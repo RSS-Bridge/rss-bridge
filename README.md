@@ -27,6 +27,6 @@ Your catchword is «share», but you don't want us to share. You want to keep us w
 
 You're not social when you hamper sharing by removing RSS. You're happy to have customers create content for your ecosystem, but you don't want this content out - a content you do not even own. Google Takeout is just a gimmick. We want our data to flow, we want RSS.
 
-We want to share with friends, using open protocols: RSS, XMPP, whatever. Because no one want to have *your* service with *your* applications using *your* API forced-feeded to them. Friends must be free to choose whatever software and service they want.
+We want to share with friends, using open protocols: RSS, XMPP, whatever. Because no one wants to have *your* service with *your* applications using *your* API forced-feeded to them. Friends must be free to choose whatever software and service they want.
 
 Get your shit together: Put RSS back in.
