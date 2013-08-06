@@ -1,7 +1,6 @@
 #################
 ## Eclipse
 #################
-simple_html_dom.php
 
 *.pydevproject
 .project
