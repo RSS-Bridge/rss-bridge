@@ -8,6 +8,12 @@ Supported sites/pages
 
  * `rss-bridge-flickr-explore.php` : [Latest interesting images](http://www.flickr.com/explore) from Flickr.
 
+Requirements
+===
+
+ * php 5.3
+ * [PHP Simple HTML DOM Parser](http://simplehtmldom.sourceforge.net/)
+ 
 Licence
 ===
 Code is public domain.
