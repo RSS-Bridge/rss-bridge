@@ -2,6 +2,7 @@
 ## Eclipse
 #################
 simple_html_dom.php
+data/
 *.pydevproject
 .project
 .metadata
