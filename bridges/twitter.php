@@ -1,9 +1,12 @@
 <?php
-require_once('rss-bridge-lib.php');
-
 /**
  * RssBridgeTwitter 
  * Based on https://github.com/mitsukarenai/twitterbridge-noapi
+ *
+ * @name Twitter Bridge
+ * @description Returns user timelines or keyword search from http://twitter.com without using their API.
+ * @use1(q="keyword search")
+ * @use2(u="user timeline mode")
  */
 class RssBridgeTwitter extends RssBridgeAbstractClass
 {
@@ -14,11 +17,11 @@ class RssBridgeTwitter extends RssBridgeAbstractClass
     protected function collectData($request) {
         $html = '';
         if (isset($request['q'])) {   /* keyword search mode */
-            $html = file_get_html('http://twitter.com/search/realtime?q='.urlencode($request['q']).'+include:retweets&src=typd') or $this->returnError('404 Not Found', 'ERROR: no results for this query.');
+            $html = file_get_html('http://twitter.com/search/realtime?q='.urlencode($request['q']).'+include:retweets&src=typd') or $this->returnError(404, 'no results for this query.');
         } elseif (isset($request['u'])) {   /* user timeline mode */
-            $html = file_get_html('http://twitter.com/'.urlencode($request['u'])) or $this->returnError('404 Not Found', 'ERROR: requested username can\'t be found.');
+            $html = file_get_html('http://twitter.com/'.urlencode($request['u'])) or $this->returnError(404, 'requested username can\'t be found.');
         } else {
-            $this->returnError('400 Bad Request', 'ERROR: You must specify a keyword (?q=...) or a Twitter username (?u=...).');
+            $this->returnError(400, 'You must specify a keyword (?q=...) or a Twitter username (?u=...).');
         }
         $this->items = Array();
         foreach($html->find('div.tweet') as $tweet) {
@@ -33,8 +36,7 @@ class RssBridgeTwitter extends RssBridgeAbstractClass
             $this->items[] = $item;
         }
     }
-} 
+}
 
 $bridge = new RssBridgeTwitter();
 $bridge->process();
-?>
