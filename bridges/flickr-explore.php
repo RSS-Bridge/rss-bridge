@@ -1,9 +1,10 @@
 <?php
-require_once('rss-bridge-lib.php');
-
 /**
  * RssBridgeFlickrExplore 
  * Returns the newest interesting images from http://www.flickr.com/explore
+ *
+ * @name Flickr Explore
+ * @description Returns the latest interesting images from Flickr
  */
 class RssBridgeFlickrExplore extends RssBridgeAbstractClass
 {
@@ -12,7 +13,7 @@ class RssBridgeFlickrExplore extends RssBridgeAbstractClass
     protected $bridgeDescription = 'Returns the latest interesting images from Flickr';
     protected $cacheDuration = 360;  // 6 hours. No need to get more.
     protected function collectData($request) {
-        $html = file_get_html('http://www.flickr.com/explore') or $this->returnError('404 Not Found', 'ERROR: could not request Flickr.');
+        $html = file_get_html('http://www.flickr.com/explore') or $this->returnError(404, 'could not request Flickr.');
         $this->items = Array();
         foreach($html->find('span.photo_container') as $element) {
             $item['uri'] = 'http://flickr.com'.$element->find('a',0)->href;
@@ -26,4 +27,3 @@ class RssBridgeFlickrExplore extends RssBridgeAbstractClass
 
 $bridge = new RssBridgeFlickrExplore();
 $bridge->process();
-?>
