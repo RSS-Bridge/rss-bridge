@@ -43,6 +43,9 @@ I'm sebsauvage, webmaster of [sebsauvage.net](http://sebsauvage.net), author of 
 
 Thanks to [Mitsukarenai](https://github.com/Mitsukarenai) for the inspiration.
 
+Patch :
+- Yves ASTIER (Draeli) : PHP optimizations, minor fixes, dynamic brigde list with all stuff behind
+
 Licence
 ===
 Code is public domain.
