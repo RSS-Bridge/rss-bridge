@@ -9,7 +9,7 @@ Supported sites/pages
  * `FlickrExplore` : [Latest interesting images](http://www.flickr.com/explore) from Flickr.
  * `GoogleSearch` : Most recent results from Google Search. Parameters:
    * q=keyword : Keyword search.
- * `Twitter.php` : Twitter. Parameters:
+ * `Twitter` : Twitter. Parameters:
    * q=keyword : Keyword search.
    * u=username : Get user timeline.
 
@@ -20,17 +20,16 @@ Output format
 Output format can be used in any rss-bridge:
 
  * `Atom` : ATOM Feed.
- * `Json` : jSon
+ * `Json` : Json
  * `Html` : html page
  * `Plaintext` : raw text (php object, as returned by print_r)
-
-Easy new format system (detail below) !
    
 Requirements
 ===
 
  * php 5.3
  * [PHP Simple HTML DOM Parser](http://simplehtmldom.sourceforge.net)
+ * Ssl lib activated in PHP config
  
 Author
 ===
@@ -39,7 +38,7 @@ I'm sebsauvage, webmaster of [sebsauvage.net](http://sebsauvage.net), author of 
 Thanks to [Mitsukarenai](https://github.com/Mitsukarenai) for the inspiration.
 
 Patch :
-- Yves ASTIER (Draeli) : PHP optimizations, minor fixes, dynamic brigde/format list with all stuff behind and extend cache system. Mail : contact@yves-astier.com
+- Yves ASTIER (Draeli) : PHP optimizations, fixes, dynamic brigde/format list with all stuff behind and extend cache system. Mail : contact@yves-astier.com
 
 Licence
 ===
