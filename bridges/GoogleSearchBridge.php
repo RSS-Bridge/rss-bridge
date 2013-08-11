@@ -11,7 +11,7 @@
 *
 * @name Google search
 * @description Returns most recent results from Google search.
-* @use1(q="keyword search")
+* @use1(q="keyword")
 */
 class GoogleSearchBridge extends BridgeAbstract{
 

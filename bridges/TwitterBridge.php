@@ -5,8 +5,8 @@
 *
 * @name Twitter Bridge
 * @description Returns user timelines or keyword search from http://twitter.com without using their API.
-* @use1(q="keyword search")
-* @use2(u="user timeline mode")
+* @use1(q="keyword")
+* @use2(u="username")
 */
 class TwitterBridge extends BridgeAbstract{
 
