@@ -1,6 +1,8 @@
 rss-bridge
 ===
 
+Version alpha 0.1
+
 rss-bridge is a collection of independant php scripts capable of generating ATOM feed for specific pages which don't have one.
 
 Supported sites/pages
@@ -28,8 +30,10 @@ Requirements
 ===
 
  * php 5.3
- * [PHP Simple HTML DOM Parser](http://simplehtmldom.sourceforge.net)
+ * [PHP Simple HTML DOM Parser](http://simplehtmldom.sourceforge.net). (Put `simple_html_dom.php` in `vendor/simplehtmldom`).
  * Ssl lib activated in PHP config
+
+Install
  
 Author
 ===

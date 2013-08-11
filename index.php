@@ -1,7 +1,7 @@
 <?php
 /*
 TODO :
-- manage SSL detection because if library isn't load, some bridge crash !
+- manage SSL detection because if library isn't loaded, some bridge crash !
 - factorize the annotation system
 - factorize to adapter : Format, Bridge, Cache (actually code is almost the same)
 - implement annotation cache for entrance page
@@ -76,97 +76,63 @@ $formats = Format::searchInformation();
 ?>
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <title>Rss-bridge - Create your own network !</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="description" content="Rss-bridge" />
-        <style type="text/css"> 
-            *{margin:0;padding:0}
-            fieldset,img{border:0}
-            ul,ol{list-style-type:none}
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Rss-bridge" />
+    <title>RSS-Bridge</title>
+    <link href="css/style.css" rel="stylesheet">
+    <!--[if IE]>
+        <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
 
-            body{background:#fff;color:#000;}
+<body>
 
-            h1{font-size:2rem;margin-bottom:1rem;text-shadow:0 3px 3px #aaa;}
-            button{cursor:pointer;border:1px solid #959595;border-radius:4px;
-                background-image: linear-gradient(top, rgb(255,255,255) 0%, rgb(237,237,237) 100%);
-                background-image: -o-linear-gradient(top, rgb(255,255,255) 0%, rgb(237,237,237) 100%);
-                background-image: -moz-linear-gradient(top, rgb(255,255,255) 0%, rgb(237,237,237) 100%);
-                background-image: -webkit-linear-gradient(top, rgb(255,255,255) 0%, rgb(237,237,237) 100%);
-                background-image: -ms-linear-gradient(top, rgb(255,255,255) 0%, rgb(237,237,237) 100%);
-            }
-            button:hover{
-                background-image: linear-gradient(top, rgb(237,237,237) 0%, rgb(255,255,255) 100%);
-                background-image: -o-linear-gradient(top, rgb(237,237,237) 0%, rgb(255,255,255) 100%);
-                background-image: -moz-linear-gradient(top, rgb(237,237,237) 0%, rgb(255,255,255) 100%);
-                background-image: -webkit-linear-gradient(top, rgb(237,237,237) 0%, rgb(255,255,255) 100%);
-                background-image: -ms-linear-gradient(top, rgb(237,237,237) 0%, rgb(255,255,255) 100%);
-            }
-            input[type="text"]{width:14rem;padding:.1rem;}
+    <header>
+        <h1>RSS-Bridge</h1>
+    </header>
 
-            .main{width:98%;margin:0 auto;font-size:1rem;}
-            .list-bridge > li:first-child{margin-top:0;}
-            .list-bridge > li{background:#f5f5f5;padding:.5rem 1rem;margin-top:2rem;border-radius:4px;
-                -webkit-box-shadow: 0px 0px 6px 2px #cfcfcf;
-                box-shadow: 0px 0px 6px 2px #cfcfcf;
-            }
-            .list-bridge > li .name{font-size:1.4rem;}
-            .list-bridge > li .description{font-size:.9rem;color:#717171;margin-bottom:.5rem;}
-            .list-bridge > li label{display:none;}
-            .list-bridge > li .list-use > li:first-child{margin-top:0;}
-            .list-bridge > li .list-use > li{margin-top:.5rem;}
+        <?php foreach($bridges as $bridgeReference => $bridgeInformations): ?>
+            <section id="bridge-<?php echo $bridgeReference ?>" data-ref="<?php echo $bridgeReference ?>">
+                <h2><?php echo $bridgeInformations['name'] ?></h2>
+                <p class="description">
+                    <?php echo isset($bridgeInformations['description']) ? $bridgeInformations['description'] : 'No description provided' ?>
+                </p> 
 
-            #origin{text-align:center;margin-top:2rem;}
-        </style>
-    </head>
-    <body>
-        <div class="main">
-            <h1>RSS-Bridge</h1>
-            <ul class="list-bridge">
-            <?php foreach($bridges as $bridgeReference => $bridgeInformations): ?>
-                <li id="bridge-<?php echo $bridgeReference ?>" data-ref="<?php echo $bridgeReference ?>">
-                    <div class="name"><?php echo $bridgeInformations['name'] ?></div>
-                    <div class="informations">
-                        <p class="description">
-                            <?php echo isset($bridgeInformations['description']) ? $bridgeInformations['description'] : 'No description provide' ?>
-                        </p>
-                        <?php if( isset($bridgeInformations['use']) && count($bridgeInformations['use']) > 0 ): ?>
-                        <ol class="list-use">
-                            <?php foreach($bridgeInformations['use'] as $anUseNum => $anUse): ?>
-                            <li data-use="<?php echo $anUseNum ?>">
-                                <form method="GET" action="?">
-                                    <input type="hidden" name="action" value="display" />
-                                    <input type="hidden" name="bridge" value="<?php echo $bridgeReference ?>" />
-                                    <?php foreach($anUse as $argName => $argDescription): ?>
-                                    <?php
-                                        $idArg = 'arg-' . $bridgeReference . '-' . $anUseNum . '-' . $argName;
-                                    ?>
-                                    <label for="<?php echo $idArg ?>"><?php echo $argDescription ?></label><input id="<?php echo $idArg ?>" type="text" value="" name="<?php echo $argName ?>" placeholder="<?php echo $argDescription ?>" />
-                                    <?php endforeach; ?>
-                                    <?php foreach( $formats as $name => $infos ): ?>
-                                        <?php if( isset($infos['name']) ){ echo getHelperButtonFormat($name, $infos['name']); } ?>
-                                    <?php endforeach; ?>
-                                </form>
-                            </li>
-                            <?php endforeach; ?>
-                        </ol>
-                        <?php else: ?>
+                <?php if( isset($bridgeInformations['use']) && count($bridgeInformations['use']) > 0 ): ?>
+                <ol class="list-use">
+                    <?php foreach($bridgeInformations['use'] as $anUseNum => $anUse): ?>
+                    <li data-use="<?php echo $anUseNum ?>">
                         <form method="GET" action="?">
                             <input type="hidden" name="action" value="display" />
                             <input type="hidden" name="bridge" value="<?php echo $bridgeReference ?>" />
+                            <?php foreach($anUse as $argName => $argDescription): ?>
+                            <?php
+                                $idArg = 'arg-' . $bridgeReference . '-' . $anUseNum . '-' . $argName;
+                            ?>
+                            <input id="<?php echo $idArg ?>" type="text" value="" placeholder="<?php echo $argDescription; ?>" name="<?php echo $argName ?>" placeholder="<?php echo $argDescription ?>" />
+                            <?php endforeach; ?>
                             <?php foreach( $formats as $name => $infos ): ?>
                                 <?php if( isset($infos['name']) ){ echo getHelperButtonFormat($name, $infos['name']); } ?>
                             <?php endforeach; ?>
                         </form>
-                        <?php endif; ?>
-                    </div>
-                </li>
+                    </li>
+                    <?php endforeach; ?>
+                </ol>
+                <?php else: ?>
+                <form method="GET" action="?">
+                    <input type="hidden" name="action" value="display" />
+                    <input type="hidden" name="bridge" value="<?php echo $bridgeReference ?>" />
+                    <?php foreach( $formats as $name => $infos ): ?>
+                        <?php if( isset($infos['name']) ){ echo getHelperButtonFormat($name, $infos['name']); } ?>
+                    <?php endforeach; ?>
+                </form>
+                <?php endif; ?>
+            </section>
             <?php endforeach; ?>
-            </ul>
-            <p id="origin">
-                <a href="">RSS-Bridge</a>
-            </p>
-        </div>
+    <footer>
+        <a href="https://github.com/sebsauvage/rss-bridge">RSS-Bridge</a> alpha 0.1
+    </footer>  
     </body>
 </html>
