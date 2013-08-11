@@ -26,6 +26,11 @@ Output format can be used in any rss-bridge:
  * `Html` : html page
  * `Plaintext` : raw text (php object, as returned by print_r)
    
+Screenshot
+===
+
+![Screenshot](http://sebsauvage.net/galerie/photos/Bordel/rss-bridge-screenshot-1.png)
+   
 Requirements
 ===
 
@@ -33,7 +38,6 @@ Requirements
  * [PHP Simple HTML DOM Parser](http://simplehtmldom.sourceforge.net). (Put `simple_html_dom.php` in `vendor/simplehtmldom`).
  * Ssl lib activated in PHP config
 
-Install
  
 Author
 ===
