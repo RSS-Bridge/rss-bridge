@@ -8,7 +8,7 @@ Supported sites/pages
 
  * `FlickrExplore` : [Latest interesting images](http://www.flickr.com/explore) from Flickr.
  * `GoogleSearch` : Most recent results from Google Search. Parameters:
- * `Twitter` : Twitter. Can return keyword/hashtag search or user timline.
+ * `Twitter` : Twitter. Can return keyword/hashtag search or user timeline.
 
 
 Output format
@@ -16,8 +16,8 @@ Output format
 Output format can take several forms:
 
  * `Atom` : ATOM Feed, for use in RSS/Feed readers
- * `Json` : Json, for consumption by other application.
- * `Html` : html page
+ * `Json` : Json, for consumption by other applications.
+ * `Html` : Simple html page.
  * `Plaintext` : raw text (php object, as returned by print_r)
    
 Screenshot
