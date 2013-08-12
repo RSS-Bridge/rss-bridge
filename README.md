@@ -7,7 +7,7 @@ Supported sites/pages
 ===
 
  * `FlickrExplore` : [Latest interesting images](http://www.flickr.com/explore) from Flickr.
- * `GoogleSearch` : Most recent results from Google Search. Parameters:
+ * `GoogleSearch` : Most recent results from Google Search.
  * `Twitter` : Twitter. Can return keyword/hashtag search or user timeline.
 
 

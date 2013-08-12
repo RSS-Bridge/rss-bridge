@@ -4,8 +4,8 @@
 * Based on https://github.com/mitsukarenai/twitterbridge-noapi
 *
 * @name Twitter Bridge
-* @description Returns user timelines or keyword search from http://twitter.com without using their API.
-* @use1(q="keyword")
+* @description Returns user timelines or keyword/hashtag search results (without using their API).
+* @use1(q="keyword or hashtag")
 * @use2(u="username")
 */
 class TwitterBridge extends BridgeAbstract{
