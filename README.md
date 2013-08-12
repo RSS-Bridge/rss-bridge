@@ -1,7 +1,7 @@
 rss-bridge
 ===
 
-rss-bridge is a collection of independant php scripts capable of generating ATOM feed for specific pages which don't have one.
+rss-bridge is a php script capable of generating ATOM feed for specific pages which don't have one.
 
 Supported sites/pages
 ===
