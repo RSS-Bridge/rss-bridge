@@ -23,7 +23,13 @@ Output format can take several forms:
 Screenshot
 ===
 
+Welcome screen:
+
 ![Screenshot](http://sebsauvage.net/galerie/photos/Bordel/rss-bridge-screenshot-1.png)
+   
+Minecraft hashtag (#Minecraft) search on Twitter, in ATOM format (as displayed by Firefox):
+
+![Screenshot](http://sebsauvage.net/galerie/photos/Bordel/rss-bridge-screenshot-2-twitter-hashtag.png)
    
 Requirements
 ===
