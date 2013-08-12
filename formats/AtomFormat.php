@@ -26,7 +26,8 @@ class AtomFormat extends FormatAbstract{
             $entryTitle = is_null($data->title) ? '' : $data->title;
             $entryUri = is_null($data->uri) ? '' : $data->uri;
             $entryTimestamp = is_null($data->timestamp) ? '' : date(DATE_ATOM, $data->timestamp);
-            $entryContent = is_null($data->content) ? '' : '<![CDATA[' . htmlentities($data->content) . ']]>';
+            // We prevent content from closing the CDATA too early.
+            $entryContent = is_null($data->content) ? '' : '<![CDATA[' . $this->sanitizeHtml(str_replace(']]>','',$data->content)) . ']]>';
 
             $entries .= <<<EOD
 
@@ -65,14 +66,22 @@ EOD;
 {$entries}
 </feed>
 EOD;
+        
+        // Remove invalid non-UTF8 characters
 
+        // We cannot use iconv because of a bug in some versions of iconv.
+        // See http://www.php.net/manual/fr/function.iconv.php#108643
+        //$toReturn = iconv("UTF-8", "UTF-8//IGNORE", $toReturn);  
+        // So we use mb_convert_encoding instead:
+        ini_set('mbstring.substitute_character', 'none');
+        $toReturn= mb_convert_encoding($toReturn, 'UTF-8', 'UTF-8'); 
         return $toReturn;
     }
 
     public function display(){
-        // $this
-            // ->setContentType('application/atom+xml; charset=' . $this->getCharset())
-            // ->callContentType();
+        $this
+            ->setContentType('application/atom+xml; charset=utf8')  // We force UTF-8 in ATOM output.
+            ->callContentType();
 
         return parent::display();
     }

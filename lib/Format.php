@@ -90,6 +90,23 @@ abstract class FormatAbstract implements FormatInterface{
 
         return $this->extraInfos;
     }
+    
+    /**
+     * Sanitized html while leaving it functionnal.
+     * The aim is to keep html as-is (with clickable hyperlinks)
+     * while reducing annoying and potentially dangerous things.
+     * Yes, I know sanitizing HTML 100% is an impossible task.
+     * Maybe we'll switch to http://htmlpurifier.org/
+     * or http://www.bioinformatics.org/phplabware/internal_utilities/htmLawed/index.php
+     */
+    public function sanitizeHtml($html)
+    {
+        $html = str_replace('<script','<&zwnj;script',$html); // Disable scripts, but leave them visible.
+        $html = str_replace('<iframe','<&zwnj;iframe',$html);
+        $html = str_replace('<link','<&zwnj;link',$html);
+        // We leave alone object and embed so that videos can play in RSS readers.
+        return $html;
+    }
 }
 
 class Format{

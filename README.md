@@ -1,8 +1,6 @@
 rss-bridge
 ===
 
-Version alpha 0.1
-
 rss-bridge is a collection of independant php scripts capable of generating ATOM feed for specific pages which don't have one.
 
 Supported sites/pages
@@ -10,19 +8,15 @@ Supported sites/pages
 
  * `FlickrExplore` : [Latest interesting images](http://www.flickr.com/explore) from Flickr.
  * `GoogleSearch` : Most recent results from Google Search. Parameters:
-   * q=keyword : Keyword search.
- * `Twitter` : Twitter. Parameters:
-   * q=keyword : Keyword search.
-   * u=username : Get user timeline.
+ * `Twitter` : Twitter. Can return keyword/hashtag search or user timline.
 
-Easy new bridge system (detail below) !
 
 Output format
 ===
-Output format can be used in any rss-bridge:
+Output format can take several forms:
 
- * `Atom` : ATOM Feed.
- * `Json` : Json
+ * `Atom` : ATOM Feed, for use in RSS/Feed readers
+ * `Json` : Json, for consumption by other application.
  * `Html` : html page
  * `Plaintext` : raw text (php object, as returned by print_r)
    
@@ -35,7 +29,7 @@ Requirements
 ===
 
  * php 5.3
- * [PHP Simple HTML DOM Parser](http://simplehtmldom.sourceforge.net). (Put `simple_html_dom.php` in `vendor/simplehtmldom`).
+ * [PHP Simple HTML DOM Parser](http://simplehtmldom.sourceforge.net). (Put `simple_html_dom.php` in `vendor/simplehtmldom/`).
  * Ssl lib activated in PHP config
 
  
@@ -46,7 +40,8 @@ I'm sebsauvage, webmaster of [sebsauvage.net](http://sebsauvage.net), author of 
 Thanks to [Mitsukarenai](https://github.com/Mitsukarenai) for the inspiration.
 
 Patch :
-- Yves ASTIER (Draeli) : PHP optimizations, fixes, dynamic brigde/format list with all stuff behind and extend cache system. Mail : contact@yves-astier.com
+
+ * Yves ASTIER ([Draeli](https://github.com/Draeli)) : PHP optimizations, fixes, dynamic brigde/format list with all stuff behind and extend cache system. Mail : contact@yves-astier.com
 
 Licence
 ===
@@ -56,7 +51,7 @@ Code is public domain.
 Technical notes
 ===
   * There is a cache so that source services won't ban you even if you hammer the rss-bridge with requests. Each bridge has a different duration for the cache. The `cache` subdirectory will be automatically created. You can purge it whenever you want.
-  * To implement a new rss-bridge, create a new class in `bridges` directory and extends with `BridgeAbstract`. Look at existing bridges for examples. For items you generate in `$this->items`, only `uri` and `title` are mandatory in each item. `timestamp` and `content` are optional but recommended. Any additional key will be ignored by ATOM feed (but outputed to jSon). If you want your new bridge appear in `index.php`, don't forget add annotation.
+  * To implement a new rss-bridge, create a new class in `bridges` subdirectory. Look at existing bridges for examples. For items you generate in `$this->items`, only `uri` and `title` are mandatory in each item. `timestamp` and `content` are optional but recommended. Any additional key will be ignored by ATOM feed (but outputed to jSon).
 
 Rant
 ===
