@@ -13,7 +13,9 @@ class CryptomeBridge extends BridgeAbstract{
     public function collectData(array $param){
         $html = '';
         $num = 90;
-        $link = 'https://secure.netsolhost.com/cryptome.org/';
+        $link = 'http://cryptome.org/';
+        // If you want HTTPS access instead, uncomment the following line:
+        //$link = 'https://secure.netsolhost.com/cryptome.org/';
 
         $html = file_get_html($link) or $this->returnError('Could not request Cryptome.', 404);
         if (isset($param['n'])) {   /* number of documents */
