@@ -7,11 +7,14 @@
 * @use1(u="username")
 */
 class IdenticaBridge extends BridgeAbstract{
+	
+	private $request;
 
     public function collectData(array $param){
         $html = '';
         if (isset($param['u'])) {   /* user timeline mode */
-            $html = file_get_html('https://identi.ca/'.urlencode($param['u'])) or $this->returnError('Requested username can\'t be found.', 404);
+        	$this->request = $param['u'];
+            $html = file_get_html('https://identi.ca/'.urlencode($this->request)) or $this->returnError('Requested username can\'t be found.', 404);
         }
         else {
             $this->returnError('You must specify an Identica username (?u=...).', 400);
@@ -28,7 +31,7 @@ class IdenticaBridge extends BridgeAbstract{
     }
 
     public function getName(){
-        return 'Identica Bridge';
+        return (!empty($this->request) ? $this->request .' - ' : '') .'Identica Bridge';
     }
 
     public function getURI(){

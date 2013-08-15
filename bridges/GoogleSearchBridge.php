@@ -15,11 +15,14 @@
 */
 class GoogleSearchBridge extends BridgeAbstract{
 
+    private $request;
+    
     public function collectData(array $param){
         $html = '';
 
         if (isset($param['q'])) {   /* keyword search mode */
-            $html = file_get_html('http://www.google.com/search?q=' . urlencode($param['q']) . '&num=100&complete=0&tbs=qdr:y,sbd:1') or $this->returnError('No results for this query.', 404);
+            $this->request = $param['q'];
+            $html = file_get_html('http://www.google.com/search?q=' . urlencode($this->request) . '&num=100&complete=0&tbs=qdr:y,sbd:1') or $this->returnError('No results for this query.', 404);
         }
         else{
             $this->returnError('You must specify a keyword (?q=...).', 400);
@@ -43,7 +46,7 @@ class GoogleSearchBridge extends BridgeAbstract{
     }
 
     public function getName(){
-        return 'Google search';
+        return (!empty($this->request) ? $this->request .' - ' : '') .'Google search';
     }
 
     public function getURI(){

@@ -8,9 +8,19 @@
 * @use1(u="username")
 */
 class YoutubeBridge extends BridgeAbstract{
-
+    
+    private $request;
+    
     public function collectData(array $param){
-        $html = file_get_html('https://www.youtube.com/user/'.urlencode($param['u']).'/videos') or $this->returnError('Could not request Youtube.', 404);
+        $html = '';
+        if (isset($param['u'])) {   /* user timeline mode */
+            $this->request = $param['u'];
+            $html = file_get_html('https://www.youtube.com/user/'.urlencode($this->request).'/videos') or $this->returnError('Could not request Youtube.', 404);
+        }
+        else {
+            $this->returnError('You must specify a Youtbe username (?u=...).', 400);
+        }
+        
     
         foreach($html->find('li.channels-content-item') as $element) {
             $item = new \Item();
@@ -23,7 +33,7 @@ class YoutubeBridge extends BridgeAbstract{
     }
 
     public function getName(){
-        return 'Youtube Bridge';
+        return (!empty($this->request) ? $this->request .' - ' : '') .'Youtube Bridge';
     }
 
     public function getURI(){
