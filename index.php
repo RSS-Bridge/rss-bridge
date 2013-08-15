@@ -13,7 +13,7 @@ TODO :
 
 date_default_timezone_set('UTC');
 error_reporting(0);
-ini_set('display_errors','1'); error_reporting(E_ALL);  // For debugging only.
+//ini_set('display_errors','1'); error_reporting(E_ALL);  // For debugging only.
 
 try{
     require_once __DIR__ . '/lib/RssBridge.php';
