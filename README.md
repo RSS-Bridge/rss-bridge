@@ -9,6 +9,8 @@ Supported sites/pages
  * `FlickrExplore` : [Latest interesting images](http://www.flickr.com/explore) from Flickr.
  * `GoogleSearch` : Most recent results from Google Search.
  * `Twitter` : Twitter. Can return keyword/hashtag search or user timeline.
+ * `Identi.ca` : Identita user timeline (Should be compatible with other Pump.io instances).
+ * `YouTube` : YouTube user channel feed.
  * `Cryptome` : Returns the most recent documents from Cryptome.org.
 
 
@@ -44,11 +46,10 @@ Author
 ===
 I'm sebsauvage, webmaster of [sebsauvage.net](http://sebsauvage.net), author of [Shaarli](http://sebsauvage.net/wiki/doku.php?id=php:shaarli) and [ZeroBin](http://sebsauvage.net/wiki/doku.php?id=php:zerobin).
 
-Thanks to [Mitsukarenai](https://github.com/Mitsukarenai) for the inspiration.
-
 Patch :
 
  * Yves ASTIER ([Draeli](https://github.com/Draeli)) : PHP optimizations, fixes, dynamic brigde/format list with all stuff behind and extend cache system. Mail : contact@yves-astier.com
+ * [Mitsukarenai](https://github.com/Mitsukarenai) : Initial inspiration, TwitterBridge, IdenticaBridge, YoutubeBridge. 
 
 Licence
 ===
