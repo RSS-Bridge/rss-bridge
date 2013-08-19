@@ -214,3 +214,8 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+
+##############
+## RSS-Bridge
+##############
+/cache
