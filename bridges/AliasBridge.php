@@ -1,15 +1,15 @@
 <?php
 /**
 * RssBridgeAlias
-* Returns the latest alias from http://alias.sh/latest-aliases/
+* Returns the most-used alias from http://alias.sh/latest-aliases/
 *
 * @name Alias
-* @description Returns the last alias from Alias.sh
+* @description Returns the most used alias from Alias.sh
 */
 class AliasBridge extends BridgeAbstract{
 
     public function collectData(array $param){
-        $html = file_get_html('http://alias.sh/latest-aliases/') or $this->returnError('Could not request Alias.', 404);
+        $html = file_get_html('http://alias.sh/most-popular/usage') or $this->returnError('Could not request Alias.', 404);
 		$html = $html->find('#content',0);
         foreach($html->find('.views-row') as $element) {
             $item = new \Item();
@@ -22,7 +22,7 @@ class AliasBridge extends BridgeAbstract{
     }
 
     public function getName(){
-        return 'Alias latest';
+        return 'Alias most used';
     }
 
     public function getURI(){
