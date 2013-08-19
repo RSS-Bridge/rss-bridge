@@ -10,12 +10,12 @@ class AliasBridge extends BridgeAbstract{
 
     public function collectData(array $param){
         $html = file_get_html('http://alias.sh/latest-aliases/') or $this->returnError('Could not request Alias.', 404);
-
+		$html = $html->find('#content',0);
         foreach($html->find('.views-row') as $element) {
             $item = new \Item();
             $item->uri = 'http://alias.sh/'.$element->find('a',0)->href;
             //$item->thumbnailUri = $element->find('img',0)->getAttribute('data-defer-src');
-            $item->content = $element->find('.bash',0)->plaintext;
+            $item->content = '<pre>'.$element->find('.bash',0)->outertext.'</pre>';
             $item->title = $element->find('a',0)->plaintext;
             $this->items[] = $item;
         }
