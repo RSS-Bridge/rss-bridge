@@ -1,7 +1,7 @@
 <?php
 /**
 * RssBridgeFlickrTagUser 
-* Returns the newest interesting images from http://www.flickr.com/explore
+* Returns the tagged images from http://www.flickr.com/
 *
 * @name Flickr TagUser
 * @description Returns the tagged or user images from Flickr
