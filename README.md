@@ -12,6 +12,7 @@ Supported sites/pages
  * `Identi.ca` : Identica user timeline (Should be compatible with other Pump.io instances).
  * `YouTube` : YouTube user channel feed.
  * `Cryptome` : Returns the most recent documents from Cryptome.org.
+ * `Se coucher moins bête` : Returns the most recent anecdotes from Secouchermoinsbete.fr with their embedded content
 
 
 Output format
@@ -52,6 +53,7 @@ Patch/contributors :
  * [Mitsukarenai](https://github.com/Mitsukarenai) : Initial inspiration, TwitterBridge, IdenticaBridge, YoutubeBridge. 
  * [ArthurHoaro](https://github.com/ArthurHoaro)
  * [BoboTiG](https://github.com/BoboTiG)
+ * [supitalp](https://github.com/supitalp) : Se coucher moins bête Bridge
 
 Licence
 ===
