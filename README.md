@@ -12,6 +12,8 @@ Supported sites/pages
  * `Identi.ca` : Identica user timeline (Should be compatible with other Pump.io instances).
  * `YouTube` : YouTube user channel feed.
  * `Cryptome` : Returns the most recent documents from Cryptome.org.
+ * `Futurasciences` : Returns the most recent documents from futura-sciences.com.
+
 
 
 Output format
