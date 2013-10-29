@@ -21,22 +21,36 @@ class InstagramBridge extends BridgeAbstract{
             $this->returnError('You must specify a Instagram username (?u=...).', 400);
         }
         
+
+
+        $image = '"(\w+)":\{"url":"(http:[^"]+)","width":(\d+),"height":(\d+)\}';
         
-        // "standard_resolution":{"url":"http:\/\/distilleryimage6.s3.amazonaws.com\/5ff1829036bc11e3b6c622000a1f92d1_7.jpg","width":612,"height":612}
-        
-        if (preg_match_all('/"standard_resolution":\{"url":"(http:[^"]+)","width":(\d+),"height":(\d+)\}/', $text, $matches))
+        if (preg_match_all('/"created_time":"(\d+)"\s*,\s*"images":\{'.$image.','.$image.','.$image.'\}/', $text, $matches))
         {
         	foreach($matches[0] as $key => $dummy)
         	{
-        		$imageurl = stripslashes($matches[1][$key]);
-        		$width = (int) $matches[2][$key];
-        		$height = (int) $matches[3][$key];
+        		$timestamp = (int) $matches[1][$key];
+        		$images = array();
+        		
+        		$pos = 2;
+        		for($i = 0; $i < 3; $i++)
+        		{
+        			$imagetype = $matches[$pos++][$key];
+	        		
+	        		$images[$imagetype] = array(
+	        			'url' => stripslashes($matches[$pos++][$key]),
+	        			'width' => (int) $matches[$pos++][$key],
+        				'height' => (int) $matches[$pos++][$key]	
+	        		);
+        		
+        		}
         		
         		
         		$item = new \Item();
-        		$item->uri = $imageurl;
-        		$item->content = '<img src="' . htmlentities($imageurl) . '" width="'.$width.'" height="'.$height.'" />';
-        		$item->title = basename($imageurl);
+        		$item->uri = $images['standard_resolution']['url'];
+        		$item->content = '<img src="' . htmlentities($images['standard_resolution']['url']) . '" width="'.$images['standard_resolution']['width'].'" height="'.$images['standard_resolution']['height'].'" />';
+        		$item->title = basename($images['standard_resolution']['url']);
+        		$item->timestamp = $timestamp;
         		$this->items[] = $item;
         	}
         }
