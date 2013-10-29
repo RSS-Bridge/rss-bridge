@@ -15,44 +15,57 @@ class InstagramBridge extends BridgeAbstract{
         $html = '';
         if (isset($param['u'])) {   /* user timeline mode */
             $this->request = $param['u'];
-            $text = file_get_contents('http://instagram.com/'.urlencode($this->request)) or $this->returnError('Could not request Instagram.', 404);
+            $html = file_get_html('http://instagram.com/'.urlencode($this->request)) or $this->returnError('Could not request Instagram.', 404);
         }
         else {
             $this->returnError('You must specify a Instagram username (?u=...).', 400);
         }
         
-
-
-        $image = '"(\w+)":\{"url":"(http:[^"]+)","width":(\d+),"height":(\d+)\}';
+        $innertext = null;
         
-        if (preg_match_all('/"created_time":"(\d+)"\s*,\s*"images":\{'.$image.','.$image.','.$image.'\}/', $text, $matches))
+        foreach($html->find('script') as $script)
         {
-        	foreach($matches[0] as $key => $dummy)
-        	{
-        		$timestamp = (int) $matches[1][$key];
-        		$images = array();
-        		
-        		$pos = 2;
-        		for($i = 0; $i < 3; $i++)
-        		{
-        			$imagetype = $matches[$pos++][$key];
-	        		
-	        		$images[$imagetype] = array(
-	        			'url' => stripslashes($matches[$pos++][$key]),
-	        			'width' => (int) $matches[$pos++][$key],
-        				'height' => (int) $matches[$pos++][$key]	
-	        		);
-        		
-        		}
-        		
-        		
-        		$item = new \Item();
-        		$item->uri = $images['standard_resolution']['url'];
-        		$item->content = '<img src="' . htmlentities($images['standard_resolution']['url']) . '" width="'.$images['standard_resolution']['width'].'" height="'.$images['standard_resolution']['height'].'" />';
-        		$item->title = basename($images['standard_resolution']['url']);
-        		$item->timestamp = $timestamp;
-        		$this->items[] = $item;
+        	if ('' === $script->innertext) {
+        		continue;
         	}
+        	
+        	$pos = strpos($script->innertext, 'window._jscalls');
+        	if (false === $pos)
+        	{
+        		continue;
+        	}
+        	
+        	$innertext = $script->innertext;
+        	
+        	break;
+        }
+        
+        
+        $json = trim(substr($innertext, $pos+15), ' =;');
+        $pos = strpos($json, '}]],');
+        $json = substr($json, $pos+4, -4);
+        $data = json_decode($json);
+
+        $userMedia = $data[2][0]->props->userMedia;
+
+
+        foreach($userMedia as $media)
+        {
+        	$image = $media->images->standard_resolution;
+        
+        
+        	$item = new \Item();
+        	$item->uri = $media->link;
+        	$item->content = '<img src="' . htmlentities($image->url) . '" width="'.htmlentities($image->width).'" height="'.htmlentities($image->height).'" />';
+        	if (isset($media->caption))
+        	{
+        		$item->title = $media->caption->text;
+        	} else {
+        		$item->title = basename($image->url);
+        	}
+        	$item->timestamp = $media->created_time;
+        	$this->items[] = $item;
+        	
         }
     }
 
@@ -65,6 +78,7 @@ class InstagramBridge extends BridgeAbstract{
     }
 
     public function getCacheDuration(){
+    	return 0;
         return 21600; // 6 hours
     }
 }
