@@ -1,4 +1,4 @@
-<?php
+ <?php
 /**
 * Atom
 * Documentation Source http://en.wikipedia.org/wiki/Atom_%28standard%29 and http://tools.ietf.org/html/rfc4287
@@ -25,6 +25,7 @@ class AtomFormat extends FormatAbstract{
             $entryAuthor = is_null($data->author) ? $uri : $data->author;
             $entryTitle = is_null($data->title) ? '' : $data->title;
             $entryUri = is_null($data->uri) ? '' : $data->uri;
+            $entryAttachment = is_null($data->attachment) ? '' : $data->attachment;
             $entryTimestamp = is_null($data->timestamp) ? '' : date(DATE_ATOM, $data->timestamp);
             // We prevent content from closing the CDATA too early.
             $entryContent = is_null($data->content) ? '' : '<![CDATA[' . $this->sanitizeHtml(str_replace(']]>','',$data->content)) . ']]>';
@@ -41,6 +42,7 @@ class AtomFormat extends FormatAbstract{
         <id>{$entryUri}</id>
         <updated>{$entryTimestamp}</updated>
         <content type="html">{$entryContent}</content>
+        <link rel="enclosure" href="{$entryAttachment}" />
     </entry>
 
 EOD;
