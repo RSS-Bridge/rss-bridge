@@ -65,6 +65,7 @@ class YoutubeBridge extends BridgeAbstract{
             $item->uri = 'https://www.youtube.com'.$element->find('a',0)->href;
             $item->thumbnailUri = 'https:'.$element->find('img',0)->src;
             $item->attachment = htmlspecialchars($video);
+            $item->attachmentCodec = "video/mp4";
             $item->title = trim($element->find('h3',0)->plaintext);
             $item->content = '<a href="' . $item->uri . '"><img src="' . $item->thumbnailUri . '" /></a><br><a href="' . $item->uri . '">' . $item->title . '</a>';
             $this->items[] = $item;

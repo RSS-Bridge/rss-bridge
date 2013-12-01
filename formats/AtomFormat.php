@@ -26,6 +26,7 @@ class AtomFormat extends FormatAbstract{
             $entryTitle = is_null($data->title) ? '' : $data->title;
             $entryUri = is_null($data->uri) ? '' : $data->uri;
             $entryAttachment = is_null($data->attachment) ? '' : $data->attachment;
+            $entryAttachmentCodec = is_null($data->attachmentCodec) ? '' : $data->attachmentCodec;
             $entryTimestamp = is_null($data->timestamp) ? date(DATE_ATOM, 0) : date(DATE_ATOM, $data->timestamp);
             $timestamps[] = (int)$entryTimestamp;
             // We prevent content from closing the CDATA too early.
@@ -43,7 +44,7 @@ class AtomFormat extends FormatAbstract{
         <id>{$entryUri}</id>
         <updated>{$entryTimestamp}</updated>
         <content type="html">{$entryContent}</content>
-        <link rel="enclosure" href="{$entryAttachment}" />
+        <link rel="enclosure" href="{$entryAttachment}" type="{$entryAttachmentCodec}" />
     </entry>
 
 EOD;
