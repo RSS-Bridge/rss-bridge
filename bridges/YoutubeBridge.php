@@ -59,7 +59,6 @@ class YoutubeBridge extends BridgeAbstract{
                     $foundArray[$tm[1]] = $u.'&signature='.$si[1];
                 }
             }
-            print_r($foundarray);
             $video = $foundArray[22];
 
             $item = new \Item();

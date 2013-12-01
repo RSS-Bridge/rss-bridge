@@ -1,4 +1,4 @@
- <?php
+<?php
 /**
 * Atom
 * Documentation Source http://en.wikipedia.org/wiki/Atom_%28standard%29 and http://tools.ietf.org/html/rfc4287
@@ -18,7 +18,7 @@ class AtomFormat extends FormatAbstract{
         $extraInfos = $this->getExtraInfos();
         $title = htmlspecialchars($extraInfos['name']);
         $uri = htmlspecialchars($extraInfos['uri']);
-
+        $timestamps = array();
         $entries = '';
         foreach($this->getDatas() as $data){
             $entryName = is_null($data->name) ? $title : $data->name;
@@ -26,7 +26,8 @@ class AtomFormat extends FormatAbstract{
             $entryTitle = is_null($data->title) ? '' : $data->title;
             $entryUri = is_null($data->uri) ? '' : $data->uri;
             $entryAttachment = is_null($data->attachment) ? '' : $data->attachment;
-            $entryTimestamp = is_null($data->timestamp) ? '' : date(DATE_ATOM, $data->timestamp);
+            $entryTimestamp = is_null($data->timestamp) ? date(DATE_ATOM, 0) : date(DATE_ATOM, $data->timestamp);
+            $timestamps[] = (int)$entryTimestamp;
             // We prevent content from closing the CDATA too early.
             $entryContent = is_null($data->content) ? '' : '<![CDATA[' . $this->sanitizeHtml(str_replace(']]>','',$data->content)) . ']]>';
 
@@ -47,6 +48,7 @@ class AtomFormat extends FormatAbstract{
 
 EOD;
         }
+        $update_timestamp = date(DATE_ATOM, max($timestamps));
 
         /*
         TODO :
@@ -62,7 +64,7 @@ EOD;
 
     <title type="text">{$title}</title>
     <id>http{$https}://{$httpHost}{$httpInfo}/</id>
-    <updated></updated>
+    <updated>{$update_timestamp}</updated>
     <link rel="alternate" type="text/html" href="{$uri}" />
     <link rel="self" href="http{$https}://{$httpHost}{$serverRequestUri}" />
 {$entries}
