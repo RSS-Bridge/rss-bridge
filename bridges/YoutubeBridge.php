@@ -37,35 +37,52 @@ class YoutubeBridge extends BridgeAbstract{
             
             if(!preg_match('/stream_map=(.[^&]*?)&/i',$html_video,$match))
             {
-                $this->returnError ("Error Locating Downlod URL's", 400);
+                //$this->returnError ("Error Locating Downlod URL's", 400);
             }
     
             if(!preg_match('/stream_map=(.[^&]*?)(?:\\\\|&)/i',$html_video,$match))
             {
-                $this->returnError ("Problem", 400);
+                //$this->returnError ("Problem", 400);
             }
     
             $fmt_url =  urldecode($match[1]);
        
             $urls = explode(',',$fmt_url);
                     
-            $foundArray = array();
+            $videos = array();
     
             foreach($urls as $url)
             {            
                 if(preg_match('/itag=([0-9]+)/',$url,$tm) && preg_match('/sig=(.*?)&/', $url , $si) && preg_match('/url=(.*?)&/', $url , $um))
                 {
                     $u = urldecode($um[1]);
-                    $foundArray[$tm[1]] = $u.'&signature='.$si[1];
+                    $videos[$tm[1]] = $u.'&signature='.$si[1];
                 }
             }
-            $video = $foundArray[22];
+            
+            $codecs = array();
+            $codecs[13] = "video/3gpp";
+            $codecs[17] =  "video/3gpp";
+            $codecs[36] =  "video/3gpp";
+            $codecs[5]  =  "video/x-flv";
+            $codecs[6]  =  "video/x-flv";
+            $codecs[34] =  "video/x-flv";
+            $codecs[35] =  "video/x-flv";
+            $codecs[43] =  "video/webm";
+            $codecs[44] =  "video/webm";
+            $codecs[45] =  "video/webm";
+            $codecs[18] =  "video/mp4";
+            $codecs[22] =  "video/mp4";
+            $codecs[37] =  "video/mp4";
+            $codecs[33] =  "video/mp4";
 
             $item = new \Item();
             $item->uri = 'https://www.youtube.com'.$element->find('a',0)->href;
             $item->thumbnailUri = 'https:'.$element->find('img',0)->src;
-            $item->attachment = htmlspecialchars($video);
-            $item->attachmentCodec = "video/mp4";
+            $item->attachments = array();
+            foreach ($videos as $key => $value){
+                $item->attachments[] = array("URL" => htmlspecialchars($value), "codec" => $codecs[$key]);
+            }
             $item->title = trim($element->find('h3',0)->plaintext);
             $item->content = '<a href="' . $item->uri . '"><img src="' . $item->thumbnailUri . '" /></a><br><a href="' . $item->uri . '">' . $item->title . '</a>';
             $this->items[] = $item;
