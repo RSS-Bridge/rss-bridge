@@ -12,7 +12,7 @@ class BandcampBridge extends BridgeAbstract{
 
     public function collectData(array $param){
         $html = '';
-        if (isset($param['tag'])) {   /* keyword search mode */
+        if (isset($param['tag'])) {
             $this->request = $param['tag'];
             $html = file_get_html('http://bandcamp.com/tag/'.urlencode($this->request).'?sort_field=date') or $this->returnError('No results for this query.', 404);
         }
