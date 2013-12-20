@@ -40,6 +40,6 @@ class BandcampBridge extends BridgeAbstract{
     }
 
     public function getCacheDuration(){
-        return 300; // 5 minutes
+        return 600; // 10 minutes
     }
 }
