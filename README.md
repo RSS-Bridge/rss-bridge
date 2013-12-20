@@ -12,6 +12,7 @@ Supported sites/pages
  * `Identi.ca` : Identica user timeline (Should be compatible with other Pump.io instances).
  * `YouTube` : YouTube user channel feed.
  * `Cryptome` : Returns the most recent documents from Cryptome.org.
+ * `Bandcamp` : Returns last release from bandcamp for a tag
 
 
 Output format
