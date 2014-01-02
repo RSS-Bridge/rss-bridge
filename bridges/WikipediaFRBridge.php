@@ -21,7 +21,7 @@ class WikipediaFRBridge extends BridgeAbstract{
 		$item = new \Item();
 		$item->uri = $host.$element->find('p', 0)->find('a', 0)->href;
 		$item->title = $element->find('p',0)->find('a',0)->title;
-		$item->content = str_replace('href="', 'href="'.$host, $html->find('div[id=mf-lumieresur]', 0)->innertext);
+		$item->content = str_replace('href="', 'href="'.$host, $element->find('div[id=mf-lumieresur]', 0)->innertext);
 		$this->items[] = $item;
     }
 
@@ -34,6 +34,6 @@ class WikipediaFRBridge extends BridgeAbstract{
     }
 
     public function getCacheDuration(){
-        return 0*3600*4; // 4 hours
+        return 3600*4; // 4 hours
     }
 }
