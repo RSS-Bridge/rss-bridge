@@ -75,7 +75,6 @@ class InstagramBridge extends BridgeAbstract{
     }
 
     public function getCacheDuration(){
-    	return 0;
-        return 21600; // 6 hours
+        return 3600; 
     }
 }
