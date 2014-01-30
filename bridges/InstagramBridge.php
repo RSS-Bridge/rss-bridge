@@ -29,31 +29,28 @@ class InstagramBridge extends BridgeAbstract{
         		continue;
         	}
         	
-        	$pos = strpos($script->innertext, 'window._jscalls');
-        	if (false === $pos)
+        	$pos = strpos(trim($script->innertext), 'window._sharedData');
+        	if (0 !== $pos)
         	{
         		continue;
         	}
         	
         	$innertext = $script->innertext;
-        	
         	break;
         }
         
         
-        $json = trim(substr($innertext, $pos+15), ' =;');
-        $pos = strpos($json, '}]],');
-        $json = substr($json, $pos+4, -4);
+        
+        $json = trim(substr($innertext, $pos+18), ' =;');
         $data = json_decode($json);
-
-        $userMedia = $data[2][0]->props->userMedia;
+        
+        $userMedia = $data->entry_data->UserProfile[0]->userMedia;
 
 
         foreach($userMedia as $media)
         {
         	$image = $media->images->standard_resolution;
-        
-        
+
         	$item = new \Item();
         	$item->uri = $media->link;
         	$item->content = '<img src="' . htmlentities($image->url) . '" width="'.htmlentities($image->width).'" height="'.htmlentities($image->height).'" />';
