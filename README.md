@@ -14,7 +14,17 @@ Supported sites/pages
  * `Cryptome` : Returns the most recent documents from Cryptome.org.
  * `Futurasciences` : Returns the most recent articles from futura-sciences.com.
  * `GuruMed`: Returns the most recent articles for gurumed.org
-
+ * `DansTonChat`: Most recent quotes from danstonchat.com
+ * `DuckDuckGo`: Most recent results from DuckDuckGo.com
+ * `FSBridge`: Most recent article (full text) from futura-sciences.com
+ * `GuruMed`: Most recent entries (full text) from gurumed.org
+ * `Instagram`: Most recent photos from an instagram.com user.
+ * `OpenClassrooms`: Lastest tutorials from fr.openclassrooms.com.
+ * `Pinterest`: Most recent photos from user or search.
+ * `ScmbBridge`: Newest stories from secouchermoinsbete.fr
+ * `WikipediaENLatest`: highlighted articles from Wikipedia in English.
+ * `WikipediaFRLatest`: highlighted articles from Wikipedia in French.
+ * `WikipediaEOLatest`: highlighted articles from Wikipedia in Esperanto.
 
 
 Output format
@@ -55,6 +65,9 @@ Patch/contributors :
  * [Mitsukarenai](https://github.com/Mitsukarenai) : Initial inspiration, TwitterBridge, IdenticaBridge, YoutubeBridge. 
  * [ArthurHoaro](https://github.com/ArthurHoaro)
  * [BoboTiG](https://github.com/BoboTiG)
+ * [Astalaseven](https://github.com/Astalaseven)
+ * [qwertygc](https://github.com/qwertygc)
+ * [Djuuu](https://github.com/Djuuu)
 
 Licence
 ===
