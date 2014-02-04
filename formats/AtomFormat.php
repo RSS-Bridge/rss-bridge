@@ -18,17 +18,26 @@ class AtomFormat extends FormatAbstract{
         $extraInfos = $this->getExtraInfos();
         $title = htmlspecialchars($extraInfos['name']);
         $uri = htmlspecialchars($extraInfos['uri']);
-
+        $timestamps = array();
         $entries = '';
         foreach($this->getDatas() as $data){
+            $attachments = '';
             $entryName = is_null($data->name) ? $title : $data->name;
             $entryAuthor = is_null($data->author) ? $uri : $data->author;
             $entryTitle = is_null($data->title) ? '' : $data->title;
             $entryUri = is_null($data->uri) ? '' : $data->uri;
-            $entryTimestamp = is_null($data->timestamp) ? '' : date(DATE_ATOM, $data->timestamp);
+            $entryAttachments = is_null($data->attachments) ? array() : $data->attachments;
+            $entryTimestamp = is_null($data->timestamp) ? date(DATE_ATOM, 0) : date(DATE_ATOM, $data->timestamp);
+            $timestamps[] = (int)$entryTimestamp;
             // We prevent content from closing the CDATA too early.
             $entryContent = is_null($data->content) ? '' : '<![CDATA[' . $this->sanitizeHtml(str_replace(']]>','',$data->content)) . ']]>';
-
+            foreach ($entryAttachments as $key => $attachment){
+                $url = $attachment["URL"];
+                $codec = $attachment["codec"];
+                $attachments .= <<<EOD
+    <link rel="enclosure" href="{$url}" type="{$codec}" />
+EOD;
+            }
             $entries .= <<<EOD
 
     <entry>
@@ -41,10 +50,12 @@ class AtomFormat extends FormatAbstract{
         <id>{$entryUri}</id>
         <updated>{$entryTimestamp}</updated>
         <content type="html">{$entryContent}</content>
+        {$attachments}
     </entry>
 
 EOD;
         }
+        $update_timestamp = date(DATE_ATOM, max($timestamps));
 
         /*
         TODO :
@@ -60,7 +71,7 @@ EOD;
 
     <title type="text">{$title}</title>
     <id>http{$https}://{$httpHost}{$httpInfo}/</id>
-    <updated></updated>
+    <updated>{$update_timestamp}</updated>
     <link rel="alternate" type="text/html" href="{$uri}" />
     <link rel="self" href="http{$https}://{$httpHost}{$serverRequestUri}" />
 {$entries}
