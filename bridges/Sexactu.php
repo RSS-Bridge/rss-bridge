@@ -12,17 +12,16 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
     
         foreach($html->find('div.content-holder ul li') as $element) {
             $item = new Item();
-            $temp = $element->find('h3 a', 0);
             
             $titreElement = $element->find('.title-holder .article-title a');
-	$titre = $titreElement->
-            $url = $temp->href;
+			$titre = $titreElement->innertext
+            $url = $titreElement->href;
             
             $temp = $element->find('div.text-container', 0);
             $content = $temp->innertext;
             
-            $auteur = $temp->find('.c1 em', 0);
-            $pos = strpos($auteur->innertext, "by");
+            $auteur = $element->find('div.header-holder', 0);
+            $pos = strpos($auteur->innertext, "par");
             
             if($pos > 0)
             {
