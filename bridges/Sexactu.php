@@ -5,7 +5,7 @@
 * @description Sexactu via rss-bridge
 * @update 04/02/2014
 */
-class LesJoiesDuCodeBridge extends BridgeAbstract{
+class SexactuBridge extends BridgeAbstract{
 
     public function collectData(array $param){
         $html = file_get_html('http://http://www.gqmagazine.fr/sexactu') or $this->returnError('Could not request http://www.gqmagazine.fr/sexactu.', 404);
@@ -13,27 +13,14 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
         foreach($html->find('div.content-holder ul li') as $element) {
             $item = new Item();
             
-            $titreElement = $element->find('.title-holder .article-title a');
-			$titre = $titreElement->innertext
-            $url = $titreElement->href;
+            // various metadata
+            $titleBock  = $element->find('title-holder');
+            $titleData = $titleBlock->find('article-title h2 a');
             
-            $temp = $element->find('div.text-container', 0);
-            $content = $temp->innertext;
-            
-            $auteur = $element->find('div.header-holder', 0);
-            $pos = strpos($auteur->innertext, "par");
-            
-            if($pos > 0)
-            {
-                $auteur = trim(str_replace("*/", "", substr($auteur->innertext, ($pos + 2))));
-                $item->name = $auteur;
-            }
-            
-            
-            $item->content .= trim($content);
-            $item->uri = $url;
-            $item->title = trim($titre);
-            
+            $item->title = trim($titleData->innertext);
+            $item->uri = $titleData->href;
+            $item->name = "Maïa Mazaurette";
+            $item->content = $element->find('text-container')->innertext;
             $this->items[] = $item;
         }
     }
