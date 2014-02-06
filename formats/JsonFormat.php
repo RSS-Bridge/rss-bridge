@@ -5,16 +5,18 @@
 *
 * @name Json
 */
-class JsonFormat extends FormatAbstract{
-
-    public function stringify(){
+class JsonFormat extends FormatAbstract
+{
+    public function stringify()
+    {
         // FIXME : sometime content can be null, transform to empty string
         $datas = $this->getDatas();
 
         return json_encode($datas);
     }
 
-    public function display(){
+    public function display()
+    {
         $this
             ->setContentType('application/json')
             ->callContentType();

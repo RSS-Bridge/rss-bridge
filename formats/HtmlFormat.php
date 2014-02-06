@@ -5,16 +5,17 @@
 *
 * @name Html
 */
-class HtmlFormat extends FormatAbstract{
-
-    public function stringify(){
+class HtmlFormat extends FormatAbstract
+{
+    public function stringify()
+    {
         /* Datas preparation */
         $extraInfos = $this->getExtraInfos();
         $title = htmlspecialchars($extraInfos['name']);
         $uri = htmlspecialchars($extraInfos['uri']);
 
         $entries = '';
-        foreach($this->getDatas() as $data){
+        foreach ($this->getDatas() as $data) {
             $entryUri = is_null($data->uri) ? $uri : $data->uri;
             $entryTitle = is_null($data->title) ? '' : $this->sanitizeHtml(strip_tags($data->title));
             $entryTimestamp = is_null($data->timestamp) ? '' : '<small>' . date(DATE_ATOM, $data->timestamp) . '</small>';
@@ -51,7 +52,8 @@ EOD;
         return $toReturn;
     }
 
-    public function display() {
+    public function display()
+    {
         $this
             ->setContentType('text/html; charset=' . $this->getCharset())
             ->callContentType();

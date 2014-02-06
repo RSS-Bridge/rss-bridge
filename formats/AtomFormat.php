@@ -5,9 +5,10 @@
 *
 * @name Atom
 */
-class AtomFormat extends FormatAbstract{
-
-    public function stringify(){
+class AtomFormat extends FormatAbstract
+{
+    public function stringify()
+    {
         /* Datas preparation */
         $https = ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 's' : '' );
         $httpHost = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
@@ -20,7 +21,7 @@ class AtomFormat extends FormatAbstract{
         $uri = htmlspecialchars($extraInfos['uri']);
 
         $entries = '';
-        foreach($this->getDatas() as $data){
+        foreach ($this->getDatas() as $data) {
             $entryName = is_null($data->name) ? $title : $data->name;
             $entryAuthor = is_null($data->author) ? $uri : $data->author;
             $entryTitle = is_null($data->title) ? '' : $data->title;
@@ -66,19 +67,21 @@ EOD;
 {$entries}
 </feed>
 EOD;
-        
+
         // Remove invalid non-UTF8 characters
 
         // We cannot use iconv because of a bug in some versions of iconv.
         // See http://www.php.net/manual/fr/function.iconv.php#108643
-        //$toReturn = iconv("UTF-8", "UTF-8//IGNORE", $toReturn);  
+        //$toReturn = iconv("UTF-8", "UTF-8//IGNORE", $toReturn);
         // So we use mb_convert_encoding instead:
         ini_set('mbstring.substitute_character', 'none');
-        $toReturn= mb_convert_encoding($toReturn, 'UTF-8', 'UTF-8'); 
+        $toReturn= mb_convert_encoding($toReturn, 'UTF-8', 'UTF-8');
+
         return $toReturn;
     }
 
-    public function display(){
+    public function display()
+    {
         $this
             ->setContentType('application/atom+xml; charset=utf8')  // We force UTF-8 in ATOM output.
             ->callContentType();

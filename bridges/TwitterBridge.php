@@ -1,6 +1,6 @@
 <?php
 /**
-* RssBridgeTwitter 
+* RssBridgeTwitter
 * Based on https://github.com/mitsukarenai/twitterbridge-noapi
 *
 * @name Twitter Bridge
@@ -8,25 +8,24 @@
 * @use1(q="keyword or #hashtag")
 * @use2(u="username")
 */
-class TwitterBridge extends BridgeAbstract{
-    
+class TwitterBridge extends BridgeAbstract
+{
     private $request;
 
-    public function collectData(array $param){
+    public function collectData(array $param)
+    {
         $html = '';
         if (isset($param['q'])) {   /* keyword search mode */
             $this->request = $param['q'];
             $html = file_get_html('http://twitter.com/search/realtime?q='.urlencode($this->request).'+include:retweets&src=typd') or $this->returnError('No results for this query.', 404);
-        }
-        elseif (isset($param['u'])) {   /* user timeline mode */
+        } elseif (isset($param['u'])) {   /* user timeline mode */
             $this->request = $param['u'];
             $html = file_get_html('http://twitter.com/'.urlencode($this->request)) or $this->returnError('Requested username can\'t be found.', 404);
-        }
-        else {
+        } else {
             $this->returnError('You must specify a keyword (?q=...) or a Twitter username (?u=...).', 400);
         }
 
-        foreach($html->find('div.tweet') as $tweet) {
+        foreach ($html->find('div.tweet') as $tweet) {
             $item = new \Item();
             $item->username = trim(substr($tweet->find('span.username', 0)->plaintext, 1));	// extract username and sanitize
             $item->fullname = $tweet->getAttribute('data-name'); // extract fullname (pseudonym)
@@ -40,15 +39,18 @@ class TwitterBridge extends BridgeAbstract{
         }
     }
 
-    public function getName(){
+    public function getName()
+    {
         return (!empty($this->request) ? $this->request .' - ' : '') .'Twitter Bridge';
     }
 
-    public function getURI(){
+    public function getURI()
+    {
         return 'http://twitter.com';
     }
 
-    public function getCacheDuration(){
+    public function getCacheDuration()
+    {
         return 300; // 5 minutes
     }
 }

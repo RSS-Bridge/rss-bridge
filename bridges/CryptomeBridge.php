@@ -8,9 +8,10 @@
 * @description Returns the N most recent documents.
 * @use1(n="number")
 */
-class CryptomeBridge extends BridgeAbstract{
-
-    public function collectData(array $param){
+class CryptomeBridge extends BridgeAbstract
+{
+    public function collectData(array $param)
+    {
         $html = '';
         $num = 90;
         $link = 'http://cryptome.org/';
@@ -22,8 +23,8 @@ class CryptomeBridge extends BridgeAbstract{
             $num = min(max(1, $param['n']+0), $num);
         }
 
-        foreach($html->find('pre') as $element) {
-            for ( $i = 0; $i < $num; ++$i ) {
+        foreach ($html->find('pre') as $element) {
+            for ($i = 0; $i < $num; ++$i) {
                 $item = new \Item();
                 $item->uri = $link.substr($element->find('a', $i)->href, 20);
                 $item->title = substr($element->find('b', $i)->plaintext, 22);
@@ -34,15 +35,18 @@ class CryptomeBridge extends BridgeAbstract{
         }
     }
 
-    public function getName(){
+    public function getName()
+    {
         return 'Cryptome';
     }
 
-    public function getURI(){
+    public function getURI()
+    {
         return 'https://secure.netsolhost.com/cryptome.org/';
     }
 
-    public function getCacheDuration(){
+    public function getCacheDuration()
+    {
         return 21600; // 6 hours
     }
 }

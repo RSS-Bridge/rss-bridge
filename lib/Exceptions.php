@@ -4,15 +4,16 @@ class HttpException extends \Exception{}
 /**
 * Not real http implementation but only utils stuff
 */
-class Http{
-
+class Http
+{
     /**
     * Return message corresponding to Http code
     */
-    static public function getMessageForCode($code){
+    public static function getMessageForCode($code)
+    {
         $codes = self::getCodes();
 
-        if( isset($codes[$code]) ){
+        if ( isset($codes[$code]) ) {
             return $codes[$code];
         }
 
@@ -22,7 +23,8 @@ class Http{
     /**
     * List of common Http code
     */
-    static public function getCodes(){
+    public static function getCodes()
+    {
         return array(
             200 => 'OK',
             201 => 'Created',
