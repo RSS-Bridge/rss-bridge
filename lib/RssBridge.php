@@ -14,13 +14,13 @@ require __DIR__ . '/Bridge.php';
 require __DIR__ . '/Cache.php';
 
 $vendorLibSimpleHtmlDom = __DIR__ . PATH_VENDOR . '/simplehtmldom/simple_html_dom.php';
-if( !file_exists($vendorLibSimpleHtmlDom) ){
+if ( !file_exists($vendorLibSimpleHtmlDom) ) {
     throw new \HttpException('"PHP Simple HTML DOM Parser" library is missing. Get it from http://simplehtmldom.sourceforge.net and place the script "simple_html_dom.php" in '.substr(PATH_VENDOR,4) . '/simplehtmldom/', 500);
 }
 require_once $vendorLibSimpleHtmlDom;
 
 /* Example use
-    
+
     require_once __DIR__ . '/lib/RssBridge.php';
 
     // Data retrieval

@@ -2,17 +2,19 @@
 /**
 * Cache with file system
 */
-class FileCache extends CacheAbstract{
+class FileCache extends CacheAbstract
+{
     protected $cacheDirCreated; // boolean to avoid always chck dir cache existance
 
-    public function loadData(){
+    public function loadData()
+    {
         $this->isPrepareCache();
 
         $datas = json_decode(file_get_contents($this->getCacheFile()),true);
         $items = array();
-        foreach($datas as $aData){
+        foreach ($datas as $aData) {
             $item = new \Item();
-            foreach($aData as $name => $value){
+            foreach ($aData as $name => $value) {
                 $item->$name = $value;
             }
             $items[] = $item;
@@ -21,7 +23,8 @@ class FileCache extends CacheAbstract{
         return $items;
     }
 
-    public function saveData($datas){
+    public function saveData($datas)
+    {
         $this->isPrepareCache();
 
         file_put_contents($this->getCacheFile(), json_encode($datas));
@@ -29,11 +32,12 @@ class FileCache extends CacheAbstract{
         return $this;
     }
 
-    public function getTime(){
+    public function getTime()
+    {
         $this->isPrepareCache();
 
         $cacheFile = $this->getCacheFile();
-        if( file_exists($cacheFile) ){
+        if ( file_exists($cacheFile) ) {
             return filemtime($cacheFile);
         }
 
@@ -45,8 +49,9 @@ class FileCache extends CacheAbstract{
     * Note : Cache name is based on request information, then cache must be prepare before use
     * @return \Exception|true
     */
-    protected function isPrepareCache(){
-        if( is_null($this->param) ){
+    protected function isPrepareCache()
+    {
+        if ( is_null($this->param) ) {
             throw new \Exception('Please feed "prepare" method before try to load');
         }
 
@@ -57,11 +62,12 @@ class FileCache extends CacheAbstract{
     * Return cache path (and create if not exist)
     * @return string Cache path
     */
-    protected function getCachePath(){
+    protected function getCachePath()
+    {
         $cacheDir = __DIR__ . '/../cache/'; // FIXME : configuration ?
 
         // FIXME : implement recursive dir creation
-        if( is_null($this->cacheDirCreated) && !is_dir($cacheDir) ){
+        if ( is_null($this->cacheDirCreated) && !is_dir($cacheDir) ) {
             $this->cacheDirCreated = true;
 
             mkdir($cacheDir,0705);
@@ -75,7 +81,8 @@ class FileCache extends CacheAbstract{
     * Get the file name use for cache store
     * @return string Path to the file cache
     */
-    protected function getCacheFile(){
+    protected function getCacheFile()
+    {
         return $this->getCachePath() . $this->getCacheName();
     }
 
@@ -83,10 +90,12 @@ class FileCache extends CacheAbstract{
     * Determines file name for store the cache
     * return string
     */
-    protected function getCacheName(){
+    protected function getCacheName()
+    {
         $this->isPrepareCache();
 
         $stringToEncode = $_SERVER['REQUEST_URI'] . http_build_query($this->param);
+
         return hash('sha1', $stringToEncode) . '.cache';
     }
 }

@@ -15,17 +15,17 @@ date_default_timezone_set('UTC');
 error_reporting(0);
 //ini_set('display_errors','1'); error_reporting(E_ALL);  // For debugging only.
 
-try{
+try {
     require_once __DIR__ . '/lib/RssBridge.php';
 
     Bridge::setDir(__DIR__ . '/bridges/');
     Format::setDir(__DIR__ . '/formats/');
     Cache::setDir(__DIR__ . '/caches/');
 
-    if( isset($_REQUEST) && isset($_REQUEST['action']) ){
-        switch($_REQUEST['action']){
+    if ( isset($_REQUEST) && isset($_REQUEST['action']) ) {
+        switch ($_REQUEST['action']) {
             case 'display':
-                if( isset($_REQUEST['bridge']) ){
+                if ( isset($_REQUEST['bridge']) ) {
                     unset($_REQUEST['action']);
                     $bridge = $_REQUEST['bridge'];
                     unset($_REQUEST['bridge']);
@@ -57,17 +57,16 @@ try{
                 break;
         }
     }
-}
-catch(HttpException $e){
+} catch (HttpException $e) {
     header('HTTP/1.1 ' . $e->getCode() . ' ' . Http::getMessageForCode($e->getCode()));
     header('Content-Type: text/plain');
     die($e->getMessage());
-}
-catch(\Exception $e){
+} catch (\Exception $e) {
     die($e->getMessage());
 }
 
-function getHelperButtonFormat($value, $name){
+function getHelperButtonFormat($value, $name)
+{
     return '<button type="submit" name="format" value="' . $value . '">' . $name . '</button>';
 }
 
@@ -98,7 +97,7 @@ $formats = Format::searchInformation();
                 <h2><?php echo $bridgeInformations['name'] ?></h2>
                 <p class="description">
                     <?php echo isset($bridgeInformations['description']) ? $bridgeInformations['description'] : 'No description provided' ?>
-                </p> 
+                </p>
 
                 <?php if( isset($bridgeInformations['use']) && count($bridgeInformations['use']) > 0 ): ?>
                 <ol class="list-use">
@@ -114,7 +113,7 @@ $formats = Format::searchInformation();
                             <input id="<?php echo $idArg ?>" type="text" value="" placeholder="<?php echo $argDescription; ?>" name="<?php echo $argName ?>" placeholder="<?php echo $argDescription ?>" />
                             <?php endforeach; ?>
                             <?php foreach( $formats as $name => $infos ): ?>
-                                <?php if( isset($infos['name']) ){ echo getHelperButtonFormat($name, $infos['name']); } ?>
+                                <?php if ( isset($infos['name']) ) { echo getHelperButtonFormat($name, $infos['name']); } ?>
                             <?php endforeach; ?>
                         </form>
                     </li>
@@ -125,7 +124,7 @@ $formats = Format::searchInformation();
                     <input type="hidden" name="action" value="display" />
                     <input type="hidden" name="bridge" value="<?php echo $bridgeReference ?>" />
                     <?php foreach( $formats as $name => $infos ): ?>
-                        <?php if( isset($infos['name']) ){ echo getHelperButtonFormat($name, $infos['name']); } ?>
+                        <?php if ( isset($infos['name']) ) { echo getHelperButtonFormat($name, $infos['name']); } ?>
                     <?php endforeach; ?>
                 </form>
                 <?php endif; ?>
@@ -133,6 +132,6 @@ $formats = Format::searchInformation();
             <?php endforeach; ?>
     <footer>
         <a href="https://github.com/sebsauvage/rss-bridge">RSS-Bridge</a> alpha 0.1
-    </footer>  
+    </footer>
     </body>
 </html>

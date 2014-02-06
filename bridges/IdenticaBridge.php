@@ -1,26 +1,26 @@
 <?php
 /**
-* RssBridgeIdentica 
+* RssBridgeIdentica
 *
 * @name Identica Bridge
 * @description Returns user timelines
 * @use1(u="username")
 */
-class IdenticaBridge extends BridgeAbstract{
-	
-	private $request;
+class IdenticaBridge extends BridgeAbstract
+{
+    private $request;
 
-    public function collectData(array $param){
+    public function collectData(array $param)
+    {
         $html = '';
         if (isset($param['u'])) {   /* user timeline mode */
-        	$this->request = $param['u'];
+            $this->request = $param['u'];
             $html = file_get_html('https://identi.ca/'.urlencode($this->request)) or $this->returnError('Requested username can\'t be found.', 404);
-        }
-        else {
+        } else {
             $this->returnError('You must specify an Identica username (?u=...).', 400);
         }
 
-        foreach($html->find('li.major') as $dent) {
+        foreach ($html->find('li.major') as $dent) {
             $item = new \Item();
             $item->uri = html_entity_decode($dent->find('a', 0)->href);	// get dent link
             $item->timestamp = strtotime($dent->find('abbr.easydate', 0)->plaintext);	// extract dent timestamp
@@ -30,15 +30,18 @@ class IdenticaBridge extends BridgeAbstract{
         }
     }
 
-    public function getName(){
+    public function getName()
+    {
         return (!empty($this->request) ? $this->request .' - ' : '') .'Identica Bridge';
     }
 
-    public function getURI(){
+    public function getURI()
+    {
         return 'https://identica.com';
     }
 
-    public function getCacheDuration(){
+    public function getCacheDuration()
+    {
         return 300; // 5 minutes
     }
 }

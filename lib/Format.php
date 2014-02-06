@@ -4,58 +4,66 @@
 * Note : adapter are store in other place
 */
 
-interface FormatInterface{
+interface FormatInterface
+{
     public function stringify();
     public function display();
     public function setDatas(array $bridge);
 }
 
-abstract class FormatAbstract implements FormatInterface{
+abstract class FormatAbstract implements FormatInterface
+{
     const DEFAULT_CHARSET = 'UTF-8';
 
-    protected 
-        $contentType,
+    protected $contentType,
         $charset,
         $datas,
         $extraInfos
     ;
 
-    public function setCharset($charset){
+    public function setCharset($charset)
+    {
         $this->charset = $charset;
 
         return $this;
     }
 
-    public function getCharset(){
+    public function getCharset()
+    {
         $charset = $this->charset;
 
         return is_null($charset) ? self::DEFAULT_CHARSET : $charset;
     }
 
-    protected function setContentType($contentType){
+    protected function setContentType($contentType)
+    {
         $this->contentType = $contentType;
 
         return $this;
     }
 
-    protected function callContentType(){
+    protected function callContentType()
+    {
         header('Content-Type: ' . $this->contentType);
     }
 
-    public function display(){
+    public function display()
+    {
         echo $this->stringify();
 
         return $this;
     }
 
-    public function setDatas(array $datas){
+    public function setDatas(array $datas)
+    {
         $this->datas = $datas;
 
         return $this;
     }
 
-    public function getDatas(){
-        if( !is_array($this->datas) ){
+    public function getDatas()
+    {
+        if ( !is_array($this->datas) ) {
             throw new \LogicException('Feed the ' . get_class($this) . ' with "setDatas" method before !');
         }
 
@@ -67,9 +75,10 @@ abstract class FormatAbstract implements FormatInterface{
     * @param array $extraInfos array with know informations (there isn't merge !!!)
     * @return this
     */
-    public function setExtraInfos(array $extraInfos = array()){    
-        foreach(array('name', 'uri') as $infoName){
-            if( !isset($extraInfos[$infoName]) ){
+    public function setExtraInfos(array $extraInfos = array())
+    {
+        foreach (array('name', 'uri') as $infoName) {
+            if ( !isset($extraInfos[$infoName]) ) {
                 $extraInfos[$infoName] = '';
             }
         }
@@ -83,14 +92,15 @@ abstract class FormatAbstract implements FormatInterface{
     * Return extra infos
     * @return array See "setExtraInfos" detail method to know what extra are disponibles
     */
-    public function getExtraInfos(){
-        if( is_null($this->extraInfos) ){ // No extra info ?
+    public function getExtraInfos()
+    {
+        if ( is_null($this->extraInfos) ) { // No extra info ?
             $this->setExtraInfos(); // Define with default value
         }
 
         return $this->extraInfos;
     }
-    
+
     /**
      * Sanitized html while leaving it functionnal.
      * The aim is to keep html as-is (with clickable hyperlinks)
@@ -109,22 +119,24 @@ abstract class FormatAbstract implements FormatInterface{
     }
 }
 
-class Format{
+class Format
+{
+    protected static $dirFormat;
 
-    static protected $dirFormat;
-
-    public function __construct(){
+    public function __construct()
+    {
         throw new \LogicException('Please use ' . __CLASS__ . '::create for new object.');
     }
 
-    static public function create($nameFormat){
-        if( !static::isValidNameFormat($nameFormat) ){
+    public static function create($nameFormat)
+    {
+        if ( !static::isValidNameFormat($nameFormat) ) {
             throw new \InvalidArgumentException('Name format must be at least one uppercase follow or not by alphabetic characters.');
         }
 
         $pathFormat = self::getDir() . $nameFormat . '.php';
 
-        if( !file_exists($pathFormat) ){
+        if ( !file_exists($pathFormat) ) {
             throw new \Exception('The format you looking for does not exist.');
         }
 
@@ -133,29 +145,32 @@ class Format{
         return new $nameFormat();
     }
 
-    static public function setDir($dirFormat){
-        if( !is_string($dirFormat) ){
+    public static function setDir($dirFormat)
+    {
+        if ( !is_string($dirFormat) ) {
             throw new \InvalidArgumentException('Dir format must be a string.');
         }
 
-        if( !file_exists($dirFormat) ){
+        if ( !file_exists($dirFormat) ) {
             throw new \Exception('Dir format does not exist.');
         }
 
         self::$dirFormat = $dirFormat;
     }
 
-    static public function getDir(){
+    public static function getDir()
+    {
         $dirFormat = self::$dirFormat;
 
-        if( is_null($dirFormat) ){
+        if ( is_null($dirFormat) ) {
             throw new \LogicException(__CLASS__ . ' class need to know format path !');
         }
 
         return $dirFormat;
     }
 
-    static public function isValidNameFormat($nameFormat){
+    public static function isValidNameFormat($nameFormat)
+    {
         return preg_match('@^[A-Z][a-zA-Z]*$@', $nameFormat);
     }
 
@@ -163,7 +178,8 @@ class Format{
     * Read format dir and catch informations about each format depending annotation
     * @return array Informations about each format
     */
-    static public function searchInformation(){
+    public static function searchInformation()
+    {
         $pathDirFormat = self::getDir();
 
         $listFormat = array();
@@ -171,24 +187,24 @@ class Format{
         $searchCommonPattern = array('name');
 
         $dirFiles = scandir($pathDirFormat);
-        if( $dirFiles !== false ){
-            foreach( $dirFiles as $fileName ){
-                if( preg_match('@([^.]+)\.php@U', $fileName, $out) ){ // Is PHP file ?
+        if ($dirFiles !== false) {
+            foreach ($dirFiles as $fileName) {
+                if ( preg_match('@([^.]+)\.php@U', $fileName, $out) ) { // Is PHP file ?
                     $infos = array(); // Information about the bridge
                     $resParse = token_get_all(file_get_contents($pathDirFormat . $fileName)); // Parse PHP file
-                    foreach($resParse as $v){
-                        if( is_array($v) && $v[0] == T_DOC_COMMENT ){ // Lexer node is COMMENT ?
+                    foreach ($resParse as $v) {
+                        if ( is_array($v) && $v[0] == T_DOC_COMMENT ) { // Lexer node is COMMENT ?
                             $commentary = $v[1];
-                            foreach( $searchCommonPattern as $name){ // Catch information with common pattern
+                            foreach ($searchCommonPattern as $name) { // Catch information with common pattern
                                 preg_match('#@' . preg_quote($name, '#') . '\s+(.+)#', $commentary, $outComment);
-                                if( isset($outComment[1]) ){
+                                if ( isset($outComment[1]) ) {
                                     $infos[$name] = $outComment[1];
                                 }
                             }
                         }
                     }
 
-                    if( isset($infos['name']) ){ // If informations containt at least a name
+                    if ( isset($infos['name']) ) { // If informations containt at least a name
                         $listFormat[$out[1]] = $infos;
                     }
                 }

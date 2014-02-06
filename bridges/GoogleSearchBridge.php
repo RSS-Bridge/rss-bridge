@@ -13,26 +13,26 @@
 * @description Returns most recent results from Google search.
 * @use1(q="keyword")
 */
-class GoogleSearchBridge extends BridgeAbstract{
-
+class GoogleSearchBridge extends BridgeAbstract
+{
     private $request;
-    
-    public function collectData(array $param){
+
+    public function collectData(array $param)
+    {
         $html = '';
 
         if (isset($param['q'])) {   /* keyword search mode */
             $this->request = $param['q'];
             $html = file_get_html('http://www.google.com/search?q=' . urlencode($this->request) . '&num=100&complete=0&tbs=qdr:y,sbd:1') or $this->returnError('No results for this query.', 404);
-        }
-        else{
+        } else {
             $this->returnError('You must specify a keyword (?q=...).', 400);
         }
 
         $emIsRes = $html->find('div[id=ires]',0);
-        if( !is_null($emIsRes) ){
-            foreach($emIsRes->find('li[class=g]') as $element) {
+        if ( !is_null($emIsRes) ) {
+            foreach ($emIsRes->find('li[class=g]') as $element) {
                 $item = new Item();
-                
+
                 // Extract direct URL from google href (eg. /url?q=...)
                 $t = $element->find('a[href]',0)->href;
                 $item->uri = 'http://google.com'.$t;
@@ -45,15 +45,18 @@ class GoogleSearchBridge extends BridgeAbstract{
         }
     }
 
-    public function getName(){
+    public function getName()
+    {
         return (!empty($this->request) ? $this->request .' - ' : '') .'Google search';
     }
 
-    public function getURI(){
+    public function getURI()
+    {
         return 'http://google.com';
     }
 
-    public function getCacheDuration(){
+    public function getCacheDuration()
+    {
         return 1800; // 30 minutes
     }
 }
