@@ -12,7 +12,7 @@ class DuckDuckGoBridge extends BridgeAbstract{
 
     public function collectData(array $param){
         $html = '';
-        $link = 'https://duckduckgo.com/html/?q='.$param[u].'+sort:date';
+        $link = 'http://duckduckgo.com/html/?q='.$param[u].'+sort:date';
 
         $html = file_get_html($link) or $this->returnError('Could not request DuckDuckGo.', 404);
 
