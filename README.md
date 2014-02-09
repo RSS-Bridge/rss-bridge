@@ -50,7 +50,7 @@ Requirements
 
  * php 5.3
  * [PHP Simple HTML DOM Parser](http://simplehtmldom.sourceforge.net). (Put `simple_html_dom.php` in `vendor/simplehtmldom/`).
- * Ssl lib activated in PHP config
+ * TLS lib activated in PHP config for some bridges.
 
  
 Author
