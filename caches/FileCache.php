@@ -1,14 +1,20 @@
 <?php
 /**
 * Cache with file system
+* 
+* 
 */
 class FileCache extends CacheAbstract{
-    protected $cacheDirCreated; // boolean to avoid always chck dir cache existance
+    protected
+        $cacheDirCreated,   // boolean to avoid always chck dir cache existance
+        $hash_algo = 'sha1' // hash method for cache key
+    ; 
+    
 
     public function loadData(){
         $this->isPrepareCache();
 
-        $datas = json_decode(file_get_contents($this->getCacheFile()),true);
+        $datas = include( $this->getCacheFile() );
         $items = array();
         foreach($datas as $aData){
             $item = new \Item();
@@ -24,7 +30,7 @@ class FileCache extends CacheAbstract{
     public function saveData($datas){
         $this->isPrepareCache();
 
-        file_put_contents($this->getCacheFile(), json_encode($datas));
+        file_put_contents($this->getCacheFile(), '<?php return '.var_export($datas) );
 
         return $this;
     }
@@ -87,6 +93,6 @@ class FileCache extends CacheAbstract{
         $this->isPrepareCache();
 
         $stringToEncode = $_SERVER['REQUEST_URI'] . http_build_query($this->param);
-        return hash('sha1', $stringToEncode) . '.cache';
+        return hash($this->hash_algo , $stringToEncode) . '.cache.php';
     }
 }
