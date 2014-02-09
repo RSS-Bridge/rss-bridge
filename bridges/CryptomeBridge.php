@@ -12,7 +12,7 @@ class CryptomeBridge extends BridgeAbstract{
 
     public function collectData(array $param){
         $html = '';
-        $num = 90;
+        $num = 20;
         $link = 'http://cryptome.org/';
         // If you want HTTPS access instead, uncomment the following line:
         //$link = 'https://secure.netsolhost.com/cryptome.org/';
