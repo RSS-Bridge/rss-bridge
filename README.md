@@ -66,6 +66,7 @@ Patch/contributors :
  * [Astalaseven](https://github.com/Astalaseven)
  * [qwertygc](https://github.com/qwertygc)
  * [Djuuu](https://github.com/Djuuu)
+ * [Anadrark](https://github.com/Anadrark])
 
 Licence
 ===
