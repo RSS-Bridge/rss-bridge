@@ -11,8 +11,13 @@
 class OpenClassroomsBridge extends BridgeAbstract{
 
     public function collectData(array $param){
+        if ($param['u']!='informatique' && $param['u']!='sciences')
+        {
+            $this->returnError('Error: You must chose "informatique" or "science".', 404);
+        }
+    
         $html = '';
-        $link = 'http://fr.openclassrooms.com/'.$param[u].'/cours?title=&sort=updatedAt+desc';
+        $link = 'http://fr.openclassrooms.com/'.$param['u'].'/cours?title=&sort=updatedAt+desc';
 
         $html = file_get_html($link) or $this->returnError('Could not request OpenClassrooms.', 404);
 
