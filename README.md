@@ -22,6 +22,7 @@ Supported sites/pages
  * `WikipediaENLatest`: highlighted articles from Wikipedia in English.
  * `WikipediaFRLatest`: highlighted articles from Wikipedia in French.
  * `WikipediaEOLatest`: highlighted articles from Wikipedia in Esperanto.
+ * `Bandcamp` : Returns last release from bandcamp for a tag
 
 
 Output format
