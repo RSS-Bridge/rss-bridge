@@ -30,7 +30,7 @@ class FileCache extends CacheAbstract{
     public function saveData($datas){
         $this->isPrepareCache();
 
-        file_put_contents($this->getCacheFile(), '<?php return '.var_export($datas) );
+        file_put_contents($this->getCacheFile(), '<?php return '.var_export($datas).';' );
 
         return $this;
     }
