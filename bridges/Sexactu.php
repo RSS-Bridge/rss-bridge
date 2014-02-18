@@ -5,23 +5,40 @@
 * @description Sexactu via rss-bridge
 * @update 04/02/2014
 */
-class SexactuBridge extends BridgeAbstract{
+define("GQ", "http://www.gqmagazine.fr");
+class Sexactu extends BridgeAbstract{
 
     public function collectData(array $param){
-        $html = file_get_html('http://http://www.gqmagazine.fr/sexactu') or $this->returnError('Could not request http://www.gqmagazine.fr/sexactu.', 404);
-    
-        foreach($html->find('div.content-holder ul li') as $element) {
-            $item = new Item();
-            
-            // various metadata
-            $titleBock  = $element->find('title-holder');
-            $titleData = $titleBlock->find('article-title h2 a');
-            
-            $item->title = trim($titleData->innertext);
-            $item->uri = $titleData->href;
-            $item->name = "Maïa Mazaurette";
-            $item->content = $element->find('text-container')->innertext;
-            $this->items[] = $item;
+        $html = file_get_html($this->getURI()) or $this->returnError('Could not request '.$this->getURI(), 404);
+
+        foreach($html->find('.content-holder') as $contentHolder) {
+            // only use first list as second one only contains pages numbers 
+            $articles = $contentHolder->find('ul', 0);
+            foreach($articles->find('li') as $element) {
+                // if you ask about that method_exists, there seems to be a bug in simple html dom
+                // see stackoverflow for more details : http://stackoverflow.com/a/10828479/15619
+                if(is_object($element)) {
+                    $item = new Item();
+                    // various metadata
+                    $titleBlock = $element->find('.title-holder', 0);
+                    if(is_object($titleBlock)) {
+                        $titleData = $titleBlock->find('.article-title',0)->find('h2', 0)->find('a',0);
+                        $item->title = trim($titleData->innertext);
+                        $item->uri = GQ.$titleData->href;
+
+                        $item->name = "Maïa Mazaurette";
+                        $elementText = $element->find('.text-container', 0);
+                        // don't forget to replace images server url with gq one
+                        foreach($elementText->find('img') as $image) {
+                            $image->src = GQ.$image->src;
+                        }
+                        $item->content = $elementText->innertext;
+                        $this->items[] = $item;
+                    }
+                    
+                }
+                
+            }
         }
     }
 
@@ -30,7 +47,7 @@ class SexactuBridge extends BridgeAbstract{
     }
 
     public function getURI(){
-        return 'http://http://www.gqmagazine.fr/sexactu/';
+        return GQ.'/sexactu';
     }
 
     public function getCacheDuration(){
@@ -40,5 +57,7 @@ class SexactuBridge extends BridgeAbstract{
         return "Sexactu via rss-bridge";
     }
 }
-?>
+
+// what did you do Seb ? WHAT DID YOU DO ????
+// seems like bridge should not incldue php close ?>
 
