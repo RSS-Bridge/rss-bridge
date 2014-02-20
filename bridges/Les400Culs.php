@@ -1,9 +1,9 @@
 <?php
 /**
 *
-* @name Sexactu
-* @description Sexactu via rss-bridge
-* @update 04/02/2014
+* @name Les 400 Culs 
+* @description La planète sexe vue par Agnès Girard via rss-bridge
+* @update 20/02/2014
 */
 define("SEXE", "http://sexes.blogs.liberation.fr");
 class Les400Culs extends BridgeAbstract{
