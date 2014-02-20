@@ -5,7 +5,7 @@
 * @description LesJoiesDuCode via rss-bridge
 * @update 30/01/2014
 */
-class LesJoiesDuCodeBridge extends BridgeAbstract{
+class LesJoiesDuCode extends BridgeAbstract{
 
     public function collectData(array $param){
         $html = file_get_html('http://lesjoiesducode.fr/') or $this->returnError('Could not request LesJoiesDuCode.', 404);
@@ -53,5 +53,3 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
         return "Les Joies Du Code via rss-bridge";
     }
 }
-?>
-

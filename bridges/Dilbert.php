@@ -5,7 +5,7 @@
 * @description The Unofficial Dilbert Daily Comic Strip RSS Feed via rss-bridge
 * @update 16/10/2013
 */
-class DilbertBridge extends BridgeAbstract{
+class Dilbert extends BridgeAbstract{
 
     public function collectData(array $param){
         $html = file_get_html('http://dilbert.com/strips/') or $this->returnError('Could not request Dilbert.', 404);
@@ -40,4 +40,4 @@ class DilbertBridge extends BridgeAbstract{
         return 14400; // 4 hours
     }
 }
-?>
+
