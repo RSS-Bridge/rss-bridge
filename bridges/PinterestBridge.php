@@ -39,7 +39,7 @@ class PinterestBridge extends BridgeAbstract{
         	
         	$item = new \Item();
         	$item->uri = $this->getURI().$a->getAttribute('href');
-        	$item->content = '<img src="' . htmlentities($img->getAttribute('src')) . '" alt="" />';
+        	$item->content = '<img src="' . htmlentities(str_replace('/236x/', '/736x/', $img->getAttribute('src'))) . '" alt="" />';
         	
         	
         	if (isset($this->query))
@@ -83,6 +83,6 @@ class PinterestBridge extends BridgeAbstract{
     }
 
     public function getCacheDuration(){
-        return 0; 
+        return 3600; 
     }
 }
