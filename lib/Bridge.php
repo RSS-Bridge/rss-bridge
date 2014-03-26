@@ -71,6 +71,17 @@ abstract class BridgeAbstract implements BridgeInterface{
 
         return $this;
     }
+
+    /**
+     * Set default image SRC attribute to point on given server when none is provided (that's to say when image src starts with '/'
+     */
+    public function defaultImageSrcTo($content, $server) {
+        foreach($content->find('img') as $image) {
+            if(strpos($image->src, '/')==0) {
+                $image->src = $server.$image->src;
+            }
+        }
+    }
 }
 
 /**
