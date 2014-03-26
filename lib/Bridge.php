@@ -90,7 +90,7 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
      * @return content of file as string
      */
     public function get_cached($url) {
-        $simplified_url = str_replace(["http://", "https://", "?", "&"], ["", "", "/", "/"], $url);
+        $simplified_url = str_replace(["http://", "https://", "?", "&", "="], ["", "", "/", "/", "/"], $url);
 		// TODO build this from the variable given to Cache
 		$pageCacheDir = __DIR__ . '/../cache/'."pages/";
         $filename =  $pageCacheDir.$simplified_url;
@@ -98,6 +98,7 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
             $filename = $filename."index.html";
         }
         if(file_exists($filename)) {
+            // $this->message("loading cached file from ".$filename." for page at url ".$url);
 			// TODO touch file and its parent, and try to do neighbour deletion
 			$currentPath = $filename;
 			while(!$pageCacheDir==$currentPath) {
@@ -105,7 +106,7 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
 				$currentPath = dirname($currentPath);
 			}
 		} else {
-            error_log("we have no local copy of ".$url." Downloading !");
+            // $this->message("we have no local copy of ".$url." Downloading !");
             $dir = substr($filename, 0, strrpos($filename, '/'));
             if(!is_dir($dir)) {
                 mkdir($dir, 0777, true);
@@ -124,6 +125,15 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
         }
         fclose($handle);
         fclose($f);
+    }
+    
+    public function message($text) {
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+        $calling = $backtrace[2];
+        $message = $calling["file"].":".$calling["line"]
+            ." class ".get_class($this)."->".$calling["function"]
+            ." - ".$text;
+        error_log($message);
     }
 }
 
