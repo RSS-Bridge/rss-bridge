@@ -109,33 +109,54 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
             $filename = $filename."index.html";
         }
         if(file_exists($filename)) {
-            // $this->message("loading cached file from ".$filename." for page at url ".$url);
+//            $this->message("loading cached file from ".$filename." for page at url ".$url);
 			// TODO touch file and its parent, and try to do neighbour deletion
-			$currentPath = $filename;
-			while(!$pageCacheDir==$currentPath) {
-				touch($currentPath);
-				$currentPath = dirname($currentPath);
-			}
+            $this->refresh_in_cache($pageCacheDir, $filename);
 		} else {
-            // $this->message("we have no local copy of ".$url." Downloading !");
+//            $this->message("we have no local copy of ".$url." Downloading to ".$filename);
             $dir = substr($filename, 0, strrpos($filename, '/'));
             if(!is_dir($dir)) {
+//				$this->message("creating directories for ".$dir);
                 mkdir($dir, 0777, true);
             }
             $this->download_remote($url, $filename);
         }
         return file_get_contents($filename);
     }
+    
+    private function refresh_in_cache($pageCacheDir, $filename) {
+		$currentPath = $filename;
+		while(!$pageCacheDir==$currentPath) {
+			touch($currentPath);
+			$currentPath = dirname($currentPath);
+		}
+    }
 
     public function download_remote($url , $save_path) {
         $f = fopen( $save_path , 'w+');
-        $handle = fopen($url , "rb");
-        while (!feof($handle)) {
-            $contents = fread($handle, 8192);
-            fwrite($f , $contents);
+        if($f) {
+            $handle = fopen($url , "rb");
+            if($handle) {
+                while (!feof($handle)) {
+                    $contents = fread($handle, 8192);
+                    if($contents) {
+                        fwrite($f , $contents);
+                    }
+                }
+                fclose($handle);
+            }
+            fclose($f);
         }
-        fclose($handle);
-        fclose($f);
+    }
+    
+    public function remove_from_cache($url) {
+        $simplified_url = str_replace(["http://", "https://", "?", "&", "="], ["", "", "/", "/", "/"], $url);
+    	// TODO build this from the variable given to Cache
+		$pageCacheDir = __DIR__ . '/../cache/'."pages/";
+        $filename =  realpath($pageCacheDir.$simplified_url);
+        $this->message("removing from cache \"".$filename."\" WELL, NOT REALLY");
+        // filename is NO GOOD
+//        unlink($filename);
     }
     
     public function message($text) {
