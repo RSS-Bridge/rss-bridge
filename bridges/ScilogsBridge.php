@@ -42,7 +42,7 @@ class ScilogsBridge extends BridgeAbstract{
     }
 
     public function getURI(){
-        return 'http://bastamag.net/';
+        return 'http://scilogs.fr/';
     }
 
     public function getCacheDuration(){
