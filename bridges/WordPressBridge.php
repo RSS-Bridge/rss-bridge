@@ -1,18 +1,19 @@
 <?php
+
 /**
-* RssBridgeWordpress
-* Returns the newest articles
-*
-* @name Wordpress Bridge
-* @description Returns the newest articles of a blog hosted on wordpress
-* @use1(url="blog URL", name="blog name")
-*/
-class WordpressBridge extends BridgeAbstract{
+ * RssBridgeWordpress
+ * Returns the newest articles
+ *
+ * @name Wordpress Bridge
+ * @description Returns the newest articles of a blog hosted on wordpress
+ * @use1(url="blog URL", name="blog name")
+ */
+class WordpressBridge extends BridgeAbstract {
 
 	private $url;
 	private $name;
 
-    public function collectData(array $param){
+	public function collectData(array $param) {
 		$this->processParams($param);
 
 		if (!$this->hasUrl()) {
@@ -21,11 +22,11 @@ class WordpressBridge extends BridgeAbstract{
 
 		$html = file_get_html($this->url) or $this->returnError("Could not request {$this->url}.", 404);
 
-		foreach($html->find('.post') as $article) {
-			$uri = $article->find('a',0)->href;
+		foreach ($html->find('.post') as $article) {
+			$uri = $article->find('a', 0)->href;
 			$this->items[] = $this->getDetails($uri);
 		}
-    }
+	}
 
 	private function getDetails($uri) {
 		$html = file_get_html($uri) or exit;
@@ -34,8 +35,8 @@ class WordpressBridge extends BridgeAbstract{
 
 		$article = $html->find('.post', 0);
 		$item->uri = $uri;
-		$item->title = $article->find('h1',0)->innertext;
-		$item->content = $this->clearContent($article->find('.entry-content,.entry',0)->innertext);
+		$item->title = $article->find('h1', 0)->innertext;
+		$item->content = $this->clearContent($article->find('.entry-content,.entry', 0)->innertext);
 		$item->timestamp = $this->getDate($uri);
 
 		return $item;
@@ -52,26 +53,26 @@ class WordpressBridge extends BridgeAbstract{
 		return $date->format('U');
 	}
 
-    public function getName(){
-        return "{$this->name} - Wordpress.com Bridge";
-    }
+	public function getName() {
+		return "{$this->name} - Wordpress.com Bridge";
+	}
 
-    public function getURI(){
-        return $this->url;
-    }
+	public function getURI() {
+		return $this->url;
+	}
 
-    public function getCacheDuration(){
-        return 21600; // 6 hours
-    }
+	public function getCacheDuration() {
+		return 21600; // 6 hours
+	}
 
-	private function hasUrl(){
-		if (empty($this->url)){
+	private function hasUrl() {
+		if (empty($this->url)) {
 			return false;
 		}
 		return true;
 	}
 
-	private function processParams($param){
+	private function processParams($param) {
 		$this->url = $param['url'];
 		$this->name = $param['name'];
 	}
