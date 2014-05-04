@@ -1,10 +1,9 @@
 <?php
-/*
-**
-* RssBridgeBasta
+/**
+* RssBridgeBastabag
 * Returns the newest articles
 *
-* @name BastaMag! Bridge
+* @name Bastamag Bridge
 * @description Returns the newest articles.
 */
 class BastaBridge extends BridgeAbstract{
