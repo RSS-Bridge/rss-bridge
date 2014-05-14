@@ -26,15 +26,15 @@ class TwitterBridge extends BridgeAbstract{
             $this->returnError('You must specify a keyword (?q=...) or a Twitter username (?u=...).', 400);
         }
 
-        foreach($html->find('div.tweet') as $tweet) {
+        foreach($html->find('div.js-stream-tweet') as $tweet) {
             $item = new \Item();
-            $item->username = trim(substr($tweet->find('span.username', 0)->plaintext, 1));	// extract username and sanitize
+            $item->username = $tweet->getAttribute('data-screen-name');	// extract username and sanitize
             $item->fullname = $tweet->getAttribute('data-name'); // extract fullname (pseudonym)
             $item->avatar = $tweet->find('img', 0)->src;	// get avatar link
             $item->id = $tweet->getAttribute('data-tweet-id');	// get TweetID
-            $item->uri = 'https://twitter.com'.$tweet->find('a.details', 0)->getAttribute('href');	// get tweet link
-            $item->timestamp = $tweet->find('span._timestamp', 0)->getAttribute('data-time');	// extract tweet timestamp
-            $item->content = str_replace('href="/', 'href="https://twitter.com/', strip_tags($tweet->find('p.tweet-text', 0)->innertext, '<a>'));	// extract tweet text
+            $item->uri = 'https://twitter.com'.$tweet->find('a.js-permalink', 0)->getAttribute('href');	// get tweet link
+            $item->timestamp = $tweet->find('span.js-short-timestamp', 0)->getAttribute('data-time');	// extract tweet timestamp
+            $item->content = str_replace('href="/', 'href="https://twitter.com/', strip_tags($tweet->find('p.js-tweet-text', 0)->innertext, '<a>'));	// extract tweet text
             $item->title = $item->fullname . ' (@'. $item->username . ') | ' . $item->content;
             $this->items[] = $item;
         }
