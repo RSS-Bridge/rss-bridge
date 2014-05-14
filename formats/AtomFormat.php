@@ -53,6 +53,10 @@ EOD;
         - <content type="html"> : RFC look with xhtml, keep this in spite of ?
         */
 
+// ####  TEMPORARY FIX ###
+$feedTimestamp = date(DATE_ATOM, time());
+//  ################ 
+
         /* Data are prepared, now let's begin the "MAGIE !!!" */
         $toReturn  = '<?xml version="1.0" encoding="UTF-8"?>';
         $toReturn .= <<<EOD
@@ -60,7 +64,7 @@ EOD;
 
     <title type="text">{$title}</title>
     <id>http{$https}://{$httpHost}{$httpInfo}/</id>
-    <updated></updated>
+    <updated>{$feedTimestamp}</updated>
     <link rel="alternate" type="text/html" href="{$uri}" />
     <link rel="self" href="http{$https}://{$httpHost}{$serverRequestUri}" />
 {$entries}
