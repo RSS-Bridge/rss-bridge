@@ -48,8 +48,7 @@ Minecraft hashtag (#Minecraft) search on Twitter, in ATOM format (as displayed b
 Requirements
 ===
 
- * php 5.3
- * [PHP Simple HTML DOM Parser](http://simplehtmldom.sourceforge.net). (Put `simple_html_dom.php` in `vendor/simplehtmldom/`).
+ * PHP 5.3
  * TLS lib activated in PHP config for some bridges.
 
  
@@ -71,6 +70,8 @@ Patch/contributors :
 Licence
 ===
 Code is public domain.
+
+Included `PHP Simple HTML DOM Parser` is under the [MIT License](http://opensource.org/licenses/MIT)
 
 
 Technical notes
