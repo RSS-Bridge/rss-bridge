@@ -68,9 +68,9 @@ Patch/contributors :
 
 Licence
 ===
-Code is [Public Domain](LICENSE).
+Code is [Public Domain](UNLICENSE).
 
-Included `PHP Simple HTML DOM Parser` is under the [MIT License](http://opensource.org/licenses/MIT)
+Including `PHP Simple HTML DOM Parser` under the [MIT License](http://opensource.org/licenses/MIT)
 
 
 Technical notes
