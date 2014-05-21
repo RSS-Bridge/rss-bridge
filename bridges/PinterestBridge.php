@@ -5,6 +5,7 @@
  *
  * @name Pinterest Bridge
  * @description Returns the newest images on a board
+* @maintainer -
  * @use1(u="username",b="board")
  * @use2(q="keyword")
  */

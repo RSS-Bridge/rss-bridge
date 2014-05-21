@@ -5,6 +5,7 @@
 *
 * @name Flickr Explore
 * @description Returns the latest interesting images from Flickr
+* @maintainer -
 */
 class FlickrExploreBridge extends BridgeAbstract{
 

@@ -6,6 +6,7 @@
 *
 * @name DansTonChat Bridge
 * @description Returns latest quotes from DansTonChat.
+* @maintainer -
 */
 class DansTonChatBridge extends BridgeAbstract{
 

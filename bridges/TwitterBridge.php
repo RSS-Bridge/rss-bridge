@@ -5,6 +5,7 @@
 *
 * @name Twitter Bridge
 * @description Returns user timelines or keyword/hashtag search results (without using their API).
+* @maintainer mitsukarenai
 * @use1(q="keyword or #hashtag")
 * @use2(u="username")
 */

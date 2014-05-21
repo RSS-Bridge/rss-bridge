@@ -5,6 +5,7 @@
 *
 * @name Wikipedia FR "Lumière sur..."
 * @description Returns the highlighted fr.wikipedia.org article.
+* @maintainer -
 */
 class WikipediaFRBridge extends BridgeAbstract{
 
