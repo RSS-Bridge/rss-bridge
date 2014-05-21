@@ -120,6 +120,12 @@ section {
     color: #555;
 }
 
+.maintainer {
+    font-size:60%;
+    float:right;
+    color: #777;
+}
+
 .placeholder {
     color: #aaa;
 }

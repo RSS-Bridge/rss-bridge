@@ -114,7 +114,7 @@ $formats = Format::searchInformation();
                             <?php
                                 $idArg = 'arg-' . $bridgeReference . '-' . $anUseNum . '-' . $argName;
                             ?>
-                            <input id="<?php echo $idArg ?>" type="text" value="" placeholder="<?php echo $argDescription; ?>" name="<?php echo $argName ?>" placeholder="<?php echo $argDescription ?>" />
+                            <input id="<?php echo $idArg ?>" type="text" value="" placeholder="<?php echo $argDescription; ?>" name="<?php echo $argName ?>" />
                             <?php endforeach; ?>
                             <?php foreach( $formats as $name => $infos ): ?>
                                 <?php if( isset($infos['name']) ){ echo getHelperButtonFormat($name, $infos['name']); } ?>
@@ -132,6 +132,7 @@ $formats = Format::searchInformation();
                     <?php endforeach; ?>
                 </form>
                 <?php endif; ?>
+		<?php echo isset($bridgeInformations['maintainer']) ? '<span class="maintainer">'.$bridgeInformations['maintainer'].'</span>' : '' ?>
             </section>
             <?php endforeach; ?>
     <footer>
