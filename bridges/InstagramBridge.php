@@ -5,6 +5,7 @@
  *
  * @name Instagram Bridge
  * @description Returns the newest images
+* @maintainer -
  * @use1(u="username")
  */
 class InstagramBridge extends BridgeAbstract{

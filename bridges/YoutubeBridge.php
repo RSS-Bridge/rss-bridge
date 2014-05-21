@@ -5,6 +5,7 @@
 *
 * @name Youtube Bridge
 * @description Returns the newest videos by username or playlist
+* @maintainer mitsukarenai
 * @use1(u="username")
 * @use2(p="playlist id")
 * @use3(s="search keyword",pa="page")

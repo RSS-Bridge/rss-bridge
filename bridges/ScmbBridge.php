@@ -5,6 +5,7 @@
 *
 * @name Se Coucher Moins Bête Bridge
 * @description Returns the newest anecdotes.
+* @maintainer -
 */
 class ScmbBridge extends BridgeAbstract{
     

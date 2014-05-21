@@ -4,6 +4,7 @@
 *
 * @name Identica Bridge
 * @description Returns user timelines
+* @maintainer -
 * @use1(u="username")
 */
 class IdenticaBridge extends BridgeAbstract{

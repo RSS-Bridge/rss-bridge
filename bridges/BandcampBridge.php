@@ -4,6 +4,7 @@
 *
 * @name Bandcamp Tag
 * @description New bandcamp release by tag
+* @maintainer -
 * @use1(tag="tag")
 */
 class BandcampBridge extends BridgeAbstract{
