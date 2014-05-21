@@ -6,7 +6,7 @@
 *
 * @name Cryptome
 * @description Returns the N most recent documents.
-* @maintainer -
+* @maintainer BoboTiG
 * @use1(n="number")
 */
 class CryptomeBridge extends BridgeAbstract{

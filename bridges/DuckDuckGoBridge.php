@@ -6,7 +6,7 @@
 *
 * @name DuckDuckGo
 * @description Returns most recent results from DuckDuckGo.
-* @maintainer -
+* @maintainer Astalaseven
 * @use1(u="keyword")
 */
 class DuckDuckGoBridge extends BridgeAbstract{

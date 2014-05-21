@@ -5,7 +5,7 @@
 *
 * @name Wikipedia EO "Artikolo de la semajno"
 * @description Returns the highlighted eo.wikipedia.org article.
-* @maintainer -
+* @maintainer gsurrel
 */
 class WikipediaEOBridge extends BridgeAbstract{
 

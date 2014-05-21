@@ -6,7 +6,7 @@
 *
 * @name OpenClassrooms Bridge
 * @description Returns latest tutorials from OpenClassrooms.
-* @maintainer -
+* @maintainer sebsauvage
 * @use1(u="informatique or sciences")
 */
 class OpenClassroomsBridge extends BridgeAbstract{

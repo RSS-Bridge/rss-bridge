@@ -5,7 +5,7 @@
 *
 * @name Wikipedia EN "Today's Featured Article..."
 * @description Returns the highlighted en.wikipedia.org article.
-* @maintainer -
+* @maintainer gsurrel
 */
 class WikipediaENBridge extends BridgeAbstract{
 
