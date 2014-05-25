@@ -219,3 +219,4 @@ pip-log.txt
 ## RSS-Bridge
 ##############
 /cache
+/whitelist.txt
