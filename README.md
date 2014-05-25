@@ -3,7 +3,7 @@ rss-bridge
 
 rss-bridge is a PHP project capable of generating ATOM feeds for websites which don't have one.
 
-Supported sites/pages
+Supported sites/pages (main)
 ===
 
  * `FlickrExplore` : [Latest interesting images](http://www.flickr.com/explore) from Flickr
@@ -23,6 +23,7 @@ Supported sites/pages
  * `WikipediaEOLatest`: highlighted articles from Wikipedia in Esperanto
  * `Bandcamp` : Returns last release from [bandcamp](https://bandcamp.com/) for a tag
 
+Plus [many other bridges](bridges/) to enable, thanks to the community
 
 Output format
 ===
