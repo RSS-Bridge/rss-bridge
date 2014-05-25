@@ -51,7 +51,7 @@ else {
 
 // whitelist control function
 function BridgeWhitelist( $whitelist, $name ) {
-	if(in_array((string)$name, $whitelist))
+	if(in_array("$name", $whitelist) or in_array("$name.php", $whitelist))
 		return TRUE;
 	else
 		return FALSE;
