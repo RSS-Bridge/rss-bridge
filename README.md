@@ -51,6 +51,14 @@ Requirements
  * PHP 5.3
  * TLS lib activated in PHP config for some bridges.
 
+Enabling/Disabling bridges
+===
+
+By default, the script creates `whitelist.txt` and adds the main bridges (see above). `whitelist.txt` is ignored by git, you can edit it:
+ * to enable extra bridges (one bridge per line)
+ * to disable main bridges (remove the line)
+
+New bridges are disabled by default, so make sure to check regularly what's new and whitelist what you want !
  
 Author
 ===
