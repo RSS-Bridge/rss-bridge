@@ -19,6 +19,44 @@ error_reporting(0);
 ini_set('user_agent', 'Mozilla/5.0 (X11; Linux x86_64; rv:30.0) Gecko/20121202 Firefox/30.0 (rss-bridge/0.1; +https://github.com/sebsauvage/rss-bridge)');
 // -------
 
+
+
+// default whitelist
+$whitelist_file = './whitelist.txt';
+$whitelist_default = array(
+	"BandcampBridge",
+	"CryptomeBridge",
+	"DansTonChatBridge",
+	"DuckDuckGoBridge",
+	"FlickrExploreBridge",
+	"GoogleSearchBridge",
+	"IdenticaBridge",
+	"InstagramBridge",
+	"OpenClassroomsBridge",
+	"PinterestBridge",
+	"ScmbBridge",
+	"TwitterBridge",
+	"WikipediaENBridge",
+	"WikipediaEOBridge",
+	"WikipediaFRBridge",
+	"YoutubeBridge");
+
+if (!file_exists($whitelist_file)) {
+	$whitelist_selection = implode("\n", $whitelist_default);
+	file_put_contents($whitelist_file, $whitelist_selection);
+}
+else {
+	$whitelist_selection = explode("\n", file_get_contents($whitelist_file));
+}
+
+// whitelist control function
+function BridgeWhitelist( $whitelist, $name ) {
+	if(in_array((string)$name, $whitelist))
+		return TRUE;
+	else
+		return FALSE;
+}
+
 try{
     require_once __DIR__ . '/lib/RssBridge.php';
 
@@ -36,7 +74,11 @@ try{
                     $format = $_REQUEST['format'];
                     unset($_REQUEST['format']);
 
-
+			// whitelist control
+			if(!BridgeWhitelist($whitelist_selection, $bridge)) {
+				throw new \HttpException('This bridge is not whitelisted', 401);
+				die; 
+			}
 
                     $cache = Cache::create('FileCache');
 
@@ -97,6 +139,7 @@ $formats = Format::searchInformation();
     </header>
 
         <?php foreach($bridges as $bridgeReference => $bridgeInformations): ?>
+	  <?php if(BridgeWhitelist($whitelist_selection, $bridgeReference)) { ?>
             <section id="bridge-<?php echo $bridgeReference ?>" data-ref="<?php echo $bridgeReference ?>">
                 <h2><?php echo $bridgeInformations['name'] ?></h2>
                 <p class="description">
@@ -134,7 +177,7 @@ $formats = Format::searchInformation();
                 <?php endif; ?>
 		<?php echo isset($bridgeInformations['maintainer']) ? '<span class="maintainer">'.$bridgeInformations['maintainer'].'</span>' : '' ?>
             </section>
-            <?php endforeach; ?>
+            <?php } endforeach; ?>
     <footer>
         <a href="https://github.com/sebsauvage/rss-bridge">RSS-Bridge</a> alpha 0.1
     </footer>  
