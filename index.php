@@ -42,8 +42,9 @@ $whitelist_default = array(
 	"YoutubeBridge");
 
 if (!file_exists($whitelist_file)) {
-	$whitelist_selection = implode("\n", $whitelist_default);
-	file_put_contents($whitelist_file, $whitelist_selection);
+	$whitelist_selection = $whitelist_default;
+	$whitelist_write = implode("\n", $whitelist_default);
+	file_put_contents($whitelist_file, $whitelist_write);
 }
 else {
 	$whitelist_selection = explode("\n", file_get_contents($whitelist_file));
@@ -141,7 +142,7 @@ $formats = Format::searchInformation();
         <?php foreach($bridges as $bridgeReference => $bridgeInformations): ?>
 	  <?php if(BridgeWhitelist($whitelist_selection, $bridgeReference)) { ?>
             <section id="bridge-<?php echo $bridgeReference ?>" data-ref="<?php echo $bridgeReference ?>">
-                <h2><?php echo $bridgeInformations['name'] ?></h2>
+                <h2><?php echo isset($bridgeInformations['homepage']) ? '<a href="'.$bridgeInformations['homepage'].'">'.$bridgeInformations['name'].'</a>' : $bridgeInformations['name']  ?></h2>
                 <p class="description">
                     <?php echo isset($bridgeInformations['description']) ? $bridgeInformations['description'] : 'No description provided' ?>
                 </p> 

@@ -137,7 +137,7 @@ class Bridge{
 
         $listBridge = array();
 
-        $searchCommonPattern = array('maintainer', 'description', 'name');
+        $searchCommonPattern = array('maintainer', 'description', 'homepage', 'name');
 
         $dirFiles = scandir($pathDirBridge);
         if( $dirFiles !== false ){

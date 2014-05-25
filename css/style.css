@@ -87,6 +87,10 @@ h2 {
     margin-bottom: 10px;
 }
 
+h2 a {
+    color:black;
+}
+
 form {
     margin-bottom: 10px;
 }
