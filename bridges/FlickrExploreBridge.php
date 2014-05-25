@@ -2,8 +2,10 @@
 /**
 * RssBridgeFlickrExplore 
 * Returns the newest interesting images from http://www.flickr.com/explore
+* 2014-05-25
 *
 * @name Flickr Explore
+* @homepage http://www.flickr.com/explore
 * @description Returns the latest interesting images from Flickr
 * @maintainer sebsauvage
 */

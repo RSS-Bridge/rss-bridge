@@ -2,8 +2,10 @@
 /**
  * RssBridgeInstagram
  * Returns the newest photos
+* 2014-05-25
  *
  * @name Instagram Bridge
+* @homepage http://instagram.com/
  * @description Returns the newest images
 * @maintainer pauder
  * @use1(u="username")

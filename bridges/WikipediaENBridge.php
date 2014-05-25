@@ -2,8 +2,10 @@
 /**
 * RssBridgeWikipediaEN
 * Retrieve latest highlighted articles from Wikipedia in English.
+* 2014-05-25
 *
 * @name Wikipedia EN "Today's Featured Article..."
+* @homepage https://en.wikipedia.org/
 * @description Returns the highlighted en.wikipedia.org article.
 * @maintainer gsurrel
 */

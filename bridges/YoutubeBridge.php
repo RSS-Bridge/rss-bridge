@@ -2,8 +2,10 @@
 /**
 * RssBridgeYoutube 
 * Returns the newest videos
+* 2014-05-25
 *
 * @name Youtube Bridge
+* @homepage https://www.youtube.com/
 * @description Returns the newest videos by username or playlist
 * @maintainer mitsukarenai
 * @use1(u="username")

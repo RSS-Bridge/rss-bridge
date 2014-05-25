@@ -2,8 +2,10 @@
 /**
 * RssBridgeTwitter 
 * Based on https://github.com/mitsukarenai/twitterbridge-noapi
+* 2014-05-25
 *
 * @name Twitter Bridge
+* @homepage http://twitter.com/
 * @description Returns user timelines or keyword/hashtag search results (without using their API).
 * @maintainer mitsukarenai
 * @use1(q="keyword or #hashtag")

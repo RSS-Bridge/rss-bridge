@@ -3,8 +3,10 @@
 * RssBridgeDansTonChat
 * Retrieve lastest quotes from DansTonChat.
 * Returns the most recent quotes, sorting by date (most recent first).
+* 2014-05-25
 *
 * @name DansTonChat Bridge
+* @homepage http://danstonchat.com/latest.html
 * @description Returns latest quotes from DansTonChat.
 * @maintainer Astalaseven
 */

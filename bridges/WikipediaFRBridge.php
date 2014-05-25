@@ -2,8 +2,10 @@
 /**
 * RssBridgeWikipediaFR
 * Retrieve latest highlighted articles from Wikipedia in French.
+* 2014-05-25
 *
 * @name Wikipedia FR "Lumière sur..."
+* @homepage https://fr.wikipedia.org/
 * @description Returns the highlighted fr.wikipedia.org article.
 * @maintainer gsurrel
 */

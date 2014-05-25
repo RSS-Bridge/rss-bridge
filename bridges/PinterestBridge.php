@@ -2,8 +2,10 @@
 /**
  * RssBridgePinterest
  * Returns the newest photos on a board
+* 2014-05-25
  *
  * @name Pinterest Bridge
+* @homepage http://www.pinterest.com/
  * @description Returns the newest images on a board
 * @maintainer pauder
  * @use1(u="username",b="board")

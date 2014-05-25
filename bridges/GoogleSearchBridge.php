@@ -8,8 +8,10 @@
 *    complete=0&num=100 : get 100 results
 *    qdr:y : in past year
 *    sbd:1 : sort by date (will only work if qdr: is specified)
+* 2014-05-25
 *
 * @name Google search
+* @homepage https://www.google.com/
 * @description Returns most recent results from Google search.
 * @maintainer sebsauvage
 * @use1(q="keyword")

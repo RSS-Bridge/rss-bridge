@@ -1,8 +1,10 @@
 <?php
 /**
 * BandcampTagRSS
+* 2014-05-25
 *
 * @name Bandcamp Tag
+* @homepage http://bandcamp.com/
 * @description New bandcamp release by tag
 * @maintainer sebsauvage
 * @use1(tag="tag")

@@ -3,8 +3,10 @@
 * RssBridgeOpenClassrooms
 * Retrieve lastest tutorials from OpenClassrooms.
 * Returns the most recent tutorials, sorting by date (most recent first).
+* 2014-05-25
 *
 * @name OpenClassrooms Bridge
+* @homepage http://fr.openclassrooms.com/
 * @description Returns latest tutorials from OpenClassrooms.
 * @maintainer sebsauvage
 * @use1(u="informatique or sciences")

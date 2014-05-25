@@ -3,8 +3,10 @@
 * RssBridgeDuckDuckGo
 * Search DuckDuckGo for most recent pages regarding a specific topic.
 * Returns the most recent links in results, sorting by date (most recent first).
+* 2014-05-25
 *
 * @name DuckDuckGo
+* @homepage https://duckduckgo.com/
 * @description Returns most recent results from DuckDuckGo.
 * @maintainer Astalaseven
 * @use1(u="keyword")
