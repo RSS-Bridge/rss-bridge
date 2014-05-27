@@ -15,6 +15,13 @@ date_default_timezone_set('UTC');
 error_reporting(0);
 //ini_set('display_errors','1'); error_reporting(E_ALL);  // For debugging only.
 
+
+// extensions check
+if (!extension_loaded('openssl'))
+	die('"openssl" extension not loaded. Please check "php.ini"');
+if (!extension_loaded('curl'))
+	die('"curl" extension not loaded. Please check "php.ini"');
+
 // FIXME : beta test UA spoofing, please report any blacklisting by PHP-fopen-unfriendly websites
 ini_set('user_agent', 'Mozilla/5.0 (X11; Linux x86_64; rv:30.0) Gecko/20121202 Firefox/30.0 (rss-bridge/0.1; +https://github.com/sebsauvage/rss-bridge)');
 // -------
