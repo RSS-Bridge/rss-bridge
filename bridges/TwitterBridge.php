@@ -37,6 +37,18 @@ class TwitterBridge extends BridgeAbstract{
             $item->id = $tweet->getAttribute('data-tweet-id');	// get TweetID
             $item->uri = 'https://twitter.com'.$tweet->find('a.js-permalink', 0)->getAttribute('href');	// get tweet link
             $item->timestamp = $tweet->find('span.js-short-timestamp', 0)->getAttribute('data-time');	// extract tweet timestamp
+		// processing content links
+		foreach($tweet->find('a') as $link) {
+			if($link->hasAttribute('data-expanded-url') ) {
+				$link->href = $link->getAttribute('data-expanded-url');
+			}
+			$link->removeAttribute('data-expanded-url');
+			$link->removeAttribute('data-query-source');
+			$link->removeAttribute('rel');
+			$link->removeAttribute('class');
+			$link->removeAttribute('target');
+			$link->removeAttribute('title');
+		}
             $item->content = str_replace('href="/', 'href="https://twitter.com/', strip_tags($tweet->find('p.js-tweet-text', 0)->innertext, '<a>'));	// extract tweet text
             $item->title = $item->fullname . ' (@'. $item->username . ') | ' . $item->content;
             $this->items[] = $item;
