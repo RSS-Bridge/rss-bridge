@@ -142,7 +142,7 @@ $formats = Format::searchInformation();
 
     <header>
         <h1>RSS-Bridge</h1>
-        <h2>·<!-- catchphrase here -->·</h2>
+        <h2>·Reconnecting the Web·</h2>
     </header>
 
         <?php $bridgecount = 0; foreach($bridges as $bridgeReference => $bridgeInformations): ?>
