@@ -142,9 +142,10 @@ $formats = Format::searchInformation();
 
     <header>
         <h1>RSS-Bridge</h1>
+        <h2>·<!-- catchphrase here -->·</h2>
     </header>
 
-        <?php foreach($bridges as $bridgeReference => $bridgeInformations): ?>
+        <?php $bridgecount = 0; foreach($bridges as $bridgeReference => $bridgeInformations): ?>
 	  <?php if(BridgeWhitelist($whitelist_selection, $bridgeReference)) { ?>
             <section id="bridge-<?php echo $bridgeReference ?>" data-ref="<?php echo $bridgeReference ?>">
                 <h2><?php echo isset($bridgeInformations['homepage']) ? '<a href="'.$bridgeInformations['homepage'].'">'.$bridgeInformations['name'].'</a>' : $bridgeInformations['name']  ?></h2>
@@ -183,9 +184,10 @@ $formats = Format::searchInformation();
                 <?php endif; ?>
 		<?php echo isset($bridgeInformations['maintainer']) ? '<span class="maintainer">'.$bridgeInformations['maintainer'].'</span>' : '' ?>
             </section>
-            <?php } endforeach; ?>
+            <?php $bridgecount++; } endforeach; ?>
     <footer>
-        <a href="https://github.com/sebsauvage/rss-bridge">RSS-Bridge</a> alpha 0.1
+	<?php echo $bridgecount; ?> active bridges<br>
+        <a href="https://github.com/sebsauvage/rss-bridge">RSS-Bridge alpha 0.1 ~ Public Domain</a>
     </footer>  
     </body>
 </html>

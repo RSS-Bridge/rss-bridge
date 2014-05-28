@@ -101,9 +101,13 @@ header,footer {
     padding: 20px;
 }
 
+header h2 {
+	margin-left:1em;
+}
+
 footer {
     text-align: center;
-    font-size: 60%;
+    font-size: 80%;
 }
 
 section {
