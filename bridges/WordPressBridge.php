@@ -5,10 +5,10 @@
  * Returns the 3 newest full posts of a Wordpress blog
  *
  * @name Wordpress Bridge
-* @homepage https://wordpress.com/
+ * @homepage https://wordpress.com/
  * @description Returns the 3 newest full posts of a Wordpress blog
-* @maintainer aledeg 
-* @update 2014-05-26
+ * @maintainer aledeg
+ * @update 2014-05-26
  * @use1(url="blog URL (required)", name="blog name")
  */
 class WordpressBridge extends BridgeAbstract {
@@ -25,7 +25,8 @@ class WordpressBridge extends BridgeAbstract {
 
 		$html = file_get_html($this->url) or $this->returnError("Could not request {$this->url}.", 404);
 
-		if(!empty($html->find('.post')) ) {
+                $posts = $html->find('.post');
+		if(!empty($posts) ) {
 			$i=0;
 			foreach ($html->find('.post') as $article) {
 				if($i < 3) {
