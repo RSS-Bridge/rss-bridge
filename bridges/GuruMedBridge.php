@@ -1,10 +1,10 @@
 <?php
 /**
 * RssBridgeGuruMed 
-* Returns the 10 newest posts from http://www.gurumed.org (full text)
+* Returns the 5 newest posts from http://www.gurumed.org (full text)
 *
 * @name GuruMed
-* @description Returns the 20 newest posts from Gurumed (full text)
+* @description Returns the 5 newest posts from Gurumed (full text)
 *@maintainer qwertygc
 */
 class GuruMedBridge extends BridgeAbstract{
@@ -29,7 +29,7 @@ class GuruMedBridge extends BridgeAbstract{
 	$limit = 0;
 
 	foreach($html->find('item') as $element) {
-	 if($limit < 10) {
+	 if($limit < 5) {
 	 $item = new \Item();
 	 $item->title = GurumedStripCDATA($element->find('title', 0)->innertext);
 	 $item->uri = GurumedStripCDATA($element->find('guid', 0)->plaintext);

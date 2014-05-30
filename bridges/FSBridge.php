@@ -4,7 +4,7 @@
 * Returns the 5 newest posts from http://www.futura-sciences.com (full text)
 *
 * @name Futurasciences
-* @description Returns the 20 newest posts from FS (full text)
+* @description Returns the 5 newest posts from FS (full text)
 *@maintainer qwertygc
 */
 class FSBridge extends BridgeAbstract{
@@ -30,7 +30,7 @@ class FSBridge extends BridgeAbstract{
 	$limit = 0;
 
 	foreach($html->find('item') as $element) {
-	 if($limit < 20) {
+	 if($limit < 5) {
 	 $item = new \Item();
 	 $item->title = FS_StripCDATA($element->find('title', 0)->innertext);
 	 $item->uri = FS_StripCDATA($element->find('guid', 0)->plaintext);

@@ -1,10 +1,10 @@
 <?php
 /**
 * RssBridgeOpenTheory
-* Returns the 10 newest posts from http://open1theory.com (full text)
+* Returns the 5 newest posts from http://open1theory.com (full text)
 *
 * @name Opentheory
-* @description Returns the 20 newest posts from OpenTheory (full text)
+* @description Returns the 5 newest posts from OpenTheory (full text)
 *@maintainer qwertygc
 */
 class OpenTheoryBridge extends BridgeAbstract{
@@ -30,7 +30,7 @@ class OpenTheoryBridge extends BridgeAbstract{
 	$limit = 0;
 
 	foreach($html->find('item') as $element) {
-	 if($limit < 10) {
+	 if($limit < 5) {
 	 $item = new \Item();
 	 $item->title = StripCDATA($element->find('title', 0)->innertext);
 	 $item->uri = StripCDATA($element->find('guid', 0)->plaintext);
