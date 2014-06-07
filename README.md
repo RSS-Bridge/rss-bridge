@@ -49,7 +49,7 @@ Requirements
 ===
 
  * PHP 5.3
- * TLS lib activated in PHP config for some bridges.
+ * `openssl` extension enabled in PHP config (`php.ini`)
 
 Enabling/Disabling bridges
 ===
@@ -75,7 +75,7 @@ Patch/contributors :
  * [Djuuu](https://github.com/Djuuu)
  * [Anadrark](https://github.com/Anadrark])
 
-Licence
+License
 ===
 Code is [Public Domain](UNLICENSE).
 
