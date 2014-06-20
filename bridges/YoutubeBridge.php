@@ -21,6 +21,15 @@ class YoutubeBridge extends BridgeAbstract{
     private $request;
     
     public function collectData(array $param){
+
+	function getPublishDate($id) {
+		# relies on Youtube API; deprecated
+		$json = json_decode(file_get_contents("https://gdata.youtube.com/feeds/api/videos/$id?v=2&alt=json"), TRUE) or return time();
+		$timestamp = strtotime($json['entry']['published']['$t']);
+		return $timestamp;
+	} 
+
+
         $html = '';
         if (isset($param['u'])) {   /* user timeline mode */
             $this->request = $param['u'];
@@ -31,6 +40,8 @@ class YoutubeBridge extends BridgeAbstract{
            	 $item->uri = 'https://www.youtube.com'.$element->find('a',0)->href;
            	 $item->thumbnailUri = 'https:'.$element->find('img',0)->src;
            	 $item->title = trim($element->find('h3',0)->plaintext);
+		$item->id = str_replace('/watch?v=', '', $element->find('a',0)->href);
+		$item->timestamp = getPublishDate($item->id);
            	 $item->content = '<a href="' . $item->uri . '"><img src="' . $item->thumbnailUri . '" /></a><br><a href="' . $item->uri . '">' . $item->title . '</a>';
            	 $this->items[] = $item;
         	}
@@ -44,6 +55,8 @@ class YoutubeBridge extends BridgeAbstract{
            	 $item->uri = 'https://www.youtube.com'.$element->find('.pl-video-title a',0)->href;
             	$item->thumbnailUri = 'https:'.str_replace('/default.','/mqdefault.',$element->find('.pl-video-thumbnail img',0)->src);
             	$item->title = trim($element->find('.pl-video-title a',0)->plaintext);
+		$item->id = str_replace('/watch?v=', '', $element->find('a',0)->href);
+		$item->timestamp = getPublishDate($item->id);
             	$item->content = '<a href="' . $item->uri . '"><img src="' . $item->thumbnailUri . '" /></a><br><a href="' . $item->uri . '">' . $item->title . '</a>';
             	$this->items[] = $item;
         	}
@@ -62,6 +75,8 @@ class YoutubeBridge extends BridgeAbstract{
 		else
             		$item->thumbnailUri = ''.$element->find('img',0)->src;
             	$item->title = trim($element->find('h3',0)->plaintext);
+		$item->id = str_replace('/watch?v=', '', $element->find('a',0)->href);
+		$item->timestamp = getPublishDate($item->id);
             	$item->content = '<a href="' . $item->uri . '"><img src="' . $item->thumbnailUri . '" /></a><br><a href="' . $item->uri . '">' . $item->title . '</a>';
             	$this->items[] = $item;
         	}
