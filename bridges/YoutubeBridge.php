@@ -71,6 +71,7 @@ class YoutubeBridge extends BridgeAbstract{
 				}
 				$this->request = 'Playlist '.trim(str_replace(' - YouTube', '', $html->find('title', 0)->plaintext)).', by '.$html->find('h1', 0)->plaintext;
 			}
+		}
 
 			else if (isset($param['s'])) {   /* search mode */
 				$this->request = $param['s']; $page = 1; if (isset($param['pa'])) $page = (int)preg_replace("/[^0-9]/",'', $param['pa']); 
