@@ -1,14 +1,12 @@
 <?php
 /**
 * @name MemoLinux
-* @description Returns the 20 newest posts from MemoLinux (full text)
-*@maintainer qwertygc
+* @homepage http://memo-linux.com/
+* @description Returns the 10 newest posts from MemoLinux (full text)
+* @maintainer qwertygc
+* @update 2014-07-07
 */
 class MemoLinuxBridge extends BridgeAbstract{
-
-
-
-
 
     public function collectData(array $param){
 
@@ -22,6 +20,7 @@ class MemoLinuxBridge extends BridgeAbstract{
 	$text = $html2->find('div.post-content', 0)->innertext;
 	$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
 	$text = preg_replace('@<div[^>]*?>.*?</div>@si', '', $text);
+	$text = preg_replace("/<h1.*/", '', $text);
 	return $text;
     }
         $html = file_get_html('http://memo-linux.com/feed/') or $this->returnError('Could not request MemoLinux.', 404);
@@ -50,7 +49,6 @@ class MemoLinuxBridge extends BridgeAbstract{
     }
 
     public function getCacheDuration(){
-        // return 3600; // 1 hour
-        return 0; // 1 hour
+        return 3600*12; // 12 hours
     }
 }

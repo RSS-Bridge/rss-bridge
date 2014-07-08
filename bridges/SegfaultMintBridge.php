@@ -1,11 +1,10 @@
 <?php
 /**
-* RssBridgeSegfaultMint
-* Returns the 10 newest posts from http://segfault.linuxmint.com (full text)
-*
 * @name SegfaultMint
-* @description Returns the 20 newest posts from SegfaultMint (full text)
-*@maintainer qwertygc
+* @homepage http://segfault.linuxmint.com/
+* @description Returns the 5 newest posts from SegfaultMint (full text)
+* @maintainer qwertygc
+* @update 2014-07-05
 */
 class SegfaultMintBridge extends BridgeAbstract{
 
@@ -30,7 +29,7 @@ class SegfaultMintBridge extends BridgeAbstract{
 	$limit = 0;
 
 	foreach($html->find('item') as $element) {
-	 if($limit < 10) {
+	 if($limit < 5) {
 	 $item = new \Item();
 	 $item->title = StripCDATA($element->find('title', 0)->innertext);
 	 $item->uri = StripCDATA($element->find('guid', 0)->plaintext);
@@ -52,7 +51,6 @@ class SegfaultMintBridge extends BridgeAbstract{
     }
 
     public function getCacheDuration(){
-        // return 3600; // 1 hour
-        return 0; // 1 hour
+        return 3600*24; // 24 hours
     }
 }
