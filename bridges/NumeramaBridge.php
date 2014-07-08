@@ -22,7 +22,7 @@ class NumeramaBridge extends BridgeAbstract{
 	$html2 = file_get_html($url);
 	$text = $html2->find('h2.intro', 0)->innertext;
 	$text = $text.$html2->find('div.content', 0)->innertext;
-	$text = preg_replace('/<script .*>/i','',$text); //Supression des balises script apparentes
+	$text = strip_tags($text, '<p><b><a><blockquote><img><em>');
 	return $text;
     }
         $html = file_get_html('http://www.numerama.com/rss/news.rss') or $this->returnError('Could not request Numerama.', 404);
