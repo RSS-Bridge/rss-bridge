@@ -85,7 +85,18 @@ Including `PHP Simple HTML DOM Parser` under the [MIT License](http://opensource
 Technical notes
 ===
   * There is a cache so that source services won't ban you even if you hammer the rss-bridge with requests. Each bridge has a different duration for the cache. The `cache` subdirectory will be automatically created. You can purge it whenever you want.
-  * To implement a new rss-bridge, create a new class in `bridges` subdirectory. Look at existing bridges for examples. For items you generate in `$this->items`, only `uri` and `title` are mandatory in each item. `timestamp` and `content` are optional but recommended. Any additional key will be ignored by ATOM feed (but outputed to json).
+  * To implement a new rss-bridge, create a new class in `bridges` subdirectory. Look at existing bridges for examples and the guidelines below. For items you generate in `$this->items`, only `uri` and `title` are mandatory in each item. `timestamp` and `content` are optional but recommended. Any additional key will be ignored by ATOM feed (but outputed to json).
+
+### Bridge guidelines
+
+  * metatags: `@name` {Name of service}, `@homepage` {URL to homepage}, `@description`, `@update` {YYYY-MM-DD}, `@maintainer` {Github username or nickname}
+  * scripts (eg. Javascript) must be stripped out. Make good use of `strip_tags()` and `preg_replace()`
+  * bridge must present data within 8 seconds (adjust iterators accordingly)
+  * cache timeout must be fine-tuned so that each refresh can provide 1 or 2 new elements on busy periods
+  * `<audio>` and `<video>` must not autoplay. Seriously.
+  * do everything you can to extract valid timestamps. Translate formats, use API, exploit sitemap, whatever. Free the data!
+  * don't create duplicates. If the website runs on WordPress, use the generic WordPress bridge if possible.
+  * maintain efficient and well-commented code :wink:
 
 Rant
 ===
