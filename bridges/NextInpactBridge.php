@@ -10,7 +10,7 @@
 * @maintainer qwertygc
 */
 class NextInpactBridge extends BridgeAbstract{
-    
+
         public function collectData(array $param){
 
 			function StripCDATA($string) {
@@ -20,7 +20,8 @@ class NextInpactBridge extends BridgeAbstract{
 		}
 		function ExtractContent($url) {
 		$html2 = file_get_html($url);
-		$text = $html2->find('div[itemprop=articleBody]', 0)->innertext;
+    $text = '<h2>'.$html2->find('div#actu_entete > h2', 0)->innertext.'</h2><br><br>';
+		$text = $text.$html2->find('div[itemprop=articleBody]', 0)->innertext;
 		return $text;
 		}
 		$html = file_get_html('http://www.nextinpact.com/rss/news.xml') or $this->returnError('Could not request Nextinpact.', 404);
@@ -37,7 +38,7 @@ class NextInpactBridge extends BridgeAbstract{
 		 $limit++;
 		 }
 		}
-    
+
     }
 
     public function getName(){
