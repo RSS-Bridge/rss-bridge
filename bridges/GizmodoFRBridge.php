@@ -19,7 +19,7 @@ class GizmodoFRBridge extends BridgeAbstract{
             $text = $text.$articleHTMLContent->find('div.entry-excerpt', 0)->innertext;
             $text = $text.$articleHTMLContent->find('div.entry-content', 0)->innertext;
             foreach($articleHTMLContent->find('pagespeed_iframe') as $element) {
-                $text = $text.'<p>link to a iframe (could be a video): <a href="'.$element->src.'">'.$element->src.'</a></p>';
+                $text = $text.'<p>link to a iframe (could be a video): <a href="'.$element->src.'">'.$element->src.'</a></p><br>';
             }
 
             $text = strip_tags($text, '<p><b><a><blockquote><img><em>');
