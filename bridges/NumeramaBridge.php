@@ -1,6 +1,6 @@
 <?php
 /**
-* RssBridgeNumerama 
+* RssBridgeNumerama
 * Returns the 5 newest posts from http://www.numerama.com (full text)
 * 2014-05-25
 *
@@ -39,7 +39,7 @@ class NumeramaBridge extends BridgeAbstract{
 	 $limit++;
 	 }
 	}
-    
+
     }
 
     public function getName(){
