@@ -11,7 +11,7 @@
  * @update 2014-05-26
  * @use1(url="blog URL (required)", name="blog name")
  */
-class WordpressBridge extends BridgeAbstract {
+class WordPressBridge extends BridgeAbstract {
 
 	private $url;
 	private $name;
