@@ -24,7 +24,7 @@ class YoutubeBridge extends BridgeAbstract{
 
 		function getPublishDate($id) {
 			// relies on Youtube API; deprecated
-			$json = json_decode(file_get_contents("https://gdata.youtube.com/feeds/api/videos/$id?v=2&alt=json"), TRUE) or $this->returnError('Youtube API is down', 404);
+			$json = json_decode(file_get_contents("https://gdata.youtube.com/feeds/api/videos/$id?v=2&alt=json"), TRUE);
 			$timestamp = strtotime($json['entry']['published']['$t']);
 			return $timestamp;
 		} 
@@ -41,10 +41,11 @@ class YoutubeBridge extends BridgeAbstract{
 			foreach($html->find('li.channels-content-item') as $element) {
 				if($count < $limit) {
 					$item = new \Item();
-					$item->uri = 'https://www.youtube.com'.$element->find('a',0)->href;
+						$videoquery = parse_url($element->find('a',0)->href, PHP_URL_QUERY); parse_str($videoquery, $videoquery);
+					$item->id = $videoquery['v'];
+					$item->uri = 'https://www.youtube.com/watch?v='.$item->id;
 					$item->thumbnailUri = 'https:'.$element->find('img',0)->src;
 					$item->title = trim($element->find('h3',0)->plaintext);
-					$item->id = str_replace('/watch?v=', '', $element->find('a',0)->href);
 					$item->timestamp = getPublishDate($item->id);
 					$item->content = '<a href="' . $item->uri . '"><img src="' . $item->thumbnailUri . '" /></a><br><a href="' . $item->uri . '">' . $item->title . '</a>';
 					$this->items[] = $item;
