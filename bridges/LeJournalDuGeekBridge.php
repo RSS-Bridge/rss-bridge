@@ -6,7 +6,7 @@
 *
 * @name journaldugeek.com (FR)
 * @homepage http://www.journaldugeek.com/
-* @description Returns the 15 newest posts from LeJournalDuGeek (full text).
+* @description Returns the 5 newest posts from LeJournalDuGeek (full text).
 * @maintainer polopollo
 */
 class LeJournalDuGeekBridge extends BridgeAbstract{
@@ -42,7 +42,7 @@ class LeJournalDuGeekBridge extends BridgeAbstract{
     	$limit = 0;
 
     	foreach($rssFeed->find('item') as $element) {
-            if($limit < 15) {
+            if($limit < 5) {
                 $item = new \Item();
                 $item->title = LeJournalDuGeekStripCDATA($element->find('title', 0)->innertext);
                 $item->uri = LeJournalDuGeekStripCDATA($element->find('guid', 0)->plaintext);
