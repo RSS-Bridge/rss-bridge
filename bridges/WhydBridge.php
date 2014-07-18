@@ -59,6 +59,6 @@ class WhydBridge extends BridgeAbstract{
 	}
 
 	public function getCacheDuration(){
-		return 1; // 10 minutes
+		return 600; // 10 minutes
 	}
 }
