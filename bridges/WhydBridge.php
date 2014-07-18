@@ -8,7 +8,7 @@
 * @description Returns 10 newest music from user profile 
 * @maintainer kranack
 * @update 2014-07-18
-* @use1(u="username")
+* @use1(u="username/id")
 *
 */
 class WhydBridge extends BridgeAbstract{
@@ -21,12 +21,16 @@ class WhydBridge extends BridgeAbstract{
 		if (isset($param['u']))
 		{
 			$this->request = $param['u'];
-            $html = file_get_html('http://www.whyd.com/u/'.urlencode($this->request)) or $this->returnError('No results for this query.', 404);
+			if (strlen(preg_replace("/[^0-9a-f]/",'', $this->request)) == 24)  // is input the userid ?
+				$html = file_get_html('http://www.whyd.com/u/'.preg_replace("/[^0-9a-f]/",'', $this->request)) or $this->returnError('No results for this query.', 404);
+			else  // input may be the username
+				$html = file_get_html('http://www.whyd.com/'.urlencode($this->request)) or $this->returnError('No results for this query.', 404);
+
             $this->name = $html->find('div#profileTop', 0)->find('h1', 0)->plaintext;
 		} 
 		else
 		{
-			$this->returnError('You must specify username', 400);
+			$this->returnError('You must specify username or id', 400);
 		}
 
 		for($i = 0; $i < 10; $i++) {
