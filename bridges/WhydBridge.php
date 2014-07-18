@@ -45,7 +45,7 @@ class WhydBridge extends BridgeAbstract{
 	}
 
 	public function getURI(){
-		return 'https://www.soundcloud.com/';
+		return 'http://www.whyd.com/';
 	}
 
 	public function getCacheDuration(){
