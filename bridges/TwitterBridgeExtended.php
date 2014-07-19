@@ -21,7 +21,7 @@ class TwitterBridgeExtended extends BridgeAbstract{
 				foreach($exclude as $exclude_pattern)
 					$exclude_request .= " -$exclude_pattern";
 			}
-			$html = file_get_html('http://twitter.com/search/realtime?q='.urlencode($param['q']).urlencode($exclude_request)'+include:retweets&src=typd') or $this->returnError('No results for this query.', 404);
+			$html = file_get_html('http://twitter.com/search/realtime?q='.urlencode($param['q']).urlencode($exclude_request).'+include:retweets&src=typd') or $this->returnError('No results for this query.', 404);
 		}
 		elseif (isset($param['u'])) {   /* user timeline mode */
 			$html = file_get_html('http://twitter.com/'.urlencode($param['u']).'/with_replies') or $this->returnError('Requested username can\'t be found.', 404);
