@@ -47,7 +47,7 @@ class DeveloppezDotComBridge extends BridgeAbstract{
     	$limit = 0;
 
     	foreach($rssFeed->find('item') as $element) {
-            if($limit < 2) {
+            if($limit < 10) {
                 $item = new \Item();
                 $item->title = DeveloppezDotComStripCDATA($element->find('title', 0)->innertext);
                 $item->uri = DeveloppezDotComStripCDATA($element->find('guid', 0)->plaintext);
