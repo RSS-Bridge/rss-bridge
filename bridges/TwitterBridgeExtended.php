@@ -8,15 +8,20 @@
 * @homepage https://twitter.com/
 * @description (same as Twitter Bridge, but with avatar, replies and RTs)
 * @maintainer mitsukarenai
-* @use1(q="keyword or hashtag")
+* @use1(q="keyword or hashtag",e="exclude words (commasep)")
 * @use2(u="username")
 */
 class TwitterBridgeExtended extends BridgeAbstract{
 
 	public function collectData(array $param){
-		$html = '';
+		$html = ''; $exclude_request = '';
 		if (isset($param['q'])) {   /* keyword search mode */
-			$html = file_get_html('http://twitter.com/search/realtime?q='.urlencode($param['q']).'+include:retweets&src=typd') or $this->returnError('No results for this query.', 404);
+			if(!empty($param['e'])) {
+				$exclude = explode(',', $param['e']);
+				foreach($exclude as $exclude_pattern)
+					$exclude_request .= " -$exclude_pattern";
+			}
+			$html = file_get_html('http://twitter.com/search/realtime?q='.urlencode($param['q']).urlencode($exclude_request)'+include:retweets&src=typd') or $this->returnError('No results for this query.', 404);
 		}
 		elseif (isset($param['u'])) {   /* user timeline mode */
 			$html = file_get_html('http://twitter.com/'.urlencode($param['u']).'/with_replies') or $this->returnError('Requested username can\'t be found.', 404);
