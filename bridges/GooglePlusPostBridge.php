@@ -6,7 +6,7 @@
  *
  * @name Google Plus Post Bridge
  * @homepage http://plus.google.com/
- * @description Returns user public post (without using their API).
+ * @description Returns user public post (using their API because without you need to parse javascript ...).
  * @maintainer Grummfy
  * @use1(username="usernameOrId")
  */
@@ -20,7 +20,8 @@ class GooglePlusPostBridge extends BridgeAbstract
 		}
 
 		$this->request = $param['username'];
-		$html = file_get_html('https://plus.google.com/' . urlencode($this->request) . '/posts') or $this->returnError('No results for this query.', 404);
+		//$html = file_get_html('https://plus.google.com/' . urlencode($this->request) . '/posts') or $this->returnError('No results for this query.', 404);
+		$html = str_get_html(__DIR__ . '/../posts') or $this->returnError('No results for this query.', 404);
 
 		//var_dump($html);
 		//exit();
@@ -31,6 +32,12 @@ class GooglePlusPostBridge extends BridgeAbstract
 				$dsd[ $k ] = array_keys(get_object_vars($v));
 			}
 		$item->content = var_export($dsd, true);
+		$this->items[] = $item;
+			$item = new \Item();
+		$item->content = var_export((($html->find('div.Dge.fOa'))), true);
+		$this->items[] = $item;
+			$item = new \Item();
+			$item->content = var_export($html->find('div', 0), true) . $html->dump_node();
 		$this->items[] = $item;
 		foreach($html->find('div.Yp.yt.Xa') as $post)
 		{
@@ -68,6 +75,6 @@ class GooglePlusPostBridge extends BridgeAbstract
 
 	public function getCacheDuration()
 	{
-		return 600; // 10 minutes
+		return 1; // 600; // 10 minutes
 	}
 }
