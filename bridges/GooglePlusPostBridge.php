@@ -1,17 +1,5 @@
 <?php
 
-//function loadFromFile($str, $lowercase=true, $forceTagsClosed=true, $target_charset = DEFAULT_TARGET_CHARSET, $stripRN=true, $defaultBRText=DEFAULT_BR_TEXT, $defaultSpanText=DEFAULT_SPAN_TEXT)
-//{
-//	$dom = new simple_html_dom(null, $lowercase, $forceTagsClosed, $target_charset, $stripRN, $defaultBRText, $defaultSpanText);
-//	if (empty($str) || strlen($str) > MAX_FILE_SIZE)
-//	{
-//		$dom->clear();
-//		return false;
-//	}
-//	$dom->load_file($str, $lowercase, $stripRN);
-//	return $dom;
-//}
-
 /**
  * Google Plus Post Bridge
  * Freely inspired by tweeter bridge
