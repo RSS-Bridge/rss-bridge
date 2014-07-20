@@ -31,6 +31,7 @@ $whitelist_default = array(
 	"DansTonChatBridge",
 	"DuckDuckGoBridge",
 	"FlickrExploreBridge",
+	"GooglePlusPostBridge",
 	"GoogleSearchBridge",
 	"IdenticaBridge",
 	"InstagramBridge",
