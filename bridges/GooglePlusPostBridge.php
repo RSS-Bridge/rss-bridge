@@ -22,7 +22,16 @@ class GooglePlusPostBridge extends BridgeAbstract
 		$this->request = $param['username'];
 		$html = file_get_html('https://plus.google.com/' . urlencode($this->request) . '/posts') or $this->returnError('No results for this query.', 404);
 
-		var_dump($html);
+		//var_dump($html);
+		//exit();
+			$item = new \Item();
+			$dsd = array();
+			foreach (get_object_vars($html) as $k => $v)
+			{
+				$dsd[ $k ] = array_keys(get_object_vars($v));
+			}
+		$item->content = var_export($dsd, true);
+		$this->items[] = $item;
 		foreach($html->find('div.Yp.yt.Xa') as $post)
 		{
 			$item = new \Item();
@@ -34,6 +43,7 @@ class GooglePlusPostBridge extends BridgeAbstract
 			$item->uri = $post->find('a.o-U-s.FI.Rg')->href;
 			$item->timestamp = $post->find('a.o-U-s.FI.Rg')->title; // 5 juin 2014 23:20:41
 			$this->items[] = $item;
+			break;
 		}
 
 //			// extract plaintext
