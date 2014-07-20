@@ -166,7 +166,7 @@ $formats = Format::searchInformation();
 	                            foreach($anUse as $argName => $argDescription)
 	                            {
 	                                $idArg = 'arg-' . $bridgeReference . '-' . $anUseNum . '-' . $argName;
-	                                echo '<input id="', $idArg, '" type="text" value="" placeholder="', $argDescription, '" name="', $argName, '" />'
+	                                echo '<input id="', $idArg, '" type="text" value="" placeholder="', $argDescription, '" name="', $argName, '" />';
 	                            }
 
 	                            foreach( $formats as $name => $infos )
