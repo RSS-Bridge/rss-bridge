@@ -119,6 +119,18 @@ function getHelperButtonFormat($value, $name){
     return '<button type="submit" name="format" value="' . $value . '">' . $name . '</button>';
 }
 
+function getHelperButtonsFormat($formats){
+	$buttons = '';
+		foreach( $formats as $name => $infos )
+		{
+			if ( isset($infos['name']) )
+			{
+				$buttons .= getHelperButtonFormat($name, $infos['name']) . PHP_EOL;
+			}
+		}
+	return $buttons;
+}
+
 function displayBridgeCard($bridgeReference, $bridgeInformations, $formats, $isActive = true)
 {
 	$name = isset($bridgeInformations['homepage']) ? '<a href="'.$bridgeInformations['homepage'].'">'.$bridgeInformations['name'].'</a>' : $bridgeInformations['name'];
@@ -146,15 +158,11 @@ CARD;
 					$card .= '<input id="' . $idArg . '" type="text" value="" placeholder="' . $argDescription . '" name="' . $argName . '" />' . PHP_EOL;
 				}
 
+				$card .= '<br />';
+
 				if ($isActive)
 				{
-					foreach( $formats as $name => $infos )
-					{
-						if ( isset($infos['name']) )
-						{
-							$card .= getHelperButtonFormat($name, $infos['name']) . PHP_EOL;
-						}
-					}
+					$card .= getHelperButtonsFormat($formats);
 				}
 				else
 				{
@@ -170,12 +178,14 @@ CARD;
 			$card .= '<form method="GET" action="?">
 				<input type="hidden" name="action" value="display" />
 				<input type="hidden" name="bridge" value="' . $bridgeReference . '" />' . PHP_EOL;
-			foreach ($formats as $name => $infos)
+
+			if ($isActive)
 			{
-				if (isset($infos['name']) )
-				{
-					$card .= getHelperButtonFormat($name, $infos['name']) . PHP_EOL;
-				}
+				$card .= getHelperButtonsFormat($formats);
+			}
+			else
+			{
+				$card .= '<span style="font-weight: bold;">Inactive</span>';
 			}
 			$card .= '</form>' . PHP_EOL;
 		}
