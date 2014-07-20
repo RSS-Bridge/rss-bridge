@@ -144,49 +144,66 @@ $formats = Format::searchInformation();
         <h1>RSS-Bridge</h1>
         <h2>·Reconnecting the Web·</h2>
     </header>
+	<?php
+	    $bridgecount = 0;
+	    foreach($bridges as $bridgeReference => $bridgeInformations):
+	?>
+	<?php if(BridgeWhitelist($whitelist_selection, $bridgeReference)): ?>
+        <section id="bridge-<?= $bridgeReference ?>" data-ref="<?= $bridgeReference ?>">
+            <h2><?= isset($bridgeInformations['homepage']) ? '<a href="'.$bridgeInformations['homepage'].'">'.$bridgeInformations['name'].'</a>' : $bridgeInformations['name']  ?></h2>
+            <p class="description">
+                <?= isset($bridgeInformations['description']) ? $bridgeInformations['description'] : 'No description provided' ?>
+            </p>
 
-        <?php $bridgecount = 0; foreach($bridges as $bridgeReference => $bridgeInformations): ?>
-	  <?php if(BridgeWhitelist($whitelist_selection, $bridgeReference)) { ?>
-            <section id="bridge-<?php echo $bridgeReference ?>" data-ref="<?php echo $bridgeReference ?>">
-                <h2><?php echo isset($bridgeInformations['homepage']) ? '<a href="'.$bridgeInformations['homepage'].'">'.$bridgeInformations['name'].'</a>' : $bridgeInformations['name']  ?></h2>
-                <p class="description">
-                    <?php echo isset($bridgeInformations['description']) ? $bridgeInformations['description'] : 'No description provided' ?>
-                </p> 
+            <?php if( isset($bridgeInformations['use']) && count($bridgeInformations['use']) > 0 ): ?>
+	            <ol class="list-use">
+	                <?php foreach($bridgeInformations['use'] as $anUseNum => $anUse): ?>
+	                <li data-use="<?= $anUseNum ?>">
+	                    <form method="GET" action="?">
+	                        <input type="hidden" name="action" value="display" />
+	                        <input type="hidden" name="bridge" value="<?= $bridgeReference ?>" />
+	                        <?php
+	                            foreach($anUse as $argName => $argDescription)
+	                            {
+	                                $idArg = 'arg-' . $bridgeReference . '-' . $anUseNum . '-' . $argName;
+	                                echo '<input id="', $idArg, '" type="text" value="" placeholder="', $argDescription, '" name="', $argName, '" />'
+	                            }
 
-                <?php if( isset($bridgeInformations['use']) && count($bridgeInformations['use']) > 0 ): ?>
-                <ol class="list-use">
-                    <?php foreach($bridgeInformations['use'] as $anUseNum => $anUse): ?>
-                    <li data-use="<?php echo $anUseNum ?>">
-                        <form method="GET" action="?">
-                            <input type="hidden" name="action" value="display" />
-                            <input type="hidden" name="bridge" value="<?php echo $bridgeReference ?>" />
-                            <?php foreach($anUse as $argName => $argDescription): ?>
-                            <?php
-                                $idArg = 'arg-' . $bridgeReference . '-' . $anUseNum . '-' . $argName;
-                            ?>
-                            <input id="<?php echo $idArg ?>" type="text" value="" placeholder="<?php echo $argDescription; ?>" name="<?php echo $argName ?>" />
-                            <?php endforeach; ?>
-                            <?php foreach( $formats as $name => $infos ): ?>
-                                <?php if( isset($infos['name']) ){ echo getHelperButtonFormat($name, $infos['name']); } ?>
-                            <?php endforeach; ?>
-                        </form>
-                    </li>
-                    <?php endforeach; ?>
-                </ol>
-                <?php else: ?>
-                <form method="GET" action="?">
-                    <input type="hidden" name="action" value="display" />
-                    <input type="hidden" name="bridge" value="<?php echo $bridgeReference ?>" />
-                    <?php foreach( $formats as $name => $infos ): ?>
-                        <?php if( isset($infos['name']) ){ echo getHelperButtonFormat($name, $infos['name']); } ?>
-                    <?php endforeach; ?>
-                </form>
-                <?php endif; ?>
-		<?php echo isset($bridgeInformations['maintainer']) ? '<span class="maintainer">'.$bridgeInformations['maintainer'].'</span>' : '' ?>
-            </section>
-            <?php $bridgecount++; } endforeach; ?>
+	                            foreach( $formats as $name => $infos )
+	                            {
+		                            if ( isset($infos['name']) )
+		                            {
+			                            echo getHelperButtonFormat($name, $infos['name']);
+		                            }
+	                            }
+		                    ?>
+	                    </form>
+	                </li>
+	                <?php endforeach; ?>
+	            </ol>
+            <?php else: ?>
+	            <form method="GET" action="?">
+	                <input type="hidden" name="action" value="display" />
+	                <input type="hidden" name="bridge" value="<?= $bridgeReference ?>" />
+	                <?php
+	                    foreach( $formats as $name => $infos )
+	                    {
+	                        if( isset($infos['name']) )
+	                        {
+		                        echo getHelperButtonFormat($name, $infos['name']);
+	                        }
+	                    }
+	                ?>
+	            </form>
+            <?php endif; ?>
+		<?= isset($bridgeInformations['maintainer']) ? '<span class="maintainer">'.$bridgeInformations['maintainer'].'</span>' : '' ?>
+        </section>
+            <?php
+		            $bridgecount++;
+                endif;
+            endforeach; ?>
     <footer>
-	<?php echo $bridgecount; ?> active bridges<br>
+		<?= $bridgecount; ?> active bridges<br>
         <a href="https://github.com/sebsauvage/rss-bridge">RSS-Bridge alpha 0.1 ~ Public Domain</a>
     </footer>  
     </body>
