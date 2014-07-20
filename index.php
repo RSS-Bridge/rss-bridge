@@ -205,7 +205,7 @@ $formats = Format::searchInformation();
     endforeach;
 	?>
     <footer>
-		<?= $bridgecount; ?> active bridges<br>
+		<?= $bridgecount; ?>/<?= count($bridges) ?> active bridges<br>
         <a href="https://github.com/sebsauvage/rss-bridge">RSS-Bridge alpha 0.1 ~ Public Domain</a>
     </footer>  
     </body>
