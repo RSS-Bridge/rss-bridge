@@ -8,6 +8,7 @@ Supported sites/pages (main)
 
  * `FlickrExplore` : [Latest interesting images](http://www.flickr.com/explore) from Flickr
  * `GoogleSearch` : Most recent results from Google Search
+ * `GooglePlus` : Most recent posts of user timeline
  * `Twitter` : Return keyword/hashtag search or user timeline
  * `Identi.ca` : Identica user timeline (Should be compatible with other Pump.io instances)
  * `YouTube` : YouTube user channel, playlist or search
@@ -74,6 +75,10 @@ Patch/contributors :
  * [qwertygc](https://github.com/qwertygc)
  * [Djuuu](https://github.com/Djuuu)
  * [Anadrark](https://github.com/Anadrark])
+ * [Grummfy](https://github.com/Grummfy)
+ * [Polopollo](https://github.com/Polopollo)
+ * [16mhz](https://github.com/16mhz)
+ * [kranack](https://github.com/kranack)
 
 License
 ===
