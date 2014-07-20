@@ -1,17 +1,35 @@
 <?php
 
+//function loadFromFile($str, $lowercase=true, $forceTagsClosed=true, $target_charset = DEFAULT_TARGET_CHARSET, $stripRN=true, $defaultBRText=DEFAULT_BR_TEXT, $defaultSpanText=DEFAULT_SPAN_TEXT)
+//{
+//	$dom = new simple_html_dom(null, $lowercase, $forceTagsClosed, $target_charset, $stripRN, $defaultBRText, $defaultSpanText);
+//	if (empty($str) || strlen($str) > MAX_FILE_SIZE)
+//	{
+//		$dom->clear();
+//		return false;
+//	}
+//	$dom->load_file($str, $lowercase, $stripRN);
+//	return $dom;
+//}
+
 /**
- * GooglePlusPostBridge
+ * Google Plus Post Bridge
+ * Freely inspired by tweeter bridge
  * 2014-07-20
  *
  * @name Google Plus Post Bridge
  * @homepage http://plus.google.com/
- * @description Returns user public post (using their API because without you need to parse javascript ...).
+ * @description Returns user public post (without API).
  * @maintainer Grummfy
  * @use1(username="usernameOrId")
  */
 class GooglePlusPostBridge extends BridgeAbstract
 {
+	protected $_title;
+	protected $_url;
+
+	const GOOGLE_PLUS_BASE_URL = 'https://plus.google.com/';
+
 	public function collectData(array $param)
 	{
 		if (!isset($param['username']))
@@ -20,57 +38,96 @@ class GooglePlusPostBridge extends BridgeAbstract
 		}
 
 		$this->request = $param['username'];
-		//$html = file_get_html('https://plus.google.com/' . urlencode($this->request) . '/posts') or $this->returnError('No results for this query.', 404);
-		$html = str_get_html(__DIR__ . '/../posts') or $this->returnError('No results for this query.', 404);
+		// get content parsed
+//		$html = file_get_html(__DIR__ . '/../posts2.html'
+		$html = file_get_html(self::GOOGLE_PLUS_BASE_URL . urlencode($this->request) . '/posts'
+			// force language
+			, false, stream_context_create(array('http'=> array(
+			'header'    => 'Accept-Language: fr,fr-be,fr-fr;q=0.8,en;q=0.4,en-us;q=0.2;*' . "\r\n"
+			)))
+		) OR $this->returnError('No results for this query.', 404);
 
-		//var_dump($html);
-		//exit();
-			$item = new \Item();
-			$dsd = array();
-			foreach (get_object_vars($html) as $k => $v)
-			{
-				$dsd[ $k ] = array_keys(get_object_vars($v));
-			}
-		$item->content = var_export($dsd, true);
-		$this->items[] = $item;
-			$item = new \Item();
-		$item->content = var_export((($html->find('div.Dge.fOa'))), true);
-		$this->items[] = $item;
-			$item = new \Item();
-			$item->content = var_export($html->find('div', 0), true) . $html->dump_node();
-		$this->items[] = $item;
-		foreach($html->find('div.Yp.yt.Xa') as $post)
-		{
-			$item = new \Item();
-			$item->content = $post->find('dib.Al.pf')->innerHTML;
-			$item->username = $item->fullname = $post->find('header.lea h3 a', 0)->innertext;
-			$item->id = $post->getAttribute('id');
-			$item->title = $item->fullname = $post->find('header.lea', 0)->innertext;
-			$item->avatar = $post->find('.ys a.ob.Jk img', 0)->src;
-			$item->uri = $post->find('a.o-U-s.FI.Rg')->href;
-			$item->timestamp = $post->find('a.o-U-s.FI.Rg')->title; // 5 juin 2014 23:20:41
-			$this->items[] = $item;
-			break;
-		}
+		// get title, url, ... there is a lot of intresting stuff in meta
+		$this->_title = $html->find('meta[property]', 0)->getAttribute('content');
+		$this->_url = $html->find('meta[itemprop=url]', 0)->getAttribute('content');
 
-//			// extract plaintext
-//			$item->content_simple = str_replace('href="/', 'href="https://twitter.com/', html_entity_decode(strip_tags($tweet->find('p.js-tweet-text', 0)->innertext, '<a>')));
-//
-//			// generate the title
-//			$item->title = $item->fullname . ' (@'. $item->username . ') | ' . $item->content_simple;
-//			// put out
+//		foreach ($html->find('meta') as $e)
+//		{
+//			$item = new \Item();
+//			$item->content = var_export($e->attr, true);
 //			$this->items[] = $item;
 //		}
+
+		// div[jsmodel=XNmfOc]
+		foreach($html->find('div.yt') as $post)
+		{
+			$item = new \Item();
+//			$item->content = $post->find('div.Al', 0)->innertext;
+			$item->username = $item->fullname = $post->find('header.lea h3 a', 0)->innertext;
+			$item->id = $post->getAttribute('id');
+//			$item->title = $item->fullname = $post->find('header.lea', 0)->plaintext;
+			$item->avatar = $post->find('div.ys img', 0)->src;
+//			var_dump((($post->find('a.o-U-s', 0)->getAllAttributes())));
+			$item->uri = $post->find('a.o-U-s', 0)->href;
+			$item->timestamp = strtotime($post->find('a.o-U-s', 0)->plaintext);
+			$this->items[] = $item;
+
+			// hashtag to treat : https://plus.google.com/explore/tag
+			$hashtags = array();
+			foreach($post->find('a.d-s') as $hashtag)
+			{
+				$hashtags[ trim($hashtag->plaintext) ] = self::GOOGLE_PLUS_BASE_URL . $hashtag->href;
+			}
+
+			$item->content = '';
+
+			// avatar display
+			$item->content .= '<div style="float:left; margin: 0 0.5em 0.5em 0;"><a href="' . self::GOOGLE_PLUS_BASE_URL . urlencode($this->request);
+			$item->content .= '"><img align="top" alt="avatar" src="' . $item->avatar.'" />' . $item->username . '</a></div>';
+
+			$content = $post->find('div.Al', 0);
+
+			// alter link
+//			$content = $content->innertext;
+//			$content = str_replace('href="./', 'href="' . self::GOOGLE_PLUS_BASE_URL, $content);
+//			$content = str_replace('href="photos', 'href="' . self::GOOGLE_PLUS_BASE_URL . 'photos', $content);
+			// XXX ugly but I don't have any idea how to do a better stuff, str_replace on link doesn't work as expected and ask too many checks
+			foreach($content->find('a') as $link)
+			{
+				$hasHttp = strpos($link->href, 'http');
+				$hasDoubleSlash = strpos($link->href, '//');
+
+				if ((!$hasHttp && !$hasDoubleSlash)
+					|| (false !== $hasHttp && strpos($link->href, 'http') != 0)
+					|| (false === $hasHttp && false !== $hasDoubleSlash && $hasDoubleSlash != 0))
+				{
+					// skipp bad link, for some hashtag or other stuff
+					if (strpos($link->href, '/') == 0)
+					{
+						$link->href = substr($link->href, 1);
+					}
+					$link->href = self::GOOGLE_PLUS_BASE_URL . $link->href;
+				}
+			}
+			$content = $content->innertext;
+
+			$item->content .= '<div style="margin-top: -1.5em">' .  $content . '</div>';
+
+			// extract plaintext
+			$item->content_simple = $post->find('div.Al', 0)->plaintext;
+		}
+
+//		$html->save(__DIR__ . '/../posts2.html');
 	}
 
 	public function getName()
 	{
-		return 'Google Plus Post Bridge';
+		return $this->_title ?: 'Google Plus Post Bridge';
 	}
 
 	public function getURI()
 	{
-		return 'http://plus.google.com/';
+		return $this->_url ?: 'http://plus.google.com/';
 	}
 
 	public function getCacheDuration()
