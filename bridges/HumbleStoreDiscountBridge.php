@@ -29,10 +29,12 @@ class HumbleStoreDiscountBridge extends BridgeAbstract{
                 $product_uri = $store_link . $value['machine_name'];
                 $platforms = str_replace('\'', '', implode("','", $value['platforms']));
                 $delivery_methods = str_replace('\'', '', implode("','", $value['delivery_methods']));
+                $thumbnail = 'https://www.humblebundle.com' . $value['storefront_featured_image_small'];
 
-                $content = '<b>' . $product_name . '</b><br/><b>Current price:</b> ' . $new_price . '<br/><b>Full price:</b> ' . $full_price
-                    . '<br/><b>Delivery methods:</b> ' . $delivery_methods . '<br/><b>Platforms:</b> '
-                    . $platforms . '<br/>' . $value['description'];
+                $content = '<img src="' . $thumbnail . '" alt="' . $value['storefront_featured_image_small'] . '"><br/><br/><b>' . $product_name
+                    . '</b><br/><br/><b>Current price:</b> ' . $new_price . '<br/><b>Full price:</b> ' . $full_price
+                    . '<br/><b>Developer:</b> ' . $value['developer_name'] . '<br/><b>Delivery methods:</b> ' . $delivery_methods
+                    . '<br/><b>Platforms:</b> ' . $platforms . '<br/>' . $value['description'];
 
                 $item = new \Item();
                 $item->title = $product_name . ' - ' . $new_price;
@@ -56,4 +58,3 @@ class HumbleStoreDiscountBridge extends BridgeAbstract{
         return 21600; // 6 hours
     }
 }
-
