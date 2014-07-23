@@ -8,7 +8,7 @@
 * @description Returns 10 newest music from user profile 
 * @maintainer kranack
 * @update 2014-07-18
-* @use1(u="username")
+* @use1(u="username/id")
 *
 */
 class WhydBridge extends BridgeAbstract{
@@ -62,4 +62,5 @@ class WhydBridge extends BridgeAbstract{
 		return 600; // 10 minutes
 	}
 }
+
 
