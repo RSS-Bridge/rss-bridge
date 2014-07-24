@@ -60,8 +60,3 @@ class MondeDiploBridge extends BridgeAbstract{
         return 21600; // 6 hours
     }
 }
-        
-<<<<<<< HEAD
-=======
-
->>>>>>> bf2303ead8b6c8aa01a3e1c58ddd27cbc4fc2d71
