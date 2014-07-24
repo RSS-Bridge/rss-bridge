@@ -18,6 +18,7 @@ class AtomFormat extends FormatAbstract{
         $extraInfos = $this->getExtraInfos();
         $title = htmlspecialchars($extraInfos['name']);
         $uri = htmlspecialchars($extraInfos['uri']);
+        $icon = 'http://g.etfv.co/'. $uri .'?icon.jpg';
 
         $entries = '';
         foreach($this->getDatas() as $data){
@@ -64,6 +65,8 @@ $feedTimestamp = date(DATE_ATOM, time());
 
     <title type="text">{$title}</title>
     <id>http{$https}://{$httpHost}{$httpInfo}/</id>
+    <icon>{$icon}</icon>
+    <logo>{$icon}</logo>
     <updated>{$feedTimestamp}</updated>
     <link rel="alternate" type="text/html" href="{$uri}" />
     <link rel="self" href="http{$https}://{$httpHost}{$serverRequestUri}" />
