@@ -45,3 +45,4 @@ class ScoopItBridge extends BridgeAbstract{
         return 21600; // 6 hours
     }
 }
+
