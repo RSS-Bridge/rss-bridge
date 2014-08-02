@@ -5,6 +5,7 @@
 *
 * @name GuruMed
 * @description Returns the 5 newest posts from Gurumed (full text)
+* @homepage http://www.gurumed.org
 *@maintainer qwertygc
 */
 class GuruMedBridge extends BridgeAbstract{

@@ -5,7 +5,9 @@
 *
 * @name Futurasciences
 * @description Returns the 5 newest posts from FS (full text)
+* @homepage http://www.futura-sciences.com
 *@maintainer qwertygc
+
 */
 class FSBridge extends BridgeAbstract{
 
