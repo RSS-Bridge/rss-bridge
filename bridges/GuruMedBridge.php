@@ -4,6 +4,7 @@
 * Returns the 10 newest posts from http://www.gurumed.org (full text)
 *
 * @name GuruMed
+* @homepage http://www.gurumed.org
 * @description Returns the 20 newest posts from Gurumed (full text)
 *@maintainer qwertygc
 */
