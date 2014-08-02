@@ -5,6 +5,7 @@
 *
 * @name Opentheory
 * @description Returns the 20 newest posts from OpenTheory (full text)
+* @homepage http://open1theory.com
 *@maintainer qwertygc
 */
 class OpenTheoryBridge extends BridgeAbstract{
