@@ -7,6 +7,7 @@
 * @maintainer corenting
 */
 class ProjectMGameBridge extends BridgeAbstract{
+
   public function collectData(array $param){
     $html = '';
     $html = file_get_html('http://projectmgame.com/en/') or $this->returnError('Error while downloading the Project M homepage', 404);
@@ -18,17 +19,12 @@ class ProjectMGameBridge extends BridgeAbstract{
 
       $p_list = $article->find('section p');
       $content = '';
-      foreach($p_list as $p)
-      {
-        $content .= $p->innertext;
-      }
+      foreach($p_list as $p) $content .= $p->innertext;
       $item->content = $content;
 
       // get publication date
       $str_date = $article->find('section div.info_block a',0)->innertext;
-      $timestamp = strtotime($str_date);
-      $item->timestamp = $timestamp;
-
+      $item->timestamp = strtotime($str_date);
       $this->items[] = $item;
     }
   }
@@ -42,6 +38,6 @@ class ProjectMGameBridge extends BridgeAbstract{
   }
 
   public function getCacheDuration(){
-    return 10800;
+    return 10800; //3 hours
   }
 }
