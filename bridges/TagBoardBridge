@@ -3,7 +3,7 @@
 * RssBridgeTagBoard
 * Search TagBoard for most recent pages regarding a specific topic.
 * Returns the most recent links in results, sorting by date (most recent first).
-* 2014-06-13
+* 2014-09-10
 *
 * @name TagBoard
 * @homepage http://www.TagBoard.com
