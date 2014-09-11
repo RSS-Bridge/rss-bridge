@@ -44,7 +44,7 @@ class TagBoardBridge extends BridgeAbstract{
     }
 
     public function getCacheDuration(){
-        return 0; // 6 hours 21600
+        return 21600; // 6 hours
     }
 }
 							
