@@ -2,14 +2,14 @@
 /**
 *
 * @name Allo Cine : Faux Raccord
-* @homepage http://www.allocine.fr/video/programme-12284/saison-22907/
+* @homepage http://www.allocine.fr/video/programme-12284/saison-24580/
 * @description Allo Cine : Faux Raccord
 * @update 07/11/2013
 * initial maintainer: superbaillot.net
 */
 class AllocineFRBridge extends BridgeAbstract{
 
-    private $_URL = "http://www.allocine.fr/video/programme-12284/saison-22907/";
+    private $_URL = "http://www.allocine.fr/video/programme-12284/saison-24580/";
     private $_NOM = "Faux Raccord";
     
     public function collectData(array $param){
