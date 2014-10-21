@@ -22,10 +22,10 @@ class AtomFormat extends FormatAbstract{
 
         $entries = '';
         foreach($this->getDatas() as $data){
-            $entryName = is_null($data->name) ? $title : $data->name;
-            $entryAuthor = is_null($data->author) ? $uri : $data->author;
-            $entryTitle = is_null($data->title) ? '' : $data->title;
-            $entryUri = is_null($data->uri) ? '' : $data->uri;
+            $entryName = htmlspecialchars(is_null($data->name) ? $title : $data->name);
+            $entryAuthor = htmlspecialchars(is_null($data->author) ? $uri : $data->author);
+            $entryTitle = htmlspecialchars(is_null($data->title) ? '' : $data->title);
+            $entryUri = htmlspecialchars(is_null($data->uri) ? '' : $data->uri);
             $entryTimestamp = is_null($data->timestamp) ? '' : date(DATE_ATOM, $data->timestamp);
             // We prevent content from closing the CDATA too early.
             $entryContent = is_null($data->content) ? '' : '<![CDATA[' . $this->sanitizeHtml(str_replace(']]>','',$data->content)) . ']]>';
