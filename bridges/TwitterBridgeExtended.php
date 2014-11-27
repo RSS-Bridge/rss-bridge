@@ -16,10 +16,10 @@ class TwitterBridgeExtended extends BridgeAbstract{
 	public function collectData(array $param){
 		$html = ''; 
 		if (isset($param['q'])) {   /* keyword search mode */
-			$html = file_get_html('http://twitter.com/search/realtime?q='.urlencode($param['q']).'+include:retweets&src=typd') or $this->returnError('No results for this query.', 404);
+			$html = file_get_html('https://twitter.com/search/realtime?q='.urlencode($param['q']).'+include:retweets&src=typd') or $this->returnError('No results for this query.', 404);
 		}
 		elseif (isset($param['u'])) {   /* user timeline mode */
-			$html = file_get_html('http://twitter.com/'.urlencode($param['u']).'/with_replies') or $this->returnError('Requested username can\'t be found.', 404);
+			$html = file_get_html('https://twitter.com/'.urlencode($param['u']).'/with_replies') or $this->returnError('Requested username can\'t be found.', 404);
 		}
 		else {
 			$this->returnError('You must specify a keyword (?q=...) or a Twitter username (?u=...).', 400);
@@ -56,7 +56,7 @@ class TwitterBridgeExtended extends BridgeAbstract{
 			}
 
 			// get tweet text
-			$item->content = '<a href="https://twitter.com/'.$item->username.'"><img align="top" alt="avatar" src="'.$item->avatar.'" />'.$item->username.'</a> '.$item->fullname.'<br/><blockquote>'.str_replace('href="/', 'href="https://twitter.com/', $tweet->find('p.js-tweet-text', 0)->innertext).'</blockquote>';
+			$item->content = '<a href="https://twitter.com/'.$item->username.'"><img style="align:top;width:75px;" alt="avatar" src="'.$item->avatar.'" />'.$item->username.'</a> '.$item->fullname.'<br/><blockquote>'.str_replace('href="/', 'href="https://twitter.com/', $tweet->find('p.js-tweet-text', 0)->innertext).'</blockquote>';
 			// generate the title
 			$item->title = $item->fullname . ' (@'. $item->username . ') | ' . $item->content_simple;
 			// put out
