@@ -29,7 +29,9 @@ class ThePirateBayBridge extends BridgeAbstract{
 			$item->id = $item->uri;
 			$item->timestamp = time();
 			$item->title = $element->find('a.detLink',0)->plaintext;
-			$item->content = $element->find('font',0)->plaintext.'<br><a href="'.$element->find('a',3)->href.'">download</a>';
+			$item->seeders = (int)$element->find('td',3)->plaintext;
+			$item->leechers = (int)$element->find('td',4)->plaintext;
+			$item->content = $element->find('font',0)->plaintext.'<br>seeders: '.$item->seeders.' | leechers: '.$item->leechers.'<br><a href="'.$element->find('a',3)->href.'">download</a>';
 			if(!empty($item->title))
 				$this->items[] = $item;
 		}
