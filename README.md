@@ -23,6 +23,7 @@ Supported sites/pages (main)
  * `WikipediaFRLatest`: highlighted articles from Wikipedia in French
  * `WikipediaEOLatest`: highlighted articles from Wikipedia in Esperanto
  * `Bandcamp` : Returns last release from [bandcamp](https://bandcamp.com/) for a tag
+ * `ThePirateBay` : Returns the newest indexed torrents from [The Pirate Bay](https://thepiratebay.se/) with keywords
 
 Plus [many other bridges](bridges/) to enable, thanks to the community
 
