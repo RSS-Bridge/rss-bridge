@@ -9,6 +9,7 @@
 * @description Bridge for giphy.com
 * @maintainer kraoc
 * @use1(s="search tag")
+* @use2(n="max number of returned items")
 */
 
 define(GIPHY_LIMIT, 10);
