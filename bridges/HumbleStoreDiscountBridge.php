@@ -14,7 +14,7 @@ class HumbleStoreDiscountBridge extends BridgeAbstract{
 
     public function collectData(array $param){
 
-        $result = file_get_html('https://www.humblebundle.com/store/api?request=2&page_size=20&sort=discount&page=0')
+        $result = file_get_html('https://www.humblebundle.com/store/api/humblebundle?request=2&page_size=20&sort=discount&page=0')
                 or $this->returnError('Could not request the Humble Store.', 404);
         $string = json_decode($result, true);
         $items = $string['results'];
