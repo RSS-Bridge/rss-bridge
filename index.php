@@ -38,7 +38,6 @@ $whitelist_default = array(
 	"OpenClassroomsBridge",
 	"PinterestBridge",
 	"ScmbBridge",
-	"ThePirateBayBridge",
 	"TwitterBridge",
 	"WikipediaENBridge",
 	"WikipediaEOBridge",
