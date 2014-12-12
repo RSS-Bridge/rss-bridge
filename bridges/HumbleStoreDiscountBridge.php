@@ -26,6 +26,7 @@ class HumbleStoreDiscountBridge extends BridgeAbstract{
                 $new_price = $value['current_price'][0] . ' ' . $value['current_price'][1];
                 $full_price = $value['full_price'][0] . ' ' . $value['full_price'][1];
                 $product_name = $value['human_name'];
+		$sale_end = (int)$value['sale_end'];
                 $product_uri = $store_link . $value['machine_name'];
                 $platforms = str_replace('\'', '', implode("','", $value['platforms']));
                 $delivery_methods = str_replace('\'', '', implode("','", $value['delivery_methods']));
@@ -39,6 +40,7 @@ class HumbleStoreDiscountBridge extends BridgeAbstract{
                 $item = new \Item();
                 $item->title = $product_name . ' - ' . $new_price;
                 $item->uri = $product_uri;
+		$item->timestamp = $sale_end - 10*24*3600; // just a hack, stamping game as 10 days before sales end (better than no timestamp)
                 $item->content = $content;
                 $this->items[] = $item;
                 $limit++;
