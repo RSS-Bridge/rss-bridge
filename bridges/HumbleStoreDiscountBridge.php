@@ -33,7 +33,7 @@ class HumbleStoreDiscountBridge extends BridgeAbstract{
                 $thumbnail = 'https://www.humblebundle.com' . $value['storefront_featured_image_small'];
 
                 $content = '<img src="' . $thumbnail . '" alt="' . $value['storefront_featured_image_small'] . '"><br/><br/><b>' . $product_name
-                    . '</b><br/><br/><b>Current price:</b> ' . $new_price . '<br/><b>Full price:</b> ' . $full_price
+                    . '</b><br/><br/><b>Current price:</b> ' . $new_price . '<br/><b>Full price:</b> ' . $full_price .'<br/><b>Sale ends:</b> '. date('d M Y', $sale_end)
                     . '<br/><b>Developer:</b> ' . $value['developer_name'] . '<br/><b>Delivery methods:</b> ' . $delivery_methods
                     . '<br/><b>Platforms:</b> ' . $platforms . '<br/>' . $value['description'];
 
