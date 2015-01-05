@@ -2,9 +2,12 @@
 /**
  * RssBridgePinterest
  * Returns the newest photos on a board
+* 2014-05-25
  *
  * @name Pinterest Bridge
+* @homepage http://www.pinterest.com/
  * @description Returns the newest images on a board
+* @maintainer pauder
  * @use1(u="username",b="board")
  * @use2(q="keyword")
  */
@@ -16,7 +19,18 @@ class PinterestBridge extends BridgeAbstract{
     
     public function collectData(array $param){
         $html = '';
-        if (isset($param['u']) && isset($param['b'])) {
+        if (isset($param['u']) || isset($param['b'])) {
+        
+            if (empty($param['u']))
+            {
+                $this->returnError('You must specify a Pinterest username (?u=...).', 400);
+            }
+
+            if (empty($param['b']))
+            {
+                $this->returnError('You must specify a Pinterest board for this username (?b=...).', 400);
+            }
+            
             $this->username = $param['u'];
             $this->board = $param['b'];
             $html = file_get_html($this->getURI().'/'.urlencode($this->username).'/'.urlencode($this->board)) or $this->returnError('Could not request Pinterest.', 404);

@@ -18,13 +18,14 @@ class AtomFormat extends FormatAbstract{
         $extraInfos = $this->getExtraInfos();
         $title = htmlspecialchars($extraInfos['name']);
         $uri = htmlspecialchars($extraInfos['uri']);
+        $icon = 'http://g.etfv.co/'. $uri .'?icon.jpg';
 
         $entries = '';
         foreach($this->getDatas() as $data){
-            $entryName = is_null($data->name) ? $title : $data->name;
-            $entryAuthor = is_null($data->author) ? $uri : $data->author;
-            $entryTitle = is_null($data->title) ? '' : $data->title;
-            $entryUri = is_null($data->uri) ? '' : $data->uri;
+            $entryName = strip_tags(is_null($data->name) ? $title : $data->name);
+            $entryAuthor = strip_tags(is_null($data->author) ? $uri : $data->author);
+            $entryTitle = strip_tags(is_null($data->title) ? '' : $data->title);
+            $entryUri = htmlspecialchars(is_null($data->uri) ? '' : $data->uri);
             $entryTimestamp = is_null($data->timestamp) ? '' : date(DATE_ATOM, $data->timestamp);
             // We prevent content from closing the CDATA too early.
             $entryContent = is_null($data->content) ? '' : '<![CDATA[' . $this->sanitizeHtml(str_replace(']]>','',$data->content)) . ']]>';
@@ -53,6 +54,10 @@ EOD;
         - <content type="html"> : RFC look with xhtml, keep this in spite of ?
         */
 
+// ####  TEMPORARY FIX ###
+$feedTimestamp = date(DATE_ATOM, time());
+//  ################ 
+
         /* Data are prepared, now let's begin the "MAGIE !!!" */
         $toReturn  = '<?xml version="1.0" encoding="UTF-8"?>';
         $toReturn .= <<<EOD
@@ -60,7 +65,9 @@ EOD;
 
     <title type="text">{$title}</title>
     <id>http{$https}://{$httpHost}{$httpInfo}/</id>
-    <updated></updated>
+    <icon>{$icon}</icon>
+    <logo>{$icon}</logo>
+    <updated>{$feedTimestamp}</updated>
     <link rel="alternate" type="text/html" href="{$uri}" />
     <link rel="self" href="http{$https}://{$httpHost}{$serverRequestUri}" />
 {$entries}

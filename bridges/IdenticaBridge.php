@@ -1,9 +1,12 @@
 <?php
 /**
 * RssBridgeIdentica 
+* 2014-05-25
 *
 * @name Identica Bridge
+* @homepage https://identi.ca/
 * @description Returns user timelines
+* @maintainer mitsukarenai
 * @use1(u="username")
 */
 class IdenticaBridge extends BridgeAbstract{
