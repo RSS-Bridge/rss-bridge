@@ -68,13 +68,9 @@ class PinterestBridge extends BridgeAbstract{
         		
         		$item->content .= '<br /><img align="left" style="margin: 2px 4px;" src="'.htmlentities($item->avatar).'" /> <strong>'.$item->username.'</strong>';
         		$item->content .= '<br />'.$item->fullname;
-        	} else {
-        	
-        		$credit = $div->find('a.creditItem',0);
-        		$item->content .= '<br />'.$credit->innertext;
         	}
         	
-        	$item->title = basename($img->getAttribute('alt'));
+        	$item->title = $img->getAttribute('alt');
         	
         	//$item->timestamp = $media->created_time;
         	$this->items[] = $item;
