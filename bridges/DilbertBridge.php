@@ -4,7 +4,7 @@
 * @name Dilbert Daily Strip
 * @homepage http://dilbert.com/strips/
 * @description The Unofficial Dilbert Daily Comic Strip
-* @update 16/10/2013
+* @update 30/01/2015
 * initial maintainer: superbaillot.net
 */
 class DilbertBridge extends BridgeAbstract{
