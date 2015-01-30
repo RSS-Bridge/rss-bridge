@@ -6,6 +6,7 @@
 * @description The Unofficial Dilbert Daily Comic Strip
 * @update 30/01/2015
 * initial maintainer: superbaillot.net
+* @maintainer kranack
 */
 class DilbertBridge extends BridgeAbstract{
 
