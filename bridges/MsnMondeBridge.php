@@ -1,43 +1,36 @@
 <?php
 /**
-* RssBridgeMsnMonde 
+* RssBridgeMsnMonde
 * Returns the 10 newest posts from MSN Actualités (full text)
 *
 * @name MSN Actu Monde
-* @homepage http://news.fr.msn.com/m6-actualite/monde/
+* @homepage http://www.msn.com/fr-fr/actualite/monde
 * @description Returns the 10 newest posts from MSN Actualités (full text)
-* @maintainer pit-fgfjiudghdf 
+* @maintainer pit-fgfjiudghdf
 * @update 2014-05-26
 */
 class MsnMondeBridge extends BridgeAbstract{
 
     public function collectData(array $param){
 
-    function MsnMondeExtractContent($url) {
-        $html2 = file_get_html($url);
-        $html2->find('div[id=m6_diaponews_placeholder]', 0)->outertext=''; //Supression de la partie "et aussi"
-        $text = $html2->find('div[class=svsubtorabs]', 0)->innertext; // ajout du resume
-        $text .= $html2->find('div[id=page1]', 0)->innertext;   // article
-        $text = preg_replace('/<p><strong>Lire aussi.*/i','',$text); //Supression de la partie "Lire aussi"
-
-        return $text;
+    function MsnMondeExtractContent($url, &$item) {
+      $html2 = file_get_html($url);
+      $item->content = $html2->find('#content', 0)->find('article', 0)->find('section', 0)->plaintext;
+      $item->timestamp = strtotime($html2->find('.authorinfo-txt', 0)->find('time', 0)->datetime);
     }
 
-        $html = file_get_html('http://news.fr.msn.com/m6-actualite/RSS/News_RSS_Monde.aspx') or $this->returnError('Could not request MsnMonde.', 404);
-        $limit = 0;
-
-        foreach($html->find('item') as $element) {
-         if($limit < 10) {
+      $html = file_get_html('http://www.msn.com/fr-fr/actualite/monde') or $this->returnError('Could not request MsnMonde.', 404);
+      $limit = 0;
+      foreach($html->find('.smalla') as $article) {
+       if($limit < 10) {
          $item = new \Item();
-         $item->title = $element->find('title', 0)->innertext;
-         $item->uri = $element->find('guid', 0)->plaintext;
-         $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-         $item->content = MsnMondeExtractContent($item->uri);
+         $item->title = utf8_decode($article->find('h4', 0)->innertext);
+         $item->uri = "http://www.msn.com" . utf8_decode($article->find('a', 0)->href);
+         MsnMondeExtractContent($item->uri, $item);
          $this->items[] = $item;
          $limit++;
-         }
-        }
-
+       }
+      }
     }
 
     public function getName(){
@@ -45,11 +38,10 @@ class MsnMondeBridge extends BridgeAbstract{
     }
 
     public function getURI(){
-        return 'http://news.fr.msn.com/m6-actualite/monde/';
+        return 'http://www.msn.com/fr-fr/actualite/monde';
     }
 
     public function getCacheDuration(){
         return 3600; // 1 hour
     }
 }
-
