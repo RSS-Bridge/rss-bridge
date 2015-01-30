@@ -5,6 +5,8 @@
 *
 * @name Rue89
 * @description Returns the 5 newest posts from Rue89 (full text)
+* @update 2015-01-30
+* @maintainer pit-fgfjiudghdf
 */
 class Rue89Bridge extends BridgeAbstract{
     public function collectData(array $param){
@@ -16,11 +18,17 @@ class Rue89Bridge extends BridgeAbstract{
     function Rue89ExtractContent($url) {
         $html2 = file_get_html($url);
         //$text = $html2->find('div[class=text]', 0)->innertext;
-        $text = $html2->find('div article', 0)->innertext;
-        //$text = $html2->find('div.article', 0)->innertext;
-        //$text = $html2->find('div[id=main]', 0)->innertext;
-        //$text = $html2->find('div[id=article]', 0)->innertext;
-        //$text = preg_replace('/(<div class="gallery-thumbnail">.+?)+(<\/div>)/i','',$text);
+
+	foreach($html2->find('img') as $image) {
+		$image->src = $image->getAttribute('data-src');
+	}
+        $text = $html2->find('div.content', 0)->innertext;
+
+
+	$text = str_replace('href="/', 'href="http://rue89.nouvelobs.com/', $text);
+	$text = str_replace('src="/', 'src="http://rue89.nouvelobs.com/', $text);
+	$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
+	$text = strip_tags($text, '<h1><h2><strong><p><b><a><blockquote><img><em><ul><ol>');
         return $text;
     }
         $html = file_get_html('http://rue89.feedsportal.com/c/33822/f/608948/index.rss') or $this->returnError('Could not request Rue89.', 404);
@@ -29,7 +37,7 @@ class Rue89Bridge extends BridgeAbstract{
          if($limit < 5) {
          $item = new \Item();
          $item->title = Rue89StripCDATA($element->find('title', 0)->innertext);
-         $item->uri = Rue89StripCDATA($element->find('guid', 0)->plaintext);
+         $item->uri = str_replace('#commentaires', '', Rue89StripCDATA($element->find('comments', 0)->plaintext));
          $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
          $item->content = Rue89ExtractContent($item->uri);
          $this->items[] = $item;
