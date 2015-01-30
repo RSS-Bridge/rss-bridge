@@ -6,8 +6,8 @@
 * @name MSN Actu Monde
 * @homepage http://www.msn.com/fr-fr/actualite/monde
 * @description Returns the 10 newest posts from MSN Actualités (full text)
-* @maintainer pit-fgfjiudghdf
-* @update 2014-05-26
+* @maintainer kranack
+* @update 2015-01-30
 */
 class MsnMondeBridge extends BridgeAbstract{
 
