@@ -71,7 +71,6 @@ class ParuVenduImmoBridge extends BridgeAbstract
     }
 
     public function getCacheDuration(){
-        return 0;
-        return 3600; // 1 hour
+        return 10800; // 3 hours
     }
 }
