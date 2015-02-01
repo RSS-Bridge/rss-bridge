@@ -19,7 +19,9 @@ class ParuVenduImmoBridge extends BridgeAbstract
     {
         $html = '';
         $num = 20;
-        $link = $this->getURI().'/immobilier/annonceimmofo/liste/listeAnnonces?tt=1&tbMai=1&tbVil=1&tbCha=1&tbPro=1&tbHot=1&tbMou=1&tbFer=1';
+        $appartment = '&tbApp=1&tbDup=1&tbChb=1&tbLof=1&tbAtl=1&tbPla=1';
+        $maison = '&tbMai=1&tbVil=1&tbCha=1&tbPro=1&tbHot=1&tbMou=1&tbFer=1';
+        $link = $this->getURI().'/immobilier/annonceimmofo/liste/listeAnnonces?tt=1'.$appartment.$maison;
         
         if (isset($param['minarea'])) {
             $this->request .= ' '.$param['minarea'].' m2';
