@@ -9,7 +9,7 @@
 * @homepage http://www.paruvendu.fr/immobilier/
 * @description Returns the N most recent documents.
 * @maintainer polo2ro
-* @use1(minarea="Min area",maxprice="Max price",pa="Country code",lo="department number")
+* @use1(minarea="Min area",maxprice="Max price",pa="Country code",lo="department numbers, comma-separated")
 */
 class ParuVenduImmoBridge extends BridgeAbstract
 {
@@ -43,6 +43,10 @@ class ParuVenduImmoBridge extends BridgeAbstract
 
 
         foreach($html->find('div.annonce a') as $element) {
+            
+            if (!$element->title) {
+                continue;
+            }
             
             $img ='';
             foreach($element->find('span.img img') as $img) {
