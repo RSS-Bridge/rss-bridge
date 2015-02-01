@@ -5,7 +5,7 @@
 * Returns the N most recent documents, sorting by date (most recent first).
 * 2014-05-25
 *
-* @name ParuVenduImmoBridge
+* @name Paru Vendu Immobilier
 * @homepage http://www.paruvendu.fr/immobilier/
 * @description Returns the N most recent documents.
 * @maintainer polo2ro
@@ -13,6 +13,7 @@
 */
 class ParuVenduImmoBridge extends BridgeAbstract
 {
+    private $request = '';
 
     public function collectData(array $param)
     {
@@ -21,6 +22,7 @@ class ParuVenduImmoBridge extends BridgeAbstract
         $link = $this->getURI().'/immobilier/annonceimmofo/liste/listeAnnonces?tt=1&tbMai=1&tbVil=1&tbCha=1&tbPro=1&tbHot=1&tbMou=1&tbFer=1';
         
         if (isset($param['minarea'])) {
+            $this->request .= ' '.$param['minarea'].' m2';
             $link .= '&sur0='.urlencode($param['minarea']);
         }
 
@@ -33,6 +35,7 @@ class ParuVenduImmoBridge extends BridgeAbstract
         }
         
         if (isset($param['lo'])) {
+            $this->request .= ' In: '.$param['lo'];
             $link .= '&lo='.urlencode($param['lo']);
         }
 
@@ -63,7 +66,7 @@ class ParuVenduImmoBridge extends BridgeAbstract
     }
 
     public function getName(){
-        return 'ParuVenduImmo';
+        return 'Paru Vendu Immobilier'.$this->request;
     }
 
     public function getURI(){
