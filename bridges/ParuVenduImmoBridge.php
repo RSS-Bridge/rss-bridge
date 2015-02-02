@@ -2,14 +2,13 @@
 /**
 * RssBridge Paru Vendu Immo
 * Retrieve lastest documents from http://www.paruvendu.fr/immobilier/.
-* Returns the N most recent documents, sorting by date (most recent first).
-* 2014-05-25
 *
 * @name Paru Vendu Immobilier
 * @homepage http://www.paruvendu.fr/immobilier/
-* @description Returns the N most recent documents.
+* @description Returns the ads from the first page of search result.
 * @maintainer polo2ro
-* @use1(minarea="Min area",maxprice="Max price",pa="Country code",lo="department numbers, comma-separated")
+* @update 2015-02-02
+* @use1(minarea="Min surface m²",maxprice="Max price",pa="Country code (ex: FR)",lo="department numbers or postal codes, comma-separated")
 */
 class ParuVenduImmoBridge extends BridgeAbstract
 {
