@@ -49,6 +49,7 @@ class FourchanBridge extends BridgeAbstract{
 		$item->content = (!empty($item->image) ? '<a href="'.$item->image.'"><img alt="'.$item->id.'" src="'.$item->imageThumb.'" /></a><br>' : '') . '<span id="'.$item->id.'">'.$element->find('.postMessage', 0)->innertext.'</span>';
 		$this->items[] = $item;
 	}
+	$this->items = array_reverse($this->items);
   }
     
     public function getName(){
