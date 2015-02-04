@@ -4,7 +4,7 @@
 * @name The Coding Love
 * @homepage http://thecodinglove.com/
 * @description The Coding Love
-* @update 30/01/2014
+* @update 04/02/2015
 * initial maintainer: superbaillot.net
 */
 class TheCodingLoveBridge extends BridgeAbstract{
@@ -20,8 +20,15 @@ class TheCodingLoveBridge extends BridgeAbstract{
             $url = $temp->href;
             
             $temp = $element->find('div.bodytype', 0);
-            $content = $temp->innertext;
             
+            // retrieve .gif instead of static .jpg
+            $images = $temp->find('p.e img');
+            foreach($images as $image){
+              $img_src = str_replace(".jpg",".gif",$image->src);
+              $image->src = $img_src;
+            }
+            $content = $temp->innertext;
+
             $auteur = $temp->find('.c1 em', 0);
             $pos = strpos($auteur->innertext, "by");
             
