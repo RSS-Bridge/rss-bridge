@@ -29,7 +29,7 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
             }
             $content = $temp->innertext;
             
-            $auteur = $temp->find('.c1 em', 0);
+            $auteur = $temp->find('i', 0);
             $pos = strpos($auteur->innertext, "by");
             
             if($pos > 0)
