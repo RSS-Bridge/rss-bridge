@@ -4,7 +4,7 @@
 * @name Les Joies Du Code
 * @homepage http://lesjoiesducode.fr/
 * @description LesJoiesDuCode
-* @update 30/01/2014
+* @update 04/02/2015
 * initial maintainer: superbaillot.net
 */
 class LesJoiesDuCodeBridge extends BridgeAbstract{
@@ -20,9 +20,16 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
             $url = $temp->href;
             
             $temp = $element->find('div.bodytype', 0);
+
+            // retrieve .gif instead of static .jpg
+            $images = $temp->find('p.e img');
+            foreach($images as $image){
+              $img_src = str_replace(".jpg",".gif",$image->src);
+              $image->src = $img_src;
+            }
             $content = $temp->innertext;
             
-            $auteur = $temp->find('.c1 em', 0);
+            $auteur = $temp->find('i', 0);
             $pos = strpos($auteur->innertext, "by");
             
             if($pos > 0)
