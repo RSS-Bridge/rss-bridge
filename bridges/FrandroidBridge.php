@@ -7,7 +7,7 @@
  * @homepage http://www.frandroid.com/
  * @description Returns the RSS feed from Frandroid (full text articles)
  * @maintainer Daiyousei
- * @update 2015-03-25 
+ * @update 2015-03-05 
  */
 class FrandroidBridge extends BridgeAbstract
 {
