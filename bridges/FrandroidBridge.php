@@ -1,13 +1,13 @@
 <?php
 /**
  * RssBridgeFrandroid
- * Returns the 5 newest posts from http://www.frandroid.com (full text)
- * 2014-05-25
+ * Returns the RSS feed from Frandroid (full text articles)
  *
  * @name Frandroid
  * @homepage http://www.frandroid.com/
- * @description Returns the 5 newest posts from Frandroid (full text)
- * @maintainer cjohnson
+ * @description Returns the RSS feed from Frandroid (full text articles)
+ * @maintainer Daiyousei
+ * @update 2015-03-25 
  */
 class FrandroidBridge extends BridgeAbstract
 {
