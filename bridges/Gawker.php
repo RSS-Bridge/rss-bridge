@@ -2,44 +2,36 @@
 /**
 *
 * @name Gawker media
-* @description A bridge allowing access to any of the numerous Gawker media blogs (Lifehacker, deadspin, Kotaku, Jezebel, and so on
+* @description A bridge allowing access to any of the numerous Gawker media blogs (Lifehacker, deadspin, Kotaku, Jezebel, and so on. Notice you have to give its id to find the RSS stream in gawker maze
 * @update 27/03/2014
-* @use1(site="site")
+* @use1(site="site id to put in uri between feeds.gawker.com and /full .. which is obviously not full AT ALL")
 */
-class Gawker extends HttpCachingBridgeAbstract{
-	private $uri;
-	private $name;
+require_once 'bridges/RssExpander.php';
+define("RSS_PREFIX", "http://feeds.gawker.com/");
+define("RSS_SUFFIX", "/full");
+class Gawker extends RssExpander{
+    
+    private function toURI($name) {
+        return RSS_PREFIX.$name.RSS_SUFFIX;
+    }
 
     public function collectData(array $param){
         if (empty($param['site'])) {
 			trigger_error("If no site is provided, nothing is gonna happen", E_USER_ERROR);
         } else {
-			$this->uri = $param['site'];
+            $this->name = $param['site'];
+			$param['url'] = $this->toURI(strtolower($param['site']));
         }
-        $html = file_get_html($this->getURI()) or $this->returnError('Could not request '.$this->getURI(), 404);
-        $this->message("loaded HTML from ".$this->getURI());
-        // customize name 
-        $this->name = $html->find('title', 0)->innertext;
-        foreach($html->find('.main-column') as $content) {
-            $this->parseContent($content);
-       }
+//        $this->message("loading feed from ".$this->getURI());
+        parent::collectData($param);
     }
-
-	public function parseContent($content) {
-		foreach($content->find('.headline') as $headline) {
-			foreach($headline->find('a') as $articleLink) {
-                // notice we only use article from this gawker site (as gawker like to see us visit other sites)
-                if(strpos($articleLink->href, $this->getURI())>=0) {
-    				$this->parseLink($articleLink);
-                }
-			}
-		}
-	}
     
-    public function parseLink($infoLink) {
+    protected function parseRSSItem($newsItem) {
         $item = new Item();
-        $item->uri = $infoLink->href;
-        $item->title = $infoLink->innertext;
+        $item->uri = trim($newsItem->link);
+        $item->title = trim($newsItem->title);
+        $item->timestamp = $this->RSS_2_0_time_to_timestamp($newsItem);
+//        $this->message("///////////////////////////////////////////////////////////////////////////////////////\nprocessing item ".var_export($item, true)."\n\n\nbuilt from\n\n\n".var_export($newsItem, true));
         try {
             // now load that uri from cache
 //            $this->message("loading page ".$item->uri);
@@ -47,15 +39,15 @@ class Gawker extends HttpCachingBridgeAbstract{
             if(is_object($articlePage)) {
                 $content = $articlePage->find('.post-content', 0);
                 $this->defaultImageSrcTo($content, $this->getURI());
-                $item->content = $content->innertext;
-                // http://stackoverflow.com/q/22715928/15619
-                $publishtime = $articlePage->find('.publish-time', 0)->getAttribute("data-publishtime");
-                // don't know what I'm doing there, but http://www.epochconverter.com/programming/functions-php.php#epoch2date recommends it
-                $item->timestamp = $this->js_to_unix_timestamp($publishtime);
                 $vcard = $articlePage->find('.vcard', 0);
                 if(is_object($vcard)) {
-    				$item->name = $vcard->find('a', 0)->innertext;
+                    $authorLink = $vcard->find('a', 0);
+    				$item->name = $authorLink->innertext;
+                    // TODO use author link href to fill the feed info
                 }
+//                $this->message("item quite loaded : ".var_export($item, true));
+                // I set item content as last element, for easier var_export reading
+                $item->content = $content->innertext;
             } else {
                 throw new Exception("cache content for ".$item->uri." is NOT a Simple DOM parser object !");
             }
@@ -65,25 +57,6 @@ class Gawker extends HttpCachingBridgeAbstract{
             $this->remove_from_cache($item->url);
             $item->content = $e->getMessage();
         }
-        $this->items[] = $item;
-    }
-
-	function js_to_unix_timestamp($jsTimestamp){
-	  return $jsTimestamp/1000; 
-	}	
-
-    public function getName(){
-        return $this->name;
-    }
-
-    public function getURI(){
-        return $this->uri;
-    }
-
-    public function getCacheDuration(){
-        return 3600; // 1h
-    }
-    public function getDescription(){
-        return "Gawker press blog content.";
+        return $item;
     }
 }

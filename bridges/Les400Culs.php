@@ -5,59 +5,40 @@
 * @description La plan�te sexe vue par Agn�s Girard via rss-bridge
 * @update 20/02/2014
 */
+require_once 'bridges/RssExpander.php';
 define("SEXE", "http://sexes.blogs.liberation.fr");
-class Les400Culs extends HttpCachingBridgeAbstract{
+define("RSS", "http://sexes.blogs.liberation.fr/feeds/");
+/**
+ * As it seems that Les 400 culs currently offer a full feed, we won't change it content here.
+ * But I'm ready for the day where it will ... again ... provide some truncated content
+ */
+class Les400Culs extends RssExpander{
 
     public function collectData(array $param){
-        $html = file_get_html($this->getURI()) or $this->returnError('Could not request '.$this->getURI(), 404);
-
-        foreach($html->find('#alpha-inner') as $articles) {
-            foreach($articles->find('div.entry') as $article) {
-                $header = $article->find('h3.entry-header a', 0);
-                $content = $article->find('div.entry-content', 0);
-
-
-                $item = new Item();
-                $item->title = trim($header->innertext);
-                $item->uri = $header->href;
-                $item->name = "Agnès Girard";
-                // date is stored outside this node !
-                $dateHeader = $article->prev_sibling();
-                // http://stackoverflow.com/a/6239199/15619 (strtotime is typical amercian bullshit)
-                $item->timestamp = DateTime::createFromFormat('d/m/Y', $dateHeader->innertext)->getTimestamp();
-
-
-                $linkForMore = $content->find('p.entry-more-link a',0);
-                if($linkForMore==null) {
-                    $item->content = $content->innertext;
-                } else {
-                    $pageAddress = $linkForMore->href;
-                    $articlePage = str_get_html($this->get_cached($linkForMore->href));
-                    if($articlePage==null) {
-                        $item->content = $content->innertext."\n<p>".$linkForMore->outertext."</p>";
-                    } else {
-                        // TODO use some caching there !
-                        $fullContent = $articlePage->find('div.entry-content', 0);
-                        $item->content = $fullContent->innertext;
-                    }
-                }
-                $this->items[] = $item;
-            }
-       }
+        $param['url'] = RSS;
+        parent::collectData($param);
     }
+    
+    protected function parseRSSItem($newsItem) {
+        $item = new Item();
+        $item->title = trim($newsItem->title);
+//        $this->message("browsing item ".var_export($newsItem, true));
+        if(empty($newsItem->guid)) {
+            $item->uri = $newsItem->link;
+        } else {
+            $item->uri = $newsItem->guid;
+        }
+        // now load that uri from cache
+//        $this->message("now loading page ".$item->uri);
+//        $articlePage = str_get_html($this->get_cached($item->uri));
 
-    public function getName(){
-        return 'Les 400 Culs';
+//        $content = $articlePage->find('.post-container', 0);
+        $item->content = $newsItem->description;
+        $item->name = $newsItem->author;
+        $item->timestamp = $this->RSS_2_0_time_to_timestamp($newsItem);
+        return $item;
     }
-
-    public function getURI(){
-        return SEXE;
-    }
-
     public function getCacheDuration(){
         return 7200; // 2h hours
-    }
-    public function getDescription(){
-        return "La planète sexe, vue et racontée par Agnès Giard. Et par rss-bridge";
     }
 }
