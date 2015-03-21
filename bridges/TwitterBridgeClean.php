@@ -1,13 +1,13 @@
 <?php
 /**
-* RssBridgeTwitter 
+* RssBridgeTwitterClean
 * Based on https://github.com/mitsukarenai/twitterbridge-noapi
-* 2014-10-08
 *
 * @name Twitter Bridge Clean
 * @homepage http://twitter.com/
 * @description Returns user timelines without username in title or search results for keywords/hashtags (without using their API).
 * @maintainer vinzv
+* @update 2015-03-07
 * @use1(q="keyword or #hashtag")
 * @use2(u="username")
 */
