@@ -4,7 +4,10 @@
 * Returns the 5 newest posts from http://www.futura-sciences.com (full text)
 *
 * @name Futurasciences
-* @description Returns the 20 newest posts from FS (full text)
+* @description Returns the 5 newest posts from FS (full text)
+* @homepage http://www.futura-sciences.com
+*@maintainer qwertygc
+
 */
 class FSBridge extends BridgeAbstract{
 
@@ -22,13 +25,14 @@ class FSBridge extends BridgeAbstract{
     function FS_ExtractContent($url) {
 	$html2 = file_get_html($url);
 	$text = $html2->find('div.fiche-actualite', 0)->innertext;
+	$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
 	return $text;
     }
         $html = file_get_html('http://www.futura-sciences.com/rss/actualites.xml') or $this->returnError('Could not request Futura Sciences.', 404);
 	$limit = 0;
 
 	foreach($html->find('item') as $element) {
-	 if($limit < 20) {
+	 if($limit < 5) {
 	 $item = new \Item();
 	 $item->title = FS_StripCDATA($element->find('title', 0)->innertext);
 	 $item->uri = FS_StripCDATA($element->find('guid', 0)->plaintext);
@@ -50,7 +54,7 @@ class FSBridge extends BridgeAbstract{
     }
 
     public function getCacheDuration(){
-        // return 3600; // 1 hour
-        return 0; // 1 hour
+        return 3600; // 1 hour
+        // return 0; // 1 hour
     }
 }

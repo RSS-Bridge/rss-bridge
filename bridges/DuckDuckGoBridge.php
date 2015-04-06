@@ -3,16 +3,19 @@
 * RssBridgeDuckDuckGo
 * Search DuckDuckGo for most recent pages regarding a specific topic.
 * Returns the most recent links in results, sorting by date (most recent first).
+* 2014-05-25
 *
 * @name DuckDuckGo
+* @homepage https://duckduckgo.com/
 * @description Returns most recent results from DuckDuckGo.
+* @maintainer Astalaseven
 * @use1(u="keyword")
 */
 class DuckDuckGoBridge extends BridgeAbstract{
 
     public function collectData(array $param){
         $html = '';
-        $link = 'https://duckduckgo.com/html/?q='.$param[u].'+sort:date';
+        $link = 'http://duckduckgo.com/html/?q='.$param[u].'+sort:date';
 
         $html = file_get_html($link) or $this->returnError('Could not request DuckDuckGo.', 404);
 

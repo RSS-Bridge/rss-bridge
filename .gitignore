@@ -166,6 +166,11 @@ UpgradeLog*.htm
 App_Data/*.mdf
 App_Data/*.ldf
 
+#################
+## Other ide stuff
+#################
+.idea/*
+
 #############
 ## Windows detritus
 #############
@@ -219,3 +224,4 @@ pip-log.txt
 ## RSS-Bridge
 ##############
 /cache
+/whitelist.txt

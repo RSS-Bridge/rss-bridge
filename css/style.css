@@ -87,6 +87,10 @@ h2 {
     margin-bottom: 10px;
 }
 
+h2 a {
+    color:black;
+}
+
 form {
     margin-bottom: 10px;
 }
@@ -97,9 +101,13 @@ header,footer {
     padding: 20px;
 }
 
+header h2 {
+	margin-left:1em;
+}
+
 footer {
     text-align: center;
-    font-size: 60%;
+    font-size: 80%;
 }
 
 section {
@@ -118,6 +126,12 @@ section {
     position:relative;
     bottom: 5px;
     color: #555;
+}
+
+.maintainer {
+    font-size:60%;
+    float:right;
+    color: #777;
 }
 
 .placeholder {

@@ -3,16 +3,24 @@
 * RssBridgeOpenClassrooms
 * Retrieve lastest tutorials from OpenClassrooms.
 * Returns the most recent tutorials, sorting by date (most recent first).
+* 2014-05-25
 *
 * @name OpenClassrooms Bridge
+* @homepage http://fr.openclassrooms.com/
 * @description Returns latest tutorials from OpenClassrooms.
+* @maintainer sebsauvage
 * @use1(u="informatique or sciences")
 */
 class OpenClassroomsBridge extends BridgeAbstract{
 
     public function collectData(array $param){
+        if ($param['u']!='informatique' && $param['u']!='sciences')
+        {
+            $this->returnError('Error: You must chose "informatique" or "science".', 404);
+        }
+    
         $html = '';
-        $link = 'http://fr.openclassrooms.com/'.$param[u].'/cours?title=&sort=updatedAt+desc';
+        $link = 'http://fr.openclassrooms.com/'.$param['u'].'/cours?title=&sort=updatedAt+desc';
 
         $html = file_get_html($link) or $this->returnError('Could not request OpenClassrooms.', 404);
 

@@ -2,9 +2,12 @@
 /**
 * RssBridgeSeCoucherMoinsBete 
 * Returns the newest anecdotes
+* 2014-05-25
 *
 * @name Se Coucher Moins Bête Bridge
+* @homepage http://secouchermoinsbete.fr/
 * @description Returns the newest anecdotes.
+* @maintainer Astalaseven
 */
 class ScmbBridge extends BridgeAbstract{
     

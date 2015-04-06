@@ -2,9 +2,12 @@
 /**
  * RssBridgePinterest
  * Returns the newest photos on a board
+* 2014-05-25
  *
  * @name Pinterest Bridge
+* @homepage http://www.pinterest.com/
  * @description Returns the newest images on a board
+* @maintainer pauder
  * @use1(u="username",b="board")
  * @use2(q="keyword")
  */
@@ -16,7 +19,18 @@ class PinterestBridge extends BridgeAbstract{
     
     public function collectData(array $param){
         $html = '';
-        if (isset($param['u']) && isset($param['b'])) {
+        if (isset($param['u']) || isset($param['b'])) {
+        
+            if (empty($param['u']))
+            {
+                $this->returnError('You must specify a Pinterest username (?u=...).', 400);
+            }
+
+            if (empty($param['b']))
+            {
+                $this->returnError('You must specify a Pinterest board for this username (?b=...).', 400);
+            }
+            
             $this->username = $param['u'];
             $this->board = $param['b'];
             $html = file_get_html($this->getURI().'/'.urlencode($this->username).'/'.urlencode($this->board)) or $this->returnError('Could not request Pinterest.', 404);
@@ -39,7 +53,7 @@ class PinterestBridge extends BridgeAbstract{
         	
         	$item = new \Item();
         	$item->uri = $this->getURI().$a->getAttribute('href');
-        	$item->content = '<img src="' . htmlentities($img->getAttribute('src')) . '" alt="" />';
+        	$item->content = '<img src="' . htmlentities(str_replace('/236x/', '/736x/', $img->getAttribute('src'))) . '" alt="" />';
         	
         	
         	if (isset($this->query))
@@ -54,13 +68,9 @@ class PinterestBridge extends BridgeAbstract{
         		
         		$item->content .= '<br /><img align="left" style="margin: 2px 4px;" src="'.htmlentities($item->avatar).'" /> <strong>'.$item->username.'</strong>';
         		$item->content .= '<br />'.$item->fullname;
-        	} else {
-        	
-        		$credit = $div->find('a.creditItem',0);
-        		$item->content .= '<br />'.$credit->innertext;
         	}
         	
-        	$item->title = basename($img->getAttribute('alt'));
+        	$item->title = $img->getAttribute('alt');
         	
         	//$item->timestamp = $media->created_time;
         	$this->items[] = $item;
@@ -83,6 +93,6 @@ class PinterestBridge extends BridgeAbstract{
     }
 
     public function getCacheDuration(){
-        return 0; 
+        return 3600; 
     }
 }

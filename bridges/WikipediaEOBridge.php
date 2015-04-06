@@ -2,9 +2,12 @@
 /**
 * RssBridgeWikipediaEO
 * Retrieve latest highlighted articles from Wikipedia in Esperanto.
+* 2014-05-25
 *
 * @name Wikipedia EO "Artikolo de la semajno"
+* @homepage https://eo.wikipedia.org/
 * @description Returns the highlighted eo.wikipedia.org article.
+* @maintainer gsurrel
 */
 class WikipediaEOBridge extends BridgeAbstract{
 
