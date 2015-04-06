@@ -1,6 +1,6 @@
 <?php
 /**
-*
+* Unfortunatly, Sexactu do not provide a RSS stream, which prevents me from upgrading this to the mugnificent RssExpander framework
 * @name Sexactu
 * @description Sexactu via rss-bridge
 * @update 04/02/2014
