@@ -25,14 +25,20 @@ class LeBonCoinBridge extends BridgeAbstract{
         $html = file_get_html($link) or $this->returnError('Could not request LeBonCoin.', 404);
 
         $list = $html->find('.list-lbc', 0);
+        if($list === NULL) {
+            return;
+        }
         $tags = $list->find('a');
 
         foreach($tags as $element) {
                 $item = new \Item();
                 $item->uri = $element->href;
                 $title = $element->getAttribute('title');
+                $content_image = $element->find('div.image', 0)->find('img', 0);
 
-                $content = '<img src="' . $element->find('div.image', 0)->find('img', 0)->getAttribute('src') . '" alt="thumbnail">';
+                if($content_image !== NULL) {
+                        $content = '<img src="' . $element->find('div.image', 0)->find('img', 0)->getAttribute('src') . '" alt="thumbnail">';
+                }
                 $date = $element->find('div.date', 0)->find('div', 0) . $element->find('div.date', 0)->find('div', 1) . '<br/>';
                 $detailsList = $element->find('div.detail', 0);
 
