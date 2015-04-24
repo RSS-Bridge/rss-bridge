@@ -1,11 +1,8 @@
 <?php
 /**
-* 2014-05-26
-*
+* Unfortunatly, Sexactu do not provide a RSS stream, which prevents me from upgrading this to the mugnificent RssExpander framework
 * @name Sexactu
-* @homepage http://www.gqmagazine.fr/sexactu
-* @description Sexactu
-* @maintainer Riduidel
+* @description Sexactu via rss-bridge
 * @update 04/02/2014
 */
 define("GQ", "http://www.gqmagazine.fr");
@@ -69,7 +66,7 @@ $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July',
         return 7200; // 2h hours
     }
     public function getDescription(){
-        return "Sexactu";
+        return "Sexactu via rss-bridge";
     }
     
     public function correctCase($str) {
@@ -88,4 +85,3 @@ $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July',
         return $str;
     }
 }
-

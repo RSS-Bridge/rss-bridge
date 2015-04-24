@@ -88,9 +88,11 @@ try{
 
                     // Data retrieval
                     $bridge = Bridge::create($bridge);
-                    $bridge
-                        ->setCache($cache) // Comment this lign for avoid cache use
-                        ->setDatas($_REQUEST);
+                    if(isset($_REQUEST["disable_cache"])) {
+                    } else {
+                        $bridge->setCache($cache); // just add disable cache to your query to disable caching
+                    }
+                    $bridge->setDatas($_REQUEST);
 
                     // Data transformation
                     $format = Format::create($format);
