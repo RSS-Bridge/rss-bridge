@@ -1,4 +1,9 @@
 <?php
+
+function xml_encode($text) {
+	return htmlspecialchars($text, ENT_XML1);
+}
+
 /**
 * Atom
 * Documentation Source http://en.wikipedia.org/wiki/Atom_%28standard%29 and http://tools.ietf.org/html/rfc4287
@@ -13,20 +18,21 @@ class AtomFormat extends FormatAbstract{
         $httpHost = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
         $httpInfo = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
 
-        $serverRequestUri = htmlspecialchars($_SERVER['REQUEST_URI']);
+        $serverRequestUri = xml_encode($_SERVER['REQUEST_URI']);
 
         $extraInfos = $this->getExtraInfos();
-        $title = htmlspecialchars($extraInfos['name']);
-        $uri = htmlspecialchars($extraInfos['uri']);
-        $icon = 'http://g.etfv.co/'. $uri .'?icon.jpg';
+        $title = xml_encode($extraInfos['name']);
+        $uri = $extraInfos['uri'];
+        $icon = xml_encode('http://g.etfv.co/'. $uri .'?icon.jpg');
+        $uri = xml_encode($uri);
 
         $entries = '';
         foreach($this->getDatas() as $data){
-            $entryName = strip_tags(is_null($data->name) ? $title : $data->name);
-            $entryAuthor = strip_tags(is_null($data->author) ? $uri : $data->author);
-            $entryTitle = strip_tags(is_null($data->title) ? '' : $data->title);
-            $entryUri = htmlspecialchars(is_null($data->uri) ? '' : $data->uri);
-            $entryTimestamp = is_null($data->timestamp) ? '' : date(DATE_ATOM, $data->timestamp);
+            $entryName = is_null($data->name) ? $title : xml_encode($data->name);
+            $entryAuthor = is_null($data->author) ? $uri : xml_encode($data->author);
+            $entryTitle = is_null($data->title) ? '' : xml_encode($data->title);
+            $entryUri = is_null($data->uri) ? '' : xml_encode($data->uri);
+            $entryTimestamp = is_null($data->timestamp) ? '' : xml_encode(date(DATE_ATOM, $data->timestamp));
             // We prevent content from closing the CDATA too early.
             $entryContent = is_null($data->content) ? '' : '<![CDATA[' . $this->sanitizeHtml(str_replace(']]>','',$data->content)) . ']]>';
 
@@ -87,7 +93,7 @@ EOD;
 
     public function display(){
         $this
-            ->setContentType('application/atom+xml; charset=utf8')  // We force UTF-8 in ATOM output.
+            ->setContentType('application/atom+xml; charset=UTF-8')  // We force UTF-8 in ATOM output.
             ->callContentType();
 
         return parent::display();
