@@ -17,7 +17,7 @@ class Arte7frBridge extends BridgeAbstract{
    
         foreach($input_json['videos'] as $element) {
             $item = new \Item();
-            $item->uri = 'http://www.arte.tv'.$element['url'];
+            $item->uri = $element['url'];
             $item->postid = $item->uri;
 
 				$date = $element['airdate_long'];
