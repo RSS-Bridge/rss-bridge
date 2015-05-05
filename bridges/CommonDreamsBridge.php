@@ -22,13 +22,15 @@ class CommonDreamsBridge extends BridgeAbstract{
 		function CommonDreamsExtractContent($url) {
 		$html3 = file_get_html($url);
 		$text = $html3->find('div[class=field--type-text-with-summary]', 0)->innertext;
+		$html3->clear();
+		unset ($html3);
 		return $text;
 		}
 
 		$html = file_get_html('http://www.commondreams.org/rss.xml') or $this->returnError('Could not request CommonDreams.', 404);
 		$limit = 0;
 		foreach($html->find('item') as $element) {
-		 if($limit < 2) {
+		 if($limit < 4) {
 		 $item = new \Item();
 		 $item->title = $element->find('title', 0)->innertext;
 		 $item->uri = CommonDreamsUrl($element->find('guid', 0)->innertext);
@@ -50,7 +52,7 @@ class CommonDreamsBridge extends BridgeAbstract{
     }
 
     public function getCacheDuration(){
-//        return 3600*2; // 2 hours
-	return 0;
+        return 3600; // 1 hours
+//	return 0;
     }
 }
