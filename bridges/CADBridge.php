@@ -23,21 +23,29 @@ class CADBridge extends BridgeAbstract{
 	
 		function CADExtractContent($url) {
 		$html3 = file_get_html($url);
-		preg_match_all("/http:\/\/cdn2\.cad-comic\.com\/comics\/cad-\S*png/", $html3, $url2);
+		$htmlpart = explode("/", $url);
+		if ($htmlpart[3] == 'cad')
+		  preg_match_all("/http:\/\/cdn2\.cad-comic\.com\/comics\/cad-\S*png/", $html3, $url2);
+		if ($htmlpart[3] == 'sillies')
+		  preg_match_all("/http:\/\/cdn2\.cad-comic\.com\/comics\/sillies-\S*gif/", $html3, $url2);
 		$img = implode ($url2[0]);
-		return $img;
+		$html3->clear();
+		unset ($html3);
+		if ($img == '')
+		  return 'Daily comic not realease yet';
+		return '<img src="'.$img.'"/>';
 		}
 
 		$html = file_get_html('http://cdn2.cad-comic.com/rss.xml') or $this->returnError('Could not request CAD.', 404);
 		$limit = 0;
 		foreach($html->find('item') as $element) {
-		 if($limit < 3) {
+		 if($limit < 5) {
 		 $item = new \Item();
 		 $item->title = $element->find('title', 0)->innertext;
 		 $item->uri = CADUrl($element->find('description', 0)->innertext);
 		 if ($item->uri != 'notanurl') {
 		   $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-		   $item->content = '<img src="'.CADExtractContent($item->uri).'"/>';
+		   $item->content = CADExtractContent($item->uri);
 		   $this->items[] = $item;
 		   $limit++;
 		  }
