@@ -123,7 +123,21 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
         }
         return file_get_contents($filename);
     }
-    
+  
+     public function get_cached_time($url) {
+        $simplified_url = str_replace(["http://", "https://", "?", "&", "="], ["", "", "/", "/", "/"], $url);
+        // TODO build this from the variable given to Cache
+        $pageCacheDir = __DIR__ . '/../cache/'."pages/";
+        $filename =  $pageCacheDir.$simplified_url;
+        if (substr($filename, -1) == '/') {
+            $filename = $filename."index.html";
+        }
+        if(!file_exists($filename)) {
+            $this->get_cached($url);
+        }
+        return filectime($filename);
+    }  
+
     private function refresh_in_cache($pageCacheDir, $filename) {
 		$currentPath = $filename;
 		while(!$pageCacheDir==$currentPath) {
