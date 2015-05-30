@@ -24,11 +24,10 @@ class YoutubeBridge extends BridgeAbstract{
 	public function collectData(array $param){
 
 		function getPublishDate($id) {
-			// relies on Youtube API; deprecated
-			$json = json_decode(file_get_contents("https://gdata.youtube.com/feeds/api/videos/$id?v=2&alt=json"), TRUE);
-			$timestamp = strtotime($json['entry']['published']['$t']);
+			$html2 = file_get_html("https://www.youtube.com/watch?v=$id");
+			$timestamp = strtotime($html2->find('meta[itemprop=datePublished]', 0)->getAttribute('content') );
 			return $timestamp;
-		} 
+		}  
 
 
         	$html = '';
