@@ -4,6 +4,7 @@
 * Returns the 5 newest posts from http://rue89.nouvelobs.com/ (full text)
 *
 * @name Rue89
+* @homepage http://rue89.nouvelobs.com/
 * @description Returns the 5 newest posts from Rue89 (full text)
 * @update 2015-01-30
 * @maintainer pit-fgfjiudghdf

@@ -2,7 +2,7 @@
 /**
 *
 * @name Freenews
-* @description Un site d'actualitÃ© pour les freenautes (mais ne parlant pas que de la freebox). Ne rentrez pas d'id si vous voulez accÃ©der aux actualitÃ©s gÃ©nÃ©rales.
+* @description Un site d'actualité pour les freenautes (mais ne parlant pas que de la freebox). Ne rentrez pas d'id si vous voulez accéder aux actualités générales.
 * @update 26/03/2014
 * @use1(id="Id de la rubrique (sans le '-')")
 */

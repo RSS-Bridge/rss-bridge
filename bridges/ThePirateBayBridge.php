@@ -5,7 +5,7 @@
 * 2014-05-25
 *
 * @name The Pirate Bay
-* @homepage https://thepiratebay.se/
+* @homepage https://thepiratebay.vg/
 * @description Returns results for the keywords. You can put several list of keywords by separating them with a semicolon (e.g. "one show;another show")
 * @maintainer mitsukarenai
 * @update 2014-05-26
@@ -55,7 +55,7 @@ class ThePirateBayBridge extends BridgeAbstract{
 
         $keywordsList = explode(";",$param['q']); 
         foreach($keywordsList as $keywords){
-            $html = file_get_html('https://thepiratebay.se/search/'.rawurlencode($keywords).'/0/3/0') or $this->returnError('Could not request TPB.', 404);
+            $html = file_get_html('https://thepiratebay.vg/search/'.rawurlencode($keywords).'/0/3/0') or $this->returnError('Could not request TPB.', 404);
 
             if ($html->find('table#searchResult', 0) == FALSE)
                 $this->returnError('No result for query '.$keywords, 404);
@@ -63,7 +63,7 @@ class ThePirateBayBridge extends BridgeAbstract{
 
             foreach($html->find('tr') as $element) {
                 $item = new \Item();
-                $item->uri = 'https://thepiratebay.se/'.$element->find('a.detLink',0)->href;
+                $item->uri = 'https://thepiratebay.vg/'.$element->find('a.detLink',0)->href;
                 $item->id = $item->uri;
                 $item->timestamp = parseDateTimestamp($element);
                 $item->title = $element->find('a.detLink',0)->plaintext;
@@ -81,7 +81,7 @@ class ThePirateBayBridge extends BridgeAbstract{
     }
 
     public function getURI(){
-        return 'https://thepiratebay.se/';
+        return 'https://thepiratebay.vg/';
     }
 
     public function getCacheDuration(){

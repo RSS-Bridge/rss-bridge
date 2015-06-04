@@ -2,7 +2,7 @@
 /**
 *
 * @name Les 400 Culs 
-* @description La planète sexe vue par Agnès Girard via rss-bridge
+* @description La planÃ¨te sexe vue par AgnÃ¨s Girard via rss-bridge
 * @update 20/02/2014
 */
 require_once 'bridges/RssExpander.php';
