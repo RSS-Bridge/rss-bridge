@@ -19,7 +19,7 @@ class TwitterBridgeClean extends BridgeAbstract{
         $html = '';
         if (isset($param['q'])) {   /* keyword search mode */
             $this->request = $param['q'];
-            $html = file_get_html('http://twitter.com/search/realtime?q='.urlencode($this->request).'+include:retweets&src=typd') or $this->returnError('No results for this query.', 404);
+            $html = file_get_html('https://twitter.com/search?q='.urlencode($this->request).'&f=tweets') or $this->returnError('No results for this query.', 404);
         }
         elseif (isset($param['u'])) {   /* user timeline mode */
             $this->request = $param['u'];

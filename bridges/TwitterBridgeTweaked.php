@@ -73,7 +73,7 @@ class TwitterBridgeTweaked extends BridgeAbstract{
 	public function collectData(array $param){
 		$html = '';
 		if (isset($param['q'])) {   /* keyword search mode */
-			$html = file_get_html('https://twitter.com/search/realtime?q='.urlencode($param['q']).'+include:retweets&src=typd') or $this->returnError('No results for this query.', 404);
+			$html = file_get_html('https://twitter.com/search?q='.urlencode($param['q']).'&f=tweets') or $this->returnError('No results for this query.', 404);
 		}
 		elseif (isset($param['u'])) {   /* user timeline mode */
 			$html = file_get_html('https://twitter.com/'.urlencode($param['u']).'/with_replies') or $this->returnError('Requested username can\'t be found.', 404);
