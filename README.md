@@ -50,7 +50,7 @@ Minecraft hashtag (#Minecraft) search on Twitter, in ATOM format (as displayed b
 Requirements
 ===
 
- * PHP 5.3
+ * PHP 5.4
  * `openssl` extension enabled in PHP config (`php.ini`)
 
 Enabling/Disabling bridges
