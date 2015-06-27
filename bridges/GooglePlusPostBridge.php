@@ -56,7 +56,7 @@ class GooglePlusPostBridge extends BridgeAbstract
 //			$item->title = $item->fullname = $post->find('header.lea', 0)->plaintext;
 			$item->avatar = $post->find('div.ys img', 0)->src;
 //			var_dump((($post->find('a.o-U-s', 0)->getAllAttributes())));
-			$item->uri = $post->find('a.o-U-s', 0)->href;
+			$item->uri = self::GOOGLE_PLUS_BASE_URL . $post->find('a.o-U-s', 0)->href;
 			$item->timestamp = strtotime($post->find('a.o-U-s', 0)->plaintext);
 			$this->items[] = $item;
 
