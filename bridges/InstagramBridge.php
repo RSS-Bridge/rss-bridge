@@ -41,29 +41,27 @@ class InstagramBridge extends BridgeAbstract{
         	$innertext = $script->innertext;
         	break;
         }
-        
-        
-        
+
         $json = trim(substr($innertext, $pos+18), ' =;');
         $data = json_decode($json);
         
-        $userMedia = $data->entry_data->UserProfile[0]->userMedia;
-
+        
+        
+        $userMedia = $data->entry_data->ProfilePage[0]->user->media->nodes;
 
         foreach($userMedia as $media)
         {
-        	$image = $media->images->standard_resolution;
 
         	$item = new \Item();
-        	$item->uri = $media->link;
-        	$item->content = '<img src="' . htmlentities($image->url) . '" width="'.htmlentities($image->width).'" height="'.htmlentities($image->height).'" />';
+        	$item->uri = "https://instagram.com/p/".$media->code."/";
+        	$item->content = '<img src="' . htmlentities($media->display_src) . '" />';
         	if (isset($media->caption))
         	{
-        		$item->title = $media->caption->text;
+        		$item->title = $media->caption;
         	} else {
-        		$item->title = basename($image->url);
+        		$item->title = basename($media->display_src);
         	}
-        	$item->timestamp = $media->created_time;
+        	$item->timestamp = $media->date;
         	$this->items[] = $item;
         	
         }
