@@ -32,14 +32,13 @@ class TheOatmealBridge extends RssExpander{
 
 
     protected function parseRSSItem($newsItem) {
+        $namespaces = $newsItem->getNameSpaces(true);
+        $dc = $newsItem->children($namespaces['dc']);
+        $rdf = $newsItem->children($namespaces['rdf']);
         $item = new Item();
         $item->title = trim($newsItem->title);
         $this->message("browsing Oatmeal item ".var_export($newsItem, true));
-        if(empty($newsItem->guid)) {
-            $item->uri = $newsItem->link;
-        } else {
-            $item->uri = $newsItem->guid;
-        }
+        $item->uri=$newsItem->attributes($namespaces['rdf'])->about;
         // now load that uri from cache
         $this->message("now loading page ".$item->uri);
         $articlePage = str_get_html($this->get_cached($item->uri));
@@ -50,9 +49,6 @@ class TheOatmealBridge extends RssExpander{
 		}
         $item->content = $content->innertext;
         
-        $namespaces = $newsItem->getNameSpaces(true);
-
-        $dc = $newsItem->children($namespaces['dc']);
         $this->message("dc content is ".var_export($dc, true));
         $item->name = $dc->creator;
         $item->timestamp = DateTime::createFromFormat(DateTime::ISO8601, $dc->date)->getTimestamp();

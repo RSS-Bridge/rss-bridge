@@ -13,7 +13,8 @@ TODO :
 
 date_default_timezone_set('UTC');
 error_reporting(0);
-//ini_set('display_errors','1'); error_reporting(E_ALL);  // For debugging only.
+//ini_set('display_errors','1');
+//error_reporting(E_ALL);  // For debugging only.
 
 // extensions check
 if (!extension_loaded('openssl'))
@@ -220,7 +221,7 @@ $formats = Format::searchInformation();
 
     <header>
         <h1>RSS-Bridge</h1>
-        <h2>·Reconnecting the Web·</h2>
+        <h2>Â·Reconnecting the WebÂ·</h2>
     </header>
 	<?php
 	    $activeFoundBridgeCount = 0;
