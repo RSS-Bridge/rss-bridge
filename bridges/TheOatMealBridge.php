@@ -61,6 +61,6 @@ class TheOatmealBridge extends RssExpander{
     }
     
     public function getCacheDuration(){
-        return 1; // 2h hours
+        return 7200; // 2h hours
     }
 }
