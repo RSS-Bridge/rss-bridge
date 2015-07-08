@@ -7,7 +7,7 @@
 * @homepage https://www.youtube.com/
 * @description Returns the 10 newest videos by username/channel/playlist or search
 * @maintainer mitsukarenai
-* @update 2014-06-20
+* @update 2015-07-08
 * @use1(u="username")
 * @use2(c="channel id")
 * @use3(p="playlist id")
@@ -82,7 +82,7 @@ class YoutubeBridge extends BridgeAbstract{
 				if($count < $limit) {
 					$item = new \Item();
 					$item->uri = 'https://www.youtube.com'.$element->find('.pl-video-title a',0)->href;
-					$item->thumbnailUri = 'https:'.str_replace('/default.','/mqdefault.',$element->find('.pl-video-thumbnail img',0)->src);
+					$item->thumbnailUri = $element->find('img',0)->getAttribute('data-thumb');
 					$item->title = trim($element->find('.pl-video-title a',0)->plaintext);
 					$item->id = str_replace('/watch?v=', '', $element->find('a',0)->href);
 					$item->timestamp = getPublishDate($item->id);
@@ -96,9 +96,9 @@ class YoutubeBridge extends BridgeAbstract{
 
 			else if (isset($param['s'])) {   /* search mode */
 				$this->request = $param['s']; $page = 1; if (isset($param['pa'])) $page = (int)preg_replace("/[^0-9]/",'', $param['pa']); 
-				$html = file_get_html('https://www.youtube.com/results?search_query='.urlencode($this->request).'&&page='.$page.'&filters=video&search_sort=video_date_uploaded') or $this->returnError('Could not request Youtube.', 404);
+				$html = file_get_html('https://www.youtube.com/results?search_query='.urlencode($this->request).'&page='.$page.'&filters=video&search_sort=video_date_uploaded') or $this->returnError('Could not request Youtube.', 404);
 
-				foreach($html->find('li.yt-lockup') as $element) {
+				foreach($html->find('div.yt-lockup') as $element) {
 					$item = new \Item();
 					$item->uri = 'https://www.youtube.com'.$element->find('a',0)->href;
 					$checkthumb = $element->find('img', 0)->getAttribute('data-thumb');
@@ -108,7 +108,7 @@ class YoutubeBridge extends BridgeAbstract{
 						$item->thumbnailUri = ''.$element->find('img',0)->src;
 					$item->title = trim($element->find('h3',0)->plaintext);
 					$item->id = str_replace('/watch?v=', '', $element->find('a',0)->href);
-					//$item->timestamp = getPublishDate($item->id);  /* better not use it here */
+					//$item->timestamp = getPublishDate($item->id);  /* bogus: better not use it  */
 					$item->content = '<a href="' . $item->uri . '"><img src="' . $item->thumbnailUri . '" /></a><br><a href="' . $item->uri . '">' . $item->title . '</a>';
 					$this->items[] = $item;
 				}
