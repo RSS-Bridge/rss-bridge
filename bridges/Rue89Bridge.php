@@ -38,6 +38,7 @@ class Rue89Bridge extends BridgeAbstract{
          if($limit < 5) {
          $item = new \Item();
          $item->title = Rue89StripCDATA($element->find('title', 0)->innertext);
+         $item->name = Rue89StripCDATA($element->find('dc:creator', 0)->innertext);
          $item->uri = str_replace('#commentaires', '', Rue89StripCDATA($element->find('comments', 0)->plaintext));
          $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
          $item->content = Rue89ExtractContent($item->uri);
