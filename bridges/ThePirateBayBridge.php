@@ -63,8 +63,8 @@ class ThePirateBayBridge extends BridgeAbstract{
 
             foreach($html->find('tr') as $element) {
                 $item = new \Item();
-                $item->uri = 'https://thepiratebay.vg/'.$element->find('a.detLink',0)->href;
-                $item->id = $item->uri;
+                $item->id = 'https://thepiratebay.vg'.$element->find('a.detLink',0)->href;
+                $item->uri = $element->find('a',3)->href;
                 $item->timestamp = parseDateTimestamp($element);
                 $item->title = $element->find('a.detLink',0)->plaintext;
                 $item->seeders = (int)$element->find('td',2)->plaintext;
