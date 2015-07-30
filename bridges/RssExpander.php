@@ -16,7 +16,7 @@ abstract class RssExpander extends HttpCachingBridgeAbstract{
         if (empty($param['url'])) {
             $this->returnError('There is no $param[\'url\'] for this RSS expander', 404);
         }
- //       $this->message("Loading from ".$param['url']);
+//       $this->message("Loading from ".$param['url']);
         // Notice WE DO NOT use cache here on purpose : we want a fresh view of the RSS stream each time
         $rssContent = simplexml_load_file($param['url']) or $this->returnError('Could not request '.$param['url'], 404);
 //        $this->message("loaded RSS from ".$param['url']);
@@ -25,7 +25,7 @@ abstract class RssExpander extends HttpCachingBridgeAbstract{
         $this->collect_RSS_2_0_data($rssContent);
     }
     
-    private function collect_RSS_2_0_data($rssContent) {
+    protected function collect_RSS_2_0_data($rssContent) {
         $rssContent = $rssContent->channel[0];
 //        $this->message("RSS content is ===========\n".var_export($rssContent, true)."===========");
         $this->load_RSS_2_0_feed_data($rssContent);
