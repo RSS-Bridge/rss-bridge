@@ -5,7 +5,7 @@
 * 14 days: http://blog.twitch.tv/2014/08/important-reminder-past-broadcasts-removed-today/
 *
 * @name Twitch API Bridge
-* @homepage https://www.twitch.tv
+* @homepage http://www.twitch.tv
 * @description Returns the newest broadcasts or highlights by channel name using the Twitch API (v3)
 * @maintainer logmanoriginal
 * @update 2015-07-14
