@@ -2,8 +2,11 @@
 /**
 *
 * @name The Oatmeal
+* @homepage http://theoatmeal.com/
 * @description Un petit site de dessins assez rigolos
-* @update 20/02/201403/07/2015
+* @update 2015-07-03
+* @maintainer Riduidel
+.
 */
 require_once 'bridges/RssExpander.php';
 define("THE_OATMEAL", "http://theoatmeal.com/");
