@@ -21,7 +21,8 @@ class Rue89Bridge extends BridgeAbstract{
         //$text = $html2->find('div[class=text]', 0)->innertext;
 
 	foreach($html2->find('img') as $image) {
-		$image->src = $image->getAttribute('data-src');
+		$src = $image->getAttribute('data-src');
+		if($src) $image->src = $src;
 	}
         $text = $html2->find('div.content', 0)->innertext;
 
