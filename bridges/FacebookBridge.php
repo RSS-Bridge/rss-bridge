@@ -72,7 +72,7 @@ class FacebookBridge extends BridgeAbstract{
     }
 
     public function getCacheDuration(){
-        return 01; // 5 minutes
+        return 300; // 5 minutes
     }
 }
 
