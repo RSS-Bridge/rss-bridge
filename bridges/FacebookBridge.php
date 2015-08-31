@@ -50,7 +50,7 @@ class FacebookBridge extends BridgeAbstract{
 				$date = 0;
 			}
 
-			$item->uri = 'https://facebook.com/'.urlencode($param['u']);
+			$item->uri = 'https://facebook.com'.$post->find("abbr")[0]->parent()->getAttribute("href");
 			$item->content = $content;
 			$item->title = $param['u']." | ".strip_tags($content);
 			$item->timestamp = $date;
