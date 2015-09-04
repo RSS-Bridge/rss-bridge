@@ -24,6 +24,7 @@ class MrssFormat extends FormatAbstract{
         foreach($this->getDatas() as $data){
             $itemTitle = strip_tags(is_null($data->title) ? '' : $data->title);
             $itemUri = is_null($data->uri) ? '' : $data->uri;
+            $itemAuthor = is_null($data->author) ? '' : $data->author;
             $itemThumbnailUri = is_null($data->thumbnailUri) ? '' : $data->thumbnailUri;
             $itemTimestamp = is_null($data->timestamp) ? '' : date(DATE_RFC2822, $data->timestamp);
             // We prevent content from closing the CDATA too early.
@@ -37,6 +38,7 @@ class MrssFormat extends FormatAbstract{
         <guid isPermaLink="true">{$itemUri}</guid>
         <pubDate>{$itemTimestamp}</pubDate>
         <description>{$itemContent}</description>
+        <author>{$itemAuthor}</author>
         <media:title>{$itemTitle}</media:title>
         <media:thumbnail url="{$itemThumbnailUri}" />
     </item>
