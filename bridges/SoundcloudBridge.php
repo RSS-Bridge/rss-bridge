@@ -39,7 +39,6 @@ class SoundCloudBridge extends BridgeAbstract{
 		    $item->id = 'https://soundcloud.com/'. urlencode($this->request) .'/'. urlencode($tracks[$i]->permalink);
 		    $item->uri = 'https://soundcloud.com/'. urlencode($this->request) .'/'. urlencode($tracks[$i]->permalink);
 		    $this->items[] = $item;
-        var_dump($item);
 		}
 
     }
@@ -52,6 +51,6 @@ class SoundCloudBridge extends BridgeAbstract{
 	}
 
 	public function getCacheDuration(){
-		return 0; // 10 minutes
+		return 60; // 10 minutes
 	}
 }
