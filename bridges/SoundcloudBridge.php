@@ -5,26 +5,27 @@
 *
 * @name Soundcloud Bridge
 * @homepage http://www.soundcloud.com/
-* @description Returns 10 newest music from user profile 
+* @description Returns 10 newest music from user profile
 * @maintainer kranack
-* @update 2014-07-24
+* @update 2015-09-08
 * @use1(u="username")
 *
 */
 class SoundCloudBridge extends BridgeAbstract{
-    
+
 	private $request;
 	private $name;
-    
+  const CLIENT_ID = '0aca19eae3843844e4053c6d8fdb7875';
+
 	public function collectData(array $param){
-		
+
 		if (isset($param['u']) && !empty($param['u']))
 		{
 			$this->request = $param['u'];
-           	
-			$res = json_decode(file_get_contents('http://api.soundcloud.com/resolve.json?url=http://www.soundcloud.com/'. urlencode($this->request) .'&consumer_key=apigee')) or $this->returnError('No results for this query', 404);
-			$tracks = json_decode(file_get_contents('http://api.soundcloud.com/users/'. urlencode($res->id) .'/tracks.json?consumer_key=apigee')) or $this->returnError('No results for this user', 404);
-		} 
+
+			$res = json_decode(file_get_contents('https://api.soundcloud.com/resolve?url=http://www.soundcloud.com/'. urlencode($this->request) .'&client_id=' . self::CLIENT_ID)) or $this->returnError('No results for this query', 404);
+			$tracks = json_decode(file_get_contents('https://api.soundcloud.com/users/'. urlencode($res->id) .'/tracks?client_id=' . self::CLIENT_ID)) or $this->returnError('No results for this user', 404);
+		}
 		else
 		{
 			$this->returnError('You must specify username', 400);
@@ -34,19 +35,19 @@ class SoundCloudBridge extends BridgeAbstract{
 		    $item = new \Item();
 		    $item->name = $tracks[$i]->user->username .' - '. $tracks[$i]->title;
 		    $item->title = $tracks[$i]->user->username .' - '. $tracks[$i]->title;
-		    $item->content = '<audio src="'. $tracks[$i]->uri .'/stream?consumer_key=apigee">';
+		    $item->content = '<audio src="'. $tracks[$i]->uri .'/stream?client_id='. self::CLIENT_ID .'">';
 		    $item->id = 'https://soundcloud.com/'. urlencode($this->request) .'/'. urlencode($tracks[$i]->permalink);
 		    $item->uri = 'https://soundcloud.com/'. urlencode($this->request) .'/'. urlencode($tracks[$i]->permalink);
 		    $this->items[] = $item;
 		}
-		
+
     }
 	public function getName(){
 		return (!empty($this->name) ? $this->name .' - ' : '') .'Soundcloud Bridge';
 	}
 
 	public function getURI(){
-		return 'http://www.soundcloud.com/';
+		return 'https://www.soundcloud.com/';
 	}
 
 	public function getCacheDuration(){
