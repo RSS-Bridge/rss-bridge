@@ -51,6 +51,6 @@ class SoundCloudBridge extends BridgeAbstract{
 	}
 
 	public function getCacheDuration(){
-		return 60; // 10 minutes
+		return 600; // 10 minutes
 	}
 }
