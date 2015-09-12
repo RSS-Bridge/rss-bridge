@@ -3,7 +3,7 @@
 *
 * @name World of Tanks 
 * @description News about the tank slaughter game. Language can be fr, ?
-* @update 26/03/2014
+* @update 2015-09-12
 * @use1(lang="Searched language",category="Category id")
 */
 define('WORLD_OF_TANKS', 'http://worldoftanks.eu/');
@@ -20,7 +20,7 @@ class WorldOfTanks extends HttpCachingBridgeAbstract{
         if(empty($param['category'])) {
             $this->uri = WORLD_OF_TANKS.$this->lang.NEWS;
         } else {
-            $this->uri = WORLD_OF_TANKS.$this->lang.NEWS.$param['category']."/";
+            $this->uri = WORLD_OF_TANKS.$this->lang.NEWS.'pc-browser/'.$param['category']."/";
         }
         $html = file_get_html($this->getURI()) or $this->returnError('Could not request '.$this->getURI(), 404);
         $this->message("loaded HTML from ".$this->getURI());

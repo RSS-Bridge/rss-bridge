@@ -2,24 +2,24 @@
 /**
 * RssBridgeBooruproject
 * Returns images from given page
-* 2014-05-25
 *
 * @name Booruproject
 * @homepage http://booru.org/
 * @description Returns images from given page and booruproject instance (****.booru.org)
 * @maintainer mitsukarenai
+* @update 2015-09-12
 * @use1(i="instance (required)", p="page", t="tags")
 */
 class BooruprojectBridge extends BridgeAbstract{
 
     public function collectData(array $param){
 	$page = 0; $tags = '';
-        if (isset($param['p'])) { 
+        if (!empty($param['p'])) { 
 		$page = (int)preg_replace("/[^0-9]/",'', $param['p']); 
 		$page = $page - 1;
 		$page = $page * 20;
         }
-        if (isset($param['t'])) { 
+        if (!empty($param['t'])) { 
             $tags = '&tags='.urlencode($param['t']); 
         }
 	if (empty($param['i'])) {
