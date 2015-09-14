@@ -2,9 +2,9 @@
 /**
 * @name DauphineLibereBridge Bridge
 * @homepage http://www.ledauphine.com/
-* @description Returns the newest articles. For choice « à la une » leave empty the input. For « France-Monde » input "france-monde". For « Faits Divers » input "faits-divers". For « Economie et Finance » input "economie-et-finance". For « Politique » input "politique". For « Sport » input "sport". For « Ain » input "ain". For « Alpes-de-Haute-Provence  » input "haute-provence". For « Hautes-Alpes » input "hautes-alpes". For « Ardèche » input "ardeche". For « Drôme » input "drome". For « Isere Sud » input "isere-sud". For « Isere Nord » input "isere-nord". For « Savoie » input "savoie". For « Haute-Savoie » input "haute-savoie". For « Vaucluse » input "vaucluse".
+* @description Returns the newest articles.
 * @maintainer qwertygc
-* @use1(u="edition")
+* @use1(list|u="À la une=>;France Monde=>france-monde;Faits Divers=>faits-divers;Économie et Finance =>economie-et-finance;Politique=>politique;Sport=>sport;Ain=>ain;Alpes-de-Haute-Provence=>haute-provence;Hautes-Alpes=>hautes-alpes;Ardèche=>ardeche;Drôme=>drome;Isère Sud=>isere-sud;Isère Nord=>isere-nord;Savoie=>savoie;Haute-Savoie=>haute-savoie;Vaucluse=>vaucluse")
 */
 class DauphineLibereBridge extends BridgeAbstract{
     
