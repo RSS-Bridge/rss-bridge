@@ -4,10 +4,11 @@
 * Returns the newest articles
 * 2014-05-25
 *
-* @name Nextinpact Bridge
+* @name NextInpact Bridge
 * @homepage http://www.nextinpact.com/
 * @description Returns the newest articles.
 * @maintainer qwertygc
+* @update 2015-09-05
 */
 class NextInpactBridge extends BridgeAbstract {
 
@@ -22,12 +23,15 @@ class NextInpactBridge extends BridgeAbstract {
 		function ExtractContent($url) {
 			$html2 = file_get_html($url);
 			$text = '<p><em>'.$html2->find('span.sub_title', 0)->innertext.'</em></p>'
-				.'<p><img src="'.$html2->find('div.container_main_image_article', 0)->find('img.dedicated',0)->src.'" /></p>'
+				.'<p><img src="'.$html2->find('div.container_main_image_article', 0)->find('img.dedicated',0)->src.'" alt="-" /></p>'
 				.'<div>'.$html2->find('div[itemprop=articleBody]', 0)->innertext.'</div>';
+			$premium_article = $html2->find('h2.title_reserve_article', 0)->innertext;
+			if (strlen($premium_article) > 0)
+				$text = $text.'<p><em>'.$premium_article.'</em></p>';
 			return $text;
 		}
 
-		$html = file_get_html('http://www.nextinpact.com/rss/news.xml') or $this->returnError('Could not request Nextinpact.', 404);
+		$html = file_get_html('http://www.nextinpact.com/rss/news.xml') or $this->returnError('Could not request NextInpact.', 404);
 		$limit = 0;
 
 		foreach($html->find('item') as $element) {
@@ -46,16 +50,16 @@ class NextInpactBridge extends BridgeAbstract {
 
     }
 
-    public function getName(){
-        return 'Nextinpact Bridge';
-    }
+	public function getName() {
+		return 'Nextinpact Bridge';
+	}
 
-    public function getURI(){
-        return 'http://www.nextinpact.com/';
-    }
+	public function getURI() {
+		return 'http://www.nextinpact.com/';
+	}
 
-    public function getCacheDuration(){
-        return 3600; // 1 hour
+	public function getCacheDuration() {
+		return 3600; // 1 hour
 		// return 0;
-    }
+	}
 }

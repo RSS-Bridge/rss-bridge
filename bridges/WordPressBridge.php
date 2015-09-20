@@ -8,7 +8,7 @@
  * @homepage https://wordpress.com/
  * @description Returns the 3 newest full posts of a Wordpress blog
  * @maintainer aledeg
- * @update 2014-05-26
+ * @update 2015-09-05
  * @use1(url="blog URL (required)", name="blog name")
  */
 class WordPressBridge extends BridgeAbstract {
@@ -24,14 +24,15 @@ class WordPressBridge extends BridgeAbstract {
 		}
 
 		$html = file_get_html($this->url) or $this->returnError("Could not request {$this->url}.", 404);
+		$posts = $html->find('.post');
 
-                $posts = $html->find('.post');
 		if(!empty($posts) ) {
 			$i=0;
 			foreach ($html->find('.post') as $article) {
 				if($i < 3) {
 					$uri = $article->find('a', 0)->href;
-					$this->items[] = $this->getDetails($uri);
+					$thumbnail = $article->find('img', 0)->src;
+					$this->items[] = $this->getDetails($uri, $thumbnail);
 					$i++;
 				}
 			}
@@ -41,14 +42,19 @@ class WordPressBridge extends BridgeAbstract {
 		}
 	}
 
-	private function getDetails($uri) {
+	private function getDetails($uri, $thumbnail) {
 		$html = file_get_html($uri) or exit;
+		$article = $html->find('.post', 0);
+
+		$title = $article->find('h1', 0)->innertext;
+		if (strlen($title) == 0)
+			$title = $article->find('h2', 0)->innertext;
 
 		$item = new \Item();
-
-		$article = $html->find('.post', 0);
 		$item->uri = $uri;
-		$item->title = $article->find('h1', 0)->innertext;
+		$item->title = htmlspecialchars_decode($title);
+		$item->author = $article->find('a[rel=author]', 0)->innertext;
+		$item->thumbnailUri = $thumbnail;
 		$item->content = $this->clearContent($article->find('.entry-content,.entry', 0)->innertext);
 		$item->timestamp = $this->getDate($uri);
 
