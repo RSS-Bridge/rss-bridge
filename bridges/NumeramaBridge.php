@@ -34,7 +34,7 @@ class NumeramaBridge extends BridgeAbstract{
 	foreach($html->find('item') as $element) {
 	 if($limit < 5) {
 	 $item = new \Item();
-	 $item->title = NumeramaStripCDATA($element->find('title', 0)->innertext);
+	 $item->title = html_entity_decode(NumeramaStripCDATA($element->find('title', 0)->innertext));
 	 $item->uri = NumeramaStripCDATA($element->find('guid', 0)->plaintext);
 	 $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
 	 $item->content = NumeramaExtractContent($item->uri);
