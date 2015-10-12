@@ -28,7 +28,7 @@ class NumeramaBridge extends BridgeAbstract{
       return $text;
       }
 
-   $html = file_get_html('http://www.numerama.com/rss/news.rss') or $this->returnError('Could not request Numerama.', 404);
+   $html = file_get_html('http://www.numerama.com/feed/') or $this->returnError('Could not request Numerama.', 404);
 	$limit = 0;
 
 	foreach($html->find('item') as $element) {
