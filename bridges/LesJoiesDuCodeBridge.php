@@ -15,7 +15,7 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
         foreach($html->find('div.blog-post') as $element) {
             $item = new Item();
             $temp = $element->find('h1 a', 0);
-            $titre = $temp->innertext;
+            $titre = html_entity_decode($temp->innertext);
             $url = $temp->href;
             
             $temp = $element->find('div.blog-post-content', 0);
