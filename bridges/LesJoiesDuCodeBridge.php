@@ -12,17 +12,16 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
     public function collectData(array $param){
         $html = file_get_html('http://lesjoiesducode.fr/') or $this->returnError('Could not request LesJoiesDuCode.', 404);
     
-        foreach($html->find('div.post') as $element) {
+        foreach($html->find('div.blog-post') as $element) {
             $item = new Item();
-            $temp = $element->find('h3 a', 0);
-            
-            $titre = $temp->innertext;
+            $temp = $element->find('h1 a', 0);
+            $titre = html_entity_decode($temp->innertext);
             $url = $temp->href;
             
-            $temp = $element->find('div.bodytype', 0);
+            $temp = $element->find('div.blog-post-content', 0);
 
             // retrieve .gif instead of static .jpg
-            $images = $temp->find('p.e img');
+            $images = $temp->find('p img');
             foreach($images as $image){
               $img_src = str_replace(".jpg",".gif",$image->src);
               $image->src = $img_src;
