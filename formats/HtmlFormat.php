@@ -19,13 +19,15 @@ class HtmlFormat extends FormatAbstract{
             $entryUri = is_null($data->uri) ? $uri : $data->uri;
             $entryTitle = is_null($data->title) ? '' : $this->sanitizeHtml(strip_tags($data->title));
             $entryTimestamp = is_null($data->timestamp) ? '' : '<small><time datetime="' . date(DATE_ATOM, $data->timestamp) . '">' . date(DATE_ATOM, $data->timestamp) . '</time></small>';
+            $entryAuthor = is_null($data->author) ? '' : '<br><small>by: ' . $data->author . '</small>';
             $entryContent = is_null($data->content) ? '' : '<p>' . $this->sanitizeHtml($data->content). '</p>';
             $entries .= <<<EOD
 
 <div class="feeditem">
 	<h2><a href="{$entryUri}">{$entryTitle}</a></h2>
 	{$entryTimestamp}
-		{$entryContent}
+   {$entryAuthor}
+   {$entryContent}
 </div>
 
 EOD;
