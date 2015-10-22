@@ -4,10 +4,10 @@
  * Returns 5 newest torrents with specified search criteria
  *
  * @name T411
- * @homepage https://t411.io/
+ * @homepage https://t411.in/
  * @description Returns the 5 newest torrents with specified search terms <br /> Use url part after '?' mark when using their search engine
  * @maintainer ORelio
- * @update 2015-09-05
+ * @update 2015-10-22
  * @use1(search="search criteria")
  */
 class T411Bridge extends BridgeAbstract {
@@ -36,7 +36,7 @@ class T411Bridge extends BridgeAbstract {
         }
 
         //Retrieve torrent listing as truncated rss, which does not contain torrent description
-        $url = 'http://www.t411.io/torrents/rss/?'.$param['search'].'&order=added&type=desc';
+        $url = 'http://www.t411.in/torrents/rss/?'.$param['search'].'&order=added&type=desc';
         $html = file_get_html($url) or $this->returnError('Could not request t411: '.$url, 500);
         $limit = 0;
 
@@ -62,7 +62,7 @@ class T411Bridge extends BridgeAbstract {
                     $item_author = $item_html->find('a.profile', 0)->innertext;
 
                     //Retrieve image for thumbnail or generic logo fallback
-                    $item_image = 'http://www.t411.io/themes/blue/images/logo.png';
+                    $item_image = 'http://www.t411.in/themes/blue/images/logo.png';
                     foreach ($item_desc->find('img') as $img) {
                         if (strpos($img->src, 'dreamprez') === false) {
                             $item_image = $img->src;
@@ -90,7 +90,7 @@ class T411Bridge extends BridgeAbstract {
     }
 
     public function getURI() {
-        return 'https://t411.io';
+        return 'https://t411.in';
     }
 
     public function getCacheDuration() {
