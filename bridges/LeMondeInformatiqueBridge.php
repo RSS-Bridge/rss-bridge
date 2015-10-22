@@ -35,7 +35,7 @@ class LeMondeInformatiqueBridge extends BridgeAbstract {
         }
 
         $feedUrl = 'http://www.lemondeinformatique.fr/rss/rss.xml';
-        $html = file_get_html($feedUrl) or $this->returnError('Could not request LeMondeInformatique: '.$feedUrl, 404);
+        $html = file_get_html($feedUrl) or $this->returnError('Could not request LeMondeInformatique: '.$feedUrl, 500);
         $limit = 0;
 
         foreach($html->find('item') as $element) {
@@ -45,7 +45,7 @@ class LeMondeInformatiqueBridge extends BridgeAbstract {
                 $article_uri = $element->innertext;
                 $article_uri = substr($article_uri, strpos($article_uri, '<link>') + 6);
                 $article_uri = substr($article_uri, 0, strpos($article_uri, '</link>'));
-                $article_html = file_get_html($article_uri) or $this->returnError('Could not request LeMondeInformatique: '.$article_uri, 404);
+                $article_html = file_get_html($article_uri) or $this->returnError('Could not request LeMondeInformatique: '.$article_uri, 500);
                 $thumbnailUri = $article_html->find('div#article', 0)->find('img#illustration', 0)->src;
                 $article_content = CleanArticle($article_html->find('div#article', 0)->innertext);
                 $article_title = $article_html->find('h1.cleanprint-title', 0)->plaintext;

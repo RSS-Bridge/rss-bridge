@@ -39,7 +39,7 @@ class Releases3DSBridge extends BridgeAbstract {
         }
 
         $dataUrl = 'http://3dsdb.com/xml.php';
-        $xml = file_get_contents($dataUrl) or $this->returnError('Could not request 3dsdb: '.$dataUrl, 404);
+        $xml = file_get_contents($dataUrl) or $this->returnError('Could not request 3dsdb: '.$dataUrl, 500);
         $limit = 0;
 
         foreach (array_reverse(explode('<release>', $xml)) as $element) {

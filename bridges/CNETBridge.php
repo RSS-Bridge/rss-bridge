@@ -45,7 +45,7 @@ class CNETBridge extends BridgeAbstract {
             $this->topicName = $param['topic'];
 
         $pageUrl = 'http://www.cnet.com/'.(empty($this->topicName) ? '' : 'topics/'.$this->topicName.'/');
-        $html = file_get_html($pageUrl) or $this->returnError('Could not request CNET: '.$pageUrl, 404);
+        $html = file_get_html($pageUrl) or $this->returnError('Could not request CNET: '.$pageUrl, 500);
         $limit = 0;
 
         foreach($html->find('div.socialSharingSmall') as $element) {
@@ -57,7 +57,7 @@ class CNETBridge extends BridgeAbstract {
 
                 if (!empty($article_title) && !empty($article_uri) && strpos($article_uri, '/news/') !== false) {
 
-                    $article_html = file_get_html($article_uri) or $this->returnError('Could not request CNET: '.$article_uri, 404);
+                    $article_html = file_get_html($article_uri) or $this->returnError('Could not request CNET: '.$article_uri, 500);
                     $article_timestamp = strtotime(ExtractFromDelimiters($article_html->innertext, '<time itemprop="datePublished" class="', '">'));
                     $article_thumbnail = $article_html->find('div.originalImage', 0);
 
