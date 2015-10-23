@@ -61,8 +61,10 @@ class ParuVenduImmoBridge extends BridgeAbstract
             
             $price = $element->find('span.price')[0]->innertext;
 
+            list($href) = explode('#', $element->href);
+            
             $item = new \Item();
-            $item->uri = $this->getURI().$element->href;
+            $item->uri = $this->getURI().$href;
             $item->title = $element->title;
             $item->content = $img.$desc.$price;
             $this->items[] = $item;
