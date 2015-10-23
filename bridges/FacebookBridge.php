@@ -3,7 +3,7 @@
 * @name Facebook
 * @homepage http://facebook.com/
 * @description Input a page title or a profile log. For a profile log, please insert the parameter as follow : myExamplePage/132621766841117
-* @update 05/09/2015
+* @update 23/10/2015
 * @maintainer teromene
 * @use1(u="username")
 */
@@ -12,6 +12,27 @@ class FacebookBridge extends BridgeAbstract{
 	private $name;
 
 	public function collectData(array $param){
+
+		//Extract a string using start and end delimiters
+		function ExtractFromDelimiters($string, $start, $end) {
+			if (strpos($string, $start) !== false) {
+				$section_retrieved = substr($string, strpos($string, $start) + strlen($start));
+				$section_retrieved = substr($section_retrieved, 0, strpos($section_retrieved, $end));
+				return $section_retrieved;
+			} return false;
+		}
+
+		//Utility function for cleaning a Facebook link
+		$unescape_fb_link = function ($matches) {
+			if (is_array($matches) && count($matches) > 1) {
+				$link = $matches[1];
+				if (strpos($link, '/') === 0)
+					$link = 'https://facebook.com'.$link.'"';
+				if (strpos($link, 'facebook.com/l.php?u=') !== false)
+					$link = urldecode(ExtractFromDelimiters($link, 'facebook.com/l.php?u=', '&'));
+				return ' href="'.$link.'"';
+			}
+		};
 
 		$html = '';
 
@@ -39,16 +60,23 @@ class FacebookBridge extends BridgeAbstract{
 
 				if($post->hasAttribute("data-time")) {
 
-					//Clean the content of the page and convert relative links into absolute links
+					//Retrieve post contents
 					$content = preg_replace('/(?i)><div class=\"clearfix([^>]+)>(.+?)div\ class=\"userContent\"/i', '', $post);
 					$content = preg_replace('/(?i)><div class=\"_59tj([^>]+)>(.+?)<\/div><\/div><a/i', '', $content);
 					$content = preg_replace('/(?i)><div class=\"_3dp([^>]+)>(.+?)div\ class=\"[^u]+userContent\"/i', '', $content);
 					$content = preg_replace('/(?i)><div class=\"_4l5([^>]+)>(.+?)<\/div>/i', '', $content);
-					$content = str_replace(' href="/', ' href="https://facebook.com/', $content);
-					$content = preg_replace('/ onmouseover=\"[^"]+\"/i', '', $content);
-					$content = preg_replace('/ onclick=\"[^"]+\"/i', '', $content);
+
+					//Remove html nodes, keep only img, links, basic formatting
+					$content = strip_tags($content,'<a><img><i><u>');
+
+					//Adapt link hrefs: convert relative links into absolute links and bypass external link redirection
+					$content = preg_replace_callback('/ href=\"([^"]+)\"/i', $unescape_fb_link, $content);
+
+					//Clean useless html tag properties and fix link closing tags
+					foreach (array('onmouseover', 'onclick', 'target', 'ajaxify', 'tabindex',
+						'class', 'style', 'data-[^=]*', 'aria-[^=]*', 'role', 'rel', 'id') as $property_name)
+							$content = preg_replace('/ '.$property_name.'=\"[^"]*\"/i', '', $content);
 					$content = preg_replace('/<\/a [^>]+>/i', '</a>', $content);
-					$content = strip_tags($content,'<a><img>');
 
 					//Retrieve date of the post
 					$date = $post->find("abbr")[0];
