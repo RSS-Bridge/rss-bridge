@@ -8,7 +8,7 @@
 * @homepage http://www.nextinpact.com/
 * @description Returns the newest articles.
 * @maintainer qwertygc
-* @update 2015-09-05
+* @update 2015-10-23
 */
 class NextInpactBridge extends BridgeAbstract {
 
@@ -25,9 +25,9 @@ class NextInpactBridge extends BridgeAbstract {
 			$text = '<p><em>'.$html2->find('span.sub_title', 0)->innertext.'</em></p>'
 				.'<p><img src="'.$html2->find('div.container_main_image_article', 0)->find('img.dedicated',0)->src.'" alt="-" /></p>'
 				.'<div>'.$html2->find('div[itemprop=articleBody]', 0)->innertext.'</div>';
-			$premium_article = $html2->find('h2.title_reserve_article', 0)->innertext;
-			if (strlen($premium_article) > 0)
-				$text = $text.'<p><em>'.$premium_article.'</em></p>';
+			$premium_article = $html2->find('h2.title_reserve_article', 0);
+			if (is_object($premium_article))
+				$text = $text.'<p><em>'.$premium_article->innertext.'</em></p>';
 			return $text;
 		}
 
