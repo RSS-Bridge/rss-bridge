@@ -34,6 +34,39 @@ class FacebookBridge extends BridgeAbstract{
 			}
 		};
 
+		//Utility function for converting facebook emoticons
+		$unescape_fb_emote = function ($matches) {
+			static $facebook_emoticons = array(
+				'smile' => ':)',
+				'frown' => ':(',
+				'tongue' => ':P',
+				'grin' => ':D',
+				'gasp' => ':O',
+				'wink' => ';)',
+				'pacman' => ':<',
+				'grumpy' => '>_<',
+				'unsure' => ':/',
+				'cry' => ':\'(',
+				'kiki' => '^_^',
+				'glasses' => '8-)',
+				'sunglasses' => 'B-)',
+				'heart' => '<3',
+				'devil' => ']:D',
+				'angel' => '0:)',
+				'squint' => '-_-',
+				'confused' => 'o_O',
+				'upset' => 'xD',
+				'colonthree' => ':3',
+				'like' => '&#x1F44D;');
+			$len = count($matches);
+			if ($len > 1)
+				for ($i = 1; $i < $len; $i++)
+					foreach ($facebook_emoticons as $name => $emote)
+						if ($matches[$i] === $name)
+							return $emote;
+			return $matches[0];
+		};
+
 		$html = '';
 
 		if(isset($param['u'])) {
@@ -77,6 +110,9 @@ class FacebookBridge extends BridgeAbstract{
 						'class', 'style', 'data-[^=]*', 'aria-[^=]*', 'role', 'rel', 'id') as $property_name)
 							$content = preg_replace('/ '.$property_name.'=\"[^"]*\"/i', '', $content);
 					$content = preg_replace('/<\/a [^>]+>/i', '</a>', $content);
+
+					//Convert textual representation of emoticons eg "<i><u>smile emoticon</u></i>" back to ASCII emoticons eg ":)"
+					$content = preg_replace_callback('/<i><u>([^ <>]+) ([^<>]+)<\/u><\/i>/i', $unescape_fb_emote, $content);
 
 					//Retrieve date of the post
 					$date = $post->find("abbr")[0];
