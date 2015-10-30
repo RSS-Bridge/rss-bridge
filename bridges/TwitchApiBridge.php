@@ -9,8 +9,8 @@
 * @description Returns the newest broadcasts or highlights by channel name using the Twitch API (v3)
 * @maintainer logmanoriginal
 * @update 2015-07-14
-* @use1(channel="Channel", list|broadcasts="Show broadcasts=>true;Don't show broadcasts=>false")
-* @use2(channel="Channel", limit="Limit", list|broadcasts="Show broadcasts=>true;Don't show broadcasts=>false")
+* @use1(text|channel="Channel", list|broadcasts="Show broadcasts=>true;Don't show broadcasts=>false")
+* @use2(text|channel="Channel", text|limit="Limit", list|broadcasts="Show broadcasts=>true;Don't show broadcasts=>false")
 *
 * Description for the API is available on GitHub: https://github.com/justintv/twitch-api
 */

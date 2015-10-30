@@ -2,9 +2,9 @@
 /**
 *
 * @name World of Tanks 
-* @description News about the tank slaughter game. Language can be fr, ?
+* @description News about the tank slaughter game.
 * @update 2015-09-12
-* @use1(lang="Searched language",category="Category id")
+* @use1(list|lang="Français=>fr;English=>en;Español=>es;Deutsch=>de;Čeština=>cs;Polski=>pl;Türkçe=>tr",text|category="Category id")
 */
 define('WORLD_OF_TANKS', 'http://worldoftanks.eu/');
 define('NEWS', '/news/');
