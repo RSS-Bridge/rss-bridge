@@ -8,7 +8,7 @@
 * @description Returns newest videos from ARTE +7 (french)
 * @maintainer mitsukarenai
 * @update 2015-10-30
-* @use1(cat="category")
+* @use1(list|cat="Toutes les vidéos=>toutes-les-videos;Actu & société=>actu-société;Séries & fiction=>séries-fiction;Cinéma=>cinéma;Arts & spectacles classiques=>arts-spectacles-classiques;Culture pop=>culture-pop;Découverte=>découverte;Histoire=>histoire;Junior=>junior")
 */
 class Arte7frBridge extends BridgeAbstract{
 
