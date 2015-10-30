@@ -2,64 +2,57 @@
 /**
 * RssBridgeArte7fr
 * Returns images from given page and tags
-* 2014-05-25
 *
 * @name Arte +7 FR
-* @homepage http://www.arte.tv/guide/fr/
+* @homepage http://www.arte.tv/guide/fr/plus7
 * @description Returns newest videos from ARTE +7 (french)
 * @maintainer mitsukarenai
+* @update 2015-10-30
+* @use1(cat="category")
 */
 class Arte7frBridge extends BridgeAbstract{
 
     public function collectData(array $param){
 
-	$input_json = json_decode(file_get_contents('http://www.arte.tv/guide/fr/plus7.json'), TRUE) or $this->returnError('Could not request ARTE.', 404);
-   
-        foreach($input_json['videos'] as $element) {
+      function extractVideoset($category='toutes-les-videos') 
+         {
+         $url = 'http://www.arte.tv/guide/fr/plus7/'.$category;
+         $input = file_get_contents($url) or die('Could not request ARTE.');
+         if(strpos($input, 'categoryVideoSet') !== FALSE)
+            {
+            $input = explode('categoryVideoSet: ', $input);
+            $input = explode('}},', $input[1]);
+            $input = $input[0].'}}';
+            }
+         else
+            {
+            $input = explode('videoSet: ', $input);
+            $input = explode('}]},', $input[1]);
+            $input = $input[0].'}]}';
+            }
+         $input = json_decode($input, TRUE);
+         return $input;
+         }
+
+      $category='toutes-les-videos';
+      if (!empty($param['cat']))
+         $category=$param['cat'];
+      $input_json = extractVideoset($category);
+
+      foreach($input_json['videos'] as $element) {
             $item = new \Item();
             $item->uri = $element['url'];
-            $item->postid = $item->uri;
-
-				$date = $element['airdate_long'];
-				$date = explode(' ', $date);
-				$day = (int)$date['1'];
-				$month=FALSE;
-				switch ($date['2']) {
-					case 'janvier':
-						$month=1;break;
-					case 'février':
-						$month=2;break;
-					case 'mars':
-						$month=3;break;
-					case 'avril':
-						$month=4;break;
-					case 'mai':
-						$month=5;break;
-					case 'juin':
-						$month=6;break;
-					case 'juillet':
-						$month=7;break;
-					case 'août':
-						$month=8;break;
-					case 'septembre':
-						$month=9;break;
-					case 'octobre':
-						$month=10;break;
-					case 'novembre':
-						$month=11;break;
-					case 'décembre':
-						$month=12;break;
-					}
-				$year=(int)date('Y');
-				$heure=explode('h', $date['4']);
-				$hour=(int)$heure['0'];
-				$minute=(int)$heure['1'];
-  
-
-            $item->timestamp = mktime($hour, $minute, 0, $month, $day, $year);
-            $item->thumbnailUri = $element['image_url'];
+            $item->id = $element['id'];
+               $hack_broadcast_time = $element['rights_end'];
+               $hack_broadcast_time = strtok($hack_broadcast_time, 'T');
+               $hack_broadcast_time = strtok('T');
+            $item->timestamp = strtotime($element['scheduled_on'].'T'.$hack_broadcast_time);
+            $item->thumbnailUri = $element['thumbnail_url'];
             $item->title = $element['title'];
-            $item->content = $element['desc'].'<br><br>'.$element['video_channels'].', '.$element['duration'].'min<br><img src="' . $item->thumbnailUri . '" />';
+            if (!empty($element['subtitle']))
+               $item->title = $element['title'].' | '.$element['subtitle'];
+            $item->duration = round((int)$element['duration']/60);
+            $item->content = $element['teaser'].'<br><br>'.$item->duration.'min<br><a href="'.$item->uri.'"><img src="' . $item->thumbnailUri . '" /></a>';
             $this->items[] = $item;
         }
     }
