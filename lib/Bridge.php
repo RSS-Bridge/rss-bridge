@@ -266,18 +266,32 @@ class Bridge{
                             }
 
                             preg_match_all('#@use(?<num>[1-9][0-9]*)\s?\((?<args>.+)\)(?:\r|\n)#', $commentary, $outComment); // Catch specific information about "use".
+
                             if( isset($outComment['args']) && is_array($outComment['args']) ){
                                 $infos['use'] = array();
+								
                                 foreach($outComment['args'] as $num => $args){ // Each use
-                                    preg_match_all('#(?<name>[a-z]+)="(?<value>.*)"(?:,|$)#U', $args, $outArg); // Catch arguments for current use
-                                    if( isset($outArg['name']) ){
+									
+                                    preg_match_all('#(?<type>[a-z]+)\|(?<name>[a-z]+)="(?<value>.*)"(?:,|$)#U', $args, $outArg); // Catch arguments for current use
+									
+									if(!isset($outArg['name']) || count($outArg['name']) == 0) {
+                                    	preg_match_all('#(?<name>[a-z]+)="(?<value>.*)"(?:,|$)#U', $args, $outArg); // Catch arguments
+									}
+
+
+                                    if( isset($outArg['name'])){
                                         $usePos = $outComment['num'][$num]; // Current use name
                                         if( !isset($infos['use'][$usePos]) ){ // Not information actually for this "use" ?
                                             $infos['use'][$usePos] = array();
                                         }
-
+										
                                         foreach($outArg['name'] as $numArg => $name){ // Each arguments
-                                            $infos['use'][$usePos][$name] = $outArg['value'][$numArg];
+                                            $infos['use'][$usePos][$name] = array();
+
+											$infos['use'][$usePos][$name]['query-name'] = $name;
+											$infos['use'][$usePos][$name]['value'] = $outArg['value'][$numArg];
+											$infos['use'][$usePos][$name]['type'] = $outArg['type'][$numArg];
+
                                         }
                                     }
                                 }
@@ -295,3 +309,4 @@ class Bridge{
         return $listBridge;
     }
 }
+

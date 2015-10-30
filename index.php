@@ -156,10 +156,22 @@ CARD;
 							<input type="hidden" name="action" value="display" />
 							<input type="hidden" name="bridge" value="' . $bridgeReference . '" />' . PHP_EOL;
 
-				foreach($anUse as $argName => $argDescription)
+				foreach($anUse as $argValue)
 				{
-					$idArg = 'arg-' . $bridgeReference . '-' . $anUseNum . '-' . $argName;
-					$card .= '<input id="' . $idArg . '" type="text" value="" placeholder="' . $argDescription . '" name="' . $argName . '" />' . PHP_EOL;
+					$idArg = 'arg-' . $bridgeReference . '-' . $anUseNum . '-' . $argValue['query-name'];
+					if($argValue['type'] == null || $argValue['type'] == "text") { //If we have no type, treat it as a text field for compatibility
+						$card .= '<input id="' . $idArg . '" type="text" value="" placeholder="' . $argValue['value'] . '" name="' . $argValue['query-name'] . '" />' . PHP_EOL;
+					} else if($argValue['type'] == "list") {
+						$card .= '<select id="' . $idArg . '" name="' . $argValue['query-name'] . '" >' . PHP_EOL;
+						$optionList = explode(";", $argValue['value']);
+						
+						foreach($optionList as $option) {
+							$option = explode("=>", $option);
+							$card .= "<option value='".$option[1]."'>".$option[0]."</option>";
+						}
+						$card .= "</select>";
+					}
+
 				}
 
 				$card .= '<br />';
