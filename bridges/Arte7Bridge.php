@@ -1,22 +1,22 @@
 <?php
 /**
-* RssBridgeArte7de
-* Returns images from given page and tags
+* RssBridgeArte7
 *
-* @name Arte +7 DE
-* @homepage http://www.arte.tv/guide/de/plus7
-* @description Returns newest videos from ARTE +7 (german)
+* @name Arte +7
+* @homepage http://www.arte.tv/
+* @description Returns newest videos from ARTE +7
 * @maintainer mitsukarenai
-* @update 2015-10-30
-* @use1(list|cat="Alle Videos=>alle-videos;Aktuelles & Gesellschaft=>aktuelles-gesellschaft;Fernsehfilme & Serien=>fernsehfilme-serien;Kino=>kino;Kunst & Kultur=>kunst-kultur;Popkultur & Alternativ=>popkultur-alternativ;Entdeckung=>entdeckung;Geschichte=>geschichte;Junior=>junior")
+* @update 2015-10-31
+* @use1(list|catfr="Toutes les vidéos (français)=>toutes-les-videos;Actu & société=>actu-société;Séries & fiction=>séries-fiction;Cinéma=>cinéma;Arts & spectacles classiques=>arts-spectacles-classiques;Culture pop=>culture-pop;Découverte=>découverte;Histoire=>histoire;Junior=>junior")
+* @use2(list|catde="Alle Videos (deutsch)=>alle-videos;Aktuelles & Gesellschaft=>aktuelles-gesellschaft;Fernsehfilme & Serien=>fernsehfilme-serien;Kino=>kino;Kunst & Kultur=>kunst-kultur;Popkultur & Alternativ=>popkultur-alternativ;Entdeckung=>entdeckung;Geschichte=>geschichte;Junior=>junior")
 */
-class Arte7deBridge extends BridgeAbstract{
+class Arte7Bridge extends BridgeAbstract{
 
     public function collectData(array $param){
 
-      function extractVideoset($category='alle-videos') 
+      function extractVideoset($category='toutes-les-videos', $lang='fr') 
          {
-         $url = 'http://www.arte.tv/guide/de/plus7/'.$category;
+         $url = 'http://www.arte.tv/guide/'.$lang.'/plus7/'.$category;
          $input = file_get_contents($url) or die('Could not request ARTE.');
          if(strpos($input, 'categoryVideoSet') !== FALSE)
             {
@@ -34,10 +34,12 @@ class Arte7deBridge extends BridgeAbstract{
          return $input;
          }
 
-      $category='alle-videos';
-      if (!empty($param['cat']))
-         $category=$param['cat'];
-      $input_json = extractVideoset($category);
+      $category='toutes-les-videos'; $lang='fr';
+      if (!empty($param['catfr']))
+         $category=$param['catfr'];
+      if (!empty($param['catde']))
+         { $category=$param['catde']; $lang='de'; }
+      $input_json = extractVideoset($category, $lang);
 
       foreach($input_json['videos'] as $element) {
             $item = new \Item();
@@ -58,7 +60,7 @@ class Arte7deBridge extends BridgeAbstract{
     }
 
     public function getName(){
-        return 'Arte7de';
+        return 'Arte7';
     }
 
     public function getURI(){
