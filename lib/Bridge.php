@@ -9,11 +9,27 @@ interface BridgeInterface{
     public function getName();
     public function getURI();
     public function getCacheDuration();
+    public function loadMetadatas();
 }
 
 abstract class BridgeAbstract implements BridgeInterface{
+
     protected $cache;
     protected $items = array();
+
+	public $name = "Bridge sans nom";
+	public $homepage = "";
+	public $description = 'No description provided';
+	public $maintainer = 'No maintainer';
+	public $parameters = array();
+
+	/**
+	* Loads the Bridge Metadatas
+	*/
+	public function loadMetadatas() {
+
+
+	}
 
     /**
     * Launch probative exception
@@ -29,6 +45,8 @@ abstract class BridgeAbstract implements BridgeInterface{
     public function getDatas(){
         return $this->items;
     }
+
+
 
     /**
     * Defined datas with parameters depending choose bridge
