@@ -6,8 +6,6 @@
 
 interface BridgeInterface{
     public function collectData(array $param);
-    public function getName();
-    public function getURI();
     public function getCacheDuration();
     public function loadMetadatas();
 }
@@ -18,7 +16,7 @@ abstract class BridgeAbstract implements BridgeInterface{
     protected $items = array();
 
 	public $name = "Bridge sans nom";
-	public $homepage = "";
+	public $uri = "";
 	public $description = 'No description provided';
 	public $maintainer = 'No maintainer';
 	public $parameters = array();
@@ -257,74 +255,25 @@ class Bridge{
     }
 
     /**
-    * Read bridge dir and catch informations about each bridge depending annotation
-    * @return array Informations about each bridge
+    * Lists the available bridges.
+    * @return array List of the bridges
     */
-    static public function searchInformation(){
+	static public function listBridges() {
+
         $pathDirBridge = self::getDir();
-
         $listBridge = array();
+	 	$dirFiles = scandir($pathDirBridge);
 
-        $searchCommonPattern = array('maintainer', 'description', 'homepage', 'name');
-
-        $dirFiles = scandir($pathDirBridge);
         if( $dirFiles !== false ){
             foreach( $dirFiles as $fileName ){
-                if( preg_match('@([^.]+)\.php@U', $fileName, $out) ){ // Is PHP file ?
-                    $infos = array(); // Information about the bridge
-                    $resParse = token_get_all(file_get_contents($pathDirBridge . $fileName)); // Parse PHP file
-                    foreach($resParse as $v){
-                        if( is_array($v) && $v[0] == T_DOC_COMMENT ){ // Lexer node is COMMENT ?
-                            $commentary = $v[1];
-                            foreach( $searchCommonPattern as $name){ // Catch information with common pattern
-                                preg_match('#@' . preg_quote($name, '#') . '\s+(.+)#', $commentary, $outComment);
-                                if( isset($outComment[1]) ){
-                                    $infos[$name] = $outComment[1];
-                                }
-                            }
+                if( preg_match('@([^.]+)\.php@U', $fileName, $out) ){
+					$listBridge[] = $out[1];
+				}
+			}
+		}
 
-                            preg_match_all('#@use(?<num>[1-9][0-9]*)\s?\((?<args>.+)\)(?:\r|\n)#', $commentary, $outComment); // Catch specific information about "use".
+		return $listBridge;
+	}
 
-                            if( isset($outComment['args']) && is_array($outComment['args']) ){
-                                $infos['use'] = array();
-								
-                                foreach($outComment['args'] as $num => $args){ // Each use
-									
-                                    preg_match_all('#(?<type>[a-z]+)\|(?<name>[a-z]+)="(?<value>.*)"(?:,|$)#U', $args, $outArg); // Catch arguments for current use
-									
-									if(!isset($outArg['name']) || count($outArg['name']) == 0) {
-                                    	preg_match_all('#(?<name>[a-z]+)="(?<value>.*)"(?:,|$)#U', $args, $outArg); // Catch arguments
-									}
-
-
-                                    if( isset($outArg['name'])){
-                                        $usePos = $outComment['num'][$num]; // Current use name
-                                        if( !isset($infos['use'][$usePos]) ){ // Not information actually for this "use" ?
-                                            $infos['use'][$usePos] = array();
-                                        }
-										
-                                        foreach($outArg['name'] as $numArg => $name){ // Each arguments
-                                            $infos['use'][$usePos][$name] = array();
-
-											$infos['use'][$usePos][$name]['query-name'] = $name;
-											$infos['use'][$usePos][$name]['value'] = $outArg['value'][$numArg];
-											$infos['use'][$usePos][$name]['type'] = $outArg['type'][$numArg];
-
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if( isset($infos['name']) ){ // If informations containt at least a name
-                        $listBridge[$out[1]] = $infos;
-                    }
-                }
-            }
-        }
-
-        return $listBridge;
-    }
 }
 

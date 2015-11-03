@@ -9,7 +9,7 @@
 */
 class FacebookBridge extends BridgeAbstract{
 
-	private $name;
+
 
 	public function collectData(array $param){
 

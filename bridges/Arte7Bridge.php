@@ -12,6 +12,46 @@
 */
 class Arte7Bridge extends BridgeAbstract{
 
+	public function loadMetadatas() {
+
+		$this->maintainer = "mitsukarenai";
+		$this->name = "Arte +7";
+		$this->uri = "http://www.arte.tv/";
+		$this->description = "Returns newest videos from ARTE +7";
+		$this->update = "2015-10-31";
+		$this->parameters["Catégorie (Français)"] =
+		'[
+			{
+				"type" : "list",
+				"identifier" : "catfr",
+				"name" : "Catégorie",
+				"values" : [
+					{
+						"name" : "Toutes les vidéos (français)",
+						"value" : "toutes-les-videos"
+					},
+					{
+						"name" : "Actu & société",
+						"value" : "actu-société"
+					},
+					{
+						"name" : "Séries & fiction",
+						"value" : "séries-fiction"
+					},
+					{
+						"name" : "Cinéma",
+						"value" : "cinéma"
+					}
+
+				]
+
+
+			}
+
+		]';
+	}
+
+
     public function collectData(array $param){
 
       function extractVideoset($category='toutes-les-videos', $lang='fr') 

@@ -96,14 +96,14 @@ try{
                         $bridge->setCache($cache); // just add disable cache to your query to disable caching
                     }
                     $bridge->setDatas($_REQUEST);
-
+					$bridge->loadMetadatas();
                     // Data transformation
                     $format = Format::create($format);
                     $format
                         ->setDatas($bridge->getDatas())
                         ->setExtraInfos(array(
-                            'name' => $bridge->getName(),
-                            'uri' => $bridge->getURI(),
+                            'name' => $bridge->name,
+                            'uri' => $bridge->uri,
                         ))
                         ->display();
                     die;
@@ -143,7 +143,7 @@ function displayBridgeCard($bridgeName, $formats, $isActive = true)
 	$bridgeElement = Bridge::create($bridgeName);
 	$bridgeElement->loadMetadatas();
 
-	$name = '<a href="'.$bridgeElement->homepage.'">'.$bridgeElement->name.'</a>';
+	$name = '<a href="'.$bridgeElement->uri.'">'.$bridgeElement->name.'</a>';
 	$description = $bridgeElement->description;
 
 	$card = <<<CARD
@@ -157,7 +157,7 @@ CARD;
 	// If we don't have any parameter for the bridge, we print a generic form to load it.
 	if(count($bridgeElement->parameters) == 0) {
 
-		$card .= '<form method="GET" action="?">
+		$card .= '<form method="POST" action="?">
 				<input type="hidden" name="action" value="display" />
 				<input type="hidden" name="bridge" value="' . $bridgeName . '" />' . PHP_EOL;
 
@@ -177,7 +177,7 @@ CARD;
 	{
 		$card .= '<ol class="list-use">' . PHP_EOL;
 		$card .= '<h5>'.$parameterName.'</h5>' . PHP_EOL;
-		$card .= '<form method="GET" action="?">
+		$card .= '<form method="POST" action="?">
 					<input type="hidden" name="action" value="display" />
 					<input type="hidden" name="bridge" value="' . $bridgeName . '" />' . PHP_EOL;
 
@@ -193,6 +193,18 @@ CARD;
 				$card .= '<input id="' . $idArg . '" type="text" value="" placeholder="' . $inputEntry['exampleValue'] . '" name="' . $inputEntry['identifier'] . '" /><br />' . PHP_EOL;
 			} else if($inputEntry['type'] == 'number') {
 				$card .= '<input id="' . $idArg . '" type="number" value="" placeholder="' . $inputEntry['exampleValue'] . '" name="' . $inputEntry['identifier'] . '" /><br />' . PHP_EOL;
+			} else if($inputEntry['type'] == 'list') {
+				$card .= '<select id="' . $idArg . '" name="' . $inputEntry['name'] . '" >';
+				foreach($inputEntry['values'] as $listValues) {
+
+					$card .= "<option value='" . $listValues['value'] . "'>" . $listValues['name'] . "</option>";
+
+				}
+				$card .= '</select><br >';
+			} else if($inputEntry['type'] == 'checkbox') {
+
+				$card .= '<input id="' . $idArg . '" type="checkbox" name="' . $inputEntry['identifier'] . '" /><br />' . PHP_EOL;
+
 			}
 
 		}
@@ -240,7 +252,7 @@ $formats = Format::searchInformation();
 	    $activeFoundBridgeCount = 0;
 		$showInactive = isset($_REQUEST['show_inactive']) && $_REQUEST['show_inactive'] == 1;
 		$inactiveBridges = '';
-	    foreach($whitelist_selection as $bridgeName)
+	    foreach(Bridge::listBridges() as $bridgeName)
 	    {
 			if(BridgeWhitelist($whitelist_selection, $bridgeName))
 			{

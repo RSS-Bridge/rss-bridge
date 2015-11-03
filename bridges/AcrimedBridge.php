@@ -1,6 +1,6 @@
 <?php
 /**
-* 2014-05-25
+*
 * @name Acrimed Bridge
 * @homepage http://www.acrimed.org/
 * @description Returns the newest articles.
@@ -8,7 +8,16 @@
 */
 class AcrimedBridge extends BridgeAbstract{
     
-        public function collectData(array $param){
+		public function loadMetadatas() {
+
+			$this->maintainer = "qwertygc";
+			$this->name = "Acrimed Bridge";
+			$this->uri = "http://www.acrimed.org/";
+			$this->description = "Returns the newest articles.";
+			$this->update = "2014-05-25";
+
+		}
+       public function collectData(array $param){
 
 			function StripCDATA($string) {
 			$string = str_replace('<![CDATA[', '', $string);
@@ -37,13 +46,6 @@ class AcrimedBridge extends BridgeAbstract{
     
     }
 
-    public function getName(){
-        return 'Acrimed Bridge';
-    }
-
-    public function getURI(){
-        return 'http://acrimed.org/';
-    }
 
     public function getCacheDuration(){
         return 3600*2; // 2 hours
