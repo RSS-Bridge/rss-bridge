@@ -1,15 +1,15 @@
 <?php
-/**
-* RssBridgeCoinDesk 
-* Returns the 5 newest posts from coindesk.com (full text)
-*
-* @name CoinDesk
-* @homepage http://www.coindesk.com/
-* @description Returns the 5 newest posts from CoinDesk (full text)
-* @maintainer mitsukarenai
-* @update 2014-05-30
-*/
 class CoinDeskBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "mitsukarenai";
+		$this->name = "CoinDesk";
+		$this->uri = "http://www.coindesk.com/";
+		$this->description = "Returns the 5 newest posts from CoinDesk (full text)";
+		$this->update = "2014-05-30";
+
+	}
 
     public function collectData(array $param){
 

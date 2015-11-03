@@ -1,16 +1,16 @@
 <?php
-/**
-* RssBridgeCommonDreams
-* Returns the newest articles
-* 2015-04-03
-*
-* @name CommonDreams Bridge
-* @homepage http://www.commondreams.org/
-* @description Returns the newest articles.
-* @maintainer nyutag
-*/
 class CommonDreamsBridge extends BridgeAbstract{
-   
+
+	   	public function loadMetadatas() {
+
+			$this->maintainer = "nyutag";
+			$this->name = "CommonDreams Bridge";
+			$this->uri = "http://www.commondreams.org/";
+			$this->description = "Returns the newest articles.";
+			$this->update = "2015-04-03";
+
+		}
+
         public function collectData(array $param){
 
 		function CommonDreamsUrl($string) {

@@ -1,16 +1,16 @@
 <?php
-/**
-* RssBridgeCAD
-* Returns the newest articles
-* 2015-04-03
-*
-* @name CAD Bridge
-* @homepage http://www.cad-comic.com/
-* @description Returns the newest articles.
-* @maintainer nyutag
-*/
 class CADBridge extends BridgeAbstract{
-   
+
+	   	public function loadMetadatas() {
+
+			$this->maintainer = "nyutag";
+			$this->name = "CAD Bridge";
+			$this->uri = "http://www.cad-comic.com/";
+			$this->description = "Returns the newest articles.";
+			$this->update = "2015-04-03";
+
+		}
+
         public function collectData(array $param){
 
 		function CADUrl($string) {

@@ -1,13 +1,16 @@
 <?php
-/**
- *
- * @name CopieDouble
-* @homepage http://www.copie-double.com/
- * @description CopieDouble
- * @update 12/12/2013
-* initial maintainer: superbaillot.net
- */
 class CopieDoubleBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "superbaillot.net";
+		$this->name = "CopieDouble";
+		$this->uri = "http://www.copie-double.com/";
+		$this->description = "CopieDouble";
+		$this->update = "12/12/2013";
+
+	}
+
 
     public function collectData(array $param){
         $html = file_get_html('http://www.copie-double.com/') or $this->returnError('Could not request CopieDouble.', 404);

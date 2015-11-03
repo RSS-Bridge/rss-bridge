@@ -1,13 +1,15 @@
 <?php
-/**
-*
-* @name Les Joies Du Code
-* @homepage http://lesjoiesducode.fr/
-* @description LesJoiesDuCode
-* @update 04/02/2015
-* initial maintainer: superbaillot.net
-*/
 class LesJoiesDuCodeBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "superbaillot.net";
+		$this->name = "Les Joies Du Code";
+		$this->uri = "http://lesjoiesducode.fr/";
+		$this->description = "LesJoiesDuCode";
+		$this->update = "04/02/2015";
+
+	}
 
     public function collectData(array $param){
         $html = file_get_html('http://lesjoiesducode.fr/') or $this->returnError('Could not request LesJoiesDuCode.', 404);

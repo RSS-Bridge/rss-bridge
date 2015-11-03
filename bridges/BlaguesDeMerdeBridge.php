@@ -1,13 +1,15 @@
 <?php
-/**
-*
-* @name Blagues De Merde
-* @homepage http://www.blaguesdemerde.fr/
-* @description Blagues De Merde
-* @update 16/10/2013
-* initial maintainer: superbaillot.net
-*/
 class BlaguesDeMerdeBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "superbaillot.net";
+		$this->name = "Blagues De Merde";
+		$this->uri = "http://www.blaguesdemerde.fr/";
+		$this->description = "Blagues De Merde";
+		$this->update = "16/10/2013";
+
+	}
 
     public function collectData(array $param){
         $html = file_get_html('http://www.blaguesdemerde.fr/') or $this->returnError('Could not request BDM.', 404);

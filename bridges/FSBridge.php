@@ -1,19 +1,15 @@
 <?php
-/**
-* RssBridgeFS
-* Returns the 5 newest posts from http://www.futura-sciences.com (full text)
-*
-* @name Futurasciences
-* @description Returns the 5 newest posts from FS (full text)
-* @homepage http://www.futura-sciences.com
-*@maintainer qwertygc
-
-*/
 class FSBridge extends BridgeAbstract{
 
+	public function loadMetadatas() {
 
+		$this->maintainer = "qwertygc";
+		$this->name = "Futurasciences";
+		$this->uri = "http://www.futura-sciences.com";
+		$this->description = "Returns the 5 newest posts from FS (full text)";
+		$this->update = "03/11/2015";
 
-
+	}
 
     public function collectData(array $param){
 

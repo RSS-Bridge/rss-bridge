@@ -1,16 +1,17 @@
 <?php
-/**
-* RssBridgeBastabag
-* Returns the newest articles
-* 2014-05-25
-*
-* @name Bastamag Bridge
-* @homepage http://www.bastamag.net/
-* @description Returns the newest articles.
-* @maintainer qwertygc
-*/
 class BastaBridge extends BridgeAbstract{
-    
+
+    	public function loadMetadatas() {
+
+			$this->maintainer = "qwertygc";
+			$this->name = "Bastamag Bridge";
+			$this->uri = "http://www.bastamag.net/";
+			$this->description = "Returns the newest articles.";
+			$this->update = "2014-05-25";
+
+		}
+
+
         public function collectData(array $param){
 
 			

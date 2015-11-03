@@ -1,14 +1,15 @@
 <?php
-/**
-*
-* @name Dilbert Daily Strip
-* @homepage http://dilbert.com/strips/
-* @description The Unofficial Dilbert Daily Comic Strip
-* @update 30/01/2015
-* initial maintainer: superbaillot.net
-* @maintainer kranack
-*/
 class DilbertBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "kranack";
+		$this->name = "Dilbert Daily Strip";
+		$this->uri = "http://dilbert.com/strips/";
+		$this->description = "The Unofficial Dilbert Daily Comic Strip";
+		$this->update = "30/01/2015";
+
+	}
 
     public function collectData(array $param){
         $html = file_get_html('http://dilbert.com/strips/') or $this->returnError('Could not request Dilbert.', 404);
