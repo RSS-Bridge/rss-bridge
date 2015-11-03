@@ -14,7 +14,7 @@
 class WhydBridge extends BridgeAbstract{
     
 	private $request;
-	private $name;
+	public $name;
     
 	public function collectData(array $param){
 		$html = '';

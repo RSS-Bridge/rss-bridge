@@ -30,6 +30,18 @@ class ABCTabsBridge extends BridgeAbstract{
 		}
     }
 
+	public function getName() {
+
+		return "ABC Tabs Bridge";
+
+	}
+
+	public function getURI() {
+
+		return "http://www.abc-tabs.com/";
+
+	}
+
 	public function getCacheDuration(){
 		return 3600; // 1 hour
 	}
