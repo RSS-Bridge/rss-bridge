@@ -1,15 +1,15 @@
 <?php
-/**
-* RssBridgeGizmodoFR
-* Returns the 15 newest posts from http://www.gizmodo.fr (full text)
-* 2014-07-14
-*
-* @name GizmodoFR
-* @homepage http://www.gizmodo.fr/
-* @description Returns the 15 newest posts from GizmodoFR (full text).
-* @maintainer polopollo
-*/
 class GizmodoFRBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "polopollo";
+		$this->name = "GizmodoFR";
+		$this->uri = "http://www.gizmodo.fr/";
+		$this->description = "Returns the 15 newest posts from GizmodoFR (full text).";
+		$this->update = "2014-07-14";
+
+	}
 
     public function collectData(array $param){
 

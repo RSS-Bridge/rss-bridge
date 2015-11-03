@@ -1,15 +1,15 @@
 <?php
-/**
-* RssBridgeKoreus
-* Returns the 5 newest posts from Koreus (full text)
-*
-* @name Koreus
-* @homepage http://www.koreus.com/
-* @description Returns the 5 newest posts from Koreus (full text)
-* @maintainer pit-fgfjiudghdf
-* @update 2014-05-26
-*/
 class KoreusBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "pit-fgfjiudghdf";
+		$this->name = "Koreus";
+		$this->uri = "http://www.koreus.com/";
+		$this->description = "Returns the 5 newest posts from Koreus (full text)";
+		$this->update = "2014-05-26";
+
+	}
 
     public function collectData(array $param){
 

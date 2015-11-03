@@ -1,15 +1,4 @@
 <?php
-/**
-* ABCTabsBridge
-* Returns the newest tabs
-*
-* @name ABC Tabs Bridge
-* @homepage http://www.abc-tabs.com/
-* @description Returns 22 newest tabs
-* @maintainer kranack
-* @update 2014-07-23
-*
-*/
 class DemoBridge extends BridgeAbstract{
 
 	public function loadMetadatas() {

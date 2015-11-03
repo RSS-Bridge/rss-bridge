@@ -1,13 +1,6 @@
 <?php
-/**
-*
-* @name Acrimed Bridge
-* @homepage http://www.acrimed.org/
-* @description Returns the newest articles.
-* @maintainer qwertygc
-*/
 class AcrimedBridge extends BridgeAbstract{
-    
+
 		public function loadMetadatas() {
 
 			$this->maintainer = "qwertygc";

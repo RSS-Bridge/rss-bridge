@@ -1,15 +1,15 @@
 <?php
-/**
-* RssBridgeLeJournalDuGeek
-* Returns the 15 newest posts from http://www.journaldugeek.com (full text)
-* 2014-07-14
-*
-* @name journaldugeek.com (FR)
-* @homepage http://www.journaldugeek.com/
-* @description Returns the 5 newest posts from LeJournalDuGeek (full text).
-* @maintainer polopollo
-*/
 class LeJournalDuGeekBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "polopollo";
+		$this->name = "journaldugeek.com (FR)";
+		$this->uri = "http://www.journaldugeek.com/";
+		$this->description = "Returns the 5 newest posts from LeJournalDuGeek (full text).";
+		$this->update = "2014-07-14";
+
+	}
 
     public function collectData(array $param){
 

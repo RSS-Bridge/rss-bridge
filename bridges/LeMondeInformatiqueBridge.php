@@ -1,16 +1,15 @@
 <?php
-/**
-* LeMondeInformatique Bridge
-* Returns the newest articles
-* 2015-09-08
-*
-* @name Le Monde Informatique
-* @homepage http://www.lemondeinformatique.fr/
-* @description Returns the newest articles.
-* @maintainer ORelio
-* @update 2015-09-08
-*/
 class LeMondeInformatiqueBridge extends BridgeAbstract {
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "ORelio";
+		$this->name = "Le Monde Informatique";
+		$this->uri = "http://www.lemondeinformatique.fr/";
+		$this->description = "Returns the newest articles.";
+		$this->update = "2015-09-08";
+
+	}
 
     public function collectData(array $param) {
 

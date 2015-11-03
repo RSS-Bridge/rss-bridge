@@ -1,13 +1,15 @@
 <?php
-/**
-*
-* @name Footito
-* @homepage http://www.footito.fr/
-* @description Footito
-* @update 21/11/2013
-* initial maintainer: superbaillot.net
-*/
 class FootitoBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "superbaillot.net";
+		$this->name = "Footito";
+		$this->uri = "http://www.footito.fr/";
+		$this->description = "Footito";
+		$this->update = "21/11/2013";
+
+	}
 
     public function collectData(array $param){
         $html = file_get_html('http://www.footito.fr/') or $this->returnError('Could not request Footito.', 404);

@@ -1,15 +1,16 @@
 <?php
-/**
-* RssBridgeCollegeDeFrance
-* Returns the 10 newest posts from http://www.college-de-france.fr
-*
-* @name CollegeDeFrance
-* @homepage http://www.college-de-france.fr/
-* @description Returns the 10 newest posts from CollegeDeFrance
-* @maintainer pit-fgfjiudghdf
-* @update 2014-05-26
-*/
 class CollegeDeFranceBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "pit-fgfjiudghdf";
+		$this->name = "CollegeDeFrance";
+		$this->uri = "http://www.college-de-france.fr/";
+		$this->description = "Returns the 10 newest posts from CollegeDeFrance";
+		$this->update = "2014-05-26";
+
+	}
+
     public function collectData(array $param){
 $find = array('janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'novembre', 'décembre');
 $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
