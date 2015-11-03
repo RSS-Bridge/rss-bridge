@@ -8,6 +8,8 @@ interface BridgeInterface{
     public function collectData(array $param);
     public function getCacheDuration();
     public function loadMetadatas();
+    public function getName();
+    public function getURI();
 }
 
 abstract class BridgeAbstract implements BridgeInterface{
@@ -207,6 +209,19 @@ class Bridge{
         throw new \LogicException('Please use ' . __CLASS__ . '::create for new object.');
     }
 
+	/**
+	* Checks if a bridge is an instantiable bridge.
+	* @param string $nameBridge name of the bridge that you want to use
+	* @return true if it is an instantiable bridge, false otherwise.
+	*/
+	static public function isInstantiable($nameBridge) {
+
+		$re = new ReflectionClass($nameBridge);
+		return $re->IsInstantiable();
+
+	}
+
+
     /**
     * Create a new bridge object
     * @param string $nameBridge Defined bridge name you want use
@@ -225,7 +240,11 @@ class Bridge{
 
         require_once $pathBridge;
 
-        return new $nameBridge();
+		if(Bridge::isInstantiable($nameBridge)) {
+        	return new $nameBridge();
+        } else {
+        	return FALSE;
+        }
     }
 
     static public function setDir($dirBridge){

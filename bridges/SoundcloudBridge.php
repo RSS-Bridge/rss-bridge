@@ -14,7 +14,7 @@
 class SoundCloudBridge extends BridgeAbstract{
 
 	private $request;
-	private $name;
+	public $name;
   const CLIENT_ID = '0aca19eae3843844e4053c6d8fdb7875';
 
 	public function collectData(array $param){

@@ -10,11 +10,11 @@
 */
 require_once 'bridges/RssExpander.php';
 define("THE_OATMEAL", "http://theoatmeal.com/");
-define("RSS", "http://feeds.feedburner.com/oatmealfeed");
+define("THE_OATMEAL_RSS", "http://feeds.feedburner.com/oatmealfeed");
 class TheOatmealBridge extends RssExpander{
 
     public function collectData(array $param){
-        $param['url'] = RSS;
+        $param['url'] = THE_OATMEAL_RSS;
         parent::collectData($param);
     }
 

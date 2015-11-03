@@ -102,8 +102,8 @@ try{
                     $format
                         ->setDatas($bridge->getDatas())
                         ->setExtraInfos(array(
-                            'name' => $bridge->name,
-                            'uri' => $bridge->uri,
+                            'name' => $bridge->getName(),
+                            'uri' => $bridge->getURI(),
                         ))
                         ->display();
                     die;
@@ -140,7 +140,11 @@ function getHelperButtonsFormat($formats){
 function displayBridgeCard($bridgeName, $formats, $isActive = true)
 {
 
+
 	$bridgeElement = Bridge::create($bridgeName);
+	if($bridgeElement == false) {
+		return "";
+	}
 	$bridgeElement->loadMetadatas();
 
 	$name = '<a href="'.$bridgeElement->uri.'">'.$bridgeElement->name.'</a>';

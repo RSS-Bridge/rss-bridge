@@ -14,7 +14,7 @@
 class WordPressBridge extends BridgeAbstract {
 
 	private $url;
-	private $name;
+	public $name;
 
 	public function collectData(array $param) {
 		$this->processParams($param);
