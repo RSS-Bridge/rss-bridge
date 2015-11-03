@@ -3,32 +3,32 @@
 * RssBridgeOpenClassrooms
 * Retrieve lastest tutorials from OpenClassrooms.
 * Returns the most recent tutorials, sorting by date (most recent first).
-* 2014-05-25
 *
 * @name OpenClassrooms Bridge
-* @homepage http://fr.openclassrooms.com/
+* @homepage https://openclassrooms.com/
 * @description Returns latest tutorials from OpenClassrooms.
 * @maintainer sebsauvage
-* @use1(u="informatique or sciences")
+* @update 2015-10-30
+* @use1(list|u="Arts & Culture=>arts;Code=>code;Design=>design;Entreprise=>business;Numérique=>digital;Sciences=>sciences;Sciences humaines=>humanities;Systèmes d'information=>it;Autres=>others")
 */
 class OpenClassroomsBridge extends BridgeAbstract{
 
     public function collectData(array $param){
-        if ($param['u']!='informatique' && $param['u']!='sciences')
+        if (empty($param['u']))
         {
-            $this->returnError('Error: You must chose "informatique" or "science".', 404);
+            $this->returnError('Error: You must chose a category.', 404);
         }
     
         $html = '';
-        $link = 'http://fr.openclassrooms.com/'.$param['u'].'/cours?title=&sort=updatedAt+desc';
+        $link = 'https://openclassrooms.com/courses?categories='.$param['u'].'&title=&sort=updatedAt+desc';
 
         $html = file_get_html($link) or $this->returnError('Could not request OpenClassrooms.', 404);
 
-        foreach($html->find('li.col6') as $element) {
+        foreach($html->find('.courseListItem') as $element) {
                 $item = new \Item();
-                $item->uri = 'http://fr.openclassrooms.com'.$element->find('a', 0)->href;
-                $item->title = $element->find('div.courses-content strong', 0)->innertext;
-                $item->content = $element->find('span.course-tags', 0)->innertext;
+                $item->uri = 'https://openclassrooms.com'.$element->find('a', 0)->href;
+                $item->title = $element->find('h3', 0)->plaintext;
+                $item->content = $element->find('slidingItem__descriptionContent', 0)->plaintext;
                 $this->items[] = $item;
         }
     }
@@ -38,7 +38,7 @@ class OpenClassroomsBridge extends BridgeAbstract{
     }
 
     public function getURI(){
-        return 'http://fr.openclassrooms.com';
+        return 'https://openclassrooms.com/';
     }
 
     public function getCacheDuration(){

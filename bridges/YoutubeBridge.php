@@ -2,25 +2,70 @@
 /**
 * RssBridgeYoutube 
 * Returns the newest videos
-*
-* @name Youtube Bridge
-* @homepage https://www.youtube.com/
-* @description Returns the 10 newest videos by username/channel/playlist or search
-* @maintainer mitsukarenai
-* @update 2015-07-08
-* @use1(u="username")
-* @use2(c="channel id")
-* @use3(p="playlist id")
-* @use4(s="search keyword",pa="page")
-* 
-* WARNING: to parse big playlists (over ~90 videos), you need to edit simple_html_dom.php: 
+* WARNING: to parse big playlists (over ~90 videos), you need to edit simple_html_dom.php:
 * change: define('MAX_FILE_SIZE', 600000);
 * into:   define('MAX_FILE_SIZE', 900000);  (or more)
 */
-class YoutubeBridge extends BridgeAbstract{
-    
-	private $request;
-    
+class YoutubeBridge extends BridgeAbstract {
+
+
+	public function loadMetadatas() {
+
+		$this->name = "Youtube Bridge";
+
+		$this->homepage = "https://youtube.com";
+		$this->description = "Returns the 10 newest videos by username/channel/playlist or search";
+		$this->maintainer = "mitsukarenai";
+
+		$this->parameters["By username"] =
+		'[
+			{
+				"type" : "text",
+				"identifier" : "u",
+				"name" : "username",
+				"exampleValue" : "test"
+			}
+		]';
+
+		$this->parameters['By channel id'] =
+		'[
+			{
+				"type" : "number",
+				"identifier" : "c",
+				"name" : "channel id",
+				"exampleValue" : "15"
+			}
+		]';
+
+		$this->parameters['By playlist Id'] =
+		'[
+			{
+				"type" : "number",
+				"identifier" : "c",
+				"name" : "playlist id",
+				"exampleValue" : "15"
+			}
+		]';
+
+		$this->parameters["Search result"] =
+		'[
+			{
+				"type" : "text",
+				"identifier" : "s",
+				"name" : "search keyword",
+				"exampleValue" : "test"
+
+			},
+			{
+				"type" : "number",
+				"identifier" : "pa",
+				"name" : "page",
+				"exampleValue" : "1"
+
+			}
+		]';
+	}
+
 	public function collectData(array $param){
 
 		function getPublishDate($id) {
