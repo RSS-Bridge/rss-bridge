@@ -1,17 +1,15 @@
 <?php
-/**
-* RssBridgeMondeDiplo
-* Search MondeDiplo for most recent pages.
-* Returns the most recent links in results.
-* 2014-07-22
-*
-* @name MondeDiplo
-* @homepage http://www.monde-diplomatique.fr
-* @description Returns most recent results from MondeDiplo.
-* @maintainer Pitchoule
-*/
-
 class MondeDiploBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "Pitchoule";
+		$this->name = "MondeDiplo";
+		$this->uri = "http://www.monde-diplomatique.fr";
+		$this->description = "Returns most recent results from MondeDiplo.";
+		$this->update = "2014-07-22";
+
+	}
 
     public function collectData(array $param){
         $link = 'http://www.monde-diplomatique.fr';

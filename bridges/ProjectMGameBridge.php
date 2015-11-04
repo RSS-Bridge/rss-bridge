@@ -1,12 +1,16 @@
 <?php
-/**
-* 2014-08-27
-* @name Project M Game Bridge
-* @homepage http://projectmgame.com/en/
-* @description Returns the newest articles.
-* @maintainer corenting
-*/
 class ProjectMGameBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "corenting";
+		$this->name = "Project M Game Bridge";
+		$this->uri = "http://projectmgame.com/en/";
+		$this->description = "Returns the newest articles.";
+		$this->update = "2014-08-27";
+
+	}
+
 
   public function collectData(array $param){
     $html = '';

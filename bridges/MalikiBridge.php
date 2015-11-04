@@ -1,15 +1,15 @@
 <?php
-/**
-* RssBridgeMaliki 
-* Returns Maliki's newest strips
-*
-* @name Maliki
-* @homepage http://www.maliki.com/
-* @description Returns Maliki's newest strips
-* @maintainer mitsukarenai
-* @update 2014-05-30
-*/
 class MalikiBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "mitsukarenai";
+		$this->name = "Maliki";
+		$this->uri = "http://www.maliki.com/";
+		$this->description = "Returns Maliki's newest strips";
+		$this->update = "2014-05-30";
+
+	}
 
     public function collectData(array $param){
         $html = file_get_html('http://www.maliki.com/') or $this->returnError('Could not request Maliki.', 404);

@@ -1,16 +1,15 @@
 <?php
-/**
-* RssBridgeNextinpact
-* Returns the newest articles
-* 2014-05-25
-*
-* @name NextInpact Bridge
-* @homepage http://www.nextinpact.com/
-* @description Returns the newest articles.
-* @maintainer qwertygc
-* @update 2015-10-23
-*/
 class NextInpactBridge extends BridgeAbstract {
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "qwertygc";
+		$this->name = "NextInpact Bridge";
+		$this->uri = "http://www.nextinpact.com/";
+		$this->description = "Returns the newest articles.";
+		$this->update = "2015-10-23";
+
+	}
 
 	public function collectData(array $param) {
 

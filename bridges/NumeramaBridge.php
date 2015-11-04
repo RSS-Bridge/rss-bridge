@@ -1,15 +1,15 @@
 <?php
-/**
-* RssBridgeNumerama
-* Returns the 5 newest posts from http://www.numerama.com (full text)
-*
-* @name Numerama
-* @homepage http://www.numerama.com/
-* @description Returns the 5 newest posts from Numerama (full text)
-* @maintainer mitsukarenai
-* @update 2015-10-12
-*/
 class NumeramaBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "mitsukarenai";
+		$this->name = "Numerama";
+		$this->uri = "http://www.numerama.com/";
+		$this->description = "Returns the 5 newest posts from Numerama (full text)";
+		$this->update = "2015-10-12";
+
+	}
 
     public function collectData(array $param){
 
