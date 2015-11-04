@@ -1,15 +1,15 @@
 <?php
-/**
-* RssBridgeNiceMatin 
-* Returns the 10 newest posts from Nice Matin (full text)
-*
-* @name NiceMatin
-* @homepage http://www.nicematin.com/
-* @description Returns the 10 newest posts from NiceMatin (full text)
-* @maintainer pit-fgfjiudghdf
-* @update 2014-05-26
-*/
 class NiceMatinBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "pit-fgfjiudghdf";
+		$this->name = "NiceMatin";
+		$this->uri = "http://www.nicematin.com/";
+		$this->description = "Returns the 10 newest posts from NiceMatin (full text)";
+		$this->update = "2014-05-26";
+
+	}
 
     public function collectData(array $param){
 

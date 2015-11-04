@@ -1,12 +1,15 @@
 <?php
-/**
-* @name MemoLinux
-* @homepage http://memo-linux.com/
-* @description Returns the 10 newest posts from MemoLinux (full text)
-* @maintainer qwertygc
-* @update 2015-01-30
-*/
 class MemoLinuxBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "qwertygc";
+		$this->name = "MemoLinux";
+		$this->uri = "http://memo-linux.com/";
+		$this->description = "Returns the 10 newest posts from MemoLinux (full text)";
+		$this->update = "2015-01-30";
+
+	}
 
     public function collectData(array $param){
 
