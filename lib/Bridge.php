@@ -17,7 +17,7 @@ abstract class BridgeAbstract implements BridgeInterface{
     protected $cache;
     protected $items = array();
 
-	public $name = "Bridge sans nom";
+	public $name = "Unnamed bridge";
 	public $uri = "";
 	public $description = 'No description provided';
 	public $maintainer = 'No maintainer';

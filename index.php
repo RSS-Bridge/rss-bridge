@@ -203,7 +203,9 @@ CARD;
 	foreach($bridgeElement->parameters as $parameterName => $parameter)
 	{
 		$card .= '<ol class="list-use">' . PHP_EOL;
-		$card .= '<h5>'.$parameterName.'</h5>' . PHP_EOL;
+		if(!is_numeric($parameterName)) {
+			$card .= '<h5>'.$parameterName.'</h5>' . PHP_EOL;
+		}
 		$card .= '<form method="POST" action="?">
 					<input type="hidden" name="action" value="display" />
 					<input type="hidden" name="bridge" value="' . $bridgeName . '" />' . PHP_EOL;
@@ -211,6 +213,8 @@ CARD;
 		$parameter = json_decode($parameter, true);
 
 		foreach($parameter as $inputEntry) {
+
+			if(!isset($inputEntry['exampleValue'])) $inputEntry['exampleValue'] = "";
 
 			$idArg = 'arg-' . $bridgeName . '-' . $parameterName . '-' . $inputEntry['identifier'];
 
