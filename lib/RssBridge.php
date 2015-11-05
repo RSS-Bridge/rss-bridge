@@ -12,6 +12,7 @@ require __DIR__ . '/Item.php';
 require __DIR__ . '/Format.php';
 require __DIR__ . '/Bridge.php';
 require __DIR__ . '/Cache.php';
+require __DIR__ . '/HTMLUtils.php';
 
 $vendorLibSimpleHtmlDom = __DIR__ . PATH_VENDOR . '/simplehtmldom/simple_html_dom.php';
 if( !file_exists($vendorLibSimpleHtmlDom) ){

@@ -1,15 +1,4 @@
 <?php
-/**
-* RssBridgeMspabooru
-* Returns images from given page
-* 2014-05-25
-*
-* @name Mspabooru
-* @homepage http://mspabooru.com/
-* @description Returns images from given page
-* @maintainer mitsukarenai
-* @use1(p="page",t="tags")
-*/
 class MspabooruBridge extends BridgeAbstract{
 
 	public function loadMetadatas() {

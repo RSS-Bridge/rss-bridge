@@ -1,15 +1,4 @@
 <?php
-/**
- * AnimeUltimeBridge
- * Returns 10 newest releases posted on Anime-Ultime
- *
- * @name Anime-Ultime
- * @homepage http://www.anime-ultime.net/
- * @description Returns the 10 newest releases posted on Anime-Ultime
- * @maintainer ORelio
- * @update 2015-10-30
- * @use1(list|type="everything=>;Anime=>A;Drama=>D;Tokusatsu=>T")
- */
 class AnimeUltimeBridge extends BridgeAbstract {
 
     private $filter = 'Releases';

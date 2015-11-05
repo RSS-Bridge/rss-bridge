@@ -1,6 +1,5 @@
 <?php
-require_once 'bridges/RssExpander.php';
-define("RSS", 'http://feeds.feedburner.com/Freenews-Freebox?format=xml');
+define("FREENEWS_RSS", 'http://feeds.feedburner.com/Freenews-Freebox?format=xml');
 class Freenews extends RssExpander {
 
 	public function loadMetadatas() {
@@ -21,8 +20,7 @@ class Freenews extends RssExpander {
 	}
 
     public function collectData(array $param){
-        $param['url'] = RSS;
-        parent::collectData($param);
+        parent::collectExpandableDatas($param, FREENEWS_RSS);
     }
     
     protected function parseRSSItem($newsItem) {

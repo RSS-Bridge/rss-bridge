@@ -1,7 +1,4 @@
 <?php
-
-require_once 'bridges/RssExpander.php';
-
 define("THE_OATMEAL", "http://theoatmeal.com/");
 define("THE_OATMEAL_RSS", "http://feeds.feedburner.com/oatmealfeed");
 
@@ -18,8 +15,7 @@ class TheOatmealBridge extends RssExpander{
 	}
 
     public function collectData(array $param){
-        $param['url'] = THE_OATMEAL_RSS;
-        parent::collectData($param);
+        parent::collectExpandableDatas($param, THE_OATMEAL_RSS);
     }
 
 
