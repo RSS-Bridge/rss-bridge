@@ -1,16 +1,15 @@
 <?php
-/**
-* @name SegfaultMint
-* @homepage http://segfault.linuxmint.com/
-* @description Returns the 5 newest posts from SegfaultMint (full text)
-* @maintainer qwertygc
-* @update 2014-07-05
-*/
 class SegfaultMintBridge extends BridgeAbstract{
 
+	public function loadMetadatas() {
 
+		$this->maintainer = "qwertygc";
+		$this->name = "SegfaultMint";
+		$this->uri = "http://segfault.linuxmint.com/";
+		$this->description = "Returns the 5 newest posts from SegfaultMint (full text)";
+		$this->update = "2014-07-05";
 
-
+	}
 
     public function collectData(array $param){
 

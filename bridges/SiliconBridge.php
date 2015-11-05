@@ -1,16 +1,15 @@
 <?php
-/**
-* Silicon Bridge
-* Returns the newest articles
-* 2015-09-08
-*
-* @name Silicon.fr
-* @homepage http://www.silicon.fr/
-* @description Returns the newest articles.
-* @maintainer ORelio
-* @update 2015-09-08
-*/
 class SiliconBridge extends BridgeAbstract {
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "ORelio";
+		$this->name = "Silicon.fr";
+		$this->uri = "http://www.silicon.fr/";
+		$this->description = "Returns the newest articles.";
+		$this->update = "2015-09-08";
+
+	}
 
     public function collectData(array $param) {
 

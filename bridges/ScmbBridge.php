@@ -1,15 +1,15 @@
 <?php
-/**
-* RssBridgeSeCoucherMoinsBete 
-* Returns the newest anecdotes
-* 2014-05-25
-*
-* @name Se Coucher Moins Bête Bridge
-* @homepage http://secouchermoinsbete.fr/
-* @description Returns the newest anecdotes.
-* @maintainer Astalaseven
-*/
 class ScmbBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "Astalaseven";
+		$this->name = "Se Coucher Moins Bête Bridge";
+		$this->uri = "http://secouchermoinsbete.fr/";
+		$this->description = "Returns the newest anecdotes.";
+		$this->update = "2014-05-25";
+
+	}
     
     public function collectData(array $param){
         $html = '';

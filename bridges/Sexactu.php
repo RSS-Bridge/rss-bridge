@@ -1,12 +1,16 @@
 <?php
-/**
-* Unfortunatly, Sexactu do not provide a RSS stream, which prevents me from upgrading this to the mugnificent RssExpander framework
-* @name Sexactu
-* @description Sexactu via rss-bridge
-* @update 04/02/2014
-*/
 define("GQ", "http://www.gqmagazine.fr");
 class Sexactu extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "Riduidel";
+		$this->name = "Sexactu";
+		$this->uri = "http://www.gqmagazine.fr";
+		$this->description = "Sexactu via rss-bridge";
+		$this->update = "04/02/2014";
+
+	}
 
     public function collectData(array $param){
 $find = array('janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'novembre', 'décembre');

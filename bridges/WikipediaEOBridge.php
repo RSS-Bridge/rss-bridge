@@ -1,15 +1,15 @@
 <?php
-/**
-* RssBridgeWikipediaEO
-* Retrieve latest highlighted articles from Wikipedia in Esperanto.
-* 2014-05-25
-*
-* @name Wikipedia EO "Artikolo de la semajno"
-* @homepage https://eo.wikipedia.org/
-* @description Returns the highlighted eo.wikipedia.org article.
-* @maintainer gsurrel
-*/
 class WikipediaEOBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "gsurrel";
+		$this->name = "Wikipedia EO 'Artikolo de la semajno'";
+		$this->uri = "https://eo.wikipedia.org/";
+		$this->description = "Returns the highlighted eo.wikipedia.org article.";
+		$this->update = "2014-05-25";
+
+	}
 
     public function collectData(array $param){
         $html = '';

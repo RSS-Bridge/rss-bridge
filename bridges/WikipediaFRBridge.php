@@ -1,15 +1,15 @@
 <?php
-/**
-* RssBridgeWikipediaFR
-* Retrieve latest highlighted articles from Wikipedia in French.
-* 2014-05-25
-*
-* @name Wikipedia FR "Lumière sur..."
-* @homepage https://fr.wikipedia.org/
-* @description Returns the highlighted fr.wikipedia.org article.
-* @maintainer gsurrel
-*/
 class WikipediaFRBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "gsurrel";
+		$this->name = "Wikipedia FR 'Lumière sur...'";
+		$this->uri = "https://fr.wikipedia.org/";
+		$this->description = "Returns the highlighted fr.wikipedia.org article.";
+		$this->update = "2014-05-25";
+
+	}
 
     public function collectData(array $param){
         $html = '';

@@ -1,15 +1,16 @@
 <?php
-/**
-* RssBridgeRue89
-* Returns the 5 newest posts from http://rue89.nouvelobs.com/ (full text)
-*
-* @name Rue89
-* @homepage http://rue89.nouvelobs.com/
-* @description Returns the 5 newest posts from Rue89 (full text)
-* @update 2015-01-30
-* @maintainer pit-fgfjiudghdf
-*/
 class Rue89Bridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "pit-fgfjiudghdf";
+		$this->name = "Rue89";
+		$this->uri = "http://rue89.nouvelobs.com/";
+		$this->description = "Returns the 5 newest posts from Rue89 (full text)";
+		$this->update = "2015-01-30";
+
+	}
+
     public function collectData(array $param){
     function Rue89StripCDATA($string) {
         $string = str_replace('<![CDATA[', '', $string);

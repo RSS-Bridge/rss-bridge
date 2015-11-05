@@ -1,21 +1,21 @@
 <?php
-/**
-* WikipediaDEBridge
-* Retrieve latest highlighted articles from Wikipedia in German.
-* 2015-11-04
-*
-* @name Wikipedia DE "Today's Featured Article..."
-* @homepage https://de.wikipedia.org/
-* @description Returns the highlighted en.wikipedia.org article.
-* @maintainer cnlpete
-*/
 class WikipediaDEBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "cnlpete";
+		$this->name = "Wikipedia DE Today's Featured Article...";
+		$this->uri = "https://de.wikipedia.org/";
+		$this->description = "Returns the highlighted en.wikipedia.org article.";
+		$this->update = "2015-11-04";
+
+	}
 
     public function collectData(array $param){
         $html = '';
         $host = 'http://de.wikipedia.org';
         // If you want HTTPS access instead, uncomment the following line:
-        //$host = 'https://en.wikipedia.org';
+        //$host = 'https://de.wikipedia.org';
         $link = '/wiki/Wikipedia:Hauptseite';
 
         $html = file_get_html($host.$link) or $this->returnError('Could not request Wikipedia DE.', 404);
