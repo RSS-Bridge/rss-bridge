@@ -1,18 +1,15 @@
 <?php
-/**
-* RssBridgeGuruMed 
-* Returns the 5 newest posts from http://www.gurumed.org (full text)
-*
-* @name GuruMed
-* @description Returns the 5 newest posts from Gurumed (full text)
-* @homepage http://www.gurumed.org
-*@maintainer qwertygc
-*/
 class GuruMedBridge extends BridgeAbstract{
 
+	public function loadMetadatas() {
 
+		$this->maintainer = "qwertygc";
+		$this->name = "GuruMed";
+		$this->uri = "http://www.gurumed.org";
+		$this->description = "Returns the 5 newest posts from Gurumed (full text)";
+		$this->update = "03/10/2015";
 
-
+	}
 
     public function collectData(array $param){
 

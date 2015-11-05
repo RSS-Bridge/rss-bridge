@@ -1,12 +1,15 @@
 <?php
-/**
-* 2014-08-27
-* @name NASA APOD Bridge
-* @homepage http://apod.nasa.gov/apod/astropix.html
-* @description Returns the 3 latest NASA APOD pictures and explanations
-* @maintainer corenting
-*/
 class NasaApodBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "corenting";
+		$this->name = "NASA APOD Bridge";
+		$this->uri = "http://apod.nasa.gov/apod/astropix.html";
+		$this->description = "Returns the 3 latest NASA APOD pictures and explanations";
+		$this->update = "2014-08-27";
+
+	}
 
   public function collectData(array $param) {
 

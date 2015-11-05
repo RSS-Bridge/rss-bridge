@@ -9,9 +9,9 @@
  */
  
 abstract class RssExpander extends HttpCachingBridgeAbstract{
-    protected $name;
-    private $uri;
-    private $description;
+    public $name;
+    public $uri;
+    public $description;
     public function collectData(array $param){
         if (empty($param['url'])) {
             $this->returnError('There is no $param[\'url\'] for this RSS expander', 404);

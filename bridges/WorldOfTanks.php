@@ -10,8 +10,8 @@ define('WORLD_OF_TANKS', 'http://worldoftanks.eu/');
 define('NEWS', '/news/');
 class WorldOfTanks extends HttpCachingBridgeAbstract{
     private $lang = "fr";
-    private $uri = WORLD_OF_TANKS;
-    private $name = 'World of tanks news';
+    public $uri = WORLD_OF_TANKS;
+    public $name = 'World of tanks news';
 
     public function collectData(array $param){
         if (!empty($param['lang'])) {

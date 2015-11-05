@@ -12,7 +12,7 @@
 * @use2(n="max number of returned items")
 */
 
-define(GIPHY_LIMIT, 10);
+define('GIPHY_LIMIT', 10);
 
 class GiphyBridge extends BridgeAbstract{
 

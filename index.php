@@ -1,5 +1,4 @@
 <?php
-$time_start = microtime(true);
 /*
 TODO :
 - manage SSL detection because if library isn't loaded, some bridge crash !
@@ -14,7 +13,7 @@ TODO :
 
 date_default_timezone_set('UTC');
 error_reporting(0);
-ini_set('display_errors','1'); error_reporting(E_ALL);  // For debugging only.
+//ini_set('display_errors','1'); error_reporting(E_ALL);  // For debugging only.
 
 // extensions check
 if (!extension_loaded('openssl'))
@@ -98,14 +97,20 @@ try{
                     $bridge->setDatas($_REQUEST);
 					$bridge->loadMetadatas();
                     // Data transformation
-                    $format = Format::create($format);
-                    $format
-                        ->setDatas($bridge->getDatas())
-                        ->setExtraInfos(array(
-                            'name' => $bridge->name,
-                            'uri' => $bridge->uri,
-                        ))
-                        ->display();
+                    try {
+		                $format = Format::create($format);
+		                $format
+		                    ->setDatas($bridge->getDatas())
+		                    ->setExtraInfos(array(
+		                        'name' => $bridge->getName(),
+		                        'uri' => $bridge->getURI(),
+		                    ))
+		                    ->display();
+		            } catch(Exception $e) {
+
+						echo "The brige has crashed. You should report this to the bridges maintainer";
+
+		            }
                     die;
                 }
                 break;
@@ -140,7 +145,11 @@ function getHelperButtonsFormat($formats){
 function displayBridgeCard($bridgeName, $formats, $isActive = true)
 {
 
+
 	$bridgeElement = Bridge::create($bridgeName);
+	if($bridgeElement == false) {
+		return "";
+	}
 	$bridgeElement->loadMetadatas();
 
 	$name = '<a href="'.$bridgeElement->uri.'">'.$bridgeElement->name.'</a>';
@@ -269,10 +278,7 @@ $formats = Format::searchInformation();
 	?>
     <footer>
 		<?= $activeFoundBridgeCount; ?>/<?= count($whitelist_selection) ?> active bridges (<a href="?show_inactive=1">Show inactive</a>)<br />
-        <a href="https://github.com/sebsauvage/rss-bridge">RSS-Bridge alpha 0.1 ~ Public Domain</a>
+        <a href="https://github.com/sebsauvage/rss-bridge">RSS-Bridge alpha 0.2 ~ Public Domain</a>
     </footer>
     </body>
 </html>
-<?php
-echo "Ran for ". (microtime(true) - $time_start);
-?>

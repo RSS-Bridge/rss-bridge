@@ -1,15 +1,15 @@
 <?php
-/**
-* RssBridgeDeveloppezDotCom
-* Returns the 15 newest posts from http://www.developpez.com (full text)
-* 2014-07-14
-*
-* @name Developpez.com Actus (FR)
-* @homepage http://www.developpez.com/
-* @description Returns the 15 newest posts from DeveloppezDotCom (full text).
-* @maintainer polopollo
-*/
 class DeveloppezDotComBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "polopollo";
+		$this->name = "Developpez.com Actus (FR)";
+		$this->uri = "http://www.developpez.com/";
+		$this->description = "Returns the 15 newest posts from DeveloppezDotCom (full text).";
+		$this->update = "2014-07-14";
+
+	}
 
     public function collectData(array $param){
 

@@ -15,8 +15,8 @@
 * Description for the API is available on GitHub: https://github.com/justintv/twitch-api
 */
 
-define(TWITCH_LIMIT, 10); // The default limit
-define(TWITCH_BROADCASTS, 'false'); // The default flag for broadcasts
+define('TWITCH_LIMIT', 10); // The default limit
+define('TWITCH_BROADCASTS', 'false'); // The default flag for broadcasts
 
 class TwitchApiBridge extends BridgeAbstract{
     

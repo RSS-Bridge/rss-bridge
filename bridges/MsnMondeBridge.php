@@ -1,15 +1,15 @@
 <?php
-/**
-* RssBridgeMsnMonde
-* Returns the 10 newest posts from MSN Actualités (full text)
-*
-* @name MSN Actu Monde
-* @homepage http://www.msn.com/fr-fr/actualite/monde
-* @description Returns the 10 newest posts from MSN Actualités (full text)
-* @maintainer kranack
-* @update 2015-01-30
-*/
 class MsnMondeBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "kranack";
+		$this->name = "MSN Actu Monde";
+		$this->uri = "http://www.msn.com/fr-fr/actualite/monde";
+		$this->description = "Returns the 10 newest posts from MSN Actualités (full text)";
+		$this->update = "2015-01-30";
+
+	}
 
     public function collectData(array $param){
 

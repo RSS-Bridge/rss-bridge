@@ -1,14 +1,15 @@
 <?php
-/**
-*
-* @name CourrierInternational
-* @homepage http://CourrierInternational.fr/
-* @description Courrier International bridge
-* @update 01/09/2015
-* @maintainer teromene
-*/
-
 class CourrierInternationalBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "teromene";
+		$this->name = "CourrierInternational";
+		$this->uri = "http://CourrierInternational.fr/";
+		$this->description = "Courrier International bridge";
+		$this->update = "01/09/2015";
+
+	}
 
     public function collectData(array $param){
 	

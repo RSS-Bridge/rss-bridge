@@ -1,15 +1,16 @@
 <?php
-/**
-* RssBridgePlanetLibre
-* Returns the 5 newest posts from PlanetLibre (full text)
-*
-* @name PlanetLibre
-* @homepage http://www.planet-libre.org
-* @description Returns the 5 newest posts from PlanetLibre (full text)
-* @maintainer pit-fgfjiudghdf 
-* @update 2014-05-26
-*/
 class PlanetLibreBridge extends BridgeAbstract{
+
+    public function loadMetadatas() {
+
+		$this->maintainer = "pit-fgfjiudghdf";
+		$this->name = "PlanetLibre";
+		$this->uri = "http://www.planet-libre.org";
+		$this->description = "Returns the 5 newest posts from PlanetLibre (full text)";
+		$this->update = "2014-05-26";
+
+	}
+
     public function collectData(array $param){
 
     function PlanetLibreExtractContent($url) {

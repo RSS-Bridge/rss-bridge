@@ -1,12 +1,15 @@
 <?php
-/**
-* 2014-05-25
-* @name LeMotDuJour Bridge
-* @homepage http://www.lemotdujour.com/
-* @description Returns the newest articles.
-* @maintainer qwertygc
-*/
 class LeMotDuJourBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "qwertygc";
+		$this->name = "LeMotDuJour Bridge";
+		$this->uri = "http://www.lemotdujour.com/";
+		$this->description = "Returns the newest articles.";
+		$this->update = "2014-05-25";
+
+	}
     
         public function collectData(array $param){
 

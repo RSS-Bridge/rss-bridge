@@ -1,19 +1,18 @@
 <?php
-/**
-* ABCTabsBridge
-* Returns the newest tabs
-*
-* @name ABC Tabs Bridge
-* @homepage http://www.abc-tabs.com/
-* @description Returns 22 newest tabs
-* @maintainer kranack
-* @update 2014-07-23
-*
-*/
 class ABCTabsBridge extends BridgeAbstract{
-    
+
 	private $request;
-    
+
+    public function loadMetadatas() {
+
+		$this->maintainer = "kranack";
+		$this->name = "ABC Tabs Bridge";
+		$this->uri = "http://www.abc-tabs.com/";
+		$this->description = "Returns 22 newest tabs";
+		$this->update = "2014-07-23";
+
+	}
+
 	public function collectData(array $param){
 		$html = '';
         $html = file_get_html('http://www.abc-tabs.com/tablatures/nouveautes.html') or $this->returnError('No results for this query.', 404);
@@ -30,12 +29,17 @@ class ABCTabsBridge extends BridgeAbstract{
 		    $this->items[] = $item;
 		}
     }
-	public function getName(){
-		return 'ABC Tabs Bridge';
+
+	public function getName() {
+
+		return "ABC Tabs Bridge";
+
 	}
 
-	public function getURI(){
-		return 'http://www.abc-tabs.com/';
+	public function getURI() {
+
+		return "http://www.abc-tabs.com/";
+
 	}
 
 	public function getCacheDuration(){

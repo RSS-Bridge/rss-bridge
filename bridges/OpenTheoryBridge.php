@@ -1,18 +1,15 @@
 <?php
-/**
-* RssBridgeOpenTheory
-* Returns the 5 newest posts from http://open1theory.com (full text)
-*
-* @name Opentheory
-* @description Returns the 5 newest posts from OpenTheory (full text)
-* @homepage http://open1theory.com
-*@maintainer qwertygc
-*/
 class OpenTheoryBridge extends BridgeAbstract{
 
+	public function loadMetadatas() {
 
+		$this->maintainer = "qwertygc";
+		$this->name = "Opentheory";
+		$this->uri = "http://open1theory.com";
+		$this->description = "Returns the 5 newest posts from OpenTheory (full text)";
+		$this->update = "02-08-2014";
 
-
+	}
 
     public function collectData(array $param){
 

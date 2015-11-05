@@ -1,16 +1,15 @@
 <?php
-/**
- * RssBridgeFrandroid
- * Returns the RSS feed from Frandroid (full text articles)
- *
- * @name Frandroid
- * @homepage http://www.frandroid.com/
- * @description Returns the RSS feed from Frandroid (full text articles)
- * @maintainer Daiyousei
- * @update 2015-03-05 
- */
 class FrandroidBridge extends BridgeAbstract
 {
+	public function loadMetadatas() {
+
+		$this->maintainer = "Daiyousei";
+		$this->name = "Frandroid";
+		$this->uri = "http://www.frandroid.com/";
+		$this->description = "Returns the RSS feed from Frandroid (full text articles)";
+		$this->update = "2015-03-05";
+
+	}
     
     public function collectData(array $param)
     {

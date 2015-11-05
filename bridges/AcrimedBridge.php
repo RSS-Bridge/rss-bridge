@@ -1,13 +1,6 @@
 <?php
-/**
-*
-* @name Acrimed Bridge
-* @homepage http://www.acrimed.org/
-* @description Returns the newest articles.
-* @maintainer qwertygc
-*/
 class AcrimedBridge extends BridgeAbstract{
-    
+
 		public function loadMetadatas() {
 
 			$this->maintainer = "qwertygc";
@@ -46,6 +39,17 @@ class AcrimedBridge extends BridgeAbstract{
     
     }
 
+	public function getName() {
+
+		return "Acrimed Bridge";
+
+	}
+
+	public function getURI() {
+
+		return "http://www.acrimed.org/";
+
+	}
 
     public function getCacheDuration(){
         return 3600*2; // 2 hours
