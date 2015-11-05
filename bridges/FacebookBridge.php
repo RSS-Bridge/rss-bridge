@@ -1,15 +1,22 @@
 <?php
-/**
-* @name Facebook
-* @homepage http://facebook.com/
-* @description Input a page title or a profile log. For a profile log, please insert the parameter as follow : myExamplePage/132621766841117
-* @update 23/10/2015
-* @maintainer teromene
-* @use1(u="username")
-*/
 class FacebookBridge extends BridgeAbstract{
 
+	public function loadMetadatas() {
 
+		$this->maintainer = "teromene";
+		$this->name = "Facebook";
+		$this->uri = "http://facebook.com/";
+		$this->description = "Input a page title or a profile log. For a profile log, please insert the parameter as follow : myExamplePage/132621766841117";
+		$this->update = "23/10/2015";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "Username",
+				"identifier" : "u"
+			}
+		]';
+	}
 
 	public function collectData(array $param){
 

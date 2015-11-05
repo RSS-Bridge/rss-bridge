@@ -1,17 +1,63 @@
 <?php
-/**
-* RssBridgeOpenClassrooms
-* Retrieve lastest tutorials from OpenClassrooms.
-* Returns the most recent tutorials, sorting by date (most recent first).
-*
-* @name OpenClassrooms Bridge
-* @homepage https://openclassrooms.com/
-* @description Returns latest tutorials from OpenClassrooms.
-* @maintainer sebsauvage
-* @update 2015-10-30
-* @use1(list|u="Arts & Culture=>arts;Code=>code;Design=>design;Entreprise=>business;Numérique=>digital;Sciences=>sciences;Sciences humaines=>humanities;Systèmes d'information=>it;Autres=>others")
-*/
 class OpenClassroomsBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "sebsauvage";
+		$this->name = "OpenClassrooms Bridge";
+		$this->uri = "https://openclassrooms.com/";
+		$this->description = "Returns latest tutorials from OpenClassrooms.";
+		$this->update = "2015-10-30";
+
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "Catégorie",
+				"identifier" : "u",
+				"type" : "list",
+				"values" : [
+					{
+						"name" : "Arts & Culture",
+						"value" : "arts"
+					},
+					{
+						"name" : "Code",
+						"value" : "code"
+					},
+					{
+						"name" : "Design",
+						"value" : "design"
+					},
+					{
+						"name" : "Entreprise",
+						"value" : "business"
+					},
+					{
+						"name" : "Numérique",
+						"value" : "digital"
+					},
+					{
+						"name" : "Sciences",
+						"value" : "sciences"
+					},
+					{
+						"name" : "Sciences Humaines",
+						"value" : "humainities"
+					},
+					{
+						"name" : "Systèmes d\'information",
+						"value" : "it"
+					},
+					{
+						"name" : "Autres",
+						"value" : "others"
+					}
+				]
+			}
+		]';
+	}
+
 
     public function collectData(array $param){
         if (empty($param['u']))

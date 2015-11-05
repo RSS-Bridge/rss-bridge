@@ -1,21 +1,27 @@
 <?php
-/**
-* WhydBridge
-* Returns the newest music from user
-*
-* @name Whyd Bridge
-* @homepage http://www.whyd.com/
-* @description Returns 10 newest music from user profile 
-* @maintainer kranack
-* @update 2014-07-18
-* @use1(u="username/id")
-*
-*/
 class WhydBridge extends BridgeAbstract{
-    
+
 	private $request;
 	public $name;
-    
+
+    public function loadMetadatas() {
+
+		$this->maintainer = "kranack";
+		$this->name = "Whyd Bridge";
+		$this->uri = "http://www.whyd.com/";
+		$this->description = "Returns 10 newest music from user profile";
+		$this->update = "2014-07-18";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "username/id",
+				"identifier" : "u"
+			}
+		]';
+
+	}
+
 	public function collectData(array $param){
 		$html = '';
 		if (isset($param['u']))

@@ -1,19 +1,24 @@
 <?php
-/**
-* CNET Bridge
-* Returns the newest articles
-* 2015-09-08
-*
-* @name CNET News
-* @homepage http://www.cnet.com/
-* @description Returns the newest articles. <br /> You may specify a topic, else all topics are selected.
-* @maintainer ORelio
-* @update 2015-09-10
-* @use1(topic="Topic name")
-*/
 class CNETBridge extends BridgeAbstract {
 
     private $topicName = '';
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "ORelio";
+		$this->name = "CNET News";
+		$this->uri = "http://www.cnet.com/";
+		$this->description = "Returns the newest articles. <br /> You may specify a topic, else all topics are selected.";
+		$this->update = "2015-09-10";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "Topic name",
+				"identifier" : "topic"
+			}
+		]';
+	}
 
     public function collectData(array $param) {
 

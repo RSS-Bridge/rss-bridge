@@ -1,14 +1,25 @@
 <?php
-/**
-*
-* @name Freenews
-* @description Un site d'actualité pour les freenautes (mais ne parlant pas que de la freebox). Ne rentrez pas d'id si vous voulez accéder aux actualités générales.
-* @update 26/03/2014
-* @use1(id="Id de la rubrique (sans le '-')")
-*/
 require_once 'bridges/RssExpander.php';
 define("RSS", 'http://feeds.feedburner.com/Freenews-Freebox?format=xml');
 class Freenews extends RssExpander {
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "mitsukarenai";
+		$this->name = "Freenews";
+		$this->uri = "http://freenews.fr";
+		$this->description = "Un site d'actualité pour les freenautes (mais ne parlant pas que de la freebox). Ne rentrez pas d'id si vous voulez accéder aux actualités générales.";
+		$this->update = "26/03/2014";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "Id de la rubrique (sans le \'-\')",
+				"identifier" : "id"
+			}
+		]';
+	}
+
     public function collectData(array $param){
         $param['url'] = RSS;
         parent::collectData($param);

@@ -1,16 +1,28 @@
 <?php
-/**
-* RssBridgeRule34paheal
-* Returns images from given page
-* 2014-05-25
-*
-* @name Rule34paheal
-* @homepage http://rule34.paheal.net/
-* @description Returns images from given page
-* @maintainer mitsukarenai
-* @use1(p="page",t='tags")
-*/
 class Rule34pahealBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "mitsukarenai";
+		$this->name = "Rule34paheal";
+		$this->uri = "http://rule34.paheal.net/";
+		$this->description = "Returns images from given page";
+		$this->update = "2014-05-25";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "page",
+				"identifier" : "p",
+				"type" : "number"
+			},
+			{
+				"name" : "tags",
+				"identifier" : "t"
+			}
+		]';
+	}
+
 
     public function collectData(array $param){
 	$page = 0;$tags='';

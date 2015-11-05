@@ -1,19 +1,34 @@
 <?php
-/**
-* HDWallpapersBridge
-* Returns the latests wallpapers from http://www.hdwallpapers.in
-*
-* @name HD Wallpapers Bridge
-* @homepage http://www.hdwallpapers.in/
-* @description Returns the latests wallpapers from HDWallpapers
-* @maintainer nel50n
-* @update 2015-04-08
-* @use1(c="category",m="max number of wallpapers",r="resolution (1920x1200, 1680x1050, ...)")
-*/
 class HDWallpapersBridge extends BridgeAbstract {
 
     private $category;
     private $resolution;
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "nel50n";
+		$this->name = "HD Wallpapers Bridge";
+		$this->uri = "http://www.hdwallpapers.in/";
+		$this->description = "Returns the latests wallpapers from HDWallpapers";
+		$this->update = "2015-04-08";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "category",
+				"identifier" : "c"
+			},
+			{
+				"name" : "max number of wallpapers",
+				"identifier" : "m"
+			},
+			{
+				"name" : "resolution",
+				"identifier" : "r",
+				"exampleValue" : "1920x1200, 1680x1050, ..."
+			}
+		]';
+	}
 
     public function collectData(array $param){
         $html = '';

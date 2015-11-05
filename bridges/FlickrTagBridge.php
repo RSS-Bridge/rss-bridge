@@ -1,17 +1,30 @@
 <?php
-/**
-* RssBridgeFlickrTagUser 
-* Returns the tagged images from http://www.flickr.com/
-* 2014-05-26
-*
-* @name Flickr TagUser
-* @homepage http://www.flickr.com/
-* @description Returns the tagged or user images from Flickr
-* @maintainer erwang
-* @use1(q="keyword")
-* @use2(u="username")
-*/
 class FlickrTagBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "erwang";
+		$this->name = "Flickr TagUser";
+		$this->uri = "http://www.flickr.com/";
+		$this->description = "Returns the tagged or user images from Flickr";
+		$this->update = "2014-05-26";
+
+		$this->parameters["By keyword"] =
+		'[
+			{
+				"name" : "Keyword",
+				"identifier" : "q"
+			}
+		]';
+
+		$this->parameters["By username"] =
+		'[
+			{
+				"name" : "Username",
+				"identifier" : "u"
+			}
+		]';
+	}
 
     public function collectData(array $param){
         $html = file_get_html('http://www.flickr.com/search/?q=vendee&s=rec') or $this->returnError('Could not request Flickr.', 404);

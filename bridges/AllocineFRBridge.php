@@ -1,17 +1,19 @@
 <?php
-/**
-*
-* @name Allo Cine : Faux Raccord
-* @homepage http://www.allocine.fr/video/programme-12284/saison-24580/
-* @description Allo Cine : Faux Raccord
-* @update 07/11/2013
-* initial maintainer: superbaillot.net
-*/
 class AllocineFRBridge extends BridgeAbstract{
 
     private $_URL = "http://www.allocine.fr/video/programme-12284/saison-24580/";
     private $_NOM = "Faux Raccord";
-    
+
+    public function loadMetadatas() {
+
+		$this->maintainer = "superbaillot.net";
+		$this->name = "Allo Cine : Faux Raccord";
+		$this->uri = "http://www.allocine.fr/video/programme-12284/saison-24580/";
+		$this->description = "Allo Cine : Faux Raccord";
+		$this->update = "07/11/2013";
+
+	}
+
     public function collectData(array $param){
         $html = file_get_html($this->_URL) or $this->returnError('Could not request Allo cine.', 404);
 

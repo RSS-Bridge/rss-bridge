@@ -1,17 +1,19 @@
 <?php
-/**
-*
-* @name Allo Cine : Tueurs En Serie
-* @homepage http://www.allocine.fr/video/programme-12286/saison-22938/
-* @description Allo Cine : Tueurs En Serie
-* @update 12/11/2013
-* initial maintainer: superbaillot.net
-*/
 class AllocineTueursEnSerieBridge extends BridgeAbstract{
 
     private $_URL = "http://www.allocine.fr/video/programme-12286/saison-22938/";
     private $_NOM = "Tueurs en Séries";
-    
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "superbaillot.net";
+		$this->name = "Allo Cine : Tueurs En Serie";
+		$this->uri = "http://www.allocine.fr/video/programme-12286/saison-22938/";
+		$this->description = "Allo Cine : Tueurs En Serie";
+		$this->update = "12/11/2013";
+
+	}
+
     public function collectData(array $param){
         $html = file_get_html($this->_URL) or $this->returnError('Could not request Allo cine.', 404);
 

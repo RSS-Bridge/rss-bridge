@@ -1,20 +1,33 @@
 <?php
-/**
-* RssBridgeGiphy
-* Based on https://github.com/mitsukarenai/twitterbridge-noapi
-* 2014-12-05
-*
-* @name Giphy Bridge
-* @homepage http://giphy.com/
-* @description Bridge for giphy.com
-* @maintainer kraoc
-* @use1(s="search tag")
-* @use2(n="max number of returned items")
-*/
-
 define('GIPHY_LIMIT', 10);
 
 class GiphyBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "kraoc";
+		$this->name = "Giphy Bridge";
+		$this->uri = "http://giphy.com/";
+		$this->description = "Bridge for giphy.com";
+		$this->update = "2014-12-05";
+
+		$this->parameters["By tag"] =
+		'[
+			{
+				"name" : "search tag",
+				"identifier" : "s"
+			}
+		]';
+
+		$this->parameters["Without tag"] =
+		'[
+			{
+				"name" : "max number of returned items",
+				"type" : "number",
+				"identifier" : "n"
+			}
+		]';
+	}
 
 	public function collectData(array $param){
 		$html = ''; 

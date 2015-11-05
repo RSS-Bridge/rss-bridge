@@ -1,16 +1,27 @@
 <?php
-/**
-* RssBridgeSakugabooru 
-* Returns images from given page
-* 2014-05-25
-*
-* @name Sakugabooru
-* @homepage http://sakuga.yshi.org/
-* @description Returns images from given page
-* @maintainer mitsukarenai
-* @use1(p="page",t="tags")
-*/
 class SakugabooruBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "mitsukarenai";
+		$this->name = "Sakugabooru";
+		$this->uri = "http://sakuga.yshi.org/";
+		$this->description = "Returns images from given page";
+		$this->update = "2014-05-25";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "page",
+				"identifier" : "p",
+				"type" : "number"
+			},
+			{
+				"name" : "tags",
+				"identifier" : "t"
+			}
+		]';
+	}
 
     public function collectData(array $param){
 	$page = 1;$tags='';

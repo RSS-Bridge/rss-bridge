@@ -1,16 +1,27 @@
 <?php
-/**
-* RssBridgeTbib
-* Returns images from given page
-* 2014-05-25
-*
-* @name Tbib
-* @homepage http://tbib.org/
-* @description Returns images from given page
-* @maintainer mitsukarenai
-* @use1(p="page",t="tags")
-*/
 class TbibBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "mitsukarenai";
+		$this->name = "Tbib";
+		$this->uri = "http://tbib.org/";
+		$this->description = "Returns images from given page";
+		$this->update = "2014-05-25";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "page",
+				"identifier" : "p",
+				"type" : "number"
+			},
+			{
+				"name" : "tags",
+				"identifier" : "t"
+			}
+		]';
+	}
 
     public function collectData(array $param){
 	$page = 0;$tags='';
