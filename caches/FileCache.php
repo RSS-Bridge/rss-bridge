@@ -24,7 +24,13 @@ class FileCache extends CacheAbstract{
     public function saveData($datas){
         $this->isPrepareCache();
 
-        file_put_contents($this->getCacheFile(), json_encode($datas));
+        $writeStream = file_put_contents($this->getCacheFile(), json_encode($datas));
+
+		if(!$writeStream) {
+
+			throw new \Exception("Cannot write the cache... Do you have the right permissions ?");
+
+		}
 
         return $this;
     }
