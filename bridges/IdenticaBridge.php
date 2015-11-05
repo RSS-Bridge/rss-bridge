@@ -1,17 +1,25 @@
 <?php
-/**
-* RssBridgeIdentica 
-* 2014-05-25
-*
-* @name Identica Bridge
-* @homepage https://identi.ca/
-* @description Returns user timelines
-* @maintainer mitsukarenai
-* @use1(u="username")
-*/
 class IdenticaBridge extends BridgeAbstract{
-	
+
 	private $request;
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "mitsukarenai";
+		$this->name = "Identica Bridge";
+		$this->uri = "https://identi.ca/";
+		$this->description = "Returns user timelines";
+		$this->update = "2014-05-25";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "username",
+				"identifier" : "u"
+			}
+		]';
+
+	}
 
     public function collectData(array $param){
         $html = '';

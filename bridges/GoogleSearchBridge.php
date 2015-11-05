@@ -1,25 +1,35 @@
 <?php
 /**
-* RssBridgeGoogleMostRecent
-* Search Google for most recent pages regarding a specific topic.
 * Returns the 100 most recent links in results in past year, sorting by date (most recent first).
 * Example:
 * http://www.google.com/search?q=sebsauvage&num=100&complete=0&tbs=qdr:y,sbd:1
 *    complete=0&num=100 : get 100 results
 *    qdr:y : in past year
 *    sbd:1 : sort by date (will only work if qdr: is specified)
-* 2014-05-25
-*
-* @name Google search
-* @homepage https://www.google.com/
-* @description Returns most recent results from Google search.
-* @maintainer sebsauvage
-* @use1(q="keyword")
 */
 class GoogleSearchBridge extends BridgeAbstract{
 
     private $request;
-    
+
+    public function loadMetadatas() {
+
+		$this->maintainer = "sebsauvage";
+		$this->name = "Google search";
+		$this->uri = "https://www.google.com/";
+		$this->description = "Returns most recent results from Google search.";
+		$this->update = "2014-05-25";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "keyword",
+				"identifier" : "q"
+			}
+		]';
+
+	}
+
+
     public function collectData(array $param){
         $html = '';
 

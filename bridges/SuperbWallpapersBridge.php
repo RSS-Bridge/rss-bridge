@@ -1,19 +1,38 @@
 <?php
-/**
-* SuperbWallpapersBridge
-* Returns the latests wallpapers from http://www.superbwallpapers.com
-*
-* @name Superb Wallpapers Bridge
-* @homepage http://www.superbwallpapers.com/
-* @description Returns the latests wallpapers from SuperbWallpapers
-* @maintainer nel50n
-* @update 2015-04-08
-* @use1(c="category",m="max number of wallpapers",r="resolution (1920x1200, 1680x1050, ...)")
-*/
 class SuperbWallpapersBridge extends BridgeAbstract {
 
     private $category;
     private $resolution;
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "nel50n";
+		$this->name = "Superb Wallpapers Bridge";
+		$this->uri = "http://www.superbwallpapers.com/";
+		$this->description = "Returns the latests wallpapers from SuperbWallpapers";
+		$this->update = "2015-04-08";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "Category",
+				"identifier" : "c"
+			},
+			{
+				"name" : "Max number of wallpapers",
+				"identifier" : "m",
+				"type" : "number"
+			},
+			{
+				"name" : "resolution",
+				"identifier" : "r",
+				"exampleValue" : "1920x1200, 1680x1050, ..."
+			}
+
+		]';
+
+	}
+
 
     public function collectData(array $param){
         $html = '';

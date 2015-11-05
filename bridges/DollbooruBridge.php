@@ -1,16 +1,28 @@
 <?php
-/**
-* RssBridgeDollbooru
-* Returns images from given page
-* 2015-01-20
-*
-* @name Dollbooru
-* @homepage http://dollbooru.org/
-* @description Returns images from given page
-* @maintainer mitsukarenai
-* @use1(p="page", t="tags")
-*/
 class DollbooruBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "mitsukarenai";
+		$this->name = "Dollbooru";
+		$this->uri = "http://dollbooru.org/";
+		$this->description = "Returns images from given page";
+		$this->update = "2015-01-20";
+
+
+		$this->parameters[]  =
+		'[
+			{
+				"name" : "page",
+				"type" : "number",
+				"identifier" : "p"
+			},
+			{
+				"name" : "tags",
+				"identifier" : "t"
+			}
+		]';
+	}
 
     public function collectData(array $param){
 	$page = 0;$tags='';

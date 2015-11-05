@@ -1,17 +1,65 @@
 <?php
-/**
-*
-* @name World of Tanks 
-* @description News about the tank slaughter game.
-* @update 2015-09-12
-* @use1(list|lang="Français=>fr;English=>en;Español=>es;Deutsch=>de;Čeština=>cs;Polski=>pl;Türkçe=>tr",text|category="Category id")
-*/
 define('WORLD_OF_TANKS', 'http://worldoftanks.eu/');
 define('NEWS', '/news/');
 class WorldOfTanks extends HttpCachingBridgeAbstract{
+
     private $lang = "fr";
     public $uri = WORLD_OF_TANKS;
-    public $name = 'World of tanks news';
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "mitsukarenai";
+		$this->name = "World of Tanks";
+		$this->uri = "http://worldoftanks.eu/";
+		$this->description = "News about the tank slaughter game.";
+		$this->update = "2015-09-12";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "ID de la catégorie",
+				"type" : "number",
+				"identifier" : "category"
+			},
+			{
+				"name" : "Langue",
+				"identifier" : "lang",
+				"type" : "list",
+				"values" : [
+					{
+						"name" : "Français",
+						"value" : "fr"
+					},
+					{
+						"name" : "English",
+						"value" : "en"
+					},
+					{
+						"name" : "Español",
+						"value" : "es"
+					},
+					{
+						"name" : "Deutsch",
+						"value" : "de"
+					},
+					{
+						"name" : "Čeština",
+						"value" : "cs"
+					},
+					{
+						"name" : "Polski",
+						"value" : "pl"
+					},
+					{
+						"name" : "Türkçe",
+						"value" : "tr"
+					}
+				]
+
+			}
+		]';
+	}
+
 
     public function collectData(array $param){
         if (!empty($param['lang'])) {

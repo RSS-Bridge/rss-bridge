@@ -1,22 +1,48 @@
 <?php
-/**
-* RssBridgeDailymotion 
-* Returns the newest videos
-*
-* @name Dailymotion Bridge
-* @homepage https://www.dailymotion.com/
-* @description Returns the 5 newest videos by username/playlist or search
-* @maintainer mitsukarenai
-* @update 2014-11-18
-* @use1(u="username")
-* @use2(p="playlist id")
-* @use3(s="search keyword",pa="page")
-* 
-*/
 class DailymotionBridge extends BridgeAbstract{
-    
+
 	private $request;
-    
+
+    public function loadMetadatas() {
+
+		$this->maintainer = "mitsukarenai";
+		$this->name = "Dailymotion Bridge";
+		$this->uri = "https://www.dailymotion.com/";
+		$this->description = "Returns the 5 newest videos by username/playlist or search";
+		$this->update = "2014-11-18";
+
+		$this->parameters["By username"] =
+		'[
+			{
+				"name" : "username",
+				"identifier" : "u"
+			}
+		]';
+
+		$this->parameters["By playlist id"] =
+		'[
+			{
+				"name" : "playlist id",
+				"identifier" : "p",
+				"type" : "number"
+			}
+		]';
+
+		$this->parameters["From search results"] =
+		'[
+			{
+				"name" : "Search keyword",
+				"identifier" : "s"
+			},
+			{
+				"name" : "Page",
+				"identifier" : "pa",
+				"type" : "number"
+			}
+		]';
+	}
+
+
 	public function collectData(array $param){
 
 		function getMetadata($id) {

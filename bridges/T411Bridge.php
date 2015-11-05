@@ -1,16 +1,23 @@
 <?php
-/**
- * T411Bridge
- * Returns 5 newest torrents with specified search criteria
- *
- * @name T411
- * @homepage https://t411.in/
- * @description Returns the 5 newest torrents with specified search terms <br /> Use url part after '?' mark when using their search engine
- * @maintainer ORelio
- * @update 2015-10-22
- * @use1(search="search criteria")
- */
 class T411Bridge extends BridgeAbstract {
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "ORelio";
+		$this->name = "T411";
+		$this->uri = "https://t411.in/";
+		$this->description = "Returns the 5 newest torrents with specified search terms <br /> Use url part after '?' mark when using their search engine";
+		$this->update = "2015-10-22";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "Search criteria",
+				"identifier" : "search"
+			}
+		]';
+	}
+
 
     public function collectData(array $param) {
 

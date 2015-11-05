@@ -1,16 +1,35 @@
 <?php
-/**
-* UnsplashBridge
-* Returns the latests photos from http://unsplash.com
-*
-* @name Unsplash Bridge
-* @homepage http://unsplash.com/
-* @description Returns the latests photos from Unsplash
-* @maintainer nel50n
-* @update 2015-03-02
-* @use1(m="max number of photos",w="width (1920, 1680, ...)",q="jpeg quality (0..100)")
-*/
 class UnsplashBridge extends BridgeAbstract {
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "nel50n";
+		$this->name = "Unsplash Bridge";
+		$this->uri = "http://unsplash.com/";
+		$this->description = "Returns the latests photos from Unsplash";
+		$this->update = "2015-03-02";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "Max number of photos",
+				"identifier" : "m",
+				"type" : "number"
+			},
+			{
+				"name" : "Width",
+				"identifier" : "w",
+				"exampleValue" : "1920, 1680, ..."
+			},
+			{
+				"name" : "JPEG quality",
+				"identifier" : "q",
+				"type" : "number"
+
+			}
+
+		]';
+	}
 
     public function collectData(array $param){
         $html = '';

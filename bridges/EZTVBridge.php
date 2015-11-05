@@ -1,18 +1,24 @@
 <?php
-/**
-* RssBridgeEZTV
-* Monitor torrent for shows on EZTV
-* 2015-01-20
-*
-* @name EZTV
-* @homepage https://eztv.ch/
-* @description Returns list of *recent* torrents for a specific show on EZTV. Get showID from URLs in https://eztv.ch/shows/showID/show-full-name.
-* @maintainer alexAubin
-* @update 2014-01-20
-* @use1(i="showID1,showID2,...")
- */
-
 class EZTVBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "alexAubin";
+		$this->name = "EZTV";
+		$this->uri = "https://eztv.ch/";
+		$this->description = "Returns list of *recent* torrents for a specific show on EZTV. Get showID from URLs in https://eztv.ch/shows/showID/show-full-name.";
+		$this->update = "2014-01-20";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "Show ids",
+				"identifier" : "i",
+				"exampleValue" : "showID1,showID2,..."
+			}
+		]';
+
+	}
 
 	public function collectData(array $param){
 

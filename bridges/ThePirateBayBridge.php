@@ -1,18 +1,23 @@
 <?php
-/**
-* RssBridgeThePirateBay
-* Returns results for the keywords. You can put several list of keywords by separating them with a semicolon (e.g. "one show;another show")
-* 2014-05-25
-*
-* @name The Pirate Bay
-* @homepage https://thepiratebay.vg/
-* @description Returns results for the keywords. You can put several list of keywords by separating them with a semicolon (e.g. "one show;another show")
-* @maintainer mitsukarenai
-* @update 2014-05-26
-* @use1(q="first list;second list;...")
- */
-
 class ThePirateBayBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "mitsukarenai";
+		$this->name = "The Pirate Bay";
+		$this->uri = "https://thepiratebay.vg/";
+		$this->description = "Returns results for the keywords. You can put several list of keywords by separating them with a semicolon (e.g. \"one show;another show\")";
+		$this->update = "2014-05-26";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "keywords, separated by semicolons",
+				"identifier" : "q",
+				"exampleValue" : "first list;second list;..."
+			}
+		]';
+	}
 
 	public function collectData(array $param){
 

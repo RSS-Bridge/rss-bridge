@@ -1,17 +1,22 @@
 <?php
-/**
-* RssBridgeDuckDuckGo
-* Search DuckDuckGo for most recent pages regarding a specific topic.
-* Returns the most recent links in results, sorting by date (most recent first).
-* 2014-05-25
-*
-* @name DuckDuckGo
-* @homepage https://duckduckgo.com/
-* @description Returns most recent results from DuckDuckGo.
-* @maintainer Astalaseven
-* @use1(u="keyword")
-*/
 class DuckDuckGoBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "Astalaseven";
+		$this->name = "DuckDuckGo";
+		$this->uri = "https://duckduckgo.com/";
+		$this->description = "Returns most recent results from DuckDuckGo.";
+		$this->update = "2014-05-25";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "keyword",
+				"identifier" : "u"
+			}
+		]';
+	}
 
     public function collectData(array $param){
         $html = '';

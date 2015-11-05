@@ -1,20 +1,31 @@
 <?php
-
-/**
- * RssBridgeWordpress
- * Returns the 3 newest full posts of a Wordpress blog
- *
- * @name Wordpress Bridge
- * @homepage https://wordpress.com/
- * @description Returns the 3 newest full posts of a Wordpress blog
- * @maintainer aledeg
- * @update 2015-09-05
- * @use1(url="blog URL (required)", name="blog name")
- */
 class WordPressBridge extends BridgeAbstract {
 
 	private $url;
 	public $name;
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "aledeg";
+		$this->name = "Wordpress Bridge";
+		$this->uri = "https://wordpress.com/";
+		$this->description = "Returns the 3 newest full posts of a Wordpress blog";
+		$this->update = "2015-09-05";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "blog URL",
+				"required" : "true",
+				"identifier" : "url"
+			},
+			{
+				"name" : "Blog name",
+				"identifier" : "name"
+			}
+		]';
+
+	}
 
 	public function collectData(array $param) {
 		$this->processParams($param);

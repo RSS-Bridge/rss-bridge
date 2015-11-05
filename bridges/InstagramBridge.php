@@ -1,19 +1,26 @@
 <?php
-/**
- * RssBridgeInstagram
- * Returns the newest photos
-* 2014-05-25
- *
- * @name Instagram Bridge
-* @homepage http://instagram.com/
- * @description Returns the newest images
-* @maintainer pauder
- * @use1(u="username")
- */
 class InstagramBridge extends BridgeAbstract{
-    
+
     private $request;
-    
+
+    public function loadMetadatas() {
+
+		$this->maintainer = "pauder";
+		$this->name = "Instagram Bridge";
+		$this->uri = "http://instagram.com/";
+		$this->description = "Returns the newest images";
+		$this->update = "2014-05-25";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "username",
+				"identifier" : "u"
+			}
+		]';
+
+	}
+
     public function collectData(array $param){
         $html = '';
         if (isset($param['u'])) {   /* user timeline mode */

@@ -1,18 +1,31 @@
 <?php
-/**
-* RssBridgeTwitter
-* Based on https://github.com/mitsukarenai/twitterbridge-noapi
-* 2014-12-05
-*
-* @name Twitter Bridge Tweaked
-* @homepage https://twitter.com/
-* @description (same as Twitter Bridge Extended, but with cleaned title & content)
-* @maintainer kraoc
-* @use1(q="keyword or hashtag")
-* @use2(u="username")
-*/
-
 class TwitterBridgeTweaked extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "kraoc";
+		$this->name = "Twitter Bridge Tweaked";
+		$this->uri = "https://twitter.com/";
+		$this->description = "(same as Twitter Bridge Extended, but with cleaned title & content)";
+		$this->update = "2014-12-05";
+
+		$this->parameters["By keyword or hashtag"] =
+		'[
+			{
+				"name" : "Keyword or #hashtag",
+				"identifier" : "q"
+			}
+		]';
+
+		$this->parameters["By username"] =
+		'[
+			{
+				"name" : "username",
+				"identifier" : "u"
+			}
+		]';
+
+	}
 
     private function containsTLD($string) {
         preg_match(
