@@ -1,16 +1,16 @@
 <?php
-/**
-* RssBridgeScilogs
-* Returns the newest articles
-* 2014-05-25
-*
-* @name Scilogs Bridge
-* @homepage http://www.scilogs.fr/
-* @description Returns the newest articles.
-* @maintainer qwertygc
-*/
 class ScilogsBridge extends BridgeAbstract{
-    
+
+		public function loadMetadatas() {
+
+			$this->maintainer = "qwertygc";
+			$this->name = "Scilogs Bridge";
+			$this->uri = "http://www.scilogs.fr/";
+			$this->description = "Returns the newest articles.";
+			$this->update = "2014-05-25";
+
+		}
+
         public function collectData(array $param){
 
 			function ScilogsStripCDATA($string) {

@@ -1,15 +1,15 @@
 <?php
-/**
-* RssBridgeWikipediaEN
-* Retrieve latest highlighted articles from Wikipedia in English.
-* 2014-05-25
-*
-* @name Wikipedia EN "Today's Featured Article..."
-* @homepage https://en.wikipedia.org/
-* @description Returns the highlighted en.wikipedia.org article.
-* @maintainer gsurrel
-*/
 class WikipediaENBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "gsurrel";
+		$this->name = "Wikipedia EN 'Today's Featured Article...'";
+		$this->uri = "https://en.wikipedia.org/";
+		$this->description = "Returns the highlighted en.wikipedia.org article.";
+		$this->update = "2014-05-25";
+
+	}
 
     public function collectData(array $param){
         $html = '';

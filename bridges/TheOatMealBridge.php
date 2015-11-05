@@ -1,17 +1,21 @@
 <?php
-/**
-*
-* @name The Oatmeal
-* @homepage http://theoatmeal.com/
-* @description Un petit site de dessins assez rigolos
-* @update 2015-07-03
-* @maintainer Riduidel
-.
-*/
+
 require_once 'bridges/RssExpander.php';
+
 define("THE_OATMEAL", "http://theoatmeal.com/");
 define("THE_OATMEAL_RSS", "http://feeds.feedburner.com/oatmealfeed");
+
 class TheOatmealBridge extends RssExpander{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "Riduidel";
+		$this->name = "The Oatmeal";
+		$this->uri = "http://theoatmeal.com/";
+		$this->description = "Un petit site de dessins assez rigolos";
+		$this->update = "2015-07-03";
+
+	}
 
     public function collectData(array $param){
         $param['url'] = THE_OATMEAL_RSS;
