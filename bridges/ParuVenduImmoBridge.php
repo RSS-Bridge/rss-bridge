@@ -1,18 +1,44 @@
 <?php
-/**
-* RssBridge Paru Vendu Immo
-* Retrieve lastest documents from http://www.paruvendu.fr/immobilier/.
-*
-* @name Paru Vendu Immobilier
-* @homepage http://www.paruvendu.fr/immobilier/
-* @description Returns the ads from the first page of search result.
-* @maintainer polo2ro
-* @update 2015-02-02
-* @use1(minarea="Min surface m²",maxprice="Max price",pa="Country code (ex: FR)",lo="department numbers or postal codes, comma-separated")
-*/
+
 class ParuVenduImmoBridge extends BridgeAbstract
 {
     private $request = '';
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "polo2ro";
+		$this->name = "Paru Vendu Immobilier";
+		$this->uri = "http://www.paruvendu.fr/immobilier/";
+		$this->description = "Returns the ads from the first page of search result.";
+		$this->update = "2015-02-02";
+
+
+		$this->parameters[] =
+		'[
+			{
+				"name": "Minimal surface m²",
+				"type" : "number",
+				"identifier" : "minarea"
+			},
+			{
+				"name" : "Max price",
+				"type" : "number",
+				"identifier" : "maxprice"
+			},
+			{
+				"name" : "Country code",
+				"type" : "text",
+				"identifier" : "pa",
+				"exampleValue" : "FR"
+			},
+			{
+				"name" : "department numbers or postal codes, comma-separated",
+				"type" : "text",
+				"identifier" : "lo"
+			}
+
+		]';
+	}
 
     public function collectData(array $param)
     {

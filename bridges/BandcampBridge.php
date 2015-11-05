@@ -1,17 +1,26 @@
 <?php
-/**
-* BandcampTagRSS
-* 2014-05-25
-*
-* @name Bandcamp Tag
-* @homepage http://bandcamp.com/
-* @description New bandcamp release by tag
-* @maintainer sebsauvage
-* @use1(tag="tag")
-*/
 class BandcampBridge extends BridgeAbstract{
-    
+
     private $request;
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "sebsauvage";
+		$this->name = "Bandcamp Tag";
+		$this->uri = "http://bandcamp.com/";
+		$this->description = "New bandcamp release by tag";
+		$this->update = "2014-05-25";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "tag",
+				"type" : "text",
+				"identifier" : "tag"
+
+			}
+		]';
+	}
 
     public function collectData(array $param){
         $html = '';

@@ -1,16 +1,27 @@
 <?php
-/**
-* RssBridgeDanbooru 
-* Returns images from given page
-* 2014-05-25
-*
-* @name Danbooru
-* @homepage http://donmai.us/
-* @description Returns images from given page
-* @maintainer mitsukarenai
-* @use1(p="page", t="tags")
-*/
 class DanbooruBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "mitsukarenai";
+		$this->name = "Danbooru";
+		$this->uri = "http://donmai.us/";
+		$this->description = "Returns images from given page";
+		$this->update = "2014-05-25";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "page",
+				"identifier" : "p"
+			},
+			{
+				"name" : "tags",
+				"identifier" : "t"
+			}
+		]';
+
+	}
 
     public function collectData(array $param){
 	$page = 1;$tags='';

@@ -14,6 +14,136 @@
 
 class LeBonCoinBridge extends BridgeAbstract{
 
+	public function loadMetadatas() {
+
+		$this->maintainer = "16mhz";
+		$this->name = "LeBonCoin";
+		$this->uri = "http://www.leboncoin.fr";
+		$this->description = "Returns most recent results from LeBonCoin for a region and a keyword.";
+		$this->update = "2015-10-30";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "Keyword",
+				"identifier" : "k"
+			},
+			{
+				"name" : "Région",
+				"identifier" : "r",
+				"type" : "list",
+				"values" : [
+						{
+						"name" : "Alsace",
+						"value" : "alsace"
+						},
+						{
+						"name" : "Aquitaine",
+						"value" : "aquitaine"
+						},
+						{
+						"name" : "Auvergne",
+						"value" : "auvergne"
+						},
+						{
+						"name" : "Basse Normandie",
+						"value" : "basse_normandie"
+						},
+						{
+						"name" : "Bourgogne",
+						"value" : "bourgogne"
+						},
+						{
+						"name" : "Bretagne",
+						"value" : "bretagne"
+						},
+						{
+						"name" : "Centre",
+						"value" : "centre"
+						},
+						{
+						"name" : "Champagne Ardenne",
+						"value" : "champagne_ardenne"
+						},
+						{
+						"name" : "Corse",
+						"value" : "corse"
+						},
+						{
+						"name" : "Franche Comté",
+						"value" : "franche_comte"
+						},
+						{
+						"name" : "Haute Normandie",
+						"value" : "haute_normandie"
+						},
+						{
+						"name" : "Ile de France",
+						"value" : "ile_de_france"
+						},
+						{
+						"name" : "Languedoc Roussillon",
+						"value" : "languedoc_roussillon"
+						},
+						{
+						"name" : "Limousin",
+						"value" : "limousin"
+						},
+						{
+						"name" : "Lorraine",
+						"value" : "lorraine"
+						},
+						{
+						"name" : "Midi Pyrénées",
+						"value" : "midi_pyrenees"
+						},
+						{
+						"name" : "Nord Pas De Calais",
+						"value" : "nord_pas_de_calais"
+						},
+						{
+						"name" : "Pays de la Loire",
+						"value" : "pays_de_la_loire"
+						},
+						{
+						"name" : "Picardie",
+						"value" : "picardie"
+						},
+						{
+						"name" : "Poitou Charentes",
+						"value" : "poitou_charentes"
+						},
+						{
+						"name" : "Provence Alpes Côte d\'Azur",
+						"value" : "provence_alpes_cote_d_azur"
+						},
+						{
+						"name" : "Rhône-Alpes",
+						"value" : "rhone_alpes"
+						},
+						{
+						"name" : "Guadeloupe",
+						"value" : "guadeloupe"
+						},
+						{
+						"name" : "Martinique",
+						"value" : "martinique"
+						},
+						{
+						"name" : "Guyane",
+						"value" : "guyane"
+						},
+						{
+						"name" : "Réunion",
+						"value" : "reunion"
+						}
+				]
+			}
+		]';
+
+	}
+
+
     public function collectData(array $param){
 
         $html = '';

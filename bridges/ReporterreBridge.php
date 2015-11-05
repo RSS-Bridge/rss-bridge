@@ -1,16 +1,16 @@
 <?php
-/**
-* RssBridgeReporterre
-* Returns the newest article
-* 2015-04-07
-*
-* @name Reporterre Bridge
-* @homepage http://www.reporterre.net/
-* @description Returns the newest articles.
-* @maintainer nyutag
-*/
 class ReporterreBridge extends BridgeAbstract{
-   
+
+		public function loadMetadatas() {
+
+			$this->maintainer = "nyutag";
+			$this->name = "Reporterre Bridge";
+			$this->uri = "http://www.reporterre.net/";
+			$this->description = "Returns the newest articles.";
+			$this->update = "2015-04-07";
+
+		}
+
         public function collectData(array $param){
 
 		function ExtractContentReporterre($url) {

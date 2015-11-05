@@ -1,19 +1,34 @@
 <?php
-/**
-* RssBridgeTwitter 
-* Based on https://github.com/mitsukarenai/twitterbridge-noapi
-* 2014-05-25
-*
-* @name Twitter Bridge
-* @homepage http://twitter.com/
-* @description Returns user timelines or keyword/hashtag search results (without using their API).
-* @maintainer mitsukarenai
-* @use1(q="keyword or #hashtag")
-* @use2(u="username")
-*/
+//Based on https://github.com/mitsukarenai/twitterbridge-noapi
 class TwitterBridge extends BridgeAbstract{
-    
+
     private $request;
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "mitsukarenai";
+		$this->name = "Twitter Bridge";
+		$this->uri = "http://twitter.com/";
+		$this->description = "Returns user timelines or keyword/hashtag search results (without using their API).";
+		$this->update = "2014-05-25";
+
+		$this->parameters["By keyword or hashtag"] =
+		'[
+			{
+				"name" : "Keyword or #hashtag",
+				"identifier" : "q"
+			}
+		]';
+
+		$this->parameters["By username"] =
+		'[
+			{
+				"name" : "username",
+				"identifier" : "u"
+			}
+		]';
+
+	}
 
     public function collectData(array $param){
         $html = '';

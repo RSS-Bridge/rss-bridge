@@ -1,16 +1,28 @@
 <?php
-/**
-* RssBridgeLolibooru
-* Returns images from given page and tags
-*
-* @name Lolibooru
-* @homepage http://lolibooru.moe/
-* @description Returns images from given page and tags
-* @maintainer mitsukarenai
-* @update 2015-03-21
-* @use1(p="page", t="tags")
-*/
 class LolibooruBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "mitsukarenai";
+		$this->name = "Lolibooru";
+		$this->uri = "http://lolibooru.moe/";
+		$this->description = "Returns images from given page and tags";
+		$this->update = "2015-03-21";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "page",
+				"identifier" : "p",
+				"type" : "number"
+			},
+			{
+				"name" : "tags",
+				"identifier" : "t"
+			}
+		]';
+
+	}
 
     public function collectData(array $param){
 	$page = 1; $tags = '';

@@ -13,6 +13,26 @@
 */
 class CryptomeBridge extends BridgeAbstract{
 
+	public function loadMetadatas() {
+
+		$this->maintainer = "BoboTiG";
+		$this->name = "Cryptome";
+		$this->uri = "http://cryptome.org/";
+		$this->description = "Returns the N most recent documents.";
+		$this->update = "";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "number of elements",
+				"identifier" : "n",
+				"type" : "number",
+				"exampleValue" : "10"
+			}
+		]';
+	}
+
+
     public function collectData(array $param){
         $html = '';
         $num = 20;

@@ -1,17 +1,23 @@
 <?php
-/**
-* RssBridgeScoopIt
-* Search DScoopIt for most recent pages regarding a specific topic.
-* Returns the most recent links in results, sorting by date (most recent first).
-* 2014-06-13
-*
-* @name ScoopIt
-* @homepage http://www.scoop.it
-* @description Returns most recent results from ScoopIt.
-* @maintainer Pitchoule
-* @use1(u="keyword")
-*/
 class ScoopItBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "Pitchoule";
+		$this->name = "ScoopIt";
+		$this->uri = "http://www.scoop.it";
+		$this->description = "Returns most recent results from ScoopIt.";
+		$this->update = "2014-06-13";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "keyword",
+				"identifier" : "u"
+			}
+		]';
+
+	}
 
     public function collectData(array $param){
         $html = '';

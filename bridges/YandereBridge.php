@@ -1,16 +1,27 @@
 <?php
-/**
-* RssBridgeYandere
-* Returns images from given page and tags
-* 2014-05-25
-*
-* @name Yande.re
-* @homepage https://yande.re/
-* @description Returns images from given page and tags
-* @maintainer mitsukarenai
-* @use1(p="page", t="tags")
-*/
 class YandereBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "mitsukarenai";
+		$this->name = "Yande.re";
+		$this->uri = "https://yande.re/";
+		$this->description = "Returns images from given page and tags";
+		$this->update = "2014-05-25";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "page",
+				"identifier" : "p",
+				"type" : "number"
+			},
+			{
+				"name" : "tags",
+				"identifier" : "t"
+			}
+		]';
+	}
 
     public function collectData(array $param){
 	$page = 1; $tags = '';

@@ -1,16 +1,27 @@
 <?php
-/**
-* RssBridgeRule34
-* Returns images from given page
-* 2014-05-25
-*
-* @name Rule34
-* @homepage http://rule34.xxx/
-* @description Returns images from given page
-* @maintainer mitsukarenai
-* @use1(p="page",t="tags")
-*/
 class Rule34Bridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "mitsukarenai";
+		$this->name = "Rule34";
+		$this->uri = "http://rule34.xxx/";
+		$this->description = "Returns images from given page";
+		$this->update = "2014-05-25";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "page",
+				"identifier" : "p",
+				"type" : "number"
+			},
+			{
+				"name" : "tags",
+				"identifier" : "t"
+			}
+		]';
+	}
 
     public function collectData(array $param){
 	$page = 0;$tags='';

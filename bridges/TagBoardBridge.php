@@ -1,17 +1,23 @@
 <?php
-/**
-* RssBridgeTagBoard
-* Search TagBoard for most recent pages regarding a specific topic.
-* Returns the most recent links in results, sorting by date (most recent first).
-* 2014-09-10
-*
-* @name TagBoard
-* @homepage http://www.TagBoard.com
-* @description Returns most recent results from TagBoard.
-* @maintainer Pitchoule
-* @use1(u="keyword")
-*/
 class TagBoardBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "Pitchoule";
+		$this->name = "TagBoard";
+		$this->uri = "http://www.TagBoard.com";
+		$this->description = "Returns most recent results from TagBoard.";
+		$this->update = "2014-09-10";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "keyword",
+				"identifier" : "u"
+			}
+		]';
+
+	}
 
     public function collectData(array $param){
         $html = '';

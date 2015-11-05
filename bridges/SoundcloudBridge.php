@@ -15,7 +15,26 @@ class SoundCloudBridge extends BridgeAbstract{
 
 	private $request;
 	public $name;
-  const CLIENT_ID = '0aca19eae3843844e4053c6d8fdb7875';
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "kranack";
+		$this->name = "Soundcloud Bridge";
+		$this->uri = "http://www.soundcloud.com/";
+		$this->description = "Returns 10 newest music from user profile";
+		$this->update = "2015-09-08";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "username",
+				"identifier" : "u"
+			}
+		]';
+
+	}
+
+  	const CLIENT_ID = '0aca19eae3843844e4053c6d8fdb7875';
 
 	public function collectData(array $param){
 

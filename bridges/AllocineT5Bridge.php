@@ -1,17 +1,19 @@
 <?php
-/**
-*
-* @name Allo Cine : Top 5
-* @homepage http://www.allocine.fr/video/programme-12299/saison-22542/
-* @description Allo Cine : Top 5 via rss-bridge
-* @update 07/11/2013
-* initial maintainer: superbaillot.net
-*/
 class AllocineT5Bridge extends BridgeAbstract{
 
     private $_URL = "http://www.allocine.fr/video/programme-12299/saison-22542/";
     private $_NOM = "Top 5";
-    
+
+    public function loadMetadatas() {
+
+		$this->maintainer = "superbaillot.net";
+		$this->name = "Allo Cine : Top 5";
+		$this->uri = "http://www.allocine.fr/video/programme-12299/saison-22542/";
+		$this->description = "Allo Cine : Top 5 via rss-bridge";
+		$this->update = "07/11/2013";
+
+	}
+
     public function collectData(array $param){
         $html = file_get_html($this->_URL) or $this->returnError('Could not request Allo cine.', 404);
 

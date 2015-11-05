@@ -1,19 +1,34 @@
 <?php
-/**
-* RssBridgeTwitterClean
-* Based on https://github.com/mitsukarenai/twitterbridge-noapi
-*
-* @name Twitter Bridge Clean
-* @homepage http://twitter.com/
-* @description Returns user timelines without username in title or search results for keywords/hashtags (without using their API).
-* @maintainer vinzv
-* @update 2015-03-07
-* @use1(q="keyword or #hashtag")
-* @use2(u="username")
-*/
+//Based on https://github.com/mitsukarenai/twitterbridge-noapi
 class TwitterBridgeClean extends BridgeAbstract{
-    
+
     private $request;
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "vinzv";
+		$this->name = "Twitter Bridge Clean";
+		$this->uri = "http://twitter.com/";
+		$this->description = "Returns user timelines without username in title or search results for keywords/hashtags (without using their API).";
+		$this->update = "2015-03-07";
+
+		$this->parameters["By keyword or hashtag"] =
+		'[
+			{
+				"name" : "Keyword or #hashtag",
+				"identifier" : "q"
+			}
+		]';
+
+		$this->parameters["By username"] =
+		'[
+			{
+				"name" : "username",
+				"identifier" : "u"
+			}
+		]';
+
+	}
 
     public function collectData(array $param){
         $html = '';

@@ -1,22 +1,40 @@
 <?php
-/**
- * RssBridgePinterest
- * Returns the newest photos on a board
-* 2014-05-25
- *
- * @name Pinterest Bridge
-* @homepage http://www.pinterest.com/
- * @description Returns the newest images on a board
-* @maintainer pauder
- * @use1(u="username",b="board")
- * @use2(q="keyword")
- */
 class PinterestBridge extends BridgeAbstract{
-    
+
     private $username;
     private $board;
     private $query;
-    
+
+    public function loadMetadatas() {
+
+		$this->maintainer = "pauder";
+		$this->name = "Pinterest Bridge";
+		$this->uri = "http://www.pinterest.com/";
+		$this->description = "Returns the newest images on a board";
+		$this->update = "2014-05-25";
+
+		$this->parameters["By username and board"] =
+		'[
+			{
+				"name" : "username",
+				"identifier" : "u"
+			},
+			{
+				"name" : "board",
+				"identifier" : "b"
+
+			}
+		]';
+
+		$this->parameters["From search"] =
+		'[
+			{
+				"name" : "Keyword",
+				"identifier" : "q"
+			}
+		]';
+	}
+
     public function collectData(array $param){
         $html = '';
         if (isset($param['u']) || isset($param['b'])) {

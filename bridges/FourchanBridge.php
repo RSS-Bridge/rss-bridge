@@ -1,15 +1,23 @@
 <?php
-/**
-* RssBridge4chan
-* @name 4chan
-* @homepage https://www.4chan.org/
-* @description Returns posts from the specified thread
-* @maintainer mitsukarenai
-* @update 2015-02-01
-* @use1(t="Thread URL")
- */
-
 class FourchanBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "mitsukarenai";
+		$this->name = "4chan";
+		$this->uri = "https://www.4chan.org/";
+		$this->description = "Returns posts from the specified thread";
+		$this->update = "2015-02-01";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "Thread URL",
+				"identifier" : "t"
+			}
+		]';
+	}
+
 
   public function collectData(array $param){
 

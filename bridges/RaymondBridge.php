@@ -1,15 +1,16 @@
 <?php
-/**
-* RssBridgeRaymond
-* Returns the 3 newest posts from Raymond.cc (full text)
-*
-* @name Raymond
-* @homepage http://www.raymond.cc
-* @description Returns the 3 newest posts from Raymond.cc (full text)
-* @maintainer pit-fgfjiudghdf
-* @update 2014-05-26
-*/
 class RaymondBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "pit-fgfjiudghdf";
+		$this->name = "Raymond";
+		$this->uri = "http://www.raymond.cc";
+		$this->description = "Returns the 3 newest posts from Raymond.cc (full text)";
+		$this->update = "2014-05-26";
+
+	}
+
     public function collectData(array $param){
     function raymondStripCDATA($string) {
         $string = str_replace('<![CDATA[', '', $string);

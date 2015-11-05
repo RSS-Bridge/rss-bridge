@@ -1,16 +1,34 @@
 <?php
-/**
-* RssBridgeBooruproject
-* Returns images from given page
-*
-* @name Booruproject
-* @homepage http://booru.org/
-* @description Returns images from given page and booruproject instance (****.booru.org)
-* @maintainer mitsukarenai
-* @update 2015-09-12
-* @use1(i="instance (required)", p="page", t="tags")
-*/
 class BooruprojectBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "mitsukarenai";
+		$this->name = "Booruproject";
+		$this->uri = "http://booru.org/";
+		$this->description = "Returns images from given page and booruproject instance (****.booru.org)";
+		$this->update = "2015-09-12";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "instance (required)",
+				"required" : "true",
+				"identifier" : "i"
+			},
+			{
+				"name" : "page",
+				"identifier" : "p"
+			},
+			{
+				"name" : "tags",
+				"identifier" : "t"
+			}
+
+
+		]';
+	}
+
 
     public function collectData(array $param){
 	$page = 0; $tags = '';

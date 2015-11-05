@@ -1,17 +1,31 @@
 <?php
-/**
-* RssBridgeTwitter 
-* Based on https://github.com/mitsukarenai/twitterbridge-noapi
-* 2014-05-25
-*
-* @name Twitter Bridge Extended
-* @homepage https://twitter.com/
-* @description (same as Twitter Bridge, but with avatar, replies and RTs)
-* @maintainer mitsukarenai
-* @use1(q="keyword or hashtag")
-* @use2(u="username")
-*/
 class TwitterBridgeExtended extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "mitsukarenai";
+		$this->name = "Twitter Bridge Extended";
+		$this->uri = "https://twitter.com/";
+		$this->description = "(same as Twitter Bridge, but with avatar, replies and RTs)";
+		$this->update = "2014-05-25";
+
+		$this->parameters["By keyword or hashtag"] =
+		'[
+			{
+				"name" : "Keyword or #hashtag",
+				"identifier" : "q"
+			}
+		]';
+
+		$this->parameters["By username"] =
+		'[
+			{
+				"name" : "username",
+				"identifier" : "u"
+			}
+		]';
+
+	}
 
 	public function collectData(array $param){
 		$html = ''; 

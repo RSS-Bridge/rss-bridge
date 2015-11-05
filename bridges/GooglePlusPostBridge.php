@@ -1,20 +1,26 @@
 <?php
-
-/**
- * Google Plus Post Bridge
- * Freely inspired by tweeter bridge
- * 2014-07-20
- *
- * @name Google Plus Post Bridge
- * @homepage http://plus.google.com/
- * @description Returns user public post (without API).
- * @maintainer Grummfy
- * @use1(username="usernameOrId")
- */
 class GooglePlusPostBridge extends BridgeAbstract
 {
 	protected $_title;
 	protected $_url;
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "Grummfy";
+		$this->name = "Google Plus Post Bridge";
+		$this->uri = "http://plus.google.com/";
+		$this->description = "Returns user public post (without API).";
+		$this->update = "2014-07-20";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "username or Id",
+				"identifier" : "username"
+			}
+		]';
+
+	}
 
 	const GOOGLE_PLUS_BASE_URL = 'https://plus.google.com/';
 

@@ -1,13 +1,15 @@
 <?php
-
-/**
- * @name Zataz
- * @homepage http://www.zataz.com/
- * @description ZATAZ Magazine - S'informer, c'est déjà se sécuriser
- * @maintainer aledeg
- * @update 07/02/2015
- */
 class ZatazBridge extends BridgeAbstract {
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "aledeg";
+		$this->name = "Zataz";
+		$this->uri = "http://www.zataz.com/";
+		$this->description = "ZATAZ Magazine - S'informer, c'est déjà se sécuriser";
+		$this->update = "07/02/2015";
+
+	}
 
 	public function collectData(array $param) {
 		$html = file_get_html($this->getURI()) or $this->returnError('Could not request ' . $this->getURI(), 404);

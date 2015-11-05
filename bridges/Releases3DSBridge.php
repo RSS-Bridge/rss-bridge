@@ -1,16 +1,15 @@
 <?php
-/**
-* 3DS Scene Releases
-* Returns the newest releases
-* 2015-09-08
-*
-* @name 3DS Scene Releases
-* @homepage http://www.3dsdb.com/
-* @description Returns the newest scene releases.
-* @maintainer ORelio
-* @update 2015-09-17
-*/
 class Releases3DSBridge extends BridgeAbstract {
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "ORelio";
+		$this->name = "3DS Scene Releases";
+		$this->uri = "http://www.3dsdb.com/";
+		$this->description = "Returns the newest scene releases.";
+		$this->update = "2015-09-17";
+
+	}
 
     public function collectData(array $param) {
 

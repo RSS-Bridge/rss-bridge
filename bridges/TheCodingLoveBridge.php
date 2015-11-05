@@ -1,13 +1,15 @@
 <?php
-/**
-*
-* @name The Coding Love
-* @homepage http://thecodinglove.com/
-* @description The Coding Love
-* @update 04/02/2015
-* initial maintainer: superbaillot.net
-*/
 class TheCodingLoveBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "superbaillot.net";
+		$this->name = "The Coding Love";
+		$this->uri = "http://thecodinglove.com/";
+		$this->description = "The Coding Love";
+		$this->update = "04/02/2015";
+
+	}
 
     public function collectData(array $param){
         $html = file_get_html('http://thecodinglove.com/') or $this->returnError('Could not request The Coding Love.', 404);

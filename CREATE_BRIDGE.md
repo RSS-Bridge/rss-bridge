@@ -20,4 +20,73 @@ The RSS elements are stored in the class variable `items[]`.
 
 Every RSS element is an instance of the `Item` class.
 
+##The `loadMetadatas` function
 
+This function is the one used by rss-bridge core to determine the name, maintainer name, website, last updated date... of the bridge, and the user parameters.
+
+### Basic metadatas.
+
+The basic metadatas are the following :
+
+```PHP
+$this->maintainer
+$this->name
+$this->uri
+$this->description
+$this->update
+```
+
+The default values are the following :
+
+```PHP
+$this->name = "Unnamed bridge";
+$this->uri = "";
+$this->description = 'No description provided';
+$this->maintainer = 'No maintainer';
+```
+
+### Parameters
+
+Parameters use a JSON-like format, which is parsed and transformed to HTML `<form>` by rss-bridge.
+
+These datas goes into the `$this->parameters` array, which is not mandatory if your bridge doesn't take any parameter.
+
+Every possible usage of a bridge is an array element.
+
+The array can be a key-based array, but it is not necessary. The following syntaxes are hereby correct :
+
+```PHP
+$this->parameters[] = ...
+$this->parameters['First usage of my bridge'] = ...
+```
+
+### Format specifications
+
+Every `$this->parameters` element is a JSON array (`[ ... ]`) containing every input.
+
+It needs the following elements to be setted :
+* name, the input name as displayed to the user
+* identifier, which will be the key in the `$param` array for the corresponding data.
+
+Hence, the most basic parameter definition is the following:
+
+```PHP
+	$this->parameters =
+	'[
+		{
+			"name" : "Username",
+			"identifier" : "u"
+
+		}
+	]';
+```
+
+####Optional parameters
+
+Here is a list of optional parameters for the input :
+
+Parameter Name | Parameter values | Description
+---------------|------------------|------------
+type|text, number, list, checkbox| Type of the input, default is text
+required| true | Set this if you want your attribute to be required
+values| [ {"name" : option1Name, "value" : "option1Value"}, ...] | Values list, required with the 'list' type

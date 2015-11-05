@@ -1,15 +1,15 @@
 <?php
-/**
-* RssBridgeFlickrExplore 
-* Returns the newest interesting images from http://www.flickr.com/explore
-* 2014-05-25
-*
-* @name Flickr Explore
-* @homepage http://www.flickr.com/explore
-* @description Returns the latest interesting images from Flickr
-* @maintainer sebsauvage
-*/
 class FlickrExploreBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "sebsauvage";
+		$this->name = "Flickr Explore";
+		$this->uri = "http://www.flickr.com/explore";
+		$this->description = "Returns the latest interesting images from Flickr";
+		$this->update = "2014-05-25";
+
+	}
 
     public function collectData(array $param){
         $html = file_get_html('http://www.flickr.com/explore') or $this->returnError('Could not request Flickr.', 404);

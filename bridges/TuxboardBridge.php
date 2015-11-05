@@ -1,13 +1,15 @@
 <?php
-/**
- *
-* @name Tuxboard
-* @homepage http://www.tuxboard.com/
-* @description Tuxboard
-* @update 2014-07-08
-* initial maintainer: superbaillot.net
- */
 class TuxboardBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "superbaillot.net";
+		$this->name = "Tuxboard";
+		$this->uri = "http://www.tuxboard.com/";
+		$this->description = "Tuxboard";
+		$this->update = "2014-07-08";
+
+	}
 
     public function collectData(array $param){
 

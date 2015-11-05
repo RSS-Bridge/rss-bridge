@@ -1,16 +1,4 @@
 <?php
-/**
-* RssBridgeCpasBien 
-* 
-* 2015-05-17
-*
-* @name Cpasbien Bridge
-* @homepage http://Cpasbien.pw/
-* @description Returns latest torrent from request query
-* @maintainer lagaisse
-* @use1(q="keywords like this")
-*/
-
 // simple_html_dom funtion to get the dom from contents instead from file
 function content_get_html($contents, $maxLen=-1, $lowercase = true, $forceTagsClosed=true, $target_charset = DEFAULT_TARGET_CHARSET, $stripRN=true, $defaultBRText=DEFAULT_BR_TEXT, $defaultSpanText=DEFAULT_SPAN_TEXT)
 {
@@ -29,6 +17,25 @@ function content_get_html($contents, $maxLen=-1, $lowercase = true, $forceTagsCl
 class CpasbienBridge extends HttpCachingBridgeAbstract{
     
     private $request;
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "lagaisse";
+		$this->name = "Cpasbien Bridge";
+		$this->uri = "http://Cpasbien.pw/";
+		$this->description = "Returns latest torrent from request query";
+		$this->update = "2015-05-17";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "keyword",
+				"identifier" : "q"
+			}
+		]';
+
+	}
+
 
     public function collectData(array $param){
         $html = '';

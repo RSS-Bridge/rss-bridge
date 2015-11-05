@@ -1,16 +1,27 @@
 <?php
-/**
-* RssBridgeKonachan 
-* Returns images from given page
-* 2014-05-25
-*
-* @name Konachan
-* @homepage http://konachan.com/
-* @description Returns images from given page
-* @maintainer mitsukarenai
-* @use1(p="page",t="tags")
-*/
 class KonachanBridge extends BridgeAbstract{
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "mitsukarenai";
+		$this->name = "Konachan";
+		$this->uri = "http://konachan.com/";
+		$this->description = "Returns images from given page";
+		$this->update = "2014-05-25";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "page",
+				"identifier" : "p",
+				"type" : "number"
+			},
+			{
+				"name" : "tags",
+				"identifier" : "t"
+			}
+		]';
+	}
 
     public function collectData(array $param){
 	$page = 1;$tags='';

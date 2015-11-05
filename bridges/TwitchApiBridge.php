@@ -22,6 +22,66 @@ class TwitchApiBridge extends BridgeAbstract{
     
 	// for use in the getName function!
 	private $channel;
+
+	public function loadMetadatas() {
+
+		$this->maintainer = "logmanoriginal";
+		$this->name = "Twitch API Bridge";
+		$this->uri = "http://www.twitch.tv";
+		$this->description = "Returns the newest broadcasts or highlights by channel name using the Twitch API (v3)";
+		$this->update = "2015-07-14";
+
+		$this->parameters["Get channel without limit"] =
+		'[
+			{
+				"name" : "Channel",
+				"identifier" : "channel"
+			},
+			{
+				"name" : "Broadcasts",
+				"identifier" : "broadcasts",
+				"type" : "list",
+				"values" : [
+					{
+						"name" : "Show broadcasts",
+						"value" : "true"
+					},
+					{
+						"name" : "Don\'t show broadcasts",
+						"value" : "false"
+					}
+				]
+			}
+		]';
+		$this->parameters["Get channel with limit"] =
+		'[
+			{
+				"name" : "Channel",
+				"identifier" : "channel"
+			},
+			{
+				"name" : "Limit",
+				"identifier" : "limit",
+				"type" : "number"
+			},
+			{
+				"name" : "Broadcasts",
+				"identifier" : "broadcasts",
+				"type" : "list",
+				"values" : [
+					{
+						"name" : "Show broadcasts",
+						"value" : "true"
+					},
+					{
+						"name" : "Don\'t show broadcasts",
+						"value" : "false"
+					}
+				]
+			}
+		]';
+
+	}
     
 	public function collectData(array $param){
 
