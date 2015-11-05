@@ -1,16 +1,4 @@
 <?php
-/**
-* SoundcloudBridge
-* Returns the newest music from user
-*
-* @name Soundcloud Bridge
-* @homepage http://www.soundcloud.com/
-* @description Returns 10 newest music from user profile
-* @maintainer kranack
-* @update 2015-09-08
-* @use1(u="username")
-*
-*/
 class SoundCloudBridge extends BridgeAbstract{
 
 	private $request;

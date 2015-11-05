@@ -1,17 +1,4 @@
 <?php
-/**
-* RssBridgeLeBonCoin
-* Search LeBonCoin for most recent ads in a specific region and topic.
-* Returns the most recent classified ads in results, sorting by date (most recent first).
-*
-* @name LeBonCoin
-* @homepage http://www.leboncoin.fr
-* @description Returns most recent results from LeBonCoin for a region and a keyword.
-* @maintainer 16mhz
-* @update 2015-10-30
-* @use1(list|r="Alsace=>alsace;Aquitaine=>aquitaine;Auvergne=>auvergne;Basse Normandie=>basse_normandie;Bourgogne=>bourgogne;Bretagne=>bretagne;Centre=>centre;Champagne Ardenne=>champagne_ardenne;Corse=>corse;Franche Comté=>franche_comte;Haute Normandie=>haute_normandie;Ile de France=>ile_de_france;Languedoc Roussillon=>languedoc_roussillon;Limousin=>limousin;Lorraine=>lorraine;Midi Pyrénées=>midi_pyrenees;Nord Pas De Calais=>nord_pas_de_calais;Pays de la Loire=>pays_de_la_loire;Picardie=>picardie;Poitou Charentes=>poitou_charentes;Provence Alpes Côte d'Azur=>provence_alpes_cote_d_azur;Rhône-Alpes=>rhone_alpes;Guadeloupe=>guadeloupe;Martinique=>martinique;Guyane=>guyane;Réunion=>reunion", text|k="Keyword")
-*/
-
 class LeBonCoinBridge extends BridgeAbstract{
 
 	public function loadMetadatas() {
