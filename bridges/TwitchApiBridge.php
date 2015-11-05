@@ -1,25 +1,9 @@
 <?php
-/**
-* RssBridgeTwitchApi
-* Returns the newest broadcasts or highlights. Be aware that Twitch deletes broadcasts after
-* 14 days: http://blog.twitch.tv/2014/08/important-reminder-past-broadcasts-removed-today/
-*
-* @name Twitch API Bridge
-* @homepage http://www.twitch.tv
-* @description Returns the newest broadcasts or highlights by channel name using the Twitch API (v3)
-* @maintainer logmanoriginal
-* @update 2015-07-14
-* @use1(text|channel="Channel", list|broadcasts="Show broadcasts=>true;Don't show broadcasts=>false")
-* @use2(text|channel="Channel", text|limit="Limit", list|broadcasts="Show broadcasts=>true;Don't show broadcasts=>false")
-*
-* Description for the API is available on GitHub: https://github.com/justintv/twitch-api
-*/
-
 define('TWITCH_LIMIT', 10); // The default limit
 define('TWITCH_BROADCASTS', 'false'); // The default flag for broadcasts
 
 class TwitchApiBridge extends BridgeAbstract{
-    
+
 	// for use in the getName function!
 	private $channel;
 

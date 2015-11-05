@@ -1,16 +1,4 @@
 <?php
-/**
-* RssBridgeCryptome
-* Retrieve lastest documents from Cryptome.
-* Returns the N most recent documents, sorting by date (most recent first).
-* 2014-05-25
-*
-* @name Cryptome
-* @homepage http://cryptome.org/
-* @description Returns the N most recent documents.
-* @maintainer BoboTiG
-* @use1(n="number")
-*/
 class CryptomeBridge extends BridgeAbstract{
 
 	public function loadMetadatas() {
