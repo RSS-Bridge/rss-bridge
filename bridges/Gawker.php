@@ -1,7 +1,7 @@
 <?php
-require_once 'bridges/RssExpander.php';
 define("RSS_PREFIX", "http://feeds.gawker.com/");
 define("RSS_SUFFIX", "/full");
+
 class Gawker extends RssExpander{
 
     public function loadMetadatas() {
@@ -34,7 +34,7 @@ class Gawker extends RssExpander{
 			$param['url'] = $this->toURI(strtolower($param['site']));
         }
 //        $this->message("loading feed from ".$this->getURI());
-        parent::collectData($param);
+        parent::collectExpandableDatas($param, $name);
     }
     
     protected function parseRSSItem($newsItem) {

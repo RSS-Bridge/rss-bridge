@@ -1,11 +1,7 @@
 <?php
-require_once 'bridges/RssExpander.php';
 define("SEXE", "http://sexes.blogs.liberation.fr");
 define("SEXE_FEED", "http://sexes.blogs.liberation.fr/feeds/");
-/**
- * As it seems that Les 400 culs currently offer a full feed, we won't change it content here.
- * But I'm ready for the day where it will ... again ... provide some truncated content
- */
+
 class Les400Culs extends RssExpander{
 
 	public function loadMetadatas() {
@@ -20,8 +16,7 @@ class Les400Culs extends RssExpander{
 
 
     public function collectData(array $param){
-        $param['url'] = SEXE_FEED;
-        parent::collectData($param);
+        parent::collectExpandableDatas($param, SEXE_FEED);
     }
     
     protected function parseRSSItem($newsItem) {

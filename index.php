@@ -52,16 +52,10 @@ if (!file_exists($whitelist_file)) {
 }
 else {
 	$whitelist_selection = explode("\n", file_get_contents($whitelist_file));
+	//Remove the last empty line.
 	array_pop($whitelist_selection);
 }
 
-// whitelist control function
-function BridgeWhitelist( $whitelist, $name ) {
-	if(in_array("$name", $whitelist) or in_array("$name.php", $whitelist))
-		return TRUE;
-	else
-		return FALSE;
-}
 
 try{
     require_once __DIR__ . '/lib/RssBridge.php';
@@ -81,7 +75,7 @@ try{
                     unset($_REQUEST['format']);
 
 			// whitelist control
-			if(!BridgeWhitelist($whitelist_selection, $bridge)) {
+			if(!Bridge::isWhitelisted($whitelist_selection, $bridge)) {
 				throw new \HttpException('This bridge is not whitelisted', 401);
 				die; 
 			}
@@ -126,119 +120,6 @@ catch(\Exception $e){
     die($e->getMessage());
 }
 
-function getHelperButtonFormat($value, $name){
-    return '<button type="submit" name="format" value="' . $value . '">' . $name . '</button>';
-}
-
-function getHelperButtonsFormat($formats){
-	$buttons = '';
-		foreach( $formats as $name => $infos )
-		{
-			if ( isset($infos['name']) )
-			{
-				$buttons .= getHelperButtonFormat($name, $infos['name']) . PHP_EOL;
-			}
-		}
-	return $buttons;
-}
-
-function displayBridgeCard($bridgeName, $formats, $isActive = true)
-{
-
-
-	$bridgeElement = Bridge::create($bridgeName);
-	if($bridgeElement == false) {
-		return "";
-	}
-	$bridgeElement->loadMetadatas();
-
-	$name = '<a href="'.$bridgeElement->uri.'">'.$bridgeElement->name.'</a>';
-	$description = $bridgeElement->description;
-
-	$card = <<<CARD
-	<section id="bridge-{$bridgeName}" data-ref="{$bridgeName}">
-		<h2>{$name}</h2>
-		<p class="description">
-			{$description}
-		</p>
-CARD;
-
-	// If we don't have any parameter for the bridge, we print a generic form to load it.
-	if(count($bridgeElement->parameters) == 0) {
-
-		$card .= '<form method="POST" action="?">
-				<input type="hidden" name="action" value="display" />
-				<input type="hidden" name="bridge" value="' . $bridgeName . '" />' . PHP_EOL;
-
-		if ($isActive)
-		{
-			$card .= getHelperButtonsFormat($formats);
-		}
-		else
-		{
-			$card .= '<span style="font-weight: bold;">Inactive</span>';
-		}
-		$card .= '</form>' . PHP_EOL;
-
-	}
-
-	foreach($bridgeElement->parameters as $parameterName => $parameter)
-	{
-		$card .= '<ol class="list-use">' . PHP_EOL;
-		if(!is_numeric($parameterName)) {
-			$card .= '<h5>'.$parameterName.'</h5>' . PHP_EOL;
-		}
-		$card .= '<form method="POST" action="?">
-					<input type="hidden" name="action" value="display" />
-					<input type="hidden" name="bridge" value="' . $bridgeName . '" />' . PHP_EOL;
-
-		$parameter = json_decode($parameter, true);
-
-		foreach($parameter as $inputEntry) {
-
-			if(!isset($inputEntry['exampleValue'])) $inputEntry['exampleValue'] = "";
-
-			$idArg = 'arg-' . $bridgeName . '-' . $parameterName . '-' . $inputEntry['identifier'];
-
-			$card .= '<label for="' .$idArg. '">' .$inputEntry['name']. ' : </label>' . PHP_EOL;
-
-			if(!isset($inputEntry['type']) || $inputEntry['type'] == 'text') {
-				$card .= '<input id="' . $idArg . '" type="text" value="" placeholder="' . $inputEntry['exampleValue'] . '" name="' . $inputEntry['identifier'] . '" /><br />' . PHP_EOL;
-			} else if($inputEntry['type'] == 'number') {
-				$card .= '<input id="' . $idArg . '" type="number" value="" placeholder="' . $inputEntry['exampleValue'] . '" name="' . $inputEntry['identifier'] . '" /><br />' . PHP_EOL;
-			} else if($inputEntry['type'] == 'list') {
-				$card .= '<select id="' . $idArg . '" name="' . $inputEntry['name'] . '" >';
-				foreach($inputEntry['values'] as $listValues) {
-
-					$card .= "<option value='" . $listValues['value'] . "'>" . $listValues['name'] . "</option>";
-
-				}
-				$card .= '</select><br >';
-			} else if($inputEntry['type'] == 'checkbox') {
-
-				$card .= '<input id="' . $idArg . '" type="checkbox" name="' . $inputEntry['identifier'] . '" /><br />' . PHP_EOL;
-
-			}
-
-		}
-		if ($isActive)
-		{
-			$card .= getHelperButtonsFormat($formats);
-		}
-		else
-		{
-			$card .= '<span style="font-weight: bold;">Inactive</span>';
-		}
-		$card .= '</form>' . PHP_EOL;
-
-	}
-
-	$card .= '<span class="maintainer">'.$bridgeElement->maintainer.'</span>';
-	$card .= '</section>';
-
-	return $card;
-}
-
 $formats = Format::searchInformation();
 
 ?>
@@ -265,23 +146,24 @@ $formats = Format::searchInformation();
 	    $activeFoundBridgeCount = 0;
 		$showInactive = isset($_REQUEST['show_inactive']) && $_REQUEST['show_inactive'] == 1;
 		$inactiveBridges = '';
-	    foreach(Bridge::listBridges() as $bridgeName)
+		$bridgeList = Bridge::listBridges();
+	    foreach($bridgeList as $bridgeName)
 	    {
-			if(BridgeWhitelist($whitelist_selection, $bridgeName))
+			if(Bridge::isWhitelisted($whitelist_selection, $bridgeName))
 			{
-				echo displayBridgeCard($bridgeName, $formats);
+				echo HTMLUtils::displayBridgeCard($bridgeName, $formats);
 	            $activeFoundBridgeCount++;
 			}
 			elseif ($showInactive)
 			{
 				// inactive bridges
-				$inactiveBridges .= displayBridgeCard($bridgeName, $formats, false) . PHP_EOL;
+				$inactiveBridges .= HTMLUtils::displayBridgeCard($bridgeName, $formats, false) . PHP_EOL;
 			}
 		}
 		echo '<hr />' . $inactiveBridges;
 	?>
     <footer>
-		<?= $activeFoundBridgeCount; ?>/<?= count($whitelist_selection) ?> active bridges (<a href="?show_inactive=1">Show inactive</a>)<br />
+		<?= $activeFoundBridgeCount; ?>/<?= count($bridgeList) ?> active bridges (<a href="?show_inactive=1">Show inactive</a>)<br />
         <a href="https://github.com/sebsauvage/rss-bridge">RSS-Bridge alpha 0.2 ~ Public Domain</a>
     </footer>
     </body>
