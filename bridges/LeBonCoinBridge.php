@@ -9,7 +9,7 @@
 * @description Returns most recent results from LeBonCoin for a region and a keyword.
 * @maintainer 16mhz
 * @update 2015-10-30
-* @use1(list|r="Alsace=>alsace;Aquitaine=>aquitaine;Auvergne=>auvergne;Basse Normandie=>basse_normandie;Bourgogne=>bourgogne;Bretagne=>bretagne;Centre=>centre;Champagne Ardenne=>champagne_ardenne;Corse=>corse;Franche Comté=>franche_comte;Haute Normandie=>haute_normandie;Ile de France=>ile_de_france;Languedoc Roussillon=>languedoc_roussillon;Limousin=>limousin;Lorraine=>lorraine;Midi Pyrénées=>midi_pyrenees;Nord Pas De Calais=>nord_pas_de_calais;Pays de la Loire=>pays_de_la_loire;Picardie=>picardie;Poitou Charentes=>poitou_charentes;Provence Alpes Côte d'Azur=>provence_alpes_cote_d_azur;Rhône-Alpes=>rhone_alpes;Guadeloupe=>guadeloupe;Martinique=>martinique;Guyane=>guyane;Réunion=>reunion", text|k="Keyword")
+* @use1(list|r="France Entière=>;Alsace=>alsace;Aquitaine=>aquitaine;Auvergne=>auvergne;Basse Normandie=>basse_normandie;Bourgogne=>bourgogne;Bretagne=>bretagne;Centre=>centre;Champagne Ardenne=>champagne_ardenne;Corse=>corse;Franche Comté=>franche_comte;Haute Normandie=>haute_normandie;Ile de France=>ile_de_france;Languedoc Roussillon=>languedoc_roussillon;Limousin=>limousin;Lorraine=>lorraine;Midi Pyrénées=>midi_pyrenees;Nord Pas De Calais=>nord_pas_de_calais;Pays de la Loire=>pays_de_la_loire;Picardie=>picardie;Poitou Charentes=>poitou_charentes;Provence Alpes Côte d'Azur=>provence_alpes_cote_d_azur;Rhône-Alpes=>rhone_alpes;Guadeloupe=>guadeloupe;Martinique=>martinique;Guyane=>guyane;Réunion=>reunion", text|k="Keyword")
 */
 
 class LeBonCoinBridge extends BridgeAbstract{
@@ -17,7 +17,11 @@ class LeBonCoinBridge extends BridgeAbstract{
     public function collectData(array $param){
 
         $html = '';
-        $link = 'http://www.leboncoin.fr/annonces/offres/' . $param[r] . '/?f=a&th=1&q=' . $param[k];
+        if(empty($param[r])) {
+			$link = 'http://www.leboncoin.fr/annonces/offres/?f=a&th=1&q=' . $param[k];        
+        } else {
+        	$link = 'http://www.leboncoin.fr/annonces/offres/' . $param[r] . '/?f=a&th=1&q=' . $param[k];
+        }
         $html = file_get_html($link) or $this->returnError('Could not request LeBonCoin.', 404);
 
         $list = $html->find('.list-lbc', 0);
