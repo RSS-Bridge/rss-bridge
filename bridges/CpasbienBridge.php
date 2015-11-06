@@ -5,7 +5,7 @@
 * 2015-05-17
 *
 * @name Cpasbien Bridge
-* @homepage http://Cpasbien.pw/
+* @homepage http://www.cpasbien.io/
 * @description Returns latest torrent from request query
 * @maintainer lagaisse
 * @use1(q="keywords like this")
@@ -34,7 +34,7 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
         $html = '';
         if (isset($param['q'])) {   /* keyword search mode */
             $this->request = str_replace(" ","-",trim($param['q']));
-            $html = file_get_html('http://www.cpasbien.pw/recherche/'.urlencode($this->request).'.html') or $this->returnError('No results for this query.', 404);
+            $html = file_get_html('http://www.cpasbien.io/recherche/'.urlencode($this->request).'.html') or $this->returnError('No results for this query.', 404);
         }
         else {
             $this->returnError('You must specify a keyword (?q=...).', 400);
@@ -74,7 +74,7 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
     }
 
     public function getURI(){
-        return 'http://www.cpasbien.pw';
+        return 'http://www.cpasbien.io';
     }
 
     public function getCacheDuration(){
