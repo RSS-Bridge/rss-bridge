@@ -20,7 +20,6 @@ class HTMLUtils {
 	public static function displayBridgeCard($bridgeName, $formats, $isActive = true)
 	{
 
-
 		$bridgeElement = Bridge::create($bridgeName);
 		if($bridgeElement == false) {
 			return "";
@@ -41,7 +40,7 @@ CARD;
 		// If we don't have any parameter for the bridge, we print a generic form to load it.
 		if(count($bridgeElement->parameters) == 0) {
 
-			$card .= '<form method="POST" action="?">
+			$card .= '<form method="GET" action="?">
 					<input type="hidden" name="action" value="display" />
 					<input type="hidden" name="bridge" value="' . $bridgeName . '" />' . PHP_EOL;
 
@@ -59,11 +58,10 @@ CARD;
 
 		foreach($bridgeElement->parameters as $parameterName => $parameter)
 		{
-			$card .= '<ol class="list-use">' . PHP_EOL;
 			if(!is_numeric($parameterName)) {
 				$card .= '<h5>'.$parameterName.'</h5>' . PHP_EOL;
 			}
-			$card .= '<form method="POST" action="?">
+			$card .= '<form method="GET" action="?">
 						<input type="hidden" name="action" value="display" />
 						<input type="hidden" name="bridge" value="' . $bridgeName . '" />' . PHP_EOL;
 
@@ -71,21 +69,32 @@ CARD;
 
 			foreach($parameter as $inputEntry) {
 
+				$additionalInfoString = "";
+				if(isset($inputEntry['required'])) {
+
+					$additionalInfoString .= " required=\"required\"";
+
+				}
+				if(isset($inputEntry['pattern'])) {
+
+					$additionalInfoString .= " pattern=\"".$inputEntry['pattern']."\"";
+
+				}
 				if(!isset($inputEntry['exampleValue'])) $inputEntry['exampleValue'] = "";
 
-				$idArg = 'arg-' . $bridgeName . '-' . $parameterName . '-' . $inputEntry['identifier'];
+				$idArg = 'arg-' . urlencode($bridgeName) . '-' . urlencode($parameterName) . '-' . urlencode($inputEntry['identifier']);
 
 				$card .= '<label for="' .$idArg. '">' .$inputEntry['name']. ' : </label>' . PHP_EOL;
 
 				if(!isset($inputEntry['type']) || $inputEntry['type'] == 'text') {
-					$card .= '<input id="' . $idArg . '" type="text" value="" placeholder="' . $inputEntry['exampleValue'] . '" name="' . $inputEntry['identifier'] . '" /><br />' . PHP_EOL;
+					$card .= '<input '.$additionalInfoString.' id="' . $idArg . '" type="text" value="" placeholder="' . $inputEntry['exampleValue'] . '" name="' . $inputEntry['identifier'] . '" /><br />' . PHP_EOL;
 				} else if($inputEntry['type'] == 'number') {
-					$card .= '<input id="' . $idArg . '" type="number" value="" placeholder="' . $inputEntry['exampleValue'] . '" name="' . $inputEntry['identifier'] . '" /><br />' . PHP_EOL;
+					$card .= '<input '.$additionalInfoString.' id="' . $idArg . '" type="number" value="" placeholder="' . $inputEntry['exampleValue'] . '" name="' . $inputEntry['identifier'] . '" /><br />' . PHP_EOL;
 				} else if($inputEntry['type'] == 'list') {
-					$card .= '<select id="' . $idArg . '" name="' . $inputEntry['name'] . '" >';
+					$card .= '<select '.$additionalInfoString.' id="' . $idArg . '" name="' . $inputEntry['name'] . '" >';
 					foreach($inputEntry['values'] as $listValues) {
 
-						$card .= "<option value='" . $listValues['value'] . "'>" . $listValues['name'] . "</option>";
+						$card .= "<option $additionalInfoString value='" . $listValues['value'] . "'>" . $listValues['name'] . "</option>";
 
 					}
 					$card .= '</select><br >';
@@ -114,6 +123,50 @@ CARD;
 		return $card;
 	}
 
+
+}
+
+class HTMLSanitizer {
+
+
+	var $tagsToRemove;
+	var $keptAttributes;
+	var $onlyKeepText;
+
+	const DEFAULT_CLEAR_TAGS = ["script", "iframe"];
+	const KEPT_ATTRIBUTES = ["title", "href", "src"];
+
+	const ONLY_TEXT = null;
+
+	function __construct($tags_to_remove = HTMLSanitizer::DEFAULT_CLEAR_TAGS, $kept_attributes = HTMLSanitizer::KEPT_ATTRIBUTES, $only_keep_text = HTMLSanitizer::ONLY_TEXT) {
+
+		$this->tagsToRemove = $tags_to_remove;
+		$this->keptAttributes = $kept_attributes;
+		$this->onlyKeepText = $only_keep_text;
+
+	}
+
+	function sanitize($textToSanitize) {
+
+		$htmlContent = str_get_html($textToSanitize);
+
+		foreach($htmlContent->find('*[!j_ai_pas_trouve_comment_tout_demander]') as $element) {
+			if(in_array($element->tag, $this->onlyKeepText)) {
+				$element->outertext = $element->plaintext;
+			} else if(in_array($element->tag, $this->tagsToRemove)) {
+				$element->outertext = '';
+			} else {
+				foreach($element->getAllAttributes() as $attributeName => $attribute) {
+
+					if(!in_array($attributeName, $this->keptAttributes)) $element->removeAttribute($attributeName);
+
+				}
+			}
+		}
+
+		return $htmlContent;
+
+	}
 
 }
 ?>

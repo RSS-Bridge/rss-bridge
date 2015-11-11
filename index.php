@@ -149,9 +149,6 @@ $formats = Format::searchInformation();
     <meta name="description" content="Rss-bridge" />
     <title>RSS-Bridge</title>
     <link href="css/style.css" rel="stylesheet">
-    <!--[if IE]>
-        <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
 </head>
 
 <body>
@@ -170,7 +167,7 @@ $formats = Format::searchInformation();
 			if(Bridge::isWhitelisted($whitelist_selection, $bridgeName))
 			{
 				echo HTMLUtils::displayBridgeCard($bridgeName, $formats);
-	            $activeFoundBridgeCount++;
+	            		$activeFoundBridgeCount++;
 			}
 			elseif ($showInactive)
 			{
