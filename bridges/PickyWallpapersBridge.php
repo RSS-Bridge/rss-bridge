@@ -31,7 +31,8 @@ class PickyWallpapersBridge extends BridgeAbstract {
 			{
 				"name" : "resolution",
 				"identifier" : "r",
-				"exampleValue" : "1920x1200, 1680x1050, ..."
+				"exampleValue" : "1920x1200, 1680x1050, ...",
+				"pattern" : "[0-9]{3,4}x[0-9]{3,4}"
 			}
 
 		]';
