@@ -279,15 +279,16 @@ class Bridge{
     */
 	static public function listBridges() {
 
-        $pathDirBridge = self::getDir();
-        $listBridge = array();
-	 	$dirFiles = scandir($pathDirBridge);
+		$pathDirBridge = self::getDir();
+		$listBridge = array();
+		$dirFiles = scandir($pathDirBridge);
 
-        if( $dirFiles !== false ){
-            foreach( $dirFiles as $fileName ){
-                if( preg_match('@([^.]+)\.php@U', $fileName, $out) ){
-					$listBridge[] = $out[1];
-				}
+		if( $dirFiles !== false ){
+
+		    foreach( $dirFiles as $fileName ) {
+		        if( preg_match('@([^.]+)\.php$@U', $fileName, $out) ){
+						$listBridge[] = $out[1];
+			}
 			}
 		}
 

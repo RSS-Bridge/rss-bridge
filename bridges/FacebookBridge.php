@@ -13,7 +13,8 @@ class FacebookBridge extends BridgeAbstract{
 		'[
 			{
 				"name" : "Username",
-				"identifier" : "u"
+				"identifier" : "u",
+				"required" : "required"
 			}
 		]';
 	}

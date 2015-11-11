@@ -23,7 +23,8 @@ class YoutubeBridge extends BridgeAbstract {
 				"type" : "text",
 				"identifier" : "u",
 				"name" : "username",
-				"exampleValue" : "test"
+				"exampleValue" : "test",
+				"required" : "required"
 			}
 		]';
 
@@ -33,7 +34,8 @@ class YoutubeBridge extends BridgeAbstract {
 				"type" : "number",
 				"identifier" : "c",
 				"name" : "channel id",
-				"exampleValue" : "15"
+				"exampleValue" : "15",
+				"required" : "required"
 			}
 		]';
 
