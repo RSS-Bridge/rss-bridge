@@ -91,7 +91,7 @@ CARD;
 				} else if($inputEntry['type'] == 'number') {
 					$card .= '<input '.$additionalInfoString.' id="' . $idArg . '" type="number" value="" placeholder="' . $inputEntry['exampleValue'] . '" name="' . $inputEntry['identifier'] . '" /><br />' . PHP_EOL;
 				} else if($inputEntry['type'] == 'list') {
-					$card .= '<select '.$additionalInfoString.' id="' . $idArg . '" name="' . $inputEntry['name'] . '" >';
+					$card .= '<select '.$additionalInfoString.' id="' . $idArg . '" name="' . $inputEntry['identifier'] . '" >';
 					foreach($inputEntry['values'] as $listValues) {
 
 						$card .= "<option $additionalInfoString value='" . $listValues['value'] . "'>" . $listValues['name'] . "</option>";
@@ -157,9 +157,7 @@ class HTMLSanitizer {
 				$element->outertext = '';
 			} else {
 				foreach($element->getAllAttributes() as $attributeName => $attribute) {
-
 					if(!in_array($attributeName, $this->keptAttributes)) $element->removeAttribute($attributeName);
-
 				}
 			}
 		}
@@ -167,6 +165,13 @@ class HTMLSanitizer {
 		return $htmlContent;
 
 	}
+	public static function defaultImageSrcTo($content, $server) {
+        foreach($content->find('img') as $image) {
+            if(strpos($image->src, '/')==0) {
+                $image->src = $server.$image->src;
+            }
+        }
+    }
 
 }
 ?>
