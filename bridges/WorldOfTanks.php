@@ -86,7 +86,7 @@ class WorldOfTanks extends HttpCachingBridgeAbstract{
 //        $this->message("loading page ".$item->uri);
         $articlePage = str_get_html($this->get_cached($item->uri));
         $content = $articlePage->find('.l-content', 0);
-        $this->defaultImageSrcTo($content, WORLD_OF_TANKS);
+        HTMLSanitizer::defaultImageSrcTo($content, WORLD_OF_TANKS);
         $item->title = $content->find('h1', 0)->innertext;
         $item->content = $content->find('.b-content', 0)->innertext;
 //        $item->name = $auteur->innertext;

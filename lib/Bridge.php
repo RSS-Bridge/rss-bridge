@@ -39,7 +39,7 @@ abstract class BridgeAbstract implements BridgeInterface{
     }
 
     /**
-    * Return datas store in the bridge
+    * Return datas stored in the bridge
     * @return mixed
     */
     public function getDatas(){
@@ -50,7 +50,7 @@ abstract class BridgeAbstract implements BridgeInterface{
 
     /**
     * Defined datas with parameters depending choose bridge
-    * Note : you can defined a cache before with "setCache"
+    * Note : you can define a cache before with "setCache"
     * @param array $param $_REQUEST, $_GET, $_POST, or array with bridge expected paramters
     */
     public function setDatas(array $param){
@@ -90,16 +90,6 @@ abstract class BridgeAbstract implements BridgeInterface{
         return $this;
     }
 
-    /**
-     * Set default image SRC attribute to point on given server when none is provided (that's to say when image src starts with '/'
-     */
-    public function defaultImageSrcTo($content, $server) {
-        foreach($content->find('img') as $image) {
-            if(strpos($image->src, '/')==0) {
-                $image->src = $server.$image->src;
-            }
-        }
-    }
 }
 
 /**
@@ -311,7 +301,7 @@ abstract class RssExpander extends HttpCachingBridgeAbstract{
 
     public function collectExpandableDatas(array $param, $name){
         if (empty($name)) {
-            $this->returnError('There is no $param[\'url\'] for this RSS expander', 404);
+            $this->returnError('There is no $name for this RSS expander', 404);
         }
 //       $this->message("Loading from ".$param['url']);
         // Notice WE DO NOT use cache here on purpose : we want a fresh view of the RSS stream each time
@@ -362,4 +352,21 @@ abstract class RssExpander extends HttpCachingBridgeAbstract{
     public function getDescription() {
         return $this->description;
     }
+}
+
+function advanced_file_get_contents($url) {
+
+	if(defined('PROXY_URL')) {
+		$context = array(
+			'http' => array(
+				'proxy' => PROXY_URL,
+				'request_fulluri' => true,
+			),
+		);
+		$context = stream_context_create($context);
+		return file_get_contents($url, false, $context);
+	} else {
+		return file_get_contents($url);
+	}
+
 }
