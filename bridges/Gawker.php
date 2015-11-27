@@ -31,10 +31,10 @@ class Gawker extends RssExpander{
 			trigger_error("If no site is provided, nothing is gonna happen", E_USER_ERROR);
         } else {
             $this->name = $param['site'];
-			$param['url'] = $this->toURI(strtolower($param['site']));
+			$url = $this->toURI(strtolower($param['site']));
         }
 //        $this->message("loading feed from ".$this->getURI());
-        parent::collectExpandableDatas($param, $name);
+        parent::collectExpandableDatas($param, $url);
     }
     
     protected function parseRSSItem($newsItem) {
@@ -49,7 +49,7 @@ class Gawker extends RssExpander{
             $articlePage = str_get_html($this->get_cached($item->uri));
             if(is_object($articlePage)) {
                 $content = $articlePage->find('.post-content', 0);
-                $this->defaultImageSrcTo($content, $this->getURI());
+                HTMLSanitizer::defaultImageSrcTo($content, $this->getURI());
                 $vcard = $articlePage->find('.vcard', 0);
                 if(is_object($vcard)) {
                     $authorLink = $vcard->find('a', 0);
