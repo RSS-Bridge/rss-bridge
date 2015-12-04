@@ -1,7 +1,6 @@
 <?php
 /*
 TODO :
-- manage SSL detection because if library isn't loaded, some bridge crash !
 - factorize the annotation system
 - factorize to adapter : Format, Bridge, Cache (actually code is almost the same)
 - implement annotation cache for entrance page
@@ -17,14 +16,14 @@ date_default_timezone_set('UTC');
 error_reporting(0);
 //ini_set('display_errors','1'); error_reporting(E_ALL);  // For debugging only.
 
+require_once __DIR__ . '/lib/RssBridge.php';
+
 // extensions check
 if (!extension_loaded('openssl'))
 	die('"openssl" extension not loaded. Please check "php.ini"');
 
 // FIXME : beta test UA spoofing, please report any blacklisting by PHP-fopen-unfriendly websites
 ini_set('user_agent', 'Mozilla/5.0 (X11; Linux x86_64; rv:30.0) Gecko/20121202 Firefox/30.0 (rss-bridge/0.1; +https://github.com/sebsauvage/rss-bridge)');
-
-// -------
 
 // default whitelist
 $whitelist_file = './whitelist.txt';
@@ -59,9 +58,9 @@ else {
 	array_pop($whitelist_selection);
 }
 
+Cache::purge();
 
 try{
-    require_once __DIR__ . '/lib/RssBridge.php';
 
     Bridge::setDir(__DIR__ . '/bridges/');
     Format::setDir(__DIR__ . '/formats/');

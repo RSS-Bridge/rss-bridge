@@ -69,4 +69,24 @@ class Cache{
     static public function isValidNameCache($nameCache){
         return preg_match('@^[A-Z][a-zA-Z0-9-]*$@', $nameCache);
     }
+
+	static public function purge() {
+		$cacheTimeLimit = time() - 60*60*24 ;
+		$cachePath = 'cache';
+		if(file_exists($cachePath)) {
+		   $cacheIterator = new RecursiveIteratorIterator(
+			 new RecursiveDirectoryIterator($cachePath),
+			 RecursiveIteratorIterator::CHILD_FIRST
+		   );
+		   foreach ($cacheIterator as $cacheFile) {
+			  if (in_array($cacheFile->getBasename(), array('.', '..')))
+				 continue;
+			  elseif ($cacheFile->isFile()) {
+				 if( filemtime($cacheFile->getPathname()) < $cacheTimeLimit )
+				    unlink( $cacheFile->getPathname() );
+				 }
+		   }
+		}
+	}
+
 }
