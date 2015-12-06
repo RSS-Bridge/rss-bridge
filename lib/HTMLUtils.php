@@ -133,8 +133,8 @@ class HTMLSanitizer {
 	var $keptAttributes;
 	var $onlyKeepText;
 
-	const DEFAULT_CLEAR_TAGS = ["script", "iframe"];
-	const KEPT_ATTRIBUTES = ["title", "href", "src"];
+	public static $DEFAULT_CLEAR_TAGS = ["script", "iframe"];
+	public static $KEPT_ATTRIBUTES = ["title", "href", "src"];
 
 	const ONLY_TEXT = null;
 
