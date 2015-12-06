@@ -90,3 +90,13 @@ Parameter Name | Parameter values | Description
 type|text, number, list, checkbox| Type of the input, default is text
 required| true | Set this if you want your attribute to be required
 values| [ {"name" : option1Name, "value" : "option1Value"}, ...] | Values list, required with the 'list' type
+
+#### Guidelines
+
+  * scripts (eg. Javascript) must be stripped out. Make good use of `strip_tags()` and `preg_replace()`
+  * bridge must present data within 8 seconds (adjust iterators accordingly)
+  * cache timeout must be fine-tuned so that each refresh can provide 1 or 2 new elements on busy periods
+  * `<audio>` and `<video>` must not autoplay. Seriously.
+  * do everything you can to extract valid timestamps. Translate formats, use API, exploit sitemap, whatever. Free the data!
+  * don't create duplicates. If the website runs on WordPress, use the generic WordPress bridge if possible.
+  * maintain efficient and well-commented code :wink:

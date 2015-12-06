@@ -18,4 +18,12 @@ Current development version
    * Hyperlinks were not clickable.
  * Corrected error message when SimpleHtmlDom library is not installed.
  * Added changelog.
+ * (many many fixes on bridges)
+ * Media RSS format
+ * input types (list)
+ * cache purge function
+ * refactoring
  
+Alpha 0.2
+===
+-TBA-
