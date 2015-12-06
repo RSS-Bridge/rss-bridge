@@ -1,16 +1,4 @@
 <?php
-/**
-* RssBridgeCpasBien 
-* 
-* 2015-05-17
-*
-* @name Cpasbien Bridge
-* @homepage http://www.cpasbien.io/
-* @description Returns latest torrent from request query
-* @maintainer lagaisse
-* @use1(q="keywords like this")
-*/
-
 // simple_html_dom funtion to get the dom from contents instead from file
 function content_get_html($contents, $maxLen=-1, $lowercase = true, $forceTagsClosed=true, $target_charset = DEFAULT_TARGET_CHARSET, $stripRN=true, $defaultBRText=DEFAULT_BR_TEXT, $defaultSpanText=DEFAULT_SPAN_TEXT)
 {
@@ -30,11 +18,30 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
     
     private $request;
 
+	public function loadMetadatas() {
+
+		$this->maintainer = "lagaisse";
+		$this->name = "Cpasbien Bridge";
+		$this->uri = "http://Cpasbien.pw/";
+		$this->description = "Returns latest torrent from request query";
+		$this->update = "2015-05-17";
+
+		$this->parameters[] =
+		'[
+			{
+				"name" : "keyword",
+				"identifier" : "q"
+			}
+		]';
+
+	}
+
+
     public function collectData(array $param){
         $html = '';
         if (isset($param['q'])) {   /* keyword search mode */
             $this->request = str_replace(" ","-",trim($param['q']));
-            $html = file_get_html('http://www.cpasbien.io/recherche/'.urlencode($this->request).'.html') or $this->returnError('No results for this query.', 404);
+            $html = file_get_html('http://www.cpasbien.pw/recherche/'.urlencode($this->request).'.html') or $this->returnError('No results for this query.', 404);
         }
         else {
             $this->returnError('You must specify a keyword (?q=...).', 400);
@@ -74,7 +81,7 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
     }
 
     public function getURI(){
-        return 'http://www.cpasbien.io';
+        return 'http://www.cpasbien.pw';
     }
 
     public function getCacheDuration(){
