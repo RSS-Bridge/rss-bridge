@@ -6,7 +6,7 @@ class LinkedInCompany extends BridgeAbstract{
 		$this->maintainer = "regisenguehard";
 		$this->name = "LinkedIn Company";
 		$this->uri = "https://www.linkedin.com/";
-		$this->description = "Returns most recent actus from Company on LinkedIn.";
+		$this->description = "Returns most recent actus from Company on LinkedIn. (https://www.linkedin.com/company/<strong style=\"font-weight:bold;\">apple</strong>)";
 		$this->update = "2015-12-22";
 
 		$this->parameters[] =
@@ -20,7 +20,7 @@ class LinkedInCompany extends BridgeAbstract{
 
     public function collectData(array $param){
         $html = '';
-        $link = 'https://www.linkedin.com/company/'.urlencode($param[c]);
+        $link = 'https://www.linkedin.com/company/'.$param[c];
 
         $html = file_get_html($link) or $this->returnError('Could not request LinkedIn.', 404);
 
@@ -47,6 +47,6 @@ class LinkedInCompany extends BridgeAbstract{
     }
 
     public function getCacheDuration(){
-        return 0; // 6 hours
+        return 21600; // 6 hours
     }
 }
