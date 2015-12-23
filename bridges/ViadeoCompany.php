@@ -6,7 +6,7 @@ class ViadeoCompany extends BridgeAbstract{
 		$this->maintainer = "regisenguehard";
 		$this->name = "Viadeo Company";
 		$this->uri = "https://www.viadeo.com/";
-		$this->description = "Returns most recent actus from Company on Viadeo.";
+		$this->description = "Returns most recent actus from Company on Viadeo. (http://www.viadeo.com/fr/company/<strong style=\"font-weight:bold;\">apple</strong>)";
 		$this->update = "2015-12-22";
 
 		$this->parameters[] =
