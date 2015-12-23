@@ -112,7 +112,7 @@ class Arte7Bridge extends BridgeAbstract{
 
     public function collectData(array $param){
 
-      function extractVideoset($category='toutes-les-videos', $lang='fr') 
+      function extractVideoset($category='toutes-les-videos', $lang='fr')
          {
          $url = 'http://www.arte.tv/guide/'.$lang.'/plus7/'.$category;
          $input = file_get_contents($url) or die('Could not request ARTE.');
@@ -141,7 +141,7 @@ class Arte7Bridge extends BridgeAbstract{
 
       foreach($input_json['videos'] as $element) {
             $item = new \Item();
-            $item->uri = $element['url'];
+            $item->uri = str_replace("autoplay=1", "", $element['url']);
             $item->id = $element['id'];
                $hack_broadcast_time = $element['rights_end'];
                $hack_broadcast_time = strtok($hack_broadcast_time, 'T');
