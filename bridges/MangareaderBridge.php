@@ -107,7 +107,7 @@ class MangareaderBridge extends BridgeAbstract{
                 $item->uri = 'http://www.mangareader.net' . $xpath->query("td[1]/a", $chapter)->item(0)->getAttribute('href'); // anchor includes path (with leading '/')
                 $item->description = substr($xpath->query("td[1]", $chapter)->item(0)->nodeValue, strlen($item->title) + 4); // first column provides "<name> : <desccription>", we only want the description
                 $item->date = $xpath->query("td[2]", $chapter)->item(0)->nodeValue; // second column provides the release date
-                $item->content = $item->description . "<br/>" . $item->date;
+                $item->content = $item->description . "<br/><time datetime=\"" . $item->date . "\">" . $item->date . "</time>";
                 $this->items[] = $item;
             }           
         }
