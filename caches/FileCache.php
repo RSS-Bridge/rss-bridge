@@ -24,6 +24,9 @@ class FileCache extends CacheAbstract{
     public function saveData($datas){
         $this->isPrepareCache();
 
+        //Re-encode datas to UTF-8
+        $datas = Cache::utf8_encode_deep($datas);
+        
         $writeStream = file_put_contents($this->getCacheFile(), json_encode($datas));
 
 		if(!$writeStream) {
