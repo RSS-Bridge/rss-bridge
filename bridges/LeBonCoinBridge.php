@@ -134,7 +134,7 @@ class LeBonCoinBridge extends BridgeAbstract{
     public function collectData(array $param){
 
         $html = '';
-        $link = 'http://www.leboncoin.fr/annonces/offres/' . $param[r] . '/?f=a&th=1&q=' . $param[k];
+        $link = 'http://www.leboncoin.fr/annonces/offres/' . $param['r'] . '/?f=a&th=1&q=' . $param['k'];
         $html = file_get_html($link) or $this->returnError('Could not request LeBonCoin.', 404);
 
         $list = $html->find('.list-lbc', 0);
