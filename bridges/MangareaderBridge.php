@@ -96,7 +96,7 @@ class MangareaderBridge extends BridgeAbstract{
             $query = "(.//*[@id='listing']//tr)[position() > 1]";
                         
             if($limit !== -1){
-                $query = "(.//*[@id='listing']//tr)[position() > 1][position() <= " . $limit . "]";
+                $query = "(.//*[@id='listing']//tr)[position() > 1][position() > last() - " . $limit . "]";
             } 
             
             $chapters = $xpath->query($query);
