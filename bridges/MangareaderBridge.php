@@ -14,7 +14,7 @@ class MangareaderBridge extends BridgeAbstract{
         $this->parameters["Get manga updates"] = '
         [
            {
-               "name" : "Manga path",
+               "name" : "Path",
                "identifier" : "path",
                "type" : "text",
                "required" : "true",
