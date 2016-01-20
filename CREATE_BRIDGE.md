@@ -90,6 +90,7 @@ Parameter Name | Parameter values | Description
 type|text, number, list, checkbox| Type of the input, default is text
 required| true | Set this if you want your attribute to be required
 values| [ {"name" : option1Name, "value" : "option1Value"}, ...] | Values list, required with the 'list' type
+title| text | Will be shown as tooltip when mouse-hovering over the input
 
 #### Guidelines
 

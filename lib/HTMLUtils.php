@@ -80,6 +80,11 @@ CARD;
 					$additionalInfoString .= " pattern=\"".$inputEntry['pattern']."\"";
 
 				}
+                if(isset($inputEntry['title'])) {
+                    
+                    $additionalInfoString .= " title=\"" .$inputEntry['title']."\"";
+                    
+                }
 				if(!isset($inputEntry['exampleValue'])) $inputEntry['exampleValue'] = "";
 
 				$idArg = 'arg-' . urlencode($bridgeName) . '-' . urlencode($parameterName) . '-' . urlencode($inputEntry['identifier']);
