@@ -52,6 +52,7 @@ class ParuVenduImmoBridge extends BridgeAbstract
             $item['uri'] = self::URI.$href;
             $item['title'] = $element->title;
             $item['content'] = $img.$desc.$price;
+
             $this->items[] = $item;
 
         }
