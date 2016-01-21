@@ -37,7 +37,7 @@ class AtomFormat extends FormatAbstract{
             $entryContent = is_null($data->content) ? '' : '<![CDATA[' . $this->sanitizeHtml(str_replace(']]>','',$data->content)) . ']]>';
 
 			// We generate a list of the enclosure links
-			$entryEnclosure = "";
+			$entryEnclosures = "";
             
 			foreach($data->enclosures as $enclosure) {
 
