@@ -7,11 +7,11 @@ class MangareaderBridge extends BridgeAbstract{
 		$this->maintainer = "logmanoriginal";
 		$this->name = "Mangareader Bridge";
 		$this->uri = "http://www.mangareader.net";
-		$this->description = "Returns the latest updates. Set limits to -1 to disable the limit.";
-		$this->update = "2016-01-20";
+		$this->description = "Returns the latest updates, popular mangas or manga updates (new chapters)";
+		$this->update = "2016-01-21";
 
-		$this->parameters["Get site updates"] = '[]';
-        $this->parameters["Get popular updates"] = 
+		$this->parameters["Get latest updates"] = '[]';
+        $this->parameters["Get popular mangas"] = 
         '[
             {
                 "name" : "Category",
@@ -172,7 +172,8 @@ class MangareaderBridge extends BridgeAbstract{
                         "value" : "yuri"
                     }
                 ],
-                "exampleValue" : "All"
+                "exampleValue" : "All",
+                "title" : "Select your category"
             }
         ]';
         $this->parameters["Get manga updates"] = 
@@ -183,13 +184,15 @@ class MangareaderBridge extends BridgeAbstract{
                "type" : "text",
                "required" : "true",
                "pattern" : "[a-zA-Z0-9-_]*",
-               "exampleValue" : "bleach, umi-no-kishidan"
+               "exampleValue" : "bleach, umi-no-kishidan",
+               "title" : "URL part of desired manga"
            },
            {
                "name" : "Limit",
                "identifier" : "limit",
                "type" : "number",
-               "exampleValue" : "10"
+               "exampleValue" : "10",
+               "title" : "Number of items to return.\n-1 returns all"
            }
         ]';
 	}
@@ -233,7 +236,7 @@ class MangareaderBridge extends BridgeAbstract{
         // Build feed based on the context (site updates or manga updates)
         if($type === "latest"){
             
-            $this->request = 'Latest';
+            $this->request = 'Latest updates';
             
             // Query each item (consists of Manga + chapters)
             $nodes = $xpath->query("//*[@id='latestchapters']/table//td");
