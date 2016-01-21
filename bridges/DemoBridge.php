@@ -53,6 +53,16 @@ class DemoBridge extends BridgeAbstract{
 
 	public function collectData(array $param){
 
+		$item = new \Item();
+	    $item->name = "TestElement";
+	    $item->title = "Test";
+	    $item->content = "Awesome content !";
+	    $item->id = "Lalala";
+	    $item->uri = "http://test.test/test";
+		$item->enclosures[] = "http://www.ardmediathek.de/ard/servlet/image/00/32/68/18/38/1135274624/16x9/960";
+
+	    $this->items[] = $item;
+
     }
 
 	public function getName() {
@@ -68,6 +78,6 @@ class DemoBridge extends BridgeAbstract{
 	}
 
 	public function getCacheDuration(){
-		return 3600; // 1 hour
+		return 00; // 1 hour
 	}
 }

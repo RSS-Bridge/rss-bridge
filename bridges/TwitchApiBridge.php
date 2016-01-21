@@ -13,7 +13,7 @@ class TwitchApiBridge extends BridgeAbstract{
 		$this->name = "Twitch API Bridge";
 		$this->uri = "http://www.twitch.tv";
 		$this->description = "Returns the newest broadcasts or highlights by channel name using the Twitch API (v3)";
-		$this->update = "2015-07-14";
+		$this->update = "2016-01-09";
 
 		$this->parameters["Get channel without limit"] =
 		'[
@@ -31,7 +31,7 @@ class TwitchApiBridge extends BridgeAbstract{
 						"value" : "true"
 					},
 					{
-						"name" : "Don\'t show broadcasts",
+						"name" : "Show highlights",
 						"value" : "false"
 					}
 				]
@@ -58,7 +58,7 @@ class TwitchApiBridge extends BridgeAbstract{
 						"value" : "true"
 					},
 					{
-						"name" : "Don\'t show broadcasts",
+						"name" : "Show highlights",
 						"value" : "false"
 					}
 				]

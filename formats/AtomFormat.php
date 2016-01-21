@@ -36,6 +36,15 @@ class AtomFormat extends FormatAbstract{
             // We prevent content from closing the CDATA too early.
             $entryContent = is_null($data->content) ? '' : '<![CDATA[' . $this->sanitizeHtml(str_replace(']]>','',$data->content)) . ']]>';
 
+			// We generate a list of the enclosure links
+			$entryEnclosures = "";
+            
+			foreach($data->enclosures as $enclosure) {
+
+				$entryEnclosures .= "<link rel=\"enclosure\" href=\"".$enclosure."\"></link>";
+
+			}
+
             $entries .= <<<EOD
 
     <entry>
@@ -48,6 +57,7 @@ class AtomFormat extends FormatAbstract{
         <id>{$entryUri}</id>
         <updated>{$entryTimestamp}</updated>
         <content type="html">{$entryContent}</content>
+		{$entryEnclosures}
     </entry>
 
 EOD;

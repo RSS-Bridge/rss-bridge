@@ -170,6 +170,7 @@ App_Data/*.ldf
 ## Other ide stuff
 #################
 .idea/*
+[#]*[#]
 
 #############
 ## Windows detritus
