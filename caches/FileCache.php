@@ -8,7 +8,7 @@ class FileCache extends CacheAbstract{
     public function loadData(){
         $this->isPrepareCache();
 
-        $datas = json_decode(file_get_contents($this->getCacheFile()),true);
+        $datas = unserialize(file_get_contents($this->getCacheFile()));
         $items = array();
         foreach($datas as $aData){
             $item = new \Item();
@@ -25,9 +25,9 @@ class FileCache extends CacheAbstract{
         $this->isPrepareCache();
 
         //Re-encode datas to UTF-8
-        $datas = Cache::utf8_encode_deep($datas);
+        //$datas = Cache::utf8_encode_deep($datas);
         
-        $writeStream = file_put_contents($this->getCacheFile(), json_encode($datas));
+        $writeStream = file_put_contents($this->getCacheFile(), serialize($datas));
 
 		if(!$writeStream) {
 
