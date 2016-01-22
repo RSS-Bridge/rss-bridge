@@ -313,7 +313,7 @@ class MangareaderBridge extends BridgeAbstract{
                 $item->description = htmlspecialchars(substr($xpath->query("td[1]", $chapter)->item(0)->nodeValue, strrpos($item->title, ": ") + 2));
                 $item->date = $xpath->query("td[2]", $chapter)->item(0)->nodeValue;
                 $item->content = $item->description . "<br/><time datetime=\"" . $item->date . "\">" . $item->date . "</time>";
-                $this->items[] = $item;
+                array_unshift($this->items, $item);
             }           
         }
         
