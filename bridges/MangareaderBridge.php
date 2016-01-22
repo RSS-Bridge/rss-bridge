@@ -8,7 +8,7 @@ class MangareaderBridge extends BridgeAbstract{
 		$this->name = "Mangareader Bridge";
 		$this->uri = "http://www.mangareader.net";
 		$this->description = "Returns the latest updates, popular mangas or manga updates (new chapters)";
-		$this->update = "2016-01-21";
+		$this->update = "2016-01-22";
 
 		$this->parameters["Get latest updates"] = '[]';
         $this->parameters["Get popular mangas"] = 
@@ -310,9 +310,7 @@ class MangareaderBridge extends BridgeAbstract{
                 $item = new \Item();
                 $item->title = htmlspecialchars($xpath->query("td[1]", $chapter)->item(0)->nodeValue);
                 $item->uri = 'http://www.mangareader.net' . $xpath->query("td[1]/a", $chapter)->item(0)->getAttribute('href');
-                $item->description = htmlspecialchars(substr($xpath->query("td[1]", $chapter)->item(0)->nodeValue, strrpos($item->title, ": ") + 2));
-                $item->date = $xpath->query("td[2]", $chapter)->item(0)->nodeValue;
-                $item->content = $item->description . "<br/><time datetime=\"" . $item->date . "\">" . $item->date . "</time>";
+                $item->timestamp = strtotime($xpath->query("td[2]", $chapter)->item(0)->nodeValue);
                 array_unshift($this->items, $item);
             }           
         }
