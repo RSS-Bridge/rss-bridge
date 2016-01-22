@@ -283,11 +283,11 @@ class MangareaderBridge extends BridgeAbstract{
                 $mangaimgelement = $xpath->query(".//*[@class='imgsearchresults']", $manga)->item(0)->getAttribute('style'); 
                 
                 $item = new \Item();
-                $item->title = $xpath->query(".//*[@class='manga_name']//a", $manga)->item(0)->nodeValue;
+                $item->title = htmlspecialchars($xpath->query(".//*[@class='manga_name']//a", $manga)->item(0)->nodeValue);
                 $item->uri = 'http://www.mangareader.net' . $xpath->query(".//*[@class='manga_name']//a", $manga)->item(0)->getAttribute('href');
-                $item->author = $xpath->query("//*[@class='author_name']", $manga)->item(0)->nodeValue;
+                $item->author = htmlspecialchars($xpath->query("//*[@class='author_name']", $manga)->item(0)->nodeValue);
                 $item->chaptercount = $xpath->query(".//*[@class='chapter_count']", $manga)->item(0)->nodeValue;
-                $item->genre = $xpath->query(".//*[@class='manga_genre']", $manga)->item(0)->nodeValue;
+                $item->genre = htmlspecialchars($xpath->query(".//*[@class='manga_genre']", $manga)->item(0)->nodeValue);
                 $item->thumbnailUri = substr($mangaimgelement, 22, strlen($mangaimgelement) - 24);
                 $item->content = '<a href="' . $item->uri . '"><img src="' . $item->thumbnailUri . '" alt="' . $item->title . '" /></a><p>' . $item->genre . '</p><p>' . $item->chaptercount . '</p>';
                 $this->items[] = $item;
@@ -308,9 +308,9 @@ class MangareaderBridge extends BridgeAbstract{
             
             foreach ($chapters as $chapter){
                 $item = new \Item();
-                $item->title = $xpath->query("td[1]", $chapter)->item(0)->nodeValue;
+                $item->title = htmlspecialchars($xpath->query("td[1]", $chapter)->item(0)->nodeValue);
                 $item->uri = 'http://www.mangareader.net' . $xpath->query("td[1]/a", $chapter)->item(0)->getAttribute('href');
-                $item->description = substr($xpath->query("td[1]", $chapter)->item(0)->nodeValue, strrpos($item->title, ": ") + 2);
+                $item->description = htmlspecialchars(substr($xpath->query("td[1]", $chapter)->item(0)->nodeValue, strrpos($item->title, ": ") + 2));
                 $item->date = $xpath->query("td[2]", $chapter)->item(0)->nodeValue;
                 $item->content = $item->description . "<br/><time datetime=\"" . $item->date . "\">" . $item->date . "</time>";
                 $this->items[] = $item;
