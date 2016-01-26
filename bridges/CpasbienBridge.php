@@ -22,15 +22,17 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
 
 		$this->maintainer = "lagaisse";
 		$this->name = "Cpasbien Bridge";
-		$this->uri = "http://Cpasbien.pw/";
-		$this->description = "Returns latest torrent from request query";
-		$this->update = "2015-05-17";
+		$this->uri = "http://www.cpasbien.io";
+		$this->description = "Returns latest torrents from a request query";
+		$this->update = "2016-01-26";
 
 		$this->parameters[] =
 		'[
 			{
-				"name" : "keyword",
-				"identifier" : "q"
+				"name" : "Search",
+				"identifier" : "q",
+                "required" : true,
+                "title" : "Type your search"
 			}
 		]';
 
@@ -38,10 +40,11 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
 
 
     public function collectData(array $param){
+        $this->loadMetadatas();
         $html = '';
         if (isset($param['q'])) {   /* keyword search mode */
             $this->request = str_replace(" ","-",trim($param['q']));
-            $html = file_get_html('http://www.cpasbien.pw/recherche/'.urlencode($this->request).'.html') or $this->returnError('No results for this query.', 404);
+            $html = file_get_html($this->uri.'/recherche/'.urlencode($this->request).'.html') or $this->returnError('No results for this query.', 404);
         }
         else {
             $this->returnError('You must specify a keyword (?q=...).', 400);
@@ -66,7 +69,7 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
                 }
 
                 $item->id = $episode->find('a', 0)->getAttribute('href');
-                $item->uri = $this->getURI() . $htmlepisode->find('#telecharger',0)->getAttribute('href');
+                $item->uri = $this->uri . $htmlepisode->find('#telecharger',0)->getAttribute('href');
                 $item->thumbnailUri = $htmlepisode->find('#bigcover', 0)->find('img',0)->getAttribute('src');
                 $this->items[] = $item;
             }
@@ -77,11 +80,11 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
 
 
     public function getName(){
-        return (!empty($this->request) ? $this->request .' - ' : '') .'Cpasbien Bridge';
+        return (!empty($this->request) ? $this->request .' - ' : '') . $this->name;
     }
 
     public function getURI(){
-        return 'http://www.cpasbien.pw';
+        return $this->uri;
     }
 
     public function getCacheDuration(){
