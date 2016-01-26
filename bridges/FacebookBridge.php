@@ -5,7 +5,7 @@ class FacebookBridge extends BridgeAbstract{
 
 		$this->maintainer = "teromene";
 		$this->name = "Facebook";
-		$this->uri = "http://facebook.com/";
+		$this->uri = "http://www.facebook.com/";
 		$this->description = "Input a page title or a profile log. For a profile log, please insert the parameter as follow : myExamplePage/132621766841117";
 		$this->update = "23/10/2015";
 
@@ -19,7 +19,7 @@ class FacebookBridge extends BridgeAbstract{
 		]';
 	}
 
-	public function collectData(array $param){
+	public function collectData(array $param) {
 
 		//Extract a string using start and end delimiters
 		function ExtractFromDelimiters($string, $start, $end) {
@@ -35,7 +35,7 @@ class FacebookBridge extends BridgeAbstract{
 			if (is_array($matches) && count($matches) > 1) {
 				$link = $matches[1];
 				if (strpos($link, '/') === 0)
-					$link = 'https://facebook.com'.$link.'"';
+					$link = 'https://www.facebook.com'.$link.'"';
 				if (strpos($link, 'facebook.com/l.php?u=') !== false)
 					$link = urldecode(ExtractFromDelimiters($link, 'facebook.com/l.php?u=', '&'));
 				return ' href="'.$link.'"';
@@ -75,18 +75,77 @@ class FacebookBridge extends BridgeAbstract{
 			return $matches[0];
 		};
 
-		$html = '';
+		$html = null;
 
-		if(isset($param['u'])) {
-			if(!strpos($param['u'], "/")) {
-				$html = file_get_html('https://facebook.com/'.urlencode($param['u']).'?_fb_noscript=1') or $this->returnError('No results for this query.', 404);
-			} else {
-				$html = file_get_html('https://facebook.com/pages/'.$param['u'].'?_fb_noscript=1') or $this->returnError('No results for this query.', 404);
+		//Handle captcha response sent by the viewer
+		if (isset($_POST['captcha_response']))
+		{
+			if (session_status() == PHP_SESSION_NONE)
+				session_start();
+			if (isset($_SESSION['captcha_fields'], $_SESSION['captcha_action']))
+			{
+				$captcha_action = $_SESSION['captcha_action'];
+				$captcha_fields = $_SESSION['captcha_fields'];
+				$captcha_fields['captcha_response'] = preg_replace("/[^a-zA-Z0-9]+/", "", $_POST['captcha_response']);
+				$http_options = array(
+					'http' => array(
+						'method'  => 'POST',
+						'user_agent'=> ini_get('user_agent'),
+						'header'=>array("Content-type: application/x-www-form-urlencoded\r\nReferer: $captcha_action\r\nCookie: noscript=1\r\n"),
+						'content' => http_build_query($captcha_fields),
+					),
+				);
+				$context  = stream_context_create($http_options);
+				$html = file_get_contents($captcha_action, false, $context);
+				if ($html === FALSE) { $this->returnError('Failed to submit captcha response back to Facebook', 500); }
+				unset($_SESSION['captcha_fields']);
+				$html = str_get_html($html);
 			}
-		} else {
-			$this->returnError('You must specify a Facebook username.', 400);
+			unset($_SESSION['captcha_fields']);
+			unset($_SESSION['captcha_action']);
 		}
 
+		//Retrieve page contents
+		if (is_null($html)) {
+			if (isset($param['u'])) {
+				if (!strpos($param['u'], "/")) {
+					$html = file_get_html('https://www.facebook.com/'.urlencode($param['u']).'?_fb_noscript=1') or $this->returnError('No results for this query.', 404);
+				} else {
+					$html = file_get_html('https://www.facebook.com/pages/'.$param['u'].'?_fb_noscript=1') or $this->returnError('No results for this query.', 404);
+				}
+			} else {
+				$this->returnError('You must specify a Facebook username.', 400);
+			}
+		}
+
+		//Handle captcha form?
+		$captcha = $html->find('div.captcha_interstitial', 0);
+		if (!is_null($captcha))
+		{
+			//Save form for submitting after getting captcha response
+			if (session_status() == PHP_SESSION_NONE)
+				session_start();
+			$captcha_fields = array();
+			foreach ($captcha->find('input, button') as $input)
+				$captcha_fields[$input->name] = $input->value;
+			$_SESSION['captcha_fields'] = $captcha_fields;
+			$_SESSION['captcha_action'] = 'https://www.facebook.com'.$captcha->find('form', 0)->action;
+
+			//Show captcha filling form to the viewer, proxying the captcha image
+			$img = base64_encode(file_get_contents($captcha->find('img', 0)->src));
+			header('HTTP/1.1 500 '.Http::getMessageForCode(500));
+			header('Content-Type: text/html');
+			die('<form method="post" action="?'.$_SERVER['QUERY_STRING'].'">'
+				.'<h2>Facebook captcha challenge</h2>'
+				.'<p>Unfortunately, rss-bridge cannot fetch the requested page.<br />'
+				.'Facebook wants rss-bridge to resolve the following captcha:</p>'
+				.'<p><img src="data:image/png;base64,'.$img.'" /></p>'
+				.'<p><b>Response:</b> <input name="captcha_response" placeholder="please fill in" />'
+				.'<input type="submit" value="Submit!" /></p>'
+				.'</form>');
+		}
+
+		//No captcha? We can carry on retrieving page contents :)
 		$element = $html->find('[id^=PagePostsSectionPagelet-]')[0]->children(0)->children(0);
 
 		if(isset($element)) {
@@ -144,7 +203,7 @@ class FacebookBridge extends BridgeAbstract{
 						$thumbnail = $profilePic;
 
 					//Build and add final item
-					$item->uri = 'https://facebook.com'.str_replace('&amp;', '&', $post->find('abbr')[0]->parent()->getAttribute('href'));
+					$item->uri = 'https://facebook.com'.$post->find('abbr')[0]->parent()->getAttribute('href');
 					$item->thumbnailUri = $thumbnail;
 					$item->content = $content;
 					$item->title = $title;
@@ -154,7 +213,12 @@ class FacebookBridge extends BridgeAbstract{
 				}
 			}
 		}
+	}
 
+	public function setDatas(array $param){
+		if (isset($param['captcha_response']))
+			unset($param['captcha_response']);
+		parent::setDatas($param);
 	}
 
 	public function getName() {

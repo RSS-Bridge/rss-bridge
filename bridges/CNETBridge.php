@@ -3,22 +3,22 @@ class CNETBridge extends BridgeAbstract {
 
     private $topicName = '';
 
-	public function loadMetadatas() {
+    public function loadMetadatas() {
 
-		$this->maintainer = "ORelio";
-		$this->name = "CNET News";
-		$this->uri = "http://www.cnet.com/";
-		$this->description = "Returns the newest articles. <br /> You may specify a topic, else all topics are selected.";
-		$this->update = "2015-09-10";
+        $this->maintainer = 'ORelio';
+        $this->name = 'CNET News';
+        $this->uri = 'http://www.cnet.com/';
+        $this->description = 'Returns the newest articles. <br /> You may specify a topic found in some section URLs, else all topics are selected.';
+        $this->update = '2016-01-23';
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "Topic name",
-				"identifier" : "topic"
-			}
-		]';
-	}
+        $this->parameters[] =
+        '[
+            {
+                "name" : "Topic name",
+                "identifier" : "topic"
+            }
+        ]';
+    }
 
     public function collectData(array $param) {
 
@@ -39,7 +39,8 @@ class CNETBridge extends BridgeAbstract {
         }
 
         function CleanArticle($article_html) {
-            $article_html = '<p>'.substr($article_html, strpos($article_html, '</script></div><p>') + 18);
+            $article_html = '<p>'.substr($article_html, strpos($article_html, '<p>') + 3);
+            $article_html = StripWithDelimiters($article_html, '<span class="credit">', '</span>');
             $article_html = StripWithDelimiters($article_html, '<script>', '</script>');
             $article_html = StripWithDelimiters($article_html, '<div class="shortcode related-links', '</div>');
             $article_html = StripWithDelimiters($article_html, '<a class="clickToEnlarge">', '</a>');
@@ -53,27 +54,29 @@ class CNETBridge extends BridgeAbstract {
         $html = file_get_html($pageUrl) or $this->returnError('Could not request CNET: '.$pageUrl, 500);
         $limit = 0;
 
-        foreach($html->find('div.socialSharingSmall') as $element) {
-            if ($limit < 4) {
+        foreach($html->find('div.assetBody') as $element) {
+            if ($limit < 8) {
 
-                $article_meta = json_decode(ExtractFromDelimiters($element->outertext, 'data-social-counts-options=\'', '\'>'));
-                $article_title = $article_meta->title;
-                $article_uri = $article_meta->url;
+                $article_title = trim($element->find('h2', 0)->plaintext);
+                $article_uri = 'http://www.cnet.com'.($element->find('a', 0)->href);
+                $article_thumbnail = $element->parent()->find('img', 0)->src;
+                $article_timestamp = strtotime($element->find('time.assetTime', 0)->plaintext);
+                $article_author = trim($element->find('a[rel=author]', 0)->plaintext);
 
                 if (!empty($article_title) && !empty($article_uri) && strpos($article_uri, '/news/') !== false) {
 
                     $article_html = file_get_html($article_uri) or $this->returnError('Could not request CNET: '.$article_uri, 500);
-                    $article_timestamp = strtotime(ExtractFromDelimiters($article_html->innertext, '<time itemprop="datePublished" class="', '">'));
-                    $article_thumbnail = $article_html->find('div.originalImage', 0);
+
+                    if (is_null($article_thumbnail))
+                        $article_thumbnail = $article_html->find('div.originalImage', 0);
 
                     if (is_null($article_thumbnail))
                         $article_thumbnail = $article_html->find('span.imageContainer', 0);
 
-                    if (!is_null($article_thumbnail))
+                    if (is_object($article_thumbnail))
                         $article_thumbnail = $article_thumbnail->find('img', 0)->src;
-                    
+
                     $article_content = trim(CleanArticle(ExtractFromDelimiters($article_html, '</div></div></div><div class="col-8">', '<footer>')));
-                    $article_author = trim($article_html->find('a.author', 0)->plaintext);
 
                     $item = new \Item();
                     $item->uri = $article_uri;
