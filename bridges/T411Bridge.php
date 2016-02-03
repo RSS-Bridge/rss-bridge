@@ -37,7 +37,9 @@ class T411Bridge extends BridgeAbstract {
         //Retrieve torrent listing as truncated rss, which does not contain torrent description
         $url = 'http://www.t411.in/torrents/search/?'.$param['search'].'&order=added&type=desc';
         $html = file_get_html($url) or $this->returnError('Could not request t411: '.$url, 500);
-        $results = $html->find('table.results')[0] or $this->returnError('No results from t411: '.$url, 500);
+        $results = $html->find('table.results', 0);
+        if (is_null($results))
+            $this->returnError('No results from t411: '.$url, 500);
         $limit = 0;
 
         //Process each item individually
@@ -77,7 +79,7 @@ class T411Bridge extends BridgeAbstract {
                     $item->author = $item_author;
                     $item->timestamp = $item_date;
                     $item->thumbnailUri = $item_image;
-                    $item->content = utf8_encode($item_desc->innertext);
+                    $item->content = $item_desc->innertext;
                     $this->items[] = $item;
                     $limit++;
                 }
