@@ -9,7 +9,7 @@ class CNETBridge extends BridgeAbstract {
         $this->name = 'CNET News';
         $this->uri = 'http://www.cnet.com/';
         $this->description = 'Returns the newest articles. <br /> You may specify a topic found in some section URLs, else all topics are selected.';
-        $this->update = '2016-01-23';
+        $this->update = '2016-02-06';
 
         $this->parameters[] =
         '[
@@ -41,7 +41,7 @@ class CNETBridge extends BridgeAbstract {
         function CleanArticle($article_html) {
             $article_html = '<p>'.substr($article_html, strpos($article_html, '<p>') + 3);
             $article_html = StripWithDelimiters($article_html, '<span class="credit">', '</span>');
-            $article_html = StripWithDelimiters($article_html, '<script>', '</script>');
+            $article_html = StripWithDelimiters($article_html, '<script', '</script>');
             $article_html = StripWithDelimiters($article_html, '<div class="shortcode related-links', '</div>');
             $article_html = StripWithDelimiters($article_html, '<a class="clickToEnlarge">', '</a>');
             return $article_html;
