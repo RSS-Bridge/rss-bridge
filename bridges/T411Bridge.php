@@ -7,7 +7,7 @@ class T411Bridge extends BridgeAbstract {
         $this->name = "T411";
         $this->uri = "https://t411.in/";
         $this->description = "Returns the 5 newest torrents with specified search terms <br /> Use url part after '?' mark when using their search engine";
-        $this->update = "2015-12-17";
+        $this->update = "2016-02-06";
 
         $this->parameters[] =
         '[
@@ -46,10 +46,10 @@ class T411Bridge extends BridgeAbstract {
         foreach($results->find('tr') as $element) {
 
             //Limit total amount of requests
-            if ($limit < 5) {
+            if ($limit < 10) {
 
                 //Requests are rate-limited
-                sleep(1); //So we need to wait
+                usleep(500000); //So we need to wait (500ms)
 
                 //Retrieve data from RSS entry
                 $item_uri = 'http://'.ExtractFromDelimiters($element->outertext, '<a href="//', '"');
@@ -66,7 +66,7 @@ class T411Bridge extends BridgeAbstract {
                     //Retrieve image for thumbnail or generic logo fallback
                     $item_image = 'http://www.t411.in/themes/blue/images/logo.png';
                     foreach ($item_desc->find('img') as $img) {
-                        if (strpos($img->src, 'dreamprez') === false) {
+                        if (strpos($img->src, 'prez') === false) {
                             $item_image = $img->src;
                             break;
                         }
