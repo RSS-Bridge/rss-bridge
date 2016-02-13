@@ -59,6 +59,8 @@ The array can be a key-based array, but it is not necessary. The following synta
 $this->parameters[] = ...
 $this->parameters['First usage of my bridge'] = ...
 ```
+It is worth mentionning that you can also define a set of parameters that will be applied to every possible utilisation of your bridge.
+To do this, just create a parameter array with the `global` key.
 
 ### Format specifications
 

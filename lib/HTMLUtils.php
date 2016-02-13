@@ -56,8 +56,28 @@ CARD;
 
 		}
 
+		$hasGlobalParameter = array_key_exists("global", $bridgeElement->parameters);
+		if($hasGlobalParameter) {
+			$globalParameters = json_decode($bridgeElement->parameters['global'], true);
+		}
+		
 		foreach($bridgeElement->parameters as $parameterName => $parameter)
 		{
+
+			$parameter = json_decode($parameter, true);
+
+			if(!is_numeric($parameterName) && $parameterName == "global") {
+
+				continue;
+				
+			}
+			
+			if($hasGlobalParameter) {
+
+				$parameter = array_merge($parameter, $globalParameters);
+
+			}
+
 			if(!is_numeric($parameterName)) {
 				$card .= '<h5>'.$parameterName.'</h5>' . PHP_EOL;
 			}
@@ -65,7 +85,6 @@ CARD;
 						<input type="hidden" name="action" value="display" />
 						<input type="hidden" name="bridge" value="' . $bridgeName . '" />' . PHP_EOL;
 
-			$parameter = json_decode($parameter, true);
 
 			foreach($parameter as $inputEntry) {
 
