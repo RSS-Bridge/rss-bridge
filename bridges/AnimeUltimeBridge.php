@@ -3,44 +3,45 @@ class AnimeUltimeBridge extends BridgeAbstract {
 
     private $filter = 'Releases';
 
-	public function loadMetadatas() {
+    public function loadMetadatas() {
 
-		$this->maintainer = "ORelio";
-		$this->name = "Anime-Ultime";
-		$this->uri = "http://www.anime-ultime.net/";
-		$this->description = "Returns the 10 newest releases posted on Anime-Ultime";
-		$this->update = "2015-10-30";
+        $this->maintainer = 'ORelio';
+        $this->name = 'Anime-Ultime';
+        $this->uri = 'http://www.anime-ultime.net/';
+        $this->description = 'Returns the 10 newest releases posted on Anime-Ultime';
+        $this->update = '2015-10-30';
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "Type",
-				"type" : "list",
-				"identifier" : "type",
-				"values" : [
-					{
-						"name" : "everything",
-						"value" : ""
+        $this->parameters[] =
+        '[
+            {
+                "name" : "Type",
+                "type" : "list",
+                "identifier" : "type",
+                "values" :
+                [
+                    {
+                        "name" : "Everything",
+                        "value" : ""
 
-					},
-					{
-						"name" : "Anime",
-						"value" : "A"
+                    },
+                    {
+                        "name" : "Anime",
+                        "value" : "A"
 
-					},
-					{
-						"name" : "Drama",
-						"value" : "D"
-					},
-					{
-						"name" : "Tokusatsu",
-						"value" : "T"
+                    },
+                    {
+                        "name" : "Drama",
+                        "value" : "D"
+                    },
+                    {
+                        "name" : "Tokusatsu",
+                        "value" : "T"
 
-					}
-				]
-			}
-		]';
-	}
+                    }
+                ]
+            }
+        ]';
+    }
 
     public function collectData(array $param) {
 

@@ -7,7 +7,7 @@ class T411Bridge extends BridgeAbstract {
         $this->name = "T411";
         $this->uri = "https://t411.in/";
         $this->description = "Returns the 5 newest torrents with specified search terms <br /> Use url part after '?' mark when using their search engine";
-        $this->update = "2015-12-17";
+        $this->update = "2016-02-06";
 
         $this->parameters[] =
         '[
@@ -37,17 +37,19 @@ class T411Bridge extends BridgeAbstract {
         //Retrieve torrent listing as truncated rss, which does not contain torrent description
         $url = 'http://www.t411.in/torrents/search/?'.$param['search'].'&order=added&type=desc';
         $html = file_get_html($url) or $this->returnError('Could not request t411: '.$url, 500);
-        $results = $html->find('table.results')[0] or $this->returnError('No results from t411: '.$url, 500);
+        $results = $html->find('table.results', 0);
+        if (is_null($results))
+            $this->returnError('No results from t411: '.$url, 500);
         $limit = 0;
 
         //Process each item individually
         foreach($results->find('tr') as $element) {
 
             //Limit total amount of requests
-            if ($limit < 5) {
+            if ($limit < 10) {
 
                 //Requests are rate-limited
-                sleep(1); //So we need to wait
+                usleep(500000); //So we need to wait (500ms)
 
                 //Retrieve data from RSS entry
                 $item_uri = 'http://'.ExtractFromDelimiters($element->outertext, '<a href="//', '"');
@@ -64,7 +66,7 @@ class T411Bridge extends BridgeAbstract {
                     //Retrieve image for thumbnail or generic logo fallback
                     $item_image = 'http://www.t411.in/themes/blue/images/logo.png';
                     foreach ($item_desc->find('img') as $img) {
-                        if (strpos($img->src, 'dreamprez') === false) {
+                        if (strpos($img->src, 'prez') === false) {
                             $item_image = $img->src;
                             break;
                         }
@@ -77,7 +79,7 @@ class T411Bridge extends BridgeAbstract {
                     $item->author = $item_author;
                     $item->timestamp = $item_date;
                     $item->thumbnailUri = $item_image;
-                    $item->content = utf8_encode($item_desc->innertext);
+                    $item->content = $item_desc->innertext;
                     $this->items[] = $item;
                     $limit++;
                 }

@@ -1,15 +1,15 @@
 <?php
 class LeMondeInformatiqueBridge extends BridgeAbstract {
 
-	public function loadMetadatas() {
+    public function loadMetadatas() {
 
-		$this->maintainer = "ORelio";
-		$this->name = "Le Monde Informatique";
-		$this->uri = "http://www.lemondeinformatique.fr/";
-		$this->description = "Returns the newest articles.";
-		$this->update = "2015-09-08";
+        $this->maintainer = "ORelio";
+        $this->name = "Le Monde Informatique";
+        $this->uri = "http://www.lemondeinformatique.fr/";
+        $this->description = "Returns the newest articles.";
+        $this->update = "2016-01-28";
 
-	}
+    }
 
     public function collectData(array $param) {
 
@@ -29,7 +29,7 @@ class LeMondeInformatiqueBridge extends BridgeAbstract {
 
         function CleanArticle($article_html) {
             $article_html = StripWithDelimiters($article_html, '<script', '</script>');
-            $article_html = StripWithDelimiters($article_html, '<h1 class="cleanprint-title">', '</h1>');
+            $article_html = StripWithDelimiters($article_html, '<h1 class="cleanprint-title"', '</h1>');
             return $article_html;
         }
 
@@ -73,6 +73,5 @@ class LeMondeInformatiqueBridge extends BridgeAbstract {
 
     public function getCacheDuration() {
         return 1800; // 30 minutes
-        // return 0;
     }
 }
