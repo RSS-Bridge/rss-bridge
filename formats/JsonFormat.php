@@ -11,7 +11,7 @@ class JsonFormat extends FormatAbstract{
         // FIXME : sometime content can be null, transform to empty string
         $datas = $this->getDatas();
 
-        return json_encode($datas);
+        return json_encode($datas, JSON_PRETTY_PRINT);
     }
 
     public function display(){
