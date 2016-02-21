@@ -50,7 +50,7 @@ class SoundCloudBridge extends BridgeAbstract{
 
     }
 	public function getName(){
-		return (!empty($this->name) ? $this->name .' - ' : '') .'Soundcloud Bridge';
+		return (!empty($this->name) ? $this->name .' - ' : '') . (!empty($this->request) ? $this->request : '');
 	}
 
 	public function getURI(){
