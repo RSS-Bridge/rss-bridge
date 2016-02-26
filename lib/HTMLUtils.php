@@ -158,16 +158,16 @@ class HTMLSanitizer {
 	var $onlyKeepText;
 
 
-	public static $DEFAULT_CLEAR_TAGS = ["script", "iframe"];
+	public static $DEFAULT_CLEAR_TAGS = ["script", "iframe", "input", "form"];
 	public static $KEPT_ATTRIBUTES = ["title", "href", "src"];
 
-	const ONLY_TEXT = null;
+	public static $ONLY_TEXT = [];
 
-	function __construct($tags_to_remove = HTMLSanitizer::DEFAULT_CLEAR_TAGS, $kept_attributes = HTMLSanitizer::KEPT_ATTRIBUTES, $only_keep_text = HTMLSanitizer::ONLY_TEXT) {
+	function __construct($tags_to_remove = null, $kept_attributes = null, $only_keep_text = null) {
 
-		$this->tagsToRemove = $tags_to_remove;
-		$this->keptAttributes = $kept_attributes;
-		$this->onlyKeepText = $only_keep_text;
+		$this->tagsToRemove = $tags_to_remove == null ? HTMLSanitizer::$DEFAULT_CLEAR_TAGS : $tags_to_remove;
+		$this->keptAttributes = $kept_attributes == null ? HTMLSanitizer::$KEPT_ATTRIBUTES : $kept_attributes;
+		$this->onlyKeepText = $only_keep_text == null ? HTMLSanitizer::$ONLY_TEXT : $only_keep_text;
 
 	}
 
@@ -175,7 +175,7 @@ class HTMLSanitizer {
 
 		$htmlContent = str_get_html($textToSanitize);
 
-		foreach($htmlContent->find('*[!j_ai_pas_trouve_comment_tout_demander]') as $element) {
+		foreach($htmlContent->find('*[!vive_les_chapeaux]') as $element) {
 			if(in_array($element->tag, $this->onlyKeepText)) {
 				$element->outertext = $element->plaintext;
 			} else if(in_array($element->tag, $this->tagsToRemove)) {
@@ -192,10 +192,12 @@ class HTMLSanitizer {
 	}
 	public static function defaultImageSrcTo($content, $server) {
         foreach($content->find('img') as $image) {
-            if(strpos($image->src, '/')==0) {
+
+			if(strpos($image->src, "http") == NULL && strpos($image->src, "//") == NULL && strpos($image->src, "data:") == NULL) {
                 $image->src = $server.$image->src;
-            }
+			}
         }
+		return $content;
     }
 
 }
