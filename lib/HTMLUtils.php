@@ -175,7 +175,7 @@ class HTMLSanitizer {
 
 		$htmlContent = str_get_html($textToSanitize);
 
-		foreach($htmlContent->find('*[!vive_les_chapeaux]') as $element) {
+		foreach($htmlContent->find('*[!b38fd2b1fe7f4747d6b1c1254ccd055e]') as $element) {
 			if(in_array($element->tag, $this->onlyKeepText)) {
 				$element->outertext = $element->plaintext;
 			} else if(in_array($element->tag, $this->tagsToRemove)) {
