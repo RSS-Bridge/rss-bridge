@@ -116,6 +116,6 @@ class PinterestBridge extends BridgeAbstract{
     }
 
     public function getCacheDuration(){
-        return 0; 
+        return 3600; 
     }
 }
