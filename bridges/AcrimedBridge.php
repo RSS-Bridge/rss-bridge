@@ -53,6 +53,6 @@ class AcrimedBridge extends RssExpander{
 	}
 
     public function getCacheDuration(){
-        return 0; // 2 hours
+        return 4800; // 2 hours
     }
 }
