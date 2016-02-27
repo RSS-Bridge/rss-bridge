@@ -5,7 +5,7 @@ class T411Bridge extends BridgeAbstract {
 
         $this->maintainer = "ORelio";
         $this->name = "T411";
-        $this->uri = "https://t411.in/";
+        $this->uri = $this->getURI();
         $this->description = "Returns the 5 newest torrents with specified search terms <br /> Use url part after '?' mark when using their search engine";
         $this->update = "2016-02-06";
 
@@ -34,8 +34,8 @@ class T411Bridge extends BridgeAbstract {
             $this->returnError('You must specify a search criteria', 400);
         }
 
-        //Retrieve torrent listing as truncated rss, which does not contain torrent description
-        $url = 'http://www.t411.in/torrents/search/?'.$param['search'].'&order=added&type=desc';
+        //Retrieve torrent listing from search results, which does not contain torrent description
+        $url = $this->getURI().'torrents/search/?'.$param['search'].'&order=added&type=desc';
         $html = file_get_html($url) or $this->returnError('Could not request t411: '.$url, 500);
         $results = $html->find('table.results', 0);
         if (is_null($results))
@@ -64,7 +64,7 @@ class T411Bridge extends BridgeAbstract {
                     $item_author = $item_html->find('a.profile', 0)->innertext;
 
                     //Retrieve image for thumbnail or generic logo fallback
-                    $item_image = 'http://www.t411.in/themes/blue/images/logo.png';
+                    $item_image = $this->getURI().'themes/blue/images/logo.png';
                     foreach ($item_desc->find('img') as $img) {
                         if (strpos($img->src, 'prez') === false) {
                             $item_image = $img->src;
@@ -92,7 +92,7 @@ class T411Bridge extends BridgeAbstract {
     }
 
     public function getURI() {
-        return 'https://t411.in';
+        return 'https://t411.ch/';
     }
 
     public function getCacheDuration() {
