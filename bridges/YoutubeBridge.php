@@ -31,10 +31,10 @@ class YoutubeBridge extends BridgeAbstract {
 		$this->parameters['By channel id'] =
 		'[
 			{
-				"type" : "number",
+				"type" : "text",
 				"identifier" : "c",
 				"name" : "channel id",
-				"exampleValue" : "15",
+				"exampleValue" : "test",
 				"required" : "required"
 			}
 		]';
