@@ -23,7 +23,7 @@ class AtomFormat extends FormatAbstract{
         $extraInfos = $this->getExtraInfos();
         $title = xml_encode($extraInfos['name']);
         $uri = $extraInfos['uri'];
-        $icon = xml_encode('http://g.etfv.co/'. $uri .'?icon.jpg');
+        $icon = xml_encode('http://icons.better-idea.org/icon?url='. $uri .'&size=64');
         $uri = xml_encode($uri);
 
         $entries = '';
