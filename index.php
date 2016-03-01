@@ -54,8 +54,6 @@ if (!file_exists($whitelist_file)) {
 }
 else {
 	$whitelist_selection = explode("\n", file_get_contents($whitelist_file));
-	//Remove the last empty line.
-	array_pop($whitelist_selection);
 }
 
 Cache::purge();
