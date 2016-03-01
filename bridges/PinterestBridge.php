@@ -51,7 +51,8 @@ class PinterestBridge extends BridgeAbstract{
             
             $this->username = $param['u'];
             $this->board = $param['b'];
-            $html = file_get_html($this->getURI().'/'.urlencode($this->username).'/'.urlencode($this->board)) or $this->returnError('Could not request Pinterest.', 404);
+            $html = file_get_html($this->getURI().'/'.urlencode($this->username).'/'.urlencode($this->board)) or $this->returnError('Username and/or board not found', 404);
+
         } else if (isset($param['q']))
         {
         	$this->query = $param['q'];
@@ -76,13 +77,17 @@ class PinterestBridge extends BridgeAbstract{
         	
         	if (isset($this->query))
         	{
-        		$avatar = $div->find('img.creditImg', 0);
-        		$username = $div->find('span.creditName', 0);
-        		$board = $div->find('span.creditTitle', 0);
+        		$avatar = $div->find('div.creditImg', 0)->find('img', 0);
+				$avatar = $avatar->getAttribute('data-src');
+				$avatar = str_replace("\\", "", $avatar);
+
+
+        		$username = $div->find('div.creditName', 0);
+        		$board = $div->find('div.creditTitle', 0);
         		
         		$item->username =$username->innertext;	
         		$item->fullname = $board->innertext;
-        		$item->avatar = $avatar->getAttribute('src');
+        		$item->avatar = $avatar;
         		
         		$item->content .= '<br /><img align="left" style="margin: 2px 4px;" src="'.htmlentities($item->avatar).'" /> <strong>'.$item->username.'</strong>';
         		$item->content .= '<br />'.$item->fullname;

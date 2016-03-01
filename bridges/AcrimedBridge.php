@@ -1,5 +1,5 @@
 <?php
-class AcrimedBridge extends BridgeAbstract{
+class AcrimedBridge extends RssExpander{
 
 		public function loadMetadatas() {
 
@@ -10,34 +10,35 @@ class AcrimedBridge extends BridgeAbstract{
 			$this->update = "2014-05-25";
 
 		}
+
        public function collectData(array $param){
 
-			function StripCDATA($string) {
-			$string = str_replace('<![CDATA[', '', $string);
-			$string = str_replace(']]>', '', $string);
-			return $string;
-		}
-		function ExtractContent($url) {
-		$html2 = file_get_html($url);
-		$text = $html2->find('div.texte', 0)->innertext;
-		return $text;
-		}
-		$html = file_get_html('http://www.acrimed.org/spip.php?page=backend') or $this->returnError('Could not request Acrimed.', 404);
-		$limit = 0;
+			parent::collectExpandableDatas($param, "http://www.acrimed.org/spip.php?page=backend");
 
-		foreach($html->find('item') as $element) {
-		 if($limit < 10) {
-		 $item = new \Item();
-		 $item->title = StripCDATA($element->find('title', 0)->innertext);
-		 $item->uri = StripCDATA($element->find('guid', 0)->plaintext);
-		 $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-		 $item->content = ExtractContent($item->uri);
-		 $this->items[] = $item;
-		 $limit++;
-		 }
 		}
     
-    }
+		protected function parseRSSItem($newsItem) {
+
+			$hs = new HTMLSanitizer();
+
+			$namespaces = $newsItem->getNameSpaces(true);
+			$dc = $newsItem->children($namespaces['dc']);
+
+			$item = new Item();
+			$item->uri = trim($newsItem->link);
+        	$item->title = trim($newsItem->title);
+        	$item->timestamp = strtotime($dc->date);
+
+			$articlePage = file_get_html($newsItem->link);
+			$article = $hs->sanitize($articlePage->find('article.article1', 0)->innertext);
+			$article = HTMLSanitizer::defaultImageSrcTo($article, "http://www.acrimed.org/");
+
+			$item->content = $article;
+
+
+			return $item;
+
+		}
 
 	public function getName() {
 
@@ -52,7 +53,6 @@ class AcrimedBridge extends BridgeAbstract{
 	}
 
     public function getCacheDuration(){
-        return 3600*2; // 2 hours
-        // return 0; // 2 hours
+        return 4800; // 2 hours
     }
 }
