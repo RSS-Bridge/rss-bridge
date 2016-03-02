@@ -13,52 +13,49 @@ class CourrierInternationalBridge extends BridgeAbstract{
 
     public function collectData(array $param){
 	
-	function fetchArticle($link) {
-		
-		$page = file_get_html($link);
+        $html = '';
 
-		$contenu = $page->find(".article-text")[0];
-		
-		return strip_tags($contenu);
-		
-
-
-	}
-
-	$html = '';
-
-        $html = file_get_html('http://www.courrierinternational.com/article') or $this->returnError('Error.', 500);
+        $html = file_get_html('http://www.courrierinternational.com/') or $this->returnError('Error.', 500);
 	
 
 	
-	$element = $html->find(".type-normal");
+        $element = $html->find("article");
 
-	$article_count = 1;	
+        $article_count = 1;	
 
-	foreach($element as $article) {
+        foreach($element as $article) {
 		
-		$item = new \Item();
+            $item = new \Item();
 		
-		$item->uri = "http://www.courrierinternational.com".$article->find("a")[0]->getAttribute("href");
-		$item->content = fetchArticle("http://www.courrierinternational.com".$article->find("a")[0]->getAttribute("href"));
-		$item->title = strip_tags($article->find("h2")[0]);
+            $item->uri = $article->parent->getAttribute("href");
 
-		$dateTime = date_parse($article->find("time")[0]);
+            if(strpos($item->uri, "http") === FALSE) {
+                $item->uri = "http://courrierinternational.fr/".$item->uri;
+            }
+        
+            $page = file_get_html($item->uri);
 
-		$item->timestamp = mktime(
+            $cleaner = new HTMLSanitizer();
+        
+            $item->content = $cleaner->sanitize($page->find("div.article-text")[0]);
+            $item->title = strip_tags($article->find(".title")[0]);
+
+            $dateTime = date_parse($page->find("time")[0]);
+
+            $item->timestamp = mktime(
        			$dateTime['hour'], 
         		$dateTime['minute'], 
         		$dateTime['second'], 
         		$dateTime['month'], 
         		$dateTime['day'], 
         		$dateTime['year']
-		);
+            );
 		
-		$this->items[] = $item;
-		$article_count ++;
-		if($article_count > 5) break;
+            $this->items[] = $item;
+            $article_count ++;
+            if($article_count > 5) break;
 	
-	}
+        }
 
 
 
