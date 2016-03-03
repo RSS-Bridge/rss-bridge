@@ -14,7 +14,14 @@ TODO :
 
 date_default_timezone_set('UTC');
 error_reporting(0);
-//ini_set('display_errors','1'); error_reporting(E_ALL);  // For debugging only.
+
+if(isset($_REQUEST['debug'])) {
+    
+    ini_set('display_errors','1'); error_reporting(E_ALL); //Report all errors
+    
+    $_REQUEST["disable_cache"] = true; //Disable the cache.
+    
+}
 
 require_once __DIR__ . '/lib/RssBridge.php';
 
