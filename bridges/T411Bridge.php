@@ -52,7 +52,7 @@ class T411Bridge extends BridgeAbstract {
                 usleep(500000); //So we need to wait (500ms)
 
                 //Retrieve data from RSS entry
-                $item_uri = 'http://'.ExtractFromDelimiters($element->outertext, '<a href="//', '"');
+                $item_uri = $this->getURI().'torrents/details/?id='.ExtractFromDelimiters($element->find('a.nfo', 0)->outertext, '?id=', '"');
                 $item_title = ExtractFromDelimiters($element->outertext, '" title="', '"');
                 $item_date = strtotime($element->find('dd', 0)->plaintext);
 
