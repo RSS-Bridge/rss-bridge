@@ -15,11 +15,10 @@ TODO :
 date_default_timezone_set('UTC');
 error_reporting(0);
 
-if(isset($_REQUEST['debug'])) {
+if(file_exists("DEBUG")) {
     
     ini_set('display_errors','1'); error_reporting(E_ALL); //Report all errors
-    
-    $_REQUEST["disable_cache"] = true; //Disable the cache.
+    define("DEBUG", "true");
     
 }
 
@@ -91,7 +90,7 @@ try{
 
                     // Data retrieval
                     $bridge = Bridge::create($bridge);
-                    if(isset($_REQUEST["disable_cache"])) {
+                    if(defined("DEBUG")) {
                     } else {
                         $bridge->setCache($cache); // just add disable cache to your query to disable caching
                     }
