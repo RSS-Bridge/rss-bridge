@@ -9,7 +9,7 @@ class CNETBridge extends BridgeAbstract {
         $this->name = 'CNET News';
         $this->uri = 'http://www.cnet.com/';
         $this->description = 'Returns the newest articles. <br /> You may specify a topic found in some section URLs, else all topics are selected.';
-        $this->update = '2016-02-06';
+        $this->update = '2016-03-16';
 
         $this->parameters[] =
         '[
@@ -76,7 +76,7 @@ class CNETBridge extends BridgeAbstract {
                     if (is_object($article_thumbnail))
                         $article_thumbnail = $article_thumbnail->find('img', 0)->src;
 
-                    $article_content = trim(CleanArticle(ExtractFromDelimiters($article_html, '</div></div></div><div class="col-8">', '<footer>')));
+                    $article_content = trim(CleanArticle(ExtractFromDelimiters($article_html, '<div class="articleContent', '<footer>')));
 
                     $item = new \Item();
                     $item->uri = $article_uri;
