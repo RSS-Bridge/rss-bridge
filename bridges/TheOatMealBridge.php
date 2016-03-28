@@ -41,7 +41,7 @@ class TheOatmealBridge extends RssExpander{
         $item = new Item();
         $item->title = trim($newsItem->title);
         $this->message("browsing Oatmeal item ".var_export($newsItem, true));
-        $item->uri=$newsItem->attributes($namespaces['rdf'])->about;
+        $item->uri=(string) $newsItem->attributes($namespaces['rdf'])->about;
         // now load that uri from cache
         $this->message("now loading page ".$item->uri);
         $articlePage = str_get_html($this->get_cached($item->uri));
@@ -53,7 +53,7 @@ class TheOatmealBridge extends RssExpander{
         $item->content = $content->innertext;
         
         $this->message("dc content is ".var_export($dc, true));
-        $item->name = $dc->creator;
+        $item->name = (string) $dc->creator;
         $item->timestamp = DateTime::createFromFormat(DateTime::ISO8601, $dc->date)->getTimestamp();
         $this->message("writtem by ".$item->name." on ".$item->timestamp);
         return $item;
