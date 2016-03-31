@@ -7,7 +7,7 @@ class FacebookBridge extends BridgeAbstract{
 		$this->name = "Facebook";
 		$this->uri = "http://www.facebook.com/";
 		$this->description = "Input a page title or a profile log. For a profile log, please insert the parameter as follow : myExamplePage/132621766841117";
-		$this->update = "23/10/2015";
+		$this->update = "31/03/2016";
 
 		$this->parameters[] =
 		'[
