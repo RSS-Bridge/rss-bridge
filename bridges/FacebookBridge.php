@@ -146,7 +146,7 @@ class FacebookBridge extends BridgeAbstract{
 		}
 
 		//No captcha? We can carry on retrieving page contents :)
-		$element = $html->find('[id^=PagePostsSectionPagelet-]')[0]->children(0)->children(0);
+		$element = $html->find('[id^=PagePostsSectionPagelet-]')[0]->children(0)->children(0)->children(0);
 
 		if(isset($element)) {
 
