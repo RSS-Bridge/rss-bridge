@@ -28,9 +28,9 @@ class Freenews extends RssExpander {
         $item->title = trim($newsItem->title);
 //        $this->message("item has for title \"".$item->title."\"");
         if(empty($newsItem->guid)) {
-            $item->uri = $newsItem->link;
+            $item->uri = (string) $newsItem->link;
         } else {
-            $item->uri = $newsItem->guid;
+            $item->uri = (string) $newsItem->guid;
         }
         // now load that uri from cache
 //        $this->message("now loading page ".$item->uri);
