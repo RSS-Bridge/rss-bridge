@@ -10,7 +10,7 @@ class LeBonCoinBridge extends BridgeAbstract{
 		$this->update = "2015-10-30";
 
 		$this->parameters[] =
-		'[
+            '[
 			{
 				"name" : "Keyword",
 				"identifier" : "k"
@@ -137,34 +137,40 @@ class LeBonCoinBridge extends BridgeAbstract{
         $link = 'http://www.leboncoin.fr/annonces/offres/' . $param['r'] . '/?f=a&th=1&q=' . urlencode($param['k']);
         $html = file_get_html($link) or $this->returnError('Could not request LeBonCoin.', 404);
 
-        $list = $html->find('.list-lbc', 0);
+        $list = $html->find('.tabsContent', 0);
         if($list === NULL) {
             return;
         }
-        $tags = $list->find('a');
+        
+        $tags = $list->find('li');
 
         foreach($tags as $element) {
-                $item = new \Item();
-                $item->uri = $element->href;
-                $title = $element->getAttribute('title');
-                $content_image = $element->find('div.image', 0)->find('img', 0);
 
-                if($content_image !== NULL) {
-                        $content = '<img src="' . $element->find('div.image', 0)->find('img', 0)->getAttribute('src') . '" alt="thumbnail">';
-                }
-                $date = $element->find('div.date', 0)->find('div', 0) . $element->find('div.date', 0)->find('div', 1) . '<br/>';
-                $detailsList = $element->find('div.detail', 0);
+            $element = $element->find('a', 0);
+            
+            $item = new \Item();
+            $item->uri = $element->href;
+            $title = $element->getAttribute('title');
+            $content_image = $element->find('div.item_image', 0)->find('.lazyload', 0);
+            
+            if($content_image !== NULL) {
+                $content = '<img src="' . $content_image->getAttribute('data-imgsrc') . '" alt="thumbnail">';
+            } else {
+                $content = "";
+            }
+            $date = $element->find('aside.item_absolute', 0)->find('p.item_sup', 0);
+                
+            $detailsList = $element->find('section.item_infos', 0);
 
-                for ($i = 1; $i < 4; $i++) {
-                    $line = $detailsList->find('div', $i);
-                    $content .= $line;
-                }
+            for($i = 0; $i <= 1; $i++) $content .= $detailsList->find('p.item_supp', $i)->plaintext;
+            $price = $detailsList->find('h3.item_price', 0);
+            $content .= $price === NULL ? '' : $price->plaintext;
 
-                $item->title = $title . ' - ' . $detailsList->find('div', 3);
-                $item->content = $content . $date;
-                $this->items[] = $item;
+            $item->title = $title;
+            $item->content = $content . $date;
+            $this->items[] = $item;
         }
-  }
+    }
 
     public function getName(){
         return 'LeBonCoin';
