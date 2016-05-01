@@ -111,7 +111,7 @@ class YoutubeBridge extends BridgeAbstract {
 						$videoquery = parse_url($element->find('a',0)->href, PHP_URL_QUERY); parse_str($videoquery, $videoquery);
 					$item->id = $videoquery['v'];
 					$item->uri = 'https://www.youtube.com/watch?v='.$item->id;
-					$item->thumbnailUri = 'https:'.$element->find('img',0)->src;
+					$item->thumbnailUri = $element->find('img',0)->src;
 					$item->title = trim($element->find('h3',0)->plaintext);
 					$item->timestamp = getPublishDate($item->id);
 					$item->content = '<a href="' . $item->uri . '"><img src="' . $item->thumbnailUri . '" /></a><br><a href="' . $item->uri . '">' . $item->title . '</a>';
