@@ -254,7 +254,7 @@ class LeBonCoinBridge extends BridgeAbstract{
 
 			$item = new \Item();
 			$item->uri = $element->href;
-			$title = $element->getAttribute('title');
+			$title = html_entity_decode($element->getAttribute('title'));
 			$content_image = $element->find('div.item_image', 0)->find('.lazyload', 0);
 
 			if($content_image !== NULL) {
@@ -277,7 +277,7 @@ class LeBonCoinBridge extends BridgeAbstract{
 	}
 
 	public function getName(){
-		return 'LeBonCoinDev';
+		return 'LeBonCoin';
 	}
 
 	public function getURI(){
