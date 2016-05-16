@@ -39,9 +39,14 @@ class CollegeDeFranceBridge extends BridgeAbstract{
 			$item->title = $element->find('.title', 0)->plaintext;
 			// Most relative URLs contains an hour in addition to the date, so let's use it
 			// <a href="/site/yann-lecun/course-2016-04-08-11h00.htm" data-target="after">
-			// But unfortunately some don't
+			//
+			// Sometimes there's an __1, perhaps it signifies an update "/site/patrick-boucheron/seminar-2016-05-03-18h00__1.htm"
+			//
+			// But unfortunately some don't have any hours info
 			// <a href="/site/institut-physique/The-Mysteries-of-Decoherence-Sebastien-Gleyzes-[Video-3-35].htm" data-target="after">
-			$d = DateTime::createFromFormat('!Y-m-d-H\hi', substr($element->href, -20, -4)) ?: DateTime::createFromFormat('!H m Y', str_replace(array_values($months), array_keys($months), $element->find('.date', 0)->innertext));
+			$timezone = new DateTimeZone('Europe/Paris');
+			// strpos($element->href, '201') will break in 2020 but it'll probably break prior to then due to site changes anyway
+			$d = DateTime::createFromFormat('!Y-m-d-H\hi', substr($element->href, strpos($element->href, '201'), 16), $timezone) or DateTime::createFromFormat('!H m Y', trim(str_replace(array_values($months), array_keys($months), $element->find('.date', 0)->plaintext)), $timezone);
 			$item->timestamp = $d->format('U');
 			$item->content =  $element->find('.lecturer', 0)->innertext . ' - ' . $element->find('.title', 0)->innertext;
 			$item->uri = 'http://www.college-de-france.fr' . $element->href;
@@ -58,6 +63,6 @@ class CollegeDeFranceBridge extends BridgeAbstract{
 	}
 
 	public function getCacheDuration(){
-		return 3600*3; // 3 hour
+		return 3600*3; // 3 hours
 	}
 }
