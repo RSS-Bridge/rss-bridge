@@ -46,7 +46,7 @@ class CollegeDeFranceBridge extends BridgeAbstract{
 			// <a href="/site/institut-physique/The-Mysteries-of-Decoherence-Sebastien-Gleyzes-[Video-3-35].htm" data-target="after">
 			$timezone = new DateTimeZone('Europe/Paris');
 			// strpos($element->href, '201') will break in 2020 but it'll probably break prior to then due to site changes anyway
-			$d = DateTime::createFromFormat('!Y-m-d-H\hi', substr($element->href, strpos($element->href, '201'), 16), $timezone) or DateTime::createFromFormat('!H m Y', trim(str_replace(array_values($months), array_keys($months), $element->find('.date', 0)->plaintext)), $timezone);
+			$d = DateTime::createFromFormat('!Y-m-d-H\hi', substr($element->href, strpos($element->href, '201'), 16), $timezone) ?: DateTime::createFromFormat('!d m Y', trim(str_replace(array_values($months), array_keys($months), $element->find('.date', 0)->plaintext)), $timezone);
 			$item->timestamp = $d->format('U');
 			$item->content =  $element->find('.lecturer', 0)->innertext . ' - ' . $element->find('.title', 0)->innertext;
 			$item->uri = 'http://www.college-de-france.fr' . $element->href;
