@@ -30,7 +30,7 @@ class YoutubeBridge extends BridgeAbstract {
 		$this->parameters['By channel id'] =
 		'[
 			{
-				"type" : "number",
+				"type" : "text",
 				"identifier" : "c",
 				"name" : "channel id",
 				"exampleValue" : "15",
@@ -41,8 +41,8 @@ class YoutubeBridge extends BridgeAbstract {
 		$this->parameters['By playlist Id'] =
 		'[
 			{
-				"type" : "number",
-				"identifier" : "c",
+				"type" : "text",
+				"identifier" : "p",
 				"name" : "playlist id",
 				"exampleValue" : "15"
 			}
@@ -68,7 +68,7 @@ class YoutubeBridge extends BridgeAbstract {
 	}
 
 	private function ytBridgeQueryVideoInfo($vid, &$author, &$desc, &$time) {
-		$html = file_get_html($this->getURI()."watch?v=$id");
+		$html = file_get_html($this->getURI()."watch?v=$vid");
 		$author = $html->innertext;
 		$author = substr($author, strpos($author, '"author=') + 8);
 		$author = substr($author, 0, strpos($author, '\u0026'));
@@ -90,13 +90,14 @@ class YoutubeBridge extends BridgeAbstract {
 
 	private function ytBridgeParseXmlFeed($xml) {
 		foreach ($xml->find('entry') as $element) {
-			$title = $element->find('title',0)->plaintext;
+			$title = $this->ytBridgeFixTitle($element->find('title',0)->plaintext);
 			$author = $element->find('name', 0)->plaintext;
 			$desc = $element->find('media:description', 0)->innertext;
 			$vid = str_replace('yt:video:', '', $element->find('id', 0)->plaintext);
 			$time = strtotime($element->find('published', 0)->plaintext);
 			$this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
 		}
+		$this->request = $this->ytBridgeFixTitle($xml->find('feed > title', 0)->plaintext);
 	}
 
 	private function ytBridgeParseHtmlListing($html, $element_selector, $title_selector) {
@@ -105,12 +106,19 @@ class YoutubeBridge extends BridgeAbstract {
 			if ($count < $limit) {
 				$author = ''; $desc = ''; $time = 0;
 				$vid = str_replace('/watch?v=', '', $element->find('a', 0)->href);
-				$title = trim($element->find($title_selector, 0)->plaintext);
-				$this->ytBridgeQueryVideoInfo($vid, $author, $desc, $time);
-				$this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
-				$count++;
+				$title = $this->ytBridgeFixTitle($element->find($title_selector, 0)->plaintext);
+				if ($title != '[Private Video]') {
+					$this->ytBridgeQueryVideoInfo($vid, $author, $desc, $time);
+					$this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
+					$count++;
+				}
 			}
 		}
+	}
+
+	private function ytBridgeFixTitle($title) {
+		// convert both &#1234; and &quot; to UTF-8
+		return html_entity_decode(mb_convert_encoding(trim($title), 'UTF-8', 'HTML-ENTITIES'));
 	}
 
 	public function collectData(array $param) {
@@ -142,6 +150,7 @@ class YoutubeBridge extends BridgeAbstract {
 			$url_listing = $this->getURI().'playlist?list='.urlencode($this->request);
 			$html = file_get_html($url_listing) or $this->returnError("Could not request YouTube. Tried:\n - $url_listing", 500);
 			$this->ytBridgeParseHtmlListing($html, 'tr.pl-video', '.pl-video-title a');
+			$this->request = 'Playlist: '.str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
 		}
 
 		else if (isset($param['s'])) { /* search mode */
