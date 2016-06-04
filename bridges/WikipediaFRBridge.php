@@ -7,7 +7,7 @@ class WikipediaFRBridge extends BridgeAbstract{
 		$this->name = "Wikipedia FR 'Lumière sur...'";
 		$this->uri = "https://fr.wikipedia.org/";
 		$this->description = "Returns the highlighted fr.wikipedia.org article.";
-		$this->update = "2014-05-25";
+		$this->update = "2016-06-04";
 
 	}
 
@@ -20,11 +20,11 @@ class WikipediaFRBridge extends BridgeAbstract{
 
         $html = file_get_html($host.$link) or $this->returnError('Could not request Wikipedia FR.', 404);
 
-		$element = $html->find('div[id=accueil-lumieresur]', 0);
+		$element = $html->find('div[id=mf-lumieresur]', 0);
 		$item = new \Item();
-		$item->uri = $host.$element->find('p', 0)->find('a', 0)->href;
-		$item->title = $element->find('p',0)->find('a',0)->title;
-		$item->content = str_replace('href="/', 'href="'.$host.'/', $element->find('div[id=mf-lumieresur]', 0)->innertext);
+		$item->uri = $host.$element->find('.BA > i > a', 0)->href;
+		$item->title = $element->find('.BA > i > a',0)->title;
+		$item->content = str_replace('href="/', 'href="'.$host.'/', $element->innertext);
 		$this->items[] = $item;
     }
 
