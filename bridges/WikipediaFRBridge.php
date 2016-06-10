@@ -21,9 +21,13 @@ class WikipediaFRBridge extends BridgeAbstract{
         $html = file_get_html($host.$link) or $this->returnError('Could not request Wikipedia FR.', 404);
 
 		$element = $html->find('div[id=mf-lumieresur]', 0);
+		# Use the "Lire la suite" link to dependably get the title of the article
+		# usually it's a child of a li.BA element (Bon article)
+		# occasionally it's a li.AdQ (Article de qualité)
+		$lirelasuite_link = $element->find('.BA > i > a, .AdQ > i > a', 0);
 		$item = new \Item();
-		$item->uri = $host.$element->find('.BA > i > a', 0)->href;
-		$item->title = $element->find('.BA > i > a',0)->title;
+		$item->uri = $host.$lirelasuite_link->href;
+		$item->title = $lirelasuite_link->title;
 		$item->content = str_replace('href="/', 'href="'.$host.'/', $element->innertext);
 		$this->items[] = $item;
     }
