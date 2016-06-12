@@ -15,11 +15,30 @@ TODO :
 date_default_timezone_set('UTC');
 error_reporting(0);
 
-if(file_exists("DEBUG")) {
-    
-    ini_set('display_errors','1'); error_reporting(E_ALL); //Report all errors
-    define("DEBUG", "true");
-    
+/*
+  Create a file named 'DEBUG' for enabling debug mode.
+  For further security, you may put whitelisted IP addresses
+  in the 'DEBUG' file, one IP per line. Empty file allows anyone (!).
+  Debugging allows displaying PHP error messages and bypasses the cache: this can allow a malicious
+  client to retrieve data about your server and hammer a provider throught your rss-bridge instance.
+*/
+if (file_exists('DEBUG')) {
+    $debug_enabled = true;
+    $debug_whitelist = trim(file_get_contents('DEBUG'));
+    if (strlen($debug_whitelist) > 0) {
+        $debug_enabled = false;
+        foreach (explode("\n", $debug_whitelist) as $allowed_ip) {
+            if (trim($allowed_ip) === $_SERVER['REMOTE_ADDR']) {
+                $debug_enabled = true;
+                break;
+            }
+        }
+    }
+    if ($debug_enabled) {
+        ini_set('display_errors', '1');
+        error_reporting(E_ALL);
+        define('DEBUG', 'true');
+    }
 }
 
 require_once __DIR__ . '/lib/RssBridge.php';
