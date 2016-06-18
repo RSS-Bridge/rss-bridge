@@ -146,7 +146,7 @@ class FacebookBridge extends BridgeAbstract{
 		}
 
 		//No captcha? We can carry on retrieving page contents :)
-		$element = $html->find('[id^=PagePostsSectionPagelet-]')[0]->children(0)->children(0)->children(0);
+		$element = $html->find('#pagelet_timeline_main_column')[0]->children(0)->children(0)->children(0)->next_sibling()->children(0);
 
 		if(isset($element)) {
 
@@ -158,7 +158,7 @@ class FacebookBridge extends BridgeAbstract{
 			
 				$item = new \Item();
 
-				if($post->hasAttribute("data-time")) {
+				if (count($post->find('abbr')) > 0) {
 
 					//Retrieve post contents
 					$content = preg_replace('/(?i)><div class=\"clearfix([^>]+)>(.+?)div\ class=\"userContent\"/i', '', $post);
@@ -198,9 +198,10 @@ class FacebookBridge extends BridgeAbstract{
 						$title = substr($title, 0, strpos(wordwrap($title, 64), "\n")).'...';
 
 					//Use first image as thumbnail if available, or profile pic fallback
-					$thumbnail = $post->find('img', 1)->src;
-					if (strlen($thumbnail) == 0)
-						$thumbnail = $profilePic;
+					$thumbnail = $post->find('img', 1);
+					if (is_object($thumbnail))
+						$thumbnail = $thumbnail->src;
+					else $thumbnail = $profilePic;
 
 					//Build and add final item
 					$item->uri = 'https://facebook.com'.$post->find('abbr')[0]->parent()->getAttribute('href');
