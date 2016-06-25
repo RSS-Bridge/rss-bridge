@@ -48,10 +48,7 @@ class GitlabCommitsBridge extends BridgeAbstract{
       or $this->returnError('No results for LWNprev', 404);
 
 
-    foreach($html->find('li') as $commit){
-      if(!in_array('commit',explode(' ',$commit->getAttribute("class")))){
-        continue;
-      }
+    foreach($html->find('li.commit') as $commit){
 
       $item = new \Item();
       $item->uri=$param['uri'];
