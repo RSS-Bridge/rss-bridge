@@ -45,7 +45,7 @@ class GitlabCommitsBridge extends BridgeAbstract{
     }
 
     $html = file_get_html($uri)
-      or $this->returnError('No results for LWNprev', 404);
+      or $this->returnError('No results for Gitlab Commits of project '.$param['uri'].'/'.$param['u'].'/'.$param['p'], 404);
 
 
     foreach($html->find('li.commit') as $commit){
