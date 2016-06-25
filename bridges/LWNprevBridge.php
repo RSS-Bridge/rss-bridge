@@ -118,7 +118,12 @@ class LWNprevBridge extends BridgeAbstract{
       }
       $h2PrevSibling=null;
 
-      $item->title='['.$cat1.($cat2?'/'.$cat2:'').'] '.$h2->textContent;
+      $item->title='';
+      if(!empty($cat1)){
+        $item->title.='['.$cat1.($cat2?'/'.$cat2:'').'] ';
+      }
+      $item->title.=$h2->textContent;
+
       $node=$h2;
       $content='';
       $contentEnd=false;
