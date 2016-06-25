@@ -73,7 +73,7 @@ function file_get_html($url, $use_include_path = false, $context=null, $offset =
 	// We DO force the tags to be terminated.
 	$dom = new simple_html_dom(null, $lowercase, $forceTagsClosed, $target_charset, $stripRN, $defaultBRText, $defaultSpanText);
 	// For sourceforge users: uncomment the next line and comment the retreive_url_contents line 2 lines down if it is not already done.
-	$contents = advanced_file_get_contents($url, $use_include_path, $context, $offset);
+	$contents = file_get_contents($url, $use_include_path, $context, $offset);
 	// Paperg - use our own mechanism for getting the contents as we want to control the timeout.
 	//$contents = retrieve_url_contents($url);
 	if (empty($contents) || strlen($contents) > MAX_FILE_SIZE)
@@ -1094,7 +1094,7 @@ class simple_html_dom
 	function load_file()
 	{
 		$args = func_get_args();
-		$this->load(call_user_func_array('advanced_file_get_contents', $args), true);
+		$this->load(call_user_func_array('file_get_contents', $args), true);
 		// Throw an error if we can't properly load the dom.
 		if (($error=error_get_last())!==null) {
 			$this->clear();
