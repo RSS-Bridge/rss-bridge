@@ -54,14 +54,14 @@ class GitlabCommitsBridge extends BridgeAbstract{
       }
 
       $item = new \Item();
-      $item->uri=$param["uri"];
+      $item->uri=$param['uri'];
 
-      foreach($commit->getElementsByTagName("a") as $a){
+      foreach($commit->getElementsByTagName('a') as $a){
         $classes=explode(' ',$a->getAttribute("class"));
         if(in_array('commit-short-id',$classes) ||
           in_array('commit_short_id',$classes)){
-          $href=$a->getAttribute("href");
-          $item->uri.=substr($href,strpos($href,"/".$param['u'].'/'.$param['p']));
+          $href=$a->getAttribute('href');
+          $item->uri.=substr($href,strpos($href,'/'.$param['u'].'/'.$param['p']));
         }
         if(in_array('commit-row-message',$classes)){
           $item->title=$a->plaintext;
@@ -77,7 +77,7 @@ class GitlabCommitsBridge extends BridgeAbstract{
       }else{
         $item->content='';
       }
-      $item->timestamp=strtotime($commit->find('time',0)->getAttribute("datetime"));
+      $item->timestamp=strtotime($commit->find('time',0)->getAttribute('datetime'));
 
       $this->items[]=$item;
     }
