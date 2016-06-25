@@ -36,7 +36,7 @@ class NakedSecurityBridge extends BridgeAbstract {
         }
 
         $feedUrl = 'https://feeds.feedburner.com/nakedsecurity?format=xml';
-        $html = file_get_html($feedUrl) or $this->returnError('Could not request '.$this->getName().': '.$feedUrl, 500);
+        $html = $this->file_get_html($feedUrl) or $this->returnError('Could not request '.$this->getName().': '.$feedUrl, 500);
         $limit = 0;
 
         foreach ($html->find('item') as $element) {
@@ -44,7 +44,7 @@ class NakedSecurityBridge extends BridgeAbstract {
 
                 //Retrieve article Uri and get that page
                 $article_uri = $element->find('guid', 0)->plaintext;
-                $article_html = file_get_html($article_uri) or $this->returnError('Could not request '.$this->getName().': '.$article_uri, 500);
+                $article_html = $this->file_get_html($article_uri) or $this->returnError('Could not request '.$this->getName().': '.$article_uri, 500);
 
                 //Build article contents from corresponding elements
                 $article_title = trim($element->find('title', 0)->plaintext);

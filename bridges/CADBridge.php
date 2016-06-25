@@ -22,7 +22,7 @@ class CADBridge extends BridgeAbstract{
 		}
 	
 		function CADExtractContent($url) {
-		$html3 = file_get_html($url);
+		$html3 = $this->file_get_html($url);
 		$htmlpart = explode("/", $url);
 		if ($htmlpart[3] == 'cad')
 		  preg_match_all("/http:\/\/cdn2\.cad-comic\.com\/comics\/cad-\S*png/", $html3, $url2);
@@ -36,7 +36,7 @@ class CADBridge extends BridgeAbstract{
 		return '<img src="'.$img.'"/>';
 		}
 
-		$html = file_get_html('http://cdn2.cad-comic.com/rss.xml') or $this->returnError('Could not request CAD.', 404);
+		$html = $this->file_get_html('http://cdn2.cad-comic.com/rss.xml') or $this->returnError('Could not request CAD.', 404);
 		$limit = 0;
 		foreach($html->find('item') as $element) {
 		 if($limit < 5) {

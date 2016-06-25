@@ -18,7 +18,7 @@ class WikipediaFRBridge extends BridgeAbstract{
         //$host = 'https://fr.wikipedia.org';
         $link = '/wiki/Wikip%C3%A9dia:Accueil_principal';
 
-        $html = file_get_html($host.$link) or $this->returnError('Could not request Wikipedia FR.', 404);
+        $html = $this->file_get_html($host.$link) or $this->returnError('Could not request Wikipedia FR.', 404);
 
 		$element = $html->find('div[id=mf-lumieresur]', 0);
 		# Use the "Lire la suite" link to dependably get the title of the article

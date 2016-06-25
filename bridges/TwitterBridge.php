@@ -34,11 +34,11 @@ class TwitterBridge extends BridgeAbstract{
         $html = '';
         if (isset($param['q'])) {   /* keyword search mode */
             $this->request = $param['q'];
-            $html = file_get_html('https://twitter.com/search?q='.urlencode($this->request).'&f=tweets') or $this->returnError('No results for this query.', 404);
+            $html = $this->file_get_html('https://twitter.com/search?q='.urlencode($this->request).'&f=tweets') or $this->returnError('No results for this query.', 404);
         }
         elseif (isset($param['u'])) {   /* user timeline mode */
             $this->request = $param['u'];
-            $html = file_get_html('http://twitter.com/'.urlencode($this->request)) or $this->returnError('Requested username can\'t be found.', 404);
+            $html = $this->file_get_html('http://twitter.com/'.urlencode($this->request)) or $this->returnError('Requested username can\'t be found.', 404);
         }
         else {
             $this->returnError('You must specify a keyword (?q=...) or a Twitter username (?u=...).', 400);

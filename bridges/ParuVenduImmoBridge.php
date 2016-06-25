@@ -66,7 +66,7 @@ class ParuVenduImmoBridge extends BridgeAbstract
             $link .= '&lo='.urlencode($param['lo']);
         }
 
-        $html = file_get_html($link) or $this->returnError('Could not request paruvendu.', 404);
+        $html = $this->file_get_html($link) or $this->returnError('Could not request paruvendu.', 404);
 
 
         foreach($html->find('div.annonce a') as $element) {

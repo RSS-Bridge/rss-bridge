@@ -12,7 +12,7 @@ class FootitoBridge extends BridgeAbstract{
 	}
 
     public function collectData(array $param){
-        $html = file_get_html('http://www.footito.fr/') or $this->returnError('Could not request Footito.', 404);
+        $html = $this->file_get_html('http://www.footito.fr/') or $this->returnError('Could not request Footito.', 404);
     
         foreach($html->find('div.post') as $element) {
             $item = new Item();

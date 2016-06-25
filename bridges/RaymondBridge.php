@@ -18,14 +18,14 @@ class RaymondBridge extends BridgeAbstract{
         return $string;
     }
     function raymondExtractContent($url) {
-        $html2 = file_get_html($url);
+        $html2 = $this->file_get_html($url);
         $text = $html2->find('div.entry-content', 0)->innertext;
 	$text = preg_replace('/class="ad".*/', '', $text);
 	$text = strip_tags($text, '<p><a><i><strong><em><img>');
 	$text = str_replace('(adsbygoogle = window.adsbygoogle || []).push({});', '', $text);
         return $text;
     }
-        $html = file_get_html('http://www.raymond.cc/blog/feed') or $this->returnError('Could not request raymond.', 404);
+        $html = $this->file_get_html('http://www.raymond.cc/blog/feed') or $this->returnError('Could not request raymond.', 404);
         $limit = 0;
         foreach($html->find('item') as $element) {
          if($limit < 3) {

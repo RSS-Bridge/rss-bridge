@@ -239,7 +239,7 @@ class LeBonCoinBridge extends BridgeAbstract{
 		else {
 			$link = 'http://www.leboncoin.fr/' . $param['c'] . '/offres/' . $param['r'] . '/?f=a&th=1&q=' . urlencode($param['k']);
 		}
-		$html = file_get_html($link) or $this->returnError('Could not request LeBonCoin.', 404);
+		$html = $this->file_get_html($link) or $this->returnError('Could not request LeBonCoin.', 404);
 
 		$list = $html->find('.tabsContent', 0);
 		if($list === NULL) {

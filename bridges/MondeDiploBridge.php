@@ -14,7 +14,7 @@ class MondeDiploBridge extends BridgeAbstract{
     public function collectData(array $param){
         $link = 'http://www.monde-diplomatique.fr';
         
-        $html = file_get_html($link) or $this->returnError('Could not request MondeDiplo. for : ' . $link , 404);
+        $html = $this->file_get_html($link) or $this->returnError('Could not request MondeDiplo. for : ' . $link , 404);
     
         foreach($html->find('div.laune') as $element) {
             $item = new Item();

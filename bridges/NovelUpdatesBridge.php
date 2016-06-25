@@ -26,7 +26,7 @@ class NovelUpdatesBridge extends BridgeAbstract{
       	if(strpos($thread['path'], 'series/') === FALSE)
             $this->returnError('You must specify the novel URL.', 400);
         $url = 'http://www.novelupdates.com'.$thread['path'].'';
-        $fullhtml = file_get_html($url) or $this->returnError("Could not request NovelUpdates, novel not found", 404);
+        $fullhtml = $this->file_get_html($url) or $this->returnError("Could not request NovelUpdates, novel not found", 404);
         $this->request = $fullhtml->find('h4.seriestitle', 0)->plaintext;
         // dirty fix for nasty simpledom bug: https://github.com/sebsauvage/rss-bridge/issues/259
         // forcefully removes tbody

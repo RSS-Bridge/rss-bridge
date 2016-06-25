@@ -12,14 +12,14 @@ class MalikiBridge extends BridgeAbstract{
 	}
 
     public function collectData(array $param){
-        $html = file_get_html('http://www.maliki.com/') or $this->returnError('Could not request Maliki.', 404);
+        $html = $this->file_get_html('http://www.maliki.com/') or $this->returnError('Could not request Maliki.', 404);
 	$count=0;
 	$latest=1; $latest_title="";
 	$latest = $html->find('div.conteneur_page a', 1)->href;
 	$latest_title = $html->find('div.conteneur_page img', 0)->title;
 
 	function MalikiExtractContent($url) {
-		$html2 = file_get_html($url);
+		$html2 = $this->file_get_html($url);
 		$text = 'http://www.maliki.com/'.$html2->find('img', 0)->src;
 		$text = '<img alt="" src="'.$text.'"/><br>'.$html2->find('div.imageetnews', 0)->plaintext;
 		return $text;

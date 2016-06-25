@@ -14,7 +14,7 @@ class ReporterreBridge extends BridgeAbstract{
         public function collectData(array $param){
 
 		function ExtractContentReporterre($url) {
-		$html2 = file_get_html($url);
+		$html2 = $this->file_get_html($url);
 		foreach($html2->find('div[style=text-align:justify]') as $e) {
 		 $text = $e->outertext;
 		}
@@ -23,7 +23,7 @@ class ReporterreBridge extends BridgeAbstract{
 		return $text;
 		}
 
-		$html = file_get_html('http://www.reporterre.net/spip.php?page=backend') or $this->returnError('Could not request Reporterre.', 404);
+		$html = $this->file_get_html('http://www.reporterre.net/spip.php?page=backend') or $this->returnError('Could not request Reporterre.', 404);
 		$limit = 0;
 
 		foreach($html->find('item') as $element) {

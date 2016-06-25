@@ -68,7 +68,7 @@ class OpenClassroomsBridge extends BridgeAbstract{
         $html = '';
         $link = 'https://openclassrooms.com/courses?categories='.$param['u'].'&title=&sort=updatedAt+desc';
 
-        $html = file_get_html($link) or $this->returnError('Could not request OpenClassrooms.', 404);
+        $html = $this->file_get_html($link) or $this->returnError('Could not request OpenClassrooms.', 404);
 
         foreach($html->find('.courseListItem') as $element) {
                 $item = new \Item();

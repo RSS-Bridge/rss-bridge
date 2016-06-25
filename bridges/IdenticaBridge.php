@@ -25,7 +25,7 @@ class IdenticaBridge extends BridgeAbstract{
         $html = '';
         if (isset($param['u'])) {   /* user timeline mode */
         	$this->request = $param['u'];
-            $html = file_get_html('https://identi.ca/'.urlencode($this->request)) or $this->returnError('Requested username can\'t be found.', 404);
+            $html = $this->file_get_html('https://identi.ca/'.urlencode($this->request)) or $this->returnError('Requested username can\'t be found.', 404);
         }
         else {
             $this->returnError('You must specify an Identica username (?u=...).', 400);

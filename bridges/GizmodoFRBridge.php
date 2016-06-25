@@ -14,7 +14,7 @@ class GizmodoFRBridge extends BridgeAbstract{
     public function collectData(array $param){
 
         function GizmodoFRExtractContent($url) {
-            $articleHTMLContent = file_get_html($url);
+            $articleHTMLContent = $this->file_get_html($url);
             $text = $articleHTMLContent->find('div.entry-thumbnail', 0)->innertext;
             $text = $text.$articleHTMLContent->find('div.entry-excerpt', 0)->innertext;
             $text = $text.$articleHTMLContent->find('div.entry-content', 0)->innertext;
@@ -26,7 +26,7 @@ class GizmodoFRBridge extends BridgeAbstract{
             return $text;
         }
 
-        $rssFeed = file_get_html('http://www.gizmodo.fr/feed') or $this->returnError('Could not request http://www.gizmodo.fr/feed', 404);
+        $rssFeed = $this->file_get_html('http://www.gizmodo.fr/feed') or $this->returnError('Could not request http://www.gizmodo.fr/feed', 404);
     	$limit = 0;
 
     	foreach($rssFeed->find('item') as $element) {

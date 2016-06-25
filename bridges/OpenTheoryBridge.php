@@ -19,12 +19,12 @@ class OpenTheoryBridge extends BridgeAbstract{
     	return $string;
     }
     function ExtractContent($url) {
-	$html2 = file_get_html($url);
+	$html2 = $this->file_get_html($url);
 	$text = $html2->find('div.entry-content', 0)->innertext;
 	$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
 	return $text;
     }
-        $html = file_get_html('http://open1theory.com/feed') or $this->returnError('Could not request OpenTheory.', 404);
+        $html = $this->file_get_html('http://open1theory.com/feed') or $this->returnError('Could not request OpenTheory.', 404);
 	$limit = 0;
 
 	foreach($html->find('item') as $element) {

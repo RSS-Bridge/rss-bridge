@@ -19,12 +19,12 @@ class KoreusBridge extends BridgeAbstract{
         return $string;
     }
     function KoreusExtractContent($url) {
-        $html2 = file_get_html($url);
+        $html2 = $this->file_get_html($url);
         $text = $html2->find('p[class=itemText]', 0)->innertext;
         $text = utf8_encode(preg_replace('/(Sur le m.+?)+$/i','',$text));
         return $text;
     }
-        $html = file_get_html('http://feeds.feedburner.com/Koreus-articles') or $this->returnError('Could not request Koreus.', 404);
+        $html = $this->file_get_html('http://feeds.feedburner.com/Koreus-articles') or $this->returnError('Could not request Koreus.', 404);
         $limit = 0;
 
         foreach($html->find('item') as $element) {

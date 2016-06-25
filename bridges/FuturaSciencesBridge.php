@@ -155,13 +155,13 @@ class FuturaSciencesBridge extends BridgeAbstract {
             $this->returnError('Invalid "feed" parameter.'.$url, 400);
 
         $url = $this->getURI().'rss/'.$param['feed'].'.xml';
-        $html = file_get_html($url) or $this->returnError('Could not request Futura-Sciences: '.$url, 500);
+        $html = $this->file_get_html($url) or $this->returnError('Could not request Futura-Sciences: '.$url, 500);
         $limit = 0;
 
         foreach($html->find('item') as $element) {
             if ($limit < 10) {
                 $article_url = str_replace('#xtor=RSS-8', '', StripCDATA($element->find('guid', 0)->plaintext));
-                $article = file_get_html($article_url) or $this->returnError('Could not request Futura-Sciences: '.$article_url, 500);
+                $article = $this->file_get_html($article_url) or $this->returnError('Could not request Futura-Sciences: '.$article_url, 500);
                 $contents = $article->find('div.content', 0)->innertext;
                 $author = trim(str_replace(', Futura-Sciences', '', $article->find('span.author', 0)->plaintext));
                 if (empty($author))

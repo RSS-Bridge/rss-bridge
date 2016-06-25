@@ -13,7 +13,7 @@ class EliteDangerousGalnetBridge extends BridgeAbstract
 
 	public function collectData(array $param)
 	{
-		$html = file_get_html('https://community.elitedangerous.com/galnet') or $this->returnError('Error while downloading the website content', 404);
+		$html = $this->file_get_html('https://community.elitedangerous.com/galnet') or $this->returnError('Error while downloading the website content', 404);
 		foreach($html->find('div.article') as $element) {
 			$item = new Item();
 

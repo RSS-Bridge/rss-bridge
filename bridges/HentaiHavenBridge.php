@@ -12,7 +12,7 @@ class HentaiHavenBridge extends BridgeAbstract{
 	}
 
     public function collectData(array $param){
-        $html = file_get_html('http://hentaihaven.org/') or $this->returnError('Could not request Hentai Haven.', 404);
+        $html = $this->file_get_html('http://hentaihaven.org/') or $this->returnError('Could not request Hentai Haven.', 404);
         foreach($html->find('div.zoe-grid') as $element) {
             $item = new \Item();
             $item->uri = $this->getURI().$element->find('div.brick-content h3 a', 0)->href;

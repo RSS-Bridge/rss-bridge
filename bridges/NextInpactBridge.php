@@ -20,7 +20,7 @@ class NextInpactBridge extends BridgeAbstract {
 		}
 
 		function ExtractContent($url) {
-			$html2 = file_get_html($url);
+			$html2 = $this->file_get_html($url);
 			$text = '<p><em>'.$html2->find('span.sub_title', 0)->innertext.'</em></p>'
 				.'<p><img src="'.$html2->find('div.container_main_image_article', 0)->find('img.dedicated',0)->src.'" alt="-" /></p>'
 				.'<div>'.$html2->find('div[itemprop=articleBody]', 0)->innertext.'</div>';
@@ -30,7 +30,7 @@ class NextInpactBridge extends BridgeAbstract {
 			return $text;
 		}
 
-		$html = file_get_html('http://www.nextinpact.com/rss/news.xml') or $this->returnError('Could not request NextInpact.', 404);
+		$html = $this->file_get_html('http://www.nextinpact.com/rss/news.xml') or $this->returnError('Could not request NextInpact.', 404);
 		$limit = 0;
 
 		foreach($html->find('item') as $element) {

@@ -15,7 +15,7 @@ class AllocineT5Bridge extends BridgeAbstract{
 	}
 
     public function collectData(array $param){
-        $html = file_get_html($this->_URL) or $this->returnError('Could not request Allo cine.', 404);
+        $html = $this->file_get_html($this->_URL) or $this->returnError('Could not request Allo cine.', 404);
 
         foreach($html->find('figure.media-meta-fig') as $element)
         {

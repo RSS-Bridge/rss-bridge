@@ -19,12 +19,12 @@ class CoinDeskBridge extends BridgeAbstract{
     	return $string;
     }
     function CoinDeskExtractContent($url) {
-	$html2 = file_get_html($url);
+	$html2 = $this->file_get_html($url);
 	$text = $html2->find('div.single-content', 0)->innertext;
 	$text = strip_tags($text, '<p><a><img>');
 	return $text;
     }
-        $html = file_get_html('http://www.coindesk.com/feed/atom/') or $this->returnError('Could not request CoinDesk.', 404);
+        $html = $this->file_get_html('http://www.coindesk.com/feed/atom/') or $this->returnError('Could not request CoinDesk.', 404);
 	$limit = 0;
 
 	foreach($html->find('entry') as $element) {

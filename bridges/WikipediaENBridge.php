@@ -18,7 +18,7 @@ class WikipediaENBridge extends BridgeAbstract{
         //$host = 'https://en.wikipedia.org';
         $link = '/wiki/Main_Page';
 
-        $html = file_get_html($host.$link) or $this->returnError('Could not request Wikipedia EN.', 404);
+        $html = $this->file_get_html($host.$link) or $this->returnError('Could not request Wikipedia EN.', 404);
 
 		$element = $html->find('div[id=mp-tfa]', 0);
 		// Clean the bottom of the featured article

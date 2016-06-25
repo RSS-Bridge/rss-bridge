@@ -77,7 +77,7 @@ class GBAtempBridge extends BridgeAbstract {
         }
 
         function fetch_post_content($uri, $site_url) {
-            $html = file_get_html($uri) or $this->returnError('Could not request GBAtemp: '.$uri, 500);
+            $html = $this->file_get_html($uri) or $this->returnError('Could not request GBAtemp: '.$uri, 500);
             $content = $html->find('div.messageContent', 0)->innertext;
             return cleanup_post_content($content, $site_url);
         }
@@ -93,7 +93,7 @@ class GBAtempBridge extends BridgeAbstract {
             } else $this->returnError('The provided type filter is invalid. Expecting N, R, T, or F.', 400);
         } else $this->returnError('Please provide a type filter. Expecting N, R, T, or F.', 400);
 
-        $html = file_get_html($this->getURI()) or $this->returnError('Could not request GBAtemp.', 500);
+        $html = $this->file_get_html($this->getURI()) or $this->returnError('Could not request GBAtemp.', 500);
 
         if ($typeFilter == 'N') {
             foreach ($html->find('li[class=news_item full]') as $newsItem) {
@@ -110,7 +110,7 @@ class GBAtempBridge extends BridgeAbstract {
                 $url = $this->getURI().$reviewItem->find('a', 0)->href;
                 $img = $this->getURI().ExtractFromDelimiters($reviewItem->find('a', 0)->style, 'image:url(', ')');
                 $title = $reviewItem->find('span.review_title', 0)->plaintext;
-                $content = file_get_html($url) or $this->returnError('Could not request GBAtemp: '.$uri, 500);
+                $content = $this->file_get_html($url) or $this->returnError('Could not request GBAtemp: '.$uri, 500);
                 $author = $content->find('a.username', 0)->plaintext;
                 $time = intval(ExtractFromDelimiters($content->find('abbr.DateTime', 0)->outertext, 'data-time="', '"'));
                 $intro = '<p><b>'.($content->find('div#review_intro', 0)->plaintext).'</b></p>';

@@ -16,11 +16,11 @@ class BastaBridge extends BridgeAbstract{
 
 			
 		function BastaExtractContent($url) {
-		$html2 = file_get_html($url);
+		$html2 = $this->file_get_html($url);
 		$text = $html2->find('div.texte', 0)->innertext;
 		return $text;
 		}
-		$html = file_get_html('http://www.bastamag.net/spip.php?page=backend') or $this->returnError('Could not request Bastamag.', 404);
+		$html = $this->file_get_html('http://www.bastamag.net/spip.php?page=backend') or $this->returnError('Could not request Bastamag.', 404);
 		$limit = 0;
 
 		foreach($html->find('item') as $element) {

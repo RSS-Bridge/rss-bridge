@@ -51,12 +51,12 @@ class PinterestBridge extends BridgeAbstract{
             
             $this->username = $param['u'];
             $this->board = $param['b'];
-            $html = file_get_html($this->getURI().'/'.urlencode($this->username).'/'.urlencode($this->board)) or $this->returnError('Username and/or board not found', 404);
+            $html = $this->file_get_html($this->getURI().'/'.urlencode($this->username).'/'.urlencode($this->board)) or $this->returnError('Username and/or board not found', 404);
 
         } else if (isset($param['q']))
         {
         	$this->query = $param['q'];
-        	$html = file_get_html($this->getURI().'/search/?q='.urlencode($this->query)) or $this->returnError('Could not request Pinterest.', 404);
+        	$html = $this->file_get_html($this->getURI().'/search/?q='.urlencode($this->query)) or $this->returnError('Could not request Pinterest.', 404);
         }
         
         else {

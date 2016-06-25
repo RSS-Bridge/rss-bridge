@@ -34,7 +34,7 @@ class WordPressBridge extends BridgeAbstract {
 			$this->returnError('You must specify a URL', 400);
 		}
 
-		$html = file_get_html($this->url) or $this->returnError("Could not request {$this->url}.", 404);
+		$html = $this->file_get_html($this->url) or $this->returnError("Could not request {$this->url}.", 404);
 		$posts = $html->find('.post');
 
 		if(!empty($posts) ) {
@@ -54,7 +54,7 @@ class WordPressBridge extends BridgeAbstract {
 	}
 
 	private function getDetails($uri, $thumbnail) {
-		$html = file_get_html($uri) or exit;
+		$html = $this->file_get_html($uri) or exit;
 		$article = $html->find('.post', 0);
 
 		$title = $article->find('h1', 0)->innertext;

@@ -27,14 +27,14 @@ class FlickrTagBridge extends BridgeAbstract{
 	}
 
     public function collectData(array $param){
-        $html = file_get_html('http://www.flickr.com/search/?q=vendee&s=rec') or $this->returnError('Could not request Flickr.', 404);
+        $html = $this->file_get_html('http://www.flickr.com/search/?q=vendee&s=rec') or $this->returnError('Could not request Flickr.', 404);
         if (isset($param['q'])) {   /* keyword search mode */
             $this->request = $param['q'];
-            $html = file_get_html('http://www.flickr.com/search/?q='.urlencode($this->request).'&s=rec') or $this->returnError('No results for this query.', 404);
+            $html = $this->file_get_html('http://www.flickr.com/search/?q='.urlencode($this->request).'&s=rec') or $this->returnError('No results for this query.', 404);
         }
         elseif (isset($param['u'])) {   /* user timeline mode */
             $this->request = $param['u'];
-            $html = file_get_html('http://www.flickr.com/photos/'.urlencode($this->request).'/') or $this->returnError('Requested username can\'t be found.', 404);
+            $html = $this->file_get_html('http://www.flickr.com/photos/'.urlencode($this->request).'/') or $this->returnError('Requested username can\'t be found.', 404);
         }
         
         else {

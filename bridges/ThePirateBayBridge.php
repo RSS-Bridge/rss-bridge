@@ -60,7 +60,7 @@ class ThePirateBayBridge extends BridgeAbstract{
 
         $keywordsList = explode(";",$param['q']); 
         foreach($keywordsList as $keywords){
-            $html = file_get_html('https://thepiratebay.org/search/'.rawurlencode($keywords).'/0/3/0') or $this->returnError('Could not request TPB.', 404);
+            $html = $this->file_get_html('https://thepiratebay.org/search/'.rawurlencode($keywords).'/0/3/0') or $this->returnError('Could not request TPB.', 404);
 
             if ($html->find('table#searchResult', 0) == FALSE)
                 $this->returnError('No result for query '.$keywords, 404);

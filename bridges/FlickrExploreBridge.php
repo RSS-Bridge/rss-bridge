@@ -12,7 +12,7 @@ class FlickrExploreBridge extends BridgeAbstract{
 	}
 
     public function collectData(array $param){
-        $html = file_get_html('http://www.flickr.com/explore') or $this->returnError('Could not request Flickr.', 404);
+        $html = $this->file_get_html('http://www.flickr.com/explore') or $this->returnError('Could not request Flickr.', 404);
     
         foreach($html->find('span.photo_container') as $element) {
             $item = new \Item();

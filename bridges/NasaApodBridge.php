@@ -13,7 +13,7 @@ class NasaApodBridge extends BridgeAbstract{
 
   public function collectData(array $param) {
 
-    $html = file_get_html('http://apod.nasa.gov/apod/archivepix.html') or $this->returnError('Error while downloading the website content', 404);
+    $html = $this->file_get_html('http://apod.nasa.gov/apod/archivepix.html') or $this->returnError('Error while downloading the website content', 404);
     $list = explode("<br>", $html->find('b', 0)->innertext);
 
     for($i = 0; $i < 3;$i++)
@@ -25,7 +25,7 @@ class NasaApodBridge extends BridgeAbstract{
       $uri = 'http://apod.nasa.gov/apod/'.$uri_page;
       $item->uri = $uri;
 
-      $picture_html = file_get_html($uri);
+      $picture_html = $this->file_get_html($uri);
       $picture_html_string = $picture_html->innertext;
 
       //Extract image and explanation

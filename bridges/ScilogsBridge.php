@@ -19,11 +19,11 @@ class ScilogsBridge extends BridgeAbstract{
 			return $string;
 		}
 		function ScilogsExtractContent($url) {
-		$html2 = file_get_html($url);
+		$html2 = $this->file_get_html($url);
 		$text = $html2->find('div.entrybody', 0)->innertext;
 		return $text;
 		}
-		$html = file_get_html('http://www.scilogs.fr/?wpmu-feed=posts') or $this->returnError('Could not request Scilogs.', 404);
+		$html = $this->file_get_html('http://www.scilogs.fr/?wpmu-feed=posts') or $this->returnError('Could not request Scilogs.', 404);
 		$limit = 0;
 
 		foreach($html->find('item') as $element) {

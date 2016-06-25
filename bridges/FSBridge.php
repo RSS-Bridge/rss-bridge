@@ -19,12 +19,12 @@ class FSBridge extends BridgeAbstract{
     	return $string;
     }
     function FS_ExtractContent($url) {
-	$html2 = file_get_html($url);
+	$html2 = $this->file_get_html($url);
 	$text = $html2->find('div.fiche-actualite', 0)->innertext;
 	$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
 	return $text;
     }
-        $html = file_get_html('http://www.futura-sciences.com/rss/actualites.xml') or $this->returnError('Could not request Futura Sciences.', 404);
+        $html = $this->file_get_html('http://www.futura-sciences.com/rss/actualites.xml') or $this->returnError('Could not request Futura Sciences.', 404);
 	$limit = 0;
 
 	foreach($html->find('item') as $element) {

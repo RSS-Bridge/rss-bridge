@@ -33,8 +33,8 @@ class GooglePlusPostBridge extends BridgeAbstract
 
 		$this->request = $param['username'];
 		// get content parsed
-//		$html = file_get_html(__DIR__ . '/../posts2.html'
-		$html = file_get_html(self::GOOGLE_PLUS_BASE_URL . urlencode($this->request) . '/posts'
+//		$html = $this->file_get_html(__DIR__ . '/../posts2.html'
+		$html = $this->file_get_html(self::GOOGLE_PLUS_BASE_URL . urlencode($this->request) . '/posts'
 			// force language
 			, false, stream_context_create(array('http'=> array(
 			'header'    => 'Accept-Language: fr,fr-be,fr-fr;q=0.8,en;q=0.4,en-us;q=0.2;*' . "\r\n"
