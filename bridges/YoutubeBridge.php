@@ -118,7 +118,7 @@ class YoutubeBridge extends BridgeAbstract {
 
 	private function ytBridgeFixTitle($title) {
 		// convert both &#1234; and &quot; to UTF-8
-		return html_entity_decode(mb_convert_encoding(trim($title), 'UTF-8', 'HTML-ENTITIES'));
+		return html_entity_decode($title,ENT_QUOTES,'UTF-8');
 	}
 
 	public function collectData(array $param) {
