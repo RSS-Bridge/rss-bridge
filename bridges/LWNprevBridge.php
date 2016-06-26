@@ -39,7 +39,20 @@ class LWNprevBridge extends BridgeAbstract{
   public function collectData(array $param){
     // Because the LWN page is written in loose HTML and not XHTML,
     // Simple HTML Dom is not accurate enough for the job
-    $html = advanced_file_get_contents('https://lwn.net/free/bigpage')
+
+    $uri='https://lwn.net/free/bigpage';
+    $context=null;
+    if(defined('PROXY_URL')) {
+      $context = array(
+        'http' => array(
+          'proxy' => PROXY_URL,
+          'request_fulluri' => true,
+        ),
+      );
+      $context = stream_context_create($context);
+    }
+
+    $html=file_get_contents($uri, false, $context)
       or $this->returnError('No results for LWNprev', 404);
 
     libxml_use_internal_errors(true);
