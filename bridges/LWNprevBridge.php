@@ -1,9 +1,9 @@
 <?php
 /**
-* RssBridgeLWNprev
-*
-* @name LWNPrev Bridge
-* @description Returns the articles from the previous LWN.net edition
+ * RssBridgeLWNprev
+ *
+ * @name LWNPrev Bridge
+ * @description Returns the articles from the previous LWN.net edition
  */
 class LWNprevBridge extends BridgeAbstract{
   public function loadMetadatas() {
@@ -74,16 +74,16 @@ class LWNprevBridge extends BridgeAbstract{
       $this->jumpToNextTag($h2NextSibling);
 
       switch($h2NextSibling->getAttribute('class')){
-        case 'FeatureByline':
-          $item->name=$h2NextSibling->getElementsByTagName('b')->item(0)->textContent;
-          break;
-        case 'GAByline':
-          $text=$h2NextSibling->textContent;
-          $item->name=substr($text,strpos($text,'by '));
-          break;
-        default:
-          $item->name='LWN';
-          break;
+      case 'FeatureByline':
+        $item->name=$h2NextSibling->getElementsByTagName('b')->item(0)->textContent;
+        break;
+      case 'GAByline':
+        $text=$h2NextSibling->textContent;
+        $item->name=substr($text,strpos($text,'by '));
+        break;
+      default:
+        $item->name='LWN';
+        break;
       };
 
       $h2FirstChild=$h2->firstChild;
@@ -137,7 +137,7 @@ class LWNprevBridge extends BridgeAbstract{
             )
           )
         ){
-        $contentEnd=true;
+          $contentEnd=true;
         }else{
           $content.=$node->C14N();
         }
