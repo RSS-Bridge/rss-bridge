@@ -23,7 +23,7 @@ class GithubIssueBridge extends BridgeAbstract{
          {
             "name" : "Project name",
             "identifier" : "p"
-         }
+         },
          {
             "name" : "Issue number",
             "identifier" : "i"
