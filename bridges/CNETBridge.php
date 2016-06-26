@@ -51,7 +51,7 @@ class CNETBridge extends BridgeAbstract {
             $this->topicName = $param['topic'];
 
         $pageUrl = 'http://www.cnet.com/'.(empty($this->topicName) ? '' : 'topics/'.$this->topicName.'/');
-        $html = file_get_html($pageUrl) or $this->returnError('Could not request CNET: '.$pageUrl, 500);
+        $html = $this->file_get_html($pageUrl) or $this->returnError('Could not request CNET: '.$pageUrl, 500);
         $limit = 0;
 
         foreach($html->find('div.assetBody') as $element) {
@@ -65,7 +65,7 @@ class CNETBridge extends BridgeAbstract {
 
                 if (!empty($article_title) && !empty($article_uri) && strpos($article_uri, '/news/') !== false) {
 
-                    $article_html = file_get_html($article_uri) or $this->returnError('Could not request CNET: '.$article_uri, 500);
+                    $article_html = $this->file_get_html($article_uri) or $this->returnError('Could not request CNET: '.$article_uri, 500);
 
                     if (is_null($article_thumbnail))
                         $article_thumbnail = $article_html->find('div.originalImage', 0);

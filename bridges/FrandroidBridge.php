@@ -22,7 +22,7 @@ class FrandroidBridge extends BridgeAbstract
         }
         function FrandroidExtractContent($url)
         {
-            $html2 = file_get_html($url);
+            $html2 = $this->file_get_html($url);
             $html3 = $html2->find('div.post-content', 0);
             $html3->find('div.no-sidebar-ad-top', 0)->outertext = '';
             $ret = $html3->find('div.shortcode-container');
@@ -35,7 +35,7 @@ class FrandroidBridge extends BridgeAbstract
             $text = strip_tags($text, '<h1><span><h2><p><b><a><blockquote><img><em><ul><ol>');
             return $text;
         }
-        $html = file_get_html('http://feeds.feedburner.com/Frandroid?format=xml') or $this->returnError('Could not request Frandroid.', 404);
+        $html = $this->file_get_html('http://feeds.feedburner.com/Frandroid?format=xml') or $this->returnError('Could not request Frandroid.', 404);
         $limit = 0;
         
         foreach ($html->find('item') as $element) {

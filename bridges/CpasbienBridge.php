@@ -44,7 +44,7 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
         $html = '';
         if (isset($param['q'])) {   /* keyword search mode */
             $this->request = str_replace(" ","-",trim($param['q']));
-            $html = file_get_html($this->uri.'/recherche/'.urlencode($this->request).'.html') or $this->returnError('No results for this query.', 404);
+            $html = $this->file_get_html($this->uri.'/recherche/'.urlencode($this->request).'.html') or $this->returnError('No results for this query.', 404);
         }
         else {
             $this->returnError('You must specify a keyword (?q=...).', 400);

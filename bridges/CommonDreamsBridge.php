@@ -20,14 +20,14 @@ class CommonDreamsBridge extends BridgeAbstract{
 		}
 	
 		function CommonDreamsExtractContent($url) {
-		$html3 = file_get_html($url);
+		$html3 = $this->file_get_html($url);
 		$text = $html3->find('div[class=field--type-text-with-summary]', 0)->innertext;
 		$html3->clear();
 		unset ($html3);
 		return $text;
 		}
 
-		$html = file_get_html('http://www.commondreams.org/rss.xml') or $this->returnError('Could not request CommonDreams.', 404);
+		$html = $this->file_get_html('http://www.commondreams.org/rss.xml') or $this->returnError('Could not request CommonDreams.', 404);
 		$limit = 0;
 		foreach($html->find('item') as $element) {
 		 if($limit < 4) {

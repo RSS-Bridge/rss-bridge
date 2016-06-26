@@ -14,12 +14,12 @@ class MsnMondeBridge extends BridgeAbstract{
     public function collectData(array $param){
 
     function MsnMondeExtractContent($url, &$item) {
-      $html2 = file_get_html($url);
+      $html2 = $this->file_get_html($url);
       $item->content = $html2->find('#content', 0)->find('article', 0)->find('section', 0)->plaintext;
       $item->timestamp = strtotime($html2->find('.authorinfo-txt', 0)->find('time', 0)->datetime);
     }
 
-      $html = file_get_html('http://www.msn.com/fr-fr/actualite/monde') or $this->returnError('Could not request MsnMonde.', 404);
+      $html = $this->file_get_html('http://www.msn.com/fr-fr/actualite/monde') or $this->returnError('Could not request MsnMonde.', 404);
       $limit = 0;
       foreach($html->find('.smalla') as $article) {
        if($limit < 10) {

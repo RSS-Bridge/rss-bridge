@@ -13,7 +13,7 @@ class DilbertBridge extends BridgeAbstract {
 
     public function collectData(array $param) {
 
-        $html = file_get_html($this->getURI()) or $this->returnError('Could not request Dilbert: '.$this->getURI(), 500);
+        $html = $this->file_get_html($this->getURI()) or $this->returnError('Could not request Dilbert: '.$this->getURI(), 500);
 
         foreach ($html->find('section.comic-item') as $element) {
 

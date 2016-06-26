@@ -21,14 +21,14 @@ class NumeramaBridge extends BridgeAbstract{
 
    function NumeramaExtractContent($url)
       {
-      $html2 = file_get_html($url);
+      $html2 = $this->file_get_html($url);
       $text = $html2->find('section[class=related-article]', 0)->innertext = ''; // remove related articles block
       $text = '<img alt="" style="max-width:300px;" src="'.$html2->find('meta[property=og:image]', 0)->getAttribute('content').'">'; // add post picture
       $text = $text.$html2->find('article[class=post-content]', 0)->innertext; // extract the post
       return $text;
       }
 
-   $html = file_get_html('http://www.numerama.com/feed/') or $this->returnError('Could not request Numerama.', 404);
+   $html = $this->file_get_html('http://www.numerama.com/feed/') or $this->returnError('Could not request Numerama.', 404);
 	$limit = 0;
 
 	foreach($html->find('item') as $element) {

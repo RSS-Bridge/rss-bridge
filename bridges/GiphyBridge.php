@@ -33,7 +33,7 @@ class GiphyBridge extends BridgeAbstract{
 		$html = ''; 
         $base_url = 'http://giphy.com';
 		if (isset($param['s'])) {   /* keyword search mode */
-			$html = file_get_html($base_url.'/search/'.urlencode($param['s'].'/')) or $this->returnError('No results for this query.', 404);
+			$html = $this->file_get_html($base_url.'/search/'.urlencode($param['s'].'/')) or $this->returnError('No results for this query.', 404);
 		}
 		else {
 			$this->returnError('You must specify a search worf (?s=...).', 400);
@@ -51,7 +51,7 @@ class GiphyBridge extends BridgeAbstract{
                 $node = $entry->first_child();                                
                 $href = $node->getAttribute('href');                
                 
-                $html2 = file_get_html($base_url . $href) or $this->returnError('No results for this query.', 404);                                
+                $html2 = $this->file_get_html($base_url . $href) or $this->returnError('No results for this query.', 404);                                
                 $figure = $html2->getElementByTagName('figure');
                 $img = $figure->firstChild();
                 $caption = $figure->lastChild();

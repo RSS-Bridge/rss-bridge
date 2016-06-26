@@ -13,7 +13,7 @@ class CopieDoubleBridge extends BridgeAbstract{
 
 
     public function collectData(array $param){
-        $html = file_get_html('http://www.copie-double.com/') or $this->returnError('Could not request CopieDouble.', 404);
+        $html = $this->file_get_html('http://www.copie-double.com/') or $this->returnError('Could not request CopieDouble.', 404);
         $table = $html->find('table table', 2);
         
         foreach($table->find('tr') as $element)

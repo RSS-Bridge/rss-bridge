@@ -90,6 +90,31 @@ abstract class BridgeAbstract implements BridgeInterface{
         return $this;
     }
 
+    protected function file_get_html($url, $use_include_path = false, $context=null, $offset = -1, $maxLen=-1, $lowercase = true, $forceTagsClosed=true, $target_charset = DEFAULT_TARGET_CHARSET, $stripRN=true, $defaultBRText=DEFAULT_BR_TEXT, $defaultSpanText=DEFAULT_SPAN_TEXT){
+      $contextOptions = array(
+        'http' => array(
+          'user_agent'=>ini_get('user_agent')
+        ),
+      );
+
+      if(defined('PROXY_URL')) {
+        $contextOptions['http']['proxy'] = PROXY_URL;
+        $contextOptions['http']['request_fulluri'] = true;
+
+        if(is_null($context)){
+          $context = stream_context_create($contextOptions);
+        } else {
+          $prevContext=$context;
+          if(!stream_context_set_option($context,$contextOptions)){
+            $context=$prevContext;
+          };
+        }
+      }
+      return file_get_html($url,$use_include_path,$context,$offset,$maxLen,
+        $lowercase,$forceTagsClosed,$target_charset,$stripRN,$defaultBRtext,
+        $defaultSpanText);
+    }
+
 }
 
 /**
@@ -354,19 +379,4 @@ abstract class RssExpander extends HttpCachingBridgeAbstract{
     }
 }
 
-function advanced_file_get_contents($url) {
 
-	if(defined('PROXY_URL')) {
-		$context = array(
-			'http' => array(
-				'proxy' => PROXY_URL,
-				'request_fulluri' => true,
-			),
-		);
-		$context = stream_context_create($context);
-		return file_get_contents($url, false, $context);
-	} else {
-		return file_get_contents($url);
-	}
-
-}

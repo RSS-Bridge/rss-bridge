@@ -18,7 +18,7 @@ class WikipediaEOBridge extends BridgeAbstract{
         //$host = 'https://eo.wikipedia.org';
         $link = '/wiki/Vikipedio:%C4%88efpa%C4%9Do';
 
-        $html = file_get_html($host.$link) or $this->returnError('Could not request Wikipedia EO.', 404);
+        $html = $this->file_get_html($host.$link) or $this->returnError('Could not request Wikipedia EO.', 404);
 
 		$element = $html->find('div[id=mf-tfa]', 0);
 		// Link to article

@@ -25,7 +25,7 @@ class ScoopItBridge extends BridgeAbstract{
             $this->request = $param['u'];
             $link = 'http://scoop.it/search?q=' .urlencode($this->request);
             
-            $html = file_get_html($link) or $this->returnError('Could not request ScoopIt. for : ' . $link , 404);
+            $html = $this->file_get_html($link) or $this->returnError('Could not request ScoopIt. for : ' . $link , 404);
             
             foreach($html->find('div.post-view') as $element) {
                 $item = new Item();

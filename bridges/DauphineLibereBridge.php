@@ -87,17 +87,17 @@ class DauphineLibereBridge extends BridgeAbstract{
 
 			
 		function ExtractContent($url) {
-		$html2 = file_get_html($url);
+		$html2 = $this->file_get_html($url);
 		$text = $html2->find('div.column', 0)->innertext;
 		$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
 		return $text;
 		}
 		if (isset($param['u'])) { /* user timeline mode */
 			$this->request = $param['u'];
-			$html = file_get_html('http://www.ledauphine.com/'.$this->request.'/rss') or $this->returnError('Could not request DauphineLibere.', 404);
+			$html = $this->file_get_html('http://www.ledauphine.com/'.$this->request.'/rss') or $this->returnError('Could not request DauphineLibere.', 404);
 		}
 		else {
-			$html = file_get_html('http://www.ledauphine.com/rss') or $this->returnError('Could not request DauphineLibere.', 404);
+			$html = $this->file_get_html('http://www.ledauphine.com/rss') or $this->returnError('Could not request DauphineLibere.', 404);
 		}
 		$limit = 0;
 

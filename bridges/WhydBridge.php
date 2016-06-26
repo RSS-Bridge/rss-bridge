@@ -28,12 +28,12 @@ class WhydBridge extends BridgeAbstract{
 		{
 			$this->request = $param['u'];
             if (strlen(preg_replace("/[^0-9a-f]/",'', $this->request)) == 24) { // is input the userid ?
-				$html = file_get_html('http://www.whyd.com/u/'.preg_replace("/[^0-9a-f]/",'', $this->request)) or $this->returnError('No results for this query.', 404);
+				$html = $this->file_get_html('http://www.whyd.com/u/'.preg_replace("/[^0-9a-f]/",'', $this->request)) or $this->returnError('No results for this query.', 404);
 			} else { // input may be the username
-				$html = file_get_html('http://www.whyd.com/search?q='.urlencode($this->request)) or $this->returnError('No results for this query.', 404);
+				$html = $this->file_get_html('http://www.whyd.com/search?q='.urlencode($this->request)) or $this->returnError('No results for this query.', 404);
 				for ($j = 0; $j < 5; $j++) {
 					if (strtolower($html->find('div.user', $j)->find('a',0)->plaintext) == strtolower($this->request)) {
-						$html = file_get_html('http://www.whyd.com' . $html->find('div.user', $j)->find('a', 0)->getAttribute('href')) or $this->returnError('No results for this query', 404);
+						$html = $this->file_get_html('http://www.whyd.com' . $html->find('div.user', $j)->find('a', 0)->getAttribute('href')) or $this->returnError('No results for this query', 404);
 						break;
 					}
 				}

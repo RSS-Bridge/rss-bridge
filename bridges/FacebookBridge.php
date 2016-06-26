@@ -109,9 +109,9 @@ class FacebookBridge extends BridgeAbstract{
 		if (is_null($html)) {
 			if (isset($param['u'])) {
 				if (!strpos($param['u'], "/")) {
-					$html = file_get_html('https://www.facebook.com/'.urlencode($param['u']).'?_fb_noscript=1') or $this->returnError('No results for this query.', 404);
+					$html = $this->file_get_html('https://www.facebook.com/'.urlencode($param['u']).'?_fb_noscript=1') or $this->returnError('No results for this query.', 404);
 				} else {
-					$html = file_get_html('https://www.facebook.com/pages/'.$param['u'].'?_fb_noscript=1') or $this->returnError('No results for this query.', 404);
+					$html = $this->file_get_html('https://www.facebook.com/pages/'.$param['u'].'?_fb_noscript=1') or $this->returnError('No results for this query.', 404);
 				}
 			} else {
 				$this->returnError('You must specify a Facebook username.', 400);

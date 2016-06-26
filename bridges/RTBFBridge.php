@@ -24,7 +24,7 @@ class RTBFBridge extends BridgeAbstract {
 		$count = 0;
 
 		if (isset($param['c'])) {
-			$html = file_get_html('http://www.rtbf.be/auvio/emissions/detail?id='.$param['c']) or $this->returnError('Could not request RTBF.', 404);
+			$html = $this->file_get_html('http://www.rtbf.be/auvio/emissions/detail?id='.$param['c']) or $this->returnError('Could not request RTBF.', 404);
 
 			foreach($html->find('.rtbf-media-grid article') as $element) {
 				if($count < $limit) {

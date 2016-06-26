@@ -19,11 +19,11 @@ class GuruMedBridge extends BridgeAbstract{
     	return $string;
     }
     function GurumedExtractContent($url) {
-	$html2 = file_get_html($url);
+	$html2 = $this->file_get_html($url);
 	$text = $html2->find('div.entry', 0)->innertext;
 	return $text;
     }
-        $html = file_get_html('http://gurumed.org/feed') or $this->returnError('Could not request Gurumed.', 404);
+        $html = $this->file_get_html('http://gurumed.org/feed') or $this->returnError('Could not request Gurumed.', 404);
 	$limit = 0;
 
 	foreach($html->find('item') as $element) {

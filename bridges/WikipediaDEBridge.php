@@ -18,7 +18,7 @@ class WikipediaDEBridge extends BridgeAbstract{
         //$host = 'https://de.wikipedia.org';
         $link = '/wiki/Wikipedia:Hauptseite';
 
-        $html = file_get_html($host.$link) or $this->returnError('Could not request Wikipedia DE.', 404);
+        $html = $this->file_get_html($host.$link) or $this->returnError('Could not request Wikipedia DE.', 404);
 
         $element = $html->find('div[id=mf-tfa]', 0);
         $element->find('div', -1)->outertext = '';
@@ -27,7 +27,7 @@ class WikipediaDEBridge extends BridgeAbstract{
         $item->uri = $host.$element->find('p', 0)->find('a', 0)->href;
         $item->title = $element->find('p',0)->find('a',0)->title;
 
-        $html2 = file_get_html($item->uri) or $this->returnError('Could not request Wikipedia DE '.$item->title.'.', 404);
+        $html2 = $this->file_get_html($item->uri) or $this->returnError('Could not request Wikipedia DE '.$item->title.'.', 404);
         $element2 = $html2->find('div[id=mw-content-text]', 0);
         $item->content = str_replace('href="/', 'href="'.$host.'/', $element2->innertext);
 

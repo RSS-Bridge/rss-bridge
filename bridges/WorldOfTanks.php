@@ -70,7 +70,7 @@ class WorldOfTanks extends HttpCachingBridgeAbstract{
         } else {
             $this->uri = WORLD_OF_TANKS.$this->lang.NEWS.'pc-browser/'.$param['category']."/";
         }
-        $html = file_get_html($this->getURI()) or $this->returnError('Could not request '.$this->getURI(), 404);
+        $html = $this->file_get_html($this->getURI()) or $this->returnError('Could not request '.$this->getURI(), 404);
         $this->message("loaded HTML from ".$this->getURI());
         // customize name 
         $this->name = $html->find('title', 0)->innertext;

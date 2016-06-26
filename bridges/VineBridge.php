@@ -24,7 +24,7 @@ class VineBridge extends BridgeAbstract {
     $html = '';
     $uri = 'http://vine.co/u/'.$param['u'].'?mode=list';
 
-    $html = file_get_html($uri) or $this->returnError('No results for this query.', 404);
+    $html = $this->file_get_html($uri) or $this->returnError('No results for this query.', 404);
 
 		foreach($html->find('.post') as $element) {
 			$a = $element->find('a', 0);

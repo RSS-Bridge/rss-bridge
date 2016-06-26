@@ -36,7 +36,7 @@ class T411Bridge extends BridgeAbstract {
 
         //Retrieve torrent listing from search results, which does not contain torrent description
         $url = $this->getURI().'torrents/search/?'.$param['search'].'&order=added&type=desc';
-        $html = file_get_html($url) or $this->returnError('Could not request t411: '.$url, 500);
+        $html = $this->file_get_html($url) or $this->returnError('Could not request t411: '.$url, 500);
         $results = $html->find('table.results', 0);
         if (is_null($results))
             $this->returnError('No results from t411: '.$url, 500);
@@ -57,7 +57,7 @@ class T411Bridge extends BridgeAbstract {
                 $item_date = strtotime($element->find('dd', 0)->plaintext);
 
                 //Retrieve full description from torrent page
-                if ($item_html = file_get_html($item_uri)) {
+                if ($item_html = $this->file_get_html($item_uri)) {
 
                     //Retrieve data from page contents
                     $item_desc = $item_html->find('div.description', 0);

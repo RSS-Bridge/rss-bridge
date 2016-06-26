@@ -12,7 +12,7 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
 	}
 
     public function collectData(array $param){
-        $html = file_get_html('http://lesjoiesducode.fr/') or $this->returnError('Could not request LesJoiesDuCode.', 404);
+        $html = $this->file_get_html('http://lesjoiesducode.fr/') or $this->returnError('Could not request LesJoiesDuCode.', 404);
     
         foreach($html->find('div.blog-post') as $element) {
             $item = new Item();

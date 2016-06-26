@@ -20,7 +20,7 @@ class LeJournalDuGeekBridge extends BridgeAbstract{
         }
 
         function LeJournalDuGeekExtractContent($url) {
-            $articleHTMLContent = file_get_html($url);
+            $articleHTMLContent = $this->file_get_html($url);
             $text = $text.$articleHTMLContent->find('div.post-content', 0)->innertext;
             foreach($articleHTMLContent->find('a.more') as $element) {
                 if ($element->innertext == "Source") {
@@ -38,7 +38,7 @@ class LeJournalDuGeekBridge extends BridgeAbstract{
             return $text;
         }
 
-        $rssFeed = file_get_html('http://www.journaldugeek.com/rss') or $this->returnError('Could not request http://www.journaldugeek.com/rss', 404);
+        $rssFeed = $this->file_get_html('http://www.journaldugeek.com/rss') or $this->returnError('Could not request http://www.journaldugeek.com/rss', 404);
     	$limit = 0;
 
     	foreach($rssFeed->find('item') as $element) {

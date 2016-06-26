@@ -31,7 +31,7 @@ class YandereBridge extends BridgeAbstract{
         if (isset($param['t'])) { 
             $tags = urlencode($param['t']); 
         }
-        $html = file_get_html("https://yande.re/post?page=$page&tags=$tags") or $this->returnError('Could not request Yandere.', 404);
+        $html = $this->file_get_html("https://yande.re/post?page=$page&tags=$tags") or $this->returnError('Could not request Yandere.', 404);
 	$input_json = explode('Post.register(', $html);
 	foreach($input_json as $element)
 	 $data[] = preg_replace('/}\)(.*)/', '}', $element);

@@ -33,7 +33,7 @@ class Rule34Bridge extends BridgeAbstract{
         if (isset($param['t'])) { 
             $tags = urlencode($param['t']); 
         }
-        $html = file_get_html("http://rule34.xxx/index.php?page=post&s=list&tags=$tags&pid=$page") or $this->returnError('Could not request Rule34.', 404);
+        $html = $this->file_get_html("http://rule34.xxx/index.php?page=post&s=list&tags=$tags&pid=$page") or $this->returnError('Could not request Rule34.', 404);
 
 
 	foreach($html->find('div[class=content] span') as $element) {

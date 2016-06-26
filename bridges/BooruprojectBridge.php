@@ -43,7 +43,7 @@ class BooruprojectBridge extends BridgeAbstract{
 	if (empty($param['i'])) {
 		$this->returnError('Please enter a ***.booru.org instance.', 404);
 	}
-        $html = file_get_html("http://".$param['i'].".booru.org/index.php?page=post&s=list&pid=".$page.$tags) or $this->returnError('Could not request Booruproject.', 404);
+        $html = $this->file_get_html("http://".$param['i'].".booru.org/index.php?page=post&s=list&pid=".$page.$tags) or $this->returnError('Could not request Booruproject.', 404);
 
 
 	foreach($html->find('div[class=content] span') as $element) {

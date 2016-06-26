@@ -22,13 +22,13 @@ class NiceMatinBridge extends BridgeAbstract{
     }
 
     function NiceMatinExtractContent($url) {
-        $html2 = file_get_html($url);
+        $html2 = $this->file_get_html($url);
         $text = $html2->find('figure[itemprop=associatedMedia]', 0)->innertext;
         $text .= $html2->find('div[id=content-article]', 0)->innertext;
         return $text;
     }
 
-        $html = file_get_html('http://www.nicematin.com/derniere-minute/rss') or $this->returnError('Could not request NiceMatin.', 404);
+        $html = $this->file_get_html('http://www.nicematin.com/derniere-minute/rss') or $this->returnError('Could not request NiceMatin.', 404);
         $limit = 0;
 
         foreach($html->find('item') as $element) {

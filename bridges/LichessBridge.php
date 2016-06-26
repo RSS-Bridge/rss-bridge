@@ -13,7 +13,7 @@ class LichessBridge  extends BridgeAbstract
 
     public function collectData(array $param)
     {
-        $xml_feed = file_get_html('http://fr.lichess.org/blog.atom') or $this->returnError('Could not retrieve Lichess blog feed.', 404);
+        $xml_feed = $this->file_get_html('http://fr.lichess.org/blog.atom') or $this->returnError('Could not retrieve Lichess blog feed.', 404);
 
         $posts_loaded = 0;
         foreach($xml_feed->find('entry') as $entry)
@@ -37,7 +37,7 @@ class LichessBridge  extends BridgeAbstract
 
     private function retrieve_lichess_post($blog_post_uri)
     {
-        $blog_post_html = file_get_html($blog_post_uri);
+        $blog_post_html = $this->file_get_html($blog_post_uri);
         $blog_post_div  = $blog_post_html->find('#lichess_blog', 0);
 
         $post_chapo   = $blog_post_div->find('.shortlede', 0)->innertext;

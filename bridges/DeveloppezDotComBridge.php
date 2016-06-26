@@ -37,13 +37,13 @@ class DeveloppezDotComBridge extends BridgeAbstract{
         }
 
         function DeveloppezDotComExtractContent($url) {
-            $articleHTMLContent = file_get_html($url);
+            $articleHTMLContent = $this->file_get_html($url);
             $text = convert_smart_quotes($articleHTMLContent->find('div.content', 0)->innertext);
             $text = utf8_encode($text);
             return trim($text);
         }
 
-        $rssFeed = file_get_html('http://www.developpez.com/index/rss') or $this->returnError('Could not request http://www.developpez.com/index/rss', 404);
+        $rssFeed = $this->file_get_html('http://www.developpez.com/index/rss') or $this->returnError('Could not request http://www.developpez.com/index/rss', 404);
     	$limit = 0;
 
     	foreach($rssFeed->find('item') as $element) {
