@@ -11,6 +11,8 @@ TODO :
 */
 
 //define('PROXY_URL', 'tcp://192.168.0.0:28');
+// keep PROXY_NAME empty to display PROXY_URL instead
+define('PROXY_NAME','Hidden Proxy Name');
 
 date_default_timezone_set('UTC');
 error_reporting(0);
