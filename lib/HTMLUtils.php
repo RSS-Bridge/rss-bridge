@@ -28,10 +28,10 @@ CARD;
 			$card .= HTMLUtils::getFormHeader($bridgeName);
 
 			if ($isActive){
-				if(defined('PROXY_URL')){
-					$idArg = 'arg-' . urlencode($bridgeName) . '-' . urlencode('proxy') . '-' . urlencode('_p');
-					$card .= '<input id="' . $idArg . '" type="checkbox" name="_p" />' . PHP_EOL;
-					$card .= '<label for="' .$idArg. '">Enable proxy ('.(PROXY_NAME?PROXY_NAME:PROXY_URL).')</label><br />' . PHP_EOL;
+				if(defined('PROXY_URL') && PROXY_BYBRIDGE){
+					$idArg = 'arg-' . urlencode($bridgeName) . '-' . urlencode('proxyoff') . '-' . urlencode('_noproxy');
+					$card .= '<input id="' . $idArg . '" type="checkbox" name="_noproxy" />' . PHP_EOL;
+					$card .= '<label for="' .$idArg. '">Disable proxy ('.(PROXY_NAME?PROXY_NAME:PROXY_URL).')</label><br />' . PHP_EOL;
 				}
 
 				$card .= HTMLUtils::getHelperButtonsFormat($formats);
@@ -106,10 +106,10 @@ CARD;
 			}
 
 			if ($isActive){
-				if(defined('PROXY_URL')){
-					$idArg = 'arg-' . urlencode($bridgeName) . '-' . urlencode('proxy') . '-' . urlencode('_p');
-					$card .= '<input id="' . $idArg . '" type="checkbox" name="_p" />' . PHP_EOL;
-					$card .= '<label for="' .$idArg. '">Enable proxy ('.(PROXY_NAME?PROXY_NAME:PROXY_URL).')</label><br />' . PHP_EOL;
+				if(defined('PROXY_URL') && PROXY_BYBRIDGE){
+					$idArg = 'arg-' . urlencode($bridgeName) . '-' . urlencode('proxyoff') . '-' . urlencode('_noproxy');
+					$card .= '<input id="' . $idArg . '" type="checkbox" name="_noproxy" />' . PHP_EOL;
+					$card .= '<label for="' .$idArg. '">Disable proxy ('.(PROXY_NAME?PROXY_NAME:PROXY_URL).')</label><br />' . PHP_EOL;
 				}
 
 				$card .= HTMLUtils::getHelperButtonsFormat($formats);

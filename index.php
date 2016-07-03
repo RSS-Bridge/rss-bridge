@@ -11,6 +11,8 @@ TODO :
 */
 
 //define('PROXY_URL', 'tcp://192.168.0.0:28');
+// Set to true if you allow users to disable proxy usage for specific bridges
+define('PROXY_BYBRIDGE',false);
 // keep PROXY_NAME empty to display PROXY_URL instead
 define('PROXY_NAME','Hidden Proxy Name');
 
@@ -113,8 +115,10 @@ try{
                     } else {
                         $bridge->setCache($cache); // just add disable cache to your query to disable caching
                     }
-                    if(isset($_REQUEST['_p'])){
-                      $bridge->useProxy=true;
+                    if(defined('PROXY_URL') && PROXY_BYBRIDGE &&
+                      isset($_REQUEST['_noproxy'])
+                    ){
+                      $bridge->useProxy=false;
                     }
                     $bridge->setDatas($_REQUEST);
 					$bridge->loadMetadatas();

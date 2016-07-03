@@ -21,7 +21,7 @@ abstract class BridgeAbstract implements BridgeInterface{
 	public $uri = "";
 	public $description = 'No description provided';
 	public $maintainer = 'No maintainer';
-	public $useProxy = false;
+	public $useProxy = true;
 	public $parameters = array();
 
     /**
