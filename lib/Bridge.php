@@ -21,6 +21,7 @@ abstract class BridgeAbstract implements BridgeInterface{
 	public $uri = "";
 	public $description = 'No description provided';
 	public $maintainer = 'No maintainer';
+	public $useProxy = false;
 	public $parameters = array();
 
     /**
@@ -111,7 +112,7 @@ abstract class BridgeAbstract implements BridgeInterface{
         ),
       );
 
-      if(defined('PROXY_URL')) {
+      if(defined('PROXY_URL') && $this->useProxy) {
         $contextOptions['http']['proxy'] = PROXY_URL;
         $contextOptions['http']['request_fulluri'] = true;
 

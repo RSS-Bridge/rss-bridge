@@ -100,7 +100,7 @@ try{
 			// whitelist control
 			if(!Bridge::isWhitelisted($whitelist_selection, $bridge)) {
 				throw new \HttpException('This bridge is not whitelisted', 401);
-				die; 
+				die;
 			}
 
                     $cache = Cache::create('FileCache');
@@ -111,6 +111,10 @@ try{
                     } else {
                         $bridge->setCache($cache); // just add disable cache to your query to disable caching
                     }
+                    if(isset($_REQUEST['_p'])){
+                      $bridge->useProxy=true;
+                    }
+                    $bridge->setDatas($_REQUEST);
 					$bridge->loadMetadatas();
                     $bridge->setDatas($_REQUEST);
                     // Data transformation

@@ -28,6 +28,12 @@ CARD;
 			$card .= HTMLUtils::getFormHeader($bridgeName);
 
 			if ($isActive){
+				if(defined('PROXY_URL')){
+					$idArg = 'arg-' . urlencode($bridgeName) . '-' . urlencode('proxy') . '-' . urlencode('_p');
+					$card .= '<input id="' . $idArg . '" type="checkbox" name="_p" />' . PHP_EOL;
+					$card .= '<label for="' .$idArg. '">Enable proxy ('.PROXY_URL.')</label><br />' . PHP_EOL;
+				}
+
 				$card .= HTMLUtils::getHelperButtonsFormat($formats);
 			} else {
 				$card .= '<span style="font-weight: bold;">Inactive</span>';
@@ -40,13 +46,13 @@ CARD;
 
 		if($hasGlobalParameter)
 			$globalParameters = json_decode($bridgeElement->parameters['global'], true);
-		
+
 		foreach($bridgeElement->parameters as $parameterName => $parameter){
 			$parameter = json_decode($parameter, true);
 
 			if(!is_numeric($parameterName) && $parameterName == 'global')
 				continue;
-			
+
 			if($hasGlobalParameter)
 				$parameter = array_merge($parameter, $globalParameters);
 
@@ -82,7 +88,7 @@ CARD;
 					$card .= '<input ' . $additionalInfoString . ' id="' . $idArg . '" type="number" value="' . $inputEntry['defaultValue'] . '" placeholder="' . $inputEntry['exampleValue'] . '" name="' . $inputEntry['identifier'] . '" /><br />' . PHP_EOL;
 				} else if($inputEntry['type'] == 'list') {
 					$card .= '<select ' . $additionalInfoString . ' id="' . $idArg . '" name="' . $inputEntry['identifier'] . '" >';
-					
+
 					foreach($inputEntry['values'] as $listValues) {
 						if($inputEntry['defaultValue'] === $listValues['name'] || $inputEntry['defaultValue'] === $listValues['value'])
 							$card .= '<option value="' . $listValues['value'] . '" selected>' . $listValues['name'] . '</option>';
@@ -100,11 +106,17 @@ CARD;
 			}
 
 			if ($isActive){
+				if(defined('PROXY_URL')){
+					$idArg = 'arg-' . urlencode($bridgeName) . '-' . urlencode('proxy') . '-' . urlencode('_p');
+					$card .= '<input id="' . $idArg . '" type="checkbox" name="_p" />' . PHP_EOL;
+					$card .= '<label for="' .$idArg. '">Enable proxy ('.PROXY_URL.')</label><br />' . PHP_EOL;
+				}
+
 				$card .= HTMLUtils::getHelperButtonsFormat($formats);
 			} else {
 				$card .= '<span style="font-weight: bold;">Inactive</span>';
 			}
-			
+
 			$card .= '</form>' . PHP_EOL;
 		}
 
@@ -161,7 +173,7 @@ class HTMLSanitizer {
 				$element->outertext = '';
 			} else {
 				foreach($element->getAllAttributes() as $attributeName => $attribute) {
-					if(!in_array($attributeName, $this->keptAttributes)) 
+					if(!in_array($attributeName, $this->keptAttributes))
 						$element->removeAttribute($attributeName);
 				}
 			}
