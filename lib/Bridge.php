@@ -105,7 +105,7 @@ abstract class BridgeAbstract implements BridgeInterface{
         return $this;
     }
 
-    protected function file_get_html($url, $use_include_path = false, $context=null, $offset = -1, $maxLen=-1, $lowercase = true, $forceTagsClosed=true, $target_charset = DEFAULT_TARGET_CHARSET, $stripRN=true, $defaultBRText=DEFAULT_BR_TEXT, $defaultSpanText=DEFAULT_SPAN_TEXT){
+    protected function getContents($url,$use_include_path=false,$context=null,$offset=0,$maxlen=null){
       $contextOptions = array(
         'http' => array(
           'user_agent'=>ini_get('user_agent')
@@ -125,9 +125,22 @@ abstract class BridgeAbstract implements BridgeInterface{
           };
         }
       }
-      return file_get_html($url,$use_include_path,$context,$offset,$maxLen,
-        $lowercase,$forceTagsClosed,$target_charset,$stripRN,$defaultBRText,
-        $defaultSpanText);
+
+      if(is_null($maxlen)){
+        $content=@file_get_contents($url, $use_include_path, $context, $offset);
+      }else{
+        $content=@file_get_contents($url, $use_include_path, $context, $offset,$maxlen);
+      }
+
+      if($content===false){
+        $this->message('Cant\'t download '.$url );
+      }
+      return $content;
+    }
+
+    protected function getSimpleHTMLDOM($url, $use_include_path = false, $context=null, $offset = 0, $maxLen=null, $lowercase = true, $forceTagsClosed=true, $target_charset = DEFAULT_TARGET_CHARSET, $stripRN=true, $defaultBRText=DEFAULT_BR_TEXT, $defaultSpanText=DEFAULT_SPAN_TEXT){
+      $content=$this->getContents($url,$use_include_path,$context,$offset,$maxLen);
+      return str_get_html($content,$lowercase,$forceTagsClosed,$target_charset,$stripRN,$defaultBRText,$defaultSpanText);
     }
 
 }
