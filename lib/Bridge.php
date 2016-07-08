@@ -105,6 +105,18 @@ abstract class BridgeAbstract implements BridgeInterface{
         return $this;
     }
 
+    public function message($text) {
+      if(!file_exists('DEBUG')){
+        return;
+      }
+      $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+      $calling = $backtrace[2];
+      $message = $calling["file"].":".$calling["line"]
+        ." class ".get_class($this)."->".$calling["function"]
+        ." - ".$text;
+      error_log($message);
+    }
+
     protected function getContents($url,$use_include_path=false,$context=null,$offset=0,$maxlen=null){
       $contextOptions = array(
         'http' => array(
@@ -233,15 +245,7 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
         // filename is NO GOOD
 //        unlink($filename);
     }
-    
-    public function message($text) {
-        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
-        $calling = $backtrace[2];
-        $message = $calling["file"].":".$calling["line"]
-            ." class ".get_class($this)."->".$calling["function"]
-            ." - ".$text;
-        error_log($message);
-    }
+
 }
 
 class Bridge{
