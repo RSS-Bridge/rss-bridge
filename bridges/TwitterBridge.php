@@ -65,7 +65,7 @@ class TwitterBridge extends BridgeAbstract{
 			$link->removeAttribute('title');
 		}
             $item->content = str_replace('href="/', 'href="https://twitter.com/', strip_tags($tweet->find('p.js-tweet-text', 0)->innertext, '<a>'));	// extract tweet text
-            $item->title = $item->fullname . ' (@' . $item->username . ') | ' . strip_tags($item->content);
+            $item->title = $item->fullname . ' (@' . $item->username . ') | ' . html_entity_decode(strip_tags($item->content),ENT_QUOTES,'UTF-8');
             $this->items[] = $item;
         }
     }

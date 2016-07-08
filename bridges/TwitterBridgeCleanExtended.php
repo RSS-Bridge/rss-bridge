@@ -71,7 +71,7 @@ class TwitterBridgeCleanExtended extends BridgeAbstract{
                 $item->content = '&#9851; @' . $item->username . ': ' . $item->content;
               }
             }
-            $item->title = $item->content;
+            $item->title = html_entity_decode($item->content,ENT_QUOTES,'UTF-8');
             $this->items[] = $item;
         }
     }
