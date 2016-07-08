@@ -223,23 +223,6 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
 		}
     }
 
-    public function download_remote($url , $save_path) {
-        $f = fopen( $save_path , 'w+');
-        if($f) {
-            $handle = fopen($url , "rb");
-            if($handle) {
-                while (!feof($handle)) {
-                    $contents = fread($handle, 8192);
-                    if($contents) {
-                        fwrite($f , $contents);
-                    }
-                }
-                fclose($handle);
-            }
-            fclose($f);
-        }
-    }
-    
     public function remove_from_cache($url) {
         $simplified_url = str_replace(["http://", "https://", "?", "&", "="], ["", "", "/", "/", "/"], $url);
     	// TODO build this from the variable given to Cache
