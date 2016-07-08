@@ -185,6 +185,7 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
 //            $this->message("loading cached file from ".$filename." for page at url ".$url);
 			// TODO touch file and its parent, and try to do neighbour deletion
             $this->refresh_in_cache($pageCacheDir, $filename);
+            $content=file_get_contents($filename);
 		} else {
 //            $this->message("we have no local copy of ".$url." Downloading to ".$filename);
             $dir = substr($filename, 0, strrpos($filename, '/'));
@@ -192,11 +193,14 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
 //				$this->message("creating directories for ".$dir);
                 mkdir($dir, 0777, true);
             }
-            $this->download_remote($url, $filename);
+            $content=$this->getContents($url);
+            if($content!==false){
+              file_put_contents($filename,$content);
+            }
         }
-        return file_get_contents($filename);
+        return $content;
     }
-  
+
      public function get_cached_time($url) {
         $simplified_url = str_replace(["http://", "https://", "?", "&", "="], ["", "", "/", "/", "/"], $url);
         // TODO build this from the variable given to Cache
