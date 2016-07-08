@@ -64,11 +64,11 @@ class OpenClassroomsBridge extends BridgeAbstract{
         {
             $this->returnServerError('Error: You must chose a category.');
         }
-    
+
         $html = '';
         $link = 'https://openclassrooms.com/courses?categories='.$param['u'].'&title=&sort=updatedAt+desc';
 
-        $html = $this->file_get_html($link) or $this->returnServerError('Could not request OpenClassrooms.');
+        $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request OpenClassrooms.');
 
         foreach($html->find('.courseListItem') as $element) {
                 $item = new \Item();

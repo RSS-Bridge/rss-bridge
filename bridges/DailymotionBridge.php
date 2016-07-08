@@ -47,14 +47,14 @@ class DailymotionBridge extends BridgeAbstract{
 
 		function getMetadata($id) {
 			$metadata=array();
-			$html2 = file_get_html('http://www.dailymotion.com/video/'.$id) or $this->returnServerError('Could not request Dailymotion.');
+			$html2 = $this->getSimpleHTMLDOM('http://www.dailymotion.com/video/'.$id) or $this->returnServerError('Could not request Dailymotion.');
 			$metadata['title'] = $html2->find('meta[property=og:title]', 0)->getAttribute('content');
 			$metadata['timestamp'] = strtotime($html2->find('meta[property=video:release_date]', 0)->getAttribute('content') );
 			$metadata['thumbnailUri'] = $html2->find('meta[property=og:image]', 0)->getAttribute('content');
 			$metadata['uri'] = $html2->find('meta[property=og:url]', 0)->getAttribute('content');
 
 			return $metadata;
-		} 
+		}
 
 
         	$html = '';
@@ -63,15 +63,15 @@ class DailymotionBridge extends BridgeAbstract{
 
 		if (isset($param['u'])) {   // user timeline mode
 			$this->request = $param['u'];
-			$html = $this->file_get_html('http://www.dailymotion.com/user/'.urlencode($this->request).'/1') or $this->returnServerError('Could not request Dailymotion.');
+			$html = $this->getSimpleHTMLDOM('http://www.dailymotion.com/user/'.urlencode($this->request).'/1') or $this->returnServerError('Could not request Dailymotion.');
 		}
 		else if (isset($param['p'])) {    // playlist mode
 			$this->request = strtok($param['p'], '_');
-			$html = $this->file_get_html('http://www.dailymotion.com/playlist/'.urlencode($this->request).'') or $this->returnServerError('Could not request Dailymotion.');
+			$html = $this->getSimpleHTMLDOM('http://www.dailymotion.com/playlist/'.urlencode($this->request).'') or $this->returnServerError('Could not request Dailymotion.');
 		}
 		else if (isset($param['s'])) {   // search mode
-			$this->request = $param['s']; $page = 1; if (isset($param['pa'])) $page = (int)preg_replace("/[^0-9]/",'', $param['pa']); 
-			$html = $this->file_get_html('http://www.dailymotion.com/search/'.urlencode($this->request).'/'.$page.'') or $this->returnServerError('Could not request Dailymotion.');
+			$this->request = $param['s']; $page = 1; if (isset($param['pa'])) $page = (int)preg_replace("/[^0-9]/",'', $param['pa']);
+			$html = $this->getSimpleHTMLDOM('http://www.dailymotion.com/search/'.urlencode($this->request).'/'.$page.'') or $this->returnServerError('Could not request Dailymotion.');
 		}
 		else {
 			$this->returnClientError('You must either specify a Dailymotion username (?u=...) or a playlist id (?p=...) or search (?s=...)');

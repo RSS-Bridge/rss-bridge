@@ -10,21 +10,21 @@ class NiceMatinBridge extends BridgeAbstract{
 	}
 
 	private function NiceMatinExtractContent($url) {
-		$html = $this->file_get_html($url);
+		$html = $this->getSimpleHTMLDOM($url);
 		if(!$html)
 			$this->returnServerError('Could not acquire content from url: ' . $url . '!');
-		
+
 		$content = $html->find('article', 0);
 		if(!$content)
 			$this->returnServerError('Could not find \'section\'!');
-		
+
 		$text = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $content->innertext);
 		$text = strip_tags($text, '<p><a><img>');
 		return $text;
 	}
 
 	public function collectData(array $param){
-		$html = $this->file_get_html('http://www.nicematin.com/derniere-minute/rss') or $this->returnServerError('Could not request NiceMatin.');
+		$html = $this->getSimpleHTMLDOM('http://www.nicematin.com/derniere-minute/rss') or $this->returnServerError('Could not request NiceMatin.');
 		$limit = 0;
 
 		foreach($html->find('item') as $element) {

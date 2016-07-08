@@ -44,7 +44,7 @@ class GitlabCommitsBridge extends BridgeAbstract{
       $uri.='master';
     }
 
-    $html = file_get_html($uri)
+    $html = $this->getSimpleHTMLDOM($uri)
       or $this->returnServerError('No results for Gitlab Commits of project '.$param['uri'].'/'.$param['u'].'/'.$param['p']);
 
 

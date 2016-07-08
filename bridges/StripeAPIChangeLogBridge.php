@@ -16,7 +16,7 @@ class StripeAPIChangeLogBridge extends BridgeAbstract{
   }
 
   public function collectData(array $param){
-    $html = $this->file_get_html('https://stripe.com/docs/upgrades')
+    $html = $this->getSimpleHTMLDOM('https://stripe.com/docs/upgrades')
       or $this->returnServerError('No results for Stripe API Changelog');
 
 

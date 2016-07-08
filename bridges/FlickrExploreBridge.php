@@ -12,7 +12,7 @@ class FlickrExploreBridge extends BridgeAbstract{
 	}
 
     public function collectData(array $param){
-        $html = $this->file_get_html('https://www.flickr.com/explore') or $this->returnServerError('Could not request Flickr.');
+        $html = $this->getSimpleHTMLDOM('https://www.flickr.com/explore') or $this->returnServerError('Could not request Flickr.');
 
         foreach($html->find('.photo-list-photo-view') as $element) {
 						// Get the styles

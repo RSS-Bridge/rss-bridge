@@ -9,7 +9,7 @@ class AllocineFRBridge extends BridgeAbstract{
         $this->description = "Bridge for allocine.fr";
         $this->update = '2016-08-17';
 
-        $this->parameters[] = 
+        $this->parameters[] =
         '[
             {
                 "name" : "category",
@@ -18,7 +18,7 @@ class AllocineFRBridge extends BridgeAbstract{
                 "required" : true,
                 "exampleValue" : "Faux Raccord",
                 "title" : "Select your category",
-                "values" : 
+                "values" :
                 [
                     {
                         "name" : "Faux Raccord",
@@ -64,12 +64,12 @@ class AllocineFRBridge extends BridgeAbstract{
         // Update bridge name to match selection
         $this->name .= ' : ' . $category;
 
-        $html = $this->file_get_html($this->uri) or $this->returnServerError("Could not request {$this->uri}!");
+        $html = $this->getSimpleTMLOM($this->uri) or $this->returnServerError("Could not request {$this->uri}!");
 
         foreach($html->find('figure.media-meta-fig') as $element)
         {
             $item = new Item();
-            
+
             $title = $element->find('div.titlebar h3.title a', 0);
             $content = trim($element->innertext);
             $figCaption = strpos($content, $category);

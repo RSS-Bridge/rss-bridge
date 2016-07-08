@@ -33,7 +33,7 @@ class CollegeDeFranceBridge extends BridgeAbstract{
 		 * 	</a>
 		 * </li>
 		 */
-		$html = $this->file_get_html('http://www.college-de-france.fr/components/search-audiovideo.jsp?fulltext=&siteid=1156951719600&lang=FR&type=all') or $this->returnServerError('Could not request CollegeDeFrance.');
+		$html = $this->getSimpleHTMLDOM('http://www.college-de-france.fr/components/search-audiovideo.jsp?fulltext=&siteid=1156951719600&lang=FR&type=all') or $this->returnServerError('Could not request CollegeDeFrance.');
 		foreach($html->find('a[data-target]') as $element) {
 			$item = new \Item();
 			$item->title = $element->find('.title', 0)->plaintext;

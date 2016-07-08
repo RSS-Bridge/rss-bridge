@@ -1,6 +1,6 @@
 <?php
 /**
-* RssBridgeYoutube 
+* RssBridgeYoutube
 * Returns the newest videos
 * WARNING: to parse big playlists (over ~90 videos), you need to edit simple_html_dom.php:
 * change: define('MAX_FILE_SIZE', 600000);
@@ -68,7 +68,7 @@ class YoutubeBridge extends BridgeAbstract {
 	}
 
 	private function ytBridgeQueryVideoInfo($vid, &$author, &$desc, &$time) {
-		$html = $this->file_get_html($this->uri."watch?v=$vid");
+		$html = $this->getSimpleHTMLDOM($this->uri."watch?v=$vid");
 		$author = $html->innertext;
 		$author = substr($author, strpos($author, '"author=') + 8);
 		$author = substr($author, 0, strpos($author, '\u0026'));
@@ -138,9 +138,9 @@ class YoutubeBridge extends BridgeAbstract {
 			$url_listing = $this->uri.'channel/'.urlencode($this->request).'/videos';
 		}
 		if (!empty($url_feed) && !empty($url_listing)) {
-			if ($xml = $this->file_get_html($url_feed)) {
+			if ($xml = $this->getSimpleHTMLDOM($url_feed)) {
 				$this->ytBridgeParseXmlFeed($xml);
-			} else if ($html = $this->file_get_html($url_listing)) {
+			} else if ($html = $this->getSimpleHTMLDOM($url_listing)) {
 				$this->ytBridgeParseHtmlListing($html, 'li.channels-content-item', 'h3');
 			} else $this->returnServerError("Could not request YouTube. Tried:\n - $url_feed\n - $url_listing");
 		}
@@ -148,15 +148,15 @@ class YoutubeBridge extends BridgeAbstract {
 		else if (isset($param['p'])) { /* playlist mode */
 			$this->request = $param['p'];
 			$url_listing = $this->uri.'playlist?list='.urlencode($this->request);
-			$html = $this->file_get_html($url_listing) or $this->returnServerError("Could not request YouTube. Tried:\n - $url_listing");
+			$html = $this->getSimpleHTMLDOM($url_listing) or $this->returnServerError("Could not request YouTube. Tried:\n - $url_listing");
 			$this->ytBridgeParseHtmlListing($html, 'tr.pl-video', '.pl-video-title a');
 			$this->request = 'Playlist: '.str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
 		}
 
 		else if (isset($param['s'])) { /* search mode */
-			$this->request = $param['s']; $page = 1; if (isset($param['pa'])) $page = (int)preg_replace("/[^0-9]/",'', $param['pa']); 
+			$this->request = $param['s']; $page = 1; if (isset($param['pa'])) $page = (int)preg_replace("/[^0-9]/",'', $param['pa']);
 			$url_listing = $this->uri.'results?search_query='.urlencode($this->request).'&page='.$page.'&filters=video&search_sort=video_date_uploaded';
-			$html = $this->file_get_html($url_listing) or $this->returnServerError("Could not request YouTube. Tried:\n - $url_listing");
+			$html = $this->getSimpleHTMLDOM($url_listing) or $this->returnServerError("Could not request YouTube. Tried:\n - $url_listing");
 			$this->ytBridgeParseHtmlListing($html, 'div.yt-lockup', 'h3');
 			$this->request = 'Search: '.str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
 		}

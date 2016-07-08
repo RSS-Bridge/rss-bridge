@@ -22,7 +22,7 @@ class DuckDuckGoBridge extends BridgeAbstract{
         $html = '';
         $link = 'http://duckduckgo.com/html/?q='.$param[u].'+sort:date';
 
-        $html = $this->file_get_html($link) or $this->returnServerError('Could not request DuckDuckGo.');
+        $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request DuckDuckGo.');
 
         foreach($html->find('div.results_links') as $element) {
                 $item = new \Item();

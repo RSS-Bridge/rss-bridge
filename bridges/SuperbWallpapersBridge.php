@@ -47,12 +47,12 @@ class SuperbWallpapersBridge extends BridgeAbstract {
 
         // Get last page number
         $link = $baseUri.'/'.$this->category.'/9999.html';
-        $html = $this->file_get_html($link);
+        $html = $this->getSimpleHTMLDOM($link);
         $lastpage = min($html->find('.paging .cpage', 0)->innertext(), ceil($max/36));
 
         for ($page = 1; $page <= $lastpage; $page++) {
             $link = $baseUri.'/'.$this->category.'/'.$page.'.html';
-            $html = $this->file_get_html($link) or $this->returnServerError('No results for this query.');
+            $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('No results for this query.');
 
             foreach($html->find('.wpl .i a') as $element) {
                 $thumbnail = $element->find('img', 0);

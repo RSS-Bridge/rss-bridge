@@ -35,7 +35,7 @@ class GoogleSearchBridge extends BridgeAbstract{
 
         if (isset($param['q'])) {   /* keyword search mode */
             $this->request = $param['q'];
-            $html = $this->file_get_html('https://www.google.com/search?q=' . urlencode($this->request) . '&num=100&complete=0&tbs=qdr:y,sbd:1') or $this->returnServerError('No results for this query.');
+            $html = $this->getSimpleHTMLDOM('https://www.google.com/search?q=' . urlencode($this->request) . '&num=100&complete=0&tbs=qdr:y,sbd:1') or $this->returnServerError('No results for this query.');
         }
         else{
             $this->returnClientError('You must specify a keyword (?q=...).');
@@ -45,7 +45,7 @@ class GoogleSearchBridge extends BridgeAbstract{
         if( !is_null($emIsRes) ){
             foreach($emIsRes->find('li[class=g]') as $element) {
                 $item = new Item();
-                
+
                 // Extract direct URL from google href (eg. /url?q=...)
                 $t = $element->find('a[href]',0)->href;
                 $item->uri = ''.$t;

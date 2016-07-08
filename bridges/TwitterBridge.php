@@ -9,7 +9,7 @@ class TwitterBridge extends BridgeAbstract{
 		$this->description = "Returns tweets by keyword/hashtag or user name";
 		$this->update = '2016-08-17';
 
-		$this->parameters["global"] = 
+		$this->parameters["global"] =
 		'[
 			{
 				"name" : "Hide profile pictures",
@@ -48,12 +48,12 @@ class TwitterBridge extends BridgeAbstract{
 	}
 
 	public function collectData(array $param){
-		$html = ''; 
+		$html = '';
 		if (isset($param['q'])) {   /* keyword search mode */
-			$html = $this->file_get_html('https://twitter.com/search?q='.urlencode($param['q']).'&f=tweets') or $this->returnServerError('No results for this query.');
+			$html = $this->getSimpleHTMLDOM('https://twitter.com/search?q='.urlencode($param['q']).'&f=tweets') or $this->returnServerError('No results for this query.');
 		}
 		elseif (isset($param['u'])) {   /* user timeline mode */
-			$html = $this->file_get_html('https://twitter.com/'.urlencode($param['u']).'/with_replies') or $this->returnServerError('Requested username can\'t be found.');
+			$html = $this->getSimpleHTMLDOM('https://twitter.com/'.urlencode($param['u']).'/with_replies') or $this->returnServerError('Requested username can\'t be found.');
 		}
 		else {
 			$this->returnClientError('You must specify a keyword (?q=...) or a Twitter username (?u=...).');
@@ -68,20 +68,20 @@ class TwitterBridge extends BridgeAbstract{
 			// extract username and sanitize
 			$item->username = $tweet->getAttribute('data-screen-name');
 			// extract fullname (pseudonym)
-			$item->fullname = $tweet->getAttribute('data-name'); 
+			$item->fullname = $tweet->getAttribute('data-name');
 			// get author
 			$item->author = $item->fullname . ' (@' . $item->username . ')';
 			// get avatar link
-			$item->avatar = $tweet->find('img', 0)->src;	
+			$item->avatar = $tweet->find('img', 0)->src;
 			// get TweetID
 			$item->id = $tweet->getAttribute('data-tweet-id');
-			// get tweet link	
-			$item->uri = 'https://twitter.com'.$tweet->find('a.js-permalink', 0)->getAttribute('href');	
+			// get tweet link
+			$item->uri = 'https://twitter.com'.$tweet->find('a.js-permalink', 0)->getAttribute('href');
 			// extract tweet timestamp
 			$item->timestamp = $tweet->find('span.js-short-timestamp', 0)->getAttribute('data-time');
 			// generate the title
-			$item->title = strip_tags($tweet->find('p.js-tweet-text', 0)->innertext); 
-	
+			$item->title = strip_tags($tweet->find('p.js-tweet-text', 0)->innertext);
+
 			// processing content links
 			foreach($tweet->find('a') as $link) {
 				if($link->hasAttribute('data-expanded-url') ) {

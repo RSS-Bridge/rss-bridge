@@ -66,7 +66,7 @@ class Releases3DSBridge extends BridgeAbstract {
                         //Retrieve cover art and short desc from IGN?
                         $ignResult = false; $ignDescription = ''; $ignLink = ''; $ignDate = time(); $ignCoverArt = '';
                         $ignSearchUrl = 'http://www.ign.com/search?q='.urlencode($name);
-                        if ($ignResult = $this->file_get_html($ignSearchUrl)) {
+                        if ($ignResult = $this->getSimpleHTMLDOM($ignSearchUrl)) {
                             $ignCoverArt = $ignResult->find('div.search-item-media', 0)->find('img', 0)->src;
                             $ignDesc = $ignResult->find('div.search-item-description', 0)->plaintext;
                             $ignLink = $ignResult->find('div.search-item-sub-title', 0)->find('a', 1)->href;

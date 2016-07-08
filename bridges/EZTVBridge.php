@@ -40,11 +40,11 @@ class EZTVBridge extends BridgeAbstract{
 			$this->returnClientError('You must provide a list of ID (?i=showID1,showID2,...)');
 
         // Loop on show ids
-        $showList = explode(",",$param['i']); 
+        $showList = explode(",",$param['i']);
         foreach($showList as $showID){
 
             // Get show page
-            $html = $this->file_get_html('https://eztv.ch/shows/'.rawurlencode($showID).'/') or $this->returnServerError('Could not request EZTV for id "'.$showID.'"');
+            $html = $this->getSimpleHTMLDOM('https://eztv.ch/shows/'.rawurlencode($showID).'/') or $this->returnServerError('Could not request EZTV for id "'.$showID.'"');
 
             // Loop on each element that look like an episode entry...
             foreach($html->find('.forum_header_border') as $element) {

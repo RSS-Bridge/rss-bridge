@@ -23,8 +23,8 @@ class TagBoardBridge extends BridgeAbstract{
         $html = '';
         $this->request = $param['u'];
         $link = 'https://post-cache.tagboard.com/search/' .$this->request;
-		
-        $html = $this->file_get_html($link) or $this->returnServerError('Could not request TagBoard for : ' . $link);
+
+        $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request TagBoard for : ' . $link);
         $parsed_json = json_decode($html);
 
         foreach($parsed_json->{'posts'} as $element) {
@@ -49,4 +49,4 @@ class TagBoardBridge extends BridgeAbstract{
         return 21600; // 6 hours
     }
 }
-							
+

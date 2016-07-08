@@ -15,7 +15,7 @@ function content_get_html($contents, $maxLen=-1, $lowercase = true, $forceTagsCl
 }
 
 class CpasbienBridge extends HttpCachingBridgeAbstract{
-    
+
     private $request;
 
 	public function loadMetadatas() {
@@ -44,7 +44,7 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
         $html = '';
         if (isset($param['q'])) {   /* keyword search mode */
             $this->request = str_replace(" ","-",trim($param['q']));
-            $html = $this->file_get_html($this->uri.'/recherche/'.urlencode($this->request).'.html') or $this->returnServerError('No results for this query.');
+            $html = $this->getSimpleHTMLDOM($this->uri.'/recherche/'.urlencode($this->request).'.html') or $this->returnServerError('No results for this query.');
         }
         else {
             $this->returnClientError('You must specify a keyword (?q=...).');
@@ -53,7 +53,7 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
         foreach ($html->find('#gauche',0)->find('div') as $episode) {
             if ($episode->getAttribute('class')=='ligne0' || $episode->getAttribute('class')=='ligne1')
             {
-                
+
                 $htmlepisode=content_get_html($this->get_cached($episode->find('a', 0)->getAttribute('href')));
 
                 $item = new \Item();
@@ -65,7 +65,7 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
                     $item->content = $textefiche->text();
                 }
                 else {
-                    $item->content = $htmlepisode->find('#textefiche', 0)->find('p',0)->text();    
+                    $item->content = $htmlepisode->find('#textefiche', 0)->find('p',0)->text();
                 }
 
                 $item->id = $episode->find('a', 0)->getAttribute('href');

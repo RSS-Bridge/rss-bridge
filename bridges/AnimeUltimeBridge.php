@@ -67,7 +67,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
             //Retrive page contents
             $website = 'http://www.anime-ultime.net/';
             $url = $website.'history-0-1/'.$requestFilter;
-            $html = $this->file_get_html($url) or $this->returnServerError('Could not request Anime-Ultime: '.$url);
+            $html = $this->getSimpleHTMLDOM($url) or $this->returnServerError('Could not request Anime-Ultime: '.$url);
 
             //Relases are sorted by day : process each day individually
             foreach ($html->find('div.history', 0)->find('h3') as $daySection) {
@@ -110,7 +110,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
                             $item->content = $item_description;
                             $this->items[] = $item;
                             $processedOK++;
-                            
+
                             //Stop processing once limit is reached
                             if ($processedOK >= 10)
                                 return;

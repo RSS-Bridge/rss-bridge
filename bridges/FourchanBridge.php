@@ -32,7 +32,7 @@ class FourchanBridge extends BridgeAbstract{
 		$this->returnClientError('You must specify the thread URL.');
 
 	$url = 'https://boards.4chan.org'.$thread['path'].'';
-	$html = $this->file_get_html($url) or $this->returnServerError("Could not request 4chan, thread not found");
+	$html = $this->getSimpleHTMLDOM($url) or $this->returnServerError("Could not request 4chan, thread not found");
 
 	foreach($html->find('div.postContainer') as $element) {
 		$item = new \Item();
@@ -59,7 +59,7 @@ class FourchanBridge extends BridgeAbstract{
 	}
 	$this->items = array_reverse($this->items);
   }
-    
+
     public function getCacheDuration(){
         return 300; // 5min
     }

@@ -15,7 +15,7 @@ class DansTonChatBridge extends BridgeAbstract{
         $html = '';
         $link = 'http://danstonchat.com/latest.html';
 
-        $html = $this->file_get_html($link) or $this->returnServerError('Could not request DansTonChat.');
+        $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request DansTonChat.');
 
         foreach($html->find('div.item') as $element) {
                 $item = new \Item();

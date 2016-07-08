@@ -10,13 +10,13 @@ class MsnMondeBridge extends BridgeAbstract{
 	}
 
 	private function MsnMondeExtractContent($url, &$item) {
-		$html2 = $this->file_get_html($url);
+		$html2 = $this->getSimpleHTLDOM($url);
 		$item->content = $html2->find('#content', 0)->find('article', 0)->find('section', 0)->plaintext;
 		$item->timestamp = strtotime($html2->find('.authorinfo-txt', 0)->find('time', 0)->datetime);
 	}
 
 	public function collectData(array $param){
-		$html = $this->file_get_html($this->uri) or $this->returnServerError('Could not request MsnMonde.');
+		$html = $this->getSimpleHTMLDOM($this->uri) or $this->returnServerError('Could not request MsnMonde.');
 		$limit = 0;
 		foreach($html->find('.smalla') as $article) {
 			if($limit < 10) {

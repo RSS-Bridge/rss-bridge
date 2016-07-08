@@ -42,7 +42,6 @@ class NumeramaBridge extends BridgeAbstract{
                 $limit++;
             }
         }
-
     }
 
     public function getCacheDuration() {
