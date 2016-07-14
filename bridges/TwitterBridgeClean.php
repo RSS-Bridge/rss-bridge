@@ -66,7 +66,7 @@ class TwitterBridgeClean extends BridgeAbstract{
 			$link->removeAttribute('dir');
 		}
             $item->content = str_replace('pic.twitter.com', 'https://pic.twitter.com', strip_tags($tweet->find('p.js-tweet-text', 0)->innertext));	// extract tweet text
-            $item->title = $item->content;
+            $item->title = html_entity_decode($item->content,ENT_QUOTES,'UTF-8');
             $this->items[] = $item;
         }
     }
