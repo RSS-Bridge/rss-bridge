@@ -7,7 +7,7 @@ class NumeramaBridge extends BridgeAbstract{
         $this->name = 'Numerama';
         $this->uri = 'http://www.numerama.com/';
         $this->description = 'Returns the 5 newest posts from Numerama (full text)';
-        $this->update = '2015-10-12';
+        $this->update = '2016-07-19';
 
     }
 
@@ -19,9 +19,9 @@ class NumeramaBridge extends BridgeAbstract{
             return $string;
         }
 
-        function NumeramaExtractContent($url)
+        function NumeramaExtractContent($bridge, $url)
         {
-            $html2 = file_get_html($url);
+            $html2 = $bridge->file_get_html($url);
             $text = $html2->find('section[class=related-article]', 0)->innertext = ''; // remove related articles block
             $text = '<img alt="" style="max-width:300px;" src="'.$html2->find('meta[property=og:image]', 0)->getAttribute('content').'">'; // add post picture
             $text = $text.$html2->find('article[class=post-content]', 0)->innertext; // extract the post
@@ -38,7 +38,7 @@ class NumeramaBridge extends BridgeAbstract{
                 $item->author = NumeramaStripCDATA($element->find('dc:creator', 0)->innertext);
                 $item->uri = NumeramaStripCDATA($element->find('guid', 0)->plaintext);
                 $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-                $item->content = NumeramaExtractContent($item->uri);
+                $item->content = NumeramaExtractContent($this, $item->uri);
                 $this->items[] = $item;
                 $limit++;
             }
