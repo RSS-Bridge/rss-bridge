@@ -14,7 +14,7 @@ class GithubIssueBridge extends BridgeAbstract{
     $this->description = 'Returns the comments of a github project issue';
     $this->update = '2016-06-25';
 
-    $this->parameters=
+    $this->parameters[]=
       '[
          {
            "name" : "User name",
