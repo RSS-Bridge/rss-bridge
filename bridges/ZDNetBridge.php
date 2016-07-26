@@ -6,8 +6,8 @@ class ZDNetBridge extends BridgeAbstract {
         $this->maintainer = 'ORelio';
         $this->name = $this->getName();
         $this->uri = $this->getURI();
-        $this->description = 'Returns the newest articles.';
-        $this->update = '2016-07-18';
+        $this->description = 'Technology News, Analysis, Comments and Product Reviews for IT Professionals.';
+        $this->update = '2016-07-20';
 
         $this->parameters[] =
         // http://www.zdnet.com/zdnet.opml
@@ -261,7 +261,7 @@ class ZDNetBridge extends BridgeAbstract {
                 $thumbnail = $article->find('meta[itemprop=image]', 0);
                 if (is_object($thumbnail))
                     $thumbnail = $thumbnail->content;
-                else $thumbnail = 'http://zdnet1.cbsistatic.com/fly/bundles/zdnetcss/images/logos/logo-192x192.png';
+                else $thumbnail = '';
 
                 $contents = $article->find('article', 0)->innertext;
                 foreach (array(
@@ -277,8 +277,17 @@ class ZDNetBridge extends BridgeAbstract {
                 }
                 $contents = StripWithDelimiters($contents, '<script', '</script>');
                 $contents = StripWithDelimiters($contents, '<meta itemprop="image"', '>');
-                $contents = StripWithDelimiters($contents, '<section class="sharethrough-top', '</section>');
-                $contents = '<p><b>'.$article_subtitle.'</b></p>'.trim($contents);
+                $contents = trim(StripWithDelimiters($contents, '<section class="sharethrough-top', '</section>'));
+                $content_img = strpos($contents, '<img');         //Look for first image
+                if (($content_img !== false && $content_img < 512) || $thumbnail == '')
+                    $content_img = ''; //Image already present on article beginning or no thumbnail
+                else $content_img = '<p><img src="'.$thumbnail.'" /></p>'; //Include thumbnail
+                $contents = $content_img
+                    .'<p><b>'.$article_subtitle.'</b></p>'
+                    .$contents;
+
+                if ($thumbnail == '')
+                    $thumbnail = 'http://zdnet1.cbsistatic.com/fly/bundles/zdnetcss/images/logos/logo-192x192.png';
 
                 $item = new \Item();
                 $item->author = $author;
@@ -303,6 +312,6 @@ class ZDNetBridge extends BridgeAbstract {
     }
 
     public function getCacheDuration() {
-        return 3600;
+        return 3600; //1 hour
     }
 }
