@@ -140,7 +140,7 @@ class SensCritiqueBridge extends BridgeAbstract {
 	}
 
 	public function getCacheDuration(){
-		return 0; // 1 hour
+		return 21600; // 6 hours
 	}
 
 }
