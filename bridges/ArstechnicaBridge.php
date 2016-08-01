@@ -32,16 +32,14 @@ class ArstechnicaBridge extends BridgeAbstract {
                         $html2 = file_get_html($url);
 
                         $text = $html2->find("section[id='article-guts']", 0);
+                        /*foreach ($text->find('<aside id="social-left">') as $node)
+                            { $node = NULL; }*/
                         $text = StripWithDelimiters($text->innertext,'<aside id="social-left">','</aside>');
-                        $text = StripWithDelimiters($text,'<div class="caption-credit">','</div>');
+                        $text = StripWithDelimiters($text,'<figcaption class="caption">','</figcaption>');
                         $text = StripWithDelimiters($text,'<div class="gallery shortcode-gallery">','</div>');
-                        $text = StripWithDelimiters($text,'<div class="lSAction">','</div>');
-                        $text = StripWithDelimiters($text,'<figcaption ','</figcaption>');
-                        $text = StripWithDelimiters($text,'<li data-thumb','</li>');
-                        //$text = strip_tags($text->innertext, '<p>');
-                        #print_r("ICI");
-                        #print_r($text);
-                        #print_r("FIN");
+                        //error_log("ICI", 0);
+                        //error_log($text, 0);
+
                         return $text;
                 }
 
@@ -71,7 +69,7 @@ class ArstechnicaBridge extends BridgeAbstract {
         }
 
         public function getCacheDuration() {
-                return 0; // 2h
+                return 7200; // 2h
         }
 
         public function getURI() {
