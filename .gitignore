@@ -227,3 +227,4 @@ pip-log.txt
 /cache
 /whitelist.txt
 DEBUG
+phpunit*.phar
