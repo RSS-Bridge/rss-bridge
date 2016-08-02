@@ -58,6 +58,8 @@ class WordPressBridge extends BridgeAbstract {
                                         $article_html = $this->file_get_html($this->items[$i]->uri);
 					$this->items[$i]->content = clearContent($article_html->find('article', 0)->innertext);
                                         if(empty($this->items[$i]->content))
+					        $this->items[$i]->content = clearContent($article_html->find('.single-content', 0)->innertext); // another common content div
+                                        if(empty($this->items[$i]->content))
 					        $this->items[$i]->content = clearContent($article_html->find('.post', 0)->innertext); // for old WordPress themes without HTML5
 
 					$i++;
