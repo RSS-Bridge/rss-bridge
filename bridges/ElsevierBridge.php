@@ -18,7 +18,10 @@ class ElsevierBridge extends BridgeAbstract{
       '[
          {
            "name" : "Journal name",
-           "identifier" : "j"
+           "identifier" : "j",
+           "required" : "true",
+           "exampleValue" : "academic-pediatrics",
+           "title" : "Insert html-part of your journal"
          }
        ]';
   }
