@@ -1,5 +1,5 @@
 <?php
-class CoinDeskBridge extends BridgeAbstract{
+class CoinDeskBridge extends BridgeAbstract {
 
 	public function loadMetadatas() {
 
@@ -11,7 +11,7 @@ class CoinDeskBridge extends BridgeAbstract{
 
 	}
 
-    public function collectData(array $param){
+    public function collectData(array $param) {
 
     function CoinDeskStripCDATA($string) {
     	$string = str_replace('<![CDATA[', '', $string);
@@ -19,12 +19,14 @@ class CoinDeskBridge extends BridgeAbstract{
     	return $string;
     }
     function CoinDeskExtractContent($url) {
-	$html2 = $this->file_get_html($url);
-	$text = $html2->find('div.single-content', 0)->innertext;
-	$text = strip_tags($text, '<p><a><img>');
-	return $text;
+		//FIXME: We need to change the $this->file_get_html to a static
+		$html2 = file_get_html($url);
+		$text = $html2->find('div.single-content', 0)->innertext;
+		$text = strip_tags($text, '<p><a><img>');
+		return $text;
     }
-        $html = $this->file_get_html('http://www.coindesk.com/feed/atom/') or $this->returnError('Could not request CoinDesk.', 404);
+
+    $html = $this->file_get_html('http://www.coindesk.com/feed/atom/') or $this->returnError('Could not request CoinDesk.', 404);
 	$limit = 0;
 
 	foreach($html->find('entry') as $element) {
