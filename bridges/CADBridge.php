@@ -7,21 +7,10 @@ class CADBridge extends BridgeAbstract{
 			$this->name = "CAD Bridge";
 			$this->uri = "http://www.cad-comic.com/";
 			$this->description = "Returns the newest articles.";
-			$this->update = "2015-04-03";
+			$this->update = "2016-08-02";
 
 		}
-
-        public function collectData(array $param){
-
-		function CADUrl($string) {
-		 $html2 = explode("\"", $string);
-		 $string = $html2[1];
-		 if (substr($string,0,4) != 'http')
-		   return 'notanurl';
-		 return $string;
-		}
-	
-		function CADExtractContent($url) {
+				function CADExtractContent($url) {
 		$html3 = $this->file_get_html($url);
 		$htmlpart = explode("/", $url);
 		if ($htmlpart[3] == 'cad')
@@ -36,6 +25,18 @@ class CADBridge extends BridgeAbstract{
 		return '<img src="'.$img.'"/>';
 		}
 
+        public function collectData(array $param){
+
+		function CADUrl($string) {
+		 $html2 = explode("\"", $string);
+		 $string = $html2[1];
+		 if (substr($string,0,4) != 'http')
+		   return 'notanurl';
+		 return $string;
+		}
+	
+
+
 		$html = $this->file_get_html('http://cdn2.cad-comic.com/rss.xml') or $this->returnError('Could not request CAD.', 404);
 		$limit = 0;
 		foreach($html->find('item') as $element) {
@@ -45,7 +46,7 @@ class CADBridge extends BridgeAbstract{
 		 $item->uri = CADUrl($element->find('description', 0)->innertext);
 		 if ($item->uri != 'notanurl') {
 		   $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-		   $item->content = CADExtractContent($item->uri);
+		   $item->content = $this->CADExtractContent($item->uri);
 		   $this->items[] = $item;
 		   $limit++;
 		  }
