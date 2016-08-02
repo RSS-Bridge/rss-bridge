@@ -17,7 +17,7 @@ class BastaBridge extends BridgeAbstract{
 			$item = new \Item();
 			$item->title = $element->find('title', 0)->innertext;
 			$item->uri = $element->find('guid', 0)->plaintext;
-			$item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
+			$item->timestamp = strtotime($element->find('dc:date', 0)->plaintext);
 			$item->content = $this->file_get_html($item->uri)->find('div.texte', 0)->innertext;
 			$this->items[] = $item;
 			$limit++;
