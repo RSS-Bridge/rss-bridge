@@ -7,8 +7,16 @@ class CommonDreamsBridge extends BridgeAbstract{
 			$this->name = "CommonDreams Bridge";
 			$this->uri = "http://www.commondreams.org/";
 			$this->description = "Returns the newest articles.";
-			$this->update = "2015-04-03";
+			$this->update = "2016-08-02";
 
+		}
+
+		function CommonDreamsExtractContent($url) {
+		$html3 = $this->file_get_html($url);
+		$text = $html3->find('div[class=field--type-text-with-summary]', 0)->innertext;
+		$html3->clear();
+		unset ($html3);
+		return $text;
 		}
 
         public function collectData(array $param){
@@ -17,14 +25,6 @@ class CommonDreamsBridge extends BridgeAbstract{
 		 $html2 = explode(" ", $string);
 		 $string = $html2[2] . "/node/" . $html2[0];
 		 return $string;
-		}
-	
-		function CommonDreamsExtractContent($url) {
-		$html3 = $this->file_get_html($url);
-		$text = $html3->find('div[class=field--type-text-with-summary]', 0)->innertext;
-		$html3->clear();
-		unset ($html3);
-		return $text;
 		}
 
 		$html = $this->file_get_html('http://www.commondreams.org/rss.xml') or $this->returnError('Could not request CommonDreams.', 404);
@@ -35,7 +35,7 @@ class CommonDreamsBridge extends BridgeAbstract{
 		 $item->title = $element->find('title', 0)->innertext;
 		 $item->uri = CommonDreamsUrl($element->find('guid', 0)->innertext);
 		 $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-		 $item->content = CommonDreamsExtractContent($item->uri);
+		 $item->content = $this->CommonDreamsExtractContent($item->uri);
 		 $this->items[] = $item;
 		 $limit++;
 		 }
