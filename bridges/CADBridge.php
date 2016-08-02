@@ -16,10 +16,18 @@ class CADBridge extends BridgeAbstract{
 			return 'Daily comic not released yet';
 
 		$htmlpart = explode("/", $url);
-		if ($htmlpart[3] == 'cad')
-			preg_match_all("/http:\/\/cdn2\.cad-comic\.com\/comics\/cad-\S*png/", $html3, $url2);
-		if ($htmlpart[3] == 'sillies')
-			preg_match_all("/http:\/\/cdn2\.cad-comic\.com\/comics\/sillies-\S*gif/", $html3, $url2);
+
+		switch ($htmlpart[3]){
+			case 'cad':
+				preg_match_all("/http:\/\/cdn2\.cad-comic\.com\/comics\/cad-\S*png/", $html3, $url2);
+				break;
+			case 'sillies':
+				preg_match_all("/http:\/\/cdn2\.cad-comic\.com\/comics\/sillies-\S*gif/", $html3, $url2);
+				break;
+			default:
+				return 'Daily comic not released yet';
+		}
+
 		$img = implode ($url2[0]);
 		$html3->clear();
 		unset ($html3);
