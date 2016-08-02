@@ -9,7 +9,7 @@ class DailymotionBridge extends BridgeAbstract{
 		$this->name = "Dailymotion Bridge";
 		$this->uri = "https://www.dailymotion.com/";
 		$this->description = "Returns the 5 newest videos by username/playlist or search";
-		$this->update = "2014-11-18";
+		$this->update = "2016-08-02";
 
 		$this->parameters["By username"] =
 		'[
@@ -24,7 +24,7 @@ class DailymotionBridge extends BridgeAbstract{
 			{
 				"name" : "playlist id",
 				"identifier" : "p",
-				"type" : "number"
+				"type" : "text"
 			}
 		]';
 
@@ -47,7 +47,7 @@ class DailymotionBridge extends BridgeAbstract{
 
 		function getMetadata($id) {
 			$metadata=array();
-			$html2 = $this->file_get_html('http://www.dailymotion.com/video/'.$id) or $this->returnError('Could not request Dailymotion.', 404);
+			$html2 = file_get_html('http://www.dailymotion.com/video/'.$id) or $this->returnError('Could not request Dailymotion.', 404);
 			$metadata['title'] = $html2->find('meta[property=og:title]', 0)->getAttribute('content');
 			$metadata['timestamp'] = strtotime($html2->find('meta[property=video:release_date]', 0)->getAttribute('content') );
 			$metadata['thumbnailUri'] = $html2->find('meta[property=og:image]', 0)->getAttribute('content');
