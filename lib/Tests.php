@@ -38,7 +38,8 @@ abstract class BridgeTest extends PHPUnit_Framework_TestCase {
         PHPUnit_Framework_Error_Notice::$enabled = FALSE;
 
 		ini_set('default_socket_timeout', 30);
-
+		
+		BridgeTest::$argNumber = 0;
     }
     
     public function setUp() {
