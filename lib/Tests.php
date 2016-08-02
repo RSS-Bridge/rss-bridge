@@ -71,7 +71,7 @@ abstract class BridgeTest extends PHPUnit_Framework_TestCase {
 	public function defaultTest($datas, $parameters, $minElementCount = -1) {
 
 		$this->assertNotEmpty($datas, "The bridge is returning empty datas");
-		$this->assertGreaterThan($minElementCount, count($datas), "There is not enough elements in the bridge");
+		$this->assertGreaterThanOrEqual($minElementCount, count($datas), "There is not enough elements in the bridge");
 
 		foreach($datas as $row) {
 			if(in_array(self::TEST_TITLE, $parameters)) {
