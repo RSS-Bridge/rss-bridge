@@ -2,15 +2,14 @@
 class WordPressBridge extends BridgeAbstract {
 
 	private $url;
-	public $name;
 
 	public function loadMetadatas() {
 
 		$this->maintainer = "aledeg";
 		$this->name = "Wordpress Bridge";
-		$this->uri = "https://wordpress.com/";
+		$this->uri = "https://wordpress.org/";
 		$this->description = "Returns the 3 newest full posts of a Wordpress blog";
-		$this->update = "2015-09-05";
+		$this->update = "2016-08-02";
 
 		$this->parameters[] =
 		'[
@@ -18,70 +17,56 @@ class WordPressBridge extends BridgeAbstract {
 				"name" : "blog URL",
 				"required" : "true",
 				"identifier" : "url"
-			},
-			{
-				"name" : "Blog name",
-				"identifier" : "name"
 			}
 		]';
 
 	}
 
 	public function collectData(array $param) {
+
+                function StripCDATA($string) {
+                        $string = str_replace('<![CDATA[', '', $string);
+                        $string = str_replace(']]>', '', $string);
+                        return $string;
+                }
+
+                function clearContent($content) {
+                        $content = preg_replace('/<script.*\/script>/', '', $content);
+                        $content = preg_replace('/<div class="wpa".*/', '', $content);
+                        return $content;
+                }
+
 		$this->processParams($param);
 
 		if (!$this->hasUrl()) {
 			$this->returnError('You must specify a URL', 400);
 		}
 
+                $this->url = $this->url.'/feed/atom';
 		$html = $this->file_get_html($this->url) or $this->returnError("Could not request {$this->url}.", 404);
-		$posts = $html->find('.post');
-
-		if(!empty($posts) ) {
-			$i=0;
-			foreach ($html->find('.post') as $article) {
+		$posts = $html->find('entry');
+                if(!empty($posts) ) {
+                        $this->name = $html->find('title', 0)->plaintext;
+                        $i=0;
+			foreach ($html->find('entry') as $article) {
 				if($i < 3) {
-					$uri = $article->find('a', 0)->href;
-					$thumbnail = $article->find('img', 0)->src;
-					$this->items[] = $this->getDetails($uri, $thumbnail);
+					$this->items[$i]->uri = $article->find('link', 0)->getAttribute('href');
+					$this->items[$i]->title = StripCDATA($article->find('title', 0)->plaintext);
+					$this->items[$i]->author = trim($article->find('author', 0)->innertext);
+					$this->items[$i]->timestamp = strtotime($article->find('updated', 0)->innertext);
+
+                                        $article_html = $this->file_get_html($this->items[$i]->uri);
+					$this->items[$i]->content = clearContent($article_html->find('article', 0)->innertext);
+                                        if(empty($this->items[$i]->content))
+					        $this->items[$i]->content = clearContent($article_html->find('.post', 0)->innertext); // for old WordPress themes without HTML5
+
 					$i++;
 				}
-			}
-		}
+			} 
+                }
 		else {
 			$this->returnError("Sorry, {$this->url} doesn't seem to be a Wordpress blog.", 404);
 		}
-	}
-
-	private function getDetails($uri, $thumbnail) {
-		$html = $this->file_get_html($uri) or exit;
-		$article = $html->find('.post', 0);
-
-		$title = $article->find('h1', 0)->innertext;
-		if (strlen($title) == 0)
-			$title = $article->find('h2', 0)->innertext;
-
-		$item = new \Item();
-		$item->uri = $uri;
-		$item->title = htmlspecialchars_decode($title);
-		$item->author = $article->find('a[rel=author]', 0)->innertext;
-		$item->thumbnailUri = $thumbnail;
-		$item->content = $this->clearContent($article->find('.entry-content,.entry', 0)->innertext);
-		$item->timestamp = $this->getDate($uri);
-
-		return $item;
-	}
-
-	private function clearContent($content) {
-		$content = preg_replace('/<script.*\/script>/', '', $content);
-		$content = preg_replace('/<div class="wpa".*/', '', $content);
-		return $content;
-	}
-
-	private function getDate($uri) {
-		preg_match('/\d{4}\/\d{2}\/\d{2}/', $uri, $matches);
-		$date = new \DateTime($matches[0]);
-		return $date->format('U');
 	}
 
 	public function getName() {
@@ -105,7 +90,6 @@ class WordPressBridge extends BridgeAbstract {
 
 	private function processParams($param) {
 		$this->url = $param['url'];
-		$this->name = $param['name'];
 	}
 
 }
