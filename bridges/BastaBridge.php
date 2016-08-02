@@ -7,19 +7,12 @@ class BastaBridge extends BridgeAbstract{
 			$this->name = "Bastamag Bridge";
 			$this->uri = "http://www.bastamag.net/";
 			$this->description = "Returns the newest articles.";
-			$this->update = "2014-05-25";
+			$this->update = "2016-08-02";
 
 		}
 
 
         public function collectData(array $param){
-
-			
-		function BastaExtractContent($url) {
-		$html2 = $this->file_get_html($url);
-		$text = $html2->find('div.texte', 0)->innertext;
-		return $text;
-		}
 		$html = $this->file_get_html('http://www.bastamag.net/spip.php?page=backend') or $this->returnError('Could not request Bastamag.', 404);
 		$limit = 0;
 
@@ -29,7 +22,7 @@ class BastaBridge extends BridgeAbstract{
 		 $item->title = $element->find('title', 0)->innertext;
 		 $item->uri = $element->find('guid', 0)->plaintext;
 		 $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-		 $item->content = BastaExtractContent($item->uri);
+		 $item->content = $this->file_get_html($item->uri)->find('div.texte', 0)->innertext;
 		 $this->items[] = $item;
 		 $limit++;
 		 }
