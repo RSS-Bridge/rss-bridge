@@ -182,11 +182,12 @@ $formats = Format::searchInformation();
 				$inactiveBridges .= HTMLUtils::displayBridgeCard($bridgeName, $formats, false) . PHP_EOL;
 			}
 		}
-		echo '<hr />' . $inactiveBridges;
+		echo $inactiveBridges;
 	?>
-    <footer>
-		<?= $activeFoundBridgeCount; ?>/<?= count($bridgeList) ?> active bridges (<a href="?show_inactive=1">Show inactive</a>)<br />
-        <a href="https://github.com/sebsauvage/rss-bridge">RSS-Bridge alpha 0.2 ~ Public Domain</a>
-    </footer>
+    <section>
+        <a href="https://github.com/sebsauvage/rss-bridge">RSS-Bridge alpha 0.2 ~ Public Domain</a><br />
+		<?= $activeFoundBridgeCount; ?>/<?= count($bridgeList) ?> active bridges. <br />
+		<a href="?show_inactive=1"><button class="small">Show inactive bridges</button></a><br />
+    </section>
     </body>
 </html>
