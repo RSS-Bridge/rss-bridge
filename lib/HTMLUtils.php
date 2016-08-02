@@ -141,7 +141,7 @@ CARD;
 
 		}
 
-		$card .= '<span class="maintainer">'.$bridgeElement->maintainer.'</span>';
+		$card .= '<p class="maintainer">'.$bridgeElement->maintainer.'</p>';
 		$card .= '</section>';
 
 		return $card;
