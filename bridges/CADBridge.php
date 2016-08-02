@@ -10,6 +10,11 @@ class CADBridge extends BridgeAbstract{
 
 	function CADExtractContent($url) {
 		$html3 = $this->file_get_html($url);
+
+		// The request might fail due to missing https support or wrong URL
+		if($html3 == false)
+			return 'Daily comic not released yet';
+
 		$htmlpart = explode("/", $url);
 		if ($htmlpart[3] == 'cad')
 			preg_match_all("/http:\/\/cdn2\.cad-comic\.com\/comics\/cad-\S*png/", $html3, $url2);
@@ -19,7 +24,7 @@ class CADBridge extends BridgeAbstract{
 		$html3->clear();
 		unset ($html3);
 		if ($img == '')
-			return 'Daily comic not realease yet';
+			return 'Daily comic not released yet';
 		return '<img src="'.$img.'"/>';
 	}
 
