@@ -61,7 +61,9 @@ By default, the script creates `whitelist.txt` and adds the main bridges (see ab
  * to enable extra bridges (one bridge per line)
  * to disable main bridges (remove the line)
 
-New bridges are disabled by default, so make sure to check regularly what's new and whitelist what you want !
+New bridges are disabled by default, so make sure to check regularly what's new and whitelist what you want!
+
+[![Deploy on Scalingo](https://cdn.scalingo.com/deploy/button.svg)](https://my.scalingo.com/deploy?source=https://github.com/sebsauvage/rss-bridge)
  
 Author
 ===
