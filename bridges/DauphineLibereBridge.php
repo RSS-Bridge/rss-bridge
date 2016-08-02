@@ -7,7 +7,7 @@ class DauphineLibereBridge extends BridgeAbstract{
 			$this->name = "DauphineLibereBridge Bridge";
 			$this->uri = "http://www.ledauphine.com/";
 			$this->description = "Returns the newest articles.";
-			$this->update = "05/11/2015";
+			$this->update = "2016-08-02";
 
 
 			$this->parameters[] =
@@ -82,16 +82,15 @@ class DauphineLibereBridge extends BridgeAbstract{
 			]';
 		}
 
-
-        public function collectData(array $param){
-
-			
 		function ExtractContent($url) {
 		$html2 = $this->file_get_html($url);
 		$text = $html2->find('div.column', 0)->innertext;
 		$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
 		return $text;
 		}
+
+        public function collectData(array $param){
+
 		if (isset($param['u'])) { /* user timeline mode */
 			$this->request = $param['u'];
 			$html = $this->file_get_html('http://www.ledauphine.com/'.$this->request.'/rss') or $this->returnError('Could not request DauphineLibere.', 404);
@@ -107,7 +106,7 @@ class DauphineLibereBridge extends BridgeAbstract{
 		 $item->title = $element->find('title', 0)->innertext;
 		 $item->uri = $element->find('guid', 0)->plaintext;
 		 $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-		 $item->content = ExtractContent($item->uri);
+		 $item->content = $this->ExtractContent($item->uri);
 		 $this->items[] = $item;
 		 $limit++;
 		 }
