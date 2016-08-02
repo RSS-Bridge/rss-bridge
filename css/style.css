@@ -58,6 +58,20 @@ section {
 
 }
 
+
+section:last-of-type {
+
+	opacity: 0.5;
+
+}
+
+section:last-of-type:hover {
+
+	opacity: 1;
+
+}
+
+
 section > h2 {
 
 	font-size: 200%;
@@ -87,6 +101,13 @@ button {
 	cursor: pointer;
 
 	width: calc(20% - 4px);
+
+}
+
+button.small {
+
+	width: auto;
+	line-height: 1.2em;
 
 }
 
@@ -126,5 +147,49 @@ input[type="text"] {
 	font-size: 1.1em;
 	margin-left: 8px;
 	padding-left: 4px;
+
+}
+
+form {
+
+	display: none;
+
+}
+
+h5 {
+
+	display: none;
+
+}
+
+.showmore-box {
+
+	display: none;
+
+}
+
+.showmore, .showless {
+
+	color: #888888;
+
+}
+
+.showmore-box:checked ~ .showmore {
+
+	display: none;
+
+}
+
+.showmore-box:not(:checked) ~ .showless {
+
+	display: none;
+
+}
+
+
+
+.showmore-box:checked ~ form, .showmore-box:checked ~ h5 {
+
+	display: block;
 
 }
