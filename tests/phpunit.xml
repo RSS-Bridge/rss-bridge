@@ -4,7 +4,7 @@
 
 		colors="true"
 		bootstrap="../lib/Tests.php"
-		processIsolation="true"
+		processIsolation="false"
         timeoutForSmallTests="1"
         timeoutForMediumTests="1"
         timeoutForLargeTests="6" >
