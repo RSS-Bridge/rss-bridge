@@ -26,6 +26,47 @@ class ElsevierBridge extends BridgeAbstract{
        ]';
   }
 
+  // Extracts the list of names from an article as string
+  function ExtractArticleName ($article){
+    $names = $article->find('small', 0);
+    if($names)
+      return trim($names->plaintext);
+    return '';
+  }
+
+  // Extracts the timestamp from an article
+  function ExtractArticleTimestamp ($article){
+    $time = $article->find('.article-info', 0);
+    if($time){
+      $timestring = trim($time->plaintext);
+      /* 
+        The format depends on the age of an article:
+        - Available online 29 July 2016
+        - July 2016
+        - May–June 2016
+      */
+      if(preg_match('/\S*(\d+\s\S+\s\d{4})/ims', $timestring, $matches)){
+        return strtotime($matches[0]);
+      } elseif (preg_match('/([A-Za-z]+\s\d{4})/ims', $timestring, $matches)){
+        return strtotime($matches[0]);
+      } elseif (preg_match('/[A-Za-z]+\-([A-Za-z]+\s\d{4})/ims', $timestring, $matches)){
+        return strtotime($matches[0]);
+      } else {
+        return 0;
+      }
+    }
+    return 0;
+  }
+
+  // Extracts the content from an article
+  function ExtractArticleContent ($article){
+    $content = $article->find('.article-content', 0);
+    if($content){
+      return trim($content->plaintext);
+    }
+    return '';
+  }
+
   public function collectData(array $param){
     $uri = 'http://www.journals.elsevier.com/'.$param['j'].'/recent-articles/';
     $html = file_get_html($uri)
@@ -36,9 +77,9 @@ class ElsevierBridge extends BridgeAbstract{
       $item = new \Item();
       $item->uri=$article->find('.pod-listing-header>a',0)->getAttribute('href').'?np=y';
       $item->title=$article->find('.pod-listing-header>a',0)->plaintext;
-      $item->name=trim($article->find('small',0)->plaintext);
-      $item->timestamp=strtotime($article->find('.article-info',0)->plaintext);
-      $item->content=trim($article->find('.article-content',0)->plaintext);
+      $item->name=$this->ExtractArticleName($article);
+      $item->timestamp=$this->ExtractArticleTimestamp($article);
+      $item->content=$this->ExtractArticleContent($article);
 
       $this->items[]=$item;
     }
