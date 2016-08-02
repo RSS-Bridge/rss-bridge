@@ -81,8 +81,8 @@ class DauphineLibereBridge extends BridgeAbstract {
 		]';
 	}
 
-	function ExtractContent($url) {
-		$html2 = $this->file_get_html($url);
+	function ExtractContent($url, $context) {
+		$html2 = $this->file_get_html($url, false, $context);
 		$text = $html2->find('div.column', 0)->innertext;
 		$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
 		return $text;
@@ -90,24 +90,34 @@ class DauphineLibereBridge extends BridgeAbstract {
 
 	public function collectData(array $param){
 
+		// Simulate Mozilla user-agent to fix error 403 (Forbidden)
+		$opts = array('http' =>
+			array(
+				'method'  => 'GET',
+				'header'  => 'User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
+			)
+		);
+
+		$context = stream_context_create($opts);
+
 		if (isset($param['u'])) { /* user timeline mode */
 			$this->request = $param['u'];
-			$html = $this->file_get_html('http://www.ledauphine.com/'.$this->request.'/rss') or $this->returnError('Could not request DauphineLibere.', 404);
+			$html = $this->file_get_html('http://www.ledauphine.com/'.$this->request.'/rss', false, $context) or $this->returnError('Could not request DauphineLibere.', 404);
 		}
 		else {
-			$html = $this->file_get_html('http://www.ledauphine.com/rss') or $this->returnError('Could not request DauphineLibere.', 404);
+			$html = $this->file_get_html('http://www.ledauphine.com/rss', false, $context) or $this->returnError('Could not request DauphineLibere.', 404);
 		}
 		$limit = 0;
 
 		foreach($html->find('item') as $element) {
 			if($limit < 10) {
-			$item = new \Item();
-			$item->title = $element->find('title', 0)->innertext;
-			$item->uri = $element->find('guid', 0)->plaintext;
-			$item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-			$item->content = $this->ExtractContent($item->uri);
-			$this->items[] = $item;
-			$limit++;
+				$item = new \Item();
+				$item->title = $element->find('title', 0)->innertext;
+				$item->uri = $element->find('guid', 0)->plaintext;
+				$item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
+				$item->content = $this->ExtractContent($item->uri, $context);
+				$this->items[] = $item;
+				$limit++;
 			}
 		}
 	}
