@@ -171,6 +171,7 @@ h5 {
 .showmore, .showless {
 
 	color: #888888;
+	cursor: pointer;
 
 }
 
