@@ -2,13 +2,11 @@
 class NextInpactBridge extends BridgeAbstract {
 
 	public function loadMetadatas() {
-
 		$this->maintainer = "qwertygc";
 		$this->name = "NextInpact Bridge";
 		$this->uri = "http://www.nextinpact.com/";
 		$this->description = "Returns the newest articles.";
 		$this->update = "2016-08-03";
-
 	}
 
 	function StripCDATA($string) {
@@ -45,8 +43,7 @@ class NextInpactBridge extends BridgeAbstract {
 				$limit++;
 			}
 		}
-
-    }
+	}
 
 	public function getName() {
 		return 'Nextinpact Bridge';
@@ -58,6 +55,5 @@ class NextInpactBridge extends BridgeAbstract {
 
 	public function getCacheDuration() {
 		return 3600; // 1 hour
-		// return 0;
 	}
 }
