@@ -11,14 +11,13 @@ class MsnMondeBridge extends BridgeAbstract{
 
 	}
 
+	function MsnMondeExtractContent($url, &$item) {
+		$html2 = $this->file_get_html($url);
+		$item->content = $html2->find('#content', 0)->find('article', 0)->find('section', 0)->plaintext;
+		$item->timestamp = strtotime($html2->find('.authorinfo-txt', 0)->find('time', 0)->datetime);
+	}
+
     public function collectData(array $param){
-
-    function MsnMondeExtractContent($url, &$item) {
-      $html2 = $this->file_get_html($url);
-      $item->content = $html2->find('#content', 0)->find('article', 0)->find('section', 0)->plaintext;
-      $item->timestamp = strtotime($html2->find('.authorinfo-txt', 0)->find('time', 0)->datetime);
-    }
-
       $html = $this->file_get_html('http://www.msn.com/fr-fr/actualite/monde') or $this->returnError('Could not request MsnMonde.', 404);
       $limit = 0;
       foreach($html->find('.smalla') as $article) {
@@ -26,7 +25,7 @@ class MsnMondeBridge extends BridgeAbstract{
          $item = new \Item();
          $item->title = utf8_decode($article->find('h4', 0)->innertext);
          $item->uri = "http://www.msn.com" . utf8_decode($article->find('a', 0)->href);
-         MsnMondeExtractContent($item->uri, $item);
+         $this->MsnMondeExtractContent($item->uri, $item);
          $this->items[] = $item;
          $limit++;
        }
