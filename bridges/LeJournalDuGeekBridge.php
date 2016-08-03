@@ -17,7 +17,7 @@ class LeJournalDuGeekBridge extends BridgeAbstract{
 
 	function LeJournalDuGeekExtractContent($url) {
 		$articleHTMLContent = $this->file_get_html($url);
-		$text = $text.$articleHTMLContent->find('div.post-content', 0)->innertext;
+		$text = $articleHTMLContent->find('div.post-content', 0)->innertext;
 
 		foreach($articleHTMLContent->find('a.more') as $element) {
 			if ($element->innertext == "Source") {
