@@ -7,7 +7,7 @@ class FuturaSciencesBridge extends BridgeAbstract {
         $this->name = $this->getName();
         $this->uri = $this->getURI();
         $this->description = 'Returns the newest articles.';
-        $this->update = '2016-03-20';
+        $this->update = '2016-08-03';
 
         $this->parameters[] =
         '[
@@ -149,6 +149,23 @@ class FuturaSciencesBridge extends BridgeAbstract {
             return $string;
         }
 
+        // Extracts the author from an article or element
+        function ExtractAuthor($article, $element){
+            $article_author = $article->find('span.author', 0);
+            if($article_author){
+                $authorname = trim(str_replace(', Futura-Sciences', '', $article_author->plaintext));
+                if(empty($authorname)){
+                    $element_author = $element->find('author', 0);
+                    if($element_author)
+                        $authorname = StripCDATA($element_author->plaintext);
+                    else
+                        return '';
+                }
+                return $authorname;
+            }
+            return '';
+        }
+
         if (empty($param['feed']))
             $this->returnError('Please select a feed to display.'.$url, 400);
         if ($param['feed'] !== preg_replace('/[^a-zA-Z-\/]+/', '', $param['feed']) || substr_count($param['feed'], '/') > 1 || strlen($param['feed'] > 64))
@@ -163,9 +180,6 @@ class FuturaSciencesBridge extends BridgeAbstract {
                 $article_url = str_replace('#xtor=RSS-8', '', StripCDATA($element->find('guid', 0)->plaintext));
                 $article = $this->file_get_html($article_url) or $this->returnError('Could not request Futura-Sciences: '.$article_url, 500);
                 $contents = $article->find('div.content', 0)->innertext;
-                $author = trim(str_replace(', Futura-Sciences', '', $article->find('span.author', 0)->plaintext));
-                if (empty($author))
-                    $author = StripCDATA($element->find('author', 0)->plaintext);
 
                 foreach (array(
                     '<div class="clear',
@@ -192,7 +206,7 @@ class FuturaSciencesBridge extends BridgeAbstract {
                 $contents = StripWithDelimiters($contents, 'fs:xt:clickname="', '"');
 
                 $item = new \Item();
-                $item->author = $author;
+                $item->author = ExtractAuthor($article, $element);
                 $item->uri = $article_url;
                 $item->title = StripCDATA($element->find('title', 0)->innertext);
                 $item->thumbnailUri = StripCDATA($element->find('enclosure', 0)->url);
