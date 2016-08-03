@@ -32,6 +32,7 @@ class LeJournalDuGeekBridge extends BridgeAbstract{
 			}
 		}
 
+		$text = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $text);
 		$text = strip_tags($text, '<p><b><a><blockquote><img><em><br/><br><ul><li>');
 		return $text;
 	}
