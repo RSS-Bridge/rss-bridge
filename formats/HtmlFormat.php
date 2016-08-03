@@ -46,7 +46,7 @@ EOD;
 </head>
 <body>
 	<h1 class="pagetitle">{$title}</h1>
-	<a class="backlink" href="./"><button class="backbutton">← back to rss-bridge</button></a>
+	<div class="buttons"><a href="./"><button class="backbutton">← back to rss-bridge</button></a><a href="./?{$atomquery}"><button class="rss-feed">RSS feed</button></a></div>
 {$entries}
 </body>
 </html>
