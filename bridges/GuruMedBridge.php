@@ -17,12 +17,6 @@ class GuruMedBridge extends BridgeAbstract{
     	return $string;
     }
 
-    function GurumedExtractContent($url) {
-	$html2 = $this->file_get_html($url);
-	$text = $html2->find('div.entry', 0)->innertext;
-	return $text;
-    }
-
     public function collectData(array $param){
         $html = $this->file_get_html('http://gurumed.org/feed') or $this->returnError('Could not request Gurumed.', 404);
 	$limit = 0;
@@ -33,7 +27,7 @@ class GuruMedBridge extends BridgeAbstract{
 	 $item->title = $this->GurumedStripCDATA($element->find('title', 0)->innertext);
 	 $item->uri = $this->GurumedStripCDATA($element->find('guid', 0)->plaintext);
 	 $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-	 $item->content = $this->GurumedExtractContent($item->uri);
+	 $item->content = $this->GurumedStripCDATA(strip_tags($element->find('description', 0), '<p><a><br>'));
 	 $this->items[] = $item;
 	 $limit++;
 	 }
