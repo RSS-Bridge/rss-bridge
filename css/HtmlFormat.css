@@ -71,7 +71,7 @@ section > div.content {
 
 }
 
-section > time {
+section > time, section > p.author {
 
 	color: #888;
 	font-size: 80%;
