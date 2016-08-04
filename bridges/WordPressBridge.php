@@ -49,8 +49,9 @@ class WordPressBridge extends BridgeAbstract {
 	}
 
 	function ClearContent($content) {
-		$content = preg_replace('/<script.*\/script>/', '', $content);
+		$content = preg_replace('/<script[^>]*>[^<]*<\/script>/', '', $content);
 		$content = preg_replace('/<div class="wpa".*/', '', $content);
+		$content = preg_replace('/<form.*\/form>/', '', $content);
 		return $content;
 	}
 
