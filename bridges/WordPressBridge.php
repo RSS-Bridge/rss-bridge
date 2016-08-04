@@ -39,6 +39,7 @@ class WordPressBridge extends BridgeAbstract {
 		$element_text = $element->outertext;
 		$element_text = str_replace('<link>', '<url>', $element_text);
 		$element_text = str_replace('</link>', '</url>', $element_text);
+		$element_text = str_replace('<link ', '<url ', $element_text);
 		return str_get_html($element_text);
 	}
 
@@ -94,13 +95,17 @@ class WordPressBridge extends BridgeAbstract {
 						$item->author = trim($article->find('author', 0)->innertext);
 						$item->timestamp = strtotime($article->find('updated', 0)->innertext);
 					}
+
                                         $article_html = $this->file_get_html($item->uri);
-					$item->content = $this->ClearContent($article_html->find('article', 0)->innertext);
-                                        if(empty($item->content))
-					        $item->content = $this->ClearContent($article_html->find('.single-content', 0)->innertext); // another common content div
-                                        if(empty($item->content))
-					        $item->content = $this->ClearContent($article_html->find('.post', 0)->innertext); // for old WordPress themes without HTML5
-					
+
+					$article = $article_html->find('article', 0);
+					if(!empty($article)){
+						$item->content = $this->ClearContent($article->innertext);
+						if(empty($item->content))
+							$item->content = $this->ClearContent($article_html->find('.single-content', 0)->innertext); // another common content div
+						if(empty($item->content))
+							$item->content = $this->ClearContent($article_html->find('.post', 0)->innertext); // for old WordPress themes without HTML5
+					}
 					$this->items[] = $item;
 					$i++;
 				}
