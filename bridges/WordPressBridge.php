@@ -21,7 +21,6 @@ class WordPressBridge extends BridgeAbstract {
 				"identifier" : "url"
 			}
 		]';
-
 	}
 
 	// Returns the content type for a given html dom
@@ -62,7 +61,7 @@ class WordPressBridge extends BridgeAbstract {
 			$this->returnError('You must specify a URL', 400);
 		}
 
-                $this->url = $this->url.'/feed/atom';
+		$this->url = $this->url.'/feed/atom';
 		$html = $this->file_get_html($this->url) or $this->returnError("Could not request {$this->url}.", 404);
 
 		// Notice: We requested an ATOM feed, however some sites return RSS feeds instead!
@@ -73,10 +72,10 @@ class WordPressBridge extends BridgeAbstract {
 		else
 			$posts = $html->find('entry');
 
+		if(!empty($posts) ) {
+			$this->name = $html->find('title', 0)->plaintext;
+			$i=0;
 
-                if(!empty($posts) ) {
-                        $this->name = $html->find('title', 0)->plaintext;
-                        $i=0;
 			foreach ($posts as $article) {
 				if($i < 3) {
 
@@ -96,7 +95,7 @@ class WordPressBridge extends BridgeAbstract {
 						$item->timestamp = strtotime($article->find('updated', 0)->innertext);
 					}
 
-                                        $article_html = $this->file_get_html($item->uri);
+					$article_html = $this->file_get_html($item->uri);
 
 					$article = $article_html->find('article', 0);
 					if(!empty($article)){
@@ -110,8 +109,7 @@ class WordPressBridge extends BridgeAbstract {
 					$i++;
 				}
 			} 
-                }
-		else {
+		} else {
 			$this->returnError("Sorry, {$this->url} doesn't seem to be a Wordpress blog.", 404);
 		}
 	}
@@ -138,6 +136,4 @@ class WordPressBridge extends BridgeAbstract {
 	private function processParams($param) {
 		$this->url = $param['url'];
 	}
-
 }
-
