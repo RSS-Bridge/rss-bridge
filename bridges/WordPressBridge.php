@@ -42,20 +42,19 @@ class WordPressBridge extends BridgeAbstract {
 		return str_get_html($element_text);
 	}
 
+	function StripCDATA($string) {
+		$string = str_replace('<![CDATA[', '', $string);
+		$string = str_replace(']]>', '', $string);
+		return $string;
+	}
+
+	function ClearContent($content) {
+		$content = preg_replace('/<script.*\/script>/', '', $content);
+		$content = preg_replace('/<div class="wpa".*/', '', $content);
+		return $content;
+	}
+
 	public function collectData(array $param) {
-
-                function StripCDATA($string) {
-                        $string = str_replace('<![CDATA[', '', $string);
-                        $string = str_replace(']]>', '', $string);
-                        return $string;
-                }
-
-                function clearContent($content) {
-                        $content = preg_replace('/<script.*\/script>/', '', $content);
-                        $content = preg_replace('/<div class="wpa".*/', '', $content);
-                        return $content;
-                }
-
 		$this->processParams($param);
 
 		if (!$this->hasUrl()) {
@@ -91,16 +90,16 @@ class WordPressBridge extends BridgeAbstract {
 						$item->timestamp = strtotime($article->find('pubDate', 0)->innertext);
 					} else {
 						$item->uri = $article->find('url', 0)->getAttribute('href'); // 'link' => 'url'!
-						$item->title = StripCDATA($article->find('title', 0)->plaintext);
+						$item->title = $this->StripCDATA($article->find('title', 0)->plaintext);
 						$item->author = trim($article->find('author', 0)->innertext);
 						$item->timestamp = strtotime($article->find('updated', 0)->innertext);
 					}
                                         $article_html = $this->file_get_html($item->uri);
-					$item->content = clearContent($article_html->find('article', 0)->innertext);
+					$item->content = $this->ClearContent($article_html->find('article', 0)->innertext);
                                         if(empty($item->content))
-					        $item->content = clearContent($article_html->find('.single-content', 0)->innertext); // another common content div
+					        $item->content = $this->ClearContent($article_html->find('.single-content', 0)->innertext); // another common content div
                                         if(empty($item->content))
-					        $item->content = clearContent($article_html->find('.post', 0)->innertext); // for old WordPress themes without HTML5
+					        $item->content = $this->ClearContent($article_html->find('.post', 0)->innertext); // for old WordPress themes without HTML5
 					
 					$this->items[] = $item;
 					$i++;
