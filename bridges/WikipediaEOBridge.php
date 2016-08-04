@@ -20,12 +20,12 @@ class WikipediaEOBridge extends BridgeAbstract{
 
         $html = $this->file_get_html($host.$link) or $this->returnError('Could not request Wikipedia EO.', 404);
 
-		$element = $html->find('div[id=mf-tfa]', 0);
+		$element = $html->find('div[id=mf-artikolo-de-la-semajno]', 0);
 		// Link to article
-		$link = $element->find('p', -2)->find('a', 0);
+		$link = $element->find('p', 3)->find('a', 0);
 		$item = new \Item();
 		$item->uri = $host.$link->href;
-		$item->title = $link->title;
+		$item->title = $element->find('p',0)->find('i',0)->innertext;
 		$item->content = str_replace('href="/', 'href="'.$host.'/', $element->innertext);
 		$this->items[] = $item;
     }
