@@ -4,6 +4,7 @@ define('WORDPRESS_TYPE_RSS', 2); // Content is of type RSS
 class WordPressBridge extends BridgeAbstract {
 
 	private $url;
+	public $sitename; // Name of the site
 
 	public function loadMetadatas() {
 
@@ -74,7 +75,7 @@ class WordPressBridge extends BridgeAbstract {
 			$posts = $html->find('entry');
 
 		if(!empty($posts) ) {
-			$this->name = $html->find('title', 0)->plaintext;
+			$this->sitename = $html->find('title', 0)->plaintext;
 			$i=0;
 
 			foreach ($posts as $article) {
@@ -132,7 +133,7 @@ class WordPressBridge extends BridgeAbstract {
 	}
 
 	public function getName() {
-		return "{$this->name} - Wordpress Bridge";
+		return "{$this->sitename} - Wordpress Bridge";
 	}
 
 	public function getURI() {
