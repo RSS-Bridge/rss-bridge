@@ -1,4 +1,6 @@
 <?php
+define('WORDPRESS_TYPE_ATOM', 1); // Content is of type ATOM
+define('WORDPRESS_TYPE_RSS', 2); // Content is of type RSS
 class WordPressBridge extends BridgeAbstract {
 
 	private $url;
@@ -9,7 +11,7 @@ class WordPressBridge extends BridgeAbstract {
 		$this->name = "Wordpress Bridge";
 		$this->uri = "https://wordpress.org/";
 		$this->description = "Returns the 3 newest full posts of a Wordpress blog";
-		$this->update = "2016-08-02";
+		$this->update = "2016-08-04";
 
 		$this->parameters[] =
 		'[
@@ -20,6 +22,24 @@ class WordPressBridge extends BridgeAbstract {
 			}
 		]';
 
+	}
+
+	// Returns the content type for a given html dom
+	function DetectContentType($html){
+		if($html->find('entry'))
+			return WORDPRESS_TYPE_ATOM;
+		if($html->find('item'))
+			return WORDPRESS_TYPE_RSS;
+		return WORDPRESS_TYPE_ATOM; // Make ATOM default
+	}
+
+	// Replaces all 'link' tags with 'url' for simplehtmldom to actually find 'links' ('url')	
+	function ReplaceLinkTagsWithUrlTags($element){
+		// We need to fix the 'link' tag as simplehtmldom cannot parse it (just rename it and load back as dom)
+		$element_text = $element->outertext;
+		$element_text = str_replace('<link>', '<url>', $element_text);
+		$element_text = str_replace('</link>', '</url>', $element_text);
+		return str_get_html($element_text);
 	}
 
 	public function collectData(array $param) {
@@ -44,17 +64,35 @@ class WordPressBridge extends BridgeAbstract {
 
                 $this->url = $this->url.'/feed/atom';
 		$html = $this->file_get_html($this->url) or $this->returnError("Could not request {$this->url}.", 404);
-		$posts = $html->find('entry');
+
+		// Notice: We requested an ATOM feed, however some sites return RSS feeds instead!
+		$type = $this->DetectContentType($html);
+
+		if($type === WORDPRESS_TYPE_RSS)
+			$posts = $html->find('item');
+		else
+			$posts = $html->find('entry');
+
+
                 if(!empty($posts) ) {
                         $this->name = $html->find('title', 0)->plaintext;
                         $i=0;
-			foreach ($html->find('entry') as $article) {
+			foreach ($posts as $article) {
 				if($i < 3) {
-					$this->items[$i]->uri = $article->find('link', 0)->getAttribute('href');
-					$this->items[$i]->title = StripCDATA($article->find('title', 0)->plaintext);
-					$this->items[$i]->author = trim($article->find('author', 0)->innertext);
-					$this->items[$i]->timestamp = strtotime($article->find('updated', 0)->innertext);
 
+					$article = $this->ReplaceLinkTagsWithUrlTags($article);
+
+					if($type === WORDPRESS_TYPE_RSS){
+						$this->items[$i]->uri = $article->find('url', 0)->innertext; // 'link' => 'url'!
+						$this->items[$i]->title = $article->find('title', 0)->plaintext;
+						$this->items[$i]->author = trim($article->find('dc:creator', 0)->innertext);
+						$this->items[$i]->timestamp = strtotime($article->find('pubDate', 0)->innertext);
+					} else {
+						$this->items[$i]->uri = $article->find('url', 0)->getAttribute('href'); // 'link' => 'url'!
+						$this->items[$i]->title = StripCDATA($article->find('title', 0)->plaintext);
+						$this->items[$i]->author = trim($article->find('author', 0)->innertext);
+						$this->items[$i]->timestamp = strtotime($article->find('updated', 0)->innertext);
+					}
                                         $article_html = $this->file_get_html($this->items[$i]->uri);
 					$this->items[$i]->content = clearContent($article_html->find('article', 0)->innertext);
                                         if(empty($this->items[$i]->content))
