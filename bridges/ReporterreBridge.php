@@ -18,6 +18,12 @@ class ReporterreBridge extends BridgeAbstract{
 			}
 			$html2->clear();
 			unset ($html2);
+
+			// Replace all relative urls with absolute ones
+			$text = preg_replace('/(href|src)(\=[\"\'])(?!http)([^"\']+)/ims', "$1$2" . $this->getURI() . "$3", $text);
+			
+			$text = strip_tags($text, '<p><br><a><img>');
+
 			return $text;
 		}
 
