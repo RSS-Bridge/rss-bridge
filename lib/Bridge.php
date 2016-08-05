@@ -111,7 +111,7 @@ abstract class BridgeAbstract implements BridgeInterface{
         }
       }
       return file_get_html($url,$use_include_path,$context,$offset,$maxLen,
-        $lowercase,$forceTagsClosed,$target_charset,$stripRN,$defaultBRtext,
+        $lowercase,$forceTagsClosed,$target_charset,$stripRN,$defaultBRText,
         $defaultSpanText);
     }
 
