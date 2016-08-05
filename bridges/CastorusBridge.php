@@ -87,6 +87,6 @@ class CastorusBridge extends BridgeAbstract {
 	}
 
 	public function getCacheDuration(){
-		return 3600; // 1 hour
+		return 600; // 10 minutes
 	}
 }
