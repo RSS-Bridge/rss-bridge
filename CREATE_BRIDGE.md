@@ -1,7 +1,7 @@
 # Howto create a bridge
 
 A bridge is an class that allows rss-bridge to create a RSS feed from a website.
-The bridge is a PHP file, located in the `bridges/` folder.
+The bridge is a PHP file, located in the [`bridges/`](bridges/) folder.
 
 Read the following chapters an make sure to read the [Guidelines](#guidelines)!
 
@@ -147,7 +147,7 @@ Parameter | ATOM | HTML | (M)RSS
 
 ## The `getName` function
 
-This function returns the name of the bridge as it should be displayed on the main page of rss-bridge.
+This function returns the name of the bridge as it will be displayed on the main page of rss-bridge or on top of the feed output (HTML, ATOM, etc...).
 
 ```PHP
 	public function getName(){
@@ -157,7 +157,7 @@ This function returns the name of the bridge as it should be displayed on the ma
 
 ## The `getURI` function
 
-This function returns the URI to the destination site of the bridge. It will be used on the main page of rss-bridge when clicking your brige name.
+This function returns the URI to the destination site of the bridge. It will be used on the main page of rss-bridge when clicking your bridge name.
 
 ```PHP
 	public function getURI(){
@@ -182,7 +182,7 @@ All bridges extend from `BridgeAbstract` and therefore are able to make use of f
 Following functions should be used for good practice and will support you with your bridge :
 
 * [`returnError`](#the-returnerror-function)
-* [`file_get_html`](#the-file-get-html-function)
+* [`file_get_html`](#the-file_get_html-function)
 
 ## The `returnError` function
 
@@ -217,6 +217,7 @@ $html = $this->file_get_html('your URI');
 This is a template for a new bridge:
 
 ```PHP
+<?php
 class MySiteBridge extends BridgeAbstract{
 	public function loadMetadatas(){
 		$this->maintainer = 'No maintainer';
@@ -242,4 +243,5 @@ class MySiteBridge extends BridgeAbstract{
 		return 3600; // 1 hour
 	}
 }
+
 ```
