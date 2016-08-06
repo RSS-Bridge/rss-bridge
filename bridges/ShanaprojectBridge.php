@@ -117,8 +117,4 @@ class ShanaprojectBridge extends BridgeAbstract {
     public function getURI(){
         return 'http://www.shanaproject.com';
     }
-
-    public function getCacheDuration(){
-        return 3600; // 1 hour
-    }
 }

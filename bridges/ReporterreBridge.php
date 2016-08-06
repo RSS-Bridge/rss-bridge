@@ -50,8 +50,4 @@ class ReporterreBridge extends BridgeAbstract{
 	public function getURI(){
 		return 'http://www.reporterre.net/';
 	}
-
-	public function getCacheDuration(){
-		return 3600; // 1 hours
-	}
 }

@@ -101,8 +101,4 @@ class WorldOfTanks extends HttpCachingBridgeAbstract{
     public function getURI(){
         return $this->uri;
     }
-
-    public function getCacheDuration(){
-        return 3600; // 2h hours
-    }
 }

@@ -49,8 +49,4 @@ class FootitoBridge extends BridgeAbstract{
     public function getURI(){
         return 'http://www.footito.fr/';
     }
-
-    public function getCacheDuration(){
-        return 3600; // 1h hours
-    }
 }

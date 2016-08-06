@@ -46,8 +46,4 @@ class KoreusBridge extends BridgeAbstract{
 	public function getURI(){
 		return 'http://www.koreus.com/';
 	}
-
-	public function getCacheDuration(){
-		return 3600; // 1 hour
-	}
 }

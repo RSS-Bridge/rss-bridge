@@ -169,6 +169,8 @@ This function returns the URI to the destination site of the bridge. It will be 
 
 This function returns the time in **seconds** during which rss-bridge will output cached values instead of re-generating a RSS feed.
 
+**Notice:** rss-bridge will return `3600` seconds (1 hour) by default, so you only have to implement this function if you require different timing!
+
 ```PHP
 	public function getCacheDuration(){
 		return 3600; // 1 hour
@@ -214,7 +216,7 @@ $html = $this->file_get_html('your URI');
 
 # Template
 
-This is a template for a new bridge:
+This is the minimum template for a new bridge:
 
 ```PHP
 <?php
@@ -237,10 +239,6 @@ class MySiteBridge extends BridgeAbstract{
 
 	public function getURI(){
 		return ''; // Insert your URI here!
-	}
-
-	public function getCacheDuration(){
-		return 3600; // 1 hour
 	}
 }
 

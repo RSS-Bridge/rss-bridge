@@ -7,7 +7,7 @@ class FuturaSciencesBridge extends BridgeAbstract {
         $this->name = $this->getName();
         $this->uri = $this->getURI();
         $this->description = 'Returns the newest articles.';
-        $this->update = '2016-08-03';
+        $this->update = '2016-08-06';
 
         $this->parameters[] =
         '[
@@ -225,9 +225,5 @@ class FuturaSciencesBridge extends BridgeAbstract {
 
     public function getURI() {
         return 'http://www.futura-sciences.com/';
-    }
-
-    public function getCacheDuration() {
-        return 3600;
     }
 }

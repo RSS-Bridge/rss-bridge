@@ -52,8 +52,4 @@ class NextInpactBridge extends BridgeAbstract {
 	public function getURI() {
 		return 'http://www.nextinpact.com/';
 	}
-
-	public function getCacheDuration() {
-		return 3600; // 1 hour
-	}
 }

@@ -9,7 +9,7 @@ class ABCTabsBridge extends BridgeAbstract{
 		$this->name = "ABC Tabs Bridge";
 		$this->uri = "http://www.abc-tabs.com/";
 		$this->description = "Returns 22 newest tabs";
-		$this->update = "2014-07-23";
+		$this->update = "2016-08-06";
 
 	}
 
@@ -40,9 +40,5 @@ class ABCTabsBridge extends BridgeAbstract{
 
 		return "http://www.abc-tabs.com/";
 
-	}
-
-	public function getCacheDuration(){
-		return 3600; // 1 hour
 	}
 }

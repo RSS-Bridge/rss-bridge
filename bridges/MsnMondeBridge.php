@@ -37,8 +37,4 @@ class MsnMondeBridge extends BridgeAbstract{
 	public function getURI(){
 		return 'http://www.msn.com/fr-fr/actualite/monde';
 	}
-
-	public function getCacheDuration(){
-		return 3600; // 1 hour
-	}
 }

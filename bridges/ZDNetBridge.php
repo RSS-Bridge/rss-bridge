@@ -7,7 +7,7 @@ class ZDNetBridge extends BridgeAbstract {
         $this->name = $this->getName();
         $this->uri = $this->getURI();
         $this->description = 'Technology News, Analysis, Comments and Product Reviews for IT Professionals.';
-        $this->update = '2016-07-20';
+        $this->update = '2016-08-06';
 
         $this->parameters[] =
         // http://www.zdnet.com/zdnet.opml
@@ -309,9 +309,5 @@ class ZDNetBridge extends BridgeAbstract {
 
     public function getURI() {
         return 'http://www.zdnet.com/';
-    }
-
-    public function getCacheDuration() {
-        return 3600; //1 hour
     }
 }

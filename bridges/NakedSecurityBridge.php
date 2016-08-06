@@ -6,7 +6,7 @@ class NakedSecurityBridge extends BridgeAbstract {
         $this->name = $this->getName();
         $this->uri = $this->getURI();
         $this->description = 'Returns the newest articles.';
-        $this->update = '2016-04-30';
+        $this->update = '2016-08-06';
     }
 
     public function collectData(array $param) {
@@ -76,9 +76,5 @@ class NakedSecurityBridge extends BridgeAbstract {
 
     public function getURI() {
         return 'https://nakedsecurity.sophos.com/';
-    }
-
-    public function getCacheDuration() {
-        return 3600; //1 hour
     }
 }

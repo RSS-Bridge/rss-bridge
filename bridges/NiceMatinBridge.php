@@ -53,8 +53,4 @@ class NiceMatinBridge extends BridgeAbstract{
 	public function getURI(){
 		return 'http://www.nicematin.com/';
 	}
-
-	public function getCacheDuration(){
-		return 3600; // 1 hour
-	}
 }

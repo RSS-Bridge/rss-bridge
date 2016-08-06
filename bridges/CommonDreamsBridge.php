@@ -47,8 +47,4 @@ class CommonDreamsBridge extends BridgeAbstract{
 	public function getURI(){
 		return 'http://www.commondreams.org/';
 	}
-
-	public function getCacheDuration(){
-		return 3600; // 1 hours
-	}
 }

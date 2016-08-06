@@ -7,7 +7,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
         $this->name = $this->getName();
         $this->uri = $this->getURI();
         $this->description = 'RSS proxy returning the newest releases.<br />You may specify a category found in RSS URLs, else main feed is selected.';
-        $this->update = "2016-03-16";
+        $this->update = "2016-08-06";
 
         $this->parameters[] =
         '[
@@ -50,9 +50,5 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 
     public function getURI() {
         return 'https://www.zone-telechargement.com/';
-    }
-
-    public function getCacheDuration() {
-        return 3600;
     }
 }

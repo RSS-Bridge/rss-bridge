@@ -39,8 +39,4 @@ class GuruMedBridge extends BridgeAbstract{
 	public function getURI(){
 		return 'http://gurumed.org/';
 	}
-
-	public function getCacheDuration(){
-		return 3600; // 1 hour
-	}
 }

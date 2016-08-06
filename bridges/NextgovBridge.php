@@ -7,7 +7,7 @@ class NextgovBridge extends BridgeAbstract {
         $this->name = $this->getName();
         $this->uri = $this->getURI();
         $this->description = 'USA Federal technology news, best practices, and web 2.0 tools.';
-        $this->update = '2016-07-20';
+        $this->update = '2016-08-06';
 
         $this->parameters[] =
         '[
@@ -102,9 +102,5 @@ class NextgovBridge extends BridgeAbstract {
 
     public function getURI() {
         return 'https://www.nextgov.com/';
-    }
-
-    public function getCacheDuration() {
-        return 3600; //1 hour
     }
 }
