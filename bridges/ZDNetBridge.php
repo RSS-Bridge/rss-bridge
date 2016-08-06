@@ -4,8 +4,8 @@ class ZDNetBridge extends BridgeAbstract {
     public function loadMetadatas() {
 
         $this->maintainer = 'ORelio';
-        $this->name = $this->getName();
-        $this->uri = $this->getURI();
+        $this->name = 'ZDNet Bridge';
+        $this->uri = 'http://www.zdnet.com/';
         $this->description = 'Technology News, Analysis, Comments and Product Reviews for IT Professionals.';
         $this->update = '2016-08-06';
 
@@ -304,10 +304,10 @@ class ZDNetBridge extends BridgeAbstract {
     }
 
     public function getName() {
-        return 'ZDNet Bridge';
+        return $this->name;
     }
 
     public function getURI() {
-        return 'http://www.zdnet.com/';
+        return $this->uri;
     }
 }

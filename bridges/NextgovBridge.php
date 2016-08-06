@@ -4,8 +4,8 @@ class NextgovBridge extends BridgeAbstract {
     public function loadMetadatas() {
 
         $this->maintainer = 'ORelio';
-        $this->name = $this->getName();
-        $this->uri = $this->getURI();
+        $this->name = 'Nextgov Bridge';
+        $this->uri = 'https://www.nextgov.com/';
         $this->description = 'USA Federal technology news, best practices, and web 2.0 tools.';
         $this->update = '2016-08-06';
 
@@ -97,10 +97,10 @@ class NextgovBridge extends BridgeAbstract {
     }
 
     public function getName() {
-        return 'Nextgov Bridge';
+        return $this->name;
     }
 
     public function getURI() {
-        return 'https://www.nextgov.com/';
+        return $this->uri;
     }
 }

@@ -3,8 +3,8 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract {
 
     public function loadMetadatas() {
         $this->maintainer = 'ORelio';
-        $this->name = $this->getName();
-        $this->uri = $this->getURI();
+        $this->name = 'Est-ce qu\'on met en prod aujourd\'hui ?';
+        $this->uri = 'https://www.estcequonmetenprodaujourdhui.info/';
         $this->description = 'Should we put a website in production today? (French)';
         $this->update = "2016-08-06";
     }
@@ -38,11 +38,11 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract {
     }
 
     public function getName() {
-        return 'Est-ce qu\'on met en prod aujourd\'hui ?';
+        return $this->name;
     }
 
     public function getURI() {
-        return 'https://www.estcequonmetenprodaujourdhui.info/';
+        return $this->uri;
     }
 
     public function getCacheDuration() {

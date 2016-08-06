@@ -2,8 +2,8 @@
 class ShanaprojectBridge extends BridgeAbstract {
     public function loadMetadatas() {
         $this->maintainer = 'logmanoriginal';
-        $this->name = $this->getName();
-        $this->uri = $this->getURI();
+        $this->name = 'Shanaproject Bridge';
+        $this->uri = 'http://www.shanaproject.com';
         $this->description = 'Returns a list of anime from the current Season Anime List';
         $this->update = '2016-08-06';
     }
@@ -111,10 +111,10 @@ class ShanaprojectBridge extends BridgeAbstract {
     }
 
     public function getName(){
-        return 'Shanaproject Bridge';
+        return $this->name;
     }
 
     public function getURI(){
-        return 'http://www.shanaproject.com';
+        return $this->uri;
     }
 }

@@ -4,8 +4,8 @@ class FuturaSciencesBridge extends BridgeAbstract {
     public function loadMetadatas() {
 
         $this->maintainer = 'ORelio';
-        $this->name = $this->getName();
-        $this->uri = $this->getURI();
+        $this->name = 'Futura-Sciences Bridge';
+        $this->uri = 'http://www.futura-sciences.com/';
         $this->description = 'Returns the newest articles.';
         $this->update = '2016-08-06';
 
@@ -220,10 +220,10 @@ class FuturaSciencesBridge extends BridgeAbstract {
     }
 
     public function getName() {
-        return 'Futura-Sciences Bridge';
+        return $this->name;
     }
 
     public function getURI() {
-        return 'http://www.futura-sciences.com/';
+        return $this->uri;
     }
 }
