@@ -25,8 +25,6 @@ class BridgeImplementationTest extends PHPUnit_Framework_TestCase {
 
 	// Checks if the bridge implements additional public functions (should not be!)
 	private function CheckBridgePublicFunctions($bridgeName){
-		require_once('bridges/' . $bridgeName . '.php');
-
 		$parent_methods = array();
 
 		if(in_array('BridgeInterface', class_parents($bridgeName)))
@@ -37,6 +35,9 @@ class BridgeImplementationTest extends PHPUnit_Framework_TestCase {
 
 		if(in_array('HttpCachingBridgeAbstract', class_parents($bridgeName)))
 			$parent_methods = array_merge($parent_methods, get_class_methods('HttpCachingBridgeAbstract'));
+
+		if(in_array('RssExpander', class_parents($bridgeName)))
+			$parent_methods = array_merge($parent_methods, get_class_methods('RssExpander'));
 
 		// Receive all non abstract methods
 		$methods = array_diff(get_class_methods($bridgeName), $parent_methods);
@@ -49,12 +50,22 @@ class BridgeImplementationTest extends PHPUnit_Framework_TestCase {
 				$method_names .= ', ' . $method;
 		}
 
+		$parent_names = '';
+		foreach(class_parents($bridgeName) as $parent){
+			if($parent_names === '')
+				$parent_names .= $parent;
+			else
+				$parent_names .= ', ' . $parent;
+		}
+
 		// There should generally be no additional (public) function
-		$this->assertEmpty($methods, $bridgeName . " defines additional public functions!\n" . $method_names);
+		$this->assertEmpty($methods, $bridgeName . ' extends (' . $parent_names . ') and defines additional public functions : ' . $method_names . '!');
 	}
 
-	public function testBridgeImplementation($bridge){
-		$this->CheckBridgePublicFunctions($bridge);
+	public function testBridgeImplementation($bridgeName){
+		require_once('bridges/' . $bridgeName . '.php');
+
+		$this->CheckBridgePublicFunctions($bridgeName);
 	}
 
 	public function count()
