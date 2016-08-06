@@ -62,10 +62,41 @@ class BridgeImplementationTest extends PHPUnit_Framework_TestCase {
 		$this->assertEmpty($methods, $bridgeName . ' extends (' . $parent_names . ') and defines additional public functions : ' . $method_names . '!');
 	}
 
+	// Checks if the bridge returns the default value for 'getCacheDuration()'
+	private function CheckBridgeGetCacheDurationDefaultValue($bridgeName){
+		// We only care for bridges that don't implement BridgeInterface directly
+		// (using one of the abstract classes)
+		// This is why we got the 'BridgeAbstractTest' class below!!!
+		if(in_array('BridgeAbstract', class_parents($bridgeName))){
+
+			// Let's check if the bridge actually implements 'getCacheDuration'
+			$bridgeReflector = new ReflectionClass($bridgeName);
+			$bridgeMethods = $bridgeReflector->GetMethods();
+			$bridgeHasMethod = false;
+
+			foreach($bridgeMethods as $method){
+				if($method->name === 'getCacheDuration' && $method->class === $bridgeReflector->name){
+					$bridgeHasMethod = true;
+					//break;
+				}
+			}
+
+			if(!$bridgeHasMethod)
+				return;
+
+			$bridge = new $bridgeName();
+
+			$abstract = new BridgeAbstractTest();
+
+			$this->assertNotEquals($bridge->getCacheDuration(), $abstract->getCacheDuration(), $bridgeName . ' seems to implement \'getCacheDuration\' with default values, so you might safely remove it');
+		}
+	}
+
 	public function testBridgeImplementation($bridgeName){
 		require_once('bridges/' . $bridgeName . '.php');
 
 		$this->CheckBridgePublicFunctions($bridgeName);
+		$this->CheckBridgeGetCacheDurationDefaultValue($bridgeName);
 	}
 
 	public function count()
@@ -109,4 +140,16 @@ class BridgeImplementationTest extends PHPUnit_Framework_TestCase {
 
 		return $result;
 	}
+}
+
+/*
+	This class is used for testing default values of 'getCacheDuration'!
+
+	It must not return any values, just implement all abstract functions!
+*/
+class BridgeAbstractTest extends BridgeAbstract{
+	public function loadMetadatas(){}
+	public function collectData(array $params){}
+	public function getName(){return '';}
+	public function getURI(){return '';}
 }
