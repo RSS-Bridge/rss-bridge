@@ -23,14 +23,6 @@ abstract class BridgeAbstract implements BridgeInterface{
 	public $maintainer = 'No maintainer';
 	public $parameters = array();
 
-	/**
-	* Loads the Bridge Metadatas
-	*/
-	public function loadMetadatas() {
-
-
-	}
-
     /**
     * Launch probative exception
     */
