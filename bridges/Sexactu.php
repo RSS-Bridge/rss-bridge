@@ -8,7 +8,7 @@ class Sexactu extends BridgeAbstract{
 		$this->name = "Sexactu";
 		$this->uri = "http://www.gqmagazine.fr";
 		$this->description = "Sexactu via rss-bridge";
-		$this->update = "04/02/2014";
+		$this->update = "2016-08-06";
 
 	}
 
@@ -69,11 +69,8 @@ $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July',
     public function getCacheDuration(){
         return 7200; // 2h hours
     }
-    public function getDescription(){
-        return "Sexactu via rss-bridge";
-    }
     
-    public function correctCase($str) {
+    private function correctCase($str) {
         $sentences=explode('.', mb_strtolower($str, "UTF-8"));
         $str="";
         $sep="";

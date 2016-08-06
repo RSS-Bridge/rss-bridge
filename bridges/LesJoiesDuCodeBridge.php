@@ -7,7 +7,7 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
 		$this->name = "Les Joies Du Code";
 		$this->uri = "http://lesjoiesducode.fr/";
 		$this->description = "LesJoiesDuCode";
-		$this->update = "04/02/2015";
+		$this->update = "2016-08-06";
 
 	}
 
@@ -59,8 +59,4 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
     public function getCacheDuration(){
         return 7200; // 2h hours
     }
-    public function getDescription(){
-        return "Les Joies Du Code via rss-bridge";
-    }
 }
-?>

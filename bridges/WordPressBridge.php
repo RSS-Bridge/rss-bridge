@@ -12,7 +12,7 @@ class WordPressBridge extends BridgeAbstract {
 		$this->name = "Wordpress Bridge";
 		$this->uri = "https://wordpress.org/";
 		$this->description = "Returns the 3 newest full posts of a Wordpress blog";
-		$this->update = "2016-08-04";
+		$this->update = "2016-08-06";
 
 		$this->parameters[] =
 		'[
@@ -25,7 +25,7 @@ class WordPressBridge extends BridgeAbstract {
 	}
 
 	// Returns the content type for a given html dom
-	function DetectContentType($html){
+	private function DetectContentType($html){
 		if($html->find('entry'))
 			return WORDPRESS_TYPE_ATOM;
 		if($html->find('item'))
@@ -34,7 +34,7 @@ class WordPressBridge extends BridgeAbstract {
 	}
 
 	// Replaces all 'link' tags with 'url' for simplehtmldom to actually find 'links' ('url')	
-	function ReplaceLinkTagsWithUrlTags($element){
+	private function ReplaceLinkTagsWithUrlTags($element){
 		// We need to fix the 'link' tag as simplehtmldom cannot parse it (just rename it and load back as dom)
 		$element_text = $element->outertext;
 		$element_text = str_replace('<link>', '<url>', $element_text);
@@ -43,13 +43,13 @@ class WordPressBridge extends BridgeAbstract {
 		return str_get_html($element_text);
 	}
 
-	function StripCDATA($string) {
+	private function StripCDATA($string) {
 		$string = str_replace('<![CDATA[', '', $string);
 		$string = str_replace(']]>', '', $string);
 		return $string;
 	}
 
-	function ClearContent($content) {
+	private function ClearContent($content) {
 		$content = preg_replace('/<script[^>]*>[^<]*<\/script>/', '', $content);
 		$content = preg_replace('/<div class="wpa".*/', '', $content);
 		$content = preg_replace('/<form.*\/form>/', '', $content);

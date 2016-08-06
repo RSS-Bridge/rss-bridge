@@ -6,10 +6,10 @@ class DeveloppezDotComBridge extends BridgeAbstract{
 		$this->name = "Developpez.com Actus (FR)";
 		$this->uri = "http://www.developpez.com/";
 		$this->description = "Returns the 15 newest posts from DeveloppezDotCom (full text).";
-		$this->update = "2016-08-03";
+		$this->update = "2016-08-06";
 	}
 
-	function DeveloppezDotComStripCDATA($string) {
+	private function DeveloppezDotComStripCDATA($string) {
 		$string = str_replace('<![CDATA[', '', $string);
 		$string = str_replace(']]>', '', $string);
 		return $string;
@@ -17,7 +17,7 @@ class DeveloppezDotComBridge extends BridgeAbstract{
 
 	// F***ing quotes from Microsoft Word badly encoded, here was the trick: 
 	// http://stackoverflow.com/questions/1262038/how-to-replace-microsoft-encoded-quotes-in-php
-	function convert_smart_quotes($string)
+	private function convert_smart_quotes($string)
 	{
 		$search = array(chr(145),
 						chr(146),
@@ -34,7 +34,7 @@ class DeveloppezDotComBridge extends BridgeAbstract{
 		return str_replace($search, $replace, $string);
 	}
 
-	function DeveloppezDotComExtractContent($url) {
+	private function DeveloppezDotComExtractContent($url) {
 		$articleHTMLContent = $this->file_get_html($url);
 		$text = $this->convert_smart_quotes($articleHTMLContent->find('div.content', 0)->innertext);
 		$text = utf8_encode($text);

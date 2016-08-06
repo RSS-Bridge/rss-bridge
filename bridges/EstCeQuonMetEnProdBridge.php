@@ -5,8 +5,8 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract {
         $this->maintainer = 'ORelio';
         $this->name = $this->getName();
         $this->uri = $this->getURI();
-        $this->description = $this->getDescription();
-        $this->update = "02/07/2016";
+        $this->description = 'Should we put a website in production today? (French)';
+        $this->update = "2016-08-06";
     }
 
     public function collectData(array $param) {
@@ -43,10 +43,6 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract {
 
     public function getURI() {
         return 'https://www.estcequonmetenprodaujourdhui.info/';
-    }
-
-    public function getDescription() {
-        return 'Should we put a website in production today? (French)';
     }
 
     public function getCacheDuration() {

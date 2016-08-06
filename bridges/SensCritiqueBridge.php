@@ -8,7 +8,7 @@ class SensCritiqueBridge extends BridgeAbstract {
 		$this->name = "Sens Critique";
 		$this->uri = "http://www.senscritique.com";
 		$this->description = "Sens Critique news";
-		$this->update = "2016-07-29";
+		$this->update = "2016-08-06";
 
 		$this->parameters[] =
 		'[
@@ -63,7 +63,7 @@ class SensCritiqueBridge extends BridgeAbstract {
 		}
   }
 
-	public function collectMoviesData() {
+	private function collectMoviesData() {
 		$html = '';
     $html = $this->file_get_html('http://www.senscritique.com/films/cette-semaine') or $this->returnError('No results for this query.', 404);
 		$list = $html->find('ul.elpr-list', 0);
@@ -71,7 +71,7 @@ class SensCritiqueBridge extends BridgeAbstract {
 		$this->extractDataFromList($list);
 	}
 
-	public function collectSeriesData() {
+	private function collectSeriesData() {
 		$html = '';
 		$html = $this->file_get_html('http://www.senscritique.com/series/actualite') or $this->returnError('No results for this query.', 404);
 		$list = $html->find('ul.elpr-list', 0);
@@ -79,7 +79,7 @@ class SensCritiqueBridge extends BridgeAbstract {
 		$this->extractDataFromList($list);
 	}
 
-	public function collectGamesData() {
+	private function collectGamesData() {
 		$html = '';
 		$html = $this->file_get_html('http://www.senscritique.com/jeuxvideo/actualite') or $this->returnError('No results for this query.', 404);
 		$list = $html->find('ul.elpr-list', 0);
@@ -87,7 +87,7 @@ class SensCritiqueBridge extends BridgeAbstract {
 		$this->extractDataFromList($list);
 	}
 
-	public function collectBooksData() {
+	private function collectBooksData() {
 		$html = '';
 		$html = $this->file_get_html('http://www.senscritique.com/livres/actualite') or $this->returnError('No results for this query.', 404);
 		$list = $html->find('ul.elpr-list', 0);
@@ -95,7 +95,7 @@ class SensCritiqueBridge extends BridgeAbstract {
 		$this->extractDataFromList($list);
 	}
 
-	public function collectBDsData() {
+	private function collectBDsData() {
 		$html = '';
 		$html = $this->file_get_html('http://www.senscritique.com/bd/actualite') or $this->returnError('No results for this query.', 404);
 		$list = $html->find('ul.elpr-list', 0);
@@ -103,7 +103,7 @@ class SensCritiqueBridge extends BridgeAbstract {
 		$this->extractDataFromList($list);
 	}
 
-	public function collectMusicsData() {
+	private function collectMusicsData() {
 		$html = '';
 		$html = $this->file_get_html('http://www.senscritique.com/musique/actualite') or $this->returnError('No results for this query.', 404);
 		$list = $html->find('ul.elpr-list', 0);
@@ -111,7 +111,7 @@ class SensCritiqueBridge extends BridgeAbstract {
 		$this->extractDataFromList($list);
 	}
 
-	public function extractDataFromList($list) {
+	private function extractDataFromList($list) {
 		if ($list === null) {
 			$this->returnError('Cannot extract data from list', 400);
 		}

@@ -7,7 +7,7 @@ class TheCodingLoveBridge extends BridgeAbstract{
 		$this->name = "The Coding Love";
 		$this->uri = "http://thecodinglove.com/";
 		$this->description = "The Coding Love";
-		$this->update = "04/02/2015";
+		$this->update = "2016-08-06";
 
 	}
 
@@ -60,8 +60,4 @@ class TheCodingLoveBridge extends BridgeAbstract{
     public function getCacheDuration(){
         return 7200; // 2h hours
     }
-    public function getDescription(){
-        return "The Coding Love via rss-bridge";
-    }
 }
-?>

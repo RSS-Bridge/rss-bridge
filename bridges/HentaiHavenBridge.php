@@ -7,7 +7,7 @@ class HentaiHavenBridge extends BridgeAbstract{
 		$this->name = "Hentai Haven";
 		$this->uri = "http://hentaihaven.org/";
 		$this->description = "Returns releases from Hentai Haven";
-		$this->update = "2015-01-16";
+		$this->update = "2016-08-06";
 
 	}
 
@@ -28,9 +28,6 @@ class HentaiHavenBridge extends BridgeAbstract{
     }
     public function getURI(){
         return '';
-    }
-    public function getDescription(){
-        return "Hentai Haven | Everything Else is Irrelevant";
     }
     public function getCacheDuration(){
         return 21600; // 6 hours

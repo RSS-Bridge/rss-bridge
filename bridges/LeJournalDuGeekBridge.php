@@ -6,16 +6,16 @@ class LeJournalDuGeekBridge extends BridgeAbstract{
 		$this->name = "journaldugeek.com (FR)";
 		$this->uri = "http://www.journaldugeek.com/";
 		$this->description = "Returns the 5 newest posts from LeJournalDuGeek (full text).";
-		$this->update = "2016-08-03";
+		$this->update = "2016-08-06";
 	}
 
-	function LeJournalDuGeekStripCDATA($string) {
+	private function LeJournalDuGeekStripCDATA($string) {
 		$string = str_replace('<![CDATA[', '', $string);
 		$string = str_replace(']]>', '', $string);
 		return $string;
 	}
 
-	function LeJournalDuGeekExtractContent($url) {
+	private function LeJournalDuGeekExtractContent($url) {
 		$articleHTMLContent = $this->file_get_html($url);
 		$text = $articleHTMLContent->find('div.post-content', 0)->innertext;
 

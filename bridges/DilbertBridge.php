@@ -6,8 +6,8 @@ class DilbertBridge extends BridgeAbstract {
         $this->maintainer = 'kranack';
         $this->name = $this->getName();
         $this->uri = $this->getURI();
-        $this->description = $this->getDescription();
-        $this->update = "14/05/2016";
+        $this->description = 'The Unofficial Dilbert Daily Comic Strip';
+        $this->update = "2016-08-06";
 
     }
 
@@ -44,10 +44,6 @@ class DilbertBridge extends BridgeAbstract {
 
     public function getURI() {
         return 'http://dilbert.com';
-    }
-
-    public function getDescription() {
-        return 'The Unofficial Dilbert Daily Comic Strip';
     }
 
     public function getCacheDuration() {
