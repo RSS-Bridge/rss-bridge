@@ -9,8 +9,8 @@ Read the following chapters an make sure to read the [Guidelines](#guidelines)!
 
 A rss bridge must extend the `BridgeAbstract` class and implement the following functions :
 
-* [`loadMetadatas`](#the-loadmetadatas-function)
-* [`collectData`](#the-collectdata-function)
+* [`loadMetadatas`](#the-loadmetadatas-function) (**required**)
+* [`collectData`](#the-collectdata-function) (**required**)
 * [`getName`](#the-getname-function)
 * [`getURI`](#the-geturi-function)
 * [`getCacheDuration`](#the-getcacheduration-function)
@@ -149,9 +149,11 @@ Parameter | ATOM | HTML | (M)RSS
 
 This function returns the name of the bridge as it will be displayed on the main page of rss-bridge or on top of the feed output (HTML, ATOM, etc...).
 
+**Notice:** rss-bridge will by default return `$this->name` which is defined in the [`loadMetadatas`](#the-loadmetadatas-function) function, so you only have to implement this function if you require different behavior!
+
 ```PHP
 	public function getName(){
-		return ''; // Insert your bridge name here!
+		return $this->name;
 	}
 ```
 
@@ -159,9 +161,11 @@ This function returns the name of the bridge as it will be displayed on the main
 
 This function returns the URI to the destination site of the bridge. It will be used on the main page of rss-bridge when clicking your bridge name.
 
+**Notice:** rss-bridge will by default return `$this->uri` which is defined in the [`loadMetadatas`](#the-loadmetadatas-function) function, so you only have to implement this function if you require different behavior!
+
 ```PHP
 	public function getURI(){
-		return ''; // Insert your URI here!
+		return $this-uri;
 	}
 ```
 
@@ -223,22 +227,14 @@ This is the minimum template for a new bridge:
 class MySiteBridge extends BridgeAbstract{
 	public function loadMetadatas(){
 		$this->maintainer = 'No maintainer';
-		$this->name = $this->getName();
-		$this->uri = $this->getURI();
+		$this->name = 'Unnamed bridge';
+		$this->uri = '';
 		$this->description = 'No description provided';
 		$this->parameters = array();
 	}
 
 	public function collectData(array $params){
 		// Implement your bridge here!
-	}
-
-	public function getName(){
-		return ''; // Insert your bridge name here!
-	}
-
-	public function getURI(){
-		return ''; // Insert your URI here!
 	}
 }
 
