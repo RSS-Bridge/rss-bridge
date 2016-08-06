@@ -37,14 +37,6 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract {
         $this->items[] = $item;
     }
 
-    public function getName() {
-        return $this->name;
-    }
-
-    public function getURI() {
-        return $this->uri;
-    }
-
     public function getCacheDuration() {
         return 21600; // 6 hours
     }

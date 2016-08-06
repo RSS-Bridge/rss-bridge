@@ -9,7 +9,7 @@ class CNETBridge extends BridgeAbstract {
         $this->name = 'CNET News';
         $this->uri = 'http://www.cnet.com/';
         $this->description = 'Returns the newest articles. <br /> You may specify a topic found in some section URLs, else all topics are selected.';
-        $this->update = '2016-03-16';
+        $this->update = '2016-08-06';
 
         $this->parameters[] =
         '[
@@ -96,12 +96,7 @@ class CNETBridge extends BridgeAbstract {
         return 'CNET News Bridge'.(empty($this->topicName) ? '' : ' - '.$this->topicName);
     }
 
-    public function getURI() {
-        return 'http://www.cnet.com/';
-    }
-
     public function getCacheDuration() {
         return 1800; // 30 minutes
-        // return 0;
     }
 }

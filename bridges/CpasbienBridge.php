@@ -24,7 +24,7 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
 		$this->name = "Cpasbien Bridge";
 		$this->uri = "http://www.cpasbien.io";
 		$this->description = "Returns latest torrents from a request query";
-		$this->update = "2016-01-26";
+		$this->update = "2016-08-06";
 
 		$this->parameters[] =
 		'[
@@ -81,10 +81,6 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
 
     public function getName(){
         return (!empty($this->request) ? $this->request .' - ' : '') . $this->name;
-    }
-
-    public function getURI(){
-        return $this->uri;
     }
 
     public function getCacheDuration(){

@@ -43,12 +43,4 @@ class ZoneTelechargementBridge extends BridgeAbstract {
             $limit++;
         }
     }
-
-    public function getName() {
-        return $this->name;
-    }
-
-    public function getURI() {
-        return $this->uri;
-    }
 }

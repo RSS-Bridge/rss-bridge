@@ -95,12 +95,4 @@ class NextgovBridge extends BridgeAbstract {
         }
 
     }
-
-    public function getName() {
-        return $this->name;
-    }
-
-    public function getURI() {
-        return $this->uri;
-    }
 }

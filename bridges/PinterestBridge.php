@@ -9,7 +9,7 @@ class PinterestBridge extends BridgeAbstract{
 
 		$this->maintainer = "pauder";
 		$this->name = "Pinterest Bridge";
-		$this->uri = "http://www.pinterest.com/";
+		$this->uri = "http://www.pinterest.com";
 		$this->description = "Returns the newest images on a board";
 		$this->update = "2016-08-06";
 
@@ -109,9 +109,5 @@ class PinterestBridge extends BridgeAbstract{
     	} else {
         	return $this->username .' - '. $this->board.' - Pinterest';
     	}
-    }
-
-    public function getURI(){
-        return 'http://www.pinterest.com';
     }
 }

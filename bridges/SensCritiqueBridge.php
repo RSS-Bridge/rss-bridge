@@ -131,10 +131,6 @@ class SensCritiqueBridge extends BridgeAbstract {
 		}
 	}
 
-	public function getName() {
-		return $this->name;
-	}
-
 	public function getURI() {
 		return (trim($this->uri) === "") ? "http://www.senscritique.com" : $this->uri;
 	}

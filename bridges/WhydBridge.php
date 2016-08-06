@@ -10,7 +10,7 @@ class WhydBridge extends BridgeAbstract{
 		$this->name = "Whyd Bridge";
 		$this->uri = "http://www.whyd.com/";
 		$this->description = "Returns 10 newest music from user profile";
-		$this->update = "2014-07-18";
+		$this->update = "2016-08-06";
 
 		$this->parameters[] =
 		'[
@@ -58,10 +58,6 @@ class WhydBridge extends BridgeAbstract{
     }
 	public function getName(){
 		return (!empty($this->name) ? $this->name .' - ' : '') .'Whyd Bridge';
-	}
-
-	public function getURI(){
-		return 'http://www.whyd.com/';
 	}
 
 	public function getCacheDuration(){

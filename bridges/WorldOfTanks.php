@@ -93,12 +93,4 @@ class WorldOfTanks extends HttpCachingBridgeAbstract{
         $item->timestamp = $content->find('.b-statistic_time', 0)->getAttribute("data-timestamp");
         $this->items[] = $item;
     }
-
-    public function getName(){
-        return $this->name;
-    }
-
-    public function getURI(){
-        return $this->uri;
-    }
 }
