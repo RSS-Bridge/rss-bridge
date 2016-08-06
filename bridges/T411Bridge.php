@@ -7,7 +7,7 @@ class T411Bridge extends BridgeAbstract {
         $this->name = 'T411';
         $this->uri = $this->getURI();
         $this->description = 'Returns the 10 newest torrents with specified search terms <br /> Use url part after "?" mark when using their search engine.';
-        $this->update = '2016-06-25';
+        $this->update = '2016-08-06';
 
         $this->parameters[] =
         '[
@@ -102,10 +102,5 @@ class T411Bridge extends BridgeAbstract {
     public function getURI() {
         return 'https://t411.ch/';
     }
-
-    public function getCacheDuration() {
-        return 3600; // 1 hour
-    }
-
 }
 

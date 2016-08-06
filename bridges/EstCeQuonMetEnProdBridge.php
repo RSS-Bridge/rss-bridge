@@ -3,10 +3,10 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract {
 
     public function loadMetadatas() {
         $this->maintainer = 'ORelio';
-        $this->name = $this->getName();
-        $this->uri = $this->getURI();
-        $this->description = $this->getDescription();
-        $this->update = "02/07/2016";
+        $this->name = 'Est-ce qu\'on met en prod aujourd\'hui ?';
+        $this->uri = 'https://www.estcequonmetenprodaujourdhui.info/';
+        $this->description = 'Should we put a website in production today? (French)';
+        $this->update = "2016-08-06";
     }
 
     public function collectData(array $param) {
@@ -35,18 +35,6 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract {
         $item->timestamp = strtotime('today midnight');
         $item->content = str_replace('src="/', 'src="'.$this->getURI(), trim(ExtractFromDelimiters($html->outertext, '<body role="document">', '<br /><br />')));
         $this->items[] = $item;
-    }
-
-    public function getName() {
-        return 'Est-ce qu\'on met en prod aujourd\'hui ?';
-    }
-
-    public function getURI() {
-        return 'https://www.estcequonmetenprodaujourdhui.info/';
-    }
-
-    public function getDescription() {
-        return 'Should we put a website in production today? (French)';
     }
 
     public function getCacheDuration() {

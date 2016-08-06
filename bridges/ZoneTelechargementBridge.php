@@ -4,10 +4,10 @@ class ZoneTelechargementBridge extends BridgeAbstract {
     public function loadMetadatas() {
 
         $this->maintainer = 'ORelio';
-        $this->name = $this->getName();
-        $this->uri = $this->getURI();
+        $this->name = 'Zone Telechargement Bridge';
+        $this->uri = 'https://www.zone-telechargement.com/';
         $this->description = 'RSS proxy returning the newest releases.<br />You may specify a category found in RSS URLs, else main feed is selected.';
-        $this->update = "2016-03-16";
+        $this->update = "2016-08-06";
 
         $this->parameters[] =
         '[
@@ -42,17 +42,5 @@ class ZoneTelechargementBridge extends BridgeAbstract {
             $this->items[] = $item;
             $limit++;
         }
-    }
-
-    public function getName() {
-        return 'Zone Telechargement Bridge';
-    }
-
-    public function getURI() {
-        return 'https://www.zone-telechargement.com/';
-    }
-
-    public function getCacheDuration() {
-        return 3600;
     }
 }

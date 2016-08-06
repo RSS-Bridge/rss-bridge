@@ -7,7 +7,7 @@ class FootitoBridge extends BridgeAbstract{
 		$this->name = "Footito";
 		$this->uri = "http://www.footito.fr/";
 		$this->description = "Footito";
-		$this->update = "21/11/2013";
+		$this->update = "2016-08-06";
 
 	}
 
@@ -49,12 +49,4 @@ class FootitoBridge extends BridgeAbstract{
     public function getURI(){
         return 'http://www.footito.fr/';
     }
-
-    public function getCacheDuration(){
-        return 3600; // 1h hours
-    }
-    public function getDescription(){
-        return "Footito via rss-bridge";
-    }
 }
-?>

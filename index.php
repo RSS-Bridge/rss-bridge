@@ -113,8 +113,8 @@ try{
                     } else {
                         $bridge->setCache($cache); // just add disable cache to your query to disable caching
                     }
-                    $bridge->setDatas($_REQUEST);
 					$bridge->loadMetadatas();
+                    $bridge->setDatas($_REQUEST);
                     // Data transformation
                     try {
 		                $format = Format::create($format);

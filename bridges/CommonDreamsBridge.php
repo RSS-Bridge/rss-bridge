@@ -6,10 +6,10 @@ class CommonDreamsBridge extends BridgeAbstract{
 		$this->name = "CommonDreams Bridge";
 		$this->uri = "http://www.commondreams.org/";
 		$this->description = "Returns the newest articles.";
-		$this->update = "2016-08-02";
+		$this->update = "2016-08-06";
 	}
 
-	function CommonDreamsExtractContent($url) {
+	private function CommonDreamsExtractContent($url) {
 		$html3 = $this->file_get_html($url);
 		$text = $html3->find('div[class=field--type-text-with-summary]', 0)->innertext;
 		$html3->clear();
@@ -46,9 +46,5 @@ class CommonDreamsBridge extends BridgeAbstract{
 
 	public function getURI(){
 		return 'http://www.commondreams.org/';
-	}
-
-	public function getCacheDuration(){
-		return 3600; // 1 hours
 	}
 }

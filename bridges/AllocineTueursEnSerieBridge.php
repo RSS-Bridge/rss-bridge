@@ -10,7 +10,7 @@ class AllocineTueursEnSerieBridge extends BridgeAbstract{
 		$this->name = "Allo Cine : Tueurs En Serie";
 		$this->uri = "http://www.allocine.fr/video/programme-12286/saison-22938/";
 		$this->description = "Allo Cine : Tueurs En Serie";
-		$this->update = "12/11/2013";
+		$this->update = "2016-08-06";
 
 	}
 
@@ -49,9 +49,6 @@ class AllocineTueursEnSerieBridge extends BridgeAbstract{
 
     public function getCacheDuration(){
         return 25200; // 7 hours
-    }
-    public function getDescription(){
-        return "Allo Cine : " . $this->_NOM . " via rss-bridge";
     }
 }
 ?>

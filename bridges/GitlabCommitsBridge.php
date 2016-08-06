@@ -12,7 +12,7 @@ class GitlabCommitsBridge extends BridgeAbstract{
     $this->name = 'Gitlab Commits';
     $this->uri = '';
     $this->description = 'Returns the commits of a project hosted on a gitlab instance';
-    $this->update = '2016-06-19';
+    $this->update = '2016-08-06';
 
     $this->parameters[] =
       '[
@@ -86,9 +86,5 @@ class GitlabCommitsBridge extends BridgeAbstract{
 
   public function getURI(){
     return '';
-  }
-
-  public function getCacheDuration(){
-    return 3600; // one hour
   }
 }

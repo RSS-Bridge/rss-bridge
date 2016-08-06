@@ -7,7 +7,7 @@ class ThePirateBayBridge extends BridgeAbstract{
 		$this->name = "The Pirate Bay";
 		$this->uri = "https://thepiratebay.org/";
 		$this->description = "Returns results for the keywords. You can put several list of keywords by separating them with a semicolon (e.g. \"one show;another show\")";
-		$this->update = "2015-01-09";
+		$this->update = "2016-08-06";
 
 		$this->parameters[] =
 		'[
@@ -87,9 +87,5 @@ class ThePirateBayBridge extends BridgeAbstract{
 
     public function getURI(){
         return 'https://thepiratebay.org/';
-    }
-
-    public function getCacheDuration(){
-        return 3600; // 1 hour
     }
 }

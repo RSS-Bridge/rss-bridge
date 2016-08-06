@@ -7,7 +7,7 @@ class CopieDoubleBridge extends BridgeAbstract{
 		$this->name = "CopieDouble";
 		$this->uri = "http://www.copie-double.com/";
 		$this->description = "CopieDouble";
-		$this->update = "12/12/2013";
+		$this->update = "2016-08-06";
 
 	}
 
@@ -50,13 +50,7 @@ class CopieDoubleBridge extends BridgeAbstract{
         return 'http://www.copie-double.com';
     }
 
-    public function getDescription(){
-        return 'CopieDouble via rss-bridge';
-    }
-
     public function getCacheDuration(){
         return 14400; // 4 hours
     }
 }
-
-?>

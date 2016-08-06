@@ -5,7 +5,7 @@ class CastorusBridge extends BridgeAbstract {
 		$this->name = "Castorus Bridge";
 		$this->uri = $this->getURI();
 		$this->description = "Returns the latest changes";
-		$this->update = "2016-08-05";
+		$this->update = "2016-08-06";
 
 		$this->parameters["Get latest changes"] = '[]';
 		$this->parameters["Get latest changes via ZIP code"] = 
@@ -33,7 +33,7 @@ class CastorusBridge extends BridgeAbstract {
 	}
 
 	// Extracts the tile from an actitiy
-	function ExtractActivityTitle($activity){
+	private function ExtractActivityTitle($activity){
 		$title = $activity->find('a', 0);
 
 		if(!$title)
@@ -43,7 +43,7 @@ class CastorusBridge extends BridgeAbstract {
 	}
 
 	// Extracts the url from an actitiy
-	function ExtractActivityUrl($activity){
+	private function ExtractActivityUrl($activity){
 		$url = $activity->find('a', 0);
 
 		if(!$url)
@@ -53,7 +53,7 @@ class CastorusBridge extends BridgeAbstract {
 	}
 
 	// Extracts the time from an activity
-	function ExtractActivityTime($activity){
+	private function ExtractActivityTime($activity){
 		// Unfortunately the time is part of the parent node, 
 		// so we have to clear all child nodes first
 		$nodes = $activity->find('*');
@@ -69,7 +69,7 @@ class CastorusBridge extends BridgeAbstract {
 	}
 
 	// Extracts the price change
-	function ExtractActivityPrice($activity){
+	private function ExtractActivityPrice($activity){
 		$price = $activity->find('span', 1);
 
 		if(!$price)

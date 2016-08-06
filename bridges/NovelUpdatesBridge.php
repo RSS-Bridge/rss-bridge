@@ -7,7 +7,7 @@ class NovelUpdatesBridge extends BridgeAbstract{
 		$this->name = "Novel Updates";
 		$this->uri = "http://www.novelupdates.com/";
 		$this->description = "Returns releases from Novel Updates";
-		$this->update = "2016-05-21";
+		$this->update = "2016-08-06";
 		$this->parameters[] =
 		'[
 			{
@@ -49,9 +49,6 @@ class NovelUpdatesBridge extends BridgeAbstract{
     }
     public function getURI(){
         return 'http://www.novelupdates.com/';
-    }
-    public function getDescription(){
-        return "Novel Updates - Directory of Translated Novels";
     }
     public function getCacheDuration(){
         return 21600; // 6 hours

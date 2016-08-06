@@ -9,7 +9,7 @@ class GBAtempBridge extends BridgeAbstract {
         $this->name = 'GBAtemp';
         $this->uri = $this->getURI();
         $this->description = 'GBAtemp is a user friendly underground video game community.';
-        $this->update = '2016-08-02';
+        $this->update = '2016-08-06';
 
         $this->parameters[] =
         '[
@@ -40,7 +40,7 @@ class GBAtempBridge extends BridgeAbstract {
         ]';
     }
 
-    function ExtractFromDelimiters($string, $start, $end) {
+    private function ExtractFromDelimiters($string, $start, $end) {
         if (strpos($string, $start) !== false) {
             $section_retrieved = substr($string, strpos($string, $start) + strlen($start));
             $section_retrieved = substr($section_retrieved, 0, strpos($section_retrieved, $end));
@@ -48,7 +48,7 @@ class GBAtempBridge extends BridgeAbstract {
         } return false;
     }
 
-    function StripWithDelimiters($string, $start, $end) {
+    private function StripWithDelimiters($string, $start, $end) {
         while (strpos($string, $start) !== false) {
             $section_to_remove = substr($string, strpos($string, $start));
             $section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
@@ -56,7 +56,7 @@ class GBAtempBridge extends BridgeAbstract {
         } return $string;
     }
 
-    function build_item($uri, $title, $author, $timestamp, $thumnail, $content) {
+    private function build_item($uri, $title, $author, $timestamp, $thumnail, $content) {
         $item = new \Item();
         $item->uri = $uri;
         $item->title = $title;
@@ -67,14 +67,14 @@ class GBAtempBridge extends BridgeAbstract {
         return $item;
     }
 
-    function cleanup_post_content($content, $site_url) {
+    private function cleanup_post_content($content, $site_url) {
         $content = str_replace(':arrow:', '&#x27a4;', $content);
         $content = str_replace('href="attachments/', 'href="'.$site_url.'attachments/', $content);
         $content = $this->StripWithDelimiters($content, '<script', '</script>');
         return $content;
     }
 
-    function fetch_post_content($uri, $site_url) {
+    private function fetch_post_content($uri, $site_url) {
         $html = $this->file_get_html($uri) or $this->returnError('Could not request GBAtemp: '.$uri, 500);
         $content = $html->find('div.messageContent', 0)->innertext;
         return $this->cleanup_post_content($content, $site_url);

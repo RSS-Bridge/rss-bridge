@@ -7,7 +7,7 @@ class DauphineLibereBridge extends BridgeAbstract {
 		$this->name = "DauphineLibereBridge Bridge";
 		$this->uri = "http://www.ledauphine.com/";
 		$this->description = "Returns the newest articles.";
-		$this->update = "2016-08-02";
+		$this->update = "2016-08-06";
 
 		$this->parameters[] =
 		'[
@@ -81,7 +81,7 @@ class DauphineLibereBridge extends BridgeAbstract {
 		]';
 	}
 
-	function ExtractContent($url, $context) {
+	private function ExtractContent($url, $context) {
 		$html2 = $this->file_get_html($url, false, $context);
 		$text = $html2->find('div.column', 0)->innertext;
 		$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);

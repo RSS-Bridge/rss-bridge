@@ -6,7 +6,7 @@ class NeuviemeArtBridge extends BridgeAbstract {
         $this->name = "9ème Art";
         $this->uri = "http://www.9emeart.fr/";
         $this->description = "Returns the newest articles.";
-        $this->update = "2016-02-05";
+        $this->update = "2016-08-06";
     }
 
     public function collectData(array $param) {
@@ -62,9 +62,5 @@ class NeuviemeArtBridge extends BridgeAbstract {
 
     public function getURI() {
         return 'http://www.9emeart.fr/';
-    }
-
-    public function getCacheDuration() {
-        return 3600; //1 hour
     }
 }

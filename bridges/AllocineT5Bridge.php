@@ -10,7 +10,7 @@ class AllocineT5Bridge extends BridgeAbstract{
 		$this->name = "Allo Cine : Top 5";
 		$this->uri = "http://www.allocine.fr/video/programme-12299/saison-22542/";
 		$this->description = "Allo Cine : Top 5 via rss-bridge";
-		$this->update = "07/11/2013";
+		$this->update = "2016-08-06";
 
 	}
 
@@ -49,9 +49,6 @@ class AllocineT5Bridge extends BridgeAbstract{
 
     public function getCacheDuration(){
         return 25200; // 7 hours
-    }
-    public function getDescription(){
-        return "Allo Cine : " . $this->_NOM . " via rss-bridge";
     }
 }
 ?>

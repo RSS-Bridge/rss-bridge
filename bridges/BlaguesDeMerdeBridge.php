@@ -7,7 +7,7 @@ class BlaguesDeMerdeBridge extends BridgeAbstract{
 		$this->name = "Blagues De Merde";
 		$this->uri = "http://www.blaguesdemerde.fr/";
 		$this->description = "Blagues De Merde";
-		$this->update = "16/10/2013";
+		$this->update = "2016-08-06";
 
 	}
 
@@ -42,9 +42,6 @@ class BlaguesDeMerdeBridge extends BridgeAbstract{
 
     public function getCacheDuration(){
         return 7200; // 2h hours
-    }
-    public function getDescription(){
-        return "Blagues De Merde via rss-bridge";
     }
 }
 ?>

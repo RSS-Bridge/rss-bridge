@@ -9,7 +9,7 @@ class VkBridge extends BridgeAbstract {
         $this->name = "VK.com";
         $this->uri = "http://www.vk.com/";
         $this->description = "Working with open pages";
-        $this->update = "21/02/2016";
+        $this->update = "2016-08-06";
         $this->parameters["Url on page group or user"] = '[
 			{
 				"name" : "Url",
@@ -51,10 +51,6 @@ class VkBridge extends BridgeAbstract {
 
     public function getName() {
         return(isset($this->name) ? $this->name . ' - ' : '') . 'VK Bridge';
-    }
-
-    public function getURI() {
-        return 'http://vk.com';
     }
 
     public function getCacheDuration() {

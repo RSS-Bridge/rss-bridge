@@ -4,10 +4,10 @@ class TheHackerNewsBridge extends BridgeAbstract {
     public function loadMetadatas() {
 
         $this->maintainer = 'ORelio';
-        $this->name = $this->getName();
-        $this->uri = $this->getURI();
+        $this->name = 'The Hacker News Bridge';
+        $this->uri = 'https://thehackernews.com/';
         $this->description = 'Cyber Security, Hacking, Technology News.';
-        $this->update = '2016-07-22';
+        $this->update = '2016-08-06';
 
     }
 
@@ -74,17 +74,5 @@ class TheHackerNewsBridge extends BridgeAbstract {
             }
         }
 
-    }
-
-    public function getName() {
-        return 'The Hacker News Bridge';
-    }
-
-    public function getURI() {
-        return 'https://thehackernews.com/';
-    }
-
-    public function getCacheDuration() {
-        return 3600; //1 hour
     }
 }

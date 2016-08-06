@@ -6,16 +6,16 @@ class KoreusBridge extends BridgeAbstract{
 		$this->name = "Koreus";
 		$this->uri = "http://www.koreus.com/";
 		$this->description = "Returns the 5 newest posts from Koreus (full text)";
-		$this->update = "2016-08-03";
+		$this->update = "2016-08-06";
 	}
 
-	function KoreusStripCDATA($string) {
+	private function KoreusStripCDATA($string) {
 		$string = str_replace('<![CDATA[', '', $string);
 		$string = str_replace(']]>', '', $string);
 		return $string;
 	}
 
-	function KoreusExtractContent($url) {
+	private function KoreusExtractContent($url) {
 		$html2 = $this->file_get_html($url);
 		$text = $html2->find('p[class=itemText]', 0)->innertext;
 		$text = utf8_encode(preg_replace('/(Sur le m.+?)+$/i','',$text));
@@ -45,9 +45,5 @@ class KoreusBridge extends BridgeAbstract{
 
 	public function getURI(){
 		return 'http://www.koreus.com/';
-	}
-
-	public function getCacheDuration(){
-		return 3600; // 1 hour
 	}
 }

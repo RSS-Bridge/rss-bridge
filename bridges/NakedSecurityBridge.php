@@ -3,10 +3,10 @@ class NakedSecurityBridge extends BridgeAbstract {
 
     public function loadMetadatas() {
         $this->maintainer = 'ORelio';
-        $this->name = $this->getName();
-        $this->uri = $this->getURI();
+        $this->name = 'Naked Security';
+        $this->uri = 'https://nakedsecurity.sophos.com/';
         $this->description = 'Returns the newest articles.';
-        $this->update = '2016-04-30';
+        $this->update = '2016-08-06';
     }
 
     public function collectData(array $param) {
@@ -68,17 +68,5 @@ class NakedSecurityBridge extends BridgeAbstract {
                 $limit++;
             }
         }
-    }
-
-    public function getName() {
-        return 'Naked Security';
-    }
-
-    public function getURI() {
-        return 'https://nakedsecurity.sophos.com/';
-    }
-
-    public function getCacheDuration() {
-        return 3600; //1 hour
     }
 }

@@ -6,10 +6,10 @@ class GuruMedBridge extends BridgeAbstract{
 		$this->name = "GuruMed";
 		$this->uri = "http://www.gurumed.org";
 		$this->description = "Returns the 5 newest posts from Gurumed (full text)";
-		$this->update = "2016-08-03";
+		$this->update = "2016-08-06";
 	}
 
-	function GurumedStripCDATA($string) {
+	private function GurumedStripCDATA($string) {
 		$string = str_replace('<![CDATA[', '', $string);
 		$string = str_replace(']]>', '', $string);
 		return $string;
@@ -38,9 +38,5 @@ class GuruMedBridge extends BridgeAbstract{
 
 	public function getURI(){
 		return 'http://gurumed.org/';
-	}
-
-	public function getCacheDuration(){
-		return 3600; // 1 hour
 	}
 }

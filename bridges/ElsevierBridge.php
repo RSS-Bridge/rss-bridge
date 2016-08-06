@@ -6,7 +6,7 @@ class ElsevierBridge extends BridgeAbstract{
 		$this->name = 'Elsevier journals recent articles';
 		$this->uri = 'http://www.journals.elsevier.com';
 		$this->description = 'Returns the recent articles published in Elsevier journals';
-		$this->update = '2016-08-02';
+		$this->update = '2016-08-06';
 
 		$this->parameters[] =
 			'[
@@ -21,7 +21,7 @@ class ElsevierBridge extends BridgeAbstract{
 	}
 
 	// Extracts the list of names from an article as string
-	function ExtractArticleName ($article){
+	private function ExtractArticleName ($article){
 		$names = $article->find('small', 0);
 		if($names)
 			return trim($names->plaintext);
@@ -29,7 +29,7 @@ class ElsevierBridge extends BridgeAbstract{
 	}
 
 	// Extracts the timestamp from an article
-	function ExtractArticleTimestamp ($article){
+	private function ExtractArticleTimestamp ($article){
 		$time = $article->find('.article-info', 0);
 		if($time){
 			$timestring = trim($time->plaintext);
@@ -53,7 +53,7 @@ class ElsevierBridge extends BridgeAbstract{
 	}
 
 	// Extracts the content from an article
-	function ExtractArticleContent ($article){
+	private function ExtractArticleContent ($article){
 		$content = $article->find('.article-content', 0);
 		if($content){
 			return trim($content->plaintext);

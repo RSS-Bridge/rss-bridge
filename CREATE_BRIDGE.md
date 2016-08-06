@@ -9,8 +9,8 @@ Read the following chapters an make sure to read the [Guidelines](#guidelines)!
 
 A rss bridge must extend the `BridgeAbstract` class and implement the following functions :
 
-* [`loadMetadatas`](#the-loadmetadatas-function)
-* [`collectData`](#the-collectdata-function)
+* [`loadMetadatas`](#the-loadmetadatas-function) (**required**)
+* [`collectData`](#the-collectdata-function) (**required**)
 * [`getName`](#the-getname-function)
 * [`getURI`](#the-geturi-function)
 * [`getCacheDuration`](#the-getcacheduration-function)
@@ -149,9 +149,11 @@ Parameter | ATOM | HTML | (M)RSS
 
 This function returns the name of the bridge as it will be displayed on the main page of rss-bridge or on top of the feed output (HTML, ATOM, etc...).
 
+**Notice:** rss-bridge will by default return `$this->name` which is defined in the [`loadMetadatas`](#the-loadmetadatas-function) function, so you only have to implement this function if you require different behavior!
+
 ```PHP
 	public function getName(){
-		return ''; // Insert your bridge name here!
+		return $this->name;
 	}
 ```
 
@@ -159,15 +161,19 @@ This function returns the name of the bridge as it will be displayed on the main
 
 This function returns the URI to the destination site of the bridge. It will be used on the main page of rss-bridge when clicking your bridge name.
 
+**Notice:** rss-bridge will by default return `$this->uri` which is defined in the [`loadMetadatas`](#the-loadmetadatas-function) function, so you only have to implement this function if you require different behavior!
+
 ```PHP
 	public function getURI(){
-		return ''; // Insert your URI here!
+		return $this->uri;
 	}
 ```
 
 ## The `getCacheDuration` function
 
 This function returns the time in **seconds** during which rss-bridge will output cached values instead of re-generating a RSS feed.
+
+**Notice:** rss-bridge will return `3600` seconds (1 hour) by default, so you only have to implement this function if you require different timing!
 
 ```PHP
 	public function getCacheDuration(){
@@ -196,7 +202,7 @@ Check the [list of error codes](https://en.wikipedia.org/wiki/List_of_HTTP_statu
 
 ## The `file_get_html` function
 
-This function is a wrapper around the simple_html_dom file_get_html function in order to provide context by design. It is considered good practice to use this function.
+This function is a wrapper around the [simple_html_dom](http://simplehtmldom.sourceforge.net/) [file_get_html](http://simplehtmldom.sourceforge.net/manual_api.htm#api) function in order to provide context by design. It is considered good practice to use this function.
 
 ```PHP
 $html = $this->file_get_html('your URI');
@@ -214,33 +220,21 @@ $html = $this->file_get_html('your URI');
 
 # Template
 
-This is a template for a new bridge:
+This is the minimum template for a new bridge:
 
 ```PHP
 <?php
 class MySiteBridge extends BridgeAbstract{
 	public function loadMetadatas(){
 		$this->maintainer = 'No maintainer';
-		$this->name = $this->getName();
-		$this->uri = $this->getURI();
+		$this->name = 'Unnamed bridge';
+		$this->uri = '';
 		$this->description = 'No description provided';
 		$this->parameters = array();
 	}
 
 	public function collectData(array $params){
 		// Implement your bridge here!
-	}
-
-	public function getName(){
-		return ''; // Insert your bridge name here!
-	}
-
-	public function getURI(){
-		return ''; // Insert your URI here!
-	}
-
-	public function getCacheDuration(){
-		return 3600; // 1 hour
 	}
 }
 

@@ -10,7 +10,7 @@ class AllocineFRBridge extends BridgeAbstract{
 		$this->name = "Allo Cine : Faux Raccord";
 		$this->uri = "http://www.allocine.fr/video/programme-12284/saison-24580/";
 		$this->description = "Allo Cine : Faux Raccord";
-		$this->update = "07/11/2013";
+		$this->update = "2016-08-06";
 
 	}
 
@@ -49,9 +49,6 @@ class AllocineFRBridge extends BridgeAbstract{
 
     public function getCacheDuration(){
         return 25200; // 7 hours
-    }
-    public function getDescription(){
-        return "Allo Cine : " . $this->_NOM . " via rss-bridge";
     }
 }
 ?>

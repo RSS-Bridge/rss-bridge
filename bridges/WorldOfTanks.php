@@ -12,7 +12,7 @@ class WorldOfTanks extends HttpCachingBridgeAbstract{
 		$this->name = "World of Tanks";
 		$this->uri = "http://worldoftanks.eu/";
 		$this->description = "News about the tank slaughter game.";
-		$this->update = "2015-09-12";
+		$this->update = "2016-08-06";
 
 		$this->parameters[] =
 		'[
@@ -79,7 +79,7 @@ class WorldOfTanks extends HttpCachingBridgeAbstract{
        }
     }
     
-    public function parseLine($infoLink) {
+    private function parseLine($infoLink) {
         $item = new Item();
         $item->uri = WORLD_OF_TANKS.$infoLink->href;
         // now load that uri from cache
@@ -92,20 +92,5 @@ class WorldOfTanks extends HttpCachingBridgeAbstract{
 //        $item->name = $auteur->innertext;
         $item->timestamp = $content->find('.b-statistic_time', 0)->getAttribute("data-timestamp");
         $this->items[] = $item;
-    }
-
-    public function getName(){
-        return $this->name;
-    }
-
-    public function getURI(){
-        return $this->uri;
-    }
-
-    public function getCacheDuration(){
-        return 3600; // 2h hours
-    }
-    public function getDescription(){
-        return "Toutes les actualités les plus brulantes de ce simulateur de destruction d'acier.";
     }
 }
