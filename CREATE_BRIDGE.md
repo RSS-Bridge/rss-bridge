@@ -165,7 +165,7 @@ This function returns the URI to the destination site of the bridge. It will be 
 
 ```PHP
 	public function getURI(){
-		return $this-uri;
+		return $this->uri;
 	}
 ```
 
@@ -202,7 +202,7 @@ Check the [list of error codes](https://en.wikipedia.org/wiki/List_of_HTTP_statu
 
 ## The `file_get_html` function
 
-This function is a wrapper around the simple_html_dom file_get_html function in order to provide context by design. It is considered good practice to use this function.
+This function is a wrapper around the [simple_html_dom](http://simplehtmldom.sourceforge.net/) [file_get_html](http://simplehtmldom.sourceforge.net/manual_api.htm#api) function in order to provide context by design. It is considered good practice to use this function.
 
 ```PHP
 $html = $this->file_get_html('your URI');
