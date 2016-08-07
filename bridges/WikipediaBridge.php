@@ -191,8 +191,10 @@ class WikipediaBridge extends BridgeAbstract{
 	private function AddDidYouKnowGeneric($element, $fullArticle){
 		foreach($element->find('ul', 0)->find('li') as $entry){
 			$item = new \Item();
+			
+			// We can only use the first anchor, there is no way of finding the 'correct' one if there are multiple
 			$item->uri = $this->uri . $entry->find('a', 0)->href;
-			$item->title = $entry->find('a', 0)->title;
+			$item->title = strip_tags($entry->innertext);
 
 			if(!$fullArticle)
 				$item->content = $this->ReplaceURIInHTMLElement($entry);
