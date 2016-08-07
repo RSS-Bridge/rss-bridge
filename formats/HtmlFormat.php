@@ -45,8 +45,8 @@ EOD;
 	<meta name="robots" content="noindex, follow">
 </head>
 <body>
-	<h1 class="pagetitle">{$title}</h1>
-	<div class="buttons"><a href="./"><button class="backbutton">← back to rss-bridge</button></a><a href="./?{$atomquery}"><button class="rss-feed">RSS feed</button></a></div>
+	<h1 class="pagetitle"><a href="{$uri}" target="_blank">{$title}</a></h1>
+	<div class="buttons"><a href="./#bridge-{$_GET['bridge']}"><button class="backbutton">← back to rss-bridge</button></a><a href="./?{$atomquery}"><button class="rss-feed">RSS feed</button></a></div>
 {$entries}
 </body>
 </html>

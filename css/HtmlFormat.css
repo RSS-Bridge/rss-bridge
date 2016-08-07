@@ -53,6 +53,11 @@ h1.pagetitle {
 	color: #2196F3;
 
 }
+
+h1.pagetitle > a {
+	color: #2196F3;
+}
+
 a.backlink, a.backlink:link, a.backlink:visited, a.itemtitle, a.itemtitle:link, a.itemtitle:visited {
 
 	color: #2196F3;
