@@ -67,9 +67,7 @@ $whitelist_default = array(
 	"PinterestBridge",
 	"ScmbBridge",
 	"TwitterBridge",
-	"WikipediaENBridge",
-	"WikipediaEOBridge",
-	"WikipediaFRBridge",
+	"WikipediaBridge",
 	"YoutubeBridge");
 
 if (!file_exists($whitelist_file)) {
