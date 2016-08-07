@@ -107,9 +107,18 @@ class WikipediaBridge extends BridgeAbstract{
 		// Clean the bottom of the featured article
 		$element->find('div', -1)->outertext = '';
 
+		// The title and URI of the article is best defined in an anchor containint the string '...' ('full article ...')
+		$target = $element->find('p/a', 0); // We'll use the first anchor as fallback
+		foreach($element->find('//a') as $anchor){
+			if(strpos($anchor->innertext, '...') !== false){
+				$target = $anchor;
+				break;
+			} 
+		}
+
 		$item = new \Item();
-		$item->uri = $this->uri . $element->find('p', 0)->find('a', 0)->href;
-		$item->title = $element->find('p', 0)->find('a', 0)->title;
+		$item->uri = $this->uri . $target->href;
+		$item->title = $target->title;
 
 		if(!$fullArticle)
 			$item->content = strip_tags(str_replace('href="/', 'href="' . $this->uri . '/', $element->innertext), '<a><p><br><img>');
