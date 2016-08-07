@@ -1,10 +1,14 @@
 <?php
+
+define('WIKIPEDIA_SUBJECT_TFA', 0); // Today's featured LoadFullArticle
+define('WIKIPEDIA_SUBJECT_DYK', 1); // Did you know...
+
 class WikipediaBridge extends BridgeAbstract{
 	public function loadMetadatas(){
 		$this->maintainer = 'logmanoriginal';
-		$this->name = 'Wikipedia bridge for \'Today\'s featured article...\' for many languages';
+		$this->name = 'Wikipedia bridge for many languages';
 		$this->uri = 'https://www.wikipedia.org/';
-		$this->description = 'Returns \'Today\'s featured article...\' for a language of your choice';
+		$this->description = 'Returns articles for a language of your choice';
 		$this->update = '2016-08-07';
 
 		$this->parameters[] = 
@@ -36,6 +40,24 @@ class WikipediaBridge extends BridgeAbstract{
 				]
 			},
 			{
+				"name": "Subject",
+				"identifier": "subject",
+				"type": "list",
+				"required": "true",
+				"title": "What subject are you interested in?",
+				"exampleValue": "Today\'s featured article",
+				"values": [
+					{
+						"name": "Today\'s featured article",
+						"value": "tfa"
+					},
+					{
+						"name": "Did you know...",
+						"value": "dyk"
+					}
+				]
+			},
+			{
 				"name": "Load full article",
 				"identifier": "fullarticle",
 				"type": "checkbox",
@@ -53,6 +75,22 @@ class WikipediaBridge extends BridgeAbstract{
 		if(!$this->CheckLanguageCode(strtolower($params['language'])))
 			$this->returnError('The language code you provided (\'' . $params['language'] . '\') is not supported!', 400);
 		
+		if(!isset($params['subject']))
+			$this->returnError('You must specify a valid subject via \'&subject=\'!', 400);
+		
+		$subject = WIKIPEDIA_SUBJECT_TFA;
+		switch($params['subject']){
+			case 'tfa':
+				$subject = WIKIPEDIA_SUBJECT_TFA;
+				break;
+			case 'dyk':
+				$subject = WIKIPEDIA_SUBJECT_DYK;
+				break;
+			default:
+				$subject = WIKIPEDIA_SUBJECT_TFA;
+				break;
+		}
+
 		$fullArticle = false;
 		if(isset($params['fullarticle']))
 			$fullArticle = $params['fullarticle'] === 'on' ? true : false;
@@ -61,7 +99,17 @@ class WikipediaBridge extends BridgeAbstract{
 		$this->uri = 'https://' . strtolower($params['language']) . '.wikipedia.org';
 
 		// While we at it let's also update the name for the feed
-		$this->name = 'Today\'s featured article from ' . strtolower($params['language']) . '.wikipedia.org';
+		switch($subject){
+			case WIKIPEDIA_SUBJECT_TFA:
+				$this->name = 'Today\'s featured article from ' . strtolower($params['language']) . '.wikipedia.org';
+				break;
+			case WIKIPEDIA_SUBJECT_DYK:
+				$this->name = 'Did you know? - articles from ' . strtolower($params['language']) . '.wikipedia.org';
+				break;
+			default:
+				$this->name = 'Articles from ' . strtolower($params['language']) . '.wikipedia.org';
+				break;
+		}
 
 		// This will automatically send us to the correct main page in any language (try it!)
 		$html = $this->file_get_html($this->uri . '/wiki');
@@ -82,7 +130,7 @@ class WikipediaBridge extends BridgeAbstract{
 		/*
 		* The method takes care of creating all items.
 		*/
-		$this->$function($html, $fullArticle);
+		$this->$function($html, $subject, $fullArticle);
 	}
 
 	/** 
@@ -100,10 +148,19 @@ class WikipediaBridge extends BridgeAbstract{
 		return in_array($languageCode, $language_names);
 	}
 
+	/**
+	* Replaces all relative URIs with absolute ones
+	* @param $element A simplehtmldom element
+	* @return The $element->innertext with all URIs replaced
+	*/
+	private function ReplaceURIInHTMLElement($element){
+		return str_replace('href="/', 'href="' . $this->uri . '/', $element->innertext);
+	}
+
 	/*
 	* Adds a new item to $items using a generic operation (should work for most (all?) wikis)
 	*/
-	private function AddElementGeneric($element, $fullArticle){
+	private function AddTodaysFeaturedArticleGeneric($element, $fullArticle){
 		// Clean the bottom of the featured article
 		$element->find('div', -1)->outertext = '';
 
@@ -121,11 +178,29 @@ class WikipediaBridge extends BridgeAbstract{
 		$item->title = $target->title;
 
 		if(!$fullArticle)
-			$item->content = strip_tags(str_replace('href="/', 'href="' . $this->uri . '/', $element->innertext), '<a><p><br><img>');
+			$item->content = strip_tags($this->ReplaceURIInHTMLElement($element), '<a><p><br><img>');
 		else 
 			$item->content = $this->LoadFullArticle($item->uri);
 
 		$this->items[] = $item;
+	}
+
+	/*
+	* Adds a new item to $items using a generic operation (should work for most (all?) wikis)
+	*/
+	private function AddDidYouKnowGeneric($element, $fullArticle){
+		foreach($element->find('ul', 0)->find('li') as $entry){
+			$item = new \Item();
+			$item->uri = $this->uri . $entry->find('a', 0)->href;
+			$item->title = $entry->find('a', 0)->title;
+
+			if(!$fullArticle)
+				$item->content = $this->ReplaceURIInHTMLElement($entry);
+			else 
+				$item->content = $this->LoadFullArticle($item->uri);
+
+			$this->items[] = $item;
+		}
 	}
 
 	/**
@@ -143,7 +218,9 @@ class WikipediaBridge extends BridgeAbstract{
 			$this->returnError('Could not find content in page: ' . $uri . '!', 404);
 		
 		// Let's remove a couple of things from the article
-		$content->find('#toc', 0)->outertext = ''; // 'Contents' table
+		$table = $content->find('#toc', 0); // Table of contents
+		if(!$table === false)
+			$table->outertext = '';
 
 		foreach($content->find('ol.references') as $reference) // References
 			$reference->outertext = '';
@@ -154,32 +231,72 @@ class WikipediaBridge extends BridgeAbstract{
 	/**
 	* Implementation for de.wikipedia.org
 	*/
-	private function GetContentsDE($html, $fullArticle){
-		$element = $html->find('div[id=mf-tfa]', 0);
-		$this->AddElementGeneric($element, $fullArticle);
+	private function GetContentsDE($html, $subject, $fullArticle){
+		switch($subject){
+			case WIKIPEDIA_SUBJECT_TFA:		
+				$element = $html->find('div[id=mf-tfa]', 0);
+				$this->AddTodaysFeaturedArticleGeneric($element, $fullArticle);
+				break;
+			case WIKIPEDIA_SUBJECT_DYK:
+				$element = $html->find('div[id=mf-dyk]', 0);
+				$this->AddDidYouKnowGeneric($element, $fullArticle);
+				break;
+			default:
+				break;
+		}
 	}
 
 	/**
 	* Implementation for fr.wikipedia.org
 	*/
-	private function GetContentsFR($html, $fullArticle){
-		$element = $html->find('div[id=accueil-lumieresur]', 0);
-		$this->AddElementGeneric($element, $fullArticle);
+	private function GetContentsFR($html, $subject, $fullArticle){
+		switch($subject){
+			case WIKIPEDIA_SUBJECT_TFA:		
+				$element = $html->find('div[id=accueil-lumieresur]', 0);
+				$this->AddTodaysFeaturedArticleGeneric($element, $fullArticle);
+				break;
+			case WIKIPEDIA_SUBJECT_DYK:
+				$element = $html->find('div[id=SaviezVous]', 0);
+				$this->AddDidYouKnowGeneric($element, $fullArticle);
+				break;
+			default:
+				break;
+		}
 	}
 
 	/**
 	* Implementation for en.wikipedia.org
 	*/
-	private function GetContentsEN($html, $fullArticle){
-		$element = $html->find('div[id=mp-tfa]', 0);
-		$this->AddElementGeneric($element, $fullArticle);
+	private function GetContentsEN($html, $subject, $fullArticle){
+		switch($subject){
+			case WIKIPEDIA_SUBJECT_TFA:		
+				$element = $html->find('div[id=mp-tfa]', 0);
+				$this->AddTodaysFeaturedArticleGeneric($element, $fullArticle);
+				break;
+			case WIKIPEDIA_SUBJECT_DYK:
+				$element = $html->find('div[id=mp-dyk]', 0);
+				$this->AddDidYouKnowGeneric($element, $fullArticle);
+				break;
+			default:
+				break;
+		}
 	}
 
 	/**
 	* Implementation for eo.wikipedia.org
 	*/
-	private function GetContentsEO($html, $fullArticle){
-		$element = $html->find('div[id=mf-artikolo-de-la-semajno]', 0);
-		$this->AddElementGeneric($element, $fullArticle);
+	private function GetContentsEO($html, $subject, $fullArticle){
+		switch($subject){
+			case WIKIPEDIA_SUBJECT_TFA:		
+				$element = $html->find('div[id=mf-artikolo-de-la-semajno]', 0);
+				$this->AddTodaysFeaturedArticleGeneric($element, $fullArticle);
+				break;
+			case WIKIPEDIA_SUBJECT_DYK:
+				$element = $html->find('div[id=mw-content-text]', 0)->find('table', 4)->find('td', 4);
+				$this->AddDidYouKnowGeneric($element, $fullArticle);
+				break;
+			default:
+				break;
+		}
 	}
 }
