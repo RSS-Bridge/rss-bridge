@@ -61,7 +61,7 @@ class WikipediaBridge extends BridgeAbstract{
 		$this->uri = 'https://' . strtolower($params['language']) . '.wikipedia.org';
 
 		// While we at it let's also update the name for the feed
-		$this->name = 'Today\'s featured articles from ' . strtolower($params['language']) . '.wikipedia.org';
+		$this->name = 'Today\'s featured article from ' . strtolower($params['language']) . '.wikipedia.org';
 
 		// This will automatically send us to the correct main page in any language (try it!)
 		$html = $this->file_get_html($this->uri . '/wiki');
