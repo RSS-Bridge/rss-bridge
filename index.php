@@ -187,7 +187,13 @@ $formats = Format::searchInformation();
     <section>
         <a href="https://github.com/sebsauvage/rss-bridge">RSS-Bridge alpha 0.2 ~ Public Domain</a><br />
 		<?= $activeFoundBridgeCount; ?>/<?= count($bridgeList) ?> active bridges. <br />
-		<a href="?show_inactive=1"><button class="small">Show inactive bridges</button></a><br />
+        <?php
+            // FIXME: This should be done in pure CSS
+            if(!$showInactive)
+                echo '<a href="?show_inactive=1"><button class="small">Show inactive bridges</button></a><br />';
+            else
+                echo '<a href="?show_inactive=0"><button class="small">Hide inactive bridges</button></a><br />';
+        ?>
     </section>
     </body>
 </html>
