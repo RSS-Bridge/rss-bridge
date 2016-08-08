@@ -28,7 +28,6 @@ class AtomFormat extends FormatAbstract{
 
         $entries = '';
         foreach($this->getDatas() as $data){
-            $entryName = is_null($data->name) ? $title : xml_encode($data->name);
             $entryAuthor = is_null($data->author) ? $uri : xml_encode($data->author);
             $entryTitle = is_null($data->title) ? '' : xml_encode($data->title);
             $entryUri = is_null($data->uri) ? '' : xml_encode($data->uri);
@@ -40,8 +39,7 @@ class AtomFormat extends FormatAbstract{
 
     <entry>
         <author>
-            <name>{$entryName}</name>
-            <uri>{$entryAuthor}</uri>
+            <name>{$entryAuthor}</name>
         </author>
         <title type="html"><![CDATA[{$entryTitle}]]></title>
         <link rel="alternate" type="text/html" href="{$entryUri}" />
