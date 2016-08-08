@@ -138,7 +138,7 @@ The following list provides an overview of the parameters used by the other form
 Parameter | ATOM | HTML | (M)RSS
 ----------|------|------|-------
 `uri`|X|X|X
-`thumbnailUri`||X
+`thumbnailUri`|||X
 `title`|X|X|X
 `name`|X||
 `timestamp`|X|X|X
