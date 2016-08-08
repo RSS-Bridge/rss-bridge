@@ -112,7 +112,6 @@ The `Item` class is used to store parameter that are collected in the [`collectD
 
 ```PHP
 $item->uri // URI to reach the subject ("http://...")
-$item->thumbnailUri // URI for the thumbnail ("http://...")
 $item->title // Title of the item
 $item->name // Name of the item
 $item->timestamp // Timestamp of the item in numeric format (use strtotime)
@@ -138,7 +137,6 @@ The following list provides an overview of the parameters used by the other form
 Parameter | ATOM | HTML | (M)RSS
 ----------|------|------|-------
 `uri`|X|X|X
-`thumbnailUri`|||X
 `title`|X|X|X
 `name`|X||
 `timestamp`|X|X|X
