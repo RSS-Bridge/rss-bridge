@@ -70,7 +70,6 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
 
                 $item->id = $episode->find('a', 0)->getAttribute('href');
                 $item->uri = $this->uri . $htmlepisode->find('#telecharger',0)->getAttribute('href');
-                $item->thumbnailUri = $htmlepisode->find('#bigcover', 0)->find('img',0)->getAttribute('src');
                 $this->items[] = $item;
             }
         }

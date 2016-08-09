@@ -6,7 +6,7 @@ class JapanExpoBridge extends BridgeAbstract{
         $this->name = 'JapanExpo';
         $this->uri = 'http://www.japan-expo-paris.com/fr/actualites';
         $this->description = 'Returns most recent entries from Japan Expo actualités.';
-        $this->update = '2016-06-12';
+        $this->update = '2016-08-09';
         $this->parameters[] =
         '[
             {
@@ -96,7 +96,6 @@ class JapanExpoBridge extends BridgeAbstract{
             $item->uri = $url;
             $item->title = $title;
             $item->timestamp = $timestamp;
-            $item->thumbnailUri = $thumbnail;
             $item->content = $content;
             $this->items[] = $item;
             $count++;

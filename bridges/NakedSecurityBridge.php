@@ -6,7 +6,7 @@ class NakedSecurityBridge extends BridgeAbstract {
         $this->name = 'Naked Security';
         $this->uri = 'https://nakedsecurity.sophos.com/';
         $this->description = 'Returns the newest articles.';
-        $this->update = '2016-08-06';
+        $this->update = '2016-08-09';
     }
 
     public function collectData(array $param) {
@@ -60,7 +60,6 @@ class NakedSecurityBridge extends BridgeAbstract {
                 $item = new \Item();
                 $item->uri = $article_uri;
                 $item->title = $article_title;
-                $item->thumbnailUri = $article_image;
                 $item->author = $article_html->find('a[rel=author]', 0)->plaintext;
                 $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
                 $item->content = $article_content;

@@ -7,7 +7,7 @@ class TheHackerNewsBridge extends BridgeAbstract {
         $this->name = 'The Hacker News Bridge';
         $this->uri = 'https://thehackernews.com/';
         $this->description = 'Cyber Security, Hacking, Technology News.';
-        $this->update = '2016-08-06';
+        $this->update = '2016-08-09';
 
     }
 
@@ -55,7 +55,6 @@ class TheHackerNewsBridge extends BridgeAbstract {
                 $article_author = trim($element->find('span.vcard', 0)->plaintext);
                 $article_title = $element->find('a.entry-title', 0)->plaintext;
                 $article_timestamp = strtotime($element->find('span.updated', 0)->plaintext);
-                $article_thumbnail = $element->find('img', 0)->src;
                 $article = $this->file_get_html($article_url) or $this->returnError('Could not request TheHackerNews: '.$article_url, 500);
 
                 $contents = $article->find('div.articlebodyonly', 0)->innertext;
@@ -66,7 +65,6 @@ class TheHackerNewsBridge extends BridgeAbstract {
                 $item->uri = $article_url;
                 $item->title = $article_title;
                 $item->author = $article_author;
-                $item->thumbnailUri = $article_thumbnail;
                 $item->timestamp = $article_timestamp;
                 $item->content = trim($contents);
                 $this->items[] = $item;

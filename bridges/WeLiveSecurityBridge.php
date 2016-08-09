@@ -6,7 +6,7 @@ class WeLiveSecurityBridge extends BridgeAbstract {
         $this->name = 'We Live Security';
         $this->uri = 'http://www.welivesecurity.com/';
         $this->description = 'Returns the newest articles.';
-        $this->update = '2016-08-06';
+        $this->update = '2016-08-09';
     }
 
     public function collectData(array $param) {
@@ -49,7 +49,6 @@ class WeLiveSecurityBridge extends BridgeAbstract {
 
                 $item = new \Item();
                 $item->uri = $article_url;
-                $item->thumbnailUri = $article_image;
                 $item->title = $element->find('title', 0)->plaintext;
                 $item->author = $article_html->find('a[rel=author]', 0)->plaintext;
                 $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);

@@ -10,7 +10,7 @@ class HDWallpapersBridge extends BridgeAbstract {
 		$this->name = "HD Wallpapers Bridge";
 		$this->uri = "http://www.hdwallpapers.in/";
 		$this->description = "Returns the latests wallpapers from HDWallpapers";
-		$this->update = "2015-04-08";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -63,8 +63,7 @@ class HDWallpapersBridge extends BridgeAbstract {
                 $item->uri = $baseUri.'/download'.str_replace('wallpapers.html', $this->resolution.'.jpg', $element->href);
                 $item->timestamp = time();
                 $item->title = $element->find('p', 0)->text();
-                $item->thumbnailUri = $baseUri.$thumbnail->src;
-                $item->content = $item->title.'<br><a href="'.$item->uri.'"><img src="'.$item->thumbnailUri.'" /></a>';
+                $item->content = $item->title.'<br><a href="'.$item->uri.'"><img src="'.$baseUri.$thumbnail->src.'" /></a>';
                 $this->items[] = $item;
 
                 $num++;

@@ -7,7 +7,7 @@ class MspabooruBridge extends BridgeAbstract{
 		$this->name = "Mspabooru";
 		$this->uri = "http://mspabooru.com/";
 		$this->description = "Returns images from given page";
-		$this->update = "2014-05-25";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -42,10 +42,10 @@ class MspabooruBridge extends BridgeAbstract{
 		$item->uri = 'http://mspabooru.com/'.$element->find('a', 0)->href;
 		$item->postid = (int)preg_replace("/[^0-9]/",'', $element->getAttribute('id'));	
 		$item->timestamp = time();
-		$item->thumbnailUri = $element->find('img', 0)->src;
+		$thumbnailUri = $element->find('img', 0)->src;
 		$item->tags = $element->find('img', 0)->getAttribute('alt');
 		$item->title = 'Mspabooru | '.$item->postid;
-		$item->content = '<a href="' . $item->uri . '"><img src="' . $item->thumbnailUri . '" /></a><br>Tags: '.$item->tags;
+		$item->content = '<a href="' . $item->uri . '"><img src="' . $thumbnailUri . '" /></a><br>Tags: '.$item->tags;
 		$this->items[] = $item; 
 	}
     }

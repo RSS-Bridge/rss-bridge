@@ -8,7 +8,7 @@ class MangareaderBridge extends BridgeAbstract{
 		$this->name = "Mangareader Bridge";
 		$this->uri = "http://www.mangareader.net";
 		$this->description = "Returns the latest updates, popular mangas or manga updates (new chapters)";
-		$this->update = "2016-01-22";
+		$this->update = "2016-08-09";
 
 		$this->parameters["Get latest updates"] = '[]';
         $this->parameters["Get popular mangas"] = 
@@ -281,15 +281,15 @@ class MangareaderBridge extends BridgeAbstract{
                 // The thumbnail is encrypted in a css-style...
                 // format: "background-image:url('<the part which is actually interesting>')"
                 $mangaimgelement = $xpath->query(".//*[@class='imgsearchresults']", $manga)->item(0)->getAttribute('style'); 
-                
+                $thumbnail = substr($mangaimgelement, 22, strlen($mangaimgelement) - 24);
+
                 $item = new \Item();
                 $item->title = htmlspecialchars($xpath->query(".//*[@class='manga_name']//a", $manga)->item(0)->nodeValue);
                 $item->uri = 'http://www.mangareader.net' . $xpath->query(".//*[@class='manga_name']//a", $manga)->item(0)->getAttribute('href');
                 $item->author = htmlspecialchars($xpath->query("//*[@class='author_name']", $manga)->item(0)->nodeValue);
                 $item->chaptercount = $xpath->query(".//*[@class='chapter_count']", $manga)->item(0)->nodeValue;
                 $item->genre = htmlspecialchars($xpath->query(".//*[@class='manga_genre']", $manga)->item(0)->nodeValue);
-                $item->thumbnailUri = substr($mangaimgelement, 22, strlen($mangaimgelement) - 24);
-                $item->content = '<a href="' . $item->uri . '"><img src="' . $item->thumbnailUri . '" alt="' . $item->title . '" /></a><p>' . $item->genre . '</p><p>' . $item->chaptercount . '</p>';
+                $item->content = '<a href="' . $item->uri . '"><img src="' . $thumbnail . '" alt="' . $item->title . '" /></a><p>' . $item->genre . '</p><p>' . $item->chaptercount . '</p>';
                 $this->items[] = $item;
             }
         }

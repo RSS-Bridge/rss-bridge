@@ -7,7 +7,7 @@ class DilbertBridge extends BridgeAbstract {
         $this->name = 'Dilbert Daily Strip';
         $this->uri = 'http://dilbert.com';
         $this->description = 'The Unofficial Dilbert Daily Comic Strip';
-        $this->update = "2016-08-06";
+        $this->update = "2016-08-09";
 
     }
 
@@ -29,7 +29,6 @@ class DilbertBridge extends BridgeAbstract {
 
             $item = new \Item();
             $item->uri = $url;
-            $item->thumbnailUri = $comic;
             $item->title = $title;
             $item->author = 'Scott Adams';
             $item->timestamp = $date;

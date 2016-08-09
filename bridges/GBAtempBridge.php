@@ -9,7 +9,7 @@ class GBAtempBridge extends BridgeAbstract {
         $this->name = 'GBAtemp';
         $this->uri = $this->getURI();
         $this->description = 'GBAtemp is a user friendly underground video game community.';
-        $this->update = '2016-08-06';
+        $this->update = '2016-08-09';
 
         $this->parameters[] =
         '[
@@ -56,13 +56,12 @@ class GBAtempBridge extends BridgeAbstract {
         } return $string;
     }
 
-    private function build_item($uri, $title, $author, $timestamp, $thumnail, $content) {
+    private function build_item($uri, $title, $author, $timestamp, $content) {
         $item = new \Item();
         $item->uri = $uri;
         $item->title = $title;
         $item->author = $author;
         $item->timestamp = $timestamp;
-        $item->thumbnailUri = $thumnail;
         $item->content = $content;
         return $item;
     }
@@ -97,17 +96,15 @@ class GBAtempBridge extends BridgeAbstract {
         if ($typeFilter == 'N') {
             foreach ($html->find('li[class=news_item full]') as $newsItem) {
                 $url = $this->getURI().$newsItem->find('a', 0)->href;
-                $img = $this->getURI().$newsItem->find('img', 0)->src;
                 $time = intval($this->ExtractFromDelimiters($newsItem->find('abbr.DateTime', 0)->outertext, 'data-time="', '"'));
                 $author = $newsItem->find('a.username', 0)->plaintext;
                 $title = $newsItem->find('a', 1)->plaintext;
                 $content = $this->fetch_post_content($url, $this->getURI());
-                $this->items[] = $this->build_item($url, $title, $author, $time, $img, $content);
+                $this->items[] = $this->build_item($url, $title, $author, $time, $content);
             }
         } else if ($typeFilter == 'R') {
             foreach ($html->find('li.portal_review') as $reviewItem) {
                 $url = $this->getURI().$reviewItem->find('a', 0)->href;
-                $img = $this->getURI().$this->ExtractFromDelimiters($reviewItem->find('a', 0)->style, 'image:url(', ')');
                 $title = $reviewItem->find('span.review_title', 0)->plaintext;
                 $content = $this->file_get_html($url) or $this->returnError('Could not request GBAtemp: '.$uri, 500);
                 $author = $content->find('a.username', 0)->plaintext;
@@ -118,7 +115,7 @@ class GBAtempBridge extends BridgeAbstract {
                 $procons = $content->find('table.review_procons', 0)->outertext;
                 $scores = $content->find('table.reviewscores', 0)->outertext;
                 $content = $this->cleanup_post_content($intro.$review.$subheader.$procons.$scores, $this->getURI());
-                $this->items[] = $this->build_item($url, $title, $author, $time, $img, $content);
+                $this->items[] = $this->build_item($url, $title, $author, $time, $content);
             }
         } else if ($typeFilter == 'T') {
             foreach ($html->find('li.portal-tutorial') as $tutorialItem) {
@@ -127,7 +124,7 @@ class GBAtempBridge extends BridgeAbstract {
                 $time = intval($this->ExtractFromDelimiters($tutorialItem->find('abbr.DateTime', 0)->outertext, 'data-time="', '"'));
                 $author = $tutorialItem->find('a.username', 0)->plaintext;
                 $content = $this->fetch_post_content($url, $this->getURI());
-                $this->items[] = $this->build_item($url, $title, $author, $time, '', $content);
+                $this->items[] = $this->build_item($url, $title, $author, $time, $content);
             }
         } else if ($typeFilter == 'F') {
             foreach ($html->find('li.rc_item') as $postItem) {
@@ -136,7 +133,7 @@ class GBAtempBridge extends BridgeAbstract {
                 $time = intval($this->ExtractFromDelimiters($postItem->find('abbr.DateTime', 0)->outertext, 'data-time="', '"'));
                 $author = $postItem->find('a.username', 0)->plaintext;
                 $content = $this->fetch_post_content($url, $this->getURI());
-                $this->items[] = $this->build_item($url, $title, $author, $time, '', $content);
+                $this->items[] = $this->build_item($url, $title, $author, $time, $content);
             }
         }
     }

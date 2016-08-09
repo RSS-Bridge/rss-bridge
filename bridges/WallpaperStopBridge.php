@@ -11,7 +11,7 @@ class WallpaperStopBridge extends BridgeAbstract {
 		$this->name = "WallpaperStop Bridge";
 		$this->uri = "http://www.wallpaperstop.com/";
 		$this->description = "Returns the latests wallpapers from WallpaperStop";
-		$this->update = "2014-11-05";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -73,8 +73,7 @@ class WallpaperStopBridge extends BridgeAbstract {
                         $item->id = $matches[3];
                         $item->timestamp = time();
                         $item->title = $thumbnail->title;
-                        $item->thumbnailUri = $baseUri.$thumbnail->src;
-                        $item->content = $item->title.'<br><a href="'.$wplink.'"><img src="'.$item->thumbnailUri.'" /></a>';
+                        $item->content = $item->title.'<br><a href="'.$wplink.'"><img src="'.$baseUri.$thumbnail->src.'" /></a>';
                         $this->items[] = $item;
 
                         $num++;

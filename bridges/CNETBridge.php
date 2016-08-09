@@ -9,7 +9,7 @@ class CNETBridge extends BridgeAbstract {
         $this->name = 'CNET News';
         $this->uri = 'http://www.cnet.com/';
         $this->description = 'Returns the newest articles. <br /> You may specify a topic found in some section URLs, else all topics are selected.';
-        $this->update = '2016-08-06';
+        $this->update = '2016-08-09';
 
         $this->parameters[] =
         '[
@@ -59,7 +59,6 @@ class CNETBridge extends BridgeAbstract {
 
                 $article_title = trim($element->find('h2', 0)->plaintext);
                 $article_uri = 'http://www.cnet.com'.($element->find('a', 0)->href);
-                $article_thumbnail = $element->parent()->find('img', 0)->src;
                 $article_timestamp = strtotime($element->find('time.assetTime', 0)->plaintext);
                 $article_author = trim($element->find('a[rel=author]', 0)->plaintext);
 
@@ -67,20 +66,10 @@ class CNETBridge extends BridgeAbstract {
 
                     $article_html = $this->file_get_html($article_uri) or $this->returnError('Could not request CNET: '.$article_uri, 500);
 
-                    if (is_null($article_thumbnail))
-                        $article_thumbnail = $article_html->find('div.originalImage', 0);
-
-                    if (is_null($article_thumbnail))
-                        $article_thumbnail = $article_html->find('span.imageContainer', 0);
-
-                    if (is_object($article_thumbnail))
-                        $article_thumbnail = $article_thumbnail->find('img', 0)->src;
-
                     $article_content = trim(CleanArticle(ExtractFromDelimiters($article_html, '<div class="articleContent', '<footer>')));
 
                     $item = new \Item();
                     $item->uri = $article_uri;
-                    $item->thumbnailUri = $article_thumbnail;
                     $item->title = $article_title;
                     $item->author = $article_author;
                     $item->timestamp = $article_timestamp;

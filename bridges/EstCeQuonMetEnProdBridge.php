@@ -6,7 +6,7 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract {
         $this->name = 'Est-ce qu\'on met en prod aujourd\'hui ?';
         $this->uri = 'https://www.estcequonmetenprodaujourdhui.info/';
         $this->description = 'Should we put a website in production today? (French)';
-        $this->update = "2016-08-06";
+        $this->update = "2016-08-09";
     }
 
     public function collectData(array $param) {
@@ -20,16 +20,8 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract {
 
         $html = $this->file_get_html($this->getURI()) or $this->returnError('Could not request EstCeQuonMetEnProd: '.$this->getURI(), 500);
 
-        $img = $html->find('img', 0);
-        if (is_object($img)) {
-            $img = $img->src;
-            if ($img[0] == '/')
-                $img = substr($this->getURI(), 0, strlen($this->getURI()) - 1).$img;
-        }
-
         $item = new \Item();
         $item->uri = $this->getURI().'#'.date('Y-m-d');
-        $item->thumbnailUri = $img;
         $item->title = $this->getName();
         $item->author = 'Nicolas Hoffmann';
         $item->timestamp = strtotime('today midnight');

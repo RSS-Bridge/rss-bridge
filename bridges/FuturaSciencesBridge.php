@@ -7,7 +7,7 @@ class FuturaSciencesBridge extends BridgeAbstract {
         $this->name = 'Futura-Sciences Bridge';
         $this->uri = 'http://www.futura-sciences.com/';
         $this->description = 'Returns the newest articles.';
-        $this->update = '2016-08-06';
+        $this->update = '2016-08-09';
 
         $this->parameters[] =
         '[
@@ -209,7 +209,6 @@ class FuturaSciencesBridge extends BridgeAbstract {
                 $item->author = ExtractAuthor($article, $element);
                 $item->uri = $article_url;
                 $item->title = StripCDATA($element->find('title', 0)->innertext);
-                $item->thumbnailUri = StripCDATA($element->find('enclosure', 0)->url);
                 $item->timestamp = strtotime(StripCDATA($element->find('pubDate', 0)->plaintext));
                 $item->content = trim($contents);
                 $this->items[] = $item;
