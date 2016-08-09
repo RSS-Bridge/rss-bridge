@@ -70,7 +70,7 @@ class TwitterBridgeExtended extends BridgeAbstract{
 			}
 
 			// get tweet text
-			$item->content = '<a href="https://twitter.com/'.$item->username.'"><img style="align:top;width:75px;" alt="avatar" src="'.$item->avatar.'" />'.$item->username.'</a> '.$item->fullname.'<br/><blockquote>'.str_replace('href="/', 'href="https://twitter.com/', $tweet->find('p.js-tweet-text', 0)->innertext).'</blockquote>';
+			$item->content = '<a href="https://twitter.com/'.$item->username.'"><img style="align:top;width:75px;" alt="'.$item->username.'" src="'.$item->avatar.'" /></a> '.$item->fullname.'<br/><blockquote>'.str_replace('href="/', 'href="https://twitter.com/', $tweet->find('p.js-tweet-text', 0)->innertext).'</blockquote>';
 			// generate the title
 			$item->title = $item->fullname . ' (@'. $item->username . ') | ' . $item->content_simple;
 			// put out
