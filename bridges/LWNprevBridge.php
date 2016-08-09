@@ -12,7 +12,7 @@ class LWNprevBridge extends BridgeAbstract{
     $this->name = 'LWN Free Weekly Edition';
     $this->uri = 'https://lwn.net/free/bigpage';
     $this->description = 'LWN Free Weekly Edition available one week late';
-    $this->update = '2016-19-01';
+    $this->update = '2016-08-09';
 
   }
 
@@ -88,14 +88,14 @@ class LWNprevBridge extends BridgeAbstract{
 
       switch($h2NextSibling->getAttribute('class')){
       case 'FeatureByline':
-        $item->name=$h2NextSibling->getElementsByTagName('b')->item(0)->textContent;
+        $item->author=$h2NextSibling->getElementsByTagName('b')->item(0)->textContent;
         break;
       case 'GAByline':
         $text=$h2NextSibling->textContent;
-        $item->name=substr($text,strpos($text,'by '));
+        $item->author=substr($text,strpos($text,'by '));
         break;
       default:
-        $item->name='LWN';
+        $item->author='LWN';
         break;
       };
 

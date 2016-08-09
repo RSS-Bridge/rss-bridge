@@ -7,7 +7,7 @@ class BlaguesDeMerdeBridge extends BridgeAbstract{
 		$this->name = "Blagues De Merde";
 		$this->uri = "http://www.blaguesdemerde.fr/";
 		$this->description = "Blagues De Merde";
-		$this->update = "2016-08-06";
+		$this->update = "2016-08-09";
 
 	}
 
@@ -26,7 +26,7 @@ class BlaguesDeMerdeBridge extends BridgeAbstract{
                 $date = $element->find("li.bdm_date",0)->innertext;
                 $time = mktime(0, 0, 0, substr($date, 3, 2), substr($date, 0, 2), substr($date, 6, 4));
                 $item->timestamp = $time;
-                $item->name = $element->find("li.bdm_pseudo",0)->innertext;;
+                $item->author = $element->find("li.bdm_pseudo",0)->innertext;;
                 $this->items[] = $item;
             }
         }

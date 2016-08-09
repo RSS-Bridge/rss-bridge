@@ -8,7 +8,7 @@ class Sexactu extends BridgeAbstract{
 		$this->name = "Sexactu";
 		$this->uri = "http://www.gqmagazine.fr";
 		$this->description = "Sexactu via rss-bridge";
-		$this->update = "2016-08-06";
+		$this->update = "2016-08-09";
 
 	}
 
@@ -42,7 +42,7 @@ $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July',
                         $date = strtotime($dateText); 
                         $item->timestamp = $date;
 
-                        $item->name = "Maïa Mazaurette";
+                        $item->author = "Maïa Mazaurette";
                         $elementText = $element->find('.text-container', 0);
                         // don't forget to replace images server url with gq one
                         foreach($elementText->find('img') as $image) {

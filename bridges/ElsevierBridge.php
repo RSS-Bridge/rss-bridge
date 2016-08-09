@@ -6,7 +6,7 @@ class ElsevierBridge extends BridgeAbstract{
 		$this->name = 'Elsevier journals recent articles';
 		$this->uri = 'http://www.journals.elsevier.com';
 		$this->description = 'Returns the recent articles published in Elsevier journals';
-		$this->update = '2016-08-06';
+		$this->update = '2016-08-09';
 
 		$this->parameters[] =
 			'[
@@ -69,7 +69,7 @@ class ElsevierBridge extends BridgeAbstract{
 			$item = new \Item();
 			$item->uri = $article->find('.pod-listing-header>a',0)->getAttribute('href').'?np=y';
 			$item->title = $article->find('.pod-listing-header>a',0)->plaintext;
-			$item->name = $this->ExtractArticleName($article);
+			$item->author = $this->ExtractArticleName($article);
 			$item->timestamp = $this->ExtractArticleTimestamp($article);
 			$item->content = $this->ExtractArticleContent($article);
 			$this->items[] = $item;

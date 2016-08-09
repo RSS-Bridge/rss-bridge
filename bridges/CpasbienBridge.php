@@ -24,7 +24,7 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
 		$this->name = "Cpasbien Bridge";
 		$this->uri = "http://www.cpasbien.io";
 		$this->description = "Returns latest torrents from a request query";
-		$this->update = "2016-08-06";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -57,7 +57,7 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
                 $htmlepisode=content_get_html($this->get_cached($episode->find('a', 0)->getAttribute('href')));
 
                 $item = new \Item();
-                $item->name = $episode->find('a', 0)->text();
+                $item->author = $episode->find('a', 0)->text();
                 $item->title = $episode->find('a', 0)->text();
                 $item->timestamp = $this->get_cached_time($episode->find('a', 0)->getAttribute('href'));
                 $textefiche=$htmlepisode->find('#textefiche', 0)->find('p',1);
