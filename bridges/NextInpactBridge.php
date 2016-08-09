@@ -6,7 +6,7 @@ class NextInpactBridge extends BridgeAbstract {
 		$this->name = "NextInpact Bridge";
 		$this->uri = "http://www.nextinpact.com/";
 		$this->description = "Returns the newest articles.";
-		$this->update = "2016-08-06";
+		$this->update = "2016-08-09";
 	}
 
 	private function StripCDATA($string) {
@@ -35,7 +35,6 @@ class NextInpactBridge extends BridgeAbstract {
 				$item = new \Item();
 				$item->title = $this->StripCDATA($element->find('title', 0)->innertext);
 				$item->uri = $this->StripCDATA($element->find('guid', 0)->plaintext);
-				$item->thumbnailUri = $this->StripCDATA($element->find('enclosure', 0)->url);
 				$item->author = $this->StripCDATA($element->find('creator', 0)->innertext);
 				$item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
 				$item->content = $this->ExtractContent($item->uri);

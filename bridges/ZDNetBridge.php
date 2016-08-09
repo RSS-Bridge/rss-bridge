@@ -7,7 +7,7 @@ class ZDNetBridge extends BridgeAbstract {
         $this->name = 'ZDNet Bridge';
         $this->uri = 'http://www.zdnet.com/';
         $this->description = 'Technology News, Analysis, Comments and Product Reviews for IT Professionals.';
-        $this->update = '2016-08-06';
+        $this->update = '2016-08-09';
 
         $this->parameters[] =
         // http://www.zdnet.com/zdnet.opml
@@ -286,14 +286,10 @@ class ZDNetBridge extends BridgeAbstract {
                     .'<p><b>'.$article_subtitle.'</b></p>'
                     .$contents;
 
-                if ($thumbnail == '')
-                    $thumbnail = 'http://zdnet1.cbsistatic.com/fly/bundles/zdnetcss/images/logos/logo-192x192.png';
-
                 $item = new \Item();
                 $item->author = $author;
                 $item->uri = $article_url;
                 $item->title = $article_title;
-                $item->thumbnailUri = $thumbnail;
                 $item->timestamp = $article_timestamp;
                 $item->content = $contents;
                 $this->items[] = $item;

@@ -7,7 +7,7 @@ class NextgovBridge extends BridgeAbstract {
         $this->name = 'Nextgov Bridge';
         $this->uri = 'https://www.nextgov.com/';
         $this->description = 'USA Federal technology news, best practices, and web 2.0 tools.';
-        $this->update = '2016-08-06';
+        $this->update = '2016-08-09';
 
         $this->parameters[] =
         '[
@@ -79,14 +79,10 @@ class NextgovBridge extends BridgeAbstract {
                     .'<p><b>'.$article_subtitle.'</b></p>'
                     .trim($contents);
 
-                if ($article_thumbnail == '')
-                    $article_thumbnail = 'http://cdn.nextgov.com/nextgov/images/logo.png';
-
                 $item = new \Item();
                 $item->uri = $article_url;
                 $item->title = $article_title;
                 $item->author = $article_author;
-                $item->thumbnailUri = $article_thumbnail;
                 $item->timestamp = $article_timestamp;
                 $item->content = $contents;
                 $this->items[] = $item;

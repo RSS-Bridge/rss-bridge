@@ -10,7 +10,7 @@ class WhydBridge extends BridgeAbstract{
 		$this->name = "Whyd Bridge";
 		$this->uri = "http://www.whyd.com/";
 		$this->description = "Returns 10 newest music from user profile";
-		$this->update = "2016-08-06";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -48,7 +48,7 @@ class WhydBridge extends BridgeAbstract{
 		for($i = 0; $i < 10; $i++) {
 			$track = $html->find('div.post', $i);
             $item = new \Item();
-            $item->name = $track->find('h2', 0)->plaintext;
+            $item->author = $track->find('h2', 0)->plaintext;
             $item->title = $track->find('h2', 0)->plaintext;
             $item->content = $track->find('a.thumb',0) . '<br/>' . $track->find('h2', 0)->plaintext;
             $item->id = 'http://www.whyd.com' . $track->find('a.no-ajaxy',0)->getAttribute('href');

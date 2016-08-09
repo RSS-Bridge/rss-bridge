@@ -7,7 +7,7 @@ class FlickrExploreBridge extends BridgeAbstract{
 		$this->name = "Flickr Explore";
 		$this->uri = "https://www.flickr.com/explore";
 		$this->description = "Returns the latest interesting images from Flickr";
-		$this->update = "2016-07-30";
+		$this->update = "2016-08-09";
 
 	}
 
@@ -30,8 +30,7 @@ class FlickrExploreBridge extends BridgeAbstract{
 
             $item = new \Item();
             $item->uri = 'https://flickr.com/photo.gne?id='.$imageID;
-            $item->thumbnailUri = $imageURI;
-            $item->content = '<a href="' . $item->uri . '"><img src="' . $item->thumbnailUri . '" /></a>'; // FIXME: Filter javascript ?
+            $item->content = '<a href="' . $item->uri . '"><img src="' . $imageURI . '" /></a>'; // FIXME: Filter javascript ?
             $item->title = $imageJSON->photo->title->_content;
             $this->items[] = $item;
         }

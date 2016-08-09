@@ -9,7 +9,7 @@ class DailymotionBridge extends BridgeAbstract{
 		$this->name = "Dailymotion Bridge";
 		$this->uri = "https://www.dailymotion.com/";
 		$this->description = "Returns the 5 newest videos by username/playlist or search";
-		$this->update = "2016-08-02";
+		$this->update = "2016-08-09";
 
 		$this->parameters["By username"] =
 		'[
@@ -83,10 +83,9 @@ class DailymotionBridge extends BridgeAbstract{
 				$item->id = str_replace('/video/', '', strtok($element->href, '_'));
 				$metadata = getMetadata($item->id);
 				$item->uri = $metadata['uri'];
-				$item->thumbnailUri = $metadata['thumbnailUri'];
 				$item->title = $metadata['title'];
 				$item->timestamp = $metadata['timestamp'];
-				$item->content = '<a href="' . $item->uri . '"><img src="' . $item->thumbnailUri . '" /></a><br><a href="' . $item->uri . '">' . $item->title . '</a>';
+				$item->content = '<a href="' . $item->uri . '"><img src="' . $metadata['thumbnailUri'] . '" /></a><br><a href="' . $item->uri . '">' . $item->title . '</a>';
 				$this->items[] = $item;
 				$count++;
 			}

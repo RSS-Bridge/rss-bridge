@@ -10,7 +10,7 @@ class TheOatmealBridge extends RssExpander{
 		$this->name = "The Oatmeal";
 		$this->uri = "http://theoatmeal.com/";
 		$this->description = "Un petit site de dessins assez rigolos";
-		$this->update = "2015-07-03";
+		$this->update = "2016-08-09";
 
 	}
 
@@ -53,9 +53,9 @@ class TheOatmealBridge extends RssExpander{
         $item->content = $content->innertext;
         
         $this->message("dc content is ".var_export($dc, true));
-        $item->name = (string) $dc->creator;
+        $item->author = (string) $dc->creator;
         $item->timestamp = DateTime::createFromFormat(DateTime::ISO8601, $dc->date)->getTimestamp();
-        $this->message("writtem by ".$item->name." on ".$item->timestamp);
+        $this->message("writtem by ".$item->author." on ".$item->timestamp);
         return $item;
     }
     

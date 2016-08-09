@@ -14,7 +14,7 @@ class YoutubeBridge extends BridgeAbstract {
 		$this->homepage = $this->getURI();
 		$this->description = 'Returns the 10 newest videos by username/channel/playlist or search';
 		$this->maintainer = 'mitsukarenai';
-		$this->update = '02/05/2016';
+		$this->update = '2016-08-09';
 
 		$this->parameters['By username'] =
 		'[
@@ -83,8 +83,8 @@ class YoutubeBridge extends BridgeAbstract {
 		$item->author = $author;
 		$item->timestamp = $time;
 		$item->uri = $this->getURI().'watch?v='.$vid;
-		$item->thumbnailUri = str_replace('/www.', '/img.', $this->getURI()).'vi/'.$vid.'/0.jpg';
-		$item->content = '<a href="'.$item->uri.'"><img src="'.$item->thumbnailUri.'" /></a><br />'.$desc;
+		$thumbnailUri = str_replace('/www.', '/img.', $this->getURI()).'vi/'.$vid.'/0.jpg';
+		$item->content = '<a href="'.$item->uri.'"><img src="'.$thumbnailUri.'" /></a><br />'.$desc;
 		$this->items[] = $item;
 	}
 

@@ -12,7 +12,7 @@ class GitlabCommitsBridge extends BridgeAbstract{
     $this->name = 'Gitlab Commits';
     $this->uri = '';
     $this->description = 'Returns the commits of a project hosted on a gitlab instance';
-    $this->update = '2016-08-06';
+    $this->update = '2016-08-09';
 
     $this->parameters[] =
       '[
@@ -64,7 +64,7 @@ class GitlabCommitsBridge extends BridgeAbstract{
           $item->title=$a->plaintext;
         }
         if(in_array('commit-author-link',$classes)){
-          $item->name=trim($a->plaintext);
+          $item->author=trim($a->plaintext);
         }
       }
 

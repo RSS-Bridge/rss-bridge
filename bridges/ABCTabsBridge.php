@@ -9,7 +9,7 @@ class ABCTabsBridge extends BridgeAbstract{
 		$this->name = "ABC Tabs Bridge";
 		$this->uri = "http://www.abc-tabs.com/";
 		$this->description = "Returns 22 newest tabs";
-		$this->update = "2016-08-06";
+		$this->update = "2016-08-09";
 
 	}
 
@@ -21,7 +21,7 @@ class ABCTabsBridge extends BridgeAbstract{
 		foreach ($table->find('tr') as $tab)
 		{
 		    $item = new \Item();
-		    $item->name = $tab->find('td', 1)->plaintext . ' - ' . $tab->find('td', 2)->plaintext;
+		    $item->author = $tab->find('td', 1)->plaintext . ' - ' . $tab->find('td', 2)->plaintext;
 		    $item->title = $tab->find('td', 1)->plaintext . ' - ' . $tab->find('td', 2)->plaintext;
 		    $item->content = 'Le ' . $tab->find('td', 0)->plaintext . '<br> Par: ' . $tab->find('td', 5)->plaintext . '<br> Type: ' . $tab->find('td', 3)->plaintext;
 		    $item->id = 'http://www.abc-tabs.com' . $tab->find('td', 2)->find('a', 0)->getAttribute('href');

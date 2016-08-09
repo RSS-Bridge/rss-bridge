@@ -12,7 +12,7 @@ class WorldOfTanks extends HttpCachingBridgeAbstract{
 		$this->name = "World of Tanks";
 		$this->uri = "http://worldoftanks.eu/";
 		$this->description = "News about the tank slaughter game.";
-		$this->update = "2016-08-06";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -89,7 +89,6 @@ class WorldOfTanks extends HttpCachingBridgeAbstract{
         HTMLSanitizer::defaultImageSrcTo($content, WORLD_OF_TANKS);
         $item->title = $content->find('h1', 0)->innertext;
         $item->content = $content->find('.b-content', 0)->innertext;
-//        $item->name = $auteur->innertext;
         $item->timestamp = $content->find('.b-statistic_time', 0)->getAttribute("data-timestamp");
         $this->items[] = $item;
     }

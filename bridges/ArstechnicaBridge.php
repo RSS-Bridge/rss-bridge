@@ -9,7 +9,7 @@ class ArstechnicaBridge extends BridgeAbstract {
                 $this->name = "ArstechnicaBridge";
                 $this->uri = "http://arstechnica.com";
                 $this->description = "The PC enthusiast's resource. Power users and the tools they love, without computing religion";
-                $this->update = "01/08/2016";
+                $this->update = "2016-08-09";
 
         }
 
@@ -51,7 +51,6 @@ class ArstechnicaBridge extends BridgeAbstract {
                                 $item = new \Item();
                                 $item->title = StripCDATA($element->find('title', 0)->innertext);
                                 $item->uri = StripCDATA($element->find('guid', 0)->plaintext);
-                                $item->thumbnailUri = StripCDATA($element->find('enclosure', 0)->url);
                                 $item->author = StripCDATA($element->find('author', 0)->innertext);
                                 $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
                                 $item->content = ExtractContent($item->uri);

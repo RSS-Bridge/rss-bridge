@@ -12,7 +12,7 @@ class StripeAPIChangeLogBridge extends BridgeAbstract{
     $this->name = 'Stripe API Changelog';
     $this->uri = '';
     $this->description = 'Returns the changes made to the stripe.com API';
-    $this->update = '2016-06-20';
+    $this->update = '2016-08-09';
   }
 
   public function collectData(array $param){
@@ -24,7 +24,7 @@ class StripeAPIChangeLogBridge extends BridgeAbstract{
       $item=new \Item();
       $item->title=trim($change->plaintext);
       $item->uri='https://stripe.com/docs/upgrades#'.$item->title;
-      $item->name='stripe';
+      $item->author='stripe';
       $item->content=$change->nextSibling()->outertext;
       $item->timestamp=strtotime($item->title);
       $this->items[]=$item;

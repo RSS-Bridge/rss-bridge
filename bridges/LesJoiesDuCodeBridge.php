@@ -7,7 +7,7 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
 		$this->name = "Les Joies Du Code";
 		$this->uri = "http://lesjoiesducode.fr/";
 		$this->description = "LesJoiesDuCode";
-		$this->update = "2016-08-06";
+		$this->update = "2016-08-09";
 
 	}
 
@@ -36,7 +36,7 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
             if($pos > 0)
             {
                 $auteur = trim(str_replace("*/", "", substr($auteur->innertext, ($pos + 2))));
-                $item->name = $auteur;
+                $item->author = $auteur;
             }
             
             

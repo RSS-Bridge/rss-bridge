@@ -7,7 +7,7 @@ class T411Bridge extends BridgeAbstract {
         $this->name = 'T411';
         $this->uri = $this->getURI();
         $this->description = 'Returns the 10 newest torrents with specified search terms <br /> Use url part after "?" mark when using their search engine.';
-        $this->update = '2016-08-06';
+        $this->update = '2016-08-09';
 
         $this->parameters[] =
         '[
@@ -63,15 +63,6 @@ class T411Bridge extends BridgeAbstract {
                     $item_desc = $item_html->find('div.description', 0);
                     $item_author = $item_html->find('a.profile', 0)->innertext;
 
-                    //Retrieve image for thumbnail or generic logo fallback
-                    $item_image = $this->getURI().'themes/blue/images/logo.png';
-                    foreach ($item_desc->find('img') as $img) {
-                        if (strpos($img->src, 'prez') === false && strpos($img->src, '/ad/') === false) {
-                            $item_image = $img->src;
-                            break;
-                        }
-                    }
-
                     //Cleanup advertisments
                     $divs = explode('<div class="align-center">', $item_desc->innertext);
                     $item_desc = '';
@@ -86,7 +77,6 @@ class T411Bridge extends BridgeAbstract {
                     $item->title = $item_title;
                     $item->author = $item_author;
                     $item->timestamp = $item_date;
-                    $item->thumbnailUri = $item_image;
                     $item->content = $item_desc;
                     $this->items[] = $item;
                     $limit++;

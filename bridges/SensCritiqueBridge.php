@@ -8,7 +8,7 @@ class SensCritiqueBridge extends BridgeAbstract {
 		$this->name = "Sens Critique";
 		$this->uri = "http://www.senscritique.com";
 		$this->description = "Sens Critique news";
-		$this->update = "2016-08-06";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -118,7 +118,7 @@ class SensCritiqueBridge extends BridgeAbstract {
 
 		foreach ($list->find('li') as $movie) {
 		    $item = new \Item();
-		    $item->name = htmlspecialchars_decode($movie->find('.elco-title a', 0)->plaintext, ENT_QUOTES) . ' ' . $movie->find('.elco-date', 0)->plaintext;
+		    $item->author = htmlspecialchars_decode($movie->find('.elco-title a', 0)->plaintext, ENT_QUOTES) . ' ' . $movie->find('.elco-date', 0)->plaintext;
 		    $item->title = $movie->find('.elco-title a', 0)->plaintext . ' ' . $movie->find('.elco-date', 0)->plaintext;
 		    $item->content = '<em>' . $movie->find('.elco-original-title', 0)->plaintext . '</em><br><br>' .
 												 $movie->find('.elco-baseline', 0)->plaintext . '<br>' .

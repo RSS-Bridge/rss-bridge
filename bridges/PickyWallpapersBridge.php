@@ -11,7 +11,7 @@ class PickyWallpapersBridge extends BridgeAbstract {
 		$this->name = "PickyWallpapers Bridge";
 		$this->uri = "http://www.pickywallpapers.com/";
 		$this->description = "Returns the latests wallpapers from PickyWallpapers";
-		$this->update = "2014-03-31";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -68,7 +68,6 @@ class PickyWallpapersBridge extends BridgeAbstract {
                     $item->uri = str_replace('www', 'wallpaper', $baseUri).'/'.$this->resolution.'/'.basename($element->src);
                     $item->timestamp = time();
                     $item->title = $element->alt;
-                    $item->thumbnailUri = $element->src;
                     $item->content = $item->title.'<br><a href="'.$item->uri.'">'.$element.'</a>';
                     $this->items[] = $item;
 

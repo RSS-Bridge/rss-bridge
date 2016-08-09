@@ -10,7 +10,7 @@ class Gawker extends RssExpander{
 		$this->name = "Gawker media";
 		$this->uri = "http://feeds.gawker.com/";
 		$this->description = "A bridge allowing access to any of the numerous Gawker media blogs (Lifehacker, deadspin, Kotaku, Jezebel, and so on. Notice you have to give its id to find the RSS stream in gawker maze";
-		$this->update = "27/03/2014";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -53,7 +53,7 @@ class Gawker extends RssExpander{
                 $vcard = $articlePage->find('.vcard', 0);
                 if(is_object($vcard)) {
                     $authorLink = $vcard->find('a', 0);
-    				$item->name = $authorLink->innertext;
+    				$item->author = $authorLink->innertext;
                     // TODO use author link href to fill the feed info
                 }
 //                $this->message("item quite loaded : ".var_export($item, true));

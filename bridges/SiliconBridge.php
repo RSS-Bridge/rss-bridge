@@ -7,7 +7,7 @@ class SiliconBridge extends BridgeAbstract {
 		$this->name = "Silicon.fr";
 		$this->uri = "http://www.silicon.fr/";
 		$this->description = "Returns the newest articles.";
-		$this->update = "2015-09-08";
+		$this->update = "2016-08-09";
 
 	}
 
@@ -48,7 +48,6 @@ class SiliconBridge extends BridgeAbstract {
                 //Build and add final item
                 $item = new \Item();
                 $item->uri = $article_uri;
-                $item->thumbnailUri = $thumbnailUri;
                 $item->title = StripCDATA($element->find('title', 0)->innertext);
                 $item->author = StripCDATA($element->find('dc:creator', 0)->innertext);
                 $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);

@@ -9,7 +9,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
         $this->name = 'Anime-Ultime';
         $this->uri = 'http://www.anime-ultime.net/';
         $this->description = 'Returns the 10 newest releases posted on Anime-Ultime';
-        $this->update = '2015-10-30';
+        $this->update = '2016-08-09';
 
         $this->parameters[] =
         '[
@@ -86,7 +86,6 @@ class AnimeUltimeBridge extends BridgeAbstract {
                         $item_link_element = $release->find('td', 0)->find('a', 0);
                         $item_uri = $website.$item_link_element->href;
                         $item_name = html_entity_decode($item_link_element->plaintext);
-                        $item_image = $website.substr($item_link_element->onmouseover, 37, strpos($item_link_element->onmouseover, ' ', 37) - 37);
                         $item_episode = html_entity_decode(str_pad($release->find('td', 1)->plaintext, 2, '0', STR_PAD_LEFT));
                         $item_fansub = $release->find('td', 2)->plaintext;
                         $item_type = $release->find('td', 4)->plaintext;
@@ -108,7 +107,6 @@ class AnimeUltimeBridge extends BridgeAbstract {
                             $item->title = $item_name.' '.$item_type.' '.$item_episode;
                             $item->author = $item_fansub;
                             $item->timestamp = $item_date;
-                            $item->thumbnailUri = $item_image;
                             $item->content = $item_description;
                             $this->items[] = $item;
                             $processedOK++;
