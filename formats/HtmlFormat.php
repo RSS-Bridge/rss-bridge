@@ -12,14 +12,14 @@ class HtmlFormat extends FormatAbstract{
         $extraInfos = $this->getExtraInfos();
         $title = htmlspecialchars($extraInfos['name']);
         $uri = htmlspecialchars($extraInfos['uri']);
-	$atomquery = str_replace('format=HtmlFormat', 'format=AtomFormat', htmlentities($_SERVER['QUERY_STRING']));
+        $atomquery = str_replace('format=HtmlFormat', 'format=AtomFormat', htmlentities($_SERVER['QUERY_STRING']));
 
         $entries = '';
         foreach($this->getDatas() as $data){
-            $entryUri = is_null($data->uri) ? $uri : $data->uri;
-            $entryTitle = is_null($data->title) ? '' : $this->sanitizeHtml(strip_tags($data->title));
-            $entryTimestamp = is_null($data->timestamp) ? '' : '<time datetime="' . date(DATE_ATOM, $data->timestamp) . '">' . date(DATE_ATOM, $data->timestamp) . '</time>';
             $entryAuthor = is_null($data->author) ? '' : '<br /><p class="author">by: ' . $data->author . '</p>';
+            $entryTitle = is_null($data->title) ? '' : $this->sanitizeHtml(strip_tags($data->title));
+            $entryUri = is_null($data->uri) ? $uri : $data->uri;
+            $entryTimestamp = is_null($data->timestamp) ? '' : '<time datetime="' . date(DATE_ATOM, $data->timestamp) . '">' . date(DATE_ATOM, $data->timestamp) . '</time>';
             $entryContent = is_null($data->content) ? '' : '<div class="content">' . $this->sanitizeHtml($data->content). '</div>';
             $entries .= <<<EOD
 

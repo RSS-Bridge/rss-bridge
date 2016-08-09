@@ -21,13 +21,11 @@ class MrssFormat extends FormatAbstract{
 
         $items = '';
         foreach($this->getDatas() as $data){
+            $itemAuthor = is_null($data->author) ? '' : $this->xml_encode($data->author);
             $itemTitle = strip_tags(is_null($data->title) ? '' : $this->xml_encode($data->title));
             $itemUri = is_null($data->uri) ? '' : $this->xml_encode($data->uri);
-            $itemAuthor = is_null($data->author) ? $title : $this->xml_encode($data->author);
             $itemTimestamp = is_null($data->timestamp) ? '' : $this->xml_encode(date(DATE_RFC2822, $data->timestamp));
-            // We prevent content from closing the CDATA too early.
             $itemContent = is_null($data->content) ? '' : $this->xml_encode($this->sanitizeHtml($data->content));
-
             $items .= <<<EOD
 
     <item>
