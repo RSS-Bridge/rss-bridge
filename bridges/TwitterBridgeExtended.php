@@ -69,9 +69,12 @@ class TwitterBridgeExtended extends BridgeAbstract{
 				$link->removeAttribute('title');
 			}
 
-			// get tweet text
-			//$item->content = '<a href="https://twitter.com/'.$item->username.'"><img style="align:top;width:75px;" alt="'.$item->username.'" src="'.$item->avatar.'" /></a><p>'.$item->fullname.'</p><br/><blockquote>'.str_replace('href="/', 'href="https://twitter.com/', $tweet->find('p.js-tweet-text', 0)->innertext).'</blockquote>';
+			// process emojis (reduce size)
+			foreach($tweet->find('img.Emoji') as $img){
+				$img->style .= ' height: 1em;';
+			}
 
+			// get tweet text
 			$cleanedTweet = str_replace('href="/', 'href="https://twitter.com/', $tweet->find('p.js-tweet-text', 0)->innertext);
 
 			$item->content = <<<EOD
