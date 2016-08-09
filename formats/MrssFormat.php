@@ -56,7 +56,7 @@ EOD;
 <rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:media="http://search.yahoo.com/mrss/" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>{$title}</title>
-        <link>{$uri}/</link>
+        <link>http{$https}://{$httpHost}{$httpInfo}/</link>
         <description>{$title}</description>
         <atom:link rel="self" href="http{$https}://{$httpHost}{$serverRequestUri}" />
         {$items}
