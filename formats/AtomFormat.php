@@ -28,7 +28,7 @@ class AtomFormat extends FormatAbstract{
             $entryUri = is_null($data->uri) ? '' : $this->xml_encode($data->uri);
             $entryTimestamp = is_null($data->timestamp) ? '' : $this->xml_encode(date(DATE_ATOM, $data->timestamp));
             // We prevent content from closing the CDATA too early.
-            $entryContent = is_null($data->content) ? '' : '<![CDATA[' . $this->sanitizeHtml(str_replace(']]>','',$data->content)) . ']]>';
+            $entryContent = is_null($data->content) ? '' : $this->xml_encode($this->sanitizeHtml($data->content));
 
             $entries .= <<<EOD
 
