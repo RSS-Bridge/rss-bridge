@@ -17,8 +17,7 @@ class MrssFormat extends FormatAbstract{
 
         $extraInfos = $this->getExtraInfos();
         $title = htmlspecialchars($extraInfos['name']);
-        $uri = htmlspecialchars($extraInfos['uri']);
-        $icon = 'http://g.etfv.co/'. $uri .'?icon.jpg';
+        $uri = !empty($extraInfos['uri']) ? $extraInfos['uri'] : 'https://github.com/sebsauvage/rss-bridge';
 
         $items = '';
         foreach($this->getDatas() as $data){
@@ -58,6 +57,7 @@ EOD;
         <title>{$title}</title>
         <link>http{$https}://{$httpHost}{$httpInfo}/</link>
         <description>{$title}</description>
+        <atom:link rel="alternate" type="text/html" href="{$uri}" />
         <atom:link rel="self" href="http{$https}://{$httpHost}{$serverRequestUri}" />
         {$items}
     </channel>
