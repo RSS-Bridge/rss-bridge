@@ -328,10 +328,6 @@ class MangareaderBridge extends BridgeAbstract{
 		return (!empty($this->request) ? $this->request . ' - ' : '') . 'Mangareader Bridge';
 	}
 
-	public function getURI(){
-		return 'http://www.mangareader.net';
-	}
-
 	public function getCacheDuration(){
 		return 10800; // 3 hours
 	}

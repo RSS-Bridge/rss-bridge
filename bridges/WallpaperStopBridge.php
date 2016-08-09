@@ -90,10 +90,6 @@ class WallpaperStopBridge extends BridgeAbstract {
         return 'WallpaperStop - '.$this->category.(!empty($this->subcategory) ? ' > '.$this->subcategory : '').' ['.$this->resolution.']';
     }
 
-    public function getURI(){
-        return 'http://www.wallpaperstop.com';
-    }
-
     public function getCacheDuration(){
         return 43200; // 12 hours
     }

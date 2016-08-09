@@ -7,7 +7,7 @@ class DuckDuckGoBridge extends BridgeAbstract{
 		$this->name = "DuckDuckGo";
 		$this->uri = "https://duckduckgo.com/";
 		$this->description = "Returns most recent results from DuckDuckGo.";
-		$this->update = "2014-05-25";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -31,14 +31,6 @@ class DuckDuckGoBridge extends BridgeAbstract{
                 $item->content = $element->find('div.snippet', 0)->plaintext;
                 $this->items[] = $item;
         }
-    }
-
-    public function getName(){
-        return 'DuckDuckGo';
-    }
-
-    public function getURI(){
-        return 'https://duckduckgo.com';
     }
 
     public function getCacheDuration(){

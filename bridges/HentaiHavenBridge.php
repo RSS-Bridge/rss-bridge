@@ -15,7 +15,7 @@ class HentaiHavenBridge extends BridgeAbstract{
         $html = $this->file_get_html('http://hentaihaven.org/') or $this->returnError('Could not request Hentai Haven.', 404);
         foreach($html->find('div.zoe-grid') as $element) {
             $item = new \Item();
-            $item->uri = $this->getURI().$element->find('div.brick-content h3 a', 0)->href;
+            $item->uri = $element->find('div.brick-content h3 a', 0)->href;
             $thumbnailUri = $element->find('a.thumbnail-image img', 0)->getAttribute('data-src');
             $item->title = mb_convert_encoding(trim($element->find('div.brick-content h3 a', 0)->innertext), 'UTF-8', 'HTML-ENTITIES');
             $item->tags = $element->find('div.oFlyout_bg div.oFlyout div.flyoutContent span.tags', 0)->plaintext;
@@ -23,12 +23,7 @@ class HentaiHavenBridge extends BridgeAbstract{
             $this->items[] = $item;
         }
     }
-    public function getName(){
-        return 'Hentai Haven';
-    }
-    public function getURI(){
-        return '';
-    }
+
     public function getCacheDuration(){
         return 21600; // 6 hours
     }

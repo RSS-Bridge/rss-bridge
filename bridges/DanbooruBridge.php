@@ -45,14 +45,6 @@ class DanbooruBridge extends BridgeAbstract{
 	}
     }
 
-    public function getName(){
-        return 'Danbooru';
-    }
-
-    public function getURI(){
-        return 'http://donmai.us/';
-    }
-
     public function getCacheDuration(){
         return 1800; // 30 minutes
     }

@@ -43,12 +43,4 @@ class NextInpactBridge extends BridgeAbstract {
 			}
 		}
 	}
-
-	public function getName() {
-		return 'Nextinpact Bridge';
-	}
-
-	public function getURI() {
-		return 'http://www.nextinpact.com/';
-	}
 }

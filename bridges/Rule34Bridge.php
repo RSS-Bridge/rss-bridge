@@ -49,14 +49,6 @@ class Rule34Bridge extends BridgeAbstract{
 	}
     }
 
-    public function getName(){
-        return 'Rule34';
-    }
-
-    public function getURI(){
-        return 'http://rule34.xxx/';
-    }
-
     public function getCacheDuration(){
         return 1800; // 30 minutes
     }

@@ -58,14 +58,6 @@ class BooruprojectBridge extends BridgeAbstract{
 	}
     }
 
-    public function getName(){
-        return 'Booruproject';
-    }
-
-    public function getURI(){
-        return 'http://booru.org/';
-    }
-
     public function getCacheDuration(){
         return 1800; // 30 minutes
     }

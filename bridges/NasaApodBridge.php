@@ -7,7 +7,7 @@ class NasaApodBridge extends BridgeAbstract{
 		$this->name = "NASA APOD Bridge";
 		$this->uri = "http://apod.nasa.gov/apod/astropix.html";
 		$this->description = "Returns the 3 latest NASA APOD pictures and explanations";
-		$this->update = "2014-08-27";
+		$this->update = "2016-08-09";
 
 	}
 
@@ -43,14 +43,6 @@ class NasaApodBridge extends BridgeAbstract{
       $item->title = $picture_html->find('b',0)->innertext;
       $this->items[] = $item;
     }
-  }
-
-  public function getName(){
-    return 'NASA APOD';
-  }
-
-  public function getURI(){
-    return 'http://apod.nasa.gov/apod/astropix.html';
   }
 
   public function getCacheDuration(){

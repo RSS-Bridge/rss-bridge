@@ -7,7 +7,7 @@ class FourchanBridge extends BridgeAbstract{
 		$this->name = "4chan";
 		$this->uri = "https://www.4chan.org/";
 		$this->description = "Returns posts from the specified thread";
-		$this->update = "2015-02-01";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -60,14 +60,6 @@ class FourchanBridge extends BridgeAbstract{
 	$this->items = array_reverse($this->items);
   }
     
-    public function getName(){
-        return '4chan';
-    }
-
-    public function getURI(){
-        return 'https://www.4chan.org/';
-    }
-
     public function getCacheDuration(){
         return 300; // 5min
     }

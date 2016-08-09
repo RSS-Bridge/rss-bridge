@@ -51,14 +51,6 @@ class FlickrTagBridge extends BridgeAbstract{
         }
     }
 
-    public function getName(){
-        return 'Flickr Tag';
-    }
-
-    public function getURI(){
-        return 'http://www.flickr.com/search/';
-    }
-
     public function getCacheDuration(){
         return 21600; // 6 hours
     }

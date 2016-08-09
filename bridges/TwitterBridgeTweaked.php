@@ -7,7 +7,7 @@ class TwitterBridgeTweaked extends BridgeAbstract{
 		$this->name = "Twitter Bridge Tweaked";
 		$this->uri = "https://twitter.com/";
 		$this->description = "(same as Twitter Bridge Extended, but with cleaned title & content)";
-		$this->update = "2016-08-06";
+		$this->update = "2016-08-09";
 
 		$this->parameters["By keyword or hashtag"] =
 		'[
@@ -145,14 +145,6 @@ class TwitterBridgeTweaked extends BridgeAbstract{
 			// put out
 			$this->items[] = $item;
 		}
-	}
-
-	public function getName(){
-		return 'Twitter Bridge Tweaked';
-	}
-
-	public function getURI(){
-		return 'http://twitter.com';
 	}
 
 	public function getCacheDuration(){

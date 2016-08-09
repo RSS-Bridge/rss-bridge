@@ -49,14 +49,6 @@ class TbibBridge extends BridgeAbstract{
 	}
     }
 
-    public function getName(){
-        return 'Tbib';
-    }
-
-    public function getURI(){
-        return 'http://tbib.org/';
-    }
-
     public function getCacheDuration(){
         return 1800; // 30 minutes
     }

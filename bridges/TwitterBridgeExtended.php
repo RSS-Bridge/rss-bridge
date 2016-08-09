@@ -7,7 +7,7 @@ class TwitterBridgeExtended extends BridgeAbstract{
 		$this->name = "Twitter Bridge Extended";
 		$this->uri = "https://twitter.com/";
 		$this->description = "(same as Twitter Bridge, but with avatar, replies and RTs)";
-		$this->update = "2014-05-25";
+		$this->update = "2016-08-09";
 
 		$this->parameters["By keyword or hashtag"] =
 		'[
@@ -76,14 +76,6 @@ class TwitterBridgeExtended extends BridgeAbstract{
 			// put out
 			$this->items[] = $item;
 		}
-	}
-
-	public function getName(){
-		return 'Twitter Bridge Extended';
-	}
-
-	public function getURI(){
-		return 'http://twitter.com';
 	}
 
 	public function getCacheDuration(){

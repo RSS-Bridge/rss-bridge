@@ -37,14 +37,6 @@ class LinkedInCompany extends BridgeAbstract{
         }
     }
 
-    public function getName(){
-        return 'LinkedIn';
-    }
-
-    public function getURI(){
-        return 'https://www.linkedin.com';
-    }
-
     public function getCacheDuration(){
         return 21600; // 6 hours
     }

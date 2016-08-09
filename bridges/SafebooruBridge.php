@@ -50,14 +50,6 @@ class SafebooruBridge extends BridgeAbstract{
 	}
     }
 
-    public function getName(){
-        return 'Safebooru';
-    }
-
-    public function getURI(){
-        return 'http://safebooru.org/';
-    }
-
     public function getCacheDuration(){
         return 1800; // 30 minutes
     }

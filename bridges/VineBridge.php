@@ -7,7 +7,7 @@ class VineBridge extends BridgeAbstract {
 		$this->name = "Vine bridge";
 		$this->uri = "http://vine.co/";
 		$this->description = "Returns the latests vines from vine user page";
-		$this->update = "2016-03-12";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -43,14 +43,6 @@ class VineBridge extends BridgeAbstract {
 			$this->items[] = $item;
 		}
 
-    }
-
-    public function getName(){
-        return 'Vine';
-    }
-
-    public function getURI(){
-        return 'http://vine.co';
     }
 
     public function getCacheDuration(){

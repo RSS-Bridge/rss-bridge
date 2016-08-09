@@ -118,14 +118,6 @@ class Releases3DSBridge extends BridgeAbstract {
         }
     }
 
-    public function getName() {
-        return '3DS Scene Releases';
-    }
-
-    public function getURI() {
-        return 'http://www.3dsdb.com/';
-    }
-
     public function getCacheDuration() {
         return 10800; //3 hours
     }

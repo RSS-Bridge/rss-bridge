@@ -71,14 +71,6 @@ class UnsplashBridge extends BridgeAbstract {
         }
     }
 
-    public function getName(){
-        return 'Unsplash';
-    }
-
-    public function getURI(){
-        return 'http://unsplash.com';
-    }
-
     public function getCacheDuration(){
         return 43200; // 12 hours
     }

@@ -49,14 +49,6 @@ class TheCodingLoveBridge extends BridgeAbstract{
         }
     }
 
-    public function getName(){
-        return 'The Coding Love';
-    }
-
-    public function getURI(){
-        return 'http://thecodinglove.com/';
-    }
-
     public function getCacheDuration(){
         return 7200; // 2h hours
     }

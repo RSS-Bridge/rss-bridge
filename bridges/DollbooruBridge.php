@@ -48,14 +48,6 @@ class DollbooruBridge extends BridgeAbstract{
 	}
     }
 
-    public function getName(){
-        return 'Dollbooru';
-    }
-
-    public function getURI(){
-        return 'http://dollbooru.org/';
-    }
-
     public function getCacheDuration(){
         return 1800; // 30 minutes
     }

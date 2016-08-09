@@ -7,7 +7,7 @@ class CopieDoubleBridge extends BridgeAbstract{
 		$this->name = "CopieDouble";
 		$this->uri = "http://www.copie-double.com/";
 		$this->description = "CopieDouble";
-		$this->update = "2016-08-06";
+		$this->update = "2016-08-09";
 
 	}
 
@@ -40,14 +40,6 @@ class CopieDoubleBridge extends BridgeAbstract{
                 $this->items[] = $item;
             }
         }
-    }
-
-    public function getName(){
-        return 'CopieDouble';
-    }
-
-    public function getURI(){
-        return 'http://www.copie-double.com';
     }
 
     public function getCacheDuration(){

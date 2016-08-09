@@ -5,7 +5,7 @@ class BastaBridge extends BridgeAbstract{
 		$this->name = "Bastamag Bridge";
 		$this->uri = "http://www.bastamag.net/";
 		$this->description = "Returns the newest articles.";
-		$this->update = "2016-08-02";
+		$this->update = "2016-08-09";
 	}
 	
 	public function collectData(array $param){
@@ -28,14 +28,6 @@ class BastaBridge extends BridgeAbstract{
 				$limit++;
 			}
 		}
-	}
-
-	public function getName(){
-		return 'Bastamag Bridge';
-	}
-
-	public function getURI(){
-		return 'http://bastamag.net/';
 	}
 
 	public function getCacheDuration(){

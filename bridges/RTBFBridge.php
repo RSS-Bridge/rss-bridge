@@ -52,10 +52,6 @@ class RTBFBridge extends BridgeAbstract {
 		return (!empty($this->request) ? $this->request .' - ' : '') .'RTBF Bridge';
 	}
 
-	public function getURI(){
-		return 'http://www.rtbf.be/auvio/emissions';
-	}
-
 	public function getCacheDuration(){
 		return 21600; // 6 hours
 	}

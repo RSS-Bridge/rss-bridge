@@ -6,7 +6,7 @@ class PlanetLibreBridge extends BridgeAbstract{
 		$this->name = "PlanetLibre";
 		$this->uri = "http://www.planet-libre.org";
 		$this->description = "Returns the 5 newest posts from PlanetLibre (full text)";
-		$this->update = "2016-08-06";
+		$this->update = "2016-08-09";
 	}
 
 	private function PlanetLibreExtractContent($url){
@@ -31,12 +31,6 @@ class PlanetLibreBridge extends BridgeAbstract{
 		}
 	}
 
-	public function getName(){
-		return 'PlanetLibre';
-	}
-	public function getURI(){
-		return 'http://www.planet-libre.org/';
-	}
 	public function getCacheDuration(){
 		return 3600*2; // 1 hour
 	}

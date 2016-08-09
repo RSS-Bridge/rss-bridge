@@ -29,16 +29,4 @@ class ABCTabsBridge extends BridgeAbstract{
 		    $this->items[] = $item;
 		}
     }
-
-	public function getName() {
-
-		return "ABC Tabs Bridge";
-
-	}
-
-	public function getURI() {
-
-		return "http://www.abc-tabs.com/";
-
-	}
 }

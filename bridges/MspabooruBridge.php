@@ -50,14 +50,6 @@ class MspabooruBridge extends BridgeAbstract{
 	}
     }
 
-    public function getName(){
-        return 'Mspabooru';
-    }
-
-    public function getURI(){
-        return 'http://mspabooru.com/';
-    }
-
     public function getCacheDuration(){
         return 1800; // 30 minutes
     }

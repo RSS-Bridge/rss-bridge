@@ -4,15 +4,15 @@ class ZatazBridge extends BridgeAbstract {
 	public function loadMetadatas() {
 
 		$this->maintainer = "aledeg";
-		$this->name = "Zataz";
-		$this->uri = "http://www.zataz.com/";
+		$this->name = 'Zataz Magazine';
+		$this->uri = 'http://www.zataz.com';
 		$this->description = "ZATAZ Magazine - S'informer, c'est déjà se sécuriser";
-		$this->update = "07/02/2015";
+		$this->update = "2016-08-09";
 
 	}
 
 	public function collectData(array $param) {
-		$html = $this->file_get_html($this->getURI()) or $this->returnError('Could not request ' . $this->getURI(), 404);
+		$html = $this->file_get_html($this->uri) or $this->returnError('Could not request ' . $this->uri, 404);
 
 		$recent_posts = $html->find('#recent-posts-3', 0)->find('ul', 0)->find('li');
 		foreach ($recent_posts as $article) {
@@ -42,16 +42,8 @@ class ZatazBridge extends BridgeAbstract {
 		return $date->format('U');
 	}
 
-	public function getName() {
-		return 'Zataz Magazine';
-	}
-
 	public function getCacheDuration() {
 		return 7200; // 2h
-	}
-
-	public function getURI() {
-		return 'http://www.zataz.com';
 	}
 
 }

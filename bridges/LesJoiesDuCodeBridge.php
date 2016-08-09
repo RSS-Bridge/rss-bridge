@@ -48,14 +48,6 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
         }
     }
 
-    public function getName(){
-        return 'Les Joies Du Code';
-    }
-
-    public function getURI(){
-        return 'http://lesjoiesducode.fr/';
-    }
-
     public function getCacheDuration(){
         return 7200; // 2h hours
     }

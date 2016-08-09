@@ -76,14 +76,6 @@ class ElsevierBridge extends BridgeAbstract{
 		}
 	}
 
-	public function getName(){
-		return 'Elsevier journals recent articles';
-	}
-
-	public function getURI(){
-		return 'http://www.journals.elsevier.com';
-	}
-
 	public function getCacheDuration(){
 		return 43200; // 12h
 	}

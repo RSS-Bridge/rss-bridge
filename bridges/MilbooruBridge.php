@@ -47,14 +47,6 @@ class MilbooruBridge extends BridgeAbstract{
 	}
     }
 
-    public function getName(){
-        return 'Milbooru';
-    }
-
-    public function getURI(){
-        return 'http://sheslostcontrol.net/moe/shimmie/';
-    }
-
     public function getCacheDuration(){
         return 1800; // 30 minutes
     }

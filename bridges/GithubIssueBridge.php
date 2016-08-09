@@ -53,14 +53,6 @@ class GithubIssueBridge extends BridgeAbstract{
     }
   }
 
-  public function getName(){
-    return 'Github Issue';
-  }
-
-  public function getURI(){
-    return '';
-  }
-
   public function getCacheDuration(){
     return 600; // ten minutes
   }

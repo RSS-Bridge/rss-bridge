@@ -61,14 +61,6 @@ class LeMondeInformatiqueBridge extends BridgeAbstract {
         }
     }
 
-    public function getName() {
-        return 'Le Monde Informatique';
-    }
-
-    public function getURI() {
-        return 'http://www.lemondeinformatique.fr/';
-    }
-
     public function getCacheDuration() {
         return 1800; // 30 minutes
     }

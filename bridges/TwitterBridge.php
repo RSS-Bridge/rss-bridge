@@ -10,7 +10,7 @@ class TwitterBridge extends BridgeAbstract{
 		$this->name = "Twitter Bridge";
 		$this->uri = "http://twitter.com/";
 		$this->description = "Returns user timelines or keyword/hashtag search results (without using their API).";
-		$this->update = "2014-05-25";
+		$this->update = "2016-08-09";
 
 		$this->parameters["By keyword or hashtag"] =
 		'[
@@ -72,10 +72,6 @@ class TwitterBridge extends BridgeAbstract{
 
     public function getName(){
         return (!empty($this->request) ? $this->request .' - ' : '') .'Twitter Bridge';
-    }
-
-    public function getURI(){
-        return 'http://twitter.com';
     }
 
     public function getCacheDuration(){

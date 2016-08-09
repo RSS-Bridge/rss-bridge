@@ -83,10 +83,6 @@ class PickyWallpapersBridge extends BridgeAbstract {
         return 'PickyWallpapers - '.$this->category.(!empty($this->subcategory) ? ' > '.$this->subcategory : '').' ['.$this->resolution.']';
     }
 
-    public function getURI(){
-        return 'http://www.pickywallpapers.com';
-    }
-
     public function getCacheDuration(){
         return 43200; // 12 hours
     }

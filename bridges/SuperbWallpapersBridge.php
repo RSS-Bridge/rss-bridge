@@ -75,10 +75,6 @@ class SuperbWallpapersBridge extends BridgeAbstract {
         return 'HDWallpapers - '.$this->category.' ['.$this->resolution.']';
     }
 
-    public function getURI(){
-        return 'http://www.superbwallpapers.com';
-    }
-
     public function getCacheDuration(){
         return 43200; // 12 hours
     }

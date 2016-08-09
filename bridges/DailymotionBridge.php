@@ -96,10 +96,6 @@ class DailymotionBridge extends BridgeAbstract{
 		return (!empty($this->request) ? $this->request .' - ' : '') .'Dailymotion Bridge';
 	}
 
-	public function getURI(){
-		return 'https://www.dailymotion.com/';
-	}
-
 	public function getCacheDuration(){
 		return 3600*3; // 3 hours
 	}

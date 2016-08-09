@@ -3,9 +3,9 @@ class CastorusBridge extends BridgeAbstract {
 	public function loadMetadatas(){
 		$this->maintainer = "logmanoriginal";
 		$this->name = "Castorus Bridge";
-		$this->uri = $this->getURI();
+		$this->uri = 'http://www.castorus.com';
 		$this->description = "Returns the latest changes";
-		$this->update = "2016-08-06";
+		$this->update = "2016-08-09";
 
 		$this->parameters["Get latest changes"] = '[]';
 		$this->parameters["Get latest changes via ZIP code"] = 
@@ -49,7 +49,7 @@ class CastorusBridge extends BridgeAbstract {
 		if(!$url)
 			$this->returnError('Cannot find url!', 404);
 		
-		return $this->getURI() . $url->href;
+		return $this->uri . $url->href;
 	}
 
 	// Extracts the time from an activity
@@ -85,10 +85,10 @@ class CastorusBridge extends BridgeAbstract {
 		if(isset($params['city']))
 			$city_filter = trim($params['city']);
 
-		$html = $this->file_get_html($this->getURI());
+		$html = $this->file_get_html($this->uri);
 
 		if(!$html)
-			$this->returnError('Could not load data from ' . $this->getURI() . '!', 404);
+			$this->returnError('Could not load data from ' . $this->uri . '!', 404);
 		
 		$activities = $html->find('div#activite/li');
 
@@ -114,14 +114,6 @@ class CastorusBridge extends BridgeAbstract {
 
 			$this->items[] = $item;
 		}
-	}
-
-	public function getName(){
-		return 'Castorus Bridge';
-	}
-
-	public function getURI(){
-		return 'http://www.castorus.com';
 	}
 
 	public function getCacheDuration(){

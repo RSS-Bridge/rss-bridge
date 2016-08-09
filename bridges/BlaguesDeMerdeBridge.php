@@ -32,14 +32,6 @@ class BlaguesDeMerdeBridge extends BridgeAbstract{
         }
     }
 
-    public function getName(){
-        return 'blaguesdemerde';
-    }
-
-    public function getURI(){
-        return 'http://www.blaguesdemerde.fr/';
-    }
-
     public function getCacheDuration(){
         return 7200; // 2h hours
     }

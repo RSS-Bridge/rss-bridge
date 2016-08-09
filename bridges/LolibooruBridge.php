@@ -51,14 +51,6 @@ class LolibooruBridge extends BridgeAbstract{
         }
     }
 
-    public function getName(){
-        return 'Lolibooru';
-    }
-
-    public function getURI(){
-        return 'http://lolibooru.moe/post';
-    }
-
     public function getCacheDuration(){
         return 1800; // 30 minutes
     }

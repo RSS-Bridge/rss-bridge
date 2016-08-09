@@ -7,7 +7,7 @@ class ProjectMGameBridge extends BridgeAbstract{
 		$this->name = "Project M Game Bridge";
 		$this->uri = "http://projectmgame.com/en/";
 		$this->description = "Returns the newest articles.";
-		$this->update = "2014-08-27";
+		$this->update = "2016-08-09";
 
 	}
 
@@ -31,14 +31,6 @@ class ProjectMGameBridge extends BridgeAbstract{
       $item->timestamp = strtotime($str_date);
       $this->items[] = $item;
     }
-  }
-
-  public function getName(){
-    return 'Project M Game Bridge';
-  }
-
-  public function getURI(){
-    return 'http://projectmgame.com/en/';
   }
 
   public function getCacheDuration(){

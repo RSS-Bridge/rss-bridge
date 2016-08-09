@@ -7,7 +7,7 @@ class CryptomeBridge extends BridgeAbstract{
 		$this->name = "Cryptome";
 		$this->uri = "http://cryptome.org/";
 		$this->description = "Returns the N most recent documents.";
-		$this->update = "";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -44,14 +44,6 @@ class CryptomeBridge extends BridgeAbstract{
             }
             break;
         }
-    }
-
-    public function getName(){
-        return 'Cryptome';
-    }
-
-    public function getURI(){
-        return 'https://secure.netsolhost.com/cryptome.org/';
     }
 
     public function getCacheDuration(){
