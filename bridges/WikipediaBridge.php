@@ -112,7 +112,7 @@ class WikipediaBridge extends BridgeAbstract{
 		}
 
 		// This will automatically send us to the correct main page in any language (try it!)
-		$html = $this->file_get_html($this->uri . '/wiki');
+		$html = $this->getSimpleHTMLDOM($this->uri . '/wiki');
 
 		if(!$html)
 			$this->returnServerError('Could not load site: ' . $this->uri . '!');
@@ -209,7 +209,7 @@ class WikipediaBridge extends BridgeAbstract{
 	* Loads the full article from a given URI
 	*/
 	private function LoadFullArticle($uri){
-		$content_html = $this->file_get_html($uri);
+		$content_html = $this->getSimpleHTMLDOM($uri);
 		
 		if(!$content_html)
 			$this->returnServerError('Could not load site: ' . $uri . '!');

@@ -28,7 +28,7 @@ class WeLiveSecurityBridge extends BridgeAbstract {
         }
 
         $feed = $this->getURI().'feed/';
-        $html = $this->file_get_html($feed) or $this->returnServerError('Could not request '.$this->getName().': '.$feed);
+        $html = $this->getSimpleHTMLDOM($feed) or $this->returnServerError('Could not request '.$this->getName().': '.$feed);
         $limit = 0;
 
         foreach ($html->find('item') as $element) {

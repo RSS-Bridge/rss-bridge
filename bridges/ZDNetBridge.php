@@ -237,7 +237,7 @@ class ZDNetBridge extends BridgeAbstract {
         if ($feed !== preg_replace('/[^a-zA-Z0-9-\/]+/', '', $feed) || substr_count($feed, '/') > 1 || strlen($feed > 64))
             $this->returnClientError('Invalid "feed" parameter.');
         $url = $baseUri.trim($feed, '/').'/rss.xml';
-        $html = $this->file_get_html($url) or $this->returnServerError('Could not request ZDNet: '.$url);
+        $html = $this->getSimpleHTMLDOM($url) or $this->returnServerError('Could not request ZDNet: '.$url);
         $limit = 0;
 
         foreach ($html->find('item') as $element) {
@@ -247,7 +247,7 @@ class ZDNetBridge extends BridgeAbstract {
                 $article_title = StripCDATA($element->find('title', 0)->plaintext);
                 $article_subtitle = StripCDATA($element->find('description', 0)->plaintext);
                 $article_timestamp = strtotime(StripCDATA($element->find('pubDate', 0)->plaintext));
-                $article = $this->file_get_html($article_url) or $this->returnServerError('Could not request ZDNet: '.$article_url);
+                $article = $this->getSimpleHTMLDOM($article_url) or $this->returnServerError('Could not request ZDNet: '.$article_url);
 
                 if (!empty($article_author))
                     $author = $article_author;
