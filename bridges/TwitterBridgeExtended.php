@@ -78,9 +78,12 @@ class TwitterBridgeExtended extends BridgeAbstract{
 			$cleanedTweet = str_replace('href="/', 'href="https://twitter.com/', $tweet->find('p.js-tweet-text', 0)->innertext);
 
 			$item->content = <<<EOD
-<a href="https://twitter.com/{$item->username}"><img style="align:top;width:75px;" alt="{$item->username}" src="{$item->avatar}" /></a>
-<p>{$item->fullname}</p><br/>
-<blockquote>{$cleanedTweet}</blockquote>
+<div style="display: inline-block; vertical-align: top;">
+	<a href="https://twitter.com/{$item->username}"><img style="align: top; width:75 px;" alt="{$item->username}" src="{$item->avatar}" title="{$item->fullname}" /></a>
+</div>
+<div style="display: inline-block; vertical-align: top;">
+	<blockquote>{$cleanedTweet}</blockquote>
+</div>
 EOD;
 
 			// generate the title
