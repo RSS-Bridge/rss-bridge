@@ -28,7 +28,7 @@ class AtomFormat extends FormatAbstract{
 
         $entries = '';
         foreach($this->getDatas() as $data){
-            $entryAuthor = is_null($data->author) ? $uri : xml_encode($data->author);
+            $entryAuthor = is_null($data->author) ? $title : xml_encode($data->author);
             $entryTitle = is_null($data->title) ? '' : xml_encode($data->title);
             $entryUri = is_null($data->uri) ? '' : xml_encode($data->uri);
             $entryTimestamp = is_null($data->timestamp) ? '' : xml_encode(date(DATE_ATOM, $data->timestamp));
