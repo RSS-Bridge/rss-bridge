@@ -6,7 +6,7 @@ class DeveloppezDotComBridge extends BridgeAbstract{
 		$this->name = "Developpez.com Actus (FR)";
 		$this->uri = "http://www.developpez.com/";
 		$this->description = "Returns the 15 newest posts from DeveloppezDotCom (full text).";
-		$this->update = "2016-08-06";
+		$this->update = "2016-08-09";
 	}
 
 	private function DeveloppezDotComStripCDATA($string) {
@@ -57,14 +57,6 @@ class DeveloppezDotComBridge extends BridgeAbstract{
 				$limit++;
 			}
 		}
-	}
-
-	public function getName(){
-		return 'DeveloppezDotCom';
-	}
-
-	public function getURI(){
-		return 'http://www.developpez.com/';
 	}
 
 	public function getCacheDuration(){

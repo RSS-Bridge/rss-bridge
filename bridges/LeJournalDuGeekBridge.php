@@ -6,7 +6,7 @@ class LeJournalDuGeekBridge extends BridgeAbstract{
 		$this->name = "journaldugeek.com (FR)";
 		$this->uri = "http://www.journaldugeek.com/";
 		$this->description = "Returns the 5 newest posts from LeJournalDuGeek (full text).";
-		$this->update = "2016-08-06";
+		$this->update = "2016-08-09";
 	}
 
 	private function LeJournalDuGeekStripCDATA($string) {
@@ -52,14 +52,6 @@ class LeJournalDuGeekBridge extends BridgeAbstract{
 				$limit++;
 			}
 		}
-	}
-
-	public function getName(){
-		return 'LeJournalDuGeek';
-	}
-
-	public function getURI(){
-		return 'http://www.journaldugeek.com/';
 	}
 
 	public function getCacheDuration(){

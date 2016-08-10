@@ -7,7 +7,7 @@ class OpenClassroomsBridge extends BridgeAbstract{
 		$this->name = "OpenClassrooms Bridge";
 		$this->uri = "https://openclassrooms.com/";
 		$this->description = "Returns latest tutorials from OpenClassrooms.";
-		$this->update = "2015-10-30";
+		$this->update = "2016-08-09";
 
 
 		$this->parameters[] =
@@ -77,14 +77,6 @@ class OpenClassroomsBridge extends BridgeAbstract{
                 $item->content = $element->find('slidingItem__descriptionContent', 0)->plaintext;
                 $this->items[] = $item;
         }
-    }
-
-    public function getName(){
-        return 'OpenClassrooms';
-    }
-
-    public function getURI(){
-        return 'https://openclassrooms.com/';
     }
 
     public function getCacheDuration(){

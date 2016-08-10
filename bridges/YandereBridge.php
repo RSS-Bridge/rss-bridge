@@ -50,14 +50,6 @@ class YandereBridge extends BridgeAbstract{
         }
     }
 
-    public function getName(){
-        return 'Yande.re';
-    }
-
-    public function getURI(){
-        return 'http://yande.re/post';
-    }
-
     public function getCacheDuration(){
         return 1800; // 30 minutes
     }

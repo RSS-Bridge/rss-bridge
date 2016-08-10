@@ -36,14 +36,6 @@ class FlickrExploreBridge extends BridgeAbstract{
         }
     }
 
-    public function getName(){
-        return 'Flickr Explore';
-    }
-
-    public function getURI(){
-        return 'https://www.flickr.com/explore';
-    }
-
     public function getCacheDuration(){
         return 21600; // 6 hours
     }

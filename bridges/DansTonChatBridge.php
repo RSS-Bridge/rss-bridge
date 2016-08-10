@@ -5,9 +5,9 @@ class DansTonChatBridge extends BridgeAbstract{
 
 		$this->maintainer = "Astalaseven";
 		$this->name = "DansTonChat Bridge";
-		$this->uri = "http://danstonchat.com/latest.html";
+		$this->uri = "http://danstonchat.com";
 		$this->description = "Returns latest quotes from DansTonChat.";
-		$this->update = "2014-05-25";
+		$this->update = "2016-08-09";
 
 	}
 
@@ -24,14 +24,6 @@ class DansTonChatBridge extends BridgeAbstract{
                 $item->content = $element->find('a', 0)->innertext;
                 $this->items[] = $item;
         }
-    }
-
-    public function getName(){
-        return 'DansTonChat';
-    }
-
-    public function getURI(){
-        return 'http://danstonchat.com';
     }
 
     public function getCacheDuration(){

@@ -160,14 +160,6 @@ class LWNprevBridge extends BridgeAbstract{
     }
   }
 
-  public function getName(){
-    return 'LWN Free Weekly Edition';
-  }
-
-  public function getURI(){
-    return 'https://lwn.net/free/bigpage';
-  }
-
   public function getCacheDuration(){
     return 604800; // one week
   }

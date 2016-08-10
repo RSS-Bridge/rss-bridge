@@ -50,14 +50,6 @@ class GelbooruBridge extends BridgeAbstract{
 	}
     }
 
-    public function getName(){
-        return 'Gelbooru';
-    }
-
-    public function getURI(){
-        return 'http://gelbooru.com/';
-    }
-
     public function getCacheDuration(){
         return 1800; // 30 minutes
     }

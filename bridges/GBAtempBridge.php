@@ -7,7 +7,7 @@ class GBAtempBridge extends BridgeAbstract {
 
         $this->maintainer = 'ORelio';
         $this->name = 'GBAtemp';
-        $this->uri = $this->getURI();
+        $this->uri = 'http://gbatemp.net/';
         $this->description = 'GBAtemp is a user friendly underground video game community.';
         $this->update = '2016-08-09';
 
@@ -91,20 +91,20 @@ class GBAtempBridge extends BridgeAbstract {
             } else $this->returnError('The provided type filter is invalid. Expecting N, R, T, or F.', 400);
         } else $this->returnError('Please provide a type filter. Expecting N, R, T, or F.', 400);
 
-        $html = $this->file_get_html($this->getURI()) or $this->returnError('Could not request GBAtemp.', 500);
+        $html = $this->file_get_html($this->uri) or $this->returnError('Could not request GBAtemp.', 500);
 
         if ($typeFilter == 'N') {
             foreach ($html->find('li[class=news_item full]') as $newsItem) {
-                $url = $this->getURI().$newsItem->find('a', 0)->href;
+                $url = $this->uri.$newsItem->find('a', 0)->href;
                 $time = intval($this->ExtractFromDelimiters($newsItem->find('abbr.DateTime', 0)->outertext, 'data-time="', '"'));
                 $author = $newsItem->find('a.username', 0)->plaintext;
                 $title = $newsItem->find('a', 1)->plaintext;
-                $content = $this->fetch_post_content($url, $this->getURI());
+                $content = $this->fetch_post_content($url, $this->uri);
                 $this->items[] = $this->build_item($url, $title, $author, $time, $content);
             }
         } else if ($typeFilter == 'R') {
             foreach ($html->find('li.portal_review') as $reviewItem) {
-                $url = $this->getURI().$reviewItem->find('a', 0)->href;
+                $url = $this->uri.$reviewItem->find('a', 0)->href;
                 $title = $reviewItem->find('span.review_title', 0)->plaintext;
                 $content = $this->file_get_html($url) or $this->returnError('Could not request GBAtemp: '.$uri, 500);
                 $author = $content->find('a.username', 0)->plaintext;
@@ -114,25 +114,25 @@ class GBAtempBridge extends BridgeAbstract {
                 $subheader = '<p><b>'.$content->find('div.review_subheader', 0)->plaintext.'</b></p>';
                 $procons = $content->find('table.review_procons', 0)->outertext;
                 $scores = $content->find('table.reviewscores', 0)->outertext;
-                $content = $this->cleanup_post_content($intro.$review.$subheader.$procons.$scores, $this->getURI());
+                $content = $this->cleanup_post_content($intro.$review.$subheader.$procons.$scores, $this->uri);
                 $this->items[] = $this->build_item($url, $title, $author, $time, $content);
             }
         } else if ($typeFilter == 'T') {
             foreach ($html->find('li.portal-tutorial') as $tutorialItem) {
-                $url = $this->getURI().$tutorialItem->find('a', 0)->href;
+                $url = $this->uri.$tutorialItem->find('a', 0)->href;
                 $title = $tutorialItem->find('a', 0)->plaintext;
                 $time = intval($this->ExtractFromDelimiters($tutorialItem->find('abbr.DateTime', 0)->outertext, 'data-time="', '"'));
                 $author = $tutorialItem->find('a.username', 0)->plaintext;
-                $content = $this->fetch_post_content($url, $this->getURI());
+                $content = $this->fetch_post_content($url, $this->uri);
                 $this->items[] = $this->build_item($url, $title, $author, $time, $content);
             }
         } else if ($typeFilter == 'F') {
             foreach ($html->find('li.rc_item') as $postItem) {
-                $url = $this->getURI().$postItem->find('a', 1)->href;
+                $url = $this->uri.$postItem->find('a', 1)->href;
                 $title = $postItem->find('a', 1)->plaintext;
                 $time = intval($this->ExtractFromDelimiters($postItem->find('abbr.DateTime', 0)->outertext, 'data-time="', '"'));
                 $author = $postItem->find('a.username', 0)->plaintext;
-                $content = $this->fetch_post_content($url, $this->getURI());
+                $content = $this->fetch_post_content($url, $this->uri);
                 $this->items[] = $this->build_item($url, $title, $author, $time, $content);
             }
         }
@@ -140,10 +140,6 @@ class GBAtempBridge extends BridgeAbstract {
 
     public function getName() {
         return 'GBAtemp'.(empty($this->filter) ? '' : ' '.$this->filter).' Bridge';
-    }
-
-    public function getURI() {
-        return 'http://gbatemp.net/';
     }
 
     public function getCacheDuration() {

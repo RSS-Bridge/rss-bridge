@@ -41,12 +41,4 @@ class FootitoBridge extends BridgeAbstract{
             $this->items[] = $item;
         }
     }
-
-    public function getName(){
-        return 'footito';
-    }
-
-    public function getURI(){
-        return 'http://www.footito.fr/';
-    }
 }

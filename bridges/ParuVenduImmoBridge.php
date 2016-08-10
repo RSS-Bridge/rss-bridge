@@ -8,9 +8,9 @@ class ParuVenduImmoBridge extends BridgeAbstract
 
 		$this->maintainer = "polo2ro";
 		$this->name = "Paru Vendu Immobilier";
-		$this->uri = "http://www.paruvendu.fr/immobilier/";
+		$this->uri = "http://www.paruvendu.fr";
 		$this->description = "Returns the ads from the first page of search result.";
-		$this->update = "2015-02-02";
+		$this->update = "2016-08-09";
 
 
 		$this->parameters[] =
@@ -46,7 +46,7 @@ class ParuVenduImmoBridge extends BridgeAbstract
         $num = 20;
         $appartment = '&tbApp=1&tbDup=1&tbChb=1&tbLof=1&tbAtl=1&tbPla=1';
         $maison = '&tbMai=1&tbVil=1&tbCha=1&tbPro=1&tbHot=1&tbMou=1&tbFer=1';
-        $link = $this->getURI().'/immobilier/annonceimmofo/liste/listeAnnonces?tt=1'.$appartment.$maison;
+        $link = $this->uri.'/immobilier/annonceimmofo/liste/listeAnnonces?tt=1'.$appartment.$maison;
         
         if (isset($param['minarea'])) {
             $this->request .= ' '.$param['minarea'].' m2';
@@ -90,7 +90,7 @@ class ParuVenduImmoBridge extends BridgeAbstract
             list($href) = explode('#', $element->href);
             
             $item = new \Item();
-            $item->uri = $this->getURI().$href;
+            $item->uri = $this->uri.$href;
             $item->title = $element->title;
             $item->content = $img.$desc.$price;
             $this->items[] = $item;
@@ -100,10 +100,6 @@ class ParuVenduImmoBridge extends BridgeAbstract
 
     public function getName(){
         return 'Paru Vendu Immobilier'.$this->request;
-    }
-
-    public function getURI(){
-        return 'http://www.paruvendu.fr';
     }
 
     public function getCacheDuration(){

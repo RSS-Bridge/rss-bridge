@@ -79,12 +79,4 @@ class GitlabCommitsBridge extends BridgeAbstract{
       $this->items[]=$item;
     }
   }
-
-  public function getName(){
-    return 'Gitlab Commits';
-  }
-
-  public function getURI(){
-    return '';
-  }
 }

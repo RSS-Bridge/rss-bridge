@@ -164,10 +164,6 @@ class TwitchApiBridge extends BridgeAbstract{
 		return (!empty($this->channel) ? $this->channel . ' - ' : '') . 'Twitch API Bridge';
 	}
 
-	public function getURI(){
-		return 'https://www.twitch.tv';
-	}
-
 	public function getCacheDuration(){
 		return 10800; // 3 hours
 	}

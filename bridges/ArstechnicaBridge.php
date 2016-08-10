@@ -62,17 +62,8 @@ class ArstechnicaBridge extends BridgeAbstract {
 
 }
 
-
-        public function getName() {
-                return 'ArsTechnica';
-        }
-
         public function getCacheDuration() {
                 return 7200; // 2h
-        }
-
-        public function getURI() {
-                return "http://arstechnica.com";
         }
 
 }

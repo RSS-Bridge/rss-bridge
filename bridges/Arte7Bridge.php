@@ -156,14 +156,6 @@ class Arte7Bridge extends BridgeAbstract{
         }
     }
 
-    public function getName(){
-        return 'Arte7';
-    }
-
-    public function getURI(){
-        return 'http://www.arte.tv/';
-    }
-
     public function getCacheDuration(){
         return 1800; // 30 minutes
     }

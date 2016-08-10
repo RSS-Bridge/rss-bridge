@@ -4,8 +4,8 @@ class T411Bridge extends BridgeAbstract {
     public function loadMetadatas() {
 
         $this->maintainer = 'ORelio';
-        $this->name = 'T411';
-        $this->uri = $this->getURI();
+        $this->name = 'T411 Bridge';
+        $this->uri = 'https://t411.ch/';
         $this->description = 'Returns the 10 newest torrents with specified search terms <br /> Use url part after "?" mark when using their search engine.';
         $this->update = '2016-08-09';
 
@@ -35,7 +35,7 @@ class T411Bridge extends BridgeAbstract {
         }
 
         //Retrieve torrent listing from search results, which does not contain torrent description
-        $url = $this->getURI().'torrents/search/?'.$param['search'].'&order=added&type=desc';
+        $url = $this->uri.'torrents/search/?'.$param['search'].'&order=added&type=desc';
         $html = $this->file_get_html($url) or $this->returnError('Could not request t411: '.$url, 500);
         $results = $html->find('table.results', 0);
         if (is_null($results))
@@ -52,7 +52,7 @@ class T411Bridge extends BridgeAbstract {
                 usleep(500000); //So we need to wait (500ms)
 
                 //Retrieve data from RSS entry
-                $item_uri = $this->getURI().'torrents/details/?id='.ExtractFromDelimiters($element->find('a.nfo', 0)->outertext, '?id=', '"');
+                $item_uri = $this->uri.'torrents/details/?id='.ExtractFromDelimiters($element->find('a.nfo', 0)->outertext, '?id=', '"');
                 $item_title = ExtractFromDelimiters($element->outertext, '" title="', '"');
                 $item_date = strtotime($element->find('dd', 0)->plaintext);
 
@@ -83,14 +83,6 @@ class T411Bridge extends BridgeAbstract {
                 }
             }
         }
-    }
-
-    public function getName() {
-        return "T411 Bridge";
-    }
-
-    public function getURI() {
-        return 'https://t411.ch/';
     }
 }
 

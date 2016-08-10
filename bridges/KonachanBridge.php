@@ -50,14 +50,6 @@ class KonachanBridge extends BridgeAbstract{
         }
     }
 
-    public function getName(){
-        return 'Konachan';
-    }
-
-    public function getURI(){
-        return 'http://konachan.com/post';
-    }
-
     public function getCacheDuration(){
         return 1800; // 30 minutes
     }

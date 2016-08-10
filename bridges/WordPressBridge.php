@@ -12,7 +12,7 @@ class WordPressBridge extends BridgeAbstract {
 		$this->name = "Wordpress Bridge";
 		$this->uri = "https://wordpress.org/";
 		$this->description = "Returns the 3 newest full posts of a Wordpress blog";
-		$this->update = "2016-08-06";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -134,10 +134,6 @@ class WordPressBridge extends BridgeAbstract {
 
 	public function getName() {
 		return "{$this->sitename} - Wordpress Bridge";
-	}
-
-	public function getURI() {
-		return $this->url;
 	}
 
 	public function getCacheDuration() {

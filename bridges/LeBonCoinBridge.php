@@ -7,7 +7,7 @@ class LeBonCoinBridge extends BridgeAbstract{
 		$this->name = "LeBonCoin";
 		$this->uri = "http://www.leboncoin.fr";
 		$this->description = "Returns most recent results from LeBonCoin for a region, and optionally a category and a keyword .";
-		$this->update = "2016-08-06";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
             '[
@@ -274,13 +274,5 @@ class LeBonCoinBridge extends BridgeAbstract{
 			$item->content = $content . $date;
 			$this->items[] = $item;
 		}
-	}
-
-	public function getName(){
-		return 'LeBonCoin';
-	}
-
-	public function getURI(){
-		return 'http://www.leboncoin.fr';
 	}
 }

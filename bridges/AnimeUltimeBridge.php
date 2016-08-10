@@ -125,10 +125,6 @@ class AnimeUltimeBridge extends BridgeAbstract {
         return 'Latest '.$this->filter.' - Anime-Ultime Bridge';
     }
 
-    public function getURI() {
-        return 'http://www.anime-ultime.net/';
-    }
-
     public function getCacheDuration() {
         return 3600*3; // 3 hours
     }

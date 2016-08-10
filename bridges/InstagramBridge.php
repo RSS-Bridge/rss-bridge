@@ -9,7 +9,7 @@ class InstagramBridge extends BridgeAbstract{
 		$this->name = "Instagram Bridge";
 		$this->uri = "http://instagram.com/";
 		$this->description = "Returns the newest images";
-		$this->update = "2016-08-06";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -76,9 +76,5 @@ class InstagramBridge extends BridgeAbstract{
 
     public function getName(){
         return (!empty($this->request) ? $this->request .' - ' : '') .'Instagram Bridge';
-    }
-
-    public function getURI(){
-        return 'http://instagram.com/';
     }
 }

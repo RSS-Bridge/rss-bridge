@@ -45,10 +45,6 @@ class TagBoardBridge extends BridgeAbstract{
         return 'tagboard - ' .$this->request;
     }
 
-    public function getURI(){
-        return 'http://TagBoard.com';
-    }
-
     public function getCacheDuration(){
         return 21600; // 6 hours
     }

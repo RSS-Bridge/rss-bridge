@@ -50,14 +50,6 @@ class SakugabooruBridge extends BridgeAbstract{
         }
     }
 
-    public function getName(){
-        return 'Sakugabooru';
-    }
-
-    public function getURI(){
-        return 'http://sakuga.yshi.org/post';
-    }
-
     public function getCacheDuration(){
         return 1800; // 30 minutes
     }

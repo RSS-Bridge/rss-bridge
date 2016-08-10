@@ -49,14 +49,6 @@ class XbooruBridge extends BridgeAbstract{
 	}
     }
 
-    public function getName(){
-        return 'Xbooru';
-    }
-
-    public function getURI(){
-        return 'http://xbooru.com/';
-    }
-
     public function getCacheDuration(){
         return 1800; // 30 minutes
     }

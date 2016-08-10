@@ -3,7 +3,7 @@ class JapanExpoBridge extends BridgeAbstract{
 
     public function loadMetadatas() {
         $this->maintainer = 'Ginko';
-        $this->name = 'JapanExpo';
+        $this->name = 'Japan Expo Actualités';
         $this->uri = 'http://www.japan-expo-paris.com/fr/actualites';
         $this->description = 'Returns most recent entries from Japan Expo actualités.';
         $this->update = '2016-08-09';
@@ -100,14 +100,6 @@ class JapanExpoBridge extends BridgeAbstract{
             $this->items[] = $item;
             $count++;
         }
-    }
-
-    public function getName(){
-        return 'Japan Expo Actualités';
-    }
-
-    public function getURI(){
-        return 'http://www.japan-expo-paris.com/fr/actualites';
     }
 
     public function getCacheDuration(){

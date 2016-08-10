@@ -48,14 +48,6 @@ class Rule34pahealBridge extends BridgeAbstract{
 	}
     }
 
-    public function getName(){
-        return 'Rule34paheal';
-    }
-
-    public function getURI(){
-        return 'http://rule34.paheal.net/';
-    }
-
     public function getCacheDuration(){
         return 1800; // 30 minutes
     }

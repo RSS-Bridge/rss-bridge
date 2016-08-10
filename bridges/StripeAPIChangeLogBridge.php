@@ -10,7 +10,7 @@ class StripeAPIChangeLogBridge extends BridgeAbstract{
 
     $this->maintainer = 'Pierre Mazière';
     $this->name = 'Stripe API Changelog';
-    $this->uri = '';
+    $this->uri = 'https://stripe.com/docs/upgrades';
     $this->description = 'Returns the changes made to the stripe.com API';
     $this->update = '2016-08-09';
   }
@@ -29,14 +29,6 @@ class StripeAPIChangeLogBridge extends BridgeAbstract{
       $item->timestamp=strtotime($item->title);
       $this->items[]=$item;
     }
-  }
-
-  public function getName(){
-    return 'Stripe API Changelog';
-  }
-
-  public function getURI(){
-    return 'https://stripe.com/docs/upgrades';
   }
 
   public function getCacheDuration(){

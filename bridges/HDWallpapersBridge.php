@@ -77,10 +77,6 @@ class HDWallpapersBridge extends BridgeAbstract {
         return 'HDWallpapers - '.str_replace(['__', '_'], [' & ', ' '], $this->category).' ['.$this->resolution.']';
     }
 
-    public function getURI(){
-        return 'http://www.hdwallpapers.in';
-    }
-
     public function getCacheDuration(){
         return 43200; // 12 hours
     }

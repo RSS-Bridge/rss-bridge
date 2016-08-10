@@ -51,10 +51,6 @@ class BandcampBridge extends BridgeAbstract{
         return (!empty($this->request) ? $this->request .' - ' : '') .'Bandcamp Tag';
     }
 
-    public function getURI(){
-        return 'http://bandcamp.com';
-    }
-
     public function getCacheDuration(){
         return 600; // 10 minutes
     }

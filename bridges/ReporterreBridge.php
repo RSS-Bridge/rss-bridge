@@ -6,7 +6,7 @@ class ReporterreBridge extends BridgeAbstract{
 			$this->name = "Reporterre Bridge";
 			$this->uri = "http://www.reporterre.net/";
 			$this->description = "Returns the newest articles.";
-			$this->update = "2016-08-06";
+			$this->update = "2016-08-09";
 		}
 
 		private function ExtractContentReporterre($url) {
@@ -20,7 +20,7 @@ class ReporterreBridge extends BridgeAbstract{
 			unset ($html2);
 
 			// Replace all relative urls with absolute ones
-			$text = preg_replace('/(href|src)(\=[\"\'])(?!http)([^"\']+)/ims', "$1$2" . $this->getURI() . "$3", $text);
+			$text = preg_replace('/(href|src)(\=[\"\'])(?!http)([^"\']+)/ims', "$1$2" . $this->uri . "$3", $text);
 
 			$text = strip_tags($text, '<p><br><a><img>');
 			return $text;
@@ -41,13 +41,5 @@ class ReporterreBridge extends BridgeAbstract{
 				$limit++;
 			}
 		}
-	}
-
-	public function getName(){
-		return 'Reporterre Bridge';
-	}
-
-	public function getURI(){
-		return 'http://www.reporterre.net/';
 	}
 }

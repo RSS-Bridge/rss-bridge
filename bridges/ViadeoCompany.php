@@ -37,14 +37,6 @@ class ViadeoCompany extends BridgeAbstract{
         }
     }
 
-    public function getName(){
-        return 'Viadeo';
-    }
-
-    public function getURI(){
-        return 'https://www.viadeo.com';
-    }
-
     public function getCacheDuration(){
         return 21600; // 6 hours
     }

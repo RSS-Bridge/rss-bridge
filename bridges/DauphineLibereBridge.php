@@ -4,10 +4,10 @@ class DauphineLibereBridge extends BridgeAbstract {
 	public function loadMetadatas() {
 
 		$this->maintainer = "qwertygc";
-		$this->name = "DauphineLibereBridge Bridge";
+		$this->name = "Dauphine Bridge";
 		$this->uri = "http://www.ledauphine.com/";
 		$this->description = "Returns the newest articles.";
-		$this->update = "2016-08-06";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -120,14 +120,6 @@ class DauphineLibereBridge extends BridgeAbstract {
 				$limit++;
 			}
 		}
-	}
-
-	public function getName(){
-		return 'Dauphine Bridge';
-	}
-
-	public function getURI(){
-		return 'http://ledauphine.com/';
 	}
 
 	public function getCacheDuration(){

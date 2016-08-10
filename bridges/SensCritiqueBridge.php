@@ -131,10 +131,6 @@ class SensCritiqueBridge extends BridgeAbstract {
 		}
 	}
 
-	public function getURI() {
-		return (trim($this->uri) === "") ? "http://www.senscritique.com" : $this->uri;
-	}
-
 	public function getCacheDuration(){
 		return 21600; // 6 hours
 	}

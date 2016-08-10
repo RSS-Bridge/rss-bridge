@@ -7,7 +7,7 @@ class NumeramaBridge extends BridgeAbstract{
         $this->name = 'Numerama';
         $this->uri = 'http://www.numerama.com/';
         $this->description = 'Returns the 5 newest posts from Numerama (full text)';
-        $this->update = '2016-07-19';
+        $this->update = '2016-08-09';
 
     }
 
@@ -19,7 +19,7 @@ class NumeramaBridge extends BridgeAbstract{
             return $string;
         }
 
-        $feed = $this->getURI().'feed/';
+        $feed = $this->uri.'feed/';
         $html = $this->file_get_html($feed) or $this->returnError('Could not request Numerama: '.$feed, 500);
         $limit = 0;
 
@@ -43,14 +43,6 @@ class NumeramaBridge extends BridgeAbstract{
             }
         }
 
-    }
-
-    public function getName() {
-        return 'Numerama';
-    }
-
-    public function getURI() {
-        return 'http://www.numerama.com/';
     }
 
     public function getCacheDuration() {

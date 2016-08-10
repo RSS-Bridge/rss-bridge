@@ -64,18 +64,6 @@ class DemoBridge extends BridgeAbstract{
 
     }
 
-	public function getName() {
-
-		return "DemoBridge";
-
-	}
-
-	public function getURI() {
-
-		return "http://github.com/sebsauvage/rss-bridge";
-
-	}
-
 	public function getCacheDuration(){
 		return 00; // 1 hour
 	}

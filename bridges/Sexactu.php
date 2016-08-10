@@ -1,5 +1,4 @@
 <?php
-define("GQ", "http://www.gqmagazine.fr");
 class Sexactu extends BridgeAbstract{
 
 	public function loadMetadatas() {
@@ -33,7 +32,7 @@ $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July',
                         $titleData = $titleDetails->find('h2', 0)->find('a',0);
                         $titleTimestamp =$titleDetails->find('h4',0);
                         $item->title = $this->correctCase(trim($titleData->innertext));
-                        $item->uri = GQ.$titleData->href;
+                        $item->uri = $this->uri.$titleData->href;
 
                         // Fugly date parsing due to the fact my DNS-323 doesn't support php intl extension
                         $dateText = $titleTimestamp->innertext;
@@ -46,7 +45,7 @@ $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July',
                         $elementText = $element->find('.text-container', 0);
                         // don't forget to replace images server url with gq one
                         foreach($elementText->find('img') as $image) {
-                            $image->src = GQ.$image->src;
+                            $image->src = $this->uri.$image->src;
                         }
                         $item->content = $elementText->innertext;
                         $this->items[] = $item;
@@ -58,12 +57,8 @@ $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July',
         }
     }
 
-    public function getName(){
-        return 'Sexactu';
-    }
-
     public function getURI(){
-        return GQ.'/sexactu';
+        return $this->uri.'/sexactu';
     }
 
     public function getCacheDuration(){
