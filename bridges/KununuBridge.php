@@ -129,6 +129,10 @@ class KununuBridge extends BridgeAbstract{
 		}
 	}
 
+	public function getCacheDuration(){
+		return 86400; // 1 day
+	}
+
 	/** 
 	* Returns true if the given site is part of the parameters list
 	*/
