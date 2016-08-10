@@ -45,6 +45,8 @@ class TwitterBridgeExtended extends BridgeAbstract{
 			$item->username = $tweet->getAttribute('data-screen-name');
 			// extract fullname (pseudonym)
 			$item->fullname = $tweet->getAttribute('data-name'); 
+			// get author
+			$item->author = $item->fullname . ' (@' . $item->username . ')';
 			// get avatar link
 			$item->avatar = $tweet->find('img', 0)->src;	
 			// get TweetID
@@ -53,8 +55,8 @@ class TwitterBridgeExtended extends BridgeAbstract{
 			$item->uri = 'https://twitter.com'.$tweet->find('a.js-permalink', 0)->getAttribute('href');	
 			// extract tweet timestamp
 			$item->timestamp = $tweet->find('span.js-short-timestamp', 0)->getAttribute('data-time');
-			// extract plaintext	
-			$item->content_simple = str_replace('href="/', 'href="https://twitter.com/', html_entity_decode(strip_tags($tweet->find('p.js-tweet-text', 0)->innertext, '<a>'))); 
+			// generate the title
+			$item->title = strip_tags($tweet->find('p.js-tweet-text', 0)->innertext); 
 	
 			// processing content links
 			foreach($tweet->find('a') as $link) {
@@ -86,8 +88,6 @@ class TwitterBridgeExtended extends BridgeAbstract{
 </div>
 EOD;
 
-			// generate the title
-			$item->title = $item->fullname . ' (@'. $item->username . ') | ' . $item->content_simple;
 			// put out
 			$this->items[] = $item;
 		}
