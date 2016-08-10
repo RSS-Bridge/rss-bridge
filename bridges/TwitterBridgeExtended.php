@@ -25,7 +25,11 @@ class TwitterBridgeExtended extends BridgeAbstract{
 		'[
 			{
 				"name" : "Keyword or #hashtag",
-				"identifier" : "q"
+				"identifier" : "q",
+				"type" : "text",
+				"required" : "true",
+				"exampleValue" : "rss-bridge, #rss-bridge",
+				"title" : "Insert a keyword or hashtag"
 			}
 		]';
 
@@ -33,7 +37,11 @@ class TwitterBridgeExtended extends BridgeAbstract{
 		'[
 			{
 				"name" : "username",
-				"identifier" : "u"
+				"identifier" : "u",
+				"type" : "text",
+				"required" : "true",
+				"exampleValue" : "sebsauvage",
+				"title" : "Insert a user name"
 			}
 		]';
 
