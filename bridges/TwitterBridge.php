@@ -1,12 +1,12 @@
 <?php
-class TwitterBridgeExtended extends BridgeAbstract{
+class TwitterBridge extends BridgeAbstract{
 
 	public function loadMetadatas() {
 
 		$this->maintainer = "mitsukarenai";
-		$this->name = "Twitter Bridge Extended";
+		$this->name = "Twitter Bridge";
 		$this->uri = "https://twitter.com/";
-		$this->description = "(same as Twitter Bridge, but with avatar, replies and RTs)";
+		$this->description = "Returns tweets by keyword/hashtag or user name";
 		$this->update = "2016-08-10";
 
 		$this->parameters["global"] = 
