@@ -79,7 +79,7 @@ class TwitterBridgeExtended extends BridgeAbstract{
 
 			$item->content = <<<EOD
 <div style="display: inline-block; vertical-align: top;">
-	<a href="https://twitter.com/{$item->username}"><img style="align: top; width:75 px;" alt="{$item->username}" src="{$item->avatar}" title="{$item->fullname}" /></a>
+	<a href="https://twitter.com/{$item->username}"><img style="align: top; width:75 px; border: 1px solid black;" alt="{$item->username}" src="{$item->avatar}" title="{$item->fullname}" /></a>
 </div>
 <div style="display: inline-block; vertical-align: top;">
 	<blockquote>{$cleanedTweet}</blockquote>
