@@ -7,7 +7,19 @@ class TwitterBridgeExtended extends BridgeAbstract{
 		$this->name = "Twitter Bridge Extended";
 		$this->uri = "https://twitter.com/";
 		$this->description = "(same as Twitter Bridge, but with avatar, replies and RTs)";
-		$this->update = "2016-08-09";
+		$this->update = "2016-08-10";
+
+		$this->parameters["global"] = 
+		'[
+			{
+				"name" : "Hide profile pictures",
+				"identifier" : "pic",
+				"type" : "checkbox",
+				"required" : "false",
+				"exampleValue" : "checked",
+				"title" : "Activate to hide profile pictures in content"
+			}
+		]';
 
 		$this->parameters["By keyword or hashtag"] =
 		'[
@@ -38,6 +50,10 @@ class TwitterBridgeExtended extends BridgeAbstract{
 		else {
 			$this->returnError('You must specify a keyword (?q=...) or a Twitter username (?u=...).', 400);
 		}
+
+		$hidePictures = false;
+		if (isset($param['pic']))
+			$hidePictures = $param['pic'] === 'on';
 
 		foreach($html->find('div.js-stream-tweet') as $tweet) {
 			$item = new \Item();
@@ -79,9 +95,18 @@ class TwitterBridgeExtended extends BridgeAbstract{
 			// get tweet text
 			$cleanedTweet = str_replace('href="/', 'href="https://twitter.com/', $tweet->find('p.js-tweet-text', 0)->innertext);
 
+			// Add picture to content
+			$picture_html = '';
+			if(!$hidePictures){
+				$picture_html = <<<EOD
+<a href="https://twitter.com/{$item->username}"><img style="align: top; width:75 px; border: 1px solid black;" alt="{$item->username}" src="{$item->avatar}" title="{$item->fullname}" /></a>
+EOD;
+			}
+
+			// add content
 			$item->content = <<<EOD
 <div style="display: inline-block; vertical-align: top;">
-	<a href="https://twitter.com/{$item->username}"><img style="align: top; width:75 px; border: 1px solid black;" alt="{$item->username}" src="{$item->avatar}" title="{$item->fullname}" /></a>
+	{$picture_html}
 </div>
 <div style="display: inline-block; vertical-align: top;">
 	<blockquote>{$cleanedTweet}</blockquote>
