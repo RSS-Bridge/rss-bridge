@@ -19,9 +19,7 @@ Supported sites/pages (main)
  * `OpenClassrooms`: Lastest tutorials from [fr.openclassrooms.com](http://fr.openclassrooms.com/)
  * `Pinterest`: Most recent photos from user or search
  * `ScmbBridge`: Newest stories from [secouchermoinsbete.fr](http://secouchermoinsbete.fr/)
- * `WikipediaENLatest`: highlighted articles from Wikipedia in English
- * `WikipediaFRLatest`: highlighted articles from Wikipedia in French
- * `WikipediaEOLatest`: highlighted articles from Wikipedia in Esperanto
+ * `Wikipedia`: highlighted articles from [Wikipedia](https://wikipedia.org/) in English, German, French or Esperanto
  * `Bandcamp` : Returns last release from [bandcamp](https://bandcamp.com/) for a tag
  * `ThePirateBay` : Returns the newest indexed torrents from [The Pirate Bay](https://thepiratebay.se/) with keywords
  * `Facebook` : Returns the latest posts on a page or profile on [Facebook](https://facebook.com/)
@@ -33,6 +31,7 @@ Output format
 Output format can take several forms:
 
  * `Atom` : ATOM Feed, for use in RSS/Feed readers
+ * `Mrss` : MRSS Feed, for use in RSS/Feed readers
  * `Json` : Json, for consumption by other applications.
  * `Html` : Simple html page.
  * `Plaintext` : raw text (php object, as returned by print_r)
@@ -42,11 +41,11 @@ Screenshot
 
 Welcome screen:
 
-![Screenshot](http://sebsauvage.net/galerie/photos/Bordel/rss-bridge-screenshot-3.png)
+![Screenshot](https://github.com/RSS-Bridge/rss-bridge/wiki/images/screenshot_rss-bridge_welcome.png)
    
-Minecraft hashtag (#Minecraft) search on Twitter, in ATOM format (as displayed by Firefox):
+RSS-Bridge hashtag (#rss-bridge) search on Twitter, in ATOM format (as displayed by Firefox):
 
-![Screenshot](http://sebsauvage.net/galerie/photos/Bordel/rss-bridge-screenshot-2-twitter-hashtag.png)
+![Screenshot](https://github.com/RSS-Bridge/rss-bridge/wiki/images/screenshot_twitterbridge_atom.png)
    
 Requirements
 ===
@@ -63,6 +62,8 @@ By default, the script creates `whitelist.txt` and adds the main bridges (see ab
 
 New bridges are disabled by default, so make sure to check regularly what's new and whitelist what you want!
 
+Deploy
+===
 [![Deploy on Scalingo](https://cdn.scalingo.com/deploy/button.svg)](https://my.scalingo.com/deploy?source=https://github.com/sebsauvage/rss-bridge)
  
 Authors
@@ -104,7 +105,7 @@ Patch/contributors :
  * [kraoc](https://github.com/kraoc)
  * [lagaisse](https://github.com/lagaisse)
 
-License
+Licenses
 ===
 Code is [Public Domain](UNLICENSE).
 
@@ -113,9 +114,10 @@ Including `PHP Simple HTML DOM Parser` under the [MIT License](http://opensource
 
 Technical notes
 ===
-  * There is a cache so that source services won't ban you even if you hammer the rss-bridge with requests. Each bridge has a different duration for the cache. The `cache` subdirectory will be automatically created and cached objects older than 24 hours get purged.
+  * There is a cache so that source services won't ban you even if you hammer the rss-bridge with requests. Each bridge can have a different duration for the cache. The `cache` subdirectory will be automatically created and cached objects older than 24 hours get purged.
   * To implement a new rss-bridge, [follow the specifications](CREATE_BRIDGE.md) and take a look at existing bridges for examples.
   * To enable debug mode (disabling cache and enabling error reporting), create an empty file named `DEBUG` in the root directory (next to `index.php`).
+  * For more information refer to the [Wiki](https://github.com/RSS-Bridge/rss-bridge/wiki)
 
 Rant
 ===
