@@ -11,10 +11,10 @@ class YoutubeBridge extends BridgeAbstract {
 	public function loadMetadatas() {
 
 		$this->name = 'YouTube Bridge';
-		$this->homepage = 'https://www.youtube.com/';
+		$this->uri = 'https://www.youtube.com/';
 		$this->description = 'Returns the 10 newest videos by username/channel/playlist or search';
 		$this->maintainer = 'mitsukarenai';
-		$this->update = '2016-08-09';
+		$this->update = '2016-08-11';
 
 		$this->parameters['By username'] =
 		'[
