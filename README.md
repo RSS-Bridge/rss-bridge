@@ -116,7 +116,7 @@ Including `PHP Simple HTML DOM Parser` under the [MIT License](http://opensource
 Technical notes
 ===
   * There is a cache so that source services won't ban you even if you hammer the rss-bridge with requests. Each bridge can have a different duration for the cache. The `cache` subdirectory will be automatically created and cached objects older than 24 hours get purged.
-  * To implement a new rss-bridge, [follow the specifications](CREATE_BRIDGE.md) and take a look at existing bridges for examples.
+  * To implement a new Bridge, [follow the specifications](https://github.com/RSS-Bridge/rss-bridge/wiki/Bridge-API) and take a look at existing Bridges for examples.
   * To enable debug mode (disabling cache and enabling error reporting), create an empty file named `DEBUG` in the root directory (next to `index.php`).
   * For more information refer to the [Wiki](https://github.com/RSS-Bridge/rss-bridge/wiki)
 
