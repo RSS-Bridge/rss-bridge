@@ -93,7 +93,7 @@ CARD;
 				$additionalInfoString = "";
 				if(isset($inputEntry['required'])) {
 
-					$additionalInfoString .= " required=\"required\"";
+					$additionalInfoString .= " required";
 
 				}
 				if(isset($inputEntry['pattern'])) {
