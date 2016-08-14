@@ -91,7 +91,7 @@ CARD;
 			foreach($parameter as $inputEntry) {
 
 				$additionalInfoString = "";
-				if(isset($inputEntry['required'])) {
+				if(isset($inputEntry['required']) && $inputEntry['required'] === true) {
 
 					$additionalInfoString .= " required";
 
