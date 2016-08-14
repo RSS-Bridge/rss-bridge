@@ -17,7 +17,7 @@ class GoogleSearchBridge extends BridgeAbstract{
 		$this->name = "Google search";
 		$this->uri = "https://www.google.com/";
 		$this->description = "Returns most recent results from Google search.";
-		$this->update = "2014-05-25";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -60,10 +60,6 @@ class GoogleSearchBridge extends BridgeAbstract{
 
     public function getName(){
         return (!empty($this->request) ? $this->request .' - ' : '') .'Google search';
-    }
-
-    public function getURI(){
-        return 'http://google.com';
     }
 
     public function getCacheDuration(){

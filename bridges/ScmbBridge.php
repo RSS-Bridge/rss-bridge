@@ -7,7 +7,7 @@ class ScmbBridge extends BridgeAbstract{
 		$this->name = "Se Coucher Moins Bête Bridge";
 		$this->uri = "http://secouchermoinsbete.fr/";
 		$this->description = "Returns the newest anecdotes.";
-		$this->update = "2014-05-25";
+		$this->update = "2016-08-09";
 
 	}
     
@@ -36,14 +36,6 @@ class ScmbBridge extends BridgeAbstract{
 			$item->content = $content;
 			$this->items[] = $item;
 		}
-    }
-
-    public function getName(){
-        return 'Se Coucher Moins Bête Bridge';
-    }
-
-    public function getURI(){
-        return 'http://secouchermoinsbete.fr/';
     }
 
     public function getCacheDuration(){

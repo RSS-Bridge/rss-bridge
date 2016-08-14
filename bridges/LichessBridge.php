@@ -5,10 +5,10 @@ class LichessBridge  extends BridgeAbstract
     public function loadMetadatas()
     {
         $this->maintainer = 'AmauryCarrade';
-        $this->name = $this->getName() . ' Bridge';
-        $this->uri = $this->getURI();
+        $this->name = 'Lichess Blog';
+        $this->uri = 'http://lichess.org/blog';
         $this->description = 'Returns the 5 newest posts from the Lichess blog (full text)';
-        $this->update = "2016-03-22";
+        $this->update = "2016-08-06";
     }
 
     public function collectData(array $param)
@@ -47,15 +47,5 @@ class LichessBridge  extends BridgeAbstract
         $content .= '<div>' . $post_content . '</div>';
 
         return $content;
-    }
-
-    public function getName()
-    {
-        return 'Lichess Blog';
-    }
-
-    public function getURI()
-    {
-        return 'http://lichess.org/blog';
     }
 }

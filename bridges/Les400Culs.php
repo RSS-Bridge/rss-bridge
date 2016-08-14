@@ -10,7 +10,7 @@ class Les400Culs extends RssExpander{
 		$this->name = "Les 400 Culs";
 		$this->uri = "http://sexes.blogs.liberation.fr";
 		$this->description = "La planete sexe vue par Agnes Girard via rss-bridge";
-		$this->update = "20/02/2014";
+		$this->update = "2016-08-09";
 
 	}
 
@@ -34,7 +34,7 @@ class Les400Culs extends RssExpander{
 
 //        $content = $articlePage->find('.post-container', 0);
         $item->content = (string) $newsItem->description;
-        $item->name = (string) $newsItem->author;
+        $item->author = (string) $newsItem->author;
         $item->timestamp = $this->RSS_2_0_time_to_timestamp($newsItem);
         return $item;
     }

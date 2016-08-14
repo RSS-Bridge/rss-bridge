@@ -7,7 +7,7 @@ class TagBoardBridge extends BridgeAbstract{
 		$this->name = "TagBoard";
 		$this->uri = "http://www.TagBoard.com";
 		$this->description = "Returns most recent results from TagBoard.";
-		$this->update = "2014-09-10";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -31,9 +31,9 @@ class TagBoardBridge extends BridgeAbstract{
                 $item = new Item();
                 $item->uri = $element->{'permalink'};
 		$item->title = $element->{'text'};
-                $item->thumbnailUri = $element->{'photos'}[0]->{'m'};
-                if (isset($item->thumbnailUri)) {
-                  $item->content = '<a href="' . $item->uri . '"><img src="' . $item->thumbnailUri . '" /></a>';
+                $thumbnailUri = $element->{'photos'}[0]->{'m'};
+                if (isset($thumbnailUri)) {
+                  $item->content = '<a href="' . $item->uri . '"><img src="' . $thumbnailUri . '" /></a>';
                 }else{
                   $item->content = $element->{'html'};
                 }
@@ -43,10 +43,6 @@ class TagBoardBridge extends BridgeAbstract{
 
     public function getName(){
         return 'tagboard - ' .$this->request;
-    }
-
-    public function getURI(){
-        return 'http://TagBoard.com';
     }
 
     public function getCacheDuration(){

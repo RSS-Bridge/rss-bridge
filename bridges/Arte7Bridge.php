@@ -7,7 +7,7 @@ class Arte7Bridge extends BridgeAbstract{
 		$this->name = "Arte +7";
 		$this->uri = "http://www.arte.tv/";
 		$this->description = "Returns newest videos from ARTE +7";
-		$this->update = "2015-10-31";
+		$this->update = "2016-08-09";
 		$this->parameters["Catégorie (Français)"] =
 		'[
 			{
@@ -147,22 +147,13 @@ class Arte7Bridge extends BridgeAbstract{
                $hack_broadcast_time = strtok($hack_broadcast_time, 'T');
                $hack_broadcast_time = strtok('T');
             $item->timestamp = strtotime($element['scheduled_on'].'T'.$hack_broadcast_time);
-            $item->thumbnailUri = $element['thumbnail_url'];
             $item->title = $element['title'];
             if (!empty($element['subtitle']))
                $item->title = $element['title'].' | '.$element['subtitle'];
             $item->duration = round((int)$element['duration']/60);
-            $item->content = $element['teaser'].'<br><br>'.$item->duration.'min<br><a href="'.$item->uri.'"><img src="' . $item->thumbnailUri . '" /></a>';
+            $item->content = $element['teaser'].'<br><br>'.$item->duration.'min<br><a href="'.$item->uri.'"><img src="' . $element['thumbnail_url'] . '" /></a>';
             $this->items[] = $item;
         }
-    }
-
-    public function getName(){
-        return 'Arte7';
-    }
-
-    public function getURI(){
-        return 'http://www.arte.tv/';
     }
 
     public function getCacheDuration(){

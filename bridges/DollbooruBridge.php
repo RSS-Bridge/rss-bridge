@@ -7,7 +7,7 @@ class DollbooruBridge extends BridgeAbstract{
 		$this->name = "Dollbooru";
 		$this->uri = "http://dollbooru.org/";
 		$this->description = "Returns images from given page";
-		$this->update = "2015-01-20";
+		$this->update = "2016-08-09";
 
 
 		$this->parameters[]  =
@@ -40,20 +40,12 @@ class DollbooruBridge extends BridgeAbstract{
 		$item->uri = 'http://dollbooru.org'.$element->href;
 		$item->postid = (int)preg_replace("/[^0-9]/",'', $element->getAttribute('data-post-id'));	
 		$item->timestamp = time();
-		$item->thumbnailUri = 'http://dollbooru.org'.$element->find('img', 0)->src;
+		$thumbnailUri = 'http://dollbooru.org'.$element->find('img', 0)->src;
 		$item->tags = $element->getAttribute('data-tags');
 		$item->title = 'Dollbooru | '.$item->postid;
-		$item->content = '<a href="' . $item->uri . '"><img src="' . $item->thumbnailUri . '" /></a><br>Tags: '.$item->tags;
+		$item->content = '<a href="' . $item->uri . '"><img src="' . $thumbnailUri . '" /></a><br>Tags: '.$item->tags;
 		$this->items[] = $item; 
 	}
-    }
-
-    public function getName(){
-        return 'Dollbooru';
-    }
-
-    public function getURI(){
-        return 'http://dollbooru.org/';
     }
 
     public function getCacheDuration(){

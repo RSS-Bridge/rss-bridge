@@ -7,7 +7,7 @@ Class FierPandaBridge extends BridgeAbstract{
         $this->name = "Fier Panda Bridge";
         $this->uri = "http://www.fier-panda.fr/";
         $this->description = "Returns latest articles from Fier Panda.";
-        $this->update = "2015-12-11";
+        $this->update = "2016-08-09";
 
     }
 
@@ -25,14 +25,6 @@ Class FierPandaBridge extends BridgeAbstract{
             $item->content = $element->find('p', 0)->innertext;
             $this->items[] = $item;
         }
-    }
-
-    public function getName(){
-        return 'Fier Panda';
-    }
-
-    public function getURI(){
-        return 'http://www.fier-panda.fr';
     }
 
     public function getCacheDuration(){

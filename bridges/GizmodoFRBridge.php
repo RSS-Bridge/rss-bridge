@@ -7,7 +7,7 @@ class GizmodoFRBridge extends BridgeAbstract{
 		$this->name = "GizmodoFR";
 		$this->uri = "http://www.gizmodo.fr/";
 		$this->description = "Returns the 15 newest posts from GizmodoFR (full text).";
-		$this->update = "2014-07-14";
+		$this->update = "2016-08-09";
 
 	}
 
@@ -41,14 +41,6 @@ class GizmodoFRBridge extends BridgeAbstract{
             }
     	}
 
-    }
-
-    public function getName(){
-        return 'GizmodoFR';
-    }
-
-    public function getURI(){
-        return 'http://www.gizmodo.fr/';
     }
 
     public function getCacheDuration(){

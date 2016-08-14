@@ -3,10 +3,10 @@ class WeLiveSecurityBridge extends BridgeAbstract {
 
     public function loadMetadatas() {
         $this->maintainer = 'ORelio';
-        $this->name = $this->getName();
-        $this->uri = $this->getURI();
+        $this->name = 'We Live Security';
+        $this->uri = 'http://www.welivesecurity.com/';
         $this->description = 'Returns the newest articles.';
-        $this->update = '2016-07-19';
+        $this->update = '2016-08-09';
     }
 
     public function collectData(array $param) {
@@ -49,7 +49,6 @@ class WeLiveSecurityBridge extends BridgeAbstract {
 
                 $item = new \Item();
                 $item->uri = $article_url;
-                $item->thumbnailUri = $article_image;
                 $item->title = $element->find('title', 0)->plaintext;
                 $item->author = $article_html->find('a[rel=author]', 0)->plaintext;
                 $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
@@ -59,17 +58,5 @@ class WeLiveSecurityBridge extends BridgeAbstract {
 
             }
         }
-    }
-
-    public function getName() {
-        return 'We Live Security';
-    }
-
-    public function getURI() {
-        return 'http://www.welivesecurity.com/';
-    }
-
-    public function getCacheDuration() {
-        return 3600; //1 hour
     }
 }

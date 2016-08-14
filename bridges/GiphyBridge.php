@@ -9,7 +9,7 @@ class GiphyBridge extends BridgeAbstract{
 		$this->name = "Giphy Bridge";
 		$this->uri = "http://giphy.com/";
 		$this->description = "Bridge for giphy.com";
-		$this->update = "2014-12-05";
+		$this->update = "2016-08-09";
 
 		$this->parameters["By tag"] =
 		'[
@@ -81,19 +81,7 @@ class GiphyBridge extends BridgeAbstract{
         }
 	}
 
-	public function getName(){
-		return 'Giphy Bridge';
-	}
-
-	public function getURI(){
-		return 'http://giphy.com/';
-	}
-
 	public function getCacheDuration(){
 		return 300; // 5 minutes
-	}
-    
-	public function getUsername(){
-		return $this->items[0]->username;
 	}
 }

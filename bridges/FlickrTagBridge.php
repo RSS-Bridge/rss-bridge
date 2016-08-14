@@ -7,7 +7,7 @@ class FlickrTagBridge extends BridgeAbstract{
 		$this->name = "Flickr TagUser";
 		$this->uri = "http://www.flickr.com/";
 		$this->description = "Returns the tagged or user images from Flickr";
-		$this->update = "2014-05-26";
+		$this->update = "2016-08-09";
 
 		$this->parameters["By keyword"] =
 		'[
@@ -44,19 +44,11 @@ class FlickrTagBridge extends BridgeAbstract{
         foreach($html->find('span.photo_container') as $element) {
             $item = new \Item();
             $item->uri = 'http://flickr.com'.$element->find('a',0)->href;
-            $item->thumbnailUri = $element->find('img',0)->getAttribute('data-defer-src');
-            $item->content = '<a href="' . $item->uri . '"><img src="' . $item->thumbnailUri . '" /></a>'; // FIXME: Filter javascript ?
+            $thumbnailUri = $element->find('img',0)->getAttribute('data-defer-src');
+            $item->content = '<a href="' . $item->uri . '"><img src="' . $thumbnailUri . '" /></a>'; // FIXME: Filter javascript ?
             $item->title = $element->find('a',0)->title;
             $this->items[] = $item;
         }
-    }
-
-    public function getName(){
-        return 'Flickr Tag';
-    }
-
-    public function getURI(){
-        return 'http://www.flickr.com/search/';
     }
 
     public function getCacheDuration(){

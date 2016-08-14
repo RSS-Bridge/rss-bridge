@@ -7,7 +7,7 @@ class FacebookBridge extends BridgeAbstract{
 		$this->name = "Facebook";
 		$this->uri = "http://www.facebook.com/";
 		$this->description = "Input a page title or a profile log. For a profile log, please insert the parameter as follow : myExamplePage/132621766841117";
-		$this->update = "31/03/2016";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -197,15 +197,8 @@ class FacebookBridge extends BridgeAbstract{
 					if (strlen($title) > 64)
 						$title = substr($title, 0, strpos(wordwrap($title, 64), "\n")).'...';
 
-					//Use first image as thumbnail if available, or profile pic fallback
-					$thumbnail = $post->find('img', 1);
-					if (is_object($thumbnail))
-						$thumbnail = $thumbnail->src;
-					else $thumbnail = $profilePic;
-
 					//Build and add final item
 					$item->uri = 'https://facebook.com'.$post->find('abbr')[0]->parent()->getAttribute('href');
-					$item->thumbnailUri = $thumbnail;
 					$item->content = $content;
 					$item->title = $title;
 					$item->author = $author;
@@ -224,10 +217,6 @@ class FacebookBridge extends BridgeAbstract{
 
 	public function getName() {
 		return (isset($this->name) ? $this->name.' - ' : '').'Facebook Bridge';
-	}
-
-	public function getURI() {
-		return 'http://facebook.com';
 	}
 
 	public function getCacheDuration() {

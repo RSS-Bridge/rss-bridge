@@ -1,5 +1,4 @@
 <?php
-define("GQ", "http://www.gqmagazine.fr");
 class Sexactu extends BridgeAbstract{
 
 	public function loadMetadatas() {
@@ -8,7 +7,7 @@ class Sexactu extends BridgeAbstract{
 		$this->name = "Sexactu";
 		$this->uri = "http://www.gqmagazine.fr";
 		$this->description = "Sexactu via rss-bridge";
-		$this->update = "04/02/2014";
+		$this->update = "2016-08-09";
 
 	}
 
@@ -33,7 +32,7 @@ $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July',
                         $titleData = $titleDetails->find('h2', 0)->find('a',0);
                         $titleTimestamp =$titleDetails->find('h4',0);
                         $item->title = $this->correctCase(trim($titleData->innertext));
-                        $item->uri = GQ.$titleData->href;
+                        $item->uri = $this->uri.$titleData->href;
 
                         // Fugly date parsing due to the fact my DNS-323 doesn't support php intl extension
                         $dateText = $titleTimestamp->innertext;
@@ -42,11 +41,11 @@ $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July',
                         $date = strtotime($dateText); 
                         $item->timestamp = $date;
 
-                        $item->name = "Maïa Mazaurette";
+                        $item->author = "Maïa Mazaurette";
                         $elementText = $element->find('.text-container', 0);
                         // don't forget to replace images server url with gq one
                         foreach($elementText->find('img') as $image) {
-                            $image->src = GQ.$image->src;
+                            $image->src = $this->uri.$image->src;
                         }
                         $item->content = $elementText->innertext;
                         $this->items[] = $item;
@@ -58,22 +57,15 @@ $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July',
         }
     }
 
-    public function getName(){
-        return 'Sexactu';
-    }
-
     public function getURI(){
-        return GQ.'/sexactu';
+        return $this->uri.'/sexactu';
     }
 
     public function getCacheDuration(){
         return 7200; // 2h hours
     }
-    public function getDescription(){
-        return "Sexactu via rss-bridge";
-    }
     
-    public function correctCase($str) {
+    private function correctCase($str) {
         $sentences=explode('.', mb_strtolower($str, "UTF-8"));
         $str="";
         $sep="";

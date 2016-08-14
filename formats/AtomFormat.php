@@ -1,9 +1,4 @@
 <?php
-
-function xml_encode($text) {
-	return htmlspecialchars($text, ENT_XML1);
-}
-
 /**
 * Atom
 * Documentation Source http://en.wikipedia.org/wiki/Atom_%28standard%29 and http://tools.ietf.org/html/rfc4287
@@ -18,46 +13,32 @@ class AtomFormat extends FormatAbstract{
         $httpHost = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
         $httpInfo = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
 
-        $serverRequestUri = xml_encode($_SERVER['REQUEST_URI']);
+        $serverRequestUri = $this->xml_encode($_SERVER['REQUEST_URI']);
 
         $extraInfos = $this->getExtraInfos();
-        $title = xml_encode($extraInfos['name']);
-        $uri = $extraInfos['uri'];
-        $icon = xml_encode('http://icons.better-idea.org/icon?url='. $uri .'&size=64');
-        $uri = xml_encode($uri);
+        $title = $this->xml_encode($extraInfos['name']);
+        $uri = !empty($extraInfos['uri']) ? $extraInfos['uri'] : 'https://github.com/sebsauvage/rss-bridge';
+        $icon = $this->xml_encode('http://icons.better-idea.org/icon?url='. $uri .'&size=64');
+        $uri = $this->xml_encode($uri);
 
         $entries = '';
         foreach($this->getDatas() as $data){
-            $entryName = is_null($data->name) ? $title : xml_encode($data->name);
-            $entryAuthor = is_null($data->author) ? $uri : xml_encode($data->author);
-            $entryTitle = is_null($data->title) ? '' : xml_encode($data->title);
-            $entryUri = is_null($data->uri) ? '' : xml_encode($data->uri);
-            $entryTimestamp = is_null($data->timestamp) ? '' : xml_encode(date(DATE_ATOM, $data->timestamp));
-            // We prevent content from closing the CDATA too early.
-            $entryContent = is_null($data->content) ? '' : '<![CDATA[' . $this->sanitizeHtml(str_replace(']]>','',$data->content)) . ']]>';
-
-			// We generate a list of the enclosure links
-			$entryEnclosures = "";
-            
-			foreach($data->enclosures as $enclosure) {
-
-				$entryEnclosures .= "<link rel=\"enclosure\" href=\"".$enclosure."\"></link>";
-
-			}
-
+            $entryAuthor = is_null($data->author) ? '' : $this->xml_encode($data->author);
+            $entryTitle = is_null($data->title) ? '' : $this->xml_encode($data->title);
+            $entryUri = is_null($data->uri) ? '' : $this->xml_encode($data->uri);
+            $entryTimestamp = is_null($data->timestamp) ? '' : $this->xml_encode(date(DATE_ATOM, $data->timestamp));
+            $entryContent = is_null($data->content) ? '' : $this->xml_encode($this->sanitizeHtml($data->content));
             $entries .= <<<EOD
 
     <entry>
         <author>
-            <name>{$entryName}</name>
-            <uri>{$entryAuthor}</uri>
+            <name>{$entryAuthor}</name>
         </author>
         <title type="html"><![CDATA[{$entryTitle}]]></title>
         <link rel="alternate" type="text/html" href="{$entryUri}" />
         <id>{$entryUri}</id>
         <updated>{$entryTimestamp}</updated>
         <content type="html">{$entryContent}</content>
-		{$entryEnclosures}
     </entry>
 
 EOD;
@@ -107,5 +88,9 @@ EOD;
             ->callContentType();
 
         return parent::display();
+    }
+
+    private function xml_encode($text) {
+        return htmlspecialchars($text, ENT_XML1);
     }
 }

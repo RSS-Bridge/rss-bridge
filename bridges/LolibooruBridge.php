@@ -7,7 +7,7 @@ class LolibooruBridge extends BridgeAbstract{
 		$this->name = "Lolibooru";
 		$this->uri = "http://lolibooru.moe/";
 		$this->description = "Returns images from given page and tags";
-		$this->update = "2015-03-21";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -45,19 +45,10 @@ class LolibooruBridge extends BridgeAbstract{
             $item->postid = $json['id'];
             $item->timestamp = $json['created_at'];
             $item->imageUri = $json['file_url'];
-            $item->thumbnailUri = $json['preview_url'];
             $item->title = 'Lolibooru | '.$json['id'];
-            $item->content = '<a href="' . $item->imageUri . '"><img src="' . $item->thumbnailUri . '" /></a><br>Tags: '.$json['tags']; 
+            $item->content = '<a href="' . $item->imageUri . '"><img src="' . $json['preview_url'] . '" /></a><br>Tags: '.$json['tags']; 
             $this->items[] = $item;
         }
-    }
-
-    public function getName(){
-        return 'Lolibooru';
-    }
-
-    public function getURI(){
-        return 'http://lolibooru.moe/post';
     }
 
     public function getCacheDuration(){

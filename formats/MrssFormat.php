@@ -13,23 +13,19 @@ class MrssFormat extends FormatAbstract{
         $httpHost = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
         $httpInfo = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
 
-        $serverRequestUri = htmlspecialchars($_SERVER['REQUEST_URI']);
+        $serverRequestUri = $this->xml_encode($_SERVER['REQUEST_URI']);
 
         $extraInfos = $this->getExtraInfos();
-        $title = htmlspecialchars($extraInfos['name']);
-        $uri = htmlspecialchars($extraInfos['uri']);
-        $icon = 'http://g.etfv.co/'. $uri .'?icon.jpg';
+        $title = $this->xml_encode($extraInfos['name']);
+        $uri = $this->xml_encode(!empty($extraInfos['uri']) ? $extraInfos['uri'] : 'https://github.com/sebsauvage/rss-bridge');
 
         $items = '';
         foreach($this->getDatas() as $data){
-            $itemTitle = strip_tags(is_null($data->title) ? '' : $data->title);
-            $itemUri = is_null($data->uri) ? '' : $data->uri;
-            $itemAuthor = is_null($data->author) ? '' : $data->author;
-            $itemThumbnailUri = is_null($data->thumbnailUri) ? '' : $data->thumbnailUri;
-            $itemTimestamp = is_null($data->timestamp) ? '' : date(DATE_RFC2822, $data->timestamp);
-            // We prevent content from closing the CDATA too early.
-            $itemContent = is_null($data->content) ? '' : htmlspecialchars($this->sanitizeHtml(str_replace(']]>','',$data->content)));
-
+            $itemAuthor = is_null($data->author) ? '' : $this->xml_encode($data->author);
+            $itemTitle = strip_tags(is_null($data->title) ? '' : $this->xml_encode($data->title));
+            $itemUri = is_null($data->uri) ? '' : $this->xml_encode($data->uri);
+            $itemTimestamp = is_null($data->timestamp) ? '' : $this->xml_encode(date(DATE_RFC2822, $data->timestamp));
+            $itemContent = is_null($data->content) ? '' : $this->xml_encode($this->sanitizeHtml($data->content));
             $items .= <<<EOD
 
     <item>
@@ -39,8 +35,6 @@ class MrssFormat extends FormatAbstract{
         <pubDate>{$itemTimestamp}</pubDate>
         <description>{$itemContent}</description>
         <author>{$itemAuthor}</author>
-        <media:title>{$itemTitle}</media:title>
-        <media:thumbnail url="{$itemThumbnailUri}" />
     </item>
 
 EOD;
@@ -59,8 +53,9 @@ EOD;
 <rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:media="http://search.yahoo.com/mrss/" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>{$title}</title>
-        <link>{$uri}/</link>
+        <link>http{$https}://{$httpHost}{$httpInfo}/</link>
         <description>{$title}</description>
+        <atom:link rel="alternate" type="text/html" href="{$uri}" />
         <atom:link rel="self" href="http{$https}://{$httpHost}{$serverRequestUri}" />
         {$items}
     </channel>
@@ -84,5 +79,9 @@ EOD;
             ->callContentType();
 
         return parent::display();
+    }
+
+    private function xml_encode($text) {
+        return htmlspecialchars($text, ENT_XML1);
     }
 }

@@ -7,7 +7,7 @@ class DemoBridge extends BridgeAbstract{
 		$this->name = "DemoBridge";
 		$this->uri = "http://github.com/sebsauvage/rss-bridge";
 		$this->description = "Bridge used for demos";
-		$this->update = "2015-11-03";
+		$this->update = "2016-08-09";
 
 		$this->parameters['testCheckbox'] =
 		'[
@@ -54,28 +54,15 @@ class DemoBridge extends BridgeAbstract{
 	public function collectData(array $param){
 
 		$item = new \Item();
-	    $item->name = "TestElement";
+	    $item->author = "Me!";
 	    $item->title = "Test";
 	    $item->content = "Awesome content !";
 	    $item->id = "Lalala";
 	    $item->uri = "http://test.test/test";
-		$item->enclosures[] = "http://www.ardmediathek.de/ard/servlet/image/00/32/68/18/38/1135274624/16x9/960";
 
 	    $this->items[] = $item;
 
     }
-
-	public function getName() {
-
-		return "DemoBridge";
-
-	}
-
-	public function getURI() {
-
-		return "http://github.com/sebsauvage/rss-bridge";
-
-	}
 
 	public function getCacheDuration(){
 		return 00; // 1 hour

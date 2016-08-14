@@ -9,7 +9,7 @@ class DailymotionBridge extends BridgeAbstract{
 		$this->name = "Dailymotion Bridge";
 		$this->uri = "https://www.dailymotion.com/";
 		$this->description = "Returns the 5 newest videos by username/playlist or search";
-		$this->update = "2014-11-18";
+		$this->update = "2016-08-09";
 
 		$this->parameters["By username"] =
 		'[
@@ -24,7 +24,7 @@ class DailymotionBridge extends BridgeAbstract{
 			{
 				"name" : "playlist id",
 				"identifier" : "p",
-				"type" : "number"
+				"type" : "text"
 			}
 		]';
 
@@ -47,7 +47,7 @@ class DailymotionBridge extends BridgeAbstract{
 
 		function getMetadata($id) {
 			$metadata=array();
-			$html2 = $this->file_get_html('http://www.dailymotion.com/video/'.$id) or $this->returnError('Could not request Dailymotion.', 404);
+			$html2 = file_get_html('http://www.dailymotion.com/video/'.$id) or $this->returnError('Could not request Dailymotion.', 404);
 			$metadata['title'] = $html2->find('meta[property=og:title]', 0)->getAttribute('content');
 			$metadata['timestamp'] = strtotime($html2->find('meta[property=video:release_date]', 0)->getAttribute('content') );
 			$metadata['thumbnailUri'] = $html2->find('meta[property=og:image]', 0)->getAttribute('content');
@@ -83,10 +83,9 @@ class DailymotionBridge extends BridgeAbstract{
 				$item->id = str_replace('/video/', '', strtok($element->href, '_'));
 				$metadata = getMetadata($item->id);
 				$item->uri = $metadata['uri'];
-				$item->thumbnailUri = $metadata['thumbnailUri'];
 				$item->title = $metadata['title'];
 				$item->timestamp = $metadata['timestamp'];
-				$item->content = '<a href="' . $item->uri . '"><img src="' . $item->thumbnailUri . '" /></a><br><a href="' . $item->uri . '">' . $item->title . '</a>';
+				$item->content = '<a href="' . $item->uri . '"><img src="' . $metadata['thumbnailUri'] . '" /></a><br><a href="' . $item->uri . '">' . $item->title . '</a>';
 				$this->items[] = $item;
 				$count++;
 			}
@@ -95,10 +94,6 @@ class DailymotionBridge extends BridgeAbstract{
 
 	public function getName(){
 		return (!empty($this->request) ? $this->request .' - ' : '') .'Dailymotion Bridge';
-	}
-
-	public function getURI(){
-		return 'https://www.dailymotion.com/';
 	}
 
 	public function getCacheDuration(){

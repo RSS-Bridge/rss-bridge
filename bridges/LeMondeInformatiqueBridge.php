@@ -7,7 +7,7 @@ class LeMondeInformatiqueBridge extends BridgeAbstract {
         $this->name = "Le Monde Informatique";
         $this->uri = "http://www.lemondeinformatique.fr/";
         $this->description = "Returns the newest articles.";
-        $this->update = "2016-01-28";
+        $this->update = "2016-08-09";
 
     }
 
@@ -45,14 +45,12 @@ class LeMondeInformatiqueBridge extends BridgeAbstract {
                 $article_uri = substr($article_uri, strpos($article_uri, '<link>') + 6);
                 $article_uri = substr($article_uri, 0, strpos($article_uri, '</link>'));
                 $article_html = $this->file_get_html($article_uri) or $this->returnError('Could not request LeMondeInformatique: '.$article_uri, 500);
-                $thumbnailUri = $article_html->find('div#article', 0)->find('img#illustration', 0)->src;
                 $article_content = CleanArticle($article_html->find('div#article', 0)->innertext);
                 $article_title = $article_html->find('h1.cleanprint-title', 0)->plaintext;
 
                 //Build and add final item
                 $item = new \Item();
                 $item->uri = $article_uri;
-                $item->thumbnailUri = $thumbnailUri;
                 $item->title = $article_title;
                 $item->author = StripCDATA($element->find('dc:creator', 0)->innertext);
                 $item->timestamp = strtotime($element->find('dc:date', 0)->plaintext);
@@ -61,14 +59,6 @@ class LeMondeInformatiqueBridge extends BridgeAbstract {
                 $limit++;
             }
         }
-    }
-
-    public function getName() {
-        return 'Le Monde Informatique';
-    }
-
-    public function getURI() {
-        return 'http://www.lemondeinformatique.fr/';
     }
 
     public function getCacheDuration() {

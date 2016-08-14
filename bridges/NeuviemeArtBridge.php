@@ -3,10 +3,10 @@ class NeuviemeArtBridge extends BridgeAbstract {
 
     public function loadMetadatas() {
         $this->maintainer = "ORelio";
-        $this->name = "9ème Art";
+        $this->name = '9ème Art Bridge';
         $this->uri = "http://www.9emeart.fr/";
         $this->description = "Returns the newest articles.";
-        $this->update = "2016-02-05";
+        $this->update = "2016-08-09";
     }
 
     public function collectData(array $param) {
@@ -46,7 +46,6 @@ class NeuviemeArtBridge extends BridgeAbstract {
                 $item = new \Item();
                 $item->uri = $article_uri;
                 $item->title = $article_title;
-                $item->thumbnailUri = $element->find('enclosure', 0)->url;
                 $item->author = $article_html->find('a[class=upp transition_fast upp]', 0)->plaintext;
                 $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
                 $item->content = $article_content;
@@ -54,17 +53,5 @@ class NeuviemeArtBridge extends BridgeAbstract {
                 $limit++;
             }
         }
-    }
-
-    public function getName() {
-        return '9ème Art Bridge';
-    }
-
-    public function getURI() {
-        return 'http://www.9emeart.fr/';
-    }
-
-    public function getCacheDuration() {
-        return 3600; //1 hour
     }
 }

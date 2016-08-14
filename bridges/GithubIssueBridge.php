@@ -12,9 +12,9 @@ class GithubIssueBridge extends BridgeAbstract{
     $this->name = 'Github Issue';
     $this->uri = '';
     $this->description = 'Returns the comments of a github project issue';
-    $this->update = '2016-06-25';
+    $this->update = '2016-08-09';
 
-    $this->parameters=
+    $this->parameters[]=
       '[
          {
            "name" : "User name",
@@ -40,7 +40,7 @@ class GithubIssueBridge extends BridgeAbstract{
     foreach($html->find('.js-comment-container') as $comment){
 
       $item = new \Item();
-      $item->name=$comment->find('img',0)->getAttribute('alt');
+      $item->author=$comment->find('img',0)->getAttribute('alt');
 
       $comment=$comment->firstChild()->nextSibling();
 
@@ -51,14 +51,6 @@ class GithubIssueBridge extends BridgeAbstract{
 
       $this->items[]=$item;
     }
-  }
-
-  public function getName(){
-    return 'Github Issue';
-  }
-
-  public function getURI(){
-    return '';
   }
 
   public function getCacheDuration(){

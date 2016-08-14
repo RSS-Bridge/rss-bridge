@@ -10,7 +10,7 @@ class SoundCloudBridge extends BridgeAbstract{
 		$this->name = "Soundcloud Bridge";
 		$this->uri = "http://www.soundcloud.com/";
 		$this->description = "Returns 10 newest music from user profile";
-		$this->update = "2015-09-08";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -40,7 +40,7 @@ class SoundCloudBridge extends BridgeAbstract{
 
 		for ($i=0; $i < 10; $i++) {
 		    $item = new \Item();
-		    $item->name = $tracks[$i]->user->username .' - '. $tracks[$i]->title;
+		    $item->author = $tracks[$i]->user->username .' - '. $tracks[$i]->title;
 		    $item->title = $tracks[$i]->user->username .' - '. $tracks[$i]->title;
 		    $item->content = '<audio src="'. $tracks[$i]->uri .'/stream?client_id='. self::CLIENT_ID .'">';
 		    $item->id = 'https://soundcloud.com/'. urlencode($this->request) .'/'. urlencode($tracks[$i]->permalink);
@@ -51,10 +51,6 @@ class SoundCloudBridge extends BridgeAbstract{
     }
 	public function getName(){
 		return (!empty($this->name) ? $this->name .' - ' : '') . (!empty($this->request) ? $this->request : '');
-	}
-
-	public function getURI(){
-		return 'https://www.soundcloud.com/';
 	}
 
 	public function getCacheDuration(){

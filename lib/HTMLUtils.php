@@ -35,6 +35,8 @@ class HTMLUtils {
 			<p class="description">
 				{$description}
 			</p>
+			<input type="checkbox" class="showmore-box" id="showmore-{$bridgeName}" />
+			<label class="showmore" for="showmore-{$bridgeName}">Show more</label>
 CARD;
 
 		// If we don't have any parameter for the bridge, we print a generic form to load it.
@@ -141,7 +143,8 @@ CARD;
 
 		}
 
-		$card .= '<span class="maintainer">'.$bridgeElement->maintainer.'</span>';
+		$card .= '<label class="showless" for="showmore-' . $bridgeName . '">Show less</label>';
+		$card .= '<p class="maintainer">'.$bridgeElement->maintainer.'</p>';
 		$card .= '</section>';
 
 		return $card;

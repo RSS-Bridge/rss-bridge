@@ -13,7 +13,7 @@ class TwitchApiBridge extends BridgeAbstract{
 		$this->name = "Twitch API Bridge";
 		$this->uri = "http://www.twitch.tv";
 		$this->description = "Returns the newest broadcasts or highlights by channel name using the Twitch API (v3)";
-		$this->update = "2016-01-09";
+		$this->update = "2016-08-09";
 
 		$this->parameters["Get channel without limit"] =
 		'[
@@ -140,10 +140,9 @@ class TwitchApiBridge extends BridgeAbstract{
 				$item = new \Item();
 				$item->id = $video->_id;
 				$item->uri = $video->url;
-				$item->thumbnailUri = $video->preview;
 				$item->title = htmlspecialchars($video->title);
 				$item->timestamp = strtotime($video->recorded_at);
-				$item->content = '<a href="' . $item->uri . '"><img src="' . $item->thumbnailUri . '" /></a><br><a href="' . $item->uri . '">' . $item->title . '</a>';
+				$item->content = '<a href="' . $item->uri . '"><img src="' . $video->preview . '" /></a><br><a href="' . $item->uri . '">' . $item->title . '</a>';
 				$this->items[] = $item;
 				
 				// Stop once the number of requested items is reached
@@ -163,10 +162,6 @@ class TwitchApiBridge extends BridgeAbstract{
 
 	public function getName(){
 		return (!empty($this->channel) ? $this->channel . ' - ' : '') . 'Twitch API Bridge';
-	}
-
-	public function getURI(){
-		return 'https://www.twitch.tv';
 	}
 
 	public function getCacheDuration(){

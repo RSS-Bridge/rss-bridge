@@ -7,7 +7,7 @@ class Releases3DSBridge extends BridgeAbstract {
 		$this->name = "3DS Scene Releases";
 		$this->uri = "http://www.3dsdb.com/";
 		$this->description = "Returns the newest scene releases.";
-		$this->update = "2015-09-17";
+		$this->update = "2016-08-09";
 
 	}
 
@@ -108,7 +108,6 @@ class Releases3DSBridge extends BridgeAbstract {
                         $item->title = $name;
                         $item->author = $publisher;
                         $item->timestamp = $ignDate;
-                        $item->thumbnailUri = $ignCoverArt;
                         $item->uri = empty($ignLink) ? $searchLinkDuckDuckGo : $ignLink;
                         $item->content = $ignDescription.$releaseDescription.$releaseSearchLinks;
                         $this->items[] = $item;
@@ -117,14 +116,6 @@ class Releases3DSBridge extends BridgeAbstract {
                 }
             }
         }
-    }
-
-    public function getName() {
-        return '3DS Scene Releases';
-    }
-
-    public function getURI() {
-        return 'http://www.3dsdb.com/';
     }
 
     public function getCacheDuration() {

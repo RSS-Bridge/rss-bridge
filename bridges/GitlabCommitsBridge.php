@@ -12,9 +12,9 @@ class GitlabCommitsBridge extends BridgeAbstract{
     $this->name = 'Gitlab Commits';
     $this->uri = '';
     $this->description = 'Returns the commits of a project hosted on a gitlab instance';
-    $this->update = '2016-06-19';
+    $this->update = '2016-08-09';
 
-    $this->parameters=
+    $this->parameters[] =
       '[
          {
             "name" : "Base URI",
@@ -27,7 +27,7 @@ class GitlabCommitsBridge extends BridgeAbstract{
          {
             "name" : "Project name",
             "identifier" : "p"
-         }
+         },
          {
             "name" : "Project branch",
             "identifier" : "b"
@@ -64,7 +64,7 @@ class GitlabCommitsBridge extends BridgeAbstract{
           $item->title=$a->plaintext;
         }
         if(in_array('commit-author-link',$classes)){
-          $item->name=trim($a->plaintext);
+          $item->author=trim($a->plaintext);
         }
       }
 
@@ -78,17 +78,5 @@ class GitlabCommitsBridge extends BridgeAbstract{
 
       $this->items[]=$item;
     }
-  }
-
-  public function getName(){
-    return 'Gitlab Commits';
-  }
-
-  public function getURI(){
-    return '';
-  }
-
-  public function getCacheDuration(){
-    return 3600; // one hour
   }
 }

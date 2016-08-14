@@ -7,7 +7,7 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
 		$this->name = "Les Joies Du Code";
 		$this->uri = "http://lesjoiesducode.fr/";
 		$this->description = "LesJoiesDuCode";
-		$this->update = "04/02/2015";
+		$this->update = "2016-08-09";
 
 	}
 
@@ -36,7 +36,7 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
             if($pos > 0)
             {
                 $auteur = trim(str_replace("*/", "", substr($auteur->innertext, ($pos + 2))));
-                $item->name = $auteur;
+                $item->author = $auteur;
             }
             
             
@@ -48,19 +48,7 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
         }
     }
 
-    public function getName(){
-        return 'Les Joies Du Code';
-    }
-
-    public function getURI(){
-        return 'http://lesjoiesducode.fr/';
-    }
-
     public function getCacheDuration(){
         return 7200; // 2h hours
     }
-    public function getDescription(){
-        return "Les Joies Du Code via rss-bridge";
-    }
 }
-?>

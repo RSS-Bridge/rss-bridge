@@ -7,7 +7,7 @@ class Rue89Bridge extends BridgeAbstract{
 		$this->name = "Rue89";
 		$this->uri = "http://rue89.nouvelobs.com/";
 		$this->description = "Returns the 5 newest posts from Rue89 (full text)";
-		$this->update = "2015-01-30";
+		$this->update = "2016-08-09";
 
 	}
 
@@ -43,14 +43,5 @@ class Rue89Bridge extends BridgeAbstract{
 			}
         }
 
-    }
-    public function getName(){
-        return 'Rue89';
-    }
-    public function getURI(){
-        return 'http://rue89.nouvelobs.com/';
-    }
-    public function getCacheDuration(){
-        return 3600; // 1 hour
     }
 }

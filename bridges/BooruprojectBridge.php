@@ -7,7 +7,7 @@ class BooruprojectBridge extends BridgeAbstract{
 		$this->name = "Booruproject";
 		$this->uri = "http://booru.org/";
 		$this->description = "Returns images from given page and booruproject instance (****.booru.org)";
-		$this->update = "2015-09-12";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -51,20 +51,11 @@ class BooruprojectBridge extends BridgeAbstract{
 		$item->uri = 'http://'.$param['i'].'.booru.org/'.$element->find('a', 0)->href;
 		$item->postid = (int)preg_replace("/[^0-9]/",'', $element->find('a', 0)->getAttribute('id'));	
 		$item->timestamp = time();
-		$item->thumbnailUri = $element->find('img', 0)->src;
 		$item->tags = $element->find('img', 0)->getAttribute('title');
 		$item->title = 'Booruproject '.$param['i'].' | '.$item->postid;
-		$item->content = '<a href="' . $item->uri . '"><img src="' . $item->thumbnailUri . '" /></a><br>Tags: '.$item->tags;
+		$item->content = '<a href="' . $item->uri . '"><img src="' . $element->find('img', 0)->src . '" /></a><br>Tags: '.$item->tags;
 		$this->items[] = $item; 
 	}
-    }
-
-    public function getName(){
-        return 'Booruproject';
-    }
-
-    public function getURI(){
-        return 'http://booru.org/';
     }
 
     public function getCacheDuration(){

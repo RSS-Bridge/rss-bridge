@@ -7,7 +7,7 @@ class YandereBridge extends BridgeAbstract{
 		$this->name = "Yande.re";
 		$this->uri = "https://yande.re/";
 		$this->description = "Returns images from given page and tags";
-		$this->update = "2014-05-25";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -44,19 +44,10 @@ class YandereBridge extends BridgeAbstract{
             $item->postid = $json['id'];
             $item->timestamp = $json['created_at'];
             $item->imageUri = $json['file_url'];
-            $item->thumbnailUri = $json['preview_url'];
             $item->title = 'Yandere | '.$json['id'];
-            $item->content = '<a href="' . $item->imageUri . '"><img src="' . $item->thumbnailUri . '" /></a><br>Tags: '.$json['tags']; 
+            $item->content = '<a href="' . $item->imageUri . '"><img src="' . $json['preview_url'] . '" /></a><br>Tags: '.$json['tags']; 
             $this->items[] = $item;
         }
-    }
-
-    public function getName(){
-        return 'Yande.re';
-    }
-
-    public function getURI(){
-        return 'http://yande.re/post';
     }
 
     public function getCacheDuration(){

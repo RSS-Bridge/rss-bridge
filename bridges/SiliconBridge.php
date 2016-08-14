@@ -4,10 +4,10 @@ class SiliconBridge extends BridgeAbstract {
 	public function loadMetadatas() {
 
 		$this->maintainer = "ORelio";
-		$this->name = "Silicon.fr";
-		$this->uri = "http://www.silicon.fr/";
+		$this->name = 'Silicon Bridge';
+		$this->uri = 'http://www.silicon.fr/';
 		$this->description = "Returns the newest articles.";
-		$this->update = "2015-09-08";
+		$this->update = "2016-08-09";
 
 	}
 
@@ -48,7 +48,6 @@ class SiliconBridge extends BridgeAbstract {
                 //Build and add final item
                 $item = new \Item();
                 $item->uri = $article_uri;
-                $item->thumbnailUri = $thumbnailUri;
                 $item->title = StripCDATA($element->find('title', 0)->innertext);
                 $item->author = StripCDATA($element->find('dc:creator', 0)->innertext);
                 $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
@@ -59,16 +58,7 @@ class SiliconBridge extends BridgeAbstract {
         }
     }
 
-    public function getName() {
-        return 'Silicon Bridge';
-    }
-
-    public function getURI() {
-        return 'http://www.silicon.fr/';
-    }
-
     public function getCacheDuration() {
         return 1800; // 30 minutes
-        // return 0;
     }
 }

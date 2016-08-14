@@ -9,7 +9,7 @@ class BandcampBridge extends BridgeAbstract{
 		$this->name = "Bandcamp Tag";
 		$this->uri = "http://bandcamp.com/";
 		$this->description = "New bandcamp release by tag";
-		$this->update = "2014-05-25";
+		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[
@@ -38,7 +38,7 @@ class BandcampBridge extends BridgeAbstract{
             $uri = rtrim($uri, "')");
 
             $item = new \Item();
-            $item->name = $release->find('div.itemsubtext',0)->plaintext . ' - ' . $release->find('div.itemtext',0)->plaintext;
+            $item->author = $release->find('div.itemsubtext',0)->plaintext . ' - ' . $release->find('div.itemtext',0)->plaintext;
             $item->title = $release->find('div.itemsubtext',0)->plaintext . ' - ' . $release->find('div.itemtext',0)->plaintext;
             $item->content = '<img src="' . $uri . '"/><br/>' . $release->find('div.itemsubtext',0)->plaintext . ' - ' . $release->find('div.itemtext',0)->plaintext;
             $item->id = $release->find('a',0)->getAttribute('href');
@@ -49,10 +49,6 @@ class BandcampBridge extends BridgeAbstract{
 
     public function getName(){
         return (!empty($this->request) ? $this->request .' - ' : '') .'Bandcamp Tag';
-    }
-
-    public function getURI(){
-        return 'http://bandcamp.com';
     }
 
     public function getCacheDuration(){
