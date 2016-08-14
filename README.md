@@ -105,6 +105,7 @@ Patch/contributors :
  * [gsurrel](https://github.com/gsurrel)
  * [kraoc](https://github.com/kraoc)
  * [lagaisse](https://github.com/lagaisse)
+ * [az5he6ch](https://github.com/az5he6ch)
 
 Licenses
 ===
