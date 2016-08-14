@@ -7,7 +7,7 @@ class TwitterBridge extends BridgeAbstract{
 		$this->name = "Twitter Bridge";
 		$this->uri = "https://twitter.com/";
 		$this->description = "Returns tweets by keyword/hashtag or user name";
-		$this->update = "2016-08-10";
+		$this->update = "2016-08-15";
 
 		$this->parameters["global"] = 
 		'[
@@ -15,7 +15,7 @@ class TwitterBridge extends BridgeAbstract{
 				"name" : "Hide profile pictures",
 				"identifier" : "pic",
 				"type" : "checkbox",
-				"required" : "false",
+				"required" : false,
 				"exampleValue" : "checked",
 				"title" : "Activate to hide profile pictures in content"
 			}
@@ -27,7 +27,7 @@ class TwitterBridge extends BridgeAbstract{
 				"name" : "Keyword or #hashtag",
 				"identifier" : "q",
 				"type" : "text",
-				"required" : "true",
+				"required" : true,
 				"exampleValue" : "rss-bridge, #rss-bridge",
 				"title" : "Insert a keyword or hashtag"
 			}
@@ -39,7 +39,7 @@ class TwitterBridge extends BridgeAbstract{
 				"name" : "username",
 				"identifier" : "u",
 				"type" : "text",
-				"required" : "true",
+				"required" : true,
 				"exampleValue" : "sebsauvage",
 				"title" : "Insert a user name"
 			}

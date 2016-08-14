@@ -9,7 +9,7 @@ class WikipediaBridge extends BridgeAbstract{
 		$this->name = 'Wikipedia bridge for many languages';
 		$this->uri = 'https://www.wikipedia.org/';
 		$this->description = 'Returns articles for a language of your choice';
-		$this->update = '2016-08-07';
+		$this->update = '2016-08-15';
 
 		$this->parameters[] = 
 		'[
@@ -17,7 +17,7 @@ class WikipediaBridge extends BridgeAbstract{
 				"name": "Language",
 				"identifier": "language",
 				"type": "list",
-				"required": "true",
+				"required": true,
 				"title": "Select your language",
 				"exampleValue": "English",
 				"values": [
@@ -43,7 +43,7 @@ class WikipediaBridge extends BridgeAbstract{
 				"name": "Subject",
 				"identifier": "subject",
 				"type": "list",
-				"required": "true",
+				"required": true,
 				"title": "What subject are you interested in?",
 				"exampleValue": "Today\'s featured article",
 				"values": [
@@ -61,7 +61,7 @@ class WikipediaBridge extends BridgeAbstract{
 				"name": "Load full article",
 				"identifier": "fullarticle",
 				"type": "checkbox",
-				"required": "false",
+				"required": false,
 				"title": "Activate to always load the full article",
 				"exampleValue": "false"
 			}

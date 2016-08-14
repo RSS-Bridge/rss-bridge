@@ -7,7 +7,7 @@ class VineBridge extends BridgeAbstract {
 		$this->name = "Vine bridge";
 		$this->uri = "http://vine.co/";
 		$this->description = "Returns the latests vines from vine user page";
-		$this->update = "2016-08-09";
+		$this->update = "2016-08-15";
 
 		$this->parameters[] =
 		'[
@@ -15,7 +15,7 @@ class VineBridge extends BridgeAbstract {
 				"name" : "User id",
 				"identifier" : "u",
 				"type" : "text",
-				"required" : "true"
+				"required" : true
 			}
 		]';
 	}

@@ -5,7 +5,7 @@ class RTBFBridge extends BridgeAbstract {
 		$this->uri = "http://www.rtbf.be/auvio/emissions";
 		$this->description = "Returns the newest RTBF videos by series ID";
 		$this->maintainer = "Frenzie";
-		$this->update = "2016-08-09";
+		$this->update = "2016-08-15";
 
 		$this->parameters[] =
 		'[
@@ -14,7 +14,7 @@ class RTBFBridge extends BridgeAbstract {
 				"identifier" : "c",
 				"name" : "series id",
 				"exampleValue" : "9500",
-				"required" : "required"
+				"required" : true
 			}
 		]';
 	}

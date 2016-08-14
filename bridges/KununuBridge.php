@@ -5,7 +5,7 @@ class KununuBridge extends BridgeAbstract{
 		$this->name = "Kununu Bridge"; /* This will be replaced later! */
 		$this->uri = "https://www.kununu.com"; /* This will be replaced later! */
 		$this->description = "Returns the latest reviews for a company and site of your choice.";
-		$this->update = "2016-08-10";
+		$this->update = "2016-08-15";
 
 		$this->parameters['global'] = 
 		'[
@@ -13,7 +13,7 @@ class KununuBridge extends BridgeAbstract{
 				"name" : "Site",
 				"identifier" : "site",
 				"type" : "list",
-				"required" : "true",
+				"required" : true,
 				"exampleValue" : "United States",
 				"title" : "Select your site",
 				"values" : 
@@ -40,7 +40,7 @@ class KununuBridge extends BridgeAbstract{
 				"name" : "Load full article",
 				"identifier" : "full",
 				"type" : "checkbox",
-				"required" : "false",
+				"required" : false,
 				"exampleValue" : "checked",
 				"title" : "Activate to load full article"
 			}
@@ -52,7 +52,7 @@ class KununuBridge extends BridgeAbstract{
 				"name" : "Company",
 				"identifier" : "company",
 				"type" : "text",
-				"required" : "true",
+				"required" : true,
 				"exampleValue" : "kununu-us",
 				"title" : "Insert company name (i.e. Kununu US) or URI path (i.e. kununu-us)"
 			}

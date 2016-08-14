@@ -12,13 +12,13 @@ class WordPressBridge extends BridgeAbstract {
 		$this->name = "Wordpress Bridge";
 		$this->uri = "https://wordpress.org/";
 		$this->description = "Returns the 3 newest full posts of a Wordpress blog";
-		$this->update = "2016-08-09";
+		$this->update = "2016-08-15";
 
 		$this->parameters[] =
 		'[
 			{
 				"name" : "blog URL",
-				"required" : "true",
+				"required" : true,
 				"identifier" : "url"
 			}
 		]';

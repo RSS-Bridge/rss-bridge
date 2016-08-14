@@ -7,13 +7,13 @@ class BooruprojectBridge extends BridgeAbstract{
 		$this->name = "Booruproject";
 		$this->uri = "http://booru.org/";
 		$this->description = "Returns images from given page and booruproject instance (****.booru.org)";
-		$this->update = "2016-08-09";
+		$this->update = "2016-08-15";
 
 		$this->parameters[] =
 		'[
 			{
 				"name" : "instance (required)",
-				"required" : "true",
+				"required" : true,
 				"identifier" : "i"
 			},
 			{

@@ -5,7 +5,7 @@ class CastorusBridge extends BridgeAbstract {
 		$this->name = "Castorus Bridge";
 		$this->uri = 'http://www.castorus.com';
 		$this->description = "Returns the latest changes";
-		$this->update = "2016-08-09";
+		$this->update = "2016-08-15";
 
 		$this->parameters["Get latest changes"] = '[]';
 		$this->parameters["Get latest changes via ZIP code"] = 
@@ -14,7 +14,7 @@ class CastorusBridge extends BridgeAbstract {
 				"name": "ZIP code",
 				"identifier" : "zip",
 				"type" : "text",
-				"required" : "true",
+				"required" : true,
 				"exampleValue" : "74910, 74",
 				"title" : "Insert ZIP code (complete or partial)"
 			}
@@ -25,7 +25,7 @@ class CastorusBridge extends BridgeAbstract {
 				"name": "City name",
 				"identifier" : "city",
 				"type" : "text",
-				"required" : "true",
+				"required" : true,
 				"exampleValue" : "Seyssel, Seys",
 				"title" : "Insert city name (complete or partial)"
 			}

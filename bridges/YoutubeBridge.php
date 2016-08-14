@@ -14,7 +14,7 @@ class YoutubeBridge extends BridgeAbstract {
 		$this->uri = 'https://www.youtube.com/';
 		$this->description = 'Returns the 10 newest videos by username/channel/playlist or search';
 		$this->maintainer = 'mitsukarenai';
-		$this->update = '2016-08-11';
+		$this->update = '2016-08-15';
 
 		$this->parameters['By username'] =
 		'[
@@ -23,7 +23,7 @@ class YoutubeBridge extends BridgeAbstract {
 				"identifier" : "u",
 				"name" : "username",
 				"exampleValue" : "test",
-				"required" : "required"
+				"required" : true
 			}
 		]';
 
@@ -34,7 +34,7 @@ class YoutubeBridge extends BridgeAbstract {
 				"identifier" : "c",
 				"name" : "channel id",
 				"exampleValue" : "15",
-				"required" : "required"
+				"required" : true
 			}
 		]';
 

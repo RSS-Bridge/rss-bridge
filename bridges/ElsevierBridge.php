@@ -6,14 +6,14 @@ class ElsevierBridge extends BridgeAbstract{
 		$this->name = 'Elsevier journals recent articles';
 		$this->uri = 'http://www.journals.elsevier.com';
 		$this->description = 'Returns the recent articles published in Elsevier journals';
-		$this->update = '2016-08-09';
+		$this->update = '2016-08-15';
 
 		$this->parameters[] =
 			'[
 				 {
 					 "name" : "Journal name",
 					 "identifier" : "j",
-					 "required" : "true",
+					 "required" : true,
 					 "exampleValue" : "academic-pediatrics",
 					 "title" : "Insert html-part of your journal"
 				 }

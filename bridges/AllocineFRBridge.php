@@ -7,7 +7,7 @@ class AllocineFRBridge extends BridgeAbstract{
         $this->name = "Allo Cine Bridge";
         $this->uri = "http://www.allocine.fr";
         $this->description = "Bridge for allocine.fr";
-        $this->update = "2016-08-10";
+        $this->update = "2016-08-15";
 
         $this->parameters[] = 
         '[
@@ -15,7 +15,7 @@ class AllocineFRBridge extends BridgeAbstract{
                 "name" : "category",
                 "identifier" : "category",
                 "type" : "list",
-                "required" : "true",
+                "required" : true,
                 "exampleValue" : "Faux Raccord",
                 "title" : "Select your category",
                 "values" : 
