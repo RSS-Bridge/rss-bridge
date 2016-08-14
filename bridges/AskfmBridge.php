@@ -22,7 +22,7 @@ class AskfmBridge extends BridgeAbstract{
         $html = '';
         if (isset($param['u'])) {
             $this->request = $param['u'];
-            $html = $this->file_get_html('http://ask.fm/'.urlencode($this->request).'/answers/more?page=0') or $this->returnServerError('Requested username can\'t be found.');
+            $html = $this->getSimpleHTMLDOM('http://ask.fm/'.urlencode($this->request).'/answers/more?page=0') or $this->returnServerError('Requested username can\'t be found.');
         }
         else {
             $this->returnClientError('You must specify a username (?u=...).');
