@@ -96,12 +96,12 @@ CARD;
 					$card .= '<select ' . $additionalInfoString . ' id="' . $idArg . '" name="' . $inputEntry['identifier'] . '" >';
 					
 					foreach($inputEntry['values'] as $listValues) {
-						$card .= '<option ' . $additionalInfoString . ' value="' . $listValues['value'] . '">' . $listValues['name'] . '</option>';
+						$card .= '<option value="' . $listValues['value'] . '">' . $listValues['name'] . '</option>';
 					}
 
 					$card .= '</select><br >';
 				} else if($inputEntry['type'] == 'checkbox') {
-					$card .= '<input id="' . $idArg . '" type="checkbox" name="' . $inputEntry['identifier'] . '" /><br />' . PHP_EOL;
+					$card .= '<input ' . $additionalInfoString . ' id="' . $idArg . '" type="checkbox" name="' . $inputEntry['identifier'] . '" /><br />' . PHP_EOL;
 				}
 			}
 
