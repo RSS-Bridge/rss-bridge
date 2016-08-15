@@ -1,17 +1,6 @@
 <?php
 class HTMLUtils {
 
-	public static function getHelperButtonsFormat($formats){
-		$buttons = '';
-
-		foreach( $formats as $name => $infos ){
-			if ( isset($infos['name']) )
-				$buttons .= '<button type="submit" name="format" value="' . $name . '">' . $infos['name'] . '</button>' . PHP_EOL;
-		}
-
-		return $buttons;
-	}
-
 	public static function displayBridgeCard($bridgeName, $formats, $isActive = true){
 		$bridgeElement = Bridge::create($bridgeName);
 
@@ -124,6 +113,17 @@ CARD;
 		$card .= '</section>';
 
 		return $card;
+	}
+
+	private static function getHelperButtonsFormat($formats){
+		$buttons = '';
+
+		foreach( $formats as $name => $infos ){
+			if ( isset($infos['name']) )
+				$buttons .= '<button type="submit" name="format" value="' . $name . '">' . $infos['name'] . '</button>' . PHP_EOL;
+		}
+
+		return $buttons;
 	}
 
 	private static function getFormHeader($bridge){
