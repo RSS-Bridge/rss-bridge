@@ -316,7 +316,7 @@ class Bridge{
 		return $listBridge;
 	}
 	static function isWhitelisted( $whitelist, $name ) {
-	if(in_array("$name", $whitelist) or in_array("$name.php", $whitelist))
+	if(in_array("$name", $whitelist) or in_array("$name.php", $whitelist) or count($whitelist) === 1 and $whitelist[0] === '*')
 		return TRUE;
 	else
 		return FALSE;
