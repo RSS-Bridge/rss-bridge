@@ -1,16 +1,12 @@
 <?php
 class HTMLUtils {
 
-	public static function getHelperButtonFormat($value, $name){
-		return '<button type="submit" name="format" value="' . $value . '">' . $name . '</button>';
-	}
-
 	public static function getHelperButtonsFormat($formats){
 		$buttons = '';
 
 		foreach( $formats as $name => $infos ){
 			if ( isset($infos['name']) )
-				$buttons .= HTMLUtils::getHelperButtonFormat($name, $infos['name']) . PHP_EOL;
+				$buttons .= '<button type="submit" name="format" value="' . $name . '">' . $infos['name'] . '</button>' . PHP_EOL;
 		}
 
 		return $buttons;
