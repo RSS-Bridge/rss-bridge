@@ -60,6 +60,7 @@ Enabling/Disabling bridges
 By default, the script creates `whitelist.txt` and adds the main bridges (see above). `whitelist.txt` is ignored by git, you can edit it:
  * to enable extra bridges (one bridge per line)
  * to disable main bridges (remove the line)
+ * to enable all bridges (just one wildcard `*` as file content)
 
 New bridges are disabled by default, so make sure to check regularly what's new and whitelist what you want!
 
