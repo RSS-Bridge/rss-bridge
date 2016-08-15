@@ -85,23 +85,32 @@ CARD;
 				if(!isset($inputEntry['exampleValue']))
 					$inputEntry['exampleValue'] = '';
 
+				if(!isset($inputEntry['defaultValue']))
+					$inputEntry['defaultValue'] = '';
+
 				$idArg = 'arg-' . urlencode($bridgeName) . '-' . urlencode($parameterName) . '-' . urlencode($inputEntry['identifier']);
 				$card .= '<label for="' . $idArg . '">' . $inputEntry['name'] . ' : </label>' . PHP_EOL;
 
 				if(!isset($inputEntry['type']) || $inputEntry['type'] == 'text') {
-					$card .= '<input ' . $additionalInfoString . ' id="' . $idArg . '" type="text" value="" placeholder="' . $inputEntry['exampleValue'] . '" name="' . $inputEntry['identifier'] . '" /><br />' . PHP_EOL;
+					$card .= '<input ' . $additionalInfoString . ' id="' . $idArg . '" type="text" value="' . $inputEntry['defaultValue'] . '" placeholder="' . $inputEntry['exampleValue'] . '" name="' . $inputEntry['identifier'] . '" /><br />' . PHP_EOL;
 				} else if($inputEntry['type'] == 'number') {
-					$card .= '<input ' . $additionalInfoString . ' id="' . $idArg . '" type="number" value="" placeholder="' . $inputEntry['exampleValue'] . '" name="' . $inputEntry['identifier'] . '" /><br />' . PHP_EOL;
+					$card .= '<input ' . $additionalInfoString . ' id="' . $idArg . '" type="number" value="' . $inputEntry['defaultValue'] . '" placeholder="' . $inputEntry['exampleValue'] . '" name="' . $inputEntry['identifier'] . '" /><br />' . PHP_EOL;
 				} else if($inputEntry['type'] == 'list') {
 					$card .= '<select ' . $additionalInfoString . ' id="' . $idArg . '" name="' . $inputEntry['identifier'] . '" >';
 					
 					foreach($inputEntry['values'] as $listValues) {
-						$card .= '<option value="' . $listValues['value'] . '">' . $listValues['name'] . '</option>';
+						if($inputEntry['defaultValue'] === $listValues['name'] || $inputEntry['defaultValue'] === $listValues['value'])
+							$card .= '<option value="' . $listValues['value'] . '" selected>' . $listValues['name'] . '</option>';
+						else
+							$card .= '<option value="' . $listValues['value'] . '">' . $listValues['name'] . '</option>';
 					}
 
 					$card .= '</select><br >';
 				} else if($inputEntry['type'] == 'checkbox') {
-					$card .= '<input ' . $additionalInfoString . ' id="' . $idArg . '" type="checkbox" name="' . $inputEntry['identifier'] . '" /><br />' . PHP_EOL;
+					if($inputEntry['defaultValue'] === 'checked')
+						$card .= '<input ' . $additionalInfoString . ' id="' . $idArg . '" type="checkbox" name="' . $inputEntry['identifier'] . '" checked /><br />' . PHP_EOL;
+					else
+						$card .= '<input ' . $additionalInfoString . ' id="' . $idArg . '" type="checkbox" name="' . $inputEntry['identifier'] . '" /><br />' . PHP_EOL;
 				}
 			}
 
