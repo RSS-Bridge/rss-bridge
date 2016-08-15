@@ -40,11 +40,7 @@ CARD;
 		// If we don't have any parameter for the bridge, we print a generic form to load it.
 		if(count($bridgeElement->parameters) == 0) {
 
-			$card .= <<<CARD
-			<form method="GET" action="?">
-				<input type="hidden" name="action" value="display" />
-				<input type="hidden" name="bridge" value="{$bridgeName}" />
-CARD;
+			$card .= HTMLUtils::getFormHeader($bridgeName);
 
 			if ($isActive){
 				$card .= HTMLUtils::getHelperButtonsFormat($formats);
@@ -72,11 +68,7 @@ CARD;
 			if(!is_numeric($parameterName))
 				$card .= '<h5>' . $parameterName . '</h5>' . PHP_EOL;
 
-			$card .= <<<CARD
-			<form method="GET" action="?">
-				<input type="hidden" name="action" value="display" />
-				<input type="hidden" name="bridge" value="{$bridgeName}" />
-CARD;
+			$card .= HTMLUtils::getFormHeader($bridgeName);
 
 			foreach($parameter as $inputEntry) {
 				$additionalInfoString = '';
@@ -127,6 +119,14 @@ CARD;
 		$card .= '</section>';
 
 		return $card;
+	}
+
+	private static function getFormHeader($bridge){
+		return <<<EOD
+			<form method="GET" action="?">
+				<input type="hidden" name="action" value="display" />
+				<input type="hidden" name="bridge" value="{$bridge}" />
+EOD;
 	}
 }
 
