@@ -11,7 +11,7 @@ class WallpaperStopBridge extends BridgeAbstract {
 		$this->name = "WallpaperStop Bridge";
 		$this->uri = "http://www.wallpaperstop.com/";
 		$this->description = "Returns the latests wallpapers from WallpaperStop";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -42,7 +42,7 @@ class WallpaperStopBridge extends BridgeAbstract {
     public function collectData(array $param){
         $html = '';
         if (!isset($param['c'])) {
-            $this->returnError('You must specify at least a category (?c=...).', 400);
+            $this->returnClientError('You must specify at least a category (?c=...).');
         } else {
             $baseUri = 'http://www.wallpaperstop.com';
 
@@ -56,7 +56,7 @@ class WallpaperStopBridge extends BridgeAbstract {
 
             for ($page = 1; $page <= $lastpage; $page++) {
                 $link = $baseUri.'/'.$this->category.'-wallpaper/'.(!empty($this->subcategory)?$this->subcategory.'-wallpaper/':'').'desktop-wallpaper-'.$page.'.html';
-                $html = $this->file_get_html($link) or $this->returnError('No results for this query.', 404);
+                $html = $this->file_get_html($link) or $this->returnServerError('No results for this query.');
 
                 if ($page === 1) {
                     preg_match('/-(\d+)\.html$/', $html->find('.pagination > .last', 0)->href, $matches);

@@ -6,17 +6,17 @@ class NiceMatinBridge extends BridgeAbstract{
 		$this->name = "NiceMatin";
 		$this->uri = "http://www.nicematin.com/";
 		$this->description = "Returns the 10 newest posts from NiceMatin (full text)";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 	}
 
 	private function NiceMatinExtractContent($url) {
 		$html = $this->file_get_html($url);
 		if(!$html)
-			$this->returnError('Could not acquire content from url: ' . $url . '!', 404);
+			$this->returnServerError('Could not acquire content from url: ' . $url . '!');
 		
 		$content = $html->find('article', 0);
 		if(!$content)
-			$this->returnError('Could not find \'section\'!', 404);
+			$this->returnServerError('Could not find \'section\'!');
 		
 		$text = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $content->innertext);
 		$text = strip_tags($text, '<p><a><img>');
@@ -24,7 +24,7 @@ class NiceMatinBridge extends BridgeAbstract{
 	}
 
 	public function collectData(array $param){
-		$html = $this->file_get_html('http://www.nicematin.com/derniere-minute/rss') or $this->returnError('Could not request NiceMatin.', 404);
+		$html = $this->file_get_html('http://www.nicematin.com/derniere-minute/rss') or $this->returnServerError('Could not request NiceMatin.');
 		$limit = 0;
 
 		foreach($html->find('item') as $element) {

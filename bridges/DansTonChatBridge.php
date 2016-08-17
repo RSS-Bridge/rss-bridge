@@ -7,7 +7,7 @@ class DansTonChatBridge extends BridgeAbstract{
 		$this->name = "DansTonChat Bridge";
 		$this->uri = "http://danstonchat.com";
 		$this->description = "Returns latest quotes from DansTonChat.";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 	}
 
@@ -15,7 +15,7 @@ class DansTonChatBridge extends BridgeAbstract{
         $html = '';
         $link = 'http://danstonchat.com/latest.html';
 
-        $html = $this->file_get_html($link) or $this->returnError('Could not request DansTonChat.', 404);
+        $html = $this->file_get_html($link) or $this->returnServerError('Could not request DansTonChat.');
 
         foreach($html->find('div.item') as $element) {
                 $item = new \Item();

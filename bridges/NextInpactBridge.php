@@ -6,7 +6,7 @@ class NextInpactBridge extends BridgeAbstract {
 		$this->name = "NextInpact Bridge";
 		$this->uri = "http://www.nextinpact.com/";
 		$this->description = "Returns the newest articles.";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 	}
 
 	private function StripCDATA($string) {
@@ -27,7 +27,7 @@ class NextInpactBridge extends BridgeAbstract {
 	}
 
 	public function collectData(array $param) {
-		$html = $this->file_get_html('http://www.nextinpact.com/rss/news.xml') or $this->returnError('Could not request NextInpact.', 404);
+		$html = $this->file_get_html('http://www.nextinpact.com/rss/news.xml') or $this->returnServerError('Could not request NextInpact.');
 		$limit = 0;
 
 		foreach($html->find('item') as $element) {

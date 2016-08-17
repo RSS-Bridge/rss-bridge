@@ -6,7 +6,7 @@ class CollegeDeFranceBridge extends BridgeAbstract{
 		$this->name = "CollegeDeFrance";
 		$this->uri = "http://www.college-de-france.fr/";
 		$this->description = "Returns the latest audio and video from CollegeDeFrance";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 	}
 
 	public function collectData(array $param) {
@@ -33,7 +33,7 @@ class CollegeDeFranceBridge extends BridgeAbstract{
 		 * 	</a>
 		 * </li>
 		 */
-		$html = $this->file_get_html('http://www.college-de-france.fr/components/search-audiovideo.jsp?fulltext=&siteid=1156951719600&lang=FR&type=all') or $this->returnError('Could not request CollegeDeFrance.', 404);
+		$html = $this->file_get_html('http://www.college-de-france.fr/components/search-audiovideo.jsp?fulltext=&siteid=1156951719600&lang=FR&type=all') or $this->returnServerError('Could not request CollegeDeFrance.');
 		foreach($html->find('a[data-target]') as $element) {
 			$item = new \Item();
 			$item->title = $element->find('.title', 0)->plaintext;

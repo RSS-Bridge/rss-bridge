@@ -9,7 +9,7 @@ class IdenticaBridge extends BridgeAbstract{
 		$this->name = "Identica Bridge";
 		$this->uri = "https://identi.ca/";
 		$this->description = "Returns user timelines";
-		$this->update = "2014-05-25";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -25,10 +25,10 @@ class IdenticaBridge extends BridgeAbstract{
         $html = '';
         if (isset($param['u'])) {   /* user timeline mode */
         	$this->request = $param['u'];
-            $html = $this->file_get_html('https://identi.ca/'.urlencode($this->request)) or $this->returnError('Requested username can\'t be found.', 404);
+            $html = $this->file_get_html('https://identi.ca/'.urlencode($this->request)) or $this->returnServerError('Requested username can\'t be found.');
         }
         else {
-            $this->returnError('You must specify an Identica username (?u=...).', 400);
+            $this->returnClientError('You must specify an Identica username (?u=...).');
         }
 
         foreach($html->find('li.major') as $dent) {

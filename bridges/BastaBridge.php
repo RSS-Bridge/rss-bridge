@@ -5,7 +5,7 @@ class BastaBridge extends BridgeAbstract{
 		$this->name = "Bastamag Bridge";
 		$this->uri = "http://www.bastamag.net/";
 		$this->description = "Returns the newest articles.";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 	}
 	
 	public function collectData(array $param){
@@ -14,7 +14,7 @@ class BastaBridge extends BridgeAbstract{
 			return preg_replace('/src=["\']{1}([^"\']+)/ims', 'src=\'http://www.bastamag.net/$1\'', $content);
 		}
 		
-		$html = $this->file_get_html('http://www.bastamag.net/spip.php?page=backend') or $this->returnError('Could not request Bastamag.', 404);
+		$html = $this->file_get_html('http://www.bastamag.net/spip.php?page=backend') or $this->returnServerError('Could not request Bastamag.');
 		$limit = 0;
 
 		foreach($html->find('item') as $element) {

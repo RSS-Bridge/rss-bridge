@@ -7,7 +7,7 @@ class DollbooruBridge extends BridgeAbstract{
 		$this->name = "Dollbooru";
 		$this->uri = "http://dollbooru.org/";
 		$this->description = "Returns images from given page";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 
 		$this->parameters[]  =
@@ -32,7 +32,7 @@ class DollbooruBridge extends BridgeAbstract{
         if (isset($param['t'])) { 
             $tags = urlencode($param['t']); 
         }
-        $html = $this->file_get_html("http://dollbooru.org/post/list/$tags/$page") or $this->returnError('Could not request Dollbooru.', 404);
+        $html = $this->file_get_html("http://dollbooru.org/post/list/$tags/$page") or $this->returnServerError('Could not request Dollbooru.');
 
 
 	foreach($html->find('div[class=shm-image-list] a') as $element) {

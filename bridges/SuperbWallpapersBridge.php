@@ -10,7 +10,7 @@ class SuperbWallpapersBridge extends BridgeAbstract {
 		$this->name = "Superb Wallpapers Bridge";
 		$this->uri = "http://www.superbwallpapers.com/";
 		$this->description = "Returns the latests wallpapers from SuperbWallpapers";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -52,7 +52,7 @@ class SuperbWallpapersBridge extends BridgeAbstract {
 
         for ($page = 1; $page <= $lastpage; $page++) {
             $link = $baseUri.'/'.$this->category.'/'.$page.'.html';
-            $html = $this->file_get_html($link) or $this->returnError('No results for this query.', 404);
+            $html = $this->file_get_html($link) or $this->returnServerError('No results for this query.');
 
             foreach($html->find('.wpl .i a') as $element) {
                 $thumbnail = $element->find('img', 0);

@@ -9,7 +9,7 @@ class GBAtempBridge extends BridgeAbstract {
         $this->name = 'GBAtemp';
         $this->uri = 'http://gbatemp.net/';
         $this->description = 'GBAtemp is a user friendly underground video game community.';
-        $this->update = '2016-08-09';
+        $this->update = '2016-08-17';
 
         $this->parameters[] =
         '[
@@ -74,7 +74,7 @@ class GBAtempBridge extends BridgeAbstract {
     }
 
     private function fetch_post_content($uri, $site_url) {
-        $html = $this->file_get_html($uri) or $this->returnError('Could not request GBAtemp: '.$uri, 500);
+        $html = $this->file_get_html($uri) or $this->returnServerError('Could not request GBAtemp: '.$uri);
         $content = $html->find('div.messageContent', 0)->innertext;
         return $this->cleanup_post_content($content, $site_url);
     }
@@ -88,10 +88,10 @@ class GBAtempBridge extends BridgeAbstract {
                 if ($typeFilter == 'R') { $this->filter = 'Review'; }
                 if ($typeFilter == 'T') { $this->filter = 'Tutorial'; }
                 if ($typeFilter == 'F') { $this->filter = 'Forum'; }
-            } else $this->returnError('The provided type filter is invalid. Expecting N, R, T, or F.', 400);
-        } else $this->returnError('Please provide a type filter. Expecting N, R, T, or F.', 400);
+            } else $this->returnClientError('The provided type filter is invalid. Expecting N, R, T, or F.');
+        } else $this->returnClientError('Please provide a type filter. Expecting N, R, T, or F.');
 
-        $html = $this->file_get_html($this->uri) or $this->returnError('Could not request GBAtemp.', 500);
+        $html = $this->file_get_html($this->uri) or $this->returnServerError('Could not request GBAtemp.');
 
         if ($typeFilter == 'N') {
             foreach ($html->find('li[class=news_item full]') as $newsItem) {
@@ -106,7 +106,7 @@ class GBAtempBridge extends BridgeAbstract {
             foreach ($html->find('li.portal_review') as $reviewItem) {
                 $url = $this->uri.$reviewItem->find('a', 0)->href;
                 $title = $reviewItem->find('span.review_title', 0)->plaintext;
-                $content = $this->file_get_html($url) or $this->returnError('Could not request GBAtemp: '.$uri, 500);
+                $content = $this->file_get_html($url) or $this->returnServerError('Could not request GBAtemp: '.$uri);
                 $author = $content->find('a.username', 0)->plaintext;
                 $time = intval($this->ExtractFromDelimiters($content->find('abbr.DateTime', 0)->outertext, 'data-time="', '"'));
                 $intro = '<p><b>'.($content->find('div#review_intro', 0)->plaintext).'</b></p>';

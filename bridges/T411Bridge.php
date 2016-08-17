@@ -7,7 +7,7 @@ class T411Bridge extends BridgeAbstract {
         $this->name = 'T411 Bridge';
         $this->uri = 'https://t411.ch/';
         $this->description = 'Returns the 10 newest torrents with specified search terms <br /> Use url part after "?" mark when using their search engine.';
-        $this->update = '2016-08-09';
+        $this->update = '2016-08-17';
 
         $this->parameters[] =
         '[
@@ -31,15 +31,15 @@ class T411Bridge extends BridgeAbstract {
 
         //Ensure proper parameters have been provided
         if (empty($param['search'])) {
-            $this->returnError('You must specify a search criteria', 400);
+            $this->returnClientError('You must specify a search criteria');
         }
 
         //Retrieve torrent listing from search results, which does not contain torrent description
         $url = $this->uri.'torrents/search/?'.$param['search'].'&order=added&type=desc';
-        $html = $this->file_get_html($url) or $this->returnError('Could not request t411: '.$url, 500);
+        $html = $this->file_get_html($url) or $this->returnServerError('Could not request t411: '.$url);
         $results = $html->find('table.results', 0);
         if (is_null($results))
-            $this->returnError('No results from t411: '.$url, 500);
+            $this->returnServerError('No results from t411: '.$url);
         $limit = 0;
 
         //Process each item individually

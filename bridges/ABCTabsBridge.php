@@ -9,13 +9,13 @@ class ABCTabsBridge extends BridgeAbstract{
 		$this->name = "ABC Tabs Bridge";
 		$this->uri = "http://www.abc-tabs.com/";
 		$this->description = "Returns 22 newest tabs";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 	}
 
 	public function collectData(array $param){
 		$html = '';
-        $html = $this->file_get_html('http://www.abc-tabs.com/tablatures/nouveautes.html') or $this->returnError('No results for this query.', 404);
+        $html = $this->file_get_html('http://www.abc-tabs.com/tablatures/nouveautes.html') or $this->returnClientError('No results for this query.');
 		$table = $html->find('table#myTable', 0)->children(1);
 		
 		foreach ($table->find('tr') as $tab)

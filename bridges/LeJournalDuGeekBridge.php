@@ -6,7 +6,7 @@ class LeJournalDuGeekBridge extends BridgeAbstract{
 		$this->name = "journaldugeek.com (FR)";
 		$this->uri = "http://www.journaldugeek.com/";
 		$this->description = "Returns the 5 newest posts from LeJournalDuGeek (full text).";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 	}
 
 	private function LeJournalDuGeekStripCDATA($string) {
@@ -38,7 +38,7 @@ class LeJournalDuGeekBridge extends BridgeAbstract{
 	}
 
 	public function collectData(array $param){
-		$rssFeed = $this->file_get_html('http://www.journaldugeek.com/rss') or $this->returnError('Could not request http://www.journaldugeek.com/rss', 404);
+		$rssFeed = $this->file_get_html('http://www.journaldugeek.com/rss') or $this->returnServerError('Could not request http://www.journaldugeek.com/rss');
 		$limit = 0;
 
 		foreach($rssFeed->find('item') as $element) {

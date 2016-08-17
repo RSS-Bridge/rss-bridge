@@ -6,7 +6,7 @@ class ReporterreBridge extends BridgeAbstract{
 			$this->name = "Reporterre Bridge";
 			$this->uri = "http://www.reporterre.net/";
 			$this->description = "Returns the newest articles.";
-			$this->update = "2016-08-09";
+			$this->update = '2016-08-17';
 		}
 
 		private function ExtractContentReporterre($url) {
@@ -27,7 +27,7 @@ class ReporterreBridge extends BridgeAbstract{
 		}
 
 	public function collectData(array $param){
-		$html = $this->file_get_html('http://www.reporterre.net/spip.php?page=backend') or $this->returnError('Could not request Reporterre.', 404);
+		$html = $this->file_get_html('http://www.reporterre.net/spip.php?page=backend') or $this->returnServerError('Could not request Reporterre.');
 		$limit = 0;
 
 		foreach($html->find('item') as $element) {

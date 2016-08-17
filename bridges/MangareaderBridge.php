@@ -8,7 +8,7 @@ class MangareaderBridge extends BridgeAbstract{
 		$this->name = "Mangareader Bridge";
 		$this->uri = "http://www.mangareader.net";
 		$this->description = "Returns the latest updates, popular mangas or manga updates (new chapters)";
-		$this->update = "2016-08-15";
+		$this->update = '2016-08-17';
 
 		$this->parameters["Get latest updates"] = '[]';
         $this->parameters["Get popular mangas"] = 
@@ -225,7 +225,7 @@ class MangareaderBridge extends BridgeAbstract{
 		// We'll use the DOM parser for this as it makes navigation easier
 		$html = file_get_contents("http://www.mangareader.net/" . $path);
         if(!$html){
-            $this->returnError('Could not receive data for ' . $path . '!', 400);
+            $this->returnClientError('Could not receive data for ' . $path . '!');
         }
         $doc = new DomDocument;
 		@$doc->loadHTML($html);

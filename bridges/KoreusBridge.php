@@ -6,7 +6,7 @@ class KoreusBridge extends BridgeAbstract{
 		$this->name = "Koreus";
 		$this->uri = "http://www.koreus.com/";
 		$this->description = "Returns the 5 newest posts from Koreus (full text)";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 	}
 
 	private function KoreusStripCDATA($string) {
@@ -23,7 +23,7 @@ class KoreusBridge extends BridgeAbstract{
 	}
 
 	public function collectData(array $param){
-		$html = $this->file_get_html('http://feeds.feedburner.com/Koreus-articles') or $this->returnError('Could not request Koreus.', 404);
+		$html = $this->file_get_html('http://feeds.feedburner.com/Koreus-articles') or $this->returnServerError('Could not request Koreus.');
 		$limit = 0;
 
 		foreach($html->find('item') as $element) {

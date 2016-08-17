@@ -7,13 +7,13 @@ class CopieDoubleBridge extends BridgeAbstract{
 		$this->name = "CopieDouble";
 		$this->uri = "http://www.copie-double.com/";
 		$this->description = "CopieDouble";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 	}
 
 
     public function collectData(array $param){
-        $html = $this->file_get_html('http://www.copie-double.com/') or $this->returnError('Could not request CopieDouble.', 404);
+        $html = $this->file_get_html('http://www.copie-double.com/') or $this->returnServerError('Could not request CopieDouble.');
         $table = $html->find('table table', 2);
         
         foreach($table->find('tr') as $element)

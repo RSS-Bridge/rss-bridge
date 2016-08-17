@@ -12,7 +12,7 @@ class WordPressBridge extends BridgeAbstract {
 		$this->name = "Wordpress Bridge";
 		$this->uri = "https://wordpress.org/";
 		$this->description = "Returns the 3 newest full posts of a Wordpress blog";
-		$this->update = "2016-08-15";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -60,11 +60,11 @@ class WordPressBridge extends BridgeAbstract {
 		$this->processParams($param);
 
 		if (!$this->hasUrl()) {
-			$this->returnError('You must specify a URL', 400);
+			$this->returnClientError('You must specify a URL');
 		}
 
 		$this->url = $this->url.'/feed/atom';
-		$html = $this->file_get_html($this->url) or $this->returnError("Could not request {$this->url}.", 404);
+		$html = $this->file_get_html($this->url) or $this->returnServerError("Could not request {$this->url}.");
 
 		// Notice: We requested an ATOM feed, however some sites return RSS feeds instead!
 		$type = $this->DetectContentType($html);
@@ -128,7 +128,7 @@ class WordPressBridge extends BridgeAbstract {
 				}
 			} 
 		} else {
-			$this->returnError("Sorry, {$this->url} doesn't seem to be a Wordpress blog.", 404);
+			$this->returnServerError("Sorry, {$this->url} doesn't seem to be a Wordpress blog.");
 		}
 	}
 

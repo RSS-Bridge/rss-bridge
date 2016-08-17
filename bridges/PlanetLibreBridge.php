@@ -6,7 +6,7 @@ class PlanetLibreBridge extends BridgeAbstract{
 		$this->name = "PlanetLibre";
 		$this->uri = "http://www.planet-libre.org";
 		$this->description = "Returns the 5 newest posts from PlanetLibre (full text)";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 	}
 
 	private function PlanetLibreExtractContent($url){
@@ -16,7 +16,7 @@ class PlanetLibreBridge extends BridgeAbstract{
 	}
 
 	public function collectData(array $param){
-		$html = $this->file_get_html('http://www.planet-libre.org/') or $this->returnError('Could not request PlanetLibre.', 404);
+		$html = $this->file_get_html('http://www.planet-libre.org/') or $this->returnServerError('Could not request PlanetLibre.');
 		$limit = 0;
 		foreach($html->find('div.post') as $element) {
 			if($limit < 5) {

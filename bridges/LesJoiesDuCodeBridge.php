@@ -7,12 +7,12 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
 		$this->name = "Les Joies Du Code";
 		$this->uri = "http://lesjoiesducode.fr/";
 		$this->description = "LesJoiesDuCode";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 	}
 
     public function collectData(array $param){
-        $html = $this->file_get_html('http://lesjoiesducode.fr/') or $this->returnError('Could not request LesJoiesDuCode.', 404);
+        $html = $this->file_get_html('http://lesjoiesducode.fr/') or $this->returnServerError('Could not request LesJoiesDuCode.');
     
         foreach($html->find('div.blog-post') as $element) {
             $item = new Item();

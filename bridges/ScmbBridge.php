@@ -7,13 +7,13 @@ class ScmbBridge extends BridgeAbstract{
 		$this->name = "Se Coucher Moins Bête Bridge";
 		$this->uri = "http://secouchermoinsbete.fr/";
 		$this->description = "Returns the newest anecdotes.";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 	}
     
     public function collectData(array $param){
         $html = '';
-        $html = $this->file_get_html('http://secouchermoinsbete.fr/') or $this->returnError('Could not request Se Coucher Moins Bete.', 404);
+        $html = $this->file_get_html('http://secouchermoinsbete.fr/') or $this->returnServerError('Could not request Se Coucher Moins Bete.');
     
         foreach($html->find('article') as $article) {
         	$item = new \Item();

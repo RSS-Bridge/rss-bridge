@@ -7,7 +7,7 @@ class EZTVBridge extends BridgeAbstract{
 		$this->name = "EZTV";
 		$this->uri = "https://eztv.ch/";
 		$this->description = "Returns list of *recent* torrents for a specific show on EZTV. Get showID from URLs in https://eztv.ch/shows/showID/show-full-name.";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -37,14 +37,14 @@ class EZTVBridge extends BridgeAbstract{
 
         // Check for ID provided
         if (!isset($param['i']))
-			$this->returnError('You must provide a list of ID (?i=showID1,showID2,...)', 400);
+			$this->returnClientError('You must provide a list of ID (?i=showID1,showID2,...)');
 
         // Loop on show ids
         $showList = explode(",",$param['i']); 
         foreach($showList as $showID){
 
             // Get show page
-            $html = $this->file_get_html('https://eztv.ch/shows/'.rawurlencode($showID).'/') or $this->returnError('Could not request EZTV for id "'.$showID.'"', 404);
+            $html = $this->file_get_html('https://eztv.ch/shows/'.rawurlencode($showID).'/') or $this->returnServerError('Could not request EZTV for id "'.$showID.'"');
 
             // Loop on each element that look like an episode entry...
             foreach($html->find('.forum_header_border') as $element) {

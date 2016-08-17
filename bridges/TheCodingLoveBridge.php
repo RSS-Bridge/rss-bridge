@@ -7,12 +7,12 @@ class TheCodingLoveBridge extends BridgeAbstract{
 		$this->name = "The Coding Love";
 		$this->uri = "http://thecodinglove.com/";
 		$this->description = "The Coding Love";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 	}
 
     public function collectData(array $param){
-        $html = $this->file_get_html('http://thecodinglove.com/') or $this->returnError('Could not request The Coding Love.', 404);
+        $html = $this->file_get_html('http://thecodinglove.com/') or $this->returnServerError('Could not request The Coding Love.');
     
         foreach($html->find('div.post') as $element) {
             $item = new Item();

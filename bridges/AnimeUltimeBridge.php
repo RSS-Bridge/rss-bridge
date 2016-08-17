@@ -9,7 +9,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
         $this->name = 'Anime-Ultime';
         $this->uri = 'http://www.anime-ultime.net/';
         $this->description = 'Returns the 10 newest releases posted on Anime-Ultime';
-        $this->update = '2016-08-09';
+        $this->update = '2016-08-17';
 
         $this->parameters[] =
         '[
@@ -53,7 +53,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
                 if ($typeFilter == 'A') { $this->filter = 'Anime'; }
                 if ($typeFilter == 'D') { $this->filter = 'Drama'; }
                 if ($typeFilter == 'T') { $this->filter = 'Tokusatsu'; }
-            } else $this->returnError('The provided type filter is invalid. Expecting A, D, T, or no filter', 400);
+            } else $this->returnClientError('The provided type filter is invalid. Expecting A, D, T, or no filter');
         }
 
         //Build date and filters for making requests
@@ -67,7 +67,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
             //Retrive page contents
             $website = 'http://www.anime-ultime.net/';
             $url = $website.'history-0-1/'.$requestFilter;
-            $html = $this->file_get_html($url) or $this->returnError('Could not request Anime-Ultime: '.$url, 500);
+            $html = $this->file_get_html($url) or $this->returnServerError('Could not request Anime-Ultime: '.$url);
 
             //Relases are sorted by day : process each day individually
             foreach ($html->find('div.history', 0)->find('h3') as $daySection) {
@@ -93,7 +93,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
                         if (!empty($item_uri)) {
 
                             //Retrieve description from description page and convert relative image src info absolute image src
-                            $html_item = file_get_contents($item_uri) or $this->returnError('Could not request Anime-Ultime: '.$item_uri, 500);
+                            $html_item = file_get_contents($item_uri) or $this->returnServerError('Could not request Anime-Ultime: '.$item_uri);
                             $item_description = substr($html_item, strpos($html_item, 'class="principal_contain" align="center">') + 41);
                             $item_description = substr($item_description, 0, strpos($item_description, '<div id="table">'));
                             $item_description = str_replace('src="images', 'src="'.$website.'images', $item_description);

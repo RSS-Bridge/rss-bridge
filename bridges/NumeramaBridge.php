@@ -7,7 +7,7 @@ class NumeramaBridge extends BridgeAbstract{
         $this->name = 'Numerama';
         $this->uri = 'http://www.numerama.com/';
         $this->description = 'Returns the 5 newest posts from Numerama (full text)';
-        $this->update = '2016-08-09';
+        $this->update = '2016-08-17';
 
     }
 
@@ -20,7 +20,7 @@ class NumeramaBridge extends BridgeAbstract{
         }
 
         $feed = $this->uri.'feed/';
-        $html = $this->file_get_html($feed) or $this->returnError('Could not request Numerama: '.$feed, 500);
+        $html = $this->file_get_html($feed) or $this->returnServerError('Could not request Numerama: '.$feed);
         $limit = 0;
 
         foreach($html->find('item') as $element) {
@@ -32,7 +32,7 @@ class NumeramaBridge extends BridgeAbstract{
                 $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
 
                 $article_url = NumeramaStripCDATA($element->find('guid', 0)->plaintext);
-                $article_html = $this->file_get_html($article_url) or $this->returnError('Could not request Numerama: '.$article_url, 500);
+                $article_html = $this->file_get_html($article_url) or $this->returnServerError('Could not request Numerama: '.$article_url);
                 $contents = $article_html->find('section[class=related-article]', 0)->innertext = ''; // remove related articles block
                 $contents = '<img alt="" style="max-width:300px;" src="'.$article_html->find('meta[property=og:image]', 0)->getAttribute('content').'">'; // add post picture
                 $contents = $contents.$article_html->find('article[class=post-content]', 0)->innertext; // extract the post

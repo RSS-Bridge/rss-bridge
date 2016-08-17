@@ -5,7 +5,7 @@ class CADBridge extends BridgeAbstract{
 		$this->name = "CAD Bridge";
 		$this->uri = "http://www.cad-comic.com/";
 		$this->description = "Returns the newest articles.";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 	}
 
 	private function CADExtractContent($url) {
@@ -45,7 +45,7 @@ class CADBridge extends BridgeAbstract{
 			return $string;
 		}
 
-		$html = $this->file_get_html('http://cdn2.cad-comic.com/rss.xml') or $this->returnError('Could not request CAD.', 404);
+		$html = $this->file_get_html('http://cdn2.cad-comic.com/rss.xml') or $this->returnServerError('Could not request CAD.');
 		$limit = 0;
 
 		foreach($html->find('item') as $element) {

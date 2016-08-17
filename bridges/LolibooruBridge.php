@@ -7,7 +7,7 @@ class LolibooruBridge extends BridgeAbstract{
 		$this->name = "Lolibooru";
 		$this->uri = "http://lolibooru.moe/";
 		$this->description = "Returns images from given page and tags";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -32,7 +32,7 @@ class LolibooruBridge extends BridgeAbstract{
         if (isset($param['t'])) { 
             $tags = urlencode($param['t']); 
         }
-        $html = $this->file_get_html("http://lolibooru.moe/post?page=$page&tags=$tags") or $this->returnError('Could not request Lolibooru.', 404);
+        $html = $this->file_get_html("http://lolibooru.moe/post?page=$page&tags=$tags") or $this->returnServerError('Could not request Lolibooru.');
 	$input_json = explode('Post.register(', $html);
 	foreach($input_json as $element)
 	 $data[] = preg_replace('/}\)(.*)/', '}', $element);

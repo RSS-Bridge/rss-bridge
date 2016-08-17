@@ -10,7 +10,7 @@ class HDWallpapersBridge extends BridgeAbstract {
 		$this->name = "HD Wallpapers Bridge";
 		$this->uri = "http://www.hdwallpapers.in/";
 		$this->description = "Returns the latests wallpapers from HDWallpapers";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -48,7 +48,7 @@ class HDWallpapersBridge extends BridgeAbstract {
 
         for ($page = 1; $page <= $lastpage; $page++) {
             $link = $baseUri.'/'.$category.'/page/'.$page;
-            $html = $this->file_get_html($link) or $this->returnError('No results for this query.', 404);
+            $html = $this->file_get_html($link) or $this->returnServerError('No results for this query.');
 
             if ($page === 1) {
                 preg_match('/page\/(\d+)$/', $html->find('.pagination a', -2)->href, $matches);

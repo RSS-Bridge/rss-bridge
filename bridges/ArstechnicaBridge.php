@@ -9,7 +9,7 @@ class ArstechnicaBridge extends BridgeAbstract {
                 $this->name = "ArstechnicaBridge";
                 $this->uri = "http://arstechnica.com";
                 $this->description = "The PC enthusiast's resource. Power users and the tools they love, without computing religion";
-                $this->update = "2016-08-09";
+                $this->update = '2016-08-17';
 
         }
 
@@ -43,7 +43,7 @@ class ArstechnicaBridge extends BridgeAbstract {
                         return $text;
                 }
 
-                $html = $this->file_get_html('http://feeds.arstechnica.com/arstechnica/index') or $this->returnError('Could not request NextInpact.', 404);
+                $html = $this->file_get_html('http://feeds.arstechnica.com/arstechnica/index') or $this->returnServerError('Could not request NextInpact.');
                 $limit = 0;
 
                 foreach($html->find('item') as $element) {

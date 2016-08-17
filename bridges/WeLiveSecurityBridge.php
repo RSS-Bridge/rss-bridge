@@ -6,7 +6,7 @@ class WeLiveSecurityBridge extends BridgeAbstract {
         $this->name = 'We Live Security';
         $this->uri = 'http://www.welivesecurity.com/';
         $this->description = 'Returns the newest articles.';
-        $this->update = '2016-08-09';
+        $this->update = '2016-08-17';
     }
 
     public function collectData(array $param) {
@@ -28,7 +28,7 @@ class WeLiveSecurityBridge extends BridgeAbstract {
         }
 
         $feed = $this->getURI().'feed/';
-        $html = $this->file_get_html($feed) or $this->returnError('Could not request '.$this->getName().': '.$feed, 500);
+        $html = $this->file_get_html($feed) or $this->returnServerError('Could not request '.$this->getName().': '.$feed);
         $limit = 0;
 
         foreach ($html->find('item') as $element) {
@@ -37,7 +37,7 @@ class WeLiveSecurityBridge extends BridgeAbstract {
                 $article_image = $element->find('image', 0)->plaintext;
                 $article_url = ExtractFromDelimiters($element->innertext, '<link>', '</link>');
                 $article_summary = ExtractFromDelimiters($element->innertext, '<description><![CDATA[<p>', '</p>');
-                $article_html = file_get_contents($article_url) or $this->returnError('Could not request '.$this->getName().': '.$article_url, 500);
+                $article_html = file_get_contents($article_url) or $this->returnServerError('Could not request '.$this->getName().': '.$article_url);
                 if (substr($article_html, 0, 2) == "\x1f\x8b") //http://www.gzip.org/zlib/rfc-gzip.html#header-trailer -> GZip ID1
                     $article_html = gzdecode($article_html);   //Response is GZipped even if we didn't accept GZip!? Let's decompress...
                 $article_html = str_get_html($article_html);   //Now we have our HTML data. But still, that's an important HTTP violation...

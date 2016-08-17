@@ -7,7 +7,7 @@ class Releases3DSBridge extends BridgeAbstract {
 		$this->name = "3DS Scene Releases";
 		$this->uri = "http://www.3dsdb.com/";
 		$this->description = "Returns the newest scene releases.";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 	}
 
@@ -38,7 +38,7 @@ class Releases3DSBridge extends BridgeAbstract {
         }
 
         $dataUrl = 'http://3dsdb.com/xml.php';
-        $xml = file_get_contents($dataUrl) or $this->returnError('Could not request 3dsdb: '.$dataUrl, 500);
+        $xml = file_get_contents($dataUrl) or $this->returnServerError('Could not request 3dsdb: '.$dataUrl);
         $limit = 0;
 
         foreach (array_reverse(explode('<release>', $xml)) as $element) {

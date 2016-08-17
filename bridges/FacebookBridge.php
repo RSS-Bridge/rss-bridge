@@ -7,7 +7,7 @@ class FacebookBridge extends BridgeAbstract{
 		$this->name = "Facebook";
 		$this->uri = "http://www.facebook.com/";
 		$this->description = "Input a page title or a profile log. For a profile log, please insert the parameter as follow : myExamplePage/132621766841117";
-		$this->update = "2016-08-15";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -97,7 +97,7 @@ class FacebookBridge extends BridgeAbstract{
 				);
 				$context  = stream_context_create($http_options);
 				$html = file_get_contents($captcha_action, false, $context);
-				if ($html === FALSE) { $this->returnError('Failed to submit captcha response back to Facebook', 500); }
+				if ($html === FALSE) { $this->returnServerError('Failed to submit captcha response back to Facebook'); }
 				unset($_SESSION['captcha_fields']);
 				$html = str_get_html($html);
 			}
@@ -109,12 +109,12 @@ class FacebookBridge extends BridgeAbstract{
 		if (is_null($html)) {
 			if (isset($param['u'])) {
 				if (!strpos($param['u'], "/")) {
-					$html = $this->file_get_html('https://www.facebook.com/'.urlencode($param['u']).'?_fb_noscript=1') or $this->returnError('No results for this query.', 404);
+					$html = $this->file_get_html('https://www.facebook.com/'.urlencode($param['u']).'?_fb_noscript=1') or $this->returnServerError('No results for this query.');
 				} else {
-					$html = $this->file_get_html('https://www.facebook.com/pages/'.$param['u'].'?_fb_noscript=1') or $this->returnError('No results for this query.', 404);
+					$html = $this->file_get_html('https://www.facebook.com/pages/'.$param['u'].'?_fb_noscript=1') or $this->returnServerError('No results for this query.');
 				}
 			} else {
-				$this->returnError('You must specify a Facebook username.', 400);
+				$this->returnClientError('You must specify a Facebook username.');
 			}
 		}
 

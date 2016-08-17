@@ -8,12 +8,12 @@ class EliteDangerousGalnetBridge extends BridgeAbstract
 		$this->name = "Elite: Dangerous Galnet";
 		$this->uri = "https://community.elitedangerous.com/galnet";
 		$this->description = "Returns the latest page of news from Galnet";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 	}
 
 	public function collectData(array $param)
 	{
-		$html = $this->file_get_html('https://community.elitedangerous.com/galnet') or $this->returnError('Error while downloading the website content', 404);
+		$html = $this->file_get_html('https://community.elitedangerous.com/galnet') or $this->returnServerError('Error while downloading the website content');
 		foreach($html->find('div.article') as $element) {
 			$item = new Item();
 

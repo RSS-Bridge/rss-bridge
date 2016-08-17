@@ -17,7 +17,7 @@ class GoogleSearchBridge extends BridgeAbstract{
 		$this->name = "Google search";
 		$this->uri = "https://www.google.com/";
 		$this->description = "Returns most recent results from Google search.";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -35,10 +35,10 @@ class GoogleSearchBridge extends BridgeAbstract{
 
         if (isset($param['q'])) {   /* keyword search mode */
             $this->request = $param['q'];
-            $html = $this->file_get_html('https://www.google.com/search?q=' . urlencode($this->request) . '&num=100&complete=0&tbs=qdr:y,sbd:1') or $this->returnError('No results for this query.', 404);
+            $html = $this->file_get_html('https://www.google.com/search?q=' . urlencode($this->request) . '&num=100&complete=0&tbs=qdr:y,sbd:1') or $this->returnServerError('No results for this query.');
         }
         else{
-            $this->returnError('You must specify a keyword (?q=...).', 400);
+            $this->returnClientError('You must specify a keyword (?q=...).');
         }
 
         $emIsRes = $html->find('div[id=ires]',0);

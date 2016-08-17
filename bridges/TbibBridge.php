@@ -7,7 +7,7 @@ class TbibBridge extends BridgeAbstract{
 		$this->name = "Tbib";
 		$this->uri = "http://tbib.org/";
 		$this->description = "Returns images from given page";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -33,7 +33,7 @@ class TbibBridge extends BridgeAbstract{
         if (isset($param['t'])) { 
             $tags = urlencode($param['t']); 
         }
-        $html = $this->file_get_html("http://tbib.org/index.php?page=post&s=list&tags=$tags&pid=$page") or $this->returnError('Could not request Tbib.', 404);
+        $html = $this->file_get_html("http://tbib.org/index.php?page=post&s=list&tags=$tags&pid=$page") or $this->returnServerError('Could not request Tbib.');
 
 
 	foreach($html->find('div[class=content] span') as $element) {

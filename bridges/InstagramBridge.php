@@ -9,7 +9,7 @@ class InstagramBridge extends BridgeAbstract{
 		$this->name = "Instagram Bridge";
 		$this->uri = "http://instagram.com/";
 		$this->description = "Returns the newest images";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -25,10 +25,10 @@ class InstagramBridge extends BridgeAbstract{
         $html = '';
         if (isset($param['u'])) {   /* user timeline mode */
             $this->request = $param['u'];
-            $html = $this->file_get_html('http://instagram.com/'.urlencode($this->request)) or $this->returnError('Could not request Instagram.', 404);
+            $html = $this->file_get_html('http://instagram.com/'.urlencode($this->request)) or $this->returnServerError('Could not request Instagram.');
         }
         else {
-            $this->returnError('You must specify a Instagram username (?u=...).', 400);
+            $this->returnClientError('You must specify a Instagram username (?u=...).');
         }
         
         $innertext = null;

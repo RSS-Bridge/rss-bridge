@@ -7,7 +7,7 @@ class DuckDuckGoBridge extends BridgeAbstract{
 		$this->name = "DuckDuckGo";
 		$this->uri = "https://duckduckgo.com/";
 		$this->description = "Returns most recent results from DuckDuckGo.";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -22,7 +22,7 @@ class DuckDuckGoBridge extends BridgeAbstract{
         $html = '';
         $link = 'http://duckduckgo.com/html/?q='.$param[u].'+sort:date';
 
-        $html = $this->file_get_html($link) or $this->returnError('Could not request DuckDuckGo.', 404);
+        $html = $this->file_get_html($link) or $this->returnServerError('Could not request DuckDuckGo.');
 
         foreach($html->find('div.results_links') as $element) {
                 $item = new \Item();

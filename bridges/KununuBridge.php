@@ -5,7 +5,7 @@ class KununuBridge extends BridgeAbstract{
 		$this->name = "Kununu Bridge"; /* This will be replaced later! */
 		$this->uri = "https://www.kununu.com"; /* This will be replaced later! */
 		$this->description = "Returns the latest reviews for a company and site of your choice.";
-		$this->update = "2016-08-15";
+		$this->update = '2016-08-17';
 
 		$this->parameters['global'] = 
 		'[
@@ -64,12 +64,12 @@ class KununuBridge extends BridgeAbstract{
 		// Get Site
 		$site = strtolower(trim($params['site']));
 		if(!isset($site) || empty($site) || !$this->site_is_valid($site))
-			$this->returnError('You must specify a valid site (&site=...)!', 400);
+			$this->returnClientError('You must specify a valid site (&site=...)!');
 
 		// Get Company (fixing whitespace and umlauts)
 		$company = $this->encode_umlauts(strtolower(str_replace(' ', '-', trim($params['company']))));
 		if(!isset($company) || empty($company))
-			$this->returnError('You must specify a company (&company=...)!', 400);
+			$this->returnClientError('You must specify a company (&company=...)!');
 
 		$full = false; // By default we'll load only short article
 		if(isset($params['full']))
@@ -87,7 +87,7 @@ class KununuBridge extends BridgeAbstract{
 				$section = 'reviews';
 				break;
 			default:
-				$this->returnError('The reviews section is not defined for you selection!', 404);
+				$this->returnServerError('The reviews section is not defined for you selection!');
 		}
 
 		// Update URI for the content
@@ -96,7 +96,7 @@ class KununuBridge extends BridgeAbstract{
 		// Load page
 		$html = $this->file_get_html($this->uri);
 		if($html === false)
-			$this->returnError('Unable to receive data from ' . $this->uri . '!', 404);
+			$this->returnServerError('Unable to receive data from ' . $this->uri . '!');
 
 		// Update name for this request
 		$this->name = $this->extract_company_name($html) . ' - ' . $this->name;
@@ -104,12 +104,12 @@ class KununuBridge extends BridgeAbstract{
 		// Find the section with all the panels (reviews)
 		$section = $html->find('section.kununu-scroll-element', 0);
 		if($section === false)
-			$this->returnError('Unable to find panel section!', 404);
+			$this->returnServerError('Unable to find panel section!');
 
 		// Find all articles (within the panels)
 		$articles = $section->find('article');
 		if($articles === false || empty($articles))
-			$this->returnError('Unable to find articles!', 404);
+			$this->returnServerError('Unable to find articles!');
 
 		// Go through all articles
 		foreach($articles as $article){
@@ -171,11 +171,11 @@ class KununuBridge extends BridgeAbstract{
 	private function extract_company_name($html){
 		$panel = $html->find('div.panel', 0);
 		if($panel === false)
-			$this->returnError('Cannot find panel for company name!', 404);
+			$this->returnServerError('Cannot find panel for company name!');
 		
 		$company_name = $panel->find('h1', 0);
 		if($company_name === false)
-			$this->returnError('Cannot find company name!', 404);
+			$this->returnServerError('Cannot find company name!');
 		
 		return $company_name->plaintext;
 	}
@@ -187,7 +187,7 @@ class KununuBridge extends BridgeAbstract{
 		// They conviniently provide a time attribute for us :)
 		$date = $article->find('time[itemprop=dtreviewed]', 0);
 		if($date === false)
-			$this->returnError('Cannot find article date!', 404);
+			$this->returnServerError('Cannot find article date!');
 		
 		return strtotime($date->datetime);
 	}
@@ -198,7 +198,7 @@ class KununuBridge extends BridgeAbstract{
 	private function extract_article_rating($article){
 		$rating = $article->find('span.rating', 0);
 		if($rating === false)
-			$this->returnError('Cannot find article rating!', 404);
+			$this->returnServerError('Cannot find article rating!');
 		
 		return $rating->getAttribute('aria-label');
 	}
@@ -209,7 +209,7 @@ class KununuBridge extends BridgeAbstract{
 	private function extract_article_summary($article){
 		$summary = $article->find('[itemprop=summary]', 0);
 		if($summary === false)
-			$this->returnError('Cannot find article summary!', 404);
+			$this->returnServerError('Cannot find article summary!');
 		
 		return strip_tags($summary->innertext);
 	}
@@ -221,11 +221,11 @@ class KununuBridge extends BridgeAbstract{
 		// Notice: This first part is the same as in extract_article_summary!
 		$summary = $article->find('[itemprop=summary]', 0);
 		if($summary === false)
-			$this->returnError('Cannot find article summary!', 404);
+			$this->returnServerError('Cannot find article summary!');
 
 		$anchor = $summary->find('a', 0);
 		if($anchor === false)
-			$this->returnError('Cannot find article URI!', 404);
+			$this->returnServerError('Cannot find article URI!');
 		
 		return 'https://www.kununu.com' . $anchor->href;
 	}
@@ -237,7 +237,7 @@ class KununuBridge extends BridgeAbstract{
 		// We need to parse the aside manually
 		$aside = $article->find('aside', 0);
 		if($aside === false)
-			$this->returnError('Cannot find article author information!', 404);
+			$this->returnServerError('Cannot find article author information!');
 
 		// Go through all h2 elements to find index of required span (I know... it's stupid)
 		$author_position = 'Unknown';
@@ -257,7 +257,7 @@ class KununuBridge extends BridgeAbstract{
 	private function extract_article_description($article){
 		$description = $article->find('div[itemprop=description]', 0);
 		if($description === false)
-			$this->returnError('Cannot find article description!', 404);
+			$this->returnServerError('Cannot find article description!');
 		
 		return $this->fix_url($description->innertext);
 	}
@@ -269,12 +269,12 @@ class KununuBridge extends BridgeAbstract{
 		// Load full article
 		$html = file_get_html($uri);
 		if($html === false)
-			$this->returnError('Could not load full description!', 404);
+			$this->returnServerError('Could not load full description!');
 
 		// Find the article
 		$article = $html->find('article', 0);
 		if($article === false)
-			$this->returnError('Cannot find article!', 404);
+			$this->returnServerError('Cannot find article!');
 
 		// Luckily they use the same layout for the review overview and full article pages :)
 		return $this->extract_article_description($article);

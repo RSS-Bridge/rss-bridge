@@ -10,7 +10,7 @@ class SoundCloudBridge extends BridgeAbstract{
 		$this->name = "Soundcloud Bridge";
 		$this->uri = "http://www.soundcloud.com/";
 		$this->description = "Returns 10 newest music from user profile";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -30,12 +30,12 @@ class SoundCloudBridge extends BridgeAbstract{
 		{
 			$this->request = $param['u'];
 
-			$res = json_decode(file_get_contents('https://api.soundcloud.com/resolve?url=http://www.soundcloud.com/'. urlencode($this->request) .'&client_id=' . self::CLIENT_ID)) or $this->returnError('No results for this query', 404);
-			$tracks = json_decode(file_get_contents('https://api.soundcloud.com/users/'. urlencode($res->id) .'/tracks?client_id=' . self::CLIENT_ID)) or $this->returnError('No results for this user', 404);
+			$res = json_decode(file_get_contents('https://api.soundcloud.com/resolve?url=http://www.soundcloud.com/'. urlencode($this->request) .'&client_id=' . self::CLIENT_ID)) or $this->returnServerError('No results for this query');
+			$tracks = json_decode(file_get_contents('https://api.soundcloud.com/users/'. urlencode($res->id) .'/tracks?client_id=' . self::CLIENT_ID)) or $this->returnServerError('No results for this user');
 		}
 		else
 		{
-			$this->returnError('You must specify username', 400);
+			$this->returnClientError('You must specify username');
 		}
 
 		for ($i=0; $i < 10; $i++) {

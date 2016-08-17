@@ -12,7 +12,7 @@ class GitlabCommitsBridge extends BridgeAbstract{
     $this->name = 'Gitlab Commits';
     $this->uri = '';
     $this->description = 'Returns the commits of a project hosted on a gitlab instance';
-    $this->update = '2016-08-09';
+    $this->update = '2016-08-17';
 
     $this->parameters[] =
       '[
@@ -45,7 +45,7 @@ class GitlabCommitsBridge extends BridgeAbstract{
     }
 
     $html = file_get_html($uri)
-      or $this->returnError('No results for Gitlab Commits of project '.$param['uri'].'/'.$param['u'].'/'.$param['p'], 404);
+      or $this->returnServerError('No results for Gitlab Commits of project '.$param['uri'].'/'.$param['u'].'/'.$param['p']);
 
 
     foreach($html->find('li.commit') as $commit){

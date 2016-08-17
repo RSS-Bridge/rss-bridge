@@ -7,7 +7,7 @@ class TheHackerNewsBridge extends BridgeAbstract {
         $this->name = 'The Hacker News Bridge';
         $this->uri = 'https://thehackernews.com/';
         $this->description = 'Cyber Security, Hacking, Technology News.';
-        $this->update = '2016-08-09';
+        $this->update = '2016-08-17';
 
     }
 
@@ -45,7 +45,7 @@ class TheHackerNewsBridge extends BridgeAbstract {
             return $string;
         }
 
-        $html = $this->file_get_html($this->getURI()) or $this->returnError('Could not request TheHackerNews: '.$this->getURI(), 500);
+        $html = $this->file_get_html($this->getURI()) or $this->returnServerError('Could not request TheHackerNews: '.$this->getURI());
         $limit = 0;
 
         foreach ($html->find('article') as $element) {
@@ -55,7 +55,7 @@ class TheHackerNewsBridge extends BridgeAbstract {
                 $article_author = trim($element->find('span.vcard', 0)->plaintext);
                 $article_title = $element->find('a.entry-title', 0)->plaintext;
                 $article_timestamp = strtotime($element->find('span.updated', 0)->plaintext);
-                $article = $this->file_get_html($article_url) or $this->returnError('Could not request TheHackerNews: '.$article_url, 500);
+                $article = $this->file_get_html($article_url) or $this->returnServerError('Could not request TheHackerNews: '.$article_url);
 
                 $contents = $article->find('div.articlebodyonly', 0)->innertext;
                 $contents = StripRecursiveHTMLSection($contents, 'div', '<div class=\'clear\'');

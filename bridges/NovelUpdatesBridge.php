@@ -7,7 +7,7 @@ class NovelUpdatesBridge extends BridgeAbstract{
 		$this->name = "Novel Updates";
 		$this->uri = "http://www.novelupdates.com/";
 		$this->description = "Returns releases from Novel Updates";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 		$this->parameters[] =
 		'[
 			{
@@ -19,14 +19,14 @@ class NovelUpdatesBridge extends BridgeAbstract{
 
     public function collectData(array $param){
         if (!isset($param['n']))
-            $this->returnError('You must specify the novel URL (/series/...)', 400);
-        $thread = parse_url($param['n']) or $this->returnError('This URL seems malformed, please check it.', 400);
+            $this->returnClientError('You must specify the novel URL (/series/...)');
+        $thread = parse_url($param['n']) or $this->returnClientError('This URL seems malformed, please check it.');
         if($thread['host'] !== 'www.novelupdates.com')
-            $this->returnError('NovelUpdates URL only.', 400);
+            $this->returnClientError('NovelUpdates URL only.');
       	if(strpos($thread['path'], 'series/') === FALSE)
-            $this->returnError('You must specify the novel URL.', 400);
+            $this->returnClientError('You must specify the novel URL.');
         $url = 'http://www.novelupdates.com'.$thread['path'].'';
-        $fullhtml = $this->file_get_html($url) or $this->returnError("Could not request NovelUpdates, novel not found", 404);
+        $fullhtml = $this->file_get_html($url) or $this->returnServerError("Could not request NovelUpdates, novel not found");
         $this->request = $fullhtml->find('h4.seriestitle', 0)->plaintext;
         // dirty fix for nasty simpledom bug: https://github.com/sebsauvage/rss-bridge/issues/259
         // forcefully removes tbody

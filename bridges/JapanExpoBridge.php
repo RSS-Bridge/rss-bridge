@@ -6,7 +6,7 @@ class JapanExpoBridge extends BridgeAbstract{
         $this->name = 'Japan Expo Actualités';
         $this->uri = 'http://www.japan-expo-paris.com/fr/actualites';
         $this->description = 'Returns most recent entries from Japan Expo actualités.';
-        $this->update = '2016-08-09';
+        $this->update = '2016-08-17';
         $this->parameters[] =
         '[
             {
@@ -59,7 +59,7 @@ class JapanExpoBridge extends BridgeAbstract{
         };
 
         $link = 'http://www.japan-expo-paris.com/fr/actualites';
-        $html = $this->file_get_html($link) or $this->returnError('Could not request JapanExpo: '.$link , 500);
+        $html = $this->file_get_html($link) or $this->returnServerError('Could not request JapanExpo: '.$link);
         $fullcontent = (!empty($param['mode']) && $param['mode'] == 'full');
         $count = 0;
 
@@ -73,7 +73,7 @@ class JapanExpoBridge extends BridgeAbstract{
 
             if ($fullcontent) {
                 if ($count < 5) {
-                    $article_html = $this->file_get_html($url) or $this->returnError('Could not request JapanExpo: '.$url , 500);
+                    $article_html = $this->file_get_html($url) or $this->returnServerError('Could not request JapanExpo: '.$url);
                     $header = $article_html->find('header.pageHeadBox', 0);
                     $timestamp = strtotime($header->find('time', 0)->datetime);
                     $title_html = $header->find('div.section', 0)->next_sibling();

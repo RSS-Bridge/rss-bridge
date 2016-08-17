@@ -6,7 +6,7 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract {
         $this->name = 'Est-ce qu\'on met en prod aujourd\'hui ?';
         $this->uri = 'https://www.estcequonmetenprodaujourdhui.info/';
         $this->description = 'Should we put a website in production today? (French)';
-        $this->update = "2016-08-09";
+        $this->update = '2016-08-17';
     }
 
     public function collectData(array $param) {
@@ -18,7 +18,7 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract {
             } return false;
         }
 
-        $html = $this->file_get_html($this->getURI()) or $this->returnError('Could not request EstCeQuonMetEnProd: '.$this->getURI(), 500);
+        $html = $this->file_get_html($this->getURI()) or $this->returnServerError('Could not request EstCeQuonMetEnProd: '.$this->getURI());
 
         $item = new \Item();
         $item->uri = $this->getURI().'#'.date('Y-m-d');

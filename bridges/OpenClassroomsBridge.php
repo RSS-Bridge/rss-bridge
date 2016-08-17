@@ -7,7 +7,7 @@ class OpenClassroomsBridge extends BridgeAbstract{
 		$this->name = "OpenClassrooms Bridge";
 		$this->uri = "https://openclassrooms.com/";
 		$this->description = "Returns latest tutorials from OpenClassrooms.";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 
 		$this->parameters[] =
@@ -62,13 +62,13 @@ class OpenClassroomsBridge extends BridgeAbstract{
     public function collectData(array $param){
         if (empty($param['u']))
         {
-            $this->returnError('Error: You must chose a category.', 404);
+            $this->returnServerError('Error: You must chose a category.');
         }
     
         $html = '';
         $link = 'https://openclassrooms.com/courses?categories='.$param['u'].'&title=&sort=updatedAt+desc';
 
-        $html = $this->file_get_html($link) or $this->returnError('Could not request OpenClassrooms.', 404);
+        $html = $this->file_get_html($link) or $this->returnServerError('Could not request OpenClassrooms.');
 
         foreach($html->find('.courseListItem') as $element) {
                 $item = new \Item();

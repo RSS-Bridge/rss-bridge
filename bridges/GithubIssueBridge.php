@@ -12,7 +12,7 @@ class GithubIssueBridge extends BridgeAbstract{
     $this->name = 'Github Issue';
     $this->uri = '';
     $this->description = 'Returns the comments of a github project issue';
-    $this->update = '2016-08-09';
+    $this->update = '2016-08-17';
 
     $this->parameters[]=
       '[
@@ -35,7 +35,7 @@ class GithubIssueBridge extends BridgeAbstract{
   public function collectData(array $param){
     $uri = 'https://github.com/'.$param['u'].'/'.$param['p'].'/issues/'.$param['i'];
     $html = file_get_html($uri)
-      or $this->returnError('No results for Github Issue '.$param['i'].' in project '.$param['u'].'/'.$param['p'], 404);
+      or $this->returnServerError('No results for Github Issue '.$param['i'].' in project '.$param['u'].'/'.$param['p']);
 
     foreach($html->find('.js-comment-container') as $comment){
 

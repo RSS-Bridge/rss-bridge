@@ -7,13 +7,13 @@ class DilbertBridge extends BridgeAbstract {
         $this->name = 'Dilbert Daily Strip';
         $this->uri = 'http://dilbert.com';
         $this->description = 'The Unofficial Dilbert Daily Comic Strip';
-        $this->update = "2016-08-09";
+        $this->update = '2016-08-17';
 
     }
 
     public function collectData(array $param) {
 
-        $html = $this->file_get_html($this->getURI()) or $this->returnError('Could not request Dilbert: '.$this->getURI(), 500);
+        $html = $this->file_get_html($this->getURI()) or $this->returnServerError('Could not request Dilbert: '.$this->getURI());
 
         foreach ($html->find('section.comic-item') as $element) {
 

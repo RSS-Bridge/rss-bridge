@@ -7,12 +7,12 @@ class BlaguesDeMerdeBridge extends BridgeAbstract{
 		$this->name = "Blagues De Merde";
 		$this->uri = "http://www.blaguesdemerde.fr/";
 		$this->description = "Blagues De Merde";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 	}
 
     public function collectData(array $param){
-        $html = $this->file_get_html('http://www.blaguesdemerde.fr/') or $this->returnError('Could not request BDM.', 404);
+        $html = $this->file_get_html('http://www.blaguesdemerde.fr/') or $this->returnServerError('Could not request BDM.');
     
         foreach($html->find('article.joke_contener') as $element) {
             $item = new Item();

@@ -7,13 +7,13 @@ class NasaApodBridge extends BridgeAbstract{
 		$this->name = "NASA APOD Bridge";
 		$this->uri = "http://apod.nasa.gov/apod/astropix.html";
 		$this->description = "Returns the 3 latest NASA APOD pictures and explanations";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 	}
 
   public function collectData(array $param) {
 
-    $html = $this->file_get_html('http://apod.nasa.gov/apod/archivepix.html') or $this->returnError('Error while downloading the website content', 404);
+    $html = $this->file_get_html('http://apod.nasa.gov/apod/archivepix.html') or $this->returnServerError('Error while downloading the website content');
     $list = explode("<br>", $html->find('b', 0)->innertext);
 
     for($i = 0; $i < 3;$i++)

@@ -11,7 +11,7 @@ class PickyWallpapersBridge extends BridgeAbstract {
 		$this->name = "PickyWallpapers Bridge";
 		$this->uri = "http://www.pickywallpapers.com/";
 		$this->description = "Returns the latests wallpapers from PickyWallpapers";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -41,7 +41,7 @@ class PickyWallpapersBridge extends BridgeAbstract {
     public function collectData(array $param){
         $html = '';
         if (!isset($param['c'])) {
-            $this->returnError('You must specify at least a category (?c=...).', 400);
+            $this->returnClientError('You must specify at least a category (?c=...).');
         } else {
             $baseUri = 'http://www.pickywallpapers.com';
 
@@ -55,7 +55,7 @@ class PickyWallpapersBridge extends BridgeAbstract {
 
             for ($page = 1; $page <= $lastpage; $page++) {
                 $link = $baseUri.'/'.$this->resolution.'/'.$this->category.'/'.(!empty($this->subcategory)?$this->subcategory.'/':'').'page-'.$page.'/';
-                $html = $this->file_get_html($link) or $this->returnError('No results for this query.', 404);
+                $html = $this->file_get_html($link) or $this->returnServerError('No results for this query.');
 
                 if ($page === 1) {
                     preg_match('/page-(\d+)\/$/', $html->find('.pages li a', -2)->href, $matches);

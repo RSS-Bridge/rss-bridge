@@ -8,12 +8,12 @@ class LichessBridge  extends BridgeAbstract
         $this->name = 'Lichess Blog';
         $this->uri = 'http://lichess.org/blog';
         $this->description = 'Returns the 5 newest posts from the Lichess blog (full text)';
-        $this->update = "2016-08-06";
+        $this->update = '2016-08-17';
     }
 
     public function collectData(array $param)
     {
-        $xml_feed = $this->file_get_html('http://fr.lichess.org/blog.atom') or $this->returnError('Could not retrieve Lichess blog feed.', 404);
+        $xml_feed = $this->file_get_html('http://fr.lichess.org/blog.atom') or $this->returnServerError('Could not retrieve Lichess blog feed.');
 
         $posts_loaded = 0;
         foreach($xml_feed->find('entry') as $entry)

@@ -12,7 +12,7 @@ class WorldOfTanks extends HttpCachingBridgeAbstract{
 		$this->name = "World of Tanks";
 		$this->uri = "http://worldoftanks.eu/";
 		$this->description = "News about the tank slaughter game.";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -70,7 +70,7 @@ class WorldOfTanks extends HttpCachingBridgeAbstract{
         } else {
             $this->uri = WORLD_OF_TANKS.$this->lang.NEWS.'pc-browser/'.$param['category']."/";
         }
-        $html = $this->file_get_html($this->getURI()) or $this->returnError('Could not request '.$this->getURI(), 404);
+        $html = $this->file_get_html($this->getURI()) or $this->returnServerError('Could not request '.$this->getURI());
         $this->message("loaded HTML from ".$this->getURI());
         // customize name 
         $this->name = $html->find('title', 0)->innertext;

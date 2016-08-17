@@ -12,12 +12,12 @@ class StripeAPIChangeLogBridge extends BridgeAbstract{
     $this->name = 'Stripe API Changelog';
     $this->uri = 'https://stripe.com/docs/upgrades';
     $this->description = 'Returns the changes made to the stripe.com API';
-    $this->update = '2016-08-09';
+    $this->update = '2016-08-17';
   }
 
   public function collectData(array $param){
     $html = file_get_html('https://stripe.com/docs/upgrades')
-      or $this->returnError('No results for Stripe API Changelog', 404);
+      or $this->returnServerError('No results for Stripe API Changelog');
 
 
     foreach($html->find('h2') as $change){

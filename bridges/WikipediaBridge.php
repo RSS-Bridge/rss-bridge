@@ -9,7 +9,7 @@ class WikipediaBridge extends BridgeAbstract{
 		$this->name = 'Wikipedia bridge for many languages';
 		$this->uri = 'https://www.wikipedia.org/';
 		$this->description = 'Returns articles for a language of your choice';
-		$this->update = '2016-08-15';
+		$this->update = '2016-08-17';
 
 		$this->parameters[] = 
 		'[
@@ -70,13 +70,13 @@ class WikipediaBridge extends BridgeAbstract{
 
 	public function collectData(array $params){
 		if(!isset($params['language']))
-			$this->returnError('You must specify a valid language via \'&language=\'!', 400);
+			$this->returnClientError('You must specify a valid language via \'&language=\'!');
 		
 		if(!$this->CheckLanguageCode(strtolower($params['language'])))
-			$this->returnError('The language code you provided (\'' . $params['language'] . '\') is not supported!', 400);
+			$this->returnClientError('The language code you provided (\'' . $params['language'] . '\') is not supported!');
 		
 		if(!isset($params['subject']))
-			$this->returnError('You must specify a valid subject via \'&subject=\'!', 400);
+			$this->returnClientError('You must specify a valid subject via \'&subject=\'!');
 		
 		$subject = WIKIPEDIA_SUBJECT_TFA;
 		switch($params['subject']){
@@ -115,7 +115,7 @@ class WikipediaBridge extends BridgeAbstract{
 		$html = $this->file_get_html($this->uri . '/wiki');
 
 		if(!$html)
-			$this->returnError('Could not load site: ' . $this->uri . '!', 404);
+			$this->returnServerError('Could not load site: ' . $this->uri . '!');
 
 		/* 
 		* Now read content depending on the language (make sure to create one function per language!)
@@ -125,7 +125,7 @@ class WikipediaBridge extends BridgeAbstract{
 		$function = 'GetContents' . strtoupper($params['language']);
 
 		if(!method_exists($this, $function))
-			$this->returnError('A function to get the contents for your langauage is missing (\'' . $function . '\')!', 501);
+			$this->returnServerError('A function to get the contents for your langauage is missing (\'' . $function . '\')!');
 		
 		/*
 		* The method takes care of creating all items.
@@ -212,12 +212,12 @@ class WikipediaBridge extends BridgeAbstract{
 		$content_html = $this->file_get_html($uri);
 		
 		if(!$content_html)
-			$this->returnError('Could not load site: ' . $uri . '!', 404);
+			$this->returnServerError('Could not load site: ' . $uri . '!');
 		
 		$content = $content_html->find('#mw-content-text', 0);
 
 		if(!$content)
-			$this->returnError('Could not find content in page: ' . $uri . '!', 404);
+			$this->returnServerError('Could not find content in page: ' . $uri . '!');
 		
 		// Let's remove a couple of things from the article
 		$table = $content->find('#toc', 0); // Table of contents

@@ -7,7 +7,7 @@ class ZDNetBridge extends BridgeAbstract {
         $this->name = 'ZDNet Bridge';
         $this->uri = 'http://www.zdnet.com/';
         $this->description = 'Technology News, Analysis, Comments and Product Reviews for IT Professionals.';
-        $this->update = '2016-08-09';
+        $this->update = '2016-08-17';
 
         $this->parameters[] =
         // http://www.zdnet.com/zdnet.opml
@@ -229,15 +229,15 @@ class ZDNetBridge extends BridgeAbstract {
         $baseUri = $this->getURI();
         $feed = $param['feed'];
         if (empty($feed))
-            $this->returnError('Please select a feed to display.', 400);
+            $this->returnClientError('Please select a feed to display.');
         if (strpos($feed, 'downloads!') !== false) {
             $feed = str_replace('downloads!', '', $feed);
             $baseUri = str_replace('www.', 'downloads.', $baseUri);
         }
         if ($feed !== preg_replace('/[^a-zA-Z0-9-\/]+/', '', $feed) || substr_count($feed, '/') > 1 || strlen($feed > 64))
-            $this->returnError('Invalid "feed" parameter.', 400);
+            $this->returnClientError('Invalid "feed" parameter.');
         $url = $baseUri.trim($feed, '/').'/rss.xml';
-        $html = $this->file_get_html($url) or $this->returnError('Could not request ZDNet: '.$url, 500);
+        $html = $this->file_get_html($url) or $this->returnServerError('Could not request ZDNet: '.$url);
         $limit = 0;
 
         foreach ($html->find('item') as $element) {
@@ -247,7 +247,7 @@ class ZDNetBridge extends BridgeAbstract {
                 $article_title = StripCDATA($element->find('title', 0)->plaintext);
                 $article_subtitle = StripCDATA($element->find('description', 0)->plaintext);
                 $article_timestamp = strtotime(StripCDATA($element->find('pubDate', 0)->plaintext));
-                $article = $this->file_get_html($article_url) or $this->returnError('Could not request ZDNet: '.$article_url, 500);
+                $article = $this->file_get_html($article_url) or $this->returnServerError('Could not request ZDNet: '.$article_url);
 
                 if (!empty($article_author))
                     $author = $article_author;

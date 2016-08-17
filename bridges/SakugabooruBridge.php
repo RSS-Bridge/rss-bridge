@@ -7,7 +7,7 @@ class SakugabooruBridge extends BridgeAbstract{
 		$this->name = "Sakugabooru";
 		$this->uri = "http://sakuga.yshi.org/";
 		$this->description = "Returns images from given page";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -31,7 +31,7 @@ class SakugabooruBridge extends BridgeAbstract{
         if (isset($param['t'])) { 
             $tags = urlencode($param['t']); 
         }
-        $html = $this->file_get_html("http://sakuga.yshi.org/post?page=$page&tags=$tags") or $this->returnError('Could not request Sakugabooru.', 404);
+        $html = $this->file_get_html("http://sakuga.yshi.org/post?page=$page&tags=$tags") or $this->returnServerError('Could not request Sakugabooru.');
 	$input_json = explode('Post.register(', $html);
 	foreach($input_json as $element)
 	 $data[] = preg_replace('/}\)(.*)/', '}', $element);

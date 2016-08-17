@@ -7,7 +7,7 @@ class GizmodoFRBridge extends BridgeAbstract{
 		$this->name = "GizmodoFR";
 		$this->uri = "http://www.gizmodo.fr/";
 		$this->description = "Returns the 15 newest posts from GizmodoFR (full text).";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 	}
 
@@ -26,7 +26,7 @@ class GizmodoFRBridge extends BridgeAbstract{
             return $text;
         }
 
-        $rssFeed = $this->file_get_html('http://www.gizmodo.fr/feed') or $this->returnError('Could not request http://www.gizmodo.fr/feed', 404);
+        $rssFeed = $this->file_get_html('http://www.gizmodo.fr/feed') or $this->returnServerError('Could not request http://www.gizmodo.fr/feed');
     	$limit = 0;
 
     	foreach($rssFeed->find('item') as $element) {

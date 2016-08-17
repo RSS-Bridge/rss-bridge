@@ -5,7 +5,7 @@ class RTBFBridge extends BridgeAbstract {
 		$this->uri = "http://www.rtbf.be/auvio/emissions";
 		$this->description = "Returns the newest RTBF videos by series ID";
 		$this->maintainer = "Frenzie";
-		$this->update = "2016-08-15";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -25,7 +25,7 @@ class RTBFBridge extends BridgeAbstract {
 		$count = 0;
 
 		if (isset($param['c'])) {
-			$html = $this->file_get_html('http://www.rtbf.be/auvio/emissions/detail?id='.$param['c']) or $this->returnError('Could not request RTBF.', 404);
+			$html = $this->file_get_html('http://www.rtbf.be/auvio/emissions/detail?id='.$param['c']) or $this->returnServerError('Could not request RTBF.');
 
 			foreach($html->find('section[id!=widget-ml-avoiraussi-] .rtbf-media-grid article') as $element) {
 				if($count < $limit) {
@@ -44,7 +44,7 @@ class RTBFBridge extends BridgeAbstract {
 			}
 		}
 		else {
-			$this->returnError('You must specify a series id.', 400);
+			$this->returnClientError('You must specify a series id.');
 		}
 	}
 

@@ -7,7 +7,7 @@ class VineBridge extends BridgeAbstract {
 		$this->name = "Vine bridge";
 		$this->uri = "http://vine.co/";
 		$this->description = "Returns the latests vines from vine user page";
-		$this->update = "2016-08-15";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -24,7 +24,7 @@ class VineBridge extends BridgeAbstract {
     $html = '';
     $uri = 'http://vine.co/u/'.$param['u'].'?mode=list';
 
-    $html = $this->file_get_html($uri) or $this->returnError('No results for this query.', 404);
+    $html = $this->file_get_html($uri) or $this->returnServerError('No results for this query.');
 
 		foreach($html->find('.post') as $element) {
 			$a = $element->find('a', 0);

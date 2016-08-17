@@ -10,7 +10,7 @@ class ParuVenduImmoBridge extends BridgeAbstract
 		$this->name = "Paru Vendu Immobilier";
 		$this->uri = "http://www.paruvendu.fr";
 		$this->description = "Returns the ads from the first page of search result.";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 
 		$this->parameters[] =
@@ -66,7 +66,7 @@ class ParuVenduImmoBridge extends BridgeAbstract
             $link .= '&lo='.urlencode($param['lo']);
         }
 
-        $html = $this->file_get_html($link) or $this->returnError('Could not request paruvendu.', 404);
+        $html = $this->file_get_html($link) or $this->returnServerError('Could not request paruvendu.');
 
 
         foreach($html->find('div.annonce a') as $element) {

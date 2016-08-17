@@ -9,7 +9,7 @@ class BandcampBridge extends BridgeAbstract{
 		$this->name = "Bandcamp Tag";
 		$this->uri = "http://bandcamp.com/";
 		$this->description = "New bandcamp release by tag";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -26,10 +26,10 @@ class BandcampBridge extends BridgeAbstract{
         $html = '';
         if (isset($param['tag'])) {
             $this->request = $param['tag'];
-            $html = $this->file_get_html('http://bandcamp.com/tag/'.urlencode($this->request).'?sort_field=date') or $this->returnError('No results for this query.', 404);
+            $html = $this->file_get_html('http://bandcamp.com/tag/'.urlencode($this->request).'?sort_field=date') or $this->returnServerError('No results for this query.');
         }
         else {
-            $this->returnError('You must specify tag (/tag/...)', 400);
+            $this->returnClientError('You must specify tag (/tag/...)');
         }
 
         foreach($html->find('li.item') as $release) {

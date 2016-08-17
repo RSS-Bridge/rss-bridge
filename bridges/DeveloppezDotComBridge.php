@@ -6,7 +6,7 @@ class DeveloppezDotComBridge extends BridgeAbstract{
 		$this->name = "Developpez.com Actus (FR)";
 		$this->uri = "http://www.developpez.com/";
 		$this->description = "Returns the 15 newest posts from DeveloppezDotCom (full text).";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 	}
 
 	private function DeveloppezDotComStripCDATA($string) {
@@ -42,7 +42,7 @@ class DeveloppezDotComBridge extends BridgeAbstract{
 	}
 
 	public function collectData(array $param){
-		$rssFeed = $this->file_get_html('http://www.developpez.com/index/rss') or $this->returnError('Could not request http://www.developpez.com/index/rss', 404);
+		$rssFeed = $this->file_get_html('http://www.developpez.com/index/rss') or $this->returnServerError('Could not request http://www.developpez.com/index/rss');
 		$limit = 0;
 
 		foreach($rssFeed->find('item') as $element) {

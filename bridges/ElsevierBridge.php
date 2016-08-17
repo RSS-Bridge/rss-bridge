@@ -6,7 +6,7 @@ class ElsevierBridge extends BridgeAbstract{
 		$this->name = 'Elsevier journals recent articles';
 		$this->uri = 'http://www.journals.elsevier.com';
 		$this->description = 'Returns the recent articles published in Elsevier journals';
-		$this->update = '2016-08-15';
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 			'[
@@ -63,7 +63,7 @@ class ElsevierBridge extends BridgeAbstract{
 
 	public function collectData(array $param){
 		$uri = 'http://www.journals.elsevier.com/' . $param['j'] . '/recent-articles/';
-		$html = file_get_html($uri) or $this->returnError('No results for Elsevier journal '.$param['j'], 404);
+		$html = file_get_html($uri) or $this->returnServerError('No results for Elsevier journal '.$param['j']);
 
 		foreach($html->find('.pod-listing') as $article){
 			$item = new \Item();

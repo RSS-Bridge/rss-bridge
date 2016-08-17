@@ -6,7 +6,7 @@ class CommonDreamsBridge extends BridgeAbstract{
 		$this->name = "CommonDreams Bridge";
 		$this->uri = "http://www.commondreams.org/";
 		$this->description = "Returns the newest articles.";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 	}
 
 	private function CommonDreamsExtractContent($url) {
@@ -25,7 +25,7 @@ class CommonDreamsBridge extends BridgeAbstract{
 			return $string;
 		}
 
-		$html = $this->file_get_html('http://www.commondreams.org/rss.xml') or $this->returnError('Could not request CommonDreams.', 404);
+		$html = $this->file_get_html('http://www.commondreams.org/rss.xml') or $this->returnServerError('Could not request CommonDreams.');
 		$limit = 0;
 		foreach($html->find('item') as $element) {
 			if($limit < 4) {

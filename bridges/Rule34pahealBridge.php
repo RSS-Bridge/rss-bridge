@@ -7,7 +7,7 @@ class Rule34pahealBridge extends BridgeAbstract{
 		$this->name = "Rule34paheal";
 		$this->uri = "http://rule34.paheal.net/";
 		$this->description = "Returns images from given page";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -32,7 +32,7 @@ class Rule34pahealBridge extends BridgeAbstract{
         if (isset($param['t'])) { 
             $tags = urlencode($param['t']); 
         }
-        $html = $this->file_get_html("http://rule34.paheal.net/post/list/$tags/$page") or $this->returnError('Could not request Rule34paheal.', 404);
+        $html = $this->file_get_html("http://rule34.paheal.net/post/list/$tags/$page") or $this->returnServerError('Could not request Rule34paheal.');
 
 
 	foreach($html->find('div[class=shm-image-list] div[class=shm-thumb]') as $element) {

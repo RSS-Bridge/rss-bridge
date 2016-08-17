@@ -7,7 +7,7 @@ class SiliconBridge extends BridgeAbstract {
 		$this->name = 'Silicon Bridge';
 		$this->uri = 'http://www.silicon.fr/';
 		$this->description = "Returns the newest articles.";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 	}
 
@@ -20,7 +20,7 @@ class SiliconBridge extends BridgeAbstract {
         }
 
         $feedUrl = 'http://www.silicon.fr/feed';
-        $html = $this->file_get_html($feedUrl) or $this->returnError('Could not request Silicon: '.$feedUrl, 500);
+        $html = $this->file_get_html($feedUrl) or $this->returnServerError('Could not request Silicon: '.$feedUrl);
         $limit = 0;
 
         foreach($html->find('item') as $element) {
@@ -30,7 +30,7 @@ class SiliconBridge extends BridgeAbstract {
                 $article_uri = $element->innertext;
                 $article_uri = substr($article_uri, strpos($article_uri, '<link>') + 6);
                 $article_uri = substr($article_uri, 0, strpos($article_uri, '</link>'));
-                $article_html = $this->file_get_html($article_uri) or $this->returnError('Could not request Silicon: '.$article_uri, 500);
+                $article_html = $this->file_get_html($article_uri) or $this->returnServerError('Could not request Silicon: '.$article_uri);
 
                 //Build article contents from corresponding elements
                 $thumbnailUri = $element->find('enclosure', 0)->url;

@@ -10,7 +10,7 @@ class WhydBridge extends BridgeAbstract{
 		$this->name = "Whyd Bridge";
 		$this->uri = "http://www.whyd.com/";
 		$this->description = "Returns 10 newest music from user profile";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -28,12 +28,12 @@ class WhydBridge extends BridgeAbstract{
 		{
 			$this->request = $param['u'];
             if (strlen(preg_replace("/[^0-9a-f]/",'', $this->request)) == 24) { // is input the userid ?
-				$html = $this->file_get_html('http://www.whyd.com/u/'.preg_replace("/[^0-9a-f]/",'', $this->request)) or $this->returnError('No results for this query.', 404);
+				$html = $this->file_get_html('http://www.whyd.com/u/'.preg_replace("/[^0-9a-f]/",'', $this->request)) or $this->returnServerError('No results for this query.');
 			} else { // input may be the username
-				$html = $this->file_get_html('http://www.whyd.com/search?q='.urlencode($this->request)) or $this->returnError('No results for this query.', 404);
+				$html = $this->file_get_html('http://www.whyd.com/search?q='.urlencode($this->request)) or $this->returnServerError('No results for this query.');
 				for ($j = 0; $j < 5; $j++) {
 					if (strtolower($html->find('div.user', $j)->find('a',0)->plaintext) == strtolower($this->request)) {
-						$html = $this->file_get_html('http://www.whyd.com' . $html->find('div.user', $j)->find('a', 0)->getAttribute('href')) or $this->returnError('No results for this query', 404);
+						$html = $this->file_get_html('http://www.whyd.com' . $html->find('div.user', $j)->find('a', 0)->getAttribute('href')) or $this->returnServerError('No results for this query');
 						break;
 					}
 				}
@@ -42,7 +42,7 @@ class WhydBridge extends BridgeAbstract{
 		} 
 		else
 		{
-			$this->returnError('You must specify username', 400);
+			$this->returnClientError('You must specify username');
 		}
 
 		for($i = 0; $i < 10; $i++) {

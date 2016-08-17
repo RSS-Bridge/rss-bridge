@@ -24,7 +24,7 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
 		$this->name = "Cpasbien Bridge";
 		$this->uri = "http://www.cpasbien.io";
 		$this->description = "Returns latest torrents from a request query";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -44,10 +44,10 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
         $html = '';
         if (isset($param['q'])) {   /* keyword search mode */
             $this->request = str_replace(" ","-",trim($param['q']));
-            $html = $this->file_get_html($this->uri.'/recherche/'.urlencode($this->request).'.html') or $this->returnError('No results for this query.', 404);
+            $html = $this->file_get_html($this->uri.'/recherche/'.urlencode($this->request).'.html') or $this->returnServerError('No results for this query.');
         }
         else {
-            $this->returnError('You must specify a keyword (?q=...).', 400);
+            $this->returnClientError('You must specify a keyword (?q=...).');
         }
 
         foreach ($html->find('#gauche',0)->find('div') as $episode) {

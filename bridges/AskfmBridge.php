@@ -7,6 +7,7 @@ class AskfmBridge extends BridgeAbstract{
                 $this->name = "Ask.fm Answers";
                 $this->uri = "http://ask.fm/";
                 $this->description = "Returns answers from an Ask.fm user";
+                $this->update = '2016-08-17';
 
                 $this->parameters["Ask.fm username"] =
                 '[
@@ -21,10 +22,10 @@ class AskfmBridge extends BridgeAbstract{
         $html = '';
         if (isset($param['u'])) {
             $this->request = $param['u'];
-            $html = $this->file_get_html('http://ask.fm/'.urlencode($this->request).'/answers/more?page=0') or $this->returnError('Requested username can\'t be found.', 404);
+            $html = $this->file_get_html('http://ask.fm/'.urlencode($this->request).'/answers/more?page=0') or $this->returnServerError('Requested username can\'t be found.');
         }
         else {
-            $this->returnError('You must specify a username (?u=...).', 400);
+            $this->returnClientError('You must specify a username (?u=...).');
         }
 
         foreach($html->find('div.streamItem-answer') as $element) {

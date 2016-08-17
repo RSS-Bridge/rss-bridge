@@ -12,7 +12,7 @@ class LWNprevBridge extends BridgeAbstract{
     $this->name = 'LWN Free Weekly Edition';
     $this->uri = 'https://lwn.net/free/bigpage';
     $this->description = 'LWN Free Weekly Edition available one week late';
-    $this->update = '2016-08-09';
+    $this->update = '2016-08-17';
 
   }
 
@@ -53,7 +53,7 @@ class LWNprevBridge extends BridgeAbstract{
     }
 
     $html=file_get_contents($uri, false, $context)
-      or $this->returnError('No results for LWNprev', 404);
+      or $this->returnServerError('No results for LWNprev');
 
     libxml_use_internal_errors(true);
     $html=DOMDocument::loadHTML($html);

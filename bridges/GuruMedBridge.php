@@ -6,7 +6,7 @@ class GuruMedBridge extends BridgeAbstract{
 		$this->name = "GuruMed";
 		$this->uri = "http://www.gurumed.org";
 		$this->description = "Returns the 5 newest posts from Gurumed (full text)";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 	}
 
 	private function GurumedStripCDATA($string) {
@@ -16,7 +16,7 @@ class GuruMedBridge extends BridgeAbstract{
 	}
 
 	public function collectData(array $param){
-		$html = $this->file_get_html('http://gurumed.org/feed') or $this->returnError('Could not request Gurumed.', 404);
+		$html = $this->file_get_html('http://gurumed.org/feed') or $this->returnServerError('Could not request Gurumed.');
 		$limit = 0;
 
 		foreach($html->find('item') as $element) {

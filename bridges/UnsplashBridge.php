@@ -7,7 +7,7 @@ class UnsplashBridge extends BridgeAbstract {
 		$this->name = "Unsplash Bridge";
 		$this->uri = "http://unsplash.com/";
 		$this->description = "Returns the latests photos from Unsplash";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -44,7 +44,7 @@ class UnsplashBridge extends BridgeAbstract {
 
         for ($page = 1; $page <= $lastpage; $page++) {
             $link = $baseUri.'/grid?page='.$page;
-            $html = $this->file_get_html($link) or $this->returnError('No results for this query.', 404);
+            $html = $this->file_get_html($link) or $this->returnServerError('No results for this query.');
 
             if ($page === 1) {
                 preg_match('/=(\d+)$/', $html->find('.pagination > a[!class]', -1)->href, $matches);

@@ -7,7 +7,7 @@ class FlickrTagBridge extends BridgeAbstract{
 		$this->name = "Flickr TagUser";
 		$this->uri = "http://www.flickr.com/";
 		$this->description = "Returns the tagged or user images from Flickr";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters["By keyword"] =
 		'[
@@ -27,18 +27,18 @@ class FlickrTagBridge extends BridgeAbstract{
 	}
 
     public function collectData(array $param){
-        $html = $this->file_get_html('http://www.flickr.com/search/?q=vendee&s=rec') or $this->returnError('Could not request Flickr.', 404);
+        $html = $this->file_get_html('http://www.flickr.com/search/?q=vendee&s=rec') or $this->returnServerError('Could not request Flickr.');
         if (isset($param['q'])) {   /* keyword search mode */
             $this->request = $param['q'];
-            $html = $this->file_get_html('http://www.flickr.com/search/?q='.urlencode($this->request).'&s=rec') or $this->returnError('No results for this query.', 404);
+            $html = $this->file_get_html('http://www.flickr.com/search/?q='.urlencode($this->request).'&s=rec') or $this->returnServerError('No results for this query.');
         }
         elseif (isset($param['u'])) {   /* user timeline mode */
             $this->request = $param['u'];
-            $html = $this->file_get_html('http://www.flickr.com/photos/'.urlencode($this->request).'/') or $this->returnError('Requested username can\'t be found.', 404);
+            $html = $this->file_get_html('http://www.flickr.com/photos/'.urlencode($this->request).'/') or $this->returnServerError('Requested username can\'t be found.');
         }
         
         else {
-            $this->returnError('You must specify a keyword or a Flickr username.', 400);
+            $this->returnClientError('You must specify a keyword or a Flickr username.');
         }
 
         foreach($html->find('span.photo_container') as $element) {

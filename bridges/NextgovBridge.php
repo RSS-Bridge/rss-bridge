@@ -7,7 +7,7 @@ class NextgovBridge extends BridgeAbstract {
         $this->name = 'Nextgov Bridge';
         $this->uri = 'https://www.nextgov.com/';
         $this->description = 'USA Federal technology news, best practices, and web 2.0 tools.';
-        $this->update = '2016-08-09';
+        $this->update = '2016-08-17';
 
         $this->parameters[] =
         '[
@@ -55,9 +55,9 @@ class NextgovBridge extends BridgeAbstract {
         if (empty($category))
             $category = 'all';
         if ($category !== preg_replace('/[^a-z-]+/', '', $category) || strlen($category > 32))
-            $this->returnError('Invalid "category" parameter.', 400);
+            $this->returnClientError('Invalid "category" parameter.');
         $url = $this->getURI().'rss/'.$category.'/';
-        $html = $this->file_get_html($url) or $this->returnError('Could not request Nextgov: '.$url, 500);
+        $html = $this->file_get_html($url) or $this->returnServerError('Could not request Nextgov: '.$url);
         $limit = 0;
 
         foreach ($html->find('item') as $element) {
@@ -69,7 +69,7 @@ class NextgovBridge extends BridgeAbstract {
                 $article_subtitle = $element->find('description', 0)->plaintext;
                 $article_timestamp = strtotime($element->find('pubDate', 0)->plaintext);
                 $article_thumbnail = ExtractFromDelimiters($element->innertext, '<media:content url="', '"');
-                $article = $this->file_get_html($article_url) or $this->returnError('Could not request Nextgov: '.$article_url, 500);
+                $article = $this->file_get_html($article_url) or $this->returnServerError('Could not request Nextgov: '.$article_url);
 
                 $contents = $article->find('div.wysiwyg', 0)->innertext;
                 $contents = StripWithDelimiters($contents, '<div class="ad-container">', '</div>');

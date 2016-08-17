@@ -7,7 +7,7 @@ class ThePirateBayBridge extends BridgeAbstract{
 		$this->name = "The Pirate Bay";
 		$this->uri = "https://thepiratebay.org/";
 		$this->description = "Returns results for the keywords. You can put several list of keywords by separating them with a semicolon (e.g. \"one show;another show\")";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -56,14 +56,14 @@ class ThePirateBayBridge extends BridgeAbstract{
 
 
 		if (!isset($param['q']))
-			$this->returnError('You must specify keywords (?q=...)', 400);
+			$this->returnClientError('You must specify keywords (?q=...)');
 
         $keywordsList = explode(";",$param['q']); 
         foreach($keywordsList as $keywords){
-            $html = $this->file_get_html('https://thepiratebay.org/search/'.rawurlencode($keywords).'/0/3/0') or $this->returnError('Could not request TPB.', 404);
+            $html = $this->file_get_html('https://thepiratebay.org/search/'.rawurlencode($keywords).'/0/3/0') or $this->returnServerError('Could not request TPB.');
 
             if ($html->find('table#searchResult', 0) == FALSE)
-                $this->returnError('No result for query '.$keywords, 404);
+                $this->returnServerError('No result for query '.$keywords);
 
 
             foreach($html->find('tr') as $element) {

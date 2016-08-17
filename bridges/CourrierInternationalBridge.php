@@ -7,7 +7,7 @@ class CourrierInternationalBridge extends BridgeAbstract{
 		$this->name = "Courrier International Bridge";
 		$this->uri = "http://CourrierInternational.fr/";
 		$this->description = "Courrier International bridge";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 	}
 
@@ -15,7 +15,7 @@ class CourrierInternationalBridge extends BridgeAbstract{
 	
         $html = '';
 
-        $html = $this->file_get_html('http://www.courrierinternational.com/') or $this->returnError('Error.', 500);
+        $html = $this->file_get_html('http://www.courrierinternational.com/') or $this->returnServerError('Error.');
 	
 
 	

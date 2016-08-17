@@ -9,7 +9,7 @@ class CNETBridge extends BridgeAbstract {
         $this->name = 'CNET News';
         $this->uri = 'http://www.cnet.com/';
         $this->description = 'Returns the newest articles. <br /> You may specify a topic found in some section URLs, else all topics are selected.';
-        $this->update = '2016-08-09';
+        $this->update = '2016-08-17';
 
         $this->parameters[] =
         '[
@@ -51,7 +51,7 @@ class CNETBridge extends BridgeAbstract {
             $this->topicName = $param['topic'];
 
         $pageUrl = 'http://www.cnet.com/'.(empty($this->topicName) ? '' : 'topics/'.$this->topicName.'/');
-        $html = $this->file_get_html($pageUrl) or $this->returnError('Could not request CNET: '.$pageUrl, 500);
+        $html = $this->file_get_html($pageUrl) or $this->returnServerError('Could not request CNET: '.$pageUrl);
         $limit = 0;
 
         foreach($html->find('div.assetBody') as $element) {
@@ -64,7 +64,7 @@ class CNETBridge extends BridgeAbstract {
 
                 if (!empty($article_title) && !empty($article_uri) && strpos($article_uri, '/news/') !== false) {
 
-                    $article_html = $this->file_get_html($article_uri) or $this->returnError('Could not request CNET: '.$article_uri, 500);
+                    $article_html = $this->file_get_html($article_uri) or $this->returnServerError('Could not request CNET: '.$article_uri);
 
                     $article_content = trim(CleanArticle(ExtractFromDelimiters($article_html, '<div class="articleContent', '<footer>')));
 

@@ -7,7 +7,7 @@ class AllocineFRBridge extends BridgeAbstract{
         $this->name = "Allo Cine Bridge";
         $this->uri = "http://www.allocine.fr";
         $this->description = "Bridge for allocine.fr";
-        $this->update = "2016-08-15";
+        $this->update = '2016-08-17';
 
         $this->parameters[] = 
         '[
@@ -41,7 +41,7 @@ class AllocineFRBridge extends BridgeAbstract{
 
         // Check all parameters
         if(!isset($params['category']))
-            $this->returnError('You must specify a valid category (&category= )!', 400);
+            $this->returnClientError('You must specify a valid category (&category= )!');
 
         $category = '';
         switch($params['category']){
@@ -58,13 +58,13 @@ class AllocineFRBridge extends BridgeAbstract{
                 $category = 'Tueurs en Séries';
                 break;
             default:
-                $this->returnError('You must select a valid category!', 400);
+                $this->returnClientError('You must select a valid category!');
         }
 
         // Update bridge name to match selection
         $this->name .= ' : ' . $category;
 
-        $html = $this->file_get_html($this->uri) or $this->returnError("Could not request {$this->uri}!", 404);
+        $html = $this->file_get_html($this->uri) or $this->returnServerError("Could not request {$this->uri}!");
 
         foreach($html->find('figure.media-meta-fig') as $element)
         {

@@ -7,7 +7,7 @@ class LeBonCoinBridge extends BridgeAbstract{
 		$this->name = "LeBonCoin";
 		$this->uri = "http://www.leboncoin.fr";
 		$this->description = "Returns most recent results from LeBonCoin for a region, and optionally a category and a keyword .";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
             '[
@@ -239,7 +239,7 @@ class LeBonCoinBridge extends BridgeAbstract{
 		else {
 			$link = 'http://www.leboncoin.fr/' . $param['c'] . '/offres/' . $param['r'] . '/?f=a&th=1&q=' . urlencode($param['k']);
 		}
-		$html = $this->file_get_html($link) or $this->returnError('Could not request LeBonCoin.', 404);
+		$html = $this->file_get_html($link) or $this->returnServerError('Could not request LeBonCoin.');
 
 		$list = $html->find('.tabsContent', 0);
 		if($list === NULL) {

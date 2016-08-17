@@ -7,7 +7,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
         $this->name = 'Zone Telechargement Bridge';
         $this->uri = 'https://www.zone-telechargement.com/';
         $this->description = 'RSS proxy returning the newest releases.<br />You may specify a category found in RSS URLs, else main feed is selected.';
-        $this->update = "2016-08-06";
+        $this->update = '2016-08-17';
 
         $this->parameters[] =
         '[
@@ -31,7 +31,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
             $category = '/'.$param['category'].'/';
 
         $url = $this->getURI().$category.'rss.xml';
-        $html = $this->file_get_html($url) or $this->returnError('Could not request Zone Telechargement: '.$url, 500);
+        $html = $this->file_get_html($url) or $this->returnServerError('Could not request Zone Telechargement: '.$url);
 
         foreach($html->find('item') as $element) {
             $item = new \Item();

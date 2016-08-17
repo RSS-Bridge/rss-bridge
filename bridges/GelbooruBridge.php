@@ -7,7 +7,7 @@ class GelbooruBridge extends BridgeAbstract{
 		$this->name = "Gelbooru";
 		$this->uri = "http://gelbooru.com/";
 		$this->description = "Returns images from given page";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -34,7 +34,7 @@ class GelbooruBridge extends BridgeAbstract{
         if (isset($param['t'])) { 
             $tags = urlencode($param['t']); 
         }
-        $html = $this->file_get_html("http://gelbooru.com/index.php?page=post&s=list&tags=$tags&pid=$page") or $this->returnError('Could not request Gelbooru.', 404);
+        $html = $this->file_get_html("http://gelbooru.com/index.php?page=post&s=list&tags=$tags&pid=$page") or $this->returnServerError('Could not request Gelbooru.');
 
 
 	foreach($html->find('div[class=content] span') as $element) {

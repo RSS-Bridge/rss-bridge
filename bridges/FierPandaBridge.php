@@ -7,14 +7,14 @@ Class FierPandaBridge extends BridgeAbstract{
         $this->name = "Fier Panda Bridge";
         $this->uri = "http://www.fier-panda.fr/";
         $this->description = "Returns latest articles from Fier Panda.";
-        $this->update = "2016-08-09";
+        $this->update = '2016-08-17';
 
     }
 
     public function collectData(array $param){
         $link = 'http://www.fier-panda.fr/';
 
-        $html = $this->file_get_html($link) or $this->returnError('Could not request Fier Panda.', 404);
+        $html = $this->file_get_html($link) or $this->returnServerError('Could not request Fier Panda.');
 
         foreach($html->find('div.container-content article') as $element) {
             $item = new \Item();

@@ -7,7 +7,7 @@ class LinkedInCompany extends BridgeAbstract{
 		$this->name = "LinkedIn Company";
 		$this->uri = "https://www.linkedin.com/";
 		$this->description = "Returns most recent actus from Company on LinkedIn. (https://www.linkedin.com/company/<strong style=\"font-weight:bold;\">apple</strong>)";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -22,7 +22,7 @@ class LinkedInCompany extends BridgeAbstract{
         $html = '';
         $link = 'https://www.linkedin.com/company/'.$param[c];
 
-        $html = $this->file_get_html($link) or $this->returnError('Could not request LinkedIn.', 404);
+        $html = $this->file_get_html($link) or $this->returnServerError('Could not request LinkedIn.');
 
         foreach($html->find('//*[@id="my-feed-post"]/li') as $element) {
             $title = $element->find('span.share-body', 0)->innertext;

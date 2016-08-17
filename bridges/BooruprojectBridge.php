@@ -7,7 +7,7 @@ class BooruprojectBridge extends BridgeAbstract{
 		$this->name = "Booruproject";
 		$this->uri = "http://booru.org/";
 		$this->description = "Returns images from given page and booruproject instance (****.booru.org)";
-		$this->update = "2016-08-15";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -41,9 +41,9 @@ class BooruprojectBridge extends BridgeAbstract{
             $tags = '&tags='.urlencode($param['t']); 
         }
 	if (empty($param['i'])) {
-		$this->returnError('Please enter a ***.booru.org instance.', 404);
+		$this->returnServerError('Please enter a ***.booru.org instance.');
 	}
-        $html = $this->file_get_html("http://".$param['i'].".booru.org/index.php?page=post&s=list&pid=".$page.$tags) or $this->returnError('Could not request Booruproject.', 404);
+        $html = $this->file_get_html("http://".$param['i'].".booru.org/index.php?page=post&s=list&pid=".$page.$tags) or $this->returnServerError('Could not request Booruproject.');
 
 
 	foreach($html->find('div[class=content] span') as $element) {

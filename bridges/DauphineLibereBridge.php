@@ -7,7 +7,7 @@ class DauphineLibereBridge extends BridgeAbstract {
 		$this->name = "Dauphine Bridge";
 		$this->uri = "http://www.ledauphine.com/";
 		$this->description = "Returns the newest articles.";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -102,10 +102,10 @@ class DauphineLibereBridge extends BridgeAbstract {
 
 		if (isset($param['u'])) { /* user timeline mode */
 			$this->request = $param['u'];
-			$html = $this->file_get_html('http://www.ledauphine.com/'.$this->request.'/rss', false, $context) or $this->returnError('Could not request DauphineLibere.', 404);
+			$html = $this->file_get_html('http://www.ledauphine.com/'.$this->request.'/rss', false, $context) or $this->returnServerError('Could not request DauphineLibere.');
 		}
 		else {
-			$html = $this->file_get_html('http://www.ledauphine.com/rss', false, $context) or $this->returnError('Could not request DauphineLibere.', 404);
+			$html = $this->file_get_html('http://www.ledauphine.com/rss', false, $context) or $this->returnServerError('Could not request DauphineLibere.');
 		}
 		$limit = 0;
 

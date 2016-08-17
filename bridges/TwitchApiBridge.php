@@ -13,7 +13,7 @@ class TwitchApiBridge extends BridgeAbstract{
 		$this->name = "Twitch API Bridge";
 		$this->uri = "http://www.twitch.tv";
 		$this->description = "Returns the newest broadcasts or highlights by channel name using the Twitch API (v3)";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters["Get channel without limit"] =
 		'[
@@ -89,7 +89,7 @@ class TwitchApiBridge extends BridgeAbstract{
 		if(isset($param['channel'])) {
 			$channel = $param['channel'];
 		} else {
-			$this->returnError('You must specify a valid channel name! Received: &channel=' . $param['channel'], 400);
+			$this->returnClientError('You must specify a valid channel name! Received: &channel=' . $param['channel']);
 		}
 		
 		$this->channel = $channel;
@@ -98,7 +98,7 @@ class TwitchApiBridge extends BridgeAbstract{
 			try {
 				$limit = (int)$param['limit'];
 			} catch (Exception $e){
-				$this->returnError('The limit you specified is not valid! Received: &limit=' . $param['limit'] . ' Expected: &limit=<num> where <num> is any integer number.', 400);
+				$this->returnClientError('The limit you specified is not valid! Received: &limit=' . $param['limit'] . ' Expected: &limit=<num> where <num> is any integer number.');
 			}
 		} else {
 			$limit = TWITCH_LIMIT;
@@ -114,7 +114,7 @@ class TwitchApiBridge extends BridgeAbstract{
 		if(isset($param['broadcasts']) && ($param['broadcasts'] == 'true' || $param['broadcasts'] == 'false')) {
 			$broadcasts = $param['broadcasts'];
 		} else {
-			$this->returnError('The value for broadcasts you specified is not valid! Received: &broadcasts=' . $param['broadcasts'] . ' Expected: &broadcasts=false or &broadcasts=true', 400);
+			$this->returnClientError('The value for broadcasts you specified is not valid! Received: &broadcasts=' . $param['broadcasts'] . ' Expected: &broadcasts=false or &broadcasts=true');
 		}
 		
 		// Build the initial request, see also: https://github.com/justintv/Twitch-API/blob/master/v3_resources/videos.md#get-channelschannelvideos
@@ -131,7 +131,7 @@ class TwitchApiBridge extends BridgeAbstract{
 			$response = file_get_contents($request, false, $context);
 			
 			if($response == false) { 
-				$this->returnError('Request failed! Check if the channel name is valid!', 400); 
+				$this->returnServerError('Request failed! Check if the channel name is valid!'); 
 			}
 			
 			$data = json_decode($response);

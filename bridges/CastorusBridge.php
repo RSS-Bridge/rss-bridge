@@ -5,7 +5,7 @@ class CastorusBridge extends BridgeAbstract {
 		$this->name = "Castorus Bridge";
 		$this->uri = 'http://www.castorus.com';
 		$this->description = "Returns the latest changes";
-		$this->update = "2016-08-15";
+		$this->update = '2016-08-17';
 
 		$this->parameters["Get latest changes"] = '[]';
 		$this->parameters["Get latest changes via ZIP code"] = 
@@ -37,7 +37,7 @@ class CastorusBridge extends BridgeAbstract {
 		$title = $activity->find('a', 0);
 
 		if(!$title)
-			$this->returnError('Cannot find title!', 404);
+			$this->returnServerError('Cannot find title!');
 		
 		return htmlspecialchars(trim($title->plaintext));
 	}
@@ -47,7 +47,7 @@ class CastorusBridge extends BridgeAbstract {
 		$url = $activity->find('a', 0);
 
 		if(!$url)
-			$this->returnError('Cannot find url!', 404);
+			$this->returnServerError('Cannot find url!');
 		
 		return $this->uri . $url->href;
 	}
@@ -59,7 +59,7 @@ class CastorusBridge extends BridgeAbstract {
 		$nodes = $activity->find('*');
 
 		if(!$nodes)
-			$this->returnError('Cannot find nodes!', 404);
+			$this->returnServerError('Cannot find nodes!');
 		
 		foreach($nodes as $node){
 			$node->outertext = '';
@@ -73,7 +73,7 @@ class CastorusBridge extends BridgeAbstract {
 		$price = $activity->find('span', 1);
 
 		if(!$price)
-			$this->returnError('Cannot find price!', 404);
+			$this->returnServerError('Cannot find price!');
 		
 		return $price->innertext;
 	}
@@ -88,12 +88,12 @@ class CastorusBridge extends BridgeAbstract {
 		$html = $this->file_get_html($this->uri);
 
 		if(!$html)
-			$this->returnError('Could not load data from ' . $this->uri . '!', 404);
+			$this->returnServerError('Could not load data from ' . $this->uri . '!');
 		
 		$activities = $html->find('div#activite/li');
 
 		if(!$activities)
-			$this->returnError('Failed to find activities!', 404);
+			$this->returnServerError('Failed to find activities!');
 		
 		foreach($activities as $activity){
 			$item = new \Item();

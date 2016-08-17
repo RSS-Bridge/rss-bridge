@@ -6,11 +6,11 @@ class MondeDiploBridge extends BridgeAbstract{
 		$this->name = 'Monde Diplomatique';
 		$this->uri = 'http://www.monde-diplomatique.fr';
 		$this->description = "Returns most recent results from MondeDiplo.";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 	}
 
 	public function collectData(array $param){	
-		$html = $this->file_get_html($this->uri) or $this->returnError('Could not request MondeDiplo. for : ' . $link , 404);
+		$html = $this->file_get_html($this->uri) or $this->returnServerError('Could not request MondeDiplo. for : ' . $link);
 
 		foreach($html->find('div.unarticle') as $article) {
 			$element = $article->parent();

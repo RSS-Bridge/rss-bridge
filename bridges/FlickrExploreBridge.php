@@ -7,12 +7,12 @@ class FlickrExploreBridge extends BridgeAbstract{
 		$this->name = "Flickr Explore";
 		$this->uri = "https://www.flickr.com/explore";
 		$this->description = "Returns the latest interesting images from Flickr";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 	}
 
     public function collectData(array $param){
-        $html = $this->file_get_html('https://www.flickr.com/explore') or $this->returnError('Could not request Flickr.', 404);
+        $html = $this->file_get_html('https://www.flickr.com/explore') or $this->returnServerError('Could not request Flickr.');
 
         foreach($html->find('.photo-list-photo-view') as $element) {
 						// Get the styles
@@ -26,7 +26,7 @@ class FlickrExploreBridge extends BridgeAbstract{
 						$imageID = reset($imageURIs);
 
 						// Get the image JSON via Flickr API
-						$imageJSON = json_decode(file_get_contents('https://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=103b574d49bd51f0e18bfe907da44a0f&photo_id='.$imageID.'&format=json&nojsoncallback=1')) or $this->returnError('Could not request Flickr.', 404); // FIXME: Request time too long...
+						$imageJSON = json_decode(file_get_contents('https://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=103b574d49bd51f0e18bfe907da44a0f&photo_id='.$imageID.'&format=json&nojsoncallback=1')) or $this->returnServerError('Could not request Flickr.'); // FIXME: Request time too long...
 
             $item = new \Item();
             $item->uri = 'https://flickr.com/photo.gne?id='.$imageID;

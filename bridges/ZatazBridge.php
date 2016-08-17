@@ -7,12 +7,12 @@ class ZatazBridge extends BridgeAbstract {
 		$this->name = 'Zataz Magazine';
 		$this->uri = 'http://www.zataz.com';
 		$this->description = "ZATAZ Magazine - S'informer, c'est déjà se sécuriser";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 	}
 
 	public function collectData(array $param) {
-		$html = $this->file_get_html($this->uri) or $this->returnError('Could not request ' . $this->uri, 404);
+		$html = $this->file_get_html($this->uri) or $this->returnServerError('Could not request ' . $this->uri);
 
 		$recent_posts = $html->find('#recent-posts-3', 0)->find('ul', 0)->find('li');
 		foreach ($recent_posts as $article) {

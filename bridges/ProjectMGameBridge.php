@@ -7,14 +7,14 @@ class ProjectMGameBridge extends BridgeAbstract{
 		$this->name = "Project M Game Bridge";
 		$this->uri = "http://projectmgame.com/en/";
 		$this->description = "Returns the newest articles.";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 	}
 
 
   public function collectData(array $param){
     $html = '';
-    $html = $this->file_get_html('http://projectmgame.com/en/') or $this->returnError('Error while downloading the Project M homepage', 404);
+    $html = $this->file_get_html('http://projectmgame.com/en/') or $this->returnServerError('Error while downloading the Project M homepage');
 
     foreach($html->find('article') as $article) {
       $item = new \Item();

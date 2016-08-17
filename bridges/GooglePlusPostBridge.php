@@ -10,7 +10,7 @@ class GooglePlusPostBridge extends BridgeAbstract
 		$this->name = "Google Plus Post Bridge";
 		$this->uri = "http://plus.google.com/";
 		$this->description = "Returns user public post (without API).";
-		$this->update = "2014-07-20";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -28,7 +28,7 @@ class GooglePlusPostBridge extends BridgeAbstract
 	{
 		if (!isset($param['username']))
 		{
-			$this->returnError('You must specify a username (?username=...).', 400);
+			$this->returnClientError('You must specify a username (?username=...).');
 		}
 
 		$this->request = $param['username'];
@@ -39,7 +39,7 @@ class GooglePlusPostBridge extends BridgeAbstract
 			, false, stream_context_create(array('http'=> array(
 			'header'    => 'Accept-Language: fr,fr-be,fr-fr;q=0.8,en;q=0.4,en-us;q=0.2;*' . "\r\n"
 			)))
-		) OR $this->returnError('No results for this query.', 404);
+		) OR $this->returnServerError('No results for this query.');
 
 		// get title, url, ... there is a lot of intresting stuff in meta
 		$this->_title = $html->find('meta[property]', 0)->getAttribute('content');

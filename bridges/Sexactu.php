@@ -7,7 +7,7 @@ class Sexactu extends BridgeAbstract{
 		$this->name = "Sexactu";
 		$this->uri = "http://www.gqmagazine.fr";
 		$this->description = "Sexactu via rss-bridge";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 	}
 
@@ -15,7 +15,7 @@ class Sexactu extends BridgeAbstract{
 $find = array('janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'novembre', 'décembre');
 $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
 
-    $html = $this->file_get_html($this->getURI()) or $this->returnError('Could not request '.$this->getURI(), 404);
+    $html = $this->file_get_html($this->getURI()) or $this->returnServerError('Could not request '.$this->getURI());
 
         foreach($html->find('.content-holder') as $contentHolder) {
             // only use first list as second one only contains pages numbers 

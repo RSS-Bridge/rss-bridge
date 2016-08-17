@@ -14,7 +14,7 @@ class YoutubeBridge extends BridgeAbstract {
 		$this->uri = 'https://www.youtube.com/';
 		$this->description = 'Returns the 10 newest videos by username/channel/playlist or search';
 		$this->maintainer = 'mitsukarenai';
-		$this->update = '2016-08-15';
+		$this->update = '2016-08-17';
 
 		$this->parameters['By username'] =
 		'[
@@ -142,13 +142,13 @@ class YoutubeBridge extends BridgeAbstract {
 				$this->ytBridgeParseXmlFeed($xml);
 			} else if ($html = $this->file_get_html($url_listing)) {
 				$this->ytBridgeParseHtmlListing($html, 'li.channels-content-item', 'h3');
-			} else $this->returnError("Could not request YouTube. Tried:\n - $url_feed\n - $url_listing", 500);
+			} else $this->returnServerError("Could not request YouTube. Tried:\n - $url_feed\n - $url_listing");
 		}
 
 		else if (isset($param['p'])) { /* playlist mode */
 			$this->request = $param['p'];
 			$url_listing = $this->uri.'playlist?list='.urlencode($this->request);
-			$html = $this->file_get_html($url_listing) or $this->returnError("Could not request YouTube. Tried:\n - $url_listing", 500);
+			$html = $this->file_get_html($url_listing) or $this->returnServerError("Could not request YouTube. Tried:\n - $url_listing");
 			$this->ytBridgeParseHtmlListing($html, 'tr.pl-video', '.pl-video-title a');
 			$this->request = 'Playlist: '.str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
 		}
@@ -156,13 +156,13 @@ class YoutubeBridge extends BridgeAbstract {
 		else if (isset($param['s'])) { /* search mode */
 			$this->request = $param['s']; $page = 1; if (isset($param['pa'])) $page = (int)preg_replace("/[^0-9]/",'', $param['pa']); 
 			$url_listing = $this->uri.'results?search_query='.urlencode($this->request).'&page='.$page.'&filters=video&search_sort=video_date_uploaded';
-			$html = $this->file_get_html($url_listing) or $this->returnError("Could not request YouTube. Tried:\n - $url_listing", 500);
+			$html = $this->file_get_html($url_listing) or $this->returnServerError("Could not request YouTube. Tried:\n - $url_listing");
 			$this->ytBridgeParseHtmlListing($html, 'div.yt-lockup', 'h3');
 			$this->request = 'Search: '.str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
 		}
 
 		else { /* no valid mode */
-			$this->returnError("You must either specify either:\n - YouTube username (?u=...)\n - Channel id (?c=...)\n - Playlist id (?p=...)\n - Search (?s=...)", 400);
+			$this->returnClientError("You must either specify either:\n - YouTube username (?u=...)\n - Channel id (?c=...)\n - Playlist id (?p=...)\n - Search (?s=...)");
 		}
 	}
 

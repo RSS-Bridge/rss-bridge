@@ -7,7 +7,7 @@ class YandereBridge extends BridgeAbstract{
 		$this->name = "Yande.re";
 		$this->uri = "https://yande.re/";
 		$this->description = "Returns images from given page and tags";
-		$this->update = "2016-08-09";
+		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[
@@ -31,7 +31,7 @@ class YandereBridge extends BridgeAbstract{
         if (isset($param['t'])) { 
             $tags = urlencode($param['t']); 
         }
-        $html = $this->file_get_html("https://yande.re/post?page=$page&tags=$tags") or $this->returnError('Could not request Yandere.', 404);
+        $html = $this->file_get_html("https://yande.re/post?page=$page&tags=$tags") or $this->returnServerError('Could not request Yandere.');
 	$input_json = explode('Post.register(', $html);
 	foreach($input_json as $element)
 	 $data[] = preg_replace('/}\)(.*)/', '}', $element);

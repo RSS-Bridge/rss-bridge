@@ -7,7 +7,7 @@ class FuturaSciencesBridge extends BridgeAbstract {
         $this->name = 'Futura-Sciences Bridge';
         $this->uri = 'http://www.futura-sciences.com/';
         $this->description = 'Returns the newest articles.';
-        $this->update = '2016-08-09';
+        $this->update = '2016-08-17';
 
         $this->parameters[] =
         '[
@@ -167,18 +167,18 @@ class FuturaSciencesBridge extends BridgeAbstract {
         }
 
         if (empty($param['feed']))
-            $this->returnError('Please select a feed to display.'.$url, 400);
+            $this->returnClientError('Please select a feed to display.'.$url);
         if ($param['feed'] !== preg_replace('/[^a-zA-Z-\/]+/', '', $param['feed']) || substr_count($param['feed'], '/') > 1 || strlen($param['feed'] > 64))
-            $this->returnError('Invalid "feed" parameter.'.$url, 400);
+            $this->returnClientError('Invalid "feed" parameter.'.$url);
 
         $url = $this->getURI().'rss/'.$param['feed'].'.xml';
-        $html = $this->file_get_html($url) or $this->returnError('Could not request Futura-Sciences: '.$url, 500);
+        $html = $this->file_get_html($url) or $this->returnServerError('Could not request Futura-Sciences: '.$url);
         $limit = 0;
 
         foreach($html->find('item') as $element) {
             if ($limit < 10) {
                 $article_url = str_replace('#xtor=RSS-8', '', StripCDATA($element->find('guid', 0)->plaintext));
-                $article = $this->file_get_html($article_url) or $this->returnError('Could not request Futura-Sciences: '.$article_url, 500);
+                $article = $this->file_get_html($article_url) or $this->returnServerError('Could not request Futura-Sciences: '.$article_url);
                 $contents = $article->find('div.content', 0)->innertext;
 
                 foreach (array(
