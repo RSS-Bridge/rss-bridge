@@ -30,6 +30,14 @@ abstract class BridgeAbstract implements BridgeInterface{
         throw new \HttpException($message, $code);
     }
 
+    protected function returnClientError($message){
+        $this->returnError($message, 400);
+    }
+
+    protected function returnServerError($message){
+        $this->returnError($message, 500);
+    }
+
     /**
     * Return datas stored in the bridge
     * @return mixed
