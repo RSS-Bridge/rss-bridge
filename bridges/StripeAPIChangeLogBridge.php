@@ -20,7 +20,7 @@ class StripeAPIChangeLogBridge extends BridgeAbstract{
       or $this->returnServerError('No results for Stripe API Changelog');
 
 
-    foreach($html->find('h2') as $change){
+    foreach($html->find('h3') as $change){
       $item=new \Item();
       $item->title=trim($change->plaintext);
       $item->uri='https://stripe.com/docs/upgrades#'.$item->title;
