@@ -13,7 +13,7 @@ TODO :
 //define('PROXY_URL', 'tcp://192.168.0.0:28');
 // Set to true if you allow users to disable proxy usage for specific bridges
 define('PROXY_BYBRIDGE',false);
-// keep PROXY_NAME empty to display PROXY_URL instead
+// Comment this line or keep PROXY_NAME empty to display PROXY_URL instead
 define('PROXY_NAME','Hidden Proxy Name');
 
 date_default_timezone_set('UTC');
