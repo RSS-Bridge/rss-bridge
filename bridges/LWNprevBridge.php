@@ -52,11 +52,12 @@ class LWNprevBridge extends BridgeAbstract{
       $context = stream_context_create($context);
     }
 
-    $html=file_get_contents($uri, false, $context)
+    $content=file_get_contents($uri, false, $context)
       or $this->returnServerError('No results for LWNprev');
 
     libxml_use_internal_errors(true);
-    $html=DOMDocument::loadHTML($html);
+    $html=new DOMDocument();
+    $html->loadHTML($content);
     libxml_clear_errors();
 
     $cat1='';
@@ -101,7 +102,7 @@ class LWNprevBridge extends BridgeAbstract{
 
       $h2FirstChild=$h2->firstChild;
       $this->jumpToNextTag($h2FirstChild);
-      if($h2FirstChild->tagName==='a'){
+      if($h2FirstChild->nodeName==='a'){
         $item->uri='https://lwn.net'.$h2FirstChild->getAttribute('href');
       }else{
         $item->uri=$realURI.'#'.$URICounter;
@@ -145,8 +146,9 @@ class LWNprevBridge extends BridgeAbstract{
         if(
           !$node || (
             $node->nodeType!==XML_TEXT_NODE && (
-              $node->tagName==='h2' ||
-              in_array($node->getAttribute('class'),array('Cat1HL','Cat2HL'))
+              $node->nodeName==='h2' ||
+              (!is_null($node->attributes) && !is_null($class=$node->attributes->getNamedItem('class')) &&
+              in_array($class->nodeValue,array('Cat1HL','Cat2HL')))
             )
           )
         ){
