@@ -41,9 +41,9 @@ class ElsevierBridge extends BridgeAbstract{
 			*/
 			if(preg_match('/\S*(\d+\s\S+\s\d{4})/ims', $timestring, $matches)){
 				return strtotime($matches[0]);
-			} elseif (preg_match('/([A-Za-z]+\s\d{4})/ims', $timestring, $matches)){
-				return strtotime($matches[0]);
 			} elseif (preg_match('/[A-Za-z]+\-([A-Za-z]+\s\d{4})/ims', $timestring, $matches)){
+				return strtotime($matches[0]);
+			} elseif (preg_match('/([A-Za-z]+\s\d{4})/ims', $timestring, $matches)){
 				return strtotime($matches[0]);
 			} else {
 				return 0;
