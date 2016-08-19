@@ -120,7 +120,6 @@ try{
                     ){
                       $bridge->useProxy=false;
                     }
-                    $bridge->setDatas($_REQUEST);
 					$bridge->loadMetadatas();
                     $bridge->setDatas($_REQUEST);
                     // Data transformation
