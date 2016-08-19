@@ -16,7 +16,7 @@ class LeJournalDuGeekBridge extends BridgeAbstract{
 	}
 
 	private function LeJournalDuGeekExtractContent($url) {
-		$articleHTMLContent = $this->file_get_html($url);
+		$articleHTMLContent = $this->getSimpleHMLDOM($url);
 		$text = $articleHTMLContent->find('div.post-content', 0)->innertext;
 
 		foreach($articleHTMLContent->find('a.more') as $element) {
@@ -38,7 +38,7 @@ class LeJournalDuGeekBridge extends BridgeAbstract{
 	}
 
 	public function collectData(array $param){
-		$rssFeed = $this->file_get_html('http://www.journaldugeek.com/rss') or $this->returnServerError('Could not request http://www.journaldugeek.com/rss');
+		$rssFeed = $this->getSimpleHTMLDOM('http://www.journaldugeek.com/rss') or $this->returnServerError('Could not request http://www.journaldugeek.com/rss');
 		$limit = 0;
 
 		foreach($rssFeed->find('item') as $element) {

@@ -10,7 +10,7 @@ class CommonDreamsBridge extends BridgeAbstract{
 	}
 
 	private function CommonDreamsExtractContent($url) {
-		$html3 = $this->file_get_html($url);
+		$html3 = $this->getSimpleHTMLDOM($url);
 		$text = $html3->find('div[class=field--type-text-with-summary]', 0)->innertext;
 		$html3->clear();
 		unset ($html3);
@@ -25,7 +25,7 @@ class CommonDreamsBridge extends BridgeAbstract{
 			return $string;
 		}
 
-		$html = $this->file_get_html('http://www.commondreams.org/rss.xml') or $this->returnServerError('Could not request CommonDreams.');
+		$html = $this->getSimpleHTMLDOM('http://www.commondreams.org/rss.xml') or $this->returnServerError('Could not request CommonDreams.');
 		$limit = 0;
 		foreach($html->find('item') as $element) {
 			if($limit < 4) {

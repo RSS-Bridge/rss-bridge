@@ -65,7 +65,7 @@ class SensCritiqueBridge extends BridgeAbstract {
 
 	private function collectMoviesData() {
 		$html = '';
-    $html = $this->file_get_html('http://www.senscritique.com/films/cette-semaine') or $this->returnServerError('No results for this query.');
+    $html = $this->getSimpleHTMLDOM('http://www.senscritique.com/films/cette-semaine') or $this->returnServerError('No results for this query.');
 		$list = $html->find('ul.elpr-list', 0);
 
 		$this->extractDataFromList($list);
@@ -73,7 +73,7 @@ class SensCritiqueBridge extends BridgeAbstract {
 
 	private function collectSeriesData() {
 		$html = '';
-		$html = $this->file_get_html('http://www.senscritique.com/series/actualite') or $this->returnServerError('No results for this query.');
+		$html = $this->getSimpleHTMLDOM('http://www.senscritique.com/series/actualite') or $this->returnServerError('No results for this query.');
 		$list = $html->find('ul.elpr-list', 0);
 
 		$this->extractDataFromList($list);
@@ -81,7 +81,7 @@ class SensCritiqueBridge extends BridgeAbstract {
 
 	private function collectGamesData() {
 		$html = '';
-		$html = $this->file_get_html('http://www.senscritique.com/jeuxvideo/actualite') or $this->returnServerError('No results for this query.');
+		$html = $this->getSimpleHTMLDOM('http://www.senscritique.com/jeuxvideo/actualite') or $this->returnServerError('No results for this query.');
 		$list = $html->find('ul.elpr-list', 0);
 
 		$this->extractDataFromList($list);
@@ -89,7 +89,7 @@ class SensCritiqueBridge extends BridgeAbstract {
 
 	private function collectBooksData() {
 		$html = '';
-		$html = $this->file_get_html('http://www.senscritique.com/livres/actualite') or $this->returnServerError('No results for this query.');
+		$html = $this->getSimpleHTMLDOM('http://www.senscritique.com/livres/actualite') or $this->returnServerError('No results for this query.');
 		$list = $html->find('ul.elpr-list', 0);
 
 		$this->extractDataFromList($list);
@@ -97,7 +97,7 @@ class SensCritiqueBridge extends BridgeAbstract {
 
 	private function collectBDsData() {
 		$html = '';
-		$html = $this->file_get_html('http://www.senscritique.com/bd/actualite') or $this->returnServerError('No results for this query.');
+		$html = $this->getSimpleHTMLDOM('http://www.senscritique.com/bd/actualite') or $this->returnServerError('No results for this query.');
 		$list = $html->find('ul.elpr-list', 0);
 
 		$this->extractDataFromList($list);
@@ -105,7 +105,7 @@ class SensCritiqueBridge extends BridgeAbstract {
 
 	private function collectMusicsData() {
 		$html = '';
-		$html = $this->file_get_html('http://www.senscritique.com/musique/actualite') or $this->returnServerError('No results for this query.');
+		$html = $this->getSimpleHTMLDOM('http://www.senscritique.com/musique/actualite') or $this->returnServerError('No results for this query.');
 		$list = $html->find('ul.elpr-list', 0);
 
 		$this->extractDataFromList($list);

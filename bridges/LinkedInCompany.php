@@ -22,7 +22,7 @@ class LinkedInCompany extends BridgeAbstract{
         $html = '';
         $link = 'https://www.linkedin.com/company/'.$param[c];
 
-        $html = $this->file_get_html($link) or $this->returnServerError('Could not request LinkedIn.');
+        $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request LinkedIn.');
 
         foreach($html->find('//*[@id="my-feed-post"]/li') as $element) {
             $title = $element->find('span.share-body', 0)->innertext;

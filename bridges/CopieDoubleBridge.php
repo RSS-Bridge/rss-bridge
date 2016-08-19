@@ -13,9 +13,9 @@ class CopieDoubleBridge extends BridgeAbstract{
 
 
     public function collectData(array $param){
-        $html = $this->file_get_html('http://www.copie-double.com/') or $this->returnServerError('Could not request CopieDouble.');
+        $html = $this->getSimpleHTMLDOM('http://www.copie-double.com/') or $this->returnServerError('Could not request CopieDouble.');
         $table = $html->find('table table', 2);
-        
+
         foreach($table->find('tr') as $element)
         {
             $td = $element->find('td', 0);
@@ -23,7 +23,7 @@ class CopieDoubleBridge extends BridgeAbstract{
             if($td->class == "couleur_1")
             {
                 $item = new Item();
-                
+
                 $title = $td->innertext;
                 $pos = strpos($title, "<a");
                 $title = substr($title, 0, $pos);
@@ -33,7 +33,7 @@ class CopieDoubleBridge extends BridgeAbstract{
             {
                 $a=$element->find("a", 0);
                 $item->uri = "http://www.copie-double.com" . $a->href;
-                
+
                 $content = str_replace('src="/', 'src="http://www.copie-double.com/',$element->find("td", 0)->innertext);
                 $content = str_replace('href="/', 'href="http://www.copie-double.com/',$content);
                 $item->content = $content;

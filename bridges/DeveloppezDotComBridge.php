@@ -15,7 +15,7 @@ class DeveloppezDotComBridge extends BridgeAbstract{
 		return $string;
 	}
 
-	// F***ing quotes from Microsoft Word badly encoded, here was the trick: 
+	// F***ing quotes from Microsoft Word badly encoded, here was the trick:
 	// http://stackoverflow.com/questions/1262038/how-to-replace-microsoft-encoded-quotes-in-php
 	private function convert_smart_quotes($string)
 	{
@@ -35,14 +35,14 @@ class DeveloppezDotComBridge extends BridgeAbstract{
 	}
 
 	private function DeveloppezDotComExtractContent($url) {
-		$articleHTMLContent = $this->file_get_html($url);
+		$articleHTMLContent = $this->getSimpleHTMLDOM($url);
 		$text = $this->convert_smart_quotes($articleHTMLContent->find('div.content', 0)->innertext);
 		$text = utf8_encode($text);
 		return trim($text);
 	}
 
 	public function collectData(array $param){
-		$rssFeed = $this->file_get_html('http://www.developpez.com/index/rss') or $this->returnServerError('Could not request http://www.developpez.com/index/rss');
+		$rssFeed = $this->getSimpleHTMLDOM('http://www.developpez.com/index/rss') or $this->returnServerError('Could not request http://www.developpez.com/index/rss');
 		$limit = 0;
 
 		foreach($rssFeed->find('item') as $element) {

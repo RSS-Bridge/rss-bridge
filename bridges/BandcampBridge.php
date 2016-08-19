@@ -26,7 +26,7 @@ class BandcampBridge extends BridgeAbstract{
         $html = '';
         if (isset($param['tag'])) {
             $this->request = $param['tag'];
-            $html = $this->file_get_html('http://bandcamp.com/tag/'.urlencode($this->request).'?sort_field=date') or $this->returnServerError('No results for this query.');
+            $html = $this->getSimpleHTMLDOM('http://bandcamp.com/tag/'.urlencode($this->request).'?sort_field=date') or $this->returnServerError('No results for this query.');
         }
         else {
             $this->returnClientError('You must specify tag (/tag/...)');

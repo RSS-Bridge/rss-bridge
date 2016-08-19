@@ -20,7 +20,7 @@ class NeuviemeArtBridge extends BridgeAbstract {
         }
 
         $feedUrl = 'http://www.9emeart.fr/9emeart.rss';
-        $html = $this->file_get_html($feedUrl) or $this->returnServerError('Could not request 9eme Art: '.$feedUrl);
+        $html = $this->getSimpleHTMLDOM($feedUrl) or $this->returnServerError('Could not request 9eme Art: '.$feedUrl);
         $limit = 0;
 
         foreach ($html->find('item') as $element) {
@@ -28,7 +28,7 @@ class NeuviemeArtBridge extends BridgeAbstract {
 
                 //Retrieve article Uri and get that page
                 $article_uri = $element->find('guid', 0)->plaintext;
-                $article_html = $this->file_get_html($article_uri) or $this->returnServerError('Could not request 9eme Art: '.$article_uri);
+                $article_html = $this->getSimpleHTMLDOM($article_uri) or $this->returnServerError('Could not request 9eme Art: '.$article_uri);
 
                 //Build article contents from corresponding elements
                 $article_title = trim($element->find('title', 0)->plaintext);

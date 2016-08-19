@@ -20,7 +20,7 @@ class NumeramaBridge extends BridgeAbstract{
         }
 
         $feed = $this->uri.'feed/';
-        $html = $this->file_get_html($feed) or $this->returnServerError('Could not request Numerama: '.$feed);
+        $html = $this->getSimpleHTMLDOM($feed) or $this->returnServerError('Could not request Numerama: '.$feed);
         $limit = 0;
 
         foreach($html->find('item') as $element) {
@@ -32,7 +32,7 @@ class NumeramaBridge extends BridgeAbstract{
                 $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
 
                 $article_url = NumeramaStripCDATA($element->find('guid', 0)->plaintext);
-                $article_html = $this->file_get_html($article_url) or $this->returnServerError('Could not request Numerama: '.$article_url);
+                $article_html = $this->getSimpleHTMLDOM($article_url) or $this->returnServerError('Could not request Numerama: '.$article_url);
                 $contents = $article_html->find('section[class=related-article]', 0)->innertext = ''; // remove related articles block
                 $contents = '<img alt="" style="max-width:300px;" src="'.$article_html->find('meta[property=og:image]', 0)->getAttribute('content').'">'; // add post picture
                 $contents = $contents.$article_html->find('article[class=post-content]', 0)->innertext; // extract the post
@@ -42,7 +42,6 @@ class NumeramaBridge extends BridgeAbstract{
                 $limit++;
             }
         }
-
     }
 
     public function getCacheDuration() {

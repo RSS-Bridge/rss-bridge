@@ -58,9 +58,9 @@ class ThePirateBayBridge extends BridgeAbstract{
 		if (!isset($param['q']))
 			$this->returnClientError('You must specify keywords (?q=...)');
 
-        $keywordsList = explode(";",$param['q']); 
+        $keywordsList = explode(";",$param['q']);
         foreach($keywordsList as $keywords){
-            $html = $this->file_get_html('https://thepiratebay.org/search/'.rawurlencode($keywords).'/0/3/0') or $this->returnServerError('Could not request TPB.');
+            $html = $this->getSimpleHTMLDOM('https://thepiratebay.org/search/'.rawurlencode($keywords).'/0/3/0') or $this->returnServerError('Could not request TPB.');
 
             if ($html->find('table#searchResult', 0) == FALSE)
                 $this->returnServerError('No result for query '.$keywords);

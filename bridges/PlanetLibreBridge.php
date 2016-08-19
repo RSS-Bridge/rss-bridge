@@ -10,13 +10,13 @@ class PlanetLibreBridge extends BridgeAbstract{
 	}
 
 	private function PlanetLibreExtractContent($url){
-		$html2 = $this->file_get_html($url);
+		$html2 = $this->geSimpleHTMLDOM($url);
 		$text = $html2->find('div[class="post-text"]', 0)->innertext;
 		return $text;
 	}
 
 	public function collectData(array $param){
-		$html = $this->file_get_html('http://www.planet-libre.org/') or $this->returnServerError('Could not request PlanetLibre.');
+		$html = $this->getSimpleHTMLDOM('http://www.planet-libre.org/') or $this->returnServerError('Could not request PlanetLibre.');
 		$limit = 0;
 		foreach($html->find('div.post') as $element) {
 			if($limit < 5) {

@@ -12,11 +12,11 @@ class FootitoBridge extends BridgeAbstract{
 	}
 
     public function collectData(array $param){
-        $html = $this->file_get_html('http://www.footito.fr/') or $this->returnServerError('Could not request Footito.');
-    
+        $html = $this->getSimpleHTMLDOM('http://www.footito.fr/') or $this->returnServerError('Could not request Footito.');
+
         foreach($html->find('div.post') as $element) {
             $item = new Item();
-            
+
             $content = trim($element->innertext);
             $content = str_replace("<img", "<img style='float : left;'", $content );
             $content = str_replace("class=\"logo\"", "style='float : left;'", $content );
@@ -27,17 +27,17 @@ class FootitoBridge extends BridgeAbstract{
             $content = str_replace("class=\"report-abuse-button\"", "style='display : none;'", $content );
             $content = str_replace("class=\"reaction clearfix\"", "style='margin : 10px 0px; padding : 5px; border-bottom : 1px #DDD solid;'", $content );
             $content = str_replace("class=\"infos\"", "style='font-size : 0.7em;'", $content );
-            
+
             $item->content = $content;
-            
+
             $title = $element->find('.contenu .texte ', 0)->plaintext;
             $item->title = $title;
-            
+
             $info = $element->find('div.infos', 0);
-            
+
             $item->timestamp = strtotime($info->find('time', 0)->datetime);
             $item->author = $info->find('a.auteur', 0)->plaintext;
-            
+
             $this->items[] = $item;
         }
     }

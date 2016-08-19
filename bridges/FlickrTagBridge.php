@@ -27,16 +27,16 @@ class FlickrTagBridge extends BridgeAbstract{
 	}
 
     public function collectData(array $param){
-        $html = $this->file_get_html('http://www.flickr.com/search/?q=vendee&s=rec') or $this->returnServerError('Could not request Flickr.');
+        $html = $this->getSimpleHTMLDOM('http://www.flickr.com/search/?q=vendee&s=rec') or $this->returnServerError('Could not request Flickr.');
         if (isset($param['q'])) {   /* keyword search mode */
             $this->request = $param['q'];
-            $html = $this->file_get_html('http://www.flickr.com/search/?q='.urlencode($this->request).'&s=rec') or $this->returnServerError('No results for this query.');
+            $html = $this->getSimpleHTMLDOM('http://www.flickr.com/search/?q='.urlencode($this->request).'&s=rec') or $this->returnServerError('No results for this query.');
         }
         elseif (isset($param['u'])) {   /* user timeline mode */
             $this->request = $param['u'];
-            $html = $this->file_get_html('http://www.flickr.com/photos/'.urlencode($this->request).'/') or $this->returnServerError('Requested username can\'t be found.');
+            $html = $this->getSimpleHTMLDOM('http://www.flickr.com/photos/'.urlencode($this->request).'/') or $this->returnServerError('Requested username can\'t be found.');
         }
-        
+
         else {
             $this->returnClientError('You must specify a keyword or a Flickr username.');
         }

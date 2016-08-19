@@ -28,7 +28,7 @@ class CryptomeBridge extends BridgeAbstract{
         // If you want HTTPS access instead, uncomment the following line:
         //$link = 'https://secure.netsolhost.com/cryptome.org/';
 
-        $html = $this->file_get_html($link) or $this->returnServerError('Could not request Cryptome.');
+        $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request Cryptome.');
         if (!empty($param['n'])) {   /* number of documents */
             $num = min(max(1, $param['n']+0), $num);
         }

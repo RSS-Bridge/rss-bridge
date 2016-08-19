@@ -134,10 +134,10 @@ class LeBonCoinBridge extends BridgeAbstract{
 				"type" : "list",
 				"values" : [
 						{ "name" : "---- Select ----", "value" : "" },
-						
+
 						{ "name" : "", "value" : "" },
 						{ "name" : "EMPLOI", "value" : "_emploi_" },
-						
+
 						{ "name" : "", "value" : "" },
 						{ "name" : "VEHICULES", "value" : "_vehicules_" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Voitures", "value" : "voitures" },
@@ -149,14 +149,14 @@ class LeBonCoinBridge extends BridgeAbstract{
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Equipement Caravaning", "value" : "equipement_caravaning" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Nautisme", "value" : "nautisme" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Equipement Nautisme", "value" : "equipement_nautisme" },
-							
+
 						{ "name" : "", "value" : "" },
 						{ "name" : "IMMOBILIER", "value" : "_immobilier_" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Ventes immobilieres", "value" : "ventes_immobilieres" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Locations", "value" : "locations" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Colocations", "value" : "colocations" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Bureaux &amp; Commerces", "value" : "bureaux_commerces" },
-							
+
 						{ "name" : "", "value" : "" },
 						{ "name" : "VACANCES", "value" : "_vacances_" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Locations gites", "value" : "locations_gites" },
@@ -164,14 +164,14 @@ class LeBonCoinBridge extends BridgeAbstract{
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Campings", "value" : "campings" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Hôtels", "value" : "hotels" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Hébergements insolites", "value" : "hebergements_insolites" },
-							
+
 						{ "name" : "", "value" : "" },
 						{ "name" : "MULTIMEDIA", "value" : "_multimedia_" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Informatique", "value" : "informatique" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Consoles & Jeux vidéo", "value" : "consoles_jeux_video" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Image & Son", "value" : "image_son" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Téléphonie", "value" : "telephonie" },
-							
+
 						{ "name" : "", "value" : "" },
 						{ "name" : "LOISIRS", "value" : "_loisirs_" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;DVD / Films", "value" : "dvd_films" },
@@ -184,7 +184,7 @@ class LeBonCoinBridge extends BridgeAbstract{
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Collection", "value" : "collection" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Jeux & Jouets", "value" : "jeux_jouets" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Vins & Gastronomie", "value" : "vins_gastronomie" },
-							
+
 						{ "name" : "", "value" : "" },
 						{ "name" : "MATERIEL PROFESSIONNEL", "value" : "_materiel_professionnel_" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Materiel Agricole", "value" : "materiel_agricole" },
@@ -196,7 +196,7 @@ class LeBonCoinBridge extends BridgeAbstract{
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Fournitures de Bureau", "value" : "fournitures_de_bureau" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Commerces & Marchés", "value" : "commerces_marches" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Matériel médical", "value" : "materiel_medical" },
-							
+
 						{ "name" : "", "value" : "" },
 						{ "name" : "SERVICES", "value" : "_services_" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Prestations de services", "value" : "prestations_de_services" },
@@ -204,7 +204,7 @@ class LeBonCoinBridge extends BridgeAbstract{
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Evénements", "value" : "evenements" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Cours particuliers", "value" : "cours_particuliers" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Covoiturage", "value" : "covoiturage" },
-							
+
 						{ "name" : "", "value" : "" },
 						{ "name" : "MAISON", "value" : "_maison_" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Ameublement", "value" : "ameublement" },
@@ -220,7 +220,7 @@ class LeBonCoinBridge extends BridgeAbstract{
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Montres & Bijoux", "value" : "montres_bijoux" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Equipement bébé", "value" : "equipement_bebe" },
 							{ "name" : "&nbsp;&nbsp;&nbsp;&nbsp;Vêtements bébé", "value" : "vetements_bebe" },
-							
+
 						{ "name" : "", "value" : "" },
 						{ "name" : "AUTRES", "value" : "autres" }
 				]
@@ -239,7 +239,7 @@ class LeBonCoinBridge extends BridgeAbstract{
 		else {
 			$link = 'http://www.leboncoin.fr/' . $param['c'] . '/offres/' . $param['r'] . '/?f=a&th=1&q=' . urlencode($param['k']);
 		}
-		$html = $this->file_get_html($link) or $this->returnServerError('Could not request LeBonCoin.');
+		$html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request LeBonCoin.');
 
 		$list = $html->find('.tabsContent', 0);
 		if($list === NULL) {

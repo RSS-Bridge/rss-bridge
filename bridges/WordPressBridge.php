@@ -33,7 +33,7 @@ class WordPressBridge extends BridgeAbstract {
 		return WORDPRESS_TYPE_ATOM; // Make ATOM default
 	}
 
-	// Replaces all 'link' tags with 'url' for simplehtmldom to actually find 'links' ('url')	
+	// Replaces all 'link' tags with 'url' for simplehtmldom to actually find 'links' ('url')
 	private function ReplaceLinkTagsWithUrlTags($element){
 		// We need to fix the 'link' tag as simplehtmldom cannot parse it (just rename it and load back as dom)
 		$element_text = $element->outertext;
@@ -64,7 +64,7 @@ class WordPressBridge extends BridgeAbstract {
 		}
 
 		$this->url = $this->url.'/feed/atom';
-		$html = $this->file_get_html($this->url) or $this->returnServerError("Could not request {$this->url}.");
+		$html = $this->getSimpleHTMLDOM($this->url) or $this->returnServerError("Could not request {$this->url}.");
 
 		// Notice: We requested an ATOM feed, however some sites return RSS feeds instead!
 		$type = $this->DetectContentType($html);
@@ -97,7 +97,7 @@ class WordPressBridge extends BridgeAbstract {
 						$item->timestamp = strtotime($article->find('updated', 0)->innertext);
 					}
 
-					$article_html = $this->file_get_html($item->uri);
+					$article_html = $this->getSimpleHTMLDOM($item->uri);
 
 					// Attempt to find most common content div
 					if(empty($item->content)){
@@ -126,7 +126,7 @@ class WordPressBridge extends BridgeAbstract {
 					$this->items[] = $item;
 					$i++;
 				}
-			} 
+			}
 		} else {
 			$this->returnServerError("Sorry, {$this->url} doesn't seem to be a Wordpress blog.");
 		}

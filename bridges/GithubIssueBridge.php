@@ -34,7 +34,7 @@ class GithubIssueBridge extends BridgeAbstract{
 
   public function collectData(array $param){
     $uri = 'https://github.com/'.$param['u'].'/'.$param['p'].'/issues/'.$param['i'];
-    $html = file_get_html($uri)
+    $html = $this->getSimpleHTMLDOM($uri)
       or $this->returnServerError('No results for Github Issue '.$param['i'].' in project '.$param['u'].'/'.$param['p']);
 
     foreach($html->find('.js-comment-container') as $comment){

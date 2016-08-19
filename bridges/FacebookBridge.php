@@ -109,9 +109,9 @@ class FacebookBridge extends BridgeAbstract{
 		if (is_null($html)) {
 			if (isset($param['u'])) {
 				if (!strpos($param['u'], "/")) {
-					$html = $this->file_get_html('https://www.facebook.com/'.urlencode($param['u']).'?_fb_noscript=1') or $this->returnServerError('No results for this query.');
+					$html = $this->getSimpleHTMLDOM('https://www.facebook.com/'.urlencode($param['u']).'?_fb_noscript=1') or $this->returnServerError('No results for this query.');
 				} else {
-					$html = $this->file_get_html('https://www.facebook.com/pages/'.$param['u'].'?_fb_noscript=1') or $this->returnServerError('No results for this query.');
+					$html = $this->getSimpleHTMLDOM('https://www.facebook.com/pages/'.$param['u'].'?_fb_noscript=1') or $this->returnServerError('No results for this query.');
 				}
 			} else {
 				$this->returnClientError('You must specify a Facebook username.');
@@ -155,7 +155,7 @@ class FacebookBridge extends BridgeAbstract{
 			$this->name = $author;
 
 			foreach($element->children() as $post) {
-			
+
 				$item = new \Item();
 
 				if (count($post->find('abbr')) > 0) {

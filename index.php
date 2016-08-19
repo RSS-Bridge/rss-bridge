@@ -11,6 +11,10 @@ TODO :
 */
 
 //define('PROXY_URL', 'tcp://192.168.0.0:28');
+// Set to true if you allow users to disable proxy usage for specific bridges
+define('PROXY_BYBRIDGE',false);
+// Comment this line or keep PROXY_NAME empty to display PROXY_URL instead
+define('PROXY_NAME','Hidden Proxy Name');
 
 date_default_timezone_set('UTC');
 error_reporting(0);
@@ -100,7 +104,7 @@ try{
 			// whitelist control
 			if(!Bridge::isWhitelisted($whitelist_selection, $bridge)) {
 				throw new \HttpException('This bridge is not whitelisted', 401);
-				die; 
+				die;
 			}
 
                     $cache = Cache::create('FileCache');
@@ -111,6 +115,12 @@ try{
                     } else {
                         $bridge->setCache($cache); // just add disable cache to your query to disable caching
                     }
+                    if(defined('PROXY_URL') && PROXY_BYBRIDGE &&
+                      isset($_REQUEST['_noproxy'])
+                    ){
+                      $bridge->useProxy=false;
+                    }
+                    $bridge->setDatas($_REQUEST);
 					$bridge->loadMetadatas();
                     $bridge->setDatas($_REQUEST);
                     // Data transformation

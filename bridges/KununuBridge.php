@@ -94,7 +94,7 @@ class KununuBridge extends BridgeAbstract{
 		$this->uri .= "/{$site}/{$company}/{$section}";
 
 		// Load page
-		$html = $this->file_get_html($this->uri);
+		$html = $this->getSimplHTMLDOM($this->uri);
 		if($html === false)
 			$this->returnServerError('Unable to receive data from ' . $this->uri . '!');
 
@@ -267,7 +267,7 @@ class KununuBridge extends BridgeAbstract{
 	*/
 	private function extract_full_description($uri){
 		// Load full article
-		$html = file_get_html($uri);
+		$html = $this->getSimpleHTMLDOM($uri);
 		if($html === false)
 			$this->returnServerError('Could not load full description!');
 

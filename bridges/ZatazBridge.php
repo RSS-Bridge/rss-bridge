@@ -12,7 +12,7 @@ class ZatazBridge extends BridgeAbstract {
 	}
 
 	public function collectData(array $param) {
-		$html = $this->file_get_html($this->uri) or $this->returnServerError('Could not request ' . $this->uri);
+		$html = $this->getSimpleHTMLDOM($this->uri) or $this->returnServerError('Could not request ' . $this->uri);
 
 		$recent_posts = $html->find('#recent-posts-3', 0)->find('ul', 0)->find('li');
 		foreach ($recent_posts as $article) {
@@ -24,7 +24,7 @@ class ZatazBridge extends BridgeAbstract {
 	}
 
 	private function getDetails($uri) {
-		$html = $this->file_get_html($uri) or exit;
+		$html = $this->getSimpleHTMLDOM($uri) or exit;
 
 		$item = new \Item();
 

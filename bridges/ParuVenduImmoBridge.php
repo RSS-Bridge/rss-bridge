@@ -47,7 +47,7 @@ class ParuVenduImmoBridge extends BridgeAbstract
         $appartment = '&tbApp=1&tbDup=1&tbChb=1&tbLof=1&tbAtl=1&tbPla=1';
         $maison = '&tbMai=1&tbVil=1&tbCha=1&tbPro=1&tbHot=1&tbMou=1&tbFer=1';
         $link = $this->uri.'/immobilier/annonceimmofo/liste/listeAnnonces?tt=1'.$appartment.$maison;
-        
+
         if (isset($param['minarea'])) {
             $this->request .= ' '.$param['minarea'].' m2';
             $link .= '&sur0='.urlencode($param['minarea']);
@@ -56,39 +56,39 @@ class ParuVenduImmoBridge extends BridgeAbstract
         if (isset($param['maxprice'])) {
             $link .= '&px1='.urlencode($param['maxprice']);
         }
-        
+
         if (isset($param['pa'])) {
             $link .= '&pa='.urlencode($param['pa']);
         }
-        
+
         if (isset($param['lo'])) {
             $this->request .= ' In: '.$param['lo'];
             $link .= '&lo='.urlencode($param['lo']);
         }
 
-        $html = $this->file_get_html($link) or $this->returnServerError('Could not request paruvendu.');
+        $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request paruvendu.');
 
 
         foreach($html->find('div.annonce a') as $element) {
-            
+
             if (!$element->title) {
                 continue;
             }
-            
+
             $img ='';
             foreach($element->find('span.img img') as $img) {
                 if ($img->original) {
                     $img = '<img src="'.$img->original.'" />';
                 }
             }
-            
+
             $desc = $element->find('span.desc')[0]->innertext;
             $desc = str_replace("voir l'annonce", '', $desc);
-            
+
             $price = $element->find('span.price')[0]->innertext;
 
             list($href) = explode('#', $element->href);
-            
+
             $item = new \Item();
             $item->uri = $this->uri.$href;
             $item->title = $element->title;

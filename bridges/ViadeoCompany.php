@@ -22,7 +22,7 @@ class ViadeoCompany extends BridgeAbstract{
         $html = '';
         $link = 'http://www.viadeo.com/fr/company/'.$param[c];
 
-        $html = $this->file_get_html($link) or $this->returnServerError('Could not request Viadeo.');
+        $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request Viadeo.');
 
         foreach($html->find('//*[@id="company-newsfeed"]/ul/li') as $element) {
             $title = $element->find('p', 0)->innertext;

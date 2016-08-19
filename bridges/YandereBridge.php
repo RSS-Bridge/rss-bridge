@@ -25,18 +25,18 @@ class YandereBridge extends BridgeAbstract{
 
     public function collectData(array $param){
 	$page = 1; $tags = '';
-        if (isset($param['p'])) { 
-            $page = (int)preg_replace("/[^0-9]/",'', $param['p']); 
+        if (isset($param['p'])) {
+            $page = (int)preg_replace("/[^0-9]/",'', $param['p']);
         }
-        if (isset($param['t'])) { 
-            $tags = urlencode($param['t']); 
+        if (isset($param['t'])) {
+            $tags = urlencode($param['t']);
         }
-        $html = $this->file_get_html("https://yande.re/post?page=$page&tags=$tags") or $this->returnServerError('Could not request Yandere.');
+        $html = $this->getSimpleHTMLDOM("https://yande.re/post?page=$page&tags=$tags") or $this->returnServerError('Could not request Yandere.');
 	$input_json = explode('Post.register(', $html);
 	foreach($input_json as $element)
 	 $data[] = preg_replace('/}\)(.*)/', '}', $element);
 	unset($data[0]);
-    
+
         foreach($data as $datai) {
 	    $json = json_decode($datai, TRUE);
             $item = new \Item();
@@ -45,7 +45,7 @@ class YandereBridge extends BridgeAbstract{
             $item->timestamp = $json['created_at'];
             $item->imageUri = $json['file_url'];
             $item->title = 'Yandere | '.$json['id'];
-            $item->content = '<a href="' . $item->imageUri . '"><img src="' . $json['preview_url'] . '" /></a><br>Tags: '.$json['tags']; 
+            $item->content = '<a href="' . $item->imageUri . '"><img src="' . $json['preview_url'] . '" /></a><br>Tags: '.$json['tags'];
             $this->items[] = $item;
         }
     }

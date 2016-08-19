@@ -48,7 +48,7 @@ class HDWallpapersBridge extends BridgeAbstract {
 
         for ($page = 1; $page <= $lastpage; $page++) {
             $link = $baseUri.'/'.$category.'/page/'.$page;
-            $html = $this->file_get_html($link) or $this->returnServerError('No results for this query.');
+            $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('No results for this query.');
 
             if ($page === 1) {
                 preg_match('/page\/(\d+)$/', $html->find('.pagination a', -2)->href, $matches);

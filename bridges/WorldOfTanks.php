@@ -70,15 +70,15 @@ class WorldOfTanks extends HttpCachingBridgeAbstract{
         } else {
             $this->uri = WORLD_OF_TANKS.$this->lang.NEWS.'pc-browser/'.$param['category']."/";
         }
-        $html = $this->file_get_html($this->getURI()) or $this->returnServerError('Could not request '.$this->getURI());
+        $html = $this->getSimpleHTMLDOM($this->getURI()) or $this->returnServerError('Could not request '.$this->getURI());
         $this->message("loaded HTML from ".$this->getURI());
-        // customize name 
+        // customize name
         $this->name = $html->find('title', 0)->innertext;
         foreach($html->find('.b-imgblock_ico') as $infoLink) {
             $this->parseLine($infoLink);
        }
     }
-    
+
     private function parseLine($infoLink) {
         $item = new Item();
         $item->uri = WORLD_OF_TANKS.$infoLink->href;

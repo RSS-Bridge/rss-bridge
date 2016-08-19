@@ -8,7 +8,7 @@ class CastorusBridge extends BridgeAbstract {
 		$this->update = '2016-08-17';
 
 		$this->parameters["Get latest changes"] = '[]';
-		$this->parameters["Get latest changes via ZIP code"] = 
+		$this->parameters["Get latest changes via ZIP code"] =
 		'[
 			{
 				"name": "ZIP code",
@@ -19,7 +19,7 @@ class CastorusBridge extends BridgeAbstract {
 				"title" : "Insert ZIP code (complete or partial)"
 			}
 		]';
-		$this->parameters["Get latest changes via city name"] = 
+		$this->parameters["Get latest changes via city name"] =
 		'[
 			{
 				"name": "City name",
@@ -38,7 +38,7 @@ class CastorusBridge extends BridgeAbstract {
 
 		if(!$title)
 			$this->returnServerError('Cannot find title!');
-		
+
 		return htmlspecialchars(trim($title->plaintext));
 	}
 
@@ -48,19 +48,19 @@ class CastorusBridge extends BridgeAbstract {
 
 		if(!$url)
 			$this->returnServerError('Cannot find url!');
-		
+
 		return $this->uri . $url->href;
 	}
 
 	// Extracts the time from an activity
 	private function ExtractActivityTime($activity){
-		// Unfortunately the time is part of the parent node, 
+		// Unfortunately the time is part of the parent node,
 		// so we have to clear all child nodes first
 		$nodes = $activity->find('*');
 
 		if(!$nodes)
 			$this->returnServerError('Cannot find nodes!');
-		
+
 		foreach($nodes as $node){
 			$node->outertext = '';
 		}
@@ -74,7 +74,7 @@ class CastorusBridge extends BridgeAbstract {
 
 		if(!$price)
 			$this->returnServerError('Cannot find price!');
-		
+
 		return $price->innertext;
 	}
 
@@ -85,23 +85,23 @@ class CastorusBridge extends BridgeAbstract {
 		if(isset($params['city']))
 			$city_filter = trim($params['city']);
 
-		$html = $this->file_get_html($this->uri);
+		$html = $this->getSimpleHTMLDOM($this->uri);
 
 		if(!$html)
 			$this->returnServerError('Could not load data from ' . $this->uri . '!');
-		
+
 		$activities = $html->find('div#activite/li');
 
 		if(!$activities)
 			$this->returnServerError('Failed to find activities!');
-		
+
 		foreach($activities as $activity){
 			$item = new \Item();
 
 			$item->title = $this->ExtractActivityTitle($activity);
 			$item->uri = $this->ExtractActivityUrl($activity);
 			$item->timestamp = $this->ExtractActivityTime($activity);
-			$item->content = '<a href="' . $item->uri . '">' . $item->title . '</a><br><p>' 
+			$item->content = '<a href="' . $item->uri . '">' . $item->title . '</a><br><p>'
 								. $this->ExtractActivityPrice($activity) . '</p>';
 
 			if(isset($zip_filter) && !(substr($item->title, 0, strlen($zip_filter)) === $zip_filter)){

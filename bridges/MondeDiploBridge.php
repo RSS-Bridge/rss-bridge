@@ -9,8 +9,8 @@ class MondeDiploBridge extends BridgeAbstract{
 		$this->update = '2016-08-17';
 	}
 
-	public function collectData(array $param){	
-		$html = $this->file_get_html($this->uri) or $this->returnServerError('Could not request MondeDiplo. for : ' . $link);
+	public function collectData(array $param){
+		$html = $this->getSimpleHTMLDOM($this->uri) or $this->returnServerError('Could not request MondeDiplo. for : ' . $link);
 
 		foreach($html->find('div.unarticle') as $article) {
 			$element = $article->parent();

@@ -33,7 +33,7 @@ class ElsevierBridge extends BridgeAbstract{
 		$time = $article->find('.article-info', 0);
 		if($time){
 			$timestring = trim($time->plaintext);
-			/* 
+			/*
 				The format depends on the age of an article:
 				- Available online 29 July 2016
 				- July 2016
@@ -63,7 +63,7 @@ class ElsevierBridge extends BridgeAbstract{
 
 	public function collectData(array $param){
 		$uri = 'http://www.journals.elsevier.com/' . $param['j'] . '/recent-articles/';
-		$html = file_get_html($uri) or $this->returnServerError('No results for Elsevier journal '.$param['j']);
+		$html = $this->getSimpleHTMLDOM($uri) or $this->returnServerError('No results for Elsevier journal '.$param['j']);
 
 		foreach($html->find('.pod-listing') as $article){
 			$item = new \Item();

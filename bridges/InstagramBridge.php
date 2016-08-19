@@ -25,35 +25,35 @@ class InstagramBridge extends BridgeAbstract{
         $html = '';
         if (isset($param['u'])) {   /* user timeline mode */
             $this->request = $param['u'];
-            $html = $this->file_get_html('http://instagram.com/'.urlencode($this->request)) or $this->returnServerError('Could not request Instagram.');
+            $html = $this->getSimpleHTMLDOM('http://instagram.com/'.urlencode($this->request)) or $this->returnServerError('Could not request Instagram.');
         }
         else {
             $this->returnClientError('You must specify a Instagram username (?u=...).');
         }
-        
+
         $innertext = null;
-        
+
         foreach($html->find('script') as $script)
         {
         	if ('' === $script->innertext) {
         		continue;
         	}
-        	
+
         	$pos = strpos(trim($script->innertext), 'window._sharedData');
         	if (0 !== $pos)
         	{
         		continue;
         	}
-        	
+
         	$innertext = $script->innertext;
         	break;
         }
 
         $json = trim(substr($innertext, $pos+18), ' =;');
         $data = json_decode($json);
-        
-        
-        
+
+
+
         $userMedia = $data->entry_data->ProfilePage[0]->user->media->nodes;
 
         foreach($userMedia as $media)
@@ -70,7 +70,7 @@ class InstagramBridge extends BridgeAbstract{
         	}
         	$item->timestamp = $media->date;
         	$this->items[] = $item;
-        	
+
         }
     }
 

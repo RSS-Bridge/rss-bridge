@@ -9,7 +9,7 @@ class CADBridge extends BridgeAbstract{
 	}
 
 	private function CADExtractContent($url) {
-		$html3 = $this->file_get_html($url);
+		$html3 = $this->getSimpleHTMLDOM($url);
 
 		// The request might fail due to missing https support or wrong URL
 		if($html3 == false)
@@ -27,7 +27,6 @@ class CADBridge extends BridgeAbstract{
 			default:
 				return 'Daily comic not released yet';
 		}
-
 		$img = implode ($url2[0]);
 		$html3->clear();
 		unset ($html3);
@@ -45,7 +44,7 @@ class CADBridge extends BridgeAbstract{
 			return $string;
 		}
 
-		$html = $this->file_get_html('http://cdn2.cad-comic.com/rss.xml') or $this->returnServerError('Could not request CAD.');
+		$html = $this->getSimpleHTMLDOM('http://cdn2.cad-comic.com/rss.xml') or $this->returnServerError('Could not request CAD.');
 		$limit = 0;
 
 		foreach($html->find('item') as $element) {

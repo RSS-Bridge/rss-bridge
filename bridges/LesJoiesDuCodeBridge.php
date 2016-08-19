@@ -12,14 +12,14 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
 	}
 
     public function collectData(array $param){
-        $html = $this->file_get_html('http://lesjoiesducode.fr/') or $this->returnServerError('Could not request LesJoiesDuCode.');
-    
+        $html = $this->getSimpleHTMLDOM('http://lesjoiesducode.fr/') or $this->returnServerError('Could not request LesJoiesDuCode.');
+
         foreach($html->find('div.blog-post') as $element) {
             $item = new Item();
             $temp = $element->find('h1 a', 0);
             $titre = html_entity_decode($temp->innertext);
             $url = $temp->href;
-            
+
             $temp = $element->find('div.blog-post-content', 0);
 
             // retrieve .gif instead of static .jpg
@@ -29,21 +29,21 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
               $image->src = $img_src;
             }
             $content = $temp->innertext;
-            
+
             $auteur = $temp->find('i', 0);
             $pos = strpos($auteur->innertext, "by");
-            
+
             if($pos > 0)
             {
                 $auteur = trim(str_replace("*/", "", substr($auteur->innertext, ($pos + 2))));
                 $item->author = $auteur;
             }
-            
-            
+
+
             $item->content .= trim($content);
             $item->uri = $url;
             $item->title = trim($titre);
-            
+
             $this->items[] = $item;
         }
     }

@@ -29,7 +29,7 @@ class ArstechnicaBridge extends BridgeAbstract {
 
                 function ExtractContent($url) {
                   #echo $url;
-                        $html2 = file_get_html($url);
+                        $html2 = getSimpleHTMLDOM($url);
 
                         $text = $html2->find("section[id='article-guts']", 0);
                         /*foreach ($text->find('<aside id="social-left">') as $node)
@@ -43,7 +43,7 @@ class ArstechnicaBridge extends BridgeAbstract {
                         return $text;
                 }
 
-                $html = $this->file_get_html('http://feeds.arstechnica.com/arstechnica/index') or $this->returnServerError('Could not request NextInpact.');
+                $html = $this->getSimpleHTMLDOM('http://feeds.arstechnica.com/arstechnica/index') or $this->returnServerError('Could not request NextInpact.');
                 $limit = 0;
 
                 foreach($html->find('item') as $element) {

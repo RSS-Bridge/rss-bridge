@@ -16,14 +16,14 @@ class KoreusBridge extends BridgeAbstract{
 	}
 
 	private function KoreusExtractContent($url) {
-		$html2 = $this->file_get_html($url);
+		$html2 = $this->getSimpeHTMLDOM($url);
 		$text = $html2->find('p[class=itemText]', 0)->innertext;
 		$text = utf8_encode(preg_replace('/(Sur le m.+?)+$/i','',$text));
 		return $text;
 	}
 
 	public function collectData(array $param){
-		$html = $this->file_get_html('http://feeds.feedburner.com/Koreus-articles') or $this->returnServerError('Could not request Koreus.');
+		$html = $this->getSimpleHTMLDOM('http://feeds.feedburner.com/Koreus-articles') or $this->returnServerError('Could not request Koreus.');
 		$limit = 0;
 
 		foreach($html->find('item') as $element) {

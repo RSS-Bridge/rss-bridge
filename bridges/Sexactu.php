@@ -15,10 +15,10 @@ class Sexactu extends BridgeAbstract{
 $find = array('janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'novembre', 'décembre');
 $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
 
-    $html = $this->file_get_html($this->getURI()) or $this->returnServerError('Could not request '.$this->getURI());
+    $html = $this->getSimpleHTMLDOM($this->getURI()) or $this->returnServerError('Could not request '.$this->getURI());
 
         foreach($html->find('.content-holder') as $contentHolder) {
-            // only use first list as second one only contains pages numbers 
+            // only use first list as second one only contains pages numbers
             $articles = $contentHolder->find('ul', 0);
             foreach($articles->find('li') as $element) {
                 // if you ask about that method_exists, there seems to be a bug in simple html dom
@@ -38,7 +38,7 @@ $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July',
                         $dateText = $titleTimestamp->innertext;
                         $dateText = substr($dateText, strpos($dateText,',')+1);
                         $dateText = str_replace($find, $replace, strtolower($dateText));
-                        $date = strtotime($dateText); 
+                        $date = strtotime($dateText);
                         $item->timestamp = $date;
 
                         $item->author = "Maïa Mazaurette";
@@ -50,9 +50,9 @@ $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July',
                         $item->content = $elementText->innertext;
                         $this->items[] = $item;
                     }
-                    
+
                 }
-                
+
             }
         }
     }
@@ -64,7 +64,7 @@ $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July',
     public function getCacheDuration(){
         return 7200; // 2h hours
     }
-    
+
     private function correctCase($str) {
         $sentences=explode('.', mb_strtolower($str, "UTF-8"));
         $str="";
@@ -73,7 +73,7 @@ $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July',
         {
            //upper case first char
            $sentence=ucfirst(trim($sentence));
-        
+
            //append sentence to output
            $str=$str.$sep.$sentence;
            $sep=". ";

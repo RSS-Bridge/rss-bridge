@@ -26,27 +26,27 @@ class GelbooruBridge extends BridgeAbstract{
 
     public function collectData(array $param){
 	$page = 0;
-        if (isset($param['p'])) { 
-		$page = (int)preg_replace("/[^0-9]/",'', $param['p']); 
+        if (isset($param['p'])) {
+		$page = (int)preg_replace("/[^0-9]/",'', $param['p']);
 		$page = $page - 1;
 		$page = $page * 63;
         }
-        if (isset($param['t'])) { 
-            $tags = urlencode($param['t']); 
+        if (isset($param['t'])) {
+            $tags = urlencode($param['t']);
         }
-        $html = $this->file_get_html("http://gelbooru.com/index.php?page=post&s=list&tags=$tags&pid=$page") or $this->returnServerError('Could not request Gelbooru.');
+        $html = $this->getSimpleHTMLDOM("http://gelbooru.com/index.php?page=post&s=list&tags=$tags&pid=$page") or $this->returnServerError('Could not request Gelbooru.');
 
 
 	foreach($html->find('div[class=content] span') as $element) {
 		$item = new \Item();
 		$item->uri = 'http://gelbooru.com/'.$element->find('a', 0)->href;
-		$item->postid = (int)preg_replace("/[^0-9]/",'', $element->getAttribute('id'));	
+		$item->postid = (int)preg_replace("/[^0-9]/",'', $element->getAttribute('id'));
 		$item->timestamp = time();
 		$thumbnailUri = $element->find('img', 0)->src;
 		$item->tags = $element->find('img', 0)->getAttribute('alt');
 		$item->title = 'Gelbooru | '.$item->postid;
 		$item->content = '<a href="' . $item->uri . '"><img src="' . $thumbnailUri . '" /></a><br>Tags: '.$item->tags;
-		$this->items[] = $item; 
+		$this->items[] = $item;
 	}
     }
 

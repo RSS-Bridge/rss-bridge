@@ -29,7 +29,7 @@ class AcrimedBridge extends RssExpander{
         	$item->title = trim($newsItem->title);
         	$item->timestamp = strtotime($dc->date);
 
-			$articlePage = $this->file_get_html($newsItem->link);
+			$articlePage = $this->getSimpleHTMLDOM($newsItem->link);
 			$article = $hs->sanitize($articlePage->find('article.article1', 0)->innertext);
 			$article = HTMLSanitizer::defaultImageSrcTo($article, "http://www.acrimed.org/");
 
