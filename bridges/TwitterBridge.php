@@ -80,7 +80,7 @@ class TwitterBridge extends BridgeAbstract{
 			// extract tweet timestamp
 			$item->timestamp = $tweet->find('span.js-short-timestamp', 0)->getAttribute('data-time');
 			// generate the title
-			$item->title = strip_tags($tweet->find('p.js-tweet-text', 0)->innertext);
+			$item->title = strip_tags(html_entity_decode($tweet->find('p.js-tweet-text', 0)->innertext,ENT_QUOTES,'UTF-8'));
 
 			// processing content links
 			foreach($tweet->find('a') as $link) {
