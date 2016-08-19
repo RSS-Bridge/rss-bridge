@@ -543,7 +543,7 @@ class IsoHuntBridge extends BridgeAbstract{
 #region Generic helper functions
 
     private function load_html($uri){
-        $html = $this->file_get_html($uri);
+        $html = $this->getSimpleHTMLDOM($uri);
         if(!$html)
             $this->returnServerError('Unable to load ' . $uri . '!');
         
