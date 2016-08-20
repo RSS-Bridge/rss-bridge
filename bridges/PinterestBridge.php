@@ -11,7 +11,6 @@ class PinterestBridge extends BridgeAbstract{
 		$this->name = "Pinterest Bridge";
 		$this->uri = "http://www.pinterest.com";
 		$this->description = "Returns the newest images on a board";
-		$this->update = '2016-08-17';
 
 		$this->parameters["By username and board"] =
 		'[

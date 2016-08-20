@@ -9,7 +9,6 @@ class VkBridge extends BridgeAbstract {
         $this->name = "VK.com";
         $this->uri = "http://www.vk.com/";
         $this->description = "Working with open pages";
-        $this->update = '2016-08-17';
         $this->parameters["Url on page group or user"] = '[
 			{
 				"name" : "Url",

@@ -10,7 +10,6 @@ class SoundCloudBridge extends BridgeAbstract{
 		$this->name = "Soundcloud Bridge";
 		$this->uri = "http://www.soundcloud.com/";
 		$this->description = "Returns 10 newest music from user profile";
-		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[

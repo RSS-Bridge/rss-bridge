@@ -7,7 +7,6 @@ class Arte7Bridge extends BridgeAbstract{
 		$this->name = "Arte +7";
 		$this->uri = "http://www.arte.tv/";
 		$this->description = "Returns newest videos from ARTE +7";
-		$this->update = "2016-08-09";
 		$this->parameters["Catégorie (Français)"] =
 		'[
 			{

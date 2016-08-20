@@ -10,7 +10,6 @@ class ParuVenduImmoBridge extends BridgeAbstract
 		$this->name = "Paru Vendu Immobilier";
 		$this->uri = "http://www.paruvendu.fr";
 		$this->description = "Returns the ads from the first page of search result.";
-		$this->update = '2016-08-17';
 
 
 		$this->parameters[] =

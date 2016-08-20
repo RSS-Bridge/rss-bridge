@@ -6,7 +6,6 @@ class JapanExpoBridge extends BridgeAbstract{
         $this->name = 'Japan Expo Actualités';
         $this->uri = 'http://www.japan-expo-paris.com/fr/actualites';
         $this->description = 'Returns most recent entries from Japan Expo actualités.';
-        $this->update = '2016-08-17';
         $this->parameters[] =
         '[
             {

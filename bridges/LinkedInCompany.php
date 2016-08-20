@@ -7,7 +7,6 @@ class LinkedInCompany extends BridgeAbstract{
 		$this->name = "LinkedIn Company";
 		$this->uri = "https://www.linkedin.com/";
 		$this->description = "Returns most recent actus from Company on LinkedIn. (https://www.linkedin.com/company/<strong style=\"font-weight:bold;\">apple</strong>)";
-		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[

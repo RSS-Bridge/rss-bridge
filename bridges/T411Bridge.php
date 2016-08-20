@@ -7,7 +7,6 @@ class T411Bridge extends BridgeAbstract {
         $this->name = 'T411 Bridge';
         $this->uri = 'https://t411.ch/';
         $this->description = 'Returns the 10 newest torrents with specified search terms <br /> Use url part after "?" mark when using their search engine.';
-        $this->update = '2016-08-17';
 
         $this->parameters[] =
         '[

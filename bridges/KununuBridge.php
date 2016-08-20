@@ -5,7 +5,6 @@ class KununuBridge extends BridgeAbstract{
 		$this->name = "Kununu Bridge"; /* This will be replaced later! */
 		$this->uri = "https://www.kununu.com"; /* This will be replaced later! */
 		$this->description = "Returns the latest reviews for a company and site of your choice.";
-		$this->update = '2016-08-17';
 
 		$this->parameters['global'] = 
 		'[

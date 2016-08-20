@@ -9,7 +9,6 @@ class AnimeUltimeBridge extends BridgeAbstract {
         $this->name = 'Anime-Ultime';
         $this->uri = 'http://www.anime-ultime.net/';
         $this->description = 'Returns the 10 newest releases posted on Anime-Ultime';
-        $this->update = '2016-08-17';
 
         $this->parameters[] =
         '[

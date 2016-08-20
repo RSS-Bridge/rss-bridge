@@ -12,7 +12,6 @@ class WorldOfTanks extends HttpCachingBridgeAbstract{
 		$this->name = "World of Tanks";
 		$this->uri = "http://worldoftanks.eu/";
 		$this->description = "News about the tank slaughter game.";
-		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[

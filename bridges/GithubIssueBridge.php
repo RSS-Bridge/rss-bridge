@@ -12,7 +12,6 @@ class GithubIssueBridge extends BridgeAbstract{
     $this->name = 'Github Issue';
     $this->uri = '';
     $this->description = 'Returns the comments of a github project issue';
-    $this->update = '2016-08-17';
 
     $this->parameters[]=
       '[

@@ -6,7 +6,6 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract {
         $this->name = 'Est-ce qu\'on met en prod aujourd\'hui ?';
         $this->uri = 'https://www.estcequonmetenprodaujourdhui.info/';
         $this->description = 'Should we put a website in production today? (French)';
-        $this->update = '2016-08-17';
     }
 
     public function collectData(array $param) {

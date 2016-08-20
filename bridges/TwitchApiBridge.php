@@ -13,7 +13,6 @@ class TwitchApiBridge extends BridgeAbstract{
 		$this->name = "Twitch API Bridge";
 		$this->uri = "http://www.twitch.tv";
 		$this->description = "Returns the newest broadcasts or highlights by channel name using the Twitch API (v3)";
-		$this->update = '2016-08-17';
 
 		$this->parameters["Get channel without limit"] =
 		'[

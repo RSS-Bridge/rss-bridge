@@ -7,7 +7,6 @@ class NovelUpdatesBridge extends BridgeAbstract{
 		$this->name = "Novel Updates";
 		$this->uri = "http://www.novelupdates.com/";
 		$this->description = "Returns releases from Novel Updates";
-		$this->update = '2016-08-17';
 		$this->parameters[] =
 		'[
 			{

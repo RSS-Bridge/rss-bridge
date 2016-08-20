@@ -7,7 +7,6 @@ class TagBoardBridge extends BridgeAbstract{
 		$this->name = "TagBoard";
 		$this->uri = "http://www.TagBoard.com";
 		$this->description = "Returns most recent results from TagBoard.";
-		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[

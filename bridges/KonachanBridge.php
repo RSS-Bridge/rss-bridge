@@ -7,7 +7,6 @@ class KonachanBridge extends BridgeAbstract{
 		$this->name = "Konachan";
 		$this->uri = "http://konachan.com/";
 		$this->description = "Returns images from given page";
-		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[

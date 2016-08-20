@@ -7,7 +7,6 @@ class OpenClassroomsBridge extends BridgeAbstract{
 		$this->name = "OpenClassrooms Bridge";
 		$this->uri = "https://openclassrooms.com/";
 		$this->description = "Returns latest tutorials from OpenClassrooms.";
-		$this->update = '2016-08-17';
 
 
 		$this->parameters[] =

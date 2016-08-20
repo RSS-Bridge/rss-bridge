@@ -9,7 +9,6 @@ class ArstechnicaBridge extends BridgeAbstract {
                 $this->name = "ArstechnicaBridge";
                 $this->uri = "http://arstechnica.com";
                 $this->description = "The PC enthusiast's resource. Power users and the tools they love, without computing religion";
-                $this->update = '2016-08-17';
 
         }
 

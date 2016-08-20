@@ -7,7 +7,6 @@ class AcrimedBridge extends RssExpander{
 			$this->name = "Acrimed Bridge";
 			$this->uri = "http://www.acrimed.org/";
 			$this->description = "Returns the newest articles.";
-			$this->update = "2016-08-09";
 
 		}
 

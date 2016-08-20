@@ -7,7 +7,6 @@ class NasaApodBridge extends BridgeAbstract{
 		$this->name = "NASA APOD Bridge";
 		$this->uri = "http://apod.nasa.gov/apod/astropix.html";
 		$this->description = "Returns the 3 latest NASA APOD pictures and explanations";
-		$this->update = '2016-08-17';
 
 	}
 

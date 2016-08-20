@@ -6,7 +6,6 @@ class NextInpactBridge extends BridgeAbstract {
 		$this->name = "NextInpact Bridge";
 		$this->uri = "http://www.nextinpact.com/";
 		$this->description = "Returns the newest articles.";
-		$this->update = '2016-08-17';
 	}
 
 	private function StripCDATA($string) {

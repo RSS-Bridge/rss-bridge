@@ -8,7 +8,6 @@ class MangareaderBridge extends BridgeAbstract{
 		$this->name = "Mangareader Bridge";
 		$this->uri = "http://www.mangareader.net";
 		$this->description = "Returns the latest updates, popular mangas or manga updates (new chapters)";
-		$this->update = '2016-08-17';
 
 		$this->parameters["Get latest updates"] = '[]';
         $this->parameters["Get popular mangas"] = 

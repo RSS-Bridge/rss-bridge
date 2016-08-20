@@ -6,7 +6,6 @@ class MsnMondeBridge extends BridgeAbstract{
 		$this->name = 'MSN Actu Monde';
 		$this->uri = 'http://www.msn.com/fr-fr/actualite/monde';
 		$this->description = "Returns the 10 newest posts from MSN Actualités (full text)";
-		$this->update = '2016-08-17';
 	}
 
 	private function MsnMondeExtractContent($url, &$item) {

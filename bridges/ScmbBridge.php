@@ -7,7 +7,6 @@ class ScmbBridge extends BridgeAbstract{
 		$this->name = "Se Coucher Moins Bête Bridge";
 		$this->uri = "http://secouchermoinsbete.fr/";
 		$this->description = "Returns the newest anecdotes.";
-		$this->update = '2016-08-17';
 
 	}
 

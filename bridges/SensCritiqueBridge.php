@@ -8,7 +8,6 @@ class SensCritiqueBridge extends BridgeAbstract {
 		$this->name = "Sens Critique";
 		$this->uri = "http://www.senscritique.com";
 		$this->description = "Sens Critique news";
-		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[

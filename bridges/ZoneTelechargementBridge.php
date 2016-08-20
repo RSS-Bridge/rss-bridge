@@ -7,7 +7,6 @@ class ZoneTelechargementBridge extends BridgeAbstract {
         $this->name = 'Zone Telechargement Bridge';
         $this->uri = 'https://www.zone-telechargement.com/';
         $this->description = 'RSS proxy returning the newest releases.<br />You may specify a category found in RSS URLs, else main feed is selected.';
-        $this->update = '2016-08-17';
 
         $this->parameters[] =
         '[

@@ -7,7 +7,6 @@ class ScoopItBridge extends BridgeAbstract{
 		$this->name = "ScoopIt";
 		$this->uri = "http://www.scoop.it";
 		$this->description = "Returns most recent results from ScoopIt.";
-		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[

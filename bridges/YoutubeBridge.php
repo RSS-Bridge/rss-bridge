@@ -14,7 +14,6 @@ class YoutubeBridge extends BridgeAbstract {
 		$this->uri = 'https://www.youtube.com/';
 		$this->description = 'Returns the 10 newest videos by username/channel/playlist or search';
 		$this->maintainer = 'mitsukarenai';
-		$this->update = '2016-08-17';
 
 		$this->parameters['By username'] =
 		'[

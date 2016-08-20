@@ -9,7 +9,6 @@ class InstagramBridge extends BridgeAbstract{
 		$this->name = "Instagram Bridge";
 		$this->uri = "http://instagram.com/";
 		$this->description = "Returns the newest images";
-		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[

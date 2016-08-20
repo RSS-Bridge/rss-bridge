@@ -7,7 +7,6 @@ class DilbertBridge extends BridgeAbstract {
         $this->name = 'Dilbert Daily Strip';
         $this->uri = 'http://dilbert.com';
         $this->description = 'The Unofficial Dilbert Daily Comic Strip';
-        $this->update = '2016-08-17';
 
     }
 

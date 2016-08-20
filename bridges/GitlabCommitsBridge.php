@@ -12,7 +12,6 @@ class GitlabCommitsBridge extends BridgeAbstract{
     $this->name = 'Gitlab Commits';
     $this->uri = '';
     $this->description = 'Returns the commits of a project hosted on a gitlab instance';
-    $this->update = '2016-08-17';
 
     $this->parameters[] =
       '[

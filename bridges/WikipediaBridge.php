@@ -9,7 +9,6 @@ class WikipediaBridge extends BridgeAbstract{
 		$this->name = 'Wikipedia bridge for many languages';
 		$this->uri = 'https://www.wikipedia.org/';
 		$this->description = 'Returns articles for a language of your choice';
-		$this->update = '2016-08-17';
 
 		$this->parameters[] = 
 		'[

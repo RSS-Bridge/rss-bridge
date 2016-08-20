@@ -7,7 +7,6 @@ class FlickrExploreBridge extends BridgeAbstract{
 		$this->name = "Flickr Explore";
 		$this->uri = "https://www.flickr.com/explore";
 		$this->description = "Returns the latest interesting images from Flickr";
-		$this->update = '2016-08-17';
 
 	}
 

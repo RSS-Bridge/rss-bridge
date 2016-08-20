@@ -8,7 +8,6 @@ class LichessBridge  extends BridgeAbstract
         $this->name = 'Lichess Blog';
         $this->uri = 'http://lichess.org/blog';
         $this->description = 'Returns the 5 newest posts from the Lichess blog (full text)';
-        $this->update = '2016-08-17';
     }
 
     public function collectData(array $param)

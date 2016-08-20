@@ -7,7 +7,6 @@ class ProjectMGameBridge extends BridgeAbstract{
 		$this->name = "Project M Game Bridge";
 		$this->uri = "http://projectmgame.com/en/";
 		$this->description = "Returns the newest articles.";
-		$this->update = '2016-08-17';
 
 	}
 

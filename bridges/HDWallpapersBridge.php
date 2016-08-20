@@ -10,7 +10,6 @@ class HDWallpapersBridge extends BridgeAbstract {
 		$this->name = "HD Wallpapers Bridge";
 		$this->uri = "http://www.hdwallpapers.in/";
 		$this->description = "Returns the latests wallpapers from HDWallpapers";
-		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[

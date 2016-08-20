@@ -10,7 +10,6 @@ class WhydBridge extends BridgeAbstract{
 		$this->name = "Whyd Bridge";
 		$this->uri = "http://www.whyd.com/";
 		$this->description = "Returns 10 newest music from user profile";
-		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[

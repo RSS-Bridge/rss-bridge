@@ -9,7 +9,6 @@ class GiphyBridge extends BridgeAbstract{
 		$this->name = "Giphy Bridge";
 		$this->uri = "http://giphy.com/";
 		$this->description = "Bridge for giphy.com";
-		$this->update = '2016-08-17';
 
 		$this->parameters["By tag"] =
 		'[

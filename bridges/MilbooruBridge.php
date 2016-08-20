@@ -7,7 +7,6 @@ class MilbooruBridge extends BridgeAbstract{
 		$this->name = "Milbooru";
 		$this->uri = "http://sheslostcontrol.net/moe/shimmie/";
 		$this->description = "Returns images from given page";
-		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[

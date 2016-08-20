@@ -7,7 +7,6 @@ class Rule34Bridge extends BridgeAbstract{
 		$this->name = "Rule34";
 		$this->uri = "http://rule34.xxx/";
 		$this->description = "Returns images from given page";
-		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[

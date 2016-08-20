@@ -7,7 +7,6 @@ class GelbooruBridge extends BridgeAbstract{
 		$this->name = "Gelbooru";
 		$this->uri = "http://gelbooru.com/";
 		$this->description = "Returns images from given page";
-		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[

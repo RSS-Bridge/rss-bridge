@@ -6,7 +6,6 @@ class ReporterreBridge extends BridgeAbstract{
 			$this->name = "Reporterre Bridge";
 			$this->uri = "http://www.reporterre.net/";
 			$this->description = "Returns the newest articles.";
-			$this->update = '2016-08-17';
 		}
 
 		private function ExtractContentReporterre($url) {

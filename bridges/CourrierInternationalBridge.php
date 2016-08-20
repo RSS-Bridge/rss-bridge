@@ -7,7 +7,6 @@ class CourrierInternationalBridge extends BridgeAbstract{
 		$this->name = "Courrier International Bridge";
 		$this->uri = "http://CourrierInternational.fr/";
 		$this->description = "Courrier International bridge";
-		$this->update = '2016-08-17';
 
 	}
 

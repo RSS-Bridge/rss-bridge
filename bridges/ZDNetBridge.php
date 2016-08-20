@@ -7,7 +7,6 @@ class ZDNetBridge extends BridgeAbstract {
         $this->name = 'ZDNet Bridge';
         $this->uri = 'http://www.zdnet.com/';
         $this->description = 'Technology News, Analysis, Comments and Product Reviews for IT Professionals.';
-        $this->update = '2016-08-17';
 
         $this->parameters[] =
         // http://www.zdnet.com/zdnet.opml

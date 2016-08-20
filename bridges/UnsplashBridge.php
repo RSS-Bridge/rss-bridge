@@ -7,7 +7,6 @@ class UnsplashBridge extends BridgeAbstract {
 		$this->name = "Unsplash Bridge";
 		$this->uri = "http://unsplash.com/";
 		$this->description = "Returns the latests photos from Unsplash";
-		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[

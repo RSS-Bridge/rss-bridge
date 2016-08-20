@@ -7,7 +7,6 @@ class TwitterBridge extends BridgeAbstract{
 		$this->name = "Twitter Bridge";
 		$this->uri = "https://twitter.com/";
 		$this->description = "Returns tweets by keyword/hashtag or user name";
-		$this->update = '2016-08-17';
 
 		$this->parameters["global"] =
 		'[

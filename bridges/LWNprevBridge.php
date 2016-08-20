@@ -12,7 +12,6 @@ class LWNprevBridge extends BridgeAbstract{
     $this->name = 'LWN Free Weekly Edition';
     $this->uri = 'https://lwn.net/free/bigpage';
     $this->description = 'LWN Free Weekly Edition available one week late';
-    $this->update = '2016-08-17';
 
   }
 

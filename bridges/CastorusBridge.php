@@ -5,7 +5,6 @@ class CastorusBridge extends BridgeAbstract {
 		$this->name = "Castorus Bridge";
 		$this->uri = 'http://www.castorus.com';
 		$this->description = "Returns the latest changes";
-		$this->update = '2016-08-17';
 
 		$this->parameters["Get latest changes"] = '[]';
 		$this->parameters["Get latest changes via ZIP code"] =

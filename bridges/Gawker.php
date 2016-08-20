@@ -10,7 +10,6 @@ class Gawker extends RssExpander{
 		$this->name = "Gawker media";
 		$this->uri = "http://feeds.gawker.com/";
 		$this->description = "A bridge allowing access to any of the numerous Gawker media blogs (Lifehacker, deadspin, Kotaku, Jezebel, and so on. Notice you have to give its id to find the RSS stream in gawker maze";
-		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[

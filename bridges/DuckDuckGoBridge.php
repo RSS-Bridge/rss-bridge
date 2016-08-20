@@ -7,7 +7,6 @@ class DuckDuckGoBridge extends BridgeAbstract{
 		$this->name = "DuckDuckGo";
 		$this->uri = "https://duckduckgo.com/";
 		$this->description = "Returns most recent results from DuckDuckGo.";
-		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[

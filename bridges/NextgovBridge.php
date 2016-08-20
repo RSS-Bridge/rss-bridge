@@ -7,7 +7,6 @@ class NextgovBridge extends BridgeAbstract {
         $this->name = 'Nextgov Bridge';
         $this->uri = 'https://www.nextgov.com/';
         $this->description = 'USA Federal technology news, best practices, and web 2.0 tools.';
-        $this->update = '2016-08-17';
 
         $this->parameters[] =
         '[

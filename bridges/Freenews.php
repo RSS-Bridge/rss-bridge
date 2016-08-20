@@ -8,7 +8,6 @@ class Freenews extends RssExpander {
 		$this->name = "Freenews";
 		$this->uri = "http://freenews.fr";
 		$this->description = "Un site d'actualité pour les freenautes (mais ne parlant pas que de la freebox). Ne rentrez pas d'id si vous voulez accéder aux actualités générales.";
-		$this->update = "2016-08-09";
 
 		$this->parameters[] =
 		'[

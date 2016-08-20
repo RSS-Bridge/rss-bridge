@@ -7,7 +7,6 @@ class ZatazBridge extends BridgeAbstract {
 		$this->name = 'Zataz Magazine';
 		$this->uri = 'http://www.zataz.com';
 		$this->description = "ZATAZ Magazine - S'informer, c'est déjà se sécuriser";
-		$this->update = '2016-08-17';
 
 	}
 

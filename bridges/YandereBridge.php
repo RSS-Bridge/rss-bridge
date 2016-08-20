@@ -7,7 +7,6 @@ class YandereBridge extends BridgeAbstract{
 		$this->name = "Yande.re";
 		$this->uri = "https://yande.re/";
 		$this->description = "Returns images from given page and tags";
-		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[

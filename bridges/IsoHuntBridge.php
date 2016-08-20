@@ -5,7 +5,6 @@ class IsoHuntBridge extends BridgeAbstract{
         $this->name = 'isoHunt Bridge'; // Is replaced later!
         $this->uri = 'https://isohunt.to'; // Is replaced later!
         $this->description = 'Returns the latest results by category or search result';
-        $this->update = '2016-08-17';
 
         /*
         * Get feeds for one of the "latest" categories

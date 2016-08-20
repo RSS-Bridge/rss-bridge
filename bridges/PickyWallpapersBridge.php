@@ -11,7 +11,6 @@ class PickyWallpapersBridge extends BridgeAbstract {
 		$this->name = "PickyWallpapers Bridge";
 		$this->uri = "http://www.pickywallpapers.com/";
 		$this->description = "Returns the latests wallpapers from PickyWallpapers";
-		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[

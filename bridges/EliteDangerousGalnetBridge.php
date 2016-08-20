@@ -8,7 +8,6 @@ class EliteDangerousGalnetBridge extends BridgeAbstract
 		$this->name = "Elite: Dangerous Galnet";
 		$this->uri = "https://community.elitedangerous.com/galnet";
 		$this->description = "Returns the latest page of news from Galnet";
-		$this->update = '2016-08-17';
 	}
 
 	public function collectData(array $param)

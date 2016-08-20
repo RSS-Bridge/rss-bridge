@@ -9,7 +9,6 @@ class ABCTabsBridge extends BridgeAbstract{
 		$this->name = "ABC Tabs Bridge";
 		$this->uri = "http://www.abc-tabs.com/";
 		$this->description = "Returns 22 newest tabs";
-		$this->update = '2016-08-17';
 
 	}
 

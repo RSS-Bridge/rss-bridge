@@ -9,7 +9,6 @@ class DailymotionBridge extends BridgeAbstract{
 		$this->name = "Dailymotion Bridge";
 		$this->uri = "https://www.dailymotion.com/";
 		$this->description = "Returns the 5 newest videos by username/playlist or search";
-		$this->update = '2016-08-17';
 
 		$this->parameters["By username"] =
 		'[

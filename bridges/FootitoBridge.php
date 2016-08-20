@@ -7,7 +7,6 @@ class FootitoBridge extends BridgeAbstract{
 		$this->name = "Footito";
 		$this->uri = "http://www.footito.fr/";
 		$this->description = "Footito";
-		$this->update = '2016-08-17';
 
 	}
 

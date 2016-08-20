@@ -7,7 +7,6 @@ class DauphineLibereBridge extends BridgeAbstract {
 		$this->name = "Dauphine Bridge";
 		$this->uri = "http://www.ledauphine.com/";
 		$this->description = "Returns the newest articles.";
-		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[

@@ -7,7 +7,6 @@ class Rue89Bridge extends BridgeAbstract{
 		$this->name = "Rue89";
 		$this->uri = "http://rue89.nouvelobs.com/";
 		$this->description = "Returns the 5 newest posts from Rue89 (full text)";
-		$this->update = '2016-08-17';
 
 	}
 

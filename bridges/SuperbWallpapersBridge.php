@@ -10,7 +10,6 @@ class SuperbWallpapersBridge extends BridgeAbstract {
 		$this->name = "Superb Wallpapers Bridge";
 		$this->uri = "http://www.superbwallpapers.com/";
 		$this->description = "Returns the latests wallpapers from SuperbWallpapers";
-		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[

@@ -7,7 +7,6 @@ class AllocineFRBridge extends BridgeAbstract{
         $this->name = "Allo Cine Bridge";
         $this->uri = "http://www.allocine.fr";
         $this->description = "Bridge for allocine.fr";
-        $this->update = '2016-08-17';
 
         $this->parameters[] =
         '[

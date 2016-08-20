@@ -6,7 +6,6 @@ class KoreusBridge extends BridgeAbstract{
 		$this->name = "Koreus";
 		$this->uri = "http://www.koreus.com/";
 		$this->description = "Returns the 5 newest posts from Koreus (full text)";
-		$this->update = '2016-08-17';
 	}
 
 	private function KoreusStripCDATA($string) {

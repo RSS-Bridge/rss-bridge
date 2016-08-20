@@ -7,7 +7,6 @@ class LolibooruBridge extends BridgeAbstract{
 		$this->name = "Lolibooru";
 		$this->uri = "http://lolibooru.moe/";
 		$this->description = "Returns images from given page and tags";
-		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[

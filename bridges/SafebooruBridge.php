@@ -7,7 +7,6 @@ class SafebooruBridge extends BridgeAbstract{
 		$this->name = "Safebooru";
 		$this->uri = "http://safebooru.org/";
 		$this->description = "Returns images from given page";
-		$this->update = '2016-08-17';
 
 		$this->parameters[] =
 		'[

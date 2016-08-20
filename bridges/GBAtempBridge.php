@@ -9,7 +9,6 @@ class GBAtempBridge extends BridgeAbstract {
         $this->name = 'GBAtemp';
         $this->uri = 'http://gbatemp.net/';
         $this->description = 'GBAtemp is a user friendly underground video game community.';
-        $this->update = '2016-08-17';
 
         $this->parameters[] =
         '[

@@ -6,7 +6,6 @@ class CollegeDeFranceBridge extends BridgeAbstract{
 		$this->name = "CollegeDeFrance";
 		$this->uri = "http://www.college-de-france.fr/";
 		$this->description = "Returns the latest audio and video from CollegeDeFrance";
-		$this->update = '2016-08-17';
 	}
 
 	public function collectData(array $param) {

@@ -7,7 +7,6 @@ class DemoBridge extends BridgeAbstract{
 		$this->name = "DemoBridge";
 		$this->uri = "http://github.com/sebsauvage/rss-bridge";
 		$this->description = "Bridge used for demos";
-		$this->update = "2016-08-09";
 
 		$this->parameters['testCheckbox'] =
 		'[
