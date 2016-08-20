@@ -13,7 +13,7 @@ class TwitterBridge extends BridgeAbstract{
 		'[
 			{
 				"name" : "Hide profile pictures",
-				"identifier" : "pic",
+				"identifier" : "nopic",
 				"type" : "checkbox",
 				"required" : false,
 				"exampleValue" : "checked",
@@ -68,8 +68,8 @@ class TwitterBridge extends BridgeAbstract{
 		}
 
 		$hidePictures = false;
-		if (isset($param['pic']))
-			$hidePictures = $param['pic'] === 'on';
+		if (isset($param['nopic']))
+			$hidePictures = $param['nopic'] === 'on';
 
 		foreach($html->find('div.js-stream-tweet') as $tweet) {
 			$item = new \Item();
