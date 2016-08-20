@@ -42,6 +42,14 @@ class TwitterBridge extends BridgeAbstract{
 				"required" : true,
 				"exampleValue" : "sebsauvage",
 				"title" : "Insert a user name"
+			},
+			{
+				"name" : "Without replies",
+				"identifier" : "norep",
+				"type" : "checkbox",
+				"required" : false,
+				"exampleValue" : "checked",
+				"title" : "Only return initial tweets"
 			}
 		]';
 
@@ -53,7 +61,7 @@ class TwitterBridge extends BridgeAbstract{
 			$html = $this->getSimpleHTMLDOM('https://twitter.com/search?q='.urlencode($param['q']).'&f=tweets') or $this->returnServerError('No results for this query.');
 		}
 		elseif (isset($param['u'])) {   /* user timeline mode */
-			$html = $this->getSimpleHTMLDOM('https://twitter.com/'.urlencode($param['u']).'/with_replies') or $this->returnServerError('Requested username can\'t be found.');
+			$html = $this->getSimpleHTMLDOM('https://twitter.com/'.urlencode($param['u']).(isset($param['norep'])?'':'/with_replies')) or $this->returnServerError('Requested username can\'t be found.');
 		}
 		else {
 			$this->returnClientError('You must specify a keyword (?q=...) or a Twitter username (?u=...).');
