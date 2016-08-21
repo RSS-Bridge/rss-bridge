@@ -41,21 +41,18 @@ class DailymotionBridge extends BridgeAbstract{
 		]';
 	}
 
+    function getMetadata($id) {
+      $metadata=array();
+      $html2 = $this->getSimpleHTMLDOM('http://www.dailymotion.com/video/'.$id) or $this->returnServerError('Could not request Dailymotion.');
+      $metadata['title'] = $html2->find('meta[property=og:title]', 0)->getAttribute('content');
+      $metadata['timestamp'] = strtotime($html2->find('meta[property=video:release_date]', 0)->getAttribute('content') );
+      $metadata['thumbnailUri'] = $html2->find('meta[property=og:image]', 0)->getAttribute('content');
+      $metadata['uri'] = $html2->find('meta[property=og:url]', 0)->getAttribute('content');
+
+      return $metadata;
+    }
 
 	public function collectData(array $param){
-
-		function getMetadata($id) {
-			$metadata=array();
-			$html2 = $this->getSimpleHTMLDOM('http://www.dailymotion.com/video/'.$id) or $this->returnServerError('Could not request Dailymotion.');
-			$metadata['title'] = $html2->find('meta[property=og:title]', 0)->getAttribute('content');
-			$metadata['timestamp'] = strtotime($html2->find('meta[property=video:release_date]', 0)->getAttribute('content') );
-			$metadata['thumbnailUri'] = $html2->find('meta[property=og:image]', 0)->getAttribute('content');
-			$metadata['uri'] = $html2->find('meta[property=og:url]', 0)->getAttribute('content');
-
-			return $metadata;
-		}
-
-
         	$html = '';
 		$limit = 5;
 		$count = 0;
@@ -80,7 +77,7 @@ class DailymotionBridge extends BridgeAbstract{
 			if($count < $limit) {
 				$item = new \Item();
 				$item->id = str_replace('/video/', '', strtok($element->href, '_'));
-				$metadata = getMetadata($item->id);
+				$metadata = $this->getMetadata($item->id);
 				$item->uri = $metadata['uri'];
 				$item->title = $metadata['title'];
 				$item->timestamp = $metadata['timestamp'];
