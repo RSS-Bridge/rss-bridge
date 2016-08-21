@@ -18,7 +18,8 @@ class TwitchApiBridge extends BridgeAbstract{
 		'[
 			{
 				"name" : "Channel",
-				"identifier" : "channel"
+				"identifier" : "channel",
+				"required" : true
 			},
 			{
 				"name" : "Broadcasts",
@@ -40,7 +41,8 @@ class TwitchApiBridge extends BridgeAbstract{
 		'[
 			{
 				"name" : "Channel",
-				"identifier" : "channel"
+				"identifier" : "channel",
+				"required" : true
 			},
 			{
 				"name" : "Limit",
