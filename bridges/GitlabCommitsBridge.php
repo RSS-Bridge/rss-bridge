@@ -17,19 +17,23 @@ class GitlabCommitsBridge extends BridgeAbstract{
       '[
          {
             "name" : "Base URI",
-            "identifier" : "uri"
+            "identifier" : "uri",
+            "defaultValue":"https://gitlab.com"
          },
          {
            "name" : "User name",
-           "identifier" : "u"
+           "identifier" : "u",
+           "required": true
          },
          {
             "name" : "Project name",
-            "identifier" : "p"
+            "identifier" : "p",
+            "required":true
          },
          {
             "name" : "Project branch",
-            "identifier" : "b"
+            "identifier" : "b",
+            "defaultValue":"master"
          }
 
       ]';
