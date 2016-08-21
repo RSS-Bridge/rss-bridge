@@ -12,7 +12,8 @@ class ViadeoCompany extends BridgeAbstract{
 		'[
 			{
 				"name" : "Company name",
-				"identifier" : "c"
+				"identifier" : "c",
+				"required" : true
 			}
 		]';
 	}
