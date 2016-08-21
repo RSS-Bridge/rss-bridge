@@ -15,7 +15,8 @@ class WhydBridge extends BridgeAbstract{
 		'[
 			{
 				"name" : "username/id",
-				"identifier" : "u"
+				"identifier" : "u",
+				"required" :true
 			}
 		]';
 
