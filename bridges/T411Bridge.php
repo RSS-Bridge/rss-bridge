@@ -12,7 +12,8 @@ class T411Bridge extends BridgeAbstract {
         '[
             {
                 "name" : "Search criteria",
-                "identifier" : "search"
+                "identifier" : "search",
+                "required": true
             }
         ]';
     }
