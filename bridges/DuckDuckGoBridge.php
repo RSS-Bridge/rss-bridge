@@ -12,7 +12,8 @@ class DuckDuckGoBridge extends BridgeAbstract{
 		'[
 			{
 				"name" : "keyword",
-				"identifier" : "u"
+				"identifier" : "u",
+				"required":true
 			}
 		]';
 	}
