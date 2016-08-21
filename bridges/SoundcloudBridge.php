@@ -15,7 +15,8 @@ class SoundCloudBridge extends BridgeAbstract{
 		'[
 			{
 				"name" : "username",
-				"identifier" : "u"
+				"identifier" : "u",
+				"required": true
 			}
 		]';
 
