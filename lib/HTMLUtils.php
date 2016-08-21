@@ -104,10 +104,21 @@ CARD;
 						else
 							$card .= '<option value="' . $listValues['value'] . '">' . $listValues['name'] . '</option>';
                       }else{
+                        if(is_array($value)){
+                          $card.='<optgroup label="'.htmlentities($name).'">';
+                          foreach($value as $subname=>$subvalue){
+                          if($inputEntry['defaultValue'] === $subname || $inputEntry['defaultValue'] === $subvalue)
+                            $card .= '<option value="' . $subvalue . '" selected>' . $subname . '</option>';
+                          else
+                            $card .= '<option value="' . $subvalue . '">' . $subname . '</option>';
+                          }
+                          $card.='</optgroup>';
+                        }else{
                           if($inputEntry['defaultValue'] === $name || $inputEntry['defaultValue'] === $value)
                             $card .= '<option value="' . $value . '" selected>' . $name . '</option>';
                           else
                             $card .= '<option value="' . $value . '">' . $name . '</option>';
+                        }
                       }
                     }
 
