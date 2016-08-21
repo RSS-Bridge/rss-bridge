@@ -13,7 +13,8 @@ class EZTVBridge extends BridgeAbstract{
 			{
 				"name" : "Show ids",
 				"identifier" : "i",
-				"exampleValue" : "showID1,showID2,..."
+				"exampleValue" : "showID1,showID2,...",
+                "required": true
 			}
 		]';
 
