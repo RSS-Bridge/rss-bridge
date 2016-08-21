@@ -45,18 +45,10 @@ CARD;
 		$hasGlobalParameter = array_key_exists('global', $bridgeElement->parameters);
 
 		if($hasGlobalParameter){
-			if(is_array($bridgeElement->parameters['global'])){
-				$globalParameters = $bridgeElement->parameters['global'];
-			}else{
-				$globalParameters = json_decode($bridgeElement->parameters['global'], true);
-			}
+			$globalParameters = $bridgeElement->parameters['global'];
 		}
 
 		foreach($bridgeElement->parameters as $parameterName => $parameter){
-          if(!is_array($parameter)){
-            $parameter = json_decode($parameter, true);
-          }
-
 			if(!is_numeric($parameterName) && $parameterName == 'global')
 				continue;
 
@@ -86,48 +78,40 @@ CARD;
 				if(!isset($inputEntry['defaultValue']))
 					$inputEntry['defaultValue'] = '';
 
-				$idArg = 'arg-' . urlencode($bridgeName) . '-' . urlencode($parameterName) . '-' . (isset($inputEntry['identifier'])?urlencode($inputEntry['identifier']):urlencode($id));
+				$idArg = 'arg-' . urlencode($bridgeName) . '-' . urlencode($parameterName) . '-' . urlencode($id);
 				$card .= '<label for="' . $idArg . '">' . $inputEntry['name'] . ' : </label>' . PHP_EOL;
 
 				if(!isset($inputEntry['type']) || $inputEntry['type'] == 'text') {
-					$card .= '<input ' . $additionalInfoString . ' id="' . $idArg . '" type="text" value="' . $inputEntry['defaultValue'] . '" placeholder="' . $inputEntry['exampleValue'] . '" name="' . (isset($inputEntry['identifier'])?$inputEntry['identifier']:$id) . '" /><br />' . PHP_EOL;
+					$card .= '<input ' . $additionalInfoString . ' id="' . $idArg . '" type="text" value="' . $inputEntry['defaultValue'] . '" placeholder="' . $inputEntry['exampleValue'] . '" name="' . $id . '" /><br />' . PHP_EOL;
 				} else if($inputEntry['type'] == 'number') {
-					$card .= '<input ' . $additionalInfoString . ' id="' . $idArg . '" type="number" value="' . $inputEntry['defaultValue'] . '" placeholder="' . $inputEntry['exampleValue'] . '" name="' . (isset($inputEntry['identifier'])?$inputEntry['identifier']:$id) . '" /><br />' . PHP_EOL;
+					$card .= '<input ' . $additionalInfoString . ' id="' . $idArg . '" type="number" value="' . $inputEntry['defaultValue'] . '" placeholder="' . $inputEntry['exampleValue'] . '" name="' . $id . '" /><br />' . PHP_EOL;
 				} else if($inputEntry['type'] == 'list') {
-					$card .= '<select ' . $additionalInfoString . ' id="' . $idArg . '" name="' . (isset($inputEntry['identifier'])?$inputEntry['identifier']:$id) . '" >';
+					$card .= '<select ' . $additionalInfoString . ' id="' . $idArg . '" name="' . $id . '" >';
 
 					foreach($inputEntry['values'] as $name=>$value) {
-                      if(is_array($value) && is_numeric($name)){
-                        $listValues=$value;
-						if($inputEntry['defaultValue'] === $listValues['name'] || $inputEntry['defaultValue'] === $listValues['value'])
-							$card .= '<option value="' . $listValues['value'] . '" selected>' . $listValues['name'] . '</option>';
-						else
-							$card .= '<option value="' . $listValues['value'] . '">' . $listValues['name'] . '</option>';
-                      }else{
-                        if(is_array($value)){
-                          $card.='<optgroup label="'.htmlentities($name).'">';
-                          foreach($value as $subname=>$subvalue){
+                      if(is_array($value)){
+                        $card.='<optgroup label="'.htmlentities($name).'">';
+                        foreach($value as $subname=>$subvalue){
                           if($inputEntry['defaultValue'] === $subname || $inputEntry['defaultValue'] === $subvalue)
                             $card .= '<option value="' . $subvalue . '" selected>' . $subname . '</option>';
                           else
                             $card .= '<option value="' . $subvalue . '">' . $subname . '</option>';
-                          }
-                          $card.='</optgroup>';
-                        }else{
-                          if($inputEntry['defaultValue'] === $name || $inputEntry['defaultValue'] === $value)
-                            $card .= '<option value="' . $value . '" selected>' . $name . '</option>';
-                          else
-                            $card .= '<option value="' . $value . '">' . $name . '</option>';
                         }
+                        $card.='</optgroup>';
+                      }else{
+                        if($inputEntry['defaultValue'] === $name || $inputEntry['defaultValue'] === $value)
+                          $card .= '<option value="' . $value . '" selected>' . $name . '</option>';
+                        else
+                          $card .= '<option value="' . $value . '">' . $name . '</option>';
                       }
                     }
 
 					$card .= '</select><br >';
 				} else if($inputEntry['type'] == 'checkbox') {
 					if($inputEntry['defaultValue'] === 'checked')
-						$card .= '<input ' . $additionalInfoString . ' id="' . $idArg . '" type="checkbox" name="' . (isset($inputEntry['identifier'])?$inputEntry['identifier']:$id) . '" checked /><br />' . PHP_EOL;
+						$card .= '<input ' . $additionalInfoString . ' id="' . $idArg . '" type="checkbox" name="' . $id . '" checked /><br />' . PHP_EOL;
 					else
-						$card .= '<input ' . $additionalInfoString . ' id="' . $idArg . '" type="checkbox" name="' . (isset($inputEntry['identifier'])?$inputEntry['identifier']:$id) . '" /><br />' . PHP_EOL;
+						$card .= '<input ' . $additionalInfoString . ' id="' . $idArg . '" type="checkbox" name="' . $id . '" /><br />' . PHP_EOL;
 				}
 			}
 
