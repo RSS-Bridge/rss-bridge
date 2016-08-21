@@ -21,7 +21,7 @@ class VkBridge extends BridgeAbstract {
         $html = '';
         if (isset($param['u'])) {
             $this->request = $param['u'];
-            $text_html = file_get_contents(urldecode($this->request)) or $this->returnServerError('No results for this query.');
+            $text_html = $this->getSimpleHTMLDOM(urldecode($this->request)) or $this->returnServerError('No results for this query.');
             $text_html = iconv('windows-1251', 'utf-8', $text_html);
             $html = str_get_html($text_html);
         }
