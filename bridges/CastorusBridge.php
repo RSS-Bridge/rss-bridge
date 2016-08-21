@@ -6,29 +6,25 @@ class CastorusBridge extends BridgeAbstract {
 		$this->uri = 'http://www.castorus.com';
 		$this->description = "Returns the latest changes";
 
-		$this->parameters["Get latest changes"] = '[]';
-		$this->parameters["Get latest changes via ZIP code"] =
-		'[
-			{
-				"name": "ZIP code",
-				"identifier" : "zip",
-				"type" : "text",
-				"required" : true,
-				"exampleValue" : "74910, 74",
-				"title" : "Insert ZIP code (complete or partial)"
-			}
-		]';
-		$this->parameters["Get latest changes via city name"] =
-		'[
-			{
-				"name": "City name",
-				"identifier" : "city",
-				"type" : "text",
-				"required" : true,
-				"exampleValue" : "Seyssel, Seys",
-				"title" : "Insert city name (complete or partial)"
-			}
-		]';
+		$this->parameters["Get latest changes"] = array();
+        $this->parameters["Get latest changes via ZIP code"] = array(
+          'zip'=>array(
+            'name'=>'ZIP code',
+            'type'=>'text',
+            'required'=>true,
+            'exampleValue'=>'74910, 74',
+            'title'=>'Insert ZIP code (complete or partial)'
+          )
+        );
+        $this->parameters["Get latest changes via city name"] = array(
+          'city'=>array(
+            'name'=>'City name',
+            'type'=>'text',
+            'required'=>true,
+            'exampleValue'=>'Seyssel, Seys',
+            'title'=>'Insert city name (complete or partial)'
+          )
+        );
 	}
 
 	// Extracts the tile from an actitiy

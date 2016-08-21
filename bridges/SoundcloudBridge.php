@@ -11,14 +11,12 @@ class SoundCloudBridge extends BridgeAbstract{
 		$this->uri = "http://www.soundcloud.com/";
 		$this->description = "Returns 10 newest music from user profile";
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "username",
-				"identifier" : "u",
-				"required": true
-			}
-		]';
+        $this->parameters[] = array(
+          'u'=>array(
+            'name'=>'username',
+            'required'=>true
+          )
+        );
 
 	}
 

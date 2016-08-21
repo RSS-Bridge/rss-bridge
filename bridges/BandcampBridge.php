@@ -10,15 +10,12 @@ class BandcampBridge extends BridgeAbstract{
 		$this->uri = "http://bandcamp.com/";
 		$this->description = "New bandcamp release by tag";
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "tag",
-				"type" : "text",
-				"identifier" : "tag"
-
-			}
-		]';
+        $this->parameters[] = array(
+          'tag'=>array(
+            'name'=>'tag',
+            'type'=>'text'
+          )
+        );
 	}
 
     public function collectData(array $param){

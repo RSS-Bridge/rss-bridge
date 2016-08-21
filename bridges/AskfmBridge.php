@@ -8,13 +8,11 @@ class AskfmBridge extends BridgeAbstract{
                 $this->uri = "http://ask.fm/";
                 $this->description = "Returns answers from an Ask.fm user";
 
-                $this->parameters["Ask.fm username"] =
-                '[
-                        {
-                                "name" : "Username",
-                                "identifier" : "u"
-                        }
-                ]';
+                $this->parameters["Ask.fm username"] = array(
+                  'u'=>array(
+                    'name'=>'Username'
+                  )
+                );
         }
 
     public function collectData(array $param){

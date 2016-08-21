@@ -8,13 +8,9 @@ class FourchanBridge extends BridgeAbstract{
 		$this->uri = "https://www.4chan.org/";
 		$this->description = "Returns posts from the specified thread";
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "Thread URL",
-				"identifier" : "t"
-			}
-		]';
+        $this->parameters[] = array(
+          't'=>array('name'=>'Thread URL')
+        );
 	}
 
 

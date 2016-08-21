@@ -12,29 +12,20 @@ class PickyWallpapersBridge extends BridgeAbstract {
 		$this->uri = "http://www.pickywallpapers.com/";
 		$this->description = "Returns the latests wallpapers from PickyWallpapers";
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "Category",
-				"identifier" : "c"
-			},
-			{
-				"name" : "subcategory",
-				"identifier" : "s"
-			},
-			{
-				"name" : "Max number of wallpapers",
-				"identifier" : "m",
-				"type" : "number"
-			},
-			{
-				"name" : "resolution",
-				"identifier" : "r",
-				"exampleValue" : "1920x1200, 1680x1050, ...",
-				"pattern" : "[0-9]{3,4}x[0-9]{3,4}"
-			}
+        $this->parameters[] = array(
+          'c'=>array('name'=>'category'),
+          's'=>array('name'=>'subcategory'),
+          'm'=>array(
+            'name'=>'Max number of wallpapers',
+            'type'=>'number'
+          ),
+          'r'=>array(
+            'name'=>'resolution',
+            'exampleValue'=>'1920x1200, 1680x1050,…',
+            'pattern'=>'[0-9]{3,4}x[0-9]{3,4}'
+          )
+        );
 
-		]';
 	}
 
     public function collectData(array $param){

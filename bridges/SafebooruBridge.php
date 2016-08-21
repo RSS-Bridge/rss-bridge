@@ -8,18 +8,13 @@ class SafebooruBridge extends BridgeAbstract{
 		$this->uri = "http://safebooru.org/";
 		$this->description = "Returns images from given page";
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "page",
-				"identifier" : "p",
-				"type" : "number"
-			},
-			{
-				"name" : "tags",
-				"identifier" : "t"
-			}
-		]';
+        $this->parameters[] = array(
+          'p'=>array(
+            'name'=>'page',
+            'type'=>'number'
+          ),
+          't'=>array('name'=>'tags')
+        );
 
 	}
 

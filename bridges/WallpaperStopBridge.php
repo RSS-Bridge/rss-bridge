@@ -12,29 +12,18 @@ class WallpaperStopBridge extends BridgeAbstract {
 		$this->uri = "http://www.wallpaperstop.com/";
 		$this->description = "Returns the latests wallpapers from WallpaperStop";
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "Category",
-				"identifier" : "c"
-			},
-			{
-				"name" : "subcategory",
-				"identifier" : "s"
-			},
-			{
-				"name" : "Max number of wallpapers",
-				"identifier" : "m",
-				"type" : "number"
-			},
-			{
-				"name" : "resolution",
-				"identifier" : "r",
-				"exampleValue" : "1920x1200, 1680x1050, ..."
-			}
-
-		]';
-
+        $this->parameters[] = array(
+          'c'=>array('name'=>'Category'),
+          's'=>array('name'=>'subcategory'),
+          'm'=>array(
+            'name'=>'Max number of wallpapers',
+            'type'=>'number'
+          ),
+          'r'=>array(
+            'name'=>'resolution',
+            'exampleValue'=>'1920x1200, 1680x1050,…',
+          )
+        );
 	}
 
 

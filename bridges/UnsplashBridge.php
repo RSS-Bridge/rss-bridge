@@ -8,26 +8,20 @@ class UnsplashBridge extends BridgeAbstract {
 		$this->uri = "http://unsplash.com/";
 		$this->description = "Returns the latests photos from Unsplash";
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "Max number of photos",
-				"identifier" : "m",
-				"type" : "number"
-			},
-			{
-				"name" : "Width",
-				"identifier" : "w",
-				"exampleValue" : "1920, 1680, ..."
-			},
-			{
-				"name" : "JPEG quality",
-				"identifier" : "q",
-				"type" : "number"
-
-			}
-
-		]';
+        $this->parameters[] = array(
+          'm'=>array(
+            'name'=>'Max number of photos',
+            'type'=>'number'
+          ),
+          'w'=>array(
+            'name'=>'Width',
+            'exampleValue'=>'1920, 1680, …'
+          ),
+          'q'=>array(
+            'name'=>'JPEG quality',
+            'type'=>'number'
+          )
+        );
 	}
 
     public function collectData(array $param){

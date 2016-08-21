@@ -10,13 +10,9 @@ class IdenticaBridge extends BridgeAbstract{
 		$this->uri = "https://identi.ca/";
 		$this->description = "Returns user timelines";
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "username",
-				"identifier" : "u"
-			}
-		]';
+        $this->parameters[] = array(
+          'u'=>array('name'=>'username')
+        );
 
 	}
 

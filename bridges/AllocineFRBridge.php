@@ -8,32 +8,20 @@ class AllocineFRBridge extends BridgeAbstract{
         $this->uri = "http://www.allocine.fr";
         $this->description = "Bridge for allocine.fr";
 
-        $this->parameters[] =
-        '[
-            {
-                "name" : "category",
-                "identifier" : "category",
-                "type" : "list",
-                "required" : true,
-                "exampleValue" : "Faux Raccord",
-                "title" : "Select your category",
-                "values" :
-                [
-                    {
-                        "name" : "Faux Raccord",
-                        "value" : "faux-raccord"
-                    },
-                    {
-                        "name" : "Top 5",
-                        "value" : "top-5"
-                    },
-                    {
-                        "name" : "Tueurs En Serie",
-                        "value" : "tuers-en-serie"
-                    }
-                ]
-            }
-        ]';
+        $this->parameters[] = array(
+          'category'=>array(
+            'name'=>'category',
+            'type'=>'list',
+            'required'=>true,
+            'exampleValue'=>'Faux Raccord',
+            'title'=>'Select your category',
+            'values'=>array(
+              'Faux Raccord'=>'faux-raccord',
+              'Top 5'=>'top-5',
+              'Tueurs En Serie'=>'tuers-en-serie'
+            )
+          )
+        );
     }
 
     public function collectData(array $params){

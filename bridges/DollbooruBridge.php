@@ -9,18 +9,13 @@ class DollbooruBridge extends BridgeAbstract{
 		$this->description = "Returns images from given page";
 
 
-		$this->parameters[]  =
-		'[
-			{
-				"name" : "page",
-				"type" : "number",
-				"identifier" : "p"
-			},
-			{
-				"name" : "tags",
-				"identifier" : "t"
-			}
-		]';
+        $this->parameters[]  = array(
+          'p'=>array(
+            'name'=>'page',
+            'type'=>'number'
+          ),
+          't'=>array('name'=>'tags')
+        );
 	}
 
     public function collectData(array $param){

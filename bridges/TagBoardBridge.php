@@ -8,14 +8,12 @@ class TagBoardBridge extends BridgeAbstract{
 		$this->uri = "http://www.TagBoard.com";
 		$this->description = "Returns most recent results from TagBoard.";
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "keyword",
-				"identifier" : "u",
-				"required" :true
-			}
-		]';
+        $this->parameters[] = array(
+          'u'=>array(
+            'name'=>'keyword',
+            'required'=>true
+          )
+        );
 
 	}
 

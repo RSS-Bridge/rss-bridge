@@ -8,14 +8,11 @@ class DuckDuckGoBridge extends BridgeAbstract{
 		$this->uri = "https://duckduckgo.com/";
 		$this->description = "Returns most recent results from DuckDuckGo.";
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "keyword",
-				"identifier" : "u",
-				"required":true
-			}
-		]';
+        $this->parameters[] = array(
+          'u'=>array(
+            'name'=>'keyword',
+            'required'=>true)
+        );
 	}
 
     public function collectData(array $param){

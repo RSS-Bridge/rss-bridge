@@ -8,13 +8,9 @@ class ZoneTelechargementBridge extends BridgeAbstract {
         $this->uri = 'https://www.zone-telechargement.com/';
         $this->description = 'RSS proxy returning the newest releases.<br />You may specify a category found in RSS URLs, else main feed is selected.';
 
-        $this->parameters[] =
-        '[
-            {
-                "name" : "Category",
-                "identifier" : "category"
-            }
-        ]';
+        $this->parameters[] = array(
+          'category'=>array('name'=>'Category')
+        );
     }
 
     public function collectData(array $param) {

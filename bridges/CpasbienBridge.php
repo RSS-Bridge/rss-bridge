@@ -25,15 +25,13 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
 		$this->uri = "http://www.cpasbien.io";
 		$this->description = "Returns latest torrents from a request query";
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "Search",
-				"identifier" : "q",
-                "required" : true,
-                "title" : "Type your search"
-			}
-		]';
+        $this->parameters[] = array(
+          'q'=>array(
+            'name'=>'Search',
+            'required'=>true,
+            'title'=>'Type your search'
+          )
+        );
 
 	}
 

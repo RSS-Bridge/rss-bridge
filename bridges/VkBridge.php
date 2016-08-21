@@ -9,13 +9,12 @@ class VkBridge extends BridgeAbstract {
         $this->name = "VK.com";
         $this->uri = "http://www.vk.com/";
         $this->description = "Working with open pages";
-        $this->parameters["Url on page group or user"] = '[
-			{
-				"name" : "Url",
-				"identifier" : "u",
-				"required" : true
-			}
-		]';
+        $this->parameters["Url on page group or user"] = array(
+          'u'=>array(
+            'name'=>'Url',
+            'required'=>true
+          )
+        );
     }
 
     public function collectData(array $param) {

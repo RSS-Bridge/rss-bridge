@@ -8,18 +8,13 @@ class Rule34pahealBridge extends BridgeAbstract{
 		$this->uri = "http://rule34.paheal.net/";
 		$this->description = "Returns images from given page";
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "page",
-				"identifier" : "p",
-				"type" : "number"
-			},
-			{
-				"name" : "tags",
-				"identifier" : "t"
-			}
-		]';
+        $this->parameters[] = array(
+          'p'=>array(
+            'name'=>'page',
+            'type'=>'number'
+          ),
+          't'=>array('name'=>'tags')
+        );
 	}
 
 

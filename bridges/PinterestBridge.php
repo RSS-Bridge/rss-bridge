@@ -12,26 +12,14 @@ class PinterestBridge extends BridgeAbstract{
 		$this->uri = "http://www.pinterest.com";
 		$this->description = "Returns the newest images on a board";
 
-		$this->parameters["By username and board"] =
-		'[
-			{
-				"name" : "username",
-				"identifier" : "u"
-			},
-			{
-				"name" : "board",
-				"identifier" : "b"
+        $this->parameters["By username and board"] = array(
+          'u'=>array('name'=>'username'),
+          'b'=>array('name'=>'board')
+        );
 
-			}
-		]';
-
-		$this->parameters["From search"] =
-		'[
-			{
-				"name" : "Keyword",
-				"identifier" : "q"
-			}
-		]';
+        $this->parameters["From search"] = array(
+          'q'=>array('name'=>'Keyword')
+        );
 	}
 
     public function collectData(array $param){

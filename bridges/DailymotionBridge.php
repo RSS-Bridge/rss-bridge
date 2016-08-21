@@ -10,35 +10,23 @@ class DailymotionBridge extends BridgeAbstract{
 		$this->uri = "https://www.dailymotion.com/";
 		$this->description = "Returns the 5 newest videos by username/playlist or search";
 
-		$this->parameters["By username"] =
-		'[
-			{
-				"name" : "username",
-				"identifier" : "u"
-			}
-		]';
+        $this->parameters["By username"] = array(
+          'u'=>array('name'=>'username')
+        );
 
-		$this->parameters["By playlist id"] =
-		'[
-			{
-				"name" : "playlist id",
-				"identifier" : "p",
-				"type" : "text"
-			}
-		]';
+        $this->parameters["By playlist id"] = array(
+          'p'=>array(
+            'name'=>'playlist id',
+            'type'=>'text')
+        );
 
-		$this->parameters["From search results"] =
-		'[
-			{
-				"name" : "Search keyword",
-				"identifier" : "s"
-			},
-			{
-				"name" : "Page",
-				"identifier" : "pa",
-				"type" : "number"
-			}
-		]';
+        $this->parameters["From search results"] = array(
+          's'=>array('name'=>'Search keyword'),
+          'pa'=>array(
+            'name'=>'Page',
+            'type'=>'number'
+          )
+        );
 	}
 
     function getMetadata($id) {

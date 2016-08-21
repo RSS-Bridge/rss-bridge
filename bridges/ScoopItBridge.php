@@ -8,14 +8,12 @@ class ScoopItBridge extends BridgeAbstract{
 		$this->uri = "http://www.scoop.it";
 		$this->description = "Returns most recent results from ScoopIt.";
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "keyword",
-				"identifier" : "u",
-				"required": true
-			}
-		]';
+        $this->parameters[] = array(
+          'u'=>array(
+            'name'=>'keyword',
+            'required'=>true
+          )
+        );
 
 	}
 

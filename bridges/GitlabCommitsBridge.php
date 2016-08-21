@@ -13,30 +13,24 @@ class GitlabCommitsBridge extends BridgeAbstract{
     $this->uri = '';
     $this->description = 'Returns the commits of a project hosted on a gitlab instance';
 
-    $this->parameters[] =
-      '[
-         {
-            "name" : "Base URI",
-            "identifier" : "uri",
-            "defaultValue":"https://gitlab.com"
-         },
-         {
-           "name" : "User name",
-           "identifier" : "u",
-           "required": true
-         },
-         {
-            "name" : "Project name",
-            "identifier" : "p",
-            "required":true
-         },
-         {
-            "name" : "Project branch",
-            "identifier" : "b",
-            "defaultValue":"master"
-         }
-
-      ]';
+    $this->parameters[] = array(
+      'uri'=>array(
+        'name'=>'Base URI',
+        'defaultValue'=>'https://gitlab.com'
+      ),
+      'u'=>array(
+        'name'=>'User name',
+        'required'=>true
+      ),
+      'p'=>array(
+        'name'=>'Project name',
+        'required'=>true
+      ),
+      'b'=>array(
+        'name'=>'Project branch',
+        'defaultValue'=>'master'
+      )
+    );
   }
 
   public function collectData(array $param){

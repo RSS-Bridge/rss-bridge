@@ -11,164 +11,82 @@ class IsoHuntBridge extends BridgeAbstract{
         * Notice: The categories "News" and "Top Searches" are received from the main page
         * Elements are sorted by name ascending!
         */
-        $this->parameters['By "Latest" category'] = 
-        '[
-            {
-                "name" : "Latest category",
-                "identifier" : "latest_category",
-                "type" : "list",
-                "required" : true,
-                "title" : "Select your category",
-                "defaultValue" : "News",
-                "values" : 
-                [
-                    {
-                        "name" : "Hot Torrents",
-                        "value" : "hot_torrents"
-                    },
-                    {
-                        "name" : "News",
-                        "value" : "news"
-                    },
-                    {
-                        "name" : "Releases",
-                        "value" : "releases"
-                    },
-                    {
-                        "name" : "Torrents",
-                        "value" : "torrents"
-                    }
-                ]
-            }
-        ]';
+        $this->parameters['By "Latest" category'] = array(
+          'latest_category'=>array(
+            'name'=>'Latest category',
+            'type'=>'list',
+            'required'=>true,
+            'title'=>'Select your category',
+            'defaultValue'=>'News',
+            'values'=>array(
+              'Hot Torrents'=>'hot_torrents',
+              'News'=>'news',
+              'Releases'=>'releases',
+              'Torrents'=>'torrents'
+            )
+          )
+        );
 
         /*
         * Get feeds for one of the "torrent" categories
         * Make sure to add new categories also to get_torrent_category_index($)!
         * Elements are sorted by name ascending!
         */
-        $this->parameters['By "Torrent" category'] = 
-        '[
-            {
-                "name" : "Torrent category",
-                "identifier" : "torrent_category",
-                "type" : "list",
-                "required" : true,
-                "title" : "Select your category",
-                "defaultValue" : "Anime",
-                "values" :
-                [
-                    {
-                        "name" : "Adult",
-                        "value" : "adult"
-                    },
-                    {
-                        "name" : "Anime",
-                        "value" : "anime"
-                    },
-                    {
-                        "name" : "Books",
-                        "value" : "books"
-                    },
-                    {
-                        "name" : "Games",
-                        "value" : "games"
-                    },
-                    {
-                        "name" : "Movies",
-                        "value" : "movies"
-                    },
-                    {
-                        "name" : "Music",
-                        "value" : "music"
-                    },
-                    {
-                        "name" : "Other",
-                        "value" : "other"
-                    },
-                    {
-                        "name" : "Series & TV",
-                        "value" : "series_tv"
-                    },
-                    {
-                        "name" : "Software",
-                        "value" : "software"
-                    }
-                ]
-            },
-            {
-                "name" : "Sort by popularity",
-                "identifier" : "torrent_popularity",
-                "type" : "checkbox",
-                "title" : "Activate to receive results by popularity"
-            }
-        ]';
+        $this->parameters['By "Torrent" category'] = array(
+          'torrent_category'=>array(
+            'name'=>'Torrent category',
+            'type'=>'list',
+            'required'=>true,
+            'title'=>'Select your category',
+            'defaultValue'=>'Anime',
+            'values'=>array(
+              'Adult'=>'adult',
+              'Anime'=>'anime',
+              'Books'=>'books',
+              'Games'=>'games',
+              'Movies'=>'movies',
+              'Music'=>'music',
+              'Other'=>'other',
+              'Series & TV'=>'series_tv',
+              'Software'=>'software'
+            )
+          ),
+          'torrent_popularity'=>array(
+            'name'=>'Sort by popularity',
+            'type'=>'checkbox',
+            'title'=>'Activate to receive results by popularity'
+          )
+        );
 
         /*
         * Get feeds for a specific search request
         */
-        $this->parameters['Search torrent by name'] = 
-        '[
-            {
-                "name" : "Name",
-                "identifier" : "search_name",
-                "type" : "text",
-                "required" : true,
-                "title" : "Insert your search query",
-                "exampleValue" : "Bridge"
-            },
-            {
-                "name" : "Category",
-                "identifier" : "search_category",
-                "type" : "list",
-                "required" : false,
-                "title" : "Select your category",
-                "defaultValue" : "All",
-                "values" :
-                [
-                    {
-                        "name" : "Adult",
-                        "value" : "adult"
-                    },
-                    {
-                        "name" : "All",
-                        "value" : "all"
-                    },
-                    {
-                        "name" : "Anime",
-                        "value" : "anime"
-                    },
-                    {
-                        "name" : "Books",
-                        "value" : "books"
-                    },
-                    {
-                        "name" : "Games",
-                        "value" : "games"
-                    },
-                    {
-                        "name" : "Movies",
-                        "value" : "movies"
-                    },
-                    {
-                        "name" : "Music",
-                        "value" : "music"
-                    },
-                    {
-                        "name" : "Other",
-                        "value" : "other"
-                    },
-                    {
-                        "name" : "Series & TV",
-                        "value" : "series_tv"
-                    },
-                    {
-                        "name" : "Software",
-                        "value" : "software"
-                    }
-                ]
-            }
-        ]';
+        $this->parameters['Search torrent by name'] = array(
+          'search_name'=>array(
+            'name'=>'Name',
+            'required'=>true,
+            'title'=>'Insert your search query',
+            'exampleValue'=>'Bridge'
+          ),
+          'search_category'=>array(
+            'name'=>'Category',
+            'type'=>'list',
+            'title'=>'Select your category',
+            'defaultValue'=>'All',
+            'values'=>array(
+              'Adult'=>'adult',
+              'All'=>'all',
+              'Anime'=>'anime',
+              'Books'=>'books',
+              'Games'=>'games',
+              'Movies'=>'movies',
+              'Music'=>'music',
+              'Other'=>'other',
+              'Series & TV'=>'series_tv',
+              'Software'=>'software'
+            )
+          )
+        );
     }
 
     public function collectData(array $params){
@@ -215,13 +133,13 @@ class IsoHuntBridge extends BridgeAbstract{
     }
 
     private function get_torrent_category_name($category){
-        $parameter = json_decode($this->parameters['By "Torrent" category'], true);
-        $languages = $parameter[0]['values'];
+        $parameter = $this->parameters['By "Torrent" category'];
+        $languages = $parameter['torrent_category']['values'];
 
-        foreach($languages as $language)
-            if(strtolower(trim($language['value'])) === strtolower(trim($category)))
-                return $language['name'];
-        
+        foreach($languages as $name=>$value)
+            if(strtolower(trim($value)) === strtolower(trim($category)))
+                return $name;
+
         return 'Unknown category';
     }
 
@@ -244,19 +162,19 @@ class IsoHuntBridge extends BridgeAbstract{
 
     private function request_latest_category($category){
         switch($category){
-            case 'hot_torrents': 
+            case 'hot_torrents':
                 $this->name = 'Latest hot torrents - ' . $this->name;
                 $this->uri .= '/statistic/hot/torrents';
                 break;
-            case 'news': 
+            case 'news':
                 $this->name = 'Latest news - ' . $this->name;
                 $this->uri .= '/';
                 break;
-            case 'releases': 
+            case 'releases':
                 $this->name = 'Latest releases - ' . $this->name;
                 $this->uri .= '/releases.php';
                 break;
-            case 'torrents': 
+            case 'torrents':
                 $this->name = 'Latest torrents - ' . $this->name;
                 $this->uri .= '/latest.php';
                 break;
@@ -288,13 +206,13 @@ class IsoHuntBridge extends BridgeAbstract{
     }
 
     private function get_search_category_name($category){
-        $parameter = json_decode($this->parameters['Search torrent by name'], true);
-        $languages = $parameter[1]['values'];
+        $parameter = $this->parameters['Search torrent by name'];
+        $languages = $parameter['search_category']['values'];
 
-        foreach($languages as $language)
-            if(strtolower(trim($language['value'])) === strtolower(trim($category)))
-                return $language['name'];
-        
+        foreach($languages as $name=>$value)
+            if(strtolower(trim($value)) === strtolower(trim($category)))
+                return $name;
+
         return 'Unknown category';
     }
 
@@ -332,7 +250,7 @@ class IsoHuntBridge extends BridgeAbstract{
 
             $item->uri = $this->fix_relative_uri($anchor->href);
             $item->title = $anchor->title;
-            // $item->author = 
+            // $item->author =
             $item->timestamp = strtotime($date->plaintext);
             $item->content = $this->fix_relative_uri($torrent->innertext);
 
@@ -370,9 +288,9 @@ class IsoHuntBridge extends BridgeAbstract{
 
             $item->uri = $element->href;
             $item->title = $element->plaintext;
-            // $item->author = 
-            // $item->timestamp = 
-            // $item->content = 
+            // $item->author =
+            // $item->timestamp =
+            // $item->content =
 
             $this->items[] = $item;
         }
@@ -453,7 +371,7 @@ class IsoHuntBridge extends BridgeAbstract{
         $content = $post->find('div', 0);
         if(!$content)
             $this->returnServerError('Unable to find content!');
-        
+
         // Remove <h2>...</h2> (title)
         foreach($content->find('h2') as $element){
             $element->outertext = '';
@@ -497,7 +415,7 @@ class IsoHuntBridge extends BridgeAbstract{
         $cell = $torrent->find('td.title-row', 0);
         if(!$cell)
             $this->returnServerError('Unable to find title cell!');
-        
+
         $title = $cell->find('span', 0);
         if(!$title)
             $this->returnServerError('Unable to find title!');
@@ -509,7 +427,7 @@ class IsoHuntBridge extends BridgeAbstract{
         $cell = $torrent->find('td.title-row', 0);
         if(!$cell)
             $this->returnServerError('Unable to find title cell!');
-        
+
         $uri = $cell->find('a', 0);
         if(!$uri)
             $this->returnServerError('Unable to find uri!');
@@ -521,7 +439,7 @@ class IsoHuntBridge extends BridgeAbstract{
         $cell = $torrent->find('td.user-row', 0);
         if(!$cell)
            return; // No author
-        
+
         $user = $cell->find('a', 0);
         if(!$user)
             $this->returnServerError('Unable to find user!');
@@ -545,7 +463,7 @@ class IsoHuntBridge extends BridgeAbstract{
         $html = $this->getSimpleHTMLDOM($uri);
         if(!$html)
             $this->returnServerError('Unable to load ' . $uri . '!');
-        
+
         return $html;
     }
 

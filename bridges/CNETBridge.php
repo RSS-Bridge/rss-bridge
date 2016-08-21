@@ -10,13 +10,9 @@ class CNETBridge extends BridgeAbstract {
         $this->uri = 'http://www.cnet.com/';
         $this->description = 'Returns the newest articles. <br /> You may specify a topic found in some section URLs, else all topics are selected.';
 
-        $this->parameters[] =
-        '[
-            {
-                "name" : "Topic name",
-                "identifier" : "topic"
-            }
-        ]';
+        $this->parameters[] = array(
+          'topic'=>array('name'=>'Topic name')
+        );
     }
 
     public function collectData(array $param) {

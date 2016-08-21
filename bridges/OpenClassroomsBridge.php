@@ -9,52 +9,23 @@ class OpenClassroomsBridge extends BridgeAbstract{
 		$this->description = "Returns latest tutorials from OpenClassrooms.";
 
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "Catégorie",
-				"identifier" : "u",
-				"type" : "list",
-				"values" : [
-					{
-						"name" : "Arts & Culture",
-						"value" : "arts"
-					},
-					{
-						"name" : "Code",
-						"value" : "code"
-					},
-					{
-						"name" : "Design",
-						"value" : "design"
-					},
-					{
-						"name" : "Entreprise",
-						"value" : "business"
-					},
-					{
-						"name" : "Numérique",
-						"value" : "digital"
-					},
-					{
-						"name" : "Sciences",
-						"value" : "sciences"
-					},
-					{
-						"name" : "Sciences Humaines",
-						"value" : "humainities"
-					},
-					{
-						"name" : "Systèmes d\'information",
-						"value" : "it"
-					},
-					{
-						"name" : "Autres",
-						"value" : "others"
-					}
-				]
-			}
-		]';
+        $this->parameters[] = array(
+          'u'=>array(
+            'name'=>'Catégorie',
+            'type'=>'list',
+            'values'=>array(
+              'Arts & Culture'=>'arts',
+              'Code'=>'code',
+              'Design'=>'design',
+              'Entreprise'=>'business',
+              'Numérique'=>'digital',
+              'Sciences'=>'sciences',
+              'Sciences Humaines'=>'humainities',
+              'Systèmes d\'information'=>'it',
+              'Autres'=>'others'
+            )
+          )
+        );
 	}
 
 

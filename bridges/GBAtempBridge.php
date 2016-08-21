@@ -10,33 +10,18 @@ class GBAtempBridge extends BridgeAbstract {
         $this->uri = 'http://gbatemp.net/';
         $this->description = 'GBAtemp is a user friendly underground video game community.';
 
-        $this->parameters[] =
-        '[
-            {
-                "name" : "Type",
-                "type" : "list",
-                "identifier" : "type",
-                "values" :
-                [
-                    {
-                        "name" : "News",
-                        "value" : "N"
-                    },
-                    {
-                        "name" : "Reviews",
-                        "value" : "R"
-                    },
-                    {
-                        "name" : "Tutorials",
-                        "value" : "T"
-                    },
-                    {
-                        "name" : "Forum",
-                        "value" : "F"
-                    }
-                ]
-            }
-        ]';
+        $this->parameters[] = array(
+          'type'=>array(
+            'name'=>'Type',
+            'type'=>'list',
+            'values'=>array(
+              'News'=>'N',
+              'Reviews'=>'R',
+              'Tutorials'=>'T',
+              'Forum'=>'F'
+            )
+          )
+        );
     }
 
     private function ExtractFromDelimiters($string, $start, $end) {

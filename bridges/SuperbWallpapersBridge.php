@@ -11,24 +11,17 @@ class SuperbWallpapersBridge extends BridgeAbstract {
 		$this->uri = "http://www.superbwallpapers.com/";
 		$this->description = "Returns the latests wallpapers from SuperbWallpapers";
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "Category",
-				"identifier" : "c"
-			},
-			{
-				"name" : "Max number of wallpapers",
-				"identifier" : "m",
-				"type" : "number"
-			},
-			{
-				"name" : "resolution",
-				"identifier" : "r",
-				"exampleValue" : "1920x1200, 1680x1050, ..."
-			}
-
-		]';
+        $this->parameters[] = array(
+          'c'=>array('name'=>'category'),
+          'm'=>array(
+            'name'=>'Max number of wallpapers',
+            'type'=>'number'
+          ),
+          'r'=>array(
+            'name'=>'resolution',
+            'exampleValue'=>'1920x1200, 1680x1050,…'
+          )
+        );
 
 	}
 

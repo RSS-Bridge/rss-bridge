@@ -11,13 +11,9 @@ class Gawker extends RssExpander{
 		$this->uri = "http://feeds.gawker.com/";
 		$this->description = "A bridge allowing access to any of the numerous Gawker media blogs (Lifehacker, deadspin, Kotaku, Jezebel, and so on. Notice you have to give its id to find the RSS stream in gawker maze";
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "site id to put in uri between feeds.gawker.com and /full .. which is obviously not full AT ALL",
-				"identifier" : "site"
-			}
-		]';
+        $this->parameters[] = array(
+          'site'=>array('name'=>'site id to put in uri between feeds.gawker.com and /full .. which is obviously not full AT ALL')
+        );
 	}
 
 
@@ -35,7 +31,7 @@ class Gawker extends RssExpander{
 //        $this->message("loading feed from ".$this->getURI());
         parent::collectExpandableDatas($param, $url);
     }
-    
+
     protected function parseRSSItem($newsItem) {
         $item = new Item();
         $item->uri = trim($newsItem->link);

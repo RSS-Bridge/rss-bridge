@@ -6,16 +6,13 @@ class RTBFBridge extends BridgeAbstract {
 		$this->description = "Returns the newest RTBF videos by series ID";
 		$this->maintainer = "Frenzie";
 
-		$this->parameters[] =
-		'[
-			{
-				"type" : "text",
-				"identifier" : "c",
-				"name" : "series id",
-				"exampleValue" : "9500",
-				"required" : true
-			}
-		]';
+        $this->parameters[] = array(
+          'c'=>array(
+            'name'=>'series id',
+            'exampleValue'=>9500,
+            'required'=>true
+          )
+        );
 	}
 
 	public function collectData(array $param) {

@@ -18,13 +18,9 @@ class GoogleSearchBridge extends BridgeAbstract{
 		$this->uri = "https://www.google.com/";
 		$this->description = "Returns most recent results from Google search.";
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "keyword",
-				"identifier" : "q"
-			}
-		]';
+        $this->parameters[] = array(
+          'q'=>array('name'=>"keyword")
+        );
 
 	}
 

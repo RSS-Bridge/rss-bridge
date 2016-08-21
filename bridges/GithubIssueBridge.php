@@ -13,22 +13,21 @@ class GithubIssueBridge extends BridgeAbstract{
     $this->uri = '';
     $this->description = 'Returns the comments of a github project issue';
 
-    $this->parameters[]=
-      '[
-         {
-           "name" : "User name",
-           "identifier" : "u"
-         },
-         {
-            "name" : "Project name",
-            "identifier" : "p"
-         },
-         {
-            "name" : "Issue number",
-            "identifier" : "i"
-         }
-
-      ]';
+    $this->parameters[]=array (
+      'u'=>array(
+        'name'=>'User name',
+        'required'=>true
+      ),
+      'p'=>array(
+        'name'=>'Project name',
+        'required'=>true
+      ),
+      'i'=>array(
+        'name'=>'Issue number',
+        'type'=>'number',
+        'required'=>true
+      )
+    );
   }
 
   public function collectData(array $param){

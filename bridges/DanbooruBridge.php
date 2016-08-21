@@ -8,18 +8,10 @@ class DanbooruBridge extends BridgeAbstract{
 		$this->uri = "http://donmai.us/";
 		$this->description = "Returns images from given page";
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "page",
-				"identifier" : "p"
-			},
-			{
-				"name" : "tags",
-				"identifier" : "t"
-			}
-		]';
-
+        $this->parameters[] = array(
+          'p'=>array('name'=>'page'),
+          't'=>array('name'=>'tags')
+        );
 	}
 
     public function collectData(array $param){

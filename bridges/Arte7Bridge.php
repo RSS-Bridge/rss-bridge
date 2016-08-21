@@ -7,105 +7,42 @@ class Arte7Bridge extends BridgeAbstract{
 		$this->name = "Arte +7";
 		$this->uri = "http://www.arte.tv/";
 		$this->description = "Returns newest videos from ARTE +7";
-		$this->parameters["Catégorie (Français)"] =
-		'[
-			{
-				"type" : "list",
-				"identifier" : "catfr",
-				"name" : "Catégorie",
-				"values" : [
-					{
-						"name" : "Toutes les vidéos (français)",
-						"value" : "toutes-les-videos"
-					},
-					{
-						"name" : "Actu & société",
-						"value" : "actu-société"
-					},
-					{
-						"name" : "Séries & fiction",
-						"value" : "séries-fiction"
-					},
-					{
-						"name" : "Cinéma",
-						"value" : "cinéma"
-					},
-					{
-						"name" : "Arts & spectacles classiques",
-						"value" : "arts-spectacles-classiques"
-					},
-					{
-						"name" : "Culture pop",
-						"value" : "culture-pop"
-					},
-					{
-						"name" : "Découverte",
-						"value" : "découverte"
-					},
-					{
-						"name" : "Histoire",
-						"value" : "histoire"
-					},
-					{
-						"name" : "Junior",
-						"value" : "junior"
-					}
+        $this->parameters["Catégorie (Français)"] = array(
+          'catfr'=>array(
+            'type'=>'list',
+            'name'=>'Catégorie',
+            'values'=>array(
+              'Toutes les vidéos (français)'=>'toutes-les-videos',
+              'Actu & société'=>'actu-société',
+              'Séries & fiction'=>'séries-fiction',
+              'Cinéma'=>'cinéma',
+              'Arts & spectacles classiques'=>'arts-spectacles-classiques',
+              'Culture pop'=>'culture-pop',
+              'Découverte'=>'découverte',
+              'Histoire'=>'histoire',
+              'Junior'=>'junior'
 
-				]
+            )
+          )
+        );
 
-
-			}
-
-		]';
-		$this->parameters["Catégorie (Allemand)"] =
-		'[
-			{
-				"type" : "list",
-				"identifier" : "catde",
-				"name" : "Catégorie",
-				"values" : [
-					{
-						"name" : "Alle Videos (deutsch)",
-						"value" : "alle-videos"
-					},
-					{
-						"name" : "Aktuelles & Gesellschaft",
-						"value" : "aktuelles-gesellschaft"
-					},
-					{
-						"name" : "Fernsehfilme & Serien",
-						"value" : "fernsehfilme-serien"
-					},
-					{
-						"name" : "Kino",
-						"value" : "kino"
-					},
-					{
-						"name" : "Kunst & Kultur",
-						"value" : "kunst-kultur"
-					},
-					{
-						"name" : "Popkultur & Alternativ",
-						"value" : "popkultur-alternativ"
-					},
-					{
-						"name" : "Entdeckung",
-						"value" : "entdeckung"
-					},
-					{
-						"name" : "Geschichte",
-						"value" : "geschichte"
-					},
-					{
-						"name" : "Junior",
-						"value" : "junior"
-					}
-				]
-
-
-			}
-
-		]';
+        $this->parameters["Catégorie (Allemand)"] = array(
+          'catde'=>array(
+            'type'=>'list',
+            'name'=>'Catégorie',
+            'values'=>array(
+              'Alle Videos (deutsch)'=>'alle-videos',
+              'Aktuelles & Gesellschaft'=>'aktuelles-gesellschaft',
+              'Fernsehfilme & Serien'=>'fernsehfilme-serien',
+              'Kino'=>'kino',
+              'Kunst & Kultur'=>'kunst-kultur',
+              'Popkultur & Alternativ'=>'popkultur-alternativ',
+              'Entdeckung'=>'entdeckung',
+              'Geschichte'=>'geschichte',
+              'Junior'=>'junior'
+            )
+          )
+        );
 	}
 
 
