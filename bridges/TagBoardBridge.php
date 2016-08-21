@@ -12,7 +12,8 @@ class TagBoardBridge extends BridgeAbstract{
 		'[
 			{
 				"name" : "keyword",
-				"identifier" : "u"
+				"identifier" : "u",
+				"required" :true
 			}
 		]';
 
