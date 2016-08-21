@@ -11,7 +11,8 @@ class NovelUpdatesBridge extends BridgeAbstract{
 		'[
 			{
 				"name" : "Novel URL",
-				"identifier" : "n"
+				"identifier" : "n",
+                "required": true
 			}
 		]';
 	}
