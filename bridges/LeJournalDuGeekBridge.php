@@ -15,7 +15,7 @@ class LeJournalDuGeekBridge extends BridgeAbstract{
 	}
 
 	private function LeJournalDuGeekExtractContent($url) {
-		$articleHTMLContent = $this->getSimpleHMLDOM($url);
+		$articleHTMLContent = $this->getSimpleHTMLDOM($url);
 		$text = $articleHTMLContent->find('div.post-content', 0)->innertext;
 
 		foreach($articleHTMLContent->find('a.more') as $element) {

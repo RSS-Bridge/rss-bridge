@@ -93,7 +93,7 @@ class KununuBridge extends BridgeAbstract{
 		$this->uri .= "/{$site}/{$company}/{$section}";
 
 		// Load page
-		$html = $this->getSimplHTMLDOM($this->uri);
+		$html = $this->getSimpleHTMLDOM($this->uri);
 		if($html === false)
 			$this->returnServerError('Unable to receive data from ' . $this->uri . '!');
 
