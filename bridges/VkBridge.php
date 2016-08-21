@@ -12,7 +12,8 @@ class VkBridge extends BridgeAbstract {
         $this->parameters["Url on page group or user"] = '[
 			{
 				"name" : "Url",
-				"identifier" : "u"
+				"identifier" : "u",
+				"required" : true
 			}
 		]';
     }
