@@ -9,7 +9,7 @@ class MsnMondeBridge extends BridgeAbstract{
 	}
 
 	private function MsnMondeExtractContent($url, &$item) {
-		$html2 = $this->getSimpleHTLDOM($url);
+		$html2 = $this->getSimpleHTMLDOM($url);
 		$item->content = $html2->find('#content', 0)->find('article', 0)->find('section', 0)->plaintext;
 		$item->timestamp = strtotime($html2->find('.authorinfo-txt', 0)->find('time', 0)->datetime);
 	}
