@@ -9,7 +9,7 @@ class PlanetLibreBridge extends BridgeAbstract{
 	}
 
 	private function PlanetLibreExtractContent($url){
-		$html2 = $this->geSimpleHTMLDOM($url);
+		$html2 = $this->getSimpleHTMLDOM($url);
 		$text = $html2->find('div[class="post-text"]', 0)->innertext;
 		return $text;
 	}
