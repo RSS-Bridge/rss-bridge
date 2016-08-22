@@ -9,38 +9,19 @@ class AnimeUltimeBridge extends BridgeAbstract {
         $this->name = 'Anime-Ultime';
         $this->uri = 'http://www.anime-ultime.net/';
         $this->description = 'Returns the 10 newest releases posted on Anime-Ultime';
-        $this->update = '2016-08-17';
 
-        $this->parameters[] =
-        '[
-            {
-                "name" : "Type",
-                "type" : "list",
-                "identifier" : "type",
-                "values" :
-                [
-                    {
-                        "name" : "Everything",
-                        "value" : ""
-
-                    },
-                    {
-                        "name" : "Anime",
-                        "value" : "A"
-
-                    },
-                    {
-                        "name" : "Drama",
-                        "value" : "D"
-                    },
-                    {
-                        "name" : "Tokusatsu",
-                        "value" : "T"
-
-                    }
-                ]
-            }
-        ]';
+        $this->parameters[] = array(
+          'type'=>array(
+            'name'=>'Type',
+            'type'=>'list',
+            'values'=>array(
+              'Everything'=>'',
+              'Anime'=>'A',
+              'Drama'=>'D',
+              'Tokusatsu'=>'T'
+            )
+          )
+        );
     }
 
     public function collectData(array $param) {

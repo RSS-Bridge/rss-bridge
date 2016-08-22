@@ -10,15 +10,10 @@ class GooglePlusPostBridge extends BridgeAbstract
 		$this->name = "Google Plus Post Bridge";
 		$this->uri = "http://plus.google.com/";
 		$this->description = "Returns user public post (without API).";
-		$this->update = '2016-08-17';
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "username or Id",
-				"identifier" : "username"
-			}
-		]';
+        $this->parameters[] = array(
+          'username'=>array('name'=>'username or Id')
+        );
 
 	}
 

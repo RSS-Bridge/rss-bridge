@@ -10,7 +10,6 @@ class Les400Culs extends RssExpander{
 		$this->name = "Les 400 Culs";
 		$this->uri = "http://sexes.blogs.liberation.fr";
 		$this->description = "La planete sexe vue par Agnes Girard via rss-bridge";
-		$this->update = "2016-08-09";
 
 	}
 

@@ -7,7 +7,6 @@ class Sexactu extends BridgeAbstract{
 		$this->name = "Sexactu";
 		$this->uri = "http://www.gqmagazine.fr";
 		$this->description = "Sexactu via rss-bridge";
-		$this->update = '2016-08-17';
 
 	}
 

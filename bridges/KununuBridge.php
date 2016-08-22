@@ -5,58 +5,38 @@ class KununuBridge extends BridgeAbstract{
 		$this->name = "Kununu Bridge"; /* This will be replaced later! */
 		$this->uri = "https://www.kununu.com"; /* This will be replaced later! */
 		$this->description = "Returns the latest reviews for a company and site of your choice.";
-		$this->update = '2016-08-17';
 
-		$this->parameters['global'] = 
-		'[
-			{
-				"name" : "Site",
-				"identifier" : "site",
-				"type" : "list",
-				"required" : true,
-				"exampleValue" : "United States",
-				"title" : "Select your site",
-				"values" : 
-				[
-					{
-						"name" : "Austria",
-						"value" : "at"
-					},
-					{
-						"name" : "Germany",
-						"value" : "de"
-					},
-					{
-						"name" : "Switzerland",
-						"value" : "ch"
-					},
-					{
-						"name" : "United States",
-						"value" : "us"
-					}
-				]
-			},
-			{
-				"name" : "Load full article",
-				"identifier" : "full",
-				"type" : "checkbox",
-				"required" : false,
-				"exampleValue" : "checked",
-				"title" : "Activate to load full article"
-			}
-		]';
+        $this->parameters['global'] = array(
+          'site'=>array(
+            'name'=>'Site',
+            'type'=>'list',
+            'required'=>true,
+            'exampleValue'=>'United States',
+            'title'=>'Select your site',
+            'values'=>array(
+              'Austria'=>'at',
+              'Germany'=>'de',
+              'Switzerland'=>'ch',
+              'United States'=>'us'
+            )
+          ),
+          'full'=>array(
+            'name'=>'Load full article',
+            'type'=>'checkbox',
+            'required'=>false,
+            'exampleValue'=>'checked',
+            'title'=>'Activate to load full article'
+          )
+        );
 
-		$this->parameters[] = 
-		'[
-			{
-				"name" : "Company",
-				"identifier" : "company",
-				"type" : "text",
-				"required" : true,
-				"exampleValue" : "kununu-us",
-				"title" : "Insert company name (i.e. Kununu US) or URI path (i.e. kununu-us)"
-			}
-		]';
+        $this->parameters[] = array(
+          'company'=>array(
+            'name'=>'Company',
+            'required'=>true,
+            'exampleValue'=>'kununu-us',
+            'title'=>'Insert company name (i.e. Kununu US) or URI path (i.e. kununu-us)'
+          )
+        );
 	}
 
 	public function collectData(array $params){
@@ -94,7 +74,7 @@ class KununuBridge extends BridgeAbstract{
 		$this->uri .= "/{$site}/{$company}/{$section}";
 
 		// Load page
-		$html = $this->getSimplHTMLDOM($this->uri);
+		$html = $this->getSimpleHTMLDOM($this->uri);
 		if($html === false)
 			$this->returnServerError('Unable to receive data from ' . $this->uri . '!');
 
@@ -133,17 +113,17 @@ class KununuBridge extends BridgeAbstract{
 		return 86400; // 1 day
 	}
 
-	/** 
+	/**
 	* Returns true if the given site is part of the parameters list
 	*/
 	private function site_is_valid($site){
-		$parameter = json_decode($this->parameters['global'], true);
-		$sites = $parameter[0]['values'];
+		$parameter = $this->parameters['global'];
+		$sites = $parameter['site']['values'];
 
 		$site_names = array();
 
-		foreach($sites as $site_item)
-			$site_names[] = $site_item['value'];
+		foreach($sites as $name=>$value)
+			$site_names[] = $value;
 
 		return in_array($site, $site_names);
 	}
@@ -172,11 +152,11 @@ class KununuBridge extends BridgeAbstract{
 		$panel = $html->find('div.panel', 0);
 		if($panel === false)
 			$this->returnServerError('Cannot find panel for company name!');
-		
+
 		$company_name = $panel->find('h1', 0);
 		if($company_name === false)
 			$this->returnServerError('Cannot find company name!');
-		
+
 		return $company_name->plaintext;
 	}
 
@@ -188,7 +168,7 @@ class KununuBridge extends BridgeAbstract{
 		$date = $article->find('time[itemprop=dtreviewed]', 0);
 		if($date === false)
 			$this->returnServerError('Cannot find article date!');
-		
+
 		return strtotime($date->datetime);
 	}
 
@@ -199,7 +179,7 @@ class KununuBridge extends BridgeAbstract{
 		$rating = $article->find('span.rating', 0);
 		if($rating === false)
 			$this->returnServerError('Cannot find article rating!');
-		
+
 		return $rating->getAttribute('aria-label');
 	}
 
@@ -210,7 +190,7 @@ class KununuBridge extends BridgeAbstract{
 		$summary = $article->find('[itemprop=summary]', 0);
 		if($summary === false)
 			$this->returnServerError('Cannot find article summary!');
-		
+
 		return strip_tags($summary->innertext);
 	}
 
@@ -226,7 +206,7 @@ class KununuBridge extends BridgeAbstract{
 		$anchor = $summary->find('a', 0);
 		if($anchor === false)
 			$this->returnServerError('Cannot find article URI!');
-		
+
 		return 'https://www.kununu.com' . $anchor->href;
 	}
 
@@ -247,7 +227,7 @@ class KununuBridge extends BridgeAbstract{
 				break;
 			}
 		}
-		
+
 		return $author_position;
 	}
 
@@ -258,7 +238,7 @@ class KununuBridge extends BridgeAbstract{
 		$description = $article->find('div[itemprop=description]', 0);
 		if($description === false)
 			$this->returnServerError('Cannot find article description!');
-		
+
 		return $this->fix_url($description->innertext);
 	}
 

@@ -7,52 +7,37 @@ class TwitterBridge extends BridgeAbstract{
 		$this->name = "Twitter Bridge";
 		$this->uri = "https://twitter.com/";
 		$this->description = "Returns tweets by keyword/hashtag or user name";
-		$this->update = '2016-08-17';
 
-		$this->parameters["global"] =
-		'[
-			{
-				"name" : "Hide profile pictures",
-				"identifier" : "nopic",
-				"type" : "checkbox",
-				"required" : false,
-				"exampleValue" : "checked",
-				"title" : "Activate to hide profile pictures in content"
-			}
-		]';
+        $this->parameters["global"] = array(
+          'nopic'=>array(
+            'name'=>'Hide profile pictures',
+            'type'=>'checkbox',
+            'title'=>'Activate to hide profile pictures in content'
+          )
+        );
 
-		$this->parameters["By keyword or hashtag"] =
-		'[
-			{
-				"name" : "Keyword or #hashtag",
-				"identifier" : "q",
-				"type" : "text",
-				"required" : true,
-				"exampleValue" : "rss-bridge, #rss-bridge",
-				"title" : "Insert a keyword or hashtag"
-			}
-		]';
+        $this->parameters["By keyword or hashtag"] = array(
+          'q'=>array(
+            'name'=>'Keyword or #hashtag',
+            'required'=>true,
+            'exampleValue'=>'rss-bridge, #rss-bridge',
+            'title'=>'Insert a keyword or hashtag'
+          )
+        );
 
-		$this->parameters["By username"] =
-		'[
-			{
-				"name" : "username",
-				"identifier" : "u",
-				"type" : "text",
-				"required" : true,
-				"exampleValue" : "sebsauvage",
-				"title" : "Insert a user name"
-			},
-			{
-				"name" : "Without replies",
-				"identifier" : "norep",
-				"type" : "checkbox",
-				"required" : false,
-				"exampleValue" : "checked",
-				"title" : "Only return initial tweets"
-			}
-		]';
-
+        $this->parameters["By username"] = array(
+          'u'=>array(
+            'name'=>'username',
+            'required'=>true,
+            'exampleValue'=>'sebsauvage',
+            'title'=>'Insert a user name'
+          ),
+          'norep'=>array(
+            'name'=>'Without replies',
+            'type'=>'checkbox',
+            'title'=>'Only return initial tweets'
+          )
+        );
 	}
 
 	public function collectData(array $param){

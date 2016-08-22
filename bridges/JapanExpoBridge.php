@@ -6,26 +6,16 @@ class JapanExpoBridge extends BridgeAbstract{
         $this->name = 'Japan Expo Actualités';
         $this->uri = 'http://www.japan-expo-paris.com/fr/actualites';
         $this->description = 'Returns most recent entries from Japan Expo actualités.';
-        $this->update = '2016-08-17';
-        $this->parameters[] =
-        '[
-            {
-                "name" : "Mode",
-                "type" : "list",
-                "identifier" : "mode",
-                "values" :
-                [
-                    {
-                        "name" : "Titles only",
-                        "value" : "light"
-                    },
-                    {
-                        "name" : "Full Contents",
-                        "value" : "full"
-                    }
-                ]
-            }
-        ]';
+        $this->parameters[] = array(
+          'mode'=>array(
+            'name'=>'Mode',
+            'type'=>'list',
+            'values'=>array(
+              'Titles only'=>'light',
+              'Full Contents'=>'full'
+            )
+          )
+        );
     }
 
     public function collectData(array $param) {

@@ -7,7 +7,6 @@ class SiliconBridge extends BridgeAbstract {
 		$this->name = 'Silicon Bridge';
 		$this->uri = 'http://www.silicon.fr/';
 		$this->description = "Returns the newest articles.";
-		$this->update = '2016-08-17';
 
 	}
 

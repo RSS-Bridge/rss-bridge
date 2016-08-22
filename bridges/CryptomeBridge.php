@@ -7,17 +7,14 @@ class CryptomeBridge extends BridgeAbstract{
 		$this->name = "Cryptome";
 		$this->uri = "http://cryptome.org/";
 		$this->description = "Returns the N most recent documents.";
-		$this->update = '2016-08-17';
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "number of elements",
-				"identifier" : "n",
-				"type" : "number",
-				"exampleValue" : "10"
-			}
-		]';
+        $this->parameters[] = array(
+          'n'=>array(
+            'name'=>'number of elements',
+            'type'=>'number',
+            'exampleValue'=>10
+          )
+        );
 	}
 
 

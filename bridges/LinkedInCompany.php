@@ -7,20 +7,18 @@ class LinkedInCompany extends BridgeAbstract{
 		$this->name = "LinkedIn Company";
 		$this->uri = "https://www.linkedin.com/";
 		$this->description = "Returns most recent actus from Company on LinkedIn. (https://www.linkedin.com/company/<strong style=\"font-weight:bold;\">apple</strong>)";
-		$this->update = '2016-08-17';
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "Company name",
-				"identifier" : "c"
-			}
-		]';
+        $this->parameters[] = array(
+          'c'=>array(
+            'name'=>'Company name',
+            'required'=>true
+          )
+        );
 	}
 
     public function collectData(array $param){
         $html = '';
-        $link = 'https://www.linkedin.com/company/'.$param[c];
+        $link = 'https://www.linkedin.com/company/'.$param['c'];
 
         $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request LinkedIn.');
 

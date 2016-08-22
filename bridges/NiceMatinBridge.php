@@ -6,7 +6,6 @@ class NiceMatinBridge extends BridgeAbstract{
 		$this->name = "NiceMatin";
 		$this->uri = "http://www.nicematin.com/";
 		$this->description = "Returns the 10 newest posts from NiceMatin (full text)";
-		$this->update = '2016-08-17';
 	}
 
 	private function NiceMatinExtractContent($url) {

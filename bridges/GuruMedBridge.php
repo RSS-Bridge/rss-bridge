@@ -6,7 +6,6 @@ class GuruMedBridge extends BridgeAbstract{
 		$this->name = "GuruMed";
 		$this->uri = "http://www.gurumed.org";
 		$this->description = "Returns the 5 newest posts from Gurumed (full text)";
-		$this->update = '2016-08-17';
 	}
 
 	private function GurumedStripCDATA($string) {

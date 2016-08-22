@@ -7,7 +7,6 @@ class Releases3DSBridge extends BridgeAbstract {
 		$this->name = "3DS Scene Releases";
 		$this->uri = "http://www.3dsdb.com/";
 		$this->description = "Returns the newest scene releases.";
-		$this->update = '2016-08-17';
 
 	}
 

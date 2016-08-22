@@ -6,7 +6,6 @@ class NeuviemeArtBridge extends BridgeAbstract {
         $this->name = '9ème Art Bridge';
         $this->uri = "http://www.9emeart.fr/";
         $this->description = "Returns the newest articles.";
-        $this->update = '2016-08-17';
     }
 
     public function collectData(array $param) {

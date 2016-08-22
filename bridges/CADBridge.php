@@ -5,7 +5,6 @@ class CADBridge extends BridgeAbstract{
 		$this->name = "CAD Bridge";
 		$this->uri = "http://www.cad-comic.com/";
 		$this->description = "Returns the newest articles.";
-		$this->update = '2016-08-17';
 	}
 
 	private function CADExtractContent($url) {

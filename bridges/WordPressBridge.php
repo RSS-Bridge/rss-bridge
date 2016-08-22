@@ -12,16 +12,13 @@ class WordPressBridge extends BridgeAbstract {
 		$this->name = "Wordpress Bridge";
 		$this->uri = "https://wordpress.org/";
 		$this->description = "Returns the 3 newest full posts of a Wordpress blog";
-		$this->update = '2016-08-17';
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "blog URL",
-				"required" : true,
-				"identifier" : "url"
-			}
-		]';
+        $this->parameters[] = array(
+          'url'=>array(
+            'name'=>'Blog URL',
+            'required'=>true
+          )
+        );
 	}
 
 	// Returns the content type for a given html dom

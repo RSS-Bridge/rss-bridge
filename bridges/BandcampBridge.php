@@ -9,17 +9,13 @@ class BandcampBridge extends BridgeAbstract{
 		$this->name = "Bandcamp Tag";
 		$this->uri = "http://bandcamp.com/";
 		$this->description = "New bandcamp release by tag";
-		$this->update = '2016-08-17';
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "tag",
-				"type" : "text",
-				"identifier" : "tag"
-
-			}
-		]';
+        $this->parameters[] = array(
+          'tag'=>array(
+            'name'=>'tag',
+            'type'=>'text'
+          )
+        );
 	}
 
     public function collectData(array $param){

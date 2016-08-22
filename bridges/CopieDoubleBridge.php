@@ -7,7 +7,6 @@ class CopieDoubleBridge extends BridgeAbstract{
 		$this->name = "CopieDouble";
 		$this->uri = "http://www.copie-double.com/";
 		$this->description = "CopieDouble";
-		$this->update = '2016-08-17';
 
 	}
 

@@ -12,7 +12,6 @@ class StripeAPIChangeLogBridge extends BridgeAbstract{
     $this->name = 'Stripe API Changelog';
     $this->uri = 'https://stripe.com/docs/upgrades';
     $this->description = 'Returns the changes made to the stripe.com API';
-    $this->update = '2016-08-17';
   }
 
   public function collectData(array $param){

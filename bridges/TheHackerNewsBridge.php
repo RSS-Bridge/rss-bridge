@@ -7,7 +7,6 @@ class TheHackerNewsBridge extends BridgeAbstract {
         $this->name = 'The Hacker News Bridge';
         $this->uri = 'https://thehackernews.com/';
         $this->description = 'Cyber Security, Hacking, Technology News.';
-        $this->update = '2016-08-17';
 
     }
 

@@ -6,7 +6,6 @@ class CommonDreamsBridge extends BridgeAbstract{
 		$this->name = "CommonDreams Bridge";
 		$this->uri = "http://www.commondreams.org/";
 		$this->description = "Returns the newest articles.";
-		$this->update = '2016-08-17';
 	}
 
 	private function CommonDreamsExtractContent($url) {

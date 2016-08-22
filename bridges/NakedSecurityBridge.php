@@ -6,7 +6,6 @@ class NakedSecurityBridge extends BridgeAbstract {
         $this->name = 'Naked Security';
         $this->uri = 'https://nakedsecurity.sophos.com/';
         $this->description = 'Returns the newest articles.';
-        $this->update = '2016-08-17';
     }
 
     public function collectData(array $param) {

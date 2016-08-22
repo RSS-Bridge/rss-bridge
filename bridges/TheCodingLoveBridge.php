@@ -7,7 +7,6 @@ class TheCodingLoveBridge extends BridgeAbstract{
 		$this->name = "The Coding Love";
 		$this->uri = "http://thecodinglove.com/";
 		$this->description = "The Coding Love";
-		$this->update = '2016-08-17';
 
 	}
 

@@ -7,20 +7,14 @@ class XbooruBridge extends BridgeAbstract{
 		$this->name = "Xbooru";
 		$this->uri = "http://xbooru.com/";
 		$this->description = "Returns images from given page";
-		$this->update = '2016-08-17';
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "page",
-				"identifier" : "p",
-				"type" : "number"
-			},
-			{
-				"name" : "tags",
-				"identifier" : "t"
-			}
-		]';
+        $this->parameters[] = array(
+          'p'=>array(
+            'name'=>'page',
+            'type'=>'number'
+          ),
+          't'=>array('name'=>'tags')
+        );
 	}
 
     public function collectData(array $param){

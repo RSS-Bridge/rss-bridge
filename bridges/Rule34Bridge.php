@@ -7,20 +7,15 @@ class Rule34Bridge extends BridgeAbstract{
 		$this->name = "Rule34";
 		$this->uri = "http://rule34.xxx/";
 		$this->description = "Returns images from given page";
-		$this->update = '2016-08-17';
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "page",
-				"identifier" : "p",
-				"type" : "number"
-			},
-			{
-				"name" : "tags",
-				"identifier" : "t"
-			}
-		]';
+        $this->parameters[] = array(
+          'p'=>array(
+            'name'=>'page',
+            'type'=>'number'
+          ),
+          't'=>array('name'=>'tags')
+        );
+
 	}
 
     public function collectData(array $param){

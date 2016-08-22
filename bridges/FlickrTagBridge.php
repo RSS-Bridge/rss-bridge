@@ -7,23 +7,14 @@ class FlickrTagBridge extends BridgeAbstract{
 		$this->name = "Flickr TagUser";
 		$this->uri = "http://www.flickr.com/";
 		$this->description = "Returns the tagged or user images from Flickr";
-		$this->update = '2016-08-17';
 
-		$this->parameters["By keyword"] =
-		'[
-			{
-				"name" : "Keyword",
-				"identifier" : "q"
-			}
-		]';
+        $this->parameters["By keyword"] = array(
+          'q'=>array('name'=>'keyword')
+        );
 
-		$this->parameters["By username"] =
-		'[
-			{
-				"name" : "Username",
-				"identifier" : "u"
-			}
-		]';
+        $this->parameters["By username"] = array(
+          'u'=>array('name'=>'Username')
+        );
 	}
 
     public function collectData(array $param){

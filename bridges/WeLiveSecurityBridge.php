@@ -6,7 +6,6 @@ class WeLiveSecurityBridge extends BridgeAbstract {
         $this->name = 'We Live Security';
         $this->uri = 'http://www.welivesecurity.com/';
         $this->description = 'Returns the newest articles.';
-        $this->update = '2016-08-17';
     }
 
     public function collectData(array $param) {

@@ -9,24 +9,17 @@ class GiphyBridge extends BridgeAbstract{
 		$this->name = "Giphy Bridge";
 		$this->uri = "http://giphy.com/";
 		$this->description = "Bridge for giphy.com";
-		$this->update = '2016-08-17';
 
-		$this->parameters["By tag"] =
-		'[
-			{
-				"name" : "search tag",
-				"identifier" : "s"
-			}
-		]';
+        $this->parameters["By tag"] = array(
+          's'=>array('name'=>'search tag')
+        );
 
-		$this->parameters["Without tag"] =
-		'[
-			{
-				"name" : "max number of returned items",
-				"type" : "number",
-				"identifier" : "n"
-			}
-		]';
+        $this->parameters["Without tag"] = array(
+          'n'=>array(
+            'name'=>'max number of returned items',
+            'type'=>'number'
+          )
+        );
 	}
 
 	public function collectData(array $param){

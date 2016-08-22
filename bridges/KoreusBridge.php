@@ -6,7 +6,6 @@ class KoreusBridge extends BridgeAbstract{
 		$this->name = "Koreus";
 		$this->uri = "http://www.koreus.com/";
 		$this->description = "Returns the 5 newest posts from Koreus (full text)";
-		$this->update = '2016-08-17';
 	}
 
 	private function KoreusStripCDATA($string) {
@@ -16,7 +15,7 @@ class KoreusBridge extends BridgeAbstract{
 	}
 
 	private function KoreusExtractContent($url) {
-		$html2 = $this->getSimpeHTMLDOM($url);
+		$html2 = $this->getSimpleHTMLDOM($url);
 		$text = $html2->find('p[class=itemText]', 0)->innertext;
 		$text = utf8_encode(preg_replace('/(Sur le m.+?)+$/i','',$text));
 		return $text;

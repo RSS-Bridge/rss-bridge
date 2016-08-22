@@ -6,7 +6,6 @@ class DeveloppezDotComBridge extends BridgeAbstract{
 		$this->name = "Developpez.com Actus (FR)";
 		$this->uri = "http://www.developpez.com/";
 		$this->description = "Returns the 15 newest posts from DeveloppezDotCom (full text).";
-		$this->update = '2016-08-17';
 	}
 
 	private function DeveloppezDotComStripCDATA($string) {

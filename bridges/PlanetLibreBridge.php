@@ -6,11 +6,10 @@ class PlanetLibreBridge extends BridgeAbstract{
 		$this->name = "PlanetLibre";
 		$this->uri = "http://www.planet-libre.org";
 		$this->description = "Returns the 5 newest posts from PlanetLibre (full text)";
-		$this->update = '2016-08-17';
 	}
 
 	private function PlanetLibreExtractContent($url){
-		$html2 = $this->geSimpleHTMLDOM($url);
+		$html2 = $this->getSimpleHTMLDOM($url);
 		$text = $html2->find('div[class="post-text"]', 0)->innertext;
 		return $text;
 	}

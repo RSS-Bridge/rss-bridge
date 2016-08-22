@@ -8,21 +8,16 @@ class Freenews extends RssExpander {
 		$this->name = "Freenews";
 		$this->uri = "http://freenews.fr";
 		$this->description = "Un site d'actualité pour les freenautes (mais ne parlant pas que de la freebox). Ne rentrez pas d'id si vous voulez accéder aux actualités générales.";
-		$this->update = "2016-08-09";
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "Id de la rubrique (sans le \'-\')",
-				"identifier" : "id"
-			}
-		]';
+        $this->parameters[] = array(
+          'id'=>array('name'=>'Id de la rubrique (sans le \'-\')')
+        );
 	}
 
     public function collectData(array $param){
         parent::collectExpandableDatas($param, FREENEWS_RSS);
     }
-    
+
     protected function parseRSSItem($newsItem) {
         $item = new Item();
         $item->title = trim($newsItem->title);

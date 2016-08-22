@@ -7,7 +7,6 @@ class LeMondeInformatiqueBridge extends BridgeAbstract {
         $this->name = "Le Monde Informatique";
         $this->uri = "http://www.lemondeinformatique.fr/";
         $this->description = "Returns the newest articles.";
-        $this->update = '2016-08-17';
 
     }
 

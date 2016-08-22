@@ -7,7 +7,6 @@ class BlaguesDeMerdeBridge extends BridgeAbstract{
 		$this->name = "Blagues De Merde";
 		$this->uri = "http://www.blaguesdemerde.fr/";
 		$this->description = "Blagues De Merde";
-		$this->update = '2016-08-17';
 
 	}
 

@@ -7,15 +7,10 @@ class FourchanBridge extends BridgeAbstract{
 		$this->name = "4chan";
 		$this->uri = "https://www.4chan.org/";
 		$this->description = "Returns posts from the specified thread";
-		$this->update = '2016-08-17';
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "Thread URL",
-				"identifier" : "t"
-			}
-		]';
+        $this->parameters[] = array(
+          't'=>array('name'=>'Thread URL')
+        );
 	}
 
 

@@ -12,52 +12,26 @@ class WorldOfTanks extends HttpCachingBridgeAbstract{
 		$this->name = "World of Tanks";
 		$this->uri = "http://worldoftanks.eu/";
 		$this->description = "News about the tank slaughter game.";
-		$this->update = '2016-08-17';
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "ID de la catégorie",
-				"type" : "number",
-				"identifier" : "category"
-			},
-			{
-				"name" : "Langue",
-				"identifier" : "lang",
-				"type" : "list",
-				"values" : [
-					{
-						"name" : "Français",
-						"value" : "fr"
-					},
-					{
-						"name" : "English",
-						"value" : "en"
-					},
-					{
-						"name" : "Español",
-						"value" : "es"
-					},
-					{
-						"name" : "Deutsch",
-						"value" : "de"
-					},
-					{
-						"name" : "Čeština",
-						"value" : "cs"
-					},
-					{
-						"name" : "Polski",
-						"value" : "pl"
-					},
-					{
-						"name" : "Türkçe",
-						"value" : "tr"
-					}
-				]
-
-			}
-		]';
+        $this->parameters[] = array(
+          'category'=>array(
+            'name'=>'ID de la catégorie',
+            'type'=>'number'
+          ),
+          'lang'=>array(
+            'name'=>'Langue',
+            'type'=>'list',
+            'values'=>array(
+              'Français'=>'fr',
+              'English'=>'en',
+              'Español'=>'es',
+              'Deutsch'=>'de',
+              'Čeština'=>'cs',
+              'Polski'=>'pl',
+              'Türkçe'=>'tr'
+            )
+          )
+        );
 	}
 
 

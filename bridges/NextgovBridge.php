@@ -7,30 +7,25 @@ class NextgovBridge extends BridgeAbstract {
         $this->name = 'Nextgov Bridge';
         $this->uri = 'https://www.nextgov.com/';
         $this->description = 'USA Federal technology news, best practices, and web 2.0 tools.';
-        $this->update = '2016-08-17';
 
-        $this->parameters[] =
-        '[
-            {
-                "name" : "Category",
-                "type" : "list",
-                "identifier" : "category",
-                "values" :
-                [
-                    { "name" : "All", "value" : "all" },
-                    { "name" : "Technology News", "value" : "technology-news" },
-                    { "name" : "CIO Briefing", "value" : "cio-briefing" },
-                    { "name" : "Emerging Tech", "value" : "emerging-tech" },
-                    { "name" : "Cloud", "value" : "cloud-computing" },
-                    { "name" : "Cybersecurity", "value" : "cybersecurity" },
-                    { "name" : "Mobile", "value" : "mobile" },
-                    { "name" : "Health", "value" : "health" },
-                    { "name" : "Defense", "value" : "defense" },
-                    { "name" : "Big Data", "value" : "big-data" }
-                ]
-            }
-        ]';
-
+        $this->parameters[] = array(
+          'category'=>array(
+            'name'=>'Category',
+            'type'=>'list',
+            'values'=>array(
+              'All'=>'all',
+              'Technology News'=>'technology-news',
+              'CIO Briefing'=>'cio-briefing',
+              'Emerging Tech'=>'emerging-tech',
+              'Cloud'=>'cloud-computing',
+              'Cybersecurity'=>'cybersecurity',
+              'Mobile'=>'mobile',
+              'Health'=>'health',
+              'Defense'=>'defense',
+              'Big Data'=>'big-data'
+            )
+          )
+        );
     }
 
     public function collectData(array $param) {

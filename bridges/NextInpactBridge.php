@@ -6,7 +6,6 @@ class NextInpactBridge extends BridgeAbstract {
 		$this->name = "NextInpact Bridge";
 		$this->uri = "http://www.nextinpact.com/";
 		$this->description = "Returns the newest articles.";
-		$this->update = '2016-08-17';
 	}
 
 	private function StripCDATA($string) {
@@ -16,7 +15,7 @@ class NextInpactBridge extends BridgeAbstract {
 	}
 
 	private function ExtractContent($url) {
-		$html2 = $this->getSimpleHTLDOM($url);
+		$html2 = $this->getSimpleHTMLDOM($url);
 		$text = '<p><em>'.$html2->find('span.sub_title', 0)->innertext.'</em></p>'
 			.'<p><img src="'.$html2->find('div.container_main_image_article', 0)->find('img.dedicated',0)->src.'" alt="-" /></p>'
 			.'<div>'.$html2->find('div[itemprop=articleBody]', 0)->innertext.'</div>';

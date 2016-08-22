@@ -7,20 +7,14 @@ class YandereBridge extends BridgeAbstract{
 		$this->name = "Yande.re";
 		$this->uri = "https://yande.re/";
 		$this->description = "Returns images from given page and tags";
-		$this->update = '2016-08-17';
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "page",
-				"identifier" : "p",
-				"type" : "number"
-			},
-			{
-				"name" : "tags",
-				"identifier" : "t"
-			}
-		]';
+        $this->parameters[] = array(
+          'p'=>array(
+            'name'=>'page',
+            'type'=>'number'
+          ),
+          't'=>array('name'=>'tags')
+        );
 	}
 
     public function collectData(array $param){

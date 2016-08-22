@@ -7,7 +7,6 @@ Class FierPandaBridge extends BridgeAbstract{
         $this->name = "Fier Panda Bridge";
         $this->uri = "http://www.fier-panda.fr/";
         $this->description = "Returns latest articles from Fier Panda.";
-        $this->update = '2016-08-17';
 
     }
 

@@ -9,20 +9,19 @@ class VkBridge extends BridgeAbstract {
         $this->name = "VK.com";
         $this->uri = "http://www.vk.com/";
         $this->description = "Working with open pages";
-        $this->update = '2016-08-17';
-        $this->parameters["Url on page group or user"] = '[
-			{
-				"name" : "Url",
-				"identifier" : "u"
-			}
-		]';
+        $this->parameters["Url on page group or user"] = array(
+          'u'=>array(
+            'name'=>'Url',
+            'required'=>true
+          )
+        );
     }
 
     public function collectData(array $param) {
         $html = '';
         if (isset($param['u'])) {
             $this->request = $param['u'];
-            $text_html = file_get_contents(urldecode($this->request)) or $this->returnServerError('No results for this query.');
+            $text_html = $this->getSimpleHTMLDOM(urldecode($this->request)) or $this->returnServerError('No results for this query.');
             $text_html = iconv('windows-1251', 'utf-8', $text_html);
             $html = str_get_html($text_html);
         }

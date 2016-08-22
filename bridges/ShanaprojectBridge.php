@@ -5,7 +5,6 @@ class ShanaprojectBridge extends BridgeAbstract {
         $this->name = 'Shanaproject Bridge';
         $this->uri = 'http://www.shanaproject.com';
         $this->description = 'Returns a list of anime from the current Season Anime List';
-        $this->update = '2016-08-17';
     }
 
     // Returns an html object for the Season Anime List (latest season)

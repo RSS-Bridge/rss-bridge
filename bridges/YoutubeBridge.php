@@ -14,57 +14,41 @@ class YoutubeBridge extends BridgeAbstract {
 		$this->uri = 'https://www.youtube.com/';
 		$this->description = 'Returns the 10 newest videos by username/channel/playlist or search';
 		$this->maintainer = 'mitsukarenai';
-		$this->update = '2016-08-17';
 
-		$this->parameters['By username'] =
-		'[
-			{
-				"type" : "text",
-				"identifier" : "u",
-				"name" : "username",
-				"exampleValue" : "test",
-				"required" : true
-			}
-		]';
+        $this->parameters['By username'] = array(
+          'u'=>array(
+            'name'=>'username',
+            'exampleValue'=>'test',
+            'required'=>true
+          )
+        );
 
-		$this->parameters['By channel id'] =
-		'[
-			{
-				"type" : "text",
-				"identifier" : "c",
-				"name" : "channel id",
-				"exampleValue" : "15",
-				"required" : true
-			}
-		]';
+        $this->parameters['By channel id'] = array(
+          'c'=>array(
+            'name'=>'channel id',
+            'exampleValue'=>"15",
+            'required'=>true
+          )
+        );
 
-		$this->parameters['By playlist Id'] =
-		'[
-			{
-				"type" : "text",
-				"identifier" : "p",
-				"name" : "playlist id",
-				"exampleValue" : "15"
-			}
-		]';
+        $this->parameters['By playlist Id'] = array(
+          'p'=>array(
+            'name'=>'playlist id',
+            'exampleValue'=>"15"
+          )
+        );
 
-		$this->parameters['Search result'] =
-		'[
-			{
-				"type" : "text",
-				"identifier" : "s",
-				"name" : "search keyword",
-				"exampleValue" : "test"
-
-			},
-			{
-				"type" : "number",
-				"identifier" : "pa",
-				"name" : "page",
-				"exampleValue" : "1"
-
-			}
-		]';
+        $this->parameters['Search result'] = array(
+          's'=>array(
+            'name'=>'search keyword',
+            'exampleValue'=>'test'
+          ),
+          'pa'=>array(
+            'name'=>'page',
+            'type'=>'number',
+            'exampleValue'=>1
+          )
+        );
 	}
 
 	private function ytBridgeQueryVideoInfo($vid, &$author, &$desc, &$time) {

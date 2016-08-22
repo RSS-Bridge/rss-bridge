@@ -10,7 +10,6 @@ class TheOatmealBridge extends RssExpander{
 		$this->name = "The Oatmeal";
 		$this->uri = "http://theoatmeal.com/";
 		$this->description = "Un petit site de dessins assez rigolos";
-		$this->update = "2016-08-09";
 
 	}
 

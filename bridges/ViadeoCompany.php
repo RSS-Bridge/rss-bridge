@@ -7,20 +7,18 @@ class ViadeoCompany extends BridgeAbstract{
 		$this->name = "Viadeo Company";
 		$this->uri = "https://www.viadeo.com/";
 		$this->description = "Returns most recent actus from Company on Viadeo. (http://www.viadeo.com/fr/company/<strong style=\"font-weight:bold;\">apple</strong>)";
-		$this->update = '2016-08-17';
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "Company name",
-				"identifier" : "c"
-			}
-		]';
+        $this->parameters[] = array(
+          'c'=>array(
+            'name'=>'Company name',
+            'required'=>true
+          )
+        );
 	}
 
     public function collectData(array $param){
         $html = '';
-        $link = 'http://www.viadeo.com/fr/company/'.$param[c];
+        $link = 'http://www.viadeo.com/fr/company/'.$param['c'];
 
         $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request Viadeo.');
 

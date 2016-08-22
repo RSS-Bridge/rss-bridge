@@ -10,24 +10,15 @@ class HDWallpapersBridge extends BridgeAbstract {
 		$this->name = "HD Wallpapers Bridge";
 		$this->uri = "http://www.hdwallpapers.in/";
 		$this->description = "Returns the latests wallpapers from HDWallpapers";
-		$this->update = '2016-08-17';
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "category",
-				"identifier" : "c"
-			},
-			{
-				"name" : "max number of wallpapers",
-				"identifier" : "m"
-			},
-			{
-				"name" : "resolution",
-				"identifier" : "r",
-				"exampleValue" : "1920x1200, 1680x1050, ..."
-			}
-		]';
+        $this->parameters[] = array(
+          'c'=>array('name'=>'category'),
+          'm'=>array('name'=>'max number of wallpapers'),
+          'r'=>array(
+            'name'=>'resolution',
+            'exampleValue'=>'1920x1200, 1680x1050,…'
+          )
+        );
 	}
 
     public function collectData(array $param){

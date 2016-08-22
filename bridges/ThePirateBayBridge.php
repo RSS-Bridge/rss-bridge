@@ -7,16 +7,13 @@ class ThePirateBayBridge extends BridgeAbstract{
 		$this->name = "The Pirate Bay";
 		$this->uri = "https://thepiratebay.org/";
 		$this->description = "Returns results for the keywords. You can put several list of keywords by separating them with a semicolon (e.g. \"one show;another show\")";
-		$this->update = '2016-08-17';
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "keywords, separated by semicolons",
-				"identifier" : "q",
-				"exampleValue" : "first list;second list;..."
-			}
-		]';
+        $this->parameters[] = array(
+          'q'=>array(
+            'name'=>'keywords, separated by semicolons',
+            'exampleValue'=>'first list;second list;…'
+          )
+        );
 	}
 
 	public function collectData(array $param){

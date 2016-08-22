@@ -8,42 +8,34 @@ class SensCritiqueBridge extends BridgeAbstract {
 		$this->name = "Sens Critique";
 		$this->uri = "http://www.senscritique.com";
 		$this->description = "Sens Critique news";
-		$this->update = '2016-08-17';
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "Movies",
-				"identifier" : "m",
-				"type": "checkbox"
-			},
-			{
-				"name" : "Series",
-				"identifier" : "s",
-				"type": "checkbox"
-			},
-			{
-				"name" : "Video Games",
-				"identifier" : "g",
-				"type": "checkbox"
-			},
-			{
-				"name" : "Books",
-				"identifier" : "b",
-				"type": "checkbox"
-			},
-			{
-				"name" : "BD",
-				"identifier" : "bd",
-				"type": "checkbox"
-			},
-			{
-				"name" : "Music",
-				"identifier" : "mu",
-				"type": "checkbox"
-			}
-		]';
-	}
+        $this->parameters[] = array(
+          'm'=>array(
+            'name'=>'Movies',
+            'type'=>'checkbox'
+          ),
+          's'=>array(
+            'name'=>'Series',
+            'type'=>'checkbox'
+          ),
+          'g'=>array(
+            'name'=>'Video Games',
+            'type'=>'checkbox'
+          ),
+          'b'=>array(
+            'name'=>'Books',
+            'type'=>'checkbox'
+          ),
+          'bd'=>array(
+            'name'=>'BD',
+            'type'=>'checkbox'
+          ),
+          'mu'=>array(
+            'name'=>'Music',
+            'type'=>'checkbox'
+          )
+        );
+  }
 
 	public function collectData(array $param) {
 		if ((isset($param['m']) && $param['m'])) {

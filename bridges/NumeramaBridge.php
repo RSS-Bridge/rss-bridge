@@ -7,7 +7,6 @@ class NumeramaBridge extends BridgeAbstract{
         $this->name = 'Numerama';
         $this->uri = 'http://www.numerama.com/';
         $this->description = 'Returns the 5 newest posts from Numerama (full text)';
-        $this->update = '2016-08-17';
 
     }
 

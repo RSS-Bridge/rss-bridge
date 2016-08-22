@@ -7,34 +7,21 @@ class AllocineFRBridge extends BridgeAbstract{
         $this->name = "Allo Cine Bridge";
         $this->uri = "http://www.allocine.fr";
         $this->description = "Bridge for allocine.fr";
-        $this->update = '2016-08-17';
 
-        $this->parameters[] =
-        '[
-            {
-                "name" : "category",
-                "identifier" : "category",
-                "type" : "list",
-                "required" : true,
-                "exampleValue" : "Faux Raccord",
-                "title" : "Select your category",
-                "values" :
-                [
-                    {
-                        "name" : "Faux Raccord",
-                        "value" : "faux-raccord"
-                    },
-                    {
-                        "name" : "Top 5",
-                        "value" : "top-5"
-                    },
-                    {
-                        "name" : "Tueurs En Serie",
-                        "value" : "tuers-en-serie"
-                    }
-                ]
-            }
-        ]';
+        $this->parameters[] = array(
+          'category'=>array(
+            'name'=>'category',
+            'type'=>'list',
+            'required'=>true,
+            'exampleValue'=>'Faux Raccord',
+            'title'=>'Select your category',
+            'values'=>array(
+              'Faux Raccord'=>'faux-raccord',
+              'Top 5'=>'top-5',
+              'Tueurs En Serie'=>'tuers-en-serie'
+            )
+          )
+        );
     }
 
     public function collectData(array $params){
@@ -64,7 +51,7 @@ class AllocineFRBridge extends BridgeAbstract{
         // Update bridge name to match selection
         $this->name .= ' : ' . $category;
 
-        $html = $this->getSimpleTMLOM($this->uri) or $this->returnServerError("Could not request {$this->uri}!");
+        $html = $this->getSimpleHTMLDOM($this->uri) or $this->returnServerError("Could not request {$this->uri}!");
 
         foreach($html->find('figure.media-meta-fig') as $element)
         {

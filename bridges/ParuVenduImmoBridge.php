@@ -10,34 +10,23 @@ class ParuVenduImmoBridge extends BridgeAbstract
 		$this->name = "Paru Vendu Immobilier";
 		$this->uri = "http://www.paruvendu.fr";
 		$this->description = "Returns the ads from the first page of search result.";
-		$this->update = '2016-08-17';
 
 
-		$this->parameters[] =
-		'[
-			{
-				"name": "Minimal surface m²",
-				"type" : "number",
-				"identifier" : "minarea"
-			},
-			{
-				"name" : "Max price",
-				"type" : "number",
-				"identifier" : "maxprice"
-			},
-			{
-				"name" : "Country code",
-				"type" : "text",
-				"identifier" : "pa",
-				"exampleValue" : "FR"
-			},
-			{
-				"name" : "department numbers or postal codes, comma-separated",
-				"type" : "text",
-				"identifier" : "lo"
-			}
-
-		]';
+        $this->parameters[] = array(
+          'minarea'=>array(
+            'name'=>'Minimal surface m²',
+            'type'=>'number'
+          ),
+          'maxprice'=>array(
+            'name'=>'Max price',
+            'type'=>'number'
+          ),
+          'pa'=>array(
+            'name'=>'Country code',
+            'exampleValue'=>'FR'
+          ),
+          'lo'=>array('name'=>'department numbers or postal codes, comma-separated')
+        );
 	}
 
     public function collectData(array $param)

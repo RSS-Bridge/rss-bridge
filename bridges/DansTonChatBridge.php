@@ -7,7 +7,6 @@ class DansTonChatBridge extends BridgeAbstract{
 		$this->name = "DansTonChat Bridge";
 		$this->uri = "http://danstonchat.com";
 		$this->description = "Returns latest quotes from DansTonChat.";
-		$this->update = '2016-08-17';
 
 	}
 

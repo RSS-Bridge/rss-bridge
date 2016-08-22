@@ -6,7 +6,6 @@ class MondeDiploBridge extends BridgeAbstract{
 		$this->name = 'Monde Diplomatique';
 		$this->uri = 'http://www.monde-diplomatique.fr';
 		$this->description = "Returns most recent results from MondeDiplo.";
-		$this->update = '2016-08-17';
 	}
 
 	public function collectData(array $param){

@@ -6,7 +6,6 @@ class LeJournalDuGeekBridge extends BridgeAbstract{
 		$this->name = "journaldugeek.com (FR)";
 		$this->uri = "http://www.journaldugeek.com/";
 		$this->description = "Returns the 5 newest posts from LeJournalDuGeek (full text).";
-		$this->update = '2016-08-17';
 	}
 
 	private function LeJournalDuGeekStripCDATA($string) {
@@ -16,7 +15,7 @@ class LeJournalDuGeekBridge extends BridgeAbstract{
 	}
 
 	private function LeJournalDuGeekExtractContent($url) {
-		$articleHTMLContent = $this->getSimpleHMLDOM($url);
+		$articleHTMLContent = $this->getSimpleHTMLDOM($url);
 		$text = $articleHTMLContent->find('div.post-content', 0)->innertext;
 
 		foreach($articleHTMLContent->find('a.more') as $element) {

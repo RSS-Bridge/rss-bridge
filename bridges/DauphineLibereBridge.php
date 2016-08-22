@@ -7,78 +7,30 @@ class DauphineLibereBridge extends BridgeAbstract {
 		$this->name = "Dauphine Bridge";
 		$this->uri = "http://www.ledauphine.com/";
 		$this->description = "Returns the newest articles.";
-		$this->update = '2016-08-17';
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "Catégorie de l\'article",
-				"identifier" : "u",
-				"type" : "list",
-				"values" : [
-					{
-						"name" : "À la une",
-						"value" : ""
-					},
-					{
-						"name" : "France Monde",
-						"value" : "france-monde"
-					},
-					{
-						"name" : "Faits Divers",
-						"value" : "faits-divers"
-					},
-					{
-						"name" : "Économie et Finance",
-						"value" : "economie-et-finance"
-					},
-					{
-						"name" : "Politique",
-						"value" : "politique"
-					},
-					{
-						"name" : "Sport",
-						"value" : "sport"
-					},
-					{
-						"name" : "Ain",
-						"value" : "ain"
-					},
-					{
-						"name" : "Alpes-de-Haute-Provence",
-						"value" : "haute-provence"
-					},
-					{
-						"name" : "Hautes-Alpes",
-						"value" : "hautes-alpes"
-					},
-					{
-						"name" : "Ardèche",
-						"value" : "ardeche"
-					},
-					{
-						"name" : "Drôme",
-						"value" : "drome"
-					},
-					{
-						"name" : "Isère Sud",
-						"value" : "isere-sud"
-					},
-					{
-						"name" : "Savoie",
-						"value" : "savoie"
-					},
-					{
-						"name" : "Haute-Savoie",
-						"value" : "haute-savoie"
-					},
-					{
-						"name" : "Vaucluse",
-						"value" : "vaucluse"
-					}
-				]
-			}
-		]';
+        $this->parameters[] = array(
+          'u'=>array(
+            'name'=>'Catégorie de l\'article',
+            'type'=>'list',
+            'values'=>array(
+              'À la une'=>'',
+              'France Monde'=>'france-monde',
+              'Faits Divers'=>'faits-divers',
+              'Économie et Finance'=>'economie-et-finance',
+              'Politique'=>'politique',
+              'Sport'=>'sport',
+              'Ain'=>'ain',
+              'Alpes-de-Haute-Provence'=>'haute-provence',
+              'Hautes-Alpes'=>'hautes-alpes',
+              'Ardèche'=>'ardeche',
+              'Drôme'=>'drome',
+              'Isère Sud'=>'isere-sud',
+              'Savoie'=>'savoie',
+              'Haute-Savoie'=>'haute-savoie',
+              'Vaucluse'=>'vaucluse'
+            )
+          )
+        );
 	}
 
 	private function ExtractContent($url, $context) {
