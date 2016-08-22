@@ -49,11 +49,11 @@ class SuperbWallpapersBridge extends BridgeAbstract {
             foreach($html->find('.wpl .i a') as $element) {
                 $thumbnail = $element->find('img', 0);
 
-                $item = new \Item();
-                $item->uri = str_replace('200x125', $this->resolution, $thumbnail->src);
-                $item->timestamp = time();
-                $item->title = $element->title;
-                $item->content = $item->title.'<br><a href="'.$item->uri.'">'.$thumbnail.'</a>';
+                $item = array();
+                $item['uri'] = str_replace('200x125', $this->resolution, $thumbnail->src);
+                $item['timestamp'] = time();
+                $item['title'] = $element->title;
+                $item['content'] = $item['title'].'<br><a href="'.$item['uri'].'">'.$thumbnail.'</a>';
                 $this->items[] = $item;
 
                 $num++;

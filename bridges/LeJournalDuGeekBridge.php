@@ -42,11 +42,11 @@ class LeJournalDuGeekBridge extends BridgeAbstract{
 
 		foreach($rssFeed->find('item') as $element) {
 			if($limit < 5) {
-				$item = new \Item();
-				$item->title = $this->LeJournalDuGeekStripCDATA($element->find('title', 0)->innertext);
-				$item->uri = $this->LeJournalDuGeekStripCDATA($element->find('guid', 0)->plaintext);
-				$item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-				$item->content = $this->LeJournalDuGeekExtractContent($item->uri);
+				$item = array();
+				$item['title'] = $this->LeJournalDuGeekStripCDATA($element->find('title', 0)->innertext);
+				$item['uri'] = $this->LeJournalDuGeekStripCDATA($element->find('guid', 0)->plaintext);
+				$item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
+				$item['content'] = $this->LeJournalDuGeekExtractContent($item['uri']);
 				$this->items[] = $item;
 				$limit++;
 			}

@@ -45,12 +45,12 @@ class WhydBridge extends BridgeAbstract{
 
 		for($i = 0; $i < 10; $i++) {
 			$track = $html->find('div.post', $i);
-            $item = new \Item();
-            $item->author = $track->find('h2', 0)->plaintext;
-            $item->title = $track->find('h2', 0)->plaintext;
-            $item->content = $track->find('a.thumb',0) . '<br/>' . $track->find('h2', 0)->plaintext;
-            $item->id = 'http://www.whyd.com' . $track->find('a.no-ajaxy',0)->getAttribute('href');
-            $item->uri = 'http://www.whyd.com' . $track->find('a.no-ajaxy',0)->getAttribute('href');
+            $item = array();
+            $item['author'] = $track->find('h2', 0)->plaintext;
+            $item['title'] = $track->find('h2', 0)->plaintext;
+            $item['content'] = $track->find('a.thumb',0) . '<br/>' . $track->find('h2', 0)->plaintext;
+            $item['id'] = 'http://www.whyd.com' . $track->find('a.no-ajaxy',0)->getAttribute('href');
+            $item['uri'] = 'http://www.whyd.com' . $track->find('a.no-ajaxy',0)->getAttribute('href');
             $this->items[] = $item;
         }
     }

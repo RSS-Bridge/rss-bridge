@@ -147,14 +147,14 @@ class WikipediaBridge extends BridgeAbstract{
 			}
 		}
 
-		$item = new \Item();
-		$item->uri = $this->uri . $target->href;
-		$item->title = $target->title;
+		$item = array();
+		$item['uri'] = $this->uri . $target->href;
+		$item['title'] = $target->title;
 
 		if(!$fullArticle)
-			$item->content = strip_tags($this->ReplaceURIInHTMLElement($element), '<a><p><br><img>');
+			$item['content'] = strip_tags($this->ReplaceURIInHTMLElement($element), '<a><p><br><img>');
 		else
-			$item->content = $this->LoadFullArticle($item->uri);
+			$item['content'] = $this->LoadFullArticle($item['uri']);
 
 		$this->items[] = $item;
 	}
@@ -164,16 +164,16 @@ class WikipediaBridge extends BridgeAbstract{
 	*/
 	private function AddDidYouKnowGeneric($element, $fullArticle){
 		foreach($element->find('ul', 0)->find('li') as $entry){
-			$item = new \Item();
+			$item = array();
 
 			// We can only use the first anchor, there is no way of finding the 'correct' one if there are multiple
-			$item->uri = $this->uri . $entry->find('a', 0)->href;
-			$item->title = strip_tags($entry->innertext);
+			$item['uri'] = $this->uri . $entry->find('a', 0)->href;
+			$item['title'] = strip_tags($entry->innertext);
 
 			if(!$fullArticle)
-				$item->content = $this->ReplaceURIInHTMLElement($entry);
+				$item['content'] = $this->ReplaceURIInHTMLElement($entry);
 			else
-				$item->content = $this->LoadFullArticle($item->uri);
+				$item['content'] = $this->LoadFullArticle($item['uri']);
 
 			$this->items[] = $item;
 		}

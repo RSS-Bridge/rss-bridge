@@ -24,24 +24,24 @@ class CourrierInternationalBridge extends BridgeAbstract{
 
         foreach($element as $article) {
 
-            $item = new \Item();
+            $item = array();
 
-            $item->uri = $article->parent->getAttribute("href");
+            $item['uri'] = $article->parent->getAttribute("href");
 
-            if(strpos($item->uri, "http") === FALSE) {
-                $item->uri = "http://courrierinternational.fr/".$item->uri;
+            if(strpos($item['uri'], "http") === FALSE) {
+                $item['uri'] = "http://courrierinternational.fr/".$item['uri'];
             }
 
-            $page = $this->getSimpleHTMLDOM($item->uri);
+            $page = $this->getSimpleHTMLDOM($item['uri']);
 
             $cleaner = new HTMLSanitizer();
 
-            $item->content = $cleaner->sanitize($page->find("div.article-text")[0]);
-            $item->title = strip_tags($article->find(".title")[0]);
+            $item['content'] = $cleaner->sanitize($page->find("div.article-text")[0]);
+            $item['title'] = strip_tags($article->find(".title")[0]);
 
             $dateTime = date_parse($page->find("time")[0]);
 
-            $item->timestamp = mktime(
+            $item['timestamp'] = mktime(
        			$dateTime['hour'],
         		$dateTime['minute'],
         		$dateTime['second'],

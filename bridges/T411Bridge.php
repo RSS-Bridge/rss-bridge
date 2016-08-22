@@ -70,12 +70,12 @@ class T411Bridge extends BridgeAbstract {
                     $item_desc = preg_replace('/<h2 class="align-center">LIENS DE T..?L..?CHARGEMENT<\/h2>/i', '', $item_desc);
 
                     //Build and add final item
-                    $item = new \Item();
-                    $item->uri = $item_uri;
-                    $item->title = $item_title;
-                    $item->author = $item_author;
-                    $item->timestamp = $item_date;
-                    $item->content = $item_desc;
+                    $item = array();
+                    $item['uri'] = $item_uri;
+                    $item['title'] = $item_title;
+                    $item['author'] = $item_author;
+                    $item['timestamp'] = $item_date;
+                    $item['content'] = $item_desc;
                     $this->items[] = $item;
                     $limit++;
                 }

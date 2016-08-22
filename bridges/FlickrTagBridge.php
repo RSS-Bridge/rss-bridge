@@ -33,11 +33,11 @@ class FlickrTagBridge extends BridgeAbstract{
         }
 
         foreach($html->find('span.photo_container') as $element) {
-            $item = new \Item();
-            $item->uri = 'http://flickr.com'.$element->find('a',0)->href;
+            $item = array();
+            $item['uri'] = 'http://flickr.com'.$element->find('a',0)->href;
             $thumbnailUri = $element->find('img',0)->getAttribute('data-defer-src');
-            $item->content = '<a href="' . $item->uri . '"><img src="' . $thumbnailUri . '" /></a>'; // FIXME: Filter javascript ?
-            $item->title = $element->find('a',0)->title;
+            $item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $thumbnailUri . '" /></a>'; // FIXME: Filter javascript ?
+            $item['title'] = $element->find('a',0)->title;
             $this->items[] = $item;
         }
     }

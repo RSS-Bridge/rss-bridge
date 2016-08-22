@@ -82,11 +82,11 @@ class JapanExpoBridge extends BridgeAbstract{
                 $content = '<img src="'.$thumbnail.'"></img><br />'.$date_text.'<br /><a href="'.$url.'">Lire l\'article</a>';
             }
 
-            $item = new \Item();
-            $item->uri = $url;
-            $item->title = $title;
-            $item->timestamp = $timestamp;
-            $item->content = $content;
+            $item = array();
+            $item['uri'] = $url;
+            $item['title'] = $title;
+            $item['timestamp'] = $timestamp;
+            $item['content'] = $content;
             $this->items[] = $item;
             $count++;
         }

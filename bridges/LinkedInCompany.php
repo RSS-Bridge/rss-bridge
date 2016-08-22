@@ -25,10 +25,10 @@ class LinkedInCompany extends BridgeAbstract{
         foreach($html->find('//*[@id="my-feed-post"]/li') as $element) {
             $title = $element->find('span.share-body', 0)->innertext;
             if ($title) {
-                $item = new \Item();
-                $item->uri = $link;
-                $item->title = mb_substr(strip_tags($element->find('span.share-body', 0)->innertext), 0 ,100);
-                $item->content = strip_tags($element->find('span.share-body', 0)->innertext);
+                $item = array();
+                $item['uri'] = $link;
+                $item['title'] = mb_substr(strip_tags($element->find('span.share-body', 0)->innertext), 0 ,100);
+                $item['content'] = strip_tags($element->find('span.share-body', 0)->innertext);
                 $this->items[] = $item;
                 $i++;
             }

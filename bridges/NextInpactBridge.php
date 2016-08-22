@@ -31,12 +31,12 @@ class NextInpactBridge extends BridgeAbstract {
 
 		foreach($html->find('item') as $element) {
 		 if($limit < 3) {
-				$item = new \Item();
-				$item->title = $this->StripCDATA($element->find('title', 0)->innertext);
-				$item->uri = $this->StripCDATA($element->find('guid', 0)->plaintext);
-				$item->author = $this->StripCDATA($element->find('creator', 0)->innertext);
-				$item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-				$item->content = $this->ExtractContent($item->uri);
+				$item = array();
+				$item['title'] = $this->StripCDATA($element->find('title', 0)->innertext);
+				$item['uri'] = $this->StripCDATA($element->find('guid', 0)->plaintext);
+				$item['author'] = $this->StripCDATA($element->find('creator', 0)->innertext);
+				$item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
+				$item['content'] = $this->ExtractContent($item['uri']);
 				$this->items[] = $item;
 				$limit++;
 			}

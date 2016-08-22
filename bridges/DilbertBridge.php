@@ -26,12 +26,12 @@ class DilbertBridge extends BridgeAbstract {
                 $title = 'Dilbert Comic Strip on '.$date;
             $date = strtotime($date);
 
-            $item = new \Item();
-            $item->uri = $url;
-            $item->title = $title;
-            $item->author = 'Scott Adams';
-            $item->timestamp = $date;
-            $item->content = '<img src="'.$comic.'" alt="'.$img->alt.'" />';
+            $item = array();
+            $item['uri'] = $url;
+            $item['title'] = $title;
+            $item['author'] = 'Scott Adams';
+            $item['timestamp'] = $date;
+            $item['content'] = '<img src="'.$comic.'" alt="'.$img->alt.'" />';
             $this->items[] = $item;
         }
     }

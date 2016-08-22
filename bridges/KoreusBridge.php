@@ -27,11 +27,11 @@ class KoreusBridge extends BridgeAbstract{
 
 		foreach($html->find('item') as $element) {
 			if($limit < 5) {
-				$item = new \Item();
-				$item->title = $this->KoreusStripCDATA($element->find('title', 0)->innertext);
-				$item->uri = $this->KoreusStripCDATA($element->find('guid', 0)->plaintext);
-				$item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-				$item->content = $this->KoreusExtractContent($item->uri);
+				$item = array();
+				$item['title'] = $this->KoreusStripCDATA($element->find('title', 0)->innertext);
+				$item['uri'] = $this->KoreusStripCDATA($element->find('guid', 0)->plaintext);
+				$item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
+				$item['content'] = $this->KoreusExtractContent($item['uri']);
 				$this->items[] = $item;
 				$limit++;
 			}

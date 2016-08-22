@@ -83,12 +83,12 @@ class AnimeUltimeBridge extends BridgeAbstract {
                             $item_description = utf8_encode($item_description);
 
                             //Build and add final item
-                            $item = new \Item();
-                            $item->uri = $item_uri;
-                            $item->title = $item_name.' '.$item_type.' '.$item_episode;
-                            $item->author = $item_fansub;
-                            $item->timestamp = $item_date;
-                            $item->content = $item_description;
+                            $item = array();
+                            $item['uri'] = $item_uri;
+                            $item['title'] = $item_name.' '.$item_type.' '.$item_episode;
+                            $item['author'] = $item_fansub;
+                            $item['timestamp'] = $item_date;
+                            $item['content'] = $item_description;
                             $this->items[] = $item;
                             $processedOK++;
 

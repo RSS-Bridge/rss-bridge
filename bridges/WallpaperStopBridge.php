@@ -56,12 +56,12 @@ class WallpaperStopBridge extends BridgeAbstract {
                     if (preg_match('%^http://www\.wallpaperstop\.com/(.+)/([^/]+)-(\d+)\.html$%', $wplink, $matches)) {
                         $thumbnail = $element->find('img', 0);
 
-                        $item = new \Item();
-                        $item->uri = $baseUri.'/wallpapers/'.str_replace('wallpaper', 'wallpapers', $matches[1]).'/'.$matches[2].'-'.$this->resolution.'-'.$matches[3].'.jpg';
-                        $item->id = $matches[3];
-                        $item->timestamp = time();
-                        $item->title = $thumbnail->title;
-                        $item->content = $item->title.'<br><a href="'.$wplink.'"><img src="'.$baseUri.$thumbnail->src.'" /></a>';
+                        $item = array();
+                        $item['uri'] = $baseUri.'/wallpapers/'.str_replace('wallpaper', 'wallpapers', $matches[1]).'/'.$matches[2].'-'.$this->resolution.'-'.$matches[3].'.jpg';
+                        $item['id'] = $matches[3];
+                        $item['timestamp'] = time();
+                        $item['title'] = $thumbnail->title;
+                        $item['content'] = $item['title'].'<br><a href="'.$wplink.'"><img src="'.$baseUri.$thumbnail->src.'" /></a>';
                         $this->items[] = $item;
 
                         $num++;

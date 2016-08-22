@@ -49,12 +49,12 @@ class HDWallpapersBridge extends BridgeAbstract {
             foreach($html->find('.wallpapers .wall a') as $element) {
                 $thumbnail = $element->find('img', 0);
 
-                $item = new \Item();
+                $item = array();
                 // http://www.hdwallpapers.in/download/yosemite_reflections-1680x1050.jpg
-                $item->uri = $baseUri.'/download'.str_replace('wallpapers.html', $this->resolution.'.jpg', $element->href);
-                $item->timestamp = time();
-                $item->title = $element->find('p', 0)->text();
-                $item->content = $item->title.'<br><a href="'.$item->uri.'"><img src="'.$baseUri.$thumbnail->src.'" /></a>';
+                $item['uri'] = $baseUri.'/download'.str_replace('wallpapers.html', $this->resolution.'.jpg', $element->href);
+                $item['timestamp'] = time();
+                $item['title'] = $element->find('p', 0)->text();
+                $item['content'] = $item['title'].'<br><a href="'.$item['uri'].'"><img src="'.$baseUri.$thumbnail->src.'" /></a>';
                 $this->items[] = $item;
 
                 $num++;

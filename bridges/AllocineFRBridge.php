@@ -55,7 +55,7 @@ class AllocineFRBridge extends BridgeAbstract{
 
         foreach($html->find('figure.media-meta-fig') as $element)
         {
-            $item = new Item();
+            $item = array();
 
             $title = $element->find('div.titlebar h3.title a', 0);
             $content = trim($element->innertext);
@@ -67,9 +67,9 @@ class AllocineFRBridge extends BridgeAbstract{
                 $content = str_replace('href="/', 'href="http://www.allocine.fr/', $content);
                 $content = str_replace('src=\'/', 'src=\'http://www.allocine.fr/', $content);
                 $content = str_replace('href=\'/', 'href=\'http://www.allocine.fr/', $content);
-                $item->content = $content;
-                $item->title = trim($title->innertext);
-                $item->uri = "http://www.allocine.fr" . $title->href;
+                $item['content'] = $content;
+                $item['title'] = trim($title->innertext);
+                $item['uri'] = "http://www.allocine.fr" . $title->href;
                 $this->items[] = $item;
             }
         }

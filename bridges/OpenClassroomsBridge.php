@@ -41,10 +41,10 @@ class OpenClassroomsBridge extends BridgeAbstract{
         $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request OpenClassrooms.');
 
         foreach($html->find('.courseListItem') as $element) {
-                $item = new \Item();
-                $item->uri = 'https://openclassrooms.com'.$element->find('a', 0)->href;
-                $item->title = $element->find('h3', 0)->plaintext;
-                $item->content = $element->find('slidingItem__descriptionContent', 0)->plaintext;
+                $item = array();
+                $item['uri'] = 'https://openclassrooms.com'.$element->find('a', 0)->href;
+                $item['title'] = $element->find('h3', 0)->plaintext;
+                $item['content'] = $element->find('slidingItem__descriptionContent', 0)->plaintext;
                 $this->items[] = $item;
         }
     }

@@ -33,12 +33,12 @@ class BandcampBridge extends BridgeAbstract{
             $uri = ltrim($script, "return 'url(");
             $uri = rtrim($uri, "')");
 
-            $item = new \Item();
-            $item->author = $release->find('div.itemsubtext',0)->plaintext . ' - ' . $release->find('div.itemtext',0)->plaintext;
-            $item->title = $release->find('div.itemsubtext',0)->plaintext . ' - ' . $release->find('div.itemtext',0)->plaintext;
-            $item->content = '<img src="' . $uri . '"/><br/>' . $release->find('div.itemsubtext',0)->plaintext . ' - ' . $release->find('div.itemtext',0)->plaintext;
-            $item->id = $release->find('a',0)->getAttribute('href');
-            $item->uri = $release->find('a',0)->getAttribute('href');
+            $item = array();
+            $item['author'] = $release->find('div.itemsubtext',0)->plaintext . ' - ' . $release->find('div.itemtext',0)->plaintext;
+            $item['title'] = $release->find('div.itemsubtext',0)->plaintext . ' - ' . $release->find('div.itemtext',0)->plaintext;
+            $item['content'] = '<img src="' . $uri . '"/><br/>' . $release->find('div.itemsubtext',0)->plaintext . ' - ' . $release->find('div.itemtext',0)->plaintext;
+            $item['id'] = $release->find('a',0)->getAttribute('href');
+            $item['uri'] = $release->find('a',0)->getAttribute('href');
             $this->items[] = $item;
         }
     }

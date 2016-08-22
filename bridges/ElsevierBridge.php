@@ -63,12 +63,12 @@ class ElsevierBridge extends BridgeAbstract{
 		$html = $this->getSimpleHTMLDOM($uri) or $this->returnServerError('No results for Elsevier journal '.$param['j']);
 
 		foreach($html->find('.pod-listing') as $article){
-			$item = new \Item();
-			$item->uri = $article->find('.pod-listing-header>a',0)->getAttribute('href').'?np=y';
-			$item->title = $article->find('.pod-listing-header>a',0)->plaintext;
-			$item->author = $this->ExtractArticleName($article);
-			$item->timestamp = $this->ExtractArticleTimestamp($article);
-			$item->content = $this->ExtractArticleContent($article);
+			$item = array();
+			$item['uri'] = $article->find('.pod-listing-header>a',0)->getAttribute('href').'?np=y';
+			$item['title'] = $article->find('.pod-listing-header>a',0)->plaintext;
+			$item['author'] = $this->ExtractArticleName($article);
+			$item['timestamp'] = $this->ExtractArticleTimestamp($article);
+			$item['content'] = $this->ExtractArticleContent($article);
 			$this->items[] = $item;
 		}
 	}

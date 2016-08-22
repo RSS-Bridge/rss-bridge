@@ -177,12 +177,12 @@ class FuturaSciencesBridge extends BridgeAbstract {
                 $contents = StripWithDelimiters($contents, 'fs:xt:clicktype="', '"');
                 $contents = StripWithDelimiters($contents, 'fs:xt:clickname="', '"');
 
-                $item = new \Item();
-                $item->author = ExtractAuthor($article, $element);
-                $item->uri = $article_url;
-                $item->title = StripCDATA($element->find('title', 0)->innertext);
-                $item->timestamp = strtotime(StripCDATA($element->find('pubDate', 0)->plaintext));
-                $item->content = trim($contents);
+                $item = array();
+                $item['author'] = ExtractAuthor($article, $element);
+                $item['uri'] = $article_url;
+                $item['title'] = StripCDATA($element->find('title', 0)->innertext);
+                $item['timestamp'] = strtotime(StripCDATA($element->find('pubDate', 0)->plaintext));
+                $item['content'] = trim($contents);
                 $this->items[] = $item;
                 $limit++;
             }

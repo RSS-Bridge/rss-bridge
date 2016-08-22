@@ -91,19 +91,19 @@ class CastorusBridge extends BridgeAbstract {
 			$this->returnServerError('Failed to find activities!');
 
 		foreach($activities as $activity){
-			$item = new \Item();
+			$item = array();
 
-			$item->title = $this->ExtractActivityTitle($activity);
-			$item->uri = $this->ExtractActivityUrl($activity);
-			$item->timestamp = $this->ExtractActivityTime($activity);
-			$item->content = '<a href="' . $item->uri . '">' . $item->title . '</a><br><p>'
+			$item['title'] = $this->ExtractActivityTitle($activity);
+			$item['uri'] = $this->ExtractActivityUrl($activity);
+			$item['timestamp'] = $this->ExtractActivityTime($activity);
+			$item['content'] = '<a href="' . $item['uri'] . '">' . $item['title'] . '</a><br><p>'
 								. $this->ExtractActivityPrice($activity) . '</p>';
 
-			if(isset($zip_filter) && !(substr($item->title, 0, strlen($zip_filter)) === $zip_filter)){
+			if(isset($zip_filter) && !(substr($item['title'], 0, strlen($zip_filter)) === $zip_filter)){
 				continue; // Skip this item
 			}
 
-			if(isset($city_filter) && !(substr($item->title, strpos($item->title, ' ') + 1, strlen($city_filter)) === $city_filter)){
+			if(isset($city_filter) && !(substr($item['title'], strpos($item['title'], ' ') + 1, strlen($city_filter)) === $city_filter)){
 				continue; // Skip this item
 			}
 

@@ -28,11 +28,11 @@ class CommonDreamsBridge extends BridgeAbstract{
 		$limit = 0;
 		foreach($html->find('item') as $element) {
 			if($limit < 4) {
-				$item = new \Item();
-				$item->title = $element->find('title', 0)->innertext;
-				$item->uri = CommonDreamsUrl($element->find('guid', 0)->innertext);
-				$item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-				$item->content = $this->CommonDreamsExtractContent($item->uri);
+				$item = array();
+				$item['title'] = $element->find('title', 0)->innertext;
+				$item['uri'] = CommonDreamsUrl($element->find('guid', 0)->innertext);
+				$item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
+				$item['content'] = $this->CommonDreamsExtractContent($item['uri']);
 				$this->items[] = $item;
 				$limit++;
 			}

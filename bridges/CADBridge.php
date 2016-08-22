@@ -48,12 +48,12 @@ class CADBridge extends BridgeAbstract{
 
 		foreach($html->find('item') as $element) {
 			if($limit < 5) {
-				$item = new \Item();
-				$item->title = $element->find('title', 0)->innertext;
-				$item->uri = CADUrl($element->find('description', 0)->innertext);
-				if ($item->uri != 'notanurl') {
-					$item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-					$item->content = $this->CADExtractContent($item->uri);
+				$item = array();
+				$item['title'] = $element->find('title', 0)->innertext;
+				$item['uri'] = CADUrl($element->find('description', 0)->innertext);
+				if ($item['uri'] != 'notanurl') {
+					$item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
+					$item['content'] = $this->CADExtractContent($item['uri']);
 					$this->items[] = $item;
 					$limit++;
 				}

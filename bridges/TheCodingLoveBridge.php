@@ -14,7 +14,7 @@ class TheCodingLoveBridge extends BridgeAbstract{
         $html = $this->getSimpleHTMLDOM('http://thecodinglove.com/') or $this->returnServerError('Could not request The Coding Love.');
 
         foreach($html->find('div.post') as $element) {
-            $item = new Item();
+            $item = array();
             $temp = $element->find('h3 a', 0);
 
             $titre = $temp->innertext;
@@ -36,13 +36,13 @@ class TheCodingLoveBridge extends BridgeAbstract{
             if($pos > 0)
             {
                 $auteur = trim(str_replace("*/", "", substr($auteur->innertext, ($pos + 2))));
-                $item->author = $auteur;
+                $item['author'] = $auteur;
             }
 
 
-            $item->content .= trim($content);
-            $item->uri = $url;
-            $item->title = trim($titre);
+            $item['content'] .= trim($content);
+            $item['uri'] = $url;
+            $item['title'] = trim($titre);
 
             $this->items[] = $item;
         }

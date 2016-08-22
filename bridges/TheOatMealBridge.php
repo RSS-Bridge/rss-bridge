@@ -37,24 +37,24 @@ class TheOatmealBridge extends RssExpander{
         $namespaces = $newsItem->getNameSpaces(true);
         $dc = $newsItem->children($namespaces['dc']);
         $rdf = $newsItem->children($namespaces['rdf']);
-        $item = new Item();
-        $item->title = trim($newsItem->title);
+        $item = array();
+        $item['title'] = trim($newsItem->title);
         $this->message("browsing Oatmeal item ".var_export($newsItem, true));
-        $item->uri=(string) $newsItem->attributes($namespaces['rdf'])->about;
+        $item['uri']=(string) $newsItem->attributes($namespaces['rdf'])->about;
         // now load that uri from cache
-        $this->message("now loading page ".$item->uri);
-        $articlePage = str_get_html($this->get_cached($item->uri));
+        $this->message("now loading page ".$item['uri']);
+        $articlePage = str_get_html($this->get_cached($item['uri']));
 
         $content = $articlePage->find('#comic', 0);
 		if($content==null) {
 			$content = $articlePage->find('#blog');
 		}
-        $item->content = $content->innertext;
+        $item['content'] = $content->innertext;
         
         $this->message("dc content is ".var_export($dc, true));
-        $item->author = (string) $dc->creator;
-        $item->timestamp = DateTime::createFromFormat(DateTime::ISO8601, $dc->date)->getTimestamp();
-        $this->message("writtem by ".$item->author." on ".$item->timestamp);
+        $item['author'] = (string) $dc->creator;
+        $item['timestamp'] = DateTime::createFromFormat(DateTime::ISO8601, $dc->date)->getTimestamp();
+        $this->message("writtem by ".$item['author']." on ".$item['timestamp']);
         return $item;
     }
     

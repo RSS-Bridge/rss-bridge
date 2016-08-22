@@ -58,13 +58,13 @@ class EZTVBridge extends BridgeAbstract{
                 if ($released->plaintext == '&gt;1 week') continue;
 
                 // Fill item
-                $item = new \Item();
-                $item->uri = 'https://eztv.ch/'.$epinfo->href;
-                $item->id = $item->uri;
-                $item->timestamp = makeTimestamp($released->plaintext);
-                $item->title = $epinfo->plaintext;
-                $item->content = $epinfo->alt;
-                if(!empty($item->title))
+                $item = array();
+                $item['uri'] = 'https://eztv.ch/'.$epinfo->href;
+                $item['id'] = $item['uri'];
+                $item['timestamp'] = makeTimestamp($released->plaintext);
+                $item['title'] = $epinfo->plaintext;
+                $item['content'] = $epinfo->alt;
+                if(isset($item['title']))
                     $this->items[] = $item;
             }
         }

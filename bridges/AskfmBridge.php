@@ -26,12 +26,12 @@ class AskfmBridge extends BridgeAbstract{
         }
 
         foreach($html->find('div.streamItem-answer') as $element) {
-            $item = new \Item();
-            $item->uri = 'http://ask.fm'.$element->find('a.streamItemsAge',0)->href;
+            $item = array();
+            $item['uri'] = 'http://ask.fm'.$element->find('a.streamItemsAge',0)->href;
             $question = trim($element->find('h1.streamItemContent-question',0)->innertext);
-            $item->title = trim(htmlspecialchars_decode($element->find('h1.streamItemContent-question',0)->plaintext, ENT_QUOTES));
+            $item['title'] = trim(htmlspecialchars_decode($element->find('h1.streamItemContent-question',0)->plaintext, ENT_QUOTES));
             $answer = trim($element->find('p.streamItemContent-answer',0)->innertext);
-            #$item->update = $element->find('a.streamitemsage',0)->data-hint; // Doesn't work, DOM parser doesn't seem to like data-hint, dunno why
+            #$item['update'] = $element->find('a.streamitemsage',0)->data-hint; // Doesn't work, DOM parser doesn't seem to like data-hint, dunno why
             $visual = $element->find('div.streamItemContent-visual',0)->innertext; // This probably should be cleaned up, especially for YouTube embeds
             //Fix tracking links, also doesn't work
             foreach($element->find('a') as $link) {
@@ -43,7 +43,7 @@ class AskfmBridge extends BridgeAbstract{
             $content = '<p>' . $question . '</p><p>' . $answer . '</p><p>' . $visual . '</p>';
             // Fix relative links without breaking // scheme used by YouTube stuff
             $content = preg_replace('#href="\/(?!\/)#', 'href="http://ask.fm/',$content);
-            $item->content = $content;
+            $item['content'] = $content;
             $this->items[] = $item;
         }
     }

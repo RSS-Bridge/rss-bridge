@@ -54,16 +54,16 @@ class InstagramBridge extends BridgeAbstract{
         foreach($userMedia as $media)
         {
 
-        	$item = new \Item();
-        	$item->uri = "https://instagram.com/p/".$media->code."/";
-        	$item->content = '<img src="' . htmlentities($media->display_src) . '" />';
+        	$item = array();
+        	$item['uri'] = "https://instagram.com/p/".$media->code."/";
+        	$item['content'] = '<img src="' . htmlentities($media->display_src) . '" />';
         	if (isset($media->caption))
         	{
-        		$item->title = $media->caption;
+        		$item['title'] = $media->caption;
         	} else {
-        		$item->title = basename($media->display_src);
+        		$item['title'] = basename($media->display_src);
         	}
-        	$item->timestamp = $media->date;
+        	$item['timestamp'] = $media->date;
         	$this->items[] = $item;
 
         }

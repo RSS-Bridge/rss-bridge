@@ -246,13 +246,13 @@ class IsoHuntBridge extends BridgeAbstract{
             if(!$date)
                 $this->returnServerError('Unable to find date!');
 
-            $item = new \Item();
+            $item = array();
 
-            $item->uri = $this->fix_relative_uri($anchor->href);
-            $item->title = $anchor->title;
-            // $item->author =
-            $item->timestamp = strtotime($date->plaintext);
-            $item->content = $this->fix_relative_uri($torrent->innertext);
+            $item['uri'] = $this->fix_relative_uri($anchor->href);
+            $item['title'] = $anchor->title;
+            // $item['author'] =
+            $item['timestamp'] = strtotime($date->plaintext);
+            $item['content'] = $this->fix_relative_uri($torrent->innertext);
 
             $this->items[] = $item;
         }
@@ -284,13 +284,13 @@ class IsoHuntBridge extends BridgeAbstract{
             if(!$element)
                 $this->returnServerError('Unable to find element!');
 
-            $item = new \Item();
+            $item = array();
 
-            $item->uri = $element->href;
-            $item->title = $element->plaintext;
-            // $item->author =
-            // $item->timestamp =
-            // $item->content =
+            $item['uri'] = $element->href;
+            $item['title'] = $element->plaintext;
+            // $item['author'] =
+            // $item['timestamp'] =
+            // $item['content'] =
 
             $this->items[] = $item;
         }
@@ -310,13 +310,13 @@ class IsoHuntBridge extends BridgeAbstract{
             $this->returnServerError('Unable to find posts!');
 
         foreach($posts as $post){
-            $item = new \Item();
+            $item = array();
 
-            $item->uri = $this->latest_news_extract_uri($post);
-            $item->title = $this->latest_news_extract_title($post);
-            $item->author = $this->latest_news_extract_author($post);
-            $item->timestamp = $this->latest_news_extract_timestamp($post);
-            $item->content = $this->latest_news_extract_content($post);
+            $item['uri'] = $this->latest_news_extract_uri($post);
+            $item['title'] = $this->latest_news_extract_title($post);
+            $item['author'] = $this->latest_news_extract_author($post);
+            $item['timestamp'] = $this->latest_news_extract_timestamp($post);
+            $item['content'] = $this->latest_news_extract_content($post);
 
             $this->items[] = $item;
         }
@@ -399,13 +399,13 @@ class IsoHuntBridge extends BridgeAbstract{
             $this->returnServerError('Unable to find torrents!');
 
         foreach($torrents as $torrent){
-            $item = new \Item();
+            $item = array();
 
-            $item->uri = $this->latest_torrents_extract_uri($torrent);
-            $item->title = $this->latest_torrents_extract_title($torrent);
-            $item->author = $this->latest_torrents_extract_author($torrent);
-            $item->timestamp = $this->latest_torrents_extract_timestamp($torrent);
-            $item->content = ''; // There is no valuable content
+            $item['uri'] = $this->latest_torrents_extract_uri($torrent);
+            $item['title'] = $this->latest_torrents_extract_title($torrent);
+            $item['author'] = $this->latest_torrents_extract_author($torrent);
+            $item['timestamp'] = $this->latest_torrents_extract_timestamp($torrent);
+            $item['content'] = ''; // There is no valuable content
 
             $this->items[] = $item;
         }

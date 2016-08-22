@@ -128,18 +128,18 @@ class MangareaderBridge extends BridgeAbstract{
                 $chapters = $xpath->query("a[@class='chaptersrec']", $node);
 
                 if (isset($manga) && $chapters->length >= 1){
-                    $item = new \Item();
-                    $item->uri = 'http://www.mangareader.net' . htmlspecialchars($manga->getAttribute('href'));
-                    $item->title = htmlspecialchars($manga->nodeValue);
+                    $item = array();
+                    $item['uri'] = 'http://www.mangareader.net' . htmlspecialchars($manga->getAttribute('href'));
+                    $item['title'] = htmlspecialchars($manga->nodeValue);
 
                     // Add each chapter to the feed
-                    $item->content = "";
+                    $item['content'] = "";
 
                     foreach ($chapters as $chapter){
-                        if($item->content <> ""){
-                            $item->content .= "<br>";
+                        if($item['content'] <> ""){
+                            $item['content'] .= "<br>";
                         }
-                        $item->content .= "<a href='http://www.mangareader.net" . htmlspecialchars($chapter->getAttribute('href')) . "'>" . htmlspecialchars($chapter->nodeValue) . "</a>";
+                        $item['content'] .= "<a href='http://www.mangareader.net" . htmlspecialchars($chapter->getAttribute('href')) . "'>" . htmlspecialchars($chapter->nodeValue) . "</a>";
                     }
 
                     $this->items[] = $item;
@@ -162,13 +162,13 @@ class MangareaderBridge extends BridgeAbstract{
                 $mangaimgelement = $xpath->query(".//*[@class='imgsearchresults']", $manga)->item(0)->getAttribute('style');
                 $thumbnail = substr($mangaimgelement, 22, strlen($mangaimgelement) - 24);
 
-                $item = new \Item();
-                $item->title = htmlspecialchars($xpath->query(".//*[@class='manga_name']//a", $manga)->item(0)->nodeValue);
-                $item->uri = 'http://www.mangareader.net' . $xpath->query(".//*[@class='manga_name']//a", $manga)->item(0)->getAttribute('href');
-                $item->author = htmlspecialchars($xpath->query("//*[@class='author_name']", $manga)->item(0)->nodeValue);
-                $item->chaptercount = $xpath->query(".//*[@class='chapter_count']", $manga)->item(0)->nodeValue;
-                $item->genre = htmlspecialchars($xpath->query(".//*[@class='manga_genre']", $manga)->item(0)->nodeValue);
-                $item->content = '<a href="' . $item->uri . '"><img src="' . $thumbnail . '" alt="' . $item->title . '" /></a><p>' . $item->genre . '</p><p>' . $item->chaptercount . '</p>';
+                $item = array();
+                $item['title'] = htmlspecialchars($xpath->query(".//*[@class='manga_name']//a", $manga)->item(0)->nodeValue);
+                $item['uri'] = 'http://www.mangareader.net' . $xpath->query(".//*[@class='manga_name']//a", $manga)->item(0)->getAttribute('href');
+                $item['author'] = htmlspecialchars($xpath->query("//*[@class='author_name']", $manga)->item(0)->nodeValue);
+                $item['chaptercount'] = $xpath->query(".//*[@class='chapter_count']", $manga)->item(0)->nodeValue;
+                $item['genre'] = htmlspecialchars($xpath->query(".//*[@class='manga_genre']", $manga)->item(0)->nodeValue);
+                $item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $thumbnail . '" alt="' . $item['title'] . '" /></a><p>' . $item['genre'] . '</p><p>' . $item['chaptercount'] . '</p>';
                 $this->items[] = $item;
             }
         }
@@ -186,18 +186,18 @@ class MangareaderBridge extends BridgeAbstract{
             $chapters = $xpath->query($query);
 
             foreach ($chapters as $chapter){
-                $item = new \Item();
-                $item->title = htmlspecialchars($xpath->query("td[1]", $chapter)->item(0)->nodeValue);
-                $item->uri = 'http://www.mangareader.net' . $xpath->query("td[1]/a", $chapter)->item(0)->getAttribute('href');
-                $item->timestamp = strtotime($xpath->query("td[2]", $chapter)->item(0)->nodeValue);
+                $item = array();
+                $item['title'] = htmlspecialchars($xpath->query("td[1]", $chapter)->item(0)->nodeValue);
+                $item['uri'] = 'http://www.mangareader.net' . $xpath->query("td[1]/a", $chapter)->item(0)->getAttribute('href');
+                $item['timestamp'] = strtotime($xpath->query("td[2]", $chapter)->item(0)->nodeValue);
                 array_unshift($this->items, $item);
             }
         }
 
 		// Return some dummy-data if no content available
 		if(count($this->items) == 0){
-			$item = new \Item();
-			$item->content = "<p>No updates available</p>";
+			$item = array();
+			$item['content'] = "<p>No updates available</p>";
 
 			$this->items[] = $item;
 		}

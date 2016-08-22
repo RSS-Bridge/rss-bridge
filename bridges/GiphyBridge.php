@@ -49,10 +49,10 @@ class GiphyBridge extends BridgeAbstract{
                 $img = $figure->firstChild();
                 $caption = $figure->lastChild();
 
-                $item = new \Item();
-                $item->id = $img->getAttribute('data-gif_id');
-                $item->uri = $img->getAttribute('data-bitly_gif_url');
-                $item->username = 'Giphy - '.ucfirst($kw);
+                $item = array();
+                $item['id'] = $img->getAttribute('data-gif_id');
+                $item['uri'] = $img->getAttribute('data-bitly_gif_url');
+                $item['username'] = 'Giphy - '.ucfirst($kw);
                 $title = $caption->innertext();
                     $title = preg_replace('/\s+/', ' ',$title);
                     $title = str_replace('animated GIF', '', $title);
@@ -60,11 +60,11 @@ class GiphyBridge extends BridgeAbstract{
                     $title = preg_replace('/\s+/', ' ',$title);
                     $title = trim($title);
                     if (strlen($title) <= 0) {
-                        $title = $item->id;
+                        $title = $item['id'];
                     }
-                $item->title = trim($title);
-                $item->content =
-                    '<a href="'.$item->uri.'">'
+                $item['title'] = trim($title);
+                $item['content'] =
+                    '<a href="'.$item['uri'].'">'
                         .'<img src="'.$img->getAttribute('src').'" width="'.$img->getAttribute('data-original-width').'" height="'.$img->getAttribute('data-original-height').'" />'
                     .'</a>';
 

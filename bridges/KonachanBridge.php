@@ -33,13 +33,13 @@ class KonachanBridge extends BridgeAbstract{
 
         foreach($data as $datai) {
 	    $json = json_decode($datai, TRUE);
-            $item = new \Item();
-            $item->uri = 'http://konachan.com/post/show/'.$json['id'];
-            $item->postid = $json['id'];
-            $item->timestamp = $json['created_at'];
-            $item->imageUri = $json['file_url'];
-            $item->title = 'Konachan | '.$json['id'];
-            $item->content = '<a href="' . $item->imageUri . '"><img src="' . $json['preview_url'] . '" /></a><br>Tags: '.$json['tags'];
+            $item = array();
+            $item['uri'] = 'http://konachan.com/post/show/'.$json['id'];
+            $item['postid'] = $json['id'];
+            $item['timestamp'] = $json['created_at'];
+            $item['imageUri'] = $json['file_url'];
+            $item['title'] = 'Konachan | '.$json['id'];
+            $item['content'] = '<a href="' . $item['imageUri'] . '"><img src="' . $json['preview_url'] . '" /></a><br>Tags: '.$json['tags'];
             $this->items[] = $item;
         }
     }

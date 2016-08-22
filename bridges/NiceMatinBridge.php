@@ -34,11 +34,11 @@ class NiceMatinBridge extends BridgeAbstract{
 				$element_text = str_replace('</link>', '</url>', $element_text);
 				$element = str_get_html($element_text);
 
-				$item = new \Item();
-				$item->title = $element->find('title', 0)->innertext;
-				$item->uri = $element->find('url', 0)->innertext;
-				$item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-				$item->content = $this->NiceMatinExtractContent($item->uri);
+				$item = array();
+				$item['title'] = $element->find('title', 0)->innertext;
+				$item['uri'] = $element->find('url', 0)->innertext;
+				$item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
+				$item['content'] = $this->NiceMatinExtractContent($item['uri']);
 				$this->items[] = $item;
 				$limit++;
 			}

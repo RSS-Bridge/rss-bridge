@@ -53,20 +53,20 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
 
                 $htmlepisode=content_get_html($this->get_cached($episode->find('a', 0)->getAttribute('href')));
 
-                $item = new \Item();
-                $item->author = $episode->find('a', 0)->text();
-                $item->title = $episode->find('a', 0)->text();
-                $item->timestamp = $this->get_cached_time($episode->find('a', 0)->getAttribute('href'));
+                $item = array();
+                $item['author'] = $episode->find('a', 0)->text();
+                $item['title'] = $episode->find('a', 0)->text();
+                $item['timestamp'] = $this->get_cached_time($episode->find('a', 0)->getAttribute('href'));
                 $textefiche=$htmlepisode->find('#textefiche', 0)->find('p',1);
                 if (isset($textefiche)) {
-                    $item->content = $textefiche->text();
+                    $item['content'] = $textefiche->text();
                 }
                 else {
-                    $item->content = $htmlepisode->find('#textefiche', 0)->find('p',0)->text();
+                    $item['content'] = $htmlepisode->find('#textefiche', 0)->find('p',0)->text();
                 }
 
-                $item->id = $episode->find('a', 0)->getAttribute('href');
-                $item->uri = $this->uri . $htmlepisode->find('#telecharger',0)->getAttribute('href');
+                $item['id'] = $episode->find('a', 0)->getAttribute('href');
+                $item['uri'] = $this->uri . $htmlepisode->find('#telecharger',0)->getAttribute('href');
                 $this->items[] = $item;
             }
         }

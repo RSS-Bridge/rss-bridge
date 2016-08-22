@@ -19,14 +19,14 @@ class LichessBridge  extends BridgeAbstract
         {
             if ($posts_loaded < 5)
             {
-                $item = new \Item();
+                $item = array();
 
-                $item->title     = html_entity_decode($entry->find('title', 0)->innertext);
-                $item->author    = $entry->find('author', 0)->find('name', 0)->innertext;
-                $item->uri       = $entry->find('id', 0)->plaintext;
-                $item->timestamp = strtotime($entry->find('published', 0)->plaintext);
+                $item['title']     = html_entity_decode($entry->find('title', 0)->innertext);
+                $item['author']    = $entry->find('author', 0)->find('name', 0)->innertext;
+                $item['uri']       = $entry->find('id', 0)->plaintext;
+                $item['timestamp'] = strtotime($entry->find('published', 0)->plaintext);
 
-                $item->content = $this->retrieve_lichess_post($item->uri);
+                $item['content'] = $this->retrieve_lichess_post($item['uri']);
 
                 $this->items[] = $item;
                 $posts_loaded++;

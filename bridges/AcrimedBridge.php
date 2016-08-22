@@ -23,16 +23,16 @@ class AcrimedBridge extends RssExpander{
 			$namespaces = $newsItem->getNameSpaces(true);
 			$dc = $newsItem->children($namespaces['dc']);
 
-			$item = new Item();
-			$item->uri = trim($newsItem->link);
-        	$item->title = trim($newsItem->title);
-        	$item->timestamp = strtotime($dc->date);
+			$item = array();
+			$item['uri'] = trim($newsItem->link);
+        	$item['title'] = trim($newsItem->title);
+        	$item['timestamp'] = strtotime($dc->date);
 
 			$articlePage = $this->getSimpleHTMLDOM($newsItem->link);
 			$article = $hs->sanitize($articlePage->find('article.article1', 0)->innertext);
 			$article = HTMLSanitizer::defaultImageSrcTo($article, "http://www.acrimed.org/");
 
-			$item->content = $article;
+			$item['content'] = $article;
 
 
 			return $item;

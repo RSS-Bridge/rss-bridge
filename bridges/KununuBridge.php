@@ -93,17 +93,17 @@ class KununuBridge extends BridgeAbstract{
 
 		// Go through all articles
 		foreach($articles as $article){
-			$item = new \Item();
+			$item = array();
 
-			$item->author = $this->extract_article_author_position($article);
-			$item->timestamp = $this->extract_article_date($article);
-			$item->title = $this->extract_article_rating($article) . ' : ' . $this->extract_article_summary($article);
-			$item->uri = $this->extract_article_uri($article);
+			$item['author'] = $this->extract_article_author_position($article);
+			$item['timestamp'] = $this->extract_article_date($article);
+			$item['title'] = $this->extract_article_rating($article) . ' : ' . $this->extract_article_summary($article);
+			$item['uri'] = $this->extract_article_uri($article);
 
 			if($full)
-				$item->content = $this->extract_full_description($item->uri);
+				$item['content'] = $this->extract_full_description($item['uri']);
 			else
-				$item->content = $this->extract_article_description($article);
+				$item['content'] = $this->extract_article_description($article);
 
 			$this->items[] = $item;
 		}

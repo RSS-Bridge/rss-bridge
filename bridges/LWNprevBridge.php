@@ -81,34 +81,34 @@ class LWNprevBridge extends BridgeAbstract{
         continue;
       }
 
-      $item = new \Item();
+      $item = array();
 
       $h2NextSibling=$h2->nextSibling;
       $this->jumpToNextTag($h2NextSibling);
 
       switch($h2NextSibling->getAttribute('class')){
       case 'FeatureByline':
-        $item->author=$h2NextSibling->getElementsByTagName('b')->item(0)->textContent;
+        $item['author']=$h2NextSibling->getElementsByTagName('b')->item(0)->textContent;
         break;
       case 'GAByline':
         $text=$h2NextSibling->textContent;
-        $item->author=substr($text,strpos($text,'by '));
+        $item['author']=substr($text,strpos($text,'by '));
         break;
       default:
-        $item->author='LWN';
+        $item['author']='LWN';
         break;
       };
 
       $h2FirstChild=$h2->firstChild;
       $this->jumpToNextTag($h2FirstChild);
       if($h2FirstChild->nodeName==='a'){
-        $item->uri='https://lwn.net'.$h2FirstChild->getAttribute('href');
+        $item['uri']='https://lwn.net'.$h2FirstChild->getAttribute('href');
       }else{
-        $item->uri=$realURI.'#'.$URICounter;
+        $item['uri']=$realURI.'#'.$URICounter;
       }
       $URICounter++;
 
-      $item->timestamp=$editionTimeStamp+$URICounter;
+      $item['timestamp']=$editionTimeStamp+$URICounter;
 
       $h2PrevSibling=$h2->previousSibling;
       $this->jumpToPreviousTag($h2PrevSibling);
@@ -131,11 +131,11 @@ class LWNprevBridge extends BridgeAbstract{
       }
       $h2PrevSibling=null;
 
-      $item->title='';
+      $item['title']='';
       if(!empty($cat1)){
-        $item->title.='['.$cat1.($cat2?'/'.$cat2:'').'] ';
+        $item['title'].='['.$cat1.($cat2?'/'.$cat2:'').'] ';
       }
-      $item->title.=$h2->textContent;
+      $item['title'].=$h2->textContent;
 
       $node=$h2;
       $content='';
@@ -156,7 +156,7 @@ class LWNprevBridge extends BridgeAbstract{
           $content.=$node->C14N();
         }
       }
-      $item->content=$content;
+      $item['content']=$content;
       $this->items[]=$item;
     }
   }

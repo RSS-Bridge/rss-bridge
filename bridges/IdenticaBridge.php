@@ -27,11 +27,11 @@ class IdenticaBridge extends BridgeAbstract{
         }
 
         foreach($html->find('li.major') as $dent) {
-            $item = new \Item();
-            $item->uri = html_entity_decode($dent->find('a', 0)->href);	// get dent link
-            $item->timestamp = strtotime($dent->find('abbr.easydate', 0)->plaintext);	// extract dent timestamp
-            $item->content = trim($dent->find('div.activity-content', 0)->innertext);	// extract dent text
-            $item->title = $param['u'] . ' | ' . $item->content;
+            $item = array();
+            $item['uri'] = html_entity_decode($dent->find('a', 0)->href);	// get dent link
+            $item['timestamp'] = strtotime($dent->find('abbr.easydate', 0)->plaintext);	// extract dent timestamp
+            $item['content'] = trim($dent->find('div.activity-content', 0)->innertext);	// extract dent text
+            $item['title'] = $param['u'] . ' | ' . $item['content'];
             $this->items[] = $item;
         }
     }

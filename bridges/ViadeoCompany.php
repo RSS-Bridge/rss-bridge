@@ -25,10 +25,10 @@ class ViadeoCompany extends BridgeAbstract{
         foreach($html->find('//*[@id="company-newsfeed"]/ul/li') as $element) {
             $title = $element->find('p', 0)->innertext;
             if ($title) {
-                $item = new \Item();
-                $item->uri = $link;
-                $item->title = mb_substr($element->find('p', 0)->innertext, 0 ,100);
-                $item->content = $element->find('p', 0)->innertext;;
+                $item = array();
+                $item['uri'] = $link;
+                $item['title'] = mb_substr($element->find('p', 0)->innertext, 0 ,100);
+                $item['content'] = $element->find('p', 0)->innertext;;
                 $this->items[] = $item;
                 $i++;
             }

@@ -63,13 +63,13 @@ class DailymotionBridge extends BridgeAbstract{
 
 		foreach($html->find('div.media a.preview_link') as $element) {
 			if($count < $limit) {
-				$item = new \Item();
-				$item->id = str_replace('/video/', '', strtok($element->href, '_'));
-				$metadata = $this->getMetadata($item->id);
-				$item->uri = $metadata['uri'];
-				$item->title = $metadata['title'];
-				$item->timestamp = $metadata['timestamp'];
-				$item->content = '<a href="' . $item->uri . '"><img src="' . $metadata['thumbnailUri'] . '" /></a><br><a href="' . $item->uri . '">' . $item->title . '</a>';
+				$item = array();
+				$item['id'] = str_replace('/video/', '', strtok($element->href, '_'));
+				$metadata = $this->getMetadata($item['id']);
+				$item['uri'] = $metadata['uri'];
+				$item['title'] = $metadata['title'];
+				$item['timestamp'] = $metadata['timestamp'];
+				$item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $metadata['thumbnailUri'] . '" /></a><br><a href="' . $item['uri'] . '">' . $item['title'] . '</a>';
 				$this->items[] = $item;
 				$count++;
 			}

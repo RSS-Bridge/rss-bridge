@@ -9,16 +9,8 @@ class FileCache extends CacheAbstract{
         $this->isPrepareCache();
 
         $datas = unserialize(file_get_contents($this->getCacheFile()));
-        $items = array();
-        foreach($datas as $aData){
-            $item = new \Item();
-            foreach($aData as $name => $value){
-                $item->$name = $value;
-            }
-            $items[] = $item;
-        }
 
-        return $items;
+        return $datas;
     }
 
     public function saveData($datas){

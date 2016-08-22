@@ -30,11 +30,11 @@ class VineBridge extends BridgeAbstract {
 			$video->controls = "true";
 			$element->find('h2', 0)->outertext = '';
 
-			$item = new \Item();
-			$item->uri = $a->href;
-			$item->timestamp = $time;
-			$item->title = $a->plaintext;
-			$item->content = $element;
+			$item = array();
+			$item['uri'] = $a->href;
+			$item['timestamp'] = $time;
+			$item['title'] = $a->plaintext;
+			$item['content'] = $element;
 
 			$this->items[] = $item;
 		}

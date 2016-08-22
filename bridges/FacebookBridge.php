@@ -153,7 +153,7 @@ class FacebookBridge extends BridgeAbstract{
 
 			foreach($element->children() as $post) {
 
-				$item = new \Item();
+				$item = array();
 
 				if (count($post->find('abbr')) > 0) {
 
@@ -195,11 +195,11 @@ class FacebookBridge extends BridgeAbstract{
 						$title = substr($title, 0, strpos(wordwrap($title, 64), "\n")).'...';
 
 					//Build and add final item
-					$item->uri = 'https://facebook.com'.$post->find('abbr')[0]->parent()->getAttribute('href');
-					$item->content = $content;
-					$item->title = $title;
-					$item->author = $author;
-					$item->timestamp = $date;
+					$item['uri'] = 'https://facebook.com'.$post->find('abbr')[0]->parent()->getAttribute('href');
+					$item['content'] = $content;
+					$item['title'] = $title;
+					$item['author'] = $author;
+					$item['timestamp'] = $date;
 					$this->items[] = $item;
 				}
 			}

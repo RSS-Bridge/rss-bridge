@@ -109,16 +109,16 @@ class SensCritiqueBridge extends BridgeAbstract {
 		}
 
 		foreach ($list->find('li') as $movie) {
-		    $item = new \Item();
-		    $item->author = htmlspecialchars_decode($movie->find('.elco-title a', 0)->plaintext, ENT_QUOTES) . ' ' . $movie->find('.elco-date', 0)->plaintext;
-		    $item->title = $movie->find('.elco-title a', 0)->plaintext . ' ' . $movie->find('.elco-date', 0)->plaintext;
-		    $item->content = '<em>' . $movie->find('.elco-original-title', 0)->plaintext . '</em><br><br>' .
+		    $item = array();
+		    $item['author'] = htmlspecialchars_decode($movie->find('.elco-title a', 0)->plaintext, ENT_QUOTES) . ' ' . $movie->find('.elco-date', 0)->plaintext;
+		    $item['title'] = $movie->find('.elco-title a', 0)->plaintext . ' ' . $movie->find('.elco-date', 0)->plaintext;
+		    $item['content'] = '<em>' . $movie->find('.elco-original-title', 0)->plaintext . '</em><br><br>' .
 												 $movie->find('.elco-baseline', 0)->plaintext . '<br>' .
 												 $movie->find('.elco-baseline', 1)->plaintext . '<br><br>' .
 												 $movie->find('.elco-description', 0)->plaintext . '<br><br>' .
 												 trim($movie->find('.erra-ratings .erra-global', 0)->plaintext) . ' / 10';
-		    $item->id = $this->getURI() . $movie->find('.elco-title a', 0)->href;
-		    $item->uri = $this->getURI() . $movie->find('.elco-title a', 0)->href;
+		    $item['id'] = $this->getURI() . $movie->find('.elco-title a', 0)->href;
+		    $item['uri'] = $this->getURI() . $movie->find('.elco-title a', 0)->href;
 		    $this->items[] = $item;
 		}
 	}

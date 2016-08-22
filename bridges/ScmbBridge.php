@@ -15,9 +15,9 @@ class ScmbBridge extends BridgeAbstract{
         $html = $this->getSimpleHTMLDOM('http://secouchermoinsbete.fr/') or $this->returnServerError('Could not request Se Coucher Moins Bete.');
 
         foreach($html->find('article') as $article) {
-        	$item = new \Item();
-			$item->uri = 'http://secouchermoinsbete.fr'.$article->find('p.summary a',0)->href;
-			$item->title = $article->find('header h1 a',0)->innertext;
+        	$item = array();
+			$item['uri'] = 'http://secouchermoinsbete.fr'.$article->find('p.summary a',0)->href;
+			$item['title'] = $article->find('header h1 a',0)->innertext;
 
 			$article->find('span.read-more',0)->outertext=''; // remove text "En savoir plus" from anecdote content
 			$content = $article->find('p.summary a',0)->innertext;
@@ -29,10 +29,10 @@ class ScmbBridge extends BridgeAbstract{
 			list($y, $m, $d) = explode('-', $date);
 			list($h, $i) = explode(':', $time);
 			$timestamp = mktime($h,$i,0,$m,$d,$y);
-			$item->timestamp = $timestamp;
+			$item['timestamp'] = $timestamp;
 
 
-			$item->content = $content;
+			$item['content'] = $content;
 			$this->items[] = $item;
 		}
     }

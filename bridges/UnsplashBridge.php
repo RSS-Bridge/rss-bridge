@@ -48,13 +48,13 @@ class UnsplashBridge extends BridgeAbstract {
                 $thumbnail = $element->find('img', 0);
                 $thumbnail->src = str_replace('https://', 'http://', $thumbnail->src);
 
-                $item = new \Item();
-                $item->uri = str_replace(array('q=75', 'w=400'),
+                $item = array();
+                $item['uri'] = str_replace(array('q=75', 'w=400'),
                                          array("q=$quality", "w=$width"),
                                          $thumbnail->src).'.jpg';           // '.jpg' only for format hint
-                $item->timestamp = time();
-                $item->title = $thumbnail->alt;
-                $item->content = $item->title.'<br><a href="'.$item->uri.'"><img src="'.$thumbnail->src.'" /></a>';
+                $item['timestamp'] = time();
+                $item['title'] = $thumbnail->alt;
+                $item['content'] = $item['title'].'<br><a href="'.$item['uri'].'"><img src="'.$thumbnail->src.'" /></a>';
                 $this->items[] = $item;
 
                 $num++;
