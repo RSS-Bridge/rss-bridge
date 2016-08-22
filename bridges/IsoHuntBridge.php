@@ -162,14 +162,18 @@ class IsoHuntBridge extends BridgeAbstract{
 
     private function request_latest_category($category){
         switch($category){
-            case 'hot_torrents':
+            case 'hot_torrents': // This is a special case! (that's why return)
                 $this->name = 'Latest hot torrents - ' . $this->name;
                 $this->uri .= '/statistic/hot/torrents';
-                break;
-            case 'news':
+                $html = $this->load_html($this->uri);
+                $this->get_latest_hot_torrents($html);
+                return;
+            case 'news': // This is a special case! (that's why return)
                 $this->name = 'Latest news - ' . $this->name;
                 $this->uri .= '/';
-                break;
+                $html = $this->load_html($this->uri);
+                $this->get_latest_news($html);
+                return;
             case 'releases':
                 $this->name = 'Latest releases - ' . $this->name;
                 $this->uri .= '/releases.php';
