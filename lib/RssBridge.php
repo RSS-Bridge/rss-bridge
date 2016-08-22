@@ -8,7 +8,6 @@ Licence: Public domain.
 define('PATH_VENDOR', '/../vendor');
 
 require __DIR__ . '/Exceptions.php';
-require __DIR__ . '/Item.php';
 require __DIR__ . '/Format.php';
 require __DIR__ . '/Bridge.php';
 require __DIR__ . '/Cache.php';
