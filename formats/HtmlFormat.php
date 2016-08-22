@@ -17,11 +17,11 @@ class HtmlFormat extends FormatAbstract{
 
         $entries = '';
         foreach($this->getDatas() as $data){
-            $entryAuthor = is_null($data->author) ? '' : '<br /><p class="author">by: ' . $data->author . '</p>';
-            $entryTitle = is_null($data->title) ? '' : $this->sanitizeHtml(strip_tags($data->title));
-            $entryUri = is_null($data->uri) ? $uri : $data->uri;
-            $entryTimestamp = is_null($data->timestamp) ? '' : '<time datetime="' . date(DATE_ATOM, $data->timestamp) . '">' . date(DATE_ATOM, $data->timestamp) . '</time>';
-            $entryContent = is_null($data->content) ? '' : '<div class="content">' . $this->sanitizeHtml($data->content). '</div>';
+            $entryAuthor = isset($data['author']) ? '<br /><p class="author">by: ' . $data['author'] . '</p>' : '';
+            $entryTitle = isset($data['title']) ? $this->sanitizeHtml(strip_tags($data['title'])) : '';
+            $entryUri = isset($data['uri']) ? $data['uri'] : $uri;
+            $entryTimestamp = isset($data['timestamp']) ? '<time datetime="' . date(DATE_ATOM, $data['timestamp']) . '">' . date(DATE_ATOM, $data['timestamp']) . '</time>' : '';
+            $entryContent = isset($data['content']) ? '<div class="content">' . $this->sanitizeHtml($data['content']). '</div>' : '';
             $entries .= <<<EOD
 
 <section class="feeditem">
