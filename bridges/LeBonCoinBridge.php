@@ -75,7 +75,7 @@ class LeBonCoinBridge extends BridgeAbstract{
                 'Hébergements insolites'=>'hebergements_insolites'
               ),
               'MULTIMEDIA'=>array(
-                'Tous'=>'_multumedia_',
+                'Tous'=>'_multimedia_',
                 'Informatique'=>'informatique',
                 'Consoles & Jeux vidéo'=>'consoles_jeux_video',
                 'Image & Son'=>'image_son',
