@@ -26,14 +26,14 @@ class TagBoardBridge extends BridgeAbstract{
         $parsed_json = json_decode($html);
 
         foreach($parsed_json->{'posts'} as $element) {
-                $item = new Item();
-                $item->uri = $element->{'permalink'};
-		$item->title = $element->{'text'};
+                $item = array();
+                $item['uri'] = $element->{'permalink'};
+		$item['title'] = $element->{'text'};
                 $thumbnailUri = $element->{'photos'}[0]->{'m'};
                 if (isset($thumbnailUri)) {
-                  $item->content = '<a href="' . $item->uri . '"><img src="' . $thumbnailUri . '" /></a>';
+                  $item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $thumbnailUri . '" /></a>';
                 }else{
-                  $item->content = $element->{'html'};
+                  $item['content'] = $element->{'html'};
                 }
                 $this->items[] = $item;
         }

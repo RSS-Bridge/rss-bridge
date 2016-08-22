@@ -25,13 +25,13 @@ class ZatazBridge extends BridgeAbstract {
 	private function getDetails($uri) {
 		$html = $this->getSimpleHTMLDOM($uri) or exit;
 
-		$item = new \Item();
+		$item = array();
 
 		$article = $html->find('.gdl-blog-full', 0);
-		$item->uri = $uri;
-		$item->title = $article->find('.blog-title', 0)->find('a', 0)->innertext;
-		$item->content = $article->find('.blog-content', 0)->innertext;
-		$item->timestamp = $this->getTimestampFromDate($article->find('.blog-date', 0)->find('a', 0)->href);
+		$item['uri'] = $uri;
+		$item['title'] = $article->find('.blog-title', 0)->find('a', 0)->innertext;
+		$item['content'] = $article->find('.blog-content', 0)->innertext;
+		$item['timestamp'] = $this->getTimestampFromDate($article->find('.blog-date', 0)->find('a', 0)->href);
 		return $item;
 	}
 

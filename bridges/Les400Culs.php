@@ -19,22 +19,22 @@ class Les400Culs extends RssExpander{
     }
     
     protected function parseRSSItem($newsItem) {
-        $item = new Item();
-        $item->title = trim((string) $newsItem->title);
+        $item = array();
+        $item['title'] = trim((string) $newsItem->title);
 //        $this->message("browsing item ".var_export($newsItem, true));
         if(empty($newsItem->guid)) {
-            $item->uri = (string) $newsItem->link;
+            $item['uri'] = (string) $newsItem->link;
         } else {
-            $item->uri = (string) $newsItem->guid;
+            $item['uri'] = (string) $newsItem->guid;
         }
         // now load that uri from cache
-//        $this->message("now loading page ".$item->uri);
-//        $articlePage = str_get_html($this->get_cached($item->uri));
+//        $this->message("now loading page ".$item['uri']);
+//        $articlePage = str_get_html($this->get_cached($item['uri']));
 
 //        $content = $articlePage->find('.post-container', 0);
-        $item->content = (string) $newsItem->description;
-        $item->author = (string) $newsItem->author;
-        $item->timestamp = $this->RSS_2_0_time_to_timestamp($newsItem);
+        $item['content'] = (string) $newsItem->description;
+        $item['author'] = (string) $newsItem->author;
+        $item['timestamp'] = $this->RSS_2_0_time_to_timestamp($newsItem);
         return $item;
     }
     public function getCacheDuration(){

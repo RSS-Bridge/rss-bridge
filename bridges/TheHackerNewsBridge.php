@@ -60,12 +60,12 @@ class TheHackerNewsBridge extends BridgeAbstract {
                 $contents = StripRecursiveHTMLSection($contents, 'div', '<div class=\'clear\'');
                 $contents = StripWithDelimiters($contents, '<script', '</script>');
 
-                $item = new \Item();
-                $item->uri = $article_url;
-                $item->title = $article_title;
-                $item->author = $article_author;
-                $item->timestamp = $article_timestamp;
-                $item->content = trim($contents);
+                $item = array();
+                $item['uri'] = $article_url;
+                $item['title'] = $article_title;
+                $item['author'] = $article_author;
+                $item['timestamp'] = $article_timestamp;
+                $item['content'] = trim($contents);
                 $this->items[] = $item;
                 $limit++;
             }

@@ -48,12 +48,12 @@ class LeMondeInformatiqueBridge extends BridgeAbstract {
                 $article_title = $article_html->find('h1.cleanprint-title', 0)->plaintext;
 
                 //Build and add final item
-                $item = new \Item();
-                $item->uri = $article_uri;
-                $item->title = $article_title;
-                $item->author = StripCDATA($element->find('dc:creator', 0)->innertext);
-                $item->timestamp = strtotime($element->find('dc:date', 0)->plaintext);
-                $item->content = $article_content;
+                $item = array();
+                $item['uri'] = $article_uri;
+                $item['title'] = $article_title;
+                $item['author'] = StripCDATA($element->find('dc:creator', 0)->innertext);
+                $item['timestamp'] = strtotime($element->find('dc:date', 0)->plaintext);
+                $item['content'] = $article_content;
                 $this->items[] = $item;
                 $limit++;
             }

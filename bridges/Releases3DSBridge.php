@@ -103,12 +103,12 @@ class Releases3DSBridge extends BridgeAbstract {
                             .'</ul>';
 
                         //Build and add final item with the above three sections
-                        $item = new \Item();
-                        $item->title = $name;
-                        $item->author = $publisher;
-                        $item->timestamp = $ignDate;
-                        $item->uri = empty($ignLink) ? $searchLinkDuckDuckGo : $ignLink;
-                        $item->content = $ignDescription.$releaseDescription.$releaseSearchLinks;
+                        $item = array();
+                        $item['title'] = $name;
+                        $item['author'] = $publisher;
+                        $item['timestamp'] = $ignDate;
+                        $item['uri'] = empty($ignLink) ? $searchLinkDuckDuckGo : $ignLink;
+                        $item['content'] = $ignDescription.$releaseDescription.$releaseSearchLinks;
                         $this->items[] = $item;
                         $limit++;
                     }

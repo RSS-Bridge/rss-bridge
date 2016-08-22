@@ -76,18 +76,18 @@ class Arte7Bridge extends BridgeAbstract{
       $input_json = extractVideoset($category, $lang);
 
       foreach($input_json['videos'] as $element) {
-            $item = new \Item();
-            $item->uri = str_replace("autoplay=1", "", $element['url']);
-            $item->id = $element['id'];
+            $item = array();
+            $item['uri'] = str_replace("autoplay=1", "", $element['url']);
+            $item['id'] = $element['id'];
                $hack_broadcast_time = $element['rights_end'];
                $hack_broadcast_time = strtok($hack_broadcast_time, 'T');
                $hack_broadcast_time = strtok('T');
-            $item->timestamp = strtotime($element['scheduled_on'].'T'.$hack_broadcast_time);
-            $item->title = $element['title'];
+            $item['timestamp'] = strtotime($element['scheduled_on'].'T'.$hack_broadcast_time);
+            $item['title'] = $element['title'];
             if (!empty($element['subtitle']))
-               $item->title = $element['title'].' | '.$element['subtitle'];
-            $item->duration = round((int)$element['duration']/60);
-            $item->content = $element['teaser'].'<br><br>'.$item->duration.'min<br><a href="'.$item->uri.'"><img src="' . $element['thumbnail_url'] . '" /></a>';
+               $item['title'] = $element['title'].' | '.$element['subtitle'];
+            $item['duration'] = round((int)$element['duration']/60);
+            $item['content'] = $element['teaser'].'<br><br>'.$item['duration'].'min<br><a href="'.$item['uri'].'"><img src="' . $element['thumbnail_url'] . '" /></a>';
             $this->items[] = $item;
         }
     }

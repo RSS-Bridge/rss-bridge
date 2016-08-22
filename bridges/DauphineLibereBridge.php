@@ -63,11 +63,11 @@ class DauphineLibereBridge extends BridgeAbstract {
 
 		foreach($html->find('item') as $element) {
 			if($limit < 10) {
-				$item = new \Item();
-				$item->title = $element->find('title', 0)->innertext;
-				$item->uri = $element->find('guid', 0)->plaintext;
-				$item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-				$item->content = $this->ExtractContent($item->uri, $context);
+				$item = array();
+				$item['title'] = $element->find('title', 0)->innertext;
+				$item['uri'] = $element->find('guid', 0)->plaintext;
+				$item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
+				$item['content'] = $this->ExtractContent($item['uri'], $context);
 				$this->items[] = $item;
 				$limit++;
 			}

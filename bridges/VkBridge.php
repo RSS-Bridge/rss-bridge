@@ -29,22 +29,22 @@ class VkBridge extends BridgeAbstract {
             if (is_object($post->find('a.wall_post_more', 0))) {
                 $post->find('a.wall_post_more', 0)->outertext = ''; //delete link "show full" in content
             }
-            $item = new \Item();
-            $item->content = strip_tags($post->find('div.wall_post_text', 0)->innertext);
+            $item = array();
+            $item['content'] = strip_tags($post->find('div.wall_post_text', 0)->innertext);
             if (is_object($post->find('a.page_media_link_title', 0))) {
                 $link = $post->find('a.page_media_link_title', 0)->getAttribute('href');
-                $item->content .= "\n\rExternal link: " . str_replace('/away.php?to=', '', urldecode($link)); //external link in the post
+                $item['content'] .= "\n\rExternal link: " . str_replace('/away.php?to=', '', urldecode($link)); //external link in the post
             }
             //get video on post
             if (is_object($post->find('span.post_video_title_content', 0))) {
                 $titleVideo = $post->find('span.post_video_title_content', 0)->plaintext;
                 $linkToVideo = 'https://vk.com' . $post->find('a.page_post_thumb_video', 0)->getAttribute('href');
-                $item->content .= "\n\r {$titleVideo}: {$linkToVideo}";
+                $item['content'] .= "\n\r {$titleVideo}: {$linkToVideo}";
             }
-            $item->uri = 'https://vk.com' . $post->find('.reply_link_wrap', 0)->find('a', 0)->getAttribute('href'); // get post link
-            $item->date = $post->find('span.rel_date', 0)->plaintext;
+            $item['uri'] = 'https://vk.com' . $post->find('.reply_link_wrap', 0)->find('a', 0)->getAttribute('href'); // get post link
+            $item['date'] = $post->find('span.rel_date', 0)->plaintext;
             $this->items[] = $item;
-            // var_dump($item->date);
+            // var_dump($item['date']);
         }
     }
 

@@ -19,11 +19,11 @@ class PlanetLibreBridge extends BridgeAbstract{
 		$limit = 0;
 		foreach($html->find('div.post') as $element) {
 			if($limit < 5) {
-				$item = new \Item();
-				$item->title = $element->find('h1', 0)->plaintext;
-				$item->uri = $element->find('a', 0)->href;
-				$item->timestamp = strtotime(str_replace('/', '-', $element->find('div[class="post-date"]', 0)->plaintext));
-				$item->content = $this->PlanetLibreExtractContent($item->uri);
+				$item = array();
+				$item['title'] = $element->find('h1', 0)->plaintext;
+				$item['uri'] = $element->find('a', 0)->href;
+				$item['timestamp'] = strtotime(str_replace('/', '-', $element->find('div[class="post-date"]', 0)->plaintext));
+				$item['content'] = $this->PlanetLibreExtractContent($item['uri']);
 				$this->items[] = $item;
 				$limit++;
 			}

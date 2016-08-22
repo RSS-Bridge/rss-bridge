@@ -24,11 +24,11 @@ class NumeramaBridge extends BridgeAbstract{
 
         foreach($html->find('item') as $element) {
             if($limit < 5) {
-                $item = new \Item();
-                $item->title = html_entity_decode(NumeramaStripCDATA($element->find('title', 0)->innertext));
-                $item->author = NumeramaStripCDATA($element->find('dc:creator', 0)->innertext);
-                $item->uri = NumeramaStripCDATA($element->find('guid', 0)->plaintext);
-                $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
+                $item = array();
+                $item['title'] = html_entity_decode(NumeramaStripCDATA($element->find('title', 0)->innertext));
+                $item['author'] = NumeramaStripCDATA($element->find('dc:creator', 0)->innertext);
+                $item['uri'] = NumeramaStripCDATA($element->find('guid', 0)->plaintext);
+                $item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
 
                 $article_url = NumeramaStripCDATA($element->find('guid', 0)->plaintext);
                 $article_html = $this->getSimpleHTMLDOM($article_url) or $this->returnServerError('Could not request Numerama: '.$article_url);
@@ -36,7 +36,7 @@ class NumeramaBridge extends BridgeAbstract{
                 $contents = '<img alt="" style="max-width:300px;" src="'.$article_html->find('meta[property=og:image]', 0)->getAttribute('content').'">'; // add post picture
                 $contents = $contents.$article_html->find('article[class=post-content]', 0)->innertext; // extract the post
 
-                $item->content = $contents;
+                $item['content'] = $contents;
                 $this->items[] = $item;
                 $limit++;
             }

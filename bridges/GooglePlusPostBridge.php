@@ -42,23 +42,23 @@ class GooglePlusPostBridge extends BridgeAbstract
 
 //		foreach ($html->find('meta') as $e)
 //		{
-//			$item = new \Item();
-//			$item->content = var_export($e->attr, true);
+//			$item = array();
+//			$item['content'] = var_export($e->attr, true);
 //			$this->items[] = $item;
 //		}
 
 		// div[jsmodel=XNmfOc]
 		foreach($html->find('div.yt') as $post)
 		{
-			$item = new \Item();
-//			$item->content = $post->find('div.Al', 0)->innertext;
-			$item->username = $item->fullname = $post->find('header.lea h3 a', 0)->innertext;
-			$item->id = $post->getAttribute('id');
-//			$item->title = $item->fullname = $post->find('header.lea', 0)->plaintext;
-			$item->avatar = $post->find('div.ys img', 0)->src;
+			$item = array();
+//			$item['content'] = $post->find('div.Al', 0)->innertext;
+			$item['username'] = $item['fullname'] = $post->find('header.lea h3 a', 0)->innertext;
+			$item['id'] = $post->getAttribute('id');
+//			$item['title'] = $item['fullname'] = $post->find('header.lea', 0)->plaintext;
+			$item['avatar'] = $post->find('div.ys img', 0)->src;
 //			var_dump((($post->find('a.o-U-s', 0)->getAllAttributes())));
-			$item->uri = self::GOOGLE_PLUS_BASE_URL . $post->find('a.o-U-s', 0)->href;
-			$item->timestamp = strtotime($post->find('a.o-U-s', 0)->plaintext);
+			$item['uri'] = self::GOOGLE_PLUS_BASE_URL . $post->find('a.o-U-s', 0)->href;
+			$item['timestamp'] = strtotime($post->find('a.o-U-s', 0)->plaintext);
 			$this->items[] = $item;
 
 			// hashtag to treat : https://plus.google.com/explore/tag
@@ -68,11 +68,11 @@ class GooglePlusPostBridge extends BridgeAbstract
 				$hashtags[ trim($hashtag->plaintext) ] = self::GOOGLE_PLUS_BASE_URL . $hashtag->href;
 			}
 
-			$item->content = '';
+			$item['content'] = '';
 
 			// avatar display
-			$item->content .= '<div style="float:left; margin: 0 0.5em 0.5em 0;"><a href="' . self::GOOGLE_PLUS_BASE_URL . urlencode($this->request);
-			$item->content .= '"><img align="top" alt="avatar" src="' . $item->avatar.'" />' . $item->username . '</a></div>';
+			$item['content'] .= '<div style="float:left; margin: 0 0.5em 0.5em 0;"><a href="' . self::GOOGLE_PLUS_BASE_URL . urlencode($this->request);
+			$item['content'] .= '"><img align="top" alt="avatar" src="' . $item['avatar'].'" />' . $item['username'] . '</a></div>';
 
 			$content = $post->find('div.Al', 0);
 
@@ -100,10 +100,10 @@ class GooglePlusPostBridge extends BridgeAbstract
 			}
 			$content = $content->innertext;
 
-			$item->content .= '<div style="margin-top: -1.5em">' .  $content . '</div>';
+			$item['content'] .= '<div style="margin-top: -1.5em">' .  $content . '</div>';
 
 			// extract plaintext
-			$item->content_simple = $post->find('div.Al', 0)->plaintext;
+			$item['content_simple'] = $post->find('div.Al', 0)->plaintext;
 		}
 
 //		$html->save(__DIR__ . '/../posts2.html');

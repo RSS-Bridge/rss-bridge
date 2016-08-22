@@ -64,15 +64,15 @@ class ThePirateBayBridge extends BridgeAbstract{
 
 
             foreach($html->find('tr') as $element) {
-                $item = new \Item();
-                $item->uri = 'https://thepiratebay.org/'.$element->find('a.detLink',0)->href;
-                $item->id = $item->uri;
-                $item->timestamp = parseDateTimestamp($element);
-                $item->title = $element->find('a.detLink',0)->plaintext;
-                $item->seeders = (int)$element->find('td',2)->plaintext;
-                $item->leechers = (int)$element->find('td',3)->plaintext;
-                $item->content = $element->find('font',0)->plaintext.'<br>seeders: '.$item->seeders.' | leechers: '.$item->leechers.'<br><a href="'.$element->find('a',3)->href.'">download</a>';
-                if(!empty($item->title))
+                $item = array();
+                $item['uri'] = 'https://thepiratebay.org/'.$element->find('a.detLink',0)->href;
+                $item['id'] = $item['uri'];
+                $item['timestamp'] = parseDateTimestamp($element);
+                $item['title'] = $element->find('a.detLink',0)->plaintext;
+                $item['seeders'] = (int)$element->find('td',2)->plaintext;
+                $item['leechers'] = (int)$element->find('td',3)->plaintext;
+                $item['content'] = $element->find('font',0)->plaintext.'<br>seeders: '.$item['seeders'].' | leechers: '.$item['leechers'].'<br><a href="'.$element->find('a',3)->href.'">download</a>';
+                if(isset($item['title']))
                     $this->items[] = $item;
             }
         }

@@ -45,12 +45,12 @@ class SiliconBridge extends BridgeAbstract {
                 }
 
                 //Build and add final item
-                $item = new \Item();
-                $item->uri = $article_uri;
-                $item->title = StripCDATA($element->find('title', 0)->innertext);
-                $item->author = StripCDATA($element->find('dc:creator', 0)->innertext);
-                $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-                $item->content = $article_content;
+                $item = array();
+                $item['uri'] = $article_uri;
+                $item['title'] = StripCDATA($element->find('title', 0)->innertext);
+                $item['author'] = StripCDATA($element->find('dc:creator', 0)->innertext);
+                $item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
+                $item['content'] = $article_content;
                 $this->items[] = $item;
                 $limit++;
             }

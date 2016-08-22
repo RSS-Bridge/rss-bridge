@@ -13,10 +13,10 @@ class MondeDiploBridge extends BridgeAbstract{
 
 		foreach($html->find('div.unarticle') as $article) {
 			$element = $article->parent();
-			$item = new Item();
-			$item->uri = $this->uri . $element->href;
-			$item->title = $element->find('h3', 0)->plaintext;
-			$item->content = $element->find('div.dates_auteurs', 0)->plaintext . '<br>' . strstr($element->find('div', 0)->plaintext, $element->find('div.dates_auteurs', 0)->plaintext, true);
+			$item = array();
+			$item['uri'] = $this->uri . $element->href;
+			$item['title'] = $element->find('h3', 0)->plaintext;
+			$item['content'] = $element->find('div.dates_auteurs', 0)->plaintext . '<br>' . strstr($element->find('div', 0)->plaintext, $element->find('div.dates_auteurs', 0)->plaintext, true);
 			$this->items[] = $item;
 		}
 	}

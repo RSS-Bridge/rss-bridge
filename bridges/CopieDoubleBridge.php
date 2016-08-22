@@ -21,21 +21,21 @@ class CopieDoubleBridge extends BridgeAbstract{
              $cpt++;
             if($td->class == "couleur_1")
             {
-                $item = new Item();
+                $item = array();
 
                 $title = $td->innertext;
                 $pos = strpos($title, "<a");
                 $title = substr($title, 0, $pos);
-                $item->title = $title;
+                $item['title'] = $title;
             }
             elseif(strpos($element->innertext, "/images/suivant.gif") === false)
             {
                 $a=$element->find("a", 0);
-                $item->uri = "http://www.copie-double.com" . $a->href;
+                $item['uri'] = "http://www.copie-double.com" . $a->href;
 
                 $content = str_replace('src="/', 'src="http://www.copie-double.com/',$element->find("td", 0)->innertext);
                 $content = str_replace('href="/', 'href="http://www.copie-double.com/',$content);
-                $item->content = $content;
+                $item['content'] = $content;
                 $this->items[] = $item;
             }
         }

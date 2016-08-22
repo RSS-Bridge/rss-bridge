@@ -54,11 +54,11 @@ class PickyWallpapersBridge extends BridgeAbstract {
 
                 foreach($html->find('.items li img') as $element) {
 
-                    $item = new \Item();
-                    $item->uri = str_replace('www', 'wallpaper', $baseUri).'/'.$this->resolution.'/'.basename($element->src);
-                    $item->timestamp = time();
-                    $item->title = $element->alt;
-                    $item->content = $item->title.'<br><a href="'.$item->uri.'">'.$element.'</a>';
+                    $item = array();
+                    $item['uri'] = str_replace('www', 'wallpaper', $baseUri).'/'.$this->resolution.'/'.basename($element->src);
+                    $item['timestamp'] = time();
+                    $item['title'] = $element->alt;
+                    $item['content'] = $item['title'].'<br><a href="'.$item['uri'].'">'.$element.'</a>';
                     $this->items[] = $item;
 
                     $num++;

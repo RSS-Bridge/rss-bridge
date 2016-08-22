@@ -37,12 +37,12 @@ class SoundCloudBridge extends BridgeAbstract{
 		}
 
 		for ($i=0; $i < 10; $i++) {
-		    $item = new \Item();
-		    $item->author = $tracks[$i]->user->username .' - '. $tracks[$i]->title;
-		    $item->title = $tracks[$i]->user->username .' - '. $tracks[$i]->title;
-		    $item->content = '<audio src="'. $tracks[$i]->uri .'/stream?client_id='. self::CLIENT_ID .'">';
-		    $item->id = 'https://soundcloud.com/'. urlencode($this->request) .'/'. urlencode($tracks[$i]->permalink);
-		    $item->uri = 'https://soundcloud.com/'. urlencode($this->request) .'/'. urlencode($tracks[$i]->permalink);
+		    $item = array();
+		    $item['author'] = $tracks[$i]->user->username .' - '. $tracks[$i]->title;
+		    $item['title'] = $tracks[$i]->user->username .' - '. $tracks[$i]->title;
+		    $item['content'] = '<audio src="'. $tracks[$i]->uri .'/stream?client_id='. self::CLIENT_ID .'">';
+		    $item['id'] = 'https://soundcloud.com/'. urlencode($this->request) .'/'. urlencode($tracks[$i]->permalink);
+		    $item['uri'] = 'https://soundcloud.com/'. urlencode($this->request) .'/'. urlencode($tracks[$i]->permalink);
 		    $this->items[] = $item;
 		}
 

@@ -29,11 +29,11 @@ class ZoneTelechargementBridge extends BridgeAbstract {
         $html = $this->getSimpleHTMLDOM($url) or $this->returnServerError('Could not request Zone Telechargement: '.$url);
 
         foreach($html->find('item') as $element) {
-            $item = new \Item();
-            $item->title = $element->find('title', 0)->plaintext;
-            $item->uri = str_replace('http://', 'https://', $element->find('guid', 0)->plaintext);
-            $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-            $item->content = StripCDATA($element->find('description', 0)->innertext);
+            $item = array();
+            $item['title'] = $element->find('title', 0)->plaintext;
+            $item['uri'] = str_replace('http://', 'https://', $element->find('guid', 0)->plaintext);
+            $item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
+            $item['content'] = StripCDATA($element->find('description', 0)->innertext);
             $this->items[] = $item;
             $limit++;
         }

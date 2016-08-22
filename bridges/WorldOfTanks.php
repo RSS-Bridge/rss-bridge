@@ -54,16 +54,16 @@ class WorldOfTanks extends HttpCachingBridgeAbstract{
     }
 
     private function parseLine($infoLink) {
-        $item = new Item();
-        $item->uri = WORLD_OF_TANKS.$infoLink->href;
+        $item = array();
+        $item['uri'] = WORLD_OF_TANKS.$infoLink->href;
         // now load that uri from cache
-//        $this->message("loading page ".$item->uri);
-        $articlePage = str_get_html($this->get_cached($item->uri));
+//        $this->message("loading page ".$item['uri']);
+        $articlePage = str_get_html($this->get_cached($item['uri']));
         $content = $articlePage->find('.l-content', 0);
         HTMLSanitizer::defaultImageSrcTo($content, WORLD_OF_TANKS);
-        $item->title = $content->find('h1', 0)->innertext;
-        $item->content = $content->find('.b-content', 0)->innertext;
-        $item->timestamp = $content->find('.b-statistic_time', 0)->getAttribute("data-timestamp");
+        $item['title'] = $content->find('h1', 0)->innertext;
+        $item['content'] = $content->find('.b-content', 0)->innertext;
+        $item['timestamp'] = $content->find('.b-statistic_time', 0)->getAttribute("data-timestamp");
         $this->items[] = $item;
     }
 }

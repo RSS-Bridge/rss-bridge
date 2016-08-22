@@ -57,9 +57,9 @@ class PinterestBridge extends BridgeAbstract{
 
         	$img = $a->find('img', 0);
 
-        	$item = new \Item();
-        	$item->uri = $this->getURI().$a->getAttribute('href');
-        	$item->content = '<img src="' . htmlentities(str_replace('/236x/', '/736x/', $img->getAttribute('src'))) . '" alt="" />';
+        	$item = array();
+        	$item['uri'] = $this->getURI().$a->getAttribute('href');
+        	$item['content'] = '<img src="' . htmlentities(str_replace('/236x/', '/736x/', $img->getAttribute('src'))) . '" alt="" />';
 
 
         	if (isset($this->query))
@@ -72,17 +72,17 @@ class PinterestBridge extends BridgeAbstract{
         		$username = $div->find('div.creditName', 0);
         		$board = $div->find('div.creditTitle', 0);
 
-        		$item->username =$username->innertext;
-        		$item->fullname = $board->innertext;
-        		$item->avatar = $avatar;
+        		$item['username'] =$username->innertext;
+        		$item['fullname'] = $board->innertext;
+        		$item['avatar'] = $avatar;
 
-        		$item->content .= '<br /><img align="left" style="margin: 2px 4px;" src="'.htmlentities($item->avatar).'" /> <strong>'.$item->username.'</strong>';
-        		$item->content .= '<br />'.$item->fullname;
+        		$item['content'] .= '<br /><img align="left" style="margin: 2px 4px;" src="'.htmlentities($item['avatar']).'" /> <strong>'.$item['username'].'</strong>';
+        		$item['content'] .= '<br />'.$item['fullname'];
         	}
 
-        	$item->title = $img->getAttribute('alt');
+        	$item['title'] = $img->getAttribute('alt');
 
-        	//$item->timestamp = $media->created_time;
+        	//$item['timestamp'] = $media->created_time;
         	$this->items[] = $item;
 
         }

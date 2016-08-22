@@ -33,12 +33,12 @@ class NovelUpdatesBridge extends BridgeAbstract{
         $html = stristr($html, '<tr>'); //remove tbody
         $html = str_get_html(stristr($html, '</tbody>', true)); //remove last tbody and get back as an array
         foreach($html->find('tr') as $element){
-            $item = new \Item();
-            $item->uri = $element->find('td', 2)->find('a', 0)->href;
-            $item->title = $element->find('td', 2)->find('a', 0)->plaintext;
-            $item->team = $element->find('td', 1)->innertext;
-            $item->timestamp = strtotime($element->find('td', 0)->plaintext);
-            $item->content = '<a href="'.$item->uri.'">'.$this->request.' - '.$item->title.'</a> by '.$item->team.'<br><a href="'.$item->uri.'">'.$fullhtml->find('div.seriesimg', 0)->innertext.'</a>';
+            $item = array();
+            $item['uri'] = $element->find('td', 2)->find('a', 0)->href;
+            $item['title'] = $element->find('td', 2)->find('a', 0)->plaintext;
+            $item['team'] = $element->find('td', 1)->innertext;
+            $item['timestamp'] = strtotime($element->find('td', 0)->plaintext);
+            $item['content'] = '<a href="'.$item['uri'].'">'.$this->request.' - '.$item['title'].'</a> by '.$item['team'].'<br><a href="'.$item['uri'].'">'.$fullhtml->find('div.seriesimg', 0)->innertext.'</a>';
             $this->items[] = $item;
         }
     }

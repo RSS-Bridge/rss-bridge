@@ -30,12 +30,12 @@ class Rue89Bridge extends BridgeAbstract{
 
 				$datas = $this->rue89getDatas(str_replace('#commentaires', '', ($element->find('comments', 0)->plaintext)));
 
-				$item = new \Item();
-				$item->title = $datas["title"];
-				$item->author = $datas["author"][0]["name"];
-				$item->timestamp = $datas["updated"];
-				$item->content = $datas["body"];
-				$item->uri = $datas["url"];
+				$item = array();
+				$item['title'] = $datas["title"];
+				$item['author'] = $datas["author"][0]["name"];
+				$item['timestamp'] = $datas["updated"];
+				$item['content'] = $datas["body"];
+				$item['uri'] = $datas["url"];
 
 				$this->items[] = $item;
 

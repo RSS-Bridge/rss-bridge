@@ -19,12 +19,12 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract {
 
         $html = $this->getSimpleHTMLDOM($this->getURI()) or $this->returnServerError('Could not request EstCeQuonMetEnProd: '.$this->getURI());
 
-        $item = new \Item();
-        $item->uri = $this->getURI().'#'.date('Y-m-d');
-        $item->title = $this->getName();
-        $item->author = 'Nicolas Hoffmann';
-        $item->timestamp = strtotime('today midnight');
-        $item->content = str_replace('src="/', 'src="'.$this->getURI(), trim(ExtractFromDelimiters($html->outertext, '<body role="document">', '<br /><br />')));
+        $item = array();
+        $item['uri'] = $this->getURI().'#'.date('Y-m-d');
+        $item['title'] = $this->getName();
+        $item['author'] = 'Nicolas Hoffmann';
+        $item['timestamp'] = strtotime('today midnight');
+        $item['content'] = str_replace('src="/', 'src="'.$this->getURI(), trim(ExtractFromDelimiters($html->outertext, '<body role="document">', '<br /><br />')));
         $this->items[] = $item;
     }
 

@@ -26,10 +26,10 @@ class ScoopItBridge extends BridgeAbstract{
             $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request ScoopIt. for : ' . $link);
 
             foreach($html->find('div.post-view') as $element) {
-                $item = new Item();
-                $item->uri = $element->find('a', 0)->href;
-                $item->title = preg_replace('~[[:cntrl:]]~', '', $element->find('div.tCustomization_post_title',0)->plaintext);
-                $item->content = preg_replace('~[[:cntrl:]]~', '', $element->find('div.tCustomization_post_description', 0)->plaintext);
+                $item = array();
+                $item['uri'] = $element->find('a', 0)->href;
+                $item['title'] = preg_replace('~[[:cntrl:]]~', '', $element->find('div.tCustomization_post_title',0)->plaintext);
+                $item['content'] = preg_replace('~[[:cntrl:]]~', '', $element->find('div.tCustomization_post_description', 0)->plaintext);
                 $this->items[] = $item;
             }
         } else {

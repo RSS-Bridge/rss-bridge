@@ -74,12 +74,12 @@ class NextgovBridge extends BridgeAbstract {
                     .'<p><b>'.$article_subtitle.'</b></p>'
                     .trim($contents);
 
-                $item = new \Item();
-                $item->uri = $article_url;
-                $item->title = $article_title;
-                $item->author = $article_author;
-                $item->timestamp = $article_timestamp;
-                $item->content = $contents;
+                $item = array();
+                $item['uri'] = $article_url;
+                $item['title'] = $article_title;
+                $item['author'] = $article_author;
+                $item['timestamp'] = $article_timestamp;
+                $item['content'] = $contents;
                 $this->items[] = $item;
                 $limit++;
             }

@@ -30,11 +30,11 @@ class GizmodoFRBridge extends BridgeAbstract{
 
     	foreach($rssFeed->find('item') as $element) {
             if($limit < 15) {
-                $item = new \Item();
-                $item->title = $element->find('title', 0)->innertext;
-                $item->uri = $element->find('guid', 0)->plaintext;
-                $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-                $item->content = GizmodoFRExtractContent($item->uri);
+                $item = array();
+                $item['title'] = $element->find('title', 0)->innertext;
+                $item['uri'] = $element->find('guid', 0)->plaintext;
+                $item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
+                $item['content'] = GizmodoFRExtractContent($item['uri']);
                 $this->items[] = $item;
                 $limit++;
             }

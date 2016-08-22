@@ -22,10 +22,10 @@ class DuckDuckGoBridge extends BridgeAbstract{
         $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request DuckDuckGo.');
 
         foreach($html->find('div.results_links') as $element) {
-                $item = new \Item();
-                $item->uri = $element->find('a', 0)->href;
-                $item->title = $element->find('a', 1)->innertext;
-                $item->content = $element->find('div.snippet', 0)->plaintext;
+                $item = array();
+                $item['uri'] = $element->find('a', 0)->href;
+                $item['title'] = $element->find('a', 1)->innertext;
+                $item['content'] = $element->find('div.snippet', 0)->plaintext;
                 $this->items[] = $item;
         }
     }

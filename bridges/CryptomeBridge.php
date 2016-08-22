@@ -33,10 +33,10 @@ class CryptomeBridge extends BridgeAbstract{
 
         foreach($html->find('pre') as $element) {
             for ( $i = 0; $i < $num; ++$i ) {
-                $item = new \Item();
-                $item->uri = $link.substr($element->find('a', $i)->href, 20);
-                $item->title = substr($element->find('b', $i)->plaintext, 22);
-                $item->content = preg_replace('#http://cryptome.org/#', $link, $element->find('b', $i)->innertext);
+                $item = array();
+                $item['uri'] = $link.substr($element->find('a', $i)->href, 20);
+                $item['title'] = substr($element->find('b', $i)->plaintext, 22);
+                $item['content'] = preg_replace('#http://cryptome.org/#', $link, $element->find('b', $i)->innertext);
                 $this->items[] = $item;
             }
             break;

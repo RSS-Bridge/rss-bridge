@@ -270,12 +270,12 @@ class ZDNetBridge extends BridgeAbstract {
                     .'<p><b>'.$article_subtitle.'</b></p>'
                     .$contents;
 
-                $item = new \Item();
-                $item->author = $author;
-                $item->uri = $article_url;
-                $item->title = $article_title;
-                $item->timestamp = $article_timestamp;
-                $item->content = $contents;
+                $item = array();
+                $item['author'] = $author;
+                $item['uri'] = $article_url;
+                $item['title'] = $article_title;
+                $item['timestamp'] = $article_timestamp;
+                $item['content'] = $contents;
                 $this->items[] = $item;
                 $limit++;
             }

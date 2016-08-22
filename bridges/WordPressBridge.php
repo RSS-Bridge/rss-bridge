@@ -78,45 +78,45 @@ class WordPressBridge extends BridgeAbstract {
 			foreach ($posts as $article) {
 				if($i < 3) {
 
-					$item = new \Item();
+					$item = array();
 
 					$article = $this->ReplaceLinkTagsWithUrlTags($article);
 
 					if($type === WORDPRESS_TYPE_RSS){
-						$item->uri = $article->find('url', 0)->innertext; // 'link' => 'url'!
-						$item->title = $article->find('title', 0)->plaintext;
-						$item->author = trim($this->StripCDATA($article->find('dc:creator', 0)->innertext));
-						$item->timestamp = strtotime($article->find('pubDate', 0)->innertext);
+						$item['uri'] = $article->find('url', 0)->innertext; // 'link' => 'url'!
+						$item['title'] = $article->find('title', 0)->plaintext;
+						$item['author'] = trim($this->StripCDATA($article->find('dc:creator', 0)->innertext));
+						$item['timestamp'] = strtotime($article->find('pubDate', 0)->innertext);
 					} else {
-						$item->uri = $article->find('url', 0)->getAttribute('href'); // 'link' => 'url'!
-						$item->title = $this->StripCDATA($article->find('title', 0)->plaintext);
-						$item->author = trim($article->find('author', 0)->innertext);
-						$item->timestamp = strtotime($article->find('updated', 0)->innertext);
+						$item['uri'] = $article->find('url', 0)->getAttribute('href'); // 'link' => 'url'!
+						$item['title'] = $this->StripCDATA($article->find('title', 0)->plaintext);
+						$item['author'] = trim($article->find('author', 0)->innertext);
+						$item['timestamp'] = strtotime($article->find('updated', 0)->innertext);
 					}
 
-					$article_html = $this->getSimpleHTMLDOM($item->uri);
+					$article_html = $this->getSimpleHTMLDOM($item['uri']);
 
 					// Attempt to find most common content div
-					if(empty($item->content)){
+					if(!isset($item['content'])){
 						$article = $article_html->find('article', 0);
 						if(!empty($article)){
-							$item->content = $this->ClearContent($article->innertext);
+							$item['content'] = $this->ClearContent($article->innertext);
 						}
 					}
 
 					// another common content div
-					if(empty($item->content)){
+					if(!isset($item['content'])){
 						$article = $article_html->find('.single-content', 0);
 						if(!empty($article)){
-							$item->content = $this->ClearContent($article->innertext);
+							$item['content'] = $this->ClearContent($article->innertext);
 						}
 					}
 
 					// for old WordPress themes without HTML5
-					if(empty($item->content)){
+					if(!isset($item['content'])){
 						$article = $article_html->find('.post', 0);
 						if(!empty($article)){
-							$item->content = $this->ClearContent($article->innertext);
+							$item['content'] = $this->ClearContent($article->innertext);
 						}
 					}
 

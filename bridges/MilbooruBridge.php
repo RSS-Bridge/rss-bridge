@@ -29,14 +29,14 @@ class MilbooruBridge extends BridgeAbstract{
 
 
 	foreach($html->find('div[class=shm-image-list] span[class=thumb]') as $element) {
-		$item = new \Item();
-		$item->uri = 'http://sheslostcontrol.net/moe/shimmie/'.$element->find('a', 0)->href;
-		$item->postid = (int)preg_replace("/[^0-9]/",'', $element->find('a', 0)->getAttribute('data-post-id'));
-		$item->timestamp = time();
+		$item = array();
+		$item['uri'] = 'http://sheslostcontrol.net/moe/shimmie/'.$element->find('a', 0)->href;
+		$item['postid'] = (int)preg_replace("/[^0-9]/",'', $element->find('a', 0)->getAttribute('data-post-id'));
+		$item['timestamp'] = time();
 		$thumbnailUri = 'http://sheslostcontrol.net/moe/shimmie/'.$element->find('img', 0)->src;
-		$item->tags = $element->find('a', 0)->getAttribute('data-tags');
-		$item->title = 'Milbooru | '.$item->postid;
-		$item->content = '<a href="' . $item->uri . '"><img src="' . $thumbnailUri . '" /></a><br>Tags: '.$item->tags;
+		$item['tags'] = $element->find('a', 0)->getAttribute('data-tags');
+		$item['title'] = 'Milbooru | '.$item['postid'];
+		$item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $thumbnailUri . '" /></a><br>Tags: '.$item['tags'];
 		$this->items[] = $item;
 	}
     }

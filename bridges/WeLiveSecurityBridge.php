@@ -46,12 +46,12 @@ class WeLiveSecurityBridge extends BridgeAbstract {
                     .'<p><b>'.$article_summary.'</b></p>'
                     .trim($article_content);
 
-                $item = new \Item();
-                $item->uri = $article_url;
-                $item->title = $element->find('title', 0)->plaintext;
-                $item->author = $article_html->find('a[rel=author]', 0)->plaintext;
-                $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-                $item->content = $article_content;
+                $item = array();
+                $item['uri'] = $article_url;
+                $item['title'] = $element->find('title', 0)->plaintext;
+                $item['author'] = $article_html->find('a[rel=author]', 0)->plaintext;
+                $item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
+                $item['content'] = $article_content;
                 $this->items[] = $item;
                 $limit++;
 

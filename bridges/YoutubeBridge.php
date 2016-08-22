@@ -61,14 +61,14 @@ class YoutubeBridge extends BridgeAbstract {
 	}
 
 	private function ytBridgeAddItem($vid, $title, $author, $desc, $time) {
-		$item = new \Item();
-		$item->id = $vid;
-		$item->title = $title;
-		$item->author = $author;
-		$item->timestamp = $time;
-		$item->uri = $this->uri.'watch?v='.$vid;
+		$item = array();
+		$item['id'] = $vid;
+		$item['title'] = $title;
+		$item['author'] = $author;
+		$item['timestamp'] = $time;
+		$item['uri'] = $this->uri.'watch?v='.$vid;
 		$thumbnailUri = str_replace('/www.', '/img.', $this->uri).'vi/'.$vid.'/0.jpg';
-		$item->content = '<a href="'.$item->uri.'"><img src="'.$thumbnailUri.'" /></a><br />'.$desc;
+		$item['content'] = '<a href="'.$item['uri'].'"><img src="'.$thumbnailUri.'" /></a><br />'.$desc;
 		$this->items[] = $item;
 	}
 

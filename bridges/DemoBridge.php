@@ -37,12 +37,12 @@ class DemoBridge extends BridgeAbstract{
 
 	public function collectData(array $param){
 
-		$item = new \Item();
-	    $item->author = "Me!";
-	    $item->title = "Test";
-	    $item->content = "Awesome content !";
-	    $item->id = "Lalala";
-	    $item->uri = "http://test.test/test";
+		$item = array();
+	    $item['author'] = "Me!";
+	    $item['title'] = "Test";
+	    $item['content'] = "Awesome content !";
+	    $item['id'] = "Lalala";
+	    $item['uri'] = "http://test.test/test";
 
 	    $this->items[] = $item;
 

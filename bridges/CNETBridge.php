@@ -63,12 +63,12 @@ class CNETBridge extends BridgeAbstract {
 
                     $article_content = trim(CleanArticle(ExtractFromDelimiters($article_html, '<div class="articleContent', '<footer>')));
 
-                    $item = new \Item();
-                    $item->uri = $article_uri;
-                    $item->title = $article_title;
-                    $item->author = $article_author;
-                    $item->timestamp = $article_timestamp;
-                    $item->content = $article_content;
+                    $item = array();
+                    $item['uri'] = $article_uri;
+                    $item['title'] = $article_title;
+                    $item['author'] = $article_author;
+                    $item['timestamp'] = $article_timestamp;
+                    $item['content'] = $article_content;
                     $this->items[] = $item;
                     $limit++;
                 }

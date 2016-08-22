@@ -37,15 +37,15 @@ class GithubIssueBridge extends BridgeAbstract{
 
     foreach($html->find('.js-comment-container') as $comment){
 
-      $item = new \Item();
-      $item->author=$comment->find('img',0)->getAttribute('alt');
+      $item = array();
+      $item['author']=$comment->find('img',0)->getAttribute('alt');
 
       $comment=$comment->firstChild()->nextSibling();
 
-      $item->uri=$uri.'#'.$comment->getAttribute('id');
-      $item->title=trim($comment->firstChild()->plaintext);
-      $item->timestamp=strtotime($comment->find('relative-time',0)->getAttribute('datetime'));
-      $item->content=$comment->find('.comment-body',0)->innertext;
+      $item['uri']=$uri.'#'.$comment->getAttribute('id');
+      $item['title']=trim($comment->firstChild()->plaintext);
+      $item['timestamp']=strtotime($comment->find('relative-time',0)->getAttribute('datetime'));
+      $item['content']=$comment->find('.comment-body',0)->innertext;
 
       $this->items[]=$item;
     }

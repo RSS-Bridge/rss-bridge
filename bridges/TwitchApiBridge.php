@@ -119,12 +119,12 @@ class TwitchApiBridge extends BridgeAbstract{
 			$data = json_decode($response);
 
 			foreach($data->videos as $video) {
-				$item = new \Item();
-				$item->id = $video->_id;
-				$item->uri = $video->url;
-				$item->title = htmlspecialchars($video->title);
-				$item->timestamp = strtotime($video->recorded_at);
-				$item->content = '<a href="' . $item->uri . '"><img src="' . $video->preview . '" /></a><br><a href="' . $item->uri . '">' . $item->title . '</a>';
+				$item = array();
+				$item['id'] = $video->_id;
+				$item['uri'] = $video->url;
+				$item['title'] = htmlspecialchars($video->title);
+				$item['timestamp'] = strtotime($video->recorded_at);
+				$item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $video->preview . '" /></a><br><a href="' . $item['uri'] . '">' . $item['title'] . '</a>';
 				$this->items[] = $item;
 
 				// Stop once the number of requested items is reached

@@ -46,12 +46,12 @@ class DeveloppezDotComBridge extends BridgeAbstract{
 
 		foreach($rssFeed->find('item') as $element) {
 			if($limit < 10) {
-				$item = new \Item();
-				$item->title = $this->DeveloppezDotComStripCDATA($element->find('title', 0)->innertext);
-				$item->uri = $this->DeveloppezDotComStripCDATA($element->find('guid', 0)->plaintext);
-				$item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-				$content = $this->DeveloppezDotComExtractContent($item->uri);
-				$item->content = strlen($content) ? $content : $element->description; //In case of it is a tutorial, we just keep the original description
+				$item = array();
+				$item['title'] = $this->DeveloppezDotComStripCDATA($element->find('title', 0)->innertext);
+				$item['uri'] = $this->DeveloppezDotComStripCDATA($element->find('guid', 0)->plaintext);
+				$item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
+				$content = $this->DeveloppezDotComExtractContent($item['uri']);
+				$item['content'] = strlen($content) ? $content : $element->description; //In case of it is a tutorial, we just keep the original description
 				$this->items[] = $item;
 				$limit++;
 			}

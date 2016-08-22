@@ -78,10 +78,10 @@ class ParuVenduImmoBridge extends BridgeAbstract
 
             list($href) = explode('#', $element->href);
 
-            $item = new \Item();
-            $item->uri = $this->uri.$href;
-            $item->title = $element->title;
-            $item->content = $img.$desc.$price;
+            $item = array();
+            $item['uri'] = $this->uri.$href;
+            $item['title'] = $element->title;
+            $item['content'] = $img.$desc.$price;
             $this->items[] = $item;
 
         }

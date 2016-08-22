@@ -41,12 +41,12 @@ class GBAtempBridge extends BridgeAbstract {
     }
 
     private function build_item($uri, $title, $author, $timestamp, $content) {
-        $item = new \Item();
-        $item->uri = $uri;
-        $item->title = $title;
-        $item->author = $author;
-        $item->timestamp = $timestamp;
-        $item->content = $content;
+        $item = array();
+        $item['uri'] = $uri;
+        $item['title'] = $title;
+        $item['author'] = $author;
+        $item['timestamp'] = $timestamp;
+        $item['content'] = $content;
         return $item;
     }
 

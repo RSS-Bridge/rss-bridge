@@ -14,7 +14,7 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
         $html = $this->getSimpleHTMLDOM('http://lesjoiesducode.fr/') or $this->returnServerError('Could not request LesJoiesDuCode.');
 
         foreach($html->find('div.blog-post') as $element) {
-            $item = new Item();
+            $item = array();
             $temp = $element->find('h1 a', 0);
             $titre = html_entity_decode($temp->innertext);
             $url = $temp->href;
@@ -35,13 +35,13 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
             if($pos > 0)
             {
                 $auteur = trim(str_replace("*/", "", substr($auteur->innertext, ($pos + 2))));
-                $item->author = $auteur;
+                $item['author'] = $auteur;
             }
 
 
-            $item->content .= trim($content);
-            $item->uri = $url;
-            $item->title = trim($titre);
+            $item['content'] .= trim($content);
+            $item['uri'] = $url;
+            $item['title'] = trim($titre);
 
             $this->items[] = $item;
         }

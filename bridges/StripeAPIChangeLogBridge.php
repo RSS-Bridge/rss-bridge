@@ -21,11 +21,11 @@ class StripeAPIChangeLogBridge extends BridgeAbstract{
 
     foreach($html->find('h3') as $change){
       $item=new \Item();
-      $item->title=trim($change->plaintext);
-      $item->uri='https://stripe.com/docs/upgrades#'.$item->title;
-      $item->author='stripe';
-      $item->content=$change->nextSibling()->outertext;
-      $item->timestamp=strtotime($item->title);
+      $item['title']=trim($change->plaintext);
+      $item['uri']='https://stripe.com/docs/upgrades#'.$item['title'];
+      $item['author']='stripe';
+      $item['content']=$change->nextSibling()->outertext;
+      $item['timestamp']=strtotime($item['title']);
       $this->items[]=$item;
     }
   }

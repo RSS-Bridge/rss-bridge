@@ -47,31 +47,31 @@ class GitlabCommitsBridge extends BridgeAbstract{
 
     foreach($html->find('li.commit') as $commit){
 
-      $item = new \Item();
-      $item->uri=$param['uri'];
+      $item = array();
+      $item['uri']=$param['uri'];
 
       foreach($commit->getElementsByTagName('a') as $a){
         $classes=explode(' ',$a->getAttribute("class"));
         if(in_array('commit-short-id',$classes) ||
           in_array('commit_short_id',$classes)){
           $href=$a->getAttribute('href');
-          $item->uri.=substr($href,strpos($href,'/'.$param['u'].'/'.$param['p']));
+          $item['uri'].=substr($href,strpos($href,'/'.$param['u'].'/'.$param['p']));
         }
         if(in_array('commit-row-message',$classes)){
-          $item->title=$a->plaintext;
+          $item['title']=$a->plaintext;
         }
         if(in_array('commit-author-link',$classes)){
-          $item->author=trim($a->plaintext);
+          $item['author']=trim($a->plaintext);
         }
       }
 
       $pre=$commit->find('pre',0);
       if($pre){
-        $item->content=$pre->outertext;
+        $item['content']=$pre->outertext;
       }else{
-        $item->content='';
+        $item['content']='';
       }
-      $item->timestamp=strtotime($commit->find('time',0)->getAttribute('datetime'));
+      $item['timestamp']=strtotime($commit->find('time',0)->getAttribute('datetime'));
 
       $this->items[]=$item;
     }

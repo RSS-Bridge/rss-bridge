@@ -160,8 +160,8 @@ class LeBonCoinBridge extends BridgeAbstract{
 
 			$element = $element->find('a', 0);
 
-			$item = new \Item();
-			$item->uri = $element->href;
+			$item = array();
+			$item['uri'] = $element->href;
 			$title = html_entity_decode($element->getAttribute('title'));
 			$content_image = $element->find('div.item_image', 0)->find('.lazyload', 0);
 
@@ -178,8 +178,8 @@ class LeBonCoinBridge extends BridgeAbstract{
 			$price = $detailsList->find('h3.item_price', 0);
 			$content .= $price === NULL ? '' : $price->plaintext;
 
-			$item->title = $title;
-			$item->content = $content . $date;
+			$item['title'] = $title;
+			$item['content'] = $content . $date;
 			$this->items[] = $item;
 		}
 	}
