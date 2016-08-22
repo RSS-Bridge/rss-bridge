@@ -51,7 +51,7 @@ class Arte7Bridge extends BridgeAbstract{
       function extractVideoset($category='toutes-les-videos', $lang='fr')
          {
          $url = 'http://www.arte.tv/guide/'.$lang.'/plus7/'.$category;
-         $input = file_get_contents($url) or die('Could not request ARTE.');
+         $input = $this->getContents($url) or die('Could not request ARTE.');
          if(strpos($input, 'categoryVideoSet') !== FALSE)
             {
             $input = explode('categoryVideoSet: ', $input);

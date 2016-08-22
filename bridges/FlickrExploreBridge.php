@@ -25,7 +25,7 @@ class FlickrExploreBridge extends BridgeAbstract{
 						$imageID = reset($imageURIs);
 
 						// Get the image JSON via Flickr API
-						$imageJSON = json_decode(file_get_contents('https://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=103b574d49bd51f0e18bfe907da44a0f&photo_id='.$imageID.'&format=json&nojsoncallback=1')) or $this->returnServerError('Could not request Flickr.'); // FIXME: Request time too long...
+                        $imageJSON = json_decode($this->getContents('https://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=103b574d49bd51f0e18bfe907da44a0f&photo_id='.$imageID.'&format=json&nojsoncallback=1')) or $this->returnServerError('Could not request Flickr.'); // FIXME: Request time too long...
 
             $item = array();
             $item['uri'] = 'https://flickr.com/photo.gne?id='.$imageID;
