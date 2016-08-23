@@ -6,8 +6,8 @@ class HtmlFormat extends FormatAbstract{
         $extraInfos = $this->getExtraInfos();
         $title = htmlspecialchars($extraInfos['name']);
         $uri = htmlspecialchars($extraInfos['uri']);
-        $atomquery = str_replace('format=Html', 'format=Atom', htmlentities(filter_input(INPUT_SERVER, 'QUERY_STRING')));
-        $mrssquery = str_replace('format=Html', 'format=Mrss', htmlentities(filter_input(INPUT_SERVER, 'QUERY_STRING')));
+        $atomquery = str_replace('format=Html', 'format=Atom', htmlentities($_SERVER['QUERY_STRING']));
+        $mrssquery = str_replace('format=Html', 'format=Mrss', htmlentities($_SERVER['QUERY_STRING']));
 
         $entries = '';
         foreach($this->getDatas() as $data){
