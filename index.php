@@ -109,9 +109,8 @@ try{
 
                     // Data retrieval
                     $bridge = Bridge::create($bridge);
-                    if(defined("DEBUG")) {
-                    } else {
-                        $bridge->setCache($cache); // just add disable cache to your query to disable caching
+                    if(!defined("DEBUG")) {
+                        $bridge->setCache($cache);
                     }
 
                     $noproxy=filter_input(INPUT_GET,'_noproxy');
