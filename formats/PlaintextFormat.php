@@ -2,8 +2,6 @@
 /**
 * Plaintext
 * Returns $this->items as raw php data.
-*
-* @name Plaintext
 */
 class PlaintextFormat extends FormatAbstract{
 

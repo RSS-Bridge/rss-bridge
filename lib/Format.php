@@ -118,10 +118,11 @@ class Format{
     }
 
     static public function create($nameFormat){
-        if( !static::isValidNameFormat($nameFormat) ){
+        if( !preg_match('@^[A-Z][a-zA-Z]*$@', $nameFormat)){
             throw new \InvalidArgumentException('Name format must be at least one uppercase follow or not by alphabetic characters.');
         }
 
+        $nameFormat=$nameFormat.'Format';
         $pathFormat = self::getDir() . $nameFormat . '.php';
 
         if( !file_exists($pathFormat) ){
@@ -155,10 +156,6 @@ class Format{
         return $dirFormat;
     }
 
-    static public function isValidNameFormat($nameFormat){
-        return preg_match('@^[A-Z][a-zA-Z]*$@', $nameFormat);
-    }
-
     /**
     * Read format dir and catch informations about each format depending annotation
     * @return array Informations about each format
@@ -172,27 +169,11 @@ class Format{
 
         $dirFiles = scandir($pathDirFormat);
         if( $dirFiles !== false ){
-            foreach( $dirFiles as $fileName ){
-                if( preg_match('@([^.]+)\.php@U', $fileName, $out) ){ // Is PHP file ?
-                    $infos = array(); // Information about the bridge
-                    $resParse = token_get_all(file_get_contents($pathDirFormat . $fileName)); // Parse PHP file
-                    foreach($resParse as $v){
-                        if( is_array($v) && $v[0] == T_DOC_COMMENT ){ // Lexer node is COMMENT ?
-                            $commentary = $v[1];
-                            foreach( $searchCommonPattern as $name){ // Catch information with common pattern
-                                preg_match('#@' . preg_quote($name, '#') . '\s+(.+)#', $commentary, $outComment);
-                                if( isset($outComment[1]) ){
-                                    $infos[$name] = $outComment[1];
-                                }
-                            }
-                        }
-                    }
-
-                    if( isset($infos['name']) ){ // If informations containt at least a name
-                        $listFormat[$out[1]] = $infos;
-                    }
-                }
+          foreach( $dirFiles as $fileName ){
+            if( preg_match('@^([^.]+)Format\.php$@U', $fileName, $out) ){ // Is PHP file ?
+              $listFormat[] = $out[1];
             }
+          }
         }
 
         return $listFormat;
