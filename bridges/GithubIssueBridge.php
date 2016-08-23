@@ -57,7 +57,7 @@ class GithubIssueBridge extends BridgeAbstract{
         $item['title']=$issue->find('.js-navigation-open',0)->plaintext;
         $comments=$issue->firstChild()->firstChild()
           ->nextSibling()->nextSibling()->nextSibling()->plaintext;
-        $item['content']='Comments: '.$comments;
+        $item['content']='Comments: '.($comments?$comments:'0');
         $item['uri']='https://github.com'.$issue->find('.js-navigation-open',0)->getAttribute('href');
         $this->items[]=$item;
       }
