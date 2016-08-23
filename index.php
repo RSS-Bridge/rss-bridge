@@ -113,8 +113,8 @@ try{
                         $bridge->setCache($cache);
                     }
 
-                    $noproxy=filter_input(INPUT_GET,'_noproxy');
-                    if(defined('PROXY_URL') && PROXY_BYBRIDGE && !empty($noproxy)){
+                    $noproxy=filter_input(INPUT_GET,'_noproxy',FILTER_VALIDATE_BOOLEAN);
+                    if(defined('PROXY_URL') && PROXY_BYBRIDGE && $noproxy){
                       $bridge->useProxy=false;
                     }
 					$bridge->loadMetadatas();
