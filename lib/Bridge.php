@@ -266,6 +266,7 @@ class Bridge{
             throw new \InvalidArgumentException('Name bridge must be at least one uppercase follow or not by alphanumeric or dash characters.');
         }
 
+        $nameBridge=$nameBridge.'Bridge';
         $pathBridge = self::getDir() . $nameBridge . '.php';
 
         if( !file_exists($pathBridge) ){
@@ -313,19 +314,21 @@ class Bridge{
 		$listBridge = array();
 		$dirFiles = scandir($pathDirBridge);
 
-		if( $dirFiles !== false ){
-
-		    foreach( $dirFiles as $fileName ) {
-		        if( preg_match('@([^.]+)\.php$@U', $fileName, $out) ){
-						$listBridge[] = $out[1];
-			}
-			}
-		}
+        if( $dirFiles !== false ){
+          foreach( $dirFiles as $fileName ) {
+            if( preg_match('@^([^.]+)Bridge\.php$@U', $fileName, $out) ){
+              $listBridge[] = $out[1];
+            }
+          }
+        }
 
 		return $listBridge;
 	}
 	static function isWhitelisted( $whitelist, $name ) {
-	if(in_array("$name", $whitelist) or in_array("$name.php", $whitelist) or count($whitelist) === 1 and trim($whitelist[0]) === '*')
+      if(in_array($name, $whitelist) or in_array($name.'.php', $whitelist) or
+        // DEPRECATED: the nameBridge notation will be removed in future releases
+        in_array($name.'Bridge', $whitelist) or in_array($name.'Bridge.php', $whitelist) or
+        count($whitelist) === 1 and trim($whitelist[0]) === '*')
 		return TRUE;
 	else
 		return FALSE;

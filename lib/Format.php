@@ -122,6 +122,7 @@ class Format{
             throw new \InvalidArgumentException('Name format must be at least one uppercase follow or not by alphabetic characters.');
         }
 
+        $nameFormat=$nameFormat.'Format';
         $pathFormat = self::getDir() . $nameFormat . '.php';
 
         if( !file_exists($pathFormat) ){
@@ -169,7 +170,7 @@ class Format{
         $dirFiles = scandir($pathDirFormat);
         if( $dirFiles !== false ){
           foreach( $dirFiles as $fileName ){
-            if( preg_match('@^([^.]+)\.php$@U', $fileName, $out) ){ // Is PHP file ?
+            if( preg_match('@^([^.]+)Format\.php$@U', $fileName, $out) ){ // Is PHP file ?
               $listFormat[] = $out[1];
             }
           }

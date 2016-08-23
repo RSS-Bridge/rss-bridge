@@ -139,10 +139,8 @@ CARD;
 
 	private static function getHelperButtonsFormat($formats){
 		$buttons = '';
-
-		foreach( $formats as $name => $infos ){
-			if ( isset($infos['name']) )
-				$buttons .= '<button type="submit" name="format" value="' . $name . '">' . $infos['name'] . '</button>' . PHP_EOL;
+		foreach( $formats as $name){
+          $buttons .= '<button type="submit" name="format" value="' . $name . '">' . $name . '</button>' . PHP_EOL;
 		}
 
 		return $buttons;
