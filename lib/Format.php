@@ -118,7 +118,7 @@ class Format{
     }
 
     static public function create($nameFormat){
-        if( !static::isValidNameFormat($nameFormat) ){
+        if( !preg_match('@^[A-Z][a-zA-Z]*$@', $nameFormat)){
             throw new \InvalidArgumentException('Name format must be at least one uppercase follow or not by alphabetic characters.');
         }
 
@@ -153,10 +153,6 @@ class Format{
         }
 
         return $dirFormat;
-    }
-
-    static public function isValidNameFormat($nameFormat){
-        return preg_match('@^[A-Z][a-zA-Z]*$@', $nameFormat);
     }
 
     /**

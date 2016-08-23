@@ -262,7 +262,7 @@ class Bridge{
     * @return Bridge object dedicated
     */
     static public function create($nameBridge){
-        if( !static::isValidNameBridge($nameBridge) ){
+        if( !preg_match('@^[A-Z][a-zA-Z0-9-]*$@', $nameBridge)){
             throw new \InvalidArgumentException('Name bridge must be at least one uppercase follow or not by alphanumeric or dash characters.');
         }
 
@@ -301,10 +301,6 @@ class Bridge{
         }
 
         return $dirBridge;
-    }
-
-    static public function isValidNameBridge($nameBridge){
-        return preg_match('@^[A-Z][a-zA-Z0-9-]*$@', $nameBridge);
     }
 
     /**
