@@ -2,8 +2,6 @@
 /**
 * Atom
 * Documentation Source http://en.wikipedia.org/wiki/Atom_%28standard%29 and http://tools.ietf.org/html/rfc4287
-*
-* @name Atom
 */
 class AtomFormat extends FormatAbstract{
 

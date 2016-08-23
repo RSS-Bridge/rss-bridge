@@ -2,8 +2,6 @@
 /**
 * Mrss
 * Documentation Source http://www.rssboard.org/media-rss
-*
-* @name Media RSS
 */
 class MrssFormat extends FormatAbstract{
 

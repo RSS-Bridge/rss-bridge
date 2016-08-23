@@ -1,10 +1,4 @@
 <?php
-/**
-* Html
-* Documentation Source http://en.wikipedia.org/wiki/Atom_%28standard%29 and http://tools.ietf.org/html/rfc4287
-*
-* @name Html
-*/
 class HtmlFormat extends FormatAbstract{
 
     public function stringify(){

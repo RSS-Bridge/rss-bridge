@@ -2,8 +2,6 @@
 /**
 * Json
 * Builds a JSON string from $this->items and return it to browser.
-*
-* @name Json
 */
 class JsonFormat extends FormatAbstract{
 
