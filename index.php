@@ -102,7 +102,7 @@ try{
         $bridge=substr($bridge,0,$pos);
       }
 
-      $format = $_REQUEST['format'];
+      $format = filter_input(INPUT_GET,'format');
       unset($_REQUEST['format']);
       // DEPRECATED: 'nameFormat' scheme is replaced by 'name' in format parameter values
       //             this is to keep compatibility until futher complete removal
