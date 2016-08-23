@@ -28,8 +28,8 @@ class SoundCloudBridge extends BridgeAbstract{
 		{
 			$this->request = $param['u'];
 
-			$res = json_decode(file_get_contents('https://api.soundcloud.com/resolve?url=http://www.soundcloud.com/'. urlencode($this->request) .'&client_id=' . self::CLIENT_ID)) or $this->returnServerError('No results for this query');
-			$tracks = json_decode(file_get_contents('https://api.soundcloud.com/users/'. urlencode($res->id) .'/tracks?client_id=' . self::CLIENT_ID)) or $this->returnServerError('No results for this user');
+			$res = json_decode($this->getContents('https://api.soundcloud.com/resolve?url=http://www.soundcloud.com/'. urlencode($this->request) .'&client_id=' . self::CLIENT_ID)) or $this->returnServerError('No results for this query');
+			$tracks = json_decode($this->getContents('https://api.soundcloud.com/users/'. urlencode($res->id) .'/tracks?client_id=' . self::CLIENT_ID)) or $this->returnServerError('No results for this user');
 		}
 		else
 		{

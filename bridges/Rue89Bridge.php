@@ -13,7 +13,7 @@ class Rue89Bridge extends BridgeAbstract{
 	private function rue89getDatas($url){
 
 		$url = "http://api.rue89.nouvelobs.com/export/mobile2/node/" . str_replace(" ", "", substr($url, -8)) . "/full";
-		$datas = json_decode(file_get_contents($url), true);
+		$datas = json_decode($this->getContents($url), true);
 
 		return $datas["node"];
 

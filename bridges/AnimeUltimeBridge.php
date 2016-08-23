@@ -74,7 +74,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
                         if (!empty($item_uri)) {
 
                             //Retrieve description from description page and convert relative image src info absolute image src
-                            $html_item = file_get_contents($item_uri) or $this->returnServerError('Could not request Anime-Ultime: '.$item_uri);
+                            $html_item = $this->getContents($item_uri) or $this->returnServerError('Could not request Anime-Ultime: '.$item_uri);
                             $item_description = substr($html_item, strpos($html_item, 'class="principal_contain" align="center">') + 41);
                             $item_description = substr($item_description, 0, strpos($item_description, '<div id="table">'));
                             $item_description = str_replace('src="images', 'src="'.$website.'images', $item_description);

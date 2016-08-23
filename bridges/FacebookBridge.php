@@ -93,7 +93,7 @@ class FacebookBridge extends BridgeAbstract{
 					),
 				);
 				$context  = stream_context_create($http_options);
-				$html = file_get_contents($captcha_action, false, $context);
+				$html = $this->getContents($captcha_action, false, $context);
 				if ($html === FALSE) { $this->returnServerError('Failed to submit captcha response back to Facebook'); }
 				unset($_SESSION['captcha_fields']);
 				$html = str_get_html($html);
@@ -129,7 +129,7 @@ class FacebookBridge extends BridgeAbstract{
 			$_SESSION['captcha_action'] = 'https://www.facebook.com'.$captcha->find('form', 0)->action;
 
 			//Show captcha filling form to the viewer, proxying the captcha image
-			$img = base64_encode(file_get_contents($captcha->find('img', 0)->src));
+			$img = base64_encode($this->getContents($captcha->find('img', 0)->src));
 			header('HTTP/1.1 500 '.Http::getMessageForCode(500));
 			header('Content-Type: text/html');
 			die('<form method="post" action="?'.$_SERVER['QUERY_STRING'].'">'

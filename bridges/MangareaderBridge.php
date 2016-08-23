@@ -102,7 +102,7 @@ class MangareaderBridge extends BridgeAbstract{
         }
 
 		// We'll use the DOM parser for this as it makes navigation easier
-		$html = file_get_contents("http://www.mangareader.net/" . $path);
+		$html = $this->getContents("http://www.mangareader.net/" . $path);
         if(!$html){
             $this->returnClientError('Could not receive data for ' . $path . '!');
         }
