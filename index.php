@@ -91,15 +91,13 @@ try{
     Format::setDir(__DIR__ . '/formats/');
     Cache::setDir(__DIR__ . '/caches/');
 
-    if( isset($_REQUEST) && isset($_REQUEST['action']) ){
-        switch($_REQUEST['action']){
-            case 'display':
-                if( isset($_REQUEST['bridge']) ){
-                    unset($_REQUEST['action']);
-                    $bridge = $_REQUEST['bridge'];
-                    unset($_REQUEST['bridge']);
-                    $format = $_REQUEST['format'];
-                    unset($_REQUEST['format']);
+    $action=filter_input(INPUT_GET,'action');
+    $bridge=filter_input(INPUT_GET,'bridge');
+    if($action === 'display' && !empty($bridge)){
+      unset($_REQUEST['action']);
+      unset($_REQUEST['bridge']);
+      $format = $_REQUEST['format'];
+      unset($_REQUEST['format']);
 
 			// whitelist control
 			if(!Bridge::isWhitelisted($whitelist_selection, $bridge)) {
@@ -115,9 +113,9 @@ try{
                     } else {
                         $bridge->setCache($cache); // just add disable cache to your query to disable caching
                     }
-                    if(defined('PROXY_URL') && PROXY_BYBRIDGE &&
-                      isset($_REQUEST['_noproxy'])
-                    ){
+
+                    $noproxy=filter_input(INPUT_GET,'_noproxy');
+                    if(defined('PROXY_URL') && PROXY_BYBRIDGE && !empty($noproxy)){
                       $bridge->useProxy=false;
                     }
 					$bridge->loadMetadatas();
@@ -138,10 +136,8 @@ try{
 
 		            }
                     die;
-                }
-                break;
-        }
-    }
+
+                    }
 }
 catch(HttpException $e){
     header('HTTP/1.1 ' . $e->getCode() . ' ' . Http::getMessageForCode($e->getCode()));
@@ -173,7 +169,7 @@ $formats = Format::searchInformation();
     </header>
 	<?php
 	    $activeFoundBridgeCount = 0;
-		$showInactive = isset($_REQUEST['show_inactive']) && $_REQUEST['show_inactive'] == 1;
+		$showInactive = filter_input(INPUT_GET,'show_inactive',FILTER_VALIDATE_BOOLEAN);
 		$inactiveBridges = '';
 		$bridgeList = Bridge::listBridges();
 	    foreach($bridgeList as $bridgeName)
