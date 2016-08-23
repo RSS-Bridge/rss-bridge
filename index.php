@@ -96,8 +96,20 @@ try{
     if($action === 'display' && !empty($bridge)){
       unset($_REQUEST['action']);
       unset($_REQUEST['bridge']);
+      // DEPRECATED: 'nameBridge' scheme is replaced by 'name' in bridge parameter values
+      //             this is to keep compatibility until futher complete removal
+      if(($pos=strpos($bridge,'Bridge'))===(strlen($bridge)-strlen('Bridge'))){
+        $bridge=substr($bridge,0,$pos);
+      }
+
       $format = $_REQUEST['format'];
       unset($_REQUEST['format']);
+      // DEPRECATED: 'nameFormat' scheme is replaced by 'name' in format parameter values
+      //             this is to keep compatibility until futher complete removal
+      if(($pos=strpos($format,'Format'))===(strlen($format)-strlen('Format'))){
+        $format=substr($format,0,$pos);
+      }
+
 
 			// whitelist control
 			if(!Bridge::isWhitelisted($whitelist_selection, $bridge)) {
