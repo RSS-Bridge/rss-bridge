@@ -47,7 +47,10 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
                     $item['content'] = $textefiche->text();
                 }
                 else {
-                    $item['content'] = $htmlepisode->find('#textefiche', 0)->find('p',0)->text();
+                    $p=$htmlepisode->find('#textefiche',0)->find('p');
+                    if(!empty($p)){
+                        $item['content'] = $htmlepisode->find('#textefiche', 0)->find('p',0)->text();
+                    }
                 }
 
                 $item['id'] = $episode->find('a', 0)->getAttribute('href');
