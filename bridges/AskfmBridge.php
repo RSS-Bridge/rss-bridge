@@ -10,7 +10,8 @@ class AskfmBridge extends BridgeAbstract{
 
                 $this->parameters["Ask.fm username"] = array(
                   'u'=>array(
-                    'name'=>'Username'
+                      'name'=>'Username',
+                      'required'=>true
                   )
                 );
         }
