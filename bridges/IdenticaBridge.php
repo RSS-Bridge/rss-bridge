@@ -11,7 +11,10 @@ class IdenticaBridge extends BridgeAbstract{
 		$this->description = "Returns user timelines";
 
         $this->parameters[] = array(
-          'u'=>array('name'=>'username')
+            'u'=>array(
+                'name'=>'username',
+                'required'=>true
+            )
         );
 
 	}
