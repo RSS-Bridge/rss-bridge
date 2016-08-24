@@ -57,7 +57,7 @@ class WorldOfTanks extends HttpCachingBridgeAbstract{
         $item = array();
         $item['uri'] = WORLD_OF_TANKS.$infoLink->href;
         // now load that uri from cache
-//        $this->message("loading page ".$item['uri']);
+        $this->message("loading page ".$item['uri']);
         $articlePage = str_get_html($this->get_cached($item['uri']));
         $content = $articlePage->find('.l-content', 0);
         HTMLSanitizer::defaultImageSrcTo($content, WORLD_OF_TANKS);

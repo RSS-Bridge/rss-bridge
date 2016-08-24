@@ -28,7 +28,7 @@ class Gawker extends RssExpander{
             $this->name = $param['site'];
 			$url = $this->toURI(strtolower($param['site']));
         }
-//        $this->message("loading feed from ".$this->getURI());
+        $this->message("loading feed from ".$this->getURI());
         parent::collectExpandableDatas($param, $url);
     }
 
@@ -37,10 +37,10 @@ class Gawker extends RssExpander{
         $item['uri'] = trim($newsItem->link);
         $item['title'] = trim($newsItem->title);
         $item['timestamp'] = $this->RSS_2_0_time_to_timestamp($newsItem);
-//        $this->message("///////////////////////////////////////////////////////////////////////////////////////\nprocessing item ".var_export($item, true)."\n\n\nbuilt from\n\n\n".var_export($newsItem, true));
+        $this->message("///////////////////////////////////////////////////////////////////////////////////////\nprocessing item ".var_export($item, true)."\n\n\nbuilt from\n\n\n".var_export($newsItem, true));
         try {
             // now load that uri from cache
-//            $this->message("loading page ".$item['uri']);
+            $this->message("loading page ".$item['uri']);
             $articlePage = str_get_html($this->get_cached($item['uri']));
             if(is_object($articlePage)) {
                 $content = $articlePage->find('.post-content', 0);
@@ -51,7 +51,7 @@ class Gawker extends RssExpander{
     				$item['author'] = $authorLink->innertext;
                     // TODO use author link href to fill the feed info
                 }
-//                $this->message("item quite loaded : ".var_export($item, true));
+                $this->message("item quite loaded : ".var_export($item, true));
                 // I set item content as last element, for easier var_export reading
                 $item['content'] = $content->innertext;
             } else {

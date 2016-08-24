@@ -24,7 +24,7 @@ class TheOatmealBridge extends RssExpander{
     protected function collect_RSS_2_0_data($rssContent) {
         $rssContent->registerXPathNamespace("dc", "http://purl.org/dc/elements/1.1/");
         $rssHeaderContent = $rssContent->channel[0];
-//        $this->message("RSS content is ===========\n".var_export($rssHeaderContent, true)."===========");
+        $this->message("RSS content is ===========\n".var_export($rssHeaderContent, true)."===========");
         $this->load_RSS_2_0_feed_data($rssHeaderContent);
         foreach($rssContent->item as $item) {
             $this->message("parsing item ".var_export($item, true));
