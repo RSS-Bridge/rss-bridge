@@ -142,11 +142,69 @@ abstract class BridgeAbstract implements BridgeInterface {
         return $this->items;
     }
 
+    protected function validateData(&$data){
+        $validated=true;
+        foreach($data as $name=>$value){
+            foreach($this->parameters as $context=>$set){
+                if(array_key_exists($name,$set)){
+                    if(!isset($set[$name]['type'])){
+                        $set[$name]['type']='text';
+                    }
+                    switch($set[$name]['type']){
+                    case 'number':
+                        $data[$name]=filter_var($value,FILTER_VALIDATE_INT);
+                        if($data[$name]===false && !empty($value)){
+                            $validated=false;
+                        }
+                        break;
+                    case 'checkbox':
+                        $data[$name]=filter_var($value,FILTER_VALIDATE_BOOLEAN,
+                            FILTER_NULL_ON_FAILURE);
+                        if(is_null($data[$name])){
+                            $validated=false;
+                        }
+                        break;
+                    case 'list':
+                        $data[$name]=filter_var($value);
+                        if(!in_array($value,$set[$name]['values'])){
+                            foreach($set[$name]['values'] as $subName=>$subValue){
+                                if(is_array($subValue) &&
+                                    in_array($value,$subValue)){
+                                    $data[$name]=filter_var($value);
+                                    break 2;
+                                }
+                            }
+                            $validated=false;
+                            $data[$name]=null;
+                        }
+                        break;
+                    default:
+                    case'text':
+                        if(isset($set[$name]['pattern'])){
+                            $data[$name]=filter_var($value,FILTER_VALIDATE_REGEXP,
+                                array('options'=>array(
+                                    'regexp'=>'/^'.$set[$name]['pattern'].'$/'
+                                ))
+                            );
+                        }else{
+                            $data[$name]=filter_var($value);
+                        }
+                        if($data[$name]===false && !empty($value)){
+                            $validated=false;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $validated;
+    }
+
     /**
     * Defined datas with parameters depending choose bridge
     * Note : you can define a cache with "setCache"
-    * @param array $param $_REQUEST, $_GET, $_POST, or array with expected 
-    * bridge paramters
+    * @param array array with expected bridge paramters
     */
     public function setDatas(array $param){
         if(!is_null($this->cache)){
@@ -159,6 +217,9 @@ abstract class BridgeAbstract implements BridgeInterface {
         if($time !== false && (time() - $this->getCacheDuration() < $time)){
             $this->items = $this->cache->loadData();
         } else {
+            if(!$this->validateData($param)){
+                $this->returnClientError('Invalid parameters value(s)');
+            }
             $this->collectData($param);
 
             if(!is_null($this->cache)){
