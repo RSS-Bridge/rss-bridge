@@ -1,19 +1,4 @@
 <?php
-// simple_html_dom funtion to get the dom from contents instead from file
-function content_get_html($contents, $maxLen=-1, $lowercase = true, $forceTagsClosed=true, $target_charset = DEFAULT_TARGET_CHARSET, $stripRN=true, $defaultBRText=DEFAULT_BR_TEXT, $defaultSpanText=DEFAULT_SPAN_TEXT)
-{
-    // We DO force the tags to be terminated.
-    $dom = new simple_html_dom(null, $lowercase, $forceTagsClosed, $target_charset, $stripRN, $defaultBRText, $defaultSpanText);
-
-    if (empty($contents) || strlen($contents) > MAX_FILE_SIZE)
-    {
-        return false;
-    }
-    // The second parameter can force the selectors to all be lowercase.
-    $dom->load($contents, $lowercase, $stripRN);
-    return $dom;
-}
-
 class CpasbienBridge extends HttpCachingBridgeAbstract{
 
     private $request;
@@ -51,7 +36,7 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
             if ($episode->getAttribute('class')=='ligne0' || $episode->getAttribute('class')=='ligne1')
             {
 
-                $htmlepisode=content_get_html($this->get_cached($episode->find('a', 0)->getAttribute('href')));
+                $htmlepisode=str_get_html($this->get_cached($episode->find('a', 0)->getAttribute('href')));
 
                 $item = array();
                 $item['author'] = $episode->find('a', 0)->text();
