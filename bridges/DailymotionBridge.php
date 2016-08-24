@@ -17,11 +17,16 @@ class DailymotionBridge extends BridgeAbstract{
         $this->parameters["By playlist id"] = array(
           'p'=>array(
             'name'=>'playlist id',
-            'type'=>'text')
+            'type'=>'text',
+            'required'=>true
+        )
         );
 
         $this->parameters["From search results"] = array(
-          's'=>array('name'=>'Search keyword'),
+            's'=>array(
+                'name'=>'Search keyword',
+                'required'=>true
+            ),
           'pa'=>array(
             'name'=>'Page',
             'type'=>'number'
