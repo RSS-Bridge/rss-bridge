@@ -1,7 +1,7 @@
 <?php
 define('WORLD_OF_TANKS', 'http://worldoftanks.eu/');
 define('NEWS', '/news/');
-class WorldOfTanks extends HttpCachingBridgeAbstract{
+class WorldOfTanksBridge extends HttpCachingBridgeAbstract{
 
     private $lang = "fr";
     public $uri = WORLD_OF_TANKS;
@@ -45,7 +45,7 @@ class WorldOfTanks extends HttpCachingBridgeAbstract{
             $this->uri = WORLD_OF_TANKS.$this->lang.NEWS.'pc-browser/'.$param['category']."/";
         }
         $html = $this->getSimpleHTMLDOM($this->getURI()) or $this->returnServerError('Could not request '.$this->getURI());
-        $this->message("loaded HTML from ".$this->getURI());
+        $this->debugMessage("loaded HTML from ".$this->getURI());
         // customize name
         $this->name = $html->find('title', 0)->innertext;
         foreach($html->find('.b-imgblock_ico') as $infoLink) {
@@ -57,7 +57,7 @@ class WorldOfTanks extends HttpCachingBridgeAbstract{
         $item = array();
         $item['uri'] = WORLD_OF_TANKS.$infoLink->href;
         // now load that uri from cache
-//        $this->message("loading page ".$item['uri']);
+        $this->debugMessage("loading page ".$item['uri']);
         $articlePage = str_get_html($this->get_cached($item['uri']));
         $content = $articlePage->find('.l-content', 0);
         HTMLSanitizer::defaultImageSrcTo($content, WORLD_OF_TANKS);

@@ -1,6 +1,6 @@
 <?php
 define("FREENEWS_RSS", 'http://feeds.feedburner.com/Freenews-Freebox?format=xml');
-class Freenews extends RssExpander {
+class FreenewsBridge extends RssExpander {
 
 	public function loadMetadatas() {
 
@@ -21,14 +21,14 @@ class Freenews extends RssExpander {
     protected function parseRSSItem($newsItem) {
         $item = array();
         $item['title'] = trim($newsItem->title);
-//        $this->message("item has for title \"".$item['title']."\"");
+        $this->debugMessage("item has for title \"".$item['title']."\"");
         if(empty($newsItem->guid)) {
             $item['uri'] = (string) $newsItem->link;
         } else {
             $item['uri'] = (string) $newsItem->guid;
         }
         // now load that uri from cache
-//        $this->message("now loading page ".$item['uri']);
+        $this->debugMessage("now loading page ".$item['uri']);
         $articlePage = str_get_html($this->get_cached($item['uri']));
 
         $content = $articlePage->find('.post-container', 0);

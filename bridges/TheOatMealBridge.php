@@ -24,10 +24,10 @@ class TheOatmealBridge extends RssExpander{
     protected function collect_RSS_2_0_data($rssContent) {
         $rssContent->registerXPathNamespace("dc", "http://purl.org/dc/elements/1.1/");
         $rssHeaderContent = $rssContent->channel[0];
-//        $this->message("RSS content is ===========\n".var_export($rssHeaderContent, true)."===========");
+        $this->debugMessage("RSS content is ===========\n".var_export($rssHeaderContent, true)."===========");
         $this->load_RSS_2_0_feed_data($rssHeaderContent);
         foreach($rssContent->item as $item) {
-            $this->message("parsing item ".var_export($item, true));
+            $this->debugMessage("parsing item ".var_export($item, true));
             $this->items[] = $this->parseRSSItem($item);
         }
     }
@@ -39,10 +39,10 @@ class TheOatmealBridge extends RssExpander{
         $rdf = $newsItem->children($namespaces['rdf']);
         $item = array();
         $item['title'] = trim($newsItem->title);
-        $this->message("browsing Oatmeal item ".var_export($newsItem, true));
+        $this->debugMessage("browsing Oatmeal item ".var_export($newsItem, true));
         $item['uri']=(string) $newsItem->attributes($namespaces['rdf'])->about;
         // now load that uri from cache
-        $this->message("now loading page ".$item['uri']);
+        $this->debugMessage("now loading page ".$item['uri']);
         $articlePage = str_get_html($this->get_cached($item['uri']));
 
         $content = $articlePage->find('#comic', 0);
@@ -51,10 +51,10 @@ class TheOatmealBridge extends RssExpander{
 		}
         $item['content'] = $content->innertext;
         
-        $this->message("dc content is ".var_export($dc, true));
+        $this->debugMessage("dc content is ".var_export($dc, true));
         $item['author'] = (string) $dc->creator;
         $item['timestamp'] = DateTime::createFromFormat(DateTime::ISO8601, $dc->date)->getTimestamp();
-        $this->message("writtem by ".$item['author']." on ".$item['timestamp']);
+        $this->debugMessage("writtem by ".$item['author']." on ".$item['timestamp']);
         return $item;
     }
     
