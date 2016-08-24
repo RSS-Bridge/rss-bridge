@@ -12,7 +12,10 @@ class GooglePlusPostBridge extends BridgeAbstract
 		$this->description = "Returns user public post (without API).";
 
         $this->parameters[] = array(
-          'username'=>array('name'=>'username or Id')
+            'username'=>array(
+                'name'=>'username or Id',
+                'required'=>true
+            )
         );
 
 	}
