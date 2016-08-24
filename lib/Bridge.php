@@ -42,7 +42,8 @@ abstract class BridgeAbstract implements BridgeInterface {
     /**
     * Defined datas with parameters depending choose bridge
     * Note : you can define a cache with "setCache"
-    * @param array $param $_REQUEST, $_GET, $_POST, or array with bridge expected paramters
+    * @param array $param $_REQUEST, $_GET, $_POST, or array with expected 
+    * bridge paramters
     */
     public function setDatas(array $param){
         if(!is_null($this->cache)){
@@ -87,15 +88,19 @@ abstract class BridgeAbstract implements BridgeInterface {
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
         $calling = $backtrace[2];
         $message = $calling['file'] . ':'
-            . $calling['line'] . ' class '
-            . get_class($this) . '->'
-            . $calling['function'] . ' - '
-            . $text;
+        . $calling['line'] . ' class '
+        . get_class($this) . '->'
+        . $calling['function'] . ' - '
+        . $text;
 
         error_log($message);
     }
 
-    protected function getContents($url, $use_include_path = false, $context = null, $offset = 0, $maxlen = null){
+    protected function getContents($url
+    , $use_include_path = false
+    , $context = null
+    , $offset = 0
+    , $maxlen = null){
         $contextOptions = array(
             'http' => array(
                 'user_agent' => ini_get('user_agent')
@@ -128,9 +133,25 @@ abstract class BridgeAbstract implements BridgeInterface {
         return $content;
     }
 
-    protected function getSimpleHTMLDOM($url, $use_include_path = false, $context = null, $offset = 0, $maxLen = null, $lowercase = true, $forceTagsClosed = true, $target_charset = DEFAULT_TARGET_CHARSET, $stripRN = true, $defaultBRText = DEFAULT_BR_TEXT, $defaultSpanText = DEFAULT_SPAN_TEXT){
+    protected function getSimpleHTMLDOM($url
+    , $use_include_path = false
+    , $context = null
+    , $offset = 0
+    , $maxLen = null
+    , $lowercase = true
+    , $forceTagsClosed = true
+    , $target_charset = DEFAULT_TARGET_CHARSET
+    , $stripRN = true
+    , $defaultBRText = DEFAULT_BR_TEXT
+    , $defaultSpanText = DEFAULT_SPAN_TEXT){
       $content = $this->getContents($url, $use_include_path, $context, $offset, $maxLen);
-      return str_get_html($content, $lowercase, $forceTagsClosed, $target_charset, $stripRN, $defaultBRText, $defaultSpanText);
+      return str_get_html($content
+      , $lowercase
+      , $forceTagsClosed
+      , $target_charset
+      , $stripRN
+      , $defaultBRText
+      , $defaultSpanText);
     }
 }
 
@@ -242,7 +263,11 @@ class Bridge {
     */
     static public function create($nameBridge){
         if(!preg_match('@^[A-Z][a-zA-Z0-9-]*$@', $nameBridge)){
-            throw new \InvalidArgumentException('Name bridge must be at least one uppercase follow or not by alphanumeric or dash characters.');
+            $message = <<<EOD
+'nameBridge' must start with one uppercase character followed or not by
+alphanumeric or dash characters!
+EOD;
+            throw new \InvalidArgumentException($message);
         }
 
         $nameBridge = $nameBridge . 'Bridge';
