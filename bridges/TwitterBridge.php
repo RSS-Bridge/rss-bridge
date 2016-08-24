@@ -40,6 +40,32 @@ class TwitterBridge extends BridgeAbstract{
         );
 	}
 
+    public function getName(){
+        switch($this->queriedContext){
+        case 'By keyword or hashtag':
+            $specific='search ';
+            $param='q';
+            break;
+        case 'By username':
+            $specific='@';
+            $param='u';
+            break;
+        }
+        return 'Twitter '.$specific
+            .$this->parameters[$this->queriedContext][$param]['value'];
+    }
+
+    public function getURI(){
+        $params=$this->parameters[$this->queriedContext];
+        switch($this->queriedContext){
+        case 'By keyword or hashtag':
+            return $this->uri.'search?q='.urlencode($params['q']['value']);
+        case 'By username':
+            return $this->uri.urlencode($params['u']['value']).
+                (isset($params['norep']['value'])?'':'/with_replies');
+        }
+    }
+
 	public function collectData(){
         $param=$this->parameters[$this->queriedContext];
 		$html = '';
