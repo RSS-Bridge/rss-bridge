@@ -89,7 +89,7 @@ EOD;
         return $listBridge;
     }
 
-    static function isWhitelisted($whitelist, $name){
+    static public function isWhitelisted($whitelist, $name){
         if(in_array($name, $whitelist)
           or in_array($name . '.php', $whitelist)
           or in_array($name . 'Bridge', $whitelist) // DEPRECATED
