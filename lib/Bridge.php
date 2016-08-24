@@ -17,12 +17,12 @@ abstract class BridgeAbstract implements BridgeInterface{
     protected $cache;
     protected $items = array();
 
-	public $name = "Unnamed bridge";
-	public $uri = "";
-	public $description = 'No description provided';
-	public $maintainer = 'No maintainer';
-	public $useProxy = true;
-	public $parameters = array();
+    public $name = "Unnamed bridge";
+    public $uri = "";
+    public $description = 'No description provided';
+    public $maintainer = 'No maintainer';
+    public $useProxy = true;
+    public $parameters = array();
 
     /**
     * Launch probative exception
@@ -175,22 +175,22 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
      */
     public function get_cached($url) {
         $simplified_url = str_replace(["http://", "https://", "?", "&", "="], ["", "", "/", "/", "/"], $url);
-		// TODO build this from the variable given to Cache
-		$pageCacheDir = __DIR__ . '/../cache/'."pages/";
+        // TODO build this from the variable given to Cache
+        $pageCacheDir = __DIR__ . '/../cache/'."pages/";
         $filename =  $pageCacheDir.$simplified_url;
         if (substr($filename, -1) == '/') {
             $filename = $filename."index.html";
         }
         if(file_exists($filename)) {
 //            $this->message("loading cached file from ".$filename." for page at url ".$url);
-			// TODO touch file and its parent, and try to do neighbour deletion
+            // TODO touch file and its parent, and try to do neighbour deletion
             $this->refresh_in_cache($pageCacheDir, $filename);
             $content=file_get_contents($filename);
-		} else {
+        } else {
 //            $this->message("we have no local copy of ".$url." Downloading to ".$filename);
             $dir = substr($filename, 0, strrpos($filename, '/'));
             if(!is_dir($dir)) {
-//				$this->message("creating directories for ".$dir);
+//                $this->message("creating directories for ".$dir);
                 mkdir($dir, 0777, true);
             }
             $content=$this->getContents($url);
@@ -216,17 +216,17 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
     }
 
     private function refresh_in_cache($pageCacheDir, $filename) {
-		$currentPath = $filename;
-		while(!$pageCacheDir==$currentPath) {
-			touch($currentPath);
-			$currentPath = dirname($currentPath);
-		}
+        $currentPath = $filename;
+        while(!$pageCacheDir==$currentPath) {
+            touch($currentPath);
+            $currentPath = dirname($currentPath);
+        }
     }
 
     public function remove_from_cache($url) {
         $simplified_url = str_replace(["http://", "https://", "?", "&", "="], ["", "", "/", "/", "/"], $url);
-    	// TODO build this from the variable given to Cache
-		$pageCacheDir = __DIR__ . '/../cache/'."pages/";
+        // TODO build this from the variable given to Cache
+        $pageCacheDir = __DIR__ . '/../cache/'."pages/";
         $filename =  realpath($pageCacheDir.$simplified_url);
         $this->message("removing from cache \"".$filename."\" WELL, NOT REALLY");
         // filename is NO GOOD
@@ -243,17 +243,17 @@ class Bridge{
         throw new \LogicException('Please use ' . __CLASS__ . '::create for new object.');
     }
 
-	/**
-	* Checks if a bridge is an instantiable bridge.
-	* @param string $nameBridge name of the bridge that you want to use
-	* @return true if it is an instantiable bridge, false otherwise.
-	*/
-	static public function isInstantiable($nameBridge) {
+    /**
+    * Checks if a bridge is an instantiable bridge.
+    * @param string $nameBridge name of the bridge that you want to use
+    * @return true if it is an instantiable bridge, false otherwise.
+    */
+    static public function isInstantiable($nameBridge) {
 
-		$re = new ReflectionClass($nameBridge);
-		return $re->IsInstantiable();
+        $re = new ReflectionClass($nameBridge);
+        return $re->IsInstantiable();
 
-	}
+    }
 
 
     /**
@@ -275,10 +275,10 @@ class Bridge{
 
         require_once $pathBridge;
 
-		if(Bridge::isInstantiable($nameBridge)) {
-        	return new $nameBridge();
+        if(Bridge::isInstantiable($nameBridge)) {
+            return new $nameBridge();
         } else {
-        	return FALSE;
+            return FALSE;
         }
     }
 
@@ -308,11 +308,11 @@ class Bridge{
     * Lists the available bridges.
     * @return array List of the bridges
     */
-	static public function listBridges() {
+    static public function listBridges() {
 
-		$pathDirBridge = self::getDir();
-		$listBridge = array();
-		$dirFiles = scandir($pathDirBridge);
+        $pathDirBridge = self::getDir();
+        $listBridge = array();
+        $dirFiles = scandir($pathDirBridge);
 
         if( $dirFiles !== false ){
           foreach( $dirFiles as $fileName ) {
@@ -322,17 +322,17 @@ class Bridge{
           }
         }
 
-		return $listBridge;
-	}
-	static function isWhitelisted( $whitelist, $name ) {
+        return $listBridge;
+    }
+    static function isWhitelisted( $whitelist, $name ) {
       if(in_array($name, $whitelist) or in_array($name.'.php', $whitelist) or
         // DEPRECATED: the nameBridge notation will be removed in future releases
         in_array($name.'Bridge', $whitelist) or in_array($name.'Bridge.php', $whitelist) or
         count($whitelist) === 1 and trim($whitelist[0]) === '*')
-		return TRUE;
-	else
-		return FALSE;
-	}
+        return TRUE;
+    else
+        return FALSE;
+    }
 
 }
 
