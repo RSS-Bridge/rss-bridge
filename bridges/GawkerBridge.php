@@ -28,7 +28,7 @@ class GawkerBridge extends RssExpander{
             $this->name = $param['site'];
 			$url = $this->toURI(strtolower($param['site']));
         }
-        $this->message("loading feed from ".$this->getURI());
+        $this->debugMessage("loading feed from ".$this->getURI());
         parent::collectExpandableDatas($param, $url);
     }
 
@@ -37,10 +37,10 @@ class GawkerBridge extends RssExpander{
         $item['uri'] = trim($newsItem->link);
         $item['title'] = trim($newsItem->title);
         $item['timestamp'] = $this->RSS_2_0_time_to_timestamp($newsItem);
-        $this->message("///////////////////////////////////////////////////////////////////////////////////////\nprocessing item ".var_export($item, true)."\n\n\nbuilt from\n\n\n".var_export($newsItem, true));
+        $this->debugMessage("///////////////////////////////////////////////////////////////////////////////////////\nprocessing item ".var_export($item, true)."\n\n\nbuilt from\n\n\n".var_export($newsItem, true));
         try {
             // now load that uri from cache
-            $this->message("loading page ".$item['uri']);
+            $this->debugMessage("loading page ".$item['uri']);
             $articlePage = str_get_html($this->get_cached($item['uri']));
             if(is_object($articlePage)) {
                 $content = $articlePage->find('.post-content', 0);
@@ -51,14 +51,14 @@ class GawkerBridge extends RssExpander{
     				$item['author'] = $authorLink->innertext;
                     // TODO use author link href to fill the feed info
                 }
-                $this->message("item quite loaded : ".var_export($item, true));
+                $this->debugMessage("item quite loaded : ".var_export($item, true));
                 // I set item content as last element, for easier var_export reading
                 $item['content'] = $content->innertext;
             } else {
                 throw new Exception("cache content for ".$item['uri']." is NOT a Simple DOM parser object !");
             }
         } catch(Exception $e) {
-            $this->message("obtaining ".$item['uri']." resulted in exception ".$e->getMessage().". Deleting cached page ...");
+            $this->debugMessage("obtaining ".$item['uri']." resulted in exception ".$e->getMessage().". Deleting cached page ...");
             // maybe file is incorrect. it should be discarded from cache
             $this->remove_from_cache($item['url']);
             $item['content'] = $e->getMessage();

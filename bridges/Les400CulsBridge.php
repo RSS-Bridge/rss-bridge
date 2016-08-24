@@ -21,14 +21,14 @@ class Les400CulsBridge extends RssExpander{
     protected function parseRSSItem($newsItem) {
         $item = array();
         $item['title'] = trim((string) $newsItem->title);
-        $this->message("browsing item ".var_export($newsItem, true));
+        $this->debugMessage("browsing item ".var_export($newsItem, true));
         if(empty($newsItem->guid)) {
             $item['uri'] = (string) $newsItem->link;
         } else {
             $item['uri'] = (string) $newsItem->guid;
         }
         // now load that uri from cache
-        $this->message("now loading page ".$item['uri']);
+        $this->debugMessage("now loading page ".$item['uri']);
 //        $articlePage = str_get_html($this->get_cached($item['uri']));
 
 //        $content = $articlePage->find('.post-container', 0);
