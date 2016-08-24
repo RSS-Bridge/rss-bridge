@@ -172,20 +172,20 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
 
         // TODO build this from the variable given to Cache
         $pageCacheDir = __DIR__ . '/../cache/pages/';
-        $filename =  $pageCacheDir . $simplified_url;
+        $filepath =  $pageCacheDir . $simplified_url;
 
-        if(substr($filename, -1) == '/'){
-            $filename = $filename . 'index.html';
+        if(substr($filepath, -1) == '/'){
+            $filepath .= 'index.html';
         }
 
-        if(file_exists($filename)){
-            $this->debugMessage('loading cached file from ' . $filename . ' for page at url ' . $url);
+        if(file_exists($filepath)){
+            $this->debugMessage('loading cached file from ' . $filepath . ' for page at url ' . $url);
             // TODO touch file and its parent, and try to do neighbour deletion
-            $this->refresh_in_cache($pageCacheDir, $filename);
-            $content = file_get_contents($filename);
+            $this->refresh_in_cache($pageCacheDir, $filepath);
+            $content = file_get_contents($filepath);
         } else {
-            $this->debugMessage('we have no local copy of ' . $url . ' Downloading to ' . $filename);
-            $dir = substr($filename, 0, strrpos($filename, '/'));
+            $this->debugMessage('we have no local copy of ' . $url . ' Downloading to ' . $filepath);
+            $dir = substr($filepath, 0, strrpos($filepath, '/'));
 
             if(!is_dir($dir)){
                 $this->debugMessage('creating directories for ' . $dir);
@@ -193,8 +193,8 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
             }
 
             $content = $this->getContents($url);
-            if($content!==false){
-                file_put_contents($filename,$content);
+            if($content !== false){
+                file_put_contents($filepath, $content);
             }
         }
 
@@ -206,21 +206,21 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
 
         // TODO build this from the variable given to Cache
         $pageCacheDir = __DIR__ . '/../cache/pages/';
-        $filename =  $pageCacheDir . $simplified_url;
+        $filepath =  $pageCacheDir . $simplified_url;
 
-        if(substr($filename, -1) == '/'){
-            $filename = $filename . 'index.html';
+        if(substr($filepath, -1) == '/'){
+            $filepath .= 'index.html';
         }
 
-        if(!file_exists($filename)){
+        if(!file_exists($filepath)){
             $this->get_cached($url);
         }
 
-        return filectime($filename);
+        return filectime($filepath);
     }
 
-    private function refresh_in_cache($pageCacheDir, $filename){
-        $currentPath = $filename;
+    private function refresh_in_cache($pageCacheDir, $filepath){
+        $currentPath = $filepath;
         while(!$pageCacheDir == $currentPath){
             touch($currentPath);
             $currentPath = dirname($currentPath);
@@ -232,9 +232,9 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
 
         // TODO build this from the variable given to Cache
         $pageCacheDir = __DIR__ . '/../cache/pages/';
-        $filename = realpath($pageCacheDir . $simplified_url);
-        $this->debugMessage('removing from cache \'' . $filename . '\' WELL, NOT REALLY');
-        // unlink($filename);
+        $filepath = realpath($pageCacheDir . $simplified_url);
+        $this->debugMessage('removing from cache \'' . $filepath . '\' WELL, NOT REALLY');
+        // unlink($filepath);
     }
 }
 
