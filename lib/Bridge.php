@@ -338,10 +338,6 @@ class Bridge{
 
 abstract class RssExpander extends HttpCachingBridgeAbstract{
 
-    public $name;
-    public $uri;
-    public $description;
-
     public function collectExpandableDatas(array $param, $name){
         if (empty($name)) {
             $this->returnServerError('There is no $name for this RSS expander');
