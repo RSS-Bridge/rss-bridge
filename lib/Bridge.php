@@ -79,7 +79,7 @@ abstract class BridgeAbstract implements BridgeInterface {
         $this->cache = $cache;
     }
 
-    public function message($text){
+    public function debugMessage($text){
         if(!file_exists('DEBUG')) {
             return;
         }
@@ -123,7 +123,7 @@ abstract class BridgeAbstract implements BridgeInterface {
         }
 
         if($content === false)
-            $this->message('Cant\'t download ' . $url);
+            $this->debugMessage('Cant\'t download ' . $url);
 
         return $content;
     }
@@ -158,16 +158,16 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
         }
 
         if(file_exists($filename)){
-            $this->message('loading cached file from ' . $filename . ' for page at url ' . $url);
+            $this->debugMessage('loading cached file from ' . $filename . ' for page at url ' . $url);
             // TODO touch file and its parent, and try to do neighbour deletion
             $this->refresh_in_cache($pageCacheDir, $filename);
             $content = file_get_contents($filename);
         } else {
-            $this->message('we have no local copy of ' . $url . ' Downloading to ' . $filename);
+            $this->debugMessage('we have no local copy of ' . $url . ' Downloading to ' . $filename);
             $dir = substr($filename, 0, strrpos($filename, '/'));
 
             if(!is_dir($dir)){
-                $this->message('creating directories for ' . $dir);
+                $this->debugMessage('creating directories for ' . $dir);
                 mkdir($dir, 0777, true);
             }
 
@@ -212,7 +212,7 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
         // TODO build this from the variable given to Cache
         $pageCacheDir = __DIR__ . '/../cache/pages/';
         $filename = realpath($pageCacheDir . $simplified_url);
-        $this->message('removing from cache \'' . $filename . '\' WELL, NOT REALLY');
+        $this->debugMessage('removing from cache \'' . $filename . '\' WELL, NOT REALLY');
         // unlink($filename);
     }
 }
@@ -323,7 +323,7 @@ abstract class RssExpander extends HttpCachingBridgeAbstract {
             $this->returnServerError('There is no $name for this RSS expander');
         }
 
-        $this->message('Loading from ' . $param['url']);
+        $this->debugMessage('Loading from ' . $param['url']);
 
         /* Notice we do not use cache here on purpose:
          * we want a fresh view of the RSS stream each time
@@ -331,7 +331,7 @@ abstract class RssExpander extends HttpCachingBridgeAbstract {
         $content = $this->getContents($name) or $this->returnServerError('Could not request ' . $name);
 
         $rssContent = simplexml_load_string($content);
-        $this->message('loaded RSS from ' . $param['url']);
+        $this->debugMessage('loaded RSS from ' . $param['url']);
         // TODO insert RSS format detection
         // For now we always assume RSS 2.0
         $this->collect_RSS_2_0_data($rssContent);
@@ -339,10 +339,10 @@ abstract class RssExpander extends HttpCachingBridgeAbstract {
 
     protected function collect_RSS_2_0_data($rssContent){
         $rssContent = $rssContent->channel[0];
-        $this->message('RSS content is ===========\n' . var_export($rssContent, true) . '===========');
+        $this->debugMessage('RSS content is ===========\n' . var_export($rssContent, true) . '===========');
         $this->load_RSS_2_0_feed_data($rssContent);
         foreach($rssContent->item as $item){
-            $this->message('parsing item ' . var_export($item, true));
+            $this->debugMessage('parsing item ' . var_export($item, true));
             $this->items[] = $this->parseRSSItem($item);
         }
     }
