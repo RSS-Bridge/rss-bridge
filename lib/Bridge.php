@@ -77,8 +77,6 @@ abstract class BridgeAbstract implements BridgeInterface {
 
     public function setCache(\CacheAbstract $cache){
         $this->cache = $cache;
-
-        return $this;
     }
 
     public function message($text){
