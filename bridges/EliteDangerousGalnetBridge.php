@@ -10,7 +10,7 @@ class EliteDangerousGalnetBridge extends BridgeAbstract
 		$this->description = "Returns the latest page of news from Galnet";
 	}
 
-	public function collectData(array $param)
+	public function collectData()
 	{
 		$html = $this->getSimpleHTMLDOM('https://community.elitedangerous.com/galnet') or $this->returnServerError('Error while downloading the website content');
 		foreach($html->find('div.article') as $element) {

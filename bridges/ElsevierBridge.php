@@ -58,9 +58,10 @@ class ElsevierBridge extends BridgeAbstract{
 		return '';
 	}
 
-	public function collectData(array $param){
-		$uri = 'http://www.journals.elsevier.com/' . $param['j'] . '/recent-articles/';
-		$html = $this->getSimpleHTMLDOM($uri) or $this->returnServerError('No results for Elsevier journal '.$param['j']);
+	public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
+		$uri = 'http://www.journals.elsevier.com/' . $param['j']['value'] . '/recent-articles/';
+		$html = $this->getSimpleHTMLDOM($uri) or $this->returnServerError('No results for Elsevier journal '.$param['j']['value']);
 
 		foreach($html->find('.pod-listing') as $article){
 			$item = array();

@@ -16,7 +16,8 @@ class FacebookBridge extends BridgeAbstract{
         );
 	}
 
-	public function collectData(array $param) {
+	public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
 
 		//Extract a string using start and end delimiters
 		function ExtractFromDelimiters($string, $start, $end) {
@@ -104,11 +105,11 @@ class FacebookBridge extends BridgeAbstract{
 
 		//Retrieve page contents
 		if (is_null($html)) {
-			if (isset($param['u'])) {
-				if (!strpos($param['u'], "/")) {
-					$html = $this->getSimpleHTMLDOM('https://www.facebook.com/'.urlencode($param['u']).'?_fb_noscript=1') or $this->returnServerError('No results for this query.');
+			if (isset($param['u']['value'])) {
+				if (!strpos($param['u']['value'], "/")) {
+					$html = $this->getSimpleHTMLDOM('https://www.facebook.com/'.urlencode($param['u']['value']).'?_fb_noscript=1') or $this->returnServerError('No results for this query.');
 				} else {
-					$html = $this->getSimpleHTMLDOM('https://www.facebook.com/pages/'.$param['u'].'?_fb_noscript=1') or $this->returnServerError('No results for this query.');
+					$html = $this->getSimpleHTMLDOM('https://www.facebook.com/pages/'.$param['u']['value'].'?_fb_noscript=1') or $this->returnServerError('No results for this query.');
 				}
 			} else {
 				$this->returnClientError('You must specify a Facebook username.');
@@ -148,7 +149,7 @@ class FacebookBridge extends BridgeAbstract{
 		if(isset($element)) {
 
 			$author = str_replace(' | Facebook', '', $html->find('title#pageTitle', 0)->innertext);
-			$profilePic = 'https://graph.facebook.com/'.$param['u'].'/picture?width=200&amp;height=200';
+			$profilePic = 'https://graph.facebook.com/'.$param['u']['value'].'/picture?width=200&amp;height=200';
 			$this->name = $author;
 
 			foreach($element->children() as $post) {
@@ -207,8 +208,8 @@ class FacebookBridge extends BridgeAbstract{
 	}
 
 	public function setDatas(array $param){
-		if (isset($param['captcha_response']))
-			unset($param['captcha_response']);
+		if (isset($param['captcha_response']['value']))
+			unset($param['captcha_response']['value']);
 		parent::setDatas($param);
 	}
 

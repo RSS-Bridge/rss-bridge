@@ -29,7 +29,7 @@ class ParuVenduImmoBridge extends BridgeAbstract
         );
 	}
 
-    public function collectData(array $param)
+    public function collectData()
     {
         $html = '';
         $num = 20;
@@ -37,22 +37,22 @@ class ParuVenduImmoBridge extends BridgeAbstract
         $maison = '&tbMai=1&tbVil=1&tbCha=1&tbPro=1&tbHot=1&tbMou=1&tbFer=1';
         $link = $this->uri.'/immobilier/annonceimmofo/liste/listeAnnonces?tt=1'.$appartment.$maison;
 
-        if (isset($param['minarea'])) {
-            $this->request .= ' '.$param['minarea'].' m2';
-            $link .= '&sur0='.urlencode($param['minarea']);
+        if (isset($param['minarea']['value'])) {
+            $this->request .= ' '.$param['minarea']['value'].' m2';
+            $link .= '&sur0='.urlencode($param['minarea']['value']);
         }
 
-        if (isset($param['maxprice'])) {
-            $link .= '&px1='.urlencode($param['maxprice']);
+        if (isset($param['maxprice']['value'])) {
+            $link .= '&px1='.urlencode($param['maxprice']['value']);
         }
 
-        if (isset($param['pa'])) {
-            $link .= '&pa='.urlencode($param['pa']);
+        if (isset($param['pa']['value'])) {
+            $link .= '&pa='.urlencode($param['pa']['value']);
         }
 
-        if (isset($param['lo'])) {
-            $this->request .= ' In: '.$param['lo'];
-            $link .= '&lo='.urlencode($param['lo']);
+        if (isset($param['lo']['value'])) {
+            $this->request .= ' In: '.$param['lo']['value'];
+            $link .= '&lo='.urlencode($param['lo']['value']);
         }
 
         $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request paruvendu.');

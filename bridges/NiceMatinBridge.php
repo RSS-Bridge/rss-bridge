@@ -22,7 +22,7 @@ class NiceMatinBridge extends BridgeAbstract{
 		return $text;
 	}
 
-	public function collectData(array $param){
+	public function collectData(){
 		$html = $this->getSimpleHTMLDOM('http://www.nicematin.com/derniere-minute/rss') or $this->returnServerError('Could not request NiceMatin.');
 		$limit = 0;
 

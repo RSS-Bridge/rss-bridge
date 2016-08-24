@@ -45,21 +45,22 @@ class DailymotionBridge extends BridgeAbstract{
       return $metadata;
     }
 
-	public function collectData(array $param){
+	public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
         	$html = '';
 		$limit = 5;
 		$count = 0;
 
-		if (isset($param['u'])) {   // user timeline mode
-			$this->request = $param['u'];
+		if (isset($param['u']['value'])) {   // user timeline mode
+			$this->request = $param['u']['value'];
 			$html = $this->getSimpleHTMLDOM('http://www.dailymotion.com/user/'.urlencode($this->request).'/1') or $this->returnServerError('Could not request Dailymotion.');
 		}
-		else if (isset($param['p'])) {    // playlist mode
-			$this->request = strtok($param['p'], '_');
+		else if (isset($param['p']['value'])) {    // playlist mode
+			$this->request = strtok($param['p']['value'], '_');
 			$html = $this->getSimpleHTMLDOM('http://www.dailymotion.com/playlist/'.urlencode($this->request).'') or $this->returnServerError('Could not request Dailymotion.');
 		}
-		else if (isset($param['s'])) {   // search mode
-			$this->request = $param['s']; $page = 1; if (isset($param['pa'])) $page = (int)preg_replace("/[^0-9]/",'', $param['pa']);
+		else if (isset($param['s']['value'])) {   // search mode
+			$this->request = $param['s']['value']; $page = 1; if (isset($param['pa']['value'])) $page = (int)preg_replace("/[^0-9]/",'', $param['pa']['value']);
 			$html = $this->getSimpleHTMLDOM('http://www.dailymotion.com/search/'.urlencode($this->request).'/'.$page.'') or $this->returnServerError('Could not request Dailymotion.');
 		}
 		else {

@@ -10,7 +10,7 @@ class TheCodingLoveBridge extends BridgeAbstract{
 
 	}
 
-    public function collectData(array $param){
+    public function collectData(){
         $html = $this->getSimpleHTMLDOM('http://thecodinglove.com/') or $this->returnServerError('Could not request The Coding Love.');
 
         foreach($html->find('div.post') as $element) {

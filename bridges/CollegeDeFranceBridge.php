@@ -8,7 +8,7 @@ class CollegeDeFranceBridge extends BridgeAbstract{
 		$this->description = "Returns the latest audio and video from CollegeDeFrance";
 	}
 
-	public function collectData(array $param) {
+	public function collectData(){
 		$months = array(
 			'01' => 'janv.',
 			'02' => 'févr.',

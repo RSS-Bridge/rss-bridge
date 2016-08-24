@@ -103,7 +103,7 @@ EOD;
 }
 
 interface BridgeInterface {
-    public function collectData(array $param);
+    public function collectData();
     public function getCacheDuration();
     public function loadMetadatas();
     public function getName();
@@ -121,6 +121,7 @@ abstract class BridgeAbstract implements BridgeInterface {
     public $maintainer = 'No maintainer';
     public $useProxy = true;
     public $parameters = array();
+    protected $queriedContext='';
 
     protected function returnError($message, $code){
         throw new \HttpException($message, $code);
@@ -201,6 +202,41 @@ abstract class BridgeAbstract implements BridgeInterface {
         return $validated;
     }
 
+    protected function getQueriedContext(){
+        $queriedContexts=array();
+        foreach($this->parameters as $context=>$set){
+            $queriedContexts[$context]=null;
+            foreach($set as $id=>$properties){
+                if(isset($properties['value']) &&
+                    !empty($properties['value'])){
+                    $queriedContexts[$context]=true;
+                }elseif(isset($properties['required']) &&
+                    $properties['required']===true){
+                    $queriedContexts[$context]=false;
+                    break;
+                }
+            }
+        }
+
+        if(isset($this->parameters['global']) &&
+            $queriedContexts['global']===false){
+            return null;
+        }
+        unset($queriedContexts['global']);
+
+        switch(array_sum($queriedContexts)){
+        case 0:
+            foreach($queriedContexts as $context=>$queried){
+                if (is_null($queried)){
+                    return $context;
+                }
+            }
+            return null;
+        case 1: return array_search(true,$queriedContexts);
+        default: return false;
+        }
+    }
+
     /**
     * Defined datas with parameters depending choose bridge
     * Note : you can define a cache with "setCache"
@@ -217,10 +253,32 @@ abstract class BridgeAbstract implements BridgeInterface {
         if($time !== false && (time() - $this->getCacheDuration() < $time)){
             $this->items = $this->cache->loadData();
         } else {
-            if(!$this->validateData($param)){
+            if($this->validateData($param)){
+                foreach($param as $name=>$value){
+                    foreach($this->parameters as $context=>$set){
+                        if(isset($this->parameters[$context][$name]))
+                            $this->parameters[$context][$name]['value']=$value;
+                    }
+                }
+                if(!empty($this->parameters)){
+                    $queriedContext=$this->getQueriedContext();
+                    if(is_null($queriedContext)){
+                        $this->returnClientError('Required parameter(s) missing');
+                    }else if($queriedContext===false){
+                        $this->returnClientError('Mixed context parameters');
+                    }else{
+                        $this->queriedContext=$queriedContext;
+                        foreach($param as $name=>$value){
+                            if(isset($this->parameters['global'][$name])){
+                                $this->parameters[$queriedContext][$name]['value']=$value;
+                            }
+                        }
+                    }
+                }
+            }else{
                 $this->returnClientError('Invalid parameters value(s)');
             }
-            $this->collectData($param);
+            $this->collectData();
 
             if(!is_null($this->cache)){
                 $this->cache->saveData($this->getDatas());

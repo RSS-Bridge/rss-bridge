@@ -26,15 +26,16 @@ class SuperbWallpapersBridge extends BridgeAbstract {
 	}
 
 
-    public function collectData(array $param){
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
         $html = '';
         $baseUri = 'http://www.superbwallpapers.com';
 
-        $this->category   = $param['c'] ?: '';           // All default
-        $this->resolution = $param['r'] ?: '1920x1200';  // Wide wallpaper default
+        $this->category   = $param['c']['value'] ?: '';           // All default
+        $this->resolution = $param['r']['value'] ?: '1920x1200';  // Wide wallpaper default
 
         $num = 0;
-        $max = $param['m'] ?: 36;
+        $max = $param['m']['value'] ?: 36;
         $lastpage = 1;
 
         // Get last page number

@@ -8,7 +8,7 @@ class NeuviemeArtBridge extends BridgeAbstract {
         $this->description = "Returns the newest articles.";
     }
 
-    public function collectData(array $param) {
+    public function collectData(){
 
         function StripWithDelimiters($string, $start, $end) {
             while (strpos($string, $start) !== false) {

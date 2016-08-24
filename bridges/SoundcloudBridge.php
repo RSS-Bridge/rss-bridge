@@ -22,11 +22,12 @@ class SoundCloudBridge extends BridgeAbstract{
 
   	const CLIENT_ID = '0aca19eae3843844e4053c6d8fdb7875';
 
-	public function collectData(array $param){
+	public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
 
-		if (isset($param['u']) && !empty($param['u']))
+		if (isset($param['u']['value']) && !empty($param['u']['value']))
 		{
-			$this->request = $param['u'];
+			$this->request = $param['u']['value'];
 
 			$res = json_decode($this->getContents('https://api.soundcloud.com/resolve?url=http://www.soundcloud.com/'. urlencode($this->request) .'&client_id=' . self::CLIENT_ID)) or $this->returnServerError('No results for this query');
 			$tracks = json_decode($this->getContents('https://api.soundcloud.com/users/'. urlencode($res->id) .'/tracks?client_id=' . self::CLIENT_ID)) or $this->returnServerError('No results for this user');

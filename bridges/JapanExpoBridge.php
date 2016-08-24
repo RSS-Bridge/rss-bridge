@@ -18,7 +18,8 @@ class JapanExpoBridge extends BridgeAbstract{
         );
     }
 
-    public function collectData(array $param) {
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
 
         function french_pubdate_to_timestamp($date_to_parse) {
             return strtotime(
@@ -50,7 +51,7 @@ class JapanExpoBridge extends BridgeAbstract{
 
         $link = 'http://www.japan-expo-paris.com/fr/actualites';
         $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request JapanExpo: '.$link);
-        $fullcontent = (!empty($param['mode']) && $param['mode'] == 'full');
+        $fullcontent = (!empty($param['mode']['value']) && $param['mode']['value'] == 'full');
         $count = 0;
 
         foreach ($html->find('a._tile2') as $element) {

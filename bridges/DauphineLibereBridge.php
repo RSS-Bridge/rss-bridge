@@ -40,7 +40,8 @@ class DauphineLibereBridge extends BridgeAbstract {
 		return $text;
 	}
 
-	public function collectData(array $param){
+	public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
 
 		// Simulate Mozilla user-agent to fix error 403 (Forbidden)
 		$opts = array('http' =>
@@ -52,8 +53,8 @@ class DauphineLibereBridge extends BridgeAbstract {
 
 		$context = stream_context_create($opts);
 
-		if (isset($param['u'])) { /* user timeline mode */
-			$this->request = $param['u'];
+		if (isset($param['u']['value'])) { /* user timeline mode */
+			$this->request = $param['u']['value'];
 			$html = $this->getSimpleHTMLDOM('http://www.ledauphine.com/'.$this->request.'/rss',false,$context) or $this->returnServerError('Could not request DauphineLibere.');
 		}
 		else {

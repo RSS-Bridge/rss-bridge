@@ -40,21 +40,22 @@ class TwitterBridge extends BridgeAbstract{
         );
 	}
 
-	public function collectData(array $param){
+	public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
 		$html = '';
-		if (isset($param['q'])) {   /* keyword search mode */
-			$html = $this->getSimpleHTMLDOM('https://twitter.com/search?q='.urlencode($param['q']).'&f=tweets') or $this->returnServerError('No results for this query.');
+		if (isset($param['q']['value'])) {   /* keyword search mode */
+			$html = $this->getSimpleHTMLDOM('https://twitter.com/search?q='.urlencode($param['q']['value']).'&f=tweets') or $this->returnServerError('No results for this query.');
 		}
-		elseif (isset($param['u'])) {   /* user timeline mode */
-			$html = $this->getSimpleHTMLDOM('https://twitter.com/'.urlencode($param['u']).(isset($param['norep'])?'':'/with_replies')) or $this->returnServerError('Requested username can\'t be found.');
+		elseif (isset($param['u']['value'])) {   /* user timeline mode */
+			$html = $this->getSimpleHTMLDOM('https://twitter.com/'.urlencode($param['u']['value']).(isset($param['norep']['value'])?'':'/with_replies')) or $this->returnServerError('Requested username can\'t be found.');
 		}
 		else {
 			$this->returnClientError('You must specify a keyword (?q=...) or a Twitter username (?u=...).');
 		}
 
 		$hidePictures = false;
-		if (isset($param['nopic']))
-			$hidePictures = $param['nopic'] === 'on';
+		if (isset($param['nopic']['value']))
+			$hidePictures = $param['nopic']['value'] === 'on';
 
 		foreach($html->find('div.js-stream-tweet') as $tweet) {
 			$item = array();

@@ -14,7 +14,7 @@ class MsnMondeBridge extends BridgeAbstract{
 		$item['timestamp'] = strtotime($html2->find('.authorinfo-txt', 0)->find('time', 0)->datetime);
 	}
 
-	public function collectData(array $param){
+	public function collectData(){
 		$html = $this->getSimpleHTMLDOM($this->uri) or $this->returnServerError('Could not request MsnMonde.');
 		$limit = 0;
 		foreach($html->find('.smalla') as $article) {

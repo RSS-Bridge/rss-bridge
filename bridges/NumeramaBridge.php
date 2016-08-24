@@ -10,7 +10,7 @@ class NumeramaBridge extends BridgeAbstract{
 
     }
 
-    public function collectData(array $param) {
+    public function collectData(){
 
         function NumeramaStripCDATA($string) {
             $string = str_replace('<![CDATA[', '', $string);

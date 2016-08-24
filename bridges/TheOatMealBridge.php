@@ -13,7 +13,8 @@ class TheOatmealBridge extends RssExpander{
 
 	}
 
-    public function collectData(array $param){
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
         parent::collectExpandableDatas($param, THE_OATMEAL_RSS);
     }
 

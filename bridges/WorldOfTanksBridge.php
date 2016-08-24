@@ -35,14 +35,15 @@ class WorldOfTanksBridge extends HttpCachingBridgeAbstract{
 	}
 
 
-    public function collectData(array $param){
-        if (!empty($param['lang'])) {
-            $this->lang = $param['lang'];
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
+        if (!empty($param['lang']['value'])) {
+            $this->lang = $param['lang']['value'];
         }
-        if(empty($param['category'])) {
+        if(empty($param['category']['value'])) {
             $this->uri = WORLD_OF_TANKS.$this->lang.NEWS;
         } else {
-            $this->uri = WORLD_OF_TANKS.$this->lang.NEWS.'pc-browser/'.$param['category']."/";
+            $this->uri = WORLD_OF_TANKS.$this->lang.NEWS.'pc-browser/'.$param['category']['value']."/";
         }
         $html = $this->getSimpleHTMLDOM($this->getURI()) or $this->returnServerError('Could not request '.$this->getURI());
         $this->debugMessage("loaded HTML from ".$this->getURI());

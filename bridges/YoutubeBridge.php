@@ -105,19 +105,20 @@ class YoutubeBridge extends BridgeAbstract {
 		return html_entity_decode($title,ENT_QUOTES,'UTF-8');
 	}
 
-	public function collectData(array $param) {
+	public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
 
 		$xml = '';
 		$html = '';
 		$url_feed = '';
 		$url_listing = '';
 
-		if (isset($param['u'])) { /* User and Channel modes */
-			$this->request = $param['u'];
+		if (isset($param['u']['value'])) { /* User and Channel modes */
+			$this->request = $param['u']['value'];
 			$url_feed = $this->uri.'feeds/videos.xml?user='.urlencode($this->request);
 			$url_listing = $this->uri.'user/'.urlencode($this->request).'/videos';
-		} else if (isset($param['c'])) {
-			$this->request = $param['c'];
+		} else if (isset($param['c']['value'])) {
+			$this->request = $param['c']['value'];
 			$url_feed = $this->uri.'feeds/videos.xml?channel_id='.urlencode($this->request);
 			$url_listing = $this->uri.'channel/'.urlencode($this->request).'/videos';
 		}
@@ -129,16 +130,16 @@ class YoutubeBridge extends BridgeAbstract {
 			} else $this->returnServerError("Could not request YouTube. Tried:\n - $url_feed\n - $url_listing");
 		}
 
-		else if (isset($param['p'])) { /* playlist mode */
-			$this->request = $param['p'];
+		else if (isset($param['p']['value'])) { /* playlist mode */
+			$this->request = $param['p']['value'];
 			$url_listing = $this->uri.'playlist?list='.urlencode($this->request);
 			$html = $this->getSimpleHTMLDOM($url_listing) or $this->returnServerError("Could not request YouTube. Tried:\n - $url_listing");
 			$this->ytBridgeParseHtmlListing($html, 'tr.pl-video', '.pl-video-title a');
 			$this->request = 'Playlist: '.str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
 		}
 
-		else if (isset($param['s'])) { /* search mode */
-			$this->request = $param['s']; $page = 1; if (isset($param['pa'])) $page = (int)preg_replace("/[^0-9]/",'', $param['pa']);
+		else if (isset($param['s']['value'])) { /* search mode */
+			$this->request = $param['s']['value']; $page = 1; if (isset($param['pa']['value'])) $page = (int)preg_replace("/[^0-9]/",'', $param['pa']['value']);
 			$url_listing = $this->uri.'results?search_query='.urlencode($this->request).'&page='.$page.'&filters=video&search_sort=video_date_uploaded';
 			$html = $this->getSimpleHTMLDOM($url_listing) or $this->returnServerError("Could not request YouTube. Tried:\n - $url_listing");
 			$this->ytBridgeParseHtmlListing($html, 'div.yt-lockup', 'h3');

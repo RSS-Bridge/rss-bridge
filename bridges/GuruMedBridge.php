@@ -14,7 +14,7 @@ class GuruMedBridge extends BridgeAbstract{
 		return $string;
 	}
 
-	public function collectData(array $param){
+	public function collectData(){
 		$html = $this->getSimpleHTMLDOM('http://gurumed.org/feed') or $this->returnServerError('Could not request Gurumed.');
 		$limit = 0;
 

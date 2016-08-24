@@ -81,7 +81,8 @@ class FuturaSciencesBridge extends BridgeAbstract {
         );
     }
 
-    public function collectData(array $param) {
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
 
         function StripCDATA($string) {
             $string = str_replace('<![CDATA[', '', $string);
@@ -138,10 +139,10 @@ class FuturaSciencesBridge extends BridgeAbstract {
             return '';
         }
 
-        $url = $this->getURI().'rss/'.$param['feed'].'.xml';
-        if (empty($param['feed']))
+        $url = $this->getURI().'rss/'.$param['feed']['value'].'.xml';
+        if (empty($param['feed']['value']))
             $this->returnClientError('Please select a feed to display.'.$url);
-        if ($param['feed'] !== preg_replace('/[^a-zA-Z-\/]+/', '', $param['feed']) || substr_count($param['feed'], '/') > 1 || strlen($param['feed'] > 64))
+        if ($param['feed']['value'] !== preg_replace('/[^a-zA-Z-\/]+/', '', $param['feed']['value']) || substr_count($param['feed']['value'], '/') > 1 || strlen($param['feed']['value'] > 64))
             $this->returnClientError('Invalid "feed" parameter.'.$url);
 
         $html = $this->getSimpleHTMLDOM($url) or $this->returnServerError('Could not request Futura-Sciences: '.$url);

@@ -89,23 +89,24 @@ class IsoHuntBridge extends BridgeAbstract{
         );
     }
 
-    public function collectData(array $params){
+    public function collectData(){
+        $params=$this->parameters[$this->queriedContext];
         $request_path = '/'; // We'll request the main page by default
 
-        if(isset($params['latest_category'])){ // Requesting one of the latest categories
-            $this->request_latest_category($params['latest_category']);
-        } elseif(isset($params['torrent_category'])){ // Requesting one of the torrent categories
+        if(isset($params['latest_category']['value'])){ // Requesting one of the latest categories
+            $this->request_latest_category($params['latest_category']['value']);
+        } elseif(isset($params['torrent_category']['value'])){ // Requesting one of the torrent categories
             $order_popularity = false;
 
-            if(isset($params['torrent_popularity']))
-                $order_popularity = $params['torrent_popularity'] === "on";
+            if(isset($params['torrent_popularity']['value']))
+                $order_popularity = $params['torrent_popularity']['value'];
 
-            $this->request_torrent_category($params['torrent_category'], $order_popularity);
-        } else if(isset($params['search_name'])){ // Requesting search
-            if(isset($params['search_category']))
-                $this->request_search($params['search_name'], $params['search_category']);
+            $this->request_torrent_category($params['torrent_category']['value'], $order_popularity);
+        } else if(isset($params['search_name']['value'])){ // Requesting search
+            if(isset($params['search_category']['value']))
+                $this->request_search($params['search_name']['value'], $params['search_category']['value']);
             else
-                $this->request_search($params['search_name']);
+                $this->request_search($params['search_name']['value']);
         } else {
             $this->returnClientError('Unknown request!');
         }

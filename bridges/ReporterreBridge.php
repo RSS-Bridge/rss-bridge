@@ -25,7 +25,7 @@ class ReporterreBridge extends BridgeAbstract{
 			return $text;
 		}
 
-	public function collectData(array $param){
+	public function collectData(){
 		$html = $this->getSimpleHTMLDOM('http://www.reporterre.net/spip.php?page=backend') or $this->returnServerError('Could not request Reporterre.');
 		$limit = 0;
 

@@ -21,7 +21,7 @@ class KoreusBridge extends BridgeAbstract{
 		return $text;
 	}
 
-	public function collectData(array $param){
+	public function collectData(){
 		$html = $this->getSimpleHTMLDOM('http://feeds.feedburner.com/Koreus-articles') or $this->returnServerError('Could not request Koreus.');
 		$limit = 0;
 

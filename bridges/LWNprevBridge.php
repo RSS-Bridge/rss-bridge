@@ -35,7 +35,7 @@ class LWNprevBridge extends BridgeAbstract{
     }
   }
 
-  public function collectData(array $param){
+  public function collectData(){
     // Because the LWN page is written in loose HTML and not XHTML,
     // Simple HTML Dom is not accurate enough for the job
 

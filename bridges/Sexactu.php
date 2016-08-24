@@ -10,7 +10,7 @@ class Sexactu extends BridgeAbstract{
 
 	}
 
-    public function collectData(array $param){
+    public function collectData(){
 $find = array('janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'novembre', 'décembre');
 $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
 

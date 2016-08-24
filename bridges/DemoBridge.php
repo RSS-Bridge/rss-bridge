@@ -35,7 +35,7 @@ class DemoBridge extends BridgeAbstract{
         );
 	}
 
-	public function collectData(array $param){
+	public function collectData(){
 
 		$item = array();
 	    $item['author'] = "Me!";

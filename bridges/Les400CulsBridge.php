@@ -14,7 +14,8 @@ class Les400CulsBridge extends RssExpander{
 	}
 
 
-    public function collectData(array $param){
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
         parent::collectExpandableDatas($param, SEXE_FEED);
     }
     

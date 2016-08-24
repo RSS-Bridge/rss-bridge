@@ -7,7 +7,7 @@ class BastaBridge extends BridgeAbstract{
 		$this->description = "Returns the newest articles.";
 	}
 
-	public function collectData(array $param){
+	public function collectData(){
 		// Replaces all relative image URLs by absolute URLs. Relative URLs always start with 'local/'!
 		function ReplaceImageUrl($content){
 			return preg_replace('/src=["\']{1}([^"\']+)/ims', 'src=\'http://www.bastamag.net/$1\'', $content);

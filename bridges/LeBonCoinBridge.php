@@ -138,14 +138,15 @@ class LeBonCoinBridge extends BridgeAbstract{
 	}
 
 
-	public function collectData(array $param){
+	public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
 
 		$html = '';
-		if (empty($param['c'])) {
-			$link = 'http://www.leboncoin.fr/annonces/offres/' . $param['r'] . '/?f=a&th=1&q=' . urlencode($param['k']);
+		if (empty($param['c']['value'])) {
+			$link = 'http://www.leboncoin.fr/annonces/offres/' . $param['r']['value'] . '/?f=a&th=1&q=' . urlencode($param['k']['value']);
 		}
 		else {
-			$link = 'http://www.leboncoin.fr/' . $param['c'] . '/offres/' . $param['r'] . '/?f=a&th=1&q=' . urlencode($param['k']);
+			$link = 'http://www.leboncoin.fr/' . $param['c']['value'] . '/offres/' . $param['r']['value'] . '/?f=a&th=1&q=' . urlencode($param['k']['value']);
 		}
 		$html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request LeBonCoin.');
 

@@ -17,13 +17,14 @@ class MilbooruBridge extends BridgeAbstract{
         );
 	}
 
-    public function collectData(array $param){
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
 	$page = 0;$tags='';
-        if (isset($param['p'])) {
-            $page = (int)preg_replace("/[^0-9]/",'', $param['p']);
+        if (isset($param['p']['value'])) {
+            $page = (int)preg_replace("/[^0-9]/",'', $param['p']['value']);
         }
-        if (isset($param['t'])) {
-            $tags = urlencode($param['t']);
+        if (isset($param['t']['value'])) {
+            $tags = urlencode($param['t']['value']);
         }
         $html = $this->getSimpleHTMLDOM("http://sheslostcontrol.net/moe/shimmie/index.php?q=/post/list/$tags/$page") or $this->returnServerError('Could not request Milbooru.');
 

@@ -10,7 +10,7 @@ Class FierPandaBridge extends BridgeAbstract{
 
     }
 
-    public function collectData(array $param){
+    public function collectData(){
         $link = 'http://www.fier-panda.fr/';
 
         $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request Fier Panda.');

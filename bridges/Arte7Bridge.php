@@ -61,13 +61,14 @@ class Arte7Bridge extends BridgeAbstract{
         return $input;
     }
 
-    public function collectData(array $param){
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
 
       $category='toutes-les-videos'; $lang='fr';
-      if (!empty($param['catfr']))
-         $category=$param['catfr'];
-      if (!empty($param['catde']))
-         { $category=$param['catde']; $lang='de'; }
+      if (!empty($param['catfr']['value']))
+         $category=$param['catfr']['value'];
+      if (!empty($param['catde']['value']))
+         { $category=$param['catde']['value']; $lang='de'; }
       $input_json = $this->extractVideoset($category, $lang);
 
       foreach($input_json['videos'] as $element) {

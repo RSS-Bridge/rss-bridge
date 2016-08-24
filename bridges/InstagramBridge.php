@@ -16,10 +16,11 @@ class InstagramBridge extends BridgeAbstract{
 
 	}
 
-    public function collectData(array $param){
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
         $html = '';
-        if (isset($param['u'])) {   /* user timeline mode */
-            $this->request = $param['u'];
+        if (isset($param['u']['value'])) {   /* user timeline mode */
+            $this->request = $param['u']['value'];
             $html = $this->getSimpleHTMLDOM('http://instagram.com/'.urlencode($this->request)) or $this->returnServerError('Could not request Instagram.');
         }
         else {

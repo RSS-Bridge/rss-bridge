@@ -16,7 +16,7 @@ class CommonDreamsBridge extends BridgeAbstract{
 		return $text;
 	}
 
-	public function collectData(array $param){
+	public function collectData(){
 
 		function CommonDreamsUrl($string) {
 			$html2 = explode(" ", $string);

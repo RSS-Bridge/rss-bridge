@@ -33,29 +33,30 @@ class GitlabCommitsBridge extends BridgeAbstract{
     );
   }
 
-  public function collectData(array $param){
-    $uri = $param['uri'].'/'.$param['u'].'/'.$param['p'].'/commits/';
-    if(isset($param['b'])){
-      $uri.=$param['b'];
+  public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
+    $uri = $param['uri']['value'].'/'.$param['u']['value'].'/'.$param['p']['value'].'/commits/';
+    if(isset($param['b']['value'])){
+      $uri.=$param['b']['value'];
     }else{
       $uri.='master';
     }
 
     $html = $this->getSimpleHTMLDOM($uri)
-      or $this->returnServerError('No results for Gitlab Commits of project '.$param['uri'].'/'.$param['u'].'/'.$param['p']);
+      or $this->returnServerError('No results for Gitlab Commits of project '.$param['uri']['value'].'/'.$param['u']['value'].'/'.$param['p']['value']);
 
 
     foreach($html->find('li.commit') as $commit){
 
       $item = array();
-      $item['uri']=$param['uri'];
+      $item['uri']=$param['uri']['value'];
 
       foreach($commit->getElementsByTagName('a') as $a){
         $classes=explode(' ',$a->getAttribute("class"));
         if(in_array('commit-short-id',$classes) ||
           in_array('commit_short_id',$classes)){
           $href=$a->getAttribute('href');
-          $item['uri'].=substr($href,strpos($href,'/'.$param['u'].'/'.$param['p']));
+          $item['uri'].=substr($href,strpos($href,'/'.$param['u']['value'].'/'.$param['p']['value']));
         }
         if(in_array('commit-row-message',$classes)){
           $item['title']=$a->plaintext;

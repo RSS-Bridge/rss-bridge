@@ -10,7 +10,7 @@ class GizmodoFRBridge extends BridgeAbstract{
 
 	}
 
-    public function collectData(array $param){
+    public function collectData(){
 
         function GizmodoFRExtractContent($url) {
             $articleHTMLContent = $this->getSimpleHTMLDOM($url);

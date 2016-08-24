@@ -25,11 +25,12 @@ class GoogleSearchBridge extends BridgeAbstract{
 	}
 
 
-    public function collectData(array $param){
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
         $html = '';
 
-        if (isset($param['q'])) {   /* keyword search mode */
-            $this->request = $param['q'];
+        if (isset($param['q']['value'])) {   /* keyword search mode */
+            $this->request = $param['q']['value'];
             $html = $this->getSimpleHTMLDOM('https://www.google.com/search?q=' . urlencode($this->request) . '&num=100&complete=0&tbs=qdr:y,sbd:1') or $this->returnServerError('No results for this query.');
         }
         else{

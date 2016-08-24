@@ -11,7 +11,7 @@ class CopieDoubleBridge extends BridgeAbstract{
 	}
 
 
-    public function collectData(array $param){
+    public function collectData(){
         $html = $this->getSimpleHTMLDOM('http://www.copie-double.com/') or $this->returnServerError('Could not request CopieDouble.');
         $table = $html->find('table table', 2);
 

@@ -63,11 +63,12 @@ class GBAtempBridge extends BridgeAbstract {
         return $this->cleanup_post_content($content, $site_url);
     }
 
-    public function collectData(array $param) {
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
         $typeFilter = '';
-        if (!empty($param['type'])) {
-            if ($param['type'] == 'N' || $param['type'] == 'R' || $param['type'] == 'T' || $param['type'] == 'F') {
-                $typeFilter = $param['type'];
+        if (!empty($param['type']['value'])) {
+            if ($param['type']['value'] == 'N' || $param['type']['value'] == 'R' || $param['type']['value'] == 'T' || $param['type']['value'] == 'F') {
+                $typeFilter = $param['type']['value'];
                 if ($typeFilter == 'N') { $this->filter = 'News'; }
                 if ($typeFilter == 'R') { $this->filter = 'Review'; }
                 if ($typeFilter == 'T') { $this->filter = 'Tutorial'; }

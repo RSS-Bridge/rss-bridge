@@ -16,7 +16,8 @@ class ThePirateBayBridge extends BridgeAbstract{
         );
 	}
 
-	public function collectData(array $param){
+	public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
 
         function parseDateTimestamp($element){
                 $guessedDate = $element->find('font',0)->plaintext;
@@ -52,10 +53,10 @@ class ThePirateBayBridge extends BridgeAbstract{
         }
 
 
-		if (!isset($param['q']))
+		if (!isset($param['q']['value']))
 			$this->returnClientError('You must specify keywords (?q=...)');
 
-        $keywordsList = explode(";",$param['q']);
+        $keywordsList = explode(";",$param['q']['value']);
         foreach($keywordsList as $keywords){
             $html = $this->getSimpleHTMLDOM('https://thepiratebay.org/search/'.rawurlencode($keywords).'/0/3/0') or $this->returnServerError('Could not request TPB.');
 

@@ -19,10 +19,11 @@ class IdenticaBridge extends BridgeAbstract{
 
 	}
 
-    public function collectData(array $param){
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
         $html = '';
-        if (isset($param['u'])) {   /* user timeline mode */
-        	$this->request = $param['u'];
+        if (isset($param['u']['value'])) {   /* user timeline mode */
+        	$this->request = $param['u']['value'];
             $html = $this->getSimpleHTMLDOM('https://identi.ca/'.urlencode($this->request)) or $this->returnServerError('Requested username can\'t be found.');
         }
         else {
@@ -34,7 +35,7 @@ class IdenticaBridge extends BridgeAbstract{
             $item['uri'] = html_entity_decode($dent->find('a', 0)->href);	// get dent link
             $item['timestamp'] = strtotime($dent->find('abbr.easydate', 0)->plaintext);	// extract dent timestamp
             $item['content'] = trim($dent->find('div.activity-content', 0)->innertext);	// extract dent text
-            $item['title'] = $param['u'] . ' | ' . $item['content'];
+            $item['title'] = $param['u']['value'] . ' | ' . $item['content'];
             $this->items[] = $item;
         }
     }

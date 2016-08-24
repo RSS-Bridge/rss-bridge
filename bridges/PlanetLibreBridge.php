@@ -14,7 +14,7 @@ class PlanetLibreBridge extends BridgeAbstract{
 		return $text;
 	}
 
-	public function collectData(array $param){
+	public function collectData(){
 		$html = $this->getSimpleHTMLDOM('http://www.planet-libre.org/') or $this->returnServerError('Could not request PlanetLibre.');
 		$limit = 0;
 		foreach($html->find('div.post') as $element) {

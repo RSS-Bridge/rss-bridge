@@ -17,10 +17,11 @@ class ScoopItBridge extends BridgeAbstract{
 
 	}
 
-    public function collectData(array $param){
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
         $html = '';
-        if ($param['u'] != '') {
-            $this->request = $param['u'];
+        if ($param['u']['value'] != '') {
+            $this->request = $param['u']['value'];
             $link = 'http://scoop.it/search?q=' .urlencode($this->request);
 
             $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request ScoopIt. for : ' . $link);

@@ -10,7 +10,7 @@ class ScmbBridge extends BridgeAbstract{
 
 	}
 
-    public function collectData(array $param){
+    public function collectData(){
         $html = '';
         $html = $this->getSimpleHTMLDOM('http://secouchermoinsbete.fr/') or $this->returnServerError('Could not request Se Coucher Moins Bete.');
 

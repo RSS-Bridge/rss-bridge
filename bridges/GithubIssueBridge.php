@@ -28,12 +28,13 @@ class GithubIssueBridge extends BridgeAbstract{
     );
   }
 
-  public function collectData(array $param){
-    $uri = 'https://github.com/'.$param['u'].'/'.$param['p'].'/issues/'.(isset($param['i'])?$param['i']:'');
+  public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
+    $uri = 'https://github.com/'.$param['u']['value'].'/'.$param['p']['value'].'/issues/'.(isset($param['i']['value'])?$param['i']['value']:'');
     $html = $this->getSimpleHTMLDOM($uri)
-      or $this->returnServerError('No results for Github Issue '.$param['i'].' in project '.$param['u'].'/'.$param['p']);
+      or $this->returnServerError('No results for Github Issue '.$param['i']['value'].' in project '.$param['u']['value'].'/'.$param['p']['value']);
 
-    if(isset($param['i'])){
+    if(isset($param['i']['value'])){
       foreach($html->find('.js-comment-container') as $comment){
 
         $item = array();

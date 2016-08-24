@@ -34,7 +34,7 @@ class CADBridge extends BridgeAbstract{
 		return '<img src="'.$img.'"/>';
 	}
 
-	public function collectData(array $param){
+	public function collectData(){
 		function CADUrl($string) {
 			$html2 = explode("\"", $string);
 			$string = $html2[1];

@@ -21,11 +21,12 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
 	}
 
 
-    public function collectData(array $param){
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
         $this->loadMetadatas();
         $html = '';
-        if (isset($param['q'])) {   /* keyword search mode */
-            $this->request = str_replace(" ","-",trim($param['q']));
+        if (isset($param['q']['value'])) {   /* keyword search mode */
+            $this->request = str_replace(" ","-",trim($param['q']['value']));
             $html = $this->getSimpleHTMLDOM($this->uri.'/recherche/'.urlencode($this->request).'.html') or $this->returnServerError('No results for this query.');
         }
         else {
