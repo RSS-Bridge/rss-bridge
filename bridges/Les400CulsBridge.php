@@ -2,7 +2,7 @@
 define("SEXE", "http://sexes.blogs.liberation.fr");
 define("SEXE_FEED", "http://sexes.blogs.liberation.fr/feeds/");
 
-class Les400Culs extends RssExpander{
+class Les400CulsBridge extends RssExpander{
 
 	public function loadMetadatas() {
 

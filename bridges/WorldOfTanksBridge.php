@@ -1,7 +1,7 @@
 <?php
 define('WORLD_OF_TANKS', 'http://worldoftanks.eu/');
 define('NEWS', '/news/');
-class WorldOfTanks extends HttpCachingBridgeAbstract{
+class WorldOfTanksBridge extends HttpCachingBridgeAbstract{
 
     private $lang = "fr";
     public $uri = WORLD_OF_TANKS;

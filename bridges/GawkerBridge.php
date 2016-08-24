@@ -2,7 +2,7 @@
 define("RSS_PREFIX", "http://feeds.gawker.com/");
 define("RSS_SUFFIX", "/full");
 
-class Gawker extends RssExpander{
+class GawkerBridge extends RssExpander{
 
     public function loadMetadatas() {
 
