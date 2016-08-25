@@ -81,7 +81,7 @@ class TwitterBridge extends BridgeAbstract{
 
 		$hidePictures = false;
 		if (isset($param['nopic']['value']))
-			$hidePictures = $param['nopic']['value'] === 'on';
+			$hidePictures = $param['nopic']['value'];
 
 		foreach($html->find('div.js-stream-tweet') as $tweet) {
 			$item = array();
