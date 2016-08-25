@@ -146,8 +146,10 @@ abstract class BridgeAbstract implements BridgeInterface {
     protected function validateData(&$data){
         $validated=true;
         foreach($data as $name=>$value){
+            $registered=false;
             foreach($this->parameters as $context=>$set){
                 if(array_key_exists($name,$set)){
+                    $registered=true;
                     if(!isset($set[$name]['type'])){
                         $set[$name]['type']='text';
                     }
@@ -196,6 +198,9 @@ abstract class BridgeAbstract implements BridgeInterface {
                         break;
                     }
                 }
+            }
+            if(!$registered){
+                $validated=false;
             }
         }
 
