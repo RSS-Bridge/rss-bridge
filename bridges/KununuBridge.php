@@ -54,7 +54,7 @@ class KununuBridge extends BridgeAbstract{
 
 		$full = false; // By default we'll load only short article
 		if(isset($params['full']['value']))
-			$full = strtolower(trim($params['full']['value'])) === 'on';
+			$full = strtolower(trim($params['full']['value']));
 
 		// Get reviews section name (depends on site)
 		$section = '';
