@@ -1,8 +1,6 @@
 <?php
 class CpasbienBridge extends HttpCachingBridgeAbstract{
 
-    private $request;
-
 	public function loadMetadatas() {
 
 		$this->maintainer = "lagaisse";
@@ -23,13 +21,11 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];
-        $this->loadMetadatas();
         $html = '';
         if (isset($param['q']['value'])) {   /* keyword search mode */
-            $this->request = str_replace(" ","-",trim($param['q']['value']));
-            $html = $this->getSimpleHTMLDOM($this->uri.'/recherche/'.urlencode($this->request).'.html') or $this->returnServerError('No results for this query.');
-        }
-        else {
+            $request = str_replace(" ","-",trim($param['q']['value']));
+            $html = $this->getSimpleHTMLDOM($this->uri.'/recherche/'.urlencode($request).'.html') or $this->returnServerError('No results for this query.');
+        } else {
             $this->returnClientError('You must specify a keyword (?q=...).');
         }
 
@@ -46,8 +42,7 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
                 $textefiche=$htmlepisode->find('#textefiche', 0)->find('p',1);
                 if (isset($textefiche)) {
                     $item['content'] = $textefiche->text();
-                }
-                else {
+                } else {
                     $p=$htmlepisode->find('#textefiche',0)->find('p');
                     if(!empty($p)){
                         $item['content'] = $htmlepisode->find('#textefiche', 0)->find('p',0)->text();
@@ -59,13 +54,12 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
                 $this->items[] = $item;
             }
         }
-
-
     }
 
 
     public function getName(){
-        return (!empty($this->request) ? $this->request .' - ' : '') . $this->name;
+        return $this->parameters[$this->queriedContext]['q']['value']
+            .' : '.$this->name;
     }
 
     public function getCacheDuration(){

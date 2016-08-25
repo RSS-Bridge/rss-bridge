@@ -15,8 +15,7 @@ class FreenewsBridge extends RssExpander {
 	}
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
-        parent::collectExpandableDatas($param, FREENEWS_RSS);
+        parent::collectExpandableDatas(FREENEWS_RSS);
     }
 
     protected function parseRSSItem($newsItem) {

@@ -30,7 +30,7 @@ class GawkerBridge extends RssExpander{
 			$url = $this->toURI(strtolower($param['site']['value']));
         }
         $this->debugMessage("loading feed from ".$this->getURI());
-        parent::collectExpandableDatas($param, $url);
+        parent::collectExpandableDatas($url);
     }
 
     protected function parseRSSItem($newsItem) {
