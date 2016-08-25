@@ -69,7 +69,7 @@ class WikipediaBridge extends BridgeAbstract{
 
 		$fullArticle = false;
 		if(isset($params['fullarticle']['value']))
-			$fullArticle = $params['fullarticle']['value'] === 'on' ? true : false;
+			$fullArticle = $params['fullarticle']['value'];
 
 		// We store the correct URI as URI of this bridge (so it can be used later!)
 		$this->uri = 'https://' . strtolower($params['language']['value']) . '.wikipedia.org';
