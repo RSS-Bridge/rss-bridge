@@ -36,7 +36,7 @@ class WeLiveSecurityBridge extends BridgeAbstract {
                 $article_image = $element->find('image', 0)->plaintext;
                 $article_url = ExtractFromDelimiters($element->innertext, '<link>', '</link>');
                 $article_summary = ExtractFromDelimiters($element->innertext, '<description><![CDATA[<p>', '</p>');
-                $article_html = file_get_contents($article_url) or $this->returnServerError('Could not request '.$this->getName().': '.$article_url);
+                $article_html = $this->getContents($article_url) or $this->returnServerError('Could not request '.$this->getName().': '.$article_url);
                 if (substr($article_html, 0, 2) == "\x1f\x8b") //http://www.gzip.org/zlib/rfc-gzip.html#header-trailer -> GZip ID1
                     $article_html = gzdecode($article_html);   //Response is GZipped even if we didn't accept GZip!? Let's decompress...
                 $article_html = str_get_html($article_html);   //Now we have our HTML data. But still, that's an important HTTP violation...
