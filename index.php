@@ -127,7 +127,7 @@ try{
                       $bridge->useProxy=false;
                     }
 					$bridge->loadMetadatas();
-                    $params=$_REQUEST;
+                    $params=$_GET;
                     unset($params['action']);
                     unset($params['bridge']);
                     unset($params['format']);
