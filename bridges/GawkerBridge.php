@@ -12,7 +12,10 @@ class GawkerBridge extends RssExpander{
 		$this->description = "A bridge allowing access to any of the numerous Gawker media blogs (Lifehacker, deadspin, Kotaku, Jezebel, and so on. Notice you have to give its id to find the RSS stream in gawker maze";
 
         $this->parameters[] = array(
-          'site'=>array('name'=>'site id to put in uri between feeds.gawker.com and /full .. which is obviously not full AT ALL')
+            'site'=>array(
+                'name'=>'site id to put in uri between feeds.gawker.com and /full .. which is obviously not full AT ALL',
+                'required'=>true
+            )
         );
 	}
 
