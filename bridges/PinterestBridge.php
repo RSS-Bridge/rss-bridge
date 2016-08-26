@@ -22,27 +22,28 @@ class PinterestBridge extends BridgeAbstract{
         );
 	}
 
-    public function collectData(array $param){
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
         $html = '';
-        if (isset($param['u']) || isset($param['b'])) {
+        if (isset($param['u']['value']) || isset($param['b']['value'])) {
 
-            if (empty($param['u']))
+            if (empty($param['u']['value']))
             {
                 $this->returnClientError('You must specify a Pinterest username (?u=...).');
             }
 
-            if (empty($param['b']))
+            if (empty($param['b']['value']))
             {
                 $this->returnClientError('You must specify a Pinterest board for this username (?b=...).');
             }
 
-            $this->username = $param['u'];
-            $this->board = $param['b'];
+            $this->username = $param['u']['value'];
+            $this->board = $param['b']['value'];
             $html = $this->getSimpleHTMLDOM($this->getURI().'/'.urlencode($this->username).'/'.urlencode($this->board)) or $this->returnServerError('Username and/or board not found');
 
-        } else if (isset($param['q']))
+        } else if (isset($param['q']['value']))
         {
-        	$this->query = $param['q'];
+        	$this->query = $param['q']['value'];
         	$html = $this->getSimpleHTMLDOM($this->getURI().'/search/?q='.urlencode($this->query)) or $this->returnServerError('Could not request Pinterest.');
         }
 

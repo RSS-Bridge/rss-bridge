@@ -18,10 +18,11 @@ class BandcampBridge extends BridgeAbstract{
         );
 	}
 
-    public function collectData(array $param){
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
         $html = '';
-        if (isset($param['tag'])) {
-            $this->request = $param['tag'];
+        if (isset($param['tag']['value'])) {
+            $this->request = $param['tag']['value'];
             $html = $this->getSimpleHTMLDOM('http://bandcamp.com/tag/'.urlencode($this->request).'?sort_field=date') or $this->returnServerError('No results for this query.');
         }
         else {

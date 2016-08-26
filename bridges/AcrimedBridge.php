@@ -10,12 +10,12 @@ class AcrimedBridge extends RssExpander{
 
 		}
 
-       public function collectData(array $param){
+       public function collectData(){
 
-			parent::collectExpandableDatas($param, "http://www.acrimed.org/spip.php?page=backend");
+			parent::collectExpandableDatas("http://www.acrimed.org/spip.php?page=backend");
 
 		}
-    
+
 		protected function parseRSSItem($newsItem) {
 
 			$hs = new HTMLSanitizer();

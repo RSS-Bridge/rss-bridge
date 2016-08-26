@@ -10,7 +10,7 @@ class LichessBridge  extends BridgeAbstract
         $this->description = 'Returns the 5 newest posts from the Lichess blog (full text)';
     }
 
-    public function collectData(array $param)
+    public function collectData()
     {
         $xml_feed = $this->getSimpleHTMLDOM('http://fr.lichess.org/blog.atom') or $this->returnServerError('Could not retrieve Lichess blog feed.');
 

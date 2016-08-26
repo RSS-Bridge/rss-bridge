@@ -10,7 +10,7 @@ class NasaApodBridge extends BridgeAbstract{
 
 	}
 
-  public function collectData(array $param) {
+  public function collectData(){
 
     $html = $this->getSimpleHTMLDOM('http://apod.nasa.gov/apod/archivepix.html') or $this->returnServerError('Error while downloading the website content');
     $list = explode("<br>", $html->find('b', 0)->innertext);

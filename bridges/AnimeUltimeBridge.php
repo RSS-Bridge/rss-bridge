@@ -24,13 +24,14 @@ class AnimeUltimeBridge extends BridgeAbstract {
         );
     }
 
-    public function collectData(array $param) {
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
 
         //Add type filter if provided
         $typeFilter = '';
-        if (!empty($param['type'])) {
-            if ($param['type'] == 'A' || $param['type'] == 'D' || $param['type'] == 'T') {
-                $typeFilter = $param['type'];
+        if (!empty($param['type']['value'])) {
+            if ($param['type']['value'] == 'A' || $param['type']['value'] == 'D' || $param['type']['value'] == 'T') {
+                $typeFilter = $param['type']['value'];
                 if ($typeFilter == 'A') { $this->filter = 'Anime'; }
                 if ($typeFilter == 'D') { $this->filter = 'Drama'; }
                 if ($typeFilter == 'T') { $this->filter = 'Tokusatsu'; }

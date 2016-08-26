@@ -10,7 +10,7 @@ class HentaiHavenBridge extends BridgeAbstract{
 
 	}
 
-    public function collectData(array $param){
+    public function collectData(){
         $html = $this->getSimpleHTMLDOM('http://hentaihaven.org/') or $this->returnServerError('Could not request Hentai Haven.');
         foreach($html->find('div.zoe-grid') as $element) {
             $item = array();

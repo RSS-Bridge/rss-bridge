@@ -43,18 +43,19 @@ class WikipediaBridge extends BridgeAbstract{
         );
 	}
 
-	public function collectData(array $params){
-		if(!isset($params['language']))
+	public function collectData(){
+        $params=$this->parameters[$this->queriedContext];
+		if(!isset($params['language']['value']))
 			$this->returnClientError('You must specify a valid language via \'&language=\'!');
 
-		if(!$this->CheckLanguageCode(strtolower($params['language'])))
-			$this->returnClientError('The language code you provided (\'' . $params['language'] . '\') is not supported!');
+		if(!$this->CheckLanguageCode(strtolower($params['language']['value'])))
+			$this->returnClientError('The language code you provided (\'' . $params['language']['value'] . '\') is not supported!');
 
-		if(!isset($params['subject']))
+		if(!isset($params['subject']['value']))
 			$this->returnClientError('You must specify a valid subject via \'&subject=\'!');
 
 		$subject = WIKIPEDIA_SUBJECT_TFA;
-		switch($params['subject']){
+		switch($params['subject']['value']){
 			case 'tfa':
 				$subject = WIKIPEDIA_SUBJECT_TFA;
 				break;
@@ -67,22 +68,22 @@ class WikipediaBridge extends BridgeAbstract{
 		}
 
 		$fullArticle = false;
-		if(isset($params['fullarticle']))
-			$fullArticle = $params['fullarticle'] === 'on' ? true : false;
+		if(isset($params['fullarticle']['value']))
+			$fullArticle = $params['fullarticle']['value'];
 
 		// We store the correct URI as URI of this bridge (so it can be used later!)
-		$this->uri = 'https://' . strtolower($params['language']) . '.wikipedia.org';
+		$this->uri = 'https://' . strtolower($params['language']['value']) . '.wikipedia.org';
 
 		// While we at it let's also update the name for the feed
 		switch($subject){
 			case WIKIPEDIA_SUBJECT_TFA:
-				$this->name = 'Today\'s featured article from ' . strtolower($params['language']) . '.wikipedia.org';
+				$this->name = 'Today\'s featured article from ' . strtolower($params['language']['value']) . '.wikipedia.org';
 				break;
 			case WIKIPEDIA_SUBJECT_DYK:
-				$this->name = 'Did you know? - articles from ' . strtolower($params['language']) . '.wikipedia.org';
+				$this->name = 'Did you know? - articles from ' . strtolower($params['language']['value']) . '.wikipedia.org';
 				break;
 			default:
-				$this->name = 'Articles from ' . strtolower($params['language']) . '.wikipedia.org';
+				$this->name = 'Articles from ' . strtolower($params['language']['value']) . '.wikipedia.org';
 				break;
 		}
 
@@ -97,7 +98,7 @@ class WikipediaBridge extends BridgeAbstract{
 		* We build the function name automatically, just make sure you create a private function ending
 		* with your desired language code, where the language code is upper case! (en -> GetContentsEN).
 		*/
-		$function = 'GetContents' . strtoupper($params['language']);
+		$function = 'GetContents' . strtoupper($params['language']['value']);
 
 		if(!method_exists($this, $function))
 			$this->returnServerError('A function to get the contents for your langauage is missing (\'' . $function . '\')!');

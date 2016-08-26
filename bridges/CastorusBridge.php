@@ -73,12 +73,13 @@ class CastorusBridge extends BridgeAbstract {
 		return $price->innertext;
 	}
 
-	public function collectData(array $params){
-		if(isset($params['zip']))
-			$zip_filter = trim($params['zip']);
+	public function collectData(){
+        $params=$this->parameters[$this->queriedContext];
+		if(isset($params['zip']['value']))
+			$zip_filter = trim($params['zip']['value']);
 
-		if(isset($params['city']))
-			$city_filter = trim($params['city']);
+		if(isset($params['city']['value']))
+			$city_filter = trim($params['city']['value']);
 
 		$html = $this->getSimpleHTMLDOM($this->uri);
 

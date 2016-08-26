@@ -17,7 +17,8 @@ class EZTVBridge extends BridgeAbstract{
         );
 	}
 
-	public function collectData(array $param){
+	public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
 
         // Make timestamp from relative released time in table
         function makeTimestamp($relativeReleaseTime){
@@ -33,11 +34,11 @@ class EZTVBridge extends BridgeAbstract{
         }
 
         // Check for ID provided
-        if (!isset($param['i']))
+        if (!isset($param['i']['value']))
 			$this->returnClientError('You must provide a list of ID (?i=showID1,showID2,...)');
 
         // Loop on show ids
-        $showList = explode(",",$param['i']);
+        $showList = explode(",",$param['i']['value']);
         foreach($showList as $showID){
 
             // Get show page

@@ -14,12 +14,13 @@ class FourchanBridge extends BridgeAbstract{
 	}
 
 
-  public function collectData(array $param){
+  public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
 
-	if (!isset($param['t']))
+	if (!isset($param['t']['value']))
 		$this->returnClientError('You must specify the thread URL (?t=...)');
 
-	$thread = parse_url($param['t']) or $this->returnClientError('This URL seems malformed, please check it.');
+	$thread = parse_url($param['t']['value']) or $this->returnClientError('This URL seems malformed, please check it.');
 	if($thread['host'] !== 'boards.4chan.org')
 		$this->returnClientError('4chan thread URL only.');
 

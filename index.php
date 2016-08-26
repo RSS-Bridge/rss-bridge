@@ -94,8 +94,6 @@ try{
     $action=filter_input(INPUT_GET,'action');
     $bridge=filter_input(INPUT_GET,'bridge');
     if($action === 'display' && !empty($bridge)){
-      unset($_REQUEST['action']);
-      unset($_REQUEST['bridge']);
       // DEPRECATED: 'nameBridge' scheme is replaced by 'name' in bridge parameter values
       //             this is to keep compatibility until futher complete removal
       if(($pos=strpos($bridge,'Bridge'))===(strlen($bridge)-strlen('Bridge'))){
@@ -103,7 +101,6 @@ try{
       }
 
       $format = filter_input(INPUT_GET,'format');
-      unset($_REQUEST['format']);
       // DEPRECATED: 'nameFormat' scheme is replaced by 'name' in format parameter values
       //             this is to keep compatibility until futher complete removal
       if(($pos=strpos($format,'Format'))===(strlen($format)-strlen('Format'))){
@@ -130,7 +127,12 @@ try{
                       $bridge->useProxy=false;
                     }
 					$bridge->loadMetadatas();
-                    $bridge->setDatas($_REQUEST);
+                    $params=$_GET;
+                    unset($params['action']);
+                    unset($params['bridge']);
+                    unset($params['format']);
+                    unset($params['_noproxy']);
+                    $bridge->setDatas($params);
                     // Data transformation
                     try {
 		                $format = Format::create($format);

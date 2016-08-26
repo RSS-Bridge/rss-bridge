@@ -91,7 +91,7 @@ class ShanaprojectBridge extends BridgeAbstract {
                 <p><a href="' . $this->BuildAnimeSearchURI($anime) . '">Search episodes</a></p>';
     }
 
-    public function collectData (array $param){
+    public function collectData(){
         $html = $this->LoadSeasonAnimeList();
 
         $animes = $html->find('div.header_display_box_info');

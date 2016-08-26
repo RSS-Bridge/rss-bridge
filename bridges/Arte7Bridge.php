@@ -45,35 +45,31 @@ class Arte7Bridge extends BridgeAbstract{
         );
 	}
 
-
-    public function collectData(array $param){
-
-      function extractVideoset($category='toutes-les-videos', $lang='fr')
-         {
-         $url = 'http://www.arte.tv/guide/'.$lang.'/plus7/'.$category;
-         $input = $this->getContents($url) or die('Could not request ARTE.');
-         if(strpos($input, 'categoryVideoSet') !== FALSE)
-            {
+    protected  function extractVideoset($category='toutes-les-videos', $lang='fr'){
+        $url = 'http://www.arte.tv/guide/'.$lang.'/plus7/'.$category;
+        $input = $this->getContents($url) or die('Could not request ARTE.');
+        if(strpos($input, 'categoryVideoSet') !== FALSE){
             $input = explode('categoryVideoSet: ', $input);
             $input = explode('}},', $input[1]);
             $input = $input[0].'}}';
-            }
-         else
-            {
+        }else{
             $input = explode('videoSet: ', $input);
             $input = explode('}]},', $input[1]);
             $input = $input[0].'}]}';
-            }
-         $input = json_decode($input, TRUE);
-         return $input;
-         }
+        }
+        $input = json_decode($input, TRUE);
+        return $input;
+    }
+
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
 
       $category='toutes-les-videos'; $lang='fr';
-      if (!empty($param['catfr']))
-         $category=$param['catfr'];
-      if (!empty($param['catde']))
-         { $category=$param['catde']; $lang='de'; }
-      $input_json = extractVideoset($category, $lang);
+      if (!empty($param['catfr']['value']))
+         $category=$param['catfr']['value'];
+      if (!empty($param['catde']['value']))
+         { $category=$param['catde']['value']; $lang='de'; }
+      $input_json = $this->extractVideoset($category, $lang);
 
       foreach($input_json['videos'] as $element) {
             $item = array();

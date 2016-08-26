@@ -12,7 +12,7 @@ class ABCTabsBridge extends BridgeAbstract{
 
 	}
 
-	public function collectData(array $param){
+	public function collectData(){
 		$html = '';
         $html = $this->getSimpleHTMLDOM('http://www.abc-tabs.com/tablatures/nouveautes.html') or $this->returnClientError('No results for this query.');
 		$table = $html->find('table#myTable', 0)->children(1);

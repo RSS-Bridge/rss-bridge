@@ -10,7 +10,7 @@ class FlickrExploreBridge extends BridgeAbstract{
 
 	}
 
-    public function collectData(array $param){
+    public function collectData(){
         $html = $this->getSimpleHTMLDOM('https://www.flickr.com/explore') or $this->returnServerError('Could not request Flickr.');
 
         foreach($html->find('.photo-list-photo-view') as $element) {

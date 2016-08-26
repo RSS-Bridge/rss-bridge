@@ -15,10 +15,11 @@ class NovelUpdatesBridge extends BridgeAbstract{
         );
 	}
 
-    public function collectData(array $param){
-        if (!isset($param['n']))
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
+        if (!isset($param['n']['value']))
             $this->returnClientError('You must specify the novel URL (/series/...)');
-        $thread = parse_url($param['n']) or $this->returnClientError('This URL seems malformed, please check it.');
+        $thread = parse_url($param['n']['value']) or $this->returnClientError('This URL seems malformed, please check it.');
         if($thread['host'] !== 'www.novelupdates.com')
             $this->returnClientError('NovelUpdates URL only.');
       	if(strpos($thread['path'], 'series/') === FALSE)

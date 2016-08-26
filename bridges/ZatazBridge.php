@@ -10,7 +10,7 @@ class ZatazBridge extends BridgeAbstract {
 
 	}
 
-	public function collectData(array $param) {
+	public function collectData(){
 		$html = $this->getSimpleHTMLDOM($this->uri) or $this->returnServerError('Could not request ' . $this->uri);
 
 		$recent_posts = $html->find('#recent-posts-3', 0)->find('ul', 0)->find('li');

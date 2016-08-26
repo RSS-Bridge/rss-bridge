@@ -12,7 +12,10 @@ class GawkerBridge extends RssExpander{
 		$this->description = "A bridge allowing access to any of the numerous Gawker media blogs (Lifehacker, deadspin, Kotaku, Jezebel, and so on. Notice you have to give its id to find the RSS stream in gawker maze";
 
         $this->parameters[] = array(
-          'site'=>array('name'=>'site id to put in uri between feeds.gawker.com and /full .. which is obviously not full AT ALL')
+            'site'=>array(
+                'name'=>'site id to put in uri between feeds.gawker.com and /full .. which is obviously not full AT ALL',
+                'required'=>true
+            )
         );
 	}
 
@@ -21,15 +24,16 @@ class GawkerBridge extends RssExpander{
         return RSS_PREFIX.$name.RSS_SUFFIX;
     }
 
-    public function collectData(array $param){
-        if (empty($param['site'])) {
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
+        if (empty($param['site']['value'])) {
 			trigger_error("If no site is provided, nothing is gonna happen", E_USER_ERROR);
         } else {
-            $this->name = $param['site'];
-			$url = $this->toURI(strtolower($param['site']));
+            $this->name = $param['site']['value'];
+			$url = $this->toURI(strtolower($param['site']['value']));
         }
         $this->debugMessage("loading feed from ".$this->getURI());
-        parent::collectExpandableDatas($param, $url);
+        parent::collectExpandableDatas($url);
     }
 
     protected function parseRSSItem($newsItem) {

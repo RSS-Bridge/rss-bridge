@@ -28,19 +28,20 @@ class PickyWallpapersBridge extends BridgeAbstract {
 
 	}
 
-    public function collectData(array $param){
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
         $html = '';
-        if (!isset($param['c'])) {
+        if (!isset($param['c']['value'])) {
             $this->returnClientError('You must specify at least a category (?c=...).');
         } else {
             $baseUri = 'http://www.pickywallpapers.com';
 
-            $this->category = $param['c'];
-            $this->subcategory = $param['s'] ?: '';
-            $this->resolution = $param['r'] ?: '1920x1200';    // Wide wallpaper default
+            $this->category = $param['c']['value'];
+            $this->subcategory = $param['s']['value'] ?: '';
+            $this->resolution = $param['r']['value'] ?: '1920x1200';    // Wide wallpaper default
 
             $num = 0;
-            $max = $param['m'] ?: 12;
+            $max = $param['m']['value'] ?: 12;
             $lastpage = 1;
 
             for ($page = 1; $page <= $lastpage; $page++) {

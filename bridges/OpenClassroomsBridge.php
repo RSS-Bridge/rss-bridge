@@ -29,14 +29,15 @@ class OpenClassroomsBridge extends BridgeAbstract{
 	}
 
 
-    public function collectData(array $param){
-        if (empty($param['u']))
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
+        if (empty($param['u']['value']))
         {
             $this->returnServerError('Error: You must chose a category.');
         }
 
         $html = '';
-        $link = 'https://openclassrooms.com/courses?categories='.$param['u'].'&title=&sort=updatedAt+desc';
+        $link = 'https://openclassrooms.com/courses?categories='.$param['u']['value'].'&title=&sort=updatedAt+desc';
 
         $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request OpenClassrooms.');
 

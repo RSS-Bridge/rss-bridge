@@ -10,7 +10,7 @@ class DilbertBridge extends BridgeAbstract {
 
     }
 
-    public function collectData(array $param) {
+    public function collectData(){
 
         $html = $this->getSimpleHTMLDOM($this->getURI()) or $this->returnServerError('Could not request Dilbert: '.$this->getURI());
 

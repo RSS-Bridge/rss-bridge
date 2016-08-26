@@ -13,7 +13,8 @@ class ZoneTelechargementBridge extends BridgeAbstract {
         );
     }
 
-    public function collectData(array $param) {
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
 
         function StripCDATA($string) {
             $string = str_replace('<![CDATA[', '', $string);
@@ -22,8 +23,8 @@ class ZoneTelechargementBridge extends BridgeAbstract {
         }
 
         $category = '/';
-        if (!empty($param['category']))
-            $category = '/'.$param['category'].'/';
+        if (!empty($param['category']['value']))
+            $category = '/'.$param['category']['value'].'/';
 
         $url = $this->getURI().$category.'rss.xml';
         $html = $this->getSimpleHTMLDOM($url) or $this->returnServerError('Could not request Zone Telechargement: '.$url);

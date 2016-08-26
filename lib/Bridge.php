@@ -103,7 +103,7 @@ EOD;
 }
 
 interface BridgeInterface {
-    public function collectData(array $param);
+    public function collectData();
     public function getCacheDuration();
     public function loadMetadatas();
     public function getName();
@@ -121,6 +121,7 @@ abstract class BridgeAbstract implements BridgeInterface {
     public $maintainer = 'No maintainer';
     public $useProxy = true;
     public $parameters = array();
+    protected $queriedContext='';
 
     protected function returnError($message, $code){
         throw new \HttpException($message, $code);
@@ -142,11 +143,109 @@ abstract class BridgeAbstract implements BridgeInterface {
         return $this->items;
     }
 
+    protected function validateData(&$data){
+        $validated=true;
+        foreach($data as $name=>$value){
+            $registered=false;
+            foreach($this->parameters as $context=>$set){
+                if(array_key_exists($name,$set)){
+                    $registered=true;
+                    if(!isset($set[$name]['type'])){
+                        $set[$name]['type']='text';
+                    }
+                    switch($set[$name]['type']){
+                    case 'number':
+                        $data[$name]=filter_var($value,FILTER_VALIDATE_INT);
+                        if($data[$name]===false && !empty($value)){
+                            $validated=false;
+                        }
+                        break;
+                    case 'checkbox':
+                        $data[$name]=filter_var($value,FILTER_VALIDATE_BOOLEAN,
+                            FILTER_NULL_ON_FAILURE);
+                        if(is_null($data[$name])){
+                            $validated=false;
+                        }
+                        break;
+                    case 'list':
+                        $data[$name]=filter_var($value);
+                        if(!in_array($value,$set[$name]['values'])){
+                            foreach($set[$name]['values'] as $subName=>$subValue){
+                                if(is_array($subValue) &&
+                                    in_array($value,$subValue)){
+                                    $data[$name]=filter_var($value);
+                                    break 2;
+                                }
+                            }
+                            $validated=false;
+                            $data[$name]=null;
+                        }
+                        break;
+                    default:
+                    case'text':
+                        if(isset($set[$name]['pattern'])){
+                            $data[$name]=filter_var($value,FILTER_VALIDATE_REGEXP,
+                                array('options'=>array(
+                                    'regexp'=>'/^'.$set[$name]['pattern'].'$/'
+                                ))
+                            );
+                        }else{
+                            $data[$name]=filter_var($value);
+                        }
+                        if($data[$name]===false && !empty($value)){
+                            $validated=false;
+                        }
+                        break;
+                    }
+                }
+            }
+            if(!$registered){
+                $validated=false;
+            }
+        }
+
+        return $validated;
+    }
+
+    protected function getQueriedContext(){
+        $queriedContexts=array();
+        foreach($this->parameters as $context=>$set){
+            $queriedContexts[$context]=null;
+            foreach($set as $id=>$properties){
+                if(isset($properties['value']) &&
+                    !empty($properties['value'])){
+                    $queriedContexts[$context]=true;
+                }elseif(isset($properties['required']) &&
+                    $properties['required']===true){
+                    $queriedContexts[$context]=false;
+                    break;
+                }
+            }
+        }
+
+        if(isset($this->parameters['global']) &&
+            $queriedContexts['global']===false){
+            return null;
+        }
+        unset($queriedContexts['global']);
+
+        switch(array_sum($queriedContexts)){
+        case 0:
+            foreach($queriedContexts as $context=>$queried){
+                if (is_null($queried)){
+                    return $context;
+                }
+            }
+            return null;
+        case 1: return array_search(true,$queriedContexts);
+        default: return false;
+        }
+    }
+
     /**
     * Defined datas with parameters depending choose bridge
     * Note : you can define a cache with "setCache"
-    * @param array $param $_REQUEST, $_GET, $_POST, or array with expected 
-    * bridge paramters
+    * @param array array with expected bridge paramters
     */
     public function setDatas(array $param){
         if(!is_null($this->cache)){
@@ -159,7 +258,32 @@ abstract class BridgeAbstract implements BridgeInterface {
         if($time !== false && (time() - $this->getCacheDuration() < $time)){
             $this->items = $this->cache->loadData();
         } else {
-            $this->collectData($param);
+            if($this->validateData($param)){
+                foreach($param as $name=>$value){
+                    foreach($this->parameters as $context=>$set){
+                        if(isset($this->parameters[$context][$name]))
+                            $this->parameters[$context][$name]['value']=$value;
+                    }
+                }
+                if(!empty($this->parameters)){
+                    $queriedContext=$this->getQueriedContext();
+                    if(is_null($queriedContext)){
+                        $this->returnClientError('Required parameter(s) missing');
+                    }else if($queriedContext===false){
+                        $this->returnClientError('Mixed context parameters');
+                    }else{
+                        $this->queriedContext=$queriedContext;
+                        foreach($param as $name=>$value){
+                            if(isset($this->parameters['global'][$name])){
+                                $this->parameters[$queriedContext][$name]['value']=$value;
+                            }
+                        }
+                    }
+                }
+            }else{
+                $this->returnClientError('Invalid parameters value(s)');
+            }
+            $this->collectData();
 
             if(!is_null($this->cache)){
                 $this->cache->saveData($this->getDatas());
@@ -348,12 +472,12 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
 
 abstract class RssExpander extends HttpCachingBridgeAbstract {
 
-    public function collectExpandableDatas(array $param, $name){
+    public function collectExpandableDatas($name){
         if(empty($name)){
             $this->returnServerError('There is no $name for this RSS expander');
         }
 
-        $this->debugMessage('Loading from ' . $param['url']);
+        $this->debugMessage('Loading from ' . $name);
 
         /* Notice we do not use cache here on purpose:
          * we want a fresh view of the RSS stream each time
@@ -361,7 +485,7 @@ abstract class RssExpander extends HttpCachingBridgeAbstract {
         $content = $this->getContents($name) or $this->returnServerError('Could not request ' . $name);
 
         $rssContent = simplexml_load_string($content);
-        $this->debugMessage('loaded RSS from ' . $param['url']);
+        $this->debugMessage('loaded RSS from ' . $name);
         // TODO insert RSS format detection
         // For now we always assume RSS 2.0
         $this->collect_RSS_2_0_data($rssContent);

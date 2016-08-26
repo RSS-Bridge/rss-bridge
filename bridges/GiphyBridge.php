@@ -10,35 +10,34 @@ class GiphyBridge extends BridgeAbstract{
 		$this->uri = "http://giphy.com/";
 		$this->description = "Bridge for giphy.com";
 
-        $this->parameters["By tag"] = array(
-          's'=>array('name'=>'search tag')
+        $this->parameters[] = array(
+            's'=>array('name'=>'search tag'),
+            'n'=>array(
+                'name'=>'max number of returned items',
+                'type'=>'number'
+            )
         );
 
-        $this->parameters["Without tag"] = array(
-          'n'=>array(
-            'name'=>'max number of returned items',
-            'type'=>'number'
-          )
-        );
 	}
 
-	public function collectData(array $param){
+	public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
 		$html = '';
         $base_url = 'http://giphy.com';
-		if (isset($param['s'])) {   /* keyword search mode */
-			$html = $this->getSimpleHTMLDOM($base_url.'/search/'.urlencode($param['s'].'/')) or $this->returnServerError('No results for this query.');
+		if (isset($param['s']['value'])) {   /* keyword search mode */
+			$html = $this->getSimpleHTMLDOM($base_url.'/search/'.urlencode($param['s']['value'].'/')) or $this->returnServerError('No results for this query.');
 		}
 		else {
 			$this->returnClientError('You must specify a search worf (?s=...).');
 		}
 
         $max = GIPHY_LIMIT;
-        if (isset($param['n'])) {
-            $max = (integer) $param['n'];
+        if (isset($param['n']['value'])) {
+            $max = (integer) $param['n']['value'];
         }
 
         $limit = 0;
-        $kw = urlencode($param['s']);
+        $kw = urlencode($param['s']['value']);
         foreach($html->find('div.hoverable-gif') as $entry) {
             if($limit < $max) {
                 $node = $entry->first_child();

@@ -10,7 +10,7 @@ class Releases3DSBridge extends BridgeAbstract {
 
 	}
 
-    public function collectData(array $param) {
+    public function collectData(){
 
         function ExtractFromDelimiters($string, $start, $end) {
             if (strpos($string, $start) !== false) {

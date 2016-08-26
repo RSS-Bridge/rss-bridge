@@ -25,7 +25,7 @@ class NextInpactBridge extends BridgeAbstract {
 		return $text;
 	}
 
-	public function collectData(array $param) {
+	public function collectData(){
 		$html = $this->getSimpleHTMLDOM('http://www.nextinpact.com/rss/news.xml') or $this->returnServerError('Could not request NextInpact.');
 		$limit = 0;
 

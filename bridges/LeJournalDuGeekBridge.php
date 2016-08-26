@@ -36,7 +36,7 @@ class LeJournalDuGeekBridge extends BridgeAbstract{
 		return $text;
 	}
 
-	public function collectData(array $param){
+	public function collectData(){
 		$rssFeed = $this->getSimpleHTMLDOM('http://www.journaldugeek.com/rss') or $this->returnServerError('Could not request http://www.journaldugeek.com/rss');
 		$limit = 0;
 

@@ -18,7 +18,8 @@ class CryptomeBridge extends BridgeAbstract{
 	}
 
 
-    public function collectData(array $param){
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
         $html = '';
         $num = 20;
         $link = 'http://cryptome.org/';
@@ -26,8 +27,8 @@ class CryptomeBridge extends BridgeAbstract{
         //$link = 'https://secure.netsolhost.com/cryptome.org/';
 
         $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request Cryptome.');
-        if (!empty($param['n'])) {   /* number of documents */
-            $num = min(max(1, $param['n']+0), $num);
+        if (!empty($param['n']['value'])) {   /* number of documents */
+            $num = min(max(1, $param['n']['value']+0), $num);
         }
 
 

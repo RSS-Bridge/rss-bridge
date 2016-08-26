@@ -11,7 +11,7 @@ class ProjectMGameBridge extends BridgeAbstract{
 	}
 
 
-  public function collectData(array $param){
+  public function collectData(){
     $html = '';
     $html = $this->getSimpleHTMLDOM('http://projectmgame.com/en/') or $this->returnServerError('Error while downloading the Project M homepage');
 

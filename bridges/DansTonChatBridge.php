@@ -10,7 +10,7 @@ class DansTonChatBridge extends BridgeAbstract{
 
 	}
 
-    public function collectData(array $param){
+    public function collectData(){
         $html = '';
         $link = 'http://danstonchat.com/latest.html';
 

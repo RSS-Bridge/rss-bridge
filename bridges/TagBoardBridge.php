@@ -17,9 +17,10 @@ class TagBoardBridge extends BridgeAbstract{
 
 	}
 
-    public function collectData(array $param){
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
         $html = '';
-        $this->request = $param['u'];
+        $this->request = $param['u']['value'];
         $link = 'https://post-cache.tagboard.com/search/' .$this->request;
 
         $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request TagBoard for : ' . $link);

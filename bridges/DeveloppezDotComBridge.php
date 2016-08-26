@@ -40,7 +40,7 @@ class DeveloppezDotComBridge extends BridgeAbstract{
 		return trim($text);
 	}
 
-	public function collectData(array $param){
+	public function collectData(){
 		$rssFeed = $this->getSimpleHTMLDOM('http://www.developpez.com/index/rss') or $this->returnServerError('Could not request http://www.developpez.com/index/rss');
 		$limit = 0;
 

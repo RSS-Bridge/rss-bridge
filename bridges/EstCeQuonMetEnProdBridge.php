@@ -8,7 +8,7 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract {
         $this->description = 'Should we put a website in production today? (French)';
     }
 
-    public function collectData(array $param) {
+    public function collectData(){
         function ExtractFromDelimiters($string, $start, $end) {
             if (strpos($string, $start) !== false) {
                 $section_retrieved = substr($string, strpos($string, $start) + strlen($start));

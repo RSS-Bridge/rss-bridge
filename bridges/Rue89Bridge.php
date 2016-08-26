@@ -19,7 +19,7 @@ class Rue89Bridge extends BridgeAbstract{
 
 	}
 
-    public function collectData(array $param){
+    public function collectData(){
 
         $html = $this->getSimpleHTMLDOM('http://api.rue89.nouvelobs.com/feed') or $this->returnServerError('Could not request Rue89.');
 

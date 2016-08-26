@@ -10,7 +10,7 @@ class CourrierInternationalBridge extends BridgeAbstract{
 
 	}
 
-    public function collectData(array $param){
+    public function collectData(){
 
         $html = '';
 

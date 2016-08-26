@@ -14,10 +14,10 @@ class Les400CulsBridge extends RssExpander{
 	}
 
 
-    public function collectData(array $param){
-        parent::collectExpandableDatas($param, SEXE_FEED);
+    public function collectData(){
+        parent::collectExpandableDatas(SEXE_FEED);
     }
-    
+
     protected function parseRSSItem($newsItem) {
         $item = array();
         $item['title'] = trim((string) $newsItem->title);

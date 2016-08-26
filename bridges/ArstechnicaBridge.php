@@ -42,7 +42,7 @@ class ArstechnicaBridge extends BridgeAbstract {
     return $text;
   }
 
-  public function collectData(array $param) {
+  public function collectData(){
 
     $html = $this->getSimpleHTMLDOM('http://feeds.arstechnica.com/arstechnica/index') or $this->returnServerError('Could not request NextInpact.');
     $limit = 0;

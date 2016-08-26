@@ -10,7 +10,7 @@ class SiliconBridge extends BridgeAbstract {
 
 	}
 
-    public function collectData(array $param) {
+    public function collectData(){
 
         function StripCDATA($string) {
             $string = str_replace('<![CDATA[', '', $string);

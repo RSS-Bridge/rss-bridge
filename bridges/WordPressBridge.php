@@ -53,7 +53,8 @@ class WordPressBridge extends BridgeAbstract {
 		return $content;
 	}
 
-	public function collectData(array $param) {
+	public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
 		$this->processParams($param);
 
 		if (!$this->hasUrl()) {
@@ -145,6 +146,6 @@ class WordPressBridge extends BridgeAbstract {
 	}
 
 	private function processParams($param) {
-		$this->url = $param['url'];
+		$this->url = $param['url']['value'];
 	}
 }

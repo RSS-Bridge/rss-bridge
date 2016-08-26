@@ -8,7 +8,7 @@ class NakedSecurityBridge extends BridgeAbstract {
         $this->description = 'Returns the newest articles.';
     }
 
-    public function collectData(array $param) {
+    public function collectData(){
 
         function StripRecursiveHTMLSection($string, $tag_name, $tag_start) {
             $open_tag = '<'.$tag_name;

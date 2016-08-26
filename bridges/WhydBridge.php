@@ -20,11 +20,12 @@ class WhydBridge extends BridgeAbstract{
 
 	}
 
-	public function collectData(array $param){
+	public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
 		$html = '';
-		if (isset($param['u']))
+		if (isset($param['u']['value']))
 		{
-			$this->request = $param['u'];
+			$this->request = $param['u']['value'];
             if (strlen(preg_replace("/[^0-9a-f]/",'', $this->request)) == 24) { // is input the userid ?
 				$html = $this->getSimpleHTMLDOM('http://www.whyd.com/u/'.preg_replace("/[^0-9a-f]/",'', $this->request)) or $this->returnServerError('No results for this query.');
 			} else { // input may be the username

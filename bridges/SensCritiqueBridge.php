@@ -37,18 +37,19 @@ class SensCritiqueBridge extends BridgeAbstract {
         );
   }
 
-	public function collectData(array $param) {
-		if ((isset($param['m']) && $param['m'])) {
+	public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
+		if ((isset($param['m']['value']) && $param['m']['value'])) {
 			$this->collectMoviesData();
-		} else if ((isset($param['s']) && $param['s'])) {
+		} else if ((isset($param['s']['value']) && $param['s']['value'])) {
 			$this->collectSeriesData();
-		} else if ((isset($param['g']) && $param['g'])) {
+		} else if ((isset($param['g']['value']) && $param['g']['value'])) {
 			$this->collectGamesData();
-		} else if ((isset($param['b']) && $param['b'])) {
+		} else if ((isset($param['b']['value']) && $param['b']['value'])) {
 			$this->collectBooksData();
-		} else if ((isset($param['bd']) && $param['bd'])) {
+		} else if ((isset($param['bd']['value']) && $param['bd']['value'])) {
 			$this->collectBDsData();
-		} else if ((isset($param['mu']) && $param['mu'])) {
+		} else if ((isset($param['mu']['value']) && $param['mu']['value'])) {
 			$this->collectMusicsData();
 		} else {
 			$this->returnClientError('You must choose a category');

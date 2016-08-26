@@ -13,8 +13,8 @@ class TheOatmealBridge extends RssExpander{
 
 	}
 
-    public function collectData(array $param){
-        parent::collectExpandableDatas($param, THE_OATMEAL_RSS);
+    public function collectData(){
+        parent::collectExpandableDatas(THE_OATMEAL_RSS);
     }
 
 
@@ -50,14 +50,14 @@ class TheOatmealBridge extends RssExpander{
 			$content = $articlePage->find('#blog');
 		}
         $item['content'] = $content->innertext;
-        
+
         $this->debugMessage("dc content is ".var_export($dc, true));
         $item['author'] = (string) $dc->creator;
         $item['timestamp'] = DateTime::createFromFormat(DateTime::ISO8601, $dc->date)->getTimestamp();
         $this->debugMessage("writtem by ".$item['author']." on ".$item['timestamp']);
         return $item;
     }
-    
+
     public function getCacheDuration(){
         return 7200; // 2h hours
     }

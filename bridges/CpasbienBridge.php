@@ -1,22 +1,5 @@
 <?php
-// simple_html_dom funtion to get the dom from contents instead from file
-function content_get_html($contents, $maxLen=-1, $lowercase = true, $forceTagsClosed=true, $target_charset = DEFAULT_TARGET_CHARSET, $stripRN=true, $defaultBRText=DEFAULT_BR_TEXT, $defaultSpanText=DEFAULT_SPAN_TEXT)
-{
-    // We DO force the tags to be terminated.
-    $dom = new simple_html_dom(null, $lowercase, $forceTagsClosed, $target_charset, $stripRN, $defaultBRText, $defaultSpanText);
-
-    if (empty($contents) || strlen($contents) > MAX_FILE_SIZE)
-    {
-        return false;
-    }
-    // The second parameter can force the selectors to all be lowercase.
-    $dom->load($contents, $lowercase, $stripRN);
-    return $dom;
-}
-
 class CpasbienBridge extends HttpCachingBridgeAbstract{
-
-    private $request;
 
 	public function loadMetadatas() {
 
@@ -36,14 +19,13 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
 	}
 
 
-    public function collectData(array $param){
-        $this->loadMetadatas();
+    public function collectData(){
+        $param=$this->parameters[$this->queriedContext];
         $html = '';
-        if (isset($param['q'])) {   /* keyword search mode */
-            $this->request = str_replace(" ","-",trim($param['q']));
-            $html = $this->getSimpleHTMLDOM($this->uri.'/recherche/'.urlencode($this->request).'.html') or $this->returnServerError('No results for this query.');
-        }
-        else {
+        if (isset($param['q']['value'])) {   /* keyword search mode */
+            $request = str_replace(" ","-",trim($param['q']['value']));
+            $html = $this->getSimpleHTMLDOM($this->uri.'/recherche/'.urlencode($request).'.html') or $this->returnServerError('No results for this query.');
+        } else {
             $this->returnClientError('You must specify a keyword (?q=...).');
         }
 
@@ -51,7 +33,7 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
             if ($episode->getAttribute('class')=='ligne0' || $episode->getAttribute('class')=='ligne1')
             {
 
-                $htmlepisode=content_get_html($this->get_cached($episode->find('a', 0)->getAttribute('href')));
+                $htmlepisode=str_get_html($this->get_cached($episode->find('a', 0)->getAttribute('href')));
 
                 $item = array();
                 $item['author'] = $episode->find('a', 0)->text();
@@ -60,9 +42,11 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
                 $textefiche=$htmlepisode->find('#textefiche', 0)->find('p',1);
                 if (isset($textefiche)) {
                     $item['content'] = $textefiche->text();
-                }
-                else {
-                    $item['content'] = $htmlepisode->find('#textefiche', 0)->find('p',0)->text();
+                } else {
+                    $p=$htmlepisode->find('#textefiche',0)->find('p');
+                    if(!empty($p)){
+                        $item['content'] = $htmlepisode->find('#textefiche', 0)->find('p',0)->text();
+                    }
                 }
 
                 $item['id'] = $episode->find('a', 0)->getAttribute('href');
@@ -70,13 +54,12 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
                 $this->items[] = $item;
             }
         }
-
-
     }
 
 
     public function getName(){
-        return (!empty($this->request) ? $this->request .' - ' : '') . $this->name;
+        return $this->parameters[$this->queriedContext]['q']['value']
+            .' : '.$this->name;
     }
 
     public function getCacheDuration(){
