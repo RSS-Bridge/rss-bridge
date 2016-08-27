@@ -1,8 +1,6 @@
 <?php
 class GBAtempBridge extends BridgeAbstract {
 
-    private $filter = '';
-
     public function loadMetadatas() {
 
         $this->maintainer = 'ORelio';
@@ -14,6 +12,7 @@ class GBAtempBridge extends BridgeAbstract {
           'type'=>array(
             'name'=>'Type',
             'type'=>'list',
+            'required'=>true,
             'values'=>array(
               'News'=>'N',
               'Reviews'=>'R',
@@ -65,20 +64,11 @@ class GBAtempBridge extends BridgeAbstract {
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];
-        $typeFilter = '';
-        if (!empty($param['type']['value'])) {
-            if ($param['type']['value'] == 'N' || $param['type']['value'] == 'R' || $param['type']['value'] == 'T' || $param['type']['value'] == 'F') {
-                $typeFilter = $param['type']['value'];
-                if ($typeFilter == 'N') { $this->filter = 'News'; }
-                if ($typeFilter == 'R') { $this->filter = 'Review'; }
-                if ($typeFilter == 'T') { $this->filter = 'Tutorial'; }
-                if ($typeFilter == 'F') { $this->filter = 'Forum'; }
-            } else $this->returnClientError('The provided type filter is invalid. Expecting N, R, T, or F.');
-        } else $this->returnClientError('Please provide a type filter. Expecting N, R, T, or F.');
 
         $html = $this->getSimpleHTMLDOM($this->uri) or $this->returnServerError('Could not request GBAtemp.');
 
-        if ($typeFilter == 'N') {
+        switch($param['type']['value']){
+        case 'N':
             foreach ($html->find('li[class=news_item full]') as $newsItem) {
                 $url = $this->uri.$newsItem->find('a', 0)->href;
                 $time = intval($this->ExtractFromDelimiters($newsItem->find('abbr.DateTime', 0)->outertext, 'data-time="', '"'));
@@ -87,7 +77,7 @@ class GBAtempBridge extends BridgeAbstract {
                 $content = $this->fetch_post_content($url, $this->uri);
                 $this->items[] = $this->build_item($url, $title, $author, $time, $content);
             }
-        } else if ($typeFilter == 'R') {
+        case 'R':
             foreach ($html->find('li.portal_review') as $reviewItem) {
                 $url = $this->uri.$reviewItem->find('a', 0)->href;
                 $title = $reviewItem->find('span.review_title', 0)->plaintext;
@@ -102,7 +92,7 @@ class GBAtempBridge extends BridgeAbstract {
                 $content = $this->cleanup_post_content($intro.$review.$subheader.$procons.$scores, $this->uri);
                 $this->items[] = $this->build_item($url, $title, $author, $time, $content);
             }
-        } else if ($typeFilter == 'T') {
+        case 'T':
             foreach ($html->find('li.portal-tutorial') as $tutorialItem) {
                 $url = $this->uri.$tutorialItem->find('a', 0)->href;
                 $title = $tutorialItem->find('a', 0)->plaintext;
@@ -111,7 +101,7 @@ class GBAtempBridge extends BridgeAbstract {
                 $content = $this->fetch_post_content($url, $this->uri);
                 $this->items[] = $this->build_item($url, $title, $author, $time, $content);
             }
-        } else if ($typeFilter == 'F') {
+        case 'F':
             foreach ($html->find('li.rc_item') as $postItem) {
                 $url = $this->uri.$postItem->find('a', 1)->href;
                 $title = $postItem->find('a', 1)->plaintext;
@@ -124,7 +114,9 @@ class GBAtempBridge extends BridgeAbstract {
     }
 
     public function getName() {
-        return 'GBAtemp'.(empty($this->filter) ? '' : ' '.$this->filter).' Bridge';
+        $param=$this->parameters[$this->queriedContext];
+        $type=array_search($param['type']['value'],$param['type']['values']);
+        return 'GBAtemp '.$type.' Bridge';
     }
 
     public function getCacheDuration() {
