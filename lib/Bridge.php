@@ -260,9 +260,12 @@ abstract class BridgeAbstract implements BridgeInterface {
             return;
         }
 
-        if(empty($this->parameters) && !empty($inputs)){
-            $this->returnClientError('Invalid parameters value(s)');
-        };
+        if(empty($this->parameters)){
+            if(!empty($inputs)){
+                $this->returnClientError('Invalid parameters value(s)');
+            }
+            return;
+        }
 
         if(!$this->validateData($inputs)){
             $this->returnClientError('Invalid parameters value(s)');
