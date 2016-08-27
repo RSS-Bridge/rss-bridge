@@ -51,7 +51,6 @@ class WikipediaBridge extends BridgeAbstract{
 
     public function getName(){
 		$params=$this->parameters[$this->queriedContext];
-        $subject = WIKIPEDIA_SUBJECT_TFA;
 		switch($params['subject']['value']){
 			case 'tfa':
 				$subject = WIKIPEDIA_SUBJECT_TFA;
@@ -80,16 +79,7 @@ class WikipediaBridge extends BridgeAbstract{
 
 	public function collectData(){
 		$params=$this->parameters[$this->queriedContext];
-		if(!isset($params['language']['value']))
-			$this->returnClientError('You must specify a valid language via \'&language=\'!');
 
-		if(!$this->CheckLanguageCode(strtolower($params['language']['value'])))
-			$this->returnClientError('The language code you provided (\'' . $params['language']['value'] . '\') is not supported!');
-
-		if(!isset($params['subject']['value']))
-			$this->returnClientError('You must specify a valid subject via \'&subject=\'!');
-
-		$subject = WIKIPEDIA_SUBJECT_TFA;
 		switch($params['subject']['value']){
 			case 'tfa':
 				$subject = WIKIPEDIA_SUBJECT_TFA;
@@ -102,9 +92,7 @@ class WikipediaBridge extends BridgeAbstract{
 				break;
 		}
 
-		$fullArticle = false;
-		if(isset($params['fullarticle']['value']))
-			$fullArticle = $params['fullarticle']['value'];
+		$fullArticle = $params['fullarticle']['value'];
 
 		// This will automatically send us to the correct main page in any language (try it!)
 		$html = $this->getSimpleHTMLDOM($this->getURI() . '/wiki');
@@ -126,20 +114,6 @@ class WikipediaBridge extends BridgeAbstract{
 		* The method takes care of creating all items.
 		*/
 		$this->$function($html, $subject, $fullArticle);
-	}
-
-	/**
-	* Returns true if the language code is part of the parameters list
-	*/
-	private function CheckLanguageCode($languageCode){
-		$languages = $this->parameters[0]['language']['values'];
-
-		$language_names = array();
-
-		foreach($languages as $name=>$value)
-			$language_names[] = $value;
-
-		return in_array($languageCode, $language_names);
 	}
 
 	/**
