@@ -246,9 +246,9 @@ abstract class BridgeAbstract implements BridgeInterface {
     * Note : you can define a cache with "setCache"
     * @param array array with expected bridge paramters
     */
-    public function setDatas(array $param){
+    public function setDatas(array $inputs){
         if(!is_null($this->cache)){
-            $this->cache->prepare($param);
+            $this->cache->prepare($inputs);
             $time = $this->cache->getTime();
         } else {
             $time = false;
@@ -259,16 +259,16 @@ abstract class BridgeAbstract implements BridgeInterface {
             return;
         }
 
-        if(empty($this->parameters) && !empty($param)){
+        if(empty($this->parameters) && !empty($inputs)){
             $this->returnClientError('Invalid parameters value(s)');
         };
 
-        if(!$this->validateData($param)){
+        if(!$this->validateData($inputs)){
             $this->returnClientError('Invalid parameters value(s)');
         }
 
         // Populate BridgeAbstract::parameters with sanitized data
-        foreach($param as $name=>$value){
+        foreach($inputs as $name=>$value){
             foreach($this->parameters as $context=>$set){
                 if(isset($this->parameters[$context][$name])){
                     $this->parameters[$context][$name]['value']=$value;
@@ -313,8 +313,8 @@ abstract class BridgeAbstract implements BridgeInterface {
 
         // Copy global parameter values to the guessed context
         foreach($this->parameters['global'] as $name=>$properties){
-            if(isset($param[$name])){
-                $value=$param[$name];
+            if(isset($inputs[$name])){
+                $value=$inputs[$name];
             }else if(isset($properties['value'])){
                 $value=$properties['value'];
             }else{
