@@ -4,9 +4,6 @@ define('TWITCH_BROADCASTS', 'false'); // The default flag for broadcasts
 
 class TwitchApiBridge extends BridgeAbstract{
 
-	// for use in the getName function!
-	private $channel;
-
 	public function loadMetadatas() {
 
 		$this->maintainer = "logmanoriginal";
@@ -64,25 +61,12 @@ class TwitchApiBridge extends BridgeAbstract{
 
 		$context = stream_context_create($opts);
 
-		$channel = '';
 		$limit = TWITCH_LIMIT;
 		$broadcasts = TWITCH_BROADCASTS;
 		$requests = 1;
 
-		if(isset($param['channel']['value'])) {
-			$channel = $param['channel']['value'];
-		} else {
-			$this->returnClientError('You must specify a valid channel name! Received: &channel=' . $param['channel']['value']);
-		}
-
-		$this->channel = $channel;
-
 		if(isset($param['limit']['value'])) {
-			try {
-				$limit = (int)$param['limit']['value'];
-			} catch (Exception $e){
-				$this->returnClientError('The limit you specified is not valid! Received: &limit=' . $param['limit']['value'] . ' Expected: &limit=<num> where <num> is any integer number.');
-			}
+            $limit = (int)$param['limit']['value'];
 		} else {
 			$limit = TWITCH_LIMIT;
 		}
@@ -94,19 +78,15 @@ class TwitchApiBridge extends BridgeAbstract{
 			if($limit % 100 != 0) { $requests++; }
 		}
 
-		if(isset($param['broadcasts']['value']) && ($param['broadcasts']['value'] == 'true' || $param['broadcasts']['value'] == 'false')) {
-			$broadcasts = $param['broadcasts']['value'];
-		} else {
-			$this->returnClientError('The value for broadcasts you specified is not valid! Received: &broadcasts=' . $param['broadcasts']['value'] . ' Expected: &broadcasts=false or &broadcasts=true');
-		}
+        $broadcasts = $param['broadcasts']['value'];
 
 		// Build the initial request, see also: https://github.com/justintv/Twitch-API/blob/master/v3_resources/videos.md#get-channelschannelvideos
 		$request = '';
 
 		if($requests == 1) {
-			$request = 'https://api.twitch.tv/kraken/channels/' . $channel . '/videos?limit=' . $limit . '&broadcasts=' . $broadcasts;
+			$request = 'https://api.twitch.tv/kraken/channels/' . $param['channel']['value'] . '/videos?limit=' . $limit . '&broadcasts=' . $broadcasts;
 		} else {
-			$request = 'https://api.twitch.tv/kraken/channels/' . $channel . '/videos?limit=100&broadcasts=' . $broadcasts;
+			$request = 'https://api.twitch.tv/kraken/channels/' . $param['channel']['value'] . '/videos?limit=100&broadcasts=' . $broadcasts;
 		}
 
 		/* Finally we're ready to request data from the API. Each response provides information for the next request. */
@@ -144,7 +124,8 @@ class TwitchApiBridge extends BridgeAbstract{
 	}
 
 	public function getName(){
-		return (!empty($this->channel) ? $this->channel . ' - ' : '') . 'Twitch API Bridge';
+        $param=$this->parameters[$this->queriedContext];
+		return $param['channel'] . ' - Twitch API Bridge';
 	}
 
 	public function getCacheDuration(){
