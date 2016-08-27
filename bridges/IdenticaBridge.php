@@ -1,8 +1,6 @@
 <?php
 class IdenticaBridge extends BridgeAbstract{
 
-	private $request;
-
 	public function loadMetadatas() {
 
 		$this->maintainer = "mitsukarenai";
@@ -20,15 +18,9 @@ class IdenticaBridge extends BridgeAbstract{
 	}
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
         $html = '';
-        if (isset($param['u']['value'])) {   /* user timeline mode */
-        	$this->request = $param['u']['value'];
-            $html = $this->getSimpleHTMLDOM('https://identi.ca/'.urlencode($this->request)) or $this->returnServerError('Requested username can\'t be found.');
-        }
-        else {
-            $this->returnClientError('You must specify an Identica username (?u=...).');
-        }
+        $html = $this->getSimpleHTMLDOM($this->getURI())
+            or $this->returnServerError('Requested username can\'t be found.');
 
         foreach($html->find('li.major') as $dent) {
             $item = array();
@@ -41,11 +33,13 @@ class IdenticaBridge extends BridgeAbstract{
     }
 
     public function getName(){
-        return (!empty($this->request) ? $this->request .' - ' : '') .'Identica Bridge';
+        $param=$this->parameters[$this->queriedContext];
+        return $param['u']['value'] .' - Identica Bridge';
     }
 
     public function getURI(){
-        return 'https://identica.com';
+        $param=$this->parameters[$this->queriedContext];
+        return $this->uri.urlencode($param['u']['value']);
     }
 
     public function getCacheDuration(){
