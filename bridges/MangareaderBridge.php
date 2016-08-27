@@ -2,15 +2,14 @@
 define('MANGAREADER_LIMIT', 10); // The default limit
 class MangareaderBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "logmanoriginal";
+	public $name = "Mangareader Bridge";
+	public $uri = "http://www.mangareader.net";
+	public $description = "Returns the latest updates, popular mangas or manga updates (new chapters)";
 
-		$this->maintainer = "logmanoriginal";
-		$this->name = "Mangareader Bridge";
-		$this->uri = "http://www.mangareader.net";
-		$this->description = "Returns the latest updates, popular mangas or manga updates (new chapters)";
-
-		$this->parameters["Get latest updates"] = array();
-        $this->parameters["Get popular mangas"] = array(
+    public $parameters = array(
+        'Get latest updates' => array(),
+        'Get popular mangas' => array(
           'category'=>array(
             'name'=>'Category',
             'type'=>'list',
@@ -58,8 +57,8 @@ class MangareaderBridge extends BridgeAbstract{
             'exampleValue'=>'All',
             'title'=>'Select your category'
           )
-        );
-        $this->parameters["Get manga updates"] = array(
+        ),
+        'Get manga updates' => array(
           'path'=>array(
             'name'=>'Path',
             'required'=>true,
@@ -73,8 +72,8 @@ class MangareaderBridge extends BridgeAbstract{
             'exampleValue'=>10,
             'title'=>'Number of items to return [-1 returns all]'
           )
-        );
-	}
+      )
+  );
 
 	public function collectData(){
         $param=$this->parameters[$this->queriedContext];

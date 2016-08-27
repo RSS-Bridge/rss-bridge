@@ -1,14 +1,10 @@
 <?php
-Class FierPandaBridge extends BridgeAbstract{
+class FierPandaBridge extends BridgeAbstract {
 
-    public function loadMetadatas() {
-
-        $this->maintainer = "snroki";
-        $this->name = "Fier Panda Bridge";
-        $this->uri = "http://www.fier-panda.fr/";
-        $this->description = "Returns latest articles from Fier Panda.";
-
-    }
+    public $maintainer = "snroki";
+    public $name = "Fier Panda Bridge";
+    public $uri = "http://www.fier-panda.fr/";
+    public $description = "Returns latest articles from Fier Panda.";
 
     public function collectData(){
         $link = 'http://www.fier-panda.fr/';

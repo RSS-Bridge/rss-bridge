@@ -1,18 +1,15 @@
 <?php
 class DanbooruBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "mitsukarenai";
+	public $name = "Danbooru";
+	public $uri = "http://donmai.us/";
+	public $description = "Returns images from given page";
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Danbooru";
-		$this->uri = "http://donmai.us/";
-		$this->description = "Returns images from given page";
-
-        $this->parameters[] = array(
-          'p'=>array('name'=>'page'),
-          't'=>array('name'=>'tags')
-        );
-	}
+    public $parameters = array( array(
+        'p'=>array('name'=>'page'),
+        't'=>array('name'=>'tags')
+    ));
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

@@ -1,21 +1,18 @@
 <?php
 class LolibooruBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "mitsukarenai";
+	public $name = "Lolibooru";
+	public $uri = "http://lolibooru.moe/";
+	public $description = "Returns images from given page and tags";
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Lolibooru";
-		$this->uri = "http://lolibooru.moe/";
-		$this->description = "Returns images from given page and tags";
-
-        $this->parameters[] = array(
-          'p'=>array(
+    public $parameters = array( array(
+        'p'=>array(
             'name'=>'page',
             'type'=>'number'
-          ),
-          't'=>array('name'=>'tags')
-        );
-	}
+        ),
+        't'=>array('name'=>'tags')
+    ));
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

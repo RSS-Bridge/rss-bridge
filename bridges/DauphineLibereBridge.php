@@ -1,37 +1,34 @@
 <?php
 class DauphineLibereBridge extends BridgeAbstract {
 
-	public function loadMetadatas() {
+	public $maintainer = "qwertygc";
+	public $name = "Dauphine Bridge";
+	public $uri = "http://www.ledauphine.com/";
+	public $description = "Returns the newest articles.";
 
-		$this->maintainer = "qwertygc";
-		$this->name = "Dauphine Bridge";
-		$this->uri = "http://www.ledauphine.com/";
-		$this->description = "Returns the newest articles.";
-
-        $this->parameters[] = array(
-          'u'=>array(
+    public $parameters = array( array(
+        'u'=>array(
             'name'=>'Catégorie de l\'article',
             'type'=>'list',
             'values'=>array(
-              'À la une'=>'',
-              'France Monde'=>'france-monde',
-              'Faits Divers'=>'faits-divers',
-              'Économie et Finance'=>'economie-et-finance',
-              'Politique'=>'politique',
-              'Sport'=>'sport',
-              'Ain'=>'ain',
-              'Alpes-de-Haute-Provence'=>'haute-provence',
-              'Hautes-Alpes'=>'hautes-alpes',
-              'Ardèche'=>'ardeche',
-              'Drôme'=>'drome',
-              'Isère Sud'=>'isere-sud',
-              'Savoie'=>'savoie',
-              'Haute-Savoie'=>'haute-savoie',
-              'Vaucluse'=>'vaucluse'
+                'À la une'=>'',
+                'France Monde'=>'france-monde',
+                'Faits Divers'=>'faits-divers',
+                'Économie et Finance'=>'economie-et-finance',
+                'Politique'=>'politique',
+                'Sport'=>'sport',
+                'Ain'=>'ain',
+                'Alpes-de-Haute-Provence'=>'haute-provence',
+                'Hautes-Alpes'=>'hautes-alpes',
+                'Ardèche'=>'ardeche',
+                'Drôme'=>'drome',
+                'Isère Sud'=>'isere-sud',
+                'Savoie'=>'savoie',
+                'Haute-Savoie'=>'haute-savoie',
+                'Vaucluse'=>'vaucluse'
             )
-          )
-        );
-	}
+        )
+    ));
 
 	private function ExtractContent($url, $context) {
 		$html2 = $this->getSimpleHTMLDOM($url,false,$context);

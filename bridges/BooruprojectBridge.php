@@ -1,23 +1,20 @@
 <?php
 class BooruprojectBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Booruproject";
-		$this->uri = "http://booru.org/";
-		$this->description = "Returns images from given page and booruproject instance (****.booru.org)";
+	public $maintainer = "mitsukarenai";
+	public $name = "Booruproject";
+	public $uri = "http://booru.org/";
+	public $description = "Returns images from given page and booruproject instance (****.booru.org)";
 
-        $this->parameters[] = array(
+    public $parameters = array( array(
           'i'=>array(
             'name'=>'instance (required)',
             'required'=>true
           ),
           'p'=>array('name'=>'page'),
           't'=>array('name'=>'tags')
-        );
-	}
-
+        ));
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

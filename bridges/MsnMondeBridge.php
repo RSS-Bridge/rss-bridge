@@ -1,12 +1,10 @@
 <?php
 class MsnMondeBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-		$this->maintainer = "kranack";
-		$this->name = 'MSN Actu Monde';
-		$this->uri = 'http://www.msn.com/fr-fr/actualite/monde';
-		$this->description = "Returns the 10 newest posts from MSN Actualités (full text)";
-	}
+	public $maintainer = "kranack";
+	public $name = 'MSN Actu Monde';
+	public $uri = 'http://www.msn.com/fr-fr/actualite/monde';
+	public $description = "Returns the 10 newest posts from MSN Actualités (full text)";
 
 	private function MsnMondeExtractContent($url, &$item) {
 		$html2 = $this->getSimpleHTMLDOM($url);

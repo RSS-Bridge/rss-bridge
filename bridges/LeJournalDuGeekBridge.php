@@ -1,12 +1,10 @@
 <?php
 class LeJournalDuGeekBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-		$this->maintainer = "polopollo";
-		$this->name = "journaldugeek.com (FR)";
-		$this->uri = "http://www.journaldugeek.com/";
-		$this->description = "Returns the 5 newest posts from LeJournalDuGeek (full text).";
-	}
+	public $maintainer = "polopollo";
+	public $name = "journaldugeek.com (FR)";
+	public $uri = "http://www.journaldugeek.com/";
+	public $description = "Returns the 5 newest posts from LeJournalDuGeek (full text).";
 
 	private function LeJournalDuGeekStripCDATA($string) {
 		$string = str_replace('<![CDATA[', '', $string);

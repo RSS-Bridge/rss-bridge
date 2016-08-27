@@ -4,14 +4,10 @@ define("THE_OATMEAL_RSS", "http://feeds.feedburner.com/oatmealfeed");
 
 class TheOatmealBridge extends RssExpander{
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "Riduidel";
-		$this->name = "The Oatmeal";
-		$this->uri = "http://theoatmeal.com/";
-		$this->description = "Un petit site de dessins assez rigolos";
-
-	}
+	public $maintainer = "Riduidel";
+	public $name = "The Oatmeal";
+	public $uri = "http://theoatmeal.com/";
+	public $description = "Un petit site de dessins assez rigolos";
 
     public function collectData(){
         parent::collectExpandableDatas(THE_OATMEAL_RSS);

@@ -1,12 +1,10 @@
 <?php
 class GuruMedBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-		$this->maintainer = "qwertygc";
-		$this->name = "GuruMed";
-		$this->uri = "http://www.gurumed.org";
-		$this->description = "Returns the 5 newest posts from Gurumed (full text)";
-	}
+	public $maintainer = "qwertygc";
+	public $name = "GuruMed";
+	public $uri = "http://www.gurumed.org";
+	public $description = "Returns the 5 newest posts from Gurumed (full text)";
 
 	private function GurumedStripCDATA($string) {
 		$string = str_replace('<![CDATA[', '', $string);

@@ -1,21 +1,17 @@
 <?php
 class WhydBridge extends BridgeAbstract{
 
-    public function loadMetadatas() {
+	public $maintainer = "kranack";
+	public $name = "Whyd Bridge";
+	public $uri = "http://www.whyd.com/";
+	public $description = "Returns 10 newest music from user profile";
 
-		$this->maintainer = "kranack";
-		$this->name = "Whyd Bridge";
-		$this->uri = "http://www.whyd.com/";
-		$this->description = "Returns 10 newest music from user profile";
-
-        $this->parameters[] = array(
-          'u'=>array(
+    public $parameters = array( array(
+        'u'=>array(
             'name'=>'username/id',
             'required'=>true
-          )
-        );
-
-	}
+        )
+    ));
 
 	public function collectData(){
         $param=$this->parameters[$this->queriedContext];

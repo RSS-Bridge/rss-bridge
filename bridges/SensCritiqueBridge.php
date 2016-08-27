@@ -1,41 +1,37 @@
 <?php
 class SensCritiqueBridge extends BridgeAbstract {
 
-	private $request;
+	public $maintainer = "kranack";
+	public $name = "Sens Critique";
+	public $uri = "http://www.senscritique.com";
+	public $description = "Sens Critique news";
 
-  public function loadMetadatas() {
-		$this->maintainer = "kranack";
-		$this->name = "Sens Critique";
-		$this->uri = "http://www.senscritique.com";
-		$this->description = "Sens Critique news";
-
-        $this->parameters[] = array(
-          'm'=>array(
+    public $parameters = array( array(
+        'm'=>array(
             'name'=>'Movies',
             'type'=>'checkbox'
-          ),
-          's'=>array(
+        ),
+        's'=>array(
             'name'=>'Series',
             'type'=>'checkbox'
-          ),
-          'g'=>array(
+        ),
+        'g'=>array(
             'name'=>'Video Games',
             'type'=>'checkbox'
-          ),
-          'b'=>array(
+        ),
+        'b'=>array(
             'name'=>'Books',
             'type'=>'checkbox'
-          ),
-          'bd'=>array(
+        ),
+        'bd'=>array(
             'name'=>'BD',
             'type'=>'checkbox'
-          ),
-          'mu'=>array(
+        ),
+        'mu'=>array(
             'name'=>'Music',
             'type'=>'checkbox'
-          )
-        );
-  }
+        )
+    ));
 
 	public function collectData(){
         $param=$this->parameters[$this->queriedContext];

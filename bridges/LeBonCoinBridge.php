@@ -1,14 +1,12 @@
 <?php
 class LeBonCoinBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "16mhz";
+	public $name = "LeBonCoin";
+	public $uri = "http://www.leboncoin.fr";
+	public $description = "Returns most recent results from LeBonCoin for a region, and optionally a category and a keyword .";
 
-		$this->maintainer = "16mhz";
-		$this->name = "LeBonCoin";
-		$this->uri = "http://www.leboncoin.fr";
-		$this->description = "Returns most recent results from LeBonCoin for a region, and optionally a category and a keyword .";
-
-        $this->parameters[] = array(
+    public $parameters = array( array(
           'k'=>array('name'=>'Mot Clé'),
           'r'=>array(
             'name'=>'Région',
@@ -132,11 +130,9 @@ class LeBonCoinBridge extends BridgeAbstract{
               ),
               'AUTRES'=>'autres'
             )
-          )
-        );
-
-	}
-
+        )
+      )
+  );
 
 	public function collectData(){
         $param=$this->parameters[$this->queriedContext];

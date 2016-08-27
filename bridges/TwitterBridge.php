@@ -1,44 +1,38 @@
 <?php
 class TwitterBridge extends BridgeAbstract{
-
-	public function loadMetadatas() {
-
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Twitter Bridge";
-		$this->uri = "https://twitter.com/";
-		$this->description = "Returns tweets by keyword/hashtag or user name";
-
-        $this->parameters["global"] = array(
-          'nopic'=>array(
-            'name'=>'Hide profile pictures',
-            'type'=>'checkbox',
-            'title'=>'Activate to hide profile pictures in content'
-          )
-        );
-
-        $this->parameters["By keyword or hashtag"] = array(
-          'q'=>array(
-            'name'=>'Keyword or #hashtag',
-            'required'=>true,
-            'exampleValue'=>'rss-bridge, #rss-bridge',
-            'title'=>'Insert a keyword or hashtag'
-          )
-        );
-
-        $this->parameters["By username"] = array(
-          'u'=>array(
-            'name'=>'username',
-            'required'=>true,
-            'exampleValue'=>'sebsauvage',
-            'title'=>'Insert a user name'
-          ),
-          'norep'=>array(
-            'name'=>'Without replies',
-            'type'=>'checkbox',
-            'title'=>'Only return initial tweets'
-          )
-        );
-	}
+    public $name='Twitter Bridge';
+    public $uri='https://twitter.com';
+    public $description='returns tweets';
+    public $parameters=array(
+        'global'=>array(
+            'nopic'=>array(
+                'name'=>'Hide profile pictures',
+                'type'=>'checkbox',
+                'title'=>'Activate to hide profile pictures in content'
+            )
+        ),
+        'By keyword or hashtag' => array(
+            'q'=>array(
+                'name'=>'Keyword or #hashtag',
+                'required'=>true,
+                'exampleValue'=>'rss-bridge, #rss-bridge',
+                'title'=>'Insert a keyword or hashtag'
+            )
+        ),
+        'By username' => array(
+            'u'=>array(
+                'name'=>'username',
+                'required'=>true,
+                'exampleValue'=>'sebsauvage',
+                'title'=>'Insert a user name'
+            ),
+            'norep'=>array(
+                'name'=>'Without replies',
+                'type'=>'checkbox',
+                'title'=>'Only return initial tweets'
+            )
+        )
+    );
 
     public function getName(){
         switch($this->queriedContext){

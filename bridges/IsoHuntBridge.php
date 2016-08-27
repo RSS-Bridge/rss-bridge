@@ -1,93 +1,93 @@
 <?php
 class IsoHuntBridge extends BridgeAbstract{
-    public function loadMetadatas(){
-        $this->maintainer = 'logmanoriginal';
-        $this->name = 'isoHunt Bridge'; // Is replaced later!
-        $this->uri = 'https://isohunt.to'; // Is replaced later!
-        $this->description = 'Returns the latest results by category or search result';
+    public $maintainer = 'logmanoriginal';
+    public $name = 'isoHunt Bridge'; // Is replaced later!
+    public $uri = 'https://isohunt.to'; // Is replaced later!
+    public $description = 'Returns the latest results by category or search result';
+
+    public $parameters = array(
+        /*
+         * Get feeds for one of the "latest" categories
+         * Notice: The categories "News" and "Top Searches" are received from the main page
+         * Elements are sorted by name ascending!
+         */
+        'By "Latest" category' => array(
+            'latest_category'=>array(
+                'name'=>'Latest category',
+                'type'=>'list',
+                'required'=>true,
+                'title'=>'Select your category',
+                'defaultValue'=>'News',
+                'values'=>array(
+                    'Hot Torrents'=>'hot_torrents',
+                    'News'=>'news',
+                    'Releases'=>'releases',
+                    'Torrents'=>'torrents'
+                )
+            )
+        ),
 
         /*
-        * Get feeds for one of the "latest" categories
-        * Notice: The categories "News" and "Top Searches" are received from the main page
-        * Elements are sorted by name ascending!
-        */
-        $this->parameters['By "Latest" category'] = array(
-          'latest_category'=>array(
-            'name'=>'Latest category',
-            'type'=>'list',
-            'required'=>true,
-            'title'=>'Select your category',
-            'defaultValue'=>'News',
-            'values'=>array(
-              'Hot Torrents'=>'hot_torrents',
-              'News'=>'news',
-              'Releases'=>'releases',
-              'Torrents'=>'torrents'
+         * Get feeds for one of the "torrent" categories
+         * Make sure to add new categories also to get_torrent_category_index($)!
+         * Elements are sorted by name ascending!
+         */
+        'By "Torrent" category' => array(
+            'torrent_category'=>array(
+                'name'=>'Torrent category',
+                'type'=>'list',
+                'required'=>true,
+                'title'=>'Select your category',
+                'defaultValue'=>'Anime',
+                'values'=>array(
+                    'Adult'=>'adult',
+                    'Anime'=>'anime',
+                    'Books'=>'books',
+                    'Games'=>'games',
+                    'Movies'=>'movies',
+                    'Music'=>'music',
+                    'Other'=>'other',
+                    'Series & TV'=>'series_tv',
+                    'Software'=>'software'
+                )
+            ),
+            'torrent_popularity'=>array(
+                'name'=>'Sort by popularity',
+                'type'=>'checkbox',
+                'title'=>'Activate to receive results by popularity'
             )
-          )
-        );
+        ),
 
         /*
-        * Get feeds for one of the "torrent" categories
-        * Make sure to add new categories also to get_torrent_category_index($)!
-        * Elements are sorted by name ascending!
-        */
-        $this->parameters['By "Torrent" category'] = array(
-          'torrent_category'=>array(
-            'name'=>'Torrent category',
-            'type'=>'list',
-            'required'=>true,
-            'title'=>'Select your category',
-            'defaultValue'=>'Anime',
-            'values'=>array(
-              'Adult'=>'adult',
-              'Anime'=>'anime',
-              'Books'=>'books',
-              'Games'=>'games',
-              'Movies'=>'movies',
-              'Music'=>'music',
-              'Other'=>'other',
-              'Series & TV'=>'series_tv',
-              'Software'=>'software'
+         * Get feeds for a specific search request
+         */
+        'Search torrent by name' => array(
+            'search_name'=>array(
+                'name'=>'Name',
+                'required'=>true,
+                'title'=>'Insert your search query',
+                'exampleValue'=>'Bridge'
+            ),
+            'search_category'=>array(
+                'name'=>'Category',
+                'type'=>'list',
+                'title'=>'Select your category',
+                'defaultValue'=>'All',
+                'values'=>array(
+                    'Adult'=>'adult',
+                    'All'=>'all',
+                    'Anime'=>'anime',
+                    'Books'=>'books',
+                    'Games'=>'games',
+                    'Movies'=>'movies',
+                    'Music'=>'music',
+                    'Other'=>'other',
+                    'Series & TV'=>'series_tv',
+                    'Software'=>'software'
+                )
             )
-          ),
-          'torrent_popularity'=>array(
-            'name'=>'Sort by popularity',
-            'type'=>'checkbox',
-            'title'=>'Activate to receive results by popularity'
-          )
-        );
-
-        /*
-        * Get feeds for a specific search request
-        */
-        $this->parameters['Search torrent by name'] = array(
-          'search_name'=>array(
-            'name'=>'Name',
-            'required'=>true,
-            'title'=>'Insert your search query',
-            'exampleValue'=>'Bridge'
-          ),
-          'search_category'=>array(
-            'name'=>'Category',
-            'type'=>'list',
-            'title'=>'Select your category',
-            'defaultValue'=>'All',
-            'values'=>array(
-              'Adult'=>'adult',
-              'All'=>'all',
-              'Anime'=>'anime',
-              'Books'=>'books',
-              'Games'=>'games',
-              'Movies'=>'movies',
-              'Music'=>'music',
-              'Other'=>'other',
-              'Series & TV'=>'series_tv',
-              'Software'=>'software'
-            )
-          )
-        );
-    }
+        )
+    );
 
     public function collectData(){
         $params=$this->parameters[$this->queriedContext];

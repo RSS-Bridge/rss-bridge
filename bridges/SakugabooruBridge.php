@@ -1,22 +1,18 @@
 <?php
 class SakugabooruBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "mitsukarenai";
+	public $name = "Sakugabooru";
+	public $uri = "http://sakuga.yshi.org/";
+	public $description = "Returns images from given page";
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Sakugabooru";
-		$this->uri = "http://sakuga.yshi.org/";
-		$this->description = "Returns images from given page";
-
-        $this->parameters[] = array(
-          'p'=>array(
+    public $parameters = array( array(
+        'p'=>array(
             'name'=>'page',
             'type'=>'number'
-          ),
-          't'=>array('name'=>'tags')
-        );
-
-	}
+        ),
+        't'=>array('name'=>'tags')
+    ));
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

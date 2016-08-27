@@ -9,21 +9,18 @@
 */
 class GoogleSearchBridge extends BridgeAbstract{
 
-    public function loadMetadatas() {
 
-		$this->maintainer = "sebsauvage";
-		$this->name = "Google search";
-		$this->uri = "https://www.google.com/";
-		$this->description = "Returns most recent results from Google search.";
+	public $maintainer = "sebsauvage";
+	public $name = "Google search";
+	public $uri = "https://www.google.com/";
+	public $description = "Returns most recent results from Google search.";
 
-        $this->parameters[] = array(
-            'q'=>array(
-                'name'=>"keyword",
-                'required'=>true
-            )
-        );
-
-	}
+    public $parameters = array( array(
+        'q'=>array(
+            'name'=>"keyword",
+            'required'=>true
+        )
+    ));
 
 
     public function collectData(){

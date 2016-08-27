@@ -1,12 +1,10 @@
 <?php
 class PlanetLibreBridge extends BridgeAbstract{
 
-	public function loadMetadatas(){
-		$this->maintainer = "pit-fgfjiudghdf";
-		$this->name = "PlanetLibre";
-		$this->uri = "http://www.planet-libre.org";
-		$this->description = "Returns the 5 newest posts from PlanetLibre (full text)";
-	}
+	public $maintainer = "pit-fgfjiudghdf";
+	public $name = "PlanetLibre";
+	public $uri = "http://www.planet-libre.org";
+	public $description = "Returns the 5 newest posts from PlanetLibre (full text)";
 
 	private function PlanetLibreExtractContent($url){
 		$html2 = $this->getSimpleHTMLDOM($url);

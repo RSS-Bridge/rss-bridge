@@ -1,31 +1,27 @@
 <?php
-
 class ParuVenduImmoBridge extends BridgeAbstract
 {
-	public function loadMetadatas() {
-
-		$this->maintainer = "polo2ro";
-		$this->name = "Paru Vendu Immobilier";
-		$this->uri = "http://www.paruvendu.fr";
-		$this->description = "Returns the ads from the first page of search result.";
+	public $maintainer = "polo2ro";
+	public $name = "Paru Vendu Immobilier";
+	public $uri = "http://www.paruvendu.fr";
+	public $description = "Returns the ads from the first page of search result.";
 
 
-        $this->parameters[] = array(
-          'minarea'=>array(
+    public $parameters = array( array(
+        'minarea'=>array(
             'name'=>'Minimal surface m²',
             'type'=>'number'
-          ),
-          'maxprice'=>array(
+        ),
+        'maxprice'=>array(
             'name'=>'Max price',
             'type'=>'number'
-          ),
-          'pa'=>array(
+        ),
+        'pa'=>array(
             'name'=>'Country code',
             'exampleValue'=>'FR'
-          ),
-          'lo'=>array('name'=>'department numbers or postal codes, comma-separated')
-        );
-	}
+        ),
+        'lo'=>array('name'=>'department numbers or postal codes, comma-separated')
+    ));
 
     public function collectData()
     {

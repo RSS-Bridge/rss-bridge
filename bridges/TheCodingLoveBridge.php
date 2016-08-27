@@ -1,14 +1,10 @@
 <?php
 class TheCodingLoveBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "superbaillot.net";
-		$this->name = "The Coding Love";
-		$this->uri = "http://thecodinglove.com/";
-		$this->description = "The Coding Love";
-
-	}
+	public $maintainer = "superbaillot.net";
+	public $name = "The Coding Love";
+	public $uri = "http://thecodinglove.com/";
+	public $description = "The Coding Love";
 
     public function collectData(){
         $html = $this->getSimpleHTMLDOM('http://thecodinglove.com/') or $this->returnServerError('Could not request The Coding Love.');

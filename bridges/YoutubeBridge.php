@@ -8,48 +8,44 @@
 */
 class YoutubeBridge extends BridgeAbstract {
 
-	public function loadMetadatas() {
+	public $name = 'YouTube Bridge';
+	public $uri = 'https://www.youtube.com/';
+	public $description = 'Returns the 10 newest videos by username/channel/playlist or search';
+	public $maintainer = 'mitsukarenai';
 
-		$this->name = 'YouTube Bridge';
-		$this->uri = 'https://www.youtube.com/';
-		$this->description = 'Returns the 10 newest videos by username/channel/playlist or search';
-		$this->maintainer = 'mitsukarenai';
-
-        $this->parameters['By username'] = array(
-          'u'=>array(
-            'name'=>'username',
-            'exampleValue'=>'test',
-            'required'=>true
-          )
-        );
-
-        $this->parameters['By channel id'] = array(
-          'c'=>array(
-            'name'=>'channel id',
-            'exampleValue'=>"15",
-            'required'=>true
-          )
-        );
-
-        $this->parameters['By playlist Id'] = array(
-          'p'=>array(
-            'name'=>'playlist id',
-            'exampleValue'=>"15"
-          )
-        );
-
-        $this->parameters['Search result'] = array(
-          's'=>array(
-            'name'=>'search keyword',
-            'exampleValue'=>'test'
-          ),
-          'pa'=>array(
-            'name'=>'page',
-            'type'=>'number',
-            'exampleValue'=>1
-          )
-        );
-	}
+    public $parameters = array(
+        'By username' => array(
+            'u'=>array(
+                'name'=>'username',
+                'exampleValue'=>'test',
+                'required'=>true
+            )
+        ),
+        'By channel id' => array(
+            'c'=>array(
+                'name'=>'channel id',
+                'exampleValue'=>"15",
+                'required'=>true
+            )
+        ),
+        'By playlist Id' => array(
+            'p'=>array(
+                'name'=>'playlist id',
+                'exampleValue'=>"15"
+            )
+        ),
+        'Search result' => array(
+            's'=>array(
+                'name'=>'search keyword',
+                'exampleValue'=>'test'
+            ),
+            'pa'=>array(
+                'name'=>'page',
+                'type'=>'number',
+                'exampleValue'=>1
+            )
+        )
+    );
 
 	private function ytBridgeQueryVideoInfo($vid, &$author, &$desc, &$time) {
 		$html = $this->getSimpleHTMLDOM($this->uri."watch?v=$vid");

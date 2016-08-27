@@ -1,20 +1,17 @@
 <?php
 class FacebookBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "teromene";
+	public $name = "Facebook";
+	public $uri = "http://www.facebook.com/";
+	public $description = "Input a page title or a profile log. For a profile log, please insert the parameter as follow : myExamplePage/132621766841117";
 
-		$this->maintainer = "teromene";
-		$this->name = "Facebook";
-		$this->uri = "http://www.facebook.com/";
-		$this->description = "Input a page title or a profile log. For a profile log, please insert the parameter as follow : myExamplePage/132621766841117";
-
-        $this->parameters[] =array(
-          'u'=>array(
+    public $parameters =array( array(
+        'u'=>array(
             'name'=>'Username',
             'required'=>true
-          )
-        );
-	}
+        )
+    ));
 
 	public function collectData(){
         $param=$this->parameters[$this->queriedContext];

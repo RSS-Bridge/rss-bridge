@@ -1,21 +1,17 @@
 <?php
 class InstagramBridge extends BridgeAbstract{
 
-    public function loadMetadatas() {
+	public $maintainer = "pauder";
+	public $name = "Instagram Bridge";
+	public $uri = "http://instagram.com/";
+	public $description = "Returns the newest images";
 
-		$this->maintainer = "pauder";
-		$this->name = "Instagram Bridge";
-		$this->uri = "http://instagram.com/";
-		$this->description = "Returns the newest images";
-
-        $this->parameters[] = array(
-            'u'=>array(
-                'name'=>'username',
-                'required'=>true
-            )
-        );
-
-	}
+    public $parameters = array( array(
+        'u'=>array(
+            'name'=>'username',
+            'required'=>true
+        )
+    ));
 
     public function collectData(){
         $html = $this->getSimpleHTMLDOM($this->getURI())

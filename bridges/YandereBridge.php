@@ -1,21 +1,18 @@
 <?php
 class YandereBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "mitsukarenai";
+	public $name = "Yande.re";
+	public $uri = "https://yande.re/";
+	public $description = "Returns images from given page and tags";
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Yande.re";
-		$this->uri = "https://yande.re/";
-		$this->description = "Returns images from given page and tags";
-
-        $this->parameters[] = array(
-          'p'=>array(
+    public $parameters = array( array(
+        'p'=>array(
             'name'=>'page',
             'type'=>'number'
-          ),
-          't'=>array('name'=>'tags')
-        );
-	}
+        ),
+        't'=>array('name'=>'tags')
+    ));
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

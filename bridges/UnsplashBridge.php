@@ -1,14 +1,12 @@
 <?php
 class UnsplashBridge extends BridgeAbstract {
 
-	public function loadMetadatas() {
+	public $maintainer = "nel50n";
+	public $name = "Unsplash Bridge";
+	public $uri = "http://unsplash.com/";
+	public $description = "Returns the latests photos from Unsplash";
 
-		$this->maintainer = "nel50n";
-		$this->name = "Unsplash Bridge";
-		$this->uri = "http://unsplash.com/";
-		$this->description = "Returns the latests photos from Unsplash";
-
-        $this->parameters[] = array(
+    public $parameters = array( array(
           'm'=>array(
             'name'=>'Max number of photos',
             'type'=>'number'
@@ -21,8 +19,7 @@ class UnsplashBridge extends BridgeAbstract {
             'name'=>'JPEG quality',
             'type'=>'number'
           )
-        );
-	}
+      ));
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

@@ -1,12 +1,10 @@
 <?php
 class CollegeDeFranceBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-		$this->maintainer = "pit-fgfjiudghdf";
-		$this->name = "CollegeDeFrance";
-		$this->uri = "http://www.college-de-france.fr/";
-		$this->description = "Returns the latest audio and video from CollegeDeFrance";
-	}
+	public $maintainer = "pit-fgfjiudghdf";
+	public $name = "CollegeDeFrance";
+	public $uri = "http://www.college-de-france.fr/";
+	public $description = "Returns the latest audio and video from CollegeDeFrance";
 
 	public function collectData(){
 		$months = array(

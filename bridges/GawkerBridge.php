@@ -4,20 +4,17 @@ define("RSS_SUFFIX", "/full");
 
 class GawkerBridge extends RssExpander{
 
-    public function loadMetadatas() {
+	public $maintainer = "mitsukarenai";
+	public $name = "Gawker media";
+	public $uri = "http://feeds.gawker.com/";
+	public $description = "A bridge allowing access to any of the numerous Gawker media blogs (Lifehacker, deadspin, Kotaku, Jezebel, and so on. Notice you have to give its id to find the RSS stream in gawker maze";
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Gawker media";
-		$this->uri = "http://feeds.gawker.com/";
-		$this->description = "A bridge allowing access to any of the numerous Gawker media blogs (Lifehacker, deadspin, Kotaku, Jezebel, and so on. Notice you have to give its id to find the RSS stream in gawker maze";
-
-        $this->parameters[] = array(
-            'site'=>array(
-                'name'=>'site id to put in uri between feeds.gawker.com and /full .. which is obviously not full AT ALL',
-                'required'=>true
-            )
-        );
-	}
+    public $parameters = array( array(
+        'site'=>array(
+            'name'=>'site id to put in uri between feeds.gawker.com and /full .. which is obviously not full AT ALL',
+            'required'=>true
+        )
+    ));
 
 
     private function toURI($name) {

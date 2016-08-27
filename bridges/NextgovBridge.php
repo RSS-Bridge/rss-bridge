@@ -1,32 +1,29 @@
 <?php
 class NextgovBridge extends BridgeAbstract {
 
-    public function loadMetadatas() {
+    public $maintainer = 'ORelio';
+    public $name = 'Nextgov Bridge';
+    public $uri = 'https://www.nextgov.com/';
+    public $description = 'USA Federal technology news, best practices, and web 2.0 tools.';
 
-        $this->maintainer = 'ORelio';
-        $this->name = 'Nextgov Bridge';
-        $this->uri = 'https://www.nextgov.com/';
-        $this->description = 'USA Federal technology news, best practices, and web 2.0 tools.';
-
-        $this->parameters[] = array(
-          'category'=>array(
+    public $parameters = array( array(
+        'category'=>array(
             'name'=>'Category',
             'type'=>'list',
             'values'=>array(
-              'All'=>'all',
-              'Technology News'=>'technology-news',
-              'CIO Briefing'=>'cio-briefing',
-              'Emerging Tech'=>'emerging-tech',
-              'Cloud'=>'cloud-computing',
-              'Cybersecurity'=>'cybersecurity',
-              'Mobile'=>'mobile',
-              'Health'=>'health',
-              'Defense'=>'defense',
-              'Big Data'=>'big-data'
+                'All'=>'all',
+                'Technology News'=>'technology-news',
+                'CIO Briefing'=>'cio-briefing',
+                'Emerging Tech'=>'emerging-tech',
+                'Cloud'=>'cloud-computing',
+                'Cybersecurity'=>'cybersecurity',
+                'Mobile'=>'mobile',
+                'Health'=>'health',
+                'Defense'=>'defense',
+                'Big Data'=>'big-data'
             )
-          )
-        );
-    }
+        )
+    ));
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

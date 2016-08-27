@@ -1,20 +1,17 @@
 <?php
 class T411Bridge extends BridgeAbstract {
 
-    public function loadMetadatas() {
+    public $maintainer = 'ORelio';
+    public $name = 'T411 Bridge';
+    public $uri = 'https://t411.ch/';
+    public $description = 'Returns the 10 newest torrents with specified search terms <br /> Use url part after "?" mark when using their search engine.';
 
-        $this->maintainer = 'ORelio';
-        $this->name = 'T411 Bridge';
-        $this->uri = 'https://t411.ch/';
-        $this->description = 'Returns the 10 newest torrents with specified search terms <br /> Use url part after "?" mark when using their search engine.';
-
-        $this->parameters[] = array(
-          'search'=>array(
+    public $parameters = array( array(
+        'search'=>array(
             'name'=>'Search criteria',
             'required'=>true
-          )
-        );
-    }
+        )
+    ));
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

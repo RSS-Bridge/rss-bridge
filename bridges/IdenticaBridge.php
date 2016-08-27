@@ -1,21 +1,17 @@
 <?php
 class IdenticaBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "mitsukarenai";
+	public $name = "Identica Bridge";
+	public $uri = "https://identi.ca/";
+	public $description = "Returns user timelines";
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Identica Bridge";
-		$this->uri = "https://identi.ca/";
-		$this->description = "Returns user timelines";
-
-        $this->parameters[] = array(
-            'u'=>array(
-                'name'=>'username',
-                'required'=>true
-            )
-        );
-
-	}
+    public $parameters = array( array(
+        'u'=>array(
+            'name'=>'username',
+            'required'=>true
+        )
+    ));
 
     public function collectData(){
         $html = '';

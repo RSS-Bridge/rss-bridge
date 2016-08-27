@@ -1,20 +1,18 @@
 <?php
 class AskfmBridge extends BridgeAbstract{
 
-        public function loadMetadatas() {
-
-                $this->maintainer = "az5he6ch";
-                $this->name = "Ask.fm Answers";
-                $this->uri = "http://ask.fm/";
-                $this->description = "Returns answers from an Ask.fm user";
-
-                $this->parameters["Ask.fm username"] = array(
-                  'u'=>array(
-                      'name'=>'Username',
-                      'required'=>true
-                  )
-                );
-        }
+    public $maintainer = "az5he6ch";
+    public $name = "Ask.fm Answers";
+    public $uri = "http://ask.fm/";
+    public $description = "Returns answers from an Ask.fm user";
+    public $parameters = array(
+        'Ask.fm username'=>array(
+            'u'=>array(
+                'name'=>'Username',
+                'required'=>true
+            )
+        )
+    );
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

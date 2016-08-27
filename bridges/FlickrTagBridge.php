@@ -1,21 +1,20 @@
 <?php
 class FlickrTagBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "erwang";
+	public $name = "Flickr TagUser";
+	public $uri = "http://www.flickr.com/";
+	public $description = "Returns the tagged or user images from Flickr";
 
-		$this->maintainer = "erwang";
-		$this->name = "Flickr TagUser";
-		$this->uri = "http://www.flickr.com/";
-		$this->description = "Returns the tagged or user images from Flickr";
+    public $parameters = array(
+        'By keyword' => array(
+            'q'=>array('name'=>'keyword')
+        ),
 
-        $this->parameters["By keyword"] = array(
-          'q'=>array('name'=>'keyword')
-        );
-
-        $this->parameters["By username"] = array(
-          'u'=>array('name'=>'Username')
-        );
-	}
+        'By username' => array(
+            'u'=>array('name'=>'Username')
+        ),
+    );
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

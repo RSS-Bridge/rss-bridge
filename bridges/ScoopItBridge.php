@@ -1,21 +1,17 @@
 <?php
 class ScoopItBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "Pitchoule";
+	public $name = "ScoopIt";
+	public $uri = "http://www.scoop.it";
+	public $description = "Returns most recent results from ScoopIt.";
 
-		$this->maintainer = "Pitchoule";
-		$this->name = "ScoopIt";
-		$this->uri = "http://www.scoop.it";
-		$this->description = "Returns most recent results from ScoopIt.";
-
-        $this->parameters[] = array(
-          'u'=>array(
+    public $parameters = array( array(
+        'u'=>array(
             'name'=>'keyword',
             'required'=>true
-          )
-        );
-
-	}
+        )
+    ));
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

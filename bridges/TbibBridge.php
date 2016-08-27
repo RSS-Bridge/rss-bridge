@@ -1,21 +1,18 @@
 <?php
 class TbibBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "mitsukarenai";
+	public $name = "Tbib";
+	public $uri = "http://tbib.org/";
+	public $description = "Returns images from given page";
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Tbib";
-		$this->uri = "http://tbib.org/";
-		$this->description = "Returns images from given page";
-
-        $this->parameters[] = array(
-          'p'=>array(
+    public $parameters = array( array(
+        'p'=>array(
             'name'=>'page',
             'type'=>'number'
-          ),
-          't'=>array('name'=>'tags')
-        );
-	}
+        ),
+        't'=>array('name'=>'tags')
+    ));
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

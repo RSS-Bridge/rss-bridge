@@ -1,14 +1,10 @@
 <?php
 class NumeramaBridge extends BridgeAbstract{
 
-    public function loadMetadatas() {
-
-        $this->maintainer = 'mitsukarenai';
-        $this->name = 'Numerama';
-        $this->uri = 'http://www.numerama.com/';
-        $this->description = 'Returns the 5 newest posts from Numerama (full text)';
-
-    }
+    public $maintainer = 'mitsukarenai';
+    public $name = 'Numerama';
+    public $uri = 'http://www.numerama.com/';
+    public $description = 'Returns the 5 newest posts from Numerama (full text)';
 
     public function collectData(){
 

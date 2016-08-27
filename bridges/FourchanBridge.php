@@ -1,18 +1,14 @@
 <?php
 class FourchanBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "mitsukarenai";
+	public $name = "4chan";
+	public $uri = "https://www.4chan.org/";
+	public $description = "Returns posts from the specified thread";
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "4chan";
-		$this->uri = "https://www.4chan.org/";
-		$this->description = "Returns posts from the specified thread";
-
-        $this->parameters[] = array(
-          't'=>array('name'=>'Thread URL')
-        );
-	}
-
+    public $parameters = array( array(
+        't'=>array('name'=>'Thread URL')
+    ));
 
   public function collectData(){
         $param=$this->parameters[$this->queriedContext];

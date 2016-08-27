@@ -1,12 +1,12 @@
 <?php
 class KununuBridge extends BridgeAbstract{
-	public function loadMetadatas(){
-		$this->maintainer = "logmanoriginal";
-		$this->name = "Kununu Bridge"; /* This will be replaced later! */
-		$this->uri = "https://www.kununu.com"; /* This will be replaced later! */
-		$this->description = "Returns the latest reviews for a company and site of your choice.";
+	public $maintainer = "logmanoriginal";
+	public $name = "Kununu Bridge"; /* This will be replaced later! */
+	public $uri = "https://www.kununu.com"; /* This will be replaced later! */
+	public $description = "Returns the latest reviews for a company and site of your choice.";
 
-        $this->parameters['global'] = array(
+    public $parameters = array(
+        'global' => array(
           'site'=>array(
             'name'=>'Site',
             'type'=>'list',
@@ -27,17 +27,17 @@ class KununuBridge extends BridgeAbstract{
             'exampleValue'=>'checked',
             'title'=>'Activate to load full article'
           )
-        );
+        ),
 
-        $this->parameters[] = array(
+        array(
           'company'=>array(
             'name'=>'Company',
             'required'=>true,
             'exampleValue'=>'kununu-us',
             'title'=>'Insert company name (i.e. Kununu US) or URI path (i.e. kununu-us)'
           )
-        );
-	}
+      )
+  );
 
 	public function collectData(){
         $params=$this->parameters[$this->queriedContext];

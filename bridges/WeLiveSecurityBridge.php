@@ -1,12 +1,10 @@
 <?php
 class WeLiveSecurityBridge extends BridgeAbstract {
 
-    public function loadMetadatas() {
-        $this->maintainer = 'ORelio';
-        $this->name = 'We Live Security';
-        $this->uri = 'http://www.welivesecurity.com/';
-        $this->description = 'Returns the newest articles.';
-    }
+    public $maintainer = 'ORelio';
+    public $name = 'We Live Security';
+    public $uri = 'http://www.welivesecurity.com/';
+    public $description = 'Returns the newest articles.';
 
     public function collectData(){
 

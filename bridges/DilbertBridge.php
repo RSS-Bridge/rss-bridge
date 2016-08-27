@@ -1,14 +1,10 @@
 <?php
 class DilbertBridge extends BridgeAbstract {
 
-    public function loadMetadatas() {
-
-        $this->maintainer = 'kranack';
-        $this->name = 'Dilbert Daily Strip';
-        $this->uri = 'http://dilbert.com';
-        $this->description = 'The Unofficial Dilbert Daily Comic Strip';
-
-    }
+    public $maintainer = 'kranack';
+    public $name = 'Dilbert Daily Strip';
+    public $uri = 'http://dilbert.com';
+    public $description = 'The Unofficial Dilbert Daily Comic Strip';
 
     public function collectData(){
 

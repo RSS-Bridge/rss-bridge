@@ -1,20 +1,17 @@
 <?php
 class VineBridge extends BridgeAbstract {
 
-	public function loadMetadatas() {
+	public $maintainer = "ckiw";
+	public $name = "Vine bridge";
+	public $uri = "http://vine.co/";
+	public $description = "Returns the latests vines from vine user page";
 
-		$this->maintainer = "ckiw";
-		$this->name = "Vine bridge";
-		$this->uri = "http://vine.co/";
-		$this->description = "Returns the latests vines from vine user page";
-
-        $this->parameters[] = array(
-          'u'=>array(
+    public $parameters = array( array(
+        'u'=>array(
             'name'=>'User id',
             'required'=>true
-          )
-        );
-	}
+        )
+    ));
 
 	public function collectData(){
         $param=$this->parameters[$this->queriedContext];

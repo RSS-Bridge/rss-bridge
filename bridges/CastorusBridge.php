@@ -1,31 +1,31 @@
 <?php
 class CastorusBridge extends BridgeAbstract {
-	public function loadMetadatas(){
-		$this->maintainer = "logmanoriginal";
-		$this->name = "Castorus Bridge";
-		$this->uri = 'http://www.castorus.com';
-		$this->description = "Returns the latest changes";
+	public $maintainer = "logmanoriginal";
+	public $name = "Castorus Bridge";
+	public $uri = 'http://www.castorus.com';
+	public $description = "Returns the latest changes";
 
-		$this->parameters["Get latest changes"] = array();
-        $this->parameters["Get latest changes via ZIP code"] = array(
-          'zip'=>array(
-            'name'=>'ZIP code',
-            'type'=>'text',
-            'required'=>true,
-            'exampleValue'=>'74910, 74',
-            'title'=>'Insert ZIP code (complete or partial)'
-          )
-        );
-        $this->parameters["Get latest changes via city name"] = array(
-          'city'=>array(
-            'name'=>'City name',
-            'type'=>'text',
-            'required'=>true,
-            'exampleValue'=>'Seyssel, Seys',
-            'title'=>'Insert city name (complete or partial)'
-          )
-        );
-	}
+    public $parameters = array(
+        'Get latest changes' => array(),
+        'Get latest changes via ZIP code' => array(
+            'zip'=>array(
+                'name'=>'ZIP code',
+                'type'=>'text',
+                'required'=>true,
+                'exampleValue'=>'74910, 74',
+                'title'=>'Insert ZIP code (complete or partial)'
+            )
+        ),
+        'Get latest changes via city name' => array(
+            'city'=>array(
+                'name'=>'City name',
+                'type'=>'text',
+                'required'=>true,
+                'exampleValue'=>'Seyssel, Seys',
+                'title'=>'Insert city name (complete or partial)'
+            )
+        )
+    );
 
 	// Extracts the tile from an actitiy
 	private function ExtractActivityTitle($activity){

@@ -1,12 +1,10 @@
 <?php
 class ReporterreBridge extends BridgeAbstract{
 
-		public function loadMetadatas() {
-			$this->maintainer = "nyutag";
-			$this->name = "Reporterre Bridge";
-			$this->uri = "http://www.reporterre.net/";
-			$this->description = "Returns the newest articles.";
-		}
+		public $maintainer = "nyutag";
+		public $name = "Reporterre Bridge";
+		public $uri = "http://www.reporterre.net/";
+		public $description = "Returns the newest articles.";
 
 		private function ExtractContentReporterre($url) {
 			$html2 = $this->getSimpleHTMLDOM($url);

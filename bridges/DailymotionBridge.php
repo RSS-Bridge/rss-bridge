@@ -1,38 +1,37 @@
 <?php
 class DailymotionBridge extends BridgeAbstract{
 
-    public function loadMetadatas() {
+        public $maintainer = "mitsukarenai";
+        public $name = "Dailymotion Bridge";
+        public $uri = "https://www.dailymotion.com/";
+        public $description = "Returns the 5 newest videos by username/playlist or search";
 
-        $this->maintainer = "mitsukarenai";
-        $this->name = "Dailymotion Bridge";
-        $this->uri = "https://www.dailymotion.com/";
-        $this->description = "Returns the 5 newest videos by username/playlist or search";
-
-        $this->parameters["By username"] = array(
-            'u'=>array(
-                'name'=>'username',
-                'required'=>true
-            )
-        );
-
-        $this->parameters["By playlist id"] = array(
-            'p'=>array(
-                'name'=>'playlist id',
-                'required'=>true
-            )
-        );
-
-        $this->parameters["From search results"] = array(
-            's'=>array(
-                'name'=>'Search keyword',
-                'required'=>true
+        public $parameters = array (
+            'By username' => array(
+                'u'=>array(
+                    'name'=>'username',
+                    'required'=>true
+                )
             ),
-            'pa'=>array(
-                'name'=>'Page',
-                'type'=>'number'
+
+            'By playlist id' => array(
+                'p'=>array(
+                    'name'=>'playlist id',
+                    'required'=>true
+                )
+            ),
+
+            'From search results' => array(
+                's'=>array(
+                    'name'=>'Search keyword',
+                    'required'=>true
+                ),
+                'pa'=>array(
+                    'name'=>'Page',
+                    'type'=>'number'
+                )
             )
         );
-    }
 
     function getMetadata($id) {
         $metadata=array();

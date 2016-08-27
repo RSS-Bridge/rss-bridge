@@ -1,22 +1,19 @@
 <?php
 class DollbooruBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Dollbooru";
-		$this->uri = "http://dollbooru.org/";
-		$this->description = "Returns images from given page";
+	public $maintainer = "mitsukarenai";
+	public $name = "Dollbooru";
+	public $uri = "http://dollbooru.org/";
+	public $description = "Returns images from given page";
 
 
-        $this->parameters[]  = array(
-          'p'=>array(
+    public $parameters  = array( array(
+        'p'=>array(
             'name'=>'page',
             'type'=>'number'
-          ),
-          't'=>array('name'=>'tags')
-        );
-	}
+        ),
+        't'=>array('name'=>'tags')
+    ));
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

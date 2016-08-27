@@ -1,12 +1,10 @@
 <?php
 class NextInpactBridge extends BridgeAbstract {
 
-	public function loadMetadatas() {
-		$this->maintainer = "qwertygc";
-		$this->name = "NextInpact Bridge";
-		$this->uri = "http://www.nextinpact.com/";
-		$this->description = "Returns the newest articles.";
-	}
+	public $maintainer = "qwertygc";
+	public $name = "NextInpact Bridge";
+	public $uri = "http://www.nextinpact.com/";
+	public $description = "Returns the newest articles.";
 
 	private function StripCDATA($string) {
 		$string = str_replace('<![CDATA[', '', $string);

@@ -1,12 +1,10 @@
 <?php
 class DeveloppezDotComBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-		$this->maintainer = "polopollo";
-		$this->name = "Developpez.com Actus (FR)";
-		$this->uri = "http://www.developpez.com/";
-		$this->description = "Returns the 15 newest posts from DeveloppezDotCom (full text).";
-	}
+	public $maintainer = "polopollo";
+	public $name = "Developpez.com Actus (FR)";
+	public $uri = "http://www.developpez.com/";
+	public $description = "Returns the 15 newest posts from DeveloppezDotCom (full text).";
 
 	private function DeveloppezDotComStripCDATA($string) {
 		$string = str_replace('<![CDATA[', '', $string);

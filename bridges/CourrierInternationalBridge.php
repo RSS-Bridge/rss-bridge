@@ -1,14 +1,10 @@
 <?php
 class CourrierInternationalBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "teromene";
-		$this->name = "Courrier International Bridge";
-		$this->uri = "http://CourrierInternational.fr/";
-		$this->description = "Courrier International bridge";
-
-	}
+    public $maintainer = "teromene";
+    public $name = "Courrier International Bridge";
+    public $uri = "http://CourrierInternational.fr/";
+    public $description = "Courrier International bridge";
 
     public function collectData(){
 

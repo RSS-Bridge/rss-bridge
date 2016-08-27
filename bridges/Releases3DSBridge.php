@@ -1,14 +1,10 @@
 <?php
 class Releases3DSBridge extends BridgeAbstract {
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "ORelio";
-		$this->name = "3DS Scene Releases";
-		$this->uri = "http://www.3dsdb.com/";
-		$this->description = "Returns the newest scene releases.";
-
-	}
+	public $maintainer = "ORelio";
+	public $name = "3DS Scene Releases";
+	public $uri = "http://www.3dsdb.com/";
+	public $description = "Returns the newest scene releases.";
 
     public function collectData(){
 

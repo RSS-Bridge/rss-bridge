@@ -1,13 +1,13 @@
 <?php
 class GithubIssueBridge extends BridgeAbstract{
-  public function loadMetadatas() {
 
-    $this->maintainer = 'Pierre Mazière';
-    $this->name = 'Github Issue';
-    $this->uri = '';
-    $this->description = 'Returns the issues or comments of an issue of a github project';
+  public $maintainer = 'Pierre Mazière';
+  public $name = 'Github Issue';
+  public $uri = '';
+  public $description = 'Returns the issues or comments of an issue of a github project';
 
-    $this->parameters['global']=array (
+  public $parameters=array(
+    'global'=>array (
       'u'=>array(
         'name'=>'User name',
         'required'=>true
@@ -16,20 +16,20 @@ class GithubIssueBridge extends BridgeAbstract{
         'name'=>'Project name',
         'required'=>true
       )
-    );
+    ),
 
-    $this->parameters['Project Issues']=array();
-    $this->parameters['Issue comments']=array(
+    'Project Issues'=>array(),
+    'Issue comments'=>array(
       'i'=>array(
         'name'=>'Issue number',
         'type'=>'number',
         'required'=>'true'
       )
-    );
-  }
+    )
+  );
 
   public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
+    $param=$this->parameters[$this->queriedContext];
     $uri = 'https://github.com/'.$param['u']['value'].'/'.$param['p']['value'].'/issues/'.(isset($param['i']['value'])?$param['i']['value']:'');
     $html = $this->getSimpleHTMLDOM($uri)
       or $this->returnServerError('No results for Github Issue '.$param['i']['value'].' in project '.$param['u']['value'].'/'.$param['p']['value']);

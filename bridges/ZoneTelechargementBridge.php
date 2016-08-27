@@ -1,17 +1,14 @@
 <?php
 class ZoneTelechargementBridge extends BridgeAbstract {
 
-    public function loadMetadatas() {
+    public $maintainer = 'ORelio';
+    public $name = 'Zone Telechargement Bridge';
+    public $uri = 'https://www.zone-telechargement.com/';
+    public $description = 'RSS proxy returning the newest releases.<br />You may specify a category found in RSS URLs, else main feed is selected.';
 
-        $this->maintainer = 'ORelio';
-        $this->name = 'Zone Telechargement Bridge';
-        $this->uri = 'https://www.zone-telechargement.com/';
-        $this->description = 'RSS proxy returning the newest releases.<br />You may specify a category found in RSS URLs, else main feed is selected.';
-
-        $this->parameters[] = array(
-          'category'=>array('name'=>'Category')
-        );
-    }
+    public $parameters = array( array(
+        'category'=>array('name'=>'Category')
+    ));
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

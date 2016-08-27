@@ -1,21 +1,18 @@
 <?php
 class XbooruBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+    public $maintainer = "mitsukarenai";
+    public $name = "Xbooru";
+    public $uri = "http://xbooru.com/";
+    public $description = "Returns images from given page";
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Xbooru";
-		$this->uri = "http://xbooru.com/";
-		$this->description = "Returns images from given page";
-
-        $this->parameters[] = array(
-          'p'=>array(
+    public $parameters = array( array(
+        'p'=>array(
             'name'=>'page',
             'type'=>'number'
-          ),
-          't'=>array('name'=>'tags')
-        );
-	}
+        ),
+        't'=>array('name'=>'tags')
+    ));
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

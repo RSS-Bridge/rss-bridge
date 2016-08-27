@@ -1,17 +1,14 @@
 <?php
 class CNETBridge extends BridgeAbstract {
 
-    public function loadMetadatas() {
+    public $maintainer = 'ORelio';
+    public $name = 'CNET News';
+    public $uri = 'http://www.cnet.com/';
+    public $description = 'Returns the newest articles. <br /> You may specify a topic found in some section URLs, else all topics are selected.';
 
-        $this->maintainer = 'ORelio';
-        $this->name = 'CNET News';
-        $this->uri = 'http://www.cnet.com/';
-        $this->description = 'Returns the newest articles. <br /> You may specify a topic found in some section URLs, else all topics are selected.';
-
-        $this->parameters[] = array(
-          'topic'=>array('name'=>'Topic name')
-        );
-    }
+    public $parameters = array( array(
+        'topic'=>array('name'=>'Topic name')
+    ));
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

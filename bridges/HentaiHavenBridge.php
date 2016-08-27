@@ -1,14 +1,10 @@
 <?php
 class HentaiHavenBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "albirew";
-		$this->name = "Hentai Haven";
-		$this->uri = "http://hentaihaven.org/";
-		$this->description = "Returns releases from Hentai Haven";
-
-	}
+	public $maintainer = "albirew";
+	public $name = "Hentai Haven";
+	public $uri = "http://hentaihaven.org/";
+	public $description = "Returns releases from Hentai Haven";
 
     public function collectData(){
         $html = $this->getSimpleHTMLDOM('http://hentaihaven.org/') or $this->returnServerError('Could not request Hentai Haven.');

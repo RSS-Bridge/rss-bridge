@@ -1,49 +1,47 @@
-<?php
-class Arte7Bridge extends BridgeAbstract{
+    <?php
+    class Arte7Bridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+        public $maintainer = "mitsukarenai";
+        public $name = "Arte +7";
+        public $uri = "http://www.arte.tv/";
+        public $description = "Returns newest videos from ARTE +7";
+        public $parameters = array(
+            'Catégorie (Français)' => array(
+                'catfr'=>array(
+                    'type'=>'list',
+                    'name'=>'Catégorie',
+                    'values'=>array(
+                        'Toutes les vidéos (français)'=>'toutes-les-videos',
+                        'Actu & société'=>'actu-société',
+                        'Séries & fiction'=>'séries-fiction',
+                        'Cinéma'=>'cinéma',
+                        'Arts & spectacles classiques'=>'arts-spectacles-classiques',
+                        'Culture pop'=>'culture-pop',
+                        'Découverte'=>'découverte',
+                        'Histoire'=>'histoire',
+                        'Junior'=>'junior'
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Arte +7";
-		$this->uri = "http://www.arte.tv/";
-		$this->description = "Returns newest videos from ARTE +7";
-        $this->parameters["Catégorie (Français)"] = array(
-          'catfr'=>array(
-            'type'=>'list',
-            'name'=>'Catégorie',
-            'values'=>array(
-              'Toutes les vidéos (français)'=>'toutes-les-videos',
-              'Actu & société'=>'actu-société',
-              'Séries & fiction'=>'séries-fiction',
-              'Cinéma'=>'cinéma',
-              'Arts & spectacles classiques'=>'arts-spectacles-classiques',
-              'Culture pop'=>'culture-pop',
-              'Découverte'=>'découverte',
-              'Histoire'=>'histoire',
-              'Junior'=>'junior'
-
+                    )
+                )
+            ),
+            'Catégorie (Allemand)' => array(
+                'catde'=>array(
+                    'type'=>'list',
+                    'name'=>'Catégorie',
+                    'values'=>array(
+                        'Alle Videos (deutsch)'=>'alle-videos',
+                        'Aktuelles & Gesellschaft'=>'aktuelles-gesellschaft',
+                        'Fernsehfilme & Serien'=>'fernsehfilme-serien',
+                        'Kino'=>'kino',
+                        'Kunst & Kultur'=>'kunst-kultur',
+                        'Popkultur & Alternativ'=>'popkultur-alternativ',
+                        'Entdeckung'=>'entdeckung',
+                        'Geschichte'=>'geschichte',
+                        'Junior'=>'junior'
+                    )
+                )
             )
-          )
         );
-
-        $this->parameters["Catégorie (Allemand)"] = array(
-          'catde'=>array(
-            'type'=>'list',
-            'name'=>'Catégorie',
-            'values'=>array(
-              'Alle Videos (deutsch)'=>'alle-videos',
-              'Aktuelles & Gesellschaft'=>'aktuelles-gesellschaft',
-              'Fernsehfilme & Serien'=>'fernsehfilme-serien',
-              'Kino'=>'kino',
-              'Kunst & Kultur'=>'kunst-kultur',
-              'Popkultur & Alternativ'=>'popkultur-alternativ',
-              'Entdeckung'=>'entdeckung',
-              'Geschichte'=>'geschichte',
-              'Junior'=>'junior'
-            )
-          )
-        );
-	}
 
     protected  function extractVideoset($category='toutes-les-videos', $lang='fr'){
         $url = 'http://www.arte.tv/guide/'.$lang.'/plus7/'.$category;

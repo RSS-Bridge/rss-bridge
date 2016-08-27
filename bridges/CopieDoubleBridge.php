@@ -1,15 +1,10 @@
 <?php
 class CopieDoubleBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "superbaillot.net";
-		$this->name = "CopieDouble";
-		$this->uri = "http://www.copie-double.com/";
-		$this->description = "CopieDouble";
-
-	}
-
+    public $maintainer = "superbaillot.net";
+    public $name = "CopieDouble";
+    public $uri = "http://www.copie-double.com/";
+    public $description = "CopieDouble";
 
     public function collectData(){
         $html = $this->getSimpleHTMLDOM('http://www.copie-double.com/') or $this->returnServerError('Could not request CopieDouble.');

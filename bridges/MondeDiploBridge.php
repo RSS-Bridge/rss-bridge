@@ -1,12 +1,10 @@
 <?php
 class MondeDiploBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-		$this->maintainer = "Pitchoule";
-		$this->name = 'Monde Diplomatique';
-		$this->uri = 'http://www.monde-diplomatique.fr';
-		$this->description = "Returns most recent results from MondeDiplo.";
-	}
+	public $maintainer = "Pitchoule";
+	public $name = 'Monde Diplomatique';
+	public $uri = 'http://www.monde-diplomatique.fr';
+	public $description = "Returns most recent results from MondeDiplo.";
 
 	public function collectData(){
 		$html = $this->getSimpleHTMLDOM($this->uri) or $this->returnServerError('Could not request MondeDiplo. for : ' . $link);

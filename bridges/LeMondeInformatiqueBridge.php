@@ -1,14 +1,10 @@
 <?php
 class LeMondeInformatiqueBridge extends BridgeAbstract {
 
-    public function loadMetadatas() {
-
-        $this->maintainer = "ORelio";
-        $this->name = "Le Monde Informatique";
-        $this->uri = "http://www.lemondeinformatique.fr/";
-        $this->description = "Returns the newest articles.";
-
-    }
+    public $maintainer = "ORelio";
+    public $name = "Le Monde Informatique";
+    public $uri = "http://www.lemondeinformatique.fr/";
+    public $description = "Returns the newest articles.";
 
     public function collectData(){
 

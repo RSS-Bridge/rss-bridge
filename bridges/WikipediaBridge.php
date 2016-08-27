@@ -4,52 +4,50 @@ define('WIKIPEDIA_SUBJECT_TFA', 0); // Today's featured article
 define('WIKIPEDIA_SUBJECT_DYK', 1); // Did you know...
 
 class WikipediaBridge extends BridgeAbstract{
-	public function loadMetadatas(){
-		$this->maintainer = 'logmanoriginal';
-		$this->name = 'Wikipedia bridge for many languages';
-		$this->uri = 'https://www.wikipedia.org/';
-		$this->description = 'Returns articles for a language of your choice';
+	public $maintainer = 'logmanoriginal';
+	public $name = 'Wikipedia bridge for many languages';
+	public $uri = 'https://www.wikipedia.org/';
+	public $description = 'Returns articles for a language of your choice';
 
-        $this->parameters[] = array(
-          'language'=>array(
-            'name'=>'Language',
-            'type'=>'list',
-            'required'=>true,
-            'title'=>'Select your language',
-            'exampleValue'=>'English',
-            'values'=>array(
-              'English'=>'en',
-              'Dutch'=>'nl',
-              'Esperanto'=>'eo',
-              'French'=>'fr',
-              'German'=>'de',
-            )
-          ),
-          'subject'=>array(
-            'name'=>'Subject',
-            'type'=>'list',
-            'required'=>true,
-            'title'=>'What subject are you interested in?',
-            'exampleValue'=>'Today\'s featured article',
-            'values'=>array(
-              'Today\'s featured article'=>'tfa',
-              'Did you know…'=>'dyk'
-            )
-          ),
-          'fullarticle'=>array(
-            'name'=>'Load full article',
-            'type'=>'checkbox',
-            'title'=>'Activate to always load the full article'
-          )
-        );
-	}
+	public $parameters = array( array(
+		'language'=>array(
+			'name'=>'Language',
+			'type'=>'list',
+			'required'=>true,
+			'title'=>'Select your language',
+			'exampleValue'=>'English',
+			'values'=>array(
+				'English'=>'en',
+				'Dutch'=>'nl',
+				'Esperanto'=>'eo',
+				'French'=>'fr',
+				'German'=>'de',
+			)
+		),
+		'subject'=>array(
+			'name'=>'Subject',
+			'type'=>'list',
+			'required'=>true,
+			'title'=>'What subject are you interested in?',
+			'exampleValue'=>'Today\'s featured article',
+			'values'=>array(
+				'Today\'s featured article'=>'tfa',
+				'Did you know…'=>'dyk'
+			)
+		),
+		'fullarticle'=>array(
+			'name'=>'Load full article',
+			'type'=>'checkbox',
+			'title'=>'Activate to always load the full article'
+		)
+	));
 
-    public function getURI(){
+	public function getURI(){
 		$params=$this->parameters[$this->queriedContext];
 		return 'https://' . strtolower($params['language']['value']) . '.wikipedia.org';
     }
 
-    public function getName(){
+	public function getName(){
 		$params=$this->parameters[$this->queriedContext];
 		switch($params['subject']['value']){
 			case 'tfa':

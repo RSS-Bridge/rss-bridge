@@ -1,21 +1,19 @@
 <?php
 class MilbooruBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Milbooru";
-		$this->uri = "http://sheslostcontrol.net/moe/shimmie/";
-		$this->description = "Returns images from given page";
+	public $maintainer = "mitsukarenai";
+	public $name = "Milbooru";
+	public $uri = "http://sheslostcontrol.net/moe/shimmie/";
+	public $description = "Returns images from given page";
 
-        $this->parameters[] = array(
-          'p'=>array(
+    public $parameters = array( array(
+        'p'=>array(
             'name'=>'page',
             'type'=>'number'
-          ),
-          't'=>array('name'=>'tags')
-        );
-	}
+        ),
+        't'=>array('name'=>'tags')
+    ));
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

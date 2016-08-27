@@ -1,19 +1,12 @@
 <?php
-/**
-* GitlabCommitsBridge
-*
-* @name GitlabCommits Bridge
-* @description Returns the commits of a project hosted on a gitlab instance
- */
 class GitlabCommitsBridge extends BridgeAbstract{
-  public function loadMetadatas() {
 
-    $this->maintainer = 'Pierre Mazière';
-    $this->name = 'Gitlab Commits';
-    $this->uri = '';
-    $this->description = 'Returns the commits of a project hosted on a gitlab instance';
+    public $maintainer = 'Pierre Mazière';
+    public $name = 'Gitlab Commits';
+    public $uri = '';
+    public $description = 'Returns the commits of a project hosted on a gitlab instance';
 
-    $this->parameters[] = array(
+    public $parameters = array( array(
       'uri'=>array(
         'name'=>'Base URI',
         'defaultValue'=>'https://gitlab.com'
@@ -30,8 +23,7 @@ class GitlabCommitsBridge extends BridgeAbstract{
         'name'=>'Project branch',
         'defaultValue'=>'master'
       )
-    );
-  }
+    ));
 
   public function collectData(){
         $param=$this->parameters[$this->queriedContext];

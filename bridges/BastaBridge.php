@@ -1,11 +1,9 @@
 <?php
 class BastaBridge extends BridgeAbstract{
-	public function loadMetadatas() {
-		$this->maintainer = "qwertygc";
-		$this->name = "Bastamag Bridge";
-		$this->uri = "http://www.bastamag.net/";
-		$this->description = "Returns the newest articles.";
-	}
+	public $maintainer = "qwertygc";
+	public $name = "Bastamag Bridge";
+	public $uri = "http://www.bastamag.net/";
+	public $description = "Returns the newest articles.";
 
 	public function collectData(){
 		// Replaces all relative image URLs by absolute URLs. Relative URLs always start with 'local/'!

@@ -5,22 +5,20 @@ class PinterestBridge extends BridgeAbstract{
     private $board;
     private $query;
 
-    public function loadMetadatas() {
+	public $maintainer = "pauder";
+	public $name = "Pinterest Bridge";
+	public $uri = "http://www.pinterest.com";
+	public $description = "Returns the newest images on a board";
 
-		$this->maintainer = "pauder";
-		$this->name = "Pinterest Bridge";
-		$this->uri = "http://www.pinterest.com";
-		$this->description = "Returns the newest images on a board";
-
-        $this->parameters["By username and board"] = array(
-          'u'=>array('name'=>'username'),
-          'b'=>array('name'=>'board')
-        );
-
-        $this->parameters["From search"] = array(
-          'q'=>array('name'=>'Keyword')
-        );
-	}
+    public $parameters = array(
+        'By username and board' => array(
+            'u'=>array('name'=>'username'),
+            'b'=>array('name'=>'board')
+        ),
+        'From search' => array(
+            'q'=>array('name'=>'Keyword')
+        )
+    );
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

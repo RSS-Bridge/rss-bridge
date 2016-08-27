@@ -126,7 +126,7 @@ try{
                     if(defined('PROXY_URL') && PROXY_BYBRIDGE && $noproxy){
                       $bridge->useProxy=false;
                     }
-					$bridge->loadMetadatas();
+
                     $params=$_GET;
                     unset($params['action']);
                     unset($params['bridge']);

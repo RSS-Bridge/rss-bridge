@@ -1,20 +1,16 @@
 <?php
 class BandcampBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "sebsauvage";
-		$this->name = "Bandcamp Tag";
-		$this->uri = "http://bandcamp.com/";
-		$this->description = "New bandcamp release by tag";
-
-        $this->parameters[] = array(
-          'tag'=>array(
+    public $maintainer = "sebsauvage";
+    public $name = "Bandcamp Tag";
+    public $uri = "http://bandcamp.com/";
+    public $description = "New bandcamp release by tag";
+    public $parameters = array( array(
+        'tag'=>array(
             'name'=>'tag',
             'type'=>'text'
-          )
-        );
-	}
+        )
+    ));
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

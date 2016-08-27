@@ -1,27 +1,24 @@
 <?php
 class GBAtempBridge extends BridgeAbstract {
 
-    public function loadMetadatas() {
+    public $maintainer = 'ORelio';
+    public $name = 'GBAtemp';
+    public $uri = 'http://gbatemp.net/';
+    public $description = 'GBAtemp is a user friendly underground video game community.';
 
-        $this->maintainer = 'ORelio';
-        $this->name = 'GBAtemp';
-        $this->uri = 'http://gbatemp.net/';
-        $this->description = 'GBAtemp is a user friendly underground video game community.';
-
-        $this->parameters[] = array(
-          'type'=>array(
+    public $parameters = array( array(
+        'type'=>array(
             'name'=>'Type',
             'type'=>'list',
             'required'=>true,
             'values'=>array(
-              'News'=>'N',
-              'Reviews'=>'R',
-              'Tutorials'=>'T',
-              'Forum'=>'F'
+                'News'=>'N',
+                'Reviews'=>'R',
+                'Tutorials'=>'T',
+                'Forum'=>'F'
             )
-          )
-        );
-    }
+        )
+    ));
 
     private function ExtractFromDelimiters($string, $start, $end) {
         if (strpos($string, $start) !== false) {

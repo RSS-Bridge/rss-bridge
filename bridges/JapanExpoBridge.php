@@ -1,22 +1,20 @@
 <?php
 class JapanExpoBridge extends BridgeAbstract{
 
-    public function loadMetadatas() {
-        $this->maintainer = 'Ginko';
-        $this->name = 'Japan Expo Actualités';
-        $this->uri = 'http://www.japan-expo-paris.com/fr/actualites';
-        $this->description = 'Returns most recent entries from Japan Expo actualités.';
-        $this->parameters[] = array(
-          'mode'=>array(
+    public $maintainer = 'Ginko';
+    public $name = 'Japan Expo Actualités';
+    public $uri = 'http://www.japan-expo-paris.com/fr/actualites';
+    public $description = 'Returns most recent entries from Japan Expo actualités.';
+    public $parameters = array( array(
+        'mode'=>array(
             'name'=>'Mode',
             'type'=>'list',
             'values'=>array(
-              'Titles only'=>'light',
-              'Full Contents'=>'full'
+                'Titles only'=>'light',
+                'Full Contents'=>'full'
             )
-          )
-        );
-    }
+        )
+    ));
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

@@ -1,28 +1,25 @@
 <?php
 class AllocineFRBridge extends BridgeAbstract{
 
-    public function loadMetadatas() {
 
-        $this->maintainer = "superbaillot.net";
-        $this->name = "Allo Cine Bridge";
-        $this->uri = "http://www.allocine.fr";
-        $this->description = "Bridge for allocine.fr";
-
-        $this->parameters[] = array(
-          'category'=>array(
+    public $maintainer = "superbaillot.net";
+    public $name = "Allo Cine Bridge";
+    public $uri = "http://www.allocine.fr";
+    public $description = "Bridge for allocine.fr";
+    public $parameters = array( array(
+        'category'=>array(
             'name'=>'category',
             'type'=>'list',
             'required'=>true,
             'exampleValue'=>'Faux Raccord',
             'title'=>'Select your category',
             'values'=>array(
-              'Faux Raccord'=>'faux-raccord',
-              'Top 5'=>'top-5',
-              'Tueurs En Serie'=>'tuers-en-serie'
+                'Faux Raccord'=>'faux-raccord',
+                'Top 5'=>'top-5',
+                'Tueurs En Serie'=>'tuers-en-serie'
             )
-          )
-        );
-    }
+        )
+    ));
 
     public function collectData(){
         $params=$this->parameters[$this->queriedContext];

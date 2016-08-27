@@ -1,16 +1,11 @@
 <?php
 class AnimeUltimeBridge extends BridgeAbstract {
 
-    private $filter = 'Releases';
-
-    public function loadMetadatas() {
-
-        $this->maintainer = 'ORelio';
-        $this->name = 'Anime-Ultime';
-        $this->uri = 'http://www.anime-ultime.net/';
-        $this->description = 'Returns the 10 newest releases posted on Anime-Ultime';
-
-        $this->parameters[] = array(
+        public $maintainer = 'ORelio';
+        public $name = 'Anime-Ultime';
+        public $uri = 'http://www.anime-ultime.net/';
+        public $description = 'Returns the 10 newest releases posted on Anime-Ultime';
+        public $parameters = array( array(
           'type'=>array(
             'name'=>'Type',
             'type'=>'list',
@@ -21,8 +16,9 @@ class AnimeUltimeBridge extends BridgeAbstract {
               'Tokusatsu'=>'T'
             )
           )
-        );
-    }
+        ));
+
+    private $filter = 'Releases';
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

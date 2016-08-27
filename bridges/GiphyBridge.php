@@ -3,22 +3,18 @@ define('GIPHY_LIMIT', 10);
 
 class GiphyBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "kraoc";
+	public $name = "Giphy Bridge";
+	public $uri = "http://giphy.com/";
+	public $description = "Bridge for giphy.com";
 
-		$this->maintainer = "kraoc";
-		$this->name = "Giphy Bridge";
-		$this->uri = "http://giphy.com/";
-		$this->description = "Bridge for giphy.com";
-
-        $this->parameters[] = array(
-            's'=>array('name'=>'search tag'),
-            'n'=>array(
-                'name'=>'max number of returned items',
-                'type'=>'number'
-            )
-        );
-
-	}
+    public $parameters = array( array(
+        's'=>array('name'=>'search tag'),
+        'n'=>array(
+            'name'=>'max number of returned items',
+            'type'=>'number'
+        )
+    ));
 
 	public function collectData(){
         $param=$this->parameters[$this->queriedContext];

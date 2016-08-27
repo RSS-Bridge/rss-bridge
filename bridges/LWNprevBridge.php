@@ -1,19 +1,9 @@
 <?php
-/**
- * RssBridgeLWNprev
- *
- * @name LWNPrev Bridge
- * @description Returns the articles from the previous LWN.net edition
- */
 class LWNprevBridge extends BridgeAbstract{
-  public function loadMetadatas() {
-
-    $this->maintainer = 'Pierre Mazière';
-    $this->name = 'LWN Free Weekly Edition';
-    $this->uri = 'https://lwn.net/free/bigpage';
-    $this->description = 'LWN Free Weekly Edition available one week late';
-
-  }
+    public $maintainer = 'Pierre Mazière';
+    public $name = 'LWN Free Weekly Edition';
+    public $uri = 'https://lwn.net/free/bigpage';
+    public $description = 'LWN Free Weekly Edition available one week late';
 
   private function jumpToNextTag(&$node){
     while($node && $node->nodeType===XML_TEXT_NODE){

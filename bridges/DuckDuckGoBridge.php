@@ -1,19 +1,16 @@
 <?php
 class DuckDuckGoBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "Astalaseven";
+	public $name = "DuckDuckGo";
+	public $uri = "https://duckduckgo.com/";
+	public $description = "Returns most recent results from DuckDuckGo.";
 
-		$this->maintainer = "Astalaseven";
-		$this->name = "DuckDuckGo";
-		$this->uri = "https://duckduckgo.com/";
-		$this->description = "Returns most recent results from DuckDuckGo.";
-
-        $this->parameters[] = array(
-          'u'=>array(
+    public $parameters = array( array(
+        'u'=>array(
             'name'=>'keyword',
             'required'=>true)
-        );
-	}
+        ));
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

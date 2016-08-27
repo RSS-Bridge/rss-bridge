@@ -1,14 +1,10 @@
 <?php
 class FootitoBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "superbaillot.net";
-		$this->name = "Footito";
-		$this->uri = "http://www.footito.fr/";
-		$this->description = "Footito";
-
-	}
+	public $maintainer = "superbaillot.net";
+	public $name = "Footito";
+	public $uri = "http://www.footito.fr/";
+	public $description = "Footito";
 
     public function collectData(){
         $html = $this->getSimpleHTMLDOM('http://www.footito.fr/') or $this->returnServerError('Could not request Footito.');

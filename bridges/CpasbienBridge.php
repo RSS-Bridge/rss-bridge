@@ -1,23 +1,18 @@
 <?php
 class CpasbienBridge extends HttpCachingBridgeAbstract{
 
-	public function loadMetadatas() {
+    public $maintainer = "lagaisse";
+    public $name = "Cpasbien Bridge";
+    public $uri = "http://www.cpasbien.io";
+    public $description = "Returns latest torrents from a request query";
 
-		$this->maintainer = "lagaisse";
-		$this->name = "Cpasbien Bridge";
-		$this->uri = "http://www.cpasbien.io";
-		$this->description = "Returns latest torrents from a request query";
-
-        $this->parameters[] = array(
-          'q'=>array(
+    public $parameters = array( array(
+        'q'=>array(
             'name'=>'Search',
             'required'=>true,
             'title'=>'Type your search'
-          )
-        );
-
-	}
-
+        )
+    ));
 
     public function collectData(){
         $param=$this->parameters[$this->queriedContext];

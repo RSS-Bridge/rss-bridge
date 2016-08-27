@@ -1,14 +1,10 @@
 <?php
 class ProjectMGameBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "corenting";
-		$this->name = "Project M Game Bridge";
-		$this->uri = "http://projectmgame.com/en/";
-		$this->description = "Returns the newest articles.";
-
-	}
+	public $maintainer = "corenting";
+	public $name = "Project M Game Bridge";
+	public $uri = "http://projectmgame.com/en/";
+	public $description = "Returns the newest articles.";
 
 
   public function collectData(){

@@ -1,14 +1,10 @@
-
 <?php
 class EliteDangerousGalnetBridge extends BridgeAbstract
 {
-	public function loadMetadatas()
-	{
-		$this->maintainer = "corenting";
-		$this->name = "Elite: Dangerous Galnet";
-		$this->uri = "https://community.elitedangerous.com/galnet";
-		$this->description = "Returns the latest page of news from Galnet";
-	}
+	public $maintainer = "corenting";
+	public $name = "Elite: Dangerous Galnet";
+	public $uri = "https://community.elitedangerous.com/galnet";
+	public $description = "Returns the latest page of news from Galnet";
 
 	public function collectData()
 	{

@@ -5,26 +5,23 @@ class WallpaperStopBridge extends BridgeAbstract {
     private $subcategory;
     private $resolution;
 
-	public function loadMetadatas() {
+	public $maintainer = "nel50n";
+	public $name = "WallpaperStop Bridge";
+	public $uri = "http://www.wallpaperstop.com/";
+	public $description = "Returns the latests wallpapers from WallpaperStop";
 
-		$this->maintainer = "nel50n";
-		$this->name = "WallpaperStop Bridge";
-		$this->uri = "http://www.wallpaperstop.com/";
-		$this->description = "Returns the latests wallpapers from WallpaperStop";
-
-        $this->parameters[] = array(
-          'c'=>array('name'=>'Category'),
-          's'=>array('name'=>'subcategory'),
-          'm'=>array(
+    public $parameters = array( array(
+        'c'=>array('name'=>'Category'),
+        's'=>array('name'=>'subcategory'),
+        'm'=>array(
             'name'=>'Max number of wallpapers',
             'type'=>'number'
-          ),
-          'r'=>array(
+        ),
+        'r'=>array(
             'name'=>'resolution',
             'exampleValue'=>'1920x1200, 1680x1050,…',
-          )
-        );
-	}
+        )
+    ));
 
 
     public function collectData(){

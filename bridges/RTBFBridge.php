@@ -1,19 +1,17 @@
 <?php
 class RTBFBridge extends BridgeAbstract {
-	public function loadMetadatas() {
-		$this->name = "RTBF Bridge";
-		$this->uri = "http://www.rtbf.be/auvio/emissions";
-		$this->description = "Returns the newest RTBF videos by series ID";
-		$this->maintainer = "Frenzie";
+	public $name = "RTBF Bridge";
+	public $uri = "http://www.rtbf.be/auvio/emissions";
+	public $description = "Returns the newest RTBF videos by series ID";
+	public $maintainer = "Frenzie";
 
-        $this->parameters[] = array(
-          'c'=>array(
+    public $parameters = array( array(
+        'c'=>array(
             'name'=>'series id',
             'exampleValue'=>9500,
             'required'=>true
-          )
-        );
-	}
+        )
+    ));
 
 	public function collectData(){
         $param=$this->parameters[$this->queriedContext];

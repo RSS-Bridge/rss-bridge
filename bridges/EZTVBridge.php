@@ -1,21 +1,18 @@
 <?php
 class EZTVBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "alexAubin";
+	public $name = "EZTV";
+	public $uri = "https://eztv.ch/";
+	public $description = "Returns list of *recent* torrents for a specific show on EZTV. Get showID from URLs in https://eztv.ch/shows/showID/show-full-name.";
 
-		$this->maintainer = "alexAubin";
-		$this->name = "EZTV";
-		$this->uri = "https://eztv.ch/";
-		$this->description = "Returns list of *recent* torrents for a specific show on EZTV. Get showID from URLs in https://eztv.ch/shows/showID/show-full-name.";
-
-        $this->parameters[] = array(
-          'i'=>array(
+    public $parameters = array( array(
+        'i'=>array(
             'name'=>'Show ids',
             'exampleValue'=>'showID1,showID2,…',
             'required'=>true
-          )
-        );
-	}
+        )
+    ));
 
 	public function collectData(){
         $param=$this->parameters[$this->queriedContext];

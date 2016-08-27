@@ -4,21 +4,17 @@ class GooglePlusPostBridge extends BridgeAbstract
 	protected $_title;
 	protected $_url;
 
-	public function loadMetadatas() {
+	public $maintainer = "Grummfy";
+	public $name = "Google Plus Post Bridge";
+	public $uri = "http://plus.google.com/";
+	public $description = "Returns user public post (without API).";
 
-		$this->maintainer = "Grummfy";
-		$this->name = "Google Plus Post Bridge";
-		$this->uri = "http://plus.google.com/";
-		$this->description = "Returns user public post (without API).";
-
-        $this->parameters[] = array(
-            'username'=>array(
-                'name'=>'username or Id',
-                'required'=>true
-            )
-        );
-
-	}
+    public $parameters = array( array(
+        'username'=>array(
+            'name'=>'username or Id',
+            'required'=>true
+        )
+    ));
 
 	const GOOGLE_PLUS_BASE_URL = 'https://plus.google.com/';
 

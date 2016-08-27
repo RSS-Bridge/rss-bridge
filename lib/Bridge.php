@@ -105,7 +105,6 @@ EOD;
 interface BridgeInterface {
     public function collectData();
     public function getCacheDuration();
-    public function loadMetadatas();
     public function getName();
     public function getURI();
 }
@@ -182,7 +181,7 @@ abstract class BridgeAbstract implements BridgeInterface {
                         }
                         break;
                     default:
-                    case'text':
+                    case 'text':
                         if(isset($set[$name]['pattern'])){
                             $data[$name]=filter_var($value,FILTER_VALIDATE_REGEXP,
                                 array('options'=>array(
@@ -401,7 +400,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 
 /**
  * Extension of BridgeAbstract allowing caching of files downloaded over http.
- * TODO allow file cache invalidation by touching files on access, and removing 
+ * TODO allow file cache invalidation by touching files on access, and removing
  * files/directories which have not been touched since ... a long time
  */
 abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
@@ -461,8 +460,8 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
 
     private function buildCacheFilePath($url, $cacheDir){
         $simplified_url = str_replace(
-            ['http://', 'https://', '?', '&', '='], 
-            ['', '', '/', '/', '/'], 
+            ['http://', 'https://', '?', '&', '='],
+            ['', '', '/', '/', '/'],
             $url);
 
         if(substr($cacheDir, -1) !== '/'){

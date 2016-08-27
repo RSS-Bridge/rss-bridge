@@ -1,33 +1,30 @@
 <?php
 class WorldOfTanksBridge extends HttpCachingBridgeAbstract{
 
-	public function loadMetadatas() {
+    public $maintainer = "mitsukarenai";
+    public $name = "World of Tanks";
+    public $uri = "http://worldoftanks.eu/";
+    public $description = "News about the tank slaughter game.";
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "World of Tanks";
-		$this->uri = "http://worldoftanks.eu/";
-		$this->description = "News about the tank slaughter game.";
-
-        $this->parameters[] = array(
-            'category'=>array(
-                // TODO: should be a list
-                'name'=>'nom de la catégorie'
-            ),
-          'lang'=>array(
+    public $parameters = array( array(
+        'category'=>array(
+            // TODO: should be a list
+            'name'=>'nom de la catégorie'
+        ),
+        'lang'=>array(
             'name'=>'Langue',
             'type'=>'list',
             'values'=>array(
-              'Français'=>'fr',
-              'English'=>'en',
-              'Español'=>'es',
-              'Deutsch'=>'de',
-              'Čeština'=>'cs',
-              'Polski'=>'pl',
-              'Türkçe'=>'tr'
+                'Français'=>'fr',
+                'English'=>'en',
+                'Español'=>'es',
+                'Deutsch'=>'de',
+                'Čeština'=>'cs',
+                'Polski'=>'pl',
+                'Türkçe'=>'tr'
             )
-          )
-        );
-	}
+        )
+    ));
 
     function getURI(){
         $param=$this->parameters[$this->queriedContext];

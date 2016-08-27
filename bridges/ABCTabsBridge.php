@@ -1,14 +1,10 @@
 <?php
 class ABCTabsBridge extends BridgeAbstract{
 
-    public function loadMetadatas() {
-
-		$this->maintainer = "kranack";
-		$this->name = "ABC Tabs Bridge";
-		$this->uri = "http://www.abc-tabs.com/";
-		$this->description = "Returns 22 newest tabs";
-
-	}
+	public $maintainer = "kranack";
+	public $name = "ABC Tabs Bridge";
+	public $uri = "http://www.abc-tabs.com/";
+	public $description = "Returns 22 newest tabs";
 
 	public function collectData(){
 		$html = '';

@@ -5,20 +5,17 @@ class WordPressBridge extends BridgeAbstract {
 
 	public $sitename; // Name of the site
 
-	public function loadMetadatas() {
+	public $maintainer = "aledeg";
+	public $name = "Wordpress Bridge";
+	public $uri = "https://wordpress.org/";
+	public $description = "Returns the 3 newest full posts of a Wordpress blog";
 
-		$this->maintainer = "aledeg";
-		$this->name = "Wordpress Bridge";
-		$this->uri = "https://wordpress.org/";
-		$this->description = "Returns the 3 newest full posts of a Wordpress blog";
-
-        $this->parameters[] = array(
-          'url'=>array(
-            'name'=>'Blog URL',
-            'required'=>true
-          )
-        );
-	}
+	public $parameters = array( array(
+		'url'=>array(
+			'name'=>'Blog URL',
+			'required'=>true
+		)
+	));
 
 	// Replaces all 'link' tags with 'url' for simplehtmldom to actually find 'links' ('url')
 	private function ReplaceLinkTagsWithUrlTags($element){

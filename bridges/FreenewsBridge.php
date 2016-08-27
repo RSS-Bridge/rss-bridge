@@ -2,13 +2,10 @@
 define("FREENEWS_RSS", 'http://feeds.feedburner.com/Freenews-Freebox?format=xml');
 class FreenewsBridge extends RssExpander {
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Freenews";
-		$this->uri = "http://freenews.fr";
-		$this->description = "Un site d'actualité pour les freenautes (mais ne parlant pas que de la freebox). Ne rentrez pas d'id si vous voulez accéder aux actualités générales.";
-	}
+	public $maintainer = "mitsukarenai";
+	public $name = "Freenews";
+	public $uri = "http://freenews.fr";
+	public $description = "Un site d'actualité pour les freenautes (mais ne parlant pas que de la freebox). Ne rentrez pas d'id si vous voulez accéder aux actualités générales.";
 
     public function collectData(){
         parent::collectExpandableDatas(FREENEWS_RSS);
