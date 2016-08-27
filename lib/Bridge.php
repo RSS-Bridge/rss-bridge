@@ -270,8 +270,9 @@ abstract class BridgeAbstract implements BridgeInterface {
         // Populate BridgeAbstract::parameters with sanitized data
         foreach($param as $name=>$value){
             foreach($this->parameters as $context=>$set){
-                if(isset($this->parameters[$context][$name]))
+                if(isset($this->parameters[$context][$name])){
                     $this->parameters[$context][$name]['value']=$value;
+                }
             }
         }
 
