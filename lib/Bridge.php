@@ -273,6 +273,23 @@ abstract class BridgeAbstract implements BridgeInterface {
                         $this->returnClientError('Mixed context parameters');
                     }else{
                         $this->queriedContext=$queriedContext;
+                        $contexts=array($this->queriedContext);
+                        if(isset($this->parameters['global'])){
+                            $contexts[]='global';
+                        }
+                        foreach($contexts as $context){
+                            foreach($this->parameters[$context] as $p=>$props){
+                                if(isset($props['type']) &&
+                                    $props['type']==='checkbox' &&
+                                    !isset($props['value'])){
+                                    if(!isset($props['defaultValue'])){
+                                        $this->parameters[$context][$p]['value']=false;
+                                    }else{
+                                        $this->parameters[$context][$p]['value']=$props['defaultValue'];
+                                    }
+                                }
+                            }
+                        }
                         foreach($param as $name=>$value){
                             if(isset($this->parameters['global'][$name])){
                                 $this->parameters[$queriedContext][$name]['value']=$value;
