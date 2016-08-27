@@ -1,8 +1,6 @@
 <?php
 class InstagramBridge extends BridgeAbstract{
 
-    private $request;
-
     public function loadMetadatas() {
 
 		$this->maintainer = "pauder";
@@ -20,15 +18,8 @@ class InstagramBridge extends BridgeAbstract{
 	}
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
-        $html = '';
-        if (isset($param['u']['value'])) {   /* user timeline mode */
-            $this->request = $param['u']['value'];
-            $html = $this->getSimpleHTMLDOM('http://instagram.com/'.urlencode($this->request)) or $this->returnServerError('Could not request Instagram.');
-        }
-        else {
-            $this->returnClientError('You must specify a Instagram username (?u=...).');
-        }
+        $html = $this->getSimpleHTMLDOM($this->getURI())
+            or $this->returnServerError('Could not request Instagram.');
 
         $innertext = null;
 
@@ -74,6 +65,13 @@ class InstagramBridge extends BridgeAbstract{
     }
 
     public function getName(){
-        return (!empty($this->request) ? $this->request .' - ' : '') .'Instagram Bridge';
+        $param=$this->parameters[$this->queriedContext];
+        return $this->param['u']['value'] .' - Instagram Bridge';
+    }
+
+    public function getURI(){
+        $param=$this->parameters[$this->queriedContext];
+        return $this->uri.urlencode($param['u']['value']);
     }
 }
+
