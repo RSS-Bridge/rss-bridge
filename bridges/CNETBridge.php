@@ -1,8 +1,6 @@
 <?php
 class CNETBridge extends BridgeAbstract {
 
-    private $topicName = '';
-
     public function loadMetadatas() {
 
         $this->maintainer = 'ORelio';
@@ -43,10 +41,7 @@ class CNETBridge extends BridgeAbstract {
             return $article_html;
         }
 
-        if (!empty($param['topic']['value']))
-            $this->topicName = $param['topic']['value'];
-
-        $pageUrl = 'http://www.cnet.com/'.(empty($this->topicName) ? '' : 'topics/'.$this->topicName.'/');
+        $pageUrl = 'http://www.cnet.com/'.(empty($param['topic']['value']) ? '' : 'topics/'.$param['topic']['value'].'/');
         $html = $this->getSimpleHTMLDOM($pageUrl) or $this->returnServerError('Could not request CNET: '.$pageUrl);
         $limit = 0;
 
@@ -78,7 +73,8 @@ class CNETBridge extends BridgeAbstract {
     }
 
     public function getName() {
-        return 'CNET News Bridge'.(empty($this->topicName) ? '' : ' - '.$this->topicName);
+        $param=$this->parameters[$this->queriedContext];
+        return 'CNET News Bridge'.(empty($param['topic']['value']) ? '' : ' - '.$this->param['topic']['value']);
     }
 
     public function getCacheDuration() {
