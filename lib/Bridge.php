@@ -311,10 +311,15 @@ abstract class BridgeAbstract implements BridgeInterface {
         }
 
         // Copy global parameter values to the guessed context
-        foreach($param as $name=>$value){
-            if(isset($this->parameters['global'][$name])){
-                $this->parameters[$queriedContext][$name]['value']=$value;
+        foreach($this->parameters['global'] as $name=>$properties){
+            if(isset($param[$name])){
+                $value=$param[$name];
+            }else if(isset($properties['value'])){
+                $value=$properties['value'];
+            }else{
+                continue;
             }
+            $this->parameters[$queriedContext][$name]['value']=$value;
         }
 
         $this->collectData();
