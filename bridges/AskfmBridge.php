@@ -16,13 +16,8 @@ class AskfmBridge extends BridgeAbstract{
 
     public function collectData(){
         $html = '';
-        if (isset($this->getInput('u'))) {
-            $this->request = $this->getInput('u');
-            $html = $this->getSimpleHTMLDOM('http://ask.fm/'.urlencode($this->request).'/answers/more?page=0') or $this->returnServerError('Requested username can\'t be found.');
-        }
-        else {
-            $this->returnClientError('You must specify a username (?u=...).');
-        }
+        $html = $this->getSimpleHTMLDOM($this->getURI())
+            or $this->returnServerError('Requested username can\'t be found.');
 
         foreach($html->find('div.streamItem-answer') as $element) {
             $item = array();
@@ -48,11 +43,11 @@ class AskfmBridge extends BridgeAbstract{
     }
 
     public function getName(){
-        return empty($this->request) ? $this->name : $this->request;
+        return $this->name.' : '.$this->getInput('u');
     }
 
     public function getURI(){
-        return empty($this->request) ? $this->uri : 'http://ask.fm/'.urlencode($this->request);
+        return $this->uri.urlencode($this->getInput('u')).'/answers/more?page=0';
     }
 
     public function getCacheDuration(){
