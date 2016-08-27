@@ -1,25 +1,25 @@
 <?php
 class DailymotionBridge extends BridgeAbstract{
 
-	private $request;
-
     public function loadMetadatas() {
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Dailymotion Bridge";
-		$this->uri = "https://www.dailymotion.com/";
-		$this->description = "Returns the 5 newest videos by username/playlist or search";
+        $this->maintainer = "mitsukarenai";
+        $this->name = "Dailymotion Bridge";
+        $this->uri = "https://www.dailymotion.com/";
+        $this->description = "Returns the 5 newest videos by username/playlist or search";
 
         $this->parameters["By username"] = array(
-          'u'=>array('name'=>'username')
+            'u'=>array(
+                'name'=>'username',
+                'required'=>true
+            )
         );
 
         $this->parameters["By playlist id"] = array(
-          'p'=>array(
-            'name'=>'playlist id',
-            'type'=>'text',
-            'required'=>true
-        )
+            'p'=>array(
+                'name'=>'playlist id',
+                'required'=>true
+            )
         );
 
         $this->parameters["From search results"] = array(
@@ -27,66 +27,87 @@ class DailymotionBridge extends BridgeAbstract{
                 'name'=>'Search keyword',
                 'required'=>true
             ),
-          'pa'=>array(
-            'name'=>'Page',
-            'type'=>'number'
-          )
+            'pa'=>array(
+                'name'=>'Page',
+                'type'=>'number'
+            )
         );
-	}
-
-    function getMetadata($id) {
-      $metadata=array();
-      $html2 = $this->getSimpleHTMLDOM('http://www.dailymotion.com/video/'.$id) or $this->returnServerError('Could not request Dailymotion.');
-      $metadata['title'] = $html2->find('meta[property=og:title]', 0)->getAttribute('content');
-      $metadata['timestamp'] = strtotime($html2->find('meta[property=video:release_date]', 0)->getAttribute('content') );
-      $metadata['thumbnailUri'] = $html2->find('meta[property=og:image]', 0)->getAttribute('content');
-      $metadata['uri'] = $html2->find('meta[property=og:url]', 0)->getAttribute('content');
-
-      return $metadata;
     }
 
-	public function collectData(){
+    function getMetadata($id) {
+        $metadata=array();
+        $html2 = $this->getSimpleHTMLDOM('http://www.dailymotion.com/video/'.$id)
+            or $this->returnServerError('Could not request Dailymotion.');
+        $metadata['title'] = $html2->find('meta[property=og:title]', 0)->getAttribute('content');
+        $metadata['timestamp'] = strtotime($html2->find('meta[property=video:release_date]', 0)->getAttribute('content') );
+        $metadata['thumbnailUri'] = $html2->find('meta[property=og:image]', 0)->getAttribute('content');
+        $metadata['uri'] = $html2->find('meta[property=og:url]', 0)->getAttribute('content');
+        return $metadata;
+    }
+
+    public function collectData(){
+        $html = '';
+        $limit = 5;
+        $count = 0;
+
+        $html = $this->getSimpleHTMLDOM($this->getURI())
+            or $this->returnServerError('Could not request Dailymotion.');
+
+        foreach($html->find('div.media a.preview_link') as $element) {
+            if($count < $limit) {
+                $item = array();
+                $item['id'] = str_replace('/video/', '', strtok($element->href, '_'));
+                $metadata = $this->getMetadata($item['id']);
+                $item['uri'] = $metadata['uri'];
+                $item['title'] = $metadata['title'];
+                $item['timestamp'] = $metadata['timestamp'];
+                $item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $metadata['thumbnailUri'] . '" /></a><br><a href="' . $item['uri'] . '">' . $item['title'] . '</a>';
+                $this->items[] = $item;
+                $count++;
+            }
+        }
+    }
+
+    public function getName(){
         $param=$this->parameters[$this->queriedContext];
-        	$html = '';
-		$limit = 5;
-		$count = 0;
+        switch($this->queriedContext){
+        case 'By username':
+            $specific=$param['u']['value'];
+            break;
+        case 'By playlist id':
+            $specific=strtok($param['p']['value'], '_');
+            break;
+        case 'From search results':
+            $specific=$param['s']['value'];
+            break;
+        }
 
-		if (isset($param['u']['value'])) {   // user timeline mode
-			$this->request = $param['u']['value'];
-			$html = $this->getSimpleHTMLDOM('http://www.dailymotion.com/user/'.urlencode($this->request).'/1') or $this->returnServerError('Could not request Dailymotion.');
-		}
-		else if (isset($param['p']['value'])) {    // playlist mode
-			$this->request = strtok($param['p']['value'], '_');
-			$html = $this->getSimpleHTMLDOM('http://www.dailymotion.com/playlist/'.urlencode($this->request).'') or $this->returnServerError('Could not request Dailymotion.');
-		}
-		else if (isset($param['s']['value'])) {   // search mode
-			$this->request = $param['s']['value']; $page = 1; if (isset($param['pa']['value'])) $page = (int)preg_replace("/[^0-9]/",'', $param['pa']['value']);
-			$html = $this->getSimpleHTMLDOM('http://www.dailymotion.com/search/'.urlencode($this->request).'/'.$page.'') or $this->returnServerError('Could not request Dailymotion.');
-		}
-		else {
-			$this->returnClientError('You must either specify a Dailymotion username (?u=...) or a playlist id (?p=...) or search (?s=...)');
-		}
+        return $specific.' : Dailymotion Bridge';
+    }
 
-		foreach($html->find('div.media a.preview_link') as $element) {
-			if($count < $limit) {
-				$item = array();
-				$item['id'] = str_replace('/video/', '', strtok($element->href, '_'));
-				$metadata = $this->getMetadata($item['id']);
-				$item['uri'] = $metadata['uri'];
-				$item['title'] = $metadata['title'];
-				$item['timestamp'] = $metadata['timestamp'];
-				$item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $metadata['thumbnailUri'] . '" /></a><br><a href="' . $item['uri'] . '">' . $item['title'] . '</a>';
-				$this->items[] = $item;
-				$count++;
-			}
-		}
-	}
+    public function getURI(){
+        $param=$this->parameters[$this->queriedContext];
+        switch($this->queriedContext){
+        case 'By username':
+            $uri='http://www.dailymotion.com/user/'
+                .urlencode($param['u']['value']).'/1';
+            break;
+        case 'By playlist id':
+            $uri='http://www.dailymotion.com/playlist/'
+                .urlencode(strtok($param['p']['value'], '_'));
+            break;
+        case 'From search results':
+            $uri='http://www.dailymotion.com/search/'
+                .urlencode($param['s']['value']);
+            if(isset($param['pa']['value'])){
+                $uri.='/'.$param['pa']['value'];
+            }
+            break;
+        }
+        return $uri;
+    }
 
-	public function getName(){
-		return (!empty($this->request) ? $this->request .' - ' : '') .'Dailymotion Bridge';
-	}
-
-	public function getCacheDuration(){
-		return 3600*3; // 3 hours
-	}
+    public function getCacheDuration(){
+        return 3600*3; // 3 hours
+    }
 }
