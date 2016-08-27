@@ -20,6 +20,7 @@ class GooglePlusPostBridge extends BridgeAbstract
 
 	public function collectData()
 	{
+		$param=$this->parameters[$queriedContext];
 		if (!isset($param['username']['value']))
 		{
 			$this->returnClientError('You must specify a username (?username=...).');
