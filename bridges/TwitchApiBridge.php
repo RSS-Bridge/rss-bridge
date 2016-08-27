@@ -26,7 +26,6 @@ class TwitchApiBridge extends BridgeAbstract{
     );
 
 	public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 
 		/* In accordance with API description:
 		 * "When specifying a version for a request to the Twitch API, set the Accept HTTP header to the API version you prefer."
@@ -40,11 +39,11 @@ class TwitchApiBridge extends BridgeAbstract{
 
 		$context = stream_context_create($opts);
 
-		if(!isset($param['limit']['value']) ||
-		   empty($param['limit']['value'])){
+		if(!isset($this->getInput('limit')) ||
+		   empty($this->getInput('limit'))){
 			$limit = TWITCH_LIMIT;
 		}else{
-			$limit = (int)$param['limit']['value'];
+			$limit = (int)$this->getInput('limit');
 		}
 
 		// The Twitch API allows a limit between 1 .. 100. Therefore any value below must be set to 1, any greater must result in multiple requests.
@@ -55,7 +54,7 @@ class TwitchApiBridge extends BridgeAbstract{
 			if($limit % 100 != 0) { $requests++; }
 		}
 
-		if($param['broadcasts']['value']){
+		if($this->getInput('broadcasts')){
 			$broadcasts='true';
 		}else{
 			$broadcasts='false';
@@ -66,9 +65,9 @@ class TwitchApiBridge extends BridgeAbstract{
 		$request = '';
 
 		if($requests == 1) {
-			$request = 'https://api.twitch.tv/kraken/channels/' . $param['channel']['value'] . '/videos?limit=' . $limit . '&broadcasts=' . $broadcasts;
+			$request = 'https://api.twitch.tv/kraken/channels/' . $this->getInput('channel') . '/videos?limit=' . $limit . '&broadcasts=' . $broadcasts;
 		} else {
-			$request = 'https://api.twitch.tv/kraken/channels/' . $param['channel']['value'] . '/videos?limit=100&broadcasts=' . $broadcasts;
+			$request = 'https://api.twitch.tv/kraken/channels/' . $this->getInput('channel') . '/videos?limit=100&broadcasts=' . $broadcasts;
 		}
 
 		/* Finally we're ready to request data from the API. Each response provides information for the next request. */
@@ -106,8 +105,7 @@ class TwitchApiBridge extends BridgeAbstract{
 	}
 
 	public function getName(){
-        $param=$this->parameters[$this->queriedContext];
-		return $param['channel']['value'] . ' - Twitch API Bridge';
+		return $this->getInput('channel') . ' - Twitch API Bridge';
 	}
 
 	public function getCacheDuration(){

@@ -16,13 +16,12 @@ class Rule34pahealBridge extends BridgeAbstract{
 
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 	$page = 0;$tags='';
-        if (isset($param['p']['value'])) {
-            $page = (int)preg_replace("/[^0-9]/",'', $param['p']['value']);
+        if (isset($this->getInput('p'))) {
+            $page = (int)preg_replace("/[^0-9]/",'', $this->getInput('p'));
         }
-        if (isset($param['t']['value'])) {
-            $tags = urlencode($param['t']['value']);
+        if (isset($this->getInput('t'))) {
+            $tags = urlencode($this->getInput('t'));
         }
         $html = $this->getSimpleHTMLDOM("http://rule34.paheal.net/post/list/$tags/$page") or $this->returnServerError('Could not request Rule34paheal.');
 

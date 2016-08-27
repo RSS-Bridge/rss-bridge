@@ -14,9 +14,8 @@ class LinkedInCompany extends BridgeAbstract{
     ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
         $html = '';
-        $link = 'https://www.linkedin.com/company/'.$param['c']['value'];
+        $link = 'https://www.linkedin.com/company/'.$this->getInput('c');
 
         $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request LinkedIn.');
 

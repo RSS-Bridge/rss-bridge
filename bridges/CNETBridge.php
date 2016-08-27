@@ -11,7 +11,6 @@ class CNETBridge extends BridgeAbstract {
     ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 
         function ExtractFromDelimiters($string, $start, $end) {
             if (strpos($string, $start) !== false) {
@@ -38,7 +37,7 @@ class CNETBridge extends BridgeAbstract {
             return $article_html;
         }
 
-        $pageUrl = 'http://www.cnet.com/'.(empty($param['topic']['value']) ? '' : 'topics/'.$param['topic']['value'].'/');
+        $pageUrl = 'http://www.cnet.com/'.(empty($this->getInput('topic')) ? '' : 'topics/'.$this->getInput('topic').'/');
         $html = $this->getSimpleHTMLDOM($pageUrl) or $this->returnServerError('Could not request CNET: '.$pageUrl);
         $limit = 0;
 
@@ -70,8 +69,7 @@ class CNETBridge extends BridgeAbstract {
     }
 
     public function getName() {
-        $param=$this->parameters[$this->queriedContext];
-        return 'CNET News Bridge'.(empty($param['topic']['value']) ? '' : ' - '.$this->param['topic']['value']);
+        return 'CNET News Bridge'.(empty($this->getInput('topic')) ? '' : ' - '.$this->param['topic']['value']);
     }
 
     public function getCacheDuration() {

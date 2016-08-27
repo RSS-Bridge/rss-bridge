@@ -24,10 +24,9 @@ class GoogleSearchBridge extends BridgeAbstract{
 
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
         $html = '';
 
-            $html = $this->getSimpleHTMLDOM('https://www.google.com/search?q=' . urlencode($param['q']['value']) . '&num=100&complete=0&tbs=qdr:y,sbd:1') or $this->returnServerError('No results for this query.');
+            $html = $this->getSimpleHTMLDOM('https://www.google.com/search?q=' . urlencode($this->getInput('q')) . '&num=100&complete=0&tbs=qdr:y,sbd:1') or $this->returnServerError('No results for this query.');
 
         $emIsRes = $html->find('div[id=ires]',0);
         if( !is_null($emIsRes) ){
@@ -47,8 +46,7 @@ class GoogleSearchBridge extends BridgeAbstract{
     }
 
     public function getName(){
-        $param=$this->parameters[$this->queriedContext];
-        return $param['q']['value'] .' - Google search';
+        return $this->getInput('q') .' - Google search';
     }
 
     public function getCacheDuration(){

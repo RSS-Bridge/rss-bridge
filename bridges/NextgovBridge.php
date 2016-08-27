@@ -26,7 +26,6 @@ class NextgovBridge extends BridgeAbstract {
     ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 
         function ExtractFromDelimiters($string, $start, $end) {
             if (strpos($string, $start) !== false) {
@@ -44,7 +43,7 @@ class NextgovBridge extends BridgeAbstract {
             } return $string;
         }
 
-        $category = $param['category']['value'];
+        $category = $this->getInput('category');
         if (empty($category))
             $category = 'all';
         if ($category !== preg_replace('/[^a-z-]+/', '', $category) || strlen($category > 32))

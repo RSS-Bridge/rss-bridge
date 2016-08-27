@@ -15,10 +15,9 @@ class AskfmBridge extends BridgeAbstract{
     );
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
         $html = '';
-        if (isset($param['u']['value'])) {
-            $this->request = $param['u']['value'];
+        if (isset($this->getInput('u'))) {
+            $this->request = $this->getInput('u');
             $html = $this->getSimpleHTMLDOM('http://ask.fm/'.urlencode($this->request).'/answers/more?page=0') or $this->returnServerError('Requested username can\'t be found.');
         }
         else {

@@ -16,11 +16,10 @@ class SoundCloudBridge extends BridgeAbstract{
   	const CLIENT_ID = '0aca19eae3843844e4053c6d8fdb7875';
 
 	public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 
         $res = json_decode($this->getContents(
             'https://api.soundcloud.com/resolve?url=http://www.soundcloud.com/'
-            . urlencode($param['u']['value'])
+            . urlencode($this->getInput('u'))
             .'&client_id=' . self::CLIENT_ID
         )) or $this->returnServerError('No results for this query');
         $tracks = json_decode($this->getContents(
@@ -35,18 +34,17 @@ class SoundCloudBridge extends BridgeAbstract{
 		    $item['title'] = $tracks[$i]->user->username .' - '. $tracks[$i]->title;
 		    $item['content'] = '<audio src="'. $tracks[$i]->uri .'/stream?client_id='. self::CLIENT_ID .'">';
             $item['id'] = 'https://soundcloud.com/'
-                . urlencode($param['u']['value']) .'/'
+                . urlencode($this->getInput('u')) .'/'
                 . urlencode($tracks[$i]->permalink);
             $item['uri'] = 'https://soundcloud.com/'
-                . urlencode($param['u']['value']) .'/'
+                . urlencode($this->getInput('u')) .'/'
                 . urlencode($tracks[$i]->permalink);
 		    $this->items[] = $item;
 		}
 
     }
 	public function getName(){
-        $param=$this->parameters[$this->queriedContext];
-		return $this->name .' - '. $param['u']['value'];
+		return $this->name .' - '. $this->getInput('u');
 	}
 
 	public function getCacheDuration(){

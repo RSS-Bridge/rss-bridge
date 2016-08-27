@@ -76,7 +76,6 @@ class MangareaderBridge extends BridgeAbstract{
   );
 
 	public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 
         $this->request = '';
 
@@ -84,21 +83,21 @@ class MangareaderBridge extends BridgeAbstract{
         $path = "latest";
         $limit = MANGAREADER_LIMIT;
 
-        if(isset($param['category']['value'])){ // Get popular updates
+        if(isset($this->getInput('category'))){ // Get popular updates
             $type = "popular";
             $path = "popular";
-            if($param['category']['value'] !== "all"){
-                $path .= "/" . $param['category']['value'];
+            if($this->getInput('category') !== "all"){
+                $path .= "/" . $this->getInput('category');
             }
         }
 
-        if(isset($param['path']['value'])){ // Get manga updates
+        if(isset($this->getInput('path'))){ // Get manga updates
             $type = "path";
-            $path = $param['path']['value'];
+            $path = $this->getInput('path');
         }
 
-        if(isset($param['limit']['value']) && $param['limit']['value'] !== ""){ // Get manga updates (optional parameter)
-            $limit = $param['limit']['value'];
+        if(isset($this->getInput('limit')) && $this->getInput('limit') !== ""){ // Get manga updates (optional parameter)
+            $limit = $this->getInput('limit');
         }
 
 		// We'll use the DOM parser for this as it makes navigation easier

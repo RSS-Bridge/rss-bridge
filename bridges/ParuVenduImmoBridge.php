@@ -25,27 +25,26 @@ class ParuVenduImmoBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $param=$this->parameters[$this->queriedContext];
         $html = '';
         $num = 20;
         $appartment = '&tbApp=1&tbDup=1&tbChb=1&tbLof=1&tbAtl=1&tbPla=1';
         $maison = '&tbMai=1&tbVil=1&tbCha=1&tbPro=1&tbHot=1&tbMou=1&tbFer=1';
         $link = $this->uri.'/immobilier/annonceimmofo/liste/listeAnnonces?tt=1'.$appartment.$maison;
 
-        if (isset($param['minarea']['value'])) {
-            $link .= '&sur0='.urlencode($param['minarea']['value']);
+        if (isset($this->getInput('minarea'))) {
+            $link .= '&sur0='.urlencode($this->getInput('minarea'));
         }
 
-        if (isset($param['maxprice']['value'])) {
-            $link .= '&px1='.urlencode($param['maxprice']['value']);
+        if (isset($this->getInput('maxprice'))) {
+            $link .= '&px1='.urlencode($this->getInput('maxprice'));
         }
 
-        if (isset($param['pa']['value'])) {
-            $link .= '&pa='.urlencode($param['pa']['value']);
+        if (isset($this->getInput('pa'))) {
+            $link .= '&pa='.urlencode($this->getInput('pa'));
         }
 
-        if (isset($param['lo']['value'])) {
-            $link .= '&lo='.urlencode($param['lo']['value']);
+        if (isset($this->getInput('lo'))) {
+            $link .= '&lo='.urlencode($this->getInput('lo'));
         }
 
         $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request paruvendu.');
@@ -81,16 +80,15 @@ class ParuVenduImmoBridge extends BridgeAbstract
     }
 
     public function getName(){
-        $param=$this->parameters[$this->queriedContext];
         $request='';
-        if(isset($param['minarea']['value']) &&
-            !empty($param['minarea']['value'])
+        if(isset($this->getInput('minarea')) &&
+            !empty($this->getInput('minarea'))
         ){
-            $request .= ' '.$param['minarea']['value'].' m2';
+            $request .= ' '.$this->getInput('minarea').' m2';
         }
-        if(isset($param['lo']['value']) &&
-            !empty($param['lo']['value'])){
-            $request .= ' In: '.$param['lo']['value'];
+        if(isset($this->getInput('lo')) &&
+            !empty($this->getInput('lo'))){
+            $request .= ' In: '.$this->getInput('lo');
         }
         return 'Paru Vendu Immobilier'.$request;
     }

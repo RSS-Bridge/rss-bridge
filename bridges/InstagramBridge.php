@@ -61,13 +61,11 @@ class InstagramBridge extends BridgeAbstract{
     }
 
     public function getName(){
-        $param=$this->parameters[$this->queriedContext];
         return $this->param['u']['value'] .' - Instagram Bridge';
     }
 
     public function getURI(){
-        $param=$this->parameters[$this->queriedContext];
-        return $this->uri.urlencode($param['u']['value']);
+        return $this->uri.urlencode($this->getInput('u'));
     }
 }
 

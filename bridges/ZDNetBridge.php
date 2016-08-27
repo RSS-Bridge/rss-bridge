@@ -160,7 +160,6 @@ class ZDNetBridge extends BridgeAbstract {
     ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 
         function StripCDATA($string) {
             $string = str_replace('<![CDATA[', '', $string);
@@ -209,7 +208,7 @@ class ZDNetBridge extends BridgeAbstract {
         }
 
         $baseUri = $this->getURI();
-        $feed = $param['feed']['value'];
+        $feed = $this->getInput('feed');
         if (empty($feed))
             $this->returnClientError('Please select a feed to display.');
         if (strpos($feed, 'downloads!') !== false) {

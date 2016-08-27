@@ -14,13 +14,12 @@ class RTBFBridge extends BridgeAbstract {
     ));
 
 	public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 		$html = '';
 		$limit = 10;
 		$count = 0;
 
-		if (isset($param['c']['value'])) {
-			$html = $this->getSimpleHTMLDOM('http://www.rtbf.be/auvio/emissions/detail?id='.$param['c']['value']) or $this->returnServerError('Could not request RTBF.');
+		if (isset($this->getInput('c'))) {
+			$html = $this->getSimpleHTMLDOM('http://www.rtbf.be/auvio/emissions/detail?id='.$this->getInput('c')) or $this->returnServerError('Could not request RTBF.');
 
 			foreach($html->find('section[id!=widget-ml-avoiraussi-] .rtbf-media-grid article') as $element) {
 				if($count < $limit) {

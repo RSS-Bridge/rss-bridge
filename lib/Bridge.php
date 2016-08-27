@@ -120,6 +120,7 @@ abstract class BridgeAbstract implements BridgeInterface {
     public $maintainer = 'No maintainer';
     public $useProxy = true;
     public $parameters = array();
+    public $inputs = array();
     protected $queriedContext='';
 
     protected function returnError($message, $code){
@@ -271,6 +272,7 @@ abstract class BridgeAbstract implements BridgeInterface {
         foreach($inputs as $name=>$value){
             foreach($this->parameters as $context=>$set){
                 if(isset($this->parameters[$context][$name])){
+                    $this->inputs[$context][$name]['value']=$value;
                     $this->parameters[$context][$name]['value']=$value;
                 }
             }
@@ -302,9 +304,9 @@ abstract class BridgeAbstract implements BridgeInterface {
                 switch($properties['type']){
                 case 'checkbox':
                     if(!isset($properties['defaultValue'])){
-                        $this->parameters[$context][$name]['value']=false;
+                        $this->inputs[$context][$name]['value']=false;
                     }else{
-                        $this->parameters[$context][$name]['value']=$properties['defaultValue'];
+                        $this->inputs[$context][$name]['value']=$properties['defaultValue'];
                     }
                     break;
                 }
@@ -312,22 +314,34 @@ abstract class BridgeAbstract implements BridgeInterface {
         }
 
         // Copy global parameter values to the guessed context
-        foreach($this->parameters['global'] as $name=>$properties){
-            if(isset($inputs[$name])){
-                $value=$inputs[$name];
-            }else if(isset($properties['value'])){
-                $value=$properties['value'];
-            }else{
-                continue;
+        if(isset($this->parameters['global'])){
+            foreach($this->parameters['global'] as $name=>$properties){
+                if(isset($inputs[$name])){
+                    $value=$inputs[$name];
+                }else if(isset($properties['value'])){
+                    $value=$properties['value'];
+                }else{
+                    continue;
+                }
+                $this->inputs[$queriedContext][$name]['value']=$value;
             }
-            $this->parameters[$queriedContext][$name]['value']=$value;
         }
+
+        // Only keep guessed context parameters values
+        $this->inputs=array($this->queriedContext=>$this->inputs[$this->queriedContext]);
 
         $this->collectData();
 
         if(!is_null($this->cache)){
             $this->cache->saveData($this->getDatas());
         }
+    }
+
+    function getInput($input){
+        if(!isset($this->inputs[$this->queriedContext][$input]['value'])){
+            return null;
+        }
+        return $this->inputs[$this->queriedContext][$input]['value'];
     }
 
     public function getName(){

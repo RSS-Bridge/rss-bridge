@@ -16,10 +16,9 @@ class VkBridge extends BridgeAbstract {
     );
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
         $html = '';
-        if (isset($param['u']['value'])) {
-            $text_html = $this->getSimpleHTMLDOM(urldecode($param['u']['value']))
+        if (isset($this->getInput('u'))) {
+            $text_html = $this->getSimpleHTMLDOM(urldecode($this->getInput('u')))
                 or $this->returnServerError('No results for this query.');
             $text_html = iconv('windows-1251', 'utf-8', $text_html);
             $html = str_get_html($text_html);

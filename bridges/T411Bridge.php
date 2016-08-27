@@ -14,7 +14,6 @@ class T411Bridge extends BridgeAbstract {
     ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 
         //Utility function for retrieving text based on start and end delimiters
         function ExtractFromDelimiters($string, $start, $end) {
@@ -26,12 +25,12 @@ class T411Bridge extends BridgeAbstract {
         }
 
         //Ensure proper parameters have been provided
-        if (empty($param['search']['value'])) {
+        if (empty($this->getInput('search'))) {
             $this->returnClientError('You must specify a search criteria');
         }
 
         //Retrieve torrent listing from search results, which does not contain torrent description
-        $url = $this->uri.'torrents/search/?'.$param['search']['value'].'&order=added&type=desc';
+        $url = $this->uri.'torrents/search/?'.$this->getInput('search').'&order=added&type=desc';
         $html = $this->getSimpleHTMLDOM($url) or $this->returnServerError('Could not request t411: '.$url);
         $results = $html->find('table.results', 0);
         if (is_null($results))

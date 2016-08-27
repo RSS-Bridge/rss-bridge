@@ -21,12 +21,12 @@ class GooglePlusPostBridge extends BridgeAbstract
 	public function collectData()
 	{
 		$param=$this->parameters[$queriedContext];
-		if (!isset($param['username']['value']))
+		if (!isset($this->getInput('username')))
 		{
 			$this->returnClientError('You must specify a username (?username=...).');
 		}
 
-		$this->request = $param['username']['value'];
+		$this->request = $this->getInput('username');
 		// get content parsed
 //		$html = $this->getSimpleHTMLDOM(__DIR__ . '/../posts2.html'
 		$html = $this->getSimpleHTMLDOM(self::GOOGLE_PLUS_BASE_URL . urlencode($this->request) . '/posts'

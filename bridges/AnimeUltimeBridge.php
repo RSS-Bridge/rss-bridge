@@ -21,13 +21,12 @@ class AnimeUltimeBridge extends BridgeAbstract {
     private $filter = 'Releases';
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 
         //Add type filter if provided
         $typeFilter = '';
-        if (!empty($param['type']['value'])) {
-            if ($param['type']['value'] == 'A' || $param['type']['value'] == 'D' || $param['type']['value'] == 'T') {
-                $typeFilter = $param['type']['value'];
+        if (!empty($this->getInput('type'))) {
+            if ($this->getInput('type') == 'A' || $this->getInput('type') == 'D' || $this->getInput('type') == 'T') {
+                $typeFilter = $this->getInput('type');
                 if ($typeFilter == 'A') { $this->filter = 'Anime'; }
                 if ($typeFilter == 'D') { $this->filter = 'Drama'; }
                 if ($typeFilter == 'T') { $this->filter = 'Tokusatsu'; }

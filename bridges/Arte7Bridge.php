@@ -60,13 +60,12 @@
     }
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 
       $category='toutes-les-videos'; $lang='fr';
-      if (!empty($param['catfr']['value']))
-         $category=$param['catfr']['value'];
-      if (!empty($param['catde']['value']))
-         { $category=$param['catde']['value']; $lang='de'; }
+      if (!empty($this->getInput('catfr')))
+         $category=$this->getInput('catfr');
+      if (!empty($this->getInput('catde')))
+         { $category=$this->getInput('catde'); $lang='de'; }
       $input_json = $this->extractVideoset($category, $lang);
 
       foreach($input_json['videos'] as $element) {

@@ -40,21 +40,20 @@ class KununuBridge extends BridgeAbstract{
   );
 
 	public function collectData(){
-        $params=$this->parameters[$this->queriedContext];
 
 		// Get Site
-		$site = strtolower(trim($params['site']['value']));
+		$site = strtolower(trim($this->getInput('site')));
 		if(!isset($site) || empty($site) || !$this->site_is_valid($site))
 			$this->returnClientError('You must specify a valid site (&site=...)!');
 
 		// Get Company (fixing whitespace and umlauts)
-		$company = $this->encode_umlauts(strtolower(str_replace(' ', '-', trim($params['company']['value']))));
+		$company = $this->encode_umlauts(strtolower(str_replace(' ', '-', trim($this->getInput('company')))));
 		if(!isset($company) || empty($company))
 			$this->returnClientError('You must specify a company (&company=...)!');
 
 		$full = false; // By default we'll load only short article
-		if(isset($params['full']['value']))
-			$full = strtolower(trim($params['full']['value']));
+		if(isset($this->getInput('full')))
+			$full = strtolower(trim($this->getInput('full')));
 
 		// Get reviews section name (depends on site)
 		$section = '';

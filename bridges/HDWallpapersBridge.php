@@ -20,12 +20,11 @@ class HDWallpapersBridge extends BridgeAbstract {
     ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
         $html = '';
         $baseUri = 'http://www.hdwallpapers.in';
 
-        $this->category   = $param['c']['value'] ?: 'latest_wallpapers'; // Latest default
-        $this->resolution = $param['r']['value'] ?: '1920x1200';         // Wide wallpaper default
+        $this->category   = $this->getInput('c') ?: 'latest_wallpapers'; // Latest default
+        $this->resolution = $this->getInput('r') ?: '1920x1200';         // Wide wallpaper default
 
         $category = $this->category;
         if (strrpos($category, 'wallpapers') !== strlen($category)-strlen('wallpapers')) {
@@ -33,7 +32,7 @@ class HDWallpapersBridge extends BridgeAbstract {
         }
 
         $num = 0;
-        $max = $param['m']['value'] ?: 14;
+        $max = $this->getInput('m') ?: 14;
         $lastpage = 1;
 
         for ($page = 1; $page <= $lastpage; $page++) {

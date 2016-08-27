@@ -22,14 +22,8 @@ class AllocineFRBridge extends BridgeAbstract{
     ));
 
     public function collectData(){
-        $params=$this->parameters[$this->queriedContext];
-
-        // Check all parameters
-        if(!isset($params['category']['value']))
-            $this->returnClientError('You must specify a valid category (&category= )!');
-
         $category = '';
-        switch($params['category']['value']){
+        switch($this->getInput('category')){
             case 'faux-raccord':
                 $this->uri = 'http://www.allocine.fr/video/programme-12284/saison-24580/';
                 $category = 'Faux Raccord';

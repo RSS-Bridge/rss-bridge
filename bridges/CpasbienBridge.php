@@ -15,10 +15,9 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
     ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
         $html = '';
-        if (isset($param['q']['value'])) {   /* keyword search mode */
-            $request = str_replace(" ","-",trim($param['q']['value']));
+        if (isset($this->getInput('q'))) {   /* keyword search mode */
+            $request = str_replace(" ","-",trim($this->getInput('q')));
             $html = $this->getSimpleHTMLDOM($this->uri.'/recherche/'.urlencode($request).'.html') or $this->returnServerError('No results for this query.');
         } else {
             $this->returnClientError('You must specify a keyword (?q=...).');

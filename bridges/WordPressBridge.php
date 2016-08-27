@@ -41,7 +41,6 @@ class WordPressBridge extends BridgeAbstract {
 	}
 
 	public function collectData(){
-		$param=$this->parameters[$this->queriedContext];
 
 		$html = $this->getSimpleHTMLDOM($this->getURI().'/feed/atom')
 				or $this->returnServerError("Could not request ".$this->getURI().'/feed/atom');
@@ -119,8 +118,7 @@ class WordPressBridge extends BridgeAbstract {
 	}
 
 	public function getURI(){
-		$param=$this->parameters[$this->queriedContext];
-		return $param['url']['value'];
+		return $this->getInput('url');
 	}
 
 	public function getName() {

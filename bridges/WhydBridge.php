@@ -14,20 +14,19 @@ class WhydBridge extends BridgeAbstract{
     ));
 
 	public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 		$html = '';
-        if (strlen(preg_replace("/[^0-9a-f]/",'', $param['u']['value'])) == 24){
+        if (strlen(preg_replace("/[^0-9a-f]/",'', $this->getInput('u'))) == 24){
             // is input the userid ?
             $html = $this->getSimpleHTMLDOM(
-                $this->uri.'u/'.preg_replace("/[^0-9a-f]/",'', $param['u']['value'])
+                $this->uri.'u/'.preg_replace("/[^0-9a-f]/",'', $this->getInput('u'))
             ) or $this->returnServerError('No results for this query.');
         } else { // input may be the username
             $html = $this->getSimpleHTMLDOM(
-                $this->uri.'search?q='.urlencode($param['u']['value'])
+                $this->uri.'search?q='.urlencode($this->getInput('u'))
             ) or $this->returnServerError('No results for this query.');
 
             for ($j = 0; $j < 5; $j++) {
-                if (strtolower($html->find('div.user', $j)->find('a',0)->plaintext) == strtolower($param['u']['value'])) {
+                if (strtolower($html->find('div.user', $j)->find('a',0)->plaintext) == strtolower($this->getInput('u'))) {
                     $html = $this->getSimpleHTMLDOM(
                         $this->uri . $html->find('div.user', $j)->find('a', 0)->getAttribute('href')
                     ) or $this->returnServerError('No results for this query');

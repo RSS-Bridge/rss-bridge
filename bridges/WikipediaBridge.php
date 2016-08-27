@@ -43,13 +43,11 @@ class WikipediaBridge extends BridgeAbstract{
 	));
 
 	public function getURI(){
-		$params=$this->parameters[$this->queriedContext];
-		return 'https://' . strtolower($params['language']['value']) . '.wikipedia.org';
+		return 'https://' . strtolower($this->getInput('language')) . '.wikipedia.org';
     }
 
 	public function getName(){
-		$params=$this->parameters[$this->queriedContext];
-		switch($params['subject']['value']){
+		switch($this->getInput('subject')){
 			case 'tfa':
 				$subject = WIKIPEDIA_SUBJECT_TFA;
 				break;
@@ -63,22 +61,21 @@ class WikipediaBridge extends BridgeAbstract{
 
 		switch($subject){
 			case WIKIPEDIA_SUBJECT_TFA:
-				$name = 'Today\'s featured article from ' . strtolower($params['language']['value']) . '.wikipedia.org';
+				$name = 'Today\'s featured article from ' . strtolower($this->getInput('language')) . '.wikipedia.org';
 				break;
 			case WIKIPEDIA_SUBJECT_DYK:
-				$name = 'Did you know? - articles from ' . strtolower($params['language']['value']) . '.wikipedia.org';
+				$name = 'Did you know? - articles from ' . strtolower($this->getInput('language')) . '.wikipedia.org';
 				break;
 			default:
-				$name = 'Articles from ' . strtolower($params['language']['value']) . '.wikipedia.org';
+				$name = 'Articles from ' . strtolower($this->getInput('language')) . '.wikipedia.org';
 				break;
 		}
         return $name;
     }
 
 	public function collectData(){
-		$params=$this->parameters[$this->queriedContext];
 
-		switch($params['subject']['value']){
+		switch($this->getInput('subject')){
 			case 'tfa':
 				$subject = WIKIPEDIA_SUBJECT_TFA;
 				break;
@@ -90,7 +87,7 @@ class WikipediaBridge extends BridgeAbstract{
 				break;
 		}
 
-		$fullArticle = $params['fullarticle']['value'];
+		$fullArticle = $this->getInput('fullarticle');
 
 		// This will automatically send us to the correct main page in any language (try it!)
 		$html = $this->getSimpleHTMLDOM($this->getURI() . '/wiki');
@@ -103,7 +100,7 @@ class WikipediaBridge extends BridgeAbstract{
 		* We build the function name automatically, just make sure you create a private function ending
 		* with your desired language code, where the language code is upper case! (en -> GetContentsEN).
 		*/
-		$function = 'GetContents' . strtoupper($params['language']['value']);
+		$function = 'GetContents' . strtoupper($this->getInput('language'));
 
 		if(!method_exists($this, $function))
 			$this->returnServerError('A function to get the contents for your language is missing (\'' . $function . '\')!');

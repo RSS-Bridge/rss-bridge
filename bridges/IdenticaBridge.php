@@ -23,19 +23,17 @@ class IdenticaBridge extends BridgeAbstract{
             $item['uri'] = html_entity_decode($dent->find('a', 0)->href);	// get dent link
             $item['timestamp'] = strtotime($dent->find('abbr.easydate', 0)->plaintext);	// extract dent timestamp
             $item['content'] = trim($dent->find('div.activity-content', 0)->innertext);	// extract dent text
-            $item['title'] = $param['u']['value'] . ' | ' . $item['content'];
+            $item['title'] = $this->getInput('u') . ' | ' . $item['content'];
             $this->items[] = $item;
         }
     }
 
     public function getName(){
-        $param=$this->parameters[$this->queriedContext];
-        return $param['u']['value'] .' - Identica Bridge';
+        return $this->getInput('u') .' - Identica Bridge';
     }
 
     public function getURI(){
-        $param=$this->parameters[$this->queriedContext];
-        return $this->uri.urlencode($param['u']['value']);
+        return $this->uri.urlencode($this->getInput('u'));
     }
 
     public function getCacheDuration(){

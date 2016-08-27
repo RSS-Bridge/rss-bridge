@@ -45,23 +45,20 @@ class TwitterBridge extends BridgeAbstract{
             $param='u';
             break;
         }
-        return 'Twitter '.$specific
-            .$this->parameters[$this->queriedContext][$param]['value'];
+        return 'Twitter '.$specific.$this->getInput($param);
     }
 
     public function getURI(){
-        $params=$this->parameters[$this->queriedContext];
         switch($this->queriedContext){
         case 'By keyword or hashtag':
-            return $this->uri.'search?q='.urlencode($params['q']['value']).'&f=tweets';
+            return $this->uri.'search?q='.urlencode($this->getInput('q')).'&f=tweets';
         case 'By username':
-            return $this->uri.urlencode($params['u']['value']).
-                ($params['norep']['value']?'':'/with_replies');
+            return $this->uri.urlencode($this->getInput('u')).
+                ($this->getInput('norep')?'':'/with_replies');
         }
     }
 
 	public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 		$html = '';
 
 		$html = $this->getSimpleHTMLDOM($this->getURI());
@@ -74,7 +71,7 @@ class TwitterBridge extends BridgeAbstract{
 			}
 		}
 
-		$hidePictures = $param['nopic']['value'];
+		$hidePictures = $this->getInput('nopic');
 
 		foreach($html->find('div.js-stream-tweet') as $tweet) {
 			$item = array();

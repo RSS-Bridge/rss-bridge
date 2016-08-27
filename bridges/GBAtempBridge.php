@@ -60,11 +60,10 @@ class GBAtempBridge extends BridgeAbstract {
     }
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 
         $html = $this->getSimpleHTMLDOM($this->uri) or $this->returnServerError('Could not request GBAtemp.');
 
-        switch($param['type']['value']){
+        switch($this->getInput('type')){
         case 'N':
             foreach ($html->find('li[class=news_item full]') as $newsItem) {
                 $url = $this->uri.$newsItem->find('a', 0)->href;
@@ -111,8 +110,7 @@ class GBAtempBridge extends BridgeAbstract {
     }
 
     public function getName() {
-        $param=$this->parameters[$this->queriedContext];
-        $type=array_search($param['type']['value'],$param['type']['values']);
+        $type=array_search($this->getInput('type'),$param['type']['values']);
         return 'GBAtemp '.$type.' Bridge';
     }
 

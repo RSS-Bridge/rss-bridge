@@ -22,12 +22,11 @@ class GawkerBridge extends RssExpander{
     }
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
-        if (empty($param['site']['value'])) {
+        if (empty($this->getInput('site'))) {
 			trigger_error("If no site is provided, nothing is gonna happen", E_USER_ERROR);
         } else {
-            $this->name = $param['site']['value'];
-			$url = $this->toURI(strtolower($param['site']['value']));
+            $this->name = $this->getInput('site');
+			$url = $this->toURI(strtolower($this->getInput('site')));
         }
         $this->debugMessage("loading feed from ".$this->getURI());
         parent::collectExpandableDatas($url);

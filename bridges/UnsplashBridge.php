@@ -22,15 +22,14 @@ class UnsplashBridge extends BridgeAbstract {
       ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
         $html = '';
         $baseUri = 'http://unsplash.com';
 
-        $width = $param['w']['value'] ?: '1920';    // Default width
+        $width = $this->getInput('w') ?: '1920';    // Default width
 
         $num = 0;
-        $max = $param['m']['value'] ?: 20;
-        $quality = $param['q']['value'] ?: 75;
+        $max = $this->getInput('m') ?: 20;
+        $quality = $this->getInput('q') ?: 75;
         $lastpage = 1;
 
         for ($page = 1; $page <= $lastpage; $page++) {

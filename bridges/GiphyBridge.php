@@ -17,23 +17,22 @@ class GiphyBridge extends BridgeAbstract{
     ));
 
 	public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 		$html = '';
         $base_url = 'http://giphy.com';
-		if (isset($param['s']['value'])) {   /* keyword search mode */
-			$html = $this->getSimpleHTMLDOM($base_url.'/search/'.urlencode($param['s']['value'].'/')) or $this->returnServerError('No results for this query.');
+		if (isset($this->getInput('s'))) {   /* keyword search mode */
+			$html = $this->getSimpleHTMLDOM($base_url.'/search/'.urlencode($this->getInput('s').'/')) or $this->returnServerError('No results for this query.');
 		}
 		else {
 			$this->returnClientError('You must specify a search worf (?s=...).');
 		}
 
         $max = GIPHY_LIMIT;
-        if (isset($param['n']['value'])) {
-            $max = (integer) $param['n']['value'];
+        if (isset($this->getInput('n'))) {
+            $max = (integer) $this->getInput('n');
         }
 
         $limit = 0;
-        $kw = urlencode($param['s']['value']);
+        $kw = urlencode($this->getInput('s'));
         foreach($html->find('div.hoverable-gif') as $entry) {
             if($limit < $max) {
                 $node = $entry->first_child();

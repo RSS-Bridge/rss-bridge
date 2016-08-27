@@ -68,16 +68,15 @@ class DailymotionBridge extends BridgeAbstract{
     }
 
     public function getName(){
-        $param=$this->parameters[$this->queriedContext];
         switch($this->queriedContext){
         case 'By username':
-            $specific=$param['u']['value'];
+            $specific=$this->getInput('u');
             break;
         case 'By playlist id':
-            $specific=strtok($param['p']['value'], '_');
+            $specific=strtok($this->getInput('p'), '_');
             break;
         case 'From search results':
-            $specific=$param['s']['value'];
+            $specific=$this->getInput('s');
             break;
         }
 
@@ -85,21 +84,20 @@ class DailymotionBridge extends BridgeAbstract{
     }
 
     public function getURI(){
-        $param=$this->parameters[$this->queriedContext];
         switch($this->queriedContext){
         case 'By username':
             $uri='http://www.dailymotion.com/user/'
-                .urlencode($param['u']['value']).'/1';
+                .urlencode($this->getInput('u')).'/1';
             break;
         case 'By playlist id':
             $uri='http://www.dailymotion.com/playlist/'
-                .urlencode(strtok($param['p']['value'], '_'));
+                .urlencode(strtok($this->getInput('p'), '_'));
             break;
         case 'From search results':
             $uri='http://www.dailymotion.com/search/'
-                .urlencode($param['s']['value']);
-            if(isset($param['pa']['value'])){
-                $uri.='/'.$param['pa']['value'];
+                .urlencode($this->getInput('s'));
+            if(isset($this->getInput('pa'))){
+                $uri.='/'.$this->getInput('pa');
             }
             break;
         }
