@@ -44,8 +44,42 @@ class WikipediaBridge extends BridgeAbstract{
         );
 	}
 
+    public function getURI(){
+		$params=$this->parameters[$this->queriedContext];
+		return 'https://' . strtolower($params['language']['value']) . '.wikipedia.org';
+    }
+
+    public function getName(){
+		$params=$this->parameters[$this->queriedContext];
+        $subject = WIKIPEDIA_SUBJECT_TFA;
+		switch($params['subject']['value']){
+			case 'tfa':
+				$subject = WIKIPEDIA_SUBJECT_TFA;
+				break;
+			case 'dyk':
+				$subject = WIKIPEDIA_SUBJECT_DYK;
+				break;
+			default:
+				$subject = WIKIPEDIA_SUBJECT_TFA;
+				break;
+		}
+
+		switch($subject){
+			case WIKIPEDIA_SUBJECT_TFA:
+				$name = 'Today\'s featured article from ' . strtolower($params['language']['value']) . '.wikipedia.org';
+				break;
+			case WIKIPEDIA_SUBJECT_DYK:
+				$name = 'Did you know? - articles from ' . strtolower($params['language']['value']) . '.wikipedia.org';
+				break;
+			default:
+				$name = 'Articles from ' . strtolower($params['language']['value']) . '.wikipedia.org';
+				break;
+		}
+        return $name;
+    }
+
 	public function collectData(){
-        $params=$this->parameters[$this->queriedContext];
+		$params=$this->parameters[$this->queriedContext];
 		if(!isset($params['language']['value']))
 			$this->returnClientError('You must specify a valid language via \'&language=\'!');
 
@@ -72,27 +106,11 @@ class WikipediaBridge extends BridgeAbstract{
 		if(isset($params['fullarticle']['value']))
 			$fullArticle = $params['fullarticle']['value'];
 
-		// We store the correct URI as URI of this bridge (so it can be used later!)
-		$this->uri = 'https://' . strtolower($params['language']['value']) . '.wikipedia.org';
-
-		// While we at it let's also update the name for the feed
-		switch($subject){
-			case WIKIPEDIA_SUBJECT_TFA:
-				$this->name = 'Today\'s featured article from ' . strtolower($params['language']['value']) . '.wikipedia.org';
-				break;
-			case WIKIPEDIA_SUBJECT_DYK:
-				$this->name = 'Did you know? - articles from ' . strtolower($params['language']['value']) . '.wikipedia.org';
-				break;
-			default:
-				$this->name = 'Articles from ' . strtolower($params['language']['value']) . '.wikipedia.org';
-				break;
-		}
-
 		// This will automatically send us to the correct main page in any language (try it!)
-		$html = $this->getSimpleHTMLDOM($this->uri . '/wiki');
+		$html = $this->getSimpleHTMLDOM($this->getURI() . '/wiki');
 
 		if(!$html)
-			$this->returnServerError('Could not load site: ' . $this->uri . '!');
+			$this->returnServerError('Could not load site: ' . $this->getURI() . '!');
 
 		/*
 		* Now read content depending on the language (make sure to create one function per language!)
@@ -130,7 +148,7 @@ class WikipediaBridge extends BridgeAbstract{
 	* @return The $element->innertext with all URIs replaced
 	*/
 	private function ReplaceURIInHTMLElement($element){
-		return str_replace('href="/', 'href="' . $this->uri . '/', $element->innertext);
+		return str_replace('href="/', 'href="' . $this->getURI() . '/', $element->innertext);
 	}
 
 	/*
@@ -153,7 +171,7 @@ class WikipediaBridge extends BridgeAbstract{
 		}
 
 		$item = array();
-		$item['uri'] = $this->uri . $target->href;
+		$item['uri'] = $this->getURI() . $target->href;
 		$item['title'] = $target->title;
 
 		if(!$fullArticle)
@@ -172,7 +190,7 @@ class WikipediaBridge extends BridgeAbstract{
 			$item = array();
 
 			// We can only use the first anchor, there is no way of finding the 'correct' one if there are multiple
-			$item['uri'] = $this->uri . $entry->find('a', 0)->href;
+			$item['uri'] = $this->getURI() . $entry->find('a', 0)->href;
 			$item['title'] = strip_tags($entry->innertext);
 
 			if(!$fullArticle)
@@ -206,7 +224,7 @@ class WikipediaBridge extends BridgeAbstract{
 		foreach($content->find('ol.references') as $reference) // References
 			$reference->outertext = '';
 
-		return str_replace('href="/', 'href="' . $this->uri . '/', $content->innertext);
+		return str_replace('href="/', 'href="' . $this->getURI() . '/', $content->innertext);
 	}
 
 	/**
