@@ -16,34 +16,45 @@ class AllocineFRBridge extends BridgeAbstract{
             'values'=>array(
                 'Faux Raccord'=>'faux-raccord',
                 'Top 5'=>'top-5',
-                'Tueurs En Serie'=>'tuers-en-serie'
+                'Tueurs en Séries'=>'tueurs-en-serie'
             )
         )
     ));
 
-    public function collectData(){
-        $category = '';
+    public function getURI(){
         switch($this->getInput('category')){
-            case 'faux-raccord':
-                $this->uri = 'http://www.allocine.fr/video/programme-12284/saison-24580/';
-                $category = 'Faux Raccord';
-                break;
-            case 'top-5':
-                $this->uri = 'http://www.allocine.fr/video/programme-12299/saison-22542/';
-                $category = 'Top 5';
-                break;
-            case 'tuers-en-serie':
-                $this->uri = 'http://www.allocine.fr/video/programme-12286/saison-22938/';
-                $category = 'Tueurs en Séries';
-                break;
-            default:
-                $this->returnClientError('You must select a valid category!');
+        case 'faux-raccord':
+            $uri = 'http://www.allocine.fr/video/programme-12284/saison-24580/';
+            break;
+        case 'top-5':
+            $uri = 'http://www.allocine.fr/video/programme-12299/saison-22542/';
+            break;
+        case 'tueurs-en-serie':
+            $uri = 'http://www.allocine.fr/video/programme-12286/saison-22938/';
+            break;
         }
 
-        // Update bridge name to match selection
-        $this->name .= ' : ' . $category;
+        return $uri;
+    }
 
-        $html = $this->getSimpleHTMLDOM($this->uri) or $this->returnServerError("Could not request {$this->uri}!");
+    public function getName(){
+        return $this->name.' : '
+            .array_search(
+                $this->getInput('category'),
+                $this->parameters[$this->queriedContext]['category']['values']
+            );
+    }
+
+    public function collectData(){
+
+        $html = $this->getSimpleHTMLDOM($this->getURI())
+            or $this->returnServerError("Could not request ".$this->getURI()." !");
+
+        $category=array_search(
+                $this->getInput('category'),
+                $this->parameters[$this->queriedContext]['category']['values']
+            );
+
 
         foreach($html->find('figure.media-meta-fig') as $element)
         {
