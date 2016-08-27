@@ -9,8 +9,6 @@
 */
 class GoogleSearchBridge extends BridgeAbstract{
 
-    private $request;
-
     public function loadMetadatas() {
 
 		$this->maintainer = "sebsauvage";
@@ -19,7 +17,10 @@ class GoogleSearchBridge extends BridgeAbstract{
 		$this->description = "Returns most recent results from Google search.";
 
         $this->parameters[] = array(
-          'q'=>array('name'=>"keyword")
+            'q'=>array(
+                'name'=>"keyword",
+                'required'=>true
+            )
         );
 
 	}
@@ -29,13 +30,7 @@ class GoogleSearchBridge extends BridgeAbstract{
         $param=$this->parameters[$this->queriedContext];
         $html = '';
 
-        if (isset($param['q']['value'])) {   /* keyword search mode */
-            $this->request = $param['q']['value'];
-            $html = $this->getSimpleHTMLDOM('https://www.google.com/search?q=' . urlencode($this->request) . '&num=100&complete=0&tbs=qdr:y,sbd:1') or $this->returnServerError('No results for this query.');
-        }
-        else{
-            $this->returnClientError('You must specify a keyword (?q=...).');
-        }
+            $html = $this->getSimpleHTMLDOM('https://www.google.com/search?q=' . urlencode($param['q']['value']) . '&num=100&complete=0&tbs=qdr:y,sbd:1') or $this->returnServerError('No results for this query.');
 
         $emIsRes = $html->find('div[id=ires]',0);
         if( !is_null($emIsRes) ){
@@ -55,7 +50,8 @@ class GoogleSearchBridge extends BridgeAbstract{
     }
 
     public function getName(){
-        return (!empty($this->request) ? $this->request .' - ' : '') .'Google search';
+        $param=$this->parameters[$this->queriedContext];
+        return $param['q']['value'] .' - Google search';
     }
 
     public function getCacheDuration(){
