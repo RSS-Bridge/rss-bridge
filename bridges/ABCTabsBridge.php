@@ -1,8 +1,6 @@
 <?php
 class ABCTabsBridge extends BridgeAbstract{
 
-	private $request;
-
     public function loadMetadatas() {
 
 		$this->maintainer = "kranack";
