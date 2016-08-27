@@ -11,7 +11,10 @@ class InstagramBridge extends BridgeAbstract{
 		$this->description = "Returns the newest images";
 
         $this->parameters[] = array(
-          'u'=>array('name'=>'username')
+            'u'=>array(
+                'name'=>'username',
+                'required'=>true
+            )
         );
 
 	}
