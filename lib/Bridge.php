@@ -291,9 +291,9 @@ abstract class BridgeAbstract implements BridgeInterface {
             $contexts[]='global';
         }
         foreach($contexts as $context){
-            foreach($this->parameters[$context] as $p=>$properties){
+            foreach($this->parameters[$context] as $name=>$properties){
                 if(!isset($properties['type'])){
-                    $this->parameters[$context][$p]['type']='text';
+                    $this->parameters[$context][$name]['type']='text';
                 }
                 if(isset($properties['value'])){
                     continue;
@@ -301,9 +301,9 @@ abstract class BridgeAbstract implements BridgeInterface {
                 switch($properties['type']){
                 case 'checkbox':
                     if(!isset($properties['defaultValue'])){
-                        $this->parameters[$context][$p]['value']=false;
+                        $this->parameters[$context][$name]['value']=false;
                     }else{
-                        $this->parameters[$context][$p]['value']=$properties['defaultValue'];
+                        $this->parameters[$context][$name]['value']=$properties['defaultValue'];
                     }
                     break;
                 }
