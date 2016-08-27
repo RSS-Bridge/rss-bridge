@@ -8,18 +8,14 @@ class BandcampBridge extends BridgeAbstract{
     public $parameters = array( array(
         'tag'=>array(
             'name'=>'tag',
-            'type'=>'text'
+            'type'=>'text',
+            'required'=>true
         )
     ));
 
     public function collectData(){
-        $html = '';
-        if (isset($this->getInput('tag'))) {
-            $html = $this->getSimpleHTMLDOM('http://bandcamp.com/tag/'.urlencode($this->getInput('tag')).'?sort_field=date') or $this->returnServerError('No results for this query.');
-        }
-        else {
-            $this->returnClientError('You must specify tag (/tag/...)');
-        }
+        $html = $this->getSimpleHTMLDOM($this->getURI())
+            or $this->returnServerError('No results for this query.');
 
         foreach($html->find('li.item') as $release) {
             $script = $release->find('div.art', 0)->getAttribute('onclick');
@@ -36,9 +32,12 @@ class BandcampBridge extends BridgeAbstract{
         }
     }
 
-    public function getName(){
+    public function getURI(){
+        return $this->uri.'tag/'.urlencode($this->getInput('tag')).'?sort_field=date';
+    }
 
-        return (!empty($this->getInput('tag')) ? $this->getInput('tag') .' - ' : '') .'Bandcamp Tag';
+    public function getName(){
+        return $this->getInput('tag') .' - '.'Bandcamp Tag';
     }
 
     public function getCacheDuration(){
