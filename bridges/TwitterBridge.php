@@ -1,7 +1,7 @@
 <?php
 class TwitterBridge extends BridgeAbstract{
     public $name='Twitter Bridge';
-    public $uri='https://twitter.com';
+    public $uri='https://twitter.com/';
     public $description='returns tweets';
     public $parameters=array(
         'global'=>array(
@@ -53,29 +53,28 @@ class TwitterBridge extends BridgeAbstract{
         $params=$this->parameters[$this->queriedContext];
         switch($this->queriedContext){
         case 'By keyword or hashtag':
-            return $this->uri.'search?q='.urlencode($params['q']['value']);
+            return $this->uri.'search?q='.urlencode($params['q']['value']).'&f=tweets';
         case 'By username':
             return $this->uri.urlencode($params['u']['value']).
-                (isset($params['norep']['value'])?'':'/with_replies');
+                ($params['norep']['value']?'':'/with_replies');
         }
     }
 
 	public function collectData(){
         $param=$this->parameters[$this->queriedContext];
 		$html = '';
-		if (isset($param['q']['value'])) {   /* keyword search mode */
-			$html = $this->getSimpleHTMLDOM('https://twitter.com/search?q='.urlencode($param['q']['value']).'&f=tweets') or $this->returnServerError('No results for this query.');
-		}
-		elseif (isset($param['u']['value'])) {   /* user timeline mode */
-			$html = $this->getSimpleHTMLDOM('https://twitter.com/'.urlencode($param['u']['value']).(isset($param['norep']['value'])?'':'/with_replies')) or $this->returnServerError('Requested username can\'t be found.');
-		}
-		else {
-			$this->returnClientError('You must specify a keyword (?q=...) or a Twitter username (?u=...).');
+
+		$html = $this->getSimpleHTMLDOM($this->getURI());
+		if(!$html){
+			switch($this->queriedContext){
+			case 'By keyword or hashtag':
+				$this->returnServerError('No results for this query.');
+			case 'By username':
+				$this->returnServerError('Requested username can\'t be found.');
+			}
 		}
 
-		$hidePictures = false;
-		if (isset($param['nopic']['value']))
-			$hidePictures = $param['nopic']['value'];
+		$hidePictures = $param['nopic']['value'];
 
 		foreach($html->find('div.js-stream-tweet') as $tweet) {
 			$item = array();
