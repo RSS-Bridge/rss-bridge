@@ -3,7 +3,6 @@ define('WORDPRESS_TYPE_ATOM', 1); // Content is of type ATOM
 define('WORDPRESS_TYPE_RSS', 2); // Content is of type RSS
 class WordPressBridge extends BridgeAbstract {
 
-	private $url;
 	public $sitename; // Name of the site
 
 	public function loadMetadatas() {
@@ -19,15 +18,6 @@ class WordPressBridge extends BridgeAbstract {
             'required'=>true
           )
         );
-	}
-
-	// Returns the content type for a given html dom
-	private function DetectContentType($html){
-		if($html->find('entry'))
-			return WORDPRESS_TYPE_ATOM;
-		if($html->find('item'))
-			return WORDPRESS_TYPE_RSS;
-		return WORDPRESS_TYPE_ATOM; // Make ATOM default
 	}
 
 	// Replaces all 'link' tags with 'url' for simplehtmldom to actually find 'links' ('url')
@@ -54,18 +44,19 @@ class WordPressBridge extends BridgeAbstract {
 	}
 
 	public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
-		$this->processParams($param);
+		$param=$this->parameters[$this->queriedContext];
 
-		if (!$this->hasUrl()) {
-			$this->returnClientError('You must specify a URL');
-		}
-
-		$this->url = $this->url.'/feed/atom';
-		$html = $this->getSimpleHTMLDOM($this->url) or $this->returnServerError("Could not request {$this->url}.");
+		$html = $this->getSimpleHTMLDOM($this->getURI().'/feed/atom')
+				or $this->returnServerError("Could not request ".$this->getURI().'/feed/atom');
 
 		// Notice: We requested an ATOM feed, however some sites return RSS feeds instead!
-		$type = $this->DetectContentType($html);
+		if($html->find('entry')){
+				$type=WORDPRESS_TYPE_ATOM;
+		}else if($html->find('item')){
+				$type=WORDPRESS_TYPE_RSS;
+		}else{
+				$type=WORDPRESS_TYPE_ATOM; // Make ATOM default
+		}
 
 		if($type === WORDPRESS_TYPE_RSS)
 			$posts = $html->find('item');
@@ -126,8 +117,13 @@ class WordPressBridge extends BridgeAbstract {
 				}
 			}
 		} else {
-			$this->returnServerError("Sorry, {$this->url} doesn't seem to be a Wordpress blog.");
+			$this->returnServerError("Sorry, ".$this->getURI()." doesn't seem to be a Wordpress blog.");
 		}
+	}
+
+	public function getURI(){
+		$param=$this->parameters[$this->queriedContext];
+		return $param['url']['value'];
 	}
 
 	public function getName() {
@@ -136,16 +132,5 @@ class WordPressBridge extends BridgeAbstract {
 
 	public function getCacheDuration() {
 		return 3600*3; // 3 hours
-	}
-
-	private function hasUrl() {
-		if (empty($this->url)) {
-			return false;
-		}
-		return true;
-	}
-
-	private function processParams($param) {
-		$this->url = $param['url']['value'];
 	}
 }
