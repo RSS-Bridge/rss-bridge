@@ -37,7 +37,7 @@ class CNETBridge extends BridgeAbstract {
             return $article_html;
         }
 
-        $pageUrl = 'http://www.cnet.com/'.(empty($this->getInput('topic')) ? '' : 'topics/'.$this->getInput('topic').'/');
+        $pageUrl = $this->uri.(empty($this->getInput('topic')) ? '' : 'topics/'.$this->getInput('topic').'/');
         $html = $this->getSimpleHTMLDOM($pageUrl) or $this->returnServerError('Could not request CNET: '.$pageUrl);
         $limit = 0;
 
@@ -45,7 +45,7 @@ class CNETBridge extends BridgeAbstract {
             if ($limit < 8) {
 
                 $article_title = trim($element->find('h2', 0)->plaintext);
-                $article_uri = 'http://www.cnet.com'.($element->find('a', 0)->href);
+                $article_uri = $this->uri.($element->find('a', 0)->href);
                 $article_timestamp = strtotime($element->find('time.assetTime', 0)->plaintext);
                 $article_author = trim($element->find('a[rel=author]', 0)->plaintext);
 
@@ -69,7 +69,7 @@ class CNETBridge extends BridgeAbstract {
     }
 
     public function getName() {
-        return 'CNET News Bridge'.(empty($this->getInput('topic')) ? '' : ' - '.$this->param['topic']['value']);
+        return 'CNET News Bridge'.(empty($this->getInput('topic')) ? '' : ' - '.$this->getInput('topic'));
     }
 
     public function getCacheDuration() {
