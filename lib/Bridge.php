@@ -419,7 +419,7 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
             }
         }
 
-        return $content;
+        return str_get_html($content);
     }
 
      public function get_cached_time($url){
