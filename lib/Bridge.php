@@ -465,8 +465,8 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
         // TODO build this from the variable given to Cache
         $cacheDir = __DIR__ . '/../cache/pages/';
         $filepath = $this->buildCacheFilePath($url, $cacheDir);
-        $this->debugMessage('removing from cache \'' . $filepath . '\' WELL, NOT REALLY');
-        // unlink($filepath);
+        $this->debugMessage('removing from cache \'' . $filepath . '\'');
+        unlink($filepath);
     }
 }
 
