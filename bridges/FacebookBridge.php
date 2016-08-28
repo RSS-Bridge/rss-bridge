@@ -3,7 +3,7 @@ class FacebookBridge extends BridgeAbstract{
 
 	public $maintainer = "teromene";
 	public $name = "Facebook";
-	public $uri = "http://www.facebook.com/";
+	public $uri = "https://www.facebook.com/";
 	public $description = "Input a page title or a profile log. For a profile log, please insert the parameter as follow : myExamplePage/132621766841117";
 
     public $parameters =array( array(
@@ -12,6 +12,8 @@ class FacebookBridge extends BridgeAbstract{
             'required'=>true
         )
     ));
+
+    private $authorName='';
 
 	public function collectData(){
 
@@ -29,7 +31,7 @@ class FacebookBridge extends BridgeAbstract{
 			if (is_array($matches) && count($matches) > 1) {
 				$link = $matches[1];
 				if (strpos($link, '/') === 0)
-					$link = 'https://www.facebook.com'.$link.'"';
+					$link = $this->uri.$link.'"';
 				if (strpos($link, 'facebook.com/l.php?u=') !== false)
 					$link = urldecode(ExtractFromDelimiters($link, 'facebook.com/l.php?u=', '&'));
 				return ' href="'.$link.'"';
@@ -101,14 +103,12 @@ class FacebookBridge extends BridgeAbstract{
 
 		//Retrieve page contents
 		if (is_null($html)) {
-			if (isset($this->getInput('u'))) {
-				if (!strpos($this->getInput('u'), "/")) {
-					$html = $this->getSimpleHTMLDOM('https://www.facebook.com/'.urlencode($this->getInput('u')).'?_fb_noscript=1') or $this->returnServerError('No results for this query.');
-				} else {
-					$html = $this->getSimpleHTMLDOM('https://www.facebook.com/pages/'.$this->getInput('u').'?_fb_noscript=1') or $this->returnServerError('No results for this query.');
-				}
+			if (!strpos($this->getInput('u'), "/")) {
+                $html = $this->getSimpleHTMLDOM($this->uri.urlencode($this->getInput('u')).'?_fb_noscript=1')
+                    or $this->returnServerError('No results for this query.');
 			} else {
-				$this->returnClientError('You must specify a Facebook username.');
+                $html = $this->getSimpleHTMLDOM($this->uri.'pages/'.$this->getInput('u').'?_fb_noscript=1')
+                    or $this->returnServerError('No results for this query.');
 			}
 		}
 
@@ -123,7 +123,7 @@ class FacebookBridge extends BridgeAbstract{
 			foreach ($captcha->find('input, button') as $input)
 				$captcha_fields[$input->name] = $input->value;
 			$_SESSION['captcha_fields'] = $captcha_fields;
-			$_SESSION['captcha_action'] = 'https://www.facebook.com'.$captcha->find('form', 0)->action;
+			$_SESSION['captcha_action'] = $this->uri.$captcha->find('form', 0)->action;
 
 			//Show captcha filling form to the viewer, proxying the captcha image
 			$img = base64_encode($this->getContents($captcha->find('img', 0)->src));
@@ -146,7 +146,7 @@ class FacebookBridge extends BridgeAbstract{
 
 			$author = str_replace(' | Facebook', '', $html->find('title#pageTitle', 0)->innertext);
 			$profilePic = 'https://graph.facebook.com/'.$this->getInput('u').'/picture?width=200&amp;height=200';
-			$this->name = $author;
+			$this->authorName = $author;
 
 			foreach($element->children() as $post) {
 
@@ -192,7 +192,7 @@ class FacebookBridge extends BridgeAbstract{
 						$title = substr($title, 0, strpos(wordwrap($title, 64), "\n")).'...';
 
 					//Build and add final item
-					$item['uri'] = 'https://facebook.com'.$post->find('abbr')[0]->parent()->getAttribute('href');
+					$item['uri'] = $this->uri.$post->find('abbr')[0]->parent()->getAttribute('href');
 					$item['content'] = $content;
 					$item['title'] = $title;
 					$item['author'] = $author;
@@ -203,14 +203,8 @@ class FacebookBridge extends BridgeAbstract{
 		}
 	}
 
-	public function setDatas(array $param){
-		if (isset($this->getInput('captcha_response')))
-			unset($this->getInput('captcha_response'));
-		parent::setDatas($param);
-	}
-
 	public function getName() {
-		return (isset($this->name) ? $this->name.' - ' : '').'Facebook Bridge';
+		return (isset($this->authorName) ? $this->authorName.' - ' : '').'Facebook Bridge';
 	}
 
 	public function getCacheDuration() {
