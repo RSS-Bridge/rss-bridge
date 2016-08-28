@@ -74,11 +74,8 @@ class CastorusBridge extends BridgeAbstract {
 	}
 
 	public function collectData(){
-		if(isset($this->getInput('zip')))
-			$zip_filter = trim($this->getInput('zip'));
-
-		if(isset($this->getInput('city')))
-			$city_filter = trim($this->getInput('city'));
+        $zip_filter = trim($this->getInput('zip'));
+        $city_filter = trim($this->getInput('city'));
 
 		$html = $this->getSimpleHTMLDOM($this->uri);
 
