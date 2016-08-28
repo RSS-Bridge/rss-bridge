@@ -19,9 +19,10 @@ class WikipediaBridge extends BridgeAbstract{
             'exampleValue'=>'English',
             'values'=>array(
               'English'=>'en',
-              'German'=>'de',
+              'Dutch'=>'nl',
+              'Esperanto'=>'es',
               'French'=>'fr',
-              'Esperanto'=>'es'
+              'German'=>'de',
             )
           ),
           'subject'=>array(
@@ -101,7 +102,7 @@ class WikipediaBridge extends BridgeAbstract{
 		$function = 'GetContents' . strtoupper($params['language']['value']);
 
 		if(!method_exists($this, $function))
-			$this->returnServerError('A function to get the contents for your langauage is missing (\'' . $function . '\')!');
+			$this->returnServerError('A function to get the contents for your language is missing (\'' . $function . '\')!');
 
 		/*
 		* The method takes care of creating all items.
@@ -134,15 +135,18 @@ class WikipediaBridge extends BridgeAbstract{
 
 	/*
 	* Adds a new item to $items using a generic operation (should work for most (all?) wikis)
+	* $anchorText can be specified if the wiki in question doesn't use '...' (like Dutch, French and Italian)
+	* $anchorFallbackIndex can be used to specify a different fallback link than the first (e.g., -1 for the last)
 	*/
-	private function AddTodaysFeaturedArticleGeneric($element, $fullArticle){
+	private function AddTodaysFeaturedArticleGeneric($element, $fullArticle, $anchorText = '...', $anchorFallbackIndex = 0){
 		// Clean the bottom of the featured article
-		$element->find('div', -1)->outertext = '';
+		if ($element->find('div', -1))
+			$element->find('div', -1)->outertext = '';
 
-		// The title and URI of the article is best defined in an anchor containint the string '...' ('full article ...')
-		$target = $element->find('p/a', 0); // We'll use the first anchor as fallback
+		// The title and URI of the article can be found in an anchor containing the string '...' in most wikis ('full article ...')
+		$target = $element->find('p/a', $anchorFallbackIndex);
 		foreach($element->find('//a') as $anchor){
-			if(strpos($anchor->innertext, '...') !== false){
+			if(strpos($anchor->innertext, $anchorText) !== false){
 				$target = $anchor;
 				break;
 			}
@@ -230,7 +234,7 @@ class WikipediaBridge extends BridgeAbstract{
 		switch($subject){
 			case WIKIPEDIA_SUBJECT_TFA:
 				$element = $html->find('div[id=accueil-lumieresur]', 0);
-				$this->AddTodaysFeaturedArticleGeneric($element, $fullArticle);
+				$this->AddTodaysFeaturedArticleGeneric($element, $fullArticle, 'Lire la suite');
 				break;
 			case WIKIPEDIA_SUBJECT_DYK:
 				$element = $html->find('div[id=SaviezVous]', 0);
@@ -270,6 +274,24 @@ class WikipediaBridge extends BridgeAbstract{
 				break;
 			case WIKIPEDIA_SUBJECT_DYK:
 				$element = $html->find('div[id=mw-content-text]', 0)->find('table', 4)->find('td', 4);
+				$this->AddDidYouKnowGeneric($element, $fullArticle);
+				break;
+			default:
+				break;
+		}
+	}
+
+	/**
+	* Implementation for nl.wikipedia.org
+	*/
+	private function GetContentsNL($html, $subject, $fullArticle){
+		switch($subject){
+			case WIKIPEDIA_SUBJECT_TFA:
+				$element = $html->find('div[id=mf-uitgelicht]', 0);
+				$this->AddTodaysFeaturedArticleGeneric($element, $fullArticle, 'Lees meer');
+				break;
+			case WIKIPEDIA_SUBJECT_DYK:
+				$element = $html->find('div[id=mw-content-text]', 0)->find('table', 4)->find('td', 2);
 				$this->AddDidYouKnowGeneric($element, $fullArticle);
 				break;
 			default:
