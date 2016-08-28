@@ -1,7 +1,6 @@
 <?php
 class BooruprojectBridge extends BridgeAbstract{
 
-
 	public $maintainer = "mitsukarenai";
 	public $name = "Booruproject";
 	public $uri = "http://booru.org/";
@@ -12,29 +11,28 @@ class BooruprojectBridge extends BridgeAbstract{
             'name'=>'instance (required)',
             'required'=>true
           ),
-          'p'=>array('name'=>'page'),
+          'p'=>array(
+              'name'=>'page',
+              'type'=>'number'
+          ),
           't'=>array('name'=>'tags')
         ));
 
+    function getURI(){
+        return 'http://'.$this->getInput('i').'.booru.org/';
+    }
+
     public function collectData(){
-	$page = 0; $tags = '';
-        if (!empty($this->getInput('p'))) {
-		$page = (int)preg_replace("/[^0-9]/",'', $this->getInput('p'));
-		$page = $page - 1;
-		$page = $page * 20;
-        }
-        if (!empty($this->getInput('t'))) {
-            $tags = '&tags='.urlencode($this->getInput('t'));
-        }
-	if (empty($this->getInput('i'))) {
-		$this->returnServerError('Please enter a ***.booru.org instance.');
-	}
-        $html = $this->getSimpleHTMLDOM("http://".$this->getInput('i').".booru.org/index.php?page=post&s=list&pid=".$page.$tags) or $this->returnServerError('Could not request Booruproject.');
+        $html = $this->getSimpleHTMLDOM(
+            $this->getURI().'index.php?page=post&s=list'
+            .'&pid='.($this->getInput('p')?($this->getInput('p') -1)*20:'')
+            .'&tags='.urlencode($this->getInput('t'))
+        ) or $this->returnServerError('Could not request Booruprojec.');
 
 
 	foreach($html->find('div[class=content] span') as $element) {
 		$item = array();
-		$item['uri'] = 'http://'.$this->getInput('i').'.booru.org/'.$element->find('a', 0)->href;
+		$item['uri'] = $this->getURI().$element->find('a', 0)->href;
 		$item['postid'] = (int)preg_replace("/[^0-9]/",'', $element->find('a', 0)->getAttribute('id'));
 		$item['timestamp'] = time();
 		$item['tags'] = $element->find('img', 0)->getAttribute('title');
