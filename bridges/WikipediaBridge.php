@@ -20,7 +20,7 @@ class WikipediaBridge extends BridgeAbstract{
             'values'=>array(
               'English'=>'en',
               'Dutch'=>'nl',
-              'Esperanto'=>'es',
+              'Esperanto'=>'eo',
               'French'=>'fr',
               'German'=>'de',
             )
