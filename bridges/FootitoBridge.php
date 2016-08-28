@@ -7,7 +7,8 @@ class FootitoBridge extends BridgeAbstract{
 	public $description = "Footito";
 
     public function collectData(){
-        $html = $this->getSimpleHTMLDOM('http://www.footito.fr/') or $this->returnServerError('Could not request Footito.');
+        $html = $this->getSimpleHTMLDOM($this->uri)
+            or $this->returnServerError('Could not request Footito.');
 
         foreach($html->find('div.post') as $element) {
             $item = array();
