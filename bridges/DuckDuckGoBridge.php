@@ -13,10 +13,8 @@ class DuckDuckGoBridge extends BridgeAbstract{
         ));
 
     public function collectData(){
-        $html = '';
-        $link = 'http://duckduckgo.com/html/?q='.$this->getInput('u').'+sort:date';
-
-        $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request DuckDuckGo.');
+        $html = $this->getSimpleHTMLDOM($this->uri.'html/?q='.$this->getInput('u').'+sort:date')
+            or $this->returnServerError('Could not request DuckDuckGo.');
 
         foreach($html->find('div.results_links') as $element) {
                 $item = array();
