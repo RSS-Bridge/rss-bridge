@@ -3,17 +3,18 @@ class EliteDangerousGalnetBridge extends BridgeAbstract
 {
 	public $maintainer = "corenting";
 	public $name = "Elite: Dangerous Galnet";
-	public $uri = "https://community.elitedangerous.com/galnet";
+	public $uri = "https://community.elitedangerous.com/galnet/";
 	public $description = "Returns the latest page of news from Galnet";
 
 	public function collectData()
 	{
-		$html = $this->getSimpleHTMLDOM('https://community.elitedangerous.com/galnet') or $this->returnServerError('Error while downloading the website content');
+        $html = $this->getSimpleHTMLDOM($this->uri)
+            or $this->returnServerError('Error while downloading the website content');
 		foreach($html->find('div.article') as $element) {
 			$item = array();
 
 			$uri = $element->find('h3 a', 0)->href;
-			$uri = 'https://community.elitedangerous.com' . $uri;
+			$uri = $this->uri . substr($uri,strlen('/galnet/'));
 			$item['uri'] = $uri;
 
 			$title = $element->find('h3 a', 0)->plaintext;
