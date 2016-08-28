@@ -15,21 +15,15 @@ class GelbooruBridge extends BridgeAbstract{
     ));
 
     public function collectData(){
-	$page = 0;
-        if ($this->getInput('p')) {
-		$page = (int)preg_replace("/[^0-9]/",'', $this->getInput('p'));
-		$page = $page - 1;
-		$page = $page * 63;
-        }
-        if ($this->getInput('t')) {
-            $tags = urlencode($this->getInput('t'));
-        }
-        $html = $this->getSimpleHTMLDOM("http://gelbooru.com/index.php?page=post&s=list&tags=$tags&pid=$page") or $this->returnServerError('Could not request Gelbooru.');
-
+        $html = $this->getSimpleHTMLDOM(
+            $this->uri.'index.php?page=post&s=list&'
+            .'&pid='.($this->getInput('p')?($this->getInput('p') -1)*63:'')
+            .'&tags='.urlencode($this->getInput('t'))
+        ) or $this->returnServerError('Could not request Gelbooru.');
 
 	foreach($html->find('div[class=content] span') as $element) {
 		$item = array();
-		$item['uri'] = 'http://gelbooru.com/'.$element->find('a', 0)->href;
+		$item['uri'] = $this->uri.$element->find('a', 0)->href;
 		$item['postid'] = (int)preg_replace("/[^0-9]/",'', $element->getAttribute('id'));
 		$item['timestamp'] = time();
 		$thumbnailUri = $element->find('img', 0)->src;
