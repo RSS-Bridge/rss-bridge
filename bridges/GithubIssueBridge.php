@@ -3,7 +3,7 @@ class GithubIssueBridge extends BridgeAbstract{
 
   public $maintainer = 'Pierre Mazière';
   public $name = 'Github Issue';
-  public $uri = '';
+  public $uri = 'https://github.com/';
   public $description = 'Returns the issues or comments of an issue of a github project';
 
   public $parameters=array(
@@ -29,11 +29,13 @@ class GithubIssueBridge extends BridgeAbstract{
   );
 
   public function collectData(){
-    $uri = 'https://github.com/'.$this->getInput('u').'/'.$this->getInput('p').'/issues/'.($this->getInput('i')?$this->getInput('i'):'');
+    $uri = $this->uri.$this->getInput('u').'/'.$this->getInput('p')
+      .'/issues/'.$this->getInput('i');
     $html = $this->getSimpleHTMLDOM($uri)
       or $this->returnServerError('No results for Github Issue '.$this->getInput('i').' in project '.$this->getInput('u').'/'.$this->getInput('p'));
 
-    if($this->getInput('i')){
+    switch($this->queriedContext){
+    case 'Issue Comments':
       foreach($html->find('.js-comment-container') as $comment){
 
         $item = array();
@@ -48,19 +50,20 @@ class GithubIssueBridge extends BridgeAbstract{
 
         $this->items[]=$item;
       }
-    }else{
+      break;
+    case 'Project Issues':
       foreach($html->find('.js-active-navigation-container .js-navigation-item') as $issue){
         $item=array();
         $info=$issue->find('.opened-by',0);
         $item['author']=$info->find('a',0)->plaintext;
         $item['timestamp']=strtotime($info->find('relative-time',0)->getAttribute('datetime'));
         $item['title']=$issue->find('.js-navigation-open',0)->plaintext;
-        $comments=$issue->firstChild()->firstChild()
-          ->nextSibling()->nextSibling()->nextSibling()->plaintext;
+        $comments=$issue->find('.col-5',0)->plaintext;
         $item['content']='Comments: '.($comments?$comments:'0');
-        $item['uri']='https://github.com'.$issue->find('.js-navigation-open',0)->getAttribute('href');
+        $item['uri']=$this->uri.$issue->find('.js-navigation-open',0)->getAttribute('href');
         $this->items[]=$item;
       }
+      break;
     }
   }
 
