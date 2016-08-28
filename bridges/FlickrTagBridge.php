@@ -8,32 +8,35 @@ class FlickrTagBridge extends BridgeAbstract{
 
     public $parameters = array(
         'By keyword' => array(
-            'q'=>array('name'=>'keyword')
+            'q'=>array(
+                'name'=>'keyword',
+                'required'=>true
+            )
         ),
 
         'By username' => array(
-            'u'=>array('name'=>'Username')
+            'u'=>array(
+                'name'=>'Username',
+                'required'=>true
+            )
         ),
     );
 
     public function collectData(){
-        $html = $this->getSimpleHTMLDOM('http://www.flickr.com/search/?q=vendee&s=rec') or $this->returnServerError('Could not request Flickr.');
-        if ($this->getInput('q')) {   /* keyword search mode */
-            $this->request = $this->getInput('q');
-            $html = $this->getSimpleHTMLDOM('http://www.flickr.com/search/?q='.urlencode($this->request).'&s=rec') or $this->returnServerError('No results for this query.');
-        }
-        elseif ($this->getInput('u')) {   /* user timeline mode */
-            $this->request = $this->getInput('u');
-            $html = $this->getSimpleHTMLDOM('http://www.flickr.com/photos/'.urlencode($this->request).'/') or $this->returnServerError('Requested username can\'t be found.');
-        }
-
-        else {
-            $this->returnClientError('You must specify a keyword or a Flickr username.');
+        switch($this->queriedContext){
+        case 'By keyword':
+            $html = $this->getSimpleHTMLDOM($this->uri.'search/?q='.urlencode($this->getInput('q')).'&s=rec')
+                or $this->returnServerError('No results for this query.');
+            break;
+        case 'by username':
+            $html = $this->getSimpleHTMLDOM($this->uri.'photos/'.urlencode($this->getInput('u')).'/')
+                or $this->returnServerError('Requested username can\'t be found.');
+            break;
         }
 
         foreach($html->find('span.photo_container') as $element) {
             $item = array();
-            $item['uri'] = 'http://flickr.com'.$element->find('a',0)->href;
+            $item['uri'] = $this->uri.$element->find('a',0)->href;
             $thumbnailUri = $element->find('img',0)->getAttribute('data-defer-src');
             $item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $thumbnailUri . '" /></a>'; // FIXME: Filter javascript ?
             $item['title'] = $element->find('a',0)->title;
