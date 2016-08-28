@@ -15,18 +15,14 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
     ));
 
     public function collectData(){
-        $html = '';
-        if (isset($this->getInput('q'))) {   /* keyword search mode */
-            $request = str_replace(" ","-",trim($this->getInput('q')));
-            $html = $this->getSimpleHTMLDOM($this->uri.'/recherche/'.urlencode($request).'.html') or $this->returnServerError('No results for this query.');
-        } else {
-            $this->returnClientError('You must specify a keyword (?q=...).');
-        }
+        $request = str_replace(" ","-",trim($this->getInput('q')));
+        $html = $this->getSimpleHTMLDOM($this->uri.'/recherche/'.urlencode($request).'.html')
+            or $this->returnServerError('No results for this query.');
 
         foreach ($html->find('#gauche',0)->find('div') as $episode) {
-            if ($episode->getAttribute('class')=='ligne0' || $episode->getAttribute('class')=='ligne1')
+            if ($episode->getAttribute('class')=='ligne0' ||
+                $episode->getAttribute('class')=='ligne1')
             {
-
                 $htmlepisode=str_get_html($this->get_cached($episode->find('a', 0)->getAttribute('href')));
 
                 $item = array();
@@ -52,8 +48,7 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
 
 
     public function getName(){
-        return $this->parameters[$this->queriedContext]['q']['value']
-            .' : '.$this->name;
+        return $this->getInput('q').' : '.$this->name;
     }
 
     public function getCacheDuration(){
