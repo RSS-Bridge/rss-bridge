@@ -29,16 +29,13 @@ class EZTVBridge extends BridgeAbstract{
                 return mktime(date('h')-$relativeHours,0,0,date('m'),date('d')-$relativeDays,date('Y'));
         }
 
-        // Check for ID provided
-        if (!isset($this->getInput('i')))
-			$this->returnClientError('You must provide a list of ID (?i=showID1,showID2,...)');
-
         // Loop on show ids
         $showList = explode(",",$this->getInput('i'));
         foreach($showList as $showID){
 
             // Get show page
-            $html = $this->getSimpleHTMLDOM('https://eztv.ch/shows/'.rawurlencode($showID).'/') or $this->returnServerError('Could not request EZTV for id "'.$showID.'"');
+            $html = $this->getSimpleHTMLDOM($this->uri.'shows/'.rawurlencode($showID).'/')
+                or $this->returnServerError('Could not request EZTV for id "'.$showID.'"');
 
             // Loop on each element that look like an episode entry...
             foreach($html->find('.forum_header_border') as $element) {
@@ -56,7 +53,7 @@ class EZTVBridge extends BridgeAbstract{
 
                 // Fill item
                 $item = array();
-                $item['uri'] = 'https://eztv.ch/'.$epinfo->href;
+                $item['uri'] = $this->uri.$epinfo->href;
                 $item['id'] = $item['uri'];
                 $item['timestamp'] = makeTimestamp($released->plaintext);
                 $item['title'] = $epinfo->plaintext;
