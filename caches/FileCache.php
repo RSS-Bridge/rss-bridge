@@ -88,6 +88,7 @@ class FileCache extends CacheAbstract{
         $this->isPrepareCache();
 
         $stringToEncode = $_SERVER['REQUEST_URI'] . http_build_query($this->param);
+        $stringToEncode = preg_replace('/(\?|&)format=[^&]*/i', '$1', $stringToEncode);
         return hash('sha1', $stringToEncode) . '.cache';
     }
 }
