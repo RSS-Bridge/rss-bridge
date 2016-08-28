@@ -33,7 +33,7 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
             if ($episode->getAttribute('class')=='ligne0' || $episode->getAttribute('class')=='ligne1')
             {
 
-                $htmlepisode=str_get_html($this->get_cached($episode->find('a', 0)->getAttribute('href')));
+                $htmlepisode=$this->get_cached($episode->find('a', 0)->getAttribute('href'));
 
                 $item = array();
                 $item['author'] = $episode->find('a', 0)->text();
