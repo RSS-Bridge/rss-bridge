@@ -3,7 +3,7 @@
 define('WIKIPEDIA_SUBJECT_TFA', 0); // Today's featured article
 define('WIKIPEDIA_SUBJECT_DYK', 1); // Did you know...
 
-class WikipediaBridge extends BridgeAbstract{
+class WikipediaBridge extends HttpCachingBridgeAbstract {
 	public function loadMetadatas(){
 		$this->maintainer = 'logmanoriginal';
 		$this->name = 'Wikipedia bridge for many languages';
@@ -188,7 +188,10 @@ class WikipediaBridge extends BridgeAbstract{
 	* Loads the full article from a given URI
 	*/
 	private function LoadFullArticle($uri){
-		$content_html = $this->getSimpleHTMLDOM($uri);
+		if($this->get_cached_time($uri) <= strtotime('-24 hours'))
+			$this->remove_from_cache($uri);
+
+		$content_html = $this->get_cached($uri);
 
 		if(!$content_html)
 			$this->returnServerError('Could not load site: ' . $uri . '!');

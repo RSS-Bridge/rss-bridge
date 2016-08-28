@@ -43,7 +43,7 @@ class TheOatmealBridge extends RssExpander{
         $item['uri']=(string) $newsItem->attributes($namespaces['rdf'])->about;
         // now load that uri from cache
         $this->debugMessage("now loading page ".$item['uri']);
-        $articlePage = str_get_html($this->get_cached($item['uri']));
+        $articlePage = $this->get_cached($item['uri']);
 
         $content = $articlePage->find('#comic', 0);
 		if($content==null) {

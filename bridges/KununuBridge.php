@@ -1,5 +1,5 @@
 <?php
-class KununuBridge extends BridgeAbstract{
+class KununuBridge extends HttpCachingBridgeAbstract {
 	public function loadMetadatas(){
 		$this->maintainer = "logmanoriginal";
 		$this->name = "Kununu Bridge"; /* This will be replaced later! */
@@ -248,7 +248,10 @@ class KununuBridge extends BridgeAbstract{
 	*/
 	private function extract_full_description($uri){
 		// Load full article
-		$html = $this->getSimpleHTMLDOM($uri);
+		if($this->get_cached_time($uri) <= strtotime('-24 hours'))
+			$this->remove_from_cache($uri);
+
+		$html = $this->get_cached($uri);
 		if($html === false)
 			$this->returnServerError('Could not load full description!');
 

@@ -25,7 +25,7 @@ class FreenewsBridge extends RssExpander {
         }
         // now load that uri from cache
         $this->debugMessage("now loading page ".$item['uri']);
-        $articlePage = str_get_html($this->get_cached($item['uri']));
+        $articlePage = $this->get_cached($item['uri']);
 
         $content = $articlePage->find('.post-container', 0);
         $item['content'] = $content->innertext;

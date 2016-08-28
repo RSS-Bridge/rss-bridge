@@ -45,7 +45,7 @@ class GawkerBridge extends RssExpander{
         try {
             // now load that uri from cache
             $this->debugMessage("loading page ".$item['uri']);
-            $articlePage = str_get_html($this->get_cached($item['uri']));
+            $articlePage = $this->get_cached($item['uri']);
             if(is_object($articlePage)) {
                 $content = $articlePage->find('.post-content', 0);
                 HTMLSanitizer::defaultImageSrcTo($content, $this->getURI());

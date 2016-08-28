@@ -58,7 +58,7 @@ class WorldOfTanksBridge extends HttpCachingBridgeAbstract{
         $item['uri'] = $this->uri.$infoLink->href;
         // now load that uri from cache
         $this->debugMessage("loading page ".$item['uri']);
-        $articlePage = str_get_html($this->get_cached($item['uri']));
+        $articlePage = $this->get_cached($item['uri']);
         $content = $articlePage->find('.l-content', 0);
         HTMLSanitizer::defaultImageSrcTo($content, $this->uri);
         $item['title'] = $content->find('h1', 0)->innertext;

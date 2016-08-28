@@ -1,7 +1,7 @@
 <?php
 define('WORDPRESS_TYPE_ATOM', 1); // Content is of type ATOM
 define('WORDPRESS_TYPE_RSS', 2); // Content is of type RSS
-class WordPressBridge extends BridgeAbstract {
+class WordPressBridge extends HttpCachingBridgeAbstract {
 
 	private $url;
 	public $sitename; // Name of the site
@@ -95,7 +95,10 @@ class WordPressBridge extends BridgeAbstract {
 						$item['timestamp'] = strtotime($article->find('updated', 0)->innertext);
 					}
 
-					$article_html = $this->getSimpleHTMLDOM($item['uri']);
+					if($this->get_cached_time($item['uri']) <= strtotime('-24 hours'))
+						$this->remove_from_cache($item['uri']);
+
+					$article_html = $this->get_cached($item['uri']);
 
 					// Attempt to find most common content div
 					if(!isset($item['content'])){
