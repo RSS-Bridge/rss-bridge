@@ -31,7 +31,7 @@ class DauphineLibereBridge extends BridgeAbstract {
     ));
 
 	private function ExtractContent($url, $context) {
-		$html2 = $this->getSimpleHTMLDOM($url,false,$context);
+		$html2 = $this->getSimpleHTMLDOM($url);
 		$text = $html2->find('div.column', 0)->innertext;
 		$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
 		return $text;
@@ -39,22 +39,14 @@ class DauphineLibereBridge extends BridgeAbstract {
 
 	public function collectData(){
 
-		// Simulate Mozilla user-agent to fix error 403 (Forbidden)
-		$opts = array('http' =>
-			array(
-				'method'  => 'GET',
-				'header'  => 'User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
-			)
-		);
-
 		$context = stream_context_create($opts);
 
-		if (isset($this->getInput('u'))) { /* user timeline mode */
-			$this->request = $this->getInput('u');
-			$html = $this->getSimpleHTMLDOM('http://www.ledauphine.com/'.$this->request.'/rss',false,$context) or $this->returnServerError('Could not request DauphineLibere.');
-		}
-		else {
-			$html = $this->getSimpleHTMLDOM('http://www.ledauphine.com/rss',false,$context) or $this->returnServerError('Could not request DauphineLibere.');
+		if (empty($this->getInput('u'))) {
+            $html = $this->getSimpleHTMLDOM($this->uri.$this->getInput('u').'/rss')
+                or $this->returnServerError('Could not request DauphineLibere.');
+		} else {
+            $html = $this->getSimpleHTMLDOM($this->uri.'rss')
+                or $this->returnServerError('Could not request DauphineLibere.');
 		}
 		$limit = 0;
 
