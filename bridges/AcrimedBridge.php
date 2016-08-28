@@ -9,7 +9,7 @@ class AcrimedBridge extends RssExpander{
 
        public function collectData(){
 
-			parent::collectExpandableDatas("http://www.acrimed.org/spip.php?page=backend");
+			$this->collectExpandableDatas("http://www.acrimed.org/spip.php?page=backend");
 
 		}
 
