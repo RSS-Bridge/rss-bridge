@@ -43,30 +43,31 @@
             )
         );
 
-    protected  function extractVideoset($category='toutes-les-videos', $lang='fr'){
-        $url = 'http://www.arte.tv/guide/'.$lang.'/plus7/'.$category;
-        $input = $this->getContents($url) or die('Could not request ARTE.');
-        if(strpos($input, 'categoryVideoSet') !== FALSE){
-            $input = explode('categoryVideoSet: ', $input);
-            $input = explode('}},', $input[1]);
-            $input = $input[0].'}}';
-        }else{
-            $input = explode('videoSet: ', $input);
-            $input = explode('}]},', $input[1]);
-            $input = $input[0].'}]}';
-        }
-        $input = json_decode($input, TRUE);
-        return $input;
-    }
-
     public function collectData(){
 
-      $category='toutes-les-videos'; $lang='fr';
-      if (!empty($this->getInput('catfr')))
-         $category=$this->getInput('catfr');
-      if (!empty($this->getInput('catde')))
-         { $category=$this->getInput('catde'); $lang='de'; }
-      $input_json = $this->extractVideoset($category, $lang);
+      switch($this->queriedContext){
+      case 'Catégorie (Français)':
+        $category=$this->getInput('catfr');
+        $lang='fr';
+        break;
+      case 'Catégorie (Allemand)':
+        $category=$this->getInput('catde');
+        $lang='de';
+        break;
+      }
+
+      $url = $this->uri.'guide/'.$lang.'/plus7/'.$category;
+      $input = $this->getContents($url) or die('Could not request ARTE.');
+      if(strpos($input, 'categoryVideoSet') !== FALSE){
+        $input = explode('categoryVideoSet: ', $input);
+        $input = explode('}},', $input[1]);
+        $input = $input[0].'}}';
+      }else{
+        $input = explode('videoSet: ', $input);
+        $input = explode('}]},', $input[1]);
+        $input = $input[0].'}]}';
+      }
+      $input_json = json_decode($input, TRUE);
 
       foreach($input_json['videos'] as $element) {
             $item = array();
