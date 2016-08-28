@@ -30,7 +30,8 @@ class CollegeDeFranceBridge extends BridgeAbstract{
 		 * 	</a>
 		 * </li>
 		 */
-		$html = $this->getSimpleHTMLDOM('http://www.college-de-france.fr/components/search-audiovideo.jsp?fulltext=&siteid=1156951719600&lang=FR&type=all') or $this->returnServerError('Could not request CollegeDeFrance.');
+        $html = $this->getSimpleHTMLDOM($this->uri.'components/search-audiovideo.jsp?fulltext=&siteid=1156951719600&lang=FR&type=all')
+            or $this->returnServerError('Could not request CollegeDeFrance.');
 		foreach($html->find('a[data-target]') as $element) {
 			$item = array();
 			$item['title'] = $element->find('.title', 0)->plaintext;
@@ -43,10 +44,25 @@ class CollegeDeFranceBridge extends BridgeAbstract{
 			// <a href="/site/institut-physique/The-Mysteries-of-Decoherence-Sebastien-Gleyzes-[Video-3-35].htm" data-target="after">
 			$timezone = new DateTimeZone('Europe/Paris');
 			// strpos($element->href, '201') will break in 2020 but it'll probably break prior to then due to site changes anyway
-			$d = DateTime::createFromFormat('!Y-m-d-H\hi', substr($element->href, strpos($element->href, '201'), 16), $timezone) ?: DateTime::createFromFormat('!d m Y', trim(str_replace(array_values($months), array_keys($months), $element->find('.date', 0)->plaintext)), $timezone);
-			$item['timestamp'] = $d->format('U');
+            $d = DateTime::createFromFormat(
+                '!Y-m-d-H\hi',
+                substr($element->href, strpos($element->href, '201'), 16),
+                $timezone
+            );
+            if(!$d){
+                $d=DateTime::createFromFormat(
+                    '!d m Y',
+                    trim(str_replace(
+                        array_values($months),
+                        array_keys($months),
+                        $element->find('.date', 0)->plaintext
+                    )),
+                    $timezone
+                );
+            }
+            $item['timestamp'] = $d->format('U');
 			$item['content'] =  $element->find('.lecturer', 0)->innertext . ' - ' . $element->find('.title', 0)->innertext;
-			$item['uri'] = 'http://www.college-de-france.fr' . $element->href;
+			$item['uri'] = $this->uri . $element->href;
 			$this->items[] = $item;
 		}
 	}
