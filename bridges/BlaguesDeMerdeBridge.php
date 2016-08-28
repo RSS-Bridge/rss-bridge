@@ -8,7 +8,8 @@ class BlaguesDeMerdeBridge extends BridgeAbstract{
 
 
     public function collectData(){
-        $html = $this->getSimpleHTMLDOM('http://www.blaguesdemerde.fr/') or $this->returnServerError('Could not request BDM.');
+        $html = $this->getSimpleHTMLDOM($this->uri)
+            or $this->returnServerError('Could not request BDM.');
 
         foreach($html->find('article.joke_contener') as $element) {
             $item = array();
