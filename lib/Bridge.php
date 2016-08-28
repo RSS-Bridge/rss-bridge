@@ -319,7 +319,11 @@ abstract class BridgeAbstract implements BridgeInterface {
                     break;
                 case 'list':
                     if(!isset($properties['defaultValue'])){
-                        $this->inputs[$context][$name]['value']=reset($properties['values']);
+                        $firstItem=reset($properties['values']);
+                        if(is_array($firstItem)){
+                            $firstItem=reset($firstItem);
+                        }
+                        $this->inputs[$context][$name]['value']=$firstItem;
                     }else{
                         $this->inputs[$context][$name]['value']=$properties['defaultValue'];
                     }
