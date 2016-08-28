@@ -108,11 +108,11 @@ class YoutubeBridge extends BridgeAbstract {
 		$url_feed = '';
 		$url_listing = '';
 
-		if (isset($this->getInput('u'))) { /* User and Channel modes */
+		if ($this->getInput('u')) { /* User and Channel modes */
 			$this->request = $this->getInput('u');
 			$url_feed = $this->uri.'feeds/videos.xml?user='.urlencode($this->request);
 			$url_listing = $this->uri.'user/'.urlencode($this->request).'/videos';
-		} else if (isset($this->getInput('c'))) {
+		} else if ($this->getInput('c')) {
 			$this->request = $this->getInput('c');
 			$url_feed = $this->uri.'feeds/videos.xml?channel_id='.urlencode($this->request);
 			$url_listing = $this->uri.'channel/'.urlencode($this->request).'/videos';
@@ -125,7 +125,7 @@ class YoutubeBridge extends BridgeAbstract {
 			} else $this->returnServerError("Could not request YouTube. Tried:\n - $url_feed\n - $url_listing");
 		}
 
-		else if (isset($this->getInput('p'))) { /* playlist mode */
+		else if ($this->getInput('p')) { /* playlist mode */
 			$this->request = $this->getInput('p');
 			$url_listing = $this->uri.'playlist?list='.urlencode($this->request);
 			$html = $this->getSimpleHTMLDOM($url_listing) or $this->returnServerError("Could not request YouTube. Tried:\n - $url_listing");
@@ -133,8 +133,8 @@ class YoutubeBridge extends BridgeAbstract {
 			$this->request = 'Playlist: '.str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
 		}
 
-		else if (isset($this->getInput('s'))) { /* search mode */
-			$this->request = $this->getInput('s'); $page = 1; if (isset($this->getInput('pa'))) $page = (int)preg_replace("/[^0-9]/",'', $this->getInput('pa'));
+		else if ($this->getInput('s')) { /* search mode */
+			$this->request = $this->getInput('s'); $page = 1; if ($this->getInput('pa')) $page = (int)preg_replace("/[^0-9]/",'', $this->getInput('pa'));
 			$url_listing = $this->uri.'results?search_query='.urlencode($this->request).'&page='.$page.'&filters=video&search_sort=video_date_uploaded';
 			$html = $this->getSimpleHTMLDOM($url_listing) or $this->returnServerError("Could not request YouTube. Tried:\n - $url_listing");
 			$this->ytBridgeParseHtmlListing($html, 'div.yt-lockup', 'h3');

@@ -16,12 +16,12 @@ class GelbooruBridge extends BridgeAbstract{
 
     public function collectData(){
 	$page = 0;
-        if (isset($this->getInput('p'))) {
+        if ($this->getInput('p')) {
 		$page = (int)preg_replace("/[^0-9]/",'', $this->getInput('p'));
 		$page = $page - 1;
 		$page = $page * 63;
         }
-        if (isset($this->getInput('t'))) {
+        if ($this->getInput('t')) {
             $tags = urlencode($this->getInput('t'));
         }
         $html = $this->getSimpleHTMLDOM("http://gelbooru.com/index.php?page=post&s=list&tags=$tags&pid=$page") or $this->returnServerError('Could not request Gelbooru.');

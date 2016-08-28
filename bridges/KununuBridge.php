@@ -52,7 +52,7 @@ class KununuBridge extends HttpCachingBridgeAbstract {
 			$this->returnClientError('You must specify a company (&company=...)!');
 
 		$full = false; // By default we'll load only short article
-		if(isset($this->getInput('full')))
+		if($this->getInput('full'))
 			$full = strtolower(trim($this->getInput('full')));
 
 		// Get reviews section name (depends on site)

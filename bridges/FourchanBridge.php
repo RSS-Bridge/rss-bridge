@@ -12,7 +12,7 @@ class FourchanBridge extends BridgeAbstract{
 
   public function collectData(){
 
-	if (!isset($this->getInput('t')))
+	if (!$this->getInput('t'))
 		$this->returnClientError('You must specify the thread URL (?t=...)');
 
 	$thread = parse_url($this->getInput('t')) or $this->returnClientError('This URL seems malformed, please check it.');

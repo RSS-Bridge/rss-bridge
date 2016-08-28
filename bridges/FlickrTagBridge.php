@@ -18,11 +18,11 @@ class FlickrTagBridge extends BridgeAbstract{
 
     public function collectData(){
         $html = $this->getSimpleHTMLDOM('http://www.flickr.com/search/?q=vendee&s=rec') or $this->returnServerError('Could not request Flickr.');
-        if (isset($this->getInput('q'))) {   /* keyword search mode */
+        if ($this->getInput('q')) {   /* keyword search mode */
             $this->request = $this->getInput('q');
             $html = $this->getSimpleHTMLDOM('http://www.flickr.com/search/?q='.urlencode($this->request).'&s=rec') or $this->returnServerError('No results for this query.');
         }
-        elseif (isset($this->getInput('u'))) {   /* user timeline mode */
+        elseif ($this->getInput('u')) {   /* user timeline mode */
             $this->request = $this->getInput('u');
             $html = $this->getSimpleHTMLDOM('http://www.flickr.com/photos/'.urlencode($this->request).'/') or $this->returnServerError('Requested username can\'t be found.');
         }

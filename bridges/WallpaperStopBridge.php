@@ -26,7 +26,7 @@ class WallpaperStopBridge extends BridgeAbstract {
 
     public function collectData(){
         $html = '';
-        if (!isset($this->getInput('c'))) {
+        if (!$this->getInput('c')) {
             $this->returnClientError('You must specify at least a category (?c=...).');
         } else {
             $baseUri = 'http://www.wallpaperstop.com';

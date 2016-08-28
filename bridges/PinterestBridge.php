@@ -22,7 +22,7 @@ class PinterestBridge extends BridgeAbstract{
 
     public function collectData(){
         $html = '';
-        if (isset($this->getInput('u')) || isset($this->getInput('b'))) {
+        if ($this->getInput('u') || $this->getInput('b')) {
 
             if (empty($this->getInput('u')))
             {
@@ -38,7 +38,7 @@ class PinterestBridge extends BridgeAbstract{
             $this->board = $this->getInput('b');
             $html = $this->getSimpleHTMLDOM($this->getURI().'/'.urlencode($this->username).'/'.urlencode($this->board)) or $this->returnServerError('Username and/or board not found');
 
-        } else if (isset($this->getInput('q')))
+        } else if ($this->getInput('q'))
         {
         	$this->query = $this->getInput('q');
         	$html = $this->getSimpleHTMLDOM($this->getURI().'/search/?q='.urlencode($this->query)) or $this->returnServerError('Could not request Pinterest.');

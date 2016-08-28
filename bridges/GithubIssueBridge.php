@@ -29,11 +29,11 @@ class GithubIssueBridge extends BridgeAbstract{
   );
 
   public function collectData(){
-    $uri = 'https://github.com/'.$this->getInput('u').'/'.$this->getInput('p').'/issues/'.(isset($this->getInput('i'))?$this->getInput('i'):'');
+    $uri = 'https://github.com/'.$this->getInput('u').'/'.$this->getInput('p').'/issues/'.($this->getInput('i')?$this->getInput('i'):'');
     $html = $this->getSimpleHTMLDOM($uri)
       or $this->returnServerError('No results for Github Issue '.$this->getInput('i').' in project '.$this->getInput('u').'/'.$this->getInput('p'));
 
-    if(isset($this->getInput('i'))){
+    if($this->getInput('i')){
       foreach($html->find('.js-comment-container') as $comment){
 
         $item = array();

@@ -19,7 +19,7 @@ class GiphyBridge extends BridgeAbstract{
 	public function collectData(){
 		$html = '';
         $base_url = 'http://giphy.com';
-		if (isset($this->getInput('s'))) {   /* keyword search mode */
+		if ($this->getInput('s')) {   /* keyword search mode */
 			$html = $this->getSimpleHTMLDOM($base_url.'/search/'.urlencode($this->getInput('s').'/')) or $this->returnServerError('No results for this query.');
 		}
 		else {
@@ -27,7 +27,7 @@ class GiphyBridge extends BridgeAbstract{
 		}
 
         $max = GIPHY_LIMIT;
-        if (isset($this->getInput('n'))) {
+        if ($this->getInput('n')) {
             $max = (integer) $this->getInput('n');
         }
 

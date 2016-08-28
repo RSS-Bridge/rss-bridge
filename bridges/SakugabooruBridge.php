@@ -16,10 +16,10 @@ class SakugabooruBridge extends BridgeAbstract{
 
     public function collectData(){
 	$page = 1;$tags='';
-        if (isset($this->getInput('p'))) {
+        if ($this->getInput('p')) {
             $page = (int)preg_replace("/[^0-9]/",'', $this->getInput('p'));
         }
-        if (isset($this->getInput('t'))) {
+        if ($this->getInput('t')) {
             $tags = urlencode($this->getInput('t'));
         }
         $html = $this->getSimpleHTMLDOM("http://sakuga.yshi.org/post?page=$page&tags=$tags") or $this->returnServerError('Could not request Sakugabooru.');

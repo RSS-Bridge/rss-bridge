@@ -31,19 +31,19 @@ class ParuVenduImmoBridge extends BridgeAbstract
         $maison = '&tbMai=1&tbVil=1&tbCha=1&tbPro=1&tbHot=1&tbMou=1&tbFer=1';
         $link = $this->uri.'/immobilier/annonceimmofo/liste/listeAnnonces?tt=1'.$appartment.$maison;
 
-        if (isset($this->getInput('minarea'))) {
+        if ($this->getInput('minarea')) {
             $link .= '&sur0='.urlencode($this->getInput('minarea'));
         }
 
-        if (isset($this->getInput('maxprice'))) {
+        if ($this->getInput('maxprice')) {
             $link .= '&px1='.urlencode($this->getInput('maxprice'));
         }
 
-        if (isset($this->getInput('pa'))) {
+        if ($this->getInput('pa')) {
             $link .= '&pa='.urlencode($this->getInput('pa'));
         }
 
-        if (isset($this->getInput('lo'))) {
+        if ($this->getInput('lo')) {
             $link .= '&lo='.urlencode($this->getInput('lo'));
         }
 
@@ -81,12 +81,12 @@ class ParuVenduImmoBridge extends BridgeAbstract
 
     public function getName(){
         $request='';
-        if(isset($this->getInput('minarea')) &&
+        if($this->getInput('minarea') &&
             !empty($this->getInput('minarea'))
         ){
             $request .= ' '.$this->getInput('minarea').' m2';
         }
-        if(isset($this->getInput('lo')) &&
+        if($this->getInput('lo') &&
             !empty($this->getInput('lo'))){
             $request .= ' In: '.$this->getInput('lo');
         }

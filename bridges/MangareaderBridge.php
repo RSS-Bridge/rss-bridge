@@ -83,7 +83,7 @@ class MangareaderBridge extends BridgeAbstract{
         $path = "latest";
         $limit = MANGAREADER_LIMIT;
 
-        if(isset($this->getInput('category'))){ // Get popular updates
+        if($this->getInput('category')){ // Get popular updates
             $type = "popular";
             $path = "popular";
             if($this->getInput('category') !== "all"){
@@ -91,12 +91,12 @@ class MangareaderBridge extends BridgeAbstract{
             }
         }
 
-        if(isset($this->getInput('path'))){ // Get manga updates
+        if($this->getInput('path')){ // Get manga updates
             $type = "path";
             $path = $this->getInput('path');
         }
 
-        if(isset($this->getInput('limit')) && $this->getInput('limit') !== ""){ // Get manga updates (optional parameter)
+        if($this->getInput('limit') && $this->getInput('limit') !== ""){ // Get manga updates (optional parameter)
             $limit = $this->getInput('limit');
         }
 

@@ -27,7 +27,7 @@ class GitlabCommitsBridge extends BridgeAbstract{
 
   public function collectData(){
     $uri = $this->getInput('uri').'/'.$this->getInput('u').'/'.$this->getInput('p').'/commits/';
-    if(isset($this->getInput('b'))){
+    if($this->getInput('b')){
       $uri.=$this->getInput('b');
     }else{
       $uri.='master';

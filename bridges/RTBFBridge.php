@@ -18,7 +18,7 @@ class RTBFBridge extends BridgeAbstract {
 		$limit = 10;
 		$count = 0;
 
-		if (isset($this->getInput('c'))) {
+		if ($this->getInput('c')) {
 			$html = $this->getSimpleHTMLDOM('http://www.rtbf.be/auvio/emissions/detail?id='.$this->getInput('c')) or $this->returnServerError('Could not request RTBF.');
 
 			foreach($html->find('section[id!=widget-ml-avoiraussi-] .rtbf-media-grid article') as $element) {

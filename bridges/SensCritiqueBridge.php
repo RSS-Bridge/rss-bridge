@@ -34,17 +34,17 @@ class SensCritiqueBridge extends BridgeAbstract {
     ));
 
 	public function collectData(){
-		if ((isset($this->getInput('m')) && $this->getInput('m'))) {
+		if (($this->getInput('m') && $this->getInput('m'))) {
 			$this->collectMoviesData();
-		} else if ((isset($this->getInput('s')) && $this->getInput('s'))) {
+		} else if (($this->getInput('s') && $this->getInput('s'))) {
 			$this->collectSeriesData();
-		} else if ((isset($this->getInput('g')) && $this->getInput('g'))) {
+		} else if (($this->getInput('g') && $this->getInput('g'))) {
 			$this->collectGamesData();
-		} else if ((isset($this->getInput('b')) && $this->getInput('b'))) {
+		} else if (($this->getInput('b') && $this->getInput('b'))) {
 			$this->collectBooksData();
-		} else if ((isset($this->getInput('bd')) && $this->getInput('bd'))) {
+		} else if (($this->getInput('bd') && $this->getInput('bd'))) {
 			$this->collectBDsData();
-		} else if ((isset($this->getInput('mu')) && $this->getInput('mu'))) {
+		} else if (($this->getInput('mu') && $this->getInput('mu'))) {
 			$this->collectMusicsData();
 		} else {
 			$this->returnClientError('You must choose a category');

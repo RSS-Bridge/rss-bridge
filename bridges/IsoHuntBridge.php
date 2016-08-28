@@ -92,17 +92,17 @@ class IsoHuntBridge extends BridgeAbstract{
     public function collectData(){
         $request_path = '/'; // We'll request the main page by default
 
-        if(isset($this->getInput('latest_category'))){ // Requesting one of the latest categories
+        if($this->getInput('latest_category')){ // Requesting one of the latest categories
             $this->request_latest_category($this->getInput('latest_category'));
-        } elseif(isset($this->getInput('torrent_category'))){ // Requesting one of the torrent categories
+        } elseif($this->getInput('torrent_category')){ // Requesting one of the torrent categories
             $order_popularity = false;
 
-            if(isset($this->getInput('torrent_popularity')))
+            if($this->getInput('torrent_popularity'))
                 $order_popularity = $this->getInput('torrent_popularity');
 
             $this->request_torrent_category($this->getInput('torrent_category'), $order_popularity);
-        } else if(isset($this->getInput('search_name'))){ // Requesting search
-            if(isset($this->getInput('search_category')))
+        } else if($this->getInput('search_name')){ // Requesting search
+            if($this->getInput('search_category'))
                 $this->request_search($this->getInput('search_name'), $this->getInput('search_category'));
             else
                 $this->request_search($this->getInput('search_name'));

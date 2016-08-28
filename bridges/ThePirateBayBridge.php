@@ -49,7 +49,7 @@ class ThePirateBayBridge extends BridgeAbstract{
         }
 
 
-		if (!isset($this->getInput('q')))
+		if (!$this->getInput('q'))
 			$this->returnClientError('You must specify keywords (?q=...)');
 
         $keywordsList = explode(";",$this->getInput('q'));

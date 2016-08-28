@@ -39,7 +39,7 @@ class TwitchApiBridge extends BridgeAbstract{
 
 		$context = stream_context_create($opts);
 
-		if(!isset($this->getInput('limit')) ||
+		if(!$this->getInput('limit') ||
 		   empty($this->getInput('limit'))){
 			$limit = TWITCH_LIMIT;
 		}else{

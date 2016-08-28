@@ -13,7 +13,7 @@ class NovelUpdatesBridge extends BridgeAbstract{
     ));
 
     public function collectData(){
-        if (!isset($this->getInput('n')))
+        if (!$this->getInput('n'))
             $this->returnClientError('You must specify the novel URL (/series/...)');
         $thread = parse_url($this->getInput('n')) or $this->returnClientError('This URL seems malformed, please check it.');
         if($thread['host'] !== 'www.novelupdates.com')
