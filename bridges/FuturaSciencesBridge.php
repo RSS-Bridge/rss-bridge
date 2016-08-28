@@ -1,88 +1,84 @@
 <?php
 class FuturaSciencesBridge extends BridgeAbstract {
 
-    public function loadMetadatas() {
+    public $maintainer = 'ORelio';
+    public $name = 'Futura-Sciences Bridge';
+    public $uri = 'http://www.futura-sciences.com/';
+    public $description = 'Returns the newest articles.';
 
-        $this->maintainer = 'ORelio';
-        $this->name = 'Futura-Sciences Bridge';
-        $this->uri = 'http://www.futura-sciences.com/';
-        $this->description = 'Returns the newest articles.';
-
-        $this->parameters[] = array(
-          'feed'=> array(
+    public $parameters = array( array(
+        'feed'=> array(
             'name'=>'Feed',
             'type'=>'list',
             'values'=>array(
-              'Les flux multi-magazines'=>array(
-                'Les dernières actualités de Futura-Sciences'=>'actualites',
-                'Les dernières définitions de Futura-Sciences'=>'definitions',
-                'Les dernières photos de Futura-Sciences'=>'photos',
-                'Les dernières questions - réponses de Futura-Sciences'=>'questions-reponses',
-                'Les derniers dossiers de Futura-Sciences'=>'dossiers'
-              ),
-              'Les flux Services'=> array(
-                'Les cartes virtuelles de Futura-Sciences'=>'services/cartes-virtuelles',
-                'Les fonds d\'écran de Futura-Sciences'=>'services/fonds-ecran'
-              ),
-              'Les flux Santé'=>array(
-                'Les dernières actualités de Futura-Santé'=>'sante/actualites',
-                'Les dernières définitions de Futura-Santé'=>'sante/definitions',
-                'Les dernières questions-réponses de Futura-Santé'=>'sante/question-reponses',
-                'Les derniers dossiers de Futura-Santé'=>'sante/dossiers'
-              ),
-              'Les flux High-Tech'=>array(
-                'Les dernières actualités de Futura-High-Tech'=>'high-tech/actualites',
-                'Les dernières astuces de Futura-High-Tech'=>'high-tech/question-reponses',
-                'Les dernières définitions de Futura-High-Tech'=>'high-tech/definitions',
-                'Les derniers dossiers de Futura-High-Tech'=>'high-tech/dossiers'
-              ),
-              'Les flux Espace'=>array(
-                'Les dernières actualités de Futura-Espace'=>'espace/actualites',
-                'Les dernières définitions de Futura-Espace'=>'espace/definitions',
-                'Les dernières questions-réponses de Futura-Espace'=>'espace/question-reponses',
-                'Les derniers dossiers de Futura-Espace'=>'espace/dossiers'
-              ),
-              'Les flux Environnement'=>array(
-                'Les dernières actualités de Futura-Environnement'=>'environnement/actualites',
-                'Les dernières définitions de Futura-Environnement'=>'environnement/definitions',
-                'Les dernières questions-réponses de Futura-Environnement'=>'environnement/question-reponses',
-                'Les derniers dossiers de Futura-Environnement'=>'environnement/dossiers'
-              ),
-              'Les flux Maison'=>array(
-                'Les dernières actualités de Futura-Maison'=>'maison/actualites',
-                'Les dernières astuces de Futura-Maison'=>'maison/question-reponses',
-                'Les dernières définitions de Futura-Maison'=>'maison/definitions',
-                'Les derniers dossiers de Futura-Maison'=>'maison/dossiers'
-              ),
-              'Les flux Nature'=>array(
-                'Les dernières actualités de Futura-Nature'=>'nature/actualites',
-                'Les dernières définitions de Futura-Nature'=>'nature/definitions',
-                'Les dernières questions-réponses de Futura-Nature'=>'nature/question-reponses',
-                'Les derniers dossiers de Futura-Nature'=>'nature/dossiers'
-              ),
-              'Les flux Terre'=>array(
-                'Les dernières actualités de Futura-Terre'=>'terre/actualites',
-                'Les dernières définitions de Futura-Terre'=>'terre/definitions',
-                'Les dernières questions-réponses de Futura-Terre'=>'terre/question-reponses',
-                'Les derniers dossiers de Futura-Terre'=>'terre/dossiers'
-              ),
-              'Les flux Matière'=>array(
-                'Les dernières actualités de Futura-Matière'=>'matiere/actualites',
-                'Les dernières définitions de Futura-Matière'=>'matiere/definitions',
-                'Les dernières questions-réponses de Futura-Matière'=>'matiere/question-reponses',
-                'Les derniers dossiers de Futura-Matière'=>'matiere/dossiers'
-              ),
-              'Les flux Mathématiques'=>array(
-                'Les dernières actualités de Futura-Mathématiques'=>'mathematiques/actualites',
-                'Les derniers dossiers de Futura-Mathématiques'=>'mathematiques/dossiers'
-              )
+                'Les flux multi-magazines'=>array(
+                    'Les dernières actualités de Futura-Sciences'=>'actualites',
+                    'Les dernières définitions de Futura-Sciences'=>'definitions',
+                    'Les dernières photos de Futura-Sciences'=>'photos',
+                    'Les dernières questions - réponses de Futura-Sciences'=>'questions-reponses',
+                    'Les derniers dossiers de Futura-Sciences'=>'dossiers'
+                ),
+                'Les flux Services'=> array(
+                    'Les cartes virtuelles de Futura-Sciences'=>'services/cartes-virtuelles',
+                    'Les fonds d\'écran de Futura-Sciences'=>'services/fonds-ecran'
+                ),
+                'Les flux Santé'=>array(
+                    'Les dernières actualités de Futura-Santé'=>'sante/actualites',
+                    'Les dernières définitions de Futura-Santé'=>'sante/definitions',
+                    'Les dernières questions-réponses de Futura-Santé'=>'sante/question-reponses',
+                    'Les derniers dossiers de Futura-Santé'=>'sante/dossiers'
+                ),
+                'Les flux High-Tech'=>array(
+                    'Les dernières actualités de Futura-High-Tech'=>'high-tech/actualites',
+                    'Les dernières astuces de Futura-High-Tech'=>'high-tech/question-reponses',
+                    'Les dernières définitions de Futura-High-Tech'=>'high-tech/definitions',
+                    'Les derniers dossiers de Futura-High-Tech'=>'high-tech/dossiers'
+                ),
+                'Les flux Espace'=>array(
+                    'Les dernières actualités de Futura-Espace'=>'espace/actualites',
+                    'Les dernières définitions de Futura-Espace'=>'espace/definitions',
+                    'Les dernières questions-réponses de Futura-Espace'=>'espace/question-reponses',
+                    'Les derniers dossiers de Futura-Espace'=>'espace/dossiers'
+                ),
+                'Les flux Environnement'=>array(
+                    'Les dernières actualités de Futura-Environnement'=>'environnement/actualites',
+                    'Les dernières définitions de Futura-Environnement'=>'environnement/definitions',
+                    'Les dernières questions-réponses de Futura-Environnement'=>'environnement/question-reponses',
+                    'Les derniers dossiers de Futura-Environnement'=>'environnement/dossiers'
+                ),
+                'Les flux Maison'=>array(
+                    'Les dernières actualités de Futura-Maison'=>'maison/actualites',
+                    'Les dernières astuces de Futura-Maison'=>'maison/question-reponses',
+                    'Les dernières définitions de Futura-Maison'=>'maison/definitions',
+                    'Les derniers dossiers de Futura-Maison'=>'maison/dossiers'
+                ),
+                'Les flux Nature'=>array(
+                    'Les dernières actualités de Futura-Nature'=>'nature/actualites',
+                    'Les dernières définitions de Futura-Nature'=>'nature/definitions',
+                    'Les dernières questions-réponses de Futura-Nature'=>'nature/question-reponses',
+                    'Les derniers dossiers de Futura-Nature'=>'nature/dossiers'
+                ),
+                'Les flux Terre'=>array(
+                    'Les dernières actualités de Futura-Terre'=>'terre/actualites',
+                    'Les dernières définitions de Futura-Terre'=>'terre/definitions',
+                    'Les dernières questions-réponses de Futura-Terre'=>'terre/question-reponses',
+                    'Les derniers dossiers de Futura-Terre'=>'terre/dossiers'
+                ),
+                'Les flux Matière'=>array(
+                    'Les dernières actualités de Futura-Matière'=>'matiere/actualites',
+                    'Les dernières définitions de Futura-Matière'=>'matiere/definitions',
+                    'Les dernières questions-réponses de Futura-Matière'=>'matiere/question-reponses',
+                    'Les derniers dossiers de Futura-Matière'=>'matiere/dossiers'
+                ),
+                'Les flux Mathématiques'=>array(
+                    'Les dernières actualités de Futura-Mathématiques'=>'mathematiques/actualites',
+                    'Les derniers dossiers de Futura-Mathématiques'=>'mathematiques/dossiers'
+                )
             )
-          )
-        );
-    }
+        )
+    ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 
         function StripCDATA($string) {
             $string = str_replace('<![CDATA[', '', $string);
@@ -139,10 +135,10 @@ class FuturaSciencesBridge extends BridgeAbstract {
             return '';
         }
 
-        $url = $this->getURI().'rss/'.$param['feed']['value'].'.xml';
-        if (empty($param['feed']['value']))
+        $url = $this->getURI().'rss/'.$this->getInput('feed').'.xml';
+        if (empty($this->getInput('feed')))
             $this->returnClientError('Please select a feed to display.'.$url);
-        if ($param['feed']['value'] !== preg_replace('/[^a-zA-Z-\/]+/', '', $param['feed']['value']) || substr_count($param['feed']['value'], '/') > 1 || strlen($param['feed']['value'] > 64))
+        if ($this->getInput('feed') !== preg_replace('/[^a-zA-Z-\/]+/', '', $this->getInput('feed')) || substr_count($this->getInput('feed'), '/') > 1 || strlen($this->getInput('feed') > 64))
             $this->returnClientError('Invalid "feed" parameter.'.$url);
 
         $html = $this->getSimpleHTMLDOM($url) or $this->returnServerError('Could not request Futura-Sciences: '.$url);

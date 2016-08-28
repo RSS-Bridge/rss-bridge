@@ -1,12 +1,10 @@
 <?php
 class NakedSecurityBridge extends BridgeAbstract {
 
-    public function loadMetadatas() {
-        $this->maintainer = 'ORelio';
-        $this->name = 'Naked Security';
-        $this->uri = 'https://nakedsecurity.sophos.com/';
-        $this->description = 'Returns the newest articles.';
-    }
+    public $maintainer = 'ORelio';
+    public $name = 'Naked Security';
+    public $uri = 'https://nakedsecurity.sophos.com/';
+    public $description = 'Returns the newest articles.';
 
     public function collectData(){
 

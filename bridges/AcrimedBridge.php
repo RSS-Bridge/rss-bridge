@@ -1,18 +1,15 @@
 <?php
 class AcrimedBridge extends RssExpander{
 
-		public function loadMetadatas() {
 
-			$this->maintainer = "qwertygc";
-			$this->name = "Acrimed Bridge";
-			$this->uri = "http://www.acrimed.org/";
-			$this->description = "Returns the newest articles.";
-
-		}
+	public $maintainer = "qwertygc";
+	public $name = "Acrimed Bridge";
+	public $uri = "http://www.acrimed.org/";
+	public $description = "Returns the newest articles.";
 
        public function collectData(){
 
-			parent::collectExpandableDatas("http://www.acrimed.org/spip.php?page=backend");
+			$this->collectExpandableDatas("http://www.acrimed.org/spip.php?page=backend");
 
 		}
 

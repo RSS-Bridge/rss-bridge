@@ -105,7 +105,6 @@ EOD;
 interface BridgeInterface {
     public function collectData();
     public function getCacheDuration();
-    public function loadMetadatas();
     public function getName();
     public function getURI();
 }
@@ -121,6 +120,7 @@ abstract class BridgeAbstract implements BridgeInterface {
     public $maintainer = 'No maintainer';
     public $useProxy = true;
     public $parameters = array();
+    public $inputs = array();
     protected $queriedContext='';
 
     protected function returnError($message, $code){
@@ -182,7 +182,7 @@ abstract class BridgeAbstract implements BridgeInterface {
                         }
                         break;
                     default:
-                    case'text':
+                    case 'text':
                         if(isset($set[$name]['pattern'])){
                             $data[$name]=filter_var($value,FILTER_VALIDATE_REGEXP,
                                 array('options'=>array(
@@ -247,9 +247,9 @@ abstract class BridgeAbstract implements BridgeInterface {
     * Note : you can define a cache with "setCache"
     * @param array array with expected bridge paramters
     */
-    public function setDatas(array $param){
+    public function setDatas(array $inputs){
         if(!is_null($this->cache)){
-            $this->cache->prepare($param);
+            $this->cache->prepare($inputs);
             $time = $this->cache->getTime();
         } else {
             $time = false;
@@ -257,38 +257,115 @@ abstract class BridgeAbstract implements BridgeInterface {
 
         if($time !== false && (time() - $this->getCacheDuration() < $time)){
             $this->items = $this->cache->loadData();
-        } else {
-            if($this->validateData($param)){
-                foreach($param as $name=>$value){
-                    foreach($this->parameters as $context=>$set){
-                        if(isset($this->parameters[$context][$name]))
-                            $this->parameters[$context][$name]['value']=$value;
-                    }
-                }
-                if(!empty($this->parameters)){
-                    $queriedContext=$this->getQueriedContext();
-                    if(is_null($queriedContext)){
-                        $this->returnClientError('Required parameter(s) missing');
-                    }else if($queriedContext===false){
-                        $this->returnClientError('Mixed context parameters');
-                    }else{
-                        $this->queriedContext=$queriedContext;
-                        foreach($param as $name=>$value){
-                            if(isset($this->parameters['global'][$name])){
-                                $this->parameters[$queriedContext][$name]['value']=$value;
-                            }
-                        }
-                    }
-                }
-            }else{
+            return;
+        }
+
+        if(empty($this->parameters)){
+            if(!empty($inputs)){
                 $this->returnClientError('Invalid parameters value(s)');
             }
-            $this->collectData();
 
+            $this->collectData();
             if(!is_null($this->cache)){
                 $this->cache->saveData($this->getDatas());
             }
+            return;
         }
+
+        if(!$this->validateData($inputs)){
+            $this->returnClientError('Invalid parameters value(s)');
+        }
+
+        // Populate BridgeAbstract::parameters with sanitized data
+        foreach($inputs as $name=>$value){
+            foreach($this->parameters as $context=>$set){
+                if(isset($this->parameters[$context][$name])){
+                    $this->inputs[$context][$name]['value']=$value;
+                    $this->parameters[$context][$name]['value']=$value;
+                }
+            }
+        }
+
+        // Guess the paramter context from input data
+        $queriedContext=$this->getQueriedContext();
+        if(is_null($queriedContext)){
+            $this->returnClientError('Required parameter(s) missing');
+        }else if($queriedContext===false){
+            $this->returnClientError('Mixed context parameters');
+        }
+
+        $this->queriedContext=$queriedContext;
+
+        // Apply default values to missing data
+        $contexts=array($this->queriedContext);
+        if(isset($this->parameters['global'])){
+            $contexts[]='global';
+        }
+        foreach($contexts as $context){
+            foreach($this->parameters[$context] as $name=>$properties){
+                if(!isset($properties['type'])){
+                    $this->parameters[$context][$name]['type']='text';
+                }
+                if(isset($properties['value'])){
+                    continue;
+                }
+                switch($properties['type']){
+                case 'checkbox':
+                    if(!isset($properties['defaultValue'])){
+                        $this->inputs[$context][$name]['value']=false;
+                    }else{
+                        $this->inputs[$context][$name]['value']=$properties['defaultValue'];
+                    }
+                    break;
+                case 'list':
+                    if(!isset($properties['defaultValue'])){
+                        $firstItem=reset($properties['values']);
+                        if(is_array($firstItem)){
+                            $firstItem=reset($firstItem);
+                        }
+                        $this->inputs[$context][$name]['value']=$firstItem;
+                    }else{
+                        $this->inputs[$context][$name]['value']=$properties['defaultValue'];
+                    }
+                    break;
+                default:
+                    if(isset($properties['defaultValue'])){
+                        $this->inputs[$context][$name]['value']=$properties['defaultValue'];
+                    }
+                    break;
+                }
+            }
+        }
+
+        // Copy global parameter values to the guessed context
+        if(isset($this->parameters['global'])){
+            foreach($this->parameters['global'] as $name=>$properties){
+                if(isset($inputs[$name])){
+                    $value=$inputs[$name];
+                }else if(isset($properties['value'])){
+                    $value=$properties['value'];
+                }else{
+                    continue;
+                }
+                $this->inputs[$queriedContext][$name]['value']=$value;
+            }
+        }
+
+        // Only keep guessed context parameters values
+        $this->inputs=array($this->queriedContext=>$this->inputs[$this->queriedContext]);
+
+        $this->collectData();
+
+        if(!is_null($this->cache)){
+            $this->cache->saveData($this->getDatas());
+        }
+    }
+
+    function getInput($input){
+        if(!isset($this->inputs[$this->queriedContext][$input]['value'])){
+            return null;
+        }
+        return $this->inputs[$this->queriedContext][$input]['value'];
     }
 
     public function getName(){
@@ -384,7 +461,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 
 /**
  * Extension of BridgeAbstract allowing caching of files downloaded over http.
- * TODO allow file cache invalidation by touching files on access, and removing 
+ * TODO allow file cache invalidation by touching files on access, and removing
  * files/directories which have not been touched since ... a long time
  */
 abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
@@ -444,8 +521,8 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
 
     private function buildCacheFilePath($url, $cacheDir){
         $simplified_url = str_replace(
-            ['http://', 'https://', '?', '&', '='], 
-            ['', '', '/', '/', '/'], 
+            ['http://', 'https://', '?', '&', '='],
+            ['', '', '/', '/', '/'],
             $url);
 
         if(substr($cacheDir, -1) !== '/'){

@@ -1,12 +1,10 @@
 <?php
 class CommonDreamsBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-		$this->maintainer = "nyutag";
-		$this->name = "CommonDreams Bridge";
-		$this->uri = "http://www.commondreams.org/";
-		$this->description = "Returns the newest articles.";
-	}
+	public $maintainer = "nyutag";
+	public $name = "CommonDreams Bridge";
+	public $uri = "http://www.commondreams.org/";
+	public $description = "Returns the newest articles.";
 
 	private function CommonDreamsExtractContent($url) {
 		$html3 = $this->getSimpleHTMLDOM($url);

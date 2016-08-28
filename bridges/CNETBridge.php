@@ -1,22 +1,16 @@
 <?php
 class CNETBridge extends BridgeAbstract {
 
-    private $topicName = '';
+    public $maintainer = 'ORelio';
+    public $name = 'CNET News';
+    public $uri = 'http://www.cnet.com/';
+    public $description = 'Returns the newest articles. <br /> You may specify a topic found in some section URLs, else all topics are selected.';
 
-    public function loadMetadatas() {
-
-        $this->maintainer = 'ORelio';
-        $this->name = 'CNET News';
-        $this->uri = 'http://www.cnet.com/';
-        $this->description = 'Returns the newest articles. <br /> You may specify a topic found in some section URLs, else all topics are selected.';
-
-        $this->parameters[] = array(
-          'topic'=>array('name'=>'Topic name')
-        );
-    }
+    public $parameters = array( array(
+        'topic'=>array('name'=>'Topic name')
+    ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 
         function ExtractFromDelimiters($string, $start, $end) {
             if (strpos($string, $start) !== false) {
@@ -43,10 +37,7 @@ class CNETBridge extends BridgeAbstract {
             return $article_html;
         }
 
-        if (!empty($param['topic']['value']))
-            $this->topicName = $param['topic']['value'];
-
-        $pageUrl = 'http://www.cnet.com/'.(empty($this->topicName) ? '' : 'topics/'.$this->topicName.'/');
+        $pageUrl = $this->uri.(empty($this->getInput('topic')) ? '' : 'topics/'.$this->getInput('topic').'/');
         $html = $this->getSimpleHTMLDOM($pageUrl) or $this->returnServerError('Could not request CNET: '.$pageUrl);
         $limit = 0;
 
@@ -54,7 +45,7 @@ class CNETBridge extends BridgeAbstract {
             if ($limit < 8) {
 
                 $article_title = trim($element->find('h2', 0)->plaintext);
-                $article_uri = 'http://www.cnet.com'.($element->find('a', 0)->href);
+                $article_uri = $this->uri.($element->find('a', 0)->href);
                 $article_timestamp = strtotime($element->find('time.assetTime', 0)->plaintext);
                 $article_author = trim($element->find('a[rel=author]', 0)->plaintext);
 
@@ -78,7 +69,7 @@ class CNETBridge extends BridgeAbstract {
     }
 
     public function getName() {
-        return 'CNET News Bridge'.(empty($this->topicName) ? '' : ' - '.$this->topicName);
+        return 'CNET News Bridge'.(empty($this->getInput('topic')) ? '' : ' - '.$this->getInput('topic'));
     }
 
     public function getCacheDuration() {

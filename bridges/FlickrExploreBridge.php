@@ -1,14 +1,10 @@
 <?php
 class FlickrExploreBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "sebsauvage";
-		$this->name = "Flickr Explore";
-		$this->uri = "https://www.flickr.com/explore";
-		$this->description = "Returns the latest interesting images from Flickr";
-
-	}
+	public $maintainer = "sebsauvage";
+	public $name = "Flickr Explore";
+	public $uri = "https://www.flickr.com/explore";
+	public $description = "Returns the latest interesting images from Flickr";
 
     public function collectData(){
         $html = $this->getSimpleHTMLDOM('https://www.flickr.com/explore') or $this->returnServerError('Could not request Flickr.');

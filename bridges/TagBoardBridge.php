@@ -1,26 +1,21 @@
 <?php
 class TagBoardBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "Pitchoule";
+	public $name = "TagBoard";
+	public $uri = "http://www.TagBoard.com";
+	public $description = "Returns most recent results from TagBoard.";
 
-		$this->maintainer = "Pitchoule";
-		$this->name = "TagBoard";
-		$this->uri = "http://www.TagBoard.com";
-		$this->description = "Returns most recent results from TagBoard.";
-
-        $this->parameters[] = array(
-          'u'=>array(
+    public $parameters = array( array(
+        'u'=>array(
             'name'=>'keyword',
             'required'=>true
-          )
-        );
-
-	}
+        )
+    ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
         $html = '';
-        $this->request = $param['u']['value'];
+        $this->request = $this->getInput('u');
         $link = 'https://post-cache.tagboard.com/search/' .$this->request;
 
         $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request TagBoard for : ' . $link);

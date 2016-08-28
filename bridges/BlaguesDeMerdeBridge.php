@@ -1,17 +1,15 @@
 <?php
 class BlaguesDeMerdeBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+    public $maintainer = "superbaillot.net";
+    public $name = "Blagues De Merde";
+    public $uri = "http://www.blaguesdemerde.fr/";
+    public $description = "Blagues De Merde";
 
-		$this->maintainer = "superbaillot.net";
-		$this->name = "Blagues De Merde";
-		$this->uri = "http://www.blaguesdemerde.fr/";
-		$this->description = "Blagues De Merde";
-
-	}
 
     public function collectData(){
-        $html = $this->getSimpleHTMLDOM('http://www.blaguesdemerde.fr/') or $this->returnServerError('Could not request BDM.');
+        $html = $this->getSimpleHTMLDOM($this->uri)
+            or $this->returnServerError('Could not request BDM.');
 
         foreach($html->find('article.joke_contener') as $element) {
             $item = array();

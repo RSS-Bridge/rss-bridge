@@ -1,30 +1,26 @@
 <?php
 class YandereBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "mitsukarenai";
+	public $name = "Yande.re";
+	public $uri = "https://yande.re/";
+	public $description = "Returns images from given page and tags";
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Yande.re";
-		$this->uri = "https://yande.re/";
-		$this->description = "Returns images from given page and tags";
-
-        $this->parameters[] = array(
-          'p'=>array(
+    public $parameters = array( array(
+        'p'=>array(
             'name'=>'page',
             'type'=>'number'
-          ),
-          't'=>array('name'=>'tags')
-        );
-	}
+        ),
+        't'=>array('name'=>'tags')
+    ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 	$page = 1; $tags = '';
-        if (isset($param['p']['value'])) {
-            $page = (int)preg_replace("/[^0-9]/",'', $param['p']['value']);
+        if (isset($this->getInput('p'))) {
+            $page = (int)preg_replace("/[^0-9]/",'', $this->getInput('p'));
         }
-        if (isset($param['t']['value'])) {
-            $tags = urlencode($param['t']['value']);
+        if (isset($this->getInput('t'))) {
+            $tags = urlencode($this->getInput('t'));
         }
         $html = $this->getSimpleHTMLDOM("https://yande.re/post?page=$page&tags=$tags") or $this->returnServerError('Could not request Yandere.');
 	$input_json = explode('Post.register(', $html);

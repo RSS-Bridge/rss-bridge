@@ -1,14 +1,10 @@
 <?php
 class NasaApodBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "corenting";
-		$this->name = "NASA APOD Bridge";
-		$this->uri = "http://apod.nasa.gov/apod/astropix.html";
-		$this->description = "Returns the 3 latest NASA APOD pictures and explanations";
-
-	}
+	public $maintainer = "corenting";
+	public $name = "NASA APOD Bridge";
+	public $uri = "http://apod.nasa.gov/apod/astropix.html";
+	public $description = "Returns the 3 latest NASA APOD pictures and explanations";
 
   public function collectData(){
 

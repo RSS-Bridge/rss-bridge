@@ -1,14 +1,10 @@
 <?php
 class Sexactu extends BridgeAbstract{
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "Riduidel";
-		$this->name = "Sexactu";
-		$this->uri = "http://www.gqmagazine.fr";
-		$this->description = "Sexactu via rss-bridge";
-
-	}
+	public $maintainer = "Riduidel";
+	public $name = "Sexactu";
+	public $uri = "http://www.gqmagazine.fr";
+	public $description = "Sexactu via rss-bridge";
 
     public function collectData(){
 $find = array('janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'novembre', 'décembre');

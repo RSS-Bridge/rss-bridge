@@ -3,32 +3,19 @@ define('WORDPRESS_TYPE_ATOM', 1); // Content is of type ATOM
 define('WORDPRESS_TYPE_RSS', 2); // Content is of type RSS
 class WordPressBridge extends HttpCachingBridgeAbstract {
 
-	private $url;
 	public $sitename; // Name of the site
 
-	public function loadMetadatas() {
+	public $maintainer = "aledeg";
+	public $name = "Wordpress Bridge";
+	public $uri = "https://wordpress.org/";
+	public $description = "Returns the 3 newest full posts of a Wordpress blog";
 
-		$this->maintainer = "aledeg";
-		$this->name = "Wordpress Bridge";
-		$this->uri = "https://wordpress.org/";
-		$this->description = "Returns the 3 newest full posts of a Wordpress blog";
-
-        $this->parameters[] = array(
-          'url'=>array(
-            'name'=>'Blog URL',
-            'required'=>true
-          )
-        );
-	}
-
-	// Returns the content type for a given html dom
-	private function DetectContentType($html){
-		if($html->find('entry'))
-			return WORDPRESS_TYPE_ATOM;
-		if($html->find('item'))
-			return WORDPRESS_TYPE_RSS;
-		return WORDPRESS_TYPE_ATOM; // Make ATOM default
-	}
+	public $parameters = array( array(
+		'url'=>array(
+			'name'=>'Blog URL',
+			'required'=>true
+		)
+	));
 
 	// Replaces all 'link' tags with 'url' for simplehtmldom to actually find 'links' ('url')
 	private function ReplaceLinkTagsWithUrlTags($element){
@@ -54,18 +41,18 @@ class WordPressBridge extends HttpCachingBridgeAbstract {
 	}
 
 	public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
-		$this->processParams($param);
 
-		if (!$this->hasUrl()) {
-			$this->returnClientError('You must specify a URL');
-		}
-
-		$this->url = $this->url.'/feed/atom';
-		$html = $this->getSimpleHTMLDOM($this->url) or $this->returnServerError("Could not request {$this->url}.");
+		$html = $this->getSimpleHTMLDOM($this->getURI().'/feed/atom')
+				or $this->returnServerError("Could not request ".$this->getURI().'/feed/atom');
 
 		// Notice: We requested an ATOM feed, however some sites return RSS feeds instead!
-		$type = $this->DetectContentType($html);
+		if($html->find('entry')){
+				$type=WORDPRESS_TYPE_ATOM;
+		}else if($html->find('item')){
+				$type=WORDPRESS_TYPE_RSS;
+		}else{
+				$type=WORDPRESS_TYPE_ATOM; // Make ATOM default
+		}
 
 		if($type === WORDPRESS_TYPE_RSS)
 			$posts = $html->find('item');
@@ -129,8 +116,12 @@ class WordPressBridge extends HttpCachingBridgeAbstract {
 				}
 			}
 		} else {
-			$this->returnServerError("Sorry, {$this->url} doesn't seem to be a Wordpress blog.");
+			$this->returnServerError("Sorry, ".$this->getURI()." doesn't seem to be a Wordpress blog.");
 		}
+	}
+
+	public function getURI(){
+		return $this->getInput('url');
 	}
 
 	public function getName() {
@@ -139,16 +130,5 @@ class WordPressBridge extends HttpCachingBridgeAbstract {
 
 	public function getCacheDuration() {
 		return 3600*3; // 3 hours
-	}
-
-	private function hasUrl() {
-		if (empty($this->url)) {
-			return false;
-		}
-		return true;
-	}
-
-	private function processParams($param) {
-		$this->url = $param['url']['value'];
 	}
 }

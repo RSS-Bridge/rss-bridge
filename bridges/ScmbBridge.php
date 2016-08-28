@@ -1,14 +1,10 @@
 <?php
 class ScmbBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "Astalaseven";
-		$this->name = "Se Coucher Moins Bête Bridge";
-		$this->uri = "http://secouchermoinsbete.fr/";
-		$this->description = "Returns the newest anecdotes.";
-
-	}
+	public $maintainer = "Astalaseven";
+	public $name = "Se Coucher Moins Bête Bridge";
+	public $uri = "http://secouchermoinsbete.fr/";
+	public $description = "Returns the newest anecdotes.";
 
     public function collectData(){
         $html = '';

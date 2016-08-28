@@ -1,23 +1,19 @@
 <?php
 class ThePirateBayBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "mitsukarenai";
+	public $name = "The Pirate Bay";
+	public $uri = "https://thepiratebay.org/";
+	public $description = "Returns results for the keywords. You can put several list of keywords by separating them with a semicolon (e.g. \"one show;another show\")";
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "The Pirate Bay";
-		$this->uri = "https://thepiratebay.org/";
-		$this->description = "Returns results for the keywords. You can put several list of keywords by separating them with a semicolon (e.g. \"one show;another show\")";
-
-        $this->parameters[] = array(
-          'q'=>array(
+    public $parameters = array( array(
+        'q'=>array(
             'name'=>'keywords, separated by semicolons',
             'exampleValue'=>'first list;second list;…'
-          )
-        );
-	}
+        )
+    ));
 
 	public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 
         function parseDateTimestamp($element){
                 $guessedDate = $element->find('font',0)->plaintext;
@@ -53,10 +49,10 @@ class ThePirateBayBridge extends BridgeAbstract{
         }
 
 
-		if (!isset($param['q']['value']))
+		if (!isset($this->getInput('q')))
 			$this->returnClientError('You must specify keywords (?q=...)');
 
-        $keywordsList = explode(";",$param['q']['value']);
+        $keywordsList = explode(";",$this->getInput('q'));
         foreach($keywordsList as $keywords){
             $html = $this->getSimpleHTMLDOM('https://thepiratebay.org/search/'.rawurlencode($keywords).'/0/3/0') or $this->returnServerError('Could not request TPB.');
 

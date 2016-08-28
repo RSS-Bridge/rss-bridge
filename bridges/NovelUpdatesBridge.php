@@ -1,25 +1,21 @@
 <?php
 class NovelUpdatesBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "albirew";
-		$this->name = "Novel Updates";
-		$this->uri = "http://www.novelupdates.com/";
-		$this->description = "Returns releases from Novel Updates";
-		$this->parameters[] = array(
-          'n'=>array(
+	public $maintainer = "albirew";
+	public $name = "Novel Updates";
+	public $uri = "http://www.novelupdates.com/";
+	public $description = "Returns releases from Novel Updates";
+	public $parameters = array( array(
+        'n'=>array(
             'name'=>'Novel URL',
             'required'=>true
-          )
-        );
-	}
+        )
+    ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
-        if (!isset($param['n']['value']))
+        if (!isset($this->getInput('n')))
             $this->returnClientError('You must specify the novel URL (/series/...)');
-        $thread = parse_url($param['n']['value']) or $this->returnClientError('This URL seems malformed, please check it.');
+        $thread = parse_url($this->getInput('n')) or $this->returnClientError('This URL seems malformed, please check it.');
         if($thread['host'] !== 'www.novelupdates.com')
             $this->returnClientError('NovelUpdates URL only.');
       	if(strpos($thread['path'], 'series/') === FALSE)

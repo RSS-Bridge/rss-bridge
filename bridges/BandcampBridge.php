@@ -1,33 +1,21 @@
 <?php
 class BandcampBridge extends BridgeAbstract{
 
-    private $request;
-
-	public function loadMetadatas() {
-
-		$this->maintainer = "sebsauvage";
-		$this->name = "Bandcamp Tag";
-		$this->uri = "http://bandcamp.com/";
-		$this->description = "New bandcamp release by tag";
-
-        $this->parameters[] = array(
-          'tag'=>array(
+    public $maintainer = "sebsauvage";
+    public $name = "Bandcamp Tag";
+    public $uri = "http://bandcamp.com/";
+    public $description = "New bandcamp release by tag";
+    public $parameters = array( array(
+        'tag'=>array(
             'name'=>'tag',
-            'type'=>'text'
-          )
-        );
-	}
+            'type'=>'text',
+            'required'=>true
+        )
+    ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
-        $html = '';
-        if (isset($param['tag']['value'])) {
-            $this->request = $param['tag']['value'];
-            $html = $this->getSimpleHTMLDOM('http://bandcamp.com/tag/'.urlencode($this->request).'?sort_field=date') or $this->returnServerError('No results for this query.');
-        }
-        else {
-            $this->returnClientError('You must specify tag (/tag/...)');
-        }
+        $html = $this->getSimpleHTMLDOM($this->getURI())
+            or $this->returnServerError('No results for this query.');
 
         foreach($html->find('li.item') as $release) {
             $script = $release->find('div.art', 0)->getAttribute('onclick');
@@ -44,8 +32,12 @@ class BandcampBridge extends BridgeAbstract{
         }
     }
 
+    public function getURI(){
+        return $this->uri.'tag/'.urlencode($this->getInput('tag')).'?sort_field=date';
+    }
+
     public function getName(){
-        return (!empty($this->request) ? $this->request .' - ' : '') .'Bandcamp Tag';
+        return $this->getInput('tag') .' - '.'Bandcamp Tag';
     }
 
     public function getCacheDuration(){

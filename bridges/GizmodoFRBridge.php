@@ -1,14 +1,10 @@
 <?php
 class GizmodoFRBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "polopollo";
-		$this->name = "GizmodoFR";
-		$this->uri = "http://www.gizmodo.fr/";
-		$this->description = "Returns the 15 newest posts from GizmodoFR (full text).";
-
-	}
+	public $maintainer = "polopollo";
+	public $name = "GizmodoFR";
+	public $uri = "http://www.gizmodo.fr/";
+	public $description = "Returns the 15 newest posts from GizmodoFR (full text).";
 
     public function collectData(){
 

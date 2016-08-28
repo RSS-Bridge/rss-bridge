@@ -1,30 +1,26 @@
 <?php
 class KonachanBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "mitsukarenai";
+	public $name = "Konachan";
+	public $uri = "http://konachan.com/";
+	public $description = "Returns images from given page";
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Konachan";
-		$this->uri = "http://konachan.com/";
-		$this->description = "Returns images from given page";
-
-        $this->parameters[] = array(
-          'p'=>array(
+    public $parameters = array( array(
+        'p'=>array(
             'name'=>'page',
             'type'=>'number'
-          ),
-          't'=>array('name'=>'tags')
-        );
-	}
+        ),
+        't'=>array('name'=>'tags')
+    ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 	$page = 1;$tags='';
-        if (isset($param['p']['value'])) {
-            $page = (int)preg_replace("/[^0-9]/",'', $param['p']['value']);
+        if (isset($this->getInput('p'))) {
+            $page = (int)preg_replace("/[^0-9]/",'', $this->getInput('p'));
         }
-        if (isset($param['t']['value'])) {
-            $tags = urlencode($param['t']['value']);
+        if (isset($this->getInput('t'))) {
+            $tags = urlencode($this->getInput('t'));
         }
         $html = $this->getSimpleHTMLDOM("http://konachan.com/post?page=$page&tags=$tags") or $this->returnServerError('Could not request Konachan.');
 	$input_json = explode('Post.register(', $html);

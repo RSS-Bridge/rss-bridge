@@ -1,18 +1,9 @@
 <?php
-/**
-* StripeAPIChangeLogBridge
-*
-* @name Stripe API Changelog Bridge
-* @description Returns the changes made to the stripe.com API
- */
 class StripeAPIChangeLogBridge extends BridgeAbstract{
-  public function loadMetadatas() {
-
-    $this->maintainer = 'Pierre Mazière';
-    $this->name = 'Stripe API Changelog';
-    $this->uri = 'https://stripe.com/docs/upgrades';
-    $this->description = 'Returns the changes made to the stripe.com API';
-  }
+  public $maintainer = 'Pierre Mazière';
+  public $name = 'Stripe API Changelog';
+  public $uri = 'https://stripe.com/docs/upgrades';
+  public $description = 'Returns the changes made to the stripe.com API';
 
   public function collectData(){
     $html = $this->getSimpleHTMLDOM('https://stripe.com/docs/upgrades')
@@ -20,7 +11,7 @@ class StripeAPIChangeLogBridge extends BridgeAbstract{
 
 
     foreach($html->find('h3') as $change){
-      $item=new \Item();
+      $item=array();
       $item['title']=trim($change->plaintext);
       $item['uri']='https://stripe.com/docs/upgrades#'.$item['title'];
       $item['author']='stripe';

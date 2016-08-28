@@ -1,55 +1,50 @@
 <?php
 class SensCritiqueBridge extends BridgeAbstract {
 
-	private $request;
+	public $maintainer = "kranack";
+	public $name = "Sens Critique";
+	public $uri = "http://www.senscritique.com";
+	public $description = "Sens Critique news";
 
-  public function loadMetadatas() {
-		$this->maintainer = "kranack";
-		$this->name = "Sens Critique";
-		$this->uri = "http://www.senscritique.com";
-		$this->description = "Sens Critique news";
-
-        $this->parameters[] = array(
-          'm'=>array(
+    public $parameters = array( array(
+        'm'=>array(
             'name'=>'Movies',
             'type'=>'checkbox'
-          ),
-          's'=>array(
+        ),
+        's'=>array(
             'name'=>'Series',
             'type'=>'checkbox'
-          ),
-          'g'=>array(
+        ),
+        'g'=>array(
             'name'=>'Video Games',
             'type'=>'checkbox'
-          ),
-          'b'=>array(
+        ),
+        'b'=>array(
             'name'=>'Books',
             'type'=>'checkbox'
-          ),
-          'bd'=>array(
+        ),
+        'bd'=>array(
             'name'=>'BD',
             'type'=>'checkbox'
-          ),
-          'mu'=>array(
+        ),
+        'mu'=>array(
             'name'=>'Music',
             'type'=>'checkbox'
-          )
-        );
-  }
+        )
+    ));
 
 	public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
-		if ((isset($param['m']['value']) && $param['m']['value'])) {
+		if ((isset($this->getInput('m')) && $this->getInput('m'))) {
 			$this->collectMoviesData();
-		} else if ((isset($param['s']['value']) && $param['s']['value'])) {
+		} else if ((isset($this->getInput('s')) && $this->getInput('s'))) {
 			$this->collectSeriesData();
-		} else if ((isset($param['g']['value']) && $param['g']['value'])) {
+		} else if ((isset($this->getInput('g')) && $this->getInput('g'))) {
 			$this->collectGamesData();
-		} else if ((isset($param['b']['value']) && $param['b']['value'])) {
+		} else if ((isset($this->getInput('b')) && $this->getInput('b'))) {
 			$this->collectBooksData();
-		} else if ((isset($param['bd']['value']) && $param['bd']['value'])) {
+		} else if ((isset($this->getInput('bd')) && $this->getInput('bd'))) {
 			$this->collectBDsData();
-		} else if ((isset($param['mu']['value']) && $param['mu']['value'])) {
+		} else if ((isset($this->getInput('mu')) && $this->getInput('mu'))) {
 			$this->collectMusicsData();
 		} else {
 			$this->returnClientError('You must choose a category');

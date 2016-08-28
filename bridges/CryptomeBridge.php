@@ -1,43 +1,34 @@
 <?php
 class CryptomeBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+    public $maintainer = "BoboTiG";
+    public $name = "Cryptome";
+    public $uri = "https://cryptome.org/";
+    public $description = "Returns the N most recent documents.";
 
-		$this->maintainer = "BoboTiG";
-		$this->name = "Cryptome";
-		$this->uri = "http://cryptome.org/";
-		$this->description = "Returns the N most recent documents.";
-
-        $this->parameters[] = array(
-          'n'=>array(
+    public $parameters = array( array(
+        'n'=>array(
             'name'=>'number of elements',
             'type'=>'number',
+            'defaultValue'=>20,
             'exampleValue'=>10
-          )
-        );
-	}
-
+        )
+    ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
-        $html = '';
-        $num = 20;
-        $link = 'http://cryptome.org/';
-        // If you want HTTPS access instead, uncomment the following line:
-        //$link = 'https://secure.netsolhost.com/cryptome.org/';
-
-        $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request Cryptome.');
-        if (!empty($param['n']['value'])) {   /* number of documents */
-            $num = min(max(1, $param['n']['value']+0), $num);
+        $html = $this->getSimpleHTMLDOM($this->uri)
+            or $this->returnServerError('Could not request Cryptome.');
+        if (!empty($this->getInput('n'))) {   /* number of documents */
+            $num = min($this->getInput('n'), 20);
         }
 
 
         foreach($html->find('pre') as $element) {
             for ( $i = 0; $i < $num; ++$i ) {
                 $item = array();
-                $item['uri'] = $link.substr($element->find('a', $i)->href, 20);
+                $item['uri'] = $this->uri.substr($element->find('a', $i)->href, 20);
                 $item['title'] = substr($element->find('b', $i)->plaintext, 22);
-                $item['content'] = preg_replace('#http://cryptome.org/#', $link, $element->find('b', $i)->innertext);
+                $item['content'] = preg_replace('#http://cryptome.org/#', $this->uri, $element->find('b', $i)->innertext);
                 $this->items[] = $item;
             }
             break;

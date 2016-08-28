@@ -4,32 +4,29 @@ class GooglePlusPostBridge extends BridgeAbstract
 	protected $_title;
 	protected $_url;
 
-	public function loadMetadatas() {
+	public $maintainer = "Grummfy";
+	public $name = "Google Plus Post Bridge";
+	public $uri = "http://plus.google.com/";
+	public $description = "Returns user public post (without API).";
 
-		$this->maintainer = "Grummfy";
-		$this->name = "Google Plus Post Bridge";
-		$this->uri = "http://plus.google.com/";
-		$this->description = "Returns user public post (without API).";
-
-        $this->parameters[] = array(
-            'username'=>array(
-                'name'=>'username or Id',
-                'required'=>true
-            )
-        );
-
-	}
+    public $parameters = array( array(
+        'username'=>array(
+            'name'=>'username or Id',
+            'required'=>true
+        )
+    ));
 
 	const GOOGLE_PLUS_BASE_URL = 'https://plus.google.com/';
 
 	public function collectData()
 	{
-		if (!isset($param['username']['value']))
+		$param=$this->parameters[$queriedContext];
+		if (!isset($this->getInput('username')))
 		{
 			$this->returnClientError('You must specify a username (?username=...).');
 		}
 
-		$this->request = $param['username']['value'];
+		$this->request = $this->getInput('username');
 		// get content parsed
 //		$html = $this->getSimpleHTMLDOM(__DIR__ . '/../posts2.html'
 		$html = $this->getSimpleHTMLDOM(self::GOOGLE_PLUS_BASE_URL . urlencode($this->request) . '/posts'

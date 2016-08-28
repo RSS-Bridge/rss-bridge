@@ -1,64 +1,52 @@
 <?php
 class DauphineLibereBridge extends BridgeAbstract {
 
-	public function loadMetadatas() {
+	public $maintainer = "qwertygc";
+	public $name = "Dauphine Bridge";
+	public $uri = "http://www.ledauphine.com/";
+	public $description = "Returns the newest articles.";
 
-		$this->maintainer = "qwertygc";
-		$this->name = "Dauphine Bridge";
-		$this->uri = "http://www.ledauphine.com/";
-		$this->description = "Returns the newest articles.";
-
-        $this->parameters[] = array(
-          'u'=>array(
+    public $parameters = array( array(
+        'u'=>array(
             'name'=>'Catégorie de l\'article',
             'type'=>'list',
             'values'=>array(
-              'À la une'=>'',
-              'France Monde'=>'france-monde',
-              'Faits Divers'=>'faits-divers',
-              'Économie et Finance'=>'economie-et-finance',
-              'Politique'=>'politique',
-              'Sport'=>'sport',
-              'Ain'=>'ain',
-              'Alpes-de-Haute-Provence'=>'haute-provence',
-              'Hautes-Alpes'=>'hautes-alpes',
-              'Ardèche'=>'ardeche',
-              'Drôme'=>'drome',
-              'Isère Sud'=>'isere-sud',
-              'Savoie'=>'savoie',
-              'Haute-Savoie'=>'haute-savoie',
-              'Vaucluse'=>'vaucluse'
+                'À la une'=>'',
+                'France Monde'=>'france-monde',
+                'Faits Divers'=>'faits-divers',
+                'Économie et Finance'=>'economie-et-finance',
+                'Politique'=>'politique',
+                'Sport'=>'sport',
+                'Ain'=>'ain',
+                'Alpes-de-Haute-Provence'=>'haute-provence',
+                'Hautes-Alpes'=>'hautes-alpes',
+                'Ardèche'=>'ardeche',
+                'Drôme'=>'drome',
+                'Isère Sud'=>'isere-sud',
+                'Savoie'=>'savoie',
+                'Haute-Savoie'=>'haute-savoie',
+                'Vaucluse'=>'vaucluse'
             )
-          )
-        );
-	}
+        )
+    ));
 
 	private function ExtractContent($url, $context) {
-		$html2 = $this->getSimpleHTMLDOM($url,false,$context);
+		$html2 = $this->getSimpleHTMLDOM($url);
 		$text = $html2->find('div.column', 0)->innertext;
 		$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
 		return $text;
 	}
 
 	public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
-
-		// Simulate Mozilla user-agent to fix error 403 (Forbidden)
-		$opts = array('http' =>
-			array(
-				'method'  => 'GET',
-				'header'  => 'User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
-			)
-		);
 
 		$context = stream_context_create($opts);
 
-		if (isset($param['u']['value'])) { /* user timeline mode */
-			$this->request = $param['u']['value'];
-			$html = $this->getSimpleHTMLDOM('http://www.ledauphine.com/'.$this->request.'/rss',false,$context) or $this->returnServerError('Could not request DauphineLibere.');
-		}
-		else {
-			$html = $this->getSimpleHTMLDOM('http://www.ledauphine.com/rss',false,$context) or $this->returnServerError('Could not request DauphineLibere.');
+		if (empty($this->getInput('u'))) {
+            $html = $this->getSimpleHTMLDOM($this->uri.$this->getInput('u').'/rss')
+                or $this->returnServerError('Could not request DauphineLibere.');
+		} else {
+            $html = $this->getSimpleHTMLDOM($this->uri.'rss')
+                or $this->returnServerError('Could not request DauphineLibere.');
 		}
 		$limit = 0;
 

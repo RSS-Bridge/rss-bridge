@@ -1,14 +1,10 @@
 <?php
 class TheHackerNewsBridge extends BridgeAbstract {
 
-    public function loadMetadatas() {
-
-        $this->maintainer = 'ORelio';
-        $this->name = 'The Hacker News Bridge';
-        $this->uri = 'https://thehackernews.com/';
-        $this->description = 'Cyber Security, Hacking, Technology News.';
-
-    }
+    public $maintainer = 'ORelio';
+    public $name = 'The Hacker News Bridge';
+    public $uri = 'https://thehackernews.com/';
+    public $description = 'Cyber Security, Hacking, Technology News.';
 
     public function collectData(){
 

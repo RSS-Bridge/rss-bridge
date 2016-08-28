@@ -1,25 +1,22 @@
 <?php
 class JapanExpoBridge extends HttpCachingBridgeAbstract {
 
-    public function loadMetadatas() {
-        $this->maintainer = 'Ginko';
-        $this->name = 'Japan Expo Actualités';
-        $this->uri = 'http://www.japan-expo-paris.com/fr/actualites';
-        $this->description = 'Returns most recent entries from Japan Expo actualités.';
-        $this->parameters[] = array(
-          'mode'=>array(
+    public $maintainer = 'Ginko';
+    public $name = 'Japan Expo Actualités';
+    public $uri = 'http://www.japan-expo-paris.com/fr/actualites';
+    public $description = 'Returns most recent entries from Japan Expo actualités.';
+    public $parameters = array( array(
+        'mode'=>array(
             'name'=>'Mode',
             'type'=>'list',
             'values'=>array(
-              'Titles only'=>'light',
-              'Full Contents'=>'full'
+                'Titles only'=>'light',
+                'Full Contents'=>'full'
             )
-          )
-        );
-    }
+        )
+    ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 
         function french_pubdate_to_timestamp($date_to_parse) {
             return strtotime(
@@ -51,7 +48,7 @@ class JapanExpoBridge extends HttpCachingBridgeAbstract {
 
         $link = 'http://www.japan-expo-paris.com/fr/actualites';
         $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request JapanExpo: '.$link);
-        $fullcontent = (!empty($param['mode']['value']) && $param['mode']['value'] == 'full');
+        $fullcontent = (!empty($this->getInput('mode')) && $this->getInput('mode') == 'full');
         $count = 0;
 
         foreach ($html->find('a._tile2') as $element) {

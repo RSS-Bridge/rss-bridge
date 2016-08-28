@@ -1,14 +1,10 @@
 <?php
 class SiliconBridge extends BridgeAbstract {
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "ORelio";
-		$this->name = 'Silicon Bridge';
-		$this->uri = 'http://www.silicon.fr/';
-		$this->description = "Returns the newest articles.";
-
-	}
+	public $maintainer = "ORelio";
+	public $name = 'Silicon Bridge';
+	public $uri = 'http://www.silicon.fr/';
+	public $description = "Returns the newest articles.";
 
     public function collectData(){
 

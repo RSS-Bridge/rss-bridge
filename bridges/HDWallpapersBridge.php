@@ -4,30 +4,27 @@ class HDWallpapersBridge extends BridgeAbstract {
     private $category;
     private $resolution;
 
-	public function loadMetadatas() {
 
-		$this->maintainer = "nel50n";
-		$this->name = "HD Wallpapers Bridge";
-		$this->uri = "http://www.hdwallpapers.in/";
-		$this->description = "Returns the latests wallpapers from HDWallpapers";
+	public $maintainer = "nel50n";
+	public $name = "HD Wallpapers Bridge";
+	public $uri = "http://www.hdwallpapers.in/";
+	public $description = "Returns the latests wallpapers from HDWallpapers";
 
-        $this->parameters[] = array(
-          'c'=>array('name'=>'category'),
-          'm'=>array('name'=>'max number of wallpapers'),
-          'r'=>array(
+    public $parameters = array( array(
+        'c'=>array('name'=>'category'),
+        'm'=>array('name'=>'max number of wallpapers'),
+        'r'=>array(
             'name'=>'resolution',
             'exampleValue'=>'1920x1200, 1680x1050,…'
-          )
-        );
-	}
+        )
+    ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
         $html = '';
         $baseUri = 'http://www.hdwallpapers.in';
 
-        $this->category   = $param['c']['value'] ?: 'latest_wallpapers'; // Latest default
-        $this->resolution = $param['r']['value'] ?: '1920x1200';         // Wide wallpaper default
+        $this->category   = $this->getInput('c') ?: 'latest_wallpapers'; // Latest default
+        $this->resolution = $this->getInput('r') ?: '1920x1200';         // Wide wallpaper default
 
         $category = $this->category;
         if (strrpos($category, 'wallpapers') !== strlen($category)-strlen('wallpapers')) {
@@ -35,7 +32,7 @@ class HDWallpapersBridge extends BridgeAbstract {
         }
 
         $num = 0;
-        $max = $param['m']['value'] ?: 14;
+        $max = $this->getInput('m') ?: 14;
         $lastpage = 1;
 
         for ($page = 1; $page <= $lastpage; $page++) {

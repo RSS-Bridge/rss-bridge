@@ -8,48 +8,44 @@
 */
 class YoutubeBridge extends BridgeAbstract {
 
-	public function loadMetadatas() {
+	public $name = 'YouTube Bridge';
+	public $uri = 'https://www.youtube.com/';
+	public $description = 'Returns the 10 newest videos by username/channel/playlist or search';
+	public $maintainer = 'mitsukarenai';
 
-		$this->name = 'YouTube Bridge';
-		$this->uri = 'https://www.youtube.com/';
-		$this->description = 'Returns the 10 newest videos by username/channel/playlist or search';
-		$this->maintainer = 'mitsukarenai';
-
-        $this->parameters['By username'] = array(
-          'u'=>array(
-            'name'=>'username',
-            'exampleValue'=>'test',
-            'required'=>true
-          )
-        );
-
-        $this->parameters['By channel id'] = array(
-          'c'=>array(
-            'name'=>'channel id',
-            'exampleValue'=>"15",
-            'required'=>true
-          )
-        );
-
-        $this->parameters['By playlist Id'] = array(
-          'p'=>array(
-            'name'=>'playlist id',
-            'exampleValue'=>"15"
-          )
-        );
-
-        $this->parameters['Search result'] = array(
-          's'=>array(
-            'name'=>'search keyword',
-            'exampleValue'=>'test'
-          ),
-          'pa'=>array(
-            'name'=>'page',
-            'type'=>'number',
-            'exampleValue'=>1
-          )
-        );
-	}
+    public $parameters = array(
+        'By username' => array(
+            'u'=>array(
+                'name'=>'username',
+                'exampleValue'=>'test',
+                'required'=>true
+            )
+        ),
+        'By channel id' => array(
+            'c'=>array(
+                'name'=>'channel id',
+                'exampleValue'=>"15",
+                'required'=>true
+            )
+        ),
+        'By playlist Id' => array(
+            'p'=>array(
+                'name'=>'playlist id',
+                'exampleValue'=>"15"
+            )
+        ),
+        'Search result' => array(
+            's'=>array(
+                'name'=>'search keyword',
+                'exampleValue'=>'test'
+            ),
+            'pa'=>array(
+                'name'=>'page',
+                'type'=>'number',
+                'exampleValue'=>1
+            )
+        )
+    );
 
 	private function ytBridgeQueryVideoInfo($vid, &$author, &$desc, &$time) {
 		$html = $this->getSimpleHTMLDOM($this->uri."watch?v=$vid");
@@ -106,19 +102,18 @@ class YoutubeBridge extends BridgeAbstract {
 	}
 
 	public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 
 		$xml = '';
 		$html = '';
 		$url_feed = '';
 		$url_listing = '';
 
-		if (isset($param['u']['value'])) { /* User and Channel modes */
-			$this->request = $param['u']['value'];
+		if (isset($this->getInput('u'))) { /* User and Channel modes */
+			$this->request = $this->getInput('u');
 			$url_feed = $this->uri.'feeds/videos.xml?user='.urlencode($this->request);
 			$url_listing = $this->uri.'user/'.urlencode($this->request).'/videos';
-		} else if (isset($param['c']['value'])) {
-			$this->request = $param['c']['value'];
+		} else if (isset($this->getInput('c'))) {
+			$this->request = $this->getInput('c');
 			$url_feed = $this->uri.'feeds/videos.xml?channel_id='.urlencode($this->request);
 			$url_listing = $this->uri.'channel/'.urlencode($this->request).'/videos';
 		}
@@ -130,16 +125,16 @@ class YoutubeBridge extends BridgeAbstract {
 			} else $this->returnServerError("Could not request YouTube. Tried:\n - $url_feed\n - $url_listing");
 		}
 
-		else if (isset($param['p']['value'])) { /* playlist mode */
-			$this->request = $param['p']['value'];
+		else if (isset($this->getInput('p'))) { /* playlist mode */
+			$this->request = $this->getInput('p');
 			$url_listing = $this->uri.'playlist?list='.urlencode($this->request);
 			$html = $this->getSimpleHTMLDOM($url_listing) or $this->returnServerError("Could not request YouTube. Tried:\n - $url_listing");
 			$this->ytBridgeParseHtmlListing($html, 'tr.pl-video', '.pl-video-title a');
 			$this->request = 'Playlist: '.str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
 		}
 
-		else if (isset($param['s']['value'])) { /* search mode */
-			$this->request = $param['s']['value']; $page = 1; if (isset($param['pa']['value'])) $page = (int)preg_replace("/[^0-9]/",'', $param['pa']['value']);
+		else if (isset($this->getInput('s'))) { /* search mode */
+			$this->request = $this->getInput('s'); $page = 1; if (isset($this->getInput('pa'))) $page = (int)preg_replace("/[^0-9]/",'', $this->getInput('pa'));
 			$url_listing = $this->uri.'results?search_query='.urlencode($this->request).'&page='.$page.'&filters=video&search_sort=video_date_uploaded';
 			$html = $this->getSimpleHTMLDOM($url_listing) or $this->returnServerError("Could not request YouTube. Tried:\n - $url_listing");
 			$this->ytBridgeParseHtmlListing($html, 'div.yt-lockup', 'h3');

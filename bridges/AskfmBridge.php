@@ -1,35 +1,26 @@
 <?php
 class AskfmBridge extends BridgeAbstract{
 
-        public function loadMetadatas() {
-
-                $this->maintainer = "az5he6ch";
-                $this->name = "Ask.fm Answers";
-                $this->uri = "http://ask.fm/";
-                $this->description = "Returns answers from an Ask.fm user";
-
-                $this->parameters["Ask.fm username"] = array(
-                  'u'=>array(
-                      'name'=>'Username',
-                      'required'=>true
-                  )
-                );
-        }
+    public $maintainer = "az5he6ch";
+    public $name = "Ask.fm Answers";
+    public $uri = "http://ask.fm/";
+    public $description = "Returns answers from an Ask.fm user";
+    public $parameters = array(
+        'Ask.fm username'=>array(
+            'u'=>array(
+                'name'=>'Username',
+                'required'=>true
+            )
+        )
+    );
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
-        $html = '';
-        if (isset($param['u']['value'])) {
-            $this->request = $param['u']['value'];
-            $html = $this->getSimpleHTMLDOM('http://ask.fm/'.urlencode($this->request).'/answers/more?page=0') or $this->returnServerError('Requested username can\'t be found.');
-        }
-        else {
-            $this->returnClientError('You must specify a username (?u=...).');
-        }
+        $html = $this->getSimpleHTMLDOM($this->getURI())
+            or $this->returnServerError('Requested username can\'t be found.');
 
         foreach($html->find('div.streamItem-answer') as $element) {
             $item = array();
-            $item['uri'] = 'http://ask.fm'.$element->find('a.streamItemsAge',0)->href;
+            $item['uri'] = $this->uri.$element->find('a.streamItemsAge',0)->href;
             $question = trim($element->find('h1.streamItemContent-question',0)->innertext);
             $item['title'] = trim(htmlspecialchars_decode($element->find('h1.streamItemContent-question',0)->plaintext, ENT_QUOTES));
             $answer = trim($element->find('p.streamItemContent-answer',0)->innertext);
@@ -44,18 +35,18 @@ class AskfmBridge extends BridgeAbstract{
             }
             $content = '<p>' . $question . '</p><p>' . $answer . '</p><p>' . $visual . '</p>';
             // Fix relative links without breaking // scheme used by YouTube stuff
-            $content = preg_replace('#href="\/(?!\/)#', 'href="http://ask.fm/',$content);
+            $content = preg_replace('#href="\/(?!\/)#', 'href="'.$this->uri,$content);
             $item['content'] = $content;
             $this->items[] = $item;
         }
     }
 
     public function getName(){
-        return empty($this->request) ? $this->name : $this->request;
+        return $this->name.' : '.$this->getInput('u');
     }
 
     public function getURI(){
-        return empty($this->request) ? $this->uri : 'http://ask.fm/'.urlencode($this->request);
+        return $this->uri.urlencode($this->getInput('u')).'/answers/more?page=0';
     }
 
     public function getCacheDuration(){

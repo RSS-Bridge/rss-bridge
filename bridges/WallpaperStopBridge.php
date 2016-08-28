@@ -5,42 +5,38 @@ class WallpaperStopBridge extends BridgeAbstract {
     private $subcategory;
     private $resolution;
 
-	public function loadMetadatas() {
+	public $maintainer = "nel50n";
+	public $name = "WallpaperStop Bridge";
+	public $uri = "http://www.wallpaperstop.com/";
+	public $description = "Returns the latests wallpapers from WallpaperStop";
 
-		$this->maintainer = "nel50n";
-		$this->name = "WallpaperStop Bridge";
-		$this->uri = "http://www.wallpaperstop.com/";
-		$this->description = "Returns the latests wallpapers from WallpaperStop";
-
-        $this->parameters[] = array(
-          'c'=>array('name'=>'Category'),
-          's'=>array('name'=>'subcategory'),
-          'm'=>array(
+    public $parameters = array( array(
+        'c'=>array('name'=>'Category'),
+        's'=>array('name'=>'subcategory'),
+        'm'=>array(
             'name'=>'Max number of wallpapers',
             'type'=>'number'
-          ),
-          'r'=>array(
+        ),
+        'r'=>array(
             'name'=>'resolution',
             'exampleValue'=>'1920x1200, 1680x1050,…',
-          )
-        );
-	}
+        )
+    ));
 
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
         $html = '';
-        if (!isset($param['c']['value'])) {
+        if (!isset($this->getInput('c'))) {
             $this->returnClientError('You must specify at least a category (?c=...).');
         } else {
             $baseUri = 'http://www.wallpaperstop.com';
 
-            $this->category = $param['c']['value'];
-            $this->subcategory = $param['s']['value'] ?: '';
-            $this->resolution = $param['r']['value'] ?: '1920x1200';    // Wide wallpaper default
+            $this->category = $this->getInput('c');
+            $this->subcategory = $this->getInput('s') ?: '';
+            $this->resolution = $this->getInput('r') ?: '1920x1200';    // Wide wallpaper default
 
             $num = 0;
-            $max = $param['m']['value'] ?: 20;
+            $max = $this->getInput('m') ?: 20;
             $lastpage = 1;
 
             for ($page = 1; $page <= $lastpage; $page++) {

@@ -1,12 +1,10 @@
 <?php
 class KoreusBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-		$this->maintainer = "pit-fgfjiudghdf";
-		$this->name = "Koreus";
-		$this->uri = "http://www.koreus.com/";
-		$this->description = "Returns the 5 newest posts from Koreus (full text)";
-	}
+	public $maintainer = "pit-fgfjiudghdf";
+	public $name = "Koreus";
+	public $uri = "http://www.koreus.com/";
+	public $description = "Returns the 5 newest posts from Koreus (full text)";
 
 	private function KoreusStripCDATA($string) {
 		$string = str_replace('<![CDATA[', '', $string);

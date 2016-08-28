@@ -2,27 +2,24 @@
 
 class VkBridge extends BridgeAbstract {
 
-    private $request;
-
-    public function loadMetadatas() {
-        $this->maintainer = "ahiles3005";
-        $this->name = "VK.com";
-        $this->uri = "http://www.vk.com/";
-        $this->description = "Working with open pages";
-        $this->parameters["Url on page group or user"] = array(
-          'u'=>array(
-            'name'=>'Url',
-            'required'=>true
-          )
-        );
-    }
+    public $maintainer = "ahiles3005";
+    public $name = "VK.com";
+    public $uri = "http://www.vk.com/";
+    public $description = "Working with open pages";
+    public $parameters=array(
+        'Url on page group or user' => array(
+            'u'=>array(
+                'name'=>'Url',
+                'required'=>true
+            )
+        )
+    );
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
         $html = '';
-        if (isset($param['u']['value'])) {
-            $this->request = $param['u']['value'];
-            $text_html = $this->getSimpleHTMLDOM(urldecode($this->request)) or $this->returnServerError('No results for this query.');
+        if (isset($this->getInput('u'))) {
+            $text_html = $this->getSimpleHTMLDOM(urldecode($this->getInput('u')))
+                or $this->returnServerError('No results for this query.');
             $text_html = iconv('windows-1251', 'utf-8', $text_html);
             $html = str_get_html($text_html);
         }

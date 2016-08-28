@@ -1,21 +1,18 @@
 <?php
 class ElsevierBridge extends BridgeAbstract{
-	public function loadMetadatas() {
+	public $maintainer = 'Pierre Mazière';
+	public $name = 'Elsevier journals recent articles';
+	public $uri = 'http://www.journals.elsevier.com/';
+	public $description = 'Returns the recent articles published in Elsevier journals';
 
-		$this->maintainer = 'Pierre Mazière';
-		$this->name = 'Elsevier journals recent articles';
-		$this->uri = 'http://www.journals.elsevier.com';
-		$this->description = 'Returns the recent articles published in Elsevier journals';
-
-        $this->parameters[] = array(
-          'j'=>array(
+    public $parameters = array( array(
+        'j'=>array(
             'name'=>'Journal name',
             'required'=>true,
             'exampleValue'=>'academic-pediactrics',
             'title'=>'Insert html-part of your journal'
-          )
-        );
-	}
+        )
+    ));
 
 	// Extracts the list of names from an article as string
 	private function ExtractArticleName ($article){
@@ -59,9 +56,8 @@ class ElsevierBridge extends BridgeAbstract{
 	}
 
 	public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
-		$uri = 'http://www.journals.elsevier.com/' . $param['j']['value'] . '/recent-articles/';
-		$html = $this->getSimpleHTMLDOM($uri) or $this->returnServerError('No results for Elsevier journal '.$param['j']['value']);
+		$uri = $this->uri . $this->getInput('j') . '/recent-articles/';
+		$html = $this->getSimpleHTMLDOM($uri) or $this->returnServerError('No results for Elsevier journal '.$this->getInput('j'));
 
 		foreach($html->find('.pod-listing') as $article){
 			$item = array();

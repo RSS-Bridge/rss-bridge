@@ -1,31 +1,21 @@
 <?php
 class InstagramBridge extends BridgeAbstract{
 
-    private $request;
+	public $maintainer = "pauder";
+	public $name = "Instagram Bridge";
+	public $uri = "http://instagram.com/";
+	public $description = "Returns the newest images";
 
-    public function loadMetadatas() {
-
-		$this->maintainer = "pauder";
-		$this->name = "Instagram Bridge";
-		$this->uri = "http://instagram.com/";
-		$this->description = "Returns the newest images";
-
-        $this->parameters[] = array(
-          'u'=>array('name'=>'username')
-        );
-
-	}
+    public $parameters = array( array(
+        'u'=>array(
+            'name'=>'username',
+            'required'=>true
+        )
+    ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
-        $html = '';
-        if (isset($param['u']['value'])) {   /* user timeline mode */
-            $this->request = $param['u']['value'];
-            $html = $this->getSimpleHTMLDOM('http://instagram.com/'.urlencode($this->request)) or $this->returnServerError('Could not request Instagram.');
-        }
-        else {
-            $this->returnClientError('You must specify a Instagram username (?u=...).');
-        }
+        $html = $this->getSimpleHTMLDOM($this->getURI())
+            or $this->returnServerError('Could not request Instagram.');
 
         $innertext = null;
 
@@ -71,6 +61,11 @@ class InstagramBridge extends BridgeAbstract{
     }
 
     public function getName(){
-        return (!empty($this->request) ? $this->request .' - ' : '') .'Instagram Bridge';
+        return $this->param['u']['value'] .' - Instagram Bridge';
+    }
+
+    public function getURI(){
+        return $this->uri.urlencode($this->getInput('u'));
     }
 }
+

@@ -1,14 +1,10 @@
 <?php
 class ZatazBridge extends BridgeAbstract {
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "aledeg";
-		$this->name = 'Zataz Magazine';
-		$this->uri = 'http://www.zataz.com';
-		$this->description = "ZATAZ Magazine - S'informer, c'est déjà se sécuriser";
-
-	}
+	public $maintainer = "aledeg";
+	public $name = 'Zataz Magazine';
+	public $uri = 'http://www.zataz.com';
+	public $description = "ZATAZ Magazine - S'informer, c'est déjà se sécuriser";
 
 	public function collectData(){
 		$html = $this->getSimpleHTMLDOM($this->uri) or $this->returnServerError('Could not request ' . $this->uri);

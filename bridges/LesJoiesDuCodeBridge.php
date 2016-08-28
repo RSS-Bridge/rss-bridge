@@ -1,14 +1,10 @@
 <?php
 class LesJoiesDuCodeBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "superbaillot.net";
-		$this->name = "Les Joies Du Code";
-		$this->uri = "http://lesjoiesducode.fr/";
-		$this->description = "LesJoiesDuCode";
-
-	}
+	public $maintainer = "superbaillot.net";
+	public $name = "Les Joies Du Code";
+	public $uri = "http://lesjoiesducode.fr/";
+	public $description = "LesJoiesDuCode";
 
     public function collectData(){
         $html = $this->getSimpleHTMLDOM('http://lesjoiesducode.fr/') or $this->returnServerError('Could not request LesJoiesDuCode.');

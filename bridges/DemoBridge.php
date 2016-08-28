@@ -1,54 +1,53 @@
 <?php
 class DemoBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+    public $maintainer = "teromene";
+    public $name = "DemoBridge";
+    public $uri = "http://github.com/rss-bridge/rss-bridge";
+    public $description = "Bridge used for demos";
 
-		$this->maintainer = "teromene";
-		$this->name = "DemoBridge";
-		$this->uri = "http://github.com/sebsauvage/rss-bridge";
-		$this->description = "Bridge used for demos";
-
-        $this->parameters['testCheckbox'] = array(
-          'testCheckbox'=>array(
-            'type'=>'checkbox',
-            'name'=>'test des checkbox'
-          )
-        );
-
-        $this->parameters['testList'] = array(
-          'testList'=>array(
-            'type'=>'list',
-            'name'=>'test des listes',
-            'values'=>array(
-              'Test'=>'test',
-              'Test 2'=>'test2'
+    public $parameters = array(
+        'testCheckbox' => array(
+            'testCheckbox'=>array(
+                'type'=>'checkbox',
+                'name'=>'test des checkbox'
             )
-          )
-        );
+        ),
 
-        $this->parameters['testNumber'] = array(
-          'testNumber'=>array(
-            'type'=>'number',
-            'name'=>'test des numéros',
-            'exampleValue'=>'1515632'
-          )
-        );
-	}
+        'testList' => array(
+            'testList'=>array(
+                'type'=>'list',
+                'name'=>'test des listes',
+                'values'=>array(
+                    'Test'=>'test',
+                    'Test 2'=>'test2'
+                )
+            )
+        ),
 
-	public function collectData(){
+        'testNumber' => array(
+            'testNumber'=>array(
+                'type'=>'number',
+                'name'=>'test des numéros',
+                'exampleValue'=>'1515632'
+            )
+        )
+    );
 
-		$item = array();
-	    $item['author'] = "Me!";
-	    $item['title'] = "Test";
-	    $item['content'] = "Awesome content !";
-	    $item['id'] = "Lalala";
-	    $item['uri'] = "http://test.test/test";
+    public function collectData(){
 
-	    $this->items[] = $item;
+        $item = array();
+        $item['author'] = "Me!";
+        $item['title'] = "Test";
+        $item['content'] = "Awesome content !";
+        $item['id'] = "Lalala";
+        $item['uri'] = "http://example.com/test";
+
+        $this->items[] = $item;
 
     }
 
-	public function getCacheDuration(){
-		return 00; // 1 hour
-	}
+    public function getCacheDuration(){
+        return 00; // 1 hour
+    }
 }

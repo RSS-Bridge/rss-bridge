@@ -1,30 +1,27 @@
 <?php
 class MilbooruBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Milbooru";
-		$this->uri = "http://sheslostcontrol.net/moe/shimmie/";
-		$this->description = "Returns images from given page";
+	public $maintainer = "mitsukarenai";
+	public $name = "Milbooru";
+	public $uri = "http://sheslostcontrol.net/moe/shimmie/";
+	public $description = "Returns images from given page";
 
-        $this->parameters[] = array(
-          'p'=>array(
+    public $parameters = array( array(
+        'p'=>array(
             'name'=>'page',
             'type'=>'number'
-          ),
-          't'=>array('name'=>'tags')
-        );
-	}
+        ),
+        't'=>array('name'=>'tags')
+    ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 	$page = 0;$tags='';
-        if (isset($param['p']['value'])) {
-            $page = (int)preg_replace("/[^0-9]/",'', $param['p']['value']);
+        if (isset($this->getInput('p'))) {
+            $page = (int)preg_replace("/[^0-9]/",'', $this->getInput('p'));
         }
-        if (isset($param['t']['value'])) {
-            $tags = urlencode($param['t']['value']);
+        if (isset($this->getInput('t'))) {
+            $tags = urlencode($this->getInput('t'));
         }
         $html = $this->getSimpleHTMLDOM("http://sheslostcontrol.net/moe/shimmie/index.php?q=/post/list/$tags/$page") or $this->returnServerError('Could not request Milbooru.');
 

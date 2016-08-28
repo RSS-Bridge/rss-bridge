@@ -1,14 +1,10 @@
 <?php
 class Rue89Bridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "pit-fgfjiudghdf";
-		$this->name = "Rue89";
-		$this->uri = "http://rue89.nouvelobs.com/";
-		$this->description = "Returns the 5 newest posts from Rue89 (full text)";
-
-	}
+	public $maintainer = "pit-fgfjiudghdf";
+	public $name = "Rue89";
+	public $uri = "http://rue89.nouvelobs.com/";
+	public $description = "Returns the 5 newest posts from Rue89 (full text)";
 
 	private function rue89getDatas($url){
 

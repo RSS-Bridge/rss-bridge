@@ -1,33 +1,28 @@
 <?php
 class Rule34Bridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "mitsukarenai";
+	public $name = "Rule34";
+	public $uri = "http://rule34.xxx/";
+	public $description = "Returns images from given page";
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Rule34";
-		$this->uri = "http://rule34.xxx/";
-		$this->description = "Returns images from given page";
-
-        $this->parameters[] = array(
-          'p'=>array(
+    public $parameters = array( array(
+        'p'=>array(
             'name'=>'page',
             'type'=>'number'
-          ),
-          't'=>array('name'=>'tags')
-        );
-
-	}
+        ),
+        't'=>array('name'=>'tags')
+    ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 	$page = 0;$tags='';
-        if (isset($param['p']['value'])) {
-		$page = (int)preg_replace("/[^0-9]/",'', $param['p']['value']);
+        if (isset($this->getInput('p'))) {
+		$page = (int)preg_replace("/[^0-9]/",'', $this->getInput('p'));
 		$page = $page - 1;
 		$page = $page * 50;
         }
-        if (isset($param['t']['value'])) {
-            $tags = urlencode($param['t']['value']);
+        if (isset($this->getInput('t'))) {
+            $tags = urlencode($this->getInput('t'));
         }
         $html = $this->getSimpleHTMLDOM("http://rule34.xxx/index.php?page=post&s=list&tags=$tags&pid=$page") or $this->returnServerError('Could not request Rule34.');
 

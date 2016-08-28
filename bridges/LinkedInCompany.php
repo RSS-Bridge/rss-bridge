@@ -1,25 +1,21 @@
 <?php
 class LinkedInCompany extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "regisenguehard";
+	public $name = "LinkedIn Company";
+	public $uri = "https://www.linkedin.com/";
+	public $description = "Returns most recent actus from Company on LinkedIn. (https://www.linkedin.com/company/<strong style=\"font-weight:bold;\">apple</strong>)";
 
-		$this->maintainer = "regisenguehard";
-		$this->name = "LinkedIn Company";
-		$this->uri = "https://www.linkedin.com/";
-		$this->description = "Returns most recent actus from Company on LinkedIn. (https://www.linkedin.com/company/<strong style=\"font-weight:bold;\">apple</strong>)";
-
-        $this->parameters[] = array(
-          'c'=>array(
+    public $parameters = array( array(
+        'c'=>array(
             'name'=>'Company name',
             'required'=>true
-          )
-        );
-	}
+        )
+    ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
         $html = '';
-        $link = 'https://www.linkedin.com/company/'.$param['c']['value'];
+        $link = 'https://www.linkedin.com/company/'.$this->getInput('c');
 
         $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request LinkedIn.');
 

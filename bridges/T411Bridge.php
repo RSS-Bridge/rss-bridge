@@ -1,23 +1,19 @@
 <?php
 class T411Bridge extends BridgeAbstract {
 
-    public function loadMetadatas() {
+    public $maintainer = 'ORelio';
+    public $name = 'T411 Bridge';
+    public $uri = 'https://t411.ch/';
+    public $description = 'Returns the 10 newest torrents with specified search terms <br /> Use url part after "?" mark when using their search engine.';
 
-        $this->maintainer = 'ORelio';
-        $this->name = 'T411 Bridge';
-        $this->uri = 'https://t411.ch/';
-        $this->description = 'Returns the 10 newest torrents with specified search terms <br /> Use url part after "?" mark when using their search engine.';
-
-        $this->parameters[] = array(
-          'search'=>array(
+    public $parameters = array( array(
+        'search'=>array(
             'name'=>'Search criteria',
             'required'=>true
-          )
-        );
-    }
+        )
+    ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 
         //Utility function for retrieving text based on start and end delimiters
         function ExtractFromDelimiters($string, $start, $end) {
@@ -29,12 +25,12 @@ class T411Bridge extends BridgeAbstract {
         }
 
         //Ensure proper parameters have been provided
-        if (empty($param['search']['value'])) {
+        if (empty($this->getInput('search'))) {
             $this->returnClientError('You must specify a search criteria');
         }
 
         //Retrieve torrent listing from search results, which does not contain torrent description
-        $url = $this->uri.'torrents/search/?'.$param['search']['value'].'&order=added&type=desc';
+        $url = $this->uri.'torrents/search/?'.$this->getInput('search').'&order=added&type=desc';
         $html = $this->getSimpleHTMLDOM($url) or $this->returnServerError('Could not request t411: '.$url);
         $results = $html->find('table.results', 0);
         if (is_null($results))

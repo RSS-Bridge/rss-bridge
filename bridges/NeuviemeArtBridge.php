@@ -1,12 +1,10 @@
 <?php
 class NeuviemeArtBridge extends BridgeAbstract {
 
-    public function loadMetadatas() {
-        $this->maintainer = "ORelio";
-        $this->name = '9ème Art Bridge';
-        $this->uri = "http://www.9emeart.fr/";
-        $this->description = "Returns the newest articles.";
-    }
+    public $maintainer = "ORelio";
+    public $name = '9ème Art Bridge';
+    public $uri = "http://www.9emeart.fr/";
+    public $description = "Returns the newest articles.";
 
     public function collectData(){
 

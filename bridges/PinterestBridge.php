@@ -5,45 +5,42 @@ class PinterestBridge extends BridgeAbstract{
     private $board;
     private $query;
 
-    public function loadMetadatas() {
+	public $maintainer = "pauder";
+	public $name = "Pinterest Bridge";
+	public $uri = "http://www.pinterest.com";
+	public $description = "Returns the newest images on a board";
 
-		$this->maintainer = "pauder";
-		$this->name = "Pinterest Bridge";
-		$this->uri = "http://www.pinterest.com";
-		$this->description = "Returns the newest images on a board";
-
-        $this->parameters["By username and board"] = array(
-          'u'=>array('name'=>'username'),
-          'b'=>array('name'=>'board')
-        );
-
-        $this->parameters["From search"] = array(
-          'q'=>array('name'=>'Keyword')
-        );
-	}
+    public $parameters = array(
+        'By username and board' => array(
+            'u'=>array('name'=>'username'),
+            'b'=>array('name'=>'board')
+        ),
+        'From search' => array(
+            'q'=>array('name'=>'Keyword')
+        )
+    );
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
         $html = '';
-        if (isset($param['u']['value']) || isset($param['b']['value'])) {
+        if (isset($this->getInput('u')) || isset($this->getInput('b'))) {
 
-            if (empty($param['u']['value']))
+            if (empty($this->getInput('u')))
             {
                 $this->returnClientError('You must specify a Pinterest username (?u=...).');
             }
 
-            if (empty($param['b']['value']))
+            if (empty($this->getInput('b')))
             {
                 $this->returnClientError('You must specify a Pinterest board for this username (?b=...).');
             }
 
-            $this->username = $param['u']['value'];
-            $this->board = $param['b']['value'];
+            $this->username = $this->getInput('u');
+            $this->board = $this->getInput('b');
             $html = $this->getSimpleHTMLDOM($this->getURI().'/'.urlencode($this->username).'/'.urlencode($this->board)) or $this->returnServerError('Username and/or board not found');
 
-        } else if (isset($param['q']['value']))
+        } else if (isset($this->getInput('q')))
         {
-        	$this->query = $param['q']['value'];
+        	$this->query = $this->getInput('q');
         	$html = $this->getSimpleHTMLDOM($this->getURI().'/search/?q='.urlencode($this->query)) or $this->returnServerError('Could not request Pinterest.');
         }
 

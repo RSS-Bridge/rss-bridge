@@ -4,59 +4,50 @@ define('WIKIPEDIA_SUBJECT_TFA', 0); // Today's featured article
 define('WIKIPEDIA_SUBJECT_DYK', 1); // Did you know...
 
 class WikipediaBridge extends HttpCachingBridgeAbstract {
-	public function loadMetadatas(){
-		$this->maintainer = 'logmanoriginal';
-		$this->name = 'Wikipedia bridge for many languages';
-		$this->uri = 'https://www.wikipedia.org/';
-		$this->description = 'Returns articles for a language of your choice';
+	public $maintainer = 'logmanoriginal';
+	public $name = 'Wikipedia bridge for many languages';
+	public $uri = 'https://www.wikipedia.org/';
+	public $description = 'Returns articles for a language of your choice';
 
-        $this->parameters[] = array(
-          'language'=>array(
-            'name'=>'Language',
-            'type'=>'list',
-            'required'=>true,
-            'title'=>'Select your language',
-            'exampleValue'=>'English',
-            'values'=>array(
-              'English'=>'en',
-              'Dutch'=>'nl',
-              'Esperanto'=>'eo',
-              'French'=>'fr',
-              'German'=>'de',
-            )
-          ),
-          'subject'=>array(
-            'name'=>'Subject',
-            'type'=>'list',
-            'required'=>true,
-            'title'=>'What subject are you interested in?',
-            'exampleValue'=>'Today\'s featured article',
-            'values'=>array(
-              'Today\'s featured article'=>'tfa',
-              'Did you know…'=>'dyk'
-            )
-          ),
-          'fullarticle'=>array(
-            'name'=>'Load full article',
-            'type'=>'checkbox',
-            'title'=>'Activate to always load the full article'
-          )
-        );
-	}
+	public $parameters = array( array(
+		'language'=>array(
+			'name'=>'Language',
+			'type'=>'list',
+			'required'=>true,
+			'title'=>'Select your language',
+			'exampleValue'=>'English',
+			'values'=>array(
+				'English'=>'en',
+				'Dutch'=>'nl',
+				'Esperanto'=>'eo',
+				'French'=>'fr',
+				'German'=>'de',
+			)
+		),
+		'subject'=>array(
+			'name'=>'Subject',
+			'type'=>'list',
+			'required'=>true,
+			'title'=>'What subject are you interested in?',
+			'exampleValue'=>'Today\'s featured article',
+			'values'=>array(
+				'Today\'s featured article'=>'tfa',
+				'Did you know…'=>'dyk'
+			)
+		),
+		'fullarticle'=>array(
+			'name'=>'Load full article',
+			'type'=>'checkbox',
+			'title'=>'Activate to always load the full article'
+		)
+	));
 
-	public function collectData(){
-        $params=$this->parameters[$this->queriedContext];
-		if(!isset($params['language']['value']))
-			$this->returnClientError('You must specify a valid language via \'&language=\'!');
+	public function getURI(){
+		return 'https://' . strtolower($this->getInput('language')) . '.wikipedia.org';
+    }
 
-		if(!$this->CheckLanguageCode(strtolower($params['language']['value'])))
-			$this->returnClientError('The language code you provided (\'' . $params['language']['value'] . '\') is not supported!');
-
-		if(!isset($params['subject']['value']))
-			$this->returnClientError('You must specify a valid subject via \'&subject=\'!');
-
-		$subject = WIKIPEDIA_SUBJECT_TFA;
-		switch($params['subject']['value']){
+	public function getName(){
+		switch($this->getInput('subject')){
 			case 'tfa':
 				$subject = WIKIPEDIA_SUBJECT_TFA;
 				break;
@@ -68,38 +59,48 @@ class WikipediaBridge extends HttpCachingBridgeAbstract {
 				break;
 		}
 
-		$fullArticle = false;
-		if(isset($params['fullarticle']['value']))
-			$fullArticle = $params['fullarticle']['value'];
-
-		// We store the correct URI as URI of this bridge (so it can be used later!)
-		$this->uri = 'https://' . strtolower($params['language']['value']) . '.wikipedia.org';
-
-		// While we at it let's also update the name for the feed
 		switch($subject){
 			case WIKIPEDIA_SUBJECT_TFA:
-				$this->name = 'Today\'s featured article from ' . strtolower($params['language']['value']) . '.wikipedia.org';
+				$name = 'Today\'s featured article from ' . strtolower($this->getInput('language')) . '.wikipedia.org';
 				break;
 			case WIKIPEDIA_SUBJECT_DYK:
-				$this->name = 'Did you know? - articles from ' . strtolower($params['language']['value']) . '.wikipedia.org';
+				$name = 'Did you know? - articles from ' . strtolower($this->getInput('language')) . '.wikipedia.org';
 				break;
 			default:
-				$this->name = 'Articles from ' . strtolower($params['language']['value']) . '.wikipedia.org';
+				$name = 'Articles from ' . strtolower($this->getInput('language')) . '.wikipedia.org';
+				break;
+		}
+        return $name;
+    }
+
+	public function collectData(){
+
+		switch($this->getInput('subject')){
+			case 'tfa':
+				$subject = WIKIPEDIA_SUBJECT_TFA;
+				break;
+			case 'dyk':
+				$subject = WIKIPEDIA_SUBJECT_DYK;
+				break;
+			default:
+				$subject = WIKIPEDIA_SUBJECT_TFA;
 				break;
 		}
 
+		$fullArticle = $this->getInput('fullarticle');
+
 		// This will automatically send us to the correct main page in any language (try it!)
-		$html = $this->getSimpleHTMLDOM($this->uri . '/wiki');
+		$html = $this->getSimpleHTMLDOM($this->getURI() . '/wiki');
 
 		if(!$html)
-			$this->returnServerError('Could not load site: ' . $this->uri . '!');
+			$this->returnServerError('Could not load site: ' . $this->getURI() . '!');
 
 		/*
 		* Now read content depending on the language (make sure to create one function per language!)
 		* We build the function name automatically, just make sure you create a private function ending
 		* with your desired language code, where the language code is upper case! (en -> GetContentsEN).
 		*/
-		$function = 'GetContents' . strtoupper($params['language']['value']);
+		$function = 'GetContents' . strtoupper($this->getInput('language'));
 
 		if(!method_exists($this, $function))
 			$this->returnServerError('A function to get the contents for your language is missing (\'' . $function . '\')!');
@@ -111,26 +112,12 @@ class WikipediaBridge extends HttpCachingBridgeAbstract {
 	}
 
 	/**
-	* Returns true if the language code is part of the parameters list
-	*/
-	private function CheckLanguageCode($languageCode){
-		$languages = $this->parameters[0]['language']['values'];
-
-		$language_names = array();
-
-		foreach($languages as $name=>$value)
-			$language_names[] = $value;
-
-		return in_array($languageCode, $language_names);
-	}
-
-	/**
 	* Replaces all relative URIs with absolute ones
 	* @param $element A simplehtmldom element
 	* @return The $element->innertext with all URIs replaced
 	*/
 	private function ReplaceURIInHTMLElement($element){
-		return str_replace('href="/', 'href="' . $this->uri . '/', $element->innertext);
+		return str_replace('href="/', 'href="' . $this->getURI() . '/', $element->innertext);
 	}
 
 	/*
@@ -153,7 +140,7 @@ class WikipediaBridge extends HttpCachingBridgeAbstract {
 		}
 
 		$item = array();
-		$item['uri'] = $this->uri . $target->href;
+		$item['uri'] = $this->getURI() . $target->href;
 		$item['title'] = $target->title;
 
 		if(!$fullArticle)
@@ -172,7 +159,7 @@ class WikipediaBridge extends HttpCachingBridgeAbstract {
 			$item = array();
 
 			// We can only use the first anchor, there is no way of finding the 'correct' one if there are multiple
-			$item['uri'] = $this->uri . $entry->find('a', 0)->href;
+			$item['uri'] = $this->getURI() . $entry->find('a', 0)->href;
 			$item['title'] = strip_tags($entry->innertext);
 
 			if(!$fullArticle)
@@ -209,7 +196,7 @@ class WikipediaBridge extends HttpCachingBridgeAbstract {
 		foreach($content->find('ol.references') as $reference) // References
 			$reference->outertext = '';
 
-		return str_replace('href="/', 'href="' . $this->uri . '/', $content->innertext);
+		return str_replace('href="/', 'href="' . $this->getURI() . '/', $content->innertext);
 	}
 
 	/**

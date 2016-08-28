@@ -1,56 +1,31 @@
 <?php
 define('TWITCH_LIMIT', 10); // The default limit
-define('TWITCH_BROADCASTS', 'false'); // The default flag for broadcasts
 
 class TwitchApiBridge extends BridgeAbstract{
 
-	// for use in the getName function!
-	private $channel;
+	public $maintainer = "logmanoriginal";
+	public $name = "Twitch API Bridge";
+	public $uri = "http://www.twitch.tv";
+	public $description = "Returns the newest broadcasts or highlights by channel name using the Twitch API (v3)";
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "logmanoriginal";
-		$this->name = "Twitch API Bridge";
-		$this->uri = "http://www.twitch.tv";
-		$this->description = "Returns the newest broadcasts or highlights by channel name using the Twitch API (v3)";
-
-        $this->parameters["Get channel without limit"] = array(
-          'channel'=>array(
-            'name'=>'Channel',
-            'required'=>true
-          ),
-          'broadcasts'=>array(
-            'name'=>'Broadcasts',
-            'type'=>'list',
-            'values'=>array(
-              'Show broadcasts'=>'true',
-              'Show highlights'=>'false'
+    public $parameters = array(
+        'Show Channel Videos'=>array(
+            'channel'=>array(
+                'name'=>'Channel',
+                'required'=>true
+            ),
+            'broadcasts'=>array(
+                'name'=>'Show Broadcasts rather than Highlights',
+                'type'=>'checkbox'
+            ),
+            'limit'=>array(
+                'name'=>'Limit',
+                'type'=>'number'
             )
-          )
-        );
-
-        $this->parameters["Get channel with limit"] = array(
-          'channel'=>array(
-            'name'=>'Channel',
-            'required'=>true
-          ),
-          'limit'=>array(
-            'name'=>'Limit',
-            'type'=>'number'
-          ),
-          'broadcasts'=>array(
-            'name'=>'Broadcasts',
-            'type'=>'list',
-            'values'=>array(
-              'Show broadcasts'=>'true',
-              'Show highlights'=>'false'
-            )
-          )
-        );
-	}
+        )
+    );
 
 	public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 
 		/* In accordance with API description:
 		 * "When specifying a version for a request to the Twitch API, set the Accept HTTP header to the API version you prefer."
@@ -64,49 +39,35 @@ class TwitchApiBridge extends BridgeAbstract{
 
 		$context = stream_context_create($opts);
 
-		$channel = '';
-		$limit = TWITCH_LIMIT;
-		$broadcasts = TWITCH_BROADCASTS;
-		$requests = 1;
-
-		if(isset($param['channel']['value'])) {
-			$channel = $param['channel']['value'];
-		} else {
-			$this->returnClientError('You must specify a valid channel name! Received: &channel=' . $param['channel']['value']);
-		}
-
-		$this->channel = $channel;
-
-		if(isset($param['limit']['value'])) {
-			try {
-				$limit = (int)$param['limit']['value'];
-			} catch (Exception $e){
-				$this->returnClientError('The limit you specified is not valid! Received: &limit=' . $param['limit']['value'] . ' Expected: &limit=<num> where <num> is any integer number.');
-			}
-		} else {
+		if(!isset($this->getInput('limit')) ||
+		   empty($this->getInput('limit'))){
 			$limit = TWITCH_LIMIT;
+		}else{
+			$limit = (int)$this->getInput('limit');
 		}
 
 		// The Twitch API allows a limit between 1 .. 100. Therefore any value below must be set to 1, any greater must result in multiple requests.
+        $requests=1;
 		if($limit < 1) { $limit = 1; }
 		if($limit > 100) {
 			$requests = (int)($limit / 100);
 			if($limit % 100 != 0) { $requests++; }
 		}
 
-		if(isset($param['broadcasts']['value']) && ($param['broadcasts']['value'] == 'true' || $param['broadcasts']['value'] == 'false')) {
-			$broadcasts = $param['broadcasts']['value'];
-		} else {
-			$this->returnClientError('The value for broadcasts you specified is not valid! Received: &broadcasts=' . $param['broadcasts']['value'] . ' Expected: &broadcasts=false or &broadcasts=true');
+		if($this->getInput('broadcasts')){
+			$broadcasts='true';
+		}else{
+			$broadcasts='false';
 		}
+
 
 		// Build the initial request, see also: https://github.com/justintv/Twitch-API/blob/master/v3_resources/videos.md#get-channelschannelvideos
 		$request = '';
 
 		if($requests == 1) {
-			$request = 'https://api.twitch.tv/kraken/channels/' . $channel . '/videos?limit=' . $limit . '&broadcasts=' . $broadcasts;
+			$request = 'https://api.twitch.tv/kraken/channels/' . $this->getInput('channel') . '/videos?limit=' . $limit . '&broadcasts=' . $broadcasts;
 		} else {
-			$request = 'https://api.twitch.tv/kraken/channels/' . $channel . '/videos?limit=100&broadcasts=' . $broadcasts;
+			$request = 'https://api.twitch.tv/kraken/channels/' . $this->getInput('channel') . '/videos?limit=100&broadcasts=' . $broadcasts;
 		}
 
 		/* Finally we're ready to request data from the API. Each response provides information for the next request. */
@@ -144,7 +105,7 @@ class TwitchApiBridge extends BridgeAbstract{
 	}
 
 	public function getName(){
-		return (!empty($this->channel) ? $this->channel . ' - ' : '') . 'Twitch API Bridge';
+		return $this->getInput('channel') . ' - Twitch API Bridge';
 	}
 
 	public function getCacheDuration(){

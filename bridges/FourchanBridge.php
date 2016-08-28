@@ -1,26 +1,21 @@
 <?php
 class FourchanBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "mitsukarenai";
+	public $name = "4chan";
+	public $uri = "https://www.4chan.org/";
+	public $description = "Returns posts from the specified thread";
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "4chan";
-		$this->uri = "https://www.4chan.org/";
-		$this->description = "Returns posts from the specified thread";
-
-        $this->parameters[] = array(
-          't'=>array('name'=>'Thread URL')
-        );
-	}
-
+    public $parameters = array( array(
+        't'=>array('name'=>'Thread URL')
+    ));
 
   public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 
-	if (!isset($param['t']['value']))
+	if (!isset($this->getInput('t')))
 		$this->returnClientError('You must specify the thread URL (?t=...)');
 
-	$thread = parse_url($param['t']['value']) or $this->returnClientError('This URL seems malformed, please check it.');
+	$thread = parse_url($this->getInput('t')) or $this->returnClientError('This URL seems malformed, please check it.');
 	if($thread['host'] !== 'boards.4chan.org')
 		$this->returnClientError('4chan thread URL only.');
 

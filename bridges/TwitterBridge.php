@@ -1,44 +1,38 @@
 <?php
 class TwitterBridge extends BridgeAbstract{
-
-	public function loadMetadatas() {
-
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Twitter Bridge";
-		$this->uri = "https://twitter.com/";
-		$this->description = "Returns tweets by keyword/hashtag or user name";
-
-        $this->parameters["global"] = array(
-          'nopic'=>array(
-            'name'=>'Hide profile pictures',
-            'type'=>'checkbox',
-            'title'=>'Activate to hide profile pictures in content'
-          )
-        );
-
-        $this->parameters["By keyword or hashtag"] = array(
-          'q'=>array(
-            'name'=>'Keyword or #hashtag',
-            'required'=>true,
-            'exampleValue'=>'rss-bridge, #rss-bridge',
-            'title'=>'Insert a keyword or hashtag'
-          )
-        );
-
-        $this->parameters["By username"] = array(
-          'u'=>array(
-            'name'=>'username',
-            'required'=>true,
-            'exampleValue'=>'sebsauvage',
-            'title'=>'Insert a user name'
-          ),
-          'norep'=>array(
-            'name'=>'Without replies',
-            'type'=>'checkbox',
-            'title'=>'Only return initial tweets'
-          )
-        );
-	}
+    public $name='Twitter Bridge';
+    public $uri='https://twitter.com/';
+    public $description='returns tweets';
+    public $parameters=array(
+        'global'=>array(
+            'nopic'=>array(
+                'name'=>'Hide profile pictures',
+                'type'=>'checkbox',
+                'title'=>'Activate to hide profile pictures in content'
+            )
+        ),
+        'By keyword or hashtag' => array(
+            'q'=>array(
+                'name'=>'Keyword or #hashtag',
+                'required'=>true,
+                'exampleValue'=>'rss-bridge, #rss-bridge',
+                'title'=>'Insert a keyword or hashtag'
+            )
+        ),
+        'By username' => array(
+            'u'=>array(
+                'name'=>'username',
+                'required'=>true,
+                'exampleValue'=>'sebsauvage',
+                'title'=>'Insert a user name'
+            ),
+            'norep'=>array(
+                'name'=>'Without replies',
+                'type'=>'checkbox',
+                'title'=>'Only return initial tweets'
+            )
+        )
+    );
 
     public function getName(){
         switch($this->queriedContext){
@@ -51,37 +45,33 @@ class TwitterBridge extends BridgeAbstract{
             $param='u';
             break;
         }
-        return 'Twitter '.$specific
-            .$this->parameters[$this->queriedContext][$param]['value'];
+        return 'Twitter '.$specific.$this->getInput($param);
     }
 
     public function getURI(){
-        $params=$this->parameters[$this->queriedContext];
         switch($this->queriedContext){
         case 'By keyword or hashtag':
-            return $this->uri.'search?q='.urlencode($params['q']['value']);
+            return $this->uri.'search?q='.urlencode($this->getInput('q')).'&f=tweets';
         case 'By username':
-            return $this->uri.urlencode($params['u']['value']).
-                (isset($params['norep']['value'])?'':'/with_replies');
+            return $this->uri.urlencode($this->getInput('u')).
+                ($this->getInput('norep')?'':'/with_replies');
         }
     }
 
 	public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
 		$html = '';
-		if (isset($param['q']['value'])) {   /* keyword search mode */
-			$html = $this->getSimpleHTMLDOM('https://twitter.com/search?q='.urlencode($param['q']['value']).'&f=tweets') or $this->returnServerError('No results for this query.');
-		}
-		elseif (isset($param['u']['value'])) {   /* user timeline mode */
-			$html = $this->getSimpleHTMLDOM('https://twitter.com/'.urlencode($param['u']['value']).(isset($param['norep']['value'])?'':'/with_replies')) or $this->returnServerError('Requested username can\'t be found.');
-		}
-		else {
-			$this->returnClientError('You must specify a keyword (?q=...) or a Twitter username (?u=...).');
+
+		$html = $this->getSimpleHTMLDOM($this->getURI());
+		if(!$html){
+			switch($this->queriedContext){
+			case 'By keyword or hashtag':
+				$this->returnServerError('No results for this query.');
+			case 'By username':
+				$this->returnServerError('Requested username can\'t be found.');
+			}
 		}
 
-		$hidePictures = false;
-		if (isset($param['nopic']['value']))
-			$hidePictures = $param['nopic']['value'];
+		$hidePictures = $this->getInput('nopic');
 
 		foreach($html->find('div.js-stream-tweet') as $tweet) {
 			$item = array();

@@ -1,12 +1,12 @@
 <?php
 class KununuBridge extends HttpCachingBridgeAbstract {
-	public function loadMetadatas(){
-		$this->maintainer = "logmanoriginal";
-		$this->name = "Kununu Bridge"; /* This will be replaced later! */
-		$this->uri = "https://www.kununu.com"; /* This will be replaced later! */
-		$this->description = "Returns the latest reviews for a company and site of your choice.";
+	public $maintainer = "logmanoriginal";
+	public $name = "Kununu Bridge"; /* This will be replaced later! */
+	public $uri = "https://www.kununu.com"; /* This will be replaced later! */
+	public $description = "Returns the latest reviews for a company and site of your choice.";
 
-        $this->parameters['global'] = array(
+    public $parameters = array(
+        'global' => array(
           'site'=>array(
             'name'=>'Site',
             'type'=>'list',
@@ -27,34 +27,33 @@ class KununuBridge extends HttpCachingBridgeAbstract {
             'exampleValue'=>'checked',
             'title'=>'Activate to load full article'
           )
-        );
+        ),
 
-        $this->parameters[] = array(
+        array(
           'company'=>array(
             'name'=>'Company',
             'required'=>true,
             'exampleValue'=>'kununu-us',
             'title'=>'Insert company name (i.e. Kununu US) or URI path (i.e. kununu-us)'
           )
-        );
-	}
+      )
+  );
 
 	public function collectData(){
-        $params=$this->parameters[$this->queriedContext];
 
 		// Get Site
-		$site = strtolower(trim($params['site']['value']));
+		$site = strtolower(trim($this->getInput('site')));
 		if(!isset($site) || empty($site) || !$this->site_is_valid($site))
 			$this->returnClientError('You must specify a valid site (&site=...)!');
 
 		// Get Company (fixing whitespace and umlauts)
-		$company = $this->encode_umlauts(strtolower(str_replace(' ', '-', trim($params['company']['value']))));
+		$company = $this->encode_umlauts(strtolower(str_replace(' ', '-', trim($this->getInput('company')))));
 		if(!isset($company) || empty($company))
 			$this->returnClientError('You must specify a company (&company=...)!');
 
 		$full = false; // By default we'll load only short article
-		if(isset($params['full']['value']))
-			$full = strtolower(trim($params['full']['value']));
+		if(isset($this->getInput('full')))
+			$full = strtolower(trim($this->getInput('full')));
 
 		// Get reviews section name (depends on site)
 		$section = '';

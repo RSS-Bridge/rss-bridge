@@ -3,14 +3,10 @@
 #error_reporting(E_ALL);
 class ArstechnicaBridge extends BridgeAbstract {
 
-  public function loadMetadatas() {
-
-    $this->maintainer = "prysme";
-    $this->name = "ArstechnicaBridge";
-    $this->uri = "http://arstechnica.com";
-    $this->description = "The PC enthusiast's resource. Power users and the tools they love, without computing religion";
-
-  }
+  public $maintainer = "prysme";
+  public $name = "ArstechnicaBridge";
+  public $uri = "http://arstechnica.com";
+  public $description = "The PC enthusiast's resource. Power users and the tools they love, without computing religion";
 
   function StripWithDelimiters($string, $start, $end) {
     while (strpos($string, $start) !== false) {

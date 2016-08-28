@@ -1,58 +1,60 @@
 <?php
 class AllocineFRBridge extends BridgeAbstract{
 
-    public function loadMetadatas() {
 
-        $this->maintainer = "superbaillot.net";
-        $this->name = "Allo Cine Bridge";
-        $this->uri = "http://www.allocine.fr";
-        $this->description = "Bridge for allocine.fr";
-
-        $this->parameters[] = array(
-          'category'=>array(
+    public $maintainer = "superbaillot.net";
+    public $name = "Allo Cine Bridge";
+    public $uri = "http://www.allocine.fr";
+    public $description = "Bridge for allocine.fr";
+    public $parameters = array( array(
+        'category'=>array(
             'name'=>'category',
             'type'=>'list',
             'required'=>true,
             'exampleValue'=>'Faux Raccord',
             'title'=>'Select your category',
             'values'=>array(
-              'Faux Raccord'=>'faux-raccord',
-              'Top 5'=>'top-5',
-              'Tueurs En Serie'=>'tuers-en-serie'
+                'Faux Raccord'=>'faux-raccord',
+                'Top 5'=>'top-5',
+                'Tueurs en Séries'=>'tueurs-en-serie'
             )
-          )
-        );
+        )
+    ));
+
+    public function getURI(){
+        switch($this->getInput('category')){
+        case 'faux-raccord':
+            $uri = 'http://www.allocine.fr/video/programme-12284/saison-24580/';
+            break;
+        case 'top-5':
+            $uri = 'http://www.allocine.fr/video/programme-12299/saison-22542/';
+            break;
+        case 'tueurs-en-serie':
+            $uri = 'http://www.allocine.fr/video/programme-12286/saison-22938/';
+            break;
+        }
+
+        return $uri;
+    }
+
+    public function getName(){
+        return $this->name.' : '
+            .array_search(
+                $this->getInput('category'),
+                $this->parameters[$this->queriedContext]['category']['values']
+            );
     }
 
     public function collectData(){
-        $params=$this->parameters[$this->queriedContext];
 
-        // Check all parameters
-        if(!isset($params['category']['value']))
-            $this->returnClientError('You must specify a valid category (&category= )!');
+        $html = $this->getSimpleHTMLDOM($this->getURI())
+            or $this->returnServerError("Could not request ".$this->getURI()." !");
 
-        $category = '';
-        switch($params['category']['value']){
-            case 'faux-raccord':
-                $this->uri = 'http://www.allocine.fr/video/programme-12284/saison-24580/';
-                $category = 'Faux Raccord';
-                break;
-            case 'top-5':
-                $this->uri = 'http://www.allocine.fr/video/programme-12299/saison-22542/';
-                $category = 'Top 5';
-                break;
-            case 'tuers-en-serie':
-                $this->uri = 'http://www.allocine.fr/video/programme-12286/saison-22938/';
-                $category = 'Tueurs en Séries';
-                break;
-            default:
-                $this->returnClientError('You must select a valid category!');
-        }
+        $category=array_search(
+                $this->getInput('category'),
+                $this->parameters[$this->queriedContext]['category']['values']
+            );
 
-        // Update bridge name to match selection
-        $this->name .= ' : ' . $category;
-
-        $html = $this->getSimpleHTMLDOM($this->uri) or $this->returnServerError("Could not request {$this->uri}!");
 
         foreach($html->find('figure.media-meta-fig') as $element)
         {

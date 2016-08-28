@@ -7,8 +7,6 @@ class HTMLUtils {
 		if($bridgeElement == false)
 			return "";
 
-		$bridgeElement->loadMetadatas();
-
 		$name = '<a href="' . $bridgeElement->uri . '">' . $bridgeElement->name . '</a>';
 		$description = $bridgeElement->description;
 

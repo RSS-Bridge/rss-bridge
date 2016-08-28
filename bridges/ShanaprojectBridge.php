@@ -1,17 +1,15 @@
 <?php
 class ShanaprojectBridge extends BridgeAbstract {
-    public function loadMetadatas() {
-        $this->maintainer = 'logmanoriginal';
-        $this->name = 'Shanaproject Bridge';
-        $this->uri = 'http://www.shanaproject.com';
-        $this->description = 'Returns a list of anime from the current Season Anime List';
-    }
+    public $maintainer = 'logmanoriginal';
+    public $name = 'Shanaproject Bridge';
+    public $uri = 'http://www.shanaproject.com';
+    public $description = 'Returns a list of anime from the current Season Anime List';
 
     // Returns an html object for the Season Anime List (latest season)
     private function LoadSeasonAnimeList(){
         // First we need to find the URI to the latest season from the 'seasons' page searching for 'Season Anime List'
         $html = $this->getSimpleHTMLDOM($this->getURI() . '/seasons');
-        if(!$html) 
+        if(!$html)
             $this->returnServerError('Could not load \'seasons\' page!');
 
         $season = $html->find('div.follows_menu/a', 1);
@@ -21,7 +19,7 @@ class ShanaprojectBridge extends BridgeAbstract {
         $html = $this->getSimpleHTMLDOM($this->getURI() . $season->href);
         if(!$html)
             $this->returnServerError('Could not load \'Season Anime List\' from \'' . $season->innertext . '\'!');
-        
+
         return $html;
     }
 
@@ -72,7 +70,7 @@ class ShanaprojectBridge extends BridgeAbstract {
 
         if(preg_match("/url\(\/\/([^\)]+)\)/i", $anime->parent->style, $matches))
             return $matches[1];
-        
+
         $this->returnServerError('Could not extract background image!');
     }
 
@@ -97,7 +95,7 @@ class ShanaprojectBridge extends BridgeAbstract {
         $animes = $html->find('div.header_display_box_info');
         if(!$animes)
             $this->returnServerError('Could not find anime headers!');
-        
+
         foreach($animes as $anime){
             $item = array();
             $item['title'] = $this->ExtractAnimeTitle($anime);

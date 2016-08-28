@@ -4,38 +4,32 @@ class SuperbWallpapersBridge extends BridgeAbstract {
     private $category;
     private $resolution;
 
-	public function loadMetadatas() {
+	public $maintainer = "nel50n";
+	public $name = "Superb Wallpapers Bridge";
+	public $uri = "http://www.superbwallpapers.com/";
+	public $description = "Returns the latests wallpapers from SuperbWallpapers";
 
-		$this->maintainer = "nel50n";
-		$this->name = "Superb Wallpapers Bridge";
-		$this->uri = "http://www.superbwallpapers.com/";
-		$this->description = "Returns the latests wallpapers from SuperbWallpapers";
-
-        $this->parameters[] = array(
-          'c'=>array('name'=>'category'),
-          'm'=>array(
+    public $parameters = array( array(
+        'c'=>array('name'=>'category'),
+        'm'=>array(
             'name'=>'Max number of wallpapers',
             'type'=>'number'
-          ),
-          'r'=>array(
+        ),
+        'r'=>array(
             'name'=>'resolution',
             'exampleValue'=>'1920x1200, 1680x1050,…'
-          )
-        );
-
-	}
-
+        )
+    ));
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
         $html = '';
         $baseUri = 'http://www.superbwallpapers.com';
 
-        $this->category   = $param['c']['value'] ?: '';           // All default
-        $this->resolution = $param['r']['value'] ?: '1920x1200';  // Wide wallpaper default
+        $this->category   = $this->getInput('c') ?: '';           // All default
+        $this->resolution = $this->getInput('r') ?: '1920x1200';  // Wide wallpaper default
 
         $num = 0;
-        $max = $param['m']['value'] ?: 36;
+        $max = $this->getInput('m') ?: 36;
         $lastpage = 1;
 
         // Get last page number

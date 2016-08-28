@@ -9,33 +9,24 @@
 */
 class GoogleSearchBridge extends BridgeAbstract{
 
-    private $request;
 
-    public function loadMetadatas() {
+	public $maintainer = "sebsauvage";
+	public $name = "Google search";
+	public $uri = "https://www.google.com/";
+	public $description = "Returns most recent results from Google search.";
 
-		$this->maintainer = "sebsauvage";
-		$this->name = "Google search";
-		$this->uri = "https://www.google.com/";
-		$this->description = "Returns most recent results from Google search.";
-
-        $this->parameters[] = array(
-          'q'=>array('name'=>"keyword")
-        );
-
-	}
+    public $parameters = array( array(
+        'q'=>array(
+            'name'=>"keyword",
+            'required'=>true
+        )
+    ));
 
 
     public function collectData(){
-        $param=$this->parameters[$this->queriedContext];
         $html = '';
 
-        if (isset($param['q']['value'])) {   /* keyword search mode */
-            $this->request = $param['q']['value'];
-            $html = $this->getSimpleHTMLDOM('https://www.google.com/search?q=' . urlencode($this->request) . '&num=100&complete=0&tbs=qdr:y,sbd:1') or $this->returnServerError('No results for this query.');
-        }
-        else{
-            $this->returnClientError('You must specify a keyword (?q=...).');
-        }
+            $html = $this->getSimpleHTMLDOM('https://www.google.com/search?q=' . urlencode($this->getInput('q')) . '&num=100&complete=0&tbs=qdr:y,sbd:1') or $this->returnServerError('No results for this query.');
 
         $emIsRes = $html->find('div[id=ires]',0);
         if( !is_null($emIsRes) ){
@@ -55,7 +46,7 @@ class GoogleSearchBridge extends BridgeAbstract{
     }
 
     public function getName(){
-        return (!empty($this->request) ? $this->request .' - ' : '') .'Google search';
+        return $this->getInput('q') .' - Google search';
     }
 
     public function getCacheDuration(){

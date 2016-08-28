@@ -1,33 +1,27 @@
 <?php
-
 class ParuVenduImmoBridge extends BridgeAbstract
 {
-    private $request = '';
-
-	public function loadMetadatas() {
-
-		$this->maintainer = "polo2ro";
-		$this->name = "Paru Vendu Immobilier";
-		$this->uri = "http://www.paruvendu.fr";
-		$this->description = "Returns the ads from the first page of search result.";
+	public $maintainer = "polo2ro";
+	public $name = "Paru Vendu Immobilier";
+	public $uri = "http://www.paruvendu.fr";
+	public $description = "Returns the ads from the first page of search result.";
 
 
-        $this->parameters[] = array(
-          'minarea'=>array(
+    public $parameters = array( array(
+        'minarea'=>array(
             'name'=>'Minimal surface m²',
             'type'=>'number'
-          ),
-          'maxprice'=>array(
+        ),
+        'maxprice'=>array(
             'name'=>'Max price',
             'type'=>'number'
-          ),
-          'pa'=>array(
+        ),
+        'pa'=>array(
             'name'=>'Country code',
             'exampleValue'=>'FR'
-          ),
-          'lo'=>array('name'=>'department numbers or postal codes, comma-separated')
-        );
-	}
+        ),
+        'lo'=>array('name'=>'department numbers or postal codes, comma-separated')
+    ));
 
     public function collectData()
     {
@@ -37,22 +31,20 @@ class ParuVenduImmoBridge extends BridgeAbstract
         $maison = '&tbMai=1&tbVil=1&tbCha=1&tbPro=1&tbHot=1&tbMou=1&tbFer=1';
         $link = $this->uri.'/immobilier/annonceimmofo/liste/listeAnnonces?tt=1'.$appartment.$maison;
 
-        if (isset($param['minarea']['value'])) {
-            $this->request .= ' '.$param['minarea']['value'].' m2';
-            $link .= '&sur0='.urlencode($param['minarea']['value']);
+        if (isset($this->getInput('minarea'))) {
+            $link .= '&sur0='.urlencode($this->getInput('minarea'));
         }
 
-        if (isset($param['maxprice']['value'])) {
-            $link .= '&px1='.urlencode($param['maxprice']['value']);
+        if (isset($this->getInput('maxprice'))) {
+            $link .= '&px1='.urlencode($this->getInput('maxprice'));
         }
 
-        if (isset($param['pa']['value'])) {
-            $link .= '&pa='.urlencode($param['pa']['value']);
+        if (isset($this->getInput('pa'))) {
+            $link .= '&pa='.urlencode($this->getInput('pa'));
         }
 
-        if (isset($param['lo']['value'])) {
-            $this->request .= ' In: '.$param['lo']['value'];
-            $link .= '&lo='.urlencode($param['lo']['value']);
+        if (isset($this->getInput('lo'))) {
+            $link .= '&lo='.urlencode($this->getInput('lo'));
         }
 
         $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request paruvendu.');
@@ -88,7 +80,17 @@ class ParuVenduImmoBridge extends BridgeAbstract
     }
 
     public function getName(){
-        return 'Paru Vendu Immobilier'.$this->request;
+        $request='';
+        if(isset($this->getInput('minarea')) &&
+            !empty($this->getInput('minarea'))
+        ){
+            $request .= ' '.$this->getInput('minarea').' m2';
+        }
+        if(isset($this->getInput('lo')) &&
+            !empty($this->getInput('lo'))){
+            $request .= ' In: '.$this->getInput('lo');
+        }
+        return 'Paru Vendu Immobilier'.$request;
     }
 
     public function getCacheDuration(){
