@@ -1,31 +1,24 @@
 <?php
 class HDWallpapersBridge extends BridgeAbstract {
-
-    private $category;
-    private $resolution;
-
-
 	public $maintainer = "nel50n";
 	public $name = "HD Wallpapers Bridge";
 	public $uri = "http://www.hdwallpapers.in/";
 	public $description = "Returns the latests wallpapers from HDWallpapers";
 
     public $parameters = array( array(
-        'c'=>array('name'=>'category'),
+      'c'=>array(
+        'name'=>'category',
+        'defaultValue'=>'latest_wallpapers'
+      ),
         'm'=>array('name'=>'max number of wallpapers'),
         'r'=>array(
             'name'=>'resolution',
+            'defaultValue'=>'1920x1200',
             'exampleValue'=>'1920x1200, 1680x1050,…'
         )
     ));
 
     public function collectData(){
-        $html = '';
-        $baseUri = 'http://www.hdwallpapers.in';
-
-        $this->category   = $this->getInput('c') ?: 'latest_wallpapers'; // Latest default
-        $this->resolution = $this->getInput('r') ?: '1920x1200';         // Wide wallpaper default
-
         $category = $this->category;
         if (strrpos($category, 'wallpapers') !== strlen($category)-strlen('wallpapers')) {
             $category .= '-desktop-wallpapers';
@@ -36,7 +29,7 @@ class HDWallpapersBridge extends BridgeAbstract {
         $lastpage = 1;
 
         for ($page = 1; $page <= $lastpage; $page++) {
-            $link = $baseUri.'/'.$category.'/page/'.$page;
+            $link = $this->uri.'/'.$category.'/page/'.$page;
             $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('No results for this query.');
 
             if ($page === 1) {
@@ -49,10 +42,10 @@ class HDWallpapersBridge extends BridgeAbstract {
 
                 $item = array();
                 // http://www.hdwallpapers.in/download/yosemite_reflections-1680x1050.jpg
-                $item['uri'] = $baseUri.'/download'.str_replace('wallpapers.html', $this->resolution.'.jpg', $element->href);
+                $item['uri'] = $this->uri.'/download'.str_replace('wallpapers.html', $this->getInput('r').'.jpg', $element->href);
                 $item['timestamp'] = time();
                 $item['title'] = $element->find('p', 0)->text();
-                $item['content'] = $item['title'].'<br><a href="'.$item['uri'].'"><img src="'.$baseUri.$thumbnail->src.'" /></a>';
+                $item['content'] = $item['title'].'<br><a href="'.$item['uri'].'"><img src="'.$this->uri.$thumbnail->src.'" /></a>';
                 $this->items[] = $item;
 
                 $num++;
@@ -63,7 +56,7 @@ class HDWallpapersBridge extends BridgeAbstract {
     }
 
     public function getName(){
-        return 'HDWallpapers - '.str_replace(['__', '_'], [' & ', ' '], $this->category).' ['.$this->resolution.']';
+        return 'HDWallpapers - '.str_replace(['__', '_'], [' & ', ' '], $this->getInput('c')).' ['.$this->getInput('r').']';
     }
 
     public function getCacheDuration(){
