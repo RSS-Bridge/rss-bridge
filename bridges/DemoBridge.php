@@ -3,7 +3,7 @@ class DemoBridge extends BridgeAbstract{
 
     public $maintainer = "teromene";
     public $name = "DemoBridge";
-    public $uri = "http://github.com/sebsauvage/rss-bridge";
+    public $uri = "http://github.com/rss-bridge/rss-bridge";
     public $description = "Bridge used for demos";
 
     public $parameters = array(
@@ -41,7 +41,7 @@ class DemoBridge extends BridgeAbstract{
         $item['title'] = "Test";
         $item['content'] = "Awesome content !";
         $item['id'] = "Lalala";
-        $item['uri'] = "http://test.test/test";
+        $item['uri'] = "http://example.com/test";
 
         $this->items[] = $item;
 
