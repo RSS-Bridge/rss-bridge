@@ -1,5 +1,5 @@
 <?php
-class JapanExpoBridge extends BridgeAbstract{
+class JapanExpoBridge extends HttpCachingBridgeAbstract {
 
     public function loadMetadatas() {
         $this->maintainer = 'Ginko';
@@ -64,7 +64,10 @@ class JapanExpoBridge extends BridgeAbstract{
 
             if ($fullcontent) {
                 if ($count < 5) {
-                    $article_html = $this->getSimpleHTMLDOM($url) or $this->returnServerError('Could not request JapanExpo: '.$url);
+                    if($this->get_cached_time($url) <= strtotime('-24 hours'))
+                        $this->remove_from_cache($url);
+
+                    $article_html = $this->get_cached($url) or $this->returnServerError('Could not request JapanExpo: '.$url);
                     $header = $article_html->find('header.pageHeadBox', 0);
                     $timestamp = strtotime($header->find('time', 0)->datetime);
                     $title_html = $header->find('div.section', 0)->next_sibling();

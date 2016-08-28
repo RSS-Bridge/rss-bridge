@@ -1,6 +1,6 @@
 <?php
 
-class LichessBridge  extends BridgeAbstract
+class LichessBridge  extends HttpCachingBridgeAbstract
 {
     public function loadMetadatas()
     {
@@ -36,7 +36,10 @@ class LichessBridge  extends BridgeAbstract
 
     private function retrieve_lichess_post($blog_post_uri)
     {
-        $blog_post_html = $this->getSimpleHTMLDOM($blog_post_uri);
+        if($this->get_cached_time($blog_post_uri) <= strtotime('-24 hours'))
+            $this->remove_from_cache($blog_post_uriuri);
+
+        $blog_post_html = $this->get_cached($blog_post_uri);
         $blog_post_div  = $blog_post_html->find('#lichess_blog', 0);
 
         $post_chapo   = $blog_post_div->find('.shortlede', 0)->innertext;
