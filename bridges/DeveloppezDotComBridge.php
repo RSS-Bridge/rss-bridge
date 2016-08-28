@@ -39,7 +39,8 @@ class DeveloppezDotComBridge extends BridgeAbstract{
 	}
 
 	public function collectData(){
-		$rssFeed = $this->getSimpleHTMLDOM('http://www.developpez.com/index/rss') or $this->returnServerError('Could not request http://www.developpez.com/index/rss');
+        $rssFeed = $this->getSimpleHTMLDOM($this->uri.'index/rss')
+            or $this->returnServerError('Could not request '.$this->uri.'index/rss');
 		$limit = 0;
 
 		foreach($rssFeed->find('item') as $element) {
