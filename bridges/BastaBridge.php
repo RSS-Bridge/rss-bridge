@@ -8,10 +8,11 @@ class BastaBridge extends BridgeAbstract{
 	public function collectData(){
 		// Replaces all relative image URLs by absolute URLs. Relative URLs always start with 'local/'!
 		function ReplaceImageUrl($content){
-			return preg_replace('/src=["\']{1}([^"\']+)/ims', 'src=\'http://www.bastamag.net/$1\'', $content);
+			return preg_replace('/src=["\']{1}([^"\']+)/ims', 'src=\''.$this->uri.'$1\'', $content);
 		}
 
-		$html = $this->getSimpleHTMLDOM('http://www.bastamag.net/spip.php?page=backend') or $this->returnServerError('Could not request Bastamag.');
+        $html = $this->getSimpleHTMLDOM($this->uri.'spip.php?page=backend')
+            or $this->returnServerError('Could not request Bastamag.');
 		$limit = 0;
 
 		foreach($html->find('item') as $element) {
