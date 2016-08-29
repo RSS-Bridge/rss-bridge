@@ -26,6 +26,8 @@ class WorldOfTanksBridge extends HttpCachingBridgeAbstract{
         )
     ));
 
+    private $title='';
+
     function getURI(){
         $lang = $this->getInput('lang');
         $uri = $this->uri.$lang.'/news/';
@@ -35,12 +37,16 @@ class WorldOfTanksBridge extends HttpCachingBridgeAbstract{
         return $uri;
     }
 
+    public function getName(){
+      return $this->title?:$this->name;
+    }
+
     public function collectData(){
       $html = $this->getSimpleHTMLDOM($this->getURI())
         or $this->returnServerError('Could not request '.$this->getURI());
         $this->debugMessage("loaded HTML from ".$this->getURI());
         // customize name
-        $this->name = $html->find('title', 0)->innertext;
+        $this->title = $html->find('title', 0)->innertext;
         foreach($html->find('.b-imgblock_ico') as $infoLink) {
             $this->parseLine($infoLink);
        }
