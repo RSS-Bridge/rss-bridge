@@ -1,5 +1,5 @@
 <?php
-class LinkedInCompany extends BridgeAbstract{
+class LinkedInCompanyBridge extends BridgeAbstract{
 
 	public $maintainer = "regisenguehard";
 	public $name = "LinkedIn Company";
@@ -15,9 +15,10 @@ class LinkedInCompany extends BridgeAbstract{
 
     public function collectData(){
         $html = '';
-        $link = 'https://www.linkedin.com/company/'.$this->getInput('c');
+        $link = $this->uri.'company/'.$this->getInput('c');
 
-        $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request LinkedIn.');
+        $html = $this->getSimpleHTMLDOM($link)
+            or $this->returnServerError('Could not request LinkedIn.');
 
         foreach($html->find('//*[@id="my-feed-post"]/li') as $element) {
             $title = $element->find('span.share-body', 0)->innertext;
