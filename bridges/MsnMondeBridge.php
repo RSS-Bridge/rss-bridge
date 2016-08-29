@@ -3,8 +3,12 @@ class MsnMondeBridge extends BridgeAbstract{
 
 	public $maintainer = "kranack";
 	public $name = 'MSN Actu Monde';
-	public $uri = 'http://www.msn.com/fr-fr/actualite/monde';
+	public $uri = 'http://www.msn.com/';
 	public $description = "Returns the 10 newest posts from MSN Actualités (full text)";
+
+    public function getURI(){
+        return $this->uri.'fr-fr/actualite/monde';
+    }
 
 	private function MsnMondeExtractContent($url, &$item) {
 		$html2 = $this->getSimpleHTMLDOM($url);
@@ -13,13 +17,13 @@ class MsnMondeBridge extends BridgeAbstract{
 	}
 
 	public function collectData(){
-		$html = $this->getSimpleHTMLDOM($this->uri) or $this->returnServerError('Could not request MsnMonde.');
+		$html = $this->getSimpleHTMLDOM($this->getURI()) or $this->returnServerError('Could not request MsnMonde.');
 		$limit = 0;
 		foreach($html->find('.smalla') as $article) {
 			if($limit < 10) {
 				$item = array();
 				$item['title'] = utf8_decode($article->find('h4', 0)->innertext);
-				$item['uri'] = "http://www.msn.com" . utf8_decode($article->find('a', 0)->href);
+				$item['uri'] = $this->uri . utf8_decode($article->find('a', 0)->href);
 				$this->MsnMondeExtractContent($item['uri'], $item);
 				$this->items[] = $item;
 				$limit++;
