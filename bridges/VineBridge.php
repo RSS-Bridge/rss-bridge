@@ -15,9 +15,10 @@ class VineBridge extends BridgeAbstract {
 
 	public function collectData(){
     $html = '';
-    $uri = 'http://vine.co/u/'.$this->getInput('u').'?mode=list';
+    $uri = $this->uri.'/u/'.$this->getInput('u').'?mode=list';
 
-    $html = $this->getSimpleHTMLDOM($uri) or $this->returnServerError('No results for this query.');
+    $html = $this->getSimpleHTMLDOM($uri)
+      or $this->returnServerError('No results for this query.');
 
 		foreach($html->find('.post') as $element) {
 			$a = $element->find('a', 0);
