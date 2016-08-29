@@ -1,53 +1,41 @@
 <?php
 class PinterestBridge extends BridgeAbstract{
 
-    private $username;
-    private $board;
-    private $query;
-
 	public $maintainer = "pauder";
 	public $name = "Pinterest Bridge";
-	public $uri = "http://www.pinterest.com";
+	public $uri = "http://www.pinterest.com/";
 	public $description = "Returns the newest images on a board";
 
     public $parameters = array(
         'By username and board' => array(
-            'u'=>array('name'=>'username'),
-            'b'=>array('name'=>'board')
+          'u'=>array(
+            'name'=>'username',
+            'required'=>true
+          ),
+          'b'=>array(
+            'name'=>'board',
+            'required'=>true
+          )
         ),
         'From search' => array(
-            'q'=>array('name'=>'Keyword')
+          'q'=>array(
+            'name'=>'Keyword',
+            'required'=>true
+          )
         )
     );
 
+
     public function collectData(){
-        $html = '';
-        if ($this->getInput('u') || $this->getInput('b')) {
-
-            if (empty($this->getInput('u')))
-            {
-                $this->returnClientError('You must specify a Pinterest username (?u=...).');
-            }
-
-            if (empty($this->getInput('b')))
-            {
-                $this->returnClientError('You must specify a Pinterest board for this username (?b=...).');
-            }
-
-            $this->username = $this->getInput('u');
-            $this->board = $this->getInput('b');
-            $html = $this->getSimpleHTMLDOM($this->getURI().'/'.urlencode($this->username).'/'.urlencode($this->board)) or $this->returnServerError('Username and/or board not found');
-
-        } else if ($this->getInput('q'))
-        {
-        	$this->query = $this->getInput('q');
-        	$html = $this->getSimpleHTMLDOM($this->getURI().'/search/?q='.urlencode($this->query)) or $this->returnServerError('Could not request Pinterest.');
+      $html = $this->getSimpleHTMLDOM($this->getURI()) ;
+      if(!$html){
+        switch($this->queriedContext){
+        case 'By username and board':
+          $this->returnServerError('Username and/or board not found');
+        case 'From search':
+          $this->returnServerError('Could not request Pinterest.');
         }
-
-        else {
-            $this->returnClientError('You must specify a Pinterest username and a board name (?u=...&b=...).');
-        }
-
+      }
 
         foreach($html->find('div.pinWrapper') as $div)
         {
@@ -60,7 +48,7 @@ class PinterestBridge extends BridgeAbstract{
         	$item['content'] = '<img src="' . htmlentities(str_replace('/236x/', '/736x/', $img->getAttribute('src'))) . '" alt="" />';
 
 
-        	if (isset($this->query))
+        	if ($this->queriedContext==='From search')
         	{
         		$avatar = $div->find('div.creditImg', 0)->find('img', 0);
 				$avatar = $avatar->getAttribute('data-src');
@@ -86,13 +74,28 @@ class PinterestBridge extends BridgeAbstract{
         }
     }
 
-    public function getName(){
+    public function getURI(){
+      switch($this->queriedContext){
+      case 'By username and board':
+        $uri = $this->uri.urlencode($this->getInput('u')).'/'.urlencode($this->getInput('b'));
+        break;
+      case 'From search':
+        $uri = $this->uri.'search/?q='.urlencode($this->getInput('q'));
+        break;
+      }
 
-    	if (isset($this->query))
-    	{
-    		return $this->query .' - Pinterest';
-    	} else {
-        	return $this->username .' - '. $this->board.' - Pinterest';
-    	}
+      return $uri;
+    }
+
+    public function getName(){
+      switch($this->queriedContext){
+      case 'By username and board':
+            $specific = $this->getInput('u').'-'.$this->getInput('b');
+        break;
+      case 'From search':
+            $specific = $this->getInput('q');
+        break;
+      }
+      return $specific .' - '.$this->name;
     }
 }
