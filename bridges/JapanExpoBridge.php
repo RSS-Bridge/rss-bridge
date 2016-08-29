@@ -7,12 +7,8 @@ class JapanExpoBridge extends HttpCachingBridgeAbstract {
     public $description = 'Returns most recent entries from Japan Expo actualités.';
     public $parameters = array( array(
         'mode'=>array(
-            'name'=>'Mode',
-            'type'=>'list',
-            'values'=>array(
-                'Titles only'=>'light',
-                'Full Contents'=>'full'
-            )
+            'name'=>'Show full contents',
+            'type'=>'checkbox',
         )
     ));
 
@@ -46,9 +42,9 @@ class JapanExpoBridge extends HttpCachingBridgeAbstract {
             }
         };
 
-        $link = 'http://www.japan-expo-paris.com/fr/actualites';
-        $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request JapanExpo: '.$link);
-        $fullcontent = (!empty($this->getInput('mode')) && $this->getInput('mode') == 'full');
+        $html = $this->getSimpleHTMLDOM($this->uri)
+          or $this->returnServerError('Could not request JapanExpo: '.$this->uri);
+        $fullcontent = $this->getInput('mode');
         $count = 0;
 
         foreach ($html->find('a._tile2') as $element) {
@@ -60,22 +56,21 @@ class JapanExpoBridge extends HttpCachingBridgeAbstract {
                 $thumbnail = trim($img_search_result[1], "'");
 
             if ($fullcontent) {
-                if ($count < 5) {
-                    if($this->get_cached_time($url) <= strtotime('-24 hours'))
-                        $this->remove_from_cache($url);
-
-                    $article_html = $this->get_cached($url) or $this->returnServerError('Could not request JapanExpo: '.$url);
-                    $header = $article_html->find('header.pageHeadBox', 0);
-                    $timestamp = strtotime($header->find('time', 0)->datetime);
-                    $title_html = $header->find('div.section', 0)->next_sibling();
-                    $title = $title_html->plaintext;
-                    $headings = $title_html->next_sibling()->outertext;
-                    $article = $article_html->find('div.content', 0)->innertext;
-                    $article = preg_replace_callback('/<img [^>]+ style="[^\(]+\(\'([^\']+)\'[^>]+>/i', $convert_article_images, $article);
-                    $content = $headings.$article;
-                } else {
-                    break;
+                if ($count >= 5) {
+                  break;
                 }
+                if($this->get_cached_time($url) <= strtotime('-24 hours'))
+                    $this->remove_from_cache($url);
+
+                $article_html = $this->get_cached($url) or $this->returnServerError('Could not request JapanExpo: '.$url);
+                $header = $article_html->find('header.pageHeadBox', 0);
+                $timestamp = strtotime($header->find('time', 0)->datetime);
+                $title_html = $header->find('div.section', 0)->next_sibling();
+                $title = $title_html->plaintext;
+                $headings = $title_html->next_sibling()->outertext;
+                $article = $article_html->find('div.content', 0)->innertext;
+                $article = preg_replace_callback('/<img [^>]+ style="[^\(]+\(\'([^\']+)\'[^>]+>/i', $convert_article_images, $article);
+                $content = $headings.$article;
             } else {
                 $date_text = $element->find('span.date', 0)->plaintext;
                 $timestamp = french_pubdate_to_timestamp($date_text);

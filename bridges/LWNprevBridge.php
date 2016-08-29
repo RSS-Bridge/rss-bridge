@@ -1,9 +1,13 @@
 <?php
 class LWNprevBridge extends BridgeAbstract{
-    public $maintainer = 'Pierre Mazière';
-    public $name = 'LWN Free Weekly Edition';
-    public $uri = 'https://lwn.net/free/bigpage';
-    public $description = 'LWN Free Weekly Edition available one week late';
+  public $maintainer = 'Pierre Mazière';
+  public $name = 'LWN Free Weekly Edition';
+  public $uri = 'https://lwn.net/';
+  public $description = 'LWN Free Weekly Edition available one week late';
+
+  function getURI(){
+      return $this->uri.'free/bigpage';
+  }
 
   private function jumpToNextTag(&$node){
     while($node && $node->nodeType===XML_TEXT_NODE){
@@ -28,20 +32,7 @@ class LWNprevBridge extends BridgeAbstract{
   public function collectData(){
     // Because the LWN page is written in loose HTML and not XHTML,
     // Simple HTML Dom is not accurate enough for the job
-
-    $uri='https://lwn.net/free/bigpage';
-    $context=null;
-    if(defined('PROXY_URL')) {
-      $context = array(
-        'http' => array(
-          'proxy' => PROXY_URL,
-          'request_fulluri' => true,
-        ),
-      );
-      $context = stream_context_create($context);
-    }
-
-    $content=file_get_contents($uri, false, $context)
+    $content=$this->getContents($this->getURI())
       or $this->returnServerError('No results for LWNprev');
 
     libxml_use_internal_errors(true);
@@ -52,13 +43,12 @@ class LWNprevBridge extends BridgeAbstract{
     $cat1='';
     $cat2='';
 
-    $realURI='https://lwn.net';
     foreach($html->getElementsByTagName('a') as $a){
       if($a->textContent==='Multi-page format'){
         break;
       }
     }
-    $realURI.=$a->getAttribute('href');
+    $realURI=$this->uri.$a->getAttribute('href');
     $URICounter=0;
 
     $edition=$html->getElementsByTagName('h1')->item(0)->textContent;
@@ -92,7 +82,7 @@ class LWNprevBridge extends BridgeAbstract{
       $h2FirstChild=$h2->firstChild;
       $this->jumpToNextTag($h2FirstChild);
       if($h2FirstChild->nodeName==='a'){
-        $item['uri']='https://lwn.net'.$h2FirstChild->getAttribute('href');
+        $item['uri']=$this->uri.$h2FirstChild->getAttribute('href');
       }else{
         $item['uri']=$realURI.'#'.$URICounter;
       }

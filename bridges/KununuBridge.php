@@ -1,8 +1,8 @@
 <?php
 class KununuBridge extends HttpCachingBridgeAbstract {
 	public $maintainer = "logmanoriginal";
-	public $name = "Kununu Bridge"; /* This will be replaced later! */
-	public $uri = "https://www.kununu.com"; /* This will be replaced later! */
+	public $name = "Kununu Bridge";
+	public $uri = "https://www.kununu.com/";
 	public $description = "Returns the latest reviews for a company and site of your choice.";
 
     public $parameters = array(
@@ -11,7 +11,6 @@ class KununuBridge extends HttpCachingBridgeAbstract {
             'name'=>'Site',
             'type'=>'list',
             'required'=>true,
-            'exampleValue'=>'United States',
             'title'=>'Select your site',
             'values'=>array(
               'Austria'=>'at',
@@ -39,47 +38,40 @@ class KununuBridge extends HttpCachingBridgeAbstract {
       )
   );
 
+    private $companyName='';
+
+    public function getURI(){
+        $company = $this->encode_umlauts(strtolower(str_replace(' ', '-', trim($this->getInput('company')))));
+        $site=$this->getInput('site');
+        $section = '';
+        switch($site){
+        case 'at':
+        case 'de':
+        case 'ch':
+            $section = 'kommentare';
+            break;
+        case 'us':
+            $section = 'reviews';
+            break;
+        }
+
+        return $this->uri.$site.'/'.$company.'/'.$section;
+    }
+
+    function getName(){
+        $company = $this->encode_umlauts(strtolower(str_replace(' ', '-', trim($this->getInput('company')))));
+        return  ($this->companyName?:$company).' - '.$this->name;
+    }
+
 	public function collectData(){
-
-		// Get Site
-		$site = strtolower(trim($this->getInput('site')));
-		if(!isset($site) || empty($site) || !$this->site_is_valid($site))
-			$this->returnClientError('You must specify a valid site (&site=...)!');
-
-		// Get Company (fixing whitespace and umlauts)
-		$company = $this->encode_umlauts(strtolower(str_replace(' ', '-', trim($this->getInput('company')))));
-		if(!isset($company) || empty($company))
-			$this->returnClientError('You must specify a company (&company=...)!');
-
-		$full = false; // By default we'll load only short article
-		if($this->getInput('full'))
-			$full = strtolower(trim($this->getInput('full')));
-
-		// Get reviews section name (depends on site)
-		$section = '';
-		switch($site){
-			case 'at':
-			case 'de':
-			case 'ch':
-				$section = 'kommentare';
-				break;
-			case 'us':
-				$section = 'reviews';
-				break;
-			default:
-				$this->returnServerError('The reviews section is not defined for you selection!');
-		}
-
-		// Update URI for the content
-		$this->uri .= "/{$site}/{$company}/{$section}";
+        $full = $this->getInput('full');
 
 		// Load page
-		$html = $this->getSimpleHTMLDOM($this->uri);
-		if($html === false)
-			$this->returnServerError('Unable to receive data from ' . $this->uri . '!');
-
+		$html = $this->getSimpleHTMLDOM($this->getURI());
+		if(!$html)
+			$this->returnServerError('Unable to receive data from ' . $this->getURI() . '!');
 		// Update name for this request
-		$this->name = $this->extract_company_name($html) . ' - ' . $this->name;
+		$this->companyName = $this->extract_company_name($html);
 
 		// Find the section with all the panels (reviews)
 		$section = $html->find('section.kununu-scroll-element', 0);
@@ -114,25 +106,10 @@ class KununuBridge extends HttpCachingBridgeAbstract {
 	}
 
 	/**
-	* Returns true if the given site is part of the parameters list
-	*/
-	private function site_is_valid($site){
-		$parameter = $this->parameters['global'];
-		$sites = $parameter['site']['values'];
-
-		$site_names = array();
-
-		foreach($sites as $name=>$value)
-			$site_names[] = $value;
-
-		return in_array($site, $site_names);
-	}
-
-	/**
 	* Fixes relative URLs in the given text
 	*/
 	private function fix_url($text){
-		return preg_replace('/href=(\'|\")\//i', 'href="https://www.kununu.com/', $text);
+		return preg_replace('/href=(\'|\")\//i', 'href="'.$this->uri, $text);
 	}
 
 	/**
@@ -207,7 +184,7 @@ class KununuBridge extends HttpCachingBridgeAbstract {
 		if($anchor === false)
 			$this->returnServerError('Cannot find article URI!');
 
-		return 'https://www.kununu.com' . $anchor->href;
+		return $this->uri . $anchor->href;
 	}
 
 	/**

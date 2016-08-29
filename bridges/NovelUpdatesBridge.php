@@ -8,21 +8,23 @@ class NovelUpdatesBridge extends BridgeAbstract{
 	public $parameters = array( array(
         'n'=>array(
             'name'=>'Novel URL',
+            'patterns'=>'http:\/\/www.novelupdates.com\/.*',
             'required'=>true
         )
     ));
 
+    private $seriesTitle='';
+
     public function collectData(){
-        if (!$this->getInput('n'))
-            $this->returnClientError('You must specify the novel URL (/series/...)');
-        $thread = parse_url($this->getInput('n')) or $this->returnClientError('This URL seems malformed, please check it.');
+        $thread = parse_url($this->getInput('n'))
+            or $this->returnClientError('This URL seems malformed, please check it.');
         if($thread['host'] !== 'www.novelupdates.com')
             $this->returnClientError('NovelUpdates URL only.');
       	if(strpos($thread['path'], 'series/') === FALSE)
             $this->returnClientError('You must specify the novel URL.');
-        $url = 'http://www.novelupdates.com'.$thread['path'].'';
+        $url = $this->uri.$thread['path'].'';
         $fullhtml = $this->getSimpleHTMLDOM($url) or $this->returnServerError("Could not request NovelUpdates, novel not found");
-        $this->request = $fullhtml->find('h4.seriestitle', 0)->plaintext;
+        $this->seriesTitle = $fullhtml->find('h4.seriestitle', 0)->plaintext;
         // dirty fix for nasty simpledom bug: https://github.com/sebsauvage/rss-bridge/issues/259
         // forcefully removes tbody
         $html = $fullhtml->find('table#myTable', 0)->innertext;
@@ -35,13 +37,13 @@ class NovelUpdatesBridge extends BridgeAbstract{
             $item['title'] = $element->find('td', 2)->find('a', 0)->plaintext;
             $item['team'] = $element->find('td', 1)->innertext;
             $item['timestamp'] = strtotime($element->find('td', 0)->plaintext);
-            $item['content'] = '<a href="'.$item['uri'].'">'.$this->request.' - '.$item['title'].'</a> by '.$item['team'].'<br><a href="'.$item['uri'].'">'.$fullhtml->find('div.seriesimg', 0)->innertext.'</a>';
+            $item['content'] = '<a href="'.$item['uri'].'">'.$this->seriesTitle.' - '.$item['title'].'</a> by '.$item['team'].'<br><a href="'.$item['uri'].'">'.$fullhtml->find('div.seriesimg', 0)->innertext.'</a>';
             $this->items[] = $item;
         }
     }
 
     public function getName(){
-        return (!empty($this->request) ? $this->request.' - ' : '') .'Novel Updates';
+        return (!empty($this->seriesTitle) ? $this->seriesTitle.' - ' : '') .'Novel Updates';
     }
 
     public function getCacheDuration(){

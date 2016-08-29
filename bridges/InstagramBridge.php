@@ -46,7 +46,7 @@ class InstagramBridge extends BridgeAbstract{
         {
 
         	$item = array();
-        	$item['uri'] = "https://instagram.com/p/".$media->code."/";
+        	$item['uri'] = $this->uri.'/p/'.$media->code.'/';
         	$item['content'] = '<img src="' . htmlentities($media->display_src) . '" />';
         	if (isset($media->caption))
         	{
@@ -61,7 +61,7 @@ class InstagramBridge extends BridgeAbstract{
     }
 
     public function getName(){
-        return $this->param['u']['value'] .' - Instagram Bridge';
+        return $this->getInput('u') .' - Instagram Bridge';
     }
 
     public function getURI(){

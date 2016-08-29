@@ -7,23 +7,26 @@ class FourchanBridge extends BridgeAbstract{
 	public $description = "Returns posts from the specified thread";
 
     public $parameters = array( array(
-        't'=>array('name'=>'Thread URL')
+        't'=>array(
+            'name'=>'Thread URL',
+            'pattern'=>'(https:\/\/)?boards\.4chan\.org\/.*thread\/.*',
+            'required'=>true
+        )
     ));
 
   public function collectData(){
 
-	if (!$this->getInput('t'))
-		$this->returnClientError('You must specify the thread URL (?t=...)');
-
-	$thread = parse_url($this->getInput('t')) or $this->returnClientError('This URL seems malformed, please check it.');
+      $thread = parse_url($this->getInput('t'))
+          or $this->returnClientError('This URL seems malformed, please check it.');
 	if($thread['host'] !== 'boards.4chan.org')
 		$this->returnClientError('4chan thread URL only.');
 
 	if(strpos($thread['path'], 'thread/') === FALSE)
 		$this->returnClientError('You must specify the thread URL.');
 
-	$url = 'https://boards.4chan.org'.$thread['path'].'';
-	$html = $this->getSimpleHTMLDOM($url) or $this->returnServerError("Could not request 4chan, thread not found");
+	$url = 'https://boards.4chan.org'.$thread['path'];
+    $html = $this->getSimpleHTMLDOM($url)
+        or $this->returnServerError("Could not request 4chan, thread not found");
 
 	foreach($html->find('div.postContainer') as $element) {
 		$item = array();

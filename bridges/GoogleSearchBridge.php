@@ -9,7 +9,6 @@
 */
 class GoogleSearchBridge extends BridgeAbstract{
 
-
 	public $maintainer = "sebsauvage";
 	public $name = "Google search";
 	public $uri = "https://www.google.com/";
@@ -26,7 +25,10 @@ class GoogleSearchBridge extends BridgeAbstract{
     public function collectData(){
         $html = '';
 
-            $html = $this->getSimpleHTMLDOM('https://www.google.com/search?q=' . urlencode($this->getInput('q')) . '&num=100&complete=0&tbs=qdr:y,sbd:1') or $this->returnServerError('No results for this query.');
+        $html = $this->getSimpleHTMLDOM($this->uri
+          .'search?q=' . urlencode($this->getInput('q'))
+          .'&num=100&complete=0&tbs=qdr:y,sbd:1')
+          or $this->returnServerError('No results for this query.');
 
         $emIsRes = $html->find('div[id=ires]',0);
         if( !is_null($emIsRes) ){

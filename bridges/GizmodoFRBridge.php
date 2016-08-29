@@ -10,6 +10,9 @@ class GizmodoFRBridge extends BridgeAbstract{
 
         function GizmodoFRExtractContent($url) {
             $articleHTMLContent = $this->getSimpleHTMLDOM($url);
+            if(!$articleHTMLContent){
+              return 'Could not load '.$url;
+            }
             $text = $articleHTMLContent->find('div.entry-thumbnail', 0)->innertext;
             $text = $text.$articleHTMLContent->find('div.entry-excerpt', 0)->innertext;
             $text = $text.$articleHTMLContent->find('div.entry-content', 0)->innertext;
@@ -21,7 +24,8 @@ class GizmodoFRBridge extends BridgeAbstract{
             return $text;
         }
 
-        $rssFeed = $this->getSimpleHTMLDOM('http://www.gizmodo.fr/feed') or $this->returnServerError('Could not request http://www.gizmodo.fr/feed');
+        $rssFeed = $this->getSimpleHTMLDOM($this->uri.'/feed')
+          or $this->returnServerError('Could not request '.$this->uri.'/feed');
     	$limit = 0;
 
     	foreach($rssFeed->find('item') as $element) {

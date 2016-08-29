@@ -54,14 +54,19 @@ class GBAtempBridge extends BridgeAbstract {
     }
 
     private function fetch_post_content($uri, $site_url) {
-        $html = $this->getSimpleHTMLDOM($uri) or $this->returnServerError('Could not request GBAtemp: '.$uri);
+        $html = $this->getSimpleHTMLDOM($uri);
+        if(!$html){
+            return 'Could not request GBAtemp '.$uri;
+        }
+
         $content = $html->find('div.messageContent', 0)->innertext;
         return $this->cleanup_post_content($content, $site_url);
     }
 
     public function collectData(){
 
-        $html = $this->getSimpleHTMLDOM($this->uri) or $this->returnServerError('Could not request GBAtemp.');
+        $html = $this->getSimpleHTMLDOM($this->uri)
+            or $this->returnServerError('Could not request GBAtemp.');
 
         switch($this->getInput('type')){
         case 'N':
@@ -110,7 +115,10 @@ class GBAtempBridge extends BridgeAbstract {
     }
 
     public function getName() {
-        $type=array_search($this->getInput('type'),$param['type']['values']);
+        $type=array_search(
+            $this->getInput('type'),
+            $this->parameters[$this->queriedContext]['type']['values']
+        );
         return 'GBAtemp '.$type.' Bridge';
     }
 

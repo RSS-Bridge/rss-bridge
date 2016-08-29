@@ -9,20 +9,19 @@ class LolibooruBridge extends BridgeAbstract{
     public $parameters = array( array(
         'p'=>array(
             'name'=>'page',
+            'defaultValue'=>1,
             'type'=>'number'
         ),
         't'=>array('name'=>'tags')
     ));
 
     public function collectData(){
-	$page = 1; $tags = '';
-        if ($this->getInput('p')) {
-            $page = (int)preg_replace("/[^0-9]/",'', $this->getInput('p'));
-        }
-        if ($this->getInput('t')) {
-            $tags = urlencode($this->getInput('t'));
-        }
-        $html = $this->getSimpleHTMLDOM("http://lolibooru.moe/post?page=$page&tags=$tags") or $this->returnServerError('Could not request Lolibooru.');
+        $html = $this->getSimpleHTMLDOM(
+            $this->uri.'post?'
+            .'&page='.$this->getInput('p')
+            .'&tags='.urlencode($this->getInput('t'))
+        ) or $this->returnServerError('Could not request Lolibooru.');
+
 	$input_json = explode('Post.register(', $html);
 	foreach($input_json as $element)
 	 $data[] = preg_replace('/}\)(.*)/', '}', $element);
@@ -31,7 +30,7 @@ class LolibooruBridge extends BridgeAbstract{
         foreach($data as $datai) {
 	    $json = json_decode($datai, TRUE);
             $item = array();
-            $item['uri'] = 'http://lolibooru.moe/post/show/'.$json['id'];
+            $item['uri'] = $this->uri.'post/show/'.$json['id'];
             $item['postid'] = $json['id'];
             $item['timestamp'] = $json['created_at'];
             $item['imageUri'] = $json['file_url'];

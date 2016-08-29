@@ -35,7 +35,8 @@ class LeJournalDuGeekBridge extends BridgeAbstract{
 	}
 
 	public function collectData(){
-		$rssFeed = $this->getSimpleHTMLDOM('http://www.journaldugeek.com/rss') or $this->returnServerError('Could not request http://www.journaldugeek.com/rss');
+        $rssFeed = $this->getSimpleHTMLDOM($this->uri.'rss')
+            or $this->returnServerError('Could not request '.$this->uri.'/rss');
 		$limit = 0;
 
 		foreach($rssFeed->find('item') as $element) {

@@ -3,11 +3,12 @@ class MondeDiploBridge extends BridgeAbstract{
 
 	public $maintainer = "Pitchoule";
 	public $name = 'Monde Diplomatique';
-	public $uri = 'http://www.monde-diplomatique.fr';
+	public $uri = 'http://www.monde-diplomatique.fr/';
 	public $description = "Returns most recent results from MondeDiplo.";
 
 	public function collectData(){
-		$html = $this->getSimpleHTMLDOM($this->uri) or $this->returnServerError('Could not request MondeDiplo. for : ' . $link);
+        $html = $this->getSimpleHTMLDOM($this->uri)
+            or $this->returnServerError('Could not request MondeDiplo. for : ' . $this->uri);
 
 		foreach($html->find('div.unarticle') as $article) {
 			$element = $article->parent();

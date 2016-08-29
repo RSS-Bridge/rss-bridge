@@ -26,16 +26,11 @@ class GitlabCommitsBridge extends BridgeAbstract{
     ));
 
   public function collectData(){
-    $uri = $this->getInput('uri').'/'.$this->getInput('u').'/'.$this->getInput('p').'/commits/';
-    if($this->getInput('b')){
-      $uri.=$this->getInput('b');
-    }else{
-      $uri.='master';
-    }
+    $uri = $this->getInput('uri').'/'.$this->getInput('u').'/'
+      .$this->getInput('p').'/commits/'.$this->getInput('b');
 
     $html = $this->getSimpleHTMLDOM($uri)
-      or $this->returnServerError('No results for Gitlab Commits of project '.$this->getInput('uri').'/'.$this->getInput('u').'/'.$this->getInput('p'));
-
+      or $this->returnServerError('No results for Gitlab Commits of project '.$uri);
 
     foreach($html->find('li.commit') as $commit){
 

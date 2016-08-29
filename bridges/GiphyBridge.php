@@ -9,7 +9,10 @@ class GiphyBridge extends BridgeAbstract{
 	public $description = "Bridge for giphy.com";
 
     public $parameters = array( array(
-        's'=>array('name'=>'search tag'),
+        's'=>array(
+            'name'=>'search tag',
+            'required'=>true
+        ),
         'n'=>array(
             'name'=>'max number of returned items',
             'type'=>'number'
@@ -19,16 +22,12 @@ class GiphyBridge extends BridgeAbstract{
 	public function collectData(){
 		$html = '';
         $base_url = 'http://giphy.com';
-		if ($this->getInput('s')) {   /* keyword search mode */
-			$html = $this->getSimpleHTMLDOM($base_url.'/search/'.urlencode($this->getInput('s').'/')) or $this->returnServerError('No results for this query.');
-		}
-		else {
-			$this->returnClientError('You must specify a search worf (?s=...).');
-		}
+        $html = $this->getSimpleHTMLDOM($this->uri.'/search/'.urlencode($this->getInput('s').'/'))
+            or $this->returnServerError('No results for this query.');
 
         $max = GIPHY_LIMIT;
         if ($this->getInput('n')) {
-            $max = (integer) $this->getInput('n');
+            $max = $this->getInput('n');
         }
 
         $limit = 0;
@@ -38,7 +37,8 @@ class GiphyBridge extends BridgeAbstract{
                 $node = $entry->first_child();
                 $href = $node->getAttribute('href');
 
-                $html2 = $this->getSimpleHTMLDOM($base_url . $href) or $this->returnServerError('No results for this query.');
+                $html2 = $this->getSimpleHTMLDOM($this->uri . $href)
+                    or $this->returnServerError('No results for this query.');
                 $figure = $html2->getElementByTagName('figure');
                 $img = $figure->firstChild();
                 $caption = $figure->lastChild();

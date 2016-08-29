@@ -7,9 +7,7 @@ class FierPandaBridge extends BridgeAbstract {
     public $description = "Returns latest articles from Fier Panda.";
 
     public function collectData(){
-        $link = 'http://www.fier-panda.fr/';
-
-        $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request Fier Panda.');
+        $html = $this->getSimpleHTMLDOM($this->uri) or $this->returnServerError('Could not request Fier Panda.');
 
         foreach($html->find('div.container-content article') as $element) {
             $item = array();

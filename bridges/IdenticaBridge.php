@@ -14,7 +14,6 @@ class IdenticaBridge extends BridgeAbstract{
     ));
 
     public function collectData(){
-        $html = '';
         $html = $this->getSimpleHTMLDOM($this->getURI())
             or $this->returnServerError('Requested username can\'t be found.');
 

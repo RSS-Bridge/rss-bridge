@@ -3,7 +3,7 @@ class LeBonCoinBridge extends BridgeAbstract{
 
 	public $maintainer = "16mhz";
 	public $name = "LeBonCoin";
-	public $uri = "http://www.leboncoin.fr";
+	public $uri = "http://www.leboncoin.fr/";
 	public $description = "Returns most recent results from LeBonCoin for a region, and optionally a category and a keyword .";
 
     public $parameters = array( array(
@@ -44,6 +44,7 @@ class LeBonCoinBridge extends BridgeAbstract{
             'name'=>'Catégorie',
             'type'=>'list',
             'values'=>array(
+              'TOUS'=>'',
               'EMPLOI'=>'_emploi_',
               'VEHICULES'=>array(
                 'Tous'=>'_vehicules_',
@@ -136,14 +137,16 @@ class LeBonCoinBridge extends BridgeAbstract{
 
 	public function collectData(){
 
-		$html = '';
-		if (empty($this->getInput('c'))) {
-			$link = 'http://www.leboncoin.fr/annonces/offres/' . $this->getInput('r') . '/?f=a&th=1&q=' . urlencode($this->getInput('k'));
-		}
-		else {
-			$link = 'http://www.leboncoin.fr/' . $this->getInput('c') . '/offres/' . $this->getInput('r') . '/?f=a&th=1&q=' . urlencode($this->getInput('k'));
-		}
-		$html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request LeBonCoin.');
+        $category=$this->getInput('c');
+        if (empty($category)){
+            $category='annonces';
+        }
+
+        $html = $this->getSimpleHTMLDOM(
+            $this->uri.$category.'/offres/' . $this->getInput('r') . '/?'
+            .'f=a&th=1&'
+            .'q=' . urlencode($this->getInput('k'))
+        ) or $this->returnServerError('Could not request LeBonCoin.');
 
 		$list = $html->find('.tabsContent', 0);
 		if($list === NULL) {

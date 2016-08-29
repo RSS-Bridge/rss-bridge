@@ -28,8 +28,9 @@ class LeMondeInformatiqueBridge extends BridgeAbstract {
             return $article_html;
         }
 
-        $feedUrl = 'http://www.lemondeinformatique.fr/rss/rss.xml';
-        $html = $this->getSimpleHTMLDOM($feedUrl) or $this->returnServerError('Could not request LeMondeInformatique: '.$feedUrl);
+        $html = $this->getSimpleHTMLDOM($this->uri.'rss/rss.xml')
+            or $this->returnServerError('Could not request LeMondeInformatique: '
+            .$this->uri.'rss/rss.xml');
         $limit = 0;
 
         foreach($html->find('item') as $element) {
