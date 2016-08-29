@@ -1,7 +1,4 @@
 <?php
-define("THE_OATMEAL", "http://theoatmeal.com/");
-define("THE_OATMEAL_RSS", "http://feeds.feedburner.com/oatmealfeed");
-
 class TheOatmealBridge extends RssExpander{
 
 	public $maintainer = "Riduidel";
@@ -10,7 +7,7 @@ class TheOatmealBridge extends RssExpander{
 	public $description = "Un petit site de dessins assez rigolos";
 
     public function collectData(){
-        parent::collectExpandableDatas(THE_OATMEAL_RSS);
+        $this->collectExpandableDatas('http://feeds.feedburner.com/oatmealfeed');
     }
 
 
