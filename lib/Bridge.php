@@ -352,6 +352,9 @@ abstract class BridgeAbstract implements BridgeInterface {
         }
 
         // Only keep guessed context parameters values
+        if(!isset($this->inputs[$this->queriedContext])){
+          $this->inputs[$this->queriedContext]=array();
+        }
         $this->inputs=array($this->queriedContext=>$this->inputs[$this->queriedContext]);
 
         $this->collectData();
