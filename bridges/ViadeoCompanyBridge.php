@@ -1,5 +1,5 @@
 <?php
-class ViadeoCompany extends BridgeAbstract{
+class ViadeoCompanyBridge extends BridgeAbstract{
 
 	public $maintainer = "regisenguehard";
 	public $name = "Viadeo Company";
@@ -15,9 +15,10 @@ class ViadeoCompany extends BridgeAbstract{
 
     public function collectData(){
         $html = '';
-        $link = 'http://www.viadeo.com/fr/company/'.$this->getInput('c');
+        $link = $this->uri.'fr/company/'.$this->getInput('c');
 
-        $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request Viadeo.');
+        $html = $this->getSimpleHTMLDOM($link)
+          or $this->returnServerError('Could not request Viadeo.');
 
         foreach($html->find('//*[@id="company-newsfeed"]/ul/li') as $element) {
             $title = $element->find('p', 0)->innertext;
