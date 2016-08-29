@@ -16,7 +16,7 @@ class NeuviemeArtBridge extends BridgeAbstract {
             } return $string;
         }
 
-        $feedUrl = 'http://www.9emeart.fr/9emeart.rss';
+        $feedUrl = $this->uri.'9emeart.rss';
         $html = $this->getSimpleHTMLDOM($feedUrl) or $this->returnServerError('Could not request 9eme Art: '.$feedUrl);
         $limit = 0;
 
@@ -32,9 +32,9 @@ class NeuviemeArtBridge extends BridgeAbstract {
                 $article_image = $element->find('enclosure', 0)->url;
                 foreach ($article_html->find('img.img_full') as $img)
                     if ($img->alt == $article_title)
-                        $article_image = 'http://www.9emeart.fr'.$img->src;
+                        $article_image = $this->uri.$img->src;
                 $article_content = '<p><img src="'.$article_image.'" /></p>'
-                    .str_replace('src="/', 'src="http://www.9emeart.fr/', $article_html->find('div.newsGenerique_con', 0)->innertext);
+                    .str_replace('src="/', 'src="'.$this->uri, $article_html->find('div.newsGenerique_con', 0)->innertext);
                 $article_content = StripWithDelimiters($article_content, '<script', '</script>');
                 $article_content = StripWithDelimiters($article_content, '<style', '</style>');
                 $article_content = StripWithDelimiters($article_content, '<link', '>');
