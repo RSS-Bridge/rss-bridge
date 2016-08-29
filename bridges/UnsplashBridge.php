@@ -9,32 +9,32 @@ class UnsplashBridge extends BridgeAbstract {
     public $parameters = array( array(
           'm'=>array(
             'name'=>'Max number of photos',
-            'type'=>'number'
+            'type'=>'number',
+            'defaultValue'=>20
           ),
           'w'=>array(
             'name'=>'Width',
-            'exampleValue'=>'1920, 1680, …'
+            'exampleValue'=>'1920, 1680, …',
+            'defaultValue'=>'1920'
           ),
           'q'=>array(
             'name'=>'JPEG quality',
-            'type'=>'number'
+            'type'=>'number',
+            'defaultValue'=>75
           )
       ));
 
     public function collectData(){
-        $html = '';
-        $baseUri = 'http://unsplash.com';
-
-        $width = $this->getInput('w') ?: '1920';    // Default width
-
+        $width = $this->getInput('w') ;
         $num = 0;
-        $max = $this->getInput('m') ?: 20;
-        $quality = $this->getInput('q') ?: 75;
+        $max = $this->getInput('m');
+        $quality = $this->getInput('q');
         $lastpage = 1;
 
         for ($page = 1; $page <= $lastpage; $page++) {
-            $link = $baseUri.'/grid?page='.$page;
-            $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('No results for this query.');
+            $link = $this->uri.'/grid?page='.$page;
+            $html = $this->getSimpleHTMLDOM($link)
+              or $this->returnServerError('No results for this query.');
 
             if ($page === 1) {
                 preg_match('/=(\d+)$/', $html->find('.pagination > a[!class]', -1)->href, $matches);
