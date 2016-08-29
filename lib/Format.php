@@ -49,7 +49,8 @@ abstract class FormatAbstract implements FormatInterface{
     }
 
     public function setItems(array $items){
-        $this->items = $items;
+        $this->items = array_map(array($this, 'array_trim'), $items);
+
         return $this;
     }
 
@@ -104,6 +105,14 @@ abstract class FormatAbstract implements FormatInterface{
         $html = str_replace('<link','<&zwnj;link',$html);
         // We leave alone object and embed so that videos can play in RSS readers.
         return $html;
+    }
+
+    protected function array_trim($elements){
+        foreach($elements as $key => $value){
+            if(is_string($value))
+                $elements[$key] = trim($value);
+        }
+        return $elements;
     }
 }
 
