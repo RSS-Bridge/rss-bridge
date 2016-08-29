@@ -9,20 +9,19 @@ class YandereBridge extends BridgeAbstract{
     public $parameters = array( array(
         'p'=>array(
             'name'=>'page',
-            'type'=>'number'
+            'type'=>'number',
+            'defaultValue'=>1
         ),
         't'=>array('name'=>'tags')
     ));
 
     public function collectData(){
-	$page = 1; $tags = '';
-        if ($this->getInput('p')) {
-            $page = (int)preg_replace("/[^0-9]/",'', $this->getInput('p'));
-        }
-        if ($this->getInput('t')) {
-            $tags = urlencode($this->getInput('t'));
-        }
-        $html = $this->getSimpleHTMLDOM("https://yande.re/post?page=$page&tags=$tags") or $this->returnServerError('Could not request Yandere.');
+        $html = $this->getSimpleHTMLDOM(
+            $this->uri.'post?'
+            .'&page='.$this->getInput('p')
+            .'&tags='.urlencode($this->getInput('t'))
+        ) or $this->returnServerError('Could not request Yander.');
+
 	$input_json = explode('Post.register(', $html);
 	foreach($input_json as $element)
 	 $data[] = preg_replace('/}\)(.*)/', '}', $element);
@@ -31,7 +30,7 @@ class YandereBridge extends BridgeAbstract{
         foreach($data as $datai) {
 	    $json = json_decode($datai, TRUE);
             $item = array();
-            $item['uri'] = 'http://yande.re/post/show/'.$json['id'];
+            $item['uri'] = $this->uri.'post/show/'.$json['id'];
             $item['postid'] = $json['id'];
             $item['timestamp'] = $json['created_at'];
             $item['imageUri'] = $json['file_url'];
