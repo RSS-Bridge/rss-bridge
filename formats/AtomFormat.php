@@ -19,7 +19,7 @@ class AtomFormat extends FormatAbstract{
         $uri = $this->xml_encode($uri);
 
         $entries = '';
-        foreach($this->getDatas() as $data){
+        foreach($this->getItems() as $data){
             $entryAuthor = isset($data['author']) ? $this->xml_encode($data['author']) : '';
             $entryTitle = isset($data['title']) ? $this->xml_encode($data['title']) : '';
             $entryUri = isset($data['uri']) ? $this->xml_encode($data['uri']) : '';

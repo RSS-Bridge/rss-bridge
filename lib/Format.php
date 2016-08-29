@@ -7,7 +7,7 @@
 interface FormatInterface{
     public function stringify();
     public function display();
-    public function setDatas(array $bridge);
+    public function setItems(array $bridges);
 }
 
 abstract class FormatAbstract implements FormatInterface{
@@ -48,15 +48,14 @@ abstract class FormatAbstract implements FormatInterface{
         return $this;
     }
 
-    public function setDatas(array $datas){
+    public function setItems(array $datas){
         $this->datas = $datas;
-
         return $this;
     }
 
-    public function getDatas(){
+    public function getItems(){
         if( !is_array($this->datas) ){
-            throw new \LogicException('Feed the ' . get_class($this) . ' with "setDatas" method before !');
+            throw new \LogicException('Feed the ' . get_class($this) . ' with "setItems" method before !');
         }
 
         return $this->datas;

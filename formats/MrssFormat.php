@@ -17,7 +17,7 @@ class MrssFormat extends FormatAbstract{
         $uri = $this->xml_encode(!empty($extraInfos['uri']) ? $extraInfos['uri'] : 'https://github.com/sebsauvage/rss-bridge');
 
         $items = '';
-        foreach($this->getDatas() as $data){
+        foreach($this->getItems() as $data){
             $itemAuthor = isset($data['author']) ? $this->xml_encode($data['author']) : '';
             $itemTitle = strip_tags(isset($data['title']) ? $this->xml_encode($data['title']) : '');
             $itemUri = isset($data['uri']) ? $this->xml_encode($data['uri']) : '';

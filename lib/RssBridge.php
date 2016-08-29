@@ -32,7 +32,7 @@ require_once $vendorLibSimpleHtmlDom;
     Format::setDir(__DIR__ . '/formats/');
     $format = Format::create('Atom');
     $format
-        ->setDatas($bridge->getDatas())
+        ->setItems($bridge->getItems())
         ->setExtraInfos(array(
             'name' => $bridge->getName(),
             'uri' => $bridge->getURI(),

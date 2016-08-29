@@ -9,7 +9,7 @@ class HtmlFormat extends FormatAbstract{
         $mrssquery = str_replace('format=Html', 'format=Mrss', htmlentities($_SERVER['QUERY_STRING']));
 
         $entries = '';
-        foreach($this->getDatas() as $data){
+        foreach($this->getItems() as $data){
             $entryAuthor = isset($data['author']) ? '<br /><p class="author">by: ' . $data['author'] . '</p>' : '';
             $entryTitle = isset($data['title']) ? $this->sanitizeHtml(strip_tags($data['title'])) : '';
             $entryUri = isset($data['uri']) ? $data['uri'] : $uri;

@@ -6,7 +6,7 @@
 class PlaintextFormat extends FormatAbstract{
 
     public function stringify(){
-        $datas = $this->getDatas();
+        $datas = $this->getItems();
         return print_r($datas, true);
     }
 
