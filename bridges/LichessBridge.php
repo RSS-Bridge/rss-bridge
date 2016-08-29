@@ -4,12 +4,13 @@ class LichessBridge  extends HttpCachingBridgeAbstract
 {
     public $maintainer = 'AmauryCarrade';
     public $name = 'Lichess Blog';
-    public $uri = 'http://lichess.org/blog';
+    public $uri = 'http://fr.lichess.org/blog';
     public $description = 'Returns the 5 newest posts from the Lichess blog (full text)';
 
     public function collectData()
     {
-        $xml_feed = $this->getSimpleHTMLDOM('http://fr.lichess.org/blog.atom') or $this->returnServerError('Could not retrieve Lichess blog feed.');
+        $xml_feed = $this->getSimpleHTMLDOM($this->uri.'.atom')
+            or $this->returnServerError('Could not retrieve Lichess blog feed.');
 
         $posts_loaded = 0;
         foreach($xml_feed->find('entry') as $entry)
