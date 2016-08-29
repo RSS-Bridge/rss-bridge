@@ -2,7 +2,6 @@
 class HtmlFormat extends FormatAbstract{
 
     public function stringify(){
-        /* Datas preparation */
         $extraInfos = $this->getExtraInfos();
         $title = htmlspecialchars($extraInfos['name']);
         $uri = htmlspecialchars($extraInfos['uri']);
