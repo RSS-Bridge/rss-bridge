@@ -98,7 +98,7 @@ abstract class FormatAbstract implements FormatInterface{
      * Maybe we'll switch to http://htmlpurifier.org/
      * or http://www.bioinformatics.org/phplabware/internal_utilities/htmLawed/index.php
      */
-    public function sanitizeHtml($html)
+    protected function sanitizeHtml($html)
     {
         $html = str_replace('<script','<&zwnj;script',$html); // Disable scripts, but leave them visible.
         $html = str_replace('<iframe','<&zwnj;iframe',$html);
