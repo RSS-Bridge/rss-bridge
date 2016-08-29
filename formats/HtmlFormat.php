@@ -9,12 +9,12 @@ class HtmlFormat extends FormatAbstract{
         $mrssquery = str_replace('format=Html', 'format=Mrss', htmlentities($_SERVER['QUERY_STRING']));
 
         $entries = '';
-        foreach($this->getItems() as $data){
-            $entryAuthor = isset($data['author']) ? '<br /><p class="author">by: ' . $data['author'] . '</p>' : '';
-            $entryTitle = isset($data['title']) ? $this->sanitizeHtml(strip_tags($data['title'])) : '';
-            $entryUri = isset($data['uri']) ? $data['uri'] : $uri;
-            $entryTimestamp = isset($data['timestamp']) ? '<time datetime="' . date(DATE_ATOM, $data['timestamp']) . '">' . date(DATE_ATOM, $data['timestamp']) . '</time>' : '';
-            $entryContent = isset($data['content']) ? '<div class="content">' . $this->sanitizeHtml($data['content']). '</div>' : '';
+        foreach($this->getItems() as $item){
+            $entryAuthor = isset($item['author']) ? '<br /><p class="author">by: ' . $item['author'] . '</p>' : '';
+            $entryTitle = isset($item['title']) ? $this->sanitizeHtml(strip_tags($item['title'])) : '';
+            $entryUri = isset($item['uri']) ? $item['uri'] : $uri;
+            $entryTimestamp = isset($item['timestamp']) ? '<time datetime="' . date(DATE_ATOM, $item['timestamp']) . '">' . date(DATE_ATOM, $item['timestamp']) . '</time>' : '';
+            $entryContent = isset($item['content']) ? '<div class="content">' . $this->sanitizeHtml($item['content']). '</div>' : '';
             $entries .= <<<EOD
 
 <section class="feeditem">

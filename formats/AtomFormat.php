@@ -19,12 +19,12 @@ class AtomFormat extends FormatAbstract{
         $uri = $this->xml_encode($uri);
 
         $entries = '';
-        foreach($this->getItems() as $data){
-            $entryAuthor = isset($data['author']) ? $this->xml_encode($data['author']) : '';
-            $entryTitle = isset($data['title']) ? $this->xml_encode($data['title']) : '';
-            $entryUri = isset($data['uri']) ? $this->xml_encode($data['uri']) : '';
-            $entryTimestamp = isset($data['timestamp']) ? $this->xml_encode(date(DATE_ATOM, $data['timestamp'])) : '';
-            $entryContent = isset($data['content']) ? $this->xml_encode($this->sanitizeHtml($data['content'])) : '';
+        foreach($this->getItems() as $item){
+            $entryAuthor = isset($item['author']) ? $this->xml_encode($item['author']) : '';
+            $entryTitle = isset($item['title']) ? $this->xml_encode($item['title']) : '';
+            $entryUri = isset($item['uri']) ? $this->xml_encode($item['uri']) : '';
+            $entryTimestamp = isset($item['timestamp']) ? $this->xml_encode(date(DATE_ATOM, $item['timestamp'])) : '';
+            $entryContent = isset($item['content']) ? $this->xml_encode($this->sanitizeHtml($item['content'])) : '';
             $entries .= <<<EOD
 
     <entry>

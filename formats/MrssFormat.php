@@ -17,12 +17,12 @@ class MrssFormat extends FormatAbstract{
         $uri = $this->xml_encode(!empty($extraInfos['uri']) ? $extraInfos['uri'] : 'https://github.com/sebsauvage/rss-bridge');
 
         $items = '';
-        foreach($this->getItems() as $data){
-            $itemAuthor = isset($data['author']) ? $this->xml_encode($data['author']) : '';
-            $itemTitle = strip_tags(isset($data['title']) ? $this->xml_encode($data['title']) : '');
-            $itemUri = isset($data['uri']) ? $this->xml_encode($data['uri']) : '';
-            $itemTimestamp = isset($data['timestamp']) ? $this->xml_encode(date(DATE_RFC2822, $data['timestamp'])) : '';
-            $itemContent = isset($data['content']) ? $this->xml_encode($this->sanitizeHtml($data['content'])) : '';
+        foreach($this->getItems() as $item){
+            $itemAuthor = isset($item['author']) ? $this->xml_encode($item['author']) : '';
+            $itemTitle = strip_tags(isset($item['title']) ? $this->xml_encode($item['title']) : '');
+            $itemUri = isset($item['uri']) ? $this->xml_encode($item['uri']) : '';
+            $itemTimestamp = isset($item['timestamp']) ? $this->xml_encode(date(DATE_RFC2822, $item['timestamp'])) : '';
+            $itemContent = isset($item['content']) ? $this->xml_encode($this->sanitizeHtml($item['content'])) : '';
             $items .= <<<EOD
 
     <item>

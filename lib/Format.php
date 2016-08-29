@@ -16,7 +16,7 @@ abstract class FormatAbstract implements FormatInterface{
     protected 
         $contentType,
         $charset,
-        $datas,
+        $items,
         $extraInfos
     ;
 
@@ -48,17 +48,16 @@ abstract class FormatAbstract implements FormatInterface{
         return $this;
     }
 
-    public function setItems(array $datas){
-        $this->datas = $datas;
+    public function setItems(array $items){
+        $this->items = $items;
         return $this;
     }
 
     public function getItems(){
-        if( !is_array($this->datas) ){
+        if(!is_array($this->items))
             throw new \LogicException('Feed the ' . get_class($this) . ' with "setItems" method before !');
-        }
 
-        return $this->datas;
+        return $this->items;
     }
 
     /**
