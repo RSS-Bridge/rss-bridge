@@ -9,7 +9,8 @@ class ThePirateBayBridge extends BridgeAbstract{
     public $parameters = array( array(
         'q'=>array(
             'name'=>'keywords, separated by semicolons',
-            'exampleValue'=>'first list;second list;…'
+            'exampleValue'=>'first list;second list;…',
+            'required'=>true
         )
     ));
 
@@ -49,12 +50,10 @@ class ThePirateBayBridge extends BridgeAbstract{
         }
 
 
-		if (!$this->getInput('q'))
-			$this->returnClientError('You must specify keywords (?q=...)');
-
         $keywordsList = explode(";",$this->getInput('q'));
         foreach($keywordsList as $keywords){
-            $html = $this->getSimpleHTMLDOM('https://thepiratebay.org/search/'.rawurlencode($keywords).'/0/3/0') or $this->returnServerError('Could not request TPB.');
+          $html = $this->getSimpleHTMLDOM($this->uri.'search/'.rawurlencode($keywords).'/0/3/0')
+            or $this->returnServerError('Could not request TPB.');
 
             if ($html->find('table#searchResult', 0) == FALSE)
                 $this->returnServerError('No result for query '.$keywords);
@@ -62,7 +61,7 @@ class ThePirateBayBridge extends BridgeAbstract{
 
             foreach($html->find('tr') as $element) {
                 $item = array();
-                $item['uri'] = 'https://thepiratebay.org/'.$element->find('a.detLink',0)->href;
+                $item['uri'] = $this->uri.$element->find('a.detLink',0)->href;
                 $item['id'] = $item['uri'];
                 $item['timestamp'] = parseDateTimestamp($element);
                 $item['title'] = $element->find('a.detLink',0)->plaintext;
