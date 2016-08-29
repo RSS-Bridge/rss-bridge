@@ -39,11 +39,9 @@ class TwitchApiBridge extends BridgeAbstract{
 
 		$context = stream_context_create($opts);
 
-		if(!$this->getInput('limit') ||
-		   empty($this->getInput('limit'))){
+		$limit = $this->getInput('limit');
+		if(!$limit){
 			$limit = TWITCH_LIMIT;
-		}else{
-			$limit = (int)$this->getInput('limit');
 		}
 
 		// The Twitch API allows a limit between 1 .. 100. Therefore any value below must be set to 1, any greater must result in multiple requests.
