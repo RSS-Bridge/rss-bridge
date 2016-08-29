@@ -7,7 +7,7 @@ class AtomFormat extends FormatAbstract{
 
     public function stringify(){
         /* Datas preparation */
-        $https = ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 's' : '' );
+        $https = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 's' : '';
         $httpHost = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
         $httpInfo = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
 
@@ -21,11 +21,11 @@ class AtomFormat extends FormatAbstract{
 
         $entries = '';
         foreach($this->getDatas() as $data){
-            $entryAuthor = is_null($data['author']) ? '' : $this->xml_encode($data['author']);
-            $entryTitle = is_null($data['title']) ? '' : $this->xml_encode($data['title']);
-            $entryUri = is_null($data['uri']) ? '' : $this->xml_encode($data['uri']);
-            $entryTimestamp = is_null($data['timestamp']) ? '' : $this->xml_encode(date(DATE_ATOM, $data['timestamp']));
-            $entryContent = is_null($data['content']) ? '' : $this->xml_encode($this->sanitizeHtml($data['content']));
+            $entryAuthor = isset($data['author']) ? $this->xml_encode($data['author']) : '';
+            $entryTitle = isset($data['title']) ? $this->xml_encode($data['title']) : '';
+            $entryUri = isset($data['uri']) ? $this->xml_encode($data['uri']) : '';
+            $entryTimestamp = isset($data['timestamp']) ? $this->xml_encode(date(DATE_ATOM, $data['timestamp'])) : '';
+            $entryContent = isset($data['content']) ? $this->xml_encode($this->sanitizeHtml($data['content'])) : '';
             $entries .= <<<EOD
 
     <entry>

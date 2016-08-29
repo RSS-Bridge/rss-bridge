@@ -7,7 +7,7 @@ class MrssFormat extends FormatAbstract{
 
     public function stringify(){
         /* Datas preparation */
-        $https = ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 's' : '' );
+        $https = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 's' : '';
         $httpHost = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
         $httpInfo = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
 
@@ -19,11 +19,11 @@ class MrssFormat extends FormatAbstract{
 
         $items = '';
         foreach($this->getDatas() as $data){
-            $itemAuthor = is_null($data['author']) ? '' : $this->xml_encode($data['author']);
-            $itemTitle = strip_tags(is_null($data['title']) ? '' : $this->xml_encode($data['title']));
-            $itemUri = is_null($data['uri']) ? '' : $this->xml_encode($data['uri']);
-            $itemTimestamp = is_null($data['timestamp']) ? '' : $this->xml_encode(date(DATE_RFC2822, $data['timestamp']));
-            $itemContent = is_null($data['content']) ? '' : $this->xml_encode($this->sanitizeHtml($data['content']));
+            $itemAuthor = isset($data['author']) ? $this->xml_encode($data['author']) : '';
+            $itemTitle = strip_tags(isset($data['title']) ? $this->xml_encode($data['title']) : '');
+            $itemUri = isset($data['uri']) ? $this->xml_encode($data['uri']) : '';
+            $itemTimestamp = isset($data['timestamp']) ? $this->xml_encode(date(DATE_RFC2822, $data['timestamp'])) : '';
+            $itemContent = isset($data['content']) ? $this->xml_encode($this->sanitizeHtml($data['content'])) : '';
             $items .= <<<EOD
 
     <item>
