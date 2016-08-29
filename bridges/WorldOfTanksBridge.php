@@ -27,11 +27,7 @@ class WorldOfTanksBridge extends HttpCachingBridgeAbstract{
     ));
 
     function getURI(){
-        $lang='fr';
-        if (!empty($this->getInput('lang'))) {
-            $lang = $this->getInput('lang');
-        }
-
+        $lang = $this->getInput('lang');
         $uri = $this->uri.$lang.'/news/';
         if(!empty($this->getInput('category'))) {
             $uri .= 'pc-browser/'.$this->getInput('category')."/";
@@ -40,7 +36,8 @@ class WorldOfTanksBridge extends HttpCachingBridgeAbstract{
     }
 
     public function collectData(){
-        $html = $this->getSimpleHTMLDOM($this->getURI()) or $this->returnServerError('Could not request '.$this->getURI());
+      $html = $this->getSimpleHTMLDOM($this->getURI())
+        or $this->returnServerError('Could not request '.$this->getURI());
         $this->debugMessage("loaded HTML from ".$this->getURI());
         // customize name
         $this->name = $html->find('title', 0)->innertext;
