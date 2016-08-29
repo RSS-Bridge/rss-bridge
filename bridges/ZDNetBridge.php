@@ -207,16 +207,12 @@ class ZDNetBridge extends BridgeAbstract {
             return $string;
         }
 
-        $baseUri = $this->getURI();
+        $baseUri = $this->uri;
         $feed = $this->getInput('feed');
-        if (empty($feed))
-            $this->returnClientError('Please select a feed to display.');
         if (strpos($feed, 'downloads!') !== false) {
             $feed = str_replace('downloads!', '', $feed);
             $baseUri = str_replace('www.', 'downloads.', $baseUri);
         }
-        if ($feed !== preg_replace('/[^a-zA-Z0-9-\/]+/', '', $feed) || substr_count($feed, '/') > 1 || strlen($feed > 64))
-            $this->returnClientError('Invalid "feed" parameter.');
         $url = $baseUri.trim($feed, '/').'/rss.xml';
         $html = $this->getSimpleHTMLDOM($url) or $this->returnServerError('Could not request ZDNet: '.$url);
         $limit = 0;
