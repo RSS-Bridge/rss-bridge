@@ -137,7 +137,7 @@ try{
                     try {
 		                $format = Format::create($format);
 		                $format
-		                    ->setDatas($bridge->getDatas())
+		                    ->setItems($bridge->getItems())
 		                    ->setExtraInfos(array(
 		                        'name' => $bridge->getName(),
 		                        'uri' => $bridge->getURI(),

@@ -6,8 +6,7 @@
 class AtomFormat extends FormatAbstract{
 
     public function stringify(){
-        /* Datas preparation */
-        $https = ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 's' : '' );
+        $https = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 's' : '';
         $httpHost = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
         $httpInfo = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
 
@@ -20,12 +19,12 @@ class AtomFormat extends FormatAbstract{
         $uri = $this->xml_encode($uri);
 
         $entries = '';
-        foreach($this->getDatas() as $data){
-            $entryAuthor = is_null($data['author']) ? '' : $this->xml_encode($data['author']);
-            $entryTitle = is_null($data['title']) ? '' : $this->xml_encode($data['title']);
-            $entryUri = is_null($data['uri']) ? '' : $this->xml_encode($data['uri']);
-            $entryTimestamp = is_null($data['timestamp']) ? '' : $this->xml_encode(date(DATE_ATOM, $data['timestamp']));
-            $entryContent = is_null($data['content']) ? '' : $this->xml_encode($this->sanitizeHtml($data['content']));
+        foreach($this->getItems() as $item){
+            $entryAuthor = isset($item['author']) ? $this->xml_encode($item['author']) : '';
+            $entryTitle = isset($item['title']) ? $this->xml_encode($item['title']) : '';
+            $entryUri = isset($item['uri']) ? $this->xml_encode($item['uri']) : '';
+            $entryTimestamp = isset($item['timestamp']) ? $this->xml_encode(date(DATE_ATOM, $item['timestamp'])) : '';
+            $entryContent = isset($item['content']) ? $this->xml_encode($this->sanitizeHtml($item['content'])) : '';
             $entries .= <<<EOD
 
     <entry>
@@ -42,16 +41,7 @@ class AtomFormat extends FormatAbstract{
 EOD;
         }
 
-        /*
-        TODO :
-        - Security: Disable Javascript ?
-        - <updated> : Define new extra info ?
-        - <content type="html"> : RFC look with xhtml, keep this in spite of ?
-        */
-
-// ####  TEMPORARY FIX ###
-$feedTimestamp = date(DATE_ATOM, time());
-//  ################ 
+    $feedTimestamp = date(DATE_ATOM, time());
 
         /* Data are prepared, now let's begin the "MAGIE !!!" */
         $toReturn  = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -70,11 +60,6 @@ $feedTimestamp = date(DATE_ATOM, time());
 EOD;
         
         // Remove invalid non-UTF8 characters
-
-        // We cannot use iconv because of a bug in some versions of iconv.
-        // See http://www.php.net/manual/fr/function.iconv.php#108643
-        //$toReturn = iconv("UTF-8", "UTF-8//IGNORE", $toReturn);  
-        // So we use mb_convert_encoding instead:
         ini_set('mbstring.substitute_character', 'none');
         $toReturn= mb_convert_encoding($toReturn, 'UTF-8', 'UTF-8'); 
         return $toReturn;
@@ -82,7 +67,7 @@ EOD;
 
     public function display(){
         $this
-            ->setContentType('application/atom+xml; charset=UTF-8')  // We force UTF-8 in ATOM output.
+            ->setContentType('application/atom+xml; charset=UTF-8')
             ->callContentType();
 
         return parent::display();

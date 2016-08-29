@@ -7,7 +7,7 @@
 interface FormatInterface{
     public function stringify();
     public function display();
-    public function setDatas(array $bridge);
+    public function setItems(array $bridges);
 }
 
 abstract class FormatAbstract implements FormatInterface{
@@ -16,7 +16,7 @@ abstract class FormatAbstract implements FormatInterface{
     protected 
         $contentType,
         $charset,
-        $datas,
+        $items,
         $extraInfos
     ;
 
@@ -48,18 +48,17 @@ abstract class FormatAbstract implements FormatInterface{
         return $this;
     }
 
-    public function setDatas(array $datas){
-        $this->datas = $datas;
+    public function setItems(array $items){
+        $this->items = array_map(array($this, 'array_trim'), $items);
 
         return $this;
     }
 
-    public function getDatas(){
-        if( !is_array($this->datas) ){
-            throw new \LogicException('Feed the ' . get_class($this) . ' with "setDatas" method before !');
-        }
+    public function getItems(){
+        if(!is_array($this->items))
+            throw new \LogicException('Feed the ' . get_class($this) . ' with "setItems" method before !');
 
-        return $this->datas;
+        return $this->items;
     }
 
     /**
@@ -99,13 +98,21 @@ abstract class FormatAbstract implements FormatInterface{
      * Maybe we'll switch to http://htmlpurifier.org/
      * or http://www.bioinformatics.org/phplabware/internal_utilities/htmLawed/index.php
      */
-    public function sanitizeHtml($html)
+    protected function sanitizeHtml($html)
     {
         $html = str_replace('<script','<&zwnj;script',$html); // Disable scripts, but leave them visible.
         $html = str_replace('<iframe','<&zwnj;iframe',$html);
         $html = str_replace('<link','<&zwnj;link',$html);
         // We leave alone object and embed so that videos can play in RSS readers.
         return $html;
+    }
+
+    protected function array_trim($elements){
+        foreach($elements as $key => $value){
+            if(is_string($value))
+                $elements[$key] = trim($value);
+        }
+        return $elements;
     }
 }
 

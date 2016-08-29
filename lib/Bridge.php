@@ -139,7 +139,7 @@ abstract class BridgeAbstract implements BridgeInterface {
     * Return items stored in the bridge
     * @return mixed
     */
-    public function getDatas(){
+    public function getItems(){
         return $this->items;
     }
 
@@ -267,7 +267,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 
             $this->collectData();
             if(!is_null($this->cache)){
-                $this->cache->saveData($this->getDatas());
+                $this->cache->saveData($this->getItems());
             }
             return;
         }
@@ -360,7 +360,7 @@ abstract class BridgeAbstract implements BridgeInterface {
         $this->collectData();
 
         if(!is_null($this->cache)){
-            $this->cache->saveData($this->getDatas());
+            $this->cache->saveData($this->getItems());
         }
     }
 
