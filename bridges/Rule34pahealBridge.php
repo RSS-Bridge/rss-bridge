@@ -1,12 +1,12 @@
 <?php
 class Rule34pahealBridge extends BridgeAbstract{
 
-	public $maintainer = "mitsukarenai";
-	public $name = "Rule34paheal";
-	public $uri = "http://rule34.paheal.net/";
-	public $description = "Returns images from given page";
+	const MAINTAINER = "mitsukarenai";
+	const NAME = "Rule34paheal";
+	const URI = "http://rule34.paheal.net/";
+	const DESCRIPTION = "Returns images from given page";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'p'=>array(
             'name'=>'page',
             'type'=>'number'
@@ -16,13 +16,13 @@ class Rule34pahealBridge extends BridgeAbstract{
 
 
     public function collectData(){
-      $html = $this->getSimpleHTMLDOM($this->uri.'post/list/'.$tags.'/'.$page)
+      $html = $this->getSimpleHTMLDOM(self::URI.'post/list/'.$tags.'/'.$page)
         or $this->returnServerError('Could not request Rule34paheal.');
 
 
 	foreach($html->find('div[class=shm-image-list] div[class=shm-thumb]') as $element) {
 		$item = array();
-		$item['uri'] = $this->uri.$element->find('a', 0)->href;
+		$item['uri'] = self::URI.$element->find('a', 0)->href;
 		$item['postid'] = (int)preg_replace("/[^0-9]/",'', $element->find('img', 0)->getAttribute('id'));
 		$item['timestamp'] = time();
 		$thumbnailUri = $element->find('img', 0)->src;

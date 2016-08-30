@@ -1,11 +1,11 @@
 <?php
 class IsoHuntBridge extends BridgeAbstract{
-  public $maintainer = 'logmanoriginal';
-  public $name = 'isoHunt Bridge';
-  public $uri = 'https://isohunt.to/';
-  public $description = 'Returns the latest results by category or search result';
+  const MAINTAINER = 'logmanoriginal';
+  const NAME = 'isoHunt Bridge';
+  const URI = 'https://isohunt.to/';
+  const DESCRIPTION = 'Returns the latest results by category or search result';
 
-  public $parameters = array(
+  const PARAMETERS = array(
     /*
      * Get feeds for one of the "latest" categories
      * Notice: The categories "News" and "Top Searches" are received from the main page
@@ -90,7 +90,7 @@ class IsoHuntBridge extends BridgeAbstract{
   );
 
   public  function getURI(){
-    $uri=$this->uri;
+    $uri=self::URI;
     switch($this->queriedContext){
     case 'By "Latest" category':
       switch($this->getInput('latest_category')){
@@ -132,27 +132,27 @@ class IsoHuntBridge extends BridgeAbstract{
       $categoryName =
         array_search(
           $this->getInput('latest_category'),
-          $this->parameters['By "Latest" category']['latest_category']['values']
+          self::PARAMETERS['By "Latest" category']['latest_category']['values']
         );
-      $name = 'Latest '.$categoryName.' - ' . $this->name;
+      $name = 'Latest '.$categoryName.' - ' . self::NAME;
       break;
 
     case 'By "Torrent" category':
       $categoryName =
         array_search(
           $this->getInput('torrent_category'),
-          $this->parameters['By "Torrent" category']['torrent_category']['values']
+          self::PARAMETERS['By "Torrent" category']['torrent_category']['values']
         );
-      $name = 'Category: ' . $categoryName . ' - ' . $this->name;
+      $name = 'Category: ' . $categoryName . ' - ' . self::NAME;
       break;
 
     case 'Search torrent by name':
       $categoryName =
         array_search(
           $this->getInput('search_category'),
-          $this->parameters['Search torrent by name']['search_category']['values']
+          self::PARAMETERS['Search torrent by name']['search_category']['values']
         );
-      $name = 'Search: "' . $this->getInput('search_name') . '" in category: ' . $categoryName . ' - ' . $this->name;
+      $name = 'Search: "' . $this->getInput('search_name') . '" in category: ' . $categoryName . ' - ' . self::NAME;
       break;
     }
 
@@ -446,7 +446,7 @@ class IsoHuntBridge extends BridgeAbstract{
   }
 
   private function fix_relative_uri($uri){
-    return preg_replace('/\//i', $this->uri, $uri, 1);
+    return preg_replace('/\//i', self::URI, $uri, 1);
   }
 
   private function build_category_uri($category, $order_popularity = false){

@@ -1,13 +1,13 @@
 <?php
 class CopieDoubleBridge extends BridgeAbstract{
 
-    public $maintainer = "superbaillot.net";
-    public $name = "CopieDouble";
-    public $uri = "http://www.copie-double.com/";
-    public $description = "CopieDouble";
+    const MAINTAINER = "superbaillot.net";
+    const NAME = "CopieDouble";
+    const URI = "http://www.copie-double.com/";
+    const DESCRIPTION = "CopieDouble";
 
     public function collectData(){
-        $html = $this->getSimpleHTMLDOM($this->uri)
+        $html = $this->getSimpleHTMLDOM(self::URI)
             or $this->returnServerError('Could not request CopieDouble.');
         $table = $html->find('table table', 2);
 
@@ -26,10 +26,10 @@ class CopieDoubleBridge extends BridgeAbstract{
             elseif(strpos($element->innertext, "/images/suivant.gif") === false)
             {
                 $a=$element->find("a", 0);
-                $item['uri'] = $this->uri . $a->href;
+                $item['uri'] = self::URI . $a->href;
 
-                $content = str_replace('src="/', 'src="/'.$this->uri,$element->find("td", 0)->innertext);
-                $content = str_replace('href="/', 'href="'.$this->uri,$content);
+                $content = str_replace('src="/', 'src="/'.self::URI,$element->find("td", 0)->innertext);
+                $content = str_replace('href="/', 'href="'.self::URI,$content);
                 $item['content'] = $content;
                 $this->items[] = $item;
             }

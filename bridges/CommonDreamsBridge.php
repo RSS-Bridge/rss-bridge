@@ -1,10 +1,10 @@
 <?php
 class CommonDreamsBridge extends BridgeAbstract{
 
-	public $maintainer = "nyutag";
-	public $name = "CommonDreams Bridge";
-	public $uri = "http://www.commondreams.org/";
-	public $description = "Returns the newest articles.";
+	const MAINTAINER = "nyutag";
+	const NAME = "CommonDreams Bridge";
+	const URI = "http://www.commondreams.org/";
+	const DESCRIPTION = "Returns the newest articles.";
 
 	private function CommonDreamsExtractContent($url) {
 		$html3 = $this->getSimpleHTMLDOM($url);

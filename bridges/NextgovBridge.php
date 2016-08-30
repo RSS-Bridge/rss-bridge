@@ -1,12 +1,12 @@
 <?php
 class NextgovBridge extends BridgeAbstract {
 
-    public $maintainer = 'ORelio';
-    public $name = 'Nextgov Bridge';
-    public $uri = 'https://www.nextgov.com/';
-    public $description = 'USA Federal technology news, best practices, and web 2.0 tools.';
+    const MAINTAINER = 'ORelio';
+    const NAME = 'Nextgov Bridge';
+    const URI = 'https://www.nextgov.com/';
+    const DESCRIPTION = 'USA Federal technology news, best practices, and web 2.0 tools.';
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'category'=>array(
             'name'=>'Category',
             'type'=>'list',

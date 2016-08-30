@@ -2,11 +2,11 @@
 
 class VkBridge extends BridgeAbstract {
 
-    public $maintainer = "ahiles3005";
-    public $name = "VK.com";
-    public $uri = "http://vk.com/";
-    public $description = "Working with open pages";
-    public $parameters=array(
+    const MAINTAINER = "ahiles3005";
+    const NAME = "VK.com";
+    const URI = "http://vk.com/";
+    const DESCRIPTION = "Working with open pages";
+    const PARAMETERS=array(
         'Url on page group or user' => array(
             'u'=>array(
                 'name'=>'Url',
@@ -33,10 +33,10 @@ class VkBridge extends BridgeAbstract {
             //get video on post
             if (is_object($post->find('span.post_video_title_content', 0))) {
                 $titleVideo = $post->find('span.post_video_title_content', 0)->plaintext;
-                $linkToVideo = $this->uri . $post->find('a.page_post_thumb_video', 0)->getAttribute('href');
+                $linkToVideo = self::URI . $post->find('a.page_post_thumb_video', 0)->getAttribute('href');
                 $item['content'] .= "\n\r {$titleVideo}: {$linkToVideo}";
             }
-            $item['uri'] = $this->uri . $post->find('.reply_link_wrap', 0)->find('a', 0)->getAttribute('href'); // get post link
+            $item['uri'] = self::URI . $post->find('.reply_link_wrap', 0)->find('a', 0)->getAttribute('href'); // get post link
             $item['date'] = $post->find('span.rel_date', 0)->plaintext;
             $this->items[] = $item;
             // var_dump($item['date']);

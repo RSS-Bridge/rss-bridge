@@ -1,14 +1,14 @@
 <?php
 class DansTonChatBridge extends BridgeAbstract{
 
-	public $maintainer = "Astalaseven";
-	public $name = "DansTonChat Bridge";
-	public $uri = "http://danstonchat.com/";
-	public $description = "Returns latest quotes from DansTonChat.";
+	const MAINTAINER = "Astalaseven";
+	const NAME = "DansTonChat Bridge";
+	const URI = "http://danstonchat.com/";
+	const DESCRIPTION = "Returns latest quotes from DansTonChat.";
 
     public function collectData(){
 
-        $html = $this->getSimpleHTMLDOM($this->uri.'latest.html')
+        $html = $this->getSimpleHTMLDOM(self::URI.'latest.html')
             or $this->returnServerError('Could not request DansTonChat.');
 
         foreach($html->find('div.item') as $element) {

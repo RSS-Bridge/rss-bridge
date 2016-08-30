@@ -1,12 +1,12 @@
 <?php
 class LolibooruBridge extends BridgeAbstract{
 
-	public $maintainer = "mitsukarenai";
-	public $name = "Lolibooru";
-	public $uri = "http://lolibooru.moe/";
-	public $description = "Returns images from given page and tags";
+	const MAINTAINER = "mitsukarenai";
+	const NAME = "Lolibooru";
+	const URI = "http://lolibooru.moe/";
+	const DESCRIPTION = "Returns images from given page and tags";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'p'=>array(
             'name'=>'page',
             'defaultValue'=>1,
@@ -17,7 +17,7 @@ class LolibooruBridge extends BridgeAbstract{
 
     public function collectData(){
         $html = $this->getSimpleHTMLDOM(
-            $this->uri.'post?'
+            self::URI.'post?'
             .'&page='.$this->getInput('p')
             .'&tags='.urlencode($this->getInput('t'))
         ) or $this->returnServerError('Could not request Lolibooru.');
@@ -30,7 +30,7 @@ class LolibooruBridge extends BridgeAbstract{
         foreach($data as $datai) {
 	    $json = json_decode($datai, TRUE);
             $item = array();
-            $item['uri'] = $this->uri.'post/show/'.$json['id'];
+            $item['uri'] = self::URI.'post/show/'.$json['id'];
             $item['postid'] = $json['id'];
             $item['timestamp'] = $json['created_at'];
             $item['imageUri'] = $json['file_url'];

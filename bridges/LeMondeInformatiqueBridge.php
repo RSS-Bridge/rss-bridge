@@ -1,10 +1,10 @@
 <?php
 class LeMondeInformatiqueBridge extends BridgeAbstract {
 
-    public $maintainer = "ORelio";
-    public $name = "Le Monde Informatique";
-    public $uri = "http://www.lemondeinformatique.fr/";
-    public $description = "Returns the newest articles.";
+    const MAINTAINER = "ORelio";
+    const NAME = "Le Monde Informatique";
+    const URI = "http://www.lemondeinformatique.fr/";
+    const DESCRIPTION = "Returns the newest articles.";
 
     public function collectData(){
 
@@ -28,9 +28,9 @@ class LeMondeInformatiqueBridge extends BridgeAbstract {
             return $article_html;
         }
 
-        $html = $this->getSimpleHTMLDOM($this->uri.'rss/rss.xml')
+        $html = $this->getSimpleHTMLDOM(self::URI.'rss/rss.xml')
             or $this->returnServerError('Could not request LeMondeInformatique: '
-            .$this->uri.'rss/rss.xml');
+            .self::URI.'rss/rss.xml');
         $limit = 0;
 
         foreach($html->find('item') as $element) {

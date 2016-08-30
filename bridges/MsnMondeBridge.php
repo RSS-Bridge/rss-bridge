@@ -1,13 +1,13 @@
 <?php
 class MsnMondeBridge extends BridgeAbstract{
 
-	public $maintainer = "kranack";
-	public $name = 'MSN Actu Monde';
-	public $uri = 'http://www.msn.com/';
-	public $description = "Returns the 10 newest posts from MSN Actualités (full text)";
+	const MAINTAINER = "kranack";
+	const NAME = 'MSN Actu Monde';
+	const URI = 'http://www.msn.com/';
+	const DESCRIPTION = "Returns the 10 newest posts from MSN Actualités (full text)";
 
     public function getURI(){
-        return $this->uri.'fr-fr/actualite/monde';
+        return self::URI.'fr-fr/actualite/monde';
     }
 
 	private function MsnMondeExtractContent($url, &$item) {
@@ -23,7 +23,7 @@ class MsnMondeBridge extends BridgeAbstract{
 			if($limit < 10) {
 				$item = array();
 				$item['title'] = utf8_decode($article->find('h4', 0)->innertext);
-				$item['uri'] = $this->uri . utf8_decode($article->find('a', 0)->href);
+				$item['uri'] = self::URI . utf8_decode($article->find('a', 0)->href);
 				$this->MsnMondeExtractContent($item['uri'], $item);
 				$this->items[] = $item;
 				$limit++;

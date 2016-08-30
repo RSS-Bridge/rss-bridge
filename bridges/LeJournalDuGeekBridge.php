@@ -1,10 +1,10 @@
 <?php
 class LeJournalDuGeekBridge extends BridgeAbstract{
 
-	public $maintainer = "polopollo";
-	public $name = "journaldugeek.com (FR)";
-	public $uri = "http://www.journaldugeek.com/";
-	public $description = "Returns the 5 newest posts from LeJournalDuGeek (full text).";
+	const MAINTAINER = "polopollo";
+	const NAME = "journaldugeek.com (FR)";
+	const URI = "http://www.journaldugeek.com/";
+	const DESCRIPTION = "Returns the 5 newest posts from LeJournalDuGeek (full text).";
 
 	private function LeJournalDuGeekStripCDATA($string) {
 		$string = str_replace('<![CDATA[', '', $string);
@@ -35,8 +35,8 @@ class LeJournalDuGeekBridge extends BridgeAbstract{
 	}
 
 	public function collectData(){
-        $rssFeed = $this->getSimpleHTMLDOM($this->uri.'rss')
-            or $this->returnServerError('Could not request '.$this->uri.'/rss');
+        $rssFeed = $this->getSimpleHTMLDOM(self::URI.'rss')
+            or $this->returnServerError('Could not request '.self::URI.'/rss');
 		$limit = 0;
 
 		foreach($rssFeed->find('item') as $element) {

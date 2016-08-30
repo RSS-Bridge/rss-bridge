@@ -1,12 +1,12 @@
 <?php
 class DauphineLibereBridge extends BridgeAbstract {
 
-	public $maintainer = "qwertygc";
-	public $name = "Dauphine Bridge";
-	public $uri = "http://www.ledauphine.com/";
-	public $description = "Returns the newest articles.";
+	const MAINTAINER = "qwertygc";
+	const NAME = "Dauphine Bridge";
+	const URI = "http://www.ledauphine.com/";
+	const DESCRIPTION = "Returns the newest articles.";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'u'=>array(
             'name'=>'Catégorie de l\'article',
             'type'=>'list',
@@ -42,10 +42,10 @@ class DauphineLibereBridge extends BridgeAbstract {
 		$context = stream_context_create($opts);
 
 		if (empty($this->getInput('u'))) {
-            $html = $this->getSimpleHTMLDOM($this->uri.$this->getInput('u').'/rss')
+            $html = $this->getSimpleHTMLDOM(self::URI.$this->getInput('u').'/rss')
                 or $this->returnServerError('Could not request DauphineLibere.');
 		} else {
-            $html = $this->getSimpleHTMLDOM($this->uri.'rss')
+            $html = $this->getSimpleHTMLDOM(self::URI.'rss')
                 or $this->returnServerError('Could not request DauphineLibere.');
 		}
 		$limit = 0;

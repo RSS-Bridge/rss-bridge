@@ -1,10 +1,10 @@
 <?php
 class GuruMedBridge extends BridgeAbstract{
 
-	public $maintainer = "qwertygc";
-	public $name = "GuruMed";
-	public $uri = "http://www.gurumed.org";
-	public $description = "Returns the 5 newest posts from Gurumed (full text)";
+	const MAINTAINER = "qwertygc";
+	const NAME = "GuruMed";
+	const URI = "http://www.gurumed.org";
+	const DESCRIPTION = "Returns the 5 newest posts from Gurumed (full text)";
 
 	private function GurumedStripCDATA($string) {
 		$string = str_replace('<![CDATA[', '', $string);
@@ -13,7 +13,7 @@ class GuruMedBridge extends BridgeAbstract{
 	}
 
 	public function collectData(){
-      $html = $this->getSimpleHTMLDOM($this->uri.'feed')
+      $html = $this->getSimpleHTMLDOM(self::URI.'feed')
         or $this->returnServerError('Could not request Gurumed.');
 		$limit = 0;
 

@@ -1,12 +1,12 @@
 <?php
 class FourchanBridge extends BridgeAbstract{
 
-	public $maintainer = "mitsukarenai";
-	public $name = "4chan";
-	public $uri = "https://www.4chan.org/";
-	public $description = "Returns posts from the specified thread";
+	const MAINTAINER = "mitsukarenai";
+	const NAME = "4chan";
+	const URI = "https://www.4chan.org/";
+	const DESCRIPTION = "Returns posts from the specified thread";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         't'=>array(
             'name'=>'Thread URL',
             'pattern'=>'(https:\/\/)?boards\.4chan\.org\/.*thread\/.*',

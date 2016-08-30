@@ -1,13 +1,13 @@
 <?php
 class ZDNetBridge extends BridgeAbstract {
 
-    public $maintainer = 'ORelio';
-    public $name = 'ZDNet Bridge';
-    public $uri = 'http://www.zdnet.com/';
-    public $description = 'Technology News, Analysis, Comments and Product Reviews for IT Professionals.';
+    const MAINTAINER = 'ORelio';
+    const NAME = 'ZDNet Bridge';
+    const URI = 'http://www.zdnet.com/';
+    const DESCRIPTION = 'Technology News, Analysis, Comments and Product Reviews for IT Professionals.';
 
     //http://www.zdnet.com/zdnet.opml
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'feed'=>array(
             'name'=>'Feed',
             'type'=>'list',
@@ -207,7 +207,7 @@ class ZDNetBridge extends BridgeAbstract {
             return $string;
         }
 
-        $baseUri = $this->uri;
+        $baseUri = self::URI;
         $feed = $this->getInput('feed');
         if (strpos($feed, 'downloads!') !== false) {
             $feed = str_replace('downloads!', '', $feed);

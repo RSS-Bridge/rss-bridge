@@ -1,12 +1,12 @@
 <?php
 class PickyWallpapersBridge extends BridgeAbstract {
 
-	public $maintainer = "nel50n";
-	public $name = "PickyWallpapers Bridge";
-	public $uri = "http://www.pickywallpapers.com/";
-	public $description = "Returns the latests wallpapers from PickyWallpapers";
+	const MAINTAINER = "nel50n";
+	const NAME = "PickyWallpapers Bridge";
+	const URI = "http://www.pickywallpapers.com/";
+	const DESCRIPTION = "Returns the latests wallpapers from PickyWallpapers";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
       'c'=>array(
         'name'=>'category',
         'required'=>true
@@ -44,7 +44,7 @@ class PickyWallpapersBridge extends BridgeAbstract {
             foreach($html->find('.items li img') as $element) {
 
                 $item = array();
-                $item['uri'] = str_replace('www', 'wallpaper', $this->uri).'/'.$resolution.'/'.basename($element->src);
+                $item['uri'] = str_replace('www', 'wallpaper', self::URI).'/'.$resolution.'/'.basename($element->src);
                 $item['timestamp'] = time();
                 $item['title'] = $element->alt;
                 $item['content'] = $item['title'].'<br><a href="'.$item['uri'].'">'.$element.'</a>';
@@ -59,7 +59,7 @@ class PickyWallpapersBridge extends BridgeAbstract {
 
     public function getURI(){
         $subcategory = $this->getInput('s');
-        $link = $this->uri.$this->getInput('r').'/'.$this->getInput('c').'/'.$subcategory;
+        $link = self::URI.$this->getInput('r').'/'.$this->getInput('c').'/'.$subcategory;
         return $link;
     }
 

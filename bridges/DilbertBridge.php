@@ -1,10 +1,10 @@
 <?php
 class DilbertBridge extends BridgeAbstract {
 
-    public $maintainer = 'kranack';
-    public $name = 'Dilbert Daily Strip';
-    public $uri = 'http://dilbert.com';
-    public $description = 'The Unofficial Dilbert Daily Comic Strip';
+    const MAINTAINER = 'kranack';
+    const NAME = 'Dilbert Daily Strip';
+    const URI = 'http://dilbert.com';
+    const DESCRIPTION = 'The Unofficial Dilbert Daily Comic Strip';
 
     public function collectData(){
 

@@ -1,12 +1,12 @@
 <?php
 class WallpaperStopBridge extends BridgeAbstract {
 
-	public $maintainer = "nel50n";
-	public $name = "WallpaperStop Bridge";
-	public $uri = "http://www.wallpaperstop.com";
-	public $description = "Returns the latests wallpapers from WallpaperStop";
+	const MAINTAINER = "nel50n";
+	const NAME = "WallpaperStop Bridge";
+	const URI = "http://www.wallpaperstop.com";
+	const DESCRIPTION = "Returns the latests wallpapers from WallpaperStop";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'c'=>array('name'=>'Category'),
         's'=>array('name'=>'subcategory'),
         'm'=>array(
@@ -32,7 +32,7 @@ class WallpaperStopBridge extends BridgeAbstract {
        $lastpage = 1;
 
        for ($page = 1; $page <= $lastpage; $page++) {
-           $link = $this->uri.'/'.$category.'-wallpaper/'.(!empty($subcategory)?$subcategory.'-wallpaper/':'').'desktop-wallpaper-'.$page.'.html';
+           $link = self::URI.'/'.$category.'-wallpaper/'.(!empty($subcategory)?$subcategory.'-wallpaper/':'').'desktop-wallpaper-'.$page.'.html';
            $html = $this->getSimpleHTMLDOM($link)
              or $this->returnServerError('No results for this query.');
 
@@ -43,15 +43,15 @@ class WallpaperStopBridge extends BridgeAbstract {
 
            foreach($html->find('article.item') as $element) {
                $wplink = $element->getAttribute('data-permalink');
-               if (preg_match('%^'.$this->uri.'/(.+)/([^/]+)-(\d+)\.html$%', $wplink, $matches)) {
+               if (preg_match('%^'.self::URI.'/(.+)/([^/]+)-(\d+)\.html$%', $wplink, $matches)) {
                    $thumbnail = $element->find('img', 0);
 
                    $item = array();
-                   $item['uri'] = $this->uri.'/wallpapers/'.str_replace('wallpaper', 'wallpapers', $matches[1]).'/'.$matches[2].'-'.$resolution.'-'.$matches[3].'.jpg';
+                   $item['uri'] = self::URI.'/wallpapers/'.str_replace('wallpaper', 'wallpapers', $matches[1]).'/'.$matches[2].'-'.$resolution.'-'.$matches[3].'.jpg';
                    $item['id'] = $matches[3];
                    $item['timestamp'] = time();
                    $item['title'] = $thumbnail->title;
-                   $item['content'] = $item['title'].'<br><a href="'.$wplink.'"><img src="'.$this->uri.$thumbnail->src.'" /></a>';
+                   $item['content'] = $item['title'].'<br><a href="'.$wplink.'"><img src="'.self::URI.$thumbnail->src.'" /></a>';
                    $this->items[] = $item;
 
                    $num++;

@@ -1,10 +1,10 @@
 <?php
 class TheHackerNewsBridge extends BridgeAbstract {
 
-    public $maintainer = 'ORelio';
-    public $name = 'The Hacker News Bridge';
-    public $uri = 'https://thehackernews.com/';
-    public $description = 'Cyber Security, Hacking, Technology News.';
+    const MAINTAINER = 'ORelio';
+    const NAME = 'The Hacker News Bridge';
+    const URI = 'https://thehackernews.com/';
+    const DESCRIPTION = 'Cyber Security, Hacking, Technology News.';
 
     public function collectData(){
 

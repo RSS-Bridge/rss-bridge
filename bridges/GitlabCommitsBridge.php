@@ -1,12 +1,12 @@
 <?php
 class GitlabCommitsBridge extends BridgeAbstract{
 
-    public $maintainer = 'Pierre Mazière';
-    public $name = 'Gitlab Commits';
-    public $uri = '';
-    public $description = 'Returns the commits of a project hosted on a gitlab instance';
+    const MAINTAINER = 'Pierre Mazière';
+    const NAME = 'Gitlab Commits';
+    const URI = '';
+    const DESCRIPTION = 'Returns the commits of a project hosted on a gitlab instance';
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
       'uri'=>array(
         'name'=>'Base URI',
         'defaultValue'=>'https://gitlab.com'

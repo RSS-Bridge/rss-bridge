@@ -1,13 +1,13 @@
 <?php
 class FierPandaBridge extends BridgeAbstract {
 
-    public $maintainer = "snroki";
-    public $name = "Fier Panda Bridge";
-    public $uri = "http://www.fier-panda.fr/";
-    public $description = "Returns latest articles from Fier Panda.";
+    const MAINTAINER = "snroki";
+    const NAME = "Fier Panda Bridge";
+    const URI = "http://www.fier-panda.fr/";
+    const DESCRIPTION = "Returns latest articles from Fier Panda.";
 
     public function collectData(){
-        $html = $this->getSimpleHTMLDOM($this->uri) or $this->returnServerError('Could not request Fier Panda.');
+        $html = $this->getSimpleHTMLDOM(self::URI) or $this->returnServerError('Could not request Fier Panda.');
 
         foreach($html->find('div.container-content article') as $element) {
             $item = array();

@@ -1,10 +1,10 @@
 <?php
 class NextInpactBridge extends BridgeAbstract {
 
-	public $maintainer = "qwertygc";
-	public $name = "NextInpact Bridge";
-	public $uri = "http://www.nextinpact.com/";
-	public $description = "Returns the newest articles.";
+	const MAINTAINER = "qwertygc";
+	const NAME = "NextInpact Bridge";
+	const URI = "http://www.nextinpact.com/";
+	const DESCRIPTION = "Returns the newest articles.";
 
 	private function StripCDATA($string) {
 		$string = str_replace('<![CDATA[', '', $string);
@@ -24,7 +24,7 @@ class NextInpactBridge extends BridgeAbstract {
 	}
 
 	public function collectData(){
-		$html = $this->getSimpleHTMLDOM($this->uri.'rss/news.xml') or $this->returnServerError('Could not request NextInpact.');
+		$html = $this->getSimpleHTMLDOM(self::URI.'rss/news.xml') or $this->returnServerError('Could not request NextInpact.');
 		$limit = 0;
 
 		foreach($html->find('item') as $element) {

@@ -1,12 +1,12 @@
 <?php
 class BooruprojectBridge extends BridgeAbstract{
 
-	public $maintainer = "mitsukarenai";
-	public $name = "Booruproject";
-	public $uri = "http://booru.org/";
-	public $description = "Returns images from given page and booruproject instance (****.booru.org)";
+	const MAINTAINER = "mitsukarenai";
+	const NAME = "Booruproject";
+	const URI = "http://booru.org/";
+	const DESCRIPTION = "Returns images from given page and booruproject instance (****.booru.org)";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
           'i'=>array(
             'name'=>'instance (required)',
             'required'=>true

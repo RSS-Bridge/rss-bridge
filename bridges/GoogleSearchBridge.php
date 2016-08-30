@@ -9,12 +9,12 @@
 */
 class GoogleSearchBridge extends BridgeAbstract{
 
-	public $maintainer = "sebsauvage";
-	public $name = "Google search";
-	public $uri = "https://www.google.com/";
-	public $description = "Returns most recent results from Google search.";
+	const MAINTAINER = "sebsauvage";
+	const NAME = "Google search";
+	const URI = "https://www.google.com/";
+	const DESCRIPTION = "Returns most recent results from Google search.";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'q'=>array(
             'name'=>"keyword",
             'required'=>true
@@ -25,7 +25,7 @@ class GoogleSearchBridge extends BridgeAbstract{
     public function collectData(){
         $html = '';
 
-        $html = $this->getSimpleHTMLDOM($this->uri
+        $html = $this->getSimpleHTMLDOM(self::URI
           .'search?q=' . urlencode($this->getInput('q'))
           .'&num=100&complete=0&tbs=qdr:y,sbd:1')
           or $this->returnServerError('No results for this query.');

@@ -2,10 +2,10 @@
 class AcrimedBridge extends RssExpander{
 
 
-	public $maintainer = "qwertygc";
-	public $name = "Acrimed Bridge";
-	public $uri = "http://www.acrimed.org/";
-	public $description = "Returns the newest articles.";
+	const MAINTAINER = "qwertygc";
+	const NAME = "Acrimed Bridge";
+	const URI = "http://www.acrimed.org/";
+	const DESCRIPTION = "Returns the newest articles.";
 
        public function collectData(){
 

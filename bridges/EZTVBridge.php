@@ -1,12 +1,12 @@
 <?php
 class EZTVBridge extends BridgeAbstract{
 
-	public $maintainer = "alexAubin";
-	public $name = "EZTV";
-	public $uri = "https://eztv.ch/";
-	public $description = "Returns list of *recent* torrents for a specific show on EZTV. Get showID from URLs in https://eztv.ch/shows/showID/show-full-name.";
+	const MAINTAINER = "alexAubin";
+	const NAME = "EZTV";
+	const URI = "https://eztv.ch/";
+	const DESCRIPTION = "Returns list of *recent* torrents for a specific show on EZTV. Get showID from URLs in https://eztv.ch/shows/showID/show-full-name.";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'i'=>array(
             'name'=>'Show ids',
             'exampleValue'=>'showID1,showID2,…',
@@ -34,7 +34,7 @@ class EZTVBridge extends BridgeAbstract{
         foreach($showList as $showID){
 
             // Get show page
-            $html = $this->getSimpleHTMLDOM($this->uri.'shows/'.rawurlencode($showID).'/')
+            $html = $this->getSimpleHTMLDOM(self::URI.'shows/'.rawurlencode($showID).'/')
                 or $this->returnServerError('Could not request EZTV for id "'.$showID.'"');
 
             // Loop on each element that look like an episode entry...
@@ -53,7 +53,7 @@ class EZTVBridge extends BridgeAbstract{
 
                 // Fill item
                 $item = array();
-                $item['uri'] = $this->uri.$epinfo->href;
+                $item['uri'] = self::URI.$epinfo->href;
                 $item['id'] = $item['uri'];
                 $item['timestamp'] = makeTimestamp($released->plaintext);
                 $item['title'] = $epinfo->plaintext;

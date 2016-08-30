@@ -1,12 +1,12 @@
 <?php
 class CryptomeBridge extends BridgeAbstract{
 
-    public $maintainer = "BoboTiG";
-    public $name = "Cryptome";
-    public $uri = "https://cryptome.org/";
-    public $description = "Returns the N most recent documents.";
+    const MAINTAINER = "BoboTiG";
+    const NAME = "Cryptome";
+    const URI = "https://cryptome.org/";
+    const DESCRIPTION = "Returns the N most recent documents.";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'n'=>array(
             'name'=>'number of elements',
             'type'=>'number',
@@ -16,7 +16,7 @@ class CryptomeBridge extends BridgeAbstract{
     ));
 
     public function collectData(){
-        $html = $this->getSimpleHTMLDOM($this->uri)
+        $html = $this->getSimpleHTMLDOM(self::URI)
             or $this->returnServerError('Could not request Cryptome.');
         if (!empty($this->getInput('n'))) {   /* number of documents */
             $num = min($this->getInput('n'), 20);
@@ -26,9 +26,9 @@ class CryptomeBridge extends BridgeAbstract{
         foreach($html->find('pre') as $element) {
             for ( $i = 0; $i < $num; ++$i ) {
                 $item = array();
-                $item['uri'] = $this->uri.substr($element->find('a', $i)->href, 20);
+                $item['uri'] = self::URI.substr($element->find('a', $i)->href, 20);
                 $item['title'] = substr($element->find('b', $i)->plaintext, 22);
-                $item['content'] = preg_replace('#http://cryptome.org/#', $this->uri, $element->find('b', $i)->innertext);
+                $item['content'] = preg_replace('#http://cryptome.org/#', self::URI, $element->find('b', $i)->innertext);
                 $this->items[] = $item;
             }
             break;

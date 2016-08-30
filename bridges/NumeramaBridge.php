@@ -1,10 +1,10 @@
 <?php
 class NumeramaBridge extends HttpCachingBridgeAbstract {
 
-    public $maintainer = 'mitsukarenai';
-    public $name = 'Numerama';
-    public $uri = 'http://www.numerama.com/';
-    public $description = 'Returns the 5 newest posts from Numerama (full text)';
+    const MAINTAINER = 'mitsukarenai';
+    const NAME = 'Numerama';
+    const URI = 'http://www.numerama.com/';
+    const DESCRIPTION = 'Returns the 5 newest posts from Numerama (full text)';
 
     public function collectData(){
 
@@ -14,7 +14,7 @@ class NumeramaBridge extends HttpCachingBridgeAbstract {
             return $string;
         }
 
-        $feed = $this->uri.'feed/';
+        $feed = self::URI.'feed/';
         $html = $this->getSimpleHTMLDOM($feed) or $this->returnServerError('Could not request Numerama: '.$feed);
         $limit = 0;
 

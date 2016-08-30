@@ -1,11 +1,11 @@
 <?php
 class NovelUpdatesBridge extends BridgeAbstract{
 
-	public $maintainer = "albirew";
-	public $name = "Novel Updates";
-	public $uri = "http://www.novelupdates.com/";
-	public $description = "Returns releases from Novel Updates";
-	public $parameters = array( array(
+	const MAINTAINER = "albirew";
+	const NAME = "Novel Updates";
+	const URI = "http://www.novelupdates.com/";
+	const DESCRIPTION = "Returns releases from Novel Updates";
+	const PARAMETERS = array( array(
         'n'=>array(
             'name'=>'Novel URL',
             'patterns'=>'http:\/\/www.novelupdates.com\/.*',
@@ -22,7 +22,7 @@ class NovelUpdatesBridge extends BridgeAbstract{
             $this->returnClientError('NovelUpdates URL only.');
       	if(strpos($thread['path'], 'series/') === FALSE)
             $this->returnClientError('You must specify the novel URL.');
-        $url = $this->uri.$thread['path'].'';
+        $url = self::URI.$thread['path'].'';
         $fullhtml = $this->getSimpleHTMLDOM($url) or $this->returnServerError("Could not request NovelUpdates, novel not found");
         $this->seriesTitle = $fullhtml->find('h4.seriestitle', 0)->plaintext;
         // dirty fix for nasty simpledom bug: https://github.com/sebsauvage/rss-bridge/issues/259

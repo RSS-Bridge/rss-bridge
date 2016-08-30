@@ -3,10 +3,10 @@
 #error_reporting(E_ALL);
 class ArstechnicaBridge extends BridgeAbstract {
 
-  public $maintainer = "prysme";
-  public $name = "ArstechnicaBridge";
-  public $uri = "http://arstechnica.com";
-  public $description = "The PC enthusiast's resource. Power users and the tools they love, without computing religion";
+  const MAINTAINER = "prysme";
+  const NAME = "ArstechnicaBridge";
+  const URI = "http://arstechnica.com";
+  const DESCRIPTION = "The PC enthusiast's resource. Power users and the tools they love, without computing religion";
 
   function StripWithDelimiters($string, $start, $end) {
     while (strpos($string, $start) !== false) {

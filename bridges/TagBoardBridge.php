@@ -1,12 +1,12 @@
 <?php
 class TagBoardBridge extends BridgeAbstract{
 
-	public $maintainer = "Pitchoule";
-	public $name = "TagBoard";
-	public $uri = "http://www.TagBoard.com/";
-	public $description = "Returns most recent results from TagBoard.";
+	const MAINTAINER = "Pitchoule";
+	const NAME = "TagBoard";
+	const URI = "http://www.TagBoard.com/";
+	const DESCRIPTION = "Returns most recent results from TagBoard.";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'u'=>array(
             'name'=>'keyword',
             'required'=>true

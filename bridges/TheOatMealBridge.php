@@ -1,10 +1,10 @@
 <?php
 class TheOatmealBridge extends RssExpander{
 
-	public $maintainer = "Riduidel";
-	public $name = "The Oatmeal";
-	public $uri = "http://theoatmeal.com/";
-	public $description = "Un petit site de dessins assez rigolos";
+	const MAINTAINER = "Riduidel";
+	const NAME = "The Oatmeal";
+	const URI = "http://theoatmeal.com/";
+	const DESCRIPTION = "Un petit site de dessins assez rigolos";
 
     public function collectData(){
         $this->collectExpandableDatas('http://feeds.feedburner.com/oatmealfeed');

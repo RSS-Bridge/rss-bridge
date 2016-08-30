@@ -1,10 +1,10 @@
 <?php
 class ReporterreBridge extends BridgeAbstract{
 
-		public $maintainer = "nyutag";
-		public $name = "Reporterre Bridge";
-		public $uri = "http://www.reporterre.net/";
-		public $description = "Returns the newest articles.";
+		const MAINTAINER = "nyutag";
+		const NAME = "Reporterre Bridge";
+		const URI = "http://www.reporterre.net/";
+		const DESCRIPTION = "Returns the newest articles.";
 
 		private function ExtractContentReporterre($url) {
 			$html2 = $this->getSimpleHTMLDOM($url);
@@ -17,14 +17,14 @@ class ReporterreBridge extends BridgeAbstract{
 			unset ($html2);
 
 			// Replace all relative urls with absolute ones
-			$text = preg_replace('/(href|src)(\=[\"\'])(?!http)([^"\']+)/ims', "$1$2" . $this->uri . "$3", $text);
+			$text = preg_replace('/(href|src)(\=[\"\'])(?!http)([^"\']+)/ims', "$1$2" . self::URI . "$3", $text);
 
 			$text = strip_tags($text, '<p><br><a><img>');
 			return $text;
 		}
 
 	public function collectData(){
-		$html = $this->getSimpleHTMLDOM($this->uri.'spip.php?page=backend') or $this->returnServerError('Could not request Reporterre.');
+		$html = $this->getSimpleHTMLDOM(self::URI.'spip.php?page=backend') or $this->returnServerError('Could not request Reporterre.');
 		$limit = 0;
 
 		foreach($html->find('item') as $element) {

@@ -1,12 +1,12 @@
 <?php
 class KonachanBridge extends BridgeAbstract{
 
-	public $maintainer = "mitsukarenai";
-	public $name = "Konachan";
-	public $uri = "http://konachan.com/";
-	public $description = "Returns images from given page";
+	const MAINTAINER = "mitsukarenai";
+	const NAME = "Konachan";
+	const URI = "http://konachan.com/";
+	const DESCRIPTION = "Returns images from given page";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'p'=>array(
             'name'=>'page',
             'defaultValue'=>1,
@@ -17,7 +17,7 @@ class KonachanBridge extends BridgeAbstract{
 
     public function collectData(){
         $html = $this->getSimpleHTMLDOM(
-            $this->uri.'/post?'
+            self::URI.'/post?'
             .'&page='.$this->getInput('p')
             .'&tags='.urlencode($this->getInput('t'))
         ) or $this->returnServerError('Could not request Konachan.');
@@ -30,7 +30,7 @@ class KonachanBridge extends BridgeAbstract{
         foreach($data as $datai) {
 	    $json = json_decode($datai, TRUE);
             $item = array();
-            $item['uri'] = $this->uri.'/post/show/'.$json['id'];
+            $item['uri'] = self::URI.'/post/show/'.$json['id'];
             $item['postid'] = $json['id'];
             $item['timestamp'] = $json['created_at'];
             $item['imageUri'] = $json['file_url'];

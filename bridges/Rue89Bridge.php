@@ -1,10 +1,10 @@
 <?php
 class Rue89Bridge extends BridgeAbstract{
 
-	public $maintainer = "pit-fgfjiudghdf";
-	public $name = "Rue89";
-	public $uri = "http://rue89.nouvelobs.com/";
-	public $description = "Returns the 5 newest posts from Rue89 (full text)";
+	const MAINTAINER = "pit-fgfjiudghdf";
+	const NAME = "Rue89";
+	const URI = "http://rue89.nouvelobs.com/";
+	const DESCRIPTION = "Returns the 5 newest posts from Rue89 (full text)";
 
 	private function rue89getDatas($url){
 

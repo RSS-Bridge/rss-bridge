@@ -1,10 +1,10 @@
 <?php
 class EstCeQuonMetEnProdBridge extends BridgeAbstract {
 
-    public $maintainer = 'ORelio';
-    public $name = 'Est-ce qu\'on met en prod aujourd\'hui ?';
-    public $uri = 'https://www.estcequonmetenprodaujourdhui.info/';
-    public $description = 'Should we put a website in production today? (French)';
+    const MAINTAINER = 'ORelio';
+    const NAME = 'Est-ce qu\'on met en prod aujourd\'hui ?';
+    const URI = 'https://www.estcequonmetenprodaujourdhui.info/';
+    const DESCRIPTION = 'Should we put a website in production today? (French)';
 
     public function collectData(){
         function ExtractFromDelimiters($string, $start, $end) {

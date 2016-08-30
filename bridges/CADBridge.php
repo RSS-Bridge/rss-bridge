@@ -1,9 +1,9 @@
 <?php
 class CADBridge extends BridgeAbstract{
-	public $maintainer = "nyutag";
-	public $name = "CAD Bridge";
-	public $uri = "http://www.cad-comic.com/";
-	public $description = "Returns the newest articles.";
+	const MAINTAINER = "nyutag";
+	const NAME = "CAD Bridge";
+	const URI = "http://www.cad-comic.com/";
+	const DESCRIPTION = "Returns the newest articles.";
 
 	private function CADExtractContent($url) {
 		$html3 = $this->getSimpleHTMLDOM($url);

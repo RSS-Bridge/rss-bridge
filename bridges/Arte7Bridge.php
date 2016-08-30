@@ -1,11 +1,11 @@
     <?php
     class Arte7Bridge extends BridgeAbstract{
 
-        public $maintainer = "mitsukarenai";
-        public $name = "Arte +7";
-        public $uri = "http://www.arte.tv/";
-        public $description = "Returns newest videos from ARTE +7";
-        public $parameters = array(
+        const MAINTAINER = "mitsukarenai";
+        const NAME = "Arte +7";
+        const URI = "http://www.arte.tv/";
+        const DESCRIPTION = "Returns newest videos from ARTE +7";
+        const PARAMETERS = array(
             'Catégorie (Français)' => array(
                 'catfr'=>array(
                     'type'=>'list',
@@ -56,7 +56,7 @@
         break;
       }
 
-      $url = $this->uri.'guide/'.$lang.'/plus7/'.$category;
+      $url = self::URI.'guide/'.$lang.'/plus7/'.$category;
       $input = $this->getContents($url) or die('Could not request ARTE.');
       if(strpos($input, 'categoryVideoSet') !== FALSE){
         $input = explode('categoryVideoSet: ', $input);

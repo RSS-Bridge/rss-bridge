@@ -1,12 +1,12 @@
 <?php
 class WorldOfTanksBridge extends HttpCachingBridgeAbstract{
 
-    public $maintainer = "mitsukarenai";
-    public $name = "World of Tanks";
-    public $uri = "http://worldoftanks.eu/";
-    public $description = "News about the tank slaughter game.";
+    const MAINTAINER = "mitsukarenai";
+    const NAME = "World of Tanks";
+    const URI = "http://worldoftanks.eu/";
+    const DESCRIPTION = "News about the tank slaughter game.";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'category'=>array(
             // TODO: should be a list
             'name'=>'nom de la catégorie'
@@ -30,7 +30,7 @@ class WorldOfTanksBridge extends HttpCachingBridgeAbstract{
 
     function getURI(){
         $lang = $this->getInput('lang');
-        $uri = $this->uri.$lang.'/news/';
+        $uri = self::URI.$lang.'/news/';
         if(!empty($this->getInput('category'))) {
             $uri .= 'pc-browser/'.$this->getInput('category')."/";
         }
@@ -38,7 +38,7 @@ class WorldOfTanksBridge extends HttpCachingBridgeAbstract{
     }
 
     public function getName(){
-      return $this->title?:$this->name;
+      return $this->title?:self::NAME;
     }
 
     public function collectData(){
@@ -54,12 +54,12 @@ class WorldOfTanksBridge extends HttpCachingBridgeAbstract{
 
     private function parseLine($infoLink) {
         $item = array();
-        $item['uri'] = $this->uri.$infoLink->href;
+        $item['uri'] = self::URI.$infoLink->href;
         // now load that uri from cache
         $this->debugMessage("loading page ".$item['uri']);
         $articlePage = $this->get_cached($item['uri']);
         $content = $articlePage->find('.l-content', 0);
-        HTMLSanitizer::defaultImageSrcTo($content, $this->uri);
+        HTMLSanitizer::defaultImageSrcTo($content, self::URI);
         $item['title'] = $content->find('h1', 0)->innertext;
         $item['content'] = $content->find('.b-content', 0)->innertext;
         $item['timestamp'] = $content->find('.b-statistic_time', 0)->getAttribute("data-timestamp");

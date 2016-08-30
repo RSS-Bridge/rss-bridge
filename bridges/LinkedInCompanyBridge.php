@@ -1,12 +1,12 @@
 <?php
 class LinkedInCompanyBridge extends BridgeAbstract{
 
-	public $maintainer = "regisenguehard";
-	public $name = "LinkedIn Company";
-	public $uri = "https://www.linkedin.com/";
-	public $description = "Returns most recent actus from Company on LinkedIn. (https://www.linkedin.com/company/<strong style=\"font-weight:bold;\">apple</strong>)";
+	const MAINTAINER = "regisenguehard";
+	const NAME = "LinkedIn Company";
+	const URI = "https://www.linkedin.com/";
+	const DESCRIPTION = "Returns most recent actus from Company on LinkedIn. (https://www.linkedin.com/company/<strong style=\"font-weight:bold;\">apple</strong>)";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'c'=>array(
             'name'=>'Company name',
             'required'=>true
@@ -15,7 +15,7 @@ class LinkedInCompanyBridge extends BridgeAbstract{
 
     public function collectData(){
         $html = '';
-        $link = $this->uri.'company/'.$this->getInput('c');
+        $link = self::URI.'company/'.$this->getInput('c');
 
         $html = $this->getSimpleHTMLDOM($link)
             or $this->returnServerError('Could not request LinkedIn.');

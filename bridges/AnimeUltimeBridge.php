@@ -1,11 +1,11 @@
 <?php
 class AnimeUltimeBridge extends BridgeAbstract {
 
-        public $maintainer = 'ORelio';
-        public $name = 'Anime-Ultime';
-        public $uri = 'http://www.anime-ultime.net/';
-        public $description = 'Returns the 10 newest releases posted on Anime-Ultime';
-        public $parameters = array( array(
+        const MAINTAINER = 'ORelio';
+        const NAME = 'Anime-Ultime';
+        const URI = 'http://www.anime-ultime.net/';
+        const DESCRIPTION = 'Returns the 10 newest releases posted on Anime-Ultime';
+        const PARAMETERS = array( array(
           'type'=>array(
             'name'=>'Type',
             'type'=>'list',
@@ -25,7 +25,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
         //Add type filter if provided
         $typeFilter = array_search(
             $this->getInput('type'),
-            $this->parameters[$this->queriedContext]['type']['values']
+            self::PARAMETERS[$this->queriedContext]['type']['values']
         );
 
         //Build date and filters for making requests
@@ -37,7 +37,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
         foreach (array($thismonth, $lastmonth) as $requestFilter) {
 
             //Retrive page contents
-            $url = $this->uri.'history-0-1/'.$requestFilter;
+            $url = self::URI.'history-0-1/'.$requestFilter;
             $html = $this->getSimpleHTMLDOM($url)
                 or $this->returnServerError('Could not request Anime-Ultime: '.$url);
 
@@ -58,7 +58,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
 
                         //Retrieve metadata from table columns
                         $item_link_element = $release->find('td', 0)->find('a', 0);
-                        $item_uri = $this->uri.$item_link_element->href;
+                        $item_uri = self::URI.$item_link_element->href;
                         $item_name = html_entity_decode($item_link_element->plaintext);
                         $item_episode = html_entity_decode(str_pad($release->find('td', 1)->plaintext, 2, '0', STR_PAD_LEFT));
                         $item_fansub = $release->find('td', 2)->plaintext;
@@ -79,7 +79,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
                                 strpos($item_description, '<div id="table">')
                             );
                             $item_description = str_replace(
-                                'src="images', 'src="'.$this->uri.'images',
+                                'src="images', 'src="'.self::URI.'images',
                                 $item_description
                             );
                             $item_description = str_replace("\r", '', $item_description);
@@ -109,7 +109,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
     public function getName() {
         $typeFilter = array_search(
             $this->getInput('type'),
-            $this->parameters[$this->queriedContext]['type']['values']
+            self::PARAMETERS[$this->queriedContext]['type']['values']
         );
 
         return 'Latest '.$typeFilter.' - Anime-Ultime Bridge';

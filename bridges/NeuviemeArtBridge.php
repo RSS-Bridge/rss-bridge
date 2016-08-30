@@ -1,10 +1,10 @@
 <?php
 class NeuviemeArtBridge extends BridgeAbstract {
 
-    public $maintainer = "ORelio";
-    public $name = '9ème Art Bridge';
-    public $uri = "http://www.9emeart.fr/";
-    public $description = "Returns the newest articles.";
+    const MAINTAINER = "ORelio";
+    const NAME = '9ème Art Bridge';
+    const URI = "http://www.9emeart.fr/";
+    const DESCRIPTION = "Returns the newest articles.";
 
     public function collectData(){
 
@@ -16,7 +16,7 @@ class NeuviemeArtBridge extends BridgeAbstract {
             } return $string;
         }
 
-        $feedUrl = $this->uri.'9emeart.rss';
+        $feedUrl = self::URI.'9emeart.rss';
         $html = $this->getSimpleHTMLDOM($feedUrl) or $this->returnServerError('Could not request 9eme Art: '.$feedUrl);
         $limit = 0;
 
@@ -32,9 +32,9 @@ class NeuviemeArtBridge extends BridgeAbstract {
                 $article_image = $element->find('enclosure', 0)->url;
                 foreach ($article_html->find('img.img_full') as $img)
                     if ($img->alt == $article_title)
-                        $article_image = $this->uri.$img->src;
+                        $article_image = self::URI.$img->src;
                 $article_content = '<p><img src="'.$article_image.'" /></p>'
-                    .str_replace('src="/', 'src="'.$this->uri, $article_html->find('div.newsGenerique_con', 0)->innertext);
+                    .str_replace('src="/', 'src="'.self::URI, $article_html->find('div.newsGenerique_con', 0)->innertext);
                 $article_content = StripWithDelimiters($article_content, '<script', '</script>');
                 $article_content = StripWithDelimiters($article_content, '<style', '</style>');
                 $article_content = StripWithDelimiters($article_content, '<link', '>');

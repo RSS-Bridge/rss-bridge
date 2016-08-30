@@ -1,11 +1,11 @@
 <?php
 class KununuBridge extends HttpCachingBridgeAbstract {
-	public $maintainer = "logmanoriginal";
-	public $name = "Kununu Bridge";
-	public $uri = "https://www.kununu.com/";
-	public $description = "Returns the latest reviews for a company and site of your choice.";
+	const MAINTAINER = "logmanoriginal";
+	const NAME = "Kununu Bridge";
+	const URI = "https://www.kununu.com/";
+	const DESCRIPTION = "Returns the latest reviews for a company and site of your choice.";
 
-    public $parameters = array(
+    const PARAMETERS = array(
         'global' => array(
           'site'=>array(
             'name'=>'Site',
@@ -55,12 +55,12 @@ class KununuBridge extends HttpCachingBridgeAbstract {
             break;
         }
 
-        return $this->uri.$site.'/'.$company.'/'.$section;
+        return self::URI.$site.'/'.$company.'/'.$section;
     }
 
     function getName(){
         $company = $this->encode_umlauts(strtolower(str_replace(' ', '-', trim($this->getInput('company')))));
-        return  ($this->companyName?:$company).' - '.$this->name;
+        return  ($this->companyName?:$company).' - '.self::NAME;
     }
 
 	public function collectData(){
@@ -109,7 +109,7 @@ class KununuBridge extends HttpCachingBridgeAbstract {
 	* Fixes relative URLs in the given text
 	*/
 	private function fix_url($text){
-		return preg_replace('/href=(\'|\")\//i', 'href="'.$this->uri, $text);
+		return preg_replace('/href=(\'|\")\//i', 'href="'.self::URI, $text);
 	}
 
 	/**
@@ -184,7 +184,7 @@ class KununuBridge extends HttpCachingBridgeAbstract {
 		if($anchor === false)
 			$this->returnServerError('Cannot find article URI!');
 
-		return $this->uri . $anchor->href;
+		return self::URI . $anchor->href;
 	}
 
 	/**

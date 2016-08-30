@@ -1,12 +1,12 @@
 <?php
 class LeBonCoinBridge extends BridgeAbstract{
 
-	public $maintainer = "16mhz";
-	public $name = "LeBonCoin";
-	public $uri = "http://www.leboncoin.fr/";
-	public $description = "Returns most recent results from LeBonCoin for a region, and optionally a category and a keyword .";
+	const MAINTAINER = "16mhz";
+	const NAME = "LeBonCoin";
+	const URI = "http://www.leboncoin.fr/";
+	const DESCRIPTION = "Returns most recent results from LeBonCoin for a region, and optionally a category and a keyword .";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
           'k'=>array('name'=>'Mot Clé'),
           'r'=>array(
             'name'=>'Région',
@@ -143,7 +143,7 @@ class LeBonCoinBridge extends BridgeAbstract{
         }
 
         $html = $this->getSimpleHTMLDOM(
-            $this->uri.$category.'/offres/' . $this->getInput('r') . '/?'
+            self::URI.$category.'/offres/' . $this->getInput('r') . '/?'
             .'f=a&th=1&'
             .'q=' . urlencode($this->getInput('k'))
         ) or $this->returnServerError('Could not request LeBonCoin.');

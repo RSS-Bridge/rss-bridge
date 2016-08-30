@@ -1,10 +1,10 @@
 <?php
 class WeLiveSecurityBridge extends BridgeAbstract {
 
-    public $maintainer = 'ORelio';
-    public $name = 'We Live Security';
-    public $uri = 'http://www.welivesecurity.com/';
-    public $description = 'Returns the newest articles.';
+    const MAINTAINER = 'ORelio';
+    const NAME = 'We Live Security';
+    const URI = 'http://www.welivesecurity.com/';
+    const DESCRIPTION = 'Returns the newest articles.';
 
     public function collectData(){
 

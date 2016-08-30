@@ -1,11 +1,11 @@
 <?php
 class JapanExpoBridge extends HttpCachingBridgeAbstract {
 
-    public $maintainer = 'Ginko';
-    public $name = 'Japan Expo Actualités';
-    public $uri = 'http://www.japan-expo-paris.com/fr/actualites';
-    public $description = 'Returns most recent entries from Japan Expo actualités.';
-    public $parameters = array( array(
+    const MAINTAINER = 'Ginko';
+    const NAME = 'Japan Expo Actualités';
+    const URI = 'http://www.japan-expo-paris.com/fr/actualites';
+    const DESCRIPTION = 'Returns most recent entries from Japan Expo actualités.';
+    const PARAMETERS = array( array(
         'mode'=>array(
             'name'=>'Show full contents',
             'type'=>'checkbox',
@@ -42,8 +42,8 @@ class JapanExpoBridge extends HttpCachingBridgeAbstract {
             }
         };
 
-        $html = $this->getSimpleHTMLDOM($this->uri)
-          or $this->returnServerError('Could not request JapanExpo: '.$this->uri);
+        $html = $this->getSimpleHTMLDOM(self::URI)
+          or $this->returnServerError('Could not request JapanExpo: '.self::URI);
         $fullcontent = $this->getInput('mode');
         $count = 0;
 

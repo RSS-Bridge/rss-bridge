@@ -1,12 +1,12 @@
 <?php
 class GithubIssueBridge extends BridgeAbstract{
 
-  public $maintainer = 'Pierre Mazière';
-  public $name = 'Github Issue';
-  public $uri = 'https://github.com/';
-  public $description = 'Returns the issues or comments of an issue of a github project';
+  const MAINTAINER = 'Pierre Mazière';
+  const NAME = 'Github Issue';
+  const URI = 'https://github.com/';
+  const DESCRIPTION = 'Returns the issues or comments of an issue of a github project';
 
-  public $parameters=array(
+  const PARAMETERS=array(
     'global'=>array (
       'u'=>array(
         'name'=>'User name',
@@ -29,7 +29,7 @@ class GithubIssueBridge extends BridgeAbstract{
   );
 
   public function collectData(){
-    $uri = $this->uri.$this->getInput('u').'/'.$this->getInput('p')
+    $uri = self::URI.$this->getInput('u').'/'.$this->getInput('p')
       .'/issues/'.$this->getInput('i');
     $html = $this->getSimpleHTMLDOM($uri)
       or $this->returnServerError('No results for Github Issue '.$this->getInput('i').' in project '.$this->getInput('u').'/'.$this->getInput('p'));
@@ -60,7 +60,7 @@ class GithubIssueBridge extends BridgeAbstract{
         $item['title']=$issue->find('.js-navigation-open',0)->plaintext;
         $comments=$issue->find('.col-5',0)->plaintext;
         $item['content']='Comments: '.($comments?$comments:'0');
-        $item['uri']=$this->uri.$issue->find('.js-navigation-open',0)->getAttribute('href');
+        $item['uri']=self::URI.$issue->find('.js-navigation-open',0)->getAttribute('href');
         $this->items[]=$item;
       }
       break;
