@@ -9,4 +9,11 @@
         timeoutForMediumTests="1"
         timeoutForLargeTests="6" >
 
+  <testsuites>
+    <testsuite name="Standard test suite">
+      <file>coverageTest.php</file>
+      <file>BridgeImplementationTest.php</file>
+    </testsuite>
+  </testsuites>
+
 </phpunit>
