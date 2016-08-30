@@ -1,64 +1,70 @@
 <?php
-/**
-* GithubIssueBridge
-*
-* @name GithubIssue Bridge
-* @description Returns the comments of a github project issue
- */
 class GithubIssueBridge extends BridgeAbstract{
-  public function loadMetadatas() {
 
-    $this->maintainer = 'Pierre Mazière';
-    $this->name = 'Github Issue';
-    $this->uri = '';
-    $this->description = 'Returns the comments of a github project issue';
-    $this->update = '2016-06-25';
+  public $maintainer = 'Pierre Mazière';
+  public $name = 'Github Issue';
+  public $uri = 'https://github.com/';
+  public $description = 'Returns the issues or comments of an issue of a github project';
 
-    $this->parameters[]=
-      '[
-         {
-           "name" : "User name",
-           "identifier" : "u"
-         },
-         {
-            "name" : "Project name",
-            "identifier" : "p"
-         },
-         {
-            "name" : "Issue number",
-            "identifier" : "i"
-         }
+  public $parameters=array(
+    'global'=>array (
+      'u'=>array(
+        'name'=>'User name',
+        'required'=>true
+      ),
+      'p'=>array(
+        'name'=>'Project name',
+        'required'=>true
+      )
+    ),
 
-      ]';
-  }
+    'Project Issues'=>array(),
+    'Issue comments'=>array(
+      'i'=>array(
+        'name'=>'Issue number',
+        'type'=>'number',
+        'required'=>'true'
+      )
+    )
+  );
 
-  public function collectData(array $param){
-    $uri = 'https://github.com/'.$param['u'].'/'.$param['p'].'/issues/'.$param['i'];
-    $html = file_get_html($uri)
-      or $this->returnError('No results for Github Issue '.$param['i'].' in project '.$param['u'].'/'.$param['p'], 404);
+  public function collectData(){
+    $uri = $this->uri.$this->getInput('u').'/'.$this->getInput('p')
+      .'/issues/'.$this->getInput('i');
+    $html = $this->getSimpleHTMLDOM($uri)
+      or $this->returnServerError('No results for Github Issue '.$this->getInput('i').' in project '.$this->getInput('u').'/'.$this->getInput('p'));
 
-    foreach($html->find('.js-comment-container') as $comment){
+    switch($this->queriedContext){
+    case 'Issue Comments':
+      foreach($html->find('.js-comment-container') as $comment){
 
-      $item = new \Item();
-      $item->name=$comment->find('img',0)->getAttribute('alt');
+        $item = array();
+        $item['author']=$comment->find('img',0)->getAttribute('alt');
 
-      $comment=$comment->firstChild()->nextSibling();
+        $comment=$comment->firstChild()->nextSibling();
 
-      $item->uri=$uri.'#'.$comment->getAttribute('id');
-      $item->title=trim($comment->firstChild()->plaintext);
-      $item->timestamp=strtotime($comment->find('relative-time',0)->getAttribute('datetime'));
-      $item->content=$comment->find('.comment-body',0)->innertext;
+        $item['uri']=$uri.'#'.$comment->getAttribute('id');
+        $item['title']=trim($comment->firstChild()->plaintext);
+        $item['timestamp']=strtotime($comment->find('relative-time',0)->getAttribute('datetime'));
+        $item['content']=$comment->find('.comment-body',0)->innertext;
 
-      $this->items[]=$item;
+        $this->items[]=$item;
+      }
+      break;
+    case 'Project Issues':
+      foreach($html->find('.js-active-navigation-container .js-navigation-item') as $issue){
+        $item=array();
+        $info=$issue->find('.opened-by',0);
+        $item['author']=$info->find('a',0)->plaintext;
+        $item['timestamp']=strtotime($info->find('relative-time',0)->getAttribute('datetime'));
+        $item['title']=$issue->find('.js-navigation-open',0)->plaintext;
+        $comments=$issue->find('.col-5',0)->plaintext;
+        $item['content']='Comments: '.($comments?$comments:'0');
+        $item['uri']=$this->uri.$issue->find('.js-navigation-open',0)->getAttribute('href');
+        $this->items[]=$item;
+      }
+      break;
     }
-  }
-
-  public function getName(){
-    return 'Github Issue';
-  }
-
-  public function getURI(){
-    return '';
   }
 
   public function getCacheDuration(){

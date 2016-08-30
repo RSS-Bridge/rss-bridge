@@ -1,90 +1,48 @@
 <?php
 class OpenClassroomsBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "sebsauvage";
+	public $name = "OpenClassrooms Bridge";
+	public $uri = "https://openclassrooms.com/";
+	public $description = "Returns latest tutorials from OpenClassrooms.";
 
-		$this->maintainer = "sebsauvage";
-		$this->name = "OpenClassrooms Bridge";
-		$this->uri = "https://openclassrooms.com/";
-		$this->description = "Returns latest tutorials from OpenClassrooms.";
-		$this->update = "2015-10-30";
-
-
-		$this->parameters[] =
-		'[
-			{
-				"name" : "Catégorie",
-				"identifier" : "u",
-				"type" : "list",
-				"values" : [
-					{
-						"name" : "Arts & Culture",
-						"value" : "arts"
-					},
-					{
-						"name" : "Code",
-						"value" : "code"
-					},
-					{
-						"name" : "Design",
-						"value" : "design"
-					},
-					{
-						"name" : "Entreprise",
-						"value" : "business"
-					},
-					{
-						"name" : "Numérique",
-						"value" : "digital"
-					},
-					{
-						"name" : "Sciences",
-						"value" : "sciences"
-					},
-					{
-						"name" : "Sciences Humaines",
-						"value" : "humainities"
-					},
-					{
-						"name" : "Systèmes d\'information",
-						"value" : "it"
-					},
-					{
-						"name" : "Autres",
-						"value" : "others"
-					}
-				]
-			}
-		]';
-	}
+    public $parameters = array( array(
+        'u'=>array(
+            'name'=>'Catégorie',
+            'type'=>'list',
+            'values'=>array(
+                'Arts & Culture'=>'arts',
+                'Code'=>'code',
+                'Design'=>'design',
+                'Entreprise'=>'business',
+                'Numérique'=>'digital',
+                'Sciences'=>'sciences',
+                'Sciences Humaines'=>'humainities',
+                'Systèmes d\'information'=>'it',
+                'Autres'=>'others'
+            )
+        )
+    ));
 
 
-    public function collectData(array $param){
-        if (empty($param['u']))
+    public function collectData(){
+        if (empty($this->getInput('u')))
         {
-            $this->returnError('Error: You must chose a category.', 404);
+            $this->returnServerError('Error: You must chose a category.');
         }
-    
-        $html = '';
-        $link = 'https://openclassrooms.com/courses?categories='.$param['u'].'&title=&sort=updatedAt+desc';
 
-        $html = $this->file_get_html($link) or $this->returnError('Could not request OpenClassrooms.', 404);
+        $html = '';
+        $link = 'https://openclassrooms.com/courses?categories='.$this->getInput('u').'&title=&sort=updatedAt+desc';
+
+        $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request OpenClassrooms.');
 
         foreach($html->find('.courseListItem') as $element) {
-                $item = new \Item();
-                $item->uri = 'https://openclassrooms.com'.$element->find('a', 0)->href;
-                $item->title = $element->find('h3', 0)->plaintext;
-                $item->content = $element->find('slidingItem__descriptionContent', 0)->plaintext;
+                $item = array();
+                $item['uri'] = 'https://openclassrooms.com'.$element->find('a', 0)->href;
+                $item['title'] = $element->find('h3', 0)->plaintext;
+                $item['content'] = $element->find('slidingItem__descriptionContent', 0)->plaintext;
                 $this->items[] = $item;
         }
-    }
-
-    public function getName(){
-        return 'OpenClassrooms';
-    }
-
-    public function getURI(){
-        return 'https://openclassrooms.com/';
     }
 
     public function getCacheDuration(){

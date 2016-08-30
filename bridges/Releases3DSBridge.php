@@ -1,17 +1,12 @@
 <?php
 class Releases3DSBridge extends BridgeAbstract {
 
-	public function loadMetadatas() {
+	public $maintainer = "ORelio";
+	public $name = "3DS Scene Releases";
+	public $uri = "http://www.3dsdb.com/";
+	public $description = "Returns the newest scene releases.";
 
-		$this->maintainer = "ORelio";
-		$this->name = "3DS Scene Releases";
-		$this->uri = "http://www.3dsdb.com/";
-		$this->description = "Returns the newest scene releases.";
-		$this->update = "2015-09-17";
-
-	}
-
-    public function collectData(array $param) {
+    public function collectData(){
 
         function ExtractFromDelimiters($string, $start, $end) {
             if (strpos($string, $start) !== false) {
@@ -38,7 +33,7 @@ class Releases3DSBridge extends BridgeAbstract {
         }
 
         $dataUrl = 'http://3dsdb.com/xml.php';
-        $xml = file_get_contents($dataUrl) or $this->returnError('Could not request 3dsdb: '.$dataUrl, 500);
+        $xml = $this->getContents($dataUrl) or $this->returnServerError('Could not request 3dsdb: '.$dataUrl);
         $limit = 0;
 
         foreach (array_reverse(explode('<release>', $xml)) as $element) {
@@ -66,7 +61,7 @@ class Releases3DSBridge extends BridgeAbstract {
                         //Retrieve cover art and short desc from IGN?
                         $ignResult = false; $ignDescription = ''; $ignLink = ''; $ignDate = time(); $ignCoverArt = '';
                         $ignSearchUrl = 'http://www.ign.com/search?q='.urlencode($name);
-                        if ($ignResult = $this->file_get_html($ignSearchUrl)) {
+                        if ($ignResult = $this->getSimpleHTMLDOM($ignSearchUrl)) {
                             $ignCoverArt = $ignResult->find('div.search-item-media', 0)->find('img', 0)->src;
                             $ignDesc = $ignResult->find('div.search-item-description', 0)->plaintext;
                             $ignLink = $ignResult->find('div.search-item-sub-title', 0)->find('a', 1)->href;
@@ -104,27 +99,18 @@ class Releases3DSBridge extends BridgeAbstract {
                             .'</ul>';
 
                         //Build and add final item with the above three sections
-                        $item = new \Item();
-                        $item->title = $name;
-                        $item->author = $publisher;
-                        $item->timestamp = $ignDate;
-                        $item->thumbnailUri = $ignCoverArt;
-                        $item->uri = empty($ignLink) ? $searchLinkDuckDuckGo : $ignLink;
-                        $item->content = $ignDescription.$releaseDescription.$releaseSearchLinks;
+                        $item = array();
+                        $item['title'] = $name;
+                        $item['author'] = $publisher;
+                        $item['timestamp'] = $ignDate;
+                        $item['uri'] = empty($ignLink) ? $searchLinkDuckDuckGo : $ignLink;
+                        $item['content'] = $ignDescription.$releaseDescription.$releaseSearchLinks;
                         $this->items[] = $item;
                         $limit++;
                     }
                 }
             }
         }
-    }
-
-    public function getName() {
-        return '3DS Scene Releases';
-    }
-
-    public function getURI() {
-        return 'http://www.3dsdb.com/';
     }
 
     public function getCacheDuration() {

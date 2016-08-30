@@ -2,16 +2,13 @@
 /**
 * Json
 * Builds a JSON string from $this->items and return it to browser.
-*
-* @name Json
 */
 class JsonFormat extends FormatAbstract{
 
     public function stringify(){
-        // FIXME : sometime content can be null, transform to empty string
-        $datas = $this->getDatas();
+        $items = $this->getItems();
 
-        return json_encode($datas, JSON_PRETTY_PRINT);
+        return json_encode($items, JSON_PRETTY_PRINT);
     }
 
     public function display(){

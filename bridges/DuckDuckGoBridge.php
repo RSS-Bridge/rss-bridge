@@ -1,44 +1,28 @@
 <?php
 class DuckDuckGoBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "Astalaseven";
+	public $name = "DuckDuckGo";
+	public $uri = "https://duckduckgo.com/";
+	public $description = "Returns most recent results from DuckDuckGo.";
 
-		$this->maintainer = "Astalaseven";
-		$this->name = "DuckDuckGo";
-		$this->uri = "https://duckduckgo.com/";
-		$this->description = "Returns most recent results from DuckDuckGo.";
-		$this->update = "2014-05-25";
+    public $parameters = array( array(
+        'u'=>array(
+            'name'=>'keyword',
+            'required'=>true)
+        ));
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "keyword",
-				"identifier" : "u"
-			}
-		]';
-	}
-
-    public function collectData(array $param){
-        $html = '';
-        $link = 'http://duckduckgo.com/html/?q='.$param[u].'+sort:date';
-
-        $html = $this->file_get_html($link) or $this->returnError('Could not request DuckDuckGo.', 404);
+    public function collectData(){
+        $html = $this->getSimpleHTMLDOM($this->uri.'html/?q='.$this->getInput('u').'+sort:date')
+            or $this->returnServerError('Could not request DuckDuckGo.');
 
         foreach($html->find('div.results_links') as $element) {
-                $item = new \Item();
-                $item->uri = $element->find('a', 0)->href;
-                $item->title = $element->find('a', 1)->innertext;
-                $item->content = $element->find('div.snippet', 0)->plaintext;
+                $item = array();
+                $item['uri'] = $element->find('a', 0)->href;
+                $item['title'] = $element->find('a', 1)->innertext;
+                $item['content'] = $element->find('div.snippet', 0)->plaintext;
                 $this->items[] = $item;
         }
-    }
-
-    public function getName(){
-        return 'DuckDuckGo';
-    }
-
-    public function getURI(){
-        return 'https://duckduckgo.com';
     }
 
     public function getCacheDuration(){

@@ -1,6 +1,6 @@
 <?php
 /**
-* RssBridgeYoutube 
+* RssBridgeYoutube
 * Returns the newest videos
 * WARNING: to parse big playlists (over ~90 videos), you need to edit simple_html_dom.php:
 * change: define('MAX_FILE_SIZE', 600000);
@@ -8,67 +8,47 @@
 */
 class YoutubeBridge extends BridgeAbstract {
 
-	public function loadMetadatas() {
+	public $name = 'YouTube Bridge';
+	public $uri = 'https://www.youtube.com/';
+	public $description = 'Returns the 10 newest videos by username/channel/playlist or search';
+	public $maintainer = 'mitsukarenai';
 
-		$this->name = 'YouTube Bridge';
-		$this->homepage = $this->getURI();
-		$this->description = 'Returns the 10 newest videos by username/channel/playlist or search';
-		$this->maintainer = 'mitsukarenai';
-		$this->update = '02/05/2016';
-
-		$this->parameters['By username'] =
-		'[
-			{
-				"type" : "text",
-				"identifier" : "u",
-				"name" : "username",
-				"exampleValue" : "test",
-				"required" : "required"
-			}
-		]';
-
-		$this->parameters['By channel id'] =
-		'[
-			{
-				"type" : "text",
-				"identifier" : "c",
-				"name" : "channel id",
-				"exampleValue" : "15",
-				"required" : "required"
-			}
-		]';
-
-		$this->parameters['By playlist Id'] =
-		'[
-			{
-				"type" : "text",
-				"identifier" : "p",
-				"name" : "playlist id",
-				"exampleValue" : "15"
-			}
-		]';
-
-		$this->parameters['Search result'] =
-		'[
-			{
-				"type" : "text",
-				"identifier" : "s",
-				"name" : "search keyword",
-				"exampleValue" : "test"
-
-			},
-			{
-				"type" : "number",
-				"identifier" : "pa",
-				"name" : "page",
-				"exampleValue" : "1"
-
-			}
-		]';
-	}
+    public $parameters = array(
+        'By username' => array(
+            'u'=>array(
+                'name'=>'username',
+                'exampleValue'=>'test',
+                'required'=>true
+            )
+        ),
+        'By channel id' => array(
+            'c'=>array(
+                'name'=>'channel id',
+                'exampleValue'=>"15",
+                'required'=>true
+            )
+        ),
+        'By playlist Id' => array(
+            'p'=>array(
+                'name'=>'playlist id',
+                'exampleValue'=>"15"
+            )
+        ),
+        'Search result' => array(
+            's'=>array(
+                'name'=>'search keyword',
+                'exampleValue'=>'test'
+            ),
+            'pa'=>array(
+                'name'=>'page',
+                'type'=>'number',
+                'exampleValue'=>1
+            )
+        )
+    );
 
 	private function ytBridgeQueryVideoInfo($vid, &$author, &$desc, &$time) {
-		$html = $this->file_get_html($this->getURI()."watch?v=$vid");
+		$html = $this->getSimpleHTMLDOM($this->uri."watch?v=$vid");
 		$author = $html->innertext;
 		$author = substr($author, strpos($author, '"author=') + 8);
 		$author = substr($author, 0, strpos($author, '\u0026'));
@@ -77,14 +57,14 @@ class YoutubeBridge extends BridgeAbstract {
 	}
 
 	private function ytBridgeAddItem($vid, $title, $author, $desc, $time) {
-		$item = new \Item();
-		$item->id = $vid;
-		$item->title = $title;
-		$item->author = $author;
-		$item->timestamp = $time;
-		$item->uri = $this->getURI().'watch?v='.$vid;
-		$item->thumbnailUri = str_replace('/www.', '/img.', $this->getURI()).'vi/'.$vid.'/0.jpg';
-		$item->content = '<a href="'.$item->uri.'"><img src="'.$item->thumbnailUri.'" /></a><br />'.$desc;
+		$item = array();
+		$item['id'] = $vid;
+		$item['title'] = $title;
+		$item['author'] = $author;
+		$item['timestamp'] = $time;
+		$item['uri'] = $this->uri.'watch?v='.$vid;
+		$thumbnailUri = str_replace('/www.', '/img.', $this->uri).'vi/'.$vid.'/0.jpg';
+		$item['content'] = '<a href="'.$item['uri'].'"><img src="'.$thumbnailUri.'" /></a><br />'.$desc;
 		$this->items[] = $item;
 	}
 
@@ -121,57 +101,53 @@ class YoutubeBridge extends BridgeAbstract {
 		return html_entity_decode($title,ENT_QUOTES,'UTF-8');
 	}
 
-	public function collectData(array $param) {
+	public function collectData(){
 
 		$xml = '';
 		$html = '';
 		$url_feed = '';
 		$url_listing = '';
 
-		if (isset($param['u'])) { /* User and Channel modes */
-			$this->request = $param['u'];
-			$url_feed = $this->getURI().'feeds/videos.xml?user='.urlencode($this->request);
-			$url_listing = $this->getURI().'user/'.urlencode($this->request).'/videos';
-		} else if (isset($param['c'])) {
-			$this->request = $param['c'];
-			$url_feed = $this->getURI().'feeds/videos.xml?channel_id='.urlencode($this->request);
-			$url_listing = $this->getURI().'channel/'.urlencode($this->request).'/videos';
+		if ($this->getInput('u')) { /* User and Channel modes */
+			$this->request = $this->getInput('u');
+			$url_feed = $this->uri.'feeds/videos.xml?user='.urlencode($this->request);
+			$url_listing = $this->uri.'user/'.urlencode($this->request).'/videos';
+		} else if ($this->getInput('c')) {
+			$this->request = $this->getInput('c');
+			$url_feed = $this->uri.'feeds/videos.xml?channel_id='.urlencode($this->request);
+			$url_listing = $this->uri.'channel/'.urlencode($this->request).'/videos';
 		}
 		if (!empty($url_feed) && !empty($url_listing)) {
-			if ($xml = $this->file_get_html($url_feed)) {
+			if ($xml = $this->getSimpleHTMLDOM($url_feed)) {
 				$this->ytBridgeParseXmlFeed($xml);
-			} else if ($html = $this->file_get_html($url_listing)) {
+			} else if ($html = $this->getSimpleHTMLDOM($url_listing)) {
 				$this->ytBridgeParseHtmlListing($html, 'li.channels-content-item', 'h3');
-			} else $this->returnError("Could not request YouTube. Tried:\n - $url_feed\n - $url_listing", 500);
+			} else $this->returnServerError("Could not request YouTube. Tried:\n - $url_feed\n - $url_listing");
 		}
 
-		else if (isset($param['p'])) { /* playlist mode */
-			$this->request = $param['p'];
-			$url_listing = $this->getURI().'playlist?list='.urlencode($this->request);
-			$html = $this->file_get_html($url_listing) or $this->returnError("Could not request YouTube. Tried:\n - $url_listing", 500);
+		else if ($this->getInput('p')) { /* playlist mode */
+			$this->request = $this->getInput('p');
+			$url_listing = $this->uri.'playlist?list='.urlencode($this->request);
+			$html = $this->getSimpleHTMLDOM($url_listing) or $this->returnServerError("Could not request YouTube. Tried:\n - $url_listing");
 			$this->ytBridgeParseHtmlListing($html, 'tr.pl-video', '.pl-video-title a');
 			$this->request = 'Playlist: '.str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
 		}
 
-		else if (isset($param['s'])) { /* search mode */
-			$this->request = $param['s']; $page = 1; if (isset($param['pa'])) $page = (int)preg_replace("/[^0-9]/",'', $param['pa']); 
-			$url_listing = $this->getURI().'results?search_query='.urlencode($this->request).'&page='.$page.'&filters=video&search_sort=video_date_uploaded';
-			$html = $this->file_get_html($url_listing) or $this->returnError("Could not request YouTube. Tried:\n - $url_listing", 500);
+		else if ($this->getInput('s')) { /* search mode */
+			$this->request = $this->getInput('s'); $page = 1; if ($this->getInput('pa')) $page = (int)preg_replace("/[^0-9]/",'', $this->getInput('pa'));
+			$url_listing = $this->uri.'results?search_query='.urlencode($this->request).'&page='.$page.'&filters=video&search_sort=video_date_uploaded';
+			$html = $this->getSimpleHTMLDOM($url_listing) or $this->returnServerError("Could not request YouTube. Tried:\n - $url_listing");
 			$this->ytBridgeParseHtmlListing($html, 'div.yt-lockup', 'h3');
 			$this->request = 'Search: '.str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
 		}
 
 		else { /* no valid mode */
-			$this->returnError("You must either specify either:\n - YouTube username (?u=...)\n - Channel id (?c=...)\n - Playlist id (?p=...)\n - Search (?s=...)", 400);
+			$this->returnClientError("You must either specify either:\n - YouTube username (?u=...)\n - Channel id (?c=...)\n - Playlist id (?p=...)\n - Search (?s=...)");
 		}
 	}
 
 	public function getName(){
 		return (!empty($this->request) ? $this->request .' - ' : '') .'YouTube Bridge';
-	}
-
-	public function getURI(){
-		return 'https://www.youtube.com/';
 	}
 
 	public function getCacheDuration(){

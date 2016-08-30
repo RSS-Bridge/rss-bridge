@@ -11,6 +11,10 @@ TODO :
 */
 
 //define('PROXY_URL', 'tcp://192.168.0.0:28');
+// Set to true if you allow users to disable proxy usage for specific bridges
+define('PROXY_BYBRIDGE',false);
+// Comment this line or keep PROXY_NAME empty to display PROXY_URL instead
+define('PROXY_NAME','Hidden Proxy Name');
 
 date_default_timezone_set('UTC');
 error_reporting(0);
@@ -67,9 +71,7 @@ $whitelist_default = array(
 	"PinterestBridge",
 	"ScmbBridge",
 	"TwitterBridge",
-	"WikipediaENBridge",
-	"WikipediaEOBridge",
-	"WikipediaFRBridge",
+	"WikipediaBridge",
 	"YoutubeBridge");
 
 if (!file_exists($whitelist_file)) {
@@ -89,37 +91,53 @@ try{
     Format::setDir(__DIR__ . '/formats/');
     Cache::setDir(__DIR__ . '/caches/');
 
-    if( isset($_REQUEST) && isset($_REQUEST['action']) ){
-        switch($_REQUEST['action']){
-            case 'display':
-                if( isset($_REQUEST['bridge']) ){
-                    unset($_REQUEST['action']);
-                    $bridge = $_REQUEST['bridge'];
-                    unset($_REQUEST['bridge']);
-                    $format = $_REQUEST['format'];
-                    unset($_REQUEST['format']);
+    $action=filter_input(INPUT_GET,'action');
+    $bridge=filter_input(INPUT_GET,'bridge');
+    if($action === 'display' && !empty($bridge)){
+      // DEPRECATED: 'nameBridge' scheme is replaced by 'name' in bridge parameter values
+      //             this is to keep compatibility until futher complete removal
+      if(($pos=strpos($bridge,'Bridge'))===(strlen($bridge)-strlen('Bridge'))){
+        $bridge=substr($bridge,0,$pos);
+      }
+
+      $format = filter_input(INPUT_GET,'format');
+      // DEPRECATED: 'nameFormat' scheme is replaced by 'name' in format parameter values
+      //             this is to keep compatibility until futher complete removal
+      if(($pos=strpos($format,'Format'))===(strlen($format)-strlen('Format'))){
+        $format=substr($format,0,$pos);
+      }
+
 
 			// whitelist control
 			if(!Bridge::isWhitelisted($whitelist_selection, $bridge)) {
 				throw new \HttpException('This bridge is not whitelisted', 401);
-				die; 
+				die;
 			}
 
                     $cache = Cache::create('FileCache');
 
                     // Data retrieval
                     $bridge = Bridge::create($bridge);
-                    if(defined("DEBUG")) {
-                    } else {
-                        $bridge->setCache($cache); // just add disable cache to your query to disable caching
+                    if(!defined("DEBUG")) {
+                        $bridge->setCache($cache);
                     }
-                    $bridge->setDatas($_REQUEST);
-					$bridge->loadMetadatas();
+
+                    $noproxy=filter_input(INPUT_GET,'_noproxy',FILTER_VALIDATE_BOOLEAN);
+                    if(defined('PROXY_URL') && PROXY_BYBRIDGE && $noproxy){
+                      $bridge->useProxy=false;
+                    }
+
+                    $params=$_GET;
+                    unset($params['action']);
+                    unset($params['bridge']);
+                    unset($params['format']);
+                    unset($params['_noproxy']);
+                    $bridge->setDatas($params);
                     // Data transformation
                     try {
 		                $format = Format::create($format);
 		                $format
-		                    ->setDatas($bridge->getDatas())
+		                    ->setItems($bridge->getItems())
 		                    ->setExtraInfos(array(
 		                        'name' => $bridge->getName(),
 		                        'uri' => $bridge->getURI(),
@@ -131,10 +149,8 @@ try{
 
 		            }
                     die;
-                }
-                break;
-        }
-    }
+
+                    }
 }
 catch(HttpException $e){
     header('HTTP/1.1 ' . $e->getCode() . ' ' . Http::getMessageForCode($e->getCode()));
@@ -166,7 +182,7 @@ $formats = Format::searchInformation();
     </header>
 	<?php
 	    $activeFoundBridgeCount = 0;
-		$showInactive = isset($_REQUEST['show_inactive']) && $_REQUEST['show_inactive'] == 1;
+		$showInactive = filter_input(INPUT_GET,'show_inactive',FILTER_VALIDATE_BOOLEAN);
 		$inactiveBridges = '';
 		$bridgeList = Bridge::listBridges();
 	    foreach($bridgeList as $bridgeName)
@@ -182,11 +198,20 @@ $formats = Format::searchInformation();
 				$inactiveBridges .= HTMLUtils::displayBridgeCard($bridgeName, $formats, false) . PHP_EOL;
 			}
 		}
-		echo '<hr />' . $inactiveBridges;
+		echo $inactiveBridges;
 	?>
-    <footer>
-		<?= $activeFoundBridgeCount; ?>/<?= count($bridgeList) ?> active bridges (<a href="?show_inactive=1">Show inactive</a>)<br />
-        <a href="https://github.com/sebsauvage/rss-bridge">RSS-Bridge alpha 0.2 ~ Public Domain</a>
-    </footer>
+    <section>
+        <a href="https://github.com/sebsauvage/rss-bridge">RSS-Bridge alpha 0.2 ~ Public Domain</a><br />
+		<?= $activeFoundBridgeCount; ?>/<?= count($bridgeList) ?> active bridges. <br />
+        <?php
+            if($activeFoundBridgeCount !== count($bridgeList)){
+                // FIXME: This should be done in pure CSS
+                if(!$showInactive)
+                    echo '<a href="?show_inactive=1"><button class="small">Show inactive bridges</button></a><br />';
+                else
+                    echo '<a href="?show_inactive=0"><button class="small">Hide inactive bridges</button></a><br />';
+            }
+        ?>
+    </section>
     </body>
 </html>

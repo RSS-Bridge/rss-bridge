@@ -1,26 +1,20 @@
 <?php
 class EZTVBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "alexAubin";
+	public $name = "EZTV";
+	public $uri = "https://eztv.ch/";
+	public $description = "Returns list of *recent* torrents for a specific show on EZTV. Get showID from URLs in https://eztv.ch/shows/showID/show-full-name.";
 
-		$this->maintainer = "alexAubin";
-		$this->name = "EZTV";
-		$this->uri = "https://eztv.ch/";
-		$this->description = "Returns list of *recent* torrents for a specific show on EZTV. Get showID from URLs in https://eztv.ch/shows/showID/show-full-name.";
-		$this->update = "2014-01-20";
+    public $parameters = array( array(
+        'i'=>array(
+            'name'=>'Show ids',
+            'exampleValue'=>'showID1,showID2,…',
+            'required'=>true
+        )
+    ));
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "Show ids",
-				"identifier" : "i",
-				"exampleValue" : "showID1,showID2,..."
-			}
-		]';
-
-	}
-
-	public function collectData(array $param){
+	public function collectData(){
 
         // Make timestamp from relative released time in table
         function makeTimestamp($relativeReleaseTime){
@@ -35,16 +29,13 @@ class EZTVBridge extends BridgeAbstract{
                 return mktime(date('h')-$relativeHours,0,0,date('m'),date('d')-$relativeDays,date('Y'));
         }
 
-        // Check for ID provided
-        if (!isset($param['i']))
-			$this->returnError('You must provide a list of ID (?i=showID1,showID2,...)', 400);
-
         // Loop on show ids
-        $showList = explode(",",$param['i']); 
+        $showList = explode(",",$this->getInput('i'));
         foreach($showList as $showID){
 
             // Get show page
-            $html = $this->file_get_html('https://eztv.ch/shows/'.rawurlencode($showID).'/') or $this->returnError('Could not request EZTV for id "'.$showID.'"', 404);
+            $html = $this->getSimpleHTMLDOM($this->uri.'shows/'.rawurlencode($showID).'/')
+                or $this->returnServerError('Could not request EZTV for id "'.$showID.'"');
 
             // Loop on each element that look like an episode entry...
             foreach($html->find('.forum_header_border') as $element) {
@@ -61,27 +52,15 @@ class EZTVBridge extends BridgeAbstract{
                 if ($released->plaintext == '&gt;1 week') continue;
 
                 // Fill item
-                $item = new \Item();
-                $item->uri = 'https://eztv.ch/'.$epinfo->href;
-                $item->id = $item->uri;
-                $item->timestamp = makeTimestamp($released->plaintext);
-                $item->title = $epinfo->plaintext;
-                $item->content = $epinfo->alt;
-                if(!empty($item->title))
+                $item = array();
+                $item['uri'] = $this->uri.$epinfo->href;
+                $item['id'] = $item['uri'];
+                $item['timestamp'] = makeTimestamp($released->plaintext);
+                $item['title'] = $epinfo->plaintext;
+                $item['content'] = $epinfo->alt;
+                if(isset($item['title']))
                     $this->items[] = $item;
             }
         }
 	}
-    
-    public function getName(){
-        return 'EZTV';
-    }
-
-    public function getURI(){
-        return 'https://eztv.ch/';
-    }
-
-    public function getCacheDuration(){
-        return 3600; // 1 hour
-    }
 }

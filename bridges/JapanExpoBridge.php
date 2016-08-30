@@ -1,34 +1,18 @@
 <?php
-class JapanExpoBridge extends BridgeAbstract{
+class JapanExpoBridge extends HttpCachingBridgeAbstract {
 
-    public function loadMetadatas() {
-        $this->maintainer = 'Ginko';
-        $this->name = 'JapanExpo';
-        $this->uri = 'http://www.japan-expo-paris.com/fr/actualites';
-        $this->description = 'Returns most recent entries from Japan Expo actualités.';
-        $this->update = '2016-06-12';
-        $this->parameters[] =
-        '[
-            {
-                "name" : "Mode",
-                "type" : "list",
-                "identifier" : "mode",
-                "values" :
-                [
-                    {
-                        "name" : "Titles only",
-                        "value" : "light"
-                    },
-                    {
-                        "name" : "Full Contents",
-                        "value" : "full"
-                    }
-                ]
-            }
-        ]';
-    }
+    public $maintainer = 'Ginko';
+    public $name = 'Japan Expo Actualités';
+    public $uri = 'http://www.japan-expo-paris.com/fr/actualites';
+    public $description = 'Returns most recent entries from Japan Expo actualités.';
+    public $parameters = array( array(
+        'mode'=>array(
+            'name'=>'Show full contents',
+            'type'=>'checkbox',
+        )
+    ));
 
-    public function collectData(array $param) {
+    public function collectData(){
 
         function french_pubdate_to_timestamp($date_to_parse) {
             return strtotime(
@@ -58,9 +42,9 @@ class JapanExpoBridge extends BridgeAbstract{
             }
         };
 
-        $link = 'http://www.japan-expo-paris.com/fr/actualites';
-        $html = $this->file_get_html($link) or $this->returnError('Could not request JapanExpo: '.$link , 500);
-        $fullcontent = (!empty($param['mode']) && $param['mode'] == 'full');
+        $html = $this->getSimpleHTMLDOM($this->uri)
+          or $this->returnServerError('Could not request JapanExpo: '.$this->uri);
+        $fullcontent = $this->getInput('mode');
         $count = 0;
 
         foreach ($html->find('a._tile2') as $element) {
@@ -72,19 +56,21 @@ class JapanExpoBridge extends BridgeAbstract{
                 $thumbnail = trim($img_search_result[1], "'");
 
             if ($fullcontent) {
-                if ($count < 5) {
-                    $article_html = $this->file_get_html($url) or $this->returnError('Could not request JapanExpo: '.$url , 500);
-                    $header = $article_html->find('header.pageHeadBox', 0);
-                    $timestamp = strtotime($header->find('time', 0)->datetime);
-                    $title_html = $header->find('div.section', 0)->next_sibling();
-                    $title = $title_html->plaintext;
-                    $headings = $title_html->next_sibling()->outertext;
-                    $article = $article_html->find('div.content', 0)->innertext;
-                    $article = preg_replace_callback('/<img [^>]+ style="[^\(]+\(\'([^\']+)\'[^>]+>/i', $convert_article_images, $article);
-                    $content = $headings.$article;
-                } else {
-                    break;
+                if ($count >= 5) {
+                  break;
                 }
+                if($this->get_cached_time($url) <= strtotime('-24 hours'))
+                    $this->remove_from_cache($url);
+
+                $article_html = $this->get_cached($url) or $this->returnServerError('Could not request JapanExpo: '.$url);
+                $header = $article_html->find('header.pageHeadBox', 0);
+                $timestamp = strtotime($header->find('time', 0)->datetime);
+                $title_html = $header->find('div.section', 0)->next_sibling();
+                $title = $title_html->plaintext;
+                $headings = $title_html->next_sibling()->outertext;
+                $article = $article_html->find('div.content', 0)->innertext;
+                $article = preg_replace_callback('/<img [^>]+ style="[^\(]+\(\'([^\']+)\'[^>]+>/i', $convert_article_images, $article);
+                $content = $headings.$article;
             } else {
                 $date_text = $element->find('span.date', 0)->plaintext;
                 $timestamp = french_pubdate_to_timestamp($date_text);
@@ -92,23 +78,14 @@ class JapanExpoBridge extends BridgeAbstract{
                 $content = '<img src="'.$thumbnail.'"></img><br />'.$date_text.'<br /><a href="'.$url.'">Lire l\'article</a>';
             }
 
-            $item = new \Item();
-            $item->uri = $url;
-            $item->title = $title;
-            $item->timestamp = $timestamp;
-            $item->thumbnailUri = $thumbnail;
-            $item->content = $content;
+            $item = array();
+            $item['uri'] = $url;
+            $item['title'] = $title;
+            $item['timestamp'] = $timestamp;
+            $item['content'] = $content;
             $this->items[] = $item;
             $count++;
         }
-    }
-
-    public function getName(){
-        return 'Japan Expo Actualités';
-    }
-
-    public function getURI(){
-        return 'http://www.japan-expo-paris.com/fr/actualites';
     }
 
     public function getCacheDuration(){

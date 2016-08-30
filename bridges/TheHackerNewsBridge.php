@@ -1,17 +1,12 @@
 <?php
 class TheHackerNewsBridge extends BridgeAbstract {
 
-    public function loadMetadatas() {
+    public $maintainer = 'ORelio';
+    public $name = 'The Hacker News Bridge';
+    public $uri = 'https://thehackernews.com/';
+    public $description = 'Cyber Security, Hacking, Technology News.';
 
-        $this->maintainer = 'ORelio';
-        $this->name = $this->getName();
-        $this->uri = $this->getURI();
-        $this->description = 'Cyber Security, Hacking, Technology News.';
-        $this->update = '2016-07-22';
-
-    }
-
-    public function collectData(array $param) {
+    public function collectData(){
 
         function StripWithDelimiters($string, $start, $end) {
             while (strpos($string, $start) !== false) {
@@ -45,7 +40,7 @@ class TheHackerNewsBridge extends BridgeAbstract {
             return $string;
         }
 
-        $html = $this->file_get_html($this->getURI()) or $this->returnError('Could not request TheHackerNews: '.$this->getURI(), 500);
+        $html = $this->getSimpleHTMLDOM($this->getURI()) or $this->returnServerError('Could not request TheHackerNews: '.$this->getURI());
         $limit = 0;
 
         foreach ($html->find('article') as $element) {
@@ -55,36 +50,22 @@ class TheHackerNewsBridge extends BridgeAbstract {
                 $article_author = trim($element->find('span.vcard', 0)->plaintext);
                 $article_title = $element->find('a.entry-title', 0)->plaintext;
                 $article_timestamp = strtotime($element->find('span.updated', 0)->plaintext);
-                $article_thumbnail = $element->find('img', 0)->src;
-                $article = $this->file_get_html($article_url) or $this->returnError('Could not request TheHackerNews: '.$article_url, 500);
+                $article = $this->getSimpleHTMLDOM($article_url) or $this->returnServerError('Could not request TheHackerNews: '.$article_url);
 
                 $contents = $article->find('div.articlebodyonly', 0)->innertext;
                 $contents = StripRecursiveHTMLSection($contents, 'div', '<div class=\'clear\'');
                 $contents = StripWithDelimiters($contents, '<script', '</script>');
 
-                $item = new \Item();
-                $item->uri = $article_url;
-                $item->title = $article_title;
-                $item->author = $article_author;
-                $item->thumbnailUri = $article_thumbnail;
-                $item->timestamp = $article_timestamp;
-                $item->content = trim($contents);
+                $item = array();
+                $item['uri'] = $article_url;
+                $item['title'] = $article_title;
+                $item['author'] = $article_author;
+                $item['timestamp'] = $article_timestamp;
+                $item['content'] = trim($contents);
                 $this->items[] = $item;
                 $limit++;
             }
         }
 
-    }
-
-    public function getName() {
-        return 'The Hacker News Bridge';
-    }
-
-    public function getURI() {
-        return 'https://thehackernews.com/';
-    }
-
-    public function getCacheDuration() {
-        return 3600; //1 hour
     }
 }

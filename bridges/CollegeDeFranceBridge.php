@@ -1,15 +1,12 @@
 <?php
 class CollegeDeFranceBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-		$this->maintainer = "pit-fgfjiudghdf";
-		$this->name = "CollegeDeFrance";
-		$this->uri = "http://www.college-de-france.fr/";
-		$this->description = "Returns the latest audio and video from CollegeDeFrance";
-		$this->update = "2016-05-01";
-	}
+	public $maintainer = "pit-fgfjiudghdf";
+	public $name = "CollegeDeFrance";
+	public $uri = "http://www.college-de-france.fr/";
+	public $description = "Returns the latest audio and video from CollegeDeFrance";
 
-	public function collectData(array $param) {
+	public function collectData(){
 		$months = array(
 			'01' => 'janv.',
 			'02' => 'févr.',
@@ -33,10 +30,11 @@ class CollegeDeFranceBridge extends BridgeAbstract{
 		 * 	</a>
 		 * </li>
 		 */
-		$html = $this->file_get_html('http://www.college-de-france.fr/components/search-audiovideo.jsp?fulltext=&siteid=1156951719600&lang=FR&type=all') or $this->returnError('Could not request CollegeDeFrance.', 404);
+        $html = $this->getSimpleHTMLDOM($this->uri.'components/search-audiovideo.jsp?fulltext=&siteid=1156951719600&lang=FR&type=all')
+            or $this->returnServerError('Could not request CollegeDeFrance.');
 		foreach($html->find('a[data-target]') as $element) {
-			$item = new \Item();
-			$item->title = $element->find('.title', 0)->plaintext;
+			$item = array();
+			$item['title'] = $element->find('.title', 0)->plaintext;
 			// Most relative URLs contains an hour in addition to the date, so let's use it
 			// <a href="/site/yann-lecun/course-2016-04-08-11h00.htm" data-target="after">
 			//
@@ -46,20 +44,27 @@ class CollegeDeFranceBridge extends BridgeAbstract{
 			// <a href="/site/institut-physique/The-Mysteries-of-Decoherence-Sebastien-Gleyzes-[Video-3-35].htm" data-target="after">
 			$timezone = new DateTimeZone('Europe/Paris');
 			// strpos($element->href, '201') will break in 2020 but it'll probably break prior to then due to site changes anyway
-			$d = DateTime::createFromFormat('!Y-m-d-H\hi', substr($element->href, strpos($element->href, '201'), 16), $timezone) ?: DateTime::createFromFormat('!d m Y', trim(str_replace(array_values($months), array_keys($months), $element->find('.date', 0)->plaintext)), $timezone);
-			$item->timestamp = $d->format('U');
-			$item->content =  $element->find('.lecturer', 0)->innertext . ' - ' . $element->find('.title', 0)->innertext;
-			$item->uri = 'http://www.college-de-france.fr' . $element->href;
+            $d = DateTime::createFromFormat(
+                '!Y-m-d-H\hi',
+                substr($element->href, strpos($element->href, '201'), 16),
+                $timezone
+            );
+            if(!$d){
+                $d=DateTime::createFromFormat(
+                    '!d m Y',
+                    trim(str_replace(
+                        array_values($months),
+                        array_keys($months),
+                        $element->find('.date', 0)->plaintext
+                    )),
+                    $timezone
+                );
+            }
+            $item['timestamp'] = $d->format('U');
+			$item['content'] =  $element->find('.lecturer', 0)->innertext . ' - ' . $element->find('.title', 0)->innertext;
+			$item['uri'] = $this->uri . $element->href;
 			$this->items[] = $item;
 		}
-	}
-
-	public function getName(){
-		return 'CollegeDeFrance';
-	}
-
-	public function getURI(){
-		return 'http://www.college-de-france.fr/';
 	}
 
 	public function getCacheDuration(){

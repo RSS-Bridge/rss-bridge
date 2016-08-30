@@ -1,84 +1,142 @@
 <?php
-//Based on https://github.com/mitsukarenai/twitterbridge-noapi
 class TwitterBridge extends BridgeAbstract{
-
-    private $request;
-
-	public function loadMetadatas() {
-
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Twitter Bridge";
-		$this->uri = "http://twitter.com/";
-		$this->description = "Returns user timelines or keyword/hashtag search results (without using their API).";
-		$this->update = "2014-05-25";
-
-		$this->parameters["By keyword or hashtag"] =
-		'[
-			{
-				"name" : "Keyword or #hashtag",
-				"identifier" : "q"
-			}
-		]';
-
-		$this->parameters["By username"] =
-		'[
-			{
-				"name" : "username",
-				"identifier" : "u"
-			}
-		]';
-
-	}
-
-    public function collectData(array $param){
-        $html = '';
-        if (isset($param['q'])) {   /* keyword search mode */
-            $this->request = $param['q'];
-            $html = $this->file_get_html('https://twitter.com/search?q='.urlencode($this->request).'&f=tweets') or $this->returnError('No results for this query.', 404);
-        }
-        elseif (isset($param['u'])) {   /* user timeline mode */
-            $this->request = $param['u'];
-            $html = $this->file_get_html('http://twitter.com/'.urlencode($this->request)) or $this->returnError('Requested username can\'t be found.', 404);
-        }
-        else {
-            $this->returnError('You must specify a keyword (?q=...) or a Twitter username (?u=...).', 400);
-        }
-
-        foreach($html->find('div.js-stream-tweet') as $tweet) {
-            $item = new \Item();
-            $item->username = $tweet->getAttribute('data-screen-name');	// extract username and sanitize
-            $item->fullname = $tweet->getAttribute('data-name'); // extract fullname (pseudonym)
-            $item->avatar = $tweet->find('img', 0)->src;	// get avatar link
-            $item->id = $tweet->getAttribute('data-tweet-id');	// get TweetID
-            $item->uri = 'https://twitter.com'.$tweet->find('a.js-permalink', 0)->getAttribute('href');	// get tweet link
-            $item->timestamp = $tweet->find('span.js-short-timestamp', 0)->getAttribute('data-time');	// extract tweet timestamp
-		// processing content links
-		foreach($tweet->find('a') as $link) {
-			if($link->hasAttribute('data-expanded-url') ) {
-				$link->href = $link->getAttribute('data-expanded-url');
-			}
-			$link->removeAttribute('data-expanded-url');
-			$link->removeAttribute('data-query-source');
-			$link->removeAttribute('rel');
-			$link->removeAttribute('class');
-			$link->removeAttribute('target');
-			$link->removeAttribute('title');
-		}
-            $item->content = str_replace('href="/', 'href="https://twitter.com/', strip_tags($tweet->find('p.js-tweet-text', 0)->innertext, '<a>'));	// extract tweet text
-            $item->title = $item->fullname . ' (@' . $item->username . ') | ' . html_entity_decode(strip_tags($item->content),ENT_QUOTES,'UTF-8');
-            $this->items[] = $item;
-        }
-    }
+    public $name='Twitter Bridge';
+    public $uri='https://twitter.com/';
+    public $description='returns tweets';
+    public $parameters=array(
+        'global'=>array(
+            'nopic'=>array(
+                'name'=>'Hide profile pictures',
+                'type'=>'checkbox',
+                'title'=>'Activate to hide profile pictures in content'
+            )
+        ),
+        'By keyword or hashtag' => array(
+            'q'=>array(
+                'name'=>'Keyword or #hashtag',
+                'required'=>true,
+                'exampleValue'=>'rss-bridge, #rss-bridge',
+                'title'=>'Insert a keyword or hashtag'
+            )
+        ),
+        'By username' => array(
+            'u'=>array(
+                'name'=>'username',
+                'required'=>true,
+                'exampleValue'=>'sebsauvage',
+                'title'=>'Insert a user name'
+            ),
+            'norep'=>array(
+                'name'=>'Without replies',
+                'type'=>'checkbox',
+                'title'=>'Only return initial tweets'
+            )
+        )
+    );
 
     public function getName(){
-        return (!empty($this->request) ? $this->request .' - ' : '') .'Twitter Bridge';
+        switch($this->queriedContext){
+        case 'By keyword or hashtag':
+            $specific='search ';
+            $param='q';
+            break;
+        case 'By username':
+            $specific='@';
+            $param='u';
+            break;
+        }
+        return 'Twitter '.$specific.$this->getInput($param);
     }
 
     public function getURI(){
-        return 'http://twitter.com';
+        switch($this->queriedContext){
+        case 'By keyword or hashtag':
+            return $this->uri.'search?q='.urlencode($this->getInput('q')).'&f=tweets';
+        case 'By username':
+            return $this->uri.urlencode($this->getInput('u')).
+                ($this->getInput('norep')?'':'/with_replies');
+        }
     }
 
-    public function getCacheDuration(){
-        return 300; // 5 minutes
-    }
+	public function collectData(){
+		$html = '';
+
+		$html = $this->getSimpleHTMLDOM($this->getURI());
+		if(!$html){
+			switch($this->queriedContext){
+			case 'By keyword or hashtag':
+				$this->returnServerError('No results for this query.');
+			case 'By username':
+				$this->returnServerError('Requested username can\'t be found.');
+			}
+		}
+
+		$hidePictures = $this->getInput('nopic');
+
+		foreach($html->find('div.js-stream-tweet') as $tweet) {
+			$item = array();
+			// extract username and sanitize
+			$item['username'] = $tweet->getAttribute('data-screen-name');
+			// extract fullname (pseudonym)
+			$item['fullname'] = $tweet->getAttribute('data-name');
+			// get author
+			$item['author'] = $item['fullname'] . ' (@' . $item['username'] . ')';
+			// get avatar link
+			$item['avatar'] = $tweet->find('img', 0)->src;
+			// get TweetID
+			$item['id'] = $tweet->getAttribute('data-tweet-id');
+			// get tweet link
+			$item['uri'] = 'https://twitter.com'.$tweet->find('a.js-permalink', 0)->getAttribute('href');
+			// extract tweet timestamp
+			$item['timestamp'] = $tweet->find('span.js-short-timestamp', 0)->getAttribute('data-time');
+			// generate the title
+			$item['title'] = strip_tags(html_entity_decode($tweet->find('p.js-tweet-text', 0)->innertext,ENT_QUOTES,'UTF-8'));
+
+			// processing content links
+			foreach($tweet->find('a') as $link) {
+				if($link->hasAttribute('data-expanded-url') ) {
+					$link->href = $link->getAttribute('data-expanded-url');
+				}
+				$link->removeAttribute('data-expanded-url');
+				$link->removeAttribute('data-query-source');
+				$link->removeAttribute('rel');
+				$link->removeAttribute('class');
+				$link->removeAttribute('target');
+				$link->removeAttribute('title');
+			}
+
+			// process emojis (reduce size)
+			foreach($tweet->find('img.Emoji') as $img){
+				$img->style .= ' height: 1em;';
+			}
+
+			// get tweet text
+			$cleanedTweet = str_replace('href="/', 'href="https://twitter.com/', $tweet->find('p.js-tweet-text', 0)->innertext);
+
+			// Add picture to content
+			$picture_html = '';
+			if(!$hidePictures){
+				$picture_html = <<<EOD
+<a href="https://twitter.com/{$item['username']}"><img style="align: top; width:75 px; border: 1px solid black;" alt="{$item['username']}" src="{$item['avatar']}" title="{$item['fullname']}" /></a>
+EOD;
+			}
+
+			// add content
+			$item['content'] = <<<EOD
+<div style="display: inline-block; vertical-align: top;">
+	{$picture_html}
+</div>
+<div style="display: inline-block; vertical-align: top;">
+	<blockquote>{$cleanedTweet}</blockquote>
+</div>
+EOD;
+
+			// put out
+			$this->items[] = $item;
+		}
+	}
+
+	public function getCacheDuration(){
+		return 300; // 5 minutes
+	}
 }

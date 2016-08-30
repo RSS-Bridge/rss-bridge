@@ -1,17 +1,12 @@
 <?php
 class LeMondeInformatiqueBridge extends BridgeAbstract {
 
-    public function loadMetadatas() {
+    public $maintainer = "ORelio";
+    public $name = "Le Monde Informatique";
+    public $uri = "http://www.lemondeinformatique.fr/";
+    public $description = "Returns the newest articles.";
 
-        $this->maintainer = "ORelio";
-        $this->name = "Le Monde Informatique";
-        $this->uri = "http://www.lemondeinformatique.fr/";
-        $this->description = "Returns the newest articles.";
-        $this->update = "2016-01-28";
-
-    }
-
-    public function collectData(array $param) {
+    public function collectData(){
 
         function StripCDATA($string) {
             $string = str_replace('<![CDATA[', '', $string);
@@ -33,8 +28,9 @@ class LeMondeInformatiqueBridge extends BridgeAbstract {
             return $article_html;
         }
 
-        $feedUrl = 'http://www.lemondeinformatique.fr/rss/rss.xml';
-        $html = $this->file_get_html($feedUrl) or $this->returnError('Could not request LeMondeInformatique: '.$feedUrl, 500);
+        $html = $this->getSimpleHTMLDOM($this->uri.'rss/rss.xml')
+            or $this->returnServerError('Could not request LeMondeInformatique: '
+            .$this->uri.'rss/rss.xml');
         $limit = 0;
 
         foreach($html->find('item') as $element) {
@@ -44,31 +40,21 @@ class LeMondeInformatiqueBridge extends BridgeAbstract {
                 $article_uri = $element->innertext;
                 $article_uri = substr($article_uri, strpos($article_uri, '<link>') + 6);
                 $article_uri = substr($article_uri, 0, strpos($article_uri, '</link>'));
-                $article_html = $this->file_get_html($article_uri) or $this->returnError('Could not request LeMondeInformatique: '.$article_uri, 500);
-                $thumbnailUri = $article_html->find('div#article', 0)->find('img#illustration', 0)->src;
+                $article_html = $this->getSimpleHTMLDOM($article_uri) or $this->returnServerError('Could not request LeMondeInformatique: '.$article_uri);
                 $article_content = CleanArticle($article_html->find('div#article', 0)->innertext);
                 $article_title = $article_html->find('h1.cleanprint-title', 0)->plaintext;
 
                 //Build and add final item
-                $item = new \Item();
-                $item->uri = $article_uri;
-                $item->thumbnailUri = $thumbnailUri;
-                $item->title = $article_title;
-                $item->author = StripCDATA($element->find('dc:creator', 0)->innertext);
-                $item->timestamp = strtotime($element->find('dc:date', 0)->plaintext);
-                $item->content = $article_content;
+                $item = array();
+                $item['uri'] = $article_uri;
+                $item['title'] = $article_title;
+                $item['author'] = StripCDATA($element->find('dc:creator', 0)->innertext);
+                $item['timestamp'] = strtotime($element->find('dc:date', 0)->plaintext);
+                $item['content'] = $article_content;
                 $this->items[] = $item;
                 $limit++;
             }
         }
-    }
-
-    public function getName() {
-        return 'Le Monde Informatique';
-    }
-
-    public function getURI() {
-        return 'http://www.lemondeinformatique.fr/';
     }
 
     public function getCacheDuration() {

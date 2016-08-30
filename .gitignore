@@ -228,3 +228,8 @@ pip-log.txt
 /whitelist.txt
 DEBUG
 phpunit*.phar
+
+######################
+## VisualStudioCode ##
+######################
+.vscode/*

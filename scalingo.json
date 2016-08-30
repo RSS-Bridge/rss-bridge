@@ -1,0 +1,6 @@
+{
+	"name": "RSS Bridge",
+	"description": "rss-bridge is a PHP project capable of generating ATOM feeds for websites which don't have one.",
+	"repository": "https://github.com/sebsauvage/rss-bridge",
+	"website": "https://github.com/sebsauvage/rss-bridge"
+}

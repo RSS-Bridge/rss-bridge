@@ -1,28 +1,23 @@
 <?php
 class Rue89Bridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "pit-fgfjiudghdf";
-		$this->name = "Rue89";
-		$this->uri = "http://rue89.nouvelobs.com/";
-		$this->description = "Returns the 5 newest posts from Rue89 (full text)";
-		$this->update = "2015-01-30";
-
-	}
+	public $maintainer = "pit-fgfjiudghdf";
+	public $name = "Rue89";
+	public $uri = "http://rue89.nouvelobs.com/";
+	public $description = "Returns the 5 newest posts from Rue89 (full text)";
 
 	private function rue89getDatas($url){
 
 		$url = "http://api.rue89.nouvelobs.com/export/mobile2/node/" . str_replace(" ", "", substr($url, -8)) . "/full";
-		$datas = json_decode(file_get_contents($url), true);
+		$datas = json_decode($this->getContents($url), true);
 
 		return $datas["node"];
 
 	}
 
-    public function collectData(array $param){
+    public function collectData(){
 
-        $html = $this->file_get_html('http://api.rue89.nouvelobs.com/feed') or $this->returnError('Could not request Rue89.', 404);
+        $html = $this->getSimpleHTMLDOM('http://api.rue89.nouvelobs.com/feed') or $this->returnServerError('Could not request Rue89.');
 
         $limit = 0;
         foreach($html->find('item') as $element) {
@@ -31,26 +26,17 @@ class Rue89Bridge extends BridgeAbstract{
 
 				$datas = $this->rue89getDatas(str_replace('#commentaires', '', ($element->find('comments', 0)->plaintext)));
 
-				$item = new \Item();
-				$item->title = $datas["title"];
-				$item->author = $datas["author"][0]["name"];
-				$item->timestamp = $datas["updated"];
-				$item->content = $datas["body"];
-				$item->uri = $datas["url"];
+				$item = array();
+				$item['title'] = $datas["title"];
+				$item['author'] = $datas["author"][0]["name"];
+				$item['timestamp'] = $datas["updated"];
+				$item['content'] = $datas["body"];
+				$item['uri'] = $datas["url"];
 
 				$this->items[] = $item;
 
 			}
         }
 
-    }
-    public function getName(){
-        return 'Rue89';
-    }
-    public function getURI(){
-        return 'http://rue89.nouvelobs.com/';
-    }
-    public function getCacheDuration(){
-        return 3600; // 1 hour
     }
 }

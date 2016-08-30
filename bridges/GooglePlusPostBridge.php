@@ -4,42 +4,28 @@ class GooglePlusPostBridge extends BridgeAbstract
 	protected $_title;
 	protected $_url;
 
-	public function loadMetadatas() {
+	public $maintainer = "Grummfy";
+	public $name = "Google Plus Post Bridge";
+	public $uri = "https://plus.google.com/";
+	public $description = "Returns user public post (without API).";
 
-		$this->maintainer = "Grummfy";
-		$this->name = "Google Plus Post Bridge";
-		$this->uri = "http://plus.google.com/";
-		$this->description = "Returns user public post (without API).";
-		$this->update = "2014-07-20";
+    public $parameters = array( array(
+        'username'=>array(
+            'name'=>'username or Id',
+            'required'=>true
+        )
+    ));
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "username or Id",
-				"identifier" : "username"
-			}
-		]';
-
-	}
-
-	const GOOGLE_PLUS_BASE_URL = 'https://plus.google.com/';
-
-	public function collectData(array $param)
+	public function collectData()
 	{
-		if (!isset($param['username']))
-		{
-			$this->returnError('You must specify a username (?username=...).', 400);
-		}
-
-		$this->request = $param['username'];
 		// get content parsed
-//		$html = $this->file_get_html(__DIR__ . '/../posts2.html'
-		$html = $this->file_get_html(self::GOOGLE_PLUS_BASE_URL . urlencode($this->request) . '/posts'
+//		$html = $this->getSimpleHTMLDOM(__DIR__ . '/../posts2.html'
+		$html = $this->getSimpleHTMLDOM($this->uri . urlencode($this->getInput('username')) . '/posts'
 			// force language
 			, false, stream_context_create(array('http'=> array(
 			'header'    => 'Accept-Language: fr,fr-be,fr-fr;q=0.8,en;q=0.4,en-us;q=0.2;*' . "\r\n"
 			)))
-		) OR $this->returnError('No results for this query.', 404);
+		) OR $this->returnServerError('No results for this query.');
 
 		// get title, url, ... there is a lot of intresting stuff in meta
 		$this->_title = $html->find('meta[property]', 0)->getAttribute('content');
@@ -47,44 +33,44 @@ class GooglePlusPostBridge extends BridgeAbstract
 
 //		foreach ($html->find('meta') as $e)
 //		{
-//			$item = new \Item();
-//			$item->content = var_export($e->attr, true);
+//			$item = array();
+//			$item['content'] = var_export($e->attr, true);
 //			$this->items[] = $item;
 //		}
 
 		// div[jsmodel=XNmfOc]
 		foreach($html->find('div.yt') as $post)
 		{
-			$item = new \Item();
-//			$item->content = $post->find('div.Al', 0)->innertext;
-			$item->username = $item->fullname = $post->find('header.lea h3 a', 0)->innertext;
-			$item->id = $post->getAttribute('id');
-//			$item->title = $item->fullname = $post->find('header.lea', 0)->plaintext;
-			$item->avatar = $post->find('div.ys img', 0)->src;
+			$item = array();
+//			$item['content'] = $post->find('div.Al', 0)->innertext;
+			$item['username'] = $item['fullname'] = $post->find('header.lea h3 a', 0)->innertext;
+			$item['id'] = $post->getAttribute('id');
+//			$item['title'] = $item['fullname'] = $post->find('header.lea', 0)->plaintext;
+			$item['avatar'] = $post->find('div.ys img', 0)->src;
 //			var_dump((($post->find('a.o-U-s', 0)->getAllAttributes())));
-			$item->uri = self::GOOGLE_PLUS_BASE_URL . $post->find('a.o-U-s', 0)->href;
-			$item->timestamp = strtotime($post->find('a.o-U-s', 0)->plaintext);
+			$item['uri'] = $this->uri . $post->find('a.o-U-s', 0)->href;
+			$item['timestamp'] = strtotime($post->find('a.o-U-s', 0)->plaintext);
 			$this->items[] = $item;
 
 			// hashtag to treat : https://plus.google.com/explore/tag
 			$hashtags = array();
 			foreach($post->find('a.d-s') as $hashtag)
 			{
-				$hashtags[ trim($hashtag->plaintext) ] = self::GOOGLE_PLUS_BASE_URL . $hashtag->href;
+				$hashtags[ trim($hashtag->plaintext) ] = $this->uri . $hashtag->href;
 			}
 
-			$item->content = '';
+			$item['content'] = '';
 
 			// avatar display
-			$item->content .= '<div style="float:left; margin: 0 0.5em 0.5em 0;"><a href="' . self::GOOGLE_PLUS_BASE_URL . urlencode($this->request);
-			$item->content .= '"><img align="top" alt="avatar" src="' . $item->avatar.'" />' . $item->username . '</a></div>';
+			$item['content'] .= '<div style="float:left; margin: 0 0.5em 0.5em 0;"><a href="' . $this->uri . urlencode($this->getInput('username'));
+			$item['content'] .= '"><img align="top" alt="avatar" src="' . $item['avatar'].'" />' . $item['username'] . '</a></div>';
 
 			$content = $post->find('div.Al', 0);
 
 			// alter link
 //			$content = $content->innertext;
-//			$content = str_replace('href="./', 'href="' . self::GOOGLE_PLUS_BASE_URL, $content);
-//			$content = str_replace('href="photos', 'href="' . self::GOOGLE_PLUS_BASE_URL . 'photos', $content);
+//			$content = str_replace('href="./', 'href="' . $this->uri, $content);
+//			$content = str_replace('href="photos', 'href="' . $this->uri . 'photos', $content);
 			// XXX ugly but I don't have any idea how to do a better stuff, str_replace on link doesn't work as expected and ask too many checks
 			foreach($content->find('a') as $link)
 			{
@@ -100,15 +86,15 @@ class GooglePlusPostBridge extends BridgeAbstract
 					{
 						$link->href = substr($link->href, 1);
 					}
-					$link->href = self::GOOGLE_PLUS_BASE_URL . $link->href;
+					$link->href = $this->uri . $link->href;
 				}
 			}
 			$content = $content->innertext;
 
-			$item->content .= '<div style="margin-top: -1.5em">' .  $content . '</div>';
+			$item['content'] .= '<div style="margin-top: -1.5em">' .  $content . '</div>';
 
 			// extract plaintext
-			$item->content_simple = $post->find('div.Al', 0)->plaintext;
+			$item['content_simple'] = $post->find('div.Al', 0)->plaintext;
 		}
 
 //		$html->save(__DIR__ . '/../posts2.html');
@@ -121,7 +107,7 @@ class GooglePlusPostBridge extends BridgeAbstract
 
 	public function getURI()
 	{
-		return $this->_url ?: 'http://plus.google.com/';
+		return $this->_url ?: $this->uri;
 	}
 
 	public function getCacheDuration()

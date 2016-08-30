@@ -1,19 +1,14 @@
 <?php
 class DilbertBridge extends BridgeAbstract {
 
-    public function loadMetadatas() {
+    public $maintainer = 'kranack';
+    public $name = 'Dilbert Daily Strip';
+    public $uri = 'http://dilbert.com';
+    public $description = 'The Unofficial Dilbert Daily Comic Strip';
 
-        $this->maintainer = 'kranack';
-        $this->name = $this->getName();
-        $this->uri = $this->getURI();
-        $this->description = $this->getDescription();
-        $this->update = "14/05/2016";
+    public function collectData(){
 
-    }
-
-    public function collectData(array $param) {
-
-        $html = $this->file_get_html($this->getURI()) or $this->returnError('Could not request Dilbert: '.$this->getURI(), 500);
+        $html = $this->getSimpleHTMLDOM($this->getURI()) or $this->returnServerError('Could not request Dilbert: '.$this->getURI());
 
         foreach ($html->find('section.comic-item') as $element) {
 
@@ -27,27 +22,14 @@ class DilbertBridge extends BridgeAbstract {
                 $title = 'Dilbert Comic Strip on '.$date;
             $date = strtotime($date);
 
-            $item = new \Item();
-            $item->uri = $url;
-            $item->thumbnailUri = $comic;
-            $item->title = $title;
-            $item->author = 'Scott Adams';
-            $item->timestamp = $date;
-            $item->content = '<img src="'.$comic.'" alt="'.$img->alt.'" />';
+            $item = array();
+            $item['uri'] = $url;
+            $item['title'] = $title;
+            $item['author'] = 'Scott Adams';
+            $item['timestamp'] = $date;
+            $item['content'] = '<img src="'.$comic.'" alt="'.$img->alt.'" />';
             $this->items[] = $item;
         }
-    }
-
-    public function getName() {
-        return 'Dilbert Daily Strip';
-    }
-
-    public function getURI() {
-        return 'http://dilbert.com';
-    }
-
-    public function getDescription() {
-        return 'The Unofficial Dilbert Daily Comic Strip';
     }
 
     public function getCacheDuration() {

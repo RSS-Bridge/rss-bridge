@@ -1,30 +1,23 @@
 <?php
 class VineBridge extends BridgeAbstract {
 
-	public function loadMetadatas() {
+	public $maintainer = "ckiw";
+	public $name = "Vine bridge";
+	public $uri = "http://vine.co/";
+	public $description = "Returns the latests vines from vine user page";
 
-		$this->maintainer = "ckiw";
-		$this->name = "Vine bridge";
-		$this->uri = "http://vine.co/";
-		$this->description = "Returns the latests vines from vine user page";
-		$this->update = "2016-03-12";
+    public $parameters = array( array(
+        'u'=>array(
+            'name'=>'User id',
+            'required'=>true
+        )
+    ));
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "User id",
-				"identifier" : "u",
-				"type" : "text",
-				"required" : "true"
-			}
-		]';
-	}
-
-	public function collectData(array $param){
+	public function collectData(){
     $html = '';
-    $uri = 'http://vine.co/u/'.$param['u'].'?mode=list';
+    $uri = 'http://vine.co/u/'.$this->getInput('u').'?mode=list';
 
-    $html = $this->file_get_html($uri) or $this->returnError('No results for this query.', 404);
+    $html = $this->getSimpleHTMLDOM($uri) or $this->returnServerError('No results for this query.');
 
 		foreach($html->find('.post') as $element) {
 			$a = $element->find('a', 0);
@@ -34,23 +27,15 @@ class VineBridge extends BridgeAbstract {
 			$video->controls = "true";
 			$element->find('h2', 0)->outertext = '';
 
-			$item = new \Item();
-			$item->uri = $a->href;
-			$item->timestamp = $time;
-			$item->title = $a->plaintext;
-			$item->content = $element;
+			$item = array();
+			$item['uri'] = $a->href;
+			$item['timestamp'] = $time;
+			$item['title'] = $a->plaintext;
+			$item['content'] = $element;
 
 			$this->items[] = $item;
 		}
 
-    }
-
-    public function getName(){
-        return 'Vine';
-    }
-
-    public function getURI(){
-        return 'http://vine.co';
     }
 
     public function getCacheDuration(){

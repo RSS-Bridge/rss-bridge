@@ -1,41 +1,35 @@
 <?php
 class TagBoardBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	public $maintainer = "Pitchoule";
+	public $name = "TagBoard";
+	public $uri = "http://www.TagBoard.com";
+	public $description = "Returns most recent results from TagBoard.";
 
-		$this->maintainer = "Pitchoule";
-		$this->name = "TagBoard";
-		$this->uri = "http://www.TagBoard.com";
-		$this->description = "Returns most recent results from TagBoard.";
-		$this->update = "2014-09-10";
+    public $parameters = array( array(
+        'u'=>array(
+            'name'=>'keyword',
+            'required'=>true
+        )
+    ));
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "keyword",
-				"identifier" : "u"
-			}
-		]';
-
-	}
-
-    public function collectData(array $param){
+    public function collectData(){
         $html = '';
-        $this->request = $param['u'];
+        $this->request = $this->getInput('u');
         $link = 'https://post-cache.tagboard.com/search/' .$this->request;
-		
-        $html = $this->file_get_html($link) or $this->returnError('Could not request TagBoard for : ' . $link , 404);
+
+        $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request TagBoard for : ' . $link);
         $parsed_json = json_decode($html);
 
         foreach($parsed_json->{'posts'} as $element) {
-                $item = new Item();
-                $item->uri = $element->{'permalink'};
-		$item->title = $element->{'text'};
-                $item->thumbnailUri = $element->{'photos'}[0]->{'m'};
-                if (isset($item->thumbnailUri)) {
-                  $item->content = '<a href="' . $item->uri . '"><img src="' . $item->thumbnailUri . '" /></a>';
+                $item = array();
+                $item['uri'] = $element->{'permalink'};
+		$item['title'] = $element->{'text'};
+                $thumbnailUri = $element->{'photos'}[0]->{'m'};
+                if (isset($thumbnailUri)) {
+                  $item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $thumbnailUri . '" /></a>';
                 }else{
-                  $item->content = $element->{'html'};
+                  $item['content'] = $element->{'html'};
                 }
                 $this->items[] = $item;
         }
@@ -45,12 +39,8 @@ class TagBoardBridge extends BridgeAbstract{
         return 'tagboard - ' .$this->request;
     }
 
-    public function getURI(){
-        return 'http://TagBoard.com';
-    }
-
     public function getCacheDuration(){
         return 21600; // 6 hours
     }
 }
-							
+

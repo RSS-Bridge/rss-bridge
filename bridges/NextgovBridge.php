@@ -1,39 +1,31 @@
 <?php
 class NextgovBridge extends BridgeAbstract {
 
-    public function loadMetadatas() {
+    public $maintainer = 'ORelio';
+    public $name = 'Nextgov Bridge';
+    public $uri = 'https://www.nextgov.com/';
+    public $description = 'USA Federal technology news, best practices, and web 2.0 tools.';
 
-        $this->maintainer = 'ORelio';
-        $this->name = $this->getName();
-        $this->uri = $this->getURI();
-        $this->description = 'USA Federal technology news, best practices, and web 2.0 tools.';
-        $this->update = '2016-07-20';
+    public $parameters = array( array(
+        'category'=>array(
+            'name'=>'Category',
+            'type'=>'list',
+            'values'=>array(
+                'All'=>'all',
+                'Technology News'=>'technology-news',
+                'CIO Briefing'=>'cio-briefing',
+                'Emerging Tech'=>'emerging-tech',
+                'Cloud'=>'cloud-computing',
+                'Cybersecurity'=>'cybersecurity',
+                'Mobile'=>'mobile',
+                'Health'=>'health',
+                'Defense'=>'defense',
+                'Big Data'=>'big-data'
+            )
+        )
+    ));
 
-        $this->parameters[] =
-        '[
-            {
-                "name" : "Category",
-                "type" : "list",
-                "identifier" : "category",
-                "values" :
-                [
-                    { "name" : "All", "value" : "all" },
-                    { "name" : "Technology News", "value" : "technology-news" },
-                    { "name" : "CIO Briefing", "value" : "cio-briefing" },
-                    { "name" : "Emerging Tech", "value" : "emerging-tech" },
-                    { "name" : "Cloud", "value" : "cloud-computing" },
-                    { "name" : "Cybersecurity", "value" : "cybersecurity" },
-                    { "name" : "Mobile", "value" : "mobile" },
-                    { "name" : "Health", "value" : "health" },
-                    { "name" : "Defense", "value" : "defense" },
-                    { "name" : "Big Data", "value" : "big-data" }
-                ]
-            }
-        ]';
-
-    }
-
-    public function collectData(array $param) {
+    public function collectData(){
 
         function ExtractFromDelimiters($string, $start, $end) {
             if (strpos($string, $start) !== false) {
@@ -51,60 +43,40 @@ class NextgovBridge extends BridgeAbstract {
             } return $string;
         }
 
-        $category = $param['category'];
-        if (empty($category))
-            $category = 'all';
-        if ($category !== preg_replace('/[^a-z-]+/', '', $category) || strlen($category > 32))
-            $this->returnError('Invalid "category" parameter.', 400);
+        $category = $this->getInput('category');
         $url = $this->getURI().'rss/'.$category.'/';
-        $html = $this->file_get_html($url) or $this->returnError('Could not request Nextgov: '.$url, 500);
+        $html = $this->getSimpleHTMLDOM($url) or $this->returnServerError('Could not request Nextgov: '.$url);
         $limit = 0;
 
         foreach ($html->find('item') as $element) {
-            if ($limit < 10) {
-
-                $article_url = ExtractFromDelimiters($element->innertext, '<link>', '</link>');
-                $article_author = ExtractFromDelimiters($element->innertext, 'dc/elements/1.1/">', '</dc:creator>');
-                $article_title = $element->find('title', 0)->plaintext;
-                $article_subtitle = $element->find('description', 0)->plaintext;
-                $article_timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-                $article_thumbnail = ExtractFromDelimiters($element->innertext, '<media:content url="', '"');
-                $article = $this->file_get_html($article_url) or $this->returnError('Could not request Nextgov: '.$article_url, 500);
-
-                $contents = $article->find('div.wysiwyg', 0)->innertext;
-                $contents = StripWithDelimiters($contents, '<div class="ad-container">', '</div>');
-                $contents = StripWithDelimiters($contents, '<div', '</div>'); //ad outer div
-                $contents = StripWithDelimiters($contents, '<script', '</script>');
-                $contents = ($article_thumbnail == '' ? '' : '<p><img src="'.$article_thumbnail.'" /></p>')
-                    .'<p><b>'.$article_subtitle.'</b></p>'
-                    .trim($contents);
-
-                if ($article_thumbnail == '')
-                    $article_thumbnail = 'http://cdn.nextgov.com/nextgov/images/logo.png';
-
-                $item = new \Item();
-                $item->uri = $article_url;
-                $item->title = $article_title;
-                $item->author = $article_author;
-                $item->thumbnailUri = $article_thumbnail;
-                $item->timestamp = $article_timestamp;
-                $item->content = $contents;
-                $this->items[] = $item;
-                $limit++;
+            if ($limit >= 10) {
+                break;
             }
+
+            $article_url = ExtractFromDelimiters($element->innertext, '<link>', '</link>');
+            $article_author = ExtractFromDelimiters($element->innertext, 'dc/elements/1.1/">', '</dc:creator>');
+            $article_title = $element->find('title', 0)->plaintext;
+            $article_subtitle = $element->find('description', 0)->plaintext;
+            $article_timestamp = strtotime($element->find('pubDate', 0)->plaintext);
+            $article_thumbnail = ExtractFromDelimiters($element->innertext, '<media:content url="', '"');
+            $article = $this->getSimpleHTMLDOM($article_url) or $this->returnServerError('Could not request Nextgov: '.$article_url);
+
+            $contents = $article->find('div.wysiwyg', 0)->innertext;
+            $contents = StripWithDelimiters($contents, '<div class="ad-container">', '</div>');
+            $contents = StripWithDelimiters($contents, '<div', '</div>'); //ad outer div
+            $contents = StripWithDelimiters($contents, '<script', '</script>');
+            $contents = ($article_thumbnail == '' ? '' : '<p><img src="'.$article_thumbnail.'" /></p>')
+                .'<p><b>'.$article_subtitle.'</b></p>'
+                .trim($contents);
+
+            $item = array();
+            $item['uri'] = $article_url;
+            $item['title'] = $article_title;
+            $item['author'] = $article_author;
+            $item['timestamp'] = $article_timestamp;
+            $item['content'] = $contents;
+            $this->items[] = $item;
+            $limit++;
         }
-
-    }
-
-    public function getName() {
-        return 'Nextgov Bridge';
-    }
-
-    public function getURI() {
-        return 'https://www.nextgov.com/';
-    }
-
-    public function getCacheDuration() {
-        return 3600; //1 hour
     }
 }

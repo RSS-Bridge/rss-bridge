@@ -9,16 +9,8 @@ class FileCache extends CacheAbstract{
         $this->isPrepareCache();
 
         $datas = unserialize(file_get_contents($this->getCacheFile()));
-        $items = array();
-        foreach($datas as $aData){
-            $item = new \Item();
-            foreach($aData as $name => $value){
-                $item->$name = $value;
-            }
-            $items[] = $item;
-        }
 
-        return $items;
+        return $datas;
     }
 
     public function saveData($datas){
@@ -96,6 +88,7 @@ class FileCache extends CacheAbstract{
         $this->isPrepareCache();
 
         $stringToEncode = $_SERVER['REQUEST_URI'] . http_build_query($this->param);
+        $stringToEncode = preg_replace('/(\?|&)format=[^&]*/i', '$1', $stringToEncode);
         return hash('sha1', $stringToEncode) . '.cache';
     }
 }

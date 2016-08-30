@@ -1,17 +1,12 @@
 <?php
-class NumeramaBridge extends BridgeAbstract{
+class NumeramaBridge extends HttpCachingBridgeAbstract {
 
-    public function loadMetadatas() {
+    public $maintainer = 'mitsukarenai';
+    public $name = 'Numerama';
+    public $uri = 'http://www.numerama.com/';
+    public $description = 'Returns the 5 newest posts from Numerama (full text)';
 
-        $this->maintainer = 'mitsukarenai';
-        $this->name = 'Numerama';
-        $this->uri = 'http://www.numerama.com/';
-        $this->description = 'Returns the 5 newest posts from Numerama (full text)';
-        $this->update = '2016-07-19';
-
-    }
-
-    public function collectData(array $param) {
+    public function collectData(){
 
         function NumeramaStripCDATA($string) {
             $string = str_replace('<![CDATA[', '', $string);
@@ -19,38 +14,32 @@ class NumeramaBridge extends BridgeAbstract{
             return $string;
         }
 
-        $feed = $this->getURI().'feed/';
-        $html = $this->file_get_html($feed) or $this->returnError('Could not request Numerama: '.$feed, 500);
+        $feed = $this->uri.'feed/';
+        $html = $this->getSimpleHTMLDOM($feed) or $this->returnServerError('Could not request Numerama: '.$feed);
         $limit = 0;
 
         foreach($html->find('item') as $element) {
             if($limit < 5) {
-                $item = new \Item();
-                $item->title = html_entity_decode(NumeramaStripCDATA($element->find('title', 0)->innertext));
-                $item->author = NumeramaStripCDATA($element->find('dc:creator', 0)->innertext);
-                $item->uri = NumeramaStripCDATA($element->find('guid', 0)->plaintext);
-                $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
+                $item = array();
+                $item['title'] = html_entity_decode(NumeramaStripCDATA($element->find('title', 0)->innertext));
+                $item['author'] = NumeramaStripCDATA($element->find('dc:creator', 0)->innertext);
+                $item['uri'] = NumeramaStripCDATA($element->find('guid', 0)->plaintext);
+                $item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
 
                 $article_url = NumeramaStripCDATA($element->find('guid', 0)->plaintext);
-                $article_html = $this->file_get_html($article_url) or $this->returnError('Could not request Numerama: '.$article_url, 500);
+                if($this->get_cached_time($article_url) <= strtotime('-24 hours'))
+                    $this->remove_from_cache($article_url);
+
+                $article_html = $this->get_cached($article_url) or $this->returnServerError('Could not request Numerama: '.$article_url);
                 $contents = $article_html->find('section[class=related-article]', 0)->innertext = ''; // remove related articles block
                 $contents = '<img alt="" style="max-width:300px;" src="'.$article_html->find('meta[property=og:image]', 0)->getAttribute('content').'">'; // add post picture
                 $contents = $contents.$article_html->find('article[class=post-content]', 0)->innertext; // extract the post
 
-                $item->content = $contents;
+                $item['content'] = $contents;
                 $this->items[] = $item;
                 $limit++;
             }
         }
-
-    }
-
-    public function getName() {
-        return 'Numerama';
-    }
-
-    public function getURI() {
-        return 'http://www.numerama.com/';
     }
 
     public function getCacheDuration() {

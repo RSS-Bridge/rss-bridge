@@ -1,50 +1,36 @@
 <?php
 class BlaguesDeMerdeBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+    public $maintainer = "superbaillot.net";
+    public $name = "Blagues De Merde";
+    public $uri = "http://www.blaguesdemerde.fr/";
+    public $description = "Blagues De Merde";
 
-		$this->maintainer = "superbaillot.net";
-		$this->name = "Blagues De Merde";
-		$this->uri = "http://www.blaguesdemerde.fr/";
-		$this->description = "Blagues De Merde";
-		$this->update = "16/10/2013";
 
-	}
+    public function collectData(){
+        $html = $this->getSimpleHTMLDOM($this->uri)
+            or $this->returnServerError('Could not request BDM.');
 
-    public function collectData(array $param){
-        $html = $this->file_get_html('http://www.blaguesdemerde.fr/') or $this->returnError('Could not request BDM.', 404);
-    
         foreach($html->find('article.joke_contener') as $element) {
-            $item = new Item();
+            $item = array();
             $temp = $element->find('a');
             if(isset($temp[2]))
             {
-                $item->content = trim($element->find('div.joke_text_contener', 0)->innertext);
+                $item['content'] = trim($element->find('div.joke_text_contener', 0)->innertext);
                 $uri = $temp[2]->href;
-                $item->uri = $uri;
-                $item->title = substr($uri, (strrpos($uri, "/") + 1));
+                $item['uri'] = $uri;
+                $item['title'] = substr($uri, (strrpos($uri, "/") + 1));
                 $date = $element->find("li.bdm_date",0)->innertext;
                 $time = mktime(0, 0, 0, substr($date, 3, 2), substr($date, 0, 2), substr($date, 6, 4));
-                $item->timestamp = $time;
-                $item->name = $element->find("li.bdm_pseudo",0)->innertext;;
+                $item['timestamp'] = $time;
+                $item['author'] = $element->find("li.bdm_pseudo",0)->innertext;;
                 $this->items[] = $item;
             }
         }
     }
 
-    public function getName(){
-        return 'blaguesdemerde';
-    }
-
-    public function getURI(){
-        return 'http://www.blaguesdemerde.fr/';
-    }
-
     public function getCacheDuration(){
         return 7200; // 2h hours
-    }
-    public function getDescription(){
-        return "Blagues De Merde via rss-bridge";
     }
 }
 ?>

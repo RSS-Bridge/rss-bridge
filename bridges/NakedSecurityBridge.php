@@ -1,15 +1,12 @@
 <?php
 class NakedSecurityBridge extends BridgeAbstract {
 
-    public function loadMetadatas() {
-        $this->maintainer = 'ORelio';
-        $this->name = $this->getName();
-        $this->uri = $this->getURI();
-        $this->description = 'Returns the newest articles.';
-        $this->update = '2016-04-30';
-    }
+    public $maintainer = 'ORelio';
+    public $name = 'Naked Security';
+    public $uri = 'https://nakedsecurity.sophos.com/';
+    public $description = 'Returns the newest articles.';
 
-    public function collectData(array $param) {
+    public function collectData(){
 
         function StripRecursiveHTMLSection($string, $tag_name, $tag_start) {
             $open_tag = '<'.$tag_name;
@@ -36,7 +33,7 @@ class NakedSecurityBridge extends BridgeAbstract {
         }
 
         $feedUrl = 'https://feeds.feedburner.com/nakedsecurity?format=xml';
-        $html = $this->file_get_html($feedUrl) or $this->returnError('Could not request '.$this->getName().': '.$feedUrl, 500);
+        $html = $this->getSimpleHTMLDOM($feedUrl) or $this->returnServerError('Could not request '.$this->getName().': '.$feedUrl);
         $limit = 0;
 
         foreach ($html->find('item') as $element) {
@@ -44,7 +41,7 @@ class NakedSecurityBridge extends BridgeAbstract {
 
                 //Retrieve article Uri and get that page
                 $article_uri = $element->find('guid', 0)->plaintext;
-                $article_html = $this->file_get_html($article_uri) or $this->returnError('Could not request '.$this->getName().': '.$article_uri, 500);
+                $article_html = $this->getSimpleHTMLDOM($article_uri) or $this->returnServerError('Could not request '.$this->getName().': '.$article_uri);
 
                 //Build article contents from corresponding elements
                 $article_title = trim($element->find('title', 0)->plaintext);
@@ -57,28 +54,15 @@ class NakedSecurityBridge extends BridgeAbstract {
                 $article_content = '<p><img src="'.$article_image.'" /></p><p><b>'.$article_summary.'</b></p>'.$article_content;
 
                 //Build and add final item
-                $item = new \Item();
-                $item->uri = $article_uri;
-                $item->title = $article_title;
-                $item->thumbnailUri = $article_image;
-                $item->author = $article_html->find('a[rel=author]', 0)->plaintext;
-                $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-                $item->content = $article_content;
+                $item = array();
+                $item['uri'] = $article_uri;
+                $item['title'] = $article_title;
+                $item['author'] = $article_html->find('a[rel=author]', 0)->plaintext;
+                $item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
+                $item['content'] = $article_content;
                 $this->items[] = $item;
                 $limit++;
             }
         }
-    }
-
-    public function getName() {
-        return 'Naked Security';
-    }
-
-    public function getURI() {
-        return 'https://nakedsecurity.sophos.com/';
-    }
-
-    public function getCacheDuration() {
-        return 3600; //1 hour
     }
 }

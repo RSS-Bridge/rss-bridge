@@ -7,7 +7,7 @@
 interface FormatInterface{
     public function stringify();
     public function display();
-    public function setDatas(array $bridge);
+    public function setItems(array $bridges);
 }
 
 abstract class FormatAbstract implements FormatInterface{
@@ -16,7 +16,7 @@ abstract class FormatAbstract implements FormatInterface{
     protected 
         $contentType,
         $charset,
-        $datas,
+        $items,
         $extraInfos
     ;
 
@@ -48,18 +48,17 @@ abstract class FormatAbstract implements FormatInterface{
         return $this;
     }
 
-    public function setDatas(array $datas){
-        $this->datas = $datas;
+    public function setItems(array $items){
+        $this->items = array_map(array($this, 'array_trim'), $items);
 
         return $this;
     }
 
-    public function getDatas(){
-        if( !is_array($this->datas) ){
-            throw new \LogicException('Feed the ' . get_class($this) . ' with "setDatas" method before !');
-        }
+    public function getItems(){
+        if(!is_array($this->items))
+            throw new \LogicException('Feed the ' . get_class($this) . ' with "setItems" method before !');
 
-        return $this->datas;
+        return $this->items;
     }
 
     /**
@@ -99,13 +98,21 @@ abstract class FormatAbstract implements FormatInterface{
      * Maybe we'll switch to http://htmlpurifier.org/
      * or http://www.bioinformatics.org/phplabware/internal_utilities/htmLawed/index.php
      */
-    public function sanitizeHtml($html)
+    protected function sanitizeHtml($html)
     {
         $html = str_replace('<script','<&zwnj;script',$html); // Disable scripts, but leave them visible.
         $html = str_replace('<iframe','<&zwnj;iframe',$html);
         $html = str_replace('<link','<&zwnj;link',$html);
         // We leave alone object and embed so that videos can play in RSS readers.
         return $html;
+    }
+
+    protected function array_trim($elements){
+        foreach($elements as $key => $value){
+            if(is_string($value))
+                $elements[$key] = trim($value);
+        }
+        return $elements;
     }
 }
 
@@ -118,10 +125,11 @@ class Format{
     }
 
     static public function create($nameFormat){
-        if( !static::isValidNameFormat($nameFormat) ){
+        if( !preg_match('@^[A-Z][a-zA-Z]*$@', $nameFormat)){
             throw new \InvalidArgumentException('Name format must be at least one uppercase follow or not by alphabetic characters.');
         }
 
+        $nameFormat=$nameFormat.'Format';
         $pathFormat = self::getDir() . $nameFormat . '.php';
 
         if( !file_exists($pathFormat) ){
@@ -155,10 +163,6 @@ class Format{
         return $dirFormat;
     }
 
-    static public function isValidNameFormat($nameFormat){
-        return preg_match('@^[A-Z][a-zA-Z]*$@', $nameFormat);
-    }
-
     /**
     * Read format dir and catch informations about each format depending annotation
     * @return array Informations about each format
@@ -172,27 +176,11 @@ class Format{
 
         $dirFiles = scandir($pathDirFormat);
         if( $dirFiles !== false ){
-            foreach( $dirFiles as $fileName ){
-                if( preg_match('@([^.]+)\.php@U', $fileName, $out) ){ // Is PHP file ?
-                    $infos = array(); // Information about the bridge
-                    $resParse = token_get_all(file_get_contents($pathDirFormat . $fileName)); // Parse PHP file
-                    foreach($resParse as $v){
-                        if( is_array($v) && $v[0] == T_DOC_COMMENT ){ // Lexer node is COMMENT ?
-                            $commentary = $v[1];
-                            foreach( $searchCommonPattern as $name){ // Catch information with common pattern
-                                preg_match('#@' . preg_quote($name, '#') . '\s+(.+)#', $commentary, $outComment);
-                                if( isset($outComment[1]) ){
-                                    $infos[$name] = $outComment[1];
-                                }
-                            }
-                        }
-                    }
-
-                    if( isset($infos['name']) ){ // If informations containt at least a name
-                        $listFormat[$out[1]] = $infos;
-                    }
-                }
+          foreach( $dirFiles as $fileName ){
+            if( preg_match('@^([^.]+)Format\.php$@U', $fileName, $out) ){ // Is PHP file ?
+              $listFormat[] = $out[1];
             }
+          }
         }
 
         return $listFormat;

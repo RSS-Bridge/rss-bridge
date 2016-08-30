@@ -1,55 +1,77 @@
 <?php
-/**
- * ElsevierBridge
- *
- * @name Elsevier Bridge
- * @description Returns the recent articles published in Elsevier journals
- */
 class ElsevierBridge extends BridgeAbstract{
-  public function loadMetadatas() {
+	public $maintainer = 'Pierre Mazière';
+	public $name = 'Elsevier journals recent articles';
+	public $uri = 'http://www.journals.elsevier.com/';
+	public $description = 'Returns the recent articles published in Elsevier journals';
 
-    $this->maintainer = 'Pierre Mazière';
-    $this->name = 'Elsevier journals recent articles';
-    $this->uri = 'http://www.journals.elsevier.com';
-    $this->description = 'Returns the recent articles published in Elsevier journals';
-    $this->update = '2016-06-26';
+    public $parameters = array( array(
+        'j'=>array(
+            'name'=>'Journal name',
+            'required'=>true,
+            'exampleValue'=>'academic-pediactrics',
+            'title'=>'Insert html-part of your journal'
+        )
+    ));
 
-    $this->parameters=
-      '[
-         {
-           "name" : "Journal name",
-           "identifier" : "j"
-         }
-       ]';
-  }
+	// Extracts the list of names from an article as string
+	private function ExtractArticleName ($article){
+		$names = $article->find('small', 0);
+		if($names)
+			return trim($names->plaintext);
+		return '';
+	}
 
-  public function collectData(array $param){
-    $uri = 'http://www.journals.elsevier.com/'.$param['j'].'/recent-articles/';
-    $html = file_get_html($uri)
-      or $this->returnError('No results for Elsevier journal '.$param['j'], 404);
+	// Extracts the timestamp from an article
+	private function ExtractArticleTimestamp ($article){
+		$time = $article->find('.article-info', 0);
+		if($time){
+			$timestring = trim($time->plaintext);
+			/*
+				The format depends on the age of an article:
+				- Available online 29 July 2016
+				- July 2016
+				- May–June 2016
+			*/
+			if(preg_match('/\S*(\d+\s\S+\s\d{4})/ims', $timestring, $matches)){
+				return strtotime($matches[0]);
+			} elseif (preg_match('/[A-Za-z]+\-([A-Za-z]+\s\d{4})/ims', $timestring, $matches)){
+				return strtotime($matches[0]);
+			} elseif (preg_match('/([A-Za-z]+\s\d{4})/ims', $timestring, $matches)){
+				return strtotime($matches[0]);
+			} else {
+				return 0;
+			}
+		}
+		return 0;
+	}
 
-    foreach($html->find('.pod-listing') as $article){
+	// Extracts the content from an article
+	private function ExtractArticleContent ($article){
+		$content = $article->find('.article-content', 0);
+		if($content){
+			return trim($content->plaintext);
+		}
+		return '';
+	}
 
-      $item = new \Item();
-      $item->uri=$article->find('.pod-listing-header>a',0)->getAttribute('href').'?np=y';
-      $item->title=$article->find('.pod-listing-header>a',0)->plaintext;
-      $item->name=trim($article->find('small',0)->plaintext);
-      $item->timestamp=strtotime($article->find('.article-info',0)->plaintext);
-      $item->content=trim($article->find('.article-content',0)->plaintext);
+	public function collectData(){
+		$uri = $this->uri . $this->getInput('j') . '/recent-articles/';
+		$html = $this->getSimpleHTMLDOM($uri) or $this->returnServerError('No results for Elsevier journal '.$this->getInput('j'));
 
-      $this->items[]=$item;
-    }
-  }
+		foreach($html->find('.pod-listing') as $article){
+			$item = array();
+			$item['uri'] = $article->find('.pod-listing-header>a',0)->getAttribute('href').'?np=y';
+			$item['title'] = $article->find('.pod-listing-header>a',0)->plaintext;
+			$item['author'] = $this->ExtractArticleName($article);
+			$item['timestamp'] = $this->ExtractArticleTimestamp($article);
+			$item['content'] = $this->ExtractArticleContent($article);
+			$this->items[] = $item;
+		}
+	}
 
-  public function getName(){
-    return 'Elsevier journals recent articles';
-  }
-
-  public function getURI(){
-    return 'http://www.journals.elsevier.com';
-  }
-
-  public function getCacheDuration(){
-    return 43200; // 12h
-  }
+	public function getCacheDuration(){
+		return 43200; // 12h
+	}
 }
+?>
