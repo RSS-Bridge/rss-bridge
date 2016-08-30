@@ -58,8 +58,6 @@ class BridgeImplementationTest extends PHPUnit_Framework_TestCase {
 				$parent_names .= ', ' . $parent;
 		}
 
-		// There should generally be no additional (public) function
-		$this->assertEmpty($methods, $bridgeName . ' extends (' . $parent_names . ') and defines additional public functions : ' . $method_names . '!');
 	}
 
 	// Checks if the bridge returns the default value for 'getCacheDuration()'
