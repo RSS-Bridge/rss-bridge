@@ -87,6 +87,7 @@ class BridgeImplementationTest extends PHPUnit_Framework_TestCase {
 			$abstract = new BridgeAbstractTest();
 
 			$this->assertNotEquals($bridge->getCacheDuration(), $abstract->getCacheDuration(), $bridgeName . ' seems to implement \'getCacheDuration\' with default values, so you might safely remove it');
+			$this->assertNotEquals($bridge->getCacheDuration(), 0, $bridgeName . ' seems to implement \'getCacheDuration\' with value 0, which should not be allowed.');
 		}
 	}
 
