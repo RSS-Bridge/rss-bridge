@@ -148,7 +148,7 @@ class BridgeImplementationTest extends PHPUnit_Framework_TestCase {
 */
 class BridgeAbstractTest extends BridgeAbstract{
 	public function loadMetadatas(){}
-	public function collectData(array $params){}
+	public function collectData(){}
 	public function getName(){return '';}
 	public function getURI(){return '';}
 }
