@@ -225,8 +225,10 @@ abstract class BridgeAbstract implements BridgeInterface {
                         break;
                     }
 
-                    if(is_null($data[$name]))
+                    if(is_null($data[$name])){
+                        echo 'Parameter \'' . $name . '\' is invalid!' . PHP_EOL;
                         return false;
+                    }
                 }
             }
 
