@@ -143,8 +143,8 @@ abstract class BridgeAbstract implements BridgeInterface {
         return $this->items;
     }
 
-    protected function isValidTextValue($value, $pattern){
-        if(isset($pattern)){
+    protected function isValidTextValue($value, $pattern = null){
+        if(!is_null($pattern)){
             $filteredValue = filter_var($value, FILTER_VALIDATE_REGEXP,
                 array('options' => array(
                     'regexp' => '/^' . $pattern . '$/'
@@ -221,7 +221,11 @@ abstract class BridgeAbstract implements BridgeInterface {
                         break;
                     default:
                     case 'text': 
-                        $data[$name] = $this->isValidTextValue($value, $set[$name]['pattern']);
+                        if(isset($set[$name]['pattern'])){
+                            $data[$name] = $this->isValidTextValue($value, $set[$name]['pattern']);
+                        } else {
+                            $data[$name] = $this->isValidTextValue($value);
+                        }
                         break;
                     }
 
