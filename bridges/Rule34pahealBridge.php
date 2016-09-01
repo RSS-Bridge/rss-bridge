@@ -16,19 +16,13 @@ class Rule34pahealBridge extends BridgeAbstract{
 
 
     public function collectData(){
-	$page = 0;$tags='';
-        if ($this->getInput('p')) {
-            $page = (int)preg_replace("/[^0-9]/",'', $this->getInput('p'));
-        }
-        if ($this->getInput('t')) {
-            $tags = urlencode($this->getInput('t'));
-        }
-        $html = $this->getSimpleHTMLDOM("http://rule34.paheal.net/post/list/$tags/$page") or $this->returnServerError('Could not request Rule34paheal.');
+      $html = $this->getSimpleHTMLDOM($this->uri.'post/list/'.$tags.'/'.$page)
+        or $this->returnServerError('Could not request Rule34paheal.');
 
 
 	foreach($html->find('div[class=shm-image-list] div[class=shm-thumb]') as $element) {
 		$item = array();
-		$item['uri'] = 'http://rule34.paheal.net'.$element->find('a', 0)->href;
+		$item['uri'] = $this->uri.$element->find('a', 0)->href;
 		$item['postid'] = (int)preg_replace("/[^0-9]/",'', $element->find('img', 0)->getAttribute('id'));
 		$item['timestamp'] = time();
 		$thumbnailUri = $element->find('img', 0)->src;

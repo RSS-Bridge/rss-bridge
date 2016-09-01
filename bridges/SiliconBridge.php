@@ -14,8 +14,9 @@ class SiliconBridge extends BridgeAbstract {
             return $string;
         }
 
-        $feedUrl = 'http://www.silicon.fr/feed';
-        $html = $this->getSimpleHTMLDOM($feedUrl) or $this->returnServerError('Could not request Silicon: '.$feedUrl);
+        $feedUrl = $this->uri.'feed';
+        $html = $this->getSimpleHTMLDOM($feedUrl)
+          or $this->returnServerError('Could not request Silicon: '.$feedUrl);
         $limit = 0;
 
         foreach($html->find('item') as $element) {
@@ -25,7 +26,8 @@ class SiliconBridge extends BridgeAbstract {
                 $article_uri = $element->innertext;
                 $article_uri = substr($article_uri, strpos($article_uri, '<link>') + 6);
                 $article_uri = substr($article_uri, 0, strpos($article_uri, '</link>'));
-                $article_html = $this->getSimpleHTMLDOM($article_uri) or $this->returnServerError('Could not request Silicon: '.$article_uri);
+                $article_html = $this->getSimpleHTMLDOM($article_uri)
+                  or $this->returnServerError('Could not request Silicon: '.$article_uri);
 
                 //Build article contents from corresponding elements
                 $thumbnailUri = $element->find('enclosure', 0)->url;

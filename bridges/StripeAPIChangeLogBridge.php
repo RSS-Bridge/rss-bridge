@@ -6,14 +6,14 @@ class StripeAPIChangeLogBridge extends BridgeAbstract{
   public $description = 'Returns the changes made to the stripe.com API';
 
   public function collectData(){
-    $html = $this->getSimpleHTMLDOM('https://stripe.com/docs/upgrades')
+    $html = $this->getSimpleHTMLDOM($this->uri)
       or $this->returnServerError('No results for Stripe API Changelog');
 
 
     foreach($html->find('h3') as $change){
       $item=array();
       $item['title']=trim($change->plaintext);
-      $item['uri']='https://stripe.com/docs/upgrades#'.$item['title'];
+      $item['uri']=$this->uri.'#'.$item['title'];
       $item['author']='stripe';
       $item['content']=$change->nextSibling()->outertext;
       $item['timestamp']=strtotime($item['title']);

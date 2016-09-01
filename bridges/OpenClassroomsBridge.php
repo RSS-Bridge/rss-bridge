@@ -10,6 +10,7 @@ class OpenClassroomsBridge extends BridgeAbstract{
         'u'=>array(
             'name'=>'Catégorie',
             'type'=>'list',
+            'required'=>true,
             'values'=>array(
                 'Arts & Culture'=>'arts',
                 'Code'=>'code',
@@ -24,21 +25,18 @@ class OpenClassroomsBridge extends BridgeAbstract{
         )
     ));
 
+    public function getURI(){
+      return $this->uri.'/courses?categories='.$this->getInput('u').'&'
+        .'title=&sort=updatedAt+desc';
+    }
 
     public function collectData(){
-        if (empty($this->getInput('u')))
-        {
-            $this->returnServerError('Error: You must chose a category.');
-        }
-
-        $html = '';
-        $link = 'https://openclassrooms.com/courses?categories='.$this->getInput('u').'&title=&sort=updatedAt+desc';
-
-        $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request OpenClassrooms.');
+        $html = $this->getSimpleHTMLDOM($this->getURI())
+          or $this->returnServerError('Could not request OpenClassrooms.');
 
         foreach($html->find('.courseListItem') as $element) {
                 $item = array();
-                $item['uri'] = 'https://openclassrooms.com'.$element->find('a', 0)->href;
+                $item['uri'] = $this->uri.$element->find('a', 0)->href;
                 $item['title'] = $element->find('h3', 0)->plaintext;
                 $item['content'] = $element->find('slidingItem__descriptionContent', 0)->plaintext;
                 $this->items[] = $item;

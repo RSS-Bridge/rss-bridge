@@ -8,11 +8,12 @@ class ScmbBridge extends BridgeAbstract{
 
     public function collectData(){
         $html = '';
-        $html = $this->getSimpleHTMLDOM('http://secouchermoinsbete.fr/') or $this->returnServerError('Could not request Se Coucher Moins Bete.');
+        $html = $this->getSimpleHTMLDOM($this->uri)
+          or $this->returnServerError('Could not request Se Coucher Moins Bete.');
 
         foreach($html->find('article') as $article) {
         	$item = array();
-			$item['uri'] = 'http://secouchermoinsbete.fr'.$article->find('p.summary a',0)->href;
+			$item['uri'] = $this->uri.$article->find('p.summary a',0)->href;
 			$item['title'] = $article->find('header h1 a',0)->innertext;
 
 			$article->find('span.read-more',0)->outertext=''; // remove text "En savoir plus" from anecdote content

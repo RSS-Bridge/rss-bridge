@@ -86,7 +86,7 @@ class TwitterBridge extends BridgeAbstract{
 			// get TweetID
 			$item['id'] = $tweet->getAttribute('data-tweet-id');
 			// get tweet link
-			$item['uri'] = 'https://twitter.com'.$tweet->find('a.js-permalink', 0)->getAttribute('href');
+			$item['uri'] = $this->uri.$tweet->find('a.js-permalink', 0)->getAttribute('href');
 			// extract tweet timestamp
 			$item['timestamp'] = $tweet->find('span.js-short-timestamp', 0)->getAttribute('data-time');
 			// generate the title
@@ -111,7 +111,7 @@ class TwitterBridge extends BridgeAbstract{
 			}
 
 			// get tweet text
-			$cleanedTweet = str_replace('href="/', 'href="https://twitter.com/', $tweet->find('p.js-tweet-text', 0)->innertext);
+			$cleanedTweet = str_replace('href="/', 'href="'.$this->uri, $tweet->find('p.js-tweet-text', 0)->innertext);
 
 			// Add picture to content
 			$picture_html = '';

@@ -25,30 +25,8 @@ class ParuVenduImmoBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = '';
-        $num = 20;
-        $appartment = '&tbApp=1&tbDup=1&tbChb=1&tbLof=1&tbAtl=1&tbPla=1';
-        $maison = '&tbMai=1&tbVil=1&tbCha=1&tbPro=1&tbHot=1&tbMou=1&tbFer=1';
-        $link = $this->uri.'/immobilier/annonceimmofo/liste/listeAnnonces?tt=1'.$appartment.$maison;
-
-        if ($this->getInput('minarea')) {
-            $link .= '&sur0='.urlencode($this->getInput('minarea'));
-        }
-
-        if ($this->getInput('maxprice')) {
-            $link .= '&px1='.urlencode($this->getInput('maxprice'));
-        }
-
-        if ($this->getInput('pa')) {
-            $link .= '&pa='.urlencode($this->getInput('pa'));
-        }
-
-        if ($this->getInput('lo')) {
-            $link .= '&lo='.urlencode($this->getInput('lo'));
-        }
-
-        $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request paruvendu.');
-
+        $html = $this->getSimpleHTMLDOM($this->getURI())
+          or $this->returnServerError('Could not request paruvendu.');
 
         foreach($html->find('div.annonce a') as $element) {
 
@@ -79,16 +57,38 @@ class ParuVenduImmoBridge extends BridgeAbstract
         }
     }
 
+    public function getURI(){
+        $appartment = '&tbApp=1&tbDup=1&tbChb=1&tbLof=1&tbAtl=1&tbPla=1';
+        $maison = '&tbMai=1&tbVil=1&tbCha=1&tbPro=1&tbHot=1&tbMou=1&tbFer=1';
+        $link = $this->uri.'/immobilier/annonceimmofo/liste/listeAnnonces?tt=1'.$appartment.$maison;
+
+        if ($this->getInput('minarea')) {
+            $link .= '&sur0='.urlencode($this->getInput('minarea'));
+        }
+
+        if ($this->getInput('maxprice')) {
+            $link .= '&px1='.urlencode($this->getInput('maxprice'));
+        }
+
+        if ($this->getInput('pa')) {
+            $link .= '&pa='.urlencode($this->getInput('pa'));
+        }
+
+        if ($this->getInput('lo')) {
+            $link .= '&lo='.urlencode($this->getInput('lo'));
+        }
+        return $link;
+    }
+
     public function getName(){
         $request='';
-        if($this->getInput('minarea') &&
-            !empty($this->getInput('minarea'))
-        ){
-            $request .= ' '.$this->getInput('minarea').' m2';
+        $minarea=$this->getInput('minarea');
+        if(!empty($minarea)){
+            $request .= ' '.$minarea.' m2';
         }
-        if($this->getInput('lo') &&
-            !empty($this->getInput('lo'))){
-            $request .= ' In: '.$this->getInput('lo');
+        $location=$this->getInput('lo');
+        if(!empty($location)){
+            $request .= ' In: '.$location;
         }
         return 'Paru Vendu Immobilier'.$request;
     }

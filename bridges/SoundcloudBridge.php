@@ -3,7 +3,7 @@ class SoundCloudBridge extends BridgeAbstract{
 
 	public $maintainer = "kranack";
 	public $name = "Soundcloud Bridge";
-	public $uri = "http://www.soundcloud.com/";
+	public $uri = "https://soundcloud.com/";
 	public $description = "Returns 10 newest music from user profile";
 
     public $parameters = array( array(
@@ -33,10 +33,10 @@ class SoundCloudBridge extends BridgeAbstract{
 		    $item['author'] = $tracks[$i]->user->username .' - '. $tracks[$i]->title;
 		    $item['title'] = $tracks[$i]->user->username .' - '. $tracks[$i]->title;
 		    $item['content'] = '<audio src="'. $tracks[$i]->uri .'/stream?client_id='. self::CLIENT_ID .'">';
-            $item['id'] = 'https://soundcloud.com/'
+            $item['id'] = $this->uri
                 . urlencode($this->getInput('u')) .'/'
                 . urlencode($tracks[$i]->permalink);
-            $item['uri'] = 'https://soundcloud.com/'
+            $item['uri'] = $this->uri
                 . urlencode($this->getInput('u')) .'/'
                 . urlencode($tracks[$i]->permalink);
 		    $this->items[] = $item;

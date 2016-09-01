@@ -8,12 +8,12 @@ class ProjectMGameBridge extends BridgeAbstract{
 
 
   public function collectData(){
-    $html = '';
-    $html = $this->getSimpleHTMLDOM('http://projectmgame.com/en/') or $this->returnServerError('Error while downloading the Project M homepage');
+    $html = $this->getSimpleHTMLDOM($this->uri)
+      or $this->returnServerError('Error while downloading the Project M homepage');
 
     foreach($html->find('article') as $article) {
       $item = array();
-      $item['uri'] = 'http://projectmgame.com/en/'.$article->find('section div.info_block a',0)->href;
+      $item['uri'] = $this->uri.$article->find('section div.info_block a',0)->href;
       $item['title'] = $article->find('h1 p',0)->innertext;
 
       $p_list = $article->find('section p');

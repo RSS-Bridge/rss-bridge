@@ -3,7 +3,7 @@ class TagBoardBridge extends BridgeAbstract{
 
 	public $maintainer = "Pitchoule";
 	public $name = "TagBoard";
-	public $uri = "http://www.TagBoard.com";
+	public $uri = "http://www.TagBoard.com/";
 	public $description = "Returns most recent results from TagBoard.";
 
     public $parameters = array( array(
@@ -14,11 +14,10 @@ class TagBoardBridge extends BridgeAbstract{
     ));
 
     public function collectData(){
-        $html = '';
-        $this->request = $this->getInput('u');
-        $link = 'https://post-cache.tagboard.com/search/' .$this->request;
+        $link = 'https://post-cache.tagboard.com/search/' .$this->getInput('u');
 
-        $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('Could not request TagBoard for : ' . $link);
+        $html = $this->getSimpleHTMLDOM($link)
+          or $this->returnServerError('Could not request TagBoard for : ' . $link);
         $parsed_json = json_decode($html);
 
         foreach($parsed_json->{'posts'} as $element) {
@@ -36,7 +35,7 @@ class TagBoardBridge extends BridgeAbstract{
     }
 
     public function getName(){
-        return 'tagboard - ' .$this->request;
+        return 'tagboard - ' .$this->getInput('u');
     }
 
     public function getCacheDuration(){
