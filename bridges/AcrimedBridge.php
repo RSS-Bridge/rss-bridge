@@ -9,7 +9,7 @@ class AcrimedBridge extends RssExpander{
 
        public function collectData(){
 
-			$this->collectExpandableDatas("http://www.acrimed.org/spip.php?page=backend");
+			$this->collectExpandableDatas(static::URI.'spip.php?page=backend');
 
 		}
 
@@ -27,7 +27,7 @@ class AcrimedBridge extends RssExpander{
 
 			$articlePage = $this->getSimpleHTMLDOM($newsItem->link);
 			$article = $hs->sanitize($articlePage->find('article.article1', 0)->innertext);
-			$article = HTMLSanitizer::defaultImageSrcTo($article, "http://www.acrimed.org/");
+			$article = HTMLSanitizer::defaultImageSrcTo($article, static::URI);
 
 			$item['content'] = $article;
 
