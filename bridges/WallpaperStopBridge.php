@@ -63,7 +63,8 @@ class WallpaperStopBridge extends BridgeAbstract {
     }
 
     public function getName(){
-        return 'WallpaperStop - '.$this->getInput('c').(!empty($this->getInput('s')) ? ' > '.$this->getInput('s') : '').' ['.$this->getInput('r').']';
+        $subcategory=$this->getInput('s');
+        return 'WallpaperStop - '.$this->getInput('c').(!empty($subcategory) ? ' > '.$subcategory : '').' ['.$this->getInput('r').']';
     }
 
     public function getCacheDuration(){

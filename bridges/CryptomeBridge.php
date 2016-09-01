@@ -18,8 +18,9 @@ class CryptomeBridge extends BridgeAbstract{
     public function collectData(){
         $html = $this->getSimpleHTMLDOM($this->uri)
             or $this->returnServerError('Could not request Cryptome.');
-        if (!empty($this->getInput('n'))) {   /* number of documents */
-            $num = min($this->getInput('n'), 20);
+        $number=$this->getInput('n');
+        if (!empty($number)) {   /* number of documents */
+            $num = min($number, 20);
         }
 
 

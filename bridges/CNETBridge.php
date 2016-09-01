@@ -37,7 +37,8 @@ class CNETBridge extends BridgeAbstract {
             return $article_html;
         }
 
-        $pageUrl = $this->uri.(empty($this->getInput('topic')) ? '' : 'topics/'.$this->getInput('topic').'/');
+        $topic=$this->getInput('topic');
+        $pageUrl = $this->uri.(empty($topic) ? '' : 'topics/'.$topic.'/');
         $html = $this->getSimpleHTMLDOM($pageUrl) or $this->returnServerError('Could not request CNET: '.$pageUrl);
         $limit = 0;
 
@@ -69,7 +70,8 @@ class CNETBridge extends BridgeAbstract {
     }
 
     public function getName() {
-        return 'CNET News Bridge'.(empty($this->getInput('topic')) ? '' : ' - '.$this->getInput('topic'));
+        $topic=$this->getInput('topic');
+        return 'CNET News Bridge'.(empty($topic) ? '' : ' - '.$topic);
     }
 
     public function getCacheDuration() {
