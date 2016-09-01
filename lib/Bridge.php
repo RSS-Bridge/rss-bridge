@@ -251,13 +251,10 @@ abstract class BridgeAbstract implements BridgeInterface {
         if(!is_null($this->cache)){
             $this->cache->prepare($inputs);
             $time = $this->cache->getTime();
-        } else {
-            $time = false;
-        }
-
-        if($time !== false && (time() - $this->getCacheDuration() < $time)){
-            $this->items = $this->cache->loadData();
-            return;
+            if($time !== false && (time() - $this->getCacheDuration() < $time)){
+                $this->items = $this->cache->loadData();
+                return;
+            }
         }
 
         if(empty($this->parameters)){
