@@ -143,68 +143,104 @@ abstract class BridgeAbstract implements BridgeInterface {
         return $this->items;
     }
 
+    protected function isValidTextValue($value, $pattern = null){
+        if(!is_null($pattern)){
+            $filteredValue = filter_var($value, FILTER_VALIDATE_REGEXP,
+                array('options' => array(
+                    'regexp' => '/^' . $pattern . '$/'
+                ))
+            );
+        } else {
+            $filteredValue = filter_var($value);
+        }
+
+        if($filteredValue === false)
+            return null;
+
+        return $filteredValue;
+    }
+
+    protected function isValidNumberValue($value){
+        $filteredValue = filter_var($value, FILTER_VALIDATE_INT);
+
+        if($filteredValue === false && !empty($value))
+            return null;
+
+        return $filteredValue;
+    }
+
+    protected function isValidCheckboxValue($value){
+        $filteredValue = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+
+        if(is_null($filteredValue))
+            return null;
+
+        return $filteredValue;
+    }
+
+    protected function isValidListValue($value, $expectedValues){
+        $filteredValue = filter_var($value);
+
+        if($filteredValue === false)
+            return null;
+
+        if(!in_array($filteredValue, $expectedValues)){ // Check sub-values?
+            foreach($expectedValues as $subName => $subValue){
+                if(is_array($subValue) && in_array($filteredValue, $subValue))
+                    return $filteredValue;
+            }
+            return null;
+        }
+
+        return $filteredValue;
+    }
+
     protected function validateData(&$data){
-        $validated=true;
-        foreach($data as $name=>$value){
-            $registered=false;
-            foreach($this->parameters as $context=>$set){
-                if(array_key_exists($name,$set)){
-                    $registered=true;
-                    if(!isset($set[$name]['type'])){
-                        $set[$name]['type']='text';
+        if(!is_array($data))
+            return false;
+
+        foreach($data as $name => $value){
+            $registered = false;
+            foreach($this->parameters as $context => $set){
+                if(array_key_exists($name, $set)){
+                    $registered = true;
+
+                    if(!isset($set[$name]['type'])){ // Default to 'text'
+                        $set[$name]['type'] = 'text';
                     }
+
                     switch($set[$name]['type']){
-                    case 'number':
-                        $data[$name]=filter_var($value,FILTER_VALIDATE_INT);
-                        if($data[$name]===false && !empty($value)){
-                            $validated=false;
-                        }
+                    case 'number': 
+                        $data[$name] = $this->isValidNumberValue($value);
                         break;
-                    case 'checkbox':
-                        $data[$name]=filter_var($value,FILTER_VALIDATE_BOOLEAN,
-                            FILTER_NULL_ON_FAILURE);
-                        if(is_null($data[$name])){
-                            $validated=false;
-                        }
+                    case 'checkbox': 
+                        $data[$name] = $this->isValidCheckboxValue($value);
                         break;
-                    case 'list':
-                        $data[$name]=filter_var($value);
-                        if(!in_array($value,$set[$name]['values'])){
-                            foreach($set[$name]['values'] as $subName=>$subValue){
-                                if(is_array($subValue) &&
-                                    in_array($value,$subValue)){
-                                    $data[$name]=filter_var($value);
-                                    break 2;
-                                }
-                            }
-                            $validated=false;
-                            $data[$name]=null;
-                        }
+                    case 'list': 
+                        $data[$name] = $this->isValidListValue($value, $set[$name]['values']);
                         break;
                     default:
-                    case 'text':
+                    case 'text': 
                         if(isset($set[$name]['pattern'])){
-                            $data[$name]=filter_var($value,FILTER_VALIDATE_REGEXP,
-                                array('options'=>array(
-                                    'regexp'=>'/^'.$set[$name]['pattern'].'$/'
-                                ))
-                            );
-                        }else{
-                            $data[$name]=filter_var($value);
-                        }
-                        if($data[$name]===false && !empty($value)){
-                            $validated=false;
+                            $data[$name] = $this->isValidTextValue($value, $set[$name]['pattern']);
+                        } else {
+                            $data[$name] = $this->isValidTextValue($value);
                         }
                         break;
+                    }
+
+                    if(is_null($data[$name])){
+                        echo 'Parameter \'' . $name . '\' is invalid!' . PHP_EOL;
+                        return false;
                     }
                 }
             }
-            if(!$registered){
-                $validated=false;
-            }
+
+            if(!$registered)
+                return false;
         }
 
-        return $validated;
+        return true;
     }
 
     protected function getQueriedContext(){
@@ -251,13 +287,10 @@ abstract class BridgeAbstract implements BridgeInterface {
         if(!is_null($this->cache)){
             $this->cache->prepare($inputs);
             $time = $this->cache->getTime();
-        } else {
-            $time = false;
-        }
-
-        if($time !== false && (time() - $this->getCacheDuration() < $time)){
-            $this->items = $this->cache->loadData();
-            return;
+            if($time !== false && (time() - $this->getCacheDuration() < $time)){
+                $this->items = $this->cache->loadData();
+                return;
+            }
         }
 
         if(empty($this->parameters)){
