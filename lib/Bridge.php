@@ -253,13 +253,12 @@ abstract class BridgeAbstract implements BridgeInterface {
         }
     }
 
-    protected function getQueriedContext(){
+    protected function getQueriedContext(array $inputs){
         $queriedContexts=array();
         foreach(static::PARAMETERS as $context=>$set){
             $queriedContexts[$context]=null;
             foreach($set as $id=>$properties){
-                if(isset($this->inputs[$context][$id]['value']) &&
-                    !empty($this->inputs[$context][$id]['value'])){
+                if(isset($inputs[$id]) && !empty($inputs[$id])){
                     $queriedContexts[$context]=true;
                 }elseif(isset($properties['required']) &&
                     $properties['required']===true){
@@ -322,7 +321,7 @@ abstract class BridgeAbstract implements BridgeInterface {
         $this->setInputs($inputs);
 
         // Guess the paramter context from input data
-        $this->queriedContext = $this->getQueriedContext();
+        $this->queriedContext = $this->getQueriedContext($inputs);
         if(is_null($this->queriedContext)){
             $this->returnClientError('Required parameter(s) missing');
         } elseif($this->queriedContext === false){
