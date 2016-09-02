@@ -120,7 +120,7 @@ abstract class BridgeAbstract implements BridgeInterface {
     const MAINTAINER = 'No maintainer';
     const PARAMETERS = array();
     public $useProxy = true;
-    public $inputs = array();
+    protected $inputs = array();
     protected $queriedContext='';
 
     protected function returnError($message, $code){
