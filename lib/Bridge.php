@@ -199,12 +199,11 @@ abstract class BridgeAbstract implements BridgeInterface {
         if(!is_array($data))
             return false;
 
-        $validated=true;
         foreach($data as $name=>$value){
-            $registered=false;
+            $registered = false;
             foreach(static::PARAMETERS as $context=>$set){
                 if(array_key_exists($name,$set)){
-                    $registered=true;
+                    $registered = true;
                     if(!isset($set[$name]['type'])){
                         $set[$name]['type']='text';
                     }
