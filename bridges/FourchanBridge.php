@@ -35,8 +35,8 @@ class FourchanBridge extends BridgeAbstract{
 		$item['timestamp'] = $element->find('span.dateTime', 0)->getAttribute('data-utc');
 		$item['author'] = $element->find('span.name', 0)->plaintext;
 
-
-		if(!empty($element->find('.file', 0) ) ) {
+        $file=$element->find('.file', 0);
+		if(!empty($file) ) {
 			$item['image'] = $element->find('.file a', 0)->href;
 			$item['imageThumb'] = $element->find('.file img', 0)->src;
 			if(!isset($item['imageThumb']) and strpos($item['image'], '.swf') !== FALSE)

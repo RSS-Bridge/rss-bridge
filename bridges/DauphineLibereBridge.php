@@ -41,8 +41,9 @@ class DauphineLibereBridge extends BridgeAbstract {
 
 		$context = stream_context_create($opts);
 
-		if (empty($this->getInput('u'))) {
-            $html = $this->getSimpleHTMLDOM($this->uri.$this->getInput('u').'/rss')
+        $category=$this->getInput('u');
+		if (empty($category)) {
+            $html = $this->getSimpleHTMLDOM($this->uri.$category.'/rss')
                 or $this->returnServerError('Could not request DauphineLibere.');
 		} else {
             $html = $this->getSimpleHTMLDOM($this->uri.'rss')

@@ -31,8 +31,9 @@ class WorldOfTanksBridge extends HttpCachingBridgeAbstract{
     function getURI(){
         $lang = $this->getInput('lang');
         $uri = $this->uri.$lang.'/news/';
-        if(!empty($this->getInput('category'))) {
-            $uri .= 'pc-browser/'.$this->getInput('category')."/";
+        $category=$this->getInput('category');
+        if(!empty($category)) {
+            $uri .= 'pc-browser/'.$category."/";
         }
         return $uri;
     }
