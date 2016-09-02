@@ -143,7 +143,7 @@ abstract class BridgeAbstract implements BridgeInterface {
         return $this->items;
     }
 
-    protected function isValidTextValue($value, $pattern = null){
+    protected function validateTextValue($value, $pattern = null){
         if(!is_null($pattern)){
             $filteredValue = filter_var($value, FILTER_VALIDATE_REGEXP,
                 array('options' => array(
@@ -160,7 +160,7 @@ abstract class BridgeAbstract implements BridgeInterface {
         return $filteredValue;
     }
 
-    protected function isValidNumberValue($value){
+    protected function validateNumberValue($value){
         $filteredValue = filter_var($value, FILTER_VALIDATE_INT);
 
         if($filteredValue === false && !empty($value))
@@ -169,7 +169,7 @@ abstract class BridgeAbstract implements BridgeInterface {
         return $filteredValue;
     }
 
-    protected function isValidCheckboxValue($value){
+    protected function validateCheckboxValue($value){
         $filteredValue = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 
         if(is_null($filteredValue))
@@ -178,7 +178,7 @@ abstract class BridgeAbstract implements BridgeInterface {
         return $filteredValue;
     }
 
-    protected function isValidListValue($value, $expectedValues){
+    protected function validateListValue($value, $expectedValues){
         $filteredValue = filter_var($value);
 
         if($filteredValue === false)
@@ -211,20 +211,20 @@ abstract class BridgeAbstract implements BridgeInterface {
 
                     switch($set[$name]['type']){
                     case 'number':
-                        $data[$name] = $this->isValidNumberValue($value);
+                        $data[$name] = $this->validateNumberValue($value);
                         break;
                     case 'checkbox':
-                        $data[$name] = $this->isValidCheckboxValue($value);
+                        $data[$name] = $this->validateCheckboxValue($value);
                         break;
                     case 'list':
-                        $data[$name] = $this->isValidListValue($value, $set[$name]['values']);
+                        $data[$name] = $this->validateListValue($value, $set[$name]['values']);
                         break;
                     default:
                     case 'text':
                         if(isset($set[$name]['pattern'])){
-                            $data[$name] = $this->isValidTextValue($value, $set[$name]['pattern']);
+                            $data[$name] = $this->validateTextValue($value, $set[$name]['pattern']);
                         } else {
-                            $data[$name] = $this->isValidTextValue($value);
+                            $data[$name] = $this->validateTextValue($value);
                         }
                         break;
                     }
