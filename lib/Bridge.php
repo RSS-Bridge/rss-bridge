@@ -251,6 +251,70 @@ abstract class BridgeAbstract implements BridgeInterface {
                 }
             }
         }
+
+        // Apply default values to missing data
+        $contexts = array($this->queriedContext);
+        if(array_key_exists('global', static::PARAMETERS)){
+            $contexts[] = 'global';
+        }
+
+        foreach($contexts as $context){
+            foreach(static::PARAMETERS[$context] as $name => $properties){
+                if(!isset($properties['type'])){
+                  $type = 'text';
+                } else {
+                  $type = $properties['type'];
+                }
+                if(isset($this->inputs[$context][$name]['value'])){
+                  continue;
+                }
+                switch($properties['type']){
+                case 'checkbox':
+                    if(!isset($properties['defaultValue'])){
+                        $this->inputs[$context][$name]['value'] = false;
+                    } else {
+                        $this->inputs[$context][$name]['value'] = $properties['defaultValue'];
+                    }
+                    break;
+                case 'list':
+                    if(!isset($properties['defaultValue'])){
+                        $firstItem = reset($properties['values']);
+                        if(is_array($firstItem)){
+                            $firstItem = reset($firstItem);
+                        }
+                        $this->inputs[$context][$name]['value'] = $firstItem;
+                    } else {
+                        $this->inputs[$context][$name]['value'] = $properties['defaultValue'];
+                    }
+                    break;
+                default:
+                    if(isset($properties['defaultValue'])){
+                        $this->inputs[$context][$name]['value'] = $properties['defaultValue'];
+                    }
+                    break;
+                }
+            }
+        }
+
+        // Copy global parameter values to the guessed context
+        if(array_key_exists('global', static::PARAMETERS)){
+            foreach(static::PARAMETERS['global'] as $name => $properties){
+                if(isset($inputs[$name])){
+                    $value = $inputs[$name];
+                }else if(isset($properties['value'])){
+                    $value = $properties['value'];
+                }else{
+                    continue;
+                }
+                $this->inputs[$this->queriedContext][$name]['value'] = $value;
+            }
+        }
+
+        // Only keep guessed context parameters values
+        if(!isset($this->inputs[$this->queriedContext])){
+          $this->inputs[$this->queriedContext] = array();
+        }
+        $this->inputs = array($this->queriedContext=>$this->inputs[$this->queriedContext]);
     }
 
     protected function getQueriedContext(array $inputs){
@@ -318,8 +382,6 @@ abstract class BridgeAbstract implements BridgeInterface {
             $this->returnClientError('Invalid parameters value(s)');
         }
 
-        $this->setInputs($inputs);
-
         // Guess the paramter context from input data
         $this->queriedContext = $this->getQueriedContext($inputs);
         if(is_null($this->queriedContext)){
@@ -328,68 +390,7 @@ abstract class BridgeAbstract implements BridgeInterface {
             $this->returnClientError('Mixed context parameters');
         }
 
-        // Apply default values to missing data
-        $contexts=array($this->queriedContext);
-        if(array_key_exists('global',static::PARAMETERS)){
-            $contexts[]='global';
-        }
-        foreach($contexts as $context){
-            foreach(static::PARAMETERS[$context] as $name=>$properties){
-                if(!isset($properties['type'])){
-                  $type='text';
-                }else{
-                  $type=$properties['type'];
-                }
-                if(isset($this->inputs[$context][$name]['value'])){
-                  continue;
-                }
-                switch($properties['type']){
-                case 'checkbox':
-                    if(!isset($properties['defaultValue'])){
-                        $this->inputs[$context][$name]['value']=false;
-                    }else{
-                        $this->inputs[$context][$name]['value']=$properties['defaultValue'];
-                    }
-                    break;
-                case 'list':
-                    if(!isset($properties['defaultValue'])){
-                        $firstItem=reset($properties['values']);
-                        if(is_array($firstItem)){
-                            $firstItem=reset($firstItem);
-                        }
-                        $this->inputs[$context][$name]['value']=$firstItem;
-                    }else{
-                        $this->inputs[$context][$name]['value']=$properties['defaultValue'];
-                    }
-                    break;
-                default:
-                    if(isset($properties['defaultValue'])){
-                        $this->inputs[$context][$name]['value']=$properties['defaultValue'];
-                    }
-                    break;
-                }
-            }
-        }
-
-        // Copy global parameter values to the guessed context
-        if(array_key_exists('global',static::PARAMETERS)){
-            foreach(static::PARAMETERS['global'] as $name=>$properties){
-                if(isset($inputs[$name])){
-                    $value=$inputs[$name];
-                }else if(isset($properties['value'])){
-                    $value=$properties['value'];
-                }else{
-                    continue;
-                }
-                $this->inputs[$this->queriedContext][$name]['value']=$value;
-            }
-        }
-
-        // Only keep guessed context parameters values
-        if(!isset($this->inputs[$this->queriedContext])){
-          $this->inputs[$this->queriedContext]=array();
-        }
-        $this->inputs=array($this->queriedContext=>$this->inputs[$this->queriedContext]);
+        $this->setInputs($inputs);
 
         $this->collectData();
 
