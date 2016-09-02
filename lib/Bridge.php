@@ -243,7 +243,8 @@ abstract class BridgeAbstract implements BridgeInterface {
         return true;
     }
 
-    protected function setInputs(array $inputs){
+    protected function setInputs(array $inputs, $queriedContext){
+        // Import and assign all inputs to their context
         foreach($inputs as $name => $value){
             foreach(static::PARAMETERS as $context => $set){
                 if(array_key_exists($name, static::PARAMETERS[$context])){
@@ -253,21 +254,19 @@ abstract class BridgeAbstract implements BridgeInterface {
         }
 
         // Apply default values to missing data
-        $contexts = array($this->queriedContext);
+        $contexts = array($queriedContext);
         if(array_key_exists('global', static::PARAMETERS)){
             $contexts[] = 'global';
         }
 
         foreach($contexts as $context){
             foreach(static::PARAMETERS[$context] as $name => $properties){
-                if(!isset($properties['type'])){
-                  $type = 'text';
-                } else {
-                  $type = $properties['type'];
-                }
                 if(isset($this->inputs[$context][$name]['value'])){
-                  continue;
+                    continue;
                 }
+
+                $type = isset($properties['type']) ? $properties['type'] : 'text';
+
                 switch($type){
                 case 'checkbox':
                     if(!isset($properties['defaultValue'])){
@@ -301,20 +300,21 @@ abstract class BridgeAbstract implements BridgeInterface {
             foreach(static::PARAMETERS['global'] as $name => $properties){
                 if(isset($inputs[$name])){
                     $value = $inputs[$name];
-                }else if(isset($properties['value'])){
+                } elseif (isset($properties['value'])){
                     $value = $properties['value'];
-                }else{
+                } else {
                     continue;
                 }
-                $this->inputs[$this->queriedContext][$name]['value'] = $value;
+                $this->inputs[$queriedContext][$name]['value'] = $value;
             }
         }
 
         // Only keep guessed context parameters values
-        if(!isset($this->inputs[$this->queriedContext])){
-          $this->inputs[$this->queriedContext] = array();
+        if(isset($this->inputs[$queriedContext])){
+            $this->inputs = array($queriedContext => $this->inputs[$queriedContext]);
+        } else {
+            $this->inputs = array();
         }
-        $this->inputs = array($this->queriedContext=>$this->inputs[$this->queriedContext]);
     }
 
     protected function getQueriedContext(array $inputs){
@@ -390,7 +390,7 @@ abstract class BridgeAbstract implements BridgeInterface {
             $this->returnClientError('Mixed context parameters');
         }
 
-        $this->setInputs($inputs);
+        $this->setInputs($inputs, $this->queriedContext);
 
         $this->collectData();
 
