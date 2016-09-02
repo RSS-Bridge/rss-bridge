@@ -111,17 +111,18 @@ interface BridgeInterface {
 
 abstract class BridgeAbstract implements BridgeInterface {
 
-    protected $cache;
-    protected $items = array();
-
     const NAME = 'Unnamed bridge';
     const URI = '';
     const DESCRIPTION = 'No description provided';
     const MAINTAINER = 'No maintainer';
     const PARAMETERS = array();
+
     public $useProxy = true;
-    public $inputs = array();
-    protected $queriedContext='';
+
+    protected $cache;
+    protected $items = array();
+    protected $inputs = array();
+    protected $queriedContext = '';
 
     protected function returnError($message, $code){
         throw new \HttpException($message, $code);
@@ -143,7 +144,7 @@ abstract class BridgeAbstract implements BridgeInterface {
         return $this->items;
     }
 
-    protected function isValidTextValue($value, $pattern = null){
+    protected function validateTextValue($value, $pattern = null){
         if(!is_null($pattern)){
             $filteredValue = filter_var($value, FILTER_VALIDATE_REGEXP,
                 array('options' => array(
@@ -160,7 +161,7 @@ abstract class BridgeAbstract implements BridgeInterface {
         return $filteredValue;
     }
 
-    protected function isValidNumberValue($value){
+    protected function validateNumberValue($value){
         $filteredValue = filter_var($value, FILTER_VALIDATE_INT);
 
         if($filteredValue === false && !empty($value))
@@ -169,7 +170,7 @@ abstract class BridgeAbstract implements BridgeInterface {
         return $filteredValue;
     }
 
-    protected function isValidCheckboxValue($value){
+    protected function validateCheckboxValue($value){
         $filteredValue = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 
         if(is_null($filteredValue))
@@ -178,7 +179,7 @@ abstract class BridgeAbstract implements BridgeInterface {
         return $filteredValue;
     }
 
-    protected function isValidListValue($value, $expectedValues){
+    protected function validateListValue($value, $expectedValues){
         $filteredValue = filter_var($value);
 
         if($filteredValue === false)
@@ -199,32 +200,31 @@ abstract class BridgeAbstract implements BridgeInterface {
         if(!is_array($data))
             return false;
 
-        $validated=true;
         foreach($data as $name=>$value){
-            $registered=false;
+            $registered = false;
             foreach(static::PARAMETERS as $context=>$set){
                 if(array_key_exists($name,$set)){
-                    $registered=true;
+                    $registered = true;
                     if(!isset($set[$name]['type'])){
                         $set[$name]['type']='text';
                     }
 
                     switch($set[$name]['type']){
                     case 'number':
-                        $data[$name] = $this->isValidNumberValue($value);
+                        $data[$name] = $this->validateNumberValue($value);
                         break;
                     case 'checkbox':
-                        $data[$name] = $this->isValidCheckboxValue($value);
+                        $data[$name] = $this->validateCheckboxValue($value);
                         break;
                     case 'list':
-                        $data[$name] = $this->isValidListValue($value, $set[$name]['values']);
+                        $data[$name] = $this->validateListValue($value, $set[$name]['values']);
                         break;
                     default:
                     case 'text':
                         if(isset($set[$name]['pattern'])){
-                            $data[$name] = $this->isValidTextValue($value, $set[$name]['pattern']);
+                            $data[$name] = $this->validateTextValue($value, $set[$name]['pattern']);
                         } else {
-                            $data[$name] = $this->isValidTextValue($value);
+                            $data[$name] = $this->validateTextValue($value);
                         }
                         break;
                     }
@@ -243,13 +243,86 @@ abstract class BridgeAbstract implements BridgeInterface {
         return true;
     }
 
-    protected function getQueriedContext(){
+    protected function setInputs(array $inputs, $queriedContext){
+        // Import and assign all inputs to their context
+        foreach($inputs as $name => $value){
+            foreach(static::PARAMETERS as $context => $set){
+                if(array_key_exists($name, static::PARAMETERS[$context])){
+                    $this->inputs[$context][$name]['value'] = $value;
+                }
+            }
+        }
+
+        // Apply default values to missing data
+        $contexts = array($queriedContext);
+        if(array_key_exists('global', static::PARAMETERS)){
+            $contexts[] = 'global';
+        }
+
+        foreach($contexts as $context){
+            foreach(static::PARAMETERS[$context] as $name => $properties){
+                if(isset($this->inputs[$context][$name]['value'])){
+                    continue;
+                }
+
+                $type = isset($properties['type']) ? $properties['type'] : 'text';
+
+                switch($type){
+                case 'checkbox':
+                    if(!isset($properties['defaultValue'])){
+                        $this->inputs[$context][$name]['value'] = false;
+                    } else {
+                        $this->inputs[$context][$name]['value'] = $properties['defaultValue'];
+                    }
+                    break;
+                case 'list':
+                    if(!isset($properties['defaultValue'])){
+                        $firstItem = reset($properties['values']);
+                        if(is_array($firstItem)){
+                            $firstItem = reset($firstItem);
+                        }
+                        $this->inputs[$context][$name]['value'] = $firstItem;
+                    } else {
+                        $this->inputs[$context][$name]['value'] = $properties['defaultValue'];
+                    }
+                    break;
+                default:
+                    if(isset($properties['defaultValue'])){
+                        $this->inputs[$context][$name]['value'] = $properties['defaultValue'];
+                    }
+                    break;
+                }
+            }
+        }
+
+        // Copy global parameter values to the guessed context
+        if(array_key_exists('global', static::PARAMETERS)){
+            foreach(static::PARAMETERS['global'] as $name => $properties){
+                if(isset($inputs[$name])){
+                    $value = $inputs[$name];
+                } elseif (isset($properties['value'])){
+                    $value = $properties['value'];
+                } else {
+                    continue;
+                }
+                $this->inputs[$queriedContext][$name]['value'] = $value;
+            }
+        }
+
+        // Only keep guessed context parameters values
+        if(isset($this->inputs[$queriedContext])){
+            $this->inputs = array($queriedContext => $this->inputs[$queriedContext]);
+        } else {
+            $this->inputs = array();
+        }
+    }
+
+    protected function getQueriedContext(array $inputs){
         $queriedContexts=array();
         foreach(static::PARAMETERS as $context=>$set){
             $queriedContexts[$context]=null;
             foreach($set as $id=>$properties){
-                if(isset($this->inputs[$context][$id]['value']) &&
-                    !empty($this->inputs[$context][$id]['value'])){
+                if(isset($inputs[$id]) && !empty($inputs[$id])){
                     $queriedContexts[$context]=true;
                 }elseif(isset($properties['required']) &&
                     $properties['required']===true){
@@ -309,87 +382,15 @@ abstract class BridgeAbstract implements BridgeInterface {
             $this->returnClientError('Invalid parameters value(s)');
         }
 
-        // Populate BridgeAbstract::parameters with sanitized data
-        foreach($inputs as $name=>$value){
-            foreach(static::PARAMETERS as $context=>$set){
-                if(array_key_exists($name,static::PARAMETERS[$context])){
-                    $this->inputs[$context][$name]['value']=$value;
-                }
-            }
-        }
-
         // Guess the paramter context from input data
-        $queriedContext=$this->getQueriedContext();
-        if(is_null($queriedContext)){
+        $this->queriedContext = $this->getQueriedContext($inputs);
+        if(is_null($this->queriedContext)){
             $this->returnClientError('Required parameter(s) missing');
-        }else if($queriedContext===false){
+        } elseif($this->queriedContext === false){
             $this->returnClientError('Mixed context parameters');
         }
 
-        $this->queriedContext=$queriedContext;
-
-        // Apply default values to missing data
-        $contexts=array($this->queriedContext);
-        if(array_key_exists('global',static::PARAMETERS)){
-            $contexts[]='global';
-        }
-        foreach($contexts as $context){
-            foreach(static::PARAMETERS[$context] as $name=>$properties){
-                if(!isset($properties['type'])){
-                  $type='text';
-                }else{
-                  $type=$properties['type'];
-                }
-                if(isset($this->inputs[$context][$name]['value'])){
-                  continue;
-                }
-                switch($properties['type']){
-                case 'checkbox':
-                    if(!isset($properties['defaultValue'])){
-                        $this->inputs[$context][$name]['value']=false;
-                    }else{
-                        $this->inputs[$context][$name]['value']=$properties['defaultValue'];
-                    }
-                    break;
-                case 'list':
-                    if(!isset($properties['defaultValue'])){
-                        $firstItem=reset($properties['values']);
-                        if(is_array($firstItem)){
-                            $firstItem=reset($firstItem);
-                        }
-                        $this->inputs[$context][$name]['value']=$firstItem;
-                    }else{
-                        $this->inputs[$context][$name]['value']=$properties['defaultValue'];
-                    }
-                    break;
-                default:
-                    if(isset($properties['defaultValue'])){
-                        $this->inputs[$context][$name]['value']=$properties['defaultValue'];
-                    }
-                    break;
-                }
-            }
-        }
-
-        // Copy global parameter values to the guessed context
-        if(array_key_exists('global',static::PARAMETERS)){
-            foreach(static::PARAMETERS['global'] as $name=>$properties){
-                if(isset($inputs[$name])){
-                    $value=$inputs[$name];
-                }else if(isset($properties['value'])){
-                    $value=$properties['value'];
-                }else{
-                    continue;
-                }
-                $this->inputs[$queriedContext][$name]['value']=$value;
-            }
-        }
-
-        // Only keep guessed context parameters values
-        if(!isset($this->inputs[$this->queriedContext])){
-          $this->inputs[$this->queriedContext]=array();
-        }
-        $this->inputs=array($this->queriedContext=>$this->inputs[$this->queriedContext]);
+        $this->setInputs($inputs, $this->queriedContext);
 
         $this->collectData();
 
