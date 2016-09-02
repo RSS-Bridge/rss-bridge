@@ -1,10 +1,10 @@
 <?php
 class NiceMatinBridge extends BridgeAbstract{
 
-	public $maintainer = "pit-fgfjiudghdf";
-	public $name = "NiceMatin";
-	public $uri = "http://www.nicematin.com/";
-	public $description = "Returns the 10 newest posts from NiceMatin (full text)";
+	const MAINTAINER = "pit-fgfjiudghdf";
+	const NAME = "NiceMatin";
+	const URI = "http://www.nicematin.com/";
+	const DESCRIPTION = "Returns the 10 newest posts from NiceMatin (full text)";
 
 	private function NiceMatinExtractContent($url) {
 		$html = $this->getSimpleHTMLDOM($url);
@@ -21,7 +21,7 @@ class NiceMatinBridge extends BridgeAbstract{
 	}
 
 	public function collectData(){
-        $html = $this->getSimpleHTMLDOM($this->uri.'derniere-minute/rss')
+        $html = $this->getSimpleHTMLDOM(self::URI.'derniere-minute/rss')
             or $this->returnServerError('Could not request NiceMatin.');
 		$limit = 0;
 

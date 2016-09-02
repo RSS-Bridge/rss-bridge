@@ -1,12 +1,12 @@
 <?php
 class FuturaSciencesBridge extends BridgeAbstract {
 
-    public $maintainer = 'ORelio';
-    public $name = 'Futura-Sciences Bridge';
-    public $uri = 'http://www.futura-sciences.com/';
-    public $description = 'Returns the newest articles.';
+    const MAINTAINER = 'ORelio';
+    const NAME = 'Futura-Sciences Bridge';
+    const URI = 'http://www.futura-sciences.com/';
+    const DESCRIPTION = 'Returns the newest articles.';
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'feed'=> array(
             'name'=>'Feed',
             'type'=>'list',

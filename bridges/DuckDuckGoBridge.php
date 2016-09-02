@@ -1,19 +1,19 @@
 <?php
 class DuckDuckGoBridge extends BridgeAbstract{
 
-	public $maintainer = "Astalaseven";
-	public $name = "DuckDuckGo";
-	public $uri = "https://duckduckgo.com/";
-	public $description = "Returns most recent results from DuckDuckGo.";
+	const MAINTAINER = "Astalaseven";
+	const NAME = "DuckDuckGo";
+	const URI = "https://duckduckgo.com/";
+	const DESCRIPTION = "Returns most recent results from DuckDuckGo.";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'u'=>array(
             'name'=>'keyword',
             'required'=>true)
         ));
 
     public function collectData(){
-        $html = $this->getSimpleHTMLDOM($this->uri.'html/?q='.$this->getInput('u').'+sort:date')
+        $html = $this->getSimpleHTMLDOM(self::URI.'html/?q='.$this->getInput('u').'+sort:date')
             or $this->returnServerError('Could not request DuckDuckGo.');
 
         foreach($html->find('div.results_links') as $element) {

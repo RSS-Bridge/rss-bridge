@@ -1,13 +1,13 @@
 <?php
 class LesJoiesDuCodeBridge extends BridgeAbstract{
 
-	public $maintainer = "superbaillot.net";
-	public $name = "Les Joies Du Code";
-	public $uri = "http://lesjoiesducode.fr/";
-	public $description = "LesJoiesDuCode";
+	const MAINTAINER = "superbaillot.net";
+	const NAME = "Les Joies Du Code";
+	const URI = "http://lesjoiesducode.fr/";
+	const DESCRIPTION = "LesJoiesDuCode";
 
     public function collectData(){
-        $html = $this->getSimpleHTMLDOM($this->uri)
+        $html = $this->getSimpleHTMLDOM(self::URI)
             or $this->returnServerError('Could not request LesJoiesDuCode.');
 
         foreach($html->find('div.blog-post') as $element) {

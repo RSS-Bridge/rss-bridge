@@ -1,10 +1,10 @@
 <?php
 class SiliconBridge extends BridgeAbstract {
 
-	public $maintainer = "ORelio";
-	public $name = 'Silicon Bridge';
-	public $uri = 'http://www.silicon.fr/';
-	public $description = "Returns the newest articles.";
+	const MAINTAINER = "ORelio";
+	const NAME = 'Silicon Bridge';
+	const URI = 'http://www.silicon.fr/';
+	const DESCRIPTION = "Returns the newest articles.";
 
     public function collectData(){
 
@@ -14,7 +14,7 @@ class SiliconBridge extends BridgeAbstract {
             return $string;
         }
 
-        $feedUrl = $this->uri.'feed';
+        $feedUrl = self::URI.'feed';
         $html = $this->getSimpleHTMLDOM($feedUrl)
           or $this->returnServerError('Could not request Silicon: '.$feedUrl);
         $limit = 0;

@@ -1,12 +1,12 @@
 <?php
 class OpenClassroomsBridge extends BridgeAbstract{
 
-	public $maintainer = "sebsauvage";
-	public $name = "OpenClassrooms Bridge";
-	public $uri = "https://openclassrooms.com/";
-	public $description = "Returns latest tutorials from OpenClassrooms.";
+	const MAINTAINER = "sebsauvage";
+	const NAME = "OpenClassrooms Bridge";
+	const URI = "https://openclassrooms.com/";
+	const DESCRIPTION = "Returns latest tutorials from OpenClassrooms.";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'u'=>array(
             'name'=>'Catégorie',
             'type'=>'list',
@@ -26,7 +26,7 @@ class OpenClassroomsBridge extends BridgeAbstract{
     ));
 
     public function getURI(){
-      return $this->uri.'/courses?categories='.$this->getInput('u').'&'
+      return self::URI.'/courses?categories='.$this->getInput('u').'&'
         .'title=&sort=updatedAt+desc';
     }
 
@@ -36,7 +36,7 @@ class OpenClassroomsBridge extends BridgeAbstract{
 
         foreach($html->find('.courseListItem') as $element) {
                 $item = array();
-                $item['uri'] = $this->uri.$element->find('a', 0)->href;
+                $item['uri'] = self::URI.$element->find('a', 0)->href;
                 $item['title'] = $element->find('h3', 0)->plaintext;
                 $item['content'] = $element->find('slidingItem__descriptionContent', 0)->plaintext;
                 $this->items[] = $item;

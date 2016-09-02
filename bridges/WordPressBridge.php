@@ -5,12 +5,12 @@ class WordPressBridge extends HttpCachingBridgeAbstract {
 
 	public $sitename; // Name of the site
 
-	public $maintainer = "aledeg";
-	public $name = "Wordpress Bridge";
-	public $uri = "https://wordpress.org/";
-	public $description = "Returns the 3 newest full posts of a Wordpress blog";
+	const MAINTAINER = "aledeg";
+	const NAME = "Wordpress Bridge";
+	const URI = "https://wordpress.org/";
+	const DESCRIPTION = "Returns the 3 newest full posts of a Wordpress blog";
 
-	public $parameters = array( array(
+	const PARAMETERS = array( array(
 		'url'=>array(
 			'name'=>'Blog URL',
 			'required'=>true

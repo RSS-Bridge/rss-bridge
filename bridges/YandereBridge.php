@@ -1,12 +1,12 @@
 <?php
 class YandereBridge extends BridgeAbstract{
 
-	public $maintainer = "mitsukarenai";
-	public $name = "Yande.re";
-	public $uri = "https://yande.re/";
-	public $description = "Returns images from given page and tags";
+	const MAINTAINER = "mitsukarenai";
+	const NAME = "Yande.re";
+	const URI = "https://yande.re/";
+	const DESCRIPTION = "Returns images from given page and tags";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'p'=>array(
             'name'=>'page',
             'type'=>'number',
@@ -17,7 +17,7 @@ class YandereBridge extends BridgeAbstract{
 
     public function collectData(){
         $html = $this->getSimpleHTMLDOM(
-            $this->uri.'post?'
+            self::URI.'post?'
             .'&page='.$this->getInput('p')
             .'&tags='.urlencode($this->getInput('t'))
         ) or $this->returnServerError('Could not request Yander.');
@@ -30,7 +30,7 @@ class YandereBridge extends BridgeAbstract{
         foreach($data as $datai) {
 	    $json = json_decode($datai, TRUE);
             $item = array();
-            $item['uri'] = $this->uri.'post/show/'.$json['id'];
+            $item['uri'] = self::URI.'post/show/'.$json['id'];
             $item['postid'] = $json['id'];
             $item['timestamp'] = $json['created_at'];
             $item['imageUri'] = $json['file_url'];

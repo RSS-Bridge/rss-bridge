@@ -1,14 +1,14 @@
 <?php
 class CourrierInternationalBridge extends BridgeAbstract{
 
-    public $maintainer = "teromene";
-    public $name = "Courrier International Bridge";
-    public $uri = "http://CourrierInternational.com/";
-    public $description = "Courrier International bridge";
+    const MAINTAINER = "teromene";
+    const NAME = "Courrier International Bridge";
+    const URI = "http://CourrierInternational.com/";
+    const DESCRIPTION = "Courrier International bridge";
 
     public function collectData(){
 
-        $html = $this->getSimpleHTMLDOM($this->uri)
+        $html = $this->getSimpleHTMLDOM(self::URI)
             or $this->returnServerError('Error.');
 
         $element = $html->find("article");
@@ -22,7 +22,7 @@ class CourrierInternationalBridge extends BridgeAbstract{
             $item['uri'] = $article->parent->getAttribute("href");
 
             if(strpos($item['uri'], "http") === FALSE) {
-                $item['uri'] = $this->uri.$item['uri'];
+                $item['uri'] = self::URI.$item['uri'];
             }
 
             $page = $this->getSimpleHTMLDOM($item['uri']);

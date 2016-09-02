@@ -2,11 +2,11 @@
 class AllocineFRBridge extends BridgeAbstract{
 
 
-    public $maintainer = "superbaillot.net";
-    public $name = "Allo Cine Bridge";
-    public $uri = "http://www.allocine.fr";
-    public $description = "Bridge for allocine.fr";
-    public $parameters = array( array(
+    const MAINTAINER = "superbaillot.net";
+    const NAME = "Allo Cine Bridge";
+    const URI = "http://www.allocine.fr";
+    const DESCRIPTION = "Bridge for allocine.fr";
+    const PARAMETERS = array( array(
         'category'=>array(
             'name'=>'category',
             'type'=>'list',
@@ -38,10 +38,10 @@ class AllocineFRBridge extends BridgeAbstract{
     }
 
     public function getName(){
-        return $this->name.' : '
+        return self::NAME.' : '
             .array_search(
                 $this->getInput('category'),
-                $this->parameters[$this->queriedContext]['category']['values']
+                self::PARAMETERS[$this->queriedContext]['category']['values']
             );
     }
 
@@ -52,7 +52,7 @@ class AllocineFRBridge extends BridgeAbstract{
 
         $category=array_search(
                 $this->getInput('category'),
-                $this->parameters[$this->queriedContext]['category']['values']
+                self::PARAMETERS[$this->queriedContext]['category']['values']
             );
 
 

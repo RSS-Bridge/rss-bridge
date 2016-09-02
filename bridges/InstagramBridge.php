@@ -1,12 +1,12 @@
 <?php
 class InstagramBridge extends BridgeAbstract{
 
-	public $maintainer = "pauder";
-	public $name = "Instagram Bridge";
-	public $uri = "http://instagram.com/";
-	public $description = "Returns the newest images";
+	const MAINTAINER = "pauder";
+	const NAME = "Instagram Bridge";
+	const URI = "http://instagram.com/";
+	const DESCRIPTION = "Returns the newest images";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'u'=>array(
             'name'=>'username',
             'required'=>true
@@ -46,7 +46,7 @@ class InstagramBridge extends BridgeAbstract{
         {
 
         	$item = array();
-        	$item['uri'] = $this->uri.'/p/'.$media->code.'/';
+        	$item['uri'] = self::URI.'/p/'.$media->code.'/';
         	$item['content'] = '<img src="' . htmlentities($media->display_src) . '" />';
         	if (isset($media->caption))
         	{
@@ -65,7 +65,7 @@ class InstagramBridge extends BridgeAbstract{
     }
 
     public function getURI(){
-        return $this->uri.urlencode($this->getInput('u'));
+        return self::URI.urlencode($this->getInput('u'));
     }
 }
 

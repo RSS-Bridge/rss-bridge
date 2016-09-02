@@ -4,12 +4,12 @@ define('WIKIPEDIA_SUBJECT_TFA', 0); // Today's featured article
 define('WIKIPEDIA_SUBJECT_DYK', 1); // Did you know...
 
 class WikipediaBridge extends HttpCachingBridgeAbstract {
-	public $maintainer = 'logmanoriginal';
-	public $name = 'Wikipedia bridge for many languages';
-	public $uri = 'https://www.wikipedia.org/';
-	public $description = 'Returns articles for a language of your choice';
+	const MAINTAINER = 'logmanoriginal';
+	const NAME = 'Wikipedia bridge for many languages';
+	const URI = 'https://www.wikipedia.org/';
+	const DESCRIPTION = 'Returns articles for a language of your choice';
 
-	public $parameters = array( array(
+	const PARAMETERS = array( array(
 		'language'=>array(
 			'name'=>'Language',
 			'type'=>'list',

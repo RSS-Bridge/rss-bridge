@@ -1,14 +1,14 @@
 <?php
 class Les400CulsBridge extends RssExpander{
 
-	public $maintainer = "unknown";
-	public $name = "Les 400 Culs";
-	public $uri = "http://sexes.blogs.liberation.fr/";
-	public $description = "La planete sexe vue par Agnes Girard via rss-bridge";
+	const MAINTAINER = "unknown";
+	const NAME = "Les 400 Culs";
+	const URI = "http://sexes.blogs.liberation.fr/";
+	const DESCRIPTION = "La planete sexe vue par Agnes Girard via rss-bridge";
 
 
     public function collectData(){
-        $this->collectExpandableDatas($this->uri.'feeds/');
+        $this->collectExpandableDatas(self::URI.'feeds/');
     }
 
     protected function parseRSSItem($newsItem) {

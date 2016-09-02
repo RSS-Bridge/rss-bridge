@@ -1,9 +1,9 @@
 <?php
 class ShanaprojectBridge extends BridgeAbstract {
-    public $maintainer = 'logmanoriginal';
-    public $name = 'Shanaproject Bridge';
-    public $uri = 'http://www.shanaproject.com';
-    public $description = 'Returns a list of anime from the current Season Anime List';
+    const MAINTAINER = 'logmanoriginal';
+    const NAME = 'Shanaproject Bridge';
+    const URI = 'http://www.shanaproject.com';
+    const DESCRIPTION = 'Returns a list of anime from the current Season Anime List';
 
     // Returns an html object for the Season Anime List (latest season)
     private function LoadSeasonAnimeList(){

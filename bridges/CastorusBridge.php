@@ -1,11 +1,11 @@
 <?php
 class CastorusBridge extends BridgeAbstract {
-	public $maintainer = "logmanoriginal";
-	public $name = "Castorus Bridge";
-	public $uri = 'http://www.castorus.com';
-	public $description = "Returns the latest changes";
+	const MAINTAINER = "logmanoriginal";
+	const NAME = "Castorus Bridge";
+	const URI = 'http://www.castorus.com';
+	const DESCRIPTION = "Returns the latest changes";
 
-    public $parameters = array(
+    const PARAMETERS = array(
         'Get latest changes' => array(),
         'Get latest changes via ZIP code' => array(
             'zip'=>array(
@@ -44,7 +44,7 @@ class CastorusBridge extends BridgeAbstract {
 		if(!$url)
 			$this->returnServerError('Cannot find url!');
 
-		return $this->uri . $url->href;
+		return self::URI . $url->href;
 	}
 
 	// Extracts the time from an activity
@@ -77,10 +77,10 @@ class CastorusBridge extends BridgeAbstract {
         $zip_filter = trim($this->getInput('zip'));
         $city_filter = trim($this->getInput('city'));
 
-		$html = $this->getSimpleHTMLDOM($this->uri);
+		$html = $this->getSimpleHTMLDOM(self::URI);
 
 		if(!$html)
-			$this->returnServerError('Could not load data from ' . $this->uri . '!');
+			$this->returnServerError('Could not load data from ' . self::URI . '!');
 
 		$activities = $html->find('div#activite/li');
 

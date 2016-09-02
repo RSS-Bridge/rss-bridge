@@ -1,12 +1,12 @@
 <?php
 class XbooruBridge extends BridgeAbstract{
 
-    public $maintainer = "mitsukarenai";
-    public $name = "Xbooru";
-    public $uri = "http://xbooru.com/";
-    public $description = "Returns images from given page";
+    const MAINTAINER = "mitsukarenai";
+    const NAME = "Xbooru";
+    const URI = "http://xbooru.com/";
+    const DESCRIPTION = "Returns images from given page";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'p'=>array(
             'name'=>'page',
             'type'=>'number'
@@ -16,7 +16,7 @@ class XbooruBridge extends BridgeAbstract{
 
     public function collectData(){
         $html = $this->getSimpleHTMLDOM(
-            $this->uri.'index.php?page=post&s=list&'
+            self::URI.'index.php?page=post&s=list&'
             .'&pid='.($this->getInput('p')?($this->getInput('p') -1)*50:'')
             .'&tags='.urlencode($this->getInput('t'))
         ) or $this->returnServerError('Could not request Xbooru.');
@@ -24,7 +24,7 @@ class XbooruBridge extends BridgeAbstract{
 
 	foreach($html->find('div[class=content] span') as $element) {
 		$item = array();
-		$item['uri'] = $this->uri.$element->find('a', 0)->href;
+		$item['uri'] = self::URI.$element->find('a', 0)->href;
 		$item['postid'] = (int)preg_replace("/[^0-9]/",'', $element->getAttribute('id'));
 		$item['timestamp'] = time();
 		$thumbnailUri = $element->find('img', 0)->src;

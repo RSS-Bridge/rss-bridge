@@ -1,11 +1,11 @@
 <?php
 class AskfmBridge extends BridgeAbstract{
 
-    public $maintainer = "az5he6ch";
-    public $name = "Ask.fm Answers";
-    public $uri = "http://ask.fm/";
-    public $description = "Returns answers from an Ask.fm user";
-    public $parameters = array(
+    const MAINTAINER = "az5he6ch";
+    const NAME = "Ask.fm Answers";
+    const URI = "http://ask.fm/";
+    const DESCRIPTION = "Returns answers from an Ask.fm user";
+    const PARAMETERS = array(
         'Ask.fm username'=>array(
             'u'=>array(
                 'name'=>'Username',
@@ -20,7 +20,7 @@ class AskfmBridge extends BridgeAbstract{
 
         foreach($html->find('div.streamItem-answer') as $element) {
             $item = array();
-            $item['uri'] = $this->uri.$element->find('a.streamItemsAge',0)->href;
+            $item['uri'] = self::URI.$element->find('a.streamItemsAge',0)->href;
             $question = trim($element->find('h1.streamItemContent-question',0)->innertext);
             $item['title'] = trim(htmlspecialchars_decode($element->find('h1.streamItemContent-question',0)->plaintext, ENT_QUOTES));
             $answer = trim($element->find('p.streamItemContent-answer',0)->innertext);
@@ -35,18 +35,18 @@ class AskfmBridge extends BridgeAbstract{
             }
             $content = '<p>' . $question . '</p><p>' . $answer . '</p><p>' . $visual . '</p>';
             // Fix relative links without breaking // scheme used by YouTube stuff
-            $content = preg_replace('#href="\/(?!\/)#', 'href="'.$this->uri,$content);
+            $content = preg_replace('#href="\/(?!\/)#', 'href="'.self::URI,$content);
             $item['content'] = $content;
             $this->items[] = $item;
         }
     }
 
     public function getName(){
-        return $this->name.' : '.$this->getInput('u');
+        return self::NAME.' : '.$this->getInput('u');
     }
 
     public function getURI(){
-        return $this->uri.urlencode($this->getInput('u')).'/answers/more?page=0';
+        return self::URI.urlencode($this->getInput('u')).'/answers/more?page=0';
     }
 
     public function getCacheDuration(){

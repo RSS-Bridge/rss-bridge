@@ -1,12 +1,12 @@
 <?php
 class PinterestBridge extends BridgeAbstract{
 
-	public $maintainer = "pauder";
-	public $name = "Pinterest Bridge";
-	public $uri = "http://www.pinterest.com/";
-	public $description = "Returns the newest images on a board";
+	const MAINTAINER = "pauder";
+	const NAME = "Pinterest Bridge";
+	const URI = "http://www.pinterest.com/";
+	const DESCRIPTION = "Returns the newest images on a board";
 
-    public $parameters = array(
+    const PARAMETERS = array(
         'By username and board' => array(
           'u'=>array(
             'name'=>'username',
@@ -77,10 +77,10 @@ class PinterestBridge extends BridgeAbstract{
     public function getURI(){
       switch($this->queriedContext){
       case 'By username and board':
-        $uri = $this->uri.urlencode($this->getInput('u')).'/'.urlencode($this->getInput('b'));
+        $uri = self::URI.urlencode($this->getInput('u')).'/'.urlencode($this->getInput('b'));
         break;
       case 'From search':
-        $uri = $this->uri.'search/?q='.urlencode($this->getInput('q'));
+        $uri = self::URI.'search/?q='.urlencode($this->getInput('q'));
         break;
       }
 
@@ -96,6 +96,6 @@ class PinterestBridge extends BridgeAbstract{
             $specific = $this->getInput('q');
         break;
       }
-      return $specific .' - '.$this->name;
+      return $specific .' - '.self::NAME;
     }
 }

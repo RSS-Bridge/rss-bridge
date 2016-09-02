@@ -1,12 +1,12 @@
 <?php
 class SoundCloudBridge extends BridgeAbstract{
 
-	public $maintainer = "kranack";
-	public $name = "Soundcloud Bridge";
-	public $uri = "https://soundcloud.com/";
-	public $description = "Returns 10 newest music from user profile";
+	const MAINTAINER = "kranack";
+	const NAME = "Soundcloud Bridge";
+	const URI = "https://soundcloud.com/";
+	const DESCRIPTION = "Returns 10 newest music from user profile";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'u'=>array(
             'name'=>'username',
             'required'=>true
@@ -33,10 +33,10 @@ class SoundCloudBridge extends BridgeAbstract{
 		    $item['author'] = $tracks[$i]->user->username .' - '. $tracks[$i]->title;
 		    $item['title'] = $tracks[$i]->user->username .' - '. $tracks[$i]->title;
 		    $item['content'] = '<audio src="'. $tracks[$i]->uri .'/stream?client_id='. self::CLIENT_ID .'">';
-            $item['id'] = $this->uri
+            $item['id'] = self::URI
                 . urlencode($this->getInput('u')) .'/'
                 . urlencode($tracks[$i]->permalink);
-            $item['uri'] = $this->uri
+            $item['uri'] = self::URI
                 . urlencode($this->getInput('u')) .'/'
                 . urlencode($tracks[$i]->permalink);
 		    $this->items[] = $item;
@@ -44,7 +44,7 @@ class SoundCloudBridge extends BridgeAbstract{
 
     }
 	public function getName(){
-		return $this->name .' - '. $this->getInput('u');
+		return self::NAME .' - '. $this->getInput('u');
 	}
 
 	public function getCacheDuration(){

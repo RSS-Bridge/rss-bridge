@@ -1,11 +1,11 @@
 <?php
 class RTBFBridge extends BridgeAbstract {
-	public $name = "RTBF Bridge";
-	public $uri = "http://www.rtbf.be/auvio/emissions/";
-	public $description = "Returns the newest RTBF videos by series ID";
-	public $maintainer = "Frenzie";
+	const NAME = "RTBF Bridge";
+	const URI = "http://www.rtbf.be/auvio/emissions/";
+	const DESCRIPTION = "Returns the newest RTBF videos by series ID";
+	const MAINTAINER = "Frenzie";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'c'=>array(
             'name'=>'series id',
             'exampleValue'=>9500,
@@ -27,7 +27,7 @@ class RTBFBridge extends BridgeAbstract {
             }
 			$item = array();
 			$item['id'] = $element->getAttribute('data-id');
-			$item['uri'] = $this->uri.'detail?id='.$item['id'];
+			$item['uri'] = self::URI.'detail?id='.$item['id'];
 			$thumbnailUriSrcSet = explode(',', $element->find('figure .www-img-16by9 img', 0)->getAttribute('data-srcset'));
 			$thumbnailUriLastSrc = end($thumbnailUriSrcSet);
 			$thumbnailUri = explode(' ', $thumbnailUriLastSrc)[0];
@@ -40,7 +40,7 @@ class RTBFBridge extends BridgeAbstract {
 	}
 
     public function getURI(){
-      return $this->uri.'detail?id='.$this->getInput('c');
+      return self::URI.'detail?id='.$this->getInput('c');
     }
 
 	public function getName(){

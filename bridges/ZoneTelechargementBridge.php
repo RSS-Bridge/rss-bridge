@@ -1,12 +1,12 @@
 <?php
 class ZoneTelechargementBridge extends BridgeAbstract {
 
-    public $maintainer = 'ORelio';
-    public $name = 'Zone Telechargement Bridge';
-    public $uri = 'https://www.zone-telechargement.com/';
-    public $description = 'RSS proxy returning the newest releases.<br />You may specify a category found in RSS URLs, else main feed is selected.';
+    const MAINTAINER = 'ORelio';
+    const NAME = 'Zone Telechargement Bridge';
+    const URI = 'https://www.zone-telechargement.com/';
+    const DESCRIPTION = 'RSS proxy returning the newest releases.<br />You may specify a category found in RSS URLs, else main feed is selected.';
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'category'=>array('name'=>'Category')
     ));
 

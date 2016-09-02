@@ -1,13 +1,13 @@
 <?php
 class FootitoBridge extends BridgeAbstract{
 
-	public $maintainer = "superbaillot.net";
-	public $name = "Footito";
-	public $uri = "http://www.footito.fr/";
-	public $description = "Footito";
+	const MAINTAINER = "superbaillot.net";
+	const NAME = "Footito";
+	const URI = "http://www.footito.fr/";
+	const DESCRIPTION = "Footito";
 
     public function collectData(){
-        $html = $this->getSimpleHTMLDOM($this->uri)
+        $html = $this->getSimpleHTMLDOM(self::URI)
             or $this->returnServerError('Could not request Footito.');
 
         foreach($html->find('div.post') as $element) {

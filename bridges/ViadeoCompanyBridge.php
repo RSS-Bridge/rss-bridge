@@ -1,12 +1,12 @@
 <?php
 class ViadeoCompanyBridge extends BridgeAbstract{
 
-	public $maintainer = "regisenguehard";
-	public $name = "Viadeo Company";
-	public $uri = "https://www.viadeo.com/";
-	public $description = "Returns most recent actus from Company on Viadeo. (http://www.viadeo.com/fr/company/<strong style=\"font-weight:bold;\">apple</strong>)";
+	const MAINTAINER = "regisenguehard";
+	const NAME = "Viadeo Company";
+	const URI = "https://www.viadeo.com/";
+	const DESCRIPTION = "Returns most recent actus from Company on Viadeo. (http://www.viadeo.com/fr/company/<strong style=\"font-weight:bold;\">apple</strong>)";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'c'=>array(
             'name'=>'Company name',
             'required'=>true
@@ -15,7 +15,7 @@ class ViadeoCompanyBridge extends BridgeAbstract{
 
     public function collectData(){
         $html = '';
-        $link = $this->uri.'fr/company/'.$this->getInput('c');
+        $link = self::URI.'fr/company/'.$this->getInput('c');
 
         $html = $this->getSimpleHTMLDOM($link)
           or $this->returnServerError('Could not request Viadeo.');

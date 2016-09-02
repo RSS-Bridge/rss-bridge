@@ -3,12 +3,13 @@ class HTMLUtils {
 
 	public static function displayBridgeCard($bridgeName, $formats, $isActive = true){
 		$bridgeElement = Bridge::create($bridgeName);
+        $bridgeClass=$bridgeName.'Bridge';
 
 		if($bridgeElement == false)
 			return "";
 
-		$name = '<a href="' . $bridgeElement->uri . '">' . $bridgeElement->name . '</a>';
-		$description = $bridgeElement->description;
+		$name = '<a href="' . $bridgeClass::URI . '">' . $bridgeClass::NAME . '</a>';
+		$description = $bridgeClass::DESCRIPTION;
 
 		$card = <<<CARD
 		<section id="bridge-{$bridgeName}" data-ref="{$bridgeName}">
@@ -21,7 +22,7 @@ class HTMLUtils {
 CARD;
 
 		// If we don't have any parameter for the bridge, we print a generic form to load it.
-		if(count($bridgeElement->parameters) == 0) {
+		if(count($bridgeClass::PARAMETERS) == 0) {
 
 			$card .= HTMLUtils::getFormHeader($bridgeName);
 
@@ -40,13 +41,13 @@ CARD;
 			$card .= '</form>' . PHP_EOL;
 		}
 
-		$hasGlobalParameter = array_key_exists('global', $bridgeElement->parameters);
+		$hasGlobalParameter = array_key_exists('global', $bridgeClass::PARAMETERS);
 
 		if($hasGlobalParameter){
-			$globalParameters = $bridgeElement->parameters['global'];
+			$globalParameters = $bridgeClass::PARAMETERS['global'];
 		}
 
-		foreach($bridgeElement->parameters as $parameterName => $parameter){
+		foreach($bridgeClass::PARAMETERS as $parameterName => $parameter){
 			if(!is_numeric($parameterName) && $parameterName == 'global')
 				continue;
 
@@ -129,7 +130,7 @@ CARD;
 		}
 
 		$card .= '<label class="showless" for="showmore-' . $bridgeName . '">Show less</label>';
-		$card .= '<p class="maintainer">' . $bridgeElement->maintainer . '</p>';
+		$card .= '<p class="maintainer">' . $bridgeClass::MAINTAINER . '</p>';
 		$card .= '</section>';
 
 		return $card;

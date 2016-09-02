@@ -3,12 +3,12 @@ define('GIPHY_LIMIT', 10);
 
 class GiphyBridge extends BridgeAbstract{
 
-	public $maintainer = "kraoc";
-	public $name = "Giphy Bridge";
-	public $uri = "http://giphy.com/";
-	public $description = "Bridge for giphy.com";
+	const MAINTAINER = "kraoc";
+	const NAME = "Giphy Bridge";
+	const URI = "http://giphy.com/";
+	const DESCRIPTION = "Bridge for giphy.com";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         's'=>array(
             'name'=>'search tag',
             'required'=>true
@@ -22,7 +22,7 @@ class GiphyBridge extends BridgeAbstract{
 	public function collectData(){
 		$html = '';
         $base_url = 'http://giphy.com';
-        $html = $this->getSimpleHTMLDOM($this->uri.'/search/'.urlencode($this->getInput('s').'/'))
+        $html = $this->getSimpleHTMLDOM(self::URI.'/search/'.urlencode($this->getInput('s').'/'))
             or $this->returnServerError('No results for this query.');
 
         $max = GIPHY_LIMIT;
@@ -37,7 +37,7 @@ class GiphyBridge extends BridgeAbstract{
                 $node = $entry->first_child();
                 $href = $node->getAttribute('href');
 
-                $html2 = $this->getSimpleHTMLDOM($this->uri . $href)
+                $html2 = $this->getSimpleHTMLDOM(self::URI . $href)
                     or $this->returnServerError('No results for this query.');
                 $figure = $html2->getElementByTagName('figure');
                 $img = $figure->firstChild();

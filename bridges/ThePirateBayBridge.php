@@ -1,12 +1,12 @@
 <?php
 class ThePirateBayBridge extends BridgeAbstract{
 
-	public $maintainer = "mitsukarenai";
-	public $name = "The Pirate Bay";
-	public $uri = "https://thepiratebay.org/";
-	public $description = "Returns results for the keywords. You can put several list of keywords by separating them with a semicolon (e.g. \"one show;another show\")";
+	const MAINTAINER = "mitsukarenai";
+	const NAME = "The Pirate Bay";
+	const URI = "https://thepiratebay.org/";
+	const DESCRIPTION = "Returns results for the keywords. You can put several list of keywords by separating them with a semicolon (e.g. \"one show;another show\")";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'q'=>array(
             'name'=>'keywords, separated by semicolons',
             'exampleValue'=>'first list;second list;…',
@@ -52,7 +52,7 @@ class ThePirateBayBridge extends BridgeAbstract{
 
         $keywordsList = explode(";",$this->getInput('q'));
         foreach($keywordsList as $keywords){
-          $html = $this->getSimpleHTMLDOM($this->uri.'search/'.rawurlencode($keywords).'/0/3/0')
+          $html = $this->getSimpleHTMLDOM(self::URI.'search/'.rawurlencode($keywords).'/0/3/0')
             or $this->returnServerError('Could not request TPB.');
 
             if ($html->find('table#searchResult', 0) == FALSE)
@@ -61,7 +61,7 @@ class ThePirateBayBridge extends BridgeAbstract{
 
             foreach($html->find('tr') as $element) {
                 $item = array();
-                $item['uri'] = $this->uri.$element->find('a.detLink',0)->href;
+                $item['uri'] = self::URI.$element->find('a.detLink',0)->href;
                 $item['id'] = $item['uri'];
                 $item['timestamp'] = parseDateTimestamp($element);
                 $item['title'] = $element->find('a.detLink',0)->plaintext;

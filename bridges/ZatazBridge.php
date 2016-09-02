@@ -1,13 +1,13 @@
 <?php
 class ZatazBridge extends BridgeAbstract {
 
-	public $maintainer = "aledeg";
-	public $name = 'Zataz Magazine';
-	public $uri = 'http://www.zataz.com';
-	public $description = "ZATAZ Magazine - S'informer, c'est déjà se sécuriser";
+	const MAINTAINER = "aledeg";
+	const NAME = 'Zataz Magazine';
+	const URI = 'http://www.zataz.com';
+	const DESCRIPTION = "ZATAZ Magazine - S'informer, c'est déjà se sécuriser";
 
 	public function collectData(){
-		$html = $this->getSimpleHTMLDOM($this->uri) or $this->returnServerError('Could not request ' . $this->uri);
+		$html = $this->getSimpleHTMLDOM(self::URI) or $this->returnServerError('Could not request ' . self::URI);
 
 		$recent_posts = $html->find('#recent-posts-3', 0)->find('ul', 0)->find('li');
 		foreach ($recent_posts as $article) {

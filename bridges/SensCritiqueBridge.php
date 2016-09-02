@@ -1,12 +1,12 @@
 <?php
 class SensCritiqueBridge extends BridgeAbstract {
 
-	public $maintainer = "kranack";
-	public $name = "Sens Critique";
-	public $uri = "http://www.senscritique.com/";
-	public $description = "Sens Critique news";
+	const MAINTAINER = "kranack";
+	const NAME = "Sens Critique";
+	const URI = "http://www.senscritique.com/";
+	const DESCRIPTION = "Sens Critique news";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'm'=>array(
             'name'=>'Movies',
             'type'=>'checkbox'
@@ -35,9 +35,9 @@ class SensCritiqueBridge extends BridgeAbstract {
 
 	public function collectData(){
       $categories=array();
-      foreach($this->parameters[$this->queriedContext] as $category=>$properties){
+      foreach(self::PARAMETERS[$this->queriedContext] as $category=>$properties){
         if($this->getInput($category)){
-          $uri=$this->uri;
+          $uri=self::URI;
           switch($category){
           case 'm': $uri.='films/cette-semaine'; break;
           case 's': $uri.='series/actualite'; break;

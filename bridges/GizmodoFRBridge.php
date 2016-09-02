@@ -1,10 +1,10 @@
 <?php
 class GizmodoFRBridge extends BridgeAbstract{
 
-	public $maintainer = "polopollo";
-	public $name = "GizmodoFR";
-	public $uri = "http://www.gizmodo.fr/";
-	public $description = "Returns the 15 newest posts from GizmodoFR (full text).";
+	const MAINTAINER = "polopollo";
+	const NAME = "GizmodoFR";
+	const URI = "http://www.gizmodo.fr/";
+	const DESCRIPTION = "Returns the 15 newest posts from GizmodoFR (full text).";
 
     public function collectData(){
 
@@ -24,8 +24,8 @@ class GizmodoFRBridge extends BridgeAbstract{
             return $text;
         }
 
-        $rssFeed = $this->getSimpleHTMLDOM($this->uri.'/feed')
-          or $this->returnServerError('Could not request '.$this->uri.'/feed');
+        $rssFeed = $this->getSimpleHTMLDOM(self::URI.'/feed')
+          or $this->returnServerError('Could not request '.self::URI.'/feed');
     	$limit = 0;
 
     	foreach($rssFeed->find('item') as $element) {

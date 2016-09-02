@@ -2,12 +2,12 @@
 define('MANGAREADER_LIMIT', 10); // The default limit
 class MangareaderBridge extends BridgeAbstract{
 
-	public $maintainer = "logmanoriginal";
-	public $name = "Mangareader Bridge";
-	public $uri = "http://www.mangareader.net/";
-	public $description = "Returns the latest updates, popular mangas or manga updates (new chapters)";
+	const MAINTAINER = "logmanoriginal";
+	const NAME = "Mangareader Bridge";
+	const URI = "http://www.mangareader.net/";
+	const DESCRIPTION = "Returns the latest updates, popular mangas or manga updates (new chapters)";
 
-    public $parameters = array(
+    const PARAMETERS = array(
         'Get latest updates' => array(),
         'Get popular mangas' => array(
           'category'=>array(
@@ -108,7 +108,7 @@ class MangareaderBridge extends BridgeAbstract{
 
                 if (isset($manga) && $chapters->length >= 1){
                     $item = array();
-                    $item['uri'] = $this->uri. htmlspecialchars($manga->getAttribute('href'));
+                    $item['uri'] = self::URI. htmlspecialchars($manga->getAttribute('href'));
                     $item['title'] = htmlspecialchars($manga->nodeValue);
 
                     // Add each chapter to the feed
@@ -118,7 +118,7 @@ class MangareaderBridge extends BridgeAbstract{
                         if($item['content'] <> ""){
                             $item['content'] .= "<br>";
                         }
-                        $item['content'] .= "<a href='" .$this->uri. htmlspecialchars($chapter->getAttribute('href')) . "'>" . htmlspecialchars($chapter->nodeValue) . "</a>";
+                        $item['content'] .= "<a href='" .self::URI. htmlspecialchars($chapter->getAttribute('href')) . "'>" . htmlspecialchars($chapter->nodeValue) . "</a>";
                     }
 
                     $this->items[] = $item;
@@ -142,7 +142,7 @@ class MangareaderBridge extends BridgeAbstract{
 
                 $item = array();
                 $item['title'] = htmlspecialchars($xpath->query(".//*[@class='manga_name']//a", $manga)->item(0)->nodeValue);
-                $item['uri'] = $this->uri . $xpath->query(".//*[@class='manga_name']//a", $manga)->item(0)->getAttribute('href');
+                $item['uri'] = self::URI . $xpath->query(".//*[@class='manga_name']//a", $manga)->item(0)->getAttribute('href');
                 $item['author'] = htmlspecialchars($xpath->query("//*[@class='author_name']", $manga)->item(0)->nodeValue);
                 $item['chaptercount'] = $xpath->query(".//*[@class='chapter_count']", $manga)->item(0)->nodeValue;
                 $item['genre'] = htmlspecialchars($xpath->query(".//*[@class='manga_genre']", $manga)->item(0)->nodeValue);
@@ -170,7 +170,7 @@ class MangareaderBridge extends BridgeAbstract{
             foreach ($chapters as $chapter){
                 $item = array();
                 $item['title'] = htmlspecialchars($xpath->query("td[1]", $chapter)->item(0)->nodeValue);
-                $item['uri'] = $this->uri . $xpath->query("td[1]/a", $chapter)->item(0)->getAttribute('href');
+                $item['uri'] = self::URI . $xpath->query("td[1]/a", $chapter)->item(0)->getAttribute('href');
                 $item['timestamp'] = strtotime($xpath->query("td[2]", $chapter)->item(0)->nodeValue);
                 array_unshift($this->items, $item);
             }
@@ -201,7 +201,7 @@ class MangareaderBridge extends BridgeAbstract{
             $path = $this->getInput('path');
             break;
         }
-        return $this->uri . $path;
+        return self::URI . $path;
     }
 
 

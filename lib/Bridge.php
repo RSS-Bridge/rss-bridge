@@ -114,12 +114,12 @@ abstract class BridgeAbstract implements BridgeInterface {
     protected $cache;
     protected $items = array();
 
-    public $name = 'Unnamed bridge';
-    public $uri = '';
-    public $description = 'No description provided';
-    public $maintainer = 'No maintainer';
+    const NAME = 'Unnamed bridge';
+    const URI = '';
+    const DESCRIPTION = 'No description provided';
+    const MAINTAINER = 'No maintainer';
+    const PARAMETERS = array();
     public $useProxy = true;
-    public $parameters = array();
     public $inputs = array();
     protected $queriedContext='';
 
@@ -199,28 +199,28 @@ abstract class BridgeAbstract implements BridgeInterface {
         if(!is_array($data))
             return false;
 
-        foreach($data as $name => $value){
-            $registered = false;
-            foreach($this->parameters as $context => $set){
-                if(array_key_exists($name, $set)){
-                    $registered = true;
-
-                    if(!isset($set[$name]['type'])){ // Default to 'text'
-                        $set[$name]['type'] = 'text';
+        $validated=true;
+        foreach($data as $name=>$value){
+            $registered=false;
+            foreach(static::PARAMETERS as $context=>$set){
+                if(array_key_exists($name,$set)){
+                    $registered=true;
+                    if(!isset($set[$name]['type'])){
+                        $set[$name]['type']='text';
                     }
 
                     switch($set[$name]['type']){
-                    case 'number': 
+                    case 'number':
                         $data[$name] = $this->isValidNumberValue($value);
                         break;
-                    case 'checkbox': 
+                    case 'checkbox':
                         $data[$name] = $this->isValidCheckboxValue($value);
                         break;
-                    case 'list': 
+                    case 'list':
                         $data[$name] = $this->isValidListValue($value, $set[$name]['values']);
                         break;
                     default:
-                    case 'text': 
+                    case 'text':
                         if(isset($set[$name]['pattern'])){
                             $data[$name] = $this->isValidTextValue($value, $set[$name]['pattern']);
                         } else {
@@ -245,7 +245,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 
     protected function getQueriedContext(){
         $queriedContexts=array();
-        foreach($this->parameters as $context=>$set){
+        foreach(static::PARAMETERS as $context=>$set){
             $queriedContexts[$context]=null;
             foreach($set as $id=>$properties){
                 if(isset($this->inputs[$context][$id]['value']) &&
@@ -259,7 +259,7 @@ abstract class BridgeAbstract implements BridgeInterface {
             }
         }
 
-        if(isset($this->parameters['global']) &&
+        if(array_key_exists('global',static::PARAMETERS) &&
             $queriedContexts['global']===false){
             return null;
         }
@@ -293,7 +293,7 @@ abstract class BridgeAbstract implements BridgeInterface {
             }
         }
 
-        if(empty($this->parameters)){
+        if(empty(static::PARAMETERS)){
             if(!empty($inputs)){
                 $this->returnClientError('Invalid parameters value(s)');
             }
@@ -311,8 +311,8 @@ abstract class BridgeAbstract implements BridgeInterface {
 
         // Populate BridgeAbstract::parameters with sanitized data
         foreach($inputs as $name=>$value){
-            foreach($this->parameters as $context=>$set){
-                if(isset($this->parameters[$context][$name])){
+            foreach(static::PARAMETERS as $context=>$set){
+                if(array_key_exists($name,static::PARAMETERS[$context])){
                     $this->inputs[$context][$name]['value']=$value;
                 }
             }
@@ -330,13 +330,15 @@ abstract class BridgeAbstract implements BridgeInterface {
 
         // Apply default values to missing data
         $contexts=array($this->queriedContext);
-        if(isset($this->parameters['global'])){
+        if(array_key_exists('global',static::PARAMETERS)){
             $contexts[]='global';
         }
         foreach($contexts as $context){
-            foreach($this->parameters[$context] as $name=>$properties){
+            foreach(static::PARAMETERS[$context] as $name=>$properties){
                 if(!isset($properties['type'])){
-                    $this->parameters[$context][$name]['type']='text';
+                  $type='text';
+                }else{
+                  $type=$properties['type'];
                 }
                 if(isset($this->inputs[$context][$name]['value'])){
                   continue;
@@ -370,8 +372,8 @@ abstract class BridgeAbstract implements BridgeInterface {
         }
 
         // Copy global parameter values to the guessed context
-        if(isset($this->parameters['global'])){
-            foreach($this->parameters['global'] as $name=>$properties){
+        if(array_key_exists('global',static::PARAMETERS)){
+            foreach(static::PARAMETERS['global'] as $name=>$properties){
                 if(isset($inputs[$name])){
                     $value=$inputs[$name];
                 }else if(isset($properties['value'])){
@@ -404,11 +406,11 @@ abstract class BridgeAbstract implements BridgeInterface {
     }
 
     public function getName(){
-        return $this->name;
+        return static::NAME;
     }
 
     public function getURI(){
-        return $this->uri;
+        return static::URI;
     }
 
     public function getCacheDuration(){
@@ -584,6 +586,10 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
 
 abstract class RssExpander extends HttpCachingBridgeAbstract {
 
+  private $name;
+  private $uri;
+  private $description;
+
     public function collectExpandableDatas($name){
         if(empty($name)){
             $this->returnServerError('There is no $name for this RSS expander');
@@ -630,6 +636,14 @@ abstract class RssExpander extends HttpCachingBridgeAbstract {
      * @return a RSS-Bridge Item, with (hopefully) the whole content)
      */
     abstract protected function parseRSSItem($item);
+
+    public function getURI(){
+      return $this->uri;
+    }
+
+    public function getName(){
+      return $this->name;
+    }
 
     public function getDescription(){
         return $this->description;

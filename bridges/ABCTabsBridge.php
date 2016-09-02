@@ -1,10 +1,10 @@
 <?php
 class ABCTabsBridge extends BridgeAbstract{
 
-	public $maintainer = "kranack";
-	public $name = "ABC Tabs Bridge";
-	public $uri = "http://www.abc-tabs.com/";
-	public $description = "Returns 22 newest tabs";
+	const MAINTAINER = "kranack";
+	const NAME = "ABC Tabs Bridge";
+	const URI = "http://www.abc-tabs.com/";
+	const DESCRIPTION = "Returns 22 newest tabs";
 
 	public function collectData(){
 		$html = '';

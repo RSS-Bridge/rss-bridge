@@ -1,10 +1,10 @@
 <?php
 class CollegeDeFranceBridge extends BridgeAbstract{
 
-	public $maintainer = "pit-fgfjiudghdf";
-	public $name = "CollegeDeFrance";
-	public $uri = "http://www.college-de-france.fr/";
-	public $description = "Returns the latest audio and video from CollegeDeFrance";
+	const MAINTAINER = "pit-fgfjiudghdf";
+	const NAME = "CollegeDeFrance";
+	const URI = "http://www.college-de-france.fr/";
+	const DESCRIPTION = "Returns the latest audio and video from CollegeDeFrance";
 
 	public function collectData(){
 		$months = array(
@@ -30,7 +30,7 @@ class CollegeDeFranceBridge extends BridgeAbstract{
 		 * 	</a>
 		 * </li>
 		 */
-        $html = $this->getSimpleHTMLDOM($this->uri.'components/search-audiovideo.jsp?fulltext=&siteid=1156951719600&lang=FR&type=all')
+        $html = $this->getSimpleHTMLDOM(self::URI.'components/search-audiovideo.jsp?fulltext=&siteid=1156951719600&lang=FR&type=all')
             or $this->returnServerError('Could not request CollegeDeFrance.');
 		foreach($html->find('a[data-target]') as $element) {
 			$item = array();
@@ -62,7 +62,7 @@ class CollegeDeFranceBridge extends BridgeAbstract{
             }
             $item['timestamp'] = $d->format('U');
 			$item['content'] =  $element->find('.lecturer', 0)->innertext . ' - ' . $element->find('.title', 0)->innertext;
-			$item['uri'] = $this->uri . $element->href;
+			$item['uri'] = self::URI . $element->href;
 			$this->items[] = $item;
 		}
 	}

@@ -1,13 +1,13 @@
 <?php
 class FlickrExploreBridge extends BridgeAbstract{
 
-	public $maintainer = "sebsauvage";
-	public $name = "Flickr Explore";
-	public $uri = "https://www.flickr.com/";
-	public $description = "Returns the latest interesting images from Flickr";
+	const MAINTAINER = "sebsauvage";
+	const NAME = "Flickr Explore";
+	const URI = "https://www.flickr.com/";
+	const DESCRIPTION = "Returns the latest interesting images from Flickr";
 
     public function collectData(){
-        $html = $this->getSimpleHTMLDOM($this->uri.'explore')
+        $html = $this->getSimpleHTMLDOM(self::URI.'explore')
             or $this->returnServerError('Could not request Flickr.');
 
         foreach($html->find('.photo-list-photo-view') as $element) {
@@ -32,7 +32,7 @@ class FlickrExploreBridge extends BridgeAbstract{
                         )) or $this->returnServerError('Could not request Flickr.'); // FIXME: Request time too long...
 
             $item = array();
-            $item['uri'] = $this->uri.'photo.gne?id='.$imageID;
+            $item['uri'] = self::URI.'photo.gne?id='.$imageID;
             $item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $imageURI . '" /></a>'; // FIXME: Filter javascript ?
             $item['title'] = $imageJSON->photo->title->_content;
             $this->items[] = $item;

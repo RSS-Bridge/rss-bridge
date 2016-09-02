@@ -1,12 +1,12 @@
 <?php
 class IdenticaBridge extends BridgeAbstract{
 
-	public $maintainer = "mitsukarenai";
-	public $name = "Identica Bridge";
-	public $uri = "https://identi.ca/";
-	public $description = "Returns user timelines";
+	const MAINTAINER = "mitsukarenai";
+	const NAME = "Identica Bridge";
+	const URI = "https://identi.ca/";
+	const DESCRIPTION = "Returns user timelines";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'u'=>array(
             'name'=>'username',
             'required'=>true
@@ -32,7 +32,7 @@ class IdenticaBridge extends BridgeAbstract{
     }
 
     public function getURI(){
-        return $this->uri.urlencode($this->getInput('u'));
+        return self::URI.urlencode($this->getInput('u'));
     }
 
     public function getCacheDuration(){

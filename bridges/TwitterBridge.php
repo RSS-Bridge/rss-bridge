@@ -1,9 +1,9 @@
 <?php
 class TwitterBridge extends BridgeAbstract{
-    public $name='Twitter Bridge';
-    public $uri='https://twitter.com/';
-    public $description='returns tweets';
-    public $parameters=array(
+    const NAME='Twitter Bridge';
+    const URI='https://twitter.com/';
+    const DESCRIPTION='returns tweets';
+    const PARAMETERS=array(
         'global'=>array(
             'nopic'=>array(
                 'name'=>'Hide profile pictures',
@@ -51,9 +51,9 @@ class TwitterBridge extends BridgeAbstract{
     public function getURI(){
         switch($this->queriedContext){
         case 'By keyword or hashtag':
-            return $this->uri.'search?q='.urlencode($this->getInput('q')).'&f=tweets';
+            return self::URI.'search?q='.urlencode($this->getInput('q')).'&f=tweets';
         case 'By username':
-            return $this->uri.urlencode($this->getInput('u')).
+            return self::URI.urlencode($this->getInput('u')).
                 ($this->getInput('norep')?'':'/with_replies');
         }
     }
@@ -86,7 +86,7 @@ class TwitterBridge extends BridgeAbstract{
 			// get TweetID
 			$item['id'] = $tweet->getAttribute('data-tweet-id');
 			// get tweet link
-			$item['uri'] = $this->uri.$tweet->find('a.js-permalink', 0)->getAttribute('href');
+			$item['uri'] = self::URI.$tweet->find('a.js-permalink', 0)->getAttribute('href');
 			// extract tweet timestamp
 			$item['timestamp'] = $tweet->find('span.js-short-timestamp', 0)->getAttribute('data-time');
 			// generate the title
@@ -111,7 +111,7 @@ class TwitterBridge extends BridgeAbstract{
 			}
 
 			// get tweet text
-			$cleanedTweet = str_replace('href="/', 'href="'.$this->uri, $tweet->find('p.js-tweet-text', 0)->innertext);
+			$cleanedTweet = str_replace('href="/', 'href="'.self::URI, $tweet->find('p.js-tweet-text', 0)->innertext);
 
 			// Add picture to content
 			$picture_html = '';

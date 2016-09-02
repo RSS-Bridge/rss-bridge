@@ -3,12 +3,12 @@ define('TWITCH_LIMIT', 10); // The default limit
 
 class TwitchApiBridge extends BridgeAbstract{
 
-	public $maintainer = "logmanoriginal";
-	public $name = "Twitch API Bridge";
-	public $uri = "http://www.twitch.tv";
-	public $description = "Returns the newest broadcasts or highlights by channel name using the Twitch API (v3)";
+	const MAINTAINER = "logmanoriginal";
+	const NAME = "Twitch API Bridge";
+	const URI = "http://www.twitch.tv";
+	const DESCRIPTION = "Returns the newest broadcasts or highlights by channel name using the Twitch API (v3)";
 
-    public $parameters = array(
+    const PARAMETERS = array(
         'Show Channel Videos'=>array(
             'channel'=>array(
                 'name'=>'Channel',

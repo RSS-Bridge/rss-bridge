@@ -1,12 +1,12 @@
 <?php
 class UnsplashBridge extends BridgeAbstract {
 
-	public $maintainer = "nel50n";
-	public $name = "Unsplash Bridge";
-	public $uri = "http://unsplash.com/";
-	public $description = "Returns the latests photos from Unsplash";
+	const MAINTAINER = "nel50n";
+	const NAME = "Unsplash Bridge";
+	const URI = "http://unsplash.com/";
+	const DESCRIPTION = "Returns the latests photos from Unsplash";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
           'm'=>array(
             'name'=>'Max number of photos',
             'type'=>'number',
@@ -32,7 +32,7 @@ class UnsplashBridge extends BridgeAbstract {
         $lastpage = 1;
 
         for ($page = 1; $page <= $lastpage; $page++) {
-            $link = $this->uri.'/grid?page='.$page;
+            $link = self::URI.'/grid?page='.$page;
             $html = $this->getSimpleHTMLDOM($link)
               or $this->returnServerError('No results for this query.');
 

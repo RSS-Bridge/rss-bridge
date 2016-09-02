@@ -1,13 +1,13 @@
 <?php
 class HentaiHavenBridge extends BridgeAbstract{
 
-	public $maintainer = "albirew";
-	public $name = "Hentai Haven";
-	public $uri = "http://hentaihaven.org/";
-	public $description = "Returns releases from Hentai Haven";
+	const MAINTAINER = "albirew";
+	const NAME = "Hentai Haven";
+	const URI = "http://hentaihaven.org/";
+	const DESCRIPTION = "Returns releases from Hentai Haven";
 
     public function collectData(){
-      $html = $this->getSimpleHTMLDOM($this->uri)
+      $html = $this->getSimpleHTMLDOM(self::URI)
         or $this->returnServerError('Could not request Hentai Haven.');
         foreach($html->find('div.zoe-grid') as $element) {
             $item = array();

@@ -1,12 +1,12 @@
 <?php
 class ScoopItBridge extends BridgeAbstract{
 
-	public $maintainer = "Pitchoule";
-	public $name = "ScoopIt";
-	public $uri = "http://www.scoop.it/";
-	public $description = "Returns most recent results from ScoopIt.";
+	const MAINTAINER = "Pitchoule";
+	const NAME = "ScoopIt";
+	const URI = "http://www.scoop.it/";
+	const DESCRIPTION = "Returns most recent results from ScoopIt.";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'u'=>array(
             'name'=>'keyword',
             'required'=>true
@@ -15,7 +15,7 @@ class ScoopItBridge extends BridgeAbstract{
 
     public function collectData(){
        $this->request = $this->getInput('u');
-       $link = $this->uri.'search?q=' .urlencode($this->getInput('u'));
+       $link = self::URI.'search?q=' .urlencode($this->getInput('u'));
 
        $html = $this->getSimpleHTMLDOM($link)
          or $this->returnServerError('Could not request ScoopIt. for : ' . $link);

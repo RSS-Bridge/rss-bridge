@@ -1,10 +1,10 @@
 <?php
 class NakedSecurityBridge extends BridgeAbstract {
 
-    public $maintainer = 'ORelio';
-    public $name = 'Naked Security';
-    public $uri = 'https://nakedsecurity.sophos.com/';
-    public $description = 'Returns the newest articles.';
+    const MAINTAINER = 'ORelio';
+    const NAME = 'Naked Security';
+    const URI = 'https://nakedsecurity.sophos.com/';
+    const DESCRIPTION = 'Returns the newest articles.';
 
     public function collectData(){
 

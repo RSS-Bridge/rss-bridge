@@ -1,10 +1,10 @@
 <?php
 class PlanetLibreBridge extends BridgeAbstract{
 
-	public $maintainer = "pit-fgfjiudghdf";
-	public $name = "PlanetLibre";
-	public $uri = "http://www.planet-libre.org";
-	public $description = "Returns the 5 newest posts from PlanetLibre (full text)";
+	const MAINTAINER = "pit-fgfjiudghdf";
+	const NAME = "PlanetLibre";
+	const URI = "http://www.planet-libre.org";
+	const DESCRIPTION = "Returns the 5 newest posts from PlanetLibre (full text)";
 
 	private function PlanetLibreExtractContent($url){
 		$html2 = $this->getSimpleHTMLDOM($url);
@@ -13,7 +13,7 @@ class PlanetLibreBridge extends BridgeAbstract{
 	}
 
 	public function collectData(){
-      $html = $this->getSimpleHTMLDOM($this->uri)
+      $html = $this->getSimpleHTMLDOM(self::URI)
         or $this->returnServerError('Could not request PlanetLibre.');
 		$limit = 0;
 		foreach($html->find('div.post') as $element) {

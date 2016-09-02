@@ -1,10 +1,10 @@
 <?php
 class Releases3DSBridge extends BridgeAbstract {
 
-	public $maintainer = "ORelio";
-	public $name = "3DS Scene Releases";
-	public $uri = "http://www.3dsdb.com/";
-	public $description = "Returns the newest scene releases.";
+	const MAINTAINER = "ORelio";
+	const NAME = "3DS Scene Releases";
+	const URI = "http://www.3dsdb.com/";
+	const DESCRIPTION = "Returns the newest scene releases.";
 
     public function collectData(){
 
@@ -32,7 +32,7 @@ class Releases3DSBridge extends BridgeAbstract {
             }
         }
 
-        $dataUrl = $this->uri.'xml.php';
+        $dataUrl = self::URI.'xml.php';
         $xml = $this->getContents($dataUrl) or $this->returnServerError('Could not request 3dsdb: '.$dataUrl);
         $limit = 0;
 

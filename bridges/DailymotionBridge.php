@@ -1,12 +1,12 @@
 <?php
 class DailymotionBridge extends BridgeAbstract{
 
-        public $maintainer = "mitsukarenai";
-        public $name = "Dailymotion Bridge";
-        public $uri = "https://www.dailymotion.com/";
-        public $description = "Returns the 5 newest videos by username/playlist or search";
+        const MAINTAINER = "mitsukarenai";
+        const NAME = "Dailymotion Bridge";
+        const URI = "https://www.dailymotion.com/";
+        const DESCRIPTION = "Returns the 5 newest videos by username/playlist or search";
 
-        public $parameters = array (
+        const PARAMETERS = array (
             'By username' => array(
                 'u'=>array(
                     'name'=>'username',
@@ -35,7 +35,7 @@ class DailymotionBridge extends BridgeAbstract{
 
     function getMetadata($id) {
         $metadata=array();
-        $html2 = $this->getSimpleHTMLDOM($this->uri.'video/'.$id);
+        $html2 = $this->getSimpleHTMLDOM(self::URI.'video/'.$id);
         if(!$html2){
             return $metadata;
         }
@@ -90,7 +90,7 @@ class DailymotionBridge extends BridgeAbstract{
     }
 
     public function getURI(){
-        $uri=$this->uri;
+        $uri=self::URI;
         switch($this->queriedContext){
         case 'By username':
             $uri.='user/'

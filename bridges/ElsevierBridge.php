@@ -1,11 +1,11 @@
 <?php
 class ElsevierBridge extends BridgeAbstract{
-	public $maintainer = 'Pierre Mazière';
-	public $name = 'Elsevier journals recent articles';
-	public $uri = 'http://www.journals.elsevier.com/';
-	public $description = 'Returns the recent articles published in Elsevier journals';
+	const MAINTAINER = 'Pierre Mazière';
+	const NAME = 'Elsevier journals recent articles';
+	const URI = 'http://www.journals.elsevier.com/';
+	const DESCRIPTION = 'Returns the recent articles published in Elsevier journals';
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'j'=>array(
             'name'=>'Journal name',
             'required'=>true,
@@ -56,7 +56,7 @@ class ElsevierBridge extends BridgeAbstract{
 	}
 
 	public function collectData(){
-		$uri = $this->uri . $this->getInput('j') . '/recent-articles/';
+		$uri = self::URI . $this->getInput('j') . '/recent-articles/';
 		$html = $this->getSimpleHTMLDOM($uri) or $this->returnServerError('No results for Elsevier journal '.$this->getInput('j'));
 
 		foreach($html->find('.pod-listing') as $article){
