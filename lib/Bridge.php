@@ -242,6 +242,16 @@ abstract class BridgeAbstract implements BridgeInterface {
         return true;
     }
 
+    protected function setInputs(array $inputs){
+        foreach($inputs as $name => $value){
+            foreach(static::PARAMETERS as $context => $set){
+                if(array_key_exists($name, static::PARAMETERS[$context])){
+                    $this->inputs[$context][$name]['value'] = $value;
+                }
+            }
+        }
+    }
+
     protected function getQueriedContext(){
         $queriedContexts=array();
         foreach(static::PARAMETERS as $context=>$set){
@@ -308,14 +318,7 @@ abstract class BridgeAbstract implements BridgeInterface {
             $this->returnClientError('Invalid parameters value(s)');
         }
 
-        // Populate BridgeAbstract::parameters with sanitized data
-        foreach($inputs as $name=>$value){
-            foreach(static::PARAMETERS as $context=>$set){
-                if(array_key_exists($name,static::PARAMETERS[$context])){
-                    $this->inputs[$context][$name]['value']=$value;
-                }
-            }
-        }
+        $this->setInputs($inputs);
 
         // Guess the paramter context from input data
         $queriedContext=$this->getQueriedContext();
