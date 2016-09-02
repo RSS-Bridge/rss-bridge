@@ -321,14 +321,12 @@ abstract class BridgeAbstract implements BridgeInterface {
         $this->setInputs($inputs);
 
         // Guess the paramter context from input data
-        $queriedContext=$this->getQueriedContext();
-        if(is_null($queriedContext)){
+        $this->queriedContext = $this->getQueriedContext();
+        if(is_null($this->queriedContext)){
             $this->returnClientError('Required parameter(s) missing');
-        }else if($queriedContext===false){
+        } elseif($this->queriedContext === false){
             $this->returnClientError('Mixed context parameters');
         }
-
-        $this->queriedContext=$queriedContext;
 
         // Apply default values to missing data
         $contexts=array($this->queriedContext);
@@ -383,7 +381,7 @@ abstract class BridgeAbstract implements BridgeInterface {
                 }else{
                     continue;
                 }
-                $this->inputs[$queriedContext][$name]['value']=$value;
+                $this->inputs[$this->queriedContext][$name]['value']=$value;
             }
         }
 
