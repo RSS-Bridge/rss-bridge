@@ -268,7 +268,7 @@ abstract class BridgeAbstract implements BridgeInterface {
                 if(isset($this->inputs[$context][$name]['value'])){
                   continue;
                 }
-                switch($properties['type']){
+                switch($type){
                 case 'checkbox':
                     if(!isset($properties['defaultValue'])){
                         $this->inputs[$context][$name]['value'] = false;
