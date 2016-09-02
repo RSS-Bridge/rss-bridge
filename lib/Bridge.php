@@ -111,17 +111,18 @@ interface BridgeInterface {
 
 abstract class BridgeAbstract implements BridgeInterface {
 
-    protected $cache;
-    protected $items = array();
-
     const NAME = 'Unnamed bridge';
     const URI = '';
     const DESCRIPTION = 'No description provided';
     const MAINTAINER = 'No maintainer';
     const PARAMETERS = array();
+
     public $useProxy = true;
+
+    protected $cache;
+    protected $items = array();
     protected $inputs = array();
-    protected $queriedContext='';
+    protected $queriedContext = '';
 
     protected function returnError($message, $code){
         throw new \HttpException($message, $code);
