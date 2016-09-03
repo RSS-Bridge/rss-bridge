@@ -605,9 +605,16 @@ abstract class RssExpander extends HttpCachingBridgeAbstract {
 
         $rssContent = simplexml_load_string($content);
         $this->debugMessage('loaded RSS from ' . $name);
-        // TODO insert RSS format detection
-        // For now we always assume RSS 2.0
-        $this->collect_RSS_2_0_data($rssContent);
+
+        if(isset($rssContent->channel[0])){ // RSS format
+            // TODO insert RSS format detection
+            // For now we always assume RSS 2.0
+            $this->collect_RSS_2_0_data($rssContent);
+        } elseif(isset($rssContent->entry[0])){ // ATOM format
+            $this->collect_ATOM_data($rssContent);
+        } else { // Unknown format
+            $this->returnServerError('The feed format is unknown!');
+        }
     }
 
     protected function collect_RSS_2_0_data($rssContent){
@@ -615,6 +622,14 @@ abstract class RssExpander extends HttpCachingBridgeAbstract {
         $this->debugMessage('RSS content is ===========\n' . var_export($rssContent, true) . '===========');
         $this->load_RSS_2_0_feed_data($rssContent);
         foreach($rssContent->item as $item){
+            $this->debugMessage('parsing item ' . var_export($item, true));
+            $this->items[] = $this->parseRSSItem($item);
+        }
+    }
+
+    protected function collect_ATOM_data($content){
+        $this->load_ATOM_feed_data($content);
+        foreach($content->entry as $item){
             $this->debugMessage('parsing item ' . var_export($item, true));
             $this->items[] = $this->parseRSSItem($item);
         }
@@ -629,6 +644,38 @@ abstract class RssExpander extends HttpCachingBridgeAbstract {
         $this->name = trim($rssContent->title);
         $this->uri = trim($rssContent->link);
         $this->description = trim($rssContent->description);
+    }
+
+    protected function load_ATOM_feed_data($content){
+        $this->name = $content->title;
+
+        // Find most best link (only one, or first of 'alternate')
+        if(!isset($content->link)){
+            $this->uri = '';
+        } elseif (count($content->link) === 1){
+            $this->uri = $content->link[0]['href'];
+        } else {
+            $this->uri = '';
+            foreach($content->link as $link){
+                if(strtolower($link['rel']) === 'alternate'){
+                    $this->uri = $link['rel'];
+                    break;
+                }
+            }
+        }
+
+        if(isset($content->subtitle))
+            $this->description = $content->subtitle;
+    }
+
+    protected function parseATOMItem($feedItem){
+        $item = array();
+        if(isset($feedItem->id)) $item['uri'] = $feedItem->id;
+        if(isset($feedItem->title)) $item['title'] = $feedItem->title;
+        if(isset($feedItem->updated)) $item['timestamp'] = strtotime($feedItem->updated);
+        if(isset($feedItem->author)) $item['author'] = $feedItem->author->name;
+        if(isset($feedItem->content)) $item['content'] = $feedItem->content;
+        return $item;
     }
 
     /**
