@@ -1,5 +1,4 @@
 <?php
-define('MANGAREADER_LIMIT', 10); // The default limit
 class MangareaderBridge extends BridgeAbstract{
 
 	const MAINTAINER = "logmanoriginal";
@@ -69,7 +68,7 @@ class MangareaderBridge extends BridgeAbstract{
           'limit'=>array(
             'name'=>'Limit',
             'type'=>'number',
-            'exampleValue'=>10,
+            'defaultValue'=>10,
             'title'=>'Number of items to return [-1 returns all]'
           )
       )
@@ -154,7 +153,7 @@ class MangareaderBridge extends BridgeAbstract{
         case 'Get manga updates':
             $limit = $this->getInput('limit');
             if(empty($limit)){
-                $limit = MANGAREADER_LIMIT;
+                $limit = self::PARAMETERS[$this->queriedContext]['limit']['defaultValue'];
             }
 
             $this->request = $xpath->query(".//*[@id='mangaproperties']//*[@class='aname']")->item(0)->nodeValue;
