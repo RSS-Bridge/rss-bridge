@@ -117,7 +117,13 @@ class MangareaderBridge extends BridgeAbstract {
                         if($item['content'] <> ""){
                             $item['content'] .= "<br>";
                         }
-                        $item['content'] .= "<a href='" . self::URI . htmlspecialchars($chapter->getAttribute('href')) . "'>" . htmlspecialchars($chapter->nodeValue) . "</a>";
+                        $item['content'] .= 
+                            "<a href='" 
+                            . self::URI 
+                            . htmlspecialchars($chapter->getAttribute('href')) 
+                            . "'>" 
+                            . htmlspecialchars($chapter->nodeValue) 
+                            . "</a>";
                     }
 
                     $this->items[] = $item;
@@ -127,7 +133,9 @@ class MangareaderBridge extends BridgeAbstract {
 
         case 'Get popular mangas':
             $pagetitle = $xpath->query(".//*[@id='bodyalt']/h1")->item(0)->nodeValue;
-            $this->request = substr($pagetitle, 0, strrpos($pagetitle, " -")); // "Popular mangas for ..."
+
+            // Find manga name within "Popular mangas for ..."
+            $this->request = substr($pagetitle, 0, strrpos($pagetitle, " -"));
 
             // Query all mangas
             $mangas = $xpath->query("//*[@id='mangaresults']/*[@class='mangaresultitem']");
@@ -136,16 +144,32 @@ class MangareaderBridge extends BridgeAbstract {
 
                 // The thumbnail is encrypted in a css-style...
                 // format: "background-image:url('<the part which is actually interesting>')"
-                $mangaimgelement = $xpath->query(".//*[@class='imgsearchresults']", $manga)->item(0)->getAttribute('style');
+                $mangaimgelement = $xpath->query(".//*[@class='imgsearchresults']", $manga)
+                    ->item(0)
+                    ->getAttribute('style');
                 $thumbnail = substr($mangaimgelement, 22, strlen($mangaimgelement) - 24);
 
                 $item = array();
-                $item['title'] = htmlspecialchars($xpath->query(".//*[@class='manga_name']//a", $manga)->item(0)->nodeValue);
-                $item['uri'] = self::URI . $xpath->query(".//*[@class='manga_name']//a", $manga)->item(0)->getAttribute('href');
-                $item['author'] = htmlspecialchars($xpath->query("//*[@class='author_name']", $manga)->item(0)->nodeValue);
-                $item['chaptercount'] = $xpath->query(".//*[@class='chapter_count']", $manga)->item(0)->nodeValue;
-                $item['genre'] = htmlspecialchars($xpath->query(".//*[@class='manga_genre']", $manga)->item(0)->nodeValue);
-                $item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $thumbnail . '" alt="' . $item['title'] . '" /></a><p>' . $item['genre'] . '</p><p>' . $item['chaptercount'] . '</p>';
+                $item['title'] = htmlspecialchars($xpath->query(".//*[@class='manga_name']//a", $manga)
+                    ->item(0)
+                    ->nodeValue);
+                $item['uri'] = self::URI . $xpath->query(".//*[@class='manga_name']//a", $manga)
+                    ->item(0)
+                    ->getAttribute('href');
+                $item['author'] = htmlspecialchars($xpath->query("//*[@class='author_name']", $manga)
+                    ->item(0)
+                    ->nodeValue);
+                $item['chaptercount'] = $xpath->query(".//*[@class='chapter_count']", $manga)
+                    ->item(0)
+                    ->nodeValue;
+                $item['genre'] = htmlspecialchars($xpath->query(".//*[@class='manga_genre']", $manga)
+                    ->item(0)
+                    ->nodeValue);
+                $item['content'] = <<<EOD
+<a href="{$item['uri']}"><img src="{$thumbnail}" alt="{$item['title']}" /></a>
+<p>{$item['genre']}</p>
+<p>{$item['chaptercount']}</p>
+EOD;
                 $this->items[] = $item;
             }
             break;
@@ -156,21 +180,30 @@ class MangareaderBridge extends BridgeAbstract {
                 $limit = self::PARAMETERS[$this->queriedContext]['limit']['defaultValue'];
             }
 
-            $this->request = $xpath->query(".//*[@id='mangaproperties']//*[@class='aname']")->item(0)->nodeValue;
+            $this->request = $xpath->query(".//*[@id='mangaproperties']//*[@class='aname']")
+                ->item(0)
+                ->nodeValue;
 
             $query = "(.//*[@id='listing']//tr)[position() > 1]";
 
             if($limit !== -1){
-                $query = "(.//*[@id='listing']//tr)[position() > 1][position() > last() - " . $limit . "]";
+                $query = 
+                    "(.//*[@id='listing']//tr)[position() > 1][position() > last() - {$limit}]";
             }
 
             $chapters = $xpath->query($query);
 
             foreach ($chapters as $chapter){
                 $item = array();
-                $item['title'] = htmlspecialchars($xpath->query("td[1]", $chapter)->item(0)->nodeValue);
-                $item['uri'] = self::URI . $xpath->query("td[1]/a", $chapter)->item(0)->getAttribute('href');
-                $item['timestamp'] = strtotime($xpath->query("td[2]", $chapter)->item(0)->nodeValue);
+                $item['title'] = htmlspecialchars($xpath->query("td[1]", $chapter)
+                    ->item(0)
+                    ->nodeValue);
+                $item['uri'] = self::URI . $xpath->query("td[1]/a", $chapter)
+                    ->item(0)
+                    ->getAttribute('href');
+                $item['timestamp'] = strtotime($xpath->query("td[2]", $chapter)
+                    ->item(0)
+                    ->nodeValue);
                 array_unshift($this->items, $item);
             }
             break;
