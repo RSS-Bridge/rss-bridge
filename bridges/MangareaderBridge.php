@@ -94,86 +94,14 @@ class MangareaderBridge extends BridgeAbstract {
         switch($this->queriedContext){
         case 'Get latest updates':
             $this->request = 'Latest updates';
-
-            // Query each item (consists of Manga + chapters)
-            $nodes = $xpath->query("//*[@id='latestchapters']/table//td");
-
-            foreach ($nodes as $node){
-                // Query the manga
-                $manga = $xpath->query("a[@class='chapter']", $node)->item(0);
-
-                // Collect the chapters for each Manga
-                $chapters = $xpath->query("a[@class='chaptersrec']", $node);
-
-                if (isset($manga) && $chapters->length >= 1){
-                    $item = array();
-                    $item['uri'] = self::URI . htmlspecialchars($manga->getAttribute('href'));
-                    $item['title'] = htmlspecialchars($manga->nodeValue);
-
-                    // Add each chapter to the feed
-                    $item['content'] = "";
-
-                    foreach ($chapters as $chapter){
-                        if($item['content'] <> ""){
-                            $item['content'] .= "<br>";
-                        }
-                        $item['content'] .= 
-                            "<a href='" 
-                            . self::URI 
-                            . htmlspecialchars($chapter->getAttribute('href')) 
-                            . "'>" 
-                            . htmlspecialchars($chapter->nodeValue) 
-                            . "</a>";
-                    }
-
-                    $this->items[] = $item;
-                }
-            }
+            $this->get_latest_updates($xpath);
             break;
-
         case 'Get popular mangas':
-            $pagetitle = $xpath->query(".//*[@id='bodyalt']/h1")->item(0)->nodeValue;
-
             // Find manga name within "Popular mangas for ..."
+            $pagetitle = $xpath->query(".//*[@id='bodyalt']/h1")->item(0)->nodeValue;
             $this->request = substr($pagetitle, 0, strrpos($pagetitle, " -"));
-
-            // Query all mangas
-            $mangas = $xpath->query("//*[@id='mangaresults']/*[@class='mangaresultitem']");
-
-            foreach ($mangas as $manga){
-
-                // The thumbnail is encrypted in a css-style...
-                // format: "background-image:url('<the part which is actually interesting>')"
-                $mangaimgelement = $xpath->query(".//*[@class='imgsearchresults']", $manga)
-                    ->item(0)
-                    ->getAttribute('style');
-                $thumbnail = substr($mangaimgelement, 22, strlen($mangaimgelement) - 24);
-
-                $item = array();
-                $item['title'] = htmlspecialchars($xpath->query(".//*[@class='manga_name']//a", $manga)
-                    ->item(0)
-                    ->nodeValue);
-                $item['uri'] = self::URI . $xpath->query(".//*[@class='manga_name']//a", $manga)
-                    ->item(0)
-                    ->getAttribute('href');
-                $item['author'] = htmlspecialchars($xpath->query("//*[@class='author_name']", $manga)
-                    ->item(0)
-                    ->nodeValue);
-                $item['chaptercount'] = $xpath->query(".//*[@class='chapter_count']", $manga)
-                    ->item(0)
-                    ->nodeValue;
-                $item['genre'] = htmlspecialchars($xpath->query(".//*[@class='manga_genre']", $manga)
-                    ->item(0)
-                    ->nodeValue);
-                $item['content'] = <<<EOD
-<a href="{$item['uri']}"><img src="{$thumbnail}" alt="{$item['title']}" /></a>
-<p>{$item['genre']}</p>
-<p>{$item['chaptercount']}</p>
-EOD;
-                $this->items[] = $item;
-            }
+            $this->get_popular_mangas($xpath);
             break;
-
         case 'Get manga updates':
             $limit = $this->getInput('limit');
             if(empty($limit)){
@@ -184,28 +112,7 @@ EOD;
                 ->item(0)
                 ->nodeValue;
 
-            $query = "(.//*[@id='listing']//tr)[position() > 1]";
-
-            if($limit !== -1){
-                $query = 
-                    "(.//*[@id='listing']//tr)[position() > 1][position() > last() - {$limit}]";
-            }
-
-            $chapters = $xpath->query($query);
-
-            foreach ($chapters as $chapter){
-                $item = array();
-                $item['title'] = htmlspecialchars($xpath->query("td[1]", $chapter)
-                    ->item(0)
-                    ->nodeValue);
-                $item['uri'] = self::URI . $xpath->query("td[1]/a", $chapter)
-                    ->item(0)
-                    ->getAttribute('href');
-                $item['timestamp'] = strtotime($xpath->query("td[2]", $chapter)
-                    ->item(0)
-                    ->nodeValue);
-                array_unshift($this->items, $item);
-            }
+            $this->get_manga_updates($xpath, $limit);
             break;
         }
 
@@ -215,6 +122,105 @@ EOD;
             $item['content'] = "<p>No updates available</p>";
 
             $this->items[] = $item;
+        }
+    }
+
+    private function get_latest_updates($xpath){
+        // Query each item (consists of Manga + chapters)
+        $nodes = $xpath->query("//*[@id='latestchapters']/table//td");
+
+        foreach ($nodes as $node){
+            // Query the manga
+            $manga = $xpath->query("a[@class='chapter']", $node)->item(0);
+
+            // Collect the chapters for each Manga
+            $chapters = $xpath->query("a[@class='chaptersrec']", $node);
+
+            if (isset($manga) && $chapters->length >= 1){
+                $item = array();
+                $item['uri'] = self::URI . htmlspecialchars($manga->getAttribute('href'));
+                $item['title'] = htmlspecialchars($manga->nodeValue);
+
+                // Add each chapter to the feed
+                $item['content'] = "";
+
+                foreach ($chapters as $chapter){
+                    if($item['content'] <> ""){
+                        $item['content'] .= "<br>";
+                    }
+                    $item['content'] .= 
+                        "<a href='" 
+                        . self::URI 
+                        . htmlspecialchars($chapter->getAttribute('href')) 
+                        . "'>" 
+                        . htmlspecialchars($chapter->nodeValue) 
+                        . "</a>";
+                }
+
+                $this->items[] = $item;
+            }
+        }
+    }
+
+    private function get_popular_mangas($xpath){
+        // Query all mangas
+        $mangas = $xpath->query("//*[@id='mangaresults']/*[@class='mangaresultitem']");
+
+        foreach ($mangas as $manga){
+
+            // The thumbnail is encrypted in a css-style...
+            // format: "background-image:url('<the part which is actually interesting>')"
+            $mangaimgelement = $xpath->query(".//*[@class='imgsearchresults']", $manga)
+                ->item(0)
+                ->getAttribute('style');
+            $thumbnail = substr($mangaimgelement, 22, strlen($mangaimgelement) - 24);
+
+            $item = array();
+            $item['title'] = htmlspecialchars($xpath->query(".//*[@class='manga_name']//a", $manga)
+                ->item(0)
+                ->nodeValue);
+            $item['uri'] = self::URI . $xpath->query(".//*[@class='manga_name']//a", $manga)
+                ->item(0)
+                ->getAttribute('href');
+            $item['author'] = htmlspecialchars($xpath->query("//*[@class='author_name']", $manga)
+                ->item(0)
+                ->nodeValue);
+            $item['chaptercount'] = $xpath->query(".//*[@class='chapter_count']", $manga)
+                ->item(0)
+                ->nodeValue;
+            $item['genre'] = htmlspecialchars($xpath->query(".//*[@class='manga_genre']", $manga)
+                ->item(0)
+                ->nodeValue);
+            $item['content'] = <<<EOD
+<a href="{$item['uri']}"><img src="{$thumbnail}" alt="{$item['title']}" /></a>
+<p>{$item['genre']}</p>
+<p>{$item['chaptercount']}</p>
+EOD;
+            $this->items[] = $item;
+        }
+    }
+
+    private function get_manga_updates($xpath, $limit){
+        $query = "(.//*[@id='listing']//tr)[position() > 1]";
+
+        if($limit !== -1){
+            $query = "(.//*[@id='listing']//tr)[position() > 1][position() > last() - {$limit}]";
+        }
+
+        $chapters = $xpath->query($query);
+
+        foreach ($chapters as $chapter){
+            $item = array();
+            $item['title'] = htmlspecialchars($xpath->query("td[1]", $chapter)
+                ->item(0)
+                ->nodeValue);
+            $item['uri'] = self::URI . $xpath->query("td[1]/a", $chapter)
+                ->item(0)
+                ->getAttribute('href');
+            $item['timestamp'] = strtotime($xpath->query("td[2]", $chapter)
+                ->item(0)
+                ->nodeValue);
+            array_unshift($this->items, $item);
         }
     }
 
