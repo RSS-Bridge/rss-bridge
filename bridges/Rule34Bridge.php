@@ -1,41 +1,12 @@
 <?php
-class Rule34Bridge extends BridgeAbstract{
+require_once('GelbooruBridge.php');
+
+class Rule34Bridge extends GelbooruBridge{
 
 	const MAINTAINER = "mitsukarenai";
 	const NAME = "Rule34";
 	const URI = "http://rule34.xxx/";
 	const DESCRIPTION = "Returns images from given page";
 
-    const PARAMETERS = array( array(
-        'p'=>array(
-            'name'=>'page',
-            'type'=>'number'
-        ),
-        't'=>array('name'=>'tags')
-    ));
-
-    public function collectData(){
-        $html = $this->getSimpleHTMLDOM(
-            self::URI.'index.php?page=post&s=list&'
-            .'&pid='.($this->getInput('p')?($this->getInput('p') -1)*50:'')
-            .'&tags='.urlencode($this->getInput('t'))
-        ) or $this->returnServerError('Could not request Rule34.');
-
-
-	foreach($html->find('div[class=content] span') as $element) {
-		$item = array();
-		$item['uri'] = self::URI.$element->find('a', 0)->href;
-		$item['postid'] = (int)preg_replace("/[^0-9]/",'', $element->getAttribute('id'));
-		$item['timestamp'] = time();
-		$thumbnailUri = $element->find('img', 0)->src;
-		$item['tags'] = $element->find('img', 0)->getAttribute('alt');
-		$item['title'] = 'Rule34 | '.$item['postid'];
-		$item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $thumbnailUri . '" /></a><br>Tags: '.$item['tags'];
-		$this->items[] = $item;
-	}
-    }
-
-    public function getCacheDuration(){
-        return 1800; // 30 minutes
-    }
+    const PIDBYPAGE=50;
 }
