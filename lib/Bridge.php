@@ -585,7 +585,7 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
     }
 }
 
-abstract class RssExpander extends HttpCachingBridgeAbstract {
+abstract class FeedExpander extends HttpCachingBridgeAbstract {
 
   private $name;
   private $uri;
