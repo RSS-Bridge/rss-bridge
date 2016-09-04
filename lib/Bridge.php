@@ -718,18 +718,21 @@ abstract class FeedExpander extends HttpCachingBridgeAbstract {
     }
 
     protected function parseRSS_2_0_Item($feedItem){
-        // Primary data is compatible to 0.91
+        // Primary data is compatible to 0.91 with some additional data
         $item = $this->parseRSS_0_9_1_Item($feedItem);
-        if(isset($feedItem->pubDate)) $item['timestamp'] = strtotime($feedItem->pubDate);
+
+        $namespaces = $feedItem->getNamespaces(true);
+        if(isset($namespaces['dc'])) $dc = $feedItem->children($namespaces['dc']);
+
+        if(isset($feedItem->pubDate)){
+            $item['timestamp'] = strtotime($feedItem->pubDate);
+        } elseif(isset($dc->date)){
+            $item['timestamp'] = strtotime($dc->date);
+        }
         if(isset($feedItem->author)){
             $item['author'] = $feedItem->author;
-        } else {
-            // Feed might use 'dc' namespace
-            $namespaces = $feedItem->getNamespaces(true);
-            if(isset($namespaces['dc'])){
-                $dc = $feedItem->children($namespaces['dc']);
-                if(isset($dc->creator)) $item['author'] = $dc->creator;
-            }
+        } elseif(isset($dc->creator)){
+            $item['author'] = $dc->creator;
         }
         return $item;
     }
