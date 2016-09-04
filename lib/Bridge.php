@@ -678,6 +678,16 @@ abstract class RssExpander extends HttpCachingBridgeAbstract {
         return $item;
     }
 
+    protected function parseRSS_0_9_1_Item($feedItem){
+        $item = array();
+        if(isset($feedItem->link)) $item['uri'] = $feedItem->link;
+        if(isset($feedItem->title)) $item['title'] = $feedItem->title;
+        // rss 0.91 doesn't support timestamps
+        // rss 0.91 doesn't support authors
+        if(isset($feedItem->description)) $item['content'] = $feedItem->description;
+        return $item;
+    }
+
     /**
      * Method should return, from a source RSS item given by lastRSS, one of our Items objects
      * @param $item the input rss item
