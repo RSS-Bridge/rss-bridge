@@ -3,35 +3,35 @@ class FourchanBridge extends BridgeAbstract{
 
 	const MAINTAINER = "mitsukarenai";
 	const NAME = "4chan";
-	const URI = "https://www.4chan.org/";
+	const URI = "https://boards.4chan.org/";
 	const DESCRIPTION = "Returns posts from the specified thread";
 
     const PARAMETERS = array( array(
-        't'=>array(
-            'name'=>'Thread URL',
-            'pattern'=>'(https:\/\/)?boards\.4chan\.org\/.*thread\/.*',
+          'c'=>array(
+            'name'=>'Thread category',
             'required'=>true
-        )
+          ),
+          't'=>array(
+            'name'=>'Thread number',
+            'type'=>'number',
+            'required'=>true
+          )
     ));
+
+    public function getURI(){
+      return static::URI.$this->getInput('c').'/thread/'.$this->getInput('t');
+
+    }
 
   public function collectData(){
 
-      $thread = parse_url($this->getInput('t'))
-          or $this->returnClientError('This URL seems malformed, please check it.');
-	if($thread['host'] !== 'boards.4chan.org')
-		$this->returnClientError('4chan thread URL only.');
-
-	if(strpos($thread['path'], 'thread/') === FALSE)
-		$this->returnClientError('You must specify the thread URL.');
-
-	$url = 'https://boards.4chan.org'.$thread['path'];
-    $html = $this->getSimpleHTMLDOM($url)
-        or $this->returnServerError("Could not request 4chan, thread not found");
+    $html = $this->getSimpleHTMLDOM($this->getURI())
+      or $this->returnServerError("Could not request 4chan, thread not found");
 
 	foreach($html->find('div.postContainer') as $element) {
 		$item = array();
 		$item['id'] = $element->find('.post', 0)->getAttribute('id');
-		$item['uri'] = $url.'#'.$item['id'];
+		$item['uri'] = $this->getURI().'#'.$item['id'];
 		$item['timestamp'] = $element->find('span.dateTime', 0)->getAttribute('data-utc');
 		$item['author'] = $element->find('span.name', 0)->plaintext;
 
