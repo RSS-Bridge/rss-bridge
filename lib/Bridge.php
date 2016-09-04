@@ -705,7 +705,16 @@ abstract class RssExpander extends HttpCachingBridgeAbstract {
 
     protected function parseRSS_1_0_Item($feedItem){
         // 1.0 adds optional elements around the 0.91 standard
-        return $this->parseRSS_0_9_1_Item($feedItem);
+        $item = $this->parseRSS_0_9_1_Item($feedItem);
+
+        $namespaces = $feedItem->getNamespaces(true);
+        if(isset($namespaces['dc'])){
+            $dc = $feedItem->children($namespaces['dc']);
+            if(isset($dc->date)) $item['timestamp'] = strtotime($dc->date);
+            if(isset($dc->creator)) $item['author'] = $dc->creator;
+        }
+
+        return $item;
     }
 
     protected function parseRSS_2_0_Item($feedItem){
@@ -719,8 +728,7 @@ abstract class RssExpander extends HttpCachingBridgeAbstract {
             $namespaces = $feedItem->getNamespaces(true);
             if(isset($namespaces['dc'])){
                 $dc = $feedItem->children($namespaces['dc']);
-                if(isset($dc->creator))
-                    $item['author'] = $dc->creator;
+                if(isset($dc->creator)) $item['author'] = $dc->creator;
             }
         }
         return $item;
