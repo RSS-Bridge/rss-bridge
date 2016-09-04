@@ -664,7 +664,7 @@ abstract class RssExpander extends HttpCachingBridgeAbstract {
     protected function load_ATOM_feed_data($content){
         $this->name = $content->title;
 
-        // Find most best link (only one, or first of 'alternate')
+        // Find best link (only one, or first of 'alternate')
         if(!isset($content->link)){
             $this->uri = '';
         } elseif (count($content->link) === 1){
@@ -673,7 +673,7 @@ abstract class RssExpander extends HttpCachingBridgeAbstract {
             $this->uri = '';
             foreach($content->link as $link){
                 if(strtolower($link['rel']) === 'alternate'){
-                    $this->uri = $link['rel'];
+                    $this->uri = $link['href'];
                     break;
                 }
             }
