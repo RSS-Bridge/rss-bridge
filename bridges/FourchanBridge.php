@@ -45,10 +45,21 @@ class FourchanBridge extends BridgeAbstract{
 		if(!empty($element->find('span.subject', 0)->innertext )) {
 			$item['subject'] = $element->find('span.subject', 0)->innertext;
 		}
-		$item['title'] = (isset($item['subject']) ? $item['subject'].' - ' : '' ) . 'reply '.$item['id'].' | '.$item['author'];
 
+		$item['title'] = 'reply '.$item['id'].' | '.$item['author'];
+        if(isset($item['subject'])){
+          $item['title'] = $item['subject'].' - '.$item['title'];
+        }
 
-		$item['content'] = (isset($item['image']) ? '<a href="'.$item['image'].'"><img alt="'.$item['id'].'" src="'.$item['imageThumb'].'" /></a><br>' : '') . '<span id="'.$item['id'].'">'.$element->find('.postMessage', 0)->innertext.'</span>';
+        $content = $element->find('.postMessage', 0)->innertext;
+        $content = str_replace('href="#p','href="'.$this->getURI().'#p',$content);
+		$item['content'] = '<span id="'.$item['id'].'">'.$content.'</span>';
+        if(isset($item['image'])){
+          $item['content'] = '<a href="'.$item['image'].'">'
+            .'<img alt="'.$item['id'].'" src="'.$item['imageThumb'].'" />'
+            .'</a><br>'
+            .$item['content'];
+        }
 		$this->items[] = $item;
 	}
 	$this->items = array_reverse($this->items);
