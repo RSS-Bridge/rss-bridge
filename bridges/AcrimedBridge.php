@@ -1,5 +1,5 @@
 <?php
-class AcrimedBridge extends RssExpander{
+class AcrimedBridge extends FeedExpander{
 
 
 	const MAINTAINER = "qwertygc";

@@ -1,5 +1,5 @@
 <?php
-class Les400CulsBridge extends RssExpander{
+class Les400CulsBridge extends FeedExpander{
 
 	const MAINTAINER = "unknown";
 	const NAME = "Les 400 Culs";

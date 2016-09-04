@@ -1,6 +1,6 @@
 <?php
 define("FREENEWS_RSS", 'http://feeds.feedburner.com/Freenews-Freebox?format=xml');
-class FreenewsBridge extends RssExpander {
+class FreenewsBridge extends FeedExpander {
 
 	const MAINTAINER = "mitsukarenai";
 	const NAME = "Freenews";

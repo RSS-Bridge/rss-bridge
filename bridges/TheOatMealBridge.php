@@ -1,5 +1,5 @@
 <?php
-class TheOatmealBridge extends RssExpander{
+class TheOatmealBridge extends FeedExpander{
 
 	const MAINTAINER = "Riduidel";
 	const NAME = "The Oatmeal";

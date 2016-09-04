@@ -1,5 +1,5 @@
 <?php
-class FeedExpanderExampleBridge extends RssExpander {
+class FeedExpanderExampleBridge extends FeedExpander {
 
     const MAINTAINER = 'logmanoriginal';
     const NAME = 'FeedExpander Example';
