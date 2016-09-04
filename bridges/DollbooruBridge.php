@@ -1,41 +1,11 @@
 <?php
-class DollbooruBridge extends BridgeAbstract{
+require_once('Shimmie2Bridge.php');
+
+class DollbooruBridge extends Shimmie2Bridge{
 
 	const MAINTAINER = "mitsukarenai";
 	const NAME = "Dollbooru";
 	const URI = "http://dollbooru.org/";
 	const DESCRIPTION = "Returns images from given page";
 
-
-    const PARAMETERS  = array( array(
-        'p'=>array(
-            'name'=>'page',
-            'type'=>'number'
-        ),
-        't'=>array('name'=>'tags')
-    ));
-
-    public function collectData(){
-        $page=$this->getInput('p');
-        $tags = urlencode($this->getInput('t'));
-        $html = $this->getSimpleHTMLDOM(self::URI."post/list/$tags/$page")
-            or $this->returnServerError('Could not request Dollbooru.');
-
-
-	foreach($html->find('div[class=shm-image-list] a') as $element) {
-		$item = array();
-		$item['uri'] = self::URI.$element->href;
-		$item['postid'] = (int)preg_replace("/[^0-9]/",'', $element->getAttribute('data-post-id'));
-		$item['timestamp'] = time();
-		$thumbnailUri = self::URI.$element->find('img', 0)->src;
-		$item['tags'] = $element->getAttribute('data-tags');
-		$item['title'] = 'Dollbooru | '.$item['postid'];
-		$item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $thumbnailUri . '" /></a><br>Tags: '.$item['tags'];
-		$this->items[] = $item;
-	}
-    }
-
-    public function getCacheDuration(){
-        return 1800; // 30 minutes
-    }
 }
