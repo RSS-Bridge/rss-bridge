@@ -606,14 +606,30 @@ abstract class RssExpander extends HttpCachingBridgeAbstract {
         $rssContent = simplexml_load_string($content);
         $this->debugMessage('loaded RSS from ' . $url);
 
-        if(isset($rssContent->channel[0])){ // RSS format
-            // TODO insert RSS format detection
-            // For now we always assume RSS 2.0
-            $this->collect_RSS_2_0_data($rssContent);
-        } elseif(isset($rssContent->entry[0])){ // ATOM format
+        $this->debugMessage('Detecting feed format/version');
+        if(isset($rssContent->channel[0])){
+            $this->debugMessage('Detected RSS format');
+            if(isset($rssContent->item[0])){
+                $this->debugMessage('Detected RSS 1.0 format');
+                $this->collect_RSS_1_0_data($rssContent);
+            } else {
+                $this->debugMessage('Detected RSS 0.9x or 2.0 format');
+                $this->collect_RSS_2_0_data($rssContent);
+            }
+        } elseif(isset($rssContent->entry[0])){
+            $this->debugMessage('Detected ATOM format');
             $this->collect_ATOM_data($rssContent);
-        } else { // Unknown format
+        } else {
+            $this->debugMessage('Unknown feed format/version');
             $this->returnServerError('The feed format is unknown!');
+        }
+    }
+
+    protected function collect_RSS_1_0_data($rssContent){
+        $this->load_RSS_2_0_feed_data($rssContent->channel[0]);
+        foreach($rssContent->item as $item){
+            $this->debugMessage('parsing item ' . var_export($item, true));
+            $this->items[] = $this->parseRSSItem($item);
         }
     }
 
@@ -685,6 +701,29 @@ abstract class RssExpander extends HttpCachingBridgeAbstract {
         // rss 0.91 doesn't support timestamps
         // rss 0.91 doesn't support authors
         if(isset($feedItem->description)) $item['content'] = $feedItem->description;
+        return $item;
+    }
+
+    protected function parseRSS_1_0_Item($feedItem){
+        // 1.0 adds optional elements around the 0.91 standard
+        return $this->parseRSS_0_9_1_Item($feedItem);
+    }
+
+    protected function parseRSS_2_0_Item($feedItem){
+        // Primary data is compatible to 0.91
+        $item = $this->parseRSS_0_9_1_Item($feedItem);
+        if(isset($feedItem->pubDate)) $item['timestamp'] = strtotime($feedItem->pubDate);
+        if(isset($feedItem->author)){
+            $item['author'] = $feedItem->author;
+        } else {
+            // Feed might use 'dc' namespace
+            $namespaces = $feedItem->getNamespaces(true);
+            if(isset($namespaces['dc'])){
+                $dc = $feedItem->children($namespaces['dc']);
+                if(isset($dc->creator))
+                    $item['author'] = $dc->creator;
+            }
+        }
         return $item;
     }
 
