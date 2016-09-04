@@ -24,13 +24,13 @@ class AllocineFRBridge extends BridgeAbstract{
     public function getURI(){
         switch($this->getInput('category')){
         case 'faux-raccord':
-            $uri = 'http://www.allocine.fr/video/programme-12284/saison-24580/';
+            $uri = static::URI.'video/programme-12284/saison-24580/';
             break;
         case 'top-5':
-            $uri = 'http://www.allocine.fr/video/programme-12299/saison-22542/';
+            $uri = static::URI.'video/programme-12299/saison-22542/';
             break;
         case 'tueurs-en-serie':
-            $uri = 'http://www.allocine.fr/video/programme-12286/saison-22938/';
+            $uri = static::URI.'video/programme-12286/saison-22938/';
             break;
         }
 
@@ -66,13 +66,13 @@ class AllocineFRBridge extends BridgeAbstract{
 
             if($figCaption !== false)
             {
-                $content = str_replace('src="/', 'src="http://www.allocine.fr/', $content);
-                $content = str_replace('href="/', 'href="http://www.allocine.fr/', $content);
-                $content = str_replace('src=\'/', 'src=\'http://www.allocine.fr/', $content);
-                $content = str_replace('href=\'/', 'href=\'http://www.allocine.fr/', $content);
+                $content = str_replace('src="/', 'src="'.static::URI, $content);
+                $content = str_replace('href="/', 'href="'.static::URI, $content);
+                $content = str_replace('src=\'/', 'src=\''.static::URI, $content);
+                $content = str_replace('href=\'/', 'href=\''.static::URI, $content);
                 $item['content'] = $content;
                 $item['title'] = trim($title->innertext);
-                $item['uri'] = "http://www.allocine.fr" . $title->href;
+                $item['uri'] = static::URI . $title->href;
                 $this->items[] = $item;
             }
         }
