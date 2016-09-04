@@ -11,7 +11,7 @@ class FreenewsBridge extends RssExpander {
         parent::collectExpandableDatas(FREENEWS_RSS);
     }
 
-    protected function parseRSSItem($newsItem) {
+    protected function parseItem($newsItem) {
         $item = array();
         $item['title'] = trim($newsItem->title);
         $this->debugMessage("item has for title \"".$item['title']."\"");

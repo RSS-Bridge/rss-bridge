@@ -42,7 +42,7 @@ class FeedExpanderExampleBridge extends RssExpander {
         }
     }
 
-    protected function parseRSSItem($newsItem) {
+    protected function parseItem($newsItem) {
         switch($this->getInput('version')){
             case 'rss_0_9_1':
                 return $this->parseRSS_0_9_1_Item($newsItem);

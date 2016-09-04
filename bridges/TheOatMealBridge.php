@@ -10,7 +10,7 @@ class TheOatmealBridge extends RssExpander{
         $this->collectExpandableDatas('http://feeds.feedburner.com/oatmealfeed');
     }
 
-    protected function parseRSSItem($newsItem) {
+    protected function parseItem($newsItem) {
         $item = $this->parseRSS_1_0_Item($newsItem);
 
         $articlePage = $this->get_cached($item['uri']);

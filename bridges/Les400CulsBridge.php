@@ -11,7 +11,7 @@ class Les400CulsBridge extends RssExpander{
         $this->collectExpandableDatas(self::URI.'feeds/');
     }
 
-    protected function parseRSSItem($newsItem) {
+    protected function parseItem($newsItem) {
         $item = array();
         $item['title'] = trim((string) $newsItem->title);
         $this->debugMessage("browsing item ".var_export($newsItem, true));

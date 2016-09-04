@@ -13,7 +13,7 @@ class AcrimedBridge extends RssExpander{
 
 		}
 
-		protected function parseRSSItem($newsItem) {
+		protected function parseItem($newsItem) {
 
 			$hs = new HTMLSanitizer();
 
