@@ -628,7 +628,7 @@ abstract class RssExpander extends HttpCachingBridgeAbstract {
         $this->load_RSS_2_0_feed_data($rssContent->channel[0]);
         foreach($rssContent->item as $item){
             $this->debugMessage('parsing item ' . var_export($item, true));
-            $this->items[] = $this->parseRSSItem($item);
+            $this->items[] = $this->parseItem($item);
         }
     }
 
@@ -638,7 +638,7 @@ abstract class RssExpander extends HttpCachingBridgeAbstract {
         $this->load_RSS_2_0_feed_data($rssContent);
         foreach($rssContent->item as $item){
             $this->debugMessage('parsing item ' . var_export($item, true));
-            $this->items[] = $this->parseRSSItem($item);
+            $this->items[] = $this->parseItem($item);
         }
     }
 
@@ -646,7 +646,7 @@ abstract class RssExpander extends HttpCachingBridgeAbstract {
         $this->load_ATOM_feed_data($content);
         foreach($content->entry as $item){
             $this->debugMessage('parsing item ' . var_export($item, true));
-            $this->items[] = $this->parseRSSItem($item);
+            $this->items[] = $this->parseItem($item);
         }
     }
 
@@ -739,7 +739,7 @@ abstract class RssExpander extends HttpCachingBridgeAbstract {
      * @param $item the input rss item
      * @return a RSS-Bridge Item, with (hopefully) the whole content)
      */
-    abstract protected function parseRSSItem($item);
+    abstract protected function parseItem($item);
 
     public function getURI(){
       return $this->uri;
