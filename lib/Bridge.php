@@ -601,10 +601,9 @@ abstract class RssExpander extends HttpCachingBridgeAbstract {
         /* Notice we do not use cache here on purpose:
          * we want a fresh view of the RSS stream each time
          */
-        $content = $this->getContents($url) or $this->returnServerError('Could not request ' . $url);
-
+        $content = $this->getContents($url) 
+            or $this->returnServerError('Could not request ' . $url);
         $rssContent = simplexml_load_string($content);
-        $this->debugMessage('loaded RSS from ' . $url);
 
         $this->debugMessage('Detecting feed format/version');
         if(isset($rssContent->channel[0])){
