@@ -1,40 +1,26 @@
 <?php
-class AcrimedBridge extends FeedExpander{
+class AcrimedBridge extends FeedExpander {
 
+    const MAINTAINER = "qwertygc";
+    const NAME = "Acrimed Bridge";
+    const URI = "http://www.acrimed.org/";
+    const DESCRIPTION = "Returns the newest articles.";
 
-	const MAINTAINER = "qwertygc";
-	const NAME = "Acrimed Bridge";
-	const URI = "http://www.acrimed.org/";
-	const DESCRIPTION = "Returns the newest articles.";
+    public function collectData(){
+        $this->collectExpandableDatas("http://www.acrimed.org/spip.php?page=backend");
+    }
 
-       public function collectData(){
+    protected function parseItem($newsItem){
+        $item = $this->parseRSS_2_0_Item($newsItem);
 
-			$this->collectExpandableDatas("http://www.acrimed.org/spip.php?page=backend");
+        $hs = new HTMLSanitizer();
+        $articlePage = $this->getSimpleHTMLDOM($newsItem->link);
+        $article = $hs->sanitize($articlePage->find('article.article1', 0)->innertext);
+        $article = HTMLSanitizer::defaultImageSrcTo($article, "http://www.acrimed.org/");
+        $item['content'] = $article;
 
-		}
-
-		protected function parseItem($newsItem) {
-
-			$hs = new HTMLSanitizer();
-
-			$namespaces = $newsItem->getNameSpaces(true);
-			$dc = $newsItem->children($namespaces['dc']);
-
-			$item = array();
-			$item['uri'] = trim($newsItem->link);
-        	$item['title'] = trim($newsItem->title);
-        	$item['timestamp'] = strtotime($dc->date);
-
-			$articlePage = $this->getSimpleHTMLDOM($newsItem->link);
-			$article = $hs->sanitize($articlePage->find('article.article1', 0)->innertext);
-			$article = HTMLSanitizer::defaultImageSrcTo($article, "http://www.acrimed.org/");
-
-			$item['content'] = $article;
-
-
-			return $item;
-
-		}
+        return $item;
+    }
 
     public function getCacheDuration(){
         return 4800; // 2 hours
