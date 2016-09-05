@@ -1,39 +1,22 @@
 <?php
+class LichessBridge  extends FeedExpander {
 
-class LichessBridge  extends HttpCachingBridgeAbstract
-{
     const MAINTAINER = 'AmauryCarrade';
     const NAME = 'Lichess Blog';
     const URI = 'http://fr.lichess.org/blog';
     const DESCRIPTION = 'Returns the 5 newest posts from the Lichess blog (full text)';
 
-    public function collectData()
-    {
-        $xml_feed = $this->getSimpleHTMLDOM(self::URI.'.atom')
-            or $this->returnServerError('Could not retrieve Lichess blog feed.');
-
-        $posts_loaded = 0;
-        foreach($xml_feed->find('entry') as $entry)
-        {
-            if ($posts_loaded < 5)
-            {
-                $item = array();
-
-                $item['title']     = html_entity_decode($entry->find('title', 0)->innertext);
-                $item['author']    = $entry->find('author', 0)->find('name', 0)->innertext;
-                $item['uri']       = $entry->find('id', 0)->plaintext;
-                $item['timestamp'] = strtotime($entry->find('published', 0)->plaintext);
-
-                $item['content'] = $this->retrieve_lichess_post($item['uri']);
-
-                $this->items[] = $item;
-                $posts_loaded++;
-            }
-        }
+    public function collectData(){
+        $this->collectExpandableDatas(self::URI . '.atom');
     }
 
-    private function retrieve_lichess_post($blog_post_uri)
-    {
+    protected function parseItem($newsItem){
+        $item = $this->parseATOMItem($newsItem);
+        $item['content'] = $this->retrieve_lichess_post($item['uri']);
+        return $item;
+    }
+
+    private function retrieve_lichess_post($blog_post_uri){
         if($this->get_cached_time($blog_post_uri) <= strtotime('-24 hours'))
             $this->remove_from_cache($blog_post_uriuri);
 

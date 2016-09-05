@@ -1,19 +1,23 @@
 <?php
-class LeJournalDuGeekBridge extends BridgeAbstract{
+class LeJournalDuGeekBridge extends FeedExpander {
 
 	const MAINTAINER = "polopollo";
 	const NAME = "journaldugeek.com (FR)";
 	const URI = "http://www.journaldugeek.com/";
 	const DESCRIPTION = "Returns the 5 newest posts from LeJournalDuGeek (full text).";
 
-	private function LeJournalDuGeekStripCDATA($string) {
-		$string = str_replace('<![CDATA[', '', $string);
-		$string = str_replace(']]>', '', $string);
-		return $string;
+	public function collectData(){
+		$this->collectExpandableDatas(self::URI . 'rss');
+	}
+
+	protected function parseItem($newsItem){
+		$item = $this->parseRSS_2_0_Item($newsItem);
+		$item['content'] = $this->LeJournalDuGeekExtractContent($item['uri']);
+		return $item;
 	}
 
 	private function LeJournalDuGeekExtractContent($url) {
-		$articleHTMLContent = $this->getSimpleHTMLDOM($url);
+		$articleHTMLContent = $this->get_cached($url);
 		$text = $articleHTMLContent->find('div.post-content', 0)->innertext;
 
 		foreach($articleHTMLContent->find('a.more') as $element) {
@@ -32,24 +36,6 @@ class LeJournalDuGeekBridge extends BridgeAbstract{
 		$text = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $text);
 		$text = strip_tags($text, '<p><b><a><blockquote><img><em><br/><br><ul><li>');
 		return $text;
-	}
-
-	public function collectData(){
-        $rssFeed = $this->getSimpleHTMLDOM(self::URI.'rss')
-            or $this->returnServerError('Could not request '.self::URI.'/rss');
-		$limit = 0;
-
-		foreach($rssFeed->find('item') as $element) {
-			if($limit < 5) {
-				$item = array();
-				$item['title'] = $this->LeJournalDuGeekStripCDATA($element->find('title', 0)->innertext);
-				$item['uri'] = $this->LeJournalDuGeekStripCDATA($element->find('guid', 0)->plaintext);
-				$item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
-				$item['content'] = $this->LeJournalDuGeekExtractContent($item['uri']);
-				$this->items[] = $item;
-				$limit++;
-			}
-		}
 	}
 
 	public function getCacheDuration(){
