@@ -6,18 +6,21 @@ class VkBridge extends BridgeAbstract {
     const NAME = "VK.com";
     const URI = "http://vk.com/";
     const DESCRIPTION = "Working with open pages";
-    const PARAMETERS=array(
-        'Url on page group or user' => array(
+    const PARAMETERS=array( array(
             'u'=>array(
-                'name'=>'Url',
+                'name'=>'Group or user name',
                 'required'=>true
             )
         )
     );
 
+    public function getURI(){
+      return static::URI.urlencode($this->getInput('u'));
+    }
     public function collectData(){
-        $text_html = $this->getContents(urldecode($this->getInput('u')))
-            or $this->returnServerError('No results for this query.');
+        $text_html = $this->getContents($this->getURI())
+          or $this->returnServerError('No results for group or user name "'.$this->getInput('u').'".');
+
         $text_html = iconv('windows-1251', 'utf-8', $text_html);
         $html = str_get_html($text_html);
         foreach ($html->find('div.post_table') as $post) {
