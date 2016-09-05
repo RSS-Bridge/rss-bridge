@@ -7,7 +7,7 @@ class NiceMatinBridge extends FeedExpander {
 	const DESCRIPTION = "Returns the 10 newest posts from NiceMatin (full text)";
 
 	public function collectData(){
-		$this->collectExpandableDatas(self::URI . 'derniere-minute/rss');
+		$this->collectExpandableDatas(self::URI . 'derniere-minute/rss', 10);
 	}
 
 	protected function parseItem($newsItem){
@@ -17,6 +17,8 @@ class NiceMatinBridge extends FeedExpander {
 	}
 
 	private function NiceMatinExtractContent($url) {
+		if($this->get_cached_time($url) <= strtotime('-24 hours'))
+			$this->remove_from_cache($url);
 		$html = $this->get_cached($url);
 		if(!$html)
 			return 'Could not acquire content from url: ' . $url . '!';

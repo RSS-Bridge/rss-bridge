@@ -78,20 +78,22 @@ class FuturaSciencesBridge extends FeedExpander {
         )
     ));
 
-	public function collectData(){
+    public function collectData(){
         $url = self::URI . 'rss/' . $this->getInput('feed') . '.xml';
-		$this->collectExpandableDatas($url);
-	}
+        $this->collectExpandableDatas($url, 10);
+    }
 
-	protected function parseItem($newsItem){
-		$item = $this->parseRSS_2_0_Item($newsItem);
+    protected function parseItem($newsItem){
+        $item = $this->parseRSS_2_0_Item($newsItem);
         $item['uri'] = str_replace('#xtor=RSS-8', '', $item['uri']);
+        if($this->get_cached_time($item['uri']) <= strtotime('-24 hours'))
+            $this->remove_from_cache($item['uri']);
         $article = $this->get_cached($item['uri']) 
             or $this->returnServerError('Could not request Futura-Sciences: ' . $item['uri']);
         $item['content'] = $this->ExtractArticleContent($article);
         $item['author'] = empty($this->ExtractAuthor($article)) ? $item['author'] : $this->ExtractAuthor($article);
-		return $item;
-	}
+        return $item;
+    }
 
     function StripWithDelimiters($string, $start, $end) {
         while (strpos($string, $start) !== false) {

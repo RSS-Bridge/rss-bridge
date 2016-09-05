@@ -7,7 +7,7 @@ class NumeramaBridge extends FeedExpander {
     const DESCRIPTION = 'Returns the 5 newest posts from Numerama (full text)';
 
     public function collectData(){
-        $this->collectExpandableDatas(self::URI . 'feed/');
+        $this->collectExpandableDatas(self::URI . 'feed/', 5);
     }
 
     protected function parseItem($newsItem){

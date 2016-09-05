@@ -6,7 +6,7 @@ class CADBridge extends FeedExpander {
 	const DESCRIPTION = "Returns the newest articles.";
 
 	public function collectData(){
-		$this->collectExpandableDatas('http://cdn2.cad-comic.com/rss.xml');
+		$this->collectExpandableDatas('http://cdn2.cad-comic.com/rss.xml', 10);
 	}
 
 	protected function parseItem($newsItem){
@@ -16,6 +16,8 @@ class CADBridge extends FeedExpander {
 	}
 
 	private function CADExtractContent($url) {
+		if($this->get_cached_time($url) <= strtotime('-24 hours'))
+			$this->remove_from_cache($url);
 		$html3 = $this->get_cached($url);
 
 		// The request might fail due to missing https support or wrong URL

@@ -7,7 +7,7 @@ class LichessBridge  extends FeedExpander {
     const DESCRIPTION = 'Returns the 5 newest posts from the Lichess blog (full text)';
 
     public function collectData(){
-        $this->collectExpandableDatas(self::URI . '.atom');
+        $this->collectExpandableDatas(self::URI . '.atom', 5);
     }
 
     protected function parseItem($newsItem){

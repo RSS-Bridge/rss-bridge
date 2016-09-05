@@ -6,18 +6,20 @@ class LeMondeInformatiqueBridge extends FeedExpander {
     const URI = "http://www.lemondeinformatique.fr/";
     const DESCRIPTION = "Returns the newest articles.";
 
-	public function collectData(){
-		$this->collectExpandableDatas(self::URI . 'rss/rss.xml');
-	}
+    public function collectData(){
+        $this->collectExpandableDatas(self::URI . 'rss/rss.xml', 10);
+    }
 
-	protected function parseItem($newsItem){
-		$item = $this->parseRSS_1_0_Item($newsItem);
+    protected function parseItem($newsItem){
+        $item = $this->parseRSS_1_0_Item($newsItem);
+        if($this->get_cached_time($item['uri']) <= strtotime('-24 hours'))
+            $this->remove_from_cache($item['uri']);
         $article_html = $this->get_cached($item['uri']) 
             or $this->returnServerError('Could not request LeMondeInformatique: ' . $item['uri']);
         $item['content'] = $this->CleanArticle($article_html->find('div#article', 0)->innertext);
         $item['title'] = $article_html->find('h1.cleanprint-title', 0)->plaintext;
-		return $item;
-	}
+        return $item;
+    }
 
     function StripCDATA($string) {
         $string = str_replace('<![CDATA[', '', $string);

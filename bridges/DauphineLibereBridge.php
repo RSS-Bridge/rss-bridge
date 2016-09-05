@@ -37,7 +37,7 @@ class DauphineLibereBridge extends FeedExpander {
             $url = self::URI . $this->getInput('u') . '/rss';
         }
 
-        $this->collectExpandableDatas($url);
+        $this->collectExpandableDatas($url, 10);
     }
 
     protected function parseItem($newsItem){
@@ -47,7 +47,9 @@ class DauphineLibereBridge extends FeedExpander {
     }
 
     private function ExtractContent($url) {
-        $html2 = $this->getSimpleHTMLDOM($url);
+		if($this->get_cached_time($url) <= strtotime('-24 hours'))
+			$this->remove_from_cache($url);
+        $html2 = $this->get_cached($url);
         $text = $html2->find('div.column', 0)->innertext;
         $text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
         return $text;

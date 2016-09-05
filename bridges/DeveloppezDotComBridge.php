@@ -7,7 +7,7 @@ class DeveloppezDotComBridge extends FeedExpander {
 	const DESCRIPTION = "Returns the 15 newest posts from DeveloppezDotCom (full text).";
 
 	public function collectData(){
-		$this->collectExpandableDatas(self::URI . 'index/rss');
+		$this->collectExpandableDatas(self::URI . 'index/rss', 15);
 	}
 
 	protected function parseItem($newsItem){
@@ -42,6 +42,8 @@ class DeveloppezDotComBridge extends FeedExpander {
 	}
 
 	private function DeveloppezDotComExtractContent($url) {
+		if($this->get_cached_time($url) <= strtotime('-24 hours'))
+			$this->remove_from_cache($url);
 		$articleHTMLContent = $this->get_cached($url);
 		$text = $this->convert_smart_quotes($articleHTMLContent->find('div.content', 0)->innertext);
 		$text = utf8_encode($text);
