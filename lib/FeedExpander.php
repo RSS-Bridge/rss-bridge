@@ -6,7 +6,7 @@ abstract class FeedExpander extends HttpCachingBridgeAbstract {
   private $uri;
   private $description;
 
-    public function collectExpandableDatas($url){
+    public function collectExpandableDatas($url, $maxItems = -1){
         if(empty($url)){
             $this->returnServerError('There is no $url for this RSS expander');
         }
@@ -25,43 +25,46 @@ abstract class FeedExpander extends HttpCachingBridgeAbstract {
             $this->debugMessage('Detected RSS format');
             if(isset($rssContent->item[0])){
                 $this->debugMessage('Detected RSS 1.0 format');
-                $this->collect_RSS_1_0_data($rssContent);
+                $this->collect_RSS_1_0_data($rssContent, $maxItems);
             } else {
                 $this->debugMessage('Detected RSS 0.9x or 2.0 format');
-                $this->collect_RSS_2_0_data($rssContent);
+                $this->collect_RSS_2_0_data($rssContent, $maxItems);
             }
         } elseif(isset($rssContent->entry[0])){
             $this->debugMessage('Detected ATOM format');
-            $this->collect_ATOM_data($rssContent);
+            $this->collect_ATOM_data($rssContent, $maxItems);
         } else {
             $this->debugMessage('Unknown feed format/version');
             $this->returnServerError('The feed format is unknown!');
         }
     }
 
-    protected function collect_RSS_1_0_data($rssContent){
+    protected function collect_RSS_1_0_data($rssContent, $maxItems){
         $this->load_RSS_2_0_feed_data($rssContent->channel[0]);
         foreach($rssContent->item as $item){
             $this->debugMessage('parsing item ' . var_export($item, true));
             $this->items[] = $this->parseItem($item);
+            if($maxItems !== -1 && count($this->items) >= $maxItems) break;
         }
     }
 
-    protected function collect_RSS_2_0_data($rssContent){
+    protected function collect_RSS_2_0_data($rssContent, $maxItems){
         $rssContent = $rssContent->channel[0];
         $this->debugMessage('RSS content is ===========\n' . var_export($rssContent, true) . '===========');
         $this->load_RSS_2_0_feed_data($rssContent);
         foreach($rssContent->item as $item){
             $this->debugMessage('parsing item ' . var_export($item, true));
             $this->items[] = $this->parseItem($item);
+            if($maxItems !== -1 && count($this->items) >= $maxItems) break;
         }
     }
 
-    protected function collect_ATOM_data($content){
+    protected function collect_ATOM_data($content, $maxItems){
         $this->load_ATOM_feed_data($content);
         foreach($content->entry as $item){
             $this->debugMessage('parsing item ' . var_export($item, true));
             $this->items[] = $this->parseItem($item);
+            if($maxItems !== -1 && count($this->items) >= $maxItems) break;
         }
     }
 

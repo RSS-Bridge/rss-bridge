@@ -1,10 +1,20 @@
 <?php
-class DeveloppezDotComBridge extends BridgeAbstract{
+class DeveloppezDotComBridge extends FeedExpander {
 
 	const MAINTAINER = "polopollo";
 	const NAME = "Developpez.com Actus (FR)";
 	const URI = "http://www.developpez.com/";
 	const DESCRIPTION = "Returns the 15 newest posts from DeveloppezDotCom (full text).";
+
+	public function collectData(){
+		$this->collectExpandableDatas(self::URI . 'index/rss', 15);
+	}
+
+	protected function parseItem($newsItem){
+		$item = $this->parseRSS_2_0_Item($newsItem);
+		$item['content'] = $this->DeveloppezDotComExtractContent($item['uri']);
+		return $item;
+	}
 
 	private function DeveloppezDotComStripCDATA($string) {
 		$string = str_replace('<![CDATA[', '', $string);
@@ -32,29 +42,12 @@ class DeveloppezDotComBridge extends BridgeAbstract{
 	}
 
 	private function DeveloppezDotComExtractContent($url) {
-		$articleHTMLContent = $this->getSimpleHTMLDOM($url);
+		if($this->get_cached_time($url) <= strtotime('-24 hours'))
+			$this->remove_from_cache($url);
+		$articleHTMLContent = $this->get_cached($url);
 		$text = $this->convert_smart_quotes($articleHTMLContent->find('div.content', 0)->innertext);
 		$text = utf8_encode($text);
 		return trim($text);
-	}
-
-	public function collectData(){
-        $rssFeed = $this->getSimpleHTMLDOM(self::URI.'index/rss')
-            or $this->returnServerError('Could not request '.self::URI.'index/rss');
-		$limit = 0;
-
-		foreach($rssFeed->find('item') as $element) {
-			if($limit < 10) {
-				$item = array();
-				$item['title'] = $this->DeveloppezDotComStripCDATA($element->find('title', 0)->innertext);
-				$item['uri'] = $this->DeveloppezDotComStripCDATA($element->find('guid', 0)->plaintext);
-				$item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
-				$content = $this->DeveloppezDotComExtractContent($item['uri']);
-				$item['content'] = strlen($content) ? $content : $element->description; //In case of it is a tutorial, we just keep the original description
-				$this->items[] = $item;
-				$limit++;
-			}
-		}
 	}
 
 	public function getCacheDuration(){

@@ -1,19 +1,25 @@
 <?php
-class NextInpactBridge extends BridgeAbstract {
+class NextInpactBridge extends FeedExpander {
 
 	const MAINTAINER = "qwertygc";
 	const NAME = "NextInpact Bridge";
 	const URI = "http://www.nextinpact.com/";
 	const DESCRIPTION = "Returns the newest articles.";
 
-	private function StripCDATA($string) {
-		$string = str_replace('<![CDATA[', '', $string);
-		$string = str_replace(']]>', '', $string);
-		return $string;
+	public function collectData(){
+		$this->collectExpandableDatas(self::URI . 'rss/news.xml', 10);
+	}
+
+	protected function parseItem($newsItem){
+		$item = $this->parseRSS_2_0_Item($newsItem);
+		$item['content'] = $this->ExtractContent($item['uri']);
+		return $item;
 	}
 
 	private function ExtractContent($url) {
-		$html2 = $this->getSimpleHTMLDOM($url);
+		if($this->get_cached_time($url) <= strtotime('-24 hours'))
+			$this->remove_from_cache($url);
+		$html2 = $this->get_cached($url);
 		$text = '<p><em>'.$html2->find('span.sub_title', 0)->innertext.'</em></p>'
 			.'<p><img src="'.$html2->find('div.container_main_image_article', 0)->find('img.dedicated',0)->src.'" alt="-" /></p>'
 			.'<div>'.$html2->find('div[itemprop=articleBody]', 0)->innertext.'</div>';
@@ -21,23 +27,5 @@ class NextInpactBridge extends BridgeAbstract {
 		if (is_object($premium_article))
 			$text = $text.'<p><em>'.$premium_article->innertext.'</em></p>';
 		return $text;
-	}
-
-	public function collectData(){
-		$html = $this->getSimpleHTMLDOM(self::URI.'rss/news.xml') or $this->returnServerError('Could not request NextInpact.');
-		$limit = 0;
-
-		foreach($html->find('item') as $element) {
-		 if($limit < 3) {
-				$item = array();
-				$item['title'] = $this->StripCDATA($element->find('title', 0)->innertext);
-				$item['uri'] = $this->StripCDATA($element->find('guid', 0)->plaintext);
-				$item['author'] = $this->StripCDATA($element->find('creator', 0)->innertext);
-				$item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
-				$item['content'] = $this->ExtractContent($item['uri']);
-				$this->items[] = $item;
-				$limit++;
-			}
-		}
 	}
 }

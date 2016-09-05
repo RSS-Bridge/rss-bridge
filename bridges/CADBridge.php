@@ -1,12 +1,24 @@
 <?php
-class CADBridge extends BridgeAbstract{
+class CADBridge extends FeedExpander {
 	const MAINTAINER = "nyutag";
 	const NAME = "CAD Bridge";
 	const URI = "http://www.cad-comic.com/";
 	const DESCRIPTION = "Returns the newest articles.";
 
+	public function collectData(){
+		$this->collectExpandableDatas('http://cdn2.cad-comic.com/rss.xml', 10);
+	}
+
+	protected function parseItem($newsItem){
+		$item = $this->parseRSS_2_0_Item($newsItem);
+		$item['content'] = $this->CADExtractContent($item['uri']);
+		return $item;
+	}
+
 	private function CADExtractContent($url) {
-		$html3 = $this->getSimpleHTMLDOM($url);
+		if($this->get_cached_time($url) <= strtotime('-24 hours'))
+			$this->remove_from_cache($url);
+		$html3 = $this->get_cached($url);
 
 		// The request might fail due to missing https support or wrong URL
 		if($html3 == false)
@@ -30,33 +42,6 @@ class CADBridge extends BridgeAbstract{
 		if ($img == '')
 			return 'Daily comic not released yet';
 		return '<img src="'.$img.'"/>';
-	}
-
-	public function collectData(){
-		function CADUrl($string) {
-			$html2 = explode("\"", $string);
-			$string = $html2[1];
-			if (substr($string,0,4) != 'http')
-				return 'notanurl';
-			return $string;
-		}
-
-		$html = $this->getSimpleHTMLDOM('http://cdn2.cad-comic.com/rss.xml') or $this->returnServerError('Could not request CAD.');
-		$limit = 0;
-
-		foreach($html->find('item') as $element) {
-			if($limit < 5) {
-				$item = array();
-				$item['title'] = $element->find('title', 0)->innertext;
-				$item['uri'] = CADUrl($element->find('description', 0)->innertext);
-				if ($item['uri'] != 'notanurl') {
-					$item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
-					$item['content'] = $this->CADExtractContent($item['uri']);
-					$this->items[] = $item;
-					$limit++;
-				}
-			}
-		}
 	}
 
 	public function getCacheDuration(){
