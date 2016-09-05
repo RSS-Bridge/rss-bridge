@@ -1,25 +1,5 @@
 <?php
-/**
-* All cache logic
-* Note : adapter are store in other place
-*/
-
-interface CacheInterface{
-    public function loadData();
-    public function saveData($datas);
-    public function getTime();
-}
-
-abstract class CacheAbstract implements CacheInterface{
-    protected $param;
-
-    public function prepare(array $param){
-        $this->param = $param;
-
-        return $this;
-    }
-}
-
+require_once(__DIR__ . '/CacheInterface.php');
 class Cache{
 
     static protected $dirCache;

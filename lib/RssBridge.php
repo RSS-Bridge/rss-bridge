@@ -9,8 +9,13 @@ define('PATH_VENDOR', '/../vendor');
 
 require __DIR__ . '/Exceptions.php';
 require __DIR__ . '/Format.php';
+require __DIR__ . '/FormatAbstract.php';
 require __DIR__ . '/Bridge.php';
+require __DIR__ . '/BridgeAbstract.php';
+require __DIR__ . '/HttpCachingBridgeAbstract.php';
+require __DIR__ . '/FeedExpander.php';
 require __DIR__ . '/Cache.php';
+require __DIR__ . '/CacheAbstract.php';
 require __DIR__ . '/HTMLUtils.php';
 
 $vendorLibSimpleHtmlDom = __DIR__ . PATH_VENDOR . '/simplehtmldom/simple_html_dom.php';
