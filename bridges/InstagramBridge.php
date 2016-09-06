@@ -46,7 +46,7 @@ class InstagramBridge extends BridgeAbstract{
         {
 
         	$item = array();
-        	$item['uri'] = self::URI.'/p/'.$media->code.'/';
+        	$item['uri'] = self::URI.'p/'.$media->code.'/';
         	$item['content'] = '<img src="' . htmlentities($media->display_src) . '" />';
         	if (isset($media->caption))
         	{
