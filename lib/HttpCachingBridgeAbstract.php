@@ -10,12 +10,19 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
     /**
      * Maintain locally cached versions of pages to download, to avoid multiple downloads.
      * @param url url to cache
+     * @param duration duration of the cache file in seconds (default: 24h/86400s)
      * @return content of the file as string
      */
-    public function get_cached($url){
+    public function get_cached($url, $duration = 86400){
         // TODO build this from the variable given to Cache
         $cacheDir = __DIR__ . '/../cache/pages/';
         $filepath = $this->buildCacheFilePath($url, $cacheDir);
+
+        if(file_exists($filepath) && filectime($filepath) < time() - $duration){
+            $this->debugMessage('Cache file ' . $filepath . ' exceeded duration of ' . $duration . ' seconds.');
+            unlink ($filepath);
+            $this->debugMessage('Cached file deleted: ' . $filepath);
+        }
 
         if(file_exists($filepath)){
             $this->debugMessage('loading cached file from ' . $filepath . ' for page at url ' . $url);
