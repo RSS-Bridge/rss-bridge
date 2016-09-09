@@ -51,7 +51,7 @@ RSS-Bridge hashtag (#rss-bridge) search on Twitter, in ATOM format (as displayed
 Requirements
 ===
 
- * PHP 5.4
+ * PHP 5.6
  * `openssl` extension enabled in PHP config (`php.ini`)
 
 Enabling/Disabling bridges
