@@ -45,23 +45,7 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
         return str_get_html($content);
     }
 
-     public function get_cached_time($url){
-        $filepath = $this->buildCacheFilePath($url);
-
-        if(!file_exists($filepath)){
-            $this->get_cached($url);
-        }
-
-        return filectime($filepath);
-    }
-
     private function buildCacheFilePath($url){
         return __DIR__ . '/../cache/pages/' . sha1($url) . '.cache';
-    }
-
-    public function remove_from_cache($url){
-        $filepath = $this->buildCacheFilePath($url);
-        $this->debugMessage('removing from cache \'' . $filepath . '\'');
-        unlink($filepath);
     }
 }
