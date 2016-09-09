@@ -14,9 +14,7 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
      * @return content of the file as string
      */
     public function get_cached($url, $duration = 86400){
-        // TODO build this from the variable given to Cache
-        $cacheDir = __DIR__ . '/../cache/pages/';
-        $filepath = $this->buildCacheFilePath($url, $cacheDir);
+        $filepath = $this->buildCacheFilePath($url);
 
         if(file_exists($filepath) && filectime($filepath) < time() - $duration){
             $this->debugMessage('Cache file ' . $filepath . ' exceeded duration of ' . $duration . ' seconds.');
@@ -27,7 +25,7 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
         if(file_exists($filepath)){
             $this->debugMessage('loading cached file from ' . $filepath . ' for page at url ' . $url);
             // TODO touch file and its parent, and try to do neighbour deletion
-            $this->refresh_in_cache($cacheDir, $filepath);
+            $this->refresh_in_cache($filepath);
             $content = file_get_contents($filepath);
         } else {
             $this->debugMessage('we have no local copy of ' . $url . ' Downloading to ' . $filepath);
@@ -48,9 +46,7 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
     }
 
      public function get_cached_time($url){
-        // TODO build this from the variable given to Cache
-        $cacheDir = __DIR__ . '/../cache/pages/';
-        $filepath = $this->buildCacheFilePath($url, $cacheDir);
+        $filepath = $this->buildCacheFilePath($url);
 
         if(!file_exists($filepath)){
             $this->get_cached($url);
@@ -59,7 +55,8 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
         return filectime($filepath);
     }
 
-    private function refresh_in_cache($cacheDir, $filepath){
+    private function refresh_in_cache($filepath){
+        $cacheDir = __DIR__ . '/../cache/pages/';
         $currentPath = $filepath;
         while(!$cacheDir == $currentPath){
             touch($currentPath);
@@ -67,7 +64,9 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
         }
     }
 
-    private function buildCacheFilePath($url, $cacheDir){
+    private function buildCacheFilePath($url){
+        $cacheDir = __DIR__ . '/../cache/pages/';
+
         $simplified_url = str_replace(
             ['http://', 'https://', '?', '&', '='],
             ['', '', '/', '/', '/'],
@@ -83,13 +82,11 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
             $filepath .= 'index.html';
         }
 
-        return $filepath;
+        return realpath($filepath);
     }
 
     public function remove_from_cache($url){
-        // TODO build this from the variable given to Cache
-        $cacheDir = __DIR__ . '/../cache/pages/';
-        $filepath = $this->buildCacheFilePath($url, $cacheDir);
+        $filepath = $this->buildCacheFilePath($url);
         $this->debugMessage('removing from cache \'' . $filepath . '\'');
         unlink($filepath);
     }
