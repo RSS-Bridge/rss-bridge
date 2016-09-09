@@ -86,8 +86,6 @@ class FuturaSciencesBridge extends FeedExpander {
     protected function parseItem($newsItem){
         $item = $this->parseRSS_2_0_Item($newsItem);
         $item['uri'] = str_replace('#xtor=RSS-8', '', $item['uri']);
-        if($this->get_cached_time($item['uri']) <= strtotime('-24 hours'))
-            $this->remove_from_cache($item['uri']);
         $article = $this->get_cached($item['uri']) 
             or $this->returnServerError('Could not request Futura-Sciences: ' . $item['uri']);
         $item['content'] = $this->ExtractArticleContent($article);

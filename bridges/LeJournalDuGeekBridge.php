@@ -17,8 +17,6 @@ class LeJournalDuGeekBridge extends FeedExpander {
 	}
 
 	private function LeJournalDuGeekExtractContent($url) {
-		if($this->get_cached_time($url) <= strtotime('-24 hours'))
-			$this->remove_from_cache($url);
 		$articleHTMLContent = $this->get_cached($url);
 		$text = $articleHTMLContent->find('div.post-content', 0)->innertext;
 

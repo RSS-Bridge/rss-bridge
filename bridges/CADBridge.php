@@ -16,8 +16,6 @@ class CADBridge extends FeedExpander {
 	}
 
 	private function CADExtractContent($url) {
-		if($this->get_cached_time($url) <= strtotime('-24 hours'))
-			$this->remove_from_cache($url);
 		$html3 = $this->get_cached($url);
 
 		// The request might fail due to missing https support or wrong URL

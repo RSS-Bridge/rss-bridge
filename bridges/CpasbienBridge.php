@@ -28,7 +28,6 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
                 $item = array();
                 $item['author'] = $episode->find('a', 0)->text();
                 $item['title'] = $episode->find('a', 0)->text();
-                $item['timestamp'] = $this->get_cached_time($episode->find('a', 0)->getAttribute('href'));
                 $textefiche=$htmlepisode->find('#textefiche', 0)->find('p',1);
                 if (isset($textefiche)) {
                     $item['content'] = $textefiche->text();

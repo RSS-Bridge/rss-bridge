@@ -175,9 +175,6 @@ class WikipediaBridge extends HttpCachingBridgeAbstract {
 	* Loads the full article from a given URI
 	*/
 	private function LoadFullArticle($uri){
-		if($this->get_cached_time($uri) <= strtotime('-24 hours'))
-			$this->remove_from_cache($uri);
-
 		$content_html = $this->get_cached($uri);
 
 		if(!$content_html)

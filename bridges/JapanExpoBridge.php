@@ -59,8 +59,6 @@ class JapanExpoBridge extends HttpCachingBridgeAbstract {
                 if ($count >= 5) {
                   break;
                 }
-                if($this->get_cached_time($url) <= strtotime('-24 hours'))
-                    $this->remove_from_cache($url);
 
                 $article_html = $this->get_cached($url) or $this->returnServerError('Could not request JapanExpo: '.$url);
                 $header = $article_html->find('header.pageHeadBox', 0);
