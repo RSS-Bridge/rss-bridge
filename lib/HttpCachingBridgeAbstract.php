@@ -25,7 +25,7 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
         if(file_exists($filepath)){
             $this->debugMessage('loading cached file from ' . $filepath . ' for page at url ' . $url);
             // TODO touch file and its parent, and try to do neighbour deletion
-            $this->refresh_in_cache($filepath);
+            touch($filepath);
             $content = file_get_contents($filepath);
         } else {
             $this->debugMessage('we have no local copy of ' . $url . ' Downloading to ' . $filepath);
@@ -55,34 +55,8 @@ abstract class HttpCachingBridgeAbstract extends BridgeAbstract {
         return filectime($filepath);
     }
 
-    private function refresh_in_cache($filepath){
-        $cacheDir = __DIR__ . '/../cache/pages/';
-        $currentPath = $filepath;
-        while(!$cacheDir == $currentPath){
-            touch($currentPath);
-            $currentPath = dirname($currentPath);
-        }
-    }
-
     private function buildCacheFilePath($url){
-        $cacheDir = __DIR__ . '/../cache/pages/';
-
-        $simplified_url = str_replace(
-            ['http://', 'https://', '?', '&', '='],
-            ['', '', '/', '/', '/'],
-            $url);
-
-        if(substr($cacheDir, -1) !== '/'){
-            $cacheDir .= '/';
-        }
-
-        $filepath = $cacheDir . $simplified_url;
-
-        if(substr($filepath, -1) === '/'){
-            $filepath .= 'index.html';
-        }
-
-        return realpath($filepath);
+        return __DIR__ . '/../cache/pages/' . sha1($url) . '.cache';
     }
 
     public function remove_from_cache($url){
