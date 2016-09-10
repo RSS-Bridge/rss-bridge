@@ -17,7 +17,7 @@ class NextInpactBridge extends FeedExpander {
 	}
 
 	private function ExtractContent($url) {
-		$html2 = $this->get_cached($url);
+		$html2 = $this->getSimpleHTMLDOMCached($url);
 		$text = '<p><em>'.$html2->find('span.sub_title', 0)->innertext.'</em></p>'
 			.'<p><img src="'.$html2->find('div.container_main_image_article', 0)->find('img.dedicated',0)->src.'" alt="-" /></p>'
 			.'<div>'.$html2->find('div[itemprop=articleBody]', 0)->innertext.'</div>';

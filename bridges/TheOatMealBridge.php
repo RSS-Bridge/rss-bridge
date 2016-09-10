@@ -13,7 +13,7 @@ class TheOatmealBridge extends FeedExpander{
     protected function parseItem($newsItem) {
         $item = $this->parseRSS_1_0_Item($newsItem);
 
-        $articlePage = $this->get_cached($item['uri']);
+        $articlePage = $this->getSimpleHTMLDOMCached($item['uri']);
         $content = $articlePage->find('#comic', 0);
         if(is_null($content)) // load alternative
             $content = $articlePage->find('#blog', 0);

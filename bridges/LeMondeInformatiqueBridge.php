@@ -12,7 +12,7 @@ class LeMondeInformatiqueBridge extends FeedExpander {
 
     protected function parseItem($newsItem){
         $item = $this->parseRSS_1_0_Item($newsItem);
-        $article_html = $this->get_cached($item['uri']) 
+        $article_html = $this->getSimpleHTMLDOMCached($item['uri']) 
             or $this->returnServerError('Could not request LeMondeInformatique: ' . $item['uri']);
         $item['content'] = $this->CleanArticle($article_html->find('div#article', 0)->innertext);
         $item['title'] = $article_html->find('h1.cleanprint-title', 0)->plaintext;

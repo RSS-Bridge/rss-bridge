@@ -1,5 +1,5 @@
 <?php
-class WorldOfTanksBridge extends HttpCachingBridgeAbstract{
+class WorldOfTanksBridge extends BridgeAbstract {
 
     const MAINTAINER = "mitsukarenai";
     const NAME = "World of Tanks";
@@ -57,7 +57,7 @@ class WorldOfTanksBridge extends HttpCachingBridgeAbstract{
         $item['uri'] = self::URI.$infoLink->href;
         // now load that uri from cache
         $this->debugMessage("loading page ".$item['uri']);
-        $articlePage = $this->get_cached($item['uri']);
+        $articlePage = $this->getSimpleHTMLDOMCached($item['uri']);
         $content = $articlePage->find('.l-content', 0);
         HTMLSanitizer::defaultImageSrcTo($content, self::URI);
         $item['title'] = $content->find('h1', 0)->innertext;

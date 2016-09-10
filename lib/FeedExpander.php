@@ -1,6 +1,6 @@
 <?php
 require_once(__DIR__ . '/BridgeInterface.php');
-abstract class FeedExpander extends HttpCachingBridgeAbstract {
+abstract class FeedExpander extends BridgeAbstract {
 
   private $name;
   private $uri;

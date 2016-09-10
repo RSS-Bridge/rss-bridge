@@ -13,7 +13,7 @@ class FreenewsBridge extends FeedExpander {
     protected function parseItem($newsItem) {
         $item = $this->parseRSS_2_0_Item($newsItem);
         
-        $articlePage = $this->get_cached($item['uri']);
+        $articlePage = $this->getSimpleHTMLDOMCached($item['uri']);
         $content = $articlePage->find('.post-container', 0);
         $item['content'] = $content->innertext;
 

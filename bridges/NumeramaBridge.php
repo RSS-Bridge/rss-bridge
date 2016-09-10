@@ -17,7 +17,7 @@ class NumeramaBridge extends FeedExpander {
     }
 
     private function ExtractContent($url){
-        $article_html = $this->get_cached($url) or $this->returnServerError('Could not request Numerama: '.$url);
+        $article_html = $this->getSimpleHTMLDOMCached('Could not request Numerama: '.$url);
         $contents = $article_html->find('section[class=related-article]', 0)->innertext = ''; // remove related articles block
         $contents = '<img alt="" style="max-width:300px;" src="'.$article_html->find('meta[property=og:image]', 0)->getAttribute('content').'">'; // add post picture
         return  $contents . $article_html->find('article[class=post-content]', 0)->innertext; // extract the post
