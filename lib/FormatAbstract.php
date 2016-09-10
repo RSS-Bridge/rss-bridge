@@ -7,8 +7,7 @@ abstract class FormatAbstract implements FormatInterface {
 		$contentType,
 		$charset,
 		$items,
-		$extraInfos
-	;
+		$extraInfos;
 
 	public function setCharset($charset){
 		$this->charset = $charset;

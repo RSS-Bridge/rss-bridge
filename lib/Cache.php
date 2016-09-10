@@ -10,8 +10,8 @@ class Cache {
 
 	static public function create($nameCache){
 		if(!static::isValidNameCache($nameCache)){
-			throw new \InvalidArgumentException('Name cache must be at least'
-			. ' one uppercase follow or not by alphanumeric or dash characters.');
+			throw new \InvalidArgumentException('Name cache must be at least one
+ uppercase follow or not by alphanumeric or dash characters.');
 		}
 
 		$pathCache = self::getDir() . $nameCache . '.php';
@@ -72,7 +72,7 @@ class Cache {
 
 
 	static public function purge(){
-		$cacheTimeLimit = time() - 60*60*24;
+		$cacheTimeLimit = time() - 86400; // 86400 -> 24h
 		$cachePath = 'cache';
 		if(file_exists($cachePath)){
 			$cacheIterator = new RecursiveIteratorIterator(

@@ -14,7 +14,13 @@ class MrssFormat extends FormatAbstract {
 
 		$extraInfos = $this->getExtraInfos();
 		$title = $this->xml_encode($extraInfos['name']);
-		$uri = $this->xml_encode(!empty($extraInfos['uri']) ? $extraInfos['uri'] : 'https://github.com/sebsauvage/rss-bridge');
+
+		if(!empty($extraInfos['uri'])){
+			$uri = $this->xml_encode($extraInfos['uri']);
+		} else {
+			$uri = 'https://github.com/sebsauvage/rss-bridge';
+		}
+
 		$icon = $this->xml_encode('http://icons.better-idea.org/icon?url='. $uri .'&size=64');
 
 		$items = '';
@@ -41,7 +47,10 @@ EOD;
 		/* Data are prepared, now let's begin the "MAGIE !!!" */
 		$toReturn  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$toReturn .= <<<EOD
-<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:media="http://search.yahoo.com/mrss/" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" 
+xmlns:dc="http://purl.org/dc/elements/1.1/" 
+xmlns:media="http://search.yahoo.com/mrss/" 
+xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
 		<title>{$title}</title>
 		<link>http{$https}://{$httpHost}{$httpInfo}/</link>

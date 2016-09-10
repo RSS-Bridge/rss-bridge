@@ -36,8 +36,7 @@ EOD;
 		$pathBridge = self::getDir() . $nameBridge . '.php';
 
 		if(!file_exists($pathBridge)){
-			throw new \Exception('The bridge you looking for does not exist.'
-			. ' It should be at path '
+			throw new \Exception('The bridge you looking for does not exist. It should be at path '
 			. $pathBridge);
 		}
 

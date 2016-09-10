@@ -348,7 +348,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 			if(is_null($context)){
 				$context = stream_context_create($contextOptions);
 			} else {
-				$prevContext=$context;
+				$prevContext = $context;
 				if(!stream_context_set_option($context, $contextOptions)){
 					$context = $prevContext;
 				}

@@ -13,8 +13,23 @@ class HtmlFormat extends FormatAbstract {
 			$entryAuthor = isset($item['author']) ? '<br /><p class="author">by: ' . $item['author'] . '</p>' : '';
 			$entryTitle = isset($item['title']) ? $this->sanitizeHtml(strip_tags($item['title'])) : '';
 			$entryUri = isset($item['uri']) ? $item['uri'] : $uri;
-			$entryTimestamp = isset($item['timestamp']) ? '<time datetime="' . date(DATE_ATOM, $item['timestamp']) . '">' . date(DATE_ATOM, $item['timestamp']) . '</time>' : '';
-			$entryContent = isset($item['content']) ? '<div class="content">' . $this->sanitizeHtml($item['content']). '</div>' : '';
+
+			$entryTimestamp = '';
+			if(isset($item['timestamp'])){
+				$entryTimestamp = '<time datetime="'
+				. date(DATE_ATOM, $item['timestamp'])
+				. '">'
+				. date(DATE_ATOM, $item['timestamp'])
+				. '</time>';
+			}
+
+			$entryContent = '';
+			if(isset($item['content'])){
+				$entryContent = '<div class="content">'
+				. $this->sanitizeHtml($item['content'])
+				. '</div>';
+			}
+
 			$entries .= <<<EOD
 
 <section class="feeditem">

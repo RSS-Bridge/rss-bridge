@@ -73,7 +73,7 @@ CARD;
 
 			$card .= HTMLUtils::getFormHeader($bridgeName);
 
-			foreach($parameter as $id=>$inputEntry){
+			foreach($parameter as $id => $inputEntry){
 				$additionalInfoString = '';
 
 				if(isset($inputEntry['required']) && $inputEntry['required'] === true)

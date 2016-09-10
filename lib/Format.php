@@ -10,8 +10,8 @@ class Format {
 
 	static public function create($nameFormat){
 		if(!preg_match('@^[A-Z][a-zA-Z]*$@', $nameFormat)){
-			throw new \InvalidArgumentException('Name format must be at least '
-			. 'one uppercase follow or not by alphabetic characters.');
+			throw new \InvalidArgumentException('Name format must be at least
+ one uppercase follow or not by alphabetic characters.');
 		}
 
 		$nameFormat = $nameFormat . 'Format';
