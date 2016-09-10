@@ -386,4 +386,60 @@ abstract class BridgeAbstract implements BridgeInterface {
       , $defaultBRText
       , $defaultSpanText);
     }
+
+    /**
+     * Maintain locally cached versions of pages to avoid multiple downloads.
+     * @param url url to cache
+     * @param duration duration of the cache file in seconds (default: 24h/86400s)
+     * @return content of the file as string
+     */
+    public function getSimpleHTMLDOMCached($url
+    , $duration = 86400
+    , $use_include_path = false
+    , $context = null
+    , $offset = 0
+    , $maxLen = null
+    , $lowercase = true
+    , $forceTagsClosed = true
+    , $target_charset = DEFAULT_TARGET_CHARSET
+    , $stripRN = true
+    , $defaultBRText = DEFAULT_BR_TEXT
+    , $defaultSpanText = DEFAULT_SPAN_TEXT){
+        $this->debugMessage('Caching url ' . $url . ', duration ' . $duration);
+
+        $filepath = __DIR__ . '/../cache/pages/' . sha1($url) . '.cache';
+        $this->debugMessage('Cache file ' . $filepath);
+
+        if(file_exists($filepath) && filectime($filepath) < time() - $duration){
+            unlink ($filepath);
+            $this->debugMessage('Cached file deleted: ' . $filepath);
+        }
+
+        if(file_exists($filepath)){
+            $this->debugMessage('Loading cached file ' . $filepath);
+            touch($filepath);
+            $content = file_get_contents($filepath);
+        } else {
+            $this->debugMessage('Caching ' . $url . ' to ' . $filepath);
+            $dir = substr($filepath, 0, strrpos($filepath, '/'));
+
+            if(!is_dir($dir)){
+                $this->debugMessage('Creating directory ' . $dir);
+                mkdir($dir, 0777, true);
+            }
+
+            $content = $this->getContents($url, $use_include_path, $context, $offset, $maxLen);
+            if($content !== false){
+                file_put_contents($filepath, $content);
+            }
+        }
+
+        return str_get_html($content
+        , $lowercase
+        , $forceTagsClosed
+        , $target_charset
+        , $stripRN
+        , $defaultBRText
+        , $defaultSpanText);
+    }
 }
