@@ -133,7 +133,7 @@ try {
 		unset($params['format']);
 		unset($params['_noproxy']);
 		$bridge->setDatas($params);
-			
+
 		// Data transformation
 		try {
 			$format = Format::create($format);

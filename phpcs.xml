@@ -24,7 +24,6 @@
   <rule ref="PSR2.ControlStructures.ElseIfDeclaration"/>
   <rule ref="PSR2.Files.EndFileNewline"/>
   <rule ref="Squiz.WhiteSpace.CastSpacing"/>
-  <rule ref="Squiz.WhiteSpace.ObjectOperatorSpacing"/>
   <rule ref="Squiz.WhiteSpace.OperatorSpacing"/>
   <rule ref="Squiz.WhiteSpace.SemicolonSpacing"/>
   <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace"/>
