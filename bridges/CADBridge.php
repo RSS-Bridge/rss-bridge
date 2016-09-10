@@ -16,7 +16,7 @@ class CADBridge extends FeedExpander {
 	}
 
 	private function CADExtractContent($url) {
-		$html3 = $this->get_cached($url);
+		$html3 = $this->getSimpleHTMLDOMCached($url);
 
 		// The request might fail due to missing https support or wrong URL
 		if($html3 == false)

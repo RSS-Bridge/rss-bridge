@@ -17,7 +17,7 @@ class NiceMatinBridge extends FeedExpander {
 	}
 
 	private function NiceMatinExtractContent($url) {
-		$html = $this->get_cached($url);
+		$html = $this->getSimpleHTMLDOMCached($url);
 		if(!$html)
 			return 'Could not acquire content from url: ' . $url . '!';
 

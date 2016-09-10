@@ -1,5 +1,5 @@
 <?php
-class CpasbienBridge extends HttpCachingBridgeAbstract{
+class CpasbienBridge extends BridgeAbstract {
 
     const MAINTAINER = "lagaisse";
     const NAME = "Cpasbien Bridge";
@@ -23,7 +23,7 @@ class CpasbienBridge extends HttpCachingBridgeAbstract{
             if ($episode->getAttribute('class')=='ligne0' ||
                 $episode->getAttribute('class')=='ligne1')
             {
-                $htmlepisode=$this->get_cached($episode->find('a', 0)->getAttribute('href'));
+                $htmlepisode=$this->getSimpleHTMLDOMCached($episode->find('a', 0)->getAttribute('href'));
 
                 $item = array();
                 $item['author'] = $episode->find('a', 0)->text();

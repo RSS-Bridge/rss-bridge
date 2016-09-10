@@ -17,7 +17,7 @@ class LichessBridge  extends FeedExpander {
     }
 
     private function retrieve_lichess_post($blog_post_uri){
-        $blog_post_html = $this->get_cached($blog_post_uri);
+        $blog_post_html = $this->getSimpleHTMLDOMCached($blog_post_uri);
         $blog_post_div  = $blog_post_html->find('#lichess_blog', 0);
 
         $post_chapo   = $blog_post_div->find('.shortlede', 0)->innertext;

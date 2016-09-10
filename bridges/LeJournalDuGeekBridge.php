@@ -17,7 +17,7 @@ class LeJournalDuGeekBridge extends FeedExpander {
 	}
 
 	private function LeJournalDuGeekExtractContent($url) {
-		$articleHTMLContent = $this->get_cached($url);
+		$articleHTMLContent = $this->getSimpleHTMLDOMCached($url);
 		$text = $articleHTMLContent->find('div.post-content', 0)->innertext;
 
 		foreach($articleHTMLContent->find('a.more') as $element) {

@@ -1,5 +1,5 @@
 <?php
-class JapanExpoBridge extends HttpCachingBridgeAbstract {
+class JapanExpoBridge extends BridgeAbstract {
 
     const MAINTAINER = 'Ginko';
     const NAME = 'Japan Expo Actualités';
@@ -60,7 +60,7 @@ class JapanExpoBridge extends HttpCachingBridgeAbstract {
                   break;
                 }
 
-                $article_html = $this->get_cached($url) or $this->returnServerError('Could not request JapanExpo: '.$url);
+                $article_html = $this->getSimpleHTMLDOMCached('Could not request JapanExpo: '.$url);
                 $header = $article_html->find('header.pageHeadBox', 0);
                 $timestamp = strtotime($header->find('time', 0)->datetime);
                 $title_html = $header->find('div.section', 0)->next_sibling();
