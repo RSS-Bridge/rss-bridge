@@ -35,7 +35,7 @@ class GithubIssueBridge extends BridgeAbstract{
       or $this->returnServerError('No results for Github Issue '.$this->getInput('i').' in project '.$this->getInput('u').'/'.$this->getInput('p'));
 
     switch($this->queriedContext){
-    case 'Issue Comments':
+    case 'Issue comments':
       foreach($html->find('.js-comment-container') as $comment){
 
         $item = array();
