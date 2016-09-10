@@ -13,6 +13,7 @@ script:
   - phpcs . --standard=phpcs.xml --warning-severity=0 --extensions=php -p
 
 matrix:
+  fast_finish: true
   allow_failures:
     - php: hhvm
     - php: nightly
