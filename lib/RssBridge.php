@@ -19,28 +19,32 @@ require __DIR__ . '/HTMLUtils.php';
 
 $vendorLibSimpleHtmlDom = __DIR__ . PATH_VENDOR . '/simplehtmldom/simple_html_dom.php';
 if( !file_exists($vendorLibSimpleHtmlDom) ){
-    throw new \HttpException('"PHP Simple HTML DOM Parser" library is missing. Get it from http://simplehtmldom.sourceforge.net and place the script "simple_html_dom.php" in '.substr(PATH_VENDOR,4) . '/simplehtmldom/', 500);
+	throw new \HttpException('"PHP Simple HTML DOM Parser" library is missing.
+ Get it from http://simplehtmldom.sourceforge.net and place the script "simple_html_dom.php" in '
+		. substr(PATH_VENDOR,4)
+		. '/simplehtmldom/'
+	, 500);
 }
 require_once $vendorLibSimpleHtmlDom;
 
 /* Example use
-    
-    require_once __DIR__ . '/lib/RssBridge.php';
 
-    // Data retrieval
-    Bridge::setDir(__DIR__ . '/bridges/');
-    $bridge = Bridge::create('GoogleSearch');
-    $bridge->collectData($_REQUEST);
+	require_once __DIR__ . '/lib/RssBridge.php';
 
-    // Data transformation
-    Format::setDir(__DIR__ . '/formats/');
-    $format = Format::create('Atom');
-    $format
-        ->setItems($bridge->getItems())
-        ->setExtraInfos(array(
-            'name' => $bridge->getName(),
-            'uri' => $bridge->getURI(),
-        ))
-        ->display();
+	// Data retrieval
+	Bridge::setDir(__DIR__ . '/bridges/');
+	$bridge = Bridge::create('GoogleSearch');
+	$bridge->collectData($_REQUEST);
+
+	// Data transformation
+	Format::setDir(__DIR__ . '/formats/');
+	$format = Format::create('Atom');
+	$format
+		->setItems($bridge->getItems())
+		->setExtraInfos(array(
+			'name' => $bridge->getName(),
+			'uri' => $bridge->getURI(),
+		))
+		->display();
 
 */
