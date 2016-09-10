@@ -28,14 +28,33 @@ class GithubIssueBridge extends BridgeAbstract{
     )
   );
 
+  public function getName(){
+    $name=$this->getInput('u').'/'.$this->getInput('p');
+    switch($this->queriedContext){
+    case 'Project Issues':
+      $name=static::NAME.'s '.$name;
+      break;
+    case 'Issue comments':
+      $name=static::NAME.' '.$name.' #'.$this->getInput('i');
+      break;
+    }
+    return $name;
+  }
+
+  public function getURI(){
+    $uri = static::URI.$this->getInput('u').'/'.$this->getInput('p').'/issues/';
+    if($this->queriedContext==='Issue comments'){
+      $uri.=$this->getInput('i');
+    }
+    return $uri;
+  }
+
   public function collectData(){
-    $uri = self::URI.$this->getInput('u').'/'.$this->getInput('p')
-      .'/issues/'.$this->getInput('i');
-    $html = $this->getSimpleHTMLDOM($uri)
+    $html = $this->getSimpleHTMLDOM($this->getURI())
       or $this->returnServerError('No results for Github Issue '.$this->getInput('i').' in project '.$this->getInput('u').'/'.$this->getInput('p'));
 
     switch($this->queriedContext){
-    case 'Issue Comments':
+    case 'Issue comments':
       foreach($html->find('.js-comment-container') as $comment){
 
         $item = array();
@@ -43,7 +62,7 @@ class GithubIssueBridge extends BridgeAbstract{
 
         $comment=$comment->firstChild()->nextSibling();
 
-        $item['uri']=$uri.'#'.$comment->getAttribute('id');
+        $item['uri']=$this->getURI().'#'.$comment->getAttribute('id');
         $item['title']=trim($comment->firstChild()->plaintext);
         $item['timestamp']=strtotime($comment->find('relative-time',0)->getAttribute('datetime'));
         $item['content']=$comment->find('.comment-body',0)->innertext;
