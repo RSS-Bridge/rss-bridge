@@ -11,3 +11,8 @@ install:
 script:
   - phpenv rehash
   - phpcs . --standard=phpcs.xml --warning-severity=0 --extensions=php -p
+
+matrix:
+  allow_failures:
+    - php: hhvm
+    - php: nightly
