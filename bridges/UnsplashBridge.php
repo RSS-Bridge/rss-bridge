@@ -1,50 +1,40 @@
 <?php
 class UnsplashBridge extends BridgeAbstract {
 
-	public function loadMetadatas() {
+	const MAINTAINER = "nel50n";
+	const NAME = "Unsplash Bridge";
+	const URI = "http://unsplash.com/";
+	const DESCRIPTION = "Returns the latests photos from Unsplash";
 
-		$this->maintainer = "nel50n";
-		$this->name = "Unsplash Bridge";
-		$this->uri = "http://unsplash.com/";
-		$this->description = "Returns the latests photos from Unsplash";
-		$this->update = "2015-03-02";
+    const PARAMETERS = array( array(
+          'm'=>array(
+            'name'=>'Max number of photos',
+            'type'=>'number',
+            'defaultValue'=>20
+          ),
+          'w'=>array(
+            'name'=>'Width',
+            'exampleValue'=>'1920, 1680, …',
+            'defaultValue'=>'1920'
+          ),
+          'q'=>array(
+            'name'=>'JPEG quality',
+            'type'=>'number',
+            'defaultValue'=>75
+          )
+      ));
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "Max number of photos",
-				"identifier" : "m",
-				"type" : "number"
-			},
-			{
-				"name" : "Width",
-				"identifier" : "w",
-				"exampleValue" : "1920, 1680, ..."
-			},
-			{
-				"name" : "JPEG quality",
-				"identifier" : "q",
-				"type" : "number"
-
-			}
-
-		]';
-	}
-
-    public function collectData(array $param){
-        $html = '';
-        $baseUri = 'http://unsplash.com';
-
-        $width = $param['w'] ?: '1920';    // Default width
-
+    public function collectData(){
+        $width = $this->getInput('w') ;
         $num = 0;
-        $max = $param['m'] ?: 20;
-        $quality = $param['q'] ?: 75;
+        $max = $this->getInput('m');
+        $quality = $this->getInput('q');
         $lastpage = 1;
 
         for ($page = 1; $page <= $lastpage; $page++) {
-            $link = $baseUri.'/grid?page='.$page;
-            $html = file_get_html($link) or $this->returnError('No results for this query.', 404);
+            $link = self::URI.'/grid?page='.$page;
+            $html = $this->getSimpleHTMLDOM($link)
+              or $this->returnServerError('No results for this query.');
 
             if ($page === 1) {
                 preg_match('/=(\d+)$/', $html->find('.pagination > a[!class]', -1)->href, $matches);
@@ -55,14 +45,13 @@ class UnsplashBridge extends BridgeAbstract {
                 $thumbnail = $element->find('img', 0);
                 $thumbnail->src = str_replace('https://', 'http://', $thumbnail->src);
 
-                $item = new \Item();
-                $item->uri = str_replace(array('q=75', 'w=400'),
+                $item = array();
+                $item['uri'] = str_replace(array('q=75', 'w=400'),
                                          array("q=$quality", "w=$width"),
                                          $thumbnail->src).'.jpg';           // '.jpg' only for format hint
-                $item->timestamp = time();
-                $item->title = $thumbnail->alt;
-                $item->thumbnailUri = $thumbnail->src;
-                $item->content = $item->title.'<br><a href="'.$item->uri.'"><img src="'.$item->thumbnailUri.'" /></a>';
+                $item['timestamp'] = time();
+                $item['title'] = $thumbnail->alt;
+                $item['content'] = $item['title'].'<br><a href="'.$item['uri'].'"><img src="'.$thumbnail->src.'" /></a>';
                 $this->items[] = $item;
 
                 $num++;
@@ -70,14 +59,6 @@ class UnsplashBridge extends BridgeAbstract {
                     break 2;
             }
         }
-    }
-
-    public function getName(){
-        return 'Unsplash';
-    }
-
-    public function getURI(){
-        return 'http://unsplash.com';
     }
 
     public function getCacheDuration(){

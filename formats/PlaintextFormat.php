@@ -2,21 +2,19 @@
 /**
 * Plaintext
 * Returns $this->items as raw php data.
-*
-* @name Plaintext
 */
-class PlaintextFormat extends FormatAbstract{
+class PlaintextFormat extends FormatAbstract {
 
-    public function stringify(){
-        $datas = $this->getDatas();
-        return print_r($datas, true);
-    }
+	public function stringify(){
+		$items = $this->getItems();
+		return print_r($items, true);
+	}
 
-    public function display(){
-        $this
-            ->setContentType('text/plain;charset=' . $this->getCharset())
-            ->callContentType();
+	public function display(){
+		$this
+			->setContentType('text/plain;charset=' . $this->getCharset())
+			->callContentType();
 
-        return parent::display();
-    }
+		return parent::display();
+	}
 }

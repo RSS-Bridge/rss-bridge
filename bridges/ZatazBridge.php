@@ -1,18 +1,13 @@
 <?php
 class ZatazBridge extends BridgeAbstract {
 
-	public function loadMetadatas() {
+	const MAINTAINER = "aledeg";
+	const NAME = 'Zataz Magazine';
+	const URI = 'http://www.zataz.com';
+	const DESCRIPTION = "ZATAZ Magazine - S'informer, c'est déjà se sécuriser";
 
-		$this->maintainer = "aledeg";
-		$this->name = "Zataz";
-		$this->uri = "http://www.zataz.com/";
-		$this->description = "ZATAZ Magazine - S'informer, c'est déjà se sécuriser";
-		$this->update = "07/02/2015";
-
-	}
-
-	public function collectData(array $param) {
-		$html = file_get_html($this->getURI()) or $this->returnError('Could not request ' . $this->getURI(), 404);
+	public function collectData(){
+		$html = $this->getSimpleHTMLDOM(self::URI) or $this->returnServerError('Could not request ' . self::URI);
 
 		$recent_posts = $html->find('#recent-posts-3', 0)->find('ul', 0)->find('li');
 		foreach ($recent_posts as $article) {
@@ -24,15 +19,15 @@ class ZatazBridge extends BridgeAbstract {
 	}
 
 	private function getDetails($uri) {
-		$html = file_get_html($uri) or exit;
+		$html = $this->getSimpleHTMLDOM($uri) or exit;
 
-		$item = new \Item();
+		$item = array();
 
 		$article = $html->find('.gdl-blog-full', 0);
-		$item->uri = $uri;
-		$item->title = $article->find('.blog-title', 0)->find('a', 0)->innertext;
-		$item->content = $article->find('.blog-content', 0)->innertext;
-		$item->timestamp = $this->getTimestampFromDate($article->find('.blog-date', 0)->find('a', 0)->href);
+		$item['uri'] = $uri;
+		$item['title'] = $article->find('.blog-title', 0)->find('a', 0)->innertext;
+		$item['content'] = $article->find('.blog-content', 0)->innertext;
+		$item['timestamp'] = $this->getTimestampFromDate($article->find('.blog-date', 0)->find('a', 0)->href);
 		return $item;
 	}
 
@@ -42,16 +37,8 @@ class ZatazBridge extends BridgeAbstract {
 		return $date->format('U');
 	}
 
-	public function getName() {
-		return 'Zataz Magazine';
-	}
-
 	public function getCacheDuration() {
 		return 7200; // 2h
-	}
-
-	public function getURI() {
-		return 'http://www.zataz.com';
 	}
 
 }

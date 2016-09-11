@@ -1,20 +1,18 @@
 <?php
 class GizmodoFRBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	const MAINTAINER = "polopollo";
+	const NAME = "GizmodoFR";
+	const URI = "http://www.gizmodo.fr/";
+	const DESCRIPTION = "Returns the 15 newest posts from GizmodoFR (full text).";
 
-		$this->maintainer = "polopollo";
-		$this->name = "GizmodoFR";
-		$this->uri = "http://www.gizmodo.fr/";
-		$this->description = "Returns the 15 newest posts from GizmodoFR (full text).";
-		$this->update = "2014-07-14";
-
-	}
-
-    public function collectData(array $param){
+    public function collectData(){
 
         function GizmodoFRExtractContent($url) {
-            $articleHTMLContent = file_get_html($url);
+            $articleHTMLContent = $this->getSimpleHTMLDOM($url);
+            if(!$articleHTMLContent){
+              return 'Could not load '.$url;
+            }
             $text = $articleHTMLContent->find('div.entry-thumbnail', 0)->innertext;
             $text = $text.$articleHTMLContent->find('div.entry-excerpt', 0)->innertext;
             $text = $text.$articleHTMLContent->find('div.entry-content', 0)->innertext;
@@ -26,29 +24,22 @@ class GizmodoFRBridge extends BridgeAbstract{
             return $text;
         }
 
-        $rssFeed = file_get_html('http://www.gizmodo.fr/feed') or $this->returnError('Could not request http://www.gizmodo.fr/feed', 404);
+        $rssFeed = $this->getSimpleHTMLDOM(self::URI.'/feed')
+          or $this->returnServerError('Could not request '.self::URI.'/feed');
     	$limit = 0;
 
     	foreach($rssFeed->find('item') as $element) {
             if($limit < 15) {
-                $item = new \Item();
-                $item->title = $element->find('title', 0)->innertext;
-                $item->uri = $element->find('guid', 0)->plaintext;
-                $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-                $item->content = GizmodoFRExtractContent($item->uri);
+                $item = array();
+                $item['title'] = $element->find('title', 0)->innertext;
+                $item['uri'] = $element->find('guid', 0)->plaintext;
+                $item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
+                $item['content'] = GizmodoFRExtractContent($item['uri']);
                 $this->items[] = $item;
                 $limit++;
             }
     	}
 
-    }
-
-    public function getName(){
-        return 'GizmodoFR';
-    }
-
-    public function getURI(){
-        return 'http://www.gizmodo.fr/';
     }
 
     public function getCacheDuration(){

@@ -1,75 +1,56 @@
 <?php
 class CourrierInternationalBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+    const MAINTAINER = "teromene";
+    const NAME = "Courrier International Bridge";
+    const URI = "http://CourrierInternational.com/";
+    const DESCRIPTION = "Courrier International bridge";
 
-		$this->maintainer = "teromene";
-		$this->name = "CourrierInternational";
-		$this->uri = "http://CourrierInternational.fr/";
-		$this->description = "Courrier International bridge";
-		$this->update = "01/09/2015";
+    public function collectData(){
 
-	}
+        $html = $this->getSimpleHTMLDOM(self::URI)
+            or $this->returnServerError('Error.');
 
-    public function collectData(array $param){
-	
-	function fetchArticle($link) {
-		
-		$page = file_get_html($link);
+        $element = $html->find("article");
 
-		$contenu = $page->find(".article-text")[0];
-		
-		return strip_tags($contenu);
-		
+        $article_count = 1;
 
+        foreach($element as $article) {
 
-	}
+            $item = array();
 
-	$html = '';
+            $item['uri'] = $article->parent->getAttribute("href");
 
-        $html = file_get_html('http://www.courrierinternational.com/article') or $this->returnError('Error.', 500);
-	
+            if(strpos($item['uri'], "http") === FALSE) {
+                $item['uri'] = self::URI.$item['uri'];
+            }
 
-	
-	$element = $html->find(".type-normal");
+            $page = $this->getSimpleHTMLDOM($item['uri']);
 
-	$article_count = 1;	
+            $cleaner = new HTMLSanitizer();
 
-	foreach($element as $article) {
-		
-		$item = new \Item();
-		
-		$item->uri = "http://www.courrierinternational.com".$article->find("a")[0]->getAttribute("href");
-		$item->content = fetchArticle("http://www.courrierinternational.com".$article->find("a")[0]->getAttribute("href"));
-		$item->title = strip_tags($article->find("h2")[0]);
+            $item['content'] = $cleaner->sanitize($page->find("div.article-text")[0]);
+            $item['title'] = strip_tags($article->find(".title")[0]);
 
-		$dateTime = date_parse($article->find("time")[0]);
+            $dateTime = date_parse($page->find("time")[0]);
 
-		$item->timestamp = mktime(
-       			$dateTime['hour'], 
-        		$dateTime['minute'], 
-        		$dateTime['second'], 
-        		$dateTime['month'], 
-        		$dateTime['day'], 
+            $item['timestamp'] = mktime(
+       			$dateTime['hour'],
+        		$dateTime['minute'],
+        		$dateTime['second'],
+        		$dateTime['month'],
+        		$dateTime['day'],
         		$dateTime['year']
-		);
-		
-		$this->items[] = $item;
-		$article_count ++;
-		if($article_count > 5) break;
-	
-	}
+            );
+
+            $this->items[] = $item;
+            $article_count ++;
+            if($article_count > 5) break;
+
+        }
 
 
 
-    }
-
-    public function getName(){
-        return 'Courrier International Bridge';
-    }
-
-    public function getURI(){
-        return 'http://courrierinternational.com';
     }
 
     public function getCacheDuration(){

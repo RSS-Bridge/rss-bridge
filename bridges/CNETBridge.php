@@ -1,26 +1,16 @@
 <?php
 class CNETBridge extends BridgeAbstract {
 
-    private $topicName = '';
+    const MAINTAINER = 'ORelio';
+    const NAME = 'CNET News';
+    const URI = 'http://www.cnet.com/';
+    const DESCRIPTION = 'Returns the newest articles. <br /> You may specify a topic found in some section URLs, else all topics are selected.';
 
-    public function loadMetadatas() {
+    const PARAMETERS = array( array(
+        'topic'=>array('name'=>'Topic name')
+    ));
 
-        $this->maintainer = 'ORelio';
-        $this->name = 'CNET News';
-        $this->uri = 'http://www.cnet.com/';
-        $this->description = 'Returns the newest articles. <br /> You may specify a topic found in some section URLs, else all topics are selected.';
-        $this->update = '2016-02-06';
-
-        $this->parameters[] =
-        '[
-            {
-                "name" : "Topic name",
-                "identifier" : "topic"
-            }
-        ]';
-    }
-
-    public function collectData(array $param) {
+    public function collectData(){
 
         function ExtractFromDelimiters($string, $start, $end) {
             if (strpos($string, $start) !== false) {
@@ -47,44 +37,30 @@ class CNETBridge extends BridgeAbstract {
             return $article_html;
         }
 
-        if (!empty($param['topic']))
-            $this->topicName = $param['topic'];
-
-        $pageUrl = 'http://www.cnet.com/'.(empty($this->topicName) ? '' : 'topics/'.$this->topicName.'/');
-        $html = file_get_html($pageUrl) or $this->returnError('Could not request CNET: '.$pageUrl, 500);
+        $pageUrl = self::URI.(empty($this->getInput('topic')) ? '' : 'topics/'.$this->getInput('topic').'/');
+        $html = $this->getSimpleHTMLDOM($pageUrl) or $this->returnServerError('Could not request CNET: '.$pageUrl);
         $limit = 0;
 
         foreach($html->find('div.assetBody') as $element) {
             if ($limit < 8) {
 
                 $article_title = trim($element->find('h2', 0)->plaintext);
-                $article_uri = 'http://www.cnet.com'.($element->find('a', 0)->href);
-                $article_thumbnail = $element->parent()->find('img', 0)->src;
+                $article_uri = self::URI.($element->find('a', 0)->href);
                 $article_timestamp = strtotime($element->find('time.assetTime', 0)->plaintext);
                 $article_author = trim($element->find('a[rel=author]', 0)->plaintext);
 
                 if (!empty($article_title) && !empty($article_uri) && strpos($article_uri, '/news/') !== false) {
 
-                    $article_html = file_get_html($article_uri) or $this->returnError('Could not request CNET: '.$article_uri, 500);
+                    $article_html = $this->getSimpleHTMLDOM($article_uri) or $this->returnServerError('Could not request CNET: '.$article_uri);
 
-                    if (is_null($article_thumbnail))
-                        $article_thumbnail = $article_html->find('div.originalImage', 0);
+                    $article_content = trim(CleanArticle(ExtractFromDelimiters($article_html, '<div class="articleContent', '<footer>')));
 
-                    if (is_null($article_thumbnail))
-                        $article_thumbnail = $article_html->find('span.imageContainer', 0);
-
-                    if (is_object($article_thumbnail))
-                        $article_thumbnail = $article_thumbnail->find('img', 0)->src;
-
-                    $article_content = trim(CleanArticle(ExtractFromDelimiters($article_html, '</div></div></div><div class="col-8">', '<footer>')));
-
-                    $item = new \Item();
-                    $item->uri = $article_uri;
-                    $item->thumbnailUri = $article_thumbnail;
-                    $item->title = $article_title;
-                    $item->author = $article_author;
-                    $item->timestamp = $article_timestamp;
-                    $item->content = $article_content;
+                    $item = array();
+                    $item['uri'] = $article_uri;
+                    $item['title'] = $article_title;
+                    $item['author'] = $article_author;
+                    $item['timestamp'] = $article_timestamp;
+                    $item['content'] = $article_content;
                     $this->items[] = $item;
                     $limit++;
                 }
@@ -93,15 +69,11 @@ class CNETBridge extends BridgeAbstract {
     }
 
     public function getName() {
-        return 'CNET News Bridge'.(empty($this->topicName) ? '' : ' - '.$this->topicName);
-    }
-
-    public function getURI() {
-        return 'http://www.cnet.com/';
+        $topic=$this->getInput('topic');
+        return 'CNET News Bridge'.(empty($topic) ? '' : ' - '.$topic);
     }
 
     public function getCacheDuration() {
         return 1800; // 30 minutes
-        // return 0;
     }
 }

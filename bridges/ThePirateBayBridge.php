@@ -1,25 +1,20 @@
 <?php
 class ThePirateBayBridge extends BridgeAbstract{
 
-	public function loadMetadatas() {
+	const MAINTAINER = "mitsukarenai";
+	const NAME = "The Pirate Bay";
+	const URI = "https://thepiratebay.org/";
+	const DESCRIPTION = "Returns results for the keywords. You can put several list of keywords by separating them with a semicolon (e.g. \"one show;another show\")";
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "The Pirate Bay";
-		$this->uri = "https://thepiratebay.se/";
-		$this->description = "Returns results for the keywords. You can put several list of keywords by separating them with a semicolon (e.g. \"one show;another show\")";
-		$this->update = "2015-01-09";
+    const PARAMETERS = array( array(
+        'q'=>array(
+            'name'=>'keywords, separated by semicolons',
+            'exampleValue'=>'first list;second list;…',
+            'required'=>true
+        )
+    ));
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "keywords, separated by semicolons",
-				"identifier" : "q",
-				"exampleValue" : "first list;second list;..."
-			}
-		]';
-	}
-
-	public function collectData(array $param){
+	public function collectData(){
 
         function parseDateTimestamp($element){
                 $guessedDate = $element->find('font',0)->plaintext;
@@ -55,41 +50,27 @@ class ThePirateBayBridge extends BridgeAbstract{
         }
 
 
-		if (!isset($param['q']))
-			$this->returnError('You must specify keywords (?q=...)', 400);
-
-        $keywordsList = explode(";",$param['q']); 
+        $keywordsList = explode(";",$this->getInput('q'));
         foreach($keywordsList as $keywords){
-            $html = file_get_html('https://thepiratebay.se/search/'.rawurlencode($keywords).'/0/3/0') or $this->returnError('Could not request TPB.', 404);
+          $html = $this->getSimpleHTMLDOM(self::URI.'search/'.rawurlencode($keywords).'/0/3/0')
+            or $this->returnServerError('Could not request TPB.');
 
             if ($html->find('table#searchResult', 0) == FALSE)
-                $this->returnError('No result for query '.$keywords, 404);
+                $this->returnServerError('No result for query '.$keywords);
 
 
             foreach($html->find('tr') as $element) {
-                $item = new \Item();
-                $item->uri = 'https://thepiratebay.se/'.$element->find('a.detLink',0)->href;
-                $item->id = $item->uri;
-                $item->timestamp = parseDateTimestamp($element);
-                $item->title = $element->find('a.detLink',0)->plaintext;
-                $item->seeders = (int)$element->find('td',2)->plaintext;
-                $item->leechers = (int)$element->find('td',3)->plaintext;
-                $item->content = $element->find('font',0)->plaintext.'<br>seeders: '.$item->seeders.' | leechers: '.$item->leechers.'<br><a href="'.$element->find('a',3)->href.'">download</a>';
-                if(!empty($item->title))
+                $item = array();
+                $item['uri'] = self::URI.$element->find('a.detLink',0)->href;
+                $item['id'] = $item['uri'];
+                $item['timestamp'] = parseDateTimestamp($element);
+                $item['title'] = $element->find('a.detLink',0)->plaintext;
+                $item['seeders'] = (int)$element->find('td',2)->plaintext;
+                $item['leechers'] = (int)$element->find('td',3)->plaintext;
+                $item['content'] = $element->find('font',0)->plaintext.'<br>seeders: '.$item['seeders'].' | leechers: '.$item['leechers'].'<br><a href="'.$element->find('a',3)->href.'">download</a>';
+                if(isset($item['title']))
                     $this->items[] = $item;
             }
         }
 	}
-    
-    public function getName(){
-        return 'The Pirate Bay';
-    }
-
-    public function getURI(){
-        return 'https://thepiratebay.se/';
-    }
-
-    public function getCacheDuration(){
-        return 3600; // 1 hour
-    }
 }

@@ -1,17 +1,12 @@
 <?php
 class SiliconBridge extends BridgeAbstract {
 
-	public function loadMetadatas() {
+	const MAINTAINER = "ORelio";
+	const NAME = 'Silicon Bridge';
+	const URI = 'http://www.silicon.fr/';
+	const DESCRIPTION = "Returns the newest articles.";
 
-		$this->maintainer = "ORelio";
-		$this->name = "Silicon.fr";
-		$this->uri = "http://www.silicon.fr/";
-		$this->description = "Returns the newest articles.";
-		$this->update = "2015-09-08";
-
-	}
-
-    public function collectData(array $param) {
+    public function collectData(){
 
         function StripCDATA($string) {
             $string = str_replace('<![CDATA[', '', $string);
@@ -19,8 +14,9 @@ class SiliconBridge extends BridgeAbstract {
             return $string;
         }
 
-        $feedUrl = 'http://www.silicon.fr/feed';
-        $html = file_get_html($feedUrl) or $this->returnError('Could not request Silicon: '.$feedUrl, 500);
+        $feedUrl = self::URI.'feed';
+        $html = $this->getSimpleHTMLDOM($feedUrl)
+          or $this->returnServerError('Could not request Silicon: '.$feedUrl);
         $limit = 0;
 
         foreach($html->find('item') as $element) {
@@ -30,7 +26,8 @@ class SiliconBridge extends BridgeAbstract {
                 $article_uri = $element->innertext;
                 $article_uri = substr($article_uri, strpos($article_uri, '<link>') + 6);
                 $article_uri = substr($article_uri, 0, strpos($article_uri, '</link>'));
-                $article_html = file_get_html($article_uri) or $this->returnError('Could not request Silicon: '.$article_uri, 500);
+                $article_html = $this->getSimpleHTMLDOM($article_uri)
+                  or $this->returnServerError('Could not request Silicon: '.$article_uri);
 
                 //Build article contents from corresponding elements
                 $thumbnailUri = $element->find('enclosure', 0)->url;
@@ -46,29 +43,19 @@ class SiliconBridge extends BridgeAbstract {
                 }
 
                 //Build and add final item
-                $item = new \Item();
-                $item->uri = $article_uri;
-                $item->thumbnailUri = $thumbnailUri;
-                $item->title = StripCDATA($element->find('title', 0)->innertext);
-                $item->author = StripCDATA($element->find('dc:creator', 0)->innertext);
-                $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-                $item->content = $article_content;
+                $item = array();
+                $item['uri'] = $article_uri;
+                $item['title'] = StripCDATA($element->find('title', 0)->innertext);
+                $item['author'] = StripCDATA($element->find('dc:creator', 0)->innertext);
+                $item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
+                $item['content'] = $article_content;
                 $this->items[] = $item;
                 $limit++;
             }
         }
     }
 
-    public function getName() {
-        return 'Silicon Bridge';
-    }
-
-    public function getURI() {
-        return 'http://www.silicon.fr/';
-    }
-
     public function getCacheDuration() {
         return 1800; // 30 minutes
-        // return 0;
     }
 }

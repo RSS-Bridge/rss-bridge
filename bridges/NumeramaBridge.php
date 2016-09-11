@@ -1,60 +1,29 @@
 <?php
-class NumeramaBridge extends BridgeAbstract{
+class NumeramaBridge extends FeedExpander {
 
-	public function loadMetadatas() {
+    const MAINTAINER = 'mitsukarenai';
+    const NAME = 'Numerama';
+    const URI = 'http://www.numerama.com/';
+    const DESCRIPTION = 'Returns the 5 newest posts from Numerama (full text)';
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Numerama";
-		$this->uri = "http://www.numerama.com/";
-		$this->description = "Returns the 5 newest posts from Numerama (full text)";
-		$this->update = "2015-10-12";
-
-	}
-
-    public function collectData(array $param){
-
-    function NumeramaStripCDATA($string) {
-    	$string = str_replace('<![CDATA[', '', $string);
-    	$string = str_replace(']]>', '', $string);
-    	return $string;
+    public function collectData(){
+        $this->collectExpandableDatas(self::URI . 'feed/', 5);
     }
 
-   function NumeramaExtractContent($url)
-      {
-      $html2 = file_get_html($url);
-      $text = $html2->find('section[class=related-article]', 0)->innertext = ''; // remove related articles block
-      $text = '<img alt="" style="max-width:300px;" src="'.$html2->find('meta[property=og:image]', 0)->getAttribute('content').'">'; // add post picture
-      $text = $text.$html2->find('article[class=post-content]', 0)->innertext; // extract the post
-      return $text;
-      }
-
-   $html = file_get_html('http://www.numerama.com/feed/') or $this->returnError('Could not request Numerama.', 404);
-	$limit = 0;
-
-	foreach($html->find('item') as $element) {
-	 if($limit < 5) {
-	 $item = new \Item();
-	 $item->title = html_entity_decode(NumeramaStripCDATA($element->find('title', 0)->innertext));
-	 $item->author = NumeramaStripCDATA($element->find('dc:creator', 0)->innertext);
-	 $item->uri = NumeramaStripCDATA($element->find('guid', 0)->plaintext);
-	 $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-	 $item->content = NumeramaExtractContent($item->uri);
-	 $this->items[] = $item;
-	 $limit++;
-	 }
-	}
-
+    protected function parseItem($newsItem){
+        $item = $this->parseRSS_2_0_Item($newsItem);
+        $item['content'] = $this->ExtractContent($item['uri']);
+        return $item;
     }
 
-    public function getName(){
-        return 'Numerama';
+    private function ExtractContent($url){
+        $article_html = $this->getSimpleHTMLDOMCached('Could not request Numerama: '.$url);
+        $contents = $article_html->find('section[class=related-article]', 0)->innertext = ''; // remove related articles block
+        $contents = '<img alt="" style="max-width:300px;" src="'.$article_html->find('meta[property=og:image]', 0)->getAttribute('content').'">'; // add post picture
+        return  $contents . $article_html->find('article[class=post-content]', 0)->innertext; // extract the post
     }
 
-    public function getURI(){
-        return 'http://www.numerama.com/';
-    }
-
-    public function getCacheDuration(){
+    public function getCacheDuration() {
         return 1800; // 30min
     }
 }

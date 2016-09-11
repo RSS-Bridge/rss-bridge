@@ -1,81 +1,54 @@
 <?php
 class PinterestBridge extends BridgeAbstract{
 
-    private $username;
-    private $board;
-    private $query;
+	const MAINTAINER = "pauder";
+	const NAME = "Pinterest Bridge";
+	const URI = "http://www.pinterest.com/";
+	const DESCRIPTION = "Returns the newest images on a board";
 
-    public function loadMetadatas() {
+    const PARAMETERS = array(
+        'By username and board' => array(
+          'u'=>array(
+            'name'=>'username',
+            'required'=>true
+          ),
+          'b'=>array(
+            'name'=>'board',
+            'required'=>true
+          )
+        ),
+        'From search' => array(
+          'q'=>array(
+            'name'=>'Keyword',
+            'required'=>true
+          )
+        )
+    );
 
-		$this->maintainer = "pauder";
-		$this->name = "Pinterest Bridge";
-		$this->uri = "http://www.pinterest.com/";
-		$this->description = "Returns the newest images on a board";
-		$this->update = "2014-05-25";
 
-		$this->parameters["By username and board"] =
-		'[
-			{
-				"name" : "username",
-				"identifier" : "u"
-			},
-			{
-				"name" : "board",
-				"identifier" : "b"
-
-			}
-		]';
-
-		$this->parameters["From search"] =
-		'[
-			{
-				"name" : "Keyword",
-				"identifier" : "q"
-			}
-		]';
-	}
-
-    public function collectData(array $param){
-        $html = '';
-        if (isset($param['u']) || isset($param['b'])) {
-        
-            if (empty($param['u']))
-            {
-                $this->returnError('You must specify a Pinterest username (?u=...).', 400);
-            }
-
-            if (empty($param['b']))
-            {
-                $this->returnError('You must specify a Pinterest board for this username (?b=...).', 400);
-            }
-            
-            $this->username = $param['u'];
-            $this->board = $param['b'];
-            $html = file_get_html($this->getURI().'/'.urlencode($this->username).'/'.urlencode($this->board)) or $this->returnError('Username and/or board not found', 404);
-
-        } else if (isset($param['q']))
-        {
-        	$this->query = $param['q'];
-        	$html = file_get_html($this->getURI().'/search/?q='.urlencode($this->query)) or $this->returnError('Could not request Pinterest.', 404);
+    public function collectData(){
+      $html = $this->getSimpleHTMLDOM($this->getURI()) ;
+      if(!$html){
+        switch($this->queriedContext){
+        case 'By username and board':
+          $this->returnServerError('Username and/or board not found');
+        case 'From search':
+          $this->returnServerError('Could not request Pinterest.');
         }
-        
-        else {
-            $this->returnError('You must specify a Pinterest username and a board name (?u=...&b=...).', 400);
-        }
-       
-        
+      }
+
         foreach($html->find('div.pinWrapper') as $div)
         {
         	$a = $div->find('a.pinImageWrapper',0);
-        	
+
         	$img = $a->find('img', 0);
-        	
-        	$item = new \Item();
-        	$item->uri = $this->getURI().$a->getAttribute('href');
-        	$item->content = '<img src="' . htmlentities(str_replace('/236x/', '/736x/', $img->getAttribute('src'))) . '" alt="" />';
-        	
-        	
-        	if (isset($this->query))
+
+        	$item = array();
+        	$item['uri'] = $this->getURI().$a->getAttribute('href');
+        	$item['content'] = '<img src="' . htmlentities(str_replace('/236x/', '/736x/', $img->getAttribute('src'))) . '" alt="" />';
+
+
+        	if ($this->queriedContext==='From search')
         	{
         		$avatar = $div->find('div.creditImg', 0)->find('img', 0);
 				$avatar = $avatar->getAttribute('data-src');
@@ -84,38 +57,45 @@ class PinterestBridge extends BridgeAbstract{
 
         		$username = $div->find('div.creditName', 0);
         		$board = $div->find('div.creditTitle', 0);
-        		
-        		$item->username =$username->innertext;	
-        		$item->fullname = $board->innertext;
-        		$item->avatar = $avatar;
-        		
-        		$item->content .= '<br /><img align="left" style="margin: 2px 4px;" src="'.htmlentities($item->avatar).'" /> <strong>'.$item->username.'</strong>';
-        		$item->content .= '<br />'.$item->fullname;
+
+        		$item['username'] =$username->innertext;
+        		$item['fullname'] = $board->innertext;
+        		$item['avatar'] = $avatar;
+
+        		$item['content'] .= '<br /><img align="left" style="margin: 2px 4px;" src="'.htmlentities($item['avatar']).'" /> <strong>'.$item['username'].'</strong>';
+        		$item['content'] .= '<br />'.$item['fullname'];
         	}
-        	
-        	$item->title = $img->getAttribute('alt');
-        	
-        	//$item->timestamp = $media->created_time;
+
+        	$item['title'] = $img->getAttribute('alt');
+
+        	//$item['timestamp'] = $media->created_time;
         	$this->items[] = $item;
-        	
+
         }
     }
 
-    public function getName(){
-    	
-    	if (isset($this->query))
-    	{
-    		return $this->query .' - Pinterest';
-    	} else {
-        	return $this->username .' - '. $this->board.' - Pinterest';
-    	}
-    }
-
     public function getURI(){
-        return 'http://www.pinterest.com';
+      switch($this->queriedContext){
+      case 'By username and board':
+        $uri = self::URI.urlencode($this->getInput('u')).'/'.urlencode($this->getInput('b'));
+        break;
+      case 'From search':
+        $uri = self::URI.'search/?q='.urlencode($this->getInput('q'));
+        break;
+      }
+
+      return $uri;
     }
 
-    public function getCacheDuration(){
-        return 3600; 
+    public function getName(){
+      switch($this->queriedContext){
+      case 'By username and board':
+            $specific = $this->getInput('u').'-'.$this->getInput('b');
+        break;
+      case 'From search':
+            $specific = $this->getInput('q');
+        break;
+      }
+      return $specific .' - '.self::NAME;
     }
 }

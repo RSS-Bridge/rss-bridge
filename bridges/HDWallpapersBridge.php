@@ -1,54 +1,36 @@
 <?php
 class HDWallpapersBridge extends BridgeAbstract {
+	const MAINTAINER = "nel50n";
+	const NAME = "HD Wallpapers Bridge";
+	const URI = "http://www.hdwallpapers.in/";
+	const DESCRIPTION = "Returns the latests wallpapers from HDWallpapers";
 
-    private $category;
-    private $resolution;
+    const PARAMETERS = array( array(
+      'c'=>array(
+        'name'=>'category',
+        'defaultValue'=>'latest_wallpapers'
+      ),
+        'm'=>array('name'=>'max number of wallpapers'),
+        'r'=>array(
+            'name'=>'resolution',
+            'defaultValue'=>'1920x1200',
+            'exampleValue'=>'1920x1200, 1680x1050,…'
+        )
+    ));
 
-	public function loadMetadatas() {
-
-		$this->maintainer = "nel50n";
-		$this->name = "HD Wallpapers Bridge";
-		$this->uri = "http://www.hdwallpapers.in/";
-		$this->description = "Returns the latests wallpapers from HDWallpapers";
-		$this->update = "2015-04-08";
-
-		$this->parameters[] =
-		'[
-			{
-				"name" : "category",
-				"identifier" : "c"
-			},
-			{
-				"name" : "max number of wallpapers",
-				"identifier" : "m"
-			},
-			{
-				"name" : "resolution",
-				"identifier" : "r",
-				"exampleValue" : "1920x1200, 1680x1050, ..."
-			}
-		]';
-	}
-
-    public function collectData(array $param){
-        $html = '';
-        $baseUri = 'http://www.hdwallpapers.in';
-
-        $this->category   = $param['c'] ?: 'latest_wallpapers'; // Latest default
-        $this->resolution = $param['r'] ?: '1920x1200';         // Wide wallpaper default
-
+    public function collectData(){
         $category = $this->category;
         if (strrpos($category, 'wallpapers') !== strlen($category)-strlen('wallpapers')) {
             $category .= '-desktop-wallpapers';
         }
 
         $num = 0;
-        $max = $param['m'] ?: 14;
+        $max = $this->getInput('m') ?: 14;
         $lastpage = 1;
 
         for ($page = 1; $page <= $lastpage; $page++) {
-            $link = $baseUri.'/'.$category.'/page/'.$page;
-            $html = file_get_html($link) or $this->returnError('No results for this query.', 404);
+            $link = self::URI.'/'.$category.'/page/'.$page;
+            $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('No results for this query.');
 
             if ($page === 1) {
                 preg_match('/page\/(\d+)$/', $html->find('.pagination a', -2)->href, $matches);
@@ -58,13 +40,12 @@ class HDWallpapersBridge extends BridgeAbstract {
             foreach($html->find('.wallpapers .wall a') as $element) {
                 $thumbnail = $element->find('img', 0);
 
-                $item = new \Item();
+                $item = array();
                 // http://www.hdwallpapers.in/download/yosemite_reflections-1680x1050.jpg
-                $item->uri = $baseUri.'/download'.str_replace('wallpapers.html', $this->resolution.'.jpg', $element->href);
-                $item->timestamp = time();
-                $item->title = $element->find('p', 0)->text();
-                $item->thumbnailUri = $baseUri.$thumbnail->src;
-                $item->content = $item->title.'<br><a href="'.$item->uri.'"><img src="'.$item->thumbnailUri.'" /></a>';
+                $item['uri'] = self::URI.'/download'.str_replace('wallpapers.html', $this->getInput('r').'.jpg', $element->href);
+                $item['timestamp'] = time();
+                $item['title'] = $element->find('p', 0)->text();
+                $item['content'] = $item['title'].'<br><a href="'.$item['uri'].'"><img src="'.self::URI.$thumbnail->src.'" /></a>';
                 $this->items[] = $item;
 
                 $num++;
@@ -75,11 +56,7 @@ class HDWallpapersBridge extends BridgeAbstract {
     }
 
     public function getName(){
-        return 'HDWallpapers - '.str_replace(['__', '_'], [' & ', ' '], $this->category).' ['.$this->resolution.']';
-    }
-
-    public function getURI(){
-        return 'http://www.hdwallpapers.in';
+        return 'HDWallpapers - '.str_replace(['__', '_'], [' & ', ' '], $this->getInput('c')).' ['.$this->getInput('r').']';
     }
 
     public function getCacheDuration(){
