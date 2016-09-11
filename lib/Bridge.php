@@ -96,7 +96,7 @@ EOD;
 		|| in_array($name . '.php', $whitelist)
 		|| in_array($name . 'Bridge', $whitelist) // DEPRECATED
 		|| in_array($name . 'Bridge.php', $whitelist) // DEPRECATED
-		|| count($whitelist) === 1 and trim($whitelist[0]) === '*'){
+		|| (count($whitelist) === 1 and trim($whitelist[0]) === '*')) {
 			return true;
 		} else {
 			return false;
