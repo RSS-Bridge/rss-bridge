@@ -11,7 +11,7 @@ class TheOatmealBridge extends FeedExpander{
     }
 
     protected function parseItem($newsItem) {
-        $item = $this->parseRSS_1_0_Item($newsItem);
+        $item = parent::parseItem($newsItem);
 
         $articlePage = $this->getSimpleHTMLDOMCached($item['uri']);
         $content = $articlePage->find('#comic', 0);

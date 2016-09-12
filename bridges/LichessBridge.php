@@ -11,7 +11,7 @@ class LichessBridge  extends FeedExpander {
     }
 
     protected function parseItem($newsItem){
-        $item = $this->parseATOMItem($newsItem);
+        $item = parent::parseItem($newsItem);
         $item['content'] = $this->retrieve_lichess_post($item['uri']);
         return $item;
     }
