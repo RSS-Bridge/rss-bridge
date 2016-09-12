@@ -168,7 +168,20 @@ abstract class FeedExpander extends BridgeAbstract {
 	 * @param $item the input rss item
 	 * @return a RSS-Bridge Item, with (hopefully) the whole content)
 	 */
-	abstract protected function parseItem($item);
+	protected function parseItem($item){
+		switch($this->feedType){
+		case 'RSS_1_0':
+			return $this->parseRSS_1_0_Item($item);
+			break;
+		case 'RSS_2_0':
+			return $this->parseRSS_2_0_Item($item);
+			break;
+		case 'ATOM_1_0':
+			return $this->parseATOMItem($item);
+			break;
+		default: $this->returnClientError('Unknown version ' . $this->getInput('version') . '!');
+		}
+	}
 
 	public function getURI(){
 		return $this->uri;
