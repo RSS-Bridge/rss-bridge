@@ -18,7 +18,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
             return $string;
         }
 
-        $url = $this->getURI().$this->getInput('category').'rss.xml';
+        $url = $this->getURI().$this->getInput('category').'/rss.xml';
         $html = $this->getSimpleHTMLDOM($url) or $this->returnServerError('Could not request Zone Telechargement: '.$url);
 
         foreach($html->find('item') as $element) {
