@@ -364,6 +364,29 @@ abstract class BridgeAbstract implements BridgeInterface {
 		if($content === false)
 			$this->debugMessage('Cant\'t download ' . $url);
 
+		// handle compressed data
+		foreach($http_response_header as $header){
+			if(stristr($header, 'content-encoding')){
+				switch(true){
+					case stristr($header, 'gzip'):
+						$content = gzinflate( substr($content,10,-8));
+						break;
+					case stristr($header, 'compress'):
+						//TODO
+					case stristr($header, 'deflate'):
+						//TODO
+					case stristr($header, 'brotli'):
+						//TODO
+						returnServerError($header . '=> Not implemented yet');
+						break;
+					case stristr($header, 'identity'):
+						break;
+					default:
+						returnServerError($header . '=> Unknown compression');
+				}
+			}
+		}
+
 		return $content;
 	}
 
