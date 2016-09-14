@@ -151,6 +151,15 @@ abstract class FeedExpander extends BridgeAbstract {
 		$namespaces = $feedItem->getNamespaces(true);
 		if(isset($namespaces['dc'])) $dc = $feedItem->children($namespaces['dc']);
 
+		if(isset($feedItem->guid)){
+			foreach($feedItem->guid->attributes() as $attribute=>$value){
+				if($attribute === 'isPermaLink' && $value === "true"){
+					$item['uri'] = $feedItem->guid;
+					break;
+				}
+			}
+		}
+
 		if(isset($feedItem->pubDate)){
 			$item['timestamp'] = strtotime($feedItem->pubDate);
 		} elseif(isset($dc->date)){
