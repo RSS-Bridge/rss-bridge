@@ -36,6 +36,11 @@ class WordPressBridge extends FeedExpander {
 			// another common content div
 			$article = $article_html->find('.single-content', 0);
 			break;
+		case !is_null($article_html->find('.post-content',0)):
+			// another common content div
+			$article = $article_html->find('.post-content', 0);
+			break;
+
 		case !is_null($article_html->find('.post',0)):
 			// for old WordPress themes without HTML5
 			$article = $article_html->find('.post', 0);
