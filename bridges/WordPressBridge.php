@@ -1,11 +1,9 @@
 <?php
-define('WORDPRESS_TYPE_ATOM', 1); // Content is of type ATOM
-define('WORDPRESS_TYPE_RSS', 2); // Content is of type RSS
 class WordPressBridge extends FeedExpander {
 	const MAINTAINER = "aledeg";
 	const NAME = "Wordpress Bridge";
 	const URI = "https://wordpress.org/";
-	const DESCRIPTION = "Returns the 3 newest full posts of a Wordpress blog";
+	const DESCRIPTION = "Returns the newest full posts of a Wordpress powered website";
 
 	const PARAMETERS = array( array(
 		'url'=>array(
