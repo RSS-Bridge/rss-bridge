@@ -51,11 +51,14 @@ class WordPressBridge extends FeedExpander {
 
 	public function getURI(){
 		$url = $this->getInput('url');
+		if(empty($url)){
+			$url = static::URI;
+		}
 		return $url;
 	}
 
 	public function collectData(){
-		if(substr($this->getInput('url'),0,strlen('http'))!=='http'){
+		if($this->getInput('url') && substr($this->getInput('url'),0,strlen('http'))!=='http'){
 			// just in case someone find a way to access local files by playing with the url
 			$this->returnClientError('The url parameter must either refer to http or https protocol.');
 		}
