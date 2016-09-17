@@ -11,8 +11,8 @@ class FreenewsBridge extends FeedExpander {
     }
 
     protected function parseItem($newsItem) {
-        $item = $this->parseRSS_2_0_Item($newsItem);
-        
+        $item = parent::parseItem($newsItem);
+
         $articlePage = $this->getSimpleHTMLDOMCached($item['uri']);
         $content = $articlePage->find('.post-container', 0);
         $item['content'] = $content->innertext;

@@ -11,7 +11,7 @@ class CommonDreamsBridge extends FeedExpander {
 	}
 
 	protected function parseItem($newsItem){
-		$item = $this->parseRSS_2_0_Item($newsItem);
+		$item = parent::parseItem($newsItem);
 		$item['content'] = $this->CommonDreamsExtractContent($item['uri']);
 		return $item;
 	}

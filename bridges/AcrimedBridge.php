@@ -11,7 +11,7 @@ class AcrimedBridge extends FeedExpander {
     }
 
     protected function parseItem($newsItem){
-        $item = $this->parseRSS_2_0_Item($newsItem);
+        $item = parent::parseItem($newsItem);
 
         $hs = new HTMLSanitizer();
         $articlePage = $this->getSimpleHTMLDOM($newsItem->link);

@@ -11,7 +11,7 @@ class NiceMatinBridge extends FeedExpander {
 	}
 
 	protected function parseItem($newsItem){
-		$item = $this->parseRSS_2_0_Item($newsItem);
+		$item = parent::parseItem($newsItem);
 		$item['content'] = $this->NiceMatinExtractContent($item['uri']);
 		return $item;
 	}

@@ -30,14 +30,14 @@ class NextgovBridge extends FeedExpander {
     }
 
     protected function parseItem($newsItem){
-        $item = $this->parseRSS_2_0_Item($newsItem);
+        $item = parent::parseItem($newsItem);
 
         $item['content'] = '';
 
         $namespaces = $newsItem->getNamespaces(true);
         if(isset($namespaces['media'])){
             $media = $newsItem->children($namespaces['media']);
-            if(isset($media->content)){ 
+            if(isset($media->content)){
                 $attributes = $media->content->attributes();
                 $item['content'] = '<img src="' . $attributes['url'] . '">';
             }
@@ -56,7 +56,7 @@ class NextgovBridge extends FeedExpander {
     }
 
     private function ExtractContent($url){
-        $article = $this->getSimpleHTMLDOMCached($url) 
+        $article = $this->getSimpleHTMLDOMCached($url)
             or $this->returnServerError('Could not request Nextgov: ' . $url);
 
         $contents = $article->find('div.wysiwyg', 0)->innertext;
