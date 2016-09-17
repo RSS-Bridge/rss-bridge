@@ -70,6 +70,28 @@ class PinterestBridge extends BridgeAbstract {
 				$item['title'] = $img->getAttribute('alt');
 				$this->items[] = $item;
 			}
+		} elseif($this->queriedContext === 'By username and board'){
+			$container = $html->find('SCRIPT[type="application/ld+json"]', 0)
+				or $this->returnServerError('Unable to find data container!');
+
+			$json = json_decode($container->innertext, true);
+
+			foreach($json['itemListElement'] as $element){
+				$item = array();
+
+				$item['uri'] = $element['item']['sharedContent']['author']['url'];
+				$item['title'] = $element['item']['name'];
+				$item['author'] = $element['item']['user']['name'];
+				$item['timestamp'] = strtotime($element['item']['datePublished']);
+				$item['content'] = <<<EOD
+<a href="{$item['uri']}">
+	<img src="{$element['item']['image']}">
+</a>
+<p>{$element['item']['text']}</p>
+EOD;
+
+				$this->items[] = $item;
+			}
 		}
 	}
 
