@@ -152,11 +152,9 @@ abstract class FeedExpander extends BridgeAbstract {
 		if(isset($namespaces['dc'])) $dc = $feedItem->children($namespaces['dc']);
 
 		if(isset($feedItem->guid)){
-			foreach($feedItem->guid->attributes() as $attribute=>$value){
-				if($attribute === 'isPermaLink' && (
-					$value === 'true' ||
-					filter_var($feedItem->guid,FILTER_VALIDATE_URL)
-				)){
+			foreach($feedItem->guid->attributes() as $attribute => $value){
+				if($attribute === 'isPermaLink'
+				&& ($value === 'true' || filter_var($feedItem->guid,FILTER_VALIDATE_URL))){
 					$item['uri'] = $feedItem->guid;
 					break;
 				}
