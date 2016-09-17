@@ -369,7 +369,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 			if(stristr($header, 'content-encoding')){
 				switch(true){
 					case stristr($header, 'gzip'):
-						$content = gzinflate( substr($content,10,-8));
+						$content = gzinflate(substr($content, 10, -8));
 						break;
 					case stristr($header, 'compress'):
 						//TODO
@@ -377,12 +377,12 @@ abstract class BridgeAbstract implements BridgeInterface {
 						//TODO
 					case stristr($header, 'brotli'):
 						//TODO
-						returnServerError($header . '=> Not implemented yet');
+						$this->returnServerError($header . '=> Not implemented yet');
 						break;
 					case stristr($header, 'identity'):
 						break;
 					default:
-						returnServerError($header . '=> Unknown compression');
+						$this->returnServerError($header . '=> Unknown compression');
 				}
 			}
 		}
