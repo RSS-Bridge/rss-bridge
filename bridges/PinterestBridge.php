@@ -36,17 +36,18 @@ class PinterestBridge extends BridgeAbstract {
 			}
 		}
 
-		foreach($html->find('div.pinWrapper') as $div){
-			$a = $div->find('a.pinImageWrapper', 0);
-			$img = $a->find('img', 0);
+		if($this->queriedContext === 'From search'){
+			foreach($html->find('div.pinWrapper') as $div){
+				$item = array();
 
-			$item = array();
-			$item['uri'] = $this->getURI() . $a->getAttribute('href');
-			$item['content'] = '<img src="'
-			. htmlentities(str_replace('/236x/', '/736x/', $img->getAttribute('src')))
-			. '" alt="" />';
+				$a = $div->find('a.pinImageWrapper', 0);
+				$img = $a->find('img', 0);
 
-			if($this->queriedContext === 'From search'){
+				$item['uri'] = $this->getURI() . $a->getAttribute('href');
+				$item['content'] = '<img src="'
+				. htmlentities(str_replace('/236x/', '/736x/', $img->getAttribute('src')))
+				. '" alt="" />';
+
 				$avatar = $div->find('div.creditImg', 0)->find('img', 0);
 				$avatar = $avatar->getAttribute('data-src');
 				$avatar = str_replace("\\", "", $avatar);
@@ -65,11 +66,10 @@ class PinterestBridge extends BridgeAbstract {
 				. '</strong>'
 				. '<br />'
 				. $item['fullname'];
+
+				$item['title'] = $img->getAttribute('alt');
+				$this->items[] = $item;
 			}
-
-			$item['title'] = $img->getAttribute('alt');
-
-			$this->items[] = $item;
 		}
 	}
 
