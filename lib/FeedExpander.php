@@ -41,6 +41,7 @@ abstract class FeedExpander extends BridgeAbstract {
 			break;
 		}
 
+		$this->debugMessage('Calling function "collect_' . $this->feedType . '_data"');
 		$this->{'collect_' . $this->feedType . '_data'}($rssContent, $maxItems);
 	}
 
