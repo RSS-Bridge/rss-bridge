@@ -1,9 +1,10 @@
 <?php
-class Sexactu extends BridgeAbstract{
+class SexactuBridge extends BridgeAbstract{
 
 	const MAINTAINER = "Riduidel";
 	const NAME = "Sexactu";
-	const URI = "http://www.gqmagazine.fr";
+	const URI = "https://www.gqmagazine.fr";
+    const HTTPS_STATUS = HTTPS_STATUS_VALID;
 	const DESCRIPTION = "Sexactu via rss-bridge";
 
     public function collectData(){

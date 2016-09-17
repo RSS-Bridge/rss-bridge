@@ -12,7 +12,7 @@ class FierPandaBridge extends BridgeAbstract {
         foreach($html->find('div.container-content article') as $element) {
             $item = array();
             $item['uri'] = $this->getURI().$element->find('a', 0)->href;
-            $item['title'] = trim($element->find('h2 a', 0)->innertext);
+            $item['title'] = trim($element->find('h1 a', 0)->innertext);
             // Remove the link at the end of the article
             $element->find('p a', 0)->outertext = '';
             $item['content'] = $element->find('p', 0)->innertext;
