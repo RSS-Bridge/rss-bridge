@@ -18,7 +18,12 @@ class GithubIssueBridge extends BridgeAbstract{
       )
     ),
 
-    'Project Issues'=>array(),
+    'Project Issues'=>array(
+      'c'=>array(
+        'name'=>'Show Issues Comments',
+        'type'=>'checkbox'
+      )
+    ),
     'Issue comments'=>array(
       'i'=>array(
         'name'=>'Issue number',
@@ -32,7 +37,12 @@ class GithubIssueBridge extends BridgeAbstract{
     $name=$this->getInput('u').'/'.$this->getInput('p');
     switch($this->queriedContext){
     case 'Project Issues':
-      $name=static::NAME.'s '.$name;
+      if($this->getInput('c')){
+        $prefix=static::NAME.'s comments for ';
+      }else{
+        $prefix=static::NAME.'s for ';
+      }
+      $name=$prefix.$name;
       break;
     case 'Issue comments':
       $name=static::NAME.' '.$name.' #'.$this->getInput('i');
@@ -42,43 +52,71 @@ class GithubIssueBridge extends BridgeAbstract{
   }
 
   public function getURI(){
-    $uri = static::URI.$this->getInput('u').'/'.$this->getInput('p').'/issues/';
+    $uri = static::URI.$this->getInput('u').'/'.$this->getInput('p').'/issues';
     if($this->queriedContext==='Issue comments'){
-      $uri.=$this->getInput('i');
+      $uri.='/'.$this->getInput('i');
+    }else if($this->getInput('c')){
+      $uri.='?q=is%3Aissue+sort%3Aupdated-desc';
     }
     return $uri;
   }
 
+
+  protected function extractIssueComment($issueNbr,$title,$comment){
+    $item = array();
+    $item['author']=$comment->find('img',0)->getAttribute('alt');
+
+    $comment=$comment->firstChild()->nextSibling();
+
+    $item['uri']= static::URI.$this->getInput('u').'/'.$this->getInput('p').'/issues/'
+      .$issueNbr.'#'.$comment->getAttribute('id');
+    $item['title']=$title.' / '.trim($comment->firstChild()->plaintext);
+    $item['timestamp']=strtotime($comment->find('relative-time',0)->getAttribute('datetime'));
+    $item['content']="<pre>".$comment->find('.comment-body',0)->innertext."</pre>";
+    return $item;
+  }
+
+  protected function extractIssueComments($issue){
+    $items=array();
+    $title=$issue->find('.gh-header-title',0)->plaintext;
+    $issueNbr=trim(substr($issue->find('.gh-header-number',0)->plaintext,1));
+    foreach($issue->find('.js-comment-container') as $comment){
+      $items[]=$this->extractIssueComment($issueNbr,$title,$comment);
+    }
+    return $items;
+  }
+
   public function collectData(){
     $html = $this->getSimpleHTMLDOM($this->getURI())
-      or $this->returnServerError('No results for Github Issue '.$this->getInput('i').' in project '.$this->getInput('u').'/'.$this->getInput('p'));
+      or $this->returnServerError('No results for Github Issue '.$this->getURI());
 
     switch($this->queriedContext){
     case 'Issue comments':
-      foreach($html->find('.js-comment-container') as $comment){
-
-        $item = array();
-        $item['author']=$comment->find('img',0)->getAttribute('alt');
-
-        $comment=$comment->firstChild()->nextSibling();
-
-        $item['uri']=$this->getURI().'#'.$comment->getAttribute('id');
-        $item['title']=trim($comment->firstChild()->plaintext);
-        $item['timestamp']=strtotime($comment->find('relative-time',0)->getAttribute('datetime'));
-        $item['content']=$comment->find('.comment-body',0)->innertext;
-
-        $this->items[]=$item;
-      }
+      $this->items=$this->extractIssueComments($html);
       break;
     case 'Project Issues':
       foreach($html->find('.js-active-navigation-container .js-navigation-item') as $issue){
-        $item=array();
         $info=$issue->find('.opened-by',0);
+        $issueNbr=substr(trim($info->plaintext),1,strpos(trim($info->plaintext),' '));
+
+        $item=array();
+        $item['content']='';
+
+        if($this->getInput('c')){
+          $uri=static::URI.$this->getInput('u').'/'.$this->getInput('p').'/issues/'.$issueNbr;
+          $issue=$this->getSimpleHTMLDOMCached($uri);
+          if($issue){
+            $this->items=array_merge($this->items,$this->extractIssueComments($issue));
+            continue;
+          }
+          $item['content']='Can not extract comments from '.$uri;
+        }
+
         $item['author']=$info->find('a',0)->plaintext;
         $item['timestamp']=strtotime($info->find('relative-time',0)->getAttribute('datetime'));
         $item['title']=$issue->find('.js-navigation-open',0)->plaintext;
         $comments=$issue->find('.col-5',0)->plaintext;
-        $item['content']='Comments: '.($comments?$comments:'0');
+        $item['content'].="\n".'Comments: '.($comments?$comments:'0');
         $item['uri']=self::URI.$issue->find('.js-navigation-open',0)->getAttribute('href');
         $this->items[]=$item;
       }
