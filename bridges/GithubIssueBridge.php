@@ -70,7 +70,8 @@ class GithubIssueBridge extends BridgeAbstract{
 
     $item['uri']= static::URI.$this->getInput('u').'/'.$this->getInput('p').'/issues/'
       .$issueNbr.'#'.$comment->getAttribute('id');
-    $item['title']=$title.' / '.trim($comment->firstChild()->plaintext);
+    $title.=' / '.trim($comment->firstChild()->plaintext);
+    $item['title']=html_entity_decode($title,ENT_QUOTES,'UTF-8');
     $item['timestamp']=strtotime($comment->find('relative-time',0)->getAttribute('datetime'));
     $item['content']="<pre>".$comment->find('.comment-body',0)->innertext."</pre>";
     return $item;
@@ -114,7 +115,11 @@ class GithubIssueBridge extends BridgeAbstract{
 
         $item['author']=$info->find('a',0)->plaintext;
         $item['timestamp']=strtotime($info->find('relative-time',0)->getAttribute('datetime'));
-        $item['title']=$issue->find('.js-navigation-open',0)->plaintext;
+        $item['title']=html_entity_decode(
+          $issue->find('.js-navigation-open',0)->plaintext,
+          ENT_QUOTES,
+          'UTF-8'
+        );
         $comments=$issue->find('.col-5',0)->plaintext;
         $item['content'].="\n".'Comments: '.($comments?$comments:'0');
         $item['uri']=self::URI.$issue->find('.js-navigation-open',0)->getAttribute('href');
