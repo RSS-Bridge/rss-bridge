@@ -105,7 +105,7 @@ class GithubIssueBridge extends BridgeAbstract{
 
         if($this->getInput('c')){
           $uri=static::URI.$this->getInput('u').'/'.$this->getInput('p').'/issues/'.$issueNbr;
-          $issue=$this->getSimpleHTMLDOMCached($uri);
+          $issue=$this->getSimpleHTMLDOMCached($uri,1800);
           if($issue){
             $this->items=array_merge($this->items,$this->extractIssueComments($issue));
             continue;
