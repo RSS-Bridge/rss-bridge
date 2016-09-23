@@ -12,6 +12,7 @@ class LeBonCoinBridge extends BridgeAbstract{
             'name'=>'Région',
             'type'=>'list',
             'values'=>array(
+              'Toute la France'=>'ile_de_france/occasions',
               'Alsace'=>'alsace',
               'Aquitaine'=>'aquitaine',
               'Auvergne'=>'auvergne',
