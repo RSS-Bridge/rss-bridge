@@ -61,19 +61,56 @@ class GithubIssueBridge extends BridgeAbstract{
     return $uri;
   }
 
-
   protected function extractIssueComment($issueNbr,$title,$comment){
+    $class=$comment->getAttribute('class');
+    $classes=explode(' ',$class);
+    $event=false;
+    if(in_array('discussion-item',$classes)){
+      $event=true;
+    }
+
+    $author='unknown';
+    if($comment->find('.author',0)){
+      $author=$comment->find('.author',0)->plaintext;
+    }
+
+    $uri=static::URI.$this->getInput('u').'/'.$this->getInput('p').'/issues/'
+      .$issueNbr;
+
+    $comment=$comment->firstChild();
+    if(!$event){
+      $comment=$comment->nextSibling();
+    }
+
+    if($event){
+      $title.=' / '.substr($class,strpos($class,'discussion-item-')+strlen('discussion-item-'));
+      if(!$comment->hasAttribute('id')){
+        $items=array();
+        $timestamp=strtotime($comment->find('relative-time',0)->getAttribute('datetime'));
+        $content=$comment->innertext;
+        while($comment=$comment->nextSibling()){
+          $item=array();
+          $item['author']=$author;
+          $item['title']=html_entity_decode($title,ENT_QUOTES,'UTF-8');
+          $item['timestamp']=$timestamp;
+          $item['content']=$content.'<p>'.$comment->children(1)->innertext.'</p>';
+          $item['uri']=$uri.'#'.$comment->children(1)->getAttribute('id');
+          $items[]=$item;
+        }
+        return $items;
+      }
+      $content=$comment->parent()->innertext;
+    }else{
+      $title.=' / '.trim($comment->firstChild()->plaintext);
+      $content="<pre>".$comment->find('.comment-body',0)->innertext."</pre>";
+    }
+
     $item = array();
-    $item['author']=$comment->find('img',0)->getAttribute('alt');
-
-    $comment=$comment->firstChild()->nextSibling();
-
-    $item['uri']= static::URI.$this->getInput('u').'/'.$this->getInput('p').'/issues/'
-      .$issueNbr.'#'.$comment->getAttribute('id');
-    $title.=' / '.trim($comment->firstChild()->plaintext);
+    $item['author']=$author;
+    $item['uri']= $uri.'#'.$comment->getAttribute('id');
     $item['title']=html_entity_decode($title,ENT_QUOTES,'UTF-8');
     $item['timestamp']=strtotime($comment->find('relative-time',0)->getAttribute('datetime'));
-    $item['content']="<pre>".$comment->find('.comment-body',0)->innertext."</pre>";
+    $item['content']=$content;
     return $item;
   }
 
@@ -81,8 +118,18 @@ class GithubIssueBridge extends BridgeAbstract{
     $items=array();
     $title=$issue->find('.gh-header-title',0)->plaintext;
     $issueNbr=trim(substr($issue->find('.gh-header-number',0)->plaintext,1));
-    foreach($issue->find('.js-comment-container') as $comment){
-      $items[]=$this->extractIssueComment($issueNbr,$title,$comment);
+    $comments=$issue->find('.js-discussion',0);
+    foreach($comments->children() as $comment){
+      $classes=explode(' ',$comment->getAttribute('class'));
+      if(in_array('discussion-item',$classes) ||
+        in_array('timeline-comment-wrapper',$classes)
+      ){
+        $item=$this->extractIssueComment($issueNbr,$title,$comment);
+        if(array_keys($item)!==range(0,count($item)-1)){
+          $item=array($item);
+        }
+        $items=array_merge($items,$item);
+      }
     }
     return $items;
   }
@@ -127,6 +174,17 @@ class GithubIssueBridge extends BridgeAbstract{
       }
       break;
     }
+
+    array_walk($this->items, function(&$item){
+      $item['content']=preg_replace('/\s+/',' ',$item['content']);
+      $item['content']=str_replace('href="/','href="'.static::URI,$item['content']);
+      $item['content']=str_replace(
+        'href="#',
+        'href="'.substr($item['uri'],0,strpos($item['uri'],'#')+1),
+        $item['content']
+      );
+      $item['title']=preg_replace('/\s+/',' ',$item['title']);
+    });
   }
 
   public function getCacheDuration(){
