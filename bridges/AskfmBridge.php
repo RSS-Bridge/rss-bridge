@@ -4,6 +4,7 @@ class AskfmBridge extends BridgeAbstract{
     const MAINTAINER = "az5he6ch";
     const NAME = "Ask.fm Answers";
     const URI = "http://ask.fm/";
+    const CACHE_TIMEOUT = 300; //5 min
     const DESCRIPTION = "Returns answers from an Ask.fm user";
     const PARAMETERS = array(
         'Ask.fm username'=>array(
@@ -48,9 +49,4 @@ class AskfmBridge extends BridgeAbstract{
     public function getURI(){
         return self::URI.urlencode($this->getInput('u')).'/answers/more?page=0';
     }
-
-    public function getCacheDuration(){
-        return 300; // 5 minutes
-    }
-
 }

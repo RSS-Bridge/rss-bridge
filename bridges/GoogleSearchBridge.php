@@ -12,6 +12,7 @@ class GoogleSearchBridge extends BridgeAbstract{
 	const MAINTAINER = "sebsauvage";
 	const NAME = "Google search";
 	const URI = "https://www.google.com/";
+	const CACHE_TIMEOUT = 1800; // 30min
 	const DESCRIPTION = "Returns most recent results from Google search.";
 
     const PARAMETERS = array( array(
@@ -49,9 +50,5 @@ class GoogleSearchBridge extends BridgeAbstract{
 
     public function getName(){
         return $this->getInput('q') .' - Google search';
-    }
-
-    public function getCacheDuration(){
-        return 1800; // 30 minutes
     }
 }

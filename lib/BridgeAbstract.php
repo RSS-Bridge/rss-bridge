@@ -6,6 +6,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	const URI = '';
 	const DESCRIPTION = 'No description provided';
 	const MAINTAINER = 'No maintainer';
+	const CACHE_TIMEOUT = 3600;
 	const PARAMETERS = array();
 
 	public $useProxy = true;
@@ -252,7 +253,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 		if(!is_null($this->cache)){
 			$this->cache->prepare($inputs);
 			$time = $this->cache->getTime();
-			if($time !== false && (time() - $this->getCacheDuration() < $time)){
+			if($time !== false && (time() - static::CACHE_TIMEOUT < $time)){
 				$this->items = $this->cache->loadData();
 				return;
 			}
@@ -304,10 +305,6 @@ abstract class BridgeAbstract implements BridgeInterface {
 
 	public function getURI(){
 		return static::URI;
-	}
-
-	public function getCacheDuration(){
-		return 3600;
 	}
 
 	public function setCache(\CacheAbstract $cache){

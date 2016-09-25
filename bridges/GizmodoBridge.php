@@ -4,6 +4,7 @@ class GizmodoBridge extends FeedExpander {
 	const MAINTAINER = "polopollo";
 	const NAME = "Gizmodo";
 	const URI = "http://gizmodo.com/";
+	const CACHE_TIMEOUT = 1800; // 30min
 	const DESCRIPTION = "Returns the newest posts from Gizmodo (full text).";
 
 	protected function parseItem($item){
@@ -27,9 +28,5 @@ class GizmodoBridge extends FeedExpander {
 
 	public function collectData(){
 		$this->collectExpandableDatas('http://feeds.gawker.com/gizmodo/full');
-	}
-
-	public function getCacheDuration(){
-		return 1800; // 30min
 	}
 }

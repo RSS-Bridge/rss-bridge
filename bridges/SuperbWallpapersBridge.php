@@ -4,6 +4,7 @@ class SuperbWallpapersBridge extends BridgeAbstract {
 	const MAINTAINER = "nel50n";
 	const NAME = "Superb Wallpapers Bridge";
 	const URI = "http://www.superbwallpapers.com/";
+	const CACHE_TIMEOUT = 43200; // 12h
 	const DESCRIPTION = "Returns the latests wallpapers from SuperbWallpapers";
 
     const PARAMETERS = array( array(
@@ -61,9 +62,5 @@ class SuperbWallpapersBridge extends BridgeAbstract {
 
     public function getName(){
         return self::NAME .'- '.$this->getInput('c').' ['.$this->getInput('r').']';
-    }
-
-    public function getCacheDuration(){
-        return 43200; // 12 hours
     }
 }

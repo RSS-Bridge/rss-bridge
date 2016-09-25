@@ -38,8 +38,4 @@ class VineBridge extends BridgeAbstract {
 		}
 
     }
-
-    public function getCacheDuration(){
-        return 10; //seconds
-    }
 }

@@ -4,6 +4,7 @@ class BandcampBridge extends BridgeAbstract{
     const MAINTAINER = "sebsauvage";
     const NAME = "Bandcamp Tag";
     const URI = "http://bandcamp.com/";
+    const CACHE_TIMEOUT = 600; // 10min
     const DESCRIPTION = "New bandcamp release by tag";
     const PARAMETERS = array( array(
         'tag'=>array(
@@ -38,9 +39,5 @@ class BandcampBridge extends BridgeAbstract{
 
     public function getName(){
         return $this->getInput('tag') .' - '.'Bandcamp Tag';
-    }
-
-    public function getCacheDuration(){
-        return 600; // 10 minutes
     }
 }

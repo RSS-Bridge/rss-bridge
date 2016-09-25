@@ -4,6 +4,7 @@ class ViadeoCompanyBridge extends BridgeAbstract{
 	const MAINTAINER = "regisenguehard";
 	const NAME = "Viadeo Company";
 	const URI = "https://www.viadeo.com/";
+	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = "Returns most recent actus from Company on Viadeo. (http://www.viadeo.com/fr/company/<strong style=\"font-weight:bold;\">apple</strong>)";
 
     const PARAMETERS = array( array(
@@ -31,9 +32,5 @@ class ViadeoCompanyBridge extends BridgeAbstract{
                 $i++;
             }
         }
-    }
-
-    public function getCacheDuration(){
-        return 21600; // 6 hours
     }
 }

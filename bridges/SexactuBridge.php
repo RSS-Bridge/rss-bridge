@@ -4,6 +4,7 @@ class SexactuBridge extends BridgeAbstract{
 	const MAINTAINER = "Riduidel";
 	const NAME = "Sexactu";
 	const URI = "https://www.gqmagazine.fr";
+	const CACHE_TIMEOUT = 7200; // 2h
 	const DESCRIPTION = "Sexactu via rss-bridge";
 
     public function collectData(){
@@ -54,10 +55,6 @@ $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July',
 
     public function getURI(){
         return self::URI.'/sexactu';
-    }
-
-    public function getCacheDuration(){
-        return 7200; // 2h hours
     }
 
     private function correctCase($str) {

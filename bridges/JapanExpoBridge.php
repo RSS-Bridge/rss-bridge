@@ -4,6 +4,7 @@ class JapanExpoBridge extends BridgeAbstract {
     const MAINTAINER = 'Ginko';
     const NAME = 'Japan Expo Actualités';
     const URI = 'http://www.japan-expo-paris.com/fr/actualites';
+    const CACHE_TIMEOUT = 14400; // 4h
     const DESCRIPTION = 'Returns most recent entries from Japan Expo actualités.';
     const PARAMETERS = array( array(
         'mode'=>array(
@@ -84,9 +85,5 @@ class JapanExpoBridge extends BridgeAbstract {
             $this->items[] = $item;
             $count++;
         }
-    }
-
-    public function getCacheDuration(){
-        return 14400; // 4 hours
     }
 }

@@ -4,6 +4,7 @@ class WhydBridge extends BridgeAbstract{
 	const MAINTAINER = "kranack";
 	const NAME = "Whyd Bridge";
 	const URI = "http://www.whyd.com/";
+	const CACHE_TIMEOUT = 600; // 10min
 	const DESCRIPTION = "Returns 10 newest music from user profile";
 
     const PARAMETERS = array( array(
@@ -51,10 +52,6 @@ class WhydBridge extends BridgeAbstract{
     }
 	public function getName(){
 		return (!empty($this->userName) ? $this->userName .' - ' : '') .'Whyd Bridge';
-	}
-
-	public function getCacheDuration(){
-		return 600; // 10 minutes
 	}
 }
 

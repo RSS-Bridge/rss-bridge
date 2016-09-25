@@ -4,6 +4,7 @@ class BlaguesDeMerdeBridge extends BridgeAbstract{
     const MAINTAINER = "superbaillot.net";
     const NAME = "Blagues De Merde";
     const URI = "http://www.blaguesdemerde.fr/";
+    const CACHE_TIMEOUT = 7200; // 2h
     const DESCRIPTION = "Blagues De Merde";
 
 
@@ -27,10 +28,6 @@ class BlaguesDeMerdeBridge extends BridgeAbstract{
                 $this->items[] = $item;
             }
         }
-    }
-
-    public function getCacheDuration(){
-        return 7200; // 2h hours
     }
 }
 ?>

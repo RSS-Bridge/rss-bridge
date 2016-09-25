@@ -2,6 +2,7 @@
 class TwitterBridge extends BridgeAbstract{
     const NAME='Twitter Bridge';
     const URI='https://twitter.com/';
+    const CACHE_TIMEOUT = 300; // 5min
     const DESCRIPTION='returns tweets';
     const PARAMETERS=array(
         'global'=>array(
@@ -134,9 +135,5 @@ EOD;
 			// put out
 			$this->items[] = $item;
 		}
-	}
-
-	public function getCacheDuration(){
-		return 300; // 5 minutes
 	}
 }

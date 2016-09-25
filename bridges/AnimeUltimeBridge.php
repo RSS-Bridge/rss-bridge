@@ -4,6 +4,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
         const MAINTAINER = 'ORelio';
         const NAME = 'Anime-Ultime';
         const URI = 'http://www.anime-ultime.net/';
+        const CACHE_TIMEOUT = 10800; // 3h
         const DESCRIPTION = 'Returns the 10 newest releases posted on Anime-Ultime';
         const PARAMETERS = array( array(
           'type'=>array(
@@ -113,10 +114,6 @@ class AnimeUltimeBridge extends BridgeAbstract {
         );
 
         return 'Latest '.$typeFilter.' - Anime-Ultime Bridge';
-    }
-
-    public function getCacheDuration() {
-        return 3600*3; // 3 hours
     }
 
 }

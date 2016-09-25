@@ -4,6 +4,7 @@ class FierPandaBridge extends BridgeAbstract {
     const MAINTAINER = "snroki";
     const NAME = "Fier Panda Bridge";
     const URI = "http://www.fier-panda.fr/";
+    const CACHE_TIMEOUT = 21600; // 6h
     const DESCRIPTION = "Returns latest articles from Fier Panda.";
 
     public function collectData(){
@@ -18,9 +19,5 @@ class FierPandaBridge extends BridgeAbstract {
             $item['content'] = $element->find('p', 0)->innertext;
             $this->items[] = $item;
         }
-    }
-
-    public function getCacheDuration(){
-        return 21600; // 6 hours
     }
 }

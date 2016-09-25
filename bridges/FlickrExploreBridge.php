@@ -4,6 +4,7 @@ class FlickrExploreBridge extends BridgeAbstract{
 	const MAINTAINER = "sebsauvage";
 	const NAME = "Flickr Explore";
 	const URI = "https://www.flickr.com/";
+	const CACHE_TIMEOUT = 21600; // 6
 	const DESCRIPTION = "Returns the latest interesting images from Flickr";
 
     public function collectData(){
@@ -37,9 +38,5 @@ class FlickrExploreBridge extends BridgeAbstract{
             $item['title'] = $imageJSON->photo->title->_content;
             $this->items[] = $item;
         }
-    }
-
-    public function getCacheDuration(){
-        return 21600; // 6 hours
     }
 }

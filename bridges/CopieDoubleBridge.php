@@ -4,6 +4,7 @@ class CopieDoubleBridge extends BridgeAbstract{
     const MAINTAINER = "superbaillot.net";
     const NAME = "CopieDouble";
     const URI = "http://www.copie-double.com/";
+    const CACHE_TIMEOUT = 14400; // 4h
     const DESCRIPTION = "CopieDouble";
 
     public function collectData(){
@@ -34,9 +35,5 @@ class CopieDoubleBridge extends BridgeAbstract{
                 $this->items[] = $item;
             }
         }
-    }
-
-    public function getCacheDuration(){
-        return 14400; // 4 hours
     }
 }

@@ -4,6 +4,7 @@ class IdenticaBridge extends BridgeAbstract{
 	const MAINTAINER = "mitsukarenai";
 	const NAME = "Identica Bridge";
 	const URI = "https://identi.ca/";
+	const CACHE_TIMEOUT = 300; // 5min
 	const DESCRIPTION = "Returns user timelines";
 
     const PARAMETERS = array( array(
@@ -33,9 +34,5 @@ class IdenticaBridge extends BridgeAbstract{
 
     public function getURI(){
         return self::URI.urlencode($this->getInput('u'));
-    }
-
-    public function getCacheDuration(){
-        return 300; // 5 minutes
     }
 }

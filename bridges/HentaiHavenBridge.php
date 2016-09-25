@@ -4,6 +4,7 @@ class HentaiHavenBridge extends BridgeAbstract{
 	const MAINTAINER = "albirew";
 	const NAME = "Hentai Haven";
 	const URI = "http://hentaihaven.org/";
+	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = "Returns releases from Hentai Haven";
 
     public function collectData(){
@@ -18,9 +19,5 @@ class HentaiHavenBridge extends BridgeAbstract{
             $item['content'] = 'Tags: ' . $item['tags'].'<br><br><a href="' . $item['uri'] . '"><img width="300" height="169" src="' . $thumbnailUri . '" /></a><br>' . $element->find('div.oFlyout_bg div.oFlyout div.flyoutContent p.description', 0)->innertext;
             $this->items[] = $item;
         }
-    }
-
-    public function getCacheDuration(){
-        return 21600; // 6 hours
     }
 }

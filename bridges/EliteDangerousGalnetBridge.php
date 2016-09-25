@@ -4,6 +4,7 @@ class EliteDangerousGalnetBridge extends BridgeAbstract
 	const MAINTAINER = "corenting";
 	const NAME = "Elite: Dangerous Galnet";
 	const URI = "https://community.elitedangerous.com/galnet/";
+    const CACHE_TIMEOUT = 7200; // 2h
 	const DESCRIPTION = "Returns the latest page of news from Galnet";
 
 	public function collectData()
@@ -30,10 +31,5 @@ class EliteDangerousGalnetBridge extends BridgeAbstract
 
 			$this->items[] = $item;
 		}
-	}
-
-	public function getCacheDuration()
-	{
-		return 3600 * 2; // 2 hours
 	}
 }

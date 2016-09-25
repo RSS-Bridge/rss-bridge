@@ -4,6 +4,7 @@ class CpasbienBridge extends BridgeAbstract {
     const MAINTAINER = "lagaisse";
     const NAME = "Cpasbien Bridge";
     const URI = "http://www.cpasbien.io";
+    const CACHE_TIMEOUT = 86400; // 24h
     const DESCRIPTION = "Returns latest torrents from a request query";
 
     const PARAMETERS = array( array(
@@ -48,9 +49,5 @@ class CpasbienBridge extends BridgeAbstract {
 
     public function getName(){
         return $this->getInput('q').' : '.self::NAME;
-    }
-
-    public function getCacheDuration(){
-        return 60*60*24; // 24 hours
     }
 }

@@ -4,6 +4,7 @@ class TagBoardBridge extends BridgeAbstract{
 	const MAINTAINER = "Pitchoule";
 	const NAME = "TagBoard";
 	const URI = "http://www.TagBoard.com/";
+	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = "Returns most recent results from TagBoard.";
 
     const PARAMETERS = array( array(
@@ -36,10 +37,6 @@ class TagBoardBridge extends BridgeAbstract{
 
     public function getName(){
         return 'tagboard - ' .$this->getInput('u');
-    }
-
-    public function getCacheDuration(){
-        return 21600; // 6 hours
     }
 }
 

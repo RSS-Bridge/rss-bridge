@@ -4,6 +4,7 @@ class SensCritiqueBridge extends BridgeAbstract {
 	const MAINTAINER = "kranack";
 	const NAME = "Sens Critique";
 	const URI = "http://www.senscritique.com/";
+	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = "Sens Critique news";
 
     const PARAMETERS = array( array(
@@ -74,9 +75,4 @@ class SensCritiqueBridge extends BridgeAbstract {
 		    $this->items[] = $item;
 		}
 	}
-
-	public function getCacheDuration(){
-		return 21600; // 6 hours
-	}
-
 }

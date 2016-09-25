@@ -4,6 +4,7 @@ class CollegeDeFranceBridge extends BridgeAbstract{
 	const MAINTAINER = "pit-fgfjiudghdf";
 	const NAME = "CollegeDeFrance";
 	const URI = "http://www.college-de-france.fr/";
+	const CACHE_TIMEOUT = 10800; // 3h
 	const DESCRIPTION = "Returns the latest audio and video from CollegeDeFrance";
 
 	public function collectData(){
@@ -65,9 +66,5 @@ class CollegeDeFranceBridge extends BridgeAbstract{
 			$item['uri'] = self::URI . $element->href;
 			$this->items[] = $item;
 		}
-	}
-
-	public function getCacheDuration(){
-		return 3600*3; // 3 hours
 	}
 }

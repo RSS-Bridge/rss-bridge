@@ -4,6 +4,7 @@ class PickyWallpapersBridge extends BridgeAbstract {
 	const MAINTAINER = "nel50n";
 	const NAME = "PickyWallpapers Bridge";
 	const URI = "http://www.pickywallpapers.com/";
+	const CACHE_TIMEOUT = 43200; // 12h
 	const DESCRIPTION = "Returns the latests wallpapers from PickyWallpapers";
 
     const PARAMETERS = array( array(
@@ -68,9 +69,5 @@ class PickyWallpapersBridge extends BridgeAbstract {
         return 'PickyWallpapers - '.$this->getInput('c')
           .($subcategory? ' > '.$subcategory : '')
           .' ['.$this->getInput('r').']';
-    }
-
-    public function getCacheDuration(){
-        return 43200; // 12 hours
     }
 }

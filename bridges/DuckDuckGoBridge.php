@@ -4,6 +4,7 @@ class DuckDuckGoBridge extends BridgeAbstract{
 	const MAINTAINER = "Astalaseven";
 	const NAME = "DuckDuckGo";
 	const URI = "https://duckduckgo.com/";
+	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = "Returns most recent results from DuckDuckGo.";
 
     const PARAMETERS = array( array(
@@ -23,9 +24,5 @@ class DuckDuckGoBridge extends BridgeAbstract{
                 $item['content'] = $element->find('div.snippet', 0)->plaintext;
                 $this->items[] = $item;
         }
-    }
-
-    public function getCacheDuration(){
-        return 21600; // 6 hours
     }
 }

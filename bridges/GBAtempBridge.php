@@ -121,9 +121,4 @@ class GBAtempBridge extends BridgeAbstract {
         );
         return 'GBAtemp '.$type.' Bridge';
     }
-
-    public function getCacheDuration() {
-        return ($this->filter === 'Forum') ? 300 : 3600; // 5 minutes / 1 hour
-    }
-
 }

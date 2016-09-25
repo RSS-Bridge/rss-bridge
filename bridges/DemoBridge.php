@@ -46,8 +46,4 @@ class DemoBridge extends BridgeAbstract{
         $this->items[] = $item;
 
     }
-
-    public function getCacheDuration(){
-        return 00; // 1 hour
-    }
 }

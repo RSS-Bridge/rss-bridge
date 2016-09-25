@@ -4,6 +4,7 @@ class DilbertBridge extends BridgeAbstract {
     const MAINTAINER = 'kranack';
     const NAME = 'Dilbert Daily Strip';
     const URI = 'http://dilbert.com';
+    const CACHE_TIMEOUT = 21600; // 6h
     const DESCRIPTION = 'The Unofficial Dilbert Daily Comic Strip';
 
     public function collectData(){
@@ -30,10 +31,6 @@ class DilbertBridge extends BridgeAbstract {
             $item['content'] = '<img src="'.$comic.'" alt="'.$img->alt.'" />';
             $this->items[] = $item;
         }
-    }
-
-    public function getCacheDuration() {
-        return 21600; // 6 hours
     }
 }
 ?>

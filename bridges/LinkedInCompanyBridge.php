@@ -4,6 +4,7 @@ class LinkedInCompanyBridge extends BridgeAbstract{
 	const MAINTAINER = "regisenguehard";
 	const NAME = "LinkedIn Company";
 	const URI = "https://www.linkedin.com/";
+	const CACHE_TIMEOUT = 21600; //6
 	const DESCRIPTION = "Returns most recent actus from Company on LinkedIn. (https://www.linkedin.com/company/<strong style=\"font-weight:bold;\">apple</strong>)";
 
     const PARAMETERS = array( array(
@@ -31,9 +32,5 @@ class LinkedInCompanyBridge extends BridgeAbstract{
                 $i++;
             }
         }
-    }
-
-    public function getCacheDuration(){
-        return 21600; // 6 hours
     }
 }

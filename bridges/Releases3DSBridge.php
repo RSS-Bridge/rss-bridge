@@ -4,6 +4,7 @@ class Releases3DSBridge extends BridgeAbstract {
 	const MAINTAINER = "ORelio";
 	const NAME = "3DS Scene Releases";
 	const URI = "http://www.3dsdb.com/";
+	const CACHE_TIMEOUT = 10800; // 3h
 	const DESCRIPTION = "Returns the newest scene releases.";
 
     public function collectData(){
@@ -115,9 +116,5 @@ class Releases3DSBridge extends BridgeAbstract {
             $this->items[] = $item;
             $limit++;
         }
-    }
-
-    public function getCacheDuration() {
-        return 10800; //3 hours
     }
 }

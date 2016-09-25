@@ -4,6 +4,7 @@ class DanbooruBridge extends BridgeAbstract{
   const MAINTAINER = "mitsukarenai";
   const NAME = "Danbooru";
   const URI = "http://donmai.us/";
+  const CACHE_TIMEOUT = 1800; // 30min
   const DESCRIPTION = "Returns images from given page";
 
   const PARAMETERS = array(
@@ -46,9 +47,5 @@ class DanbooruBridge extends BridgeAbstract{
     foreach($html->find(static::PATHTODATA) as $element) {
       $this->items[] = $this->getItemFromElement($element);
     }
-  }
-
-  public function getCacheDuration(){
-    return 1800; // 30 minutes
   }
 }

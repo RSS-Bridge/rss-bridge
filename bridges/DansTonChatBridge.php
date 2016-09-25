@@ -4,6 +4,7 @@ class DansTonChatBridge extends BridgeAbstract{
 	const MAINTAINER = "Astalaseven";
 	const NAME = "DansTonChat Bridge";
 	const URI = "http://danstonchat.com/";
+	const CACHE_TIMEOUT = 21600; //6h
 	const DESCRIPTION = "Returns latest quotes from DansTonChat.";
 
     public function collectData(){
@@ -18,9 +19,5 @@ class DansTonChatBridge extends BridgeAbstract{
                 $item['content'] = $element->find('a', 0)->innertext;
                 $this->items[] = $item;
         }
-    }
-
-    public function getCacheDuration(){
-        return 21600; // 6 hours
     }
 }

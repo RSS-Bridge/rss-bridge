@@ -3,6 +3,7 @@ class IsoHuntBridge extends BridgeAbstract{
   const MAINTAINER = 'logmanoriginal';
   const NAME = 'isoHunt Bridge';
   const URI = 'https://isohunt.to/';
+  const CACHE_TIMEOUT = 300; //5min
   const DESCRIPTION = 'Returns the latest results by category or search result';
 
   const PARAMETERS = array(
@@ -197,10 +198,6 @@ class IsoHuntBridge extends BridgeAbstract{
       }
       break;
     }
-  }
-
-  public function getCacheDuration(){
-    return 300; // 5 minutes
   }
 
   #region Helper functions for "Movie Torrents"
