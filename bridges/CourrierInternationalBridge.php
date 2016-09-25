@@ -25,14 +25,20 @@ class CourrierInternationalBridge extends BridgeAbstract{
                 $item['uri'] = self::URI.$item['uri'];
             }
 
-            $page = $this->getSimpleHTMLDOM($item['uri']);
+
+            $page = $this->getSimpleHTMLDOMCached($item['uri']);
 
             $cleaner = new HTMLSanitizer();
 
-            $item['content'] = $cleaner->sanitize($page->find("div.article-text")[0]);
-            $item['title'] = strip_tags($article->find(".title")[0]);
+            $content = $page->find('.article-text',0);
+            if(!$content){
+              $content = $page->find('.depeche-text',0);
+            }
 
-            $dateTime = date_parse($page->find("time")[0]);
+            $item['content'] = $cleaner->sanitize($content);
+            $item['title'] = strip_tags($article->find(".title",0));
+
+            $dateTime = date_parse($page->find("time",0));
 
             $item['timestamp'] = mktime(
        			$dateTime['hour'],
