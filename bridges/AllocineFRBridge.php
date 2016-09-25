@@ -4,7 +4,7 @@ class AllocineFRBridge extends BridgeAbstract{
 
     const MAINTAINER = "superbaillot.net";
     const NAME = "Allo Cine Bridge";
-    const URI = "http://www.allocine.fr";
+    const URI = "http://www.allocine.fr/";
     const DESCRIPTION = "Bridge for allocine.fr";
     const PARAMETERS = array( array(
         'category'=>array(
