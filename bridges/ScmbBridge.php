@@ -8,8 +8,8 @@ class ScmbBridge extends BridgeAbstract{
 
     public function collectData(){
         $html = '';
-        $html = $this->getSimpleHTMLDOM(self::URI)
-          or $this->returnServerError('Could not request Se Coucher Moins Bete.');
+        $html = getSimpleHTMLDOM(self::URI)
+          or returnServerError('Could not request Se Coucher Moins Bete.');
 
         foreach($html->find('article') as $article) {
         	$item = array();

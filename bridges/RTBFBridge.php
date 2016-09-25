@@ -18,8 +18,8 @@ class RTBFBridge extends BridgeAbstract {
 		$limit = 10;
 		$count = 0;
 
-        $html = $this->getSimpleHTMLDOM($this->getURI())
-          or $this->returnServerError('Could not request RTBF.');
+        $html = getSimpleHTMLDOM($this->getURI())
+          or returnServerError('Could not request RTBF.');
 
 		foreach($html->find('section[id!=widget-ml-avoiraussi-] .rtbf-media-grid article') as $element) {
 			if($count >= $limit) {

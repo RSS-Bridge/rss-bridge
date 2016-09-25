@@ -14,8 +14,8 @@ class BandcampBridge extends BridgeAbstract{
     ));
 
     public function collectData(){
-        $html = $this->getSimpleHTMLDOM($this->getURI())
-            or $this->returnServerError('No results for this query.');
+        $html = getSimpleHTMLDOM($this->getURI())
+            or returnServerError('No results for this query.');
 
         foreach($html->find('li.item') as $release) {
             $script = $release->find('div.art', 0)->getAttribute('onclick');

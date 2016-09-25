@@ -70,10 +70,10 @@ class TwitchApiBridge extends BridgeAbstract{
 
 		/* Finally we're ready to request data from the API. Each response provides information for the next request. */
 		for($i = 0; $i < $requests; $i++) {
-			$response = $this->getSimpleHTMLDOM($request, false, $context);
+			$response = getSimpleHTMLDOM($request, false, $context);
 
 			if($response == false) {
-				$this->returnServerError('Request failed! Check if the channel name is valid!');
+				returnServerError('Request failed! Check if the channel name is valid!');
 			}
 
 			$data = json_decode($response);

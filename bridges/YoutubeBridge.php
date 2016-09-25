@@ -48,7 +48,7 @@ class YoutubeBridge extends BridgeAbstract {
     );
 
 	private function ytBridgeQueryVideoInfo($vid, &$author, &$desc, &$time) {
-		$html = $this->getSimpleHTMLDOM(self::URI."watch?v=$vid");
+		$html = getSimpleHTMLDOM(self::URI."watch?v=$vid");
 		$author = $html->innertext;
 		$author = substr($author, strpos($author, '"author=') + 8);
 		$author = substr($author, 0, strpos($author, '\u0026'));
@@ -118,17 +118,17 @@ class YoutubeBridge extends BridgeAbstract {
 			$url_listing = self::URI.'channel/'.urlencode($this->request).'/videos';
 		}
 		if (!empty($url_feed) && !empty($url_listing)) {
-			if ($xml = $this->getSimpleHTMLDOM($url_feed)) {
+			if ($xml = getSimpleHTMLDOM($url_feed)) {
 				$this->ytBridgeParseXmlFeed($xml);
-			} else if ($html = $this->getSimpleHTMLDOM($url_listing)) {
+			} else if ($html = getSimpleHTMLDOM($url_listing)) {
 				$this->ytBridgeParseHtmlListing($html, 'li.channels-content-item', 'h3');
-			} else $this->returnServerError("Could not request YouTube. Tried:\n - $url_feed\n - $url_listing");
+			} else returnServerError("Could not request YouTube. Tried:\n - $url_feed\n - $url_listing");
 		}
 
 		else if ($this->getInput('p')) { /* playlist mode */
 			$this->request = $this->getInput('p');
 			$url_listing = self::URI.'playlist?list='.urlencode($this->request);
-			$html = $this->getSimpleHTMLDOM($url_listing) or $this->returnServerError("Could not request YouTube. Tried:\n - $url_listing");
+			$html = getSimpleHTMLDOM($url_listing) or returnServerError("Could not request YouTube. Tried:\n - $url_listing");
 			$this->ytBridgeParseHtmlListing($html, 'tr.pl-video', '.pl-video-title a');
 			$this->request = 'Playlist: '.str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
 		}
@@ -136,13 +136,13 @@ class YoutubeBridge extends BridgeAbstract {
 		else if ($this->getInput('s')) { /* search mode */
 			$this->request = $this->getInput('s'); $page = 1; if ($this->getInput('pa')) $page = (int)preg_replace("/[^0-9]/",'', $this->getInput('pa'));
 			$url_listing = self::URI.'results?search_query='.urlencode($this->request).'&page='.$page.'&filters=video&search_sort=video_date_uploaded';
-			$html = $this->getSimpleHTMLDOM($url_listing) or $this->returnServerError("Could not request YouTube. Tried:\n - $url_listing");
+			$html = getSimpleHTMLDOM($url_listing) or returnServerError("Could not request YouTube. Tried:\n - $url_listing");
 			$this->ytBridgeParseHtmlListing($html, 'div.yt-lockup', 'h3');
 			$this->request = 'Search: '.str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
 		}
 
 		else { /* no valid mode */
-			$this->returnClientError("You must either specify either:\n - YouTube username (?u=...)\n - Channel id (?c=...)\n - Playlist id (?p=...)\n - Search (?s=...)");
+			returnClientError("You must either specify either:\n - YouTube username (?u=...)\n - Channel id (?c=...)\n - Playlist id (?p=...)\n - Search (?s=...)");
 		}
 	}
 

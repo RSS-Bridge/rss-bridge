@@ -9,7 +9,7 @@ class KoreusBridge extends FeedExpander {
 	protected function parseItem($item) {
 		$item = parent::parseItem($item);
 
-		$html = $this->getSimpleHTMLDOMCached($item['uri']);
+		$html = getSimpleHTMLDOMCached($item['uri']);
 		$text = $html->find('p.itemText', 0)->innertext;
 		$item['content'] = utf8_encode($text);
 

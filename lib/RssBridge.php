@@ -16,6 +16,8 @@ require __DIR__ . '/FeedExpander.php';
 require __DIR__ . '/Cache.php';
 require __DIR__ . '/CacheAbstract.php';
 require __DIR__ . '/HTMLUtils.php';
+require __DIR__ . '/error.php';
+require __DIR__ . '/contents.php';
 
 $vendorLibSimpleHtmlDom = __DIR__ . PATH_VENDOR . '/simplehtmldom/simple_html_dom.php';
 if( !file_exists($vendorLibSimpleHtmlDom) ){

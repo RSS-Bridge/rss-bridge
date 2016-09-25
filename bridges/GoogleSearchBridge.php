@@ -25,10 +25,10 @@ class GoogleSearchBridge extends BridgeAbstract{
     public function collectData(){
         $html = '';
 
-        $html = $this->getSimpleHTMLDOM(self::URI
+        $html = getSimpleHTMLDOM(self::URI
           .'search?q=' . urlencode($this->getInput('q'))
           .'&num=100&complete=0&tbs=qdr:y,sbd:1')
-          or $this->returnServerError('No results for this query.');
+          or returnServerError('No results for this query.');
 
         $emIsRes = $html->find('div[id=ires]',0);
         if( !is_null($emIsRes) ){

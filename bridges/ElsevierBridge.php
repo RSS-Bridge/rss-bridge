@@ -57,7 +57,7 @@ class ElsevierBridge extends BridgeAbstract{
 
 	public function collectData(){
 		$uri = self::URI . $this->getInput('j') . '/recent-articles/';
-		$html = $this->getSimpleHTMLDOM($uri) or $this->returnServerError('No results for Elsevier journal '.$this->getInput('j'));
+		$html = getSimpleHTMLDOM($uri) or returnServerError('No results for Elsevier journal '.$this->getInput('j'));
 
 		foreach($html->find('.pod-listing') as $article){
 			$item = array();

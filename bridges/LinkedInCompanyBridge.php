@@ -17,8 +17,8 @@ class LinkedInCompanyBridge extends BridgeAbstract{
         $html = '';
         $link = self::URI.'company/'.$this->getInput('c');
 
-        $html = $this->getSimpleHTMLDOM($link)
-            or $this->returnServerError('Could not request LinkedIn.');
+        $html = getSimpleHTMLDOM($link)
+            or returnServerError('Could not request LinkedIn.');
 
         foreach($html->find('//*[@id="my-feed-post"]/li') as $element) {
             $title = $element->find('span.share-body', 0)->innertext;

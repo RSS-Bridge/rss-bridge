@@ -30,8 +30,8 @@ class CollegeDeFranceBridge extends BridgeAbstract{
 		 * 	</a>
 		 * </li>
 		 */
-        $html = $this->getSimpleHTMLDOM(self::URI.'components/search-audiovideo.jsp?fulltext=&siteid=1156951719600&lang=FR&type=all')
-            or $this->returnServerError('Could not request CollegeDeFrance.');
+        $html = getSimpleHTMLDOM(self::URI.'components/search-audiovideo.jsp?fulltext=&siteid=1156951719600&lang=FR&type=all')
+            or returnServerError('Could not request CollegeDeFrance.');
 		foreach($html->find('a[data-target]') as $element) {
 			$item = array();
 			$item['title'] = $element->find('.title', 0)->plaintext;

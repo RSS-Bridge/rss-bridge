@@ -8,8 +8,8 @@ class EliteDangerousGalnetBridge extends BridgeAbstract
 
 	public function collectData()
 	{
-        $html = $this->getSimpleHTMLDOM(self::URI)
-            or $this->returnServerError('Error while downloading the website content');
+        $html = getSimpleHTMLDOM(self::URI)
+            or returnServerError('Error while downloading the website content');
 		foreach($html->find('div.article') as $element) {
 			$item = array();
 

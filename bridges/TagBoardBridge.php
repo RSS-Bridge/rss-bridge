@@ -16,8 +16,8 @@ class TagBoardBridge extends BridgeAbstract{
     public function collectData(){
         $link = 'https://post-cache.tagboard.com/search/' .$this->getInput('u');
 
-        $html = $this->getSimpleHTMLDOM($link)
-          or $this->returnServerError('Could not request TagBoard for : ' . $link);
+        $html = getSimpleHTMLDOM($link)
+          or returnServerError('Could not request TagBoard for : ' . $link);
         $parsed_json = json_decode($html);
 
         foreach($parsed_json->{'posts'} as $element) {

@@ -7,7 +7,7 @@ class ReporterreBridge extends BridgeAbstract{
 		const DESCRIPTION = "Returns the newest articles.";
 
 		private function ExtractContentReporterre($url) {
-			$html2 = $this->getSimpleHTMLDOM($url);
+			$html2 = getSimpleHTMLDOM($url);
 
 			foreach($html2->find('div[style=text-align:justify]') as $e) {
 				$text = $e->outertext;
@@ -24,7 +24,7 @@ class ReporterreBridge extends BridgeAbstract{
 		}
 
 	public function collectData(){
-		$html = $this->getSimpleHTMLDOM(self::URI.'spip.php?page=backend') or $this->returnServerError('Could not request Reporterre.');
+		$html = getSimpleHTMLDOM(self::URI.'spip.php?page=backend') or returnServerError('Could not request Reporterre.');
 		$limit = 0;
 
 		foreach($html->find('item') as $element) {

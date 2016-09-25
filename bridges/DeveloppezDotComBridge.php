@@ -42,7 +42,7 @@ class DeveloppezDotComBridge extends FeedExpander {
 	}
 
 	private function DeveloppezDotComExtractContent($url) {
-		$articleHTMLContent = $this->getSimpleHTMLDOMCached($url);
+		$articleHTMLContent = getSimpleHTMLDOMCached($url);
 		$text = $this->convert_smart_quotes($articleHTMLContent->find('div.content', 0)->innertext);
 		$text = utf8_encode($text);
 		return trim($text);

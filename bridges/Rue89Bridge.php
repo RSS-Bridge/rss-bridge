@@ -10,7 +10,7 @@ class Rue89Bridge extends FeedExpander {
 		$item = parent::parseItem($item);
 
 		$url = "http://api.rue89.nouvelobs.com/export/mobile2/node/" . str_replace(" ", "", substr($item['uri'], -8)) . "/full";
-		$datas = json_decode($this->getContents($url), true);
+		$datas = json_decode(getContents($url), true);
 		$item['content'] = $datas['node']['body'];
 
 		return $item;

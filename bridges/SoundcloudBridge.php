@@ -17,16 +17,16 @@ class SoundCloudBridge extends BridgeAbstract{
 
 	public function collectData(){
 
-        $res = json_decode($this->getContents(
+        $res = json_decode(getContents(
             'https://api.soundcloud.com/resolve?url=http://www.soundcloud.com/'
             . urlencode($this->getInput('u'))
             .'&client_id=' . self::CLIENT_ID
-        )) or $this->returnServerError('No results for this query');
-        $tracks = json_decode($this->getContents(
+        )) or returnServerError('No results for this query');
+        $tracks = json_decode(getContents(
             'https://api.soundcloud.com/users/'
             . urlencode($res->id)
             .'/tracks?client_id=' . self::CLIENT_ID
-        )) or $this->returnServerError('No results for this user');
+        )) or returnServerError('No results for this user');
 
 		for ($i=0; $i < 10; $i++) {
 		    $item = array();

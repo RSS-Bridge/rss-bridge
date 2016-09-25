@@ -18,8 +18,8 @@ class VkBridge extends BridgeAbstract {
       return static::URI.urlencode($this->getInput('u'));
     }
     public function collectData(){
-        $text_html = $this->getContents($this->getURI())
-          or $this->returnServerError('No results for group or user name "'.$this->getInput('u').'".');
+        $text_html = getContents($this->getURI())
+          or returnServerError('No results for group or user name "'.$this->getInput('u').'".');
 
         $text_html = iconv('windows-1251', 'utf-8', $text_html);
         $html = str_get_html($text_html);

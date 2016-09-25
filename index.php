@@ -124,8 +124,9 @@ try {
 			$bridge->setCache($cache);
 
 		$noproxy = filter_input(INPUT_GET, '_noproxy', FILTER_VALIDATE_BOOLEAN);
-		if(defined('PROXY_URL') && PROXY_BYBRIDGE && $noproxy)
-			$bridge->useProxy = false;
+		if(defined('PROXY_URL') && PROXY_BYBRIDGE && $noproxy){
+			define('NOPROXY',true);
+		}
 
 		$params = $_GET;
 		unset($params['action']);

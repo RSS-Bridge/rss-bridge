@@ -8,8 +8,8 @@ class CourrierInternationalBridge extends BridgeAbstract{
 
     public function collectData(){
 
-        $html = $this->getSimpleHTMLDOM(self::URI)
-            or $this->returnServerError('Error.');
+        $html = getSimpleHTMLDOM(self::URI)
+            or returnServerError('Error.');
 
         $element = $html->find("article");
 
@@ -25,7 +25,7 @@ class CourrierInternationalBridge extends BridgeAbstract{
                 $item['uri'] = self::URI.$item['uri'];
             }
 
-            $page = $this->getSimpleHTMLDOM($item['uri']);
+            $page = getSimpleHTMLDOM($item['uri']);
 
             $cleaner = new HTMLSanitizer();
 

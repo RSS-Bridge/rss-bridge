@@ -8,7 +8,7 @@ class NasaApodBridge extends BridgeAbstract{
 
   public function collectData(){
 
-    $html = $this->getSimpleHTMLDOM(self::URI.'archivepix.html') or $this->returnServerError('Error while downloading the website content');
+    $html = getSimpleHTMLDOM(self::URI.'archivepix.html') or returnServerError('Error while downloading the website content');
     $list = explode("<br>", $html->find('b', 0)->innertext);
 
     for($i = 0; $i < 3;$i++)
@@ -20,7 +20,7 @@ class NasaApodBridge extends BridgeAbstract{
       $uri = self::URI.$uri_page;
       $item['uri'] = $uri;
 
-      $picture_html = $this->getSimpleHTMLDOM($uri);
+      $picture_html = getSimpleHTMLDOM($uri);
       $picture_html_string = $picture_html->innertext;
 
       //Extract image and explanation

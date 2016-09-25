@@ -35,7 +35,7 @@ class DailymotionBridge extends BridgeAbstract{
 
     function getMetadata($id) {
         $metadata=array();
-        $html2 = $this->getSimpleHTMLDOM(self::URI.'video/'.$id);
+        $html2 = getSimpleHTMLDOM(self::URI.'video/'.$id);
         if(!$html2){
             return $metadata;
         }
@@ -52,8 +52,8 @@ class DailymotionBridge extends BridgeAbstract{
         $limit = 5;
         $count = 0;
 
-        $html = $this->getSimpleHTMLDOM($this->getURI())
-            or $this->returnServerError('Could not request Dailymotion.');
+        $html = getSimpleHTMLDOM($this->getURI())
+            or returnServerError('Could not request Dailymotion.');
 
         foreach($html->find('div.media a.preview_link') as $element) {
             if($count < $limit) {

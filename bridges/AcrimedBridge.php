@@ -14,7 +14,7 @@ class AcrimedBridge extends FeedExpander {
         $item = parent::parseItem($newsItem);
 
         $hs = new HTMLSanitizer();
-        $articlePage = $this->getSimpleHTMLDOM($newsItem->link);
+        $articlePage = getSimpleHTMLDOM($newsItem->link);
         $article = $hs->sanitize($articlePage->find('article.article1', 0)->innertext);
         $article = HTMLSanitizer::defaultImageSrcTo($article, static::URI);
         $item['content'] = $article;

@@ -7,14 +7,14 @@ class PlanetLibreBridge extends BridgeAbstract{
 	const DESCRIPTION = "Returns the 5 newest posts from PlanetLibre (full text)";
 
 	private function PlanetLibreExtractContent($url){
-		$html2 = $this->getSimpleHTMLDOM($url);
+		$html2 = getSimpleHTMLDOM($url);
 		$text = $html2->find('div[class="post-text"]', 0)->innertext;
 		return $text;
 	}
 
 	public function collectData(){
-      $html = $this->getSimpleHTMLDOM(self::URI)
-        or $this->returnServerError('Could not request PlanetLibre.');
+      $html = getSimpleHTMLDOM(self::URI)
+        or returnServerError('Could not request PlanetLibre.');
 		$limit = 0;
 		foreach($html->find('div.post') as $element) {
 			if($limit < 5) {

@@ -9,46 +9,46 @@ abstract class FeedExpander extends BridgeAbstract {
 
 	public function collectExpandableDatas($url, $maxItems = -1){
 		if(empty($url)){
-			$this->returnServerError('There is no $url for this RSS expander');
+			returnServerError('There is no $url for this RSS expander');
 		}
 
-		$this->debugMessage('Loading from ' . $url);
+		debugMessage('Loading from ' . $url);
 
 		/* Notice we do not use cache here on purpose:
 		 * we want a fresh view of the RSS stream each time
 		 */
-		$content = $this->getContents($url)
-			or $this->returnServerError('Could not request ' . $url);
+		$content = getContents($url)
+			or returnServerError('Could not request ' . $url);
 		$rssContent = simplexml_load_string($content);
 
-		$this->debugMessage('Detecting feed format/version');
+		debugMessage('Detecting feed format/version');
 		switch(true){
 		case isset($rssContent->item[0]):
-			$this->debugMessage('Detected RSS 1.0 format');
+			debugMessage('Detected RSS 1.0 format');
 			$this->feedType = "RSS_1_0";
 			break;
 		case isset($rssContent->channel[0]):
-			$this->debugMessage('Detected RSS 0.9x or 2.0 format');
+			debugMessage('Detected RSS 0.9x or 2.0 format');
 			$this->feedType = "RSS_2_0";
 			break;
 		case isset($rssContent->entry[0]):
-			$this->debugMessage('Detected ATOM format');
+			debugMessage('Detected ATOM format');
 			$this->feedType = "ATOM_1_0";
 			break;
 		default:
-			$this->debugMessage('Unknown feed format/version');
-			$this->returnServerError('The feed format is unknown!');
+			debugMessage('Unknown feed format/version');
+			returnServerError('The feed format is unknown!');
 			break;
 		}
 
-		$this->debugMessage('Calling function "collect_' . $this->feedType . '_data"');
+		debugMessage('Calling function "collect_' . $this->feedType . '_data"');
 		$this->{'collect_' . $this->feedType . '_data'}($rssContent, $maxItems);
 	}
 
 	protected function collect_RSS_1_0_data($rssContent, $maxItems){
 		$this->load_RSS_2_0_feed_data($rssContent->channel[0]);
 		foreach($rssContent->item as $item){
-			$this->debugMessage('parsing item ' . var_export($item, true));
+			debugMessage('parsing item ' . var_export($item, true));
 			$this->items[] = $this->parseItem($item);
 			if($maxItems !== -1 && count($this->items) >= $maxItems) break;
 		}
@@ -56,13 +56,13 @@ abstract class FeedExpander extends BridgeAbstract {
 
 	protected function collect_RSS_2_0_data($rssContent, $maxItems){
 		$rssContent = $rssContent->channel[0];
-		$this->debugMessage('RSS content is ===========\n'
+		debugMessage('RSS content is ===========\n'
 		. var_export($rssContent, true)
 		. '===========');
 
 		$this->load_RSS_2_0_feed_data($rssContent);
 		foreach($rssContent->item as $item){
-			$this->debugMessage('parsing item ' . var_export($item, true));
+			debugMessage('parsing item ' . var_export($item, true));
 			$this->items[] = $this->parseItem($item);
 			if($maxItems !== -1 && count($this->items) >= $maxItems) break;
 		}
@@ -71,7 +71,7 @@ abstract class FeedExpander extends BridgeAbstract {
 	protected function collect_ATOM_1_0_data($content, $maxItems){
 		$this->load_ATOM_feed_data($content);
 		foreach($content->entry as $item){
-			$this->debugMessage('parsing item ' . var_export($item, true));
+			debugMessage('parsing item ' . var_export($item, true));
 			$this->items[] = $this->parseItem($item);
 			if($maxItems !== -1 && count($this->items) >= $maxItems) break;
 		}
@@ -190,7 +190,7 @@ abstract class FeedExpander extends BridgeAbstract {
 		case 'ATOM_1_0':
 			return $this->parseATOMItem($item);
 			break;
-		default: $this->returnClientError('Unknown version ' . $this->getInput('version') . '!');
+		default: returnClientError('Unknown version ' . $this->getInput('version') . '!');
 		}
 	}
 

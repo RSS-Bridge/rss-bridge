@@ -38,7 +38,7 @@ class FeedExpanderExampleBridge extends FeedExpander {
             case 'atom_1_0':
                 parent::collectExpandableDatas('http://segfault.linuxmint.com/feed/atom/');
                 break;
-            default: $this->returnClientError('Unknown version ' . $this->getInput('version') . '!');
+            default: returnClientError('Unknown version ' . $this->getInput('version') . '!');
         }
     }
 
@@ -56,7 +56,7 @@ class FeedExpanderExampleBridge extends FeedExpander {
             case 'atom_1_0':
                 return $this->parseATOMItem($newsItem);
                 break;
-            default: $this->returnClientError('Unknown version ' . $this->getInput('version') . '!');
+            default: returnClientError('Unknown version ' . $this->getInput('version') . '!');
         }
     }
 }

@@ -6,8 +6,8 @@ class StripeAPIChangeLogBridge extends BridgeAbstract{
   const DESCRIPTION = 'Returns the changes made to the stripe.com API';
 
   public function collectData(){
-    $html = $this->getSimpleHTMLDOM(self::URI)
-      or $this->returnServerError('No results for Stripe API Changelog');
+    $html = getSimpleHTMLDOM(self::URI)
+      or returnServerError('No results for Stripe API Changelog');
 
 
     foreach($html->find('h3') as $change){

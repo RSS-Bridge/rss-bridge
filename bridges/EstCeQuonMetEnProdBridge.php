@@ -15,7 +15,7 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract {
             } return false;
         }
 
-        $html = $this->getSimpleHTMLDOM($this->getURI()) or $this->returnServerError('Could not request EstCeQuonMetEnProd: '.$this->getURI());
+        $html = getSimpleHTMLDOM($this->getURI()) or returnServerError('Could not request EstCeQuonMetEnProd: '.$this->getURI());
 
         $item = array();
         $item['uri'] = $this->getURI().'#'.date('Y-m-d');

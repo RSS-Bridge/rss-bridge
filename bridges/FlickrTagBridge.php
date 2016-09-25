@@ -25,12 +25,12 @@ class FlickrTagBridge extends BridgeAbstract{
     public function collectData(){
         switch($this->queriedContext){
         case 'By keyword':
-            $html = $this->getSimpleHTMLDOM(self::URI.'search/?q='.urlencode($this->getInput('q')).'&s=rec')
-                or $this->returnServerError('No results for this query.');
+            $html = getSimpleHTMLDOM(self::URI.'search/?q='.urlencode($this->getInput('q')).'&s=rec')
+                or returnServerError('No results for this query.');
             break;
         case 'by username':
-            $html = $this->getSimpleHTMLDOM(self::URI.'photos/'.urlencode($this->getInput('u')).'/')
-                or $this->returnServerError('Requested username can\'t be found.');
+            $html = getSimpleHTMLDOM(self::URI.'photos/'.urlencode($this->getInput('u')).'/')
+                or returnServerError('Requested username can\'t be found.');
             break;
         }
 

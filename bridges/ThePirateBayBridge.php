@@ -52,11 +52,11 @@ class ThePirateBayBridge extends BridgeAbstract{
 
         $keywordsList = explode(";",$this->getInput('q'));
         foreach($keywordsList as $keywords){
-          $html = $this->getSimpleHTMLDOM(self::URI.'search/'.rawurlencode($keywords).'/0/3/0')
-            or $this->returnServerError('Could not request TPB.');
+          $html = getSimpleHTMLDOM(self::URI.'search/'.rawurlencode($keywords).'/0/3/0')
+            or returnServerError('Could not request TPB.');
 
             if ($html->find('table#searchResult', 0) == FALSE)
-                $this->returnServerError('No result for query '.$keywords);
+                returnServerError('No result for query '.$keywords);
 
 
             foreach($html->find('tr') as $element) {

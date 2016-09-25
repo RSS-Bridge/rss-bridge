@@ -56,8 +56,8 @@ class NextgovBridge extends FeedExpander {
     }
 
     private function ExtractContent($url){
-        $article = $this->getSimpleHTMLDOMCached($url)
-            or $this->returnServerError('Could not request Nextgov: ' . $url);
+        $article = getSimpleHTMLDOMCached($url)
+            or returnServerError('Could not request Nextgov: ' . $url);
 
         $contents = $article->find('div.wysiwyg', 0)->innertext;
         $contents = $this->StripWithDelimiters($contents, '<div class="ad-container">', '</div>');

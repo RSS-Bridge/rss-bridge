@@ -40,8 +40,8 @@ class DanbooruBridge extends BridgeAbstract{
   }
 
   public function collectData(){
-    $html = $this->getSimpleHTMLDOM($this->getFullURI())
-      or $this->returnServerError('Could not request '.$this->getName());
+    $html = getSimpleHTMLDOM($this->getFullURI())
+      or returnServerError('Could not request '.$this->getName());
 
     foreach($html->find(static::PATHTODATA) as $element) {
       $this->items[] = $this->getItemFromElement($element);

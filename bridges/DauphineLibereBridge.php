@@ -47,7 +47,7 @@ class DauphineLibereBridge extends FeedExpander {
     }
 
     private function ExtractContent($url) {
-        $html2 = $this->getSimpleHTMLDOMCached($url);
+        $html2 = getSimpleHTMLDOMCached($url);
         $text = $html2->find('div.column', 0)->innertext;
         $text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
         return $text;

@@ -32,8 +32,8 @@ class LWNprevBridge extends BridgeAbstract{
   public function collectData(){
     // Because the LWN page is written in loose HTML and not XHTML,
     // Simple HTML Dom is not accurate enough for the job
-    $content=$this->getContents($this->getURI())
-      or $this->returnServerError('No results for LWNprev');
+    $content=getContents($this->getURI())
+      or returnServerError('No results for LWNprev');
 
     libxml_use_internal_errors(true);
     $html=new DOMDocument();
