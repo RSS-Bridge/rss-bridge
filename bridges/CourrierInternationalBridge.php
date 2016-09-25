@@ -27,9 +27,7 @@ class CourrierInternationalBridge extends BridgeAbstract{
 
             $page = getSimpleHTMLDOM($item['uri']);
 
-            $cleaner = new HTMLSanitizer();
-
-            $item['content'] = $cleaner->sanitize($page->find("div.article-text")[0]);
+            $item['content'] = sanitize($page->find("div.article-text")[0]);
             $item['title'] = strip_tags($article->find(".title")[0]);
 
             $dateTime = date_parse($page->find("time")[0]);

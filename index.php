@@ -188,11 +188,11 @@ $formats = Format::searchInformation();
 		$bridgeList = Bridge::listBridges();
 		foreach($bridgeList as $bridgeName){
 			if(Bridge::isWhitelisted($whitelist_selection, $bridgeName)){
-				echo HTMLUtils::displayBridgeCard($bridgeName, $formats);
+				echo displayBridgeCard($bridgeName, $formats);
 						$activeFoundBridgeCount++;
 			} elseif($showInactive) {
 				// inactive bridges
-				$inactiveBridges .= HTMLUtils::displayBridgeCard($bridgeName, $formats, false) . PHP_EOL;
+				$inactiveBridges .= displayBridgeCard($bridgeName, $formats, false) . PHP_EOL;
 			}
 		}
 		echo $inactiveBridges;

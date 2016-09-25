@@ -59,7 +59,7 @@ class WorldOfTanksBridge extends BridgeAbstract {
         debugMessage("loading page ".$item['uri']);
         $articlePage = getSimpleHTMLDOMCached($item['uri']);
         $content = $articlePage->find('.l-content', 0);
-        HTMLSanitizer::defaultImageSrcTo($content, self::URI);
+        defaultImageSrcTo($content, self::URI);
         $item['title'] = $content->find('h1', 0)->innertext;
         $item['content'] = $content->find('.b-content', 0)->innertext;
         $item['timestamp'] = $content->find('.b-statistic_time', 0)->getAttribute("data-timestamp");
