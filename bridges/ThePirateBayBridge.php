@@ -4,14 +4,23 @@ class ThePirateBayBridge extends BridgeAbstract{
 	const MAINTAINER = "mitsukarenai";
 	const NAME = "The Pirate Bay";
 	const URI = "https://thepiratebay.org/";
-	const DESCRIPTION = "Returns results for the keywords. You can put several list of keywords by separating them with a semicolon (e.g. \"one show;another show\")";
+	const DESCRIPTION = "Returns results for the keywords. You can put several list of keywords by separating them with a semicolon (e.g. \"one show;another show\"). Category based search needs the category number as input. User based search takes the Uploader name";
 
     const PARAMETERS = array( array(
         'q'=>array(
             'name'=>'keywords, separated by semicolons',
             'exampleValue'=>'first list;second list;…',
             'required'=>true
-        )
+        ),
+        'crit'=>array(
+            'type'=>'list',
+            'name'=>'Search type',
+            'values'=>array(
+                'search'=>'search',
+                'category'=>'cat',
+                'user'=>'usr'                
+            )
+        ),
     ));
 
 	public function collectData(){
@@ -49,11 +58,24 @@ class ThePirateBayBridge extends BridgeAbstract{
                 return $timestamp;
         }
 
-
+		$critList = $this->getInput('crit');
         $keywordsList = explode(";",$this->getInput('q'));
         foreach($keywordsList as $keywords){
-          $html = $this->getSimpleHTMLDOM(self::URI.'search/'.rawurlencode($keywords).'/0/3/0')
-            or $this->returnServerError('Could not request TPB.');
+          switch ($critList) {
+		    case "search":
+		    	$html = $this->getSimpleHTMLDOM(self::URI.'search/'.rawurlencode($keywords).'/0/3/0')
+            		or $this->returnServerError('Could not request TPB.');
+		        break;
+		    case "cat":
+		          $html = $this->getSimpleHTMLDOM(self::URI.'browse/'.rawurlencode($keywords).'/0/3/0')
+            		or $this->returnServerError('Could not request TPB.');
+		        break;
+		    case "usr":
+		        $html = $this->getSimpleHTMLDOM(self::URI.'user/'.rawurlencode($keywords).'/0/3/0')
+            		or $this->returnServerError('Could not request TPB.');
+		        break;
+		  }
+
 
             if ($html->find('table#searchResult', 0) == FALSE)
                 $this->returnServerError('No result for query '.$keywords);
@@ -61,9 +83,10 @@ class ThePirateBayBridge extends BridgeAbstract{
 
             foreach($html->find('tr') as $element) {
                 $item = array();
-                $item['uri'] = self::URI.$element->find('a.detLink',0)->href;
-                $item['id'] = $item['uri'];
+                $item['uri'] = $element->find('a',3)->href;                
+                $item['id'] = self::URI.$element->find('a.detLink',0)->href;
                 $item['timestamp'] = parseDateTimestamp($element);
+                $item['author'] = $element->find('a.detDesc',0)->plaintext;
                 $item['title'] = $element->find('a.detLink',0)->plaintext;
                 $item['seeders'] = (int)$element->find('td',2)->plaintext;
                 $item['leechers'] = (int)$element->find('td',3)->plaintext;
