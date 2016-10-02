@@ -3,6 +3,7 @@ class CADBridge extends FeedExpander {
 	const MAINTAINER = "nyutag";
 	const NAME = "CAD Bridge";
 	const URI = "http://www.cad-comic.com/";
+	const CACHE_TIMEOUT = 7200; //2h
 	const DESCRIPTION = "Returns the newest articles.";
 
 	public function collectData(){
@@ -40,10 +41,6 @@ class CADBridge extends FeedExpander {
 		if ($img == '')
 			return 'Daily comic not released yet';
 		return '<img src="'.$img.'"/>';
-	}
-
-	public function getCacheDuration(){
-		return 3600*2; // 2 hours
 	}
 }
 ?>

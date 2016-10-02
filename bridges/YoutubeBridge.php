@@ -10,6 +10,7 @@ class YoutubeBridge extends BridgeAbstract {
 
 	const NAME = 'YouTube Bridge';
 	const URI = 'https://www.youtube.com/';
+	const CACHE_TIMEOUT = 10800; // 3h
 	const DESCRIPTION = 'Returns the 10 newest videos by username/channel/playlist or search';
 	const MAINTAINER = 'mitsukarenai';
 
@@ -148,9 +149,5 @@ class YoutubeBridge extends BridgeAbstract {
 
 	public function getName(){
 		return (!empty($this->request) ? $this->request .' - ' : '') .'YouTube Bridge';
-	}
-
-	public function getCacheDuration(){
-		return 10800; // 3 hours
 	}
 }

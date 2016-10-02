@@ -4,6 +4,7 @@ class AcrimedBridge extends FeedExpander {
     const MAINTAINER = "qwertygc";
     const NAME = "Acrimed Bridge";
     const URI = "http://www.acrimed.org/";
+    const CACHE_TIMEOUT = 4800; //2hours
     const DESCRIPTION = "Returns the newest articles.";
 
     public function collectData(){
@@ -22,7 +23,4 @@ class AcrimedBridge extends FeedExpander {
         return $item;
     }
 
-    public function getCacheDuration(){
-        return 4800; // 2 hours
-    }
 }

@@ -4,6 +4,7 @@ class FlickrTagBridge extends BridgeAbstract{
 	const MAINTAINER = "erwang";
 	const NAME = "Flickr TagUser";
 	const URI = "http://www.flickr.com/";
+	const CACHE_TIMEOUT = 21600; //6h
 	const DESCRIPTION = "Returns the tagged or user images from Flickr";
 
     const PARAMETERS = array(
@@ -42,10 +43,6 @@ class FlickrTagBridge extends BridgeAbstract{
             $item['title'] = $element->find('a',0)->title;
             $this->items[] = $item;
         }
-    }
-
-    public function getCacheDuration(){
-        return 21600; // 6 hours
     }
 }
 

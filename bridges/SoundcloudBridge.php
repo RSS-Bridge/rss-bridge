@@ -4,6 +4,7 @@ class SoundCloudBridge extends BridgeAbstract{
 	const MAINTAINER = "kranack";
 	const NAME = "Soundcloud Bridge";
 	const URI = "https://soundcloud.com/";
+	const CACHE_TIMEOUT = 600; // 10min
 	const DESCRIPTION = "Returns 10 newest music from user profile";
 
     const PARAMETERS = array( array(
@@ -45,9 +46,5 @@ class SoundCloudBridge extends BridgeAbstract{
     }
 	public function getName(){
 		return self::NAME .' - '. $this->getInput('u');
-	}
-
-	public function getCacheDuration(){
-		return 600; // 10 minutes
 	}
 }

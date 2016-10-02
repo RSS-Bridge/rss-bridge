@@ -4,6 +4,7 @@ class GithubIssueBridge extends BridgeAbstract{
   const MAINTAINER = 'Pierre Mazière';
   const NAME = 'Github Issue';
   const URI = 'https://github.com/';
+  const CACHE_TIMEOUT = 600; // 10min
   const DESCRIPTION = 'Returns the issues or comments of an issue of a github project';
 
   const PARAMETERS=array(
@@ -152,7 +153,7 @@ class GithubIssueBridge extends BridgeAbstract{
 
         if($this->getInput('c')){
           $uri=static::URI.$this->getInput('u').'/'.$this->getInput('p').'/issues/'.$issueNbr;
-          $issue=$this->getSimpleHTMLDOMCached($uri,1800);
+          $issue=$this->getSimpleHTMLDOMCached($uri,static::CACHE_TIMEOUT);
           if($issue){
             $this->items=array_merge($this->items,$this->extractIssueComments($issue));
             continue;
@@ -185,9 +186,5 @@ class GithubIssueBridge extends BridgeAbstract{
       );
       $item['title']=preg_replace('/\s+/',' ',$item['title']);
     });
-  }
-
-  public function getCacheDuration(){
-    return 600; // ten minutes
   }
 }

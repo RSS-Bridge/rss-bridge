@@ -4,6 +4,7 @@ class MangareaderBridge extends BridgeAbstract {
     const MAINTAINER = "logmanoriginal";
     const NAME = "Mangareader Bridge";
     const URI = "http://www.mangareader.net/";
+    const CACHE_TIMEOUT = 10800; // 3h
     const DESCRIPTION = "Returns the latest updates, popular mangas or manga updates (new chapters)";
 
     const PARAMETERS = array(
@@ -148,12 +149,12 @@ class MangareaderBridge extends BridgeAbstract {
                     if($item['content'] <> ""){
                         $item['content'] .= "<br>";
                     }
-                    $item['content'] .= 
-                        "<a href='" 
-                        . self::URI 
-                        . htmlspecialchars($chapter->getAttribute('href')) 
-                        . "'>" 
-                        . htmlspecialchars($chapter->nodeValue) 
+                    $item['content'] .=
+                        "<a href='"
+                        . self::URI
+                        . htmlspecialchars($chapter->getAttribute('href'))
+                        . "'>"
+                        . htmlspecialchars($chapter->nodeValue)
                         . "</a>";
                 }
 
@@ -245,10 +246,6 @@ EOD;
 
     public function getName(){
         return (!empty($this->request) ? $this->request . ' - ' : '') . 'Mangareader Bridge';
-    }
-
-    public function getCacheDuration(){
-        return 10800; // 3 hours
     }
 }
 ?>

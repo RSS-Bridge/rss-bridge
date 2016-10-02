@@ -4,6 +4,7 @@ class LeMondeInformatiqueBridge extends FeedExpander {
     const MAINTAINER = "ORelio";
     const NAME = "Le Monde Informatique";
     const URI = "http://www.lemondeinformatique.fr/";
+    const CACHE_TIMEOUT = 1800; // 30min
     const DESCRIPTION = "Returns the newest articles.";
 
     public function collectData(){
@@ -37,9 +38,5 @@ class LeMondeInformatiqueBridge extends FeedExpander {
         $article_html = $this->StripWithDelimiters($article_html, '<script', '</script>');
         $article_html = $this->StripWithDelimiters($article_html, '<h1 class="cleanprint-title"', '</h1>');
         return $article_html;
-    }
-
-    public function getCacheDuration() {
-        return 1800; // 30 minutes
     }
 }

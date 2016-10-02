@@ -4,6 +4,7 @@ class TheCodingLoveBridge extends BridgeAbstract{
 	const MAINTAINER = "superbaillot.net";
 	const NAME = "The Coding Love";
 	const URI = "http://thecodinglove.com/";
+	const CACHE_TIMEOUT = 7200; // 2h
 	const DESCRIPTION = "The Coding Love";
 
     public function collectData(){
@@ -43,9 +44,5 @@ class TheCodingLoveBridge extends BridgeAbstract{
 
             $this->items[] = $item;
         }
-    }
-
-    public function getCacheDuration(){
-        return 7200; // 2h hours
     }
 }

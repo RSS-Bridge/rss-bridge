@@ -4,6 +4,7 @@ class FacebookBridge extends BridgeAbstract{
 	const MAINTAINER = "teromene";
 	const NAME = "Facebook";
 	const URI = "https://www.facebook.com/";
+	const CACHE_TIMEOUT = 300; // 5min
 	const DESCRIPTION = "Input a page title or a profile log. For a profile log, please insert the parameter as follow : myExamplePage/132621766841117";
 
     const PARAMETERS =array( array(
@@ -205,9 +206,5 @@ class FacebookBridge extends BridgeAbstract{
 
 	public function getName() {
 		return (isset($this->authorName) ? $this->authorName.' - ' : '').'Facebook Bridge';
-	}
-
-	public function getCacheDuration() {
-		return 300; // 5 minutes
 	}
 }

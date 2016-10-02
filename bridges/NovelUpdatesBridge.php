@@ -4,6 +4,7 @@ class NovelUpdatesBridge extends BridgeAbstract{
 	const MAINTAINER = "albirew";
 	const NAME = "Novel Updates";
 	const URI = "http://www.novelupdates.com/";
+	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = "Returns releases from Novel Updates";
 	const PARAMETERS = array( array(
         'n'=>array(
@@ -47,9 +48,5 @@ class NovelUpdatesBridge extends BridgeAbstract{
 
     public function getName(){
         return $this->seriesTitle. ' - ' . static::NAME;
-    }
-
-    public function getCacheDuration(){
-        return 21600; // 6 hours
     }
 }

@@ -4,6 +4,7 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract {
     const MAINTAINER = 'ORelio';
     const NAME = 'Est-ce qu\'on met en prod aujourd\'hui ?';
     const URI = 'https://www.estcequonmetenprodaujourdhui.info/';
+    const CACHE_TIMEOUT = 21600; // 6h
     const DESCRIPTION = 'Should we put a website in production today? (French)';
 
     public function collectData(){
@@ -24,10 +25,6 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract {
         $item['timestamp'] = strtotime('today midnight');
         $item['content'] = str_replace('src="/', 'src="'.$this->getURI(), trim(ExtractFromDelimiters($html->outertext, '<body role="document">', '<br /><br />')));
         $this->items[] = $item;
-    }
-
-    public function getCacheDuration() {
-        return 21600; // 6 hours
     }
 }
 ?>

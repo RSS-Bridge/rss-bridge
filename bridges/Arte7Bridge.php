@@ -4,6 +4,7 @@
         const MAINTAINER = "mitsukarenai";
         const NAME = "Arte +7";
         const URI = "http://www.arte.tv/";
+        const CACHE_TIMEOUT = 1800; // 30min
         const DESCRIPTION = "Returns newest videos from ARTE +7";
         const PARAMETERS = array(
             'Catégorie (Français)' => array(
@@ -86,7 +87,4 @@
         }
     }
 
-    public function getCacheDuration(){
-        return 1800; // 30 minutes
-    }
 }

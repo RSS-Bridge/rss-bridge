@@ -4,6 +4,7 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
 	const MAINTAINER = "superbaillot.net";
 	const NAME = "Les Joies Du Code";
 	const URI = "http://lesjoiesducode.fr/";
+	const CACHE_TIMEOUT = 7200; // 2h
 	const DESCRIPTION = "LesJoiesDuCode";
 
     public function collectData(){
@@ -42,9 +43,5 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
 
             $this->items[] = $item;
         }
-    }
-
-    public function getCacheDuration(){
-        return 7200; // 2h hours
     }
 }

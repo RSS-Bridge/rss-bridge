@@ -4,6 +4,7 @@ class NasaApodBridge extends BridgeAbstract{
 	const MAINTAINER = "corenting";
 	const NAME = "NASA APOD Bridge";
 	const URI = "http://apod.nasa.gov/apod/";
+	const CACHE_TIMEOUT = 43200; // 12h
 	const DESCRIPTION = "Returns the 3 latest NASA APOD pictures and explanations";
 
   public function collectData(){
@@ -38,9 +39,5 @@ class NasaApodBridge extends BridgeAbstract{
       $item['title'] = $picture_html->find('b',0)->innertext;
       $this->items[] = $item;
     }
-  }
-
-  public function getCacheDuration(){
-    return 3600*12; // 12 hours
   }
 }

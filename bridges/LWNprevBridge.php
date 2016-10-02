@@ -3,6 +3,7 @@ class LWNprevBridge extends BridgeAbstract{
   const MAINTAINER = 'Pierre Mazière';
   const NAME = 'LWN Free Weekly Edition';
   const URI = 'https://lwn.net/';
+  const CACHE_TIMEOUT = 604800; // 1 week
   const DESCRIPTION = 'LWN Free Weekly Edition available one week late';
 
   function getURI(){
@@ -139,9 +140,5 @@ class LWNprevBridge extends BridgeAbstract{
       $item['content']=$content;
       $this->items[]=$item;
     }
-  }
-
-  public function getCacheDuration(){
-    return 604800; // one week
   }
 }

@@ -4,6 +4,7 @@ class TheOatmealBridge extends FeedExpander{
 	const MAINTAINER = "Riduidel";
 	const NAME = "The Oatmeal";
 	const URI = "http://theoatmeal.com/";
+	const CACHE_TIMEOUT = 7200; // 2h
 	const DESCRIPTION = "Un petit site de dessins assez rigolos";
 
     public function collectData(){
@@ -22,9 +23,5 @@ class TheOatmealBridge extends FeedExpander{
             $item['content'] = $content->innertext;
 
         return $item;
-    }
-
-    public function getCacheDuration(){
-        return 7200; // 2h hours
     }
 }

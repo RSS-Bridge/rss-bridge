@@ -4,6 +4,7 @@ class ScoopItBridge extends BridgeAbstract{
 	const MAINTAINER = "Pitchoule";
 	const NAME = "ScoopIt";
 	const URI = "http://www.scoop.it/";
+	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = "Returns most recent results from ScoopIt.";
 
     const PARAMETERS = array( array(
@@ -27,10 +28,6 @@ class ScoopItBridge extends BridgeAbstract{
            $item['content'] = preg_replace('~[[:cntrl:]]~', '', $element->find('div.tCustomization_post_description', 0)->plaintext);
            $this->items[] = $item;
        }
-    }
-
-    public function getCacheDuration(){
-        return 21600; // 6 hours
     }
 }
 

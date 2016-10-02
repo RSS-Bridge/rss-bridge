@@ -4,6 +4,7 @@ class CourrierInternationalBridge extends BridgeAbstract{
     const MAINTAINER = "teromene";
     const NAME = "Courrier International Bridge";
     const URI = "http://CourrierInternational.com/";
+    const CACHE_TIMEOUT = 300; // 5 min
     const DESCRIPTION = "Courrier International bridge";
 
     public function collectData(){
@@ -51,10 +52,6 @@ class CourrierInternationalBridge extends BridgeAbstract{
 
 
 
-    }
-
-    public function getCacheDuration(){
-        return 300; // 5 minutes
     }
 }
 

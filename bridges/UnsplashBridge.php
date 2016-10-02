@@ -4,6 +4,7 @@ class UnsplashBridge extends BridgeAbstract {
 	const MAINTAINER = "nel50n";
 	const NAME = "Unsplash Bridge";
 	const URI = "http://unsplash.com/";
+	const CACHE_TIMEOUT = 43200; // 12h
 	const DESCRIPTION = "Returns the latests photos from Unsplash";
 
     const PARAMETERS = array( array(
@@ -59,9 +60,5 @@ class UnsplashBridge extends BridgeAbstract {
                     break 2;
             }
         }
-    }
-
-    public function getCacheDuration(){
-        return 43200; // 12 hours
     }
 }

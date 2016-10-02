@@ -3,6 +3,7 @@ class WordPressBridge extends FeedExpander {
 	const MAINTAINER = "aledeg";
 	const NAME = "Wordpress Bridge";
 	const URI = "https://wordpress.org/";
+	const CACHE_TIMEOUT = 10800; // 3h
 	const DESCRIPTION = "Returns the newest full posts of a Wordpress powered website";
 
 	const PARAMETERS = array( array(
@@ -68,9 +69,5 @@ class WordPressBridge extends FeedExpander {
 
 		$this->collectExpandableDatas($this->getURI().'/feed/atom/');
 
-	}
-
-	public function getCacheDuration() {
-		return 3600*3; // 3 hours
 	}
 }

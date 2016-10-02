@@ -6,6 +6,7 @@ class TwitchApiBridge extends BridgeAbstract{
 	const MAINTAINER = "logmanoriginal";
 	const NAME = "Twitch API Bridge";
 	const URI = "http://www.twitch.tv";
+	const CACHE_TIMEOUT = 10800; // 3h
 	const DESCRIPTION = "Returns the newest broadcasts or highlights by channel name using the Twitch API (v3)";
 
     const PARAMETERS = array(
@@ -104,10 +105,6 @@ class TwitchApiBridge extends BridgeAbstract{
 
 	public function getName(){
 		return $this->getInput('channel') . ' - Twitch API Bridge';
-	}
-
-	public function getCacheDuration(){
-		return 10800; // 3 hours
 	}
 }
 ?>

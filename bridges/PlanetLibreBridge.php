@@ -28,8 +28,4 @@ class PlanetLibreBridge extends BridgeAbstract{
 			}
 		}
 	}
-
-	public function getCacheDuration(){
-		return 3600*2; // 1 hour
-	}
 }

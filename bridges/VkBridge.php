@@ -5,6 +5,7 @@ class VkBridge extends BridgeAbstract {
     const MAINTAINER = "ahiles3005";
     const NAME = "VK.com";
     const URI = "http://vk.com/";
+    const CACHE_TIMEOUT = 300; // 5min
     const DESCRIPTION = "Working with open pages";
     const PARAMETERS=array( array(
             'u'=>array(
@@ -45,9 +46,4 @@ class VkBridge extends BridgeAbstract {
             // var_dump($item['date']);
         }
     }
-
-    public function getCacheDuration() {
-        return 300; // 5 minutes
-    }
-
 }

@@ -7,6 +7,7 @@ class GooglePlusPostBridge extends BridgeAbstract
 	const MAINTAINER = "Grummfy";
 	const NAME = "Google Plus Post Bridge";
 	const URI = "https://plus.google.com/";
+	const CACHE_TIMEOUT = 600; //10min
 	const DESCRIPTION = "Returns user public post (without API).";
 
     const PARAMETERS = array( array(
@@ -108,10 +109,5 @@ class GooglePlusPostBridge extends BridgeAbstract
 	public function getURI()
 	{
 		return $this->_url ?: self::URI;
-	}
-
-	public function getCacheDuration()
-	{
-		return 1; // 600; // 10 minutes
 	}
 }
