@@ -116,12 +116,11 @@ try {
 			die;
 		}
 
-		$cache = Cache::create('FileCache');
-
 		// Data retrieval
 		$bridge = Bridge::create($bridge);
-		if(!defined("DEBUG"))
-			$bridge->setCache($cache);
+
+		$cache = Cache::create('FileCache');
+		$bridge->setCache($cache);
 
 		$noproxy = filter_input(INPUT_GET, '_noproxy', FILTER_VALIDATE_BOOLEAN);
 		if(defined('PROXY_URL') && PROXY_BYBRIDGE && $noproxy){
