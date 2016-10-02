@@ -18,8 +18,8 @@ class ViadeoCompanyBridge extends BridgeAbstract{
         $html = '';
         $link = self::URI.'fr/company/'.$this->getInput('c');
 
-        $html = $this->getSimpleHTMLDOM($link)
-          or $this->returnServerError('Could not request Viadeo.');
+        $html = getSimpleHTMLDOM($link)
+          or returnServerError('Could not request Viadeo.');
 
         foreach($html->find('//*[@id="company-newsfeed"]/ul/li') as $element) {
             $title = $element->find('p', 0)->innertext;

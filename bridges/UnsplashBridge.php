@@ -34,8 +34,8 @@ class UnsplashBridge extends BridgeAbstract {
 
         for ($page = 1; $page <= $lastpage; $page++) {
             $link = self::URI.'/grid?page='.$page;
-            $html = $this->getSimpleHTMLDOM($link)
-              or $this->returnServerError('No results for this query.');
+            $html = getSimpleHTMLDOM($link)
+              or returnServerError('No results for this query.');
 
             if ($page === 1) {
                 preg_match('/=(\d+)$/', $html->find('.pagination > a[!class]', -1)->href, $matches);

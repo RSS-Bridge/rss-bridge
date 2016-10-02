@@ -54,7 +54,7 @@ class GBAtempBridge extends BridgeAbstract {
     }
 
     private function fetch_post_content($uri, $site_url) {
-        $html = $this->getSimpleHTMLDOM($uri);
+        $html = getSimpleHTMLDOM($uri);
         if(!$html){
             return 'Could not request GBAtemp '.$uri;
         }
@@ -65,8 +65,8 @@ class GBAtempBridge extends BridgeAbstract {
 
     public function collectData(){
 
-        $html = $this->getSimpleHTMLDOM(self::URI)
-            or $this->returnServerError('Could not request GBAtemp.');
+        $html = getSimpleHTMLDOM(self::URI)
+            or returnServerError('Could not request GBAtemp.');
 
         switch($this->getInput('type')){
         case 'N':
@@ -82,7 +82,7 @@ class GBAtempBridge extends BridgeAbstract {
             foreach ($html->find('li.portal_review') as $reviewItem) {
                 $url = self::URI.$reviewItem->find('a', 0)->href;
                 $title = $reviewItem->find('span.review_title', 0)->plaintext;
-                $content = $this->getSimpleHTMLDOM($url) or $this->returnServerError('Could not request GBAtemp: '.$uri);
+                $content = getSimpleHTMLDOM($url) or returnServerError('Could not request GBAtemp: '.$uri);
                 $author = $content->find('a.username', 0)->plaintext;
                 $time = intval($this->ExtractFromDelimiters($content->find('abbr.DateTime', 0)->outertext, 'data-time="', '"'));
                 $intro = '<p><b>'.($content->find('div#review_intro', 0)->plaintext).'</b></p>';

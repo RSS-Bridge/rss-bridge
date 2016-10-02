@@ -42,9 +42,9 @@ class WorldOfTanksBridge extends BridgeAbstract {
     }
 
     public function collectData(){
-      $html = $this->getSimpleHTMLDOM($this->getURI())
-        or $this->returnServerError('Could not request '.$this->getURI());
-        $this->debugMessage("loaded HTML from ".$this->getURI());
+      $html = getSimpleHTMLDOM($this->getURI())
+        or returnServerError('Could not request '.$this->getURI());
+        debugMessage("loaded HTML from ".$this->getURI());
         // customize name
         $this->title = $html->find('title', 0)->innertext;
         foreach($html->find('.b-imgblock_ico') as $infoLink) {
@@ -56,10 +56,10 @@ class WorldOfTanksBridge extends BridgeAbstract {
         $item = array();
         $item['uri'] = self::URI.$infoLink->href;
         // now load that uri from cache
-        $this->debugMessage("loading page ".$item['uri']);
-        $articlePage = $this->getSimpleHTMLDOMCached($item['uri']);
+        debugMessage("loading page ".$item['uri']);
+        $articlePage = getSimpleHTMLDOMCached($item['uri']);
         $content = $articlePage->find('.l-content', 0);
-        HTMLSanitizer::defaultImageSrcTo($content, self::URI);
+        defaultImageSrcTo($content, self::URI);
         $item['title'] = $content->find('h1', 0)->innertext;
         $item['content'] = $content->find('.b-content', 0)->innertext;
         $item['timestamp'] = $content->find('.b-statistic_time', 0)->getAttribute("data-timestamp");

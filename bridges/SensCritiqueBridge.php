@@ -47,8 +47,8 @@ class SensCritiqueBridge extends BridgeAbstract {
           case 'bd': $uri.='bd/actualite'; break;
           case 'mu': $uri.='musique/actualite'; break;
           }
-          $html = $this->getSimpleHTMLDOM($uri)
-            or $this->returnServerError('No results for this query.');
+          $html = getSimpleHTMLDOM($uri)
+            or returnServerError('No results for this query.');
           $list = $html->find('ul.elpr-list', 0);
 
           $this->extractDataFromList($list);
@@ -58,7 +58,7 @@ class SensCritiqueBridge extends BridgeAbstract {
 
 	private function extractDataFromList($list) {
 		if ($list === null) {
-			$this->returnClientError('Cannot extract data from list');
+			returnClientError('Cannot extract data from list');
 		}
 
 		foreach ($list->find('li') as $movie) {

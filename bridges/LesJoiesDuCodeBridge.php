@@ -8,8 +8,8 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
 	const DESCRIPTION = "LesJoiesDuCode";
 
     public function collectData(){
-        $html = $this->getSimpleHTMLDOM(self::URI)
-            or $this->returnServerError('Could not request LesJoiesDuCode.');
+        $html = getSimpleHTMLDOM(self::URI)
+            or returnServerError('Could not request LesJoiesDuCode.');
 
         foreach($html->find('div.blog-post') as $element) {
             $item = array();

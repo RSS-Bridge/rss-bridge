@@ -16,8 +16,8 @@ class AskfmBridge extends BridgeAbstract{
     );
 
     public function collectData(){
-        $html = $this->getSimpleHTMLDOM($this->getURI())
-            or $this->returnServerError('Requested username can\'t be found.');
+        $html = getSimpleHTMLDOM($this->getURI())
+            or returnServerError('Requested username can\'t be found.');
 
         foreach($html->find('div.streamItem-answer') as $element) {
             $item = array();

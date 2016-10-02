@@ -26,13 +26,13 @@ class PinterestBridge extends BridgeAbstract {
 	);
 
 	public function collectData(){
-		$html = $this->getSimpleHTMLDOM($this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 		if(!$html){
 			switch($this->queriedContext){
 			case 'By username and board':
-				$this->returnServerError('Username and/or board not found');
+				returnServerError('Username and/or board not found');
 			case 'From search':
-				$this->returnServerError('Could not request Pinterest.');
+				returnServerError('Could not request Pinterest.');
 			}
 		}
 
@@ -72,7 +72,7 @@ class PinterestBridge extends BridgeAbstract {
 			}
 		} elseif($this->queriedContext === 'By username and board'){
 			$container = $html->find('SCRIPT[type="application/ld+json"]', 0)
-				or $this->returnServerError('Unable to find data container!');
+				or returnServerError('Unable to find data container!');
 
 			$json = json_decode($container->innertext, true);
 

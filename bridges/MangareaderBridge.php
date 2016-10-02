@@ -79,9 +79,9 @@ class MangareaderBridge extends BridgeAbstract {
 
     public function collectData(){
         // We'll use the DOM parser for this as it makes navigation easier
-        $html = $this->getContents($this->getURI());
+        $html = getContents($this->getURI());
         if(!$html){
-            $this->returnClientError('Could not receive data for ' . $path . '!');
+            returnClientError('Could not receive data for ' . $path . '!');
         }
         libxml_use_internal_errors(true);
         $doc = new DomDocument;

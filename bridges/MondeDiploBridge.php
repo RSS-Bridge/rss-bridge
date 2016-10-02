@@ -8,8 +8,8 @@ class MondeDiploBridge extends BridgeAbstract{
 	const DESCRIPTION = "Returns most recent results from MondeDiplo.";
 
 	public function collectData(){
-        $html = $this->getSimpleHTMLDOM(self::URI)
-            or $this->returnServerError('Could not request MondeDiplo. for : ' . self::URI);
+        $html = getSimpleHTMLDOM(self::URI)
+            or returnServerError('Could not request MondeDiplo. for : ' . self::URI);
 
 		foreach($html->find('div.unarticle') as $article) {
 			$element = $article->parent();

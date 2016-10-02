@@ -39,8 +39,8 @@ class AnimeUltimeBridge extends BridgeAbstract {
 
             //Retrive page contents
             $url = self::URI.'history-0-1/'.$requestFilter;
-            $html = $this->getSimpleHTMLDOM($url)
-                or $this->returnServerError('Could not request Anime-Ultime: '.$url);
+            $html = getSimpleHTMLDOM($url)
+                or returnServerError('Could not request Anime-Ultime: '.$url);
 
             //Relases are sorted by day : process each day individually
             foreach ($html->find('div.history', 0)->find('h3') as $daySection) {
@@ -68,8 +68,8 @@ class AnimeUltimeBridge extends BridgeAbstract {
                         if (!empty($item_uri)) {
 
                             //Retrieve description from description page and convert relative image src info absolute image src
-                            $html_item = $this->getContents($item_uri)
-                                or $this->returnServerError('Could not request Anime-Ultime: '.$item_uri);
+                            $html_item = getContents($item_uri)
+                                or returnServerError('Could not request Anime-Ultime: '.$item_uri);
                             $item_description = substr(
                                 $html_item,
                                 strpos($html_item, 'class="principal_contain" align="center">')

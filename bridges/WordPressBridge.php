@@ -23,7 +23,7 @@ class WordPressBridge extends FeedExpander {
 	protected function parseItem($newItem){
 		$item=parent::parseItem($newItem);
 
-		$article_html = $this->getSimpleHTMLDOMCached($item['uri']);
+		$article_html = getSimpleHTMLDOMCached($item['uri']);
 
 		$article=null;
 		switch(true){
@@ -64,7 +64,7 @@ class WordPressBridge extends FeedExpander {
 	public function collectData(){
 		if($this->getInput('url') && substr($this->getInput('url'),0,strlen('http'))!=='http'){
 			// just in case someone find a way to access local files by playing with the url
-			$this->returnClientError('The url parameter must either refer to http or https protocol.');
+			returnClientError('The url parameter must either refer to http or https protocol.');
 		}
 
 		$this->collectExpandableDatas($this->getURI().'/feed/atom/');

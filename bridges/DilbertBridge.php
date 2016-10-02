@@ -9,7 +9,7 @@ class DilbertBridge extends BridgeAbstract {
 
     public function collectData(){
 
-        $html = $this->getSimpleHTMLDOM($this->getURI()) or $this->returnServerError('Could not request Dilbert: '.$this->getURI());
+        $html = getSimpleHTMLDOM($this->getURI()) or returnServerError('Could not request Dilbert: '.$this->getURI());
 
         foreach ($html->find('section.comic-item') as $element) {
 

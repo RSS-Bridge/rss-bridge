@@ -34,8 +34,8 @@ class EZTVBridge extends BridgeAbstract{
         foreach($showList as $showID){
 
             // Get show page
-            $html = $this->getSimpleHTMLDOM(self::URI.'shows/'.rawurlencode($showID).'/')
-                or $this->returnServerError('Could not request EZTV for id "'.$showID.'"');
+            $html = getSimpleHTMLDOM(self::URI.'shows/'.rawurlencode($showID).'/')
+                or returnServerError('Could not request EZTV for id "'.$showID.'"');
 
             // Loop on each element that look like an episode entry...
             foreach($html->find('.forum_header_border') as $element) {

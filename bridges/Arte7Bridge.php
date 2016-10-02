@@ -58,7 +58,7 @@
       }
 
       $url = self::URI.'guide/'.$lang.'/plus7/'.$category;
-      $input = $this->getContents($url) or die('Could not request ARTE.');
+      $input = getContents($url) or die('Could not request ARTE.');
       if(strpos($input, 'categoryVideoSet') !== FALSE){
         $input = explode('categoryVideoSet: ', $input);
         $input = explode('}},', $input[1]);

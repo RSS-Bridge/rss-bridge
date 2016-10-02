@@ -143,11 +143,11 @@ class LeBonCoinBridge extends BridgeAbstract{
             $category='annonces';
         }
 
-        $html = $this->getSimpleHTMLDOM(
+        $html = getSimpleHTMLDOM(
             self::URI.$category.'/offres/' . $this->getInput('r') . '/?'
             .'f=a&th=1&'
             .'q=' . urlencode($this->getInput('k'))
-        ) or $this->returnServerError('Could not request LeBonCoin.');
+        ) or returnServerError('Could not request LeBonCoin.');
 
 		$list = $html->find('.tabsContent', 0);
 		if($list === NULL) {

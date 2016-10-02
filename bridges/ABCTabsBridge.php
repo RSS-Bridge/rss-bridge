@@ -8,7 +8,7 @@ class ABCTabsBridge extends BridgeAbstract{
 
 	public function collectData(){
 		$html = '';
-        $html = $this->getSimpleHTMLDOM(static::URI.'tablatures/nouveautes.html') or $this->returnClientError('No results for this query.');
+        $html = getSimpleHTMLDOM(static::URI.'tablatures/nouveautes.html') or returnClientError('No results for this query.');
 		$table = $html->find('table#myTable', 0)->children(1);
 
 		foreach ($table->find('tr') as $tab)

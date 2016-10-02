@@ -8,8 +8,8 @@ class TheCodingLoveBridge extends BridgeAbstract{
 	const DESCRIPTION = "The Coding Love";
 
     public function collectData(){
-      $html = $this->getSimpleHTMLDOM(self::URI)
-        or $this->returnServerError('Could not request The Coding Love.');
+      $html = getSimpleHTMLDOM(self::URI)
+        or returnServerError('Could not request The Coding Love.');
 
         foreach($html->find('div.post') as $element) {
             $item = array();

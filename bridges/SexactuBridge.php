@@ -11,7 +11,7 @@ class SexactuBridge extends BridgeAbstract{
 $find = array('janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'novembre', 'décembre');
 $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
 
-    $html = $this->getSimpleHTMLDOM($this->getURI()) or $this->returnServerError('Could not request '.$this->getURI());
+    $html = getSimpleHTMLDOM($this->getURI()) or returnServerError('Could not request '.$this->getURI());
 
         foreach($html->find('.content-holder') as $contentHolder) {
             // only use first list as second one only contains pages numbers

@@ -23,8 +23,8 @@ class GiphyBridge extends BridgeAbstract{
 	public function collectData(){
 		$html = '';
         $base_url = 'http://giphy.com';
-        $html = $this->getSimpleHTMLDOM(self::URI.'/search/'.urlencode($this->getInput('s').'/'))
-            or $this->returnServerError('No results for this query.');
+        $html = getSimpleHTMLDOM(self::URI.'/search/'.urlencode($this->getInput('s').'/'))
+            or returnServerError('No results for this query.');
 
         $max = GIPHY_LIMIT;
         if ($this->getInput('n')) {
@@ -38,8 +38,8 @@ class GiphyBridge extends BridgeAbstract{
                 $node = $entry->first_child();
                 $href = $node->getAttribute('href');
 
-                $html2 = $this->getSimpleHTMLDOM(self::URI . $href)
-                    or $this->returnServerError('No results for this query.');
+                $html2 = getSimpleHTMLDOM(self::URI . $href)
+                    or returnServerError('No results for this query.');
                 $figure = $html2->getElementByTagName('figure');
                 $img = $figure->firstChild();
                 $caption = $figure->lastChild();

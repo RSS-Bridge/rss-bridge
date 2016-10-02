@@ -17,8 +17,8 @@ class VineBridge extends BridgeAbstract {
     $html = '';
     $uri = self::URI.'/u/'.$this->getInput('u').'?mode=list';
 
-    $html = $this->getSimpleHTMLDOM($uri)
-      or $this->returnServerError('No results for this query.');
+    $html = getSimpleHTMLDOM($uri)
+      or returnServerError('No results for this query.');
 
 		foreach($html->find('.post') as $element) {
 			$a = $element->find('a', 0);

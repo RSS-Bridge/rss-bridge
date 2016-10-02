@@ -32,8 +32,8 @@ class OpenClassroomsBridge extends BridgeAbstract{
     }
 
     public function collectData(){
-        $html = $this->getSimpleHTMLDOM($this->getURI())
-          or $this->returnServerError('Could not request OpenClassrooms.');
+        $html = getSimpleHTMLDOM($this->getURI())
+          or returnServerError('Could not request OpenClassrooms.');
 
         foreach($html->find('.courseListItem') as $element) {
                 $item = array();

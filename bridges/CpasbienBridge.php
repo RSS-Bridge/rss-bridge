@@ -17,14 +17,14 @@ class CpasbienBridge extends BridgeAbstract {
 
     public function collectData(){
         $request = str_replace(" ","-",trim($this->getInput('q')));
-        $html = $this->getSimpleHTMLDOM(self::URI.'/recherche/'.urlencode($request).'.html')
-            or $this->returnServerError('No results for this query.');
+        $html = getSimpleHTMLDOM(self::URI.'/recherche/'.urlencode($request).'.html')
+            or returnServerError('No results for this query.');
 
         foreach ($html->find('#gauche',0)->find('div') as $episode) {
             if ($episode->getAttribute('class')=='ligne0' ||
                 $episode->getAttribute('class')=='ligne1')
             {
-                $htmlepisode=$this->getSimpleHTMLDOMCached($episode->find('a', 0)->getAttribute('href'));
+                $htmlepisode=getSimpleHTMLDOMCached($episode->find('a', 0)->getAttribute('href'));
 
                 $item = array();
                 $item['author'] = $episode->find('a', 0)->text();

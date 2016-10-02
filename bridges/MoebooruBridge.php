@@ -22,8 +22,8 @@ class MoebooruBridge extends BridgeAbstract{
   }
 
   public function collectData(){
-    $html = $this->getSimpleHTMLDOM($this->getFullURI())
-      or $this->returnServerError('Could not request '.$this->getName());
+    $html = getSimpleHTMLDOM($this->getFullURI())
+      or returnServerError('Could not request '.$this->getName());
 
 
     $input_json = explode('Post.register(', $html);

@@ -18,7 +18,7 @@ class ThePirateBayBridge extends BridgeAbstract{
             'values'=>array(
                 'search'=>'search',
                 'category'=>'cat',
-                'user'=>'usr'                
+                'user'=>'usr'
             )
         ),
         'cat_check'=>array(
@@ -70,7 +70,7 @@ class ThePirateBayBridge extends BridgeAbstract{
 		if ($catBool)
 		{
 			$catNum = $this->getInput('cat');
-		}			
+		}
 		$critList = $this->getInput('crit');
         $keywordsList = explode(";",$this->getInput('q'));
         foreach($keywordsList as $keywords){
@@ -78,33 +78,32 @@ class ThePirateBayBridge extends BridgeAbstract{
 		    case "search":
 				if ($catBool == FALSE)
 				{
-					$html = $this->getSimpleHTMLDOM(self::URI.'search/'.rawurlencode($keywords).'/0/3/0')
-						or $this->returnServerError('Could not request TPB.');
+					$html = getSimpleHTMLDOM(self::URI.'search/'.rawurlencode($keywords).'/0/3/0')
+						or returnServerError('Could not request TPB.');
 				}
 				else
 				{
-					$html = $this->getSimpleHTMLDOM(self::URI.'search/'.rawurlencode($keywords).'/0/3/'.rawurlencode($catNum))
-						or $this->returnServerError('Could not request TPB.');
+					$html = getSimpleHTMLDOM(self::URI.'search/'.rawurlencode($keywords).'/0/3/'.rawurlencode($catNum))
+						or returnServerError('Could not request TPB.');
 				}
 		        break;
 		    case "cat":
-		          $html = $this->getSimpleHTMLDOM(self::URI.'browse/'.rawurlencode($keywords).'/0/3/0')
-            		or $this->returnServerError('Could not request TPB.');
+		          $html = getSimpleHTMLDOM(self::URI.'browse/'.rawurlencode($keywords).'/0/3/0')
+            		or returnServerError('Could not request TPB.');
 		        break;
 		    case "usr":
-		        $html = $this->getSimpleHTMLDOM(self::URI.'user/'.rawurlencode($keywords).'/0/3/0')
-            		or $this->returnServerError('Could not request TPB.');
+		        $html = getSimpleHTMLDOM(self::URI.'user/'.rawurlencode($keywords).'/0/3/0')
+            		or returnServerError('Could not request TPB.');
 		        break;
 		  }
 
-
             if ($html->find('table#searchResult', 0) == FALSE)
-                $this->returnServerError('No result for query '.$keywords);
+                returnServerError('No result for query '.$keywords);
 
 
             foreach($html->find('tr') as $element) {
                 $item = array();
-                $item['uri'] = $element->find('a',3)->href;                
+                $item['uri'] = $element->find('a',3)->href;
                 $item['id'] = self::URI.$element->find('a.detLink',0)->href;
                 $item['timestamp'] = parseDateTimestamp($element);
                 $item['author'] = $element->find('a.detDesc',0)->plaintext;

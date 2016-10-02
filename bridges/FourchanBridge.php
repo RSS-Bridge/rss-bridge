@@ -26,8 +26,8 @@ class FourchanBridge extends BridgeAbstract{
 
   public function collectData(){
 
-    $html = $this->getSimpleHTMLDOM($this->getURI())
-      or $this->returnServerError("Could not request 4chan, thread not found");
+    $html = getSimpleHTMLDOM($this->getURI())
+      or returnServerError("Could not request 4chan, thread not found");
 
 	foreach($html->find('div.postContainer') as $element) {
 		$item = array();

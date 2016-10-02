@@ -136,8 +136,8 @@ class GithubIssueBridge extends BridgeAbstract{
   }
 
   public function collectData(){
-    $html = $this->getSimpleHTMLDOM($this->getURI())
-      or $this->returnServerError('No results for Github Issue '.$this->getURI());
+    $html = getSimpleHTMLDOM($this->getURI())
+      or returnServerError('No results for Github Issue '.$this->getURI());
 
     switch($this->queriedContext){
     case 'Issue comments':
@@ -153,7 +153,7 @@ class GithubIssueBridge extends BridgeAbstract{
 
         if($this->getInput('c')){
           $uri=static::URI.$this->getInput('u').'/'.$this->getInput('p').'/issues/'.$issueNbr;
-          $issue=$this->getSimpleHTMLDOMCached($uri,static::CACHE_TIMEOUT);
+          $issue=getSimpleHTMLDOMCached($uri,static::CACHE_TIMEOUT);
           if($issue){
             $this->items=array_merge($this->items,$this->extractIssueComments($issue));
             continue;

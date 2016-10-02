@@ -34,7 +34,7 @@ class Releases3DSBridge extends BridgeAbstract {
         }
 
         $dataUrl = self::URI.'xml.php';
-        $xml = $this->getContents($dataUrl) or $this->returnServerError('Could not request 3dsdb: '.$dataUrl);
+        $xml = getContents($dataUrl) or returnServerError('Could not request 3dsdb: '.$dataUrl);
         $limit = 0;
 
         foreach (array_reverse(explode('<release>', $xml)) as $element) {
@@ -69,7 +69,7 @@ class Releases3DSBridge extends BridgeAbstract {
             //Retrieve cover art and short desc from IGN?
             $ignResult = false; $ignDescription = ''; $ignLink = ''; $ignDate = time(); $ignCoverArt = '';
             $ignSearchUrl = 'http://www.ign.com/search?q='.urlencode($name);
-            if ($ignResult = $this->getSimpleHTMLDOM($ignSearchUrl)) {
+            if ($ignResult = getSimpleHTMLDOM($ignSearchUrl)) {
                 $ignCoverArt = $ignResult->find('div.search-item-media', 0)->find('img', 0)->src;
                 $ignDesc = $ignResult->find('div.search-item-description', 0)->plaintext;
                 $ignLink = $ignResult->find('div.search-item-sub-title', 0)->find('a', 1)->href;

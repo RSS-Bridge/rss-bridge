@@ -124,8 +124,9 @@ try {
 			$bridge->setCache($cache);
 
 		$noproxy = filter_input(INPUT_GET, '_noproxy', FILTER_VALIDATE_BOOLEAN);
-		if(defined('PROXY_URL') && PROXY_BYBRIDGE && $noproxy)
-			$bridge->useProxy = false;
+		if(defined('PROXY_URL') && PROXY_BYBRIDGE && $noproxy){
+			define('NOPROXY',true);
+		}
 
 		$params = $_GET;
 		unset($params['action']);
@@ -187,11 +188,11 @@ $formats = Format::searchInformation();
 		$bridgeList = Bridge::listBridges();
 		foreach($bridgeList as $bridgeName){
 			if(Bridge::isWhitelisted($whitelist_selection, $bridgeName)){
-				echo HTMLUtils::displayBridgeCard($bridgeName, $formats);
+				echo displayBridgeCard($bridgeName, $formats);
 						$activeFoundBridgeCount++;
 			} elseif($showInactive) {
 				// inactive bridges
-				$inactiveBridges .= HTMLUtils::displayBridgeCard($bridgeName, $formats, false) . PHP_EOL;
+				$inactiveBridges .= displayBridgeCard($bridgeName, $formats, false) . PHP_EOL;
 			}
 		}
 		echo $inactiveBridges;

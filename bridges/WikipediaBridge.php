@@ -90,10 +90,10 @@ class WikipediaBridge extends BridgeAbstract {
 		$fullArticle = $this->getInput('fullarticle');
 
 		// This will automatically send us to the correct main page in any language (try it!)
-		$html = $this->getSimpleHTMLDOM($this->getURI() . '/wiki');
+		$html = getSimpleHTMLDOM($this->getURI() . '/wiki');
 
 		if(!$html)
-			$this->returnServerError('Could not load site: ' . $this->getURI() . '!');
+			returnServerError('Could not load site: ' . $this->getURI() . '!');
 
 		/*
 		* Now read content depending on the language (make sure to create one function per language!)
@@ -103,7 +103,7 @@ class WikipediaBridge extends BridgeAbstract {
 		$function = 'GetContents' . strtoupper($this->getInput('language'));
 
 		if(!method_exists($this, $function))
-			$this->returnServerError('A function to get the contents for your language is missing (\'' . $function . '\')!');
+			returnServerError('A function to get the contents for your language is missing (\'' . $function . '\')!');
 
 		/*
 		* The method takes care of creating all items.
@@ -175,15 +175,15 @@ class WikipediaBridge extends BridgeAbstract {
 	* Loads the full article from a given URI
 	*/
 	private function LoadFullArticle($uri){
-		$content_html = $this->getSimpleHTMLDOMCached($uri);
+		$content_html = getSimpleHTMLDOMCached($uri);
 
 		if(!$content_html)
-			$this->returnServerError('Could not load site: ' . $uri . '!');
+			returnServerError('Could not load site: ' . $uri . '!');
 
 		$content = $content_html->find('#mw-content-text', 0);
 
 		if(!$content)
-			$this->returnServerError('Could not find content in page: ' . $uri . '!');
+			returnServerError('Could not find content in page: ' . $uri . '!');
 
 		// Let's remove a couple of things from the article
 		$table = $content->find('#toc', 0); // Table of contents

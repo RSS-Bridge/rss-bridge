@@ -14,8 +14,8 @@ class InstagramBridge extends BridgeAbstract{
     ));
 
     public function collectData(){
-        $html = $this->getSimpleHTMLDOM($this->getURI())
-            or $this->returnServerError('Could not request Instagram.');
+        $html = getSimpleHTMLDOM($this->getURI())
+            or returnServerError('Could not request Instagram.');
 
         $innertext = null;
 

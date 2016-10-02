@@ -214,7 +214,7 @@ class ZDNetBridge extends BridgeAbstract {
             $baseUri = str_replace('www.', 'downloads.', $baseUri);
         }
         $url = $baseUri.trim($feed, '/').'/rss.xml';
-        $html = $this->getSimpleHTMLDOM($url) or $this->returnServerError('Could not request ZDNet: '.$url);
+        $html = getSimpleHTMLDOM($url) or returnServerError('Could not request ZDNet: '.$url);
         $limit = 0;
 
         foreach ($html->find('item') as $element) {
@@ -224,7 +224,7 @@ class ZDNetBridge extends BridgeAbstract {
                 $article_title = StripCDATA($element->find('title', 0)->plaintext);
                 $article_subtitle = StripCDATA($element->find('description', 0)->plaintext);
                 $article_timestamp = strtotime(StripCDATA($element->find('pubDate', 0)->plaintext));
-                $article = $this->getSimpleHTMLDOM($article_url) or $this->returnServerError('Could not request ZDNet: '.$article_url);
+                $article = getSimpleHTMLDOM($article_url) or returnServerError('Could not request ZDNet: '.$article_url);
 
                 if (!empty($article_author))
                     $author = $article_author;
