@@ -140,7 +140,9 @@ abstract class BridgeAbstract implements BridgeInterface {
 		if(!is_null($this->cache)){
 			$this->cache->prepare($inputs);
 			$time = $this->cache->getTime();
-			if($time !== false && (time() - static::CACHE_TIMEOUT < $time)){
+			if($time !== false
+			&& (time() - static::CACHE_TIMEOUT < $time)
+			&& (!defined('DEBUG') || DEBUG !== true)){
 				$this->items = $this->cache->loadData();
 				return;
 			}
