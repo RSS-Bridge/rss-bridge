@@ -41,7 +41,7 @@ if(file_exists('DEBUG')){
 	if($debug_enabled){
 		ini_set('display_errors', '1');
 		error_reporting(E_ALL);
-		define('DEBUG', 'true');
+		define('DEBUG', true);
 	}
 }
 
