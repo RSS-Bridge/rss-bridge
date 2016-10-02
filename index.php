@@ -175,12 +175,20 @@ $formats = Format::searchInformation();
 </head>
 
 <body>
+	<?php
+		$status = '';
+		if(defined('DEBUG') && DEBUG === true){
+			$status .= 'debug mode active';
+		}
 
+		echo <<<EOD
 	<header>
 		<h1>RSS-Bridge</h1>
 		<h2>·Reconnecting the Web·</h2>
+		<p class="status">{$status}</p>
 	</header>
-	<?php
+EOD;
+
 		$activeFoundBridgeCount = 0;
 		$showInactive = filter_input(INPUT_GET, 'show_inactive', FILTER_VALIDATE_BOOLEAN);
 		$inactiveBridges = '';
