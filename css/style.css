@@ -46,6 +46,12 @@ header > h2 {
 
 }
 
+header > p.status {
+	font-weight: bold;
+	margin: 1em;
+	color: red;
+}
+
 section {
 
 	background-color: #FFFFFF;
