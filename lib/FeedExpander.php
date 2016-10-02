@@ -112,21 +112,21 @@ abstract class FeedExpander extends BridgeAbstract {
 
 	protected function parseATOMItem($feedItem){
 		$item = array();
-		if(isset($feedItem->id)) $item['uri'] = $feedItem->id;
-		if(isset($feedItem->title)) $item['title'] = $feedItem->title;
-		if(isset($feedItem->updated)) $item['timestamp'] = strtotime($feedItem->updated);
-		if(isset($feedItem->author)) $item['author'] = $feedItem->author->name;
-		if(isset($feedItem->content)) $item['content'] = $feedItem->content;
+		if(isset($feedItem->id)) $item['uri'] = (string)$feedItem->id;
+		if(isset($feedItem->title)) $item['title'] = (string)$feedItem->title;
+		if(isset($feedItem->updated)) $item['timestamp'] = strtotime((string)$feedItem->updated);
+		if(isset($feedItem->author)) $item['author'] = (string)$feedItem->author->name;
+		if(isset($feedItem->content)) $item['content'] = (string)$feedItem->content;
 		return $item;
 	}
 
 	protected function parseRSS_0_9_1_Item($feedItem){
 		$item = array();
-		if(isset($feedItem->link)) $item['uri'] = $feedItem->link;
-		if(isset($feedItem->title)) $item['title'] = $feedItem->title;
+		if(isset($feedItem->link)) $item['uri'] = (string)$feedItem->link;
+		if(isset($feedItem->title)) $item['title'] = (string)$feedItem->title;
 		// rss 0.91 doesn't support timestamps
 		// rss 0.91 doesn't support authors
-		if(isset($feedItem->description)) $item['content'] = $feedItem->description;
+		if(isset($feedItem->description)) $item['content'] = (string)$feedItem->description;
 		return $item;
 	}
 
@@ -137,8 +137,8 @@ abstract class FeedExpander extends BridgeAbstract {
 		$namespaces = $feedItem->getNamespaces(true);
 		if(isset($namespaces['dc'])){
 			$dc = $feedItem->children($namespaces['dc']);
-			if(isset($dc->date)) $item['timestamp'] = strtotime($dc->date);
-			if(isset($dc->creator)) $item['author'] = $dc->creator;
+			if(isset($dc->date)) $item['timestamp'] = strtotime((string)$dc->date);
+			if(isset($dc->creator)) $item['author'] = (string)$dc->creator;
 		}
 
 		return $item;
@@ -155,21 +155,21 @@ abstract class FeedExpander extends BridgeAbstract {
 			foreach($feedItem->guid->attributes() as $attribute => $value){
 				if($attribute === 'isPermaLink'
 				&& ($value === 'true' || filter_var($feedItem->guid,FILTER_VALIDATE_URL))){
-					$item['uri'] = $feedItem->guid;
+					$item['uri'] = (string)$feedItem->guid;
 					break;
 				}
 			}
 		}
 
 		if(isset($feedItem->pubDate)){
-			$item['timestamp'] = strtotime($feedItem->pubDate);
+			$item['timestamp'] = strtotime((string)$feedItem->pubDate);
 		} elseif(isset($dc->date)){
-			$item['timestamp'] = strtotime($dc->date);
+			$item['timestamp'] = strtotime((string)$dc->date);
 		}
 		if(isset($feedItem->author)){
-			$item['author'] = $feedItem->author;
+			$item['author'] = (string)$feedItem->author;
 		} elseif(isset($dc->creator)){
-			$item['author'] = $dc->creator;
+			$item['author'] = (string)$dc->creator;
 		}
 		return $item;
 	}
