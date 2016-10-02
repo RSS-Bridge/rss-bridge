@@ -4,8 +4,8 @@ class AllocineFRBridge extends BridgeAbstract{
 
     const MAINTAINER = "superbaillot.net";
     const NAME = "Allo Cine Bridge";
-    const URI = "http://www.allocine.fr";
     const CACHE_TIMEOUT = 25200; // 7h
+    const URI = "http://www.allocine.fr/";
     const DESCRIPTION = "Bridge for allocine.fr";
     const PARAMETERS = array( array(
         'category'=>array(
@@ -25,10 +25,10 @@ class AllocineFRBridge extends BridgeAbstract{
     public function getURI(){
         switch($this->getInput('category')){
         case 'faux-raccord':
-            $uri = static::URI.'video/programme-12284/saison-24580/';
+            $uri = static::URI.'video/programme-12284/saison-27129/';
             break;
         case 'top-5':
-            $uri = static::URI.'video/programme-12299/saison-22542/';
+            $uri = static::URI.'video/programme-12299/saison-29561/';
             break;
         case 'tueurs-en-serie':
             $uri = static::URI.'video/programme-12286/saison-22938/';
