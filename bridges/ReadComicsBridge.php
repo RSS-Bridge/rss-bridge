@@ -18,7 +18,7 @@ class ReadComicsBridge extends BridgeAbstract{
 
         function parseDateTimestamp($element){
             $guessedDate = $element->find('span',0)->plaintext;
-            $guessedDate = strptime($guessedDate, '%d/%m/%Y');
+            $guessedDate = strptime($guessedDate, '%m/%d/%Y');
             $timestamp   = mktime(0, 0, 0, $guessedDate['tm_mon'] + 1, $guessedDate['tm_mday'], date('Y'));
             
             return $timestamp;
