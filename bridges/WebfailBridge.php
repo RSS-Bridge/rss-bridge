@@ -123,7 +123,7 @@ class WebfailBridge extends BridgeAbstract {
 
 	private function fixTitle($title){
 		// This fixes titles that include umlauts (in German language)
-		return html_entity_decode($title, ENT_COMPAT | ENT_HTML401, 'UTF-8');
+		return html_entity_decode($title, ENT_QUOTES | ENT_HTML401, 'UTF-8');
 	}
 
 	private function getVideoId($onclick){
