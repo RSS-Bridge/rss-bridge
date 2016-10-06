@@ -64,7 +64,7 @@ class WebfailBridge extends BridgeAbstract {
 		$news = $html->find('#main', 0)->find('a.wf-list-news');
 		foreach($news as $element){
 			$item = array();
-			$item['title'] = $element->find('div.wf-news-title', 0)->innertext;
+			$item['title'] = $this->fixTitle($element->find('div.wf-news-title', 0)->innertext);
 			$item['uri'] = $this->getURI() . $element->href;
 
 			$img = $element->find('img.wf-image', 0)->src;
@@ -97,7 +97,7 @@ class WebfailBridge extends BridgeAbstract {
 		$articles = $html->find('article');
 		foreach($articles as $article){
 			$item = array();
-			$item['title'] = $article->find('a', 1)->innertext;
+			$item['title'] = $this->fixTitle($article->find('a', 1)->innertext);
 
 			// Webfail shares videos or images
 			if(!is_null($article->find('img.wf-image', 0))){ // Image type
@@ -119,6 +119,11 @@ class WebfailBridge extends BridgeAbstract {
 
 			$this->items[] = $item;
 		}
+	}
+
+	private function fixTitle($title){
+		// This fixes titles that include umlauts (in German language)
+		return html_entity_decode($title, ENT_QUOTES | ENT_HTML401, 'UTF-8');
 	}
 
 	private function getVideoId($onclick){
