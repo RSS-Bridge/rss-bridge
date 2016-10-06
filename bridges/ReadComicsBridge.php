@@ -27,7 +27,7 @@ class ReadComicsBridge extends BridgeAbstract{
         $keywordsList = explode(";",$this->getInput('q'));
         foreach($keywordsList as $keywords){
 			$html = $this->getSimpleHTMLDOM(self::URI.'comic/'.rawurlencode($keywords))
-						or $this->returnServerError('Could not request RCO.');
+						or $this->returnServerError('Could not request readcomics.tv.');
 
             foreach($html->find('li') as $element) {
                 $item = array();
