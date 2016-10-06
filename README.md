@@ -107,6 +107,7 @@ Patch/contributors :
  * [kraoc](https://github.com/kraoc)
  * [lagaisse](https://github.com/lagaisse)
  * [az5he6ch](https://github.com/az5he6ch)
+ * [niawag](https://github.com/niawag)
 
 Licenses
 ===
