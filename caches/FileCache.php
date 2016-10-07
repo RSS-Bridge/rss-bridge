@@ -36,7 +36,7 @@ class FileCache extends CacheAbstract {
 
 	public function purgeCache(){
 		$cacheTimeLimit = time() - 86400; // 86400 -> 24h
-		$cachePath = 'cache';
+		$cachePath = $this->getCachePath();
 		if(file_exists($cachePath)){
 			$cacheIterator = new RecursiveIteratorIterator(
 			new RecursiveDirectoryIterator($cachePath),
