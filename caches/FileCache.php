@@ -73,10 +73,9 @@ class FileCache extends CacheAbstract {
 	protected function getCachePath(){
 		$cacheDir = __DIR__ . '/../cache/'; // FIXME : configuration ?
 
-		// FIXME : implement recursive dir creation
 		if(!is_dir($cacheDir)){
-			mkdir($cacheDir,0755);
-			chmod($cacheDir,0755);
+			mkdir($cacheDir, 0755, true);
+			chmod($cacheDir, 0755);
 		}
 
 		return $cacheDir;
