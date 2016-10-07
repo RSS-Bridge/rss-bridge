@@ -34,6 +34,26 @@ class FileCache extends CacheAbstract {
 		return false;
 	}
 
+	public function purgeCache(){
+		$cacheTimeLimit = time() - 86400; // 86400 -> 24h
+		$cachePath = 'cache';
+		if(file_exists($cachePath)){
+			$cacheIterator = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator($cachePath),
+			RecursiveIteratorIterator::CHILD_FIRST
+			);
+
+			foreach($cacheIterator as $cacheFile){
+				if(in_array($cacheFile->getBasename(), array('.', '..')))
+					continue;
+				elseif($cacheFile->isFile()){
+					if(filemtime($cacheFile->getPathname()) < $cacheTimeLimit)
+						unlink($cacheFile->getPathname());
+				}
+			}
+		}
+	}
+
 	/**
 	* Cache is prepared ?
 	* Note : Cache name is based on request information, then cache must be prepare before use

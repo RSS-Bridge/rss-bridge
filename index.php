@@ -84,8 +84,6 @@ if(!file_exists($whitelist_file)){
 	$whitelist_selection = explode("\n", file_get_contents($whitelist_file));
 }
 
-Cache::purge();
-
 try {
 
 	Bridge::setDir(__DIR__ . '/bridges/');
@@ -120,6 +118,8 @@ try {
 		$bridge = Bridge::create($bridge);
 
 		$cache = Cache::create('FileCache');
+		$cache->purgeCache();
+
 		$bridge->setCache($cache);
 
 		$noproxy = filter_input(INPUT_GET, '_noproxy', FILTER_VALIDATE_BOOLEAN);
