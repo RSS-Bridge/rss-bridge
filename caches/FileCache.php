@@ -75,8 +75,8 @@ class FileCache extends CacheAbstract {
 
 		// FIXME : implement recursive dir creation
 		if(!is_dir($cacheDir)){
-			mkdir($cacheDir,0705);
-			chmod($cacheDir,0705);
+			mkdir($cacheDir,0755);
+			chmod($cacheDir,0755);
 		}
 
 		return $cacheDir;
