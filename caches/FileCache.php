@@ -3,7 +3,6 @@
 * Cache with file system
 */
 class FileCache extends CacheAbstract {
-	protected $cacheDirCreated; // boolean to avoid always chck dir cache existance
 
 	public function loadData(){
 		$this->isPrepareCache();
@@ -75,9 +74,7 @@ class FileCache extends CacheAbstract {
 		$cacheDir = __DIR__ . '/../cache/'; // FIXME : configuration ?
 
 		// FIXME : implement recursive dir creation
-		if(is_null($this->cacheDirCreated) && !is_dir($cacheDir)){
-			$this->cacheDirCreated = true;
-
+		if(!is_dir($cacheDir)){
 			mkdir($cacheDir,0705);
 			chmod($cacheDir,0705);
 		}
