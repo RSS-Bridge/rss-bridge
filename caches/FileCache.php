@@ -7,14 +7,11 @@ class FileCache implements CacheInterface {
 	protected $param;
 
 	public function loadData(){
-		$this->isPrepareCache();
 		$datas = unserialize(file_get_contents($this->getCacheFile()));
 		return $datas;
 	}
 
 	public function saveData($datas){
-		$this->isPrepareCache();
-
 		$writeStream = file_put_contents($this->getCacheFile(), serialize($datas));
 
 		if(!$writeStream) {
@@ -25,8 +22,6 @@ class FileCache implements CacheInterface {
 	}
 
 	public function getTime(){
-		$this->isPrepareCache();
-
 		$cacheFile = $this->getCacheFile();
 		if(file_exists($cacheFile)){
 			return filemtime($cacheFile);
@@ -66,19 +61,6 @@ class FileCache implements CacheInterface {
 	}
 
 	/**
-	* Cache is prepared ?
-	* Note : Cache name is based on request information, then cache must be prepare before use
-	* @return \Exception|true
-	*/
-	protected function isPrepareCache(){
-		if(is_null($this->param)){
-			throw new \Exception('Please feed "setParameters" method before try to load');
-		}
-
-		return true;
-	}
-
-	/**
 	* Return cache path (and create if not exist)
 	* @return string Cache path
 	*/
@@ -106,7 +88,10 @@ class FileCache implements CacheInterface {
 	* return string
 	*/
 	protected function getCacheName(){
-		$this->isPrepareCache();
+		if(is_null($this->param)){
+			throw new \Exception('Call "setParameters" first!');
+		}
+
 		return hash('sha1', http_build_query($this->param)) . '.cache';
 	}
 }
