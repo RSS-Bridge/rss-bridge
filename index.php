@@ -130,6 +130,7 @@ try {
 
 		// Initialize cache
 		$cache = Cache::create('FileCache');
+		$cache->setPath(__DIR__ . '/cache');
 		$cache->purgeCache();
 		$cache->setParameters($params);
 

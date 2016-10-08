@@ -4,6 +4,7 @@
 */
 class FileCache implements CacheInterface {
 
+	protected $path;
 	protected $param;
 
 	public function loadData(){
@@ -32,7 +33,7 @@ class FileCache implements CacheInterface {
 
 	public function purgeCache(){
 		$cacheTimeLimit = time() - 86400; // 86400 -> 24h
-		$cachePath = $this->getCachePath();
+		$cachePath = $this->getPath();
 		if(file_exists($cachePath)){
 			$cacheIterator = new RecursiveIteratorIterator(
 			new RecursiveDirectoryIterator($cachePath),
@@ -51,6 +52,28 @@ class FileCache implements CacheInterface {
 	}
 
 	/**
+	* Set cache path
+	* @return self
+	*/
+	public function setPath($path){
+		if(is_null($path) || !is_string($path)){
+			throw new \Exception('The given path is invalid!');
+		}
+
+		$this->path = $path;
+
+		// Make sure path ends with '/' or '\'
+		$lastchar = substr($this->path, -1, 1);
+		if($lastchar !== '/' && $lastchar !== '\\')
+			$this->path .= '/';
+
+		if(!is_dir($this->path))
+			mkdir($this->path, 0755, true);
+
+		return $this;
+	}
+
+	/**
 	* Set HTTP GET parameters
 	* @return self
 	*/
@@ -64,15 +87,12 @@ class FileCache implements CacheInterface {
 	* Return cache path (and create if not exist)
 	* @return string Cache path
 	*/
-	protected function getCachePath(){
-		$cacheDir = __DIR__ . '/../cache/'; // FIXME : configuration ?
-
-		if(!is_dir($cacheDir)){
-			mkdir($cacheDir, 0755, true);
-			chmod($cacheDir, 0755);
+	protected function getPath(){
+		if(is_null($this->path)){
+			throw new \Exception('Call "setPath" first!');
 		}
 
-		return $cacheDir;
+		return $this->path;
 	}
 
 	/**
@@ -80,7 +100,7 @@ class FileCache implements CacheInterface {
 	* @return string Path to the file cache
 	*/
 	protected function getCacheFile(){
-		return $this->getCachePath() . $this->getCacheName();
+		return $this->getPath() . $this->getCacheName();
 	}
 
 	/**
