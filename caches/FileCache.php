@@ -107,9 +107,6 @@ class FileCache implements CacheInterface {
 	*/
 	protected function getCacheName(){
 		$this->isPrepareCache();
-
-		$stringToEncode = $_SERVER['REQUEST_URI'] . http_build_query($this->param);
-		$stringToEncode = preg_replace('/(\?|&)format=[^&]*/i', '$1', $stringToEncode);
-		return hash('sha1', $stringToEncode) . '.cache';
+		return hash('sha1', http_build_query($this->param)) . '.cache';
 	}
 }
