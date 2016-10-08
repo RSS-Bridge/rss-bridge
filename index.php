@@ -19,6 +19,9 @@ define('PROXY_NAME', 'Hidden Proxy Name');
 date_default_timezone_set('UTC');
 error_reporting(0);
 
+// Specify directory for cached files (using FileCache)
+define('CACHE_DIR', __DIR__ . '/cache');
+
 /*
   Create a file named 'DEBUG' for enabling debug mode.
   For further security, you may put whitelisted IP addresses
@@ -130,7 +133,7 @@ try {
 
 		// Initialize cache
 		$cache = Cache::create('FileCache');
-		$cache->setPath(__DIR__ . '/cache');
+		$cache->setPath(CACHE_DIR);
 		$cache->purgeCache(86400); // 24 hours
 		$cache->setParameters($params);
 
