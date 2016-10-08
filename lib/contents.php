@@ -103,30 +103,24 @@ function getSimpleHTMLDOMCached($url
 ){
 	debugMessage('Caching url ' . $url . ', duration ' . $duration);
 
-	$filepath = __DIR__ . '/../cache/pages/' . sha1($url) . '.cache';
-	debugMessage('Cache file ' . $filepath);
+	// Initialize cache
+	$cache = Cache::create('FileCache');
+	$cache->setPath(CACHE_DIR . '/pages');
+	$cache->purgeCache(86400); // 24 hours (forced)
 
-	if(file_exists($filepath) && filectime($filepath) < time() - $duration){
-		unlink ($filepath);
-		debugMessage('Cached file deleted: ' . $filepath);
-	}
+	$params = [$url];
+	$cache->setParameters($params);
 
-	if(file_exists($filepath)){
-		debugMessage('Loading cached file ' . $filepath);
-		touch($filepath);
-		$content = file_get_contents($filepath);
-	} else {
-		debugMessage('Caching ' . $url . ' to ' . $filepath);
-		$dir = substr($filepath, 0, strrpos($filepath, '/'));
-
-		if(!is_dir($dir)){
-			debugMessage('Creating directory ' . $dir);
-			mkdir($dir, 0777, true);
-		}
-
+	// Determine if cached file is within duration
+	$time = $cache->getTime();
+	if($time !== false
+	&& (time() - $duration < $time)
+	&& (!defined('DEBUG') || DEBUG !== true)){ // Contents within duration
+		$content = $cache->loadData();
+	} else { // Content not within duration
 		$content = getContents($url, $use_include_path, $context, $offset, $maxLen);
 		if($content !== false){
-			file_put_contents($filepath, $content);
+			$cache->saveData($content);
 		}
 	}
 
