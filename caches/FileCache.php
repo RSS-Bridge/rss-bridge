@@ -55,7 +55,11 @@ class FileCache implements CacheInterface {
 		}
 	}
 
-	public function prepare(array $param){
+	/**
+	* Set HTTP GET parameters
+	* @return self
+	*/
+	public function setParameters(array $param){
 		$this->param = $param;
 
 		return $this;
@@ -68,7 +72,7 @@ class FileCache implements CacheInterface {
 	*/
 	protected function isPrepareCache(){
 		if(is_null($this->param)){
-			throw new \Exception('Please feed "prepare" method before try to load');
+			throw new \Exception('Please feed "setParameters" method before try to load');
 		}
 
 		return true;

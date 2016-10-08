@@ -138,7 +138,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	*/
 	public function setDatas(array $inputs){
 		if(!is_null($this->cache)){
-			$this->cache->prepare($inputs);
+			$this->cache->setParameters($inputs);
 			$time = $this->cache->getTime();
 			if($time !== false
 			&& (time() - static::CACHE_TIMEOUT < $time)
