@@ -2,7 +2,9 @@
 /**
 * Cache with file system
 */
-class FileCache extends CacheAbstract {
+class FileCache implements CacheInterface {
+
+	protected $param;
 
 	public function loadData(){
 		$this->isPrepareCache();
@@ -51,6 +53,12 @@ class FileCache extends CacheAbstract {
 				}
 			}
 		}
+	}
+
+	public function prepare(array $param){
+		$this->param = $param;
+
+		return $this;
 	}
 
 	/**

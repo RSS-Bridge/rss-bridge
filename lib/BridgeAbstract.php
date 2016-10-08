@@ -196,7 +196,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 		return static::URI;
 	}
 
-	public function setCache(\CacheAbstract $cache){
+	public function setCache(\CacheInterface $cache){
 		$this->cache = $cache;
 	}
 }
