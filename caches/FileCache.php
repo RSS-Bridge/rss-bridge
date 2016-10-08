@@ -31,8 +31,7 @@ class FileCache implements CacheInterface {
 		return false;
 	}
 
-	public function purgeCache(){
-		$cacheTimeLimit = time() - 86400; // 86400 -> 24h
+	public function purgeCache($duration){
 		$cachePath = $this->getPath();
 		if(file_exists($cachePath)){
 			$cacheIterator = new RecursiveIteratorIterator(
@@ -44,7 +43,7 @@ class FileCache implements CacheInterface {
 				if(in_array($cacheFile->getBasename(), array('.', '..')))
 					continue;
 				elseif($cacheFile->isFile()){
-					if(filemtime($cacheFile->getPathname()) < $cacheTimeLimit)
+					if(filemtime($cacheFile->getPathname()) < time() - $duration)
 						unlink($cacheFile->getPathname());
 				}
 			}

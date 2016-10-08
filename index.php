@@ -131,7 +131,7 @@ try {
 		// Initialize cache
 		$cache = Cache::create('FileCache');
 		$cache->setPath(__DIR__ . '/cache');
-		$cache->purgeCache();
+		$cache->purgeCache(86400); // 24 hours
 		$cache->setParameters($params);
 
 		// Load cache & data
