@@ -117,11 +117,6 @@ try {
 		// Data retrieval
 		$bridge = Bridge::create($bridge);
 
-		$cache = Cache::create('FileCache');
-		$cache->purgeCache();
-
-		$bridge->setCache($cache);
-
 		$noproxy = filter_input(INPUT_GET, '_noproxy', FILTER_VALIDATE_BOOLEAN);
 		if(defined('PROXY_URL') && PROXY_BYBRIDGE && $noproxy){
 			define('NOPROXY',true);
@@ -132,6 +127,14 @@ try {
 		unset($params['bridge']);
 		unset($params['format']);
 		unset($params['_noproxy']);
+
+		// Initialize cache
+		$cache = Cache::create('FileCache');
+		$cache->purgeCache();
+		$cache->setParameters($params);
+
+		// Load cache & data
+		$bridge->setCache($cache);
 		$bridge->setDatas($params);
 
 		// Data transformation
