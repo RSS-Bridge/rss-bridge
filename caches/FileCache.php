@@ -2,20 +2,17 @@
 /**
 * Cache with file system
 */
-class FileCache extends CacheAbstract {
-	protected $cacheDirCreated; // boolean to avoid always chck dir cache existance
+class FileCache implements CacheInterface {
+
+	protected $path;
+	protected $param;
 
 	public function loadData(){
-		$this->isPrepareCache();
 		$datas = unserialize(file_get_contents($this->getCacheFile()));
 		return $datas;
 	}
 
 	public function saveData($datas){
-		$this->isPrepareCache();
-
-		//Re-encode datas to UTF-8
-		//$datas = Cache::utf8_encode_deep($datas);
 		$writeStream = file_put_contents($this->getCacheFile(), serialize($datas));
 
 		if(!$writeStream) {
@@ -26,8 +23,6 @@ class FileCache extends CacheAbstract {
 	}
 
 	public function getTime(){
-		$this->isPrepareCache();
-
 		$cacheFile = $this->getCacheFile();
 		if(file_exists($cacheFile)){
 			return filemtime($cacheFile);
@@ -36,35 +31,67 @@ class FileCache extends CacheAbstract {
 		return false;
 	}
 
+	public function purgeCache($duration){
+		$cachePath = $this->getPath();
+		if(file_exists($cachePath)){
+			$cacheIterator = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator($cachePath),
+			RecursiveIteratorIterator::CHILD_FIRST
+			);
+
+			foreach($cacheIterator as $cacheFile){
+				if(in_array($cacheFile->getBasename(), array('.', '..')))
+					continue;
+				elseif($cacheFile->isFile()){
+					if(filemtime($cacheFile->getPathname()) < time() - $duration)
+						unlink($cacheFile->getPathname());
+				}
+			}
+		}
+	}
+
 	/**
-	* Cache is prepared ?
-	* Note : Cache name is based on request information, then cache must be prepare before use
-	* @return \Exception|true
+	* Set cache path
+	* @return self
 	*/
-	protected function isPrepareCache(){
-		if(is_null($this->param)){
-			throw new \Exception('Please feed "prepare" method before try to load');
+	public function setPath($path){
+		if(is_null($path) || !is_string($path)){
+			throw new \Exception('The given path is invalid!');
 		}
 
-		return true;
+		$this->path = $path;
+
+		// Make sure path ends with '/' or '\'
+		$lastchar = substr($this->path, -1, 1);
+		if($lastchar !== '/' && $lastchar !== '\\')
+			$this->path .= '/';
+
+		if(!is_dir($this->path))
+			mkdir($this->path, 0755, true);
+
+		return $this;
+	}
+
+	/**
+	* Set HTTP GET parameters
+	* @return self
+	*/
+	public function setParameters(array $param){
+		$this->param = array_map('strtolower', $param);
+
+		return $this;
 	}
 
 	/**
 	* Return cache path (and create if not exist)
 	* @return string Cache path
 	*/
-	protected function getCachePath(){
-		$cacheDir = __DIR__ . '/../cache/'; // FIXME : configuration ?
-
-		// FIXME : implement recursive dir creation
-		if(is_null($this->cacheDirCreated) && !is_dir($cacheDir)){
-			$this->cacheDirCreated = true;
-
-			mkdir($cacheDir,0705);
-			chmod($cacheDir,0705);
+	protected function getPath(){
+		if(is_null($this->path)){
+			throw new \Exception('Call "setPath" first!');
 		}
 
-		return $cacheDir;
+		return $this->path;
 	}
 
 	/**
@@ -72,7 +99,7 @@ class FileCache extends CacheAbstract {
 	* @return string Path to the file cache
 	*/
 	protected function getCacheFile(){
-		return $this->getCachePath() . $this->getCacheName();
+		return $this->getPath() . $this->getCacheName();
 	}
 
 	/**
@@ -80,10 +107,10 @@ class FileCache extends CacheAbstract {
 	* return string
 	*/
 	protected function getCacheName(){
-		$this->isPrepareCache();
+		if(is_null($this->param)){
+			throw new \Exception('Call "setParameters" first!');
+		}
 
-		$stringToEncode = $_SERVER['REQUEST_URI'] . http_build_query($this->param);
-		$stringToEncode = preg_replace('/(\?|&)format=[^&]*/i', '$1', $stringToEncode);
-		return hash('sha1', $stringToEncode) . '.cache';
+		return hash('sha1', http_build_query($this->param)) . '.cache';
 	}
 }

@@ -50,45 +50,4 @@ class Cache {
 	static public function isValidNameCache($nameCache){
 		return preg_match('@^[A-Z][a-zA-Z0-9-]*$@', $nameCache);
 	}
-
-
-	static public function utf8_encode_deep(&$input){
-		if (is_string($input)){
-			$input = utf8_encode($input);
-		} elseif(is_array($input)){
-			foreach($input as &$value){
-				Cache::utf8_encode_deep($value);
-			}
-
-			unset($value);
-		} elseif(is_object($input)){
-			$vars = array_keys(get_object_vars($input));
-
-			foreach($vars as $var){
-				Cache::utf8_encode_deep($input->$var);
-			}
-		}
-	}
-
-
-	static public function purge(){
-		$cacheTimeLimit = time() - 86400; // 86400 -> 24h
-		$cachePath = 'cache';
-		if(file_exists($cachePath)){
-			$cacheIterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator($cachePath),
-			RecursiveIteratorIterator::CHILD_FIRST
-			);
-
-			foreach($cacheIterator as $cacheFile){
-				if(in_array($cacheFile->getBasename(), array('.', '..')))
-					continue;
-				elseif($cacheFile->isFile()){
-					if(filemtime($cacheFile->getPathname()) < $cacheTimeLimit)
-						unlink($cacheFile->getPathname());
-				}
-			}
-		}
-	}
-
 }

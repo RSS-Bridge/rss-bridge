@@ -19,6 +19,9 @@ define('PROXY_NAME', 'Hidden Proxy Name');
 date_default_timezone_set('UTC');
 error_reporting(0);
 
+// Specify directory for cached files (using FileCache)
+define('CACHE_DIR', __DIR__ . '/cache');
+
 /*
   Create a file named 'DEBUG' for enabling debug mode.
   For further security, you may put whitelisted IP addresses
@@ -84,8 +87,6 @@ if(!file_exists($whitelist_file)){
 	$whitelist_selection = explode("\n", file_get_contents($whitelist_file));
 }
 
-Cache::purge();
-
 try {
 
 	Bridge::setDir(__DIR__ . '/bridges/');
@@ -119,9 +120,6 @@ try {
 		// Data retrieval
 		$bridge = Bridge::create($bridge);
 
-		$cache = Cache::create('FileCache');
-		$bridge->setCache($cache);
-
 		$noproxy = filter_input(INPUT_GET, '_noproxy', FILTER_VALIDATE_BOOLEAN);
 		if(defined('PROXY_URL') && PROXY_BYBRIDGE && $noproxy){
 			define('NOPROXY',true);
@@ -132,6 +130,15 @@ try {
 		unset($params['bridge']);
 		unset($params['format']);
 		unset($params['_noproxy']);
+
+		// Initialize cache
+		$cache = Cache::create('FileCache');
+		$cache->setPath(CACHE_DIR);
+		$cache->purgeCache(86400); // 24 hours
+		$cache->setParameters($params);
+
+		// Load cache & data
+		$bridge->setCache($cache);
 		$bridge->setDatas($params);
 
 		// Data transformation
