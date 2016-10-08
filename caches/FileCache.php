@@ -55,7 +55,7 @@ class FileCache implements CacheInterface {
 	* @return self
 	*/
 	public function setParameters(array $param){
-		$this->param = $param;
+		$this->param = array_map('strtolower', $param);
 
 		return $this;
 	}
