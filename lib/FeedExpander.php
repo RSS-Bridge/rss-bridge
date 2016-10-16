@@ -4,7 +4,6 @@ abstract class FeedExpander extends BridgeAbstract {
 
 	private $name;
 	private $uri;
-	private $description;
 	private $feedType;
 
 	public function collectExpandableDatas($url, $maxItems = -1){
@@ -85,7 +84,6 @@ abstract class FeedExpander extends BridgeAbstract {
 	protected function load_RSS_2_0_feed_data($rssContent){
 		$this->name = trim($rssContent->title);
 		$this->uri = trim($rssContent->link);
-		$this->description = trim($rssContent->description);
 	}
 
 	protected function load_ATOM_feed_data($content){
@@ -105,9 +103,6 @@ abstract class FeedExpander extends BridgeAbstract {
 				}
 			}
 		}
-
-		if(isset($content->subtitle))
-			$this->description = $content->subtitle;
 	}
 
 	protected function parseATOMItem($feedItem){
@@ -200,9 +195,5 @@ abstract class FeedExpander extends BridgeAbstract {
 
 	public function getName(){
 		return $this->name;
-	}
-
-	public function getDescription(){
-		return $this->description;
 	}
 }
