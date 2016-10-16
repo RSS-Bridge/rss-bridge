@@ -8,12 +8,11 @@ class FileCache implements CacheInterface {
 	protected $param;
 
 	public function loadData(){
-		$datas = unserialize(file_get_contents($this->getCacheFile()));
-		return $datas;
+		return json_decode(file_get_contents($this->getCacheFile()), true);
 	}
 
 	public function saveData($datas){
-		$writeStream = file_put_contents($this->getCacheFile(), serialize($datas));
+		$writeStream = file_put_contents($this->getCacheFile(), json_encode($datas, JSON_PRETTY_PRINT));
 
 		if(!$writeStream) {
 			throw new \Exception("Cannot write the cache... Do you have the right permissions ?");
@@ -111,6 +110,6 @@ class FileCache implements CacheInterface {
 			throw new \Exception('Call "setParameters" first!');
 		}
 
-		return hash('sha1', http_build_query($this->param)) . '.cache';
+		return hash('md5', http_build_query($this->param)) . '.cache';
 	}
 }
