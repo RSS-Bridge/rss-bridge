@@ -125,13 +125,14 @@ try {
 			define('NOPROXY',true);
 		}
 
+		$params = $_GET;
+		
 		// Initialize cache
 		$cache = Cache::create('FileCache');
 		$cache->setPath(CACHE_DIR);
 		$cache->purgeCache(86400); // 24 hours
 		$cache->setParameters($params);
 
-		$params = $_GET;
 		unset($params['action']);
 		unset($params['bridge']);
 		unset($params['format']);
