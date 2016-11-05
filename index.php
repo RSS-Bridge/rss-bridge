@@ -10,6 +10,9 @@ TODO :
 - implement header('X-Cached-Version: '.date(DATE_ATOM, filemtime($cachefile)));
 */
 
+// Defines the minimum required PHP version for RSS-Bridge
+define('PHP_VERSION_REQUIRED', '5.6.0');
+
 //define('PROXY_URL', 'tcp://192.168.0.0:28');
 // Set to true if you allow users to disable proxy usage for specific bridges
 define('PROXY_BYBRIDGE', false);
@@ -50,9 +53,20 @@ if(file_exists('DEBUG')){
 
 require_once __DIR__ . '/lib/RssBridge.php';
 
+// Check PHP version
+if(version_compare(PHP_VERSION, PHP_VERSION_REQUIRED) === -1)
+	die('RSS-Bridge requires at least PHP version ' . PHP_VERSION_REQUIRED . '!');
+
 // extensions check
 if(!extension_loaded('openssl'))
 	die('"openssl" extension not loaded. Please check "php.ini"');
+
+if(!extension_loaded('libxml'))
+	die('"libxml" extension not loaded. Please check "php.ini"');
+
+// configuration checks
+if(ini_get('allow_url_fopen') !== "1")
+	die('"allow_url_fopen" is not set to "1". Please check "php.ini');
 
 // FIXME : beta test UA spoofing, please report any blacklisting by PHP-fopen-unfriendly websites
 ini_set('user_agent', 'Mozilla/5.0(X11; Linux x86_64; rv:30.0)
@@ -126,7 +140,7 @@ try {
 		}
 
 		$params = $_GET;
-		
+
 		// Initialize cache
 		$cache = Cache::create('FileCache');
 		$cache->setPath(CACHE_DIR);
