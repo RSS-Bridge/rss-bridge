@@ -1,4 +1,4 @@
-    <?php
+<?php
     class Arte7Bridge extends BridgeAbstract{
 
         const MAINTAINER = "mitsukarenai";
