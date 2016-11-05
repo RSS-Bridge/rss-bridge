@@ -60,15 +60,16 @@
       $url = self::URI.'guide/'.$lang.'/plus7/'.$category;
       $input = getContents($url) or die('Could not request ARTE.');
       if(strpos($input, 'categoryVideoSet') !== FALSE){
-        $input = explode('categoryVideoSet: ', $input);
-        $input = explode('}},', $input[1]);
+        $input = explode('categoryVideoSet="', $input);
+        $input = explode('}}', $input[1]);
         $input = $input[0].'}}';
       }else{
-        $input = explode('videoSet: ', $input);
-        $input = explode('}]},', $input[1]);
+        $input = explode('videoSet="', $input);
+        $input = explode('}]}', $input[1]);
         $input = $input[0].'}]}';
       }
-      $input_json = json_decode($input, TRUE);
+
+      $input_json = json_decode(html_entity_decode($input, ENT_QUOTES), TRUE);
 
       foreach($input_json['videos'] as $element) {
             $item = array();
