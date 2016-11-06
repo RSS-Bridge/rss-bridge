@@ -110,6 +110,7 @@ Patch/contributors :
  * [az5he6ch](https://github.com/az5he6ch)
  * [niawag](https://github.com/niawag)
  * [JeremyRand](https://github.com/JeremyRand)
+ * [mro](https://github.com/mro)
 
 Licenses
 ===
