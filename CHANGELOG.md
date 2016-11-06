@@ -7,13 +7,14 @@ Alpha 0.1
 * Includes refactoring.
 * Unstable.
 
-Alpha 0.2 (current development version)
+Alpha 0.2
 ===
 
 ## Important changes
 * RSS-Bridge has been [UNLICENSED](UNLICENSE)
 * RSS-Bridge is now a community-managed project on [GitHub](https://github.com/rss-bridge/rss-bridge)
 * RSS-Bridge now has a [Wiki](https://github.com/rss-bridge/rss-bridge/wiki)
+* RSS-Bridge now supports [Travis-CI](https://travis-ci.org)
 
 ## General changes
 * Added [CHANGELOG](CHANGELOG.md) (this file)
@@ -21,19 +22,20 @@ Alpha 0.2 (current development version)
 * Added cache purging function (cache will be force-purged after 24 hours or as defined by bridge)
 * Added new format [MrssFormat](formats/MrssFormat.php)
 * Added parameter `author` - for display of the feed author name - to all formats
-* Added new abstractions of the BridgeInterface:
-  - [HttpCachingBridgeAbstract](https://github.com/RSS-Bridge/rss-bridge/wiki/Bridge-API)
-  - [RssExpander](https://github.com/RSS-Bridge/rss-bridge/wiki/Bridge-API)
+* Added new abstraction of the BridgeInterface:
+  - [FeedExpander](https://github.com/RSS-Bridge/rss-bridge/wiki/Bridge-API)
 * Added optional support for proxy usage on each individual bridge
 * Added support for [custom bridge parameter](https://github.com/RSS-Bridge/rss-bridge/wiki/BridgeAbstract#format-specifications) (text, number, list, checkbox)
 * Changed design of the welcome screen
 * Changed design of HtmlFormat
 * Changed behavior of debug mode:
   - Enable debug mode by placing a file called "DEBUG" in the root folder
-  - Debug mode automatically disables caching
+  - Debug mode automatically disables cache file loading
 * Changed implementation of bridges - see [Wiki](https://github.com/rss-bridge/rss-bridge/wiki)
-  - Changed comment-style metadata to public function [`loadMetadatas`](https://github.com/RSS-Bridge/rss-bridge/wiki/BridgeAbstract#the-loadmetadatas-function)
+  - Changed comment-style metadata to constants
   - Added support for multiple utilizations per bridge
+  - Changed the parameter loading algorithm to be loaded by RSS-Bridge core
+* Improved checks for PHP version, configuration and extensions
 * Many bug fixes
 
 ## Modified Bridges
@@ -46,7 +48,6 @@ Alpha 0.2 (current development version)
 * AcrimedBridge
 * AllocineFRBridge
 * AnimeUltimeBridge
-* ArstechnicaBridge
 * Arte7Bridge
 * AskfmBridge
 * BandcampBridge
@@ -80,17 +81,13 @@ Alpha 0.2 (current development version)
 * FlickrTagBridge
 * FootitoBridge
 * FourchanBridge
-* Freenews
 * FuturaSciencesBridge
 * GBAtempBridge
-* Gawker
 * GelbooruBridge
 * GiphyBridge
 * GithubIssueBridge
-* GitlabCommitsBridge
-* GizmodoFRBridge
+* GizmodoBridge
 * GooglePlusPostBridge
-* GuruMedBridge
 * HDWallpapersBridge
 * HentaiHavenBridge
 * IdenticaBridge
@@ -102,33 +99,31 @@ Alpha 0.2 (current development version)
 * KununuBridge
 * LWNprevBridge
 * LeBonCoinBridge
-* LeJournalDuGeekBridge
+* LegifranceJOBridge
 * LeMondeInformatiqueBridge
-* Les400Culs
 * LesJoiesDuCodeBridge
 * LichessBridge
-* LinkedInCompany
+* LinkedInCompanyBridge
 * LolibooruBridge
 * MangareaderBridge
 * MilbooruBridge
+* MoebooruBridge
 * MondeDiploBridge
 * MsnMondeBridge
 * MspabooruBridge
-* NakedSecurityBridge
 * NasaApodBridge
 * NeuviemeArtBridge
 * NextInpactBridge
 * NextgovBridge
 * NiceMatinBridge
 * NovelUpdatesBridge
-* NumeramaBridge
 * OpenClassroomsBridge
 * ParuVenduImmoBridge
 * PickyWallpapersBridge
 * PinterestBridge
 * PlanetLibreBridge
-* ProjectMGameBridge
 * RTBFBridge
+* ReadComicsBridge
 * Releases3DSBridge
 * ReporterreBridge
 * Rue89Bridge
@@ -139,9 +134,9 @@ Alpha 0.2 (current development version)
 * ScmbBridge
 * ScoopItBridge
 * SensCritiqueBridge
-* Sexactu
+* SexactuBridge
 * ShanaprojectBridge
-* SiliconBridge
+* Shimmie2Bridge
 * SoundcloudBridge
 * StripeAPIChangeLogBridge
 * SuperbWallpapersBridge
@@ -150,22 +145,19 @@ Alpha 0.2 (current development version)
 * TbibBridge
 * TheCodingLoveBridge
 * TheHackerNewsBridge
-* TheOatMealBridge
 * ThePirateBayBridge
-* TwitchApiBridge
 * UnsplashBridge
-* ViadeoCompany
+* ViadeoCompanyBridge
 * VineBridge
 * VkBridge
 * WallpaperStopBridge
+* WebfailBridge
 * WeLiveSecurityBridge
 * WhydBridge
 * WikipediaBridge
 * WordPressBridge
-* WorldOfTanks
+* WorldOfTanksBridge
 * XbooruBridge
 * YandereBridge
 * YoutubeBridge
 * ZDNetBridge
-* ZatazBridge
-* ZoneTelechargementBridge
