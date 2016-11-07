@@ -42,12 +42,14 @@ class HtmlFormat extends FormatAbstract {
 EOD;
 		}
 
+		$charset = $this->getCharset();
+
 		/* Data are prepared, now let's begin the "MAGIE !!!" */
 		$toReturn = <<<EOD
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
+	<meta charset="{$charset}">
 	<title>{$title}</title>
 	<link href="css/HtmlFormat.css" rel="stylesheet">
 	<meta name="robots" content="noindex, follow">
@@ -64,6 +66,9 @@ EOD;
 </html>
 EOD;
 
+		// Remove invalid characters
+		ini_set('mbstring.substitute_character', 'none');
+		$toReturn = mb_convert_encoding($toReturn, $this->getCharset(), 'UTF-8');
 		return $toReturn;
 	}
 
