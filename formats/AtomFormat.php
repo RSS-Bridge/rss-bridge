@@ -32,7 +32,7 @@ class AtomFormat extends FormatAbstract{
 		<author>
 			<name>{$entryAuthor}</name>
 		</author>
-		<title type="html"><![CDATA[{$entryTitle}]]></title>
+		<title type="html">{$entryTitle}</title>
 		<link rel="alternate" type="text/html" href="{$entryUri}" />
 		<id>{$entryUri}</id>
 		<updated>{$entryTimestamp}</updated>
