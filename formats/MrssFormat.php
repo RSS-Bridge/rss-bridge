@@ -30,6 +30,9 @@ class MrssFormat extends FormatAbstract {
 			$itemUri = isset($item['uri']) ? $this->xml_encode($item['uri']) : '';
 			$itemTimestamp = isset($item['timestamp']) ? $this->xml_encode(date(DATE_RFC2822, $item['timestamp'])) : '';
 			$itemContent = isset($item['content']) ? $this->xml_encode($this->sanitizeHtml($item['content'])) : '';
+  		$entryEnclosures = "";
+  		foreach($item['enclosures'] as $enclosure)
+  			$entryEnclosures .= "<enclosure url=\"".xml_encode($enclosure)."\"/>";
 			$items .= <<<EOD
 
 	<item>
@@ -39,6 +42,7 @@ class MrssFormat extends FormatAbstract {
 		<pubDate>{$itemTimestamp}</pubDate>
 		<description>{$itemContent}</description>
 		<author>{$itemAuthor}</author>
+		{$entryEnclosures}
 	</item>
 
 EOD;
