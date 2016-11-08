@@ -47,7 +47,7 @@ EOD;
 		/* Data are prepared, now let's begin the "MAGIE !!!" */
 		$toReturn  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$toReturn .= <<<EOD
-<feed xmlns="http://www.w3.org/2005/Atom" xmlns:thr="http://purl.org/syndication/thread/1.0" xml:lang="en-US">
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:thr="http://purl.org/syndication/thread/1.0">
 
 	<title type="text">{$title}</title>
 	<id>http{$https}://{$httpHost}{$httpInfo}/</id>
