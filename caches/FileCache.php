@@ -14,7 +14,7 @@ class FileCache implements CacheInterface {
 	public function saveData($datas){
 		$writeStream = file_put_contents($this->getCacheFile(), json_encode($datas, JSON_PRETTY_PRINT));
 
-		if(!$writeStream) {
+		if($writeStream === FALSE) {
 			throw new \Exception("Cannot write the cache... Do you have the right permissions ?");
 		}
 
