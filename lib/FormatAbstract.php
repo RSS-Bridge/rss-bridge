@@ -18,7 +18,7 @@ abstract class FormatAbstract implements FormatInterface {
 	public function getCharset(){
 		$charset = $this->charset;
 
-		return is_null($charset) ? self::DEFAULT_CHARSET : $charset;
+		return is_null($charset) ? static::DEFAULT_CHARSET : $charset;
 	}
 
 	protected function setContentType($contentType){

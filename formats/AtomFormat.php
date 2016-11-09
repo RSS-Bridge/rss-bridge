@@ -26,9 +26,12 @@ class AtomFormat extends FormatAbstract{
 			$entryUri = isset($item['uri']) ? $this->xml_encode($item['uri']) : '';
 			$entryTimestamp = isset($item['timestamp']) ? $this->xml_encode(date(DATE_ATOM, $item['timestamp'])) : '';
 			$entryContent = isset($item['content']) ? $this->xml_encode($this->sanitizeHtml($item['content'])) : '';
-			$entryEnclosures = "";
-			foreach($item['enclosures'] as $enclosure)
-  				$entryEnclosures .= "<link rel=\"enclosure\" href=\"".$this->xml_encode($enclosure)."\"/>";
+
+			$entryEnclosure = '';
+			if(isset($item['enclosure'])){
+				$entryEnclosure = '<link rel="enclosure" href="' . $this->xml_encode($item['enclosure']) . '"/>';
+			}
+
 			$entries .= <<<EOD
 
 	<entry>
@@ -40,17 +43,18 @@ class AtomFormat extends FormatAbstract{
 		<id>{$entryUri}</id>
 		<updated>{$entryTimestamp}</updated>
 		<content type="html">{$entryContent}</content>
-		{$entryEnclosures}
+		{$entryEnclosure}
 	</entry>
 
 EOD;
 		}
 
 	$feedTimestamp = date(DATE_ATOM, time());
+	$charset = $this->getCharset();
 
 		/* Data are prepared, now let's begin the "MAGIE !!!" */
-		$toReturn  = '<?xml version="1.0" encoding="UTF-8"?>';
-		$toReturn .= <<<EOD
+		$toReturn = <<<EOD
+<?xml version="1.0" encoding="{$charset}"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xmlns:thr="http://purl.org/syndication/thread/1.0">
 
 	<title type="text">{$title}</title>
@@ -64,15 +68,15 @@ EOD;
 </feed>
 EOD;
 
-		// Remove invalid non-UTF8 characters
+		// Remove invalid characters
 		ini_set('mbstring.substitute_character', 'none');
-		$toReturn = mb_convert_encoding($toReturn, 'UTF-8', 'UTF-8');
+		$toReturn = mb_convert_encoding($toReturn, $this->getCharset(), 'UTF-8');
 		return $toReturn;
 	}
 
 	public function display(){
 		$this
-			->setContentType('application/atom+xml; charset=UTF-8')
+			->setContentType('application/atom+xml; charset=' . $this->getCharset())
 			->callContentType();
 
 		return parent::display();
