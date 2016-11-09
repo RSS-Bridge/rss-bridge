@@ -30,6 +30,13 @@ class HtmlFormat extends FormatAbstract {
 				. '</div>';
 			}
 
+			$entryEnclosure = '';
+			if(isset($item['enclosure'])){
+				$entryEnclosure = '<div class="enclosure"><a href="'
+				. $this->sanitizeHtml($item['enclosure'])
+				. '">enclosure</a><div>';
+			}
+
 			$entries .= <<<EOD
 
 <section class="feeditem">
@@ -37,6 +44,7 @@ class HtmlFormat extends FormatAbstract {
 	{$entryTimestamp}
 	{$entryAuthor}
 	{$entryContent}
+	{$entryEnclosure}
 </section>
 
 EOD;

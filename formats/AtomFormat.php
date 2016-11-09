@@ -26,9 +26,12 @@ class AtomFormat extends FormatAbstract{
 			$entryUri = isset($item['uri']) ? $this->xml_encode($item['uri']) : '';
 			$entryTimestamp = isset($item['timestamp']) ? $this->xml_encode(date(DATE_ATOM, $item['timestamp'])) : '';
 			$entryContent = isset($item['content']) ? $this->xml_encode($this->sanitizeHtml($item['content'])) : '';
-			$entryEnclosures = "";
-			foreach($item['enclosures'] as $enclosure)
-  				$entryEnclosures .= "<link rel=\"enclosure\" href=\"".$this->xml_encode($enclosure)."\"/>";
+
+			$entryEnclosure = '';
+			if(isset($item['enclosure'])){
+				$entryEnclosure = '<link rel="enclosure" href="' . $this->xml_encode($item['enclosure']) . '"/>';
+			}
+
 			$entries .= <<<EOD
 
 	<entry>
@@ -40,7 +43,7 @@ class AtomFormat extends FormatAbstract{
 		<id>{$entryUri}</id>
 		<updated>{$entryTimestamp}</updated>
 		<content type="html">{$entryContent}</content>
-		{$entryEnclosures}
+		{$entryEnclosure}
 	</entry>
 
 EOD;
