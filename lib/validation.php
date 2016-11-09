@@ -53,7 +53,6 @@ function validateData(&$data,$parameters){
 		return $filteredValue;
 	};
 
-
 	if(!is_array($data))
 		return false;
 
@@ -99,5 +98,3 @@ function validateData(&$data,$parameters){
 
 	return true;
 }
-
-?>
