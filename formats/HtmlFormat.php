@@ -30,11 +30,21 @@ class HtmlFormat extends FormatAbstract {
 				. '</div>';
 			}
 
-			$entryEnclosure = '';
-			if(isset($item['enclosure'])){
-				$entryEnclosure = '<div class="enclosure"><a href="'
-				. $this->sanitizeHtml($item['enclosure'])
-				. '">enclosure</a><div>';
+			$entryEnclosures = '';
+			if(isset($item['enclosures'])){
+				$entryEnclosures = '<div class="attachments"><p>Attachments:</p>';
+
+				foreach($item['enclosures'] as $enclosure){
+					$url = $this->sanitizeHtml($enclosure);
+
+					$entryEnclosures .= '<li class="enclosure"><a href="'
+					. $url
+					. '">'
+					. substr($url, strrpos($url, '/') + 1)
+					. '</a></li>';
+				}
+
+				$entryEnclosures .= '</div>';
 			}
 
 			$entries .= <<<EOD
@@ -44,7 +54,7 @@ class HtmlFormat extends FormatAbstract {
 	{$entryTimestamp}
 	{$entryAuthor}
 	{$entryContent}
-	{$entryEnclosure}
+	{$entryEnclosures}
 </section>
 
 EOD;
