@@ -31,9 +31,23 @@ class MrssFormat extends FormatAbstract {
 			$itemTimestamp = isset($item['timestamp']) ? $this->xml_encode(date(DATE_RFC2822, $item['timestamp'])) : '';
 			$itemContent = isset($item['content']) ? $this->xml_encode($this->sanitizeHtml($item['content'])) : '';
 
-			$entryEnclosure = '';
-			if(isset($item['enclosure'])){
-				$entryEnclosure = '<enclosure url="' . $this->xml_encode($item['enclosure']) . '"/>';
+			$entryEnclosuresWarning = '';
+			$entryEnclosures = '';
+			if(isset($item['enclosures'])){
+				$entryEnclosures .= '<enclosure url="'
+				. $this->xml_encode($item['enclosures'][0])
+				. '"/>';
+
+				if(count($item['enclosures']) > 1){
+					$entryEnclosures .= PHP_EOL;
+					$entryEnclosuresWarning = '&lt;br&gt;Warning:
+Some media files might not be shown to you. Consider using the ATOM format instead!';
+					foreach($item['enclosures'] as $enclosure){
+						$entryEnclosures .= '<atom:link rel="enclosure" href="'
+						. $enclosure . '" />'
+						. PHP_EOL;
+					}
+				}
 			}
 
 			$items .= <<<EOD
@@ -43,9 +57,9 @@ class MrssFormat extends FormatAbstract {
 		<link>{$itemUri}</link>
 		<guid isPermaLink="true">{$itemUri}</guid>
 		<pubDate>{$itemTimestamp}</pubDate>
-		<description>{$itemContent}</description>
+		<description>{$itemContent}{$entryEnclosuresWarning}</description>
 		<author>{$itemAuthor}</author>
-		{$entryEnclosure}
+		{$entryEnclosures}
 	</item>
 
 EOD;
