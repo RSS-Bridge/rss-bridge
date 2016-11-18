@@ -9,23 +9,29 @@ function displayBridgeCard($bridgeName, $formats, $isActive = true){
 	
 	// If we have a defined array of compatibles formats : show only helperbuttons for thoses formats.
 	// If we dont have any defined array of compatibles formats : show helperbuttons for every availables formats.
+	$compatiblesFormats = array();
 	if (defined($bridgeClass::FORMATS)&&(count($bridgeClass::FORMATS) > 0)){
-	$bridgeFormats = $bridgeClass::FORMATS;}
-	else {$bridgeFormats = $formats};
+		$bridgeFormats = $bridgeClass::FORMATS;
+		//check if format exists
+		foreach($bridgeFormats as $name){ 
+			if(in_array($name , $formats){
+				$compatiblesFormats[] = $name ;
+			}
+		}	   
+	}
+	// if no compatible format, nevermind		   
+	if (count($compatibles)==0){$compatiblesFormats = $formats};
 	
-	$getHelperButtonsFormat = function($formats){
+	$getHelperButtonsFormat = function($compatiblesFormats){
 		$buttons = '';
-		foreach($formats as $name){
-			if(in_array($name , $bridgeFormats){
+		foreach($compatiblesFormats as $name){
 			$buttons .= '<button type="submit" name="format" value="'
 				. $name
 				. '">'
 				. $name
 				. '</button>'
-				. PHP_EOL;
-			}
+				. PHP_EOL;			
 		}
-
 		return $buttons;
 	};
 
