@@ -14,7 +14,7 @@ function displayBridgeCard($bridgeName, $formats, $isActive = true){
 		$bridgeFormats = $bridgeClass::FORMATS;
 		//check if format exists
 		foreach($bridgeFormats as $name){ 
-			if(in_array($name , $formats){
+			if(in_array($name , $formats)){
 				$compatiblesFormats[] = $name ;
 			}
 		}	   
