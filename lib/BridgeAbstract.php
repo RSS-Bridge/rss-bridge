@@ -197,8 +197,8 @@ abstract class BridgeAbstract implements BridgeInterface {
 	
 	public function getExtraInfos(){
 		$ExtraInfos = array();
-		$ExtraInfos->'name'= getName();
-		$ExtraInfos->'uri'= getURI();
+		$ExtraInfos['name']= getName();
+		$ExtraInfos['uri']= getURI();
 		return $ExtraInfos;
 	}
 
