@@ -20,7 +20,7 @@ function displayBridgeCard($bridgeName, $formats, $isActive = true){
 		}	   
 	}
 	// if no compatible format, nevermind		   
-	if (count($compatibles)==0){$compatiblesFormats = $formats};
+	if (count($compatiblesFormats) == 0){$compatiblesFormats = $formats};
 	
 	$getHelperButtonsFormat = function($compatiblesFormats){
 		$buttons = '';
