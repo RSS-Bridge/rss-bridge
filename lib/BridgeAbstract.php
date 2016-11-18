@@ -8,6 +8,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	const MAINTAINER = 'No maintainer';
 	const CACHE_TIMEOUT = 3600;
 	const PARAMETERS = array();
+	const FORMATS = array(); // array of compatibles formats or null
 
 	protected $cache;
 	protected $items = array();
