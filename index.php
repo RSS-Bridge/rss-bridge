@@ -159,13 +159,9 @@ try {
 		// Data transformation
 		try {
 			$format = Format::create($format);
-			$format
-				->setItems($bridge->getItems())
-				->setExtraInfos(array(
-					'name' => $bridge->getName(),
-					'uri' => $bridge->getURI(),
-				))
-				->display();
+			$format->setItems($bridge->getItems());
+			$format->setExtraInfos($bridge->getExtraInfos());
+			$format->display();
 		} catch(Exception $e){
 			echo "The bridge has crashed. You should report this to the bridges maintainer";
 		}
