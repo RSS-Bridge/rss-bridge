@@ -194,6 +194,13 @@ abstract class BridgeAbstract implements BridgeInterface {
 	public function getURI(){
 		return static::URI;
 	}
+	
+	public function getExtraInfos(){
+		$ExtraInfos = array();
+		$ExtraInfos->'name'= getName();
+		$ExtraInfos->'uri'= getURI();
+		return $ExtraInfos;
+	}
 
 	public function setCache(\CacheInterface $cache){
 		$this->cache = $cache;
