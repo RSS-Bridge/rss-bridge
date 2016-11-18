@@ -1,15 +1,29 @@
 <?php
 function displayBridgeCard($bridgeName, $formats, $isActive = true){
 
+	$bridgeElement = Bridge::create($bridgeName);
+	$bridgeClass = $bridgeName . 'Bridge';
+
+	if($bridgeElement == false)
+		return "";
+	
+	// If we have a defined array of compatibles formats : show only helperbuttons for thoses formats.
+	// If we dont have any defined array of compatibles formats : show helperbuttons for every availables formats.
+	if (defined($bridgeClass::FORMATS)&&(count($bridgeClass::FORMATS) > 0)){
+	$bridgeFormats = $bridgeClass::FORMATS;}
+	else {$bridgeFormats = $formats};
+	
 	$getHelperButtonsFormat = function($formats){
 		$buttons = '';
 		foreach($formats as $name){
+			if(in_array($name , $bridgeFormats){
 			$buttons .= '<button type="submit" name="format" value="'
 				. $name
 				. '">'
 				. $name
 				. '</button>'
 				. PHP_EOL;
+			}
 		}
 
 		return $buttons;
@@ -22,12 +36,6 @@ function displayBridgeCard($bridgeName, $formats, $isActive = true){
 				<input type="hidden" name="bridge" value="{$bridge}" />
 EOD;
 	};
-
-	$bridgeElement = Bridge::create($bridgeName);
-	$bridgeClass = $bridgeName . 'Bridge';
-
-	if($bridgeElement == false)
-		return "";
 
 	$name = '<a href="' . $bridgeClass::URI . '">' . $bridgeClass::NAME . '</a>';
 	$description = $bridgeClass::DESCRIPTION;
