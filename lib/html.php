@@ -10,7 +10,7 @@ function displayBridgeCard($bridgeName, $formats, $isActive = true){
 	// If we have a defined array of compatibles formats : show only helperbuttons for thoses formats.
 	// If we dont have any defined array of compatibles formats : show helperbuttons for every availables formats.
 	$compatiblesFormats = array();
-	if (defined($bridgeClass::FORMATS)&&(count($bridgeClass::FORMATS) > 0)){
+	if (!empty($bridgeClass::FORMATS)){
 		$bridgeFormats = $bridgeClass::FORMATS;
 		//check if format exists
 		foreach($bridgeFormats as $name){ 
