@@ -1,12 +1,13 @@
 <?php
 class CNETBridge extends BridgeAbstract {
 
-    public $maintainer = 'ORelio';
-    public $name = 'CNET News';
-    public $uri = 'http://www.cnet.com/';
-    public $description = 'Returns the newest articles. <br /> You may specify a topic found in some section URLs, else all topics are selected.';
+    const MAINTAINER = 'ORelio';
+    const NAME = 'CNET News';
+    const URI = 'http://www.cnet.com/';
+    const CACHE_TIMEOUT = 1800; // 30min
+    const DESCRIPTION = 'Returns the newest articles. <br /> You may specify a topic found in some section URLs, else all topics are selected.';
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'topic'=>array('name'=>'Topic name')
     ));
 
@@ -37,21 +38,21 @@ class CNETBridge extends BridgeAbstract {
             return $article_html;
         }
 
-        $pageUrl = $this->uri.(empty($this->getInput('topic')) ? '' : 'topics/'.$this->getInput('topic').'/');
-        $html = $this->getSimpleHTMLDOM($pageUrl) or $this->returnServerError('Could not request CNET: '.$pageUrl);
+        $pageUrl = self::URI.(empty($this->getInput('topic')) ? '' : 'topics/'.$this->getInput('topic').'/');
+        $html = getSimpleHTMLDOM($pageUrl) or returnServerError('Could not request CNET: '.$pageUrl);
         $limit = 0;
 
         foreach($html->find('div.assetBody') as $element) {
             if ($limit < 8) {
 
                 $article_title = trim($element->find('h2', 0)->plaintext);
-                $article_uri = $this->uri.($element->find('a', 0)->href);
+                $article_uri = self::URI.($element->find('a', 0)->href);
                 $article_timestamp = strtotime($element->find('time.assetTime', 0)->plaintext);
                 $article_author = trim($element->find('a[rel=author]', 0)->plaintext);
 
                 if (!empty($article_title) && !empty($article_uri) && strpos($article_uri, '/news/') !== false) {
 
-                    $article_html = $this->getSimpleHTMLDOM($article_uri) or $this->returnServerError('Could not request CNET: '.$article_uri);
+                    $article_html = getSimpleHTMLDOM($article_uri) or returnServerError('Could not request CNET: '.$article_uri);
 
                     $article_content = trim(CleanArticle(ExtractFromDelimiters($article_html, '<div class="articleContent', '<footer>')));
 
@@ -69,10 +70,7 @@ class CNETBridge extends BridgeAbstract {
     }
 
     public function getName() {
-        return 'CNET News Bridge'.(empty($this->getInput('topic')) ? '' : ' - '.$this->getInput('topic'));
-    }
-
-    public function getCacheDuration() {
-        return 1800; // 30 minutes
+        $topic=$this->getInput('topic');
+        return 'CNET News Bridge'.(empty($topic) ? '' : ' - '.$topic);
     }
 }

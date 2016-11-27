@@ -1,11 +1,12 @@
 <?php
 class BandcampBridge extends BridgeAbstract{
 
-    public $maintainer = "sebsauvage";
-    public $name = "Bandcamp Tag";
-    public $uri = "http://bandcamp.com/";
-    public $description = "New bandcamp release by tag";
-    public $parameters = array( array(
+    const MAINTAINER = "sebsauvage";
+    const NAME = "Bandcamp Tag";
+    const URI = "http://bandcamp.com/";
+    const CACHE_TIMEOUT = 600; // 10min
+    const DESCRIPTION = "New bandcamp release by tag";
+    const PARAMETERS = array( array(
         'tag'=>array(
             'name'=>'tag',
             'type'=>'text',
@@ -14,8 +15,8 @@ class BandcampBridge extends BridgeAbstract{
     ));
 
     public function collectData(){
-        $html = $this->getSimpleHTMLDOM($this->getURI())
-            or $this->returnServerError('No results for this query.');
+        $html = getSimpleHTMLDOM($this->getURI())
+            or returnServerError('No results for this query.');
 
         foreach($html->find('li.item') as $release) {
             $script = $release->find('div.art', 0)->getAttribute('onclick');
@@ -33,14 +34,10 @@ class BandcampBridge extends BridgeAbstract{
     }
 
     public function getURI(){
-        return $this->uri.'tag/'.urlencode($this->getInput('tag')).'?sort_field=date';
+        return self::URI.'tag/'.urlencode($this->getInput('tag')).'?sort_field=date';
     }
 
     public function getName(){
         return $this->getInput('tag') .' - '.'Bandcamp Tag';
-    }
-
-    public function getCacheDuration(){
-        return 600; // 10 minutes
     }
 }

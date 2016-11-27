@@ -1,38 +1,22 @@
 <?php
-class KoreusBridge extends BridgeAbstract{
+class KoreusBridge extends FeedExpander {
 
-	public $maintainer = "pit-fgfjiudghdf";
-	public $name = "Koreus";
-	public $uri = "http://www.koreus.com/";
-	public $description = "Returns the 5 newest posts from Koreus (full text)";
+	const MAINTAINER = "pit-fgfjiudghdf";
+	const NAME = "Koreus";
+	const URI = "http://www.koreus.com/";
+	const DESCRIPTION = "Returns the newest posts from Koreus (full text)";
 
-	private function KoreusStripCDATA($string) {
-		$string = str_replace('<![CDATA[', '', $string);
-		$string = str_replace(']]>', '', $string);
-		return $string;
-	}
+	protected function parseItem($item) {
+		$item = parent::parseItem($item);
 
-	private function KoreusExtractContent($url) {
-		$html2 = $this->getSimpleHTMLDOM($url);
-		$text = $html2->find('p[class=itemText]', 0)->innertext;
-		$text = utf8_encode(preg_replace('/(Sur le m.+?)+$/i','',$text));
-		return $text;
+		$html = getSimpleHTMLDOMCached($item['uri']);
+		$text = $html->find('p.itemText', 0)->innertext;
+		$item['content'] = utf8_encode($text);
+
+		return $item;
 	}
 
 	public function collectData(){
-		$html = $this->getSimpleHTMLDOM('http://feeds.feedburner.com/Koreus-articles') or $this->returnServerError('Could not request Koreus.');
-		$limit = 0;
-
-		foreach($html->find('item') as $element) {
-			if($limit < 5) {
-				$item = array();
-				$item['title'] = $this->KoreusStripCDATA($element->find('title', 0)->innertext);
-				$item['uri'] = $this->KoreusStripCDATA($element->find('guid', 0)->plaintext);
-				$item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
-				$item['content'] = $this->KoreusExtractContent($item['uri']);
-				$this->items[] = $item;
-				$limit++;
-			}
-		}
+		$this->collectExpandableDatas('http://feeds.feedburner.com/Koreus-articles');
 	}
 }

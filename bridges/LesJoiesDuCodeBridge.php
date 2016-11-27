@@ -1,14 +1,15 @@
 <?php
 class LesJoiesDuCodeBridge extends BridgeAbstract{
 
-	public $maintainer = "superbaillot.net";
-	public $name = "Les Joies Du Code";
-	public $uri = "http://lesjoiesducode.fr/";
-	public $description = "LesJoiesDuCode";
+	const MAINTAINER = "superbaillot.net";
+	const NAME = "Les Joies Du Code";
+	const URI = "http://lesjoiesducode.fr/";
+	const CACHE_TIMEOUT = 7200; // 2h
+	const DESCRIPTION = "LesJoiesDuCode";
 
     public function collectData(){
-        $html = $this->getSimpleHTMLDOM($this->uri)
-            or $this->returnServerError('Could not request LesJoiesDuCode.');
+        $html = getSimpleHTMLDOM(self::URI)
+            or returnServerError('Could not request LesJoiesDuCode.');
 
         foreach($html->find('div.blog-post') as $element) {
             $item = array();
@@ -42,9 +43,5 @@ class LesJoiesDuCodeBridge extends BridgeAbstract{
 
             $this->items[] = $item;
         }
-    }
-
-    public function getCacheDuration(){
-        return 7200; // 2h hours
     }
 }

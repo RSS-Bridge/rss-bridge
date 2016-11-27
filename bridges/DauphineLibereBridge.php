@@ -1,12 +1,13 @@
 <?php
-class DauphineLibereBridge extends BridgeAbstract {
+class DauphineLibereBridge extends FeedExpander {
 
-	public $maintainer = "qwertygc";
-	public $name = "Dauphine Bridge";
-	public $uri = "http://www.ledauphine.com/";
-	public $description = "Returns the newest articles.";
+    const MAINTAINER = "qwertygc";
+    const NAME = "Dauphine Bridge";
+    const URI = "http://www.ledauphine.com/";
+    const CACHE_TIMEOUT = 7200; // 2h
+    const DESCRIPTION = "Returns the newest articles.";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'u'=>array(
             'name'=>'Catégorie de l\'article',
             'type'=>'list',
@@ -30,41 +31,27 @@ class DauphineLibereBridge extends BridgeAbstract {
         )
     ));
 
-	private function ExtractContent($url, $context) {
-		$html2 = $this->getSimpleHTMLDOM($url);
-		$text = $html2->find('div.column', 0)->innertext;
-		$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
-		return $text;
-	}
+    public function collectData(){
+        $url = self::URI . 'rss';
 
-	public function collectData(){
+        if (empty($this->getInput('u'))) {
+            $url = self::URI . $this->getInput('u') . '/rss';
+        }
 
-		$context = stream_context_create($opts);
+        $this->collectExpandableDatas($url, 10);
+    }
 
-		if (empty($this->getInput('u'))) {
-            $html = $this->getSimpleHTMLDOM($this->uri.$this->getInput('u').'/rss')
-                or $this->returnServerError('Could not request DauphineLibere.');
-		} else {
-            $html = $this->getSimpleHTMLDOM($this->uri.'rss')
-                or $this->returnServerError('Could not request DauphineLibere.');
-		}
-		$limit = 0;
+    protected function parseItem($newsItem){
+        $item = parent::parseItem($newsItem);
+        $item['content'] = $this->ExtractContent($item['uri']);
+        return $item;
+    }
 
-		foreach($html->find('item') as $element) {
-			if($limit < 10) {
-				$item = array();
-				$item['title'] = $element->find('title', 0)->innertext;
-				$item['uri'] = $element->find('guid', 0)->plaintext;
-				$item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
-				$item['content'] = $this->ExtractContent($item['uri'], $context);
-				$this->items[] = $item;
-				$limit++;
-			}
-		}
-	}
-
-	public function getCacheDuration(){
-		return 3600*2; // 2 hours
-	}
+    private function ExtractContent($url) {
+        $html2 = getSimpleHTMLDOMCached($url);
+        $text = $html2->find('div.column', 0)->innertext;
+        $text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
+        return $text;
+    }
 }
 ?>

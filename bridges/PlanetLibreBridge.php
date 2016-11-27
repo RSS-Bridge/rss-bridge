@@ -1,19 +1,20 @@
 <?php
 class PlanetLibreBridge extends BridgeAbstract{
 
-	public $maintainer = "pit-fgfjiudghdf";
-	public $name = "PlanetLibre";
-	public $uri = "http://www.planet-libre.org";
-	public $description = "Returns the 5 newest posts from PlanetLibre (full text)";
+	const MAINTAINER = "pit-fgfjiudghdf";
+	const NAME = "PlanetLibre";
+	const URI = "http://www.planet-libre.org";
+	const DESCRIPTION = "Returns the 5 newest posts from PlanetLibre (full text)";
 
 	private function PlanetLibreExtractContent($url){
-		$html2 = $this->getSimpleHTMLDOM($url);
+		$html2 = getSimpleHTMLDOM($url);
 		$text = $html2->find('div[class="post-text"]', 0)->innertext;
 		return $text;
 	}
 
 	public function collectData(){
-		$html = $this->getSimpleHTMLDOM('http://www.planet-libre.org/') or $this->returnServerError('Could not request PlanetLibre.');
+      $html = getSimpleHTMLDOM(self::URI)
+        or returnServerError('Could not request PlanetLibre.');
 		$limit = 0;
 		foreach($html->find('div.post') as $element) {
 			if($limit < 5) {
@@ -26,9 +27,5 @@ class PlanetLibreBridge extends BridgeAbstract{
 				$limit++;
 			}
 		}
-	}
-
-	public function getCacheDuration(){
-		return 3600*2; // 1 hour
 	}
 }

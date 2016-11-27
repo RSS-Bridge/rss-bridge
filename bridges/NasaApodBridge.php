@@ -1,14 +1,15 @@
 <?php
 class NasaApodBridge extends BridgeAbstract{
 
-	public $maintainer = "corenting";
-	public $name = "NASA APOD Bridge";
-	public $uri = "http://apod.nasa.gov/apod/";
-	public $description = "Returns the 3 latest NASA APOD pictures and explanations";
+	const MAINTAINER = "corenting";
+	const NAME = "NASA APOD Bridge";
+	const URI = "http://apod.nasa.gov/apod/";
+	const CACHE_TIMEOUT = 43200; // 12h
+	const DESCRIPTION = "Returns the 3 latest NASA APOD pictures and explanations";
 
   public function collectData(){
 
-    $html = $this->getSimpleHTMLDOM($this->uri.'archivepix.html') or $this->returnServerError('Error while downloading the website content');
+    $html = getSimpleHTMLDOM(self::URI.'archivepix.html') or returnServerError('Error while downloading the website content');
     $list = explode("<br>", $html->find('b', 0)->innertext);
 
     for($i = 0; $i < 3;$i++)
@@ -17,10 +18,10 @@ class NasaApodBridge extends BridgeAbstract{
       $item = array();
 
       $uri_page = $html->find('a',$i + 3)->href;
-      $uri = $this->uri.$uri_page;
+      $uri = self::URI.$uri_page;
       $item['uri'] = $uri;
 
-      $picture_html = $this->getSimpleHTMLDOM($uri);
+      $picture_html = getSimpleHTMLDOM($uri);
       $picture_html_string = $picture_html->innertext;
 
       //Extract image and explanation
@@ -38,9 +39,5 @@ class NasaApodBridge extends BridgeAbstract{
       $item['title'] = $picture_html->find('b',0)->innertext;
       $this->items[] = $item;
     }
-  }
-
-  public function getCacheDuration(){
-    return 3600*12; // 12 hours
   }
 }

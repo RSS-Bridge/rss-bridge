@@ -1,12 +1,13 @@
 <?php
 class IdenticaBridge extends BridgeAbstract{
 
-	public $maintainer = "mitsukarenai";
-	public $name = "Identica Bridge";
-	public $uri = "https://identi.ca/";
-	public $description = "Returns user timelines";
+	const MAINTAINER = "mitsukarenai";
+	const NAME = "Identica Bridge";
+	const URI = "https://identi.ca/";
+	const CACHE_TIMEOUT = 300; // 5min
+	const DESCRIPTION = "Returns user timelines";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'u'=>array(
             'name'=>'username',
             'required'=>true
@@ -14,8 +15,8 @@ class IdenticaBridge extends BridgeAbstract{
     ));
 
     public function collectData(){
-        $html = $this->getSimpleHTMLDOM($this->getURI())
-            or $this->returnServerError('Requested username can\'t be found.');
+        $html = getSimpleHTMLDOM($this->getURI())
+            or returnServerError('Requested username can\'t be found.');
 
         foreach($html->find('li.major') as $dent) {
             $item = array();
@@ -32,10 +33,6 @@ class IdenticaBridge extends BridgeAbstract{
     }
 
     public function getURI(){
-        return $this->uri.urlencode($this->getInput('u'));
-    }
-
-    public function getCacheDuration(){
-        return 300; // 5 minutes
+        return self::URI.urlencode($this->getInput('u'));
     }
 }

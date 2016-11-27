@@ -1,12 +1,13 @@
 <?php
 class DailymotionBridge extends BridgeAbstract{
 
-        public $maintainer = "mitsukarenai";
-        public $name = "Dailymotion Bridge";
-        public $uri = "https://www.dailymotion.com/";
-        public $description = "Returns the 5 newest videos by username/playlist or search";
+        const MAINTAINER = "mitsukarenai";
+        const NAME = "Dailymotion Bridge";
+        const URI = "https://www.dailymotion.com/";
+        const CACHE_TIMEOUT = 10800; // 3h
+        const DESCRIPTION = "Returns the 5 newest videos by username/playlist or search";
 
-        public $parameters = array (
+        const PARAMETERS = array (
             'By username' => array(
                 'u'=>array(
                     'name'=>'username',
@@ -35,7 +36,7 @@ class DailymotionBridge extends BridgeAbstract{
 
     function getMetadata($id) {
         $metadata=array();
-        $html2 = $this->getSimpleHTMLDOM($this->uri.'video/'.$id);
+        $html2 = getSimpleHTMLDOM(self::URI.'video/'.$id);
         if(!$html2){
             return $metadata;
         }
@@ -52,8 +53,8 @@ class DailymotionBridge extends BridgeAbstract{
         $limit = 5;
         $count = 0;
 
-        $html = $this->getSimpleHTMLDOM($this->getURI())
-            or $this->returnServerError('Could not request Dailymotion.');
+        $html = getSimpleHTMLDOM($this->getURI())
+            or returnServerError('Could not request Dailymotion.');
 
         foreach($html->find('div.media a.preview_link') as $element) {
             if($count < $limit) {
@@ -90,7 +91,7 @@ class DailymotionBridge extends BridgeAbstract{
     }
 
     public function getURI(){
-        $uri=$this->uri;
+        $uri=self::URI;
         switch($this->queriedContext){
         case 'By username':
             $uri.='user/'
@@ -109,9 +110,5 @@ class DailymotionBridge extends BridgeAbstract{
             break;
         }
         return $uri;
-    }
-
-    public function getCacheDuration(){
-        return 3600*3; // 3 hours
     }
 }

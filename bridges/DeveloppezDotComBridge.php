@@ -1,10 +1,21 @@
 <?php
-class DeveloppezDotComBridge extends BridgeAbstract{
+class DeveloppezDotComBridge extends FeedExpander {
 
-	public $maintainer = "polopollo";
-	public $name = "Developpez.com Actus (FR)";
-	public $uri = "http://www.developpez.com/";
-	public $description = "Returns the 15 newest posts from DeveloppezDotCom (full text).";
+	const MAINTAINER = "polopollo";
+	const NAME = "Developpez.com Actus (FR)";
+	const URI = "http://www.developpez.com/";
+	const CACHE_TIMEOUT = 1800; // 30min
+	const DESCRIPTION = "Returns the 15 newest posts from DeveloppezDotCom (full text).";
+
+	public function collectData(){
+		$this->collectExpandableDatas(self::URI . 'index/rss', 15);
+	}
+
+	protected function parseItem($newsItem){
+		$item = parent::parseItem($newsItem);
+		$item['content'] = $this->DeveloppezDotComExtractContent($item['uri']);
+		return $item;
+	}
 
 	private function DeveloppezDotComStripCDATA($string) {
 		$string = str_replace('<![CDATA[', '', $string);
@@ -32,32 +43,9 @@ class DeveloppezDotComBridge extends BridgeAbstract{
 	}
 
 	private function DeveloppezDotComExtractContent($url) {
-		$articleHTMLContent = $this->getSimpleHTMLDOM($url);
+		$articleHTMLContent = getSimpleHTMLDOMCached($url);
 		$text = $this->convert_smart_quotes($articleHTMLContent->find('div.content', 0)->innertext);
 		$text = utf8_encode($text);
 		return trim($text);
-	}
-
-	public function collectData(){
-        $rssFeed = $this->getSimpleHTMLDOM($this->uri.'index/rss')
-            or $this->returnServerError('Could not request '.$this->uri.'index/rss');
-		$limit = 0;
-
-		foreach($rssFeed->find('item') as $element) {
-			if($limit < 10) {
-				$item = array();
-				$item['title'] = $this->DeveloppezDotComStripCDATA($element->find('title', 0)->innertext);
-				$item['uri'] = $this->DeveloppezDotComStripCDATA($element->find('guid', 0)->plaintext);
-				$item['timestamp'] = strtotime($element->find('pubDate', 0)->plaintext);
-				$content = $this->DeveloppezDotComExtractContent($item['uri']);
-				$item['content'] = strlen($content) ? $content : $element->description; //In case of it is a tutorial, we just keep the original description
-				$this->items[] = $item;
-				$limit++;
-			}
-		}
-	}
-
-	public function getCacheDuration(){
-		return 1800; // 30min
 	}
 }

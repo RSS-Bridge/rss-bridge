@@ -1,12 +1,12 @@
 <?php
 class VineBridge extends BridgeAbstract {
 
-	public $maintainer = "ckiw";
-	public $name = "Vine bridge";
-	public $uri = "http://vine.co/";
-	public $description = "Returns the latests vines from vine user page";
+	const MAINTAINER = "ckiw";
+	const NAME = "Vine bridge";
+	const URI = "http://vine.co/";
+	const DESCRIPTION = "Returns the latests vines from vine user page";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'u'=>array(
             'name'=>'User id',
             'required'=>true
@@ -15,9 +15,10 @@ class VineBridge extends BridgeAbstract {
 
 	public function collectData(){
     $html = '';
-    $uri = 'http://vine.co/u/'.$this->getInput('u').'?mode=list';
+    $uri = self::URI.'/u/'.$this->getInput('u').'?mode=list';
 
-    $html = $this->getSimpleHTMLDOM($uri) or $this->returnServerError('No results for this query.');
+    $html = getSimpleHTMLDOM($uri)
+      or returnServerError('No results for this query.');
 
 		foreach($html->find('.post') as $element) {
 			$a = $element->find('a', 0);
@@ -36,9 +37,5 @@ class VineBridge extends BridgeAbstract {
 			$this->items[] = $item;
 		}
 
-    }
-
-    public function getCacheDuration(){
-        return 10; //seconds
     }
 }

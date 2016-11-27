@@ -1,40 +1,41 @@
 <?php
 class UnsplashBridge extends BridgeAbstract {
 
-	public $maintainer = "nel50n";
-	public $name = "Unsplash Bridge";
-	public $uri = "http://unsplash.com/";
-	public $description = "Returns the latests photos from Unsplash";
+	const MAINTAINER = "nel50n";
+	const NAME = "Unsplash Bridge";
+	const URI = "http://unsplash.com/";
+	const CACHE_TIMEOUT = 43200; // 12h
+	const DESCRIPTION = "Returns the latests photos from Unsplash";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
           'm'=>array(
             'name'=>'Max number of photos',
-            'type'=>'number'
+            'type'=>'number',
+            'defaultValue'=>20
           ),
           'w'=>array(
             'name'=>'Width',
-            'exampleValue'=>'1920, 1680, …'
+            'exampleValue'=>'1920, 1680, …',
+            'defaultValue'=>'1920'
           ),
           'q'=>array(
             'name'=>'JPEG quality',
-            'type'=>'number'
+            'type'=>'number',
+            'defaultValue'=>75
           )
       ));
 
     public function collectData(){
-        $html = '';
-        $baseUri = 'http://unsplash.com';
-
-        $width = $this->getInput('w') ?: '1920';    // Default width
-
+        $width = $this->getInput('w') ;
         $num = 0;
-        $max = $this->getInput('m') ?: 20;
-        $quality = $this->getInput('q') ?: 75;
+        $max = $this->getInput('m');
+        $quality = $this->getInput('q');
         $lastpage = 1;
 
         for ($page = 1; $page <= $lastpage; $page++) {
-            $link = $baseUri.'/grid?page='.$page;
-            $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('No results for this query.');
+            $link = self::URI.'/grid?page='.$page;
+            $html = getSimpleHTMLDOM($link)
+              or returnServerError('No results for this query.');
 
             if ($page === 1) {
                 preg_match('/=(\d+)$/', $html->find('.pagination > a[!class]', -1)->href, $matches);
@@ -59,9 +60,5 @@ class UnsplashBridge extends BridgeAbstract {
                     break 2;
             }
         }
-    }
-
-    public function getCacheDuration(){
-        return 43200; // 12 hours
     }
 }

@@ -2,27 +2,28 @@
 
 class VkBridge extends BridgeAbstract {
 
-    public $maintainer = "ahiles3005";
-    public $name = "VK.com";
-    public $uri = "http://www.vk.com/";
-    public $description = "Working with open pages";
-    public $parameters=array(
-        'Url on page group or user' => array(
+    const MAINTAINER = "ahiles3005";
+    const NAME = "VK.com";
+    const URI = "http://vk.com/";
+    const CACHE_TIMEOUT = 300; // 5min
+    const DESCRIPTION = "Working with open pages";
+    const PARAMETERS=array( array(
             'u'=>array(
-                'name'=>'Url',
+                'name'=>'Group or user name',
                 'required'=>true
             )
         )
     );
 
+    public function getURI(){
+      return static::URI.urlencode($this->getInput('u'));
+    }
     public function collectData(){
-        $html = '';
-        if ($this->getInput('u')) {
-            $text_html = $this->getSimpleHTMLDOM(urldecode($this->getInput('u')))
-                or $this->returnServerError('No results for this query.');
-            $text_html = iconv('windows-1251', 'utf-8', $text_html);
-            $html = str_get_html($text_html);
-        }
+        $text_html = getContents($this->getURI())
+          or returnServerError('No results for group or user name "'.$this->getInput('u').'".');
+
+        $text_html = iconv('windows-1251', 'utf-8', $text_html);
+        $html = str_get_html($text_html);
         foreach ($html->find('div.post_table') as $post) {
             if (is_object($post->find('a.wall_post_more', 0))) {
                 $post->find('a.wall_post_more', 0)->outertext = ''; //delete link "show full" in content
@@ -36,22 +37,13 @@ class VkBridge extends BridgeAbstract {
             //get video on post
             if (is_object($post->find('span.post_video_title_content', 0))) {
                 $titleVideo = $post->find('span.post_video_title_content', 0)->plaintext;
-                $linkToVideo = 'https://vk.com' . $post->find('a.page_post_thumb_video', 0)->getAttribute('href');
+                $linkToVideo = self::URI . $post->find('a.page_post_thumb_video', 0)->getAttribute('href');
                 $item['content'] .= "\n\r {$titleVideo}: {$linkToVideo}";
             }
-            $item['uri'] = 'https://vk.com' . $post->find('.reply_link_wrap', 0)->find('a', 0)->getAttribute('href'); // get post link
+            $item['uri'] = self::URI . $post->find('.reply_link_wrap', 0)->find('a', 0)->getAttribute('href'); // get post link
             $item['date'] = $post->find('span.rel_date', 0)->plaintext;
             $this->items[] = $item;
             // var_dump($item['date']);
         }
     }
-
-    public function getName() {
-        return(isset($this->name) ? $this->name . ' - ' : '') . 'VK Bridge';
-    }
-
-    public function getCacheDuration() {
-        return 300; // 5 minutes
-    }
-
 }

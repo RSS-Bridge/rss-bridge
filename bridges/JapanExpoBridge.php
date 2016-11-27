@@ -1,11 +1,12 @@
 <?php
-class JapanExpoBridge extends HttpCachingBridgeAbstract {
+class JapanExpoBridge extends BridgeAbstract {
 
-    public $maintainer = 'Ginko';
-    public $name = 'Japan Expo Actualités';
-    public $uri = 'http://www.japan-expo-paris.com/fr/actualites';
-    public $description = 'Returns most recent entries from Japan Expo actualités.';
-    public $parameters = array( array(
+    const MAINTAINER = 'Ginko';
+    const NAME = 'Japan Expo Actualités';
+    const URI = 'http://www.japan-expo-paris.com/fr/actualites';
+    const CACHE_TIMEOUT = 14400; // 4h
+    const DESCRIPTION = 'Returns most recent entries from Japan Expo actualités.';
+    const PARAMETERS = array( array(
         'mode'=>array(
             'name'=>'Show full contents',
             'type'=>'checkbox',
@@ -42,8 +43,8 @@ class JapanExpoBridge extends HttpCachingBridgeAbstract {
             }
         };
 
-        $html = $this->getSimpleHTMLDOM($this->uri)
-          or $this->returnServerError('Could not request JapanExpo: '.$this->uri);
+        $html = getSimpleHTMLDOM(self::URI)
+          or returnServerError('Could not request JapanExpo: '.self::URI);
         $fullcontent = $this->getInput('mode');
         $count = 0;
 
@@ -59,10 +60,8 @@ class JapanExpoBridge extends HttpCachingBridgeAbstract {
                 if ($count >= 5) {
                   break;
                 }
-                if($this->get_cached_time($url) <= strtotime('-24 hours'))
-                    $this->remove_from_cache($url);
 
-                $article_html = $this->get_cached($url) or $this->returnServerError('Could not request JapanExpo: '.$url);
+                $article_html = getSimpleHTMLDOMCached('Could not request JapanExpo: '.$url);
                 $header = $article_html->find('header.pageHeadBox', 0);
                 $timestamp = strtotime($header->find('time', 0)->datetime);
                 $title_html = $header->find('div.section', 0)->next_sibling();
@@ -86,9 +85,5 @@ class JapanExpoBridge extends HttpCachingBridgeAbstract {
             $this->items[] = $item;
             $count++;
         }
-    }
-
-    public function getCacheDuration(){
-        return 14400; // 4 hours
     }
 }

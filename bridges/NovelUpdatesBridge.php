@@ -1,29 +1,29 @@
 <?php
 class NovelUpdatesBridge extends BridgeAbstract{
 
-	public $maintainer = "albirew";
-	public $name = "Novel Updates";
-	public $uri = "http://www.novelupdates.com/";
-	public $description = "Returns releases from Novel Updates";
-	public $parameters = array( array(
+	const MAINTAINER = "albirew";
+	const NAME = "Novel Updates";
+	const URI = "http://www.novelupdates.com/";
+	const CACHE_TIMEOUT = 21600; // 6h
+	const DESCRIPTION = "Returns releases from Novel Updates";
+	const PARAMETERS = array( array(
         'n'=>array(
-            'name'=>'Novel URL',
-            'patterns'=>'http:\/\/www.novelupdates.com\/.*',
-            'required'=>true
+          'name'=>'Novel name as found in the url',
+          'exampleValue'=>'spirit-realm',
+          'required'=>true
         )
     ));
 
     private $seriesTitle='';
 
+    public function getURI(){
+      return static::URI.'/series/'.$this->getInput('n').'/';
+    }
+
     public function collectData(){
-        $thread = parse_url($this->getInput('n'))
-            or $this->returnClientError('This URL seems malformed, please check it.');
-        if($thread['host'] !== 'www.novelupdates.com')
-            $this->returnClientError('NovelUpdates URL only.');
-      	if(strpos($thread['path'], 'series/') === FALSE)
-            $this->returnClientError('You must specify the novel URL.');
-        $url = $this->uri.$thread['path'].'';
-        $fullhtml = $this->getSimpleHTMLDOM($url) or $this->returnServerError("Could not request NovelUpdates, novel not found");
+        $fullhtml = getSimpleHTMLDOM($this->getURI())
+          or returnServerError('Could not request NovelUpdates, novel "'.$this->getInput('n').'" not found');
+
         $this->seriesTitle = $fullhtml->find('h4.seriestitle', 0)->plaintext;
         // dirty fix for nasty simpledom bug: https://github.com/sebsauvage/rss-bridge/issues/259
         // forcefully removes tbody
@@ -37,16 +37,16 @@ class NovelUpdatesBridge extends BridgeAbstract{
             $item['title'] = $element->find('td', 2)->find('a', 0)->plaintext;
             $item['team'] = $element->find('td', 1)->innertext;
             $item['timestamp'] = strtotime($element->find('td', 0)->plaintext);
-            $item['content'] = '<a href="'.$item['uri'].'">'.$this->seriesTitle.' - '.$item['title'].'</a> by '.$item['team'].'<br><a href="'.$item['uri'].'">'.$fullhtml->find('div.seriesimg', 0)->innertext.'</a>';
+            $item['content'] =
+              '<a href="'.$item['uri'].'">'
+              .$this->seriesTitle.' - '.$item['title']
+              .'</a> by '.$item['team'].'<br>'
+              .'<a href="'.$item['uri'].'">'.$fullhtml->find('div.seriesimg', 0)->innertext.'</a>';
             $this->items[] = $item;
         }
     }
 
     public function getName(){
-        return (!empty($this->seriesTitle) ? $this->seriesTitle.' - ' : '') .'Novel Updates';
-    }
-
-    public function getCacheDuration(){
-        return 21600; // 6 hours
+        return $this->seriesTitle. ' - ' . static::NAME;
     }
 }

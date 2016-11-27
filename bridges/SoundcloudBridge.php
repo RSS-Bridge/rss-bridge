@@ -1,12 +1,13 @@
 <?php
 class SoundCloudBridge extends BridgeAbstract{
 
-	public $maintainer = "kranack";
-	public $name = "Soundcloud Bridge";
-	public $uri = "http://www.soundcloud.com/";
-	public $description = "Returns 10 newest music from user profile";
+	const MAINTAINER = "kranack";
+	const NAME = "Soundcloud Bridge";
+	const URI = "https://soundcloud.com/";
+	const CACHE_TIMEOUT = 600; // 10min
+	const DESCRIPTION = "Returns 10 newest music from user profile";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'u'=>array(
             'name'=>'username',
             'required'=>true
@@ -17,26 +18,26 @@ class SoundCloudBridge extends BridgeAbstract{
 
 	public function collectData(){
 
-        $res = json_decode($this->getContents(
+        $res = json_decode(getContents(
             'https://api.soundcloud.com/resolve?url=http://www.soundcloud.com/'
             . urlencode($this->getInput('u'))
             .'&client_id=' . self::CLIENT_ID
-        )) or $this->returnServerError('No results for this query');
-        $tracks = json_decode($this->getContents(
+        )) or returnServerError('No results for this query');
+        $tracks = json_decode(getContents(
             'https://api.soundcloud.com/users/'
             . urlencode($res->id)
             .'/tracks?client_id=' . self::CLIENT_ID
-        )) or $this->returnServerError('No results for this user');
+        )) or returnServerError('No results for this user');
 
 		for ($i=0; $i < 10; $i++) {
 		    $item = array();
 		    $item['author'] = $tracks[$i]->user->username .' - '. $tracks[$i]->title;
 		    $item['title'] = $tracks[$i]->user->username .' - '. $tracks[$i]->title;
 		    $item['content'] = '<audio src="'. $tracks[$i]->uri .'/stream?client_id='. self::CLIENT_ID .'">';
-            $item['id'] = 'https://soundcloud.com/'
+            $item['id'] = self::URI
                 . urlencode($this->getInput('u')) .'/'
                 . urlencode($tracks[$i]->permalink);
-            $item['uri'] = 'https://soundcloud.com/'
+            $item['uri'] = self::URI
                 . urlencode($this->getInput('u')) .'/'
                 . urlencode($tracks[$i]->permalink);
 		    $this->items[] = $item;
@@ -44,10 +45,6 @@ class SoundCloudBridge extends BridgeAbstract{
 
     }
 	public function getName(){
-		return $this->name .' - '. $this->getInput('u');
-	}
-
-	public function getCacheDuration(){
-		return 600; // 10 minutes
+		return self::NAME .' - '. $this->getInput('u');
 	}
 }

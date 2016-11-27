@@ -1,12 +1,12 @@
 <?php
 class DemoBridge extends BridgeAbstract{
 
-    public $maintainer = "teromene";
-    public $name = "DemoBridge";
-    public $uri = "http://github.com/rss-bridge/rss-bridge";
-    public $description = "Bridge used for demos";
+    const MAINTAINER = "teromene";
+    const NAME = "DemoBridge";
+    const URI = "http://github.com/rss-bridge/rss-bridge";
+    const DESCRIPTION = "Bridge used for demos";
 
-    public $parameters = array(
+    const PARAMETERS = array(
         'testCheckbox' => array(
             'testCheckbox'=>array(
                 'type'=>'checkbox',
@@ -45,9 +45,5 @@ class DemoBridge extends BridgeAbstract{
 
         $this->items[] = $item;
 
-    }
-
-    public function getCacheDuration(){
-        return 00; // 1 hour
     }
 }

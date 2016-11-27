@@ -51,8 +51,9 @@ RSS-Bridge hashtag (#rss-bridge) search on Twitter, in ATOM format (as displayed
 Requirements
 ===
 
- * PHP 5.4
+ * PHP 5.6, e.g. `AddHandler application/x-httpd-php56 .php` in `.htaccess`
  * `openssl` extension enabled in PHP config (`php.ini`)
+ * `allow_url_fopen=1` in `php.ini`
 
 Enabling/Disabling bridges
 ===
@@ -107,6 +108,9 @@ Patch/contributors :
  * [kraoc](https://github.com/kraoc)
  * [lagaisse](https://github.com/lagaisse)
  * [az5he6ch](https://github.com/az5he6ch)
+ * [niawag](https://github.com/niawag)
+ * [JeremyRand](https://github.com/JeremyRand)
+ * [mro](https://github.com/mro)
 
 Licenses
 ===

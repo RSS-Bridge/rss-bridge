@@ -1,15 +1,16 @@
 <?php
 class CourrierInternationalBridge extends BridgeAbstract{
 
-    public $maintainer = "teromene";
-    public $name = "Courrier International Bridge";
-    public $uri = "http://CourrierInternational.com/";
-    public $description = "Courrier International bridge";
+    const MAINTAINER = "teromene";
+    const NAME = "Courrier International Bridge";
+    const URI = "http://CourrierInternational.com/";
+    const CACHE_TIMEOUT = 300; // 5 min
+    const DESCRIPTION = "Courrier International bridge";
 
     public function collectData(){
 
-        $html = $this->getSimpleHTMLDOM($this->uri)
-            or $this->returnServerError('Error.');
+        $html = getSimpleHTMLDOM(self::URI)
+            or returnServerError('Error.');
 
         $element = $html->find("article");
 
@@ -22,17 +23,20 @@ class CourrierInternationalBridge extends BridgeAbstract{
             $item['uri'] = $article->parent->getAttribute("href");
 
             if(strpos($item['uri'], "http") === FALSE) {
-                $item['uri'] = $this->uri.$item['uri'];
+                $item['uri'] = self::URI.$item['uri'];
             }
 
-            $page = $this->getSimpleHTMLDOM($item['uri']);
+            $page = getSimpleHTMLDOMCached($item['uri']);
 
-            $cleaner = new HTMLSanitizer();
+            $content = $page->find('.article-text',0);
+            if(!$content){
+              $content = $page->find('.depeche-text',0);
+            }
 
-            $item['content'] = $cleaner->sanitize($page->find("div.article-text")[0]);
-            $item['title'] = strip_tags($article->find(".title")[0]);
+            $item['content'] = sanitize($content);
+            $item['title'] = strip_tags($article->find(".title",0));
 
-            $dateTime = date_parse($page->find("time")[0]);
+            $dateTime = date_parse($page->find("time",0));
 
             $item['timestamp'] = mktime(
        			$dateTime['hour'],
@@ -51,10 +55,6 @@ class CourrierInternationalBridge extends BridgeAbstract{
 
 
 
-    }
-
-    public function getCacheDuration(){
-        return 300; // 5 minutes
     }
 }
 

@@ -1,12 +1,13 @@
 <?php
 class FacebookBridge extends BridgeAbstract{
 
-	public $maintainer = "teromene";
-	public $name = "Facebook";
-	public $uri = "https://www.facebook.com/";
-	public $description = "Input a page title or a profile log. For a profile log, please insert the parameter as follow : myExamplePage/132621766841117";
+	const MAINTAINER = "teromene";
+	const NAME = "Facebook";
+	const URI = "https://www.facebook.com/";
+	const CACHE_TIMEOUT = 300; // 5min
+	const DESCRIPTION = "Input a page title or a profile log. For a profile log, please insert the parameter as follow : myExamplePage/132621766841117";
 
-    public $parameters =array( array(
+    const PARAMETERS =array( array(
         'u'=>array(
             'name'=>'Username',
             'required'=>true
@@ -31,7 +32,7 @@ class FacebookBridge extends BridgeAbstract{
 			if (is_array($matches) && count($matches) > 1) {
 				$link = $matches[1];
 				if (strpos($link, '/') === 0)
-					$link = $this->uri.$link.'"';
+					$link = self::URI.$link.'"';
 				if (strpos($link, 'facebook.com/l.php?u=') !== false)
 					$link = urldecode(ExtractFromDelimiters($link, 'facebook.com/l.php?u=', '&'));
 				return ' href="'.$link.'"';
@@ -92,8 +93,8 @@ class FacebookBridge extends BridgeAbstract{
 					),
 				);
 				$context  = stream_context_create($http_options);
-				$html = $this->getContents($captcha_action, false, $context);
-				if ($html === FALSE) { $this->returnServerError('Failed to submit captcha response back to Facebook'); }
+				$html = getContents($captcha_action, false, $context);
+				if ($html === FALSE) { returnServerError('Failed to submit captcha response back to Facebook'); }
 				unset($_SESSION['captcha_fields']);
 				$html = str_get_html($html);
 			}
@@ -104,11 +105,11 @@ class FacebookBridge extends BridgeAbstract{
 		//Retrieve page contents
 		if (is_null($html)) {
 			if (!strpos($this->getInput('u'), "/")) {
-                $html = $this->getSimpleHTMLDOM($this->uri.urlencode($this->getInput('u')).'?_fb_noscript=1')
-                    or $this->returnServerError('No results for this query.');
+                $html = getSimpleHTMLDOM(self::URI.urlencode($this->getInput('u')).'?_fb_noscript=1')
+                    or returnServerError('No results for this query.');
 			} else {
-                $html = $this->getSimpleHTMLDOM($this->uri.'pages/'.$this->getInput('u').'?_fb_noscript=1')
-                    or $this->returnServerError('No results for this query.');
+                $html = getSimpleHTMLDOM(self::URI.'pages/'.$this->getInput('u').'?_fb_noscript=1')
+                    or returnServerError('No results for this query.');
 			}
 		}
 
@@ -123,10 +124,10 @@ class FacebookBridge extends BridgeAbstract{
 			foreach ($captcha->find('input, button') as $input)
 				$captcha_fields[$input->name] = $input->value;
 			$_SESSION['captcha_fields'] = $captcha_fields;
-			$_SESSION['captcha_action'] = $this->uri.$captcha->find('form', 0)->action;
+			$_SESSION['captcha_action'] = self::URI.$captcha->find('form', 0)->action;
 
 			//Show captcha filling form to the viewer, proxying the captcha image
-			$img = base64_encode($this->getContents($captcha->find('img', 0)->src));
+			$img = base64_encode(getContents($captcha->find('img', 0)->src));
 			header('HTTP/1.1 500 '.Http::getMessageForCode(500));
 			header('Content-Type: text/html');
 			die('<form method="post" action="?'.$_SERVER['QUERY_STRING'].'">'
@@ -192,7 +193,7 @@ class FacebookBridge extends BridgeAbstract{
 						$title = substr($title, 0, strpos(wordwrap($title, 64), "\n")).'...';
 
 					//Build and add final item
-					$item['uri'] = $this->uri.$post->find('abbr')[0]->parent()->getAttribute('href');
+					$item['uri'] = self::URI.$post->find('abbr')[0]->parent()->getAttribute('href');
 					$item['content'] = $content;
 					$item['title'] = $title;
 					$item['author'] = $author;
@@ -205,9 +206,5 @@ class FacebookBridge extends BridgeAbstract{
 
 	public function getName() {
 		return (isset($this->authorName) ? $this->authorName.' - ' : '').'Facebook Bridge';
-	}
-
-	public function getCacheDuration() {
-		return 300; // 5 minutes
 	}
 }

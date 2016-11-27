@@ -1,14 +1,15 @@
 <?php
 class DilbertBridge extends BridgeAbstract {
 
-    public $maintainer = 'kranack';
-    public $name = 'Dilbert Daily Strip';
-    public $uri = 'http://dilbert.com';
-    public $description = 'The Unofficial Dilbert Daily Comic Strip';
+    const MAINTAINER = 'kranack';
+    const NAME = 'Dilbert Daily Strip';
+    const URI = 'http://dilbert.com';
+    const CACHE_TIMEOUT = 21600; // 6h
+    const DESCRIPTION = 'The Unofficial Dilbert Daily Comic Strip';
 
     public function collectData(){
 
-        $html = $this->getSimpleHTMLDOM($this->getURI()) or $this->returnServerError('Could not request Dilbert: '.$this->getURI());
+        $html = getSimpleHTMLDOM($this->getURI()) or returnServerError('Could not request Dilbert: '.$this->getURI());
 
         foreach ($html->find('section.comic-item') as $element) {
 
@@ -30,10 +31,6 @@ class DilbertBridge extends BridgeAbstract {
             $item['content'] = '<img src="'.$comic.'" alt="'.$img->alt.'" />';
             $this->items[] = $item;
         }
-    }
-
-    public function getCacheDuration() {
-        return 21600; // 6 hours
     }
 }
 ?>

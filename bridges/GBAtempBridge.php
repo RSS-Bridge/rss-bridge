@@ -1,12 +1,12 @@
 <?php
 class GBAtempBridge extends BridgeAbstract {
 
-    public $maintainer = 'ORelio';
-    public $name = 'GBAtemp';
-    public $uri = 'http://gbatemp.net/';
-    public $description = 'GBAtemp is a user friendly underground video game community.';
+    const MAINTAINER = 'ORelio';
+    const NAME = 'GBAtemp';
+    const URI = 'http://gbatemp.net/';
+    const DESCRIPTION = 'GBAtemp is a user friendly underground video game community.';
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'type'=>array(
             'name'=>'Type',
             'type'=>'list',
@@ -54,7 +54,7 @@ class GBAtempBridge extends BridgeAbstract {
     }
 
     private function fetch_post_content($uri, $site_url) {
-        $html = $this->getSimpleHTMLDOM($uri);
+        $html = getSimpleHTMLDOM($uri);
         if(!$html){
             return 'Could not request GBAtemp '.$uri;
         }
@@ -65,24 +65,24 @@ class GBAtempBridge extends BridgeAbstract {
 
     public function collectData(){
 
-        $html = $this->getSimpleHTMLDOM($this->uri)
-            or $this->returnServerError('Could not request GBAtemp.');
+        $html = getSimpleHTMLDOM(self::URI)
+            or returnServerError('Could not request GBAtemp.');
 
         switch($this->getInput('type')){
         case 'N':
             foreach ($html->find('li[class=news_item full]') as $newsItem) {
-                $url = $this->uri.$newsItem->find('a', 0)->href;
+                $url = self::URI.$newsItem->find('a', 0)->href;
                 $time = intval($this->ExtractFromDelimiters($newsItem->find('abbr.DateTime', 0)->outertext, 'data-time="', '"'));
                 $author = $newsItem->find('a.username', 0)->plaintext;
                 $title = $newsItem->find('a', 1)->plaintext;
-                $content = $this->fetch_post_content($url, $this->uri);
+                $content = $this->fetch_post_content($url, self::URI);
                 $this->items[] = $this->build_item($url, $title, $author, $time, $content);
             }
         case 'R':
             foreach ($html->find('li.portal_review') as $reviewItem) {
-                $url = $this->uri.$reviewItem->find('a', 0)->href;
+                $url = self::URI.$reviewItem->find('a', 0)->href;
                 $title = $reviewItem->find('span.review_title', 0)->plaintext;
-                $content = $this->getSimpleHTMLDOM($url) or $this->returnServerError('Could not request GBAtemp: '.$uri);
+                $content = getSimpleHTMLDOM($url) or returnServerError('Could not request GBAtemp: '.$uri);
                 $author = $content->find('a.username', 0)->plaintext;
                 $time = intval($this->ExtractFromDelimiters($content->find('abbr.DateTime', 0)->outertext, 'data-time="', '"'));
                 $intro = '<p><b>'.($content->find('div#review_intro', 0)->plaintext).'</b></p>';
@@ -90,25 +90,25 @@ class GBAtempBridge extends BridgeAbstract {
                 $subheader = '<p><b>'.$content->find('div.review_subheader', 0)->plaintext.'</b></p>';
                 $procons = $content->find('table.review_procons', 0)->outertext;
                 $scores = $content->find('table.reviewscores', 0)->outertext;
-                $content = $this->cleanup_post_content($intro.$review.$subheader.$procons.$scores, $this->uri);
+                $content = $this->cleanup_post_content($intro.$review.$subheader.$procons.$scores, self::URI);
                 $this->items[] = $this->build_item($url, $title, $author, $time, $content);
             }
         case 'T':
             foreach ($html->find('li.portal-tutorial') as $tutorialItem) {
-                $url = $this->uri.$tutorialItem->find('a', 0)->href;
+                $url = self::URI.$tutorialItem->find('a', 0)->href;
                 $title = $tutorialItem->find('a', 0)->plaintext;
                 $time = intval($this->ExtractFromDelimiters($tutorialItem->find('abbr.DateTime', 0)->outertext, 'data-time="', '"'));
                 $author = $tutorialItem->find('a.username', 0)->plaintext;
-                $content = $this->fetch_post_content($url, $this->uri);
+                $content = $this->fetch_post_content($url, self::URI);
                 $this->items[] = $this->build_item($url, $title, $author, $time, $content);
             }
         case 'F':
             foreach ($html->find('li.rc_item') as $postItem) {
-                $url = $this->uri.$postItem->find('a', 1)->href;
+                $url = self::URI.$postItem->find('a', 1)->href;
                 $title = $postItem->find('a', 1)->plaintext;
                 $time = intval($this->ExtractFromDelimiters($postItem->find('abbr.DateTime', 0)->outertext, 'data-time="', '"'));
                 $author = $postItem->find('a.username', 0)->plaintext;
-                $content = $this->fetch_post_content($url, $this->uri);
+                $content = $this->fetch_post_content($url, self::URI);
                 $this->items[] = $this->build_item($url, $title, $author, $time, $content);
             }
         }
@@ -117,13 +117,8 @@ class GBAtempBridge extends BridgeAbstract {
     public function getName() {
         $type=array_search(
             $this->getInput('type'),
-            $this->parameters[$this->queriedContext]['type']['values']
+            self::PARAMETERS[$this->queriedContext]['type']['values']
         );
         return 'GBAtemp '.$type.' Bridge';
     }
-
-    public function getCacheDuration() {
-        return ($this->filter === 'Forum') ? 300 : 3600; // 5 minutes / 1 hour
-    }
-
 }

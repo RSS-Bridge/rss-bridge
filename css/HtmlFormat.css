@@ -70,9 +70,16 @@ a.backlink, a.backlink:link, a.backlink:visited, a.itemtitle, a.itemtitle:link, 
 
 }
 
-section > div.content {
+section > div.content, section > div.attachments {
 
 	padding: 10px;
+
+}
+
+section > div.attachments > li.enclosure {
+
+	list-style-type: circle;
+	list-style-position: inside;
 
 }
 

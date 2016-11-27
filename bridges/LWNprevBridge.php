@@ -1,12 +1,13 @@
 <?php
 class LWNprevBridge extends BridgeAbstract{
-  public $maintainer = 'Pierre Mazière';
-  public $name = 'LWN Free Weekly Edition';
-  public $uri = 'https://lwn.net/';
-  public $description = 'LWN Free Weekly Edition available one week late';
+  const MAINTAINER = 'Pierre Mazière';
+  const NAME = 'LWN Free Weekly Edition';
+  const URI = 'https://lwn.net/';
+  const CACHE_TIMEOUT = 604800; // 1 week
+  const DESCRIPTION = 'LWN Free Weekly Edition available one week late';
 
   function getURI(){
-      return $this->uri.'free/bigpage';
+      return self::URI.'free/bigpage';
   }
 
   private function jumpToNextTag(&$node){
@@ -32,8 +33,8 @@ class LWNprevBridge extends BridgeAbstract{
   public function collectData(){
     // Because the LWN page is written in loose HTML and not XHTML,
     // Simple HTML Dom is not accurate enough for the job
-    $content=$this->getContents($this->getURI())
-      or $this->returnServerError('No results for LWNprev');
+    $content=getContents($this->getURI())
+      or returnServerError('No results for LWNprev');
 
     libxml_use_internal_errors(true);
     $html=new DOMDocument();
@@ -48,7 +49,7 @@ class LWNprevBridge extends BridgeAbstract{
         break;
       }
     }
-    $realURI=$this->uri.$a->getAttribute('href');
+    $realURI=self::URI.$a->getAttribute('href');
     $URICounter=0;
 
     $edition=$html->getElementsByTagName('h1')->item(0)->textContent;
@@ -82,7 +83,7 @@ class LWNprevBridge extends BridgeAbstract{
       $h2FirstChild=$h2->firstChild;
       $this->jumpToNextTag($h2FirstChild);
       if($h2FirstChild->nodeName==='a'){
-        $item['uri']=$this->uri.$h2FirstChild->getAttribute('href');
+        $item['uri']=self::URI.$h2FirstChild->getAttribute('href');
       }else{
         $item['uri']=$realURI.'#'.$URICounter;
       }
@@ -139,9 +140,5 @@ class LWNprevBridge extends BridgeAbstract{
       $item['content']=$content;
       $this->items[]=$item;
     }
-  }
-
-  public function getCacheDuration(){
-    return 604800; // one week
   }
 }

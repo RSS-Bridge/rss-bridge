@@ -1,11 +1,12 @@
 <?php
 class IsoHuntBridge extends BridgeAbstract{
-  public $maintainer = 'logmanoriginal';
-  public $name = 'isoHunt Bridge';
-  public $uri = 'https://isohunt.to/';
-  public $description = 'Returns the latest results by category or search result';
+  const MAINTAINER = 'logmanoriginal';
+  const NAME = 'isoHunt Bridge';
+  const URI = 'https://isohunt.to/';
+  const CACHE_TIMEOUT = 300; //5min
+  const DESCRIPTION = 'Returns the latest results by category or search result';
 
-  public $parameters = array(
+  const PARAMETERS = array(
     /*
      * Get feeds for one of the "latest" categories
      * Notice: The categories "News" and "Top Searches" are received from the main page
@@ -90,7 +91,7 @@ class IsoHuntBridge extends BridgeAbstract{
   );
 
   public  function getURI(){
-    $uri=$this->uri;
+    $uri=self::URI;
     switch($this->queriedContext){
     case 'By "Latest" category':
       switch($this->getInput('latest_category')){
@@ -132,27 +133,27 @@ class IsoHuntBridge extends BridgeAbstract{
       $categoryName =
         array_search(
           $this->getInput('latest_category'),
-          $this->parameters['By "Latest" category']['latest_category']['values']
+          self::PARAMETERS['By "Latest" category']['latest_category']['values']
         );
-      $name = 'Latest '.$categoryName.' - ' . $this->name;
+      $name = 'Latest '.$categoryName.' - ' . self::NAME;
       break;
 
     case 'By "Torrent" category':
       $categoryName =
         array_search(
           $this->getInput('torrent_category'),
-          $this->parameters['By "Torrent" category']['torrent_category']['values']
+          self::PARAMETERS['By "Torrent" category']['torrent_category']['values']
         );
-      $name = 'Category: ' . $categoryName . ' - ' . $this->name;
+      $name = 'Category: ' . $categoryName . ' - ' . self::NAME;
       break;
 
     case 'Search torrent by name':
       $categoryName =
         array_search(
           $this->getInput('search_category'),
-          $this->parameters['Search torrent by name']['search_category']['values']
+          self::PARAMETERS['Search torrent by name']['search_category']['values']
         );
-      $name = 'Search: "' . $this->getInput('search_name') . '" in category: ' . $categoryName . ' - ' . $this->name;
+      $name = 'Search: "' . $this->getInput('search_name') . '" in category: ' . $categoryName . ' - ' . self::NAME;
       break;
     }
 
@@ -199,30 +200,26 @@ class IsoHuntBridge extends BridgeAbstract{
     }
   }
 
-  public function getCacheDuration(){
-    return 300; // 5 minutes
-  }
-
   #region Helper functions for "Movie Torrents"
 
   private function get_movie_torrents($html){
     $container = $html->find('div#w0', 0);
     if(!$container)
-      $this->returnServerError('Unable to find torrent container!');
+      returnServerError('Unable to find torrent container!');
 
     $torrents = $container->find('article');
     if(!$torrents)
-      $this->returnServerError('Unable to find torrents!');
+      returnServerError('Unable to find torrents!');
 
     foreach($torrents as $torrent){
 
       $anchor = $torrent->find('a', 0);
       if(!$anchor)
-        $this->returnServerError('Unable to find anchor!');
+        returnServerError('Unable to find anchor!');
 
       $date = $torrent->find('small', 0);
       if(!$date)
-        $this->returnServerError('Unable to find date!');
+        returnServerError('Unable to find date!');
 
       $item = array();
 
@@ -243,11 +240,11 @@ class IsoHuntBridge extends BridgeAbstract{
   private function get_latest_hot_torrents($html){
     $container = $html->find('div#serps', 0);
     if(!$container)
-      $this->returnServerError('Unable to find torrent container!');
+      returnServerError('Unable to find torrent container!');
 
     $torrents = $container->find('tr');
     if(!$torrents)
-      $this->returnServerError('Unable to find torrents!');
+      returnServerError('Unable to find torrents!');
 
     // Remove first element (header row)
     $torrents = array_slice($torrents, 1);
@@ -256,11 +253,11 @@ class IsoHuntBridge extends BridgeAbstract{
 
       $cell = $torrent->find('td', 0);
       if(!$cell)
-        $this->returnServerError('Unable to find cell!');
+        returnServerError('Unable to find cell!');
 
       $element = $cell->find('a', 0);
       if(!$element)
-        $this->returnServerError('Unable to find element!');
+        returnServerError('Unable to find element!');
 
       $item = array();
 
@@ -281,11 +278,11 @@ class IsoHuntBridge extends BridgeAbstract{
   private function get_latest_news($html){
     $container = $html->find('div#postcontainer', 0);
     if(!$container)
-      $this->returnServerError('Unable to find post container!');
+      returnServerError('Unable to find post container!');
 
     $posts = $container->find('div.index-post');
     if(!$posts)
-      $this->returnServerError('Unable to find posts!');
+      returnServerError('Unable to find posts!');
 
     foreach($posts as $post){
       $item = array();
@@ -303,7 +300,7 @@ class IsoHuntBridge extends BridgeAbstract{
   private function latest_news_extract_author($post){
     $author = $post->find('small', 0);
     if(!$author)
-      $this->returnServerError('Unable to find author!');
+      returnServerError('Unable to find author!');
 
     // The author is hidden within a string like: 'Posted by {author} on {date}'
     preg_match('/Posted\sby\s(.*)\son/i', $author->innertext, $matches);
@@ -314,7 +311,7 @@ class IsoHuntBridge extends BridgeAbstract{
   private function latest_news_extract_timestamp($post){
     $date = $post->find('small', 0);
     if(!$date)
-      $this->returnServerError('Unable to find date!');
+      returnServerError('Unable to find date!');
 
     // The date is hidden within a string like: 'Posted by {author} on {date}'
     preg_match('/Posted\sby\s.*\son\s(.*)/i', $date->innertext, $matches);
@@ -332,7 +329,7 @@ class IsoHuntBridge extends BridgeAbstract{
   private function latest_news_extract_title($post){
     $title = $post->find('a', 0);
     if(!$title)
-      $this->returnServerError('Unable to find title!');
+      returnServerError('Unable to find title!');
 
     return $title->plaintext;
   }
@@ -340,7 +337,7 @@ class IsoHuntBridge extends BridgeAbstract{
   private function latest_news_extract_uri($post){
     $uri = $post->find('a', 0);
     if(!$uri)
-      $this->returnServerError('Unable to find uri!');
+      returnServerError('Unable to find uri!');
 
     return $uri->href;
   }
@@ -348,7 +345,7 @@ class IsoHuntBridge extends BridgeAbstract{
   private function latest_news_extract_content($post){
     $content = $post->find('div', 0);
     if(!$content)
-      $this->returnServerError('Unable to find content!');
+      returnServerError('Unable to find content!');
 
     // Remove <h2>...</h2> (title)
     foreach($content->find('h2') as $element){
@@ -370,11 +367,11 @@ class IsoHuntBridge extends BridgeAbstract{
   private function get_latest_torrents($html){
     $container = $html->find('div#serps', 0);
     if(!$container)
-      $this->returnServerError('Unable to find torrent container!');
+      returnServerError('Unable to find torrent container!');
 
     $torrents = $container->find('tr[data-key]');
     if(!$torrents)
-      $this->returnServerError('Unable to find torrents!');
+      returnServerError('Unable to find torrents!');
 
     foreach($torrents as $torrent){
       $item = array();
@@ -392,11 +389,11 @@ class IsoHuntBridge extends BridgeAbstract{
   private function latest_torrents_extract_title($torrent){
     $cell = $torrent->find('td.title-row', 0);
     if(!$cell)
-      $this->returnServerError('Unable to find title cell!');
+      returnServerError('Unable to find title cell!');
 
     $title = $cell->find('span', 0);
     if(!$title)
-      $this->returnServerError('Unable to find title!');
+      returnServerError('Unable to find title!');
 
     return $title->plaintext;
   }
@@ -404,11 +401,11 @@ class IsoHuntBridge extends BridgeAbstract{
   private function latest_torrents_extract_uri($torrent){
     $cell = $torrent->find('td.title-row', 0);
     if(!$cell)
-      $this->returnServerError('Unable to find title cell!');
+      returnServerError('Unable to find title cell!');
 
     $uri = $cell->find('a', 0);
     if(!$uri)
-      $this->returnServerError('Unable to find uri!');
+      returnServerError('Unable to find uri!');
 
     return $this->fix_relative_uri($uri->href);
   }
@@ -420,7 +417,7 @@ class IsoHuntBridge extends BridgeAbstract{
 
     $user = $cell->find('a', 0);
     if(!$user)
-      $this->returnServerError('Unable to find user!');
+      returnServerError('Unable to find user!');
 
     return $user->plaintext;
   }
@@ -428,7 +425,7 @@ class IsoHuntBridge extends BridgeAbstract{
   private function latest_torrents_extract_timestamp($torrent){
     $cell = $torrent->find('td.date-row', 0);
     if(!$cell)
-      $this->returnServerError('Unable to find date cell!');
+      returnServerError('Unable to find date cell!');
 
     return strtotime('-' . $cell->plaintext, time());
   }
@@ -438,15 +435,15 @@ class IsoHuntBridge extends BridgeAbstract{
   #region Generic helper functions
 
   private function load_html($uri){
-    $html = $this->getSimpleHTMLDOM($uri);
+    $html = getSimpleHTMLDOM($uri);
     if(!$html)
-      $this->returnServerError('Unable to load ' . $uri . '!');
+      returnServerError('Unable to load ' . $uri . '!');
 
     return $html;
   }
 
   private function fix_relative_uri($uri){
-    return preg_replace('/\//i', $this->uri, $uri, 1);
+    return preg_replace('/\//i', self::URI, $uri, 1);
   }
 
   private function build_category_uri($category, $order_popularity = false){

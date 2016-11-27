@@ -1,9 +1,10 @@
 <?php
 class TwitterBridge extends BridgeAbstract{
-    public $name='Twitter Bridge';
-    public $uri='https://twitter.com/';
-    public $description='returns tweets';
-    public $parameters=array(
+    const NAME='Twitter Bridge';
+    const URI='https://twitter.com/';
+    const CACHE_TIMEOUT = 300; // 5min
+    const DESCRIPTION='returns tweets';
+    const PARAMETERS=array(
         'global'=>array(
             'nopic'=>array(
                 'name'=>'Hide profile pictures',
@@ -51,9 +52,9 @@ class TwitterBridge extends BridgeAbstract{
     public function getURI(){
         switch($this->queriedContext){
         case 'By keyword or hashtag':
-            return $this->uri.'search?q='.urlencode($this->getInput('q')).'&f=tweets';
+            return self::URI.'search?q='.urlencode($this->getInput('q')).'&f=tweets';
         case 'By username':
-            return $this->uri.urlencode($this->getInput('u')).
+            return self::URI.urlencode($this->getInput('u')).
                 ($this->getInput('norep')?'':'/with_replies');
         }
     }
@@ -61,13 +62,13 @@ class TwitterBridge extends BridgeAbstract{
 	public function collectData(){
 		$html = '';
 
-		$html = $this->getSimpleHTMLDOM($this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 		if(!$html){
 			switch($this->queriedContext){
 			case 'By keyword or hashtag':
-				$this->returnServerError('No results for this query.');
+				returnServerError('No results for this query.');
 			case 'By username':
-				$this->returnServerError('Requested username can\'t be found.');
+				returnServerError('Requested username can\'t be found.');
 			}
 		}
 
@@ -86,7 +87,7 @@ class TwitterBridge extends BridgeAbstract{
 			// get TweetID
 			$item['id'] = $tweet->getAttribute('data-tweet-id');
 			// get tweet link
-			$item['uri'] = 'https://twitter.com'.$tweet->find('a.js-permalink', 0)->getAttribute('href');
+			$item['uri'] = self::URI.$tweet->find('a.js-permalink', 0)->getAttribute('href');
 			// extract tweet timestamp
 			$item['timestamp'] = $tweet->find('span.js-short-timestamp', 0)->getAttribute('data-time');
 			// generate the title
@@ -111,7 +112,7 @@ class TwitterBridge extends BridgeAbstract{
 			}
 
 			// get tweet text
-			$cleanedTweet = str_replace('href="/', 'href="https://twitter.com/', $tweet->find('p.js-tweet-text', 0)->innertext);
+			$cleanedTweet = str_replace('href="/', 'href="'.self::URI, $tweet->find('p.js-tweet-text', 0)->innertext);
 
 			// Add picture to content
 			$picture_html = '';
@@ -134,9 +135,5 @@ EOD;
 			// put out
 			$this->items[] = $item;
 		}
-	}
-
-	public function getCacheDuration(){
-		return 300; // 5 minutes
 	}
 }

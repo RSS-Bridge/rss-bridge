@@ -1,13 +1,15 @@
 <?php
 class TheCodingLoveBridge extends BridgeAbstract{
 
-	public $maintainer = "superbaillot.net";
-	public $name = "The Coding Love";
-	public $uri = "http://thecodinglove.com/";
-	public $description = "The Coding Love";
+	const MAINTAINER = "superbaillot.net";
+	const NAME = "The Coding Love";
+	const URI = "http://thecodinglove.com/";
+	const CACHE_TIMEOUT = 7200; // 2h
+	const DESCRIPTION = "The Coding Love";
 
     public function collectData(){
-        $html = $this->getSimpleHTMLDOM('http://thecodinglove.com/') or $this->returnServerError('Could not request The Coding Love.');
+      $html = getSimpleHTMLDOM(self::URI)
+        or returnServerError('Could not request The Coding Love.');
 
         foreach($html->find('div.post') as $element) {
             $item = array();
@@ -42,9 +44,5 @@ class TheCodingLoveBridge extends BridgeAbstract{
 
             $this->items[] = $item;
         }
-    }
-
-    public function getCacheDuration(){
-        return 7200; // 2h hours
     }
 }

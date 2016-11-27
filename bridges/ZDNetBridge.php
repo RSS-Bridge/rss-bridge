@@ -1,13 +1,13 @@
 <?php
 class ZDNetBridge extends BridgeAbstract {
 
-    public $maintainer = 'ORelio';
-    public $name = 'ZDNet Bridge';
-    public $uri = 'http://www.zdnet.com/';
-    public $description = 'Technology News, Analysis, Comments and Product Reviews for IT Professionals.';
+    const MAINTAINER = 'ORelio';
+    const NAME = 'ZDNet Bridge';
+    const URI = 'http://www.zdnet.com/';
+    const DESCRIPTION = 'Technology News, Analysis, Comments and Product Reviews for IT Professionals.';
 
     //http://www.zdnet.com/zdnet.opml
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'feed'=>array(
             'name'=>'Feed',
             'type'=>'list',
@@ -207,18 +207,14 @@ class ZDNetBridge extends BridgeAbstract {
             return $string;
         }
 
-        $baseUri = $this->getURI();
+        $baseUri = self::URI;
         $feed = $this->getInput('feed');
-        if (empty($feed))
-            $this->returnClientError('Please select a feed to display.');
         if (strpos($feed, 'downloads!') !== false) {
             $feed = str_replace('downloads!', '', $feed);
             $baseUri = str_replace('www.', 'downloads.', $baseUri);
         }
-        if ($feed !== preg_replace('/[^a-zA-Z0-9-\/]+/', '', $feed) || substr_count($feed, '/') > 1 || strlen($feed > 64))
-            $this->returnClientError('Invalid "feed" parameter.');
         $url = $baseUri.trim($feed, '/').'/rss.xml';
-        $html = $this->getSimpleHTMLDOM($url) or $this->returnServerError('Could not request ZDNet: '.$url);
+        $html = getSimpleHTMLDOM($url) or returnServerError('Could not request ZDNet: '.$url);
         $limit = 0;
 
         foreach ($html->find('item') as $element) {
@@ -228,7 +224,7 @@ class ZDNetBridge extends BridgeAbstract {
                 $article_title = StripCDATA($element->find('title', 0)->plaintext);
                 $article_subtitle = StripCDATA($element->find('description', 0)->plaintext);
                 $article_timestamp = strtotime(StripCDATA($element->find('pubDate', 0)->plaintext));
-                $article = $this->getSimpleHTMLDOM($article_url) or $this->returnServerError('Could not request ZDNet: '.$article_url);
+                $article = getSimpleHTMLDOM($article_url) or returnServerError('Could not request ZDNet: '.$article_url);
 
                 if (!empty($article_author))
                     $author = $article_author;

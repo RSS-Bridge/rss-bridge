@@ -1,39 +1,51 @@
 <?php
 class DanbooruBridge extends BridgeAbstract{
 
-	public $maintainer = "mitsukarenai";
-	public $name = "Danbooru";
-	public $uri = "http://donmai.us/";
-	public $description = "Returns images from given page";
+  const MAINTAINER = "mitsukarenai";
+  const NAME = "Danbooru";
+  const URI = "http://donmai.us/";
+  const CACHE_TIMEOUT = 1800; // 30min
+  const DESCRIPTION = "Returns images from given page";
 
-    public $parameters = array( array(
-        'p'=>array(
-            'name'=>'page',
-            'type'=>'number'
-        ),
-        't'=>array('name'=>'tags')
-    ));
+  const PARAMETERS = array(
+    'global'=>array(
+      'p'=>array(
+        'name'=>'page',
+        'defaultValue'=>1,
+        'type'=>'number'
+      ),
+      't'=>array('name'=>'tags')
+    ),
+    0=>array()
+  );
 
-    public function collectData(){
-        $page = $this->getInput('p')?$this->getInput('p'):1;
-        $tags = urlencode($this->getInput('t'));
+  const PATHTODATA='article';
+  const IDATTRIBUTE='data-id';
 
-        $html = $this->getSimpleHTMLDOM($this->uri."posts?&page=$page&tags=$tags")
-            or $this->returnServerError('Could not request Danbooru.');
-	foreach($html->find('div[id=posts] article') as $element) {
-		$item = array();
-		$item['uri'] = $this->uri.$element->find('a', 0)->href;
-		$item['postid'] = (int)preg_replace("/[^0-9]/",'', $element->getAttribute('data-id'));
-		$item['timestamp'] = time();
-		$thumbnailUri = $this->uri.$element->find('img', 0)->src;
-		$item['tags'] = $element->find('img', 0)->getAttribute('alt');
-		$item['title'] = 'Danbooru | '.$item['postid'];
-		$item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $thumbnailUri . '" /></a><br>Tags: '.$item['tags'];
-		$this->items[] = $item;
-	}
+  protected function getFullURI(){
+    return $this->getURI().'posts?'
+      .'&page='.$this->getInput('p')
+      .'&tags='.urlencode($this->getInput('t'));
+  }
+
+  protected function getItemFromElement($element){
+    $item = array();
+    $item['uri'] = $this->getURI().$element->find('a', 0)->href;
+    $item['postid'] = (int)preg_replace("/[^0-9]/",'', $element->getAttribute(static::IDATTRIBUTE));
+    $item['timestamp'] = time();
+    $thumbnailUri = $this->getURI().$element->find('img', 0)->src;
+    $item['tags'] = $element->find('img', 0)->getAttribute('alt');
+    $item['title'] = $this->getName().' | '.$item['postid'];
+    $item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $thumbnailUri . '" /></a><br>Tags: '.$item['tags'];
+    return $item;
+  }
+
+  public function collectData(){
+    $html = getSimpleHTMLDOM($this->getFullURI())
+      or returnServerError('Could not request '.$this->getName());
+
+    foreach($html->find(static::PATHTODATA) as $element) {
+      $this->items[] = $this->getItemFromElement($element);
     }
-
-    public function getCacheDuration(){
-        return 1800; // 30 minutes
-    }
+  }
 }

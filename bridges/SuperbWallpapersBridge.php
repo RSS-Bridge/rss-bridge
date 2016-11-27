@@ -1,45 +1,47 @@
 <?php
 class SuperbWallpapersBridge extends BridgeAbstract {
 
-    private $category;
-    private $resolution;
+	const MAINTAINER = "nel50n";
+	const NAME = "Superb Wallpapers Bridge";
+	const URI = "http://www.superbwallpapers.com/";
+	const CACHE_TIMEOUT = 43200; // 12h
+	const DESCRIPTION = "Returns the latests wallpapers from SuperbWallpapers";
 
-	public $maintainer = "nel50n";
-	public $name = "Superb Wallpapers Bridge";
-	public $uri = "http://www.superbwallpapers.com/";
-	public $description = "Returns the latests wallpapers from SuperbWallpapers";
-
-    public $parameters = array( array(
-        'c'=>array('name'=>'category'),
+    const PARAMETERS = array( array(
+      'c'=>array(
+        'name'=>'category',
+        'required'=>true
+      ),
         'm'=>array(
             'name'=>'Max number of wallpapers',
             'type'=>'number'
         ),
         'r'=>array(
             'name'=>'resolution',
-            'exampleValue'=>'1920x1200, 1680x1050,…'
+            'exampleValue'=>'1920x1200, 1680x1050,…',
+            'defaultValue'=>'1920x1200'
         )
     ));
 
     public function collectData(){
-        $html = '';
-        $baseUri = 'http://www.superbwallpapers.com';
-
-        $this->category   = $this->getInput('c') ?: '';           // All default
-        $this->resolution = $this->getInput('r') ?: '1920x1200';  // Wide wallpaper default
+        $category   = $this->getInput('c');
+        $resolution = $this->getInput('r');  // Wide wallpaper default
 
         $num = 0;
         $max = $this->getInput('m') ?: 36;
         $lastpage = 1;
 
         // Get last page number
-        $link = $baseUri.'/'.$this->category.'/9999.html';
-        $html = $this->getSimpleHTMLDOM($link);
+        $link = self::URI.'/'.$category.'/9999.html';
+        $html = getSimpleHTMLDOM($link)
+          or returnServerError('Could not load '.$link);
+
         $lastpage = min($html->find('.paging .cpage', 0)->innertext(), ceil($max/36));
 
         for ($page = 1; $page <= $lastpage; $page++) {
-            $link = $baseUri.'/'.$this->category.'/'.$page.'.html';
-            $html = $this->getSimpleHTMLDOM($link) or $this->returnServerError('No results for this query.');
+            $link = self::URI.'/'.$category.'/'.$page.'.html';
+            $html = getSimpleHTMLDOM($link)
+              or returnServerError('No results for this query.');
 
             foreach($html->find('.wpl .i a') as $element) {
                 $thumbnail = $element->find('img', 0);
@@ -59,10 +61,6 @@ class SuperbWallpapersBridge extends BridgeAbstract {
     }
 
     public function getName(){
-        return 'HDWallpapers - '.$this->category.' ['.$this->resolution.']';
-    }
-
-    public function getCacheDuration(){
-        return 43200; // 12 hours
+        return self::NAME .'- '.$this->getInput('c').' ['.$this->getInput('r').']';
     }
 }

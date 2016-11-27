@@ -1,11 +1,12 @@
 <?php
 class ElsevierBridge extends BridgeAbstract{
-	public $maintainer = 'Pierre Mazière';
-	public $name = 'Elsevier journals recent articles';
-	public $uri = 'http://www.journals.elsevier.com/';
-	public $description = 'Returns the recent articles published in Elsevier journals';
+	const MAINTAINER = 'Pierre Mazière';
+	const NAME = 'Elsevier journals recent articles';
+	const URI = 'http://www.journals.elsevier.com/';
+	const CACHE_TIMEOUT = 43200; //12h
+	const DESCRIPTION = 'Returns the recent articles published in Elsevier journals';
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         'j'=>array(
             'name'=>'Journal name',
             'required'=>true,
@@ -56,8 +57,8 @@ class ElsevierBridge extends BridgeAbstract{
 	}
 
 	public function collectData(){
-		$uri = $this->uri . $this->getInput('j') . '/recent-articles/';
-		$html = $this->getSimpleHTMLDOM($uri) or $this->returnServerError('No results for Elsevier journal '.$this->getInput('j'));
+		$uri = self::URI . $this->getInput('j') . '/recent-articles/';
+		$html = getSimpleHTMLDOM($uri) or returnServerError('No results for Elsevier journal '.$this->getInput('j'));
 
 		foreach($html->find('.pod-listing') as $article){
 			$item = array();
@@ -68,10 +69,6 @@ class ElsevierBridge extends BridgeAbstract{
 			$item['content'] = $this->ExtractArticleContent($article);
 			$this->items[] = $item;
 		}
-	}
-
-	public function getCacheDuration(){
-		return 43200; // 12h
 	}
 }
 ?>

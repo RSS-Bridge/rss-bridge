@@ -1,16 +1,17 @@
 <?php
-class Sexactu extends BridgeAbstract{
+class SexactuBridge extends BridgeAbstract{
 
-	public $maintainer = "Riduidel";
-	public $name = "Sexactu";
-	public $uri = "http://www.gqmagazine.fr";
-	public $description = "Sexactu via rss-bridge";
+	const MAINTAINER = "Riduidel";
+	const NAME = "Sexactu";
+	const URI = "https://www.gqmagazine.fr";
+	const CACHE_TIMEOUT = 7200; // 2h
+	const DESCRIPTION = "Sexactu via rss-bridge";
 
     public function collectData(){
 $find = array('janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'novembre', 'décembre');
 $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
 
-    $html = $this->getSimpleHTMLDOM($this->getURI()) or $this->returnServerError('Could not request '.$this->getURI());
+    $html = getSimpleHTMLDOM($this->getURI()) or returnServerError('Could not request '.$this->getURI());
 
         foreach($html->find('.content-holder') as $contentHolder) {
             // only use first list as second one only contains pages numbers
@@ -27,7 +28,7 @@ $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July',
                         $titleData = $titleDetails->find('h2', 0)->find('a',0);
                         $titleTimestamp =$titleDetails->find('h4',0);
                         $item['title'] = $this->correctCase(trim($titleData->innertext));
-                        $item['uri'] = $this->uri.$titleData->href;
+                        $item['uri'] = self::URI.$titleData->href;
 
                         // Fugly date parsing due to the fact my DNS-323 doesn't support php intl extension
                         $dateText = $titleTimestamp->innertext;
@@ -40,7 +41,7 @@ $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July',
                         $elementText = $element->find('.text-container', 0);
                         // don't forget to replace images server url with gq one
                         foreach($elementText->find('img') as $image) {
-                            $image->src = $this->uri.$image->src;
+                            $image->src = self::URI.$image->src;
                         }
                         $item['content'] = $elementText->innertext;
                         $this->items[] = $item;
@@ -53,11 +54,7 @@ $replace = array('January', 'February', 'March', 'April', 'May', 'June', 'July',
     }
 
     public function getURI(){
-        return $this->uri.'/sexactu';
-    }
-
-    public function getCacheDuration(){
-        return 7200; // 2h hours
+        return self::URI.'/sexactu';
     }
 
     private function correctCase($str) {

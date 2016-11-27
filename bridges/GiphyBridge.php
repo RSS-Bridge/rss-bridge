@@ -3,12 +3,13 @@ define('GIPHY_LIMIT', 10);
 
 class GiphyBridge extends BridgeAbstract{
 
-	public $maintainer = "kraoc";
-	public $name = "Giphy Bridge";
-	public $uri = "http://giphy.com/";
-	public $description = "Bridge for giphy.com";
+	const MAINTAINER = "kraoc";
+	const NAME = "Giphy Bridge";
+	const URI = "http://giphy.com/";
+	const CACHE_TIMEOUT = 300; //5min
+	const DESCRIPTION = "Bridge for giphy.com";
 
-    public $parameters = array( array(
+    const PARAMETERS = array( array(
         's'=>array(
             'name'=>'search tag',
             'required'=>true
@@ -22,8 +23,8 @@ class GiphyBridge extends BridgeAbstract{
 	public function collectData(){
 		$html = '';
         $base_url = 'http://giphy.com';
-        $html = $this->getSimpleHTMLDOM($this->uri.'/search/'.urlencode($this->getInput('s').'/'))
-            or $this->returnServerError('No results for this query.');
+        $html = getSimpleHTMLDOM(self::URI.'/search/'.urlencode($this->getInput('s').'/'))
+            or returnServerError('No results for this query.');
 
         $max = GIPHY_LIMIT;
         if ($this->getInput('n')) {
@@ -37,8 +38,8 @@ class GiphyBridge extends BridgeAbstract{
                 $node = $entry->first_child();
                 $href = $node->getAttribute('href');
 
-                $html2 = $this->getSimpleHTMLDOM($this->uri . $href)
-                    or $this->returnServerError('No results for this query.');
+                $html2 = getSimpleHTMLDOM(self::URI . $href)
+                    or returnServerError('No results for this query.');
                 $figure = $html2->getElementByTagName('figure');
                 $img = $figure->firstChild();
                 $caption = $figure->lastChild();
@@ -66,9 +67,5 @@ class GiphyBridge extends BridgeAbstract{
                 $limit++;
             }
         }
-	}
-
-	public function getCacheDuration(){
-		return 300; // 5 minutes
 	}
 }

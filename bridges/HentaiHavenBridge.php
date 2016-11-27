@@ -1,14 +1,15 @@
 <?php
 class HentaiHavenBridge extends BridgeAbstract{
 
-	public $maintainer = "albirew";
-	public $name = "Hentai Haven";
-	public $uri = "http://hentaihaven.org/";
-	public $description = "Returns releases from Hentai Haven";
+	const MAINTAINER = "albirew";
+	const NAME = "Hentai Haven";
+	const URI = "http://hentaihaven.org/";
+	const CACHE_TIMEOUT = 21600; // 6h
+	const DESCRIPTION = "Returns releases from Hentai Haven";
 
     public function collectData(){
-      $html = $this->getSimpleHTMLDOM($this->uri)
-        or $this->returnServerError('Could not request Hentai Haven.');
+      $html = getSimpleHTMLDOM(self::URI)
+        or returnServerError('Could not request Hentai Haven.');
         foreach($html->find('div.zoe-grid') as $element) {
             $item = array();
             $item['uri'] = $element->find('div.brick-content h3 a', 0)->href;
@@ -18,9 +19,5 @@ class HentaiHavenBridge extends BridgeAbstract{
             $item['content'] = 'Tags: ' . $item['tags'].'<br><br><a href="' . $item['uri'] . '"><img width="300" height="169" src="' . $thumbnailUri . '" /></a><br>' . $element->find('div.oFlyout_bg div.oFlyout div.flyoutContent p.description', 0)->innertext;
             $this->items[] = $item;
         }
-    }
-
-    public function getCacheDuration(){
-        return 21600; // 6 hours
     }
 }
