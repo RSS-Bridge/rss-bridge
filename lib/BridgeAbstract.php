@@ -11,10 +11,22 @@ abstract class BridgeAbstract implements BridgeInterface {
 	const FORMATS = array(); // array of compatibles formats or null
 
 	protected $cache;
+	protected $extraInfos;
 	protected $items = array();
 	protected $inputs = array();
 	protected $queriedContext = '';
 
+		/**
+	* Return cachable datas (extrainfos and items) stored in the bridge
+	* @return mixed
+	*/
+	public function getCachable(){
+		$cachable = array();
+		$cachable["items"] = $this->getItems();
+		$cachable["extraInfos"] = $this->getExtraInfos();
+		return $cachable;
+	}
+	
 	/**
 	* Return items stored in the bridge
 	* @return mixed
@@ -143,7 +155,10 @@ abstract class BridgeAbstract implements BridgeInterface {
 			if($time !== false
 			&& (time() - static::CACHE_TIMEOUT < $time)
 			&& (!defined('DEBUG') || DEBUG !== true)){
-				$this->items = $this->cache->loadData();
+				$cachable = array();
+				$cachable = $this->cache->loadData();
+				$this->items = $cachable["items"];
+				$this->extraInfos = $cachable["extraInfos"];
 				return;
 			}
 		}
@@ -155,7 +170,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 
 			$this->collectData();
 			if(!is_null($this->cache)){
-				$this->cache->saveData($this->getItems());
+				$this->cache->saveData($this->getCachable());
 			}
 			return;
 		}
@@ -177,7 +192,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 		$this->collectData();
 
 		if(!is_null($this->cache)){
-			$this->cache->saveData($this->getItems());
+			$this->cache->saveData($this->getCachable());
 		}
 	}
 
@@ -202,7 +217,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 		$extraInfos['uri']= $this->getURI();
 		return $extraInfos;
 	}
-
+	
 	public function setCache(\CacheInterface $cache){
 		$this->cache = $cache;
 	}
