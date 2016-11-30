@@ -16,7 +16,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	protected $inputs = array();
 	protected $queriedContext = '';
 
-		/**
+	/**
 	* Return cachable datas (extrainfos and items) stored in the bridge
 	* @return mixed
 	*/
@@ -217,7 +217,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 		$extraInfos['uri']= $this->getURI();
 		return $extraInfos;
 	}
-	
+
 	public function setCache(\CacheInterface $cache){
 		$this->cache = $cache;
 	}
