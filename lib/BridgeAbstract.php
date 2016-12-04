@@ -8,8 +8,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	const MAINTAINER = 'No maintainer';
 	const CACHE_TIMEOUT = 3600;
 	const PARAMETERS = array();
-	const FORMATS = array(); // array of compatibles formats or null
-
+	
 	protected $cache;
 	protected $extraInfos;
 	protected $items = array();
@@ -21,10 +20,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	* @return mixed
 	*/
 	public function getCachable(){
-		$cachable = array();
-		$cachable["items"] = $this->getItems();
-		$cachable["extraInfos"] = $this->getExtraInfos();
-		return $cachable;
+		return array("items" => $this->getItems(), "extraInfos" => $this->getExtraInfos());
 	}
 	
 	/**
@@ -212,10 +208,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	}
 	
 	public function getExtraInfos(){
-		$extraInfos = array();
-		$extraInfos['name']= $this->getName();
-		$extraInfos['uri']= $this->getURI();
-		return $extraInfos;
+		return array("name" => $this->getName(), "uri" => $this->getURI());
 	}
 
 	public function setCache(\CacheInterface $cache){
