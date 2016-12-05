@@ -25,7 +25,7 @@ class T411Bridge extends BridgeAbstract {
         }
 
         //Retrieve torrent listing from search results, which does not contain torrent description
-        $url = self::URI.'torrents/search/?'.$this->getInput('search').'&order=added&type=desc';
+        $url = self::URI.'torrents/search/?'.urlencode($this->getInput('search')).'&order=added&type=desc';
         $html = getSimpleHTMLDOM($url)
           or returnServerError('Could not request t411: '.$url);
 
