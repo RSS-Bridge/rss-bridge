@@ -1,6 +1,6 @@
 <?php
-class FuturaSciencesBridge extends FeedExpander {
-
+class FuturaSciencesBridge extends FeedExpander
+{
     const MAINTAINER = 'ORelio';
     const NAME = 'Futura-Sciences Bridge';
     const URI = 'http://www.futura-sciences.com/';
@@ -78,12 +78,14 @@ class FuturaSciencesBridge extends FeedExpander {
         )
     ));
 
-    public function collectData(){
+    public function collectData()
+    {
         $url = self::URI . 'rss/' . $this->getInput('feed') . '.xml';
         $this->collectExpandableDatas($url, 10);
     }
 
-    protected function parseItem($newsItem){
+    protected function parseItem($newsItem)
+    {
         $item = parent::parseItem($newsItem);
         $item['uri'] = str_replace('#xtor=RSS-8', '', $item['uri']);
         $article = getSimpleHTMLDOMCached($item['uri'])
@@ -93,15 +95,18 @@ class FuturaSciencesBridge extends FeedExpander {
         return $item;
     }
 
-    function StripWithDelimiters($string, $start, $end) {
+    public function StripWithDelimiters($string, $start, $end)
+    {
         while (strpos($string, $start) !== false) {
             $section_to_remove = substr($string, strpos($string, $start));
             $section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
             $string = str_replace($section_to_remove, '', $string);
-        } return $string;
+        }
+        return $string;
     }
 
-    function StripRecursiveHTMLSection($string, $tag_name, $tag_start) {
+    public function StripRecursiveHTMLSection($string, $tag_name, $tag_start)
+    {
         $open_tag = '<'.$tag_name;
         $close_tag = '</'.$tag_name.'>';
         $close_tag_length = strlen($close_tag);
@@ -125,7 +130,8 @@ class FuturaSciencesBridge extends FeedExpander {
         return $string;
     }
 
-    function ExtractArticleContent($article){
+    public function ExtractArticleContent($article)
+    {
         $contents = $article->find('div.content', 0)->innertext;
 
         foreach (array(
@@ -142,7 +148,7 @@ class FuturaSciencesBridge extends FeedExpander {
             '<div class="httplogbar-wrapper noprint',
             '<div id="forumcomments'
         ) as $div_start) {
-            $contents = $this->StripRecursiveHTMLSection($contents , 'div', $div_start);
+            $contents = $this->StripRecursiveHTMLSection($contents, 'div', $div_start);
         }
 
         $contents = $this->StripWithDelimiters($contents, '<hr ', '/>');
@@ -156,9 +162,10 @@ class FuturaSciencesBridge extends FeedExpander {
     }
 
     // Extracts the author from an article or element
-    function ExtractAuthor($article){
+    public function ExtractAuthor($article)
+    {
         $article_author = $article->find('span.author', 0);
-        if($article_author){
+        if ($article_author) {
             return trim(str_replace(', Futura-Sciences', '', $article_author->plaintext));
         }
         return '';

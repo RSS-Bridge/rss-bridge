@@ -1,12 +1,13 @@
 <?php
-class IsoHuntBridge extends BridgeAbstract{
-  const MAINTAINER = 'logmanoriginal';
-  const NAME = 'isoHunt Bridge';
-  const URI = 'https://isohunt.to/';
-  const CACHE_TIMEOUT = 300; //5min
+class IsoHuntBridge extends BridgeAbstract
+{
+    const MAINTAINER = 'logmanoriginal';
+    const NAME = 'isoHunt Bridge';
+    const URI = 'https://isohunt.to/';
+    const CACHE_TIMEOUT = 300; //5min
   const DESCRIPTION = 'Returns the latest results by category or search result';
 
-  const PARAMETERS = array(
+    const PARAMETERS = array(
     /*
      * Get feeds for one of the "latest" categories
      * Notice: The categories "News" and "Top Searches" are received from the main page
@@ -90,11 +91,12 @@ class IsoHuntBridge extends BridgeAbstract{
     )
   );
 
-  public  function getURI(){
-    $uri=self::URI;
-    switch($this->queriedContext){
+    public function getURI()
+    {
+        $uri=self::URI;
+        switch ($this->queriedContext) {
     case 'By "Latest" category':
-      switch($this->getInput('latest_category')){
+      switch ($this->getInput('latest_category')) {
       case 'hot_torrents':
         $uri .= 'statistic/hot/torrents';
         break;
@@ -119,16 +121,18 @@ class IsoHuntBridge extends BridgeAbstract{
     case 'Search torrent by name':
       $category=$this->getInput('search_category');
       $uri .= $this->build_category_uri($category);
-      if($category!=='movies')
-        $uri .= '&ihq=' . urlencode($this->getInput('search_name'));
+      if ($category!=='movies') {
+          $uri .= '&ihq=' . urlencode($this->getInput('search_name'));
+      }
       break;
     }
 
-    return $uri;
-  }
+        return $uri;
+    }
 
-  public  function getName(){
-    switch($this->queriedContext){
+    public function getName()
+    {
+        switch ($this->queriedContext) {
     case 'By "Latest" category':
       $categoryName =
         array_search(
@@ -157,16 +161,17 @@ class IsoHuntBridge extends BridgeAbstract{
       break;
     }
 
-    return $name;
-  }
+        return $name;
+    }
 
 
-  public function collectData(){
-    $html = $this->load_html($this->getURI());
+    public function collectData()
+    {
+        $html = $this->load_html($this->getURI());
 
-    switch($this->queriedContext){
+        switch ($this->queriedContext) {
     case 'By "Latest" category':
-      switch($this->getInput('latest_category')){
+      switch ($this->getInput('latest_category')) {
       case 'hot_torrents':
         $this->get_latest_hot_torrents($html);
         break;
@@ -181,288 +186,327 @@ class IsoHuntBridge extends BridgeAbstract{
       break;
 
     case 'By "Torrent" category':
-      if($this->getInput('torrent_category') === 'movies'){
-        // This one is special (content wise)
+      if ($this->getInput('torrent_category') === 'movies') {
+          // This one is special (content wise)
         $this->get_movie_torrents($html);
-      }else{
-        $this->get_latest_torrents($html);
+      } else {
+          $this->get_latest_torrents($html);
       }
       break;
 
     case 'Search torrent by name':
-      if( $this->getInput('search_category') === 'movies'){
-        // This one is special (content wise)
+      if ($this->getInput('search_category') === 'movies') {
+          // This one is special (content wise)
         $this->get_movie_torrents($html);
       } else {
-        $this->get_latest_torrents($html);
+          $this->get_latest_torrents($html);
       }
       break;
     }
-  }
+    }
 
   #region Helper functions for "Movie Torrents"
 
-  private function get_movie_torrents($html){
-    $container = $html->find('div#w0', 0);
-    if(!$container)
-      returnServerError('Unable to find torrent container!');
+  private function get_movie_torrents($html)
+  {
+      $container = $html->find('div#w0', 0);
+      if (!$container) {
+          returnServerError('Unable to find torrent container!');
+      }
 
-    $torrents = $container->find('article');
-    if(!$torrents)
-      returnServerError('Unable to find torrents!');
+      $torrents = $container->find('article');
+      if (!$torrents) {
+          returnServerError('Unable to find torrents!');
+      }
 
-    foreach($torrents as $torrent){
+      foreach ($torrents as $torrent) {
+          $anchor = $torrent->find('a', 0);
+          if (!$anchor) {
+              returnServerError('Unable to find anchor!');
+          }
 
-      $anchor = $torrent->find('a', 0);
-      if(!$anchor)
-        returnServerError('Unable to find anchor!');
+          $date = $torrent->find('small', 0);
+          if (!$date) {
+              returnServerError('Unable to find date!');
+          }
 
-      $date = $torrent->find('small', 0);
-      if(!$date)
-        returnServerError('Unable to find date!');
+          $item = array();
 
-      $item = array();
-
-      $item['uri'] = $this->fix_relative_uri($anchor->href);
-      $item['title'] = $anchor->title;
+          $item['uri'] = $this->fix_relative_uri($anchor->href);
+          $item['title'] = $anchor->title;
       // $item['author'] =
       $item['timestamp'] = strtotime($date->plaintext);
-      $item['content'] = $this->fix_relative_uri($torrent->innertext);
+          $item['content'] = $this->fix_relative_uri($torrent->innertext);
 
-      $this->items[] = $item;
-    }
+          $this->items[] = $item;
+      }
   }
 
   #endregion
 
   #region Helper functions for "Latest Hot Torrents"
 
-  private function get_latest_hot_torrents($html){
-    $container = $html->find('div#serps', 0);
-    if(!$container)
-      returnServerError('Unable to find torrent container!');
+  private function get_latest_hot_torrents($html)
+  {
+      $container = $html->find('div#serps', 0);
+      if (!$container) {
+          returnServerError('Unable to find torrent container!');
+      }
 
-    $torrents = $container->find('tr');
-    if(!$torrents)
-      returnServerError('Unable to find torrents!');
+      $torrents = $container->find('tr');
+      if (!$torrents) {
+          returnServerError('Unable to find torrents!');
+      }
 
     // Remove first element (header row)
     $torrents = array_slice($torrents, 1);
 
-    foreach($torrents as $torrent){
+      foreach ($torrents as $torrent) {
+          $cell = $torrent->find('td', 0);
+          if (!$cell) {
+              returnServerError('Unable to find cell!');
+          }
 
-      $cell = $torrent->find('td', 0);
-      if(!$cell)
-        returnServerError('Unable to find cell!');
+          $element = $cell->find('a', 0);
+          if (!$element) {
+              returnServerError('Unable to find element!');
+          }
 
-      $element = $cell->find('a', 0);
-      if(!$element)
-        returnServerError('Unable to find element!');
+          $item = array();
 
-      $item = array();
-
-      $item['uri'] = $element->href;
-      $item['title'] = $element->plaintext;
+          $item['uri'] = $element->href;
+          $item['title'] = $element->plaintext;
       // $item['author'] =
       // $item['timestamp'] =
       // $item['content'] =
 
       $this->items[] = $item;
-    }
+      }
   }
 
   #endregion
 
   #region Helper functions for "Latest News"
 
-  private function get_latest_news($html){
-    $container = $html->find('div#postcontainer', 0);
-    if(!$container)
-      returnServerError('Unable to find post container!');
+  private function get_latest_news($html)
+  {
+      $container = $html->find('div#postcontainer', 0);
+      if (!$container) {
+          returnServerError('Unable to find post container!');
+      }
 
-    $posts = $container->find('div.index-post');
-    if(!$posts)
-      returnServerError('Unable to find posts!');
+      $posts = $container->find('div.index-post');
+      if (!$posts) {
+          returnServerError('Unable to find posts!');
+      }
 
-    foreach($posts as $post){
-      $item = array();
+      foreach ($posts as $post) {
+          $item = array();
 
-      $item['uri'] = $this->latest_news_extract_uri($post);
-      $item['title'] = $this->latest_news_extract_title($post);
-      $item['author'] = $this->latest_news_extract_author($post);
-      $item['timestamp'] = $this->latest_news_extract_timestamp($post);
-      $item['content'] = $this->latest_news_extract_content($post);
+          $item['uri'] = $this->latest_news_extract_uri($post);
+          $item['title'] = $this->latest_news_extract_title($post);
+          $item['author'] = $this->latest_news_extract_author($post);
+          $item['timestamp'] = $this->latest_news_extract_timestamp($post);
+          $item['content'] = $this->latest_news_extract_content($post);
 
-      $this->items[] = $item;
-    }
+          $this->items[] = $item;
+      }
   }
 
-  private function latest_news_extract_author($post){
-    $author = $post->find('small', 0);
-    if(!$author)
-      returnServerError('Unable to find author!');
+    private function latest_news_extract_author($post)
+    {
+        $author = $post->find('small', 0);
+        if (!$author) {
+            returnServerError('Unable to find author!');
+        }
 
     // The author is hidden within a string like: 'Posted by {author} on {date}'
     preg_match('/Posted\sby\s(.*)\son/i', $author->innertext, $matches);
 
-    return $matches[1];
-  }
+        return $matches[1];
+    }
 
-  private function latest_news_extract_timestamp($post){
-    $date = $post->find('small', 0);
-    if(!$date)
-      returnServerError('Unable to find date!');
+    private function latest_news_extract_timestamp($post)
+    {
+        $date = $post->find('small', 0);
+        if (!$date) {
+            returnServerError('Unable to find date!');
+        }
 
     // The date is hidden within a string like: 'Posted by {author} on {date}'
     preg_match('/Posted\sby\s.*\son\s(.*)/i', $date->innertext, $matches);
 
-    $timestamp = strtotime($matches[1]);
+        $timestamp = strtotime($matches[1]);
 
     // Make sure date is not in the future (dates are given like 'Nov. 20' without year)
-    if($timestamp > time()){
-      $timestamp = strtotime('-1 year', $timestamp);
+    if ($timestamp > time()) {
+        $timestamp = strtotime('-1 year', $timestamp);
     }
 
-    return $timestamp;
-  }
+        return $timestamp;
+    }
 
-  private function latest_news_extract_title($post){
-    $title = $post->find('a', 0);
-    if(!$title)
-      returnServerError('Unable to find title!');
+    private function latest_news_extract_title($post)
+    {
+        $title = $post->find('a', 0);
+        if (!$title) {
+            returnServerError('Unable to find title!');
+        }
 
-    return $title->plaintext;
-  }
+        return $title->plaintext;
+    }
 
-  private function latest_news_extract_uri($post){
-    $uri = $post->find('a', 0);
-    if(!$uri)
-      returnServerError('Unable to find uri!');
+    private function latest_news_extract_uri($post)
+    {
+        $uri = $post->find('a', 0);
+        if (!$uri) {
+            returnServerError('Unable to find uri!');
+        }
 
-    return $uri->href;
-  }
+        return $uri->href;
+    }
 
-  private function latest_news_extract_content($post){
-    $content = $post->find('div', 0);
-    if(!$content)
-      returnServerError('Unable to find content!');
+    private function latest_news_extract_content($post)
+    {
+        $content = $post->find('div', 0);
+        if (!$content) {
+            returnServerError('Unable to find content!');
+        }
 
     // Remove <h2>...</h2> (title)
-    foreach($content->find('h2') as $element){
-      $element->outertext = '';
+    foreach ($content->find('h2') as $element) {
+        $element->outertext = '';
     }
 
     // Remove <small>...</small> (author)
-    foreach($content->find('small') as $element){
-      $element->outertext = '';
+    foreach ($content->find('small') as $element) {
+        $element->outertext = '';
     }
 
-    return $content->innertext;
-  }
+        return $content->innertext;
+    }
 
   #endregion
 
   #region Helper functions for "Latest Torrents", "Latest Releases" and "Torrent Category"
 
-  private function get_latest_torrents($html){
-    $container = $html->find('div#serps', 0);
-    if(!$container)
-      returnServerError('Unable to find torrent container!');
+  private function get_latest_torrents($html)
+  {
+      $container = $html->find('div#serps', 0);
+      if (!$container) {
+          returnServerError('Unable to find torrent container!');
+      }
 
-    $torrents = $container->find('tr[data-key]');
-    if(!$torrents)
-      returnServerError('Unable to find torrents!');
+      $torrents = $container->find('tr[data-key]');
+      if (!$torrents) {
+          returnServerError('Unable to find torrents!');
+      }
 
-    foreach($torrents as $torrent){
-      $item = array();
+      foreach ($torrents as $torrent) {
+          $item = array();
 
-      $item['uri'] = $this->latest_torrents_extract_uri($torrent);
-      $item['title'] = $this->latest_torrents_extract_title($torrent);
-      $item['author'] = $this->latest_torrents_extract_author($torrent);
-      $item['timestamp'] = $this->latest_torrents_extract_timestamp($torrent);
-      $item['content'] = ''; // There is no valuable content
+          $item['uri'] = $this->latest_torrents_extract_uri($torrent);
+          $item['title'] = $this->latest_torrents_extract_title($torrent);
+          $item['author'] = $this->latest_torrents_extract_author($torrent);
+          $item['timestamp'] = $this->latest_torrents_extract_timestamp($torrent);
+          $item['content'] = ''; // There is no valuable content
 
       $this->items[] = $item;
+      }
+  }
+
+    private function latest_torrents_extract_title($torrent)
+    {
+        $cell = $torrent->find('td.title-row', 0);
+        if (!$cell) {
+            returnServerError('Unable to find title cell!');
+        }
+
+        $title = $cell->find('span', 0);
+        if (!$title) {
+            returnServerError('Unable to find title!');
+        }
+
+        return $title->plaintext;
     }
-  }
 
-  private function latest_torrents_extract_title($torrent){
-    $cell = $torrent->find('td.title-row', 0);
-    if(!$cell)
-      returnServerError('Unable to find title cell!');
+    private function latest_torrents_extract_uri($torrent)
+    {
+        $cell = $torrent->find('td.title-row', 0);
+        if (!$cell) {
+            returnServerError('Unable to find title cell!');
+        }
 
-    $title = $cell->find('span', 0);
-    if(!$title)
-      returnServerError('Unable to find title!');
+        $uri = $cell->find('a', 0);
+        if (!$uri) {
+            returnServerError('Unable to find uri!');
+        }
 
-    return $title->plaintext;
-  }
+        return $this->fix_relative_uri($uri->href);
+    }
 
-  private function latest_torrents_extract_uri($torrent){
-    $cell = $torrent->find('td.title-row', 0);
-    if(!$cell)
-      returnServerError('Unable to find title cell!');
-
-    $uri = $cell->find('a', 0);
-    if(!$uri)
-      returnServerError('Unable to find uri!');
-
-    return $this->fix_relative_uri($uri->href);
-  }
-
-  private function latest_torrents_extract_author($torrent){
-    $cell = $torrent->find('td.user-row', 0);
-    if(!$cell)
-      return; // No author
+    private function latest_torrents_extract_author($torrent)
+    {
+        $cell = $torrent->find('td.user-row', 0);
+        if (!$cell) {
+            return;
+        } // No author
 
     $user = $cell->find('a', 0);
-    if(!$user)
-      returnServerError('Unable to find user!');
+        if (!$user) {
+            returnServerError('Unable to find user!');
+        }
 
-    return $user->plaintext;
-  }
+        return $user->plaintext;
+    }
 
-  private function latest_torrents_extract_timestamp($torrent){
-    $cell = $torrent->find('td.date-row', 0);
-    if(!$cell)
-      returnServerError('Unable to find date cell!');
+    private function latest_torrents_extract_timestamp($torrent)
+    {
+        $cell = $torrent->find('td.date-row', 0);
+        if (!$cell) {
+            returnServerError('Unable to find date cell!');
+        }
 
-    return strtotime('-' . $cell->plaintext, time());
-  }
+        return strtotime('-' . $cell->plaintext, time());
+    }
 
   #endregion
 
   #region Generic helper functions
 
-  private function load_html($uri){
-    $html = getSimpleHTMLDOM($uri);
-    if(!$html)
-      returnServerError('Unable to load ' . $uri . '!');
+  private function load_html($uri)
+  {
+      $html = getSimpleHTMLDOM($uri);
+      if (!$html) {
+          returnServerError('Unable to load ' . $uri . '!');
+      }
 
-    return $html;
+      return $html;
   }
 
-  private function fix_relative_uri($uri){
-    return preg_replace('/\//i', self::URI, $uri, 1);
-  }
+    private function fix_relative_uri($uri)
+    {
+        return preg_replace('/\//i', self::URI, $uri, 1);
+    }
 
-  private function build_category_uri($category, $order_popularity = false){
-    switch($category){
+    private function build_category_uri($category, $order_popularity = false)
+    {
+        switch ($category) {
     case 'anime': $index = 1; break;
-    case 'software' : $index = 2; break;
-    case 'games' : $index = 3; break;
-    case 'adult' : $index = 4; break;
-    case 'movies' : $index = 5; break;
-    case 'music' : $index = 6; break;
-    case 'other' : $index = 7; break;
-    case 'series_tv' : $index = 8; break;
+    case 'software': $index = 2; break;
+    case 'games': $index = 3; break;
+    case 'adult': $index = 4; break;
+    case 'movies': $index = 5; break;
+    case 'music': $index = 6; break;
+    case 'other': $index = 7; break;
+    case 'series_tv': $index = 8; break;
     case 'books': $index = 9; break;
     case 'all':
     default: $index = 0; break;
     }
 
-    return 'torrents/?iht=' . $index . '&ihs=' . ($order_popularity ? 1 : 0) . '&age=0';
-  }
+        return 'torrents/?iht=' . $index . '&ihs=' . ($order_popularity ? 1 : 0) . '&age=0';
+    }
 
   #endregion
 }

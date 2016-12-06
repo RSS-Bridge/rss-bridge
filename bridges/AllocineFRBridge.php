@@ -1,7 +1,6 @@
 <?php
-class AllocineFRBridge extends BridgeAbstract{
-
-
+class AllocineFRBridge extends BridgeAbstract
+{
     const MAINTAINER = "superbaillot.net";
     const NAME = "Allo Cine Bridge";
     const CACHE_TIMEOUT = 25200; // 7h
@@ -22,8 +21,9 @@ class AllocineFRBridge extends BridgeAbstract{
         )
     ));
 
-    public function getURI(){
-        switch($this->getInput('category')){
+    public function getURI()
+    {
+        switch ($this->getInput('category')) {
         case 'faux-raccord':
             $uri = static::URI.'video/programme-12284/saison-27129/';
             break;
@@ -38,7 +38,8 @@ class AllocineFRBridge extends BridgeAbstract{
         return $uri;
     }
 
-    public function getName(){
+    public function getName()
+    {
         return self::NAME.' : '
             .array_search(
                 $this->getInput('category'),
@@ -46,8 +47,8 @@ class AllocineFRBridge extends BridgeAbstract{
             );
     }
 
-    public function collectData(){
-
+    public function collectData()
+    {
         $html = getSimpleHTMLDOM($this->getURI())
             or returnServerError("Could not request ".$this->getURI()." !");
 
@@ -57,16 +58,14 @@ class AllocineFRBridge extends BridgeAbstract{
             );
 
 
-        foreach($html->find('figure.media-meta-fig') as $element)
-        {
+        foreach ($html->find('figure.media-meta-fig') as $element) {
             $item = array();
 
             $title = $element->find('div.titlebar h3.title a', 0);
             $content = trim($element->innertext);
             $figCaption = strpos($content, $category);
 
-            if($figCaption !== false)
-            {
+            if ($figCaption !== false) {
                 $content = str_replace('src="/', 'src="'.static::URI, $content);
                 $content = str_replace('href="/', 'href="'.static::URI, $content);
                 $content = str_replace('src=\'/', 'src=\''.static::URI, $content);
@@ -78,5 +77,4 @@ class AllocineFRBridge extends BridgeAbstract{
             }
         }
     }
-
 }

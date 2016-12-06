@@ -1,23 +1,26 @@
 <?php
-class Releases3DSBridge extends BridgeAbstract {
+class Releases3DSBridge extends BridgeAbstract
+{
+    const MAINTAINER = "ORelio";
+    const NAME = "3DS Scene Releases";
+    const URI = "http://www.3dsdb.com/";
+    const CACHE_TIMEOUT = 10800; // 3h
+    const DESCRIPTION = "Returns the newest scene releases.";
 
-	const MAINTAINER = "ORelio";
-	const NAME = "3DS Scene Releases";
-	const URI = "http://www.3dsdb.com/";
-	const CACHE_TIMEOUT = 10800; // 3h
-	const DESCRIPTION = "Returns the newest scene releases.";
-
-    public function collectData(){
-
-        function ExtractFromDelimiters($string, $start, $end) {
+    public function collectData()
+    {
+        function ExtractFromDelimiters($string, $start, $end)
+        {
             if (strpos($string, $start) !== false) {
                 $section_retrieved = substr($string, strpos($string, $start) + strlen($start));
                 $section_retrieved = substr($section_retrieved, 0, strpos($section_retrieved, $end));
                 return $section_retrieved;
-            } return false;
+            }
+            return false;
         }
 
-        function TypeToString($type) {
+        function TypeToString($type)
+        {
             switch ($type) {
                 case 1: return '3DS Game';
                 case 4: return 'eShop';
@@ -25,7 +28,8 @@ class Releases3DSBridge extends BridgeAbstract {
             }
         }
 
-        function CardToString($card) {
+        function CardToString($card)
+        {
             switch ($card) {
                 case 1: return 'Regular (CARD1)';
                 case 2: return 'NAND (CARD2)';
@@ -39,16 +43,16 @@ class Releases3DSBridge extends BridgeAbstract {
 
         foreach (array_reverse(explode('<release>', $xml)) as $element) {
             if ($limit >= 5) {
-              break;
+                break;
             }
 
             if (strpos($element, '</release>') === false) {
-              continue;
+                continue;
             }
 
             $releasename = ExtractFromDelimiters($element, '<releasename>', '</releasename>');
             if (empty($releasename)) {
-              continue;
+                continue;
             }
 
             $id = ExtractFromDelimiters($element, '<id>', '</id>');
@@ -67,7 +71,11 @@ class Releases3DSBridge extends BridgeAbstract {
             $card = ExtractFromDelimiters($element, '<card>', '</card>');
 
             //Retrieve cover art and short desc from IGN?
-            $ignResult = false; $ignDescription = ''; $ignLink = ''; $ignDate = time(); $ignCoverArt = '';
+            $ignResult = false;
+            $ignDescription = '';
+            $ignLink = '';
+            $ignDate = time();
+            $ignCoverArt = '';
             $ignSearchUrl = 'http://www.ign.com/search?q='.urlencode($name);
             if ($ignResult = getSimpleHTMLDOM($ignSearchUrl)) {
                 $ignCoverArt = $ignResult->find('div.search-item-media', 0)->find('img', 0)->src;

@@ -1,26 +1,26 @@
 <?php
-class DilbertBridge extends BridgeAbstract {
-
+class DilbertBridge extends BridgeAbstract
+{
     const MAINTAINER = 'kranack';
     const NAME = 'Dilbert Daily Strip';
     const URI = 'http://dilbert.com';
     const CACHE_TIMEOUT = 21600; // 6h
     const DESCRIPTION = 'The Unofficial Dilbert Daily Comic Strip';
 
-    public function collectData(){
-
+    public function collectData()
+    {
         $html = getSimpleHTMLDOM($this->getURI()) or returnServerError('Could not request Dilbert: '.$this->getURI());
 
         foreach ($html->find('section.comic-item') as $element) {
-
             $img = $element->find('img', 0);
             $link = $element->find('a', 0);
             $comic = $img->src;
             $title = $link->alt;
             $url = $link->href;
             $date = substr($url, 25);
-            if (empty($title))
+            if (empty($title)) {
                 $title = 'Dilbert Comic Strip on '.$date;
+            }
             $date = strtotime($date);
 
             $item = array();
@@ -33,4 +33,3 @@ class DilbertBridge extends BridgeAbstract {
         }
     }
 }
-?>

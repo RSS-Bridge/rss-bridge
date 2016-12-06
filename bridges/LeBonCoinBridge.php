@@ -1,10 +1,10 @@
 <?php
-class LeBonCoinBridge extends BridgeAbstract{
-
-	const MAINTAINER = "16mhz";
-	const NAME = "LeBonCoin";
-	const URI = "http://www.leboncoin.fr/";
-	const DESCRIPTION = "Returns most recent results from LeBonCoin for a region, and optionally a category and a keyword .";
+class LeBonCoinBridge extends BridgeAbstract
+{
+    const MAINTAINER = "16mhz";
+    const NAME = "LeBonCoin";
+    const URI = "http://www.leboncoin.fr/";
+    const DESCRIPTION = "Returns most recent results from LeBonCoin for a region, and optionally a category and a keyword .";
 
     const PARAMETERS = array( array(
           'k'=>array('name'=>'Mot Clé'),
@@ -136,10 +136,10 @@ class LeBonCoinBridge extends BridgeAbstract{
       )
   );
 
-	public function collectData(){
-
+    public function collectData()
+    {
         $category=$this->getInput('c');
-        if (empty($category)){
+        if (empty($category)) {
             $category='annonces';
         }
 
@@ -149,38 +149,39 @@ class LeBonCoinBridge extends BridgeAbstract{
             .'q=' . urlencode($this->getInput('k'))
         ) or returnServerError('Could not request LeBonCoin.');
 
-		$list = $html->find('.tabsContent', 0);
-		if($list === NULL) {
-			return;
-		}
+        $list = $html->find('.tabsContent', 0);
+        if ($list === null) {
+            return;
+        }
 
-		$tags = $list->find('li');
+        $tags = $list->find('li');
 
-		foreach($tags as $element) {
+        foreach ($tags as $element) {
+            $element = $element->find('a', 0);
 
-			$element = $element->find('a', 0);
+            $item = array();
+            $item['uri'] = $element->href;
+            $title = html_entity_decode($element->getAttribute('title'));
+            $content_image = $element->find('div.item_image', 0)->find('.lazyload', 0);
 
-			$item = array();
-			$item['uri'] = $element->href;
-			$title = html_entity_decode($element->getAttribute('title'));
-			$content_image = $element->find('div.item_image', 0)->find('.lazyload', 0);
+            if ($content_image !== null) {
+                $content = '<img src="' . $content_image->getAttribute('data-imgsrc') . '" alt="thumbnail">';
+            } else {
+                $content = "";
+            }
+            $date = $element->find('aside.item_absolute', 0)->find('p.item_sup', 0);
 
-			if($content_image !== NULL) {
-				$content = '<img src="' . $content_image->getAttribute('data-imgsrc') . '" alt="thumbnail">';
-			} else {
-				$content = "";
-			}
-			$date = $element->find('aside.item_absolute', 0)->find('p.item_sup', 0);
+            $detailsList = $element->find('section.item_infos', 0);
 
-			$detailsList = $element->find('section.item_infos', 0);
+            for ($i = 0; $i <= 1; $i++) {
+                $content .= $detailsList->find('p.item_supp', $i)->plaintext;
+            }
+            $price = $detailsList->find('h3.item_price', 0);
+            $content .= $price === null ? '' : $price->plaintext;
 
-			for($i = 0; $i <= 1; $i++) $content .= $detailsList->find('p.item_supp', $i)->plaintext;
-			$price = $detailsList->find('h3.item_price', 0);
-			$content .= $price === NULL ? '' : $price->plaintext;
-
-			$item['title'] = $title;
-			$item['content'] = $content . $date;
-			$this->items[] = $item;
-		}
-	}
+            $item['title'] = $title;
+            $item['content'] = $content . $date;
+            $this->items[] = $item;
+        }
+    }
 }

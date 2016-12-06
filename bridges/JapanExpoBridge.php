@@ -1,6 +1,6 @@
 <?php
-class JapanExpoBridge extends BridgeAbstract {
-
+class JapanExpoBridge extends BridgeAbstract
+{
     const MAINTAINER = 'Ginko';
     const NAME = 'Japan Expo Actualités';
     const URI = 'http://www.japan-expo-paris.com/fr/actualites';
@@ -13,9 +13,10 @@ class JapanExpoBridge extends BridgeAbstract {
         )
     ));
 
-    public function collectData(){
-
-        function french_pubdate_to_timestamp($date_to_parse) {
+    public function collectData()
+    {
+        function french_pubdate_to_timestamp($date_to_parse)
+        {
             return strtotime(
                 strtr(
                     strtolower(str_replace('Publié le ', '', $date_to_parse)),
@@ -49,16 +50,16 @@ class JapanExpoBridge extends BridgeAbstract {
         $count = 0;
 
         foreach ($html->find('a._tile2') as $element) {
-
             $url = $element->href;
             $thumbnail = 'http://s.japan-expo.com/katana/images/JES049/paris.png';
             preg_match('/url\(([^)]+)\)/', $element->find('img.rspvimgset', 0)->style, $img_search_result);
-            if (count($img_search_result) >= 2)
+            if (count($img_search_result) >= 2) {
                 $thumbnail = trim($img_search_result[1], "'");
+            }
 
             if ($fullcontent) {
                 if ($count >= 5) {
-                  break;
+                    break;
                 }
 
                 $article_html = getSimpleHTMLDOMCached('Could not request JapanExpo: '.$url);

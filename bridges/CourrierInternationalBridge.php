@@ -1,14 +1,14 @@
 <?php
-class CourrierInternationalBridge extends BridgeAbstract{
-
+class CourrierInternationalBridge extends BridgeAbstract
+{
     const MAINTAINER = "teromene";
     const NAME = "Courrier International Bridge";
     const URI = "http://CourrierInternational.com/";
     const CACHE_TIMEOUT = 300; // 5 min
     const DESCRIPTION = "Courrier International bridge";
 
-    public function collectData(){
-
+    public function collectData()
+    {
         $html = getSimpleHTMLDOM(self::URI)
             or returnServerError('Error.');
 
@@ -16,46 +16,41 @@ class CourrierInternationalBridge extends BridgeAbstract{
 
         $article_count = 1;
 
-        foreach($element as $article) {
-
+        foreach ($element as $article) {
             $item = array();
 
             $item['uri'] = $article->parent->getAttribute("href");
 
-            if(strpos($item['uri'], "http") === FALSE) {
+            if (strpos($item['uri'], "http") === false) {
                 $item['uri'] = self::URI.$item['uri'];
             }
 
             $page = getSimpleHTMLDOMCached($item['uri']);
 
-            $content = $page->find('.article-text',0);
-            if(!$content){
-              $content = $page->find('.depeche-text',0);
+            $content = $page->find('.article-text', 0);
+            if (!$content) {
+                $content = $page->find('.depeche-text', 0);
             }
 
             $item['content'] = sanitize($content);
-            $item['title'] = strip_tags($article->find(".title",0));
+            $item['title'] = strip_tags($article->find(".title", 0));
 
-            $dateTime = date_parse($page->find("time",0));
+            $dateTime = date_parse($page->find("time", 0));
 
             $item['timestamp'] = mktime(
-       			$dateTime['hour'],
-        		$dateTime['minute'],
-        		$dateTime['second'],
-        		$dateTime['month'],
-        		$dateTime['day'],
-        		$dateTime['year']
+                   $dateTime['hour'],
+                $dateTime['minute'],
+                $dateTime['second'],
+                $dateTime['month'],
+                $dateTime['day'],
+                $dateTime['year']
             );
 
             $this->items[] = $item;
             $article_count ++;
-            if($article_count > 5) break;
-
+            if ($article_count > 5) {
+                break;
+            }
         }
-
-
-
     }
 }
-
-?>

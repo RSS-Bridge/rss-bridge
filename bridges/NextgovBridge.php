@@ -1,6 +1,6 @@
 <?php
-class NextgovBridge extends FeedExpander {
-
+class NextgovBridge extends FeedExpander
+{
     const MAINTAINER = 'ORelio';
     const NAME = 'Nextgov Bridge';
     const URI = 'https://www.nextgov.com/';
@@ -25,19 +25,21 @@ class NextgovBridge extends FeedExpander {
         )
     ));
 
-    public function collectData(){
+    public function collectData()
+    {
         $this->collectExpandableDatas(self::URI . 'rss/' . $this->getInput('category') . '/', 10);
     }
 
-    protected function parseItem($newsItem){
+    protected function parseItem($newsItem)
+    {
         $item = parent::parseItem($newsItem);
 
         $item['content'] = '';
 
         $namespaces = $newsItem->getNamespaces(true);
-        if(isset($namespaces['media'])){
+        if (isset($namespaces['media'])) {
             $media = $newsItem->children($namespaces['media']);
-            if(isset($media->content)){
+            if (isset($media->content)) {
                 $attributes = $media->content->attributes();
                 $item['content'] = '<img src="' . $attributes['url'] . '">';
             }
@@ -47,15 +49,18 @@ class NextgovBridge extends FeedExpander {
         return $item;
     }
 
-    private function StripWithDelimiters($string, $start, $end) {
+    private function StripWithDelimiters($string, $start, $end)
+    {
         while (strpos($string, $start) !== false) {
             $section_to_remove = substr($string, strpos($string, $start));
             $section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
             $string = str_replace($section_to_remove, '', $string);
-        } return $string;
+        }
+        return $string;
     }
 
-    private function ExtractContent($url){
+    private function ExtractContent($url)
+    {
         $article = getSimpleHTMLDOMCached($url)
             or returnServerError('Could not request Nextgov: ' . $url);
 

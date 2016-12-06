@@ -1,6 +1,6 @@
 <?php
-class DauphineLibereBridge extends FeedExpander {
-
+class DauphineLibereBridge extends FeedExpander
+{
     const MAINTAINER = "qwertygc";
     const NAME = "Dauphine Bridge";
     const URI = "http://www.ledauphine.com/";
@@ -31,7 +31,8 @@ class DauphineLibereBridge extends FeedExpander {
         )
     ));
 
-    public function collectData(){
+    public function collectData()
+    {
         $url = self::URI . 'rss';
 
         if (empty($this->getInput('u'))) {
@@ -41,17 +42,18 @@ class DauphineLibereBridge extends FeedExpander {
         $this->collectExpandableDatas($url, 10);
     }
 
-    protected function parseItem($newsItem){
+    protected function parseItem($newsItem)
+    {
         $item = parent::parseItem($newsItem);
         $item['content'] = $this->ExtractContent($item['uri']);
         return $item;
     }
 
-    private function ExtractContent($url) {
+    private function ExtractContent($url)
+    {
         $html2 = getSimpleHTMLDOMCached($url);
         $text = $html2->find('div.column', 0)->innertext;
         $text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
         return $text;
     }
 }
-?>

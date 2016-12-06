@@ -1,28 +1,29 @@
 <?php
-class FlickrExploreBridge extends BridgeAbstract{
+class FlickrExploreBridge extends BridgeAbstract
+{
+    const MAINTAINER = "sebsauvage";
+    const NAME = "Flickr Explore";
+    const URI = "https://www.flickr.com/";
+    const CACHE_TIMEOUT = 21600; // 6
+    const DESCRIPTION = "Returns the latest interesting images from Flickr";
 
-	const MAINTAINER = "sebsauvage";
-	const NAME = "Flickr Explore";
-	const URI = "https://www.flickr.com/";
-	const CACHE_TIMEOUT = 21600; // 6
-	const DESCRIPTION = "Returns the latest interesting images from Flickr";
-
-    public function collectData(){
+    public function collectData()
+    {
         $html = getSimpleHTMLDOM(self::URI.'explore')
             or returnServerError('Could not request Flickr.');
 
-        foreach($html->find('.photo-list-photo-view') as $element) {
-						// Get the styles
-						$style = explode(';', $element->style);
-						// Get the background-image style
-						$backgroundImage = explode(':', end($style));
-						// URI type : url(//cX.staticflickr.com/X/XXXXX/XXXXXXXXX.jpg)
-						$imageURI = trim(str_replace(['url(', ')'], '', end($backgroundImage)));
-						// Get the image ID
-						$imageURIs = explode('_', basename($imageURI));
-						$imageID = reset($imageURIs);
+        foreach ($html->find('.photo-list-photo-view') as $element) {
+            // Get the styles
+                        $style = explode(';', $element->style);
+                        // Get the background-image style
+                        $backgroundImage = explode(':', end($style));
+                        // URI type : url(//cX.staticflickr.com/X/XXXXX/XXXXXXXXX.jpg)
+                        $imageURI = trim(str_replace(['url(', ')'], '', end($backgroundImage)));
+                        // Get the image ID
+                        $imageURIs = explode('_', basename($imageURI));
+            $imageID = reset($imageURIs);
 
-						// Get the image JSON via Flickr API
+                        // Get the image JSON via Flickr API
                         $imageJSON = json_decode(getContents(
                             'https://api.flickr.com/services/rest/?'
                             .'method=flickr.photos.getInfo&'

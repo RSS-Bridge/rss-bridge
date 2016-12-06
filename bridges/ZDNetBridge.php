@@ -1,6 +1,6 @@
 <?php
-class ZDNetBridge extends BridgeAbstract {
-
+class ZDNetBridge extends BridgeAbstract
+{
     const MAINTAINER = 'ORelio';
     const NAME = 'ZDNet Bridge';
     const URI = 'http://www.zdnet.com/';
@@ -159,31 +159,37 @@ class ZDNetBridge extends BridgeAbstract {
         )
     ));
 
-    public function collectData(){
-
-        function StripCDATA($string) {
+    public function collectData()
+    {
+        function StripCDATA($string)
+        {
             $string = str_replace('<![CDATA[', '', $string);
             $string = str_replace(']]>', '', $string);
             return trim($string);
         }
 
-        function ExtractFromDelimiters($string, $start, $end) {
+        function ExtractFromDelimiters($string, $start, $end)
+        {
             if (strpos($string, $start) !== false) {
                 $section_retrieved = substr($string, strpos($string, $start) + strlen($start));
                 $section_retrieved = substr($section_retrieved, 0, strpos($section_retrieved, $end));
                 return $section_retrieved;
-            } return false;
+            }
+            return false;
         }
 
-        function StripWithDelimiters($string, $start, $end) {
+        function StripWithDelimiters($string, $start, $end)
+        {
             while (strpos($string, $start) !== false) {
                 $section_to_remove = substr($string, strpos($string, $start));
                 $section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
                 $string = str_replace($section_to_remove, '', $string);
-            } return $string;
+            }
+            return $string;
         }
 
-        function StripRecursiveHTMLSection($string, $tag_name, $tag_start) {
+        function StripRecursiveHTMLSection($string, $tag_name, $tag_start)
+        {
             $open_tag = '<'.$tag_name;
             $close_tag = '</'.$tag_name.'>';
             $close_tag_length = strlen($close_tag);
@@ -226,19 +232,23 @@ class ZDNetBridge extends BridgeAbstract {
                 $article_timestamp = strtotime(StripCDATA($element->find('pubDate', 0)->plaintext));
                 $article = getSimpleHTMLDOM($article_url) or returnServerError('Could not request ZDNet: '.$article_url);
 
-                if (!empty($article_author))
+                if (!empty($article_author)) {
                     $author = $article_author;
-                else {
+                } else {
                     $author = $article->find('meta[name=author]', 0);
-                    if (is_object($author))
+                    if (is_object($author)) {
                         $author = $author->content;
-                    else $author = 'ZDNet';
+                    } else {
+                        $author = 'ZDNet';
+                    }
                 }
 
                 $thumbnail = $article->find('meta[itemprop=image]', 0);
-                if (is_object($thumbnail))
+                if (is_object($thumbnail)) {
                     $thumbnail = $thumbnail->content;
-                else $thumbnail = '';
+                } else {
+                    $thumbnail = '';
+                }
 
                 $contents = $article->find('article', 0)->innertext;
                 foreach (array(
@@ -250,15 +260,18 @@ class ZDNetBridge extends BridgeAbstract {
                     '<div id="sharethrough',
                     '<div id="inpage-video'
                 ) as $div_start) {
-                    $contents = StripRecursiveHTMLSection($contents , 'div', $div_start);
+                    $contents = StripRecursiveHTMLSection($contents, 'div', $div_start);
                 }
                 $contents = StripWithDelimiters($contents, '<script', '</script>');
                 $contents = StripWithDelimiters($contents, '<meta itemprop="image"', '>');
                 $contents = trim(StripWithDelimiters($contents, '<section class="sharethrough-top', '</section>'));
                 $content_img = strpos($contents, '<img');         //Look for first image
-                if (($content_img !== false && $content_img < 512) || $thumbnail == '')
-                    $content_img = ''; //Image already present on article beginning or no thumbnail
-                else $content_img = '<p><img src="'.$thumbnail.'" /></p>'; //Include thumbnail
+                if (($content_img !== false && $content_img < 512) || $thumbnail == '') {
+                    $content_img = '';
+                } //Image already present on article beginning or no thumbnail
+                else {
+                    $content_img = '<p><img src="'.$thumbnail.'" /></p>';
+                } //Include thumbnail
                 $contents = $content_img
                     .'<p><b>'.$article_subtitle.'</b></p>'
                     .$contents;
@@ -273,6 +286,5 @@ class ZDNetBridge extends BridgeAbstract {
                 $limit++;
             }
         }
-
     }
 }

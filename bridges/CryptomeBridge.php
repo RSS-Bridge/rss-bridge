@@ -1,6 +1,6 @@
 <?php
-class CryptomeBridge extends BridgeAbstract{
-
+class CryptomeBridge extends BridgeAbstract
+{
     const MAINTAINER = "BoboTiG";
     const NAME = "Cryptome";
     const URI = "https://cryptome.org/";
@@ -16,7 +16,8 @@ class CryptomeBridge extends BridgeAbstract{
         )
     ));
 
-    public function collectData(){
+    public function collectData()
+    {
         $html = getSimpleHTMLDOM(self::URI)
             or returnServerError('Could not request Cryptome.');
         $number=$this->getInput('n');
@@ -25,8 +26,8 @@ class CryptomeBridge extends BridgeAbstract{
         }
 
 
-        foreach($html->find('pre') as $element) {
-            for ( $i = 0; $i < $num; ++$i ) {
+        foreach ($html->find('pre') as $element) {
+            for ($i = 0; $i < $num; ++$i) {
                 $item = array();
                 $item['uri'] = self::URI.substr($element->find('a', $i)->href, 20);
                 $item['title'] = substr($element->find('b', $i)->plaintext, 22);

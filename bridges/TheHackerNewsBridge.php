@@ -1,22 +1,25 @@
 <?php
-class TheHackerNewsBridge extends BridgeAbstract {
-
+class TheHackerNewsBridge extends BridgeAbstract
+{
     const MAINTAINER = 'ORelio';
     const NAME = 'The Hacker News Bridge';
     const URI = 'https://thehackernews.com/';
     const DESCRIPTION = 'Cyber Security, Hacking, Technology News.';
 
-    public function collectData(){
-
-        function StripWithDelimiters($string, $start, $end) {
+    public function collectData()
+    {
+        function StripWithDelimiters($string, $start, $end)
+        {
             while (strpos($string, $start) !== false) {
                 $section_to_remove = substr($string, strpos($string, $start));
                 $section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
                 $string = str_replace($section_to_remove, '', $string);
-            } return $string;
+            }
+            return $string;
         }
 
-        function StripRecursiveHTMLSection($string, $tag_name, $tag_start) {
+        function StripRecursiveHTMLSection($string, $tag_name, $tag_start)
+        {
             $open_tag = '<'.$tag_name;
             $close_tag = '</'.$tag_name.'>';
             $close_tag_length = strlen($close_tag);
@@ -45,7 +48,6 @@ class TheHackerNewsBridge extends BridgeAbstract {
 
         foreach ($html->find('article') as $element) {
             if ($limit < 5) {
-
                 $article_url = $element->find('a.entry-title', 0)->href;
                 $article_author = trim($element->find('span.vcard', 0)->plaintext);
                 $article_title = $element->find('a.entry-title', 0)->plaintext;
@@ -66,6 +68,5 @@ class TheHackerNewsBridge extends BridgeAbstract {
                 $limit++;
             }
         }
-
     }
 }

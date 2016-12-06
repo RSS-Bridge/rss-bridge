@@ -1,6 +1,6 @@
 <?php
-class DemoBridge extends BridgeAbstract{
-
+class DemoBridge extends BridgeAbstract
+{
     const MAINTAINER = "teromene";
     const NAME = "DemoBridge";
     const URI = "http://github.com/rss-bridge/rss-bridge";
@@ -34,8 +34,8 @@ class DemoBridge extends BridgeAbstract{
         )
     );
 
-    public function collectData(){
-
+    public function collectData()
+    {
         $item = array();
         $item['author'] = "Me!";
         $item['title'] = "Test";
@@ -44,6 +44,5 @@ class DemoBridge extends BridgeAbstract{
         $item['uri'] = "http://example.com/test";
 
         $this->items[] = $item;
-
     }
 }

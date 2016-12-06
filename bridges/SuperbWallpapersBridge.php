@@ -1,11 +1,11 @@
 <?php
-class SuperbWallpapersBridge extends BridgeAbstract {
-
-	const MAINTAINER = "nel50n";
-	const NAME = "Superb Wallpapers Bridge";
-	const URI = "http://www.superbwallpapers.com/";
-	const CACHE_TIMEOUT = 43200; // 12h
-	const DESCRIPTION = "Returns the latests wallpapers from SuperbWallpapers";
+class SuperbWallpapersBridge extends BridgeAbstract
+{
+    const MAINTAINER = "nel50n";
+    const NAME = "Superb Wallpapers Bridge";
+    const URI = "http://www.superbwallpapers.com/";
+    const CACHE_TIMEOUT = 43200; // 12h
+    const DESCRIPTION = "Returns the latests wallpapers from SuperbWallpapers";
 
     const PARAMETERS = array( array(
       'c'=>array(
@@ -23,7 +23,8 @@ class SuperbWallpapersBridge extends BridgeAbstract {
         )
     ));
 
-    public function collectData(){
+    public function collectData()
+    {
         $category   = $this->getInput('c');
         $resolution = $this->getInput('r');  // Wide wallpaper default
 
@@ -43,7 +44,7 @@ class SuperbWallpapersBridge extends BridgeAbstract {
             $html = getSimpleHTMLDOM($link)
               or returnServerError('No results for this query.');
 
-            foreach($html->find('.wpl .i a') as $element) {
+            foreach ($html->find('.wpl .i a') as $element) {
                 $thumbnail = $element->find('img', 0);
 
                 $item = array();
@@ -54,13 +55,15 @@ class SuperbWallpapersBridge extends BridgeAbstract {
                 $this->items[] = $item;
 
                 $num++;
-                if ($num >= $max)
+                if ($num >= $max) {
                     break 2;
+                }
             }
         }
     }
 
-    public function getName(){
+    public function getName()
+    {
         return self::NAME .'- '.$this->getInput('c').' ['.$this->getInput('r').']';
     }
 }

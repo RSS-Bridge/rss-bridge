@@ -1,22 +1,25 @@
 <?php
-class LichessBridge  extends FeedExpander {
-
+class LichessBridge extends FeedExpander
+{
     const MAINTAINER = 'AmauryCarrade';
     const NAME = 'Lichess Blog';
     const URI = 'http://fr.lichess.org/blog';
     const DESCRIPTION = 'Returns the 5 newest posts from the Lichess blog (full text)';
 
-    public function collectData(){
+    public function collectData()
+    {
         $this->collectExpandableDatas(self::URI . '.atom', 5);
     }
 
-    protected function parseItem($newsItem){
+    protected function parseItem($newsItem)
+    {
         $item = parent::parseItem($newsItem);
         $item['content'] = $this->retrieve_lichess_post($item['uri']);
         return $item;
     }
 
-    private function retrieve_lichess_post($blog_post_uri){
+    private function retrieve_lichess_post($blog_post_uri)
+    {
         $blog_post_html = getSimpleHTMLDOMCached($blog_post_uri);
         $blog_post_div  = $blog_post_html->find('#lichess_blog', 0);
 

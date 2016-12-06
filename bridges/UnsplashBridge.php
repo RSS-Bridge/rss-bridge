@@ -1,11 +1,11 @@
 <?php
-class UnsplashBridge extends BridgeAbstract {
-
-	const MAINTAINER = "nel50n";
-	const NAME = "Unsplash Bridge";
-	const URI = "http://unsplash.com/";
-	const CACHE_TIMEOUT = 43200; // 12h
-	const DESCRIPTION = "Returns the latests photos from Unsplash";
+class UnsplashBridge extends BridgeAbstract
+{
+    const MAINTAINER = "nel50n";
+    const NAME = "Unsplash Bridge";
+    const URI = "http://unsplash.com/";
+    const CACHE_TIMEOUT = 43200; // 12h
+    const DESCRIPTION = "Returns the latests photos from Unsplash";
 
     const PARAMETERS = array( array(
           'm'=>array(
@@ -25,7 +25,8 @@ class UnsplashBridge extends BridgeAbstract {
           )
       ));
 
-    public function collectData(){
+    public function collectData()
+    {
         $width = $this->getInput('w') ;
         $num = 0;
         $max = $this->getInput('m');
@@ -42,7 +43,7 @@ class UnsplashBridge extends BridgeAbstract {
                 $lastpage = min($matches[1], ceil($max/40));
             }
 
-            foreach($html->find('.photo') as $element) {
+            foreach ($html->find('.photo') as $element) {
                 $thumbnail = $element->find('img', 0);
                 $thumbnail->src = str_replace('https://', 'http://', $thumbnail->src);
 
@@ -56,8 +57,9 @@ class UnsplashBridge extends BridgeAbstract {
                 $this->items[] = $item;
 
                 $num++;
-                if ($num >= $max)
+                if ($num >= $max) {
                     break 2;
+                }
             }
         }
     }

@@ -1,6 +1,6 @@
 <?php
-class GBAtempBridge extends BridgeAbstract {
-
+class GBAtempBridge extends BridgeAbstract
+{
     const MAINTAINER = 'ORelio';
     const NAME = 'GBAtemp';
     const URI = 'http://gbatemp.net/';
@@ -20,23 +20,28 @@ class GBAtempBridge extends BridgeAbstract {
         )
     ));
 
-    private function ExtractFromDelimiters($string, $start, $end) {
+    private function ExtractFromDelimiters($string, $start, $end)
+    {
         if (strpos($string, $start) !== false) {
             $section_retrieved = substr($string, strpos($string, $start) + strlen($start));
             $section_retrieved = substr($section_retrieved, 0, strpos($section_retrieved, $end));
             return $section_retrieved;
-        } return false;
+        }
+        return false;
     }
 
-    private function StripWithDelimiters($string, $start, $end) {
+    private function StripWithDelimiters($string, $start, $end)
+    {
         while (strpos($string, $start) !== false) {
             $section_to_remove = substr($string, strpos($string, $start));
             $section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
             $string = str_replace($section_to_remove, '', $string);
-        } return $string;
+        }
+        return $string;
     }
 
-    private function build_item($uri, $title, $author, $timestamp, $content) {
+    private function build_item($uri, $title, $author, $timestamp, $content)
+    {
         $item = array();
         $item['uri'] = $uri;
         $item['title'] = $title;
@@ -46,16 +51,18 @@ class GBAtempBridge extends BridgeAbstract {
         return $item;
     }
 
-    private function cleanup_post_content($content, $site_url) {
+    private function cleanup_post_content($content, $site_url)
+    {
         $content = str_replace(':arrow:', '&#x27a4;', $content);
         $content = str_replace('href="attachments/', 'href="'.$site_url.'attachments/', $content);
         $content = $this->StripWithDelimiters($content, '<script', '</script>');
         return $content;
     }
 
-    private function fetch_post_content($uri, $site_url) {
+    private function fetch_post_content($uri, $site_url)
+    {
         $html = getSimpleHTMLDOM($uri);
-        if(!$html){
+        if (!$html) {
             return 'Could not request GBAtemp '.$uri;
         }
 
@@ -63,12 +70,12 @@ class GBAtempBridge extends BridgeAbstract {
         return $this->cleanup_post_content($content, $site_url);
     }
 
-    public function collectData(){
-
+    public function collectData()
+    {
         $html = getSimpleHTMLDOM(self::URI)
             or returnServerError('Could not request GBAtemp.');
 
-        switch($this->getInput('type')){
+        switch ($this->getInput('type')) {
         case 'N':
             foreach ($html->find('li[class=news_item full]') as $newsItem) {
                 $url = self::URI.$newsItem->find('a', 0)->href;
@@ -114,7 +121,8 @@ class GBAtempBridge extends BridgeAbstract {
         }
     }
 
-    public function getName() {
+    public function getName()
+    {
         $type=array_search(
             $this->getInput('type'),
             self::PARAMETERS[$this->queriedContext]['type']['values']

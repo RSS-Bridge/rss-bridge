@@ -1,12 +1,12 @@
 <?php
-class AnimeUltimeBridge extends BridgeAbstract {
-
-        const MAINTAINER = 'ORelio';
-        const NAME = 'Anime-Ultime';
-        const URI = 'http://www.anime-ultime.net/';
-        const CACHE_TIMEOUT = 10800; // 3h
+class AnimeUltimeBridge extends BridgeAbstract
+{
+    const MAINTAINER = 'ORelio';
+    const NAME = 'Anime-Ultime';
+    const URI = 'http://www.anime-ultime.net/';
+    const CACHE_TIMEOUT = 10800; // 3h
         const DESCRIPTION = 'Returns the 10 newest releases posted on Anime-Ultime';
-        const PARAMETERS = array( array(
+    const PARAMETERS = array( array(
           'type'=>array(
             'name'=>'Type',
             'type'=>'list',
@@ -21,7 +21,8 @@ class AnimeUltimeBridge extends BridgeAbstract {
 
     private $filter = 'Releases';
 
-    public function collectData(){
+    public function collectData()
+    {
 
         //Add type filter if provided
         $typeFilter = array_search(
@@ -98,8 +99,9 @@ class AnimeUltimeBridge extends BridgeAbstract {
                             $processedOK++;
 
                             //Stop processing once limit is reached
-                            if ($processedOK >= 10)
+                            if ($processedOK >= 10) {
                                 return;
+                            }
                         }
                     }
                 }
@@ -107,7 +109,8 @@ class AnimeUltimeBridge extends BridgeAbstract {
         }
     }
 
-    public function getName() {
+    public function getName()
+    {
         $typeFilter = array_search(
             $this->getInput('type'),
             self::PARAMETERS[$this->queriedContext]['type']['values']
@@ -115,5 +118,4 @@ class AnimeUltimeBridge extends BridgeAbstract {
 
         return 'Latest '.$typeFilter.' - Anime-Ultime Bridge';
     }
-
 }

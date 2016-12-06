@@ -1,13 +1,13 @@
 <?php
 define('GIPHY_LIMIT', 10);
 
-class GiphyBridge extends BridgeAbstract{
-
-	const MAINTAINER = "kraoc";
-	const NAME = "Giphy Bridge";
-	const URI = "http://giphy.com/";
-	const CACHE_TIMEOUT = 300; //5min
-	const DESCRIPTION = "Bridge for giphy.com";
+class GiphyBridge extends BridgeAbstract
+{
+    const MAINTAINER = "kraoc";
+    const NAME = "Giphy Bridge";
+    const URI = "http://giphy.com/";
+    const CACHE_TIMEOUT = 300; //5min
+    const DESCRIPTION = "Bridge for giphy.com";
 
     const PARAMETERS = array( array(
         's'=>array(
@@ -20,8 +20,9 @@ class GiphyBridge extends BridgeAbstract{
         )
     ));
 
-	public function collectData(){
-		$html = '';
+    public function collectData()
+    {
+        $html = '';
         $base_url = 'http://giphy.com';
         $html = getSimpleHTMLDOM(self::URI.'/search/'.urlencode($this->getInput('s').'/'))
             or returnServerError('No results for this query.');
@@ -33,8 +34,8 @@ class GiphyBridge extends BridgeAbstract{
 
         $limit = 0;
         $kw = urlencode($this->getInput('s'));
-        foreach($html->find('div.hoverable-gif') as $entry) {
-            if($limit < $max) {
+        foreach ($html->find('div.hoverable-gif') as $entry) {
+            if ($limit < $max) {
                 $node = $entry->first_child();
                 $href = $node->getAttribute('href');
 
@@ -49,14 +50,14 @@ class GiphyBridge extends BridgeAbstract{
                 $item['uri'] = $img->getAttribute('data-bitly_gif_url');
                 $item['username'] = 'Giphy - '.ucfirst($kw);
                 $title = $caption->innertext();
-                    $title = preg_replace('/\s+/', ' ',$title);
-                    $title = str_replace('animated GIF', '', $title);
-                    $title = str_replace($kw, '', $title);
-                    $title = preg_replace('/\s+/', ' ',$title);
-                    $title = trim($title);
-                    if (strlen($title) <= 0) {
-                        $title = $item['id'];
-                    }
+                $title = preg_replace('/\s+/', ' ', $title);
+                $title = str_replace('animated GIF', '', $title);
+                $title = str_replace($kw, '', $title);
+                $title = preg_replace('/\s+/', ' ', $title);
+                $title = trim($title);
+                if (strlen($title) <= 0) {
+                    $title = $item['id'];
+                }
                 $item['title'] = trim($title);
                 $item['content'] =
                     '<a href="'.$item['uri'].'">'
@@ -67,5 +68,5 @@ class GiphyBridge extends BridgeAbstract{
                 $limit++;
             }
         }
-	}
+    }
 }

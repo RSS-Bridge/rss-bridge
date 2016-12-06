@@ -1,19 +1,22 @@
 <?php
-class EstCeQuonMetEnProdBridge extends BridgeAbstract {
-
+class EstCeQuonMetEnProdBridge extends BridgeAbstract
+{
     const MAINTAINER = 'ORelio';
     const NAME = 'Est-ce qu\'on met en prod aujourd\'hui ?';
     const URI = 'https://www.estcequonmetenprodaujourdhui.info/';
     const CACHE_TIMEOUT = 21600; // 6h
     const DESCRIPTION = 'Should we put a website in production today? (French)';
 
-    public function collectData(){
-        function ExtractFromDelimiters($string, $start, $end) {
+    public function collectData()
+    {
+        function ExtractFromDelimiters($string, $start, $end)
+        {
             if (strpos($string, $start) !== false) {
                 $section_retrieved = substr($string, strpos($string, $start) + strlen($start));
                 $section_retrieved = substr($section_retrieved, 0, strpos($section_retrieved, $end));
                 return $section_retrieved;
-            } return false;
+            }
+            return false;
         }
 
         $html = getSimpleHTMLDOM($this->getURI()) or returnServerError('Could not request EstCeQuonMetEnProd: '.$this->getURI());
@@ -27,4 +30,3 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract {
         $this->items[] = $item;
     }
 }
-?>

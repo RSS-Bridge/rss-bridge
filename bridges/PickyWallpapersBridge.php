@@ -1,11 +1,11 @@
 <?php
-class PickyWallpapersBridge extends BridgeAbstract {
-
-	const MAINTAINER = "nel50n";
-	const NAME = "PickyWallpapers Bridge";
-	const URI = "http://www.pickywallpapers.com/";
-	const CACHE_TIMEOUT = 43200; // 12h
-	const DESCRIPTION = "Returns the latests wallpapers from PickyWallpapers";
+class PickyWallpapersBridge extends BridgeAbstract
+{
+    const MAINTAINER = "nel50n";
+    const NAME = "PickyWallpapers Bridge";
+    const URI = "http://www.pickywallpapers.com/";
+    const CACHE_TIMEOUT = 43200; // 12h
+    const DESCRIPTION = "Returns the latests wallpapers from PickyWallpapers";
 
     const PARAMETERS = array( array(
       'c'=>array(
@@ -27,14 +27,15 @@ class PickyWallpapersBridge extends BridgeAbstract {
     ));
 
 
-    public function collectData(){
+    public function collectData()
+    {
         $lastpage = 1;
         $num = 0;
         $max = $this->getInput('m');
         $resolution = $this->getInput('r');    // Wide wallpaper default
 
         for ($page = 1; $page <= $lastpage; $page++) {
-          $html = getSimpleHTMLDOM($this->getURI().'/page-'.$page.'/')
+            $html = getSimpleHTMLDOM($this->getURI().'/page-'.$page.'/')
             or returnServerError('No results for this query.');
 
             if ($page === 1) {
@@ -42,8 +43,7 @@ class PickyWallpapersBridge extends BridgeAbstract {
                 $lastpage = min($matches[1], ceil($max/12));
             }
 
-            foreach($html->find('.items li img') as $element) {
-
+            foreach ($html->find('.items li img') as $element) {
                 $item = array();
                 $item['uri'] = str_replace('www', 'wallpaper', self::URI).'/'.$resolution.'/'.basename($element->src);
                 $item['timestamp'] = time();
@@ -52,19 +52,22 @@ class PickyWallpapersBridge extends BridgeAbstract {
                 $this->items[] = $item;
 
                 $num++;
-                if ($num >= $max)
+                if ($num >= $max) {
                     break 2;
+                }
             }
         }
     }
 
-    public function getURI(){
+    public function getURI()
+    {
         $subcategory = $this->getInput('s');
         $link = self::URI.$this->getInput('r').'/'.$this->getInput('c').'/'.$subcategory;
         return $link;
     }
 
-    public function getName(){
+    public function getName()
+    {
         $subcategory = $this->getInput('s');
         return 'PickyWallpapers - '.$this->getInput('c')
           .($subcategory? ' > '.$subcategory : '')

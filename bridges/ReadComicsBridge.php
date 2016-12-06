@@ -1,10 +1,10 @@
 <?php
-class ReadComicsBridge extends BridgeAbstract{
-
-	const MAINTAINER = "niawag";
-	const NAME = "Read Comics";
-	const URI = "http://www.readcomics.tv/";
-	const DESCRIPTION = "Enter the comics as they appear in the website uri, separated by semicolons, ex: good-comic-1;good-comic-2; ...";
+class ReadComicsBridge extends BridgeAbstract
+{
+    const MAINTAINER = "niawag";
+    const NAME = "Read Comics";
+    const URI = "http://www.readcomics.tv/";
+    const DESCRIPTION = "Enter the comics as they appear in the website uri, separated by semicolons, ex: good-comic-1;good-comic-2; ...";
 
     const PARAMETERS = array( array(
         'q'=>array(
@@ -14,30 +14,32 @@ class ReadComicsBridge extends BridgeAbstract{
         ),
     ));
 
-	public function collectData(){
-
-        function parseDateTimestamp($element){
-            $guessedDate = $element->find('span',0)->plaintext;
+    public function collectData()
+    {
+        function parseDateTimestamp($element)
+        {
+            $guessedDate = $element->find('span', 0)->plaintext;
             $guessedDate = strptime($guessedDate, '%m/%d/%Y');
             $timestamp   = mktime(0, 0, 0, $guessedDate['tm_mon'] + 1, $guessedDate['tm_mday'], date('Y'));
             
             return $timestamp;
         }
 
-        $keywordsList = explode(";",$this->getInput('q'));
-        foreach($keywordsList as $keywords){
-			$html = $this->getSimpleHTMLDOM(self::URI.'comic/'.rawurlencode($keywords))
-						or $this->returnServerError('Could not request readcomics.tv.');
+        $keywordsList = explode(";", $this->getInput('q'));
+        foreach ($keywordsList as $keywords) {
+            $html = $this->getSimpleHTMLDOM(self::URI.'comic/'.rawurlencode($keywords))
+                        or $this->returnServerError('Could not request readcomics.tv.');
 
-            foreach($html->find('li') as $element) {
+            foreach ($html->find('li') as $element) {
                 $item = array();
-                $item['uri'] = $element->find('a.ch-name',0)->href;                
-                $item['id'] = $item['uri'];                
+                $item['uri'] = $element->find('a.ch-name', 0)->href;
+                $item['id'] = $item['uri'];
                 $item['timestamp'] = parseDateTimestamp($element);
-                $item['title'] = $element->find('a.ch-name',0)->plaintext;
-                if(isset($item['title']))
+                $item['title'] = $element->find('a.ch-name', 0)->plaintext;
+                if (isset($item['title'])) {
                     $this->items[] = $item;
+                }
             }
         }
-	}
+    }
 }

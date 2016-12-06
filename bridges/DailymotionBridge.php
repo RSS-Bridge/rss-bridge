@@ -1,13 +1,13 @@
 <?php
-class DailymotionBridge extends BridgeAbstract{
-
-        const MAINTAINER = "mitsukarenai";
-        const NAME = "Dailymotion Bridge";
-        const URI = "https://www.dailymotion.com/";
-        const CACHE_TIMEOUT = 10800; // 3h
+class DailymotionBridge extends BridgeAbstract
+{
+    const MAINTAINER = "mitsukarenai";
+    const NAME = "Dailymotion Bridge";
+    const URI = "https://www.dailymotion.com/";
+    const CACHE_TIMEOUT = 10800; // 3h
         const DESCRIPTION = "Returns the 5 newest videos by username/playlist or search";
 
-        const PARAMETERS = array (
+    const PARAMETERS = array(
             'By username' => array(
                 'u'=>array(
                     'name'=>'username',
@@ -34,21 +34,23 @@ class DailymotionBridge extends BridgeAbstract{
             )
         );
 
-    function getMetadata($id) {
+    public function getMetadata($id)
+    {
         $metadata=array();
         $html2 = getSimpleHTMLDOM(self::URI.'video/'.$id);
-        if(!$html2){
+        if (!$html2) {
             return $metadata;
         }
 
         $metadata['title'] = $html2->find('meta[property=og:title]', 0)->getAttribute('content');
-        $metadata['timestamp'] = strtotime($html2->find('meta[property=video:release_date]', 0)->getAttribute('content') );
+        $metadata['timestamp'] = strtotime($html2->find('meta[property=video:release_date]', 0)->getAttribute('content'));
         $metadata['thumbnailUri'] = $html2->find('meta[property=og:image]', 0)->getAttribute('content');
         $metadata['uri'] = $html2->find('meta[property=og:url]', 0)->getAttribute('content');
         return $metadata;
     }
 
-    public function collectData(){
+    public function collectData()
+    {
         $html = '';
         $limit = 5;
         $count = 0;
@@ -56,12 +58,12 @@ class DailymotionBridge extends BridgeAbstract{
         $html = getSimpleHTMLDOM($this->getURI())
             or returnServerError('Could not request Dailymotion.');
 
-        foreach($html->find('div.media a.preview_link') as $element) {
-            if($count < $limit) {
+        foreach ($html->find('div.media a.preview_link') as $element) {
+            if ($count < $limit) {
                 $item = array();
                 $item['id'] = str_replace('/video/', '', strtok($element->href, '_'));
                 $metadata = $this->getMetadata($item['id']);
-                if(empty($metadata)){
+                if (empty($metadata)) {
                     continue;
                 }
                 $item['uri'] = $metadata['uri'];
@@ -74,8 +76,9 @@ class DailymotionBridge extends BridgeAbstract{
         }
     }
 
-    public function getName(){
-        switch($this->queriedContext){
+    public function getName()
+    {
+        switch ($this->queriedContext) {
         case 'By username':
             $specific=$this->getInput('u');
             break;
@@ -90,9 +93,10 @@ class DailymotionBridge extends BridgeAbstract{
         return $specific.' : Dailymotion Bridge';
     }
 
-    public function getURI(){
+    public function getURI()
+    {
         $uri=self::URI;
-        switch($this->queriedContext){
+        switch ($this->queriedContext) {
         case 'By username':
             $uri.='user/'
                 .urlencode($this->getInput('u')).'/1';
@@ -104,7 +108,7 @@ class DailymotionBridge extends BridgeAbstract{
         case 'From search results':
             $uri.='search/'
                 .urlencode($this->getInput('s'));
-            if($this->getInput('pa')){
+            if ($this->getInput('pa')) {
                 $uri.='/'.$this->getInput('pa');
             }
             break;

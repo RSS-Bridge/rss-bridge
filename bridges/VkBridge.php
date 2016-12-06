@@ -1,7 +1,7 @@
 <?php
 
-class VkBridge extends BridgeAbstract {
-
+class VkBridge extends BridgeAbstract
+{
     const MAINTAINER = "ahiles3005";
     const NAME = "VK.com";
     const URI = "http://vk.com/";
@@ -15,10 +15,12 @@ class VkBridge extends BridgeAbstract {
         )
     );
 
-    public function getURI(){
-      return static::URI.urlencode($this->getInput('u'));
+    public function getURI()
+    {
+        return static::URI.urlencode($this->getInput('u'));
     }
-    public function collectData(){
+    public function collectData()
+    {
         $text_html = getContents($this->getURI())
           or returnServerError('No results for group or user name "'.$this->getInput('u').'".');
 

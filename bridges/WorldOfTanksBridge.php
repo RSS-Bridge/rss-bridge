@@ -1,6 +1,6 @@
 <?php
-class WorldOfTanksBridge extends BridgeAbstract {
-
+class WorldOfTanksBridge extends BridgeAbstract
+{
     const MAINTAINER = "mitsukarenai";
     const NAME = "World of Tanks";
     const URI = "http://worldoftanks.eu/";
@@ -28,31 +28,35 @@ class WorldOfTanksBridge extends BridgeAbstract {
 
     private $title='';
 
-    function getURI(){
+    public function getURI()
+    {
         $lang = $this->getInput('lang');
         $uri = self::URI.$lang.'/news/';
-        if(!empty($this->getInput('category'))) {
+        if (!empty($this->getInput('category'))) {
             $uri .= 'pc-browser/'.$this->getInput('category')."/";
         }
         return $uri;
     }
 
-    public function getName(){
-      return $this->title?:self::NAME;
+    public function getName()
+    {
+        return $this->title?:self::NAME;
     }
 
-    public function collectData(){
-      $html = getSimpleHTMLDOM($this->getURI())
+    public function collectData()
+    {
+        $html = getSimpleHTMLDOM($this->getURI())
         or returnServerError('Could not request '.$this->getURI());
         debugMessage("loaded HTML from ".$this->getURI());
         // customize name
         $this->title = $html->find('title', 0)->innertext;
-        foreach($html->find('.b-imgblock_ico') as $infoLink) {
+        foreach ($html->find('.b-imgblock_ico') as $infoLink) {
             $this->parseLine($infoLink);
-       }
+        }
     }
 
-    private function parseLine($infoLink) {
+    private function parseLine($infoLink)
+    {
         $item = array();
         $item['uri'] = self::URI.$infoLink->href;
         // now load that uri from cache

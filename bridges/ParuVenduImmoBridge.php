@@ -1,11 +1,11 @@
 <?php
 class ParuVenduImmoBridge extends BridgeAbstract
 {
-	const MAINTAINER = "polo2ro";
-	const NAME = "Paru Vendu Immobilier";
-	const URI = "http://www.paruvendu.fr";
-	const CACHE_TIMEOUT = 10800; // 3h
-	const DESCRIPTION = "Returns the ads from the first page of search result.";
+    const MAINTAINER = "polo2ro";
+    const NAME = "Paru Vendu Immobilier";
+    const URI = "http://www.paruvendu.fr";
+    const CACHE_TIMEOUT = 10800; // 3h
+    const DESCRIPTION = "Returns the ads from the first page of search result.";
 
 
     const PARAMETERS = array( array(
@@ -29,14 +29,13 @@ class ParuVenduImmoBridge extends BridgeAbstract
         $html = getSimpleHTMLDOM($this->getURI())
           or returnServerError('Could not request paruvendu.');
 
-        foreach($html->find('div.annonce a') as $element) {
-
+        foreach ($html->find('div.annonce a') as $element) {
             if (!$element->title) {
                 continue;
             }
 
             $img ='';
-            foreach($element->find('span.img img') as $img) {
+            foreach ($element->find('span.img img') as $img) {
                 if ($img->original) {
                     $img = '<img src="'.$img->original.'" />';
                 }
@@ -54,11 +53,11 @@ class ParuVenduImmoBridge extends BridgeAbstract
             $item['title'] = $element->title;
             $item['content'] = $img.$desc.$price;
             $this->items[] = $item;
-
         }
     }
 
-    public function getURI(){
+    public function getURI()
+    {
         $appartment = '&tbApp=1&tbDup=1&tbChb=1&tbLof=1&tbAtl=1&tbPla=1';
         $maison = '&tbMai=1&tbVil=1&tbCha=1&tbPro=1&tbHot=1&tbMou=1&tbFer=1';
         $link = self::URI.'/immobilier/annonceimmofo/liste/listeAnnonces?tt=1'.$appartment.$maison;
@@ -81,14 +80,15 @@ class ParuVenduImmoBridge extends BridgeAbstract
         return $link;
     }
 
-    public function getName(){
+    public function getName()
+    {
         $request='';
         $minarea=$this->getInput('minarea');
-        if(!empty($minarea)){
+        if (!empty($minarea)) {
             $request .= ' '.$minarea.' m2';
         }
         $location=$this->getInput('lo');
-        if(!empty($location)){
+        if (!empty($location)) {
             $request .= ' In: '.$location;
         }
         return 'Paru Vendu Immobilier'.$request;

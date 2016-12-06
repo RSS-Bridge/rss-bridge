@@ -1,8 +1,8 @@
 <?php
 require_once('GelbooruBridge.php');
 
-class XbooruBridge extends GelbooruBridge{
-
+class XbooruBridge extends GelbooruBridge
+{
     const MAINTAINER = "mitsukarenai";
     const NAME = "Xbooru";
     const URI = "http://xbooru.com/";
