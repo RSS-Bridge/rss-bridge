@@ -3,7 +3,7 @@ class T411Bridge extends BridgeAbstract {
 
     const MAINTAINER = 'ORelio';
     const NAME = 'T411 Bridge';
-    const URI = 'https://t411.ch/';
+    const URI = 'https://www.t411.li/';
     const DESCRIPTION = 'Returns the 10 newest torrents with specified search terms <br /> Use url part after "?" mark when using their search engine.';
 
     const PARAMETERS = array( array(
@@ -25,7 +25,7 @@ class T411Bridge extends BridgeAbstract {
         }
 
         //Retrieve torrent listing from search results, which does not contain torrent description
-        $url = self::URI.'torrents/search/?'.$this->getInput('search').'&order=added&type=desc';
+        $url = self::URI.'torrents/search/?search='.urlencode($this->getInput('search')).'&order=added&type=desc';
         $html = getSimpleHTMLDOM($url)
           or returnServerError('Could not request t411: '.$url);
 
