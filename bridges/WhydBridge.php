@@ -10,7 +10,7 @@ class WhydBridge extends BridgeAbstract
 	const PARAMETERS = array( array(
 		'u' => array(
 			'name' => 'username/id',
-			'required' =>true
+			'required' => true
 		)
 	));
 

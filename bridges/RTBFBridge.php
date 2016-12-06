@@ -11,7 +11,7 @@ class RTBFBridge extends BridgeAbstract
 		'c' => array(
 			'name' => 'series id',
 			'exampleValue' =>9500,
-			'required' =>true
+			'required' => true
 		)
 	));
 

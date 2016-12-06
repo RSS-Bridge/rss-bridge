@@ -13,11 +13,11 @@ class DuckDuckGoBridge extends BridgeAbstract
 	const PARAMETERS = array( array(
 		'u' => array(
 			'name' => 'keyword',
-			'required' =>true),
+			'required' => true),
 		'sort' => array(
 			'name' => 'sort by',
 			'type' => 'list',
-			'required' =>false,
+			'required' => false,
 			'values' => array(
 				'date' =>self::SORT_DATE,
 				'relevance' =>self::SORT_RELEVANCE

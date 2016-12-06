@@ -11,11 +11,11 @@ class GithubIssueBridge extends BridgeAbstract
 	'global' => array(
 	  'u' => array(
 		'name' => 'User name',
-		'required' =>true
+		'required' => true
 	  ),
 	  'p' => array(
 		'name' => 'Project name',
-		'required' =>true
+		'required' => true
 	  )
 	),
 

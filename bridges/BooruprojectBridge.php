@@ -19,7 +19,7 @@ class BooruprojectBridge extends GelbooruBridge
 	  'Booru subdomain (subdomain.booru.org)' => array(
 		'i' => array(
 		'name' => 'Subdomain',
-		'required' =>true
+		'required' => true
 		)
 	  )
 	);

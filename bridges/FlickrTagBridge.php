@@ -11,14 +11,14 @@ class FlickrTagBridge extends BridgeAbstract
 		'By keyword' => array(
 			'q' => array(
 				'name' => 'keyword',
-				'required' =>true
+				'required' => true
 			)
 		),
 
 		'By username' => array(
 			'u' => array(
 				'name' => 'Username',
-				'required' =>true
+				'required' => true
 			)
 		),
 	);

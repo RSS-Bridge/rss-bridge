@@ -10,7 +10,7 @@ class PickyWallpapersBridge extends BridgeAbstract
 	const PARAMETERS = array( array(
 	  'c' => array(
 		'name' => 'category',
-		'required' =>true
+		'required' => true
 	  ),
 		's' => array('name' => 'subcategory'),
 		'm' => array(

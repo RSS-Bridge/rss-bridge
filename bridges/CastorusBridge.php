@@ -13,7 +13,7 @@ class CastorusBridge extends BridgeAbstract
 			'zip' => array(
 				'name' => 'ZIP code',
 				'type' => 'text',
-				'required' =>true,
+				'required' => true,
 				'exampleValue' => '74910, 74',
 				'title' => 'Insert ZIP code (complete or partial)'
 			)
@@ -22,7 +22,7 @@ class CastorusBridge extends BridgeAbstract
 			'city' => array(
 				'name' => 'City name',
 				'type' => 'text',
-				'required' =>true,
+				'required' => true,
 				'exampleValue' => 'Seyssel, Seys',
 				'title' => 'Insert city name (complete or partial)'
 			)

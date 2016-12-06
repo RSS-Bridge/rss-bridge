@@ -19,14 +19,14 @@ class YoutubeBridge extends BridgeAbstract
 			'u' => array(
 				'name' => 'username',
 				'exampleValue' => 'test',
-				'required' =>true
+				'required' => true
 			)
 		),
 		'By channel id' => array(
 			'c' => array(
 				'name' => 'channel id',
 				'exampleValue' "" =>15",
-				'required' =>true
+				'required' => true
 			)
 		),
 		'By playlist Id' => array(

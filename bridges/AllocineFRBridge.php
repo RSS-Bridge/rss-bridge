@@ -10,7 +10,7 @@ class AllocineFRBridge extends BridgeAbstract
 		'category' => array(
 			'name' => 'category',
 			'type' => 'list',
-			'required' =>true,
+			'required' => true,
 			'exampleValue' => 'Faux Raccord',
 			'title' => 'Select your category',
 			'values' => array(

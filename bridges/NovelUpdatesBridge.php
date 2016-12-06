@@ -10,7 +10,7 @@ class NovelUpdatesBridge extends BridgeAbstract
 		'n' => array(
 		  'name' => 'Novel name as found in the url',
 		  'exampleValue' => 'spirit-realm',
-		  'required' =>true
+		  'required' => true
 		)
 	));
 

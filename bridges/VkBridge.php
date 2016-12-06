@@ -10,7 +10,7 @@ class VkBridge extends BridgeAbstract
 	const PARAMETERS=array( array(
 			'u' => array(
 				'name' => 'Group or user name',
-				'required' =>true
+				'required' => true
 			)
 		)
 	);

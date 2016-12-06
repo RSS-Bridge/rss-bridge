@@ -10,7 +10,7 @@ class BandcampBridge extends BridgeAbstract
 		'tag' => array(
 			'name' => 'tag',
 			'type' => 'text',
-			'required' =>true
+			'required' => true
 		)
 	));
 

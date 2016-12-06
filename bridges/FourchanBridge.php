@@ -10,12 +10,12 @@ class FourchanBridge extends BridgeAbstract
 	const PARAMETERS = array( array(
 		  'c' => array(
 			'name' => 'Thread category',
-			'required' =>true
+			'required' => true
 		  ),
 		  't' => array(
 			'name' => 'Thread number',
 			'type' => 'number',
-			'required' =>true
+			'required' => true
 		  )
 	));
 

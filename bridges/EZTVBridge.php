@@ -10,7 +10,7 @@ class EZTVBridge extends BridgeAbstract
 		'i' => array(
 			'name' => 'Show ids',
 			'exampleValue' => 'showID1,showID2,…',
-			'required' =>true
+			'required' => true
 		)
 	));
 

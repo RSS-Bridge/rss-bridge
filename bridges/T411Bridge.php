@@ -9,7 +9,7 @@ class T411Bridge extends BridgeAbstract
 	const PARAMETERS = array( array(
 		'search' => array(
 			'name' => 'Search criteria',
-			'required' =>true
+			'required' => true
 		)
 	));
 

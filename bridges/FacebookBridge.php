@@ -10,7 +10,7 @@ class FacebookBridge extends BridgeAbstract
 	const PARAMETERS =array( array(
 		'u' => array(
 			'name' => 'Username',
-			'required' =>true
+			'required' => true
 		)
 	));
 

@@ -9,7 +9,7 @@ class InstagramBridge extends BridgeAbstract
 	const PARAMETERS = array( array(
 		'u' => array(
 			'name' => 'username',
-			'required' =>true
+			'required' => true
 		)
 	));
 

@@ -12,7 +12,7 @@ class GiphyBridge extends BridgeAbstract
 	const PARAMETERS = array( array(
 		's' => array(
 			'name' => 'search tag',
-			'required' =>true
+			'required' => true
 		),
 		'n' => array(
 			'name' => 'max number of returned items',

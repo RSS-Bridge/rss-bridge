@@ -17,7 +17,7 @@ class IsoHuntBridge extends BridgeAbstract
 	  'latest_category' => array(
 		'name' => 'Latest category',
 		'type' => 'list',
-		'required' =>true,
+		'required' => true,
 		'title' => 'Select your category',
 		'defaultValue' => 'news',
 		'values' => array(
@@ -38,7 +38,7 @@ class IsoHuntBridge extends BridgeAbstract
 	  'torrent_category' => array(
 		'name' => 'Torrent category',
 		'type' => 'list',
-		'required' =>true,
+		'required' => true,
 		'title' => 'Select your category',
 		'defaultValue' => 'anime',
 		'values' => array(
@@ -66,7 +66,7 @@ class IsoHuntBridge extends BridgeAbstract
 	'Search torrent by name' => array(
 	  'search_name' => array(
 		'name' => 'Name',
-		'required' =>true,
+		'required' => true,
 		'title' => 'Insert your search query',
 		'exampleValue' => 'Bridge'
 	  ),

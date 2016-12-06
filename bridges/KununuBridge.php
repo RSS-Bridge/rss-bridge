@@ -12,7 +12,7 @@ class KununuBridge extends BridgeAbstract
 		  'site' => array(
 			'name' => 'Site',
 			'type' => 'list',
-			'required' =>true,
+			'required' => true,
 			'title' => 'Select your site',
 			'values' => array(
 			  'Austria' => 'at',
@@ -24,7 +24,7 @@ class KununuBridge extends BridgeAbstract
 		  'full' => array(
 			'name' => 'Load full article',
 			'type' => 'checkbox',
-			'required' =>false,
+			'required' => false,
 			'exampleValue' => 'checked',
 			'title' => 'Activate to load full article'
 		  )
@@ -33,7 +33,7 @@ class KununuBridge extends BridgeAbstract
 		array(
 		  'company' => array(
 			'name' => 'Company',
-			'required' =>true,
+			'required' => true,
 			'exampleValue' => 'kununu-us',
 			'title' => 'Insert company name (i.e. Kununu US) or URI path (i.e. kununu-us)'
 		  )

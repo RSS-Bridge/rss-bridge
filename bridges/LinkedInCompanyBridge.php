@@ -10,7 +10,7 @@ class LinkedInCompanyBridge extends BridgeAbstract
 	const PARAMETERS = array( array(
 		'c' => array(
 			'name' => 'Company name',
-			'required' =>true
+			'required' => true
 		)
 	));
 

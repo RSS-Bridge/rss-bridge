@@ -13,7 +13,7 @@ class GooglePlusPostBridge extends BridgeAbstract
 	const PARAMETERS = array( array(
 		'username' => array(
 			'name' => 'username or Id',
-			'required' =>true
+			'required' => true
 		)
 	));
 

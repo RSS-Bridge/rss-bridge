@@ -9,7 +9,7 @@ class VineBridge extends BridgeAbstract
 	const PARAMETERS = array( array(
 		'u' => array(
 			'name' => 'User id',
-			'required' =>true
+			'required' => true
 		)
 	));
 

@@ -10,7 +10,7 @@ class ThePirateBayBridge extends BridgeAbstract
 		'q' => array(
 			'name' => 'keywords, separated by semicolons',
 			'exampleValue' => 'first list;second list;…',
-			'required' =>true
+			'required' => true
 		),
 		'crit' => array(
 			'type' => 'list',

@@ -10,7 +10,7 @@ class CpasbienBridge extends BridgeAbstract
 	const PARAMETERS = array( array(
 		'q' => array(
 			'name' => 'Search',
-			'required' =>true,
+			'required' => true,
 			'title' => 'Type your search'
 		)
 	));

@@ -16,7 +16,7 @@ class TwitterBridge extends BridgeAbstract
 		'By keyword or hashtag' => array(
 			'q' => array(
 				'name' => 'Keyword or #hashtag',
-				'required' =>true,
+				'required' => true,
 				'exampleValue' => 'rss-bridge, #rss-bridge',
 				'title' => 'Insert a keyword or hashtag'
 			)
@@ -24,7 +24,7 @@ class TwitterBridge extends BridgeAbstract
 		'By username' => array(
 			'u' => array(
 				'name' => 'username',
-				'required' =>true,
+				'required' => true,
 				'exampleValue' => 'sebsauvage',
 				'title' => 'Insert a user name'
 			),

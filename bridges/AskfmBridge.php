@@ -10,7 +10,7 @@ class AskfmBridge extends BridgeAbstract
 		'Ask.fm username' => array(
 			'u' => array(
 				'name' => 'Username',
-				'required' =>true
+				'required' => true
 			)
 		)
 	);

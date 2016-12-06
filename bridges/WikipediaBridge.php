@@ -14,7 +14,7 @@ class WikipediaBridge extends BridgeAbstract
 		'language' => array(
 			'name' => 'Language',
 			'type' => 'list',
-			'required' =>true,
+			'required' => true,
 			'title' => 'Select your language',
 			'exampleValue' => 'English',
 			'values' => array(
@@ -28,7 +28,7 @@ class WikipediaBridge extends BridgeAbstract
 		'subject' => array(
 			'name' => 'Subject',
 			'type' => 'list',
-			'required' =>true,
+			'required' => true,
 			'title' => 'What subject are you interested in?',
 			'exampleValue' => 'Today\'s featured article',
 			'values' => array(

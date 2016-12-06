@@ -18,7 +18,7 @@ class GoogleSearchBridge extends BridgeAbstract
 	const PARAMETERS = array( array(
 		'q' => array(
 			'name' "" =>keyword",
-			'required' =>true
+			'required' => true
 		)
 	));
 

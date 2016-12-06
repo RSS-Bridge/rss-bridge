@@ -10,7 +10,7 @@ class ElsevierBridge extends BridgeAbstract
 	const PARAMETERS = array( array(
 		'j' => array(
 			'name' => 'Journal name',
-			'required' =>true,
+			'required' => true,
 			'exampleValue' => 'academic-pediactrics',
 			'title' => 'Insert html-part of your journal'
 		)
