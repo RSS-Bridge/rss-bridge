@@ -126,7 +126,7 @@ class FuturaSciencesBridge extends FeedExpander {
     }
 
     function ExtractArticleContent($article){
-        $contents = $article->find('div.content', 0)->innertext;
+        $contents = $article->find('section[class=module article-text article-text-classic bg-white]', 0)->innertext;
 
         foreach (array(
             '<div class="clear',
