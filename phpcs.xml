@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset name="RSS-Bridge Ruleset">
   <description>Created with the PHP Coding Standard Generator. http://edorian.github.com/php-coding-standard-generator/</description>
-  <exclude-pattern>./bridges</exclude-pattern>
   <exclude-pattern>./css</exclude-pattern>
   <exclude-pattern>./vendor</exclude-pattern>
   <rule ref="Generic.Classes.DuplicateClassName"/>
