@@ -1,23 +1,26 @@
 <?php
-class DeveloppezDotComBridge extends FeedExpander {
-
+class DeveloppezDotComBridge extends FeedExpander
+{
 	const MAINTAINER = "polopollo";
 	const NAME = "Developpez.com Actus (FR)";
 	const URI = "http://www.developpez.com/";
 	const CACHE_TIMEOUT = 1800; // 30min
 	const DESCRIPTION = "Returns the 15 newest posts from DeveloppezDotCom (full text).";
 
-	public function collectData(){
+	public function collectData()
+	{
 		$this->collectExpandableDatas(self::URI . 'index/rss', 15);
 	}
 
-	protected function parseItem($newsItem){
+	protected function parseItem($newsItem)
+	{
 		$item = parent::parseItem($newsItem);
 		$item['content'] = $this->DeveloppezDotComExtractContent($item['uri']);
 		return $item;
 	}
 
-	private function DeveloppezDotComStripCDATA($string) {
+	private function DeveloppezDotComStripCDATA($string)
+	{
 		$string = str_replace('<![CDATA[', '', $string);
 		$string = str_replace(']]>', '', $string);
 		return $string;
@@ -42,7 +45,8 @@ class DeveloppezDotComBridge extends FeedExpander {
 		return str_replace($search, $replace, $string);
 	}
 
-	private function DeveloppezDotComExtractContent($url) {
+	private function DeveloppezDotComExtractContent($url)
+	{
 		$articleHTMLContent = getSimpleHTMLDOMCached($url);
 		$text = $this->convert_smart_quotes($articleHTMLContent->find('div.content', 0)->innertext);
 		$text = utf8_encode($text);

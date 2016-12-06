@@ -3,51 +3,54 @@
 define('WIKIPEDIA_SUBJECT_TFA', 0); // Today's featured article
 define('WIKIPEDIA_SUBJECT_DYK', 1); // Did you know...
 
-class WikipediaBridge extends BridgeAbstract {
+class WikipediaBridge extends BridgeAbstract
+{
 	const MAINTAINER = 'logmanoriginal';
 	const NAME = 'Wikipedia bridge for many languages';
 	const URI = 'https://www.wikipedia.org/';
 	const DESCRIPTION = 'Returns articles for a language of your choice';
 
 	const PARAMETERS = array( array(
-		'language'=>array(
-			'name'=>'Language',
-			'type'=>'list',
-			'required'=>true,
-			'title'=>'Select your language',
-			'exampleValue'=>'English',
-			'values'=>array(
-				'English'=>'en',
-				'Dutch'=>'nl',
-				'Esperanto'=>'eo',
-				'French'=>'fr',
-				'German'=>'de',
+		'language' => array(
+			'name' => 'Language',
+			'type' => 'list',
+			'required' =>true,
+			'title' => 'Select your language',
+			'exampleValue' => 'English',
+			'values' => array(
+				'English' => 'en',
+				'Dutch' => 'nl',
+				'Esperanto' => 'eo',
+				'French' => 'fr',
+				'German' => 'de',
 			)
 		),
-		'subject'=>array(
-			'name'=>'Subject',
-			'type'=>'list',
-			'required'=>true,
-			'title'=>'What subject are you interested in?',
-			'exampleValue'=>'Today\'s featured article',
-			'values'=>array(
-				'Today\'s featured article'=>'tfa',
-				'Did you know…'=>'dyk'
+		'subject' => array(
+			'name' => 'Subject',
+			'type' => 'list',
+			'required' =>true,
+			'title' => 'What subject are you interested in?',
+			'exampleValue' => 'Today\'s featured article',
+			'values' => array(
+				'Today\'s featured article' => 'tfa',
+				'Did you know…' => 'dyk'
 			)
 		),
-		'fullarticle'=>array(
-			'name'=>'Load full article',
-			'type'=>'checkbox',
-			'title'=>'Activate to always load the full article'
+		'fullarticle' => array(
+			'name' => 'Load full article',
+			'type' => 'checkbox',
+			'title' => 'Activate to always load the full article'
 		)
 	));
 
-	public function getURI(){
+	public function getURI()
+	{
 		return 'https://' . strtolower($this->getInput('language')) . '.wikipedia.org';
-    }
+	}
 
-	public function getName(){
-		switch($this->getInput('subject')){
+	public function getName()
+	{
+		switch ($this->getInput('subject')) {
 			case 'tfa':
 				$subject = WIKIPEDIA_SUBJECT_TFA;
 				break;
@@ -59,7 +62,7 @@ class WikipediaBridge extends BridgeAbstract {
 				break;
 		}
 
-		switch($subject){
+		switch ($subject) {
 			case WIKIPEDIA_SUBJECT_TFA:
 				$name = 'Today\'s featured article from ' . strtolower($this->getInput('language')) . '.wikipedia.org';
 				break;
@@ -70,12 +73,12 @@ class WikipediaBridge extends BridgeAbstract {
 				$name = 'Articles from ' . strtolower($this->getInput('language')) . '.wikipedia.org';
 				break;
 		}
-        return $name;
-    }
+		return $name;
+	}
 
-	public function collectData(){
-
-		switch($this->getInput('subject')){
+	public function collectData()
+	{
+		switch ($this->getInput('subject')) {
 			case 'tfa':
 				$subject = WIKIPEDIA_SUBJECT_TFA;
 				break;
@@ -92,8 +95,9 @@ class WikipediaBridge extends BridgeAbstract {
 		// This will automatically send us to the correct main page in any language (try it!)
 		$html = getSimpleHTMLDOM($this->getURI() . '/wiki');
 
-		if(!$html)
+		if (!$html) {
 			returnServerError('Could not load site: ' . $this->getURI() . '!');
+		}
 
 		/*
 		* Now read content depending on the language (make sure to create one function per language!)
@@ -102,8 +106,9 @@ class WikipediaBridge extends BridgeAbstract {
 		*/
 		$function = 'GetContents' . strtoupper($this->getInput('language'));
 
-		if(!method_exists($this, $function))
+		if (!method_exists($this, $function)) {
 			returnServerError('A function to get the contents for your language is missing (\'' . $function . '\')!');
+		}
 
 		/*
 		* The method takes care of creating all items.
@@ -116,7 +121,8 @@ class WikipediaBridge extends BridgeAbstract {
 	* @param $element A simplehtmldom element
 	* @return The $element->innertext with all URIs replaced
 	*/
-	private function ReplaceURIInHTMLElement($element){
+	private function ReplaceURIInHTMLElement($element)
+	{
 		return str_replace('href="/', 'href="' . $this->getURI() . '/', $element->innertext);
 	}
 
@@ -125,15 +131,17 @@ class WikipediaBridge extends BridgeAbstract {
 	* $anchorText can be specified if the wiki in question doesn't use '...' (like Dutch, French and Italian)
 	* $anchorFallbackIndex can be used to specify a different fallback link than the first (e.g., -1 for the last)
 	*/
-	private function AddTodaysFeaturedArticleGeneric($element, $fullArticle, $anchorText = '...', $anchorFallbackIndex = 0){
+	private function AddTodaysFeaturedArticleGeneric($element, $fullArticle, $anchorText = '...', $anchorFallbackIndex = 0)
+	{
 		// Clean the bottom of the featured article
-		if ($element->find('div', -1))
+		if ($element->find('div', -1)) {
 			$element->find('div', -1)->outertext = '';
+		}
 
 		// The title and URI of the article can be found in an anchor containing the string '...' in most wikis ('full article ...')
 		$target = $element->find('p/a', $anchorFallbackIndex);
-		foreach($element->find('//a') as $anchor){
-			if(strpos($anchor->innertext, $anchorText) !== false){
+		foreach ($element->find('//a') as $anchor) {
+			if (strpos($anchor->innertext, $anchorText) !== false) {
 				$target = $anchor;
 				break;
 			}
@@ -143,10 +151,11 @@ class WikipediaBridge extends BridgeAbstract {
 		$item['uri'] = $this->getURI() . $target->href;
 		$item['title'] = $target->title;
 
-		if(!$fullArticle)
+		if (!$fullArticle) {
 			$item['content'] = strip_tags($this->ReplaceURIInHTMLElement($element), '<a><p><br><img>');
-		else
+		} else {
 			$item['content'] = $this->LoadFullArticle($item['uri']);
+		}
 
 		$this->items[] = $item;
 	}
@@ -154,18 +163,20 @@ class WikipediaBridge extends BridgeAbstract {
 	/*
 	* Adds a new item to $items using a generic operation (should work for most (all?) wikis)
 	*/
-	private function AddDidYouKnowGeneric($element, $fullArticle){
-		foreach($element->find('ul', 0)->find('li') as $entry){
+	private function AddDidYouKnowGeneric($element, $fullArticle)
+	{
+		foreach ($element->find('ul', 0)->find('li') as $entry) {
 			$item = array();
 
 			// We can only use the first anchor, there is no way of finding the 'correct' one if there are multiple
 			$item['uri'] = $this->getURI() . $entry->find('a', 0)->href;
 			$item['title'] = strip_tags($entry->innertext);
 
-			if(!$fullArticle)
+			if (!$fullArticle) {
 				$item['content'] = $this->ReplaceURIInHTMLElement($entry);
-			else
+			} else {
 				$item['content'] = $this->LoadFullArticle($item['uri']);
+			}
 
 			$this->items[] = $item;
 		}
@@ -174,24 +185,29 @@ class WikipediaBridge extends BridgeAbstract {
 	/**
 	* Loads the full article from a given URI
 	*/
-	private function LoadFullArticle($uri){
+	private function LoadFullArticle($uri)
+	{
 		$content_html = getSimpleHTMLDOMCached($uri);
 
-		if(!$content_html)
+		if (!$content_html) {
 			returnServerError('Could not load site: ' . $uri . '!');
+		}
 
 		$content = $content_html->find('#mw-content-text', 0);
 
-		if(!$content)
+		if (!$content) {
 			returnServerError('Could not find content in page: ' . $uri . '!');
+		}
 
 		// Let's remove a couple of things from the article
 		$table = $content->find('#toc', 0); // Table of contents
-		if(!$table === false)
+		if (!$table === false) {
 			$table->outertext = '';
+		}
 
-		foreach($content->find('ol.references') as $reference) // References
+		foreach ($content->find('ol.references') as $reference) { // References
 			$reference->outertext = '';
+		}
 
 		return str_replace('href="/', 'href="' . $this->getURI() . '/', $content->innertext);
 	}
@@ -199,8 +215,9 @@ class WikipediaBridge extends BridgeAbstract {
 	/**
 	* Implementation for de.wikipedia.org
 	*/
-	private function GetContentsDE($html, $subject, $fullArticle){
-		switch($subject){
+	private function GetContentsDE($html, $subject, $fullArticle)
+	{
+		switch ($subject) {
 			case WIKIPEDIA_SUBJECT_TFA:
 				$element = $html->find('div[id=mf-tfa]', 0);
 				$this->AddTodaysFeaturedArticleGeneric($element, $fullArticle);
@@ -217,8 +234,9 @@ class WikipediaBridge extends BridgeAbstract {
 	/**
 	* Implementation for fr.wikipedia.org
 	*/
-	private function GetContentsFR($html, $subject, $fullArticle){
-		switch($subject){
+	private function GetContentsFR($html, $subject, $fullArticle)
+	{
+		switch ($subject) {
 			case WIKIPEDIA_SUBJECT_TFA:
 				$element = $html->find('div[id=accueil-lumieresur]', 0);
 				$this->AddTodaysFeaturedArticleGeneric($element, $fullArticle, 'Lire la suite');
@@ -235,8 +253,9 @@ class WikipediaBridge extends BridgeAbstract {
 	/**
 	* Implementation for en.wikipedia.org
 	*/
-	private function GetContentsEN($html, $subject, $fullArticle){
-		switch($subject){
+	private function GetContentsEN($html, $subject, $fullArticle)
+	{
+		switch ($subject) {
 			case WIKIPEDIA_SUBJECT_TFA:
 				$element = $html->find('div[id=mp-tfa]', 0);
 				$this->AddTodaysFeaturedArticleGeneric($element, $fullArticle);
@@ -253,8 +272,9 @@ class WikipediaBridge extends BridgeAbstract {
 	/**
 	* Implementation for eo.wikipedia.org
 	*/
-	private function GetContentsEO($html, $subject, $fullArticle){
-		switch($subject){
+	private function GetContentsEO($html, $subject, $fullArticle)
+	{
+		switch ($subject) {
 			case WIKIPEDIA_SUBJECT_TFA:
 				$element = $html->find('div[id=mf-artikolo-de-la-semajno]', 0);
 				$this->AddTodaysFeaturedArticleGeneric($element, $fullArticle);
@@ -271,8 +291,9 @@ class WikipediaBridge extends BridgeAbstract {
 	/**
 	* Implementation for nl.wikipedia.org
 	*/
-	private function GetContentsNL($html, $subject, $fullArticle){
-		switch($subject){
+	private function GetContentsNL($html, $subject, $fullArticle)
+	{
+		switch ($subject) {
 			case WIKIPEDIA_SUBJECT_TFA:
 				$element = $html->find('div[id=mf-uitgelicht]', 0);
 				$this->AddTodaysFeaturedArticleGeneric($element, $fullArticle, 'Lees meer');

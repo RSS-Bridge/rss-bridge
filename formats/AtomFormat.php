@@ -4,9 +4,10 @@
 * Documentation Source http://en.wikipedia.org/wiki/Atom_%28standard%29 and
 * http://tools.ietf.org/html/rfc4287
 */
-class AtomFormat extends FormatAbstract{
-
-	public function stringify(){
+class AtomFormat extends FormatAbstract
+{
+	public function stringify()
+	{
 		$https = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 's' : '';
 		$httpHost = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
 		$httpInfo = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
@@ -20,7 +21,7 @@ class AtomFormat extends FormatAbstract{
 		$uri = $this->xml_encode($uri);
 
 		$entries = '';
-		foreach($this->getItems() as $item){
+		foreach ($this->getItems() as $item) {
 			$entryAuthor = isset($item['author']) ? $this->xml_encode($item['author']) : '';
 			$entryTitle = isset($item['title']) ? $this->xml_encode($item['title']) : '';
 			$entryUri = isset($item['uri']) ? $this->xml_encode($item['uri']) : '';
@@ -28,8 +29,8 @@ class AtomFormat extends FormatAbstract{
 			$entryContent = isset($item['content']) ? $this->xml_encode($this->sanitizeHtml($item['content'])) : '';
 
 			$entryEnclosures = '';
-			if(isset($item['enclosures'])){
-				foreach($item['enclosures'] as $enclosure){
+			if (isset($item['enclosures'])) {
+				foreach ($item['enclosures'] as $enclosure) {
 					$entryEnclosures .= '<link rel="enclosure" href="'
 					. $this->xml_encode($enclosure)
 					. '"/>'
@@ -54,8 +55,8 @@ class AtomFormat extends FormatAbstract{
 EOD;
 		}
 
-	$feedTimestamp = date(DATE_ATOM, time());
-	$charset = $this->getCharset();
+		$feedTimestamp = date(DATE_ATOM, time());
+		$charset = $this->getCharset();
 
 		/* Data are prepared, now let's begin the "MAGIE !!!" */
 		$toReturn = <<<EOD
@@ -79,7 +80,8 @@ EOD;
 		return $toReturn;
 	}
 
-	public function display(){
+	public function display()
+	{
 		$this
 			->setContentType('application/atom+xml; charset=' . $this->getCharset())
 			->callContentType();
@@ -87,7 +89,8 @@ EOD;
 		return parent::display();
 	}
 
-	private function xml_encode($text){
+	private function xml_encode($text)
+	{
 		return htmlspecialchars($text, ENT_XML1);
 	}
 }

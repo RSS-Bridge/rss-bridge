@@ -3,9 +3,10 @@
 * Plaintext
 * Returns $this->items as raw php data.
 */
-class PlaintextFormat extends FormatAbstract {
-
-	public function stringify(){
+class PlaintextFormat extends FormatAbstract
+{
+	public function stringify()
+	{
 		$items = $this->getItems();
 		$toReturn = print_r($items, true);
 
@@ -15,7 +16,8 @@ class PlaintextFormat extends FormatAbstract {
 		return $toReturn;
 	}
 
-	public function display(){
+	public function display()
+	{
 		$this
 			->setContentType('text/plain; charset=' . $this->getCharset())
 			->callContentType();

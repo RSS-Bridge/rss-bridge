@@ -1,6 +1,6 @@
 <?php
-class PinterestBridge extends BridgeAbstract {
-
+class PinterestBridge extends BridgeAbstract
+{
 	const MAINTAINER = "pauder";
 	const NAME = "Pinterest Bridge";
 	const URI = "http://www.pinterest.com/";
@@ -25,10 +25,11 @@ class PinterestBridge extends BridgeAbstract {
 		)
 	);
 
-	public function collectData(){
+	public function collectData()
+	{
 		$html = getSimpleHTMLDOM($this->getURI());
-		if(!$html){
-			switch($this->queriedContext){
+		if (!$html) {
+			switch ($this->queriedContext) {
 			case 'By username and board':
 				returnServerError('Username and/or board not found');
 			case 'From search':
@@ -36,8 +37,8 @@ class PinterestBridge extends BridgeAbstract {
 			}
 		}
 
-		if($this->queriedContext === 'From search'){
-			foreach($html->find('div.pinWrapper') as $div){
+		if ($this->queriedContext === 'From search') {
+			foreach ($html->find('div.pinWrapper') as $div) {
 				$item = array();
 
 				$a = $div->find('a.pinImageWrapper', 0);
@@ -70,13 +71,13 @@ class PinterestBridge extends BridgeAbstract {
 				$item['title'] = $img->getAttribute('alt');
 				$this->items[] = $item;
 			}
-		} elseif($this->queriedContext === 'By username and board'){
+		} elseif ($this->queriedContext === 'By username and board') {
 			$container = $html->find('SCRIPT[type="application/ld+json"]', 0)
 				or returnServerError('Unable to find data container!');
 
 			$json = json_decode($container->innertext, true);
 
-			foreach($json['itemListElement'] as $element){
+			foreach ($json['itemListElement'] as $element) {
 				$item = array();
 
 				$item['uri'] = $element['item']['sharedContent']['author']['url'];
@@ -95,8 +96,9 @@ EOD;
 		}
 	}
 
-	public function getURI(){
-		switch($this->queriedContext){
+	public function getURI()
+	{
+		switch ($this->queriedContext) {
 		case 'By username and board':
 			$uri = self::URI . urlencode($this->getInput('u')) . '/' . urlencode($this->getInput('b'));
 			break;
@@ -107,8 +109,9 @@ EOD;
 		return $uri;
 	}
 
-	public function getName(){
-		switch($this->queriedContext){
+	public function getName()
+	{
+		switch ($this->queriedContext) {
 		case 'By username and board':
 			$specific = $this->getInput('u') . '-' . $this->getInput('b');
 		break;

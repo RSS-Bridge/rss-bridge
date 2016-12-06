@@ -1,18 +1,22 @@
 <?php
-function returnError($message, $code){
+function returnError($message, $code)
+{
 	throw new \HttpException($message, $code);
 }
 
-function returnClientError($message){
+function returnClientError($message)
+{
 	returnError($message, 400);
 }
 
-function returnServerError($message){
+function returnServerError($message)
+{
 	returnError($message, 500);
 }
 
-function debugMessage($text){
-	if(!file_exists('DEBUG')) {
+function debugMessage($text)
+{
+	if (!file_exists('DEBUG')) {
 		return;
 	}
 

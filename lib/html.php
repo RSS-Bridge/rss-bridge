@@ -1,9 +1,9 @@
 <?php
-function displayBridgeCard($bridgeName, $formats, $isActive = true){
-
-	$getHelperButtonsFormat = function($formats){
+function displayBridgeCard($bridgeName, $formats, $isActive = true)
+{
+	$getHelperButtonsFormat = function ($formats) {
 		$buttons = '';
-		foreach($formats as $name){
+		foreach ($formats as $name) {
 			$buttons .= '<button type="submit" name="format" value="'
 				. $name
 				. '">'
@@ -15,7 +15,7 @@ function displayBridgeCard($bridgeName, $formats, $isActive = true){
 		return $buttons;
 	};
 
-	$getFormHeader = function($bridge){
+	$getFormHeader = function ($bridge) {
 		return <<<EOD
 			<form method="GET" action="?">
 				<input type="hidden" name="action" value="display" />
@@ -26,8 +26,9 @@ EOD;
 	$bridgeElement = Bridge::create($bridgeName);
 	$bridgeClass = $bridgeName . 'Bridge';
 
-	if($bridgeElement == false)
+	if ($bridgeElement == false) {
 		return "";
+	}
 
 	$name = '<a href="' . $bridgeClass::URI . '">' . $bridgeClass::NAME . '</a>';
 	$description = $bridgeClass::DESCRIPTION;
@@ -43,12 +44,11 @@ EOD;
 CARD;
 
 	// If we don't have any parameter for the bridge, we print a generic form to load it.
-	if(count($bridgeClass::PARAMETERS) == 0){
-
+	if (count($bridgeClass::PARAMETERS) == 0) {
 		$card .= $getFormHeader($bridgeName);
 
-		if($isActive){
-			if(defined('PROXY_URL') && PROXY_BYBRIDGE){
+		if ($isActive) {
+			if (defined('PROXY_URL') && PROXY_BYBRIDGE) {
 				$idArg = 'arg-'
 					. urlencode($bridgeName)
 					. '-'
@@ -79,39 +79,47 @@ CARD;
 
 	$hasGlobalParameter = array_key_exists('global', $bridgeClass::PARAMETERS);
 
-	if($hasGlobalParameter){
+	if ($hasGlobalParameter) {
 		$globalParameters = $bridgeClass::PARAMETERS['global'];
 	}
 
-	foreach($bridgeClass::PARAMETERS as $parameterName => $parameter){
-		if(!is_numeric($parameterName) && $parameterName == 'global')
+	foreach ($bridgeClass::PARAMETERS as $parameterName => $parameter) {
+		if (!is_numeric($parameterName) && $parameterName == 'global') {
 			continue;
+		}
 
-		if($hasGlobalParameter)
+		if ($hasGlobalParameter) {
 			$parameter = array_merge($parameter, $globalParameters);
+		}
 
-		if(!is_numeric($parameterName))
+		if (!is_numeric($parameterName)) {
 			$card .= '<h5>' . $parameterName . '</h5>' . PHP_EOL;
+		}
 
 		$card .= $getFormHeader($bridgeName);
 
-		foreach($parameter as $id => $inputEntry){
+		foreach ($parameter as $id => $inputEntry) {
 			$additionalInfoString = '';
 
-			if(isset($inputEntry['required']) && $inputEntry['required'] === true)
+			if (isset($inputEntry['required']) && $inputEntry['required'] === true) {
 				$additionalInfoString .= ' required';
+			}
 
-			if(isset($inputEntry['pattern']))
+			if (isset($inputEntry['pattern'])) {
 				$additionalInfoString .= ' pattern="' . $inputEntry['pattern'] . '"';
+			}
 
-			if(isset($inputEntry['title']))
+			if (isset($inputEntry['title'])) {
 				$additionalInfoString .= ' title="' . $inputEntry['title'] . '"';
+			}
 
-			if(!isset($inputEntry['exampleValue']))
+			if (!isset($inputEntry['exampleValue'])) {
 				$inputEntry['exampleValue'] = '';
+			}
 
-			if(!isset($inputEntry['defaultValue']))
+			if (!isset($inputEntry['defaultValue'])) {
 				$inputEntry['defaultValue'] = '';
+			}
 
 			$idArg = 'arg-'
 				. urlencode($bridgeName)
@@ -127,7 +135,7 @@ CARD;
 				. ' : </label>'
 				. PHP_EOL;
 
-			if(!isset($inputEntry['type']) || $inputEntry['type'] == 'text'){
+			if (!isset($inputEntry['type']) || $inputEntry['type'] == 'text') {
 				$card .= '<input '
 					. $additionalInfoString
 					. ' id="'
@@ -140,7 +148,7 @@ CARD;
 					. $id
 					. '" /><br />'
 					. PHP_EOL;
-			} elseif($inputEntry['type'] == 'number'){
+			} elseif ($inputEntry['type'] == 'number') {
 				$card .= '<input '
 					. $additionalInfoString
 					. ' id="'
@@ -153,7 +161,7 @@ CARD;
 					. $id
 					. '" /><br />'
 					. PHP_EOL;
-			} else if($inputEntry['type'] == 'list'){
+			} elseif ($inputEntry['type'] == 'list') {
 				$card .= '<select '
 					. $additionalInfoString
 					. ' id="'
@@ -162,12 +170,12 @@ CARD;
 					. $id
 					. '" >';
 
-				foreach($inputEntry['values'] as $name => $value){
-					if(is_array($value)){
+				foreach ($inputEntry['values'] as $name => $value) {
+					if (is_array($value)) {
 						$card .= '<optgroup label="' . htmlentities($name) . '">';
-						foreach($value as $subname => $subvalue){
-							if($inputEntry['defaultValue'] === $subname
-								|| $inputEntry['defaultValue'] === $subvalue){
+						foreach ($value as $subname => $subvalue) {
+							if ($inputEntry['defaultValue'] === $subname
+								|| $inputEntry['defaultValue'] === $subvalue) {
 								$card .= '<option value="'
 									. $subvalue
 									. '" selected>'
@@ -183,8 +191,8 @@ CARD;
 						}
 						$card .= '</optgroup>';
 					} else {
-						if($inputEntry['defaultValue'] === $name
-							|| $inputEntry['defaultValue'] === $value){
+						if ($inputEntry['defaultValue'] === $name
+							|| $inputEntry['defaultValue'] === $value) {
 							$card .= '<option value="'
 								. $value
 								. '" selected>'
@@ -200,8 +208,8 @@ CARD;
 					}
 				}
 				$card .= '</select><br >';
-			} elseif($inputEntry['type'] == 'checkbox'){
-				if($inputEntry['defaultValue'] === 'checked')
+			} elseif ($inputEntry['type'] == 'checkbox') {
+				if ($inputEntry['defaultValue'] === 'checked') {
 					$card .= '<input '
 					. $additionalInfoString
 					. ' id="'
@@ -210,7 +218,7 @@ CARD;
 					. $id
 					. '" checked /><br />'
 					. PHP_EOL;
-				else
+				} else {
 					$card .= '<input '
 					. $additionalInfoString
 					. ' id="'
@@ -219,11 +227,12 @@ CARD;
 					. $id
 					. '" /><br />'
 					. PHP_EOL;
+				}
 			}
 		}
 
-		if($isActive){
-			if(defined('PROXY_URL') && PROXY_BYBRIDGE){
+		if ($isActive) {
+			if (defined('PROXY_URL') && PROXY_BYBRIDGE) {
 				$idArg = 'arg-'
 					. urlencode($bridgeName)
 					. '-'
@@ -257,21 +266,20 @@ CARD;
 	return $card;
 }
 
-function sanitize($textToSanitize
-	,$removedTags=array('script','iframe','input','form')
-	,$keptAttributes=array('title','href','src')
-	,$keptText=array()){
+function sanitize($textToSanitize, $removedTags=array('script','iframe','input','form'), $keptAttributes=array('title','href','src'), $keptText=array())
+{
 	$htmlContent = str_get_html($textToSanitize);
 
-	foreach($htmlContent->find('*[!b38fd2b1fe7f4747d6b1c1254ccd055e]') as $element){
-		if(in_array($element->tag, $keptText)){
+	foreach ($htmlContent->find('*[!b38fd2b1fe7f4747d6b1c1254ccd055e]') as $element) {
+		if (in_array($element->tag, $keptText)) {
 			$element->outertext = $element->plaintext;
-		} elseif(in_array($element->tag, $removedTags)){
+		} elseif (in_array($element->tag, $removedTags)) {
 			$element->outertext = '';
 		} else {
-			foreach($element->getAllAttributes() as $attributeName => $attribute){
-				if(!in_array($attributeName, $keptAttributes))
+			foreach ($element->getAllAttributes() as $attributeName => $attribute) {
+				if (!in_array($attributeName, $keptAttributes)) {
 					$element->removeAttribute($attributeName);
+				}
 			}
 		}
 	}
@@ -279,14 +287,14 @@ function sanitize($textToSanitize
 	return $htmlContent;
 }
 
-function defaultImageSrcTo($content, $server){
-	foreach($content->find('img') as $image){
-		if(is_null(strpos($image->src, "http"))
+function defaultImageSrcTo($content, $server)
+{
+	foreach ($content->find('img') as $image) {
+		if (is_null(strpos($image->src, "http"))
 			&& is_null(strpos($image->src, "//"))
-			&& is_null(strpos($image->src, "data:")))
+			&& is_null(strpos($image->src, "data:"))) {
 			$image->src = $server . $image->src;
+		}
 	}
 	return $content;
 }
-
-?>

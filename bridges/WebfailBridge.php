@@ -1,5 +1,6 @@
 <?php
-class WebfailBridge extends BridgeAbstract {
+class WebfailBridge extends BridgeAbstract
+{
 	const MAINTAINER = 'logmanoriginal';
 	const URI = 'https://webfail.com';
 	const NAME = 'Webfail';
@@ -32,21 +33,23 @@ class WebfailBridge extends BridgeAbstract {
 		)
 	);
 
-	public function getURI(){
-		if(is_null($this->getInput('language')))
+	public function getURI()
+	{
+		if (is_null($this->getInput('language'))) {
 			return self::URI;
+		}
 
 		// e.g.: https://en.webfail.com
 		return 'https://' . $this->getInput('language') . '.webfail.com';
 	}
 
-	public function collectData(){
+	public function collectData()
+	{
 		$html = getSimpleHTMLDOM($this->getURI() . $this->getInput('type'));
 
-		$type = array_search($this->getInput('type')
-		, self::PARAMETERS[$this->queriedContext]['type']['values']);
+		$type = array_search($this->getInput('type'), self::PARAMETERS[$this->queriedContext]['type']['values']);
 
-		switch(strtolower($type)){
+		switch (strtolower($type)) {
 		case 'facebook':
 		case 'videos':
 			$this->ExtractNews($html, $type);
@@ -60,16 +63,17 @@ class WebfailBridge extends BridgeAbstract {
 		}
 	}
 
-	private function ExtractNews($html, $type){
+	private function ExtractNews($html, $type)
+	{
 		$news = $html->find('#main', 0)->find('a.wf-list-news');
-		foreach($news as $element){
+		foreach ($news as $element) {
 			$item = array();
 			$item['title'] = $this->fixTitle($element->find('div.wf-news-title', 0)->innertext);
 			$item['uri'] = $this->getURI() . $element->href;
 
 			$img = $element->find('img.wf-image', 0)->src;
 			// Load high resolution image for 'facebook'
-			switch(strtolower($type)){
+			switch (strtolower($type)) {
 			case 'facebook':
 				$img = $this->getImageHiResUri($item['uri']);
 				break;
@@ -77,7 +81,7 @@ class WebfailBridge extends BridgeAbstract {
 			}
 
 			$description = '';
-			if(!is_null($element->find('div.wf-news-description', 0))){
+			if (!is_null($element->find('div.wf-news-description', 0))) {
 				$description = $element->find('div.wf-news-description', 0)->innertext;
 			}
 
@@ -93,21 +97,22 @@ class WebfailBridge extends BridgeAbstract {
 		}
 	}
 
-	private function ExtractArticle($html){
+	private function ExtractArticle($html)
+	{
 		$articles = $html->find('article');
-		foreach($articles as $article){
+		foreach ($articles as $article) {
 			$item = array();
 			$item['title'] = $this->fixTitle($article->find('a', 1)->innertext);
 
 			// Webfail shares videos or images
-			if(!is_null($article->find('img.wf-image', 0))){ // Image type
+			if (!is_null($article->find('img.wf-image', 0))) { // Image type
 				$item['uri'] = $this->getURI() . $article->find('a', 2)->href;
 				$item['content'] = '<a href="'
 				. $item['uri']
 				. '"><img src="'
 				. $article->find('img.wf-image', 0)->src
 				. '">';
-			} elseif(!is_null($article->find('div.wf-video', 0))){ // Video type
+			} elseif (!is_null($article->find('div.wf-video', 0))) { // Video type
 				$videoId = $this->getVideoId($article->find('div.wf-play', 0)->onclick);
 				$item['uri'] = 'https://youtube.com/watch?v=' . $videoId;
 				$item['content'] = '<a href="'
@@ -121,16 +126,19 @@ class WebfailBridge extends BridgeAbstract {
 		}
 	}
 
-	private function fixTitle($title){
+	private function fixTitle($title)
+	{
 		// This fixes titles that include umlauts (in German language)
 		return html_entity_decode($title, ENT_QUOTES | ENT_HTML401, 'UTF-8');
 	}
 
-	private function getVideoId($onclick){
+	private function getVideoId($onclick)
+	{
 		return substr($onclick, 21, 11);
 	}
 
-	private function getImageHiResUri($url){
+	private function getImageHiResUri($url)
+	{
 		// https://de.webfail.com/ef524fae509?tag=ffdt
 		// http://cdn.webfail.com/upl/img/ef524fae509/post2.jpg
 		$id = substr($url, strrpos($url, '/') + 1, strlen($url) - strrpos($url, '?') + 2);

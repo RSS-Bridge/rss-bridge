@@ -3,9 +3,10 @@
 * Json
 * Builds a JSON string from $this->items and return it to browser.
 */
-class JsonFormat extends FormatAbstract {
-
-	public function stringify(){
+class JsonFormat extends FormatAbstract
+{
+	public function stringify()
+	{
 		$items = $this->getItems();
 		$toReturn = json_encode($items, JSON_PRETTY_PRINT);
 
@@ -15,7 +16,8 @@ class JsonFormat extends FormatAbstract {
 		return $toReturn;
 	}
 
-	public function display(){
+	public function display()
+	{
 		$this
 			->setContentType('application/json; charset=' . $this->getCharset())
 			->callContentType();

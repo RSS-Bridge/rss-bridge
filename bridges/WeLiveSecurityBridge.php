@@ -1,25 +1,28 @@
 <?php
-class WeLiveSecurityBridge extends FeedExpander {
-
+class WeLiveSecurityBridge extends FeedExpander
+{
 	const MAINTAINER = 'ORelio';
 	const NAME = 'We Live Security';
 	const URI = 'http://www.welivesecurity.com/';
 	const DESCRIPTION = 'Returns the newest articles.';
 
-	private function StripWithDelimiters($string, $start, $end) {
+	private function StripWithDelimiters($string, $start, $end)
+	{
 		while (strpos($string, $start) !== false) {
 			$section_to_remove = substr($string, strpos($string, $start));
 			$section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
 			$string = str_replace($section_to_remove, '', $string);
-		} return $string;
+		}
+		return $string;
 	}
 
 
-	protected function parseItem($item){
+	protected function parseItem($item)
+	{
 		$item = parent::parseItem($item);
 
 		$article_html = getSimpleHTMLDOMCached($item['uri']);
-		if(!$article_html){
+		if (!$article_html) {
 			$item['content'] .= '<p>Could not request '.$this->getName().': '.$item['uri'].'</p>';
 			return $item;
 		}
@@ -34,7 +37,8 @@ class WeLiveSecurityBridge extends FeedExpander {
 		return $item;
 	}
 
-	public function collectData(){
+	public function collectData()
+	{
 		$feed = static::URI.'feed/';
 		$this->collectExpandableDatas($feed);
 	}

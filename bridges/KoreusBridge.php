@@ -1,12 +1,13 @@
 <?php
-class KoreusBridge extends FeedExpander {
-
+class KoreusBridge extends FeedExpander
+{
 	const MAINTAINER = "pit-fgfjiudghdf";
 	const NAME = "Koreus";
 	const URI = "http://www.koreus.com/";
 	const DESCRIPTION = "Returns the newest posts from Koreus (full text)";
 
-	protected function parseItem($item) {
+	protected function parseItem($item)
+	{
 		$item = parent::parseItem($item);
 
 		$html = getSimpleHTMLDOMCached($item['uri']);
@@ -16,7 +17,8 @@ class KoreusBridge extends FeedExpander {
 		return $item;
 	}
 
-	public function collectData(){
+	public function collectData()
+	{
 		$this->collectExpandableDatas('http://feeds.feedburner.com/Koreus-articles');
 	}
 }

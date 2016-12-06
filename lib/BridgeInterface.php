@@ -1,5 +1,6 @@
 <?php
-interface BridgeInterface {
+interface BridgeInterface
+{
 	public function collectData();
 	public function getName();
 	public function getURI();
