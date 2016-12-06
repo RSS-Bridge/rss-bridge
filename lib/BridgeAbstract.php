@@ -194,11 +194,11 @@ abstract class BridgeAbstract implements BridgeInterface {
 	public function getURI(){
 		return static::URI;
 	}
-	
+
 	public function getExtraInfos(){
 		$extraInfos = array();
-		$extraInfos['name']= $this->getName();
-		$extraInfos['uri']= $this->getURI();
+		$extraInfos['name'] = $this->getName();
+		$extraInfos['uri'] = $this->getURI();
 		return $extraInfos;
 	}
 
