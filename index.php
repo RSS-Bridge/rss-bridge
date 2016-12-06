@@ -33,43 +33,43 @@ define('CACHE_DIR', __DIR__ . '/cache');
   client to retrieve data about your server and hammer a provider throught your rss-bridge instance.
 */
 if (file_exists('DEBUG')) {
-    $debug_enabled = true;
-    $debug_whitelist = trim(file_get_contents('DEBUG'));
-    if (strlen($debug_whitelist) > 0) {
-        $debug_enabled = false;
-        foreach (explode("\n", $debug_whitelist) as $allowed_ip) {
-            if (trim($allowed_ip) === $_SERVER['REMOTE_ADDR']) {
-                $debug_enabled = true;
-                break;
-            }
-        }
-    }
-    if ($debug_enabled) {
-        ini_set('display_errors', '1');
-        error_reporting(E_ALL);
-        define('DEBUG', true);
-    }
+	$debug_enabled = true;
+	$debug_whitelist = trim(file_get_contents('DEBUG'));
+	if (strlen($debug_whitelist) > 0) {
+		$debug_enabled = false;
+		foreach (explode("\n", $debug_whitelist) as $allowed_ip) {
+			if (trim($allowed_ip) === $_SERVER['REMOTE_ADDR']) {
+				$debug_enabled = true;
+				break;
+			}
+		}
+	}
+	if ($debug_enabled) {
+		ini_set('display_errors', '1');
+		error_reporting(E_ALL);
+		define('DEBUG', true);
+	}
 }
 
 require_once __DIR__ . '/lib/RssBridge.php';
 
 // Check PHP version
 if (version_compare(PHP_VERSION, PHP_VERSION_REQUIRED) === -1) {
-    die('RSS-Bridge requires at least PHP version ' . PHP_VERSION_REQUIRED . '!');
+	die('RSS-Bridge requires at least PHP version ' . PHP_VERSION_REQUIRED . '!');
 }
 
 // extensions check
 if (!extension_loaded('openssl')) {
-    die('"openssl" extension not loaded. Please check "php.ini"');
+	die('"openssl" extension not loaded. Please check "php.ini"');
 }
 
 if (!extension_loaded('libxml')) {
-    die('"libxml" extension not loaded. Please check "php.ini"');
+	die('"libxml" extension not loaded. Please check "php.ini"');
 }
 
 // configuration checks
 if (ini_get('allow_url_fopen') !== "1") {
-    die('"allow_url_fopen" is not set to "1". Please check "php.ini');
+	die('"allow_url_fopen" is not set to "1". Please check "php.ini');
 }
 
 // FIXME : beta test UA spoofing, please report any blacklisting by PHP-fopen-unfriendly websites
@@ -80,102 +80,102 @@ ini_set('user_agent', 'Mozilla/5.0(X11; Linux x86_64; rv:30.0)
 // default whitelist
 $whitelist_file = './whitelist.txt';
 $whitelist_default = array(
-    "BandcampBridge",
-    "CryptomeBridge",
-    "DansTonChatBridge",
-    "DuckDuckGoBridge",
-    "FacebookBridge",
-    "FlickrExploreBridge",
-    "GooglePlusPostBridge",
-    "GoogleSearchBridge",
-    "IdenticaBridge",
-    "InstagramBridge",
-    "OpenClassroomsBridge",
-    "PinterestBridge",
-    "ScmbBridge",
-    "TwitterBridge",
-    "WikipediaBridge",
-    "YoutubeBridge");
+	"BandcampBridge",
+	"CryptomeBridge",
+	"DansTonChatBridge",
+	"DuckDuckGoBridge",
+	"FacebookBridge",
+	"FlickrExploreBridge",
+	"GooglePlusPostBridge",
+	"GoogleSearchBridge",
+	"IdenticaBridge",
+	"InstagramBridge",
+	"OpenClassroomsBridge",
+	"PinterestBridge",
+	"ScmbBridge",
+	"TwitterBridge",
+	"WikipediaBridge",
+	"YoutubeBridge");
 
 if (!file_exists($whitelist_file)) {
-    $whitelist_selection = $whitelist_default;
-    $whitelist_write = implode("\n", $whitelist_default);
-    file_put_contents($whitelist_file, $whitelist_write);
+	$whitelist_selection = $whitelist_default;
+	$whitelist_write = implode("\n", $whitelist_default);
+	file_put_contents($whitelist_file, $whitelist_write);
 } else {
-    $whitelist_selection = explode("\n", file_get_contents($whitelist_file));
+	$whitelist_selection = explode("\n", file_get_contents($whitelist_file));
 }
 
 try {
-    Bridge::setDir(__DIR__ . '/bridges/');
-    Format::setDir(__DIR__ . '/formats/');
-    Cache::setDir(__DIR__ . '/caches/');
+	Bridge::setDir(__DIR__ . '/bridges/');
+	Format::setDir(__DIR__ . '/formats/');
+	Cache::setDir(__DIR__ . '/caches/');
 
-    $action = filter_input(INPUT_GET, 'action');
-    $bridge = filter_input(INPUT_GET, 'bridge');
+	$action = filter_input(INPUT_GET, 'action');
+	$bridge = filter_input(INPUT_GET, 'bridge');
 
-    if ($action === 'display' && !empty($bridge)) {
-        // DEPRECATED: 'nameBridge' scheme is replaced by 'name' in bridge parameter values
-        //             this is to keep compatibility until futher complete removal
-        if (($pos = strpos($bridge, 'Bridge')) === (strlen($bridge) - strlen('Bridge'))) {
-            $bridge = substr($bridge, 0, $pos);
-        }
+	if ($action === 'display' && !empty($bridge)) {
+		// DEPRECATED: 'nameBridge' scheme is replaced by 'name' in bridge parameter values
+		//			 this is to keep compatibility until futher complete removal
+		if (($pos = strpos($bridge, 'Bridge')) === (strlen($bridge) - strlen('Bridge'))) {
+			$bridge = substr($bridge, 0, $pos);
+		}
 
-        $format = filter_input(INPUT_GET, 'format');
+		$format = filter_input(INPUT_GET, 'format');
 
-        // DEPRECATED: 'nameFormat' scheme is replaced by 'name' in format parameter values
-        //             this is to keep compatibility until futher complete removal
-        if (($pos = strpos($format, 'Format')) === (strlen($format) - strlen('Format'))) {
-            $format = substr($format, 0, $pos);
-        }
+		// DEPRECATED: 'nameFormat' scheme is replaced by 'name' in format parameter values
+		//			 this is to keep compatibility until futher complete removal
+		if (($pos = strpos($format, 'Format')) === (strlen($format) - strlen('Format'))) {
+			$format = substr($format, 0, $pos);
+		}
 
-        // whitelist control
-        if (!Bridge::isWhitelisted($whitelist_selection, $bridge)) {
-            throw new \HttpException('This bridge is not whitelisted', 401);
-            die;
-        }
+		// whitelist control
+		if (!Bridge::isWhitelisted($whitelist_selection, $bridge)) {
+			throw new \HttpException('This bridge is not whitelisted', 401);
+			die;
+		}
 
-        // Data retrieval
-        $bridge = Bridge::create($bridge);
+		// Data retrieval
+		$bridge = Bridge::create($bridge);
 
-        $noproxy = filter_input(INPUT_GET, '_noproxy', FILTER_VALIDATE_BOOLEAN);
-        if (defined('PROXY_URL') && PROXY_BYBRIDGE && $noproxy) {
-            define('NOPROXY', true);
-        }
+		$noproxy = filter_input(INPUT_GET, '_noproxy', FILTER_VALIDATE_BOOLEAN);
+		if (defined('PROXY_URL') && PROXY_BYBRIDGE && $noproxy) {
+			define('NOPROXY', true);
+		}
 
-        $params = $_GET;
+		$params = $_GET;
 
-        // Initialize cache
-        $cache = Cache::create('FileCache');
-        $cache->setPath(CACHE_DIR);
-        $cache->purgeCache(86400); // 24 hours
-        $cache->setParameters($params);
+		// Initialize cache
+		$cache = Cache::create('FileCache');
+		$cache->setPath(CACHE_DIR);
+		$cache->purgeCache(86400); // 24 hours
+		$cache->setParameters($params);
 
-        unset($params['action']);
-        unset($params['bridge']);
-        unset($params['format']);
-        unset($params['_noproxy']);
+		unset($params['action']);
+		unset($params['bridge']);
+		unset($params['format']);
+		unset($params['_noproxy']);
 
-        // Load cache & data
-        $bridge->setCache($cache);
-        $bridge->setDatas($params);
+		// Load cache & data
+		$bridge->setCache($cache);
+		$bridge->setDatas($params);
 
-        // Data transformation
-        try {
-            $format = Format::create($format);
-            $format->setItems($bridge->getItems());
-            $format->setExtraInfos($bridge->getExtraInfos());
-            $format->display();
-        } catch (Exception $e) {
-            echo "The bridge has crashed. You should report this to the bridges maintainer";
-        }
-        die;
-    }
+		// Data transformation
+		try {
+			$format = Format::create($format);
+			$format->setItems($bridge->getItems());
+			$format->setExtraInfos($bridge->getExtraInfos());
+			$format->display();
+		} catch (Exception $e) {
+			echo "The bridge has crashed. You should report this to the bridges maintainer";
+		}
+		die;
+	}
 } catch (HttpException $e) {
-    header('HTTP/1.1 ' . $e->getCode() . ' ' . Http::getMessageForCode($e->getCode()));
-    header('Content-Type: text/plain');
-    die($e->getMessage());
+	header('HTTP/1.1 ' . $e->getCode() . ' ' . Http::getMessageForCode($e->getCode()));
+	header('Content-Type: text/plain');
+	die($e->getMessage());
 } catch (\Exception $e) {
-    die($e->getMessage());
+	die($e->getMessage());
 }
 
 $formats = Format::searchInformation();
@@ -193,12 +193,12 @@ $formats = Format::searchInformation();
 
 <body>
 	<?php
-        $status = '';
-        if (defined('DEBUG') && DEBUG === true) {
-            $status .= 'debug mode active';
-        }
+		$status = '';
+		if (defined('DEBUG') && DEBUG === true) {
+			$status .= 'debug mode active';
+		}
 
-        echo <<<EOD
+		echo <<<EOD
 	<header>
 		<h1>RSS-Bridge</h1>
 		<h2>·Reconnecting the Web·</h2>
@@ -206,34 +206,34 @@ $formats = Format::searchInformation();
 	</header>
 EOD;
 
-        $activeFoundBridgeCount = 0;
-        $showInactive = filter_input(INPUT_GET, 'show_inactive', FILTER_VALIDATE_BOOLEAN);
-        $inactiveBridges = '';
-        $bridgeList = Bridge::listBridges();
-        foreach ($bridgeList as $bridgeName) {
-            if (Bridge::isWhitelisted($whitelist_selection, $bridgeName)) {
-                echo displayBridgeCard($bridgeName, $formats);
-                $activeFoundBridgeCount++;
-            } elseif ($showInactive) {
-                // inactive bridges
-                $inactiveBridges .= displayBridgeCard($bridgeName, $formats, false) . PHP_EOL;
-            }
-        }
-        echo $inactiveBridges;
-    ?>
+		$activeFoundBridgeCount = 0;
+		$showInactive = filter_input(INPUT_GET, 'show_inactive', FILTER_VALIDATE_BOOLEAN);
+		$inactiveBridges = '';
+		$bridgeList = Bridge::listBridges();
+		foreach ($bridgeList as $bridgeName) {
+			if (Bridge::isWhitelisted($whitelist_selection, $bridgeName)) {
+				echo displayBridgeCard($bridgeName, $formats);
+				$activeFoundBridgeCount++;
+			} elseif ($showInactive) {
+				// inactive bridges
+				$inactiveBridges .= displayBridgeCard($bridgeName, $formats, false) . PHP_EOL;
+			}
+		}
+		echo $inactiveBridges;
+	?>
 	<section>
 		<a href="https://github.com/RSS-Bridge/rss-bridge">RSS-Bridge alpha 0.2 ~ Public Domain</a><br />
 		<?= $activeFoundBridgeCount; ?>/<?= count($bridgeList) ?> active bridges. <br />
 		<?php
-            if ($activeFoundBridgeCount !== count($bridgeList)) {
-                // FIXME: This should be done in pure CSS
-                if (!$showInactive) {
-                    echo '<a href="?show_inactive=1"><button class="small">Show inactive bridges</button></a><br />';
-                } else {
-                    echo '<a href="?show_inactive=0"><button class="small">Hide inactive bridges</button></a><br />';
-                }
-            }
-        ?>
+			if ($activeFoundBridgeCount !== count($bridgeList)) {
+				// FIXME: This should be done in pure CSS
+				if (!$showInactive) {
+					echo '<a href="?show_inactive=1"><button class="small">Show inactive bridges</button></a><br />';
+				} else {
+					echo '<a href="?show_inactive=0"><button class="small">Hide inactive bridges</button></a><br />';
+				}
+			}
+		?>
 	</section>
 	</body>
 </html>
