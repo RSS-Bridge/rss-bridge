@@ -16,9 +16,9 @@ class GoogleSearchBridge extends BridgeAbstract
 	const DESCRIPTION = "Returns most recent results from Google search.";
 
 	const PARAMETERS = array( array(
-		'q'=>array(
-			'name'=>"keyword",
-			'required'=>true
+		'q' => array(
+			'name' "" =>keyword",
+			'required' =>true
 		)
 	));
 

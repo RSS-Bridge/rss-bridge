@@ -7,10 +7,10 @@ class EZTVBridge extends BridgeAbstract
 	const DESCRIPTION = "Returns list of *recent* torrents for a specific show on EZTV. Get showID from URLs in https://eztv.ch/shows/showID/show-full-name.";
 
 	const PARAMETERS = array( array(
-		'i'=>array(
-			'name'=>'Show ids',
-			'exampleValue'=>'showID1,showID2,…',
-			'required'=>true
+		'i' => array(
+			'name' => 'Show ids',
+			'exampleValue' => 'showID1,showID2,…',
+			'required' =>true
 		)
 	));
 

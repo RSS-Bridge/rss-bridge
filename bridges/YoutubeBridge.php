@@ -16,34 +16,34 @@ class YoutubeBridge extends BridgeAbstract
 
 	const PARAMETERS = array(
 		'By username' => array(
-			'u'=>array(
-				'name'=>'username',
-				'exampleValue'=>'test',
-				'required'=>true
+			'u' => array(
+				'name' => 'username',
+				'exampleValue' => 'test',
+				'required' =>true
 			)
 		),
 		'By channel id' => array(
-			'c'=>array(
-				'name'=>'channel id',
-				'exampleValue'=>"15",
-				'required'=>true
+			'c' => array(
+				'name' => 'channel id',
+				'exampleValue' "" =>15",
+				'required' =>true
 			)
 		),
 		'By playlist Id' => array(
-			'p'=>array(
-				'name'=>'playlist id',
-				'exampleValue'=>"15"
+			'p' => array(
+				'name' => 'playlist id',
+				'exampleValue' "" =>15"
 			)
 		),
 		'Search result' => array(
-			's'=>array(
-				'name'=>'search keyword',
-				'exampleValue'=>'test'
+			's' => array(
+				'name' => 'search keyword',
+				'exampleValue' => 'test'
 			),
-			'pa'=>array(
-				'name'=>'page',
-				'type'=>'number',
-				'exampleValue'=>1
+			'pa' => array(
+				'name' => 'page',
+				'type' => 'number',
+				'exampleValue' =>1
 			)
 		)
 	);

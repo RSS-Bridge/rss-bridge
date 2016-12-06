@@ -8,15 +8,15 @@ class HDWallpapersBridge extends BridgeAbstract
 	const DESCRIPTION = "Returns the latests wallpapers from HDWallpapers";
 
 	const PARAMETERS = array( array(
-	  'c'=>array(
-		'name'=>'category',
-		'defaultValue'=>'latest_wallpapers'
+	  'c' => array(
+		'name' => 'category',
+		'defaultValue' => 'latest_wallpapers'
 	  ),
-		'm'=>array('name'=>'max number of wallpapers'),
-		'r'=>array(
-			'name'=>'resolution',
-			'defaultValue'=>'1920x1200',
-			'exampleValue'=>'1920x1200, 1680x1050,…'
+		'm' => array('name' => 'max number of wallpapers'),
+		'r' => array(
+			'name' => 'resolution',
+			'defaultValue' => '1920x1200',
+			'exampleValue' => '1920x1200, 1680x1050,…'
 		)
 	));
 

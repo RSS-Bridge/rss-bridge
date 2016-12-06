@@ -8,9 +8,9 @@ class VkBridge extends BridgeAbstract
 	const CACHE_TIMEOUT = 300; // 5min
 	const DESCRIPTION = "Working with open pages";
 	const PARAMETERS=array( array(
-			'u'=>array(
-				'name'=>'Group or user name',
-				'required'=>true
+			'u' => array(
+				'name' => 'Group or user name',
+				'required' =>true
 			)
 		)
 	);

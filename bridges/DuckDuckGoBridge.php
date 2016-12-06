@@ -11,18 +11,18 @@ class DuckDuckGoBridge extends BridgeAbstract
 	const SORT_RELEVANCE = '';
 
 	const PARAMETERS = array( array(
-		'u'=>array(
-			'name'=>'keyword',
-			'required'=>true),
-		'sort'=>array(
-			'name'=>'sort by',
-			'type'=>'list',
-			'required'=>false,
-			'values'=>array(
-				'date'=>self::SORT_DATE,
-				'relevance'=>self::SORT_RELEVANCE
+		'u' => array(
+			'name' => 'keyword',
+			'required' =>true),
+		'sort' => array(
+			'name' => 'sort by',
+			'type' => 'list',
+			'required' =>false,
+			'values' => array(
+				'date' =>self::SORT_DATE,
+				'relevance' =>self::SORT_RELEVANCE
 				),
-			'defaultValue'=>self::SORT_DATE
+			'defaultValue' =>self::SORT_DATE
 			)
 		));
 

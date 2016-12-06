@@ -8,9 +8,9 @@ class SoundCloudBridge extends BridgeAbstract
 	const DESCRIPTION = "Returns 10 newest music from user profile";
 
 	const PARAMETERS = array( array(
-		'u'=>array(
-			'name'=>'username',
-			'required'=>true
+		'u' => array(
+			'name' => 'username',
+			'required' =>true
 		)
 	));
 

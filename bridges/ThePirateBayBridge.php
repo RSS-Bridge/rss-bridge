@@ -7,27 +7,27 @@ class ThePirateBayBridge extends BridgeAbstract
 	const DESCRIPTION = "Returns results for the keywords. You can put several list of keywords by separating them with a semicolon (e.g. \"one show;another show\"). Category based search needs the category number as input. User based search takes the Uploader name. Search can be done in a specified category";
 
 	const PARAMETERS = array( array(
-		'q'=>array(
-			'name'=>'keywords, separated by semicolons',
-			'exampleValue'=>'first list;second list;…',
-			'required'=>true
+		'q' => array(
+			'name' => 'keywords, separated by semicolons',
+			'exampleValue' => 'first list;second list;…',
+			'required' =>true
 		),
-		'crit'=>array(
-			'type'=>'list',
-			'name'=>'Search type',
-			'values'=>array(
-				'search'=>'search',
-				'category'=>'cat',
-				'user'=>'usr'
+		'crit' => array(
+			'type' => 'list',
+			'name' => 'Search type',
+			'values' => array(
+				'search' => 'search',
+				'category' => 'cat',
+				'user' => 'usr'
 			)
 		),
-		'cat_check'=>array(
-			'type'=>'checkbox',
-			'name'=>'Specify category for normal search ?',
+		'cat_check' => array(
+			'type' => 'checkbox',
+			'name' => 'Specify category for normal search ?',
 		),
-		'cat'=>array(
-			'name'=>'Category number',
-			'exampleValue'=>'100, 200… See TPB for category number'
+		'cat' => array(
+			'name' => 'Category number',
+			'exampleValue' => '100, 200… See TPB for category number'
 		),
 	));
 

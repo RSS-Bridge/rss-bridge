@@ -8,25 +8,25 @@ class DauphineLibereBridge extends FeedExpander
 	const DESCRIPTION = "Returns the newest articles.";
 
 	const PARAMETERS = array( array(
-		'u'=>array(
-			'name'=>'Catégorie de l\'article',
-			'type'=>'list',
-			'values'=>array(
-				'À la une'=>'',
-				'France Monde'=>'france-monde',
-				'Faits Divers'=>'faits-divers',
-				'Économie et Finance'=>'economie-et-finance',
-				'Politique'=>'politique',
-				'Sport'=>'sport',
-				'Ain'=>'ain',
-				'Alpes-de-Haute-Provence'=>'haute-provence',
-				'Hautes-Alpes'=>'hautes-alpes',
-				'Ardèche'=>'ardeche',
-				'Drôme'=>'drome',
-				'Isère Sud'=>'isere-sud',
-				'Savoie'=>'savoie',
-				'Haute-Savoie'=>'haute-savoie',
-				'Vaucluse'=>'vaucluse'
+		'u' => array(
+			'name' => 'Catégorie de l\'article',
+			'type' => 'list',
+			'values' => array(
+				'À la une' => '',
+				'France Monde' => 'france-monde',
+				'Faits Divers' => 'faits-divers',
+				'Économie et Finance' => 'economie-et-finance',
+				'Politique' => 'politique',
+				'Sport' => 'sport',
+				'Ain' => 'ain',
+				'Alpes-de-Haute-Provence' => 'haute-provence',
+				'Hautes-Alpes' => 'hautes-alpes',
+				'Ardèche' => 'ardeche',
+				'Drôme' => 'drome',
+				'Isère Sud' => 'isere-sud',
+				'Savoie' => 'savoie',
+				'Haute-Savoie' => 'haute-savoie',
+				'Vaucluse' => 'vaucluse'
 			)
 		)
 	));

@@ -9,19 +9,19 @@ class ParuVenduImmoBridge extends BridgeAbstract
 
 
 	const PARAMETERS = array( array(
-		'minarea'=>array(
-			'name'=>'Minimal surface m²',
-			'type'=>'number'
+		'minarea' => array(
+			'name' => 'Minimal surface m²',
+			'type' => 'number'
 		),
-		'maxprice'=>array(
-			'name'=>'Max price',
-			'type'=>'number'
+		'maxprice' => array(
+			'name' => 'Max price',
+			'type' => 'number'
 		),
-		'pa'=>array(
-			'name'=>'Country code',
-			'exampleValue'=>'FR'
+		'pa' => array(
+			'name' => 'Country code',
+			'exampleValue' => 'FR'
 		),
-		'lo'=>array('name'=>'department numbers or postal codes, comma-separated')
+		'lo' => array('name' => 'department numbers or postal codes, comma-separated')
 	));
 
 	public function collectData()

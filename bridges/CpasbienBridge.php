@@ -8,10 +8,10 @@ class CpasbienBridge extends BridgeAbstract
 	const DESCRIPTION = "Returns latest torrents from a request query";
 
 	const PARAMETERS = array( array(
-		'q'=>array(
-			'name'=>'Search',
-			'required'=>true,
-			'title'=>'Type your search'
+		'q' => array(
+			'name' => 'Search',
+			'required' =>true,
+			'title' => 'Type your search'
 		)
 	));
 

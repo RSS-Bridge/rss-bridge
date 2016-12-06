@@ -11,35 +11,35 @@ class WikipediaBridge extends BridgeAbstract
 	const DESCRIPTION = 'Returns articles for a language of your choice';
 
 	const PARAMETERS = array( array(
-		'language'=>array(
-			'name'=>'Language',
-			'type'=>'list',
-			'required'=>true,
-			'title'=>'Select your language',
-			'exampleValue'=>'English',
-			'values'=>array(
-				'English'=>'en',
-				'Dutch'=>'nl',
-				'Esperanto'=>'eo',
-				'French'=>'fr',
-				'German'=>'de',
+		'language' => array(
+			'name' => 'Language',
+			'type' => 'list',
+			'required' =>true,
+			'title' => 'Select your language',
+			'exampleValue' => 'English',
+			'values' => array(
+				'English' => 'en',
+				'Dutch' => 'nl',
+				'Esperanto' => 'eo',
+				'French' => 'fr',
+				'German' => 'de',
 			)
 		),
-		'subject'=>array(
-			'name'=>'Subject',
-			'type'=>'list',
-			'required'=>true,
-			'title'=>'What subject are you interested in?',
-			'exampleValue'=>'Today\'s featured article',
-			'values'=>array(
-				'Today\'s featured article'=>'tfa',
-				'Did you know…'=>'dyk'
+		'subject' => array(
+			'name' => 'Subject',
+			'type' => 'list',
+			'required' =>true,
+			'title' => 'What subject are you interested in?',
+			'exampleValue' => 'Today\'s featured article',
+			'values' => array(
+				'Today\'s featured article' => 'tfa',
+				'Did you know…' => 'dyk'
 			)
 		),
-		'fullarticle'=>array(
-			'name'=>'Load full article',
-			'type'=>'checkbox',
-			'title'=>'Activate to always load the full article'
+		'fullarticle' => array(
+			'name' => 'Load full article',
+			'type' => 'checkbox',
+			'title' => 'Activate to always load the full article'
 		)
 	));
 

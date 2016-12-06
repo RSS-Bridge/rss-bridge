@@ -8,20 +8,20 @@ class UnsplashBridge extends BridgeAbstract
 	const DESCRIPTION = "Returns the latests photos from Unsplash";
 
 	const PARAMETERS = array( array(
-		  'm'=>array(
-			'name'=>'Max number of photos',
-			'type'=>'number',
-			'defaultValue'=>20
+		  'm' => array(
+			'name' => 'Max number of photos',
+			'type' => 'number',
+			'defaultValue' =>20
 		  ),
-		  'w'=>array(
-			'name'=>'Width',
-			'exampleValue'=>'1920, 1680, …',
-			'defaultValue'=>'1920'
+		  'w' => array(
+			'name' => 'Width',
+			'exampleValue' => '1920, 1680, …',
+			'defaultValue' => '1920'
 		  ),
-		  'q'=>array(
-			'name'=>'JPEG quality',
-			'type'=>'number',
-			'defaultValue'=>75
+		  'q' => array(
+			'name' => 'JPEG quality',
+			'type' => 'number',
+			'defaultValue' =>75
 		  )
 	  ));
 

@@ -7,21 +7,21 @@ class WorldOfTanksBridge extends BridgeAbstract
 	const DESCRIPTION = "News about the tank slaughter game.";
 
 	const PARAMETERS = array( array(
-		'category'=>array(
+		'category' => array(
 			// TODO: should be a list
-			'name'=>'nom de la catégorie'
+			'name' => 'nom de la catégorie'
 		),
-		'lang'=>array(
-			'name'=>'Langue',
-			'type'=>'list',
-			'values'=>array(
-				'Français'=>'fr',
-				'English'=>'en',
-				'Español'=>'es',
-				'Deutsch'=>'de',
-				'Čeština'=>'cs',
-				'Polski'=>'pl',
-				'Türkçe'=>'tr'
+		'lang' => array(
+			'name' => 'Langue',
+			'type' => 'list',
+			'values' => array(
+				'Français' => 'fr',
+				'English' => 'en',
+				'Español' => 'es',
+				'Deutsch' => 'de',
+				'Čeština' => 'cs',
+				'Polski' => 'pl',
+				'Türkçe' => 'tr'
 			)
 		)
 	));

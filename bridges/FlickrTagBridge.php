@@ -9,16 +9,16 @@ class FlickrTagBridge extends BridgeAbstract
 
 	const PARAMETERS = array(
 		'By keyword' => array(
-			'q'=>array(
-				'name'=>'keyword',
-				'required'=>true
+			'q' => array(
+				'name' => 'keyword',
+				'required' =>true
 			)
 		),
 
 		'By username' => array(
-			'u'=>array(
-				'name'=>'Username',
-				'required'=>true
+			'u' => array(
+				'name' => 'Username',
+				'required' =>true
 			)
 		),
 	);

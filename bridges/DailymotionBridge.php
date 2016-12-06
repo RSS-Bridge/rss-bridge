@@ -9,27 +9,27 @@ class DailymotionBridge extends BridgeAbstract
 
 	const PARAMETERS = array(
 			'By username' => array(
-				'u'=>array(
-					'name'=>'username',
-					'required'=>true
+				'u' => array(
+					'name' => 'username',
+					'required' =>true
 				)
 			),
 
 			'By playlist id' => array(
-				'p'=>array(
-					'name'=>'playlist id',
-					'required'=>true
+				'p' => array(
+					'name' => 'playlist id',
+					'required' =>true
 				)
 			),
 
 			'From search results' => array(
-				's'=>array(
-					'name'=>'Search keyword',
-					'required'=>true
+				's' => array(
+					'name' => 'Search keyword',
+					'required' =>true
 				),
-				'pa'=>array(
-					'name'=>'Page',
-					'type'=>'number'
+				'pa' => array(
+					'name' => 'Page',
+					'type' => 'number'
 				)
 			)
 		);

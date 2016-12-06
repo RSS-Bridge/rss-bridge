@@ -7,15 +7,15 @@ class GBAtempBridge extends BridgeAbstract
 	const DESCRIPTION = 'GBAtemp is a user friendly underground video game community.';
 
 	const PARAMETERS = array( array(
-		'type'=>array(
-			'name'=>'Type',
-			'type'=>'list',
-			'required'=>true,
-			'values'=>array(
-				'News'=>'N',
-				'Reviews'=>'R',
-				'Tutorials'=>'T',
-				'Forum'=>'F'
+		'type' => array(
+			'name' => 'Type',
+			'type' => 'list',
+			'required' =>true,
+			'values' => array(
+				'News' => 'N',
+				'Reviews' => 'R',
+				'Tutorials' => 'T',
+				'Forum' => 'F'
 			)
 		)
 	));

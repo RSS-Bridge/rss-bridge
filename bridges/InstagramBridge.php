@@ -7,9 +7,9 @@ class InstagramBridge extends BridgeAbstract
 	const DESCRIPTION = "Returns the newest images";
 
 	const PARAMETERS = array( array(
-		'u'=>array(
-			'name'=>'username',
-			'required'=>true
+		'u' => array(
+			'name' => 'username',
+			'required' =>true
 		)
 	));
 

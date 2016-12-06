@@ -8,18 +8,18 @@ class SuperbWallpapersBridge extends BridgeAbstract
 	const DESCRIPTION = "Returns the latests wallpapers from SuperbWallpapers";
 
 	const PARAMETERS = array( array(
-	  'c'=>array(
-		'name'=>'category',
-		'required'=>true
+	  'c' => array(
+		'name' => 'category',
+		'required' =>true
 	  ),
-		'm'=>array(
-			'name'=>'Max number of wallpapers',
-			'type'=>'number'
+		'm' => array(
+			'name' => 'Max number of wallpapers',
+			'type' => 'number'
 		),
-		'r'=>array(
-			'name'=>'resolution',
-			'exampleValue'=>'1920x1200, 1680x1050,…',
-			'defaultValue'=>'1920x1200'
+		'r' => array(
+			'name' => 'resolution',
+			'exampleValue' => '1920x1200, 1680x1050,…',
+			'defaultValue' => '1920x1200'
 		)
 	));
 

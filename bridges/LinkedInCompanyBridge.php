@@ -8,9 +8,9 @@ class LinkedInCompanyBridge extends BridgeAbstract
 	const DESCRIPTION = "Returns most recent actus from Company on LinkedIn. (https://www.linkedin.com/company/<strong style=\"font-weight:bold;\">apple</strong>)";
 
 	const PARAMETERS = array( array(
-		'c'=>array(
-			'name'=>'Company name',
-			'required'=>true
+		'c' => array(
+			'name' => 'Company name',
+			'required' =>true
 		)
 	));
 

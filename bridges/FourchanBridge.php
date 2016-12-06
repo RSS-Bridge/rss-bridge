@@ -8,14 +8,14 @@ class FourchanBridge extends BridgeAbstract
 	const DESCRIPTION = "Returns posts from the specified thread";
 
 	const PARAMETERS = array( array(
-		  'c'=>array(
-			'name'=>'Thread category',
-			'required'=>true
+		  'c' => array(
+			'name' => 'Thread category',
+			'required' =>true
 		  ),
-		  't'=>array(
-			'name'=>'Thread number',
-			'type'=>'number',
-			'required'=>true
+		  't' => array(
+			'name' => 'Thread number',
+			'type' => 'number',
+			'required' =>true
 		  )
 	));
 

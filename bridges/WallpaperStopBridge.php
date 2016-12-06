@@ -8,17 +8,17 @@ class WallpaperStopBridge extends BridgeAbstract
 	const DESCRIPTION = "Returns the latests wallpapers from WallpaperStop";
 
 	const PARAMETERS = array( array(
-		'c'=>array('name'=>'Category'),
-		's'=>array('name'=>'subcategory'),
-		'm'=>array(
-			'name'=>'Max number of wallpapers',
-			'type'=>'number',
-			'defaultValue'=>20
+		'c' => array('name' => 'Category'),
+		's' => array('name' => 'subcategory'),
+		'm' => array(
+			'name' => 'Max number of wallpapers',
+			'type' => 'number',
+			'defaultValue' =>20
 		),
-		'r'=>array(
-			'name'=>'resolution',
-			'exampleValue'=>'1920x1200, 1680x1050,…',
-			'defaultValue'=>'1920x1200'
+		'r' => array(
+			'name' => 'resolution',
+			'exampleValue' => '1920x1200, 1680x1050,…',
+			'defaultValue' => '1920x1200'
 		)
 	));
 

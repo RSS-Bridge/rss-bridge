@@ -8,10 +8,10 @@ class RTBFBridge extends BridgeAbstract
 	const MAINTAINER = "Frenzie";
 
 	const PARAMETERS = array( array(
-		'c'=>array(
-			'name'=>'series id',
-			'exampleValue'=>9500,
-			'required'=>true
+		'c' => array(
+			'name' => 'series id',
+			'exampleValue' =>9500,
+			'required' =>true
 		)
 	));
 

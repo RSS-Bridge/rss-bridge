@@ -8,9 +8,9 @@ class IdenticaBridge extends BridgeAbstract
 	const DESCRIPTION = "Returns user timelines";
 
 	const PARAMETERS = array( array(
-		'u'=>array(
-			'name'=>'username',
-			'required'=>true
+		'u' => array(
+			'name' => 'username',
+			'required' =>true
 		)
 	));
 

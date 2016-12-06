@@ -7,10 +7,10 @@ class NovelUpdatesBridge extends BridgeAbstract
 	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = "Returns releases from Novel Updates";
 	const PARAMETERS = array( array(
-		'n'=>array(
-		  'name'=>'Novel name as found in the url',
-		  'exampleValue'=>'spirit-realm',
-		  'required'=>true
+		'n' => array(
+		  'name' => 'Novel name as found in the url',
+		  'exampleValue' => 'spirit-realm',
+		  'required' =>true
 		)
 	));
 

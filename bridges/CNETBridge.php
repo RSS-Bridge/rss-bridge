@@ -8,7 +8,7 @@ class CNETBridge extends BridgeAbstract
 	const DESCRIPTION = 'Returns the newest articles. <br /> You may specify a topic found in some section URLs, else all topics are selected.';
 
 	const PARAMETERS = array( array(
-		'topic'=>array('name'=>'Topic name')
+		'topic' => array('name' => 'Topic name')
 	));
 
 	public function collectData()

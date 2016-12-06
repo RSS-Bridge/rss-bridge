@@ -7,9 +7,9 @@ class T411Bridge extends BridgeAbstract
 	const DESCRIPTION = 'Returns the 10 newest torrents with specified search terms <br /> Use url part after "?" mark when using their search engine.';
 
 	const PARAMETERS = array( array(
-		'search'=>array(
-			'name'=>'Search criteria',
-			'required'=>true
+		'search' => array(
+			'name' => 'Search criteria',
+			'required' =>true
 		)
 	));
 

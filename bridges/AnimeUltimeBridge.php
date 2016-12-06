@@ -7,14 +7,14 @@ class AnimeUltimeBridge extends BridgeAbstract
 	const CACHE_TIMEOUT = 10800; // 3h
 		const DESCRIPTION = 'Returns the 10 newest releases posted on Anime-Ultime';
 	const PARAMETERS = array( array(
-		  'type'=>array(
-			'name'=>'Type',
-			'type'=>'list',
-			'values'=>array(
-			  'Everything'=>'',
-			  'Anime'=>'A',
-			  'Drama'=>'D',
-			  'Tokusatsu'=>'T'
+		  'type' => array(
+			'name' => 'Type',
+			'type' => 'list',
+			'values' => array(
+			  'Everything' => '',
+			  'Anime' => 'A',
+			  'Drama' => 'D',
+			  'Tokusatsu' => 'T'
 			)
 		  )
 		));

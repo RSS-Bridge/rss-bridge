@@ -8,9 +8,9 @@ class WordPressBridge extends FeedExpander
 	const DESCRIPTION = "Returns the newest full posts of a Wordpress powered website";
 
 	const PARAMETERS = array( array(
-		'url'=>array(
-			'name'=>'Blog URL',
-			'required'=>true
+		'url' => array(
+			'name' => 'Blog URL',
+			'required' =>true
 		)
 	));
 

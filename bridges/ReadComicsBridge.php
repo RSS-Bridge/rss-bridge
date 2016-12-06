@@ -7,10 +7,10 @@ class ReadComicsBridge extends BridgeAbstract
 	const DESCRIPTION = "Enter the comics as they appear in the website uri, separated by semicolons, ex: good-comic-1;good-comic-2; ...";
 
 	const PARAMETERS = array( array(
-		'q'=>array(
-			'name'=>'keywords, separated by semicolons',
-			'exampleValue'=>'first list;second list;...',
-			'required'=>true
+		'q' => array(
+			'name' => 'keywords, separated by semicolons',
+			'exampleValue' => 'first list;second list;...',
+			'required' =>true
 		),
 	));
 

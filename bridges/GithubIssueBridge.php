@@ -8,28 +8,28 @@ class GithubIssueBridge extends BridgeAbstract
   const DESCRIPTION = 'Returns the issues or comments of an issue of a github project';
 
 	const PARAMETERS=array(
-	'global'=>array(
-	  'u'=>array(
-		'name'=>'User name',
-		'required'=>true
+	'global' => array(
+	  'u' => array(
+		'name' => 'User name',
+		'required' =>true
 	  ),
-	  'p'=>array(
-		'name'=>'Project name',
-		'required'=>true
+	  'p' => array(
+		'name' => 'Project name',
+		'required' =>true
 	  )
 	),
 
-	'Project Issues'=>array(
-	  'c'=>array(
-		'name'=>'Show Issues Comments',
-		'type'=>'checkbox'
+	'Project Issues' => array(
+	  'c' => array(
+		'name' => 'Show Issues Comments',
+		'type' => 'checkbox'
 	  )
 	),
-	'Issue comments'=>array(
-	  'i'=>array(
-		'name'=>'Issue number',
-		'type'=>'number',
-		'required'=>'true'
+	'Issue comments' => array(
+	  'i' => array(
+		'name' => 'Issue number',
+		'type' => 'number',
+		'required' => 'true'
 	  )
 	)
   );

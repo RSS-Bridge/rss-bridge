@@ -7,10 +7,10 @@ class AskfmBridge extends BridgeAbstract
 	const CACHE_TIMEOUT = 300; //5 min
 	const DESCRIPTION = "Returns answers from an Ask.fm user";
 	const PARAMETERS = array(
-		'Ask.fm username'=>array(
-			'u'=>array(
-				'name'=>'Username',
-				'required'=>true
+		'Ask.fm username' => array(
+			'u' => array(
+				'name' => 'Username',
+				'required' =>true
 			)
 		)
 	);

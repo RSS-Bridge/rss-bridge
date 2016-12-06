@@ -7,9 +7,9 @@ class JapanExpoBridge extends BridgeAbstract
 	const CACHE_TIMEOUT = 14400; // 4h
 	const DESCRIPTION = 'Returns most recent entries from Japan Expo actualités.';
 	const PARAMETERS = array( array(
-		'mode'=>array(
-			'name'=>'Show full contents',
-			'type'=>'checkbox',
+		'mode' => array(
+			'name' => 'Show full contents',
+			'type' => 'checkbox',
 		)
 	));
 

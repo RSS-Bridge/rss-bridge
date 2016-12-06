@@ -7,12 +7,12 @@ class MoebooruBridge extends BridgeAbstract
   const DESCRIPTION = "Returns images from given page";
 
 	const PARAMETERS = array( array(
-	'p'=>array(
-	  'name'=>'page',
-	  'defaultValue'=>1,
-	  'type'=>'number'
+	'p' => array(
+	  'name' => 'page',
+	  'defaultValue' =>1,
+	  'type' => 'number'
 	),
-	't'=>array('name'=>'tags')
+	't' => array('name' => 'tags')
   ));
 
 	protected function getFullURI()

@@ -8,15 +8,15 @@ class DanbooruBridge extends BridgeAbstract
   const DESCRIPTION = "Returns images from given page";
 
 	const PARAMETERS = array(
-	'global'=>array(
-	  'p'=>array(
-		'name'=>'page',
-		'defaultValue'=>1,
-		'type'=>'number'
+	'global' => array(
+	  'p' => array(
+		'name' => 'page',
+		'defaultValue' =>1,
+		'type' => 'number'
 	  ),
-	  't'=>array('name'=>'tags')
+	  't' => array('name' => 'tags')
 	),
-	0=>array()
+	0=> array()
   );
 
 	const PATHTODATA='article';

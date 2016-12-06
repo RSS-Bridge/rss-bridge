@@ -11,9 +11,9 @@ class GooglePlusPostBridge extends BridgeAbstract
 	const DESCRIPTION = "Returns user public post (without API).";
 
 	const PARAMETERS = array( array(
-		'username'=>array(
-			'name'=>'username or Id',
-			'required'=>true
+		'username' => array(
+			'name' => 'username or Id',
+			'required' =>true
 		)
 	));
 
@@ -22,7 +22,7 @@ class GooglePlusPostBridge extends BridgeAbstract
 		// get content parsed
 //		$html = getSimpleHTMLDOM(__DIR__ . '/../posts2.html'
 		$html = getSimpleHTMLDOM(self::URI . urlencode($this->getInput('username')) . '/posts'
-			// force language, false, stream_context_create(array('http'=> array(
+			// force language, false, stream_context_create(array('http' => array(
 			'header'	=> 'Accept-Language: fr,fr-be,fr-fr;q=0.8,en;q=0.4,en-us;q=0.2;*' . "\r\n"
 			)))
 		) or returnServerError('No results for this query.');

@@ -10,21 +10,21 @@ class CastorusBridge extends BridgeAbstract
 	const PARAMETERS = array(
 		'Get latest changes' => array(),
 		'Get latest changes via ZIP code' => array(
-			'zip'=>array(
-				'name'=>'ZIP code',
-				'type'=>'text',
-				'required'=>true,
-				'exampleValue'=>'74910, 74',
-				'title'=>'Insert ZIP code (complete or partial)'
+			'zip' => array(
+				'name' => 'ZIP code',
+				'type' => 'text',
+				'required' =>true,
+				'exampleValue' => '74910, 74',
+				'title' => 'Insert ZIP code (complete or partial)'
 			)
 		),
 		'Get latest changes via city name' => array(
-			'city'=>array(
-				'name'=>'City name',
-				'type'=>'text',
-				'required'=>true,
-				'exampleValue'=>'Seyssel, Seys',
-				'title'=>'Insert city name (complete or partial)'
+			'city' => array(
+				'name' => 'City name',
+				'type' => 'text',
+				'required' =>true,
+				'exampleValue' => 'Seyssel, Seys',
+				'title' => 'Insert city name (complete or partial)'
 			)
 		)
 	);

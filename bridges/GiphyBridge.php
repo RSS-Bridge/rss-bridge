@@ -10,13 +10,13 @@ class GiphyBridge extends BridgeAbstract
 	const DESCRIPTION = "Bridge for giphy.com";
 
 	const PARAMETERS = array( array(
-		's'=>array(
-			'name'=>'search tag',
-			'required'=>true
+		's' => array(
+			'name' => 'search tag',
+			'required' =>true
 		),
-		'n'=>array(
-			'name'=>'max number of returned items',
-			'type'=>'number'
+		'n' => array(
+			'name' => 'max number of returned items',
+			'type' => 'number'
 		)
 	));
 

@@ -8,9 +8,9 @@ class ScoopItBridge extends BridgeAbstract
 	const DESCRIPTION = "Returns most recent results from ScoopIt.";
 
 	const PARAMETERS = array( array(
-		'u'=>array(
-			'name'=>'keyword',
-			'required'=>true
+		'u' => array(
+			'name' => 'keyword',
+			'required' =>true
 		)
 	));
 

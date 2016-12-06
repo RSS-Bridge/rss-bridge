@@ -8,20 +8,20 @@ class OpenClassroomsBridge extends BridgeAbstract
 	const DESCRIPTION = "Returns latest tutorials from OpenClassrooms.";
 
 	const PARAMETERS = array( array(
-		'u'=>array(
-			'name'=>'Catégorie',
-			'type'=>'list',
-			'required'=>true,
-			'values'=>array(
-				'Arts & Culture'=>'arts',
-				'Code'=>'code',
-				'Design'=>'design',
-				'Entreprise'=>'business',
-				'Numérique'=>'digital',
-				'Sciences'=>'sciences',
-				'Sciences Humaines'=>'humainities',
-				'Systèmes d\'information'=>'it',
-				'Autres'=>'others'
+		'u' => array(
+			'name' => 'Catégorie',
+			'type' => 'list',
+			'required' =>true,
+			'values' => array(
+				'Arts & Culture' => 'arts',
+				'Code' => 'code',
+				'Design' => 'design',
+				'Entreprise' => 'business',
+				'Numérique' => 'digital',
+				'Sciences' => 'sciences',
+				'Sciences Humaines' => 'humainities',
+				'Systèmes d\'information' => 'it',
+				'Autres' => 'others'
 			)
 		)
 	));

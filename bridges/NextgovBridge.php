@@ -7,20 +7,20 @@ class NextgovBridge extends FeedExpander
 	const DESCRIPTION = 'USA Federal technology news, best practices, and web 2.0 tools.';
 
 	const PARAMETERS = array( array(
-		'category'=>array(
-			'name'=>'Category',
-			'type'=>'list',
-			'values'=>array(
-				'All'=>'all',
-				'Technology News'=>'technology-news',
-				'CIO Briefing'=>'cio-briefing',
-				'Emerging Tech'=>'emerging-tech',
-				'Cloud'=>'cloud-computing',
-				'Cybersecurity'=>'cybersecurity',
-				'Mobile'=>'mobile',
-				'Health'=>'health',
-				'Defense'=>'defense',
-				'Big Data'=>'big-data'
+		'category' => array(
+			'name' => 'Category',
+			'type' => 'list',
+			'values' => array(
+				'All' => 'all',
+				'Technology News' => 'technology-news',
+				'CIO Briefing' => 'cio-briefing',
+				'Emerging Tech' => 'emerging-tech',
+				'Cloud' => 'cloud-computing',
+				'Cybersecurity' => 'cybersecurity',
+				'Mobile' => 'mobile',
+				'Health' => 'health',
+				'Defense' => 'defense',
+				'Big Data' => 'big-data'
 			)
 		)
 	));

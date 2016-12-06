@@ -8,37 +8,37 @@
 		const DESCRIPTION = "Returns newest videos from ARTE +7";
 		const PARAMETERS = array(
 			'Catégorie (Français)' => array(
-				'catfr'=>array(
-					'type'=>'list',
-					'name'=>'Catégorie',
-					'values'=>array(
-						'Toutes les vidéos (français)'=>'toutes-les-videos',
-						'Actu & société'=>'actu-société',
-						'Séries & fiction'=>'séries-fiction',
-						'Cinéma'=>'cinéma',
-						'Arts & spectacles classiques'=>'arts-spectacles-classiques',
-						'Culture pop'=>'culture-pop',
-						'Découverte'=>'découverte',
-						'Histoire'=>'histoire',
-						'Junior'=>'junior'
+				'catfr' => array(
+					'type' => 'list',
+					'name' => 'Catégorie',
+					'values' => array(
+						'Toutes les vidéos (français)' => 'toutes-les-videos',
+						'Actu & société' => 'actu-société',
+						'Séries & fiction' => 'séries-fiction',
+						'Cinéma' => 'cinéma',
+						'Arts & spectacles classiques' => 'arts-spectacles-classiques',
+						'Culture pop' => 'culture-pop',
+						'Découverte' => 'découverte',
+						'Histoire' => 'histoire',
+						'Junior' => 'junior'
 
 					)
 				)
 			),
 			'Catégorie (Allemand)' => array(
-				'catde'=>array(
-					'type'=>'list',
-					'name'=>'Catégorie',
-					'values'=>array(
-						'Alle Videos (deutsch)'=>'alle-videos',
-						'Aktuelles & Gesellschaft'=>'aktuelles-gesellschaft',
-						'Fernsehfilme & Serien'=>'fernsehfilme-serien',
-						'Kino'=>'kino',
-						'Kunst & Kultur'=>'kunst-kultur',
-						'Popkultur & Alternativ'=>'popkultur-alternativ',
-						'Entdeckung'=>'entdeckung',
-						'Geschichte'=>'geschichte',
-						'Junior'=>'junior'
+				'catde' => array(
+					'type' => 'list',
+					'name' => 'Catégorie',
+					'values' => array(
+						'Alle Videos (deutsch)' => 'alle-videos',
+						'Aktuelles & Gesellschaft' => 'aktuelles-gesellschaft',
+						'Fernsehfilme & Serien' => 'fernsehfilme-serien',
+						'Kino' => 'kino',
+						'Kunst & Kultur' => 'kunst-kultur',
+						'Popkultur & Alternativ' => 'popkultur-alternativ',
+						'Entdeckung' => 'entdeckung',
+						'Geschichte' => 'geschichte',
+						'Junior' => 'junior'
 					)
 				)
 			)

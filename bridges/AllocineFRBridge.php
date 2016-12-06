@@ -7,16 +7,16 @@ class AllocineFRBridge extends BridgeAbstract
 	const URI = "http://www.allocine.fr/";
 	const DESCRIPTION = "Bridge for allocine.fr";
 	const PARAMETERS = array( array(
-		'category'=>array(
-			'name'=>'category',
-			'type'=>'list',
-			'required'=>true,
-			'exampleValue'=>'Faux Raccord',
-			'title'=>'Select your category',
-			'values'=>array(
-				'Faux Raccord'=>'faux-raccord',
-				'Top 5'=>'top-5',
-				'Tueurs en Séries'=>'tueurs-en-serie'
+		'category' => array(
+			'name' => 'category',
+			'type' => 'list',
+			'required' =>true,
+			'exampleValue' => 'Faux Raccord',
+			'title' => 'Select your category',
+			'values' => array(
+				'Faux Raccord' => 'faux-raccord',
+				'Top 5' => 'top-5',
+				'Tueurs en Séries' => 'tueurs-en-serie'
 			)
 		)
 	));

@@ -8,11 +8,11 @@ class ElsevierBridge extends BridgeAbstract
 	const DESCRIPTION = 'Returns the recent articles published in Elsevier journals';
 
 	const PARAMETERS = array( array(
-		'j'=>array(
-			'name'=>'Journal name',
-			'required'=>true,
-			'exampleValue'=>'academic-pediactrics',
-			'title'=>'Insert html-part of your journal'
+		'j' => array(
+			'name' => 'Journal name',
+			'required' =>true,
+			'exampleValue' => 'academic-pediactrics',
+			'title' => 'Insert html-part of your journal'
 		)
 	));
 

@@ -9,33 +9,33 @@ class KununuBridge extends BridgeAbstract
 
 	const PARAMETERS = array(
 		'global' => array(
-		  'site'=>array(
-			'name'=>'Site',
-			'type'=>'list',
-			'required'=>true,
-			'title'=>'Select your site',
-			'values'=>array(
-			  'Austria'=>'at',
-			  'Germany'=>'de',
-			  'Switzerland'=>'ch',
-			  'United States'=>'us'
+		  'site' => array(
+			'name' => 'Site',
+			'type' => 'list',
+			'required' =>true,
+			'title' => 'Select your site',
+			'values' => array(
+			  'Austria' => 'at',
+			  'Germany' => 'de',
+			  'Switzerland' => 'ch',
+			  'United States' => 'us'
 			)
 		  ),
-		  'full'=>array(
-			'name'=>'Load full article',
-			'type'=>'checkbox',
-			'required'=>false,
-			'exampleValue'=>'checked',
-			'title'=>'Activate to load full article'
+		  'full' => array(
+			'name' => 'Load full article',
+			'type' => 'checkbox',
+			'required' =>false,
+			'exampleValue' => 'checked',
+			'title' => 'Activate to load full article'
 		  )
 		),
 
 		array(
-		  'company'=>array(
-			'name'=>'Company',
-			'required'=>true,
-			'exampleValue'=>'kununu-us',
-			'title'=>'Insert company name (i.e. Kununu US) or URI path (i.e. kununu-us)'
+		  'company' => array(
+			'name' => 'Company',
+			'required' =>true,
+			'exampleValue' => 'kununu-us',
+			'title' => 'Insert company name (i.e. Kununu US) or URI path (i.e. kununu-us)'
 		  )
 	  )
   );

@@ -8,9 +8,9 @@ class FacebookBridge extends BridgeAbstract
 	const DESCRIPTION = "Input a page title or a profile log. For a profile log, please insert the parameter as follow : myExamplePage/132621766841117";
 
 	const PARAMETERS =array( array(
-		'u'=>array(
-			'name'=>'Username',
-			'required'=>true
+		'u' => array(
+			'name' => 'Username',
+			'required' =>true
 		)
 	));
 
@@ -95,8 +95,8 @@ class FacebookBridge extends BridgeAbstract
 				$http_options = array(
 					'http' => array(
 						'method'  => 'POST',
-						'user_agent'=> ini_get('user_agent'),
-						'header'=>array("Content-type: application/x-www-form-urlencoded\r\nReferer: $captcha_action\r\nCookie: noscript=1\r\n"),
+						'user_agent' => ini_get('user_agent'),
+						'header' => array("Content-type: application/x-www-form-urlencoded\r\nReferer: $captcha_action\r\nCookie: noscript=1\r\n"),
 						'content' => http_build_query($captcha_fields),
 					),
 				);

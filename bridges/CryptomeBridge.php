@@ -8,11 +8,11 @@ class CryptomeBridge extends BridgeAbstract
 	const DESCRIPTION = "Returns the N most recent documents.";
 
 	const PARAMETERS = array( array(
-		'n'=>array(
-			'name'=>'number of elements',
-			'type'=>'number',
-			'defaultValue'=>20,
-			'exampleValue'=>10
+		'n' => array(
+			'name' => 'number of elements',
+			'type' => 'number',
+			'defaultValue' =>20,
+			'exampleValue' =>10
 		)
 	));
 

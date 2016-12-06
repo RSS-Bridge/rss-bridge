@@ -8,29 +8,29 @@ class SensCritiqueBridge extends BridgeAbstract
 	const DESCRIPTION = "Sens Critique news";
 
 	const PARAMETERS = array( array(
-		'm'=>array(
-			'name'=>'Movies',
-			'type'=>'checkbox'
+		'm' => array(
+			'name' => 'Movies',
+			'type' => 'checkbox'
 		),
-		's'=>array(
-			'name'=>'Series',
-			'type'=>'checkbox'
+		's' => array(
+			'name' => 'Series',
+			'type' => 'checkbox'
 		),
-		'g'=>array(
-			'name'=>'Video Games',
-			'type'=>'checkbox'
+		'g' => array(
+			'name' => 'Video Games',
+			'type' => 'checkbox'
 		),
-		'b'=>array(
-			'name'=>'Books',
-			'type'=>'checkbox'
+		'b' => array(
+			'name' => 'Books',
+			'type' => 'checkbox'
 		),
-		'bd'=>array(
-			'name'=>'BD',
-			'type'=>'checkbox'
+		'bd' => array(
+			'name' => 'BD',
+			'type' => 'checkbox'
 		),
-		'mu'=>array(
-			'name'=>'Music',
-			'type'=>'checkbox'
+		'mu' => array(
+			'name' => 'Music',
+			'type' => 'checkbox'
 		)
 	));
 

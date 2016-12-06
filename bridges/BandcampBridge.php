@@ -7,10 +7,10 @@ class BandcampBridge extends BridgeAbstract
 	const CACHE_TIMEOUT = 600; // 10min
 	const DESCRIPTION = "New bandcamp release by tag";
 	const PARAMETERS = array( array(
-		'tag'=>array(
-			'name'=>'tag',
-			'type'=>'text',
-			'required'=>true
+		'tag' => array(
+			'name' => 'tag',
+			'type' => 'text',
+			'required' =>true
 		)
 	));
 

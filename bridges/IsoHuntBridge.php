@@ -14,17 +14,17 @@ class IsoHuntBridge extends BridgeAbstract
 	 * Elements are sorted by name ascending!
 	 */
 	'By "Latest" category' => array(
-	  'latest_category'=>array(
-		'name'=>'Latest category',
-		'type'=>'list',
-		'required'=>true,
-		'title'=>'Select your category',
-		'defaultValue'=>'news',
-		'values'=>array(
-		  'Hot Torrents'=>'hot_torrents',
-		  'News'=>'news',
-		  'Releases'=>'releases',
-		  'Torrents'=>'torrents'
+	  'latest_category' => array(
+		'name' => 'Latest category',
+		'type' => 'list',
+		'required' =>true,
+		'title' => 'Select your category',
+		'defaultValue' => 'news',
+		'values' => array(
+		  'Hot Torrents' => 'hot_torrents',
+		  'News' => 'news',
+		  'Releases' => 'releases',
+		  'Torrents' => 'torrents'
 		)
 	  )
 	),
@@ -35,28 +35,28 @@ class IsoHuntBridge extends BridgeAbstract
 	 * Elements are sorted by name ascending!
 	 */
 	'By "Torrent" category' => array(
-	  'torrent_category'=>array(
-		'name'=>'Torrent category',
-		'type'=>'list',
-		'required'=>true,
-		'title'=>'Select your category',
-		'defaultValue'=>'anime',
-		'values'=>array(
-		  'Adult'=>'adult',
-		  'Anime'=>'anime',
-		  'Books'=>'books',
-		  'Games'=>'games',
-		  'Movies'=>'movies',
-		  'Music'=>'music',
-		  'Other'=>'other',
-		  'Series & TV'=>'series_tv',
-		  'Software'=>'software'
+	  'torrent_category' => array(
+		'name' => 'Torrent category',
+		'type' => 'list',
+		'required' =>true,
+		'title' => 'Select your category',
+		'defaultValue' => 'anime',
+		'values' => array(
+		  'Adult' => 'adult',
+		  'Anime' => 'anime',
+		  'Books' => 'books',
+		  'Games' => 'games',
+		  'Movies' => 'movies',
+		  'Music' => 'music',
+		  'Other' => 'other',
+		  'Series & TV' => 'series_tv',
+		  'Software' => 'software'
 		)
 	  ),
-	  'torrent_popularity'=>array(
-		'name'=>'Sort by popularity',
-		'type'=>'checkbox',
-		'title'=>'Activate to receive results by popularity'
+	  'torrent_popularity' => array(
+		'name' => 'Sort by popularity',
+		'type' => 'checkbox',
+		'title' => 'Activate to receive results by popularity'
 	  )
 	),
 
@@ -64,28 +64,28 @@ class IsoHuntBridge extends BridgeAbstract
 	 * Get feeds for a specific search request
 	 */
 	'Search torrent by name' => array(
-	  'search_name'=>array(
-		'name'=>'Name',
-		'required'=>true,
-		'title'=>'Insert your search query',
-		'exampleValue'=>'Bridge'
+	  'search_name' => array(
+		'name' => 'Name',
+		'required' =>true,
+		'title' => 'Insert your search query',
+		'exampleValue' => 'Bridge'
 	  ),
-	  'search_category'=>array(
-		'name'=>'Category',
-		'type'=>'list',
-		'title'=>'Select your category',
-		'defaultValue'=>'all',
-		'values'=>array(
-		  'Adult'=>'adult',
-		  'All'=>'all',
-		  'Anime'=>'anime',
-		  'Books'=>'books',
-		  'Games'=>'games',
-		  'Movies'=>'movies',
-		  'Music'=>'music',
-		  'Other'=>'other',
-		  'Series & TV'=>'series_tv',
-		  'Software'=>'software'
+	  'search_category' => array(
+		'name' => 'Category',
+		'type' => 'list',
+		'title' => 'Select your category',
+		'defaultValue' => 'all',
+		'values' => array(
+		  'Adult' => 'adult',
+		  'All' => 'all',
+		  'Anime' => 'anime',
+		  'Books' => 'books',
+		  'Games' => 'games',
+		  'Movies' => 'movies',
+		  'Music' => 'music',
+		  'Other' => 'other',
+		  'Series & TV' => 'series_tv',
+		  'Software' => 'software'
 		)
 	  )
 	)

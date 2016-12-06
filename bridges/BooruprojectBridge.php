@@ -9,17 +9,17 @@ class BooruprojectBridge extends GelbooruBridge
 	const DESCRIPTION = "Returns images from given page of booruproject";
 
 	const PARAMETERS = array(
-	  'global'=>array(
-		'p'=>array(
-		  'name'=>'page',
-		  'type'=>'number'
+	  'global' => array(
+		'p' => array(
+		  'name' => 'page',
+		  'type' => 'number'
 		),
-		't'=>array('name'=>'tags')
+		't' => array('name' => 'tags')
 	  ),
-	  'Booru subdomain (subdomain.booru.org)'=>array(
-		'i'=>array(
-		'name'=>'Subdomain',
-		'required'=>true
+	  'Booru subdomain (subdomain.booru.org)' => array(
+		'i' => array(
+		'name' => 'Subdomain',
+		'required' =>true
 		)
 	  )
 	);

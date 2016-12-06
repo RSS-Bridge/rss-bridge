@@ -8,28 +8,28 @@ class DemoBridge extends BridgeAbstract
 
 	const PARAMETERS = array(
 		'testCheckbox' => array(
-			'testCheckbox'=>array(
-				'type'=>'checkbox',
-				'name'=>'test des checkbox'
+			'testCheckbox' => array(
+				'type' => 'checkbox',
+				'name' => 'test des checkbox'
 			)
 		),
 
 		'testList' => array(
-			'testList'=>array(
-				'type'=>'list',
-				'name'=>'test des listes',
-				'values'=>array(
-					'Test'=>'test',
-					'Test 2'=>'test2'
+			'testList' => array(
+				'type' => 'list',
+				'name' => 'test des listes',
+				'values' => array(
+					'Test' => 'test',
+					'Test 2' => 'test2'
 				)
 			)
 		),
 
 		'testNumber' => array(
-			'testNumber'=>array(
-				'type'=>'number',
-				'name'=>'test des numéros',
-				'exampleValue'=>'1515632'
+			'testNumber' => array(
+				'type' => 'number',
+				'name' => 'test des numéros',
+				'exampleValue' => '1515632'
 			)
 		)
 	);

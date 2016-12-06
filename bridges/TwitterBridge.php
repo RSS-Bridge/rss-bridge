@@ -6,32 +6,32 @@ class TwitterBridge extends BridgeAbstract
 	const CACHE_TIMEOUT = 300; // 5min
 	const DESCRIPTION='returns tweets';
 	const PARAMETERS=array(
-		'global'=>array(
-			'nopic'=>array(
-				'name'=>'Hide profile pictures',
-				'type'=>'checkbox',
-				'title'=>'Activate to hide profile pictures in content'
+		'global' => array(
+			'nopic' => array(
+				'name' => 'Hide profile pictures',
+				'type' => 'checkbox',
+				'title' => 'Activate to hide profile pictures in content'
 			)
 		),
 		'By keyword or hashtag' => array(
-			'q'=>array(
-				'name'=>'Keyword or #hashtag',
-				'required'=>true,
-				'exampleValue'=>'rss-bridge, #rss-bridge',
-				'title'=>'Insert a keyword or hashtag'
+			'q' => array(
+				'name' => 'Keyword or #hashtag',
+				'required' =>true,
+				'exampleValue' => 'rss-bridge, #rss-bridge',
+				'title' => 'Insert a keyword or hashtag'
 			)
 		),
 		'By username' => array(
-			'u'=>array(
-				'name'=>'username',
-				'required'=>true,
-				'exampleValue'=>'sebsauvage',
-				'title'=>'Insert a user name'
+			'u' => array(
+				'name' => 'username',
+				'required' =>true,
+				'exampleValue' => 'sebsauvage',
+				'title' => 'Insert a user name'
 			),
-			'norep'=>array(
-				'name'=>'Without replies',
-				'type'=>'checkbox',
-				'title'=>'Only return initial tweets'
+			'norep' => array(
+				'name' => 'Without replies',
+				'type' => 'checkbox',
+				'title' => 'Only return initial tweets'
 			)
 		)
 	);

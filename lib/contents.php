@@ -44,12 +44,12 @@ function getContents($url, $use_include_path = false, $context = null, $offset =
 				//TODO
 			case stristr($header, 'brotli'):
 				//TODO
-				returnServerError($header . '=> Not implemented yet');
+				returnServerError($header . ' => Not implemented yet');
 				break;
 			case stristr($header, 'identity'):
 				break;
 			default:
-				returnServerError($header . '=> Unknown compression');
+				returnServerError($header . ' => Unknown compression');
 			}
 		}
 	}

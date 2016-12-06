@@ -7,9 +7,9 @@ class VineBridge extends BridgeAbstract
 	const DESCRIPTION = "Returns the latests vines from vine user page";
 
 	const PARAMETERS = array( array(
-		'u'=>array(
-			'name'=>'User id',
-			'required'=>true
+		'u' => array(
+			'name' => 'User id',
+			'required' =>true
 		)
 	));
 

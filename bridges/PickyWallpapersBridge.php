@@ -8,21 +8,21 @@ class PickyWallpapersBridge extends BridgeAbstract
 	const DESCRIPTION = "Returns the latests wallpapers from PickyWallpapers";
 
 	const PARAMETERS = array( array(
-	  'c'=>array(
-		'name'=>'category',
-		'required'=>true
+	  'c' => array(
+		'name' => 'category',
+		'required' =>true
 	  ),
-		's'=>array('name'=>'subcategory'),
-		'm'=>array(
-			'name'=>'Max number of wallpapers',
-			'defaultValue'=>12,
-			'type'=>'number'
+		's' => array('name' => 'subcategory'),
+		'm' => array(
+			'name' => 'Max number of wallpapers',
+			'defaultValue' =>12,
+			'type' => 'number'
 		),
-		'r'=>array(
-			'name'=>'resolution',
-			'exampleValue'=>'1920x1200, 1680x1050,…',
-			'defaultValue'=>'1920x1200',
-			'pattern'=>'[0-9]{3,4}x[0-9]{3,4}'
+		'r' => array(
+			'name' => 'resolution',
+			'exampleValue' => '1920x1200, 1680x1050,…',
+			'defaultValue' => '1920x1200',
+			'pattern' => '[0-9]{3,4}x[0-9]{3,4}'
 		)
 	));
 
