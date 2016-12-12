@@ -1,6 +1,6 @@
 rss-bridge
 ===
-[![LICENSE](https://img.shields.io/badge/license-UNLICENSE-blue.svg)](UNLICENSE)
+[![LICENSE](https://img.shields.io/badge/license-UNLICENSE-blue.svg)](UNLICENSE) [![Build Status](https://travis-ci.org/RSS-Bridge/rss-bridge.svg?branch=master)](https://travis-ci.org/RSS-Bridge/rss-bridge)
 
 rss-bridge is a PHP project capable of generating ATOM feeds for websites which don't have one.
 
