@@ -7,7 +7,8 @@ function getContents($url
 ){
 	$contextOptions = array(
 		'http' => array(
-			'user_agent' => ini_get('user_agent')
+			'user_agent' => ini_get('user_agent'),
+			'accept_encoding' => 'gzip'
 		)
 	);
 
