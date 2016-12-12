@@ -18,12 +18,12 @@ class AmazonBridge extends BridgeAbstract {
 			'type' => 'list',
 			'required' => false,
 			'values' => array(
-				'Pertinence' => 'relevanceblender',
-				'Popularité' => 'popularity-rank',
-				'Prix : par ordre croissant' => 'price-asc-rank',
-				'Prix : par ordre décroissant' => 'price-desc-rank',
-				'Note moyenne des commentaires' => 'review-rank',
-				'Dernières nouveautés' => 'date-desc-rank',
+				'Relevance' => 'relevanceblender',
+				'Popularity' => 'popularity-rank',
+				'Price : in ascending order' => 'price-asc-rank',
+				'Price : in descending order' => 'price-desc-rank',
+				'Average rating' => 'review-rank',
+				'Newest item' => 'date-desc-rank',
 			),
 			'defaultValue' => 'popularity-rank',
 		)
