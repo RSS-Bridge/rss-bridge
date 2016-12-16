@@ -2,11 +2,11 @@
 
 class AmazonBridge extends BridgeAbstract {
 
-	const MAINTAINER = "Alexis CHEMEL";
-	const NAME = "Amazon";
-	const URI = "https://www.amazon.fr/";
+	const MAINTAINER = 'Alexis CHEMEL';
+	const NAME = 'Amazon';
+	const URI = 'https://www.amazon.com/';
 	const CACHE_TIMEOUT = 3600; // 1h
-	const DESCRIPTION = "Returns products from Amazon search";
+	const DESCRIPTION = 'Returns products from Amazon search';
 
 	const PARAMETERS = array(array(
 		'q' => array(
@@ -19,26 +19,48 @@ class AmazonBridge extends BridgeAbstract {
 			'required' => false,
 			'values' => array(
 				'Relevance' => 'relevanceblender',
-				'Popularity' => 'popularity-rank',
-				'Price : in ascending order' => 'price-asc-rank',
-				'Price : in descending order' => 'price-desc-rank',
-				'Average rating' => 'review-rank',
-				'Newest item' => 'date-desc-rank',
+				'Price: Low to High' => 'price-asc-rank',
+				'Price: High to Low' => 'price-desc-rank',
+				'Average Customer Review' => 'review-rank',
+				'Newest Arrivals' => 'date-desc-rank',
 			),
-			'defaultValue' => 'popularity-rank',
-		)
+			'defaultValue' => 'relevanceblender',
+		),
+		'tld' => array(
+			'name' => 'Country',
+			'type' => 'list',
+			'required' => true,
+			'values' => array(
+				'Australia' => 'com.au',
+				'Brazil' => 'com.br',
+				'Canada' => 'ca',
+				'China' => 'cn',
+				'France' => 'fr',
+				'Germany' => 'de',
+				'India' => 'in',
+				'Italy' => 'it',
+				'Japan' => 'co.jp',
+				'Mexico' => 'com.mx',
+				'Netherlands' => 'nl',
+				'Spain' => 'es',
+				'United Kingdom' => 'co.uk',
+				'United States' => 'com',
+			),
+			'defaultValue' => 'com',
+		),
 	));
 
 	public function getName(){
 
-		return 'Amazon - '.$this->getInput('q');
+		return 'Amazon.'.$this->getInput('tld').': '.$this->getInput('q');
 	}
 
 	public function collectData() {
 
-		$url = self::URI.'s/?field-keywords='.urlencode($this->getInput('q')).'&sort='.$this->getInput('sort');
+		$uri = 'https://www.amazon.'.$this->getInput('tld').'/';
+		$uri .= 's/?field-keywords='.urlencode($this->getInput('q')).'&sort='.$this->getInput('sort');
 
-		$html = getSimpleHTMLDOM($url)
+		$html = getSimpleHTMLDOM($uri)
 			or returnServerError('Could not request Amazon.');
 
 		foreach($html->find('li.s-result-item') as $element) {
