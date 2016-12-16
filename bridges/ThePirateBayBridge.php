@@ -108,16 +108,8 @@ class ThePirateBayBridge extends BridgeAbstract{
 
 
             foreach($html->find('tr') as $element) {
-		$skip = FALSE;
-
-		if ($trustedBool)
-		{
-			$element_str = (string)$element;
-			if (strpos($element_str, 'VIP') == FALSE and strpos($element_str, 'Trusted') == FALSE )
-				$skip = TRUE;
-		}					
-
-		if ( $skip == FALSE ) 
+		    
+		if ( !$trustedBool or !is_null($element->find('img[alt=VIP]', 0)) or !is_null($element->find('img[alt=Trusted]', 0)) ) 
 		{
 			$item = array();
 			$item['uri'] = $element->find('a',3)->href;
