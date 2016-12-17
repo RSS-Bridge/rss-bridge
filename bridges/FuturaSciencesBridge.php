@@ -93,7 +93,7 @@ class FuturaSciencesBridge extends FeedExpander {
         return $item;
     }
 
-    function StripWithDelimiters($string, $start, $end) {
+    private function StripWithDelimiters($string, $start, $end) {
         while (strpos($string, $start) !== false) {
             $section_to_remove = substr($string, strpos($string, $start));
             $section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
@@ -101,7 +101,7 @@ class FuturaSciencesBridge extends FeedExpander {
         } return $string;
     }
 
-    function StripRecursiveHTMLSection($string, $tag_name, $tag_start) {
+    private function StripRecursiveHTMLSection($string, $tag_name, $tag_start) {
         $open_tag = '<'.$tag_name;
         $close_tag = '</'.$tag_name.'>';
         $close_tag_length = strlen($close_tag);
@@ -125,7 +125,7 @@ class FuturaSciencesBridge extends FeedExpander {
         return $string;
     }
 
-    function ExtractArticleContent($article){
+    private function ExtractArticleContent($article){
         $contents = $article->find('section[class=module article-text article-text-classic bg-white]', 0)->innertext;
 
         foreach (array(
@@ -156,7 +156,7 @@ class FuturaSciencesBridge extends FeedExpander {
     }
 
     // Extracts the author from an article or element
-    function ExtractAuthor($article){
+    private function ExtractAuthor($article){
         $article_author = $article->find('span.author', 0);
         if($article_author){
             return trim(str_replace(', Futura-Sciences', '', $article_author->plaintext));

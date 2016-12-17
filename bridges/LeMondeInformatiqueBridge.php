@@ -20,13 +20,13 @@ class LeMondeInformatiqueBridge extends FeedExpander {
         return $item;
     }
 
-    function StripCDATA($string) {
+    private function StripCDATA($string) {
         $string = str_replace('<![CDATA[', '', $string);
         $string = str_replace(']]>', '', $string);
         return $string;
     }
 
-    function StripWithDelimiters($string, $start, $end) {
+    private function StripWithDelimiters($string, $start, $end) {
         while (strpos($string, $start) !== false) {
             $section_to_remove = substr($string, strpos($string, $start));
             $section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
@@ -34,7 +34,7 @@ class LeMondeInformatiqueBridge extends FeedExpander {
         } return $string;
     }
 
-    function CleanArticle($article_html) {
+    private function CleanArticle($article_html) {
         $article_html = $this->StripWithDelimiters($article_html, '<script', '</script>');
         $article_html = $this->StripWithDelimiters($article_html, '<h1 class="cleanprint-title"', '</h1>');
         return $article_html;

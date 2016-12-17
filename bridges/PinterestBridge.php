@@ -103,6 +103,7 @@ EOD;
 		case 'From search':
 			$uri = self::URI . 'search/?q=' . urlencode($this->getInput('q'));
 			break;
+		default: return parent::getURI();
 		}
 		return $uri;
 	}
@@ -115,6 +116,7 @@ EOD;
 		case 'From search':
 			$specific = $this->getInput('q');
 		break;
+		default: return parent::getName();
 		}
 		return $specific . ' - ' . self::NAME;
 	}

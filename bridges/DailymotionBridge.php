@@ -34,7 +34,7 @@ class DailymotionBridge extends BridgeAbstract{
             )
         );
 
-    function getMetadata($id) {
+    protected function getMetadata($id) {
         $metadata=array();
         $html2 = getSimpleHTMLDOM(self::URI.'video/'.$id);
         if(!$html2){
