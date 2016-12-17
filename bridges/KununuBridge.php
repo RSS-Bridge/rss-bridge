@@ -6,66 +6,66 @@ class KununuBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 86400; // 24h
 	const DESCRIPTION = "Returns the latest reviews for a company and site of your choice.";
 
-    const PARAMETERS = array(
-        'global' => array(
-          'site'=>array(
-            'name'=>'Site',
-            'type'=>'list',
-            'required'=>true,
-            'title'=>'Select your site',
-            'values'=>array(
-              'Austria'=>'at',
-              'Germany'=>'de',
-              'Switzerland'=>'ch',
-              'United States'=>'us'
-            )
-          ),
-          'full'=>array(
-            'name'=>'Load full article',
-            'type'=>'checkbox',
-            'required'=>false,
-            'exampleValue'=>'checked',
-            'title'=>'Activate to load full article'
-          )
-        ),
+	const PARAMETERS = array(
+		'global' => array(
+			'site'=>array(
+				'name'=>'Site',
+				'type'=>'list',
+				'required'=>true,
+				'title'=>'Select your site',
+				'values'=>array(
+					'Austria'=>'at',
+					'Germany'=>'de',
+					'Switzerland'=>'ch',
+					'United States'=>'us'
+				)
+		),
+			'full'=>array(
+				'name'=>'Load full article',
+				'type'=>'checkbox',
+				'required'=>false,
+				'exampleValue'=>'checked',
+				'title'=>'Activate to load full article'
+			)
+		),
 
-        array(
-          'company'=>array(
-            'name'=>'Company',
-            'required'=>true,
-            'exampleValue'=>'kununu-us',
-            'title'=>'Insert company name (i.e. Kununu US) or URI path (i.e. kununu-us)'
-          )
-      )
-  );
+		array(
+			'company'=>array(
+				'name'=>'Company',
+				'required'=>true,
+				'exampleValue'=>'kununu-us',
+				'title'=>'Insert company name (i.e. Kununu US) or URI path (i.e. kununu-us)'
+			)
+		)
+	);
 
-    private $companyName='';
+	private $companyName='';
 
-    public function getURI(){
-        $company = $this->encode_umlauts(strtolower(str_replace(' ', '-', trim($this->getInput('company')))));
-        $site=$this->getInput('site');
-        $section = '';
-        switch($site){
-        case 'at':
-        case 'de':
-        case 'ch':
-            $section = 'kommentare';
-            break;
-        case 'us':
-            $section = 'reviews';
-            break;
-        }
+	public function getURI(){
+		$company = $this->encode_umlauts(strtolower(str_replace(' ', '-', trim($this->getInput('company')))));
+		$site=$this->getInput('site');
+		$section = '';
+		switch($site){
+		case 'at':
+		case 'de':
+		case 'ch':
+			$section = 'kommentare';
+			break;
+		case 'us':
+			$section = 'reviews';
+			break;
+		}
 
-        return self::URI.$site.'/'.$company.'/'.$section;
-    }
+		return self::URI.$site.'/'.$company.'/'.$section;
+	}
 
-    function getName(){
-        $company = $this->encode_umlauts(strtolower(str_replace(' ', '-', trim($this->getInput('company')))));
-        return  ($this->companyName?:$company).' - '.self::NAME;
-    }
+	function getName(){
+		$company = $this->encode_umlauts(strtolower(str_replace(' ', '-', trim($this->getInput('company')))));
+		return ($this->companyName?:$company).' - '.self::NAME;
+	}
 
 	public function collectData(){
-        $full = $this->getInput('full');
+		$full = $this->getInput('full');
 
 		// Load page
 		$html = getSimpleHTMLDOM($this->getURI());
