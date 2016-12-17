@@ -5,6 +5,7 @@ class MoebooruBridge extends BridgeAbstract{
   const URI = "https://moe.dev.myconan.net/";
   const CACHE_TIMEOUT = 1800; // 30min
   const DESCRIPTION = "Returns images from given page";
+  const MAINTAINER = 'pmaziere';
 
   const PARAMETERS = array( array(
     'p'=>array(
