@@ -85,6 +85,7 @@ class DailymotionBridge extends BridgeAbstract{
         case 'From search results':
             $specific=$this->getInput('s');
             break;
+        default: return parent::getName();
         }
 
         return $specific.' : Dailymotion Bridge';
