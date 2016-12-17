@@ -124,11 +124,11 @@ class KununuBridge extends BridgeAbstract {
 	*/
 	private function extract_company_name($html){
 		$panel = $html->find('div.panel', 0);
-		if($panel === false)
+		if(is_null($panel))
 			returnServerError('Cannot find panel for company name!');
 
 		$company_name = $panel->find('h1', 0);
-		if($company_name === false)
+		if(is_null($company_name))
 			returnServerError('Cannot find company name!');
 
 		return $company_name->plaintext;
@@ -140,7 +140,7 @@ class KununuBridge extends BridgeAbstract {
 	private function extract_article_date($article){
 		// They conviniently provide a time attribute for us :)
 		$date = $article->find('time[itemprop=dtreviewed]', 0);
-		if($date === false)
+		if(is_null($date))
 			returnServerError('Cannot find article date!');
 
 		return strtotime($date->datetime);
@@ -151,7 +151,7 @@ class KununuBridge extends BridgeAbstract {
 	*/
 	private function extract_article_rating($article){
 		$rating = $article->find('span.rating', 0);
-		if($rating === false)
+		if(is_null($rating))
 			returnServerError('Cannot find article rating!');
 
 		return $rating->getAttribute('aria-label');
@@ -162,7 +162,7 @@ class KununuBridge extends BridgeAbstract {
 	*/
 	private function extract_article_summary($article){
 		$summary = $article->find('[itemprop=summary]', 0);
-		if($summary === false)
+		if(is_null($summary))
 			returnServerError('Cannot find article summary!');
 
 		return strip_tags($summary->innertext);
@@ -174,11 +174,11 @@ class KununuBridge extends BridgeAbstract {
 	private function extract_article_uri($article){
 		// Notice: This first part is the same as in extract_article_summary!
 		$summary = $article->find('[itemprop=summary]', 0);
-		if($summary === false)
+		if(is_null($summary))
 			returnServerError('Cannot find article summary!');
 
 		$anchor = $summary->find('a', 0);
-		if($anchor === false)
+		if(is_null($anchor))
 			returnServerError('Cannot find article URI!');
 
 		return self::URI . $anchor->href;
@@ -190,7 +190,7 @@ class KununuBridge extends BridgeAbstract {
 	private function extract_article_author_position($article){
 		// We need to parse the aside manually
 		$aside = $article->find('aside', 0);
-		if($aside === false)
+		if(is_null($aside))
 			returnServerError('Cannot find article author information!');
 
 		// Go through all h2 elements to find index of required span (I know... it's stupid)
@@ -210,7 +210,7 @@ class KununuBridge extends BridgeAbstract {
 	*/
 	private function extract_article_description($article){
 		$description = $article->find('div[itemprop=description]', 0);
-		if($description === false)
+		if(is_null($description))
 			returnServerError('Cannot find article description!');
 
 		return $this->fix_url($description->innertext);
@@ -227,7 +227,7 @@ class KununuBridge extends BridgeAbstract {
 
 		// Find the article
 		$article = $html->find('article', 0);
-		if($article === false)
+		if(is_null($article))
 			returnServerError('Cannot find article!');
 
 		// Luckily they use the same layout for the review overview and full article pages :)
