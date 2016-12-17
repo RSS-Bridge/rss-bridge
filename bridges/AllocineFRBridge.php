@@ -23,27 +23,36 @@ class AllocineFRBridge extends BridgeAbstract{
     ));
 
     public function getURI(){
-        switch($this->getInput('category')){
-        case 'faux-raccord':
-            $uri = static::URI.'video/programme-12284/saison-27129/';
-            break;
-        case 'top-5':
-            $uri = static::URI.'video/programme-12299/saison-29561/';
-            break;
-        case 'tueurs-en-serie':
-            $uri = static::URI.'video/programme-12286/saison-22938/';
-            break;
+        if(!is_null($this->getInput('category'))){
+
+            switch($this->getInput('category')){
+            case 'faux-raccord':
+                $uri = static::URI.'video/programme-12284/saison-27129/';
+                break;
+            case 'top-5':
+                $uri = static::URI.'video/programme-12299/saison-29561/';
+                break;
+            case 'tueurs-en-serie':
+                $uri = static::URI.'video/programme-12286/saison-22938/';
+                break;
+            }
+
+            return $uri;
         }
 
-        return $uri;
+        return parent::getURI();
     }
 
     public function getName(){
+        if(!is_null($this->getInput('category'))){
         return self::NAME.' : '
             .array_search(
                 $this->getInput('category'),
                 self::PARAMETERS[$this->queriedContext]['category']['values']
             );
+        }
+
+        return parent::getName();
     }
 
     public function collectData(){
