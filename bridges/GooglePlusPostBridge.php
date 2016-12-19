@@ -79,7 +79,7 @@ class GooglePlusPostBridge extends BridgeAbstract
 			$content = $content->innertext;
 
 			$item['content'] .= '<div style="margin-top: -1.5em">' .  $content . '</div>';
-
+			$item['content'] = trim(strip_tags($item['content'], '<a><p><div><img>'));
 			// extract plaintext
 			$item['content_simple'] = $post->find('div.Al', 0)->plaintext;
 			$this->items[] = $item;
