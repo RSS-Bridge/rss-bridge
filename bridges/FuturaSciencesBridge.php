@@ -89,7 +89,8 @@ class FuturaSciencesBridge extends FeedExpander {
         $article = getSimpleHTMLDOMCached($item['uri'])
             or returnServerError('Could not request Futura-Sciences: ' . $item['uri']);
         $item['content'] = $this->ExtractArticleContent($article);
-        $item['author'] = empty($this->ExtractAuthor($article)) ? $item['author'] : $this->ExtractAuthor($article);
+        $author = $this->ExtractAuthor($article);
+        $item['author'] = empty($author) ? $item['author'] : $author;
         return $item;
     }
 
@@ -126,12 +127,16 @@ class FuturaSciencesBridge extends FeedExpander {
     }
 
     private function ExtractArticleContent($article){
-        $contents = $article->find('section[class=module article-text article-text-classic bg-white]', 0)->innertext;
+        $contents = $article->find('section.article-text-classic', 0)->innertext;
+        $headline = trim($article->find('p.description', 0)->plaintext);
+        if (!empty($headline))
+            $headline = '<p><b>'.$headline.'</b></p>';
 
         foreach (array(
             '<div class="clear',
             '<div class="sharebar2',
             '<div class="diaporamafullscreen"',
+            '<div class="module social-button',
             '<div style="margin-bottom:10px;" class="noprint"',
             '<div class="ficheprevnext',
             '<div class="bar noprint',
@@ -140,7 +145,8 @@ class FuturaSciencesBridge extends FeedExpander {
             '<div class="noprint',
             '<div class="bg bglight border border-full noprint',
             '<div class="httplogbar-wrapper noprint',
-            '<div id="forumcomments'
+            '<div id="forumcomments',
+            '<div ng-if="active"'
         ) as $div_start) {
             $contents = $this->StripRecursiveHTMLSection($contents , 'div', $div_start);
         }
@@ -151,13 +157,14 @@ class FuturaSciencesBridge extends FeedExpander {
         $contents = $this->StripWithDelimiters($contents, 'fs:definition="', '"');
         $contents = $this->StripWithDelimiters($contents, 'fs:xt:clicktype="', '"');
         $contents = $this->StripWithDelimiters($contents, 'fs:xt:clickname="', '"');
+        $contents = $this->StripWithDelimiters($contents, '<script ', '</script>');
 
-        return $contents;
+        return $headline.trim($contents);
     }
 
     // Extracts the author from an article or element
     private function ExtractAuthor($article){
-        $article_author = $article->find('span.author', 0);
+        $article_author = $article->find('h3.epsilon', 0);
         if($article_author){
             return trim(str_replace(', Futura-Sciences', '', $article_author->plaintext));
         }
