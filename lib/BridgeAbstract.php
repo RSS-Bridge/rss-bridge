@@ -13,6 +13,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	protected $items = array();
 	protected $inputs = array();
 	protected $queriedContext = '';
+	protected $extraInfos = array();
 
 	/**
 	* Return items stored in the bridge
@@ -142,7 +143,9 @@ abstract class BridgeAbstract implements BridgeInterface {
 			if($time !== false
 			&& (time() - static::CACHE_TIMEOUT < $time)
 			&& (!defined('DEBUG') || DEBUG !== true)){
-				$this->items = $this->cache->loadData();
+				$cacheContent = $this->cache->loadData();
+				$this->items = $cacheContent['items'];
+				$this->extraInfos = $cacheContent['extraInfos'];
 				return;
 			}
 		}
@@ -154,7 +157,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 
 			$this->collectData();
 			if(!is_null($this->cache)){
-				$this->cache->saveData($this->getItems());
+				$this->cache->saveData(array('items' => $this->getItems(), 'extraInfos' => $this->getExtraInfos()));
 			}
 			return;
 		}
@@ -176,7 +179,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 		$this->collectData();
 
 		if(!is_null($this->cache)){
-			$this->cache->saveData($this->getItems());
+			$this->cache->saveData(array('items' => $this->getItems(), 'extraInfos' => $this->getExtraInfos()));
 		}
 	}
 
@@ -196,10 +199,14 @@ abstract class BridgeAbstract implements BridgeInterface {
 	}
 
 	public function getExtraInfos(){
+		// In case the data were not loaded from the cache
+		if(empty($this->extraInfos)){
 		$extraInfos = array();
 		$extraInfos['name'] = $this->getName();
 		$extraInfos['uri'] = $this->getURI();
-		return $extraInfos;
+		$this->extraInfos = $extraInfos;
+		}
+		return $this->extraInfos;
 	}
 
 	public function setCache(\CacheInterface $cache){
