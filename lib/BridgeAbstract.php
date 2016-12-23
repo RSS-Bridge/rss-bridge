@@ -22,7 +22,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	public function getCachable(){
 		return array("items" => $this->getItems(), "extraInfos" => $this->getExtraInfos());
 	}
-	
+
 	/**
 	* Return items stored in the bridge
 	* @return mixed
@@ -207,7 +207,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	public function getURI(){
 		return static::URI;
 	}
-	
+
 	public function getExtraInfos(){
 		return array("name" => $this->getName(), "uri" => $this->getURI());
 	}
