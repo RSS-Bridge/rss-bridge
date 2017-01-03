@@ -239,6 +239,7 @@ EOD;
         case 'Get manga updates':
             $path = $this->getInput('path');
             break;
+        default: return parent::getURI();
         }
         return self::URI . $path;
     }

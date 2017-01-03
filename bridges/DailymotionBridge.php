@@ -34,7 +34,7 @@ class DailymotionBridge extends BridgeAbstract{
             )
         );
 
-    function getMetadata($id) {
+    protected function getMetadata($id) {
         $metadata=array();
         $html2 = getSimpleHTMLDOM(self::URI.'video/'.$id);
         if(!$html2){
@@ -85,6 +85,7 @@ class DailymotionBridge extends BridgeAbstract{
         case 'From search results':
             $specific=$this->getInput('s');
             break;
+        default: return parent::getName();
         }
 
         return $specific.' : Dailymotion Bridge';

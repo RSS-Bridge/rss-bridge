@@ -122,6 +122,8 @@ class IsoHuntBridge extends BridgeAbstract{
       if($category!=='movies')
         $uri .= '&ihq=' . urlencode($this->getInput('search_name'));
       break;
+
+    default: parent::getURI();
     }
 
     return $uri;
@@ -155,6 +157,8 @@ class IsoHuntBridge extends BridgeAbstract{
         );
       $name = 'Search: "' . $this->getInput('search_name') . '" in category: ' . $categoryName . ' - ' . self::NAME;
       break;
+
+    default: return parent::getName();
     }
 
     return $name;

@@ -7,7 +7,8 @@ function getContents($url
 ){
 	$contextOptions = array(
 		'http' => array(
-			'user_agent' => ini_get('user_agent')
+			'user_agent' => ini_get('user_agent'),
+			'accept_encoding' => 'gzip'
 		)
 	);
 
@@ -26,9 +27,9 @@ function getContents($url
 	}
 
 	if(is_null($maxlen)){
-		$content = @file_get_contents($url, $use_include_path, $context, $offset);
+		$content = file_get_contents($url, $use_include_path, $context, $offset);
 	} else {
-		$content = @file_get_contents($url, $use_include_path, $context, $offset, $maxlen);
+		$content = file_get_contents($url, $use_include_path, $context, $offset, $maxlen);
 	}
 
 	if($content === false)

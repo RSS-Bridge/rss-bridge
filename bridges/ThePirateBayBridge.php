@@ -29,6 +29,10 @@ class ThePirateBayBridge extends BridgeAbstract{
             'name'=>'Category number',
             'exampleValue'=>'100, 200… See TPB for category number'
         ),
+        'trusted'=>array(
+            'type'=>'checkbox',
+            'name'=>'Only get results from Trusted or VIP users ?',
+        ),
     ));
 
 	public function collectData(){
@@ -72,6 +76,8 @@ class ThePirateBayBridge extends BridgeAbstract{
 			$catNum = $this->getInput('cat');
 		}
 		$critList = $this->getInput('crit');
+	
+	$trustedBool = $this->getInput('trusted');
         $keywordsList = explode(";",$this->getInput('q'));
         foreach($keywordsList as $keywords){
           switch ($critList) {
@@ -102,17 +108,21 @@ class ThePirateBayBridge extends BridgeAbstract{
 
 
             foreach($html->find('tr') as $element) {
-                $item = array();
-                $item['uri'] = $element->find('a',3)->href;
-                $item['id'] = self::URI.$element->find('a.detLink',0)->href;
-                $item['timestamp'] = parseDateTimestamp($element);
-                $item['author'] = $element->find('a.detDesc',0)->plaintext;
-                $item['title'] = $element->find('a.detLink',0)->plaintext;
-                $item['seeders'] = (int)$element->find('td',2)->plaintext;
-                $item['leechers'] = (int)$element->find('td',3)->plaintext;
-                $item['content'] = $element->find('font',0)->plaintext.'<br>seeders: '.$item['seeders'].' | leechers: '.$item['leechers'].'<br><a href="'.$item['id'].'">info page</a>';
-                if(isset($item['title']))
-                    $this->items[] = $item;
+		    
+		if ( !$trustedBool or !is_null($element->find('img[alt=VIP]', 0)) or !is_null($element->find('img[alt=Trusted]', 0)) ) 
+		{
+			$item = array();
+			$item['uri'] = $element->find('a',3)->href;
+			$item['id'] = self::URI.$element->find('a.detLink',0)->href;
+			$item['timestamp'] = parseDateTimestamp($element);
+			$item['author'] = $element->find('a.detDesc',0)->plaintext;
+			$item['title'] = $element->find('a.detLink',0)->plaintext;
+			$item['seeders'] = (int)$element->find('td',2)->plaintext;
+			$item['leechers'] = (int)$element->find('td',3)->plaintext;
+			$item['content'] = $element->find('font',0)->plaintext.'<br>seeders: '.$item['seeders'].' | leechers: '.$item['leechers'].'<br><a href="'.$item['id'].'">info page</a>';
+			if(isset($item['title']))
+			    $this->items[] = $item;
+		}
             }
         }
 	}
