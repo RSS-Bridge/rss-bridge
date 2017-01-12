@@ -3,7 +3,7 @@ class CpasbienBridge extends BridgeAbstract {
 
     const MAINTAINER = "lagaisse";
     const NAME = "Cpasbien Bridge";
-    const URI = "http://www.cpasbien.io";
+    const URI = "http://www.cpasbien.cm";
     const CACHE_TIMEOUT = 86400; // 24h
     const DESCRIPTION = "Returns latest torrents from a request query";
 
@@ -24,11 +24,14 @@ class CpasbienBridge extends BridgeAbstract {
             if ($episode->getAttribute('class')=='ligne0' ||
                 $episode->getAttribute('class')=='ligne1')
             {
-                $htmlepisode=getSimpleHTMLDOMCached($episode->find('a', 0)->getAttribute('href'));
+
+                $urlepisode = $episode->find('a', 0)->getAttribute('href');           
+                $htmlepisode=getSimpleHTMLDOMCached($urlepisode, 86400*366*30);
 
                 $item = array();
                 $item['author'] = $episode->find('a', 0)->text();
                 $item['title'] = $episode->find('a', 0)->text();
+                $item['pubdate'] = $this->getCachedDate($urlepisode);
                 $textefiche=$htmlepisode->find('#textefiche', 0)->find('p',1);
                 if (isset($textefiche)) {
                     $item['content'] = $textefiche->text();
@@ -49,5 +52,20 @@ class CpasbienBridge extends BridgeAbstract {
 
     public function getName(){
         return $this->getInput('q').' : '.self::NAME;
+    }
+
+    private function getCachedDate($url){
+        debugMessage('getting pubdate from url ' . $url . '');
+
+        // Initialize cache
+        $cache = Cache::create('FileCache');
+        $cache->setPath(CACHE_DIR . '/pages');
+
+        $params = [$url];
+        $cache->setParameters($params);
+
+        // Get cachefile timestamp
+        $time = $cache->getTime();
+        return ($time!==false?$time:time());
     }
 }
