@@ -236,13 +236,8 @@ EOD;
 						$date = 0;
 					}
 
-					//Build title from username and content
-					$title = $author;
-					if(strlen($title) > 24)
-						$title = substr($title, 0, strpos(wordwrap($title, 24), "\n")) . '...';
-					$title = $title . ' | ' . strip_tags($content);
-					if(strlen($title) > 64)
-						$title = substr($title, 0, strpos(wordwrap($title, 64), "\n")) . '...';
+					//Build title from content
+					$title = mb_substr(strip_tags($post->find('.userContent > p')[0]->innertext), 0, 20).'...';
 
 					//Build and add final item
 					$item['uri'] = self::URI . $post->find('abbr')[0]->parent()->getAttribute('href');
