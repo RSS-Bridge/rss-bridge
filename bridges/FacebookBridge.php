@@ -1,4 +1,5 @@
 <?php
+require __DIR__ . '/../lib/contents_curl.php';
 class FacebookBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'teromene';
@@ -87,6 +88,7 @@ class FacebookBridge extends BridgeAbstract {
 				$captcha_action = $_SESSION['captcha_action'];
 				$captcha_fields = $_SESSION['captcha_fields'];
 				$captcha_fields['captcha_response'] = preg_replace("/[^a-zA-Z0-9]+/", "", $_POST['captcha_response']);
+				/*
 				$http_options = array(
 					'http' => array(
 						'method'  => 'POST',
@@ -98,10 +100,11 @@ class FacebookBridge extends BridgeAbstract {
 				);
 				$context = stream_context_create($http_options);
 				$html = getContents($captcha_action, false, $context);
+				 */
+				list($html, $info, $res_header) = curlgetContents($captcha_action, $captcha_fields, true);
+				if ( $info['http_code'] != 200 )
+					returnServerError('Error '.$info['http_code'].$captcha_action."\nReq:\n".$res_header."\nResp:\n".$info['request_header']);
 
-				if($html === false){
-					returnServerError('Failed to submit captcha response back to Facebook');
-				}
 				unset($_SESSION['captcha_fields']);
 				$html = str_get_html($html);
 			}
@@ -109,14 +112,16 @@ class FacebookBridge extends BridgeAbstract {
 			unset($_SESSION['captcha_action']);
 		}
 
+		$res_header = '';
 		//Retrieve page contents
-		if(is_null($html)){
-			if(!strpos($this->getInput('u'), "/")){
-				$html = getSimpleHTMLDOM(self::URI . urlencode($this->getInput('u')) . '?_fb_noscript=1')
-					or returnServerError('No results for this query.');
+		if (is_null($html)) {
+			if (!strpos($this->getInput('u'), "/")) {
+                list($html, $info, $res_header) = curlgetSimpleHTMLDOM(self::URI.urlencode($this->getInput('u')).'?_fb_noscript=1');
+				if ( $info['http_code'] != 200 )
+					returnServerError('Error '.$info['http_code']."\nResp:\n".$res_header."\nReq:\n".$info['request_header']);
 			} else {
-				$html = getSimpleHTMLDOM(self::URI . 'pages/' . $this->getInput('u') . '?_fb_noscript=1')
-					or returnServerError('No results for this query.');
+                list($html, $info) = curlgetSimpleHTMLDOM(self::URI.'pages/'.$this->getInput('u').'?_fb_noscript=1');
+				if ( $info['http_code'] != 200 ) returnServerError('No results for this query.');
 			}
 		}
 
@@ -171,6 +176,18 @@ EOD;
 			foreach($element->children() as $post){
 				// Ignore summary posts
 				if(strpos($post->class, '_3xaf') !== false) continue;
+
+				// Determine post attachments
+				/*
+				$attachment_wrapper = $post->find('._3x-2')[0];// search for attachment
+				if ( isset($attachment_wrapper) ) {
+					$attachment = $attachment_wrapper->find('.mtm')[0]->children(0);
+					if ( strpos($attachment->class, '_2a2q') !== false ) {
+						// photos
+					} elseif ( strpos($attachment->class, '_6m2') !== false ) {
+						// link
+					}
+				}*/
 
 				$item = array();
 
