@@ -27,7 +27,7 @@ class DuckDuckGoBridge extends BridgeAbstract{
         ));
 
     public function collectData(){
-        $html = getSimpleHTMLDOM(self::URI.'html/?q='.$this->getInput('u').$this->getInput('sort'))
+        $html = getSimpleHTMLDOM(self::URI.'html/?kd=-1&q='.$this->getInput('u').$this->getInput('sort'))
             or returnServerError('Could not request DuckDuckGo.');
 
         foreach($html->find('div.results_links') as $element) {
