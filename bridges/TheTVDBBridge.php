@@ -50,9 +50,9 @@ class TheTVDBBridge extends BridgeAbstract{
         curl_close($ch);
         $token_json = (array)json_decode($result);
         if(isset($token_json["Error"])){
-			throw new Exception($token_json["Error"]);
-			die;
-		}
+            throw new Exception($token_json["Error"]);
+            die;
+        }
         $token = $token_json['token'];
         return $token;
     }
@@ -72,9 +72,9 @@ class TheTVDBBridge extends BridgeAbstract{
         curl_close($ch);
         $result_array = (array)json_decode($result);
         if(isset($result_array["Error"])){
-			throw new Exception($result_array["Error"]);
-			die;
-		}
+            throw new Exception($result_array["Error"]);
+            die;
+        }
         return $result_array;
     }
     
