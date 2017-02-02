@@ -207,6 +207,6 @@ class FacebookBridge extends BridgeAbstract{
 	}
 
 	public function getName() {
-		return (isset($this->authorName) ? $this->authorName.' - ' : '').'Facebook Bridge';
+		return isset($this->extraInfos['name']) ? $this->extraInfos['name'] : $this->authorName.' - Facebook Bridge';
 	}
 }
