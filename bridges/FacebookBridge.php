@@ -124,7 +124,7 @@ class FacebookBridge extends BridgeAbstract{
 			foreach ($captcha->find('input, button') as $input)
 				$captcha_fields[$input->name] = $input->value;
 			$_SESSION['captcha_fields'] = $captcha_fields;
-			$_SESSION['captcha_action'] = self::URI.$captcha->find('form', 0)->action;
+			$_SESSION['captcha_action'] = $captcha->find('form', 0)->action;
 
 			//Show captcha filling form to the viewer, proxying the captcha image
 			$img = base64_encode(getContents($captcha->find('img', 0)->src));
