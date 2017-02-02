@@ -150,6 +150,8 @@ class FacebookBridge extends BridgeAbstract{
 			$this->authorName = $author;
 
 			foreach($element->children() as $post) {
+				// Ignore summary posts
+				if ( strpos($post->class, '_3xaf') !== false ) continue;
 
 				$item = array();
 
