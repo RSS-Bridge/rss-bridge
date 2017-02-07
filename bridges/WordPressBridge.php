@@ -66,8 +66,11 @@ class WordPressBridge extends FeedExpander {
 			// just in case someone find a way to access local files by playing with the url
 			returnClientError('The url parameter must either refer to http or https protocol.');
 		}
-
-		$this->collectExpandableDatas($this->getURI().'/feed/atom/');
+		try{
+			$this->collectExpandableDatas($this->getURI().'/feed/atom/');
+		}catch (HttpException $e){
+			$this->collectExpandableDatas($this->getURI().'/?feed=atom');
+		}
 
 	}
 }
