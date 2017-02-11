@@ -49,18 +49,18 @@ class WebfailBridge extends BridgeAbstract {
 		switch(strtolower($type)){
 		case 'facebook':
 		case 'videos':
-			$this->ExtractNews($html, $type);
+			$this->extractNews($html, $type);
 			break;
 		case 'none':
 		case 'images':
 		case 'gifs':
-			$this->ExtractArticle($html);
+			$this->extractArticle($html);
 			break;
 		default: returnClientError('Unknown type: ' . $type);
 		}
 	}
 
-	private function ExtractNews($html, $type){
+	private function extractNews($html, $type){
 		$news = $html->find('#main', 0)->find('a.wf-list-news');
 		foreach($news as $element){
 			$item = array();
@@ -93,7 +93,7 @@ class WebfailBridge extends BridgeAbstract {
 		}
 	}
 
-	private function ExtractArticle($html){
+	private function extractArticle($html){
 		$articles = $html->find('article');
 		foreach($articles as $article){
 			$item = array();

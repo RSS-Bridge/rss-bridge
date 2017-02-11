@@ -1,10 +1,10 @@
 <?php
 class NiceMatinBridge extends FeedExpander {
 
-	const MAINTAINER = "pit-fgfjiudghdf";
-	const NAME = "NiceMatin";
-	const URI = "http://www.nicematin.com/";
-	const DESCRIPTION = "Returns the 10 newest posts from NiceMatin (full text)";
+	const MAINTAINER = 'pit-fgfjiudghdf';
+	const NAME = 'NiceMatin';
+	const URI = 'http://www.nicematin.com/';
+	const DESCRIPTION = 'Returns the 10 newest posts from NiceMatin (full text)';
 
 	public function collectData(){
 		$this->collectExpandableDatas(self::URI . 'derniere-minute/rss', 10);
@@ -12,11 +12,11 @@ class NiceMatinBridge extends FeedExpander {
 
 	protected function parseItem($newsItem){
 		$item = parent::parseItem($newsItem);
-		$item['content'] = $this->NiceMatinExtractContent($item['uri']);
+		$item['content'] = $this->extractContent($item['uri']);
 		return $item;
 	}
 
-	private function NiceMatinExtractContent($url) {
+	private function extractContent($url){
 		$html = getSimpleHTMLDOMCached($url);
 		if(!$html)
 			return 'Could not acquire content from url: ' . $url . '!';

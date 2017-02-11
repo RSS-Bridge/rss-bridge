@@ -1,11 +1,11 @@
 <?php
 require_once('MoebooruBridge.php');
 
-class YandereBridge extends MoebooruBridge{
+class YandereBridge extends MoebooruBridge {
 
-	const MAINTAINER = "mitsukarenai";
-	const NAME = "Yande.re";
-	const URI = "https://yande.re/";
-	const DESCRIPTION = "Returns images from given page and tags";
+	const MAINTAINER = 'mitsukarenai';
+	const NAME = 'Yande.re';
+	const URI = 'https://yande.re/';
+	const DESCRIPTION = 'Returns images from given page and tags';
 
 }

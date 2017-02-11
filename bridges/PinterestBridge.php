@@ -1,10 +1,10 @@
 <?php
 class PinterestBridge extends BridgeAbstract {
 
-	const MAINTAINER = "pauder";
-	const NAME = "Pinterest Bridge";
-	const URI = "http://www.pinterest.com/";
-	const DESCRIPTION = "Returns the newest images on a board";
+	const MAINTAINER = 'pauder';
+	const NAME = 'Pinterest Bridge';
+	const URI = 'http://www.pinterest.com/';
+	const DESCRIPTION = 'Returns the newest images on a board';
 
 	const PARAMETERS = array(
 		'By username and board' => array(
@@ -63,8 +63,7 @@ class PinterestBridge extends BridgeAbstract {
 				. htmlentities($item['avatar'])
 				. '" /> <strong>'
 				. $item['username']
-				. '</strong>'
-				. '<br />'
+				. '</strong><br />'
 				. $item['fullname'];
 
 				$item['title'] = $img->getAttribute('alt');
