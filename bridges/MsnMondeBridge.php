@@ -1,5 +1,5 @@
 <?php
-class MsnMondeBridge extends BridgeAbstrac {
+class MsnMondeBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'kranack';
 	const NAME = 'MSN Actu Monde';
