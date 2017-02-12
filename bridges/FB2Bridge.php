@@ -154,20 +154,37 @@ EOD;
 	// Currently not used. Is used to get more than only 3 elements, as they appear on another page.
 	private function computeNextLink($string, $pageID){
 
-		$regex = "/timeline_unit\\\\\\\\u00253A1\\\\\\\\u00253A([0-9]*)\\\\\\\\u00253A([0-9]*)\\\\\\\\u00253A([0-9]*)\\\\\\\\u00253A([0-9]*)/";
+		$regex = implode(
+			'',
+			array(
+				"/timeline_unit",
+				"\\\\\\\\u00253A1",
+				"\\\\\\\\u00253A([0-9]*)",
+				"\\\\\\\\u00253A([0-9]*)",
+				"\\\\\\\\u00253A([0-9]*)",
+				"\\\\\\\\u00253A([0-9]*)/"
+			)
+		);
+
 		preg_match($regex, $string, $result);
 
-		return "https://touch.facebook.com/pages_reaction_units/more/?page_id="
-		. $pageID
-		. "&cursor=%7B%22timeline_cursor%22%3A%22timeline_unit%3A1%3A"
-		. $result[1]
-		. "%3A"
-		. $result[2]
-		. "%3A"
-		. $result[3]
-		. "%3A"
-		. $result[4]
-		. "%22%2C%22timeline_section_cursor%22%3A%7B%7D%2C%22has_next_page%22%3Atrue%7D&surface=mobile_page_home&unit_count=3";
+		return implode(
+			'',
+			array(
+				"https://touch.facebook.com/pages_reaction_units/more/?page_id=",
+				$pageID,
+				"&cursor=%7B%22timeline_cursor%22%3A%22timeline_unit%3A1%3A",
+				$result[1],
+				"%3A",
+				$result[2],
+				"%3A",
+				$result[3],
+				"%3A",
+				$result[4],
+				"%22%2C%22timeline_section_cursor%22%3A%7B%7D%2C%22",
+				"has_next_page%22%3Atrue%7D&surface=mobile_page_home&unit_count=3"
+			)
+		);
 	}
 
 	//Builds the HTML from the encoded JS that Facebook provides.
