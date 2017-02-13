@@ -21,7 +21,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	*/
 	public function getCachable(){
 		return array(
-			'items' => $this->getItems(), 
+			'items' => $this->getItems(),
 			'extraInfos' => $this->getExtraInfos()
 		);
 	}
@@ -35,7 +35,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	}
 
 	/**
-	 * Sets the input values for a given context. Existing values are 
+	 * Sets the input values for a given context. Existing values are
 	 * overwritten.
 	 *
 	 * @param array $inputs Associative array of inputs
@@ -228,8 +228,20 @@ abstract class BridgeAbstract implements BridgeInterface {
 		return $this->inputs[$this->queriedContext][$input]['value'];
 	}
 
+	public function getDescription(){
+		return static::DESCRIPTION;
+	}
+
+	public function getMaintainer(){
+		return static::MAINTAINER;
+	}
+
 	public function getName(){
 		return static::NAME;
+	}
+
+	public function getParameters(){
+		return static::PARAMETERS;
 	}
 
 	public function getURI(){
@@ -238,7 +250,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 
 	public function getExtraInfos(){
 		return array(
-			'name' => $this->getName(), 
+			'name' => $this->getName(),
 			'uri' => $this->getURI()
 		);
 	}

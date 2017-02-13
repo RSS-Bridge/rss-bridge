@@ -14,6 +14,13 @@ interface BridgeInterface {
 	public function getCachable();
 
 	/**
+	 * Returns the description
+	 *
+	 * @return string Description
+	 */
+	public function getDescription();
+
+	/**
 	 * Return an array of extra information
 	 *
 	 * @return array Associative array of extra information
@@ -28,11 +35,25 @@ interface BridgeInterface {
 	public function getItems();
 
 	/**
+	 * Returns the bridge maintainer
+	 *
+	 * @return string Bridge maintainer
+	 */
+	public function getMaintainer();
+
+	/**
 	 * Returns the bridge name
 	 *
 	 * @return string Bridge name
 	 */
 	public function getName();
+
+	/**
+	 * Returns the bridge parameters
+	 *
+	 * @return array Bridge parameters
+	 */
+	public function getParameters();
 
 	/**
 	 * Returns the bridge URI
