@@ -20,7 +20,11 @@ class FourchanBridge extends BridgeAbstract {
 	));
 
 	public function getURI(){
-		return static::URI . $this->getInput('c') . '/thread/' . $this->getInput('t');
+		if(!is_null($this->getInput('c')) && !is_null($this->getInput('t'))){
+			return static::URI . $this->getInput('c') . '/thread/' . $this->getInput('t');
+		}
+
+		return parent::getURI();
 	}
 
 	public function collectData(){

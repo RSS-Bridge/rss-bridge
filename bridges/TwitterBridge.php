@@ -62,6 +62,7 @@ class TwitterBridge extends BridgeAbstract {
 			return self::URI
 			. urlencode($this->getInput('u'))
 			. ($this->getInput('norep') ? '' : '/with_replies');
+		default: return parent::getURI();
 		}
 	}
 

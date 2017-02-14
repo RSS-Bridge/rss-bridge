@@ -46,7 +46,11 @@ class BandcampBridge extends BridgeAbstract {
 	}
 
 	public function getURI(){
-		return self::URI . 'tag/' . urlencode($this->getInput('tag')) . '?sort_field=date';
+		if(!is_null($this->getInput('tag'))){
+			return self::URI . 'tag/' . urlencode($this->getInput('tag')) . '?sort_field=date';
+		}
+
+		return parent::getURI();
 	}
 
 	public function getName(){

@@ -49,7 +49,11 @@ class RTBFBridge extends BridgeAbstract {
 	}
 
 	public function getURI(){
-	  return self::URI . 'detail?id=' . $this->getInput('c');
+		if(!is_null($this->getInput('c'))){
+			return self::URI . 'detail?id=' . $this->getInput('c');
+		}
+
+		return parent::getURI();
 	}
 
 	public function getName(){

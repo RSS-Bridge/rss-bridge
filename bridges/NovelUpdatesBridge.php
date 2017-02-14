@@ -17,7 +17,11 @@ class NovelUpdatesBridge extends BridgeAbstract {
 	private $seriesTitle = '';
 
 	public function getURI(){
-		return static::URI . '/series/' . $this->getInput('n') . '/';
+		if(!is_null($this->getInput('n'))){
+			return static::URI . '/series/' . $this->getInput('n') . '/';
+		}
+
+		return parent::getURI();
 	}
 
 	public function collectData(){

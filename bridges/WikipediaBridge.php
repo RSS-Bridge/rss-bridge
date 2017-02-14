@@ -43,9 +43,13 @@ class WikipediaBridge extends BridgeAbstract {
 	));
 
 	public function getURI(){
-		return 'https://'
-		. strtolower($this->getInput('language'))
-		. '.wikipedia.org';
+		if(!is_null($this->getInput('language'))){
+			return 'https://'
+			. strtolower($this->getInput('language'))
+			. '.wikipedia.org';
+		}
+
+		return parent::getURI();
 	}
 
 	public function getName(){

@@ -42,7 +42,11 @@ class GoComicsBridge extends BridgeAbstract {
 	}
 
 	public function getURI(){
-		return self::URI . urlencode($this->getInput('comicname'));
+		if(!is_null($this->getInput('comicname'))){
+			return self::URI . urlencode($this->getInput('comicname'));
+		}
+
+		return parent::getURI();
 	}
 
 	public function getName(){

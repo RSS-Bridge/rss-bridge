@@ -28,7 +28,11 @@ class BooruprojectBridge extends GelbooruBridge {
 	const PIDBYPAGE = 20;
 
 	public function getURI(){
-		return 'http://' . $this->getInput('i') . '.booru.org/';
+		if(!is_null($this->getInput('i'))){
+			return 'http://' . $this->getInput('i') . '.booru.org/';
+		}
+
+		return parent::getURI();
 	}
 
 	public function getName(){

@@ -34,7 +34,7 @@ class WebfailBridge extends BridgeAbstract {
 
 	public function getURI(){
 		if(is_null($this->getInput('language')))
-			return self::URI;
+			return parent::getURI();
 
 		// e.g.: https://en.webfail.com
 		return 'https://' . $this->getInput('language') . '.webfail.com';

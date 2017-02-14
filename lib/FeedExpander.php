@@ -190,7 +190,7 @@ abstract class FeedExpander extends BridgeAbstract {
 	}
 
 	public function getURI(){
-		return $this->uri;
+		return $this->uri ?: parent::getURI();
 	}
 
 	public function getName(){

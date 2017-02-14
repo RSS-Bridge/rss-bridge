@@ -56,7 +56,7 @@ class WordPressBridge extends FeedExpander {
 	public function getURI(){
 		$url = $this->getInput('url');
 		if(empty($url)){
-			$url = static::URI;
+			$url = parent::getURI();
 		}
 		return $url;
 	}

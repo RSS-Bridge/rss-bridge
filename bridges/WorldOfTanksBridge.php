@@ -28,13 +28,17 @@ class WorldOfTanksBridge extends BridgeAbstract {
 
 	private $title = '';
 
-	function getURI(){
-		$lang = $this->getInput('lang');
-		$uri = self::URI . $lang . '/news/';
-		if(!empty($this->getInput('category'))) {
-			$uri .= 'pc-browser/' . $this->getInput('category') . '/';
+	public function getURI(){
+		if(!is_null($this->getInput('lang'))){
+			$lang = $this->getInput('lang');
+			$uri = self::URI . $lang . '/news/';
+			if(!empty($this->getInput('category'))) {
+				$uri .= 'pc-browser/' . $this->getInput('category') . '/';
+			}
+			return $uri;
 		}
-		return $uri;
+
+		return parent::getURI();
 	}
 
 	public function getName(){

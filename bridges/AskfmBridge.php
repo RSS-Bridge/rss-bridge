@@ -65,6 +65,10 @@ class AskfmBridge extends BridgeAbstract {
 	}
 
 	public function getURI(){
-		return self::URI . urlencode($this->getInput('u')) . '/answers/more?page=0';
+		if(!is_null($this->getInput('u'))){
+			return self::URI . urlencode($this->getInput('u')) . '/answers/more?page=0';
+		}
+
+		return parent::getURI();
 	}
 }
