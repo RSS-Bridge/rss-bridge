@@ -47,6 +47,7 @@ class GithubIssueBridge extends BridgeAbstract {
 		case 'Issue comments':
 			$name = static::NAME . ' ' . $name . ' #' . $this->getInput('i');
 			break;
+		default: return parent::getName();
 		}
 		return $name;
 	}

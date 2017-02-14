@@ -84,15 +84,19 @@ class ParuVenduImmoBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		$request = '';
-		$minarea = $this->getInput('minarea');
-		if(!empty($minarea)){
-			$request .= ' ' . $minarea . ' m2';
+		if(!is_null($this->getInput('minarea'))){
+			$request = '';
+			$minarea = $this->getInput('minarea');
+			if(!empty($minarea)){
+				$request .= ' ' . $minarea . ' m2';
+			}
+			$location = $this->getInput('lo');
+			if(!empty($location)){
+				$request .= ' In: ' . $location;
+			}
+			return 'Paru Vendu Immobilier' . $request;
 		}
-		$location = $this->getInput('lo');
-		if(!empty($location)){
-			$request .= ' In: ' . $location;
-		}
-		return 'Paru Vendu Immobilier' . $request;
+
+		return parent::getName();
 	}
 }

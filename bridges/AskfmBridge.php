@@ -57,7 +57,11 @@ class AskfmBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		return self::NAME . ' : ' . $this->getInput('u');
+		if(!is_null($this->getInput('u'))){
+			return self::NAME . ' : ' . $this->getInput('u');
+		}
+
+		return parent::getName();
 	}
 
 	public function getURI(){

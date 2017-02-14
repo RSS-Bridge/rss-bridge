@@ -46,6 +46,10 @@ class GoComicsBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		return $this->getInput('comicname') . ' - GoComics';
+		if(!is_null($this->getInput('comicname'))){
+			return $this->getInput('comicname') . ' - GoComics';
+		}
+
+		return parent::getName();
 	}
 }

@@ -40,6 +40,10 @@ class TagBoardBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		return 'tagboard - ' . $this->getInput('u');
+		if(!is_null($this->getInput('u'))){
+			return 'tagboard - ' . $this->getInput('u');
+		}
+
+		return parent::getName();
 	}
 }

@@ -46,6 +46,7 @@ class TwitterBridge extends BridgeAbstract {
 			$specific = '@';
 			$param = 'u';
 			break;
+		default: return parent::getName();
 		}
 		return 'Twitter ' . $specific . $this->getInput($param);
 	}

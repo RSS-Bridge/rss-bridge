@@ -81,7 +81,11 @@ class Torrent9Bridge extends BridgeAbstract {
 
 
 	public function getName(){
-		return $this->getInput('q') . ' : ' . self::NAME;
+		if(!is_null($this->getInput('q'))){
+			return $this->getInput('q') . ' : ' . self::NAME;
+		}
+
+		return parent::getName();
 	}
 
 	private function getCachedDate($url){

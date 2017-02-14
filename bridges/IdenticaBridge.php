@@ -35,7 +35,11 @@ class IdenticaBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		return $this->getInput('u') . ' - Identica Bridge';
+		if(!is_null($this->getInput('u'))){
+			return $this->getInput('u') . ' - Identica Bridge';
+		}
+
+		return parent::getName();
 	}
 
 	public function getURI(){

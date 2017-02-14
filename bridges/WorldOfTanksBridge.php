@@ -38,7 +38,7 @@ class WorldOfTanksBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		return $this->title ?: self::NAME;
+		return $this->title ?: parent::getName();
 	}
 
 	public function collectData(){

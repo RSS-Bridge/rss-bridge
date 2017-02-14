@@ -56,9 +56,7 @@ class WikipediaBridge extends BridgeAbstract {
 			case 'dyk':
 				$subject = WIKIPEDIA_SUBJECT_DYK;
 				break;
-			default:
-				$subject = WIKIPEDIA_SUBJECT_TFA;
-				break;
+			default: return parent::getName();
 		}
 
 		switch($subject){

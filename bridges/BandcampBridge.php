@@ -50,6 +50,10 @@ class BandcampBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		return $this->getInput('tag') . ' - Bandcamp Tag';
+		if(!is_null($this->getInput('tag'))){
+			return $this->getInput('tag') . ' - Bandcamp Tag';
+		}
+
+		return parent::getName();
 	}
 }

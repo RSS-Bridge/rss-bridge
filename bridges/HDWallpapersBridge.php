@@ -70,10 +70,14 @@ class HDWallpapersBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		return 'HDWallpapers - '
-		. str_replace(['__', '_'], [' & ', ' '], $this->getInput('c'))
-		. ' ['
-		. $this->getInput('r')
-		. ']';
+		if(!is_null($this->getInput('c')) && !is_null($this->getInput('r'))){
+			return 'HDWallpapers - '
+			. str_replace(['__', '_'], [' & ', ' '], $this->getInput('c'))
+			. ' ['
+			. $this->getInput('r')
+			. ']';
+		}
+
+		return parent::getName();
 	}
 }

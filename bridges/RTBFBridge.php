@@ -53,6 +53,10 @@ class RTBFBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		return $this->getInput('c') .' - RTBF Bridge';
+		if(!is_null($this->getInput('c'))){
+			return $this->getInput('c') .' - RTBF Bridge';
+		}
+
+		return parent::getName();
 	}
 }

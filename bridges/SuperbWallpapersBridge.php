@@ -61,6 +61,10 @@ class SuperbWallpapersBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		return self::NAME . '- ' . $this->getInput('c') . ' [' . $this->getInput('r') . ']';
+		if(!is_null($this->getInput('c')) && !is_null($this->getInput('r'))){
+			return self::NAME . '- ' . $this->getInput('c') . ' [' . $this->getInput('r') . ']';
+		}
+
+		return parent::getName();
 	}
 }

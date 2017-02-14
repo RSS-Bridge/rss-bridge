@@ -194,6 +194,6 @@ abstract class FeedExpander extends BridgeAbstract {
 	}
 
 	public function getName(){
-		return $this->name;
+		return $this->name ?: parent::getName();
 	}
 }

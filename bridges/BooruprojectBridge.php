@@ -32,6 +32,10 @@ class BooruprojectBridge extends GelbooruBridge {
 	}
 
 	public function getName(){
-		return static::NAME . ' ' . $this->getInput('i');
+		if(!is_null($this->getInput('i'))){
+			return static::NAME . ' ' . $this->getInput('i');
+		}
+
+		return parent::getName();
 	}
 }
