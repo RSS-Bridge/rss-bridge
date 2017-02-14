@@ -27,7 +27,7 @@ class ScoopItBridge extends BridgeAbstract {
 			$item['title'] = preg_replace(
 				'~[[:cntrl:]]~',
 				'',
-				$element->find('div.tCustomization_post_title',0)->plaintext
+				$element->find('div.tCustomization_post_title', 0)->plaintext
 			);
 
 			$item['content'] = preg_replace(

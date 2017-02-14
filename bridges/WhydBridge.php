@@ -29,7 +29,7 @@ class WhydBridge extends BridgeAbstract {
 			) or returnServerError('No results for this query.');
 
 			for($j = 0; $j < 5; $j++){
-				if(strtolower($html->find('div.user', $j)->find('a',0)->plaintext) == strtolower($this->getInput('u'))){
+				if(strtolower($html->find('div.user', $j)->find('a', 0)->plaintext) == strtolower($this->getInput('u'))){
 					$html = getSimpleHTMLDOM(
 						self::URI . $html->find('div.user', $j)->find('a', 0)->getAttribute('href')
 					) or returnServerError('No results for this query');

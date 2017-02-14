@@ -43,8 +43,8 @@ class WebfailBridge extends BridgeAbstract {
 	public function collectData(){
 		$html = getSimpleHTMLDOM($this->getURI() . $this->getInput('type'));
 
-		$type = array_search($this->getInput('type')
-		, self::PARAMETERS[$this->queriedContext]['type']['values']);
+		$type = array_search($this->getInput('type'),
+			self::PARAMETERS[$this->queriedContext]['type']['values']);
 
 		switch(strtolower($type)){
 		case 'facebook':

@@ -52,7 +52,7 @@ class GiphyBridge extends BridgeAbstract {
 					$title = preg_replace('/\s+/', ' ', $title);
 					$title = str_replace('animated GIF', '', $title);
 					$title = str_replace($kw, '', $title);
-					$title = preg_replace('/\s+/', ' ',$title);
+					$title = preg_replace('/\s+/', ' ', $title);
 					$title = trim($title);
 					if(strlen($title) <= 0){
 						$title = $item['id'];

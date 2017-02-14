@@ -135,10 +135,10 @@ class WikipediaBridge extends BridgeAbstract {
 	* used to specify a different fallback link than the first
 	* (e.g., -1 for the last)
 	*/
-	private function addTodaysFeaturedArticleGeneric($element
-	, $fullArticle
-	, $anchorText = '...'
-	, $anchorFallbackIndex = 0){
+	private function addTodaysFeaturedArticleGeneric($element,
+	$fullArticle,
+	$anchorText = '...',
+	$anchorFallbackIndex = 0){
 		// Clean the bottom of the featured article
 		if ($element->find('div', -1))
 			$element->find('div', -1)->outertext = '';

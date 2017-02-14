@@ -41,7 +41,7 @@ class ThePirateBayBridge extends BridgeAbstract {
 	public function collectData(){
 
 		function parseDateTimestamp($element){
-				$guessedDate = $element->find('font',0)->plaintext;
+				$guessedDate = $element->find('font', 0)->plaintext;
 				$guessedDate = explode('Uploaded ', $guessedDate)[1];
 				$guessedDate = explode(',', $guessedDate)[0];
 
@@ -70,7 +70,7 @@ class ThePirateBayBridge extends BridgeAbstract {
 					);
 				} elseif(explode('&nbsp;', $guessedDate)[0] == 'Y-day'){
 					$guessedDate = strptime(
-						explode('&nbsp;',$guessedDate)[1], '%H:%M'
+						explode('&nbsp;', $guessedDate)[1], '%H:%M'
 					);
 
 					$timestamp = mktime(

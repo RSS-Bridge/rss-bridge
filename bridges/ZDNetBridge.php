@@ -270,7 +270,7 @@ class ZDNetBridge extends BridgeAbstract {
 					'<div id="sharethrough',
 					'<div id="inpage-video'
 				) as $div_start){
-					$contents = stripRecursiveHtmlSection($contents , 'div', $div_start);
+					$contents = stripRecursiveHtmlSection($contents, 'div', $div_start);
 				}
 				$contents = stripWithDelimiters($contents, '<script', '</script>');
 				$contents = stripWithDelimiters($contents, '<meta itemprop="image"', '>');

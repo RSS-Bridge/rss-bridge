@@ -19,11 +19,11 @@ class GooglePlusPostBridge extends BridgeAbstract{
 
 	public function collectData(){
 		// get content parsed
-		$html = getSimpleHTMLDOMCached(self::URI . urlencode($this->getInput('username')) . '/posts'
+		$html = getSimpleHTMLDOMCached(self::URI . urlencode($this->getInput('username')) . '/posts',
 			// force language
-			, 84600
-			, false
-			, stream_context_create(array(
+			84600,
+			false,
+			stream_context_create(array(
 				'http' => array(
 					'header' => 'Accept-Language: fr,fr-be,fr-fr;q=0.8,en;q=0.4,en-us;q=0.2;*' . "\r\n"
 			)))

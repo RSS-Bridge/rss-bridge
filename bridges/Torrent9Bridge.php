@@ -47,7 +47,7 @@ class Torrent9Bridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($page)
 			or returnServerError('No results for this query.');
 
-		foreach($html->find('table',0)->find('tr') as $episode){
+		foreach($html->find('table', 0)->find('tr') as $episode){
 			if($episode->parent->tag == 'tbody'){
 
 				$urlepisode = self::URI . $episode->find('a', 0)->getAttribute('href');
@@ -72,7 +72,7 @@ class Torrent9Bridge extends BridgeAbstract {
 				}
 
 				$item['id'] = $episode->find('a', 0)->getAttribute('href');
-				$item['uri'] = self::URI . $htmlepisode->find('.download',0)->getAttribute('href');
+				$item['uri'] = self::URI . $htmlepisode->find('.download', 0)->getAttribute('href');
 
 				$this->items[] = $item;
 			}

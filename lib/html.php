@@ -257,10 +257,10 @@ CARD;
 	return $card;
 }
 
-function sanitize($textToSanitize
-	,$removedTags=array('script','iframe','input','form')
-	,$keptAttributes=array('title','href','src')
-	,$keptText=array()){
+function sanitize($textToSanitize,
+$removedTags = array('script', 'iframe', 'input', 'form'),
+$keptAttributes = array('title', 'href', 'src'),
+$keptText = array()){
 	$htmlContent = str_get_html($textToSanitize);
 
 	foreach($htmlContent->find('*[!b38fd2b1fe7f4747d6b1c1254ccd055e]') as $element){

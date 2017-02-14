@@ -27,7 +27,7 @@ class ViadeoCompanyBridge extends BridgeAbstract {
 			if($title){
 				$item = array();
 				$item['uri'] = $link;
-				$item['title'] = mb_substr($element->find('p', 0)->innertext, 0 , 100);
+				$item['title'] = mb_substr($element->find('p', 0)->innertext, 0, 100);
 				$item['content'] = $element->find('p', 0)->innertext;;
 				$this->items[] = $item;
 				$i++;

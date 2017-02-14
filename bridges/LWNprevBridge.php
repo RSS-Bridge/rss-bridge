@@ -73,7 +73,7 @@ class LWNprevBridge extends BridgeAbstract{
 				break;
 			case 'GAByline':
 				$text = $h2NextSibling->textContent;
-				$item['author'] = substr($text,strpos($text, 'by '));
+				$item['author'] = substr($text, strpos($text, 'by '));
 				break;
 			default:
 				$item['author'] = 'LWN';

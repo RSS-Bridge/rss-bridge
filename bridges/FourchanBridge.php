@@ -54,7 +54,7 @@ class FourchanBridge extends BridgeAbstract {
 				}
 
 			$content = $element->find('.postMessage', 0)->innertext;
-			$content = str_replace('href="#p','href="' . $this->getURI() . '#p', $content);
+			$content = str_replace('href="#p', 'href="' . $this->getURI() . '#p', $content);
 			$item['content'] = '<span id="' . $item['id'] . '">' . $content . '</span>';
 
 			if(isset($item['image'])){

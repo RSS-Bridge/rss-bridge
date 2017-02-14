@@ -20,7 +20,7 @@ class CpasbienBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI . '/recherche/' . urlencode($request) . '.html')
 			or returnServerError('No results for this query.');
 
-		foreach($html->find('#gauche',0)->find('div') as $episode){
+		foreach($html->find('#gauche', 0)->find('div') as $episode){
 			if($episode->getAttribute('class') == 'ligne0'
 			|| $episode->getAttribute('class') == 'ligne1'){
 

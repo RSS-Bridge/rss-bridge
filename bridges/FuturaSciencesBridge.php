@@ -148,7 +148,7 @@ class FuturaSciencesBridge extends FeedExpander {
 			'<div id="forumcomments',
 			'<div ng-if="active"'
 		) as $div_start) {
-			$contents = $this->stripRecursiveHTMLSection($contents , 'div', $div_start);
+			$contents = $this->stripRecursiveHTMLSection($contents, 'div', $div_start);
 		}
 
 		$contents = $this->stripWithDelimiters($contents, '<hr ', '/>');

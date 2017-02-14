@@ -37,9 +37,9 @@ class RTBFBridge extends BridgeAbstract {
 
 			$thumbnailUriLastSrc = end($thumbnailUriSrcSet);
 			$thumbnailUri = explode(' ', $thumbnailUriLastSrc)[0];
-			$item['title'] = trim($element->find('h3',0)->plaintext)
+			$item['title'] = trim($element->find('h3', 0)->plaintext)
 			. ' - '
-			. trim($element->find('h4',0)->plaintext);
+			. trim($element->find('h4', 0)->plaintext);
 
 			$item['timestamp'] = strtotime($element->find('time', 0)->getAttribute('datetime'));
 			$item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $thumbnailUri . '" /></a>';

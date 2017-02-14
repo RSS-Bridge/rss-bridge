@@ -43,18 +43,18 @@ class KernelBugTrackerBridge extends BridgeAbstract {
 		$sorting = $this->getInput('sorting');
 
 		// We use the print preview page for simplicity
-		$html = getSimpleHTMLDOMCached($this->getURI() . '&format=multiple'
-		, 86400
-		, false
-		, null
-		, 0
-		, null
-		, true
-		, true
-		, DEFAULT_TARGET_CHARSET
-		, false // Do NOT remove line breaks
-		, DEFAULT_BR_TEXT
-		, DEFAULT_SPAN_TEXT);
+		$html = getSimpleHTMLDOMCached($this->getURI() . '&format=multiple',
+		86400,
+		false,
+		null,
+		0,
+		null,
+		true,
+		true,
+		DEFAULT_TARGET_CHARSET,
+		false, // Do NOT remove line breaks
+		DEFAULT_BR_TEXT,
+		DEFAULT_SPAN_TEXT);
 
 		if($html === false)
 			returnServerError('Failed to load page!');

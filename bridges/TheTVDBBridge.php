@@ -98,13 +98,13 @@ class TheTVDBBridge extends BridgeAbstract {
 		return $serie['data']->seriesName;
 	}
 
-	private function getSeasonEpisodes($token
-	, $serie_id
-	, $season
-	, $seriename
-	, &$episodelist
-	, $nbepisodemin
-	, $page = 1){
+	private function getSeasonEpisodes($token,
+	$serie_id,
+	$season,
+	$seriename,
+	&$episodelist,
+	$nbepisodemin,
+	$page = 1){
 		$url = $this->getApiUri()
 		. 'series/'
 		. $serie_id
