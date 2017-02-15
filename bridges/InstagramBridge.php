@@ -53,10 +53,18 @@ class InstagramBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		return $this->getInput('u') . ' - Instagram Bridge';
+		if(!is_null($this->getInput('u'))){
+			return $this->getInput('u') . ' - Instagram Bridge';
+		}
+
+		return parent::getName();
 	}
 
 	public function getURI(){
-		return self::URI . urlencode($this->getInput('u'));
+		if(!is_null($this->getInput('u'))){
+			return self::URI . urlencode($this->getInput('u'));
+		}
+
+		return parent::getURI();
 	}
 }

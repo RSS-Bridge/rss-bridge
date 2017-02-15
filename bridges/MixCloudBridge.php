@@ -16,7 +16,11 @@ class MixCloudBridge extends BridgeAbstract {
 	));
 
 	public function getName(){
-		return 'MixCloud - ' . $this->getInput('u');
+		if(!is_null($this->getInput('u'))){
+			return 'MixCloud - ' . $this->getInput('u');
+		}
+
+		return parent::getName();
 	}
 
 	public function collectData(){

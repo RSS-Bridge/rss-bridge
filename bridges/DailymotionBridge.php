@@ -116,6 +116,7 @@ class DailymotionBridge extends BridgeAbstract {
 				$uri .= '/' . $this->getInput('pa');
 			}
 			break;
+		default: return parent::getURI();
 		}
 		return $uri;
 	}

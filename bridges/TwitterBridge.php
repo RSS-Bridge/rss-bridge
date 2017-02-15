@@ -46,6 +46,7 @@ class TwitterBridge extends BridgeAbstract {
 			$specific = '@';
 			$param = 'u';
 			break;
+		default: return parent::getName();
 		}
 		return 'Twitter ' . $specific . $this->getInput($param);
 	}
@@ -61,6 +62,7 @@ class TwitterBridge extends BridgeAbstract {
 			return self::URI
 			. urlencode($this->getInput('u'))
 			. ($this->getInput('norep') ? '' : '/with_replies');
+		default: return parent::getURI();
 		}
 	}
 

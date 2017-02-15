@@ -27,7 +27,11 @@ class OpenClassroomsBridge extends BridgeAbstract {
 	));
 
 	public function getURI(){
-		return self::URI . '/courses?categories=' . $this->getInput('u') . '&title=&sort=updatedAt+desc';
+		if(!is_null($this->getInput('u'))){
+			return self::URI . '/courses?categories=' . $this->getInput('u') . '&title=&sort=updatedAt+desc';
+		}
+
+		return parent::getURI();
 	}
 
 	public function collectData(){

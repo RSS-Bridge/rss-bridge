@@ -257,6 +257,11 @@ EOD;
 	}
 
 	public function getName(){
-		return isset($this->extraInfos['name']) ? $this->extraInfos['name'] : $this->authorName . ' - Facebook Bridge';
+		if(!empty($this->authorName)){
+			return isset($this->extraInfos['name']) ? $this->extraInfos['name'] : $this->authorName
+			. ' - Facebook Bridge';
+		}
+
+		return parent::getName();
 	}
 }

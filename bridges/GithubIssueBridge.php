@@ -47,18 +47,23 @@ class GithubIssueBridge extends BridgeAbstract {
 		case 'Issue comments':
 			$name = static::NAME . ' ' . $name . ' #' . $this->getInput('i');
 			break;
+		default: return parent::getName();
 		}
 		return $name;
 	}
 
 	public function getURI(){
-		$uri = static::URI . $this->getInput('u') . '/' . $this->getInput('p') . '/issues';
-		if($this->queriedContext === 'Issue comments'){
-			$uri .= '/' . $this->getInput('i');
-		} elseif($this->getInput('c')){
-			$uri .= '?q=is%3Aissue+sort%3Aupdated-desc';
+		if(!is_null($this->getInput('u')) && !is_null($this->getInput('p'))){
+			$uri = static::URI . $this->getInput('u') . '/' . $this->getInput('p') . '/issues';
+			if($this->queriedContext === 'Issue comments'){
+				$uri .= '/' . $this->getInput('i');
+			} elseif($this->getInput('c')){
+				$uri .= '?q=is%3Aissue+sort%3Aupdated-desc';
+			}
+			return $uri;
 		}
-		return $uri;
+
+		return parent::getURI();
 	}
 
 	protected function extractIssueComment($issueNbr, $title, $comment){

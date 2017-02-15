@@ -97,6 +97,6 @@ class GooglePlusPostBridge extends BridgeAbstract{
 	}
 
 	public function getURI(){
-		return $this->_url ?: self::URI;
+		return $this->_url ?: parent::getURI();
 	}
 }

@@ -70,24 +70,32 @@ class PickyWallpapersBridge extends BridgeAbstract {
 	}
 
 	public function getURI(){
-		$subcategory = $this->getInput('s');
-		$link = self::URI
-		. $this->getInput('r')
-		. '/'
-		. $this->getInput('c')
-		. '/'
-		. $subcategory;
+		if(!is_null($this->getInput('s')) && !is_null($this->getInput('r')) && !is_null($this->getInput('c'))){
+			$subcategory = $this->getInput('s');
+			$link = self::URI
+			. $this->getInput('r')
+			. '/'
+			. $this->getInput('c')
+			. '/'
+			. $subcategory;
 
-		return $link;
+			return $link;
+		}
+
+		return parent::getURI();
 	}
 
 	public function getName(){
-		$subcategory = $this->getInput('s');
-		return 'PickyWallpapers - '
-		. $this->getInput('c')
-		. ($subcategory ? ' > ' . $subcategory : '')
-		. ' ['
-		. $this->getInput('r')
-		. ']';
+		if(!is_null($this->getInput('s'))){
+			$subcategory = $this->getInput('s');
+			return 'PickyWallpapers - '
+			. $this->getInput('c')
+			. ($subcategory ? ' > ' . $subcategory : '')
+			. ' ['
+			. $this->getInput('r')
+			. ']';
+		}
+
+		return parent::getName();
 	}
 }

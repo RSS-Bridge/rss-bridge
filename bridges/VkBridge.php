@@ -16,7 +16,11 @@ class VkBridge extends BridgeAbstract {
 	);
 
 	public function getURI(){
-		return static::URI . urlencode($this->getInput('u'));
+		if(!is_null($this->getInput('u'))){
+			return static::URI . urlencode($this->getInput('u'));
+		}
+
+		return parent::getURI();
 	}
 
 	public function collectData(){

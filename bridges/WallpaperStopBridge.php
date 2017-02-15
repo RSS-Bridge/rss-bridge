@@ -92,12 +92,16 @@ class WallpaperStopBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		$subcategory = $this->getInput('s');
-		return 'WallpaperStop - '
-		. $this->getInput('c')
-		. (!empty($subcategory) ? ' > ' . $subcategory : '')
-		. ' ['
-		. $this->getInput('r')
-		. ']';
+		if(!is_null($this->getInput('s')) && !is_null($this->getInput('c')) && !is_null($this->getInput('r'))){
+			$subcategory = $this->getInput('s');
+			return 'WallpaperStop - '
+			. $this->getInput('c')
+			. (!empty($subcategory) ? ' > ' . $subcategory : '')
+			. ' ['
+			. $this->getInput('r')
+			. ']';
+		}
+
+		return parent::getName();
 	}
 }

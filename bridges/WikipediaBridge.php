@@ -43,9 +43,13 @@ class WikipediaBridge extends BridgeAbstract {
 	));
 
 	public function getURI(){
-		return 'https://'
-		. strtolower($this->getInput('language'))
-		. '.wikipedia.org';
+		if(!is_null($this->getInput('language'))){
+			return 'https://'
+			. strtolower($this->getInput('language'))
+			. '.wikipedia.org';
+		}
+
+		return parent::getURI();
 	}
 
 	public function getName(){
@@ -56,9 +60,7 @@ class WikipediaBridge extends BridgeAbstract {
 			case 'dyk':
 				$subject = WIKIPEDIA_SUBJECT_DYK;
 				break;
-			default:
-				$subject = WIKIPEDIA_SUBJECT_TFA;
-				break;
+			default: return parent::getName();
 		}
 
 		switch($subject){

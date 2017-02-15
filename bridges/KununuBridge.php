@@ -70,7 +70,7 @@ class KununuBridge extends BridgeAbstract {
 			return ($this->companyName ?: $company) . ' - ' . self::NAME;
 		}
 
-		return paren::getName();
+		return parent::getName();
 	}
 
 	public function collectData(){

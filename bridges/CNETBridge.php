@@ -83,7 +83,11 @@ topic found in some section URLs, else all topics are selected.';
 	}
 
 	public function getName(){
-		$topic = $this->getInput('topic');
-		return 'CNET News Bridge' . (empty($topic) ? '' : ' - ' . $topic);
+		if(!is_null($this->getInput('topic'))){
+			$topic = $this->getInput('topic');
+			return 'CNET News Bridge' . (empty($topic) ? '' : ' - ' . $topic);
+		}
+
+		return parent::getName();
 	}
 }
