@@ -1,61 +1,55 @@
 <?php
-class CourrierInternationalBridge extends BridgeAbstract{
+class CourrierInternationalBridge extends BridgeAbstract {
 
-    const MAINTAINER = "teromene";
-    const NAME = "Courrier International Bridge";
-    const URI = "http://CourrierInternational.com/";
-    const CACHE_TIMEOUT = 300; // 5 min
-    const DESCRIPTION = "Courrier International bridge";
+	const MAINTAINER = 'teromene';
+	const NAME = 'Courrier International Bridge';
+	const URI = 'http://CourrierInternational.com/';
+	const CACHE_TIMEOUT = 300; // 5 min
+	const DESCRIPTION = 'Courrier International bridge';
 
-    public function collectData(){
+	public function collectData(){
+		$html = getSimpleHTMLDOM(self::URI)
+			or returnServerError('Error.');
 
-        $html = getSimpleHTMLDOM(self::URI)
-            or returnServerError('Error.');
+		$element = $html->find("article");
+		$article_count = 1;
 
-        $element = $html->find("article");
+		foreach($element as $article){
+			$item = array();
 
-        $article_count = 1;
+			$item['uri'] = $article->parent->getAttribute('href');
 
-        foreach($element as $article) {
+			if(strpos($item['uri'], 'http') === false){
+				$item['uri'] = self::URI . $item['uri'];
+			}
 
-            $item = array();
+			$page = getSimpleHTMLDOMCached($item['uri']);
 
-            $item['uri'] = $article->parent->getAttribute("href");
+			$content = $page->find('.article-text', 0);
 
-            if(strpos($item['uri'], "http") === FALSE) {
-                $item['uri'] = self::URI.$item['uri'];
-            }
+			if(!$content){
+				$content = $page->find('.depeche-text', 0);
+			}
 
-            $page = getSimpleHTMLDOMCached($item['uri']);
+			$item['content'] = sanitize($content);
+			$item['title'] = strip_tags($article->find('.title', 0));
 
-            $content = $page->find('.article-text',0);
-            if(!$content){
-              $content = $page->find('.depeche-text',0);
-            }
+			$dateTime = date_parse($page->find('time', 0));
 
-            $item['content'] = sanitize($content);
-            $item['title'] = strip_tags($article->find(".title",0));
+			$item['timestamp'] = mktime(
+				$dateTime['hour'],
+				$dateTime['minute'],
+				$dateTime['second'],
+				$dateTime['month'],
+				$dateTime['day'],
+				$dateTime['year']
+			);
 
-            $dateTime = date_parse($page->find("time",0));
+			$this->items[] = $item;
+			$article_count ++;
 
-            $item['timestamp'] = mktime(
-       			$dateTime['hour'],
-        		$dateTime['minute'],
-        		$dateTime['second'],
-        		$dateTime['month'],
-        		$dateTime['day'],
-        		$dateTime['year']
-            );
-
-            $this->items[] = $item;
-            $article_count ++;
-            if($article_count > 5) break;
-
-        }
-
-
-
-    }
+			if($article_count > 5)
+				break;
+		}
+	}
 }
-
-?>

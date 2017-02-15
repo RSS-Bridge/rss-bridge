@@ -1,10 +1,9 @@
 <?php
-function getContents($url
-, $use_include_path = false
-, $context = null
-, $offset = 0
-, $maxlen = null
-){
+function getContents($url,
+$use_include_path = false,
+$context = null,
+$offset = 0,
+$maxlen = null){
 	$contextOptions = array(
 		'http' => array(
 			'user_agent' => ini_get('user_agent'),
@@ -61,26 +60,25 @@ function getContents($url
 	return $content;
 }
 
-function getSimpleHTMLDOM($url
-	, $use_include_path = false
-	, $context = null
-	, $offset = 0
-	, $maxLen = null
-	, $lowercase = true
-	, $forceTagsClosed = true
-	, $target_charset = DEFAULT_TARGET_CHARSET
-	, $stripRN = true
-	, $defaultBRText = DEFAULT_BR_TEXT
-	, $defaultSpanText = DEFAULT_SPAN_TEXT
-){
+function getSimpleHTMLDOM($url,
+$use_include_path = false,
+$context = null,
+$offset = 0,
+$maxLen = null,
+$lowercase = true,
+$forceTagsClosed = true,
+$target_charset = DEFAULT_TARGET_CHARSET,
+$stripRN = true,
+$defaultBRText = DEFAULT_BR_TEXT,
+$defaultSpanText = DEFAULT_SPAN_TEXT){
 	$content = getContents($url, $use_include_path, $context, $offset, $maxLen);
-	return str_get_html($content
-		, $lowercase
-		, $forceTagsClosed
-		, $target_charset
-		, $stripRN
-		, $defaultBRText
-		, $defaultSpanText);
+	return str_get_html($content,
+	$lowercase,
+	$forceTagsClosed,
+	$target_charset,
+	$stripRN,
+	$defaultBRText,
+	$defaultSpanText);
 }
 
 /**
@@ -89,19 +87,18 @@ function getSimpleHTMLDOM($url
  * @param duration duration of the cache file in seconds (default: 24h/86400s)
  * @return content of the file as string
  */
-function getSimpleHTMLDOMCached($url
-	, $duration = 86400
-	, $use_include_path = false
-	, $context = null
-	, $offset = 0
-	, $maxLen = null
-	, $lowercase = true
-	, $forceTagsClosed = true
-	, $target_charset = DEFAULT_TARGET_CHARSET
-	, $stripRN = true
-	, $defaultBRText = DEFAULT_BR_TEXT
-	, $defaultSpanText = DEFAULT_SPAN_TEXT
-){
+function getSimpleHTMLDOMCached($url,
+$duration = 86400,
+$use_include_path = false,
+$context = null,
+$offset = 0,
+$maxLen = null,
+$lowercase = true,
+$forceTagsClosed = true,
+$target_charset = DEFAULT_TARGET_CHARSET,
+$stripRN = true,
+$defaultBRText = DEFAULT_BR_TEXT,
+$defaultSpanText = DEFAULT_SPAN_TEXT){
 	debugMessage('Caching url ' . $url . ', duration ' . $duration);
 
 	// Initialize cache
@@ -125,13 +122,11 @@ function getSimpleHTMLDOMCached($url
 		}
 	}
 
-	return str_get_html($content
-		, $lowercase
-		, $forceTagsClosed
-		, $target_charset
-		, $stripRN
-		, $defaultBRText
-		, $defaultSpanText);
+	return str_get_html($content,
+	$lowercase,
+	$forceTagsClosed,
+	$target_charset,
+	$stripRN,
+	$defaultBRText,
+	$defaultSpanText);
 }
-
-?>
