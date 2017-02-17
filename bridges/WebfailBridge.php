@@ -99,14 +99,14 @@ class WebfailBridge extends BridgeAbstract {
 			$item = array();
 			$item['title'] = $this->fixTitle($article->find('a', 1)->innertext);
 
-			// Webfail shares videos or images
+			// Images, videos and gifs are provided in their own unique way
 			if(!is_null($article->find('img.wf-image', 0))){ // Image type
 				$item['uri'] = $this->getURI() . $article->find('a', 2)->href;
 				$item['content'] = '<a href="'
 				. $item['uri']
 				. '"><img src="'
 				. $article->find('img.wf-image', 0)->src
-				. '">';
+				. '"></a>';
 			} elseif(!is_null($article->find('div.wf-video', 0))){ // Video type
 				$videoId = $this->getVideoId($article->find('div.wf-play', 0)->onclick);
 				$item['uri'] = 'https://youtube.com/watch?v=' . $videoId;
@@ -115,6 +115,13 @@ class WebfailBridge extends BridgeAbstract {
 				. '"><img src="http://img.youtube.com/vi/'
 				. $videoId
 				. '/0.jpg"></a>';
+			} elseif(!is_null($article->find('video[id*=gif-]', 0))){ // Gif type
+				$item['uri'] = $this->getURI() . $article->find('a', 2)->href;
+				$item['content'] = '<video controls src="'
+				. $article->find('video[id*=gif-]', 0)->src
+				. '" poster="'
+				. $article->find('video[id*=gif-]', 0)->poster
+				. '"></video>';
 			}
 
 			$this->items[] = $item;
