@@ -278,7 +278,7 @@ $keptText = array()){
 	return $htmlContent;
 }
 
-function defaultImageSrcTo($content, $server){
+function defaultLinkTo($content, $server){
 	foreach($content->find('img') as $image){
 		if(strpos($image->src, 'http') === false
 		&& strpos($image->src, '//') === false
