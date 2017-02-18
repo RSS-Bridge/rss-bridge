@@ -280,9 +280,9 @@ $keptText = array()){
 
 function defaultImageSrcTo($content, $server){
 	foreach($content->find('img') as $image){
-		if(is_null(strpos($image->src, "http"))
-			&& is_null(strpos($image->src, "//"))
-			&& is_null(strpos($image->src, "data:")))
+		if(strpos($image->src, 'http') === false
+		&& strpos($image->src, '//') === false
+		&& strpos($image->src, 'data:') === false)
 			$image->src = $server . $image->src;
 	}
 	return $content;
