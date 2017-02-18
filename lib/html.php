@@ -278,12 +278,21 @@ $keptText = array()){
 	return $htmlContent;
 }
 
-function defaultImageSrcTo($content, $server){
+function defaultLinkTo($content, $server){
 	foreach($content->find('img') as $image){
-		if(is_null(strpos($image->src, "http"))
-			&& is_null(strpos($image->src, "//"))
-			&& is_null(strpos($image->src, "data:")))
+		if(strpos($image->src, 'http') === false
+		&& strpos($image->src, '//') === false
+		&& strpos($image->src, 'data:') === false)
 			$image->src = $server . $image->src;
 	}
+
+	foreach($content->find('a') as $anchor){
+		if(strpos($anchor->href, 'http') === false
+		&& strpos($anchor->href, '//') === false
+		&& strpos($anchor->href, '#') !== 0
+		&& strpos($anchor->href, '?') !== 0)
+			$anchor->href = $server . $anchor->href;
+	}
+
 	return $content;
 }
