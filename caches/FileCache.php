@@ -39,7 +39,7 @@ class FileCache implements CacheInterface {
 			);
 
 			foreach($cacheIterator as $cacheFile){
-				if(in_array($cacheFile->getBasename(), array('.', '..')))
+				if(in_array($cacheFile->getBasename(), array('.', '..', '.gitkeep')))
 					continue;
 				elseif($cacheFile->isFile()){
 					if(filemtime($cacheFile->getPathname()) < time() - $duration)
