@@ -285,5 +285,14 @@ function defaultImageSrcTo($content, $server){
 		&& strpos($image->src, 'data:') === false)
 			$image->src = $server . $image->src;
 	}
+
+	foreach($content->find('a') as $anchor){
+		if(strpos($anchor->href, 'http') === false
+		&& strpos($anchor->href, '//') === false
+		&& strpos($anchor->href, '#') !== 0
+		&& strpos($anchor->href, '?') !== 0)
+			$anchor->href = $server . $anchor->href;
+	}
+
 	return $content;
 }
