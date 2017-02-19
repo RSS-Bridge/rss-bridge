@@ -1,38 +1,52 @@
 <?php
-class IdenticaBridge extends BridgeAbstract{
+class IdenticaBridge extends BridgeAbstract {
 
-	const MAINTAINER = "mitsukarenai";
-	const NAME = "Identica Bridge";
-	const URI = "https://identi.ca/";
+	const MAINTAINER = 'mitsukarenai';
+	const NAME = 'Identica Bridge';
+	const URI = 'https://identi.ca/';
 	const CACHE_TIMEOUT = 300; // 5min
-	const DESCRIPTION = "Returns user timelines";
+	const DESCRIPTION = 'Returns user timelines';
 
-    const PARAMETERS = array( array(
-        'u'=>array(
-            'name'=>'username',
-            'required'=>true
-        )
-    ));
+	const PARAMETERS = array( array(
+		'u' => array(
+			'name' => 'username',
+			'required' => true
+		)
+	));
 
-    public function collectData(){
-        $html = getSimpleHTMLDOM($this->getURI())
-            or returnServerError('Requested username can\'t be found.');
+	public function collectData(){
+		$html = getSimpleHTMLDOM($this->getURI())
+			or returnServerError('Requested username can\'t be found.');
 
-        foreach($html->find('li.major') as $dent) {
-            $item = array();
-            $item['uri'] = html_entity_decode($dent->find('a', 0)->href);	// get dent link
-            $item['timestamp'] = strtotime($dent->find('abbr.easydate', 0)->plaintext);	// extract dent timestamp
-            $item['content'] = trim($dent->find('div.activity-content', 0)->innertext);	// extract dent text
-            $item['title'] = $this->getInput('u') . ' | ' . $item['content'];
-            $this->items[] = $item;
-        }
-    }
+		foreach($html->find('li.major') as $dent){
+			$item = array();
 
-    public function getName(){
-        return $this->getInput('u') .' - Identica Bridge';
-    }
+			// get dent link
+			$item['uri'] = html_entity_decode($dent->find('a', 0)->href);
 
-    public function getURI(){
-        return self::URI.urlencode($this->getInput('u'));
-    }
+			// extract dent timestamp
+			$item['timestamp'] = strtotime($dent->find('abbr.easydate', 0)->plaintext);
+
+			// extract dent text
+			$item['content'] = trim($dent->find('div.activity-content', 0)->innertext);
+			$item['title'] = $this->getInput('u') . ' | ' . $item['content'];
+			$this->items[] = $item;
+		}
+	}
+
+	public function getName(){
+		if(!is_null($this->getInput('u'))){
+			return $this->getInput('u') . ' - Identica Bridge';
+		}
+
+		return parent::getName();
+	}
+
+	public function getURI(){
+		if(!is_null($this->getInput('u'))){
+			return self::URI . urlencode($this->getInput('u'));
+		}
+
+		return parent::getURI();
+	}
 }

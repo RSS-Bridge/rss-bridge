@@ -1,35 +1,35 @@
 <?php
 class CastorusBridge extends BridgeAbstract {
-	const MAINTAINER = "logmanoriginal";
-	const NAME = "Castorus Bridge";
+	const MAINTAINER = 'logmanoriginal';
+	const NAME = 'Castorus Bridge';
 	const URI = 'http://www.castorus.com';
 	const CACHE_TIMEOUT = 600; // 10min
-	const DESCRIPTION = "Returns the latest changes";
+	const DESCRIPTION = 'Returns the latest changes';
 
-    const PARAMETERS = array(
-        'Get latest changes' => array(),
-        'Get latest changes via ZIP code' => array(
-            'zip'=>array(
-                'name'=>'ZIP code',
-                'type'=>'text',
-                'required'=>true,
-                'exampleValue'=>'74910, 74',
-                'title'=>'Insert ZIP code (complete or partial)'
-            )
-        ),
-        'Get latest changes via city name' => array(
-            'city'=>array(
-                'name'=>'City name',
-                'type'=>'text',
-                'required'=>true,
-                'exampleValue'=>'Seyssel, Seys',
-                'title'=>'Insert city name (complete or partial)'
-            )
-        )
-    );
+	const PARAMETERS = array(
+		'Get latest changes' => array(),
+		'Get latest changes via ZIP code' => array(
+			'zip' => array(
+				'name' => 'ZIP code',
+				'type' => 'text',
+				'required' => true,
+				'exampleValue' => '74910, 74',
+				'title' => 'Insert ZIP code (complete or partial)'
+			)
+		),
+		'Get latest changes via city name' => array(
+			'city' => array(
+				'name' => 'City name',
+				'type' => 'text',
+				'required' => true,
+				'exampleValue' => 'Seyssel, Seys',
+				'title' => 'Insert city name (complete or partial)'
+			)
+		)
+	);
 
-	// Extracts the tile from an actitiy
-	private function ExtractActivityTitle($activity){
+	// Extracts the title from an actitiy
+	private function extractActivityTitle($activity){
 		$title = $activity->find('a', 0);
 
 		if(!$title)
@@ -39,7 +39,7 @@ class CastorusBridge extends BridgeAbstract {
 	}
 
 	// Extracts the url from an actitiy
-	private function ExtractActivityUrl($activity){
+	private function extractActivityUrl($activity){
 		$url = $activity->find('a', 0);
 
 		if(!$url)
@@ -49,7 +49,7 @@ class CastorusBridge extends BridgeAbstract {
 	}
 
 	// Extracts the time from an activity
-	private function ExtractActivityTime($activity){
+	private function extractActivityTime($activity){
 		// Unfortunately the time is part of the parent node,
 		// so we have to clear all child nodes first
 		$nodes = $activity->find('*');
@@ -65,7 +65,7 @@ class CastorusBridge extends BridgeAbstract {
 	}
 
 	// Extracts the price change
-	private function ExtractActivityPrice($activity){
+	private function extractActivityPrice($activity){
 		$price = $activity->find('span', 1);
 
 		if(!$price)
@@ -75,8 +75,8 @@ class CastorusBridge extends BridgeAbstract {
 	}
 
 	public function collectData(){
-        $zip_filter = trim($this->getInput('zip'));
-        $city_filter = trim($this->getInput('city'));
+		$zip_filter = trim($this->getInput('zip'));
+		$city_filter = trim($this->getInput('city'));
 
 		$html = getSimpleHTMLDOM(self::URI);
 
@@ -91,17 +91,24 @@ class CastorusBridge extends BridgeAbstract {
 		foreach($activities as $activity){
 			$item = array();
 
-			$item['title'] = $this->ExtractActivityTitle($activity);
-			$item['uri'] = $this->ExtractActivityUrl($activity);
-			$item['timestamp'] = $this->ExtractActivityTime($activity);
-			$item['content'] = '<a href="' . $item['uri'] . '">' . $item['title'] . '</a><br><p>'
-								. $this->ExtractActivityPrice($activity) . '</p>';
+			$item['title'] = $this->extractActivityTitle($activity);
+			$item['uri'] = $this->extractActivityUrl($activity);
+			$item['timestamp'] = $this->extractActivityTime($activity);
+			$item['content'] = '<a href="'
+			. $item['uri']
+			. '">'
+			. $item['title']
+			. '</a><br><p>'
+			. $this->extractActivityPrice($activity)
+			. '</p>';
 
-			if(isset($zip_filter) && !(substr($item['title'], 0, strlen($zip_filter)) === $zip_filter)){
+			if(isset($zip_filter)
+			&& !(substr($item['title'], 0, strlen($zip_filter)) === $zip_filter)){
 				continue; // Skip this item
 			}
 
-			if(isset($city_filter) && !(substr($item['title'], strpos($item['title'], ' ') + 1, strlen($city_filter)) === $city_filter)){
+			if(isset($city_filter)
+			&& !(substr($item['title'], strpos($item['title'], ' ') + 1, strlen($city_filter)) === $city_filter)){
 				continue; // Skip this item
 			}
 

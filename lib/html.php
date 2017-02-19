@@ -15,22 +15,21 @@ function displayBridgeCard($bridgeName, $formats, $isActive = true){
 		return $buttons;
 	};
 
-	$getFormHeader = function($bridge){
+	$getFormHeader = function($bridgeName){
 		return <<<EOD
 			<form method="GET" action="?">
 				<input type="hidden" name="action" value="display" />
-				<input type="hidden" name="bridge" value="{$bridge}" />
+				<input type="hidden" name="bridge" value="{$bridgeName}" />
 EOD;
 	};
 
-	$bridgeElement = Bridge::create($bridgeName);
-	$bridgeClass = $bridgeName . 'Bridge';
+	$bridge = Bridge::create($bridgeName);
 
-	if($bridgeElement == false)
+	if($bridge == false)
 		return "";
 
-	$name = '<a href="' . $bridgeClass::URI . '">' . $bridgeClass::NAME . '</a>';
-	$description = $bridgeClass::DESCRIPTION;
+	$name = '<a href="' . $bridge->getURI() . '">' . $bridge->getName() . '</a>';
+	$description = $bridge->getDescription();
 
 	$card = <<<CARD
 		<section id="bridge-{$bridgeName}" data-ref="{$bridgeName}">
@@ -43,7 +42,7 @@ EOD;
 CARD;
 
 	// If we don't have any parameter for the bridge, we print a generic form to load it.
-	if(count($bridgeClass::PARAMETERS) == 0){
+	if(count($bridge->getParameters()) == 0){
 
 		$card .= $getFormHeader($bridgeName);
 
@@ -77,13 +76,13 @@ CARD;
 		$card .= '</form>' . PHP_EOL;
 	}
 
-	$hasGlobalParameter = array_key_exists('global', $bridgeClass::PARAMETERS);
+	$hasGlobalParameter = array_key_exists('global', $bridge->getParameters());
 
 	if($hasGlobalParameter){
-		$globalParameters = $bridgeClass::PARAMETERS['global'];
+		$globalParameters = $bridge->getParameters()['global'];
 	}
 
-	foreach($bridgeClass::PARAMETERS as $parameterName => $parameter){
+	foreach($bridge->getParameters() as $parameterName => $parameter){
 		if(!is_numeric($parameterName) && $parameterName == 'global')
 			continue;
 
@@ -251,16 +250,16 @@ CARD;
 	}
 
 	$card .= '<label class="showless" for="showmore-' . $bridgeName . '">Show less</label>';
-	$card .= '<p class="maintainer">' . $bridgeClass::MAINTAINER . '</p>';
+	$card .= '<p class="maintainer">' . $bridge->getMaintainer() . '</p>';
 	$card .= '</section>';
 
 	return $card;
 }
 
-function sanitize($textToSanitize
-	,$removedTags=array('script','iframe','input','form')
-	,$keptAttributes=array('title','href','src')
-	,$keptText=array()){
+function sanitize($textToSanitize,
+$removedTags = array('script', 'iframe', 'input', 'form'),
+$keptAttributes = array('title', 'href', 'src'),
+$keptText = array()){
 	$htmlContent = str_get_html($textToSanitize);
 
 	foreach($htmlContent->find('*[!b38fd2b1fe7f4747d6b1c1254ccd055e]') as $element){
@@ -279,14 +278,21 @@ function sanitize($textToSanitize
 	return $htmlContent;
 }
 
-function defaultImageSrcTo($content, $server){
+function defaultLinkTo($content, $server){
 	foreach($content->find('img') as $image){
-		if(is_null(strpos($image->src, "http"))
-			&& is_null(strpos($image->src, "//"))
-			&& is_null(strpos($image->src, "data:")))
+		if(strpos($image->src, 'http') === false
+		&& strpos($image->src, '//') === false
+		&& strpos($image->src, 'data:') === false)
 			$image->src = $server . $image->src;
 	}
+
+	foreach($content->find('a') as $anchor){
+		if(strpos($anchor->href, 'http') === false
+		&& strpos($anchor->href, '//') === false
+		&& strpos($anchor->href, '#') !== 0
+		&& strpos($anchor->href, '?') !== 0)
+			$anchor->href = $server . $anchor->href;
+	}
+
 	return $content;
 }
-
-?>

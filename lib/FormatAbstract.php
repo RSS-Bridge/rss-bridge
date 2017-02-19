@@ -89,9 +89,9 @@ abstract class FormatAbstract implements FormatInterface {
 	 */
 	protected function sanitizeHtml($html)
 	{
-		$html = str_replace('<script','<&zwnj;script',$html); // Disable scripts, but leave them visible.
-		$html = str_replace('<iframe','<&zwnj;iframe',$html);
-		$html = str_replace('<link','<&zwnj;link',$html);
+		$html = str_replace('<script', '<&zwnj;script', $html); // Disable scripts, but leave them visible.
+		$html = str_replace('<iframe', '<&zwnj;iframe', $html);
+		$html = str_replace('<link', '<&zwnj;link', $html);
 		// We leave alone object and embed so that videos can play in RSS readers.
 		return $html;
 	}

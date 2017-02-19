@@ -1,13 +1,13 @@
 <?php
-function validateData(&$data,$parameters){
+function validateData(&$data, $parameters){
 	$validateTextValue = function($value, $pattern = null){
 		if(!is_null($pattern)){
-			$filteredValue = filter_var($value
-				, FILTER_VALIDATE_REGEXP
-				, array('options' => array(
+			$filteredValue = filter_var($value,
+			FILTER_VALIDATE_REGEXP,
+			array('options' => array(
 					'regexp' => '/^' . $pattern . '$/'
-				))
-			);
+				)
+			));
 		} else {
 			$filteredValue = filter_var($value);
 		}

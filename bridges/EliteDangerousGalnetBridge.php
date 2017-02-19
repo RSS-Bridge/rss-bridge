@@ -1,21 +1,21 @@
 <?php
-class EliteDangerousGalnetBridge extends BridgeAbstract
-{
-	const MAINTAINER = "corenting";
-	const NAME = "Elite: Dangerous Galnet";
-	const URI = "https://community.elitedangerous.com/galnet/";
-    const CACHE_TIMEOUT = 7200; // 2h
-	const DESCRIPTION = "Returns the latest page of news from Galnet";
+class EliteDangerousGalnetBridge extends BridgeAbstract {
 
-	public function collectData()
-	{
-        $html = getSimpleHTMLDOM(self::URI)
-            or returnServerError('Error while downloading the website content');
-		foreach($html->find('div.article') as $element) {
+	const MAINTAINER = 'corenting';
+	const NAME = 'Elite: Dangerous Galnet';
+	const URI = 'https://community.elitedangerous.com/galnet/';
+	const CACHE_TIMEOUT = 7200; // 2h
+	const DESCRIPTION = 'Returns the latest page of news from Galnet';
+
+	public function collectData(){
+		$html = getSimpleHTMLDOM(self::URI)
+			or returnServerError('Error while downloading the website content');
+
+		foreach($html->find('div.article') as $element){
 			$item = array();
 
 			$uri = $element->find('h3 a', 0)->href;
-			$uri = self::URI . substr($uri,strlen('/galnet/'));
+			$uri = self::URI . substr($uri, strlen('/galnet/'));
 			$item['uri'] = $uri;
 
 			$title = $element->find('h3 a', 0)->plaintext;

@@ -149,7 +149,7 @@ abstract class FeedExpander extends BridgeAbstract {
 		if(isset($feedItem->guid)){
 			foreach($feedItem->guid->attributes() as $attribute => $value){
 				if($attribute === 'isPermaLink'
-				&& ($value === 'true' || filter_var($feedItem->guid,FILTER_VALIDATE_URL))){
+				&& ($value === 'true' || filter_var($feedItem->guid, FILTER_VALIDATE_URL))){
 					$item['uri'] = (string)$feedItem->guid;
 					break;
 				}
@@ -190,10 +190,10 @@ abstract class FeedExpander extends BridgeAbstract {
 	}
 
 	public function getURI(){
-		return $this->uri;
+		return $this->uri ?: parent::getURI();
 	}
 
 	public function getName(){
-		return $this->name;
+		return $this->name ?: parent::getName();
 	}
 }

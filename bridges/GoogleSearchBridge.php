@@ -9,11 +9,11 @@
 */
 class GoogleSearchBridge extends BridgeAbstract {
 
-	const MAINTAINER = "sebsauvage";
-	const NAME = "Google search";
-	const URI = "https://www.google.com/";
+	const MAINTAINER = 'sebsauvage';
+	const NAME = 'Google search';
+	const URI = 'https://www.google.com/';
 	const CACHE_TIMEOUT = 1800; // 30min
-	const DESCRIPTION = "Returns most recent results from Google search.";
+	const DESCRIPTION = 'Returns most recent results from Google search.';
 
 	const PARAMETERS = array(array(
 		'q' => array(
@@ -22,30 +22,31 @@ class GoogleSearchBridge extends BridgeAbstract {
 		)
 	));
 
-
-	public function collectData() {
+	public function collectData(){
 		$html = '';
 
-		$html = getSimpleHTMLDOM(self::URI.'search?q='.urlencode($this->getInput('q'))
-		  .'&num=100&complete=0&tbs=qdr:y,sbd:1')
-		  or returnServerError('No results for this query.');
+		$html = getSimpleHTMLDOM(self::URI
+		. 'search?q='
+		. urlencode($this->getInput('q'))
+		.'&num=100&complete=0&tbs=qdr:y,sbd:1')
+			or returnServerError('No results for this query.');
 
 		$emIsRes = $html->find('div[id=ires]', 0);
 
-		if( !is_null($emIsRes) ) {
-
-			foreach($emIsRes->find('div[class=g]') as $element) {
+		if(!is_null($emIsRes)){
+			foreach($emIsRes->find('div[class=g]') as $element){
 
 				$item = array();
 
 				// Extract direct URL from google href (eg. /url?q=...)
 				$t = $element->find('a[href]', 0)->href;
-				$item['uri'] = ''.$t;
+				$item['uri'] = '' . $t;
 				parse_str(parse_url($t, PHP_URL_QUERY), $parameters);
-				if (isset($parameters['q'])) { $item['uri'] = $parameters['q']; }
+				if(isset($parameters['q'])){
+					$item['uri'] = $parameters['q'];
+				}
 
 				$item['title'] = $element->find('h3', 0)->plaintext;
-
 				$item['content'] = $element->find('span[class=st]', 0)->plaintext;
 
 				$this->items[] = $item;
@@ -54,7 +55,10 @@ class GoogleSearchBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
+		if(!is_null($this->getInput('q'))){
+			return $this->getInput('q') . ' - Google search';
+		}
 
-		return $this->getInput('q') .' - Google search';
+		return parent::getName();
 	}
 }

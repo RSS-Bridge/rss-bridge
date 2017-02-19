@@ -8,11 +8,13 @@ class FileCache implements CacheInterface {
 	protected $param;
 
 	public function loadData(){
-		return json_decode(file_get_contents($this->getCacheFile()), true);
+		return unserialize(file_get_contents($this->getCacheFile()));
 	}
 
 	public function saveData($datas){
-		$writeStream = file_put_contents($this->getCacheFile(), json_encode($datas, JSON_PRETTY_PRINT));
+		// Notice: We use plain serialize() here to reduce memory footprint on
+		// large input data.
+		$writeStream = file_put_contents($this->getCacheFile(), serialize($datas));
 
 		if($writeStream === false) {
 			throw new \Exception("Cannot write the cache... Do you have the right permissions ?");
@@ -39,7 +41,7 @@ class FileCache implements CacheInterface {
 			);
 
 			foreach($cacheIterator as $cacheFile){
-				if(in_array($cacheFile->getBasename(), array('.', '..')))
+				if(in_array($cacheFile->getBasename(), array('.', '..', '.gitkeep')))
 					continue;
 				elseif($cacheFile->isFile()){
 					if(filemtime($cacheFile->getPathname()) < time() - $duration)
@@ -110,6 +112,8 @@ class FileCache implements CacheInterface {
 			throw new \Exception('Call "setParameters" first!');
 		}
 
-		return hash('md5', http_build_query($this->param)) . '.cache';
+		// Change character when making incompatible changes to prevent loading
+		// errors due to incompatible file contents         \|/
+		return hash('md5', http_build_query($this->param) . 'A') . '.cache';
 	}
 }
