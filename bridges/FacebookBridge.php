@@ -150,6 +150,7 @@ class FacebookBridge extends BridgeAbstract {
 	<p><img src="data:image/png;base64,{$img}" /></p>
 	<p><b>Response:</b> <input name="captcha_response" placeholder="please fill in" />
 	<input type="submit" value="Submit!" /></p>
+	<pre>{$res_header}</pre>
 </form>
 EOD;
 			die($message);
