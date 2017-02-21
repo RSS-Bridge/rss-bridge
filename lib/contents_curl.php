@@ -4,8 +4,16 @@ function curlgetContents( $url, $params, $post=false){
 	curl_setopt($ch, CURLOPT_URL, $post ? $url : $url.'?'.http_build_query($params) );
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
-	curl_setopt($ch, CURLOPT_COOKIEJAR, '/tmp/rssbridge-fb-cookies.txt');
-	curl_setopt($ch, CURLOPT_COOKIEFILE, '/tmp/rssbridge-fb-cookies.txt');
+	#curl_setopt($ch, CURLOPT_COOKIEJAR, '/tmp/rssbridge-fb-cookies.txt');
+	#curl_setopt($ch, CURLOPT_COOKIEFILE, '/tmp/rssbridge-fb-cookies.txt');
+	$files = array_diff(scandir(__DIR__.'/../proxylist/'), array('.', '..'));
+	$proxies = [];
+	foreach($files as $file) {
+		$proxies_str = file_get_contents(__DIR__.'/../proxylist/'.$file);
+		array_push($proxies, explode("\n", $proxies_str));
+	}
+	$proxy = array_rand($proxies);
+	curl_setopt($ch, CURLOPT_PROXY, $proxy);
 
 	curl_setopt($ch, CURLOPT_HEADER, 1);
 	curl_setopt($ch, CURLOPT_VERBOSE, 1);
@@ -33,7 +41,7 @@ function curlgetContents( $url, $params, $post=false){
 	curl_close($ch);
 	file_put_contents(__DIR__.'/../debug/D'.date('H-i-s').'.html', $body);
 
-	return array($body, $info, $header);
+	return array($body, $info, $header, $proxy);
 
 }
 function curlgetSimpleHTMLDOM($url
@@ -48,7 +56,7 @@ function curlgetSimpleHTMLDOM($url
 	, $defaultBRText = DEFAULT_BR_TEXT
 	, $defaultSpanText = DEFAULT_SPAN_TEXT
 ){
-	list($body, $info, $header) = curlgetContents($url, $use_include_path, $context, $offset, $maxLen);
+	list($body, $info, $header, $proxy) = curlgetContents($url, $use_include_path, $context, $offset, $maxLen);
 	return array(str_get_html($body
 		, $lowercase
 		, $forceTagsClosed
@@ -56,6 +64,6 @@ function curlgetSimpleHTMLDOM($url
 		, $stripRN
 		, $defaultBRText
 		, $defaultSpanText),
-	$info, $header);
+	$info, $header, $proxy);
 }
 ?>

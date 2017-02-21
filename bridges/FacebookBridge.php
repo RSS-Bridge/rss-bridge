@@ -101,7 +101,7 @@ class FacebookBridge extends BridgeAbstract {
 				$context = stream_context_create($http_options);
 				$html = getContents($captcha_action, false, $context);
 				 */
-				list($html, $info, $res_header) = curlgetContents($captcha_action, $captcha_fields, true);
+				list($html, $info, $res_header, $proxy) = curlgetContents($captcha_action, $captcha_fields, true);
 				if ( $info['http_code'] != 200 )
 					returnServerError('Error '.$info['http_code'].$captcha_action."\nReq:\n".$res_header."\nResp:\n".$info['request_header']);
 
@@ -113,10 +113,11 @@ class FacebookBridge extends BridgeAbstract {
 		}
 
 		$res_header = '';
+		$proxy = '';
 		//Retrieve page contents
 		if (is_null($html)) {
 			if (!strpos($this->getInput('u'), "/")) {
-                list($html, $info, $res_header) = curlgetSimpleHTMLDOM(self::URI.urlencode($this->getInput('u')).'?_fb_noscript=1');
+                list($html, $info, $res_header, $proxy) = curlgetSimpleHTMLDOM(self::URI.urlencode($this->getInput('u')).'?_fb_noscript=1');
 				if ( $info['http_code'] != 200 )
 					returnServerError('Error '.$info['http_code']."\nResp:\n".$res_header."\nReq:\n".$info['request_header']);
 			} else {
@@ -151,6 +152,7 @@ class FacebookBridge extends BridgeAbstract {
 	<p><b>Response:</b> <input name="captcha_response" placeholder="please fill in" />
 	<input type="submit" value="Submit!" /></p>
 	<pre>{$res_header}</pre>
+	<p>Proxy: <pre>{$proxy}</pre></p>
 </form>
 EOD;
 			die($message);
