@@ -39,7 +39,7 @@ function curlgetContents( $url, $params, $post=false){
 	$header = substr($response, 0, $header_size);
 	$body = substr($response, $header_size);
 	curl_close($ch);
-	file_put_contents(__DIR__.'/../debug/D'.date('H-i-s').'.html', $body);
+	#file_put_contents(__DIR__.'/../debug/D'.date('H-i-s').'.html', $body);
 
 	return array($body, $info, $header, $proxy);
 
