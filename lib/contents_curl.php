@@ -10,11 +10,13 @@ function curlgetContents( $url, $params, $post=false){
 	$proxies = [];
 	foreach($files as $file) {
 		$proxies_str = file_get_contents(__DIR__.'/../proxylist/'.$file);
-		array_push($proxies, explode("\n", $proxies_str));
+		$proxies = array_merge($proxies, explode("\n", $proxies_str, -1));
 	}
-	$proxy = array_rand($proxies);
+	$proxy = $proxies[array_rand($proxies)];
 	curl_setopt($ch, CURLOPT_PROXY, $proxy);
+	$proxy_d = print_r($proxy, true);
 
+	curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
 	curl_setopt($ch, CURLOPT_HEADER, 1);
 	curl_setopt($ch, CURLOPT_VERBOSE, 1);
 	curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
@@ -38,10 +40,18 @@ function curlgetContents( $url, $params, $post=false){
 	$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 	$header = substr($response, 0, $header_size);
 	$body = substr($response, $header_size);
+
+	if($errno = curl_errno($ch)) {
+		$error_message = curl_strerror($errno);
+		$info = "cURL error ({$errno}):\n {$error_message}";
+	}
 	curl_close($ch);
 	#file_put_contents(__DIR__.'/../debug/D'.date('H-i-s').'.html', $body);
+	
+	rewind($verbose);
+	$verboseLog = stream_get_contents($verbose);
 
-	return array($body, $info, $header, $proxy);
+	return array($body, $info, $header, $proxy_d);
 
 }
 function curlgetSimpleHTMLDOM($url

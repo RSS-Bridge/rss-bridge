@@ -103,7 +103,7 @@ class FacebookBridge extends BridgeAbstract {
 				 */
 				list($html, $info, $res_header, $proxy) = curlgetContents($captcha_action, $captcha_fields, true);
 				if ( $info['http_code'] != 200 )
-					returnServerError('Error '.$info['http_code'].$captcha_action."\nReq:\n".$res_header."\nResp:\n".$info['request_header']);
+					returnServerError('Error '.$info['http_code'].$captcha_action."\nReq:\n".$res_header."\nResp:\n".$info['request_header']."\nProxy:\n".$proxy);
 
 				unset($_SESSION['captcha_fields']);
 				$html = str_get_html($html);
@@ -119,7 +119,7 @@ class FacebookBridge extends BridgeAbstract {
 			if (!strpos($this->getInput('u'), "/")) {
                 list($html, $info, $res_header, $proxy) = curlgetSimpleHTMLDOM(self::URI.urlencode($this->getInput('u')).'?_fb_noscript=1');
 				if ( $info['http_code'] != 200 )
-					returnServerError('Error '.$info['http_code']."\nResp:\n".$res_header."\nReq:\n".$info['request_header']);
+					returnServerError('Error '.print_r($info, true)."\nResp:\n".$res_header."\nReq:\n".$info['request_header']."\nProxy:\n".$proxy);
 			} else {
                 list($html, $info) = curlgetSimpleHTMLDOM(self::URI.'pages/'.$this->getInput('u').'?_fb_noscript=1');
 				if ( $info['http_code'] != 200 ) returnServerError('No results for this query.');
