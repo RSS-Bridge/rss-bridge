@@ -30,8 +30,6 @@ $maxlen = null){
 	} else {
 		$content = file_get_contents($url, $use_include_path, $context, $offset, $maxlen);
 	}
-	date_default_timezone_set('CST');
-	file_put_contents(__DIR__.'/../debug/D'.date('H-i-s').'.html', $content);
 
 	if($content === false)
 		debugMessage('Cant\'t download ' . $url);
