@@ -12,6 +12,10 @@ class FacebookBridge extends BridgeAbstract {
 		'u' => array(
 			'name' => 'Username',
 			'required' => true
+		),
+		'anti_captcha_key' => array(
+			'name' => 'API key of anti-captcha.com',
+			'required' => false
 		)
 	));
 
@@ -124,20 +128,95 @@ class FacebookBridge extends BridgeAbstract {
 		$captcha = $html->find('div.captcha_interstitial', 0);
 		if (!is_null($captcha))
 		{
-			//Save form for submitting after getting captcha response
-			if (session_status() == PHP_SESSION_NONE)
-				session_start();
 			$captcha_fields = array();
 			foreach ($captcha->find('input, button') as $input)
 				$captcha_fields[$input->name] = $input->value;
-			$_SESSION['captcha_fields'] = $captcha_fields;
-			$_SESSION['captcha_action'] = $captcha->find('form', 0)->action;
-
-			//Show captcha filling form to the viewer, proxying the captcha image
+			$captcha_action = $captcha->find('form', 0)->action;
 			$img = base64_encode(getContents($captcha->find('img', 0)->src));
-			header('HTTP/1.1 500 ' . Http::getMessageForCode(500));
-			header('Content-Type: text/html');
-			$message = <<<EOD
+			if ($this->getInput('anti_captcha_key')) {
+				// Send the image to anti-captcha worker so they can solve it for us
+				$post_content = http_build_query(array(
+				  'key' => $this->getInput('anti_captcha_key'),
+				  'body' => $img,
+				));
+
+				$http_options = array(
+					'http' => array(
+						'method'  => 'POST',
+						'user_agent' => ini_get('user_agent'),
+						'header' => array(
+							'Content-Type: application/x-www-form-urlencoded',
+							'Content-Length: ' . strlen($post_content)),
+						'content' => $post_content,
+					),
+				);
+				$context = stream_context_create($http_options);
+				$res = getContents('https://anti-captcha.com/in.php', false, $context);
+				if ($res === false) {
+					returnServerError('Failed to submit captcha to anti-captcha.com');
+				}
+				if (substr($res, 0, 2) !== 'OK') {
+					returnServerError('anti-captcha.com in.php Error: ' . $res);
+				}
+				$captcha_id = substr($res, 3);
+
+				// Make sure we forward the captcha response
+				set_time_limit(330);
+				ignore_user_abort();
+
+				$i = 310;
+				$html = null;
+				while ($i--) {
+					sleep(1);
+					$res = getContents(
+						'https://anti-captcha.com/res.php?key=' . $this->getInput('anti_captcha_key') .
+							'&action=get&id=' . $captcha_id, false);
+					// CAPCHA_NOT_READY matches typo from the API response. Don't fix it.
+					if ($res === false || $res === 'CAPCHA_NOT_READY') {
+						continue;
+					}
+					if (substr($res, 0, 5) === 'ERROR') {
+						returnServerError('anti-captcha.com res.php Error: ' . $res);
+					}
+					if (substr($res, 0, 2) === 'OK') {
+						// Handle captcha response
+						$captcha_fields['captcha_response'] = preg_replace("/[^a-zA-Z0-9]+/", "", substr($res, 3));
+						$http_options = array(
+							'http' => array(
+								'method'  => 'POST',
+								'user_agent' => ini_get('user_agent'),
+								'header' => array("Content-type:
+application/x-www-form-urlencoded\r\nReferer: $captcha_action\r\nCookie: noscript=1\r\n"),
+								'content' => http_build_query($captcha_fields),
+							),
+						);
+						$context  = stream_context_create($http_options);
+						$html = getContents($captcha_action, false, $context);
+						if ($html === false) {
+							returnServerError('Failed to submit captcha response back to Facebook.');
+						}
+						$html = str_get_html($html);
+						$captcha = $html->find('div.captcha_interstitial', 0);
+						if (!is_null($captcha)) {
+							returnServerError('Captcha response failed to remove captcha.');
+						}
+						break;
+					}
+				}
+				if (is_null($html)) {
+					returnServerError('Failed to get a captcha response in time.');
+				}
+			} else {
+				//Save form for submitting after getting captcha response
+				if (session_status() == PHP_SESSION_NONE)
+					session_start();
+				$_SESSION['captcha_fields'] = $captcha_fields;
+				$_SESSION['captcha_action'] = $captcha_action;
+
+				//Show captcha filling form to the viewer, proxying the captcha image
+				header('HTTP/1.1 500 ' . Http::getMessageForCode(500));
+				header('Content-Type: text/html');
+				$message = <<<EOD
 <form method="post" action="?{$_SERVER['QUERY_STRING']}">
 	<h2>Facebook captcha challenge</h2>
 	<p>Unfortunately, rss-bridge cannot fetch the requested page.<br />
@@ -147,7 +226,8 @@ class FacebookBridge extends BridgeAbstract {
 	<input type="submit" value="Submit!" /></p>
 </form>
 EOD;
-			die($message);
+				die($message);
+			}
 		}
 
 		//No captcha? We can carry on retrieving page contents :)
