@@ -24,18 +24,23 @@ class VkBridge extends BridgeAbstract {
 	}
 
 	public function collectData(){
+
+		ini_set('user-agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:53.0) Gecko/20100101 Firefox/53.0');
+
 		$text_html = getContents($this->getURI())
 			or returnServerError('No results for group or user name "' . $this->getInput('u') . '".');
 
 		$text_html = iconv('windows-1251', 'utf-8', $text_html);
 		$html = str_get_html($text_html);
-		foreach($html->find('div.post_table') as $post){
+
+		foreach($html->find('.post') as $post){
+
 			if(is_object($post->find('a.wall_post_more', 0))){
 				//delete link "show full" in content
 				$post->find('a.wall_post_more', 0)->outertext = '';
 			}
 			$item = array();
-			$item['content'] = strip_tags($post->find('div.wall_post_text', 0)->innertext);
+			$item['content'] = strip_tags(backgroundToImg($post->find('div.wall_text', 0)->innertext), '<br><img>');
 			if(is_object($post->find('a.page_media_link_title', 0))){
 				$link = $post->find('a.page_media_link_title', 0)->getAttribute('href');
 
@@ -52,7 +57,7 @@ class VkBridge extends BridgeAbstract {
 			}
 
 			// get post link
-			$item['uri'] = self::URI . $post->find('.reply_link_wrap', 0)->find('a', 0)->getAttribute('href');
+			$item['uri'] = self::URI . $post->find('a.post_link', 0)->getAttribute('href');
 			$item['date'] = $post->find('span.rel_date', 0)->plaintext;
 			$this->items[] = $item;
 			// var_dump($item['date']);
