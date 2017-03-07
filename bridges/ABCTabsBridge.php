@@ -3,7 +3,7 @@ class ABCTabsBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'kranack';
 	const NAME = 'ABC Tabs Bridge';
-	const URI = 'http://www.abc-tabs.com/';
+	const URI = 'https://www.abc-tabs.com/';
 	const DESCRIPTION = 'Returns 22 newest tabs';
 
 	public function collectData(){

@@ -3,7 +3,7 @@ class AskfmBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'az5he6ch';
 	const NAME = 'Ask.fm Answers';
-	const URI = 'http://ask.fm/';
+	const URI = 'https://ask.fm/';
 	const CACHE_TIMEOUT = 300; //5 min
 	const DESCRIPTION = 'Returns answers from an Ask.fm user';
 	const PARAMETERS = array(

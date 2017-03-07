@@ -3,7 +3,7 @@ class DansTonChatBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'Astalaseven';
 	const NAME = 'DansTonChat Bridge';
-	const URI = 'http://danstonchat.com/';
+	const URI = 'https://danstonchat.com/';
 	const CACHE_TIMEOUT = 21600; //6h
 	const DESCRIPTION = 'Returns latest quotes from DansTonChat.';
 

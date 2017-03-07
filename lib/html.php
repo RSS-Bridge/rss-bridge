@@ -28,6 +28,14 @@ EOD;
 	if($bridge == false)
 		return "";
 
+	$HTTPSWarning = '';
+	if(strpos($bridge->getURI(), 'https') !== 0) {
+
+		$HTTPSWarning = '<div class="secure-warning">Warning :
+						This bridge is not fetching its content through a secure connection</div>';
+
+	}
+
 	$name = '<a href="' . $bridge->getURI() . '">' . $bridge->getName() . '</a>';
 	$description = $bridge->getDescription();
 
@@ -45,6 +53,7 @@ CARD;
 	if(count($bridge->getParameters()) == 0){
 
 		$card .= $getFormHeader($bridgeName);
+		$card .= $HTTPSWarning;
 
 		if($isActive){
 			if(defined('PROXY_URL') && PROXY_BYBRIDGE){
@@ -93,6 +102,7 @@ CARD;
 			$card .= '<h5>' . $parameterName . '</h5>' . PHP_EOL;
 
 		$card .= $getFormHeader($bridgeName);
+		$card .= $HTTPSWarning;
 
 		foreach($parameter as $id => $inputEntry){
 			$additionalInfoString = '';
