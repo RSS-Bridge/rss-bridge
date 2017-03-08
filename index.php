@@ -93,19 +93,25 @@ $whitelist_default = array(
 	"WikipediaBridge",
 	"YoutubeBridge");
 
-if(!file_exists($whitelist_file)){
-	$whitelist_selection = $whitelist_default;
-	$whitelist_write = implode("\n", $whitelist_default);
-	file_put_contents($whitelist_file, $whitelist_write);
-} else {
-	$whitelist_selection = explode("\n", file_get_contents($whitelist_file));
-}
-
 try {
 
 	Bridge::setDir(__DIR__ . '/bridges/');
 	Format::setDir(__DIR__ . '/formats/');
 	Cache::setDir(__DIR__ . '/caches/');
+
+	if(!file_exists($whitelist_file)){
+		$whitelist_selection = $whitelist_default;
+		$whitelist_write = implode("\n", $whitelist_default);
+		file_put_contents($whitelist_file, $whitelist_write);
+	} else {
+
+		$whitelist_file_content = file_get_contents($whitelist_file);
+		if($whitelist_file_content != "*\n") {
+			$whitelist_selection = explode("\n", $whitelist_file_content);
+		} else {
+			$whitelist_selection = Bridge::listBridges();
+		}
+	}
 
 	$action = filter_input(INPUT_GET, 'action');
 	$bridge = filter_input(INPUT_GET, 'bridge');
