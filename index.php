@@ -69,9 +69,12 @@ if(ini_get('allow_url_fopen') !== "1")
 	die('"allow_url_fopen" is not set to "1". Please check "php.ini');
 
 // FIXME : beta test UA spoofing, please report any blacklisting by PHP-fopen-unfriendly websites
-ini_set('user_agent', 'Mozilla/5.0(X11; Linux x86_64; rv:30.0) '.
-	'Gecko/20121202 Firefox/30.0(rss-bridge/0.1; '.
-	' +https://github.com/RSS-Bridge/rss-bridge)');
+
+$userAgent = 'Mozilla/5.0(X11; Linux x86_64; rv:30.0)';
+$userAgent .= ' Gecko/20121202 Firefox/30.0(rss-bridge/0.1;';
+$userAgent .= '+https://github.com/RSS-Bridge/rss-bridge)';
+
+ini_set('user_agent', $userAgent);
 
 // default whitelist
 $whitelist_file = './whitelist.txt';
