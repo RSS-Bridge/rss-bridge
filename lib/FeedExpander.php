@@ -82,12 +82,12 @@ abstract class FeedExpander extends BridgeAbstract {
 
 	// TODO set title, link, description, language, and so on
 	protected function load_RSS_2_0_feed_data($rssContent){
-		$this->name = trim($rssContent->title);
-		$this->uri = trim($rssContent->link);
+		$this->name = trim((string)$rssContent->title);
+		$this->uri = trim((string)$rssContent->link);
 	}
 
 	protected function load_ATOM_feed_data($content){
-		$this->name = $content->title;
+		$this->name = (string)$content->title;
 
 		// Find best link (only one, or first of 'alternate')
 		if(!isset($content->link)){
