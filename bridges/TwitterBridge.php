@@ -32,6 +32,12 @@ class TwitterBridge extends BridgeAbstract {
 				'name' => 'Without replies',
 				'type' => 'checkbox',
 				'title' => 'Only return initial tweets'
+			),
+			'noretweet' => array(
+				'name' => 'Without retweets',
+				'required' => false,
+				'type' => 'checkbox',
+				'title' => 'Hide retweets'
 			)
 		)
 	);
@@ -82,6 +88,13 @@ class TwitterBridge extends BridgeAbstract {
 		$hidePictures = $this->getInput('nopic');
 
 		foreach($html->find('div.js-stream-tweet') as $tweet){
+
+			// Skip retweets?
+			if($this->getInput('noretweet')
+			&& $tweet->getAttribute('data-screen-name') !== $this->getInput('u')){
+				continue;
+			}
+
 			$item = array();
 			// extract username and sanitize
 			$item['username'] = $tweet->getAttribute('data-screen-name');
