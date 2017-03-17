@@ -99,7 +99,49 @@ try {
 	$action = array_key_exists('action', $params) ? $params['action'] : null;
 	$bridge = array_key_exists('bridge', $params) ? $params['bridge'] : null;
 
-	if($action === 'display' && !empty($bridge)) {
+	// Returns a list of all bridges as JSON formatted text
+	// TODO: Move this part into separate file
+	if($action === 'list') {
+		$list = new StdClass();
+		$list->bridges = array();
+		$list->total = 0;
+
+		$bridgeList = Bridge::listBridges();
+		foreach($bridgeList as $bridgeName) {
+			if(Bridge::isWhitelisted($whitelist_selection, $bridgeName)){
+				$bridgeName = $bridgeName . 'Bridge';
+				$pathBridge = __DIR__ . '/bridges/' . $bridgeName . '.php';
+				require_once($pathBridge);
+
+				if(Bridge::isInstantiable($bridgeName)){
+					$bridge = new $bridgeName();
+				} else { // Broken bridge, handle like inactive bridge
+					$list->bridges[$bridgeName] = array(
+						'status' => 'inactive'
+					);
+					continue;
+				}
+
+				$list->bridges[$bridgeName] = array(
+					'status' => 'active',
+					'uri' => $bridge->getURI(),
+					'name' => $bridge->getName(),
+					'parameters' => $bridge->getParameters(),
+					'maintainer' => $bridge->getMaintainer(),
+					'description' => $bridge->getDescription()
+				);
+				$list->total++;
+			} elseif($showInactive) {
+				$list->bridges[$bridgeName] = array(
+					'status' => 'inactive'
+				);
+			}
+		}
+		echo json_encode($list, JSON_PRETTY_PRINT);
+		die;
+	}
+
+	if($action === 'display' && !empty($bridge)){
 		// DEPRECATED: 'nameBridge' scheme is replaced by 'name' in bridge parameter values
 		//             this is to keep compatibility until futher complete removal
 		if(($pos = strpos($bridge, 'Bridge')) === (strlen($bridge) - strlen('Bridge'))) {
