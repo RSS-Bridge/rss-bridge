@@ -3,7 +3,7 @@ class BandcampBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'sebsauvage';
 	const NAME = 'Bandcamp Tag';
-	const URI = 'http://bandcamp.com/';
+	const URI = 'https://bandcamp.com/';
 	const CACHE_TIMEOUT = 600; // 10min
 	const DESCRIPTION = 'New bandcamp release by tag';
 	const PARAMETERS = array( array(
