@@ -69,7 +69,7 @@ EOD;
 <head>
 	<meta charset="{$charset}">
 	<title>{$title}</title>
-	<link href="css/HtmlFormat.css" rel="stylesheet">
+	<link href="static/HtmlFormat.css" rel="stylesheet">
 	<meta name="robots" content="noindex, follow">
 </head>
 <body>

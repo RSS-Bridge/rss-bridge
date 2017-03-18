@@ -198,10 +198,18 @@ $formats = Format::searchInformation();
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta name="description" content="Rss-bridge" />
 	<title>RSS-Bridge</title>
-	<link href="css/style.css" rel="stylesheet">
+	<link href="static/style.css" rel="stylesheet">
+	<script src="static/search.js"></script>
+	<noscript>
+		<style>
+			.searchbar {
+				display: none;
+			}
+		</style>
+	</noscript>
 </head>
 
-<body>
+<body onload="search()">
 	<?php
 		$status = '';
 		if(defined('DEBUG') && DEBUG === true){
@@ -214,6 +222,11 @@ $formats = Format::searchInformation();
 		<h2>·Reconnecting the Web·</h2>
 		<p class="status">{$status}</p>
 	</header>
+	<section class="searchbar">
+		<h3>Search</h3>
+		<input type="text" name="searchfield" id="searchfield" placeholder="Enter the bridge you want to search for" onchange="search()" onkeyup="search()">
+	</section>
+
 EOD;
 
 		$activeFoundBridgeCount = 0;
@@ -231,7 +244,7 @@ EOD;
 		}
 		echo $inactiveBridges;
 	?>
-	<section>
+	<section class="footer">
 		<a href="https://github.com/RSS-Bridge/rss-bridge">RSS-Bridge alpha 0.2 ~ Public Domain</a><br />
 		<?= $activeFoundBridgeCount; ?>/<?= count($bridgeList) ?> active bridges. <br />
 		<?php
