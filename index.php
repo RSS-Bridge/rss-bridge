@@ -224,7 +224,9 @@ $formats = Format::searchInformation();
 	</header>
 	<section class="searchbar">
 		<h3>Search</h3>
-		<input type="text" name="searchfield" id="searchfield" placeholder="Enter the bridge you want to search for" onchange="search()" onkeyup="search()">
+		<input type="text" name="searchfield"
+			id="searchfield" placeholder="Enter the bridge you want to search for"
+			onchange="search()" onkeyup="search()">
 	</section>
 
 EOD;
