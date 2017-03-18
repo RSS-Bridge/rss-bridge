@@ -30,25 +30,27 @@ class GooglePlusPostBridge extends BridgeAbstract{
 		) or returnServerError('No results for this query.');
 
 		// get title, url, ... there is a lot of intresting stuff in meta
-		$this->_title = $html->find('meta[property]', 0)->getAttribute('content');
-		$this->_url = $html->find('meta[itemprop=url]', 0)->getAttribute('content');
+		$this->_title = $html->find('meta[property=og:title]', 0)->getAttribute('content');
+		$this->_url = $html->find('meta[property=og:url]', 0)->getAttribute('content');
 
-		// div[jsmodel=XNmfOc]
-		foreach($html->find('div.yt') as $post){
+		// I don't even know where to start with this discusting html...
+		foreach($html->find('div[jsname=WsjYwc]') as $post){
 			$item = array();
-//			$item['content'] = $post->find('div.Al', 0)->innertext;
-			$item['author'] = $item['fullname'] = $post->find('header.lea h3 a', 0)->innertext;
-			$item['id'] = $post->getAttribute('id');
-			$item['title'] = $item['fullname'] = $post->find('header.lea', 0)->plaintext;
-			$item['avatar'] = $post->find('div.ys img', 0)->src;
-			$item['uri'] = self::URI . $post->find('a.o-U-s', 0)->href;
-			$item['timestamp'] = strtotime($post->find('a.o-U-s', 0)->plaintext);
+
+			$item['author'] = $item['fullname'] = $post->find('div div div div a', 0)->innertext;
+			$item['id'] = $post->find('div div div', 0)->getAttribute('id');
+			$item['avatar'] = $post->find('div img', 0)->src;
+			$item['uri'] = self::URI . $post->find('div div div a', 1)->href;
+			$item['timestamp'] = strtotime(
+				'+' . preg_replace('/[^0-9A-Za-z]/',
+				'',
+				$post->find('div div div a span', 1)->getAttribute('aria-label')));
 
 			// hashtag to treat : https://plus.google.com/explore/tag
-			$hashtags = array();
-			foreach($post->find('a.d-s') as $hashtag){
-				$hashtags[trim($hashtag->plaintext)] = self::URI . $hashtag->href;
-			}
+			// $hashtags = array();
+			// foreach($post->find('a.d-s') as $hashtag){
+			// 	$hashtags[trim($hashtag->plaintext)] = self::URI . $hashtag->href;
+			// }
 
 			$item['content'] = '';
 
@@ -63,7 +65,10 @@ class GooglePlusPostBridge extends BridgeAbstract{
 			. $item['avatar']
 			. '" /></a></div>';
 
-			$content = $post->find('div.Al', 0);
+			$content = $post->find('div div[id^=body] div div', 0);
+			// extract plaintext
+			$item['content_simple'] = $content->plaintext;
+			$item['title'] = substr($item['content_simple'], 0, 72) . '...';
 
 			// XXX ugly but I don't have any idea how to do a better stuff,
 			// str_replace on link doesn't work as expected and ask too many checks
@@ -86,8 +91,7 @@ class GooglePlusPostBridge extends BridgeAbstract{
 
 			$item['content'] .= '<div style="margin-top: -1.5em">' .  $content . '</div>';
 			$item['content'] = trim(strip_tags($item['content'], '<a><p><div><img>'));
-			// extract plaintext
-			$item['content_simple'] = $post->find('div.Al', 0)->plaintext;
+
 			$this->items[] = $item;
 		}
 	}
