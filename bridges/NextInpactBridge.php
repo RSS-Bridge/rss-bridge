@@ -3,7 +3,7 @@ class NextInpactBridge extends FeedExpander {
 
 	const MAINTAINER = 'qwertygc';
 	const NAME = 'NextInpact Bridge';
-	const URI = 'http://www.nextinpact.com/';
+	const URI = 'https://www.nextinpact.com/';
 	const DESCRIPTION = 'Returns the newest articles.';
 
 	public function collectData(){
