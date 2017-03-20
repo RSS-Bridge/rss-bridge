@@ -3,7 +3,7 @@ class NasaApodBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'corenting';
 	const NAME = 'NASA APOD Bridge';
-	const URI = 'http://apod.nasa.gov/apod/';
+	const URI = 'https://apod.nasa.gov/apod/';
 	const CACHE_TIMEOUT = 43200; // 12h
 	const DESCRIPTION = 'Returns the 3 latest NASA APOD pictures and explanations';
 
