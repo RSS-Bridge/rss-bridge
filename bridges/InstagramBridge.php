@@ -3,7 +3,7 @@ class InstagramBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'pauder';
 	const NAME = 'Instagram Bridge';
-	const URI = 'http://instagram.com/';
+	const URI = 'https://instagram.com/';
 	const DESCRIPTION = 'Returns the newest images';
 
 	const PARAMETERS = array( array(
