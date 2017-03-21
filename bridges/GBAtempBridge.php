@@ -3,7 +3,7 @@ class GBAtempBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'ORelio';
 	const NAME = 'GBAtemp';
-	const URI = 'http://gbatemp.net/';
+	const URI = 'https://gbatemp.net/';
 	const DESCRIPTION = 'GBAtemp is a user friendly underground video game community.';
 
 	const PARAMETERS = array( array(

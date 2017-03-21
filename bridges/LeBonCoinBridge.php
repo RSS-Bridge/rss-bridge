@@ -3,7 +3,7 @@ class LeBonCoinBridge extends BridgeAbstract {
 
 	const MAINTAINER = '16mhz';
 	const NAME = 'LeBonCoin';
-	const URI = 'http://www.leboncoin.fr/';
+	const URI = 'https://www.leboncoin.fr/';
 	const DESCRIPTION = 'Returns most recent results from LeBonCoin for a
 region, and optionally a category and a keyword .';
 
