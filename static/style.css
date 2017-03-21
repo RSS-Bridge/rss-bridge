@@ -52,6 +52,35 @@ header > p.status {
 	color: red;
 }
 
+.searchbar {
+
+	width: 50%;
+	margin: auto;
+
+}
+
+.searchbar input[type="text"] {
+
+	width: 100%;
+	margin: auto;
+	font-size: 1.4em;
+
+}
+
+.searchbar input[type="text"]::placeholder {
+
+	text-align: center;
+
+}
+
+.searchbar > h3 {
+
+	font-size: 150%;
+	font-weight: bold;
+	color: #1182DB;
+
+}
+
 section {
 
 	background-color: #FFFFFF;
@@ -65,13 +94,13 @@ section {
 }
 
 
-section:last-of-type {
+section.footer {
 
 	opacity: 0.5;
 
 }
 
-section:last-of-type:hover {
+section.footer:hover {
 
 	opacity: 1;
 
