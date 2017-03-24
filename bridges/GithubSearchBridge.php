@@ -34,12 +34,10 @@ class GithubSearchBridge extends BridgeAbstract {
 			$title = $element->find('h3', 0)->plaintext;
 			$item['title'] = $title;
 
-			if (count($element->find('p')) == 2)
-			{
+			if (count($element->find('p')) == 2){
 				$content = $element->find('p', 0)->innertext;
 			}
-			else
-			{
+			else{
 				$content = '';
 			}
 			$item['content'] = $content;
