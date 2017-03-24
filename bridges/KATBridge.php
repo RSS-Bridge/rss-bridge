@@ -7,7 +7,7 @@ class KATBridge extends BridgeAbstract {
  list of keywords by separating them with a semicolon (e.g. "one show;another
  show"). Category based search needs the category number as input. User based
  search takes the Uploader ID: see KAT URL for user feed. Search can be done in a specified category';
- 
+
 	const PARAMETERS = array( array(
 		'q' => array(
 			'name' => 'keywords, separated by semicolons',
@@ -38,14 +38,14 @@ class KATBridge extends BridgeAbstract {
 	));
 	public function collectData(){
 		function parseDateTimestamp($element){
-        $guessedDate = strptime($element, '%d-%m-%Y %H:%M:%S');
-        $timestamp = mktime(
-          $guessedDate['tm_hour'],
-          $guessedDate['tm_min'],
-          $guessedDate['tm_sec'],
-          $guessedDate['tm_mon'] + 1,
-          $guessedDate['tm_mday'],
-          $guessedDate['tm_year'] + 1900);
+				$guessedDate = strptime($element, '%d-%m-%Y %H:%M:%S');
+				$timestamp = mktime(
+				$guessedDate['tm_hour'],
+				$guessedDate['tm_min'],
+				$guessedDate['tm_sec'],
+				$guessedDate['tm_mon'] + 1,
+				$guessedDate['tm_mday'],
+				$guessedDate['tm_year'] + 1900);
 				return $timestamp;
 		}
 		$catBool = $this->getInput('cat_check');
@@ -64,8 +64,8 @@ class KATBridge extends BridgeAbstract {
 						'torrents-search.php?search=' .
 						rawurlencode($keywords)
 					) or returnServerError('Could not request KAT.');
-				} 
-        else {
+				}
+				else {
 					$html = getSimpleHTMLDOM(
 						self::URI .
 						'torrents-search.php?search=' .
@@ -107,7 +107,7 @@ class KATBridge extends BridgeAbstract {
 					$item['size'] = $element->find('td', 1)->plaintext;
 					$item['content'] = $item['title']
 					. '<br>size: '
-          . $item['size']
+					. $item['size']
 					. '<br>seeders: '
 					. $item['seeders']
 					. ' | leechers: '
