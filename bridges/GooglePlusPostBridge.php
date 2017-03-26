@@ -19,15 +19,8 @@ class GooglePlusPostBridge extends BridgeAbstract{
 
 	public function collectData(){
 		// get content parsed
-		$html = getSimpleHTMLDOMCached(self::URI . urlencode($this->getInput('username')) . '/posts',
-			// force language
-			84600,
-			false,
-			stream_context_create(array(
-				'http' => array(
-					'header' => 'Accept-Language: fr,fr-be,fr-fr;q=0.8,en;q=0.4,en-us;q=0.2;*' . "\r\n"
-			)))
-		) or returnServerError('No results for this query.');
+		$html = getSimpleHTMLDOMCached(self::URI . urlencode($this->getInput('username')) . '/posts')
+			or returnServerError('No results for this query.');
 
 		// get title, url, ... there is a lot of intresting stuff in meta
 		$this->_title = $html->find('meta[property=og:title]', 0)->getAttribute('content');
@@ -41,10 +34,15 @@ class GooglePlusPostBridge extends BridgeAbstract{
 			$item['id'] = $post->find('div div div', 0)->getAttribute('id');
 			$item['avatar'] = $post->find('div img', 0)->src;
 			$item['uri'] = self::URI . $post->find('div div div a', 1)->href;
-			$item['timestamp'] = strtotime(
-				'+' . preg_replace('/[^0-9A-Za-z]/',
-				'',
-				$post->find('div div div a span', 1)->getAttribute('aria-label')));
+
+			$timestamp = $post->find('a.qXj2He span', 0);
+
+			if($timestamp){
+				$item['timestamp'] = strtotime('+' . preg_replace(
+						'/[^0-9A-Za-z]/',
+						'',
+						$timestamp->getAttribute('aria-label')));
+			}
 
 			// hashtag to treat : https://plus.google.com/explore/tag
 			// $hashtags = array();
@@ -65,7 +63,7 @@ class GooglePlusPostBridge extends BridgeAbstract{
 			. $item['avatar']
 			. '" /></a></div>';
 
-			$content = $post->find('div div[id^=body] div div', 0);
+			$content = $post->find('div[jsname=EjRJtf]', 0);
 			// extract plaintext
 			$item['content_simple'] = $content->plaintext;
 			$item['title'] = substr($item['content_simple'], 0, 72) . '...';
