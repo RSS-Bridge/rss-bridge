@@ -18,8 +18,15 @@ class GooglePlusPostBridge extends BridgeAbstract{
 	));
 
 	public function collectData(){
+		$username = $this->getInput('username');
+
+		// Usernames start with a + if it's not an ID
+		if(!is_numeric($username) && substr($username, 0, 1) !== '+'){
+			$username = '+' . $username;
+		}
+
 		// get content parsed
-		$html = getSimpleHTMLDOMCached(self::URI . urlencode($this->getInput('username')) . '/posts')
+		$html = getSimpleHTMLDOMCached(self::URI . urlencode($username) . '/posts')
 			or returnServerError('No results for this query.');
 
 		// get title, url, ... there is a lot of intresting stuff in meta
