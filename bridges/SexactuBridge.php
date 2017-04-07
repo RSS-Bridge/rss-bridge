@@ -70,7 +70,7 @@ class SexactuBridge extends BridgeAbstract {
 		if($content){
 			return $content;
 		}
-		
+
 		return null;
 	}
 
