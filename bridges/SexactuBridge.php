@@ -3,7 +3,7 @@ class SexactuBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'Riduidel';
 	const NAME = 'Sexactu';
-	const AUTHOR = 'Ma�a Mazaurette';
+	const AUTHOR = 'Maïa Mazaurette';
 	const URI = 'http://www.gqmagazine.fr';
 	const CACHE_TIMEOUT = 7200; // 2h
 	const DESCRIPTION = 'Sexactu via rss-bridge';
