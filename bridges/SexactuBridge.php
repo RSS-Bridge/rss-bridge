@@ -3,8 +3,8 @@ class SexactuBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'Riduidel';
 	const NAME = 'Sexactu';
-	const AUTHOR = 'Maïa Mazaurette';
-	const DOMAIN = 'http://www.gqmagazine.fr';
+	const AUTHOR = 'Maï¿½a Mazaurette';
+	const URI = 'http://www.gqmagazine.fr';
 	const CACHE_TIMEOUT = 7200; // 2h
 	const DESCRIPTION = 'Sexactu via rss-bridge';
 
@@ -14,9 +14,8 @@ class SexactuBridge extends BridgeAbstract {
 			'data-original' => 'src'
 	);
 
-
 	public function getURI(){
-		return self::DOMAIN . '/sexactu';
+		return self::URI . '/sexactu';
 	}
 
 	public function collectData(){
@@ -40,7 +39,7 @@ class SexactuBridge extends BridgeAbstract {
 				if(substr($uri, 0, 1) === 'h'){ // absolute uri
 					$item['uri'] = $uri;
 				} else if(substr($uri, 0, 1) === '/'){ // domain relative url
-					$item['uri'] = self::DOMAIN . $uri;
+					$item['uri'] = self::URI . $uri;
 				} else {
 					$item['uri'] = $this->getURI() . $uri;
 				}
@@ -49,7 +48,7 @@ class SexactuBridge extends BridgeAbstract {
 
 				$publicationDate = $article->find('time[itemprop=datePublished]', 0);
 				$short_date = $publicationDate->datetime;
-				$item['timestamp'] = date_parse($short_date);
+				$item['timestamp'] = strtotime($short_date);
 			} else {
 				// Sometimes we get rubbish, ignore.
 				continue;
@@ -82,7 +81,7 @@ class SexactuBridge extends BridgeAbstract {
 	private function replaceUriInHtmlElement($element){
 		$returned = $element->innertext;
 		foreach (self::REPLACED_ATTRIBUTES as $initial => $final) {
-			$returned = str_replace($initial.'="/', $final.'="' . self::DOMAIN . '/', $returned);
+			$returned = str_replace($initial . '="/', $final . '="' . self::URI . '/', $returned);
 		}
 		return $returned;
 	}
