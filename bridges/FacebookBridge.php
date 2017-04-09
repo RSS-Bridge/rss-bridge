@@ -1,4 +1,5 @@
 <?php
+require __DIR__ . '/../lib/contents_curl.php';
 class FacebookBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'teromene';
@@ -87,6 +88,7 @@ class FacebookBridge extends BridgeAbstract {
 				$captcha_action = $_SESSION['captcha_action'];
 				$captcha_fields = $_SESSION['captcha_fields'];
 				$captcha_fields['captcha_response'] = preg_replace("/[^a-zA-Z0-9]+/", "", $_POST['captcha_response']);
+				/*
 				$http_options = array(
 					'http' => array(
 						'method'  => 'POST',
@@ -98,10 +100,11 @@ class FacebookBridge extends BridgeAbstract {
 				);
 				$context = stream_context_create($http_options);
 				$html = getContents($captcha_action, false, $context);
+				 */
+				list($html, $info, $res_header, $proxy) = curlgetContents($captcha_action, $captcha_fields, true);
+				if ( $info['http_code'] != 200 )
+					returnServerError('Error '.$info['http_code'].$captcha_action."\nReq:\n".$res_header."\nResp:\n".$info['request_header']."\nProxy:\n".$proxy);
 
-				if($html === false){
-					returnServerError('Failed to submit captcha response back to Facebook');
-				}
 				unset($_SESSION['captcha_fields']);
 				$html = str_get_html($html);
 			}
@@ -109,14 +112,17 @@ class FacebookBridge extends BridgeAbstract {
 			unset($_SESSION['captcha_action']);
 		}
 
+		$res_header = '';
+		$proxy = '';
 		//Retrieve page contents
-		if(is_null($html)){
-			if(!strpos($this->getInput('u'), "/")){
-				$html = getSimpleHTMLDOM(self::URI . urlencode($this->getInput('u')) . '?_fb_noscript=1')
-					or returnServerError('No results for this query.');
+		if (is_null($html)) {
+			if (!strpos($this->getInput('u'), "/")) {
+                list($html, $info, $res_header, $proxy) = curlgetSimpleHTMLDOM(self::URI.urlencode($this->getInput('u')).'?_fb_noscript=1');
+				if ( $info['http_code'] != 200 )
+					returnServerError('Error '.print_r($info, true)."\nResp:\n".$res_header."\nReq:\n".$info['request_header']."\nProxy:\n".$proxy);
 			} else {
-				$html = getSimpleHTMLDOM(self::URI . 'pages/' . $this->getInput('u') . '?_fb_noscript=1')
-					or returnServerError('No results for this query.');
+                list($html, $info) = curlgetSimpleHTMLDOM(self::URI.'pages/'.$this->getInput('u').'?_fb_noscript=1');
+				if ( $info['http_code'] != 200 ) returnServerError('No results for this query.');
 			}
 		}
 
@@ -145,6 +151,8 @@ class FacebookBridge extends BridgeAbstract {
 	<p><img src="data:image/png;base64,{$img}" /></p>
 	<p><b>Response:</b> <input name="captcha_response" placeholder="please fill in" />
 	<input type="submit" value="Submit!" /></p>
+	<pre>{$res_header}</pre>
+	<p>Proxy: <pre>{$proxy}</pre></p>
 </form>
 EOD;
 			die($message);
@@ -171,6 +179,18 @@ EOD;
 			foreach($element->children() as $post){
 				// Ignore summary posts
 				if(strpos($post->class, '_3xaf') !== false) continue;
+
+				// Determine post attachments
+				/*
+				$attachment_wrapper = $post->find('._3x-2')[0];// search for attachment
+				if ( isset($attachment_wrapper) ) {
+					$attachment = $attachment_wrapper->find('.mtm')[0]->children(0);
+					if ( strpos($attachment->class, '_2a2q') !== false ) {
+						// photos
+					} elseif ( strpos($attachment->class, '_6m2') !== false ) {
+						// link
+					}
+				}*/
 
 				$item = array();
 
@@ -236,13 +256,8 @@ EOD;
 						$date = 0;
 					}
 
-					//Build title from username and content
-					$title = $author;
-					if(strlen($title) > 24)
-						$title = substr($title, 0, strpos(wordwrap($title, 24), "\n")) . '...';
-					$title = $title . ' | ' . strip_tags($content);
-					if(strlen($title) > 64)
-						$title = substr($title, 0, strpos(wordwrap($title, 64), "\n")) . '...';
+					//Build title from content
+					$title = mb_substr(strip_tags($post->find('.userContent > p')[0]->innertext), 0, 20).'...';
 
 					//Build and add final item
 					$item['uri'] = self::URI . $post->find('abbr')[0]->parent()->getAttribute('href');
@@ -257,11 +272,6 @@ EOD;
 	}
 
 	public function getName(){
-		if(!empty($this->authorName)){
-			return isset($this->extraInfos['name']) ? $this->extraInfos['name'] : $this->authorName
-			. ' - Facebook Bridge';
-		}
-
-		return parent::getName();
+		return isset($this->extraInfos['name']) ? $this->extraInfos['name'] : $this->authorName.' - Facebook Bridge';
 	}
 }
