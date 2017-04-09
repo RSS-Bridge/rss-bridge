@@ -1,9 +1,9 @@
 <?php
-class PinterestBridge extends BridgeAbstract {
+class PinterestBridge extends FeedExpander {
 
 	const MAINTAINER = 'pauder';
 	const NAME = 'Pinterest Bridge';
-	const URI = 'http://www.pinterest.com/';
+	const URI = 'https://www.pinterest.com';
 	const DESCRIPTION = 'Returns the newest images on a board';
 
 	const PARAMETERS = array(
@@ -15,6 +15,13 @@ class PinterestBridge extends BridgeAbstract {
 			'b' => array(
 				'name' => 'board',
 				'required' => true
+			),
+			'r' => array(
+				'name' => 'Use provided RSS',
+				'type' => 'checkbox',
+				'required' => false,
+				'defaultValue' => 'checked',
+				'title' => 'Uncheck to return data via custom filters (more data)'
 			)
 		),
 		'From search' => array(
@@ -26,81 +33,116 @@ class PinterestBridge extends BridgeAbstract {
 	);
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM($this->getURI());
-		if(!$html){
-			switch($this->queriedContext){
+		switch($this->queriedContext){
 			case 'By username and board':
-				returnServerError('Username and/or board not found');
+				if($this->getInput('r')){
+					$this->collectExpandableDatas($this->getURI() . '.rss');
+				} else {
+					$html = getSimpleHTMLDOMCached($this->getURI());
+					$this->getUserResults($html);
+				}
+				break;
 			case 'From search':
-				returnServerError('Could not request Pinterest.');
-			}
+			default:
+				$html = getSimpleHTMLDOMCached($this->getURI());
+				$this->getSearchResults($html);
 		}
+	}
 
-		if($this->queriedContext === 'From search'){
-			foreach($html->find('div.pinWrapper') as $div){
-				$item = array();
+	private function getUserResults($html){
+		$json = json_decode($html->find('#jsInit1', 0)->innertext, true);
+		$results = $json['tree']['children'][0]['children'][0]['children'][0]['options']['props']['data']['board_feed'];
+		$username = $json['resourceDataCache'][0]['data']['owner']['username'];
+		$fullname = $json['resourceDataCache'][0]['data']['owner']['full_name'];
+		$avatar = $json['resourceDataCache'][0]['data']['owner']['image_small_url'];
 
-				$a = $div->find('a.pinImageWrapper', 0);
-				$img = $a->find('img', 0);
+		foreach($results as $result){
+			$item = array();
 
-				$item['uri'] = $this->getURI() . $a->getAttribute('href');
-				$item['content'] = '<img src="'
-				. htmlentities(str_replace('/236x/', '/736x/', $img->getAttribute('src')))
-				. '" alt="" />';
+			$item['uri'] = $result['link'];
 
-				$avatar = $div->find('div.creditImg', 0)->find('img', 0);
-				$avatar = $avatar->getAttribute('data-src');
-				$avatar = str_replace("\\", "", $avatar);
+			// Some use regular titles, others provide 'advanced' infos, a few
+			// provide even less info. Thus we attempt multiple options.
+			$item['title'] = trim($result['title']);
 
-				$username = $div->find('div.creditName', 0);
-				$board = $div->find('div.creditTitle', 0);
+			if($item['title'] === "")
+				$item['title'] = trim($result['rich_summary']['display_name']);
 
-				$item['username'] = $username->innertext;
-				$item['fullname'] = $board->innertext;
-				$item['avatar'] = $avatar;
+			if($item['title'] === "")
+				$item['title'] = trim($result['description']);
 
-				$item['content'] .= '<br /><img align="left" style="margin: 2px 4px;" src="'
+			$item['timestamp'] = strtotime($result['created_at']);
+			$item['username'] = $username;
+			$item['fullname'] = $fullname;
+			$item['avatar'] = $avatar;
+			$item['author'] = $item['username'] . ' (' . $item['fullname'] . ')';
+			$item['content'] = '<img align="left" style="margin: 2px 4px;" src="'
 				. htmlentities($item['avatar'])
-				. '" /> <strong>'
+				. '" /><p><strong>'
 				. $item['username']
-				. '</strong><br />'
-				. $item['fullname'];
+				. '</strong><br>'
+				. $item['fullname']
+				. '</p><br><img src="'
+				. $result['images']['736x']['url']
+				. '" alt="" /><br><p>'
+				. $result['description']
+				. '</p>';
 
-				$item['title'] = $img->getAttribute('alt');
-				$this->items[] = $item;
-			}
-		} elseif($this->queriedContext === 'By username and board'){
-			$container = $html->find('SCRIPT[type="application/ld+json"]', 0)
-				or returnServerError('Unable to find data container!');
+			$item['enclosures'] = array($result['images']['orig']['url']);
 
-			$json = json_decode($container->innertext, true);
+			$this->items[] = $item;
+		}
+	}
 
-			foreach($json['itemListElement'] as $element){
-				$item = array();
+	private function getSearchResults($html){
+		$json = json_decode($html->find('#jsInit1', 0)->innertext, true);
+		$results = $json['resourceDataCache'][0]['data']['results'];
 
-				$item['uri'] = $element['item']['sharedContent']['author']['url'];
-				$item['title'] = $element['item']['name'];
-				$item['author'] = $element['item']['user']['name'];
-				$item['timestamp'] = strtotime($element['item']['datePublished']);
-				$item['content'] = <<<EOD
-<a href="{$item['uri']}">
-	<img src="{$element['item']['image']}">
-</a>
-<p>{$element['item']['text']}</p>
-EOD;
+		foreach($results as $result){
+			$item = array();
 
-				$this->items[] = $item;
-			}
+			$item['uri'] = self::URI . $result['board']['url'];
+
+			// Some use regular titles, others provide 'advanced' infos, a few
+			// provide even less info. Thus we attempt multiple options.
+			$item['title'] = trim($result['title']);
+
+			if($item['title'] === "")
+				$item['title'] = trim($result['rich_summary']['display_name']);
+
+			if($item['title'] === "")
+				$item['title'] = trim($result['grid_description']);
+
+			$item['timestamp'] = strtotime($result['created_at']);
+			$item['username'] = $result['pinner']['username'];
+			$item['fullname'] = $result['pinner']['full_name'];
+			$item['avatar'] = $result['pinner']['image_small_url'];
+			$item['author'] = $item['username'] . ' (' . $item['fullname'] . ')';
+			$item['content'] = '<img align="left" style="margin: 2px 4px;" src="'
+				. htmlentities($item['avatar'])
+				. '" /><p><strong>'
+				. $item['username']
+				. '</strong><br>'
+				. $item['fullname']
+				. '</p><br><img src="'
+				. $result['images']['736x']['url']
+				. '" alt="" /><br><p>'
+				. $result['description']
+				. '</p>';
+
+			$item['enclosures'] = array($result['images']['orig']['url']);
+
+			$this->items[] = $item;
 		}
 	}
 
 	public function getURI(){
 		switch($this->queriedContext){
 		case 'By username and board':
-			$uri = self::URI . urlencode($this->getInput('u')) . '/' . urlencode($this->getInput('b'));
+			$uri = self::URI . '/' . urlencode($this->getInput('u')) . '/' . urlencode($this->getInput('b'));// . '.rss';
 			break;
 		case 'From search':
-			$uri = self::URI . 'search/?q=' . urlencode($this->getInput('q'));
+			$uri = self::URI . '/search/?q=' . urlencode($this->getInput('q'));
 			break;
 		default: return parent::getURI();
 		}
@@ -110,7 +152,7 @@ EOD;
 	public function getName(){
 		switch($this->queriedContext){
 		case 'By username and board':
-			$specific = $this->getInput('u') . '-' . $this->getInput('b');
+			$specific = $this->getInput('u') . ' - ' . $this->getInput('b');
 		break;
 		case 'From search':
 			$specific = $this->getInput('q');
