@@ -48,7 +48,7 @@ class ShanaprojectBridge extends BridgeAbstract {
 	private function extractAnimeTimestamp($anime){
 		$timestamp = $anime->find('span.header_info_block', 1);
 		if(!$timestamp)
-			returnServerError('Could not find anime timestamp!');
+			return null;
 		return strtotime($timestamp->innertext);
 	}
 
