@@ -168,89 +168,96 @@ EOD;
 
 			$this->authorName = $author;
 
-			foreach($element->children() as $post){
-				// Ignore summary posts
-				if(strpos($post->class, '_3xaf') !== false) continue;
+			foreach($element->children() as $cell){
+				// Manage summary posts
+				if(strpos($cell->class, '_3xaf') !== false){
+					$posts = $cell->children();
+				} else {
+					$posts = array($cell);
+				}
 
-				$item = array();
+				foreach($posts as $post){
 
-				if(count($post->find('abbr')) > 0){
+					$item = array();
 
-					//Retrieve post contents
-					$content = preg_replace(
-						'/(?i)><div class=\"clearfix([^>]+)>(.+?)div\ class=\"userContent\"/i',
-						'',
-						$post);
+					if(count($post->find('abbr')) > 0){
 
-					$content = preg_replace(
-						'/(?i)><div class=\"_59tj([^>]+)>(.+?)<\/div><\/div><a/i',
-						'',
-						$content);
+						//Retrieve post contents
+						$content = preg_replace(
+							'/(?i)><div class=\"clearfix([^>]+)>(.+?)div\ class=\"userContent\"/i',
+							'',
+							$post);
 
-					$content = preg_replace(
-						'/(?i)><div class=\"_3dp([^>]+)>(.+?)div\ class=\"[^u]+userContent\"/i',
-						'',
-						$content);
+						$content = preg_replace(
+							'/(?i)><div class=\"_59tj([^>]+)>(.+?)<\/div><\/div><a/i',
+							'',
+							$content);
 
-					$content = preg_replace(
-						'/(?i)><div class=\"_4l5([^>]+)>(.+?)<\/div>/i',
-						'',
-						$content);
+						$content = preg_replace(
+							'/(?i)><div class=\"_3dp([^>]+)>(.+?)div\ class=\"[^u]+userContent\"/i',
+							'',
+							$content);
 
-					//Remove html nodes, keep only img, links, basic formatting
-					$content = strip_tags($content, '<a><img><i><u><br><p>');
+						$content = preg_replace(
+							'/(?i)><div class=\"_4l5([^>]+)>(.+?)<\/div>/i',
+							'',
+							$content);
 
-					//Adapt link hrefs: convert relative links into absolute links and bypass external link redirection
-					$content = preg_replace_callback('/ href=\"([^"]+)\"/i', $unescape_fb_link, $content);
+						//Remove html nodes, keep only img, links, basic formatting
+						$content = strip_tags($content, '<a><img><i><u><br><p>');
 
-					//Clean useless html tag properties and fix link closing tags
-					foreach (array(
-						'onmouseover',
-						'onclick',
-						'target',
-						'ajaxify',
-						'tabindex',
-						'class',
-						'style',
-						'data-[^=]*',
-						'aria-[^=]*',
-						'role',
-						'rel',
-						'id') as $property_name)
-							$content = preg_replace('/ ' . $property_name . '=\"[^"]*\"/i', '', $content);
-					$content = preg_replace('/<\/a [^>]+>/i', '</a>', $content);
+						//Adapt link hrefs: convert relative links into absolute links and bypass external link redirection
+						$content = preg_replace_callback('/ href=\"([^"]+)\"/i', $unescape_fb_link, $content);
 
-					//Convert textual representation of emoticons eg
-					//"<i><u>smile emoticon</u></i>" back to ASCII emoticons eg ":)"
-					$content = preg_replace_callback(
-						'/<i><u>([^ <>]+) ([^<>]+)<\/u><\/i>/i',
-						$unescape_fb_emote,
-						$content
-					);
+						//Clean useless html tag properties and fix link closing tags
+						foreach (array(
+							'onmouseover',
+							'onclick',
+							'target',
+							'ajaxify',
+							'tabindex',
+							'class',
+							'style',
+							'data-[^=]*',
+							'aria-[^=]*',
+							'role',
+							'rel',
+							'id') as $property_name)
+								$content = preg_replace('/ ' . $property_name . '=\"[^"]*\"/i', '', $content);
+						$content = preg_replace('/<\/a [^>]+>/i', '</a>', $content);
 
-					//Retrieve date of the post
-					$date = $post->find("abbr")[0];
-					if(isset($date) && $date->hasAttribute('data-utime')){
-						$date = $date->getAttribute('data-utime');
-					} else {
-						$date = 0;
+						//Convert textual representation of emoticons eg
+						//"<i><u>smile emoticon</u></i>" back to ASCII emoticons eg ":)"
+						$content = preg_replace_callback(
+							'/<i><u>([^ <>]+) ([^<>]+)<\/u><\/i>/i',
+							$unescape_fb_emote,
+							$content
+						);
+
+						//Retrieve date of the post
+						$date = $post->find("abbr")[0];
+						if(isset($date) && $date->hasAttribute('data-utime')){
+							$date = $date->getAttribute('data-utime');
+						} else {
+							$date = 0;
+						}
+
+						//Build title from username and content
+						$title = $author;
+						if(strlen($title) > 24)
+							$title = substr($title, 0, strpos(wordwrap($title, 24), "\n")) . '...';
+						$title = $title . ' | ' . strip_tags($content);
+						if(strlen($title) > 64)
+							$title = substr($title, 0, strpos(wordwrap($title, 64), "\n")) . '...';
+
+						//Build and add final item
+						$item['uri'] = self::URI . $post->find('abbr')[0]->parent()->getAttribute('href');
+						$item['content'] = $content;
+						$item['title'] = $title;
+						$item['author'] = $author;
+						$item['timestamp'] = $date;
+						$this->items[] = $item;
 					}
-
-					//Build title from username and content
-					$title = $author;
-					if(strlen($title) > 24)
-						$title = substr($title, 0, strpos(wordwrap($title, 24), "\n")) . '...';
-					$title = $title . ' | ' . strip_tags($content);
-					if(strlen($title) > 64)
-						$title = substr($title, 0, strpos(wordwrap($title, 64), "\n")) . '...';
-
-					//Build and add final item
-					$item['uri'] = self::URI . $post->find('abbr')[0]->parent()->getAttribute('href');
-					$item['content'] = $content;
-					$item['title'] = $title;
-					$item['author'] = $author;
-					$item['timestamp'] = $date;
-					$this->items[] = $item;
 				}
 			}
 		}
