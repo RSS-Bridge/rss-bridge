@@ -17,10 +17,9 @@ class PinterestBridge extends FeedExpander {
 				'required' => true
 			),
 			'r' => array(
-				'name' => 'Use provided RSS',
+				'name' => 'Use custom RSS',
 				'type' => 'checkbox',
 				'required' => false,
-				'defaultValue' => 'checked',
 				'title' => 'Uncheck to return data via custom filters (more data)'
 			)
 		),
@@ -36,10 +35,10 @@ class PinterestBridge extends FeedExpander {
 		switch($this->queriedContext){
 			case 'By username and board':
 				if($this->getInput('r')){
-					$this->collectExpandableDatas($this->getURI() . '.rss');
-				} else {
 					$html = getSimpleHTMLDOMCached($this->getURI());
 					$this->getUserResults($html);
+				} else {
+					$this->collectExpandableDatas($this->getURI() . '.rss');
 				}
 				break;
 			case 'From search':
