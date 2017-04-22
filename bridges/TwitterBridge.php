@@ -11,6 +11,11 @@ class TwitterBridge extends BridgeAbstract {
 				'name' => 'Hide profile pictures',
 				'type' => 'checkbox',
 				'title' => 'Activate to hide profile pictures in content'
+			),
+			'noimg' => array(
+				'name' => 'Hide images in tweets',
+				'type' => 'checkbox',
+				'title' => 'Activate to hide images in tweets'
 			)
 		),
 		'By keyword or hashtag' => array(
@@ -119,23 +124,8 @@ class TwitterBridge extends BridgeAbstract {
 				)
 			);
 
-			// processing content links
-			foreach($tweet->find('a') as $link){
-				if($link->hasAttribute('data-expanded-url')){
-					$link->href = $link->getAttribute('data-expanded-url');
-				}
-				$link->removeAttribute('data-expanded-url');
-				$link->removeAttribute('data-query-source');
-				$link->removeAttribute('rel');
-				$link->removeAttribute('class');
-				$link->removeAttribute('target');
-				$link->removeAttribute('title');
-			}
-
-			// process emojis (reduce size)
-			foreach($tweet->find('img.Emoji') as $img){
-				$img->style .= ' height: 1em;';
-			}
+			$this->processContentLinks($tweet);
+			$this->processEmojis($tweet);
 
 			// get tweet text
 			$cleanedTweet = str_replace(
@@ -150,10 +140,26 @@ class TwitterBridge extends BridgeAbstract {
 				$picture_html = <<<EOD
 <a href="https://twitter.com/{$item['username']}">
 <img
-	style="align: top; width:75 px; border: 1px solid black;"
+	style="align:top; width:75px; border:1px solid black;"
 	alt="{$item['username']}"
 	src="{$item['avatar']}"
 	title="{$item['fullname']}" />
+</a>
+EOD;
+			}
+
+			// Add embeded image to content
+			$image_html = '';
+			$image = $this->getImageURI($tweet);
+			if(!$this->getInput('noimg') && !is_null($image)){
+				// add enclosures
+				$item['enclosures'] = array($this->getImageURI($tweet));
+
+				$image_html = <<<EOD
+<a href="{$image}">
+<img
+	style="align:top; max-width:558px; border:1px solid black;"
+	src="{$image}" />
 </a>
 EOD;
 			}
@@ -166,10 +172,96 @@ EOD;
 <div style="display: inline-block; vertical-align: top;">
 	<blockquote>{$cleanedTweet}</blockquote>
 </div>
+<div style="display: block; vertical-align: top;">
+	<blockquote>{$image_html}</blockquote>
+</div>
 EOD;
+
+			// add quoted tweet
+			$quotedTweet = $tweet->find('div.QuoteTweet', 0);
+			if($quotedTweet){
+				// get tweet text
+				$cleanedQuotedTweet = str_replace(
+					'href="/',
+					'href="' . self::URI,
+					$quotedTweet->find('div.tweet-text', 0)->innertext
+				);
+
+				$this->processContentLinks($quotedTweet);
+				$this->processEmojis($quotedTweet);
+
+				// Add embeded image to content
+				$quotedImage_html = '';
+				$quotedImage = $this->getQuotedImageURI($tweet);
+				if(!$this->getInput('noimg') && !is_null($quotedImage)){
+					// add enclosures
+					$item['enclosures'] = array($this->getQuotedImageURI($tweet));
+
+					$quotedImage_html = <<<EOD
+<a href="{$quotedImage}">
+<img
+	style="align:top; max-width:558px; border:1px solid black;"
+	src="{$quotedImage}" />
+</a>
+EOD;
+				}
+
+				$item['content'] = <<<EOD
+<div style="display: inline-block; vertical-align: top;">
+	<blockquote>{$cleanedQuotedTweet}</blockquote>
+</div>
+<div style="display: block; vertical-align: top;">
+	<blockquote>{$quotedImage_html}</blockquote>
+</div>
+<hr>
+{$item['content']}
+EOD;
+			}
 
 			// put out
 			$this->items[] = $item;
 		}
+	}
+
+	private function processEmojis($tweet){
+		// process emojis (reduce size)
+		foreach($tweet->find('img.Emoji') as $img){
+			$img->style .= ' height: 1em;';
+		}
+	}
+
+	private function processContentLinks($tweet){
+		// processing content links
+		foreach($tweet->find('a') as $link){
+			if($link->hasAttribute('data-expanded-url')){
+				$link->href = $link->getAttribute('data-expanded-url');
+			}
+			$link->removeAttribute('data-expanded-url');
+			$link->removeAttribute('data-query-source');
+			$link->removeAttribute('rel');
+			$link->removeAttribute('class');
+			$link->removeAttribute('target');
+			$link->removeAttribute('title');
+		}
+	}
+
+	private function getImageURI($tweet){
+		// Find media in tweet
+		$container = $tweet->find('div.AdaptiveMedia-container', 0);
+		if($container && $container->find('img', 0)){
+			return $container->find('img', 0)->src;
+		}
+
+		return null;
+	}
+
+	private function getQuotedImageURI($tweet){
+		// Find media in tweet
+		$container = $tweet->find('div.QuoteMedia-container', 0);
+		if($container && $container->find('img', 0)){
+			return $container->find('img', 0)->src;
+		}
+
+		return null;
 	}
 }
