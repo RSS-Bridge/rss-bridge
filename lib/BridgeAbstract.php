@@ -237,6 +237,11 @@ abstract class BridgeAbstract implements BridgeInterface {
 	}
 
 	public function getName(){
+		// Return cached name when bridge is using cached data
+		if(isset($this->extraInfos)){
+			return $this->extraInfos['name'];
+		}
+
 		return static::NAME;
 	}
 
@@ -245,6 +250,11 @@ abstract class BridgeAbstract implements BridgeInterface {
 	}
 
 	public function getURI(){
+		// Return cached uri when bridge is using cached data
+		if(isset($this->extraInfos)){
+			return $this->extraInfos['uri'];
+		}
+
 		return static::URI;
 	}
 
