@@ -26,7 +26,7 @@ class AllocineFRBridge extends BridgeAbstract {
 
 			switch($this->getInput('category')){
 			case 'faux-raccord':
-				$uri = static::URI . 'video/programme-12284/saison-27129/';
+				$uri = static::URI . 'video/programme-12284/saison-29841/';
 				break;
 			case 'top-5':
 				$uri = static::URI . 'video/programme-12299/saison-29561/';
