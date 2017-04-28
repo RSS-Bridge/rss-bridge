@@ -236,11 +236,11 @@ class WikipediaBridge extends BridgeAbstract {
 	private function getContentsFr($html, $subject, $fullArticle){
 		switch($subject){
 			case WIKIPEDIA_SUBJECT_TFA:
-				$element = $html->find('div[id=accueil-lumieresur]', 0);
+				$element = $html->find('div[class=accueil_2017_cadre]', 0);
 				$this->addTodaysFeaturedArticleGeneric($element, $fullArticle, 'Lire la suite');
 				break;
 			case WIKIPEDIA_SUBJECT_DYK:
-				$element = $html->find('div[id=SaviezVous]', 0);
+				$element = $html->find('div[class=accueil_2017_cadre]', 2);
 				$this->addDidYouKnowGeneric($element, $fullArticle);
 				break;
 			default:
