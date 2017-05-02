@@ -78,7 +78,7 @@ class YoutubeBridge extends BridgeAbstract {
 			// Make sure the description is easy on the eye :)
 			$desc = htmlspecialchars($desc);
 			$desc = nl2br($desc);
-			$desc = preg_replace('/(http[s]{0,1}\:\/\/[a-zA-Z0-9.\/]{4,})/ims',
+			$desc = preg_replace('/(http[s]{0,1}\:\/\/[a-zA-Z0-9.\/\?\&=\-_]{4,})/ims',
 				'<a href="$1" target="_blank">$1</a> ',
 				$desc);
 
