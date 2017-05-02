@@ -153,13 +153,13 @@ EOD;
 			$image = $this->getImageURI($tweet);
 			if(!$this->getInput('noimg') && !is_null($image)){
 				// add enclosures
-				$item['enclosures'] = array($this->getImageURI($tweet));
+				$item['enclosures'] = array($image . ':orig');
 
 				$image_html = <<<EOD
-<a href="{$image}">
+<a href="{$image}:orig">
 <img
 	style="align:top; max-width:558px; border:1px solid black;"
-	src="{$image}" />
+	src="{$image}:thumb" />
 </a>
 EOD;
 			}
@@ -195,13 +195,13 @@ EOD;
 				$quotedImage = $this->getQuotedImageURI($tweet);
 				if(!$this->getInput('noimg') && !is_null($quotedImage)){
 					// add enclosures
-					$item['enclosures'] = array($this->getQuotedImageURI($tweet));
+					$item['enclosures'] = array($quotedImage . ':orig');
 
 					$quotedImage_html = <<<EOD
-<a href="{$quotedImage}">
+<a href="{$quotedImage}:orig">
 <img
 	style="align:top; max-width:558px; border:1px solid black;"
-	src="{$quotedImage}" />
+	src="{$quotedImage}:thumb" />
 </a>
 EOD;
 				}
