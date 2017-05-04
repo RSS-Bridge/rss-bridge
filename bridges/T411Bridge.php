@@ -3,7 +3,7 @@ class T411Bridge extends BridgeAbstract {
 
 	const MAINTAINER = 'ORelio';
 	const NAME = 'T411 Bridge';
-	const URI = 'https://www.t411.li/';
+	const URI = 'https://www.t411.al/';
 	const DESCRIPTION = 'Returns the 10 newest torrents with specified search
  terms <br /> Use url part after "?" mark when using their search engine.';
 
