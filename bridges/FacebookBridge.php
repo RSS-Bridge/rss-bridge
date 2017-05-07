@@ -111,11 +111,23 @@ class FacebookBridge extends BridgeAbstract {
 
 		//Retrieve page contents
 		if(is_null($html)){
+			$http_options = array(
+				'http' => array(
+					'method' => 'GET',
+					'user_agent' => ini_get('user_agent'),
+					'header' => 'Accept-Language: ' . getEnv('HTTP_ACCEPT_LANGUAGE') . "\r\n"
+				)
+			);
+			$context = stream_context_create($http_options);
 			if(!strpos($this->getInput('u'), "/")){
-				$html = getSimpleHTMLDOM(self::URI . urlencode($this->getInput('u')) . '?_fb_noscript=1')
+				$html = getSimpleHTMLDOM(self::URI . urlencode($this->getInput('u')) . '?_fb_noscript=1',
+				false,
+				$context)
 					or returnServerError('No results for this query.');
 			} else {
-				$html = getSimpleHTMLDOM(self::URI . 'pages/' . $this->getInput('u') . '?_fb_noscript=1')
+				$html = getSimpleHTMLDOM(self::URI . 'pages/' . $this->getInput('u') . '?_fb_noscript=1',
+				false,
+				$context)
 					or returnServerError('No results for this query.');
 			}
 		}
