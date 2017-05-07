@@ -1,5 +1,5 @@
 <?php
-function curlgetContents( $url, $params, $post=false){
+function curlgetContents($url, $params, $post = false){
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $post ? $url : $url.'?'.http_build_query($params) );
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -54,26 +54,26 @@ function curlgetContents( $url, $params, $post=false){
 	return array($body, $info, $header, $proxy_d);
 
 }
-function curlgetSimpleHTMLDOM($url
-	, $use_include_path = false
-	, $context = null
-	, $offset = 0
-	, $maxLen = null
-	, $lowercase = true
-	, $forceTagsClosed = true
-	, $target_charset = DEFAULT_TARGET_CHARSET
-	, $stripRN = true
-	, $defaultBRText = DEFAULT_BR_TEXT
-	, $defaultSpanText = DEFAULT_SPAN_TEXT
+function curlgetSimpleHTMLDOM($url,
+	$use_include_path = false,
+	$context = null,
+	$offset = 0,
+	$maxLen = null,
+	$lowercase = true,
+	$forceTagsClosed = true,
+	$target_charset = DEFAULT_TARGET_CHARSET,
+	$stripRN = true,
+	$defaultBRText = DEFAULT_BR_TEXT,
+	$defaultSpanText = DEFAULT_SPAN_TEXT
 ){
 	list($body, $info, $header, $proxy) = curlgetContents($url, $use_include_path, $context, $offset, $maxLen);
-	return array(str_get_html($body
-		, $lowercase
-		, $forceTagsClosed
-		, $target_charset
-		, $stripRN
-		, $defaultBRText
-		, $defaultSpanText),
-	$info, $header, $proxy);
+	return array(str_get_html($body,
+		$lowercase,
+		$forceTagsClosed,
+		$target_charset,
+		$stripRN,
+		$defaultBRText,
+		$defaultSpanText),
+	$info, $header, $proxy);// for debug purposes
 }
 ?>
