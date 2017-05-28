@@ -1,7 +1,7 @@
 <?php
 class RTBFBridge extends BridgeAbstract {
 	const NAME = 'RTBF Bridge';
-	const URI = 'http://www.rtbf.be/auvio/emissions/';
+	const URI = 'http://www.rtbf.be/auvio/';
 	const CACHE_TIMEOUT = 21600; //6h
 	const DESCRIPTION = 'Returns the newest RTBF videos by series ID';
 	const MAINTAINER = 'Frenzie';
@@ -50,10 +50,10 @@ class RTBFBridge extends BridgeAbstract {
 
 	public function getURI(){
 		if(!is_null($this->getInput('c'))){
-			return self::URI . 'detail?id=' . $this->getInput('c');
+			return self::URI . 'emissions/detail?id=' . $this->getInput('c');
 		}
 
-		return parent::getURI();
+		return parent::getURI() . 'emissions/';
 	}
 
 	public function getName(){
