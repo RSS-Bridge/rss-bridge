@@ -97,15 +97,21 @@ EOD;
 
 		$html = $this->buildContent($fileContent);
 		$author = $this->getInput('u');
-
+		
 		foreach($html->find("article") as $content){
 
 			$item = array();
+			
 			$item['uri'] = "http://touch.facebook.com"
-			. $content->find("div._52jc", 0)->find("a", 0)->getAttribute("href");
+			. $content->find("div[class='_52jc _5qc4 _24u0 _36xo']", 0)->find("a", 0)->getAttribute("href");
 
-			$content->find("header", 0)->innertext = "";
-			$content->find("footer", 0)->innertext = "";
+			if($content->find("header", 0) !== null) {
+				$content->find("header", 0)->innertext = "";
+			}
+			
+			if($content->find("footer", 0) !== null) {
+				$content->find("footer", 0)->innertext = "";
+			}
 
 			//Remove html nodes, keep only img, links, basic formatting
 			$content = strip_tags($content, '<a><img><i><u><br><p>');
