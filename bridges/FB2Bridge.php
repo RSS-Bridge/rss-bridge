@@ -82,6 +82,11 @@ class FB2Bridge extends BridgeAbstract {
 Unable to get the page id. You should consider getting the ID by hand, then importing it into FB2Bridge
 EOD;
 				die();
+			} elseif($pageID == -1) {
+				echo <<<EOD
+This page is not accessible without being logged in.
+EOD;
+				die();
 			}
 		}
 
@@ -97,18 +102,18 @@ EOD;
 
 		$html = $this->buildContent($fileContent);
 		$author = $this->getInput('u');
-		
+
 		foreach($html->find("article") as $content){
 
 			$item = array();
-			
+
 			$item['uri'] = "http://touch.facebook.com"
 			. $content->find("div[class='_52jc _5qc4 _24u0 _36xo']", 0)->find("a", 0)->getAttribute("href");
 
 			if($content->find("header", 0) !== null) {
 				$content->find("header", 0)->innertext = "";
 			}
-			
+
 			if($content->find("footer", 0) !== null) {
 				$content->find("footer", 0)->innertext = "";
 			}
@@ -241,6 +246,10 @@ EOD;
 		);
 
 		$pageContent = file_get_contents($page, 0, $context);
+
+		if(strpos($pageContent, "signup-button") != false) {
+			return -1;
+		}
 
 		//Get the page ID if we don't have a captcha
 		$regex = "/page_id=([0-9]*)&/";
