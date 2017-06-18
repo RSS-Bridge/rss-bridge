@@ -117,7 +117,7 @@ class TwitterBridge extends BridgeAbstract {
 			// get TweetID
 			$item['id'] = $tweet->getAttribute('data-tweet-id');
 			// get tweet link
-			$item['uri'] = self::URI . $tweet->find('a.js-permalink', 0)->getAttribute('href');
+			$item['uri'] = self::URI . substr($tweet->find('a.js-permalink', 0)->getAttribute('href'), 1);
 			// extract tweet timestamp
 			$item['timestamp'] = $tweet->find('span.js-short-timestamp', 0)->getAttribute('data-time');
 			// generate the title
