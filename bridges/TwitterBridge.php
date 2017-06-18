@@ -100,6 +100,11 @@ class TwitterBridge extends BridgeAbstract {
 				continue;
 			}
 
+			// remove 'invisible' content
+			foreach($tweet->find('.invisible') as $invisible){
+				$invisible->outertext = '';
+			}
+
 			$item = array();
 			// extract username and sanitize
 			$item['username'] = $tweet->getAttribute('data-screen-name');
@@ -116,13 +121,7 @@ class TwitterBridge extends BridgeAbstract {
 			// extract tweet timestamp
 			$item['timestamp'] = $tweet->find('span.js-short-timestamp', 0)->getAttribute('data-time');
 			// generate the title
-			$item['title'] = strip_tags(
-				html_entity_decode(
-					$tweet->find('p.js-tweet-text', 0)->innertext,
-					ENT_QUOTES,
-					'UTF-8'
-				)
-			);
+			$item['title'] = $this->fixAnchorSpacing(strip_tags($tweet->find('p.js-tweet-text', 0), '<a>'));
 
 			$this->processContentLinks($tweet);
 			$this->processEmojis($tweet);
@@ -133,6 +132,9 @@ class TwitterBridge extends BridgeAbstract {
 				'href="' . self::URI,
 				$tweet->find('p.js-tweet-text', 0)->innertext
 			);
+
+			// fix anchors missing spaces in-between
+			$cleanedTweet = $this->fixAnchorSpacing($cleanedTweet);
 
 			// Add picture to content
 			$picture_html = '';
@@ -243,6 +245,15 @@ EOD;
 			$link->removeAttribute('target');
 			$link->removeAttribute('title');
 		}
+	}
+
+	private function fixAnchorSpacing($content){
+		// fix anchors missing spaces in-between
+		return str_replace(
+			'<a',
+			' <a',
+			$content
+		);
 	}
 
 	private function getImageURI($tweet){
