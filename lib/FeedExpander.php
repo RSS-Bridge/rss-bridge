@@ -48,7 +48,10 @@ abstract class FeedExpander extends BridgeAbstract {
 		$this->load_RSS_2_0_feed_data($rssContent->channel[0]);
 		foreach($rssContent->item as $item){
 			debugMessage('parsing item ' . var_export($item, true));
-			$this->items[] = $this->parseItem($item);
+			$tmp_item = $this->parseItem($item);
+			if (!empty($tmp_item)) {
+				$this->items[] = $tmp_item;
+			}
 			if($maxItems !== -1 && count($this->items) >= $maxItems) break;
 		}
 	}
@@ -62,7 +65,10 @@ abstract class FeedExpander extends BridgeAbstract {
 		$this->load_RSS_2_0_feed_data($rssContent);
 		foreach($rssContent->item as $item){
 			debugMessage('parsing item ' . var_export($item, true));
-			$this->items[] = $this->parseItem($item);
+			$tmp_item = $this->parseItem($item);
+			if (!empty($tmp_item)) {
+				$this->items[] = $tmp_item;
+			}
 			if($maxItems !== -1 && count($this->items) >= $maxItems) break;
 		}
 	}
@@ -71,7 +77,10 @@ abstract class FeedExpander extends BridgeAbstract {
 		$this->load_ATOM_feed_data($content);
 		foreach($content->entry as $item){
 			debugMessage('parsing item ' . var_export($item, true));
-			$this->items[] = $this->parseItem($item);
+			$tmp_item = $this->parseItem($item);
+			if (!empty($tmp_item)) {
+				$this->items[] = $tmp_item;
+			}
 			if($maxItems !== -1 && count($this->items) >= $maxItems) break;
 		}
 	}
