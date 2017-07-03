@@ -71,8 +71,9 @@ class TwitterBridge extends BridgeAbstract {
 			. '&f=tweets';
 		case 'By username':
 			return self::URI
-			. urlencode($this->getInput('u'))
-			. ($this->getInput('norep') ? '' : '/with_replies');
+			. urlencode($this->getInput('u'));
+			// Always return without replies!
+			// . ($this->getInput('norep') ? '' : '/with_replies');
 		default: return parent::getURI();
 		}
 	}
