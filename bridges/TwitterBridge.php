@@ -44,6 +44,25 @@ class TwitterBridge extends BridgeAbstract {
 				'type' => 'checkbox',
 				'title' => 'Hide retweets'
 			)
+		),
+		'By list' => array(
+			'user' => array(
+				'name' => 'User',
+				'required' => true,
+				'exampleValue' => 'sebsauvage',
+				'title' => 'Insert a user name'
+			),
+			'list' => array(
+				'name' => 'List',
+				'required' => true,
+				'title' => 'Insert the list name'
+			),
+			'filter' => array(
+				'name' => 'Filter',
+				'exampleValue' => '#rss-bridge',
+				'required' => false,
+				'title' => 'Specify term to search for'
+			)
 		)
 	);
 
@@ -56,6 +75,10 @@ class TwitterBridge extends BridgeAbstract {
 		case 'By username':
 			$specific = '@';
 			$param = 'u';
+			break;
+		case 'By list':
+			$specific = $this->getInput('user');
+			$param = 'list';
 			break;
 		default: return parent::getName();
 		}
@@ -74,6 +97,11 @@ class TwitterBridge extends BridgeAbstract {
 			. urlencode($this->getInput('u'));
 			// Always return without replies!
 			// . ($this->getInput('norep') ? '' : '/with_replies');
+		case 'By list':
+			return self::URI
+			. urlencode($this->getInput('user'))
+			. '/lists/'
+			. str_replace(' ', '-', strtolower($this->getInput('list')));
 		default: return parent::getURI();
 		}
 	}
@@ -88,6 +116,8 @@ class TwitterBridge extends BridgeAbstract {
 				returnServerError('No results for this query.');
 			case 'By username':
 				returnServerError('Requested username can\'t be found.');
+			case 'By list':
+				returnServerError('Requested username or list can\'t be found');
 			}
 		}
 
@@ -123,6 +153,18 @@ class TwitterBridge extends BridgeAbstract {
 			$item['timestamp'] = $tweet->find('span.js-short-timestamp', 0)->getAttribute('data-time');
 			// generate the title
 			$item['title'] = strip_tags($this->fixAnchorSpacing($tweet->find('p.js-tweet-text', 0), '<a>'));
+
+			switch($this->queriedContext) {
+				case 'By list':
+					// Check if filter applies to list (using raw content)
+					if(!is_null($this->getInput('filter'))) {
+						if(stripos($tweet->find('p.js-tweet-text', 0)->plaintext, $this->getInput('filter')) === false) {
+							continue 2; // switch + for-loop!
+						}
+					}
+					break;
+				default:
+			}
 
 			$this->processContentLinks($tweet);
 			$this->processEmojis($tweet);
