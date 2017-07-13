@@ -8,18 +8,20 @@ class RainbowSixSiegeBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Latest articles from the Rainbow Six Siege blog';
 
 	public function collectData(){
-		$jsonString = getContents("https://prod-tridionservice.ubisoft.com/live/v1/News/Latest?templateId=tcm%3A152-76778-32&pageIndex=0&pageSize=10&language=en-US&detailPageId=tcm%3A152-194572-64&keywordList=175426&siteId=undefined&useSeoFriendlyUrl=true")
+		$jsonString = getContents("https://prod-tridionservice.ubisoft.com/live/v1/News/Latest?templateId=tcm%3A152-7677" .
+															"8-32&pageIndex=0&pageSize=10&language=en-US&detailPageId=tcm%3A152-194572-64" .
+															"&keywordList=175426&siteId=undefined&useSeoFriendlyUrl=true")
 			or returnServerError('Error while downloading the website content');
 
 		$json = json_decode($jsonString, true);
-    $json = $json['items'];
+		$json = $json['items'];
 
 		// Start at index 2 to remove highlighted articles
 		for($i = 0; $i < count($json); $i++){
-      $jsonItem = $json[$i]['Content'];
+			$jsonItem = $json[$i]['Content'];
 			$article = str_get_html($jsonItem);
 
-      $item = array();
+			$item = array();
 
 			$uri = $article->find('h3 a', 0)->href;
 			$uri = 'https://rainbow6.ubisoft.com' . $uri;
