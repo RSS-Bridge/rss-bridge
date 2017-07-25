@@ -31,11 +31,14 @@ class DanbooruBridge extends BridgeAbstract {
 	}
 
 	protected function getItemFromElement($element){
+		// Fix links
+		defaultLinkTo($element, $this->getURI());
+
 		$item = array();
-		$item['uri'] = $this->getURI() . $element->find('a', 0)->href;
+		$item['uri'] = $element->find('a', 0)->href;
 		$item['postid'] = (int)preg_replace("/[^0-9]/", '', $element->getAttribute(static::IDATTRIBUTE));
 		$item['timestamp'] = time();
-		$thumbnailUri = $this->getURI() . $element->find('img', 0)->src;
+		$thumbnailUri = $element->find('img', 0)->src;
 		$item['tags'] = $element->find('img', 0)->getAttribute('alt');
 		$item['title'] = $this->getName() . ' | ' . $item['postid'];
 		$item['content'] = '<a href="'
