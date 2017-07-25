@@ -12,6 +12,12 @@ class FacebookBridge extends BridgeAbstract {
 		'u' => array(
 			'name' => 'Username',
 			'required' => true
+		),
+		'novideo' => array(
+			'name' => 'No Videos',
+			'type' => 'checkbox',
+			'required' => false,
+			'title' => 'Activate to remove posts including (facebook) videos'
 		)
 	));
 
@@ -189,6 +195,10 @@ EOD;
 				}
 
 				foreach($posts as $post){
+
+					// (optionally) skip posts that include facebook videos
+					if($this->getInput('novideo') && !empty($post->find('[aria-label=Video]')))
+						continue;
 
 					$item = array();
 
