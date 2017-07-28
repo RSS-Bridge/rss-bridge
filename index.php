@@ -197,12 +197,7 @@ EOD;
 		// Data transformation
 		try {
 			$format = Format::create($format);
-			$items = $bridge->getItems();
-			if(empty($items)){
-				throw new Exception('No results for this query', 503);
-			}
-
-			$format->setItems($items);
+			$format->setItems($bridge->getItems());
 			$format->setExtraInfos($bridge->getExtraInfos());
 			$format->display();
 		} catch(Exception $e){
@@ -217,7 +212,7 @@ EOD;
 			. $bridge->getMaintainer();
 
 			$message = <<<EOD
-{$bridge->getName()} was unable to receive or process the remote website's content.
+RSS-Bridge was unable to transform the contents returned by {$bridge->getName()}!
 Check your input parameters or press F5 to retry.
 
 Use the following link to notify the bridge maintainer if this error persists:
@@ -233,6 +228,7 @@ EOD;
 			header('Content-Type: text/plain');
 			die($message);
 		}
+
 		die;
 	}
 }
