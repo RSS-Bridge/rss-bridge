@@ -131,16 +131,28 @@ function buildBridgeException($e, $bridge){
 <html lang="en">
 <head>
 	<title>{$e->getCode()} - {$e->getMessage()}</title>
+	<link href="static/exception.css" rel="stylesheet">
 </head>
 <body>
-	<h1>Error {$e->getCode()} - {$e->getMessage()}</h1>
-	<p><strong>{$bridge->getName()}</strong> was unable to receive or process the remote website's content!
-	<br>Check your input parameters or press F5 to retry.
-	<br>If the error persists use <a href="{$link}">this</a> link to notify the bridge maintainer.
-	<br>Notice: After clicking on the link you can review the issue before sending it.</p>
-	<h2>Additional info</h2>
-	<p>Error code: "{$e->getCode()}"</p>
-	<p>Message: "{$e->getMessage()}"</p>
+	<header>
+		<h1>Error {$e->getCode()}</h1>
+		<h2>{$e->getMessage()}</h2>
+		<p class="status">{$bridge->getName()}</p>
+	</header>
+	<section>
+		<p class="exception-message"><strong>{$bridge->getName()}</strong> was
+		unable to receive or process the remote website's content!</p>
+		<div class="advice">
+			<ul class="advice">
+				<li>Press Return to check your input parameters</li>
+				<li>Press F5 to retry.</li>
+				<li>Open a GitHub Issue if this error persists</li>
+			</ul>
+		</div>
+		<a href="{$link}" title="After clicking on this button you can review
+		the issue before submitting it"><button>Open GitHub Issue</button></a>
+		<p class="maintainer">{$bridge->getMaintainer()}</p>
+	</section>
 </body>
 </html>
 EOD;
@@ -176,16 +188,28 @@ function buildTransformException($e, $bridge){
 <html lang="en">
 <head>
 	<title>{$e->getCode()} - {$e->getMessage()}</title>
+	<link href="static/exception.css" rel="stylesheet">
 </head>
 <body>
-	<h1>Error {$e->getCode()} - {$e->getMessage()}</h1>
-	<p>RSS-Bridge was unable to transform the contents returned by <strong>{$bridge->getName()}</strong>!
-	<br>Check your input parameters or press F5 to retry.
-	<br>If the error persists use <a href="{$link}">this</a> link to notify the bridge maintainer.
-	<br>Notice: After clicking on the link you can review the issue before sending it.</p>
-	<h2>Additional info</h2>
-	<p>Error code: "{$e->getCode()}"</p>
-	<p>Message: "{$e->getMessage()}"</p>
+	<header>
+		<h1>Error {$e->getCode()}</h1>
+		<h2>{$e->getMessage()}</h2>
+		<p class="status">{$bridge->getName()}</p>
+	</header>
+	<section>
+		<p class="exception-message">SS-Bridge was unable to transform the contents
+		returned by <strong>{$bridge->getName()}</strong>!</p>
+		<div class="advice">
+			<ul class="advice">
+				<li>Press Return to check your input parameters</li>
+				<li>Press F5 to retry</li>
+				<li>Open a GitHub Issue if this error persists</li>
+			</ul>
+		</div>
+		<a href="{$link}" title="After clicking on this button you can review
+		the issue before submitting it"><button>Open GitHub Issue</button></a>
+		<p class="maintainer">{$bridge->getMaintainer()}</p>
+	</section>
 </body>
 </html>
 EOD;
