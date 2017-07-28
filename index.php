@@ -162,8 +162,37 @@ try {
 		unset($params['_noproxy']);
 
 		// Load cache & data
-		$bridge->setCache($cache);
-		$bridge->setDatas($params);
+		try {
+			$bridge->setCache($cache);
+			$bridge->setDatas($params);
+		} catch(Exception $e){
+			$title = urlencode($bridge->getName() . ' failed with error ' . $e->getCode());
+			$body = urlencode('Error message: ' . $e->getmessage());
+			$link = 'https://github.com/rss-bridge/rss-bridge/issues/new?title='
+			. $title
+			. '&body='
+			. $body
+			. '&labels=bug+report'
+			. '&assignee='
+			. $bridge->getMaintainer();
+
+			$message = <<<EOD
+{$bridge->getName()} was unable to receive or process the remote website's content.
+Check your input parameters or press F5 to retry.
+
+Use the following link to notify the bridge maintainer if this error persists:
+$link
+
+Additional info:
+
+Error code: "{$e->getCode()}"
+Message: "{$e->getMessage()}"
+EOD;
+
+			header('HTTP/1.1 ' . $e->getCode() . ' ' . Http::getMessageForCode($e->getCode()));
+			header('Content-Type: text/plain');
+			die($message);
+		}
 
 		// Data transformation
 		try {
