@@ -193,7 +193,8 @@ try {
 	<h1>Error {$e->getCode()} - {$e->getMessage()}</h1>
 	<p><strong>{$bridge->getName()}</strong> was unable to receive or process the remote website's content!
 	<br>Check your input parameters or press F5 to retry.
-	<br>Use <a href="{$link}">this</a> link to notify the bridge maintainer if this error persists.</p>
+	<br>If the error persists use <a href="{$link}">this</a> link to notify the bridge maintainer.
+	<br>Notice: After clicking on the link you can review the issue before sending it.</p>
 	<h2>Additional info</h2>
 	<p>Error code: "{$e->getCode()}"</p>
 	<p>Message: "{$e->getMessage()}"</p>
@@ -240,7 +241,8 @@ EOD;
 	<h1>Error {$e->getCode()} - {$e->getMessage()}</h1>
 	<p>RSS-Bridge was unable to transform the contents returned by <strong>{$bridge->getName()}</strong>!
 	<br>Check your input parameters or press F5 to retry.
-	<br>Use <a href="{$link}">this</a> link to notify the bridge maintainer if this error persists.</p>
+	<br>If the error persists use <a href="{$link}">this</a> link to notify the bridge maintainer.
+	<br>Notice: After clicking on the link you can review the issue before sending it.</p>
 	<h2>Additional info</h2>
 	<p>Error code: "{$e->getCode()}"</p>
 	<p>Message: "{$e->getMessage()}"</p>
