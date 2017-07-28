@@ -179,8 +179,7 @@ try {
 			. $title
 			. '&body='
 			. $body
-			. '&labels=bug+report'
-			. '&assignee='
+			. '&labels=bug+report&assignee='
 			. $bridge->getMaintainer();
 
 			$message = <<<EOD
@@ -227,8 +226,7 @@ EOD;
 			. $title
 			. '&body='
 			. $body
-			. '&labels=bug+report'
-			. '&assignee='
+			. '&labels=bug+report&assignee='
 			. $bridge->getMaintainer();
 
 			$message = <<<EOD
