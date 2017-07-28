@@ -167,7 +167,14 @@ try {
 			$bridge->setDatas($params);
 		} catch(Exception $e){
 			$title = urlencode($bridge->getName() . ' failed with error ' . $e->getCode());
-			$body = urlencode('Error message: ' . $e->getmessage());
+
+			// Build a GitHub compatible message
+			$body = urlencode('Error message: `'
+				. $e->getmessage()
+				. "`\nQuery string: `"
+				. $_SERVER['QUERY_STRING'] . '`'
+				);
+
 			$link = 'https://github.com/rss-bridge/rss-bridge/issues/new?title='
 			. $title
 			. '&body='
@@ -177,20 +184,25 @@ try {
 			. $bridge->getMaintainer();
 
 			$message = <<<EOD
-{$bridge->getName()} was unable to receive or process the remote website's content.
-Check your input parameters or press F5 to retry.
-
-Use the following link to notify the bridge maintainer if this error persists:
-$link
-
-Additional info:
-
-Error code: "{$e->getCode()}"
-Message: "{$e->getMessage()}"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>{$e->getCode()} - {$e->getMessage()}</title>
+</head>
+<body>
+	<h1>Error {$e->getCode()} - {$e->getMessage()}</h1>
+	<p><strong>{$bridge->getName()}</strong> was unable to receive or process the remote website's content!
+	<br>Check your input parameters or press F5 to retry.
+	<br>Use <a href="{$link}">this</a> link to notify the bridge maintainer if this error persists.</p>
+	<h2>Additional info</h2>
+	<p>Error code: "{$e->getCode()}"</p>
+	<p>Message: "{$e->getMessage()}"</p>
+</body>
+</html>
 EOD;
 
 			header('HTTP/1.1 ' . $e->getCode() . ' ' . Http::getMessageForCode($e->getCode()));
-			header('Content-Type: text/plain');
+			header('Content-Type: text/html');
 			die($message);
 		}
 
@@ -202,7 +214,14 @@ EOD;
 			$format->display();
 		} catch(Exception $e){
 			$title = urlencode($bridge->getName() . ' failed with error ' . $e->getCode());
-			$body = urlencode('Error message: ' . $e->getmessage());
+
+			// Build a GitHub compatible message
+			$body = urlencode('Error message: `'
+				. $e->getmessage()
+				. "`\nQuery string: `"
+				. $_SERVER['QUERY_STRING'] . '`'
+				);
+
 			$link = 'https://github.com/rss-bridge/rss-bridge/issues/new?title='
 			. $title
 			. '&body='
@@ -212,20 +231,25 @@ EOD;
 			. $bridge->getMaintainer();
 
 			$message = <<<EOD
-RSS-Bridge was unable to transform the contents returned by {$bridge->getName()}!
-Check your input parameters or press F5 to retry.
-
-Use the following link to notify the bridge maintainer if this error persists:
-$link
-
-Additional info:
-
-Error code: "{$e->getCode()}"
-Message: "{$e->getMessage()}"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>{$e->getCode()} - {$e->getMessage()}</title>
+</head>
+<body>
+	<h1>Error {$e->getCode()} - {$e->getMessage()}</h1>
+	<p>RSS-Bridge was unable to transform the contents returned by <strong>{$bridge->getName()}</strong>!
+	<br>Check your input parameters or press F5 to retry.
+	<br>Use <a href="{$link}">this</a> link to notify the bridge maintainer if this error persists.</p>
+	<h2>Additional info</h2>
+	<p>Error code: "{$e->getCode()}"</p>
+	<p>Message: "{$e->getMessage()}"</p>
+</body>
+</html>
 EOD;
 
 			header('HTTP/1.1 ' . $e->getCode() . ' ' . Http::getMessageForCode($e->getCode()));
-			header('Content-Type: text/plain');
+			header('Content-Type: text/html');
 			die($message);
 		}
 
