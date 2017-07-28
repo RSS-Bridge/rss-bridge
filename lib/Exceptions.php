@@ -102,3 +102,93 @@ function buildGitHubIssueQuery($title, $body, $labels = null, $maintainer = null
 
 	return $uri;
 }
+
+/**
+ * Returns the exception message as HTML string
+ *
+ * @param $e Exception The exception to show
+ * @param $bridge object The bridge object
+ * @return string Returns the exception as HTML string. Returns null if the
+ * provided parameter are invalid
+ */
+function buildBridgeException($e, $bridge){
+	if(!($e instanceof \Exception) || !($bridge instanceof \BridgeInterface)){
+		return null;
+	}
+
+	$title = $bridge->getName() . ' failed with error ' . $e->getCode();
+
+	// Build a GitHub compatible message
+	$body = 'Error message: `'
+	. $e->getmessage()
+	. "`\nQuery string: `"
+	. $_SERVER['QUERY_STRING'] . '`';
+
+	$link = buildGitHubIssueQuery($title, $body, 'bug report', $bridge->getMaintainer());
+
+	$message = <<<EOD
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>{$e->getCode()} - {$e->getMessage()}</title>
+</head>
+<body>
+	<h1>Error {$e->getCode()} - {$e->getMessage()}</h1>
+	<p><strong>{$bridge->getName()}</strong> was unable to receive or process the remote website's content!
+	<br>Check your input parameters or press F5 to retry.
+	<br>If the error persists use <a href="{$link}">this</a> link to notify the bridge maintainer.
+	<br>Notice: After clicking on the link you can review the issue before sending it.</p>
+	<h2>Additional info</h2>
+	<p>Error code: "{$e->getCode()}"</p>
+	<p>Message: "{$e->getMessage()}"</p>
+</body>
+</html>
+EOD;
+
+	return $message;
+}
+
+/**
+ * Returns the exception message as HTML string
+ *
+ * @param $e Exception The exception to show
+ * @param $bridge object The bridge object
+ * @return string Returns the exception as HTML string. Returns null if the
+ * provided parameter are invalid
+ */
+function buildTransformException($e, $bridge){
+	if(!($e instanceof \Exception) || !($bridge instanceof \BridgeInterface)){
+		return null;
+	}
+
+	$title = $bridge->getName() . ' failed with error ' . $e->getCode();
+
+	// Build a GitHub compatible message
+	$body = 'Error message: `'
+	. $e->getmessage()
+	. "`\nQuery string: `"
+	. $_SERVER['QUERY_STRING'] . '`';
+
+	$link = buildGitHubIssueQuery($title, $body, 'bug report', $bridge->getMaintainer());
+
+	$message = <<<EOD
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>{$e->getCode()} - {$e->getMessage()}</title>
+</head>
+<body>
+	<h1>Error {$e->getCode()} - {$e->getMessage()}</h1>
+	<p>RSS-Bridge was unable to transform the contents returned by <strong>{$bridge->getName()}</strong>!
+	<br>Check your input parameters or press F5 to retry.
+	<br>If the error persists use <a href="{$link}">this</a> link to notify the bridge maintainer.
+	<br>Notice: After clicking on the link you can review the issue before sending it.</p>
+	<h2>Additional info</h2>
+	<p>Error code: "{$e->getCode()}"</p>
+	<p>Message: "{$e->getMessage()}"</p>
+</body>
+</html>
+EOD;
+
+	return $message;
+}
