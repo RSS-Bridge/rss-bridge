@@ -58,3 +58,47 @@ class Http{
 		);
 	}
 }
+
+/**
+ * Returns an URL that automatically populates a new issue on GitHub based
+ * on the information provided
+ *
+ * @param $title string Sets the title of the issue
+ * @param $body string Sets the body of the issue (GitHub markdown applies)
+ * @param $labels mixed (optional) Specifies labels to add to the issue
+ * @param $maintainer string (optional) Specifies the maintainer for the issue.
+ * The maintainer only applies if part of the development team!
+ * @return string Returns a qualified URL to a new issue with populated conent.
+ * Returns null if title or body is null or empty
+ */
+function buildGitHubIssueQuery($title, $body, $labels = null, $maintainer = null){
+	if(!isset($title) || !isset($body) || empty($title) || empty($body)){
+		return null;
+	}
+
+	// Add title and body
+	$uri = 'https://github.com/rss-bridge/rss-bridge/issues/new?title='
+		. urlencode($title)
+		. '&body='
+		. urlencode($body);
+
+	// Add labels
+	if(!is_null($labels) && is_array($labels) && count($labels) > 0){
+		if(count($lables) === 1){
+			$uri .= '&labels=' . urlencode($labels[0]);
+		} else {
+			foreach($labels as $label){
+				$uri .= '&labels[]=' . urlencode($label);
+			}
+		}
+	} elseif(!is_null($labels) && is_string($labels)){
+		$uri .= '&labels=' . urlencode($labels);
+	}
+
+	// Add maintainer
+	if(!empty($maintainer)){
+		$uri .= '&assignee=' . urlencode($maintainer);
+	}
+
+	return $uri;
+}
