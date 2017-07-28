@@ -166,38 +166,9 @@ try {
 			$bridge->setCache($cache);
 			$bridge->setDatas($params);
 		} catch(Exception $e){
-			$title = $bridge->getName() . ' failed with error ' . $e->getCode();
-
-			// Build a GitHub compatible message
-			$body = 'Error message: `'
-				. $e->getmessage()
-				. "`\nQuery string: `"
-				. $_SERVER['QUERY_STRING'] . '`';
-
-			$link = buildGitHubIssueQuery($title, $body, 'bug report', $bridge->getMaintainer());
-
-			$message = <<<EOD
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<title>{$e->getCode()} - {$e->getMessage()}</title>
-</head>
-<body>
-	<h1>Error {$e->getCode()} - {$e->getMessage()}</h1>
-	<p><strong>{$bridge->getName()}</strong> was unable to receive or process the remote website's content!
-	<br>Check your input parameters or press F5 to retry.
-	<br>If the error persists use <a href="{$link}">this</a> link to notify the bridge maintainer.
-	<br>Notice: After clicking on the link you can review the issue before sending it.</p>
-	<h2>Additional info</h2>
-	<p>Error code: "{$e->getCode()}"</p>
-	<p>Message: "{$e->getMessage()}"</p>
-</body>
-</html>
-EOD;
-
 			header('HTTP/1.1 ' . $e->getCode() . ' ' . Http::getMessageForCode($e->getCode()));
 			header('Content-Type: text/html');
-			die($message);
+			die(buildBridgeException($e, $bridge));
 		}
 
 		// Data transformation
@@ -207,38 +178,9 @@ EOD;
 			$format->setExtraInfos($bridge->getExtraInfos());
 			$format->display();
 		} catch(Exception $e){
-			$title = $bridge->getName() . ' failed with error ' . $e->getCode();
-
-			// Build a GitHub compatible message
-			$body = 'Error message: `'
-				. $e->getmessage()
-				. "`\nQuery string: `"
-				. $_SERVER['QUERY_STRING'] . '`';
-
-			$link = buildGitHubIssueQuery($title, $body, 'bug report', $bridge->getMaintainer());
-
-			$message = <<<EOD
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<title>{$e->getCode()} - {$e->getMessage()}</title>
-</head>
-<body>
-	<h1>Error {$e->getCode()} - {$e->getMessage()}</h1>
-	<p>RSS-Bridge was unable to transform the contents returned by <strong>{$bridge->getName()}</strong>!
-	<br>Check your input parameters or press F5 to retry.
-	<br>If the error persists use <a href="{$link}">this</a> link to notify the bridge maintainer.
-	<br>Notice: After clicking on the link you can review the issue before sending it.</p>
-	<h2>Additional info</h2>
-	<p>Error code: "{$e->getCode()}"</p>
-	<p>Message: "{$e->getMessage()}"</p>
-</body>
-</html>
-EOD;
-
 			header('HTTP/1.1 ' . $e->getCode() . ' ' . Http::getMessageForCode($e->getCode()));
 			header('Content-Type: text/html');
-			die($message);
+			die(buildTransformException($e, $bridge));
 		}
 
 		die;
