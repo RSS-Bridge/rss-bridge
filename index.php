@@ -168,7 +168,12 @@ try {
 		// Data transformation
 		try {
 			$format = Format::create($format);
-			$format->setItems($bridge->getItems());
+			$items = $bridge->getItems();
+			if(empty($items)){
+				throw new Exception('No results for this query', 503);
+			}
+
+			$format->setItems($items);
 			$format->setExtraInfos($bridge->getExtraInfos());
 			$format->display();
 		} catch(Exception $e){
