@@ -166,21 +166,15 @@ try {
 			$bridge->setCache($cache);
 			$bridge->setDatas($params);
 		} catch(Exception $e){
-			$title = urlencode($bridge->getName() . ' failed with error ' . $e->getCode());
+			$title = $bridge->getName() . ' failed with error ' . $e->getCode();
 
 			// Build a GitHub compatible message
-			$body = urlencode('Error message: `'
+			$body = 'Error message: `'
 				. $e->getmessage()
 				. "`\nQuery string: `"
-				. $_SERVER['QUERY_STRING'] . '`'
-				);
+				. $_SERVER['QUERY_STRING'] . '`';
 
-			$link = 'https://github.com/rss-bridge/rss-bridge/issues/new?title='
-			. $title
-			. '&body='
-			. $body
-			. '&labels=bug+report&assignee='
-			. $bridge->getMaintainer();
+			$link = buildGitHubIssueQuery($title, $body, 'bug report', $bridge->getMaintainer());
 
 			$message = <<<EOD
 <!DOCTYPE html>
@@ -213,21 +207,15 @@ EOD;
 			$format->setExtraInfos($bridge->getExtraInfos());
 			$format->display();
 		} catch(Exception $e){
-			$title = urlencode($bridge->getName() . ' failed with error ' . $e->getCode());
+			$title = $bridge->getName() . ' failed with error ' . $e->getCode();
 
 			// Build a GitHub compatible message
-			$body = urlencode('Error message: `'
+			$body = 'Error message: `'
 				. $e->getmessage()
 				. "`\nQuery string: `"
-				. $_SERVER['QUERY_STRING'] . '`'
-				);
+				. $_SERVER['QUERY_STRING'] . '`';
 
-			$link = 'https://github.com/rss-bridge/rss-bridge/issues/new?title='
-			. $title
-			. '&body='
-			. $body
-			. '&labels=bug+report&assignee='
-			. $bridge->getMaintainer();
+			$link = buildGitHubIssueQuery($title, $body, 'bug report', $bridge->getMaintainer());
 
 			$message = <<<EOD
 <!DOCTYPE html>
