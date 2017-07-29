@@ -120,7 +120,7 @@ function buildBridgeException($e, $bridge){
 
 	// Build a GitHub compatible message
 	$body = 'Error message: `'
-	. $e->getmessage()
+	. $e->getMessage()
 	. "`\nQuery string: `"
 	. $_SERVER['QUERY_STRING'] . '`';
 
@@ -151,7 +151,7 @@ function buildTransformException($e, $bridge){
 
 	// Build a GitHub compatible message
 	$body = 'Error message: `'
-	. $e->getmessage()
+	. $e->getMessage()
 	. "`\nQuery string: `"
 	. $_SERVER['QUERY_STRING'] . '`';
 
