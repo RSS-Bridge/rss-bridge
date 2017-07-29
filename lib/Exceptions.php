@@ -72,7 +72,7 @@ class Http{
  * Returns null if title or body is null or empty
  */
 function buildGitHubIssueQuery($title, $body, $labels = null, $maintainer = null){
-	if(!isset($title) || !isset($body) || empty($title) || empty($body)){
+	if (!isset($title) || !isset($body) || empty($title) || empty($body)) {
 		return null;
 	}
 
@@ -83,20 +83,20 @@ function buildGitHubIssueQuery($title, $body, $labels = null, $maintainer = null
 		. urlencode($body);
 
 	// Add labels
-	if(!is_null($labels) && is_array($labels) && count($labels) > 0){
-		if(count($lables) === 1){
+	if (!is_null($labels) && is_array($labels) && count($labels) > 0) {
+		if (count($lables) === 1) {
 			$uri .= '&labels=' . urlencode($labels[0]);
 		} else {
-			foreach($labels as $label){
+			foreach ($labels as $label) {
 				$uri .= '&labels[]=' . urlencode($label);
 			}
 		}
-	} elseif(!is_null($labels) && is_string($labels)){
+	} elseif (!is_null($labels) && is_string($labels)) {
 		$uri .= '&labels=' . urlencode($labels);
 	}
 
 	// Add maintainer
-	if(!empty($maintainer)){
+	if (!empty($maintainer)) {
 		$uri .= '&assignee=' . urlencode($maintainer);
 	}
 
@@ -112,7 +112,7 @@ function buildGitHubIssueQuery($title, $body, $labels = null, $maintainer = null
  * provided parameter are invalid
  */
 function buildBridgeException($e, $bridge){
-	if(!($e instanceof \Exception) || !($bridge instanceof \BridgeInterface)){
+	if (!($e instanceof \Exception) || !($bridge instanceof \BridgeInterface)) {
 		return null;
 	}
 
@@ -143,7 +143,7 @@ unable to receive or process the remote website's content!";
  * provided parameter are invalid
  */
 function buildTransformException($e, $bridge){
-	if(!($e instanceof \Exception) || !($bridge instanceof \BridgeInterface)){
+	if (!($e instanceof \Exception) || !($bridge instanceof \BridgeInterface)) {
 		return null;
 	}
 
