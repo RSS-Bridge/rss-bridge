@@ -162,8 +162,14 @@ try {
 		unset($params['_noproxy']);
 
 		// Load cache & data
-		$bridge->setCache($cache);
-		$bridge->setDatas($params);
+		try {
+			$bridge->setCache($cache);
+			$bridge->setDatas($params);
+		} catch(Exception $e){
+			header('HTTP/1.1 ' . $e->getCode() . ' ' . Http::getMessageForCode($e->getCode()));
+			header('Content-Type: text/html');
+			die(buildBridgeException($e, $bridge));
+		}
 
 		// Data transformation
 		try {
@@ -172,8 +178,11 @@ try {
 			$format->setExtraInfos($bridge->getExtraInfos());
 			$format->display();
 		} catch(Exception $e){
-			echo "The bridge has crashed. You should report this to the bridges maintainer";
+			header('HTTP/1.1 ' . $e->getCode() . ' ' . Http::getMessageForCode($e->getCode()));
+			header('Content-Type: text/html');
+			die(buildTransformException($e, $bridge));
 		}
+
 		die;
 	}
 }
