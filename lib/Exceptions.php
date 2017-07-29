@@ -185,7 +185,7 @@ function buildSection($e, $bridge, $message, $link){
 			<li>Open a GitHub Issue if this error persists</li>
 		</ul>
 	</div>
-	<a href="{$link}" title="After clicking on this button you can review
+	<a href="{$link}" title="After clicking this button you can review
 	the issue before submitting it"><button>Open GitHub Issue</button></a>
 	<p class="maintainer">{$bridge->getMaintainer()}</p>
 </section>
@@ -198,7 +198,7 @@ function buildPage($title, $header, $section){
 <html lang="en">
 <head>
 	<title>{$title}</title>
-	<link href="static/exception.css" rel="stylesheet">
+	<link href="static/style.css" rel="stylesheet">
 </head>
 <body>
 	{$header}
