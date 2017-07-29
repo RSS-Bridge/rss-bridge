@@ -197,7 +197,7 @@ function buildTransformException($e, $bridge){
 		<p class="status">{$bridge->getName()}</p>
 	</header>
 	<section>
-		<p class="exception-message">SS-Bridge was unable to transform the contents
+		<p class="exception-message">RSS-Bridge was unable to transform the contents
 		returned by <strong>{$bridge->getName()}</strong>!</p>
 		<div class="advice">
 			<ul class="advice">
