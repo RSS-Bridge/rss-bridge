@@ -22,9 +22,9 @@ class ViadeoCompanyBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($link)
 			or returnServerError('Could not request Viadeo.');
 
-		foreach($html->find('//*[@id="company-newsfeed"]/ul/li') as $element){
+		foreach($html->find('//*[@id="company-newsfeed"]/ul/li') as $element) {
 			$title = $element->find('p', 0)->innertext;
-			if($title){
+			if($title) {
 				$item = array();
 				$item['uri'] = $link;
 				$item['title'] = mb_substr($element->find('p', 0)->innertext, 0, 100);

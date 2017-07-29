@@ -11,9 +11,9 @@ class LWNprevBridge extends BridgeAbstract{
 	}
 
 	private function jumpToNextTag(&$node){
-		while($node && $node->nodeType === XML_TEXT_NODE){
+		while($node && $node->nodeType === XML_TEXT_NODE) {
 			$nextNode = $node->nextSibling;
-			if(!$nextNode){
+			if(!$nextNode) {
 				break;
 			}
 			$node = $nextNode;
@@ -21,9 +21,9 @@ class LWNprevBridge extends BridgeAbstract{
 	}
 
 	private function jumpToPreviousTag(&$node){
-		while($node && $node->nodeType === XML_TEXT_NODE){
+		while($node && $node->nodeType === XML_TEXT_NODE) {
 			$previousNode = $node->previousSibling;
-			if(!$previousNode){
+			if(!$previousNode) {
 				break;
 			}
 			$node = $previousNode;
@@ -44,8 +44,8 @@ class LWNprevBridge extends BridgeAbstract{
 		$cat1 = '';
 		$cat2 = '';
 
-		foreach($html->getElementsByTagName('a') as $a){
-			if($a->textContent === 'Multi-page format'){
+		foreach($html->getElementsByTagName('a') as $a) {
+			if($a->textContent === 'Multi-page format') {
 				break;
 			}
 		}
@@ -57,8 +57,8 @@ class LWNprevBridge extends BridgeAbstract{
 			substr($edition, strpos($edition, 'for ') + strlen('for '))
 		);
 
-		foreach($html->getElementsByTagName('h2') as $h2){
-			if($h2->getAttribute('class') !== 'SummaryHL'){
+		foreach($html->getElementsByTagName('h2') as $h2) {
+			if($h2->getAttribute('class') !== 'SummaryHL') {
 				continue;
 			}
 
@@ -67,7 +67,7 @@ class LWNprevBridge extends BridgeAbstract{
 			$h2NextSibling = $h2->nextSibling;
 			$this->jumpToNextTag($h2NextSibling);
 
-			switch($h2NextSibling->getAttribute('class')){
+			switch($h2NextSibling->getAttribute('class')) {
 			case 'FeatureByline':
 				$item['author'] = $h2NextSibling->getElementsByTagName('b')->item(0)->textContent;
 				break;
@@ -82,9 +82,9 @@ class LWNprevBridge extends BridgeAbstract{
 
 			$h2FirstChild = $h2->firstChild;
 			$this->jumpToNextTag($h2FirstChild);
-			if($h2FirstChild->nodeName === 'a'){
+			if($h2FirstChild->nodeName === 'a') {
 				$item['uri'] = self::URI . $h2FirstChild->getAttribute('href');
-			}else{
+			} else{
 				$item['uri'] = $realURI . '#' . $URICounter;
 			}
 			$URICounter++;
@@ -93,12 +93,12 @@ class LWNprevBridge extends BridgeAbstract{
 
 			$h2PrevSibling = $h2->previousSibling;
 			$this->jumpToPreviousTag($h2PrevSibling);
-			switch($h2PrevSibling->getAttribute('class')){
+			switch($h2PrevSibling->getAttribute('class')) {
 			case 'Cat2HL':
 				$cat2 = $h2PrevSibling->textContent;
 				$h2PrevSibling = $h2PrevSibling->previousSibling;
 				$this->jumpToPreviousTag($h2PrevSibling);
-				if($h2PrevSibling->getAttribute('class') !== 'Cat1HL'){
+				if($h2PrevSibling->getAttribute('class') !== 'Cat1HL') {
 					break;
 				}
 				$cat1 = $h2PrevSibling->textContent;
@@ -113,7 +113,7 @@ class LWNprevBridge extends BridgeAbstract{
 			$h2PrevSibling = null;
 
 			$item['title'] = '';
-			if(!empty($cat1)){
+			if(!empty($cat1)) {
 				$item['title'] .= '[' . $cat1 . ($cat2 ? '/' . $cat2 : '') . '] ';
 			}
 			$item['title'] .= $h2->textContent;
@@ -121,7 +121,7 @@ class LWNprevBridge extends BridgeAbstract{
 			$node = $h2;
 			$content = '';
 			$contentEnd = false;
-			while(!$contentEnd){
+			while(!$contentEnd) {
 				$node = $node->nextSibling;
 				if(!$node || (
 						$node->nodeType !== XML_TEXT_NODE && (
@@ -132,9 +132,9 @@ class LWNprevBridge extends BridgeAbstract{
 							)
 						)
 					)
-				){
+				) {
 					$contentEnd = true;
-				}else{
+				} else{
 					$content .= $node->C14N();
 				}
 			}

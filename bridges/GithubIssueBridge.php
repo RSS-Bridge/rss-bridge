@@ -35,9 +35,9 @@ class GithubIssueBridge extends BridgeAbstract {
 
 	public function getName(){
 		$name = $this->getInput('u') . '/' . $this->getInput('p');
-		switch($this->queriedContext){
+		switch($this->queriedContext) {
 		case 'Project Issues':
-			if($this->getInput('c')){
+			if($this->getInput('c')) {
 				$prefix = static::NAME . 's comments for ';
 			} else {
 				$prefix = static::NAME . 's for ';
@@ -53,11 +53,11 @@ class GithubIssueBridge extends BridgeAbstract {
 	}
 
 	public function getURI(){
-		if(!is_null($this->getInput('u')) && !is_null($this->getInput('p'))){
+		if(!is_null($this->getInput('u')) && !is_null($this->getInput('p'))) {
 			$uri = static::URI . $this->getInput('u') . '/' . $this->getInput('p') . '/issues';
-			if($this->queriedContext === 'Issue comments'){
+			if($this->queriedContext === 'Issue comments') {
 				$uri .= '/' . $this->getInput('i');
-			} elseif($this->getInput('c')){
+			} elseif($this->getInput('c')) {
 				$uri .= '?q=is%3Aissue+sort%3Aupdated-desc';
 			}
 			return $uri;
@@ -70,29 +70,29 @@ class GithubIssueBridge extends BridgeAbstract {
 		$class = $comment->getAttribute('class');
 		$classes = explode(' ', $class);
 		$event = false;
-		if(in_array('discussion-item', $classes)){
+		if(in_array('discussion-item', $classes)) {
 			$event = true;
 		}
 
 		$author = 'unknown';
-		if($comment->find('.author', 0)){
+		if($comment->find('.author', 0)) {
 			$author = $comment->find('.author', 0)->plaintext;
 		}
 
 		$uri = static::URI . $this->getInput('u') . '/' . $this->getInput('p') . '/issues/' . $issueNbr;
 
 		$comment = $comment->firstChild();
-		if(!$event){
+		if(!$event) {
 			$comment = $comment->nextSibling();
 		}
 
-		if($event){
+		if($event) {
 			$title .= ' / ' . substr($class, strpos($class, 'discussion-item-') + strlen('discussion-item-'));
-			if(!$comment->hasAttribute('id')){
+			if(!$comment->hasAttribute('id')) {
 				$items = array();
 				$timestamp = strtotime($comment->find('relative-time', 0)->getAttribute('datetime'));
 				$content = $comment->innertext;
-				while($comment = $comment->nextSibling()){
+				while($comment = $comment->nextSibling()) {
 					$item = array();
 					$item['author'] = $author;
 					$item['title'] = html_entity_decode($title, ENT_QUOTES, 'UTF-8');
@@ -123,12 +123,12 @@ class GithubIssueBridge extends BridgeAbstract {
 		$title = $issue->find('.gh-header-title', 0)->plaintext;
 		$issueNbr = trim(substr($issue->find('.gh-header-number', 0)->plaintext, 1));
 		$comments = $issue->find('.js-discussion', 0);
-		foreach($comments->children() as $comment){
+		foreach($comments->children() as $comment) {
 			$classes = explode(' ', $comment->getAttribute('class'));
 			if(in_array('discussion-item', $classes)
-			|| in_array('timeline-comment-wrapper', $classes)){
+			|| in_array('timeline-comment-wrapper', $classes)) {
 				$item = $this->extractIssueComment($issueNbr, $title, $comment);
-				if(array_keys($item) !== range(0, count($item) - 1)){
+				if(array_keys($item) !== range(0, count($item) - 1)) {
 					$item = array($item);
 				}
 				$items = array_merge($items, $item);
@@ -141,22 +141,22 @@ class GithubIssueBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('No results for Github Issue ' . $this->getURI());
 
-		switch($this->queriedContext){
+		switch($this->queriedContext) {
 		case 'Issue comments':
 			$this->items = $this->extractIssueComments($html);
 			break;
 		case 'Project Issues':
-			foreach($html->find('.js-active-navigation-container .js-navigation-item') as $issue){
+			foreach($html->find('.js-active-navigation-container .js-navigation-item') as $issue) {
 				$info = $issue->find('.opened-by', 0);
 				$issueNbr = substr(trim($info->plaintext), 1, strpos(trim($info->plaintext), ' '));
 
 				$item = array();
 				$item['content'] = '';
 
-				if($this->getInput('c')){
+				if($this->getInput('c')) {
 					$uri = static::URI . $this->getInput('u') . '/' . $this->getInput('p') . '/issues/' . $issueNbr;
 					$issue = getSimpleHTMLDOMCached($uri, static::CACHE_TIMEOUT);
-					if($issue){
+					if($issue) {
 						$this->items = array_merge($this->items, $this->extractIssueComments($issue));
 						continue;
 					}

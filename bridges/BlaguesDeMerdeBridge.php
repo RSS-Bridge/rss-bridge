@@ -11,11 +11,11 @@ class BlaguesDeMerdeBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI)
 			or returnServerError('Could not request BDM.');
 
-		foreach($html->find('article.joke_contener') as $element){
+		foreach($html->find('article.joke_contener') as $element) {
 			$item = array();
 			$temp = $element->find('a');
 
-			if(isset($temp[2])){
+			if(isset($temp[2])) {
 				$item['content'] = trim($element->find('div.joke_text_contener', 0)->innertext);
 				$uri = $temp[2]->href;
 				$item['uri'] = $uri;

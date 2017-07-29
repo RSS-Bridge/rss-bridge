@@ -12,7 +12,7 @@ class DansTonChatBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI . 'latest.html')
 			or returnServerError('Could not request DansTonChat.');
 
-		foreach($html->find('div.item') as $element){
+		foreach($html->find('div.item') as $element) {
 			$item = array();
 			$item['uri'] = $element->find('a', 0)->href;
 			$item['title'] = 'DansTonChat ' . $element->find('a', 1)->plaintext;

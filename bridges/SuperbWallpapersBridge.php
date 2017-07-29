@@ -38,12 +38,12 @@ class SuperbWallpapersBridge extends BridgeAbstract {
 
 		$lastpage = min($html->find('.paging .cpage', 0)->innertext(), ceil($max / 36));
 
-		for($page = 1; $page <= $lastpage; $page++){
+		for($page = 1; $page <= $lastpage; $page++) {
 			$link = self::URI . '/' . $category . '/' . $page . '.html';
 			$html = getSimpleHTMLDOM($link)
 				or returnServerError('No results for this query.');
 
-			foreach($html->find('.wpl .i a') as $element){
+			foreach($html->find('.wpl .i a') as $element) {
 				$thumbnail = $element->find('img', 0);
 
 				$item = array();
@@ -61,7 +61,7 @@ class SuperbWallpapersBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		if(!is_null($this->getInput('c')) && !is_null($this->getInput('r'))){
+		if(!is_null($this->getInput('c')) && !is_null($this->getInput('r'))) {
 			return self::NAME . '- ' . $this->getInput('c') . ' [' . $this->getInput('r') . ']';
 		}
 

@@ -110,7 +110,7 @@ class ShanaprojectBridge extends BridgeAbstract {
 		if(!$animes)
 			returnServerError('Could not find anime headers!');
 
-		foreach($animes as $anime){
+		foreach($animes as $anime) {
 			$item = array();
 			$item['title'] = $this->extractAnimeTitle($anime);
 			$item['author'] = $this->extractAnimeAuthor($anime);

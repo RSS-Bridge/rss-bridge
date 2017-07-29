@@ -18,7 +18,7 @@ class FB2Bridge extends BridgeAbstract {
 	public function collectData(){
 
 		function extractFromDelimiters($string, $start, $end){
-			if(strpos($string, $start) !== false){
+			if(strpos($string, $start) !== false) {
 				$section_retrieved = substr($string, strpos($string, $start) + strlen($start));
 				$section_retrieved = substr($section_retrieved, 0, strpos($section_retrieved, $end));
 				return $section_retrieved;
@@ -29,7 +29,7 @@ class FB2Bridge extends BridgeAbstract {
 
 		//Utility function for cleaning a Facebook link
 		$unescape_fb_link = function($matches){
-			if(is_array($matches) && count($matches) > 1){
+			if(is_array($matches) && count($matches) > 1) {
 				$link = $matches[1];
 				if(strpos($link, '/') === 0)
 					$link = self::URI . $link . '"';
@@ -72,12 +72,12 @@ class FB2Bridge extends BridgeAbstract {
 			return $matches[0];
 		};
 
-		if($this->getInput('u') !== null){
+		if($this->getInput('u') !== null) {
 			$page = 'https://touch.facebook.com/' . $this->getInput('u');
 			$cookies = $this->getCookies($page);
 			$pageID = $this->getPageID($page, $cookies);
 
-			if($pageID === null){
+			if($pageID === null) {
 				echo <<<EOD
 Unable to get the page id. You should consider getting the ID by hand, then importing it into FB2Bridge
 EOD;
@@ -103,7 +103,7 @@ EOD;
 		$html = $this->buildContent($fileContent);
 		$author = $this->getInput('u');
 
-		foreach($html->find("article") as $content){
+		foreach($html->find("article") as $content) {
 
 			$item = array();
 
@@ -223,8 +223,8 @@ EOD;
 
 		//First request to get the cookie
 		$cookies = "";
-		foreach($http_response_header as $hdr){
-			if(strpos($hdr, "Set-Cookie") !== false){
+		foreach($http_response_header as $hdr) {
+			if(strpos($hdr, "Set-Cookie") !== false) {
 				$cLine = explode(":", $hdr)[1];
 				$cLine = explode(";", $cLine)[0];
 				$cookies .= ";" . $cLine;
@@ -255,7 +255,7 @@ EOD;
 		$regex = "/page_id=([0-9]*)&/";
 		preg_match($regex, $pageContent, $matches);
 
-		if(count($matches) > 0){
+		if(count($matches) > 0) {
 			return $matches[1];
 		}
 

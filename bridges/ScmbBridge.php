@@ -12,7 +12,7 @@ class ScmbBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI)
 			or returnServerError('Could not request Se Coucher Moins Bete.');
 
-		foreach($html->find('article') as $article){
+		foreach($html->find('article') as $article) {
 			$item = array();
 			$item['uri'] = self::URI . $article->find('p.summary a', 0)->href;
 			$item['title'] = $article->find('header h1 a', 0)->innertext;

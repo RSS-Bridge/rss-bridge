@@ -35,7 +35,7 @@ class MoebooruBridge extends BridgeAbstract {
 			$data[] = preg_replace('/}\)(.*)/', '}', $element);
 		unset($data[0]);
 
-		foreach($data as $datai){
+		foreach($data as $datai) {
 			$json = json_decode($datai, true);
 			$item = array();
 			$item['uri'] = $this->getURI() . '/post/show/' . $json['id'];

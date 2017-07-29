@@ -18,7 +18,7 @@ class GoComicsBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not request GoComics: ' . $this->getURI());
 
-		foreach($html->find('div.item-comic-container') as $element){
+		foreach($html->find('div.item-comic-container') as $element) {
 
 			$img = $element->find('img', 0);
 			$link = $element->find('a.item-comic-link', 0);
@@ -42,7 +42,7 @@ class GoComicsBridge extends BridgeAbstract {
 	}
 
 	public function getURI(){
-		if(!is_null($this->getInput('comicname'))){
+		if(!is_null($this->getInput('comicname'))) {
 			return self::URI . urlencode($this->getInput('comicname'));
 		}
 
@@ -50,7 +50,7 @@ class GoComicsBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		if(!is_null($this->getInput('comicname'))){
+		if(!is_null($this->getInput('comicname'))) {
 			return $this->getInput('comicname') . ' - GoComics';
 		}
 

@@ -9,14 +9,14 @@ class Cache {
 	}
 
 	static public function create($nameCache){
-		if(!static::isValidNameCache($nameCache)){
+		if(!static::isValidNameCache($nameCache)) {
 			throw new \InvalidArgumentException('Name cache must be at least one
  uppercase follow or not by alphanumeric or dash characters.');
 		}
 
 		$pathCache = self::getDir() . $nameCache . '.php';
 
-		if(!file_exists($pathCache)){
+		if(!file_exists($pathCache)) {
 			throw new \Exception('The cache you looking for does not exist.');
 		}
 
@@ -26,11 +26,11 @@ class Cache {
 	}
 
 	static public function setDir($dirCache){
-		if(!is_string($dirCache)){
+		if(!is_string($dirCache)) {
 			throw new \InvalidArgumentException('Dir cache must be a string.');
 		}
 
-		if(!file_exists($dirCache)){
+		if(!file_exists($dirCache)) {
 			throw new \Exception('Dir cache does not exist.');
 		}
 
@@ -40,7 +40,7 @@ class Cache {
 	static public function getDir(){
 		$dirCache = self::$dirCache;
 
-		if(is_null($dirCache)){
+		if(is_null($dirCache)) {
 			throw new \LogicException(__CLASS__ . ' class need to know cache path !');
 		}
 

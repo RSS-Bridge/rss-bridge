@@ -17,7 +17,7 @@ class RainbowSixSiegeBridge extends BridgeAbstract {
 		$json = $json['items'];
 
 		// Start at index 2 to remove highlighted articles
-		for($i = 0; $i < count($json); $i++){
+		for($i = 0; $i < count($json); $i++) {
 			$jsonItem = $json[$i]['Content'];
 			$article = str_get_html($jsonItem);
 

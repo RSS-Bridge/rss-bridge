@@ -22,8 +22,8 @@ class RTBFBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not request RTBF.');
 
-		foreach($html->find('section[id!=widget-ml-avoiraussi-] .rtbf-media-grid article') as $element){
-			if($count >= $limit){
+		foreach($html->find('section[id!=widget-ml-avoiraussi-] .rtbf-media-grid article') as $element) {
+			if($count >= $limit) {
 				break;
 			}
 
@@ -49,7 +49,7 @@ class RTBFBridge extends BridgeAbstract {
 	}
 
 	public function getURI(){
-		if(!is_null($this->getInput('c'))){
+		if(!is_null($this->getInput('c'))) {
 			return self::URI . 'emissions/detail?id=' . $this->getInput('c');
 		}
 
@@ -57,7 +57,7 @@ class RTBFBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		if(!is_null($this->getInput('c'))){
+		if(!is_null($this->getInput('c'))) {
 			return $this->getInput('c') .' - RTBF Bridge';
 		}
 

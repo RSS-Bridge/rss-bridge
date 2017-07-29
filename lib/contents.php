@@ -11,21 +11,21 @@ $maxlen = null){
 		)
 	);
 
-	if(defined('PROXY_URL') && !defined('NOPROXY')){
+	if(defined('PROXY_URL') && !defined('NOPROXY')) {
 		$contextOptions['http']['proxy'] = PROXY_URL;
 		$contextOptions['http']['request_fulluri'] = true;
 
-		if(is_null($context)){
+		if(is_null($context)) {
 			$context = stream_context_create($contextOptions);
 		} else {
 			$prevContext = $context;
-			if(!stream_context_set_option($context, $contextOptions)){
+			if(!stream_context_set_option($context, $contextOptions)) {
 				$context = $prevContext;
 			}
 		}
 	}
 
-	if(is_null($maxlen)){
+	if(is_null($maxlen)) {
 		$content = file_get_contents($url, $use_include_path, $context, $offset);
 	} else {
 		$content = file_get_contents($url, $use_include_path, $context, $offset, $maxlen);
@@ -35,9 +35,9 @@ $maxlen = null){
 		debugMessage('Cant\'t download ' . $url);
 
 	// handle compressed data
-	foreach($http_response_header as $header){
-		if(stristr($header, 'content-encoding')){
-			switch(true){
+	foreach($http_response_header as $header) {
+		if(stristr($header, 'content-encoding')) {
+			switch(true) {
 			case stristr($header, 'gzip'):
 				$content = gzinflate(substr($content, 10, -8));
 				break;
@@ -113,11 +113,11 @@ $defaultSpanText = DEFAULT_SPAN_TEXT){
 	$time = $cache->getTime();
 	if($time !== false
 	&& (time() - $duration < $time)
-	&& (!defined('DEBUG') || DEBUG !== true)){ // Contents within duration
+	&& (!defined('DEBUG') || DEBUG !== true)) { // Contents within duration
 		$content = $cache->loadData();
 	} else { // Content not within duration
 		$content = getContents($url, $use_include_path, $context, $offset, $maxLen);
-		if($content !== false){
+		if($content !== false) {
 			$cache->saveData($content);
 		}
 	}

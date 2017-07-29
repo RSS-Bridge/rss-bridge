@@ -57,7 +57,7 @@ class CastorusBridge extends BridgeAbstract {
 		if(!$nodes)
 			returnServerError('Cannot find nodes!');
 
-		foreach($nodes as $node){
+		foreach($nodes as $node) {
 			$node->outertext = '';
 		}
 
@@ -88,7 +88,7 @@ class CastorusBridge extends BridgeAbstract {
 		if(!$activities)
 			returnServerError('Failed to find activities!');
 
-		foreach($activities as $activity){
+		foreach($activities as $activity) {
 			$item = array();
 
 			$item['title'] = $this->extractActivityTitle($activity);
@@ -103,12 +103,12 @@ class CastorusBridge extends BridgeAbstract {
 			. '</p>';
 
 			if(isset($zip_filter)
-			&& !(substr($item['title'], 0, strlen($zip_filter)) === $zip_filter)){
+			&& !(substr($item['title'], 0, strlen($zip_filter)) === $zip_filter)) {
 				continue; // Skip this item
 			}
 
 			if(isset($city_filter)
-			&& !(substr($item['title'], strpos($item['title'], ' ') + 1, strlen($city_filter)) === $city_filter)){
+			&& !(substr($item['title'], strpos($item['title'], ' ') + 1, strlen($city_filter)) === $city_filter)) {
 				continue; // Skip this item
 			}
 

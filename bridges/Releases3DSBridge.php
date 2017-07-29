@@ -10,7 +10,7 @@ class Releases3DSBridge extends BridgeAbstract {
 	public function collectData(){
 
 		function extractFromDelimiters($string, $start, $end){
-			if(strpos($string, $start) !== false){
+			if(strpos($string, $start) !== false) {
 				$section_retrieved = substr($string, strpos($string, $start) + strlen($start));
 				$section_retrieved = substr($section_retrieved, 0, strpos($section_retrieved, $end));
 				return $section_retrieved;
@@ -20,7 +20,7 @@ class Releases3DSBridge extends BridgeAbstract {
 		}
 
 		function typeToString($type){
-			switch($type){
+			switch($type) {
 				case 1: return '3DS Game';
 				case 4: return 'eShop';
 				default: return '??? (' . $type . ')';
@@ -28,7 +28,7 @@ class Releases3DSBridge extends BridgeAbstract {
 		}
 
 		function cardToString($card){
-			switch($card){
+			switch($card) {
 				case 1: return 'Regular (CARD1)';
 				case 2: return 'NAND (CARD2)';
 				default: return '??? (' . $card . ')';
@@ -40,17 +40,17 @@ class Releases3DSBridge extends BridgeAbstract {
 			or returnServerError('Could not request 3dsdb: ' . $dataUrl);
 		$limit = 0;
 
-		foreach(array_reverse(explode('<release>', $xml)) as $element){
-			if($limit >= 5){
+		foreach(array_reverse(explode('<release>', $xml)) as $element) {
+			if($limit >= 5) {
 				break;
 			}
 
-			if(strpos($element, '</release>') === false){
+			if(strpos($element, '</release>') === false) {
 				continue;
 			}
 
 			$releasename = extractFromDelimiters($element, '<releasename>', '</releasename>');
-			if(empty($releasename)){
+			if(empty($releasename)) {
 				continue;
 			}
 
@@ -77,7 +77,7 @@ class Releases3DSBridge extends BridgeAbstract {
 			$ignCoverArt = '';
 
 			$ignSearchUrl = 'http://www.ign.com/search?q=' . urlencode($name);
-			if($ignResult = getSimpleHTMLDOM($ignSearchUrl)){
+			if($ignResult = getSimpleHTMLDOM($ignSearchUrl)) {
 				$ignCoverArt = $ignResult->find('div.search-item-media', 0)->find('img', 0)->src;
 				$ignDesc = $ignResult->find('div.search-item-description', 0)->plaintext;
 				$ignLink = $ignResult->find('div.search-item-sub-title', 0)->find('a', 1)->href;

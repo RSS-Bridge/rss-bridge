@@ -70,7 +70,7 @@ class YoutubeBridge extends BridgeAbstract {
 	}
 
 	private function ytBridgeParseXmlFeed($xml) {
-		foreach($xml->find('entry') as $element){
+		foreach($xml->find('entry') as $element) {
 			$title = $this->ytBridgeFixTitle($element->find('title', 0)->plaintext);
 			$author = $element->find('name', 0)->plaintext;
 			$desc = $element->find('media:description', 0)->innertext;
@@ -92,14 +92,14 @@ class YoutubeBridge extends BridgeAbstract {
 	private function ytBridgeParseHtmlListing($html, $element_selector, $title_selector){
 		$limit = 10;
 		$count = 0;
-		foreach($html->find($element_selector) as $element){
-			if($count < $limit){
+		foreach($html->find($element_selector) as $element) {
+			if($count < $limit) {
 				$author = '';
 				$desc = '';
 				$time = 0;
 				$vid = str_replace('/watch?v=', '', $element->find('a', 0)->href);
 				$title = $this->ytBridgeFixTitle($element->find($title_selector, 0)->plaintext);
-				if($title != '[Private Video]'){
+				if($title != '[Private Video]') {
 					$this->ytBridgeQueryVideoInfo($vid, $author, $desc, $time);
 					$this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
 					$count++;
@@ -134,32 +134,32 @@ class YoutubeBridge extends BridgeAbstract {
 		$url_feed = '';
 		$url_listing = '';
 
-		if($this->getInput('u')){ /* User and Channel modes */
+		if($this->getInput('u')) { /* User and Channel modes */
 			$this->request = $this->getInput('u');
 			$url_feed = self::URI . 'feeds/videos.xml?user=' . urlencode($this->request);
 			$url_listing = self::URI . 'user/' . urlencode($this->request) . '/videos';
-		} elseif($this->getInput('c')){
+		} elseif($this->getInput('c')) {
 			$this->request = $this->getInput('c');
 			$url_feed = self::URI . 'feeds/videos.xml?channel_id=' . urlencode($this->request);
 			$url_listing = self::URI . 'channel/' . urlencode($this->request) . '/videos';
 		}
 
-		if(!empty($url_feed) && !empty($url_listing)){
-			if($xml = $this->ytGetSimpleHTMLDOM($url_feed)){
+		if(!empty($url_feed) && !empty($url_listing)) {
+			if($xml = $this->ytGetSimpleHTMLDOM($url_feed)) {
 				$this->ytBridgeParseXmlFeed($xml);
-			} elseif($html = $this->ytGetSimpleHTMLDOM($url_listing)){
+			} elseif($html = $this->ytGetSimpleHTMLDOM($url_listing)) {
 				$this->ytBridgeParseHtmlListing($html, 'li.channels-content-item', 'h3');
 			} else {
 				returnServerError("Could not request YouTube. Tried:\n - $url_feed\n - $url_listing");
 			}
-		} elseif($this->getInput('p')){ /* playlist mode */
+		} elseif($this->getInput('p')) { /* playlist mode */
 			$this->request = $this->getInput('p');
 			$url_listing = self::URI . 'playlist?list=' . urlencode($this->request);
 			$html = $this->ytGetSimpleHTMLDOM($url_listing)
 				or returnServerError("Could not request YouTube. Tried:\n - $url_listing");
 			$this->ytBridgeParseHtmlListing($html, 'tr.pl-video', '.pl-video-title a');
 			$this->request = 'Playlist: ' . str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
-		} elseif($this->getInput('s')){ /* search mode */
+		} elseif($this->getInput('s')) { /* search mode */
 			$this->request = $this->getInput('s');
 			$page = 1;
 			if($this->getInput('pa'))

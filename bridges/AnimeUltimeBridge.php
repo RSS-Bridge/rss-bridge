@@ -120,7 +120,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
 	}
 
 	public function getName() {
-		if(!is_null($this->getInput('type'))){
+		if(!is_null($this->getInput('type'))) {
 			$typeFilter = array_search(
 				$this->getInput('type'),
 				self::PARAMETERS[$this->queriedContext]['type']['values']

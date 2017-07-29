@@ -22,9 +22,9 @@ class AllocineFRBridge extends BridgeAbstract {
 	));
 
 	public function getURI(){
-		if(!is_null($this->getInput('category'))){
+		if(!is_null($this->getInput('category'))) {
 
-			switch($this->getInput('category')){
+			switch($this->getInput('category')) {
 			case 'faux-raccord':
 				$uri = static::URI . 'video/programme-12284/saison-29841/';
 				break;
@@ -43,7 +43,7 @@ class AllocineFRBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		if(!is_null($this->getInput('category'))){
+		if(!is_null($this->getInput('category'))) {
 			return self::NAME . ' : '
 				.array_search(
 					$this->getInput('category'),
@@ -64,15 +64,14 @@ class AllocineFRBridge extends BridgeAbstract {
 				self::PARAMETERS[$this->queriedContext]['category']['values']
 			);
 
-		foreach($html->find('figure.media-meta-fig') as $element){
+		foreach($html->find('figure.media-meta-fig') as $element) {
 			$item = array();
 
 			$title = $element->find('div.titlebar h3.title a', 0);
 			$content = trim($element->innertext);
 			$figCaption = strpos($content, $category);
 
-			if($figCaption !== false)
-			{
+			if($figCaption !== false) {
 				$content = str_replace('src="/', 'src="' . static::URI, $content);
 				$content = str_replace('href="/', 'href="' . static::URI, $content);
 				$content = str_replace('src=\'/', 'src=\'' . static::URI, $content);

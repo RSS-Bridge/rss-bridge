@@ -34,7 +34,7 @@ class DauphineLibereBridge extends FeedExpander {
 	public function collectData(){
 		$url = self::URI . 'rss';
 
-		if(empty($this->getInput('u'))){
+		if(empty($this->getInput('u'))) {
 			$url = self::URI . $this->getInput('u') . '/rss';
 		}
 

@@ -20,7 +20,7 @@ class AtomFormat extends FormatAbstract{
 		$uri = $this->xml_encode($uri);
 
 		$entries = '';
-		foreach($this->getItems() as $item){
+		foreach($this->getItems() as $item) {
 			$entryAuthor = isset($item['author']) ? $this->xml_encode($item['author']) : '';
 			$entryTitle = isset($item['title']) ? $this->xml_encode($item['title']) : '';
 			$entryUri = isset($item['uri']) ? $this->xml_encode($item['uri']) : '';
@@ -28,8 +28,8 @@ class AtomFormat extends FormatAbstract{
 			$entryContent = isset($item['content']) ? $this->xml_encode($this->sanitizeHtml($item['content'])) : '';
 
 			$entryEnclosures = '';
-			if(isset($item['enclosures'])){
-				foreach($item['enclosures'] as $enclosure){
+			if(isset($item['enclosures'])) {
+				foreach($item['enclosures'] as $enclosure) {
 					$entryEnclosures .= '<link rel="enclosure" href="'
 					. $this->xml_encode($enclosure)
 					. '"/>'

@@ -17,7 +17,7 @@ topic found in some section URLs, else all topics are selected.';
 	public function collectData(){
 
 		function extractFromDelimiters($string, $start, $end){
-			if(strpos($string, $start) !== false){
+			if(strpos($string, $start) !== false) {
 				$section_retrieved = substr($string, strpos($string, $start) + strlen($start));
 				$section_retrieved = substr($section_retrieved, 0, strpos($section_retrieved, $end));
 				return $section_retrieved;
@@ -27,7 +27,7 @@ topic found in some section URLs, else all topics are selected.';
 		}
 
 		function stripWithDelimiters($string, $start, $end){
-			while(strpos($string, $start) !== false){
+			while(strpos($string, $start) !== false) {
 				$section_to_remove = substr($string, strpos($string, $start));
 				$section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
 				$string = str_replace($section_to_remove, '', $string);
@@ -49,14 +49,14 @@ topic found in some section URLs, else all topics are selected.';
 		$html = getSimpleHTMLDOM($pageUrl) or returnServerError('Could not request CNET: ' . $pageUrl);
 		$limit = 0;
 
-		foreach($html->find('div.assetBody') as $element){
-			if($limit < 8){
+		foreach($html->find('div.assetBody') as $element) {
+			if($limit < 8) {
 				$article_title = trim($element->find('h2', 0)->plaintext);
 				$article_uri = self::URI . ($element->find('a', 0)->href);
 				$article_timestamp = strtotime($element->find('time.assetTime', 0)->plaintext);
 				$article_author = trim($element->find('a[rel=author]', 0)->plaintext);
 
-				if(!empty($article_title) && !empty($article_uri) && strpos($article_uri, '/news/') !== false){
+				if(!empty($article_title) && !empty($article_uri) && strpos($article_uri, '/news/') !== false) {
 					$article_html = getSimpleHTMLDOM($article_uri)
 						or returnServerError('Could not request CNET: ' . $article_uri);
 					$article_content = trim(
@@ -83,7 +83,7 @@ topic found in some section URLs, else all topics are selected.';
 	}
 
 	public function getName(){
-		if(!is_null($this->getInput('topic'))){
+		if(!is_null($this->getInput('topic'))) {
 			$topic = $this->getInput('topic');
 			return 'CNET News Bridge' . (empty($topic) ? '' : ' - ' . $topic);
 		}

@@ -141,7 +141,7 @@ region, and optionally a category and a keyword .';
 	public function collectData(){
 
 		$category = $this->getInput('c');
-		if(empty($category)){
+		if(empty($category)) {
 				$category = 'annonces';
 		}
 
@@ -154,13 +154,13 @@ region, and optionally a category and a keyword .';
 			or returnServerError('Could not request LeBonCoin.');
 
 		$list = $html->find('.tabsContent', 0);
-		if($list === null){
+		if($list === null) {
 			return;
 		}
 
 		$tags = $list->find('li');
 
-		foreach($tags as $element){
+		foreach($tags as $element) {
 
 			$element = $element->find('a', 0);
 
@@ -169,7 +169,7 @@ region, and optionally a category and a keyword .';
 			$title = html_entity_decode($element->getAttribute('title'));
 			$content_image = $element->find('div.item_image', 0)->find('.lazyload', 0);
 
-			if($content_image !== null){
+			if($content_image !== null) {
 				$content = '<img src="' . $content_image->getAttribute('data-imgsrc') . '" alt="thumbnail">';
 			} else {
 				$content = "";

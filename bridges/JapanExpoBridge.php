@@ -38,7 +38,7 @@ class JapanExpoBridge extends BridgeAbstract {
 		}
 
 		$convert_article_images = function($matches){
-			if(is_array($matches) && count($matches) > 1){
+			if(is_array($matches) && count($matches) > 1) {
 				return '<img src="' . $matches[1] . '" />';
 			}
 		};
@@ -48,7 +48,7 @@ class JapanExpoBridge extends BridgeAbstract {
 		$fullcontent = $this->getInput('mode');
 		$count = 0;
 
-		foreach($html->find('a._tile2') as $element){
+		foreach($html->find('a._tile2') as $element) {
 
 			$url = $element->href;
 			$thumbnail = 'http://s.japan-expo.com/katana/images/JES049/paris.png';
@@ -57,8 +57,8 @@ class JapanExpoBridge extends BridgeAbstract {
 			if(count($img_search_result) >= 2)
 				$thumbnail = trim($img_search_result[1], "'");
 
-			if($fullcontent){
-				if($count >= 5){
+			if($fullcontent) {
+				if($count >= 5) {
 					break;
 				}
 

@@ -42,8 +42,17 @@
   <rule ref="PEAR.NamingConventions.ValidClassName"/>
   <!-- Use 'elseif' instead of 'else if' -->
   <rule ref="PSR2.ControlStructures.ElseIfDeclaration"/>
+  <!-- Do not add spaces after opening or before closing bracket -->
+  <rule ref="PSR2.ControlStructures.ControlStructureSpacing"/>
   <!-- Add a new line at the end of a file -->
   <rule ref="PSR2.Files.EndFileNewline"/>
+  <!-- Add space after closing parenthesis -->
+  <!-- Add body into new line -->
+  <!-- Close body in new line -->
+  <rule ref="Squiz.ControlStructures.ControlSignature">
+    <!-- No space after keyword (before opening parenthesis) -->
+    <exclude name="Squiz.ControlStructures.ControlSignature.SpaceAfterKeyword"/>
+  </rule>
   <!-- When declaring a function: -->
   <!-- Do not add a space before a comma -->
   <!-- Add a space after a comma -->

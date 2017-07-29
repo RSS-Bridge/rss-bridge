@@ -16,8 +16,8 @@ class PlanetLibreBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI)
 			or returnServerError('Could not request PlanetLibre.');
 		$limit = 0;
-		foreach($html->find('div.post') as $element){
-			if($limit < 5){
+		foreach($html->find('div.post') as $element) {
+			if($limit < 5) {
 				$item = array();
 				$item['title'] = $element->find('h1', 0)->plaintext;
 				$item['uri'] = $element->find('a', 0)->href;

@@ -37,7 +37,7 @@ class CollegeDeFranceBridge extends BridgeAbstract {
 		. 'components/search-audiovideo.jsp?fulltext=&siteid=1156951719600&lang=FR&type=all')
 			or returnServerError('Could not request CollegeDeFrance.');
 
-		foreach($html->find('a[data-target]') as $element){
+		foreach($html->find('a[data-target]') as $element) {
 			$item = array();
 			$item['title'] = $element->find('.title', 0)->plaintext;
 
@@ -60,7 +60,7 @@ class CollegeDeFranceBridge extends BridgeAbstract {
 				$timezone
 			);
 
-			if(!$d){
+			if(!$d) {
 				$d = DateTime::createFromFormat(
 					'!d m Y',
 					trim(str_replace(

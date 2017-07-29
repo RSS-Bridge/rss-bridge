@@ -24,11 +24,11 @@ class SexactuBridge extends BridgeAbstract {
 
 		$sexactu = $html->find('.container_sexactu', 0);
 		$rowList = $sexactu->find('.row');
-		foreach($rowList as $row){
+		foreach($rowList as $row) {
 			// only use first list as second one only contains pages numbers
 
 			$title = $row->find('.title', 0);
-			if($title){
+			if($title) {
 				$item = array();
 				$item['author'] = self::AUTHOR;
 				$item['title'] = $title->plaintext;
@@ -36,9 +36,9 @@ class SexactuBridge extends BridgeAbstract {
 				$uri = $title->$urlAttribute;
 				if($uri === false)
 					continue;
-				if(substr($uri, 0, 1) === 'h'){ // absolute uri
+				if(substr($uri, 0, 1) === 'h') { // absolute uri
 					$item['uri'] = $uri;
-				} else if(substr($uri, 0, 1) === '/'){ // domain relative url
+				} else if(substr($uri, 0, 1) === '/') { // domain relative url
 					$item['uri'] = self::URI . $uri;
 				} else {
 					$item['uri'] = $this->getURI() . $uri;
@@ -66,7 +66,7 @@ class SexactuBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOMCached($uri);
 
 		$content = $html->find('#article', 0);
-		if($content){
+		if($content) {
 			return $content;
 		}
 

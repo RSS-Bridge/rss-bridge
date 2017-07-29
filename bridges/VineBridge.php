@@ -20,7 +20,7 @@ class VineBridge extends BridgeAbstract {
 	$html = getSimpleHTMLDOM($uri)
 		or returnServerError('No results for this query.');
 
-		foreach($html->find('.post') as $element){
+		foreach($html->find('.post') as $element) {
 			$a = $element->find('a', 0);
 			$a->href = str_replace('https://', 'http://', $a->href);
 			$time = strtotime(ltrim($element->find('p', 0)->plaintext, ' Uploaded at '));

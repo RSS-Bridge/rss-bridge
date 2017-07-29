@@ -17,7 +17,7 @@ class NovelUpdatesBridge extends BridgeAbstract {
 	private $seriesTitle = '';
 
 	public function getURI(){
-		if(!is_null($this->getInput('n'))){
+		if(!is_null($this->getInput('n'))) {
 			return static::URI . '/series/' . $this->getInput('n') . '/';
 		}
 
@@ -35,7 +35,7 @@ class NovelUpdatesBridge extends BridgeAbstract {
 		$html = stristr($html, '<tbody>'); //strip thead
 		$html = stristr($html, '<tr>'); //remove tbody
 		$html = str_get_html(stristr($html, '</tbody>', true)); //remove last tbody and get back as an array
-		foreach($html->find('tr') as $element){
+		foreach($html->find('tr') as $element) {
 				$item = array();
 				$item['uri'] = $element->find('td', 2)->find('a', 0)->href;
 				$item['title'] = $element->find('td', 2)->find('a', 0)->plaintext;
@@ -60,7 +60,7 @@ class NovelUpdatesBridge extends BridgeAbstract {
 	}
 
 		public function getName(){
-			if(!empty($this->seriesTitle)){
+			if(!empty($this->seriesTitle)) {
 				return $this->seriesTitle . ' - ' . static::NAME;
 			}
 

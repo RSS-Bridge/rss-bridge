@@ -16,7 +16,7 @@ class MixCloudBridge extends BridgeAbstract {
 	));
 
 	public function getName(){
-		if(!is_null($this->getInput('u'))){
+		if(!is_null($this->getInput('u'))) {
 			return 'MixCloud - ' . $this->getInput('u');
 		}
 
@@ -28,7 +28,7 @@ class MixCloudBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI . $this->getInput('u'))
 			or returnServerError('Could not request MixCloud.');
 
-		foreach($html->find('section.card') as $element){
+		foreach($html->find('section.card') as $element) {
 
 			$item = array();
 
@@ -40,7 +40,7 @@ class MixCloudBridge extends BridgeAbstract {
 
 			$image = $element->find('a.album-art img', 0);
 
-			if($image){
+			if($image) {
 				$item['content'] = '<img src="' . $image->getAttribute('src') . '" />';
 			}
 

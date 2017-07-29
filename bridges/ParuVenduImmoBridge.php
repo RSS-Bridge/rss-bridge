@@ -29,15 +29,15 @@ class ParuVenduImmoBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not request paruvendu.');
 
-		foreach($html->find('div.annonce a') as $element){
+		foreach($html->find('div.annonce a') as $element) {
 
-			if(!$element->title){
+			if(!$element->title) {
 				continue;
 			}
 
 			$img = '';
-			foreach($element->find('span.img img') as $img){
-				if($img->original){
+			foreach($element->find('span.img img') as $img) {
+				if($img->original) {
 					$img = '<img src="' . $img->original . '" />';
 				}
 			}
@@ -65,33 +65,33 @@ class ParuVenduImmoBridge extends BridgeAbstract {
 		. $appartment
 		. $maison;
 
-		if($this->getInput('minarea')){
+		if($this->getInput('minarea')) {
 			$link .= '&sur0=' . urlencode($this->getInput('minarea'));
 		}
 
-		if($this->getInput('maxprice')){
+		if($this->getInput('maxprice')) {
 			$link .= '&px1=' . urlencode($this->getInput('maxprice'));
 		}
 
-		if($this->getInput('pa')){
+		if($this->getInput('pa')) {
 			$link .= '&pa=' . urlencode($this->getInput('pa'));
 		}
 
-		if($this->getInput('lo')){
+		if($this->getInput('lo')) {
 			$link .= '&lo=' . urlencode($this->getInput('lo'));
 		}
 		return $link;
 	}
 
 	public function getName(){
-		if(!is_null($this->getInput('minarea'))){
+		if(!is_null($this->getInput('minarea'))) {
 			$request = '';
 			$minarea = $this->getInput('minarea');
-			if(!empty($minarea)){
+			if(!empty($minarea)) {
 				$request .= ' ' . $minarea . ' m2';
 			}
 			$location = $this->getInput('lo');
-			if(!empty($location)){
+			if(!empty($location)) {
 				$request .= ' In: ' . $location;
 			}
 			return 'Paru Vendu Immobilier' . $request;

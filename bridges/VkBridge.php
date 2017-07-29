@@ -16,7 +16,7 @@ class VkBridge extends BridgeAbstract {
 	);
 
 	public function getURI(){
-		if(!is_null($this->getInput('u'))){
+		if(!is_null($this->getInput('u'))) {
 			return static::URI . urlencode($this->getInput('u'));
 		}
 
@@ -33,15 +33,15 @@ class VkBridge extends BridgeAbstract {
 		$text_html = iconv('windows-1251', 'utf-8', $text_html);
 		$html = str_get_html($text_html);
 
-		foreach($html->find('.post') as $post){
+		foreach($html->find('.post') as $post) {
 
-			if(is_object($post->find('a.wall_post_more', 0))){
+			if(is_object($post->find('a.wall_post_more', 0))) {
 				//delete link "show full" in content
 				$post->find('a.wall_post_more', 0)->outertext = '';
 			}
 			$item = array();
 			$item['content'] = strip_tags(backgroundToImg($post->find('div.wall_text', 0)->innertext), '<br><img>');
-			if(is_object($post->find('a.page_media_link_title', 0))){
+			if(is_object($post->find('a.page_media_link_title', 0))) {
 				$link = $post->find('a.page_media_link_title', 0)->getAttribute('href');
 
 				//external link in the post
@@ -50,7 +50,7 @@ class VkBridge extends BridgeAbstract {
 			}
 
 			//get video on post
-			if(is_object($post->find('span.post_video_title_content', 0))){
+			if(is_object($post->find('span.post_video_title_content', 0))) {
 				$titleVideo = $post->find('span.post_video_title_content', 0)->plaintext;
 				$linkToVideo = self::URI . $post->find('a.page_post_thumb_video', 0)->getAttribute('href');
 				$item['content'] .= "\n\r {$titleVideo}: {$linkToVideo}";

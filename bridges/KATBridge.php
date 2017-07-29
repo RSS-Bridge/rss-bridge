@@ -49,23 +49,22 @@ class KATBridge extends BridgeAbstract {
 				return $timestamp;
 		}
 		$catBool = $this->getInput('cat_check');
-		if($catBool){
+		if($catBool) {
 			$catNum = $this->getInput('cat');
 		}
 		$critList = $this->getInput('crit');
 		$trustedBool = $this->getInput('trusted');
 		$keywordsList = explode(';', $this->getInput('q'));
-		foreach($keywordsList as $keywords){
-			switch($critList){
+		foreach($keywordsList as $keywords) {
+			switch($critList) {
 			case 'search':
-				if($catBool == false){
+				if($catBool == false) {
 					$html = getSimpleHTMLDOM(
 						self::URI .
 						'torrents-search.php?search=' .
 						rawurlencode($keywords)
 					) or returnServerError('Could not request KAT.');
-				}
-				else {
+				} else {
 					$html = getSimpleHTMLDOM(
 						self::URI .
 						'torrents-search.php?search=' .
@@ -92,10 +91,10 @@ class KATBridge extends BridgeAbstract {
 			}
 			if ($html->find('table.ttable_headinner', 0) == false)
 				returnServerError('No result for query ' . $keywords);
-			foreach($html->find('tr.t-row') as $element){
+			foreach($html->find('tr.t-row') as $element) {
 				if(!$trustedBool
 				|| !is_null($element->find('i[title="Elite Uploader"]', 0))
-				|| !is_null($element->find('i[title="Verified Uploader"]', 0))){
+				|| !is_null($element->find('i[title="Verified Uploader"]', 0))) {
 					$item = array();
 					$item['uri'] = self::URI . $element->find('a', 2)->href;
 					$item['id'] = self::URI . $element->find('a.cellMainLink', 0)->href;

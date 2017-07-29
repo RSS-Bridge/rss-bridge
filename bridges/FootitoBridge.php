@@ -10,7 +10,7 @@ class FootitoBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI)
 			or returnServerError('Could not request Footito.');
 
-		foreach($html->find('div.post') as $element){
+		foreach($html->find('div.post') as $element) {
 			$item = array();
 
 			$content = trim($element->innertext);

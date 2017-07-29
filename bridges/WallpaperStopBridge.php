@@ -35,7 +35,7 @@ class WallpaperStopBridge extends BridgeAbstract {
 		$max = $this->getInput('m');
 		$lastpage = 1;
 
-		for($page = 1; $page <= $lastpage; $page++){
+		for($page = 1; $page <= $lastpage; $page++) {
 			$link = self::URI
 			. '/'
 			. $category
@@ -48,14 +48,14 @@ class WallpaperStopBridge extends BridgeAbstract {
 			$html = getSimpleHTMLDOM($link)
 				or returnServerError('No results for this query.');
 
-			if($page === 1){
+			if($page === 1) {
 				preg_match('/-(\d+)\.html$/', $html->find('.pagination > .last', 0)->href, $matches);
 				$lastpage = min($matches[1], ceil($max / 20));
 			}
 
-			foreach($html->find('article.item') as $element){
+			foreach($html->find('article.item') as $element) {
 				$wplink = $element->getAttribute('data-permalink');
-				if(preg_match('%^' . self::URI . '/(.+)/([^/]+)-(\d+)\.html$%', $wplink, $matches)){
+				if(preg_match('%^' . self::URI . '/(.+)/([^/]+)-(\d+)\.html$%', $wplink, $matches)) {
 					$thumbnail = $element->find('img', 0);
 
 					$item = array();
@@ -92,7 +92,7 @@ class WallpaperStopBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		if(!is_null($this->getInput('s')) && !is_null($this->getInput('c')) && !is_null($this->getInput('r'))){
+		if(!is_null($this->getInput('s')) && !is_null($this->getInput('c')) && !is_null($this->getInput('r'))) {
 			$subcategory = $this->getInput('s');
 			return 'WallpaperStop - '
 			. $this->getInput('c')

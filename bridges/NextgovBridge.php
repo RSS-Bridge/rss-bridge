@@ -35,9 +35,9 @@ class NextgovBridge extends FeedExpander {
 		$item['content'] = '';
 
 		$namespaces = $newsItem->getNamespaces(true);
-		if(isset($namespaces['media'])){
+		if(isset($namespaces['media'])) {
 			$media = $newsItem->children($namespaces['media']);
-			if(isset($media->content)){
+			if(isset($media->content)) {
 				$attributes = $media->content->attributes();
 				$item['content'] = '<img src="' . $attributes['url'] . '">';
 			}

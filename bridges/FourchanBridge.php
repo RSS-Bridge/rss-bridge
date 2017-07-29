@@ -20,7 +20,7 @@ class FourchanBridge extends BridgeAbstract {
 	));
 
 	public function getURI(){
-		if(!is_null($this->getInput('c')) && !is_null($this->getInput('t'))){
+		if(!is_null($this->getInput('c')) && !is_null($this->getInput('t'))) {
 			return static::URI . $this->getInput('c') . '/thread/' . $this->getInput('t');
 		}
 
@@ -32,7 +32,7 @@ class FourchanBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError("Could not request 4chan, thread not found");
 
-		foreach($html->find('div.postContainer') as $element){
+		foreach($html->find('div.postContainer') as $element) {
 			$item = array();
 			$item['id'] = $element->find('.post', 0)->getAttribute('id');
 			$item['uri'] = $this->getURI() . '#' . $item['id'];
@@ -41,19 +41,19 @@ class FourchanBridge extends BridgeAbstract {
 
 			$file = $element->find('.file', 0);
 
-			if(!empty($file)){
+			if(!empty($file)) {
 				$item['image'] = $element->find('.file a', 0)->href;
 				$item['imageThumb'] = $element->find('.file img', 0)->src;
 				if(!isset($item['imageThumb']) and strpos($item['image'], '.swf') !== false)
 					$item['imageThumb'] = 'http://i.imgur.com/eO0cxf9.jpg';
 			}
 
-			if(!empty($element->find('span.subject', 0)->innertext)){
+			if(!empty($element->find('span.subject', 0)->innertext)) {
 				$item['subject'] = $element->find('span.subject', 0)->innertext;
 			}
 
 			$item['title'] = 'reply ' . $item['id'] . ' | ' . $item['author'];
-				if(isset($item['subject'])){
+				if(isset($item['subject'])) {
 					$item['title'] = $item['subject'] . ' - ' . $item['title'];
 				}
 
@@ -61,7 +61,7 @@ class FourchanBridge extends BridgeAbstract {
 			$content = str_replace('href="#p', 'href="' . $this->getURI() . '#p', $content);
 			$item['content'] = '<span id="' . $item['id'] . '">' . $content . '</span>';
 
-			if(isset($item['image'])){
+			if(isset($item['image'])) {
 				$item['content'] = '<a href="'
 				. $item['image']
 				. '"><img alt="'

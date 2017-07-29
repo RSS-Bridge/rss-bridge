@@ -48,7 +48,7 @@ class TwitterBridge extends BridgeAbstract {
 	);
 
 	public function getName(){
-		switch($this->queriedContext){
+		switch($this->queriedContext) {
 		case 'By keyword or hashtag':
 			$specific = 'search ';
 			$param = 'q';
@@ -63,7 +63,7 @@ class TwitterBridge extends BridgeAbstract {
 	}
 
 	public function getURI(){
-		switch($this->queriedContext){
+		switch($this->queriedContext) {
 		case 'By keyword or hashtag':
 			return self::URI
 			. 'search?q='
@@ -82,8 +82,8 @@ class TwitterBridge extends BridgeAbstract {
 		$html = '';
 
 		$html = getSimpleHTMLDOM($this->getURI());
-		if(!$html){
-			switch($this->queriedContext){
+		if(!$html) {
+			switch($this->queriedContext) {
 			case 'By keyword or hashtag':
 				returnServerError('No results for this query.');
 			case 'By username':
@@ -93,16 +93,16 @@ class TwitterBridge extends BridgeAbstract {
 
 		$hidePictures = $this->getInput('nopic');
 
-		foreach($html->find('div.js-stream-tweet') as $tweet){
+		foreach($html->find('div.js-stream-tweet') as $tweet) {
 
 			// Skip retweets?
 			if($this->getInput('noretweet')
-			&& $tweet->getAttribute('data-screen-name') !== $this->getInput('u')){
+			&& $tweet->getAttribute('data-screen-name') !== $this->getInput('u')) {
 				continue;
 			}
 
 			// remove 'invisible' content
-			foreach($tweet->find('.invisible') as $invisible){
+			foreach($tweet->find('.invisible') as $invisible) {
 				$invisible->outertext = '';
 			}
 
@@ -139,7 +139,7 @@ class TwitterBridge extends BridgeAbstract {
 
 			// Add picture to content
 			$picture_html = '';
-			if(!$hidePictures){
+			if(!$hidePictures) {
 				$picture_html = <<<EOD
 <a href="https://twitter.com/{$item['username']}">
 <img
@@ -154,7 +154,7 @@ EOD;
 			// Add embeded image to content
 			$image_html = '';
 			$image = $this->getImageURI($tweet);
-			if(!$this->getInput('noimg') && !is_null($image)){
+			if(!$this->getInput('noimg') && !is_null($image)) {
 				// add enclosures
 				$item['enclosures'] = array($image . ':orig');
 
@@ -182,7 +182,7 @@ EOD;
 
 			// add quoted tweet
 			$quotedTweet = $tweet->find('div.QuoteTweet', 0);
-			if($quotedTweet){
+			if($quotedTweet) {
 				// get tweet text
 				$cleanedQuotedTweet = str_replace(
 					'href="/',
@@ -196,7 +196,7 @@ EOD;
 				// Add embeded image to content
 				$quotedImage_html = '';
 				$quotedImage = $this->getQuotedImageURI($tweet);
-				if(!$this->getInput('noimg') && !is_null($quotedImage)){
+				if(!$this->getInput('noimg') && !is_null($quotedImage)) {
 					// add enclosures
 					$item['enclosures'] = array($quotedImage . ':orig');
 
@@ -228,15 +228,15 @@ EOD;
 
 	private function processEmojis($tweet){
 		// process emojis (reduce size)
-		foreach($tweet->find('img.Emoji') as $img){
+		foreach($tweet->find('img.Emoji') as $img) {
 			$img->style .= ' height: 1em;';
 		}
 	}
 
 	private function processContentLinks($tweet){
 		// processing content links
-		foreach($tweet->find('a') as $link){
-			if($link->hasAttribute('data-expanded-url')){
+		foreach($tweet->find('a') as $link) {
+			if($link->hasAttribute('data-expanded-url')) {
 				$link->href = $link->getAttribute('data-expanded-url');
 			}
 			$link->removeAttribute('data-expanded-url');
@@ -260,7 +260,7 @@ EOD;
 	private function getImageURI($tweet){
 		// Find media in tweet
 		$container = $tweet->find('div.AdaptiveMedia-container', 0);
-		if($container && $container->find('img', 0)){
+		if($container && $container->find('img', 0)) {
 			return $container->find('img', 0)->src;
 		}
 
@@ -270,7 +270,7 @@ EOD;
 	private function getQuotedImageURI($tweet){
 		// Find media in tweet
 		$container = $tweet->find('div.QuoteMedia-container', 0);
-		if($container && $container->find('img', 0)){
+		if($container && $container->find('img', 0)) {
 			return $container->find('img', 0)->src;
 		}
 

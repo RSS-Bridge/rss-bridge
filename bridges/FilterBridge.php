@@ -31,7 +31,7 @@ class FilterBridge extends FeedExpander {
 	protected function parseItem($newItem){
 		$item = parent::parseItem($newItem);
 
-		switch(true){
+		switch(true) {
 		case $this->getFilterType() === 'permit':
 			if (preg_match($this->getFilter(), $item['title'])) {
 				return $item;
@@ -57,20 +57,20 @@ class FilterBridge extends FeedExpander {
 	public function getURI(){
 		$url = $this->getInput('url');
 
-		if(empty($url)){
+		if(empty($url)) {
 			$url = parent::getURI();
 		}
 		return $url;
 	}
 
 	public function collectData(){
-		if($this->getInput('url') && substr($this->getInput('url'), 0, strlen('http')) !== 'http'){
+		if($this->getInput('url') && substr($this->getInput('url'), 0, strlen('http')) !== 'http') {
 			// just in case someone find a way to access local files by playing with the url
 			returnClientError('The url parameter must either refer to http or https protocol.');
 		}
 		try{
 			$this->collectExpandableDatas($this->getURI());
-		}catch (HttpException $e){
+		} catch (HttpException $e) {
 			$this->collectExpandableDatas($this->getURI());
 		}
 	}

@@ -92,9 +92,9 @@ class IsoHuntBridge extends BridgeAbstract {
 
 	public function getURI(){
 		$uri = self::URI;
-		switch($this->queriedContext){
+		switch($this->queriedContext) {
 		case 'By "Latest" category':
-			switch($this->getInput('latest_category')){
+			switch($this->getInput('latest_category')) {
 			case 'hot_torrents':
 				$uri .= 'statistic/hot/torrents';
 				break;
@@ -128,7 +128,7 @@ class IsoHuntBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		switch($this->queriedContext){
+		switch($this->queriedContext) {
 		case 'By "Latest" category':
 			$categoryName = array_search(
 					$this->getInput('latest_category'),
@@ -163,9 +163,9 @@ class IsoHuntBridge extends BridgeAbstract {
 	public function collectData(){
 		$html = $this->loadHtml($this->getURI());
 
-		switch($this->queriedContext){
+		switch($this->queriedContext) {
 		case 'By "Latest" category':
-			switch($this->getInput('latest_category')){
+			switch($this->getInput('latest_category')) {
 			case 'hot_torrents':
 				$this->getLatestHotTorrents($html);
 				break;
@@ -179,7 +179,7 @@ class IsoHuntBridge extends BridgeAbstract {
 			}
 			break;
 		case 'By "Torrent" category':
-			if($this->getInput('torrent_category') === 'movies'){
+			if($this->getInput('torrent_category') === 'movies') {
 				// This one is special (content wise)
 				$this->getMovieTorrents($html);
 			} else {
@@ -187,7 +187,7 @@ class IsoHuntBridge extends BridgeAbstract {
 			}
 			break;
 		case 'Search torrent by name':
-			if( $this->getInput('search_category') === 'movies'){
+			if($this->getInput('search_category') === 'movies') {
 				// This one is special (content wise)
 				$this->getMovieTorrents($html);
 			} else {
@@ -208,7 +208,7 @@ class IsoHuntBridge extends BridgeAbstract {
 		if(!$torrents)
 			returnServerError('Unable to find torrents!');
 
-		foreach($torrents as $torrent){
+		foreach($torrents as $torrent) {
 
 			$anchor = $torrent->find('a', 0);
 			if(!$anchor)
@@ -246,7 +246,7 @@ class IsoHuntBridge extends BridgeAbstract {
 		// Remove first element (header row)
 		$torrents = array_slice($torrents, 1);
 
-		foreach($torrents as $torrent){
+		foreach($torrents as $torrent) {
 
 			$cell = $torrent->find('td', 0);
 			if(!$cell)
@@ -281,7 +281,7 @@ class IsoHuntBridge extends BridgeAbstract {
 		if(!$posts)
 			returnServerError('Unable to find posts!');
 
-		foreach($posts as $post){
+		foreach($posts as $post) {
 			$item = array();
 
 			$item['uri'] = $this->latestNewsExtractUri($post);
@@ -316,7 +316,7 @@ class IsoHuntBridge extends BridgeAbstract {
 		$timestamp = strtotime($matches[1]);
 
 		// Make sure date is not in the future (dates are given like 'Nov. 20' without year)
-		if($timestamp > time()){
+		if($timestamp > time()) {
 			$timestamp = strtotime('-1 year', $timestamp);
 		}
 
@@ -345,12 +345,12 @@ class IsoHuntBridge extends BridgeAbstract {
 			returnServerError('Unable to find content!');
 
 		// Remove <h2>...</h2> (title)
-		foreach($content->find('h2') as $element){
+		foreach($content->find('h2') as $element) {
 			$element->outertext = '';
 		}
 
 		// Remove <small>...</small> (author)
-		foreach($content->find('small') as $element){
+		foreach($content->find('small') as $element) {
 			$element->outertext = '';
 		}
 
@@ -370,7 +370,7 @@ class IsoHuntBridge extends BridgeAbstract {
 		if(!$torrents)
 			returnServerError('Unable to find torrents!');
 
-		foreach($torrents as $torrent){
+		foreach($torrents as $torrent) {
 			$item = array();
 
 			$item['uri'] = $this->latestTorrentsExtractUri($torrent);
@@ -444,7 +444,7 @@ class IsoHuntBridge extends BridgeAbstract {
 	}
 
 	private function buildCategoryUri($category, $order_popularity = false){
-		switch($category){
+		switch($category) {
 		case 'anime': $index = 1; break;
 		case 'software' : $index = 2; break;
 		case 'games' : $index = 3; break;

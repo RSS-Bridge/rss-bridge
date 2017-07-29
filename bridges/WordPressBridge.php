@@ -26,7 +26,7 @@ class WordPressBridge extends FeedExpander {
 		$article_html = getSimpleHTMLDOMCached($item['uri']);
 
 		$article = null;
-		switch(true){
+		switch(true) {
 		case !is_null($article_html->find('article', 0)):
 			// most common content div
 			$article = $article_html->find('article', 0);
@@ -46,7 +46,7 @@ class WordPressBridge extends FeedExpander {
 			break;
 		}
 
-		if(!is_null($article)){
+		if(!is_null($article)) {
 			$item['content'] = $this->clearContent($article->innertext);
 		}
 
@@ -55,20 +55,20 @@ class WordPressBridge extends FeedExpander {
 
 	public function getURI(){
 		$url = $this->getInput('url');
-		if(empty($url)){
+		if(empty($url)) {
 			$url = parent::getURI();
 		}
 		return $url;
 	}
 
 	public function collectData(){
-		if($this->getInput('url') && substr($this->getInput('url'), 0, strlen('http')) !== 'http'){
+		if($this->getInput('url') && substr($this->getInput('url'), 0, strlen('http')) !== 'http') {
 			// just in case someone find a way to access local files by playing with the url
 			returnClientError('The url parameter must either refer to http or https protocol.');
 		}
 		try{
 			$this->collectExpandableDatas($this->getURI() . '/feed/atom/');
-		}catch (HttpException $e){
+		} catch (HttpException $e) {
 			$this->collectExpandableDatas($this->getURI() . '/?feed=atom');
 		}
 

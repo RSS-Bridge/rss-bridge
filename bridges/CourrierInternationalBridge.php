@@ -14,12 +14,12 @@ class CourrierInternationalBridge extends BridgeAbstract {
 		$element = $html->find("article");
 		$article_count = 1;
 
-		foreach($element as $article){
+		foreach($element as $article) {
 			$item = array();
 
 			$item['uri'] = $article->parent->getAttribute('href');
 
-			if(strpos($item['uri'], 'http') === false){
+			if(strpos($item['uri'], 'http') === false) {
 				$item['uri'] = self::URI . $item['uri'];
 			}
 
@@ -27,7 +27,7 @@ class CourrierInternationalBridge extends BridgeAbstract {
 
 			$content = $page->find('.article-text', 0);
 
-			if(!$content){
+			if(!$content) {
 				$content = $page->find('.depeche-text', 0);
 			}
 

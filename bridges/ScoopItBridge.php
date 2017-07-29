@@ -21,7 +21,7 @@ class ScoopItBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($link)
 			or returnServerError('Could not request ScoopIt. for : ' . $link);
 
-		foreach($html->find('div.post-view') as $element){
+		foreach($html->find('div.post-view') as $element) {
 			$item = array();
 			$item['uri'] = $element->find('a', 0)->href;
 			$item['title'] = preg_replace(

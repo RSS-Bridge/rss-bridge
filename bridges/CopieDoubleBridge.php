@@ -13,16 +13,16 @@ class CopieDoubleBridge extends BridgeAbstract {
 
 		$table = $html->find('table table', 2);
 
-		foreach($table->find('tr') as $element){
+		foreach($table->find('tr') as $element) {
 			$td = $element->find('td', 0);
 
-			if($td->class === 'couleur_1'){
+			if($td->class === 'couleur_1') {
 				$item = array();
 				$title = $td->innertext;
 				$pos = strpos($title, '<a');
 				$title = substr($title, 0, $pos);
 				$item['title'] = $title;
-			} elseif(strpos($element->innertext, '/images/suivant.gif') === false){
+			} elseif(strpos($element->innertext, '/images/suivant.gif') === false) {
 				$a = $element->find('a', 0);
 				$item['uri'] = self::URI . $a->href;
 				$content = str_replace('src="/', 'src="/' . self::URI, $element->find("td", 0)->innertext);

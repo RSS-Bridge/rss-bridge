@@ -32,9 +32,9 @@ class PinterestBridge extends FeedExpander {
 	);
 
 	public function collectData(){
-		switch($this->queriedContext){
+		switch($this->queriedContext) {
 			case 'By username and board':
-				if($this->getInput('r')){
+				if($this->getInput('r')) {
 					$html = getSimpleHTMLDOMCached($this->getURI());
 					$this->getUserResults($html);
 				} else {
@@ -55,7 +55,7 @@ class PinterestBridge extends FeedExpander {
 		$fullname = $json['resourceDataCache'][0]['data']['owner']['full_name'];
 		$avatar = $json['resourceDataCache'][0]['data']['owner']['image_small_url'];
 
-		foreach($results as $result){
+		foreach($results as $result) {
 			$item = array();
 
 			$item['uri'] = $result['link'];
@@ -97,7 +97,7 @@ class PinterestBridge extends FeedExpander {
 		$json = json_decode($html->find('#jsInit1', 0)->innertext, true);
 		$results = $json['resourceDataCache'][0]['data']['results'];
 
-		foreach($results as $result){
+		foreach($results as $result) {
 			$item = array();
 
 			$item['uri'] = self::URI . $result['board']['url'];
@@ -136,7 +136,7 @@ class PinterestBridge extends FeedExpander {
 	}
 
 	public function getURI(){
-		switch($this->queriedContext){
+		switch($this->queriedContext) {
 		case 'By username and board':
 			$uri = self::URI . '/' . urlencode($this->getInput('u')) . '/' . urlencode($this->getInput('b'));// . '.rss';
 			break;
@@ -149,7 +149,7 @@ class PinterestBridge extends FeedExpander {
 	}
 
 	public function getName(){
-		switch($this->queriedContext){
+		switch($this->queriedContext) {
 		case 'By username and board':
 			$specific = $this->getInput('u') . ' - ' . $this->getInput('b');
 		break;

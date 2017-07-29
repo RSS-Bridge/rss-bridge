@@ -23,12 +23,12 @@ class CryptomeBridge extends BridgeAbstract {
 		$number = $this->getInput('n');
 
 		/* number of documents */
-		if(!empty($number)){
+		if(!empty($number)) {
 			$num = min($number, 20);
 		}
 
-		foreach($html->find('pre') as $element){
-			for($i = 0; $i < $num; ++$i){
+		foreach($html->find('pre') as $element) {
+			for($i = 0; $i < $num; ++$i) {
 				$item = array();
 				$item['uri'] = self::URI . substr($element->find('a', $i)->href, 20);
 				$item['title'] = substr($element->find('b', $i)->plaintext, 22);

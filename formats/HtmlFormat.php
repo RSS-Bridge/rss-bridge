@@ -9,13 +9,13 @@ class HtmlFormat extends FormatAbstract {
 		$mrssquery = str_replace('format=Html', 'format=Mrss', htmlentities($_SERVER['QUERY_STRING']));
 
 		$entries = '';
-		foreach($this->getItems() as $item){
+		foreach($this->getItems() as $item) {
 			$entryAuthor = isset($item['author']) ? '<br /><p class="author">by: ' . $item['author'] . '</p>' : '';
 			$entryTitle = isset($item['title']) ? $this->sanitizeHtml(strip_tags($item['title'])) : '';
 			$entryUri = isset($item['uri']) ? $item['uri'] : $uri;
 
 			$entryTimestamp = '';
-			if(isset($item['timestamp'])){
+			if(isset($item['timestamp'])) {
 				$entryTimestamp = '<time datetime="'
 				. date(DATE_ATOM, $item['timestamp'])
 				. '">'
@@ -24,17 +24,17 @@ class HtmlFormat extends FormatAbstract {
 			}
 
 			$entryContent = '';
-			if(isset($item['content'])){
+			if(isset($item['content'])) {
 				$entryContent = '<div class="content">'
 				. $this->sanitizeHtml($item['content'])
 				. '</div>';
 			}
 
 			$entryEnclosures = '';
-			if(isset($item['enclosures'])){
+			if(isset($item['enclosures'])) {
 				$entryEnclosures = '<div class="attachments"><p>Attachments:</p>';
 
-				foreach($item['enclosures'] as $enclosure){
+				foreach($item['enclosures'] as $enclosure) {
 					$url = $this->sanitizeHtml($enclosure);
 
 					$entryEnclosures .= '<li class="enclosure"><a href="'

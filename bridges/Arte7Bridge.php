@@ -44,7 +44,7 @@ class Arte7Bridge extends BridgeAbstract {
 	);
 
 	public function collectData(){
-		switch($this->queriedContext){
+		switch($this->queriedContext) {
 		case 'Catégorie (Français)':
 			$category = $this->getInput('catfr');
 			$lang = 'fr';
@@ -58,7 +58,7 @@ class Arte7Bridge extends BridgeAbstract {
 		$url = self::URI . 'guide/' . $lang . '/plus7/' . $category;
 		$input = getContents($url) or die('Could not request ARTE.');
 
-		if(strpos($input, 'categoryVideoSet') !== false){
+		if(strpos($input, 'categoryVideoSet') !== false) {
 			$input = explode('categoryVideoSet="', $input);
 			$input = explode('}}', $input[1]);
 			$input = $input[0] . '}}';

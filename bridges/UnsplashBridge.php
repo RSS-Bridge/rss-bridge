@@ -32,12 +32,12 @@ class UnsplashBridge extends BridgeAbstract {
 		$quality = $this->getInput('q');
 		$lastpage = 1;
 
-		for($page = 1; $page <= $lastpage; $page++){
+		for($page = 1; $page <= $lastpage; $page++) {
 			$link = self::URI . '/grid?page=' . $page;
 			$html = getSimpleHTMLDOM($link)
 				or returnServerError('No results for this query.');
 
-			if($page === 1){
+			if($page === 1) {
 				preg_match(
 					'/=(\d+)$/',
 					$html->find('.pagination > a[!class]', -1)->href,
@@ -47,7 +47,7 @@ class UnsplashBridge extends BridgeAbstract {
 				$lastpage = min($matches[1], ceil($max / 40));
 			}
 
-			foreach($html->find('.photo') as $element){
+			foreach($html->find('.photo') as $element) {
 				$thumbnail = $element->find('img', 0);
 				$thumbnail->src = str_replace('https://', 'http://', $thumbnail->src);
 

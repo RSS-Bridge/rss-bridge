@@ -34,16 +34,16 @@ class PickyWallpapersBridge extends BridgeAbstract {
 		$max = $this->getInput('m');
 		$resolution = $this->getInput('r'); // Wide wallpaper default
 
-		for($page = 1; $page <= $lastpage; $page++){
+		for($page = 1; $page <= $lastpage; $page++) {
 			$html = getSimpleHTMLDOM($this->getURI() . '/page-' . $page . '/')
 				or returnServerError('No results for this query.');
 
-			if($page === 1){
+			if($page === 1) {
 				preg_match('/page-(\d+)\/$/', $html->find('.pages li a', -2)->href, $matches);
 				$lastpage = min($matches[1], ceil($max / 12));
 			}
 
-			foreach($html->find('.items li img') as $element){
+			foreach($html->find('.items li img') as $element) {
 				$item = array();
 				$item['uri'] = str_replace('www', 'wallpaper', self::URI)
 				. '/'
@@ -70,7 +70,7 @@ class PickyWallpapersBridge extends BridgeAbstract {
 	}
 
 	public function getURI(){
-		if(!is_null($this->getInput('s')) && !is_null($this->getInput('r')) && !is_null($this->getInput('c'))){
+		if(!is_null($this->getInput('s')) && !is_null($this->getInput('r')) && !is_null($this->getInput('c'))) {
 			$subcategory = $this->getInput('s');
 			$link = self::URI
 			. $this->getInput('r')
@@ -86,7 +86,7 @@ class PickyWallpapersBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		if(!is_null($this->getInput('s'))){
+		if(!is_null($this->getInput('s'))) {
 			$subcategory = $this->getInput('s');
 			return 'PickyWallpapers - '
 			. $this->getInput('c')

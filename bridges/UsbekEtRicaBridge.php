@@ -31,11 +31,11 @@ class UsbekEtRicaBridge extends BridgeAbstract {
 
 		$articles = $html->find('div.details');
 
-		foreach($articles as $article){
+		foreach($articles as $article) {
 			$item = array();
 
 			$title = $article->find('div.card-title', 0);
-			if($title){
+			if($title) {
 				$item['title'] = $title->plaintext;
 			} else {
 				// Sometimes we get rubbish, ignore.
@@ -43,32 +43,32 @@ class UsbekEtRicaBridge extends BridgeAbstract {
 			}
 
 			$author = $article->find('div.author span', 0);
-			if($author){
+			if($author) {
 				$item['author'] = $author->plaintext;
 			}
 
 			$uri = $article->find('a.read', 0)->href;
-			if(substr($uri, 0, 1) === 'h'){ // absolute uri
+			if(substr($uri, 0, 1) === 'h') { // absolute uri
 				$item['uri'] = $uri;
 			} else { // relative uri
 				$item['uri'] = $this->getURI() . $uri;
 			}
 
-			if($fullarticle){
+			if($fullarticle) {
 				$content = $this->loadFullArticle($item['uri']);
 			}
 
-			if($fullarticle && !is_null($content)){
+			if($fullarticle && !is_null($content)) {
 				$item['content'] = $content;
 			} else {
 				$excerpt = $article->find('div.card-excerpt', 0);
-				if($excerpt){
+				if($excerpt) {
 					$item['content'] = $excerpt->plaintext;
 				}
 			}
 
 			$image = $article->find('div.card-img img', 0);
-			if($image){
+			if($image) {
 				$item['enclosures'] = array(
 					$image->src
 				);
@@ -76,7 +76,7 @@ class UsbekEtRicaBridge extends BridgeAbstract {
 
 			$this->items[] = $item;
 
-			if($limit > 0 && count($this->items) >= $limit){
+			if($limit > 0 && count($this->items) >= $limit) {
 				break;
 			}
 		}
@@ -91,7 +91,7 @@ class UsbekEtRicaBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOMCached($uri);
 
 		$content = $html->find('section.main', 0);
-		if($content){
+		if($content) {
 			return $this->replaceUriInHtmlElement($content);
 		}
 

@@ -32,7 +32,7 @@ class SoundCloudBridge extends BridgeAbstract {
 			. self::CLIENT_ID
 		)) or returnServerError('No results for this user');
 
-		for($i = 0; $i < 10; $i++){
+		for($i = 0; $i < 10; $i++) {
 			$item = array();
 			$item['author'] = $tracks[$i]->user->username . ' - ' . $tracks[$i]->title;
 			$item['title'] = $tracks[$i]->user->username . ' - ' . $tracks[$i]->title;
@@ -55,7 +55,7 @@ class SoundCloudBridge extends BridgeAbstract {
 
 	}
 	public function getName(){
-		if(!is_null($this->getInput('u'))){
+		if(!is_null($this->getInput('u'))) {
 			return self::NAME . ' - ' . $this->getInput('u');
 		}
 

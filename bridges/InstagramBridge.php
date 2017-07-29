@@ -30,13 +30,13 @@ class InstagramBridge extends BridgeAbstract {
 
 		$innertext = null;
 
-		foreach($html->find('script') as $script){
-			if('' === $script->innertext){
+		foreach($html->find('script') as $script) {
+			if('' === $script->innertext) {
 				continue;
 			}
 
 			$pos = strpos(trim($script->innertext), 'window._sharedData');
-			if(0 !== $pos){
+			if(0 !== $pos) {
 				continue;
 			}
 
@@ -49,9 +49,9 @@ class InstagramBridge extends BridgeAbstract {
 
 		$userMedia = $data->entry_data->ProfilePage[0]->user->media->nodes;
 
-		foreach($userMedia as $media){
+		foreach($userMedia as $media) {
 			// Check media type
-			switch($this->getInput('media_type')){
+			switch($this->getInput('media_type')) {
 				case 'all': break;
 				case 'video':
 					if($media->is_video === false) continue 2;
@@ -65,7 +65,7 @@ class InstagramBridge extends BridgeAbstract {
 			$item = array();
 			$item['uri'] = self::URI . 'p/' . $media->code . '/';
 			$item['content'] = '<img src="' . htmlentities($media->display_src) . '" />';
-			if (isset($media->caption)){
+			if (isset($media->caption)) {
 				$item['title'] = $media->caption;
 			} else {
 				$item['title'] = basename($media->display_src);
@@ -76,7 +76,7 @@ class InstagramBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		if(!is_null($this->getInput('u'))){
+		if(!is_null($this->getInput('u'))) {
 			return $this->getInput('u') . ' - Instagram Bridge';
 		}
 
@@ -84,7 +84,7 @@ class InstagramBridge extends BridgeAbstract {
 	}
 
 	public function getURI(){
-		if(!is_null($this->getInput('u'))){
+		if(!is_null($this->getInput('u'))) {
 			return self::URI . urlencode($this->getInput('u'));
 		}
 

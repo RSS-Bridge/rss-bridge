@@ -29,7 +29,7 @@ class WorldOfTanksBridge extends BridgeAbstract {
 	private $title = '';
 
 	public function getURI(){
-		if(!is_null($this->getInput('lang'))){
+		if(!is_null($this->getInput('lang'))) {
 			$lang = $this->getInput('lang');
 			$uri = self::URI . $lang . '/news/';
 			if(!empty($this->getInput('category'))) {
@@ -51,7 +51,7 @@ class WorldOfTanksBridge extends BridgeAbstract {
 		debugMessage("loaded HTML from " . $this->getURI());
 		// customize name
 		$this->title = $html->find('title', 0)->innertext;
-		foreach($html->find('.b-imgblock_ico') as $infoLink){
+		foreach($html->find('.b-imgblock_ico') as $infoLink) {
 			$this->parseLine($infoLink);
 		}
 	}

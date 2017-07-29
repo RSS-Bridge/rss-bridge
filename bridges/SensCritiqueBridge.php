@@ -36,10 +36,10 @@ class SensCritiqueBridge extends BridgeAbstract {
 
 	public function collectData(){
 		$categories = array();
-		foreach(self::PARAMETERS[$this->queriedContext] as $category => $properties){
-			if($this->getInput($category)){
+		foreach(self::PARAMETERS[$this->queriedContext] as $category => $properties) {
+			if($this->getInput($category)) {
 				$uri = self::URI;
-				switch($category){
+				switch($category) {
 				case 'm': $uri .= 'films/cette-semaine';
 				break;
 				case 's': $uri .= 'series/actualite';
@@ -63,11 +63,11 @@ class SensCritiqueBridge extends BridgeAbstract {
 	}
 
 	private function extractDataFromList($list){
-		if($list === null){
+		if($list === null) {
 			returnClientError('Cannot extract data from list');
 		}
 
-		foreach($list->find('li') as $movie){
+		foreach($list->find('li') as $movie) {
 			$item = array();
 			$item['author'] = htmlspecialchars_decode($movie->find('.elco-title a', 0)->plaintext, ENT_QUOTES)
 			. ' '

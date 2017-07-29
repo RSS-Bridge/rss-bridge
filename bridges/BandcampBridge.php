@@ -18,7 +18,7 @@ class BandcampBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('No results for this query.');
 
-		foreach($html->find('li.item') as $release){
+		foreach($html->find('li.item') as $release) {
 			$script = $release->find('div.art', 0)->getAttribute('onclick');
 			$uri = ltrim($script, "return 'url(");
 			$uri = rtrim($uri, "')");
@@ -46,7 +46,7 @@ class BandcampBridge extends BridgeAbstract {
 	}
 
 	public function getURI(){
-		if(!is_null($this->getInput('tag'))){
+		if(!is_null($this->getInput('tag'))) {
 			return self::URI . 'tag/' . urlencode($this->getInput('tag')) . '?sort_field=date';
 		}
 
@@ -54,7 +54,7 @@ class BandcampBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		if(!is_null($this->getInput('tag'))){
+		if(!is_null($this->getInput('tag'))) {
 			return $this->getInput('tag') . ' - Bandcamp Tag';
 		}
 
