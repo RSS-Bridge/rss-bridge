@@ -106,6 +106,14 @@ class TwitterBridge extends BridgeAbstract {
 				$invisible->outertext = '';
 			}
 
+			// Skip protmoted tweets
+			$heading = $tweet->previousSibling();
+			if(!is_null($heading) &&
+				$heading->getAttribute('class') === 'promoted-tweet-heading'
+			) {
+				continue;
+			}
+
 			$item = array();
 			// extract username and sanitize
 			$item['username'] = $tweet->getAttribute('data-screen-name');
