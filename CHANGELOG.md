@@ -1,11 +1,6 @@
 rss-bridge Changelog
 ===
 
-Alpha 0.1
-===
-* First tagged version.
-* Includes refactoring.
-* Unstable.
 
 Alpha 0.2
 ===
@@ -161,3 +156,9 @@ Alpha 0.2
 * YandereBridge
 * YoutubeBridge
 * ZDNetBridge
+
+Alpha 0.1
+===
+* First tagged version.
+* Includes refactoring.
+* Unstable.
