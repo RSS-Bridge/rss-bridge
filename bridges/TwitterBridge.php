@@ -107,10 +107,10 @@ class TwitterBridge extends BridgeAbstract {
 			}
 
 			// Skip protmoted tweets
-			$heading=$tweet->previousSibling();
+			$heading = $tweet->previousSibling();
 			if(!is_null($heading) &&
-				$heading->getAttribute('class')==='promoted-tweet-heading'
-			){
+				$heading->getAttribute('class') === 'promoted-tweet-heading'
+			) {
 				continue;
 			}
 
