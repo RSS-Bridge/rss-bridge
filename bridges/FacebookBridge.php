@@ -281,9 +281,11 @@ EOD;
 						if(strlen($title) > 64)
 							$title = substr($title, 0, strpos(wordwrap($title, 64), "\n")) . '...';
 
+						$uri = self::URI . $post->find('abbr')[0]->parent()->getAttribute('href');
+
 						//Build and add final item
-						$item['uri'] = self::URI . $post->find('abbr')[0]->parent()->getAttribute('href');
-						$item['content'] = $content;
+						$item['uri'] = htmlspecialchars_decode($uri);
+						$item['content'] = htmlspecialchars_decode($content);
 						$item['title'] = $title;
 						$item['author'] = $author;
 						$item['timestamp'] = $date;
