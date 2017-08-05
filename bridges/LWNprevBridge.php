@@ -188,9 +188,9 @@ EOD;
 
 			$item = array();
 
-			$item['uri'] = self::URI.'#'.microtime(true);
+			$item['uri'] = self::URI.'#'.count($items);
 
-			$item['timestamp'] = $this->editionTimeStamp;//+$URICounter;
+			$item['timestamp'] = $this->editionTimeStamp;
 
 			$item['author'] = 'LWN';
 
