@@ -84,22 +84,22 @@ ini_set('user_agent', $userAgent);
 
 // default whitelist
 $whitelist_default = array(
-	"BandcampBridge",
-	"CryptomeBridge",
-	"DansTonChatBridge",
-	"DuckDuckGoBridge",
-	"FacebookBridge",
-	"FlickrExploreBridge",
-	"GooglePlusPostBridge",
-	"GoogleSearchBridge",
-	"IdenticaBridge",
-	"InstagramBridge",
-	"OpenClassroomsBridge",
-	"PinterestBridge",
-	"ScmbBridge",
-	"TwitterBridge",
-	"WikipediaBridge",
-	"YoutubeBridge");
+	'BandcampBridge',
+	'CryptomeBridge',
+	'DansTonChatBridge',
+	'DuckDuckGoBridge',
+	'FacebookBridge',
+	'FlickrExploreBridge',
+	'GooglePlusPostBridge',
+	'GoogleSearchBridge',
+	'IdenticaBridge',
+	'InstagramBridge',
+	'OpenClassroomsBridge',
+	'PinterestBridge',
+	'ScmbBridge',
+	'TwitterBridge',
+	'WikipediaBridge',
+	'YoutubeBridge');
 
 try {
 
