@@ -94,8 +94,8 @@ EOD;
 	static public function isWhitelisted($whitelist, $name){
 		if(in_array($name, $whitelist)
 		|| in_array($name . '.php', $whitelist)
-		|| in_array($name . 'Bridge', $whitelist) // DEPRECATED
-		|| in_array($name . 'Bridge.php', $whitelist) // DEPRECATED
+		|| in_array($name . 'bridge', $whitelist) // DEPRECATED
+		|| in_array($name . 'bridge.php', $whitelist) // DEPRECATED
 		|| (count($whitelist) === 1 && trim($whitelist[0]) === '*')) {
 			return true;
 		} else {

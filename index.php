@@ -119,6 +119,9 @@ try {
 		} else {
 			$whitelist_selection = Bridge::listBridges();
 		}
+
+		// Prepare for case-insensitive match
+		$whitelist_selection = array_map('strtolower', $whitelist_selection);
 	}
 
 	$action = filter_input(INPUT_GET, 'action');
@@ -140,7 +143,7 @@ try {
 		}
 
 		// whitelist control
-		if(!Bridge::isWhitelisted($whitelist_selection, $bridge)) {
+		if(!Bridge::isWhitelisted($whitelist_selection, strtolower($bridge))) {
 			throw new \HttpException('This bridge is not whitelisted', 401);
 			die;
 		}
@@ -246,7 +249,7 @@ EOD;
 		$inactiveBridges = '';
 		$bridgeList = Bridge::listBridges();
 		foreach($bridgeList as $bridgeName) {
-			if(Bridge::isWhitelisted($whitelist_selection, $bridgeName)) {
+			if(Bridge::isWhitelisted($whitelist_selection, strtolower($bridgeName))) {
 				echo displayBridgeCard($bridgeName, $formats);
 						$activeFoundBridgeCount++;
 			} elseif($showInactive) {
