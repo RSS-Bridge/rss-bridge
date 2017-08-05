@@ -17,16 +17,25 @@ class DribbbleBridge extends BridgeAbstract {
 			$item['title'] = $shot->find('.dribbble-over strong', 0)->plaintext;
 			$item['author'] = trim($shot->find('.attribution-user a', 0)->plaintext);
 			$item['content'] = $shot->find('.comment', 0)->plaintext;
-			$item['content'] .= $this->getFullSizeImage($shot);
+
+            $preview_path = $shot->find('picture source', 0)->attr['srcset'];
+			$item['content'] .= $this->getImageTag($preview_path, $item['title']);
+			$item['enclosures'] = [ $this->getFullSizeImagePath($preview_path) ];
 
 			$this->items[] = $item;
 		}
 	}
 
-	private function getFullSizeImage($shot){
-		$image_preview = $shot->find('picture source', 0)->attr['srcset'];
-		$image_path = str_replace('_1x', '', $image_preview);
-
-		return '<br /> <img src="'.$image_path.'" alt="" />';
+    private function getImageTag($preview_path, $title){
+        return sprintf(
+            '<br /> <a href="%s"><img src="%s" alt="%s" /></a>',
+            $this->getFullSizeImagePath($preview_path),
+            $preview_path,
+            $title
+        );
 	}
+
+	private function getFullSizeImagePath($preview_path){
+        return str_replace('_1x', '', $preview_path);
+    }
 }
