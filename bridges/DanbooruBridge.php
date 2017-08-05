@@ -23,11 +23,16 @@ class DanbooruBridge extends BridgeAbstract {
 
 	const PATHTODATA = 'article';
 	const IDATTRIBUTE = 'data-id';
+	const TAGATTRIBUTE = 'alt';
 
 	protected function getFullURI(){
 		return $this->getURI()
 		. 'posts?&page=' . $this->getInput('p')
 		. '&tags=' . urlencode($this->getInput('t'));
+	}
+
+	protected function getTags($element){
+		return $element->find('img', 0)->getAttribute(static::TAGATTRIBUTE);
 	}
 
 	protected function getItemFromElement($element){
@@ -39,7 +44,7 @@ class DanbooruBridge extends BridgeAbstract {
 		$item['postid'] = (int)preg_replace("/[^0-9]/", '', $element->getAttribute(static::IDATTRIBUTE));
 		$item['timestamp'] = time();
 		$thumbnailUri = $element->find('img', 0)->src;
-		$item['tags'] = $element->find('img', 0)->getAttribute('alt');
+		$item['tags'] = $this->getTags($element);
 		$item['title'] = $this->getName() . ' | ' . $item['postid'];
 		$item['content'] = '<a href="'
 		. $item['uri']
