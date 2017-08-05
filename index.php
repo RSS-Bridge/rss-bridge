@@ -71,6 +71,14 @@ if(!extension_loaded('libxml'))
 if(ini_get('allow_url_fopen') !== "1")
 	die('"allow_url_fopen" is not set to "1". Please check "php.ini');
 
+// Check cache folder permissions (write permissions required)
+if(!is_writable(CACHE_DIR))
+	die('RSS-Bridge does not have write permissions for ' . CACHE_DIR . '!');
+
+// Check whitelist file permissions (only in DEBUG mode)
+if(!file_exists('./whitelist.txt') && !is_writable('./'))
+	die('RSS-Bridge does not have write permissions for ' . WHITELIST_FILE . '!');
+
 // FIXME : beta test UA spoofing, please report any blacklisting by PHP-fopen-unfriendly websites
 
 $userAgent = 'Mozilla/5.0(X11; Linux x86_64; rv:30.0)';
