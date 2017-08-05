@@ -1,5 +1,5 @@
 <?php
-class DribbbleBridge extends FeedExpander {
+class DribbbleBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'quentinus95';
 	const NAME = 'Dribbble popular shots';
@@ -23,8 +23,7 @@ class DribbbleBridge extends FeedExpander {
 		}
 	}
 
-	private function getFullSizeImage($shot)
-	{
+	private function getFullSizeImage($shot){
 		$image_preview = $shot->find('picture source', 0)->attr['srcset'];
 		$image_path = str_replace('_1x', '', $image_preview);
 
