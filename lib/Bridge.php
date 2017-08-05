@@ -9,16 +9,6 @@ class Bridge {
 	}
 
 	/**
-	* Checks if a bridge is an instantiable bridge.
-	* @param string $nameBridge name of the bridge that you want to use
-	* @return true if it is an instantiable bridge, false otherwise.
-	*/
-	static public function isInstantiable($nameBridge){
-		$re = new ReflectionClass($nameBridge);
-		return $re->IsInstantiable();
-	}
-
-	/**
 	* Create a new bridge object
 	* @param string $nameBridge Defined bridge name you want use
 	* @return Bridge object dedicated
@@ -42,11 +32,11 @@ EOD;
 
 		require_once $pathBridge;
 
-		if(Bridge::isInstantiable($nameBridge)) {
+		if((new ReflectionClass($nameBridge))->isInstantiable()) {
 			return new $nameBridge();
-		} else {
-			return false;
 		}
+
+		return false;
 	}
 
 	static public function setDir($dirBridge){
@@ -62,13 +52,11 @@ EOD;
 	}
 
 	static public function getDir(){
-		$dirBridge = self::$dirBridge;
-
-		if(is_null($dirBridge)) {
+		if(is_null(self::$dirBridge)) {
 			throw new \LogicException(__CLASS__ . ' class need to know bridge path !');
 		}
 
-		return $dirBridge;
+		return self::$dirBridge;
 	}
 
 	/**
@@ -76,9 +64,8 @@ EOD;
 	* @return array List of the bridges
 	*/
 	static public function listBridges(){
-		$pathDirBridge = self::getDir();
 		$listBridge = array();
-		$dirFiles = scandir($pathDirBridge);
+		$dirFiles = scandir(self::getDir());
 
 		if($dirFiles !== false) {
 			foreach($dirFiles as $fileName) {
@@ -92,14 +79,10 @@ EOD;
 	}
 
 	static public function isWhitelisted($whitelist, $name){
-		if(in_array($name, $whitelist)
+		return in_array($name, $whitelist)
 		|| in_array($name . '.php', $whitelist)
 		|| in_array($name . 'bridge', $whitelist) // DEPRECATED
 		|| in_array($name . 'bridge.php', $whitelist) // DEPRECATED
-		|| (count($whitelist) === 1 && trim($whitelist[0]) === '*')) {
-			return true;
-		} else {
-			return false;
-		}
+		|| (count($whitelist) === 1 && trim($whitelist[0]) === '*');
 	}
 }
