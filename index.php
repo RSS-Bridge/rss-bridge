@@ -25,6 +25,9 @@ error_reporting(0);
 // Specify directory for cached files (using FileCache)
 define('CACHE_DIR', __DIR__ . '/cache');
 
+// Specify path for whitelist file
+define('WHITELIST_FILE', __DIR__ . '/whitelist.txt');
+
 /*
   Create a file named 'DEBUG' for enabling debug mode.
   For further security, you may put whitelisted IP addresses
@@ -77,7 +80,6 @@ $userAgent .= '+https://github.com/RSS-Bridge/rss-bridge)';
 ini_set('user_agent', $userAgent);
 
 // default whitelist
-$whitelist_file = './whitelist.txt';
 $whitelist_default = array(
 	"BandcampBridge",
 	"CryptomeBridge",
@@ -102,13 +104,13 @@ try {
 	Format::setDir(__DIR__ . '/formats/');
 	Cache::setDir(__DIR__ . '/caches/');
 
-	if(!file_exists($whitelist_file)) {
+	if(!file_exists(WHITELIST_FILE)) {
 		$whitelist_selection = $whitelist_default;
 		$whitelist_write = implode("\n", $whitelist_default);
-		file_put_contents($whitelist_file, $whitelist_write);
+		file_put_contents(WHITELIST_FILE, $whitelist_write);
 	} else {
 
-		$whitelist_file_content = file_get_contents($whitelist_file);
+		$whitelist_file_content = file_get_contents(WHITELIST_FILE);
 		if($whitelist_file_content != "*\n") {
 			$whitelist_selection = explode("\n", $whitelist_file_content);
 		} else {
