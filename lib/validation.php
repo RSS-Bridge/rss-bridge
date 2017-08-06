@@ -21,7 +21,7 @@ function validateData(&$data, $parameters){
 	$validateNumberValue = function($value){
 		$filteredValue = filter_var($value, FILTER_VALIDATE_INT);
 
-		if($filteredValue === false && !empty($value))
+		if($filteredValue === false)
 			return null;
 
 		return $filteredValue;
