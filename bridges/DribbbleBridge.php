@@ -1,5 +1,4 @@
 <?php
-error_reporting(E_ALL);
 class DribbbleBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'quentinus95';
