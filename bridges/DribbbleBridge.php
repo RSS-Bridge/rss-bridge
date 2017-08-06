@@ -29,7 +29,7 @@ class DribbbleBridge extends BridgeAbstract {
 			$item['author'] = trim($shot->find('.attribution-user a', 0)->plaintext);
 
 			$description = $shot->find('.comment', 0);
-			$item['content'] = $description === null ? '' : $description;
+			$item['content'] = $description === null ? '' : $description->plaintext;
 
 			$preview_path = $shot->find('picture source', 0)->attr['srcset'];
 			$item['content'] .= $this->getImageTag($preview_path, $item['title']);
