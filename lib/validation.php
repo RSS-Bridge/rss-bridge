@@ -28,12 +28,7 @@ function validateData(&$data, $parameters){
 	};
 
 	$validateCheckboxValue = function($value){
-		$filteredValue = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-
-		if(is_null($filteredValue))
-			return null;
-
-		return $filteredValue;
+		return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 	};
 
 	$validateListValue = function($value, $expectedValues){
