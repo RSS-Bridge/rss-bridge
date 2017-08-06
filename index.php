@@ -174,7 +174,7 @@ try {
 			$bridge->setCache($cache);
 			$bridge->setDatas($params);
 		} catch(Exception $e) {
-			header('HTTP/1.1 ' . $e->getCode() . ' ' . Http::getMessageForCode($e->getCode()));
+			http_response_code($e->getCode());
 			header('Content-Type: text/html');
 			die(buildBridgeException($e, $bridge));
 		}
@@ -186,7 +186,7 @@ try {
 			$format->setExtraInfos($bridge->getExtraInfos());
 			$format->display();
 		} catch(Exception $e) {
-			header('HTTP/1.1 ' . $e->getCode() . ' ' . Http::getMessageForCode($e->getCode()));
+			http_response_code($e->getCode());
 			header('Content-Type: text/html');
 			die(buildTransformException($e, $bridge));
 		}
@@ -194,7 +194,7 @@ try {
 		die;
 	}
 } catch(HttpException $e) {
-	header('HTTP/1.1 ' . $e->getCode() . ' ' . Http::getMessageForCode($e->getCode()));
+	http_response_code($e->getCode());
 	header('Content-Type: text/plain');
 	die($e->getMessage());
 } catch(\Exception $e) {

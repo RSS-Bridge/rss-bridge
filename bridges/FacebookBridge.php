@@ -155,7 +155,7 @@ class FacebookBridge extends BridgeAbstract {
 
 			//Show captcha filling form to the viewer, proxying the captcha image
 			$img = base64_encode(getContents($captcha->find('img', 0)->src));
-			header('HTTP/1.1 500 ' . Http::getMessageForCode(500));
+			http_response_code(500);
 			header('Content-Type: text/html');
 			$message = <<<EOD
 <form method="post" action="?{$_SERVER['QUERY_STRING']}">
