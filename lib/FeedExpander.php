@@ -18,7 +18,7 @@ abstract class FeedExpander extends BridgeAbstract {
 		 */
 		$content = getContents($url)
 			or returnServerError('Could not request ' . $url);
-		$rssContent = simplexml_load_string($content);
+		$rssContent = simplexml_load_string(trim($content));
 
 		debugMessage('Detecting feed format/version');
 		switch(true) {
