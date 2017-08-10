@@ -52,6 +52,18 @@ header > p.status {
 	color: red;
 }
 
+input[type="text"] {
+
+	background-color: white;
+	color: #404552;
+	border: 0px;
+	border-bottom: 2px solid #2196F3;
+	font-size: 1.1em;
+	margin-left: 8px;
+	padding-left: 4px;
+
+}
+
 .searchbar {
 
 	width: 50%;
@@ -64,12 +76,37 @@ header > p.status {
 	width: 100%;
 	margin: auto;
 	font-size: 1.4em;
+	text-align: center;
 
 }
 
 .searchbar input[type="text"]::placeholder {
 
 	text-align: center;
+
+}
+
+.searchbar input[type="text"]:focus::-webkit-input-placeholder {
+
+	opacity: 0;
+
+}
+
+.searchbar input[type="text"]:focus::-moz-placeholder {
+
+	opacity: 0;
+
+}
+
+.searchbar input[type="text"]:focus:-moz-placeholder {
+
+	opacity: 0;
+
+}
+
+.searchbar input[type="text"]:focus:-ms-input-placeholder {
+
+	opacity: 0;
 
 }
 
@@ -185,43 +222,6 @@ form {
 	width: 80%;
 	margin: auto;
 	margin-bottom: 6px;
-
-}
-
-input[type="text"] {
-
-	background-color: white;
-	color: #404552;
-	border: 0px;
-	border-bottom: 2px solid #2196F3;
-	font-size: 1.1em;
-	margin-left: 8px;
-	padding-left: 4px;
-	text-align: center;
-
-}
-
-input[type="text"]:focus::-webkit-input-placeholder {
-
-	opacity: 0;
-
-}
-
-input[type="text"]:focus::-moz-placeholder {
-
-	opacity: 0;
-
-}
-
-input[type="text"]:focus:-moz-placeholder {
-
-	opacity: 0;
-
-}
-
-input[type="text"]:focus:-ms-input-placeholder {
-
-	opacity: 0;
 
 }
 
