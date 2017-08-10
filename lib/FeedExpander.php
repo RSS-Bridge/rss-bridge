@@ -102,12 +102,12 @@ abstract class FeedExpander extends BridgeAbstract {
 		if(!isset($content->link)) {
 			$this->uri = '';
 		} elseif (count($content->link) === 1) {
-			$this->uri = $content->link[0]['href'];
+			$this->uri = (string)$content->link[0]['href'];
 		} else {
 			$this->uri = '';
 			foreach($content->link as $link) {
 				if(strtolower($link['rel']) === 'alternate') {
-					$this->uri = $link['href'];
+					$this->uri = (string)$link['href'];
 					break;
 				}
 			}
