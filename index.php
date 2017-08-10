@@ -106,42 +106,37 @@ try {
 		$list->bridges = array();
 		$list->total = 0;
 
-		$bridgeList = Bridge::listBridges();
-		foreach($bridgeList as $bridgeName) {
-			if(Bridge::isWhitelisted($whitelist_selection, $bridgeName)){
-				$bridgeName = $bridgeName . 'Bridge';
-				$pathBridge = __DIR__ . '/bridges/' . $bridgeName . '.php';
-				require_once($pathBridge);
+		foreach(Bridge::listBridges() as $bridgeName) {
+			$bridgeClass = $bridgeName . 'Bridge';
+			require_once(__DIR__ . '/bridges/' . $bridgeClass . '.php');
 
-				if(Bridge::isInstantiable($bridgeName)){
-					$bridge = new $bridgeName();
-				} else { // Broken bridge, handle like inactive bridge
-					$list->bridges[$bridgeName] = array(
-						'status' => 'inactive'
-					);
-					continue;
-				}
-
-				$list->bridges[$bridgeName] = array(
-					'status' => 'active',
-					'uri' => $bridge->getURI(),
-					'name' => $bridge->getName(),
-					'parameters' => $bridge->getParameters(),
-					'maintainer' => $bridge->getMaintainer(),
-					'description' => $bridge->getDescription()
-				);
-				$list->total++;
-			} elseif($showInactive) {
+			if((new ReflectionClass($bridgeClass))->isInstantiable()) {
+				$bridge = new $bridgeClass();
+			} else { // Broken bridge, handle like inactive bridge
 				$list->bridges[$bridgeName] = array(
 					'status' => 'inactive'
 				);
+				continue;
 			}
+
+			$status = Bridge::isWhitelisted($whitelist_selection, strtolower($bridgeName)) ? 'active' : 'inactive';
+
+			$list->bridges[$bridgeName] = array(
+				'status' => $status,
+				'uri' => $bridge->getURI(),
+				'name' => $bridge->getName(),
+				'parameters' => $bridge->getParameters(),
+				'maintainer' => $bridge->getMaintainer(),
+				'description' => $bridge->getDescription()
+			);
 		}
+
+		$list->total = count($list->bridges);
+
+		header('Content-Type: application/json');
 		echo json_encode($list, JSON_PRETTY_PRINT);
 		die;
-	}
-
-	if($action === 'display' && !empty($bridge)){
+	} elseif($action === 'display' && !empty($bridge)) {
 		// DEPRECATED: 'nameBridge' scheme is replaced by 'name' in bridge parameter values
 		//             this is to keep compatibility until futher complete removal
 		if(($pos = strpos($bridge, 'Bridge')) === (strlen($bridge) - strlen('Bridge'))) {
