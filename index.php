@@ -229,6 +229,8 @@ $formats = Format::searchInformation();
 			$status .= 'debug mode active';
 		}
 
+		$query = filter_input(INPUT_GET, 'q');
+
 		echo <<<EOD
 	<header>
 		<h1>RSS-Bridge</h1>
@@ -239,7 +241,7 @@ $formats = Format::searchInformation();
 		<h3>Search</h3>
 		<input type="text" name="searchfield"
 			id="searchfield" placeholder="Enter the bridge you want to search for"
-			onchange="search()" onkeyup="search()">
+			onchange="search()" onkeyup="search()" value="{$query}">
 	</section>
 
 EOD;
