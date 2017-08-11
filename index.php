@@ -213,6 +213,7 @@ $formats = Format::searchInformation();
 	<title>RSS-Bridge</title>
 	<link href="static/style.css" rel="stylesheet">
 	<script src="static/search.js"></script>
+	<script src="static/select.js"></script>
 	<noscript>
 		<style>
 			.searchbar {
