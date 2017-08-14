@@ -18,10 +18,10 @@ class GoComicsBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not request GoComics: ' . $this->getURI());
 
-		foreach($html->find('div.item-comic-container') as $element) {
+		foreach($html->find('div.comic__container') as $element) {
 
 			$img = $element->find('img', 0);
-			$link = $element->find('a.item-comic-link', 0);
+			$link = $element->find('a.js-item-comic-link', 0);
 			$comic = $img->src;
 			$title = $link->title;
 			$url = $html->find('input.js-copy-link', 0)->value;
