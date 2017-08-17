@@ -80,7 +80,7 @@ function validateData(&$data, $parameters){
 					break;
 				}
 
-				if(is_null($data[$name])) {
+				if(is_null($data[$name]) && isset($set[$name]['required']) && $set[$name]['required']) {
 					echo 'Parameter \'' . $name . '\' is invalid!' . PHP_EOL;
 					return false;
 				}
