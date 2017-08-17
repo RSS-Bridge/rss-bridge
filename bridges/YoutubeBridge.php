@@ -53,8 +53,12 @@ class YoutubeBridge extends BridgeAbstract {
 		$author = $html->innertext;
 		$author = substr($author, strpos($author, '"author=') + 8);
 		$author = substr($author, 0, strpos($author, '\u0026'));
-		$desc = $html->find('div#watch-description-text', 0)->innertext;
-		$time = strtotime($html->find('meta[itemprop=datePublished]', 0)->getAttribute('content'));
+
+		if(!is_null($html->find('div#watch-description-text', 0)))
+			$desc = $html->find('div#watch-description-text', 0)->innertext;
+
+		if(!is_null($html->find('meta[itemprop=datePublished]', 0)))
+			$time = strtotime($html->find('meta[itemprop=datePublished]', 0)->getAttribute('content'));
 	}
 
 	private function ytBridgeAddItem($vid, $title, $author, $desc, $time){
