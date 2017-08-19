@@ -1,9 +1,9 @@
 <?php
 /**
 * Mrss
-* Documentation Source http://www.rssboard.org/media-rss
+* Documentation Source http://www.rssboard.org/rss-specification
 */
-class MrssFormat extends FormatAbstract {
+class RssFormat extends FormatAbstract {
 
 	public function stringify(){
 		$https = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 's' : '';
@@ -18,7 +18,7 @@ class MrssFormat extends FormatAbstract {
 		if(!empty($extraInfos['uri'])) {
 			$uri = $this->xml_encode($extraInfos['uri']);
 		} else {
-			$uri = 'https://github.com/sebsauvage/rss-bridge';
+			$uri = 'https://github.com/rss-bridge/rss-bridge';
 		}
 
 		$icon = $this->xml_encode('http://icons.better-idea.org/icon?url='. $uri .'&size=64');
@@ -31,12 +31,22 @@ class MrssFormat extends FormatAbstract {
 			$itemTimestamp = isset($item['timestamp']) ? $this->xml_encode(date(DATE_RFC2822, $item['timestamp'])) : '';
 			$itemContent = isset($item['content']) ? $this->xml_encode($this->sanitizeHtml($item['content'])) : '';
 
+			$entryEnclosuresWarning = '';
 			$entryEnclosures = '';
 			if(isset($item['enclosures'])) {
-				foreach($item['enclosures'] as $enclosure) {
-					$entryEnclosures .= '<media:content url="'
-					. $this->xml_encode($item['enclosures'][0])
-					. '"/>';
+				$entryEnclosures .= '<enclosure url="'
+				. $this->xml_encode($item['enclosures'][0])
+				. '"/>';
+
+				if(count($item['enclosures']) > 1) {
+					$entryEnclosures .= PHP_EOL;
+					$entryEnclosuresWarning = '&lt;br&gt;Warning:
+Some media files might not be shown to you. Consider using the ATOM format instead!';
+					foreach($item['enclosures'] as $enclosure) {
+						$entryEnclosures .= '<atom:link rel="enclosure" href="'
+						. $enclosure . '" />'
+						. PHP_EOL;
+					}
 				}
 			}
 
@@ -47,7 +57,7 @@ class MrssFormat extends FormatAbstract {
 		<link>{$itemUri}</link>
 		<guid isPermaLink="true">{$itemUri}</guid>
 		<pubDate>{$itemTimestamp}</pubDate>
-		<description>{$itemContent}</description>
+		<description>{$itemContent}{$entryEnclosuresWarning}</description>
 		<author>{$itemAuthor}</author>
 		{$entryEnclosures}
 	</item>
@@ -62,7 +72,6 @@ EOD;
 <?xml version="1.0" encoding="{$charset}"?>
 <rss version="2.0"
 xmlns:dc="http://purl.org/dc/elements/1.1/"
-xmlns:media="http://search.yahoo.com/mrss/"
 xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
 		<title>{$title}</title>
