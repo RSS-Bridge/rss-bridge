@@ -102,6 +102,7 @@ class YoutubeBridge extends BridgeAbstract {
 				$desc = '';
 				$time = 0;
 				$vid = str_replace('/watch?v=', '', $element->find('a', 0)->href);
+				$vid = substr($vid, 0, strpos($vid, '&') ?: strlen($vid));
 				$title = $this->ytBridgeFixTitle($element->find($title_selector, 0)->plaintext);
 				if($title != '[Private Video]') {
 					$this->ytBridgeQueryVideoInfo($vid, $author, $desc, $time);
