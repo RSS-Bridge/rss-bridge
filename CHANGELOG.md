@@ -5,71 +5,71 @@ RSS-Bridge 2017-08-03
 ==
 
 ## Important changes
-RSS-Bridge now has [contribution guidelines](CONTRIBUTING.md)
-[phpcs rules](phpcs.xml) follow the [contribution guidelines](CONTRIBUTING.md)
+* RSS-Bridge now has [contribution guidelines](CONTRIBUTING.md)
+* [phpcs rules](phpcs.xml) follow the [contribution guidelines](CONTRIBUTING.md)
 
 ## General changes
-Added a search bar to make searching for bridges easier
-Added user friendly error page for when a bridge fails
-Added caching of extraInfos (name, uri)
-Added an indicator to warn for bridges using HTTP instead of HTTPS
-Various bug fixes and improvements
+* Added a search bar to make searching for bridges easier
+* Added user friendly error page for when a bridge fails
+* Added caching of extraInfos (name, uri)
+* Added an indicator to warn for bridges using HTTP instead of HTTPS
+* Various bug fixes and improvements
 
 ## Modified bridges
-[AllocineFRBridge] Update Faux Raccord link
-[DanbooruBridge] Fix broken URI
-[DuckDuckGoBridge] Disable DuckDuckGo redirects so that the links returned are correct.
-[FacebookBridge] Add option to hide posts with facebook videos
-[FacebookBridge] Add requester languages to HTTP header
-[FacebookBridge] Handle summary posts
-[FacebookBridge] Replace 'novideo' with 'media_type'
-[FilterBridge] Initial implementation of basic title permit and block
-[FlickrTagBridge] Fix and improve bridge by using the FlickrExploreBridge approach
-[GooglePlusPostBridge] Autofix user names
-[GooglePlusPostBridge] Fix bridge implementation
-[GooglePlusPostBridge] Fix content loading
-[InstagramBridge] Add option to filter for videos and pictures
-[LWNprevBridge] full rewrite
-[MangareaderBridge] Fix double forward slashes
-[NasaApodBridge] Use HTTPS instead of HTTP
-[PinterestBridge] Fix checkbox not working
-[PinterestBridge] Fix implementation after DOM changes
-[RTBFBridge] Update URI
-[SexactuBridge] Fix URI and timestamp
-[SexactuBridge] Use most modern version of bridge api and cached pages (#504)
-[ShanaprojectBridge] Don't throw error if timestamp is missing
-[TwitterBridge] Add option to hide retweets
-[TwitterBridge] Avoid empty content caused by new login policy
-[TwitterBridge] Fix double slashes in URI
-[TwitterBridge] Fix missing spaces
-[TwitterBridge] Fix title includes anchors in plaintext format
-[TwitterBridge] ignore promoted tweets
-[TwitterBridge] Optimize returned image sizes
-[TwitterBridge] Show quotes and pictures
-[WebfailBridge] Properly handle gifs (DOM changed)
-[YoutubeBridge] Improve readability of feed contents
-[YoutubeBridge] Improve URL handling in video descriptions
+* AllocineFRBridge] Update Faux Raccord link
+* [DanbooruBridge] Fix broken URI
+* [DuckDuckGoBridge] Disable DuckDuckGo redirects so that the links returned are correct.
+* [FacebookBridge] Add option to hide posts with facebook videos
+* [FacebookBridge] Add requester languages to HTTP header
+* [FacebookBridge] Handle summary posts
+* [FacebookBridge] Replace 'novideo' with 'media_type'
+* [FilterBridge] Initial implementation of basic title permit and block
+* [FlickrTagBridge] Fix and improve bridge by using the FlickrExploreBridge approach
+* [GooglePlusPostBridge] Autofix user names
+* [GooglePlusPostBridge] Fix bridge implementation
+* [GooglePlusPostBridge] Fix content loading
+* [InstagramBridge] Add option to filter for videos and pictures
+* [LWNprevBridge] full rewrite
+* [MangareaderBridge] Fix double forward slashes
+* [NasaApodBridge] Use HTTPS instead of HTTP
+* [PinterestBridge] Fix checkbox not working
+* [PinterestBridge] Fix implementation after DOM changes
+* [RTBFBridge] Update URI
+* [SexactuBridge] Fix URI and timestamp
+* [SexactuBridge] Use most modern version of bridge api and cached pages (#504)
+* [ShanaprojectBridge] Don't throw error if timestamp is missing
+* [TwitterBridge] Add option to hide retweets
+* [TwitterBridge] Avoid empty content caused by new login policy
+* [TwitterBridge] Fix double slashes in URI
+* [TwitterBridge] Fix missing spaces
+* [TwitterBridge] Fix title includes anchors in plaintext format
+* [TwitterBridge] ignore promoted tweets
+* [TwitterBridge] Optimize returned image sizes
+* [TwitterBridge] Show quotes and pictures
+* [WebfailBridge] Properly handle gifs (DOM changed)
+* [YoutubeBridge] Improve readability of feed contents
+* [YoutubeBridge] Improve URL handling in video descriptions
 
 ## New bridges
-AmazonBridge
-DiceBridge
-EtsyBridge
-FB2Bridge
-FilterBridge
-FlickrBridge
-GithubSearchBridge
-GoComicsBridge
-KATBridge
-KernelBugTrackerBridge
-MixCloudBridge
-MoinMoinBridge
-RainbowSixSiegeBridge
-SteamBridge
-TheTVDBBridge
-Torrent9Bridge
-UsbekEtRicaBridge
-WikiLeaksBridge
-WordPressPluginUpdateBridge
+* AmazonBridge
+* DiceBridge
+* EtsyBridge
+* FB2Bridge
+* FilterBridge
+* FlickrBridge
+* GithubSearchBridge
+* GoComicsBridge
+* KATBridge
+* KernelBugTrackerBridge
+* MixCloudBridge
+* MoinMoinBridge
+* RainbowSixSiegeBridge
+* SteamBridge
+* TheTVDBBridge
+* Torrent9Bridge
+* UsbekEtRicaBridge
+* WikiLeaksBridge
+* WordPressPluginUpdateBridge
 
 Alpha 0.2
 ===
