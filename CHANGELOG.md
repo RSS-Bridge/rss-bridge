@@ -1,6 +1,36 @@
 rss-bridge Changelog
 ===
 
+RSS-Bridge 2017-08-19
+==
+
+## General changes
+* whitelist: Do case-insensitive whitelist matching
+* [FeedExpander] Fix Serialization of 'SimpleXMLElement' is not allowed
+* [FeedExpander] Remove whitespace from source content
+* [index] Add GET parameter 'q' for search queries
+  - **Example**: You can now add `&q=Twitter` to load into the search field
+* [index] Check permissions for cache folder and whitelist file
+* [index] Show bridge options when loading with URL fragment
+  - **Example**: You can now add `#bridge-Twitter` to load the card with all
+parameters visible
+* [style] Center search cursor and hide placeholder
+* [validation] Fix error on undefined optional numeric value
+
+## Modified bridges
+* [DanbooruBridge] Allow descendant classes to override tag collection
+* [DribbbleBridge] Add dribble bridge listing last dribble popular shots (#558)
+* [FacebookBridge] Fix &amp; in URLs
+* [GelbooruBridge] Fix bridge not getting tags correctly
+* [GoComicsBridge] Fix for page structure changes (#568)
+* [LeBonCoinBridge] Fix bridge is marked executable
+* [LWNprevBridge] Fix everchanging url
+* [YoutubeBridge] Fix error on certain keywords
+* [YoutubeBridge] Fix issues loading playlists
+
+## Removed bridges
+* VineBridge
+
 RSS-Bridge 2017-08-03
 ==
 
