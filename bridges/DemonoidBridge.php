@@ -128,8 +128,7 @@ class DemonoidBridge extends BridgeAbstract {
 					$item['leechers'] = $matches[0];
 					preg_match('~(?<=>).*?(?=</td>)~', $cols[5], $matches);
 					$item['size'] = $matches[0];
-					$item['content'] = 
-					'Uploaded by ' . $item['author']
+					$item['content'] = 'Uploaded by ' . $item['author']
 					. ' , Size ' . $item['size']
 					. '<br>seeders: '
 					. $item['seeders']
