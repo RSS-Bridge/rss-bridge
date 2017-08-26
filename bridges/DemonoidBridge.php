@@ -15,8 +15,8 @@ class DemonoidBridge extends BridgeAbstract {
  category feed is accomplished by leaving "keywords" box blank and using the
  corresponding category number.';
 
- 	const PARAMETERS = array( array(
- 		'q' => array(
+	const PARAMETERS = array( array(
+		'q' => array(
 			'name' => 'keywords/user ID/category, separated by semicolons',
 			'exampleValue' => 'first list;second list;…',
 			'required' => true
@@ -93,43 +93,42 @@ class DemonoidBridge extends BridgeAbstract {
 
 			$bigTable = explode('<!-- start torrent list -->', $html)[1];
 			$last50 = explode('<!-- end torrent list -->', $bigTable)[0];
-			$dateChunk = explode('added_today',$last50);
+			$dateChunk = explode('added_today', $last50);
 			$item = array ();
 
-			for($block=1;$block<count($dateChunk);$block++) {
-				preg_match('~(?<=>Add).*?(?=<)~',$dateChunk[$block],$dateStr);
-				if(preg_match('~today~',$dateStr[0])) {
+			for($block = 1;$block < count($dateChunk);$block++) {
+				preg_match('~(?<=>Add).*?(?=<)~', $dateChunk[$block], $dateStr);
+				if(preg_match('~today~', $dateStr[0])) {
 					date_default_timezone_set('UTC');
-					$timestamp = mktime(0,0,0,gmdate('n'),gmdate('j'),gmdate('Y'));
-				}
-				else {
-					preg_match('~(?<=ed on ).*\d+~',$dateStr[0],$fullDateStr);
+					$timestamp = mktime(0, 0, 0, gmdate('n'), gmdate('j'), gmdate('Y'));
+				}	else {
+					preg_match('~(?<=ed on ).*\d+~', $dateStr[0], $fullDateStr);
 					date_default_timezone_set('UTC');
-					$dateObj = strptime($fullDateStr[0],'%A, %b %d, %Y');
-					$timestamp = mktime(0,0,0, $dateObj['tm_mon'] + 1, $dateObj['tm_mday'], 1900 + $dateObj['tm_year']);
+					$dateObj = strptime($fullDateStr[0], '%A, %b %d, %Y');
+					$timestamp = mktime(0, 0, 0, $dateObj['tm_mon'] + 1, $dateObj['tm_mday'], 1900 + $dateObj['tm_year']);
 				}
 
-				$itemsChunk = explode('<!-- tstart -->',$dateChunk[$block]);
+				$itemsChunk = explode('<!-- tstart -->', $dateChunk[$block]);
 
-				for($items=1;$items<count($itemsChunk);$items++) {
+				for($items = 1;$items < count($itemsChunk);$items++) {
 					$item = array();
-					$cols = explode('<td',$itemsChunk[$items]);
-					preg_match('~(?<=href=\"/).*?(?=\")~',$cols[1],$matches);
+					$cols = explode('<td', $itemsChunk[$items]);
+					preg_match('~(?<=href=\"/).*?(?=\")~', $cols[1], $matches);
 					$item['id'] = self::URI . $matches[0];
-					preg_match('~(?<=href=\").*?(?=\")~',$cols[4],$matches);
+					preg_match('~(?<=href=\").*?(?=\")~', $cols[4], $matches);
 					$item['uri'] = $matches[0];
 					$item['timestamp'] = $timestamp;
-					preg_match('~(?<=href=\"/users/).*?(?=\")~',$cols[3],$matches);
+					preg_match('~(?<=href=\"/users/).*?(?=\")~', $cols[3], $matches);
 					$item['author'] = $matches[0];
-					preg_match('~(?<=/\">).*?(?=</a>)~',$cols[1],$matches);
+					preg_match('~(?<=/\">).*?(?=</a>)~', $cols[1], $matches);
 					$item['title'] = $matches[0];
-					preg_match('~(?<=green\">)\d+(?=</font>)~',$cols[8],$matches);
+					preg_match('~(?<=green\">)\d+(?=</font>)~', $cols[8], $matches);
 					$item['seeders'] = $matches[0];
-					preg_match('~(?<=red\">)\d+(?=</font>)~',$cols[9],$matches);
+					preg_match('~(?<=red\">)\d+(?=</font>)~', $cols[9], $matches);
 					$item['leechers'] = $matches[0];
-					preg_match('~(?<=>).*?(?=</td>)~',$cols[5],$matches);
+					preg_match('~(?<=>).*?(?=</td>)~', $cols[5], $matches);
 					$item['size'] = $matches[0];
-					$item['content'] =
+					$item['content'] = 
 					'Uploaded by ' . $item['author']
 					. ' , Size ' . $item['size']
 					. '<br>seeders: '
