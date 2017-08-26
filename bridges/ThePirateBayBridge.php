@@ -11,7 +11,7 @@ class ThePirateBayBridge extends BridgeAbstract {
 
 	const PARAMETERS = array( array(
 		'q' => array(
-			'name' => 'keywords, separated by semicolons',
+			'name' => 'keywords/username/category, separated by semicolons',
 			'exampleValue' => 'first list;second list;…',
 			'required' => true
 		),
@@ -24,9 +24,9 @@ class ThePirateBayBridge extends BridgeAbstract {
 				'user' => 'usr'
 			)
 		),
-		'cat_check' => array(
+		'catCheck' => array(
 			'type' => 'checkbox',
-			'name' => 'Specify category for normal search ?',
+			'name' => 'Specify category for keyword search ?',
 		),
 		'cat' => array(
 			'name' => 'Category number',
@@ -94,7 +94,7 @@ class ThePirateBayBridge extends BridgeAbstract {
 				return $timestamp;
 		}
 
-		$catBool = $this->getInput('cat_check');
+		$catBool = $this->getInput('catCheck');
 		if($catBool) {
 			$catNum = $this->getInput('cat');
 		}
