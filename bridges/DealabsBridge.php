@@ -2,12 +2,24 @@
 class DealabsBridge extends BridgeAbstract {
 	const NAME = 'Dealabs search bridge';
 	const URI = 'https://www.dealabs.com/';
-	const DESCRIPTION = 'Return the Dealabs search result using keywords, with/without expired deals, with/without shop deals and by category';
+	const DESCRIPTION = 'Return the Dealabs search result using keywords,'
+		. ' with/without expired deals, with/without shop deals and by'
+		. ' category';
 	const MAINTAINER = 'sysadminstory';
 	const PARAMETERS = array( array (
-		'q' => array('name' => 'Mot(s) clé(s)', 'type' => 'text', 'required' => true ),
-		'expired_choice' => array('name' => 'Afficher deals expirés', 'type' => 'checkbox'),
-		'instore_choice' => array('name' => 'Afficher deals en magasin', 'type' => 'checkbox'),
+		'q' => array(
+			'name' => 'Mot(s) clé(s)',
+			'type' => 'text',
+			'required' => true
+		),
+		'expired_choice' => array(
+			'name' => 'Afficher deals expirés',
+			'type' => 'checkbox'
+		),
+		'instore_choice' => array(
+			'name' => 'Afficher deals en magasin',
+			'type' => 'checkbox'
+		),
 		'cat' => array(
 			'name' => 'Catégorie',
 			'type' => 'list',
@@ -74,6 +86,7 @@ class DealabsBridge extends BridgeAbstract {
 
 
 	));
+	
 	const CACHE_TIMEOUT = 3600;
 
 	public function collectData(){
@@ -93,16 +106,24 @@ class DealabsBridge extends BridgeAbstract {
 			or returnServerError('Could not request Dealabs.');
 		$list = $html->find('article');
 		if($list === null) {
-			return;
+			returnClientError('Your combination of parameters returned no results');
 		}
 
 		foreach($list as $deal) {
 			$item = array();
-			$item['uri'] = $deal->find('a.title',0)->href;
+			$item['uri'] = $deal->find('a.title', 0)->href;
 			$item['title'] = $deal->find('a.title', 0)->plaintext;
 			$item['author'] = $deal->find('a.poster_link', 0)->plaintext;
-			$item['content'] = '<table><tr><td>' .$deal->find('div.image_part',0)->outertext . '</td><td>'. $deal->find('a.title',0)->outertext . $deal->find('p.description',0)->outertext .'</td><td>'. $deal->find('div.vote_part',0)->outertext . '</td></table>';
-			$item['timestamp'] = $this->relativeDateToTimestamp($deal->find('p.date_deal',0)->plaintext);
+			$item['content'] = '<table><tr><td>'
+				. $deal->find('div.image_part', 0)->outertext
+				. '</td><td>'
+				. $deal->find('a.title', 0)->outertext
+				. $deal->find('p.description', 0)->outertext
+				. '</td><td>'
+				. $deal->find('div.vote_part', 0)->outertext
+				. '</td></table>';
+			$item['timestamp'] = $this->relativeDateToTimestamp(
+				$deal->find('p.date_deal', 0)->plaintext);
 			$this->items[] = $item;
 		}
 
@@ -110,7 +131,25 @@ class DealabsBridge extends BridgeAbstract {
 
 	private function relativeDateToTimestamp($str) {
 		$date = new DateTime();
-		$date->modify(str_replace(array('il y a ', 'min' , 'h', 'jour', 'jours', 'mois', 'ans'), array('-', 'minute', 'hour', 'day', 'month', 'year'), $str));
+		$search = array(
+			'il y a ',
+			'min',
+			'h',
+			'jour',
+			'jours',
+			'mois',
+			'ans'
+		);
+		$replace = array(
+			'-',
+			'minute',
+			'hour',
+			'day',
+			'month',
+			'year'
+		);
+
+		$date->modify(str_replace($search, $replace, $str));
 		return $date->getTimestamp();
 	}
 
