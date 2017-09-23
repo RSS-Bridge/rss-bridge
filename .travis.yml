@@ -6,6 +6,7 @@ php:
   - nightly
 
 install:
+  - pear channel-update pear.php.net
   - pear install PHP_CodeSniffer
 
 script:
