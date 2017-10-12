@@ -132,8 +132,8 @@ try {
 		$whitelist_selection = array_map('strtolower', $whitelist_selection);
 	}
 
-	$action = $params['action'];
-	$bridge = $params['bridge'];
+	$action = array_key_exists('action', $params) ? $params['action'] : null;
+	$bridge = array_key_exists('bridge', $params) ? $params['bridge'] : null;
 
 	if($action === 'display' && !empty($bridge)) {
 		// DEPRECATED: 'nameBridge' scheme is replaced by 'name' in bridge parameter values
@@ -160,7 +160,7 @@ try {
 		// Data retrieval
 		$bridge = Bridge::create($bridge);
 
-		$noproxy = filter_var($params['_noproxy'], FILTER_VALIDATE_BOOLEAN);
+		$noproxy = array_key_exists('_noproxy', $params) && filter_var($params['_noproxy'], FILTER_VALIDATE_BOOLEAN);
 		if(defined('PROXY_URL') && PROXY_BYBRIDGE && $noproxy) {
 			define('NOPROXY', true);
 		}
