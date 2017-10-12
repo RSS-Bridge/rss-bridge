@@ -3,7 +3,7 @@ class Torrent9Bridge extends BridgeAbstract {
 
 	const MAINTAINER = 'lagaisse';
 	const NAME = 'Torrent9 Bridge';
-	const URI = 'http://www.torrent9.biz';
+	const URI = 'http://www.torrent9.pe';
 	const CACHE_TIMEOUT = 86400; // 24h = 86400s
 	const DESCRIPTION = 'Returns latest torrents';
 
