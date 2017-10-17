@@ -2,9 +2,8 @@
 class DealabsBridge extends BridgeAbstract {
 	const NAME = 'Dealabs search bridge';
 	const URI = 'https://www.dealabs.com/';
-	const DESCRIPTION = 'Return the Dealabs search result using keywords,'
-		. ' with/without expired deals, with/without shop deals and by'
-		. ' category';
+	const DESCRIPTION = 'Return the Dealabs search result using keywords,
+ with/without expired deals, with/without shop deals and by category';
 	const MAINTAINER = 'sysadminstory';
 	const PARAMETERS = array( array (
 		'q' => array(
@@ -154,18 +153,15 @@ class DealabsBridge extends BridgeAbstract {
 	}
 
 	private function getCatSubcatParam($str) {
-		if(strlen($str) >=2) {
+		if(strlen($str) >= 2) {
 			if(substr($str, 0, 1) == 'c') {
 				$var_name = 'cat[]';
-			}
-			else if(substr($str, 0, 1) == 's') {
+			} else if(substr($str, 0, 1) == 's') {
 				$var_name = 'sub_cat[]';
 			}
 			$value = substr($str, 1);
 			return $var_name .'='. $value;
-		}
-		else
-		{
+		} else {
 			return '';
 		}
 	}
