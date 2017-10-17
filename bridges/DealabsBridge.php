@@ -85,7 +85,7 @@ class DealabsBridge extends BridgeAbstract {
 
 
 	));
-	
+
 	const CACHE_TIMEOUT = 3600;
 
 	public function collectData(){
