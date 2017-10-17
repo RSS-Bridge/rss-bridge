@@ -88,7 +88,8 @@ class YoutubeBridge extends BridgeAbstract {
 
 			$vid = str_replace('yt:video:', '', $element->find('id', 0)->plaintext);
 			$time = strtotime($element->find('published', 0)->plaintext);
-			$this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
+			if(strpos($vid, 'googleads') === false)
+				$this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
 		}
 		$this->request = $this->ytBridgeFixTitle($xml->find('feed > title', 0)->plaintext);
 	}
@@ -104,7 +105,7 @@ class YoutubeBridge extends BridgeAbstract {
 				$vid = str_replace('/watch?v=', '', $element->find('a', 0)->href);
 				$vid = substr($vid, 0, strpos($vid, '&') ?: strlen($vid));
 				$title = $this->ytBridgeFixTitle($element->find($title_selector, 0)->plaintext);
-				if($title != '[Private Video]') {
+				if($title != '[Private Video]' && strpos($vid, 'googleads') === false) {
 					$this->ytBridgeQueryVideoInfo($vid, $author, $desc, $time);
 					$this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
 					$count++;

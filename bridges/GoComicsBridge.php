@@ -20,7 +20,7 @@ class GoComicsBridge extends BridgeAbstract {
 
 		foreach($html->find('div.comic__container') as $element) {
 
-			$img = $element->find('img', 0);
+			$img = $element->find('.item-comic-image img', 0);
 			$link = $element->find('a.js-item-comic-link', 0);
 			$comic = $img->src;
 			$title = $link->title;

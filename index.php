@@ -28,6 +28,14 @@ define('CACHE_DIR', __DIR__ . '/cache');
 // Specify path for whitelist file
 define('WHITELIST_FILE', __DIR__ . '/whitelist.txt');
 
+
+/*
+Move the CLI arguments to the $_GET array, in order to be able to use
+rss-bridge from the command line
+*/
+parse_str(implode('&', array_slice($argv, 1)), $cliArgs);
+$params = array_merge($_GET, $cliArgs);
+
 /*
   Create a file named 'DEBUG' for enabling debug mode.
   For further security, you may put whitelisted IP addresses in the file,
@@ -124,8 +132,8 @@ try {
 		$whitelist_selection = array_map('strtolower', $whitelist_selection);
 	}
 
-	$action = filter_input(INPUT_GET, 'action');
-	$bridge = filter_input(INPUT_GET, 'bridge');
+	$action = array_key_exists('action', $params) ? $params['action'] : null;
+	$bridge = array_key_exists('bridge', $params) ? $params['bridge'] : null;
 
 	if($action === 'display' && !empty($bridge)) {
 		// DEPRECATED: 'nameBridge' scheme is replaced by 'name' in bridge parameter values
@@ -134,7 +142,7 @@ try {
 			$bridge = substr($bridge, 0, $pos);
 		}
 
-		$format = filter_input(INPUT_GET, 'format')
+		$format = $params['format']
 			or returnClientError('You must specify a format!');
 
 		// DEPRECATED: 'nameFormat' scheme is replaced by 'name' in format parameter values
@@ -152,12 +160,10 @@ try {
 		// Data retrieval
 		$bridge = Bridge::create($bridge);
 
-		$noproxy = filter_input(INPUT_GET, '_noproxy', FILTER_VALIDATE_BOOLEAN);
+		$noproxy = array_key_exists('_noproxy', $params) && filter_var($params['_noproxy'], FILTER_VALIDATE_BOOLEAN);
 		if(defined('PROXY_URL') && PROXY_BYBRIDGE && $noproxy) {
 			define('NOPROXY', true);
 		}
-
-		$params = $_GET;
 
 		// Initialize cache
 		$cache = Cache::create('FileCache');
