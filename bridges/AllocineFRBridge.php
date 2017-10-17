@@ -26,7 +26,7 @@ class AllocineFRBridge extends BridgeAbstract {
 
 			switch($this->getInput('category')) {
 			case 'faux-raccord':
-				$uri = static::URI . 'video/programme-12284/saison-29841/';
+				$uri = static::URI . 'video/programme-12284/saison-32180/';
 				break;
 			case 'top-5':
 				$uri = static::URI . 'video/programme-12299/saison-29561/';
@@ -64,7 +64,7 @@ class AllocineFRBridge extends BridgeAbstract {
 				self::PARAMETERS[$this->queriedContext]['category']['values']
 			);
 
-		foreach($html->find('figure.media-meta-fig') as $element) {
+		foreach($html->find('.media-meta-list figure.media-meta-fig') as $element) {
 			$item = array();
 
 			$title = $element->find('div.titlebar h3.title a', 0);
