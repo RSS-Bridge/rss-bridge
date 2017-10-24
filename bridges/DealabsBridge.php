@@ -28,7 +28,7 @@ class DealabsBridge extends BridgeAbstract {
 
 		foreach($list as $deal) {
 			$item = array();
-			$item['uri'] = $deal->find('div[class=fGrid-right space--l-2]',0)->find('a', 0)->href;
+			$item['uri'] = $deal->find('div[class=fGrid-right space--l-2]', 0)->find('a', 0)->href;
 			$item['title'] = $deal->find(
 				'a[class=cept-tt thread-link linkPlain space--r-1 size--all-s size--fromW2-m]', 0
 				)->plaintext;
@@ -38,8 +38,7 @@ class DealabsBridge extends BridgeAbstract {
 					'a[class*=cept-thread-image-link imgFrame imgFrame--noBorder box--all-i thread-listImgCell]', 0)->href
 				. '"><img src="'
 				. $this->getImage($deal)
-				. '"/>'
-				. '</td><td><h2><a href="'
+				. '"/></td><td><h2><a href="'
 				. $deal->find('a[class=cept-tt thread-link linkPlain space--r-1 size--all-s size--fromW2-m]', 0)->href
 				. '">'
 				. $deal->find('a[class=cept-tt thread-link linkPlain space--r-1 size--all-s size--fromW2-m]', 0)->innertext
@@ -70,8 +69,7 @@ class DealabsBridge extends BridgeAbstract {
 	private function getPrix($deal)
 	{
 		if($deal->find(
-			'span[class*=thread-price text--b vAlign--all-tt cept-tp size--all-m size--fromW2-xxl size--fromW4-xxxl]', 0)
-			!= NULL) {
+			'span[class*=thread-price text--b vAlign--all-tt cept-tp size--all-m size--fromW2-xxl size--fromW4-xxxl]', 0) != null) {
 			return '<div>Prix : '
 				. $deal->find(
 					'span[class*=thread-price text--b vAlign--all-tt cept-tp size--all-m size--fromW2-xxl size--fromW4-xxxl]', 0
@@ -85,8 +83,8 @@ class DealabsBridge extends BridgeAbstract {
 
 	private function getLivraison($deal)
 	{
-		if($deal->find('span[class=size--all-s overflow--wrap-off cept-shipping-price]', 0) != NULL) {
-			if($deal->find('span[class=size--all-s overflow--wrap-off cept-shipping-price]', 0)->children(0) != NULL)
+		if($deal->find('span[class=size--all-s overflow--wrap-off cept-shipping-price]', 0) != null) {
+			if($deal->find('span[class=size--all-s overflow--wrap-off cept-shipping-price]', 0)->children(0) != null)
 			{
 				return '<div>Livraison : '
 				. $deal->find('span[class=size--all-s overflow--wrap-off cept-shipping-price]', 0)->children(0)->innertext
@@ -101,7 +99,7 @@ class DealabsBridge extends BridgeAbstract {
 
 	private function getOrigine($deal)
 	{
-		if($deal->find('a[class=text--color-greyShade]', 0) != NULL) {
+		if($deal->find('a[class=text--color-greyShade]', 0) != null) {
 			return '<div>Origine : '
 				. $deal->find('a[class=text--color-greyShade]', 0)->outertext
 				. '</div>';
@@ -112,7 +110,7 @@ class DealabsBridge extends BridgeAbstract {
 
 	private function getReduction($deal)
 	{
-		if($deal->find('span[class=mute--text size--all-s space--l-2 text--lineThrough]', 0) != NULL) {
+		if($deal->find('span[class=mute--text size--all-s space--l-2 text--lineThrough]', 0) != null) {
 			return '<div>Réduction : <span style="text-decoration: line-through;">'
 				. $deal->find(
 					'span[class=mute--text size--all-s space--l-2 text--lineThrough]', 0
@@ -128,8 +126,7 @@ class DealabsBridge extends BridgeAbstract {
 	private function getImage($deal)
 	{
 		if($deal->find(
-			'img[class=thread-image width--all-auto height--all-auto imgFrame-img cept-thread-img img--dummy js-lazy-img]', 0)
-			!= NULL) {
+			'img[class=thread-image width--all-auto height--all-auto imgFrame-img cept-thread-img img--dummy js-lazy-img]', 0) != null) {
 			return json_decode(
 				html_entity_decode(
 					$deal->find(
@@ -139,13 +136,13 @@ class DealabsBridge extends BridgeAbstract {
 
 			return $deal->find(
 				'img[class=thread-image width--all-auto height--all-auto imgFrame-img cept-thread-img]', 0
-				)->src ;
+				)->src;
 		}
 	}
 
 	private function getExpedition($deal)
 	{
-		if($deal->find('span[class=meta-ribbon hide--toW3 space--l-3 text--color-greyShade]', 0) != NULL) {
+		if($deal->find('span[class=meta-ribbon hide--toW3 space--l-3 text--color-greyShade]', 0) != null) {
 			return '<div>'
 				. $deal->find('span[class=meta-ribbon hide--toW3 space--l-3 text--color-greyShade]', 0)->children(1)->plaintext
 				. '</div>';
@@ -216,7 +213,6 @@ class DealabsBridge extends BridgeAbstract {
 			'year',
 			''
 		);
-
 
 		$date->modify(str_replace($search, $replace, $str));
 		return $date->getTimestamp();
