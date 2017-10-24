@@ -69,7 +69,8 @@ class DealabsBridge extends BridgeAbstract {
 	private function getPrix($deal)
 	{
 		if($deal->find(
-			'span[class*=thread-price text--b vAlign--all-tt cept-tp size--all-m size--fromW2-xxl size--fromW4-xxxl]', 0) != null) {
+			'span[class*=thread-price text--b vAlign--all-tt cept-tp '
+			. 'size--all-m size--fromW2-xxl size--fromW4-xxxl]', 0) != null) {
 			return '<div>Prix : '
 				. $deal->find(
 					'span[class*=thread-price text--b vAlign--all-tt cept-tp size--all-m size--fromW2-xxl size--fromW4-xxxl]', 0
@@ -84,8 +85,7 @@ class DealabsBridge extends BridgeAbstract {
 	private function getLivraison($deal)
 	{
 		if($deal->find('span[class=size--all-s overflow--wrap-off cept-shipping-price]', 0) != null) {
-			if($deal->find('span[class=size--all-s overflow--wrap-off cept-shipping-price]', 0)->children(0) != null)
-			{
+			if($deal->find('span[class=size--all-s overflow--wrap-off cept-shipping-price]', 0)->children(0) != null) {
 				return '<div>Livraison : '
 				. $deal->find('span[class=size--all-s overflow--wrap-off cept-shipping-price]', 0)->children(0)->innertext
 				. '</div>';
@@ -126,7 +126,8 @@ class DealabsBridge extends BridgeAbstract {
 	private function getImage($deal)
 	{
 		if($deal->find(
-			'img[class=thread-image width--all-auto height--all-auto imgFrame-img cept-thread-img img--dummy js-lazy-img]', 0) != null) {
+			'img[class=thread-image width--all-auto height--all-auto '
+			. 'imgFrame-img cept-thread-img img--dummy js-lazy-img]', 0) != null) {
 			return json_decode(
 				html_entity_decode(
 					$deal->find(
@@ -184,9 +185,9 @@ class DealabsBridge extends BridgeAbstract {
 		$date_str = trim(str_replace($month_fr, $month_en, $string));
 
 		if(!preg_match('/[0-9]{4}/', $string)) {
-			$date_str.=' ' . date('Y');
+			$date_str .= ' ' . date('Y');
 		}
-		$date_str.=' 00:00';
+		$date_str .= ' 00:00';
 
 		$date = DateTime::createFromFormat('j F Y H:i', $date_str);
 		return $date->getTimestamp();
