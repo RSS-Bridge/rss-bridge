@@ -2,8 +2,7 @@
 class DealabsBridge extends BridgeAbstract {
 	const NAME = 'Dealabs search bridge';
 	const URI = 'https://www.dealabs.com/';
-	const DESCRIPTION = 'Return the Dealabs search result using keywords,
- with/without expired deals, with/without shop deals and by category';
+	const DESCRIPTION = 'Return the Dealabs search result using keywords';
 	const MAINTAINER = 'sysadminstory';
 	const PARAMETERS = array( array (
 		'q' => array(
@@ -11,79 +10,6 @@ class DealabsBridge extends BridgeAbstract {
 			'type' => 'text',
 			'required' => true
 		),
-		'expired_choice' => array(
-			'name' => 'Afficher deals expirés',
-			'type' => 'checkbox'
-		),
-		'instore_choice' => array(
-			'name' => 'Afficher deals en magasin',
-			'type' => 'checkbox'
-		),
-		'cat' => array(
-			'name' => 'Catégorie',
-			'type' => 'list',
-			'values' => array(
-				'Toutes les catégories' => '',
-				'High-tech' => array(
-					'Tous' => 'c2',
-					'Informatique' => 's3',
-					'Téléphonie' => 's4',
-					'Accessoires, consommables' => 's6',
-					'Gadgets' => 's8',
-					'Applications, logiciels' => 's46'
-				),
-				'Audiovisuel' => array(
-					'Tous' => 'c5',
-					'Image et son' => 's9',
-					'Photo, caméscopes' => 's10',
-					'CD, DVD, Blu-ray' => 's11',
-					'Jeux vidéo, consoles' => 's12'
-				),
-				'Loisirs' => array(
-					'Tous' => 'c7',
-					'Jeux, jouets' => 's13',
-					'Livres, papeterie' => 's14',
-					'Plein air' => 's15',
-					'Sport' => 's35',
-					'Auto/Moto, accessoires' => 's37',
-					'Animaux, accessoires' => 's47',
-					'Instruments de musique' => 's48'
-				),
-				'Mode' => array(
-					'Tous' => 'c16',
-					'Homme' => 's17',
-					'Femme' => 's18',
-					'Mixte' => 's50',
-					'Enfants' => 's19',
-					'Puériculture' => 's36',
-					'Beauté, santé' => 's21',
-					'Bijoux, accessoires' => 's20',
-					'Bagagerie' => 's38'
-				),
-				'Maison' => array(
-					'Tous' => 'c23',
-					'Meuble, literie, déco' => 's24',
-					'Cuisine, art de la table' => 's25',
-					'Électroménager' => 's26',
-					'Bricolage' => 's27',
-					'Jardin' => 's28'
-				),
-				'Services' => array(
-					'Tous' => 'c51',
-					'Voyages' => 's57',
-					'Hébergement, restauration' => 's52',
-					'Sorties' => 's53',
-					'Presse' => 's24',
-					'Bien-être' => 's55',
-					'Transport, expédition' => 's56',
-					'Autres' => 's58'
-				),
-				'Épicerie' => 'c31'
-
-			)
-		)
-
-
 	));
 
 	const CACHE_TIMEOUT = 3600;
@@ -91,17 +17,9 @@ class DealabsBridge extends BridgeAbstract {
 	public function collectData(){
 		$q = $this->getInput('q');
 
-		$expired_choice = $this->getInput('expired_choice');
-		$instore_choice = $this->getInput('instore_choice');
-		$cat_subcat = $this->getInput('cat');
 		$html = getSimpleHTMLDOM(self::URI
 			. '/search/?q='
-			. urlencode($q)
-			. '&hide_expired='
-			. $expired_choice
-			. '&hide_instore='
-			. $instore_choice
-			. '&' . $this->getCatSubcatParam($cat_subcat))
+			. urlencode($q))
 			or returnServerError('Could not request Dealabs.');
 		$list = $html->find('article');
 		if($list === null) {
@@ -110,22 +28,171 @@ class DealabsBridge extends BridgeAbstract {
 
 		foreach($list as $deal) {
 			$item = array();
-			$item['uri'] = $deal->find('a.title', 0)->href;
-			$item['title'] = $deal->find('a.title', 0)->plaintext;
-			$item['author'] = $deal->find('a.poster_link', 0)->plaintext;
-			$item['content'] = '<table><tr><td>'
-				. $deal->find('div.image_part', 0)->outertext
+			$item['uri'] = $deal->find('div[class=fGrid-right space--l-2]',0)->find('a', 0)->href;
+			$item['title'] = $deal->find(
+				'a[class=cept-tt thread-link linkPlain space--r-1 size--all-s size--fromW2-m]', 0
+				)->plaintext;
+			$item['author'] = $deal->find('span.thread-username', 0)->plaintext;
+			$item['content'] = '<table><tr><td><a href="'
+				. $deal->find(
+					'a[class*=cept-thread-image-link imgFrame imgFrame--noBorder box--all-i thread-listImgCell]', 0)->href
+				. '"><img src="'
+				. $this->getImage($deal)
+				. '"/>'
+				. '</td><td><h2><a href="'
+				. $deal->find('a[class=cept-tt thread-link linkPlain space--r-1 size--all-s size--fromW2-m]', 0)->href
+				. '">'
+				. $deal->find('a[class=cept-tt thread-link linkPlain space--r-1 size--all-s size--fromW2-m]', 0)->innertext
+				. '</a></h2>'
+				. $this->getPrix($deal)
+				. $this->getReduction($deal)
+				. $this->getExpedition($deal)
+				. $this->getLivraison($deal)
+				. $this->getOrigine($deal)
+				. $deal->find(
+					'div[class=cept-description-container overflow--wrap-break size--all-s size--fromW2-m space--fromW3-b-2]', 0
+					)->innertext
 				. '</td><td>'
-				. $deal->find('a.title', 0)->outertext
-				. $deal->find('p.description', 0)->outertext
-				. '</td><td>'
-				. $deal->find('div.vote_part', 0)->outertext
+				. $deal->find('div[class=flex flex--align-c flex--justify-space-between space--b-2]', 0)->children(0)->outertext
 				. '</td></table>';
-			$item['timestamp'] = $this->relativeDateToTimestamp(
-				$deal->find('p.date_deal', 0)->plaintext);
+			$dealPossibleDates = $deal->find('span[class=meta-ribbon hide--toW3 space--l-3 text--color-greyShade]');
+			$itemDate = end($dealPossibleDates)->children(1)->plaintext;
+			if(substr( $itemDate, 0, 6 ) === 'il y a') {
+				$item['timestamp'] = $this->relativeDateToTimestamp($itemDate);
+			} else 	{
+				$item['timestamp'] = $this->parseDate($itemDate);
+			}
 			$this->items[] = $item;
 		}
 
+	}
+
+	private function getPrix($deal)
+	{
+		if($deal->find(
+			'span[class*=thread-price text--b vAlign--all-tt cept-tp size--all-m size--fromW2-xxl size--fromW4-xxxl]', 0)
+			!= NULL) {
+			return '<div>Prix : '
+				. $deal->find(
+					'span[class*=thread-price text--b vAlign--all-tt cept-tp size--all-m size--fromW2-xxl size--fromW4-xxxl]', 0
+				)->plaintext
+				. '</div>';
+		} else {
+			return '';
+		}
+	}
+
+
+	private function getLivraison($deal)
+	{
+		if($deal->find('span[class=size--all-s overflow--wrap-off cept-shipping-price]', 0) != NULL) {
+			if($deal->find('span[class=size--all-s overflow--wrap-off cept-shipping-price]', 0)->children(0) != NULL)
+			{
+				return '<div>Livraison : '
+				. $deal->find('span[class=size--all-s overflow--wrap-off cept-shipping-price]', 0)->children(0)->innertext
+				. '</div>';
+			} else {
+				return '';
+			}
+		} else {
+			return '';
+		}
+	}
+
+	private function getOrigine($deal)
+	{
+		if($deal->find('a[class=text--color-greyShade]', 0) != NULL) {
+			return '<div>Origine : '
+				. $deal->find('a[class=text--color-greyShade]', 0)->outertext
+				. '</div>';
+		} else {
+			return '';
+		}
+	}
+
+	private function getReduction($deal)
+	{
+		if($deal->find('span[class=mute--text size--all-s space--l-2 text--lineThrough]', 0) != NULL) {
+			return '<div>Réduction : <span style="text-decoration: line-through;">'
+				. $deal->find(
+					'span[class=mute--text size--all-s space--l-2 text--lineThrough]', 0
+					)->plaintext
+				. '</span>&nbsp;'
+				. $deal->find('span[class=mute--text size--all-s]', 0)->plaintext
+				. '</div>';
+		} else {
+			return '';
+		}
+	}
+
+	private function getImage($deal)
+	{
+		if($deal->find(
+			'img[class=thread-image width--all-auto height--all-auto imgFrame-img cept-thread-img img--dummy js-lazy-img]', 0)
+			!= NULL) {
+			return json_decode(
+				html_entity_decode(
+					$deal->find(
+						'img[class=thread-image width--all-auto height--all-auto imgFrame-img cept-thread-img img--dummy js-lazy-img]', 0)
+						->getAttribute('data-lazy-img')))->{'src'};
+		} else {
+
+			return $deal->find(
+				'img[class=thread-image width--all-auto height--all-auto imgFrame-img cept-thread-img]', 0
+				)->src ;
+		}
+	}
+
+	private function getExpedition($deal)
+	{
+		if($deal->find('span[class=meta-ribbon hide--toW3 space--l-3 text--color-greyShade]', 0) != NULL) {
+			return '<div>'
+				. $deal->find('span[class=meta-ribbon hide--toW3 space--l-3 text--color-greyShade]', 0)->children(1)->plaintext
+				. '</div>';
+		} else {
+			return '';
+		}
+	}
+
+	private function parseDate($string)
+	{
+		$month_fr = array(
+			'janvier',
+			'février',
+			'mars',
+			'avril',
+			'mai',
+			'juin',
+			'juillet',
+			'août',
+			'septembre',
+			'octobre',
+			'novembre',
+			'décembre'
+		);
+		$month_en = array(
+			'January',
+			'February',
+			'March',
+			'April',
+			'May',
+			'June',
+			'July',
+			'August',
+			'September',
+			'October',
+			'November',
+			'December'
+		);
+		$date_str = trim(str_replace($month_fr, $month_en, $string));
+
+		if(!preg_match('/[0-9]{4}/', $string)) {
+			$date_str.=' ' . date('Y');
+		}
+		$date_str.=' 00:00';
+
+		$date = DateTime::createFromFormat('j F Y H:i', $date_str);
+		return $date->getTimestamp();
 	}
 
 	private function relativeDateToTimestamp($str) {
@@ -137,7 +204,8 @@ class DealabsBridge extends BridgeAbstract {
 			'jour',
 			'jours',
 			'mois',
-			'ans'
+			'ans',
+			'et '
 		);
 		$replace = array(
 			'-',
@@ -145,25 +213,13 @@ class DealabsBridge extends BridgeAbstract {
 			'hour',
 			'day',
 			'month',
-			'year'
+			'year',
+			''
 		);
+
 
 		$date->modify(str_replace($search, $replace, $str));
 		return $date->getTimestamp();
-	}
-
-	private function getCatSubcatParam($str) {
-		if(strlen($str) >= 2) {
-			if(substr($str, 0, 1) == 'c') {
-				$var_name = 'cat[]';
-			} else if(substr($str, 0, 1) == 's') {
-				$var_name = 'sub_cat[]';
-			}
-			$value = substr($str, 1);
-			return $var_name .'='. $value;
-		} else {
-			return '';
-		}
 	}
 
 }
