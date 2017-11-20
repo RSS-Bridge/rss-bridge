@@ -1,62 +1,32 @@
 <?php
-class NiceMatinBridge extends BridgeAbstract{
+class NiceMatinBridge extends FeedExpander {
 
-	public function loadMetadatas() {
+	const MAINTAINER = 'pit-fgfjiudghdf';
+	const NAME = 'NiceMatin';
+	const URI = 'http://www.nicematin.com/';
+	const DESCRIPTION = 'Returns the 10 newest posts from NiceMatin (full text)';
 
-		$this->maintainer = "pit-fgfjiudghdf";
-		$this->name = "NiceMatin";
-		$this->uri = "http://www.nicematin.com/";
-		$this->description = "Returns the 10 newest posts from NiceMatin (full text)";
-		$this->update = "2014-05-26";
-
+	public function collectData(){
+		$this->collectExpandableDatas(self::URI . 'derniere-minute/rss', 10);
 	}
 
-    public function collectData(array $param){
+	protected function parseItem($newsItem){
+		$item = parent::parseItem($newsItem);
+		$item['content'] = $this->extractContent($item['uri']);
+		return $item;
+	}
 
-    function NiceMatinUrl($string) {
-        $string = str_replace('</link>', '', $string);
-        //$string = str_replace('.+', '', $string);
-        $string = preg_replace('/html.*http.*/i','html',$string);
-        $string = preg_replace('/.*http/i','http',$string);
-        return $string;
-    }
+	private function extractContent($url){
+		$html = getSimpleHTMLDOMCached($url);
+		if(!$html)
+			return 'Could not acquire content from url: ' . $url . '!';
 
-    function NiceMatinExtractContent($url) {
-        $html2 = file_get_html($url);
-        $text = $html2->find('figure[itemprop=associatedMedia]', 0)->innertext;
-        $text .= $html2->find('div[id=content-article]', 0)->innertext;
-        return $text;
-    }
+		$content = $html->find('article', 0);
+		if(!$content)
+			return 'Could not find \'section\'!';
 
-        $html = file_get_html('http://www.nicematin.com/derniere-minute/rss') or $this->returnError('Could not request NiceMatin.', 404);
-        $limit = 0;
-
-        foreach($html->find('item') as $element) {
-         if($limit < 10) {
-         $item = new \Item();
-         //$item->title = NiceMatinStripCDATA($element->find('title', 0)->innertext);
-         $item->title = $element->find('title', 0)->innertext;
-         $item->uri = NiceMatinUrl($element->plaintext);
-
-         $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-         $item->content = NiceMatinExtractContent($item->uri);
-         $this->items[] = $item;
-         $limit++;
-         }
-        }
-
-    }
-
-    public function getName(){
-        return 'NiceMatin';
-    }
-
-    public function getURI(){
-        return 'http://www.nicematin.com/';
-    }
-
-    public function getCacheDuration(){
-        return 3600; // 1 hour
-    }
+		$text = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $content->innertext);
+		$text = strip_tags($text, '<p><a><img>');
+		return $text;
+	}
 }
-

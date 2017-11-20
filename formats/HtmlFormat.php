@@ -1,85 +1,100 @@
 <?php
-/**
-* Html
-* Documentation Source http://en.wikipedia.org/wiki/Atom_%28standard%29 and http://tools.ietf.org/html/rfc4287
-*
-* @name Html
-*/
-class HtmlFormat extends FormatAbstract{
+class HtmlFormat extends FormatAbstract {
 
-    public function stringify(){
-        /* Datas preparation */
-        $extraInfos = $this->getExtraInfos();
-        $title = htmlspecialchars($extraInfos['name']);
-        $uri = htmlspecialchars($extraInfos['uri']);
-	$atomquery = str_replace('format=HtmlFormat', 'format=AtomFormat', htmlentities($_SERVER['QUERY_STRING']));
+	public function stringify(){
+		$extraInfos = $this->getExtraInfos();
+		$title = htmlspecialchars($extraInfos['name']);
+		$uri = htmlspecialchars($extraInfos['uri']);
+		$atomquery = str_replace('format=Html', 'format=Atom', htmlentities($_SERVER['QUERY_STRING']));
+		$mrssquery = str_replace('format=Html', 'format=Mrss', htmlentities($_SERVER['QUERY_STRING']));
 
-        $entries = '';
-        foreach($this->getDatas() as $data){
-            $entryUri = is_null($data->uri) ? $uri : $data->uri;
-            $entryTitle = is_null($data->title) ? '' : $this->sanitizeHtml(strip_tags($data->title));
-            $entryTimestamp = is_null($data->timestamp) ? '' : '<small><time datetime="' . date(DATE_ATOM, $data->timestamp) . '">' . date(DATE_ATOM, $data->timestamp) . '</time></small>';
-            $entryAuthor = is_null($data->author) ? '' : '<br><small>by: ' . $data->author . '</small>';
-            $entryContent = is_null($data->content) ? '' : '<p>' . $this->sanitizeHtml($data->content). '</p>';
-            $entries .= <<<EOD
+		$entries = '';
+		foreach($this->getItems() as $item) {
+			$entryAuthor = isset($item['author']) ? '<br /><p class="author">by: ' . $item['author'] . '</p>' : '';
+			$entryTitle = isset($item['title']) ? $this->sanitizeHtml(strip_tags($item['title'])) : '';
+			$entryUri = isset($item['uri']) ? $item['uri'] : $uri;
 
-<div class="feeditem">
-	<h2><a href="{$entryUri}">{$entryTitle}</a></h2>
+			$entryTimestamp = '';
+			if(isset($item['timestamp'])) {
+				$entryTimestamp = '<time datetime="'
+				. date(DATE_ATOM, $item['timestamp'])
+				. '">'
+				. date(DATE_ATOM, $item['timestamp'])
+				. '</time>';
+			}
+
+			$entryContent = '';
+			if(isset($item['content'])) {
+				$entryContent = '<div class="content">'
+				. $this->sanitizeHtml($item['content'])
+				. '</div>';
+			}
+
+			$entryEnclosures = '';
+			if(isset($item['enclosures'])) {
+				$entryEnclosures = '<div class="attachments"><p>Attachments:</p>';
+
+				foreach($item['enclosures'] as $enclosure) {
+					$url = $this->sanitizeHtml($enclosure);
+
+					$entryEnclosures .= '<li class="enclosure"><a href="'
+					. $url
+					. '">'
+					. substr($url, strrpos($url, '/') + 1)
+					. '</a></li>';
+				}
+
+				$entryEnclosures .= '</div>';
+			}
+
+			$entries .= <<<EOD
+
+<section class="feeditem">
+	<h2><a class="itemtitle" href="{$entryUri}">{$entryTitle}</a></h2>
 	{$entryTimestamp}
-   {$entryAuthor}
-   {$entryContent}
-</div>
+	{$entryAuthor}
+	{$entryContent}
+	{$entryEnclosures}
+</section>
 
 EOD;
-        }
+		}
 
-        $styleCss = <<<'EOD'
-body{
-	font-family:"Trebuchet MS",Verdana,Arial,Helvetica,sans-serif;
-	font-size:10pt;
-	background-color:#aaa;
-	background-image:linear-gradient(#eee, #aaa);
-	background-attachment:fixed;
-}
-div.feeditem{border:1px solid black;padding:1em;margin:1em;background-color:#fff;}
-div.feeditem:hover { background-color:#ebf7ff; }
-h1 {border-bottom:dotted #bbb;margin:0 1em 1em 1em;}
-h2 {margin:0;}
-h2 a {color:black;text-decoration:none;}
-h2 a:hover {text-decoration:underline;}
-span.menu {margin-left:1em;}
-span.menu img {vertical-align:middle;}
-span.menu a { color:black; text-decoration:none;  padding:0.4em; }
-span.menu a:hover { background-color:white; }
+		$charset = $this->getCharset();
 
-EOD;
-
-        /* Data are prepared, now let's begin the "MAGIE !!!" */
-        $toReturn = <<<EOD
+		/* Data are prepared, now let's begin the "MAGIE !!!" */
+		$toReturn = <<<EOD
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
+	<meta charset="{$charset}">
 	<title>{$title}</title>
-	<style type="text/css">{$styleCss}</style>
+	<link href="static/HtmlFormat.css" rel="stylesheet">
 	<meta name="robots" content="noindex, follow">
 </head>
 <body>
-	<h1>{$title}</h1>
-<span class="menu"><a href="./" onclick="window.history.back()">← back to rss-bridge</a> <a title="Get the ATOM feed" href="./?{$atomquery}"><img alt="feed" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZAgMAAAC5h23wAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAJUExURf+cCv/8+P/OhD2VurcAAAABdFJOU/4a4wd9AAAAbklEQVQI13XOMQ6AIAwFUGzCgLtHYPEUHMHBTwgTRyFOXoDdUT2ltCKbXV6b/iZV6qcMYmY1EJtw3MwFQRJU/Bfl6VaEzENQxbHIUxKTrY4Xgk4ct0EvcrYa9iTPGrxqbE3XHWSfRfIk1trp6O8+R38aBYbaAE4AAAAASUVORK5CYII="></a></span>
+	<h1 class="pagetitle"><a href="{$uri}" target="_blank">{$title}</a></h1>
+	<div class="buttons">
+		<a href="./#bridge-{$_GET['bridge']}"><button class="backbutton">← back to rss-bridge</button></a>
+		<a href="./?{$atomquery}"><button class="rss-feed">RSS feed (ATOM)</button></a>
+		<a href="./?{$mrssquery}"><button class="rss-feed">RSS feed (MRSS)</button></a>
+	</div>
 {$entries}
 </body>
 </html>
 EOD;
 
-        return $toReturn;
-    }
+		// Remove invalid characters
+		ini_set('mbstring.substitute_character', 'none');
+		$toReturn = mb_convert_encoding($toReturn, $this->getCharset(), 'UTF-8');
+		return $toReturn;
+	}
 
-    public function display() {
-        $this
-            ->setContentType('text/html; charset=' . $this->getCharset())
-            ->callContentType();
+	public function display() {
+		$this
+			->setContentType('text/html; charset=' . $this->getCharset())
+			->callContentType();
 
-        return parent::display();
-    }
+		return parent::display();
+	}
 }

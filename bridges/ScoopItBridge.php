@@ -1,54 +1,42 @@
 <?php
-class ScoopItBridge extends BridgeAbstract{
+class ScoopItBridge extends BridgeAbstract {
 
-	public function loadMetadatas() {
+	const MAINTAINER = 'Pitchoule';
+	const NAME = 'ScoopIt';
+	const URI = 'http://www.scoop.it/';
+	const CACHE_TIMEOUT = 21600; // 6h
+	const DESCRIPTION = 'Returns most recent results from ScoopIt.';
 
-		$this->maintainer = "Pitchoule";
-		$this->name = "ScoopIt";
-		$this->uri = "http://www.scoop.it";
-		$this->description = "Returns most recent results from ScoopIt.";
-		$this->update = "2014-06-13";
+	const PARAMETERS = array( array(
+		'u' => array(
+			'name' => 'keyword',
+			'required' => true
+		)
+	));
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "keyword",
-				"identifier" : "u"
-			}
-		]';
+	public function collectData(){
+		$this->request = $this->getInput('u');
+		$link = self::URI . 'search?q=' . urlencode($this->getInput('u'));
 
+		$html = getSimpleHTMLDOM($link)
+			or returnServerError('Could not request ScoopIt. for : ' . $link);
+
+		foreach($html->find('div.post-view') as $element) {
+			$item = array();
+			$item['uri'] = $element->find('a', 0)->href;
+			$item['title'] = preg_replace(
+				'~[[:cntrl:]]~',
+				'',
+				$element->find('div.tCustomization_post_title', 0)->plaintext
+			);
+
+			$item['content'] = preg_replace(
+				'~[[:cntrl:]]~',
+				'',
+				$element->find('div.tCustomization_post_description', 0)->plaintext
+			);
+
+			$this->items[] = $item;
+		}
 	}
-
-    public function collectData(array $param){
-        $html = '';
-        if ($param['u'] != '') {
-            $this->request = $param['u'];
-            $link = 'http://scoop.it/search?q=' .urlencode($this->request);
-            
-            $html = file_get_html($link) or $this->returnError('Could not request ScoopIt. for : ' . $link , 404);
-            
-            foreach($html->find('div.post-view') as $element) {
-                $item = new Item();
-                $item->uri = $element->find('a', 0)->href;
-                $item->title = preg_replace('~[[:cntrl:]]~', '', $element->find('div.tCustomization_post_title',0)->plaintext);
-                $item->content = preg_replace('~[[:cntrl:]]~', '', $element->find('div.tCustomization_post_description', 0)->plaintext);
-                $this->items[] = $item;
-            }
-        } else {
-            $this->returnError('You must specify a keyword', 404);
-        }
-    }
-
-    public function getName(){
-        return 'ScooptIt';
-    }
-
-    public function getURI(){
-        return 'http://Scoop.it';
-    }
-
-    public function getCacheDuration(){
-        return 21600; // 6 hours
-    }
 }
-

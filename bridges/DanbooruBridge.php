@@ -1,59 +1,67 @@
 <?php
-class DanbooruBridge extends BridgeAbstract{
+class DanbooruBridge extends BridgeAbstract {
 
-	public function loadMetadatas() {
+	const MAINTAINER = 'mitsukarenai';
+	const NAME = 'Danbooru';
+	const URI = 'http://donmai.us/';
+	const CACHE_TIMEOUT = 1800; // 30min
+	const DESCRIPTION = 'Returns images from given page';
 
-		$this->maintainer = "mitsukarenai";
-		$this->name = "Danbooru";
-		$this->uri = "http://donmai.us/";
-		$this->description = "Returns images from given page";
-		$this->update = "2014-05-25";
+	const PARAMETERS = array(
+		'global' => array(
+			'p' => array(
+				'name' => 'page',
+				'defaultValue' => 1,
+				'type' => 'number'
+			),
+			't' => array(
+				'name' => 'tags'
+			)
+		),
+		0 => array()
+	);
 
-		$this->parameters[] =
-		'[
-			{
-				"name" : "page",
-				"identifier" : "p"
-			},
-			{
-				"name" : "tags",
-				"identifier" : "t"
-			}
-		]';
+	const PATHTODATA = 'article';
+	const IDATTRIBUTE = 'data-id';
+	const TAGATTRIBUTE = 'alt';
 
+	protected function getFullURI(){
+		return $this->getURI()
+		. 'posts?&page=' . $this->getInput('p')
+		. '&tags=' . urlencode($this->getInput('t'));
 	}
 
-    public function collectData(array $param){
-	$page = 1;$tags='';
-        if (isset($param['p'])) { 
-            $page = (int)preg_replace("/[^0-9]/",'', $param['p']); 
-        }
-        if (isset($param['t'])) { 
-            $tags = urlencode($param['t']); 
-        }
-        $html = file_get_html("http://donmai.us/posts?&page=$page&tags=$tags") or $this->returnError('Could not request Danbooru.', 404);
-	foreach($html->find('div[id=posts] article') as $element) {
-		$item = new \Item();
-		$item->uri = 'http://donmai.us'.$element->find('a', 0)->href;
-		$item->postid = (int)preg_replace("/[^0-9]/",'', $element->getAttribute('data-id'));	
-		$item->timestamp = time();
-		$item->thumbnailUri = 'http://donmai.us'.$element->find('img', 0)->src;
-		$item->tags = $element->find('img', 0)->getAttribute('alt');
-		$item->title = 'Danbooru | '.$item->postid;
-		$item->content = '<a href="' . $item->uri . '"><img src="' . $item->thumbnailUri . '" /></a><br>Tags: '.$item->tags;
-		$this->items[] = $item; 
+	protected function getTags($element){
+		return $element->find('img', 0)->getAttribute(static::TAGATTRIBUTE);
 	}
-    }
 
-    public function getName(){
-        return 'Danbooru';
-    }
+	protected function getItemFromElement($element){
+		// Fix links
+		defaultLinkTo($element, $this->getURI());
 
-    public function getURI(){
-        return 'http://donmai.us/';
-    }
+		$item = array();
+		$item['uri'] = $element->find('a', 0)->href;
+		$item['postid'] = (int)preg_replace("/[^0-9]/", '', $element->getAttribute(static::IDATTRIBUTE));
+		$item['timestamp'] = time();
+		$thumbnailUri = $element->find('img', 0)->src;
+		$item['tags'] = $this->getTags($element);
+		$item['title'] = $this->getName() . ' | ' . $item['postid'];
+		$item['content'] = '<a href="'
+		. $item['uri']
+		. '"><img src="'
+		. $thumbnailUri
+		. '" /></a><br>Tags: '
+		. $item['tags'];
 
-    public function getCacheDuration(){
-        return 1800; // 30 minutes
-    }
+		return $item;
+	}
+
+	public function collectData(){
+		$html = getSimpleHTMLDOM($this->getFullURI())
+			or returnServerError('Could not request ' . $this->getName());
+
+		foreach($html->find(static::PATHTODATA) as $element) {
+			$this->items[] = $this->getItemFromElement($element);
+		}
+	}
 }

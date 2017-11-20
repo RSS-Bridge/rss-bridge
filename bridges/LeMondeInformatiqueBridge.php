@@ -1,77 +1,44 @@
 <?php
-class LeMondeInformatiqueBridge extends BridgeAbstract {
+class LeMondeInformatiqueBridge extends FeedExpander {
 
-    public function loadMetadatas() {
+	const MAINTAINER = 'ORelio';
+	const NAME = 'Le Monde Informatique';
+	const URI = 'http://www.lemondeinformatique.fr/';
+	const CACHE_TIMEOUT = 1800; // 30min
+	const DESCRIPTION = 'Returns the newest articles.';
 
-        $this->maintainer = "ORelio";
-        $this->name = "Le Monde Informatique";
-        $this->uri = "http://www.lemondeinformatique.fr/";
-        $this->description = "Returns the newest articles.";
-        $this->update = "2016-01-28";
+	public function collectData(){
+		$this->collectExpandableDatas(self::URI . 'rss/rss.xml', 10);
+	}
 
-    }
+	protected function parseItem($newsItem){
+		$item = parent::parseItem($newsItem);
+		$article_html = getSimpleHTMLDOMCached($item['uri'])
+			or returnServerError('Could not request LeMondeInformatique: ' . $item['uri']);
+		$item['content'] = $this->cleanArticle($article_html->find('div#article', 0)->innertext);
+		$item['title'] = $article_html->find('h1.cleanprint-title', 0)->plaintext;
+		return $item;
+	}
 
-    public function collectData(array $param) {
+	private function stripCDATA($string){
+		$string = str_replace('<![CDATA[', '', $string);
+		$string = str_replace(']]>', '', $string);
+		return $string;
+	}
 
-        function StripCDATA($string) {
-            $string = str_replace('<![CDATA[', '', $string);
-            $string = str_replace(']]>', '', $string);
-            return $string;
-        }
+	private function stripWithDelimiters($string, $start, $end){
+		while(strpos($string, $start) !== false) {
+			$section_to_remove = substr($string, strpos($string, $start));
+			$section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
+			$string = str_replace($section_to_remove, '', $string);
+		}
 
-        function StripWithDelimiters($string, $start, $end) {
-            while (strpos($string, $start) !== false) {
-                $section_to_remove = substr($string, strpos($string, $start));
-                $section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
-                $string = str_replace($section_to_remove, '', $string);
-            } return $string;
-        }
+		return $string;
+	}
 
-        function CleanArticle($article_html) {
-            $article_html = StripWithDelimiters($article_html, '<script', '</script>');
-            $article_html = StripWithDelimiters($article_html, '<h1 class="cleanprint-title"', '</h1>');
-            return $article_html;
-        }
-
-        $feedUrl = 'http://www.lemondeinformatique.fr/rss/rss.xml';
-        $html = file_get_html($feedUrl) or $this->returnError('Could not request LeMondeInformatique: '.$feedUrl, 500);
-        $limit = 0;
-
-        foreach($html->find('item') as $element) {
-            if($limit < 5) {
-
-                //Retrieve article details
-                $article_uri = $element->innertext;
-                $article_uri = substr($article_uri, strpos($article_uri, '<link>') + 6);
-                $article_uri = substr($article_uri, 0, strpos($article_uri, '</link>'));
-                $article_html = file_get_html($article_uri) or $this->returnError('Could not request LeMondeInformatique: '.$article_uri, 500);
-                $thumbnailUri = $article_html->find('div#article', 0)->find('img#illustration', 0)->src;
-                $article_content = CleanArticle($article_html->find('div#article', 0)->innertext);
-                $article_title = $article_html->find('h1.cleanprint-title', 0)->plaintext;
-
-                //Build and add final item
-                $item = new \Item();
-                $item->uri = $article_uri;
-                $item->thumbnailUri = $thumbnailUri;
-                $item->title = $article_title;
-                $item->author = StripCDATA($element->find('dc:creator', 0)->innertext);
-                $item->timestamp = strtotime($element->find('dc:date', 0)->plaintext);
-                $item->content = $article_content;
-                $this->items[] = $item;
-                $limit++;
-            }
-        }
-    }
-
-    public function getName() {
-        return 'Le Monde Informatique';
-    }
-
-    public function getURI() {
-        return 'http://www.lemondeinformatique.fr/';
-    }
-
-    public function getCacheDuration() {
-        return 1800; // 30 minutes
-    }
+	private function cleanArticle($article_html){
+		$article_html = $this->stripWithDelimiters($article_html, '<script', '</script>');
+		$article_html = $this->stripWithDelimiters($article_html, '<h1 class="cleanprint-title"', '</h1>');
+		return $article_html;
+	}
 }

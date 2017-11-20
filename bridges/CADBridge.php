@@ -1,69 +1,45 @@
 <?php
-class CADBridge extends BridgeAbstract{
+class CADBridge extends FeedExpander {
+	const MAINTAINER = 'nyutag';
+	const NAME = 'CAD Bridge';
+	const URI = 'http://www.cad-comic.com/';
+	const CACHE_TIMEOUT = 7200; //2h
+	const DESCRIPTION = 'Returns the newest articles.';
 
-	   	public function loadMetadatas() {
+	public function collectData(){
+		$this->collectExpandableDatas('http://cdn2.cad-comic.com/rss.xml', 10);
+	}
 
-			$this->maintainer = "nyutag";
-			$this->name = "CAD Bridge";
-			$this->uri = "http://www.cad-comic.com/";
-			$this->description = "Returns the newest articles.";
-			$this->update = "2015-04-03";
+	protected function parseItem($newsItem){
+		$item = parent::parseItem($newsItem);
+		$item['content'] = $this->extractCADContent($item['uri']);
+		return $item;
+	}
 
-		}
+	private function extractCADContent($url) {
+		$html3 = getSimpleHTMLDOMCached($url);
 
-        public function collectData(array $param){
+		// The request might fail due to missing https support or wrong URL
+		if($html3 == false)
+			return 'Daily comic not released yet';
 
-		function CADUrl($string) {
-		 $html2 = explode("\"", $string);
-		 $string = $html2[1];
-		 if (substr($string,0,4) != 'http')
-		   return 'notanurl';
-		 return $string;
-		}
-	
-		function CADExtractContent($url) {
-		$html3 = file_get_html($url);
 		$htmlpart = explode("/", $url);
-		if ($htmlpart[3] == 'cad')
-		  preg_match_all("/http:\/\/cdn2\.cad-comic\.com\/comics\/cad-\S*png/", $html3, $url2);
-		if ($htmlpart[3] == 'sillies')
-		  preg_match_all("/http:\/\/cdn2\.cad-comic\.com\/comics\/sillies-\S*gif/", $html3, $url2);
-		$img = implode ($url2[0]);
+
+		switch ($htmlpart[3]) {
+			case 'cad':
+				preg_match_all("/http:\/\/cdn2\.cad-comic\.com\/comics\/cad-\S*png/", $html3, $url2);
+				break;
+			case 'sillies':
+				preg_match_all("/http:\/\/cdn2\.cad-comic\.com\/comics\/sillies-\S*gif/", $html3, $url2);
+				break;
+			default:
+				return 'Daily comic not released yet';
+		}
+		$img = implode($url2[0]);
 		$html3->clear();
-		unset ($html3);
+		unset($html3);
 		if ($img == '')
-		  return 'Daily comic not realease yet';
-		return '<img src="'.$img.'"/>';
-		}
-
-		$html = file_get_html('http://cdn2.cad-comic.com/rss.xml') or $this->returnError('Could not request CAD.', 404);
-		$limit = 0;
-		foreach($html->find('item') as $element) {
-		 if($limit < 5) {
-		 $item = new \Item();
-		 $item->title = $element->find('title', 0)->innertext;
-		 $item->uri = CADUrl($element->find('description', 0)->innertext);
-		 if ($item->uri != 'notanurl') {
-		   $item->timestamp = strtotime($element->find('pubDate', 0)->plaintext);
-		   $item->content = CADExtractContent($item->uri);
-		   $this->items[] = $item;
-		   $limit++;
-		  }
-		 }
-		}
-    
-    }
-
-    public function getName(){
-        return 'CAD Bridge';
-    }
-
-    public function getURI(){
-        return 'http://www.cad-comic.com/';
-    }
-
-    public function getCacheDuration(){
-        return 3600*2; // 2 hours
-//	return 0;
-    }
+			return 'Daily comic not released yet';
+		return '<img src="' . $img . '"/>';
+	}
 }

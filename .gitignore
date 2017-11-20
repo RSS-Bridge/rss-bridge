@@ -227,3 +227,8 @@ pip-log.txt
 /cache
 /whitelist.txt
 DEBUG
+
+######################
+## VisualStudioCode ##
+######################
+.vscode/*
