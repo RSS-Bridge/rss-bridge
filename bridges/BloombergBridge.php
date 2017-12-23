@@ -22,7 +22,7 @@ class BloombergBridge extends BridgeAbstract
         case 'Trending Stories':
             return self::NAME . ' Trending Stories';
         case 'From Search':
-            if(!is_null($this->getInput('q'))) {
+            if (!is_null($this->getInput('q'))) {
                     return self::NAME . ' Search : ' . $this->getInput('q');
             }
             break;
@@ -43,7 +43,7 @@ class BloombergBridge extends BridgeAbstract
             $stories = $html->find('div.search-result-items article.search-result-story');
             break;
         }
-        foreach($stories as $element) {
+        foreach ($stories as $element) {
             $item['uri'] = $element->find('h1 a', 0)->href;
             if (preg_match('#^https://#i', $item['uri']) !== 1) {
                 $item['uri'] = $this->getURI() . $item['uri'];
