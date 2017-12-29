@@ -196,9 +196,9 @@ class YoutubeBridge extends BridgeAbstract {
 		case 'By channel id':
 		case 'By playlist Id':
 		case 'Search result':
-      return $this->feedName . ' - ' . 'YouTube'; // We already know it's a bridge, right?
-    default:
-      return parent::getName();
+			return $this->feedName . ' - YouTube'; // We already know it's a bridge, right?
+		default:
+			return parent::getName();
 		}
   }
 }
