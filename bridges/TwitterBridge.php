@@ -166,7 +166,7 @@ class TwitterBridge extends BridgeAbstract {
 			switch($this->queriedContext) {
 				case 'By list':
 					// Check if filter applies to list (using raw content)
-					if(!is_null($this->getInput('filter'))) {
+					if($this->getInput('filter')) {
 						if(stripos($tweet->find('p.js-tweet-text', 0)->plaintext, $this->getInput('filter')) === false) {
 							continue 2; // switch + for-loop!
 						}
