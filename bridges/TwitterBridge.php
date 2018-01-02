@@ -82,7 +82,7 @@ class TwitterBridge extends BridgeAbstract {
 			break;
 		default: return parent::getName();
 		}
-		return 'Twitter List ' . $this->getInput($param) . ' by ' $specific;
+		return 'Twitter List ' . $this->getInput($param) . ' by ' . $specific;
 	}
 
 	public function getURI(){
@@ -161,7 +161,8 @@ class TwitterBridge extends BridgeAbstract {
 			$item['timestamp'] = $tweet->find('span.js-short-timestamp', 0)->getAttribute('data-time');
 			// generate the title
 			$item['title'] = strip_tags($this->fixAnchorSpacing($tweet->find('p.js-tweet-text', 0), '<a>'));
-
+      
+			
 			switch($this->queriedContext) {
 				case 'By list':
 					// Check if filter applies to list (using raw content)
@@ -173,6 +174,7 @@ class TwitterBridge extends BridgeAbstract {
 					break;
 				default:
 			}
+			
 
 			$this->processContentLinks($tweet);
 			$this->processEmojis($tweet);
