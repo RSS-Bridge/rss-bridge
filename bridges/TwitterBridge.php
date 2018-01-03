@@ -82,7 +82,7 @@ class TwitterBridge extends BridgeAbstract {
 			break;
 		default: return parent::getName();
 		}
-		return 'Twitter List ' . $this->getInput($param) . ' by ' . $specific;
+		return $this->getInput($param) . ' - Twitter list by ' . $specific;
 	}
 
 	public function getURI(){
