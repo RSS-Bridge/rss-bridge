@@ -77,12 +77,10 @@ class TwitterBridge extends BridgeAbstract {
 			$param = 'u';
 			break;
 		case 'By list':
-			$specific = $this->getInput('user');
-			$param = 'list';
-			break;
+			return $this->getInput('list') . ' - Twitter list by ' . $this->getInput('user');
 		default: return parent::getName();
 		}
-		return $this->getInput($param) . ' - Twitter list by ' . $specific;
+		return 'Twitter ' . $specific . $this->getInput($param);
 	}
 
 	public function getURI(){
