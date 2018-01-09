@@ -42,10 +42,10 @@ class LegifranceJOBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI)
 			or $this->returnServer('Unable to download ' . self::URI);
 
-		$this->author = trim($html->find('h2.title', 0)->plaintext);
+		$this->author = trim($html->find('h2.titleJO', 0)->plaintext);
 		$uri = $html->find('h2.titleELI', 0)->plaintext;
 		$this->uri = trim(substr($uri, strpos($uri, 'https')));
-		$this->timestamp = strtotime(substr($this->uri, strpos($this->uri, 'eli/jo/') + strlen('eli/jo/')));
+		$this->timestamp = strtotime(substr($this->uri, strpos($this->uri, 'eli/jo/') + strlen('eli/jo/'), -5));
 
 		foreach($html->find('h3') as $section) {
 			$subsections = $section->nextSibling()->find('h4');
