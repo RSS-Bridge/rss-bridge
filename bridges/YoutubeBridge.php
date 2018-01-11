@@ -91,7 +91,7 @@ class YoutubeBridge extends BridgeAbstract {
 			if(strpos($vid, 'googleads') === false)
 				$this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
 		}
-		$this->request = $this->ytBridgeFixTitle($xml->find('feed > title', 0)->plaintext);
+		$this->feedName = $this->ytBridgeFixTitle($xml->find('feed > title', 0)->plaintext);  // feedName will be used by getName()
 	}
 
 	private function ytBridgeParseHtmlListing($html, $element_selector, $title_selector){
@@ -164,7 +164,7 @@ class YoutubeBridge extends BridgeAbstract {
 			$html = $this->ytGetSimpleHTMLDOM($url_listing)
 				or returnServerError("Could not request YouTube. Tried:\n - $url_listing");
 			$this->ytBridgeParseHtmlListing($html, 'tr.pl-video', '.pl-video-title a');
-			$this->request = 'Playlist: ' . str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
+			$this->feedName = 'Playlist: ' . str_replace(' - YouTube', '', $html->find('title', 0)->plaintext); // feedName will be used by getName()
 		} elseif($this->getInput('s')) { /* search mode */
 			$this->request = $this->getInput('s');
 			$page = 1;
@@ -182,7 +182,7 @@ class YoutubeBridge extends BridgeAbstract {
 				or returnServerError("Could not request YouTube. Tried:\n - $url_listing");
 
 			$this->ytBridgeParseHtmlListing($html, 'div.yt-lockup', 'h3');
-			$this->request = 'Search: ' . str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
+			$this->feedName = 'Search: ' . str_replace(' - YouTube', '', $html->find('title', 0)->plaintext); // feedName will be used by getName()
 		} else { /* no valid mode */
 			returnClientError("You must either specify either:\n - YouTube
  username (?u=...)\n - Channel id (?c=...)\n - Playlist id (?p=...)\n - Search (?s=...)");
@@ -190,6 +190,15 @@ class YoutubeBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		return (!empty($this->request) ? $this->request . ' - ' : '') . 'YouTube Bridge';
-	}
+	  // Name depends on queriedContext:
+		switch($this->queriedContext) {
+		case 'By username':
+		case 'By channel id':
+		case 'By playlist Id':
+		case 'Search result':
+			return $this->feedName . ' - YouTube'; // We already know it's a bridge, right?
+		default:
+			return parent::getName();
+		}
+  }
 }
