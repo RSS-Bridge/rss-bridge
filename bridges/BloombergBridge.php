@@ -39,7 +39,11 @@ class BloombergBridge extends BridgeAbstract
 			$stories = $html->find('ul.top-news-v3__stories article.top-news-v3-story');
 			break;
 		case 'From Search': // Get list of <article> elements from search.
-			$html = getSimpleHTMLDOMCached($this->getURI() . 'search?sort=time:desc&page=1&query=' . urlencode($this->getInput('q')), 300);
+			$html = getSimpleHTMLDOMCached(
+				$this->getURI() .
+				'search?sort=time:desc&page=1&query=' .
+				urlencode($this->getInput('q')), 300
+			);
 			$stories = $html->find('div.search-result-items article.search-result-story');
 			break;
 		}
