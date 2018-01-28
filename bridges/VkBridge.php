@@ -88,7 +88,8 @@ class VkBridge extends BridgeAbstract
 
 				$date = date_parse($strdate);
 			}
-			return strtotime($date['day'] . '-' . $date['month'] . '-' . $date['year'] . ' ' . $date['hour'] . ':' . $date['minute']);
+			return strtotime($date['day'] . '-' . $date['month'] . '-' . $date['year'] . ' ' .
+				$date['hour'] . ':' . $date['minute']);
 		}
 
 	}
@@ -102,8 +103,8 @@ class VkBridge extends BridgeAbstract
 				'method' => "GET",
 				'user_agent' => ini_get('user_agent'),
 				'accept_encoding' => 'gzip',
-				'header' => "Accept-language: en\r\n" .
-					"Cookie: remixlang=3\r\n"
+				'header' => "Accept-language: en\r\n 
+					Cookie: remixlang=3\r\n"
 			)
 		);
 
