@@ -77,9 +77,7 @@ class TwitterBridge extends BridgeAbstract {
 			$param = 'u';
 			break;
 		case 'By list':
-			$specific = $this->getInput('user');
-			$param = 'list';
-			break;
+			return $this->getInput('list') . ' - Twitter list by ' . $this->getInput('user');
 		default: return parent::getName();
 		}
 		return 'Twitter ' . $specific . $this->getInput($param);
@@ -165,7 +163,7 @@ class TwitterBridge extends BridgeAbstract {
 			switch($this->queriedContext) {
 				case 'By list':
 					// Check if filter applies to list (using raw content)
-					if(!is_null($this->getInput('filter'))) {
+					if($this->getInput('filter')) {
 						if(stripos($tweet->find('p.js-tweet-text', 0)->plaintext, $this->getInput('filter')) === false) {
 							continue 2; // switch + for-loop!
 						}
