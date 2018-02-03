@@ -22,16 +22,16 @@ class IvooxBridge extends BridgeAbstract
 	private function ivGetSimpleHTMLDOM($url)
 	{
 		return getSimpleHTMLDOM(
-		$url, 
-		$use_include_path = false, 
+		$url,
+		$use_include_path = false,
 		$context = null,
-		$offset = 0, 
-		$maxLen = null, 
-		$lowercase = true, 
-		$forceTagsClosed = true, 
-		$target_charset = DEFAULT_TARGET_CHARSET, 
-		$stripRN = false, 
-		$defaultBRText = DEFAULT_BR_TEXT, 
+		$offset = 0,
+		$maxLen = null,
+		$lowercase = true,
+		$forceTagsClosed = true,
+		$target_charset = DEFAULT_TARGET_CHARSET,
+		$stripRN = false,
+		$defaultBRText = DEFAULT_BR_TEXT,
 		$defaultSpanText = DEFAULT_SPAN_TEXT);
 	}
 
@@ -42,14 +42,17 @@ class IvooxBridge extends BridgeAbstract
 		}
 	}
 
-	private function ivBridgeAddItem($episode_link, $podcast_name, $episode_title, $author_name, $episode_description, $publication_date, $episode_duration)
+	private function ivBridgeAddItem($episode_link, $podcast_name, $episode_title, $author_name,
+	    $episode_description, $publication_date, $episode_duration)
 	{
 		$item = array();
 		$item['title'] = $podcast_name . ':' . $episode_title;
 		$item['author'] = $author_name;
 		$item['timestamp'] = $publication_date;
 		$item['uri'] = $episode_link;
-		$item['content'] = '<a href="' . $episode_link . '">' . $podcast_name . ': ' . $episode_title . '</a><br />Duration: ' . $episode_duration . '"<br />Description:<br />' . $episode_description;
+		$item['content'] = '<a href="' . $episode_link . '">' . $podcast_name . ': ' . $episode_title . '</a>'
+			. '<br />Duration: ' . $episode_duration . '"'
+			. "<br />Description:<br />' . $episode_description;
 		$this->items[] = $item;
 	}
 
@@ -57,14 +60,14 @@ class IvooxBridge extends BridgeAbstract
 	{
 		$limit = 4;
 		$count = 0;
-		
+
 		foreach($html->find('div.flip-container') as $flipper) {
 			$linkcount = 0;
-			if(!empty($flipper->find( 'div.modulo-type-banner' ))) { 
+			if(!empty($flipper->find( 'div.modulo-type-banner' ))) {
 				// ad
 				continue;
 			}
-			
+
 			if($count < $limit) {
 				foreach($flipper->find('div.header-modulo') as $element) {
 					foreach($element->find('a') as $link) {
@@ -89,12 +92,15 @@ class IvooxBridge extends BridgeAbstract
 				$episode_duration = $flipper->find('p.time', 0)->innertext;
 				$publication_date = $flipper->find('li.date', 0)->getAttribute('title');
 
-				// alternative date_parse_from_format or DateTime::createFromFormat('G:i - d \d\e M \d\e Y', $publication); // TODO: month name translations, due funciton doesn't support locale
+				// alternative date_parse_from_format
+				// or DateTime::createFromFormat('G:i - d \d\e M \d\e Y', $publication);
+				// TODO: month name translations, due function doesn't support locale
 
 				$a = strptime($publication_date, '%H:%M - %d de %b. de %Y'); // obsolete function, uses c libraries
 				$publication_date = mktime(0, 0, 0, $a['tm_mon'] + 1, $a['tm_mday'], $a['tm_year'] + 1900);
-				
-				$this->ivBridgeAddItem($episode_link, $podcast_name, $episode_title, $author_name, $episode_description, $publication_date, $episode_duration);
+
+				$this->ivBridgeAddItem($episode_link, $podcast_name, $episode_title, $author_name, $episode_description,
+										$publication_date, $episode_duration);
 				$count++;
 			}
 		}
@@ -106,7 +112,7 @@ class IvooxBridge extends BridgeAbstract
 		// store locale, change to spanish
 		$originalLocales = explode(";", setlocale(LC_ALL, 0));
 		setlocale(LC_ALL, "es_ES.utf8");
-		
+
 		$this->printIfDebug('debug mode active');
 		$xml = '';
 		$html = '';
