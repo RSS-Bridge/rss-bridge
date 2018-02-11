@@ -28,9 +28,9 @@ class DealabsBridge extends BridgeAbstract {
 
 		foreach($list as $deal) {
 			$item = array();
-			$item['uri'] = $deal->find('div[class=fGrid-right space--l-2]', 0)->find('a', 0)->href;
+			$item['uri'] = $deal->find('div[class=threadGrid-title]', 0)->find('a', 0)->href;
 			$item['title'] = $deal->find(
-				'a[class=cept-tt thread-link linkPlain space--r-1 size--all-s size--fromW2-m]', 0
+				'a[class=cept-tt thread-link linkPlain space--r-1 size--all-s size--fromW3-m]', 0
 				)->plaintext;
 			$item['author'] = $deal->find('span.thread-username', 0)->plaintext;
 			$item['content'] = '<table><tr><td><a href="'
@@ -39,9 +39,9 @@ class DealabsBridge extends BridgeAbstract {
 				. '"><img src="'
 				. $this->getImage($deal)
 				. '"/></td><td><h2><a href="'
-				. $deal->find('a[class=cept-tt thread-link linkPlain space--r-1 size--all-s size--fromW2-m]', 0)->href
+				. $deal->find('a[class=cept-tt thread-link linkPlain space--r-1 size--all-s size--fromW3-m]', 0)->href
 				. '">'
-				. $deal->find('a[class=cept-tt thread-link linkPlain space--r-1 size--all-s size--fromW2-m]', 0)->innertext
+				. $deal->find('a[class=cept-tt thread-link linkPlain space--r-1 size--all-s size--fromW3-m]', 0)->innertext
 				. '</a></h2>'
 				. $this->getPrix($deal)
 				. $this->getReduction($deal)
@@ -49,13 +49,14 @@ class DealabsBridge extends BridgeAbstract {
 				. $this->getLivraison($deal)
 				. $this->getOrigine($deal)
 				. $deal->find(
-					'div[class=cept-description-container overflow--wrap-break size--all-s size--fromW2-m space--fromW3-b-2]', 0
+					'div[class=cept-description-container overflow--wrap-break size--all-s size--fromW3-m]', 0
 					)->innertext
 				. '</td><td>'
 				. $deal->find('div[class=flex flex--align-c flex--justify-space-between space--b-2]', 0)->children(0)->outertext
 				. '</td></table>';
-			$dealPossibleDates = $deal->find('span[class=meta-ribbon hide--toW3 space--l-3 text--color-greyShade]');
-			$itemDate = end($dealPossibleDates)->children(1)->plaintext;
+			$dealDateDiv = $deal->find('div[class=size--all-s flex flex--wrap flex--justify-e flex--grow-1]',0)
+				->find('span[class=hide--toW3]');
+			$itemDate = end($dealDateDiv)->plaintext;
 			if(substr( $itemDate, 0, 6 ) === 'il y a') {
 				$item['timestamp'] = $this->relativeDateToTimestamp($itemDate);
 			} else 	{
@@ -69,11 +70,10 @@ class DealabsBridge extends BridgeAbstract {
 	private function getPrix($deal)
 	{
 		if($deal->find(
-			'span[class*=thread-price text--b vAlign--all-tt cept-tp '
-			. 'size--all-m size--fromW2-xxl size--fromW4-xxxl]', 0) != null) {
+			'span[class*=thread-price]', 0) != null) {
 			return '<div>Prix : '
 				. $deal->find(
-					'span[class*=thread-price text--b vAlign--all-tt cept-tp size--all-m size--fromW2-xxl size--fromW4-xxxl]', 0
+					'span[class*=thread-price]', 0
 				)->plaintext
 				. '</div>';
 		} else {
@@ -84,13 +84,15 @@ class DealabsBridge extends BridgeAbstract {
 
 	private function getLivraison($deal)
 	{
-		if($deal->find('span[class=size--all-s overflow--wrap-off cept-shipping-price]', 0) != null) {
-			if($deal->find('span[class=size--all-s overflow--wrap-off cept-shipping-price]', 0)->children(0) != null) {
+		if($deal->find('span[class*=cept-shipping-price]', 0) != null) {
+			if($deal->find('span[class*=cept-shipping-price]', 0)->children(0) != null) {
 				return '<div>Livraison : '
-				. $deal->find('span[class=size--all-s overflow--wrap-off cept-shipping-price]', 0)->children(0)->innertext
+				. $deal->find('span[class*=cept-shipping-price]', 0)->children(0)->innertext
 				. '</div>';
 			} else {
-				return '';
+				return '<div>Livraison : '
+				. $deal->find('span[class*=cept-shipping-price]', 0)->innertext
+				. '</div>';
 			}
 		} else {
 			return '';
@@ -110,13 +112,13 @@ class DealabsBridge extends BridgeAbstract {
 
 	private function getReduction($deal)
 	{
-		if($deal->find('span[class=mute--text size--all-s space--l-2 text--lineThrough]', 0) != null) {
+		if($deal->find('span[class*=mute--text text--lineThrough]', 0) != null) {
 			return '<div>Réduction : <span style="text-decoration: line-through;">'
 				. $deal->find(
-					'span[class=mute--text size--all-s space--l-2 text--lineThrough]', 0
+					'span[class*=mute--text text--lineThrough]', 0
 					)->plaintext
 				. '</span>&nbsp;'
-				. $deal->find('span[class=mute--text size--all-s]', 0)->plaintext
+				. $deal->find('span[class=space--ml-1 size--all-l size--fromW3-xl]', 0)->plaintext
 				. '</div>';
 		} else {
 			return '';
@@ -126,8 +128,8 @@ class DealabsBridge extends BridgeAbstract {
 	private function getImage($deal)
 	{
 		if($deal->find(
-			'img[class=thread-image width--all-auto height--all-auto '
-			. 'imgFrame-img cept-thread-img img--dummy js-lazy-img]', 0) != null) {
+			'img[class=thread-image width--all-auto height--all-auto imgFrame-img '
+			. 'cept-thread-img img--dummy js-lazy-img]', 0) != null) {
 			return json_decode(
 				html_entity_decode(
 					$deal->find(
@@ -143,9 +145,9 @@ class DealabsBridge extends BridgeAbstract {
 
 	private function getExpedition($deal)
 	{
-		if($deal->find('span[class=meta-ribbon hide--toW3 space--l-3 text--color-greyShade]', 0) != null) {
+		if($deal->find('span[class=meta-ribbon overflow--wrap-off space--l-3 text--color-greyShade]', 0) != null) {
 			return '<div>'
-				. $deal->find('span[class=meta-ribbon hide--toW3 space--l-3 text--color-greyShade]', 0)->children(1)->plaintext
+				. $deal->find('span[class=meta-ribbon overflow--wrap-off space--l-3 text--color-greyShade]', 0)->children(2)->plaintext
 				. '</div>';
 		} else {
 			return '';
