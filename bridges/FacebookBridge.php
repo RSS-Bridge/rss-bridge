@@ -46,7 +46,7 @@ class FacebookBridge extends BridgeAbstract {
 			if(is_array($matches) && count($matches) > 1) {
 				$link = $matches[1];
 				if(strpos($link, '/') === 0)
-					$link = self::URI . $link . '"';
+					$link = self::URI . $link;
 				if(strpos($link, 'facebook.com/l.php?u=') !== false)
 					$link = urldecode(extractFromDelimiters($link, 'facebook.com/l.php?u=', '&'));
 				return ' href="' . $link . '"';

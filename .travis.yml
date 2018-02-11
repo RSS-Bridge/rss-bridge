@@ -2,20 +2,6 @@ dist: trusty
 sudo: false
 language: php
 
-before_install:
-  # Circumvent a bug in current Travis CI builds using Ubuntu Trusty, where the
-  # include_path is wrong.
-  #
-  # Default is:
-  # - include_path='.:/home/travis/.phpenv/versions/5.6.31/share/pear'
-  #
-  # Should be:
-  # - include_path='.:/home/travis/.phpenv/versions/5.6.31/lib/php/pear'
-  #
-  # This applies to all builds except hhvm and nightly. Once the distro is fixed
-  # the following line can be removed
-  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" || ${TRAVIS_PHP_VERSION:0:1} == "7" ]]; then echo "include_path='.:/home/travis/.phpenv/versions/$(phpenv version-name)/lib/php/pear'" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi
-
 install:
   - pear channel-update pear.php.net
   - pear install PHP_CodeSniffer
