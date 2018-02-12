@@ -54,7 +54,7 @@ class DealabsBridge extends BridgeAbstract {
 				. '</td><td>'
 				. $deal->find('div[class=flex flex--align-c flex--justify-space-between space--b-2]', 0)->children(0)->outertext
 				. '</td></table>';
-			$dealDateDiv = $deal->find('div[class=size--all-s flex flex--wrap flex--justify-e flex--grow-1]',0)
+			$dealDateDiv = $deal->find('div[class=size--all-s flex flex--wrap flex--justify-e flex--grow-1]', 0)
 				->find('span[class=hide--toW3]');
 			$itemDate = end($dealDateDiv)->plaintext;
 			if(substr( $itemDate, 0, 6 ) === 'il y a') {
@@ -140,7 +140,7 @@ class DealabsBridge extends BridgeAbstract {
 				'js-lazy-img'
 			)
 		);
-		
+
 			$selectorPlain = implode(
 			' ', /* Notice this is a space! */
 			array(
@@ -163,9 +163,18 @@ class DealabsBridge extends BridgeAbstract {
 
 	private function getExpedition($deal)
 	{
-		if($deal->find('span[class=meta-ribbon overflow--wrap-off space--l-3 text--color-greyShade]', 0) != null) {
+		$selector = implode(
+			' ', /* Notice this is a space! */
+			array(
+				'meta-ribbon',
+				'overflow--wrap-off',
+				'space--l-3',
+				'text--color-greyShade'
+			)
+		);
+		if($deal->find('span[class='. $selector .']', 0) != null) {
 			return '<div>'
-				. $deal->find('span[class=meta-ribbon overflow--wrap-off space--l-3 text--color-greyShade]', 0)->children(2)->plaintext
+				. $deal->find('span[class='. $selector .']', 0)->children(2)->plaintext
 				. '</div>';
 		} else {
 			return '';
