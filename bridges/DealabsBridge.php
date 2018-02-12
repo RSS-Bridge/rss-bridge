@@ -54,7 +54,7 @@ class DealabsBridge extends BridgeAbstract {
 				. '</td><td>'
 				. $deal->find('div[class=flex flex--align-c flex--justify-space-between space--b-2]', 0)->children(0)->outertext
 				. '</td></table>';
-			$dealDateDiv = $deal->find('div[class=size--all-s flex flex--wrap flex--justify-e flex--grow-1]', 0)
+			$dealDateDiv = $deal->find('div[class=size--all-s flex flex--wrap flex--justify-e flex--grow-1]',0)
 				->find('span[class=hide--toW3]');
 			$itemDate = end($dealDateDiv)->plaintext;
 			if(substr( $itemDate, 0, 6 ) === 'il y a') {
@@ -127,18 +127,37 @@ class DealabsBridge extends BridgeAbstract {
 
 	private function getImage($deal)
 	{
-		if($deal->find(
-			'img[class=thread-image width--all-auto height--all-auto imgFrame-img cept-thread-img img--dummy js-lazy-img]', 0) != null) {
+
+		$selectorLazy = implode(
+			' ', /* Notice this is a space! */
+			array(
+				'thread-image',
+				'width--all-auto',
+				'height--all-auto',
+				'imgFrame-img',
+				'cept-thread-img',
+				'img--dummy',
+				'js-lazy-img'
+			)
+		);
+		
+			$selectorPlain = implode(
+			' ', /* Notice this is a space! */
+			array(
+				'thread-image',
+				'width--all-auto',
+				'height--all-auto',
+				'imgFrame-img',
+				'cept-thread-img'
+			)
+		);
+		if($deal->find('img[class='. $selectorLazy .']', 0) != null) {
 			return json_decode(
 				html_entity_decode(
-					$deal->find(
-						'img[class=thread-image width--all-auto height--all-auto imgFrame-img cept-thread-img img--dummy js-lazy-img]', 0)
+					$deal->find('img[class='. $selectorLazy .']', 0)
 						->getAttribute('data-lazy-img')))->{'src'};
 		} else {
-
-			return $deal->find(
-				'img[class=thread-image width--all-auto height--all-auto imgFrame-img cept-thread-img]', 0
-				)->src;
+			return $deal->find('img[class='. $selectorPlain .']', 0	)->src;
 		}
 	}
 
@@ -146,8 +165,7 @@ class DealabsBridge extends BridgeAbstract {
 	{
 		if($deal->find('span[class=meta-ribbon overflow--wrap-off space--l-3 text--color-greyShade]', 0) != null) {
 			return '<div>'
-				. $deal->find('span[class=meta-ribbon overflow--wrap-off space--l-3 text--color-greyShade]', 0)
-				->children(2)->plaintext
+				. $deal->find('span[class=meta-ribbon overflow--wrap-off space--l-3 text--color-greyShade]', 0)->children(2)->plaintext
 				. '</div>';
 		} else {
 			return '';
