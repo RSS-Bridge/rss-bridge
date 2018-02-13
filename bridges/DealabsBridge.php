@@ -46,7 +46,6 @@ class DealabsBridge extends BridgeAbstract {
 		$priceFrom = $this->getInput('priceFrom');
 		$priceTo = $this->getInput('priceFrom');
 
-
 		/* Event if the original website uses POST with the search page, GET works too */
 		$html = getSimpleHTMLDOM(self::URI
 			. '/search/advanced?q='
@@ -55,7 +54,7 @@ class DealabsBridge extends BridgeAbstract {
 			. '&hide_local='. $hide_local
 			. '&priceFrom='. $priceFrom
 			. '&priceTo='. $priceTo
-			/* Some default parameters 
+			/* Some default parameters
 			 * search_fields : Search in Titres & Descriptions & Codes
 			 * sort_by : Sort the search by new deals
 			 * time_frame : Search will not be on a limited timeframe
