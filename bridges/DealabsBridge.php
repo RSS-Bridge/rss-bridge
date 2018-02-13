@@ -10,16 +10,57 @@ class DealabsBridge extends BridgeAbstract {
 			'type' => 'text',
 			'required' => true
 		),
+		'hide_expired' => array(
+			'name' => 'Masquer les éléments expirés',
+			'type' => 'checkbox',
+			'required' => 'true'
+		),
+		'hide_local' => array(
+			'name' => 'Masquer les deals locaux',
+			'type' => 'checkbox',
+			'title' => 'Masquer les deals en magasins physiques',
+			'required' => 'true'
+		),
+		'priceFrom' => array(
+			'name' => 'Prix minimum',
+			'type' => 'text',
+			'title' => 'Prix mnimum en euros',
+			'required' => 'false',
+			'defaultValue' => ''
+		),
+		'priceTo' => array(
+			'name' => 'Prix maximum',
+			'type' => 'text',
+			'title' => 'Prix maximum en euros',
+			'required' => 'false',
+			'defaultValue' => ''
+		),
 	));
 
 	const CACHE_TIMEOUT = 3600;
 
 	public function collectData(){
 		$q = $this->getInput('q');
+		$hide_expired = $this->getInput('hide_expired');
+		$hide_local = $this->getInput('hide_local');
+		$priceFrom = $this->getInput('priceFrom');
+		$priceTo = $this->getInput('priceFrom');
 
+
+		/* Event if the original website uses POST with the search page, GET works too */
 		$html = getSimpleHTMLDOM(self::URI
-			. '/search/?q='
-			. urlencode($q))
+			. '/search/advanced?q='
+			. urlencode($q)
+			. '&hide_expired='. $hide_expired
+			. '&hide_local='. $hide_local
+			. '&priceFrom='. $priceFrom
+			. '&priceTo='. $priceTo
+			/* Some default parameters 
+			 * search_fields : Search in Titres & Descriptions & Codes
+			 * sort_by : Sort the search by new deals
+			 * time_frame : Search will not be on a limited timeframe
+			 */
+			. '&search_fields[]=1&search_fields[]=2&search_fields[]=3&sort_by=new&time_frame=0')
 			or returnServerError('Could not request Dealabs.');
 		$list = $html->find('article');
 		if($list === null) {
@@ -67,6 +108,10 @@ class DealabsBridge extends BridgeAbstract {
 
 	}
 
+	/**
+	 * Get the Price from a Deal if it exists
+	 * @return string String of the deal price
+	 */
 	private function getPrix($deal)
 	{
 		if($deal->find(
@@ -82,6 +127,10 @@ class DealabsBridge extends BridgeAbstract {
 	}
 
 
+	/**
+	 * Get the Shipping costs from a Deal if it exists
+	 * @return string String of the deal shipping Cost
+	 */
 	private function getLivraison($deal)
 	{
 		if($deal->find('span[class*=cept-shipping-price]', 0) != null) {
@@ -99,6 +148,10 @@ class DealabsBridge extends BridgeAbstract {
 		}
 	}
 
+	/**
+	 * Get the source of a Deal if it exists
+	 * @return string String of the deal source
+	 */
 	private function getOrigine($deal)
 	{
 		if($deal->find('a[class=text--color-greyShade]', 0) != null) {
@@ -110,6 +163,10 @@ class DealabsBridge extends BridgeAbstract {
 		}
 	}
 
+	/**
+	 * Get the original Price and discout from a Deal if it exists
+	 * @return string String of the deal original price and discount
+	 */
 	private function getReduction($deal)
 	{
 		if($deal->find('span[class*=mute--text text--lineThrough]', 0) != null) {
@@ -125,6 +182,10 @@ class DealabsBridge extends BridgeAbstract {
 		}
 	}
 
+	/**
+	 * Get the Picture URL from a Deal if it exists
+	 * @return string String of the deal Picture URL
+	 */
 	private function getImage($deal)
 	{
 
@@ -161,6 +222,10 @@ class DealabsBridge extends BridgeAbstract {
 		}
 	}
 
+	/**
+	 * Get the originating country from a Deal if it existsa
+	 * @return string String of the deal originating country
+	 */
 	private function getExpedition($deal)
 	{
 		$selector = implode(
@@ -181,6 +246,10 @@ class DealabsBridge extends BridgeAbstract {
 		}
 	}
 
+	/**
+	 * Transforms a French date into a timestam
+	 * @return int timestamp of the input date
+	 */
 	private function parseDate($string)
 	{
 		$month_fr = array(
@@ -222,6 +291,10 @@ class DealabsBridge extends BridgeAbstract {
 		return $date->getTimestamp();
 	}
 
+	/**
+	 * Transforms a relate French date into a timestam
+	 * @return int timestamp of the input date
+	 */
 	private function relativeDateToTimestamp($str) {
 		$date = new DateTime();
 		$search = array(
