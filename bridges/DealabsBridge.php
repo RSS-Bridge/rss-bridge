@@ -140,7 +140,7 @@ class DealabsBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($url)
 			or returnServerError('Could not request Dealabs.');
 		$list = $html->find('article');
-		
+
 		// Deal Image Link CSS Selector
 		$selectorImageLink = implode(
 			' ', /* Notice this is a space! */
@@ -201,7 +201,7 @@ class DealabsBridge extends BridgeAbstract {
 		);
 
 		// If there is no results, we don't parse the content because it display some random deals
-		$noresult = $html->find('h3[class=size--all-l size--fromW2-xl size--fromW3-xxl]',0);
+		$noresult = $html->find('h3[class=size--all-l size--fromW2-xl size--fromW3-xxl]', 0);
 		if($noresult != null && $noresult->plaintext == 'Il n&#039;y a rien à afficher pour le moment :(') {
 			$this->items = array();
 		} else {
