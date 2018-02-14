@@ -399,9 +399,9 @@ class DealabsBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		switch($this->queriedContext){
+		switch($this->queriedContext) {
 			case 'Recherche par Mot(s) clé(s)':
-				return self::NAME . ' - Recherche : '. $this->getInput('q') ;
+				return self::NAME . ' - Recherche : '. $this->getInput('q');
 				break;
 			case 'Deals par groupe':
 				$values = self::PARAMETERS['Deals par groupe']['groupe']['values'];
