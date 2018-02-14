@@ -140,49 +140,107 @@ class DealabsBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($url)
 			or returnServerError('Could not request Dealabs.');
 		$list = $html->find('article');
-		if($list === null) {
-			returnClientError('Your combination of parameters returned no results');
-		}
+		
+		// Deal Image Link CSS Selector
+		$selectorImageLink = implode(
+			' ', /* Notice this is a space! */
+			array(
+				'cept-thread-image-link',
+				'imgFrame',
+				'imgFrame--noBorder',
+				'box--all-i',
+				'thread-listImgCell',
+			)
+		);
 
-		foreach($list as $deal) {
-			$item = array();
-			$item['uri'] = $deal->find('div[class=threadGrid-title]', 0)->find('a', 0)->href;
-			$item['title'] = $deal->find(
-				'a[class=cept-tt thread-link linkPlain space--r-1 size--all-s size--fromW3-m]', 0
-				)->plaintext;
-			$item['author'] = $deal->find('span.thread-username', 0)->plaintext;
-			$item['content'] = '<table><tr><td><a href="'
-				. $deal->find(
-					'a[class*=cept-thread-image-link imgFrame imgFrame--noBorder box--all-i thread-listImgCell]', 0)->href
-				. '"><img src="'
-				. $this->getImage($deal)
-				. '"/></td><td><h2><a href="'
-				. $deal->find('a[class=cept-tt thread-link linkPlain space--r-1 size--all-s size--fromW3-m]', 0)->href
-				. '">'
-				. $deal->find('a[class=cept-tt thread-link linkPlain space--r-1 size--all-s size--fromW3-m]', 0)->innertext
-				. '</a></h2>'
-				. $this->getPrix($deal)
-				. $this->getReduction($deal)
-				. $this->getExpedition($deal)
-				. $this->getLivraison($deal)
-				. $this->getOrigine($deal)
-				. $deal->find(
-					'div[class=cept-description-container overflow--wrap-break size--all-s size--fromW3-m]', 0
-					)->innertext
-				. '</td><td>'
-				. $deal->find('div[class=flex flex--align-c flex--justify-space-between space--b-2]', 0)->children(0)->outertext
-				. '</td></table>';
-			$dealDateDiv = $deal->find('div[class=size--all-s flex flex--wrap flex--justify-e flex--grow-1]', 0)
-				->find('span[class=hide--toW3]');
-			$itemDate = end($dealDateDiv)->plaintext;
-			if(substr( $itemDate, 0, 6 ) === 'il y a') {
-				$item['timestamp'] = $this->relativeDateToTimestamp($itemDate);
-			} else 	{
-				$item['timestamp'] = $this->parseDate($itemDate);
+		// Deal Link CSS Selector
+		$selectorLink = implode(
+			' ', /* Notice this is a space! */
+			array(
+				'cept-tt',
+				'thread-link',
+				'linkPlain',
+				'space--r-1',
+				'size--all-s',
+				'size--fromW3-m',
+			)
+		);
+
+		// Deal Hotness CSS Selector
+		$selectorHot = implode(
+			' ', /* Notice this is a space! */
+			array(
+				'flex',
+				'flex--align-c',
+				'flex--justify-space-between',
+				'space--b-2',
+			)
+		);
+
+		// Deal Description CSS Selector
+		$selectorDescription = implode(
+			' ', /* Notice this is a space! */
+			array(
+				'cept-description-container',
+				'overflow--wrap-break',
+				'size--all-s',
+				'size--fromW3-m',
+			)
+		);
+
+		// Deal Date CSS Selector
+		$selectorDate = implode(
+			' ', /* Notice this is a space! */
+			array(
+				'size--all-s',
+				'flex',
+				'flex--wrap',
+				'flex--justify-e',
+				'flex--grow-1',
+			)
+		);
+
+		// If there is no results, we don't parse the content because it display some random deals
+		$noresult = $html->find('h3[class=size--all-l size--fromW2-xl size--fromW3-xxl]',0);
+		if($noresult != null && $noresult->plaintext == 'Il n&#039;y a rien à afficher pour le moment :(') {
+			$this->items = array();
+		} else {
+			foreach($list as $deal) {
+				$item = array();
+				$item['uri'] = $deal->find('div[class=threadGrid-title]', 0)->find('a', 0)->href;
+				$item['title'] = $deal->find('a[class='. $selectorLink .']', 0
+					)->plaintext;
+				$item['author'] = $deal->find('span.thread-username', 0)->plaintext;
+				$item['content'] = '<table><tr><td><a href="'
+					. $deal->find(
+						'a[class*='. $selectorImageLink .']', 0)->href
+					. '"><img src="'
+					. $this->getImage($deal)
+					. '"/></td><td><h2><a href="'
+					. $deal->find('a[class='. $selectorLink .']', 0)->href
+					. '">'
+					. $deal->find('a[class='. $selectorLink .']', 0)->innertext
+					. '</a></h2>'
+					. $this->getPrix($deal)
+					. $this->getReduction($deal)
+					. $this->getExpedition($deal)
+					. $this->getLivraison($deal)
+					. $this->getOrigine($deal)
+					. $deal->find('div[class='. $selectorDescription .']', 0)->innertext
+					. '</td><td>'
+					. $deal->find('div[class='. $selectorHot .']', 0)->children(0)->outertext
+					. '</td></table>';
+				$dealDateDiv = $deal->find('div[class='. $selectorDate .']', 0)
+					->find('span[class=hide--toW3]');
+				$itemDate = end($dealDateDiv)->plaintext;
+				if(substr( $itemDate, 0, 6 ) === 'il y a') {
+					$item['timestamp'] = $this->relativeDateToTimestamp($itemDate);
+				} else 	{
+					$item['timestamp'] = $this->parseDate($itemDate);
+				}
+				$this->items[] = $item;
 			}
-			$this->items[] = $item;
 		}
-
 	}
 
 	/**
