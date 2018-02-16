@@ -70,8 +70,8 @@ class YoutubeBridge extends BridgeAbstract {
 			$author = $json->itemListElement[0]->item->name;
 		}
 
-		if(!is_null($html->find('div#watch-description-text', 0)))
-			$desc = $html->find('div#watch-description-text', 0)->innertext;
+		if(!is_null($html->find('#watch-description-text', 0)))
+			$desc = $html->find('#watch-description-text', 0)->innertext;
 
 		if(!is_null($html->find('meta[itemprop=datePublished]', 0)))
 			$time = strtotime($html->find('meta[itemprop=datePublished]', 0)->getAttribute('content'));
