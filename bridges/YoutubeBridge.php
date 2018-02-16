@@ -50,6 +50,12 @@ class YoutubeBridge extends BridgeAbstract {
 
 	private function ytBridgeQueryVideoInfo($vid, &$author, &$desc, &$time){
 		$html = $this->ytGetSimpleHTMLDOM(self::URI . "watch?v=$vid");
+
+		// Skip unavailable videos
+		if(!strpos($html->innertext, 'IS_UNAVAILABLE_PAGE')){
+			return;
+		}
+
 		$author = $html->innertext;
 		$author = substr($author, strpos($author, '"author=') + 8);
 		$author = substr($author, 0, strpos($author, '\u0026'));
