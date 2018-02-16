@@ -52,11 +52,11 @@ class YoutubeBridge extends BridgeAbstract {
 		$html = $this->ytGetSimpleHTMLDOM(self::URI . "watch?v=$vid");
 
 		// Skip unavailable videos
-		if(!strpos($html->innertext, 'IS_UNAVAILABLE_PAGE')){
+		if(!strpos($html->innertext, 'IS_UNAVAILABLE_PAGE')) {
 			return;
 		}
 
-		foreach($html->find('script') as $script){
+		foreach($html->find('script') as $script) {
 			$data = trim($script->innertext);
 
 			if(strpos($data, '{') !== 0)
