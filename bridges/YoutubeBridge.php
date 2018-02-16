@@ -56,9 +56,19 @@ class YoutubeBridge extends BridgeAbstract {
 			return;
 		}
 
-		$author = $html->innertext;
-		$author = substr($author, strpos($author, '"author=') + 8);
-		$author = substr($author, 0, strpos($author, '\u0026'));
+		foreach($html->find('script') as $script){
+			$data = trim($script->innertext);
+
+			if(strpos($data, '{') !== 0)
+				continue; // Wrong script
+
+			$json = json_decode($data);
+
+			if(!isset($json->itemListElement))
+				continue; // Wrong script
+
+			$author = $json->itemListElement[0]->item->name;
+		}
 
 		if(!is_null($html->find('div#watch-description-text', 0)))
 			$desc = $html->find('div#watch-description-text', 0)->innertext;
