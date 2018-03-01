@@ -4,50 +4,120 @@ class DealabsBridge extends BridgeAbstract {
 	const URI = 'https://www.dealabs.com/';
 	const DESCRIPTION = 'Return the Dealabs search result using keywords';
 	const MAINTAINER = 'sysadminstory';
-	const PARAMETERS = array( array (
-		'q' => array(
-			'name' => 'Mot(s) clé(s)',
-			'type' => 'text',
-			'required' => true
+	const PARAMETERS = array(
+		'Recherche par Mot(s) clé(s)' => array (
+			'q' => array(
+				'name' => 'Mot(s) clé(s)',
+				'type' => 'text',
+				'required' => true
+			),
+			'hide_expired' => array(
+				'name' => 'Masquer les éléments expirés',
+				'type' => 'checkbox',
+				'required' => 'true'
+			),
+			'hide_local' => array(
+				'name' => 'Masquer les deals locaux',
+				'type' => 'checkbox',
+				'title' => 'Masquer les deals en magasins physiques',
+				'required' => 'true'
+			),
+			'priceFrom' => array(
+				'name' => 'Prix minimum',
+				'type' => 'text',
+				'title' => 'Prix mnimum en euros',
+				'required' => 'false',
+				'defaultValue' => ''
+			),
+			'priceTo' => array(
+				'name' => 'Prix maximum',
+				'type' => 'text',
+				'title' => 'Prix maximum en euros',
+				'required' => 'false',
+				'defaultValue' => ''
+			),
 		),
-		'hide_expired' => array(
-			'name' => 'Masquer les éléments expirés',
-			'type' => 'checkbox',
-			'required' => 'true'
-		),
-		'hide_local' => array(
-			'name' => 'Masquer les deals locaux',
-			'type' => 'checkbox',
-			'title' => 'Masquer les deals en magasins physiques',
-			'required' => 'true'
-		),
-		'priceFrom' => array(
-			'name' => 'Prix minimum',
-			'type' => 'text',
-			'title' => 'Prix mnimum en euros',
-			'required' => 'false',
-			'defaultValue' => ''
-		),
-		'priceTo' => array(
-			'name' => 'Prix maximum',
-			'type' => 'text',
-			'title' => 'Prix maximum en euros',
-			'required' => 'false',
-			'defaultValue' => ''
-		),
-	));
+
+		'Deals par groupe' => array(
+			'groupe' => array(
+				'name' => 'Groupe',
+				'type' => 'list',
+				'required' => 'true',
+				'title' => 'Groupe dont il faut afficher les deals',
+				'values' => array(
+					'Accessoires & gadgets' => 'accessoires-gadgets',
+					'Alimentation & boissons' => 'alimentation-boissons',
+					'Animaux' => 'animaux',
+					'Applis & logiciels' => 'applis-logiciels',
+					'Consoles & jeux vidéo' => 'consoles-jeux-video',
+					'Culture & divertissement' => 'culture-divertissement',
+					'Gratuit' => 'gratuit',
+					'Image, son & vidéo' => 'image-son-video',
+					'Informatique' => 'informatique',
+					'Jeux & jouets' => 'jeux-jouets',
+					'Maison & jardin' => 'maison-jardin',
+					'Mode & accessoires' => 'mode-accessoires',
+					'Santé & cosmétiques' => 'hygiene-sante-cosmetiques',
+					'Services divers' => 'services-divers',
+					'Sports & plein air' => 'sports-plein-air',
+					'Téléphonie' => 'telephonie',
+					'Voyages & sorties' => 'voyages-sorties-restaurants'
+				)
+			),
+			'ordre' => array(
+				'name' => 'Trier par',
+				'type' => 'list',
+				'required' => 'true',
+				'title' => 'Ordre de tri des deals',
+				'values' => array(
+					'Du deal le plus Hot au moins Hot' => '',
+					'Du deal le plus récent au plus ancien' => '-nouveaux',
+					'Du deal le plus commentés au moins commentés' => '-commentes'
+				)
+			)
+		)
+	);
 
 	const CACHE_TIMEOUT = 3600;
 
 	public function collectData(){
+		switch($this->queriedContext) {
+		case 'Recherche par Mot(s) clé(s)':
+			return $this->collectDataMotsCles();
+			break;
+		case 'Deals par groupe':
+			return $this->collectDataGroupe();
+			break;
+		}
+	}
+
+	/**
+	 * Get the Deal data from the choosen groupe in the choose order
+	 */
+	public function collectDataGroupe()
+	{
+
+		$groupe = $this->getInput('groupe');
+		$ordre = $this->getInput('ordre');
+
+		$url = self::URI
+			. '/groupe/' . $groupe . $ordre;
+		$this->collectDeals($url);
+	}
+
+	/**
+	 * Get the Deal data from the choosen keywords and parameters
+	 */
+	public function collectDataMotsCles()
+	{
 		$q = $this->getInput('q');
 		$hide_expired = $this->getInput('hide_expired');
 		$hide_local = $this->getInput('hide_local');
 		$priceFrom = $this->getInput('priceFrom');
 		$priceTo = $this->getInput('priceFrom');
 
-		/* Event if the original website uses POST with the search page, GET works too */
-		$html = getSimpleHTMLDOM(self::URI
+		/* Even if the original website uses POST with the search page, GET works too */
+		$url = self::URI
 			. '/search/advanced?q='
 			. urlencode($q)
 			. '&hide_expired='. $hide_expired
@@ -59,52 +129,118 @@ class DealabsBridge extends BridgeAbstract {
 			 * sort_by : Sort the search by new deals
 			 * time_frame : Search will not be on a limited timeframe
 			 */
-			. '&search_fields[]=1&search_fields[]=2&search_fields[]=3&sort_by=new&time_frame=0')
+			. '&search_fields[]=1&search_fields[]=2&search_fields[]=3&sort_by=new&time_frame=0';
+		$this->collectDeals($url);
+	}
+
+	/**
+	 * Get the Deal data using the given URL
+	 */
+	public function collectDeals($url){
+		$html = getSimpleHTMLDOM($url)
 			or returnServerError('Could not request Dealabs.');
 		$list = $html->find('article');
-		if($list === null) {
-			returnClientError('Your combination of parameters returned no results');
-		}
 
-		foreach($list as $deal) {
-			$item = array();
-			$item['uri'] = $deal->find('div[class=threadGrid-title]', 0)->find('a', 0)->href;
-			$item['title'] = $deal->find(
-				'a[class=cept-tt thread-link linkPlain space--r-1 size--all-s size--fromW3-m]', 0
-				)->plaintext;
-			$item['author'] = $deal->find('span.thread-username', 0)->plaintext;
-			$item['content'] = '<table><tr><td><a href="'
-				. $deal->find(
-					'a[class*=cept-thread-image-link imgFrame imgFrame--noBorder box--all-i thread-listImgCell]', 0)->href
-				. '"><img src="'
-				. $this->getImage($deal)
-				. '"/></td><td><h2><a href="'
-				. $deal->find('a[class=cept-tt thread-link linkPlain space--r-1 size--all-s size--fromW3-m]', 0)->href
-				. '">'
-				. $deal->find('a[class=cept-tt thread-link linkPlain space--r-1 size--all-s size--fromW3-m]', 0)->innertext
-				. '</a></h2>'
-				. $this->getPrix($deal)
-				. $this->getReduction($deal)
-				. $this->getExpedition($deal)
-				. $this->getLivraison($deal)
-				. $this->getOrigine($deal)
-				. $deal->find(
-					'div[class=cept-description-container overflow--wrap-break size--all-s size--fromW3-m]', 0
-					)->innertext
-				. '</td><td>'
-				. $deal->find('div[class=flex flex--align-c flex--justify-space-between space--b-2]', 0)->children(0)->outertext
-				. '</td></table>';
-			$dealDateDiv = $deal->find('div[class=size--all-s flex flex--wrap flex--justify-e flex--grow-1]', 0)
-				->find('span[class=hide--toW3]');
-			$itemDate = end($dealDateDiv)->plaintext;
-			if(substr( $itemDate, 0, 6 ) === 'il y a') {
-				$item['timestamp'] = $this->relativeDateToTimestamp($itemDate);
-			} else 	{
-				$item['timestamp'] = $this->parseDate($itemDate);
+		// Deal Image Link CSS Selector
+		$selectorImageLink = implode(
+			' ', /* Notice this is a space! */
+			array(
+				'cept-thread-image-link',
+				'imgFrame',
+				'imgFrame--noBorder',
+				'box--all-i',
+				'thread-listImgCell',
+			)
+		);
+
+		// Deal Link CSS Selector
+		$selectorLink = implode(
+			' ', /* Notice this is a space! */
+			array(
+				'cept-tt',
+				'thread-link',
+				'linkPlain',
+				'space--r-1',
+				'size--all-s',
+				'size--fromW3-m',
+			)
+		);
+
+		// Deal Hotness CSS Selector
+		$selectorHot = implode(
+			' ', /* Notice this is a space! */
+			array(
+				'flex',
+				'flex--align-c',
+				'flex--justify-space-between',
+				'space--b-2',
+			)
+		);
+
+		// Deal Description CSS Selector
+		$selectorDescription = implode(
+			' ', /* Notice this is a space! */
+			array(
+				'cept-description-container',
+				'overflow--wrap-break',
+				'size--all-s',
+				'size--fromW3-m',
+			)
+		);
+
+		// Deal Date CSS Selector
+		$selectorDate = implode(
+			' ', /* Notice this is a space! */
+			array(
+				'size--all-s',
+				'flex',
+				'flex--wrap',
+				'flex--justify-e',
+				'flex--grow-1',
+			)
+		);
+
+		// If there is no results, we don't parse the content because it display some random deals
+		$noresult = $html->find('h3[class=size--all-l size--fromW2-xl size--fromW3-xxl]', 0);
+		if($noresult != null && $noresult->plaintext == 'Il n&#039;y a rien à afficher pour le moment :(') {
+			$this->items = array();
+		} else {
+			foreach($list as $deal) {
+				$item = array();
+				$item['uri'] = $deal->find('div[class=threadGrid-title]', 0)->find('a', 0)->href;
+				$item['title'] = $deal->find('a[class='. $selectorLink .']', 0
+					)->plaintext;
+				$item['author'] = $deal->find('span.thread-username', 0)->plaintext;
+				$item['content'] = '<table><tr><td><a href="'
+					. $deal->find(
+						'a[class*='. $selectorImageLink .']', 0)->href
+					. '"><img src="'
+					. $this->getImage($deal)
+					. '"/></td><td><h2><a href="'
+					. $deal->find('a[class='. $selectorLink .']', 0)->href
+					. '">'
+					. $deal->find('a[class='. $selectorLink .']', 0)->innertext
+					. '</a></h2>'
+					. $this->getPrix($deal)
+					. $this->getReduction($deal)
+					. $this->getExpedition($deal)
+					. $this->getLivraison($deal)
+					. $this->getOrigine($deal)
+					. $deal->find('div[class='. $selectorDescription .']', 0)->innertext
+					. '</td><td>'
+					. $deal->find('div[class='. $selectorHot .']', 0)->children(0)->outertext
+					. '</td></table>';
+				$dealDateDiv = $deal->find('div[class='. $selectorDate .']', 0)
+					->find('span[class=hide--toW3]');
+				$itemDate = end($dealDateDiv)->plaintext;
+				if(substr( $itemDate, 0, 6 ) === 'il y a') {
+					$item['timestamp'] = $this->relativeDateToTimestamp($itemDate);
+				} else 	{
+					$item['timestamp'] = $this->parseDate($itemDate);
+				}
+				$this->items[] = $item;
 			}
-			$this->items[] = $item;
 		}
-
 	}
 
 	/**
@@ -318,6 +454,21 @@ class DealabsBridge extends BridgeAbstract {
 
 		$date->modify(str_replace($search, $replace, $str));
 		return $date->getTimestamp();
+	}
+
+	public function getName(){
+		switch($this->queriedContext) {
+			case 'Recherche par Mot(s) clé(s)':
+				return self::NAME . ' - Recherche : '. $this->getInput('q');
+				break;
+			case 'Deals par groupe':
+				$values = self::PARAMETERS['Deals par groupe']['groupe']['values'];
+				$groupe = array_search($this->getInput('groupe'), $values);
+				return self::NAME . ' - Groupe : '. $groupe;
+				break;
+			default: // Return default value
+				return self::NAME;
+		}
 	}
 
 }
