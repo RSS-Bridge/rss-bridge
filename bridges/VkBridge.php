@@ -17,7 +17,7 @@ class VkBridge extends BridgeAbstract
 		)
 	);
 
-	protected $pageName = NULL;
+	protected $pageName;
 
 	public function getURI()
 	{
