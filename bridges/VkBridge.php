@@ -17,6 +17,8 @@ class VkBridge extends BridgeAbstract
 		)
 	);
 
+	protected $pageName = NULL;
+
 	public function getURI()
 	{
 		if (!is_null($this->getInput('u'))) {
@@ -26,15 +28,24 @@ class VkBridge extends BridgeAbstract
 		return parent::getURI();
 	}
 
+	public function getName()
+	{
+		if ($this->pageName) {
+			return $this->pageName;
+		}
+
+		return parent::getName();
+	}
+
 	public function collectData()
 	{
-
 		$text_html = $this->getContents()
 		or returnServerError('No results for group or user name "' . $this->getInput('u') . '".');
 
 		$text_html = iconv('windows-1251', 'utf-8', $text_html);
 		$html = str_get_html($text_html);
 		$pageName = $html->find('.page_name', 0)->plaintext;
+		$this->pageName = $pageName;
 
 		foreach ($html->find('.post') as $post) {
 
