@@ -15,12 +15,6 @@ class PinterestBridge extends FeedExpander {
 			'b' => array(
 				'name' => 'board',
 				'required' => true
-			),
-			'r' => array(
-				'name' => 'Use custom RSS',
-				'type' => 'checkbox',
-				'required' => false,
-				'title' => 'Uncheck to return data via custom filters (more data)'
 			)
 		),
 		'From search' => array(
@@ -34,12 +28,8 @@ class PinterestBridge extends FeedExpander {
 	public function collectData(){
 		switch($this->queriedContext) {
 			case 'By username and board':
-				if($this->getInput('r')) {
-					$html = getSimpleHTMLDOMCached($this->getURI());
-					$this->getUserResults($html);
-				} else {
-					$this->collectExpandableDatas($this->getURI() . '.rss');
-				}
+				$this->collectExpandableDatas($this->getURI() . '.rss');
+				$this->fixLowRes();
 				break;
 			case 'From search':
 			default:
@@ -48,49 +38,17 @@ class PinterestBridge extends FeedExpander {
 		}
 	}
 
-	private function getUserResults($html){
-		$json = json_decode($html->find('#jsInit1', 0)->innertext, true);
-		$results = $json['tree']['children'][0]['children'][0]['children'][0]['options']['props']['data']['board_feed'];
-		$username = $json['resourceDataCache'][0]['data']['owner']['username'];
-		$fullname = $json['resourceDataCache'][0]['data']['owner']['full_name'];
-		$avatar = $json['resourceDataCache'][0]['data']['owner']['image_small_url'];
+	private function fixLowRes() {
 
-		foreach($results as $result) {
-			$item = array();
+		$newitems = [];
+		$pattern = '/https\:\/\/i\.pinimg\.com\/[a-zA-Z0-9]*x\//';
+		foreach($this->items as $item) {
 
-			$item['uri'] = $result['link'];
-
-			// Some use regular titles, others provide 'advanced' infos, a few
-			// provide even less info. Thus we attempt multiple options.
-			$item['title'] = trim($result['title']);
-
-			if($item['title'] === "")
-				$item['title'] = trim($result['rich_summary']['display_name']);
-
-			if($item['title'] === "")
-				$item['title'] = trim($result['description']);
-
-			$item['timestamp'] = strtotime($result['created_at']);
-			$item['username'] = $username;
-			$item['fullname'] = $fullname;
-			$item['avatar'] = $avatar;
-			$item['author'] = $item['username'] . ' (' . $item['fullname'] . ')';
-			$item['content'] = '<img align="left" style="margin: 2px 4px;" src="'
-				. htmlentities($item['avatar'])
-				. '" /><p><strong>'
-				. $item['username']
-				. '</strong><br>'
-				. $item['fullname']
-				. '</p><br><img src="'
-				. $result['images']['736x']['url']
-				. '" alt="" /><br><p>'
-				. $result['description']
-				. '</p>';
-
-			$item['enclosures'] = array($result['images']['orig']['url']);
-
-			$this->items[] = $item;
+			$item["content"] = preg_replace($pattern, 'https://i.pinimg.com/originals/', $item["content"]);
+			$newitems[] = $item;
 		}
+		$this->items = $newitems;
+
 	}
 
 	private function getSearchResults($html){
