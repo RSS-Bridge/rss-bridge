@@ -70,6 +70,9 @@ if(!extension_loaded('openssl'))
 if(!extension_loaded('libxml'))
 	die('"libxml" extension not loaded. Please check "php.ini"');
 
+if(!extension_loaded('mbstring'))
+	die('"mbstring" extension not loaded. Please check "php.ini"');
+
 // configuration checks
 if(ini_get('allow_url_fopen') !== "1")
 	die('"allow_url_fopen" is not set to "1". Please check "php.ini');
