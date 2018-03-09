@@ -19,6 +19,10 @@ define('PROXY_BYBRIDGE', false);
 // Comment this line or keep PROXY_NAME empty to display PROXY_URL instead
 define('PROXY_NAME', 'Hidden Proxy Name');
 
+// Allows the operator to specify custom cache timeouts via '&_cache_timeout=3600'
+// true: enabled (default), false: disabled
+define('CUSTOM_CACHE_TIMEOUT', true);
+
 date_default_timezone_set('UTC');
 error_reporting(0);
 
@@ -168,6 +172,16 @@ try {
 			define('NOPROXY', true);
 		}
 
+		// Custom cache timeout
+		$cache_timeout = -1;
+		if(array_key_exists('_cache_timeout', $params)) {
+			if(!CUSTOM_CACHE_TIMEOUT) {
+				throw new \HttpException('This server doesn\'t support "_cache_timeout"!');
+			}
+
+			$cache_timeout = filter_var($params['_cache_timeout'], FILTER_VALIDATE_INT);
+		}
+
 		// Initialize cache
 		$cache = Cache::create('FileCache');
 		$cache->setPath(CACHE_DIR);
@@ -178,10 +192,12 @@ try {
 		unset($params['bridge']);
 		unset($params['format']);
 		unset($params['_noproxy']);
+		unset($params['_cache_timeout']);
 
 		// Load cache & data
 		try {
 			$bridge->setCache($cache);
+			$bridge->setCacheTimeout($cache_timeout);
 			$bridge->setDatas($params);
 		} catch(Exception $e) {
 			http_response_code($e->getCode());
