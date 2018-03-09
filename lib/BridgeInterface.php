@@ -68,4 +68,13 @@ interface BridgeInterface {
 	 * @param object CacheInterface The cache instance
 	 */
 	public function setCache(\CacheInterface $cache);
+
+	/**
+	 * Sets the timeout for clearing the cache files. The timeout must be
+	 * specified between 1..86400 seconds (max. 24 hours). The default timeout
+	 * (specified by the bridge maintainer) applies for invalid values.
+	 *
+	 * @param int $timeout The cache timeout in seconds
+	 */
+	public function setCacheTimeout($timeout);
 }
