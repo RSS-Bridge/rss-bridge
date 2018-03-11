@@ -50,12 +50,28 @@ class YoutubeBridge extends BridgeAbstract {
 
 	private function ytBridgeQueryVideoInfo($vid, &$author, &$desc, &$time){
 		$html = $this->ytGetSimpleHTMLDOM(self::URI . "watch?v=$vid");
-		$author = $html->innertext;
-		$author = substr($author, strpos($author, '"author=') + 8);
-		$author = substr($author, 0, strpos($author, '\u0026'));
 
-		if(!is_null($html->find('div#watch-description-text', 0)))
-			$desc = $html->find('div#watch-description-text', 0)->innertext;
+		// Skip unavailable videos
+		if(!strpos($html->innertext, 'IS_UNAVAILABLE_PAGE')) {
+			return;
+		}
+
+		foreach($html->find('script') as $script) {
+			$data = trim($script->innertext);
+
+			if(strpos($data, '{') !== 0)
+				continue; // Wrong script
+
+			$json = json_decode($data);
+
+			if(!isset($json->itemListElement))
+				continue; // Wrong script
+
+			$author = $json->itemListElement[0]->item->name;
+		}
+
+		if(!is_null($html->find('#watch-description-text', 0)))
+			$desc = $html->find('#watch-description-text', 0)->innertext;
 
 		if(!is_null($html->find('meta[itemprop=datePublished]', 0)))
 			$time = strtotime($html->find('meta[itemprop=datePublished]', 0)->getAttribute('content'));

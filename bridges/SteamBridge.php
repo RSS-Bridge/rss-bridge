@@ -2,7 +2,7 @@
 class SteamBridge extends BridgeAbstract {
 
 	const NAME = 'Steam Bridge';
-	const URI = 'https://steamcommunity.com/';
+	const URI = 'https://store.steampowered.com/';
 	const CACHE_TIMEOUT = 3600; // 1h
 	const DESCRIPTION = 'Returns games list';
 	const MAINTAINER = 'jacknumber';
@@ -68,62 +68,65 @@ class SteamBridge extends BridgeAbstract {
 
 		$username = $this->getInput('username');
 		$params = array(
-			'sort' => $this->getInput('sort'),
-			'cc' => $this->getInput('currency')
+			'cc' => $this->getInput('currency'),
+			'sort' => $this->getInput('sort')
 		);
 
-		$url = self::URI . 'id/' . $username . '/wishlist?' . http_build_query($params);
+		$url = self::URI . 'wishlist/id/' . $username . '/?' . http_build_query($params);
 
-		$html = '';
-		$html = getSimpleHTMLDOM($url)
+		$jsonDataRegex = '/var g_rg(?:WishlistData|AppInfo) = ([^;]*)/';
+		$content = getContents($url)
 			or returnServerError("Could not request Steam Wishlist. Tried:\n - $url");
 
-		foreach($html->find('#wishlist_items .wishlistRow') as $element) {
+		preg_match_all($jsonDataRegex, $content, $matches, PREG_SET_ORDER, 0);
 
-			$gameTitle = $element->find('h4', 0)->plaintext;
-			$gameUri = $element->find('.storepage_btn_ctn a', 0)->href;
-			$gameImg = $element->find('.gameListRowLogo img', 0)->src;
+		$appList = json_decode($matches[0][1], true);
+		$fullAppList = json_decode($matches[1][1], true);
+		//var_dump($matches[1][1]);
+		//var_dump($fullAppList);
+		$sortedElementList = array_fill(0, count($appList), 0);
+		foreach($appList as $app) {
 
-			$discountBlock = $element->find('.discount_block', 0);
+			$sortedElementList[$app["priority"] - 1] = $app["appid"];
 
-			if($element->find('.discount_block', 0)) {
-				$gameHasPromo = 1;
-			} else {
+		}
 
-				if($this->getInput('only_discount')) {
-					continue;
-				}
+		foreach($sortedElementList as $appId) {
 
-				$gameHasPromo = 0;
-
-			}
-
-			if($gameHasPromo) {
-
-				$gamePromoValue = $discountBlock->find('.discount_pct', 0)->plaintext;
-				$gameOldPrice = $discountBlock->find('.discount_original_price', 0)->plaintext;
-				$gameNewPrice = $discountBlock->find('.discount_final_price', 0)->plaintext;
-				$gamePrice = $gameNewPrice;
-
-			} else {
-				$gamePrice = $element->find('.gameListPriceData .price', 0)->plaintext;
-			}
+			$app = $fullAppList[$appId];
+			$gameTitle = $app["name"];
+			$gameUri = "http://store.steampowered.com/app/" . $appId . "/";
+			$gameImg = $app["capsule"];
 
 			$item = array();
 			$item['uri'] = $gameUri;
 			$item['title'] = $gameTitle;
-			$item['price'] = $gamePrice;
-			$item['hasPromo'] = $gameHasPromo;
 
-			if($gameHasPromo) {
+			if(count($app["subs"]) > 0) {
+				if($app["subs"][0]["discount_pct"] != 0) {
 
-				$item['promoValue'] = $gamePromoValue;
-				$item['oldPrice'] = $gameOldPrice;
-				$item['newPrice'] = $gameNewPrice;
+					$item['promoValue'] = $app["subs"][0]["discount_pct"];
+					$item['oldPrice'] = $app["subs"][0]["price"] / 100 / ((100 - $gamePromoValue / 100));
+					$item['newPrice'] = $app["subs"][0]["price"] / 100;
+					$item['price'] = $item['newPrice'];
+
+					$item['hasPromo'] = true;
+
+				} else {
+
+					if($this->getInput('only_discount')) {
+						continue;
+					}
+
+					$item['price'] = $app["subs"][0]["price"] / 100;
+					$item['hasPromo'] = false;
+				}
 
 			}
 
 			$this->items[] = $item;
+
 		}
+
 	}
 }

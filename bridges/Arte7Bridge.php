@@ -60,7 +60,7 @@ class Arte7Bridge extends BridgeAbstract {
 			break;
 		}
 
-		$url = 'https://api.arte.tv/api/opa/v3/videos?sort=broadcastBegin&limit=10&language='
+		$url = 'https://api.arte.tv/api/opa/v3/videos?sort=-lastModified&limit=10&language='
 			. $lang
 			. ($category != null ? '&category.code=' . $category : '');
 
