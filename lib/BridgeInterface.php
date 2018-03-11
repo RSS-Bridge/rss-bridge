@@ -77,4 +77,11 @@ interface BridgeInterface {
 	 * @param int $timeout The cache timeout in seconds
 	 */
 	public function setCacheTimeout($timeout);
+
+	/**
+	 * Returns the cache timeout
+	 *
+	 * @return int Cache timeout
+	 */
+	public function getCacheTimeout();
 }

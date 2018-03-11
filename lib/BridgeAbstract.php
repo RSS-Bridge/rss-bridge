@@ -270,12 +270,6 @@ abstract class BridgeAbstract implements BridgeInterface {
 		$this->cache = $cache;
 	}
 
-	/**
-	 * Sets the cache timeout to the provided timeout value. The specified
-	 * timeout must be between 1..86400, otherwise the default timeout is used.
-	 *
-	 * @param int $timeout The timeout in seconds
-	 */
 	public function setCacheTimeout($timeout){
 		if(is_numeric($timeout) && ($timeout < 1 || $timeout > 86400)) {
 			$this->cacheTimeout = static::CACHE_TIMEOUT;
@@ -285,12 +279,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 		$this->cacheTimeout = $timeout;
 	}
 
-	/**
-	 * Returns the cache timeout
-	 *
-	 * @return int Returns the cache timeout
-	 */
-	protected function getCacheTimeout(){
+	public function getCacheTimeout(){
 		return isset($this->cacheTimeout) ? $this->cacheTimeout : static::CACHE_TIMEOUT;
 	}
 }
