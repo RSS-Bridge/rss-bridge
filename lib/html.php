@@ -75,8 +75,24 @@ CARD;
 					. ((defined('PROXY_NAME') && PROXY_NAME) ? PROXY_NAME : PROXY_URL)
 					. ')</label><br />'
 					. PHP_EOL;
-			}
+			} if(CUSTOM_CACHE_TIMEOUT) {
+				$idArg = 'arg-'
+					. urlencode($bridgeName)
+					. '-'
+					. urlencode('_cache_timeout');
 
+				$card .= '<label for="'
+					. $idArg
+					. '">Cache timeout in seconds : </label>'
+					. PHP_EOL;
+
+				$card .= '<input id="'
+					. $idArg
+					. '" type="number" value="'
+					. $bridge->getCacheTimeout()
+					. '" name="_cache_timeout" /><br />'
+					. PHP_EOL;
+			}
 			$card .= $getHelperButtonsFormat($formats);
 		} else {
 			$card .= '<span style="font-weight: bold;">Inactive</span>';
@@ -250,6 +266,23 @@ CARD;
 					. '">Disable proxy ('
 					. ((defined('PROXY_NAME') && PROXY_NAME) ? PROXY_NAME : PROXY_URL)
 					. ')</label><br />'
+					. PHP_EOL;
+			} if(CUSTOM_CACHE_TIMEOUT) {
+				$idArg = 'arg-'
+					. urlencode($bridgeName)
+					. '-'
+					. urlencode('_cache_timeout');
+
+				$card .= '<label for="'
+					. $idArg
+					. '">Cache timeout in seconds : </label>'
+					. PHP_EOL;
+
+				$card .= '<input id="'
+					. $idArg
+					. '" type="number" value="'
+					. $bridge->getCacheTimeout()
+					. '" name="_cache_timeout" /><br />'
 					. PHP_EOL;
 			}
 			$card .= $getHelperButtonsFormat($formats);
