@@ -20,8 +20,8 @@ define('PROXY_BYBRIDGE', false);
 define('PROXY_NAME', 'Hidden Proxy Name');
 
 // Allows the operator to specify custom cache timeouts via '&_cache_timeout=3600'
-// true: enabled (default), false: disabled
-define('CUSTOM_CACHE_TIMEOUT', true);
+// true: enabled, false: disabled (default)
+define('CUSTOM_CACHE_TIMEOUT', false);
 
 date_default_timezone_set('UTC');
 error_reporting(0);
