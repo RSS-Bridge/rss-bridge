@@ -181,6 +181,9 @@ class YoutubeBridge extends BridgeAbstract {
 				or returnServerError("Could not request YouTube. Tried:\n - $url_listing");
 			$this->ytBridgeParseHtmlListing($html, 'tr.pl-video', '.pl-video-title a');
 			$this->feedName = 'Playlist: ' . str_replace(' - YouTube', '', $html->find('title', 0)->plaintext); // feedName will be used by getName()
+			usort($this->items, function ($item1, $item2) {
+				return $item2['timestamp'] - $item1['timestamp'];
+			});
 		} elseif($this->getInput('s')) { /* search mode */
 			$this->request = $this->getInput('s');
 			$page = 1;
