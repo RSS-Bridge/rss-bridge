@@ -110,8 +110,8 @@ class YoutubeBridge extends BridgeAbstract {
 		$this->feedName = $this->ytBridgeFixTitle($xml->find('feed > title', 0)->plaintext);  // feedName will be used by getName()
 	}
 
-	private function ytBridgeParseHtmlListing($html, $element_selector, $title_selector){
-		$limit = 10;
+	private function ytBridgeParseHtmlListing($html, $element_selector, $title_selector, $ignore_limit = false){
+		$limit = $ignore_limit ? INF : 10;
 		$count = 0;
 		foreach($html->find($element_selector) as $element) {
 			if($count < $limit) {
@@ -179,7 +179,7 @@ class YoutubeBridge extends BridgeAbstract {
 			$url_listing = self::URI . 'playlist?list=' . urlencode($this->request);
 			$html = $this->ytGetSimpleHTMLDOM($url_listing)
 				or returnServerError("Could not request YouTube. Tried:\n - $url_listing");
-			$this->ytBridgeParseHtmlListing($html, 'tr.pl-video', '.pl-video-title a');
+			$this->ytBridgeParseHtmlListing($html, 'tr.pl-video', '.pl-video-title a', true);
 			$this->feedName = 'Playlist: ' . str_replace(' - YouTube', '', $html->find('title', 0)->plaintext); // feedName will be used by getName()
 			usort($this->items, function ($item1, $item2) {
 				return $item2['timestamp'] - $item1['timestamp'];
