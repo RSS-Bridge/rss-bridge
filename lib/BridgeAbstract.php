@@ -14,6 +14,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	protected $items = array();
 	protected $inputs = array();
 	protected $queriedContext = '';
+	protected $cacheTimeout;
 
 	/**
 	* Return cachable datas (extrainfos and items) stored in the bridge
@@ -171,7 +172,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 		if(!is_null($this->cache)) {
 			$time = $this->cache->getTime();
 			if($time !== false
-			&& (time() - static::CACHE_TIMEOUT < $time)
+			&& (time() - $this->getCacheTimeout() < $time)
 			&& (!defined('DEBUG') || DEBUG !== true)) {
 				$cached = $this->cache->loadData();
 				if(isset($cached['items']) && isset($cached['extraInfos'])) {
@@ -267,5 +268,18 @@ abstract class BridgeAbstract implements BridgeInterface {
 
 	public function setCache(\CacheInterface $cache){
 		$this->cache = $cache;
+	}
+
+	public function setCacheTimeout($timeout){
+		if(is_numeric($timeout) && ($timeout < 1 || $timeout > 86400)) {
+			$this->cacheTimeout = static::CACHE_TIMEOUT;
+			return;
+		}
+
+		$this->cacheTimeout = $timeout;
+	}
+
+	public function getCacheTimeout(){
+		return isset($this->cacheTimeout) ? $this->cacheTimeout : static::CACHE_TIMEOUT;
 	}
 }
