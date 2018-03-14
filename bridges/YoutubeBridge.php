@@ -110,8 +110,12 @@ class YoutubeBridge extends BridgeAbstract {
 		$this->feedName = $this->ytBridgeFixTitle($xml->find('feed > title', 0)->plaintext);  // feedName will be used by getName()
 	}
 
-	private function ytBridgeParseHtmlListing($html, $element_selector, $title_selector){
-		$limit = 10;
+	private function ytCountItemsFromHtmlListing($html, $element_selector, $title_selector) {
+		return $this->ytBridgeParseHtmlListing($html, $element_selector, $title_selector, false);
+	}
+
+	private function ytBridgeParseHtmlListing($html, $element_selector, $title_selector, $add_parsed_items = true) {
+		$limit = $add_parsed_items ? 10 : INF;
 		$count = 0;
 		foreach($html->find($element_selector) as $element) {
 			if($count < $limit) {
@@ -122,12 +126,15 @@ class YoutubeBridge extends BridgeAbstract {
 				$vid = substr($vid, 0, strpos($vid, '&') ?: strlen($vid));
 				$title = $this->ytBridgeFixTitle($element->find($title_selector, 0)->plaintext);
 				if($title != '[Private Video]' && strpos($vid, 'googleads') === false) {
-					$this->ytBridgeQueryVideoInfo($vid, $author, $desc, $time);
-					$this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
+					if ($add_parsed_items) {
+						$this->ytBridgeQueryVideoInfo($vid, $author, $desc, $time);
+						$this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
+					}
 					$count++;
 				}
 			}
 		}
+		return $count;
 	}
 
 	private function ytBridgeFixTitle($title) {
@@ -176,10 +183,16 @@ class YoutubeBridge extends BridgeAbstract {
 			}
 		} elseif($this->getInput('p')) { /* playlist mode */
 			$this->request = $this->getInput('p');
+			$url_feed = self::URI . 'feeds/videos.xml?playlist_id=' . urlencode($this->request);
 			$url_listing = self::URI . 'playlist?list=' . urlencode($this->request);
 			$html = $this->ytGetSimpleHTMLDOM($url_listing)
 				or returnServerError("Could not request YouTube. Tried:\n - $url_listing");
-			$this->ytBridgeParseHtmlListing($html, 'tr.pl-video', '.pl-video-title a');
+			$item_count = $this->ytCountItemsFromHtmlListing($html, 'tr.pl-video', '.pl-video-title a');
+			if ($item_count <= 15 && ($xml = $this->ytGetSimpleHTMLDOM($url_feed))) {
+				$this->ytBridgeParseXmlFeed($xml);
+			} else {
+				$this->ytBridgeParseHtmlListing($html, 'tr.pl-video', '.pl-video-title a');
+			}
 			$this->feedName = 'Playlist: ' . str_replace(' - YouTube', '', $html->find('title', 0)->plaintext); // feedName will be used by getName()
 			usort($this->items, function ($item1, $item2) {
 				return $item2['timestamp'] - $item1['timestamp'];
