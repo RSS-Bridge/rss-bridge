@@ -110,10 +110,6 @@ class YoutubeBridge extends BridgeAbstract {
 		$this->feedName = $this->ytBridgeFixTitle($xml->find('feed > title', 0)->plaintext);  // feedName will be used by getName()
 	}
 
-	private function ytCountItemsFromHtmlListing($html, $element_selector, $title_selector) {
-		return $this->ytBridgeParseHtmlListing($html, $element_selector, $title_selector, false);
-	}
-
 	private function ytBridgeParseHtmlListing($html, $element_selector, $title_selector, $add_parsed_items = true) {
 		$limit = $add_parsed_items ? 10 : INF;
 		$count = 0;
@@ -187,7 +183,7 @@ class YoutubeBridge extends BridgeAbstract {
 			$url_listing = self::URI . 'playlist?list=' . urlencode($this->request);
 			$html = $this->ytGetSimpleHTMLDOM($url_listing)
 				or returnServerError("Could not request YouTube. Tried:\n - $url_listing");
-			$item_count = $this->ytCountItemsFromHtmlListing($html, 'tr.pl-video', '.pl-video-title a');
+			$item_count = $this->ytBridgeParseHtmlListing($html, 'tr.pl-video', '.pl-video-title a', false);
 			if ($item_count <= 15 && ($xml = $this->ytGetSimpleHTMLDOM($url_feed))) {
 				$this->ytBridgeParseXmlFeed($xml);
 			} else {
