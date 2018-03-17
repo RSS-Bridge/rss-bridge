@@ -46,8 +46,15 @@ class VkBridge extends BridgeAbstract
 		$html = str_get_html($text_html);
 		$pageName = $html->find('.page_name', 0)->plaintext;
 		$this->pageName = htmlspecialchars_decode($pageName);
+		$pinned_post_item = null;
+		$last_post_id = 0;
 
 		foreach ($html->find('.post') as $post) {
+
+			$is_pinned_post = false;
+			if (strpos($post->getAttribute('class'), 'post_fixed') !== false) {
+				$is_pinned_post = true;
+			}
 
 			if (is_object($post->find('a.wall_post_more', 0))) {
 				//delete link "show full" in content
@@ -72,6 +79,8 @@ class VkBridge extends BridgeAbstract
 
 			// get post link
 			$post_link = $post->find('a.post_link', 0)->getAttribute('href');
+			preg_match("/wall-?\d+_(\d+)/", $post_link, $preg_match_result);
+			$item['post_id'] = intval($preg_match_result[1]);
 			if (substr(self::URI, -1) == '/') {
 				$post_link = self::URI . ltrim($post_link, "/");
 			} else {
@@ -81,8 +90,25 @@ class VkBridge extends BridgeAbstract
 			$item['timestamp'] = $this->getTime($post);
 			$item['title'] = $this->getTitle($item['content']);
 			$item['author'] = $pageName;
-			$this->items[] = $item;
+			if ($is_pinned_post) {
+				// do not append it now
+				$pinned_post_item = $item;
+			} else {
+				$last_post_id = $item['post_id'];
+				$this->items[] = $item;
+			}
 
+		}
+
+		if (is_null($pinned_post_item)) {
+			return;
+		} else if (count($this->items) == 0) {
+			$this->items[] = $pinned_post_item;
+		} else if ($last_post_id < $pinned_post_item['post_id']) {
+			$this->items[] = $pinned_post_item;
+			usort($this->items, function ($item1, $item2) {
+				return $item1['post_id'] - $item2['post_id'];
+			});
 		}
 	}
 
