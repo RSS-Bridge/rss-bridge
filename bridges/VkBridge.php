@@ -86,6 +86,21 @@ class VkBridge extends BridgeAbstract
 				$el_to_remove->outertext = '';
 			};
 
+			// looking for article
+			$article = $post->find("a.article_snippet", 0);
+			if (is_object($article)) {
+				$article_title = $article->find("div.article_snippet__title", 0)->innertext;
+				$article_author = $article->find("div.article_snippet__author", 0)->innertext;
+				$article_link = self::URI . ltrim($article->getAttribute('href'), '/');
+				$article_img_element_style = $article->find("div.article_snippet__image", 0)->getAttribute('style');
+				preg_match('/background-image: url\((.*)\)/', $article_img_element_style, $matches);
+				if (count($matches) > 0) {
+					$content_suffix .= "<br><img src='" . $matches[1] . "'>";
+				}
+				$content_suffix .= "<br>Article: <a href='$article_link'>$article_title ($article_author)</a>";
+				$article->outertext = '';
+			}
+
 			if (is_object($post->find('div.copy_quote', 0))) {
 				$copy_quote = $post->find('div.copy_quote', 0);
 				if ($copy_post_header = $copy_quote->find('div.copy_post_header', 0)) {
