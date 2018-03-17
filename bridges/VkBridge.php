@@ -71,7 +71,13 @@ class VkBridge extends BridgeAbstract
 			}
 
 			// get post link
-			$item['uri'] = self::URI . $post->find('a.post_link', 0)->getAttribute('href');
+			$post_link = $post->find('a.post_link', 0)->getAttribute('href');
+			if (substr(self::URI, -1) == '/') {
+				$post_link = self::URI . ltrim($post_link, "/");
+			} else {
+				$post_link = self::URI . $post_link;
+			}
+			$item['uri'] = $post_link;
 			$item['timestamp'] = $this->getTime($post);
 			$item['title'] = $this->getTitle($item['content']);
 			$item['author'] = $pageName;
