@@ -73,10 +73,18 @@ class VkBridge extends BridgeAbstract
 			// get post link
 			$item['uri'] = self::URI . $post->find('a.post_link', 0)->getAttribute('href');
 			$item['timestamp'] = $this->getTime($post);
+			$item['title'] = $this->getTitle($item['content']);
 			$item['author'] = $pageName;
 			$this->items[] = $item;
 
 		}
+	}
+
+	private function getTitle($content)
+	{
+		preg_match('/^["\w\ \p{Cyrillic}\(\)\?#«»-]+/mu', htmlspecialchars_decode($content), $result);
+		if (count($result) == 0) return "untitled";
+		return $result[0];
 	}
 
 	private function getTime($post)
