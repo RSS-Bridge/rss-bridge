@@ -60,6 +60,16 @@ class VkBridge extends BridgeAbstract
 				//delete link "show full" in content
 				$post->find('a.wall_post_more', 0)->outertext = '';
 			}
+
+			if (is_object($post->find('div.copy_quote', 0))) {
+				$copy_quote = $post->find('div.copy_quote', 0);
+				if ($copy_post_header = $copy_quote->find('div.copy_post_header', 0)) {
+					$copy_post_header->outertext = '';
+				}
+				$copy_quote_content = $copy_quote->innertext;
+				$copy_quote->outertext = "<br>Reposted: <br>$copy_quote_content";
+			}
+
 			$item = array();
 			$item['content'] = strip_tags(backgroundToImg($post->find('div.wall_text', 0)->innertext), '<br><img>');
 
