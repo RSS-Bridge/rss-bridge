@@ -45,7 +45,7 @@ class VkBridge extends BridgeAbstract
 		$text_html = iconv('windows-1251', 'utf-8', $text_html);
 		$html = str_get_html($text_html);
 		$pageName = $html->find('.page_name', 0)->plaintext;
-		$this->pageName = $pageName;
+		$this->pageName = htmlspecialchars_decode($pageName);
 
 		foreach ($html->find('.post') as $post) {
 
