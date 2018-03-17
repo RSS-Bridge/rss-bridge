@@ -61,6 +61,31 @@ class VkBridge extends BridgeAbstract
 				$post->find('a.wall_post_more', 0)->outertext = '';
 			}
 
+			$content_suffix = "";
+
+			// looking for external links
+			$external_link_selectors = array(
+				'a.page_media_link_title',
+				'div.page_media_link_title > a',
+			);
+
+			foreach($external_link_selectors as $sel) {
+				if (is_object($post->find($sel, 0))) {
+					$a = $post->find($sel, 0);
+					$innertext = $a->innertext;
+					$parsed_url = parse_url($a->getAttribute('href'));
+					if (strpos($parsed_url['path'], '/away.php') !== 0) continue;
+					parse_str($parsed_url["query"], $parsed_query);
+					$content_suffix .= "<br>External link: <a href='" . $parsed_query["to"] . "'>$innertext</a>";
+				}
+			}
+
+			// remove external link from content
+			$el_to_remove = $post->find('div.page_media_link_desc_wrap', 0);
+			if (is_object($el_to_remove)) {
+				$el_to_remove->outertext = '';
+			};
+
 			if (is_object($post->find('div.copy_quote', 0))) {
 				$copy_quote = $post->find('div.copy_quote', 0);
 				if ($copy_post_header = $copy_quote->find('div.copy_post_header', 0)) {
@@ -71,14 +96,7 @@ class VkBridge extends BridgeAbstract
 			}
 
 			$item = array();
-			$item['content'] = strip_tags(backgroundToImg($post->find('div.wall_text', 0)->innertext), '<br><img>');
-
-			if (is_object($post->find('a.page_media_link_title', 0))) {
-				$link = $post->find('a.page_media_link_title', 0)->getAttribute('href');
-				//external link in the post
-				$item['content'] .= "\n\rExternal link: "
-					. str_replace('/away.php?to=', '', urldecode($link));
-			}
+			$item['content'] = strip_tags(backgroundToImg($post->find('div.wall_text', 0)->innertext), '<br><img>') . $content_suffix;
 
 			//get video on post
 			if (is_object($post->find('span.post_video_title_content', 0))) {
