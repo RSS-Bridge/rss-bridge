@@ -47,9 +47,10 @@ class InstagramBridge extends BridgeAbstract {
 		$json = trim(substr($innertext, $pos + 18), ' =;');
 		$data = json_decode($json);
 
-		$userMedia = $data->entry_data->ProfilePage[0]->user->media->nodes;
+		$userMedia = $data->entry_data->ProfilePage[0]->graphql->user->edge_owner_to_timeline_media->edges;
 
 		foreach($userMedia as $media) {
+			$media = $media->node;
 			// Check media type
 			switch($this->getInput('media_type')) {
 				case 'all': break;
@@ -63,14 +64,14 @@ class InstagramBridge extends BridgeAbstract {
 			}
 
 			$item = array();
-			$item['uri'] = self::URI . 'p/' . $media->code . '/';
-			$item['content'] = '<img src="' . htmlentities($media->display_src) . '" />';
-			if (isset($media->caption)) {
-				$item['title'] = $media->caption;
+			$item['uri'] = self::URI . 'p/' . $media->shortcode . '/';
+			$item['content'] = '<img src="' . htmlentities($media->display_url) . '" />';
+			if (isset($media->edge_media_to_caption->edges[0]->node->text)) {
+				$item['title'] = $media->edge_media_to_caption->edges[0]->node->text;
 			} else {
-				$item['title'] = basename($media->display_src);
+				$item['title'] = basename($media->display_url);
 			}
-			$item['timestamp'] = $media->date;
+			$item['timestamp'] = $media->taken_at_timestamp;
 			$this->items[] = $item;
 		}
 	}
