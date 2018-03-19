@@ -6,23 +6,42 @@ class InstagramBridge extends BridgeAbstract {
 	const URI = 'https://instagram.com/';
 	const DESCRIPTION = 'Returns the newest images';
 
-	const PARAMETERS = array( array(
-		'u' => array(
-			'name' => 'username',
-			'required' => true
-		),
-		'media_type' => array(
-			'name' => 'Media type',
-			'type' => 'list',
-			'required' => false,
-			'values' => array(
-				'Both' => 'all',
-				'Video' => 'video',
-				'Picture' => 'picture'
+	const PARAMETERS = array(
+		array(
+			'u' => array(
+				'name' => 'username',
+				'required' => true
 			),
-			'defaultValue' => 'all'
+			'media_type' => array(
+				'name' => 'Media type',
+				'type' => 'list',
+				'required' => false,
+				'values' => array(
+					'Both' => 'all',
+					'Video' => 'video',
+					'Picture' => 'picture'
+				),
+				'defaultValue' => 'all'
+			)
+		),
+		array(
+			'h' => array(
+				'name' => 'hashtag',
+				'required' => true
+			),
+			'media_type' => array(
+				'name' => 'Media type',
+				'type' => 'list',
+				'required' => false,
+				'values' => array(
+					'Both' => 'all',
+					'Video' => 'video',
+					'Picture' => 'picture'
+				),
+				'defaultValue' => 'all'
+			)
 		)
-	));
+	);
 
 	public function collectData(){
 		$html = getSimpleHTMLDOM($this->getURI())
@@ -47,7 +66,11 @@ class InstagramBridge extends BridgeAbstract {
 		$json = trim(substr($innertext, $pos + 18), ' =;');
 		$data = json_decode($json);
 
-		$userMedia = $data->entry_data->ProfilePage[0]->graphql->user->edge_owner_to_timeline_media->edges;
+		if(!is_null($this->getInput('u'))) {
+			$userMedia = $data->entry_data->ProfilePage[0]->graphql->user->edge_owner_to_timeline_media->edges;
+		} else {
+			$userMedia = $data->entry_data->TagPage[0]->graphql->hashtag->edge_hashtag_to_media->edges;
+		}
 
 		foreach($userMedia as $media) {
 			$media = $media->node;
@@ -87,6 +110,8 @@ class InstagramBridge extends BridgeAbstract {
 	public function getURI(){
 		if(!is_null($this->getInput('u'))) {
 			return self::URI . urlencode($this->getInput('u'));
+		} elseif(!is_null($this->getInput('h'))) {
+			return self::URI . 'explore/tags/' . urlencode($this->getInput('h'));
 		}
 
 		return parent::getURI();
