@@ -101,6 +101,15 @@ class VkBridge extends BridgeAbstract
 				$article->outertext = '';
 			}
 
+			// get video on post
+			$video = $post->find('div.post_video_desc', 0);
+			if (is_object($video)) {
+				$video_title = $video->find('div.post_video_title', 0)->plaintext;
+				$video_link = self::URI . ltrim( $video->find('a.lnk', 0)->getAttribute('href'), '/' );
+				$content_suffix .= "<br>Video: <a href='$video_link'>$video_title</a>";
+				$video->outertext = '';
+			}
+
 			if (is_object($post->find('div.copy_quote', 0))) {
 				$copy_quote = $post->find('div.copy_quote', 0);
 				if ($copy_post_header = $copy_quote->find('div.copy_post_header', 0)) {
@@ -112,13 +121,6 @@ class VkBridge extends BridgeAbstract
 
 			$item = array();
 			$item['content'] = strip_tags(backgroundToImg($post->find('div.wall_text', 0)->innertext), '<br><img>') . $content_suffix;
-
-			//get video on post
-			if (is_object($post->find('span.post_video_title_content', 0))) {
-				$titleVideo = $post->find('span.post_video_title_content', 0)->plaintext;
-				$linkToVideo = self::URI . $post->find('a.page_post_thumb_video', 0)->getAttribute('href');
-				$item['content'] .= "\n\r {$titleVideo}: {$linkToVideo}";
-			}
 
 			// get post link
 			$post_link = $post->find('a.post_link', 0)->getAttribute('href');
