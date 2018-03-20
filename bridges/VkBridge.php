@@ -110,6 +110,14 @@ class VkBridge extends BridgeAbstract
 				$video->outertext = '';
 			}
 
+			// get all photos
+			foreach($post->find('div.wall_text > a.page_post_thumb_wrap') as $a) {
+				$result = $this->getPhoto($a);
+				if ($result == null) continue;
+				$a->outertext = '';
+				$content_suffix .= "<br>$result";
+			}
+
 			if (is_object($post->find('div.copy_quote', 0))) {
 				$copy_quote = $post->find('div.copy_quote', 0);
 				if ($copy_post_header = $copy_quote->find('div.copy_post_header', 0)) {
@@ -154,6 +162,29 @@ class VkBridge extends BridgeAbstract
 			usort($this->items, function ($item1, $item2) {
 				return $item1['post_id'] - $item2['post_id'];
 			});
+		}
+	}
+
+	private function getPhoto($a) {
+		$onclick = $a->getAttribute('onclick');
+		preg_match('/return showPhoto\(.+?({.*})/', $onclick, $preg_match_result);
+		if (count($preg_match_result) == 0) return;
+
+		$arg = htmlspecialchars_decode( str_replace('queue:1', '"queue":1', $preg_match_result[1]) );
+		$data = json_decode($arg, true);
+		if ($data == null) return;
+
+		$thumb = $data['temp']['base'] . $data['temp']['x_'][0] . ".jpg";
+		$original = '';
+		foreach(array('y_', 'z_', 'w_') as $key) {
+			if (!isset($data['temp'][$key])) continue;
+			$original = $data['temp']['base'] . $data['temp'][$key][0] . ".jpg";
+		}
+
+		if ($original) {
+			return "<a href='$original'><img src='$thumb'></a>";
+		} else {
+			return "<img src='$thumb'>";
 		}
 	}
 
