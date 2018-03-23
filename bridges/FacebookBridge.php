@@ -127,7 +127,14 @@ class FacebookBridge extends BridgeAbstract {
 					'header' => 'Accept-Language: ' . getEnv('HTTP_ACCEPT_LANGUAGE') . "\r\n"
 				)
 			);
+
 			$context = stream_context_create($http_options);
+
+			// First character cannot be a forward slash
+			if(strpos($this->getInput('u'), "/") === 0) {
+				returnClientError('Remove leading slash "/" from the username!');
+			}
+
 			if(!strpos($this->getInput('u'), "/")) {
 				$html = getSimpleHTMLDOM(self::URI . urlencode($this->getInput('u')) . '?_fb_noscript=1',
 				false,
