@@ -27,11 +27,25 @@ if(file_exists('config.ini.php')) {
 	}
 }
 
+if(!is_string($config['proxy']['url']))
+	die('Parameter [proxy] => "url" is not a valid string! Please check "config.ini.php"!');
+
 if(!empty($config['proxy']['url']))
 	define('PROXY_URL', $config['proxy']['url']);
 
+if(!is_bool($config['proxy']['by_bridge']))
+	die('Parameter [proxy] => "by_bridge" is not a valid Boolean! Please check "config.ini.php"!');
+
 define('PROXY_BYBRIDGE', $config['proxy']['by_bridge']);
+
+if(!is_string($config['proxy']['name']))
+	die('Parameter [proxy] => "name" is not a valid string! Please check "config.ini.php"!');
+
 define('PROXY_NAME', $config['proxy']['name']);
+
+if(!is_bool($config['cache']['custom_timeout']))
+	die('Parameter [cache] => "custom_timeout" is not a valid Boolean! Please check "config.ini.php"!');
+
 define('CUSTOM_CACHE_TIMEOUT', $config['cache']['custom_timeout']);
 
 // Defines the minimum required PHP version for RSS-Bridge
