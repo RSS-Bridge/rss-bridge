@@ -27,8 +27,6 @@ if(file_exists('config.ini.php')) {
 	}
 }
 
-var_dump($config);
-
 if(!empty($config['proxy']['url']))
 	define('PROXY_URL', $config['proxy']['url']);
 
