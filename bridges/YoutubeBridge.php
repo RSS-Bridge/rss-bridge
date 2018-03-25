@@ -141,8 +141,8 @@ class YoutubeBridge extends BridgeAbstract {
 	private function ytGetSimpleHTMLDOM($url){
 		return getSimpleHTMLDOM($url,
 			$use_include_path = false,
-			$context = null,
-			$offset = 0,
+			$header = array(),
+			$opts = array(),
 			$maxLen = null,
 			$lowercase = true,
 			$forceTagsClosed = true,
