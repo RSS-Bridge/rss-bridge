@@ -45,9 +45,7 @@ class KernelBugTrackerBridge extends BridgeAbstract {
 		// We use the print preview page for simplicity
 		$html = getSimpleHTMLDOMCached($this->getURI() . '&format=multiple',
 		86400,
-		false,
 		null,
-		0,
 		null,
 		true,
 		true,
