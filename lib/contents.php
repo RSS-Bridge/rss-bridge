@@ -3,7 +3,10 @@ function getContents($url, $header = array(), $opts = array()){
 	$ch = curl_init($url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-	curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+
+	if(is_array($header) && count($header) !== 0)
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+
 	curl_setopt($ch, CURLOPT_USERAGENT, ini_get('user_agent'));
 	curl_setopt($ch, CURLOPT_ENCODING, '');
 	curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
