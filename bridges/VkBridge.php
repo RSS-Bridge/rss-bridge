@@ -43,6 +43,8 @@ class VkBridge extends BridgeAbstract
 		or returnServerError('No results for group or user name "' . $this->getInput('u') . '".');
 
 		$text_html = iconv('windows-1251', 'utf-8', $text_html);
+		// makes album link generating work correctly
+		$text_html = str_replace('"class="page_album_link">', '" class="page_album_link">', $text_html);
 		$html = str_get_html($text_html);
 		$pageName = $html->find('.page_name', 0)->plaintext;
 		$this->pageName = htmlspecialchars_decode($pageName);
@@ -116,6 +118,15 @@ class VkBridge extends BridgeAbstract
 				if ($result == null) continue;
 				$a->outertext = '';
 				$content_suffix .= "<br>$result";
+			}
+
+			// get albums
+			foreach($post->find('.page_album_wrap') as $el) {
+				$a = $el->find('.page_album_link', 0);
+				$album_title = $a->find('.page_album_title_text', 0)->getAttribute('title');
+				$album_link = self::URI . ltrim($a->getAttribute('href'), '/');
+				$el->outertext = '';
+				$content_suffix .= "<br>Album: <a href='$album_link'>$album_title</a>";
 			}
 
 			if (is_object($post->find('div.copy_quote', 0))) {
