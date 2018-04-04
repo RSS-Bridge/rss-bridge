@@ -54,7 +54,7 @@ function buildGitHubIssueQuery($title, $body, $labels = null, $maintainer = null
  * provided parameter are invalid
  */
 function buildBridgeException($e, $bridge){
-	if(!($e instanceof \Exception) || !($bridge instanceof \BridgeInterface)) {
+	if(( !($e instanceof \Exception) && !($e instanceof \Error)) || !($bridge instanceof \BridgeInterface)) {
 		return null;
 	}
 
@@ -85,7 +85,7 @@ unable to receive or process the remote website's content!";
  * provided parameter are invalid
  */
 function buildTransformException($e, $bridge){
-	if(!($e instanceof \Exception) || !($bridge instanceof \BridgeInterface)) {
+	if(( !($e instanceof \Exception) && !($e instanceof \Error)) || !($bridge instanceof \BridgeInterface)) {
 		return null;
 	}
 

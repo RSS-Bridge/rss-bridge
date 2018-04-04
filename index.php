@@ -77,6 +77,9 @@ if(!extension_loaded('libxml'))
 if(!extension_loaded('mbstring'))
 	die('"mbstring" extension not loaded. Please check "php.ini"');
 
+if(!extension_loaded('simplexml'))
+	die('"simplexml" extension not loaded. Please check "php.ini"');
+
 // configuration checks
 if(ini_get('allow_url_fopen') !== "1")
 	die('"allow_url_fopen" is not set to "1". Please check "php.ini');
@@ -199,10 +202,14 @@ try {
 			$bridge->setCache($cache);
 			$bridge->setCacheTimeout($cache_timeout);
 			$bridge->setDatas($params);
-		} catch(Exception $e) {
+		} catch(Error $e) {
 			http_response_code($e->getCode());
 			header('Content-Type: text/html');
 			die(buildBridgeException($e, $bridge));
+		} catch(Exception $e) {
+                        http_response_code($e->getCode());
+                        header('Content-Type: text/html');
+                        die(buildBridgeException($e, $bridge));
 		}
 
 		// Data transformation
@@ -211,11 +218,16 @@ try {
 			$format->setItems($bridge->getItems());
 			$format->setExtraInfos($bridge->getExtraInfos());
 			$format->display();
-		} catch(Exception $e) {
+		} catch(Error $e) {
 			http_response_code($e->getCode());
 			header('Content-Type: text/html');
 			die(buildTransformException($e, $bridge));
-		}
+                } catch(Exception $e) {
+                        http_response_code($e->getCode());
+                        header('Content-Type: text/html');
+                        die(buildBridgeException($e, $bridge));
+                }
+
 
 		die;
 	}
