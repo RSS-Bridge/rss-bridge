@@ -19,6 +19,10 @@ define('PROXY_BYBRIDGE', false);
 // Comment this line or keep PROXY_NAME empty to display PROXY_URL instead
 define('PROXY_NAME', 'Hidden Proxy Name');
 
+// Allows the operator to specify custom cache timeouts via '&_cache_timeout=3600'
+// true: enabled, false: disabled (default)
+define('CUSTOM_CACHE_TIMEOUT', false);
+
 date_default_timezone_set('UTC');
 error_reporting(0);
 
@@ -72,6 +76,9 @@ if(!extension_loaded('libxml'))
 
 if(!extension_loaded('mbstring'))
 	die('"mbstring" extension not loaded. Please check "php.ini"');
+
+if(!extension_loaded('simplexml'))
+	die('"simplexml" extension not loaded. Please check "php.ini"');
 
 // configuration checks
 if(ini_get('allow_url_fopen') !== "1")
@@ -168,6 +175,16 @@ try {
 			define('NOPROXY', true);
 		}
 
+		// Custom cache timeout
+		$cache_timeout = -1;
+		if(array_key_exists('_cache_timeout', $params)) {
+			if(!CUSTOM_CACHE_TIMEOUT) {
+				throw new \HttpException('This server doesn\'t support "_cache_timeout"!');
+			}
+
+			$cache_timeout = filter_var($params['_cache_timeout'], FILTER_VALIDATE_INT);
+		}
+
 		// Initialize cache
 		$cache = Cache::create('FileCache');
 		$cache->setPath(CACHE_DIR);
@@ -178,15 +195,21 @@ try {
 		unset($params['bridge']);
 		unset($params['format']);
 		unset($params['_noproxy']);
+		unset($params['_cache_timeout']);
 
 		// Load cache & data
 		try {
 			$bridge->setCache($cache);
+			$bridge->setCacheTimeout($cache_timeout);
 			$bridge->setDatas($params);
-		} catch(Exception $e) {
+		} catch(Error $e) {
 			http_response_code($e->getCode());
 			header('Content-Type: text/html');
 			die(buildBridgeException($e, $bridge));
+		} catch(Exception $e) {
+                        http_response_code($e->getCode());
+                        header('Content-Type: text/html');
+                        die(buildBridgeException($e, $bridge));
 		}
 
 		// Data transformation
@@ -195,11 +218,16 @@ try {
 			$format->setItems($bridge->getItems());
 			$format->setExtraInfos($bridge->getExtraInfos());
 			$format->display();
-		} catch(Exception $e) {
+		} catch(Error $e) {
 			http_response_code($e->getCode());
 			header('Content-Type: text/html');
 			die(buildTransformException($e, $bridge));
-		}
+                } catch(Exception $e) {
+                        http_response_code($e->getCode());
+                        header('Content-Type: text/html');
+                        die(buildBridgeException($e, $bridge));
+                }
+
 
 		die;
 	}
