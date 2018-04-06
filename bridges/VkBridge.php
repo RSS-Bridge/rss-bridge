@@ -109,7 +109,7 @@ class VkBridge extends BridgeAbstract
 	{
 		ini_set('user-agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:53.0) Gecko/20100101 Firefox/53.0');
 
-		$header = array("Accept-language: en\r\nCookie: remixlang=3\r\n");
+		$header = array('Accept-language: en', 'Cookie: remixlang=3');
 
 		return getContents($this->getURI(), $header);
 	}
