@@ -18,8 +18,8 @@ class IPBBridge extends FeedExpander {
 				'name' => 'Limit',
 				'type' => 'number',
 				'required' => false,
-				'title' => 'Specify how many pages should be fetched (-1: all)',
-				'defaultValue' => 1
+				'title' => 'Specifies the number of items to return on each request (-1: all)',
+				'defaultValue' => 10
 			)
 		)
 	);
@@ -161,15 +161,18 @@ class IPBBridge extends FeedExpander {
 
 		$next = null; // Holds the URI of the next page
 
-		do {
-			// Skip loading HTML on first iteration
-			if(!is_null($next)) {
-				$html = getSimpleHTMLDOMCached($next);
+		while(true) {
+			$next = $this->$callback($html, is_null($next));
+
+			if(is_null($next) || ($limit > 0 && count($this->items) >= $limit)) {
+				break;
 			}
 
-			$next = $this->$callback($html, is_null($next));
-			$limit--;
-		} while(!is_null($next) && $limit <> 0);
+			$html = getSimpleHTMLDOMCached($next);
+		}
+
+		// We might have more items than specified, remove excess
+		$this->items = array_slice($this->items, 0, $limit);
 	}
 
 	private function collectTopicArticle($html, $firstrun = true){
