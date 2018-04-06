@@ -96,17 +96,15 @@ class FacebookBridge extends BridgeAbstract {
 				$captcha_action = $_SESSION['captcha_action'];
 				$captcha_fields = $_SESSION['captcha_fields'];
 				$captcha_fields['captcha_response'] = preg_replace("/[^a-zA-Z0-9]+/", "", $_POST['captcha_response']);
-				$http_options = array(
-					'http' => array(
-						'method'  => 'POST',
-						'user_agent' => ini_get('user_agent'),
-						'header' => array("Content-type:
- application/x-www-form-urlencoded\r\nReferer: $captcha_action\r\nCookie: noscript=1\r\n"),
-						'content' => http_build_query($captcha_fields)
-					),
+
+				$header = array("Content-type:
+application/x-www-form-urlencoded\r\nReferer: $captcha_action\r\nCookie: noscript=1\r\n");
+				$opts = array(
+					CURLOPT_POST => 1,
+					CURLOPT_POSTFIELDS => http_build_query($captcha_fields)
 				);
-				$context = stream_context_create($http_options);
-				$html = getContents($captcha_action, false, $context);
+
+				$html = getContents($captcha_action, $header, $opts);
 
 				if($html === false) {
 					returnServerError('Failed to submit captcha response back to Facebook');
@@ -120,15 +118,7 @@ class FacebookBridge extends BridgeAbstract {
 
 		//Retrieve page contents
 		if(is_null($html)) {
-			$http_options = array(
-				'http' => array(
-					'method' => 'GET',
-					'user_agent' => ini_get('user_agent'),
-					'header' => 'Accept-Language: ' . getEnv('HTTP_ACCEPT_LANGUAGE') . "\r\n"
-				)
-			);
-
-			$context = stream_context_create($http_options);
+			$header = array('Accept-Language: ' . getEnv('HTTP_ACCEPT_LANGUAGE') . "\r\n");
 
 			// First character cannot be a forward slash
 			if(strpos($this->getInput('u'), "/") === 0) {
@@ -136,14 +126,10 @@ class FacebookBridge extends BridgeAbstract {
 			}
 
 			if(!strpos($this->getInput('u'), "/")) {
-				$html = getSimpleHTMLDOM(self::URI . urlencode($this->getInput('u')) . '?_fb_noscript=1',
-				false,
-				$context)
+				$html = getSimpleHTMLDOM(self::URI . urlencode($this->getInput('u')) . '?_fb_noscript=1', $header)
 					or returnServerError('No results for this query.');
 			} else {
-				$html = getSimpleHTMLDOM(self::URI . 'pages/' . $this->getInput('u') . '?_fb_noscript=1',
-				false,
-				$context)
+				$html = getSimpleHTMLDOM(self::URI . 'pages/' . $this->getInput('u') . '?_fb_noscript=1', $header)
 					or returnServerError('No results for this query.');
 			}
 		}

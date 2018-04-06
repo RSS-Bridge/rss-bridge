@@ -1,77 +1,45 @@
 <?php
-function getContents($url,
-$use_include_path = false,
-$context = null,
-$offset = 0,
-$maxlen = null){
-	$contextOptions = array(
-		'http' => array(
-			'user_agent' => ini_get('user_agent'),
-			'accept_encoding' => 'gzip'
-		)
-	);
+function getContents($url, $header = array(), $opts = array()){
+	$ch = curl_init($url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
-	if(defined('PROXY_URL') && !defined('NOPROXY')) {
-		$contextOptions['http']['proxy'] = PROXY_URL;
-		$contextOptions['http']['request_fulluri'] = true;
+	if(is_array($header) && count($header) !== 0)
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 
-		if(is_null($context)) {
-			$context = stream_context_create($contextOptions);
-		} else {
-			$prevContext = $context;
-			if(!stream_context_set_option($context, $contextOptions)) {
-				$context = $prevContext;
-			}
+	curl_setopt($ch, CURLOPT_USERAGENT, ini_get('user_agent'));
+	curl_setopt($ch, CURLOPT_ENCODING, '');
+	curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
+
+	if(is_array($opts)) {
+		foreach($opts as $key => $value) {
+			curl_setopt($ch, $key, $value);
 		}
 	}
 
-	if(is_null($maxlen)) {
-		$content = file_get_contents($url, $use_include_path, $context, $offset);
-	} else {
-		$content = file_get_contents($url, $use_include_path, $context, $offset, $maxlen);
+	if(defined('PROXY_URL') && !defined('NOPROXY')) {
+		curl_setopt($ch, CURLOPT_PROXY, PROXY_URL);
 	}
+
+	$content = curl_exec($ch);
+	curl_close($ch);
 
 	if($content === false)
 		debugMessage('Cant\'t download ' . $url);
-
-	// handle compressed data
-	foreach($http_response_header as $header) {
-		if(stristr($header, 'content-encoding')) {
-			switch(true) {
-			case stristr($header, 'gzip'):
-				$content = gzinflate(substr($content, 10, -8));
-				break;
-			case stristr($header, 'compress'):
-				//TODO
-			case stristr($header, 'deflate'):
-				//TODO
-			case stristr($header, 'brotli'):
-				//TODO
-				returnServerError($header . '=> Not implemented yet');
-				break;
-			case stristr($header, 'identity'):
-				break;
-			default:
-				returnServerError($header . '=> Unknown compression');
-			}
-		}
-	}
 
 	return $content;
 }
 
 function getSimpleHTMLDOM($url,
-$use_include_path = false,
-$context = null,
-$offset = 0,
-$maxLen = null,
+$header = array(),
+$opts = array(),
 $lowercase = true,
 $forceTagsClosed = true,
 $target_charset = DEFAULT_TARGET_CHARSET,
 $stripRN = true,
 $defaultBRText = DEFAULT_BR_TEXT,
 $defaultSpanText = DEFAULT_SPAN_TEXT){
-	$content = getContents($url, $use_include_path, $context, $offset, $maxLen);
+	$content = getContents($url, $header, $opts);
 	return str_get_html($content,
 	$lowercase,
 	$forceTagsClosed,
@@ -89,10 +57,8 @@ $defaultSpanText = DEFAULT_SPAN_TEXT){
  */
 function getSimpleHTMLDOMCached($url,
 $duration = 86400,
-$use_include_path = false,
-$context = null,
-$offset = 0,
-$maxLen = null,
+$header = array(),
+$opts = array(),
 $lowercase = true,
 $forceTagsClosed = true,
 $target_charset = DEFAULT_TARGET_CHARSET,
@@ -116,7 +82,7 @@ $defaultSpanText = DEFAULT_SPAN_TEXT){
 	&& (!defined('DEBUG') || DEBUG !== true)) { // Contents within duration
 		$content = $cache->loadData();
 	} else { // Content not within duration
-		$content = getContents($url, $use_include_path, $context, $offset, $maxLen);
+		$content = getContents($url, $header, $opts);
 		if($content !== false) {
 			$cache->saveData($content);
 		}
