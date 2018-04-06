@@ -160,9 +160,6 @@ class DealabsBridge extends BridgeAbstract {
 				'cept-tt',
 				'thread-link',
 				'linkPlain',
-				'space--r-1',
-				'size--all-s',
-				'size--fromW3-m',
 			)
 		);
 
@@ -208,7 +205,7 @@ class DealabsBridge extends BridgeAbstract {
 			foreach($list as $deal) {
 				$item = array();
 				$item['uri'] = $deal->find('div[class=threadGrid-title]', 0)->find('a', 0)->href;
-				$item['title'] = $deal->find('a[class='. $selectorLink .']', 0
+				$item['title'] = $deal->find('a[class*='. $selectorLink .']', 0
 					)->plaintext;
 				$item['author'] = $deal->find('span.thread-username', 0)->plaintext;
 				$item['content'] = '<table><tr><td><a href="'
@@ -217,9 +214,9 @@ class DealabsBridge extends BridgeAbstract {
 					. '"><img src="'
 					. $this->getImage($deal)
 					. '"/></td><td><h2><a href="'
-					. $deal->find('a[class='. $selectorLink .']', 0)->href
+					. $deal->find('a[class*='. $selectorLink .']', 0)->href
 					. '">'
-					. $deal->find('a[class='. $selectorLink .']', 0)->innertext
+					. $deal->find('a[class*='. $selectorLink .']', 0)->innertext
 					. '</a></h2>'
 					. $this->getPrix($deal)
 					. $this->getReduction($deal)
