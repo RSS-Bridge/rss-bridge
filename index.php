@@ -207,9 +207,9 @@ try {
 			header('Content-Type: text/html');
 			die(buildBridgeException($e, $bridge));
 		} catch(Exception $e) {
-                        http_response_code($e->getCode());
-                        header('Content-Type: text/html');
-                        die(buildBridgeException($e, $bridge));
+			http_response_code($e->getCode());
+			header('Content-Type: text/html');
+			die(buildBridgeException($e, $bridge));
 		}
 
 		// Data transformation
@@ -222,12 +222,11 @@ try {
 			http_response_code($e->getCode());
 			header('Content-Type: text/html');
 			die(buildTransformException($e, $bridge));
-                } catch(Exception $e) {
-                        http_response_code($e->getCode());
-                        header('Content-Type: text/html');
-                        die(buildBridgeException($e, $bridge));
-                }
-
+		} catch(Exception $e) {
+			http_response_code($e->getCode());
+			header('Content-Type: text/html');
+			die(buildBridgeException($e, $bridge));
+		}
 
 		die;
 	}
