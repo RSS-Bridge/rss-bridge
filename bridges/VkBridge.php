@@ -84,10 +84,17 @@ class VkBridge extends BridgeAbstract
 			}
 
 			// remove external link from content
-			$el_to_remove = $post->find('div.page_media_link_desc_wrap', 0);
-			if (is_object($el_to_remove)) {
-				$el_to_remove->outertext = '';
-			};
+			$external_link_selectors_to_remove = array(
+				'div.page_media_thumbed_link',
+				'div.page_media_link_desc_wrap',
+				'div.media_desc > a.lnk',
+			);
+
+			foreach($external_link_selectors_to_remove as $sel) {
+				if (is_object($post->find($sel, 0))) {
+					$post->find($sel, 0)->outertext = '';
+				}
+			}
 
 			// looking for article
 			$article = $post->find("a.article_snippet", 0);
