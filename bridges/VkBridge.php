@@ -137,6 +137,28 @@ class VkBridge extends BridgeAbstract
 				$content_suffix .= "<br>Album: <a href='$album_link'>$album_title</a>";
 			}
 
+			// get documents
+			foreach($post->find('a.page_doc_photo_href') as $a) {
+				$doc_link = self::URI . ltrim($a->getAttribute('href'), '/');
+				$doc_gif_label_element = $a->find(".page_gif_label", 0);
+				$doc_title_element = $a->find(".doc_label", 0);
+
+				if (is_object($doc_gif_label_element)) {
+					$gif_preview_img = backgroundToImg($a->find('.page_doc_photo', 0));
+					$content_suffix .= "<br>Gif: <a href='$doc_link'>$gif_preview_img</a>";
+
+				} else if (is_object($doc_title_element)) {
+					$doc_title = $doc_title_element->innertext;
+					$content_suffix .= "<br>Doc: <a href='$doc_link'>$doc_title</a>";
+
+				} else {
+					continue;
+
+				}
+
+				$a->outertext = '';
+			}
+
 			if (is_object($post->find('div.copy_quote', 0))) {
 				$copy_quote = $post->find('div.copy_quote', 0);
 				if ($copy_post_header = $copy_quote->find('div.copy_post_header', 0)) {
