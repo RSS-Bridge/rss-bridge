@@ -69,6 +69,7 @@ class VkBridge extends BridgeAbstract
 			$external_link_selectors = array(
 				'a.page_media_link_title',
 				'div.page_media_link_title > a',
+				'div.media_desc > a.lnk',
 			);
 
 			foreach($external_link_selectors as $sel) {
