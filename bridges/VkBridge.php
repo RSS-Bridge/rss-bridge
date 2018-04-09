@@ -159,6 +159,14 @@ class VkBridge extends BridgeAbstract
 				$a->outertext = '';
 			}
 
+			// get sign
+			foreach($post->find('a.wall_signed_by') as $a) {
+				$link = self::URI . ltrim($a->getAttribute('href'), '/');
+				$title = $a->innertext;
+				$content_suffix .= "<br>Sign: <a href='$link'>$title</a>";
+				$a->outertext = '';
+			}
+
 			if (is_object($post->find('div.copy_quote', 0))) {
 				$copy_quote = $post->find('div.copy_quote', 0);
 				if ($copy_post_header = $copy_quote->find('div.copy_post_header', 0)) {
