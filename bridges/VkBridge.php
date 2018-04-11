@@ -209,7 +209,7 @@ class VkBridge extends BridgeAbstract
 		} else if ($last_post_id < $pinned_post_item['post_id']) {
 			$this->items[] = $pinned_post_item;
 			usort($this->items, function ($item1, $item2) {
-				return $item1['post_id'] - $item2['post_id'];
+				return $item2['post_id'] - $item1['post_id'];
 			});
 		}
 	}
