@@ -137,7 +137,7 @@ class VkBridge extends BridgeAbstract
 				$content_suffix .= "<br>Album: <a href='$album_link'>$album_title</a>";
 			}
 
-			// get documents
+			// get photo documents
 			foreach($post->find('a.page_doc_photo_href') as $a) {
 				$doc_link = self::URI . ltrim($a->getAttribute('href'), '/');
 				$doc_gif_label_element = $a->find(".page_gif_label", 0);
@@ -158,6 +158,24 @@ class VkBridge extends BridgeAbstract
 
 				$a->outertext = '';
 			}
+
+			// get other documents
+			foreach($post->find('div.page_doc_row') as $div) {
+				$doc_title_element = $div->find("a.page_doc_title", 0);
+
+				if (is_object($doc_title_element)) {
+					$doc_title = $doc_title_element->innertext;
+					$doc_link = $doc_title_element->getAttribute('href');
+					$content_suffix .= "<br>Doc: <a href='$doc_link'>$doc_title</a>";
+
+				} else {
+					continue;
+
+				}
+
+				$div->outertext = '';
+			}
+
 
 			// get sign
 			foreach($post->find('a.wall_signed_by') as $a) {
