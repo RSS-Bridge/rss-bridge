@@ -168,7 +168,7 @@ class VkBridge extends BridgeAbstract
 
 				if (is_object($doc_title_element)) {
 					$doc_title = $doc_title_element->innertext;
-					$doc_link = $doc_title_element->getAttribute('href');
+					$doc_link = self::URI . ltrim($doc_title_element->getAttribute('href'), '/');
 					$content_suffix .= "<br>Doc: <a href='$doc_link'>$doc_title</a>";
 
 				} else {
