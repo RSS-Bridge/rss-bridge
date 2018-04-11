@@ -181,10 +181,9 @@ class VkBridge extends BridgeAbstract
 
 
 			// get sign
+			$post_author = $pageName;
 			foreach($post->find('a.wall_signed_by') as $a) {
-				$link = self::URI . ltrim($a->getAttribute('href'), '/');
-				$title = $a->innertext;
-				$content_suffix .= "<br>Sign: <a href='$link'>$title</a>";
+				$post_author = $a->innertext;
 				$a->outertext = '';
 			}
 
@@ -212,7 +211,7 @@ class VkBridge extends BridgeAbstract
 			$item['uri'] = $post_link;
 			$item['timestamp'] = $this->getTime($post);
 			$item['title'] = $this->getTitle($item['content']);
-			$item['author'] = $pageName;
+			$item['author'] = $post_author;
 			if ($is_pinned_post) {
 				// do not append it now
 				$pinned_post_item = $item;
