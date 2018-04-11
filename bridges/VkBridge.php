@@ -46,8 +46,11 @@ class VkBridge extends BridgeAbstract
 		// makes album link generating work correctly
 		$text_html = str_replace('"class="page_album_link">', '" class="page_album_link">', $text_html);
 		$html = str_get_html($text_html);
-		$pageName = $html->find('.page_name', 0)->plaintext;
-		$this->pageName = htmlspecialchars_decode($pageName);
+		$pageName = $html->find('.page_name', 0);
+		if (is_object($pageName)) {
+			$pageName = $pageName->plaintext;
+			$this->pageName = htmlspecialchars_decode($pageName);
+		}
 		$pinned_post_item = null;
 		$last_post_id = 0;
 
