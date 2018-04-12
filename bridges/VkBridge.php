@@ -179,7 +179,6 @@ class VkBridge extends BridgeAbstract
 				$div->outertext = '';
 			}
 
-
 			// get sign
 			$post_author = $pageName;
 			foreach($post->find('a.wall_signed_by') as $a) {
@@ -197,7 +196,8 @@ class VkBridge extends BridgeAbstract
 			}
 
 			$item = array();
-			$item['content'] = strip_tags(backgroundToImg($post->find('div.wall_text', 0)->innertext), '<br><img>') . $content_suffix;
+			$item['content'] = strip_tags(backgroundToImg($post->find('div.wall_text', 0)->innertext), '<br><img>');
+			$item['content'] .= $content_suffix;
 
 			// get post link
 			$post_link = $post->find('a.post_link', 0)->getAttribute('href');
