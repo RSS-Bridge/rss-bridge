@@ -3,7 +3,7 @@ class GoComicsBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'sky';
 	const NAME = 'GoComics Unofficial RSS';
-	const URI = 'http://www.gocomics.com/';
+	const URI = 'https://www.gocomics.com/';
 	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = 'The Unofficial GoComics RSS';
 	const PARAMETERS = array( array(
@@ -18,25 +18,27 @@ class GoComicsBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not request GoComics: ' . $this->getURI());
 
-		foreach($html->find('div.comic__container') as $element) {
+		//Get info from first page
+		$author = preg_replace('/By /', '', $html->find(".media-subheading", 0)->plaintext);
 
-			$img = $element->find('.item-comic-image img', 0);
-			$link = $element->find('a.js-item-comic-link', 0);
-			$comic = $img->src;
-			$title = $link->title;
-			$url = $html->find('input.js-copy-link', 0)->value;
-			$date = substr($title, -10);
-			if (empty($title))
-				$title = 'GoComics ' . $this->getInput('comicname') . ' on ' . $date;
-			$date = strtotime($date);
+		$link = self::URI . $html->find(".gc-deck--cta-0", 0)->find('a', 0)->href;
+		for($i = 0; $i < 5; $i++) {
 
 			$item = array();
-			$item['id'] = $url;
-			$item['uri'] = $url;
-			$item['title'] = $title;
-			$item['author'] = preg_replace('/by /', '', $element->find('a.link-blended small', 0)->plaintext);
-			$item['timestamp'] = $date;
-			$item['content'] = '<img src="' . $comic . '" alt="' . $title . '" />';
+
+			$page = getSimpleHTMLDOM($link)
+				or returnServerError('Could not request GoComics: ' . $link);
+			$imagelink = $page->find(".img-fluid", 1)->src;
+			$date = explode("/", $link);
+
+			$item['id'] = $imagelink;
+			$item['uri'] = $link;
+			$item['author'] = $author;
+			$item['title'] = 'GoComics ' . $this->getInput('comicname');
+			$item['timestamp'] = DateTime::createFromFormat("Ymd", $date[5] . $date[6] . $date[7])->getTimestamp();
+			$item['content'] = '<img src="' . $imagelink . '" />';
+
+			$link = self::URI . $page->find(".js-previous-comic", 0)->href;
 			$this->items[] = $item;
 		}
 	}
