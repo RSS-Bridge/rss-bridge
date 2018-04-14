@@ -232,3 +232,6 @@ DEBUG
 ## VisualStudioCode ##
 ######################
 .vscode/*
+
+#Builder
+.buildconfig
