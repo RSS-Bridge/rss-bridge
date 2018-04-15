@@ -29,7 +29,7 @@ class NotAlwaysBridge extends BridgeAbstract {
 		public function collectData(){
 				$html = getSimpleHTMLDOM($this->getURI())
 						or returnServerError('Could not request NotAlways.');
-				foreach($html->find('.post') as $post){
+				foreach($html->find('.post') as $post) {
 						#print_r($post);
 						$item = array();
 						$item['uri'] = $post->find('h1', 0)->find('a', 0)->href;
@@ -40,7 +40,7 @@ class NotAlwaysBridge extends BridgeAbstract {
 		}
 
 		public function getName(){
-				if(!is_null($this->getInput('filter'))){
+				if(!is_null($this->getInput('filter'))) {
 						return $this->getInput('filter') . ' - NotAlways Bridge';
 				}
 
@@ -48,7 +48,7 @@ class NotAlwaysBridge extends BridgeAbstract {
 		}
 
 		public function getURI(){
-				if(!is_null($this->getInput('filter'))){
+				if(!is_null($this->getInput('filter'))) {
 						return self::URI . $this->getInput('filter') . "/";
 				}
 
