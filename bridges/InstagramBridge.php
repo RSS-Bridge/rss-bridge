@@ -95,6 +95,7 @@ class InstagramBridge extends BridgeAbstract {
 				$item['title'] = basename($media->display_url);
 			}
 			$item['timestamp'] = $media->taken_at_timestamp;
+			$item['enclosures'] = array($media->display_url);
 			$this->items[] = $item;
 		}
 	}
