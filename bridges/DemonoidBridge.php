@@ -52,14 +52,14 @@ class DemonoidBridge extends BridgeAbstract {
 			switch($critList) {
 				case 'search':
 				if($catBool == false) {
-					$html = file_get_contents(
+					$html = getContents(
 						self::URI .
 						'files/?category=0&subcategory=All&quality=All&seeded=2&external=2&query=' .
 						urlencode($keywords) . #not rawurlencode so space -> '+'
 						'&uid=0&sort='
 						) or returnServerError('Could not request Demonoid.');
 					} else {
-						$html = file_get_contents(
+						$html = getContents(
 							self::URI .
 							'files/?category=' .
 							rawurlencode($catNum) .
@@ -70,7 +70,7 @@ class DemonoidBridge extends BridgeAbstract {
 					}
 					break;
 				case 'usr':
-				$html = file_get_contents(
+				$html = getContents(
 					self::URI .
 					'files/?uid=' .
 					rawurlencode($keywords) .
@@ -78,7 +78,7 @@ class DemonoidBridge extends BridgeAbstract {
 					) or returnServerError('Could not request Demonoid.');
 					break;
 				case 'cat':
-				$html = file_get_contents(
+				$html = getContents(
 					self::URI .
 					'files/?uid=0&category=' .
 					rawurlencode($keywords) .
