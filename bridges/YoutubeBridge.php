@@ -207,7 +207,7 @@ class YoutubeBridge extends BridgeAbstract {
 			$html = $this->ytGetSimpleHTMLDOM($url_listing)
 				or returnServerError("Could not request YouTube. Tried:\n - $url_listing");
 
-			$this->ytBridgeParseHtmlListing($html, 'div.yt-lockup', 'h3');
+			$this->ytBridgeParseHtmlListing($html, 'div.yt-lockup', 'h3 > a');
 			$this->feedName = 'Search: ' . str_replace(' - YouTube', '', $html->find('title', 0)->plaintext); // feedName will be used by getName()
 		} else { /* no valid mode */
 			returnClientError("You must either specify either:\n - YouTube
