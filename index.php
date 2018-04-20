@@ -303,7 +303,7 @@ EOD;
 		echo $inactiveBridges;
 	?>
 	<section class="footer">
-		<a href="https://github.com/RSS-Bridge/rss-bridge">RSS-Bridge 2018-04-06 ~ Public Domain</a><br />
+		<a href="https://github.com/RSS-Bridge/rss-bridge">RSS-Bridge 2018-04-20 ~ Public Domain</a><br />
 		<?= $activeFoundBridgeCount; ?>/<?= count($bridgeList) ?> active bridges. <br />
 		<?php
 			if($activeFoundBridgeCount !== count($bridgeList)) {
