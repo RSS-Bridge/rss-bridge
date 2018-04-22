@@ -1,16 +1,12 @@
 <?php
-class WorldOfTanksBridge extends BridgeAbstract {
+class WorldOfTanksBridge extends FeedExpander {
 
-	const MAINTAINER = 'mitsukarenai';
+	const MAINTAINER = 'Riduidel';
 	const NAME = 'World of Tanks';
 	const URI = 'http://worldoftanks.eu/';
 	const DESCRIPTION = 'News about the tank slaughter game.';
 
 	const PARAMETERS = array( array(
-		'category' => array(
-			// TODO: should be a list
-			'name' => 'nom de la catégorie'
-		),
 		'lang' => array(
 			'name' => 'Langue',
 			'type' => 'list',
@@ -26,47 +22,31 @@ class WorldOfTanksBridge extends BridgeAbstract {
 		)
 	));
 
-	private $title = '';
+	public function collectData() {
+		$this->collectExpandableDatas(sprintf('https://worldoftanks.eu/%s/rss/news/', $this->getInput('lang')));
+	}
 
-	public function getURI(){
-		if(!is_null($this->getInput('lang'))) {
-			$lang = $this->getInput('lang');
-			$uri = self::URI . $lang . '/news/';
-			if(!empty($this->getInput('category'))) {
-				$uri .= 'pc-browser/' . $this->getInput('category') . '/';
-			}
-			return $uri;
+	protected function parseItem($newsItem){
+		$item = parent::parseItem($newsItem);
+		$item['content'] = $this->loadFullArticle($item['uri']);
+		return $item;
+	}
+
+	/**
+	 * Loads the full article and returns the contents
+	 * @param $uri The article URI
+	 * @return The article content
+	 */
+	private function loadFullArticle($uri){
+		$html = getSimpleHTMLDOMCached($uri);
+
+		$content = $html->find('article', 0);
+
+		// Remove the scripts, please
+		foreach($content->find('script') as $script) {
+			$script->outertext = '';
 		}
 
-		return parent::getURI();
-	}
-
-	public function getName(){
-		return $this->title ?: parent::getName();
-	}
-
-	public function collectData(){
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request ' . $this->getURI());
-		debugMessage("loaded HTML from " . $this->getURI());
-		// customize name
-		$this->title = $html->find('title', 0)->innertext;
-		foreach($html->find('.b-imgblock_ico') as $infoLink) {
-			$this->parseLine($infoLink);
-		}
-	}
-
-	private function parseLine($infoLink){
-		$item = array();
-		$item['uri'] = self::URI . $infoLink->href;
-		// now load that uri from cache
-		debugMessage('loading page ' . $item['uri']);
-		$articlePage = getSimpleHTMLDOMCached($item['uri']);
-		$content = $articlePage->find('.l-content', 0);
-		defaultLinkTo($content, self::URI);
-		$item['title'] = $content->find('h1', 0)->innertext;
-		$item['content'] = $content->find('.b-content', 0)->innertext;
-		$item['timestamp'] = $content->find('.b-statistic_time', 0)->getAttribute("data-timestamp");
-		$this->items[] = $item;
+		return $content->innertext;
 	}
 }
