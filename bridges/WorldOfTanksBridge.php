@@ -21,17 +21,17 @@ class WorldOfTanksBridge extends FeedExpander {
 			)
 		)
 	));
-	
+
 	public function collectData() {
 		$this->collectExpandableDatas(sprintf('http://worldoftanks.eu/%s/rss/news/', $this->getInput('lang')));
 	}
-	
+
 	protected function parseItem($newsItem){
 		$item = parent::parseItem($newsItem);
 		$item['content'] = $this->loadFullArticle($item['uri']);
 		return $item;
 	}
-	
+
 	/**
 	 * Loads the full article and returns the contents
 	 * @param $uri The article URI
@@ -39,9 +39,9 @@ class WorldOfTanksBridge extends FeedExpander {
 	 */
 	private function loadFullArticle($uri){
 		$html = getSimpleHTMLDOMCached($uri);
-		
+
 		$content = $html->find('article', 0);
-		
+
 		// Remove the scripts, please
 		foreach($content->find('script') as $script) {
 			$script->outertext = '';
