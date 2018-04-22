@@ -25,7 +25,7 @@ class FeedExpanderExampleBridge extends FeedExpander {
 	);
 
 	public function collectData(){
-		switch($this->getInput('version')){
+		switch($this->getInput('version')) {
 			case 'rss_0_9_1':
 				parent::collectExpandableDatas('http://static.userland.com/gems/backend/sampleRss.xml');
 				break;
@@ -43,7 +43,7 @@ class FeedExpanderExampleBridge extends FeedExpander {
 	}
 
 	protected function parseItem($newsItem) {
-		switch($this->getInput('version')){
+		switch($this->getInput('version')) {
 			case 'rss_0_9_1':
 				return $this->parseRSS_0_9_1_Item($newsItem);
 				break;

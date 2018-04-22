@@ -11,7 +11,7 @@ class MondeDiploBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI)
 			or returnServerError('Could not request MondeDiplo. for : ' . self::URI);
 
-		foreach($html->find('div.unarticle') as $article){
+		foreach($html->find('div.unarticle') as $article) {
 			$element = $article->parent();
 			$item = array();
 			$item['uri'] = self::URI . $element->href;

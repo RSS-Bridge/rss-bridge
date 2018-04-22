@@ -4,7 +4,7 @@ class MixCloudBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'Alexis CHEMEL';
 	const NAME = 'MixCloud';
-	const URI = 'https://mixcloud.com/';
+	const URI = 'https://www.mixcloud.com';
 	const CACHE_TIMEOUT = 3600; // 1h
 	const DESCRIPTION = 'Returns latest musics on user stream';
 
@@ -16,7 +16,7 @@ class MixCloudBridge extends BridgeAbstract {
 	));
 
 	public function getName(){
-		if(!is_null($this->getInput('u'))){
+		if(!is_null($this->getInput('u'))) {
 			return 'MixCloud - ' . $this->getInput('u');
 		}
 
@@ -24,11 +24,12 @@ class MixCloudBridge extends BridgeAbstract {
 	}
 
 	public function collectData(){
+		ini_set('user_agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:53.0) Gecko/20100101 Firefox/53.0');
 
-		$html = getSimpleHTMLDOM(self::URI . $this->getInput('u'))
+		$html = getSimpleHTMLDOM(self::URI . '/' . $this->getInput('u'))
 			or returnServerError('Could not request MixCloud.');
 
-		foreach($html->find('section.card') as $element){
+		foreach($html->find('section.card') as $element) {
 
 			$item = array();
 
@@ -40,7 +41,7 @@ class MixCloudBridge extends BridgeAbstract {
 
 			$image = $element->find('a.album-art img', 0);
 
-			if($image){
+			if($image) {
 				$item['content'] = '<img src="' . $image->getAttribute('src') . '" />';
 			}
 

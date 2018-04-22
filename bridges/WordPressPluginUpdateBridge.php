@@ -66,7 +66,7 @@ class WordPressPluginUpdateBridge extends BridgeAbstract {
 
 
 	public function getName(){
-		if(!is_null($this->getInput('q'))){
+		if(!is_null($this->getInput('q'))) {
 			return $this->getInput('q') . ' : ' . self::NAME;
 		}
 

@@ -34,7 +34,7 @@ class FlickrBridge extends BridgeAbstract {
 	);
 
 	public function collectData(){
-		switch($this->queriedContext){
+		switch($this->queriedContext) {
 		case 'Explore':
 			$key = 'photos';
 			$html = getSimpleHTMLDOM(self::URI . 'explore')
@@ -68,7 +68,7 @@ class FlickrBridge extends BridgeAbstract {
 
 		$model_json = json_decode($model_text, true);
 
-		foreach($html->find('.photo-list-photo-view') as $element){
+		foreach($html->find('.photo-list-photo-view') as $element) {
 			// Get the styles
 			$style = explode(';', $element->style);
 
@@ -83,17 +83,17 @@ class FlickrBridge extends BridgeAbstract {
 			$imageID = reset($imageURIs);
 
 			// Use JSON data to build items
-			foreach(reset($model_json)[0][$key]['_data'] as $element){
-				if($element['id'] === $imageID){
+			foreach(reset($model_json)[0][$key]['_data'] as $element) {
+				if($element['id'] === $imageID) {
 					$item = array();
 
 					/* Author name depends on scope. On a keyword search the
 					 * author is part of the picture data. On a username search
 					 * the author is part of the owner data.
 					 */
-					if(array_key_exists('username', $element)){
+					if(array_key_exists('username', $element)) {
 						$item['author'] = $element['username'];
-					} elseif (array_key_exists('owner', reset($model_json)[0])){
+					} elseif (array_key_exists('owner', reset($model_json)[0])) {
 						$item['author'] = reset($model_json)[0]['owner']['username'];
 					}
 

@@ -19,7 +19,7 @@ class AskfmBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Requested username can\'t be found.');
 
-		foreach($html->find('div.streamItem-answer') as $element){
+		foreach($html->find('div.streamItem-answer') as $element) {
 			$item = array();
 			$item['uri'] = self::URI . $element->find('a.streamItemsAge', 0)->href;
 			$question = trim($element->find('h1.streamItemContent-question', 0)->innertext);
@@ -38,7 +38,7 @@ class AskfmBridge extends BridgeAbstract {
 			// This probably should be cleaned up, especially for YouTube embeds
 			$visual = $element->find('div.streamItemContent-visual', 0)->innertext;
 			//Fix tracking links, also doesn't work
-			foreach($element->find('a') as $link){
+			foreach($element->find('a') as $link) {
 				if(strpos($link->href, 'l.ask.fm') !== false) {
 
 					// Too slow
@@ -57,7 +57,7 @@ class AskfmBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		if(!is_null($this->getInput('u'))){
+		if(!is_null($this->getInput('u'))) {
 			return self::NAME . ' : ' . $this->getInput('u');
 		}
 
@@ -65,7 +65,7 @@ class AskfmBridge extends BridgeAbstract {
 	}
 
 	public function getURI(){
-		if(!is_null($this->getInput('u'))){
+		if(!is_null($this->getInput('u'))) {
 			return self::URI . urlencode($this->getInput('u')) . '/answers/more?page=0';
 		}
 

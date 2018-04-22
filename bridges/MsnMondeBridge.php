@@ -21,8 +21,8 @@ class MsnMondeBridge extends BridgeAbstract {
 			or returnServerError('Could not request MsnMonde.');
 
 		$limit = 0;
-		foreach($html->find('.smalla') as $article){
-			if($limit < 10){
+		foreach($html->find('.smalla') as $article) {
+			if($limit < 10) {
 				$item = array();
 				$item['title'] = utf8_decode($article->find('h4', 0)->innertext);
 				$item['uri'] = self::URI . utf8_decode($article->find('a', 0)->href);

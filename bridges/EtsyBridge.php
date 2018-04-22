@@ -38,7 +38,7 @@ class EtsyBridge extends BridgeAbstract {
 
 		$results = $html->find('div.block-grid-item');
 
-		foreach($results as $result){
+		foreach($results as $result) {
 			// Skip banner cards (ads for categories)
 			if($result->find('a.banner-card'))
 				continue;
@@ -57,7 +57,7 @@ class EtsyBridge extends BridgeAbstract {
 
 			$image = $result->find('img.placeholder', 0)->src;
 
-			if($this->getInput('showimage')){
+			if($this->getInput('showimage')) {
 				$item['content'] .= '<img src="' . $image . '">';
 			}
 
@@ -68,10 +68,10 @@ class EtsyBridge extends BridgeAbstract {
 	}
 
 	public function getURI(){
-		if(!is_null($this->getInput('query'))){
+		if(!is_null($this->getInput('query'))) {
 			$uri = self::URI . '/search?q=' . urlencode($this->getInput('query'));
 
-			if(!is_null($this->getInput('queryextension'))){
+			if(!is_null($this->getInput('queryextension'))) {
 				$uri .= $this->getInput('queryextension');
 			}
 

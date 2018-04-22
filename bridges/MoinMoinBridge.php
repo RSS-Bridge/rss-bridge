@@ -92,17 +92,17 @@ class MoinMoinBridge extends BridgeAbstract {
 
 		$sections = $this->splitSections($html);
 
-		foreach($sections as $section){
+		foreach($sections as $section) {
 			$item = array();
 
 			$item['uri'] = $this->findSectionAnchor($section[0]);
 
-			switch($this->getInput('content')){
+			switch($this->getInput('content')) {
 				case 'none': // Do not return any content
 					break;
 				case 'follow': // Follow the anchor
 					// We can only follow anchors (use default otherwise)
-					if($this->getInput('separator') === 'a'){
+					if($this->getInput('separator') === 'a') {
 						$content = $this->followAnchor($item['uri']);
 
 						// Return only actual content
@@ -124,14 +124,14 @@ class MoinMoinBridge extends BridgeAbstract {
 			$item['title'] = strip_tags($section[1]);
 
 			// Skip items with empty title
-			if(empty(trim($item['title']))){
+			if(empty(trim($item['title']))) {
 				continue;
 			}
 
 			$this->items[] = $item;
 
 			if($this->getInput('limit') > 0
-			&& count($this->items) >= $this->getInput('limit')){
+			&& count($this->items) >= $this->getInput('limit')) {
 				break;
 			}
 		}
@@ -177,7 +177,7 @@ class MoinMoinBridge extends BridgeAbstract {
 		);
 
 		// Some pages don't use headers, return page as one feed
-		if(count($sections) === 0){
+		if(count($sections) === 0) {
 			return array(
 				array(
 					$content,
@@ -198,13 +198,13 @@ class MoinMoinBridge extends BridgeAbstract {
 
 		// For IDs
 		$anchor = $html->find($this->getInput('separator') . '[id=]', 0);
-		if(!is_null($anchor)){
+		if(!is_null($anchor)) {
 			return $this->getInput('source') . '#' . $anchor->id;
 		}
 
 		// For actual anchors
 		$anchor = $html->find($this->getInput('separator') . '[href=]', 0);
-		if(!is_null($anchor)){
+		if(!is_null($anchor)) {
 			return $anchor->href;
 		}
 
@@ -225,11 +225,11 @@ class MoinMoinBridge extends BridgeAbstract {
 		*/
 		$pageinfo = $html->find('[id="pageinfo"]', 0);
 
-		if(is_null($pageinfo)){
+		if(is_null($pageinfo)) {
 			return null;
 		} else {
 			$author = $pageinfo->find('[title=]', 0);
-			if(is_null($author)){
+			if(is_null($author)) {
 				return null;
 			} else {
 				return trim(explode('@', $author->title)[0]);
@@ -246,7 +246,7 @@ class MoinMoinBridge extends BridgeAbstract {
 		// See example of findAuthor()
 		$pageinfo = $html->find('[id="pageinfo"]', 0);
 
-		if(is_null($pageinfo)){
+		if(is_null($pageinfo)) {
 			return null;
 		} else {
 			$timestamp = $pageinfo->innertext;
@@ -264,8 +264,8 @@ class MoinMoinBridge extends BridgeAbstract {
 
 		$source = $source ?: $this->getURI();
 
-		foreach($html->find('a') as $anchor){
-			switch(substr($anchor->href, 0, 1)){
+		foreach($html->find('a') as $anchor) {
+			switch(substr($anchor->href, 0, 1)) {
 				case 'h': // http or https, no actions required
 					break;
 				case '/': // some relative path
@@ -287,12 +287,12 @@ class MoinMoinBridge extends BridgeAbstract {
 	 * wiki domain)
 	 */
 	private function followAnchor($anchor){
-		if(strrpos($anchor, $this->findDomain($this->getInput('source')) === false)){
+		if(strrpos($anchor, $this->findDomain($this->getInput('source')) === false)) {
 			return null;
 		}
 
 		$html = getSimpleHTMLDOMCached($anchor);
-		if(!$html){ // Cannot load article
+		if(!$html) { // Cannot load article
 			return null;
 		}
 
@@ -310,7 +310,7 @@ class MoinMoinBridge extends BridgeAbstract {
 
 	/* This function is a copy from CNETBridge */
 	private function stripWithDelimiters($string, $start, $end){
-		while(strpos($string, $start) !== false){
+		while(strpos($string, $start) !== false) {
 			$section_to_remove = substr($string, strpos($string, $start));
 			$section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
 			$string = str_replace($section_to_remove, '', $string);

@@ -19,8 +19,8 @@ class BastaBridge extends BridgeAbstract {
 
 		$limit = 0;
 
-		foreach($html->find('item') as $element){
-			if($limit < 10){
+		foreach($html->find('item') as $element) {
+			if($limit < 10) {
 				$item = array();
 				$item['title'] = $element->find('title', 0)->innertext;
 				$item['uri'] = $element->find('guid', 0)->plaintext;

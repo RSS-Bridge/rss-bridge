@@ -49,7 +49,7 @@ class WebfailBridge extends BridgeAbstract {
 		$type = array_search($this->getInput('type'),
 			self::PARAMETERS[$this->queriedContext]['type']['values']);
 
-		switch(strtolower($type)){
+		switch(strtolower($type)) {
 		case 'facebook':
 		case 'videos':
 			$this->extractNews($html, $type);
@@ -65,14 +65,14 @@ class WebfailBridge extends BridgeAbstract {
 
 	private function extractNews($html, $type){
 		$news = $html->find('#main', 0)->find('a.wf-list-news');
-		foreach($news as $element){
+		foreach($news as $element) {
 			$item = array();
 			$item['title'] = $this->fixTitle($element->find('div.wf-news-title', 0)->innertext);
 			$item['uri'] = $this->getURI() . $element->href;
 
 			$img = $element->find('img.wf-image', 0)->src;
 			// Load high resolution image for 'facebook'
-			switch(strtolower($type)){
+			switch(strtolower($type)) {
 			case 'facebook':
 				$img = $this->getImageHiResUri($item['uri']);
 				break;
@@ -80,7 +80,7 @@ class WebfailBridge extends BridgeAbstract {
 			}
 
 			$description = '';
-			if(!is_null($element->find('div.wf-news-description', 0))){
+			if(!is_null($element->find('div.wf-news-description', 0))) {
 				$description = $element->find('div.wf-news-description', 0)->innertext;
 			}
 
@@ -98,19 +98,19 @@ class WebfailBridge extends BridgeAbstract {
 
 	private function extractArticle($html){
 		$articles = $html->find('article');
-		foreach($articles as $article){
+		foreach($articles as $article) {
 			$item = array();
 			$item['title'] = $this->fixTitle($article->find('a', 1)->innertext);
 
 			// Images, videos and gifs are provided in their own unique way
-			if(!is_null($article->find('img.wf-image', 0))){ // Image type
+			if(!is_null($article->find('img.wf-image', 0))) { // Image type
 				$item['uri'] = $this->getURI() . $article->find('a', 2)->href;
 				$item['content'] = '<a href="'
 				. $item['uri']
 				. '"><img src="'
 				. $article->find('img.wf-image', 0)->src
 				. '"></a>';
-			} elseif(!is_null($article->find('div.wf-video', 0))){ // Video type
+			} elseif(!is_null($article->find('div.wf-video', 0))) { // Video type
 				$videoId = $this->getVideoId($article->find('div.wf-play', 0)->onclick);
 				$item['uri'] = 'https://youtube.com/watch?v=' . $videoId;
 				$item['content'] = '<a href="'
@@ -118,7 +118,7 @@ class WebfailBridge extends BridgeAbstract {
 				. '"><img src="http://img.youtube.com/vi/'
 				. $videoId
 				. '/0.jpg"></a>';
-			} elseif(!is_null($article->find('video[id*=gif-]', 0))){ // Gif type
+			} elseif(!is_null($article->find('video[id*=gif-]', 0))) { // Gif type
 				$item['uri'] = $this->getURI() . $article->find('a', 2)->href;
 				$item['content'] = '<video controls src="'
 				. $article->find('video[id*=gif-]', 0)->src

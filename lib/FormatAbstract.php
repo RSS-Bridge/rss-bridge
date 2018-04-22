@@ -56,8 +56,8 @@ abstract class FormatAbstract implements FormatInterface {
 	* @return this
 	*/
 	public function setExtraInfos(array $extraInfos = array()){
-		foreach(array('name', 'uri') as $infoName){
-			if( !isset($extraInfos[$infoName]) ){
+		foreach(array('name', 'uri') as $infoName) {
+			if(!isset($extraInfos[$infoName])) {
 				$extraInfos[$infoName] = '';
 			}
 		}
@@ -72,7 +72,7 @@ abstract class FormatAbstract implements FormatInterface {
 	* @return array See "setExtraInfos" detail method to know what extra are disponibles
 	*/
 	public function getExtraInfos(){
-		if( is_null($this->extraInfos) ){ // No extra info ?
+		if(is_null($this->extraInfos)) { // No extra info ?
 			$this->setExtraInfos(); // Define with default value
 		}
 
@@ -97,7 +97,7 @@ abstract class FormatAbstract implements FormatInterface {
 	}
 
 	protected function array_trim($elements){
-		foreach($elements as $key => $value){
+		foreach($elements as $key => $value) {
 			if(is_string($value))
 				$elements[$key] = trim($value);
 		}

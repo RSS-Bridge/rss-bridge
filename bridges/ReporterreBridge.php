@@ -9,7 +9,7 @@ class ReporterreBridge extends BridgeAbstract {
 		private function extractContent($url){
 			$html2 = getSimpleHTMLDOM($url);
 
-			foreach($html2->find('div[style=text-align:justify]') as $e){
+			foreach($html2->find('div[style=text-align:justify]') as $e) {
 				$text = $e->outertext;
 			}
 
@@ -32,7 +32,7 @@ class ReporterreBridge extends BridgeAbstract {
 			or returnServerError('Could not request Reporterre.');
 		$limit = 0;
 
-		foreach($html->find('item') as $element){
+		foreach($html->find('item') as $element) {
 			if($limit < 5) {
 				$item = array();
 				$item['title'] = html_entity_decode($element->find('title', 0)->plaintext);

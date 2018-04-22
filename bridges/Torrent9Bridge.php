@@ -3,7 +3,7 @@ class Torrent9Bridge extends BridgeAbstract {
 
 	const MAINTAINER = 'lagaisse';
 	const NAME = 'Torrent9 Bridge';
-	const URI = 'http://www.torrent9.biz';
+	const URI = 'http://www.torrent9.pe';
 	const CACHE_TIMEOUT = 86400; // 24h = 86400s
 	const DESCRIPTION = 'Returns latest torrents';
 
@@ -36,7 +36,7 @@ class Torrent9Bridge extends BridgeAbstract {
 
 	public function collectData(){
 
-		if($this->queriedContext === 'From search'){
+		if($this->queriedContext === 'From search') {
 			$request = str_replace(' ', '-', trim($this->getInput('q')));
 			$page = self::URI . '/search_torrent/' . urlencode($request) . '.html';
 		} else {
@@ -47,8 +47,8 @@ class Torrent9Bridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($page)
 			or returnServerError('No results for this query.');
 
-		foreach($html->find('table', 0)->find('tr') as $episode){
-			if($episode->parent->tag == 'tbody'){
+		foreach($html->find('table', 0)->find('tr') as $episode) {
+			if($episode->parent->tag == 'tbody') {
 
 				$urlepisode = self::URI . $episode->find('a', 0)->getAttribute('href');
 
@@ -62,11 +62,11 @@ class Torrent9Bridge extends BridgeAbstract {
 				$item['pubdate'] = $this->getCachedDate($urlepisode);
 
 				$textefiche = $htmlepisode->find('.movie-information', 0)->find('p', 1);
-				if(isset($textefiche)){
+				if(isset($textefiche)) {
 					$item['content'] = $textefiche->text();
 				} else {
 					$p = $htmlepisode->find('.movie-information', 0)->find('p');
-					if(!empty($p)){
+					if(!empty($p)) {
 						$item['content'] = $htmlepisode->find('.movie-information', 0)->find('p', 0)->text();
 					}
 				}
@@ -81,7 +81,7 @@ class Torrent9Bridge extends BridgeAbstract {
 
 
 	public function getName(){
-		if(!is_null($this->getInput('q'))){
+		if(!is_null($this->getInput('q'))) {
 			return $this->getInput('q') . ' : ' . self::NAME;
 		}
 

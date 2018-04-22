@@ -18,7 +18,7 @@ class FB2Bridge extends BridgeAbstract {
 	public function collectData(){
 
 		function extractFromDelimiters($string, $start, $end){
-			if(strpos($string, $start) !== false){
+			if(strpos($string, $start) !== false) {
 				$section_retrieved = substr($string, strpos($string, $start) + strlen($start));
 				$section_retrieved = substr($section_retrieved, 0, strpos($section_retrieved, $end));
 				return $section_retrieved;
@@ -29,7 +29,7 @@ class FB2Bridge extends BridgeAbstract {
 
 		//Utility function for cleaning a Facebook link
 		$unescape_fb_link = function($matches){
-			if(is_array($matches) && count($matches) > 1){
+			if(is_array($matches) && count($matches) > 1) {
 				$link = $matches[1];
 				if(strpos($link, '/') === 0)
 					$link = self::URI . $link . '"';
@@ -72,14 +72,19 @@ class FB2Bridge extends BridgeAbstract {
 			return $matches[0];
 		};
 
-		if($this->getInput('u') !== null){
+		if($this->getInput('u') !== null) {
 			$page = 'https://touch.facebook.com/' . $this->getInput('u');
 			$cookies = $this->getCookies($page);
 			$pageID = $this->getPageID($page, $cookies);
 
-			if($pageID === null){
+			if($pageID === null) {
 				echo <<<EOD
 Unable to get the page id. You should consider getting the ID by hand, then importing it into FB2Bridge
+EOD;
+				die();
+			} elseif($pageID == -1) {
+				echo <<<EOD
+This page is not accessible without being logged in.
 EOD;
 				die();
 			}
@@ -98,14 +103,20 @@ EOD;
 		$html = $this->buildContent($fileContent);
 		$author = $this->getInput('u');
 
-		foreach($html->find("article") as $content){
+		foreach($html->find("article") as $content) {
 
 			$item = array();
-			$item['uri'] = "http://touch.facebook.com"
-			. $content->find("div._52jc", 0)->find("a", 0)->getAttribute("href");
 
-			$content->find("header", 0)->innertext = "";
-			$content->find("footer", 0)->innertext = "";
+			$item['uri'] = "http://touch.facebook.com"
+			. $content->find("div[class='_52jc _5qc4 _24u0 _36xo']", 0)->find("a", 0)->getAttribute("href");
+
+			if($content->find("header", 0) !== null) {
+				$content->find("header", 0)->innertext = "";
+			}
+
+			if($content->find("footer", 0) !== null) {
+				$content->find("footer", 0)->innertext = "";
+			}
 
 			//Remove html nodes, keep only img, links, basic formatting
 			$content = strip_tags($content, '<a><img><i><u><br><p>');
@@ -212,8 +223,8 @@ EOD;
 
 		//First request to get the cookie
 		$cookies = "";
-		foreach($http_response_header as $hdr){
-			if(strpos($hdr, "Set-Cookie") !== false){
+		foreach($http_response_header as $hdr) {
+			if(strpos($hdr, "Set-Cookie") !== false) {
 				$cLine = explode(":", $hdr)[1];
 				$cLine = explode(";", $cLine)[0];
 				$cookies .= ";" . $cLine;
@@ -236,11 +247,15 @@ EOD;
 
 		$pageContent = file_get_contents($page, 0, $context);
 
+		if(strpos($pageContent, "signup-button") != false) {
+			return -1;
+		}
+
 		//Get the page ID if we don't have a captcha
 		$regex = "/page_id=([0-9]*)&/";
 		preg_match($regex, $pageContent, $matches);
 
-		if(count($matches) > 0){
+		if(count($matches) > 0) {
 			return $matches[1];
 		}
 

@@ -9,7 +9,7 @@ class Format {
 	}
 
 	static public function create($nameFormat){
-		if(!preg_match('@^[A-Z][a-zA-Z]*$@', $nameFormat)){
+		if(!preg_match('@^[A-Z][a-zA-Z]*$@', $nameFormat)) {
 			throw new \InvalidArgumentException('Name format must be at least
  one uppercase follow or not by alphabetic characters.');
 		}
@@ -17,7 +17,7 @@ class Format {
 		$nameFormat = $nameFormat . 'Format';
 		$pathFormat = self::getDir() . $nameFormat . '.php';
 
-		if(!file_exists($pathFormat)){
+		if(!file_exists($pathFormat)) {
 			throw new \Exception('The format you looking for does not exist.');
 		}
 
@@ -27,11 +27,11 @@ class Format {
 	}
 
 	static public function setDir($dirFormat){
-		if(!is_string($dirFormat)){
+		if(!is_string($dirFormat)) {
 			throw new \InvalidArgumentException('Dir format must be a string.');
 		}
 
-		if(!file_exists($dirFormat)){
+		if(!file_exists($dirFormat)) {
 			throw new \Exception('Dir format does not exist.');
 		}
 
@@ -41,7 +41,7 @@ class Format {
 	static public function getDir(){
 		$dirFormat = self::$dirFormat;
 
-		if(is_null($dirFormat)){
+		if(is_null($dirFormat)) {
 			throw new \LogicException(__CLASS__ . ' class need to know format path !');
 		}
 
@@ -60,9 +60,9 @@ class Format {
 		$searchCommonPattern = array('name');
 
 		$dirFiles = scandir($pathDirFormat);
-		if($dirFiles !== false){
-			foreach($dirFiles as $fileName){
-				if(preg_match('@^([^.]+)Format\.php$@U', $fileName, $out)){ // Is PHP file ?
+		if($dirFiles !== false) {
+			foreach($dirFiles as $fileName) {
+				if(preg_match('@^([^.]+)Format\.php$@U', $fileName, $out)) { // Is PHP file ?
 					$listFormat[] = $out[1];
 				}
 			}

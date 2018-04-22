@@ -95,7 +95,7 @@ class FuturaSciencesBridge extends FeedExpander {
 	}
 
 	private function stripWithDelimiters($string, $start, $end){
-		while(strpos($string, $start) !== false){
+		while(strpos($string, $start) !== false) {
 			$section_to_remove = substr($string, strpos($string, $start));
 			$section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
 			$string = str_replace($section_to_remove, '', $string);
@@ -106,8 +106,8 @@ class FuturaSciencesBridge extends FeedExpander {
 		$open_tag = '<' . $tag_name;
 		$close_tag = '</' . $tag_name . '>';
 		$close_tag_length = strlen($close_tag);
-		if(strpos($tag_start, $open_tag) === 0){
-			while(strpos($string, $tag_start) !== false){
+		if(strpos($tag_start, $open_tag) === 0) {
+			while(strpos($string, $tag_start) !== false) {
 				$max_recursion = 100;
 				$section_to_remove = null;
 				$section_start = strpos($string, $tag_start);
@@ -165,7 +165,7 @@ class FuturaSciencesBridge extends FeedExpander {
 	// Extracts the author from an article or element
 	private function extractAuthor($article){
 		$article_author = $article->find('h3.epsilon', 0);
-		if($article_author){
+		if($article_author) {
 			return trim(str_replace(', Futura-Sciences', '', $article_author->plaintext));
 		}
 		return '';

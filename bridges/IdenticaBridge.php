@@ -18,7 +18,7 @@ class IdenticaBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Requested username can\'t be found.');
 
-		foreach($html->find('li.major') as $dent){
+		foreach($html->find('li.major') as $dent) {
 			$item = array();
 
 			// get dent link
@@ -35,7 +35,7 @@ class IdenticaBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		if(!is_null($this->getInput('u'))){
+		if(!is_null($this->getInput('u'))) {
 			return $this->getInput('u') . ' - Identica Bridge';
 		}
 
@@ -43,7 +43,7 @@ class IdenticaBridge extends BridgeAbstract {
 	}
 
 	public function getURI(){
-		if(!is_null($this->getInput('u'))){
+		if(!is_null($this->getInput('u'))) {
 			return self::URI . urlencode($this->getInput('u'));
 		}
 

@@ -35,7 +35,7 @@ class DailymotionBridge extends BridgeAbstract {
 	protected function getMetadata($id){
 		$metadata = array();
 		$html2 = getSimpleHTMLDOM(self::URI . 'video/' . $id);
-		if(!$html2){
+		if(!$html2) {
 			return $metadata;
 		}
 
@@ -56,12 +56,12 @@ class DailymotionBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not request Dailymotion.');
 
-		foreach($html->find('div.media a.preview_link') as $element){
-			if($count < $limit){
+		foreach($html->find('div.media a.preview_link') as $element) {
+			if($count < $limit) {
 				$item = array();
 				$item['id'] = str_replace('/video/', '', strtok($element->href, '_'));
 				$metadata = $this->getMetadata($item['id']);
-				if(empty($metadata)){
+				if(empty($metadata)) {
 					continue;
 				}
 				$item['uri'] = $metadata['uri'];
@@ -85,7 +85,7 @@ class DailymotionBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		switch($this->queriedContext){
+		switch($this->queriedContext) {
 		case 'By username':
 			$specific = $this->getInput('u');
 			break;
@@ -103,7 +103,7 @@ class DailymotionBridge extends BridgeAbstract {
 
 	public function getURI(){
 		$uri = self::URI;
-		switch($this->queriedContext){
+		switch($this->queriedContext) {
 		case 'By username':
 			$uri .= 'user/' . urlencode($this->getInput('u')) . '/1';
 			break;
@@ -112,7 +112,7 @@ class DailymotionBridge extends BridgeAbstract {
 			break;
 		case 'From search results':
 			$uri .= 'search/' . urlencode($this->getInput('s'));
-			if($this->getInput('pa')){
+			if($this->getInput('pa')) {
 				$uri .= '/' . $this->getInput('pa');
 			}
 			break;

@@ -10,7 +10,7 @@ class StripeAPIChangeLogBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI)
 			or returnServerError('No results for Stripe API Changelog');
 
-		foreach($html->find('h3') as $change){
+		foreach($html->find('h3') as $change) {
 			$item = array();
 			$item['title'] = trim($change->plaintext);
 			$item['uri'] = self::URI . '#' . $item['title'];

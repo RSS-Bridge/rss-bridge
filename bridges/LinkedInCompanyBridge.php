@@ -22,9 +22,9 @@ class LinkedInCompanyBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($link)
 			or returnServerError('Could not request LinkedIn.');
 
-		foreach($html->find('//*[@id="my-feed-post"]/li') as $element){
+		foreach($html->find('//*[@id="my-feed-post"]/li') as $element) {
 			$title = $element->find('span.share-body', 0)->innertext;
-			if($title){
+			if($title) {
 				$item = array();
 				$item['uri'] = $link;
 				$item['title'] = mb_substr(strip_tags($element->find('span.share-body', 0)->innertext), 0, 100);

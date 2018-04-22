@@ -39,7 +39,7 @@ class WikiLeaksBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI());
 
 		// News are presented differently
-		switch($this->getInput('category')){
+		switch($this->getInput('category')) {
 			case '-News-':
 				$this->loadNewsItems($html);
 				break;
@@ -49,7 +49,7 @@ class WikiLeaksBridge extends BridgeAbstract {
 	}
 
 	public function getURI(){
-		if(!is_null($this->getInput('category'))){
+		if(!is_null($this->getInput('category'))) {
 			return static::URI . '/' . $this->getInput('category') . '.html';
 		}
 
@@ -57,13 +57,13 @@ class WikiLeaksBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		if(!is_null($this->getInput('category'))){
+		if(!is_null($this->getInput('category'))) {
 			$category = array_search(
 				$this->getInput('category'),
 				static::PARAMETERS[0]['category']['values']
 			);
 
-			if($category === false){
+			if($category === false) {
 				$category = array_search(
 					$this->getInput('category'),
 					static::PARAMETERS[0]['category']['values']['Leaks']
@@ -79,11 +79,11 @@ class WikiLeaksBridge extends BridgeAbstract {
 	private function loadNewsItems($html){
 		$articles = $html->find('div.news-articles ul li');
 
-		if(is_null($articles) || count($articles) === 0){
+		if(is_null($articles) || count($articles) === 0) {
 			return;
 		}
 
-		foreach($articles as $article){
+		foreach($articles as $article) {
 			$item = array();
 
 			$item['title'] = $article->find('h3', 0)->plaintext;
@@ -98,11 +98,11 @@ class WikiLeaksBridge extends BridgeAbstract {
 	private function loadLeakItems($html){
 		$articles = $html->find('li.tile');
 
-		if(is_null($articles) || count($articles) === 0){
+		if(is_null($articles) || count($articles) === 0) {
 			return;
 		}
 
-		foreach($articles as $article){
+		foreach($articles as $article) {
 			$item = array();
 
 			$item['title'] = $article->find('h2', 0)->plaintext;
@@ -110,7 +110,7 @@ class WikiLeaksBridge extends BridgeAbstract {
 
 			$teaser = static::URI . '/' . $article->find('div.teaser img', 0)->src;
 
-			if($this->getInput('teaser')){
+			if($this->getInput('teaser')) {
 				$item['content'] = '<img src="'
 				. $teaser
 				. '" /><p>'

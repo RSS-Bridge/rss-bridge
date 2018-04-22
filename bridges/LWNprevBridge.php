@@ -6,14 +6,16 @@ class LWNprevBridge extends BridgeAbstract{
 	const CACHE_TIMEOUT = 604800; // 1 week
 	const DESCRIPTION = 'LWN Free Weekly Edition available one week late';
 
+	private $editionTimeStamp;
+
 	function getURI(){
-		return self::URI . 'free/bigpage';
+		return self::URI.'free/bigpage';
 	}
 
 	private function jumpToNextTag(&$node){
-		while($node && $node->nodeType === XML_TEXT_NODE){
+		while($node && $node->nodeType === XML_TEXT_NODE) {
 			$nextNode = $node->nextSibling;
-			if(!$nextNode){
+			if(!$nextNode) {
 				break;
 			}
 			$node = $nextNode;
@@ -21,9 +23,9 @@ class LWNprevBridge extends BridgeAbstract{
 	}
 
 	private function jumpToPreviousTag(&$node){
-		while($node && $node->nodeType === XML_TEXT_NODE){
+		while($node && $node->nodeType === XML_TEXT_NODE) {
 			$previousNode = $node->previousSibling;
-			if(!$previousNode){
+			if(!$previousNode) {
 				break;
 			}
 			$node = $previousNode;
@@ -36,110 +38,228 @@ class LWNprevBridge extends BridgeAbstract{
 		$content = getContents($this->getURI())
 			or returnServerError('No results for LWNprev');
 
-		libxml_use_internal_errors(true);
-		$html = new DOMDocument();
-		$html->loadHTML($content);
-		libxml_clear_errors();
+		$contents = explode('<b>Page editor</b>', $content);
 
-		$cat1 = '';
-		$cat2 = '';
+		foreach($contents as $content) {
+			if(strpos($content, '<html>') === false) {
+				$content = <<<EOD
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><title>LWN</title></head><body>{$content}</body></html>
+EOD;
+			} else {
+				$content = $content.'</body></html>';
+			}
 
-		foreach($html->getElementsByTagName('a') as $a){
-			if($a->textContent === 'Multi-page format'){
-				break;
+			libxml_use_internal_errors(true);
+			$html = new DOMDocument();
+			$html->loadHTML($content);
+			libxml_clear_errors();
+
+			$edition = $html->getElementsByTagName('h1');
+			if($edition->length !== 0) {
+				$text = $edition->item(0)->textContent;
+				$this->editionTimeStamp = strtotime(
+					substr($text, strpos($text, 'for ') + strlen('for '))
+				);
+			}
+
+			if(strpos($content, 'Cat1HL') === false) {
+				$items = $this->getFeatureContents($html);
+			} elseif(strpos($content, 'Cat3HL') === false) {
+				$items = $this->getBriefItems($html);
+			} else {
+				$items = $this->getAnnouncements($html);
+			}
+
+			$this->items = array_merge($this->items, $items);
+		}
+	}
+
+	private function getArticleContent(&$title){
+		$link = $title->firstChild;
+		$this->jumpToNextTag($link);
+		$item['uri'] = self::URI;
+		if($link->nodeName === 'a') {
+			$item['uri'] .= $link->getAttribute('href');
+		}
+
+		$item['timestamp'] = $this->editionTimeStamp;
+
+		$node = $title;
+		$content = '';
+		$contentEnd = false;
+		while(!$contentEnd) {
+			$node = $node->nextSibling;
+			if(!$node || (
+					$node->nodeType !== XML_TEXT_NODE &&
+					$node->nodeName === 'h2' || (
+						!is_null($node->attributes) &&
+						!is_null($class = $node->attributes->getNamedItem('class')) &&
+						in_array($class->nodeValue, array('Cat1HL','Cat2HL'))
+					)
+				)
+			) {
+				$contentEnd = true;
+			} else {
+				$content .= $node->C14N();
 			}
 		}
-		$realURI = self::URI . $a->getAttribute('href');
-		$URICounter = 0;
+		$item['content'] = $content;
+		return $item;
+	}
 
-		$edition = $html->getElementsByTagName('h1')->item(0)->textContent;
-		$editionTimeStamp = strtotime(
-			substr($edition, strpos($edition, 'for ') + strlen('for '))
-		);
-
-		foreach($html->getElementsByTagName('h2') as $h2){
-			if($h2->getAttribute('class') !== 'SummaryHL'){
+	private function getFeatureContents(&$html){
+		$items = array();
+		foreach($html->getElementsByTagName('h2') as $title) {
+			if($title->getAttribute('class') !== 'SummaryHL') {
 				continue;
 			}
 
 			$item = array();
 
-			$h2NextSibling = $h2->nextSibling;
-			$this->jumpToNextTag($h2NextSibling);
-
-			switch($h2NextSibling->getAttribute('class')){
-			case 'FeatureByline':
-				$item['author'] = $h2NextSibling->getElementsByTagName('b')->item(0)->textContent;
-				break;
-			case 'GAByline':
-				$text = $h2NextSibling->textContent;
-				$item['author'] = substr($text, strpos($text, 'by '));
-				break;
-			default:
-				$item['author'] = 'LWN';
-				break;
-			};
-
-			$h2FirstChild = $h2->firstChild;
-			$this->jumpToNextTag($h2FirstChild);
-			if($h2FirstChild->nodeName === 'a'){
-				$item['uri'] = self::URI . $h2FirstChild->getAttribute('href');
-			}else{
-				$item['uri'] = $realURI . '#' . $URICounter;
+			$author = $title->nextSibling;
+			$this->jumpToNextTag($author);
+			if($author->getAttribute('class') === 'FeatureByline') {
+				$item['author'] = $author->getElementsByTagName('b')->item(0)->textContent;
+			} else {
+				continue;
 			}
-			$URICounter++;
 
-			$item['timestamp'] = $editionTimeStamp + $URICounter;
+			$item['title'] = $title->textContent;
 
-			$h2PrevSibling = $h2->previousSibling;
-			$this->jumpToPreviousTag($h2PrevSibling);
-			switch($h2PrevSibling->getAttribute('class')){
-			case 'Cat2HL':
-				$cat2 = $h2PrevSibling->textContent;
-				$h2PrevSibling = $h2PrevSibling->previousSibling;
-				$this->jumpToPreviousTag($h2PrevSibling);
-				if($h2PrevSibling->getAttribute('class') !== 'Cat1HL'){
-					break;
-				}
-				$cat1 = $h2PrevSibling->textContent;
-				break;
-			case 'Cat1HL':
-				$cat1 = $h2PrevSibling->textContent;
-				$cat2 = '';
-				break;
-			default:
+			$items[] = array_merge($item, $this->getArticleContent($title));
+		}
+		return $items;
+	}
+
+	private function getItemPrefix(&$cat, &$cats){
+		$cat1 = '';
+		$cat2 = '';
+		$cat3 = '';
+		switch($cat->getAttribute('class')) {
+		case 'Cat3HL':
+			$cat3 = $cat->textContent;
+			$cat = $cat->previousSibling;
+			$this->jumpToPreviousTag($cat);
+			$cats[2] = $cat3;
+			if($cat->getAttribute('class') !== 'Cat2HL') {
 				break;
 			}
-			$h2PrevSibling = null;
-
-			$item['title'] = '';
-			if(!empty($cat1)){
-				$item['title'] .= '[' . $cat1 . ($cat2 ? '/' . $cat2 : '') . '] ';
+		case 'Cat2HL':
+			$cat2 = $cat->textContent;
+			$cat = $cat->previousSibling;
+			$this->jumpToPreviousTag($cat);
+			$cats[1] = $cat2;
+			if(empty($cat3)) {
+				$cats[2] = '';
 			}
-			$item['title'] .= $h2->textContent;
+			if($cat->getAttribute('class') !== 'Cat1HL') {
+				break;
+			}
+		case 'Cat1HL':
+			$cat1 = $cat->textContent;
+			$cats[0] = $cat1;
+			if(empty($cat3)) {
+				$cats[2] = '';
+			}
+			if(empty($cat2)) {
+				$cats[1] = '';
+			}
+			break;
+		default:
+			break;
+		}
 
-			$node = $h2;
+		$prefix = '';
+		if(!empty($cats[0])) {
+			$prefix .= '['.$cats[0].($cats[1] ? '/'.$cats[1] : '').'] ';
+		}
+		return $prefix;
+	}
+
+	private function getAnnouncements(&$html){
+		$items = array();
+		$cats = array('','','');
+
+		foreach($html->getElementsByTagName('p') as $newsletters) {
+			if($newsletters->getAttribute('class') !== 'Cat3HL') {
+				continue;
+			}
+
+			$item = array();
+
+			$item['uri'] = self::URI.'#'.count($items);
+
+			$item['timestamp'] = $this->editionTimeStamp;
+
+			$item['author'] = 'LWN';
+
+			$cat = $newsletters->previousSibling;
+			$this->jumpToPreviousTag($cat);
+			$prefix = $this->getItemPrefix($cat, $cats);
+			$item['title'] = $prefix.' '.$newsletters->textContent;
+
+			$node = $newsletters;
 			$content = '';
 			$contentEnd = false;
-			while(!$contentEnd){
+			while(!$contentEnd) {
 				$node = $node->nextSibling;
 				if(!$node || (
 						$node->nodeType !== XML_TEXT_NODE && (
-							$node->nodeName === 'h2' || (
-								!is_null($node->attributes) &&
-								!is_null($class = $node->attributes->getNamedItem('class')) &&
-								in_array($class->nodeValue, array('Cat1HL', 'Cat2HL'))
-							)
+							!is_null($node->attributes) &&
+							!is_null($class = $node->attributes->getNamedItem('class')) &&
+							in_array($class->nodeValue, array('Cat1HL','Cat2HL','Cat3HL'))
 						)
 					)
-				){
+				) {
 					$contentEnd = true;
-				}else{
+				} else {
 					$content .= $node->C14N();
 				}
 			}
 			$item['content'] = $content;
-			$this->items[] = $item;
+			$items[] = $item;
 		}
+
+		foreach($html->getElementsByTagName('h2') as $title) {
+			if($title->getAttribute('class') !== 'SummaryHL') {
+				continue;
+			}
+
+			$item = array();
+
+			$cat = $title->previousSibling;
+			$this->jumpToPreviousTag($cat);
+			$cat = $cat->previousSibling;
+			$this->jumpToPreviousTag($cat);
+			$prefix = $this->getItemPrefix($cat, $cats);
+			$item['title'] = $prefix.' '.$title->textContent;
+			$items[] = array_merge($item, $this->getArticleContent($title));
+		}
+
+		return $items;
+	}
+
+	private function getBriefItems(&$html){
+		$items = array();
+		$cats = array('','','');
+		foreach($html->getElementsByTagName('h2') as $title) {
+			if($title->getAttribute('class') !== 'SummaryHL') {
+				continue;
+			}
+
+			$item = array();
+
+			$cat = $title->previousSibling;
+			$this->jumpToPreviousTag($cat);
+			$cat = $cat->previousSibling;
+			$this->jumpToPreviousTag($cat);
+			$prefix = $this->getItemPrefix($cat, $cats);
+			$item['title'] = $prefix.' '.$title->textContent;
+			$items[] = array_merge($item, $this->getArticleContent($title));
+		}
+
+		return $items;
 	}
 }
+?>

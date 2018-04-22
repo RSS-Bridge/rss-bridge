@@ -19,10 +19,10 @@ class LegifranceJOBridge extends BridgeAbstract {
 		$item['uri'] = $this->uri . '#' . count($this->items);
 		$item['title'] = $section->plaintext;
 
-		if(!is_null($origin)){
+		if(!is_null($origin)) {
 			$item['title'] = '[ ' . $item['title'] . ' / ' . $subsection->plaintext . ' ] ' . $origin->plaintext;
 			$data = $origin;
-		} elseif(!is_null($subsection)){
+		} elseif(!is_null($subsection)) {
 			$item['title'] = '[ ' . $item['title'] . ' ] ' . $subsection->plaintext;
 			$data = $subsection;
 		} else {
@@ -30,7 +30,7 @@ class LegifranceJOBridge extends BridgeAbstract {
 		}
 
 		$item['content'] = '';
-		foreach($data->nextSibling()->find('a') as $content){
+		foreach($data->nextSibling()->find('a') as $content) {
 			$text = $content->plaintext;
 			$href = $content->nextSibling()->getAttribute('resource');
 			$item['content'] .= '<p><a href="' . $href . '">' . $text . '</a></p>';
@@ -42,24 +42,24 @@ class LegifranceJOBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI)
 			or $this->returnServer('Unable to download ' . self::URI);
 
-		$this->author = trim($html->find('h2.title', 0)->plaintext);
+		$this->author = trim($html->find('h2.titleJO', 0)->plaintext);
 		$uri = $html->find('h2.titleELI', 0)->plaintext;
 		$this->uri = trim(substr($uri, strpos($uri, 'https')));
-		$this->timestamp = strtotime(substr($this->uri, strpos($this->uri, 'eli/jo/') + strlen('eli/jo/')));
+		$this->timestamp = strtotime(substr($this->uri, strpos($this->uri, 'eli/jo/') + strlen('eli/jo/'), -5));
 
-		foreach($html->find('h3') as $section){
+		foreach($html->find('h3') as $section) {
 			$subsections = $section->nextSibling()->find('h4');
-			foreach($subsections as $subsection){
+			foreach($subsections as $subsection) {
 				$origins = $subsection->nextSibling()->find('h5');
-				foreach($origins as $origin){
+				foreach($origins as $origin) {
 					$this->items[] = $this->extractItem($section, $subsection, $origin);
 				}
-				if(!empty($origins)){
+				if(!empty($origins)) {
 					continue;
 				}
 				$this->items[] = $this->extractItem($section, $subsection);
 			}
-			if(!empty($subsections)){
+			if(!empty($subsections)) {
 				continue;
 			}
 			$this->items[] = $this->extractItem($section);

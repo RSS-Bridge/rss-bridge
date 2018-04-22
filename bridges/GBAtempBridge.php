@@ -21,7 +21,7 @@ class GBAtempBridge extends BridgeAbstract {
 	));
 
 	private function extractFromDelimiters($string, $start, $end){
-		if(strpos($string, $start) !== false){
+		if(strpos($string, $start) !== false) {
 			$section_retrieved = substr($string, strpos($string, $start) + strlen($start));
 			$section_retrieved = substr($section_retrieved, 0, strpos($section_retrieved, $end));
 			return $section_retrieved;
@@ -31,7 +31,7 @@ class GBAtempBridge extends BridgeAbstract {
 	}
 
 	private function stripWithDelimiters($string, $start, $end){
-		while(strpos($string, $start) !== false){
+		while(strpos($string, $start) !== false) {
 			$section_to_remove = substr($string, strpos($string, $start));
 			$section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
 			$string = str_replace($section_to_remove, '', $string);
@@ -59,7 +59,7 @@ class GBAtempBridge extends BridgeAbstract {
 
 	private function fetchPostContent($uri, $site_url){
 		$html = getSimpleHTMLDOM($uri);
-		if(!$html){
+		if(!$html) {
 			return 'Could not request GBAtemp ' . $uri;
 		}
 
@@ -72,9 +72,9 @@ class GBAtempBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI)
 			or returnServerError('Could not request GBAtemp.');
 
-		switch($this->getInput('type')){
+		switch($this->getInput('type')) {
 		case 'N':
-			foreach($html->find('li[class=news_item full]') as $newsItem){
+			foreach($html->find('li[class=news_item full]') as $newsItem) {
 				$url = self::URI . $newsItem->find('a', 0)->href;
 				$time = intval(
 					$this->extractFromDelimiters(
@@ -89,7 +89,7 @@ class GBAtempBridge extends BridgeAbstract {
 				$this->items[] = $this->buildItem($url, $title, $author, $time, $content);
 			}
 		case 'R':
-			foreach($html->find('li.portal_review') as $reviewItem){
+			foreach($html->find('li.portal_review') as $reviewItem) {
 				$url = self::URI . $reviewItem->find('a', 0)->href;
 				$title = $reviewItem->find('span.review_title', 0)->plaintext;
 				$content = getSimpleHTMLDOM($url)
@@ -111,7 +111,7 @@ class GBAtempBridge extends BridgeAbstract {
 				$this->items[] = $this->buildItem($url, $title, $author, $time, $content);
 			}
 		case 'T':
-			foreach($html->find('li.portal-tutorial') as $tutorialItem){
+			foreach($html->find('li.portal-tutorial') as $tutorialItem) {
 				$url = self::URI . $tutorialItem->find('a', 0)->href;
 				$title = $tutorialItem->find('a', 0)->plaintext;
 				$time = intval(
@@ -126,7 +126,7 @@ class GBAtempBridge extends BridgeAbstract {
 				$this->items[] = $this->buildItem($url, $title, $author, $time, $content);
 			}
 		case 'F':
-			foreach($html->find('li.rc_item') as $postItem){
+			foreach($html->find('li.rc_item') as $postItem) {
 				$url = self::URI . $postItem->find('a', 1)->href;
 				$title = $postItem->find('a', 1)->plaintext;
 				$time = intval(
@@ -144,7 +144,7 @@ class GBAtempBridge extends BridgeAbstract {
 	}
 
 	public function getName() {
-		if(!is_null($this->getInput('type'))){
+		if(!is_null($this->getInput('type'))) {
 			$type = array_search(
 				$this->getInput('type'),
 				self::PARAMETERS[$this->queriedContext]['type']['values']

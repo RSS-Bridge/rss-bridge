@@ -23,7 +23,7 @@ class HDWallpapersBridge extends BridgeAbstract {
 
 	public function collectData(){
 		$category = $this->category;
-		if(strrpos($category, 'wallpapers') !== strlen($category) - strlen('wallpapers')){
+		if(strrpos($category, 'wallpapers') !== strlen($category) - strlen('wallpapers')) {
 			$category .= '-desktop-wallpapers';
 		}
 
@@ -31,17 +31,17 @@ class HDWallpapersBridge extends BridgeAbstract {
 		$max = $this->getInput('m') ?: 14;
 		$lastpage = 1;
 
-		for($page = 1; $page <= $lastpage; $page++){
+		for($page = 1; $page <= $lastpage; $page++) {
 			$link = self::URI . '/' . $category . '/page/' . $page;
 			$html = getSimpleHTMLDOM($link)
 				or returnServerError('No results for this query.');
 
-			if($page === 1){
+			if($page === 1) {
 				preg_match('/page\/(\d+)$/', $html->find('.pagination a', -2)->href, $matches);
 				$lastpage = min($matches[1], ceil($max / 14));
 			}
 
-			foreach($html->find('.wallpapers .wall a') as $element){
+			foreach($html->find('.wallpapers .wall a') as $element) {
 				$thumbnail = $element->find('img', 0);
 
 				$item = array();
@@ -70,7 +70,7 @@ class HDWallpapersBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		if(!is_null($this->getInput('c')) && !is_null($this->getInput('r'))){
+		if(!is_null($this->getInput('c')) && !is_null($this->getInput('r'))) {
 			return 'HDWallpapers - '
 			. str_replace(['__', '_'], [' & ', ' '], $this->getInput('c'))
 			. ' ['

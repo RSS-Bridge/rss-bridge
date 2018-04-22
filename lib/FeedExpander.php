@@ -7,7 +7,7 @@ abstract class FeedExpander extends BridgeAbstract {
 	private $feedType;
 
 	public function collectExpandableDatas($url, $maxItems = -1){
-		if(empty($url)){
+		if(empty($url)) {
 			returnServerError('There is no $url for this RSS expander');
 		}
 
@@ -18,10 +18,10 @@ abstract class FeedExpander extends BridgeAbstract {
 		 */
 		$content = getContents($url)
 			or returnServerError('Could not request ' . $url);
-		$rssContent = simplexml_load_string($content);
+		$rssContent = simplexml_load_string(trim($content));
 
 		debugMessage('Detecting feed format/version');
-		switch(true){
+		switch(true) {
 		case isset($rssContent->item[0]):
 			debugMessage('Detected RSS 1.0 format');
 			$this->feedType = "RSS_1_0";
@@ -46,9 +46,12 @@ abstract class FeedExpander extends BridgeAbstract {
 
 	protected function collect_RSS_1_0_data($rssContent, $maxItems){
 		$this->load_RSS_2_0_feed_data($rssContent->channel[0]);
-		foreach($rssContent->item as $item){
+		foreach($rssContent->item as $item) {
 			debugMessage('parsing item ' . var_export($item, true));
-			$this->items[] = $this->parseItem($item);
+			$tmp_item = $this->parseItem($item);
+			if (!empty($tmp_item)) {
+				$this->items[] = $tmp_item;
+			}
 			if($maxItems !== -1 && count($this->items) >= $maxItems) break;
 		}
 	}
@@ -60,18 +63,24 @@ abstract class FeedExpander extends BridgeAbstract {
 		. '===========');
 
 		$this->load_RSS_2_0_feed_data($rssContent);
-		foreach($rssContent->item as $item){
+		foreach($rssContent->item as $item) {
 			debugMessage('parsing item ' . var_export($item, true));
-			$this->items[] = $this->parseItem($item);
+			$tmp_item = $this->parseItem($item);
+			if (!empty($tmp_item)) {
+				$this->items[] = $tmp_item;
+			}
 			if($maxItems !== -1 && count($this->items) >= $maxItems) break;
 		}
 	}
 
 	protected function collect_ATOM_1_0_data($content, $maxItems){
 		$this->load_ATOM_feed_data($content);
-		foreach($content->entry as $item){
+		foreach($content->entry as $item) {
 			debugMessage('parsing item ' . var_export($item, true));
-			$this->items[] = $this->parseItem($item);
+			$tmp_item = $this->parseItem($item);
+			if (!empty($tmp_item)) {
+				$this->items[] = $tmp_item;
+			}
 			if($maxItems !== -1 && count($this->items) >= $maxItems) break;
 		}
 	}
@@ -90,15 +99,15 @@ abstract class FeedExpander extends BridgeAbstract {
 		$this->name = (string)$content->title;
 
 		// Find best link (only one, or first of 'alternate')
-		if(!isset($content->link)){
+		if(!isset($content->link)) {
 			$this->uri = '';
-		} elseif (count($content->link) === 1){
-			$this->uri = $content->link[0]['href'];
+		} elseif (count($content->link) === 1) {
+			$this->uri = (string)$content->link[0]['href'];
 		} else {
 			$this->uri = '';
-			foreach($content->link as $link){
-				if(strtolower($link['rel']) === 'alternate'){
-					$this->uri = $link['href'];
+			foreach($content->link as $link) {
+				if(strtolower($link['rel']) === 'alternate') {
+					$this->uri = (string)$link['href'];
 					break;
 				}
 			}
@@ -130,7 +139,7 @@ abstract class FeedExpander extends BridgeAbstract {
 		$item = $this->parseRSS_0_9_1_Item($feedItem);
 
 		$namespaces = $feedItem->getNamespaces(true);
-		if(isset($namespaces['dc'])){
+		if(isset($namespaces['dc'])) {
 			$dc = $feedItem->children($namespaces['dc']);
 			if(isset($dc->date)) $item['timestamp'] = strtotime((string)$dc->date);
 			if(isset($dc->creator)) $item['author'] = (string)$dc->creator;
@@ -146,24 +155,24 @@ abstract class FeedExpander extends BridgeAbstract {
 		$namespaces = $feedItem->getNamespaces(true);
 		if(isset($namespaces['dc'])) $dc = $feedItem->children($namespaces['dc']);
 
-		if(isset($feedItem->guid)){
-			foreach($feedItem->guid->attributes() as $attribute => $value){
+		if(isset($feedItem->guid)) {
+			foreach($feedItem->guid->attributes() as $attribute => $value) {
 				if($attribute === 'isPermaLink'
-				&& ($value === 'true' || filter_var($feedItem->guid, FILTER_VALIDATE_URL))){
+				&& ($value === 'true' || filter_var($feedItem->guid, FILTER_VALIDATE_URL))) {
 					$item['uri'] = (string)$feedItem->guid;
 					break;
 				}
 			}
 		}
 
-		if(isset($feedItem->pubDate)){
+		if(isset($feedItem->pubDate)) {
 			$item['timestamp'] = strtotime((string)$feedItem->pubDate);
-		} elseif(isset($dc->date)){
+		} elseif(isset($dc->date)) {
 			$item['timestamp'] = strtotime((string)$dc->date);
 		}
-		if(isset($feedItem->author)){
+		if(isset($feedItem->author)) {
 			$item['author'] = (string)$feedItem->author;
-		} elseif(isset($dc->creator)){
+		} elseif(isset($dc->creator)) {
 			$item['author'] = (string)$dc->creator;
 		}
 		return $item;
@@ -175,7 +184,7 @@ abstract class FeedExpander extends BridgeAbstract {
 	 * @return a RSS-Bridge Item, with (hopefully) the whole content)
 	 */
 	protected function parseItem($item){
-		switch($this->feedType){
+		switch($this->feedType) {
 		case 'RSS_1_0':
 			return $this->parseRSS_1_0_Item($item);
 			break;

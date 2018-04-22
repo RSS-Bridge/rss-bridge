@@ -21,7 +21,7 @@ class GooglePlusPostBridge extends BridgeAbstract{
 		$username = $this->getInput('username');
 
 		// Usernames start with a + if it's not an ID
-		if(!is_numeric($username) && substr($username, 0, 1) !== '+'){
+		if(!is_numeric($username) && substr($username, 0, 1) !== '+') {
 			$username = '+' . $username;
 		}
 
@@ -34,7 +34,7 @@ class GooglePlusPostBridge extends BridgeAbstract{
 		$this->_url = $html->find('meta[property=og:url]', 0)->getAttribute('content');
 
 		// I don't even know where to start with this discusting html...
-		foreach($html->find('div[jsname=WsjYwc]') as $post){
+		foreach($html->find('div[jsname=WsjYwc]') as $post) {
 			$item = array();
 
 			$item['author'] = $item['fullname'] = $post->find('div div div div a', 0)->innertext;
@@ -44,7 +44,7 @@ class GooglePlusPostBridge extends BridgeAbstract{
 
 			$timestamp = $post->find('a.qXj2He span', 0);
 
-			if($timestamp){
+			if($timestamp) {
 				$item['timestamp'] = strtotime('+' . preg_replace(
 						'/[^0-9A-Za-z]/',
 						'',
@@ -77,15 +77,15 @@ class GooglePlusPostBridge extends BridgeAbstract{
 
 			// XXX ugly but I don't have any idea how to do a better stuff,
 			// str_replace on link doesn't work as expected and ask too many checks
-			foreach($content->find('a') as $link){
+			foreach($content->find('a') as $link) {
 				$hasHttp = strpos($link->href, 'http');
 				$hasDoubleSlash = strpos($link->href, '//');
 
 				if((!$hasHttp && !$hasDoubleSlash)
 				|| (false !== $hasHttp && strpos($link->href, 'http') != 0)
-				|| (false === $hasHttp && false !== $hasDoubleSlash && $hasDoubleSlash != 0)){
+				|| (false === $hasHttp && false !== $hasDoubleSlash && $hasDoubleSlash != 0)) {
 					// skipp bad link, for some hashtag or other stuff
-					if(strpos($link->href, '/') == 0){
+					if(strpos($link->href, '/') == 0) {
 						$link->href = substr($link->href, 1);
 					}
 

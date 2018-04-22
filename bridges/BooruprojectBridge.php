@@ -28,7 +28,7 @@ class BooruprojectBridge extends GelbooruBridge {
 	const PIDBYPAGE = 20;
 
 	public function getURI(){
-		if(!is_null($this->getInput('i'))){
+		if(!is_null($this->getInput('i'))) {
 			return 'http://' . $this->getInput('i') . '.booru.org/';
 		}
 
@@ -36,7 +36,7 @@ class BooruprojectBridge extends GelbooruBridge {
 	}
 
 	public function getName(){
-		if(!is_null($this->getInput('i'))){
+		if(!is_null($this->getInput('i'))) {
 			return static::NAME . ' ' . $this->getInput('i');
 		}
 

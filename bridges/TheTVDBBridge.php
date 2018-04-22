@@ -55,7 +55,7 @@ class TheTVDBBridge extends BridgeAbstract {
 		$result = curl_exec($ch);
 		curl_close($ch);
 		$token_json = (array)json_decode($result);
-		if(isset($token_json['Error'])){
+		if(isset($token_json['Error'])) {
 			throw new Exception($token_json['Error']);
 			die;
 		}
@@ -78,7 +78,7 @@ class TheTVDBBridge extends BridgeAbstract {
 		$result = curl_exec($ch);
 		curl_close($ch);
 		$result_array = (array)json_decode($result);
-		if(isset($result_array['Error'])){
+		if(isset($result_array['Error'])) {
 			throw new Exception($result_array['Error']);
 			die;
 		}
@@ -118,7 +118,7 @@ class TheTVDBBridge extends BridgeAbstract {
 		//than 100 episodes in every season
 		$episodes = (array)$episodes['data'];
 		$episodes = array_slice($episodes, -$nbepisodemin, $nbepisodemin);
-		foreach($episodes as $episode){
+		foreach($episodes as $episode) {
 			$episodedata = array();
 			$episodedata['uri'] = $this->getURI()
 			. '?tab=episode&seriesid='
@@ -129,7 +129,7 @@ class TheTVDBBridge extends BridgeAbstract {
 			. $episode->id;
 
 			// check if the absoluteNumber exist
-			if(isset($episode->absoluteNumber)){
+			if(isset($episode->absoluteNumber)) {
 				$episodedata['title'] = 'S'
 				. $episode->airedSeason
 				. 'E'
@@ -166,7 +166,7 @@ class TheTVDBBridge extends BridgeAbstract {
 		$maxseason = $this->getLatestSeasonNumber($token, $serie_id);
 		$seriename = $this->getSerieName($token, $serie_id);
 		$season = $maxseason;
-		while(sizeof($episodelist) < $nbepisode && $season >= 1){
+		while(sizeof($episodelist) < $nbepisode && $season >= 1) {
 			$nbepisodetmp = $nbepisode - sizeof($episodelist);
 			$this->getSeasonEpisodes(
 				$token,
@@ -189,7 +189,7 @@ class TheTVDBBridge extends BridgeAbstract {
 				$episodelist,
 				$nbepisode
 			);
-		} catch(Exception $e){
+		} catch(Exception $e) {
 			unset($e);
 		}
 		// sort and keep the 10 last episodes, works bad with the netflix serie

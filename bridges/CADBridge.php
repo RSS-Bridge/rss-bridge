@@ -25,7 +25,7 @@ class CADBridge extends FeedExpander {
 
 		$htmlpart = explode("/", $url);
 
-		switch ($htmlpart[3]){
+		switch ($htmlpart[3]) {
 			case 'cad':
 				preg_match_all("/http:\/\/cdn2\.cad-comic\.com\/comics\/cad-\S*png/", $html3, $url2);
 				break;

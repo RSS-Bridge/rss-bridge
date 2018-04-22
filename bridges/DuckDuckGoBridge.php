@@ -31,7 +31,7 @@ class DuckDuckGoBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI . 'html/?kd=-1&q=' . $this->getInput('u') . $this->getInput('sort'))
 			or returnServerError('Could not request DuckDuckGo.');
 
-		foreach($html->find('div.results_links') as $element){
+		foreach($html->find('div.results_links') as $element) {
 			$item = array();
 			$item['uri'] = $element->find('a', 0)->href;
 			$item['title'] = $element->find('a', 1)->innertext;

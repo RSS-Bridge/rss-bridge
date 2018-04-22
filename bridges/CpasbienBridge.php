@@ -20,9 +20,9 @@ class CpasbienBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI . '/recherche/' . urlencode($request) . '.html')
 			or returnServerError('No results for this query.');
 
-		foreach($html->find('#gauche', 0)->find('div') as $episode){
+		foreach($html->find('#gauche', 0)->find('div') as $episode) {
 			if($episode->getAttribute('class') == 'ligne0'
-			|| $episode->getAttribute('class') == 'ligne1'){
+			|| $episode->getAttribute('class') == 'ligne1') {
 
 				$urlepisode = $episode->find('a', 0)->getAttribute('href');
 				$htmlepisode = getSimpleHTMLDOMCached($urlepisode, 86400 * 366 * 30);
@@ -33,11 +33,11 @@ class CpasbienBridge extends BridgeAbstract {
 				$item['pubdate'] = $this->getCachedDate($urlepisode);
 				$textefiche = $htmlepisode->find('#textefiche', 0)->find('p', 1);
 
-				if(isset($textefiche)){
+				if(isset($textefiche)) {
 					$item['content'] = $textefiche->text();
 				} else {
 					$p = $htmlepisode->find('#textefiche', 0)->find('p');
-					if(!empty($p)){
+					if(!empty($p)) {
 						$item['content'] = $htmlepisode->find('#textefiche', 0)->find('p', 0)->text();
 					}
 				}
@@ -50,7 +50,7 @@ class CpasbienBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		if(!is_null($this->getInput('q'))){
+		if(!is_null($this->getInput('q'))) {
 			return $this->getInput('q') . ' : ' . self::NAME;
 		}
 

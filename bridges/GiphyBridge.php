@@ -27,14 +27,14 @@ class GiphyBridge extends BridgeAbstract {
 			or returnServerError('No results for this query.');
 
 		$max = GIPHY_LIMIT;
-		if($this->getInput('n')){
+		if($this->getInput('n')) {
 			$max = $this->getInput('n');
 		}
 
 		$limit = 0;
 		$kw = urlencode($this->getInput('s'));
-		foreach($html->find('div.hoverable-gif') as $entry){
-			if($limit < $max){
+		foreach($html->find('div.hoverable-gif') as $entry) {
+			if($limit < $max) {
 				$node = $entry->first_child();
 				$href = $node->getAttribute('href');
 
@@ -54,7 +54,7 @@ class GiphyBridge extends BridgeAbstract {
 					$title = str_replace($kw, '', $title);
 					$title = preg_replace('/\s+/', ' ', $title);
 					$title = trim($title);
-					if(strlen($title) <= 0){
+					if(strlen($title) <= 0) {
 						$title = $item['id'];
 					}
 				$item['title'] = trim($title);

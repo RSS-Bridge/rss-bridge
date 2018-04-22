@@ -45,9 +45,7 @@ class KernelBugTrackerBridge extends BridgeAbstract {
 		// We use the print preview page for simplicity
 		$html = getSimpleHTMLDOMCached($this->getURI() . '&format=multiple',
 		86400,
-		false,
 		null,
-		0,
 		null,
 		true,
 		true,
@@ -66,18 +64,18 @@ class KernelBugTrackerBridge extends BridgeAbstract {
 		// Get and limit comments
 		$comments = $html->find('div.bz_comment');
 
-		if($limit > 0 && count($comments) > $limit){
+		if($limit > 0 && count($comments) > $limit) {
 			$comments = array_slice($comments, count($comments) - $limit, $limit);
 		}
 
 		// Order comments
-		switch($sorting){
+		switch($sorting) {
 			case 'lf': $comments = array_reverse($comments, true);
 			case 'of':
 			default: // Nothing to do, keep original order
 		}
 
-		foreach($comments as $comment){
+		foreach($comments as $comment) {
 			$comment = $this->inlineStyles($comment);
 
 			$item = array();
@@ -99,7 +97,7 @@ class KernelBugTrackerBridge extends BridgeAbstract {
 	}
 
 	public function getURI(){
-		switch($this->queriedContext){
+		switch($this->queriedContext) {
 			case 'Bug comments':
 				return parent::getURI()
 				. '/show_bug.cgi?id='
@@ -110,7 +108,7 @@ class KernelBugTrackerBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		switch($this->queriedContext){
+		switch($this->queriedContext) {
 			case 'Bug comments':
 				return 'Bug '
 				. $this->bugid
@@ -142,7 +140,7 @@ class KernelBugTrackerBridge extends BridgeAbstract {
 	 * attributes.
 	 */
 	private function inlineStyles($html){
-		foreach($html->find('.bz_obsolete') as $element){
+		foreach($html->find('.bz_obsolete') as $element) {
 			$element->style = 'text-decoration:line-through;';
 		}
 

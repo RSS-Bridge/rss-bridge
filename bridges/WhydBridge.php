@@ -18,7 +18,7 @@ class WhydBridge extends BridgeAbstract {
 
 	public function collectData(){
 		$html = '';
-		if(strlen(preg_replace("/[^0-9a-f]/", '', $this->getInput('u'))) == 24){
+		if(strlen(preg_replace("/[^0-9a-f]/", '', $this->getInput('u'))) == 24) {
 			// is input the userid ?
 			$html = getSimpleHTMLDOM(
 				self::URI . 'u/' . preg_replace("/[^0-9a-f]/", '', $this->getInput('u'))
@@ -28,8 +28,8 @@ class WhydBridge extends BridgeAbstract {
 				self::URI . 'search?q=' . urlencode($this->getInput('u'))
 			) or returnServerError('No results for this query.');
 
-			for($j = 0; $j < 5; $j++){
-				if(strtolower($html->find('div.user', $j)->find('a', 0)->plaintext) == strtolower($this->getInput('u'))){
+			for($j = 0; $j < 5; $j++) {
+				if(strtolower($html->find('div.user', $j)->find('a', 0)->plaintext) == strtolower($this->getInput('u'))) {
 					$html = getSimpleHTMLDOM(
 						self::URI . $html->find('div.user', $j)->find('a', 0)->getAttribute('href')
 					) or returnServerError('No results for this query');
@@ -39,7 +39,7 @@ class WhydBridge extends BridgeAbstract {
 		}
 		$this->userName = $html->find('div#profileTop', 0)->find('h1', 0)->plaintext;
 
-		for($i = 0; $i < 10; $i++){
+		for($i = 0; $i < 10; $i++) {
 			$track = $html->find('div.post', $i);
 			$item = array();
 			$item['author'] = $track->find('h2', 0)->plaintext;

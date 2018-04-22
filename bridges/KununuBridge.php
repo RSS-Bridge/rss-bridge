@@ -41,13 +41,13 @@ class KununuBridge extends BridgeAbstract {
 	private $companyName = '';
 
 	public function getURI(){
-		if(!is_null($this->getInput('company')) && !is_null($this->getInput('site'))){
+		if(!is_null($this->getInput('company')) && !is_null($this->getInput('site'))) {
 
 			$company = $this->fixCompanyName($this->getInput('company'));
 			$site = $this->getInput('site');
 			$section = '';
 
-			switch($site){
+			switch($site) {
 			case 'at':
 			case 'de':
 			case 'ch':
@@ -65,7 +65,7 @@ class KununuBridge extends BridgeAbstract {
 	}
 
 	function getName(){
-		if(!is_null($this->getInput('company'))){
+		if(!is_null($this->getInput('company'))) {
 			$company = $this->fixCompanyName($this->getInput('company'));
 			return ($this->companyName ?: $company) . ' - ' . self::NAME;
 		}
@@ -94,7 +94,7 @@ class KununuBridge extends BridgeAbstract {
 			returnServerError('Unable to find articles!');
 
 		// Go through all articles
-		foreach($articles as $article){
+		foreach($articles as $article) {
 			$item = array();
 
 			$item['author'] = $this->extractArticleAuthorPosition($article);
@@ -208,8 +208,8 @@ class KununuBridge extends BridgeAbstract {
 
 		// Go through all h2 elements to find index of required span (I know... it's stupid)
 		$author_position = 'Unknown';
-		foreach($user_content->find('div') as $content){
-			if(stristr(strtolower($content->plaintext), 'position')){ /* This works for at, ch, de, us */
+		foreach($user_content->find('div') as $content) {
+			if(stristr(strtolower($content->plaintext), 'position')) { /* This works for at, ch, de, us */
 				$author_position = $content->next_sibling()->plaintext;
 				break;
 			}

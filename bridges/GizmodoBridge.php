@@ -11,11 +11,11 @@ class GizmodoBridge extends FeedExpander {
 		$item = parent::parseItem($item);
 
 		$articleHTMLContent = getSimpleHTMLDOMCached($item['uri']);
-		if(!$articleHTMLContent){
+		if(!$articleHTMLContent) {
 			$text = 'Could not load ' . $item['uri'];
 		} else {
 			$text = $articleHTMLContent->find('div.entry-content', 0)->innertext;
-			foreach($articleHTMLContent->find('pagespeed_iframe') as $element){
+			foreach($articleHTMLContent->find('pagespeed_iframe') as $element) {
 				$text .= '<p>link to a iframe (could be a video): <a href="'
 				. $element->src
 				. '">'

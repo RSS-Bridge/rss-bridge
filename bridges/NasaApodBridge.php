@@ -14,7 +14,7 @@ class NasaApodBridge extends BridgeAbstract {
 
 		$list = explode("<br>", $html->find('b', 0)->innertext);
 
-		for($i = 0; $i < 3; $i++){
+		for($i = 0; $i < 3; $i++) {
 			$line = $list[$i];
 			$item = array();
 

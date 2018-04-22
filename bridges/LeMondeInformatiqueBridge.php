@@ -27,7 +27,7 @@ class LeMondeInformatiqueBridge extends FeedExpander {
 	}
 
 	private function stripWithDelimiters($string, $start, $end){
-		while(strpos($string, $start) !== false){
+		while(strpos($string, $start) !== false) {
 			$section_to_remove = substr($string, strpos($string, $start));
 			$section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
 			$string = str_replace($section_to_remove, '', $string);

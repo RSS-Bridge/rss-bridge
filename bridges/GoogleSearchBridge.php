@@ -33,8 +33,8 @@ class GoogleSearchBridge extends BridgeAbstract {
 
 		$emIsRes = $html->find('div[id=ires]', 0);
 
-		if(!is_null($emIsRes)){
-			foreach($emIsRes->find('div[class=g]') as $element){
+		if(!is_null($emIsRes)) {
+			foreach($emIsRes->find('div[class=g]') as $element) {
 
 				$item = array();
 
@@ -42,7 +42,7 @@ class GoogleSearchBridge extends BridgeAbstract {
 				$t = $element->find('a[href]', 0)->href;
 				$item['uri'] = '' . $t;
 				parse_str(parse_url($t, PHP_URL_QUERY), $parameters);
-				if(isset($parameters['q'])){
+				if(isset($parameters['q'])) {
 					$item['uri'] = $parameters['q'];
 				}
 
@@ -55,7 +55,7 @@ class GoogleSearchBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		if(!is_null($this->getInput('q'))){
+		if(!is_null($this->getInput('q'))) {
 			return $this->getInput('q') . ' - Google search';
 		}
 

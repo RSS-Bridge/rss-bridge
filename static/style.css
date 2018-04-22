@@ -52,6 +52,18 @@ header > p.status {
 	color: red;
 }
 
+input[type="text"] {
+
+	background-color: white;
+	color: #404552;
+	border: 0px;
+	border-bottom: 2px solid #2196F3;
+	font-size: 1.1em;
+	margin-left: 8px;
+	padding-left: 4px;
+
+}
+
 .searchbar {
 
 	width: 50%;
@@ -64,12 +76,37 @@ header > p.status {
 	width: 100%;
 	margin: auto;
 	font-size: 1.4em;
+	text-align: center;
 
 }
 
 .searchbar input[type="text"]::placeholder {
 
 	text-align: center;
+
+}
+
+.searchbar input[type="text"]:focus::-webkit-input-placeholder {
+
+	opacity: 0;
+
+}
+
+.searchbar input[type="text"]:focus::-moz-placeholder {
+
+	opacity: 0;
+
+}
+
+.searchbar input[type="text"]:focus:-moz-placeholder {
+
+	opacity: 0;
+
+}
+
+.searchbar input[type="text"]:focus:-ms-input-placeholder {
+
+	opacity: 0;
 
 }
 
@@ -188,18 +225,6 @@ form {
 
 }
 
-input[type="text"] {
-
-	background-color: white;
-	color: #404552;
-	border: 0px;
-	border-bottom: 2px solid #2196F3;
-	font-size: 1.1em;
-	margin-left: 8px;
-	padding-left: 4px;
-
-}
-
 form {
 
 	display: none;
@@ -242,5 +267,39 @@ h5 {
 .showmore-box:checked ~ form, .showmore-box:checked ~ h5 {
 
 	display: block;
+
+}
+
+/* Additional styles for error pages */
+
+.exception-message {
+
+	background-color: #c00000;
+	color: #FFFFFF;
+
+	font-weight: bold;
+
+	box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
+	border-radius: 2px;
+	border: 1px solid transparent;
+
+	width: 80%;
+	margin: auto;
+	margin-bottom: 6px;
+
+}
+
+.advice {
+
+	margin-left: auto;
+	margin-right: auto;
+
+	display: table;
+
+}
+
+.advice > li {
+
+	text-align: left;
 
 }

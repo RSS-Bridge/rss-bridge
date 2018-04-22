@@ -21,7 +21,7 @@ require __DIR__ . '/error.php';
 require __DIR__ . '/contents.php';
 
 $vendorLibSimpleHtmlDom = __DIR__ . PATH_VENDOR . '/simplehtmldom/simple_html_dom.php';
-if(!file_exists($vendorLibSimpleHtmlDom)){
+if(!file_exists($vendorLibSimpleHtmlDom)) {
 	throw new \HttpException('"PHP Simple HTML DOM Parser" library is missing.
  Get it from http://simplehtmldom.sourceforge.net and place the script "simple_html_dom.php" in '
 		. substr(PATH_VENDOR, 4)

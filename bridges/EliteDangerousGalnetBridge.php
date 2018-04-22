@@ -11,7 +11,7 @@ class EliteDangerousGalnetBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI)
 			or returnServerError('Error while downloading the website content');
 
-		foreach($html->find('div.article') as $element){
+		foreach($html->find('div.article') as $element) {
 			$item = array();
 
 			$uri = $element->find('h3 a', 0)->href;

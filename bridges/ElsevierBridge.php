@@ -27,7 +27,7 @@ class ElsevierBridge extends BridgeAbstract {
 	// Extracts the timestamp from an article
 	private function extractArticleTimestamp($article){
 		$time = $article->find('.article-info', 0);
-		if($time){
+		if($time) {
 			$timestring = trim($time->plaintext);
 			/*
 				The format depends on the age of an article:
@@ -35,11 +35,11 @@ class ElsevierBridge extends BridgeAbstract {
 				- July 2016
 				- May–June 2016
 			*/
-			if(preg_match('/\S*(\d+\s\S+\s\d{4})/ims', $timestring, $matches)){
+			if(preg_match('/\S*(\d+\s\S+\s\d{4})/ims', $timestring, $matches)) {
 				return strtotime($matches[0]);
-			} elseif (preg_match('/[A-Za-z]+\-([A-Za-z]+\s\d{4})/ims', $timestring, $matches)){
+			} elseif (preg_match('/[A-Za-z]+\-([A-Za-z]+\s\d{4})/ims', $timestring, $matches)) {
 				return strtotime($matches[0]);
-			} elseif (preg_match('/([A-Za-z]+\s\d{4})/ims', $timestring, $matches)){
+			} elseif (preg_match('/([A-Za-z]+\s\d{4})/ims', $timestring, $matches)) {
 				return strtotime($matches[0]);
 			} else {
 				return 0;
@@ -51,7 +51,7 @@ class ElsevierBridge extends BridgeAbstract {
 	// Extracts the content from an article
 	private function extractArticleContent($article){
 		$content = $article->find('.article-content', 0);
-		if($content){
+		if($content) {
 			return trim($content->plaintext);
 		}
 		return '';
@@ -62,7 +62,7 @@ class ElsevierBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($uri)
 			or returnServerError('No results for Elsevier journal ' . $this->getInput('j'));
 
-		foreach($html->find('.pod-listing') as $article){
+		foreach($html->find('.pod-listing') as $article) {
 			$item = array();
 			$item['uri'] = $article->find('.pod-listing-header>a', 0)->getAttribute('href') . '?np=y';
 			$item['title'] = $article->find('.pod-listing-header>a', 0)->plaintext;

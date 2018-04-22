@@ -3,24 +3,28 @@ class Arte7Bridge extends BridgeAbstract {
 
 	const MAINTAINER = 'mitsukarenai';
 	const NAME = 'Arte +7';
-	const URI = 'http://www.arte.tv/';
+	const URI = 'https://www.arte.tv/';
 	const CACHE_TIMEOUT = 1800; // 30min
 	const DESCRIPTION = 'Returns newest videos from ARTE +7';
+
+	const API_TOKEN = 'Nzc1Yjc1ZjJkYjk1NWFhN2I2MWEwMmRlMzAzNjI5NmU3NWU3ODg4ODJjOWMxNTMxYzEzZGRjYjg2ZGE4MmIwOA';
+
 	const PARAMETERS = array(
 		'Catégorie (Français)' => array(
 			'catfr' => array(
 				'type' => 'list',
 				'name' => 'Catégorie',
 				'values' => array(
-					'Toutes les vidéos (français)' => 'toutes-les-videos',
-					'Actu & société' => 'actu-société',
-					'Séries & fiction' => 'séries-fiction',
-					'Cinéma' => 'cinéma',
-					'Arts & spectacles classiques' => 'arts-spectacles-classiques',
-					'Culture pop' => 'culture-pop',
-					'Découverte' => 'découverte',
-					'Histoire' => 'histoire',
-					'Junior' => 'junior'
+					'Toutes les vidéos (français)' => null,
+					'Actu & société' => 'ACT',
+					'Séries & fiction' => 'SER',
+					'Cinéma' => 'CIN',
+					'Arts & spectacles classiques' => 'ARS',
+					'Culture pop' => 'CPO',
+					'Découverte' => 'DEC',
+					'Histoire' => 'HIST',
+					'Science' => 'SCI',
+					'Autre' => 'AUT'
 				)
 			)
 		),
@@ -29,22 +33,23 @@ class Arte7Bridge extends BridgeAbstract {
 				'type' => 'list',
 				'name' => 'Catégorie',
 				'values' => array(
-					'Alle Videos (deutsch)' => 'alle-videos',
-					'Aktuelles & Gesellschaft' => 'aktuelles-gesellschaft',
-					'Fernsehfilme & Serien' => 'fernsehfilme-serien',
-					'Kino' => 'kino',
-					'Kunst & Kultur' => 'kunst-kultur',
-					'Popkultur & Alternativ' => 'popkultur-alternativ',
-					'Entdeckung' => 'entdeckung',
-					'Geschichte' => 'geschichte',
-					'Junior' => 'junior'
+					'Alle Videos (deutsch)' => null,
+					'Aktuelles & Gesellschaft' => 'ACT',
+					'Fernsehfilme & Serien' => 'SER',
+					'Kino' => 'CIN',
+					'Kunst & Kultur' => 'ARS',
+					'Popkultur & Alternativ' => 'CPO',
+					'Entdeckung' => 'DEC',
+					'Geschichte' => 'HIST',
+					'Wissenschaft' => 'SCI',
+					'Sonstiges' => 'AUT'
 				)
 			)
 		)
 	);
 
 	public function collectData(){
-		switch($this->queriedContext){
+		switch($this->queriedContext) {
 		case 'Catégorie (Français)':
 			$category = $this->getInput('catfr');
 			$lang = 'fr';
@@ -55,44 +60,37 @@ class Arte7Bridge extends BridgeAbstract {
 			break;
 		}
 
-		$url = self::URI . 'guide/' . $lang . '/plus7/' . $category;
-		$input = getContents($url) or die('Could not request ARTE.');
+		$url = 'https://api.arte.tv/api/opa/v3/videos?sort=-lastModified&limit=10&language='
+			. $lang
+			. ($category != null ? '&category.code=' . $category : '');
 
-		if(strpos($input, 'categoryVideoSet') !== false){
-			$input = explode('categoryVideoSet="', $input);
-			$input = explode('}}', $input[1]);
-			$input = $input[0] . '}}';
-		} else {
-			$input = explode('videoSet="', $input);
-			$input = explode('}]}', $input[1]);
-			$input = $input[0] . '}]}';
-		}
+		$header = array(
+			'Authorization: Bearer ' . self::API_TOKEN
+		);
 
-		$input_json = json_decode(html_entity_decode($input, ENT_QUOTES), true);
+		$input = getContents($url, $header) or die('Could not request ARTE.');
+		$input_json = json_decode($input, true);
 
 		foreach($input_json['videos'] as $element) {
+
 			$item = array();
-			$item['uri'] = str_replace("autoplay=1", "", $element['url']);
+			$item['uri'] = $element['url'];
 			$item['id'] = $element['id'];
 
-			$hack_broadcast_time = $element['rights_end'];
-			$hack_broadcast_time = strtok($hack_broadcast_time, 'T');
-			$hack_broadcast_time = strtok('T');
-
-			$item['timestamp'] = strtotime($element['scheduled_on'] . 'T' . $hack_broadcast_time);
+			$item['timestamp'] = strtotime($element['videoRightsBegin']);
 			$item['title'] = $element['title'];
 
 			if(!empty($element['subtitle']))
 				$item['title'] = $element['title'] . ' | ' . $element['subtitle'];
 
-			$item['duration'] = round((int)$element['duration'] / 60);
-			$item['content'] = $element['teaser']
+			$item['duration'] = round((int)$element['durationSeconds'] / 60);
+			$item['content'] = $element['teaserText']
 			. '<br><br>'
 			. $item['duration']
 			. 'min<br><a href="'
 			. $item['uri']
 			. '"><img src="'
-			. $element['thumbnail_url']
+			. $element['mainImage']['url']
 			. '" /></a>';
 
 			$this->items[] = $item;
