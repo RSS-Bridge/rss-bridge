@@ -23,7 +23,7 @@ class WorldOfTanksBridge extends FeedExpander {
 	));
 
 	public function collectData() {
-		$this->collectExpandableDatas(sprintf('http://worldoftanks.eu/%s/rss/news/', $this->getInput('lang')));
+		$this->collectExpandableDatas(sprintf('https://worldoftanks.eu/%s/rss/news/', $this->getInput('lang')));
 	}
 
 	protected function parseItem($newsItem){
@@ -45,7 +45,7 @@ class WorldOfTanksBridge extends FeedExpander {
 		// Remove the scripts, please
 		foreach($content->find('script') as $script) {
 			$script->outertext = '';
-    }
+		}
 
 		return $content->innertext;
 	}
