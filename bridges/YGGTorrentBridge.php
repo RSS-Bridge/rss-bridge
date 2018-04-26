@@ -105,7 +105,10 @@ class YGGTorrentBridge extends BridgeAbstract {
 					or returnServerError("Unable to query Yggtorrent !");
 
 		$count = 0;
-		foreach($html->find(".results", 0)->find("tr") as $row) {
+		$results = $html->find(".results", 0);
+		if(!$results) return;
+
+		foreach($results->find("tr") as $row) {
 			$count++;
 			if($count == 1) continue;
 			if($count == 12) break;
@@ -118,6 +121,7 @@ class YGGTorrentBridge extends BridgeAbstract {
 			$item["seeders"] = $row->find("td", 7)->plaintext;
 			$item["leechers"] = $row->find("td", 8)->plaintext;
 			$item["size"] = $row->find("td", 5)->plaintext;
+
 			$this->items[] = $item;
 		}
 
@@ -127,9 +131,10 @@ class YGGTorrentBridge extends BridgeAbstract {
 
 		//For weird reason, the link we get can be invalid, we fix it.
 		$url_full = explode("/", $url);
+		$url_full[4] = urlencode($url_full[4]);
+		$url_full[5] = urlencode($url_full[5]);
 		$url_full[6] = urlencode($url_full[6]);
 		$url = implode("/", $url_full);
-
 		$page = getSimpleHTMLDOM($url) or returnServerError("Unable to query Yggtorrent page !");
 		$author = $page->find(".informations", 0)->find("a", 4)->plaintext;
 		$content = $page->find(".default", 1);
