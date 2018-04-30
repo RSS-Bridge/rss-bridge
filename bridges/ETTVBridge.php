@@ -125,7 +125,7 @@ class ETTVBridge extends BridgeAbstract {
 			$item = array();
 			$item['author'] = $details->children(6)->children(1)->plaintext;
 			$item['title'] = $entry->title;
-			$item['uri'] = $dllinks->children(0)->children(0)->children(0)->href;
+			$item['uri'] = $link;
 			$item['timestamp'] = strtotime($details->children(7)->children(1)->plaintext);
 			$item['content'] = '';
 			$item['content'] .= '<br/><b>Name: </b>' . $details->children(0)->children(1)->innertext;
