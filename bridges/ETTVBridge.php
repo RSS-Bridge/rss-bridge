@@ -99,7 +99,7 @@ class ETTVBridge extends BridgeAbstract {
 		$query_str = 'torrents-search.php';
 		$query_str .= '?search=' . urlencode('+'.str_replace(' ', ' +', $this->getInput('query')));
 		$query_str .= '&cat=' . $this->getInput('cat');
-		$query_str .= 'incldead&=' . $this->getInput('status');
+		$query_str .= '&incldead=' . $this->getInput('status');
 		$query_str .= '&lang=' . $this->getInput('lang');
 		$query_str .= '&sort=id&order=desc';
 
