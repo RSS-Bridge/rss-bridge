@@ -102,10 +102,19 @@ class VkBridge extends BridgeAbstract
 			// looking for article
 			$article = $post->find("a.article_snippet", 0);
 			if (is_object($article)) {
-				$article_title = $article->find("div.article_snippet__title", 0)->innertext;
-				$article_author = $article->find("div.article_snippet__author", 0)->innertext;
+				if ( strpos($article->getAttribute('class'), "article_snippet_mini") !== false) {
+					$article_title_selector = "div.article_snippet_mini_title";
+					$article_author_selector = "div.article_snippet_mini_info > .group_link";
+					$article_thumb_selector = "div.article_snippet_mini_thumb";
+				} else {
+					$article_title_selector = "div.article_snippet__title";
+					$article_author_selector = "div.article_snippet__author";
+					$article_thumb_selector = "div.article_snippet__image";
+				}
+				$article_title = $article->find($article_title_selector, 0)->innertext;
+				$article_author = $article->find($article_author_selector, 0)->innertext;
 				$article_link = self::URI . ltrim($article->getAttribute('href'), '/');
-				$article_img_element_style = $article->find("div.article_snippet__image", 0)->getAttribute('style');
+				$article_img_element_style = $article->find($article_thumb_selector, 0)->getAttribute('style');
 				preg_match('/background-image: url\((.*)\)/', $article_img_element_style, $matches);
 				if (count($matches) > 0) {
 					$content_suffix .= "<br><img src='" . $matches[1] . "'>";
