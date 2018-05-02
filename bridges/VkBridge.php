@@ -102,7 +102,7 @@ class VkBridge extends BridgeAbstract
 			// looking for article
 			$article = $post->find("a.article_snippet", 0);
 			if (is_object($article)) {
-				if ( strpos($article->getAttribute('class'), "article_snippet_mini") !== false) {
+				if (strpos($article->getAttribute('class'), "article_snippet_mini") !== false) {
 					$article_title_selector = "div.article_snippet_mini_title";
 					$article_author_selector = "div.article_snippet_mini_info > .group_link";
 					$article_thumb_selector = "div.article_snippet_mini_thumb";
