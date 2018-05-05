@@ -31,10 +31,10 @@ class ElloBridge extends BridgeAbstract {
 		);
 
 		if(!empty($this->getInput('u'))) {
-			$postData = getContents(self::URI . 'api/v2/users/~' . $this->getInput('u') . '/posts', $header) or
+			$postData = getContents(self::URI . 'api/v2/users/~' . urlencode($this->getInput('u')) . '/posts', $header) or
 				returnServerError('Unable to query Ello API.');
 		} else {
-			$postData = getContents(self::URI . 'api/v2/posts?terms=' . $this->getInput('s'), $header) or
+			$postData = getContents(self::URI . 'api/v2/posts?terms=' . urlencode($this->getInput('s')), $header) or
 				returnServerError('Unable to query Ello API.');
 		}
 
