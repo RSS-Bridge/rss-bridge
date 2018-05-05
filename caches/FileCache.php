@@ -8,7 +8,9 @@ class FileCache implements CacheInterface {
 	protected $param;
 
 	public function loadData(){
-		return unserialize(file_get_contents($this->getCacheFile()));
+		if(file_exists($this->getCacheFile())) {
+			return unserialize(file_get_contents($this->getCacheFile()));
+		}
 	}
 
 	public function saveData($datas){
