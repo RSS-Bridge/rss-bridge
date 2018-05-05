@@ -18,10 +18,10 @@ class MrssFormat extends FormatAbstract {
 		if(!empty($extraInfos['uri'])) {
 			$uri = $this->xml_encode($extraInfos['uri']);
 		} else {
-			$uri = 'https://github.com/sebsauvage/rss-bridge';
+			$uri = 'https://github.com/RSS-Bridge/rss-bridge';
 		}
 
-		$icon = $this->xml_encode('http://icons.better-idea.org/icon?url='. $uri .'&size=64');
+		$icon = $this->xml_encode($uri .'/favicon.ico');
 
 		$items = '';
 		foreach($this->getItems() as $item) {

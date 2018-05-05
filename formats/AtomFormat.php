@@ -15,8 +15,8 @@ class AtomFormat extends FormatAbstract{
 
 		$extraInfos = $this->getExtraInfos();
 		$title = $this->xml_encode($extraInfos['name']);
-		$uri = !empty($extraInfos['uri']) ? $extraInfos['uri'] : 'https://github.com/sebsauvage/rss-bridge';
-		$icon = $this->xml_encode('http://icons.better-idea.org/icon?url='. $uri .'&size=64');
+		$uri = !empty($extraInfos['uri']) ? $extraInfos['uri'] : 'https://github.com/RSS-Bridge/rss-bridge';
+		$icon = $this->xml_encode($uri .'/favicon.ico');
 		$uri = $this->xml_encode($uri);
 
 		$entries = '';
