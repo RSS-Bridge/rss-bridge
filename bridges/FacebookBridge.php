@@ -164,6 +164,12 @@ EOD;
 		}
 
 		//No captcha? We can carry on retrieving page contents :)
+		//First, we check wether the page is public or not
+		$loginForm = $html->find('._585r', 0);
+		if($loginForm != null) {
+			returnServerError('You must be logged in to view this page. This is not supported by RSS-Bridge.');
+		}
+
 		$element = $html
 		->find('#pagelet_timeline_main_column')[0]
 		->children(0)
