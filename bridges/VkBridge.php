@@ -256,7 +256,12 @@ class VkBridge extends BridgeAbstract
 		$original = '';
 		foreach(array('y_', 'z_', 'w_') as $key) {
 			if (!isset($data['temp'][$key])) continue;
-			$original = $data['temp']['base'] . $data['temp'][$key][0] . ".jpg";
+			if (substr($data['temp']['base'], 0, 4) == "http") {
+				$base = "";
+			} else {
+				$base = $data['temp']['base'];
+			}
+			$original = $base . $data['temp'][$key][0] . ".jpg";
 		}
 
 		if ($original) {
