@@ -303,9 +303,10 @@ class DealabsBridge extends BridgeAbstract {
 	{
 		if($deal->find('span[class*=mute--text text--lineThrough]', 0) != null) {
 			$discountHtml = $deal->find('span[class=space--ml-1 size--all-l size--fromW3-xl]', 0);
-			if($discountHtml != null) {
+			if($discountHtml != NULL) {
 				$discount = $discountHtml->plaintext;
-			} else {
+			}
+			else{
 				$discount = '';
 			}
 			return '<div>Réduction : <span style="text-decoration: line-through;">'
@@ -418,6 +419,7 @@ class DealabsBridge extends BridgeAbstract {
 			'November',
 			'December'
 		);
+		$string = str_replace('Actualisé ', '', $string);
 		$date_str = trim(str_replace($month_fr, $month_en, $string));
 
 		if(!preg_match('/[0-9]{4}/', $string)) {
@@ -426,6 +428,7 @@ class DealabsBridge extends BridgeAbstract {
 		$date_str .= ' 00:00';
 
 		$date = DateTime::createFromFormat('j F Y H:i', $date_str);
+		var_dump(DateTime::getLastErrors());
 		return $date->getTimestamp();
 	}
 
