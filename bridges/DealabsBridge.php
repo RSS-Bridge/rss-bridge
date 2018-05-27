@@ -305,8 +305,7 @@ class DealabsBridge extends BridgeAbstract {
 			$discountHtml = $deal->find('span[class=space--ml-1 size--all-l size--fromW3-xl]', 0);
 			if($discountHtml != null) {
 				$discount = $discountHtml->plaintext;
-			}
-			else {
+			} else {
 				$discount = '';
 			}
 			return '<div>Réduction : <span style="text-decoration: line-through;">'
