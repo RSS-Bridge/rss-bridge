@@ -11,8 +11,16 @@ class InstagramBridge extends BridgeAbstract {
 			'u' => array(
 				'name' => 'username',
 				'required' => true
-			),
-			'media_type_u' => array(
+			)
+		),
+		array(
+			'h' => array(
+				'name' => 'hashtag',
+				'required' => true
+			)
+		),
+		'global' => array(
+			'media_type' => array(
 				'name' => 'Media type',
 				'type' => 'list',
 				'required' => false,
@@ -24,27 +32,15 @@ class InstagramBridge extends BridgeAbstract {
 				),
 				'defaultValue' => 'all'
 			)
-		),
-		array(
-			'h' => array(
-				'name' => 'hashtag',
-				'required' => true
-			),
-			'media_type_h' => array(
-				'name' => 'Media type',
-				'type' => 'list',
-				'required' => false,
-				'values' => array(
-					'Both' => 'all',
-					'Video' => 'video',
-					'Picture' => 'picture'
-				),
-				'defaultValue' => 'all'
-			)
 		)
+
 	);
 
 	public function collectData(){
+
+		if(!is_null($this->getInput('h')) && $this->getInput('media_type') == 'story') {
+			returnClientError('Stories are not supported for hashtags!');
+		}
 
 		$data = $this->getInstagramJSON($this->getURI());
 
@@ -58,7 +54,7 @@ class InstagramBridge extends BridgeAbstract {
 			$media = $media->node;
 
 			if(!is_null($this->getInput('u'))) {
-				switch($this->getInput('media_type_u')) {
+				switch($this->getInput('media_type')) {
 					case 'all': break;
 					case 'video':
 						if($media->__typename != 'GraphVideo') continue 2;
@@ -72,7 +68,7 @@ class InstagramBridge extends BridgeAbstract {
 					default: break;
 				}
 			} else {
-				if($this->getInput('media_type_h') == 'video' && !$media->is_video) continue;
+				if($this->getInput('media_type') == 'video' && !$media->is_video) continue;
 			}
 
 			$item = array();
