@@ -10,18 +10,46 @@ TODO :
 - implement header('X-Cached-Version: '.date(DATE_ATOM, filemtime($cachefile)));
 */
 
+if(!file_exists('config.default.ini.php'))
+	die('The default configuration file "config.default.ini.php" is missing!');
+
+$config = parse_ini_file('config.default.ini.php', true, INI_SCANNER_TYPED);
+
+if(file_exists('config.ini.php')) {
+	// Replace default configuration with custom settings
+	foreach(parse_ini_file('config.ini.php', true, INI_SCANNER_TYPED) as $header => $section) {
+		foreach($section as $key => $value) {
+			// Skip unknown sections and keys
+			if(array_key_exists($header, $config) && array_key_exists($key, $config[$header])) {
+				$config[$header][$key] = $value;
+			}
+		}
+	}
+}
+
+if(!is_string($config['proxy']['url']))
+	die('Parameter [proxy] => "url" is not a valid string! Please check "config.ini.php"!');
+
+if(!empty($config['proxy']['url']))
+	define('PROXY_URL', $config['proxy']['url']);
+
+if(!is_bool($config['proxy']['by_bridge']))
+	die('Parameter [proxy] => "by_bridge" is not a valid Boolean! Please check "config.ini.php"!');
+
+define('PROXY_BYBRIDGE', $config['proxy']['by_bridge']);
+
+if(!is_string($config['proxy']['name']))
+	die('Parameter [proxy] => "name" is not a valid string! Please check "config.ini.php"!');
+
+define('PROXY_NAME', $config['proxy']['name']);
+
+if(!is_bool($config['cache']['custom_timeout']))
+	die('Parameter [cache] => "custom_timeout" is not a valid Boolean! Please check "config.ini.php"!');
+
+define('CUSTOM_CACHE_TIMEOUT', $config['cache']['custom_timeout']);
+
 // Defines the minimum required PHP version for RSS-Bridge
 define('PHP_VERSION_REQUIRED', '5.6.0');
-
-//define('PROXY_URL', 'tcp://192.168.0.0:28');
-// Set to true if you allow users to disable proxy usage for specific bridges
-define('PROXY_BYBRIDGE', false);
-// Comment this line or keep PROXY_NAME empty to display PROXY_URL instead
-define('PROXY_NAME', 'Hidden Proxy Name');
-
-// Allows the operator to specify custom cache timeouts via '&_cache_timeout=3600'
-// true: enabled, false: disabled (default)
-define('CUSTOM_CACHE_TIMEOUT', false);
 
 date_default_timezone_set('UTC');
 error_reporting(0);
