@@ -148,7 +148,6 @@ class DealabsBridge extends BridgeAbstract {
 				'cept-thread-image-link',
 				'imgFrame',
 				'imgFrame--noBorder',
-				'box--all-i',
 				'thread-listImgCell',
 			)
 		);
@@ -179,6 +178,7 @@ class DealabsBridge extends BridgeAbstract {
 			' ', /* Notice this is a space! */
 			array(
 				'cept-description-container',
+				'userHtml',
 				'overflow--wrap-break',
 				'size--all-s',
 				'size--fromW3-m',
@@ -302,12 +302,18 @@ class DealabsBridge extends BridgeAbstract {
 	private function getReduction($deal)
 	{
 		if($deal->find('span[class*=mute--text text--lineThrough]', 0) != null) {
+			$discountHtml = $deal->find('span[class=space--ml-1 size--all-l size--fromW3-xl]', 0);
+			if($discountHtml != null) {
+				$discount = $discountHtml->plaintext;
+			} else {
+				$discount = '';
+			}
 			return '<div>Réduction : <span style="text-decoration: line-through;">'
 				. $deal->find(
 					'span[class*=mute--text text--lineThrough]', 0
 					)->plaintext
 				. '</span>&nbsp;'
-				. $deal->find('span[class=space--ml-1 size--all-l size--fromW3-xl]', 0)->plaintext
+				. $discount
 				. '</div>';
 		} else {
 			return '';
@@ -412,6 +418,7 @@ class DealabsBridge extends BridgeAbstract {
 			'November',
 			'December'
 		);
+		$string = str_replace('Actualisé ', '', $string);
 		$date_str = trim(str_replace($month_fr, $month_en, $string));
 
 		if(!preg_match('/[0-9]{4}/', $string)) {
