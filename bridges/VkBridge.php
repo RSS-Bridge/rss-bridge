@@ -132,6 +132,16 @@ class VkBridge extends BridgeAbstract
 				$video->outertext = '';
 			}
 
+			// get all other videos
+			foreach($post->find('a.page_post_thumb_video') as $a) {
+				$video_title = $a->getAttribute('aria-label');
+				$temp = explode(" ", $video_title, 2);
+				if (count($temp) > 1) $video_title = $temp[1];
+				$video_link = self::URI . ltrim( $a->getAttribute('href'), '/' );
+				$content_suffix .= "<br>Video: <a href='$video_link'>$video_title</a>";
+				$a->outertext = '';
+			}
+
 			// get all photos
 			foreach($post->find('div.wall_text > a.page_post_thumb_wrap') as $a) {
 				$result = $this->getPhoto($a);
