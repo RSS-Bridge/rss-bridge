@@ -104,7 +104,7 @@ class VkBridge extends BridgeAbstract
 			if (is_object($article)) {
 				if (strpos($article->getAttribute('class'), "article_snippet_mini") !== false) {
 					$article_title_selector = "div.article_snippet_mini_title";
-					$article_author_selector = "div.article_snippet_mini_info > .group_link";
+					$article_author_selector = "div.article_snippet_mini_info > .mem_link, div.article_snippet_mini_info > .group_link";
 					$article_thumb_selector = "div.article_snippet_mini_thumb";
 				} else {
 					$article_title_selector = "div.article_snippet__title";
