@@ -198,6 +198,16 @@ class VkBridge extends BridgeAbstract
 				$div->outertext = '';
 			}
 
+			// get polls
+			foreach($post->find('div.page_media_poll_wrap') as $div) {
+				$poll_title = $div->find('.page_media_poll_title', 0)->innertext;
+				$content_suffix .= "<br>Poll: $poll_title";
+				foreach($div->find('div.page_poll_text') as $poll_stat_title) {
+					$content_suffix .= "<br>- " . $poll_stat_title->innertext;
+				}
+				$div->outertext = '';
+			}
+
 			// get sign
 			$post_author = $pageName;
 			foreach($post->find('a.wall_signed_by') as $a) {
