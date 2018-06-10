@@ -104,7 +104,8 @@ class VkBridge extends BridgeAbstract
 			if (is_object($article)) {
 				if (strpos($article->getAttribute('class'), "article_snippet_mini") !== false) {
 					$article_title_selector = "div.article_snippet_mini_title";
-					$article_author_selector = "div.article_snippet_mini_info > .group_link";
+					$article_author_selector = "div.article_snippet_mini_info > .mem_link,
+						div.article_snippet_mini_info > .group_link";
 					$article_thumb_selector = "div.article_snippet_mini_thumb";
 				} else {
 					$article_title_selector = "div.article_snippet__title";
@@ -130,6 +131,16 @@ class VkBridge extends BridgeAbstract
 				$video_link = self::URI . ltrim( $video->find('a.lnk', 0)->getAttribute('href'), '/' );
 				$content_suffix .= "<br>Video: <a href='$video_link'>$video_title</a>";
 				$video->outertext = '';
+			}
+
+			// get all other videos
+			foreach($post->find('a.page_post_thumb_video') as $a) {
+				$video_title = $a->getAttribute('aria-label');
+				$temp = explode(" ", $video_title, 2);
+				if (count($temp) > 1) $video_title = $temp[1];
+				$video_link = self::URI . ltrim( $a->getAttribute('href'), '/' );
+				$content_suffix .= "<br>Video: <a href='$video_link'>$video_title</a>";
+				$a->outertext = '';
 			}
 
 			// get all photos
@@ -185,6 +196,16 @@ class VkBridge extends BridgeAbstract
 
 				}
 
+				$div->outertext = '';
+			}
+
+			// get polls
+			foreach($post->find('div.page_media_poll_wrap') as $div) {
+				$poll_title = $div->find('.page_media_poll_title', 0)->innertext;
+				$content_suffix .= "<br>Poll: $poll_title";
+				foreach($div->find('div.page_poll_text') as $poll_stat_title) {
+					$content_suffix .= "<br>- " . $poll_stat_title->innertext;
+				}
 				$div->outertext = '';
 			}
 
