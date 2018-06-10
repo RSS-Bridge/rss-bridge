@@ -22,10 +22,12 @@ function getContents($url, $header = array(), $opts = array()){
 	}
 
 	$content = curl_exec($ch);
+	$curlError = curl_error($ch);
+	$curlErrno = curl_errno($ch);
 	curl_close($ch);
 
 	if($content === false)
-		debugMessage('Cant\'t download ' . $url);
+		debugMessage('Cant\'t download ' . $url . ' cUrl error: ' . $curlError . ' (' . $curlErrno . ')');
 
 	return $content;
 }
