@@ -14,6 +14,8 @@ if(!file_exists('config.default.ini.php'))
 	die('The default configuration file "config.default.ini.php" is missing!');
 
 $config = parse_ini_file('config.default.ini.php', true, INI_SCANNER_TYPED);
+if(!$config)
+	die('Error parsing config.default.ini.php');
 
 if(file_exists('config.ini.php')) {
 	// Replace default configuration with custom settings
