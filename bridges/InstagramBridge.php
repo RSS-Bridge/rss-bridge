@@ -107,10 +107,11 @@ class InstagramBridge extends BridgeAbstract {
 		$content = '<img src="' . htmlentities($mediaInfo->display_url) . '" alt="'. $caption . '" />';
 
 		foreach($mediaInfo->edge_sidecar_to_children->edges as $media) {
-
-			$content .= '<img src="' . htmlentities($media->node->display_url) . '" alt="'. $caption . '" />';
-			$enclosures[] = $media->node->display_url;
-
+			$display_url = $media->node->display_url;
+			if(!in_array($display_url, $enclosures)){ // add only if not added yet
+				$content .= '<img src="' . htmlentities($display_url) . '" alt="'. $caption . '" />';
+				$enclosures[] = $display_url;
+			}
 		}
 
 		return [$content, $enclosures];
