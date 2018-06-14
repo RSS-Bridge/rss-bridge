@@ -18,17 +18,15 @@ class SuperSmashBlogBridge extends BridgeAbstract {
 			// Build content
 			$picture = $article['acf']['image1']['url'];
 			if (strlen($picture) != 0) {
-				$picture = str_get_html('<img src="' . 'https://www.smashbros.com/' . substr($picture, 8) . '"/>');
-			}
-			else {
+				$picture = str_get_html('<img src="https://www.smashbros.com/' . substr($picture, 8) . '"/>');
+			} else {
 				$picture = '';
 			}
 
 			$video = $article['acf']['link_url'];
 			if (strlen($video) != 0) {
 				$video = str_get_html('<a href="' . $video .'">Youtube video</a>');
-			}
-			else {
+			} else {
 				$video = '';
 			}
 			$text = str_get_html($article['acf']['editor']);
