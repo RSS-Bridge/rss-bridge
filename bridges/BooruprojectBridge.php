@@ -7,23 +7,23 @@ class BooruprojectBridge extends GelbooruBridge {
 	const NAME = 'Booruproject';
 	const URI = 'http://booru.org/';
 	const DESCRIPTION = 'Returns images from given page of booruproject';
-	const PARAMETERS = array(
-		'global' => array(
-			'p' => array(
+	const PARAMETERS = [
+		'global' => [
+			'p' => [
 				'name' => 'page',
 				'type' => 'number'
-			),
-			't' => array(
+			],
+			't' => [
 				'name' => 'tags'
-			)
-		),
-		'Booru subdomain (subdomain.booru.org)' => array(
-			'i' => array(
+			]
+		],
+		'Booru subdomain (subdomain.booru.org)' => [
+			'i' => [
 				'name' => 'Subdomain',
 				'required' => true
-			)
-		)
-	);
+			]
+		]
+	];
 
 	const PIDBYPAGE = 20;
 

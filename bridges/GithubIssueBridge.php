@@ -7,31 +7,31 @@ class GithubIssueBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 600; // 10min
 	const DESCRIPTION = 'Returns the issues or comments of an issue of a github project';
 
-	const PARAMETERS = array(
-		'global' => array(
-			'u' => array(
+	const PARAMETERS = [
+		'global' => [
+			'u' => [
 				'name' => 'User name',
 				'required' => true
-			),
-			'p' => array(
+			],
+			'p' => [
 				'name' => 'Project name',
 				'required' => true
-			)
-		),
-		'Project Issues' => array(
-			'c' => array(
+			]
+		],
+		'Project Issues' => [
+			'c' => [
 				'name' => 'Show Issues Comments',
 				'type' => 'checkbox'
-			)
-		),
-		'Issue comments' => array(
-			'i' => array(
+			]
+		],
+		'Issue comments' => [
+			'i' => [
 				'name' => 'Issue number',
 				'type' => 'number',
 				'required' => 'true'
-			)
-		)
-	);
+			]
+		]
+	];
 
 	public function getName(){
 		$name = $this->getInput('u') . '/' . $this->getInput('p');
@@ -70,7 +70,7 @@ class GithubIssueBridge extends BridgeAbstract {
 		$class = $comment->getAttribute('class');
 		$classes = explode(' ', $class);
 		$event = false;
-		if(in_array('discussion-item', $classes)) {
+		if(in_array('discussion-item', $classes, true)) {
 			$event = true;
 		}
 
@@ -89,11 +89,11 @@ class GithubIssueBridge extends BridgeAbstract {
 		if($event) {
 			$title .= ' / ' . substr($class, strpos($class, 'discussion-item-') + strlen('discussion-item-'));
 			if(!$comment->hasAttribute('id')) {
-				$items = array();
+				$items = [];
 				$timestamp = strtotime($comment->find('relative-time', 0)->getAttribute('datetime'));
 				$content = $comment->innertext;
 				while($comment = $comment->nextSibling()) {
-					$item = array();
+					$item = [];
 					$item['author'] = $author;
 					$item['title'] = html_entity_decode($title, ENT_QUOTES, 'UTF-8');
 					$item['timestamp'] = $timestamp;
@@ -109,7 +109,7 @@ class GithubIssueBridge extends BridgeAbstract {
 			$content = "<pre>" . $comment->find('.comment-body', 0)->innertext . "</pre>";
 		}
 
-		$item = array();
+		$item = [];
 		$item['author'] = $author;
 		$item['uri'] = $uri . '#' . $comment->getAttribute('id');
 		$item['title'] = html_entity_decode($title, ENT_QUOTES, 'UTF-8');
@@ -119,17 +119,17 @@ class GithubIssueBridge extends BridgeAbstract {
 	}
 
 	protected function extractIssueComments($issue){
-		$items = array();
+		$items = [];
 		$title = $issue->find('.gh-header-title', 0)->plaintext;
 		$issueNbr = trim(substr($issue->find('.gh-header-number', 0)->plaintext, 1));
 		$comments = $issue->find('.js-discussion', 0);
 		foreach($comments->children() as $comment) {
 			$classes = explode(' ', $comment->getAttribute('class'));
-			if(in_array('discussion-item', $classes)
-			|| in_array('timeline-comment-wrapper', $classes)) {
+			if(in_array('discussion-item', $classes, true)
+			|| in_array('timeline-comment-wrapper', $classes, true)) {
 				$item = $this->extractIssueComment($issueNbr, $title, $comment);
 				if(array_keys($item) !== range(0, count($item) - 1)) {
-					$item = array($item);
+					$item = [$item];
 				}
 				$items = array_merge($items, $item);
 			}
@@ -150,7 +150,7 @@ class GithubIssueBridge extends BridgeAbstract {
 				$info = $issue->find('.opened-by', 0);
 				$issueNbr = substr(trim($info->plaintext), 1, strpos(trim($info->plaintext), ' '));
 
-				$item = array();
+				$item = [];
 				$item['content'] = '';
 
 				if($this->getInput('c')) {

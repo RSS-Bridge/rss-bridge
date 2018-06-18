@@ -7,35 +7,35 @@ class SensCritiqueBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = 'Sens Critique news';
 
-	const PARAMETERS = array( array(
-		'm' => array(
+	const PARAMETERS = [ [
+		'm' => [
 			'name' => 'Movies',
 			'type' => 'checkbox'
-		),
-		's' => array(
+		],
+		's' => [
 			'name' => 'Series',
 			'type' => 'checkbox'
-		),
-		'g' => array(
+		],
+		'g' => [
 			'name' => 'Video Games',
 			'type' => 'checkbox'
-		),
-		'b' => array(
+		],
+		'b' => [
 			'name' => 'Books',
 			'type' => 'checkbox'
-		),
-		'bd' => array(
+		],
+		'bd' => [
 			'name' => 'BD',
 			'type' => 'checkbox'
-		),
-		'mu' => array(
+		],
+		'mu' => [
 			'name' => 'Music',
 			'type' => 'checkbox'
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
-		$categories = array();
+		$categories = [];
 		foreach(self::PARAMETERS[$this->queriedContext] as $category => $properties) {
 			if($this->getInput($category)) {
 				$uri = self::URI;
@@ -68,7 +68,7 @@ class SensCritiqueBridge extends BridgeAbstract {
 		}
 
 		foreach($list->find('li') as $movie) {
-			$item = array();
+			$item = [];
 			$item['author'] = htmlspecialchars_decode($movie->find('.elco-title a', 0)->plaintext, ENT_QUOTES)
 			. ' '
 			. $movie->find('.elco-date', 0)->plaintext;

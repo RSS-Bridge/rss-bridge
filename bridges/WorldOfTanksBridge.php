@@ -6,11 +6,11 @@ class WorldOfTanksBridge extends FeedExpander {
 	const URI = 'http://worldoftanks.eu/';
 	const DESCRIPTION = 'News about the tank slaughter game.';
 
-	const PARAMETERS = array( array(
-		'lang' => array(
+	const PARAMETERS = [ [
+		'lang' => [
 			'name' => 'Langue',
 			'type' => 'list',
-			'values' => array(
+			'values' => [
 				'Français' => 'fr',
 				'English' => 'en',
 				'Español' => 'es',
@@ -18,9 +18,9 @@ class WorldOfTanksBridge extends FeedExpander {
 				'Čeština' => 'cs',
 				'Polski' => 'pl',
 				'Türkçe' => 'tr'
-			)
-		)
-	));
+			]
+		]
+	]];
 
 	public function collectData() {
 		$this->collectExpandableDatas(sprintf('https://worldoftanks.eu/%s/rss/news/', $this->getInput('lang')));

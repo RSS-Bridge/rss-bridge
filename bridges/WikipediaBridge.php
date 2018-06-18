@@ -9,38 +9,38 @@ class WikipediaBridge extends BridgeAbstract {
 	const URI = 'https://www.wikipedia.org/';
 	const DESCRIPTION = 'Returns articles for a language of your choice';
 
-	const PARAMETERS = array( array(
-		'language' => array(
+	const PARAMETERS = [ [
+		'language' => [
 			'name' => 'Language',
 			'type' => 'list',
 			'required' => true,
 			'title' => 'Select your language',
 			'exampleValue' => 'English',
-			'values' => array(
+			'values' => [
 				'English' => 'en',
 				'Dutch' => 'nl',
 				'Esperanto' => 'eo',
 				'French' => 'fr',
 				'German' => 'de',
-			)
-		),
-		'subject' => array(
+			]
+		],
+		'subject' => [
 			'name' => 'Subject',
 			'type' => 'list',
 			'required' => true,
 			'title' => 'What subject are you interested in?',
 			'exampleValue' => 'Today\'s featured article',
-			'values' => array(
+			'values' => [
 				'Today\'s featured article' => 'tfa',
 				'Did you know…' => 'dyk'
-			)
-		),
-		'fullarticle' => array(
+			]
+		],
+		'fullarticle' => [
 			'name' => 'Load full article',
 			'type' => 'checkbox',
 			'title' => 'Activate to always load the full article'
-		)
-	));
+		]
+	]];
 
 	public function getURI(){
 		if(!is_null($this->getInput('language'))) {
@@ -155,7 +155,7 @@ class WikipediaBridge extends BridgeAbstract {
 			}
 		}
 
-		$item = array();
+		$item = [];
 		$item['uri'] = $this->getURI() . $target->href;
 		$item['title'] = $target->title;
 
@@ -172,7 +172,7 @@ class WikipediaBridge extends BridgeAbstract {
 	*/
 	private function addDidYouKnowGeneric($element, $fullArticle){
 		foreach($element->find('ul', 0)->find('li') as $entry) {
-			$item = array();
+			$item = [];
 
 			// We can only use the first anchor, there is no way of finding the 'correct' one if there are multiple
 			$item['uri'] = $this->getURI() . $entry->find('a', 0)->href;

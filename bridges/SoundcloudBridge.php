@@ -7,12 +7,12 @@ class SoundCloudBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 600; // 10min
 	const DESCRIPTION = 'Returns 10 newest music from user profile';
 
-	const PARAMETERS = array( array(
-		'u' => array(
+	const PARAMETERS = [ [
+		'u' => [
 			'name' => 'username',
 			'required' => true
-		)
-	));
+		]
+	]];
 
 	const CLIENT_ID = '4jkoEFmZEDaqjwJ9Eih4ATNhcH3vMVfp';
 
@@ -33,7 +33,7 @@ class SoundCloudBridge extends BridgeAbstract {
 		)) or returnServerError('No results for this user');
 
 		for($i = 0; $i < 10; $i++) {
-			$item = array();
+			$item = [];
 			$item['author'] = $tracks[$i]->user->username . ' - ' . $tracks[$i]->title;
 			$item['title'] = $tracks[$i]->user->username . ' - ' . $tracks[$i]->title;
 			$item['content'] = '<audio src="'

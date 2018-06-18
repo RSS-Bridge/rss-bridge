@@ -7,12 +7,12 @@ class ZDNetBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Technology News, Analysis, Comments and Product Reviews for IT Professionals.';
 
 	//http://www.zdnet.com/zdnet.opml
-	const PARAMETERS = array( array(
-		'feed' => array(
+	const PARAMETERS = [ [
+		'feed' => [
 			'name' => 'Feed',
 			'type' => 'list',
-			'values' => array(
-				'Subscribe to ZDNet RSS Feeds' => array(
+			'values' => [
+				'Subscribe to ZDNet RSS Feeds' => [
 					'All Blogs' => 'blog',
 					'Just News' => 'news',
 					'All Reviews' => 'topic/reviews',
@@ -22,8 +22,8 @@ class ZDNetBridge extends BridgeAbstract {
 					'Latest UK Articles' => 'uk',
 					'Latest US Articles' => 'us',
 					'Latest Asia Articles' => 'as'
-				),
-				'Keep up with ZDNet Blogs RSS:' => array(
+				],
+				'Keep up with ZDNet Blogs RSS:' => [
 					'Transforming the Datacenter' => 'blog/transforming-datacenter',
 					'SMB India' => 'blog/smb-india',
 					'Indonesia BizTech' => 'blog/indonesia-biztech',
@@ -116,8 +116,8 @@ class ZDNetBridge extends BridgeAbstract {
 					'ZDNet UK Book Reviews' => 'blog/zdnet-uk-book-reviews',
 					'ZDNet UK First Take' => 'blog/zdnet-uk-first-take',
 					'Zero Day' => 'blog/security'
-				),
-				'ZDNet Hot Topics RSS:' => array(
+				],
+				'ZDNet Hot Topics RSS:' => [
 					'Apple' => 'topic/apple',
 					'Collaboration' => 'topic/collaboration',
 					'Enterprise Software' => 'topic/enterprise-software',
@@ -141,23 +141,23 @@ class ZDNetBridge extends BridgeAbstract {
 					'Samsung' => 'topic/samsung',
 					'Security' => 'topic/security',
 					'Small business: going big on mobility' => 'topic/small-business-going-big-on-mobility'
-				),
-				'Product Blogs:' => array(
+				],
+				'Product Blogs:' => [
 					'Digital Cameras & Camcorders' => 'blog/digitalcameras',
 					'Home Theater' => 'blog/home-theater',
 					'Laptops and Desktops' => 'blog/computers',
 					'The Mobile Gadgeteer' => 'blog/mobile-gadgeteer',
 					'Smartphones and Cell Phones' => 'blog/cell-phones',
 					'The ToyBox' => 'blog/gadgetreviews'
-				),
-				'Vertical Blogs:' => array(
+				],
+				'Vertical Blogs:' => [
 					'ZDNet Education' => 'blog/education',
 					'ZDNet Healthcare' => 'blog/healthcare',
 					'ZDNet Government' => 'blog/government'
-				)
-			)
-		)
-	));
+				]
+			]
+		]
+	]];
 
 	public function collectData(){
 
@@ -261,7 +261,7 @@ class ZDNetBridge extends BridgeAbstract {
 				}
 
 				$contents = $article->find('article', 0)->innertext;
-				foreach(array(
+				foreach([
 					'<div class="shareBar"',
 					'<div class="shortcodeGalleryWrapper"',
 					'<div class="relatedContent',
@@ -269,7 +269,7 @@ class ZDNetBridge extends BridgeAbstract {
 					'<div data-shortcode',
 					'<div id="sharethrough',
 					'<div id="inpage-video'
-				) as $div_start) {
+				] as $div_start) {
 					$contents = stripRecursiveHtmlSection($contents, 'div', $div_start);
 				}
 				$contents = stripWithDelimiters($contents, '<script', '</script>');
@@ -287,7 +287,7 @@ class ZDNetBridge extends BridgeAbstract {
 				. '</b></p>'
 				. $contents;
 
-				$item = array();
+				$item = [];
 				$item['author'] = $author;
 				$item['uri'] = $article_url;
 				$item['title'] = $article_title;

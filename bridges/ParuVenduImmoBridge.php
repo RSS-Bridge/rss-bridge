@@ -7,23 +7,23 @@ class ParuVenduImmoBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 10800; // 3h
 	const DESCRIPTION = 'Returns the ads from the first page of search result.';
 
-	const PARAMETERS = array( array(
-		'minarea' => array(
+	const PARAMETERS = [ [
+		'minarea' => [
 			'name' => 'Minimal surface m²',
 			'type' => 'number'
-		),
-		'maxprice' => array(
+		],
+		'maxprice' => [
 			'name' => 'Max price',
 			'type' => 'number'
-		),
-		'pa' => array(
+		],
+		'pa' => [
 			'name' => 'Country code',
 			'exampleValue' => 'FR'
-		),
-		'lo' => array(
+		],
+		'lo' => [
 			'name' => 'department numbers or postal codes, comma-separated'
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
 		$html = getSimpleHTMLDOM($this->getURI())
@@ -49,7 +49,7 @@ class ParuVenduImmoBridge extends BridgeAbstract {
 
 			list($href) = explode('#', $element->href);
 
-			$item = array();
+			$item = [];
 			$item['uri'] = self::URI . $href;
 			$item['title'] = $element->title;
 			$item['content'] = $img . $desc . $price;

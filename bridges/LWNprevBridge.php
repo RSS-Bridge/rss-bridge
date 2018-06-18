@@ -8,7 +8,7 @@ class LWNprevBridge extends BridgeAbstract{
 
 	private $editionTimeStamp;
 
-	function getURI(){
+	public function getURI(){
 		return self::URI.'free/bigpage';
 	}
 
@@ -95,7 +95,7 @@ EOD;
 					$node->nodeName === 'h2' || (
 						!is_null($node->attributes) &&
 						!is_null($class = $node->attributes->getNamedItem('class')) &&
-						in_array($class->nodeValue, array('Cat1HL','Cat2HL'))
+						in_array($class->nodeValue, ['Cat1HL','Cat2HL'], true)
 					)
 				)
 			) {
@@ -109,13 +109,13 @@ EOD;
 	}
 
 	private function getFeatureContents(&$html){
-		$items = array();
+		$items = [];
 		foreach($html->getElementsByTagName('h2') as $title) {
 			if($title->getAttribute('class') !== 'SummaryHL') {
 				continue;
 			}
 
-			$item = array();
+			$item = [];
 
 			$author = $title->nextSibling;
 			$this->jumpToNextTag($author);
@@ -145,6 +145,7 @@ EOD;
 			if($cat->getAttribute('class') !== 'Cat2HL') {
 				break;
 			}
+			// no break
 		case 'Cat2HL':
 			$cat2 = $cat->textContent;
 			$cat = $cat->previousSibling;
@@ -156,6 +157,7 @@ EOD;
 			if($cat->getAttribute('class') !== 'Cat1HL') {
 				break;
 			}
+			// no break
 		case 'Cat1HL':
 			$cat1 = $cat->textContent;
 			$cats[0] = $cat1;
@@ -178,15 +180,15 @@ EOD;
 	}
 
 	private function getAnnouncements(&$html){
-		$items = array();
-		$cats = array('','','');
+		$items = [];
+		$cats = ['','',''];
 
 		foreach($html->getElementsByTagName('p') as $newsletters) {
 			if($newsletters->getAttribute('class') !== 'Cat3HL') {
 				continue;
 			}
 
-			$item = array();
+			$item = [];
 
 			$item['uri'] = self::URI.'#'.count($items);
 
@@ -208,7 +210,7 @@ EOD;
 						$node->nodeType !== XML_TEXT_NODE && (
 							!is_null($node->attributes) &&
 							!is_null($class = $node->attributes->getNamedItem('class')) &&
-							in_array($class->nodeValue, array('Cat1HL','Cat2HL','Cat3HL'))
+							in_array($class->nodeValue, ['Cat1HL','Cat2HL','Cat3HL'], true)
 						)
 					)
 				) {
@@ -226,7 +228,7 @@ EOD;
 				continue;
 			}
 
-			$item = array();
+			$item = [];
 
 			$cat = $title->previousSibling;
 			$this->jumpToPreviousTag($cat);
@@ -241,14 +243,14 @@ EOD;
 	}
 
 	private function getBriefItems(&$html){
-		$items = array();
-		$cats = array('','','');
+		$items = [];
+		$cats = ['','',''];
 		foreach($html->getElementsByTagName('h2') as $title) {
 			if($title->getAttribute('class') !== 'SummaryHL') {
 				continue;
 			}
 
-			$item = array();
+			$item = [];
 
 			$cat = $title->previousSibling;
 			$this->jumpToPreviousTag($cat);
@@ -262,4 +264,3 @@ EOD;
 		return $items;
 	}
 }
-?>

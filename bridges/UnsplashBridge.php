@@ -7,23 +7,23 @@ class UnsplashBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 43200; // 12h
 	const DESCRIPTION = 'Returns the latests photos from Unsplash';
 
-	const PARAMETERS = array( array(
-		'm' => array(
+	const PARAMETERS = [ [
+		'm' => [
 			'name' => 'Max number of photos',
 			'type' => 'number',
 			'defaultValue' => 20
-		),
-		'w' => array(
+		],
+		'w' => [
 			'name' => 'Width',
 			'exampleValue' => '1920, 1680, …',
 			'defaultValue' => '1920'
-		),
-		'q' => array(
+		],
+		'q' => [
 			'name' => 'JPEG quality',
 			'type' => 'number',
 			'defaultValue' => 75
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
 		$width = $this->getInput('w');
@@ -51,10 +51,10 @@ class UnsplashBridge extends BridgeAbstract {
 				$thumbnail = $element->find('img', 0);
 				$thumbnail->src = str_replace('https://', 'http://', $thumbnail->src);
 
-				$item = array();
+				$item = [];
 				$item['uri'] = str_replace(
-					array('q=75', 'w=400'),
-					array("q=$quality", "w=$width"),
+					['q=75', 'w=400'],
+					["q=$quality", "w=$width"],
 					$thumbnail->src).'.jpg'; // '.jpg' only for format hint
 
 				$item['timestamp'] = time();

@@ -7,11 +7,11 @@ class DauphineLibereBridge extends FeedExpander {
 	const CACHE_TIMEOUT = 7200; // 2h
 	const DESCRIPTION = 'Returns the newest articles.';
 
-	const PARAMETERS = array( array(
-		'u' => array(
+	const PARAMETERS = [ [
+		'u' => [
 			'name' => 'Catégorie de l\'article',
 			'type' => 'list',
-			'values' => array(
+			'values' => [
 				'À la une' => '',
 				'France Monde' => 'france-monde',
 				'Faits Divers' => 'faits-divers',
@@ -27,9 +27,9 @@ class DauphineLibereBridge extends FeedExpander {
 				'Savoie' => 'savoie',
 				'Haute-Savoie' => 'haute-savoie',
 				'Vaucluse' => 'vaucluse'
-			)
-		)
-	));
+			]
+		]
+	]];
 
 	public function collectData(){
 		$url = self::URI . 'rss';

@@ -6,19 +6,19 @@ class GBAtempBridge extends BridgeAbstract {
 	const URI = 'https://gbatemp.net/';
 	const DESCRIPTION = 'GBAtemp is a user friendly underground video game community.';
 
-	const PARAMETERS = array( array(
-		'type' => array(
+	const PARAMETERS = [ [
+		'type' => [
 			'name' => 'Type',
 			'type' => 'list',
 			'required' => true,
-			'values' => array(
+			'values' => [
 				'News' => 'N',
 				'Reviews' => 'R',
 				'Tutorials' => 'T',
 				'Forum' => 'F'
-			)
-		)
-	));
+			]
+		]
+	]];
 
 	private function extractFromDelimiters($string, $start, $end){
 		if(strpos($string, $start) !== false) {
@@ -41,7 +41,7 @@ class GBAtempBridge extends BridgeAbstract {
 	}
 
 	private function buildItem($uri, $title, $author, $timestamp, $content){
-		$item = array();
+		$item = [];
 		$item['uri'] = $uri;
 		$item['title'] = $title;
 		$item['author'] = $author;
@@ -88,6 +88,7 @@ class GBAtempBridge extends BridgeAbstract {
 				$content = $this->fetchPostContent($url, self::URI);
 				$this->items[] = $this->buildItem($url, $title, $author, $time, $content);
 			}
+			// no break
 		case 'R':
 			foreach($html->find('li.portal_review') as $reviewItem) {
 				$url = self::URI . $reviewItem->find('a', 0)->href;
@@ -110,6 +111,7 @@ class GBAtempBridge extends BridgeAbstract {
 				$content = $this->cleanupPostContent($intro . $review . $subheader . $procons . $scores, self::URI);
 				$this->items[] = $this->buildItem($url, $title, $author, $time, $content);
 			}
+			// no break
 		case 'T':
 			foreach($html->find('li.portal-tutorial') as $tutorialItem) {
 				$url = self::URI . $tutorialItem->find('a', 0)->href;
@@ -125,6 +127,7 @@ class GBAtempBridge extends BridgeAbstract {
 				$content = $this->fetchPostContent($url, self::URI);
 				$this->items[] = $this->buildItem($url, $title, $author, $time, $content);
 			}
+			// no break
 		case 'F':
 			foreach($html->find('li.rc_item') as $postItem) {
 				$url = self::URI . $postItem->find('a', 1)->href;
@@ -147,7 +150,7 @@ class GBAtempBridge extends BridgeAbstract {
 		if(!is_null($this->getInput('type'))) {
 			$type = array_search(
 				$this->getInput('type'),
-				self::PARAMETERS[$this->queriedContext]['type']['values']
+				self::PARAMETERS[$this->queriedContext]['type']['values'], true
 			);
 			return 'GBAtemp ' . $type . ' Bridge';
 		}

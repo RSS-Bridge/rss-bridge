@@ -6,13 +6,13 @@ class GrandComicsDatabaseBridge extends BridgeAbstract {
 	const URI = 'https://www.comics.org/';
 	const CACHE_TIMEOUT = 7200; // 2h
 	const DESCRIPTION = 'Returns the latest comics added to a series timeline';
-	const PARAMETERS = array( array(
-		'series' => array(
+	const PARAMETERS = [ [
+		'series' => [
 			'name' => 'Series id (from the timeline URL)',
 			'required' => true,
 			'exampleValue' => '63051',
-		),
-	));
+		],
+	]];
 
 	public function collectData(){
 
@@ -49,7 +49,7 @@ class GrandComicsDatabaseBridge extends BridgeAbstract {
 			}
 
 			// Build final item
-			$item = array();
+			$item = [];
 			$item['title'] = $seriesName . ' - ' . $key_date;
 			$item['timestamp'] = strtotime($key_date);
 			$item['content'] = str_get_html($content);

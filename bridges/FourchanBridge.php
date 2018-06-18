@@ -7,17 +7,17 @@ class FourchanBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 300; // 5min
 	const DESCRIPTION = 'Returns posts from the specified thread';
 
-	const PARAMETERS = array( array(
-		'c' => array(
+	const PARAMETERS = [ [
+		'c' => [
 			'name' => 'Thread category',
 			'required' => true
-		),
-		't' => array(
+		],
+		't' => [
 			'name' => 'Thread number',
 			'type' => 'number',
 			'required' => true
-		)
-	));
+		]
+	]];
 
 	public function getURI(){
 		if(!is_null($this->getInput('c')) && !is_null($this->getInput('t'))) {
@@ -33,7 +33,7 @@ class FourchanBridge extends BridgeAbstract {
 			or returnServerError("Could not request 4chan, thread not found");
 
 		foreach($html->find('div.postContainer') as $element) {
-			$item = array();
+			$item = [];
 			$item['id'] = $element->find('.post', 0)->getAttribute('id');
 			$item['uri'] = $this->getURI() . '#' . $item['id'];
 			$item['timestamp'] = $element->find('span.dateTime', 0)->getAttribute('data-utc');

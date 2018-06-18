@@ -7,14 +7,14 @@ class WordPressPluginUpdateBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 86400; // 24h = 86400s
 	const DESCRIPTION = 'Returns latest updates of WordPress.com plugins.';
 
-	const PARAMETERS = array(
-		array(
-			'pluginUrl' => array(
+	const PARAMETERS = [
+		[
+			'pluginUrl' => [
 				'name' => 'URL to the plugin',
 				'required' => true
-			)
-		)
-	);
+			]
+		]
+	];
 
 	public function collectData(){
 
@@ -26,7 +26,7 @@ class WordPressPluginUpdateBridge extends BridgeAbstract {
 
 		$content = $html->find('.block-content', 0);
 
-		$item = array();
+		$item = [];
 		$item['content'] = '';
 		$version = null;
 
@@ -49,7 +49,7 @@ class WordPressPluginUpdateBridge extends BridgeAbstract {
 					$this->items[] = $item;
 
 					$version = $element;
-					$item = array();
+					$item = [];
 					$item['content'] = '';
 
 				}

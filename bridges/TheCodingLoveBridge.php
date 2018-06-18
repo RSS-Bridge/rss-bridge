@@ -12,7 +12,7 @@ class TheCodingLoveBridge extends BridgeAbstract {
 			or returnServerError('Could not request The Coding Love.');
 
 		foreach($html->find('div.post') as $element) {
-			$item = array();
+			$item = [];
 			$temp = $element->find('h3 a', 0);
 
 			$titre = $temp->innertext;

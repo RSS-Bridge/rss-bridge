@@ -8,14 +8,14 @@ class VkBridge extends BridgeAbstract
 	const URI = 'https://vk.com/';
 	const CACHE_TIMEOUT = 300; // 5min
 	const DESCRIPTION = 'Working with open pages';
-	const PARAMETERS = array(
-		array(
-			'u' => array(
+	const PARAMETERS = [
+		[
+			'u' => [
 				'name' => 'Group or user name',
 				'required' => true
-			)
-		)
-	);
+			]
+		]
+	];
 
 	protected $pageName;
 
@@ -69,11 +69,11 @@ class VkBridge extends BridgeAbstract
 			$content_suffix = "";
 
 			// looking for external links
-			$external_link_selectors = array(
+			$external_link_selectors = [
 				'a.page_media_link_title',
 				'div.page_media_link_title > a',
 				'div.media_desc > a.lnk',
-			);
+			];
 
 			foreach($external_link_selectors as $sel) {
 				if (is_object($post->find($sel, 0))) {
@@ -87,11 +87,11 @@ class VkBridge extends BridgeAbstract
 			}
 
 			// remove external link from content
-			$external_link_selectors_to_remove = array(
+			$external_link_selectors_to_remove = [
 				'div.page_media_thumbed_link',
 				'div.page_media_link_desc_wrap',
 				'div.media_desc > a.lnk',
-			);
+			];
 
 			foreach($external_link_selectors_to_remove as $sel) {
 				if (is_object($post->find($sel, 0))) {
@@ -128,7 +128,7 @@ class VkBridge extends BridgeAbstract
 			$video = $post->find('div.post_video_desc', 0);
 			if (is_object($video)) {
 				$video_title = $video->find('div.post_video_title', 0)->plaintext;
-				$video_link = self::URI . ltrim( $video->find('a.lnk', 0)->getAttribute('href'), '/' );
+				$video_link = self::URI . ltrim($video->find('a.lnk', 0)->getAttribute('href'), '/');
 				$content_suffix .= "<br>Video: <a href='$video_link'>$video_title</a>";
 				$video->outertext = '';
 			}
@@ -138,7 +138,7 @@ class VkBridge extends BridgeAbstract
 				$video_title = $a->getAttribute('aria-label');
 				$temp = explode(" ", $video_title, 2);
 				if (count($temp) > 1) $video_title = $temp[1];
-				$video_link = self::URI . ltrim( $a->getAttribute('href'), '/' );
+				$video_link = self::URI . ltrim($a->getAttribute('href'), '/');
 				$content_suffix .= "<br>Video: <a href='$video_link'>$video_title</a>";
 				$a->outertext = '';
 			}
@@ -170,7 +170,7 @@ class VkBridge extends BridgeAbstract
 					$gif_preview_img = backgroundToImg($a->find('.page_doc_photo', 0));
 					$content_suffix .= "<br>Gif: <a href='$doc_link'>$gif_preview_img</a>";
 
-				} else if (is_object($doc_title_element)) {
+				} elseif (is_object($doc_title_element)) {
 					$doc_title = $doc_title_element->innertext;
 					$content_suffix .= "<br>Doc: <a href='$doc_link'>$doc_title</a>";
 
@@ -225,7 +225,7 @@ class VkBridge extends BridgeAbstract
 				$copy_quote->outertext = "<br>Reposted: <br>$copy_quote_content";
 			}
 
-			$item = array();
+			$item = [];
 			$item['content'] = strip_tags(backgroundToImg($post->find('div.wall_text', 0)->innertext), '<br><img>');
 			$item['content'] .= $content_suffix;
 
@@ -254,9 +254,9 @@ class VkBridge extends BridgeAbstract
 
 		if (is_null($pinned_post_item)) {
 			return;
-		} else if (count($this->items) == 0) {
+		} elseif (count($this->items) == 0) {
 			$this->items[] = $pinned_post_item;
-		} else if ($last_post_id < $pinned_post_item['post_id']) {
+		} elseif ($last_post_id < $pinned_post_item['post_id']) {
 			$this->items[] = $pinned_post_item;
 			usort($this->items, function ($item1, $item2) {
 				return $item2['post_id'] - $item1['post_id'];
@@ -269,13 +269,13 @@ class VkBridge extends BridgeAbstract
 		preg_match('/return showPhoto\(.+?({.*})/', $onclick, $preg_match_result);
 		if (count($preg_match_result) == 0) return;
 
-		$arg = htmlspecialchars_decode( str_replace('queue:1', '"queue":1', $preg_match_result[1]) );
+		$arg = htmlspecialchars_decode(str_replace('queue:1', '"queue":1', $preg_match_result[1]));
 		$data = json_decode($arg, true);
 		if ($data == null) return;
 
 		$thumb = $data['temp']['base'] . $data['temp']['x_'][0] . ".jpg";
 		$original = '';
-		foreach(array('y_', 'z_', 'w_') as $key) {
+		foreach(['y_', 'z_', 'w_'] as $key) {
 			if (!isset($data['temp'][$key])) continue;
 			if (!isset($data['temp'][$key][0])) continue;
 			if (substr($data['temp'][$key][0], 0, 4) == "http") {
@@ -330,7 +330,7 @@ class VkBridge extends BridgeAbstract
 	{
 		ini_set('user-agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:53.0) Gecko/20100101 Firefox/53.0');
 
-		$header = array('Accept-language: en', 'Cookie: remixlang=3');
+		$header = ['Accept-language: en', 'Cookie: remixlang=3'];
 
 		return getContents($this->getURI(), $header);
 	}

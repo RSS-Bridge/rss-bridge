@@ -7,12 +7,12 @@ class ScoopItBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = 'Returns most recent results from ScoopIt.';
 
-	const PARAMETERS = array( array(
-		'u' => array(
+	const PARAMETERS = [ [
+		'u' => [
 			'name' => 'keyword',
 			'required' => true
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
 		$this->request = $this->getInput('u');
@@ -22,7 +22,7 @@ class ScoopItBridge extends BridgeAbstract {
 			or returnServerError('Could not request ScoopIt. for : ' . $link);
 
 		foreach($html->find('div.post-view') as $element) {
-			$item = array();
+			$item = [];
 			$item['uri'] = $element->find('a', 0)->href;
 			$item['title'] = preg_replace(
 				'~[[:cntrl:]]~',

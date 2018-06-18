@@ -2,13 +2,13 @@
 require_once(__DIR__ . '/CacheInterface.php');
 class Cache {
 
-	static protected $dirCache;
+	protected static $dirCache;
 
 	public function __construct(){
 		throw new \LogicException('Please use ' . __CLASS__ . '::create for new object.');
 	}
 
-	static public function create($nameCache){
+	public static function create($nameCache){
 		if(!static::isValidNameCache($nameCache)) {
 			throw new \InvalidArgumentException('Name cache must be at least one
  uppercase follow or not by alphanumeric or dash characters.');
@@ -25,7 +25,7 @@ class Cache {
 		return new $nameCache();
 	}
 
-	static public function setDir($dirCache){
+	public static function setDir($dirCache){
 		if(!is_string($dirCache)) {
 			throw new \InvalidArgumentException('Dir cache must be a string.');
 		}
@@ -37,7 +37,7 @@ class Cache {
 		self::$dirCache = $dirCache;
 	}
 
-	static public function getDir(){
+	public static function getDir(){
 		$dirCache = self::$dirCache;
 
 		if(is_null($dirCache)) {
@@ -47,7 +47,7 @@ class Cache {
 		return $dirCache;
 	}
 
-	static public function isValidNameCache($nameCache){
+	public static function isValidNameCache($nameCache){
 		return preg_match('@^[A-Z][a-zA-Z0-9-]*$@', $nameCache);
 	}
 }

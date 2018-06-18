@@ -5,66 +5,66 @@ class TwitterBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 300; // 5min
 	const DESCRIPTION = 'returns tweets';
 	const MAINTAINER = 'pmaziere';
-	const PARAMETERS = array(
-		'global' => array(
-			'nopic' => array(
+	const PARAMETERS = [
+		'global' => [
+			'nopic' => [
 				'name' => 'Hide profile pictures',
 				'type' => 'checkbox',
 				'title' => 'Activate to hide profile pictures in content'
-			),
-			'noimg' => array(
+			],
+			'noimg' => [
 				'name' => 'Hide images in tweets',
 				'type' => 'checkbox',
 				'title' => 'Activate to hide images in tweets'
-			)
-		),
-		'By keyword or hashtag' => array(
-			'q' => array(
+			]
+		],
+		'By keyword or hashtag' => [
+			'q' => [
 				'name' => 'Keyword or #hashtag',
 				'required' => true,
 				'exampleValue' => 'rss-bridge, #rss-bridge',
 				'title' => 'Insert a keyword or hashtag'
-			)
-		),
-		'By username' => array(
-			'u' => array(
+			]
+		],
+		'By username' => [
+			'u' => [
 				'name' => 'username',
 				'required' => true,
 				'exampleValue' => 'sebsauvage',
 				'title' => 'Insert a user name'
-			),
-			'norep' => array(
+			],
+			'norep' => [
 				'name' => 'Without replies',
 				'type' => 'checkbox',
 				'title' => 'Only return initial tweets'
-			),
-			'noretweet' => array(
+			],
+			'noretweet' => [
 				'name' => 'Without retweets',
 				'required' => false,
 				'type' => 'checkbox',
 				'title' => 'Hide retweets'
-			)
-		),
-		'By list' => array(
-			'user' => array(
+			]
+		],
+		'By list' => [
+			'user' => [
 				'name' => 'User',
 				'required' => true,
 				'exampleValue' => 'sebsauvage',
 				'title' => 'Insert a user name'
-			),
-			'list' => array(
+			],
+			'list' => [
 				'name' => 'List',
 				'required' => true,
 				'title' => 'Insert the list name'
-			),
-			'filter' => array(
+			],
+			'filter' => [
 				'name' => 'Filter',
 				'exampleValue' => '#rss-bridge',
 				'required' => false,
 				'title' => 'Specify term to search for'
-			)
-		)
-	);
+			]
+		]
+	];
 
 	public function getName(){
 		switch($this->queriedContext) {
@@ -112,8 +112,10 @@ class TwitterBridge extends BridgeAbstract {
 			switch($this->queriedContext) {
 			case 'By keyword or hashtag':
 				returnServerError('No results for this query.');
+				// no break
 			case 'By username':
 				returnServerError('Requested username can\'t be found.');
+				// no break
 			case 'By list':
 				returnServerError('Requested username or list can\'t be found');
 			}
@@ -142,7 +144,7 @@ class TwitterBridge extends BridgeAbstract {
 				continue;
 			}
 
-			$item = array();
+			$item = [];
 			// extract username and sanitize
 			$item['username'] = $tweet->getAttribute('data-screen-name');
 			// extract fullname (pseudonym)
@@ -204,7 +206,7 @@ EOD;
 			$image = $this->getImageURI($tweet);
 			if(!$this->getInput('noimg') && !is_null($image)) {
 				// add enclosures
-				$item['enclosures'] = array($image . ':orig');
+				$item['enclosures'] = [$image . ':orig'];
 
 				$image_html = <<<EOD
 <a href="{$image}:orig">
@@ -246,7 +248,7 @@ EOD;
 				$quotedImage = $this->getQuotedImageURI($tweet);
 				if(!$this->getInput('noimg') && !is_null($quotedImage)) {
 					// add enclosures
-					$item['enclosures'] = array($quotedImage . ':orig');
+					$item['enclosures'] = [$quotedImage . ':orig'];
 
 					$quotedImage_html = <<<EOD
 <a href="{$quotedImage}:orig">

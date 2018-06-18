@@ -9,12 +9,12 @@ class Arte7Bridge extends BridgeAbstract {
 
 	const API_TOKEN = 'Nzc1Yjc1ZjJkYjk1NWFhN2I2MWEwMmRlMzAzNjI5NmU3NWU3ODg4ODJjOWMxNTMxYzEzZGRjYjg2ZGE4MmIwOA';
 
-	const PARAMETERS = array(
-		'Catégorie (Français)' => array(
-			'catfr' => array(
+	const PARAMETERS = [
+		'Catégorie (Français)' => [
+			'catfr' => [
 				'type' => 'list',
 				'name' => 'Catégorie',
-				'values' => array(
+				'values' => [
 					'Toutes les vidéos (français)' => null,
 					'Actu & société' => 'ACT',
 					'Séries & fiction' => 'SER',
@@ -25,14 +25,14 @@ class Arte7Bridge extends BridgeAbstract {
 					'Histoire' => 'HIST',
 					'Science' => 'SCI',
 					'Autre' => 'AUT'
-				)
-			)
-		),
-		'Catégorie (Allemand)' => array(
-			'catde' => array(
+				]
+			]
+		],
+		'Catégorie (Allemand)' => [
+			'catde' => [
 				'type' => 'list',
 				'name' => 'Catégorie',
-				'values' => array(
+				'values' => [
 					'Alle Videos (deutsch)' => null,
 					'Aktuelles & Gesellschaft' => 'ACT',
 					'Fernsehfilme & Serien' => 'SER',
@@ -43,10 +43,10 @@ class Arte7Bridge extends BridgeAbstract {
 					'Geschichte' => 'HIST',
 					'Wissenschaft' => 'SCI',
 					'Sonstiges' => 'AUT'
-				)
-			)
-		)
-	);
+				]
+			]
+		]
+	];
 
 	public function collectData(){
 		switch($this->queriedContext) {
@@ -64,16 +64,16 @@ class Arte7Bridge extends BridgeAbstract {
 			. $lang
 			. ($category != null ? '&category.code=' . $category : '');
 
-		$header = array(
+		$header = [
 			'Authorization: Bearer ' . self::API_TOKEN
-		);
+		];
 
 		$input = getContents($url, $header) or die('Could not request ARTE.');
 		$input_json = json_decode($input, true);
 
 		foreach($input_json['videos'] as $element) {
 
-			$item = array();
+			$item = [];
 			$item['uri'] = $element['url'];
 			$item['id'] = $element['id'];
 

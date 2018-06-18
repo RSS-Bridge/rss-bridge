@@ -8,12 +8,12 @@ class ViadeoCompanyBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns most recent actus from Company on Viadeo.
  (http://www.viadeo.com/fr/company/<strong style="font-weight:bold;">apple</strong>)';
 
-	const PARAMETERS = array( array(
-		'c' => array(
+	const PARAMETERS = [ [
+		'c' => [
 			'name' => 'Company name',
 			'required' => true
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
 		$html = '';
@@ -25,7 +25,7 @@ class ViadeoCompanyBridge extends BridgeAbstract {
 		foreach($html->find('//*[@id="company-newsfeed"]/ul/li') as $element) {
 			$title = $element->find('p', 0)->innertext;
 			if($title) {
-				$item = array();
+				$item = [];
 				$item['uri'] = $link;
 				$item['title'] = mb_substr($element->find('p', 0)->innertext, 0, 100);
 				$item['content'] = $element->find('p', 0)->innertext;;

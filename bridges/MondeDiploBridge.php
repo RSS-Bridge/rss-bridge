@@ -13,7 +13,7 @@ class MondeDiploBridge extends BridgeAbstract {
 
 		foreach($html->find('div.unarticle') as $article) {
 			$element = $article->parent();
-			$item = array();
+			$item = [];
 			$item['uri'] = self::URI . $element->href;
 			$item['title'] = $element->find('h3', 0)->plaintext;
 			$item['content'] = $element->find('div.dates_auteurs', 0)->plaintext

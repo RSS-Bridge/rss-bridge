@@ -6,13 +6,13 @@ class BandcampBridge extends BridgeAbstract {
 	const URI = 'https://bandcamp.com/';
 	const CACHE_TIMEOUT = 600; // 10min
 	const DESCRIPTION = 'New bandcamp release by tag';
-	const PARAMETERS = array( array(
-		'tag' => array(
+	const PARAMETERS = [ [
+		'tag' => [
 			'name' => 'tag',
 			'type' => 'text',
 			'required' => true
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
 		$html = getSimpleHTMLDOM($this->getURI())
@@ -23,7 +23,7 @@ class BandcampBridge extends BridgeAbstract {
 			$uri = ltrim($script, "return 'url(");
 			$uri = rtrim($uri, "')");
 
-			$item = array();
+			$item = [];
 			$item['author'] = $release->find('div.itemsubtext', 0)->plaintext
 			. ' - '
 			. $release->find('div.itemtext', 0)->plaintext;

@@ -15,12 +15,12 @@ class GoogleSearchBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 1800; // 30min
 	const DESCRIPTION = 'Returns most recent results from Google search.';
 
-	const PARAMETERS = array(array(
-		'q' => array(
+	const PARAMETERS = [[
+		'q' => [
 			'name' => "keyword",
 			'required' => true
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
 		$html = '';
@@ -36,7 +36,7 @@ class GoogleSearchBridge extends BridgeAbstract {
 		if(!is_null($emIsRes)) {
 			foreach($emIsRes->find('div[class=g]') as $element) {
 
-				$item = array();
+				$item = [];
 
 				// Extract direct URL from google href (eg. /url?q=...)
 				$t = $element->find('a[href]', 0)->href;

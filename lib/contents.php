@@ -1,5 +1,5 @@
 <?php
-function getContents($url, $header = array(), $opts = array()){
+function getContents($url, $header = [], $opts = []){
 	$ch = curl_init($url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -33,8 +33,8 @@ function getContents($url, $header = array(), $opts = array()){
 }
 
 function getSimpleHTMLDOM($url,
-$header = array(),
-$opts = array(),
+$header = [],
+$opts = [],
 $lowercase = true,
 $forceTagsClosed = true,
 $target_charset = DEFAULT_TARGET_CHARSET,
@@ -59,8 +59,8 @@ $defaultSpanText = DEFAULT_SPAN_TEXT){
  */
 function getSimpleHTMLDOMCached($url,
 $duration = 86400,
-$header = array(),
-$opts = array(),
+$header = [],
+$opts = [],
 $lowercase = true,
 $forceTagsClosed = true,
 $target_charset = DEFAULT_TARGET_CHARSET,

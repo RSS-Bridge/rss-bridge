@@ -23,7 +23,7 @@ class MsnMondeBridge extends BridgeAbstract {
 		$limit = 0;
 		foreach($html->find('.smalla') as $article) {
 			if($limit < 10) {
-				$item = array();
+				$item = [];
 				$item['title'] = utf8_decode($article->find('h4', 0)->innertext);
 				$item['uri'] = self::URI . utf8_decode($article->find('a', 0)->href);
 				$this->msnMondeExtractContent($item['uri'], $item);

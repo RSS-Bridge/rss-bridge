@@ -9,16 +9,16 @@ class GiphyBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 300; //5min
 	const DESCRIPTION = 'Bridge for giphy.com';
 
-	const PARAMETERS = array( array(
-		's' => array(
+	const PARAMETERS = [ [
+		's' => [
 			'name' => 'search tag',
 			'required' => true
-		),
-		'n' => array(
+		],
+		'n' => [
 			'name' => 'max number of returned items',
 			'type' => 'number'
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
 		$html = '';
@@ -44,7 +44,7 @@ class GiphyBridge extends BridgeAbstract {
 				$img = $figure->firstChild();
 				$caption = $figure->lastChild();
 
-				$item = array();
+				$item = [];
 				$item['id'] = $img->getAttribute('data-gif_id');
 				$item['uri'] = $img->getAttribute('data-bitly_gif_url');
 				$item['username'] = 'Giphy - ' . ucfirst($kw);

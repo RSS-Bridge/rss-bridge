@@ -6,20 +6,20 @@ class AllocineFRBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 25200; // 7h
 	const URI = 'http://www.allocine.fr/';
 	const DESCRIPTION = 'Bridge for allocine.fr';
-	const PARAMETERS = array( array(
-		'category' => array(
+	const PARAMETERS = [ [
+		'category' => [
 			'name' => 'category',
 			'type' => 'list',
 			'required' => true,
 			'exampleValue' => 'Faux Raccord',
 			'title' => 'Select your category',
-			'values' => array(
+			'values' => [
 				'Faux Raccord' => 'faux-raccord',
 				'Top 5' => 'top-5',
 				'Tueurs en Séries' => 'tueurs-en-serie'
-			)
-		)
-	));
+			]
+		]
+	]];
 
 	public function getURI(){
 		if(!is_null($this->getInput('category'))) {
@@ -47,7 +47,7 @@ class AllocineFRBridge extends BridgeAbstract {
 			return self::NAME . ' : '
 				.array_search(
 					$this->getInput('category'),
-					self::PARAMETERS[$this->queriedContext]['category']['values']
+					self::PARAMETERS[$this->queriedContext]['category']['values'], true
 				);
 		}
 
@@ -61,11 +61,11 @@ class AllocineFRBridge extends BridgeAbstract {
 
 		$category = array_search(
 				$this->getInput('category'),
-				self::PARAMETERS[$this->queriedContext]['category']['values']
+				self::PARAMETERS[$this->queriedContext]['category']['values'], true
 			);
 
 		foreach($html->find('.media-meta-list figure.media-meta-fig') as $element) {
-			$item = array();
+			$item = [];
 
 			$title = $element->find('div.titlebar h3.title a', 0);
 			$content = trim($element->innertext);

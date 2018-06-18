@@ -8,23 +8,23 @@ class FacebookBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Input a page title or a profile log. For a profile log,
  please insert the parameter as follow : myExamplePage/132621766841117';
 
-	const PARAMETERS = array( array(
-		'u' => array(
+	const PARAMETERS = [ [
+		'u' => [
 			'name' => 'Username',
 			'required' => true
-		),
-		'media_type' => array(
+		],
+		'media_type' => [
 			'name' => 'Media type',
 			'type' => 'list',
 			'required' => false,
-			'values' => array(
+			'values' => [
 				'All' => 'all',
 				'Video' => 'video',
 				'No Video' => 'novideo'
-			),
+			],
 			'defaultValue' => 'all'
-		)
-	));
+		]
+	]];
 
 	private $authorName = '';
 
@@ -55,7 +55,7 @@ class FacebookBridge extends BridgeAbstract {
 
 		//Utility function for converting facebook emoticons
 		$unescape_fb_emote = function($matches){
-			static $facebook_emoticons = array(
+			static $facebook_emoticons = [
 				'smile' => ':)',
 				'frown' => ':(',
 				'tongue' => ':P',
@@ -76,7 +76,7 @@ class FacebookBridge extends BridgeAbstract {
 				'confused' => 'o_O',
 				'upset' => 'xD',
 				'colonthree' => ':3',
-				'like' => '&#x1F44D;');
+				'like' => '&#x1F44D;'];
 			$len = count($matches);
 			if ($len > 1)
 				for ($i = 1; $i < $len; $i++)
@@ -97,12 +97,12 @@ class FacebookBridge extends BridgeAbstract {
 				$captcha_fields = $_SESSION['captcha_fields'];
 				$captcha_fields['captcha_response'] = preg_replace("/[^a-zA-Z0-9]+/", "", $_POST['captcha_response']);
 
-				$header = array("Content-type:
-application/x-www-form-urlencoded\r\nReferer: $captcha_action\r\nCookie: noscript=1\r\n");
-				$opts = array(
+				$header = ["Content-type:
+application/x-www-form-urlencoded\r\nReferer: $captcha_action\r\nCookie: noscript=1\r\n"];
+				$opts = [
 					CURLOPT_POST => 1,
 					CURLOPT_POSTFIELDS => http_build_query($captcha_fields)
-				);
+				];
 
 				$html = getContents($captcha_action, $header, $opts);
 
@@ -118,7 +118,7 @@ application/x-www-form-urlencoded\r\nReferer: $captcha_action\r\nCookie: noscrip
 
 		//Retrieve page contents
 		if(is_null($html)) {
-			$header = array('Accept-Language: ' . getEnv('HTTP_ACCEPT_LANGUAGE') . "\r\n");
+			$header = ['Accept-Language: ' . getEnv('HTTP_ACCEPT_LANGUAGE') . "\r\n"];
 
 			// First character cannot be a forward slash
 			if(strpos($this->getInput('u'), "/") === 0) {
@@ -140,7 +140,7 @@ application/x-www-form-urlencoded\r\nReferer: $captcha_action\r\nCookie: noscrip
 			//Save form for submitting after getting captcha response
 			if (session_status() == PHP_SESSION_NONE)
 				session_start();
-			$captcha_fields = array();
+			$captcha_fields = [];
 			foreach ($captcha->find('input, button') as $input)
 				$captcha_fields[$input->name] = $input->value;
 			$_SESSION['captcha_fields'] = $captcha_fields;
@@ -192,7 +192,7 @@ EOD;
 				if(strpos($cell->class, '_3xaf') !== false) {
 					$posts = $cell->children();
 				} else {
-					$posts = array($cell);
+					$posts = [$cell];
 				}
 
 				foreach($posts as $post) {
@@ -208,7 +208,7 @@ EOD;
 						default: break;
 					}
 
-					$item = array();
+					$item = [];
 
 					if(count($post->find('abbr')) > 0) {
 
@@ -240,7 +240,7 @@ EOD;
 						$content = preg_replace_callback('/ href=\"([^"]+)\"/i', $unescape_fb_link, $content);
 
 						//Clean useless html tag properties and fix link closing tags
-						foreach (array(
+						foreach ([
 							'onmouseover',
 							'onclick',
 							'target',
@@ -252,7 +252,7 @@ EOD;
 							'aria-[^=]*',
 							'role',
 							'rel',
-							'id') as $property_name)
+							'id'] as $property_name)
 								$content = preg_replace('/ ' . $property_name . '=\"[^"]*\"/i', '', $content);
 						$content = preg_replace('/<\/a [^>]+>/i', '</a>', $content);
 

@@ -7,26 +7,26 @@ class PickyWallpapersBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 43200; // 12h
 	const DESCRIPTION = 'Returns the latests wallpapers from PickyWallpapers';
 
-	const PARAMETERS = array( array(
-		'c' => array(
+	const PARAMETERS = [ [
+		'c' => [
 			'name' => 'category',
 			'required' => true
-		),
-		's' => array(
+		],
+		's' => [
 			'name' => 'subcategory'
-		),
-		'm' => array(
+		],
+		'm' => [
 			'name' => 'Max number of wallpapers',
 			'defaultValue' => 12,
 			'type' => 'number'
-		),
-		'r' => array(
+		],
+		'r' => [
 			'name' => 'resolution',
 			'exampleValue' => '1920x1200, 1680x1050,…',
 			'defaultValue' => '1920x1200',
 			'pattern' => '[0-9]{3,4}x[0-9]{3,4}'
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
 		$lastpage = 1;
@@ -44,7 +44,7 @@ class PickyWallpapersBridge extends BridgeAbstract {
 			}
 
 			foreach($html->find('.items li img') as $element) {
-				$item = array();
+				$item = [];
 				$item['uri'] = str_replace('www', 'wallpaper', self::URI)
 				. '/'
 				. $resolution

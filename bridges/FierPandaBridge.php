@@ -12,7 +12,7 @@ class FierPandaBridge extends BridgeAbstract {
 			or returnServerError('Could not request Fier Panda.');
 
 		foreach($html->find('div.container-content article') as $element) {
-			$item = array();
+			$item = [];
 			$item['uri'] = $this->getURI() . $element->find('a', 0)->href;
 			$item['title'] = trim($element->find('h1 a', 0)->innertext);
 			// Remove the link at the end of the article

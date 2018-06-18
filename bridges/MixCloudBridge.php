@@ -8,12 +8,12 @@ class MixCloudBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 3600; // 1h
 	const DESCRIPTION = 'Returns latest musics on user stream';
 
-	const PARAMETERS = array(array(
-		'u' => array(
+	const PARAMETERS = [[
+		'u' => [
 			'name' => 'username',
 			'required' => true,
-		)
-	));
+		]
+	]];
 
 	public function getName(){
 		if(!is_null($this->getInput('u'))) {
@@ -31,7 +31,7 @@ class MixCloudBridge extends BridgeAbstract {
 
 		foreach($html->find('section.card') as $element) {
 
-			$item = array();
+			$item = [];
 
 			$item['uri'] = self::URI . $element->find('hgroup.card-title h1 a', 0)->getAttribute('href');
 			$item['title'] = html_entity_decode(

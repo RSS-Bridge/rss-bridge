@@ -16,7 +16,7 @@ class NasaApodBridge extends BridgeAbstract {
 
 		for($i = 0; $i < 3; $i++) {
 			$line = $list[$i];
-			$item = array();
+			$item = [];
 
 			$uri_page = $html->find('a', $i + 3)->href;
 			$uri = self::URI . $uri_page;

@@ -7,11 +7,11 @@ class NotAlwaysBridge extends BridgeAbstract {
 		const DESCRIPTION = 'Returns the latest stories';
 		const CACHE_TIMEOUT = 1800; // 30 minutes
 
-		const PARAMETERS = array( array(
-				'filter' => array(
+		const PARAMETERS = [ [
+				'filter' => [
 						'type' => 'list',
 						'name' => 'Filter',
-						'values' => array(
+						'values' => [
 								'All' => 'all',
 								'Right' => 'right',
 								'Working' => 'working',
@@ -21,17 +21,17 @@ class NotAlwaysBridge extends BridgeAbstract {
 								'Friendly' => 'friendly',
 								'Hopeless' => 'hopeless',
 								'Unfiltered' => 'unfiltered'
-						),
+						],
 						'required' => true
-				)
-		));
+				]
+		]];
 
 		public function collectData(){
 				$html = getSimpleHTMLDOM($this->getURI())
 						or returnServerError('Could not request NotAlways.');
 				foreach($html->find('.post') as $post) {
 						#print_r($post);
-						$item = array();
+						$item = [];
 						$item['uri'] = $post->find('h1', 0)->find('a', 0)->href;
 						$item['content'] = $post;
 						$item['title'] = $post->find('h1', 0)->find('a', 0)->innertext;

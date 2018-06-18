@@ -21,7 +21,7 @@ class RainbowSixSiegeBridge extends BridgeAbstract {
 			$jsonItem = $json[$i]['Content'];
 			$article = str_get_html($jsonItem);
 
-			$item = array();
+			$item = [];
 
 			$uri = $article->find('h3 a', 0)->href;
 			$uri = 'https://rainbow6.ubisoft.com' . $uri;

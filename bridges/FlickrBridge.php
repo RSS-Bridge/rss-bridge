@@ -11,27 +11,27 @@ class FlickrBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 21600; // 6 hours
 	const DESCRIPTION = 'Returns images from Flickr';
 
-	const PARAMETERS = array(
-		'Explore' => array(),
-		'By keyword' => array(
-			'q' => array(
+	const PARAMETERS = [
+		'Explore' => [],
+		'By keyword' => [
+			'q' => [
 				'name' => 'Keyword',
 				'type' => 'text',
 				'required' => true,
 				'title' => 'Insert keyword',
 				'exampleValue' => 'bird'
-			)
-		),
-		'By username' => array(
-			'u' => array(
+			]
+		],
+		'By username' => [
+			'u' => [
 				'name' => 'Username',
 				'type' => 'text',
 				'required' => true,
 				'title' => 'Insert username (as shown in the address bar)',
 				'exampleValue' => 'flickr'
-			)
-		),
-	);
+			]
+		],
+	];
 
 	public function collectData(){
 		switch($this->queriedContext) {
@@ -85,7 +85,7 @@ class FlickrBridge extends BridgeAbstract {
 			// Use JSON data to build items
 			foreach(reset($model_json)[0][$key]['_data'] as $element) {
 				if($element['id'] === $imageID) {
-					$item = array();
+					$item = [];
 
 					/* Author name depends on scope. On a keyword search the
 					 * author is part of the picture data. On a username search

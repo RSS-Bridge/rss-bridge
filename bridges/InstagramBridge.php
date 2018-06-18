@@ -6,35 +6,35 @@ class InstagramBridge extends BridgeAbstract {
 	const URI = 'https://instagram.com/';
 	const DESCRIPTION = 'Returns the newest images';
 
-	const PARAMETERS = array(
-		array(
-			'u' => array(
+	const PARAMETERS = [
+		[
+			'u' => [
 				'name' => 'username',
 				'required' => true
-			)
-		),
-		array(
-			'h' => array(
+			]
+		],
+		[
+			'h' => [
 				'name' => 'hashtag',
 				'required' => true
-			)
-		),
-		'global' => array(
-			'media_type' => array(
+			]
+		],
+		'global' => [
+			'media_type' => [
 				'name' => 'Media type',
 				'type' => 'list',
 				'required' => false,
-				'values' => array(
+				'values' => [
 					'All' => 'all',
 					'Story' => 'story',
 					'Video' => 'video',
 					'Picture' => 'picture',
-				),
+				],
 				'defaultValue' => 'all'
-			)
-		)
+			]
+		]
 
-	);
+	];
 
 	public function collectData(){
 
@@ -71,7 +71,7 @@ class InstagramBridge extends BridgeAbstract {
 				if($this->getInput('media_type') == 'video' && !$media->is_video) continue;
 			}
 
-			$item = array();
+			$item = [];
 			$item['uri'] = self::URI . 'p/' . $media->shortcode . '/';
 
 			if (isset($media->edge_media_to_caption->edges[0]->node->text)) {
@@ -86,7 +86,7 @@ class InstagramBridge extends BridgeAbstract {
 				$item['enclosures'] = $data[1];
 			} else {
 				$item['content'] = '<img src="' . htmlentities($media->display_url) . '" alt="'. $item["title"] . '" />';
-				$item['enclosures'] = array($media->display_url);
+				$item['enclosures'] = [$media->display_url];
 			}
 
 			$item['timestamp'] = $media->taken_at_timestamp;

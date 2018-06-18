@@ -6,11 +6,11 @@ class NextgovBridge extends FeedExpander {
 	const URI = 'https://www.nextgov.com/';
 	const DESCRIPTION = 'USA Federal technology news, best practices, and web 2.0 tools.';
 
-	const PARAMETERS = array( array(
-		'category' => array(
+	const PARAMETERS = [ [
+		'category' => [
 			'name' => 'Category',
 			'type' => 'list',
-			'values' => array(
+			'values' => [
 				'All' => 'all',
 				'Technology News' => 'technology-news',
 				'CIO Briefing' => 'cio-briefing',
@@ -21,9 +21,9 @@ class NextgovBridge extends FeedExpander {
 				'Health' => 'health',
 				'Defense' => 'defense',
 				'Big Data' => 'big-data'
-			)
-		)
-	));
+			]
+		]
+	]];
 
 	public function collectData(){
 		$this->collectExpandableDatas(self::URI . 'rss/' . $this->getInput('category') . '/', 10);

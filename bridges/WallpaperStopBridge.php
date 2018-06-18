@@ -7,24 +7,24 @@ class WallpaperStopBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 43200; // 12h
 	const DESCRIPTION = 'Returns the latests wallpapers from WallpaperStop';
 
-	const PARAMETERS = array( array(
-		'c' => array(
+	const PARAMETERS = [ [
+		'c' => [
 			'name' => 'Category'
-		),
-		's' => array(
+		],
+		's' => [
 			'name' => 'subcategory'
-		),
-		'm' => array(
+		],
+		'm' => [
 			'name' => 'Max number of wallpapers',
 			'type' => 'number',
 			'defaultValue' => 20
-		),
-		'r' => array(
+		],
+		'r' => [
 			'name' => 'resolution',
 			'exampleValue' => '1920x1200, 1680x1050,…',
 			'defaultValue' => '1920x1200'
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
 		$category = $this->getInput('c');
@@ -58,7 +58,7 @@ class WallpaperStopBridge extends BridgeAbstract {
 				if(preg_match('%^' . self::URI . '/(.+)/([^/]+)-(\d+)\.html$%', $wplink, $matches)) {
 					$thumbnail = $element->find('img', 0);
 
-					$item = array();
+					$item = [];
 					$item['uri'] = self::URI
 					. '/wallpapers/'
 					. str_replace('wallpaper', 'wallpapers', $matches[1])

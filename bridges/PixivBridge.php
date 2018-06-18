@@ -7,13 +7,13 @@ class PixivBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns the tag search from pixiv.net';
 
 
-	const PARAMETERS = array( array(
-		'tag' => array(
+	const PARAMETERS = [ [
+		'tag' => [
 			'name' => 'Tag to search',
 			'exampleValue' => 'example',
 			'required' => true
-		),
-	));
+		],
+	]];
 
 
 	public function collectData(){
@@ -32,7 +32,7 @@ class PixivBridge extends BridgeAbstract {
 			if($count == 10) break;
 			$count++;
 
-			$item = array();
+			$item = [];
 			$item["id"] = $result["illustId"];
 			$item["uri"] = "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" . $result["illustId"];
 			$item["title"] = $result["illustTitle"];
@@ -58,7 +58,7 @@ class PixivBridge extends BridgeAbstract {
 			mkdir($path, 0755, true);
 
 		if(!is_file($path . '/' . $illustId . '.jpeg')) {
-			$headers = array("Referer:  https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" . $illustId);
+			$headers = ["Referer:  https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" . $illustId];
 			$illust = getContents($url, $headers);
 			if(strpos($illust, "404 Not Found") !== false) {
 				$illust = getContents(str_replace("jpg", "png", $url), $headers);

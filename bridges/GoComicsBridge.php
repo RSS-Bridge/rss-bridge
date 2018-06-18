@@ -6,13 +6,13 @@ class GoComicsBridge extends BridgeAbstract {
 	const URI = 'https://www.gocomics.com/';
 	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = 'The Unofficial GoComics RSS';
-	const PARAMETERS = array( array(
-		'comicname' => array(
+	const PARAMETERS = [ [
+		'comicname' => [
 			'name' => 'comicname',
 			'type' => 'text',
 			'required' => true
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
 		$html = getSimpleHTMLDOM($this->getURI())
@@ -24,7 +24,7 @@ class GoComicsBridge extends BridgeAbstract {
 		$link = self::URI . $html->find(".gc-deck--cta-0", 0)->find('a', 0)->href;
 		for($i = 0; $i < 5; $i++) {
 
-			$item = array();
+			$item = [];
 
 			$page = getSimpleHTMLDOM($link)
 				or returnServerError('Could not request GoComics: ' . $link);

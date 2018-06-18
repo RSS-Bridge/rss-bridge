@@ -15,7 +15,7 @@ class CourrierInternationalBridge extends BridgeAbstract {
 		$article_count = 1;
 
 		foreach($element as $article) {
-			$item = array();
+			$item = [];
 
 			$item['uri'] = $article->parent->getAttribute('href');
 

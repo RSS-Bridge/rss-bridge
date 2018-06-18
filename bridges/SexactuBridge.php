@@ -8,11 +8,11 @@ class SexactuBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 7200; // 2h
 	const DESCRIPTION = 'Sexactu via rss-bridge';
 
-	const REPLACED_ATTRIBUTES = array(
+	const REPLACED_ATTRIBUTES = [
 			'href' => 'href',
 			'src' => 'src',
 			'data-original' => 'src'
-	);
+	];
 
 	public function getURI(){
 		return self::URI . '/sexactu';
@@ -29,7 +29,7 @@ class SexactuBridge extends BridgeAbstract {
 
 			$title = $row->find('.title', 0);
 			if($title) {
-				$item = array();
+				$item = [];
 				$item['author'] = self::AUTHOR;
 				$item['title'] = $title->plaintext;
 				$urlAttribute = "data-href";
@@ -38,7 +38,7 @@ class SexactuBridge extends BridgeAbstract {
 					continue;
 				if(substr($uri, 0, 1) === 'h') { // absolute uri
 					$item['uri'] = $uri;
-				} else if(substr($uri, 0, 1) === '/') { // domain relative url
+				} elseif(substr($uri, 0, 1) === '/') { // domain relative url
 					$item['uri'] = self::URI . $uri;
 				} else {
 					$item['uri'] = $this->getURI() . $uri;

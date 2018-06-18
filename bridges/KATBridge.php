@@ -8,34 +8,34 @@ class KATBridge extends BridgeAbstract {
  show"). Category based search needs the category number as input. User based
  search takes the Uploader ID: see KAT URL for user feed. Search can be done in a specified category';
 
-	const PARAMETERS = array( array(
-		'q' => array(
+	const PARAMETERS = [ [
+		'q' => [
 			'name' => 'keywords, separated by semicolons',
 			'exampleValue' => 'first list;second list;…',
 			'required' => true
-		),
-		'crit' => array(
+		],
+		'crit' => [
 			'type' => 'list',
 			'name' => 'Search type',
-			'values' => array(
+			'values' => [
 				'search' => 'search',
 				'category' => 'cat',
 				'user' => 'usr'
-			)
-		),
-		'cat_check' => array(
+			]
+		],
+		'cat_check' => [
 			'type' => 'checkbox',
 			'name' => 'Specify category for normal search ?',
-		),
-		'cat' => array(
+		],
+		'cat' => [
 			'name' => 'Category number',
 			'exampleValue' => '100, 200… See KAT for category number'
-		),
-		'trusted' => array(
+		],
+		'trusted' => [
 			'type' => 'checkbox',
 			'name' => 'Only get results from Elite or Verified uploaders ?',
-		),
-	));
+		],
+	]];
 	public function collectData(){
 		function parseDateTimestamp($element){
 				$guessedDate = strptime($element, '%d-%m-%Y %H:%M:%S');
@@ -95,7 +95,7 @@ class KATBridge extends BridgeAbstract {
 				if(!$trustedBool
 				|| !is_null($element->find('i[title="Elite Uploader"]', 0))
 				|| !is_null($element->find('i[title="Verified Uploader"]', 0))) {
-					$item = array();
+					$item = [];
 					$item['uri'] = self::URI . $element->find('a', 2)->href;
 					$item['id'] = self::URI . $element->find('a.cellMainLink', 0)->href;
 					$item['timestamp'] = parseDateTimestamp($element->find('td', 2)->plaintext);

@@ -34,7 +34,7 @@ class ReporterreBridge extends BridgeAbstract {
 
 		foreach($html->find('item') as $element) {
 			if($limit < 5) {
-				$item = array();
+				$item = [];
 				$item['title'] = html_entity_decode($element->find('title', 0)->plaintext);
 				$item['timestamp'] = strtotime($element->find('dc:date', 0)->plaintext);
 				$item['uri'] = $element->find('guid', 0)->innertext;

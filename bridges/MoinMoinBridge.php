@@ -5,50 +5,50 @@ class MoinMoinBridge extends BridgeAbstract {
 	const NAME = 'MoinMoin Bridge';
 	const URI = 'https://moinmo.in';
 	const DESCRIPTION = 'Generates feeds for pages of a MoinMoin (compatible) wiki';
-	const PARAMETERS = array(
-		array(
-			'source' => array(
+	const PARAMETERS = [
+		[
+			'source' => [
 				'name' => 'Source',
 				'type' => 'text',
 				'required' => true,
 				'title' => 'Insert wiki page URI (e.g.: https://moinmo.in/MoinMoin)',
 				'exampleValue' => 'https://moinmo.in/MoinMoin'
-			),
-			'separator' => array(
+			],
+			'separator' => [
 				'name' => 'Separator',
 				'type' => 'list',
 				'requied' => true,
 				'title' => 'Defines the separtor for splitting content into feeds',
 				'defaultValue' => 'h2',
-				'values' => array(
+				'values' => [
 					'Header (h1)' => 'h1',
 					'Header (h2)' => 'h2',
 					'Header (h3)' => 'h3',
 					'List element (li)' => 'li',
 					'Anchor (a)' => 'a'
-				)
-			),
-			'limit' => array(
+				]
+			],
+			'limit' => [
 				'name' => 'Limit',
 				'type' => 'number',
 				'required' => false,
 				'title' => 'Number of items to return (from top)',
 				'defaultValue' => -1
-			),
-			'content' => array(
+			],
+			'content' => [
 				'name' => 'Content',
 				'type' => 'list',
 				'required' => false,
 				'title' => 'Defines how feed contents are build',
 				'defaultValue' => 'separator',
-				'values' => array(
+				'values' => [
 					'By separator' => 'separator',
 					'Follow link (only for anchor)' => 'follow',
 					'None' => 'none'
-				)
-			)
-		)
-	);
+				]
+			]
+		]
+	];
 
 	private $title = '';
 
@@ -93,7 +93,7 @@ class MoinMoinBridge extends BridgeAbstract {
 		$sections = $this->splitSections($html);
 
 		foreach($sections as $section) {
-			$item = array();
+			$item = [];
 
 			$item['uri'] = $this->findSectionAnchor($section[0]);
 
@@ -114,6 +114,7 @@ class MoinMoinBridge extends BridgeAbstract {
 
 						break;
 					}
+					// no break
 				case 'separator':
 				default: // Use contents from the current page
 					$item['content'] = $this->cleanArticle($section[2]);
@@ -157,16 +158,16 @@ class MoinMoinBridge extends BridgeAbstract {
 		$content = $html->find('div#page', 0)->innertext
 			or returnServerError('Unable to find <div id="page"/>!');
 
-		$sections = array();
+		$sections = [];
 
 		$regex = implode(
 			'',
-			array(
+			[
 				"\<{$this->getInput('separator')}.+?(?=\>)\>",
 				"(.+?)(?=\<\/{$this->getInput('separator')}\>)",
 				"\<\/{$this->getInput('separator')}\>",
 				"(.+?)((?=\<{$this->getInput('separator')})|(?=\<div\sid=\"pagebottom\")){1}"
-			)
+			]
 		);
 
 		preg_match_all(
@@ -178,13 +179,13 @@ class MoinMoinBridge extends BridgeAbstract {
 
 		// Some pages don't use headers, return page as one feed
 		if(count($sections) === 0) {
-			return array(
-				array(
+			return [
+				[
 					$content,
 					$html->find('title', 0)->innertext,
 					$content
-				)
-			);
+				]
+			];
 		}
 
 		return $sections;
@@ -250,7 +251,7 @@ class MoinMoinBridge extends BridgeAbstract {
 			return null;
 		} else {
 			$timestamp = $pageinfo->innertext;
-			$matches = array();
+			$matches = [];
 			preg_match('/.+?(?=\().+?(?=\d)([0-9\-\s\:]+)/m', $pageinfo, $matches);
 			return strtotime($matches[1]);
 		}
@@ -303,7 +304,7 @@ class MoinMoinBridge extends BridgeAbstract {
 	 * Finds the domain for a given URI
 	 */
 	private function findDomain($uri){
-		$matches = array();
+		$matches = [];
 		preg_match('/(http[s]{0,1}:\/\/.+?(?=\/))/', $uri, $matches);
 		return $matches[1];
 	}

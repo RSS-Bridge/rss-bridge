@@ -7,40 +7,40 @@ class DiceBridge extends BridgeAbstract {
 	const DESCRIPTION = 'The Unofficial Dice RSS';
 	// const CACHE_TIMEOUT = 86400; // 1 day
 
-	const PARAMETERS = array(array(
-		'for_one' => array(
+	const PARAMETERS = [[
+		'for_one' => [
 			'name' => 'With at least one of the words',
 			'required' => false,
-		),
-		'for_all' => array(
+		],
+		'for_all' => [
 			'name' => 'With all of the words',
 			'required' => false,
-		),
-		'for_exact' => array(
+		],
+		'for_exact' => [
 			'name' => 'With the exact phrase',
 			'required' => false,
-		),
-		'for_none' => array(
+		],
+		'for_none' => [
 			'name' => 'With none of these words',
 			'required' => false,
-		),
-		'for_jt' => array(
+		],
+		'for_jt' => [
 			'name' => 'Within job title',
 			'required' => false,
-		),
-		'for_com' => array(
+		],
+		'for_com' => [
 			'name' => 'Within company name',
 			'required' => false,
-		),
-		'for_loc' => array(
+		],
+		'for_loc' => [
 			'name' => 'City, State, or ZIP code',
 			'required' => false,
-		),
-		'radius' => array(
+		],
+		'radius' => [
 			'name' => 'Radius in miles',
 			'type' => 'list',
 			'required' => false,
-			'values' => array(
+			'values' => [
 				'Exact Location' => 'El',
 				'Within 5 miles' => '5',
 				'Within 10 miles' => '10',
@@ -50,14 +50,14 @@ class DiceBridge extends BridgeAbstract {
 				'Within 50 miles' => '50',
 				'Within 75 miles' => '75',
 				'Within 100 miles' => '100',
-			),
+			],
 			'defaultValue' => '0',
-		),
-		'jtype' => array(
+		],
+		'jtype' => [
 			'name' => 'Job type',
 			'type' => 'list',
 			'required' => false,
-			'values' => array(
+			'values' => [
 				'Full-Time' => 'Full Time',
 				'Part-Time' => 'Part Time',
 				'Contract - Independent' => 'Contract Independent',
@@ -66,14 +66,14 @@ class DiceBridge extends BridgeAbstract {
 				'Contract to Hire - W2' => 'C2H W2',
 				'Third Party - Contract - Corp-to-Corp' => 'Contract Corp-To-Corp',
 				'Third Party - Contract to Hire - Corp-to-Corp' => 'C2H Corp-To-Corp',
-			),
+			],
 			'defaultValue' => 'Full Time',
-		),
-		'telecommute' => array(
+		],
+		'telecommute' => [
 			'name' => 'Telecommute',
 			'type' => 'checkbox',
-		),
-	));
+		],
+	]];
 
 	public function collectData() {
 		$uri = 'https://www.dice.com/jobs/advancedResult.html';
@@ -96,7 +96,7 @@ class DiceBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($uri)
 			or returnServerError('Could not request Dice.');
 		foreach($html->find('div.complete-serp-result-div') as $element) {
-			$item = array();
+			$item = [];
 			// Title
 			$masterLink = $element->find('a[id^=position]', 0);
 			$item['title'] = $masterLink->title;

@@ -16,7 +16,7 @@ return PhpCsFixer\Config::create()
     ->setRules([
         'blank_line_after_namespace' => true,
         'strict_param' => true,
-        'array_syntax' => ['syntax' => 'long'],
+        'array_syntax' => ['syntax' => 'short'],
         // 'braces' => [
         //   'position_after_anonymous_constructs' => 'same',
         //   'position_after_control_structures'   => 'same',

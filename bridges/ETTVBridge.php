@@ -7,15 +7,15 @@ class ETTVBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns list of 20 latest torrents for a specific search.';
 	const CACHE_TIMEOUT = 14400; // 4 hours
 
-	const PARAMETERS = array( array(
-		'query' => array(
+	const PARAMETERS = [ [
+		'query' => [
 			'name' => 'Keywords',
 			'required' => true
-		),
-		'cat' => array(
+		],
+		'cat' => [
 			'type' => 'list',
 			'name' => 'Category',
-			'values' => array(
+			'values' => [
 				'(ALL TYPES)' => '0',
 				'Anime: Movies' => '73',
 				'Anime: Dubbed/Subbed' => '74',
@@ -54,23 +54,23 @@ class ETTVBridge extends BridgeAbstract {
 				'TV: Sport' => '72',
 				'TV: HEVC/x265' => '77',
 				'Unsorted: Unsorted' => '78'
-			),
+			],
 			'defaultValue' => '(ALL TYPES)'
-		),
-		'status' => array(
+		],
+		'status' => [
 			'type' => 'list',
 			'name' => 'Status',
-			'values' => array(
+			'values' => [
 				'Active Transfers' => '0',
 				'Included Dead' => '1',
 				'Only Dead' => '2'
-			),
+			],
 			'defaultValue' => 'Included Dead'
-		),
-		'lang' => array(
+		],
+		'lang' => [
 			'type' => 'list',
 			'name' => 'Lang',
-			'values' => array(
+			'values' => [
 				'(ALL)' => '0',
 				'Arabic' => '17',
 				'Chinese ' => '10',
@@ -89,10 +89,10 @@ class ETTVBridge extends BridgeAbstract {
 				'Russian' => '7',
 				'Spanish' => '6',
 				'Turkish' => '16'
-			),
+			],
 			'defaultValue' => '(ALL)'
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
 		// No control on inputs, because all have defaultValue set
@@ -122,7 +122,7 @@ class ETTVBridge extends BridgeAbstract {
 			$dllinks = $page->find('div#downloadbox table', 0);
 
 			// fill item
-			$item = array();
+			$item = [];
 			$item['author'] = $details->children(6)->children(1)->plaintext;
 			$item['title'] = $entry->title;
 			$item['uri'] = $dllinks->children(0)->children(0)->children(0)->href;

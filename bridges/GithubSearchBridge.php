@@ -6,26 +6,26 @@ class GithubSearchBridge extends BridgeAbstract {
 	const URI = 'https://github.com/';
 	const CACHE_TIMEOUT = 600; // 10min
 	const DESCRIPTION = 'Returns a specified repositories search (sorted by recently updated)';
-	const PARAMETERS = array( array(
-		's' => array(
+	const PARAMETERS = [ [
+		's' => [
 			'type' => 'text',
 			'name' => 'Search query'
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
-		$params = array('utf8' => '✓',
+		$params = ['utf8' => '✓',
 										'q' => urlencode($this->getInput('s')),
 										's' => 'updated',
 										'o' => 'desc',
-										'type' => 'Repositories');
+										'type' => 'Repositories'];
 		$url = self::URI . 'search?' . http_build_query($params);
 
 		$html = getSimpleHTMLDOM($url)
 			or returnServerError('Error while downloading the website content');
 
 		foreach($html->find('div.repo-list-item') as $element) {
-			$item = array();
+			$item = [];
 
 			$uri = $element->find('h3 a', 0)->href;
 			$uri = substr(self::URI, 0, -1) . $uri;

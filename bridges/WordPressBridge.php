@@ -6,12 +6,12 @@ class WordPressBridge extends FeedExpander {
 	const CACHE_TIMEOUT = 10800; // 3h
 	const DESCRIPTION = 'Returns the newest full posts of a Wordpress powered website';
 
-	const PARAMETERS = array( array(
-		'url' => array(
+	const PARAMETERS = [ [
+		'url' => [
 			'name' => 'Blog URL',
 			'required' => true
-		)
-	));
+		]
+	]];
 
 	private function clearContent($content){
 		$content = preg_replace('/<script[^>]*>[^<]*<\/script>/', '', $content);

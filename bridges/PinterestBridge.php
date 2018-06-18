@@ -6,24 +6,24 @@ class PinterestBridge extends FeedExpander {
 	const URI = 'https://www.pinterest.com';
 	const DESCRIPTION = 'Returns the newest images on a board';
 
-	const PARAMETERS = array(
-		'By username and board' => array(
-			'u' => array(
+	const PARAMETERS = [
+		'By username and board' => [
+			'u' => [
 				'name' => 'username',
 				'required' => true
-			),
-			'b' => array(
+			],
+			'b' => [
 				'name' => 'board',
 				'required' => true
-			)
-		),
-		'From search' => array(
-			'q' => array(
+			]
+		],
+		'From search' => [
+			'q' => [
 				'name' => 'Keyword',
 				'required' => true
-			)
-		)
-	);
+			]
+		]
+	];
 
 	public function collectData(){
 		switch($this->queriedContext) {
@@ -56,7 +56,7 @@ class PinterestBridge extends FeedExpander {
 		$results = $json['resourceDataCache'][0]['data']['results'];
 
 		foreach($results as $result) {
-			$item = array();
+			$item = [];
 
 			$item['uri'] = self::URI . $result['board']['url'];
 
@@ -87,7 +87,7 @@ class PinterestBridge extends FeedExpander {
 				. $result['description']
 				. '</p>';
 
-			$item['enclosures'] = array($result['images']['orig']['url']);
+			$item['enclosures'] = [$result['images']['orig']['url']];
 
 			$this->items[] = $item;
 		}

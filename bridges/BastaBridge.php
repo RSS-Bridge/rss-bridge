@@ -21,7 +21,7 @@ class BastaBridge extends BridgeAbstract {
 
 		foreach($html->find('item') as $element) {
 			if($limit < 10) {
-				$item = array();
+				$item = [];
 				$item['title'] = $element->find('title', 0)->innertext;
 				$item['uri'] = $element->find('guid', 0)->plaintext;
 				$item['timestamp'] = strtotime($element->find('dc:date', 0)->plaintext);

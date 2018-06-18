@@ -2,7 +2,7 @@
 require_once(__DIR__ . '/BridgeInterface.php');
 class Bridge {
 
-	static protected $dirBridge;
+	protected static $dirBridge;
 
 	public function __construct(){
 		throw new \LogicException('Please use ' . __CLASS__ . '::create for new object.');
@@ -13,7 +13,7 @@ class Bridge {
 	* @param string $nameBridge Defined bridge name you want use
 	* @return Bridge object dedicated
 	*/
-	static public function create($nameBridge){
+	public static function create($nameBridge){
 		if(!preg_match('@^[A-Z][a-zA-Z0-9-]*$@', $nameBridge)) {
 			$message = <<<EOD
 'nameBridge' must start with one uppercase character followed or not by
@@ -39,7 +39,7 @@ EOD;
 		return false;
 	}
 
-	static public function setDir($dirBridge){
+	public static function setDir($dirBridge){
 		if(!is_string($dirBridge)) {
 			throw new \InvalidArgumentException('Dir bridge must be a string.');
 		}
@@ -51,7 +51,7 @@ EOD;
 		self::$dirBridge = $dirBridge;
 	}
 
-	static public function getDir(){
+	public static function getDir(){
 		if(is_null(self::$dirBridge)) {
 			throw new \LogicException(__CLASS__ . ' class need to know bridge path !');
 		}
@@ -63,8 +63,8 @@ EOD;
 	* Lists the available bridges.
 	* @return array List of the bridges
 	*/
-	static public function listBridges(){
-		$listBridge = array();
+	public static function listBridges(){
+		$listBridge = [];
 		$dirFiles = scandir(self::getDir());
 
 		if($dirFiles !== false) {
@@ -78,11 +78,11 @@ EOD;
 		return $listBridge;
 	}
 
-	static public function isWhitelisted($whitelist, $name){
-		return in_array($name, $whitelist)
-		|| in_array($name . '.php', $whitelist)
-		|| in_array($name . 'bridge', $whitelist) // DEPRECATED
-		|| in_array($name . 'bridge.php', $whitelist) // DEPRECATED
+	public static function isWhitelisted($whitelist, $name){
+		return in_array($name, $whitelist, true)
+		|| in_array($name . '.php', $whitelist, true)
+		|| in_array($name . 'bridge', $whitelist, true) // DEPRECATED
+		|| in_array($name . 'bridge.php', $whitelist, true) // DEPRECATED
 		|| (count($whitelist) === 1 && trim($whitelist[0]) === '*');
 	}
 }

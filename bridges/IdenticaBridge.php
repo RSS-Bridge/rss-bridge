@@ -7,19 +7,19 @@ class IdenticaBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 300; // 5min
 	const DESCRIPTION = 'Returns user timelines';
 
-	const PARAMETERS = array( array(
-		'u' => array(
+	const PARAMETERS = [ [
+		'u' => [
 			'name' => 'username',
 			'required' => true
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Requested username can\'t be found.');
 
 		foreach($html->find('li.major') as $dent) {
-			$item = array();
+			$item = [];
 
 			// get dent link
 			$item['uri'] = html_entity_decode($dent->find('a', 0)->href);

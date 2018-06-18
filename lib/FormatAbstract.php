@@ -3,11 +3,10 @@ require_once(__DIR__ . '/FormatInterface.php');
 abstract class FormatAbstract implements FormatInterface {
 	const DEFAULT_CHARSET = 'UTF-8';
 
-	protected
-		$contentType,
-		$charset,
-		$items,
-		$extraInfos;
+	protected $contentType;
+	protected $charset;
+	protected $items;
+	protected $extraInfos;
 
 	public function setCharset($charset){
 		$this->charset = $charset;
@@ -38,7 +37,7 @@ abstract class FormatAbstract implements FormatInterface {
 	}
 
 	public function setItems(array $items){
-		$this->items = array_map(array($this, 'array_trim'), $items);
+		$this->items = array_map([$this, 'array_trim'], $items);
 
 		return $this;
 	}
@@ -55,8 +54,8 @@ abstract class FormatAbstract implements FormatInterface {
 	* @param array $extraInfos array with know informations (there isn't merge !!!)
 	* @return this
 	*/
-	public function setExtraInfos(array $extraInfos = array()){
-		foreach(array('name', 'uri') as $infoName) {
+	public function setExtraInfos(array $extraInfos = []){
+		foreach(['name', 'uri'] as $infoName) {
 			if(!isset($extraInfos[$infoName])) {
 				$extraInfos[$infoName] = '';
 			}

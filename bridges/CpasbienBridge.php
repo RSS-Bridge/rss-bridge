@@ -7,13 +7,13 @@ class CpasbienBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 86400; // 24h
 	const DESCRIPTION = 'Returns latest torrents from a request query';
 
-	const PARAMETERS = array( array(
-		'q' => array(
+	const PARAMETERS = [ [
+		'q' => [
 			'name' => 'Search',
 			'required' => true,
 			'title' => 'Type your search'
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
 		$request = str_replace(" ", "-", trim($this->getInput('q')));
@@ -27,7 +27,7 @@ class CpasbienBridge extends BridgeAbstract {
 				$urlepisode = $episode->find('a', 0)->getAttribute('href');
 				$htmlepisode = getSimpleHTMLDOMCached($urlepisode, 86400 * 366 * 30);
 
-				$item = array();
+				$item = [];
 				$item['author'] = $episode->find('a', 0)->text();
 				$item['title'] = $episode->find('a', 0)->text();
 				$item['pubdate'] = $this->getCachedDate($urlepisode);

@@ -8,7 +8,7 @@ class CollegeDeFranceBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns the latest audio and video from CollegeDeFrance';
 
 	public function collectData(){
-		$months = array(
+		$months = [
 			'01' => 'janv.',
 			'02' => 'févr.',
 			'03' => 'mars',
@@ -21,7 +21,7 @@ class CollegeDeFranceBridge extends BridgeAbstract {
 			'10' => 'oct.',
 			'11' => 'nov.',
 			'12' => 'déc.'
-		);
+		];
 
 		// The "API" used by the site returns a list of partial HTML in this form
 		/* <li>
@@ -38,7 +38,7 @@ class CollegeDeFranceBridge extends BridgeAbstract {
 			or returnServerError('Could not request CollegeDeFrance.');
 
 		foreach($html->find('a[data-target]') as $element) {
-			$item = array();
+			$item = [];
 			$item['title'] = $element->find('.title', 0)->plaintext;
 
 			// Most relative URLs contains an hour in addition to the date, so let's use it

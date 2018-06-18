@@ -6,20 +6,20 @@ class HDWallpapersBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 43200; //12h
 	const DESCRIPTION = 'Returns the latests wallpapers from HDWallpapers';
 
-	const PARAMETERS = array( array(
-		'c' => array(
+	const PARAMETERS = [ [
+		'c' => [
 			'name' => 'category',
 			'defaultValue' => 'latest_wallpapers'
-		),
-		'm' => array(
+		],
+		'm' => [
 			'name' => 'max number of wallpapers'
-		),
-		'r' => array(
+		],
+		'r' => [
 			'name' => 'resolution',
 			'defaultValue' => '1920x1200',
 			'exampleValue' => '1920x1200, 1680x1050,…'
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
 		$category = $this->category;
@@ -44,7 +44,7 @@ class HDWallpapersBridge extends BridgeAbstract {
 			foreach($html->find('.wallpapers .wall a') as $element) {
 				$thumbnail = $element->find('img', 0);
 
-				$item = array();
+				$item = [];
 				// http://www.hdwallpapers.in/download/yosemite_reflections-1680x1050.jpg
 				$item['uri'] = self::URI
 				. '/download'

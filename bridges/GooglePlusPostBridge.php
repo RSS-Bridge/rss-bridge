@@ -10,12 +10,12 @@ class GooglePlusPostBridge extends BridgeAbstract{
 	const CACHE_TIMEOUT = 600; //10min
 	const DESCRIPTION = 'Returns user public post (without API).';
 
-	const PARAMETERS = array( array(
-		'username' => array(
+	const PARAMETERS = [ [
+		'username' => [
 			'name' => 'username or Id',
 			'required' => true
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
 		$username = $this->getInput('username');
@@ -35,7 +35,7 @@ class GooglePlusPostBridge extends BridgeAbstract{
 
 		// I don't even know where to start with this discusting html...
 		foreach($html->find('div[jsname=WsjYwc]') as $post) {
-			$item = array();
+			$item = [];
 
 			$item['author'] = $item['fullname'] = $post->find('div div div div a', 0)->innertext;
 			$item['id'] = $post->find('div div div', 0)->getAttribute('id');

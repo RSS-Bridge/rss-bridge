@@ -14,39 +14,39 @@ class YoutubeBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns the 10 newest videos by username/channel/playlist or search';
 	const MAINTAINER = 'mitsukarenai';
 
-	const PARAMETERS = array(
-		'By username' => array(
-			'u' => array(
+	const PARAMETERS = [
+		'By username' => [
+			'u' => [
 				'name' => 'username',
 				'exampleValue' => 'test',
 				'required' => true
-			)
-		),
-		'By channel id' => array(
-			'c' => array(
+			]
+		],
+		'By channel id' => [
+			'c' => [
 				'name' => 'channel id',
 				'exampleValue' => "15",
 				'required' => true
-			)
-		),
-		'By playlist Id' => array(
-			'p' => array(
+			]
+		],
+		'By playlist Id' => [
+			'p' => [
 				'name' => 'playlist id',
 				'exampleValue' => "15"
-			)
-		),
-		'Search result' => array(
-			's' => array(
+			]
+		],
+		'Search result' => [
+			's' => [
 				'name' => 'search keyword',
 				'exampleValue' => 'test'
-			),
-			'pa' => array(
+			],
+			'pa' => [
 				'name' => 'page',
 				'type' => 'number',
 				'exampleValue' => 1
-			)
-		)
-	);
+			]
+		]
+	];
 
 	private function ytBridgeQueryVideoInfo($vid, &$author, &$desc, &$time){
 		$html = $this->ytGetSimpleHTMLDOM(self::URI . "watch?v=$vid");
@@ -78,7 +78,7 @@ class YoutubeBridge extends BridgeAbstract {
 	}
 
 	private function ytBridgeAddItem($vid, $title, $author, $desc, $time){
-		$item = array();
+		$item = [];
 		$item['id'] = $vid;
 		$item['title'] = $title;
 		$item['author'] = $author;
@@ -140,8 +140,8 @@ class YoutubeBridge extends BridgeAbstract {
 
 	private function ytGetSimpleHTMLDOM($url){
 		return getSimpleHTMLDOM($url,
-			$header = array(),
-			$opts = array(),
+			$header = [],
+			$opts = [],
 			$lowercase = true,
 			$forceTagsClosed = true,
 			$target_charset = DEFAULT_TARGET_CHARSET,

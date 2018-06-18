@@ -7,17 +7,17 @@ class FDroidBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 60 * 60 * 2; // 2 hours
 	const DESCRIPTION = 'Returns latest added/updated apps on the open-source Android apps repository F-Droid';
 
-	const PARAMETERS = array( array(
-		'u' => array(
+	const PARAMETERS = [ [
+		'u' => [
 			'name' => 'Widget selection',
 			'type' => 'list',
 			'required' => true,
-			'values' => array(
+			'values' => [
 				'Latest added apps' => 'added',
 				'Latest updated apps' => 'updated'
-			)
-		)
-	));
+			]
+		]
+	]];
 
 	public function collectData(){
 		$url = self::URI;
@@ -39,7 +39,7 @@ class FDroidBridge extends BridgeAbstract {
 		// and now extracting app info from the selected widget (and yeah turns out icons are of heterogeneous sizes)
 
 		foreach($html_widget->find('a') as $element) {
-				$item = array();
+				$item = [];
 				$item['uri'] = self::URI . $element->href;
 				$item['title'] = $element->find('h4', 0)->plaintext;
 				$item['icon'] = $element->find('img', 0)->src;

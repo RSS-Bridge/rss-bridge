@@ -6,20 +6,20 @@ class TebeoBridge extends FeedExpander {
 	const DESCRIPTION = 'Returns the newest Tébéo videos by category';
 	const MAINTAINER = 'Mitsukarenai';
 
-	const PARAMETERS = array( array(
-		'cat' => array(
+	const PARAMETERS = [ [
+		'cat' => [
 			'name' => 'Catégorie',
 			'type' => 'list',
-			'values' => array(
+			'values' => [
 				'Toutes les vidéos' => '/',
 				'Actualité' => '/14-actualite',
 				'Sport' => '/3-sport',
 				'Culture-Loisirs' => '/5-culture-loisirs',
 				'Société' => '/15-societe',
 				'Langue Bretonne' => '/9-langue-bretonne'
-			)
-		)
-	));
+			]
+		]
+	]];
 
 	public function collectData(){
 		$url = self::URI . '/le-replay/' . $this->getInput('cat');
@@ -27,7 +27,7 @@ class TebeoBridge extends FeedExpander {
 			or returnServerError('Could not request Tébéo.');
 
 		foreach($html->find('div[id=items_replay] div.replay') as $element) {
-			$item = array();
+			$item = [];
 			$item['uri'] = $element->find('a', 0)->href;
 			$item['title'] = $element->find('h3', 0)->plaintext;
 			$item['timestamp'] = strtotime($element->find('p.moment-format-day', 0)->plaintext);

@@ -7,12 +7,12 @@ class TagBoardBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = 'Returns most recent results from TagBoard.';
 
-	const PARAMETERS = array( array(
-		'u' => array(
+	const PARAMETERS = [ [
+		'u' => [
 			'name' => 'keyword',
 			'required' => true
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
 		$link = 'https://post-cache.tagboard.com/search/' . $this->getInput('u');
@@ -22,7 +22,7 @@ class TagBoardBridge extends BridgeAbstract {
 		$parsed_json = json_decode($html);
 
 		foreach($parsed_json->{'posts'} as $element) {
-			$item = array();
+			$item = [];
 			$item['uri'] = $element->{'permalink'};
 			$item['title'] = $element->{'text'};
 			$thumbnailUri = $element->{'photos'}[0]->{'m'};

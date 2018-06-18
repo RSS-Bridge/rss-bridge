@@ -21,19 +21,19 @@ class DeveloppezDotComBridge extends FeedExpander {
 	// http://stackoverflow.com/questions/1262038/how-to-replace-microsoft-encoded-quotes-in-php
 	private function convertSmartQuotes($string)
 	{
-		$search = array(chr(145),
+		$search = [chr(145),
 						chr(146),
 						chr(147),
 						chr(148),
-						chr(151));
+						chr(151)];
 
-		$replace = array(
+		$replace = [
 			"'",
 			"'",
 			'"',
 			'"',
 			'-'
-		);
+		];
 
 		return str_replace($search, $replace, $string);
 	}

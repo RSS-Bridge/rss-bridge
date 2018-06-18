@@ -6,36 +6,36 @@ class DiscogsBridge extends BridgeAbstract {
 	const NAME = 'DiscogsBridge';
 	const URI = 'https://www.discogs.com/';
 	const DESCRIPTION = 'Returns releases from discogs';
-	const PARAMETERS = array(
-		'Artist Releases' => array(
-			'artistid' => array(
+	const PARAMETERS = [
+		'Artist Releases' => [
+			'artistid' => [
 				'name' => 'Artist ID',
 				'type' => 'number',
-			)
-		),
-		'Label Releases' => array(
-			'labelid' => array(
+			]
+		],
+		'Label Releases' => [
+			'labelid' => [
 				'name' => 'Label ID',
 				'type' => 'number',
-			)
-		),
-		'User Wantlist' => array(
-			'username_wantlist' => array(
+			]
+		],
+		'User Wantlist' => [
+			'username_wantlist' => [
 				'name' => 'Username',
 				'type' => 'text',
-			)
-		),
-		'User Folder' => array(
-			'username_folder' => array(
+			]
+		],
+		'User Folder' => [
+			'username_folder' => [
 				'name' => 'Username',
 				'type' => 'text',
-			),
-			'folderid' => array(
+			],
+			'folderid' => [
 				'name' => 'Folder ID',
 				'type' => 'number',
-			)
-		)
-	);
+			]
+		]
+	];
 
 	public function collectData() {
 
@@ -56,7 +56,7 @@ class DiscogsBridge extends BridgeAbstract {
 			$jsonData = json_decode($data, true);
 			foreach($jsonData["releases"] as $release) {
 
-				$item = array();
+				$item = [];
 				$item["author"] = $release["artist"];
 				$item["title"] = $release["title"];
 				$item["id"] = $release["id"];
@@ -88,7 +88,7 @@ class DiscogsBridge extends BridgeAbstract {
 			foreach($jsonData as $element) {
 
 				$infos = $element["basic_information"];
-				$item = array();
+				$item = [];
 				$item["title"] = $infos["title"];
 				$item["author"] = $infos["artists"][0]["name"];
 				$item["id"] = $infos["artists"][0]["id"];

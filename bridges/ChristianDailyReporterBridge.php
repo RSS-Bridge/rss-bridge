@@ -14,7 +14,7 @@ class ChristianDailyReporterBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($uri)
 			or returnServerError('Could not request Christian Daily Reporter.');
 		foreach($html->find('div.top p a,div.column p a') as $element) {
-			$item = array();
+			$item = [];
 			// Title
 			$item['title'] = $element->innertext;
 			// URL
