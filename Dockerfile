@@ -1,4 +1,3 @@
-FROM php:7.1-apache
+FROM ulsmith/alpine-apache-php7
 
-COPY * /var/www/html/
-RUN echo '*' > whitelist.txt && chown -R www-data:www-data *
+COPY --chown=apache:root ./ /app/public/
