@@ -33,7 +33,7 @@ class ContainerLinuxReleasesBridge extends BridgeAbstract {
 	}
 
 	public function collectData() {
-		$data = $this->getReleaseFeed($this->getURI());
+		$data = $this->getReleaseFeed($this->getJsonUri());
 
 		foreach ($data as $releaseVersion => $release) {
 			$item = [];
@@ -56,10 +56,14 @@ EOT;
 		}
 	}
 
-	public function getURI() {
+	private function getJsonUri() {
 		$channel = $this->getInput('channel');
 
 		return "https://coreos.com/releases/releases-$channel.json";
+	}
+
+	public function getURI() {
+		return self::URI;
 	}
 
 	public function getName(){
