@@ -1,0 +1,15 @@
+; This file is for unifying the coding style for different editors and IDEs.
+; More information at http://EditorConfig.org
+
+root = true
+; Use 2 spaces for indentation in all files
+[*]
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+
+[*.php]
+indent_size = 4
