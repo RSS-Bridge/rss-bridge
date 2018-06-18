@@ -1,0 +1,8 @@
+.git
+cache/*
+DEBUG
+Dockerfile
+whitelist.txt
+phpcs.xml
+CHANGELOG.md
+CONTRIBUTING.md
