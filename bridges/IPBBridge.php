@@ -5,24 +5,24 @@ class IPBBridge extends FeedExpander {
 	const URI = 'https://www.invisionpower.com';
 	const DESCRIPTION = 'Returns feeds for forums powered by IPB';
 	const MAINTAINER = 'logmanoriginal';
-	const PARAMETERS = array(
-		array(
-			'uri' => array(
+	const PARAMETERS = [
+		[
+			'uri' => [
 				'name' => 'URI',
 				'type' => 'text',
 				'required' => true,
 				'title' => 'Insert forum, subforum or topic URI',
 				'exampleValue' => 'https://invisioncommunity.com/forums/forum/499-feedback-and-ideas/'
-			),
-			'limit' => array(
+			],
+			'limit' => [
 				'name' => 'Limit',
 				'type' => 'number',
 				'required' => false,
 				'title' => 'Specifies the number of items to return on each request (-1: all)',
 				'defaultValue' => 10
-			)
-		)
-	);
+			]
+		]
+	];
 	const CACHE_TIMEOUT = 3600;
 
 	// Constants for internal use
@@ -69,7 +69,7 @@ class IPBBridge extends FeedExpander {
 			case $this->isTopic($html):
 				$this->collectTopic($html, $limit);
 				break;
-			case $this->isForum($html);
+			case $this->isForum($html):
 				$this->collectForum($html);
 				break;
 			default:
@@ -109,7 +109,7 @@ class IPBBridge extends FeedExpander {
 	private function collectForumList($html){
 		foreach($html->find(static::FORUM_TYPE_LIST_FILTER, 0)->children() as $row) {
 			// Columns: Title, Statistics, Last modified
-			$item = array();
+			$item = [];
 
 			$item['uri'] = $row->find('a', 0)->href;
 			$item['title'] = $row->find('a', 0)->title;
@@ -123,7 +123,7 @@ class IPBBridge extends FeedExpander {
 	private function collectForumTable($html){
 		foreach($html->find(static::FORUM_TYPE_TABLE_FILTER, 0)->children() as $row) {
 			// Columns: Icon, Content, Preview, Statistics, Last modified
-			$item = array();
+			$item = [];
 
 			// Skip header row
 			if(!is_null($row->find('th', 0))) continue;
@@ -190,7 +190,7 @@ class IPBBridge extends FeedExpander {
 		}
 
 		foreach(array_reverse($html->find(static::TOPIC_TYPE_ARTICLE)) as $article) {
-			$item = array();
+			$item = [];
 
 			$item['uri'] = $article->find('time', 0)->parent()->href;
 			$item['author'] = $article->find('aside a', 0)->plaintext;
@@ -240,7 +240,7 @@ class IPBBridge extends FeedExpander {
 		}
 
 		foreach(array_reverse($html->find(static::TOPIC_TYPE_DIV)) as $article) {
-			$item = array();
+			$item = [];
 
 			$item['uri'] = $article->find('a[rel=bookmark]', 0)->href;
 			$item['author'] = $article->find('.author', 0)->plaintext;
@@ -267,7 +267,7 @@ class IPBBridge extends FeedExpander {
 
 	/** Returns all images from the provide HTML DOM */
 	private function findImages($html){
-		$images = array();
+		$images = [];
 
 		foreach($html->find('img') as $img) {
 			$images[] = $img->src;

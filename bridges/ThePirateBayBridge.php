@@ -9,34 +9,34 @@ class ThePirateBayBridge extends BridgeAbstract {
  show"). Category based search needs the category number as input. User based
  search takes the Uploader name. Search can be done in a specified category';
 
-	const PARAMETERS = array( array(
-		'q' => array(
+	const PARAMETERS = [ [
+		'q' => [
 			'name' => 'keywords/username/category, separated by semicolons',
 			'exampleValue' => 'first list;second list;…',
 			'required' => true
-		),
-		'crit' => array(
+		],
+		'crit' => [
 			'type' => 'list',
 			'name' => 'Search type',
-			'values' => array(
+			'values' => [
 				'search' => 'search',
 				'category' => 'cat',
 				'user' => 'usr'
-			)
-		),
-		'catCheck' => array(
+			]
+		],
+		'catCheck' => [
 			'type' => 'checkbox',
 			'name' => 'Specify category for keyword search ?',
-		),
-		'cat' => array(
+		],
+		'cat' => [
 			'name' => 'Category number',
 			'exampleValue' => '100, 200… See TPB for category number'
-		),
-		'trusted' => array(
+		],
+		'trusted' => [
 			'type' => 'checkbox',
 			'name' => 'Only get results from Trusted or VIP users ?',
-		),
-	));
+		],
+	]];
 
 	public function collectData(){
 
@@ -148,7 +148,7 @@ class ThePirateBayBridge extends BridgeAbstract {
 				if(!$trustedBool
 				|| !is_null($element->find('img[alt=VIP]', 0))
 				|| !is_null($element->find('img[alt=Trusted]', 0))) {
-					$item = array();
+					$item = [];
 					$item['uri'] = $element->find('a', 3)->href;
 					$item['id'] = self::URI . $element->find('a.detLink', 0)->href;
 					$item['timestamp'] = parseDateTimestamp($element);

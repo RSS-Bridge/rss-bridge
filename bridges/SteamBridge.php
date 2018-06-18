@@ -6,16 +6,16 @@ class SteamBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 3600; // 1h
 	const DESCRIPTION = 'Returns apps list';
 	const MAINTAINER = 'jacknumber';
-	const PARAMETERS = array(
-		'Wishlist' => array(
-			'username' => array(
+	const PARAMETERS = [
+		'Wishlist' => [
+			'username' => [
 				'name' => 'Username',
 				'required' => true,
-			),
-			'currency' => array(
+			],
+			'currency' => [
 				'name' => 'Currency',
 				'type' => 'list',
-				'values' => array(
+				'values' => [
 					// source: http://steam.steamlytics.xyz/currencies
 					'USD' => 'us',
 					'GBP' => 'gb',
@@ -45,26 +45,26 @@ class SteamBridge extends BridgeAbstract {
 					'TWD' => 'tw',
 					'SRD' => 'sr',
 					'AED' => 'ae',
-				),
-			),
-			'only_discount' => array(
+				],
+			],
+			'only_discount' => [
 				'name' => 'Only discount',
 				'type' => 'checkbox',
-			)
-		)
-	);
+			]
+		]
+	];
 
 	public function collectData(){
 
 		$username = $this->getInput('username');
-		$params = array(
+		$params = [
 			'cc' => $this->getInput('currency')
-		);
+		];
 
 		$url = self::URI . 'wishlist/id/' . $username . '?' . http_build_query($params);
 
 		$targetVariable = 'g_rgAppInfo';
-		$sort = array();
+		$sort = [];
 
 		$html = '';
 		$html = getSimpleHTMLDOM($url)
@@ -117,7 +117,7 @@ class SteamBridge extends BridgeAbstract {
 				}
 			}
 
-			$item = array();
+			$item = [];
 			$item['uri'] = "http://store.steampowered.com/app/$id/";
 			$item['title'] = $element->name;
 			$item['type'] = $appType;
@@ -140,7 +140,7 @@ class SteamBridge extends BridgeAbstract {
 
 			}
 
-			$item['enclosures'] = array();
+			$item['enclosures'] = [];
 			$item['enclosures'][] = str_replace('_292x136', '', $element->capsule);
 
 			foreach($element->screenshots as $screenshot) {

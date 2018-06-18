@@ -6,18 +6,18 @@ class AnimeUltimeBridge extends BridgeAbstract {
 	const URI = 'http://www.anime-ultime.net/';
 	const CACHE_TIMEOUT = 10800; // 3h
 	const DESCRIPTION = 'Returns the 10 newest releases posted on Anime-Ultime';
-	const PARAMETERS = array( array(
-		'type' => array(
+	const PARAMETERS = [ [
+		'type' => [
 		'name' => 'Type',
 		'type' => 'list',
-		'values' => array(
+		'values' => [
 			'Everything' => '',
 			'Anime' => 'A',
 			'Drama' => 'D',
 			'Tokusatsu' => 'T'
-			)
-		)
-	));
+			]
+		]
+	]];
 
 	private $filter = 'Releases';
 
@@ -26,7 +26,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
 		//Add type filter if provided
 		$typeFilter = array_search(
 			$this->getInput('type'),
-			self::PARAMETERS[$this->queriedContext]['type']['values']
+			self::PARAMETERS[$this->queriedContext]['type']['values'], true
 		);
 
 		//Build date and filters for making requests
@@ -35,7 +35,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
 
 		//Process each HTML page until having 10 releases
 		$processedOK = 0;
-		foreach (array($thismonth, $lastmonth) as $requestFilter) {
+		foreach ([$thismonth, $lastmonth] as $requestFilter) {
 
 			//Retrive page contents
 			$url = self::URI . 'history-0-1/' . $requestFilter;
@@ -100,7 +100,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
 							$item_description = utf8_encode($item_description);
 
 							//Build and add final item
-							$item = array();
+							$item = [];
 							$item['uri'] = $item_uri;
 							$item['title'] = $item_name . ' ' . $item_type . ' ' . $item_episode;
 							$item['author'] = $item_fansub;
@@ -123,7 +123,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
 		if(!is_null($this->getInput('type'))) {
 			$typeFilter = array_search(
 				$this->getInput('type'),
-				self::PARAMETERS[$this->queriedContext]['type']['values']
+				self::PARAMETERS[$this->queriedContext]['type']['values'], true
 			);
 
 			return 'Latest ' . $typeFilter . ' - Anime-Ultime Bridge';

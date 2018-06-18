@@ -4,33 +4,33 @@ class WebfailBridge extends BridgeAbstract {
 	const URI = 'https://webfail.com';
 	const NAME = 'Webfail';
 	const DESCRIPTION = 'Returns the latest fails';
-	const PARAMETERS = array(
-		'By content type' => array(
-			'language' => array(
+	const PARAMETERS = [
+		'By content type' => [
+			'language' => [
 				'name' => 'Language',
 				'type' => 'list',
 				'title' => 'Select your language',
-				'values' => array(
+				'values' => [
 					'English' => 'en',
 					'German' => 'de'
-				),
+				],
 				'defaultValue' => 'English'
-			),
-			'type' => array(
+			],
+			'type' => [
 				'name' => 'Type',
 				'type' => 'list',
 				'title' => 'Select your content type',
-				'values' => array(
+				'values' => [
 					'None' => '/',
 					'Facebook' => '/ffdts',
 					'Images' => '/images',
 					'Videos' => '/videos',
 					'Gifs' => '/gifs'
-				),
+				],
 				'defaultValue' => 'None'
-			)
-		)
-	);
+			]
+		]
+	];
 
 	public function getURI(){
 		if(is_null($this->getInput('language')))
@@ -47,7 +47,7 @@ class WebfailBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI() . $this->getInput('type'));
 
 		$type = array_search($this->getInput('type'),
-			self::PARAMETERS[$this->queriedContext]['type']['values']);
+			self::PARAMETERS[$this->queriedContext]['type']['values'], true);
 
 		switch(strtolower($type)) {
 		case 'facebook':
@@ -66,7 +66,7 @@ class WebfailBridge extends BridgeAbstract {
 	private function extractNews($html, $type){
 		$news = $html->find('#main', 0)->find('a.wf-list-news');
 		foreach($news as $element) {
-			$item = array();
+			$item = [];
 			$item['title'] = $this->fixTitle($element->find('div.wf-news-title', 0)->innertext);
 			$item['uri'] = $this->getURI() . $element->href;
 
@@ -99,7 +99,7 @@ class WebfailBridge extends BridgeAbstract {
 	private function extractArticle($html){
 		$articles = $html->find('article');
 		foreach($articles as $article) {
-			$item = array();
+			$item = [];
 			$item['title'] = $this->fixTitle($article->find('a', 1)->innertext);
 
 			// Images, videos and gifs are provided in their own unique way

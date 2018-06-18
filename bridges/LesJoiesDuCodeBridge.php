@@ -12,7 +12,7 @@ class LesJoiesDuCodeBridge extends BridgeAbstract {
 			or returnServerError('Could not request LesJoiesDuCode.');
 
 		foreach($html->find('div.blog-post') as $element) {
-			$item = array();
+			$item = [];
 			$temp = $element->find('h1 a', 0);
 			$titre = html_entity_decode($temp->innertext);
 			$url = $temp->href;

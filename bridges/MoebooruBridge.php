@@ -7,16 +7,16 @@ class MoebooruBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns images from given page';
 	const MAINTAINER = 'pmaziere';
 
-	const PARAMETERS = array( array(
-		'p' => array(
+	const PARAMETERS = [ [
+		'p' => [
 			'name' => 'page',
 			'defaultValue' => 1,
 			'type' => 'number'
-		),
-		't' => array(
+		],
+		't' => [
 			'name' => 'tags'
-		)
-	));
+		]
+	]];
 
 	protected function getFullURI(){
 		return $this->getURI()
@@ -37,7 +37,7 @@ class MoebooruBridge extends BridgeAbstract {
 
 		foreach($data as $datai) {
 			$json = json_decode($datai, true);
-			$item = array();
+			$item = [];
 			$item['uri'] = $this->getURI() . '/post/show/' . $json['id'];
 			$item['postid'] = $json['id'];
 			$item['timestamp'] = $json['created_at'];

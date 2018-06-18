@@ -14,7 +14,7 @@ class ABCTabsBridge extends BridgeAbstract {
 		$table = $html->find('table#myTable', 0)->children(1);
 
 		foreach ($table->find('tr') as $tab) {
-			$item = array();
+			$item = [];
 			$item['author'] = $tab->find('td', 1)->plaintext
 			. ' - '
 			. $tab->find('td', 2)->plaintext;

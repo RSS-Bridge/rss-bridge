@@ -6,23 +6,23 @@ class UsbekEtRicaBridge extends BridgeAbstract {
 	const URI = 'https://usbeketrica.com';
 	const DESCRIPTION = 'Returns latest articles from the front page';
 
-	const PARAMETERS = array(
-		array(
-			'limit' => array(
+	const PARAMETERS = [
+		[
+			'limit' => [
 				'name' => 'Number of articles to return',
 				'type' => 'number',
 				'required' => false,
 				'title' => 'Specifies the maximum number of articles to return',
 				'defaultValue' => -1
-			),
-			'fullarticle' => array(
+			],
+			'fullarticle' => [
 				'name' => 'Load full article',
 				'type' => 'checkbox',
 				'required' => false,
 				'title' => 'Activate to load full articles',
-			)
-		)
-	);
+			]
+		]
+	];
 
 	public function collectData(){
 		$limit = $this->getInput('limit');
@@ -32,7 +32,7 @@ class UsbekEtRicaBridge extends BridgeAbstract {
 		$articles = $html->find('div.details');
 
 		foreach($articles as $article) {
-			$item = array();
+			$item = [];
 
 			$title = $article->find('div.card-title', 0);
 			if($title) {
@@ -69,9 +69,9 @@ class UsbekEtRicaBridge extends BridgeAbstract {
 
 			$image = $article->find('div.card-img img', 0);
 			if($image) {
-				$item['enclosures'] = array(
+				$item['enclosures'] = [
 					$image->src
-				);
+				];
 			}
 
 			$this->items[] = $item;

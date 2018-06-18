@@ -8,11 +8,11 @@ class CNETBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns the newest articles. <br /> You may specify a
 topic found in some section URLs, else all topics are selected.';
 
-	const PARAMETERS = array( array(
-		'topic' => array(
+	const PARAMETERS = [ [
+		'topic' => [
 			'name' => 'Topic name'
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
 
@@ -69,7 +69,7 @@ topic found in some section URLs, else all topics are selected.';
 						)
 					);
 
-					$item = array();
+					$item = [];
 					$item['uri'] = $article_uri;
 					$item['title'] = $article_title;
 					$item['author'] = $article_author;

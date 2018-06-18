@@ -6,27 +6,27 @@ class CastorusBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 600; // 10min
 	const DESCRIPTION = 'Returns the latest changes';
 
-	const PARAMETERS = array(
-		'Get latest changes' => array(),
-		'Get latest changes via ZIP code' => array(
-			'zip' => array(
+	const PARAMETERS = [
+		'Get latest changes' => [],
+		'Get latest changes via ZIP code' => [
+			'zip' => [
 				'name' => 'ZIP code',
 				'type' => 'text',
 				'required' => true,
 				'exampleValue' => '74910, 74',
 				'title' => 'Insert ZIP code (complete or partial)'
-			)
-		),
-		'Get latest changes via city name' => array(
-			'city' => array(
+			]
+		],
+		'Get latest changes via city name' => [
+			'city' => [
 				'name' => 'City name',
 				'type' => 'text',
 				'required' => true,
 				'exampleValue' => 'Seyssel, Seys',
 				'title' => 'Insert city name (complete or partial)'
-			)
-		)
-	);
+			]
+		]
+	];
 
 	// Extracts the title from an actitiy
 	private function extractActivityTitle($activity){
@@ -89,7 +89,7 @@ class CastorusBridge extends BridgeAbstract {
 			returnServerError('Failed to find activities!');
 
 		foreach($activities as $activity) {
-			$item = array();
+			$item = [];
 
 			$item['title'] = $this->extractActivityTitle($activity);
 			$item['uri'] = $this->extractActivityUrl($activity);

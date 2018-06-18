@@ -1,0 +1,50 @@
+<?php
+$finder = PhpCsFixer\Finder::create()
+    ->exclude('vendor')
+    ->in(__DIR__)
+;
+
+/**
+ * This is same as PSR2 with 3 changes:
+ * 1. Use tabs instead of spaces
+ * 2. function_declaration is turned off
+ * 3. braces rule is turned off
+ */
+// 1.
+return PhpCsFixer\Config::create()
+    ->setIndent("\t")
+    ->setRules([
+        'blank_line_after_namespace' => true,
+        'strict_param' => true,
+        'array_syntax' => ['syntax' => 'short'],
+        // 'braces' => [
+        //   'position_after_anonymous_constructs' => 'same',
+        //   'position_after_control_structures'   => 'same',
+        //   // Put braces on same line as functions and classes
+        //   'position_after_functions_and_oop_constructs' => 'same'
+        // ],
+        'elseif' => true,
+        'encoding' => true,
+        'full_opening_tag' => true,
+        'full_opening_tag' => true,
+        'indentation_type' => true,
+        'line_ending' => true,
+        'lowercase_constants' => true,
+        'lowercase_keywords' => true,
+        'method_argument_space' => true,
+        'no_break_comment' => true,
+        'no_closing_tag' => true,
+        'no_spaces_after_function_name' => true,
+        'no_spaces_inside_parenthesis' => true,
+        'no_trailing_whitespace' => true,
+        'no_trailing_whitespace_in_comment' => true,
+        'single_blank_line_at_eof' => true,
+        'single_class_element_per_statement' => true,
+        'single_import_per_statement' => true,
+        'single_line_after_imports' => true,
+        'switch_case_semicolon_to_colon' => true,
+        'switch_case_space' => true,
+        'visibility_required' => true,
+    ])
+    ->setFinder($finder)
+;

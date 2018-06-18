@@ -11,28 +11,28 @@ class Torrent9Bridge extends BridgeAbstract {
 	const PAGE_SERIES_VOSTFR = 'torrents_series_vostfr';
 	const PAGE_SERIES_FR = 'torrents_series_french';
 
-	const PARAMETERS = array(
-		'From search' => array(
-			'q' => array(
+	const PARAMETERS = [
+		'From search' => [
+			'q' => [
 				'name' => 'Search',
 				'required' => true,
 				'title' => 'Type your search'
-			)
-		),
-		'By page' => array(
-			'page' => array(
+			]
+		],
+		'By page' => [
+			'page' => [
 				'name' => 'Page',
 				'type' => 'list',
 				'required' => false,
-				'values' => array(
+				'values' => [
 					'Series' => self::PAGE_SERIES,
 					'Series VOST' => self::PAGE_SERIES_VOSTFR,
 					'Series FR' => self::PAGE_SERIES_FR,
-				),
+				],
 				'defaultValue' => self::PAGE_SERIES
-			)
-		)
-	);
+			]
+		]
+	];
 
 	public function collectData(){
 
@@ -55,7 +55,7 @@ class Torrent9Bridge extends BridgeAbstract {
 				 //30 years = forever
 				$htmlepisode = getSimpleHTMLDOMCached($urlepisode, 86400 * 366 * 30);
 
-				$item = array();
+				$item = [];
 				$item['author'] = $episode->find('a', 0)->text();
 				$item['title'] = $episode->find('a', 0)->text();
 				$item['id'] = $episode->find('a', 0)->getAttribute('href');

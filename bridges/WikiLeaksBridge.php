@@ -4,16 +4,16 @@ class WikiLeaksBridge extends BridgeAbstract {
 	const URI = 'https://wikileaks.org';
 	const DESCRIPTION = 'Returns the latest news or articles from WikiLeaks';
 	const MAINTAINER = 'logmanoriginal';
-	const PARAMETERS = array(
-		array(
-			'category' => array(
+	const PARAMETERS = [
+		[
+			'category' => [
 				'name' => 'Category',
 				'type' => 'list',
 				'required' => true,
 				'title' => 'Select your category',
-				'values' => array(
+				'values' => [
 					'News' => '-News-',
-					'Leaks' => array(
+					'Leaks' => [
 						'All' => '-Leaks-',
 						'Intelligence' => '+-Intelligence-+',
 						'Global Economy' => '+-Global-Economy-+',
@@ -21,19 +21,19 @@ class WikiLeaksBridge extends BridgeAbstract {
 						'Corporations' => '+-Corporations-+',
 						'Government' => '+-Government-+',
 						'War & Military' => '+-War-Military-+'
-					)
-				),
+					]
+				],
 				'defaultValue' => 'news'
-			),
-			'teaser' => array(
+			],
+			'teaser' => [
 				'name' => 'Show teaser',
 				'type' => 'checkbox',
 				'required' => false,
 				'title' => 'If checked feeds will display the teaser',
 				'defaultValue' => true
-			)
-		)
-	);
+			]
+		]
+	];
 
 	public function collectData(){
 		$html = getSimpleHTMLDOM($this->getURI());
@@ -60,13 +60,13 @@ class WikiLeaksBridge extends BridgeAbstract {
 		if(!is_null($this->getInput('category'))) {
 			$category = array_search(
 				$this->getInput('category'),
-				static::PARAMETERS[0]['category']['values']
+				static::PARAMETERS[0]['category']['values'], true
 			);
 
 			if($category === false) {
 				$category = array_search(
 					$this->getInput('category'),
-					static::PARAMETERS[0]['category']['values']['Leaks']
+					static::PARAMETERS[0]['category']['values']['Leaks'], true
 				);
 			}
 
@@ -84,7 +84,7 @@ class WikiLeaksBridge extends BridgeAbstract {
 		}
 
 		foreach($articles as $article) {
-			$item = array();
+			$item = [];
 
 			$item['title'] = $article->find('h3', 0)->plaintext;
 			$item['uri'] = static::URI . $article->find('h3 a', 0)->href;
@@ -103,7 +103,7 @@ class WikiLeaksBridge extends BridgeAbstract {
 		}
 
 		foreach($articles as $article) {
-			$item = array();
+			$item = [];
 
 			$item['title'] = $article->find('h2', 0)->plaintext;
 			$item['uri'] = static::URI . $article->find('a', 0)->href;
@@ -121,7 +121,7 @@ class WikiLeaksBridge extends BridgeAbstract {
 			}
 
 			$item['timestamp'] = strtotime($article->find('div.timestamp', 0)->plaintext);
-			$item['enclosures'] = array($teaser);
+			$item['enclosures'] = [$teaser];
 
 			$this->items[] = $item;
 		}

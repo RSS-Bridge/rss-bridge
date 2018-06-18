@@ -24,7 +24,7 @@ class DilbertBridge extends BridgeAbstract {
 				$title = 'Dilbert Comic Strip on ' . $date;
 			$date = strtotime($date);
 
-			$item = array();
+			$item = [];
 			$item['uri'] = $url;
 			$item['title'] = $title;
 			$item['author'] = 'Scott Adams';

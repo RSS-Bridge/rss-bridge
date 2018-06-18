@@ -5,35 +5,35 @@ class KernelBugTrackerBridge extends BridgeAbstract {
 	const URI = 'https://bugzilla.kernel.org';
 	const DESCRIPTION = 'Returns feeds for bug comments';
 	const MAINTAINER = 'logmanoriginal';
-	const PARAMETERS = array(
-		'Bug comments' => array(
-			'id' => array(
+	const PARAMETERS = [
+		'Bug comments' => [
+			'id' => [
 				'name' => 'Bug tracking ID',
 				'type' => 'number',
 				'required' => true,
 				'title' => 'Insert bug tracking ID',
 				'exampleValue' => 121241
-			),
-			'limit' => array(
+			],
+			'limit' => [
 				'name' => 'Number of comments to return',
 				'type' => 'number',
 				'required' => false,
 				'title' => 'Specify number of comments to return',
 				'defaultValue' => -1
-			),
-			'sorting' => array(
+			],
+			'sorting' => [
 				'name' => 'Sorting',
 				'type' => 'list',
 				'required' => false,
 				'title' => 'Defines the sorting order of the comments returned',
 				'defaultValue' => 'of',
-				'values' => array(
+				'values' => [
 					'Oldest first' => 'of',
 					'Latest first' => 'lf'
-				)
-			)
-		)
-	);
+				]
+			]
+		]
+	];
 
 	private $bugid = '';
 	private $bugdesc = '';
@@ -71,6 +71,7 @@ class KernelBugTrackerBridge extends BridgeAbstract {
 		// Order comments
 		switch($sorting) {
 			case 'lf': $comments = array_reverse($comments, true);
+			// no break
 			case 'of':
 			default: // Nothing to do, keep original order
 		}
@@ -78,7 +79,7 @@ class KernelBugTrackerBridge extends BridgeAbstract {
 		foreach($comments as $comment) {
 			$comment = $this->inlineStyles($comment);
 
-			$item = array();
+			$item = [];
 			$item['uri'] = $this->getURI() . '#' . $comment->id;
 			$item['author'] = $comment->find('span.bz_comment_user', 0)->innertext;
 			$item['title'] = $comment->find('span.bz_comment_number', 0)->find('a', 0)->innertext;

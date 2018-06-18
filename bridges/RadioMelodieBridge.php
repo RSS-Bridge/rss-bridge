@@ -10,7 +10,7 @@ class RadioMelodieBridge extends BridgeAbstract {
 			or returnServerError('Could not request Radio Melodie.');
 		$list = $html->find('div[class=actuitem]');
 		foreach($list as $element) {
-			$item = array();
+			$item = [];
 
 			// Get picture URL
 			$pictureHTML = $element->find('div[class=picture]');
@@ -20,7 +20,7 @@ class RadioMelodieBridge extends BridgeAbstract {
 				$pictures);
 			$pictureURL = $pictures[1];
 
-			$item['enclosures'] = array($pictureURL);
+			$item['enclosures'] = [$pictureURL];
 			$item['uri'] = self::URI . $element->parent()->href;
 			$item['title'] = $element->find('h3', 0)->plaintext;
 			$item['content'] = $element->find('p', 0)->plaintext . '<br/><img src="'.$pictureURL.'"/>';

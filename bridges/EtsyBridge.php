@@ -5,32 +5,32 @@ class EtsyBridge extends BridgeAbstract {
 	const URI = 'https://www.etsy.com';
 	const DESCRIPTION = 'Returns feeds for search results';
 	const MAINTAINER = 'logmanoriginal';
-	const PARAMETERS = array(
-		array(
-			'query' => array(
+	const PARAMETERS = [
+		[
+			'query' => [
 				'name' => 'Search query',
 				'type' => 'text',
 				'required' => true,
 				'title' => 'Insert your search term here',
 				'exampleValue' => 'Enter your search term'
-			),
-			'queryextension' => array(
+			],
+			'queryextension' => [
 				'name' => 'Query extension',
 				'type' => 'text',
 				'requied' => false,
 				'title' => 'Insert additional query parts here
 (anything after ?search=<your search query>)',
 				'exampleValue' => '&explicit=1&locationQuery=2921044'
-			),
-			'showimage' => array(
+			],
+			'showimage' => [
 				'name' => 'Show image in content',
 				'type' => 'checkbox',
 				'requrired' => false,
 				'title' => 'Activate to show the image in the content',
 				'defaultValue' => false
-			)
-		)
-	);
+			]
+		]
+	];
 
 	public function collectData(){
 		$html = getSimpleHTMLDOM($this->getURI())
@@ -43,7 +43,7 @@ class EtsyBridge extends BridgeAbstract {
 			if($result->find('a.banner-card'))
 				continue;
 
-			$item = array();
+			$item = [];
 
 			$item['title'] = $result->find('a', 0)->title;
 			$item['uri'] = $result->find('a', 0)->href;
@@ -61,7 +61,7 @@ class EtsyBridge extends BridgeAbstract {
 				$item['content'] .= '<img src="' . $image . '">';
 			}
 
-			$item['enclosures'] = array($image);
+			$item['enclosures'] = [$image];
 
 			$this->items[] = $item;
 		}

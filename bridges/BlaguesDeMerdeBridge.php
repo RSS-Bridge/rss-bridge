@@ -12,7 +12,7 @@ class BlaguesDeMerdeBridge extends BridgeAbstract {
 			or returnServerError('Could not request BDM.');
 
 		foreach($html->find('article.joke_contener') as $element) {
-			$item = array();
+			$item = [];
 			$temp = $element->find('a');
 
 			if(isset($temp[2])) {

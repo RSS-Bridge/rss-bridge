@@ -12,7 +12,7 @@ class HentaiHavenBridge extends BridgeAbstract {
 			or returnServerError('Could not request Hentai Haven.');
 
 		foreach($html->find('div.zoe-grid') as $element) {
-			$item = array();
+			$item = [];
 			$item['uri'] = $element->find('div.brick-content h3 a', 0)->href;
 			$thumbnailUri = $element->find('a.thumbnail-image img', 0)->getAttribute('data-src');
 			$item['title'] = mb_convert_encoding(

@@ -7,13 +7,13 @@ class LeBonCoinBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns most recent results from LeBonCoin for a
 region, and optionally a category and a keyword .';
 
-	const PARAMETERS = array(
-		array(
-			'k' => array('name' => 'Mot Clé'),
-			'r' => array(
+	const PARAMETERS = [
+		[
+			'k' => ['name' => 'Mot Clé'],
+			'r' => [
 				'name' => 'Région',
 				'type' => 'list',
-				'values' => array(
+				'values' => [
 					'Toute la France' => 'ile_de_france/occasions',
 					'Alsace' => 'alsace',
 					'Aquitaine' => 'aquitaine',
@@ -41,15 +41,15 @@ region, and optionally a category and a keyword .';
 					'Martinique' => 'martinique',
 					'Guyane' => 'guyane',
 					'Réunion' => 'reunion'
-				)
-			),
-			'c' => array(
+				]
+			],
+			'c' => [
 				'name' => 'Catégorie',
 				'type' => 'list',
-				'values' => array(
+				'values' => [
 					'TOUS' => '',
 					'EMPLOI' => '_emploi_',
-					'VEHICULES' => array(
+					'VEHICULES' => [
 						'Tous' => '_vehicules_',
 						'Voitures' => 'voitures',
 						'Motos' => 'motos',
@@ -60,30 +60,30 @@ region, and optionally a category and a keyword .';
 						'Équipement Caravaning' => 'equipement_caravaning',
 						'Nautisme' => 'nautisme',
 						'Équipement Nautisme' => 'equipement_nautisme'
-					),
-					'IMMOBILIER' => array(
+					],
+					'IMMOBILIER' => [
 						'Tous' => '_immobilier_',
 						'Ventes immobilières' => 'ventes_immobilieres',
 						'Locations' => 'locations',
 						'Colocations' => 'colocations',
 						'Bureaux & Commerces' => 'bureaux_commerces'
-					),
-					'VACANCES' => array(
+					],
+					'VACANCES' => [
 						'Tous' => '_vacances_',
 						'Location gîtes' => 'locations_gites',
 						'Chambres d\'hôtes' => 'chambres_d_hotes',
 						'Campings' => 'campings',
 						'Hôtels' => 'hotels',
 						'Hébergements insolites' => 'hebergements_insolites'
-					),
-					'MULTIMEDIA' => array(
+					],
+					'MULTIMEDIA' => [
 						'Tous' => '_multimedia_',
 						'Informatique' => 'informatique',
 						'Consoles & Jeux vidéo' => 'consoles_jeux_video',
 						'Image & Son' => 'image_son',
 						'Téléphonie' => 'telephonie'
-					),
-					'LOISIRS' => array(
+					],
+					'LOISIRS' => [
 						'Tous' => '_loisirs_',
 						'DVD / Films' => 'dvd_films',
 						'CD / Musique' => 'cd_musique',
@@ -95,8 +95,8 @@ region, and optionally a category and a keyword .';
 						'Collection' => 'collection',
 						'Jeux & Jouets' => 'jeux_jouets',
 						'Vins & Gastronomie' => 'vins_gastronomie'
-					),
-					'MATÉRIEL PROFESSIONNEL' => array(
+					],
+					'MATÉRIEL PROFESSIONNEL' => [
 						'Tous' => '_materiel_professionnel_',
 						'Matériel Agricole' => 'mateiel_agricole',
 						'Transport - Manutention' => 'transport_manutention',
@@ -107,16 +107,16 @@ region, and optionally a category and a keyword .';
 						'Fournitures de Bureau' => 'fournitures_de_bureau',
 						'Commerces & Marchés' => 'commerces_marches',
 						'Matériel médical' => 'materiel_medical'
-					),
-					'SERVICES' => array(
+					],
+					'SERVICES' => [
 						'Tous' => '_services_',
 						'Prestations de services' => 'prestations_de_services',
 						'Billetterie' => 'billetterie',
 						'Évènements' => 'evenements',
 						'Cours particuliers' => 'cours_particuliers',
 						'Covoiturage' => 'covoiturage'
-					),
-					'MAISON' => array(
+					],
+					'MAISON' => [
 						'Tous' => '_maison_',
 						'Ameublement' => 'ameublement',
 						'Électroménager' => 'electromenager',
@@ -131,12 +131,12 @@ region, and optionally a category and a keyword .';
 						'Montres & Bijoux' => 'montres_bijoux',
 						'Équipement bébé' => 'equipement_bebe',
 						'Vêtements bébé' => 'vetements_bebe'
-					),
+					],
 					'AUTRES' => 'autres'
-				)
-			)
-		)
-	);
+				]
+			]
+		]
+	];
 
 	public function collectData(){
 
@@ -164,7 +164,7 @@ region, and optionally a category and a keyword .';
 
 			$element = $element->find('a', 0);
 
-			$item = array();
+			$item = [];
 			$item['uri'] = $element->href;
 			$title = html_entity_decode($element->getAttribute('title'));
 			$content_image = $element->find('div.item_image', 0)->find('.lazyload', 0);

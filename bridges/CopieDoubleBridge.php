@@ -17,7 +17,7 @@ class CopieDoubleBridge extends BridgeAbstract {
 			$td = $element->find('td', 0);
 
 			if($td->class === 'couleur_1') {
-				$item = array();
+				$item = [];
 				$title = $td->innertext;
 				$pos = strpos($title, '<a');
 				$title = substr($title, 0, $pos);

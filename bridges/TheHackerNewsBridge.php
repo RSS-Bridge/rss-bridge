@@ -65,7 +65,7 @@ class TheHackerNewsBridge extends BridgeAbstract {
 				$contents = stripRecursiveHtmlSection($contents, 'div', '<div class=\'clear\'');
 				$contents = stripWithDelimiters($contents, '<script', '</script>');
 
-				$item = array();
+				$item = [];
 				$item['uri'] = $article_url;
 				$item['title'] = $article_title;
 				$item['author'] = $article_author;

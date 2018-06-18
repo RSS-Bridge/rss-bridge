@@ -6,23 +6,23 @@ class FeedExpanderExampleBridge extends FeedExpander {
 	const URI = '#';
 	const DESCRIPTION = 'Example bridge to test FeedExpander';
 
-	const PARAMETERS = array(
-		'Feed' => array(
-			'version' => array(
+	const PARAMETERS = [
+		'Feed' => [
+			'version' => [
 				'name' => 'Version',
 				'type' => 'list',
 				'required' => true,
 				'title' => 'Select your feed format/version',
 				'defaultValue' => 'RSS 2.0',
-				'values' => array(
+				'values' => [
 					'RSS 0.91' => 'rss_0_9_1',
 					'RSS 1.0' => 'rss_1_0',
 					'RSS 2.0' => 'rss_2_0',
 					'ATOM 1.0' => 'atom_1_0'
-				)
-			)
-		)
-	);
+				]
+			]
+		]
+	];
 
 	public function collectData(){
 		switch($this->getInput('version')) {

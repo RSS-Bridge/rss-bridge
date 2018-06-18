@@ -20,7 +20,7 @@ class CommonDreamsBridge extends FeedExpander {
 		$html3 = getSimpleHTMLDOMCached($url);
 		$text = $html3->find('div[class=field--type-text-with-summary]', 0)->innertext;
 		$html3->clear();
-		unset ($html3);
+		unset($html3);
 		return $text;
 	}
 }

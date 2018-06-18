@@ -7,26 +7,26 @@ class FilterBridge extends FeedExpander {
 	const CACHE_TIMEOUT = 3600; // 1h
 	const DESCRIPTION = 'Filters a feed of your choice';
 
-	const PARAMETERS = array(array(
-		'url' => array(
+	const PARAMETERS = [[
+		'url' => [
 			'name' => 'Feed URL',
 			'required' => true,
-		),
-		'filter' => array(
+		],
+		'filter' => [
 			'name' => 'Filter item title (regular expression)',
 			'required' => false,
-		),
-		'filter_type' => array(
+		],
+		'filter_type' => [
 			'name' => 'Filter type',
 			'type' => 'list',
 			'required' => false,
-			'values' => array(
+			'values' => [
 				'Permit' => 'permit',
 				'Block' => 'block',
-			),
+			],
 			'defaultValue' => 'permit',
-		),
-	));
+		],
+	]];
 
 	protected function parseItem($newItem){
 		$item = parent::parseItem($newItem);

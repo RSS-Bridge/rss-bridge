@@ -7,14 +7,14 @@ class CryptomeBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 21600; //6h
 	const DESCRIPTION = 'Returns the N most recent documents.';
 
-	const PARAMETERS = array( array(
-		'n' => array(
+	const PARAMETERS = [ [
+		'n' => [
 			'name' => 'number of elements',
 			'type' => 'number',
 			'defaultValue' => 20,
 			'exampleValue' => 10
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
 		$html = getSimpleHTMLDOM(self::URI)
@@ -29,7 +29,7 @@ class CryptomeBridge extends BridgeAbstract {
 
 		foreach($html->find('pre') as $element) {
 			for($i = 0; $i < $num; ++$i) {
-				$item = array();
+				$item = [];
 				$item['uri'] = self::URI . substr($element->find('a', $i)->href, 20);
 				$item['title'] = substr($element->find('b', $i)->plaintext, 22);
 				$item['content'] = preg_replace(

@@ -7,14 +7,14 @@ class ElsevierBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 43200; //12h
 	const DESCRIPTION = 'Returns the recent articles published in Elsevier journals';
 
-	const PARAMETERS = array( array(
-		'j' => array(
+	const PARAMETERS = [ [
+		'j' => [
 			'name' => 'Journal name',
 			'required' => true,
 			'exampleValue' => 'academic-pediactrics',
 			'title' => 'Insert html-part of your journal'
-		)
-	));
+		]
+	]];
 
 	// Extracts the list of names from an article as string
 	private function extractArticleName($article){
@@ -63,7 +63,7 @@ class ElsevierBridge extends BridgeAbstract {
 			or returnServerError('No results for Elsevier journal ' . $this->getInput('j'));
 
 		foreach($html->find('.pod-listing') as $article) {
-			$item = array();
+			$item = [];
 			$item['uri'] = $article->find('.pod-listing-header>a', 0)->getAttribute('href') . '?np=y';
 			$item['title'] = $article->find('.pod-listing-header>a', 0)->plaintext;
 			$item['author'] = $this->extractArticleName($article);

@@ -8,29 +8,29 @@ class AmazonBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 3600; // 1h
 	const DESCRIPTION = 'Returns products from Amazon search';
 
-	const PARAMETERS = array(array(
-		'q' => array(
+	const PARAMETERS = [[
+		'q' => [
 			'name' => 'Keyword',
 			'required' => true,
-		),
-		'sort' => array(
+		],
+		'sort' => [
 			'name' => 'Sort by',
 			'type' => 'list',
 			'required' => false,
-			'values' => array(
+			'values' => [
 				'Relevance' => 'relevanceblender',
 				'Price: Low to High' => 'price-asc-rank',
 				'Price: High to Low' => 'price-desc-rank',
 				'Average Customer Review' => 'review-rank',
 				'Newest Arrivals' => 'date-desc-rank',
-			),
+			],
 			'defaultValue' => 'relevanceblender',
-		),
-		'tld' => array(
+		],
+		'tld' => [
 			'name' => 'Country',
 			'type' => 'list',
 			'required' => true,
-			'values' => array(
+			'values' => [
 				'Australia' => 'com.au',
 				'Brazil' => 'com.br',
 				'Canada' => 'ca',
@@ -45,10 +45,10 @@ class AmazonBridge extends BridgeAbstract {
 				'Spain' => 'es',
 				'United Kingdom' => 'co.uk',
 				'United States' => 'com',
-			),
+			],
 			'defaultValue' => 'com',
-		),
-	));
+		],
+	]];
 
 	public function getName(){
 		if(!is_null($this->getInput('tld')) && !is_null($this->getInput('q'))) {
@@ -68,7 +68,7 @@ class AmazonBridge extends BridgeAbstract {
 
 		foreach($html->find('li.s-result-item') as $element) {
 
-			$item = array();
+			$item = [];
 
 			// Title
 			$title = $element->find('h2', 0);

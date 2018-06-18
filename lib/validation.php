@@ -4,10 +4,10 @@ function validateData(&$data, $parameters){
 		if(!is_null($pattern)) {
 			$filteredValue = filter_var($value,
 			FILTER_VALIDATE_REGEXP,
-			array('options' => array(
+			['options' => [
 					'regexp' => '/^' . $pattern . '$/'
-				)
-			));
+				]
+			]);
 		} else {
 			$filteredValue = filter_var($value);
 		}
@@ -37,9 +37,9 @@ function validateData(&$data, $parameters){
 		if($filteredValue === false)
 			return null;
 
-		if(!in_array($filteredValue, $expectedValues)) { // Check sub-values?
+		if(!in_array($filteredValue, $expectedValues, true)) { // Check sub-values?
 			foreach($expectedValues as $subName => $subValue) {
-				if(is_array($subValue) && in_array($filteredValue, $subValue))
+				if(is_array($subValue) && in_array($filteredValue, $subValue, true))
 					return $filteredValue;
 			}
 			return null;

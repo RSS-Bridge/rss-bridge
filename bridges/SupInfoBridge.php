@@ -6,12 +6,12 @@ class SupInfoBridge extends BridgeAbstract {
 	const URI = 'https://www.supinfo.com';
 	const DESCRIPTION = 'Returns the newest articles.';
 
-	const PARAMETERS = array(array(
-		'tag' => array(
+	const PARAMETERS = [[
+		'tag' => [
 			'name' => 'Category (not mandatory)',
 			'type' => 'text',
-		)
-	));
+		]
+	]];
 
 	public function collectData() {
 
@@ -37,7 +37,7 @@ class SupInfoBridge extends BridgeAbstract {
 			or returnServerError('Unable to fetch article !');
 
 		$article = $articleHTML->find('div[id=courseDocZero]', 0);
-		$item = array();
+		$item = [];
 		$item['author'] = $article->find('#courseMetas', 0)->find('a', 0)->plaintext;
 		$item['id'] = $link;
 		$item['uri'] = self::URI . $link;

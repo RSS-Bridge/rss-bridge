@@ -6,15 +6,15 @@ class BloombergBridge extends BridgeAbstract
 	const DESCRIPTION = 'Trending stories from Bloomberg';
 	const MAINTAINER = 'mdemoss';
 
-	const PARAMETERS = array(
-	'Trending Stories' => array(),
-	'From Search' => array(
-	'q' => array(
+	const PARAMETERS = [
+	'Trending Stories' => [],
+	'From Search' => [
+	'q' => [
 				'name' => 'Keyword',
 				'required' => true
-	)
-	)
-	);
+	]
+	]
+	];
 
 	public function getName()
 	{

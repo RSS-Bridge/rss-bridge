@@ -7,21 +7,21 @@ class SuperbWallpapersBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 43200; // 12h
 	const DESCRIPTION = 'Returns the latests wallpapers from SuperbWallpapers';
 
-	const PARAMETERS = array( array(
-		'c' => array(
+	const PARAMETERS = [ [
+		'c' => [
 			'name' => 'category',
 			'required' => true
-		),
-		'm' => array(
+		],
+		'm' => [
 			'name' => 'Max number of wallpapers',
 			'type' => 'number'
-		),
-		'r' => array(
+		],
+		'r' => [
 			'name' => 'resolution',
 			'exampleValue' => '1920x1200, 1680x1050,…',
 			'defaultValue' => '1920x1200'
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
 		$category = $this->getInput('c');
@@ -46,7 +46,7 @@ class SuperbWallpapersBridge extends BridgeAbstract {
 			foreach($html->find('.wpl .i a') as $element) {
 				$thumbnail = $element->find('img', 0);
 
-				$item = array();
+				$item = [];
 				$item['uri'] = str_replace('200x125', $this->resolution, $thumbnail->src);
 				$item['timestamp'] = time();
 				$item['title'] = $element->title;

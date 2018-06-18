@@ -82,7 +82,7 @@ if(file_exists('DEBUG')) {
 	$debug_whitelist = trim(file_get_contents('DEBUG'));
 
 	$debug_enabled = empty($debug_whitelist)
-	|| in_array($_SERVER['REMOTE_ADDR'], explode("\n", $debug_whitelist));
+	|| in_array($_SERVER['REMOTE_ADDR'], explode("\n", $debug_whitelist), true);
 
 	if($debug_enabled) {
 		ini_set('display_errors', '1');
@@ -134,7 +134,7 @@ $userAgent .= '+https://github.com/RSS-Bridge/rss-bridge)';
 ini_set('user_agent', $userAgent);
 
 // default whitelist
-$whitelist_default = array(
+$whitelist_default = [
 	'BandcampBridge',
 	'CryptomeBridge',
 	'DansTonChatBridge',
@@ -150,7 +150,7 @@ $whitelist_default = array(
 	'ScmbBridge',
 	'TwitterBridge',
 	'WikipediaBridge',
-	'YoutubeBridge');
+	'YoutubeBridge'];
 
 try {
 

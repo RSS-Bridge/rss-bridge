@@ -6,37 +6,37 @@ class KununuBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 86400; // 24h
 	const DESCRIPTION = 'Returns the latest reviews for a company and site of your choice.';
 
-	const PARAMETERS = array(
-		'global' => array(
-			'site' => array(
+	const PARAMETERS = [
+		'global' => [
+			'site' => [
 				'name' => 'Site',
 				'type' => 'list',
 				'required' => true,
 				'title' => 'Select your site',
-				'values' => array(
+				'values' => [
 					'Austria' => 'at',
 					'Germany' => 'de',
 					'Switzerland' => 'ch',
 					'United States' => 'us'
-				)
-			),
-			'full' => array(
+				]
+			],
+			'full' => [
 				'name' => 'Load full article',
 				'type' => 'checkbox',
 				'required' => false,
 				'exampleValue' => 'checked',
 				'title' => 'Activate to load full article'
-			)
-		),
-		array(
-			'company' => array(
+			]
+		],
+		[
+			'company' => [
 				'name' => 'Company',
 				'required' => true,
 				'exampleValue' => 'kununu-us',
 				'title' => 'Insert company name (i.e. Kununu US) or URI path (i.e. kununu-us)'
-			)
-		)
-	);
+			]
+		]
+	];
 
 	private $companyName = '';
 
@@ -64,7 +64,7 @@ class KununuBridge extends BridgeAbstract {
 		return parent::getURI();
 	}
 
-	function getName(){
+	public function getName(){
 		if(!is_null($this->getInput('company'))) {
 			$company = $this->fixCompanyName($this->getInput('company'));
 			return ($this->companyName ?: $company) . ' - ' . self::NAME;
@@ -95,7 +95,7 @@ class KununuBridge extends BridgeAbstract {
 
 		// Go through all articles
 		foreach($articles as $article) {
-			$item = array();
+			$item = [];
 
 			$item['author'] = $this->extractArticleAuthorPosition($article);
 			$item['timestamp'] = $this->extractArticleDate($article);
@@ -135,8 +135,8 @@ class KununuBridge extends BridgeAbstract {
 	* Encodes unmlauts in the given text
 	*/
 	private function encodeUmlauts($text){
-		$umlauts = Array("/ä/","/ö/","/ü/","/Ä/","/Ö/","/Ü/","/ß/");
-		$replace = Array("ae","oe","ue","Ae","Oe","Ue","ss");
+		$umlauts = ["/ä/","/ö/","/ü/","/Ä/","/Ö/","/Ü/","/ß/"];
+		$replace = ["ae","oe","ue","Ae","Oe","Ue","ss"];
 
 		return preg_replace($umlauts, $replace, $text);
 	}

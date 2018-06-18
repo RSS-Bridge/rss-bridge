@@ -178,7 +178,7 @@ CARD;
 					. $id
 					. '" /><br />'
 					. PHP_EOL;
-			} else if($inputEntry['type'] == 'list') {
+			} elseif($inputEntry['type'] == 'list') {
 				$card .= '<select '
 					. $additionalInfoString
 					. ' id="'
@@ -300,19 +300,19 @@ CARD;
 }
 
 function sanitize($textToSanitize,
-$removedTags = array('script', 'iframe', 'input', 'form'),
-$keptAttributes = array('title', 'href', 'src'),
-$keptText = array()){
+$removedTags = ['script', 'iframe', 'input', 'form'],
+$keptAttributes = ['title', 'href', 'src'],
+$keptText = []){
 	$htmlContent = str_get_html($textToSanitize);
 
 	foreach($htmlContent->find('*[!b38fd2b1fe7f4747d6b1c1254ccd055e]') as $element) {
-		if(in_array($element->tag, $keptText)) {
+		if(in_array($element->tag, $keptText, true)) {
 			$element->outertext = $element->plaintext;
-		} elseif(in_array($element->tag, $removedTags)) {
+		} elseif(in_array($element->tag, $removedTags, true)) {
 			$element->outertext = '';
 		} else {
 			foreach($element->getAllAttributes() as $attributeName => $attribute) {
-				if(!in_array($attributeName, $keptAttributes))
+				if(!in_array($attributeName, $keptAttributes, true))
 					$element->removeAttribute($attributeName);
 			}
 		}

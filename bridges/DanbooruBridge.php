@@ -7,19 +7,19 @@ class DanbooruBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 1800; // 30min
 	const DESCRIPTION = 'Returns images from given page';
 
-	const PARAMETERS = array(
-		'global' => array(
-			'p' => array(
+	const PARAMETERS = [
+		'global' => [
+			'p' => [
 				'name' => 'page',
 				'defaultValue' => 1,
 				'type' => 'number'
-			),
-			't' => array(
+			],
+			't' => [
 				'name' => 'tags'
-			)
-		),
-		0 => array()
-	);
+			]
+		],
+		0 => []
+	];
 
 	const PATHTODATA = 'article';
 	const IDATTRIBUTE = 'data-id';
@@ -39,7 +39,7 @@ class DanbooruBridge extends BridgeAbstract {
 		// Fix links
 		defaultLinkTo($element, $this->getURI());
 
-		$item = array();
+		$item = [];
 		$item['uri'] = $element->find('a', 0)->href;
 		$item['postid'] = (int)preg_replace("/[^0-9]/", '', $element->getAttribute(static::IDATTRIBUTE));
 		$item['timestamp'] = time();

@@ -6,13 +6,13 @@ class RTBFBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns the newest RTBF videos by series ID';
 	const MAINTAINER = 'Frenzie';
 
-	const PARAMETERS = array( array(
-		'c' => array(
+	const PARAMETERS = [ [
+		'c' => [
 			'name' => 'series id',
 			'exampleValue' => 9500,
 			'required' => true
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
 		$html = '';
@@ -27,7 +27,7 @@ class RTBFBridge extends BridgeAbstract {
 				break;
 			}
 
-			$item = array();
+			$item = [];
 			$item['id'] = $element->getAttribute('data-id');
 			$item['uri'] = self::URI . 'detail?id=' . $item['id'];
 			$thumbnailUriSrcSet = explode(

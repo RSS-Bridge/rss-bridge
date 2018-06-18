@@ -12,7 +12,7 @@ class EliteDangerousGalnetBridge extends BridgeAbstract {
 			or returnServerError('Error while downloading the website content');
 
 		foreach($html->find('div.article') as $element) {
-			$item = array();
+			$item = [];
 
 			$uri = $element->find('h3 a', 0)->href;
 			$uri = self::URI . substr($uri, strlen('/galnet/'));

@@ -10,12 +10,12 @@ class YGGTorrentBridge extends BridgeAbstract {
 	const URI = 'https://yggtorrent.is';
 	const DESCRIPTION = 'Returns torrent search from Yggtorrent';
 
-	const PARAMETERS = array(
-		array(
-			"cat" => array(
+	const PARAMETERS = [
+		[
+			"cat" => [
 				"name" => "category",
 				"type" => "list",
-				"values" => array(
+				"values" => [
 					"Toute les catégories" => "all.all",
 					"Film/Vidéo - Toutes les sous-catégories" => "2145.all",
 					"Film/Vidéo - Animation" => "2145.2178",
@@ -57,31 +57,31 @@ class YGGTorrentBridge extends BridgeAbstract {
 					"GPS - Applications" => "2141.2168",
 					"GPS - Cartes" => "2141.2169",
 					"GPS - Divers" => "2141.2170"
-				)
-			),
-			"nom" => array(
+				]
+			],
+			"nom" => [
 				"name" => "Nom",
 				"description" => "Nom du torrent",
 				"type" => "text"
-			),
-			"description" => array(
+			],
+			"description" => [
 				"name" => "Description",
 				"description" => "Description du torrent",
 				"type" => "text"
-			),
-			"fichier" => array(
+			],
+			"fichier" => [
 				"name" => "Fichier",
 				"description" => "Fichier du torrent",
 				"type" => "text"
-			),
-			"uploader" => array(
+			],
+			"uploader" => [
 				"name" => "Uploader",
 				"description" => "Uploader du torrent",
 				"type" => "text"
-			),
+			],
 
-		)
-	);
+		]
+	];
 
 	public function collectData() {
 
@@ -112,7 +112,7 @@ class YGGTorrentBridge extends BridgeAbstract {
 			$count++;
 			if($count == 1) continue;
 			if($count == 12) break;
-			$item = array();
+			$item = [];
 			$item["timestamp"] = $row->find(".hidden", 1)->plaintext;
 			$item["title"] = $row->find("a", 1)->plaintext;
 			$torrentData = $this->collectTorrentData($row->find("a", 1)->href);
@@ -138,6 +138,6 @@ class YGGTorrentBridge extends BridgeAbstract {
 		$page = getSimpleHTMLDOM($url) or returnServerError("Unable to query Yggtorrent page !");
 		$author = $page->find(".informations", 0)->find("a", 4)->plaintext;
 		$content = $page->find(".default", 1);
-		return array("author" => $author, "content" => $content);
+		return ["author" => $author, "content" => $content];
 	}
 }

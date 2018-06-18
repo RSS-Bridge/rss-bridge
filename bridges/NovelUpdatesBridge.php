@@ -6,13 +6,13 @@ class NovelUpdatesBridge extends BridgeAbstract {
 	const URI = 'http://www.novelupdates.com/';
 	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = 'Returns releases from Novel Updates';
-	const PARAMETERS = array( array(
-		'n' => array(
+	const PARAMETERS = [ [
+		'n' => [
 			'name' => 'Novel name as found in the url',
 			'exampleValue' => 'spirit-realm',
 			'required' => true
-		)
-	));
+		]
+	]];
 
 	private $seriesTitle = '';
 
@@ -36,7 +36,7 @@ class NovelUpdatesBridge extends BridgeAbstract {
 		$html = stristr($html, '<tr>'); //remove tbody
 		$html = str_get_html(stristr($html, '</tbody>', true)); //remove last tbody and get back as an array
 		foreach($html->find('tr') as $element) {
-				$item = array();
+				$item = [];
 				$item['uri'] = $element->find('td', 2)->find('a', 0)->href;
 				$item['title'] = $element->find('td', 2)->find('a', 0)->plaintext;
 				$item['team'] = $element->find('td', 1)->innertext;

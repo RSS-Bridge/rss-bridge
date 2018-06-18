@@ -6,21 +6,21 @@ class AskfmBridge extends BridgeAbstract {
 	const URI = 'https://ask.fm/';
 	const CACHE_TIMEOUT = 300; //5 min
 	const DESCRIPTION = 'Returns answers from an Ask.fm user';
-	const PARAMETERS = array(
-		'Ask.fm username' => array(
-			'u' => array(
+	const PARAMETERS = [
+		'Ask.fm username' => [
+			'u' => [
 				'name' => 'Username',
 				'required' => true
-			)
-		)
-	);
+			]
+		]
+	];
 
 	public function collectData(){
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Requested username can\'t be found.');
 
 		foreach($html->find('div.streamItem-answer') as $element) {
-			$item = array();
+			$item = [];
 			$item['uri'] = self::URI . $element->find('a.streamItemsAge', 0)->href;
 			$question = trim($element->find('h1.streamItemContent-question', 0)->innertext);
 

@@ -33,7 +33,7 @@ class SuperSmashBlogBridge extends BridgeAbstract {
 			$content = $picture . $video . $text;
 
 			// Build final item
-			$item = array();
+			$item = [];
 			$item['title'] = $article['title']['rendered'];
 			$item['timestamp'] = strtotime($article['date']);
 			$item['content'] = $content;

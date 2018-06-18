@@ -7,33 +7,33 @@ class DailymotionBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 10800; // 3h
 	const DESCRIPTION = 'Returns the 5 newest videos by username/playlist or search';
 
-	const PARAMETERS = array (
-		'By username' => array(
-			'u' => array(
+	const PARAMETERS = [
+		'By username' => [
+			'u' => [
 				'name' => 'username',
 				'required' => true
-			)
-		),
-		'By playlist id' => array(
-			'p' => array(
+			]
+		],
+		'By playlist id' => [
+			'p' => [
 				'name' => 'playlist id',
 				'required' => true
-			)
-		),
-		'From search results' => array(
-			's' => array(
+			]
+		],
+		'From search results' => [
+			's' => [
 				'name' => 'Search keyword',
 				'required' => true
-			),
-			'pa' => array(
+			],
+			'pa' => [
 				'name' => 'Page',
 				'type' => 'number'
-			)
-		)
-	);
+			]
+		]
+	];
 
 	protected function getMetadata($id){
-		$metadata = array();
+		$metadata = [];
 		$html2 = getSimpleHTMLDOM(self::URI . 'video/' . $id);
 		if(!$html2) {
 			return $metadata;
@@ -58,7 +58,7 @@ class DailymotionBridge extends BridgeAbstract {
 
 		foreach($html->find('div.media a.preview_link') as $element) {
 			if($count < $limit) {
-				$item = array();
+				$item = [];
 				$item['id'] = str_replace('/video/', '', strtok($element->href, '_'));
 				$metadata = $this->getMetadata($item['id']);
 				if(empty($metadata)) {

@@ -13,7 +13,7 @@ class DansTonChatBridge extends BridgeAbstract {
 			or returnServerError('Could not request DansTonChat.');
 
 		foreach($html->find('div.item') as $element) {
-			$item = array();
+			$item = [];
 			$item['uri'] = $element->find('a', 0)->href;
 			$titleContent = $element->find('h3 a', 0);
 			if($titleContent) {

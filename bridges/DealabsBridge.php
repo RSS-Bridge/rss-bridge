@@ -4,47 +4,47 @@ class DealabsBridge extends BridgeAbstract {
 	const URI = 'https://www.dealabs.com/';
 	const DESCRIPTION = 'Return the Dealabs search result using keywords';
 	const MAINTAINER = 'sysadminstory';
-	const PARAMETERS = array(
-		'Recherche par Mot(s) clé(s)' => array (
-			'q' => array(
+	const PARAMETERS = [
+		'Recherche par Mot(s) clé(s)' => [
+			'q' => [
 				'name' => 'Mot(s) clé(s)',
 				'type' => 'text',
 				'required' => true
-			),
-			'hide_expired' => array(
+			],
+			'hide_expired' => [
 				'name' => 'Masquer les éléments expirés',
 				'type' => 'checkbox',
 				'required' => 'true'
-			),
-			'hide_local' => array(
+			],
+			'hide_local' => [
 				'name' => 'Masquer les deals locaux',
 				'type' => 'checkbox',
 				'title' => 'Masquer les deals en magasins physiques',
 				'required' => 'true'
-			),
-			'priceFrom' => array(
+			],
+			'priceFrom' => [
 				'name' => 'Prix minimum',
 				'type' => 'text',
 				'title' => 'Prix mnimum en euros',
 				'required' => 'false',
 				'defaultValue' => ''
-			),
-			'priceTo' => array(
+			],
+			'priceTo' => [
 				'name' => 'Prix maximum',
 				'type' => 'text',
 				'title' => 'Prix maximum en euros',
 				'required' => 'false',
 				'defaultValue' => ''
-			),
-		),
+			],
+		],
 
-		'Deals par groupe' => array(
-			'groupe' => array(
+		'Deals par groupe' => [
+			'groupe' => [
 				'name' => 'Groupe',
 				'type' => 'list',
 				'required' => 'true',
 				'title' => 'Groupe dont il faut afficher les deals',
-				'values' => array(
+				'values' => [
 					'Accessoires & gadgets' => 'accessoires-gadgets',
 					'Alimentation & boissons' => 'alimentation-boissons',
 					'Animaux' => 'animaux',
@@ -62,21 +62,21 @@ class DealabsBridge extends BridgeAbstract {
 					'Sports & plein air' => 'sports-plein-air',
 					'Téléphonie' => 'telephonie',
 					'Voyages & sorties' => 'voyages-sorties-restaurants'
-				)
-			),
-			'ordre' => array(
+				]
+			],
+			'ordre' => [
 				'name' => 'Trier par',
 				'type' => 'list',
 				'required' => 'true',
 				'title' => 'Ordre de tri des deals',
-				'values' => array(
+				'values' => [
 					'Du deal le plus Hot au moins Hot' => '',
 					'Du deal le plus récent au plus ancien' => '-nouveaux',
 					'Du deal le plus commentés au moins commentés' => '-commentes'
-				)
-			)
-		)
-	);
+				]
+			]
+		]
+	];
 
 	const CACHE_TIMEOUT = 3600;
 
@@ -144,66 +144,66 @@ class DealabsBridge extends BridgeAbstract {
 		// Deal Image Link CSS Selector
 		$selectorImageLink = implode(
 			' ', /* Notice this is a space! */
-			array(
+			[
 				'cept-thread-image-link',
 				'imgFrame',
 				'imgFrame--noBorder',
 				'thread-listImgCell',
-			)
+			]
 		);
 
 		// Deal Link CSS Selector
 		$selectorLink = implode(
 			' ', /* Notice this is a space! */
-			array(
+			[
 				'cept-tt',
 				'thread-link',
 				'linkPlain',
-			)
+			]
 		);
 
 		// Deal Hotness CSS Selector
 		$selectorHot = implode(
 			' ', /* Notice this is a space! */
-			array(
+			[
 				'flex',
 				'flex--align-c',
 				'flex--justify-space-between',
 				'space--b-2',
-			)
+			]
 		);
 
 		// Deal Description CSS Selector
 		$selectorDescription = implode(
 			' ', /* Notice this is a space! */
-			array(
+			[
 				'cept-description-container',
 				'userHtml',
 				'overflow--wrap-break',
 				'size--all-s',
 				'size--fromW3-m',
-			)
+			]
 		);
 
 		// Deal Date CSS Selector
 		$selectorDate = implode(
 			' ', /* Notice this is a space! */
-			array(
+			[
 				'size--all-s',
 				'flex',
 				'flex--wrap',
 				'flex--justify-e',
 				'flex--grow-1',
-			)
+			]
 		);
 
 		// If there is no results, we don't parse the content because it display some random deals
 		$noresult = $html->find('h3[class=size--all-l size--fromW2-xl size--fromW3-xxl]', 0);
 		if($noresult != null && $noresult->plaintext == 'Il n&#039;y a rien à afficher pour le moment :(') {
-			$this->items = array();
+			$this->items = [];
 		} else {
 			foreach($list as $deal) {
-				$item = array();
+				$item = [];
 				$item['uri'] = $deal->find('div[class=threadGrid-title]', 0)->find('a', 0)->href;
 				$item['title'] = $deal->find('a[class*='. $selectorLink .']', 0
 					)->plaintext;
@@ -230,7 +230,7 @@ class DealabsBridge extends BridgeAbstract {
 				$dealDateDiv = $deal->find('div[class='. $selectorDate .']', 0)
 					->find('span[class=hide--toW3]');
 				$itemDate = end($dealDateDiv)->plaintext;
-				if(substr( $itemDate, 0, 6 ) === 'il y a') {
+				if(substr($itemDate, 0, 6) === 'il y a') {
 					$item['timestamp'] = $this->relativeDateToTimestamp($itemDate);
 				} else 	{
 					$item['timestamp'] = $this->parseDate($itemDate);
@@ -329,7 +329,7 @@ class DealabsBridge extends BridgeAbstract {
 
 		$selectorLazy = implode(
 			' ', /* Notice this is a space! */
-			array(
+			[
 				'thread-image',
 				'width--all-auto',
 				'height--all-auto',
@@ -337,18 +337,18 @@ class DealabsBridge extends BridgeAbstract {
 				'cept-thread-img',
 				'img--dummy',
 				'js-lazy-img'
-			)
+			]
 		);
 
 			$selectorPlain = implode(
 			' ', /* Notice this is a space! */
-			array(
+			[
 				'thread-image',
 				'width--all-auto',
 				'height--all-auto',
 				'imgFrame-img',
 				'cept-thread-img'
-			)
+			]
 		);
 		if($deal->find('img[class='. $selectorLazy .']', 0) != null) {
 			return json_decode(
@@ -356,7 +356,7 @@ class DealabsBridge extends BridgeAbstract {
 					$deal->find('img[class='. $selectorLazy .']', 0)
 						->getAttribute('data-lazy-img')))->{'src'};
 		} else {
-			return $deal->find('img[class='. $selectorPlain .']', 0	)->src;
+			return $deal->find('img[class='. $selectorPlain .']', 0)->src;
 		}
 	}
 
@@ -368,12 +368,12 @@ class DealabsBridge extends BridgeAbstract {
 	{
 		$selector = implode(
 			' ', /* Notice this is a space! */
-			array(
+			[
 				'meta-ribbon',
 				'overflow--wrap-off',
 				'space--l-3',
 				'text--color-greyShade'
-			)
+			]
 		);
 		if($deal->find('span[class='. $selector .']', 0) != null) {
 			return '<div>'
@@ -390,7 +390,7 @@ class DealabsBridge extends BridgeAbstract {
 	 */
 	private function parseDate($string)
 	{
-		$month_fr = array(
+		$month_fr = [
 			'janvier',
 			'février',
 			'mars',
@@ -403,8 +403,8 @@ class DealabsBridge extends BridgeAbstract {
 			'octobre',
 			'novembre',
 			'décembre'
-		);
-		$month_en = array(
+		];
+		$month_en = [
 			'January',
 			'February',
 			'March',
@@ -417,7 +417,7 @@ class DealabsBridge extends BridgeAbstract {
 			'October',
 			'November',
 			'December'
-		);
+		];
 		$string = str_replace('Actualisé ', '', $string);
 		$date_str = trim(str_replace($month_fr, $month_en, $string));
 
@@ -436,7 +436,7 @@ class DealabsBridge extends BridgeAbstract {
 	 */
 	private function relativeDateToTimestamp($str) {
 		$date = new DateTime();
-		$search = array(
+		$search = [
 			'il y a ',
 			'min',
 			'h',
@@ -445,8 +445,8 @@ class DealabsBridge extends BridgeAbstract {
 			'mois',
 			'ans',
 			'et '
-		);
-		$replace = array(
+		];
+		$replace = [
 			'-',
 			'minute',
 			'hour',
@@ -454,7 +454,7 @@ class DealabsBridge extends BridgeAbstract {
 			'month',
 			'year',
 			''
-		);
+		];
 
 		$date->modify(str_replace($search, $replace, $str));
 		return $date->getTimestamp();
@@ -467,7 +467,7 @@ class DealabsBridge extends BridgeAbstract {
 				break;
 			case 'Deals par groupe':
 				$values = self::PARAMETERS['Deals par groupe']['groupe']['values'];
-				$groupe = array_search($this->getInput('groupe'), $values);
+				$groupe = array_search($this->getInput('groupe'), $values, true);
 				return self::NAME . ' - Groupe : '. $groupe;
 				break;
 			default: // Return default value

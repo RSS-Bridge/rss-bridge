@@ -236,3 +236,6 @@ config.ini.php
 
 #Builder
 .buildconfig
+
+# PHP CS Fixer
+.php_cs.cache

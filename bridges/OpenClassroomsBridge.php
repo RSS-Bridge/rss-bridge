@@ -7,12 +7,12 @@ class OpenClassroomsBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = 'Returns latest tutorials from OpenClassrooms.';
 
-	const PARAMETERS = array( array(
-		'u' => array(
+	const PARAMETERS = [ [
+		'u' => [
 			'name' => 'Catégorie',
 			'type' => 'list',
 			'required' => true,
-			'values' => array(
+			'values' => [
 				'Arts & Culture' => 'arts',
 				'Code' => 'code',
 				'Design' => 'design',
@@ -22,9 +22,9 @@ class OpenClassroomsBridge extends BridgeAbstract {
 				'Sciences Humaines' => 'humainities',
 				'Systèmes d\'information' => 'it',
 				'Autres' => 'others'
-			)
-		)
-	));
+			]
+		]
+	]];
 
 	public function getURI(){
 		if(!is_null($this->getInput('u'))) {
@@ -39,7 +39,7 @@ class OpenClassroomsBridge extends BridgeAbstract {
 			or returnServerError('Could not request OpenClassrooms.');
 
 		foreach($html->find('.courseListItem') as $element) {
-				$item = array();
+				$item = [];
 				$item['uri'] = self::URI . $element->find('a', 0)->href;
 				$item['title'] = $element->find('h3', 0)->plaintext;
 				$item['content'] = $element->find('slidingItem__descriptionContent', 0)->plaintext;

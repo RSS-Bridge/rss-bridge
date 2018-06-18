@@ -6,12 +6,12 @@ class JapanExpoBridge extends BridgeAbstract {
 	const URI = 'http://www.japan-expo-paris.com/fr/actualites';
 	const CACHE_TIMEOUT = 14400; // 4h
 	const DESCRIPTION = 'Returns most recent entries from Japan Expo actualités.';
-	const PARAMETERS = array( array(
-		'mode' => array(
+	const PARAMETERS = [ [
+		'mode' => [
 			'name' => 'Show full contents',
 			'type' => 'checkbox',
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
 
@@ -19,7 +19,7 @@ class JapanExpoBridge extends BridgeAbstract {
 			return strtotime(
 				strtr(
 					strtolower(str_replace('Publié le ', '', $date_to_parse)),
-					array(
+					[
 						'janvier' => 'jan',
 						'février' => 'feb',
 						'mars' => 'march',
@@ -32,7 +32,7 @@ class JapanExpoBridge extends BridgeAbstract {
 						'octobre' => 'oct',
 						'novembre' => 'nov',
 						'décembre' => 'dec'
-					)
+					]
 				)
 			);
 		}
@@ -88,7 +88,7 @@ class JapanExpoBridge extends BridgeAbstract {
 				. '">Lire l\'article</a>';
 			}
 
-			$item = array();
+			$item = [];
 			$item['uri'] = $url;
 			$item['title'] = $title;
 			$item['timestamp'] = $timestamp;

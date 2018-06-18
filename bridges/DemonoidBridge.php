@@ -6,16 +6,16 @@ class DemonoidBridge extends BridgeAbstract {
 	const URI = 'https://www.demonoid.pw/';
 	const DESCRIPTION = 'Returns results from search';
 
-	const PARAMETERS = array(array(
-		'q' => array(
+	const PARAMETERS = [[
+		'q' => [
 			'name' => 'keywords',
 			'exampleValue' => 'keyword1 keyword2…',
 			'required' => true,
-			),
-		'category' => array(
+			],
+		'category' => [
 			'name' => 'Category',
 			'type' => 'list',
-			'values' => array(
+			'values' => [
 				'All' => 0,
 				'Movies' => 1,
 				'Music' => 2,
@@ -27,13 +27,13 @@ class DemonoidBridge extends BridgeAbstract {
 				'Comics' => 10,
 				'Books' => 11,
 				'Audiobooks' => 17
-				)
-			)
-		), array(
-		'catOnly' => array(
+				]
+			]
+		], [
+		'catOnly' => [
 			'name' => 'Category',
 			'type' => 'list',
-			'values' => array(
+			'values' => [
 				'All' => 0,
 				'Movies' => 1,
 				'Music' => 2,
@@ -45,19 +45,19 @@ class DemonoidBridge extends BridgeAbstract {
 				'Comics' => 10,
 				'Books' => 11,
 				'Audiobooks' => 17
-				)
-			)
-		), array(
-		'userid' => array(
+				]
+			]
+		], [
+		'userid' => [
 			'name' => 'user id',
 			'exampleValue' => '00000',
 			'required' => true,
 			'type' => 'number'
-			),
-		'category' => array(
+			],
+		'category' => [
 			'name' => 'Category',
 			'type' => 'list',
-			'values' => array(
+			'values' => [
 				'All' => 0,
 				'Movies' => 1,
 				'Music' => 2,
@@ -69,10 +69,10 @@ class DemonoidBridge extends BridgeAbstract {
 				'Comics' => 10,
 				'Books' => 11,
 				'Audiobooks' => 17
-				)
-			)
-		)
-	);
+				]
+			]
+		]
+	];
 
 	public function collectData() {
 
@@ -122,7 +122,7 @@ class DemonoidBridge extends BridgeAbstract {
 			if(preg_match('~items total~', $currentElement)) {
 				break;
 			}
-			$item = array();
+			$item = [];
 			//Do we have a date ?
 			if(preg_match('~Added.*?(.*)~', $currentElement->plaintext, $dateStr)) {
 				if(preg_match('~today~', $dateStr[0])) {

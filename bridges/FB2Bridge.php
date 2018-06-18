@@ -8,12 +8,12 @@ class FB2Bridge extends BridgeAbstract {
 	const DESCRIPTION = 'Input a page title or a profile log. For a profile log,
  please insert the parameter as follow : myExamplePage/132621766841117';
 
-	const PARAMETERS = array( array(
-		'u' => array(
+	const PARAMETERS = [ [
+		'u' => [
 			'name' => 'Username',
 			'required' => true
-		)
-	));
+		]
+	]];
 
 	public function collectData(){
 
@@ -41,7 +41,7 @@ class FB2Bridge extends BridgeAbstract {
 
 		//Utility function for converting facebook emoticons
 		$unescape_fb_emote = function($matches){
-			static $facebook_emoticons = array(
+			static $facebook_emoticons = [
 				'smile' => ':)',
 				'frown' => ':(',
 				'tongue' => ':P',
@@ -62,7 +62,7 @@ class FB2Bridge extends BridgeAbstract {
 				'confused' => 'o_O',
 				'upset' => 'xD',
 				'colonthree' => ':3',
-				'like' => '&#x1F44D;');
+				'like' => '&#x1F44D;'];
 			$len = count($matches);
 			if ($len > 1)
 				for ($i = 1; $i < $len; $i++)
@@ -105,7 +105,7 @@ EOD;
 
 		foreach($html->find("article") as $content) {
 
-			$item = array();
+			$item = [];
 
 			$item['uri'] = "http://touch.facebook.com"
 			. $content->find("div[class='_52jc _5qc4 _24u0 _36xo']", 0)->find("a", 0)->getAttribute("href");
@@ -125,7 +125,7 @@ EOD;
 			$content = preg_replace_callback('/ href=\"([^"]+)\"/i', $unescape_fb_link, $content);
 
 			//Clean useless html tag properties and fix link closing tags
-			foreach (array(
+			foreach ([
 				'onmouseover',
 				'onclick',
 				'target',
@@ -137,7 +137,7 @@ EOD;
 				'aria-[^=]*',
 				'role',
 				'rel',
-				'id') as $property_name)
+				'id'] as $property_name)
 					$content = preg_replace('/ ' . $property_name . '=\"[^"]*\"/i', '', $content);
 			$content = preg_replace('/<\/a [^>]+>/i', '</a>', $content);
 
@@ -167,21 +167,21 @@ EOD;
 
 		$regex = implode(
 			'',
-			array(
+			[
 				"/timeline_unit",
 				"\\\\\\\\u00253A1",
 				"\\\\\\\\u00253A([0-9]*)",
 				"\\\\\\\\u00253A([0-9]*)",
 				"\\\\\\\\u00253A([0-9]*)",
 				"\\\\\\\\u00253A([0-9]*)/"
-			)
+			]
 		);
 
 		preg_match($regex, $string, $result);
 
 		return implode(
 			'',
-			array(
+			[
 				"https://touch.facebook.com/pages_reaction_units/more/?page_id=",
 				$pageID,
 				"&cursor=%7B%22timeline_cursor%22%3A%22timeline_unit%3A1%3A",
@@ -194,7 +194,7 @@ EOD;
 				$result[4],
 				"%22%2C%22timeline_section_cursor%22%3A%7B%7D%2C%22",
 				"has_next_page%22%3Atrue%7D&surface=mobile_page_home&unit_count=3"
-			)
+			]
 		);
 	}
 
@@ -212,12 +212,12 @@ EOD;
 	//the page if no cookie is provided.
 	private function getCookies($pageURL){
 
-		$ctx = stream_context_create(array(
-			'http' => array(
+		$ctx = stream_context_create([
+			'http' => [
 				'user_agent' => "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
 				'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
-				)
-			)
+				]
+			]
 		);
 		$a = file_get_contents($pageURL, 0, $ctx);
 
@@ -237,12 +237,12 @@ EOD;
 	//Get the page ID from the Facebook page.
 	private function getPageID($page, $cookies){
 
-		$context = stream_context_create(array(
-			'http' => array(
+		$context = stream_context_create([
+			'http' => [
 				'user_agent' => "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
 				'header' => 'Cookie: ' . $cookies
-				)
-			)
+				]
+			]
 		);
 
 		$pageContent = file_get_contents($page, 0, $context);

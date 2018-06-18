@@ -6,14 +6,14 @@ class LegifranceJOBridge extends BridgeAbstract {
 	const URI = 'https://www.legifrance.gouv.fr/affichJO.do';
 	const DESCRIPTION = 'Returns the laws and decrees officially registered daily in France';
 
-	const PARAMETERS = array();
+	const PARAMETERS = [];
 
 	private $author;
 	private $timestamp;
 	private $uri;
 
 	private function extractItem($section, $subsection = null, $origin = null){
-		$item = array();
+		$item = [];
 		$item['author'] = $this->author;
 		$item['timestamp'] = $this->timestamp;
 		$item['uri'] = $this->uri . '#' . count($this->items);

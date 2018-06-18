@@ -8,21 +8,21 @@ class TheTVDBBridge extends BridgeAbstract {
 	const APIURI = 'https://api.thetvdb.com/';
 	const CACHE_TIMEOUT = 43200; // 12h
 	const DESCRIPTION = 'Returns latest episodes of a serie with theTVDB api. You can contribute to theTVDB.';
-	const PARAMETERS = array(
-		array(
-			'serie_id' => array(
+	const PARAMETERS = [
+		[
+			'serie_id' => [
 				'type' => 'number',
 				'name' => 'ID',
 				'required' => true,
-			),
-			'nb_episode' => array(
+			],
+			'nb_episode' => [
 				'type' => 'number',
 				'name' => 'Number of episodes',
 				'defaultValue' => 10,
 				'required' => true,
-			),
-		)
-	);
+			],
+		]
+	];
 	const APIACCOUNT = 'RSSBridge';
 	const APIKEY = '76DE1887EA401C9A';
 	const APIUSERKEY = 'B52869AC6005330F';
@@ -33,21 +33,21 @@ class TheTVDBBridge extends BridgeAbstract {
 
 	private function getToken(){
 		//login and get token, don't use curlJob to do less adaptations
-		$login_array = array(
+		$login_array = [
 			'apikey' => self::APIKEY,
 			'username' => self::APIACCOUNT,
 			'userkey' => self::APIUSERKEY
-		);
+		];
 
 		$login_json = json_encode($login_array);
 		$ch = curl_init($this->getApiUri() . 'login');
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $login_json);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+		curl_setopt($ch, CURLOPT_HTTPHEADER, [
 				'Content-Type: application/json',
 				'Accept: application/json'
-			)
+			]
 		);
 
 		curl_setopt($ch, CURLOPT_TIMEOUT, 5);
@@ -68,10 +68,10 @@ class TheTVDBBridge extends BridgeAbstract {
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+		curl_setopt($ch, CURLOPT_HTTPHEADER, [
 				'Accept: application/json',
 				$token_header
-			)
+			]
 		);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 5);
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
@@ -119,7 +119,7 @@ class TheTVDBBridge extends BridgeAbstract {
 		$episodes = (array)$episodes['data'];
 		$episodes = array_slice($episodes, -$nbepisodemin, $nbepisodemin);
 		foreach($episodes as $episode) {
-			$episodedata = array();
+			$episodedata = [];
 			$episodedata['uri'] = $this->getURI()
 			. '?tab=episode&seriesid='
 			. $serie_id
@@ -161,7 +161,7 @@ class TheTVDBBridge extends BridgeAbstract {
 	public function collectData(){
 		$serie_id = $this->getInput('serie_id');
 		$nbepisode = $this->getInput('nb_episode');
-		$episodelist = array();
+		$episodelist = [];
 		$token = $this->getToken();
 		$maxseason = $this->getLatestSeasonNumber($token, $serie_id);
 		$seriename = $this->getSerieName($token, $serie_id);

@@ -7,14 +7,14 @@ class MangareaderBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 10800; // 3h
 	const DESCRIPTION = 'Returns the latest updates, popular mangas or manga updates (new chapters)';
 
-	const PARAMETERS = array(
-		'Get latest updates' => array(),
-		'Get popular mangas' => array(
-			'category' => array(
+	const PARAMETERS = [
+		'Get latest updates' => [],
+		'Get popular mangas' => [
+			'category' => [
 				'name' => 'Category',
 				'type' => 'list',
 				'required' => true,
-				'values' => array(
+				'values' => [
 					'All' => 'all',
 					'Action' => 'action',
 					'Adventure' => 'adventure',
@@ -53,27 +53,27 @@ class MangareaderBridge extends BridgeAbstract {
 					'Vampire' => 'vampire',
 					'Yaoi' => 'yaoi',
 					'Yuri' => 'yuri'
-				),
+				],
 			'exampleValue' => 'All',
 			'title' => 'Select your category'
-			)
-		),
-		'Get manga updates' => array(
-			'path' => array(
+			]
+		],
+		'Get manga updates' => [
+			'path' => [
 				'name' => 'Path',
 				'required' => true,
 				'pattern' => '[a-zA-Z0-9-_]*',
 				'exampleValue' => 'bleach, umi-no-kishidan',
 				'title' => 'URL part of desired manga'
-			),
-			'limit' => array(
+			],
+			'limit' => [
 				'name' => 'Limit',
 				'type' => 'number',
 				'defaultValue' => 10,
 				'title' => 'Number of items to return [-1 returns all]'
-			)
-		)
-	);
+			]
+		]
+	];
 
 	private $request = '';
 
@@ -119,7 +119,7 @@ class MangareaderBridge extends BridgeAbstract {
 
 		// Return some dummy-data if no content available
 		if(empty($this->items)) {
-			$item = array();
+			$item = [];
 			$item['content'] = "<p>No updates available</p>";
 
 			$this->items[] = $item;
@@ -138,7 +138,7 @@ class MangareaderBridge extends BridgeAbstract {
 			$chapters = $xpath->query("a[@class='chaptersrec']", $node);
 
 			if (isset($manga) && $chapters->length >= 1) {
-				$item = array();
+				$item = [];
 				$item['uri'] = self::URI . htmlspecialchars($manga->getAttribute('href'));
 				$item['title'] = htmlspecialchars($manga->nodeValue);
 
@@ -175,7 +175,7 @@ class MangareaderBridge extends BridgeAbstract {
 				->getAttribute('style');
 			$thumbnail = substr($mangaimgelement, 22, strlen($mangaimgelement) - 24);
 
-			$item = array();
+			$item = [];
 			$item['title'] = htmlspecialchars($xpath->query(".//*[@class='manga_name']//a", $manga)
 				->item(0)
 				->nodeValue);
@@ -210,7 +210,7 @@ EOD;
 		$chapters = $xpath->query($query);
 
 		foreach ($chapters as $chapter) {
-			$item = array();
+			$item = [];
 			$item['title'] = htmlspecialchars($xpath->query("td[1]", $chapter)
 				->item(0)
 				->nodeValue);

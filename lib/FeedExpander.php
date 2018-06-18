@@ -115,7 +115,7 @@ abstract class FeedExpander extends BridgeAbstract {
 	}
 
 	protected function parseATOMItem($feedItem){
-		$item = array();
+		$item = [];
 		if(isset($feedItem->id)) $item['uri'] = (string)$feedItem->id;
 		if(isset($feedItem->title)) $item['title'] = (string)$feedItem->title;
 		if(isset($feedItem->updated)) $item['timestamp'] = strtotime((string)$feedItem->updated);
@@ -125,7 +125,7 @@ abstract class FeedExpander extends BridgeAbstract {
 	}
 
 	protected function parseRSS_0_9_1_Item($feedItem){
-		$item = array();
+		$item = [];
 		if(isset($feedItem->link)) $item['uri'] = (string)$feedItem->link;
 		if(isset($feedItem->title)) $item['title'] = (string)$feedItem->title;
 		// rss 0.91 doesn't support timestamps

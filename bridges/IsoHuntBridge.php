@@ -6,41 +6,41 @@ class IsoHuntBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 300; //5min
 	const DESCRIPTION = 'Returns the latest results by category or search result';
 
-	const PARAMETERS = array(
+	const PARAMETERS = [
 		/*
 		 * Get feeds for one of the "latest" categories
 		 * Notice: The categories "News" and "Top Searches" are received from the main page
 		 * Elements are sorted by name ascending!
 		 */
-		'By "Latest" category' => array(
-			'latest_category' => array(
+		'By "Latest" category' => [
+			'latest_category' => [
 				'name' => 'Latest category',
 				'type' => 'list',
 				'required' => true,
 				'title' => 'Select your category',
 				'defaultValue' => 'news',
-				'values' => array(
+				'values' => [
 					'Hot Torrents' => 'hot_torrents',
 					'News' => 'news',
 					'Releases' => 'releases',
 					'Torrents' => 'torrents'
-				)
-			)
-		),
+				]
+			]
+		],
 
 		/*
 		 * Get feeds for one of the "torrent" categories
 		 * Make sure to add new categories also to get_torrent_category_index($)!
 		 * Elements are sorted by name ascending!
 		 */
-		'By "Torrent" category' => array(
-			'torrent_category' => array(
+		'By "Torrent" category' => [
+			'torrent_category' => [
 				'name' => 'Torrent category',
 				'type' => 'list',
 				'required' => true,
 				'title' => 'Select your category',
 				'defaultValue' => 'anime',
-				'values' => array(
+				'values' => [
 					'Adult' => 'adult',
 					'Anime' => 'anime',
 					'Books' => 'books',
@@ -50,31 +50,31 @@ class IsoHuntBridge extends BridgeAbstract {
 					'Other' => 'other',
 					'Series & TV' => 'series_tv',
 					'Software' => 'software'
-				)
-			),
-			'torrent_popularity' => array(
+				]
+			],
+			'torrent_popularity' => [
 				'name' => 'Sort by popularity',
 				'type' => 'checkbox',
 				'title' => 'Activate to receive results by popularity'
-			)
-		),
+			]
+		],
 
 		/*
 		 * Get feeds for a specific search request
 		 */
-		'Search torrent by name' => array(
-			'search_name' => array(
+		'Search torrent by name' => [
+			'search_name' => [
 				'name' => 'Name',
 				'required' => true,
 				'title' => 'Insert your search query',
 				'exampleValue' => 'Bridge'
-			),
-			'search_category' => array(
+			],
+			'search_category' => [
 				'name' => 'Category',
 				'type' => 'list',
 				'title' => 'Select your category',
 				'defaultValue' => 'all',
-				'values' => array(
+				'values' => [
 					'Adult' => 'adult',
 					'All' => 'all',
 					'Anime' => 'anime',
@@ -85,10 +85,10 @@ class IsoHuntBridge extends BridgeAbstract {
 					'Other' => 'other',
 					'Series & TV' => 'series_tv',
 					'Software' => 'software'
-				)
-			)
-		)
-	);
+				]
+			]
+		]
+	];
 
 	public function getURI(){
 		$uri = self::URI;
@@ -132,21 +132,21 @@ class IsoHuntBridge extends BridgeAbstract {
 		case 'By "Latest" category':
 			$categoryName = array_search(
 					$this->getInput('latest_category'),
-					self::PARAMETERS['By "Latest" category']['latest_category']['values']
+					self::PARAMETERS['By "Latest" category']['latest_category']['values'], true
 				);
 			$name = 'Latest ' . $categoryName . ' - ' . self::NAME;
 			break;
 		case 'By "Torrent" category':
 			$categoryName = array_search(
 					$this->getInput('torrent_category'),
-					self::PARAMETERS['By "Torrent" category']['torrent_category']['values']
+					self::PARAMETERS['By "Torrent" category']['torrent_category']['values'], true
 				);
 			$name = 'Category: ' . $categoryName . ' - ' . self::NAME;
 			break;
 		case 'Search torrent by name':
 			$categoryName = array_search(
 					$this->getInput('search_category'),
-					self::PARAMETERS['Search torrent by name']['search_category']['values']
+					self::PARAMETERS['Search torrent by name']['search_category']['values'], true
 				);
 			$name = 'Search: "'
 			. $this->getInput('search_name')
@@ -218,7 +218,7 @@ class IsoHuntBridge extends BridgeAbstract {
 			if(!$date)
 				returnServerError('Unable to find date!');
 
-			$item = array();
+			$item = [];
 
 			$item['uri'] = $this->fixRelativeUri($anchor->href);
 			$item['title'] = $anchor->title;
@@ -256,7 +256,7 @@ class IsoHuntBridge extends BridgeAbstract {
 			if(!$element)
 				returnServerError('Unable to find element!');
 
-			$item = array();
+			$item = [];
 
 			$item['uri'] = $element->href;
 			$item['title'] = $element->plaintext;
@@ -282,7 +282,7 @@ class IsoHuntBridge extends BridgeAbstract {
 			returnServerError('Unable to find posts!');
 
 		foreach($posts as $post) {
-			$item = array();
+			$item = [];
 
 			$item['uri'] = $this->latestNewsExtractUri($post);
 			$item['title'] = $this->latestNewsExtractTitle($post);
@@ -371,7 +371,7 @@ class IsoHuntBridge extends BridgeAbstract {
 			returnServerError('Unable to find torrents!');
 
 		foreach($torrents as $torrent) {
-			$item = array();
+			$item = [];
 
 			$item['uri'] = $this->latestTorrentsExtractUri($torrent);
 			$item['title'] = $this->latestTorrentsExtractTitle($torrent);
@@ -446,13 +446,13 @@ class IsoHuntBridge extends BridgeAbstract {
 	private function buildCategoryUri($category, $order_popularity = false){
 		switch($category) {
 		case 'anime': $index = 1; break;
-		case 'software' : $index = 2; break;
-		case 'games' : $index = 3; break;
-		case 'adult' : $index = 4; break;
-		case 'movies' : $index = 5; break;
-		case 'music' : $index = 6; break;
-		case 'other' : $index = 7; break;
-		case 'series_tv' : $index = 8; break;
+		case 'software': $index = 2; break;
+		case 'games': $index = 3; break;
+		case 'adult': $index = 4; break;
+		case 'movies': $index = 5; break;
+		case 'music': $index = 6; break;
+		case 'other': $index = 7; break;
+		case 'series_tv': $index = 8; break;
 		case 'books': $index = 9; break;
 		case 'all':
 		default: $index = 0; break;

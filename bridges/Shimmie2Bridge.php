@@ -19,7 +19,7 @@ class Shimmie2Bridge extends DanbooruBridge {
 	}
 
 	protected function getItemFromElement($element){
-		$item = array();
+		$item = [];
 		$item['uri'] = $this->getURI() . $element->href;
 		$item['id'] = (int)preg_replace("/[^0-9]/", '', $element->getAttribute(static::IDATTRIBUTE));
 		$item['timestamp'] = time();

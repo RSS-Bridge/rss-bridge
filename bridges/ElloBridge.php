@@ -7,28 +7,28 @@ class ElloBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 4800; //2hours
 	const DESCRIPTION = 'Returns the newest posts for Ello';
 
-	const PARAMETERS = array(
-		'By User' => array(
-			'u' => array(
+	const PARAMETERS = [
+		'By User' => [
+			'u' => [
 				'name' => 'Username',
 				'required' => true,
 				'title' => 'Username'
-			)
-		),
-		'Search' => array(
-			's' => array(
+			]
+		],
+		'Search' => [
+			's' => [
 				'name' => 'Search',
 				'required' => true,
 				'title' => 'Search'
-			)
-		)
-	);
+			]
+		]
+	];
 
 	public function collectData() {
 
-		$header = array(
+		$header = [
 			'Authorization: Bearer ' . $this->getAPIKey()
-		);
+		];
 
 		if(!empty($this->getInput('u'))) {
 			$postData = getContents(self::URI . 'api/v2/users/~' . urlencode($this->getInput('u')) . '/posts', $header) or
@@ -42,7 +42,7 @@ class ElloBridge extends BridgeAbstract {
 		$count = 0;
 		foreach($postData->posts as $post) {
 
-			$item = array();
+			$item = [];
 			$item['author'] = $this->getUsername($post, $postData);
 			$item['timestamp'] = strtotime($post->created_at);
 			$item['title'] = $this->findText($post->summary);

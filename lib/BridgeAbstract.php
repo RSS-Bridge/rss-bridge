@@ -7,12 +7,12 @@ abstract class BridgeAbstract implements BridgeInterface {
 	const DESCRIPTION = 'No description provided';
 	const MAINTAINER = 'No maintainer';
 	const CACHE_TIMEOUT = 3600;
-	const PARAMETERS = array();
+	const PARAMETERS = [];
 
 	protected $cache;
 	protected $extraInfos;
-	protected $items = array();
-	protected $inputs = array();
+	protected $items = [];
+	protected $inputs = [];
 	protected $queriedContext = '';
 	protected $cacheTimeout;
 
@@ -21,10 +21,10 @@ abstract class BridgeAbstract implements BridgeInterface {
 	* @return mixed
 	*/
 	public function getCachable(){
-		return array(
+		return [
 			'items' => $this->getItems(),
 			'extraInfos' => $this->getExtraInfos()
-		);
+		];
 	}
 
 	/**
@@ -53,7 +53,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 		}
 
 		// Apply default values to missing data
-		$contexts = array($queriedContext);
+		$contexts = [$queriedContext];
 		if(array_key_exists('global', static::PARAMETERS)) {
 			$contexts[] = 'global';
 		}
@@ -110,9 +110,9 @@ abstract class BridgeAbstract implements BridgeInterface {
 
 		// Only keep guessed context parameters values
 		if(isset($this->inputs[$queriedContext])) {
-			$this->inputs = array($queriedContext => $this->inputs[$queriedContext]);
+			$this->inputs = [$queriedContext => $this->inputs[$queriedContext]];
 		} else {
-			$this->inputs = array();
+			$this->inputs = [];
 		}
 	}
 
@@ -123,7 +123,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	 * @return mixed Returns the context name or null if no match was found
 	 */
 	protected function getQueriedContext(array $inputs){
-		$queriedContexts = array();
+		$queriedContexts = [];
 
 		// Detect matching context
 		foreach(static::PARAMETERS as $context => $set) {
@@ -158,7 +158,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 			}
 			return null;
 		case 1: // Found unique match
-			return array_search(true, $queriedContexts);
+			return array_search(true, $queriedContexts, true);
 		default: return false;
 		}
 	}
@@ -260,10 +260,10 @@ abstract class BridgeAbstract implements BridgeInterface {
 	}
 
 	public function getExtraInfos(){
-		return array(
+		return [
 			'name' => $this->getName(),
 			'uri' => $this->getURI()
-		);
+		];
 	}
 
 	public function setCache(\CacheInterface $cache){

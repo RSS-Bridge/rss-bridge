@@ -123,7 +123,7 @@ class Releases3DSBridge extends BridgeAbstract {
 			. '">Search using Qwant</a></li></ul>';
 
 			//Build and add final item with the above three sections
-			$item = array();
+			$item = [];
 			$item['title'] = $name;
 			$item['author'] = $publisher;
 			$item['timestamp'] = $ignDate;
