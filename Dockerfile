@@ -1,3 +1,5 @@
 FROM ulsmith/alpine-apache-php7
 
-COPY --chown=apache:root ./ /app/public/
+COPY ./ /app/public/
+
+RUN chown -R apache:root /app/public
