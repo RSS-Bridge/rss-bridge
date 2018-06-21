@@ -178,10 +178,9 @@ class DealabsBridge extends BridgeAbstract {
 			' ', /* Notice this is a space! */
 			array(
 				'cept-description-container',
-				'userHtml',
 				'overflow--wrap-break',
 				'size--all-s',
-				'size--fromW3-m',
+				'size--fromW3-m'
 			)
 		);
 
@@ -191,7 +190,6 @@ class DealabsBridge extends BridgeAbstract {
 			array(
 				'size--all-s',
 				'flex',
-				'flex--wrap',
 				'flex--justify-e',
 				'flex--grow-1',
 			)
@@ -223,11 +221,11 @@ class DealabsBridge extends BridgeAbstract {
 					. $this->getExpedition($deal)
 					. $this->getLivraison($deal)
 					. $this->getOrigine($deal)
-					. $deal->find('div[class='. $selectorDescription .']', 0)->innertext
+					. $deal->find('div[class*='. $selectorDescription .']', 0)->innertext
 					. '</td><td>'
 					. $deal->find('div[class='. $selectorHot .']', 0)->children(0)->outertext
 					. '</td></table>';
-				$dealDateDiv = $deal->find('div[class='. $selectorDate .']', 0)
+				$dealDateDiv = $deal->find('div[class*='. $selectorDate .']', 0)
 					->find('span[class=hide--toW3]');
 				$itemDate = end($dealDateDiv)->plaintext;
 				if(substr( $itemDate, 0, 6 ) === 'il y a') {
