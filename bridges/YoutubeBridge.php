@@ -226,5 +226,5 @@ class YoutubeBridge extends BridgeAbstract {
 		default:
 			return parent::getName();
 		}
-  }
+	}
 }
