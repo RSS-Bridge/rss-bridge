@@ -23,6 +23,13 @@ class FacebookBridge extends BridgeAbstract {
 				'No Video' => 'novideo'
 			),
 			'defaultValue' => 'all'
+		),
+		'skip_reviews' => array(
+			'name' => 'Skip reviews',
+			'type' => 'checkbox',
+			'required' => false,
+			'defaultValue' => false,
+			'title' => 'Feed includes reviews when checked'
 		)
 	));
 
@@ -193,6 +200,12 @@ EOD;
 					$posts = $cell->children();
 				} else {
 					$posts = array($cell);
+				}
+
+				// Optionally skip reviews
+				if($this->getInput('skip_reviews')
+				&& !is_null($cell->find('#review_composer_container', 0))) {
+					continue;
 				}
 
 				foreach($posts as $post) {
