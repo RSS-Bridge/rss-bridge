@@ -3,7 +3,7 @@ class Torrent9Bridge extends BridgeAbstract {
 
 	const MAINTAINER = 'lagaisse';
 	const NAME = 'Torrent9 Bridge';
-	const URI = 'http://www.torrent9.pe';
+	const URI = 'http://www.t9.pe';
 	const CACHE_TIMEOUT = 86400; // 24h = 86400s
 	const DESCRIPTION = 'Returns latest torrents';
 
@@ -63,7 +63,7 @@ class Torrent9Bridge extends BridgeAbstract {
 
 				$textefiche = $htmlepisode->find('.movie-information', 0)->find('p', 1);
 				if(isset($textefiche)) {
-					$item['content'] = $textefiche->text();
+					$item['content'] = $textefiche->innertext();
 				} else {
 					$p = $htmlepisode->find('.movie-information', 0)->find('p');
 					if(!empty($p)) {
