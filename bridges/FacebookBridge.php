@@ -127,17 +127,44 @@ application/x-www-form-urlencoded\r\nReferer: $captcha_action\r\nCookie: noscrip
 		if(is_null($html)) {
 			$header = array('Accept-Language: ' . getEnv('HTTP_ACCEPT_LANGUAGE') . "\r\n");
 
-			// First character cannot be a forward slash
-			if(strpos($this->getInput('u'), "/") === 0) {
-				returnClientError('Remove leading slash "/" from the username!');
-			}
+			// Check if the user provided a fully qualified URL
+			if (filter_var($this->getInput('u'), FILTER_VALIDATE_URL)) {
 
-			if(!strpos($this->getInput('u'), "/")) {
-				$html = getSimpleHTMLDOM(self::URI . urlencode($this->getInput('u')) . '?_fb_noscript=1', $header)
-					or returnServerError('No results for this query.');
+				$urlparts = parse_url($this->getInput('u'));
+
+				if($urlparts['host'] !== parse_url(self::URI)['host']) {
+					returnClientError('The host you provided is invalid! Received "'
+					. $urlparts['host']
+					. '", expected "'
+					. parse_url(self::URI)['host']
+					. '"!');
+				}
+
+				if(!array_key_exists('path', $urlparts)
+				|| $urlparts['path'] === '/') {
+					returnClientError('The URL you provided doesn\'t contain the user name!');
+				}
+
+				$user = explode('/', $urlparts['path'])[1];
+
+				$html = getSimpleHTMLDOM(self::URI . urlencode($user) . '?_fb_noscript=1', $header)
+						or returnServerError('No results for this query.');
+
 			} else {
-				$html = getSimpleHTMLDOM(self::URI . 'pages/' . $this->getInput('u') . '?_fb_noscript=1', $header)
-					or returnServerError('No results for this query.');
+
+				// First character cannot be a forward slash
+				if(strpos($this->getInput('u'), "/") === 0) {
+					returnClientError('Remove leading slash "/" from the username!');
+				}
+
+				if(!strpos($this->getInput('u'), "/")) {
+					$html = getSimpleHTMLDOM(self::URI . urlencode($this->getInput('u')) . '?_fb_noscript=1', $header)
+						or returnServerError('No results for this query.');
+				} else {
+					$html = getSimpleHTMLDOM(self::URI . 'pages/' . $this->getInput('u') . '?_fb_noscript=1', $header)
+						or returnServerError('No results for this query.');
+				}
+
 			}
 		}
 
