@@ -30,6 +30,8 @@ if(!file_exists($vendorLibSimpleHtmlDom)) {
 }
 require_once $vendorLibSimpleHtmlDom;
 
+require_once __DIR__ . PATH_VENDOR . '/cloudflare-bypass/autoload.php';
+
 /* Example use
 
 	require_once __DIR__ . '/lib/RssBridge.php';
