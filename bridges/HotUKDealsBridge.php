@@ -1338,7 +1338,9 @@ class HotUKDealsBridge extends PepperBridgeAbstract {
 		'uri-group' => '/tag/',
 		'request-error' => 'Could not request HotUKDeals',
 		'no-results' => 'Ooops, looks like we could',
-		'relative-date-indicator' => 'ago',
+		'relative-date-indicator' => array(
+			'ago',
+		),
 		'price' => 'Price',
 		'shipping' => 'Shipping',
 		'origin' => 'Origin',
@@ -1380,15 +1382,16 @@ class HotUKDealsBridge extends PepperBridgeAbstract {
 		),
 		'relative-date-alt-prefixes' => array(
 			'Made hot ',
+			'Refreshed ',
+			'Last updated '
+		),
+		'relative-date-ignore-suffix' => array(
+			'/by.*$/'
 		),
 		'localdeal' => array(
 			'Local',
 			'Expires'
 		)
-	)
-	;
-
-
+	);
 
 }
-

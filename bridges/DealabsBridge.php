@@ -87,7 +87,9 @@ class DealabsBridge extends PepperBridgeAbstract {
 		'uri-group' => '/groupe/',
 		'request-error' => 'Could not request Dealabs',
 		'no-results' => 'Il n&#039;y a rien à afficher pour le moment :(',
-		'relative-date-indicator' => 'il y a',
+		'relative-date-indicator' => array(
+			'il y a',
+		),
 		'price' => 'Prix',
 		'shipping' => 'Livraison',
 		'origin' => 'Origine',
@@ -124,12 +126,14 @@ class DealabsBridge extends PepperBridgeAbstract {
 		'relative-date-alt-prefixes' => array(
 			'Actualisé ',
 		),
+		'relative-date-ignore-suffix' => array(
+		),
+
 		'localdeal' => array(
 			'Local',
 			'Pays d\'expédition'
 		),
-	)
-	;
+	);
 
 
 
@@ -256,10 +260,10 @@ class PepperBridgeAbstract extends BridgeAbstract {
 
 		// If there is no results, we don't parse the content because it display some random deals
 		$noresult = $html->find('h3[class=size--all-l size--fromW2-xl size--fromW3-xxl]', 0);
-		if($noresult != null && strpos($noresult->plaintext, $this->i8n('no-results')) !== false ) {
+		if ($noresult != null && strpos($noresult->plaintext, $this->i8n('no-results')) !== false) {
 			$this->items = array();
 		} else {
-			foreach($list as $deal) {
+			foreach ($list as $deal) {
 				$item = array();
 				$item['uri'] = $deal->find('div[class=threadGrid-title]', 0)->find('a', 0)->href;
 				$item['title'] = $deal->find('a[class*='. $selectorLink .']', 0
@@ -287,13 +291,13 @@ class PepperBridgeAbstract extends BridgeAbstract {
 				$dealDateDiv = $deal->find('div[class*='. $selectorDate .']', 0)
 					->find('span[class=hide--toW3]');
 				$itemDate = end($dealDateDiv)->plaintext;
-				// In case of a Local deal, there is no date, but we can use this case for other reason (like date not in the last field)
-				if($this->contains($itemDate, $this->i8n('localdeal')))
-				{
+				// In case of a Local deal, there is no date, but we can use
+				//  this case for other reason (like date not in the last field)
+				if ($this->contains($itemDate, $this->i8n('localdeal'))) {
 					$item['timestamp'] = time();
 				}
 				// chekf if the relative date indicator is there
-				else if(preg_match('/'. $this->i8n('relative-date-indicator') .'/', $itemDate) == 1) {
+				else if ($this->contains($itemDate, $this->i8n('relative-date-indicator'))) {
 					$item['timestamp'] = $this->relativeDateToTimestamp($itemDate);
 				} else {
 					$item['timestamp'] = $this->parseDate($itemDate);
@@ -309,10 +313,8 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	 */
 	private function contains($str, array $arr)
 	{
-		foreach($arr as $a)
-		{
-			if (stripos($str,$a) !== false) 
-			{
+		foreach ($arr as $a) {
+			if (stripos($str, $a) !== false) {
 				return true;
 			}
 		}
@@ -325,7 +327,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	 */
 	private function getPrix($deal)
 	{
-		if($deal->find(
+		if ($deal->find(
 			'span[class*=thread-price]', 0) != null) {
 			return '<div>'.$this->i8n('price') .' : '
 				. $deal->find(
@@ -344,8 +346,8 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	 */
 	private function getLivraison($deal)
 	{
-		if($deal->find('span[class*=cept-shipping-price]', 0) != null) {
-			if($deal->find('span[class*=cept-shipping-price]', 0)->children(0) != null) {
+		if ($deal->find('span[class*=cept-shipping-price]', 0) != null) {
+			if ($deal->find('span[class*=cept-shipping-price]', 0)->children(0) != null) {
 				return '<div>'. $this->i8n('shipping') .' : '
 					. $deal->find('span[class*=cept-shipping-price]', 0)->children(0)->innertext
 					. '</div>';
@@ -365,7 +367,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	 */
 	private function getOrigine($deal)
 	{
-		if($deal->find('a[class=text--color-greyShade]', 0) != null) {
+		if ($deal->find('a[class=text--color-greyShade]', 0) != null) {
 			return '<div>'. $this->i8n('origin') .' : '
 				. $deal->find('a[class=text--color-greyShade]', 0)->outertext
 				. '</div>';
@@ -380,9 +382,9 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	 */
 	private function getReduction($deal)
 	{
-		if($deal->find('span[class*=mute--text text--lineThrough]', 0) != null) {
+		if ($deal->find('span[class*=mute--text text--lineThrough]', 0) != null) {
 			$discountHtml = $deal->find('span[class=space--ml-1 size--all-l size--fromW3-xl]', 0);
-			if($discountHtml != null) {
+			if ($discountHtml != null) {
 				$discount = $discountHtml->plaintext;
 			} else {
 				$discount = '';
@@ -428,7 +430,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 				'cept-thread-img'
 			)
 		);
-		if($deal->find('img[class='. $selectorLazy .']', 0) != null) {
+		if ($deal->find('img[class='. $selectorLazy .']', 0) != null) {
 			return json_decode(
 				html_entity_decode(
 					$deal->find('img[class='. $selectorLazy .']', 0)
@@ -453,7 +455,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 				'text--color-greyShade'
 			)
 		);
-		if($deal->find('span[class='. $selector .']', 0) != null) {
+		if ($deal->find('span[class='. $selector .']', 0) != null) {
 			return '<div>'
 				. $deal->find('span[class='. $selector .']', 0)->children(2)->plaintext
 				. '</div>';
@@ -490,7 +492,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 		$date_str = trim(str_replace($month_local, $month_en, $string));
 
 		// If the date does not contain any year, we add the current year
-		if(!preg_match('/[0-9]{4}/', $string)) {
+		if (!preg_match('/[0-9]{4}/', $string)) {
 			$date_str .= ' ' . date('Y');
 		}
 
@@ -512,6 +514,18 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	}
 
 	/**
+	 * Remove the suffix of a relative date if it has one
+	 * @return the relative date without suffixes
+	 */
+	private function removeRelativeDateSuffixes($string)
+	{
+		if (count($this->i8n('relative-date-ignore-suffix')) > 0) {
+			$string = preg_replace($this->i8n('relative-date-ignore-suffix'), '', $string);
+		}
+		return $string;
+	}
+
+	/**
 	 * Transforms a relative local date into a timestamp
 	 * @return int timestamp of the input date
 	 */
@@ -521,6 +535,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 		// In case of update date, replace it by the regular relative date first word
 		$str = str_replace($this->i8n('relative-date-alt-prefixes'), $this->i8n('local-time-relative')[0], $str);
 
+		$str = $this->removeRelativeDateSuffixes($str);
 
 		$search = $this->i8n('local-time-relative');
 
@@ -560,18 +575,16 @@ class PepperBridgeAbstract extends BridgeAbstract {
 
 
 	/**
-	 * This is some "localisation" function that returns the needed content using the "$lang" class variable in the local class
+	 * This is some "localisation" function that returns the needed content using 
+	 * the "$lang" class variable in the local class
 	 * @return various the local content needed
 	 */
 	public function i8n($key)
 	{
-		if(array_key_exists($key, $this->lang))
-		{
+		if (array_key_exists($key, $this->lang)) {
 			return $this->lang[$key];
-		}
-		else
-		{
-			return NULL;
+		} else {
+			return null;
 		}
 	}
 
@@ -579,7 +592,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 
 /*
 
-class ExampleDealBridge extends PepperBridgeAbstract {
+class ExampleDealsBridge extends PepperBridgeAbstract {
 
 	const NAME = 'Example Deals Bridge'; // Bridge Name
 	const URI = 'https://www.exampledeal.com/'; // Website Base URL
@@ -637,8 +650,10 @@ class ExampleDealBridge extends PepperBridgeAbstract {
 				'required' => 'true',
 				'title' => 'Sort order of deals',
 				'values' => array(
-					'From the most to the least hot deal' => '-hot', // the value is the part after the group URL that changes between the sort order on the website ; the default sort order type has therefore an empty value
-					'From the most recent deal to the oldest' => '', 
+					'From the most to the least hot deal' => '-hot', // The value is the part
+					// after the group URL that changes between the sort order on the
+					// website ; the default sort order type has therefore an empty value
+					'From the most recent deal to the oldest' => '',
 					'From the most commented deal to the least commented deal' => '-discussed'
 				)
 			)
@@ -648,12 +663,17 @@ class ExampleDealBridge extends PepperBridgeAbstract {
 	public $lang = array(
 		'bridge-uri' => SELF::URI, // Nothing to change
 		'bridge-name' => SELF::NAME, // Nothing to change
-		'context-keyword' => 'Search by keyword(s))', // This is the same text as
-		'context-group' => 'Deals per group', // This is the same text as 
+		'context-keyword' => 'Search by keyword(s))', // This is the same text as in
+		//the PARAMETERS constant
+		'context-group' => 'Deals per group', // This is the same text as as in the
+		// PARAMETERS constant
 		'uri-group' => '/tag/', // This is the part of the site URL to display a Group
-		'no-results' => 'Ooops, looks like we could', // This is part of the text displayed when a search by keyword does not have any result
-		'relative-date-indicator' => 'ago', // This is the text on the website that permits to differentiate between a relative date and a absolute date
-		'request-error' => 'Could not request HotUKDeals', // This is the error message when an access to the Website gone wrong
+		'no-results' => 'Ooops, looks like we could', // This is part of the text
+		// displayed when a search by keyword does not have any result
+		'relative-date-indicator' => 'ago', // This is the text on the website that
+		// permits to differentiate between a relative date and a absolute date
+		'request-error' => 'Could not request Example Deals', // This is the error
+		// message when an access to the Website gone wrong
 		// The 4 following lines are part of the text displayed in the content of the RSS Feed ; the name is self explanatory
 		'price' => 'Price',
 		'shipping' => 'Livraison',
@@ -679,7 +699,9 @@ class ExampleDealBridge extends PepperBridgeAbstract {
 			'rd',
 			'th'
 
-		), // This is the list of months used in the date of the website : they could be short or long names, depending of the website ; if the website add some text after the day number, you must add them after the last month
+		), // This is the list of months used in the date of the website : they could
+		// be short or long names, depending of the website ; if the website add some
+		// text after the day number, you must add them after the last month
 		'local-time-relative' => array(
 			'Found ',
 			'm',
@@ -697,11 +719,18 @@ class ExampleDealBridge extends PepperBridgeAbstract {
 		), // This is a list of "Words" that could have been added before an absolute date ; this is very dependant of website
 		'relative-date-alt-prefixes' => array(
 			'Actualisé ',
-		), // This is a list of "Words" that could replace the default first word of a relative date (the first word of the list named 'local-time-relative'
+		), // This is a list of "Words" that could replace the default first word of
+		// a relative date (the first word of the list named 'local-time-relative'
+		'relative-date-ignore-suffix' => array(
+			'/by.*$/'
+		), // Array of regular expression that contains pattern thaht match the
+		// suffix of relative date that could appear (like in the "hot" sort order)
 		'localdeal' => array(
 			'Local',
 			'Expires'
-		), // For some Deals, like the Local deals, there is no date ; We must catch those case, and we must list the "Words" that is displayed on those deals on the top and the most right section of the deal
+		), // For some Deals, like the Local deals, there is no date ; We must catch
+		// those case, and we must list the "Words" that is displayed on those deals
+		// on the top and the most right section of the deal
 	)
 	;
 
@@ -709,4 +738,4 @@ class ExampleDealBridge extends PepperBridgeAbstract {
 
 }
 
-*/
+ */
