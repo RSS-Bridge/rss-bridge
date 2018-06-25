@@ -292,12 +292,10 @@ class PepperBridgeAbstract extends BridgeAbstract {
 					->find('span[class=hide--toW3]');
 				$itemDate = end($dealDateDiv)->plaintext;
 				// In case of a Local deal, there is no date, but we can use
-				//  this case for other reason (like date not in the last field)
+				// this case for other reason (like date not in the last field)
 				if ($this->contains($itemDate, $this->i8n('localdeal'))) {
 					$item['timestamp'] = time();
-				}
-				// chekf if the relative date indicator is there
-				else if ($this->contains($itemDate, $this->i8n('relative-date-indicator'))) {
+				} else if ($this->contains($itemDate, $this->i8n('relative-date-indicator'))) {
 					$item['timestamp'] = $this->relativeDateToTimestamp($itemDate);
 				} else {
 					$item['timestamp'] = $this->parseDate($itemDate);
@@ -575,7 +573,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 
 
 	/**
-	 * This is some "localisation" function that returns the needed content using 
+	 * This is some "localisation" function that returns the needed content using
 	 * the "$lang" class variable in the local class
 	 * @return various the local content needed
 	 */
