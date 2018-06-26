@@ -25,3 +25,8 @@ name = "Hidden proxy name"
 ; true  = enabled
 ; false = disabled (default)
 by_bridge = false
+
+[authentication]
+enable_authentication = false
+username =
+password =
