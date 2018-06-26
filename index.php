@@ -1,29 +1,21 @@
 <?php
-/*
-TODO :
-- factorize the annotation system
-- factorize to adapter : Format, Bridge, Cache(actually code is almost the same)
-- implement annotation cache for entrance page
-- Cache : I think logic must be change as least to avoid to reconvert object from json in FileCache case.
-- add namespace to avoid futur problem ?
-- see FIXME mentions in the code
-- implement header('X-Cached-Version: '.date(DATE_ATOM, filemtime($cachefile)));
-*/
 require_once __DIR__ . '/lib/RssBridge.php';
 
-Configuration::loadConfiguration();
-Authentication::showPromptIfNeeded();
-// Defines the minimum required PHP version for RSS-Bridge
 define('PHP_VERSION_REQUIRED', '5.6.0');
-
-date_default_timezone_set('UTC');
-error_reporting(0);
 
 // Specify directory for cached files (using FileCache)
 define('CACHE_DIR', __DIR__ . '/cache');
 
 // Specify path for whitelist file
 define('WHITELIST_FILE', __DIR__ . '/whitelist.txt');
+
+Configuration::verifyInstallation();
+Configuration::loadConfiguration();
+
+Authentication::showPromptIfNeeded();
+
+date_default_timezone_set('UTC');
+error_reporting(0);
 
 /*
 Move the CLI arguments to the $_GET array, in order to be able to use
@@ -52,38 +44,6 @@ if(file_exists('DEBUG')) {
 		define('DEBUG', true);
 	}
 }
-
-// Check PHP version
-if(version_compare(PHP_VERSION, PHP_VERSION_REQUIRED) === -1)
-	die('RSS-Bridge requires at least PHP version ' . PHP_VERSION_REQUIRED . '!');
-
-// extensions check
-if(!extension_loaded('openssl'))
-	die('"openssl" extension not loaded. Please check "php.ini"');
-
-if(!extension_loaded('libxml'))
-	die('"libxml" extension not loaded. Please check "php.ini"');
-
-if(!extension_loaded('mbstring'))
-	die('"mbstring" extension not loaded. Please check "php.ini"');
-
-if(!extension_loaded('simplexml'))
-	die('"simplexml" extension not loaded. Please check "php.ini"');
-
-if(!extension_loaded('curl'))
-	die('"curl" extension not loaded. Please check "php.ini"');
-
-// configuration checks
-if(ini_get('allow_url_fopen') !== "1")
-	die('"allow_url_fopen" is not set to "1". Please check "php.ini');
-
-// Check cache folder permissions (write permissions required)
-if(!is_writable(CACHE_DIR))
-	die('RSS-Bridge does not have write permissions for ' . CACHE_DIR . '!');
-
-// Check whitelist file permissions (only in DEBUG mode)
-if(!file_exists(WHITELIST_FILE) && !is_writable(dirname(WHITELIST_FILE)))
-	die('RSS-Bridge does not have write permissions for ' . WHITELIST_FILE . '!');
 
 // FIXME : beta test UA spoofing, please report any blacklisting by PHP-fopen-unfriendly websites
 

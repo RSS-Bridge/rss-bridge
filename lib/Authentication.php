@@ -1,9 +1,9 @@
 <?php
 class Authentication {
-	
+
 	public static function showPromptIfNeeded() {
-		
-		if(Configuration::$config['authentication']['enable_authentication'] == true) {
+
+		if(Configuration::getConfig('authentication', 'enable') === true) {
 			if(!Authentication::verifyPrompt()) {
 				header('WWW-Authenticate: Basic realm="RSS-Bridge"');
 				header('HTTP/1.0 401 Unauthorized');
@@ -11,17 +11,21 @@ class Authentication {
 			}
 
 		}
-		
+
 	}
-	
+
 	public static function verifyPrompt() {
-		
+
 		if(isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
-			return (Configuration::$config['authentication']['username'] == $_SERVER['PHP_AUTH_USER'] && Configuration::$config['authentication']['password'] == $_SERVER['PHP_AUTH_PW']);
-		} else {
-			return false;
+			if(Configuration::getConfig('authentication', 'username') === $_SERVER['PHP_AUTH_USER']
+				&& Configuration::getConfig('authentication', 'password') === $_SERVER['PHP_AUTH_PW']) {
+				return true;
+			} else {
+				error_log('[RSS-Bridge] Failed authentication attempt from ' . $_SERVER['REMOTE_ADDR']);
+			}
 		}
-		
+		return false;
+
 	}
-	
+
 }

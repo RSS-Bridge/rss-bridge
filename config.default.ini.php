@@ -27,6 +27,18 @@ name = "Hidden proxy name"
 by_bridge = false
 
 [authentication]
-enable_authentication = false
-username =
-password =
+
+; Enables authentication for all requests to this RSS-Bridge instance.
+;
+; Warning: You'll have to upgrade existing feeds after enabling this option!
+;
+; true  = enabled
+; false = disabled (default)
+enable = false
+
+; The username for authentication. Insert this name when prompted for login.
+username = ""
+
+; The password for authentication. Insert this password when prompted for login.
+; Use a strong password to prevent others from guessing your login!
+password = ""
