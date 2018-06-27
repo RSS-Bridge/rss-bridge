@@ -1,60 +1,7 @@
 <?php
-/*
-TODO :
-- factorize the annotation system
-- factorize to adapter : Format, Bridge, Cache(actually code is almost the same)
-- implement annotation cache for entrance page
-- Cache : I think logic must be change as least to avoid to reconvert object from json in FileCache case.
-- add namespace to avoid futur problem ?
-- see FIXME mentions in the code
-- implement header('X-Cached-Version: '.date(DATE_ATOM, filemtime($cachefile)));
-*/
+require_once __DIR__ . '/lib/RssBridge.php';
 
-if(!file_exists('config.default.ini.php'))
-	die('The default configuration file "config.default.ini.php" is missing!');
-
-$config = parse_ini_file('config.default.ini.php', true, INI_SCANNER_TYPED);
-if(!$config)
-	die('Error parsing config.default.ini.php');
-
-if(file_exists('config.ini.php')) {
-	// Replace default configuration with custom settings
-	foreach(parse_ini_file('config.ini.php', true, INI_SCANNER_TYPED) as $header => $section) {
-		foreach($section as $key => $value) {
-			// Skip unknown sections and keys
-			if(array_key_exists($header, $config) && array_key_exists($key, $config[$header])) {
-				$config[$header][$key] = $value;
-			}
-		}
-	}
-}
-
-if(!is_string($config['proxy']['url']))
-	die('Parameter [proxy] => "url" is not a valid string! Please check "config.ini.php"!');
-
-if(!empty($config['proxy']['url']))
-	define('PROXY_URL', $config['proxy']['url']);
-
-if(!is_bool($config['proxy']['by_bridge']))
-	die('Parameter [proxy] => "by_bridge" is not a valid Boolean! Please check "config.ini.php"!');
-
-define('PROXY_BYBRIDGE', $config['proxy']['by_bridge']);
-
-if(!is_string($config['proxy']['name']))
-	die('Parameter [proxy] => "name" is not a valid string! Please check "config.ini.php"!');
-
-define('PROXY_NAME', $config['proxy']['name']);
-
-if(!is_bool($config['cache']['custom_timeout']))
-	die('Parameter [cache] => "custom_timeout" is not a valid Boolean! Please check "config.ini.php"!');
-
-define('CUSTOM_CACHE_TIMEOUT', $config['cache']['custom_timeout']);
-
-// Defines the minimum required PHP version for RSS-Bridge
 define('PHP_VERSION_REQUIRED', '5.6.0');
-
-date_default_timezone_set('UTC');
-error_reporting(0);
 
 // Specify directory for cached files (using FileCache)
 define('CACHE_DIR', __DIR__ . '/cache');
@@ -62,6 +9,13 @@ define('CACHE_DIR', __DIR__ . '/cache');
 // Specify path for whitelist file
 define('WHITELIST_FILE', __DIR__ . '/whitelist.txt');
 
+Configuration::verifyInstallation();
+Configuration::loadConfiguration();
+
+Authentication::showPromptIfNeeded();
+
+date_default_timezone_set('UTC');
+error_reporting(0);
 
 /*
 Move the CLI arguments to the $_GET array, in order to be able to use
@@ -90,40 +44,6 @@ if(file_exists('DEBUG')) {
 		define('DEBUG', true);
 	}
 }
-
-require_once __DIR__ . '/lib/RssBridge.php';
-
-// Check PHP version
-if(version_compare(PHP_VERSION, PHP_VERSION_REQUIRED) === -1)
-	die('RSS-Bridge requires at least PHP version ' . PHP_VERSION_REQUIRED . '!');
-
-// extensions check
-if(!extension_loaded('openssl'))
-	die('"openssl" extension not loaded. Please check "php.ini"');
-
-if(!extension_loaded('libxml'))
-	die('"libxml" extension not loaded. Please check "php.ini"');
-
-if(!extension_loaded('mbstring'))
-	die('"mbstring" extension not loaded. Please check "php.ini"');
-
-if(!extension_loaded('simplexml'))
-	die('"simplexml" extension not loaded. Please check "php.ini"');
-
-if(!extension_loaded('curl'))
-	die('"curl" extension not loaded. Please check "php.ini"');
-
-// configuration checks
-if(ini_get('allow_url_fopen') !== "1")
-	die('"allow_url_fopen" is not set to "1". Please check "php.ini');
-
-// Check cache folder permissions (write permissions required)
-if(!is_writable(CACHE_DIR))
-	die('RSS-Bridge does not have write permissions for ' . CACHE_DIR . '!');
-
-// Check whitelist file permissions (only in DEBUG mode)
-if(!file_exists(WHITELIST_FILE) && !is_writable(dirname(WHITELIST_FILE)))
-	die('RSS-Bridge does not have write permissions for ' . WHITELIST_FILE . '!');
 
 // FIXME : beta test UA spoofing, please report any blacklisting by PHP-fopen-unfriendly websites
 
