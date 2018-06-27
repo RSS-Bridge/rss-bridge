@@ -70,4 +70,8 @@
   <rule ref="Squiz.WhiteSpace.SemicolonSpacing"/>
   <!-- Do not add whitespace at start or end of a file or end of a line -->
   <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace"/>
+  <!-- Whenever possible use single quote strings -->
+  <rule ref="Squiz.Strings.DoubleQuoteUsage">
+    <exclude name="Squiz.Strings.DoubleQuoteUsage.ContainsVar" />
+  </rule>
 </ruleset>
