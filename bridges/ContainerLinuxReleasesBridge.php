@@ -40,17 +40,28 @@ class ContainerLinuxReleasesBridge extends BridgeAbstract {
 
 			$item['uri'] = "https://coreos.com/releases/#$releaseVersion";
 			$item['title'] = $releaseVersion;
-			$item['content'] = nl2br($release['release_notes']);
 
-			$item['content'] .= <<<EOT
-<br/>
+			$content = $release['release_notes'];
+			$content .= <<<EOT
+
 Major Software:
-<br/>
-- Kernel: {$release['major_software']['kernel'][0]}<br/>
-- Docker: {$release['major_software']['docker'][0]}<br/>
-- etcd: {$release['major_software']['etcd'][0]}<br/>
+* Kernel: <tt>{$release['major_software']['kernel'][0]}</tt>
+* Docker: <tt>{$release['major_software']['docker'][0]}</tt>
+* etcd: <tt>{$release['major_software']['etcd'][0]}</tt>
 EOT;
 			$item['timestamp'] = strtotime($release['release_date']);
+
+			// Based on https://gist.github.com/jbroadway/2836900
+			$regex = '/\[([^\[]+)\]\(([^\)]+)\)/';
+			$replacement = '<a href=\'\2\'>\1</a>';
+
+			$item['content'] = preg_replace($regex, $replacement, nl2br($content));
+
+			$regex = '/\n[\*|\-](.*)/';
+			$item['content'] = preg_replace_callback ($regex, function($regs) {
+				$item = $regs[1];
+				return sprintf ("\n<ul>\n\t<li>%s</li>\n</ul>", trim ($item));
+			}, $item['content']);
 
 			$this->items[] = $item;
 		}
