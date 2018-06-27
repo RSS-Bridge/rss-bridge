@@ -64,7 +64,10 @@ function buildBridgeException($e, $bridge){
 	$body = 'Error message: `'
 	. $e->getMessage()
 	. "`\nQuery string: `"
-	. $_SERVER['QUERY_STRING'] . '`';
+	. $_SERVER['QUERY_STRING']
+	. "`\nVersion: `"
+	. Configuration::getVersion()
+	. '`';
 
 	$link = buildGitHubIssueQuery($title, $body, 'bug report', $bridge->getMaintainer());
 

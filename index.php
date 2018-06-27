@@ -253,7 +253,8 @@ EOD;
 		echo $inactiveBridges;
 	?>
 	<section class="footer">
-		<a href="https://github.com/RSS-Bridge/rss-bridge">RSS-Bridge 2018-06-10 ~ Public Domain</a><br />
+		<a href="https://github.com/RSS-Bridge/rss-bridge">RSS-Bridge ~ Public Domain</a><br />
+		<p class="version"> <?= Configuration::getVersion() ?> </p>
 		<?= $activeFoundBridgeCount; ?>/<?= count($bridgeList) ?> active bridges. <br />
 		<?php
 			if($activeFoundBridgeCount !== count($bridgeList)) {

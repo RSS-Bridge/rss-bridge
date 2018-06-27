@@ -1,6 +1,8 @@
 <?php
 class Configuration {
 
+	public static $VERSION = "2018-06-10";
+
 	public static $config = null;
 
 	public static function verifyInstallation() {
@@ -99,6 +101,18 @@ class Configuration {
 		}
 
 		return null;
+
+	}
+
+	public static function getVersion() {
+
+		$revisionHashFile = '.git/refs/heads/master';
+
+		if(file_exists($revisionHashFile)) {
+
+			return 'git.' . trim(file_get_contents($revisionHashFile));
+
+		} else return Configuration::$VERSION;
 
 	}
 
