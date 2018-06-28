@@ -95,6 +95,7 @@ try {
 		$whitelist_selection = array_map('strtolower', $whitelist_selection);
 	}
 
+	$showInactive = filter_input(INPUT_GET, 'show_inactive', FILTER_VALIDATE_BOOLEAN);
 	$action = array_key_exists('action', $params) ? $params['action'] : null;
 	$bridge = array_key_exists('bridge', $params) ? $params['bridge'] : null;
 
@@ -182,6 +183,8 @@ try {
 		}
 
 		die;
+	} else {
+		echo Index::create($whitelist_selection, $showInactive);
 	}
 } catch(HttpException $e) {
 	http_response_code($e->getCode());
@@ -190,81 +193,3 @@ try {
 } catch(\Exception $e) {
 	die($e->getMessage());
 }
-
-$formats = Format::searchInformation();
-
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta name="description" content="Rss-bridge" />
-	<title>RSS-Bridge</title>
-	<link href="static/style.css" rel="stylesheet">
-	<script src="static/search.js"></script>
-	<script src="static/select.js"></script>
-	<noscript>
-		<style>
-			.searchbar {
-				display: none;
-			}
-		</style>
-	</noscript>
-</head>
-
-<body onload="search()">
-	<?php
-		$status = '';
-		if(defined('DEBUG') && DEBUG === true) {
-			$status .= 'debug mode active';
-		}
-
-		$query = filter_input(INPUT_GET, 'q');
-
-		echo <<<EOD
-	<header>
-		<h1>RSS-Bridge</h1>
-		<h2>·Reconnecting the Web·</h2>
-		<p class="status">{$status}</p>
-	</header>
-	<section class="searchbar">
-		<h3>Search</h3>
-		<input type="text" name="searchfield"
-			id="searchfield" placeholder="Enter the bridge you want to search for"
-			onchange="search()" onkeyup="search()" value="{$query}">
-	</section>
-
-EOD;
-
-		$activeFoundBridgeCount = 0;
-		$showInactive = filter_input(INPUT_GET, 'show_inactive', FILTER_VALIDATE_BOOLEAN);
-		$inactiveBridges = '';
-		$bridgeList = Bridge::listBridges();
-		foreach($bridgeList as $bridgeName) {
-			if(Bridge::isWhitelisted($whitelist_selection, strtolower($bridgeName))) {
-				echo displayBridgeCard($bridgeName, $formats);
-						$activeFoundBridgeCount++;
-			} elseif($showInactive) {
-				// inactive bridges
-				$inactiveBridges .= displayBridgeCard($bridgeName, $formats, false) . PHP_EOL;
-			}
-		}
-		echo $inactiveBridges;
-	?>
-	<section class="footer">
-		<a href="https://github.com/RSS-Bridge/rss-bridge">RSS-Bridge ~ Public Domain</a><br />
-		<p class="version"> <?= Configuration::getVersion() ?> </p>
-		<?= $activeFoundBridgeCount; ?>/<?= count($bridgeList) ?> active bridges. <br />
-		<?php
-			if($activeFoundBridgeCount !== count($bridgeList)) {
-				// FIXME: This should be done in pure CSS
-				if(!$showInactive)
-					echo '<a href="?show_inactive=1"><button class="small">Show inactive bridges</button></a><br />';
-				else
-					echo '<a href="?show_inactive=0"><button class="small">Hide inactive bridges</button></a><br />';
-			}
-		?>
-	</section>
-	</body>
-</html>
