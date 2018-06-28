@@ -85,7 +85,7 @@ class InstagramBridge extends BridgeAbstract {
 				$item['content'] = $data[0];
 				$item['enclosures'] = $data[1];
 			} else {
-				$item['content'] = '<img src="' . htmlentities($media->display_url) . '" alt="'. $item["title"] . '" />';
+				$item['content'] = '<img src="' . htmlentities($media->display_url) . '" alt="'. $item['title'] . '" />';
 				$item['enclosures'] = array($media->display_url);
 			}
 

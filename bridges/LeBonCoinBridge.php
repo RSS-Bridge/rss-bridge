@@ -172,7 +172,7 @@ region, and optionally a category and a keyword .';
 			if($content_image !== null) {
 				$content = '<img src="' . $content_image->getAttribute('data-imgsrc') . '" alt="thumbnail">';
 			} else {
-				$content = "";
+				$content = '';
 			}
 			$date = $element->find('aside.item_absolute', 0)->find('p.item_sup', 0);
 

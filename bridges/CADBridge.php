@@ -23,14 +23,14 @@ class CADBridge extends FeedExpander {
 		if($html3 == false)
 			return 'Daily comic not released yet';
 
-		$htmlpart = explode("/", $url);
+		$htmlpart = explode('/', $url);
 
 		switch ($htmlpart[3]) {
 			case 'cad':
-				preg_match_all("/http:\/\/cdn2\.cad-comic\.com\/comics\/cad-\S*png/", $html3, $url2);
+				preg_match_all('/http:\/\/cdn2\.cad-comic\.com\/comics\/cad-\S*png/', $html3, $url2);
 				break;
 			case 'sillies':
-				preg_match_all("/http:\/\/cdn2\.cad-comic\.com\/comics\/sillies-\S*gif/", $html3, $url2);
+				preg_match_all('/http:\/\/cdn2\.cad-comic\.com\/comics\/sillies-\S*gif/', $html3, $url2);
 				break;
 			default:
 				return 'Daily comic not released yet';

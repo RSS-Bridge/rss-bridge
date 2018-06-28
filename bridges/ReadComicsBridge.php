@@ -25,7 +25,7 @@ class ReadComicsBridge extends BridgeAbstract {
 			return $timestamp;
 		}
 
-		$keywordsList = explode(";", $this->getInput('q'));
+		$keywordsList = explode(';', $this->getInput('q'));
 		foreach($keywordsList as $keywords) {
 			$html = $this->getSimpleHTMLDOM(self::URI . 'comic/' . rawurlencode($keywords))
 				or $this->returnServerError('Could not request readcomics.tv.');

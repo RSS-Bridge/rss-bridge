@@ -135,8 +135,8 @@ class KununuBridge extends BridgeAbstract {
 	* Encodes unmlauts in the given text
 	*/
 	private function encodeUmlauts($text){
-		$umlauts = Array("/ä/","/ö/","/ü/","/Ä/","/Ö/","/Ü/","/ß/");
-		$replace = Array("ae","oe","ue","Ae","Oe","Ue","ss");
+		$umlauts = Array('/ä/','/ö/','/ü/','/Ä/','/Ö/','/Ü/','/ß/');
+		$replace = Array('ae','oe','ue','Ae','Oe','Ue','ss');
 
 		return preg_replace($umlauts, $replace, $text);
 	}

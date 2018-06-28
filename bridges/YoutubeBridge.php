@@ -25,14 +25,14 @@ class YoutubeBridge extends BridgeAbstract {
 		'By channel id' => array(
 			'c' => array(
 				'name' => 'channel id',
-				'exampleValue' => "15",
+				'exampleValue' => '15',
 				'required' => true
 			)
 		),
 		'By playlist Id' => array(
 			'p' => array(
 				'name' => 'playlist id',
-				'exampleValue' => "15"
+				'exampleValue' => '15'
 			)
 		),
 		'Search result' => array(
@@ -195,7 +195,7 @@ class YoutubeBridge extends BridgeAbstract {
 			$this->request = $this->getInput('s');
 			$page = 1;
 			if($this->getInput('pa'))
-				$page = (int)preg_replace("/[^0-9]/", '', $this->getInput('pa'));
+				$page = (int)preg_replace('/[^0-9]/', '', $this->getInput('pa'));
 
 			$url_listing = self::URI
 			. 'results?search_query='

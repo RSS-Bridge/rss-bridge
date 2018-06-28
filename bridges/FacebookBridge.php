@@ -102,7 +102,7 @@ class FacebookBridge extends BridgeAbstract {
 			if (isset($_SESSION['captcha_fields'], $_SESSION['captcha_action'])) {
 				$captcha_action = $_SESSION['captcha_action'];
 				$captcha_fields = $_SESSION['captcha_fields'];
-				$captcha_fields['captcha_response'] = preg_replace("/[^a-zA-Z0-9]+/", "", $_POST['captcha_response']);
+				$captcha_fields['captcha_response'] = preg_replace('/[^a-zA-Z0-9]+/', '', $_POST['captcha_response']);
 
 				$header = array("Content-type:
 application/x-www-form-urlencoded\r\nReferer: $captcha_action\r\nCookie: noscript=1\r\n");
@@ -153,11 +153,11 @@ application/x-www-form-urlencoded\r\nReferer: $captcha_action\r\nCookie: noscrip
 			} else {
 
 				// First character cannot be a forward slash
-				if(strpos($this->getInput('u'), "/") === 0) {
+				if(strpos($this->getInput('u'), '/') === 0) {
 					returnClientError('Remove leading slash "/" from the username!');
 				}
 
-				if(!strpos($this->getInput('u'), "/")) {
+				if(!strpos($this->getInput('u'), '/')) {
 					$html = getSimpleHTMLDOM(self::URI . urlencode($this->getInput('u')) . '?_fb_noscript=1', $header)
 						or returnServerError('No results for this query.');
 				} else {
@@ -305,7 +305,7 @@ EOD;
 						);
 
 						//Retrieve date of the post
-						$date = $post->find("abbr")[0];
+						$date = $post->find('abbr')[0];
 						if(isset($date) && $date->hasAttribute('data-utime')) {
 							$date = $date->getAttribute('data-utime');
 						} else {

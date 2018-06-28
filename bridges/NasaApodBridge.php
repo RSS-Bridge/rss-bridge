@@ -12,7 +12,7 @@ class NasaApodBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI . 'archivepix.html')
 			or returnServerError('Error while downloading the website content');
 
-		$list = explode("<br>", $html->find('b', 0)->innertext);
+		$list = explode('<br>', $html->find('b', 0)->innertext);
 
 		for($i = 0; $i < 3; $i++) {
 			$line = $list[$i];
@@ -32,7 +32,7 @@ class NasaApodBridge extends BridgeAbstract {
 			$explanation = $picture_html->find('p', 2)->innertext;
 
 			//Extract date from the picture page
-			$date = explode(" ", $picture_html->find('p', 1)->innertext);
+			$date = explode(' ', $picture_html->find('p', 1)->innertext);
 			$item['timestamp'] = strtotime($date[4] . $date[3] . $date[2]);
 
 			//Other informations

@@ -32,7 +32,7 @@ class SexactuBridge extends BridgeAbstract {
 				$item = array();
 				$item['author'] = self::AUTHOR;
 				$item['title'] = $title->plaintext;
-				$urlAttribute = "data-href";
+				$urlAttribute = 'data-href';
 				$uri = $title->$urlAttribute;
 				if($uri === false)
 					continue;

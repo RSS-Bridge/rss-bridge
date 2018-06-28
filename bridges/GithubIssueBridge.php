@@ -106,7 +106,7 @@ class GithubIssueBridge extends BridgeAbstract {
 			$content = $comment->parent()->innertext;
 		} else {
 			$title .= ' / ' . trim($comment->firstChild()->plaintext);
-			$content = "<pre>" . $comment->find('.comment-body', 0)->innertext . "</pre>";
+			$content = '<pre>' . $comment->find('.comment-body', 0)->innertext . '</pre>';
 		}
 
 		$item = array();

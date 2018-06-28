@@ -66,7 +66,7 @@ class VkBridge extends BridgeAbstract
 				$post->find('a.wall_post_more', 0)->outertext = '';
 			}
 
-			$content_suffix = "";
+			$content_suffix = '';
 
 			// looking for external links
 			$external_link_selectors = array(
@@ -81,8 +81,8 @@ class VkBridge extends BridgeAbstract
 					$innertext = $a->innertext;
 					$parsed_url = parse_url($a->getAttribute('href'));
 					if (strpos($parsed_url['path'], '/away.php') !== 0) continue;
-					parse_str($parsed_url["query"], $parsed_query);
-					$content_suffix .= "<br>External link: <a href='" . $parsed_query["to"] . "'>$innertext</a>";
+					parse_str($parsed_url['query'], $parsed_query);
+					$content_suffix .= "<br>External link: <a href='" . $parsed_query['to'] . "'>$innertext</a>";
 				}
 			}
 
@@ -100,17 +100,17 @@ class VkBridge extends BridgeAbstract
 			}
 
 			// looking for article
-			$article = $post->find("a.article_snippet", 0);
+			$article = $post->find('a.article_snippet', 0);
 			if (is_object($article)) {
-				if (strpos($article->getAttribute('class'), "article_snippet_mini") !== false) {
-					$article_title_selector = "div.article_snippet_mini_title";
-					$article_author_selector = "div.article_snippet_mini_info > .mem_link,
-						div.article_snippet_mini_info > .group_link";
-					$article_thumb_selector = "div.article_snippet_mini_thumb";
+				if (strpos($article->getAttribute('class'), 'article_snippet_mini') !== false) {
+					$article_title_selector = 'div.article_snippet_mini_title';
+					$article_author_selector = 'div.article_snippet_mini_info > .mem_link,
+						div.article_snippet_mini_info > .group_link';
+					$article_thumb_selector = 'div.article_snippet_mini_thumb';
 				} else {
-					$article_title_selector = "div.article_snippet__title";
-					$article_author_selector = "div.article_snippet__author";
-					$article_thumb_selector = "div.article_snippet__image";
+					$article_title_selector = 'div.article_snippet__title';
+					$article_author_selector = 'div.article_snippet__author';
+					$article_thumb_selector = 'div.article_snippet__image';
 				}
 				$article_title = $article->find($article_title_selector, 0)->innertext;
 				$article_author = $article->find($article_author_selector, 0)->innertext;
@@ -136,7 +136,7 @@ class VkBridge extends BridgeAbstract
 			// get all other videos
 			foreach($post->find('a.page_post_thumb_video') as $a) {
 				$video_title = $a->getAttribute('aria-label');
-				$temp = explode(" ", $video_title, 2);
+				$temp = explode(' ', $video_title, 2);
 				if (count($temp) > 1) $video_title = $temp[1];
 				$video_link = self::URI . ltrim( $a->getAttribute('href'), '/' );
 				$content_suffix .= "<br>Video: <a href='$video_link'>$video_title</a>";
@@ -163,8 +163,8 @@ class VkBridge extends BridgeAbstract
 			// get photo documents
 			foreach($post->find('a.page_doc_photo_href') as $a) {
 				$doc_link = self::URI . ltrim($a->getAttribute('href'), '/');
-				$doc_gif_label_element = $a->find(".page_gif_label", 0);
-				$doc_title_element = $a->find(".doc_label", 0);
+				$doc_gif_label_element = $a->find('.page_gif_label', 0);
+				$doc_title_element = $a->find('.doc_label', 0);
 
 				if (is_object($doc_gif_label_element)) {
 					$gif_preview_img = backgroundToImg($a->find('.page_doc_photo', 0));
@@ -184,7 +184,7 @@ class VkBridge extends BridgeAbstract
 
 			// get other documents
 			foreach($post->find('div.page_doc_row') as $div) {
-				$doc_title_element = $div->find("a.page_doc_title", 0);
+				$doc_title_element = $div->find('a.page_doc_title', 0);
 
 				if (is_object($doc_title_element)) {
 					$doc_title = $doc_title_element->innertext;
@@ -204,7 +204,7 @@ class VkBridge extends BridgeAbstract
 				$poll_title = $div->find('.page_media_poll_title', 0)->innertext;
 				$content_suffix .= "<br>Poll: $poll_title";
 				foreach($div->find('div.page_poll_text') as $poll_stat_title) {
-					$content_suffix .= "<br>- " . $poll_stat_title->innertext;
+					$content_suffix .= '<br>- ' . $poll_stat_title->innertext;
 				}
 				$div->outertext = '';
 			}
@@ -231,10 +231,10 @@ class VkBridge extends BridgeAbstract
 
 			// get post link
 			$post_link = $post->find('a.post_link', 0)->getAttribute('href');
-			preg_match("/wall-?\d+_(\d+)/", $post_link, $preg_match_result);
+			preg_match('/wall-?\d+_(\d+)/', $post_link, $preg_match_result);
 			$item['post_id'] = intval($preg_match_result[1]);
 			if (substr(self::URI, -1) == '/') {
-				$post_link = self::URI . ltrim($post_link, "/");
+				$post_link = self::URI . ltrim($post_link, '/');
 			} else {
 				$post_link = self::URI . $post_link;
 			}
@@ -273,17 +273,17 @@ class VkBridge extends BridgeAbstract
 		$data = json_decode($arg, true);
 		if ($data == null) return;
 
-		$thumb = $data['temp']['base'] . $data['temp']['x_'][0] . ".jpg";
+		$thumb = $data['temp']['base'] . $data['temp']['x_'][0] . '.jpg';
 		$original = '';
 		foreach(array('y_', 'z_', 'w_') as $key) {
 			if (!isset($data['temp'][$key])) continue;
 			if (!isset($data['temp'][$key][0])) continue;
-			if (substr($data['temp'][$key][0], 0, 4) == "http") {
-				$base = "";
+			if (substr($data['temp'][$key][0], 0, 4) == 'http') {
+				$base = '';
 			} else {
 				$base = $data['temp']['base'];
 			}
-			$original = $base . $data['temp'][$key][0] . ".jpg";
+			$original = $base . $data['temp'][$key][0] . '.jpg';
 		}
 
 		if ($original) {
@@ -296,7 +296,7 @@ class VkBridge extends BridgeAbstract
 	private function getTitle($content)
 	{
 		preg_match('/^["\w\ \p{Cyrillic}\(\)\?#«»-]+/mu', htmlspecialchars_decode($content), $result);
-		if (count($result) == 0) return "untitled";
+		if (count($result) == 0) return 'untitled';
 		return $result[0];
 	}
 

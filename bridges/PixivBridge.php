@@ -33,40 +33,40 @@ class PixivBridge extends BridgeAbstract {
 			$count++;
 
 			$item = array();
-			$item["id"] = $result["illustId"];
-			$item["uri"] = "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" . $result["illustId"];
-			$item["title"] = $result["illustTitle"];
-			$item["author"] = $result["userName"];
+			$item['id'] = $result['illustId'];
+			$item['uri'] = 'https://www.pixiv.net/member_illust.php?mode=medium&illust_id=' . $result['illustId'];
+			$item['title'] = $result['illustTitle'];
+			$item['author'] = $result['userName'];
 
-			preg_match_all($timeRegex, $result["url"], $dt, PREG_SET_ORDER, 0);
-			$elementDate = DateTime::createFromFormat("YmdHis",
+			preg_match_all($timeRegex, $result['url'], $dt, PREG_SET_ORDER, 0);
+			$elementDate = DateTime::createFromFormat('YmdHis',
 						$dt[0][1] . $dt[0][2] . $dt[0][3] . $dt[0][4] . $dt[0][5] . $dt[0][6]);
-			$item["timestamp"] = $elementDate->getTimestamp();
+			$item['timestamp'] = $elementDate->getTimestamp();
 
-			$item["content"] = "<img src='" . $this->cacheImage($result['url'], $item["id"]) . "' />";
+			$item['content'] = "<img src='" . $this->cacheImage($result['url'], $item['id']) . "' />";
 			$this->items[] = $item;
 		}
 	}
 
 	public function cacheImage($url, $illustId) {
 
-		$url = str_replace("_master1200", "", $url);
-		$url = str_replace("c/240x240/img-master/", "img-original/", $url);
+		$url = str_replace('_master1200', '', $url);
+		$url = str_replace('c/240x240/img-master/', 'img-original/', $url);
 		$path = CACHE_DIR . '/pixiv_img';
 
 		if(!is_dir($path))
 			mkdir($path, 0755, true);
 
 		if(!is_file($path . '/' . $illustId . '.jpeg')) {
-			$headers = array("Referer:  https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" . $illustId);
+			$headers = array('Referer:  https://www.pixiv.net/member_illust.php?mode=medium&illust_id=' . $illustId);
 			$illust = getContents($url, $headers);
-			if(strpos($illust, "404 Not Found") !== false) {
-				$illust = getContents(str_replace("jpg", "png", $url), $headers);
+			if(strpos($illust, '404 Not Found') !== false) {
+				$illust = getContents(str_replace('jpg', 'png', $url), $headers);
 			}
 			file_put_contents($path . '/' . $illustId . '.jpeg', $illust);
 		}
 
-		return 'cache/pixiv_img/' . $illustId . ".jpeg";
+		return 'cache/pixiv_img/' . $illustId . '.jpeg';
 
 	}
 
