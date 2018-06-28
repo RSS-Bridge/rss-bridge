@@ -45,22 +45,28 @@ class ContainerLinuxReleasesBridge extends BridgeAbstract {
 			$content .= <<<EOT
 
 Major Software:
-* Kernel: <tt>{$release['major_software']['kernel'][0]}</tt>
-* Docker: <tt>{$release['major_software']['docker'][0]}</tt>
-* etcd: <tt>{$release['major_software']['etcd'][0]}</tt>
+* Kernel: {$release['major_software']['kernel'][0]}
+* Docker: {$release['major_software']['docker'][0]}
+* etcd: {$release['major_software']['etcd'][0]}
 EOT;
 			$item['timestamp'] = strtotime($release['release_date']);
 
 			// Based on https://gist.github.com/jbroadway/2836900
+			// Links
 			$regex = '/\[([^\[]+)\]\(([^\)]+)\)/';
 			$replacement = '<a href=\'\2\'>\1</a>';
+			$item['content'] = preg_replace($regex, $replacement, $content);
 
-			$item['content'] = preg_replace($regex, $replacement, nl2br($content));
+			// Headings
+			$regex = '/^(.*)\:\s?$/m';
+			$replacement = '<h3>\1</h3>';
+			$item['content'] = preg_replace($regex, $replacement, $item['content']);
 
-			$regex = '/\n[\*|\-](.*)/';
+			// Lists
+			$regex = '/\n\s*[\*|\-](.*)/';
 			$item['content'] = preg_replace_callback ($regex, function($regs) {
 				$item = $regs[1];
-				return sprintf ("\n<ul>\n\t<li>%s</li>\n</ul>", trim ($item));
+				return sprintf ("<ul><li>%s</li></ul>", trim ($item));
 			}, $item['content']);
 
 			$this->items[] = $item;
