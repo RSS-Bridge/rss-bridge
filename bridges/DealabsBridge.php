@@ -557,16 +557,16 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	 */
 	public function getName(){
 		switch($this->queriedContext) {
-		case $this->i8n('context-keyword'):
-			return $this->i8n('bridge-name') . ' - '. $this->i8n('title-keyword') .' : '. $this->getInput('q');
-			break;
-		case $this->i8n('context-group'):
-			$values = static::PARAMETERS[$this->i8n('context-group')]['group']['values'];
-			$group = array_search($this->getInput('group'), $values);
-			return $this->i8n('bridge-name') . ' - '. $this->i8n('title-group'). ' : '. $group;
-			break;
-		default: // Return default value
-			return static::NAME;
+			case $this->i8n('context-keyword'):
+				return $this->i8n('bridge-name') . ' - '. $this->i8n('title-keyword') .' : '. $this->getInput('q');
+				break;
+			case $this->i8n('context-group'):
+				$values = static::PARAMETERS[$this->i8n('context-group')]['group']['values'];
+				$group = array_search($this->getInput('group'), $values);
+				return $this->i8n('bridge-name') . ' - '. $this->i8n('title-group'). ' : '. $group;
+				break;
+			default: // Return default value
+				return static::NAME;
 		}
 	}
 
@@ -587,153 +587,3 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	}
 
 }
-
-/*
-
-class ExampleDealsBridge extends PepperBridgeAbstract {
-
-	const NAME = 'Example Deals Bridge'; // Bridge Name
-	const URI = 'https://www.exampledeal.com/'; // Website Base URL
-	const DESCRIPTION = 'Display Deals of Example Deal'; // Bridge Description
-	const MAINTAINER = 'My Nickname'; // Bridge Maitainer
-
-	// Parameter name must stays the same because they are used in the Main Bridge
-	const PARAMETERS = array(
-		'Search by keyword(s))' => array (
-			'q' => array(
-				'name' => 'Keyword(s)',
-				'type' => 'text',
-				'required' => true
-			),
-			'hide_expired' => array(
-				'name' => 'Hide expired deals',
-				'type' => 'checkbox',
-				'required' => 'true'
-			),
-			'hide_local' => array(
-				'name' => 'Hide local deals',
-				'type' => 'checkbox',
-				'title' => 'Hide deals in physical store',
-				'required' => 'true'
-			),
-			'priceFrom' => array(
-				'name' => 'Minimal Price',
-				'type' => 'text',
-				'title' => 'Minmal Price in Currency',
-				'required' => 'false',
-				'defaultValue' => ''
-			),
-			'priceTo' => array(
-				'name' => 'Maximum Price',
-				'type' => 'text',
-				'title' => 'Maximum Price in Currency',
-				'required' => 'false',
-				'defaultValue' => ''
-			),
-		),
-
-		'Deals per group' => array(
-			'group' => array(
-				'name' => 'Group',
-				'type' => 'list',
-				'required' => 'true',
-				'title' => 'Group whose deals must be displayed',
-				'values' => array(
-					'Group Name' => 'group-url', // group-url is the part of the URL thaht changes between the different groups
-				)
-			),
-			'order' => array(
-				'name' => 'Order',
-				'type' => 'list',
-				'required' => 'true',
-				'title' => 'Sort order of deals',
-				'values' => array(
-					'From the most to the least hot deal' => '-hot', // The value is the part
-					// after the group URL that changes between the sort order on the
-					// website ; the default sort order type has therefore an empty value
-					'From the most recent deal to the oldest' => '',
-					'From the most commented deal to the least commented deal' => '-discussed'
-				)
-			)
-		)
-	);
-
-	public $lang = array(
-		'bridge-uri' => SELF::URI, // Nothing to change
-		'bridge-name' => SELF::NAME, // Nothing to change
-		'context-keyword' => 'Search by keyword(s))', // This is the same text as in
-		//the PARAMETERS constant
-		'context-group' => 'Deals per group', // This is the same text as as in the
-		// PARAMETERS constant
-		'uri-group' => '/tag/', // This is the part of the site URL to display a Group
-		'no-results' => 'Ooops, looks like we could', // This is part of the text
-		// displayed when a search by keyword does not have any result
-		'relative-date-indicator' => 'ago', // This is the text on the website that
-		// permits to differentiate between a relative date and a absolute date
-		'request-error' => 'Could not request Example Deals', // This is the error
-		// message when an access to the Website gone wrong
-		// The 4 following lines are part of the text displayed in the content of the RSS Feed ; the name is self explanatory
-		'price' => 'Price',
-		'shipping' => 'Livraison',
-		'origin' => 'Origine',
-		'discount' => 'Réduction',
-		'title-keyword' => 'Recherche', // This is the text used in the RSS Feed Title for the keyword search mode
-		'title-group' => 'Groupe', // This is the text used in the RSS Feed Title for the group mode
-		'local-months' => array(
-			'Jan',
-			'Feb',
-			'Mar',
-			'Apr',
-			'May',
-			'Jun',
-			'Jul',
-			'Aug',
-			'Sep',
-			'Occ',
-			'Nov',
-			'Dec',
-			'st',
-			'nd',
-			'rd',
-			'th'
-
-		), // This is the list of months used in the date of the website : they could
-		// be short or long names, depending of the website ; if the website add some
-		// text after the day number, you must add them after the last month
-		'local-time-relative' => array(
-			'Found ',
-			'm',
-			'h,',
-			'day',
-			'days',
-			'month',
-			'year',
-			'and '
-		), // This is the list of local "words" that appears in a relative date
-		'date-prefixes' => array(
-			'Found ',
-			'Refreshed ',
-			'Made hot '
-		), // This is a list of "Words" that could have been added before an absolute date ; this is very dependant of website
-		'relative-date-alt-prefixes' => array(
-			'Actualisé ',
-		), // This is a list of "Words" that could replace the default first word of
-		// a relative date (the first word of the list named 'local-time-relative'
-		'relative-date-ignore-suffix' => array(
-			'/by.*$/'
-		), // Array of regular expression that contains pattern thaht match the
-		// suffix of relative date that could appear (like in the "hot" sort order)
-		'localdeal' => array(
-			'Local',
-			'Expires'
-		), // For some Deals, like the Local deals, there is no date ; We must catch
-		// those case, and we must list the "Words" that is displayed on those deals
-		// on the top and the most right section of the deal
-	)
-	;
-
-
-
-}
-
- */
