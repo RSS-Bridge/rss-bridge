@@ -1,5 +1,12 @@
 <?php
+use CloudflareBypass\RequestMethod\CFCurl;
 function getContents($url, $header = array(), $opts = array()){
+	$curl_cf_wrapper = new CFCurl(array(
+		'cache'         => true,   // Stores clearance tokens in Cache folder
+		'cache_path'	=> __DIR__ . '/../cache/cf',
+		'max_retries'   => 5       // Max attempts to try and get CF clearance
+	));
+
 	$ch = curl_init($url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -21,7 +28,7 @@ function getContents($url, $header = array(), $opts = array()){
 		curl_setopt($ch, CURLOPT_PROXY, PROXY_URL);
 	}
 
-	$content = curl_exec($ch);
+	$content = $curl_cf_wrapper->exec($ch); // NOTE: HEAD requests not supported!
 	$curlError = curl_error($ch);
 	$curlErrno = curl_errno($ch);
 	curl_close($ch);
