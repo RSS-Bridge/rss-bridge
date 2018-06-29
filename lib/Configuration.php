@@ -115,8 +115,9 @@ class Configuration {
 			if(file_exists($revisionHashFile)) {
 				return 'git.' . $branchName . '.' . substr(file_get_contents($revisionHashFile), 0, 7);
 			}
+		}
 
-		} else return Configuration::$VERSION;
+		return Configuration::$VERSION;
 
 	}
 
