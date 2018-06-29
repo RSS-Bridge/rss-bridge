@@ -66,7 +66,7 @@ EOT;
 			$regex = '/\n\s*[\*|\-](.*)/';
 			$item['content'] = preg_replace_callback ($regex, function($regs) {
 				$item = $regs[1];
-				return sprintf ("<ul><li>%s</li></ul>", trim ($item));
+				return sprintf ('<ul><li>%s</li></ul>', trim ($item));
 			}, $item['content']);
 
 			$this->items[] = $item;
