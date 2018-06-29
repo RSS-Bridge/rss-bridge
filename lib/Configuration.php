@@ -106,11 +106,15 @@ class Configuration {
 
 	public static function getVersion() {
 
-		$revisionHashFile = '.git/refs/heads/master';
+		$headFile = '.git/HEAD';
 
-		if(file_exists($revisionHashFile)) {
+		if(file_exists($headFile)) {
 
-			return 'git.' . trim(file_get_contents($revisionHashFile));
+			$revisionHashFile = '.git/' . substr(file_get_contents($headFile), 5, -1);
+			$branchName = explode('/', $revisionHashFile)[3];
+			if(file_exists($revisionHashFile)) {
+				return 'git.' . $branchName . '.' . substr(file_get_contents($revisionHashFile), 0, 7);
+			}
 
 		} else return Configuration::$VERSION;
 
