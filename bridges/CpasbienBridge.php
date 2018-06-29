@@ -16,7 +16,7 @@ class CpasbienBridge extends BridgeAbstract {
 	));
 
 	public function collectData(){
-		$request = str_replace(" ", "-", trim($this->getInput('q')));
+		$request = str_replace(' ', '-', trim($this->getInput('q')));
 		$html = getSimpleHTMLDOM(self::URI . '/recherche/' . urlencode($request) . '.html')
 			or returnServerError('No results for this query.');
 

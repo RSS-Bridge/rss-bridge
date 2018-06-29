@@ -26,7 +26,7 @@ class Configuration {
 			die('"curl" extension not loaded. Please check "php.ini"');
 
 		// configuration checks
-		if(ini_get('allow_url_fopen') !== "1")
+		if(ini_get('allow_url_fopen') !== '1')
 			die('"allow_url_fopen" is not set to "1". Please check "php.ini');
 
 		// Check cache folder permissions (write permissions required)

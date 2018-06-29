@@ -49,7 +49,7 @@ class NotAlwaysBridge extends BridgeAbstract {
 
 		public function getURI(){
 				if(!is_null($this->getInput('filter'))) {
-						return self::URI . $this->getInput('filter') . "/";
+						return self::URI . $this->getInput('filter') . '/';
 				}
 
 				return parent::getURI();

@@ -11,7 +11,7 @@ class CourrierInternationalBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI)
 			or returnServerError('Error.');
 
-		$element = $html->find("article");
+		$element = $html->find('article');
 		$article_count = 1;
 
 		foreach($element as $article) {

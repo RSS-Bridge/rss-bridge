@@ -26,7 +26,7 @@ EOD;
 	$bridge = Bridge::create($bridgeName);
 
 	if($bridge == false)
-		return "";
+		return '';
 
 	$HTTPSWarning = '';
 	if(strpos($bridge->getURI(), 'https') !== 0) {

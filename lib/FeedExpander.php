@@ -24,15 +24,15 @@ abstract class FeedExpander extends BridgeAbstract {
 		switch(true) {
 		case isset($rssContent->item[0]):
 			debugMessage('Detected RSS 1.0 format');
-			$this->feedType = "RSS_1_0";
+			$this->feedType = 'RSS_1_0';
 			break;
 		case isset($rssContent->channel[0]):
 			debugMessage('Detected RSS 0.9x or 2.0 format');
-			$this->feedType = "RSS_2_0";
+			$this->feedType = 'RSS_2_0';
 			break;
 		case isset($rssContent->entry[0]):
 			debugMessage('Detected ATOM format');
-			$this->feedType = "ATOM_1_0";
+			$this->feedType = 'ATOM_1_0';
 			break;
 		default:
 			debugMessage('Unknown feed format/version');

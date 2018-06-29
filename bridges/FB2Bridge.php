@@ -103,19 +103,19 @@ EOD;
 		$html = $this->buildContent($fileContent);
 		$author = $this->getInput('u');
 
-		foreach($html->find("article") as $content) {
+		foreach($html->find('article') as $content) {
 
 			$item = array();
 
-			$item['uri'] = "http://touch.facebook.com"
-			. $content->find("div[class='_52jc _5qc4 _24u0 _36xo']", 0)->find("a", 0)->getAttribute("href");
+			$item['uri'] = 'http://touch.facebook.com'
+			. $content->find("div[class='_52jc _5qc4 _24u0 _36xo']", 0)->find('a', 0)->getAttribute('href');
 
-			if($content->find("header", 0) !== null) {
-				$content->find("header", 0)->innertext = "";
+			if($content->find('header', 0) !== null) {
+				$content->find('header', 0)->innertext = '';
 			}
 
-			if($content->find("footer", 0) !== null) {
-				$content->find("footer", 0)->innertext = "";
+			if($content->find('footer', 0) !== null) {
+				$content->find('footer', 0)->innertext = '';
 			}
 
 			//Remove html nodes, keep only img, links, basic formatting
@@ -168,7 +168,7 @@ EOD;
 		$regex = implode(
 			'',
 			array(
-				"/timeline_unit",
+				'/timeline_unit',
 				"\\\\\\\\u00253A1",
 				"\\\\\\\\u00253A([0-9]*)",
 				"\\\\\\\\u00253A([0-9]*)",
@@ -182,18 +182,18 @@ EOD;
 		return implode(
 			'',
 			array(
-				"https://touch.facebook.com/pages_reaction_units/more/?page_id=",
+				'https://touch.facebook.com/pages_reaction_units/more/?page_id=',
 				$pageID,
-				"&cursor=%7B%22timeline_cursor%22%3A%22timeline_unit%3A1%3A",
+				'&cursor=%7B%22timeline_cursor%22%3A%22timeline_unit%3A1%3A',
 				$result[1],
-				"%3A",
+				'%3A',
 				$result[2],
-				"%3A",
+				'%3A',
 				$result[3],
-				"%3A",
+				'%3A',
 				$result[4],
-				"%22%2C%22timeline_section_cursor%22%3A%7B%7D%2C%22",
-				"has_next_page%22%3Atrue%7D&surface=mobile_page_home&unit_count=3"
+				'%22%2C%22timeline_section_cursor%22%3A%7B%7D%2C%22',
+				'has_next_page%22%3Atrue%7D&surface=mobile_page_home&unit_count=3'
 			)
 		);
 	}
@@ -201,7 +201,7 @@ EOD;
 	//Builds the HTML from the encoded JS that Facebook provides.
 	private function buildContent($pageContent){
 
-		$regex = "/\\\"html\\\":\\\"(.*?)\\\",\\\"replace/";
+		$regex = '/\\"html\\":\\"(.*?)\\",\\"replace/';
 		preg_match($regex, $pageContent, $result);
 
 		return str_get_html(html_entity_decode(json_decode('"' . $result[1] . '"')));
@@ -214,7 +214,7 @@ EOD;
 
 		$ctx = stream_context_create(array(
 			'http' => array(
-				'user_agent' => "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
+				'user_agent' => 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0',
 				'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
 				)
 			)
@@ -222,12 +222,12 @@ EOD;
 		$a = file_get_contents($pageURL, 0, $ctx);
 
 		//First request to get the cookie
-		$cookies = "";
+		$cookies = '';
 		foreach($http_response_header as $hdr) {
-			if(strpos($hdr, "Set-Cookie") !== false) {
-				$cLine = explode(":", $hdr)[1];
-				$cLine = explode(";", $cLine)[0];
-				$cookies .= ";" . $cLine;
+			if(strpos($hdr, 'Set-Cookie') !== false) {
+				$cLine = explode(':', $hdr)[1];
+				$cLine = explode(';', $cLine)[0];
+				$cookies .= ';' . $cLine;
 			}
 		}
 
@@ -239,7 +239,7 @@ EOD;
 
 		$context = stream_context_create(array(
 			'http' => array(
-				'user_agent' => "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0",
+				'user_agent' => 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0',
 				'header' => 'Cookie: ' . $cookies
 				)
 			)
@@ -247,12 +247,12 @@ EOD;
 
 		$pageContent = file_get_contents($page, 0, $context);
 
-		if(strpos($pageContent, "signup-button") != false) {
+		if(strpos($pageContent, 'signup-button') != false) {
 			return -1;
 		}
 
 		//Get the page ID if we don't have a captcha
-		$regex = "/page_id=([0-9]*)&/";
+		$regex = '/page_id=([0-9]*)&/';
 		preg_match($regex, $pageContent, $matches);
 
 		if(count($matches) > 0) {
@@ -260,7 +260,7 @@ EOD;
 		}
 
 		//Get the page ID if we do have a captcha
-		$regex = "/\"pageID\":\"([0-9]*)\"/";
+		$regex = '/"pageID":"([0-9]*)"/';
 		preg_match($regex, $pageContent, $matches);
 
 		return $matches[1];

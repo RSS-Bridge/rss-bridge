@@ -35,11 +35,11 @@ class DemoBridge extends BridgeAbstract {
 	public function collectData(){
 
 		$item = array();
-		$item['author'] = "Me!";
-		$item['title'] = "Test";
-		$item['content'] = "Awesome content !";
-		$item['id'] = "Lalala";
-		$item['uri'] = "http://example.com/test";
+		$item['author'] = 'Me!';
+		$item['title'] = 'Test';
+		$item['content'] = 'Awesome content !';
+		$item['id'] = 'Lalala';
+		$item['uri'] = 'http://example.com/test';
 
 		$this->items[] = $item;
 	}

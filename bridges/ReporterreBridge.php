@@ -19,7 +19,7 @@ class ReporterreBridge extends BridgeAbstract {
 			// Replace all relative urls with absolute ones
 			$text = preg_replace(
 				'/(href|src)(\=[\"\'])(?!http)([^"\']+)/ims',
-				"$1$2" . self::URI . "$3",
+				'$1$2' . self::URI . '$3',
 				$text
 			);
 

@@ -1,7 +1,7 @@
 <?php
 class ETTVBridge extends BridgeAbstract {
 
-	const MAINTAINER = "GregThib";
+	const MAINTAINER = 'GregThib';
 	const NAME = 'ETTV';
 	const URI = 'https://www.ettv.tv/';
 	const DESCRIPTION = 'Returns list of 20 latest torrents for a specific search.';
@@ -113,7 +113,7 @@ class ETTVBridge extends BridgeAbstract {
 			$entry = $element->find('td', 1)->find('a', 0);
 
 			// retrieve result page to get more details
-			$link = rtrim(self::URI, "/") . $entry->href;
+			$link = rtrim(self::URI, '/') . $entry->href;
 			$page = getSimpleHTMLDOM($link)
 				or returnServerError('Could not request page ' . $link);
 

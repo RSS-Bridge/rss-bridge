@@ -8,7 +8,7 @@ class SuperSmashBlogBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Latest articles from the Super Smash Blog blog';
 
 	public function collectData(){
-		$dlUrl = "https://www.smashbros.com/data/bs/en_US/json/en_US.json";
+		$dlUrl = 'https://www.smashbros.com/data/bs/en_US/json/en_US.json';
 
 		$jsonString = getContents($dlUrl) or returnServerError('Error while downloading the website content');
 		$json = json_decode($jsonString, true);

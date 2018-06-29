@@ -41,7 +41,7 @@ class DanbooruBridge extends BridgeAbstract {
 
 		$item = array();
 		$item['uri'] = $element->find('a', 0)->href;
-		$item['postid'] = (int)preg_replace("/[^0-9]/", '', $element->getAttribute(static::IDATTRIBUTE));
+		$item['postid'] = (int)preg_replace('/[^0-9]/', '', $element->getAttribute(static::IDATTRIBUTE));
 		$item['timestamp'] = time();
 		$thumbnailUri = $element->find('img', 0)->src;
 		$item['tags'] = $this->getTags($element);

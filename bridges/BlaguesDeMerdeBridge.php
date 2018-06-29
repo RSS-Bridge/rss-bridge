@@ -19,7 +19,7 @@ class BlaguesDeMerdeBridge extends BridgeAbstract {
 				$item['content'] = trim($element->find('div.joke_text_contener', 0)->innertext);
 				$uri = $temp[2]->href;
 				$item['uri'] = $uri;
-				$item['title'] = substr($uri, (strrpos($uri, "/") + 1));
+				$item['title'] = substr($uri, (strrpos($uri, '/') + 1));
 				$date = $element->find('li.bdm_date', 0)->innertext;
 				$time = mktime(0, 0, 0, substr($date, 3, 2), substr($date, 0, 2), substr($date, 6, 4));
 				$item['timestamp'] = $time;

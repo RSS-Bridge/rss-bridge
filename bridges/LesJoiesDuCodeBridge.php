@@ -22,16 +22,16 @@ class LesJoiesDuCodeBridge extends BridgeAbstract {
 			// retrieve .gif instead of static .jpg
 			$images = $temp->find('p img');
 			foreach($images as $image) {
-				$img_src = str_replace(".jpg", ".gif", $image->src);
+				$img_src = str_replace('.jpg', '.gif', $image->src);
 				$image->src = $img_src;
 			}
 			$content = $temp->innertext;
 
 			$auteur = $temp->find('i', 0);
-			$pos = strpos($auteur->innertext, "by");
+			$pos = strpos($auteur->innertext, 'by');
 
 			if($pos > 0) {
-				$auteur = trim(str_replace("*/", "", substr($auteur->innertext, ($pos + 2))));
+				$auteur = trim(str_replace('*/', '', substr($auteur->innertext, ($pos + 2))));
 				$item['author'] = $auteur;
 			}
 

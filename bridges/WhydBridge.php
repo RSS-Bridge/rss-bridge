@@ -18,10 +18,10 @@ class WhydBridge extends BridgeAbstract {
 
 	public function collectData(){
 		$html = '';
-		if(strlen(preg_replace("/[^0-9a-f]/", '', $this->getInput('u'))) == 24) {
+		if(strlen(preg_replace('/[^0-9a-f]/', '', $this->getInput('u'))) == 24) {
 			// is input the userid ?
 			$html = getSimpleHTMLDOM(
-				self::URI . 'u/' . preg_replace("/[^0-9a-f]/", '', $this->getInput('u'))
+				self::URI . 'u/' . preg_replace('/[^0-9a-f]/', '', $this->getInput('u'))
 			) or returnServerError('No results for this query.');
 		} else { // input may be the username
 			$html = getSimpleHTMLDOM(

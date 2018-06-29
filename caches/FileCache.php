@@ -19,7 +19,7 @@ class FileCache implements CacheInterface {
 		$writeStream = file_put_contents($this->getCacheFile(), serialize($datas));
 
 		if($writeStream === false) {
-			throw new \Exception("Cannot write the cache... Do you have the right permissions ?");
+			throw new \Exception('Cannot write the cache... Do you have the right permissions ?');
 		}
 
 		return $this;

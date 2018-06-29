@@ -42,59 +42,59 @@ class DiscogsBridge extends BridgeAbstract {
 		if(!empty($this->getInput('artistid')) || !empty($this->getInput('labelid'))) {
 
 			if(!empty($this->getInput('artistid'))) {
-				$data = getContents("https://api.discogs.com/artists/"
+				$data = getContents('https://api.discogs.com/artists/'
 						. $this->getInput('artistid')
-						. "/releases?sort=year&sort_order=desc")
-						or returnServerError("Unable to query discogs !");
+						. '/releases?sort=year&sort_order=desc')
+						or returnServerError('Unable to query discogs !');
 			} elseif(!empty($this->getInput('labelid'))) {
-				$data = getContents("https://api.discogs.com/labels/"
+				$data = getContents('https://api.discogs.com/labels/'
 						. $this->getInput('labelid')
-						. "/releases?sort=year&sort_order=desc")
-						or returnServerError("Unable to query discogs !");
+						. '/releases?sort=year&sort_order=desc')
+						or returnServerError('Unable to query discogs !');
 			}
 
 			$jsonData = json_decode($data, true);
-			foreach($jsonData["releases"] as $release) {
+			foreach($jsonData['releases'] as $release) {
 
 				$item = array();
-				$item["author"] = $release["artist"];
-				$item["title"] = $release["title"];
-				$item["id"] = $release["id"];
-				$resId = array_key_exists("main_release", $release) ? $release["main_release"] : $release["id"];
-				$item["uri"] = self::URI . $this->getInput('artistid') . "/release/" . $resId;
-				$item["timestamp"] = DateTime::createFromFormat("Y", $release["year"])->getTimestamp();
-				$item["content"] = $item["author"] . " - " . $item["title"];
+				$item['author'] = $release['artist'];
+				$item['title'] = $release['title'];
+				$item['id'] = $release['id'];
+				$resId = array_key_exists('main_release', $release) ? $release['main_release'] : $release['id'];
+				$item['uri'] = self::URI . $this->getInput('artistid') . '/release/' . $resId;
+				$item['timestamp'] = DateTime::createFromFormat('Y', $release['year'])->getTimestamp();
+				$item['content'] = $item['author'] . ' - ' . $item['title'];
 				$this->items[] = $item;
 			}
 
-		} elseif(!empty($this->getInput("username_wantlist")) || !empty($this->getInput("username_folder"))) {
+		} elseif(!empty($this->getInput('username_wantlist')) || !empty($this->getInput('username_folder'))) {
 
-			if(!empty($this->getInput("username_wantlist"))) {
-				$data = getContents("https://api.discogs.com/users/"
+			if(!empty($this->getInput('username_wantlist'))) {
+				$data = getContents('https://api.discogs.com/users/'
 						. $this->getInput('username_wantlist')
-						. "/wants?sort=added&sort_order=desc")
-						or returnServerError("Unable to query discogs !");
-				$jsonData = json_decode($data, true)["wants"];
+						. '/wants?sort=added&sort_order=desc')
+						or returnServerError('Unable to query discogs !');
+				$jsonData = json_decode($data, true)['wants'];
 
-			} elseif(!empty($this->getInput("username_folder"))) {
-				$data = getContents("https://api.discogs.com/users/"
+			} elseif(!empty($this->getInput('username_folder'))) {
+				$data = getContents('https://api.discogs.com/users/'
 						. $this->getInput('username_folder')
-						. "/collection/folders/"
-						. $this->getInput("folderid")
-						."/releases?sort=added&sort_order=desc")
-						or returnServerError("Unable to query discogs !");
-				$jsonData = json_decode($data, true)["releases"];
+						. '/collection/folders/'
+						. $this->getInput('folderid')
+						.'/releases?sort=added&sort_order=desc')
+						or returnServerError('Unable to query discogs !');
+				$jsonData = json_decode($data, true)['releases'];
 			}
 			foreach($jsonData as $element) {
 
-				$infos = $element["basic_information"];
+				$infos = $element['basic_information'];
 				$item = array();
-				$item["title"] = $infos["title"];
-				$item["author"] = $infos["artists"][0]["name"];
-				$item["id"] = $infos["artists"][0]["id"];
-				$item["uri"] = self::URI . $infos["artists"][0]["id"] . "/release/" . $infos["id"];
-				$item["timestamp"] = strtotime($element["date_added"]);
-				$item["content"] = $item["author"] . " - " . $item["title"];
+				$item['title'] = $infos['title'];
+				$item['author'] = $infos['artists'][0]['name'];
+				$item['id'] = $infos['artists'][0]['id'];
+				$item['uri'] = self::URI . $infos['artists'][0]['id'] . '/release/' . $infos['id'];
+				$item['timestamp'] = strtotime($element['date_added']);
+				$item['content'] = $item['author'] . ' - ' . $item['title'];
 				$this->items[] = $item;
 
 			}
