@@ -21,7 +21,8 @@ class MrssFormat extends FormatAbstract {
 			$uri = 'https://github.com/RSS-Bridge/rss-bridge';
 		}
 
-		$icon = $this->xml_encode($uri .'/favicon.ico');
+		$uriparts = parse_url($uri);
+		$icon = $this->xml_encode($uriparts['scheme'] . '://' . $uriparts['host'] .'/favicon.ico');
 
 		$items = '';
 		foreach($this->getItems() as $item) {
