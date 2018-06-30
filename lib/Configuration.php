@@ -1,6 +1,8 @@
 <?php
 class Configuration {
 
+	public static $VERSION = "2018-06-10";
+
 	public static $config = null;
 
 	public static function verifyInstallation() {
@@ -99,6 +101,23 @@ class Configuration {
 		}
 
 		return null;
+
+	}
+
+	public static function getVersion() {
+
+		$headFile = '.git/HEAD';
+
+		if(file_exists($headFile)) {
+
+			$revisionHashFile = '.git/' . substr(file_get_contents($headFile), 5, -1);
+			$branchName = explode('/', $revisionHashFile)[3];
+			if(file_exists($revisionHashFile)) {
+				return 'git.' . $branchName . '.' . substr(file_get_contents($revisionHashFile), 0, 7);
+			}
+		}
+
+		return Configuration::$VERSION;
 
 	}
 

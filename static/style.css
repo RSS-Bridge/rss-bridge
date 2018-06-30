@@ -143,6 +143,11 @@ section.footer:hover {
 
 }
 
+section.footer .version {
+	
+	font-size: 80%;
+	
+}
 
 section > h2 {
 
