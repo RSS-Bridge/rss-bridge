@@ -16,7 +16,7 @@ require __DIR__ . '/FeedExpander.php';
 require __DIR__ . '/Cache.php';
 require __DIR__ . '/Authentication.php';
 require __DIR__ . '/Configuration.php';
-require __DIR__ . '/Index.php';
+require __DIR__ . '/BridgeList.php';
 require __DIR__ . '/BridgeCard.php';
 
 require __DIR__ . '/validation.php';

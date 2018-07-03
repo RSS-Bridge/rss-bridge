@@ -1,5 +1,5 @@
 <?php
-final class Index {
+final class BridgeList {
 
 	private static function head() {
 		return <<<EOD
@@ -24,8 +24,8 @@ EOD;
 
 	private static function body($whitelist, $showInactive) {
 		$body = '<body onload="search()">'
-		. Index::header()
-		. Index::searchbar();
+		. BridgeList::header()
+		. BridgeList::searchbar();
 
 		$totalActiveBridges = 0;
 		$inactiveBridges = '';
@@ -50,7 +50,7 @@ EOD;
 		}
 
 		$body .= $inactiveBridges;
-		$body .= Index::footer(count($bridgeList), $totalActiveBridges, $showInactive);
+		$body .= BridgeList::footer(count($bridgeList), $totalActiveBridges, $showInactive);
 		$body .= '</body>';
 
 		return $body;
@@ -113,8 +113,8 @@ EOD;
 	static function create($whitelist, $showInactive = true) {
 
 	return '<!DOCTYPE html><html lang="en">'
-	. Index::head()
-	. Index::body($whitelist, $showInactive)
+	. BridgeList::head()
+	. BridgeList::body($whitelist, $showInactive)
 	. '</html>';
 
 	}

@@ -184,7 +184,7 @@ try {
 
 		die;
 	} else {
-		echo Index::create($whitelist_selection, $showInactive);
+		echo BridgeList::create($whitelist_selection, $showInactive);
 	}
 } catch(HttpException $e) {
 	http_response_code($e->getCode());
