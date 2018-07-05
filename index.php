@@ -181,8 +181,6 @@ try {
 			header('Content-Type: text/html');
 			die(buildBridgeException($e, $bridge));
 		}
-
-		die;
 	} else {
 		echo BridgeList::create($whitelist_selection, $showInactive);
 	}
