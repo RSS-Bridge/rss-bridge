@@ -16,14 +16,14 @@ final class BridgeCard {
 		return $buttons;
 	}
 
-	private static function getFormHeader($bridgeName, $isWarning = false) {
+	private static function getFormHeader($bridgeName, $isHttps = false) {
 		$form = <<<EOD
 			<form method="GET" action="?">
 				<input type="hidden" name="action" value="display" />
 				<input type="hidden" name="bridge" value="{$bridgeName}" />
 EOD;
 
-		if($isWarning) {
+		if(!$isHttps) {
 			$form .= '<div class="secure-warning">Warning :
 This bridge is not fetching its content through a secure connection</div>';
 		}
@@ -34,10 +34,10 @@ This bridge is not fetching its content through a secure connection</div>';
 	private static function getForm($bridgeName,
 	$formats,
 	$isActive = false,
-	$isWarning = false,
+	$isHttps = false,
 	$parameterName = '',
 	$parameter = array()) {
-		$form = BridgeCard::getFormHeader($bridgeName, $isWarning);
+		$form = BridgeCard::getFormHeader($bridgeName, $isHttps);
 
 		foreach($parameter as $id => $inputEntry) {
 			if(!isset($inputEntry['exampleValue']))
@@ -197,7 +197,7 @@ This bridge is not fetching its content through a secure connection</div>';
 		if($bridge == false)
 			return '';
 
-		$isWarning = strpos($bridge->getURI(), 'https') !== 0;
+		$isHttps = strpos($bridge->getURI(), 'https') === 0;
 
 		$uri = $bridge->getURI();
 		$name = $bridge->getName();
@@ -231,7 +231,7 @@ CARD;
 		if(count($parameters) === 0
 		|| count($parameters) === 1 && array_key_exists('global', $parameters)) {
 
-			$card .= BridgeCard::getForm($bridgeName, $formats, $isActive, $isWarning);
+			$card .= BridgeCard::getForm($bridgeName, $formats, $isActive, $isHttps);
 
 		} else {
 
@@ -245,7 +245,7 @@ CARD;
 				if(!is_numeric($parameterName))
 					$card .= '<h5>' . $parameterName . '</h5>' . PHP_EOL;
 
-				$card .= BridgeCard::getForm($bridgeName, $formats, $isActive, $isWarning, $parameterName, $parameter);
+				$card .= BridgeCard::getForm($bridgeName, $formats, $isActive, $isHttps	, $parameterName, $parameter);
 			}
 
 		}
