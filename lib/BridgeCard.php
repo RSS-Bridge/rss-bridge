@@ -36,10 +36,10 @@ This bridge is not fetching its content through a secure connection</div>';
 	$isActive = false,
 	$isHttps = false,
 	$parameterName = '',
-	$parameter = array()) {
+	$parameters = array()) {
 		$form = BridgeCard::getFormHeader($bridgeName, $isHttps);
 
-		foreach($parameter as $id => $inputEntry) {
+		foreach($parameters as $id => $inputEntry) {
 			if(!isset($inputEntry['exampleValue']))
 				$inputEntry['exampleValue'] = '';
 
