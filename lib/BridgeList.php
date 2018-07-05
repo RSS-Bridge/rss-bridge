@@ -1,7 +1,7 @@
 <?php
 final class BridgeList {
 
-	private static function head() {
+	private static function getHead() {
 		return <<<EOD
 <head>
 	<meta charset="utf-8">
@@ -22,10 +22,10 @@ final class BridgeList {
 EOD;
 	}
 
-	private static function body($whitelist, $showInactive) {
+	private static function getBody($whitelist, $showInactive) {
 		$body = '<body onload="search()">'
-		. BridgeList::header()
-		. BridgeList::searchbar();
+		. BridgeList::getHeader()
+		. BridgeList::getSearchbar();
 
 		$totalActiveBridges = 0;
 		$inactiveBridges = '';
@@ -50,13 +50,13 @@ EOD;
 		}
 
 		$body .= $inactiveBridges;
-		$body .= BridgeList::footer(count($bridgeList), $totalActiveBridges, $showInactive);
+		$body .= BridgeList::getFooter(count($bridgeList), $totalActiveBridges, $showInactive);
 		$body .= '</body>';
 
 		return $body;
 	}
 
-	private static function header() {
+	private static function getHeader() {
 		$status = '';
 
 		if(defined('DEBUG') && DEBUG === true) {
@@ -72,7 +72,7 @@ EOD;
 EOD;
 	}
 
-	private static function searchbar() {
+	private static function getSearchbar() {
 		$query = filter_input(INPUT_GET, 'q');
 
 		return <<<EOD
@@ -85,7 +85,7 @@ EOD;
 EOD;
 	}
 
-	private static function footer($totalBridges, $totalActiveBridges, $showInactive) {
+	private static function getFooter($totalBridges, $totalActiveBridges, $showInactive) {
 		$version = Configuration::getVersion();
 
 		$inactive = '';
@@ -113,8 +113,8 @@ EOD;
 	static function create($whitelist, $showInactive = true) {
 
 	return '<!DOCTYPE html><html lang="en">'
-	. BridgeList::head()
-	. BridgeList::body($whitelist, $showInactive)
+	. BridgeList::getHead()
+	. BridgeList::getBody($whitelist, $showInactive)
 	. '</html>';
 
 	}
