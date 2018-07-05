@@ -245,7 +245,7 @@ CARD;
 				if(!is_numeric($parameterName))
 					$card .= '<h5>' . $parameterName . '</h5>' . PHP_EOL;
 
-				$card .= BridgeCard::getForm($bridgeName, $formats, $isActive, $isHttps	, $parameterName, $parameter);
+				$card .= BridgeCard::getForm($bridgeName, $formats, $isActive, $isHttps, $parameterName, $parameter);
 			}
 
 		}
