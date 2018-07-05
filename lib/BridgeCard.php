@@ -56,7 +56,7 @@ This bridge is not fetching its content through a secure connection</div>';
 			$form .= '<label for="'
 				. $idArg
 				. '">'
-				. $inputEntry['name']
+				. filter_var($inputEntry['name'], FILTER_SANITIZE_STRING)
 				. ' : </label>'
 				. PHP_EOL;
 
@@ -90,7 +90,7 @@ This bridge is not fetching its content through a secure connection</div>';
 			$retVal .= ' pattern="' . $entry['pattern'] . '"';
 
 		if(isset($entry['title']))
-			$retVal .= ' title="' . $entry['title'] . '"';
+			$retVal .= ' title="' . filter_var($entry['title'], FILTER_SANITIZE_STRING) . '"';
 
 		return $retVal;
 	}
@@ -101,9 +101,9 @@ This bridge is not fetching its content through a secure connection</div>';
 		. ' id="'
 		. $id
 		. '" type="text" value="'
-		. $entry['defaultValue']
+		. filter_var($entry['defaultValue'], FILTER_SANITIZE_STRING)
 		. '" placeholder="'
-		. $entry['exampleValue']
+		. filter_var($entry['exampleValue'], FILTER_SANITIZE_STRING)
 		. '" name="'
 		. $name
 		. '" /><br>'
@@ -116,9 +116,9 @@ This bridge is not fetching its content through a secure connection</div>';
 		. ' id="'
 		. $id
 		. '" type="number" value="'
-		. $entry['defaultValue']
+		. filter_var($entry['defaultValue'], FILTER_SANITIZE_NUMBER_INT)
 		. '" placeholder="'
-		. $entry['exampleValue']
+		. filter_var($entry['exampleValue'], FILTER_SANITIZE_NUMBER_INT)
 		. '" name="'
 		. $name
 		. '" /><br>'
