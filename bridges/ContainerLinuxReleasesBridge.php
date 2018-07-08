@@ -1,7 +1,7 @@
 <?php
 class ContainerLinuxReleasesBridge extends BridgeAbstract {
 
-	const MAINTAINER = 'capt3m0';
+	const MAINTAINER = 'captn3m0';
 	const NAME = 'Core OS Container Linux Releases Bridge';
 	const URI = 'https://coreos.com/releases/';
 	const DESCRIPTION = 'Returns the releases notes for Container Linux';
