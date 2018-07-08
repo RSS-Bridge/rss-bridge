@@ -1,41 +1,257 @@
 <?php
 class FacebookBridge extends BridgeAbstract {
 
-	const MAINTAINER = 'teromene';
+	const MAINTAINER = 'teromene, logmanoriginal';
 	const NAME = 'Facebook';
 	const URI = 'https://www.facebook.com/';
 	const CACHE_TIMEOUT = 300; // 5min
 	const DESCRIPTION = 'Input a page title or a profile log. For a profile log,
  please insert the parameter as follow : myExamplePage/132621766841117';
 
-	const PARAMETERS = array( array(
-		'u' => array(
-			'name' => 'Username',
-			'required' => true
-		),
-		'media_type' => array(
-			'name' => 'Media type',
-			'type' => 'list',
-			'required' => false,
-			'values' => array(
-				'All' => 'all',
-				'Video' => 'video',
-				'No Video' => 'novideo'
+	const PARAMETERS = array(
+		'User' => array(
+			'u' => array(
+				'name' => 'Username',
+				'required' => true
 			),
-			'defaultValue' => 'all'
+			'media_type' => array(
+				'name' => 'Media type',
+				'type' => 'list',
+				'required' => false,
+				'values' => array(
+					'All' => 'all',
+					'Video' => 'video',
+					'No Video' => 'novideo'
+				),
+				'defaultValue' => 'all'
+			),
+			'skip_reviews' => array(
+				'name' => 'Skip reviews',
+				'type' => 'checkbox',
+				'required' => false,
+				'defaultValue' => false,
+				'title' => 'Feed includes reviews when checked'
+			)
 		),
-		'skip_reviews' => array(
-			'name' => 'Skip reviews',
-			'type' => 'checkbox',
-			'required' => false,
-			'defaultValue' => false,
-			'title' => 'Feed includes reviews when checked'
+		'Group' => array(
+			'g' => array(
+				'name' => 'Group',
+				'type' => 'text',
+				'required' => true,
+				'exampleValue' => 'https://www.facebook.com/groups/743149642484225',
+				'title' => 'Insert group name or facebook group URL'
+			)
 		)
-	));
+	);
 
 	private $authorName = '';
+	private $groupName = '';
 
-	public function collectData(){
+	public function getURI() {
+		$uri = self::URI;
+
+		switch($this->queriedContext) {
+
+			case 'Group':
+				$uri .= 'groups/' . $this->sanitizeGroup(filter_var($this->getInput('g'), FILTER_SANITIZE_URL));
+				break;
+
+		}
+
+		return $uri .= '?_fb_noscript=1';
+	}
+
+	public function collectData() {
+
+		switch($this->queriedContext) {
+
+			case 'Group':
+				$this->collectGroupData();
+				break;
+
+			case 'User':
+				$this->collectUserData();
+				break;
+
+			default:
+				returnClientError('Unknown context: "' . $this->queriedContext . '"!');
+
+		}
+
+	}
+
+	#region Group
+
+	private function collectGroupData() {
+
+		$header = array('Accept-Language: ' . getEnv('HTTP_ACCEPT_LANGUAGE') . "\r\n");
+
+		$html = getSimpleHTMLDOM($this->getURI(), $header)
+			or returnServerError('Failed loading facebook page: ' . $this->getURI());
+
+		if(!$this->isPublicGroup($html)) {
+			returnClientError('This group is not public! RSS-Bridge only supports public groups!');
+		}
+
+		defaultLinkTo($html, substr(self::URI, 0, strlen(self::URI) - 1));
+
+		$this->groupName = $this->extractGroupName($html);
+
+		$posts = $html->find('div.userContentWrapper')
+			or returnServerError('Failed finding posts!');
+
+		foreach($posts as $post) {
+
+			$item = array();
+
+			$item['uri'] = $this->extractGroupURI($post);
+			$item['title'] = $this->extractGroupTitle($post);
+			$item['author'] = $this->extractGroupAuthor($post);
+			$item['content'] = $this->extractGroupContent($post);
+			$item['timestamp'] = $this->extractGroupTimestamp($post);
+			$item['enclosures'] = $this->extractGroupEnclosures($post);
+
+			$this->items[] = $item;
+
+		}
+
+	}
+
+	private function sanitizeGroup($group) {
+
+		if(filter_var(
+			$group,
+			FILTER_VALIDATE_URL,
+			FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED)) {
+			// User provided a URL
+
+			$urlparts = parse_url($group);
+
+			if($urlparts['host'] !== parse_url(self::URI)['host']
+			&& 'www.' . $urlparts['host'] !== parse_url(self::URI)['host']) {
+
+				returnClientError('The host you provided is invalid! Received "'
+				. $urlparts['host']
+				. '", expected "'
+				. parse_url(self::URI)['host']
+				. '"!');
+
+			}
+
+			return explode('/', $urlparts['path'])[2];
+
+		} elseif(strpos($group, '/') !== false) {
+			returnClientError('The group you provided is invalid: ' . $group);
+		} else {
+			return $group;
+		}
+
+	}
+
+	private function isPublicGroup($html) {
+
+		// Facebook redirects to the groups about page for non-public groups
+		$about = $html->find('#pagelet_group_about', 0);
+
+		return !($about);
+
+	}
+
+	private function extractGroupName($html) {
+
+		$ogtitle = $html->find('meta[property="og:title"]', 0)
+			or returnServerError('Unable to find group title!');
+
+		return htmlspecialchars_decode($ogtitle->content, ENT_QUOTES);
+
+	}
+
+	private function extractGroupURI($post) {
+
+		$elements = $post->find('a')
+			or returnServerError('Unable to find URI!');
+
+		foreach($elements as $anchor) {
+
+			// Find the one that is a permalink
+			if(strpos($anchor->href, 'permalink') !== false) {
+				return $anchor->href;
+			}
+
+		}
+
+		return null;
+
+	}
+
+	private function extractGroupContent($post) {
+
+		$content = $post->find('div.userContent', 0)
+			or returnServerError('Unable to find user content!');
+
+		return $content->innertext . $content->next_sibling()->innertext;
+
+	}
+
+	private function extractGroupTimestamp($post) {
+
+		$element = $post->find('abbr[data-utime]', 0)
+			or returnServerError('Unable to find timestamp!');
+
+		return $element->getAttribute('data-utime');
+
+	}
+
+	private function extractGroupAuthor($post) {
+
+		$element = $post->find('img', 0)
+			or returnServerError('Unable to find author information!');
+
+		return $element->{'aria-label'};
+
+	}
+
+	private function extractGroupEnclosures($post) {
+
+		$elements = $post->find('div.userContent', 0)->next_sibling()->find('img');
+
+		$enclosures = array();
+
+		foreach($elements as $enclosure) {
+			$enclosures[] = $enclosure->src;
+		}
+
+		return empty($enclosures) ? null : $enclosures;
+
+	}
+
+	private function extractGroupTitle($post) {
+
+		$element = $post->find('h5', 0)
+			or returnServerError('Unable to find title!');
+
+		if(strpos($element->plaintext, 'shared') === false) {
+
+			$content = strip_tags($this->extractGroupContent($post));
+
+			return $this->extractGroupAuthor($post)
+			. ' posted: '
+			. substr(
+					$content,
+					0,
+					strpos(wordwrap($content, 64), "\n")
+				)
+			. '...';
+
+		}
+
+		return $element->plaintext;
+
+	}
+
+	#endregion
+
+	private function collectUserData(){
 
 		//Extract a string using start and end delimiters
 		function extractFromDelimiters($string, $start, $end){
@@ -336,9 +552,22 @@ EOD;
 	}
 
 	public function getName(){
-		if(!empty($this->authorName)) {
-			return isset($this->extraInfos['name']) ? $this->extraInfos['name'] : $this->authorName
-			. ' - Facebook Bridge';
+
+		switch($this->queriedContext) {
+
+			case 'User':
+				if(!empty($this->authorName)) {
+					return isset($this->extraInfos['name']) ? $this->extraInfos['name'] : $this->authorName
+					. ' - Facebook Bridge';
+				}
+				break;
+
+			case 'Group':
+				if(!empty($this->groupName)) {
+					return $this->groupName . ' - Facebook Bridge';
+				}
+				break;
+
 		}
 
 		return parent::getName();
