@@ -95,7 +95,7 @@ EOD;
 		. $pageID
 		. '&cursor={"card_id"%3A"videos"%2C"has_next_page"%3Atrue}&surface=mobile_page_home&unit_count=8';
 
-		$fileContent = file_get_contents($requestString);
+		$fileContent = getContents($requestString);
 
 		$articleIndex = 0;
 		$maxArticle = 3;
@@ -200,11 +200,11 @@ EOD;
 
 	//Builds the HTML from the encoded JS that Facebook provides.
 	private function buildContent($pageContent){
-
-		$regex = '/\\"html\\":\\"(.*?)\\",\\"replace/';
+		// The html ends with:
+		// /div>","replaceifexists
+		$regex = '/\\"html\\":(\".+\/div>"),"replace/';
 		preg_match($regex, $pageContent, $result);
-
-		return str_get_html(html_entity_decode(json_decode('"' . $result[1] . '"')));
+		return str_get_html(html_entity_decode(json_decode($result[1])));
 	}
 
 
