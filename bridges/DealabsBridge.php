@@ -279,11 +279,11 @@ class PepperBridgeAbstract extends BridgeAbstract {
 						. '">'
 						. $deal->find('a[class*='. $selectorLink .']', 0)->innertext
 						. '</a></h2>'
-						. $this->getPrix($deal)
-						. $this->getReduction($deal)
-						. $this->getExpedition($deal)
-						. $this->getLivraison($deal)
-						. $this->getOrigine($deal)
+						. $this->getPrice($deal)
+						. $this->getDiscount($deal)
+						. $this->getShipsFrom($deal)
+						. $this->getShippingCost($deal)
+						. $this->GetSource($deal)
 						. $deal->find('div[class*='. $selectorDescription .']', 0)->innertext
 						. '</td><td>'
 						. $deal->find('div[class='. $selectorHot .']', 0)->children(0)->outertext
@@ -323,7 +323,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	 * Get the Price from a Deal if it exists
 	 * @return string String of the deal price
 	 */
-	private function getPrix($deal)
+	private function getPrice($deal)
 	{
 		if ($deal->find(
 			'span[class*=thread-price]', 0) != null) {
@@ -342,7 +342,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	 * Get the Shipping costs from a Deal if it exists
 	 * @return string String of the deal shipping Cost
 	 */
-	private function getLivraison($deal)
+	private function getShippingCost($deal)
 	{
 		if ($deal->find('span[class*=cept-shipping-price]', 0) != null) {
 			if ($deal->find('span[class*=cept-shipping-price]', 0)->children(0) != null) {
@@ -363,7 +363,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	 * Get the source of a Deal if it exists
 	 * @return string String of the deal source
 	 */
-	private function getOrigine($deal)
+	private function GetSource($deal)
 	{
 		if ($deal->find('a[class=text--color-greyShade]', 0) != null) {
 			return '<div>'. $this->i8n('origin') .' : '
@@ -378,7 +378,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	 * Get the original Price and discout from a Deal if it exists
 	 * @return string String of the deal original price and discount
 	 */
-	private function getReduction($deal)
+	private function getDiscount($deal)
 	{
 		if ($deal->find('span[class*=mute--text text--lineThrough]', 0) != null) {
 			$discountHtml = $deal->find('span[class=space--ml-1 size--all-l size--fromW3-xl]', 0);
@@ -439,10 +439,10 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	}
 
 	/**
-	 * Get the originating country from a Deal if it existsa
+	 * Get the originating country from a Deal if it exists
 	 * @return string String of the deal originating country
 	 */
-	private function getExpedition($deal)
+	private function getShipsFrom($deal)
 	{
 		$selector = implode(
 			' ', /* Notice this is a space! */
