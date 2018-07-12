@@ -561,7 +561,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 				return $this->i8n('bridge-name') . ' - '. $this->i8n('title-keyword') .' : '. $this->getInput('q');
 				break;
 			case $this->i8n('context-group'):
-				$values = static::PARAMETERS[$this->i8n('context-group')]['group']['values'];
+				$values = $this->getParameters()[$this->i8n('context-group')]['group']['values'];
 				$group = array_search($this->getInput('group'), $values);
 				return $this->i8n('bridge-name') . ' - '. $this->i8n('title-group'). ' : '. $group;
 				break;
