@@ -1,8 +1,9 @@
 <?php
-class DealabsBridge extends BridgeAbstract {
-	const NAME = 'Dealabs search bridge';
+class DealabsBridge extends PepperBridgeAbstract {
+
+	const NAME = 'Dealabs Bridge';
 	const URI = 'https://www.dealabs.com/';
-	const DESCRIPTION = 'Return the Dealabs search result using keywords';
+	const DESCRIPTION = 'Affiche les Deals de Dealabs';
 	const MAINTAINER = 'sysadminstory';
 	const PARAMETERS = array(
 		'Recherche par Mot(s) clé(s)' => array (
@@ -39,7 +40,7 @@ class DealabsBridge extends BridgeAbstract {
 		),
 
 		'Deals par groupe' => array(
-			'groupe' => array(
+			'group' => array(
 				'name' => 'Groupe',
 				'type' => 'list',
 				'required' => 'true',
@@ -61,10 +62,10 @@ class DealabsBridge extends BridgeAbstract {
 					'Services divers' => 'services-divers',
 					'Sports & plein air' => 'sports-plein-air',
 					'Téléphonie' => 'telephonie',
-					'Voyages & sorties' => 'voyages-sorties-restaurants'
+					'Voyages & sorties' => 'voyages-sorties-restaurants',
 				)
 			),
-			'ordre' => array(
+			'order' => array(
 				'name' => 'Trier par',
 				'type' => 'list',
 				'required' => 'true',
@@ -78,37 +79,99 @@ class DealabsBridge extends BridgeAbstract {
 		)
 	);
 
+	public $lang = array(
+		'bridge-uri' => SELF::URI,
+		'bridge-name' => SELF::NAME,
+		'context-keyword' => 'Recherche par Mot(s) clé(s)',
+		'context-group' => 'Deals par groupe',
+		'uri-group' => '/groupe/',
+		'request-error' => 'Could not request Dealabs',
+		'no-results' => 'Il n&#039;y a rien à afficher pour le moment :(',
+		'relative-date-indicator' => array(
+			'il y a',
+		),
+		'price' => 'Prix',
+		'shipping' => 'Livraison',
+		'origin' => 'Origine',
+		'discount' => 'Réduction',
+		'title-keyword' => 'Recherche',
+		'title-group' => 'Groupe',
+		'local-months' => array(
+			'janvier',
+			'février',
+			'mars',
+			'avril',
+			'mai',
+			'juin',
+			'juillet',
+			'août',
+			'septembre',
+			'octobre',
+			'novembre',
+			'décembre'
+		),
+		'local-time-relative' => array(
+			'il y a ',
+			'min',
+			'h',
+			'jour',
+			'jours',
+			'mois',
+			'ans',
+			'et '
+		),
+		'date-prefixes' => array(
+			'Actualisé ',
+		),
+		'relative-date-alt-prefixes' => array(
+			'Actualisé ',
+		),
+		'relative-date-ignore-suffix' => array(
+		),
+
+		'localdeal' => array(
+			'Local',
+			'Pays d\'expédition'
+		),
+	);
+
+
+
+}
+
+class PepperBridgeAbstract extends BridgeAbstract {
+
 	const CACHE_TIMEOUT = 3600;
 
 	public function collectData(){
 		switch($this->queriedContext) {
-		case 'Recherche par Mot(s) clé(s)':
-			return $this->collectDataMotsCles();
+		case $this->i8n('context-keyword'):
+			return $this->collectDataKeywords();
 			break;
-		case 'Deals par groupe':
-			return $this->collectDataGroupe();
+		case $this->i8n('context-group'):
+			return $this->collectDataGroup();
 			break;
 		}
 	}
 
 	/**
-	 * Get the Deal data from the choosen groupe in the choose order
+	 * Get the Deal data from the choosen group in the choosed order
 	 */
-	public function collectDataGroupe()
+	public function collectDataGroup()
 	{
 
-		$groupe = $this->getInput('groupe');
-		$ordre = $this->getInput('ordre');
+		$group = $this->getInput('group');
+		$order = $this->getInput('order');
 
-		$url = self::URI
-			. '/groupe/' . $groupe . $ordre;
+		$url = $this->i8n('bridge-uri')
+			. $this->i8n('uri-group') . $group . $order;
 		$this->collectDeals($url);
 	}
 
 	/**
 	 * Get the Deal data from the choosen keywords and parameters
 	 */
-	public function collectDataMotsCles()
+	public function collectDataKeywords()
 	{
 		$q = $this->getInput('q');
 		$hide_expired = $this->getInput('hide_expired');
@@ -117,7 +180,7 @@ class DealabsBridge extends BridgeAbstract {
 		$priceTo = $this->getInput('priceFrom');
 
 		/* Even if the original website uses POST with the search page, GET works too */
-		$url = self::URI
+		$url = $this->i8n('bridge-uri')
 			. '/search/advanced?q='
 			. urlencode($q)
 			. '&hide_expired='. $hide_expired
@@ -138,8 +201,8 @@ class DealabsBridge extends BridgeAbstract {
 	 */
 	public function collectDeals($url){
 		$html = getSimpleHTMLDOM($url)
-			or returnServerError('Could not request Dealabs.');
-		$list = $html->find('article');
+			or returnServerError($this->i8n('request-error'));
+		$list = $html->find('article[id]');
 
 		// Deal Image Link CSS Selector
 		$selectorImageLink = implode(
@@ -197,40 +260,44 @@ class DealabsBridge extends BridgeAbstract {
 
 		// If there is no results, we don't parse the content because it display some random deals
 		$noresult = $html->find('h3[class=size--all-l size--fromW2-xl size--fromW3-xxl]', 0);
-		if($noresult != null && $noresult->plaintext == 'Il n&#039;y a rien à afficher pour le moment :(') {
+		if ($noresult != null && strpos($noresult->plaintext, $this->i8n('no-results')) !== false) {
 			$this->items = array();
 		} else {
-			foreach($list as $deal) {
+			foreach ($list as $deal) {
 				$item = array();
 				$item['uri'] = $deal->find('div[class=threadGrid-title]', 0)->find('a', 0)->href;
 				$item['title'] = $deal->find('a[class*='. $selectorLink .']', 0
-					)->plaintext;
+				)->plaintext;
 				$item['author'] = $deal->find('span.thread-username', 0)->plaintext;
 				$item['content'] = '<table><tr><td><a href="'
 					. $deal->find(
 						'a[class*='. $selectorImageLink .']', 0)->href
-					. '"><img src="'
-					. $this->getImage($deal)
-					. '"/></td><td><h2><a href="'
-					. $deal->find('a[class*='. $selectorLink .']', 0)->href
-					. '">'
-					. $deal->find('a[class*='. $selectorLink .']', 0)->innertext
-					. '</a></h2>'
-					. $this->getPrix($deal)
-					. $this->getReduction($deal)
-					. $this->getExpedition($deal)
-					. $this->getLivraison($deal)
-					. $this->getOrigine($deal)
-					. $deal->find('div[class*='. $selectorDescription .']', 0)->innertext
-					. '</td><td>'
-					. $deal->find('div[class='. $selectorHot .']', 0)->children(0)->outertext
-					. '</td></table>';
+						. '"><img src="'
+						. $this->getImage($deal)
+						. '"/></td><td><h2><a href="'
+						. $deal->find('a[class*='. $selectorLink .']', 0)->href
+						. '">'
+						. $deal->find('a[class*='. $selectorLink .']', 0)->innertext
+						. '</a></h2>'
+						. $this->getPrice($deal)
+						. $this->getDiscount($deal)
+						. $this->getShipsFrom($deal)
+						. $this->getShippingCost($deal)
+						. $this->GetSource($deal)
+						. $deal->find('div[class*='. $selectorDescription .']', 0)->innertext
+						. '</td><td>'
+						. $deal->find('div[class='. $selectorHot .']', 0)->children(0)->outertext
+						. '</td></table>';
 				$dealDateDiv = $deal->find('div[class*='. $selectorDate .']', 0)
 					->find('span[class=hide--toW3]');
 				$itemDate = end($dealDateDiv)->plaintext;
-				if(substr( $itemDate, 0, 6 ) === 'il y a') {
+				// In case of a Local deal, there is no date, but we can use
+				// this case for other reason (like date not in the last field)
+				if ($this->contains($itemDate, $this->i8n('localdeal'))) {
+					$item['timestamp'] = time();
+				} else if ($this->contains($itemDate, $this->i8n('relative-date-indicator'))) {
 					$item['timestamp'] = $this->relativeDateToTimestamp($itemDate);
-				} else 	{
+				} else {
 					$item['timestamp'] = $this->parseDate($itemDate);
 				}
 				$this->items[] = $item;
@@ -239,14 +306,28 @@ class DealabsBridge extends BridgeAbstract {
 	}
 
 	/**
+	 * Check if the string $str contains any of the string of the array $arr
+	 * @return boolean true if the string matched anything otherwise false
+	 */
+	private function contains($str, array $arr)
+	{
+		foreach ($arr as $a) {
+			if (stripos($str, $a) !== false) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Get the Price from a Deal if it exists
 	 * @return string String of the deal price
 	 */
-	private function getPrix($deal)
+	private function getPrice($deal)
 	{
-		if($deal->find(
+		if ($deal->find(
 			'span[class*=thread-price]', 0) != null) {
-			return '<div>Prix : '
+			return '<div>'.$this->i8n('price') .' : '
 				. $deal->find(
 					'span[class*=thread-price]', 0
 				)->plaintext
@@ -261,17 +342,17 @@ class DealabsBridge extends BridgeAbstract {
 	 * Get the Shipping costs from a Deal if it exists
 	 * @return string String of the deal shipping Cost
 	 */
-	private function getLivraison($deal)
+	private function getShippingCost($deal)
 	{
-		if($deal->find('span[class*=cept-shipping-price]', 0) != null) {
-			if($deal->find('span[class*=cept-shipping-price]', 0)->children(0) != null) {
-				return '<div>Livraison : '
-				. $deal->find('span[class*=cept-shipping-price]', 0)->children(0)->innertext
-				. '</div>';
+		if ($deal->find('span[class*=cept-shipping-price]', 0) != null) {
+			if ($deal->find('span[class*=cept-shipping-price]', 0)->children(0) != null) {
+				return '<div>'. $this->i8n('shipping') .' : '
+					. $deal->find('span[class*=cept-shipping-price]', 0)->children(0)->innertext
+					. '</div>';
 			} else {
-				return '<div>Livraison : '
-				. $deal->find('span[class*=cept-shipping-price]', 0)->innertext
-				. '</div>';
+				return '<div>'. $this->i8n('shipping') .' : '
+					. $deal->find('span[class*=cept-shipping-price]', 0)->innertext
+					. '</div>';
 			}
 		} else {
 			return '';
@@ -282,10 +363,10 @@ class DealabsBridge extends BridgeAbstract {
 	 * Get the source of a Deal if it exists
 	 * @return string String of the deal source
 	 */
-	private function getOrigine($deal)
+	private function GetSource($deal)
 	{
-		if($deal->find('a[class=text--color-greyShade]', 0) != null) {
-			return '<div>Origine : '
+		if ($deal->find('a[class=text--color-greyShade]', 0) != null) {
+			return '<div>'. $this->i8n('origin') .' : '
 				. $deal->find('a[class=text--color-greyShade]', 0)->outertext
 				. '</div>';
 		} else {
@@ -297,19 +378,19 @@ class DealabsBridge extends BridgeAbstract {
 	 * Get the original Price and discout from a Deal if it exists
 	 * @return string String of the deal original price and discount
 	 */
-	private function getReduction($deal)
+	private function getDiscount($deal)
 	{
-		if($deal->find('span[class*=mute--text text--lineThrough]', 0) != null) {
+		if ($deal->find('span[class*=mute--text text--lineThrough]', 0) != null) {
 			$discountHtml = $deal->find('span[class=space--ml-1 size--all-l size--fromW3-xl]', 0);
-			if($discountHtml != null) {
+			if ($discountHtml != null) {
 				$discount = $discountHtml->plaintext;
 			} else {
 				$discount = '';
 			}
-			return '<div>Réduction : <span style="text-decoration: line-through;">'
+			return '<div>'. $this->i8n('discount') .' : <span style="text-decoration: line-through;">'
 				. $deal->find(
 					'span[class*=mute--text text--lineThrough]', 0
-					)->plaintext
+				)->plaintext
 				. '</span>&nbsp;'
 				. $discount
 				. '</div>';
@@ -324,7 +405,6 @@ class DealabsBridge extends BridgeAbstract {
 	 */
 	private function getImage($deal)
 	{
-
 		$selectorLazy = implode(
 			' ', /* Notice this is a space! */
 			array(
@@ -338,7 +418,7 @@ class DealabsBridge extends BridgeAbstract {
 			)
 		);
 
-			$selectorPlain = implode(
+		$selectorPlain = implode(
 			' ', /* Notice this is a space! */
 			array(
 				'thread-image',
@@ -348,21 +428,21 @@ class DealabsBridge extends BridgeAbstract {
 				'cept-thread-img'
 			)
 		);
-		if($deal->find('img[class='. $selectorLazy .']', 0) != null) {
+		if ($deal->find('img[class='. $selectorLazy .']', 0) != null) {
 			return json_decode(
 				html_entity_decode(
 					$deal->find('img[class='. $selectorLazy .']', 0)
-						->getAttribute('data-lazy-img')))->{'src'};
+					->getAttribute('data-lazy-img')))->{'src'};
 		} else {
-			return $deal->find('img[class='. $selectorPlain .']', 0	)->src;
+			return $deal->find('img[class*='. $selectorPlain .']', 0	)->src;
 		}
 	}
 
 	/**
-	 * Get the originating country from a Deal if it existsa
+	 * Get the originating country from a Deal if it exists
 	 * @return string String of the deal originating country
 	 */
-	private function getExpedition($deal)
+	private function getShipsFrom($deal)
 	{
 		$selector = implode(
 			' ', /* Notice this is a space! */
@@ -373,7 +453,7 @@ class DealabsBridge extends BridgeAbstract {
 				'text--color-greyShade'
 			)
 		);
-		if($deal->find('span[class='. $selector .']', 0) != null) {
+		if ($deal->find('span[class='. $selector .']', 0) != null) {
 			return '<div>'
 				. $deal->find('span[class='. $selector .']', 0)->children(2)->plaintext
 				. '</div>';
@@ -383,25 +463,12 @@ class DealabsBridge extends BridgeAbstract {
 	}
 
 	/**
-	 * Transforms a French date into a timestam
+	 * Transforms a local date into a timestamp
 	 * @return int timestamp of the input date
 	 */
 	private function parseDate($string)
 	{
-		$month_fr = array(
-			'janvier',
-			'février',
-			'mars',
-			'avril',
-			'mai',
-			'juin',
-			'juillet',
-			'août',
-			'septembre',
-			'octobre',
-			'novembre',
-			'décembre'
-		);
+		$month_local = $this->i8n('local-months');
 		$month_en = array(
 			'January',
 			'February',
@@ -416,12 +483,18 @@ class DealabsBridge extends BridgeAbstract {
 			'November',
 			'December'
 		);
-		$string = str_replace('Actualisé ', '', $string);
-		$date_str = trim(str_replace($month_fr, $month_en, $string));
 
-		if(!preg_match('/[0-9]{4}/', $string)) {
+		// A date can be prfixed with some words, we remove theme
+		$string = $this->removeDatePrefixes($string);
+		// We translate the local months name in the english one
+		$date_str = trim(str_replace($month_local, $month_en, $string));
+
+		// If the date does not contain any year, we add the current year
+		if (!preg_match('/[0-9]{4}/', $string)) {
 			$date_str .= ' ' . date('Y');
 		}
+
+		// Add the Hour and minutes
 		$date_str .= ' 00:00';
 
 		$date = DateTime::createFromFormat('j F Y H:i', $date_str);
@@ -429,21 +502,41 @@ class DealabsBridge extends BridgeAbstract {
 	}
 
 	/**
-	 * Transforms a relate French date into a timestam
+	 * Remove the prefix of a date if it has one
+	 * @return the date without prefiux
+	 */
+	private function removeDatePrefixes($string)
+	{
+		$string = str_replace($this->i8n('date-prefixes'), array(), $string);
+		return $string;
+	}
+
+	/**
+	 * Remove the suffix of a relative date if it has one
+	 * @return the relative date without suffixes
+	 */
+	private function removeRelativeDateSuffixes($string)
+	{
+		if (count($this->i8n('relative-date-ignore-suffix')) > 0) {
+			$string = preg_replace($this->i8n('relative-date-ignore-suffix'), '', $string);
+		}
+		return $string;
+	}
+
+	/**
+	 * Transforms a relative local date into a timestamp
 	 * @return int timestamp of the input date
 	 */
 	private function relativeDateToTimestamp($str) {
 		$date = new DateTime();
-		$search = array(
-			'il y a ',
-			'min',
-			'h',
-			'jour',
-			'jours',
-			'mois',
-			'ans',
-			'et '
-		);
+
+		// In case of update date, replace it by the regular relative date first word
+		$str = str_replace($this->i8n('relative-date-alt-prefixes'), $this->i8n('local-time-relative')[0], $str);
+
+		$str = $this->removeRelativeDateSuffixes($str);
+
+		$search = $this->i8n('local-time-relative');
+
 		$replace = array(
 			'-',
 			'minute',
@@ -458,18 +551,38 @@ class DealabsBridge extends BridgeAbstract {
 		return $date->getTimestamp();
 	}
 
+	/**
+	 * Returns the RSS Feed title according to the parameters
+	 * @return string the RSS feed Tiyle
+	 */
 	public function getName(){
 		switch($this->queriedContext) {
-			case 'Recherche par Mot(s) clé(s)':
-				return self::NAME . ' - Recherche : '. $this->getInput('q');
+			case $this->i8n('context-keyword'):
+				return $this->i8n('bridge-name') . ' - '. $this->i8n('title-keyword') .' : '. $this->getInput('q');
 				break;
-			case 'Deals par groupe':
-				$values = self::PARAMETERS['Deals par groupe']['groupe']['values'];
-				$groupe = array_search($this->getInput('groupe'), $values);
-				return self::NAME . ' - Groupe : '. $groupe;
+			case $this->i8n('context-group'):
+				$values = $this->getParameters()[$this->i8n('context-group')]['group']['values'];
+				$group = array_search($this->getInput('group'), $values);
+				return $this->i8n('bridge-name') . ' - '. $this->i8n('title-group'). ' : '. $group;
 				break;
 			default: // Return default value
-				return self::NAME;
+				return static::NAME;
+		}
+	}
+
+
+
+	/**
+	 * This is some "localisation" function that returns the needed content using
+	 * the "$lang" class variable in the local class
+	 * @return various the local content needed
+	 */
+	public function i8n($key)
+	{
+		if (array_key_exists($key, $this->lang)) {
+			return $this->lang[$key];
+		} else {
+			return null;
 		}
 	}
 
