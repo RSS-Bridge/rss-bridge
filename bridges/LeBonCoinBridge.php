@@ -1,11 +1,10 @@
 <?php
 class LeBonCoinBridge extends BridgeAbstract {
 
-	const MAINTAINER = '16mhz';
+	const MAINTAINER = 'jacknumber';
 	const NAME = 'LeBonCoin';
 	const URI = 'https://www.leboncoin.fr/';
-	const DESCRIPTION = 'Returns most recent results from LeBonCoin for a
-region, and optionally a category and a keyword .';
+	const DESCRIPTION = 'Returns most recent results from LeBonCoin';
 
 	const PARAMETERS = array(
 		array(
@@ -14,125 +13,137 @@ region, and optionally a category and a keyword .';
 				'name' => 'Région',
 				'type' => 'list',
 				'values' => array(
-					'Toute la France' => 'ile_de_france/occasions',
-					'Alsace' => 'alsace',
-					'Aquitaine' => 'aquitaine',
-					'Auvergne' => 'auvergne',
-					'Basse Normandie' => 'basse_normandie',
-					'Bourgogne' => 'bourgogne',
-					'Bretagne' => 'bretagne',
-					'Centre' => 'centre',
-					'Champagne Ardenne' => 'champagne_ardenne',
-					'Corse' => 'corse',
-					'Franche Comté' => 'franche_comte',
-					'Haute Normandie' => 'haute_normandie',
-					'Ile de France' => 'ile_de_france',
-					'Languedoc Roussillon' => 'languedoc_roussillon',
-					'Limousin' => 'limousin',
-					'Lorraine' => 'lorraine',
-					'Midi Pyrénées' => 'midi_pyrenees',
-					'Nord Pas De Calais' => 'nord_pas_de_calais',
-					'Pays de la Loire' => 'pays_de_la_loire',
-					'Picardie' => 'picardie',
-					'Poitou Charentes' => 'poitou_charentes',
-					'Provence Alpes Côte d\'Azur' => 'provence_alpes_cote_d_azur',
-					'Rhône-Alpes' => 'rhone_alpes',
-					'Guadeloupe' => 'guadeloupe',
-					'Martinique' => 'martinique',
-					'Guyane' => 'guyane',
-					'Réunion' => 'reunion'
+					'Toute la France' => '',
+					'Alsace' => '1',
+					'Aquitaine' => '2',
+					'Auvergne' => '3',
+					'Basse Normandie' => '4',
+					'Bourgogne' => '5',
+					'Bretagne' => '6',
+					'Centre' => '7',
+					'Champagne Ardenne' => '8',
+					'Corse' => '9',
+					'Franche Comté' => '10',
+					'Haute Normandie' => '11',
+					'Ile de France' => '12',
+					'Languedoc Roussillon' => '13',
+					'Limousin' => '14',
+					'Lorraine' => '15',
+					'Midi Pyrénées' => '16',
+					'Nord Pas De Calais' => '17',
+					'Pays de la Loire' => '18',
+					'Picardie' => '19',
+					'Poitou Charentes' => '20',
+					'Provence Alpes Côte d\'Azur' => '21',
+					'Rhône-Alpes' => '22',
+					'Guadeloupe' => '23',
+					'Martinique' => '24',
+					'Guyane' => '25',
+					'Réunion' => '26'
 				)
 			),
 			'c' => array(
 				'name' => 'Catégorie',
 				'type' => 'list',
 				'values' => array(
-					'TOUS' => '',
-					'EMPLOI' => '_emploi_',
+					'Toutes catégories' => '',
+					'EMPLOI' => array(
+						'Emploi et recrutement' => '71',
+						'Offres d\'emploi et jobs' => '33'
+					),
 					'VEHICULES' => array(
-						'Tous' => '_vehicules_',
-						'Voitures' => 'voitures',
-						'Motos' => 'motos',
-						'Caravaning' => 'caravaning',
-						'Utilitaires' => 'utilitaires',
-						'Équipement Auto' => 'equipement_auto',
-						'Équipement Moto' => 'equipement_moto',
-						'Équipement Caravaning' => 'equipement_caravaning',
-						'Nautisme' => 'nautisme',
-						'Équipement Nautisme' => 'equipement_nautisme'
+						'Tous' => '1',
+						'Voitures' => '2',
+						'Motos' => '3',
+						'Caravaning' => '4',
+						'Utilitaires' => '5',
+						'Equipement Auto' => '6',
+						'Equipement Moto' => '44',
+						'Equipement Caravaning' => '50',
+						'Nautisme' => '7',
+						'Equipement Nautisme' => '51'
 					),
 					'IMMOBILIER' => array(
-						'Tous' => '_immobilier_',
-						'Ventes immobilières' => 'ventes_immobilieres',
-						'Locations' => 'locations',
-						'Colocations' => 'colocations',
-						'Bureaux & Commerces' => 'bureaux_commerces'
+						'Tous' => '8',
+						'Ventes immobilières' => '9',
+						'Locations' => '10',
+						'Colocations' => '11',
+						'Bureaux & Commerces' => '13'
 					),
 					'VACANCES' => array(
-						'Tous' => '_vacances_',
-						'Location gîtes' => 'locations_gites',
-						'Chambres d\'hôtes' => 'chambres_d_hotes',
-						'Campings' => 'campings',
-						'Hôtels' => 'hotels',
-						'Hébergements insolites' => 'hebergements_insolites'
+						'Tous' => '66',
+						'Locations & Gîtes' => '12',
+						'Chambres d\'hôtes' => '67',
+						'Campings' => '68',
+						'Hôtels' => '69',
+						'Hébergements insolites' => '70'
 					),
 					'MULTIMEDIA' => array(
-						'Tous' => '_multimedia_',
-						'Informatique' => 'informatique',
-						'Consoles & Jeux vidéo' => 'consoles_jeux_video',
-						'Image & Son' => 'image_son',
-						'Téléphonie' => 'telephonie'
+						'Tous' => '14',
+						'Informatique' => '15',
+						'Consoles & Jeux vidéo' => '43',
+						'Image & Son' => '16',
+						'Téléphonie' => '17'
 					),
 					'LOISIRS' => array(
-						'Tous' => '_loisirs_',
-						'DVD / Films' => 'dvd_films',
-						'CD / Musique' => 'cd_musique',
-						'Livres' => 'livres',
-						'Animaux' => 'animaux',
-						'Vélos' => 'velos',
-						'Sports & Hobbies' => 'sports_hobbies',
-						'Instruments de musique' => 'instruments_de_musique',
-						'Collection' => 'collection',
-						'Jeux & Jouets' => 'jeux_jouets',
-						'Vins & Gastronomie' => 'vins_gastronomie'
+						'Tous' => '24',
+						'DVD / Films' => '25',
+						'CD / Musique' => '26',
+						'Livres' => '27',
+						'Animaux' => '28',
+						'Vélos' => '55',
+						'Sports & Hobbies' => '29',
+						'Instruments de musique' => '30',
+						'Collection' => '40',
+						'Jeux & Jouets' => '41',
+						'Vins & Gastronomie' => '48'
 					),
-					'MATÉRIEL PROFESSIONNEL' => array(
-						'Tous' => '_materiel_professionnel_',
-						'Matériel Agricole' => 'mateiel_agricole',
-						'Transport - Manutention' => 'transport_manutention',
-						'BTP - Chantier - Gros-œuvre' => 'btp_chantier_gros_oeuvre',
-						'Outillage - Matériaux 2nd-œuvre' => 'outillage_materiaux_2nd_oeuvre',
-						'Équipements Industriels' => 'equipement_industriels',
-						'Restauration - Hôtellerie' => 'restauration_hotellerie',
-						'Fournitures de Bureau' => 'fournitures_de_bureau',
-						'Commerces & Marchés' => 'commerces_marches',
-						'Matériel médical' => 'materiel_medical'
+					'MATERIEL PROFESSIONNEL' => array(
+						'Tous' => '56',
+						'Matériel Agricole' => '57',
+						'Transport - Manutention' => '58',
+						'BTP - Chantier Gros-oeuvre' => '59',
+						'Outillage - Matériaux 2nd-oeuvre' => '60',
+						'Équipements Industriels' => '32',
+						'Restauration - Hôtellerie' => '61',
+						'Fournitures de Bureau' => '62',
+						'Commerces & Marchés' => '63',
+						'Matériel Médical' => '64'
 					),
 					'SERVICES' => array(
-						'Tous' => '_services_',
-						'Prestations de services' => 'prestations_de_services',
-						'Billetterie' => 'billetterie',
-						'Évènements' => 'evenements',
-						'Cours particuliers' => 'cours_particuliers',
-						'Covoiturage' => 'covoiturage'
+						'Tous' => '31',
+						'Prestations de services' => '34',
+						'Billetterie' => '35',
+						'Evénements' => '49',
+						'Cours particuliers' => '36',
+						'Covoiturage' => '65'
 					),
 					'MAISON' => array(
-						'Tous' => '_maison_',
-						'Ameublement' => 'ameublement',
-						'Électroménager' => 'electromenager',
-						'Arts de la table' => 'arts_de_la_table',
-						'Décoration' => 'decoration',
-						'Linge de maison' => 'linge_de_maison',
-						'Bricolage' => 'bricolage',
-						'Jardinage' => 'jardinage',
-						'Vêtements' => 'vetements',
-						'Chaussures' => 'chaussures',
-						'Accessoires & Bagagerie' => 'accessoires_bagagerie',
-						'Montres & Bijoux' => 'montres_bijoux',
-						'Équipement bébé' => 'equipement_bebe',
-						'Vêtements bébé' => 'vetements_bebe'
+						'Tous' => '18',
+						'Ameublement' => '19',
+						'Electroménager' => '20',
+						'Arts de la table' => '45',
+						'Décoration' => '39',
+						'Linge de maison' => '46',
+						'Bricolage' => '21',
+						'Jardinage' => '52',
+						'Vêtements' => '22',
+						'Chaussures' => '53',
+						'Accessoires & Bagagerie' => '47',
+						'Montres & Bijoux' => '42',
+						'Equipement bébé' => '23',
+						'Vêtements bébé' => '54',
 					),
-					'AUTRES' => 'autres'
+					'AUTRES' => '37'
+				)
+			),
+			'o' => array(
+				'name' => 'Vendeur',
+				'type' => 'list',
+				'values' => array(
+					'Tous' => '',
+					'Particuliers' => 'private',
+					'Professionnels' => 'pro',
 				)
 			)
 		)
@@ -140,50 +151,71 @@ region, and optionally a category and a keyword .';
 
 	public function collectData(){
 
-		$category = $this->getInput('c');
-		if(empty($category)) {
-				$category = 'annonces';
+		$params = array(
+			'text' => $this->getInput('k'),
+			'region' => $this->getInput('r'),
+			'category' => $this->getInput('c'),
+			'owner_type' => $this->getInput('o'),
+		);
+
+		$url = self::URI . 'recherche/?' . http_build_query($params);
+		$html = file_get_contents($url)
+			or returnServerError('Could not request LeBonCoin. Tried: ' . $url);
+
+		if(!preg_match('/^<script>window.FLUX_STATE[^\r\n]*/m', $html, $matches)) {
+			returnServerError('Could not parse JSON in page content.');
 		}
 
-		$html = getSimpleHTMLDOM(self::URI
-		. $category
-		. '/offres/'
-		. $this->getInput('r')
-		. '/?f=a&th=1&q='
-		. urlencode($this->getInput('k')))
-			or returnServerError('Could not request LeBonCoin.');
+		$clean_match = str_replace(
+			array('</script>', '<script>window.FLUX_STATE = '),
+			array('', ''),
+			$matches[0]
+		);
+		$json = json_decode($clean_match);
 
-		$list = $html->find('.tabsContent', 0);
-		if($list === null) {
+		if($json->adSearch->data->total === 0) {
 			return;
 		}
 
-		$tags = $list->find('li');
+		foreach($json->adSearch->data->ads as $element) {
 
-		foreach($tags as $element) {
+			$item['title'] = $element->subject;
+			$item['content'] = $element->body;
+			$item['date'] = $element->index_date;
+			$item['timestamp'] = strtotime($element->index_date);
+			$item['uri'] = $element->url;
+			$item['ad_type'] = $element->ad_type;
+			$item['author'] = $element->owner->name;
 
-			$element = $element->find('a', 0);
+			if(isset($element->location->city)) {
 
-			$item = array();
-			$item['uri'] = $element->href;
-			$title = html_entity_decode($element->getAttribute('title'));
-			$content_image = $element->find('div.item_image', 0)->find('.lazyload', 0);
+				$item['city'] = $element->location->city;
+				$item['content'] .= ' -- ' . $element->location->city;
 
-			if($content_image !== null) {
-				$content = '<img src="' . $content_image->getAttribute('data-imgsrc') . '" alt="thumbnail">';
-			} else {
-				$content = '';
 			}
-			$date = $element->find('aside.item_absolute', 0)->find('p.item_sup', 0);
 
-			$detailsList = $element->find('section.item_infos', 0);
+			if(isset($element->location->zipcode)) {
+				$item['zipcode'] = $element->location->zipcode;
+			}
 
-			for($i = 0; $i <= 1; $i++) $content .= $detailsList->find('p.item_supp', $i)->plaintext;
-			$price = $detailsList->find('h3.item_price', 0);
-			$content .= $price === null ? '' : $price->plaintext;
+			if(isset($element->price)) {
 
-			$item['title'] = $title;
-			$item['content'] = $content . $date;
+				$item['price'] = $element->price[0];
+				$item['content'] .= ' -- ' . current($element->price) . '€';
+
+			}
+
+			if(isset($element->images->urls)) {
+
+				$item['thumbnail'] = $element->images->thumb_url;
+				$item['enclosures'] = array();
+
+				foreach($element->images->urls as $image) {
+					$item['enclosures'][] = $image;
+				}
+
+			}
+
 			$this->items[] = $item;
 		}
 	}
