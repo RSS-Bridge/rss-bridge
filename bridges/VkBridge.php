@@ -228,6 +228,16 @@ class VkBridge extends BridgeAbstract
 			$item = array();
 			$item['content'] = strip_tags(backgroundToImg($post->find('div.wall_text', 0)->innertext), '<br><img>');
 			$item['content'] .= $content_suffix;
+			$item['categories'] = array();
+
+			// get post hashtags
+			foreach($post->find('a') as $a) {
+				$href = $a->getAttribute('href');
+				$prefix = '/feed?section=search&q=%23';
+				if ($href && substr($href, 0, strlen($prefix)) === $prefix) {
+					$item['categories'][] = urldecode(substr($href, strlen($prefix)));
+				}
+			}
 
 			// get post link
 			$post_link = $post->find('a.post_link', 0)->getAttribute('href');
