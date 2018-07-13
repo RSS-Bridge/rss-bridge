@@ -40,6 +40,16 @@ class AtomFormat extends FormatAbstract{
 				}
 			}
 
+			$entryCategories = '';
+			if(isset($item['categories'])) {
+				foreach($item['categories'] as $category) {
+					$entryCategories .= '<category term="'
+					. $this->xml_encode($category)
+					. '"/>'
+					. PHP_EOL;
+				}
+			}
+
 			$entries .= <<<EOD
 
 	<entry>
@@ -52,6 +62,7 @@ class AtomFormat extends FormatAbstract{
 		<updated>{$entryTimestamp}</updated>
 		<content type="html">{$entryContent}</content>
 		{$entryEnclosures}
+		{$entryCategories}
 	</entry>
 
 EOD;

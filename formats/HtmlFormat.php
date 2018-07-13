@@ -47,6 +47,20 @@ class HtmlFormat extends FormatAbstract {
 				$entryEnclosures .= '</div>';
 			}
 
+			$entryCategories = '';
+			if(isset($item['categories'])) {
+				$entryCategories = '<div class="categories"><p>Categories:</p>';
+
+				foreach($item['categories'] as $category) {
+
+					$entryCategories .= '<li class="category">'
+					. $this->sanitizeHtml($category)
+					. '</li>';
+				}
+
+				$entryCategories .= '</div>';
+			}
+
 			$entries .= <<<EOD
 
 <section class="feeditem">
@@ -55,6 +69,7 @@ class HtmlFormat extends FormatAbstract {
 	{$entryAuthor}
 	{$entryContent}
 	{$entryEnclosures}
+	{$entryCategories}
 </section>
 
 EOD;
