@@ -23,12 +23,11 @@ class ZenodoBridge extends BridgeAbstract {
 			}
 			$content = $element->find('p.hidden-xs', 0)->find('a', 0)->innertext . '<br>';
 			$type = '<br>Type: ' . $element->find('span.label-default', 0)->innertext;
-			$access = '';
 
-            $raw_date = $element->find('small.text-muted', 0)->innertext;
+			$raw_date = $element->find('small.text-muted', 0)->innertext;
 			$clean_date = date_parse(str_replace('Uploaded on ', '', $raw_date));
 
-			$content = $content .	date_parse($clean_date);
+			$content = $content . date_parse($clean_date);
 
 			$item['timestamp'] = mktime(
 					$clean_date['hour'],
@@ -39,14 +38,12 @@ class ZenodoBridge extends BridgeAbstract {
 					$clean_date['year']
 			);
 
+			$access = '';
 			if ($element->find('span.label-success', 0)->innertext) {
-				global $access;
 				$access = 'Open Access';
 			} elseif ($element->find('span.label-warning', 0)->innertext) {
-				global $access;
 				$access = 'Embargoed Access';
 			} else {
-				global $access;
 				$access = $element->find('span.label-error', 0)->innertext;
 			}
 			$access = '<br>Access: ' . $access;
