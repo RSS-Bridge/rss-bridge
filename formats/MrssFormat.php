@@ -51,6 +51,16 @@ Some media files might not be shown to you. Consider using the ATOM format inste
 				}
 			}
 
+			$entryCategories = '';
+			if(isset($item['categories'])) {
+
+				foreach($item['categories'] as $category) {
+					$entryCategories .= '<category>'
+					. $category  . '</category>'
+					. PHP_EOL;
+				}
+			}
+
 			$items .= <<<EOD
 
 	<item>
@@ -61,6 +71,7 @@ Some media files might not be shown to you. Consider using the ATOM format inste
 		<description>{$itemContent}{$entryEnclosuresWarning}</description>
 		<author>{$itemAuthor}</author>
 		{$entryEnclosures}
+		{$entryCategories}
 	</item>
 
 EOD;
