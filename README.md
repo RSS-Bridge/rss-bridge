@@ -53,7 +53,7 @@ Requirements
 
  * PHP 5.6, e.g. `AddHandler application/x-httpd-php56 .php` in `.htaccess`
  * `openssl` extension enabled in PHP config (`php.ini`)
- * `allow_url_fopen=1` in `php.ini`
+ * `curl` extension enabled in PHP config (`php.ini`)
 
 Enabling/Disabling bridges
 ===
