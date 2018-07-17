@@ -1,7 +1,7 @@
 <?php
 class Configuration {
 
-	public static $VERSION = '2018-06-10';
+	public static $VERSION = '2018-07-17';
 
 	public static $config = null;
 
