@@ -27,10 +27,6 @@ class Configuration {
 		if(!extension_loaded('curl'))
 			die('"curl" extension not loaded. Please check "php.ini"');
 
-		// configuration checks
-		if(ini_get('allow_url_fopen') !== '1')
-			die('"allow_url_fopen" is not set to "1". Please check "php.ini');
-
 		// Check cache folder permissions (write permissions required)
 		if(!is_writable(CACHE_DIR))
 			die('RSS-Bridge does not have write permissions for ' . CACHE_DIR . '!');
