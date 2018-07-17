@@ -159,7 +159,7 @@ class LeBonCoinBridge extends BridgeAbstract {
 		);
 
 		$url = self::URI . 'recherche/?' . http_build_query($params);
-		$html = file_get_contents($url)
+		$html = getContents($url)
 			or returnServerError('Could not request LeBonCoin. Tried: ' . $url);
 
 		if(!preg_match('/^<script>window.FLUX_STATE[^\r\n]*/m', $html, $matches)) {
