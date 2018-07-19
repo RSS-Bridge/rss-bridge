@@ -45,9 +45,10 @@ class ElloBridge extends BridgeAbstract {
 			$item = array();
 			$item['author'] = $this->getUsername($post, $postData);
 			$item['timestamp'] = strtotime($post->created_at);
-			$item['title'] = $this->findText($post->summary);
+			$item['title'] = strip_tags($this->findText($post->summary));
 			$item['content'] = $this->getPostContent($post->body);
 			$item['enclosures'] = $this->getEnclosures($post, $postData);
+			$item['uri'] = self::URI . $item['author'] . '/post/' . $post->token;
 			$content = $post->body;
 
 			$this->items[] = $item;
