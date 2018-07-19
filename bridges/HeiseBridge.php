@@ -17,28 +17,51 @@ class HeiseBridge extends FeedExpander {
 				'Internet-Störungen' => 'https://www.heise.de/netze/netzwerk-tools/imonitor-internet-stoerungen/feed/aktuelle-meldungen/',
 				'Alle News von heise Developer' => 'https://www.heise.de/developer/rss/news-atom.xml'
 			)
+		),
+		'limit' => array(
+			'name' => 'Limit',
+			'type' => 'number',
+			'required' => false,
+			'title' => 'Specify number of full articles to return',
+			'defaultValue' => 5
 		)
 	));
+	const LIMIT = 5;
 
 	public function collectData() {
-		//ini_set('memory_limit', '-1'); //dirty workaround for memory limitation
 		$this->collectExpandableDatas($this->getInput('category')); // or returnServerError('Error while downloading the website content');
 	}
 
 	protected function parseItem($feedItem) {
 		$item = parent::parseItem($feedItem);
 
-		$article = getSimpleHTMLDOMCached($item['uri']) or returnServerError('Could not open article: ' . $url);
-		$author = $article->find('span.ISI_IGNORE', 0);
+		$limit = $this->getInput('limit') ?: static::LIMIT;
+
+		if(count($this->items) >= $limit) {
+			return $item;
+		}
 
 		//remove ads
 		foreach ($article->find('section.widget-werbung') as &$ad) {
 			$ad = '';
 		}
-		$article = $article->find('div.article-content', 0);
+
+		$article = getSimpleHTMLDOMCached($item['uri']) or returnServerError('Could not open article: ' . $item['uri']);
+
+		switch ($article->find('body', 0)->class) {
+			case 'ct':
+				$article = $article->find('div.ct__main__content', 0);
+				$author = $article->find('li.article_page_info_author', 0)->find('a', 0);
+				break;
+			case 'developer':
+			case 'ho':
+				$author = $article->find('span.ISI_IGNORE', 0);
+				$article = $article->find('div.article-content', 0);
+				break;
+		}
 
 		$item['author'] = $author;
-		$item['content'] = strip_tags($article, '<span><p><a><br><h1><h2><h3><img><table><tbody><tr><td>');
+		$item['content'] = strip_tags($article, '<embetty-tweet><iframe><span><p><a><br><h1><h2><h3><img><table><tbody><tr><td><strong>');
 
 		return $item;
 	}
