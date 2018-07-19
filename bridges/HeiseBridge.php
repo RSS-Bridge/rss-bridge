@@ -41,12 +41,12 @@ class HeiseBridge extends FeedExpander {
 			return $item;
 		}
 
+		$article = getSimpleHTMLDOMCached($item['uri']) or returnServerError('Could not open article: ' . $item['uri']);
+
 		//remove ads
 		foreach ($article->find('section.widget-werbung') as &$ad) {
 			$ad = '';
 		}
-
-		$article = getSimpleHTMLDOMCached($item['uri']) or returnServerError('Could not open article: ' . $item['uri']);
 
 		switch ($article->find('body', 0)->class) {
 			case 'ct':
