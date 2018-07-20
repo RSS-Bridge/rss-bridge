@@ -3,20 +3,53 @@ function search() {
 	var searchTerm = document.getElementById('searchfield').value;
 	var searchableElements = document.getElementsByTagName('section');
 
-	var regexMatch = new RegExp(searchTerm, "i");
+	var regexMatch = new RegExp(searchTerm, 'i');
+
+	// Attempt to create anchor from search term (will default to 'localhost' on failure)
+	var searchTermUri = document.createElement('a');
+	searchTermUri.href = searchTerm;
+
+	if(searchTermUri.hostname == 'localhost') {
+		searchTermUri = null;
+	} else {
+
+		// Ignore "www."
+		if(searchTermUri.hostname.indexOf('www.') === 0) {
+			searchTermUri.hostname = searchTermUri.hostname.substr(4);
+		}
+
+	}
 
 	for(var i = 0; i < searchableElements.length; i++) {
 
 		var textValue = searchableElements[i].getAttribute('data-ref');
-		if(textValue != null) {
+		var anchors = searchableElements[i].getElementsByTagName('a');
 
-			if(textValue.match(regexMatch) == null && searchableElements[i].style.display != "none") {
+		if(anchors != null && anchors.length > 0) {
 
-				searchableElements[i].style.display = "none";
+			var uriValue = anchors[0]; // First anchor is bridge URI
 
-			} else if(textValue.match(regexMatch) != null) {
+			// Ignore "www."
+			if(uriValue.hostname.indexOf('www.') === 0) {
+				uriValue.hostname = uriValue.hostname.substr(4);
+			}
 
-				searchableElements[i].style.display = "block";
+		}
+
+		if(textValue != null || uriValue != null) {
+
+			if(textValue.match(regexMatch) != null ||
+				uriValue.hostname.match(regexMatch) ||
+				searchTermUri != null &&
+				uriValue.hostname != 'localhost' && (
+					uriValue.href.match(regexMatch) != null ||
+					uriValue.hostname == searchTermUri.hostname)) {
+
+				searchableElements[i].style.display = 'block';
+
+			} else {
+
+				searchableElements[i].style.display = 'none';
 
 			}
 
