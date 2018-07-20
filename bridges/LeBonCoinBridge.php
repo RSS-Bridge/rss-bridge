@@ -42,6 +42,7 @@ class LeBonCoinBridge extends BridgeAbstract {
 					'Réunion' => '26'
 				)
 			),
+			'cities' => array('name' => 'Ville'),
 			'c' => array(
 				'name' => 'Catégorie',
 				'type' => 'list',
@@ -154,6 +155,7 @@ class LeBonCoinBridge extends BridgeAbstract {
 		$params = array(
 			'text' => $this->getInput('k'),
 			'region' => $this->getInput('r'),
+			'cities' => $this->getInput('cities'),
 			'category' => $this->getInput('c'),
 			'owner_type' => $this->getInput('o'),
 		);
