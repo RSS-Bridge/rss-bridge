@@ -22,16 +22,16 @@ final class BridgeList {
 EOD;
 	}
 
-	private static function getBody($whitelist, $showInactive) {
-		$body = '<body onload="search()">'
-		. BridgeList::getHeader()
-		. BridgeList::getSearchbar();
+	private static function getBridges($whitelist, $showInactive, &$totalBridges, &$totalActiveBridges) {
 
+		$body = '';
 		$totalActiveBridges = 0;
 		$inactiveBridges = '';
 
 		$bridgeList = Bridge::listBridges();
 		$formats = Format::searchInformation();
+
+		$totalBridges = count($bridgeList);
 
 		foreach($bridgeList as $bridgeName) {
 
@@ -50,8 +50,6 @@ EOD;
 		}
 
 		$body .= $inactiveBridges;
-		$body .= BridgeList::getFooter(count($bridgeList), $totalActiveBridges, $showInactive);
-		$body .= '</body>';
 
 		return $body;
 	}
@@ -112,10 +110,17 @@ EOD;
 
 	static function create($whitelist, $showInactive = true) {
 
-	return '<!DOCTYPE html><html lang="en">'
-	. BridgeList::getHead()
-	. BridgeList::getBody($whitelist, $showInactive)
-	. '</html>';
+		$totalBridges = 0;
+		$totalActiveBridges = 0;
+
+		return '<!DOCTYPE html><html lang="en">'
+		. BridgeList::getHead()
+		. '<body onload="search()">'
+		. BridgeList::getHeader()
+		. BridgeList::getSearchbar()
+		. BridgeList::getBridges($whitelist, $showInactive, $totalBridges, $totalActiveBridges)
+		. BridgeList::getFooter($totalBridges, $totalActiveBridges, $showInactive)
+		. '</body></html>';
 
 	}
 }
