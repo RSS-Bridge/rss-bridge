@@ -21,15 +21,36 @@ function getContents($url, $header = array(), $opts = array()){
 		curl_setopt($ch, CURLOPT_PROXY, PROXY_URL);
 	}
 
-	$content = curl_exec($ch);
+	// We always want the resonse header as part of the data!
+	curl_setopt($ch, CURLOPT_HEADER, true);
+
+	$data = curl_exec($ch);
 	$curlError = curl_error($ch);
 	$curlErrno = curl_errno($ch);
-	curl_close($ch);
 
-	if($content === false)
+	if($data === false)
 		debugMessage('Cant\'t download ' . $url . ' cUrl error: ' . $curlError . ' (' . $curlErrno . ')');
 
-	return $content;
+	$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+	$header = substr($data, 0, $headerSize);
+	$headers = parseResponseHeader($header);
+	$finalHeader = end($headers);
+
+	error_log(json_encode($headers));
+
+	if(array_key_exists('http_code', $finalHeader)
+	&& strpos($finalHeader['http_code'], '200') === false
+	&& array_key_exists('Server', $finalHeader)
+	&& strpos($finalHeader['Server'], 'cloudflare') !== false) {
+		returnServerError(<<< EOD
+The server responded with a Cloudflare challenge, which is not supported by RSS-Bridge!<br>
+If this error persists longer than a week, please consider opening an issue on GitHub!
+EOD
+		);
+	}
+
+	curl_close($ch);
+	return substr($data, $headerSize);
 }
 
 function getSimpleHTMLDOM($url,
@@ -97,4 +118,39 @@ $defaultSpanText = DEFAULT_SPAN_TEXT){
 	$stripRN,
 	$defaultBRText,
 	$defaultSpanText);
+}
+
+/**
+ * Parses the provided response header into an associative array
+ *
+ * Based on https://stackoverflow.com/a/18682872
+ */
+function parseResponseHeader($header) {
+
+	$headers = array();
+	$requests = explode("\r\n\r\n", trim($header));
+
+	foreach ($requests as $request) {
+
+		$header = array();
+
+		foreach (explode("\r\n", $request) as $i => $line) {
+
+			if($i === 0) {
+				$header['http_code'] = $line;
+			} else {
+
+				list ($key, $value) = explode(': ', $line);
+				$header[$key] = $value;
+
+			}
+
+		}
+
+		$headers[] = $header;
+
+	}
+
+	return $headers;
+
 }
