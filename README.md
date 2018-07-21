@@ -1,8 +1,6 @@
 rss-bridge
 ===
-[![LICENSE](https://img.shields.io/badge/license-UNLICENSE-blue.svg)](UNLICENSE) 
-[![Build Status](https://travis-ci.org/RSS-Bridge/rss-bridge.svg?branch=master)](https://travis-ci.org/RSS-Bridge/rss-bridge) 
-[![GitHub release](https://img.shields.io/github/release/rss-bridge/rss-bridge.svg)](https://github.com/rss-bridge/rss-bridge/releases/latest)
+[![LICENSE](https://img.shields.io/badge/license-UNLICENSE-blue.svg)](UNLICENSE) [![GitHub release](https://img.shields.io/github/release/rss-bridge/rss-bridge.svg)](https://github.com/rss-bridge/rss-bridge/releases/latest) [![Build Status](https://travis-ci.org/RSS-Bridge/rss-bridge.svg?branch=master)](https://travis-ci.org/RSS-Bridge/rss-bridge) [![Docker Build Status](https://img.shields.io/docker/build/rssbridge/rss-bridge.svg)](https://hub.docker.com/r/rssbridge/rss-bridge/)
 
 rss-bridge is a PHP project capable of generating ATOM feeds for websites which don't have one.
 
