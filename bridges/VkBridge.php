@@ -234,8 +234,11 @@ class VkBridge extends BridgeAbstract
 			foreach($post->find('a') as $a) {
 				$href = $a->getAttribute('href');
 				$prefix = '/feed?section=search&q=%23';
+				$innertext = $a->innertext;
 				if ($href && substr($href, 0, strlen($prefix)) === $prefix) {
 					$item['categories'][] = urldecode(substr($href, strlen($prefix)));
+				} else if (substr($innertext, 0, 1) == '#') {
+					$item['categories'][] = $innertext;
 				}
 			}
 
