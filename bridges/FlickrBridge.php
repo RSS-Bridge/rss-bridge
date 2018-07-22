@@ -30,29 +30,75 @@ class FlickrBridge extends BridgeAbstract {
 				'title' => 'Insert username (as shown in the address bar)',
 				'exampleValue' => 'flickr'
 			)
-		),
+		)
 	);
 
 	public function collectData(){
+
 		switch($this->queriedContext) {
+
 		case 'Explore':
-			$key = 'photos';
+			$filter = 'photo-lite-models';
 			$html = getSimpleHTMLDOM(self::URI . 'explore')
 				or returnServerError('Could not request Flickr.');
 			break;
+
 		case 'By keyword':
-			$key = 'photos';
+			$filter = 'photo-lite-models';
 			$html = getSimpleHTMLDOM(self::URI . 'search/?q=' . urlencode($this->getInput('q')) . '&s=rec')
 				or returnServerError('No results for this query.');
 			break;
+
 		case 'By username':
-			$key = 'photoPageList';
+			$filter = 'photo-models';
 			$html = getSimpleHTMLDOM(self::URI . 'photos/' . urlencode($this->getInput('u')))
 				or returnServerError('Requested username can\'t be found.');
 			break;
+
 		default:
 			returnClientError('Invalid context: ' . $this->queriedContext);
+
 		}
+
+		$model_json = $this->extractJsonModel($html);
+		$photo_models = $this->getPhotoModels($model_json, $filter);
+
+		foreach($photo_models as $model) {
+
+			$item = array();
+
+			/* Author name depends on scope. On a keyword search the
+			* author is part of the picture data. On a username search
+			* the author is part of the owner data.
+			*/
+			if(array_key_exists('username', $model)) {
+				$item['author'] = $model['username'];
+			} elseif (array_key_exists('owner', reset($model_json)[0])) {
+				$item['author'] = reset($model_json)[0]['owner']['username'];
+			}
+
+			$item['title'] = (array_key_exists('title', $model) ? $model['title'] : 'Untitled');
+			$item['uri'] = self::URI . 'photo.gne?id=' . $model['id'];
+
+			$description = (array_key_exists('description', $model) ? $model['description'] : '');
+
+			$item['content'] = '<a href="'
+			. $item['uri']
+			. '"><img src="'
+			. $this->extractContentImage($model)
+			. '" style="max-width: 640px; max-height: 480px;"/></a><br><p>'
+			. $description
+			. '</p>';
+
+			$item['enclosures'] = $this->extractEnclosures($model);
+
+			$this->items[] = $item;
+
+		}
+
+	}
+
+	private function extractJsonModel($html) {
 
 		// Find SCRIPT containing JSON data
 		$model = $html->find('.modelExport', 0);
@@ -62,59 +108,68 @@ class FlickrBridge extends BridgeAbstract {
 		$start = strpos($model_text, 'modelExport:') + strlen('modelExport:');
 		$end = strpos($model_text, 'auth:') - strlen('auth:');
 
-		// Dissect JSON data and remove trailing comma
+		// Extract JSON data, remove trailing comma
 		$model_text = trim(substr($model_text, $start, $end - $start));
 		$model_text = substr($model_text, 0, strlen($model_text) - 1);
 
-		$model_json = json_decode($model_text, true);
+		return json_decode($model_text, true);
 
-		foreach($html->find('.photo-list-photo-view') as $element) {
-			// Get the styles
-			$style = explode(';', $element->style);
-
-			// Get the background-image style
-			$backgroundImage = explode(':', end($style));
-
-			// URI type : url(//cX.staticflickr.com/X/XXXXX/XXXXXXXXX.jpg)
-			$imageURI = trim(str_replace(['url(', ')'], '', end($backgroundImage)));
-
-			// Get the image ID
-			$imageURIs = explode('_', basename($imageURI));
-			$imageID = reset($imageURIs);
-
-			// Use JSON data to build items
-			foreach(reset($model_json)[0][$key]['_data'] as $element) {
-				if($element['id'] === $imageID) {
-					$item = array();
-
-					/* Author name depends on scope. On a keyword search the
-					 * author is part of the picture data. On a username search
-					 * the author is part of the owner data.
-					 */
-					if(array_key_exists('username', $element)) {
-						$item['author'] = $element['username'];
-					} elseif (array_key_exists('owner', reset($model_json)[0])) {
-						$item['author'] = reset($model_json)[0]['owner']['username'];
-					}
-
-					$item['title'] = (array_key_exists('title', $element) ? $element['title'] : 'Untitled');
-					$item['uri'] = self::URI . 'photo.gne?id=' . $imageID;
-
-					$description = (array_key_exists('description', $element) ? $element['description'] : '');
-
-					$item['content'] = '<a href="'
-					. $item['uri']
-					. '"><img src="'
-					. $imageURI
-					. '" /></a><br><p>'
-					. $description
-					. '</p>';
-
-					$this->items[] = $item;
-
-					break;
-				}
-			}
-		}
 	}
+
+	private function getPhotoModels($json, $filter) {
+
+		// The JSON model contains a "legend" array, where each element contains
+		// the path to an element in the "main" object
+		$photo_models = array();
+
+		foreach($json['legend'] as $legend) {
+
+			$photo_model = $json['main'];
+
+			foreach($legend as $element) { // Traverse tree
+				$photo_model = $photo_model[$element];
+			}
+
+			// We are only interested in content
+			if($photo_model['_flickrModelRegistry'] === $filter) {
+				$photo_models[] = $photo_model;
+			}
+
+		}
+
+		return $photo_models;
+
+	}
+
+	private function extractEnclosures($model) {
+
+		$areas = array();
+
+		foreach($model['sizes'] as $size) {
+			$areas[$size['width'] * $size['height']] = $size['url'];
+		}
+
+		return array(max($areas));
+
+	}
+
+	private function extractContentImage($model) {
+
+		$areas = array();
+		$limit = 320 * 240;
+
+		foreach($model['sizes'] as $size) {
+
+			$image_area = $size['width'] * $size['height'];
+
+			if($image_area >= $limit) {
+				$areas[$image_area] = $size['url'];
+			}
+
+		}
+
+		return min($areas);
+
+	}
+
 }
