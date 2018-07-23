@@ -149,7 +149,7 @@ class FlickrBridge extends BridgeAbstract {
 			$areas[$size['width'] * $size['height']] = $size['url'];
 		}
 
-		return array(max($areas));
+		return array($this->fixURL(max($areas)));
 
 	}
 
@@ -168,7 +168,18 @@ class FlickrBridge extends BridgeAbstract {
 
 		}
 
-		return min($areas);
+		return $this->fixURL(min($areas));
+
+	}
+
+	private function fixURL($url) {
+
+		// For some reason the image URLs don't include the protocol (https)
+		if(strpos($url, '//') === 0) {
+			$url = 'https:' . $url;
+		}
+
+		return $url;
 
 	}
 
