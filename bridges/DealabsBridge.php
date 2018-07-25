@@ -241,9 +241,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 			' ', /* Notice this is a space! */
 			array(
 				'cept-description-container',
-				'overflow--wrap-break',
-				'size--all-s',
-				'size--fromW3-m'
+				'overflow--wrap-break'
 			)
 		);
 
