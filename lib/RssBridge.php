@@ -34,6 +34,17 @@ if(!file_exists($vendorLibSimpleHtmlDom)) {
 }
 require_once $vendorLibSimpleHtmlDom;
 
+$vendorLibPhpUrlJoin = __DIR__ . PATH_VENDOR . '/php-urljoin/src/urljoin.php';
+if(!file_exists($vendorLibPhpUrlJoin)) {
+	throw new \HttpException('"php-urljoin" library is missing.
+ Get it from https://github.com/fluffy-critter/php-urljoin and place the script "urljoin.php" in '
+		. substr(PATH_VENDOR, 4)
+		. '/php-urljoin/src/',
+	500);
+}
+require_once $vendorLibPhpUrlJoin;
+
+
 /* Example use
 
 	require_once __DIR__ . '/lib/RssBridge.php';
