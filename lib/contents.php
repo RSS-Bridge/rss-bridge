@@ -36,8 +36,6 @@ function getContents($url, $header = array(), $opts = array()){
 	$headers = parseResponseHeader($header);
 	$finalHeader = end($headers);
 
-	error_log(json_encode($headers));
-
 	if(array_key_exists('http_code', $finalHeader)
 	&& strpos($finalHeader['http_code'], '200') === false
 	&& array_key_exists('Server', $finalHeader)
