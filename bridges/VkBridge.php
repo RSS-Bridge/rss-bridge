@@ -128,11 +128,13 @@ class VkBridge extends BridgeAbstract
 
 			// get video on post
 			$video = $post->find('div.post_video_desc', 0);
+			$main_video_link = '';
 			if (is_object($video)) {
 				$video_title = $video->find('div.post_video_title', 0)->plaintext;
 				$video_link = $video->find('a.lnk', 0)->getAttribute('href');
 				$content_suffix .= "<br>Video: <a href='$video_link'>$video_title</a>";
 				$video->outertext = '';
+				$main_video_link = $video_link;
 			}
 
 			// get all other videos
@@ -141,7 +143,7 @@ class VkBridge extends BridgeAbstract
 				$temp = explode(' ', $video_title, 2);
 				if (count($temp) > 1) $video_title = $temp[1];
 				$video_link = $a->getAttribute('href');
-				$content_suffix .= "<br>Video: <a href='$video_link'>$video_title</a>";
+				if ($video_link != $main_video_link) $content_suffix .= "<br>Video: <a href='$video_link'>$video_title</a>";
 				$a->outertext = '';
 			}
 
