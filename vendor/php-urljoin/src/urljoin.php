@@ -10,8 +10,27 @@ Latest version at: https://github.com/plaidfluff/php-urljoin
  */
 
 function urljoin($base, $rel) {
+	if (!$base) {
+		return $rel;
+	}
+
+	if (!$rel) {
+		return $base;
+	}
+
+	$uses_relative = array('', 'ftp', 'http', 'gopher', 'nntp', 'imap',
+		'wais', 'file', 'https', 'shttp', 'mms',
+		'prospero', 'rtsp', 'rtspu', 'sftp',
+		'svn', 'svn+ssh', 'ws', 'wss');
+
 	$pbase = parse_url($base);
 	$prel = parse_url($rel);
+
+	if (isset($prel['scheme'])) {
+		if ($prel['scheme'] != $pbase['scheme'] || in_array($prel['scheme'], $uses_relative) == false) {
+			return $rel;
+		}
+	}
 
 	$merged = array_merge($pbase, $prel);
 	if ($prel['path'][0] != '/') {
