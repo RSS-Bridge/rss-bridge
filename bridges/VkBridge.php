@@ -56,6 +56,8 @@ class VkBridge extends BridgeAbstract
 
 		foreach ($html->find('.post') as $post) {
 
+			defaultLinkTo($post, self::URI);
+
 			$is_pinned_post = false;
 			if (strpos($post->getAttribute('class'), 'post_fixed') !== false) {
 				$is_pinned_post = true;
@@ -114,7 +116,7 @@ class VkBridge extends BridgeAbstract
 				}
 				$article_title = $article->find($article_title_selector, 0)->innertext;
 				$article_author = $article->find($article_author_selector, 0)->innertext;
-				$article_link = self::URI . ltrim($article->getAttribute('href'), '/');
+				$article_link = $article->getAttribute('href');
 				$article_img_element_style = $article->find($article_thumb_selector, 0)->getAttribute('style');
 				preg_match('/background-image: url\((.*)\)/', $article_img_element_style, $matches);
 				if (count($matches) > 0) {
@@ -128,7 +130,7 @@ class VkBridge extends BridgeAbstract
 			$video = $post->find('div.post_video_desc', 0);
 			if (is_object($video)) {
 				$video_title = $video->find('div.post_video_title', 0)->plaintext;
-				$video_link = self::URI . ltrim( $video->find('a.lnk', 0)->getAttribute('href'), '/' );
+				$video_link = $video->find('a.lnk', 0)->getAttribute('href');
 				$content_suffix .= "<br>Video: <a href='$video_link'>$video_title</a>";
 				$video->outertext = '';
 			}
@@ -138,7 +140,7 @@ class VkBridge extends BridgeAbstract
 				$video_title = $a->getAttribute('aria-label');
 				$temp = explode(' ', $video_title, 2);
 				if (count($temp) > 1) $video_title = $temp[1];
-				$video_link = self::URI . ltrim( $a->getAttribute('href'), '/' );
+				$video_link = $a->getAttribute('href');
 				$content_suffix .= "<br>Video: <a href='$video_link'>$video_title</a>";
 				$a->outertext = '';
 			}
@@ -155,14 +157,14 @@ class VkBridge extends BridgeAbstract
 			foreach($post->find('.page_album_wrap') as $el) {
 				$a = $el->find('.page_album_link', 0);
 				$album_title = $a->find('.page_album_title_text', 0)->getAttribute('title');
-				$album_link = self::URI . ltrim($a->getAttribute('href'), '/');
+				$album_link = $a->getAttribute('href');
 				$el->outertext = '';
 				$content_suffix .= "<br>Album: <a href='$album_link'>$album_title</a>";
 			}
 
 			// get photo documents
 			foreach($post->find('a.page_doc_photo_href') as $a) {
-				$doc_link = self::URI . ltrim($a->getAttribute('href'), '/');
+				$doc_link = $a->getAttribute('href');
 				$doc_gif_label_element = $a->find('.page_gif_label', 0);
 				$doc_title_element = $a->find('.doc_label', 0);
 
@@ -188,7 +190,7 @@ class VkBridge extends BridgeAbstract
 
 				if (is_object($doc_title_element)) {
 					$doc_title = $doc_title_element->innertext;
-					$doc_link = self::URI . ltrim($doc_title_element->getAttribute('href'), '/');
+					$doc_link = $doc_title_element->getAttribute('href');
 					$content_suffix .= "<br>Doc: <a href='$doc_link'>$doc_title</a>";
 
 				} else {
@@ -246,11 +248,6 @@ class VkBridge extends BridgeAbstract
 			$post_link = $post->find('a.post_link', 0)->getAttribute('href');
 			preg_match('/wall-?\d+_(\d+)/', $post_link, $preg_match_result);
 			$item['post_id'] = intval($preg_match_result[1]);
-			if (substr(self::URI, -1) == '/') {
-				$post_link = self::URI . ltrim($post_link, '/');
-			} else {
-				$post_link = self::URI . $post_link;
-			}
 			$item['uri'] = $post_link;
 			$item['timestamp'] = $this->getTime($post);
 			$item['title'] = $this->getTitle($item['content']);
