@@ -14,6 +14,11 @@ class GooglePlusPostBridge extends BridgeAbstract{
 		'username' => array(
 			'name' => 'username or Id',
 			'required' => true
+		),
+		'include_media' => array(
+			'name' => 'Include media',
+			'type' => 'checkbox',
+			'title' => 'Enable to include media in the feed content'
 		)
 	));
 
@@ -52,7 +57,7 @@ class GooglePlusPostBridge extends BridgeAbstract{
 
 			$message = $post->find('div[jsname=EjRJtf]', 0);
 
-			$item['content'] = '<div style="float: left; padding: 10px;"><a href="'
+			$item['content'] = '<div style="float: left; padding: 0 10px 10px 0;"><a href="'
 			. $this->url
 			. '"><img align="top" alt="'
 			. $item['author']
@@ -81,6 +86,14 @@ class GooglePlusPostBridge extends BridgeAbstract{
 
 				foreach($media->find('img') as $img) {
 					$item['enclosures'][] = $this->fixImage($img)->src;
+				}
+
+				if($this->getInput('include_media') === true && count($item['enclosures'] > 0)) {
+					$item['content'] .= '<div style="clear: both;"><a href="'
+					. $item['enclosures'][0]
+					. '"><img src="'
+					. $item['enclosures'][0]
+					. '" /></a></div>';
 				}
 
 			}
