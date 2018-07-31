@@ -92,6 +92,14 @@ class AmazonPriceTrackerBridge extends BridgeAbstract {
 		}
 	}
 
+	private function parseDynamicImage($attribute) {
+		$json = json_decode(html_entity_decode($attribute), true);
+
+		if ($json and count($json) > 0) {
+			return array_keys($json)[0];
+		}
+	}
+
 	/**
 	 * Returns a generated image tag for the product
 	 */
@@ -99,11 +107,15 @@ class AmazonPriceTrackerBridge extends BridgeAbstract {
 		$imageSrc = $html->find('#main-image-container img', 0);
 
 		if ($imageSrc) {
-			$imageSrc = $imageSrc ? $imageSrc->getAttribute('data-old-hires') : '';
-			return <<<EOT
-<img width="300" style="max-width:300;max-height:300" src="$imageSrc" alt="{$this->title}" />
-EOT;
+			$hiresImage = $imageSrc->getAttribute('data-old-hires');
+			$dynamicImageAttribute = $imageSrc->getAttribute('data-a-dynamic-image');
+			$image = $hiresImage ?: $this->parseDynamicImage($dynamicImageAttribute);
 		}
+		$image = $image ?: 'https://placekitten.com/200/300';
+
+		return <<<EOT
+<img width="300" style="max-width:300;max-height:300" src="$image" alt="{$this->title}" />
+EOT;
 	}
 
 	/**
@@ -116,6 +128,39 @@ EOT;
 		return getSimpleHTMLDOM($uri) ?: returnServerError('Could not request Amazon.');
 	}
 
+	private function scrapePriceFromMetrics($html) {
+		$asinData = $html->find('#cerberus-data-metrics', 0);
+
+		// <div id="cerberus-data-metrics" style="display: none;"
+		// 	data-asin="B00WTHJ5SU" data-asin-price="14.99" data-asin-shipping="0"
+		// 	data-asin-currency-code="USD" data-substitute-count="-1" ... />
+		if ($asinData) {
+			return [
+				'price' 	=> $asinData->getAttribute('data-asin-price'),
+				'currency'	=> $asinData->getAttribute('data-asin-currency-code'),
+				'shipping'	=> $asinData->getAttribute('data-asin-shipping')
+			];
+		}
+
+		return false;
+	}
+
+	private function scrapePriceGeneric($html) {
+		$priceDiv = $html->find('span.offer-price', 0) ?: $html->find('.a-color-price', 0);
+
+		preg_match('/^\s*([A-Z]{3}|£|\$)\s?([\d.,]+)\s*$/', $priceDiv->plaintext, $matches);
+
+		if (count($matches) === 3) {
+			return [
+				'price' 	=> $matches[2],
+				'currency'	=> $matches[1],
+				'shipping'	=> '0'
+			];
+		}
+
+		return false;
+	}
+
 	/**
 	 * Scrape method for Amazon product page
 	 * @return [type] [description]
@@ -125,23 +170,16 @@ EOT;
 		$this->title = $this->getTitle($html);
 		$imageTag = $this->getImage($html);
 
-		$asinData = $html->find('#cerberus-data-metrics', 0);
-
-		// <div id="cerberus-data-metrics" style="display: none;"
-		// 	data-asin="B00WTHJ5SU" data-asin-price="14.99" data-asin-shipping="0"
-		// 	data-asin-currency-code="USD" data-substitute-count="-1" ... />
-		$currency = $asinData->getAttribute('data-asin-currency-code');
-		$shipping = $asinData->getAttribute('data-asin-shipping');
-		$price    = $asinData->getAttribute('data-asin-price');
+		$data = $this->scrapePriceFromMetrics($html) ?: $this->scrapePriceGeneric($html);
 
 		$item = array(
 			'title' 	=> $this->title,
 			'uri' 		=> $this->getURI(),
-			'content' 	=> "$imageTag<br/>Price: $price $currency",
+			'content' 	=> "$imageTag<br/>Price: {$data['price']} {$data['currency']}",
 		);
 
-		if ($shipping !== '0') {
-			$item['content'] .= "<br>Shipping: $shipping $currency</br>";
+		if ($data['shipping'] !== '0') {
+			$item['content'] .= "<br>Shipping: {$data['shipping']} {$data['currency']}</br>";
 		}
 
 		$this->items[] = $item;
