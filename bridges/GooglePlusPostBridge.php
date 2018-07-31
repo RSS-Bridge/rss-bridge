@@ -57,6 +57,11 @@ class GooglePlusPostBridge extends BridgeAbstract{
 
 			$message = $post->find('div[jsname=EjRJtf]', 0);
 
+			// Empty messages are not supported right now
+			if(!$message) {
+				continue;
+			}
+
 			$item['content'] = '<div style="float: left; padding: 0 10px 10px 0;"><a href="'
 			. $this->url
 			. '"><img align="top" alt="'
