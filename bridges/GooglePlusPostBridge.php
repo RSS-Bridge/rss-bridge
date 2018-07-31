@@ -1,8 +1,8 @@
 <?php
 class GooglePlusPostBridge extends BridgeAbstract{
 
-	protected $_title;
-	protected $_url;
+	private $title;
+	private $url;
 
 	const MAINTAINER = 'Grummfy, logmanoriginal';
 	const NAME = 'Google Plus Post Bridge';
@@ -18,6 +18,7 @@ class GooglePlusPostBridge extends BridgeAbstract{
 	));
 
 	public function collectData(){
+
 		$username = $this->getInput('username');
 
 		// Usernames start with a + if it's not an ID
@@ -25,23 +26,19 @@ class GooglePlusPostBridge extends BridgeAbstract{
 			$username = '+' . $username;
 		}
 
-		// get content parsed
-		$html = getSimpleHTMLDOMCached(static::URI . '/' . urlencode($username) . '/posts')
+		$html = getSimpleHTMLDOM(static::URI . '/' . urlencode($username) . '/posts')
 			or returnServerError('No results for this query.');
 
 		$html = defaultLinkTo($html, static::URI);
 
-		// get title, url, ... there is a lot of intresting stuff in meta
-		$this->_title = $html->find('meta[property=og:title]', 0)->getAttribute('content');
-		$this->_url = $html->find('meta[property=og:url]', 0)->getAttribute('content');
+		$this->title = $html->find('meta[property=og:title]', 0)->getAttribute('content');
+		$this->url   = $html->find('meta[property=og:url]', 0)->getAttribute('content');
 
-		// I don't even know where to start with this discusting html...
 		foreach($html->find('div[jsname=WsjYwc]') as $post) {
+
 			$item = array();
 
-			$item['author'] = $item['fullname'] = $post->find('div div div div a', 0)->innertext;
-			$item['id'] = $post->find('div div div', 0)->getAttribute('id');
-			$item['avatar'] = $post->find('div img', 0)->src;
+			$item['author'] = $post->find('div div div div a', 0)->innertext;
 			$item['uri'] = $post->find('div div div a', 1)->href;
 
 			$timestamp = $post->find('a.qXj2He span', 0);
@@ -53,29 +50,28 @@ class GooglePlusPostBridge extends BridgeAbstract{
 						$timestamp->getAttribute('aria-label')));
 			}
 
-			$item['content'] = '';
+			$message = $post->find('div[jsname=EjRJtf]', 0);
 
-			// avatar display
-			$item['content'] .= '<div style="float:left; margin: 0 0.5em 0.5em 0;"><a href="'
-			. static::URI
-			. '/'
-			. urlencode($this->getInput('username'));
-
-			$item['content'] .= '"><img align="top" alt="'
+			$item['content'] = '<div style="float: left; padding: 10px;"><a href="'
+			. $this->url
+			. '"><img align="top" alt="'
 			. $item['author']
 			. '" src="'
-			. $item['avatar']
-			. '" /></a></div>';
+			. $post->find('div img', 0)->src
+			. '" /></a></div><div>'
+			. trim(strip_tags($message, '<a><p><div><img>'))
+			. '</div>';
 
-			$content = $post->find('div[jsname=EjRJtf]', 0);
-			// extract plaintext
-			$item['content_simple'] = $content->plaintext;
-			$item['title'] = substr($item['content_simple'], 0, 72) . '...';
+			// Make title at least 50 characters long, but don't add '...' if it is shorter!
+			if(strlen($message->plaintext) > 50) {
+				$end = strpos($message->plaintext, ' ', 50);
+			}
 
-			$content = $content->innertext;
-
-			$item['content'] .= '<div style="margin-top: -1.5em">' .  $content . '</div>';
-			$item['content'] = trim(strip_tags($item['content'], '<a><p><div><img>'));
+			if(strlen(substr($message->plaintext, 0, $end)) === strlen($message->plaintext)) {
+				$item['title'] = $message->plaintext;
+			} else {
+				$item['title'] = substr($message->plaintext, 0, $end) . '...';
+			}
 
 			$media = $post->find('[jsname="MTOxpb"]', 0);
 
@@ -84,23 +80,29 @@ class GooglePlusPostBridge extends BridgeAbstract{
 				$item['enclosures'] = array();
 
 				foreach($media->find('img') as $img) {
-
 					$item['enclosures'][] = $this->fixImage($img)->src;
-
 				}
 
 			}
 
+			// Add custom parameters (only useful for JSON or Plaintext)
+			$item['fullname'] = $item['author'];
+			$item['avatar'] = $post->find('div img', 0)->src;
+			$item['id'] = $post->find('div div div', 0)->getAttribute('id');
+			$item['content_simple'] = $message->plaintext;
+
 			$this->items[] = $item;
+
 		}
+
 	}
 
 	public function getName(){
-		return $this->_title ?: 'Google Plus Post Bridge';
+		return $this->title ?: 'Google Plus Post Bridge';
 	}
 
 	public function getURI(){
-		return $this->_url ?: parent::getURI();
+		return $this->url ?: parent::getURI();
 	}
 
 	private function fixImage($img) {
@@ -152,12 +154,7 @@ class GooglePlusPostBridge extends BridgeAbstract{
 
 		}
 
-		echo $img->src . '<br>';
-
 		$img->src = $this->build_url($urlparts);
-
-		echo $img->src . '<br><br>';
-
 		return $img;
 
 	}
