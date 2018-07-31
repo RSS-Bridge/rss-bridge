@@ -101,7 +101,7 @@ class YGGTorrentBridge extends BridgeAbstract {
 					. $category
 					. '&sub_category='
 					. $subcategory
-					. '&do=search')
+					. '&do=search&order=desc&sort=publish_date')
 					or returnServerError('Unable to query Yggtorrent !');
 
 		$count = 0;
