@@ -37,10 +37,24 @@ function urljoin($base, $rel) {
 	}
 
 	$merged = array_merge($pbase, $prel);
-	if (array_key_exists('path', $prel) && array_key_exists('path', $pbase) && substr($prel['path'], 0, 1) != '/') {
-		// Relative path
-		$dir = preg_replace('@/[^/]*$@', '', $pbase['path']);
-		$merged['path'] = $dir . '/' . $prel['path'];
+
+	// Handle relative paths:
+	//   'path/to/file.ext'
+	// './path/to/file.ext'
+	if (array_key_exists('path', $prel) && substr($prel['path'], 0, 1) != '/') {
+
+		// Normalize: './path/to/file.ext' => 'path/to/file.ext'
+		if (substr($prel['path'], 0, 2) === './') {
+			$prel['path'] = substr($prel['path'], 2);
+		}
+
+		if (array_key_exists('path', $pbase)) {
+			$dir = preg_replace('@/[^/]*$@', '', $pbase['path']);
+			$merged['path'] = $dir . '/' . $prel['path'];
+		} else {
+			$merged['path'] = '/' . $prel['path'];
+		}
+
 	}
 
 	if(array_key_exists('path', $merged)) {
