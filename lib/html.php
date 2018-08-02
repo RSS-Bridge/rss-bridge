@@ -42,18 +42,11 @@ function backgroundToImg($htmlContent) {
 
 function defaultLinkTo($content, $server){
 	foreach($content->find('img') as $image) {
-		if(strpos($image->src, 'http') === false
-		&& strpos($image->src, '//') === false
-		&& strpos($image->src, 'data:') === false)
-			$image->src = $server . $image->src;
+		$image->src = urljoin($server, $image->src);
 	}
 
 	foreach($content->find('a') as $anchor) {
-		if(strpos($anchor->href, 'http') === false
-		&& strpos($anchor->href, '//') === false
-		&& strpos($anchor->href, '#') !== 0
-		&& strpos($anchor->href, '?') !== 0)
-			$anchor->href = $server . $anchor->href;
+		$anchor->href = urljoin($server, $anchor->href);
 	}
 
 	return $content;
