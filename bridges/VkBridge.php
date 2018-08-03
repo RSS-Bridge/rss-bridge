@@ -226,7 +226,7 @@ class VkBridge extends BridgeAbstract
 					$copy_post_header->outertext = '';
 				}
 				$copy_quote_content = $copy_quote->innertext;
-				$copy_quote->outertext = "Reposted: <br>$copy_quote_content";
+				$copy_quote->outertext = "<br>Reposted: <br>$copy_quote_content";
 			}
 
 			$item = array();
