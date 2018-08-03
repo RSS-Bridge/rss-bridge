@@ -51,6 +51,11 @@ class VkBridge extends BridgeAbstract
 			$pageName = $pageName->plaintext;
 			$this->pageName = htmlspecialchars_decode($pageName);
 		}
+		foreach ($html->find('div.replies') as $comment_block) {
+			$comment_block->outertext = '';
+		}
+		$html->load($html->save());
+
 		$pinned_post_item = null;
 		$last_post_id = 0;
 
