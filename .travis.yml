@@ -9,6 +9,9 @@ install:
       pear channel-update pear.php.net;
       pear install PHP_CodeSniffer;
     fi
+  - if [[ $TRAVIS_PHP_VERSION == "7.0" ]]; then
+      composer global require phpunit/phpunit ^6;
+    fi
 
 script:
   - phpenv rehash
@@ -16,6 +19,9 @@ script:
       /home/travis/.composer/vendor/bin/phpcs . --standard=phpcs.xml --warning-severity=0 --extensions=php -p;
     else
       phpcs . --standard=phpcs.xml --warning-severity=0 --extensions=php -p;
+    fi
+  - if [[ $TRAVIS_PHP_VERSION == "7.0" ]]; then
+      phpunit --configuration=phpunit.xml --include-path=lib/;
     fi
 
 matrix:

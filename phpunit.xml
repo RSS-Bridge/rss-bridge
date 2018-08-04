@@ -1,0 +1,16 @@
+<phpunit
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.5/phpunit.xsd"
+	colors="true"
+	processIsolation="false"
+	timeoutForSmallTests="1"
+	timeoutForMediumTests="1"
+	timeoutForLargeTests="6" >
+
+	<testsuites>
+		<testsuite name="Standard test suite">
+		<file>tests/BridgeImplementationTest.php</file>
+		</testsuite>
+	</testsuites>
+
+</phpunit>
