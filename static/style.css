@@ -55,8 +55,9 @@ a:hover {
 	 color: white;
  }
 
-/* Input boxes */
- input[type="text"] {
+input[type="text"],
+input[type="number"] {
+
 	background-color: white;
 	color: #404552;
 	border: 1px solid #dedede;
