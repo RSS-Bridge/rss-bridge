@@ -39,41 +39,45 @@ This bridge is not fetching its content through a secure connection</div>';
 	$parameters = array()) {
 		$form = BridgeCard::getFormHeader($bridgeName, $isHttps);
 
-		$form .= '<div class="parameters">';
+		if(count($parameters) > 0) {
 
-		foreach($parameters as $id => $inputEntry) {
-			if(!isset($inputEntry['exampleValue']))
-				$inputEntry['exampleValue'] = '';
+			$form .= '<div class="parameters">';
 
-			if(!isset($inputEntry['defaultValue']))
-				$inputEntry['defaultValue'] = '';
+			foreach($parameters as $id => $inputEntry) {
+				if(!isset($inputEntry['exampleValue']))
+					$inputEntry['exampleValue'] = '';
 
-			$idArg = 'arg-'
-				. urlencode($bridgeName)
-				. '-'
-				. urlencode($parameterName)
-				. '-'
-				. urlencode($id);
+				if(!isset($inputEntry['defaultValue']))
+					$inputEntry['defaultValue'] = '';
 
-			$form .= '<label for="'
-				. $idArg
-				. '">'
-				. filter_var($inputEntry['name'], FILTER_SANITIZE_STRING)
-				. ' : </label>'
-				. PHP_EOL;
+				$idArg = 'arg-'
+					. urlencode($bridgeName)
+					. '-'
+					. urlencode($parameterName)
+					. '-'
+					. urlencode($id);
 
-			if(!isset($inputEntry['type']) || $inputEntry['type'] === 'text') {
-				$form .= BridgeCard::getTextInput($inputEntry, $idArg, $id);
-			} elseif($inputEntry['type'] === 'number') {
-				$form .= BridgeCard::getNumberInput($inputEntry, $idArg, $id);
-			} else if($inputEntry['type'] === 'list') {
-				$form .= BridgeCard::getListInput($inputEntry, $idArg, $id);
-			} elseif($inputEntry['type'] === 'checkbox') {
-				$form .= BridgeCard::getCheckboxInput($inputEntry, $idArg, $id);
+				$form .= '<label for="'
+					. $idArg
+					. '">'
+					. filter_var($inputEntry['name'], FILTER_SANITIZE_STRING)
+					. ' : </label>'
+					. PHP_EOL;
+
+				if(!isset($inputEntry['type']) || $inputEntry['type'] === 'text') {
+					$form .= BridgeCard::getTextInput($inputEntry, $idArg, $id);
+				} elseif($inputEntry['type'] === 'number') {
+					$form .= BridgeCard::getNumberInput($inputEntry, $idArg, $id);
+				} else if($inputEntry['type'] === 'list') {
+					$form .= BridgeCard::getListInput($inputEntry, $idArg, $id);
+				} elseif($inputEntry['type'] === 'checkbox') {
+					$form .= BridgeCard::getCheckboxInput($inputEntry, $idArg, $id);
+				}
 			}
-		}
 
-		$form .= '</div>';
+			$form .= '</div>';
+
+		}
 
 		if($isActive) {
 			$form .= BridgeCard::buildFormatButtons($formats);
