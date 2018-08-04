@@ -78,11 +78,17 @@ input[type="text"]:focus {
 }
  .searchbar input[type="text"]::placeholder {
 	text-align: center;
+
 }
- .searchbar input[type="text"]:focus::-webkit-input-placeholder { opacity: 0; }
- .searchbar input[type="text"]:focus::-moz-placeholder { opacity: 0; }
- .searchbar input[type="text"]:focus:-moz-placeholder { opacity: 0; }
- .searchbar input[type="text"]:focus:-ms-input-placeholder { opacity: 0; }
+
+.searchbar input[type="text"]:focus::-webkit-input-placeholder,
+.searchbar input[type="text"]:focus::-moz-placeholder,
+.searchbar input[type="text"]:focus:-moz-placeholder,
+.searchbar input[type="text"]:focus:-ms-input-placeholder {
+
+	opacity: 0;
+
+}
 
  .searchbar > h3 {
 	font-size: 200%;
