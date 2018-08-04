@@ -162,7 +162,45 @@ section.footer .version {
  form {
 	margin-bottom: 6px;
 }
- .maintainer {
+
+@supports (display: grid) {
+
+	.parameters {
+
+		display: grid;
+		grid-template-columns: 40% max-content;
+		grid-column-gap: 10px;
+		grid-row-gap: 5px;
+
+	}
+
+	.parameters label {
+
+		text-align: right;
+
+	}
+
+	.parameters input[type="text"],
+	.parameters input[type="number"],
+	.parameters input[type="checkbox"],
+	.parameters select {
+
+		margin-left: 0;
+
+	}
+
+	.parameters input[type="text"],
+	.parameters input[type="number"] {
+
+		width: auto;
+		color: #404552;
+
+	}
+
+} /* @supports (display: grid) */
+
+.maintainer {
+
 	color: #888888;
 	font-size: 70%;
 	text-align: right;

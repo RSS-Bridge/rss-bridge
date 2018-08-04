@@ -39,6 +39,8 @@ This bridge is not fetching its content through a secure connection</div>';
 	$parameters = array()) {
 		$form = BridgeCard::getFormHeader($bridgeName, $isHttps);
 
+		$form .= '<div class="parameters">';
+
 		foreach($parameters as $id => $inputEntry) {
 			if(!isset($inputEntry['exampleValue']))
 				$inputEntry['exampleValue'] = '';
@@ -70,6 +72,8 @@ This bridge is not fetching its content through a secure connection</div>';
 				$form .= BridgeCard::getCheckboxInput($inputEntry, $idArg, $id);
 			}
 		}
+
+		$form .= '</div>';
 
 		if($isActive) {
 			$form .= BridgeCard::buildFormatButtons($formats);
@@ -106,7 +110,7 @@ This bridge is not fetching its content through a secure connection</div>';
 		. filter_var($entry['exampleValue'], FILTER_SANITIZE_STRING)
 		. '" name="'
 		. $name
-		. '" /><br>'
+		. '" />'
 		. PHP_EOL;
 	}
 
@@ -121,7 +125,7 @@ This bridge is not fetching its content through a secure connection</div>';
 		. filter_var($entry['exampleValue'], FILTER_SANITIZE_NUMBER_INT)
 		. '" name="'
 		. $name
-		. '" /><br>'
+		. '" />'
 		. PHP_EOL;
 	}
 
@@ -172,7 +176,7 @@ This bridge is not fetching its content through a secure connection</div>';
 			}
 		}
 
-		$list .= '</select><br>';
+		$list .= '</select>';
 
 		return $list;
 	}
@@ -186,7 +190,7 @@ This bridge is not fetching its content through a secure connection</div>';
 		. $name
 		. '" '
 		. ($entry['defaultValue'] === 'checked' ?: '')
-		. ' /><br>'
+		. ' />'
 		. PHP_EOL;
 	}
 
