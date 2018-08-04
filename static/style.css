@@ -163,6 +163,12 @@ section.footer .version {
 	margin-bottom: 6px;
 }
 
+.parameters label::first-letter {
+
+	text-transform: capitalize;
+
+}
+
 .parameters label::after {
 
 	content: ' :';
