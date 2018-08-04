@@ -61,7 +61,7 @@ This bridge is not fetching its content through a secure connection</div>';
 					. $idArg
 					. '">'
 					. filter_var($inputEntry['name'], FILTER_SANITIZE_STRING)
-					. ' : </label>'
+					. '</label>'
 					. PHP_EOL;
 
 				if(!isset($inputEntry['type']) || $inputEntry['type'] === 'text') {
