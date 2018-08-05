@@ -58,7 +58,7 @@ class ElloBridge extends BridgeAbstract {
 
 	}
 
-	public function findText($path) {
+	private function findText($path) {
 
 		foreach($path as $summaryElement) {
 
@@ -72,7 +72,7 @@ class ElloBridge extends BridgeAbstract {
 
 	}
 
-	public function getPostContent($path) {
+	private function getPostContent($path) {
 
 		$content = '';
 		foreach($path as $summaryElement) {
@@ -93,7 +93,7 @@ class ElloBridge extends BridgeAbstract {
 
 	}
 
-	public function getEnclosures($post, $postData) {
+	private function getEnclosures($post, $postData) {
 
 		$assets = [];
 		foreach($post->links->assets as $asset) {
@@ -109,7 +109,7 @@ class ElloBridge extends BridgeAbstract {
 
 	}
 
-	public function getUsername($post, $postData) {
+	private function getUsername($post, $postData) {
 
 		foreach($postData->linked->users as $user) {
 			if($user->id == $post->links->author->id) {
@@ -119,7 +119,7 @@ class ElloBridge extends BridgeAbstract {
 
 	}
 
-	public function getAPIKey() {
+	private function getAPIKey() {
 		$cache = Cache::create('FileCache');
 		$cache->setPath(CACHE_DIR);
 		$cache->setParameters(['key']);

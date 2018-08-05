@@ -275,7 +275,4 @@ EOD;
 		return 'http://facebook.com';
 	}
 
-	public function getCacheDuration(){
-		return 60 * 60 * 3; // 5 minutes
-	}
 }

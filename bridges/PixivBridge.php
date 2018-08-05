@@ -48,7 +48,7 @@ class PixivBridge extends BridgeAbstract {
 		}
 	}
 
-	public function cacheImage($url, $illustId) {
+	private function cacheImage($url, $illustId) {
 
 		$url = str_replace('_master1200', '', $url);
 		$url = str_replace('c/240x240/img-master/', 'img-original/', $url);

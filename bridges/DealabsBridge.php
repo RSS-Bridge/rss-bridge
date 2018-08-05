@@ -157,7 +157,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	/**
 	 * Get the Deal data from the choosen group in the choosed order
 	 */
-	public function collectDataGroup()
+	protected function collectDataGroup()
 	{
 
 		$group = $this->getInput('group');
@@ -171,7 +171,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	/**
 	 * Get the Deal data from the choosen keywords and parameters
 	 */
-	public function collectDataKeywords()
+	protected function collectDataKeywords()
 	{
 		$q = $this->getInput('q');
 		$hide_expired = $this->getInput('hide_expired');
@@ -199,7 +199,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	/**
 	 * Get the Deal data using the given URL
 	 */
-	public function collectDeals($url){
+	protected function collectDeals($url){
 		$html = getSimpleHTMLDOM($url)
 			or returnServerError($this->i8n('request-error'));
 		$list = $html->find('article[id]');
@@ -575,7 +575,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	 * the "$lang" class variable in the local class
 	 * @return various the local content needed
 	 */
-	public function i8n($key)
+	protected function i8n($key)
 	{
 		if (array_key_exists($key, $this->lang)) {
 			return $this->lang[$key];

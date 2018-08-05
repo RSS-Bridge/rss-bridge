@@ -127,7 +127,7 @@ class YGGTorrentBridge extends BridgeAbstract {
 
 	}
 
-	public function collectTorrentData($url) {
+	private function collectTorrentData($url) {
 
 		//For weird reason, the link we get can be invalid, we fix it.
 		$url_full = explode('/', $url);

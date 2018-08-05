@@ -354,7 +354,7 @@ class VkBridge extends BridgeAbstract
 
 	}
 
-	public function getContents()
+	private function getContents()
 	{
 		ini_set('user-agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:53.0) Gecko/20100101 Firefox/53.0');
 

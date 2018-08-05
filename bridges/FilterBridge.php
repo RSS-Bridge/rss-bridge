@@ -6,6 +6,7 @@ class FilterBridge extends FeedExpander {
 	const NAME = 'Filter';
 	const CACHE_TIMEOUT = 3600; // 1h
 	const DESCRIPTION = 'Filters a feed of your choice';
+	const URI = 'https://github.com/rss-bridge/rss-bridge';
 
 	const PARAMETERS = array(array(
 		'url' => array(

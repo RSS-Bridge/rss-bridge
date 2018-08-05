@@ -31,7 +31,7 @@ class SupInfoBridge extends BridgeAbstract {
 		}
 	}
 
-	public function fetchArticle($link) {
+	private function fetchArticle($link) {
 
 		$articleHTML = getSimpleHTMLDOM(self::URI . $link)
 			or returnServerError('Unable to fetch article !');
