@@ -48,7 +48,7 @@ class HtmlFormat extends FormatAbstract {
 			}
 
 			$entryCategories = '';
-			if(isset($item['categories'])) {
+			if(isset($item['categories']) && count($item['categories']) > 0) {
 				$entryCategories = '<div class="categories"><p>Categories:</p>';
 
 				foreach($item['categories'] as $category) {
