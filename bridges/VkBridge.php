@@ -278,15 +278,15 @@ class VkBridge extends BridgeAbstract
 
 		}
 
-		if (is_null($pinned_post_item)) {
-			// pass
-		} else if (count($this->items) == 0) {
-			$this->items[] = $pinned_post_item;
-		} else if ($last_post_id < $pinned_post_item['post_id']) {
-			$this->items[] = $pinned_post_item;
-			usort($this->items, function ($item1, $item2) {
-				return $item2['post_id'] - $item1['post_id'];
-			});
+		if (!is_null($pinned_post_item)) {
+			if (count($this->items) == 0) {
+				$this->items[] = $pinned_post_item;
+			} else if ($last_post_id < $pinned_post_item['post_id']) {
+				$this->items[] = $pinned_post_item;
+				usort($this->items, function ($item1, $item2) {
+					return $item2['post_id'] - $item1['post_id'];
+				});
+			}
 		}
 
 		$this->getCleanVideoLinks();
