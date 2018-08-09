@@ -135,7 +135,6 @@ try {
 
 		header('Content-Type: application/json');
 		echo json_encode($list, JSON_PRETTY_PRINT);
-		die;
 	} elseif($action === 'display' && !empty($bridge)) {
 		// DEPRECATED: 'nameBridge' scheme is replaced by 'name' in bridge parameter values
 		//             this is to keep compatibility until futher complete removal
