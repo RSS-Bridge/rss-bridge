@@ -365,6 +365,8 @@ class VkBridge extends BridgeAbstract
 
 	protected function appendVideo($video_title, $video_link, &$content_suffix, array &$post_videos)
 	{
+		if (!$video_title) $video_title = '(empty)';
+
 		preg_match('/video([0-9-]+_[0-9]+)/', $video_link, $preg_match_result);
 
 		if (count($preg_match_result) > 1) {
