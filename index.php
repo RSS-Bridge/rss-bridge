@@ -99,7 +99,46 @@ try {
 	$action = array_key_exists('action', $params) ? $params['action'] : null;
 	$bridge = array_key_exists('bridge', $params) ? $params['bridge'] : null;
 
-	if($action === 'display' && !empty($bridge)) {
+	// Return list of bridges as JSON formatted text
+	if($action === 'list') {
+
+		$list = new StdClass();
+		$list->bridges = array();
+		$list->total = 0;
+
+		foreach(Bridge::listBridges() as $bridgeName) {
+
+			$bridge = Bridge::create($bridgeName);
+
+			if($bridge === false) { // Broken bridge, show as inactive
+
+				$list->bridges[$bridgeName] = array(
+					'status' => 'inactive'
+				);
+
+				continue;
+
+			}
+
+			$status = Bridge::isWhitelisted($whitelist_selection, strtolower($bridgeName)) ? 'active' : 'inactive';
+
+			$list->bridges[$bridgeName] = array(
+				'status' => $status,
+				'uri' => $bridge->getURI(),
+				'name' => $bridge->getName(),
+				'parameters' => $bridge->getParameters(),
+				'maintainer' => $bridge->getMaintainer(),
+				'description' => $bridge->getDescription()
+			);
+
+		}
+
+		$list->total = count($list->bridges);
+
+		header('Content-Type: application/json');
+		echo json_encode($list, JSON_PRETTY_PRINT);
+
+	} elseif($action === 'display' && !empty($bridge)) {
 		// DEPRECATED: 'nameBridge' scheme is replaced by 'name' in bridge parameter values
 		//             this is to keep compatibility until futher complete removal
 		if(($pos = strpos($bridge, 'Bridge')) === (strlen($bridge) - strlen('Bridge'))) {
