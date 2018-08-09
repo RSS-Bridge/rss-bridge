@@ -99,24 +99,25 @@ try {
 	$action = array_key_exists('action', $params) ? $params['action'] : null;
 	$bridge = array_key_exists('bridge', $params) ? $params['bridge'] : null;
 
-	// Returns a list of all bridges as JSON formatted text
-	// TODO: Move this part into separate file
+	// Return list of bridges as JSON formatted text
 	if($action === 'list') {
+
 		$list = new StdClass();
 		$list->bridges = array();
 		$list->total = 0;
 
 		foreach(Bridge::listBridges() as $bridgeName) {
-			$bridgeClass = $bridgeName . 'Bridge';
-			require_once(__DIR__ . '/bridges/' . $bridgeClass . '.php');
 
-			if((new ReflectionClass($bridgeClass))->isInstantiable()) {
-				$bridge = new $bridgeClass();
-			} else { // Broken bridge, handle like inactive bridge
+			$bridge = Bridge::create($bridgeName);
+
+			if($bridge === false) { // Broken bridge, show as inactive
+
 				$list->bridges[$bridgeName] = array(
 					'status' => 'inactive'
 				);
+
 				continue;
+
 			}
 
 			$status = Bridge::isWhitelisted($whitelist_selection, strtolower($bridgeName)) ? 'active' : 'inactive';
@@ -129,12 +130,14 @@ try {
 				'maintainer' => $bridge->getMaintainer(),
 				'description' => $bridge->getDescription()
 			);
+
 		}
 
 		$list->total = count($list->bridges);
 
 		header('Content-Type: application/json');
 		echo json_encode($list, JSON_PRETTY_PRINT);
+
 	} elseif($action === 'display' && !empty($bridge)) {
 		// DEPRECATED: 'nameBridge' scheme is replaced by 'name' in bridge parameter values
 		//             this is to keep compatibility until futher complete removal
