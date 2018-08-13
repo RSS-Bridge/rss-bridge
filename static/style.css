@@ -1,25 +1,25 @@
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary, time, mark, audio, video {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    outline: 0;
-    font-size: 100%;
-    font: inherit;
-    vertical-align: baseline;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
 }
 /* HTML5 display-role reset for older browsers */
  article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
-    display: block;
+	display: block;
 }
 /* Let's go for the actual style */
  body {
-    background-color: #f0f0f0;
-    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+	background-color: #f0f0f0;
+	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
 }
 
 a, a:link, a:visited {
-    color: #2196F3;
-    text-decoration: none;
+	color: #2196F3;
+	text-decoration: none;
 }
 
 a:hover {
@@ -28,50 +28,50 @@ a:hover {
 
 /* Header */
  header {
-    margin-top: 40px;
-    text-align: center;
-    color: #1182DB;
+	margin-top: 40px;
+	text-align: center;
+	color: #1182DB;
 }
  header > h1 {
-    font-size: 500%;
-    font-weight: bold;
+	font-size: 500%;
+	font-weight: bold;
 }
  header > h2 {
-    margin-left: 1em;
-    font-size: 200%;
+	margin-left: 1em;
+	font-size: 200%;
 }
  header > p.status {
-    font-weight: bold;
-    margin: 1em;
-    color: red;
+	font-weight: bold;
+	margin: 1em;
+	color: red;
 }
 
 /* Input boxes */
  input[type="text"] {
-    background-color: white;
-    color: #404552;
-    border: 1px solid #dedede;
-    margin-left: 8px;
-    margin-bottom: 10px;
-    padding: 5px 10px;
+	background-color: white;
+	color: #404552;
+	border: 1px solid #dedede;
+	margin-left: 8px;
+	margin-bottom: 10px;
+	padding: 5px 10px;
 }
 input[type="text"]:focus {
-    outline: none;
-    border-color: #888;
+	outline: none;
+	border-color: #888;
 }
  .searchbar {
-    width: 40%;
-    margin: 40px auto 100px;
+	width: 40%;
+	margin: 40px auto 100px;
 }
  .searchbar input[type="text"] {
-    width: 90%;
-    margin: auto;
-    font-size: 1.1em;
-    text-align: center;
-    margin-bottom: 10px;
+	width: 90%;
+	margin: auto;
+	font-size: 1.1em;
+	text-align: center;
+	margin-bottom: 10px;
 }
  .searchbar input[type="text"]::placeholder {
-    text-align: center;
+	text-align: center;
 }
  .searchbar input[type="text"]:focus::-webkit-input-placeholder { opacity: 0; }
  .searchbar input[type="text"]:focus::-moz-placeholder { opacity: 0; }
@@ -79,133 +79,133 @@ input[type="text"]:focus {
  .searchbar input[type="text"]:focus:-ms-input-placeholder { opacity: 0; }
 
  .searchbar > h3 {
-    font-size: 200%;
-    font-weight: bold;
-    color: #1182DB;
-    margin-bottom: 10px;
+	font-size: 200%;
+	font-weight: bold;
+	color: #1182DB;
+	margin-bottom: 10px;
 }
 
 /* Section */
  section {
-    background-color: #FFFFFF;
-    width: 60%;
-    margin: 30px auto;
-    padding: 15px 15px;
-    text-align: center;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.09);
-    border-radius: 4px;
+	background-color: #FFFFFF;
+	width: 60%;
+	margin: 30px auto;
+	padding: 15px 15px;
+	text-align: center;
+	box-shadow: 0 6px 15px rgba(0, 0, 0, 0.09);
+	border-radius: 4px;
 }
  section.footer {
-    opacity: 0.5;
+	opacity: 0.5;
 }
  section.footer:hover {
-    opacity: 1;
+	opacity: 1;
 }
  section > h2 {
-    font-size: 200%;
-    font-weight: bold;
+	font-size: 200%;
+	font-weight: bold;
 }
 
 
 /* Buttons */
  button {
-    line-height: 1.9em;
-    color: #FFF;
-    font-weight: bold;
-    vertical-align: middle;
-    padding: 6px 12px;
-    margin: 12px auto 0px;
-    border-radius: 4px;
-    border: 1px solid transparent;
-    background: #2196F3 none repeat scroll 0% 0%;
-    cursor: pointer;
-    width: calc(20% - 4px);
+	line-height: 1.9em;
+	color: #FFF;
+	font-weight: bold;
+	vertical-align: middle;
+	padding: 6px 12px;
+	margin: 12px auto 0px;
+	border-radius: 4px;
+	border: 1px solid transparent;
+	background: #2196F3 none repeat scroll 0% 0%;
+	cursor: pointer;
+	width: calc(20% - 4px);
 }
  button.small {
-    width: auto;
-    line-height: 1.2em;
+	width: auto;
+	line-height: 1.2em;
 }
  button:hover {
    background: #49afff;
  }
 
  .description {
-    margin: 10px;
+	margin: 10px;
 }
  h5 {
-    margin: 20px;
-    font-weight: bold;
+	margin: 20px;
+	font-weight: bold;
 }
  form {
-    margin-bottom: 6px;
+	margin-bottom: 6px;
 }
  .maintainer {
-    color: #888888;
-    font-size: 70%;
-    text-align: right;
+	color: #888888;
+	font-size: 70%;
+	text-align: right;
 }
  .secure-warning {
-    background-color: #ffc600;
-    color: #5f5f5f;
-    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
-    border-radius: 2px;
-    border: 1px solid transparent;
-    width: 80%;
-    margin: auto;
-    margin-bottom: 6px;
+	background-color: #ffc600;
+	color: #5f5f5f;
+	box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
+	border-radius: 2px;
+	border: 1px solid transparent;
+	width: 80%;
+	margin: auto;
+	margin-bottom: 6px;
 }
  form {
-    display: none;
+	display: none;
 }
 
 select {
-    padding: 5px 10px;
-    margin-left: 8px;
+	padding: 5px 10px;
+	margin-left: 8px;
 }
 
  h5 {
-    display: none;
+	display: none;
 }
 
 /* Show more / less */
  .showmore-box {
-    display: none;
+	display: none;
 }
  .showmore, .showless {
-    color: #888888;
-    cursor: pointer;
+	color: #888888;
+	cursor: pointer;
 }
 .showmore:hover, .showless:hover {
-    color: #000;
-    cursor: pointer;
+	color: #000;
+	cursor: pointer;
 }
  .showmore-box:checked ~ .showmore {
-    display: none;
+	display: none;
 }
  .showmore-box:not(:checked) ~ .showless {
-    display: none;
+	display: none;
 }
  .showmore-box:checked ~ form, .showmore-box:checked ~ h5 {
-    display: block;
+	display: block;
 }
 
 /* Additional styles for error pages */
  .exception-message {
-    background-color: #c00000;
-    color: #FFFFFF;
-    font-weight: bold;
-    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
-    border-radius: 2px;
-    border: 1px solid transparent;
-    width: 80%;
-    margin: auto;
-    margin-bottom: 6px;
+	background-color: #c00000;
+	color: #FFFFFF;
+	font-weight: bold;
+	box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
+	border-radius: 2px;
+	border: 1px solid transparent;
+	width: 80%;
+	margin: auto;
+	margin-bottom: 6px;
 }
  .advice {
-    margin-left: auto;
-    margin-right: auto;
-    display: table;
+	margin-left: auto;
+	margin-right: auto;
+	display: table;
 }
  .advice > li {
-    text-align: left;
+	text-align: left;
 }
