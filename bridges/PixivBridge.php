@@ -40,7 +40,8 @@ class PixivBridge extends BridgeAbstract {
 
 			preg_match_all($timeRegex, $result['url'], $dt, PREG_SET_ORDER, 0);
 			$elementDate = DateTime::createFromFormat('YmdHis',
-						$dt[0][1] . $dt[0][2] . $dt[0][3] . $dt[0][4] . $dt[0][5] . $dt[0][6]);
+						$dt[0][1] . $dt[0][2] . $dt[0][3] . $dt[0][4] . $dt[0][5] . $dt[0][6],
+						new DateTimeZone('Asia/Tokyo'));
 			$item['timestamp'] = $elementDate->getTimestamp();
 
 			$item['content'] = "<img src='" . $this->cacheImage($result['url'], $item['id']) . "' />";
