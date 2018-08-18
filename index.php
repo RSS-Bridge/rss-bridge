@@ -126,6 +126,7 @@ try {
 				'status' => $status,
 				'uri' => $bridge->getURI(),
 				'name' => $bridge->getName(),
+				'icon' => $bridge->getIcon(),
 				'parameters' => $bridge->getParameters(),
 				'maintainer' => $bridge->getMaintainer(),
 				'description' => $bridge->getDescription()

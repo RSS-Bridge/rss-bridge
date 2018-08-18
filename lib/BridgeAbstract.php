@@ -246,6 +246,15 @@ abstract class BridgeAbstract implements BridgeInterface {
 		return static::NAME;
 	}
 
+	public function getIcon(){
+		// Return cached icon when bridge is using cached data
+		if(isset($this->extraInfos)) {
+			return $this->extraInfos['icon'];
+		}
+
+		return '';
+	}
+
 	public function getParameters(){
 		return static::PARAMETERS;
 	}
@@ -262,7 +271,8 @@ abstract class BridgeAbstract implements BridgeInterface {
 	public function getExtraInfos(){
 		return array(
 			'name' => $this->getName(),
-			'uri' => $this->getURI()
+			'uri' => $this->getURI(),
+			'icon' => $this->getIcon()
 		);
 	}
 
