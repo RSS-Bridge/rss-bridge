@@ -201,6 +201,7 @@ This bridge is not fetching its content through a secure connection</div>';
 
 		$uri = $bridge->getURI();
 		$name = $bridge->getName();
+		$icon = $bridge->getIcon();
 		$description = $bridge->getDescription();
 		$parameters = $bridge->getParameters();
 

@@ -51,12 +51,12 @@ abstract class FormatAbstract implements FormatInterface {
 	}
 
 	/**
-	* Define common informations can be required by formats and set default value for unknow values
+	* Define common informations can be required by formats and set default value for unknown values
 	* @param array $extraInfos array with know informations (there isn't merge !!!)
 	* @return this
 	*/
 	public function setExtraInfos(array $extraInfos = array()){
-		foreach(array('name', 'uri') as $infoName) {
+		foreach(array('name', 'uri', 'icon') as $infoName) {
 			if(!isset($extraInfos[$infoName])) {
 				$extraInfos[$infoName] = '';
 			}
