@@ -163,9 +163,9 @@ class LeBonCoinBridge extends BridgeAbstract {
 		$url = self::URI . 'recherche/?' . http_build_query($params);
 
 		$header = array(
-		    'Accept: text/html',
-		    'Accept-Language: ' . getEnv('HTTP_ACCEPT_LANGUAGE'),
-		    'Accept-Encoding: identity'
+			'Accept: text/html',
+			'Accept-Language: ' . getEnv('HTTP_ACCEPT_LANGUAGE'),
+			'Accept-Encoding: identity'
 		);
 
 		$html = getContents($url, $header)
