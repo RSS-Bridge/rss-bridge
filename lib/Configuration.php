@@ -27,6 +27,9 @@ class Configuration {
 		if(!extension_loaded('curl'))
 			die('"curl" extension not loaded. Please check "php.ini"');
 
+		if(!extension_loaded('json'))
+			die('"json" extension not loaded. Please check "php.ini"');
+
 		// Check cache folder permissions (write permissions required)
 		if(!is_writable(CACHE_DIR))
 			die('RSS-Bridge does not have write permissions for ' . CACHE_DIR . '!');
