@@ -1,4 +1,25 @@
 <?php
+/*
+  Create a file named 'DEBUG' for enabling debug mode.
+  For further security, you may put whitelisted IP addresses in the file,
+  one IP per line. Empty file allows anyone(!).
+  Debugging allows displaying PHP error messages and bypasses the cache: this
+  can allow a malicious client to retrieve data about your server and hammer
+  a provider throught your rss-bridge instance.
+*/
+if(file_exists('DEBUG')) {
+	$debug_whitelist = trim(file_get_contents('DEBUG'));
+
+	$debug_enabled = empty($debug_whitelist)
+	|| in_array($_SERVER['REMOTE_ADDR'], explode("\n", $debug_whitelist));
+
+	if($debug_enabled) {
+		ini_set('display_errors', '1');
+		error_reporting(E_ALL);
+		define('DEBUG', true);
+	}
+}
+
 require_once __DIR__ . '/lib/RssBridge.php';
 
 define('PHP_VERSION_REQUIRED', '5.6.0');
@@ -23,27 +44,6 @@ rss-bridge from the command line
 */
 parse_str(implode('&', array_slice($argv, 1)), $cliArgs);
 $params = array_merge($_GET, $cliArgs);
-
-/*
-  Create a file named 'DEBUG' for enabling debug mode.
-  For further security, you may put whitelisted IP addresses in the file,
-  one IP per line. Empty file allows anyone(!).
-  Debugging allows displaying PHP error messages and bypasses the cache: this
-  can allow a malicious client to retrieve data about your server and hammer
-  a provider throught your rss-bridge instance.
-*/
-if(file_exists('DEBUG')) {
-	$debug_whitelist = trim(file_get_contents('DEBUG'));
-
-	$debug_enabled = empty($debug_whitelist)
-	|| in_array($_SERVER['REMOTE_ADDR'], explode("\n", $debug_whitelist));
-
-	if($debug_enabled) {
-		ini_set('display_errors', '1');
-		error_reporting(E_ALL);
-		define('DEBUG', true);
-	}
-}
 
 // FIXME : beta test UA spoofing, please report any blacklisting by PHP-fopen-unfriendly websites
 
