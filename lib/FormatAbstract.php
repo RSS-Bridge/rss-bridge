@@ -7,6 +7,7 @@ abstract class FormatAbstract implements FormatInterface {
 		$contentType,
 		$charset,
 		$items,
+		$lastModified,
 		$extraInfos;
 
 	public function setCharset($charset){
@@ -27,11 +28,18 @@ abstract class FormatAbstract implements FormatInterface {
 		return $this;
 	}
 
+	public function setLastModified($lastModified){
+		$this->lastModified = $lastModified;
+	}
+
 	protected function callContentType(){
 		header('Content-Type: ' . $this->contentType);
 	}
 
 	public function display(){
+		if ($this->lastModified) {
+			header('Last-Modified: ' . gmdate('D, d M Y H:i:s ', $this->lastModified) . 'GMT');
+		}
 		echo $this->stringify();
 
 		return $this;
