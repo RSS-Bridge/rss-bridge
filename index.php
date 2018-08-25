@@ -195,6 +195,7 @@ try {
 		try {
 			$bridge->setCache($cache);
 			$bridge->setCacheTimeout($cache_timeout);
+			$bridge->dieIfNotModified();
 			$bridge->setDatas($params);
 		} catch(Error $e) {
 			http_response_code($e->getCode());
@@ -211,6 +212,7 @@ try {
 			$format = Format::create($format);
 			$format->setItems($bridge->getItems());
 			$format->setExtraInfos($bridge->getExtraInfos());
+			$format->setLastModified($bridge->getCacheTime());
 			$format->display();
 		} catch(Error $e) {
 			http_response_code($e->getCode());

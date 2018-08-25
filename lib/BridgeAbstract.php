@@ -292,4 +292,27 @@ abstract class BridgeAbstract implements BridgeInterface {
 	public function getCacheTimeout(){
 		return isset($this->cacheTimeout) ? $this->cacheTimeout : static::CACHE_TIMEOUT;
 	}
+
+	public function getCacheTime(){
+		return !is_null($this->cache) ? $this->cache->getTime() : false;
+	}
+
+	public function dieIfNotModified(){
+		if ((defined('DEBUG') && DEBUG === true)) return; // disabled in debug mode
+
+		$if_modified_since = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
+		if (!$if_modified_since) return; // If-Modified-Since value is required
+
+		$last_modified = $this->getCacheTime();
+		if (!$last_modified) return; // did not detect cache time
+
+		if (time() - $this->getCacheTimeout() > $last_modified) return; // cache timeout
+
+		$last_modified = (gmdate('D, d M Y H:i:s ', $last_modified) . 'GMT');
+
+		if ($if_modified_since == $last_modified) {
+			header('HTTP/1.1 304 Not Modified');
+			die();
+		}
+	}
 }
