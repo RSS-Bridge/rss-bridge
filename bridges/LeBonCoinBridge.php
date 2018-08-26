@@ -231,15 +231,18 @@ class LeBonCoinBridge extends BridgeAbstract {
 			$requestJson->filters->location['regions'] = [$this->getInput('r')];
 		}
 		if($this->getInput('cities') != '') {
-			$requestJson->filters->location['city_zipcodes'] = [$this->getInput('cities')];
+			$requestJson->filters->location['city_zipcodes'] = array();
+			$requestJson->filters->location['city_zipcodes'][] = array(
+				'zipcode' => $this->getInput('cities')
+			);
 		}
 
 		$requestJson->filters->category = array(
-							'id' => $this->getInput('c')
+			'id' => $this->getInput('c')
 		);
 
 		$requestJson->filters->keywords = array(
-							'text' => $this->getInput('k')
+			'text' => $this->getInput('k')
 		);
 
 		$requestJson->limit = 30;
