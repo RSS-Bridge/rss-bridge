@@ -29,7 +29,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
 /* Section */
  section {
 	background-color: #FFFFFF;
-	width: 60%;
+	width: 80%;
 	margin: 30px auto;
 	padding: 15px 15px;
 	text-align: center;
@@ -40,6 +40,13 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
 	font-size: 200%;
 	font-weight: bold;
 	text-align: center;
+	word-break: break-all;
+}
+
+ @media screen and (min-width: 767px) {
+	section {
+width: 60%;
+	}
 }
  h1.pagetitle {
 	margin: 40px 0 20px;

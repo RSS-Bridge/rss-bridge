@@ -60,8 +60,13 @@ input[type="text"]:focus {
 	border-color: #888;
 }
  .searchbar {
-	width: 40%;
+	width: 80%;
 	margin: 40px auto 100px;
+}
+@media screen and (min-width: 767px) {
+	 .searchbar {
+		width: 40%;
+	}
 }
  .searchbar input[type="text"] {
 	width: 90%;
@@ -88,7 +93,7 @@ input[type="text"]:focus {
 /* Section */
  section {
 	background-color: #FFFFFF;
-	width: 60%;
+	width: 80%;
 	margin: 30px auto;
 	padding: 15px 15px;
 	text-align: center;
@@ -106,6 +111,11 @@ input[type="text"]:focus {
 	font-weight: bold;
 }
 
+@media screen and (min-width: 767px) {
+	section {
+		width: 60%;
+	}
+}
 
 /* Buttons */
  button {
@@ -119,7 +129,6 @@ input[type="text"]:focus {
 	border: 1px solid transparent;
 	background: #2196F3 none repeat scroll 0% 0%;
 	cursor: pointer;
-	width: calc(20% - 4px);
 }
  button.small {
 	width: auto;
@@ -128,7 +137,12 @@ input[type="text"]:focus {
  button:hover {
    background: #49afff;
  }
-
+ 
+@media screen and (min-width: 767px) {
+	button {
+		width: 15%;
+	}
+}
  .description {
 	margin: 10px;
 }
