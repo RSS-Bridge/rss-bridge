@@ -7,6 +7,7 @@ abstract class FormatAbstract implements FormatInterface {
 		$contentType,
 		$charset,
 		$items,
+		$lastModified,
 		$extraInfos;
 
 	public function setCharset($charset){
@@ -27,11 +28,18 @@ abstract class FormatAbstract implements FormatInterface {
 		return $this;
 	}
 
+	public function setLastModified($lastModified){
+		$this->lastModified = $lastModified;
+	}
+
 	protected function callContentType(){
 		header('Content-Type: ' . $this->contentType);
 	}
 
 	public function display(){
+		if ($this->lastModified) {
+			header('Last-Modified: ' . gmdate('D, d M Y H:i:s ', $this->lastModified) . 'GMT');
+		}
 		echo $this->stringify();
 
 		return $this;
@@ -51,12 +59,12 @@ abstract class FormatAbstract implements FormatInterface {
 	}
 
 	/**
-	* Define common informations can be required by formats and set default value for unknow values
+	* Define common informations can be required by formats and set default value for unknown values
 	* @param array $extraInfos array with know informations (there isn't merge !!!)
 	* @return this
 	*/
 	public function setExtraInfos(array $extraInfos = array()){
-		foreach(array('name', 'uri') as $infoName) {
+		foreach(array('name', 'uri', 'icon') as $infoName) {
 			if(!isset($extraInfos[$infoName])) {
 				$extraInfos[$infoName] = '';
 			}

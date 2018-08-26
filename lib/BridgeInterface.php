@@ -49,6 +49,13 @@ interface BridgeInterface {
 	public function getName();
 
 	/**
+	 * Returns the bridge icon
+	 *
+	 * @return string Bridge icon
+	 */
+	public function getIcon();
+
+	/**
 	 * Returns the bridge parameters
 	 *
 	 * @return array Bridge parameters

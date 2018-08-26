@@ -62,6 +62,7 @@ require_once $vendorLibPhpUrlJoin;
 		->setExtraInfos(array(
 			'name' => $bridge->getName(),
 			'uri' => $bridge->getURI(),
+			'icon' => $bridge->getIcon(),
 		))
 		->display();
 
