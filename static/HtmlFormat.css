@@ -29,7 +29,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
 /* Section */
  section {
 	background-color: #FFFFFF;
-	width: 80%;
+	width: 95%;
 	margin: 30px auto;
 	padding: 15px 15px;
 	text-align: center;
@@ -37,26 +37,31 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
 	border-radius: 4px;
 }
  section > h2 {
-	font-size: 200%;
+	font-size: 125%;
 	font-weight: bold;
 	text-align: center;
 	word-break: break-all;
 }
-
- @media screen and (min-width: 767px) {
-	section {
-width: 60%;
-	}
-}
  h1.pagetitle {
 	margin: 40px 0 20px;
-	font-size: 300%;
+	font-size: 150%;
 	font-weight: bold;
 	text-align: center;
 	color: #2196F3;
 }
  h1.pagetitle > a {
 	color: #2196F3;
+}
+ @media screen and (min-width: 767px) {
+	section {
+width: 60%;
+	}
+	section > h2 {
+	    font-size: 200%;
+	}
+	h1.pagetitle {
+		font-size: 300%;
+	}
 }
  a.backlink, a.backlink:link, a.backlink:visited, a.itemtitle, a.itemtitle:link, a.itemtitle:visited {
 	color: #2196F3;

@@ -33,17 +33,24 @@ a:hover {
 	color: #1182DB;
 }
  header > h1 {
-	font-size: 500%;
+	font-size: 200%;
 	font-weight: bold;
 }
  header > h2 {
-	margin-left: 1em;
-	font-size: 200%;
+	font-size: 150%;
 }
  header > p.status {
 	font-weight: bold;
 	margin: 1em;
 	color: red;
+}
+ @media screen and (min-width: 767px) {
+	header > h1 {
+		font-size: 500%;
+	}
+	header > h2 {
+		font-size: 200%;
+	}
 }
 
 /* Input boxes */
@@ -61,11 +68,12 @@ input[type="text"]:focus {
 }
  .searchbar {
 	width: 80%;
-	margin: 40px auto 100px;
+	margin: 40px auto;
 }
 @media screen and (min-width: 767px) {
 	 .searchbar {
 		width: 40%;
+		margin: 40px auto 100px;
 	}
 }
  .searchbar input[type="text"] {
