@@ -8,8 +8,8 @@ class LeBonCoinBridge extends BridgeAbstract {
 
 	const PARAMETERS = array(
 		array(
-			'k' => array('name' => 'Mot Clé'),
-			'r' => array(
+			'keywords' => array('name' => 'Mots-Clés'),
+			'region' => array(
 				'name' => 'Région',
 				'type' => 'list',
 				'values' => array(
@@ -46,7 +46,7 @@ class LeBonCoinBridge extends BridgeAbstract {
 				'name' => 'Villes',
 				'title' => 'Codes postaux séparés par des virgules'
 			),
-			'c' => array(
+			'category' => array(
 				'name' => 'Catégorie',
 				'type' => 'list',
 				'values' => array(
@@ -141,7 +141,7 @@ class LeBonCoinBridge extends BridgeAbstract {
 					'AUTRES' => '37'
 				)
 			),
-			'o' => array(
+			'owner' => array(
 				'name' => 'Vendeur',
 				'type' => 'list',
 				'values' => array(
@@ -228,10 +228,10 @@ class LeBonCoinBridge extends BridgeAbstract {
 	private function buildRequestJson() {
 
 		$requestJson = new StdClass();
-		$requestJson->owner_type = $this->getInput('o');
+		$requestJson->owner_type = $this->getInput('owner');
 		$requestJson->filters->location = array();
-		if($this->getInput('r') != '') {
-			$requestJson->filters->location['regions'] = [$this->getInput('r')];
+		if($this->getInput('region') != '') {
+			$requestJson->filters->location['regions'] = [$this->getInput('region')];
 		}
 		if($this->getInput('cities') != '') {
 
@@ -247,11 +247,11 @@ class LeBonCoinBridge extends BridgeAbstract {
 		}
 
 		$requestJson->filters->category = array(
-			'id' => $this->getInput('c')
+			'id' => $this->getInput('category')
 		);
 
 		$requestJson->filters->keywords = array(
-			'text' => $this->getInput('k')
+			'text' => $this->getInput('keywords')
 		);
 
 		$requestJson->limit = 30;
