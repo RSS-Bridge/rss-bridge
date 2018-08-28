@@ -244,6 +244,14 @@ class LeBonCoinBridge extends BridgeAbstract {
 					'AUTRES' => '37'
 				)
 			),
+			'pricemin' => array(
+				'name' => 'Prix min',
+				'type' => 'number',
+			),
+			'pricemax' => array(
+				'name' => 'Prix max',
+				'type' => 'number',
+			),
 			'owner' => array(
 				'name' => 'Vendeur',
 				'type' => 'list',
@@ -257,6 +265,25 @@ class LeBonCoinBridge extends BridgeAbstract {
 	);
 
 	public static $LBC_API_KEY = 'ba0c2dad52b3ec';
+
+	private function getPrice($pricemin, $pricemax){
+
+		if(!is_null($pricemin)
+		&& !is_null($pricemax)
+		&& $pricemin > $pricemax) {
+			returnClientError('Min-price must be lower than max-price.');
+		}
+
+		if(!is_null($pricemin)
+		&& is_null($pricemax)) {
+			returnClientError('Max-price is needed when min-price is setted (range).');
+		}
+
+		return array(
+			'min' => $pricemin,
+			'max' => $pricemax
+		);
+	}
 
 	public function collectData(){
 
@@ -359,6 +386,11 @@ class LeBonCoinBridge extends BridgeAbstract {
 		$requestJson->filters->keywords = array(
 			'text' => $this->getInput('keywords')
 		);
+
+		if($this->getInput('pricemin') != ''
+		|| $this->getInput('pricemax') != '') {
+			$requestJson->filters->ranges->price = $this->getPrice($this->getInput('pricemin'), $this->getInput('pricemax'));
+		}
 
 		$requestJson->limit = 30;
 
