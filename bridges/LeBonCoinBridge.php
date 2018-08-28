@@ -150,43 +150,35 @@ class LeBonCoinBridge extends BridgeAbstract {
 		)
 	);
 
+	public static $LBC_API_KEY = 'ba0c2dad52b3ec';
+
 	public function collectData(){
 
-		$params = array(
-			'text' => $this->getInput('k'),
-			'region' => $this->getInput('r'),
-			'cities' => $this->getInput('cities'),
-			'category' => $this->getInput('c'),
-			'owner_type' => $this->getInput('o'),
-		);
-
-		$url = self::URI . 'recherche/?' . http_build_query($params);
+		$url = 'https://api.leboncoin.fr/finder/search/';
+		$data = $this->buildRequestJson();
 
 		$header = array(
-			'Accept: text/html',
-			'Accept-Language: ' . getEnv('HTTP_ACCEPT_LANGUAGE'),
-			'Accept-Encoding: identity'
+			'Content-Type: application/json',
+			'Content-Length: ' . strlen($data),
+			'api_key: ' . self::$LBC_API_KEY
 		);
 
-		$html = getContents($url, $header)
+		$opts = array(
+			CURL_CUSTOMREQUEST => 'POST',
+			CURLOPT_POSTFIELDS => $data
+
+		);
+
+		$content = getContents($url, $header, $opts)
 			or returnServerError('Could not request LeBonCoin. Tried: ' . $url);
 
-		if(!preg_match('/^<script>window.FLUX_STATE[^\r\n]*/m', $html, $matches)) {
-			returnServerError('Could not parse JSON in page content.');
-		}
+		$json = json_decode($content);
 
-		$clean_match = str_replace(
-			array('</script>', '<script>window.FLUX_STATE = '),
-			array('', ''),
-			$matches[0]
-		);
-		$json = json_decode($clean_match);
-
-		if($json->adSearch->data->total === 0) {
+		if($json->total === 0) {
 			return;
 		}
 
-		foreach($json->adSearch->data->ads as $element) {
+		foreach($json->ads as $element) {
 
 			$item['title'] = $element->subject;
 			$item['content'] = $element->body;
@@ -228,4 +220,43 @@ class LeBonCoinBridge extends BridgeAbstract {
 			$this->items[] = $item;
 		}
 	}
+
+
+	private function buildRequestJson() {
+
+		$requestJson = new StdClass();
+		$requestJson->owner_type = $this->getInput('o');
+		$requestJson->filters->location = array();
+		if($this->getInput('r') != '') {
+			$requestJson->filters->location['regions'] = [$this->getInput('r')];
+		}
+		if($this->getInput('cities') != '') {
+
+			$requestJson->filters->location['city_zipcodes'] = array();
+
+			foreach (explode(',', $this->getInput('cities')) as $zipcode) {
+
+				$requestJson->filters->location['city_zipcodes'][] = array(
+					'zipcode' => trim($zipcode)
+				);
+			}
+
+		}
+
+		$requestJson->filters->category = array(
+			'id' => $this->getInput('c')
+		);
+
+		$requestJson->filters->keywords = array(
+			'text' => $this->getInput('k')
+		);
+
+		$requestJson->limit = 30;
+
+		return json_encode($requestJson);
+
+	}
+
+
+
 }
