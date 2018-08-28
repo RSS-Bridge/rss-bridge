@@ -235,7 +235,7 @@ class LeBonCoinBridge extends BridgeAbstract {
 			$requestJson->filters->location['city_zipcodes'] = array();
 
 			foreach (explode(',', $this->getInput('cities')) as $zipcode) {
-				
+
 				$requestJson->filters->location['city_zipcodes'][] = array(
 					'zipcode' => trim($zipcode)
 				);
