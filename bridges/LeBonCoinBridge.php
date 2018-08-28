@@ -42,7 +42,10 @@ class LeBonCoinBridge extends BridgeAbstract {
 					'Réunion' => '26'
 				)
 			),
-			'cities' => array('name' => 'Ville'),
+			'cities' => array(
+				'name' => 'Villes',
+				'title' => 'Codes postaux séparés par des virgules'
+			),
 			'c' => array(
 				'name' => 'Catégorie',
 				'type' => 'list',
