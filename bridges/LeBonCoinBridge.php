@@ -158,7 +158,7 @@ class LeBonCoinBridge extends BridgeAbstract {
 						'Emploi et recrutement' => '71',
 						'Offres d\'emploi et jobs' => '33'
 					),
-					'VEHICULES' => array(
+					'VÉHICULES' => array(
 						'Tous' => '1',
 						'Voitures' => '2',
 						'Motos' => '3',
@@ -185,7 +185,7 @@ class LeBonCoinBridge extends BridgeAbstract {
 						'Hôtels' => '69',
 						'Hébergements insolites' => '70'
 					),
-					'MULTIMEDIA' => array(
+					'MULTIMÉDIA' => array(
 						'Tous' => '14',
 						'Informatique' => '15',
 						'Consoles & Jeux vidéo' => '43',
@@ -205,7 +205,7 @@ class LeBonCoinBridge extends BridgeAbstract {
 						'Jeux & Jouets' => '41',
 						'Vins & Gastronomie' => '48'
 					),
-					'MATERIEL PROFESSIONNEL' => array(
+					'MATÉRIEL PROFESSIONNEL' => array(
 						'Tous' => '56',
 						'Matériel Agricole' => '57',
 						'Transport - Manutention' => '58',
@@ -221,14 +221,14 @@ class LeBonCoinBridge extends BridgeAbstract {
 						'Tous' => '31',
 						'Prestations de services' => '34',
 						'Billetterie' => '35',
-						'Evénements' => '49',
+						'Événements' => '49',
 						'Cours particuliers' => '36',
 						'Covoiturage' => '65'
 					),
 					'MAISON' => array(
 						'Tous' => '18',
 						'Ameublement' => '19',
-						'Electroménager' => '20',
+						'Électroménager' => '20',
 						'Arts de la table' => '45',
 						'Décoration' => '39',
 						'Linge de maison' => '46',
@@ -238,20 +238,19 @@ class LeBonCoinBridge extends BridgeAbstract {
 						'Chaussures' => '53',
 						'Accessoires & Bagagerie' => '47',
 						'Montres & Bijoux' => '42',
-						'Equipement bébé' => '23',
+						'Équipement bébé' => '23',
 						'Vêtements bébé' => '54',
 					),
 					'AUTRES' => '37'
 				)
 			),
-
 			'pricemin' => array(
 				'name' => 'Prix min',
-				'type' => 'number',
+				'type' => 'number'
 			),
 			'pricemax' => array(
 				'name' => 'Prix max',
-				'type' => 'number',
+				'type' => 'number'
 			),
 			'estate' => array(
 				'name' => 'Type de bien',
@@ -267,43 +266,43 @@ class LeBonCoinBridge extends BridgeAbstract {
 			),
 			'roomsmin' => array(
 				'name' => 'Pièces min',
-				'type' => 'number',
+				'type' => 'number'
 			),
 			'roomsmax' => array(
 				'name' => 'Pièces max',
-				'type' => 'number',
+				'type' => 'number'
 			),
 			'squaremin' => array(
 				'name' => 'Surface min',
-				'type' => 'number',
+				'type' => 'number'
 			),
 			'squaremax' => array(
 				'name' => 'Surface max',
-				'type' => 'number',
+				'type' => 'number'
 			),
 			'mileagemin' => array(
 				'name' => 'Kilométrage min',
-				'type' => 'number',
+				'type' => 'number'
 			),
 			'mileagemax' => array(
 				'name' => 'Kilométrage max',
-				'type' => 'number',
+				'type' => 'number'
 			),
 			'yearmin' => array(
 				'name' => 'Année min',
-				'type' => 'number',
+				'type' => 'number'
 			),
 			'yearmax' => array(
 				'name' => 'Année max',
-				'type' => 'number',
+				'type' => 'number'
 			),
 			'cubiccapacitymin' => array(
 				'name' => 'Cylindrée min',
-				'type' => 'number',
+				'type' => 'number'
 			),
 			'cubiccapacitymax' => array(
 				'name' => 'Cylindrée max',
-				'type' => 'number',
+				'type' => 'number'
 			),
 			'fuel' => array(
 				'name' => 'Énergie',
@@ -313,9 +312,9 @@ class LeBonCoinBridge extends BridgeAbstract {
 					'Essence' => '1',
 					'Diesel' => '2',
 					'GPL' => '3',
-					'Electrique' => '4',
+					'Électrique' => '4',
 					'Hybride' => '6',
-					'Autre' => '5',
+					'Autre' => '5'
 				)
 			),
 			'owner' => array(
@@ -324,7 +323,7 @@ class LeBonCoinBridge extends BridgeAbstract {
 				'values' => array(
 					'Tous' => '',
 					'Particuliers' => 'private',
-					'Professionnels' => 'pro',
+					'Professionnels' => 'pro'
 				)
 			)
 		)
@@ -426,12 +425,19 @@ class LeBonCoinBridge extends BridgeAbstract {
 		$requestJson = new StdClass();
 		$requestJson->owner_type = $this->getInput('owner');
 		$requestJson->filters->location = array();
+
+		$requestJson->filters->keywords = array(
+			'text' => $this->getInput('keywords')
+		);
+
 		if($this->getInput('region') != '') {
 			$requestJson->filters->location['regions'] = [$this->getInput('region')];
 		}
+
 		if($this->getInput('department') != '') {
 			$requestJson->filters->location['departments'] = [$this->getInput('department')];
 		}
+
 		if($this->getInput('cities') != '') {
 
 			$requestJson->filters->location['city_zipcodes'] = array();
@@ -449,13 +455,15 @@ class LeBonCoinBridge extends BridgeAbstract {
 			'id' => $this->getInput('category')
 		);
 
-		$requestJson->filters->keywords = array(
-			'text' => $this->getInput('keywords')
-		);
-
 		if($this->getInput('pricemin') != ''
 		|| $this->getInput('pricemax') != '') {
-			$requestJson->filters->ranges->price = $this->getRange('price', $this->getInput('pricemin'), $this->getInput('pricemax'));
+
+			$requestJson->filters->ranges->price = $this->getRange(
+				'price',
+				$this->getInput('pricemin'),
+				$this->getInput('pricemax')
+			);
+
 		}
 
 		if($this->getInput('estate') != '') {
@@ -464,27 +472,57 @@ class LeBonCoinBridge extends BridgeAbstract {
 
 		if($this->getInput('roomsmin') != ''
 		|| $this->getInput('roomsmax') != '') {
-			$requestJson->filters->ranges->rooms = $this->getRange('rooms', $this->getInput('roomsmin'), $this->getInput('roomsmax'));
+
+			$requestJson->filters->ranges->rooms = $this->getRange(
+				'rooms',
+				$this->getInput('roomsmin'),
+				$this->getInput('roomsmax')
+			);
+
 		}
 
 		if($this->getInput('squaremin') != ''
 		|| $this->getInput('squaremax') != '') {
-			$requestJson->filters->ranges->square = $this->getRange('square', $this->getInput('squaremin'), $this->getInput('squaremax'));
+
+			$requestJson->filters->ranges->square = $this->getRange(
+				'square',
+				$this->getInput('squaremin'),
+				$this->getInput('squaremax')
+			);
+
 		}
 
 		if($this->getInput('mileagemin') != ''
 		|| $this->getInput('mileagemax') != '') {
-			$requestJson->filters->ranges->mileage = $this->getRange('mileage', $this->getInput('mileagemin'), $this->getInput('mileagemax'));
+
+			$requestJson->filters->ranges->mileage = $this->getRange(
+				'mileage',
+				$this->getInput('mileagemin'),
+				$this->getInput('mileagemax')
+			);
+
 		}
 
 		if($this->getInput('yearmin') != ''
 		|| $this->getInput('yearmax') != '') {
-			$requestJson->filters->ranges->regdate = $this->getRange('year', $this->getInput('yearmin'), $this->getInput('yearmax'));
+
+			$requestJson->filters->ranges->regdate = $this->getRange(
+				'year',
+				$this->getInput('yearmin'),
+				$this->getInput('yearmax')
+			);
+
 		}
 
 		if($this->getInput('cubiccapacitymin') != ''
 		|| $this->getInput('cubiccapacitymax') != '') {
-			$requestJson->filters->ranges->cubic_capacity = $this->getRange('cubic_capacity', $this->getInput('cubiccapacitymin'), $this->getInput('cubiccapacitymax'));
+
+			$requestJson->filters->ranges->cubic_capacity = $this->getRange(
+				'cubic_capacity',
+				$this->getInput('cubiccapacitymin'),
+				$this->getInput('cubiccapacitymax')
+			);
+
 		}
 
 		if($this->getInput('fuel') != '') {
