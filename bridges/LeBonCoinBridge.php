@@ -244,12 +244,41 @@ class LeBonCoinBridge extends BridgeAbstract {
 					'AUTRES' => '37'
 				)
 			),
+
 			'pricemin' => array(
 				'name' => 'Prix min',
 				'type' => 'number',
 			),
 			'pricemax' => array(
 				'name' => 'Prix max',
+				'type' => 'number',
+			),
+			'estate' => array(
+				'name' => 'Type de bien',
+				'type' => 'list',
+				'values' => array(
+					'' => '',
+					'Maison' => '1',
+					'Appartement' => '2',
+					'Terrain' => '3',
+					'Parking' => '4',
+					'Autre' => '5'
+				)
+			),
+			'roomsmin' => array(
+				'name' => 'Pièces min',
+				'type' => 'number',
+			),
+			'roomsmax' => array(
+				'name' => 'Pièces max',
+				'type' => 'number',
+			),
+			'squaremin' => array(
+				'name' => 'Surface min',
+				'type' => 'number',
+			),
+			'squaremax' => array(
+				'name' => 'Surface max',
 				'type' => 'number',
 			),
 			'owner' => array(
@@ -266,22 +295,22 @@ class LeBonCoinBridge extends BridgeAbstract {
 
 	public static $LBC_API_KEY = 'ba0c2dad52b3ec';
 
-	private function getPrice($pricemin, $pricemax){
+	private function getRange($field, $range_min, $range_max){
 
-		if(!is_null($pricemin)
-		&& !is_null($pricemax)
-		&& $pricemin > $pricemax) {
-			returnClientError('Min-price must be lower than max-price.');
+		if(!is_null($range_min)
+		&& !is_null($range_max)
+		&& $range_min > $range_max) {
+			returnClientError('Min-' . $field . ' must be lower than max-' . $field . '.');
 		}
 
-		if(!is_null($pricemin)
-		&& is_null($pricemax)) {
-			returnClientError('Max-price is needed when min-price is setted (range).');
+		if(!is_null($range_min)
+		&& is_null($range_max)) {
+			returnClientError('Max-' . $field . ' is needed when min-' . $field . ' is setted (range).');
 		}
 
 		return array(
-			'min' => $pricemin,
-			'max' => $pricemax
+			'min' => $range_min,
+			'max' => $range_max
 		);
 	}
 
@@ -389,7 +418,21 @@ class LeBonCoinBridge extends BridgeAbstract {
 
 		if($this->getInput('pricemin') != ''
 		|| $this->getInput('pricemax') != '') {
-			$requestJson->filters->ranges->price = $this->getPrice($this->getInput('pricemin'), $this->getInput('pricemax'));
+			$requestJson->filters->ranges->price = $this->getRange('price', $this->getInput('pricemin'), $this->getInput('pricemax'));
+		}
+
+		if($this->getInput('estate') != '') {
+			$requestJson->filters->enums['real_estate_type'] = [$this->getInput('estate')];
+		}
+
+		if($this->getInput('roomsmin') != ''
+		|| $this->getInput('roomsmax') != '') {
+			$requestJson->filters->ranges->rooms = $this->getRange('rooms', $this->getInput('roomsmin'), $this->getInput('roomsmax'));
+		}
+
+		if($this->getInput('squaremin') != ''
+		|| $this->getInput('squaremax') != '') {
+			$requestJson->filters->ranges->square = $this->getRange('square', $this->getInput('squaremin'), $this->getInput('squaremax'));
 		}
 
 		$requestJson->limit = 30;
@@ -397,7 +440,5 @@ class LeBonCoinBridge extends BridgeAbstract {
 		return json_encode($requestJson);
 
 	}
-
-
 
 }
