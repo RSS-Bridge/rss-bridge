@@ -281,6 +281,43 @@ class LeBonCoinBridge extends BridgeAbstract {
 				'name' => 'Surface max',
 				'type' => 'number',
 			),
+			'mileagemin' => array(
+				'name' => 'Kilométrage min',
+				'type' => 'number',
+			),
+			'mileagemax' => array(
+				'name' => 'Kilométrage max',
+				'type' => 'number',
+			),
+			'yearmin' => array(
+				'name' => 'Année min',
+				'type' => 'number',
+			),
+			'yearmax' => array(
+				'name' => 'Année max',
+				'type' => 'number',
+			),
+			'cubiccapacitymin' => array(
+				'name' => 'Cylindrée min',
+				'type' => 'number',
+			),
+			'cubiccapacitymax' => array(
+				'name' => 'Cylindrée max',
+				'type' => 'number',
+			),
+			'fuel' => array(
+				'name' => 'Énergie',
+				'type' => 'list',
+				'values' => array(
+					'' => '',
+					'Essence' => '1',
+					'Diesel' => '2',
+					'GPL' => '3',
+					'Electrique' => '4',
+					'Hybride' => '6',
+					'Autre' => '5',
+				)
+			),
 			'owner' => array(
 				'name' => 'Vendeur',
 				'type' => 'list',
@@ -433,6 +470,25 @@ class LeBonCoinBridge extends BridgeAbstract {
 		if($this->getInput('squaremin') != ''
 		|| $this->getInput('squaremax') != '') {
 			$requestJson->filters->ranges->square = $this->getRange('square', $this->getInput('squaremin'), $this->getInput('squaremax'));
+		}
+
+		if($this->getInput('mileagemin') != ''
+		|| $this->getInput('mileagemax') != '') {
+			$requestJson->filters->ranges->mileage = $this->getRange('mileage', $this->getInput('mileagemin'), $this->getInput('mileagemax'));
+		}
+
+		if($this->getInput('yearmin') != ''
+		|| $this->getInput('yearmax') != '') {
+			$requestJson->filters->ranges->regdate = $this->getRange('year', $this->getInput('yearmin'), $this->getInput('yearmax'));
+		}
+
+		if($this->getInput('cubiccapacitymin') != ''
+		|| $this->getInput('cubiccapacitymax') != '') {
+			$requestJson->filters->ranges->cubic_capacity = $this->getRange('cubic_capacity', $this->getInput('cubiccapacitymin'), $this->getInput('cubiccapacitymax'));
+		}
+
+		if($this->getInput('fuel') != '') {
+			$requestJson->filters->enums['fuel'] = [$this->getInput('fuel')];
 		}
 
 		$requestJson->limit = 30;
