@@ -111,7 +111,7 @@ class YGGTorrentBridge extends BridgeAbstract {
 		foreach($results->find('tr') as $row) {
 			$count++;
 			if($count == 1) continue;
-			if($count == 12) break;
+			if($count == 22) break;
 			$item = array();
 			$item['timestamp'] = $row->find('.hidden', 1)->plaintext;
 			$item['title'] = $row->find('a', 1)->plaintext;
@@ -135,7 +135,7 @@ class YGGTorrentBridge extends BridgeAbstract {
 		$url_full[5] = urlencode($url_full[5]);
 		$url_full[6] = urlencode($url_full[6]);
 		$url = implode('/', $url_full);
-		$page = getSimpleHTMLDOM($url) or returnServerError('Unable to query Yggtorrent page !');
+		$page = getSimpleHTMLDOMCached($url) or returnServerError('Unable to query Yggtorrent page !');
 		$author = $page->find('.informations', 0)->find('a', 4)->plaintext;
 		$content = $page->find('.default', 1);
 		return array('author' => $author, 'content' => $content);
