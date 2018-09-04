@@ -422,7 +422,7 @@ EOD;
 			$author = str_replace(' | Facebook', '', $html->find('title#pageTitle', 0)->innertext);
 			$profilePic = 'https://graph.facebook.com/'
 			. $this->getInput('u')
-			. '/picture?width=200&amp;height=200';
+			. '/picture?width=200&amp;height=200#.image';
 
 			$this->authorName = $author;
 
@@ -539,6 +539,9 @@ EOD;
 						$item['title'] = $title;
 						$item['author'] = $author;
 						$item['timestamp'] = $date;
+						if(strpos($item['content'], '<img') === false)
+							$item['enclosures'] = array($profilePic);
+
 						$this->items[] = $item;
 					}
 				}

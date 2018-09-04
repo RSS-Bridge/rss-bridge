@@ -39,7 +39,7 @@ class AtomFormat extends FormatAbstract{
 				foreach($item['enclosures'] as $enclosure) {
 					$entryEnclosures .= '<link rel="enclosure" href="'
 					. $this->xml_encode($enclosure)
-					. '"/>'
+					. '" type="' . getMimeType($enclosure) . '" />'
 					. PHP_EOL;
 				}
 			}
