@@ -7,9 +7,9 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = 'Should we put a website in production today? (French)';
 
-	public function collectData(){
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request EstCeQuonMetEnProd: ' . $this->getURI());
+	public function collectData() {
+		$html = getSimpleHTMLDOM(self::URI)
+			or returnServerError('Could not request EstCeQuonMetEnProd: ' . self::URI);
 
 		$item = array();
 		$item['uri'] = $this->getURI() . '#' . date('Y-m-d');
@@ -18,10 +18,10 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract {
 		$item['timestamp'] = strtotime('today midnight');
 		$item['content'] = str_replace(
 			'src="/',
-			'src="' . $this->getURI(),
-			trim(extractFromDelimiters($html->outertext, '<body role="document">', '<br /><br />'))
+			'src="' . self::URI,
+			trim(extractFromDelimiters($html->outertext, '<body role="document">', '<div id="share'))
 		);
 
-		$this->items[] = $item;
+		$this->items []= $item;
 	}
 }
