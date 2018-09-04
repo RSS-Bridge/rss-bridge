@@ -175,7 +175,7 @@ class ZDNetBridge extends FeedExpander {
 
 		$article = getSimpleHTMLDOMCached($item['uri']);
 		if(!$article) {
-			$item['content'] .= '<p><em>' . 'Could not request ZDNet: ' . $url . '</em></p>';
+			$item['content'] .= '<p><em>Could not request ZDNet: ' . $url . '</em></p>';
 			return $item;
 		}
 

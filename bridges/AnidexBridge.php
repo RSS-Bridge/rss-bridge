@@ -203,4 +203,3 @@ class AnidexBridge extends BridgeAbstract {
 		$results = null;
 	}
 }
-

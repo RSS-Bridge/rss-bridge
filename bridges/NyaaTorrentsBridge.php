@@ -127,4 +127,3 @@ class NyaaTorrentsBridge extends BridgeAbstract {
 		$results = null;
 	}
 }
-

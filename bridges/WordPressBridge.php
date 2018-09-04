@@ -57,9 +57,11 @@ class WordPressBridge extends FeedExpander {
 			$article_image = str_get_html($item['content'])->find('img.wp-post-image', 0);
 		}
 		if(is_object($article_image) && !empty($article_image->src)) {
-			$article_image = empty($article_image->getAttribute('data-lazy-src'))
-				? $article_image->src
-				: $article_image->getAttribute('data-lazy-src');
+			if(empty($article_image->getAttribute('data-lazy-src'))) {
+				$article_image = $article_image->src;
+			} else {
+				$article_image = $article_image->getAttribute('data-lazy-src');
+			}
 			$mime_type = getMimeType($article_image);
 			if (strpos($mime_type, 'image') === false)
 				$article_image .= '#.image'; // force image

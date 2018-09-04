@@ -132,11 +132,14 @@ function markdownToHtml($string) {
 	$string = preg_replace('/([^"\/])(www\.[^ "<]+)([^"])/', '$1<a href="http://$2">$2</a>$3', $string.' ');
 
 	$count = 1;
-	while ($count > 0)
+	while($count > 0) {
 		$string = preg_replace('/ (src|href)="([^"]+)<i>([^"]+)"/U', ' $1="$2_$3"', $string, -1, $count);
+	}
+
 	$count = 1;
-	while ($count > 0)
+	while($count > 0) {
 		$string = preg_replace('/ (src|href)="([^"]+)<\/i>([^"]+)"/U', ' $1="$2_$3"', $string, -1, $count);
+	}
 
 	return '<div>'.trim($string).'</div>';
 }

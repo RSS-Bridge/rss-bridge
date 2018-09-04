@@ -22,6 +22,6 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract {
 			trim(extractFromDelimiters($html->outertext, '<body role="document">', '<div id="share'))
 		);
 
-		$this->items []= $item;
+		$this->items[] = $item;
 	}
 }

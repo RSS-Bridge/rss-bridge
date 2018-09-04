@@ -80,8 +80,9 @@ class NextInpactBridge extends FeedExpander {
 				$subtitle = '';
 			}
 
-			$postimg = $html->find('div.container_main_image_article, '
-				.'div.image-brief-container, div.image-brief-side-container', 0);
+			$postimg = $html->find(
+				'div.container_main_image_article, div.image-brief-container, div.image-brief-side-container', 0
+			);
 			if(is_object($postimg)) {
 				$postimg = '<p><img src="'
 				. $postimg->find('img.dedicated', 0)->src
