@@ -3,7 +3,7 @@ class FuturaSciencesBridge extends FeedExpander {
 
 	const MAINTAINER = 'ORelio';
 	const NAME = 'Futura-Sciences Bridge';
-	const URI = 'http://www.futura-sciences.com/';
+	const URI = 'https://www.futura-sciences.com/';
 	const DESCRIPTION = 'Returns the newest articles.';
 
 	const PARAMETERS = array( array(
@@ -90,7 +90,8 @@ class FuturaSciencesBridge extends FeedExpander {
 			or returnServerError('Could not request Futura-Sciences: ' . $item['uri']);
 		$item['content'] = $this->extractArticleContent($article);
 		$author = $this->extractAuthor($article);
-		$item['author'] = empty($author) ? $item['author'] : $author;
+		if (!empty($author))
+			$item['author'] = $author;
 		return $item;
 	}
 
@@ -105,6 +106,7 @@ class FuturaSciencesBridge extends FeedExpander {
 			'<div class="sharebar2',
 			'<div class="diaporamafullscreen"',
 			'<div class="module social-button',
+			'<div class="module social-share',
 			'<div style="margin-bottom:10px;" class="noprint"',
 			'<div class="ficheprevnext',
 			'<div class="bar noprint',
@@ -125,6 +127,7 @@ class FuturaSciencesBridge extends FeedExpander {
 		$contents = stripWithDelimiters($contents, 'fs:definition="', '"');
 		$contents = stripWithDelimiters($contents, 'fs:xt:clicktype="', '"');
 		$contents = stripWithDelimiters($contents, 'fs:xt:clickname="', '"');
+		$contents = StripWithDelimiters($contents, '<section class="module-toretain module-propal-nl', '</section>');
 		$contents = stripWithDelimiters($contents, '<script ', '</script>');
 
 		return $headline . trim($contents);
