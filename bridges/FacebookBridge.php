@@ -478,6 +478,12 @@ EOD;
 							'',
 							$content);
 
+						//Remove "SpSonsSoriSsés"
+						$content = preg_replace(
+							'/(?iU)<a [^>]+ href="#" role="link" [^>}]+>.+<\/a>/iU',
+							'',
+							$content);
+
 						//Remove html nodes, keep only img, links, basic formatting
 						$content = strip_tags($content, '<a><img><i><u><br><p>');
 
