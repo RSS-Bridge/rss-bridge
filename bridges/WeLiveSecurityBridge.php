@@ -3,7 +3,7 @@ class WeLiveSecurityBridge extends FeedExpander {
 
 	const MAINTAINER = 'ORelio';
 	const NAME = 'We Live Security';
-	const URI = 'http://www.welivesecurity.com/';
+	const URI = 'https://www.welivesecurity.com/';
 	const DESCRIPTION = 'Returns the newest articles.';
 
 	protected function parseItem($item){
@@ -11,18 +11,16 @@ class WeLiveSecurityBridge extends FeedExpander {
 
 		$article_html = getSimpleHTMLDOMCached($item['uri']);
 		if(!$article_html) {
-			$item['content'] .= '<p>Could not request ' . $this->getName() . ': ' . $item['uri'] . '</p>';
+			$item['content'] .= '<p><em>Could not request ' . $this->getName() . ': ' . $item['uri'] . '</p>';
 			return $item;
 		}
 
-		$article_content = $article_html->find('div.wlistingsingletext', 0)->innertext;
-		$article_content = '<p><b>'
-		. $item['content']
-		. '</b></p>'
-		. trim($article_content);
-
-		$item['content'] = $article_content;
+		$article_content = $article_html->find('div.formatted', 0)->innertext;
 		$article_content = stripWithDelimiters($article_content, '<script', '</script>');
+		$article_content = stripRecursiveHTMLSection($article_content, 'div', '<div class="comments');
+		$article_content = stripRecursiveHTMLSection($article_content, 'div', '<div class="similar-articles');
+		$article_content = stripRecursiveHTMLSection($article_content, 'span', '<span class="meta');
+		$item['content'] = trim($article_content);
 
 		return $item;
 	}
