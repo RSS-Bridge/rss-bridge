@@ -20,13 +20,16 @@ class GBAtempBridge extends BridgeAbstract {
 		)
 	));
 
-	private function buildItem($uri, $title, $author, $timestamp, $content){
+	private function buildItem($uri, $title, $author, $timestamp, $thumbnail, $content){
 		$item = array();
 		$item['uri'] = $uri;
 		$item['title'] = $title;
 		$item['author'] = $author;
 		$item['timestamp'] = $timestamp;
 		$item['content'] = $content;
+		if (!empty($thumbnail)) {
+			$item['enclosures'] = array($thumbnail);
+		}
 		return $item;
 	}
 
@@ -37,13 +40,38 @@ class GBAtempBridge extends BridgeAbstract {
 		return $content;
 	}
 
+	private function findItemDate($item){
+		$time = 0;
+		$dateField = $item->find('abbr.DateTime', 0);
+		if (is_object($dateField)) {
+			$time = intval(
+				extractFromDelimiters(
+					$dateField->outertext,
+					'data-time="',
+					'"'
+				)
+			);
+		} else {
+			$dateField = $item->find('span.DateTime', 0);
+			$time = DateTime::createFromFormat(
+				'M j, Y \a\t g:i A',
+				extractFromDelimiters(
+					$dateField->outertext,
+					'title="',
+					'"'
+				)
+			)->getTimestamp();
+		}
+		return $time;
+	}
+
 	private function fetchPostContent($uri, $site_url){
-		$html = getSimpleHTMLDOM($uri);
+		$html = getSimpleHTMLDOMCached($uri);
 		if(!$html) {
-			return 'Could not request GBAtemp ' . $uri;
+			return 'Could not request GBAtemp: ' . $uri;
 		}
 
-		$content = $html->find('div.messageContent', 0)->innertext;
+		$content = $html->find('div.messageContent, blockquote.baseHtml', 0)->innertext;
 		return $this->cleanupPostContent($content, $site_url);
 	}
 
@@ -56,70 +84,56 @@ class GBAtempBridge extends BridgeAbstract {
 		case 'N':
 			foreach($html->find('li[class=news_item full]') as $newsItem) {
 				$url = self::URI . $newsItem->find('a', 0)->href;
-				$time = intval(
-					$this->extractFromDelimiters(
-						$newsItem->find('abbr.DateTime', 0)->outertext,
-						'data-time="',
-						'"'
-					)
-				);
+				$img = $this->getURI().$newsItem->find('img', 0)->src . '#.image';
+				$time = $this->findItemDate($newsItem);
 				$author = $newsItem->find('a.username', 0)->plaintext;
 				$title = $newsItem->find('a', 1)->plaintext;
 				$content = $this->fetchPostContent($url, self::URI);
-				$this->items[] = $this->buildItem($url, $title, $author, $time, $content);
+				$this->items[] = $this->buildItem($url, $title, $author, $time, $img, $content);
+				unset($newsItem);
 			}
+			break;
 		case 'R':
 			foreach($html->find('li.portal_review') as $reviewItem) {
 				$url = self::URI . $reviewItem->find('a', 0)->href;
+				$img = $this->getURI() . extractFromDelimiters($reviewItem->find('a', 0)->style, 'image:url(', ')');
 				$title = $reviewItem->find('span.review_title', 0)->plaintext;
 				$content = getSimpleHTMLDOM($url)
 					or returnServerError('Could not request GBAtemp: ' . $uri);
 				$author = $content->find('a.username', 0)->plaintext;
-				$time = intval(
-					$this->extractFromDelimiters(
-						$content->find('abbr.DateTime', 0)->outertext,
-						'data-time="',
-						'"'
-					)
-				);
+				$time = $this->findItemDate($content);
 				$intro = '<p><b>' . ($content->find('div#review_intro', 0)->plaintext) . '</b></p>';
 				$review = $content->find('div#review_main', 0)->innertext;
 				$subheader = '<p><b>' . $content->find('div.review_subheader', 0)->plaintext . '</b></p>';
 				$procons = $content->find('table.review_procons', 0)->outertext;
 				$scores = $content->find('table.reviewscores', 0)->outertext;
 				$content = $this->cleanupPostContent($intro . $review . $subheader . $procons . $scores, self::URI);
-				$this->items[] = $this->buildItem($url, $title, $author, $time, $content);
+				$this->items[] = $this->buildItem($url, $title, $author, $time, $img, $content);
+				unset($reviewItem);
 			}
+			break;
 		case 'T':
 			foreach($html->find('li.portal-tutorial') as $tutorialItem) {
 				$url = self::URI . $tutorialItem->find('a', 0)->href;
 				$title = $tutorialItem->find('a', 0)->plaintext;
-				$time = intval(
-					$this->extractFromDelimiters(
-						$tutorialItem->find('abbr.DateTime', 0)->outertext,
-						'data-time="',
-						'"'
-					)
-				);
+				$time = $this->findItemDate($tutorialItem);
 				$author = $tutorialItem->find('a.username', 0)->plaintext;
 				$content = $this->fetchPostContent($url, self::URI);
-				$this->items[] = $this->buildItem($url, $title, $author, $time, $content);
+				$this->items[] = $this->buildItem($url, $title, $author, $time, null, $content);
+				unset($tutorialItem);
 			}
+			break;
 		case 'F':
 			foreach($html->find('li.rc_item') as $postItem) {
 				$url = self::URI . $postItem->find('a', 1)->href;
 				$title = $postItem->find('a', 1)->plaintext;
-				$time = intval(
-					$this->extractFromDelimiters(
-						$postItem->find('abbr.DateTime', 0)->outertext,
-						'data-time="',
-						'"'
-					)
-				);
+				$time = $this->findItemDate($postItem);
 				$author = $postItem->find('a.username', 0)->plaintext;
 				$content = $this->fetchPostContent($url, self::URI);
-				$this->items[] = $this->buildItem($url, $title, $author, $time, $content);
+				$this->items[] = $this->buildItem($url, $title, $author, $time, null, $content);
+				unset($postItem);
 			}
+			break;
 		}
 	}
 
