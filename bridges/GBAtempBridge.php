@@ -20,26 +20,6 @@ class GBAtempBridge extends BridgeAbstract {
 		)
 	));
 
-	private function extractFromDelimiters($string, $start, $end){
-		if(strpos($string, $start) !== false) {
-			$section_retrieved = substr($string, strpos($string, $start) + strlen($start));
-			$section_retrieved = substr($section_retrieved, 0, strpos($section_retrieved, $end));
-			return $section_retrieved;
-		}
-
-		return false;
-	}
-
-	private function stripWithDelimiters($string, $start, $end){
-		while(strpos($string, $start) !== false) {
-			$section_to_remove = substr($string, strpos($string, $start));
-			$section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
-			$string = str_replace($section_to_remove, '', $string);
-		}
-
-		return $string;
-	}
-
 	private function buildItem($uri, $title, $author, $timestamp, $content){
 		$item = array();
 		$item['uri'] = $uri;
@@ -53,7 +33,7 @@ class GBAtempBridge extends BridgeAbstract {
 	private function cleanupPostContent($content, $site_url){
 		$content = str_replace(':arrow:', '&#x27a4;', $content);
 		$content = str_replace('href="attachments/', 'href="'.$site_url.'attachments/', $content);
-		$content = $this->stripWithDelimiters($content, '<script', '</script>');
+		$content = stripWithDelimiters($content, '<script', '</script>');
 		return $content;
 	}
 

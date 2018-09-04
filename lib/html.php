@@ -51,3 +51,92 @@ function defaultLinkTo($content, $server){
 
 	return $content;
 }
+
+/**
+ * Extract the first part of a string matching the specified start and end delimiters
+ * @param $string input string, e.g. '<div>Post author: John Doe</div>'
+ * @param $start start delimiter, e.g. 'author: '
+ * @param $end end delimiter, e.g. '<'
+ * @return extracted string, e.g. 'John Doe', or false if the delimiters were not found.
+ */
+function extractFromDelimiters($string, $start, $end) {
+	if (strpos($string, $start) !== false) {
+		$section_retrieved = substr($string, strpos($string, $start) + strlen($start));
+		$section_retrieved = substr($section_retrieved, 0, strpos($section_retrieved, $end));
+		return $section_retrieved;
+	} return false;
+}
+
+/**
+ * Remove one or more part(s) of a string using a start and end delmiters
+ * @param $string input string, e.g. 'foo<script>superscript()</script>bar'
+ * @param $start start delimiter, e.g. '<script'
+ * @param $end end delimiter, e.g. '</script>'
+ * @return cleaned string, e.g. 'foobar'
+ */
+function stripWithDelimiters($string, $start, $end) {
+	while(strpos($string, $start) !== false) {
+		$section_to_remove = substr($string, strpos($string, $start));
+		$section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
+		$string = str_replace($section_to_remove, '', $string);
+	}
+	return $string;
+}
+
+/**
+ * Remove HTML sections containing one or more sections using the same HTML tag
+ * @param $string input string, e.g. 'foo<div class="ads"><div>ads</div>ads</div>bar'
+ * @param $tag_name name of the HTML tag, e.g. 'div'
+ * @param $tag_start start of the HTML tag to remove, e.g. '<div class="ads">'
+ * @return cleaned string, e.g. 'foobar'
+ */
+function stripRecursiveHTMLSection($string, $tag_name, $tag_start){
+	$open_tag = '<' . $tag_name;
+	$close_tag = '</' . $tag_name . '>';
+	$close_tag_length = strlen($close_tag);
+	if(strpos($tag_start, $open_tag) === 0) {
+		while(strpos($string, $tag_start) !== false) {
+			$max_recursion = 100;
+			$section_to_remove = null;
+			$section_start = strpos($string, $tag_start);
+			$search_offset = $section_start;
+			do {
+				$max_recursion--;
+				$section_end = strpos($string, $close_tag, $search_offset);
+				$search_offset = $section_end + $close_tag_length;
+				$section_to_remove = substr($string, $section_start, $section_end - $section_start + $close_tag_length);
+				$open_tag_count = substr_count($section_to_remove, $open_tag);
+				$close_tag_count = substr_count($section_to_remove, $close_tag);
+			} while ($open_tag_count > $close_tag_count && $max_recursion > 0);
+			$string = str_replace($section_to_remove, '', $string);
+		}
+	}
+	return $string;
+}
+
+/**
+ * Convert Markdown tags into HTML tags. Only a subset of the Markdown syntax is implemented.
+ * @param $string input string in Markdown format
+ * @return output string in HTML format
+ */
+function markdownToHtml($string) {
+	$string = preg_replace('/\!\[([^\]]+)\]\(([^\) ]+)(?: [^\)]+)?\)/', '<img src="$2" alt="$1" />', $string);
+	$string = preg_replace('/\[([^\]]+)\]\(([^\)]+)\)/', '<a href="$2">$1</a>', $string);
+	$string = preg_replace('/\*\*(.*)\*\*/U', '<b>$1</b>', $string);
+	$string = preg_replace('/\*(.*)\*/U', '<i>$1</i>', $string);
+	$string = preg_replace('/__(.*)__/U', '<b>$1</b>', $string);
+	$string = preg_replace('/_(.*)_/U', '<i>$1</i>', $string);
+	$string = preg_replace('/[-]{6,99}/', '<hr />', $string);
+	$string = str_replace('&#10;', '<br />', $string);
+	$string = preg_replace('/([^"])(https?:\/\/[^ "<]+)([^"])/', '$1<a href="$2">$2</a>$3', $string.' ');
+	$string = preg_replace('/([^"\/])(www\.[^ "<]+)([^"])/', '$1<a href="http://$2">$2</a>$3', $string.' ');
+
+	$count = 1;
+	while ($count > 0)
+		$string = preg_replace('/ (src|href)="([^"]+)<i>([^"]+)"/U', ' $1="$2_$3"', $string, -1, $count);
+	$count = 1;
+	while ($count > 0)
+		$string = preg_replace('/ (src|href)="([^"]+)<\/i>([^"]+)"/U', ' $1="$2_$3"', $string, -1, $count);
+
+	return '<div>'.trim($string).'</div>';
+}

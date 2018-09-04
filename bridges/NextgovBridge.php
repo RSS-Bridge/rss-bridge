@@ -47,28 +47,18 @@ class NextgovBridge extends FeedExpander {
 		return $item;
 	}
 
-	private function stripWithDelimiters($string, $start, $end){
-		while (strpos($string, $start) !== false) {
-			$section_to_remove = substr($string, strpos($string, $start));
-			$section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
-			$string = str_replace($section_to_remove, '', $string);
-		}
-
-		return $string;
-	}
-
 	private function extractContent($url){
 		$article = getSimpleHTMLDOMCached($url)
 			or returnServerError('Could not request Nextgov: ' . $url);
 
 		$contents = $article->find('div.wysiwyg', 0)->innertext;
-		$contents = $this->stripWithDelimiters($contents, '<div class="ad-container">', '</div>');
-		$contents = $this->stripWithDelimiters($contents, '<div', '</div>'); //ad outer div
-		return $this->stripWithDelimiters($contents, '<script', '</script>');
 		$contents = ($article_thumbnail == '' ? '' : '<p><img src="' . $article_thumbnail . '" /></p>')
 			. '<p><b>'
 			. $article_subtitle
 			. '</b></p>'
 			. trim($contents);
+		$contents = stripWithDelimiters($contents, '<div class="ad-container">', '</div>');
+		$contents = stripWithDelimiters($contents, '<div', '</div>'); //ad outer div
+		return trim(stripWithDelimiters($contents, '<script', '</script>'));
 	}
 }

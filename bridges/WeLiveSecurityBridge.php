@@ -6,17 +6,6 @@ class WeLiveSecurityBridge extends FeedExpander {
 	const URI = 'http://www.welivesecurity.com/';
 	const DESCRIPTION = 'Returns the newest articles.';
 
-	private function stripWithDelimiters($string, $start, $end){
-		while(strpos($string, $start) !== false) {
-			$section_to_remove = substr($string, strpos($string, $start));
-			$section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
-			$string = str_replace($section_to_remove, '', $string);
-		}
-
-		return $string;
-	}
-
-
 	protected function parseItem($item){
 		$item = parent::parseItem($item);
 
@@ -27,13 +16,13 @@ class WeLiveSecurityBridge extends FeedExpander {
 		}
 
 		$article_content = $article_html->find('div.wlistingsingletext', 0)->innertext;
-		$article_content = $this->stripWithDelimiters($article_content, '<script', '</script>');
 		$article_content = '<p><b>'
 		. $item['content']
 		. '</b></p>'
 		. trim($article_content);
 
 		$item['content'] = $article_content;
+		$article_content = stripWithDelimiters($article_content, '<script', '</script>');
 
 		return $item;
 	}

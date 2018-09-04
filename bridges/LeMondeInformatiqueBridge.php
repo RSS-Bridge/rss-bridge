@@ -26,19 +26,13 @@ class LeMondeInformatiqueBridge extends FeedExpander {
 		return $string;
 	}
 
-	private function stripWithDelimiters($string, $start, $end){
-		while(strpos($string, $start) !== false) {
-			$section_to_remove = substr($string, strpos($string, $start));
-			$section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
-			$string = str_replace($section_to_remove, '', $string);
-		}
 
 		return $string;
 	}
 
 	private function cleanArticle($article_html){
-		$article_html = $this->stripWithDelimiters($article_html, '<script', '</script>');
 		$article_html = $this->stripWithDelimiters($article_html, '<h1 class="cleanprint-title"', '</h1>');
+		$article_html = stripWithDelimiters($article_html, '<script', '</script>');
 		return $article_html;
 	}
 }
