@@ -5,7 +5,7 @@ class NineGagBridge extends BridgeAbstract {
 	const URI = 'https://9gag.com/';
 	const DESCRIPTION = 'Returns latest quotes from 9gag.';
 	const MAINTAINER = 'ZeNairolf';
-	const CACHE_TIMEOUT = 60;
+	const CACHE_TIMEOUT = 3600;
 	const PARAMETERS = array(
 		'Popular' => array(
 			'd' => array(
