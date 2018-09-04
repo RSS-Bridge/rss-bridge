@@ -58,14 +58,21 @@ EOD;
 		$status = '';
 
 		if(defined('DEBUG') && DEBUG === true) {
-			$status .= 'debug mode active';
+			if(defined('DEBUG_INSECURE') && DEBUG_INSECURE === true) {
+				$status .= 'Debug mode is active from any location, make sure only you can access RSS-Bridge.';
+			} else {
+				$status .= 'Debug mode is active from your IP address, your requests will bypass the cache.';
+			}
 		}
+
+		if (!empty($status))
+			$status = '<section class="status">Warning : ' . $status . '</section>';
 
 		return <<<EOD
 <header>
 	<h1>RSS-Bridge</h1>
-	<h2>·Reconnecting the Web·</h2>
-	<p class="status">{$status}</p>
+	<h2>Reconnecting the Web</h2>
+	{$status}
 </header>
 EOD;
 	}

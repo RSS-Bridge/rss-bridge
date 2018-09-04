@@ -40,10 +40,10 @@ a:hover {
 	margin-left: 1em;
 	font-size: 200%;
 }
- header > p.status {
-	font-weight: bold;
-	margin: 1em;
-	color: red;
+ header > section.status {
+	width: 40%;
+	background-color: #ffc600;
+	color: #5f5f5f;
 }
 
 /* Input boxes */
