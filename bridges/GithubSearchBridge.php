@@ -34,11 +34,24 @@ class GithubSearchBridge extends BridgeAbstract {
 			$title = $element->find('h3', 0)->plaintext;
 			$item['title'] = $title;
 
-			if (count($element->find('p')) == 2) {
-				$content = $element->find('p', 0)->innertext;
+			// Description
+			if (count($element->find('p.d-inline-block')) != 0) {
+				$content = $element->find('p.d-inline-block', 0)->innertext;
 			} else{
-				$content = '';
+				$content = 'No description';
 			}
+
+			// Tags
+			$content = $content . '<br />';
+			$tags = $element->find('a.topic-tag');
+			if (count($tags) != 0) {
+				$content = $content . "Tags : ";
+				foreach($tags as $tag_element) {
+					$tag_link = 'https://github.com' . $tag_element->href;
+					$content = $content . '<a href="' . $tag_link . '">' . $tag_element->innertext . '</a>';
+				}
+			}
+
 			$item['content'] = $content;
 
 			$date = $element->find('relative-time', 0)->datetime;
