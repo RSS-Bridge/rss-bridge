@@ -5,7 +5,7 @@ class NineGagBridge extends BridgeAbstract {
 	const URI = 'https://9gag.com/';
 	const DESCRIPTION = 'Returns latest quotes from 9gag.';
 	const MAINTAINER = 'ZeNairolf';
-	const CACHE_TIMEOUT = 0;
+	const CACHE_TIMEOUT = 3600;
 	const PARAMETERS = array(
 		'Popular' => array(
 			'd' => array(
@@ -197,7 +197,7 @@ class NineGagBridge extends BridgeAbstract {
 		return $this->p;
 	}
 
-	protected function getParameterKey(String $input = null) {
+	protected function getParameterKey(String $input = '') {
 		$params = $this->getParameters();
 		$tab = 'Sections';
 		if ('d' === $input) {
@@ -216,6 +216,8 @@ class NineGagBridge extends BridgeAbstract {
 	protected static function getContent(array $post) {
 		if ('Animated' === $post['type']) {
 			$content = self::getAnimated($post);
+		} elseif ('Article' === $post['type']) {
+			$content = self::getArticle($post);
 		} else {
 			$content = self::getPhoto($post);
 		}
@@ -241,7 +243,7 @@ class NineGagBridge extends BridgeAbstract {
 		return $photo;
 	}
 
-	protected static function getAnimated(array $post = array()) {
+	protected static function getAnimated(array $post) {
 		$poster = $post['images']['image460']['url'];
 		$sources = $post['images'];
 		$video = sprintf(
@@ -264,6 +266,46 @@ class NineGagBridge extends BridgeAbstract {
 		$video .= '</video>';
 
 		return $video;
+	}
+
+	protected static function getArticle(array $post) {
+		$blocks = $post['article']['blocks'];
+		$medias = $post['article']['medias'];
+		$contents = array();
+		foreach ($blocks as $block) {
+			if ('Media' === $block['type']) {
+				$mediaId = $block['mediaId'];
+				$contents[] = self::getContent($medias[$mediaId]);
+			} elseif ('RichText' === $block['type']) {
+				$contents[] = self::getRichText($block['content']);
+			}
+		}
+
+		$content = join('</div><div>', $contents);
+		$content = sprintf('<%1$s>%2$s</%1$s>',
+			'div',
+			$content
+		);
+
+		return $content;
+	}
+
+	protected static function getRichText(string $text = '') {
+		$text = trim($text);
+
+		if (preg_match('/^>\s(?<text>.*)/', $text, $matches)) {
+			$text = sprintf('<%1$s>%2$s</%1$s>',
+				'blockquote',
+				$matches['text']
+			);
+		} else {
+			$text = sprintf('<%1$s>%2$s</%1$s>',
+				'p',
+				$text
+			);
+		}
+
+		return $text;
 	}
 
 	protected static function getCategories(array $post) {
