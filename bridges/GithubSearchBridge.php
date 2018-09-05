@@ -45,7 +45,7 @@ class GithubSearchBridge extends BridgeAbstract {
 			$content = $content . '<br />';
 			$tags = $element->find('a.topic-tag');
 			if (count($tags) != 0) {
-				$content = $content . "Tags : ";
+				$content = $content . 'Tags : ';
 				foreach($tags as $tag_element) {
 					$tag_link = 'https://github.com' . $tag_element->href;
 					$content = $content . '<a href="' . $tag_link . '">' . $tag_element->innertext . '</a>';
