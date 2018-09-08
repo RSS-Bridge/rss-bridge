@@ -44,16 +44,19 @@ class GithubSearchBridge extends BridgeAbstract {
 			// Tags
 			$content = $content . '<br />';
 			$tags = $element->find('a.topic-tag');
+			$tags_array = array();
 			if (count($tags) != 0) {
 				$content = $content . 'Tags : ';
 				foreach($tags as $tag_element) {
 					$tag_link = 'https://github.com' . $tag_element->href;
-					$content = $content . '<a href="' . $tag_link . '">' . $tag_element->innertext . '</a>';
+					$tag_name = trim($tag_element->innertext);
+					$content = $content . '<a href="' . $tag_link . '">' . $tag_name . '</a> ';
+					array_push($tags_array, $tag_element->innertext);
 				}
 			}
 
+			$item['categories'] = $tags_array;
 			$item['content'] = $content;
-
 			$date = $element->find('relative-time', 0)->datetime;
 			$item['timestamp'] = strtotime($date);
 
