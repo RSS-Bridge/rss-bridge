@@ -74,7 +74,9 @@ class GooglePlusPostBridge extends BridgeAbstract{
 
 			// Make title at least 50 characters long, but don't add '...' if it is shorter!
 			if(strlen($message->plaintext) > 50) {
-				$end = strpos($message->plaintext, ' ', 50);
+				$end = strpos($message->plaintext, ' ', 50) ?: strlen($message->plaintext);
+			} else {
+				$end = strlen($message->plaintext);
 			}
 
 			if(strlen(substr($message->plaintext, 0, $end)) === strlen($message->plaintext)) {
