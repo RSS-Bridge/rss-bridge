@@ -49,6 +49,7 @@ class GrandComicsDatabaseBridge extends BridgeAbstract {
 			}
 
 			// Build final item
+			$content = str_replace('href="/', 'href="' . static::URI, $content);
 			$item = array();
 			$item['title'] = $seriesName . ' - ' . $key_date;
 			$item['timestamp'] = strtotime($key_date);
