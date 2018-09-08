@@ -210,6 +210,13 @@ section.footer .version {
 
 	}
 
+	.parameters input[type="checkbox"] {
+
+		width: 20px;
+		height: 20px;
+
+	}
+
 } /* @supports (display: grid) */
 
 .maintainer {
