@@ -99,10 +99,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
 							);
 
 							// Convert relative image src into absolute image src, remove line breaks
-							$item_description = str_replace(
-								'src="images', 'src="' . self::URI . 'images',
-								$item_description
-							);
+							$item_description = defaultLinkTo($item_description, self::URI);
 							$item_description = str_replace("\r", '', $item_description);
 							$item_description = str_replace("\n", '', $item_description);
 							$item_description = utf8_encode($item_description);

@@ -7,7 +7,6 @@
   can allow a malicious client to retrieve data about your server and hammer
   a provider throught your rss-bridge instance.
 */
-error_reporting(0);
 if(file_exists('DEBUG')) {
 	$debug_whitelist = trim(file_get_contents('DEBUG'));
 

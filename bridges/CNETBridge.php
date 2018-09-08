@@ -55,54 +55,54 @@ class CNETBridge extends BridgeAbstract {
 		$pageUrl = self::URI . (empty($topic) ? 'news/' : $topic.'/');
 		$html = getSimpleHTMLDOM($pageUrl)
 		or returnServerError('Could not request CNET: '.$pageUrl);
-		$limit = 0;
 
 		// Process articles
 		foreach($html->find('div.assetBody, div.riverPost') as $element) {
-			if ($limit < 10) {
 
-				$article_title = trim($element->find('h2, h3', 0)->plaintext);
-				$article_uri = self::URI . (substr($element->find('a', 0)->href, 1));
-				$article_thumbnail = $element->parent()->find('img[src]', 0)->src;
-				$article_timestamp = strtotime($element->find('time.assetTime, div.timeAgo', 0)->plaintext);
-				$article_author = trim($element->find('a[rel=author], a.name', 0)->plaintext);
-				$article_content = '<p><b>' . trim($element->find('p.dek', 0)->plaintext) . '</b></p>';
+			if(count($this->items) >= 10) {
+				break;
+			}
 
-				if (is_null($article_thumbnail))
-					$article_thumbnail = extractFromDelimiters($element->innertext, '<img src="', '"');
+			$article_title = trim($element->find('h2, h3', 0)->plaintext);
+			$article_uri = self::URI . (substr($element->find('a', 0)->href, 1));
+			$article_thumbnail = $element->parent()->find('img[src]', 0)->src;
+			$article_timestamp = strtotime($element->find('time.assetTime, div.timeAgo', 0)->plaintext);
+			$article_author = trim($element->find('a[rel=author], a.name', 0)->plaintext);
+			$article_content = '<p><b>' . trim($element->find('p.dek', 0)->plaintext) . '</b></p>';
 
-				if (!empty($article_title) && !empty($article_uri) && strpos($article_uri, self::URI . 'news/') !== false) {
+			if (is_null($article_thumbnail))
+				$article_thumbnail = extractFromDelimiters($element->innertext, '<img src="', '"');
 
-					$article_html = getSimpleHTMLDOMCached($article_uri) or $article_html = null;
+			if (!empty($article_title) && !empty($article_uri) && strpos($article_uri, self::URI . 'news/') !== false) {
 
-					if (!is_null($article_html)) {
+				$article_html = getSimpleHTMLDOMCached($article_uri) or $article_html = null;
 
-						if (empty($article_thumbnail))
-							$article_thumbnail = $article_html->find('div.originalImage', 0);
-						if (empty($article_thumbnail))
-							$article_thumbnail = $article_html->find('span.imageContainer', 0);
-						if (is_object($article_thumbnail))
-							$article_thumbnail = $article_thumbnail->find('img', 0)->src;
+				if (!is_null($article_html)) {
 
-						$article_content .= trim(
-							$this->cleanArticle(
-								extractFromDelimiters(
-									$article_html, '<article', '<footer'
-								)
+					if (empty($article_thumbnail))
+						$article_thumbnail = $article_html->find('div.originalImage', 0);
+					if (empty($article_thumbnail))
+						$article_thumbnail = $article_html->find('span.imageContainer', 0);
+					if (is_object($article_thumbnail))
+						$article_thumbnail = $article_thumbnail->find('img', 0)->src;
+
+					$article_content .= trim(
+						$this->cleanArticle(
+							extractFromDelimiters(
+								$article_html, '<article', '<footer'
 							)
-						);
-					}
-
-					$item = array();
-					$item['uri'] = $article_uri;
-					$item['title'] = $article_title;
-					$item['author'] = $article_author;
-					$item['timestamp'] = $article_timestamp;
-					$item['enclosures'] = array($article_thumbnail);
-					$item['content'] = $article_content;
-					$this->items[] = $item;
-					$limit++;
+						)
+					);
 				}
+
+				$item = array();
+				$item['uri'] = $article_uri;
+				$item['title'] = $article_title;
+				$item['author'] = $article_author;
+				$item['timestamp'] = $article_timestamp;
+				$item['enclosures'] = array($article_thumbnail);
+				$item['content'] = $article_content;
+				$this->items[] = $item;
 			}
 		}
 	}

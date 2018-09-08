@@ -40,11 +40,17 @@ a:hover {
 	margin-left: 1em;
 	font-size: 200%;
 }
- header > section.status {
+ header > section.warning {
 	width: 40%;
 	background-color: #ffc600;
 	color: #5f5f5f;
 }
+ header > section.critical-warning {
+	 width: 40%;
+	 background-color: #cf3e3e;
+	 font-weight: bold;
+	 color: white;
+ }
 
 /* Input boxes */
  input[type="text"] {

@@ -11,7 +11,7 @@ class WeLiveSecurityBridge extends FeedExpander {
 
 		$article_html = getSimpleHTMLDOMCached($item['uri']);
 		if(!$article_html) {
-			$item['content'] .= '<p><em>Could not request ' . $this->getName() . ': ' . $item['uri'] . '</p>';
+			$item['content'] .= '<p><em>Could not request ' . $this->getName() . ': ' . $item['uri'] . '</em></p>';
 			return $item;
 		}
 

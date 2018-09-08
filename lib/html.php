@@ -40,13 +40,29 @@ function backgroundToImg($htmlContent) {
 
 }
 
+/**
+ * Convert relative links in HTML into absolute links
+ * @param $content HTML content to fix. Supports HTML objects or string objects
+ * @param $server full URL to the page containing relative links
+ * @return content with fixed URLs, as HTML object or string depending on input type
+ */
 function defaultLinkTo($content, $server){
+	$string_convert = false;
+	if (is_string($content)) {
+		$string_convert = true;
+		$content = str_get_html($content);
+	}
+
 	foreach($content->find('img') as $image) {
 		$image->src = urljoin($server, $image->src);
 	}
 
 	foreach($content->find('a') as $anchor) {
 		$anchor->href = urljoin($server, $anchor->href);
+	}
+
+	if ($string_convert) {
+		$content = $content->outertext;
 	}
 
 	return $content;
@@ -141,5 +157,5 @@ function markdownToHtml($string) {
 		$string = preg_replace('/ (src|href)="([^"]+)<\/i>([^"]+)"/U', ' $1="$2_$3"', $string, -1, $count);
 	}
 
-	return '<div>'.trim($string).'</div>';
+	return '<div>' . trim($string) . '</div>';
 }

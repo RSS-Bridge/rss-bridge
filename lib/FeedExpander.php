@@ -124,7 +124,7 @@ abstract class FeedExpander extends BridgeAbstract {
 		if(isset($feedItem->author)) $item['author'] = (string)$feedItem->author->name;
 		if(isset($feedItem->content)) $item['content'] = (string)$feedItem->content;
 
-		//When "link" field is present, URL is more relable than "id" field
+		//When "link" field is present, URL is more reliable than "id" field
 		if (count($feedItem->link) === 1) {
 			$this->uri = (string)$feedItem->link[0]['href'];
 		} else {

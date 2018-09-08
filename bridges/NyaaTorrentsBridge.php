@@ -57,17 +57,12 @@ class NyaaTorrentsBridge extends BridgeAbstract {
 	public function collectData() {
 
 		// Build Search URL from user-provided parameters
-		$search_url = self::URI . '?s=id&o=desc';
-		foreach (array('f', 'c') as $param_name) {
-			$param = $this->getInput($param_name);
-			if (!empty($param) && intval($param) != 0 && ctype_digit(str_replace('_', '', $param))) {
-				$search_url .= '&' . $param_name . '=' . $param;
-			}
-		}
-		$query = $this->getInput('q');
-		if (!empty($query)) {
-			$search_url .= '&q=' . urlencode($query);
-		}
+		$search_url = self::URI . '?s=id&o=desc&'
+		. http_build_query(array(
+			'f' => $this->getInput('f'),
+			'c' => $this->getInput('c'),
+			'q' => $this->getInput('q')
+		));
 
 		// Retrieve torrent listing from search results, which does not contain torrent description
 		$html = getSimpleHTMLDOM($search_url)
@@ -78,16 +73,20 @@ class NyaaTorrentsBridge extends BridgeAbstract {
 			if (strpos($link->href, '/view/') === 0 && !in_array($link->href, $results))
 				$results[] = $link->href;
 		if (empty($results))
-			returnServerError('No results from Nyaa: '.$url, 500);
-		$limit = 0;
+			returnServerError('No results from Nyaa: ' . $url, 500);
 
 		//Process each item individually
 		foreach ($results as $element) {
 
+			//Limit total amount of requests
+			if(count($this->items) >= 20) {
+				break;
+			}
+
 			$torrent_id = str_replace('/view/', '', $element);
 
-			//Limit total amount of requests and ignore entries without valid torrent ID
-			if ($limit < 20 && $torrent_id != 0 && ctype_digit($torrent_id)) {
+			//Ignore entries without valid torrent ID
+			if ($torrent_id != 0 && ctype_digit($torrent_id)) {
 
 				//Retrieve data for this torrent ID
 				$item_uri = self::URI . 'view/'.$torrent_id;
@@ -102,7 +101,7 @@ class NyaaTorrentsBridge extends BridgeAbstract {
 					$item_date = intval(extractFromDelimiters($item_html->outertext, 'data-timestamp="', '"'));
 
 					//Retrieve image for thumbnail or generic logo fallback
-					$item_image = $this->getURI().'static/img/avatar/default.png';
+					$item_image = $this->getURI() . 'static/img/avatar/default.png';
 					foreach ($item_desc->find('img') as $img) {
 						if (strpos($img->src, 'prez') === false) {
 							$item_image = $img->src;
@@ -119,7 +118,6 @@ class NyaaTorrentsBridge extends BridgeAbstract {
 					$item['enclosures'] = array($item_image);
 					$item['content'] = $item_desc;
 					$this->items[] = $item;
-					$limit++;
 				}
 			}
 			$element = null;

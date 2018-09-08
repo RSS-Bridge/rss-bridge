@@ -55,24 +55,27 @@ EOD;
 	}
 
 	private static function getHeader() {
-		$status = '';
+		$warning = '';
 
 		if(defined('DEBUG') && DEBUG === true) {
 			if(defined('DEBUG_INSECURE') && DEBUG_INSECURE === true) {
-				$status .= 'Debug mode is active from any location, make sure only you can access RSS-Bridge.';
+				$warning .= <<<EOD
+<section class="critical-warning">Warning : Debug mode is active from any location, 
+make sure only you can access RSS-Bridge.</section>
+EOD;
 			} else {
-				$status .= 'Debug mode is active from your IP address, your requests will bypass the cache.';
+				$warning .= <<<EOD
+<section class="warning">Warning : Debug mode is active from your IP address, 
+your requests will bypass the cache.</section>
+EOD;
 			}
 		}
-
-		if (!empty($status))
-			$status = '<section class="status">Warning : ' . $status . '</section>';
 
 		return <<<EOD
 <header>
 	<h1>RSS-Bridge</h1>
 	<h2>Reconnecting the Web</h2>
-	{$status}
+	{$warning}
 </header>
 EOD;
 	}

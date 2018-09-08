@@ -4,7 +4,6 @@ class AnidexBridge extends BridgeAbstract {
 	const MAINTAINER = 'ORelio';
 	const NAME = 'Anidex';
 	const URI = 'https://anidex.info/';
-	const CACHE_TIMEOUT = 3600; // 1h
 	const DESCRIPTION = 'Returns the newest torrents, with optional search criteria.';
 	const PARAMETERS = array(
 		array(
@@ -142,15 +141,19 @@ class AnidexBridge extends BridgeAbstract {
 				$results[] = $link->href;
 		if (empty($results))
 			returnServerError('No results from Anidex: '.$search_url);
-		$limit = 0;
 
 		//Process each item individually
 		foreach ($results as $element) {
 
+			//Limit total amount of requests
+			if(count($this->items) >= 20) {
+				break;
+			}
+
 			$torrent_id = str_replace('/torrent/', '', $element);
 
-			//Limit total amount of requests and ignore entries without valid torrent ID
-			if ($limit < 20 && $torrent_id != 0 && ctype_digit($torrent_id)) {
+			//Ignore entries without valid torrent ID
+			if ($torrent_id != 0 && ctype_digit($torrent_id)) {
 
 				//Retrieve data for this torrent ID
 				$item_uri = self::URI . 'torrent/'.$torrent_id;
@@ -163,7 +166,7 @@ class AnidexBridge extends BridgeAbstract {
 					$item_desc = $item_html->find('div.panel-body', 0);
 					$item_author = trim($item_html->find('span.fa-user', 0)->parent()->plaintext);
 					$item_date = strtotime(trim($item_html->find('span.fa-clock', 0)->parent()->plaintext));
-					$item_image = $this->getURI().'images/user_logos/default.png';
+					$item_image = $this->getURI() . 'images/user_logos/default.png';
 
 					//Check for description-less torrent andn optionally extract image
 					$desc_title_found = false;
@@ -195,7 +198,6 @@ class AnidexBridge extends BridgeAbstract {
 					$item['enclosures'] = array($item_image);
 					$item['content'] = $item_desc;
 					$this->items[] = $item;
-					$limit++;
 				}
 			}
 			$element = null;
