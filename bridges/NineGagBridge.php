@@ -135,18 +135,16 @@ class NineGagBridge extends BridgeAbstract {
 	}
 
 	public function getName() {
-		if ($_GET['bridge'] === substr(get_class($this), 0, -6)) {
-			if ($this->getInput('d')) {
-				$name = $this->getParameterKey('d');
-			} else {
-				$name = sprintf(
-					'%s [%s]',
-					$this->getParameterKey('g'),
-					$this->getParameterKey('t')
-				);
+		if ($this->getInput('d')) {
+			$name = sprintf('%s - %s', '9GAG', $this->getParameterKey('d'));
+		} elseif ($this->getInput('g')) {
+			$name = sprintf('%s - %s', '9GAG', $this->getParameterKey('g'));
+			if ($this->getInput('t')) {
+				$name = sprintf('%s [%s]', $name, $this->getParameterKey('t'));
 			}
-
-			return sprintf('%s - %s', '9GAG', $name);
+		}
+		if (!empty($name)) {
+			return $name;
 		}
 
 		return self::NAME;
@@ -154,19 +152,11 @@ class NineGagBridge extends BridgeAbstract {
 
 	public function getURI() {
 		$uri = $this->getInput('g');
-		if ('default' === $uri) {
+		if ($uri === 'default') {
 			$uri = $this->getInput('t');
 		}
 
 		return self::URI.$uri;
-	}
-
-	public function getIcon() {
-		return sprintf(
-			'%s%s',
-			'https://www.google.com/s2/favicons?domain=',
-			parse_url(self::URI, PHP_URL_HOST)
-		);
 	}
 
 	protected function getGroup() {
@@ -186,7 +176,7 @@ class NineGagBridge extends BridgeAbstract {
 	}
 
 	protected function getPages() {
-		if (null === $this->p) {
+		if ($this->p === null) {
 			$value = (int) $this->getInput('p');
 			$value = ($value < self::MIN_NBR_PAGE) ? self::MIN_NBR_PAGE : $value;
 			$value = ($value > self::MAX_NBR_PAGE) ? self::MAX_NBR_PAGE : $value;
@@ -200,7 +190,7 @@ class NineGagBridge extends BridgeAbstract {
 	protected function getParameterKey(String $input = '') {
 		$params = $this->getParameters();
 		$tab = 'Sections';
-		if ('d' === $input) {
+		if ($input === 'd') {
 			$tab = 'Popular';
 		}
 		if (!isset($params[$tab][$input])) {
@@ -214,9 +204,9 @@ class NineGagBridge extends BridgeAbstract {
 	}
 
 	protected static function getContent(array $post) {
-		if ('Animated' === $post['type']) {
+		if ($post['type'] === 'Animated') {
 			$content = self::getAnimated($post);
-		} elseif ('Article' === $post['type']) {
+		} elseif ($post['type'] === 'Article') {
 			$content = self::getArticle($post);
 		} else {
 			$content = self::getPhoto($post);
@@ -282,7 +272,8 @@ class NineGagBridge extends BridgeAbstract {
 		}
 
 		$content = join('</div><div>', $contents);
-		$content = sprintf('<%1$s>%2$s</%1$s>',
+		$content = sprintf(
+			'<%1$s>%2$s</%1$s>',
 			'div',
 			$content
 		);
@@ -294,12 +285,14 @@ class NineGagBridge extends BridgeAbstract {
 		$text = trim($text);
 
 		if (preg_match('/^>\s(?<text>.*)/', $text, $matches)) {
-			$text = sprintf('<%1$s>%2$s</%1$s>',
+			$text = sprintf(
+				'<%1$s>%2$s</%1$s>',
 				'blockquote',
 				$matches['text']
 			);
 		} else {
-			$text = sprintf('<%1$s>%2$s</%1$s>',
+			$text = sprintf(
+				'<%1$s>%2$s</%1$s>',
 				'p',
 				$text
 			);
