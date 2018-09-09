@@ -66,13 +66,13 @@ class NyaaTorrentsBridge extends BridgeAbstract {
 
 		// Retrieve torrent listing from search results, which does not contain torrent description
 		$html = getSimpleHTMLDOM($search_url)
-		or returnServerError('Could not request Nyaa: '.$search_url);
+		or returnServerError('Could not request Nyaa: ' . $search_url);
 		$links = $html->find('a');
 		$results = array();
 		foreach ($links as $link)
 			if (strpos($link->href, '/view/') === 0 && !in_array($link->href, $results))
 				$results[] = $link->href;
-		if (empty($results))
+		if (empty($results) && empty($this->getInput('q')))
 			returnServerError('No results from Nyaa: ' . $url, 500);
 
 		//Process each item individually
@@ -89,7 +89,7 @@ class NyaaTorrentsBridge extends BridgeAbstract {
 			if ($torrent_id != 0 && ctype_digit($torrent_id)) {
 
 				//Retrieve data for this torrent ID
-				$item_uri = self::URI . 'view/'.$torrent_id;
+				$item_uri = self::URI . 'view/' . $torrent_id;
 
 				//Retrieve full description from torrent page
 				if ($item_html = getSimpleHTMLDOMCached($item_uri)) {

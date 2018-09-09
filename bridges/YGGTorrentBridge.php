@@ -110,8 +110,8 @@ class YGGTorrentBridge extends BridgeAbstract {
 
 		foreach($results->find('tr') as $row) {
 			$count++;
-			if($count == 1) continue;
-			if($count == 22) break;
+			if($count == 1) continue; // Skip table header
+			if($count == 22) break; // Stop processing after 21 items (20 + 1 table header)
 			$item = array();
 			$item['timestamp'] = $row->find('.hidden', 1)->plaintext;
 			$item['title'] = $row->find('a', 1)->plaintext;

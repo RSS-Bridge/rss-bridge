@@ -174,10 +174,8 @@ class ZDNetBridge extends FeedExpander {
 		$item = parent::parseItem($item);
 
 		$article = getSimpleHTMLDOMCached($item['uri']);
-		if(!$article) {
-			$item['content'] .= '<p><em>Could not request ZDNet: ' . $url . '</em></p>';
-			return $item;
-		}
+		if(!$article)
+			returnServerError('Could not request ZDNet: ' . $url);
 
 		$contents = $article->find('article', 0)->innertext;
 		foreach(array(

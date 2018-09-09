@@ -90,7 +90,7 @@ class GBAtempBridge extends BridgeAbstract {
 				$title = $newsItem->find('a', 1)->plaintext;
 				$content = $this->fetchPostContent($url, self::URI);
 				$this->items[] = $this->buildItem($url, $title, $author, $time, $img, $content);
-				unset($newsItem);
+				unset($newsItem); // Some items are heavy, freeing the item proactively helps saving memory
 			}
 			break;
 		case 'R':
@@ -109,7 +109,7 @@ class GBAtempBridge extends BridgeAbstract {
 				$scores = $content->find('table.reviewscores', 0)->outertext;
 				$content = $this->cleanupPostContent($intro . $review . $subheader . $procons . $scores, self::URI);
 				$this->items[] = $this->buildItem($url, $title, $author, $time, $img, $content);
-				unset($reviewItem);
+				unset($reviewItem); // Free up memory
 			}
 			break;
 		case 'T':
@@ -120,7 +120,7 @@ class GBAtempBridge extends BridgeAbstract {
 				$author = $tutorialItem->find('a.username', 0)->plaintext;
 				$content = $this->fetchPostContent($url, self::URI);
 				$this->items[] = $this->buildItem($url, $title, $author, $time, null, $content);
-				unset($tutorialItem);
+				unset($tutorialItem); // Free up memory
 			}
 			break;
 		case 'F':
@@ -131,7 +131,7 @@ class GBAtempBridge extends BridgeAbstract {
 				$author = $postItem->find('a.username', 0)->plaintext;
 				$content = $this->fetchPostContent($url, self::URI);
 				$this->items[] = $this->buildItem($url, $title, $author, $time, null, $content);
-				unset($postItem);
+				unset($postItem); // Free up memory
 			}
 			break;
 		}

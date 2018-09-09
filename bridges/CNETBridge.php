@@ -64,7 +64,7 @@ class CNETBridge extends BridgeAbstract {
 			}
 
 			$article_title = trim($element->find('h2, h3', 0)->plaintext);
-			$article_uri = self::URI . (substr($element->find('a', 0)->href, 1));
+			$article_uri = self::URI . substr($element->find('a', 0)->href, 1);
 			$article_thumbnail = $element->parent()->find('img[src]', 0)->src;
 			$article_timestamp = strtotime($element->find('time.assetTime, div.timeAgo', 0)->plaintext);
 			$article_author = trim($element->find('a[rel=author], a.name', 0)->plaintext);
