@@ -5,7 +5,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
 	const NAME = 'Anime-Ultime';
 	const URI = 'http://www.anime-ultime.net/';
 	const CACHE_TIMEOUT = 10800; // 3h
-	const DESCRIPTION = 'Returns the 10 newest releases posted on Anime-Ultime';
+	const DESCRIPTION = 'Returns the newest releases posted on Anime-Ultime.';
 	const PARAMETERS = array( array(
 		'type' => array(
 		'name' => 'Type',
@@ -65,6 +65,13 @@ class AnimeUltimeBridge extends BridgeAbstract {
 						$item_link_element = $release->find('td', 0)->find('a', 0);
 						$item_uri = self::URI . $item_link_element->href;
 						$item_name = html_entity_decode($item_link_element->plaintext);
+
+						$item_image = self::URI . substr(
+							$item_link_element->onmouseover,
+							37,
+							strpos($item_link_element->onmouseover, ' ', 37) - 37
+						);
+
 						$item_episode = html_entity_decode(
 							str_pad(
 								$release->find('td', 1)->plaintext,
@@ -79,8 +86,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
 
 						if(!empty($item_uri)) {
 
-							// Retrieve description from description page and
-							// convert relative image src info absolute image src
+							// Retrieve description from description page
 							$html_item = getContents($item_uri)
 								or returnServerError('Could not request Anime-Ultime: ' . $item_uri);
 							$item_description = substr(
@@ -91,10 +97,9 @@ class AnimeUltimeBridge extends BridgeAbstract {
 								0,
 								strpos($item_description, '<div id="table">')
 							);
-							$item_description = str_replace(
-								'src="images', 'src="' . self::URI . 'images',
-								$item_description
-							);
+
+							// Convert relative image src into absolute image src, remove line breaks
+							$item_description = defaultLinkTo($item_description, self::URI);
 							$item_description = str_replace("\r", '', $item_description);
 							$item_description = str_replace("\n", '', $item_description);
 							$item_description = utf8_encode($item_description);
@@ -105,6 +110,7 @@ class AnimeUltimeBridge extends BridgeAbstract {
 							$item['title'] = $item_name . ' ' . $item_type . ' ' . $item_episode;
 							$item['author'] = $item_fansub;
 							$item['timestamp'] = $item_date;
+							$item['enclosures'] = array($item_image);
 							$item['content'] = $item_description;
 							$this->items[] = $item;
 							$processedOK++;

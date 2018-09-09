@@ -37,7 +37,7 @@ class MrssFormat extends FormatAbstract {
 			if(isset($item['enclosures'])) {
 				$entryEnclosures .= '<enclosure url="'
 				. $this->xml_encode($item['enclosures'][0])
-				. '"/>';
+				. '" type="' . getMimeType($item['enclosures'][0]) . '" />';
 
 				if(count($item['enclosures']) > 1) {
 					$entryEnclosures .= PHP_EOL;
@@ -45,7 +45,7 @@ class MrssFormat extends FormatAbstract {
 Some media files might not be shown to you. Consider using the ATOM format instead!';
 					foreach($item['enclosures'] as $enclosure) {
 						$entryEnclosures .= '<atom:link rel="enclosure" href="'
-						. $enclosure . '" />'
+						. $enclosure . '" type="' . getMimeType($enclosure) . '" />'
 						. PHP_EOL;
 					}
 				}

@@ -1,9 +1,9 @@
 <?php
-class ZDNetBridge extends BridgeAbstract {
+class ZDNetBridge extends FeedExpander {
 
 	const MAINTAINER = 'ORelio';
 	const NAME = 'ZDNet Bridge';
-	const URI = 'http://www.zdnet.com/';
+	const URI = 'https://www.zdnet.com/';
 	const DESCRIPTION = 'Technology News, Analysis, Comments and Product Reviews for IT Professionals.';
 
 	//http://www.zdnet.com/zdnet.opml
@@ -160,143 +160,42 @@ class ZDNetBridge extends BridgeAbstract {
 	));
 
 	public function collectData(){
-
-		function stripCdata($string){
-			$string = str_replace('<![CDATA[', '', $string);
-			$string = str_replace(']]>', '', $string);
-			return trim($string);
-		}
-
-		function extractFromDelimiters($string, $start, $end){
-			if(strpos($string, $start) !== false) {
-				$section_retrieved = substr($string, strpos($string, $start) + strlen($start));
-				$section_retrieved = substr($section_retrieved, 0, strpos($section_retrieved, $end));
-				return $section_retrieved;
-			}
-
-			return false;
-		}
-
-		function stripWithDelimiters($string, $start, $end){
-			while(strpos($string, $start) !== false) {
-				$section_to_remove = substr($string, strpos($string, $start));
-				$section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
-				$string = str_replace($section_to_remove, '', $string);
-			}
-
-			return $string;
-		}
-
-		function stripRecursiveHtmlSection($string, $tag_name, $tag_start){
-			$open_tag = '<' . $tag_name;
-			$close_tag = '</' . $tag_name . '>';
-			$close_tag_length = strlen($close_tag);
-			if(strpos($tag_start, $open_tag) === 0) {
-				while(strpos($string, $tag_start) !== false) {
-					$max_recursion = 100;
-					$section_to_remove = null;
-					$section_start = strpos($string, $tag_start);
-					$search_offset = $section_start;
-					do {
-						$max_recursion--;
-						$section_end = strpos($string, $close_tag, $search_offset);
-						$search_offset = $section_end + $close_tag_length;
-						$section_to_remove = substr(
-							$string,
-							$section_start,
-							$section_end - $section_start + $close_tag_length
-						);
-
-						$open_tag_count = substr_count($section_to_remove, $open_tag);
-						$close_tag_count = substr_count($section_to_remove, $close_tag);
-					} while ($open_tag_count > $close_tag_count && $max_recursion > 0);
-					$string = str_replace($section_to_remove, '', $string);
-				}
-			}
-			return $string;
-		}
-
-		$baseUri = self::URI;
+		$baseUri = static::URI;
 		$feed = $this->getInput('feed');
 		if(strpos($feed, 'downloads!') !== false) {
 			$feed = str_replace('downloads!', '', $feed);
 			$baseUri = str_replace('www.', 'downloads.', $baseUri);
 		}
 		$url = $baseUri . trim($feed, '/') . '/rss.xml';
-		$html = getSimpleHTMLDOM($url)
-			or returnServerError('Could not request ZDNet: ' . $url);
-		$limit = 0;
+		$this->collectExpandableDatas($url);
+	}
 
-		foreach($html->find('item') as $element) {
-			if($limit < 10) {
-				$article_url = preg_replace(
-					'/([^#]+)#ftag=.*/',
-					'$1',
-					stripCdata(extractFromDelimiters($element->innertext, '<link>', '</link>'))
-				);
+	protected function parseItem($item){
+		$item = parent::parseItem($item);
 
-				$article_author = stripCdata(extractFromDelimiters($element->innertext, 'role="author">', '<'));
-				$article_title = stripCdata($element->find('title', 0)->plaintext);
-				$article_subtitle = stripCdata($element->find('description', 0)->plaintext);
-				$article_timestamp = strtotime(stripCdata($element->find('pubDate', 0)->plaintext));
-				$article = getSimpleHTMLDOM($article_url)
-					or returnServerError('Could not request ZDNet: ' . $article_url);
+		$article = getSimpleHTMLDOMCached($item['uri']);
+		if(!$article)
+			returnServerError('Could not request ZDNet: ' . $url);
 
-				if(!empty($article_author)) {
-					$author = $article_author;
-				} else {
-					$author = $article->find('meta[name=author]', 0);
-					if(is_object($author)) {
-						$author = $author->content;
-					} else {
-						$author = 'ZDNet';
-					}
-				}
-
-				$thumbnail = $article->find('meta[itemprop=image]', 0);
-				if(is_object($thumbnail)) {
-					$thumbnail = $thumbnail->content;
-				} else {
-					$thumbnail = '';
-				}
-
-				$contents = $article->find('article', 0)->innertext;
-				foreach(array(
-					'<div class="shareBar"',
-					'<div class="shortcodeGalleryWrapper"',
-					'<div class="relatedContent',
-					'<div class="downloadNow',
-					'<div data-shortcode',
-					'<div id="sharethrough',
-					'<div id="inpage-video'
-				) as $div_start) {
-					$contents = stripRecursiveHtmlSection($contents, 'div', $div_start);
-				}
-				$contents = stripWithDelimiters($contents, '<script', '</script>');
-				$contents = stripWithDelimiters($contents, '<meta itemprop="image"', '>');
-				$contents = trim(stripWithDelimiters($contents, '<section class="sharethrough-top', '</section>'));
-				$content_img = strpos($contents, '<img'); //Look for first image
-				if (($content_img !== false && $content_img < 512) || $thumbnail == '') {
-					$content_img = ''; //Image already present on article beginning or no thumbnail
-				} else {
-					$content_img = '<p><img src="'.$thumbnail.'" /></p>'; //Include thumbnail
-				}
-				$contents = $content_img
-				. '<p><b>'
-				. $article_subtitle
-				. '</b></p>'
-				. $contents;
-
-				$item = array();
-				$item['author'] = $author;
-				$item['uri'] = $article_url;
-				$item['title'] = $article_title;
-				$item['timestamp'] = $article_timestamp;
-				$item['content'] = $contents;
-				$this->items[] = $item;
-				$limit++;
-			}
+		$contents = $article->find('article', 0)->innertext;
+		foreach(array(
+			'<div class="shareBar"',
+			'<div class="shortcodeGalleryWrapper"',
+			'<div class="relatedContent',
+			'<div class="downloadNow',
+			'<div data-shortcode',
+			'<div id="sharethrough',
+			'<div id="inpage-video'
+		) as $div_start) {
+			$contents = stripRecursiveHtmlSection($contents, 'div', $div_start);
 		}
+		$contents = stripWithDelimiters($contents, '<script', '</script>');
+		$contents = stripWithDelimiters($contents, '<meta itemprop="image"', '>');
+		$contents = stripWithDelimiters($contents, '<svg class="svg-symbol', '</svg>');
+		$contents = trim(stripWithDelimiters($contents, '<section class="sharethrough-top', '</section>'));
+		$item['content'] = $contents;
+
+		return $item;
 
 	}
 }

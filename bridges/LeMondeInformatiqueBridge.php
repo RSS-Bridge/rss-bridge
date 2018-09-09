@@ -3,8 +3,7 @@ class LeMondeInformatiqueBridge extends FeedExpander {
 
 	const MAINTAINER = 'ORelio';
 	const NAME = 'Le Monde Informatique';
-	const URI = 'http://www.lemondeinformatique.fr/';
-	const CACHE_TIMEOUT = 1800; // 30min
+	const URI = 'https://www.lemondeinformatique.fr/';
 	const DESCRIPTION = 'Returns the newest articles.';
 
 	public function collectData(){
@@ -15,30 +14,26 @@ class LeMondeInformatiqueBridge extends FeedExpander {
 		$item = parent::parseItem($newsItem);
 		$article_html = getSimpleHTMLDOMCached($item['uri'])
 			or returnServerError('Could not request LeMondeInformatique: ' . $item['uri']);
-		$item['content'] = $this->cleanArticle($article_html->find('div#article', 0)->innertext);
-		$item['title'] = $article_html->find('h1.cleanprint-title', 0)->plaintext;
+
+		//Deduce thumbnail URL from article image URL
+		$item['enclosures'] = array(
+			str_replace(
+				'/grande/',
+				'/petite/',
+				$article_html->find('.article-image', 0)->find('img', 0)->src
+			)
+		);
+
+		//No response header sets the encoding, explicit conversion is needed or subsequent xml_encode() will fail
+		$item['content'] = utf8_encode($this->cleanArticle($article_html->find('div.col-primary', 0)->innertext));
+		$item['author'] = utf8_encode($article_html->find('div.author-infos', 0)->find('b', 0)->plaintext);
+
 		return $item;
 	}
 
-	private function stripCDATA($string){
-		$string = str_replace('<![CDATA[', '', $string);
-		$string = str_replace(']]>', '', $string);
-		return $string;
-	}
-
-	private function stripWithDelimiters($string, $start, $end){
-		while(strpos($string, $start) !== false) {
-			$section_to_remove = substr($string, strpos($string, $start));
-			$section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
-			$string = str_replace($section_to_remove, '', $string);
-		}
-
-		return $string;
-	}
-
 	private function cleanArticle($article_html){
-		$article_html = $this->stripWithDelimiters($article_html, '<script', '</script>');
-		$article_html = $this->stripWithDelimiters($article_html, '<h1 class="cleanprint-title"', '</h1>');
+		$article_html = stripWithDelimiters($article_html, '<script', '</script>');
+		$article_html = explode('<p class="contact-error', $article_html)[0] . '</div>';
 		return $article_html;
 	}
 }

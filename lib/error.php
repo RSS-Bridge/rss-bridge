@@ -20,7 +20,7 @@ function debugMessage($text){
 	$calling = $backtrace[2];
 	$message = $calling['file'] . ':'
 		. $calling['line'] . ' class '
-		. $calling['class'] . '->'
+		. (isset($calling['class']) ? $calling['class'] : '<no-class>') . '->'
 		. $calling['function'] . ' - '
 		. $text;
 

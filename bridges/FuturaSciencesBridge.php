@@ -3,7 +3,7 @@ class FuturaSciencesBridge extends FeedExpander {
 
 	const MAINTAINER = 'ORelio';
 	const NAME = 'Futura-Sciences Bridge';
-	const URI = 'http://www.futura-sciences.com/';
+	const URI = 'https://www.futura-sciences.com/';
 	const DESCRIPTION = 'Returns the newest articles.';
 
 	const PARAMETERS = array( array(
@@ -90,40 +90,9 @@ class FuturaSciencesBridge extends FeedExpander {
 			or returnServerError('Could not request Futura-Sciences: ' . $item['uri']);
 		$item['content'] = $this->extractArticleContent($article);
 		$author = $this->extractAuthor($article);
-		$item['author'] = empty($author) ? $item['author'] : $author;
+		if (!empty($author))
+			$item['author'] = $author;
 		return $item;
-	}
-
-	private function stripWithDelimiters($string, $start, $end){
-		while(strpos($string, $start) !== false) {
-			$section_to_remove = substr($string, strpos($string, $start));
-			$section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
-			$string = str_replace($section_to_remove, '', $string);
-		} return $string;
-	}
-
-	private function stripRecursiveHTMLSection($string, $tag_name, $tag_start){
-		$open_tag = '<' . $tag_name;
-		$close_tag = '</' . $tag_name . '>';
-		$close_tag_length = strlen($close_tag);
-		if(strpos($tag_start, $open_tag) === 0) {
-			while(strpos($string, $tag_start) !== false) {
-				$max_recursion = 100;
-				$section_to_remove = null;
-				$section_start = strpos($string, $tag_start);
-				$search_offset = $section_start;
-				do {
-					$max_recursion--;
-					$section_end = strpos($string, $close_tag, $search_offset);
-					$search_offset = $section_end + $close_tag_length;
-					$section_to_remove = substr($string, $section_start, $section_end - $section_start + $close_tag_length);
-					$open_tag_count = substr_count($section_to_remove, $open_tag);
-					$close_tag_count = substr_count($section_to_remove, $close_tag);
-				} while ($open_tag_count > $close_tag_count && $max_recursion > 0);
-				$string = str_replace($section_to_remove, '', $string);
-			}
-		}
-		return $string;
 	}
 
 	private function extractArticleContent($article){
@@ -137,6 +106,7 @@ class FuturaSciencesBridge extends FeedExpander {
 			'<div class="sharebar2',
 			'<div class="diaporamafullscreen"',
 			'<div class="module social-button',
+			'<div class="module social-share',
 			'<div style="margin-bottom:10px;" class="noprint"',
 			'<div class="ficheprevnext',
 			'<div class="bar noprint',
@@ -148,16 +118,17 @@ class FuturaSciencesBridge extends FeedExpander {
 			'<div id="forumcomments',
 			'<div ng-if="active"'
 		) as $div_start) {
-			$contents = $this->stripRecursiveHTMLSection($contents, 'div', $div_start);
+			$contents = stripRecursiveHTMLSection($contents, 'div', $div_start);
 		}
 
-		$contents = $this->stripWithDelimiters($contents, '<hr ', '/>');
-		$contents = $this->stripWithDelimiters($contents, '<p class="content-date', '</p>');
-		$contents = $this->stripWithDelimiters($contents, '<h1 class="content-title', '</h1>');
-		$contents = $this->stripWithDelimiters($contents, 'fs:definition="', '"');
-		$contents = $this->stripWithDelimiters($contents, 'fs:xt:clicktype="', '"');
-		$contents = $this->stripWithDelimiters($contents, 'fs:xt:clickname="', '"');
-		$contents = $this->stripWithDelimiters($contents, '<script ', '</script>');
+		$contents = stripWithDelimiters($contents, '<hr ', '/>');
+		$contents = stripWithDelimiters($contents, '<p class="content-date', '</p>');
+		$contents = stripWithDelimiters($contents, '<h1 class="content-title', '</h1>');
+		$contents = stripWithDelimiters($contents, 'fs:definition="', '"');
+		$contents = stripWithDelimiters($contents, 'fs:xt:clicktype="', '"');
+		$contents = stripWithDelimiters($contents, 'fs:xt:clickname="', '"');
+		$contents = StripWithDelimiters($contents, '<section class="module-toretain module-propal-nl', '</section>');
+		$contents = stripWithDelimiters($contents, '<script ', '</script>');
 
 		return $headline . trim($contents);
 	}

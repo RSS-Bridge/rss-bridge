@@ -6,16 +6,6 @@ class NeuviemeArtBridge extends FeedExpander {
 	const URI = 'http://www.9emeart.fr/';
 	const DESCRIPTION = 'Returns the newest articles.';
 
-	private function stripWithDelimiters($string, $start, $end){
-		while(strpos($string, $start) !== false) {
-			$section_to_remove = substr($string, strpos($string, $start));
-			$section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
-			$string = str_replace($section_to_remove, '', $string);
-		}
-
-		return $string;
-	}
-
 	protected function parseItem($item){
 		$item = parent::parseItem($item);
 
@@ -34,16 +24,16 @@ class NeuviemeArtBridge extends FeedExpander {
 		}
 
 		$article_content = '';
-		if($article_image) {
+		if ($article_image) {
 			$article_content = '<p><img src="' . $article_image . '" /></p>';
 		}
 		$article_content .= str_replace(
 			'src="/', 'src="' . self::URI,
 			$article_html->find('div.newsGenerique_con', 0)->innertext
 		);
-		$article_content = $this->stripWithDelimiters($article_content, '<script', '</script>');
-		$article_content = $this->stripWithDelimiters($article_content, '<style', '</style>');
-		$article_content = $this->stripWithDelimiters($article_content, '<link', '>');
+		$article_content = stripWithDelimiters($article_content, '<script', '</script>');
+		$article_content = stripWithDelimiters($article_content, '<style', '</style>');
+		$article_content = stripWithDelimiters($article_content, '<link', '>');
 
 		$item['content'] = $article_content;
 
