@@ -430,6 +430,8 @@ EOD;
 
 		if(isset($element)) {
 
+			defaultLinkTo($element, self::URI);
+
 			$author = str_replace(' | Facebook', '', $html->find('title#pageTitle', 0)->innertext);
 			$profilePic = 'https://graph.facebook.com/'
 			. $this->getInput('u')
@@ -536,7 +538,11 @@ EOD;
 						if(strlen($title) > 64)
 							$title = substr($title, 0, strpos(wordwrap($title, 64), "\n")) . '...';
 
-						$uri = self::URI . $post->find('abbr')[0]->parent()->getAttribute('href');
+						$uri = $post->find('abbr')[0]->parent()->getAttribute('href');
+
+						if (false !== strpos($uri, '?')) {
+							$uri = substr($uri, 0, strpos($uri, '?'));
+						}
 
 						//Build and add final item
 						$item['uri'] = htmlspecialchars_decode($uri);
