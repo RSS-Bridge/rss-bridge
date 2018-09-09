@@ -540,12 +540,9 @@ EOD;
 
 						$uri = $post->find('abbr')[0]->parent()->getAttribute('href');
 
-						$old_qs = parse_url($uri, PHP_URL_QUERY);
-						parse_str($old_qs, $qs_items);
-
-						if (isset($qs_items['__xts__'])) unset($qs_items['__xts__']);
-
-						$uri = str_replace($old_qs, http_build_query($qs_items), $uri);
+						if (false !== strpos($uri, '?')) {
+							$uri = substr($uri, 0, strpos($uri, '?'));
+						}
 
 						//Build and add final item
 						$item['uri'] = htmlspecialchars_decode($uri);
