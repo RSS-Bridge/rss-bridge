@@ -3,7 +3,7 @@ class DauphineLibereBridge extends FeedExpander {
 
 	const MAINTAINER = 'qwertygc';
 	const NAME = 'Dauphine Bridge';
-	const URI = 'http://www.ledauphine.com/';
+	const URI = 'https://www.ledauphine.com/';
 	const CACHE_TIMEOUT = 7200; // 2h
 	const DESCRIPTION = 'Returns the newest articles.';
 
@@ -49,8 +49,9 @@ class DauphineLibereBridge extends FeedExpander {
 
 	private function extractContent($url){
 		$html2 = getSimpleHTMLDOMCached($url);
-		$text = $html2->find('div.column', 0)->innertext;
-		$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
-		return $text;
+		foreach ($html2->find('.noprint, link, script, iframe, .shareTool, .contentInfo') as $remove) {
+			$remove->outertext = '';
+		}
+		return $html2->find('div.content', 0)->innertext;
 	}
 }
