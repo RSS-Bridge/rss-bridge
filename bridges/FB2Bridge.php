@@ -17,16 +17,6 @@ class FB2Bridge extends BridgeAbstract {
 
 	public function collectData(){
 
-		function extractFromDelimiters($string, $start, $end){
-			if(strpos($string, $start) !== false) {
-				$section_retrieved = substr($string, strpos($string, $start) + strlen($start));
-				$section_retrieved = substr($section_retrieved, 0, strpos($section_retrieved, $end));
-				return $section_retrieved;
-			}
-
-			return false;
-		}
-
 		//Utility function for cleaning a Facebook link
 		$unescape_fb_link = function($matches){
 			if(is_array($matches) && count($matches) > 1) {
