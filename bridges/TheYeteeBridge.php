@@ -14,8 +14,9 @@ class TheYeteeBridge extends BridgeAbstract {
 
 		$div =  $html->find('.hero-col');
 		foreach($div as $element) {
-			
+
 				$item = array();
+				$item['enclosures'] = array();
 
 				$title = $element->find('h2',0)->plaintext;
 				$item['title'] = $title;
@@ -31,6 +32,7 @@ class TheYeteeBridge extends BridgeAbstract {
 				foreach($photos as $photo)
 				{
 					$content = $content."<br /><img src='$photo->src' />";
+					$item['enclosures'][] = $photo->src;
 				}
 				$item['content'] = $content;
 
