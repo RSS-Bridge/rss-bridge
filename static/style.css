@@ -6,16 +6,15 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
 	font-size: 100%;
 	font: inherit;
 	vertical-align: baseline;
-
 }
+
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
-
 	display: block;
-
 }
+
 /* Let's go for the actual style */
- body {
+body {
 	background-color: #f0f0f0;
 	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
 }
@@ -26,38 +25,42 @@ a, a:link, a:visited {
 }
 
 a:hover {
- text-decoration: underline;
+	text-decoration: underline;
 }
 
 /* Header */
- header {
+
+header {
 	margin-top: 40px;
 	text-align: center;
 	color: #1182DB;
 }
- header > h1 {
+
+header > h1 {
 	font-size: 500%;
 	font-weight: bold;
 }
- header > h2 {
+
+header > h2 {
 	margin-left: 1em;
 	font-size: 200%;
 }
- header > section.warning {
+
+header > section.warning {
 	width: 40%;
 	background-color: #ffc600;
 	color: #5f5f5f;
 }
- header > section.critical-warning {
-	 width: 40%;
-	 background-color: #cf3e3e;
-	 font-weight: bold;
-	 color: white;
- }
+
+header > section.critical-warning {
+	width: 40%;
+	background-color: #cf3e3e;
+	font-weight: bold;
+	color: white;
+}
 
 input[type="text"],
 input[type="number"] {
-
 	background-color: white;
 	color: #404552;
 	border: 1px solid #dedede;
@@ -65,36 +68,37 @@ input[type="number"] {
 	margin-bottom: 10px;
 	padding: 5px 10px;
 }
+
 input[type="text"]:focus {
 	outline: none;
 	border-color: #888;
 }
- .searchbar {
+
+.searchbar {
 	width: 40%;
 	margin: 40px auto 100px;
 }
- .searchbar input[type="text"] {
+
+.searchbar input[type="text"] {
 	width: 90%;
 	margin: auto;
 	font-size: 1.1em;
 	text-align: center;
 	margin-bottom: 10px;
 }
- .searchbar input[type="text"]::placeholder {
-	text-align: center;
 
+.searchbar input[type="text"]::placeholder {
+	text-align: center;
 }
 
 .searchbar input[type="text"]:focus::-webkit-input-placeholder,
 .searchbar input[type="text"]:focus::-moz-placeholder,
 .searchbar input[type="text"]:focus:-moz-placeholder,
 .searchbar input[type="text"]:focus:-ms-input-placeholder {
-
 	opacity: 0;
-
 }
 
- .searchbar > h3 {
+.searchbar > h3 {
 	font-size: 200%;
 	font-weight: bold;
 	color: #1182DB;
@@ -102,7 +106,7 @@ input[type="text"]:focus {
 }
 
 /* Section */
- section {
+section {
 	background-color: #FFFFFF;
 	width: 60%;
 	margin: 30px auto;
@@ -111,27 +115,26 @@ input[type="text"]:focus {
 	box-shadow: 0 6px 15px rgba(0, 0, 0, 0.09);
 	border-radius: 4px;
 }
- section.footer {
+
+section.footer {
 	opacity: 0.5;
 }
- section.footer:hover {
-	opacity: 1;
 
+section.footer:hover {
+	opacity: 1;
 }
 
 section.footer .version {
-
 	font-size: 80%;
-
 }
- section > h2 {
+
+section > h2 {
 	font-size: 200%;
 	font-weight: bold;
 }
 
-
 /* Buttons */
- button {
+button {
 	line-height: 1.9em;
 	color: #FFF;
 	font-weight: bold;
@@ -144,88 +147,78 @@ section.footer .version {
 	cursor: pointer;
 	width: calc(20% - 4px);
 }
- button.small {
+
+button.small {
 	width: auto;
 	line-height: 1.2em;
 }
- button:hover {
-   background: #49afff;
- }
 
- .description {
+button:hover {
+	background: #49afff;
+}
+
+.description {
 	margin: 10px;
 }
- h5 {
+
+h5 {
 	margin: 20px;
 	font-weight: bold;
 }
- form {
+
+form {
 	margin-bottom: 6px;
 }
 
 .parameters label::first-letter {
-
 	text-transform: capitalize;
-
 }
 
 .parameters label::after {
-
 	content: ' :';
-
 }
 
 @supports (display: grid) {
 
 	.parameters {
-
 		display: grid;
 		padding: 12px 0;
 		grid-template-columns: 40% max-content;
 		grid-column-gap: 10px;
 		grid-row-gap: 5px;
-
 	}
 
 	.parameters label {
-
 		text-align: right;
-
 	}
 
 	.parameters input[type="text"],
 	.parameters input[type="number"],
 	.parameters input[type="checkbox"],
 	.parameters select {
-
 		margin-left: 0;
-
 	}
 
 	.parameters input[type="text"],
 	.parameters input[type="number"] {
-
 		width: auto;
 		color: #404552;
-
 	}
 
 	.parameters input[type="checkbox"] {
-
 		width: 20px;
 		height: 20px;
-
 	}
 
 } /* @supports (display: grid) */
 
 .maintainer {
-
 	color: #888888;
 	font-size: 70%;
 	text-align: right;
 }
- .secure-warning {
+
+.secure-warning {
 	background-color: #ffc600;
 	color: #5f5f5f;
 	box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
@@ -235,7 +228,8 @@ section.footer .version {
 	margin: auto;
 	margin-bottom: 6px;
 }
- form {
+
+form {
 	display: none;
 }
 
@@ -244,15 +238,16 @@ select {
 	margin-left: 8px;
 }
 
- h5 {
+h5 {
 	display: none;
 }
 
 /* Show more / less */
- .showmore-box {
+.showmore-box {
 	display: none;
 }
- .showmore, .showless {
+
+.showmore, .showless {
 	color: #888888;
 	cursor: pointer;
 }
@@ -260,20 +255,21 @@ select {
 	color: #000;
 	cursor: pointer;
 }
- .showmore-box:checked ~ .showmore {
+
+.showmore-box:checked ~ .showmore {
 	display: none;
 }
- .showmore-box:not(:checked) ~ .showless {
+
+.showmore-box:not(:checked) ~ .showless {
 	display: none;
 }
 
 .showmore-box:checked ~ form, .showmore-box:checked ~ h5 {
-
 	display: block;
 }
 
 /* Additional styles for error pages */
- .exception-message {
+.exception-message {
 	background-color: #c00000;
 	color: #FFFFFF;
 	font-weight: bold;
@@ -284,11 +280,13 @@ select {
 	margin: auto;
 	margin-bottom: 6px;
 }
- .advice {
+
+.advice {
 	margin-left: auto;
 	margin-right: auto;
 	display: table;
 }
- .advice > li {
+
+.advice > li {
 	text-align: left;
 }
