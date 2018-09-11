@@ -28,6 +28,12 @@ class Arte7Bridge extends BridgeAbstract {
 				)
 			)
 		),
+		'Collection (Français)' => array(
+			'colfr' => array(
+                'name' => 'Collection id (ex. RC-014095 pour https://www.arte.tv/fr/videos/RC-014095/blow-up/)',
+                'required' => true
+			)
+		),
 		'Catégorie (Allemand)' => array(
 			'catde' => array(
 				'type' => 'list',
@@ -45,6 +51,12 @@ class Arte7Bridge extends BridgeAbstract {
 					'Sonstiges' => 'AUT'
 				)
 			)
+		),
+		'Collection (Allemand)' => array(
+			'colde' => array(
+                'name' => 'Collection id (ex. RC-014095 pour https://www.arte.tv/de/videos/RC-014095/blow-up/)',
+                'required' => true
+			)
 		)
 	);
 
@@ -54,15 +66,24 @@ class Arte7Bridge extends BridgeAbstract {
 			$category = $this->getInput('catfr');
 			$lang = 'fr';
 			break;
+        case 'Collection (Français)':
+			$lang = 'fr';
+            $collectionId = $this->getInput('colfr');
+			break;
 		case 'Catégorie (Allemand)':
 			$category = $this->getInput('catde');
 			$lang = 'de';
+			break;
+        case 'Collection (Allemand)':
+			$lang = 'de';
+            $collectionId = $this->getInput('colde');
 			break;
 		}
 
 		$url = 'https://api.arte.tv/api/opa/v3/videos?sort=-lastModified&limit=10&language='
 			. $lang
-			. ($category != null ? '&category.code=' . $category : '');
+			. ($category != null ? '&category.code=' . $category : '')
+            . ($collectionId !=null ? '&collections.collectionId=' . $collectionId : '');
 
 		$header = array(
 			'Authorization: Bearer ' . self::API_TOKEN
