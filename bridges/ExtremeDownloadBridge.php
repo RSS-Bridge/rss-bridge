@@ -33,16 +33,14 @@ class ExtremeDownloadBridge extends BridgeAbstract {
 		$filter = $this->getInput('filter');
 
 		// Get the TV show title
-		$this->showTitle = $html->find('span[id=news-title]',0)->plaintext;
+		$this->showTitle = $html->find('span[id=news-title]', 0)->plaintext;
 
 		$list = $html->find('div[class=prez_7]');
 		foreach($list as $element) {
-			
 			$add = false;
-			if($filter == 'both'){
+			if($filter == 'both') {
 				$add = true;
-			}
-			else {
+			} else {
 				$type = $this->findLinkType($element);
 				if($type == $filter) {
 					$add = true;
@@ -53,7 +51,7 @@ class ExtremeDownloadBridge extends BridgeAbstract {
 
 				// Get the element name
 				$title = $element->plaintext;
-				
+
 				// Get thee element links
 				$links = $element->next_sibling()->innertext;
 
@@ -67,7 +65,7 @@ class ExtremeDownloadBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		switch($this->queriedContext){
+		switch($this->queriedContext) {
 		case 'Suivre la publication des épisodes d\'une série en cours de diffusion':
 			return $this->showTitle . '  - ' . self::NAME;
 			break;
@@ -78,21 +76,18 @@ class ExtremeDownloadBridge extends BridgeAbstract {
 
 	private function findLinkType($element)
 	{
-		$return ='';
+		$return = '';
 		// Walk through all elements in the reverse order until finding one with class 'presz_2'
-		while($element->class != 'prez_2')
-		{
+		while($element->class != 'prez_2') {
 			$element = $element->prev_sibling();
 		}
 		$text = html_entity_decode($element->plaintext);
 
 		// Regarding the text of the element, return the according link type
-		if(stristr($text,'téléchargement') != false)
-		{
+		if(stristr($text, 'téléchargement') != false) {
 			$return = 'download';
 		}
-		else if(stristr($text,'streaming') != false)
-		{
+		else if(stristr($text, 'streaming') != false) {
 			$return = 'streaming';
 		}
 
