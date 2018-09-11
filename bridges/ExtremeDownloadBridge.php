@@ -86,8 +86,7 @@ class ExtremeDownloadBridge extends BridgeAbstract {
 		// Regarding the text of the element, return the according link type
 		if(stristr($text, 'téléchargement') != false) {
 			$return = 'download';
-		}
-		else if(stristr($text, 'streaming') != false) {
+		} else if(stristr($text, 'streaming') != false) {
 			$return = 'streaming';
 		}
 
