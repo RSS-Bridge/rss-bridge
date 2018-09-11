@@ -83,7 +83,7 @@ class Arte7Bridge extends BridgeAbstract {
 		$url = 'https://api.arte.tv/api/opa/v3/videos?sort=-lastModified&limit=10&language='
 			. $lang
 			. ($category != null ? '&category.code=' . $category : '')
-			 . ($collectionId !=null ? '&collections.collectionId=' . $collectionId : '');
+			. ($collectionId != null ? '&collections.collectionId=' . $collectionId : '');
 
 		$header = array(
 			'Authorization: Bearer ' . self::API_TOKEN
