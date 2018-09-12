@@ -4,7 +4,7 @@ class AutoJMBridge extends BridgeAbstract {
 
 	const NAME = 'AutoJM';
 	const URI = 'http://www.autojm.fr/';
-	const DESCRIPTION = 'Suivre les offres de véhicules proposés par AutoJM en fonction des critères de filtrages proposés par le site web AutoJM';
+	const DESCRIPTION = 'Suivre les offres de véhicules proposés par AutoJM en fonction des critères de filtrages';
 	const MAINTAINER = 'sysadminstory';
 	const PARAMETERS = array(
 		'Afficher les offres de véhicules disponible en fonction des critères du site AutoJM' => array(
@@ -23,12 +23,11 @@ class AutoJMBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI . $this->getInput('url'))
 			or returnServerError('Could not request AutoJM.');
 		$list = $html->find('div[class*=ligne_modele]');
-		foreach($list as $element)
-		{
+		foreach($list as $element) {
 			$image = $element->find('img[class=width-100]', 0)->src;
 			$serie = $element->find('div[class=serie]', 0)->find('span', 0)->plaintext;
 			$url = $element->find('div[class=serie]', 0)->find('a[class=btn_ligne color-black]', 0)->href;
-			if($element->find('div[class*=hasStock-info]', 0) != NULL) {
+			if($element->find('div[class*=hasStock-info]', 0) != null) {
 				$dispo = 'Disponible';
 			} else {
 				$dispo = 'Sur commande';
@@ -41,21 +40,19 @@ class AutoJMBridge extends BridgeAbstract {
 			$remise = $element->find('div[class*=remise]', 0)->plaintext;
 			$prix = $element->find('div[class*=prixjm]', 0)->plaintext;
 
+			$item = array();
 			$item['uri'] = $url;
 			$item['title'] = $serie;
 			$item['content'] = '<p><img style="vertical-align:middle ; padding: 10px" src="' . $image . '" />'. $serie . '</p>'.
-				'<ul>'.
-				'<li>Disponibilité : ' . $dispo . '</li>' .
-				'<li>Carburant : ' . $carburant . '</li>' .
-				'<li>Transmission : ' . $transmission . '</li>' .
-				'<li>Nombre de places : ' . $places . '</li>' .
-				'<li>Nombre de portes : ' . $portes . '</li>' .
-				'<li>Série : ' . $serie . '</li>' .
-				'<li>Carosserie : ' . $carosserie . '</li>' .
-				'<li>Remise : ' . $remise . '</li>' .
-				'<li>Prix : ' . $prix . '</li>' .
-				'</ul>'
-				;
+			$item['content'] .= '<ul><li>Disponibilité : ' . $dispo . '</li>';
+			$item['content'] .= '<li>Carburant : ' . $carburant . '</li>';
+			$item['content'] .= '<li>Transmission : ' . $transmission . '</li>';
+			$item['content'] .= '<li>Nombre de places : ' . $places . '</li>';
+			$item['content'] .= '<li>Nombre de portes : ' . $portes . '</li>';
+			$item['content'] .= '<li>Série : ' . $serie . '</li>';
+			$item['content'] .= '<li>Carosserie : ' . $carosserie . '</li>';
+			$item['content'] .= '<li>Remise : ' . $remise . '</li>' ;
+			$item['content'] .= '<li>Prix : ' . $prix . '</li></ul>';
 
 			$this->items[] = $item;
 		}
