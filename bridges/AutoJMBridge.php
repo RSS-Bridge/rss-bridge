@@ -51,7 +51,7 @@ class AutoJMBridge extends BridgeAbstract {
 			$item['content'] .= '<li>Nombre de portes : ' . $portes . '</li>';
 			$item['content'] .= '<li>Série : ' . $serie . '</li>';
 			$item['content'] .= '<li>Carosserie : ' . $carosserie . '</li>';
-			$item['content'] .= '<li>Remise : ' . $remise . '</li>' ;
+			$item['content'] .= '<li>Remise : ' . $remise . '</li>';
 			$item['content'] .= '<li>Prix : ' . $prix . '</li></ul>';
 
 			$this->items[] = $item;
