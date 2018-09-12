@@ -362,7 +362,7 @@ class LeBonCoinBridge extends BridgeAbstract {
 		);
 
 		$opts = array(
-			CURL_CUSTOMREQUEST => 'POST',
+			CURLOPT_CUSTOMREQUEST => 'POST',
 			CURLOPT_POSTFIELDS => $data
 
 		);
@@ -424,7 +424,7 @@ class LeBonCoinBridge extends BridgeAbstract {
 
 		$requestJson = new StdClass();
 		$requestJson->owner_type = $this->getInput('owner');
-		$requestJson->filters->location = array();
+		$requestJson->filters = new StdClass();
 
 		$requestJson->filters->keywords = array(
 			'text' => $this->getInput('keywords')
