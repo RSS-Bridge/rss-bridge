@@ -13,6 +13,13 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 	display: block;
 }
 
+/* Adjust parameters for browsers that don't support the grid layout */
+
+.parameters label:before {
+	content: " ";
+	display: block;
+}
+
 /* Let's go for the actual style */
 body {
 	background-color: #f0f0f0;
