@@ -11,7 +11,7 @@ class AtomFormat extends FormatAbstract{
 		$httpHost = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
 		$httpInfo = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
 
-		$serverRequestUri = $this->xml_encode($_SERVER['REQUEST_URI']);
+		$serverRequestUri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
 
 		$extraInfos = $this->getExtraInfos();
 		$title = $this->xml_encode($extraInfos['name']);
