@@ -25,13 +25,11 @@ class PikabuBridge extends BridgeAbstract {
 		)
 	);
 
-	public function getURI($die_on_fail = false) {
+	public function getURI() {
 		if ($this->getInput('tag')) {
 			return self::URI . '/tag/' . rawurlencode($this->getInput('tag')) . '/' . rawurlencode($this->getInput('filter'));
-		} else if (!$die_on_fail) {
-			return self::URI;
 		} else {
-			returnServerError('No input given');
+			return parent::getURI();
 		}
 	}
 
@@ -47,14 +45,8 @@ class PikabuBridge extends BridgeAbstract {
 		}
 	}
 
-	protected function parseItem($item){
-		$item = parent::parseItem($item);
-		$item['save'] = in_array($item['uri'], $this->includedUris);
-		return $item;
-	}
-
 	public function collectData(){
-		$link = $this->getURI(true);
+		$link = $this->getURI();
 
 		$text_html = getContents($link) or returnServerError('Could not fetch ' . $link);
 		$text_html = iconv('windows-1251', 'utf-8', $text_html);
