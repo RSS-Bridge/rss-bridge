@@ -27,7 +27,7 @@ class PikabuBridge extends BridgeAbstract {
 
 	public function getURI($die_on_fail = false) {
 		if ($this->getInput('tag')) {
-			return self::URI . '/tag/' . urlencode($this->getInput('tag')) . '/' . urlencode($this->getInput('filter'));
+			return self::URI . '/tag/' . rawurlencode($this->getInput('tag')) . '/' . rawurlencode($this->getInput('filter'));
 		} else if (!$die_on_fail) {
 			return self::URI;
 		} else {
