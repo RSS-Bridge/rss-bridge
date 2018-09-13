@@ -9,7 +9,7 @@ class PikabuBridge extends BridgeAbstract {
 	const PARAMETERS = array(
 		'По тегу' => array(
 			'tag' => array(
-				'name' => 'Тэг',
+				'name' => 'Тег',
 				'exampleValue' => 'it',
 				'required' => true
 			),
