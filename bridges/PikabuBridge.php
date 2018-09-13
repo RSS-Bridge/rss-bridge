@@ -3,7 +3,7 @@ class PikabuBridge extends BridgeAbstract {
 
 	const NAME = 'Пикабу';
 	const URI = 'https://pikabu.ru';
-	const DESCRIPTION = 'Выводит посты по тэгу';
+	const DESCRIPTION = 'Выводит посты по тегу';
 	const MAINTAINER = 'em92';
 
 	const PARAMETERS = array(
