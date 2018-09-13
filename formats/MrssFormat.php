@@ -78,9 +78,9 @@ EOD;
 		}
 
 		$charset = $this->getCharset();
-		
+
 		/* xml attributes need to have certain characters escaped to be w3c compliant */
-		$titleSafe = htmlspecialchars($title);
+		$imageTitle = htmlspecialchars($title, ENT_COMPAT);
 		/* Data are prepared, now let's begin the "MAGIE !!!" */
 		$toReturn = <<<EOD
 <?xml version="1.0" encoding="{$charset}"?>
@@ -92,7 +92,7 @@ xmlns:atom="http://www.w3.org/2005/Atom">
 		<title>{$title}</title>
 		<link>http{$https}://{$httpHost}{$httpInfo}/</link>
 		<description>{$title}</description>
-		<image url="{$icon}" title="{$titleSafe}" link="{$uri}"/>
+		<image url="{$icon}" title="{$imageTitle}" link="{$uri}"/>
 		<atom:link rel="alternate" type="text/html" href="{$uri}" />
 		<atom:link rel="self" href="http{$https}://{$httpHost}{$serverRequestUri}" />
 		{$items}
