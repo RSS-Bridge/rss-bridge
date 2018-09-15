@@ -39,36 +39,44 @@ This bridge is not fetching its content through a secure connection</div>';
 	$parameters = array()) {
 		$form = BridgeCard::getFormHeader($bridgeName, $isHttps);
 
-		foreach($parameters as $id => $inputEntry) {
-			if(!isset($inputEntry['exampleValue']))
-				$inputEntry['exampleValue'] = '';
+		if(count($parameters) > 0) {
 
-			if(!isset($inputEntry['defaultValue']))
-				$inputEntry['defaultValue'] = '';
+			$form .= '<div class="parameters">';
 
-			$idArg = 'arg-'
-				. urlencode($bridgeName)
-				. '-'
-				. urlencode($parameterName)
-				. '-'
-				. urlencode($id);
+			foreach($parameters as $id => $inputEntry) {
+				if(!isset($inputEntry['exampleValue']))
+					$inputEntry['exampleValue'] = '';
 
-			$form .= '<label for="'
-				. $idArg
-				. '">'
-				. filter_var($inputEntry['name'], FILTER_SANITIZE_STRING)
-				. ' : </label>'
-				. PHP_EOL;
+				if(!isset($inputEntry['defaultValue']))
+					$inputEntry['defaultValue'] = '';
 
-			if(!isset($inputEntry['type']) || $inputEntry['type'] === 'text') {
-				$form .= BridgeCard::getTextInput($inputEntry, $idArg, $id);
-			} elseif($inputEntry['type'] === 'number') {
-				$form .= BridgeCard::getNumberInput($inputEntry, $idArg, $id);
-			} else if($inputEntry['type'] === 'list') {
-				$form .= BridgeCard::getListInput($inputEntry, $idArg, $id);
-			} elseif($inputEntry['type'] === 'checkbox') {
-				$form .= BridgeCard::getCheckboxInput($inputEntry, $idArg, $id);
+				$idArg = 'arg-'
+					. urlencode($bridgeName)
+					. '-'
+					. urlencode($parameterName)
+					. '-'
+					. urlencode($id);
+
+				$form .= '<label for="'
+					. $idArg
+					. '">'
+					. filter_var($inputEntry['name'], FILTER_SANITIZE_STRING)
+					. '</label>'
+					. PHP_EOL;
+
+				if(!isset($inputEntry['type']) || $inputEntry['type'] === 'text') {
+					$form .= BridgeCard::getTextInput($inputEntry, $idArg, $id);
+				} elseif($inputEntry['type'] === 'number') {
+					$form .= BridgeCard::getNumberInput($inputEntry, $idArg, $id);
+				} else if($inputEntry['type'] === 'list') {
+					$form .= BridgeCard::getListInput($inputEntry, $idArg, $id);
+				} elseif($inputEntry['type'] === 'checkbox') {
+					$form .= BridgeCard::getCheckboxInput($inputEntry, $idArg, $id);
+				}
 			}
+
+			$form .= '</div>';
+
 		}
 
 		if($isActive) {
@@ -106,7 +114,7 @@ This bridge is not fetching its content through a secure connection</div>';
 		. filter_var($entry['exampleValue'], FILTER_SANITIZE_STRING)
 		. '" name="'
 		. $name
-		. '" /><br>'
+		. '" />'
 		. PHP_EOL;
 	}
 
@@ -121,7 +129,7 @@ This bridge is not fetching its content through a secure connection</div>';
 		. filter_var($entry['exampleValue'], FILTER_SANITIZE_NUMBER_INT)
 		. '" name="'
 		. $name
-		. '" /><br>'
+		. '" />'
 		. PHP_EOL;
 	}
 
@@ -172,7 +180,7 @@ This bridge is not fetching its content through a secure connection</div>';
 			}
 		}
 
-		$list .= '</select><br>';
+		$list .= '</select>';
 
 		return $list;
 	}
@@ -186,7 +194,7 @@ This bridge is not fetching its content through a secure connection</div>';
 		. $name
 		. '" '
 		. ($entry['defaultValue'] === 'checked' ?: '')
-		. ' /><br>'
+		. ' />'
 		. PHP_EOL;
 	}
 
