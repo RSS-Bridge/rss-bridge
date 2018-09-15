@@ -94,17 +94,20 @@ class ETTVBridge extends BridgeAbstract {
 		)
 	));
 
+	protected $results_link;
+
 	public function collectData(){
-		// No control on inputs, because all have defaultValue set
+		// No control on inputs, because all defaultValue are set
 		$query_str = 'torrents-search.php';
 		$query_str .= '?search=' . urlencode('+'.str_replace(' ', ' +', $this->getInput('query')));
 		$query_str .= '&cat=' . $this->getInput('cat');
-		$query_str .= 'incldead&=' . $this->getInput('status');
+		$query_str .= '&incldead=' . $this->getInput('status');
 		$query_str .= '&lang=' . $this->getInput('lang');
 		$query_str .= '&sort=id&order=desc';
 
 		// Get results page
-		$html = getSimpleHTMLDOM(self::URI . $query_str)
+		$this->results_link = self::URI . $query_str;
+		$html = getSimpleHTMLDOM($this->results_link)
 			or returnServerError('Could not request ' . $this->getName());
 
 		// Loop on each entry
@@ -125,7 +128,7 @@ class ETTVBridge extends BridgeAbstract {
 			$item = array();
 			$item['author'] = $details->children(6)->children(1)->plaintext;
 			$item['title'] = $entry->title;
-			$item['uri'] = $dllinks->children(0)->children(0)->children(0)->href;
+			$item['uri'] = $link;
 			$item['timestamp'] = strtotime($details->children(7)->children(1)->plaintext);
 			$item['content'] = '';
 			$item['content'] .= '<br/><b>Name: </b>' . $details->children(0)->children(1)->innertext;
@@ -138,5 +141,21 @@ class ETTVBridge extends BridgeAbstract {
 			$item['content'] .= '<br/><br/>' . $details->children(1)->children(0)->innertext;
 			$this->items[] = $item;
 		}
+	}
+
+	public function getName(){
+		if($this->getInput('query')) {
+			return '[' . self::NAME . '] ' . $this->getInput('query');
+		}
+
+		return self::NAME;
+	}
+
+	public function getURI(){
+		if(isset($this->results_link) && !empty($this->results_link)) {
+			return $this->results_link;
+		}
+
+		return self::URI;
 	}
 }
