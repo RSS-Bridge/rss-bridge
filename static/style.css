@@ -202,6 +202,10 @@ form {
 		text-align: right;
 	}
 
+	.parameters label::before {
+		content: none;
+	}
+
 	.parameters input[type="text"],
 	.parameters input[type="number"],
 	.parameters input[type="checkbox"],
