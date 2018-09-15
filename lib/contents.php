@@ -163,13 +163,15 @@ function getMimeType($url) {
 	static $mime = null;
 
 	if (is_null($mime)) {
+		// Default values, overriden by /etc/mime.types when present
 		$mime = array(
 			'jpg' => 'image/jpeg',
 			'gif' => 'image/gif',
 			'png' => 'image/png',
 			'image' => 'image/*'
 		);
-		if (is_file('/etc/mime.types')) {
+		// '@' is used to mute open_basedir warning, see issue #818
+		if (@is_readable('/etc/mime.types')) {
 			$file = fopen('/etc/mime.types', 'r');
 			while(($line = fgets($file)) !== false) {
 				$line = trim(preg_replace('/#.*/', '', $line));
