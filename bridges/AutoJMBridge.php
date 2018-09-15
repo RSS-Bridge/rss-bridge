@@ -43,7 +43,7 @@ class AutoJMBridge extends BridgeAbstract {
 			$item = array();
 			$item['uri'] = $url;
 			$item['title'] = $serie;
-			$item['content'] = '<p><img style="vertical-align:middle ; padding: 10px" src="' . $image . '" />'. $serie . '</p>'.
+			$item['content'] = '<p><img style="vertical-align:middle ; padding: 10px" src="' . $image . '" />'. $serie . '</p>';
 			$item['content'] .= '<ul><li>Disponibilité : ' . $dispo . '</li>';
 			$item['content'] .= '<li>Carburant : ' . $carburant . '</li>';
 			$item['content'] .= '<li>Transmission : ' . $transmission . '</li>';
