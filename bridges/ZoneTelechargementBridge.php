@@ -44,7 +44,6 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 
 		}
 
-
 		// Finally construct the items array
 		foreach($episodes as $epnum => $episode) {
 			$item = array();
