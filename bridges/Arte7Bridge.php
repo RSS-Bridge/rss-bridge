@@ -30,8 +30,9 @@ class Arte7Bridge extends BridgeAbstract {
 		),
 		'Collection (Français)' => array(
 			'colfr' => array(
-				'name' => 'Collection id (ex. RC-014095 pour https://www.arte.tv/fr/videos/RC-014095/blow-up/)',
-				'required' => true
+				'name' => 'Collection id',
+				'required' => true,
+				'title' => 'ex. RC-014095 pour https://www.arte.tv/fr/videos/RC-014095/blow-up/'
 			)
 		),
 		'Catégorie (Allemand)' => array(
@@ -54,8 +55,9 @@ class Arte7Bridge extends BridgeAbstract {
 		),
 		'Collection (Allemand)' => array(
 			'colde' => array(
-				'name' => 'Collection id (ex. RC-014095 pour https://www.arte.tv/de/videos/RC-014095/blow-up/)',
-				'required' => true
+				'name' => 'Collection id',
+				'required' => true,
+				'title' => 'ex. RC-014095 pour https://www.arte.tv/de/videos/RC-014095/blow-up/'
 			)
 		)
 	);
