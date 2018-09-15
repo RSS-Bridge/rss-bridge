@@ -109,7 +109,7 @@ EOD;
 			}
 
 			//Remove html nodes, keep only img, links, basic formatting
-			$content = strip_tags($content, '<a><img><i><u><br><p>');
+			$content = strip_tags($content, '<a><img><i><u><br><p><h3><h4>');
 
 			//Adapt link hrefs: convert relative links into absolute links and bypass external link redirection
 			$content = preg_replace_callback('/ href=\"([^"]+)\"/i', $unescape_fb_link, $content);
