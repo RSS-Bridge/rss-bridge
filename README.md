@@ -1,6 +1,6 @@
 rss-bridge
 ===
-[![LICENSE](https://img.shields.io/badge/license-UNLICENSE-blue.svg)](UNLICENSE) [![GitHub release](https://img.shields.io/github/release/rss-bridge/rss-bridge.svg)](https://github.com/rss-bridge/rss-bridge/releases/latest) [![Build Status](https://travis-ci.org/RSS-Bridge/rss-bridge.svg?branch=master)](https://travis-ci.org/RSS-Bridge/rss-bridge) [![Docker Build Status](https://img.shields.io/docker/build/rssbridge/rss-bridge.svg)](https://hub.docker.com/r/rssbridge/rss-bridge/)
+[![LICENSE](https://img.shields.io/badge/license-UNLICENSE-blue.svg)](UNLICENSE) [![GitHub release](https://img.shields.io/github/release/rss-bridge/rss-bridge.svg)](https://github.com/rss-bridge/rss-bridge/releases/latest) [![Debian Release](https://img.shields.io/badge/dynamic/json.svg?label=debian%20release&url=https%3A%2F%2Fsources.debian.org%2Fapi%2Fsrc%2Frss-bridge%2F&query=%24.versions%5B0%5D.version&colorB=blue)](https://tracker.debian.org/pkg/rss-bridge) [![Build Status](https://travis-ci.org/RSS-Bridge/rss-bridge.svg?branch=master)](https://travis-ci.org/RSS-Bridge/rss-bridge) [![Docker Build Status](https://img.shields.io/docker/build/rssbridge/rss-bridge.svg)](https://hub.docker.com/r/rssbridge/rss-bridge/)
 
 rss-bridge is a PHP project capable of generating ATOM feeds for websites which don't have one.
 
@@ -36,18 +36,18 @@ Output format can take several forms:
 * `Json` : Json, for consumption by other applications.
 * `Mrss` : MRSS Feed, for use in RSS/Feed readers
 * `Plaintext` : raw text (php object, as returned by print_r)
-   
+
 Screenshot
 ===
 
 Welcome screen:
 
 ![Screenshot](https://github.com/RSS-Bridge/rss-bridge/wiki/images/screenshot_rss-bridge_welcome.png)
-   
+
 RSS-Bridge hashtag (#rss-bridge) search on Twitter, in ATOM format (as displayed by Firefox):
 
 ![Screenshot](https://github.com/RSS-Bridge/rss-bridge/wiki/images/screenshot_twitterbridge_atom.png)
-   
+
 Requirements
 ===
 
@@ -69,7 +69,7 @@ Deploy
 ===
 [![Deploy on Scalingo](https://cdn.scalingo.com/deploy/button.svg)](https://my.scalingo.com/deploy?source=https://github.com/sebsauvage/rss-bridge)
 [![Deploy to Docker Cloud](https://files.cloud.docker.com/images/deploy-to-dockercloud.svg)](https://cloud.docker.com/stack/deploy/?repo=https://github.com/rss-bridge/rss-bridge)
- 
+
 Authors
 ===
 We are RSS Bridge Community, a group of developers continuing the project initiated by sebsauvage, webmaster of [sebsauvage.net](http://sebsauvage.net), author of [Shaarli](http://sebsauvage.net/wiki/doku.php?id=php:shaarli) and [ZeroBin](http://sebsauvage.net/wiki/doku.php?id=php:zerobin).
