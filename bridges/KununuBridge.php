@@ -64,7 +64,7 @@ class KununuBridge extends BridgeAbstract {
 		return parent::getURI();
 	}
 
-	function getName(){
+	public function getName(){
 		if(!is_null($this->getInput('company'))) {
 			$company = $this->fixCompanyName($this->getInput('company'));
 			return ($this->companyName ?: $company) . ' - ' . self::NAME;
@@ -73,52 +73,67 @@ class KununuBridge extends BridgeAbstract {
 		return parent::getName();
 	}
 
+	public function getIcon() {
+		return 'https://www.kununu.com/favicon-196x196.png';
+	}
+
 	public function collectData(){
 		$full = $this->getInput('full');
 
 		// Load page
-		$html = getSimpleHTMLDOMCached($this->getURI());
-		if(!$html)
-			returnServerError('Unable to receive data from ' . $this->getURI() . '!');
+		$html = getSimpleHTMLDOM($this->getURI())
+			or returnServerError('Unable to receive data from ' . $this->getURI() . '!');
+
+		$html = defaultLinkTo($html, static::URI);
+
 		// Update name for this request
-		$this->companyName = $this->extractCompanyName($html);
+		$company = $html->find('span[class="company-name"]', 0)
+			or returnServerError('Cannot find company name!');
+
+		$this->companyName = $company->innertext;
 
 		// Find the section with all the panels (reviews)
-		$section = $html->find('section.kununu-scroll-element', 0);
-		if($section === false)
-			returnServerError('Unable to find panel section!');
+		$section = $html->find('section.kununu-scroll-element', 0)
+			or returnServerError('Unable to find panel section!');
 
 		// Find all articles (within the panels)
-		$articles = $section->find('article');
-		if($articles === false || empty($articles))
-			returnServerError('Unable to find articles!');
+		$articles = $section->find('article')
+			or returnServerError('Unable to find articles!');
 
 		// Go through all articles
 		foreach($articles as $article) {
+
+			$anchor = $article->find('h1.review-title a', 0)
+				or returnServerError('Cannot find article URI!');
+
+			$date = $article->find('meta[itemprop=dateCreated]', 0)
+				or returnServerError('Cannot find article date!');
+
+			$rating = $article->find('span.rating', 0)
+				or returnServerError('Cannot find article rating!');
+
+			$summary = $article->find('[itemprop=name]', 0)
+				or returnServerError('Cannot find article summary!');
+
 			$item = array();
 
 			$item['author'] = $this->extractArticleAuthorPosition($article);
-			$item['timestamp'] = $this->extractArticleDate($article);
-			$item['title'] = $this->extractArticleRating($article)
+			$item['timestamp'] = strtotime($date);
+			$item['title'] = $rating->getAttribute('aria-label')
 			. ' : '
-			. $this->extractArticleSummary($article);
+			. strip_tags($summary->innertext);
 
-			$item['uri'] = $this->extractArticleUri($article);
+			$item['uri'] = $anchor->href;
 
-			if($full)
+			if($full) {
 				$item['content'] = $this->extractFullDescription($item['uri']);
-			else
+			} else {
 				$item['content'] = $this->extractArticleDescription($article);
+			}
 
 			$this->items[] = $item;
-		}
-	}
 
-	/**
-	* Fixes relative URLs in the given text
-	*/
-	private function fixUrl($text){
-		return preg_replace('/href=(\'|\")\//i', 'href="'.self::URI, $text);
+		}
 	}
 
 	/*
@@ -128,73 +143,11 @@ class KununuBridge extends BridgeAbstract {
 		$company = trim($company);
 		$company = str_replace(' ', '-', $company);
 		$company = strtolower($company);
-		return $this->encodeUmlauts($company);
-	}
 
-	/**
-	* Encodes unmlauts in the given text
-	*/
-	private function encodeUmlauts($text){
 		$umlauts = Array('/ä/','/ö/','/ü/','/Ä/','/Ö/','/Ü/','/ß/');
 		$replace = Array('ae','oe','ue','Ae','Oe','Ue','ss');
 
-		return preg_replace($umlauts, $replace, $text);
-	}
-
-	/**
-	* Returns the company name from the review html
-	*/
-	private function extractCompanyName($html){
-		$company_name = $html->find('h1[itemprop=name]', 0);
-		if(is_null($company_name))
-			returnServerError('Cannot find company name!');
-
-		return $company_name->plaintext;
-	}
-
-	/**
-	* Returns the date from a given article
-	*/
-	private function extractArticleDate($article){
-		// They conviniently provide a time attribute for us :)
-		$date = $article->find('meta[itemprop=dateCreated]', 0);
-		if(is_null($date))
-			returnServerError('Cannot find article date!');
-
-		return strtotime($date->content);
-	}
-
-	/**
-	* Returns the rating from a given article
-	*/
-	private function extractArticleRating($article){
-		$rating = $article->find('span.rating', 0);
-		if(is_null($rating))
-			returnServerError('Cannot find article rating!');
-
-		return $rating->getAttribute('aria-label');
-	}
-
-	/**
-	* Returns the summary from a given article
-	*/
-	private function extractArticleSummary($article){
-		$summary = $article->find('[itemprop=name]', 0);
-		if(is_null($summary))
-			returnServerError('Cannot find article summary!');
-
-		return strip_tags($summary->innertext);
-	}
-
-	/**
-	* Returns the URI from a given article
-	*/
-	private function extractArticleUri($article){
-		$anchor = $article->find('h1.review-title a', 0);
-		if(is_null($anchor))
-			returnServerError('Cannot find article URI!');
-
-		return self::URI . $anchor->href;
+		return preg_replace($umlauts, $replace, $company);
 	}
 
 	/**
@@ -202,9 +155,8 @@ class KununuBridge extends BridgeAbstract {
 	*/
 	private function extractArticleAuthorPosition($article){
 		// We need to parse the user-content manually
-		$user_content = $article->find('div.user-content', 0);
-		if(is_null($user_content))
-			returnServerError('Cannot find user content!');
+		$user_content = $article->find('div.user-content', 0)
+			or returnServerError('Cannot find user content!');
 
 		// Go through all h2 elements to find index of required span (I know... it's stupid)
 		$author_position = 'Unknown';
@@ -222,11 +174,10 @@ class KununuBridge extends BridgeAbstract {
 	* Returns the description from a given article
 	*/
 	private function extractArticleDescription($article){
-		$description = $article->find('[itemprop=reviewBody]', 0);
-		if(is_null($description))
-			returnServerError('Cannot find article description!');
+		$description = $article->find('[itemprop=reviewBody]', 0)
+			or returnServerError('Cannot find article description!');
 
-		return $this->fixUrl($description->innertext);
+		return $description->innertext;
 	}
 
 	/**
@@ -234,14 +185,14 @@ class KununuBridge extends BridgeAbstract {
 	*/
 	private function extractFullDescription($uri){
 		// Load full article
-		$html = getSimpleHTMLDOMCached($uri);
-		if($html === false)
-			returnServerError('Could not load full description!');
+		$html = getSimpleHTMLDOMCached($uri)
+			or returnServerError('Could not load full description!');
+
+		$html =	defaultLinkTo($html, static::URI);
 
 		// Find the article
-		$article = $html->find('article', 0);
-		if(is_null($article))
-			returnServerError('Cannot find article!');
+		$article = $html->find('article', 0)
+			or returnServerError('Cannot find article!');
 
 		// Luckily they use the same layout for the review overview and full article pages :)
 		return $this->extractArticleDescription($article);
