@@ -127,7 +127,7 @@ function buildSection($e, $bridge, $message, $link){
 		<ul class="advice">
 			<li>Press Return to check your input parameters</li>
 			<li>Press F5 to retry</li>
-			<li>Open a GitHub Issue if this error persists</li>
+			<li>Open a <a href="{$link}">GitHub Issue</a> if this error persists</li>
 		</ul>
 	</div>
 	<a href="{$link}" title="After clicking this button you can review
