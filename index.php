@@ -219,12 +219,20 @@ try {
 		$cache->purgeCache(86400); // 24 hours
 		$cache->setParameters($cache_params);
 
+		$items = array();
+		$infos = array();
+		$ctime = 0;
+
 		// Load cache & data
 		try {
 			$bridge->setCache($cache);
 			$bridge->setCacheTimeout($cache_timeout);
 			$bridge->dieIfNotModified();
 			$bridge->setDatas($bridge_params);
+
+			$items = $bridge->getItems();
+			$infos = $bridge->getExtraInfos();
+			$ctime = $bridge->getCacheTime();
 		} catch(Error $e) {
 			http_response_code($e->getCode());
 			header('Content-Type: text/html');
@@ -238,9 +246,9 @@ try {
 		// Data transformation
 		try {
 			$format = Format::create($format);
-			$format->setItems($bridge->getItems());
-			$format->setExtraInfos($bridge->getExtraInfos());
-			$format->setLastModified($bridge->getCacheTime());
+			$format->setItems($items);
+			$format->setExtraInfos($infos);
+			$format->setLastModified($ctime);
 			$format->display();
 		} catch(Error $e) {
 			http_response_code($e->getCode());
@@ -249,7 +257,7 @@ try {
 		} catch(Exception $e) {
 			http_response_code($e->getCode());
 			header('Content-Type: text/html');
-			die(buildBridgeException($e, $bridge));
+			die(buildTransformException($e, $bridge));
 		}
 	} else {
 		echo BridgeList::create($whitelist_selection, $showInactive);
