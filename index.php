@@ -234,13 +234,23 @@ try {
 			$infos = $bridge->getExtraInfos();
 			$ctime = $bridge->getCacheTime();
 		} catch(Error $e) {
-			http_response_code($e->getCode());
-			header('Content-Type: text/html');
-			die(buildBridgeException($e, $bridge));
+			$item = array();
+
+			$item['uri'] = http_build_query($params);
+			$item['title'] = $e->getCode();
+			$item['timestamp'] = time();
+			$item['content'] = htmlspecialchars(buildBridgeException($e, $bridge));
+
+			$items[] = $item;
 		} catch(Exception $e) {
-			http_response_code($e->getCode());
-			header('Content-Type: text/html');
-			die(buildBridgeException($e, $bridge));
+			$item = array();
+
+			$item['uri'] = http_build_query($params);
+			$item['title'] = $e->getCode();
+			$item['timestamp'] = time();
+			$item['content'] = buildBridgeException($e, $bridge);
+
+			$items[] = $item;
 		}
 
 		// Data transformation
