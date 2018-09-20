@@ -76,7 +76,7 @@ function buildBridgeException($e, $bridge){
 unable to receive or process the remote website's content!";
 	$section = buildSection($e, $bridge, $message, $link);
 
-	return buildPage($title, $header, $section);
+	return $section;
 }
 
 /**
