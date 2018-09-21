@@ -241,7 +241,7 @@ try {
 		} else { // Collect new data
 
 			try {
-				$bridge->setDatas($params);
+				$bridge->setDatas($bridge_params);
 				$bridge->collectData();
 
 				$items = $bridge->getItems();
@@ -253,7 +253,10 @@ try {
 			} catch(Error $e) {
 				$item = array();
 
-				$item['uri'] = http_build_query($params);
+				// Create "new" error message every 24 hours
+				$params['_error_time'] = urlencode((int)(time()/86400));
+
+				$item['uri'] = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) . '?' . http_build_query($params);
 				$item['title'] = $e->getCode();
 				$item['timestamp'] = time();
 				$item['content'] = htmlspecialchars(buildBridgeException($e, $bridge));
@@ -262,7 +265,10 @@ try {
 			} catch(Exception $e) {
 				$item = array();
 
-				$item['uri'] = http_build_query($params);
+				// Create "new" error message every 24 hours
+				$params['_error_time'] = urlencode((int)(time()/86400));
+
+				$item['uri'] = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) . '?' . http_build_query($params);
 				$item['title'] = $e->getCode();
 				$item['timestamp'] = time();
 				$item['content'] = buildBridgeException($e, $bridge);
