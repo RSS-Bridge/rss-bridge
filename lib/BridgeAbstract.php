@@ -256,7 +256,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 		return isset($this->cacheTimeout) ? $this->cacheTimeout : static::CACHE_TIMEOUT;
 	}
 
-	public function getCacheTime(){
+	public function getModifiedTime(){
 		return !is_null($this->cache) ? $this->cache->getTime() : false;
 	}
 
@@ -266,7 +266,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 		$if_modified_since = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
 		if (!$if_modified_since) return; // If-Modified-Since value is required
 
-		$last_modified = $this->getCacheTime();
+		$last_modified = $this->getModifiedTime();
 		if (!$last_modified) return; // did not detect cache time
 
 		if (time() - $this->getCacheTimeout() > $last_modified) return; // cache timeout

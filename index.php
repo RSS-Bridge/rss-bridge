@@ -221,7 +221,7 @@ try {
 
 		$items = array();
 		$infos = array();
-		$ctime = 0;
+		$mtime = 0;
 
 		// Load cache & data
 		try {
@@ -232,7 +232,7 @@ try {
 
 			$items = $bridge->getItems();
 			$infos = $bridge->getExtraInfos();
-			$ctime = $bridge->getCacheTime();
+			$mtime = $bridge->getModifiedTime();
 		} catch(Error $e) {
 			$item = array();
 
@@ -258,7 +258,7 @@ try {
 			$format = Format::create($format);
 			$format->setItems($items);
 			$format->setExtraInfos($infos);
-			$format->setLastModified($ctime);
+			$format->setLastModified($mtime);
 			$format->display();
 		} catch(Error $e) {
 			http_response_code($e->getCode());
