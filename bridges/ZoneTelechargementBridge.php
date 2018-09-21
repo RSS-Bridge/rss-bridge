@@ -51,7 +51,8 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 			// Add every link available in the episode table separated by a <br/> tag
 			$item['content'] = implode('<br/>', $episode);
 			$item['title'] = $this->showTitle . 'Episode ' . $epnum;
-			$this->items[] = $item;
+			// Insert the episode at the beginning of the item list, to show the newest episode first
+			array_unshift($this->items, $item);
 		}
 	}
 
