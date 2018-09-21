@@ -178,14 +178,18 @@ try {
 			define('NOPROXY', true);
 		}
 
-		// Custom cache timeout
+		// Cache timeout
 		$cache_timeout = -1;
 		if(array_key_exists('_cache_timeout', $params)) {
+
 			if(!CUSTOM_CACHE_TIMEOUT) {
 				throw new \HttpException('This server doesn\'t support "_cache_timeout"!');
 			}
 
 			$cache_timeout = filter_var($params['_cache_timeout'], FILTER_VALIDATE_INT);
+
+		} else {
+			$cache_timeout = $bridge->getCacheTimeout();
 		}
 
 		// Remove parameters that don't concern bridges
@@ -221,36 +225,57 @@ try {
 
 		$items = array();
 		$infos = array();
-		$mtime = 0;
+		$mtime = $cache->getTime();
 
-		// Load cache & data
-		try {
-			$bridge->setCache($cache);
-			$bridge->setCacheTimeout($cache_timeout);
-			$bridge->dieIfNotModified();
-			$bridge->setDatas($bridge_params);
+		if($mtime !== false
+		&& (time() - $cache_timeout < $mtime)
+		&& (!defined('DEBUG') || DEBUG !== true)) { // Load cached data
 
-			$items = $bridge->getItems();
-			$infos = $bridge->getExtraInfos();
-			$mtime = $bridge->getModifiedTime();
-		} catch(Error $e) {
-			$item = array();
+			$cached = $cache->loadData();
 
-			$item['uri'] = http_build_query($params);
-			$item['title'] = $e->getCode();
-			$item['timestamp'] = time();
-			$item['content'] = htmlspecialchars(buildBridgeException($e, $bridge));
+			if(isset($cached['items']) && isset($cached['extraInfos'])) {
+				$items = $cached['items'];
+				$infos = $cached['extraInfos'];
+			}
 
-			$items[] = $item;
-		} catch(Exception $e) {
-			$item = array();
+		} else { // Collect new data
 
-			$item['uri'] = http_build_query($params);
-			$item['title'] = $e->getCode();
-			$item['timestamp'] = time();
-			$item['content'] = buildBridgeException($e, $bridge);
+			try {
+				$bridge->setDatas($params);
+				$bridge->collectData();
 
-			$items[] = $item;
+				$items = $bridge->getItems();
+				$infos = array(
+					'name' => $bridge->getName(),
+					'uri'  => $bridge->getURI(),
+					'icon' => $bridge->getIcon()
+				);
+			} catch(Error $e) {
+				$item = array();
+
+				$item['uri'] = http_build_query($params);
+				$item['title'] = $e->getCode();
+				$item['timestamp'] = time();
+				$item['content'] = htmlspecialchars(buildBridgeException($e, $bridge));
+
+				$items[] = $item;
+			} catch(Exception $e) {
+				$item = array();
+
+				$item['uri'] = http_build_query($params);
+				$item['title'] = $e->getCode();
+				$item['timestamp'] = time();
+				$item['content'] = buildBridgeException($e, $bridge);
+
+				$items[] = $item;
+			}
+
+			// Store data in cache
+			$cache->saveData(array(
+				'items' => $items,
+				'extraInfos' => $infos
+			));
+
 		}
 
 		// Data transformation

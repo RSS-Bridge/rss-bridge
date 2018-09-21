@@ -9,23 +9,9 @@ abstract class BridgeAbstract implements BridgeInterface {
 	const CACHE_TIMEOUT = 3600;
 	const PARAMETERS = array();
 
-	protected $cache;
-	protected $extraInfos;
 	protected $items = array();
 	protected $inputs = array();
 	protected $queriedContext = '';
-	protected $cacheTimeout;
-
-	/**
-	* Return cachable datas (extrainfos and items) stored in the bridge
-	* @return mixed
-	*/
-	public function getCachable(){
-		return array(
-			'items' => $this->getItems(),
-			'extraInfos' => $this->getExtraInfos()
-		);
-	}
 
 	/**
 	* Return items stored in the bridge
@@ -118,34 +104,18 @@ abstract class BridgeAbstract implements BridgeInterface {
 
 	/**
 	* Defined datas with parameters depending choose bridge
-	* Note : you can define a cache with "setCache"
 	* @param array array with expected bridge paramters
 	*/
 	public function setDatas(array $inputs){
-		if(!is_null($this->cache)) {
-			$time = $this->cache->getTime();
-			if($time !== false
-			&& (time() - $this->getCacheTimeout() < $time)
-			&& (!defined('DEBUG') || DEBUG !== true)) {
-				$cached = $this->cache->loadData();
-				if(isset($cached['items']) && isset($cached['extraInfos'])) {
-					$this->items = $cached['items'];
-					$this->extraInfos = $cached['extraInfos'];
-					return;
-				}
-			}
-		}
 
 		if(empty(static::PARAMETERS)) {
+
 			if(!empty($inputs)) {
 				returnClientError('Invalid parameters value(s)');
 			}
 
-			$this->collectData();
-			if(!is_null($this->cache)) {
-				$this->cache->saveData($this->getCachable());
-			}
 			return;
+
 		}
 
 		$validator = new ParameterValidator();
@@ -172,11 +142,6 @@ abstract class BridgeAbstract implements BridgeInterface {
 
 		$this->setInputs($inputs, $this->queriedContext);
 
-		$this->collectData();
-
-		if(!is_null($this->cache)) {
-			$this->cache->saveData($this->getCachable());
-		}
 	}
 
 	/**
@@ -201,20 +166,10 @@ abstract class BridgeAbstract implements BridgeInterface {
 	}
 
 	public function getName(){
-		// Return cached name when bridge is using cached data
-		if(isset($this->extraInfos)) {
-			return $this->extraInfos['name'];
-		}
-
 		return static::NAME;
 	}
 
 	public function getIcon(){
-		// Return cached icon when bridge is using cached data
-		if(isset($this->extraInfos)) {
-			return $this->extraInfos['icon'];
-		}
-
 		return '';
 	}
 
@@ -223,53 +178,23 @@ abstract class BridgeAbstract implements BridgeInterface {
 	}
 
 	public function getURI(){
-		// Return cached uri when bridge is using cached data
-		if(isset($this->extraInfos)) {
-			return $this->extraInfos['uri'];
-		}
-
 		return static::URI;
 	}
 
-	public function getExtraInfos(){
-		return array(
-			'name' => $this->getName(),
-			'uri' => $this->getURI(),
-			'icon' => $this->getIcon()
-		);
-	}
-
-	public function setCache(\CacheInterface $cache){
-		$this->cache = $cache;
-	}
-
-	public function setCacheTimeout($timeout){
-		if(is_numeric($timeout) && ($timeout < 1 || $timeout > 86400)) {
-			$this->cacheTimeout = static::CACHE_TIMEOUT;
-			return;
-		}
-
-		$this->cacheTimeout = $timeout;
-	}
-
 	public function getCacheTimeout(){
-		return isset($this->cacheTimeout) ? $this->cacheTimeout : static::CACHE_TIMEOUT;
+		return static::CACHE_TIMEOUT;
 	}
-
-	public function getModifiedTime(){
-		return !is_null($this->cache) ? $this->cache->getTime() : false;
-	}
-
+/*
 	public function dieIfNotModified(){
 		if ((defined('DEBUG') && DEBUG === true)) return; // disabled in debug mode
 
 		$if_modified_since = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
 		if (!$if_modified_since) return; // If-Modified-Since value is required
 
-		$last_modified = $this->getModifiedTime();
-		if (!$last_modified) return; // did not detect cache time
+		// $last_modified = $this->getModifiedTime();
+		// if (!$last_modified) return; // did not detect cache time
 
-		if (time() - $this->getCacheTimeout() > $last_modified) return; // cache timeout
+		// if (time() - $this->getCacheTimeout() > $last_modified) return; // cache timeout
 
 		$last_modified = (gmdate('D, d M Y H:i:s ', $last_modified) . 'GMT');
 
@@ -277,5 +202,5 @@ abstract class BridgeAbstract implements BridgeInterface {
 			header('HTTP/1.1 304 Not Modified');
 			die();
 		}
-	}
+	}*/
 }
