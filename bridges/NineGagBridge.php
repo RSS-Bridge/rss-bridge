@@ -304,7 +304,15 @@ class NineGagBridge extends BridgeAbstract {
 	protected static function getCategories($post) {
 		$params = self::PARAMETERS;
 		$sections = $params['Sections']['g']['values'];
-		$postSections = $post['sections'];
+
+		if(isset($post['sections'])) {
+			$postSections = $post['sections'];
+		} elseif (isset($post['postSection'])) {
+			$postSections = array($post['postSection']);
+		} else {
+			$postSections = array();
+		}
+
 		foreach ($postSections as $key => $section) {
 			$postSections[$key] = array_search($section, $sections);
 		}
