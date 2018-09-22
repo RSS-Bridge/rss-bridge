@@ -231,6 +231,17 @@ try {
 		&& (time() - $cache_timeout < $mtime)
 		&& (!defined('DEBUG') || DEBUG !== true)) { // Load cached data
 
+			// Send "Not Modified" response if client supports it
+			// Implementation based on https://stackoverflow.com/a/10847262
+			if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
+				$stime = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']);
+
+				if($mtime <= $stime) { // Cached data is older or same
+					header('HTTP/1.1 304 Not Modified');
+					die();
+				}
+			}
+
 			$cached = $cache->loadData();
 
 			if(isset($cached['items']) && isset($cached['extraInfos'])) {
