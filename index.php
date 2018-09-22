@@ -188,24 +188,43 @@ try {
 			$cache_timeout = filter_var($params['_cache_timeout'], FILTER_VALIDATE_INT);
 		}
 
+		// Remove parameters that don't concern bridges
+		$bridge_params = array_diff_key(
+			$params,
+			array_fill_keys(
+				array(
+					'action',
+					'bridge',
+					'format',
+					'_noproxy',
+					'_cache_timeout',
+				), '')
+		);
+
+		// Remove parameters that don't concern caches
+		$cache_params = array_diff_key(
+			$params,
+			array_fill_keys(
+				array(
+					'action',
+					'format',
+					'_noproxy',
+					'_cache_timeout',
+				), '')
+		);
+
 		// Initialize cache
 		$cache = Cache::create('FileCache');
 		$cache->setPath(CACHE_DIR);
 		$cache->purgeCache(86400); // 24 hours
-		$cache->setParameters($params);
-
-		unset($params['action']);
-		unset($params['bridge']);
-		unset($params['format']);
-		unset($params['_noproxy']);
-		unset($params['_cache_timeout']);
+		$cache->setParameters($cache_params);
 
 		// Load cache & data
 		try {
 			$bridge->setCache($cache);
 			$bridge->setCacheTimeout($cache_timeout);
 			$bridge->dieIfNotModified();
-			$bridge->setDatas($params);
+			$bridge->setDatas($bridge_params);
 		} catch(Error $e) {
 			http_response_code($e->getCode());
 			header('Content-Type: text/html');
