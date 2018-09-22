@@ -270,7 +270,7 @@ try {
 				$item['uri'] = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) . '?' . http_build_query($params);
 				$item['title'] = 'Bridge returned error ' . $e->getCode() . '! (' . $params['_error_time'] . ')';
 				$item['timestamp'] = time();
-				$item['content'] = htmlspecialchars(buildBridgeException($e, $bridge));
+				$item['content'] = buildBridgeException($e, $bridge);
 
 				$items[] = $item;
 			} catch(Exception $e) {
