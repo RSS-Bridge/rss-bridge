@@ -267,8 +267,14 @@ try {
 				// Create "new" error message every 24 hours
 				$params['_error_time'] = urlencode((int)(time() / 86400));
 
+				// Error 0 is a special case (i.e. "trying to get property of non-object")
+				if($e->getCode() === 0) {
+					$item['title'] = 'Bridge encountered an unexpected situation! (' . $params['_error_time'] . ')';
+				} else {
+					$item['title'] = 'Bridge returned error ' . $e->getCode() . '! (' . $params['_error_time'] . ')';
+				}
+
 				$item['uri'] = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) . '?' . http_build_query($params);
-				$item['title'] = 'Bridge returned error ' . $e->getCode() . '! (' . $params['_error_time'] . ')';
 				$item['timestamp'] = time();
 				$item['content'] = buildBridgeException($e, $bridge);
 
