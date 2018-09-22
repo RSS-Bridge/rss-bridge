@@ -187,7 +187,7 @@ class NineGagBridge extends BridgeAbstract {
 		return $this->p;
 	}
 
-	protected function getParameterKey(String $input = '') {
+	protected function getParameterKey($input = '') {
 		$params = $this->getParameters();
 		$tab = 'Sections';
 		if ($input === 'd') {
@@ -203,7 +203,7 @@ class NineGagBridge extends BridgeAbstract {
 		);
 	}
 
-	protected static function getContent(array $post) {
+	protected static function getContent($post) {
 		if ($post['type'] === 'Animated') {
 			$content = self::getAnimated($post);
 		} elseif ($post['type'] === 'Article') {
@@ -215,7 +215,7 @@ class NineGagBridge extends BridgeAbstract {
 		return $content;
 	}
 
-	protected static function getPhoto(array $post) {
+	protected static function getPhoto($post) {
 		$image = $post['images']['image460'];
 		$photo = '<picture>';
 		$photo .= sprintf(
@@ -233,7 +233,7 @@ class NineGagBridge extends BridgeAbstract {
 		return $photo;
 	}
 
-	protected static function getAnimated(array $post) {
+	protected static function getAnimated($post) {
 		$poster = $post['images']['image460']['url'];
 		$sources = $post['images'];
 		$video = sprintf(
@@ -258,7 +258,7 @@ class NineGagBridge extends BridgeAbstract {
 		return $video;
 	}
 
-	protected static function getArticle(array $post) {
+	protected static function getArticle($post) {
 		$blocks = $post['article']['blocks'];
 		$medias = $post['article']['medias'];
 		$contents = array();
@@ -281,7 +281,7 @@ class NineGagBridge extends BridgeAbstract {
 		return $content;
 	}
 
-	protected static function getRichText(string $text = '') {
+	protected static function getRichText($text = '') {
 		$text = trim($text);
 
 		if (preg_match('/^>\s(?<text>.*)/', $text, $matches)) {
@@ -301,7 +301,7 @@ class NineGagBridge extends BridgeAbstract {
 		return $text;
 	}
 
-	protected static function getCategories(array $post) {
+	protected static function getCategories($post) {
 		$params = self::PARAMETERS;
 		$sections = $params['Sections']['g']['values'];
 		$postSections = $post['sections'];
@@ -312,7 +312,7 @@ class NineGagBridge extends BridgeAbstract {
 		return $postSections;
 	}
 
-	protected static function getTimestamp(array $post) {
+	protected static function getTimestamp($post) {
 		$url = $post['images']['image460']['url'];
 		$headers = get_headers($url, true);
 		$date = $headers['Date'];
