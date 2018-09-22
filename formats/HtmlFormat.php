@@ -85,6 +85,8 @@ EOD;
 	<meta charset="{$charset}">
 	<title>{$title}</title>
 	<link href="static/HtmlFormat.css" rel="stylesheet">
+	<link rel="alternate" type="application/atom+xml" title="Atom" href="./?{$atomquery}" />
+	<link rel="alternate" type="application/rss+xml" title="RSS" href="/?{$mrssquery}" />
 	<meta name="robots" content="noindex, follow">
 </head>
 <body>
