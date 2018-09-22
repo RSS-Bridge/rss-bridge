@@ -18,8 +18,8 @@ require __DIR__ . '/Authentication.php';
 require __DIR__ . '/Configuration.php';
 require __DIR__ . '/BridgeCard.php';
 require __DIR__ . '/BridgeList.php';
+require __DIR__ . '/ParameterValidator.php';
 
-require __DIR__ . '/validation.php';
 require __DIR__ . '/html.php';
 require __DIR__ . '/error.php';
 require __DIR__ . '/contents.php';

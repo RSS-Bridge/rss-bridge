@@ -195,8 +195,18 @@ abstract class BridgeAbstract implements BridgeInterface {
 			return;
 		}
 
-		if(!validateData($inputs, static::PARAMETERS)) {
-			returnClientError('Invalid parameters value(s)');
+		$validator = new ParameterValidator();
+
+		if(!$validator->validateData($inputs, static::PARAMETERS)) {
+			$parameters = array_map(
+				function($i){ return $i['name']; }, // Just display parameter names
+				$validator->getInvalidParameters()
+			);
+
+			returnClientError(
+				'Invalid parameters value(s): '
+				. implode(', ', $parameters)
+			);
 		}
 
 		// Guess the paramter context from input data
