@@ -120,4 +120,52 @@ class ParameterValidator {
 
 		return empty($this->invalid);
 	}
+
+	/**
+	 * Returns the name of the context matching the provided inputs
+	 *
+	 * @param array $data Associative array of user data
+	 * @param array $parameters Array of bridge parameters
+	 * @return mixed Returns the context name or null if no match was found
+	 */
+	public function getQueriedContext($data, $parameters){
+		$queriedContexts = array();
+
+		// Detect matching context
+		foreach($parameters as $context => $set) {
+			$queriedContexts[$context] = null;
+
+			// Check if all parameters of the context are satisfied
+			foreach($set as $id => $properties) {
+				if(isset($data[$id]) && !empty($data[$id])) {
+					$queriedContexts[$context] = true;
+				} elseif(isset($properties['required'])
+				&& $properties['required'] === true) {
+					$queriedContexts[$context] = false;
+					break;
+				}
+			}
+
+		}
+
+		// Abort if one of the globally required parameters is not satisfied
+		if(array_key_exists('global', $parameters)
+		&& $queriedContexts['global'] === false) {
+			return null;
+		}
+		unset($queriedContexts['global']);
+
+		switch(array_sum($queriedContexts)) {
+		case 0: // Found no match, is there a context without parameters?
+			foreach($queriedContexts as $context => $queried) {
+				if(is_null($queried)) {
+					return $context;
+				}
+			}
+			return null;
+		case 1: // Found unique match
+			return array_search(true, $queriedContexts);
+		default: return false;
+		}
+	}
 }
