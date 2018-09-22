@@ -69,11 +69,15 @@ function buildBridgeException($e, $bridge){
 	. Configuration::getVersion()
 	. '`';
 
+	$body_html = nl2br($body);
 	$link = buildGitHubIssueQuery($title, $body, 'bug report', $bridge->getMaintainer());
 
 	$header = buildHeader($e, $bridge);
-	$message = "<strong>{$bridge->getName()}</strong> was
-unable to receive or process the remote website's content!";
+	$message = <<<EOD
+<strong>{$bridge->getName()}</strong> was unable to receive or process the
+remote website's content!<br>
+{$body_html}
+EOD;
 	$section = buildSection($e, $bridge, $message, $link);
 
 	return $section;
