@@ -2,7 +2,7 @@
 class FacebookBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'teromene, logmanoriginal';
-	const NAME = 'Facebook';
+	const NAME = 'Facebook Bridge';
 	const URI = 'https://www.facebook.com/';
 	const CACHE_TIMEOUT = 300; // 5min
 	const DESCRIPTION = 'Input a page title or a profile log. For a profile log,
@@ -47,17 +47,56 @@ class FacebookBridge extends BridgeAbstract {
 	private $authorName = '';
 	private $groupName = '';
 
+	public function getName(){
+
+		switch($this->queriedContext) {
+
+			case 'User':
+				if(!empty($this->authorName)) {
+					return isset($this->extraInfos['name']) ? $this->extraInfos['name'] : $this->authorName
+					. ' - ' . static::NAME;
+				}
+				break;
+
+			case 'Group':
+				if(!empty($this->groupName)) {
+					return $this->groupName . ' - ' . static::NAME;
+				}
+				break;
+
+		}
+
+		return parent::getName();
+	}
+
 	public function getURI() {
 		$uri = self::URI;
 
 		switch($this->queriedContext) {
 
 			case 'Group':
+				// Discover groups via	https://www.facebook.com/groups/
+				// Example group:		https://www.facebook.com/groups/sailors.worldwide
 				$uri .= 'groups/' . $this->sanitizeGroup(filter_var($this->getInput('g'), FILTER_SANITIZE_URL));
+				break;
+
+			case 'User':
+				// Example user 1:		https://www.facebook.com/artetv/
+				// Example user 2:		artetv
+				$user = $this->sanitizeUser($this->getInput('u'));
+
+				if(!strpos($user, '/')) {
+					$uri .= urlencode($user);
+				} else {
+					$uri .= 'pages/' . $user;
+				}
+
 				break;
 
 		}
 
+		// Request the mobile version to reduce page size (no javascript)
+		// More information: https://stackoverflow.com/a/11103592
 		return $uri .= '?_fb_noscript=1';
 	}
 
@@ -249,165 +288,210 @@ class FacebookBridge extends BridgeAbstract {
 
 	}
 
-	#endregion
+	#endregion (Group)
 
-	private function collectUserData(){
+	#region User
 
-		//Utility function for cleaning a Facebook link
-		$unescape_fb_link = function($matches){
+	/**
+	 * Checks if $user is a valid username or URI and returns the username
+	 */
+	private function sanitizeUser($user) {
+		if (filter_var($user, FILTER_VALIDATE_URL)) {
+
+			$urlparts = parse_url($user);
+
+			if($urlparts['host'] !== parse_url(self::URI)['host']) {
+				returnClientError('The host you provided is invalid! Received "'
+				. $urlparts['host']
+				. '", expected "'
+				. parse_url(self::URI)['host']
+				. '"!');
+			}
+
+			if(!array_key_exists('path', $urlparts)
+			|| $urlparts['path'] === '/') {
+				returnClientError('The URL you provided doesn\'t contain the user name!');
+			}
+
+			return explode('/', $urlparts['path'])[1];
+
+		} else {
+
+			// First character cannot be a forward slash
+			if(strpos($user, '/') === 0) {
+				returnClientError('Remove leading slash "/" from the username!');
+			}
+
+			return $user;
+
+		}
+	}
+
+	/**
+	 * Bypass external link redirection
+	 */
+	private function unescape_fb_link($content){
+		return preg_replace_callback('/ href=\"([^"]+)\"/i', function($matches){
 			if(is_array($matches) && count($matches) > 1) {
+
 				$link = $matches[1];
-				if(strpos($link, '/') === 0)
-					$link = self::URI . $link;
+
 				if(strpos($link, 'facebook.com/l.php?u=') !== false)
 					$link = urldecode(extractFromDelimiters($link, 'facebook.com/l.php?u=', '&'));
+
 				return ' href="' . $link . '"';
+
 			}
-		};
+		}, $content);
+	}
 
-		//Utility function for converting facebook emoticons
-		$unescape_fb_emote = function($matches){
-			static $facebook_emoticons = array(
-				'smile' => ':)',
-				'frown' => ':(',
-				'tongue' => ':P',
-				'grin' => ':D',
-				'gasp' => ':O',
-				'wink' => ';)',
-				'pacman' => ':<',
-				'grumpy' => '>_<',
-				'unsure' => ':/',
-				'cry' => ':\'(',
-				'kiki' => '^_^',
-				'glasses' => '8-)',
-				'sunglasses' => 'B-)',
-				'heart' => '<3',
-				'devil' => ']:D',
-				'angel' => '0:)',
-				'squint' => '-_-',
-				'confused' => 'o_O',
-				'upset' => 'xD',
-				'colonthree' => ':3',
-				'like' => '&#x1F44D;');
-			$len = count($matches);
-			if ($len > 1)
-				for ($i = 1; $i < $len; $i++)
-					foreach ($facebook_emoticons as $name => $emote)
-						if ($matches[$i] === $name)
-							return $emote;
-			return $matches[0];
-		};
+	/**
+	 * Convert textual representation of emoticons back to ASCII emoticons.
+	 * i.e. "<i><u>smile emoticon</u></i>" => ":)"
+	 */
+	private function unescape_fb_emote($content){
+		return preg_replace_callback('/<i><u>([^ <>]+) ([^<>]+)<\/u><\/i>/i', function($matches){
+				static $facebook_emoticons = array(
+					'smile' => ':)',
+					'frown' => ':(',
+					'tongue' => ':P',
+					'grin' => ':D',
+					'gasp' => ':O',
+					'wink' => ';)',
+					'pacman' => ':<',
+					'grumpy' => '>_<',
+					'unsure' => ':/',
+					'cry' => ':\'(',
+					'kiki' => '^_^',
+					'glasses' => '8-)',
+					'sunglasses' => 'B-)',
+					'heart' => '<3',
+					'devil' => ']:D',
+					'angel' => '0:)',
+					'squint' => '-_-',
+					'confused' => 'o_O',
+					'upset' => 'xD',
+					'colonthree' => ':3',
+					'like' => '&#x1F44D;');
 
-		$html = null;
+				$len = count($matches);
 
-		//Handle captcha response sent by the viewer
+				if ($len > 1)
+					for ($i = 1; $i < $len; $i++)
+						foreach ($facebook_emoticons as $name => $emote)
+							if ($matches[$i] === $name)
+								return $emote;
+
+				return $matches[0];
+			}, $content);
+	}
+
+	/**
+	 * Returns the captcha message for the given captcha
+	 */
+	private function returnCaptchaMessage($captcha) {
+		// Save form for submitting after getting captcha response
+		if (session_status() == PHP_SESSION_NONE) {
+			session_start();
+		}
+
+		$captcha_fields = array();
+
+		foreach ($captcha->find('input, button') as $input) {
+			$captcha_fields[$input->name] = $input->value;
+		}
+
+		$_SESSION['captcha_fields'] = $captcha_fields;
+		$_SESSION['captcha_action'] = $captcha->find('form', 0)->action;
+
+		// Show captcha filling form to the viewer, proxying the captcha image
+		$img = base64_encode(getContents($captcha->find('img', 0)->src));
+
+		http_response_code(500);
+		header('Content-Type: text/html');
+
+		$message = <<<EOD
+<form method="post" action="?{$_SERVER['QUERY_STRING']}">
+<h2>Facebook captcha challenge</h2>
+<p>Unfortunately, rss-bridge cannot fetch the requested page.<br />
+Facebook wants rss-bridge to resolve the following captcha:</p>
+<p><img src="data:image/png;base64,{$img}" /></p>
+<p><b>Response:</b> <input name="captcha_response" placeholder="please fill in" />
+<input type="submit" value="Submit!" /></p>
+</form>
+EOD;
+
+		die($message);
+	}
+
+	/**
+	 * Checks if a capture response was received and tries to load the contents
+	 * @return mixed null if no capture response was received, simplhtmldom document otherwise
+	 */
+	private function handleCaptchaResponse() {
 		if (isset($_POST['captcha_response'])) {
 			if (session_status() == PHP_SESSION_NONE)
 				session_start();
+
 			if (isset($_SESSION['captcha_fields'], $_SESSION['captcha_action'])) {
 				$captcha_action = $_SESSION['captcha_action'];
 				$captcha_fields = $_SESSION['captcha_fields'];
 				$captcha_fields['captcha_response'] = preg_replace('/[^a-zA-Z0-9]+/', '', $_POST['captcha_response']);
 
-				$header = array("Content-type:
-application/x-www-form-urlencoded\r\nReferer: $captcha_action\r\nCookie: noscript=1\r\n");
+				$header = array(
+					'Content-type: application/x-www-form-urlencoded',
+					'Referer: ' . $captcha_action,
+					'Cookie: noscript=1'
+				);
+
 				$opts = array(
 					CURLOPT_POST => 1,
 					CURLOPT_POSTFIELDS => http_build_query($captcha_fields)
 				);
 
-				$html = getContents($captcha_action, $header, $opts);
+				$html = getSimpleHTMLDOM($captcha_action, $header, $opts)
+					or returnServerError('Failed to submit captcha response back to Facebook');
 
-				if($html === false) {
-					returnServerError('Failed to submit captcha response back to Facebook');
-				}
-				unset($_SESSION['captcha_fields']);
-				$html = str_get_html($html);
+				return $html;
 			}
+
 			unset($_SESSION['captcha_fields']);
 			unset($_SESSION['captcha_action']);
 		}
 
-		//Retrieve page contents
+		return null;
+	}
+
+	private function collectUserData(){
+
+		$html = $this->handleCaptchaResponse();
+
+		// Retrieve page contents
 		if(is_null($html)) {
-			$header = array('Accept-Language: ' . getEnv('HTTP_ACCEPT_LANGUAGE') . "\r\n");
 
-			// Check if the user provided a fully qualified URL
-			if (filter_var($this->getInput('u'), FILTER_VALIDATE_URL)) {
+			$header = array('Accept-Language: ' . getEnv('HTTP_ACCEPT_LANGUAGE'));
 
-				$urlparts = parse_url($this->getInput('u'));
+			$html = getSimpleHTMLDOM($this->getURI(), $header)
+				or returnServerError('No results for this query.');
 
-				if($urlparts['host'] !== parse_url(self::URI)['host']) {
-					returnClientError('The host you provided is invalid! Received "'
-					. $urlparts['host']
-					. '", expected "'
-					. parse_url(self::URI)['host']
-					. '"!');
-				}
-
-				if(!array_key_exists('path', $urlparts)
-				|| $urlparts['path'] === '/') {
-					returnClientError('The URL you provided doesn\'t contain the user name!');
-				}
-
-				$user = explode('/', $urlparts['path'])[1];
-
-				$html = getSimpleHTMLDOM(self::URI . urlencode($user) . '?_fb_noscript=1', $header)
-						or returnServerError('No results for this query.');
-
-			} else {
-
-				// First character cannot be a forward slash
-				if(strpos($this->getInput('u'), '/') === 0) {
-					returnClientError('Remove leading slash "/" from the username!');
-				}
-
-				if(!strpos($this->getInput('u'), '/')) {
-					$html = getSimpleHTMLDOM(self::URI . urlencode($this->getInput('u')) . '?_fb_noscript=1', $header)
-						or returnServerError('No results for this query.');
-				} else {
-					$html = getSimpleHTMLDOM(self::URI . 'pages/' . $this->getInput('u') . '?_fb_noscript=1', $header)
-						or returnServerError('No results for this query.');
-				}
-
-			}
 		}
 
-		//Handle captcha form?
+		// Handle captcha form?
 		$captcha = $html->find('div.captcha_interstitial', 0);
-		if (!is_null($captcha)) {
-			//Save form for submitting after getting captcha response
-			if (session_status() == PHP_SESSION_NONE)
-				session_start();
-			$captcha_fields = array();
-			foreach ($captcha->find('input, button') as $input)
-				$captcha_fields[$input->name] = $input->value;
-			$_SESSION['captcha_fields'] = $captcha_fields;
-			$_SESSION['captcha_action'] = $captcha->find('form', 0)->action;
 
-			//Show captcha filling form to the viewer, proxying the captcha image
-			$img = base64_encode(getContents($captcha->find('img', 0)->src));
-			http_response_code(500);
-			header('Content-Type: text/html');
-			$message = <<<EOD
-<form method="post" action="?{$_SERVER['QUERY_STRING']}">
-	<h2>Facebook captcha challenge</h2>
-	<p>Unfortunately, rss-bridge cannot fetch the requested page.<br />
-		Facebook wants rss-bridge to resolve the following captcha:</p>
-	<p><img src="data:image/png;base64,{$img}" /></p>
-	<p><b>Response:</b> <input name="captcha_response" placeholder="please fill in" />
-	<input type="submit" value="Submit!" /></p>
-</form>
-EOD;
-			die($message);
+		if (!is_null($captcha)) {
+			$this->returnCaptchaMessage($captcha);
 		}
 
-		//No captcha? We can carry on retrieving page contents :)
-		//First, we check wether the page is public or not
+		// No captcha? We can carry on retrieving page contents :)
+		// First, we check wether the page is public or not
 		$loginForm = $html->find('._585r', 0);
+
 		if($loginForm != null) {
 			returnServerError('You must be logged in to view this page. This is not supported by RSS-Bridge.');
 		}
+
+		$html = defaultLinkTo($html, self::URI);
 
 		$element = $html
 		->find('#pagelet_timeline_main_column')[0]
@@ -419,12 +503,9 @@ EOD;
 
 		if(isset($element)) {
 
-			defaultLinkTo($element, self::URI);
-
 			$author = str_replace(' | Facebook', '', $html->find('title#pageTitle', 0)->innertext);
-			$profilePic = 'https://graph.facebook.com/'
-			. $this->getInput('u')
-			. '/picture?width=200&amp;height=200#.image';
+
+			$profilePic = $html->find('meta[property="og:image"]', 0)->content;
 
 			$this->authorName = $author;
 
@@ -480,19 +561,18 @@ EOD;
 							'',
 							$content);
 
-						//Remove "SpSonsSoriSsés"
+						// Remove "SpSonsSoriSsés"
 						$content = preg_replace(
 							'/(?iU)<a [^>]+ href="#" role="link" [^>}]+>.+<\/a>/iU',
 							'',
 							$content);
 
-						//Remove html nodes, keep only img, links, basic formatting
+						// Remove html nodes, keep only img, links, basic formatting
 						$content = strip_tags($content, '<a><img><i><u><br><p>');
 
-						//Adapt link hrefs: convert relative links into absolute links and bypass external link redirection
-						$content = preg_replace_callback('/ href=\"([^"]+)\"/i', $unescape_fb_link, $content);
+						$content = $this->unescape_fb_link($content);
 
-						//Clean useless html tag properties and fix link closing tags
+						// Clean useless html tag properties and fix link closing tags
 						foreach (array(
 							'onmouseover',
 							'onclick',
@@ -505,31 +585,31 @@ EOD;
 							'aria-[^=]*',
 							'role',
 							'rel',
-							'id') as $property_name)
-								$content = preg_replace('/ ' . $property_name . '=\"[^"]*\"/i', '', $content);
+							'id') as $property_name) {
+							$content = preg_replace('/ ' . $property_name . '=\"[^"]*\"/i', '', $content);
+						}
+
 						$content = preg_replace('/<\/a [^>]+>/i', '</a>', $content);
 
-						//Convert textual representation of emoticons eg
-						//"<i><u>smile emoticon</u></i>" back to ASCII emoticons eg ":)"
-						$content = preg_replace_callback(
-							'/<i><u>([^ <>]+) ([^<>]+)<\/u><\/i>/i',
-							$unescape_fb_emote,
-							$content
-						);
+						$this->unescape_fb_emote($content);
 
-						//Retrieve date of the post
+						// Retrieve date of the post
 						$date = $post->find('abbr')[0];
+
 						if(isset($date) && $date->hasAttribute('data-utime')) {
 							$date = $date->getAttribute('data-utime');
 						} else {
 							$date = 0;
 						}
 
-						//Build title from username and content
+						// Build title from username and content
 						$title = $author;
+
 						if(strlen($title) > 24)
 							$title = substr($title, 0, strpos(wordwrap($title, 24), "\n")) . '...';
+
 						$title = $title . ' | ' . strip_tags($content);
+
 						if(strlen($title) > 64)
 							$title = substr($title, 0, strpos(wordwrap($title, 64), "\n")) . '...';
 
@@ -545,8 +625,10 @@ EOD;
 						$item['title'] = $title;
 						$item['author'] = $author;
 						$item['timestamp'] = $date;
-						if(strpos($item['content'], '<img') === false)
+
+						if(strpos($item['content'], '<img') === false) {
 							$item['enclosures'] = array($profilePic);
+						}
 
 						$this->items[] = $item;
 					}
@@ -555,25 +637,6 @@ EOD;
 		}
 	}
 
-	public function getName(){
+	#endregion (User)
 
-		switch($this->queriedContext) {
-
-			case 'User':
-				if(!empty($this->authorName)) {
-					return isset($this->extraInfos['name']) ? $this->extraInfos['name'] : $this->authorName
-					. ' - Facebook Bridge';
-				}
-				break;
-
-			case 'Group':
-				if(!empty($this->groupName)) {
-					return $this->groupName . ' - Facebook Bridge';
-				}
-				break;
-
-		}
-
-		return parent::getName();
-	}
 }
