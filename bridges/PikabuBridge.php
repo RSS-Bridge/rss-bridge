@@ -67,6 +67,11 @@ class PikabuBridge extends BridgeAbstract {
 				}
 			}
 
+			foreach($post->find('[data-type=gifx]') as $el) {
+				$src = $el->getAttribute('data-source');
+				$el->outertext = '<img src="'.$src.'">';
+			}
+
 			foreach($post->find('img') as $img) {
 				$src = $img->getAttribute('src');
 				if (!$src) {
