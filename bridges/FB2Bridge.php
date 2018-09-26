@@ -96,6 +96,12 @@ EOD;
 		foreach($html->find('article') as $content) {
 
 			$item = array();
+			
+			preg_match('/publish_time\\\&quot;:([0-9]+),/', $content->getAttribute('data-store', 0), $match);
+			if(isset($match[1]))
+				$timestamp = $match[1];
+			else
+				$timestamp = 0;
 
 			$item['uri'] = 'http://touch.facebook.com'
 			. $content->find("div[class='_52jc _5qc4 _24u0 _36xo']", 0)->find('a', 0)->getAttribute('href');
@@ -144,10 +150,12 @@ EOD;
 			if (strlen($title) > 64)
 				$title = substr($title, 0, strpos(wordwrap($title, 64), "\n")) . '...';
 
-			$item['title'] = $title;
-			$item['author'] = $author;
-
-			array_push($this->items, $item);
+			$item['title'] = html_entity_decode($title, ENT_QUOTES);
+			$item['author'] = html_entity_decode($author, ENT_QUOTES);
+			$item['timestamp'] = html_entity_decode($timestamp, ENT_QUOTES);
+			
+			if($item['timestamp'] != 0)
+				array_push($this->items, $item);
 		}
 	}
 
@@ -194,7 +202,7 @@ EOD;
 		// /div>","replaceifexists
 		$regex = '/\\"html\\":(\".+\/div>"),"replace/';
 		preg_match($regex, $pageContent, $result);
-		return str_get_html(html_entity_decode(json_decode($result[1])));
+		return str_get_html(json_decode($result[1]));
 	}
 
 
