@@ -103,8 +103,8 @@ EOD;
 			else
 				$timestamp = 0;
 
-			$item['uri'] = 'http://touch.facebook.com'
-			. $content->find("div[class='_52jc _5qc4 _24u0 _36xo']", 0)->find('a', 0)->getAttribute('href');
+			$item['uri'] = html_entity_decode('http://touch.facebook.com'
+			. $content->find("div[class='_52jc _5qc4 _24u0 _36xo']", 0)->find('a', 0)->getAttribute('href'), ENT_QUOTES);
 
 			if($content->find('header', 0) !== null) {
 				$content->find('header', 0)->innertext = '';
@@ -141,7 +141,7 @@ EOD;
 			// "<i><u>smile emoticon</u></i>" back to ASCII emoticons eg ":)"
 			$content = preg_replace_callback('/<i><u>([^ <>]+) ([^<>]+)<\/u><\/i>/i', $unescape_fb_emote, $content);
 
-			$item['content'] = $content;
+			$item['content'] = html_entity_decode($content, ENT_QUOTES);
 
 			$title = $author;
 			if (strlen($title) > 24)
