@@ -86,7 +86,7 @@ class FacebookBridge extends BridgeAbstract {
 				$user = $this->sanitizeUser($this->getInput('u'));
 
 				if(!strpos($user, '/')) {
-					$uri .= urlencode($user);
+					$uri .= '/pg/' . urlencode($user) . '/posts';
 				} else {
 					$uri .= 'pages/' . $user;
 				}
@@ -495,7 +495,6 @@ EOD;
 
 		$element = $html
 		->find('#pagelet_timeline_main_column')[0]
-		->children(0)
 		->children(0)
 		->children(0)
 		->next_sibling()
