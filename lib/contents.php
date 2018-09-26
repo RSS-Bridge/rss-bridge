@@ -32,19 +32,26 @@ function getContents($url, $header = array(), $opts = array()){
 		debugMessage('Cant\'t download ' . $url . ' cUrl error: ' . $curlError . ' (' . $curlErrno . ')');
 
 	$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+	$errorCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 	$header = substr($data, 0, $headerSize);
 	$headers = parseResponseHeader($header);
 	$finalHeader = end($headers);
 
-	if(array_key_exists('http_code', $finalHeader)
-	&& strpos($finalHeader['http_code'], '200') === false
-	&& array_key_exists('Server', $finalHeader)
-	&& strpos($finalHeader['Server'], 'cloudflare') !== false) {
-		returnServerError(<<< EOD
-The server responded with a Cloudflare challenge, which is not supported by RSS-Bridge!<br>
+	if($errorCode !== 200) {
+
+		if(array_key_exists('Server', $finalHeader) && strpos($finalHeader['Server'], 'cloudflare') !== false) {
+			returnServerError(<<< EOD
+The server responded with a Cloudflare challenge, which is not supported by RSS-Bridge!
 If this error persists longer than a week, please consider opening an issue on GitHub!
 EOD
-		);
+			);
+		}
+
+		returnError(<<<EOD
+The requested resouce cannot be found!
+Please make sure your input parameters are correct!
+EOD
+		, $errorCode);
 	}
 
 	curl_close($ch);
