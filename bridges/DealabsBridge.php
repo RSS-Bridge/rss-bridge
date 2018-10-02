@@ -1140,7 +1140,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 			array(
 				'size--all-s',
 				'flex',
-			    	'boxAlign-jc--all-fe'
+				'boxAlign-jc--all-fe'
 			)
 		);
 
