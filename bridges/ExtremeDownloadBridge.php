@@ -61,7 +61,6 @@ class ExtremeDownloadBridge extends BridgeAbstract {
 				// Get thee element links
 				$links = $element->next_sibling()->innertext;
 
-
 				$item['content'] = $links;
 				$item['title'] = $this->showTitle . ' ' . $title . ' - ' . $typesText[$type];
 				// As RSS Bridge use the URI as GUID they need to be unique : adding a md5 hash of the title element
