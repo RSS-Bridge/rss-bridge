@@ -41,7 +41,7 @@ class GQMagazineBridge extends BridgeAbstract
 		'data-original' => 'src'
 	);
 
-	public function getDomain() {
+	private function getDomain() {
 		return $this->getInput('domain');
 	}
 
