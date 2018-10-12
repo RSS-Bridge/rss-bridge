@@ -18,10 +18,7 @@ class GQMagazineBridge extends BridgeAbstract
 	const URI = 'https://www.gqmagazine.fr';
 
 	const CACHE_TIMEOUT = 7200; // 2h
-	const DESCRIPTION = 'GQMagazine section extractor bridge. This bridge allows you get only a specific section.'
-		. '<br/>'
-		. 'I typically use it to get articles published by Maia Mazaurette by configuring it to use '
-		. 'gqmagazine.fr as domain and journaliste/maia-mazaurette as page.';
+	const DESCRIPTION = 'GQMagazine section extractor bridge. This bridge allows you get only a specific section.';
 
 	const PARAMETERS = array( array(
 		'domain' => array(
@@ -100,7 +97,7 @@ class GQMagazineBridge extends BridgeAbstract
 			// List the CSS classes of that div
 			$classes = $div->class;
 			// I can't directly lookup that class since GQ since to generate random names like "ArticleBodySection-fkggUW"
-			if(strpos($classes, "ArticleBodySection") !== false) {
+			if(strpos($classes, 'ArticleBodySection') !== false) {
 				return $div;
 			}
 		}
