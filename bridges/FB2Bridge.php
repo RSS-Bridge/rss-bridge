@@ -96,7 +96,7 @@ EOD;
 		foreach($html->find('article') as $content) {
 
 			$item = array();
-			
+
 			preg_match('/publish_time\\\&quot;:([0-9]+),/', $content->getAttribute('data-store', 0), $match);
 			if(isset($match[1]))
 				$timestamp = $match[1];
@@ -153,7 +153,7 @@ EOD;
 			$item['title'] = html_entity_decode($title, ENT_QUOTES);
 			$item['author'] = html_entity_decode($author, ENT_QUOTES);
 			$item['timestamp'] = html_entity_decode($timestamp, ENT_QUOTES);
-			
+
 			if($item['timestamp'] != 0)
 				array_push($this->items, $item);
 		}
