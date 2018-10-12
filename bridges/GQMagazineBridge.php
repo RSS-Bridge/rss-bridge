@@ -19,10 +19,10 @@ class GQMagazineBridge extends BridgeAbstract
 
 	const CACHE_TIMEOUT = 7200; // 2h
 	const DESCRIPTION = 'GQMagazine section extractor bridge. This bridge allows you get only a specific section.'
-		. '<br/>' 
+		. '<br/>'
 		. 'I typically use it to get articles published by Maia Mazaurette by configuring it to use '
 		. 'gqmagazine.fr as domain and journaliste/maia-mazaurette as page.';
-	
+
 	const PARAMETERS = array( array(
 		'domain' => array(
 			'name' => 'Domain to use',
@@ -37,13 +37,13 @@ class GQMagazineBridge extends BridgeAbstract
 			'required' => true
 		),
 	));
-	
+
 	const REPLACED_ATTRIBUTES = array(
 		'href' => 'href',
 		'src' => 'src',
 		'data-original' => 'src'
 	);
-	
+
 	public function getDomain() {
 		return $this->getInput('domain');
 	}
@@ -52,7 +52,7 @@ class GQMagazineBridge extends BridgeAbstract
 	{
 		return $this->getDomain() . '/' . $this->getInput('page');
 	}
-	
+
 	public function collectData()
 	{
 		$html = getSimpleHTMLDOM($this->getURI()) or returnServerError('Could not request ' . $this->getURI());
@@ -87,8 +87,7 @@ class GQMagazineBridge extends BridgeAbstract
 			$this->items[] = $item;
 		}
 	}
-	
-	
+
 	/**
 	 * Loads the full article and returns the contents
 	 * @param $uri The article URI
@@ -107,7 +106,7 @@ class GQMagazineBridge extends BridgeAbstract
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Replaces all relative URIs with absolute ones
 	 * @param $element A simplehtmldom element
