@@ -506,8 +506,6 @@ EOD;
 			returnServerError('You must be logged in to view this page. This is not supported by RSS-Bridge.');
 		}
 
-		$html = defaultLinkTo($html, self::URI);
-
 		$element = $html
 		->find('#pagelet_timeline_main_column')[0]
 		->children(0)
@@ -632,6 +630,8 @@ EOD;
 						if (false !== strpos($uri, '?')) {
 							$uri = substr($uri, 0, strpos($uri, '?'));
 						}
+
+						$content = defaultLinkTo($content, self::URI);
 
 						//Build and add final item
 						$item['uri'] = htmlspecialchars_decode($uri);
