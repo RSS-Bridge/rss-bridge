@@ -178,14 +178,18 @@ try {
 			define('NOPROXY', true);
 		}
 
-		// Custom cache timeout
+		// Cache timeout
 		$cache_timeout = -1;
 		if(array_key_exists('_cache_timeout', $params)) {
+
 			if(!CUSTOM_CACHE_TIMEOUT) {
 				throw new \HttpException('This server doesn\'t support "_cache_timeout"!');
 			}
 
 			$cache_timeout = filter_var($params['_cache_timeout'], FILTER_VALIDATE_INT);
+
+		} else {
+			$cache_timeout = $bridge->getCacheTimeout();
 		}
 
 		// Remove parameters that don't concern bridges
@@ -219,28 +223,90 @@ try {
 		$cache->purgeCache(86400); // 24 hours
 		$cache->setParameters($cache_params);
 
-		// Load cache & data
-		try {
-			$bridge->setCache($cache);
-			$bridge->setCacheTimeout($cache_timeout);
-			$bridge->dieIfNotModified();
-			$bridge->setDatas($bridge_params);
-		} catch(Error $e) {
-			http_response_code($e->getCode());
-			header('Content-Type: text/html');
-			die(buildBridgeException($e, $bridge));
-		} catch(Exception $e) {
-			http_response_code($e->getCode());
-			header('Content-Type: text/html');
-			die(buildBridgeException($e, $bridge));
+		$items = array();
+		$infos = array();
+		$mtime = $cache->getTime();
+
+		if($mtime !== false
+		&& (time() - $cache_timeout < $mtime)
+		&& (!defined('DEBUG') || DEBUG !== true)) { // Load cached data
+
+			// Send "Not Modified" response if client supports it
+			// Implementation based on https://stackoverflow.com/a/10847262
+			if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
+				$stime = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']);
+
+				if($mtime <= $stime) { // Cached data is older or same
+					header('HTTP/1.1 304 Not Modified');
+					die();
+				}
+			}
+
+			$cached = $cache->loadData();
+
+			if(isset($cached['items']) && isset($cached['extraInfos'])) {
+				$items = $cached['items'];
+				$infos = $cached['extraInfos'];
+			}
+
+		} else { // Collect new data
+
+			try {
+				$bridge->setDatas($bridge_params);
+				$bridge->collectData();
+
+				$items = $bridge->getItems();
+				$infos = array(
+					'name' => $bridge->getName(),
+					'uri'  => $bridge->getURI(),
+					'icon' => $bridge->getIcon()
+				);
+			} catch(Error $e) {
+				$item = array();
+
+				// Create "new" error message every 24 hours
+				$params['_error_time'] = urlencode((int)(time() / 86400));
+
+				// Error 0 is a special case (i.e. "trying to get property of non-object")
+				if($e->getCode() === 0) {
+					$item['title'] = 'Bridge encountered an unexpected situation! (' . $params['_error_time'] . ')';
+				} else {
+					$item['title'] = 'Bridge returned error ' . $e->getCode() . '! (' . $params['_error_time'] . ')';
+				}
+
+				$item['uri'] = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) . '?' . http_build_query($params);
+				$item['timestamp'] = time();
+				$item['content'] = buildBridgeException($e, $bridge);
+
+				$items[] = $item;
+			} catch(Exception $e) {
+				$item = array();
+
+				// Create "new" error message every 24 hours
+				$params['_error_time'] = urlencode((int)(time() / 86400));
+
+				$item['uri'] = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) . '?' . http_build_query($params);
+				$item['title'] = 'Bridge returned error ' . $e->getCode() . '! (' . $params['_error_time'] . ')';
+				$item['timestamp'] = time();
+				$item['content'] = buildBridgeException($e, $bridge);
+
+				$items[] = $item;
+			}
+
+			// Store data in cache
+			$cache->saveData(array(
+				'items' => $items,
+				'extraInfos' => $infos
+			));
+
 		}
 
 		// Data transformation
 		try {
 			$format = Format::create($format);
-			$format->setItems($bridge->getItems());
-			$format->setExtraInfos($bridge->getExtraInfos());
-			$format->setLastModified($bridge->getCacheTime());
+			$format->setItems($items);
+			$format->setExtraInfos($infos);
+			$format->setLastModified($mtime);
 			$format->display();
 		} catch(Error $e) {
 			http_response_code($e->getCode());
@@ -249,7 +315,7 @@ try {
 		} catch(Exception $e) {
 			http_response_code($e->getCode());
 			header('Content-Type: text/html');
-			die(buildBridgeException($e, $bridge));
+			die(buildTransformException($e, $bridge));
 		}
 	} else {
 		echo BridgeList::create($whitelist_selection, $showInactive);

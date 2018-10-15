@@ -69,14 +69,18 @@ function buildBridgeException($e, $bridge){
 	. Configuration::getVersion()
 	. '`';
 
+	$body_html = nl2br($body);
 	$link = buildGitHubIssueQuery($title, $body, 'bug report', $bridge->getMaintainer());
 
 	$header = buildHeader($e, $bridge);
-	$message = "<strong>{$bridge->getName()}</strong> was
-unable to receive or process the remote website's content!";
+	$message = <<<EOD
+<strong>{$bridge->getName()}</strong> was unable to receive or process the
+remote website's content!<br>
+{$body_html}
+EOD;
 	$section = buildSection($e, $bridge, $message, $link);
 
-	return buildPage($title, $header, $section);
+	return $section;
 }
 
 /**
@@ -127,7 +131,7 @@ function buildSection($e, $bridge, $message, $link){
 		<ul class="advice">
 			<li>Press Return to check your input parameters</li>
 			<li>Press F5 to retry</li>
-			<li>Open a GitHub Issue if this error persists</li>
+			<li>Open a <a href="{$link}">GitHub Issue</a> if this error persists</li>
 		</ul>
 	</div>
 	<a href="{$link}" title="After clicking this button you can review
