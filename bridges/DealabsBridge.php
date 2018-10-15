@@ -1120,10 +1120,8 @@ class PepperBridgeAbstract extends BridgeAbstract {
 		$selectorHot = implode(
 			' ', /* Notice this is a space! */
 			array(
-				'flex',
-				'flex--align-c',
-				'flex--justify-space-between',
-				'space--b-2',
+				'cept-vote-box',
+				'vote-box'
 			)
 		);
 
@@ -1142,8 +1140,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 			array(
 				'size--all-s',
 				'flex',
-				'flex--justify-e',
-				'flex--grow-1',
+				'boxAlign-jc--all-fe'
 			)
 		);
 
@@ -1175,7 +1172,8 @@ class PepperBridgeAbstract extends BridgeAbstract {
 						. $this->GetSource($deal)
 						. $deal->find('div[class*='. $selectorDescription .']', 0)->innertext
 						. '</td><td>'
-						. $deal->find('div[class='. $selectorHot .']', 0)->children(0)->outertext
+						. $deal->find('div[class*='. $selectorHot .']', 0)
+						->find('span', 1)->outertext
 						. '</td></table>';
 				$dealDateDiv = $deal->find('div[class*='. $selectorDate .']', 0)
 					->find('span[class=hide--toW3]');
