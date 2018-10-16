@@ -114,6 +114,11 @@ EOD;
 				$content->find('footer', 0)->innertext = '';
 			}
 
+			// Replace emoticon images by their textual representation (part of the span)
+			foreach($content->find('span[title*="emoticon"]') as $emoticon) {
+				$emoticon->innertext = $emoticon->find('span[aria-hidden="true"]', 0)->innertext;
+			}
+
 			//Remove html nodes, keep only img, links, basic formatting
 			$content = strip_tags($content, '<a><img><i><u><br><p><h3><h4>');
 
