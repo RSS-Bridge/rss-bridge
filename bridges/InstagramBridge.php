@@ -104,7 +104,7 @@ class InstagramBridge extends BridgeAbstract {
 		if (count($mediaInfo->edge_media_to_caption->edges) > 0) {
 			$caption = $mediaInfo->edge_media_to_caption->edges[0]->node->text;
 		} else {
-			$caption = "";
+			$caption = '';
 		}
 
 		$enclosures = [$mediaInfo->display_url];
