@@ -151,7 +151,7 @@ class ThingiverseBridge extends BridgeAbstract {
 			$this->items[] = $item;
 		}
 	}
-    
+
 	public function getURI(){
 		if(!is_null($this->getInput('query'))) {
 			$uri = self::URI . '/search?q=' . urlencode($this->getInput('query'));
