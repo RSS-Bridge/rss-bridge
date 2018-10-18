@@ -87,7 +87,7 @@ EOD;
 		$fileContent = getContents($requestString);
 
 		$html = $this->buildContent($fileContent);
-		$author = $pageInfo['username'];
+		$author = strip_tags($pageInfo['username']);
 
 		foreach($html->find('article') as $content) {
 
