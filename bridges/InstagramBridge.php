@@ -101,7 +101,11 @@ class InstagramBridge extends BridgeAbstract {
 		$mediaInfo = $data->entry_data->PostPage[0]->graphql->shortcode_media;
 
 		//Process the first element, that isn't in the node graph
-		$caption = $mediaInfo->edge_media_to_caption->edges[0]->node->text;
+		if (count($mediaInfo->edge_media_to_caption->edges) > 0) {
+			$caption = $mediaInfo->edge_media_to_caption->edges[0]->node->text;
+		} else {
+			$caption = '';
+		}
 
 		$enclosures = [$mediaInfo->display_url];
 		$content = '<img src="' . htmlentities($mediaInfo->display_url) . '" alt="'. $caption . '" />';
