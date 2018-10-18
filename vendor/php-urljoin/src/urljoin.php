@@ -26,6 +26,15 @@ function urljoin($base, $rel) {
 	$pbase = parse_url($base);
 	$prel = parse_url($rel);
 
+	if ($prel === false || preg_match('/^[a-z0-9\-.]*[^a-z0-9\-.:][a-z0-9\-.]*:/i', $rel)) {
+		/*
+			Either parse_url couldn't parse this, or the original URL
+			fragment had an invalid scheme character before the first :,
+			which can confuse parse_url
+		*/
+		$prel = array('path' => $rel);
+	}
+
 	if (array_key_exists('path', $pbase) && $pbase['path'] === '/') {
 		unset($pbase['path']);
 	}
