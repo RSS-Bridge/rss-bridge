@@ -83,8 +83,7 @@ EOD;
 		//Build the string for the first request
 		$requestString = 'https://touch.facebook.com/page_content_list_view/more/?page_id='
 		. $pageInfo['userId']
-		. '&start_cursor=1&num_to_fetch=10&surface_type=timeline';
-
+		. '&start_cursor=1&num_to_fetch=105&surface_type=timeline';
 		$fileContent = getContents($requestString);
 
 		$html = $this->buildContent($fileContent);
@@ -229,7 +228,7 @@ EOD;
 		$usernameRegex = '/data-nt=\"FB:TEXT4\">(.*?)<\/div>/m';
 		preg_match($usernameRegex, $pageContent, $usernameMatches);
 		if(count($usernameMatches) > 0) {
-			$username = $usernameMatches[1];
+			$username = strip_tags($usernameMatches[1]);
 		} else {
 			$username = $this->getInput('u');
 		}
