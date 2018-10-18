@@ -65,14 +65,14 @@ class FB2Bridge extends BridgeAbstract {
 		if($this->getInput('u') !== null) {
 			$page = 'https://touch.facebook.com/' . $this->getInput('u');
 			$cookies = $this->getCookies($page);
-			$pageID = $this->getPageID($page, $cookies);
+			$pageInfo = $this->getPageInfos($page, $cookies);
 
-			if($pageID === null) {
+			if($pageInfo['userId'] === null) {
 				echo <<<EOD
 Unable to get the page id. You should consider getting the ID by hand, then importing it into FB2Bridge
 EOD;
 				die();
-			} elseif($pageID == -1) {
+			} elseif($pageInfo['userId'] == -1) {
 				echo <<<EOD
 This page is not accessible without being logged in.
 EOD;
@@ -81,17 +81,14 @@ EOD;
 		}
 
 		//Build the string for the first request
-		$requestString = 'https://touch.facebook.com/pages_reaction_units/more/?page_id='
-		. $pageID
-		. '&cursor={"card_id"%3A"videos"%2C"has_next_page"%3Atrue}&surface=mobile_page_home&unit_count=8';
+		$requestString = 'https://touch.facebook.com/page_content_list_view/more/?page_id='
+		. $pageInfo['userId']
+		. '&start_cursor=1&num_to_fetch=10&surface_type=timeline';
 
 		$fileContent = getContents($requestString);
 
-		$articleIndex = 0;
-		$maxArticle = 3;
-
 		$html = $this->buildContent($fileContent);
-		$author = $this->getInput('u');
+		$author = $pageInfo['username'];
 
 		foreach($html->find('article') as $content) {
 
@@ -114,13 +111,17 @@ EOD;
 				$content->find('footer', 0)->innertext = '';
 			}
 
+			if($content->find('._5rgu', 0) !== null) {
+				$content->find('._5rgu', 0)->innertext = '';
+			}
+
 			// Replace emoticon images by their textual representation (part of the span)
 			foreach($content->find('span[title*="emoticon"]') as $emoticon) {
 				$emoticon->innertext = $emoticon->find('span[aria-hidden="true"]', 0)->innertext;
 			}
 
 			//Remove html nodes, keep only img, links, basic formatting
-			$content = strip_tags($content, '<a><img><i><u><br><p><h3><h4>');
+			//$content = strip_tags($content, '<a><img><i><u><br><p><h3><h4>');
 
 			//Adapt link hrefs: convert relative links into absolute links and bypass external link redirection
 			$content = preg_replace_callback('/ href=\"([^"]+)\"/i', $unescape_fb_link, $content);
@@ -146,6 +147,11 @@ EOD;
 			// "<i><u>smile emoticon</u></i>" back to ASCII emoticons eg ":)"
 			$content = preg_replace_callback('/<i><u>([^ <>]+) ([^<>]+)<\/u><\/i>/i', $unescape_fb_emote, $content);
 
+			//Remove the "...Plus" tag
+			$content = preg_replace(
+				'/… (<span>|)<a href="https:\/\/www\.facebook\.com\/story\.php\?story_fbid=.*?<\/a>/m',
+				'', $content, 1);
+
 			$item['content'] = html_entity_decode($content, ENT_QUOTES);
 
 			$title = $author;
@@ -165,48 +171,13 @@ EOD;
 	}
 
 
-	// Currently not used. Is used to get more than only 3 elements, as they appear on another page.
-	private function computeNextLink($string, $pageID){
-
-		$regex = implode(
-			'',
-			array(
-				'/timeline_unit',
-				"\\\\\\\\u00253A1",
-				"\\\\\\\\u00253A([0-9]*)",
-				"\\\\\\\\u00253A([0-9]*)",
-				"\\\\\\\\u00253A([0-9]*)",
-				"\\\\\\\\u00253A([0-9]*)/"
-			)
-		);
-
-		preg_match($regex, $string, $result);
-
-		return implode(
-			'',
-			array(
-				'https://touch.facebook.com/pages_reaction_units/more/?page_id=',
-				$pageID,
-				'&cursor=%7B%22timeline_cursor%22%3A%22timeline_unit%3A1%3A',
-				$result[1],
-				'%3A',
-				$result[2],
-				'%3A',
-				$result[3],
-				'%3A',
-				$result[4],
-				'%22%2C%22timeline_section_cursor%22%3A%7B%7D%2C%22',
-				'has_next_page%22%3Atrue%7D&surface=mobile_page_home&unit_count=3'
-			)
-		);
-	}
-
 	//Builds the HTML from the encoded JS that Facebook provides.
 	private function buildContent($pageContent){
 		// The html ends with:
 		// /div>","replaceifexists
 		$regex = '/\\"html\\":(\".+\/div>"),"replace/';
 		preg_match($regex, $pageContent, $result);
+
 		return str_get_html(json_decode($result[1]));
 	}
 
@@ -237,8 +208,8 @@ EOD;
 		return substr($cookies, 1);
 	}
 
-	//Get the page ID from the Facebook page.
-	private function getPageID($page, $cookies){
+	//Get the page ID and username from the Facebook page.
+	private function getPageInfos($page, $cookies){
 
 		$context = stream_context_create(array(
 			'http' => array(
@@ -254,19 +225,28 @@ EOD;
 			return -1;
 		}
 
+		//Get the username
+		$usernameRegex = '/data-nt=\"FB:TEXT4\">(.*?)<\/div>/m';
+		preg_match($usernameRegex, $pageContent, $usernameMatches);
+		if(count($usernameMatches) > 0) {
+			$username = $usernameMatches[1];
+		} else {
+			$username = $this->getInput('u');
+		}
+
 		//Get the page ID if we don't have a captcha
 		$regex = '/page_id=([0-9]*)&/';
 		preg_match($regex, $pageContent, $matches);
 
 		if(count($matches) > 0) {
-			return $matches[1];
+			return array('userId' => $matches[1], 'username' => $username);
 		}
 
 		//Get the page ID if we do have a captcha
 		$regex = '/"pageID":"([0-9]*)"/';
 		preg_match($regex, $pageContent, $matches);
 
-		return $matches[1];
+		return array('userId' => $matches[1], 'username' => $username);
 
 	}
 
