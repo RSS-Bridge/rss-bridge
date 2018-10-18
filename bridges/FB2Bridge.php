@@ -85,14 +85,12 @@ EOD;
 		. $pageInfo['userId']
 		. '&start_cursor=1&num_to_fetch=105&surface_type=timeline';
 		$fileContent = getContents($requestString);
-
 		$html = $this->buildContent($fileContent);
 		$author = $pageInfo['username'];
 
 		foreach($html->find('article') as $content) {
 
 			$item = array();
-
 			preg_match('/publish_time\\\&quot;:([0-9]+),/', $content->getAttribute('data-store', 0), $match);
 			if(isset($match[1]))
 				$timestamp = $match[1];
@@ -102,6 +100,12 @@ EOD;
 			$item['uri'] = html_entity_decode('http://touch.facebook.com'
 			. $content->find("div[class='_52jc _5qc4 _24u0 _36xo']", 0)->find('a', 0)->getAttribute('href'), ENT_QUOTES);
 
+			//Decode images
+			$imagecleaned = preg_replace_callback('/<i [^>]* style="[^"]*url\(\'(.*?)\'\).*?><\/i>/m', function ($matches) {
+					return "<img src='" . str_replace(['\\3a ', '\\3d ', '\\26 '], [':', '=', '&'], $matches[1]) . "' />";
+				}, $content);
+			$content = str_get_html($imagecleaned);
+
 			if($content->find('header', 0) !== null) {
 				$content->find('header', 0)->innertext = '';
 			}
@@ -110,17 +114,13 @@ EOD;
 				$content->find('footer', 0)->innertext = '';
 			}
 
-			if($content->find('._5rgu', 0) !== null) {
-				$content->find('._5rgu', 0)->innertext = '';
-			}
-
 			// Replace emoticon images by their textual representation (part of the span)
 			foreach($content->find('span[title*="emoticon"]') as $emoticon) {
 				$emoticon->innertext = $emoticon->find('span[aria-hidden="true"]', 0)->innertext;
 			}
 
 			//Remove html nodes, keep only img, links, basic formatting
-			//$content = strip_tags($content, '<a><img><i><u><br><p><h3><h4>');
+			$content = strip_tags($content, '<a><img><i><u><br><p><h3><h4><section>');
 
 			//Adapt link hrefs: convert relative links into absolute links and bypass external link redirection
 			$content = preg_replace_callback('/ href=\"([^"]+)\"/i', $unescape_fb_link, $content);
@@ -133,7 +133,6 @@ EOD;
 				'ajaxify',
 				'tabindex',
 				'class',
-				'style',
 				'data-[^=]*',
 				'aria-[^=]*',
 				'role',
@@ -151,6 +150,30 @@ EOD;
 				'/… (<span>|)<a href="https:\/\/www\.facebook\.com\/story\.php\?story_fbid=.*?<\/a>/m',
 				'', $content, 1);
 
+			//Remove tracking images
+			$content = preg_replace('/<img src=\'.*?safe_image\.php.*?\' \/>/m', '', $content);
+
+			//Remove the double section tags
+			$content = str_replace(['<section><section>', '</section></section>'], ['<section>', '</section>'], $content);
+
+			//Move the section tag link upper, if it is down
+			$content = str_get_html($content);
+			$sectionContent = $content->find('section', 0);
+			if($sectionContent != null) {
+				$sectionLink = $sectionContent->nextSibling();
+				if($sectionLink != null) {
+					$fullLink = '<a href="' . $sectionLink->getAttribute('href') .  '">' . $sectionContent->innertext . '</a>';
+					$sectionContent->innertext = $fullLink;
+				}
+			}
+
+			//Move the href tag upper if it is inside the section
+			foreach($content->find('section > a') as $sectionToFix) {
+				$sectionLink = $sectionToFix->getAttribute('href');
+				$section = $sectionToFix->parent();
+				$section->outertext = '<a href="' . $sectionLink .  '">' . $section . '</a>';
+			}
+
 			$item['content'] = html_entity_decode($content, ENT_QUOTES);
 
 			$title = $author;
@@ -164,9 +187,10 @@ EOD;
 			$item['author'] = html_entity_decode($author, ENT_QUOTES);
 			$item['timestamp'] = html_entity_decode($timestamp, ENT_QUOTES);
 
-			if($item['timestamp'] != 0)
+			//if($item['timestamp'] != 0)
 				array_push($this->items, $item);
 		}
+
 	}
 
 
@@ -177,7 +201,9 @@ EOD;
 		$regex = '/\\"html\\":(\".+\/div>"),"replace/';
 		preg_match($regex, $pageContent, $result);
 
-		return str_get_html(json_decode($result[1]));
+		$htmlContent = html_entity_decode(json_decode($result[1]), ENT_QUOTES, 'UTF-8');
+
+		return str_get_html($htmlContent);
 	}
 
 
