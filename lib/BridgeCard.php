@@ -193,7 +193,7 @@ This bridge is not fetching its content through a secure connection</div>';
 		. '" type="checkbox" name="'
 		. $name
 		. '" '
-		. ($entry['defaultValue'] === 'checked' ?: '')
+		. ($entry['defaultValue'] === 'checked' ? 'checked' : '')
 		. ' />'
 		. PHP_EOL;
 	}
