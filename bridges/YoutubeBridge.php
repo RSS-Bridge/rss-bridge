@@ -181,7 +181,9 @@ class YoutubeBridge extends BridgeAbstract {
 
 	private function ytGetSimpleHTMLDOM($url){
 		return getSimpleHTMLDOM($url,
-			$header = array(),
+			$header = array(
+				'Accept-Language: en-US'
+			),
 			$opts = array(),
 			$lowercase = true,
 			$forceTagsClosed = true,
