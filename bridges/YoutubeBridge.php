@@ -147,7 +147,15 @@ class YoutubeBridge extends BridgeAbstract {
 				$time = 0;
 				$vid = str_replace('/watch?v=', '', $element->find('a', 0)->href);
 				$vid = substr($vid, 0, strpos($vid, '&') ?: strlen($vid));
-				$title = $this->ytBridgeFixTitle($element->find($title_selector, 0)->plaintext);
+				$title = trim($this->ytBridgeFixTitle($element->find($title_selector, 0)->plaintext));
+
+				if (
+					$title == '[Private video]' ||
+					$title == '[Deleted video]' ||
+					strpos($vid, 'googleads') !== false
+				) {
+					continue;
+				}
 
 				// The duration comes in one of the formats:
 				// hh:mm:ss / mm:ss / m:ss
@@ -162,13 +170,11 @@ class YoutubeBridge extends BridgeAbstract {
 					continue;
 				}
 
-				if($title != '[Private Video]' && strpos($vid, 'googleads') === false) {
-					if ($add_parsed_items) {
-						$this->ytBridgeQueryVideoInfo($vid, $author, $desc, $time);
-						$this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
-					}
-					$count++;
+				if ($add_parsed_items) {
+					$this->ytBridgeQueryVideoInfo($vid, $author, $desc, $time);
+					$this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
 				}
+				$count++;
 			}
 		}
 		return $count;
