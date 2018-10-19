@@ -17,7 +17,7 @@ class EtsyBridge extends BridgeAbstract {
 			'queryextension' => array(
 				'name' => 'Query extension',
 				'type' => 'text',
-				'requied' => false,
+				'required' => false,
 				'title' => 'Insert additional query parts here
 (anything after ?search=<your search query>)',
 				'exampleValue' => '&explicit=1&locationQuery=2921044'
@@ -25,9 +25,9 @@ class EtsyBridge extends BridgeAbstract {
 			'showimage' => array(
 				'name' => 'Show image in content',
 				'type' => 'checkbox',
-				'requrired' => false,
+				'required' => false,
 				'title' => 'Activate to show the image in the content',
-				'defaultValue' => false
+				'defaultValue' => 'checked'
 			)
 		)
 	);
@@ -36,26 +36,27 @@ class EtsyBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Failed to receive ' . $this->getURI());
 
-		$results = $html->find('div.block-grid-item');
+		$results = $html->find('li.block-grid-item');
 
 		foreach($results as $result) {
 			// Skip banner cards (ads for categories)
-			if($result->find('a.banner-card'))
+			if($result->find('span.ad-indicator'))
 				continue;
 
 			$item = array();
 
 			$item['title'] = $result->find('a', 0)->title;
 			$item['uri'] = $result->find('a', 0)->href;
-			$item['author'] = $result->find('div.card-shop-name', 0)->plaintext;
+			$item['author'] = $result->find('p.text-gray-lighter', 0)->plaintext;
 
 			$item['content'] = '<p>'
-			. $result->find('div.card-price', 0)->plaintext
+			. $result->find('span.currency-value', 0)->plaintext . ' '
+			. $result->find('span.currency-symbol', 0)->plaintext
 			. '</p><p>'
-			. $result->find('div.card-title', 0)->plaintext
+			. $result->find('a', 0)->title
 			. '</p>';
 
-			$image = $result->find('img.placeholder', 0)->src;
+			$image = $result->find('img.display-block', 0)->src;
 
 			if($this->getInput('showimage')) {
 				$item['content'] .= '<img src="' . $image . '">';
