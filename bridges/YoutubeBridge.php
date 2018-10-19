@@ -152,7 +152,7 @@ class YoutubeBridge extends BridgeAbstract {
 				// The duration comes in one of the formats:
 				// hh:mm:ss / mm:ss / m:ss
 				// 01:03:30 / 15:06 / 1:24
-				$durationText = trim($element->find('span[class="video-time"]', 0)->plaintext);
+				$durationText = trim($element->find('div.timestamp span', 0)->plaintext);
 				$durationText = preg_replace('/([\d]{1,2})\:([\d]{2})/', '00:$1:$2', $durationText);
 
 				sscanf($durationText, '%d:%d:%d', $hours, $minutes, $seconds);
