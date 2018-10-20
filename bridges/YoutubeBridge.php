@@ -149,10 +149,9 @@ class YoutubeBridge extends BridgeAbstract {
 				$vid = substr($vid, 0, strpos($vid, '&') ?: strlen($vid));
 				$title = trim($this->ytBridgeFixTitle($element->find($title_selector, 0)->plaintext));
 
-				if (
-					$title == '[Private video]' ||
-					$title == '[Deleted video]' ||
-					strpos($vid, 'googleads') !== false
+				if (strpos($vid, 'googleads') !== false
+					|| $title == '[Private video]'
+					|| $title == '[Deleted video]'
 				) {
 					continue;
 				}
