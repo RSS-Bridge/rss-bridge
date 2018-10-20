@@ -552,11 +552,7 @@ EOD;
 
 					if(count($post->find('abbr')) > 0) {
 
-						//Retrieve post contents
-						$content = preg_replace(
-							'/(?i)><div class=\"clearfix([^>]+)>(.+?)div\ class=\"userContent\"/i',
-							'',
-							$post);
+						$content = $post->find('.userContentWrapper', 0);
 
 						$content = preg_replace(
 							'/(?i)><div class=\"_59tj([^>]+)>(.+?)<\/div><\/div><a/i',
