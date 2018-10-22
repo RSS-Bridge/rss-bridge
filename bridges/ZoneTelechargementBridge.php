@@ -1,7 +1,7 @@
 <?php
 class ZoneTelechargementBridge extends BridgeAbstract {
 	const NAME = 'Zone Telechargement';
-	const URI = 'https://ww4.zone-telechargement1.org/';
+	const URI = 'https://www.zone-telechargement1.org/';
 	const DESCRIPTION = 'Suivi de série sur Zone Telechargement';
 	const MAINTAINER = 'sysadminstory';
 	const PARAMETERS = array(
@@ -12,9 +12,9 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 				'required' => true,
 				'title' => 'URL d\'une série sans le https://ww4.zone-telechargement1.org/',
 				'exampleValue' => 'telecharger-series/31079-halt-and-catch-fire-saison-4-french-hd720p.html'
-				)
 			)
-		);
+		)
+	);
 
 	public function collectData(){
 		$html = getSimpleHTMLDOM(self::URI . $this->getInput('url'))
@@ -58,7 +58,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 		}
 	}
 
-	public function getName(){
+	public function getName() {
 		switch($this->queriedContext) {
 		case 'Suivre la publication des épisodes d\'une série en cours de diffusion':
 			return $this->showTitle . ' - ' . self::NAME;
@@ -68,8 +68,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 		}
 	}
 
-	private function findLinkHoster($element)
-	{
+	private function findLinkHoster($element) {
 		// The hoster name is one level higher than the link tag : get the parent element
 		$element = $element->parent();
 		//echo "PARENT : $element \n";
