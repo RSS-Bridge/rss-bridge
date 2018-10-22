@@ -306,7 +306,7 @@ try {
 			$format = Format::create($format);
 			$format->setItems($items);
 			$format->setExtraInfos($infos);
-			$format->setLastModified($mtime);
+			$format->setLastModified($cache->getTime());
 			$format->display();
 		} catch(Error $e) {
 			http_response_code($e->getCode());
