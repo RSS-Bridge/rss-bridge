@@ -3,7 +3,7 @@ class InstagramBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'pauder';
 	const NAME = 'Instagram Bridge';
-	const URI = 'https://instagram.com/';
+	const URI = 'https://www.instagram.com/';
 	const DESCRIPTION = 'Returns the newest images';
 
 	const PARAMETERS = array(
@@ -143,7 +143,7 @@ class InstagramBridge extends BridgeAbstract {
 
 	public function getURI(){
 		if(!is_null($this->getInput('u'))) {
-			return self::URI . urlencode($this->getInput('u'));
+			return self::URI . urlencode($this->getInput('u')) . '/';
 		} elseif(!is_null($this->getInput('h'))) {
 			return self::URI . 'explore/tags/' . urlencode($this->getInput('h'));
 		}
