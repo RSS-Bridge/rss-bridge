@@ -1,24 +1,37 @@
 <?php
 function getContents($url, $header = array(), $opts = array()){
+	debugMessage('Reading contents from "' . $url . '"');
+
 	$ch = curl_init($url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
-	if(is_array($header) && count($header) !== 0)
+	if(is_array($header) && count($header) !== 0) {
+
+		debugMessage('Setting headers: ' . json_encode($header));
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+
+	}
 
 	curl_setopt($ch, CURLOPT_USERAGENT, ini_get('user_agent'));
 	curl_setopt($ch, CURLOPT_ENCODING, '');
 	curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
 
 	if(is_array($opts)) {
+
+		debugMessage('Setting options: ' . json_encode($opts));
+
 		foreach($opts as $key => $value) {
 			curl_setopt($ch, $key, $value);
 		}
+
 	}
 
 	if(defined('PROXY_URL') && !defined('NOPROXY')) {
+
+		debugMessage('Setting proxy url: ' . PROXY_URL);
 		curl_setopt($ch, CURLOPT_PROXY, PROXY_URL);
+
 	}
 
 	// We always want the response header as part of the data!
@@ -34,6 +47,9 @@ function getContents($url, $header = array(), $opts = array()){
 	$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 	$errorCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 	$header = substr($data, 0, $headerSize);
+
+	debugMessage('Response header: ' . $header);
+
 	$headers = parseResponseHeader($header);
 	$finalHeader = end($headers);
 
