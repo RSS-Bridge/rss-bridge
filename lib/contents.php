@@ -17,7 +17,7 @@ function getContents($url, $header = array(), $opts = array()){
 	curl_setopt($ch, CURLOPT_ENCODING, '');
 	curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
 
-	if(is_array($opts)) {
+	if(is_array($opts) && count($opts) !== 0) {
 
 		debugMessage('Setting options: ' . json_encode($opts));
 
