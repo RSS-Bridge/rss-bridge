@@ -95,7 +95,7 @@ class FacebookBridge extends BridgeAbstract {
 				$user = $this->sanitizeUser($this->getInput('u'));
 
 				if(!strpos($user, '/')) {
-					$uri .= '/pg/' . urlencode($user) . '/posts';
+					$uri .= urlencode($user) . '/posts';
 				} else {
 					$uri .= 'pages/' . $user;
 				}
