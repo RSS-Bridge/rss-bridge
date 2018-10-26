@@ -14,6 +14,21 @@
 /**
  * Gets contents from the Internet.
  *
+ * **Content caching** (disabled in debug mode)
+ *
+ * A copy of the received content is stored in a local cache folder `server/` at
+ * {@see PATH_CACHE}. The `If-Modified-Since` header is added to the request, if
+ * the provided URL has been cached before.
+ *
+ * When the server responds with `304 Not Modified`, the cached data is returned.
+ * This will improve response times and reduce bandwidth for servers that support
+ * the `If-Modified-Since` header.
+ *
+ * Cached files are forcefully removed after 24 hours.
+ *
+ * @link https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-Modified-Since
+ * If-Modified-Since
+ *
  * @param string $url The URL.
  * @param array $header (optional) A list of cURL header.
  * For more information follow the links below.
@@ -28,6 +43,14 @@
  */
 function getContents($url, $header = array(), $opts = array()){
 	Debug::log('Reading contents from "' . $url . '"');
+
+	// Initialize cache
+	$cache = Cache::create('FileCache');
+	$cache->setPath(PATH_CACHE . 'server/');
+	$cache->purgeCache(86400); // 24 hours (forced)
+
+	$params = [$url];
+	$cache->setParameters($params);
 
 	$ch = curl_init($url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -64,9 +87,22 @@ function getContents($url, $header = array(), $opts = array()){
 	// We always want the response header as part of the data!
 	curl_setopt($ch, CURLOPT_HEADER, true);
 
+	// Build "If-Modified-Since" header
+	if(!Debug::isEnabled() && $time = $cache->getTime()) { // Skip if cache file doesn't exist
+		Debug::log('Adding If-Modified-Since');
+		curl_setopt($ch, CURLOPT_TIMEVALUE, $time);
+		curl_setopt($ch, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
+	}
+
+	// Enables logging for the outgoing header
+	curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+
 	$data = curl_exec($ch);
 	$curlError = curl_error($ch);
 	$curlErrno = curl_errno($ch);
+	$curlInfo = curl_getinfo($ch);
+
+	Debug::log('Outgoing header: ' . json_encode($curlInfo));
 
 	if($data === false)
 		Debug::log('Cant\'t download ' . $url . ' cUrl error: ' . $curlError . ' (' . $curlErrno . ')');
@@ -80,25 +116,32 @@ function getContents($url, $header = array(), $opts = array()){
 	$headers = parseResponseHeader($header);
 	$finalHeader = end($headers);
 
-	if($errorCode !== 200) {
+	curl_close($ch);
 
-		if(array_key_exists('Server', $finalHeader) && strpos($finalHeader['Server'], 'cloudflare') !== false) {
+	switch($errorCode) {
+		case 200: // Contents received
+			Debug::log('New contents received');
+			$data = substr($data, $headerSize);
+			$cache->saveData($data);
+			return $data;
+		case 304: // Not modified, use cached data
+			Debug::log('Contents not modified on host, returning cached data');
+			return $cache->loadData();
+		default:
+			if(array_key_exists('Server', $finalHeader) && strpos($finalHeader['Server'], 'cloudflare') !== false) {
 			returnServerError(<<< EOD
 The server responded with a Cloudflare challenge, which is not supported by RSS-Bridge!
 If this error persists longer than a week, please consider opening an issue on GitHub!
 EOD
-			);
-		}
+				);
+			}
 
-		returnError(<<<EOD
+			returnError(<<<EOD
 The requested resource cannot be found!
 Please make sure your input parameters are correct!
 EOD
-		, $errorCode);
+			, $errorCode);
 	}
-
-	curl_close($ch);
-	return substr($data, $headerSize);
 }
 
 /**
