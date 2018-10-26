@@ -7,6 +7,16 @@ final class BridgeList {
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta name="description" content="RSS-Bridge" />
+	<link
+		rel="alternate"
+		type="application/atom+xml"
+		href="https://github.com/RSS-Bridge/rss-bridge/releases.atom"
+		title="RSS-Bridge releases on GitHub" />
+	<link
+		rel="alternate"
+		type="application/atom+xml"
+		href="https://github.com/RSS-Bridge/rss-bridge/commits/master.atom"
+		title="Recent commits to RSS-Bridge on GitHub" />
 	<title>RSS-Bridge</title>
 	<link href="static/style.css" rel="stylesheet">
 	<script src="static/search.js"></script>
@@ -60,13 +70,13 @@ EOD;
 		if(defined('DEBUG') && DEBUG === true) {
 			if(defined('DEBUG_INSECURE') && DEBUG_INSECURE === true) {
 				$warning .= <<<EOD
-<section class="critical-warning">Warning : Debug mode is active from any location, 
-make sure only you can access RSS-Bridge.</section>
+<section class="critical-warning">Warning : Debug mode is active from any location,
+ make sure only you can access RSS-Bridge.</section>
 EOD;
 			} else {
 				$warning .= <<<EOD
-<section class="warning">Warning : Debug mode is active from your IP address, 
-your requests will bypass the cache.</section>
+<section class="warning">Warning : Debug mode is active from your IP address,
+ your requests will bypass the cache.</section>
 EOD;
 			}
 		}
@@ -114,6 +124,14 @@ EOD;
 	<p class="version">{$version}</p>
 	{$totalActiveBridges}/{$totalBridges} active bridges.<br>
 	{$inactive}
+	<a class="feed"
+		href="https://github.com/RSS-Bridge/rss-bridge/releases.atom"
+		title="Shows the official RSS-Bridge releases feed on GitHub"
+		>RSS-Bridge releases on GitHub</a>
+	<a class="feed"
+		href="https://github.com/RSS-Bridge/rss-bridge/commits/master.atom"
+		title="Shows the official RSS-Bridge commits feed on GitHub"
+		>Recent commits to RSS-Bridge on GitHub</a>
 </section>
 EOD;
 	}
