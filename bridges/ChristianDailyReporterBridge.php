@@ -7,6 +7,9 @@ class ChristianDailyReporterBridge extends BridgeAbstract {
 	const DESCRIPTION = 'The Unofficial Christian Daily Reporter RSS';
 	// const CACHE_TIMEOUT = 86400; // 1 day
 
+	public function getIcon() {
+		return self::URI . 'images/cdrfavicon.png';
+	}
 
 	public function collectData() {
 		$uri = 'https://www.christiandailyreporter.com/';

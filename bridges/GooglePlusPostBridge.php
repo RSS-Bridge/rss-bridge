@@ -22,6 +22,10 @@ class GooglePlusPostBridge extends BridgeAbstract{
 		)
 	));
 
+	public function getIcon() {
+		return 'https://ssl.gstatic.com/images/branding/product/ico/google_plus_alldp.ico';
+	}
+
 	public function collectData(){
 
 		$username = $this->getInput('username');

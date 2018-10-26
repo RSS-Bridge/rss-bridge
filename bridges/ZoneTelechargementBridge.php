@@ -16,6 +16,10 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 		)
 	);
 
+	public function getIcon() {
+		return 'https://ww7.zone-telechargement1.org/templates/Default/images/favicon.ico';
+	}
+
 	public function collectData(){
 		$html = getSimpleHTMLDOM(self::URI . $this->getInput('url'))
 			or returnServerError('Could not request Zone Telechargement.');

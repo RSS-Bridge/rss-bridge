@@ -56,6 +56,10 @@ class FacebookBridge extends BridgeAbstract {
 	private $authorName = '';
 	private $groupName = '';
 
+	public function getIcon() {
+		return 'https://static.xx.fbcdn.net/rsrc.php/yo/r/iRmz9lCMBD2.ico';
+	}
+
 	public function getName(){
 
 		switch($this->queriedContext) {

@@ -7,6 +7,11 @@ class EliteDangerousGalnetBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 7200; // 2h
 	const DESCRIPTION = 'Returns the latest page of news from Galnet';
 
+	public function getIcon() {
+		return 'https://community.elitedangerous.com/sites/
+EDSITE_COMM/themes/bootstrap/bootstrap_community/favicon.ico';
+	}
+
 	public function collectData(){
 		$html = getSimpleHTMLDOM(self::URI)
 			or returnServerError('Error while downloading the website content');

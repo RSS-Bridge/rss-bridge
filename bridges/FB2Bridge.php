@@ -15,6 +15,10 @@ class FB2Bridge extends BridgeAbstract {
 		)
 	));
 
+	public function getIcon() {
+		return 'https://static.xx.fbcdn.net/rsrc.php/yo/r/iRmz9lCMBD2.ico';
+	}
+
 	public function collectData(){
 
 		//Utility function for cleaning a Facebook link

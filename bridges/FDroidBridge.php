@@ -19,6 +19,10 @@ class FDroidBridge extends BridgeAbstract {
 		)
 	));
 
+	public function getIcon() {
+		return self::URI . 'assets/favicon.ico?v=8j6PKzW9Mk';
+	}
+
 	public function collectData(){
 		$url = self::URI;
 		$html = getSimpleHTMLDOM($url)

@@ -21,6 +21,10 @@ class TebeoBridge extends FeedExpander {
 		)
 	));
 
+	public function getIcon() {
+		return self::URI . 'images/header_logo.png';
+	}
+
 	public function collectData(){
 		$url = self::URI . '/le-replay/' . $this->getInput('cat');
 		$html = getSimpleHTMLDOM($url)

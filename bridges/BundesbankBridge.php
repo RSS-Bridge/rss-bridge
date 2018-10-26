@@ -27,6 +27,10 @@ class BundesbankBridge extends BridgeAbstract {
 		)
 	);
 
+	public function getIcon() {
+		return self::URI . 'resource/crblob/1890/a7f48ee0ae35348748121770ba3ca009/mL/favicon-ico-data.ico';
+	}
+
 	public function getURI() {
 		switch($this->getInput(self::PARAM_LANG)) {
 			case self::LANG_EN: return self::URI . 'en/publications/reports/studies';

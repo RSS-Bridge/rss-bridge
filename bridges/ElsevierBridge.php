@@ -57,6 +57,10 @@ class ElsevierBridge extends BridgeAbstract {
 		return '';
 	}
 
+	public function getIcon() {
+		return 'https://cdn.elsevier.io/verona/includes/favicons/favicon-32x32.png';
+	}
+
 	public function collectData(){
 		$uri = self::URI . $this->getInput('j') . '/recent-articles/';
 		$html = getSimpleHTMLDOM($uri)

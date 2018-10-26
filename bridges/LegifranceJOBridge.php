@@ -38,6 +38,10 @@ class LegifranceJOBridge extends BridgeAbstract {
 		return $item;
 	}
 
+	public function getIcon() {
+		return 'https://www.legifrance.gouv.fr/img/favicon.ico';
+	}
+
 	public function collectData(){
 		$html = getSimpleHTMLDOM(self::URI)
 			or $this->returnServer('Unable to download ' . self::URI);

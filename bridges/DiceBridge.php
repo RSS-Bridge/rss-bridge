@@ -75,6 +75,10 @@ class DiceBridge extends BridgeAbstract {
 		),
 	));
 
+	public function getIcon() {
+		return 'https://assets.dice.com/techpro/img/favicons/favicon.ico';
+	}
+
 	public function collectData() {
 		$uri = 'https://www.dice.com/jobs/advancedResult.html';
 		$uri .= '?for_one=' . urlencode($this->getInput('for_one'));

@@ -32,6 +32,10 @@ class ContainerLinuxReleasesBridge extends BridgeAbstract {
 		return json_decode($json, true);
 	}
 
+	public function getIcon() {
+		return 'https://coreos.com/assets/ico/favicon.png';
+	}
+
 	public function collectData() {
 		$data = $this->getReleaseFeed($this->getJsonUri());
 

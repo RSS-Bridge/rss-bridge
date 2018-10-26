@@ -36,6 +36,11 @@ class KATBridge extends BridgeAbstract {
 			'name' => 'Only get results from Elite or Verified uploaders ?',
 		),
 	));
+
+	public function getIcon() {
+		return 'https://statuskatcrco-631f.kxcdn.com/assets/images/favicon.ico';
+	}
+
 	public function collectData(){
 		function parseDateTimestamp($element){
 				$guessedDate = strptime($element, '%d-%m-%Y %H:%M:%S');

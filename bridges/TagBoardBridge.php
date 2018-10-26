@@ -14,6 +14,10 @@ class TagBoardBridge extends BridgeAbstract {
 		)
 	));
 
+	public function getIcon() {
+		return 'https://static.tagboard.com/public/favicon-32x32.png';
+	}
+
 	public function collectData(){
 		$link = 'https://post-cache.tagboard.com/search/' . $this->getInput('u');
 

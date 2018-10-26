@@ -48,6 +48,10 @@ class DailymotionBridge extends BridgeAbstract {
 		return $metadata;
 	}
 
+	public function getIcon() {
+		return 'https://static1-ssl.dmcdn.net/images/neon/favicons/android-icon-36x36.png.vf806ca4ed0deed812';
+	}
+
 	public function collectData(){
 		$html = '';
 		$limit = 5;

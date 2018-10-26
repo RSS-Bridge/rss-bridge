@@ -26,6 +26,10 @@ class NotAlwaysBridge extends BridgeAbstract {
 				)
 		));
 
+		public function getIcon() {
+			return self::URI . 'favicon_nar.png';
+		}
+
 		public function collectData(){
 				$html = getSimpleHTMLDOM($this->getURI())
 						or returnServerError('Could not request NotAlways.');

@@ -13,6 +13,10 @@ class JapanExpoBridge extends BridgeAbstract {
 		)
 	));
 
+	public function getIcon() {
+		return 'https://s.japan-expo.com/katana/images/JES073/favicons/paris.png';
+	}
+
 	public function collectData(){
 
 		function frenchPubDateToTimestamp($date_to_parse) {

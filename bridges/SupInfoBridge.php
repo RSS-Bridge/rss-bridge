@@ -13,6 +13,10 @@ class SupInfoBridge extends BridgeAbstract {
 		)
 	));
 
+	public function getIcon() {
+		return self::URI . '/favicon.png';
+	}
+
 	public function collectData() {
 
 		if(empty($this->getInput('tag'))) {

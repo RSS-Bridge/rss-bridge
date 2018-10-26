@@ -14,6 +14,10 @@ class BandcampBridge extends BridgeAbstract {
 		)
 	));
 
+	public function getIcon() {
+		return 'https://s4.bcbits.com/img/bc_favicon.ico';
+	}
+
 	public function collectData(){
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('No results for this query.');

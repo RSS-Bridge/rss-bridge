@@ -19,6 +19,10 @@ class AutoJMBridge extends BridgeAbstract {
 	);
 	const CACHE_TIMEOUT = 3600;
 
+	public function getIcon() {
+		return self::URI . 'assets/images/favicon.ico';
+	}
+
 	public function collectData() {
 		$html = getSimpleHTMLDOM(self::URI . $this->getInput('url'))
 			or returnServerError('Could not request AutoJM.');
@@ -59,4 +63,3 @@ class AutoJMBridge extends BridgeAbstract {
 
 	}
 }
-?>
