@@ -107,7 +107,9 @@ class Configuration {
 
 		$headFile = '.git/HEAD';
 
-		if(file_exists($headFile)) {
+		$is_readable = @is_readable($headFile);
+
+		if($is_readable && file_exists($headFile)) {
 
 			$revisionHashFile = '.git/' . substr(file_get_contents($headFile), 5, -1);
 			$branchName = explode('/', $revisionHashFile)[3];
