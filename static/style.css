@@ -304,3 +304,12 @@ h5 {
 .advice > li {
 	text-align: left;
 }
+
+.feed {
+	display: block;
+}
+
+.feed:before {
+	content:url('../static/feed-icon-14x14.png');
+	padding-right: 5px;
+}
