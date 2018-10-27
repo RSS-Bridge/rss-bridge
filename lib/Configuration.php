@@ -107,7 +107,8 @@ class Configuration {
 
 		$headFile = '.git/HEAD';
 
-		if(file_exists($headFile)) {
+		// '@' is used to mute open_basedir warning
+		if(@is_readable($headFile)) {
 
 			$revisionHashFile = '.git/' . substr(file_get_contents($headFile), 5, -1);
 			$branchName = explode('/', $revisionHashFile)[3];
