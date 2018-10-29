@@ -11,6 +11,11 @@
 ; false = disabled (default)
 custom_timeout = false
 
+; Ignore specified custom timeout for specific requests.
+; true  = enabled
+; false = disabled (default)
+ignore_custom_timeout = false
+
 [proxy]
 
 ; Sets the proxy url (i.e. "tcp://192.168.0.0:32")

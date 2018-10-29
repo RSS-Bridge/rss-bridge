@@ -82,6 +82,11 @@ class Configuration {
 
 		define('CUSTOM_CACHE_TIMEOUT', self::getConfig('cache', 'custom_timeout'));
 
+		if(!is_bool(self::getConfig('cache', 'ignore_custom_timeout')))
+			die('Parameter [cache] => "ignore_custom_timeout" is not a valid Boolean! Please check "config.ini.php"!');
+
+		define('IGNORE_CUSTOM_CACHE_TIMEOUT', self::getConfig('cache', 'ignore_custom_timeout'));
+
 		if(!is_bool(self::getConfig('authentication', 'enable')))
 			die('Parameter [authentication] => "enable" is not a valid Boolean! Please check "config.ini.php"!');
 
