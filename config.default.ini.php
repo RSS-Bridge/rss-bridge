@@ -11,6 +11,11 @@
 ; false = disabled (default)
 custom_timeout = false
 
+[misc]
+; Advertise an email address where people can reach the maintainer.
+; An empty string disables this message.
+maintainer_email = ""
+
 [proxy]
 
 ; Sets the proxy url (i.e. "tcp://192.168.0.0:32")
