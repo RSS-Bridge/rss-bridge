@@ -98,7 +98,8 @@ EOD;
 
 		$maintainer = Configuration::getConfig('misc', 'maintainer_email');
 		$maintainertext = '';
-		if (!empty($maintainer)) $maintainertext = <<<EOD
+		if (!empty($maintainer)) {
+			$maintainertext = <<<EOD
 <br />
 <span>
    You may email the maintainer of this rss-bridge instance
