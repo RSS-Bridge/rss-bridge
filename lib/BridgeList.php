@@ -106,6 +106,7 @@ EOD;
    at <a href="mailto:{$maintainer}">{$maintainer}</a>
 </span>
 EOD;
+		}
 
 		$inactive = '';
 
