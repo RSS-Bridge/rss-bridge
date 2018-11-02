@@ -11,7 +11,7 @@
 ; false = disabled (default)
 custom_timeout = false
 
-[misc]
+[admin]
 ; Advertise an email address where people can reach the maintainer.
 ; This address is displayed on the main page, visible to everyone!
 ; ""    = Disabled (default)
