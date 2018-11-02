@@ -13,7 +13,8 @@ custom_timeout = false
 
 [misc]
 ; Advertise an email address where people can reach the maintainer.
-; An empty string disables this message.
+; This address is displayed on the main page, visible to everyone!
+; ""    = Disabled (default)
 maintainer_email = ""
 
 [proxy]
