@@ -202,6 +202,7 @@ try {
 					'format',
 					'_noproxy',
 					'_cache_timeout',
+					'_error_time'
 				), '')
 		);
 
@@ -214,6 +215,7 @@ try {
 					'format',
 					'_noproxy',
 					'_cache_timeout',
+					'_error_time'
 				), '')
 		);
 
