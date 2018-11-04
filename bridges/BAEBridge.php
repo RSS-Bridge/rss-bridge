@@ -81,7 +81,7 @@ class BAEBridge extends BridgeAbstract {
 		return $uri;
 	}
 
-	public function remove_accents($string) {
+	private function remove_accents($string) {
 		$chars = array(
 			// Decompositions for Latin-1 Supplement
 			'ª' => 'a', 'º' => 'o',
