@@ -109,6 +109,8 @@ class CrewbayBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($url) or returnClientError('No results for this query.');
 
 		$annonces = $html->find('#SearchResults div.result');
+		$limit = 0;
+
 		foreach ($annonces as $annonce) {
 			$detail = $annonce->find('.btn--profile', 0);
 			$htmlDetail = getSimpleHTMLDOMCached($detail->getAttribute('data-modal-href'));
@@ -183,6 +185,9 @@ class CrewbayBridge extends BridgeAbstract {
 			}
 
 			$this->items[] = $item;
+			$limit += 1;
+
+			if ($limit == 10) break;
 		}
 	}
 
