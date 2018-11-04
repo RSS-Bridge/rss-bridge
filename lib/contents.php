@@ -64,7 +64,7 @@ EOD
 		}
 
 		returnError(<<<EOD
-The requested resouce cannot be found!
+The requested resource cannot be found!
 Please make sure your input parameters are correct!
 EOD
 		, $errorCode);
