@@ -28,11 +28,9 @@ class BAEBridge extends BridgeAbstract {
 		$url = $this->getURI();
 		$html = getSimpleHTMLDOM($url) or returnClientError('No results for this query.');
 
-		$annonces = $html->find('#index div.annonce');
+		$annonces = $html->find('main article');
 		foreach ($annonces as $annonce) {
-			$detail = $annonce->find('.infoPlus a', 0);
-			if (!$detail) // ads
-				continue;
+			$detail = $annonce->find('footer a', 0);
 
 			$htmlDetail = getSimpleHTMLDOMCached(parent::getURI() . $detail->href);
 			if (!$htmlDetail)
@@ -40,10 +38,10 @@ class BAEBridge extends BridgeAbstract {
 
 			$item = array();
 
-			$item['title'] = $annonce->find('.titre', 0)->plaintext;
+			$item['title'] = $annonce->find('header h2', 0)->plaintext;
 			$item['uri'] = parent::getURI() . $detail->href;
 
-			$content = $htmlDetail->find('div#textes', 0)->innertext;
+			$content = $htmlDetail->find('article p', 0)->innertext;
 			if (!empty($this->getInput('keyword'))) {
 				$keyword = $this->remove_accents(strtolower($this->getInput('keyword')));
 				$cleanTitle = $this->remove_accents(strtolower($item['title']));
@@ -54,14 +52,16 @@ class BAEBridge extends BridgeAbstract {
 					}
 				}
 			}
+
 			$content .= '<hr>';
-			$content .= $htmlDetail->find('div#visuels .contact', 0)->innertext;
-			$content .= '<br><br><b>Région :</b><br>';
-			$content .= $htmlDetail->find('div#visuels .carte', 0)->innertext;
+			$content .= $htmlDetail->find('section', 0)->innertext;
 			$content = str_replace('src="/', 'src="' . parent::getURI() . '/', $content);
 			$content = str_replace('href="/', 'href="' . parent::getURI() . '/', $content);
 			$item['content'] = $content;
-
+			$image = $htmlDetail->find('#zoom', 0);
+			if ($image) {
+				$item['enclosures'] = array(parent::getURI() . $image->getAttribute('src'));
+			}
 			$this->items[] = $item;
 		}
 	}
