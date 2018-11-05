@@ -76,9 +76,7 @@ class XenForoBridge extends BridgeAbstract {
 		$this->threadurl = filter_var(
 			$this->getInput('url'),
 			FILTER_VALIDATE_URL,
-			FILTER_FLAG_SCHEME_REQUIRED |
-			FILTER_FLAG_HOST_REQUIRED |
-			FILTER_FLAG_PATH_REQUIRED);
+			FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED);
 
 		if($this->threadurl === false) {
 			returnClientError('The URL you provided is invalid!');
