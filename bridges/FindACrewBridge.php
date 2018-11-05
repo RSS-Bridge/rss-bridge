@@ -53,7 +53,7 @@ class FindACrewBridge extends BridgeAbstract {
 
 		$opts = array(
 			CURLOPT_CUSTOMREQUEST => 'POST',
-			CURLOPT_POSTFIELDS => http_build_query($data)."\n"
+			CURLOPT_POSTFIELDS => http_build_query($data) . "\n"
 		);
 
 		$html = getSimpleHTMLDOM($url, $header, $opts) or returnClientError('No results for this query.');
@@ -76,7 +76,7 @@ class FindACrewBridge extends BridgeAbstract {
 	public function getURI() {
 		$uri = parent::getURI();
 		// Those params must be in the URL
-		$uri .= '/en/'.$this->getInput('type').'/search?srhtyp=srhrst&mdl=2';
+		$uri .= '/en/'.$this->getInput('type') . '/search?srhtyp=srhrst&mdl=2';
 		return $uri;
 	}
 }
