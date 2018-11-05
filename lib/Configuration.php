@@ -8,8 +8,8 @@ class Configuration {
 	public static function verifyInstallation() {
 
 		// Check PHP version
-		if(version_compare(PHP_VERSION, PHP_VERSION_REQUIRED) === -1)
-			die('RSS-Bridge requires at least PHP version ' . PHP_VERSION_REQUIRED . '!');
+		if(version_compare(PHP_VERSION, '5.6.0') === -1)
+			die('RSS-Bridge requires at least PHP version 5.6.0!');
 
 		// extensions check
 		if(!extension_loaded('openssl'))
