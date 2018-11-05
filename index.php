@@ -240,7 +240,7 @@ try {
 				$stime = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']);
 
 				if($mtime <= $stime) { // Cached data is older or same
-					header('HTTP/1.1 304 Not Modified');
+					header('Last-Modified: ' . gmdate('D, d M Y H:i:s ', $mtime) . 'GMT', true, 304);
 					die();
 				}
 			}
@@ -317,13 +317,11 @@ try {
 			$format->display();
 		} catch(Error $e) {
 			error_log($e);
-			http_response_code($e->getCode());
-			header('Content-Type: text/html');
+			header('Content-Type: text/html', true, $e->getCode());
 			die(buildTransformException($e, $bridge));
 		} catch(Exception $e) {
 			error_log($e);
-			http_response_code($e->getCode());
-			header('Content-Type: text/html');
+			header('Content-Type: text/html', true, $e->getCode());
 			die(buildTransformException($e, $bridge));
 		}
 	} else {
@@ -331,8 +329,7 @@ try {
 	}
 } catch(HttpException $e) {
 	error_log($e);
-	http_response_code($e->getCode());
-	header('Content-Type: text/plain');
+	header('Content-Type: text/plain', true, $e->getCode());
 	die($e->getMessage());
 } catch(\Exception $e) {
 	error_log($e);
