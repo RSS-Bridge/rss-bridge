@@ -18,7 +18,7 @@ class PixivBridge extends BridgeAbstract {
 
 	public function collectData(){
 
-		$html = getContents(static::URI.'search.php?word=' . urlencode($this->getInput('tag')))
+		$html = getContents(static::URI . 'search.php?word=' . urlencode($this->getInput('tag')))
 			or returnClientError('Unable to query pixiv.net');
 		$regex = '/<input type="hidden"id="js-mount-point-search-result-list"data-items="([^"]*)/';
 		$timeRegex = '/img\/([0-9]{4})\/([0-9]{2})\/([0-9]{2})\/([0-9]{2})\/([0-9]{2})\/([0-9]{2})\//';

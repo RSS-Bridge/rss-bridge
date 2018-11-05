@@ -85,7 +85,7 @@ class InstagramBridge extends BridgeAbstract {
 				$item['content'] = $data[0];
 				$item['enclosures'] = $data[1];
 			} else {
-				$item['content'] = '<img src="' . htmlentities($media->display_url) . '" alt="'. $item['title'] . '" />';
+				$item['content'] = '<img src="' . htmlentities($media->display_url) . '" alt="' . $item['title'] . '" />';
 				$item['enclosures'] = array($media->display_url);
 			}
 
@@ -108,12 +108,12 @@ class InstagramBridge extends BridgeAbstract {
 		}
 
 		$enclosures = [$mediaInfo->display_url];
-		$content = '<img src="' . htmlentities($mediaInfo->display_url) . '" alt="'. $caption . '" />';
+		$content = '<img src="' . htmlentities($mediaInfo->display_url) . '" alt="' . $caption . '" />';
 
 		foreach($mediaInfo->edge_sidecar_to_children->edges as $media) {
 			$display_url = $media->node->display_url;
 			if(!in_array($display_url, $enclosures)) { // add only if not added yet
-				$content .= '<img src="' . htmlentities($display_url) . '" alt="'. $caption . '" />';
+				$content .= '<img src="' . htmlentities($display_url) . '" alt="' . $caption . '" />';
 				$enclosures[] = $display_url;
 			}
 		}

@@ -167,7 +167,7 @@ EOD;
 			if($sectionContent != null) {
 				$sectionLink = $sectionContent->nextSibling();
 				if($sectionLink != null) {
-					$fullLink = '<a href="' . $sectionLink->getAttribute('href') .  '">' . $sectionContent->innertext . '</a>';
+					$fullLink = '<a href="' . $sectionLink->getAttribute('href') . '">' . $sectionContent->innertext . '</a>';
 					$sectionContent->innertext = $fullLink;
 				}
 			}
@@ -176,7 +176,7 @@ EOD;
 			foreach($content->find('section > a') as $sectionToFix) {
 				$sectionLink = $sectionToFix->getAttribute('href');
 				$section = $sectionToFix->parent();
-				$section->outertext = '<a href="' . $sectionLink .  '">' . $section . '</a>';
+				$section->outertext = '<a href="' . $sectionLink . '">' . $section . '</a>';
 			}
 
 			$item['content'] = html_entity_decode($content, ENT_QUOTES);

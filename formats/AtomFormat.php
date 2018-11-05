@@ -21,7 +21,7 @@ class AtomFormat extends FormatAbstract{
 		if(!empty($extraInfos['icon'])) {
 			$icon = $extraInfos['icon'];
 		} else {
-			$icon = $this->xml_encode($uriparts['scheme'] . '://' . $uriparts['host'] .'/favicon.ico');
+			$icon = $this->xml_encode($uriparts['scheme'] . '://' . $uriparts['host'] . '/favicon.ico');
 		}
 
 		$uri = $this->xml_encode($uri);

@@ -43,7 +43,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 			$hoster = $this->findLinkHoster($element);
 
 			// Format the link and add the link to the corresponding episode table
-			$episodes[$epnumber][] = '<a href="' . $element->href . '">'. $hoster . ' - '
+			$episodes[$epnumber][] = '<a href="' . $element->href . '">' . $hoster . ' - '
 				. $this->showTitle . ' Episode ' . $epnumber . '</a>';
 
 		}

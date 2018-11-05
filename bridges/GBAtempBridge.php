@@ -35,7 +35,7 @@ class GBAtempBridge extends BridgeAbstract {
 
 	private function cleanupPostContent($content, $site_url){
 		$content = str_replace(':arrow:', '&#x27a4;', $content);
-		$content = str_replace('href="attachments/', 'href="'.$site_url.'attachments/', $content);
+		$content = str_replace('href="attachments/', 'href="' . $site_url . 'attachments/', $content);
 		$content = stripWithDelimiters($content, '<script', '</script>');
 		return $content;
 	}
