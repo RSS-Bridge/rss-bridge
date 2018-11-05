@@ -192,7 +192,7 @@ EOD;
 			$item['author'] = html_entity_decode($author, ENT_QUOTES);
 			$item['timestamp'] = html_entity_decode($timestamp, ENT_QUOTES);
 
-			//if($item['timestamp'] != 0)
+			if($item['timestamp'] != 0)
 				array_push($this->items, $item);
 		}
 
