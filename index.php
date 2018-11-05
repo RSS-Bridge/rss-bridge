@@ -54,13 +54,16 @@ if (isset($argv)) {
 	$params = $_GET;
 }
 
-// FIXME : beta test UA spoofing, please report any blacklisting by PHP-fopen-unfriendly websites
+define('REPOSITORY', 'https://github.com/RSS-Bridge/rss-bridge/');
+define('USER_AGENT',
+	'Mozilla/5.0 (X11; Linux x86_64; rv:30.0) Gecko/20121202 Firefox/30.0(rss-bridge/'
+	. Configuration::$VERSION
+	. ';+'
+	. REPOSITORY
+	. ')'
+);
 
-$userAgent = 'Mozilla/5.0(X11; Linux x86_64; rv:30.0)';
-$userAgent .= ' Gecko/20121202 Firefox/30.0(rss-bridge/0.1;';
-$userAgent .= '+https://github.com/RSS-Bridge/rss-bridge)';
-
-ini_set('user_agent', $userAgent);
+ini_set('user_agent', USER_AGENT);
 
 // default whitelist
 $whitelist_default = array(
