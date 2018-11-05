@@ -290,7 +290,7 @@ class XenForoBridge extends BridgeAbstract {
 
 		// A navigation bar becomes available if the number of posts grows too
 		// high. When this happens we need to load further pages (from last backwards)
-		if(($pageNav = $html->find('div.PageNav', 0)) !== false) {
+		if(($pageNav = $html->find('div.PageNav', 0))) {
 
 			$lastpage = $pageNav->{'data-last'};
 			$baseurl  = $pageNav->{'data-baseurl'};
@@ -333,7 +333,7 @@ class XenForoBridge extends BridgeAbstract {
 
 		// A navigation bar becomes available if the number of posts grows too
 		// high. When this happens we need to load further pages (from last backwards)
-		if(($pageNav = $html->find('div.pageNav', 0)) !== false) {
+		if(($pageNav = $html->find('div.pageNav', 0))) {
 
 			foreach($pageNav->find('li') as $nav) {
 				$lastpage = $nav->plaintext;
