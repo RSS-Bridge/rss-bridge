@@ -96,6 +96,18 @@ EOD;
 	private static function getFooter($totalBridges, $totalActiveBridges, $showInactive) {
 		$version = Configuration::getVersion();
 
+		$email = Configuration::getConfig('admin', 'email');
+		$admininfo = '';
+		if (!empty($email)) {
+			$admininfo = <<<EOD
+<br />
+<span>
+   You may email the administrator of this RSS-Bridge instance
+   at <a href="mailto:{$email}">{$email}</a>
+</span>
+EOD;
+		}
+
 		$inactive = '';
 
 		if($totalActiveBridges !== $totalBridges) {
@@ -114,6 +126,7 @@ EOD;
 	<p class="version">{$version}</p>
 	{$totalActiveBridges}/{$totalBridges} active bridges.<br>
 	{$inactive}
+	{$admininfo}
 </section>
 EOD;
 	}
