@@ -76,7 +76,7 @@ class FindACrewBridge extends BridgeAbstract {
 	public function getURI() {
 		$uri = parent::getURI();
 		// Those params must be in the URL
-		$uri .= '/en/'.$this->getInput('type') . '/search?srhtyp=srhrst&mdl=2';
+		$uri .= '/en/' . $this->getInput('type') . '/search?srhtyp=srhrst&mdl=2';
 		return $uri;
 	}
 }
