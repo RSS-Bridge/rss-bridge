@@ -19,7 +19,8 @@ function buildGitHubIssueQuery($title, $body, $labels = null, $maintainer = null
 	}
 
 	// Add title and body
-	$uri = 'https://github.com/rss-bridge/rss-bridge/issues/new?title='
+	$uri = REPOSITORY
+		. 'issues/new?title='
 		. urlencode($title)
 		. '&body='
 		. urlencode($body);
