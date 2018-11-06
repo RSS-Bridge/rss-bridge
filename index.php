@@ -28,9 +28,6 @@ if(file_exists('DEBUG')) {
 
 require_once __DIR__ . '/lib/RssBridge.php';
 
-// Specify directory for cached files (using FileCache)
-define('CACHE_DIR', __DIR__ . '/cache');
-
 // Specify path for whitelist file
 define('WHITELIST_FILE', __DIR__ . '/whitelist.txt');
 
@@ -222,7 +219,7 @@ try {
 
 		// Initialize cache
 		$cache = Cache::create('FileCache');
-		$cache->setPath(CACHE_DIR);
+		$cache->setPath(PATH_CACHE);
 		$cache->purgeCache(86400); // 24 hours
 		$cache->setParameters($cache_params);
 

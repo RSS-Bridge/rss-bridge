@@ -53,7 +53,7 @@ class PixivBridge extends BridgeAbstract {
 
 		$url = str_replace('_master1200', '', $url);
 		$url = str_replace('c/240x240/img-master/', 'img-original/', $url);
-		$path = CACHE_DIR . '/pixiv_img';
+		$path = PATH_CACHE . '/pixiv_img';
 
 		if(!is_dir($path))
 			mkdir($path, 0755, true);

@@ -2,6 +2,7 @@
 
 define('PATH_VENDOR', __DIR__ . '/../vendor'); // Path for vendor library
 define('PATH_LIB', __DIR__ . '/../lib'); // Path for core library
+define('PATH_CACHE', __DIR__ . '/../cache'); // Path to cache folder
 
 // Classes
 require_once PATH_LIB . '/Exceptions.php';
