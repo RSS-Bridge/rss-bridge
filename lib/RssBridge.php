@@ -1,7 +1,7 @@
 <?php
 
-define('PATH_VENDOR', __DIR__ . '/../vendor'); // Path for vendor library
 define('PATH_LIB', __DIR__ . '/../lib'); // Path for core library
+define('PATH_LIB_VENDOR', __DIR__ . '/../vendor'); // Path for vendor library
 define('PATH_CACHE', __DIR__ . '/../cache'); // Path to cache folder
 
 // Classes
@@ -24,5 +24,5 @@ require_once PATH_LIB . '/error.php';
 require_once PATH_LIB . '/contents.php';
 
 // Vendor
-require_once PATH_VENDOR . '/simplehtmldom/simple_html_dom.php';
-require_once PATH_VENDOR . '/php-urljoin/src/urljoin.php';
+require_once PATH_LIB_VENDOR . '/simplehtmldom/simple_html_dom.php';
+require_once PATH_LIB_VENDOR . '/php-urljoin/src/urljoin.php';
