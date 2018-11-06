@@ -81,9 +81,9 @@ $whitelist_default = array(
 
 try {
 
-	Bridge::setDir(__DIR__ . '/bridges/');
-	Format::setDir(__DIR__ . '/formats/');
-	Cache::setDir(__DIR__ . '/caches/');
+	Bridge::setDir(PATH_LIB_BRIDGES);
+	Format::setDir(PATH_LIB_FORMATS);
+	Cache::setDir(PATH_LIB_CACHES);
 
 	if(!file_exists(WHITELIST_FILE)) {
 		$whitelist_selection = $whitelist_default;

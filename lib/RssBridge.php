@@ -2,6 +2,9 @@
 
 define('PATH_LIB', __DIR__ . '/../lib'); // Path for core library
 define('PATH_LIB_VENDOR', __DIR__ . '/../vendor'); // Path for vendor library
+define('PATH_LIB_BRIDGES', __DIR__ . '/../bridges/'); // Path to bridges library
+define('PATH_LIB_FORMATS', __DIR__ . '/../formats/'); // Path to formats library
+define('PATH_LIB_CACHES', __DIR__ . '/../caches/'); // Path to caches library
 define('PATH_CACHE', __DIR__ . '/../cache'); // Path to cache folder
 
 // Classes
