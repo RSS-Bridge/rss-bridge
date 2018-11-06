@@ -365,6 +365,26 @@ class FacebookBridge extends BridgeAbstract {
 	}
 
 	/**
+	 * Remove Facebook's tracking code
+	 */
+	private function remove_tracking_codes($content){
+		return preg_replace_callback('/ href=\"([^"]+)\"/i', function($matches){
+			if(is_array($matches) && count($matches) > 1) {
+
+				$link = $matches[1];
+
+				if(strpos($link, 'facebook.com') !== false) {
+					if(strpos($link, '?') !== false) {
+						$link = substr($link, 0, strpos($link, '?'));
+					}
+				}
+				return ' href="' . $link . '"';
+
+			}
+		}, $content);
+	}
+
+	/**
 	 * Convert textual representation of emoticons back to ASCII emoticons.
 	 * i.e. "<i><u>smile emoticon</u></i>" => ":)"
 	 */
@@ -609,6 +629,8 @@ EOD;
 
 						// Restore links in the content before adding to the item
 						$content = defaultLinkTo($content, self::URI);
+
+						$content = $this->remove_tracking_codes($content);
 
 						// Retrieve date of the post
 						$date = $post->find('abbr')[0];
