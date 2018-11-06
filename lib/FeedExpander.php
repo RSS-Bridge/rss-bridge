@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . '/BridgeInterface.php');
+
 abstract class FeedExpander extends BridgeAbstract {
 
 	private $name;

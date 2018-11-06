@@ -8,6 +8,11 @@ define('PATH_LIB_CACHES', __DIR__ . '/../caches/'); // Path to caches library
 define('PATH_CACHE', __DIR__ . '/../cache'); // Path to cache folder
 define('REPOSITORY', 'https://github.com/RSS-Bridge/rss-bridge/');
 
+// Interfaces
+require_once PATH_LIB . 'BridgeInterface.php';
+require_once PATH_LIB . 'CacheInterface.php';
+require_once PATH_LIB . 'FormatInterface.php';
+
 // Classes
 require_once PATH_LIB . 'Exceptions.php';
 require_once PATH_LIB . 'Format.php';

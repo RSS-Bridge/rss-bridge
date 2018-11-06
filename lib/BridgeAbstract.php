@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . '/BridgeInterface.php');
+
 abstract class BridgeAbstract implements BridgeInterface {
 
 	const NAME = 'Unnamed bridge';

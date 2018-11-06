@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . '/BridgeInterface.php');
+
 class Bridge {
 
 	static protected $dirBridge;
