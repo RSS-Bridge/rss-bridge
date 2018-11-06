@@ -49,7 +49,6 @@ if (isset($argv)) {
 	$params = $_GET;
 }
 
-define('REPOSITORY', 'https://github.com/RSS-Bridge/rss-bridge/');
 define('USER_AGENT',
 	'Mozilla/5.0 (X11; Linux x86_64; rv:30.0) Gecko/20121202 Firefox/30.0(rss-bridge/'
 	. Configuration::$VERSION
