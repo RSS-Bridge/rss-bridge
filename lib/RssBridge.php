@@ -24,26 +24,8 @@ require __DIR__ . '/html.php';
 require __DIR__ . '/error.php';
 require __DIR__ . '/contents.php';
 
-$vendorLibSimpleHtmlDom = PATH_VENDOR . '/simplehtmldom/simple_html_dom.php';
-if(!file_exists($vendorLibSimpleHtmlDom)) {
-	throw new \HttpException('"PHP Simple HTML DOM Parser" library is missing.
- Get it from http://simplehtmldom.sourceforge.net and place the script "simple_html_dom.php" in '
-		. substr(PATH_VENDOR, 4)
-		. '/simplehtmldom/',
-	500);
-}
-require_once $vendorLibSimpleHtmlDom;
-
-$vendorLibPhpUrlJoin = PATH_VENDOR . '/php-urljoin/src/urljoin.php';
-if(!file_exists($vendorLibPhpUrlJoin)) {
-	throw new \HttpException('"php-urljoin" library is missing.
- Get it from https://github.com/fluffy-critter/php-urljoin and place the script "urljoin.php" in '
-		. substr(PATH_VENDOR, 4)
-		. '/php-urljoin/src/',
-	500);
-}
-require_once $vendorLibPhpUrlJoin;
-
+require_once PATH_VENDOR . '/simplehtmldom/simple_html_dom.php';
+require_once PATH_VENDOR . '/php-urljoin/src/urljoin.php';
 
 /* Example use
 
