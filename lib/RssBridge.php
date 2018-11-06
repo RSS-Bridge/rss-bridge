@@ -6,23 +6,24 @@ Licence: Public domain.
 */
 
 define('PATH_VENDOR', __DIR__ . '/../vendor');
+define('PATH_LIB', __DIR__ . '/../lib');
 
-require_once __DIR__ . '/Exceptions.php';
-require_once __DIR__ . '/Format.php';
-require_once __DIR__ . '/FormatAbstract.php';
-require_once __DIR__ . '/Bridge.php';
-require_once __DIR__ . '/BridgeAbstract.php';
-require_once __DIR__ . '/FeedExpander.php';
-require_once __DIR__ . '/Cache.php';
-require_once __DIR__ . '/Authentication.php';
-require_once __DIR__ . '/Configuration.php';
-require_once __DIR__ . '/BridgeCard.php';
-require_once __DIR__ . '/BridgeList.php';
-require_once __DIR__ . '/ParameterValidator.php';
+require_once PATH_LIB . '/Exceptions.php';
+require_once PATH_LIB . '/Format.php';
+require_once PATH_LIB . '/FormatAbstract.php';
+require_once PATH_LIB . '/Bridge.php';
+require_once PATH_LIB . '/BridgeAbstract.php';
+require_once PATH_LIB . '/FeedExpander.php';
+require_once PATH_LIB . '/Cache.php';
+require_once PATH_LIB . '/Authentication.php';
+require_once PATH_LIB . '/Configuration.php';
+require_once PATH_LIB . '/BridgeCard.php';
+require_once PATH_LIB . '/BridgeList.php';
+require_once PATH_LIB . '/ParameterValidator.php';
 
-require_once __DIR__ . '/html.php';
-require_once __DIR__ . '/error.php';
-require_once __DIR__ . '/contents.php';
+require_once PATH_LIB . '/html.php';
+require_once PATH_LIB . '/error.php';
+require_once PATH_LIB . '/contents.php';
 
 require_once PATH_VENDOR . '/simplehtmldom/simple_html_dom.php';
 require_once PATH_VENDOR . '/php-urljoin/src/urljoin.php';
