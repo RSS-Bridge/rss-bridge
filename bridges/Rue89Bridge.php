@@ -18,10 +18,10 @@ class Rue89Bridge extends BridgeAbstract {
 
 	}
 
-	public function getArticle($articleInfo) {
+	private function getArticle($articleInfo) {
 
 		$articleJson = getContents($articleInfo->json_url) or die('Unable to get article !');
-		$article = json_decode($articleJson);		
+		$article = json_decode($articleJson);
 		$item = array();
 		$item['title'] = $article->title;
 		$item['uri'] = $article->url;
