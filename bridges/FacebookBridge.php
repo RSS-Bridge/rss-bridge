@@ -577,6 +577,16 @@ EOD;
 
 						$content = $post->find('.userContentWrapper', 0);
 
+						// Remove embedded videos (the preview image remains)
+						foreach($content->find('._5mly') as $video) {
+							$video->outertext = '';
+						}
+
+						// Remove "Views ..."
+						foreach($content->find('._2ezg') as $subject) {
+							$subject->outertext = '';
+						}
+
 						// Remove origin information (i.e. "YOUTUBE.COM") from embedded media
 						foreach($content->find('._59tj') as $subject) {
 							$subject->outertext = '';
