@@ -589,6 +589,11 @@ EOD;
 							}
 						}
 
+						// Remove hidden elements (they are hidden anyway)
+						foreach($content->find('.hidden_elem') as $subject) {
+							$subject->outertext = '';
+						}
+
 						$content = preg_replace(
 							'/(?i)><div class=\"_3dp([^>]+)>(.+?)div\ class=\"[^u]+userContent\"/i',
 							'',
