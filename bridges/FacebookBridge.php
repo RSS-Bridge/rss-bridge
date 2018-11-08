@@ -538,7 +538,7 @@ EOD;
 
 		if(isset($element)) {
 
-			$author = str_replace(' | Facebook', '', $html->find('title#pageTitle', 0)->innertext);
+			$author = str_replace(' - Posts | Facebook', '', $html->find('title#pageTitle', 0)->innertext);
 
 			$profilePic = $html->find('meta[property="og:image"]', 0)->content;
 
