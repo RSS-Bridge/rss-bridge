@@ -577,31 +577,23 @@ EOD;
 
 						$content = $post->find('.userContentWrapper', 0);
 
-						// Remove embedded videos (the preview image remains)
-						foreach($content->find('._5mly') as $video) {
-							$video->outertext = '';
-						}
+						// This array specifies filters applied to all posts in order of appearance
+						$content_filters = array(
+							'._5mly', // Remove embedded videos (the preview image remains)
+							'._2ezg', // Remove "Views ..."
+							'._59tj', // Remove origin information (i.e. "YOUTUBE.COM") from embedded media
+							'.hidden_elem', // Remove hidden elements (they are hidden anyway)
+						);
 
-						// Remove "Views ..."
-						foreach($content->find('._2ezg') as $subject) {
-							$subject->outertext = '';
-						}
-
-						// Remove origin information (i.e. "YOUTUBE.COM") from embedded media
-						foreach($content->find('._59tj') as $subject) {
-							$subject->outertext = '';
-						}
-
-						// Change title tag for embedded media from anchor to paragraph
-						foreach($content->find('._3n1k') as $subject) {
-							foreach($subject->find('a') as $anchor) {
-								$anchor->outertext = '<p>' . $anchor->innertext . '</p>';
+						foreach($content_filters as $filter) {
+							foreach($content->find($filter) as $subject) {
+								$subject->outertext = '';
 							}
 						}
 
-						// Remove hidden elements (they are hidden anyway)
-						foreach($content->find('.hidden_elem') as $subject) {
-							$subject->outertext = '';
+						// Change title tag for embedded media from anchor to paragraph
+						foreach($content->find('._3n1k a') as $anchor) {
+								$anchor->outertext = '<p>' . $anchor->innertext . '</p>';
 						}
 
 						$content = preg_replace(
