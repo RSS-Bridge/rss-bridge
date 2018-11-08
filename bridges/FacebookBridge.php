@@ -590,9 +590,14 @@ EOD;
 							}
 						}
 
+						// Change origin tag for embedded media from div to paragraph
+						foreach($content->find('._59tj') as $subject) {
+							$subject->outertext = '<p>' . $subject->innertext . '</p>';
+						}
+
 						// Change title tag for embedded media from anchor to paragraph
 						foreach($content->find('._3n1k a') as $anchor) {
-								$anchor->outertext = '<p>' . $anchor->innertext . '</p>';
+							$anchor->outertext = '<p>' . $anchor->innertext . '</p>';
 						}
 
 						$content = preg_replace(
