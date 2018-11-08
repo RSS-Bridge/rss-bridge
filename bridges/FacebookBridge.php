@@ -581,7 +581,6 @@ EOD;
 						$content_filters = array(
 							'._5mly', // Remove embedded videos (the preview image remains)
 							'._2ezg', // Remove "Views ..."
-							'._59tj', // Remove origin information (i.e. "YOUTUBE.COM") from embedded media
 							'.hidden_elem', // Remove hidden elements (they are hidden anyway)
 						);
 
