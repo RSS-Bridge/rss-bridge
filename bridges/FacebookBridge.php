@@ -577,10 +577,17 @@ EOD;
 
 						$content = $post->find('.userContentWrapper', 0);
 
-						$content = preg_replace(
-							'/(?i)><div class=\"_59tj([^>]+)>(.+?)<\/div><\/div><a/i',
-							'',
-							$content);
+						// Remove origin information (i.e. "YOUTUBE.COM") from embedded media
+						foreach($content->find('._59tj') as $subject) {
+							$subject->outertext = '';
+						}
+
+						// Change title tag for embedded media from anchor to paragraph
+						foreach($content->find('._3n1k') as $subject) {
+							foreach($subject->find('a') as $anchor) {
+								$anchor->outertext = '<p>' . $anchor->innertext . '</p>';
+							}
+						}
 
 						$content = preg_replace(
 							'/(?i)><div class=\"_3dp([^>]+)>(.+?)div\ class=\"[^u]+userContent\"/i',
