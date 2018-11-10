@@ -35,3 +35,14 @@ require_once PATH_LIB . 'contents.php';
 // Vendor
 require_once PATH_LIB_VENDOR . 'simplehtmldom/simple_html_dom.php';
 require_once PATH_LIB_VENDOR . 'php-urljoin/src/urljoin.php';
+
+// Initialize static members
+try {
+	Bridge::setDir(PATH_LIB_BRIDGES);
+	Format::setDir(PATH_LIB_FORMATS);
+	Cache::setDir(PATH_LIB_CACHES);
+} catch(Exception $e) {
+	error_log($e);
+	header('Content-type: text/plain', true, 500);
+	die($e->getMessage());
+}
