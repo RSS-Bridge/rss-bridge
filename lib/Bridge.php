@@ -70,13 +70,17 @@ EOD;
 	* @return array List of the bridges
 	*/
 	static public function listBridges(){
-		$listBridge = array();
-		$dirFiles = scandir(self::getDir());
 
-		if($dirFiles !== false) {
-			foreach($dirFiles as $fileName) {
-				if(preg_match('@^([^.]+)Bridge\.php$@U', $fileName, $out)) {
-					$listBridge[] = $out[1];
+		static $listBridge = array(); // Initialized on first call
+
+		if(empty($listBridge)) {
+			$dirFiles = scandir(self::getDir());
+
+			if($dirFiles !== false) {
+				foreach($dirFiles as $fileName) {
+					if(preg_match('@^([^.]+)Bridge\.php$@U', $fileName, $out)) {
+						$listBridge[] = $out[1];
+					}
 				}
 			}
 		}
