@@ -50,22 +50,7 @@ $whitelist_default = array(
 
 try {
 
-	if(!file_exists(WHITELIST)) {
-		$whitelist_selection = $whitelist_default;
-		$whitelist_write = implode("\n", $whitelist_default);
-		file_put_contents(WHITELIST, $whitelist_write);
-	} else {
-
-		$whitelist_file_content = file_get_contents(WHITELIST);
-		if($whitelist_file_content != "*\n") {
-			$whitelist_selection = explode("\n", $whitelist_file_content);
-		} else {
-			$whitelist_selection = Bridge::listBridges();
-		}
-
-		// Prepare for case-insensitive match
-		$whitelist_selection = array_map('strtolower', $whitelist_selection);
-	}
+	Bridge::setWhitelist($whitelist_default);
 
 	$showInactive = filter_input(INPUT_GET, 'show_inactive', FILTER_VALIDATE_BOOLEAN);
 	$action = array_key_exists('action', $params) ? $params['action'] : null;
@@ -92,7 +77,7 @@ try {
 
 			}
 
-			$status = Bridge::isWhitelisted($whitelist_selection, strtolower($bridgeName)) ? 'active' : 'inactive';
+			$status = Bridge::isWhitelisted($bridgeName) ? 'active' : 'inactive';
 
 			$list->bridges[$bridgeName] = array(
 				'status' => $status,
@@ -112,11 +97,6 @@ try {
 		echo json_encode($list, JSON_PRETTY_PRINT);
 
 	} elseif($action === 'display' && !empty($bridge)) {
-		// DEPRECATED: 'nameBridge' scheme is replaced by 'name' in bridge parameter values
-		//             this is to keep compatibility until futher complete removal
-		if(($pos = strpos($bridge, 'Bridge')) === (strlen($bridge) - strlen('Bridge'))) {
-			$bridge = substr($bridge, 0, $pos);
-		}
 
 		$format = $params['format']
 			or returnClientError('You must specify a format!');
@@ -128,7 +108,7 @@ try {
 		}
 
 		// whitelist control
-		if(!Bridge::isWhitelisted($whitelist_selection, strtolower($bridge))) {
+		if(!Bridge::isWhitelisted($bridge)) {
 			throw new \HttpException('This bridge is not whitelisted', 401);
 			die;
 		}
@@ -287,7 +267,7 @@ try {
 			die(buildTransformException($e, $bridge));
 		}
 	} else {
-		echo BridgeList::create($whitelist_selection, $showInactive);
+		echo BridgeList::create($showInactive);
 	}
 } catch(HttpException $e) {
 	error_log($e);

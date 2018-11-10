@@ -22,7 +22,7 @@ final class BridgeList {
 EOD;
 	}
 
-	private static function getBridges($whitelist, $showInactive, &$totalBridges, &$totalActiveBridges) {
+	private static function getBridges($showInactive, &$totalBridges, &$totalActiveBridges) {
 
 		$body = '';
 		$totalActiveBridges = 0;
@@ -35,7 +35,7 @@ EOD;
 
 		foreach($bridgeList as $bridgeName) {
 
-			if(Bridge::isWhitelisted($whitelist, strtolower($bridgeName))) {
+			if(Bridge::isWhitelisted($bridgeName)) {
 
 				$body .= BridgeCard::displayBridgeCard($bridgeName, $formats);
 				$totalActiveBridges++;
@@ -131,7 +131,7 @@ EOD;
 EOD;
 	}
 
-	static function create($whitelist, $showInactive = true) {
+	static function create($showInactive = true) {
 
 		$totalBridges = 0;
 		$totalActiveBridges = 0;
@@ -141,7 +141,7 @@ EOD;
 		. '<body onload="search()">'
 		. BridgeList::getHeader()
 		. BridgeList::getSearchbar()
-		. BridgeList::getBridges($whitelist, $showInactive, $totalBridges, $totalActiveBridges)
+		. BridgeList::getBridges($showInactive, $totalBridges, $totalActiveBridges)
 		. BridgeList::getFooter($totalBridges, $totalActiveBridges, $showInactive)
 		. '</body></html>';
 
