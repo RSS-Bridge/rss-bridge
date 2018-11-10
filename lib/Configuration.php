@@ -91,6 +91,10 @@ class Configuration {
 		if(!is_string(self::getConfig('authentication', 'password')))
 			die('Parameter [authentication] => "password" is not a valid string! Please check "config.ini.php"!');
 
+		if(!empty(self::getConfig('admin', 'email'))
+		&& !filter_var(self::getConfig('admin', 'email'), FILTER_VALIDATE_EMAIL))
+			die('Parameter [admin] => "email" is not a valid email address! Please check "config.ini.php"!');
+
 	}
 
 	public static function getConfig($category, $key) {
