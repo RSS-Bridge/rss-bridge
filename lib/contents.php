@@ -123,7 +123,7 @@ $defaultSpanText = DEFAULT_SPAN_TEXT){
 	$time = $cache->getTime();
 	if($time !== false
 	&& (time() - $duration < $time)
-	&& (!defined('DEBUG') || DEBUG !== true)) { // Contents within duration
+	&& Debug::isEnabled()) { // Contents within duration
 		$content = $cache->loadData();
 	} else { // Content not within duration
 		$content = getContents($url, $header, $opts);

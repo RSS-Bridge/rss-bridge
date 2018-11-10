@@ -1,31 +1,4 @@
 <?php
-/*
-  Create a file named 'DEBUG' for enabling debug mode.
-  For further security, you may put whitelisted IP addresses in the file,
-  one IP per line. Empty file allows anyone(!).
-  Debugging allows displaying PHP error messages and bypasses the cache: this
-  can allow a malicious client to retrieve data about your server and hammer
-  a provider throught your rss-bridge instance.
-*/
-if(file_exists('DEBUG')) {
-	$debug_whitelist = trim(file_get_contents('DEBUG'));
-
-	$debug_enabled = empty($debug_whitelist)
-		|| in_array($_SERVER['REMOTE_ADDR'],
-			explode("\n", str_replace("\r", '', $debug_whitelist)
-		)
-	);
-
-	if($debug_enabled) {
-		ini_set('display_errors', '1');
-		error_reporting(E_ALL);
-		define('DEBUG', true);
-		if (empty($debug_whitelist)) {
-			define('DEBUG_INSECURE', true);
-		}
-	}
-}
-
 require_once __DIR__ . '/lib/rssbridge.php';
 
 Configuration::verifyInstallation();
@@ -221,7 +194,7 @@ try {
 
 		if($mtime !== false
 		&& (time() - $cache_timeout < $mtime)
-		&& (!defined('DEBUG') || DEBUG !== true)) { // Load cached data
+		&& !Debug::isEnabled()) { // Load cached data
 
 			// Send "Not Modified" response if client supports it
 			// Implementation based on https://stackoverflow.com/a/10847262

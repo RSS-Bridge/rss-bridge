@@ -1,5 +1,6 @@
 <?php
 
+define('PATH_ROOT', __DIR__ . '/../'); // Path to root folder
 define('PATH_LIB', __DIR__ . '/../lib/'); // Path to core library
 define('PATH_LIB_VENDOR', __DIR__ . '/../vendor/'); // Path to vendor library
 define('PATH_LIB_BRIDGES', __DIR__ . '/../bridges/'); // Path to bridges library
