@@ -113,7 +113,7 @@ $defaultSpanText = DEFAULT_SPAN_TEXT){
 
 	// Initialize cache
 	$cache = Cache::create('FileCache');
-	$cache->setPath(PATH_CACHE . '/pages');
+	$cache->setPath(PATH_CACHE . 'pages/');
 	$cache->purgeCache(86400); // 24 hours (forced)
 
 	$params = [$url];

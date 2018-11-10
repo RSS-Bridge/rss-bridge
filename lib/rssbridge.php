@@ -5,7 +5,7 @@ define('PATH_LIB_VENDOR', __DIR__ . '/../vendor/'); // Path to vendor library
 define('PATH_LIB_BRIDGES', __DIR__ . '/../bridges/'); // Path to bridges library
 define('PATH_LIB_FORMATS', __DIR__ . '/../formats/'); // Path to formats library
 define('PATH_LIB_CACHES', __DIR__ . '/../caches/'); // Path to caches library
-define('PATH_CACHE', __DIR__ . '/../cache'); // Path to cache folder
+define('PATH_CACHE', __DIR__ . '/../cache/'); // Path to cache folder
 define('REPOSITORY', 'https://github.com/RSS-Bridge/rss-bridge/');
 
 // Interfaces
