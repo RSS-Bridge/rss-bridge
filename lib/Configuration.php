@@ -34,9 +34,9 @@ class Configuration {
 		if(!is_writable(PATH_CACHE))
 			die('RSS-Bridge does not have write permissions for ' . PATH_CACHE . '!');
 
-		// Check whitelist file permissions (only in DEBUG mode)
-		if(!file_exists(WHITELIST_FILE) && !is_writable(dirname(WHITELIST_FILE)))
-			die('RSS-Bridge does not have write permissions for ' . WHITELIST_FILE . '!');
+		// Check whitelist file permissions
+		if(!file_exists(WHITELIST) && !is_writable(dirname(WHITELIST)))
+			die('RSS-Bridge does not have write permissions for ' . WHITELIST . '!');
 
 	}
 

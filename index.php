@@ -28,9 +28,6 @@ if(file_exists('DEBUG')) {
 
 require_once __DIR__ . '/lib/rssbridge.php';
 
-// Specify path for whitelist file
-define('WHITELIST_FILE', __DIR__ . '/whitelist.txt');
-
 Configuration::verifyInstallation();
 Configuration::loadConfiguration();
 
@@ -80,13 +77,13 @@ $whitelist_default = array(
 
 try {
 
-	if(!file_exists(WHITELIST_FILE)) {
+	if(!file_exists(WHITELIST)) {
 		$whitelist_selection = $whitelist_default;
 		$whitelist_write = implode("\n", $whitelist_default);
-		file_put_contents(WHITELIST_FILE, $whitelist_write);
+		file_put_contents(WHITELIST, $whitelist_write);
 	} else {
 
-		$whitelist_file_content = file_get_contents(WHITELIST_FILE);
+		$whitelist_file_content = file_get_contents(WHITELIST);
 		if($whitelist_file_content != "*\n") {
 			$whitelist_selection = explode("\n", $whitelist_file_content);
 		} else {
