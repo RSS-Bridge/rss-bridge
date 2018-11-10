@@ -26,7 +26,7 @@ if(file_exists('DEBUG')) {
 	}
 }
 
-require_once __DIR__ . '/lib/RssBridge.php';
+require_once __DIR__ . '/lib/rssbridge.php';
 
 // Specify path for whitelist file
 define('WHITELIST_FILE', __DIR__ . '/whitelist.txt');
