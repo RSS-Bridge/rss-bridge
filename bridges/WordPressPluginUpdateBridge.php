@@ -74,7 +74,7 @@ class WordPressPluginUpdateBridge extends BridgeAbstract {
 	}
 
 	private function getCachedDate($url){
-		debugMessage('getting pubdate from url ' . $url . '');
+		Debug::log('getting pubdate from url ' . $url . '');
 		// Initialize cache
 		$cache = Cache::create('FileCache');
 		$cache->setPath(PATH_CACHE . 'pages/');

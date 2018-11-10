@@ -10,19 +10,3 @@ function returnClientError($message){
 function returnServerError($message){
 	returnError($message, 500);
 }
-
-function debugMessage($text){
-	if(!file_exists('DEBUG')) {
-		return;
-	}
-
-	$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
-	$calling = $backtrace[2];
-	$message = $calling['file'] . ':'
-		. $calling['line'] . ' class '
-		. (isset($calling['class']) ? $calling['class'] : '<no-class>') . '->'
-		. $calling['function'] . ' - '
-		. $text;
-
-	error_log($message);
-}

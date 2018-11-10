@@ -453,7 +453,7 @@ class XenForoBridge extends BridgeAbstract {
 
 		}
 
-		// debugMessage(date_format($df, 'U'));
+		// Debug::log(date_format($df, 'U'));
 
 		return date_format($df, 'U');
 
