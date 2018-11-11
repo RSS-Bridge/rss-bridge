@@ -25,6 +25,8 @@ class PikabuBridge extends BridgeAbstract {
 		)
 	);
 
+	protected $title = null;
+
 	public function getURI() {
 		if ($this->getInput('tag')) {
 			return self::URI . '/tag/' . rawurlencode($this->getInput('tag')) . '/' . rawurlencode($this->getInput('filter'));
@@ -38,10 +40,10 @@ class PikabuBridge extends BridgeAbstract {
 	}
 
 	public function getName() {
-		if (is_string($this->getInput('tag'))) {
-			return $this->getInput('tag') . ' - ' . parent::getName();
-		} else {
+		if (is_null($this->title)) {
 			return parent::getName();
+		} else {
+			return $this->title . ' - ' . parent::getName();
 		}
 	}
 
@@ -51,6 +53,8 @@ class PikabuBridge extends BridgeAbstract {
 		$text_html = getContents($link) or returnServerError('Could not fetch ' . $link);
 		$text_html = iconv('windows-1251', 'utf-8', $text_html);
 		$html = str_get_html($text_html);
+
+		$this->title = $html->find('title', 0)->innertext;
 
 		foreach($html->find('article.story') as $post) {
 			$time = $post->find('time.story__datetime', 0);
