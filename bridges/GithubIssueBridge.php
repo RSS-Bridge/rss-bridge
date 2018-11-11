@@ -192,7 +192,7 @@ class GithubIssueBridge extends BridgeAbstract {
 					ENT_QUOTES,
 					'UTF-8'
 				);
-				$comments = $issue->find('.col-5', 0)->plaintext;
+				$comments = trim($issue->find('.col-5', 0)->plaintext);
 				$item['content'] .= "\n" . 'Comments: ' . ($comments ? $comments : '0');
 				$item['uri'] = self::URI
 					. $issue->find('.js-navigation-open', 0)->getAttribute('href');
