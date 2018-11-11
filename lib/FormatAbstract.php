@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . '/FormatInterface.php');
+
 abstract class FormatAbstract implements FormatInterface {
 	const DEFAULT_CHARSET = 'UTF-8';
 

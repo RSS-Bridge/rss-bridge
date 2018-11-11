@@ -117,7 +117,7 @@ class NineGagBridge extends BridgeAbstract {
 		$cursor = 'c=10';
 		$posts = array();
 		for ($i = 0; $i < $this->getPages(); ++$i) {
-			$content = getContents($url.$cursor);
+			$content = getContents($url . $cursor);
 			$json = json_decode($content, true);
 			$posts = array_merge($posts, $json['data']['posts']);
 			$cursor = $json['data']['nextCursor'];
@@ -156,7 +156,7 @@ class NineGagBridge extends BridgeAbstract {
 			$uri = $this->getInput('t');
 		}
 
-		return self::URI.$uri;
+		return self::URI . $uri;
 	}
 
 	protected function getGroup() {

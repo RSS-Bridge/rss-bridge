@@ -15,13 +15,13 @@ class AtomFormat extends FormatAbstract{
 
 		$extraInfos = $this->getExtraInfos();
 		$title = $this->xml_encode($extraInfos['name']);
-		$uri = !empty($extraInfos['uri']) ? $extraInfos['uri'] : 'https://github.com/RSS-Bridge/rss-bridge';
+		$uri = !empty($extraInfos['uri']) ? $extraInfos['uri'] : REPOSITORY;
 
 		$uriparts = parse_url($uri);
 		if(!empty($extraInfos['icon'])) {
 			$icon = $extraInfos['icon'];
 		} else {
-			$icon = $this->xml_encode($uriparts['scheme'] . '://' . $uriparts['host'] .'/favicon.ico');
+			$icon = $this->xml_encode($uriparts['scheme'] . '://' . $uriparts['host'] . '/favicon.ico');
 		}
 
 		$uri = $this->xml_encode($uri);

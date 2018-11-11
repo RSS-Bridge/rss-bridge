@@ -45,7 +45,7 @@ class AllocineFRBridge extends BridgeAbstract {
 	public function getName(){
 		if(!is_null($this->getInput('category'))) {
 			return self::NAME . ' : '
-				.array_search(
+				. array_search(
 					$this->getInput('category'),
 					self::PARAMETERS[$this->queriedContext]['category']['values']
 				);

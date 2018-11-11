@@ -1,40 +1,5 @@
 <?php
-/*
-  Create a file named 'DEBUG' for enabling debug mode.
-  For further security, you may put whitelisted IP addresses in the file,
-  one IP per line. Empty file allows anyone(!).
-  Debugging allows displaying PHP error messages and bypasses the cache: this
-  can allow a malicious client to retrieve data about your server and hammer
-  a provider throught your rss-bridge instance.
-*/
-if(file_exists('DEBUG')) {
-	$debug_whitelist = trim(file_get_contents('DEBUG'));
-
-	$debug_enabled = empty($debug_whitelist)
-		|| in_array($_SERVER['REMOTE_ADDR'],
-			explode("\n", str_replace("\r", '', $debug_whitelist)
-		)
-	);
-
-	if($debug_enabled) {
-		ini_set('display_errors', '1');
-		error_reporting(E_ALL);
-		define('DEBUG', true);
-		if (empty($debug_whitelist)) {
-			define('DEBUG_INSECURE', true);
-		}
-	}
-}
-
-require_once __DIR__ . '/lib/RssBridge.php';
-
-define('PHP_VERSION_REQUIRED', '5.6.0');
-
-// Specify directory for cached files (using FileCache)
-define('CACHE_DIR', __DIR__ . '/cache');
-
-// Specify path for whitelist file
-define('WHITELIST_FILE', __DIR__ . '/whitelist.txt');
+require_once __DIR__ . '/lib/rssbridge.php';
 
 Configuration::verifyInstallation();
 Configuration::loadConfiguration();
@@ -54,13 +19,15 @@ if (isset($argv)) {
 	$params = $_GET;
 }
 
-// FIXME : beta test UA spoofing, please report any blacklisting by PHP-fopen-unfriendly websites
+define('USER_AGENT',
+	'Mozilla/5.0 (X11; Linux x86_64; rv:30.0) Gecko/20121202 Firefox/30.0(rss-bridge/'
+	. Configuration::$VERSION
+	. ';+'
+	. REPOSITORY
+	. ')'
+);
 
-$userAgent = 'Mozilla/5.0(X11; Linux x86_64; rv:30.0)';
-$userAgent .= ' Gecko/20121202 Firefox/30.0(rss-bridge/0.1;';
-$userAgent .= '+https://github.com/RSS-Bridge/rss-bridge)';
-
-ini_set('user_agent', $userAgent);
+ini_set('user_agent', USER_AGENT);
 
 // default whitelist
 $whitelist_default = array(
@@ -69,7 +36,7 @@ $whitelist_default = array(
 	'DansTonChatBridge',
 	'DuckDuckGoBridge',
 	'FacebookBridge',
-	'FlickrExploreBridge',
+	'FlickrBridge',
 	'GooglePlusPostBridge',
 	'GoogleSearchBridge',
 	'IdenticaBridge',
@@ -83,26 +50,7 @@ $whitelist_default = array(
 
 try {
 
-	Bridge::setDir(__DIR__ . '/bridges/');
-	Format::setDir(__DIR__ . '/formats/');
-	Cache::setDir(__DIR__ . '/caches/');
-
-	if(!file_exists(WHITELIST_FILE)) {
-		$whitelist_selection = $whitelist_default;
-		$whitelist_write = implode("\n", $whitelist_default);
-		file_put_contents(WHITELIST_FILE, $whitelist_write);
-	} else {
-
-		$whitelist_file_content = file_get_contents(WHITELIST_FILE);
-		if($whitelist_file_content != "*\n") {
-			$whitelist_selection = explode("\n", $whitelist_file_content);
-		} else {
-			$whitelist_selection = Bridge::listBridges();
-		}
-
-		// Prepare for case-insensitive match
-		$whitelist_selection = array_map('strtolower', $whitelist_selection);
-	}
+	Bridge::setWhitelist($whitelist_default);
 
 	$showInactive = filter_input(INPUT_GET, 'show_inactive', FILTER_VALIDATE_BOOLEAN);
 	$action = array_key_exists('action', $params) ? $params['action'] : null;
@@ -129,7 +77,7 @@ try {
 
 			}
 
-			$status = Bridge::isWhitelisted($whitelist_selection, strtolower($bridgeName)) ? 'active' : 'inactive';
+			$status = Bridge::isWhitelisted($bridgeName) ? 'active' : 'inactive';
 
 			$list->bridges[$bridgeName] = array(
 				'status' => $status,
@@ -149,11 +97,6 @@ try {
 		echo json_encode($list, JSON_PRETTY_PRINT);
 
 	} elseif($action === 'display' && !empty($bridge)) {
-		// DEPRECATED: 'nameBridge' scheme is replaced by 'name' in bridge parameter values
-		//             this is to keep compatibility until futher complete removal
-		if(($pos = strpos($bridge, 'Bridge')) === (strlen($bridge) - strlen('Bridge'))) {
-			$bridge = substr($bridge, 0, $pos);
-		}
 
 		$format = $params['format']
 			or returnClientError('You must specify a format!');
@@ -165,7 +108,7 @@ try {
 		}
 
 		// whitelist control
-		if(!Bridge::isWhitelisted($whitelist_selection, strtolower($bridge))) {
+		if(!Bridge::isWhitelisted($bridge)) {
 			throw new \HttpException('This bridge is not whitelisted', 401);
 			die;
 		}
@@ -207,6 +150,7 @@ try {
 					'format',
 					'_noproxy',
 					'_cache_timeout',
+					'_error_time'
 				), '')
 		);
 
@@ -219,12 +163,13 @@ try {
 					'format',
 					'_noproxy',
 					'_cache_timeout',
+					'_error_time'
 				), '')
 		);
 
 		// Initialize cache
 		$cache = Cache::create('FileCache');
-		$cache->setPath(CACHE_DIR);
+		$cache->setPath(PATH_CACHE);
 		$cache->purgeCache(86400); // 24 hours
 		$cache->setParameters($cache_params);
 
@@ -234,7 +179,7 @@ try {
 
 		if($mtime !== false
 		&& (time() - $cache_timeout < $mtime)
-		&& (!defined('DEBUG') || DEBUG !== true)) { // Load cached data
+		&& !Debug::isEnabled()) { // Load cached data
 
 			// Send "Not Modified" response if client supports it
 			// Implementation based on https://stackoverflow.com/a/10847262
@@ -242,7 +187,7 @@ try {
 				$stime = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']);
 
 				if($mtime <= $stime) { // Cached data is older or same
-					header('HTTP/1.1 304 Not Modified');
+					header('Last-Modified: ' . gmdate('D, d M Y H:i:s ', $mtime) . 'GMT', true, 304);
 					die();
 				}
 			}
@@ -319,22 +264,19 @@ try {
 			$format->display();
 		} catch(Error $e) {
 			error_log($e);
-			http_response_code($e->getCode());
-			header('Content-Type: text/html');
+			header('Content-Type: text/html', true, $e->getCode());
 			die(buildTransformException($e, $bridge));
 		} catch(Exception $e) {
 			error_log($e);
-			http_response_code($e->getCode());
-			header('Content-Type: text/html');
+			header('Content-Type: text/html', true, $e->getCode());
 			die(buildTransformException($e, $bridge));
 		}
 	} else {
-		echo BridgeList::create($whitelist_selection, $showInactive);
+		echo BridgeList::create($showInactive);
 	}
 } catch(HttpException $e) {
 	error_log($e);
-	http_response_code($e->getCode());
-	header('Content-Type: text/plain');
+	header('Content-Type: text/plain', true, $e->getCode());
 	die($e->getMessage());
 } catch(\Exception $e) {
 	error_log($e);

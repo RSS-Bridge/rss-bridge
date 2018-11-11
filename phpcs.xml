@@ -13,6 +13,13 @@
   <rule ref="Generic.CodeAnalysis.UnnecessaryFinalModifier"/>
   <!-- Do not override methods to call their parent -->
   <rule ref="Generic.CodeAnalysis.UselessOverridingMethod"/>
+  <!-- Make sure the concatenation operator has spaces around it -->
+  <rule ref="Squiz.Strings.ConcatenationSpacing">
+    <properties>
+      <property name="spacing" value="1"/>
+      <property name="ignoreNewlines" value="true"/>
+    </properties>
+  </rule>
   <!-- One line should not have more than 80 characters -->
   <!-- One line must never exceed 120 characters -->
   <rule ref="Generic.Files.LineLength">

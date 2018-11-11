@@ -9,7 +9,7 @@ class LWNprevBridge extends BridgeAbstract{
 	private $editionTimeStamp;
 
 	function getURI(){
-		return self::URI.'free/bigpage';
+		return self::URI . 'free/bigpage';
 	}
 
 	private function jumpToNextTag(&$node){
@@ -47,7 +47,7 @@ class LWNprevBridge extends BridgeAbstract{
 <html><head><title>LWN</title></head><body>{$content}</body></html>
 EOD;
 			} else {
-				$content = $content.'</body></html>';
+				$content = $content . '</body></html>';
 			}
 
 			libxml_use_internal_errors(true);
@@ -172,7 +172,7 @@ EOD;
 
 		$prefix = '';
 		if(!empty($cats[0])) {
-			$prefix .= '['.$cats[0].($cats[1] ? '/'.$cats[1] : '').'] ';
+			$prefix .= '[' . $cats[0] . ($cats[1] ? '/' . $cats[1] : '') . '] ';
 		}
 		return $prefix;
 	}
@@ -188,7 +188,7 @@ EOD;
 
 			$item = array();
 
-			$item['uri'] = self::URI.'#'.count($items);
+			$item['uri'] = self::URI . '#' . count($items);
 
 			$item['timestamp'] = $this->editionTimeStamp;
 
@@ -197,7 +197,7 @@ EOD;
 			$cat = $newsletters->previousSibling;
 			$this->jumpToPreviousTag($cat);
 			$prefix = $this->getItemPrefix($cat, $cats);
-			$item['title'] = $prefix.' '.$newsletters->textContent;
+			$item['title'] = $prefix . ' ' . $newsletters->textContent;
 
 			$node = $newsletters;
 			$content = '';
@@ -233,7 +233,7 @@ EOD;
 			$cat = $cat->previousSibling;
 			$this->jumpToPreviousTag($cat);
 			$prefix = $this->getItemPrefix($cat, $cats);
-			$item['title'] = $prefix.' '.$title->textContent;
+			$item['title'] = $prefix . ' ' . $title->textContent;
 			$items[] = array_merge($item, $this->getArticleContent($title));
 		}
 
@@ -255,7 +255,7 @@ EOD;
 			$cat = $cat->previousSibling;
 			$this->jumpToPreviousTag($cat);
 			$prefix = $this->getItemPrefix($cat, $cats);
-			$item['title'] = $prefix.' '.$title->textContent;
+			$item['title'] = $prefix . ' ' . $title->textContent;
 			$items[] = array_merge($item, $this->getArticleContent($title));
 		}
 

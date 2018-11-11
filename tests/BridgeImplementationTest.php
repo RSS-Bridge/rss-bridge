@@ -4,9 +4,7 @@ use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\TestResult;
 use PHPUnit\Framework\AssertionFailedError;
 
-require_once(__DIR__ . '/../lib/RssBridge.php');
-
-Bridge::setDir(__DIR__ . '/../bridges/');
+require_once __DIR__ . '/../lib/rssbridge.php';
 
 /**
  * This class checks bridges for implementation details:

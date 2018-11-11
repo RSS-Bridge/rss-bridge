@@ -75,7 +75,7 @@ class PikabuBridge extends BridgeAbstract {
 						continue;
 					}
 				}
-				$img->outertext = '<img src="'.$src.'">';
+				$img->outertext = '<img src="' . $src . '">';
 			}
 
 			$categories = array();

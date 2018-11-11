@@ -18,11 +18,11 @@ class MrssFormat extends FormatAbstract {
 		if(!empty($extraInfos['uri'])) {
 			$uri = $this->xml_encode($extraInfos['uri']);
 		} else {
-			$uri = 'https://github.com/RSS-Bridge/rss-bridge';
+			$uri = REPOSITORY;
 		}
 
 		$uriparts = parse_url($uri);
-		$icon = $this->xml_encode($uriparts['scheme'] . '://' . $uriparts['host'] .'/favicon.ico');
+		$icon = $this->xml_encode($uriparts['scheme'] . '://' . $uriparts['host'] . '/favicon.ico');
 
 		$items = '';
 		foreach($this->getItems() as $item) {
@@ -56,7 +56,7 @@ Some media files might not be shown to you. Consider using the ATOM format inste
 
 				foreach($item['categories'] as $category) {
 					$entryCategories .= '<category>'
-					. $category  . '</category>'
+					. $category . '</category>'
 					. PHP_EOL;
 				}
 			}

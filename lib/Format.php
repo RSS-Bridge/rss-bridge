@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . '/FormatInterface.php');
+
 class Format {
 
 	static protected $dirFormat;

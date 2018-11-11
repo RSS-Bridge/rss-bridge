@@ -55,7 +55,7 @@ class UnsplashBridge extends BridgeAbstract {
 				$item['uri'] = str_replace(
 					array('q=75', 'w=400'),
 					array("q=$quality", "w=$width"),
-					$thumbnail->src).'.jpg'; // '.jpg' only for format hint
+					$thumbnail->src) . '.jpg'; // '.jpg' only for format hint
 
 				$item['timestamp'] = time();
 				$item['title'] = $thumbnail->alt;

@@ -25,7 +25,7 @@ class SuperSmashBlogBridge extends BridgeAbstract {
 
 			$video = $article['acf']['link_url'];
 			if (strlen($video) != 0) {
-				$video = str_get_html('<a href="' . $video .'">Youtube video</a>');
+				$video = str_get_html('<a href="' . $video . '">Youtube video</a>');
 			} else {
 				$video = '';
 			}

@@ -1,6 +1,6 @@
 <?php
 function getContents($url, $header = array(), $opts = array()){
-	debugMessage('Reading contents from "' . $url . '"');
+	Debug::log('Reading contents from "' . $url . '"');
 
 	$ch = curl_init($url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -8,7 +8,7 @@ function getContents($url, $header = array(), $opts = array()){
 
 	if(is_array($header) && count($header) !== 0) {
 
-		debugMessage('Setting headers: ' . json_encode($header));
+		Debug::log('Setting headers: ' . json_encode($header));
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 
 	}
@@ -19,7 +19,7 @@ function getContents($url, $header = array(), $opts = array()){
 
 	if(is_array($opts) && count($opts) !== 0) {
 
-		debugMessage('Setting options: ' . json_encode($opts));
+		Debug::log('Setting options: ' . json_encode($opts));
 
 		foreach($opts as $key => $value) {
 			curl_setopt($ch, $key, $value);
@@ -29,7 +29,7 @@ function getContents($url, $header = array(), $opts = array()){
 
 	if(defined('PROXY_URL') && !defined('NOPROXY')) {
 
-		debugMessage('Setting proxy url: ' . PROXY_URL);
+		Debug::log('Setting proxy url: ' . PROXY_URL);
 		curl_setopt($ch, CURLOPT_PROXY, PROXY_URL);
 
 	}
@@ -42,13 +42,13 @@ function getContents($url, $header = array(), $opts = array()){
 	$curlErrno = curl_errno($ch);
 
 	if($data === false)
-		debugMessage('Cant\'t download ' . $url . ' cUrl error: ' . $curlError . ' (' . $curlErrno . ')');
+		Debug::log('Cant\'t download ' . $url . ' cUrl error: ' . $curlError . ' (' . $curlErrno . ')');
 
 	$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 	$errorCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 	$header = substr($data, 0, $headerSize);
 
-	debugMessage('Response header: ' . $header);
+	Debug::log('Response header: ' . $header);
 
 	$headers = parseResponseHeader($header);
 	$finalHeader = end($headers);
@@ -64,7 +64,7 @@ EOD
 		}
 
 		returnError(<<<EOD
-The requested resouce cannot be found!
+The requested resource cannot be found!
 Please make sure your input parameters are correct!
 EOD
 		, $errorCode);
@@ -109,11 +109,11 @@ $target_charset = DEFAULT_TARGET_CHARSET,
 $stripRN = true,
 $defaultBRText = DEFAULT_BR_TEXT,
 $defaultSpanText = DEFAULT_SPAN_TEXT){
-	debugMessage('Caching url ' . $url . ', duration ' . $duration);
+	Debug::log('Caching url ' . $url . ', duration ' . $duration);
 
 	// Initialize cache
 	$cache = Cache::create('FileCache');
-	$cache->setPath(CACHE_DIR . '/pages');
+	$cache->setPath(PATH_CACHE . 'pages/');
 	$cache->purgeCache(86400); // 24 hours (forced)
 
 	$params = [$url];
@@ -123,7 +123,7 @@ $defaultSpanText = DEFAULT_SPAN_TEXT){
 	$time = $cache->getTime();
 	if($time !== false
 	&& (time() - $duration < $time)
-	&& (!defined('DEBUG') || DEBUG !== true)) { // Contents within duration
+	&& Debug::isEnabled()) { // Contents within duration
 		$content = $cache->loadData();
 	} else { // Content not within duration
 		$content = getContents($url, $header, $opts);

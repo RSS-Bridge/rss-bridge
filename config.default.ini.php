@@ -16,6 +16,12 @@ custom_timeout = false
 ; false = disabled (default)
 ignore_custom_timeout = false
 
+[admin]
+; Advertise an email address where people can reach the administrator.
+; This address is displayed on the main page, visible to everyone!
+; ""    = Disabled (default)
+email = ""
+
 [proxy]
 
 ; Sets the proxy url (i.e. "tcp://192.168.0.0:32")

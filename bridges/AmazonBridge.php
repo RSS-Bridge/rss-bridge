@@ -52,7 +52,7 @@ class AmazonBridge extends BridgeAbstract {
 
 	public function getName(){
 		if(!is_null($this->getInput('tld')) && !is_null($this->getInput('q'))) {
-			return 'Amazon.'.$this->getInput('tld').': '.$this->getInput('q');
+			return 'Amazon.' . $this->getInput('tld') . ': ' . $this->getInput('q');
 		}
 
 		return parent::getName();
@@ -60,8 +60,8 @@ class AmazonBridge extends BridgeAbstract {
 
 	public function collectData() {
 
-		$uri = 'https://www.amazon.'.$this->getInput('tld').'/';
-		$uri .= 's/?field-keywords='.urlencode($this->getInput('q')).'&sort='.$this->getInput('sort');
+		$uri = 'https://www.amazon.' . $this->getInput('tld') . '/';
+		$uri .= 's/?field-keywords=' . urlencode($this->getInput('q')) . '&sort=' . $this->getInput('sort');
 
 		$html = getSimpleHTMLDOM($uri)
 			or returnServerError('Could not request Amazon.');
@@ -86,7 +86,7 @@ class AmazonBridge extends BridgeAbstract {
 			$price = $element->find('span.s-price', 0);
 			$price = ($price) ? $price->innertext : '';
 
-			$item['content'] = '<img src="'.$image->getAttribute('src').'" /><br />'.$price;
+			$item['content'] = '<img src="' . $image->getAttribute('src') . '" /><br />' . $price;
 
 			$this->items[] = $item;
 		}

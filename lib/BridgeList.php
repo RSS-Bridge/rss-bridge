@@ -22,7 +22,7 @@ final class BridgeList {
 EOD;
 	}
 
-	private static function getBridges($whitelist, $showInactive, &$totalBridges, &$totalActiveBridges) {
+	private static function getBridges($showInactive, &$totalBridges, &$totalActiveBridges) {
 
 		$body = '';
 		$totalActiveBridges = 0;
@@ -35,7 +35,7 @@ EOD;
 
 		foreach($bridgeList as $bridgeName) {
 
-			if(Bridge::isWhitelisted($whitelist, strtolower($bridgeName))) {
+			if(Bridge::isWhitelisted($bridgeName)) {
 
 				$body .= BridgeCard::displayBridgeCard($bridgeName, $formats);
 				$totalActiveBridges++;
@@ -57,16 +57,16 @@ EOD;
 	private static function getHeader() {
 		$warning = '';
 
-		if(defined('DEBUG') && DEBUG === true) {
-			if(defined('DEBUG_INSECURE') && DEBUG_INSECURE === true) {
+		if(Debug::isEnabled()) {
+			if(!Debug::isSecure()) {
 				$warning .= <<<EOD
-<section class="critical-warning">Warning : Debug mode is active from any location, 
-make sure only you can access RSS-Bridge.</section>
+<section class="critical-warning">Warning : Debug mode is active from any location,
+ make sure only you can access RSS-Bridge.</section>
 EOD;
 			} else {
 				$warning .= <<<EOD
-<section class="warning">Warning : Debug mode is active from your IP address, 
-your requests will bypass the cache.</section>
+<section class="warning">Warning : Debug mode is active from your IP address,
+ your requests will bypass the cache.</section>
 EOD;
 			}
 		}
@@ -96,6 +96,18 @@ EOD;
 	private static function getFooter($totalBridges, $totalActiveBridges, $showInactive) {
 		$version = Configuration::getVersion();
 
+		$email = Configuration::getConfig('admin', 'email');
+		$admininfo = '';
+		if (!empty($email)) {
+			$admininfo = <<<EOD
+<br />
+<span>
+   You may email the administrator of this RSS-Bridge instance
+   at <a href="mailto:{$email}">{$email}</a>
+</span>
+EOD;
+		}
+
 		$inactive = '';
 
 		if($totalActiveBridges !== $totalBridges) {
@@ -114,11 +126,12 @@ EOD;
 	<p class="version">{$version}</p>
 	{$totalActiveBridges}/{$totalBridges} active bridges.<br>
 	{$inactive}
+	{$admininfo}
 </section>
 EOD;
 	}
 
-	static function create($whitelist, $showInactive = true) {
+	static function create($showInactive = true) {
 
 		$totalBridges = 0;
 		$totalActiveBridges = 0;
@@ -128,7 +141,7 @@ EOD;
 		. '<body onload="search()">'
 		. BridgeList::getHeader()
 		. BridgeList::getSearchbar()
-		. BridgeList::getBridges($whitelist, $showInactive, $totalBridges, $totalActiveBridges)
+		. BridgeList::getBridges($showInactive, $totalBridges, $totalActiveBridges)
 		. BridgeList::getFooter($totalBridges, $totalActiveBridges, $showInactive)
 		. '</body></html>';
 

@@ -19,6 +19,12 @@ class InstagramBridge extends BridgeAbstract {
 				'required' => true
 			)
 		),
+		array(
+			'l' => array(
+				'name' => 'location',
+				'required' => true
+			)
+		),
 		'global' => array(
 			'media_type' => array(
 				'name' => 'Media type',
@@ -38,16 +44,18 @@ class InstagramBridge extends BridgeAbstract {
 
 	public function collectData(){
 
-		if(!is_null($this->getInput('h')) && $this->getInput('media_type') == 'story') {
-			returnClientError('Stories are not supported for hashtags!');
+		if(is_null($this->getInput('u')) && $this->getInput('media_type') == 'story') {
+			returnClientError('Stories are not supported for hashtags nor locations!');
 		}
 
 		$data = $this->getInstagramJSON($this->getURI());
 
 		if(!is_null($this->getInput('u'))) {
 			$userMedia = $data->entry_data->ProfilePage[0]->graphql->user->edge_owner_to_timeline_media->edges;
-		} else {
+		} elseif(!is_null($this->getInput('h'))) {
 			$userMedia = $data->entry_data->TagPage[0]->graphql->hashtag->edge_hashtag_to_media->edges;
+		} elseif(!is_null($this->getInput('l'))) {
+			$userMedia = $data->entry_data->LocationsPage[0]->graphql->location->edge_location_to_media->edges;
 		}
 
 		foreach($userMedia as $media) {
@@ -85,7 +93,7 @@ class InstagramBridge extends BridgeAbstract {
 				$item['content'] = $data[0];
 				$item['enclosures'] = $data[1];
 			} else {
-				$item['content'] = '<img src="' . htmlentities($media->display_url) . '" alt="'. $item['title'] . '" />';
+				$item['content'] = '<img src="' . htmlentities($media->display_url) . '" alt="' . $item['title'] . '" />';
 				$item['enclosures'] = array($media->display_url);
 			}
 
@@ -108,13 +116,14 @@ class InstagramBridge extends BridgeAbstract {
 		}
 
 		$enclosures = [$mediaInfo->display_url];
-		$content = '<img src="' . htmlentities($mediaInfo->display_url) . '" alt="'. $caption . '" />';
+		$content = '<img src="' . htmlentities($mediaInfo->display_url) . '" alt="' . $caption . '" />';
 
 		foreach($mediaInfo->edge_sidecar_to_children->edges as $media) {
-
-			$content .= '<img src="' . htmlentities($media->node->display_url) . '" alt="'. $caption . '" />';
-			$enclosures[] = $media->node->display_url;
-
+			$display_url = $media->node->display_url;
+			if(!in_array($display_url, $enclosures)) { // add only if not added yet
+				$content .= '<img src="' . htmlentities($display_url) . '" alt="' . $caption . '" />';
+				$enclosures[] = $display_url;
+			}
 		}
 
 		return [$content, $enclosures];
@@ -146,8 +155,9 @@ class InstagramBridge extends BridgeAbstract {
 			return self::URI . urlencode($this->getInput('u')) . '/';
 		} elseif(!is_null($this->getInput('h'))) {
 			return self::URI . 'explore/tags/' . urlencode($this->getInput('h'));
+		} elseif(!is_null($this->getInput('l'))) {
+			return self::URI . 'explore/locations/' . urlencode($this->getInput('l'));
 		}
-
 		return parent::getURI();
 	}
 }

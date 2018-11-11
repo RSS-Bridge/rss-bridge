@@ -155,8 +155,8 @@ function markdownToHtml($string) {
 	$string = preg_replace('/_(.*)_/U', '<i>$1</i>', $string);
 	$string = preg_replace('/[-]{6,99}/', '<hr />', $string);
 	$string = str_replace('&#10;', '<br />', $string);
-	$string = preg_replace('/([^"])(https?:\/\/[^ "<]+)([^"])/', '$1<a href="$2">$2</a>$3', $string.' ');
-	$string = preg_replace('/([^"\/])(www\.[^ "<]+)([^"])/', '$1<a href="http://$2">$2</a>$3', $string.' ');
+	$string = preg_replace('/([^"])(https?:\/\/[^ "<]+)([^"])/', '$1<a href="$2">$2</a>$3', $string . ' ');
+	$string = preg_replace('/([^"\/])(www\.[^ "<]+)([^"])/', '$1<a href="http://$2">$2</a>$3', $string . ' ');
 
 	//As the regex are not perfect, we need to fix <i> and </i> that are introduced in URLs
 	// Fixup regex <i>: https://regex101.com/r/NTRPf6/1

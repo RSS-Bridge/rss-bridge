@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . '/CacheInterface.php');
+
 class Cache {
 
 	static protected $dirCache;

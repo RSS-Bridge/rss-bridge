@@ -81,7 +81,7 @@ class DiscogsBridge extends BridgeAbstract {
 						. $this->getInput('username_folder')
 						. '/collection/folders/'
 						. $this->getInput('folderid')
-						.'/releases?sort=added&sort_order=desc')
+						. '/releases?sort=added&sort_order=desc')
 						or returnServerError('Unable to query discogs !');
 				$jsonData = json_decode($data, true)['releases'];
 			}

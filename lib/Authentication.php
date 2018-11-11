@@ -5,8 +5,7 @@ class Authentication {
 
 		if(Configuration::getConfig('authentication', 'enable') === true) {
 			if(!Authentication::verifyPrompt()) {
-				header('WWW-Authenticate: Basic realm="RSS-Bridge"');
-				header('HTTP/1.0 401 Unauthorized');
+				header('WWW-Authenticate: Basic realm="RSS-Bridge"', true, 401);
 				die('Please authenticate in order to access this instance !');
 			}
 

@@ -49,9 +49,9 @@ class FDroidBridge extends BridgeAbstract {
 				$item['icon'] = $element->find('img', 0)->src;
 				$item['summary'] = $element->find('span.package-summary', 0)->plaintext;
 				$item['content'] = '
-					<a href="'.$item['uri'].'">
-						<img alt="" style="max-height:128px" src="'.$item['icon'].'">
-					</a><br>'.$item['summary'];
+					<a href="' . $item['uri'] . '">
+						<img alt="" style="max-height:128px" src="' . $item['icon'] . '">
+					</a><br>' . $item['summary'];
 				$this->items[] = $item;
 		}
 	}
