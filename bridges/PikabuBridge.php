@@ -6,6 +6,16 @@ class PikabuBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Выводит посты по тегу';
 	const MAINTAINER = 'em92';
 
+	const PARAMETERS_FILTER = array(
+		'name' => 'Фильтр',
+		'type' => 'list',
+		'values' => array(
+			'Горячее' => 'hot',
+			'Свежее' => 'new',
+		),
+		'defaultValue' => 'hot'
+	);
+
 	const PARAMETERS = array(
 		'По тегу' => array(
 			'tag' => array(
@@ -13,15 +23,15 @@ class PikabuBridge extends BridgeAbstract {
 				'exampleValue' => 'it',
 				'required' => true
 			),
-			'filter' => array(
-				'name' => 'Фильтр',
-				'type' => 'list',
-				'values' => array(
-					'Горячее' => 'hot',
-					'Свежее' => 'new',
-				),
-				'defaultValue' => 'hot'
-			)
+			'filter' => self::PARAMETERS_FILTER
+		),
+		'По сообществу' => array(
+			'community' => array(
+				'name' => 'Сообщество',
+				'exampleValue' => 'linux',
+				'required' => true
+			),
+			'filter' => self::PARAMETERS_FILTER
 		)
 	);
 
@@ -30,6 +40,12 @@ class PikabuBridge extends BridgeAbstract {
 	public function getURI() {
 		if ($this->getInput('tag')) {
 			return self::URI . '/tag/' . rawurlencode($this->getInput('tag')) . '/' . rawurlencode($this->getInput('filter'));
+		} else if ($this->getInput('community')) {
+			$uri = self::URI . '/community/' . rawurlencode($this->getInput('community'));
+			if ($this->getInput('filter') != 'hot') {
+				$uri .= '/' . rawurlencode($this->getInput('filter'));
+			}
+			return $uri;
 		} else {
 			return parent::getURI();
 		}
