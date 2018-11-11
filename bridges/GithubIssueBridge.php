@@ -52,7 +52,7 @@ class GithubIssueBridge extends BridgeAbstract {
 	}
 
 	public function getURI(){
-		if(!is_null($this->getInput('u')) && !is_null($this->getInput('p'))) {
+		if(null !== $this->getInput('u') && null !== $this->getInput('p')) {
 			$uri = static::URI . $this->getInput('u') . '/'
 				. $this->getInput('p') . '/issues';
 			if($this->queriedContext === 'Issue comments') {
