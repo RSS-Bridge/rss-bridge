@@ -66,62 +66,50 @@ class GithubIssueBridge extends BridgeAbstract {
 		return parent::getURI();
 	}
 
-	protected function extractIssueComment($issueNbr, $title, $comment){
-		$class = $comment->getAttribute('class');
-		$classes = explode(' ', $class);
-		$event = false;
-		if(in_array('discussion-item', $classes)) {
-			$event = true;
-		}
-
-		$author = 'unknown';
-		if($comment->find('.author', 0)) {
-			$author = $comment->find('.author', 0)->plaintext;
-		}
-
-		$uri = static::URI . $this->getInput('u') . '/'
-			. $this->getInput('p') . '/issues/' . $issueNbr;
-
+	protected function extractIssueEvent($issueNbr, $title, $comment){
 		$comment = $comment->firstChild();
-		if(!$event) {
-			$comment = $comment->nextSibling();
-			$title .= ' / ' . trim($comment->firstChild()->plaintext);
-			$content = '<pre>';
-			$content .= $comment->find('.comment-body', 0)->innertext;
-			$content .= '</pre>';
-		}
+		$uri = static::URI . $this->getInput('u') . '/' . $this->getInput('p')
+			. '/issues/' . $issueNbr . '#' . $comment->getAttribute('id');
 
-		if($event) {
-			$title .= ' / ';
-			$title .= substr(
-				$class,
-				strpos($class, 'discussion-item-') + strlen('discussion-item-')
-			);
-			if(!$comment->hasAttribute('id')) {
-				$items = array();
-				$timestamp = strtotime(
-					$comment->find('relative-time', 0)->getAttribute('datetime')
-				);
-				$content = $comment->innertext;
-				while($comment = $comment->nextSibling()) {
-					$item = array();
-					$item['author'] = $author;
-					$item['title'] = html_entity_decode($title, ENT_QUOTES, 'UTF-8');
-					$item['timestamp'] = $timestamp;
-					$item['content'] = $content . '<p>'
-						. $comment->children(1)->innertext . '</p>';
-					$item['uri'] = $uri . '#'
-						. $comment->children(1)->getAttribute('id');
-					$items[] = $item;
-				}
-				return $items;
+		$author = $comment->find('.author', 0)->plaintext;
+
+		$title .= ' / ' . trim($comment->plaintext);
+
+		$content = $title;
+		if (null !== $comment->nextSibling()) {
+			$content = $comment->nextSibling()->innertext;
+			if ($comment->nextSibling()->nodeName() === 'span') {
+				$content = $comment->nextSibling()->nextSibling()->innertext;
 			}
-			$content = $comment->parent()->innertext;
 		}
 
 		$item = array();
 		$item['author'] = $author;
-		$item['uri'] = $uri . '#' . $comment->getAttribute('id');
+		$item['uri'] = $uri;
+		$item['title'] = html_entity_decode($title, ENT_QUOTES, 'UTF-8');
+		$item['timestamp'] = strtotime(
+			$comment->find('relative-time', 0)->getAttribute('datetime')
+		);
+		$item['content'] = $content;
+		return $item;
+	}
+
+	protected function extractIssueComment($issueNbr, $title, $comment){
+		$uri = static::URI . $this->getInput('u') . '/'
+			. $this->getInput('p') . '/issues/' . $issueNbr;
+
+		$author = $comment->find('.author', 0)->plaintext;
+
+		$title .= ' / ' . trim(
+			$comment->find('.comment .timeline-comment-header-text', 0)->plaintext
+		);
+
+		$content = $comment->find('.comment-body', 0)->innertext;
+
+		$item = array();
+		$item['author'] = $author;
+		$item['uri'] = $uri
+			. '#' . $comment->firstChild()->nextSibling()->getAttribute('id');
 		$item['title'] = html_entity_decode($title, ENT_QUOTES, 'UTF-8');
 		$item['timestamp'] = strtotime(
 			$comment->find('relative-time', 0)->getAttribute('datetime')
@@ -138,14 +126,24 @@ class GithubIssueBridge extends BridgeAbstract {
 		);
 		$comments = $issue->find('.js-discussion', 0);
 		foreach($comments->children() as $comment) {
+			if (!$comment->hasChildNodes()) {
+				continue;
+			}
+			$comment = $comment->firstChild();
 			$classes = explode(' ', $comment->getAttribute('class'));
-			if(in_array('discussion-item', $classes)
-			|| in_array('timeline-comment-wrapper', $classes)) {
+			if (in_array('timeline-comment-wrapper', $classes)) {
 				$item = $this->extractIssueComment($issueNbr, $title, $comment);
-				if(array_keys($item) !== range(0, count($item) - 1)) {
-					$item = array($item);
+				$items[] = $item;
+				continue;
+			}
+			while (in_array('discussion-item', $classes)) {
+				$item = $this->extractIssueEvent($issueNbr, $title, $comment);
+				$items[] = $item;
+				$comment = $comment->nextSibling();
+				if (null == $comment) {
+					break;
 				}
-				$items = array_merge($items, $item);
+				$classes = explode(' ', $comment->getAttribute('class'));
 			}
 		}
 		return $items;
