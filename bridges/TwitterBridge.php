@@ -258,14 +258,14 @@ EOD;
 				}
 
 				$item['content'] = <<<EOD
+{$item['content']}
+<hr>
 <div style="display: inline-block; vertical-align: top;">
 	<blockquote>{$cleanedQuotedTweet}</blockquote>
 </div>
 <div style="display: block; vertical-align: top;">
 	<blockquote>{$quotedImage_html}</blockquote>
 </div>
-<hr>
-{$item['content']}
 EOD;
 			}
 
