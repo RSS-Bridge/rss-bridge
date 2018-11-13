@@ -8,7 +8,7 @@ class Format {
 		throw new \LogicException('Please use ' . __CLASS__ . '::create for new object.');
 	}
 
-	static public function create($nameFormat){
+	public static function create($nameFormat){
 		if(!preg_match('@^[A-Z][a-zA-Z]*$@', $nameFormat)) {
 			throw new \InvalidArgumentException('Name format must be at least
  one uppercase follow or not by alphabetic characters.');
@@ -26,7 +26,7 @@ class Format {
 		return new $nameFormat();
 	}
 
-	static public function setDir($dirFormat){
+	public static function setDir($dirFormat){
 		if(!is_string($dirFormat)) {
 			throw new \InvalidArgumentException('Dir format must be a string.');
 		}
@@ -38,7 +38,7 @@ class Format {
 		self::$dirFormat = $dirFormat;
 	}
 
-	static public function getDir(){
+	public static function getDir(){
 		$dirFormat = self::$dirFormat;
 
 		if(is_null($dirFormat)) {
@@ -52,7 +52,7 @@ class Format {
 	* Read format dir and catch informations about each format depending annotation
 	* @return array Informations about each format
 	*/
-	static public function searchInformation(){
+	public static function searchInformation(){
 		$pathDirFormat = self::getDir();
 
 		$listFormat = array();

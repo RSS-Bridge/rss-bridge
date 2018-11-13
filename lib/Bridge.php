@@ -19,7 +19,7 @@ class Bridge {
 	* @param string $nameBridge Defined bridge name you want use
 	* @return Bridge object dedicated
 	*/
-	static public function create($nameBridge){
+	public static function create($nameBridge){
 		if(!preg_match('@^[A-Z][a-zA-Z0-9-]*$@', $nameBridge)) {
 			$message = <<<EOD
 'nameBridge' must start with one uppercase character followed or not by
@@ -45,7 +45,7 @@ EOD;
 		return false;
 	}
 
-	static public function setDir($dirBridge){
+	public static function setDir($dirBridge){
 		if(!is_string($dirBridge)) {
 			throw new \InvalidArgumentException('Dir bridge must be a string.');
 		}
@@ -57,7 +57,7 @@ EOD;
 		self::$dirBridge = $dirBridge;
 	}
 
-	static public function getDir(){
+	public static function getDir(){
 		if(is_null(self::$dirBridge)) {
 			throw new \LogicException(__CLASS__ . ' class need to know bridge path !');
 		}
@@ -69,7 +69,7 @@ EOD;
 	* Lists the available bridges.
 	* @return array List of the bridges
 	*/
-	static public function listBridges(){
+	public static function listBridges(){
 
 		static $listBridge = array(); // Initialized on first call
 
@@ -91,7 +91,7 @@ EOD;
 	/**
 	 * @return bool Returns true if the given bridge is whitelisted.
 	 */
-	static public function isWhitelisted($name){
+	public static function isWhitelisted($name){
 		return in_array(Bridge::sanitizeBridgeName($name), Bridge::getWhitelist());
 	}
 
