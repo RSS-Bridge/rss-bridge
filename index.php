@@ -126,7 +126,10 @@ try {
 		if(array_key_exists('_cache_timeout', $params)) {
 
 			if(!CUSTOM_CACHE_TIMEOUT) {
-				throw new \HttpException('This server doesn\'t support "_cache_timeout"!');
+				unset($params['_cache_timeout']);
+				$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) . '?' . http_build_query($params);
+				header('Location: ' . $uri, true, 301);
+				die();
 			}
 
 			$cache_timeout = filter_var($params['_cache_timeout'], FILTER_VALIDATE_INT);
