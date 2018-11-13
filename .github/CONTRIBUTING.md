@@ -43,5 +43,7 @@ Note that all pull-requests must pass all tests before they can be merged.
   * [Use PascalCase for class names](https://github.com/RSS-Bridge/rss-bridge/wiki/Classes#use-pascalcase-for-class-names)
   * [Do not use final statements inside final classes](https://github.com/RSS-Bridge/rss-bridge/wiki/Classes#do-not-use-final-statements-inside-final-classes)
   * [Do not override methods to call their parent](https://github.com/RSS-Bridge/rss-bridge/wiki/Classes#do-not-override-methods-to-call-their-parent)
+  * [abstract and final declarations MUST precede the visibility declaration](https://github.com/RSS-Bridge/rss-bridge/wiki/Classes#abstract-and-final-declarations-must-precede-the-visibility-declaration)
+  * [static declaration MUST come after the visibility declaration](https://github.com/RSS-Bridge/rss-bridge/wiki/Classes#static-declaration-must-come-after-the-visibility-declaration)
 * [Casting](https://github.com/RSS-Bridge/rss-bridge/wiki/Casting)
   * [Do not add spaces when casting](https://github.com/RSS-Bridge/rss-bridge/wiki/Casting#do-not-add-spaces-when-casting)
