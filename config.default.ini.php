@@ -11,11 +11,6 @@
 ; false = disabled (default)
 custom_timeout = false
 
-; Ignore specified custom timeout for specific requests.
-; true  = enabled
-; false = disabled (default)
-ignore_custom_timeout = false
-
 [admin]
 ; Advertise an email address where people can reach the administrator.
 ; This address is displayed on the main page, visible to everyone!

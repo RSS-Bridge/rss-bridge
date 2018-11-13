@@ -220,7 +220,7 @@ This bridge is not fetching its content through a secure connection</div>';
 			);
 		}
 
-		if(CUSTOM_CACHE_TIMEOUT && !IGNORE_CUSTOM_CACHE_TIMEOUT) {
+		if(CUSTOM_CACHE_TIMEOUT) {
 			$parameters['global']['_cache_timeout'] = array(
 				'name' => 'Cache timeout in seconds',
 				'type' => 'number',

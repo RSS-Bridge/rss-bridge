@@ -123,7 +123,7 @@ try {
 
 		// Cache timeout
 		$cache_timeout = -1;
-		if(!IGNORE_CUSTOM_CACHE_TIMEOUT && array_key_exists('_cache_timeout', $params)) {
+		if(array_key_exists('_cache_timeout', $params)) {
 
 			if(!CUSTOM_CACHE_TIMEOUT) {
 				throw new \HttpException('This server doesn\'t support "_cache_timeout"!');
