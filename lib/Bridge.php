@@ -28,7 +28,7 @@ EOD;
 			throw new \InvalidArgumentException($message);
 		}
 
-		$nameBridge = $nameBridge . 'Bridge';
+		$nameBridge = Bridge::sanitizeBridgeName($nameBridge) . 'Bridge';
 		$pathBridge = self::getDir() . $nameBridge . '.php';
 
 		if(!file_exists($pathBridge)) {
