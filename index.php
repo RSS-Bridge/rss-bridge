@@ -127,7 +127,8 @@ try {
 
 			if(!CUSTOM_CACHE_TIMEOUT) {
 				unset($params['_cache_timeout']);
-				header('Location: ' . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) . '?' . http_build_query($params), true, 301);
+				$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) . '?' . http_build_query($params);
+				header('Location: ' . $uri, true, 301);
 				die();
 			}
 
