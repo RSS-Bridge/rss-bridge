@@ -18,7 +18,7 @@ class Format {
 		$pathFormat = self::getDir() . $nameFormat . '.php';
 
 		if(!file_exists($pathFormat)) {
-			throw new \Exception('The format you looking for does not exist.');
+			throw new \Exception('The format you are looking for does not exist.');
 		}
 
 		require_once $pathFormat;

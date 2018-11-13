@@ -17,7 +17,7 @@ class Cache {
 		$pathCache = self::getDir() . $nameCache . '.php';
 
 		if(!file_exists($pathCache)) {
-			throw new \Exception('The cache you looking for does not exist.');
+			throw new \Exception('The cache you are looking for does not exist.');
 		}
 
 		require_once $pathCache;
