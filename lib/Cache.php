@@ -17,7 +17,7 @@
  * directory.
  *
  * This class is capable of:
- * - Locating cache classes in the specified working directory (see {@see Cache::$dirCache})
+ * - Locating cache classes in the specified working directory (see {@see Cache::$workingDir})
  * - Creating new cache instances based on the cache's name (see {@see Cache::create()})
  *
  * The following example illustrates the intended use for this class.
@@ -35,96 +35,103 @@
 class Cache {
 
 	/**
-	 * Holds the working directory.
+	 * Holds a path to the working directory.
 	 *
 	 * Do not access this property directly!
 	 * Use {@see Cache::setDir()} and {@see Cache::getDir()} instead.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
-	static protected $dirCache;
+	static protected $workingDir = null;
 
 	/**
 	 * Throws an exception when trying to create a new instance of this class.
-	 * Use {@see Cache::create()} to instanciate a new cache from the working
+	 * Use {@see Cache::create()} to create a new cache object from the working
 	 * directory.
 	 *
-	 * @throws LogicException if called.
+	 * @throws \LogicException if called.
 	 */
 	public function __construct(){
-		throw new \LogicException('Please use ' . __CLASS__ . '::create for new object.');
+		throw new \LogicException('Use ' . __CLASS__ . '::create($name) to create cache objects!');
 	}
 
 	/**
 	 * Creates a new cache object from the working directory.
 	 *
-	 * @throws InvalidArgumentException if the provided name is invalid.
-	 * @throws Exception if no cache with the given name exist in the working
-	 * directory.
-	 * @param string $nameCache Name of the cache object.
-	 * @return object Instance of the cache.
+	 * @throws \InvalidArgumentException if the requested cache name is invalid.
+	 * @throws \Exception if the requested cache file doesn't exist in the
+	 * working directory.
+	 * @param string $name Name of the cache object.
+	 * @return object The cache object.
 	 */
-	public static function create($nameCache){
-		if(!static::isValidNameCache($nameCache)) {
-			throw new \InvalidArgumentException('Name cache must be at least one
- uppercase follow or not by alphanumeric or dash characters.');
+	public static function create($name){
+		if(!self::isCacheName($name)) {
+			throw new \InvalidArgumentException('Cache name invalid!');
 		}
 
-		$pathCache = self::getDir() . $nameCache . '.php';
+		$filePath = self::getDir() . $name . '.php';
 
-		if(!file_exists($pathCache)) {
-			throw new \Exception('The cache you are looking for does not exist.');
+		if(!file_exists($filePath)) {
+			throw new \Exception('Cache file ' . $filePath . ' does not exist!');
 		}
 
-		require_once $pathCache;
+		require_once $filePath;
 
-		return new $nameCache();
+		return new $name();
 	}
 
 	/**
 	 * Sets the working directory.
 	 *
-	 * @param string $dirCache Path to a directory containing cache classes
-	 * @throws InvalidArgumentException if the provided path is not a valid string.
-	 * @throws Exception if the provided path does not exist.
+	 * @param string $workingDir Path to a directory containing cache classes
+	 * @throws \InvalidArgumentException if $workingDir is not a string.
+	 * @throws \Exception if the working directory doesn't exist.
+	 * @throws \InvalidArgumentException if $workingDir is not a directory.
 	 * @return void
 	 */
-	public static function setDir($dirCache){
-		if(!is_string($dirCache)) {
-			throw new \InvalidArgumentException('Dir cache must be a string.');
+	public static function setDir($workingDir){
+		self::$workingDir = null;
+
+		if(!is_string($workingDir)) {
+			throw new \InvalidArgumentException('Working directory is not a valid string!');
 		}
 
-		if(!file_exists($dirCache)) {
-			throw new \Exception('Dir cache does not exist.');
+		if(!file_exists($workingDir)) {
+			throw new \Exception('Working directory does not exist!');
 		}
 
-		self::$dirCache = $dirCache;
+		if(!is_dir($workingDir)) {
+			throw new \InvalidArgumentException('Working directory is not a directory!');
+		}
+
+		self::$workingDir = realpath($workingDir) . '/';
 	}
 
 	/**
 	 * Returns the current working directory.
-	 * The working directory must be specified with {@see Cache::setDir()}!
+	 * The working directory must be set with {@see Cache::setDir()}!
 	 *
-	 * @throws LogicException if the working directory was not specified.
+	 * @throws \LogicException if the working directory is not set.
 	 * @return string The current working directory.
 	 */
 	public static function getDir(){
-		$dirCache = self::$dirCache;
-
-		if(is_null($dirCache)) {
-			throw new \LogicException(__CLASS__ . ' class need to know cache path !');
+		if(is_null(self::$workingDir)) {
+			throw new \LogicException('Working directory is not set!');
 		}
 
-		return $dirCache;
+		return self::$workingDir;
 	}
 
 	/**
 	 * Returns true if the provided name is a valid cache name.
 	 *
-	 * @param string $nameCache The cache name.
-	 * @return int 1 if the name is valid, 0 if not, false if an error occurred.
+	 * A valid cache name starts with a capital letter ([A-Z]), followed by
+	 * zero or more alphanumeric characters or hyphen ([A-Za-z0-9-]).
+	 *
+	 * @param string $name The cache name.
+	 * @return bool true if the name is a valid cache name, false otherwise.
 	 */
-	public static function isValidNameCache($nameCache){
-		return preg_match('@^[A-Z][a-zA-Z0-9-]*$@', $nameCache);
+	public static function isCacheName($name){
+		return is_string($name) && preg_match('/^[A-Z][a-zA-Z0-9-]*$/', $name) === 1;
 	}
 }
