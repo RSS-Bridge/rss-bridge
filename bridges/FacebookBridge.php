@@ -659,16 +659,10 @@ EOD;
 							$date = 0;
 						}
 
-						// Build title from username and content
-						$title = $author;
-
-						if(strlen($title) > 24)
-							$title = substr($title, 0, strpos(wordwrap($title, 24), "\n")) . '...';
-
-						$title = $title . ' | ' . strip_tags($content);
-
+						// Build title from content
+						$title = strip_tags($post->find('.userContent')[0]->innertext);
 						if(strlen($title) > 64)
-							$title = substr($title, 0, strpos(wordwrap($title, 64), "\n")) . '...';
+							$title = substr($title, 0, 64) . '...';
 
 						$uri = $post->find('abbr')[0]->parent()->getAttribute('href');
 
