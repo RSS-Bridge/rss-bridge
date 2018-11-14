@@ -43,7 +43,7 @@ require_once PATH_LIB_VENDOR . 'php-urljoin/src/urljoin.php';
 try {
 	Bridge::setDir(PATH_LIB_BRIDGES);
 	Format::setDir(PATH_LIB_FORMATS);
-	Cache::setDir(PATH_LIB_CACHES);
+	Cache::setWorkingDir(PATH_LIB_CACHES);
 } catch(Exception $e) {
 	error_log($e);
 	header('Content-type: text/plain', true, 500);
