@@ -55,7 +55,7 @@ class Bridge {
 	 *
 	 * @var array
 	 */
-	private static $whitelist = array();
+	protected static $whitelist = array();
 
 	/**
 	 * Throws an exception when trying to create a new instance of this class.
@@ -246,7 +246,7 @@ class Bridge {
 	 * @return string|null The sanitized bridge name if the provided name is
 	 * valid, null otherwise.
 	 */
-	private static function sanitizeBridgeName($name) {
+	protected static function sanitizeBridgeName($name) {
 
 		if(is_string($name)) {
 
