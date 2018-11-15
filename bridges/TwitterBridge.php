@@ -158,7 +158,8 @@ class TwitterBridge extends BridgeAbstract {
 			// extract tweet timestamp
 			$item['timestamp'] = $tweet->find('span.js-short-timestamp', 0)->getAttribute('data-time');
 			// generate the title
-			$item['title'] = strip_tags($this->fixAnchorSpacing(htmlspecialchars_decode($tweet->find('p.js-tweet-text', 0), ENT_QUOTES), '<a>'));
+			$item['title'] = strip_tags($this->fixAnchorSpacing(htmlspecialchars_decode(
+				$tweet->find('p.js-tweet-text', 0), ENT_QUOTES), '<a>'));
 
 			switch($this->queriedContext) {
 				case 'By list':
