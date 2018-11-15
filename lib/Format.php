@@ -64,7 +64,7 @@ class Format {
 	 * @return object|bool The format object or false if the class is not instantiable.
 	 */
 	public static function create($name){
-		if(!preg_match('@^[A-Z][a-zA-Z]*$@', $name)) {
+		if(!self::isFormatName($name)) {
 			throw new \InvalidArgumentException('Format name invalid!');
 		}
 
@@ -124,6 +124,19 @@ class Format {
 		}
 
 		return self::$workingDir;
+	}
+
+	/**
+	 * Returns true if the provided name is a valid format name.
+	 *
+	 * A valid format name starts with a capital letter ([A-Z]), followed by
+	 * zero or more alphanumeric characters or hyphen ([A-Za-z0-9-]).
+	 *
+	 * @param string $name The format name.
+	 * @return bool true if the name is a valid format name, false otherwise.
+	 */
+	public static function isFormatName($name){
+		return is_string($name) && preg_match('/^[A-Z][a-zA-Z0-9-]*$/', $name) === 1;
 	}
 
 	/**
