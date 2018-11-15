@@ -141,7 +141,7 @@ final class BridgeImplementationTest extends TestCase {
 	}
 
 	public function count() {
-		return count(Bridge::listBridges());
+		return count(Bridge::getBridgeNames());
 	}
 
 	public function run(TestResult $result = null) {
@@ -150,7 +150,7 @@ final class BridgeImplementationTest extends TestCase {
 			$result = new TestResult;
 		}
 
-		foreach (Bridge::listBridges() as $bridge) {
+		foreach (Bridge::getBridgeNames() as $bridge) {
 
 			$bridge .= 'Bridge';
 

@@ -28,7 +28,7 @@ EOD;
 		$totalActiveBridges = 0;
 		$inactiveBridges = '';
 
-		$bridgeList = Bridge::listBridges();
+		$bridgeList = Bridge::getBridgeNames();
 		$formats = Format::searchInformation();
 
 		$totalBridges = count($bridgeList);

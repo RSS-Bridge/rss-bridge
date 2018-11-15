@@ -154,29 +154,29 @@ class Bridge {
 	}
 
 	/**
-	 * Returns the list of bridge names based on the working directory.
+	 * Returns the list of bridge names from the working directory.
 	 *
 	 * The list is cached internally to allow for successive calls.
 	 *
 	 * @return array List of bridge names
 	 */
-	public static function listBridges(){
+	public static function getBridgeNames(){
 
-		static $listBridge = array(); // Initialized on first call
+		static $bridgeNames = array(); // Initialized on first call
 
-		if(empty($listBridge)) {
-			$dirFiles = scandir(self::getWorkingDir());
+		if(empty($bridgeNames)) {
+			$files = scandir(self::getWorkingDir());
 
-			if($dirFiles !== false) {
-				foreach($dirFiles as $fileName) {
-					if(preg_match('/^([^.]+)Bridge\.php$/U', $fileName, $out)) {
-						$listBridge[] = $out[1];
+			if($files !== false) {
+				foreach($files as $file) {
+					if(preg_match('/^([^.]+)Bridge\.php$/U', $file, $out)) {
+						$bridgeNames[] = $out[1];
 					}
 				}
 			}
 		}
 
-		return $listBridge;
+		return $bridgeNames;
 	}
 
 	/**
@@ -218,7 +218,7 @@ class Bridge {
 				$contents = trim(file_get_contents(WHITELIST));
 
 				if($contents === '*') { // Whitelist all bridges
-					self::$whitelist = self::listBridges();
+					self::$whitelist = self::getBridgeNames();
 				} else {
 					self::$whitelist = array_map('self::sanitizeBridgeName', explode("\n", $contents));
 				}
@@ -281,9 +281,9 @@ class Bridge {
 			}
 
 			// The name is valid if a corresponding bridge file is found on disk
-			if(in_array(strtolower($name), array_map('strtolower', self::listBridges()))) {
-				$index = array_search(strtolower($name), array_map('strtolower', self::listBridges()));
-				return self::listBridges()[$index];
+			if(in_array(strtolower($name), array_map('strtolower', self::getBridgeNames()))) {
+				$index = array_search(strtolower($name), array_map('strtolower', self::getBridgeNames()));
+				return self::getBridgeNames()[$index];
 			}
 
 			Debug::log('Invalid bridge name specified: "' . $name . '"!');

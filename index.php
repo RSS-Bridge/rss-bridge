@@ -63,7 +63,7 @@ try {
 		$list->bridges = array();
 		$list->total = 0;
 
-		foreach(Bridge::listBridges() as $bridgeName) {
+		foreach(Bridge::getBridgeNames() as $bridgeName) {
 
 			$bridge = Bridge::create($bridgeName);
 
