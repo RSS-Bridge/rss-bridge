@@ -185,4 +185,8 @@ abstract class BridgeAbstract implements BridgeInterface {
 		return static::CACHE_TIMEOUT;
 	}
 
+	public function detectParameters(string $url){
+		return null;
+	}
+
 }
