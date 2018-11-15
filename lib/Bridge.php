@@ -78,7 +78,7 @@ class Bridge {
 	 * @return object|bool The bridge object or false if the class is not instantiable.
 	 */
 	public static function create($name){
-		if(!preg_match('/^[A-Z][a-zA-Z0-9-]*$/', $name)) {
+		if(!self::isBridgeName($name)) {
 			throw new \InvalidArgumentException('Bridge name invalid!');
 		}
 
@@ -138,6 +138,19 @@ class Bridge {
 		}
 
 		return self::$workingDir;
+	}
+
+	/**
+	 * Returns true if the provided name is a valid bridge name.
+	 *
+	 * A valid bridge name starts with a capital letter ([A-Z]), followed by
+	 * zero or more alphanumeric characters or hyphen ([A-Za-z0-9-]).
+	 *
+	 * @param string $name The bridge name.
+	 * @return bool true if the name is a valid bridge name, false otherwise.
+	 */
+	public static function isBridgeName($name){
+		return is_string($name) && preg_match('/^[A-Z][a-zA-Z0-9-]*$/', $name) === 1;
 	}
 
 	/**
