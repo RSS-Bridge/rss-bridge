@@ -140,25 +140,27 @@ class Format {
 	}
 
 	/**
-	* Read format dir and catch informations about each format depending annotation
-	* @return array Informations about each format
-	*/
-	public static function searchInformation(){
-		$pathDirFormat = self::getWorkingDir();
+	 * Returns the list of format names from the working directory.
+	 *
+	 * The list is cached internally to allow for successive calls.
+	 *
+	 * @return array List of format names
+	 */
+	public static function getFormatNames(){
+		static $formatNames = array(); // Initialized on first call
 
-		$listFormat = array();
+		if(empty($formatNames)) {
+			$files = scandir(self::getWorkingDir());
 
-		$searchCommonPattern = array('name');
-
-		$dirFiles = scandir($pathDirFormat);
-		if($dirFiles !== false) {
-			foreach($dirFiles as $fileName) {
-				if(preg_match('@^([^.]+)Format\.php$@U', $fileName, $out)) { // Is PHP file ?
-					$listFormat[] = $out[1];
+			if($files !== false) {
+				foreach($files as $file) {
+					if(preg_match('/^([^.]+)Format\.php$/U', $file, $out)) {
+						$formatNames[] = $out[1];
+					}
 				}
 			}
 		}
 
-		return $listFormat;
+		return $formatNames;
 	}
 }
