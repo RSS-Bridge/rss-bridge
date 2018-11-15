@@ -43,9 +43,9 @@ class Bridge {
 	 * Do not access this property directly!
 	 * Use {@see Bridge::setWorkingDir()} and {@see Bridge::getWorkingDir()} instead.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
-	protected static $workingDir;
+	protected static $workingDir = null;
 
 	/**
 	 * Holds a list of whitelisted bridges.
@@ -104,9 +104,12 @@ class Bridge {
 	 * @param string $dir Path to the directory containing bridges.
 	 * @throws \LogicException if the provided path is not a valid string.
 	 * @throws \Exception if the provided path does not exist.
+	 * @throws \InvalidArgumentException if $dir is not a directory.
 	 * @return void
 	 */
 	public static function setWorkingDir($dir){
+		self::$workingDir = null;
+
 		if(!is_string($dir)) {
 			throw new \InvalidArgumentException('Working directory is not a valid string!');
 		}
@@ -115,7 +118,11 @@ class Bridge {
 			throw new \Exception('Working directory does not exist!');
 		}
 
-		self::$workingDir = $dir;
+		if(!is_dir($dir)) {
+			throw new \InvalidArgumentException('Working directory is not a directory!');
+		}
+
+		self::$workingDir = realpath($dir) . '/';
 	}
 
 	/**
