@@ -11,7 +11,6 @@
  * @link	https://github.com/rss-bridge/rss-bridge
  */
 
-
 /**
  * Factory class responsible for creating cache objects from a given working
  * directory.
@@ -42,7 +41,7 @@ class Cache {
 	 *
 	 * @var string|null
 	 */
-	static protected $workingDir = null;
+	protected static $workingDir = null;
 
 	/**
 	 * Throws an exception when trying to create a new instance of this class.
@@ -108,7 +107,7 @@ class Cache {
 	}
 
 	/**
-	 * Returns the current working directory.
+	 * Returns the working directory.
 	 * The working directory must be set with {@see Cache::setWorkingDir()}!
 	 *
 	 * @throws \LogicException if the working directory is not set.
