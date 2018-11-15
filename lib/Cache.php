@@ -61,7 +61,7 @@ class Cache {
 	 * @throws \Exception if the requested cache file doesn't exist in the
 	 * working directory.
 	 * @param string $name Name of the cache object.
-	 * @return object The cache object.
+	 * @return object|bool The cache object or false if the class is not instantiable.
 	 */
 	public static function create($name){
 		if(!self::isCacheName($name)) {
@@ -76,7 +76,11 @@ class Cache {
 
 		require_once $filePath;
 
-		return new $name();
+		if((new \ReflectionClass($name))->isInstantiable()) {
+			return new $name();
+		}
+
+		return false;
 	}
 
 	/**
