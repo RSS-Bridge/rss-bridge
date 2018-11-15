@@ -82,7 +82,7 @@ class Bridge {
 			throw new \InvalidArgumentException('Bridge name invalid!');
 		}
 
-		$nameBridge = Bridge::sanitizeBridgeName($nameBridge) . 'Bridge';
+		$nameBridge = self::sanitizeBridgeName($nameBridge) . 'Bridge';
 		$pathBridge = self::getWorkingDir() . $nameBridge . '.php';
 
 		if(!file_exists($pathBridge)) {
@@ -166,7 +166,7 @@ class Bridge {
 	 * @return bool True if the bridge is whitelisted.
 	 */
 	public static function isWhitelisted($name){
-		return in_array(Bridge::sanitizeBridgeName($name), Bridge::getWhitelist());
+		return in_array(self::sanitizeBridgeName($name), self::getWhitelist());
 	}
 
 	/**
@@ -191,23 +191,23 @@ class Bridge {
 		if($firstCall) {
 
 			// Create initial whitelist or load from disk
-			if (!file_exists(WHITELIST) && !empty(Bridge::$whitelist)) {
-				file_put_contents(WHITELIST, implode("\n", Bridge::$whitelist));
+			if (!file_exists(WHITELIST) && !empty(self::$whitelist)) {
+				file_put_contents(WHITELIST, implode("\n", self::$whitelist));
 			} else {
 
 				$contents = trim(file_get_contents(WHITELIST));
 
 				if($contents === '*') { // Whitelist all bridges
-					Bridge::$whitelist = Bridge::listBridges();
+					self::$whitelist = self::listBridges();
 				} else {
-					Bridge::$whitelist = array_map('Bridge::sanitizeBridgeName', explode("\n", $contents));
+					self::$whitelist = array_map('self::sanitizeBridgeName', explode("\n", $contents));
 				}
 
 			}
 
 		}
 
-		return Bridge::$whitelist;
+		return self::$whitelist;
 
 	}
 
@@ -226,7 +226,7 @@ class Bridge {
 	 * @return void
 	 */
 	public static function setWhitelist($default = array()) {
-		Bridge::$whitelist = array_map('Bridge::sanitizeBridgeName', $default);
+		self::$whitelist = array_map('self::sanitizeBridgeName', $default);
 	}
 
 	/**
@@ -261,9 +261,9 @@ class Bridge {
 			}
 
 			// The name is valid if a corresponding bridge file is found on disk
-			if(in_array(strtolower($name), array_map('strtolower', Bridge::listBridges()))) {
-				$index = array_search(strtolower($name), array_map('strtolower', Bridge::listBridges()));
-				return Bridge::listBridges()[$index];
+			if(in_array(strtolower($name), array_map('strtolower', self::listBridges()))) {
+				$index = array_search(strtolower($name), array_map('strtolower', self::listBridges()));
+				return self::listBridges()[$index];
 			}
 
 			Debug::log('Invalid bridge name specified: "' . $name . '"!');
