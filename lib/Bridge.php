@@ -16,7 +16,7 @@
  * directory, limited by a whitelist.
  *
  * This class is capable of:
- * - Locating bridge classes in the specified working directory (see {@see Bridge::$dirBridge})
+ * - Locating bridge classes in the specified working directory (see {@see Bridge::$workingDir})
  * - Filtering bridges based on a whitelist (see {@see Bridge::$whitelist})
  * - Creating new bridge instances based on the bridge's name (see {@see Bridge::create()})
  *
@@ -45,7 +45,7 @@ class Bridge {
 	 *
 	 * @var string
 	 */
-	static protected $dirBridge;
+	static protected $workingDir;
 
 	/**
 	 * Holds a list of whitelisted bridges.
@@ -115,7 +115,7 @@ class Bridge {
 			throw new \Exception('Working directory does not exist!');
 		}
 
-		self::$dirBridge = $dirBridge;
+		self::$workingDir = $dirBridge;
 	}
 
 	/**
@@ -126,11 +126,11 @@ class Bridge {
 	 * @return string The current working directory.
 	 */
 	public static function getWorkingDir(){
-		if(is_null(self::$dirBridge)) {
+		if(is_null(self::$workingDir)) {
 			throw new \LogicException('Working directory is not set!');
 		}
 
-		return self::$dirBridge;
+		return self::$workingDir;
 	}
 
 	/**
