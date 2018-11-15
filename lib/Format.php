@@ -108,7 +108,7 @@ class Format {
 			throw new \InvalidArgumentException('Working directory is not a directory!');
 		}
 
-		self::$workingDir = $dir;
+		self::$workingDir = realpath($dir) . '/';
 	}
 
 	/**
