@@ -45,7 +45,7 @@ class Bridge {
 	 *
 	 * @var string
 	 */
-	static protected $workingDir;
+	protected static $workingDir;
 
 	/**
 	 * Holds a list of whitelisted bridges.
@@ -91,7 +91,7 @@ class Bridge {
 
 		require_once $pathBridge;
 
-		if((new ReflectionClass($nameBridge))->isInstantiable()) {
+		if((new \ReflectionClass($nameBridge))->isInstantiable()) {
 			return new $nameBridge();
 		}
 
