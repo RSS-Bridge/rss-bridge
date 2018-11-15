@@ -74,25 +74,25 @@ class Bridge {
 	 * @throws \InvalidArgumentException if the requested bridge name is invalid.
 	 * @throws \Exception if the requested bridge doesn't exist in the working
 	 * directory.
-	 * @param string $nameBridge Name of the bridge object.
+	 * @param string $name Name of the bridge object.
 	 * @return object|bool The bridge object or false if the class is not instantiable.
 	 */
-	public static function create($nameBridge){
-		if(!preg_match('/^[A-Z][a-zA-Z0-9-]*$/', $nameBridge)) {
+	public static function create($name){
+		if(!preg_match('/^[A-Z][a-zA-Z0-9-]*$/', $name)) {
 			throw new \InvalidArgumentException('Bridge name invalid!');
 		}
 
-		$nameBridge = self::sanitizeBridgeName($nameBridge) . 'Bridge';
-		$pathBridge = self::getWorkingDir() . $nameBridge . '.php';
+		$name = self::sanitizeBridgeName($name) . 'Bridge';
+		$filePath = self::getWorkingDir() . $name . '.php';
 
-		if(!file_exists($pathBridge)) {
-			throw new \Exception('Cache file ' . $pathBridge . ' does not exist!');
+		if(!file_exists($filePath)) {
+			throw new \Exception('Cache file ' . $filePath . ' does not exist!');
 		}
 
-		require_once $pathBridge;
+		require_once $filePath;
 
-		if((new \ReflectionClass($nameBridge))->isInstantiable()) {
-			return new $nameBridge();
+		if((new \ReflectionClass($name))->isInstantiable()) {
+			return new $name();
 		}
 
 		return false;
