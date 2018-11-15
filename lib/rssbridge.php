@@ -41,7 +41,7 @@ require_once PATH_LIB_VENDOR . 'php-urljoin/src/urljoin.php';
 
 // Initialize static members
 try {
-	Bridge::setDir(PATH_LIB_BRIDGES);
+	Bridge::setWorkingDir(PATH_LIB_BRIDGES);
 	Format::setDir(PATH_LIB_FORMATS);
 	Cache::setWorkingDir(PATH_LIB_CACHES);
 } catch(Exception $e) {

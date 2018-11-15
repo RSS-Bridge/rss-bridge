@@ -26,7 +26,7 @@
  * require_once __DIR__ . '/rssbridge.php';
  *
  * // Step 1: Set the working directory
- * Bridge::setDir(__DIR__ . '/../bridges/');
+ * Bridge::setWorkingDir(__DIR__ . '/../bridges/');
  *
  * // Step 2: Add bridges to the whitelist
  * Bridge::setWhitelist(array('GitHubIssue', 'GoogleSearch', 'Facebook', 'Twitter'));
@@ -40,7 +40,7 @@ class Bridge {
 	/**
 	 * Holds the working directory.
 	 * Do not access this property directly!
-	 * Use {@see Bridge::setDir()} and {@see Bridge::getDir()} instead.
+	 * Use {@see Bridge::setWorkingDir()} and {@see Bridge::getWorkingDir()} instead.
 	 *
 	 * @var string
 	 */
@@ -85,7 +85,7 @@ EOD;
 		}
 
 		$nameBridge = Bridge::sanitizeBridgeName($nameBridge) . 'Bridge';
-		$pathBridge = self::getDir() . $nameBridge . '.php';
+		$pathBridge = self::getWorkingDir() . $nameBridge . '.php';
 
 		if(!file_exists($pathBridge)) {
 			throw new \Exception('The bridge you are looking for does not exist. It should be at path '
@@ -109,7 +109,7 @@ EOD;
 	 * @throws Exception if the provided path does not exist.
 	 * @return void
 	 */
-	public static function setDir($dirBridge){
+	public static function setWorkingDir($dirBridge){
 		if(!is_string($dirBridge)) {
 			throw new \InvalidArgumentException('Dir bridge must be a string.');
 		}
@@ -123,12 +123,12 @@ EOD;
 
 	/**
 	 * Returns the current working directory.
-	 * The working directory must be specified with {@see Bridge::setDir()}!
+	 * The working directory must be specified with {@see Bridge::setWorkingDir()}!
 	 *
 	 * @throws LogicException if the working directory was not specified.
 	 * @return string The current working directory.
 	 */
-	public static function getDir(){
+	public static function getWorkingDir(){
 		if(is_null(self::$dirBridge)) {
 			throw new \LogicException(__CLASS__ . ' class need to know bridge path !');
 		}
@@ -148,7 +148,7 @@ EOD;
 		static $listBridge = array(); // Initialized on first call
 
 		if(empty($listBridge)) {
-			$dirFiles = scandir(self::getDir());
+			$dirFiles = scandir(self::getWorkingDir());
 
 			if($dirFiles !== false) {
 				foreach($dirFiles as $fileName) {
