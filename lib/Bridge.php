@@ -101,21 +101,21 @@ class Bridge {
 	/**
 	 * Sets the working directory.
 	 *
-	 * @param string $dirBridge Path to the directory containing bridges.
+	 * @param string $dir Path to the directory containing bridges.
 	 * @throws \LogicException if the provided path is not a valid string.
 	 * @throws \Exception if the provided path does not exist.
 	 * @return void
 	 */
-	public static function setWorkingDir($dirBridge){
-		if(!is_string($dirBridge)) {
+	public static function setWorkingDir($dir){
+		if(!is_string($dir)) {
 			throw new \InvalidArgumentException('Working directory is not a valid string!');
 		}
 
-		if(!file_exists($dirBridge)) {
+		if(!file_exists($dir)) {
 			throw new \Exception('Working directory does not exist!');
 		}
 
-		self::$workingDir = $dirBridge;
+		self::$workingDir = $dir;
 	}
 
 	/**
