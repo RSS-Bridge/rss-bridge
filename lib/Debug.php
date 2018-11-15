@@ -66,23 +66,23 @@ class Debug {
 
 			$debug_whitelist = trim(file_get_contents(PATH_ROOT . 'DEBUG'));
 
-			Debug::$enabled = empty($debug_whitelist) || in_array($_SERVER['REMOTE_ADDR'],
+			self::$enabled = empty($debug_whitelist) || in_array($_SERVER['REMOTE_ADDR'],
 					explode("\n", str_replace("\r", '', $debug_whitelist)
 				)
 			);
 
-			if(Debug::$enabled) {
+			if(self::$enabled) {
 				ini_set('display_errors', '1');
 				error_reporting(E_ALL);
 
-				Debug::$secure = !empty($debug_whitelist);
+				self::$secure = !empty($debug_whitelist);
 			}
 
 			$firstCall = false; // Skip check on next call
 
 		}
 
-		return Debug::$enabled;
+		return self::$enabled;
 	}
 
 	/**
@@ -95,7 +95,7 @@ class Debug {
 	 * @return bool True if debug mode is secure
 	 */
 	public static function isSecure() {
-		return Debug::$secure;
+		return self::$secure;
 	}
 
 	/**
@@ -104,7 +104,7 @@ class Debug {
 	 * @param string $text The message to add to error_log
 	 */
 	public static function log($text) {
-		if(!Debug::isEnabled()) {
+		if(!self::isEnabled()) {
 			return;
 		}
 
