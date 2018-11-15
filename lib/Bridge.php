@@ -12,11 +12,11 @@
  */
 
 /**
- * Factory class responsible for creating new instances of bridges from a given
- * working directory, limited by a whitelist.
+ * Factory class responsible for creating bridge objects from a given working
+ * directory, limited by a whitelist.
  *
  * This class is capable of:
- * - Locating bridges in the specified working directory (see {@see Bridge::$dirBridge})
+ * - Locating bridge classes in the specified working directory (see {@see Bridge::$dirBridge})
  * - Filtering bridges based on a whitelist (see {@see Bridge::$whitelist})
  * - Creating new bridge instances based on the bridge's name (see {@see Bridge::create()})
  *
@@ -38,7 +38,8 @@
 class Bridge {
 
 	/**
-	 * Holds the working directory.
+	 * Holds a path to the working directory.
+	 *
 	 * Do not access this property directly!
 	 * Use {@see Bridge::setWorkingDir()} and {@see Bridge::getWorkingDir()} instead.
 	 *
@@ -47,7 +48,8 @@ class Bridge {
 	static protected $dirBridge;
 
 	/**
-	 * Holds the whitelist.
+	 * Holds a list of whitelisted bridges.
+	 *
 	 * Do not access this property directly!
 	 * Use {@see Bridge::getWhitelist()} instead.
 	 *
@@ -60,36 +62,31 @@ class Bridge {
 	 * Use {@see Bridge::create()} to instanciate a new bridge from the working
 	 * directory.
 	 *
-	 * @throws LogicException if called.
+	 * @throws \LogicException if called.
 	 */
 	public function __construct(){
-		throw new \LogicException('Please use ' . __CLASS__ . '::create for new object.');
+		throw new \LogicException('Use ' . __CLASS__ . '::create($name) to create bridge objects!');
 	}
 
 	/**
-	 * Creates a new instance of a bridge in the working directory.
+	 * Creates a new bridge object from the working directory.
 	 *
-	 * @throws InvalidArgumentException if the provided bridge name is invalid.
-	 * @throws Exception if a bridge with the given name does not exist in the
-	 * working directory.
-	 * @param string $nameBridge Name of the bridge.
-	 * @return object|bool Instance of the bridge or false if the bridge is not instantiable.
+	 * @throws \InvalidArgumentException if the requested bridge name is invalid.
+	 * @throws \Exception if the requested bridge doesn't exist in the working
+	 * directory.
+	 * @param string $nameBridge Name of the bridge object.
+	 * @return object|bool The bridge object or false if the class is not instantiable.
 	 */
 	public static function create($nameBridge){
 		if(!preg_match('@^[A-Z][a-zA-Z0-9-]*$@', $nameBridge)) {
-			$message = <<<EOD
-'nameBridge' must start with one uppercase character followed or not by
-alphanumeric or dash characters!
-EOD;
-			throw new \InvalidArgumentException($message);
+			throw new \InvalidArgumentException('Bridge name invalid!');
 		}
 
 		$nameBridge = Bridge::sanitizeBridgeName($nameBridge) . 'Bridge';
 		$pathBridge = self::getWorkingDir() . $nameBridge . '.php';
 
 		if(!file_exists($pathBridge)) {
-			throw new \Exception('The bridge you are looking for does not exist. It should be at path '
-			. $pathBridge);
+			throw new \Exception('Cache file ' . $pathBridge . ' does not exist!');
 		}
 
 		require_once $pathBridge;
@@ -102,35 +99,35 @@ EOD;
 	}
 
 	/**
-	 * Sets the current working directory.
+	 * Sets the working directory.
 	 *
 	 * @param string $dirBridge Path to the directory containing bridges.
-	 * @throws LogicException if the provided path is not a valid string.
-	 * @throws Exception if the provided path does not exist.
+	 * @throws \LogicException if the provided path is not a valid string.
+	 * @throws \Exception if the provided path does not exist.
 	 * @return void
 	 */
 	public static function setWorkingDir($dirBridge){
 		if(!is_string($dirBridge)) {
-			throw new \InvalidArgumentException('Dir bridge must be a string.');
+			throw new \InvalidArgumentException('Working directory is not a valid string!');
 		}
 
 		if(!file_exists($dirBridge)) {
-			throw new \Exception('Dir bridge does not exist.');
+			throw new \Exception('Working directory does not exist!');
 		}
 
 		self::$dirBridge = $dirBridge;
 	}
 
 	/**
-	 * Returns the current working directory.
+	 * Returns the working directory.
 	 * The working directory must be specified with {@see Bridge::setWorkingDir()}!
 	 *
-	 * @throws LogicException if the working directory was not specified.
+	 * @throws \LogicException if the working directory is not set.
 	 * @return string The current working directory.
 	 */
 	public static function getWorkingDir(){
 		if(is_null(self::$dirBridge)) {
-			throw new \LogicException(__CLASS__ . ' class need to know bridge path !');
+			throw new \LogicException('Working directory is not set!');
 		}
 
 		return self::$dirBridge;
