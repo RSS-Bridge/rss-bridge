@@ -662,7 +662,7 @@ EOD;
 						// Build title from content
 						$title = strip_tags($post->find('.userContent', 0)->innertext);
 						if(strlen($title) > 64)
-							$title = substr($title, 0, 64) . '...';
+							$title = substr($title, 0, strpos(wordwrap($title, 64), "\n")) . '...';
 
 						$uri = $post->find('abbr')[0]->parent()->getAttribute('href');
 
