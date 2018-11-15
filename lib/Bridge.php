@@ -86,7 +86,7 @@ class Bridge {
 		$filePath = self::getWorkingDir() . $name . '.php';
 
 		if(!file_exists($filePath)) {
-			throw new \Exception('Cache file ' . $filePath . ' does not exist!');
+			throw new \Exception('Bridge file ' . $filePath . ' does not exist!');
 		}
 
 		require_once $filePath;
