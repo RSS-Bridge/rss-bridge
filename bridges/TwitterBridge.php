@@ -66,7 +66,7 @@ class TwitterBridge extends BridgeAbstract {
 		)
 	);
 
-	public function detectParameters(string $url){
+	public function detectParameters($url){
 		$params = array();
 
 		// By keyword or hashtag (search)

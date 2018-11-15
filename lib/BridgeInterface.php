@@ -65,8 +65,8 @@ interface BridgeInterface {
 	/**
 	 * Returns parameters from given URL or null if URL is not applicable
 	 *
-	 * @param $url URL to extract parameters from
+	 * @param $url string URL to extract parameters from
 	 * @return array Bridge parameters
 	 */
-	public function detectParameters(string $url);
+	public function detectParameters($url);
 }
