@@ -148,7 +148,7 @@ class TwitterBridge extends BridgeAbstract {
 			// extract fullname (pseudonym)
 			$item['fullname'] = $tweet->getAttribute('data-name');
 			// get author
-			$item['author'] = $item['fullname'] . ' (@' . $item['username'] . ')';
+			$item['author'] = htmlspecialchars_decode($item['fullname'] . ' (@' . $item['username'] . ')', ENT_QUOTES);
 			// get avatar link
 			$item['avatar'] = $tweet->find('img', 0)->src;
 			// get TweetID
@@ -158,7 +158,7 @@ class TwitterBridge extends BridgeAbstract {
 			// extract tweet timestamp
 			$item['timestamp'] = $tweet->find('span.js-short-timestamp', 0)->getAttribute('data-time');
 			// generate the title
-			$item['title'] = strip_tags($this->fixAnchorSpacing($tweet->find('p.js-tweet-text', 0), '<a>'));
+			$item['title'] = htmlspecialchars_decode(strip_tags($this->fixAnchorSpacing($tweet->find('p.js-tweet-text', 0), '<a>')), ENT_QUOTES);
 
 			switch($this->queriedContext) {
 				case 'By list':
@@ -268,6 +268,7 @@ EOD;
 </div>
 EOD;
 			}
+			$item['content'] = htmlspecialchars_decode($item['content'], ENT_QUOTES);
 
 			// put out
 			$this->items[] = $item;
