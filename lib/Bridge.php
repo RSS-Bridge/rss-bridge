@@ -78,7 +78,7 @@ class Bridge {
 	 * @return object|bool The bridge object or false if the class is not instantiable.
 	 */
 	public static function create($nameBridge){
-		if(!preg_match('@^[A-Z][a-zA-Z0-9-]*$@', $nameBridge)) {
+		if(!preg_match('/^[A-Z][a-zA-Z0-9-]*$/', $nameBridge)) {
 			throw new \InvalidArgumentException('Bridge name invalid!');
 		}
 
@@ -156,7 +156,7 @@ class Bridge {
 
 			if($dirFiles !== false) {
 				foreach($dirFiles as $fileName) {
-					if(preg_match('@^([^.]+)Bridge\.php$@U', $fileName, $out)) {
+					if(preg_match('/^([^.]+)Bridge\.php$/U', $fileName, $out)) {
 						$listBridge[] = $out[1];
 					}
 				}
