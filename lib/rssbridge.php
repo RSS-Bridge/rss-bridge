@@ -1,13 +1,41 @@
 <?php
+/**
+ * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
+ * Atom feeds for websites that don't have one.
+ *
+ * For the full license information, please view the UNLICENSE file distributed
+ * with this source code.
+ *
+ * @package	Core
+ * @license	http://unlicense.org/ UNLICENSE
+ * @link	https://github.com/rss-bridge/rss-bridge
+ */
 
-define('PATH_ROOT', __DIR__ . '/../'); // Path to root folder
+/** Path to the root folder of RSS-Bridge (where index.php is located) */
+define('PATH_ROOT', __DIR__ . '/../');
+
+/** Path to the core library */
 define('PATH_LIB', __DIR__ . '/../lib/'); // Path to core library
-define('PATH_LIB_VENDOR', __DIR__ . '/../vendor/'); // Path to vendor library
-define('PATH_LIB_BRIDGES', __DIR__ . '/../bridges/'); // Path to bridges library
-define('PATH_LIB_FORMATS', __DIR__ . '/../formats/'); // Path to formats library
-define('PATH_LIB_CACHES', __DIR__ . '/../caches/'); // Path to caches library
-define('PATH_CACHE', __DIR__ . '/../cache/'); // Path to cache folder
-define('WHITELIST', __DIR__ . '/../whitelist.txt'); // Path to whitelist file
+
+/** Path to the vendor library */
+define('PATH_LIB_VENDOR', __DIR__ . '/../vendor/');
+
+/** Path to the bridges library */
+define('PATH_LIB_BRIDGES', __DIR__ . '/../bridges/');
+
+/** Path to the formats library */
+define('PATH_LIB_FORMATS', __DIR__ . '/../formats/');
+
+/** Path to the caches library */
+define('PATH_LIB_CACHES', __DIR__ . '/../caches/');
+
+/** Path to the cache folder */
+define('PATH_CACHE', __DIR__ . '/../cache/');
+
+/** Path to the whitelist file */
+define('WHITELIST', __DIR__ . '/../whitelist.txt');
+
+/** URL to the RSS-Bridge repository */
 define('REPOSITORY', 'https://github.com/RSS-Bridge/rss-bridge/');
 
 // Interfaces
