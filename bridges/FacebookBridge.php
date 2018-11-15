@@ -677,11 +677,11 @@ EOD;
 						}
 
 						//Build and add final item
-						$item['uri'] = htmlspecialchars_decode($uri);
-						$item['content'] = htmlspecialchars_decode($content);
-						$item['title'] = $title;
-						$item['author'] = $author;
-						$item['timestamp'] = $date;
+						$item['uri'] = htmlspecialchars_decode($uri, ENT_QUOTES);
+						$item['content'] = htmlspecialchars_decode($content, ENT_QUOTES);
+						$item['title'] = htmlspecialchars_decode($title, ENT_QUOTES);
+						$item['author'] = htmlspecialchars_decode($author, ENT_QUOTES);
+						$item['timestamp'] = htmlspecialchars_decode($date, ENT_QUOTES);
 
 						if(strpos($item['content'], '<img') === false) {
 							$item['enclosures'] = array($profilePic);
