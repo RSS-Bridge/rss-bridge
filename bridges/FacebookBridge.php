@@ -660,7 +660,7 @@ EOD;
 						}
 
 						// Build title from content
-						$title = strip_tags($post->find('.userContent')[0]->innertext);
+						$title = strip_tags($post->find('.userContent', 0)->innertext);
 						if(strlen($title) > 64)
 							$title = substr($title, 0, 64) . '...';
 
