@@ -681,7 +681,7 @@ EOD;
 						$item['content'] = htmlspecialchars_decode($content, ENT_QUOTES);
 						$item['title'] = htmlspecialchars_decode($title, ENT_QUOTES);
 						$item['author'] = htmlspecialchars_decode($author, ENT_QUOTES);
-						$item['timestamp'] = htmlspecialchars_decode($date, ENT_QUOTES);
+						$item['timestamp'] = $date;
 
 						if(strpos($item['content'], '<img') === false) {
 							$item['enclosures'] = array($profilePic);
