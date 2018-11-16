@@ -1,10 +1,35 @@
 <?php
 /**
- * Implements a validator for bridge parameters
+ * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
+ * Atom feeds for websites that don't have one.
+ *
+ * For the full license information, please view the UNLICENSE file distributed
+ * with this source code.
+ *
+ * @package	Core
+ * @license	http://unlicense.org/ UNLICENSE
+ * @link	https://github.com/rss-bridge/rss-bridge
+ */
+
+/**
+ * Validator for bridge parameters
  */
 class ParameterValidator {
+
+	/**
+	 * Holds the list of invalid parameters
+	 *
+	 * @var array
+	 */
 	private $invalid = array();
 
+	/**
+	 * Add item to list of invalid parameters
+	 *
+	 * @param string $name The name of the parameter
+	 * @param string $reason The reason for that parameter being invalid
+	 * @return void
+	 */
 	private function addInvalidParameter($name, $reason){
 		$this->invalid[] = array(
 			'name' => $name,
@@ -13,13 +38,23 @@ class ParameterValidator {
 	}
 
 	/**
-	 * Returns an array of invalid parameters, where each element is an
-	 * array of 'name' and 'reason'.
+	 * Return list of invalid parameters.
+	 *
+	 * Each element is an array of 'name' and 'reason'.
+	 *
+	 * @return array List of invalid parameters
 	 */
 	public function getInvalidParameters() {
 		return $this->invalid;
 	}
 
+	/**
+	 * Validate value for a text input
+	 *
+	 * @param string $value The value of a text input
+	 * @param string|null $pattern (optional) A regex pattern
+	 * @return string|null The filtered value or null if the value is invalid
+	 */
 	private function validateTextValue($value, $pattern = null){
 		if(!is_null($pattern)) {
 			$filteredValue = filter_var($value,
@@ -38,6 +73,12 @@ class ParameterValidator {
 		return $filteredValue;
 	}
 
+	/**
+	 * Validate value for a number input
+	 *
+	 * @param int $value The value of a number input
+	 * @return int|null The filtered value or null if the value is invalid
+	 */
 	private function validateNumberValue($value){
 		$filteredValue = filter_var($value, FILTER_VALIDATE_INT);
 
@@ -47,10 +88,23 @@ class ParameterValidator {
 		return $filteredValue;
 	}
 
+	/**
+	 * Validate value for a checkbox
+	 *
+	 * @param bool $value The value of a checkbox
+	 * @return bool The filtered value
+	 */
 	private function validateCheckboxValue($value){
 		return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 	}
 
+	/**
+	 * Validate value for a list
+	 *
+	 * @param string $value The value of a list
+	 * @param array $expectedValues A list of expected values
+	 * @return string|null The filtered value or null if the value is invalid
+	 */
 	private function validateListValue($value, $expectedValues){
 		$filteredValue = filter_var($value);
 
@@ -69,9 +123,11 @@ class ParameterValidator {
 	}
 
 	/**
-	 * Checks if all required parameters are supplied by the user
-	 * @param $data An array of parameters provided by the user
-	 * @param $parameters An array of bridge parameters
+	 * Check if all required parameters are satisfied
+	 *
+	 * @param array $data (ref) A list of input values
+	 * @param array $parameters The bridge parameters
+	 * @return bool True if all parameters are satisfied
 	 */
 	public function validateData(&$data, $parameters){
 
@@ -122,11 +178,11 @@ class ParameterValidator {
 	}
 
 	/**
-	 * Returns the name of the context matching the provided inputs
+	 * Get the name of the context matching the provided inputs
 	 *
 	 * @param array $data Associative array of user data
 	 * @param array $parameters Array of bridge parameters
-	 * @return mixed Returns the context name or null if no match was found
+	 * @return string|null Returns the context name or null if no match was found
 	 */
 	public function getQueriedContext($data, $parameters){
 		$queriedContexts = array();

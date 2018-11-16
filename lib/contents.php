@@ -1,4 +1,31 @@
 <?php
+/**
+ * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
+ * Atom feeds for websites that don't have one.
+ *
+ * For the full license information, please view the UNLICENSE file distributed
+ * with this source code.
+ *
+ * @package	Core
+ * @license	http://unlicense.org/ UNLICENSE
+ * @link	https://github.com/rss-bridge/rss-bridge
+ */
+
+/**
+ * Gets contents from the Internet.
+ *
+ * @param string $url The URL.
+ * @param array $header (optional) A list of cURL header.
+ * For more information follow the links below.
+ * * https://php.net/manual/en/function.curl-setopt.php
+ * * https://curl.haxx.se/libcurl/c/CURLOPT_HTTPHEADER.html
+ * @param array $opts (optional) A list of cURL options as associative array in
+ * the format `$opts[$option] = $value;`, where `$option` is any `CURLOPT_XXX`
+ * option and `$value` the corresponding value.
+ *
+ * For more information see http://php.net/manual/en/function.curl-setopt.php
+ * @return string The contents.
+ */
 function getContents($url, $header = array(), $opts = array()){
 	Debug::log('Reading contents from "' . $url . '"');
 
@@ -74,6 +101,32 @@ EOD
 	return substr($data, $headerSize);
 }
 
+/**
+ * Gets contents from the Internet as simplhtmldom object.
+ *
+ * @param string $url The URL.
+ * @param array $header (optional) A list of cURL header.
+ * For more information follow the links below.
+ * * https://php.net/manual/en/function.curl-setopt.php
+ * * https://curl.haxx.se/libcurl/c/CURLOPT_HTTPHEADER.html
+ * @param array $opts (optional) A list of cURL options as associative array in
+ * the format `$opts[$option] = $value;`, where `$option` is any `CURLOPT_XXX`
+ * option and `$value` the corresponding value.
+ *
+ * For more information see http://php.net/manual/en/function.curl-setopt.php
+ * @param bool $lowercase Force all selectors to lowercase.
+ * @param bool $forceTagsClosed Forcefully close tags in malformed HTML.
+ *
+ * _Remarks_: Forcefully closing tags is great for malformed HTML, but it can
+ * lead to parsing errors.
+ * @param string $target_charset Defines the target charset.
+ * @param bool $stripRN Replace all occurrences of `"\r"` and `"\n"` by `" "`.
+ * @param string $defaultBRText Specifies the replacement text for `<br>` tags
+ * when returning plaintext.
+ * @param string $defaultSpanText Specifies the replacement text for `<span />`
+ * tags when returning plaintext.
+ * @return string Contents as simplehtmldom object.
+ */
 function getSimpleHTMLDOM($url,
 $header = array(),
 $opts = array(),
@@ -94,10 +147,34 @@ $defaultSpanText = DEFAULT_SPAN_TEXT){
 }
 
 /**
- * Maintain locally cached versions of pages to avoid multiple downloads.
- * @param url url to cache
- * @param duration duration of the cache file in seconds (default: 24h/86400s)
- * @return content of the file as string
+ * Gets contents from the Internet as simplhtmldom object. Contents are cached
+ * and re-used for subsequent calls until the cache duration elapsed.
+ *
+ * _Notice_: Cached contents are forcefully removed after 24 hours (86400 seconds).
+ *
+ * @param string $url The URL.
+ * @param int $duration Cache duration in seconds.
+ * @param array $header (optional) A list of cURL header.
+ * For more information follow the links below.
+ * * https://php.net/manual/en/function.curl-setopt.php
+ * * https://curl.haxx.se/libcurl/c/CURLOPT_HTTPHEADER.html
+ * @param array $opts (optional) A list of cURL options as associative array in
+ * the format `$opts[$option] = $value;`, where `$option` is any `CURLOPT_XXX`
+ * option and `$value` the corresponding value.
+ *
+ * For more information see http://php.net/manual/en/function.curl-setopt.php
+ * @param bool $lowercase Force all selectors to lowercase.
+ * @param bool $forceTagsClosed Forcefully close tags in malformed HTML.
+ *
+ * _Remarks_: Forcefully closing tags is great for malformed HTML, but it can
+ * lead to parsing errors.
+ * @param string $target_charset Defines the target charset.
+ * @param bool $stripRN Replace all occurrences of `"\r"` and `"\n"` by `" "`.
+ * @param string $defaultBRText Specifies the replacement text for `<br>` tags
+ * when returning plaintext.
+ * @param string $defaultSpanText Specifies the replacement text for `<span />`
+ * tags when returning plaintext.
+ * @return string Contents as simplehtmldom object.
  */
 function getSimpleHTMLDOMCached($url,
 $duration = 86400,
@@ -142,9 +219,12 @@ $defaultSpanText = DEFAULT_SPAN_TEXT){
 }
 
 /**
- * Parses the provided response header into an associative array
+ * Parses the cURL response header into an associative array
  *
  * Based on https://stackoverflow.com/a/18682872
+ *
+ * @param string $header The cURL response header.
+ * @return array An associative array of response headers.
  */
 function parseResponseHeader($header) {
 
@@ -177,10 +257,18 @@ function parseResponseHeader($header) {
 }
 
 /**
- * Determine MIME type from URL/Path file extension
- * Remark: Built-in functions mime_content_type or fileinfo requires fetching remote content
- * Remark: A bridge can hint for a MIME type by appending #.ext to a URL, e.g. #.image
+ * Determines the MIME type from a URL/Path file extension.
+ *
+ * _Remarks_:
+ *
+ * * The built-in functions `mime_content_type` and `fileinfo` require fetching
+ * remote contents.
+ * * A caller can hint for a MIME type by appending `#.ext` to the URL (i.e. `#.image`).
+ *
  * Based on https://stackoverflow.com/a/1147952
+ *
+ * @param string $url The URL or path to the file.
+ * @return string The MIME type of the file.
  */
 function getMimeType($url) {
 	static $mime = null;

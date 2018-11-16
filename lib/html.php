@@ -1,4 +1,34 @@
 <?php
+/**
+ * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
+ * Atom feeds for websites that don't have one.
+ *
+ * For the full license information, please view the UNLICENSE file distributed
+ * with this source code.
+ *
+ * @package	Core
+ * @license	http://unlicense.org/ UNLICENSE
+ * @link	https://github.com/rss-bridge/rss-bridge
+ */
+
+/**
+ * Removes unwanted tags from a given HTML text.
+ *
+ * @param string $textToSanitize The HTML text to sanitize.
+ * @param array $removedTags A list of tags to remove from the DOM.
+ * @param array $keptAttributes A list of attributes to keep on tags (other
+ * attributes are removed).
+ * @param array $keptText A list of tags where the innertext replaces the tag
+ * (i.e. `<p>Hello World!</p>` becomes `Hello World!`).
+ * @return object A simplehtmldom object of the remaining contents.
+ *
+ * @todo Check if this implementation is still necessary, because simplehtmldom
+ * already removes some of the tags (search for `remove_noise` in simple_html_dom.php).
+ * @todo Rename parameters to make more sense. `$textToSanitize` must be HTML,
+ * `$removedTags`, `$keptAttributes` and `$keptText` are past tense.
+ * @todo Clarify the meaning of `*[!b38fd2b1fe7f4747d6b1c1254ccd055e]`, which
+ * looks like a SHA1 hash (does simplehtmldom not support `find('*')`?).
+ */
 function sanitize($textToSanitize,
 $removedTags = array('script', 'iframe', 'input', 'form'),
 $keptAttributes = array('title', 'href', 'src'),
@@ -21,6 +51,35 @@ $keptText = array()){
 	return $htmlContent;
 }
 
+/**
+ * Replace background by image
+ *
+ * Replaces tags with styles of `backgroud-image` by `<img />` tags.
+ *
+ * For example:
+ *
+ * ```HTML
+ * <html>
+ *   <body style="background-image: url('bgimage.jpg');">
+ *     <h1>Hello world!</h1>
+ *   </body>
+ * </html>
+ * ```
+ *
+ * results in this output:
+ *
+ * ```HTML
+ * <html>
+ *   <img style="display:block;" src="bgimage.jpg" />
+ * </html>
+ * ```
+ *
+ * @param string $htmlContent The HTML content
+ * @return string The HTML content with all ocurrences replaced
+ *
+ * @todo Clarify the meaning of `*[!b38fd2b1fe7f4747d6b1c1254ccd055e]`, which
+ * looks like a SHA1 hash (does simplehtmldom not support `find('*')`?).
+ */
 function backgroundToImg($htmlContent) {
 
 	$regex = '/background-image[ ]{0,}:[ ]{0,}url\([\'"]{0,}(.*?)[\'"]{0,}\)/';
@@ -42,9 +101,17 @@ function backgroundToImg($htmlContent) {
 
 /**
  * Convert relative links in HTML into absolute links
- * @param $content HTML content to fix. Supports HTML objects or string objects
- * @param $server full URL to the page containing relative links
- * @return content with fixed URLs, as HTML object or string depending on input type
+ *
+ * This function is based on `php-urljoin`.
+ *
+ * @link https://github.com/plaidfluff/php-urljoin php-urljoin
+ *
+ * @param string|object $content The HTML content. Supports HTML objects or string objects
+ * @param string $server Fully qualified URL to the page containing relative links
+ * @return object Content with fixed URLs.
+ *
+ * @todo If the input type was a string, this function should return a string as
+ * well. This is currently done implicitly by how the simplehtmldom object works.
  */
 function defaultLinkTo($content, $server){
 	$string_convert = false;
@@ -70,10 +137,14 @@ function defaultLinkTo($content, $server){
 
 /**
  * Extract the first part of a string matching the specified start and end delimiters
- * @param $string input string, e.g. '<div>Post author: John Doe</div>'
- * @param $start start delimiter, e.g. 'author: '
- * @param $end end delimiter, e.g. '<'
- * @return extracted string, e.g. 'John Doe', or false if the delimiters were not found.
+ *
+ * @param string $string Input string, e.g. `<div>Post author: John Doe</div>`
+ * @param string $start Start delimiter, e.g. `author: `
+ * @param string $end End delimiter, e.g. `<`
+ * @return string|bool Extracted string, e.g. `John Doe`, or false if the
+ * delimiters were not found.
+ *
+ * @todo This function can possibly be simplified to use a single `substr` command.
  */
 function extractFromDelimiters($string, $start, $end) {
 	if (strpos($string, $start) !== false) {
@@ -85,10 +156,13 @@ function extractFromDelimiters($string, $start, $end) {
 
 /**
  * Remove one or more part(s) of a string using a start and end delmiters
- * @param $string input string, e.g. 'foo<script>superscript()</script>bar'
- * @param $start start delimiter, e.g. '<script'
- * @param $end end delimiter, e.g. '</script>'
- * @return cleaned string, e.g. 'foobar'
+ *
+ * @param string $string Input string, e.g. `foo<script>superscript()</script>bar`
+ * @param string $start Start delimiter, e.g. `<script`
+ * @param string $end End delimiter, e.g. `</script>`
+ * @return string Cleaned string, e.g. `foobar`
+ *
+ * @todo This function can possibly be simplified to use a single `substr` command.
  */
 function stripWithDelimiters($string, $start, $end) {
 	while(strpos($string, $start) !== false) {
@@ -101,10 +175,13 @@ function stripWithDelimiters($string, $start, $end) {
 
 /**
  * Remove HTML sections containing one or more sections using the same HTML tag
- * @param $string input string, e.g. 'foo<div class="ads"><div>ads</div>ads</div>bar'
- * @param $tag_name name of the HTML tag, e.g. 'div'
- * @param $tag_start start of the HTML tag to remove, e.g. '<div class="ads">'
- * @return cleaned string, e.g. 'foobar'
+ *
+ * @param string $string Input string, e.g. `foo<div class="ads"><div>ads</div>ads</div>bar`
+ * @param string $tag_name Name of the HTML tag, e.g. `div`
+ * @param string $tag_start Start of the HTML tag to remove, e.g. `<div class="ads">`
+ * @return string Cleaned String, e.g. `foobar`
+ *
+ * @todo This function needs more documentation to make it maintainable.
  */
 function stripRecursiveHTMLSection($string, $tag_name, $tag_start){
 	$open_tag = '<' . $tag_name;
@@ -131,9 +208,13 @@ function stripRecursiveHTMLSection($string, $tag_name, $tag_start){
 }
 
 /**
- * Convert Markdown tags into HTML tags. Only a subset of the Markdown syntax is implemented.
- * @param $string input string in Markdown format
- * @return output string in HTML format
+ * Convert Markdown into HTML. Only a subset of the Markdown syntax is implemented.
+ *
+ * @link https://daringfireball.net/projects/markdown/ Markdown
+ * @link https://github.github.com/gfm/ GitHub Flavored Markdown Spec
+ *
+ * @param string $string Input string in Markdown format
+ * @return string output string in HTML format
  */
 function markdownToHtml($string) {
 

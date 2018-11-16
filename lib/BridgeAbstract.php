@@ -1,32 +1,112 @@
 <?php
+/**
+ * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
+ * Atom feeds for websites that don't have one.
+ *
+ * For the full license information, please view the UNLICENSE file distributed
+ * with this source code.
+ *
+ * @package	Core
+ * @license	http://unlicense.org/ UNLICENSE
+ * @link	https://github.com/rss-bridge/rss-bridge
+ */
 
+/**
+ * An abstract class for bridges
+ *
+ * This class implements {@see BridgeInterface} with most common functions in
+ * order to reduce code duplication. Bridges should inherit from this class
+ * instead of implementing the interface manually.
+ *
+ * @todo Move constants to the interface (this is supported by PHP)
+ * @todo Change visibility of constants to protected
+ * @todo Return `self` on more functions to allow chaining
+ * @todo Add specification for PARAMETERS ()
+ * @todo Add specification for $items
+ */
 abstract class BridgeAbstract implements BridgeInterface {
 
+	/**
+	 * Name of the bridge
+	 *
+	 * Use {@see BridgeAbstract::getName()} to read this parameter
+	 */
 	const NAME = 'Unnamed bridge';
-	const URI = '';
-	const DESCRIPTION = 'No description provided';
-	const MAINTAINER = 'No maintainer';
-	const CACHE_TIMEOUT = 3600;
-	const PARAMETERS = array();
-
-	protected $items = array();
-	protected $inputs = array();
-	protected $queriedContext = '';
 
 	/**
-	* Return items stored in the bridge
-	* @return mixed
-	*/
+	 * URI to the site the bridge is intended to be used for.
+	 *
+	 * Use {@see BridgeAbstract::getURI()} to read this parameter
+	 */
+	const URI = '';
+
+	/**
+	 * A brief description of what the bridge can do
+	 *
+	 * Use {@see BridgeAbstract::getDescription()} to read this parameter
+	 */
+	const DESCRIPTION = 'No description provided';
+
+	/**
+	 * The name of the maintainer. Multiple maintainers can be separated by comma
+	 *
+	 * Use {@see BridgeAbstract::getMaintainer()} to read this parameter
+	 */
+	const MAINTAINER = 'No maintainer';
+
+	/**
+	 * The default cache timeout for the bridge
+	 *
+	 * Use {@see BridgeAbstract::getCacheTimeout()} to read this parameter
+	 */
+	const CACHE_TIMEOUT = 3600;
+
+	/**
+	 * Parameters for the bridge
+	 *
+	 * Use {@see BridgeAbstract::getParameters()} to read this parameter
+	 */
+	const PARAMETERS = array();
+
+	/**
+	 * Holds the list of items collected by the bridge
+	 *
+	 * Items must be collected by {@see BridgeInterface::collectData()}
+	 *
+	 * Use {@see BridgeAbstract::getItems()} to access items.
+	 *
+	 * @var array
+	 */
+	protected $items = array();
+
+	/**
+	 * Holds the list of input parameters used by the bridge
+	 *
+	 * Do not access this parameter directly!
+	 * Use {@see BridgeAbstract::setInputs()} and {@see BridgeAbstract::getInput()} instead!
+	 *
+	 * @var array
+	 */
+	protected $inputs = array();
+
+	/**
+	 * Holds the name of the queried context
+	 *
+	 * @var string
+	 */
+	protected $queriedContext = '';
+
+	/** {@inheritdoc} */
 	public function getItems(){
 		return $this->items;
 	}
 
 	/**
-	 * Sets the input values for a given context. Existing values are
-	 * overwritten.
+	 * Sets the input values for a given context.
 	 *
 	 * @param array $inputs Associative array of inputs
-	 * @param string $context The context name
+	 * @param string $queriedContext The context name
+	 * @return void
 	 */
 	protected function setInputs(array $inputs, $queriedContext){
 		// Import and assign all inputs to their context
@@ -103,9 +183,15 @@ abstract class BridgeAbstract implements BridgeInterface {
 	}
 
 	/**
-	* Defined datas with parameters depending choose bridge
-	* @param array array with expected bridge paramters
-	*/
+	 * Set inputs for the bridge
+	 *
+	 * Returns errors and aborts execution if the provided input parameters are
+	 * invalid.
+	 *
+	 * @param array List of input parameters. Each element in this list must
+	 * relate to an item in {@see BridgeAbstract::PARAMETERS}
+	 * @return void
+	 */
 	public function setDatas(array $inputs){
 
 		if(empty(static::PARAMETERS)) {
@@ -148,7 +234,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	 * Returns the value for the provided input
 	 *
 	 * @param string $input The input name
-	 * @return mixed Returns the input value or null if the input is not defined
+	 * @return mixed|null The input value or null if the input is not defined
 	 */
 	protected function getInput($input){
 		if(!isset($this->inputs[$this->queriedContext][$input]['value'])) {
@@ -157,30 +243,37 @@ abstract class BridgeAbstract implements BridgeInterface {
 		return $this->inputs[$this->queriedContext][$input]['value'];
 	}
 
+	/** {@inheritdoc} */
 	public function getDescription(){
 		return static::DESCRIPTION;
 	}
 
+	/** {@inheritdoc} */
 	public function getMaintainer(){
 		return static::MAINTAINER;
 	}
 
+	/** {@inheritdoc} */
 	public function getName(){
 		return static::NAME;
 	}
 
+	/** {@inheritdoc} */
 	public function getIcon(){
 		return '';
 	}
 
+	/** {@inheritdoc} */
 	public function getParameters(){
 		return static::PARAMETERS;
 	}
 
+	/** {@inheritdoc} */
 	public function getURI(){
 		return static::URI;
 	}
 
+	/** {@inheritdoc} */
 	public function getCacheTimeout(){
 		return static::CACHE_TIMEOUT;
 	}

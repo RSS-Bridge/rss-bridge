@@ -1,17 +1,35 @@
 <?php
+/**
+ * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
+ * Atom feeds for websites that don't have one.
+ *
+ * For the full license information, please view the UNLICENSE file distributed
+ * with this source code.
+ *
+ * @package	Core
+ * @license	http://unlicense.org/ UNLICENSE
+ * @link	https://github.com/rss-bridge/rss-bridge
+ */
+
+/**
+ * Implements a RSS-Bridge specific exception class
+ *
+ * @todo This class serves no purpose, remove it!
+ */
 class HttpException extends \Exception{}
 
 /**
  * Returns an URL that automatically populates a new issue on GitHub based
  * on the information provided
  *
- * @param $title string Sets the title of the issue
- * @param $body string Sets the body of the issue (GitHub markdown applies)
- * @param $labels mixed (optional) Specifies labels to add to the issue
- * @param $maintainer string (optional) Specifies the maintainer for the issue.
+ * @param string $title string Sets the title of the issue
+ * @param string $body string Sets the body of the issue (GitHub markdown applies)
+ * @param string $labels mixed (optional) Specifies labels to add to the issue
+ * @param string $maintainer string (optional) Specifies the maintainer for the issue.
  * The maintainer only applies if part of the development team!
- * @return string Returns a qualified URL to a new issue with populated conent.
- * Returns null if title or body is null or empty
+ * @return string|null A qualified URL to a new issue with populated conent or null.
+ *
+ * @todo This function belongs inside a class
  */
 function buildGitHubIssueQuery($title, $body, $labels = null, $maintainer = null){
 	if(!isset($title) || !isset($body) || empty($title) || empty($body)) {
@@ -49,10 +67,11 @@ function buildGitHubIssueQuery($title, $body, $labels = null, $maintainer = null
 /**
  * Returns the exception message as HTML string
  *
- * @param $e Exception The exception to show
- * @param $bridge object The bridge object
- * @return string Returns the exception as HTML string. Returns null if the
- * provided parameter are invalid
+ * @param object $e Exception The exception to show
+ * @param object $bridge object The bridge object
+ * @return string|null Returns the exception as HTML string or null.
+ *
+ * @todo This function belongs inside a class
  */
 function buildBridgeException($e, $bridge){
 	if(( !($e instanceof \Exception) && !($e instanceof \Error)) || !($bridge instanceof \BridgeInterface)) {
@@ -87,10 +106,11 @@ EOD;
 /**
  * Returns the exception message as HTML string
  *
- * @param $e Exception The exception to show
- * @param $bridge object The bridge object
- * @return string Returns the exception as HTML string. Returns null if the
- * provided parameter are invalid
+ * @param object $e Exception The exception to show
+ * @param object $bridge object The bridge object
+ * @return string|null Returns the exception as HTML string or null.
+ *
+ * @todo This function belongs inside a class
  */
 function buildTransformException($e, $bridge){
 	if(( !($e instanceof \Exception) && !($e instanceof \Error)) || !($bridge instanceof \BridgeInterface)) {
@@ -114,6 +134,15 @@ function buildTransformException($e, $bridge){
 	return buildPage($title, $header, $section);
 }
 
+/**
+ * Builds a new HTML header with data from a exception an a bridge
+ *
+ * @param object $e The exception object
+ * @param object $bridge The bridge object
+ * @return string The HTML header
+ *
+ * @todo This function belongs inside a class
+ */
 function buildHeader($e, $bridge){
 	return <<<EOD
 <header>
@@ -124,6 +153,17 @@ function buildHeader($e, $bridge){
 EOD;
 }
 
+/**
+ * Builds a new HTML section
+ *
+ * @param object $e The exception object
+ * @param object $bridge The bridge object
+ * @param string $message The message to display
+ * @param string $link The link to include in the anchor
+ * @return string The HTML section
+ *
+ * @todo This function belongs inside a class
+ */
 function buildSection($e, $bridge, $message, $link){
 	return <<<EOD
 <section>
@@ -142,6 +182,16 @@ function buildSection($e, $bridge, $message, $link){
 EOD;
 }
 
+/**
+ * Builds a new HTML page
+ *
+ * @param string $title The HTML title
+ * @param string $header The HTML header
+ * @param string $section The HTML section
+ * @return string The HTML page
+ *
+ * @todo This function belongs inside a class
+ */
 function buildPage($title, $header, $section){
 	return <<<EOD
 <!DOCTYPE html>
