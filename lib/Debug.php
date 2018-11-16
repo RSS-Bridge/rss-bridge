@@ -109,7 +109,7 @@ class Debug {
 		}
 
 		$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
-		$calling = $backtrace[2];
+		$calling = end($backtrace);
 		$message = $calling['file'] . ':'
 			. $calling['line'] . ' class '
 			. (isset($calling['class']) ? $calling['class'] : '<no-class>') . '->'
