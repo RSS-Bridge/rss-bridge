@@ -16,7 +16,6 @@
  *
  * This class implements a configuration module for RSS-Bridge.
  *
- * @todo Throw an exception if the caller tries to create objects of this class.
  * @todo Make this class final.
  */
 class Configuration {
@@ -44,6 +43,15 @@ class Configuration {
 	 * @todo Change the scope of this property to protected or private
 	 */
 	public static $config = null;
+
+	/**
+	 * Throw an exception when trying to create a new instance of this class.
+	 *
+	 * @throws \LogicException if called.
+	 */
+	public function __construct(){
+		throw new \LogicException('Can\'t create object of this class!');
+	}
 
 	/**
 	 * Verifies the current installation of RSS-Bridge and PHP.
