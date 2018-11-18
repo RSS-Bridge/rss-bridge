@@ -29,7 +29,6 @@
  * @link http://www.rssboard.org/rss-specification RSS 2.0 Specification
  * @link https://tools.ietf.org/html/rfc4287 The Atom Syndication Format
  *
- * @todo Return `self` on more functions to allow chaining
  * @todo The parsing functions should all be private. This class is complicated
  * enough without having to consider children overriding functions.
  */
@@ -67,7 +66,7 @@ abstract class FeedExpander extends BridgeAbstract {
 	 * @param string $url URL to the feed.
 	 * @param int $maxItems Maximum number of items to collect from the feed
 	 * (`-1`: no limit).
-	 * @return void
+	 * @return self
 	 */
 	public function collectExpandableDatas($url, $maxItems = -1){
 		if(empty($url)) {
@@ -105,6 +104,8 @@ abstract class FeedExpander extends BridgeAbstract {
 
 		Debug::log('Calling function "collect_' . $this->feedType . '_data"');
 		$this->{'collect_' . $this->feedType . '_data'}($rssContent, $maxItems);
+
+		return $this;
 	}
 
 	/**
