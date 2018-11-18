@@ -38,9 +38,8 @@ abstract class FeedExpander extends BridgeAbstract {
 	 * Holds the title of the current feed
 	 *
 	 * @var string
-	 * @todo Rename this parameter to $title for clarity
 	 */
-	private $name;
+	private $title;
 
 	/**
 	 * Holds the URI of the feed
@@ -207,7 +206,7 @@ abstract class FeedExpander extends BridgeAbstract {
 	 * @todo set title, link, description, language, and so on
 	 */
 	protected function load_RSS_2_0_feed_data($rssContent){
-		$this->name = trim((string)$rssContent->title);
+		$this->title = trim((string)$rssContent->title);
 		$this->uri = trim((string)$rssContent->link);
 	}
 
@@ -218,7 +217,7 @@ abstract class FeedExpander extends BridgeAbstract {
 	 * @return void
 	 */
 	protected function load_ATOM_feed_data($content){
-		$this->name = (string)$content->title;
+		$this->title = (string)$content->title;
 
 		// Find best link (only one, or first of 'alternate')
 		if(!isset($content->link)) {
@@ -401,7 +400,7 @@ abstract class FeedExpander extends BridgeAbstract {
 
 	/** {@inheritdoc} */
 	public function getName(){
-		return !empty($this->name) ? $this->name : parent::getName();
+		return !empty($this->title) ? $this->title : parent::getName();
 	}
 
 	/** {@inheritdoc} */
