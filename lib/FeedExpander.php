@@ -34,6 +34,15 @@
  */
 abstract class FeedExpander extends BridgeAbstract {
 
+	/** Indicates an RSS 1.0 feed */
+	const FEED_TYPE_RSS_1_0 = 'RSS_1_0';
+
+	/** Indicates an RSS 2.0 feed */
+	const FEED_TYPE_RSS_2_0 = 'RSS_2_0';
+
+	/** Indicates an Atom 1.0 feed */
+	const FEED_TYPE_ATOM_1_0 = 'ATOM_1_0';
+
 	/**
 	 * Holds the title of the current feed
 	 *
@@ -52,7 +61,6 @@ abstract class FeedExpander extends BridgeAbstract {
 	 * Holds the feed type during internal operations.
 	 *
 	 * @var string
-	 * @todo Define possible values as constant instead of static strings
 	 */
 	private $feedType;
 
@@ -85,15 +93,15 @@ abstract class FeedExpander extends BridgeAbstract {
 		switch(true) {
 		case isset($rssContent->item[0]):
 			Debug::log('Detected RSS 1.0 format');
-			$this->feedType = 'RSS_1_0';
+			$this->feedType = self::FEED_TYPE_RSS_1_0;
 			break;
 		case isset($rssContent->channel[0]):
 			Debug::log('Detected RSS 0.9x or 2.0 format');
-			$this->feedType = 'RSS_2_0';
+			$this->feedType = self::FEED_TYPE_RSS_2_0;
 			break;
 		case isset($rssContent->entry[0]):
 			Debug::log('Detected ATOM format');
-			$this->feedType = 'ATOM_1_0';
+			$this->feedType = self::FEED_TYPE_ATOM_1_0;
 			break;
 		default:
 			Debug::log('Unknown feed format/version');
@@ -380,13 +388,13 @@ abstract class FeedExpander extends BridgeAbstract {
 	 */
 	protected function parseItem($item){
 		switch($this->feedType) {
-		case 'RSS_1_0':
+		case self::FEED_TYPE_RSS_1_0:
 			return $this->parseRSS_1_0_Item($item);
 			break;
-		case 'RSS_2_0':
+		case self::FEED_TYPE_RSS_2_0:
 			return $this->parseRSS_2_0_Item($item);
 			break;
-		case 'ATOM_1_0':
+		case self::FEED_TYPE_ATOM_1_0:
 			return $this->parseATOMItem($item);
 			break;
 		default: returnClientError('Unknown version ' . $this->getInput('version') . '!');
