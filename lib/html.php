@@ -26,8 +26,6 @@
  * already removes some of the tags (search for `remove_noise` in simple_html_dom.php).
  * @todo Rename parameters to make more sense. `$textToSanitize` must be HTML,
  * `$removedTags`, `$keptAttributes` and `$keptText` are past tense.
- * @todo Clarify the meaning of `*[!b38fd2b1fe7f4747d6b1c1254ccd055e]`, which
- * looks like a SHA1 hash (does simplehtmldom not support `find('*')`?).
  */
 function sanitize($textToSanitize,
 $removedTags = array('script', 'iframe', 'input', 'form'),
@@ -35,6 +33,17 @@ $keptAttributes = array('title', 'href', 'src'),
 $keptText = array()){
 	$htmlContent = str_get_html($textToSanitize);
 
+	/*
+	 * Notice: simple_html_dom currently doesn't support "->find(*)", which is a
+	 * known issue: https://sourceforge.net/p/simplehtmldom/bugs/157/
+	 *
+	 * A solution to this is to find all nodes WITHOUT a specific attribute. If
+	 * the attribute is very unlikely to appear in the DOM, this is essentially
+	 * returning all nodes.
+	 *
+	 * "*[!b38fd2b1fe7f4747d6b1c1254ccd055e]" is doing exactly that. The attrib
+	 * "b38fd2b1fe7f4747d6b1c1254ccd055e" is very unlikely to appear in any DOM.
+	 */
 	foreach($htmlContent->find('*[!b38fd2b1fe7f4747d6b1c1254ccd055e]') as $element) {
 		if(in_array($element->tag, $keptText)) {
 			$element->outertext = $element->plaintext;
@@ -76,15 +85,23 @@ $keptText = array()){
  *
  * @param string $htmlContent The HTML content
  * @return string The HTML content with all ocurrences replaced
- *
- * @todo Clarify the meaning of `*[!b38fd2b1fe7f4747d6b1c1254ccd055e]`, which
- * looks like a SHA1 hash (does simplehtmldom not support `find('*')`?).
  */
 function backgroundToImg($htmlContent) {
 
 	$regex = '/background-image[ ]{0,}:[ ]{0,}url\([\'"]{0,}(.*?)[\'"]{0,}\)/';
 	$htmlContent = str_get_html($htmlContent);
 
+	/*
+	 * Notice: simple_html_dom currently doesn't support "->find(*)", which is a
+	 * known issue: https://sourceforge.net/p/simplehtmldom/bugs/157/
+	 *
+	 * A solution to this is to find all nodes WITHOUT a specific attribute. If
+	 * the attribute is very unlikely to appear in the DOM, this is essentially
+	 * returning all nodes.
+	 *
+	 * "*[!b38fd2b1fe7f4747d6b1c1254ccd055e]" is doing exactly that. The attrib
+	 * "b38fd2b1fe7f4747d6b1c1254ccd055e" is very unlikely to appear in any DOM.
+	 */
 	foreach($htmlContent->find('*[!b38fd2b1fe7f4747d6b1c1254ccd055e]') as $element) {
 
 		if(preg_match($regex, $element->style, $matches) > 0) {
