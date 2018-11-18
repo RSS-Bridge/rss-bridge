@@ -124,6 +124,8 @@ final class Configuration {
 	 * - `config.ini.php`: The local configuration file that can be modified by
 	 * server administrators.
 	 *
+	 * The files must be located at {@see PATH_ROOT}
+	 *
 	 * RSS-Bridge will first load `config.default.ini.php` into memory and then
 	 * replace parameters with the contents of `config.ini.php`. That way new
 	 * parameters are automatically initialized with default values and custom
@@ -137,21 +139,20 @@ final class Configuration {
 	 *
 	 * @return void
 	 *
-	 * @todo Use {@see PATH_ROOT} to locate configuration files.
 	 * @todo Add documentation for constants defined by this function.
 	 */
 	public static function loadConfiguration() {
 
-		if(!file_exists('config.default.ini.php'))
+		if(!file_exists(PATH_ROOT . 'config.default.ini.php'))
 			die('The default configuration file "config.default.ini.php" is missing!');
 
-		Configuration::$config = parse_ini_file('config.default.ini.php', true, INI_SCANNER_TYPED);
+		Configuration::$config = parse_ini_file(PATH_ROOT . 'config.default.ini.php', true, INI_SCANNER_TYPED);
 		if(!Configuration::$config)
 			die('Error parsing config.default.ini.php');
 
-		if(file_exists('config.ini.php')) {
+		if(file_exists(PATH_ROOT . 'config.ini.php')) {
 			// Replace default configuration with custom settings
-			foreach(parse_ini_file('config.ini.php', true, INI_SCANNER_TYPED) as $header => $section) {
+			foreach(parse_ini_file(PATH_ROOT . 'config.ini.php', true, INI_SCANNER_TYPED) as $header => $section) {
 				foreach($section as $key => $value) {
 					// Skip unknown sections and keys
 					if(array_key_exists($header, Configuration::$config) && array_key_exists($key, Configuration::$config[$header])) {
@@ -227,7 +228,7 @@ final class Configuration {
 	 */
 	public static function getVersion() {
 
-		$headFile = '.git/HEAD';
+		$headFile = PATH_ROOT . '.git/HEAD';
 
 		// '@' is used to mute open_basedir warning
 		if(@is_readable($headFile)) {
