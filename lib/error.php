@@ -14,14 +14,14 @@
 /**
  * Throws an exception when called.
  *
- * @throws \HttpException when called
+ * @throws \Exception when called
  * @param string $message The error message
  * @param int $code The HTTP error code
  * @link https://en.wikipedia.org/wiki/List_of_HTTP_status_codes List of HTTP
  * status codes
  */
 function returnError($message, $code){
-	throw new \HttpException($message, $code);
+	throw new \Exception($message, $code);
 }
 
 /**

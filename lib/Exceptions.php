@@ -12,13 +12,6 @@
  */
 
 /**
- * Implements a RSS-Bridge specific exception class
- *
- * @todo This class serves no purpose, remove it!
- */
-class HttpException extends \Exception{}
-
-/**
  * Returns an URL that automatically populates a new issue on GitHub based
  * on the information provided
  *

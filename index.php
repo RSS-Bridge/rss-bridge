@@ -109,7 +109,7 @@ try {
 
 		// whitelist control
 		if(!Bridge::isWhitelisted($bridge)) {
-			throw new \HttpException('This bridge is not whitelisted', 401);
+			throw new \Exception('This bridge is not whitelisted', 401);
 			die;
 		}
 
@@ -272,11 +272,8 @@ try {
 	} else {
 		echo BridgeList::create($showInactive);
 	}
-} catch(HttpException $e) {
-	error_log($e);
-	header('Content-Type: text/plain', true, $e->getCode());
-	die($e->getMessage());
 } catch(\Exception $e) {
 	error_log($e);
+	header('Content-Type: text/plain', true, $e->getCode());
 	die($e->getMessage());
 }
