@@ -21,8 +21,8 @@ abstract class FormatAbstract implements FormatInterface {
 	/** The default charset (UTF-8) */
 	const DEFAULT_CHARSET = 'UTF-8';
 
-	/** @var string $contentType The content type */
-	protected $contentType;
+	/** @var string|null $contentType The content type */
+	protected $contentType = null;
 
 	/** @var string $charset The charset */
 	protected $charset;
@@ -82,10 +82,18 @@ abstract class FormatAbstract implements FormatInterface {
 	/**
 	 * Send header with the currently specified content type
 	 *
+	 * @throws \LogicException if the content type is not set
+	 * @throws \LogicException if the content type is not a string
+	 *
 	 * @return void
-	 * @todo This should throw an error if no content type is set
 	 */
 	protected function callContentType(){
+		if(empty($this->contentType))
+			throw new \LogicException('Content-Type is not set!');
+
+		if(!is_string($this->contentType))
+			throw new \LogicException('Content-Type must be a string!');
+
 		header('Content-Type: ' . $this->contentType);
 	}
 
