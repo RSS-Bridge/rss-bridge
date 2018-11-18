@@ -113,7 +113,33 @@ class CrewbayBridge extends BridgeAbstract {
 
 		foreach ($annonces as $annonce) {
 			$detail = $annonce->find('.btn--profile', 0);
-			$htmlDetail = getSimpleHTMLDOMCached($detail->getAttribute('data-modal-href'));
+			$htmlDetail = getSimpleHTMLDOMCached($detail->href);
+
+			if (!empty($this->getInput('recreational_position')) || !empty($this->getInput('professional_position'))) {
+				if ($this->getInput('type') == 'boats') {
+					if ($this->getInput('status') == 'professional') {
+						$positions = array($annonce->find('.title .position', 0)->plaintext);
+					} else {
+						$positions = array(str_replace('Wanted:', '', $annonce->find('.content li', 0)->plaintext));
+					}
+				} else {
+					$list = $htmlDetail->find('.viewer-details .viewer-list');
+					$positions = explode("\r\n", end($list)->find('span.value', 0)->plaintext);
+				}
+
+				$found = false;
+				$keyword = $this->getInput('status') == 'professional' ? 'professional_position' : 'recreational_position';
+				foreach ($positions as $position) {
+					if (strpos(trim($position), $this->getInput($keyword)) !== false) {
+						$found = true;
+						break;
+					}
+				}
+
+				if (!$found) {
+					continue;
+				}
+			}
 
 			$item = array();
 
@@ -134,21 +160,23 @@ class CrewbayBridge extends BridgeAbstract {
 			$images = $annonce->find('.avatar img');
 			$item['enclosures'] = array(end($images)->getAttribute('src'));
 
-			if ($this->getInput('type') == 'boats') {
-				$fields = array('job', 'boat', 'skipper');
-			} else {
-				$fields = array('profile', 'positions', 'info', 'qualifications' , 'skills', 'references');
-			}
+			$content = $htmlDetail->find('.viewer-intro--info', 0)->innertext;
 
-			$content = '';
-			foreach ($fields as $field) {
-				$info = $htmlDetail->find('.profile--modal-body .info-' . $field, 0);
-				if ($info) {
-					$content .= $htmlDetail->find('.profile--modal-body .info-' . $field, 0)->innertext;
+			$sections = $htmlDetail->find('.viewer-container .viewer-section');
+			foreach ($sections as $section) {
+				if ($section->find('.viewer-section-title', 0)) {
+					$class = str_replace('viewer-', '', explode(' ', $section->getAttribute('class'))[0]);
+					if (!in_array($class, array('apply', 'photos', 'reviews', 'contact', 'experience', 'qa'))) {
+						// Basic sections
+						$content .= $section->find('.viewer-section-title h3', 0)->outertext;
+						$content .= $section->find('.viewer-section-content', 0)->innertext;
+					}
+				} else {
+					// Info section
+					$content .= $section->find('.viewer-section-content h3', 0)->outertext;
+					$content .= $section->find('.viewer-section-content p', 0)->outertext;
 				}
 			}
-
-			$item['content'] = $content;
 
 			if (!empty($this->getInput('keyword'))) {
 				$keyword = strtolower($this->getInput('keyword'));
@@ -159,28 +187,16 @@ class CrewbayBridge extends BridgeAbstract {
 				}
 			}
 
-			if (!empty($this->getInput('recreational_position')) || !empty($this->getInput('professional_position'))) {
-				if ($this->getInput('type') == 'boats') {
-					if ($this->getInput('status') == 'professional') {
-						$positions = array($annonce->find('.title .position', 0)->plaintext);
-					} else {
-						$positions = array(str_replace('Wanted:', '', $annonce->find('.content li', 0)->plaintext));
-					}
-				} else {
-					$positions = explode("\r\n", trim($htmlDetail->find('.info-positions .value', 0)->plaintext));
-				}
+			$item['content'] = $content;
 
-				$found = false;
-				$keyword = $this->getInput('status') == 'professional' ? 'professional_position' : 'recreational_position';
-				foreach ($positions as $position) {
-					if (strpos(trim($position), $this->getInput($keyword)) !== false) {
-						$found = true;
-						break;
-					}
+			$tags = $htmlDetail->find('li.viewer-tags--tag');
+			foreach ($tags as $tag) {
+				if (!isset($item['categories'])) {
+					$item['categories'] = array();
 				}
-
-				if (!$found) {
-					continue;
+				$text = trim($tag->plaintext);
+				if (!in_array($text, $item['categories'])) {
+					$item['categories'][] = $text;
 				}
 			}
 
