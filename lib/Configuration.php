@@ -138,8 +138,6 @@ final class Configuration {
 	 * _Notice_: The configuration is stored in {@see Configuration::$config}.
 	 *
 	 * @return void
-	 *
-	 * @todo Add documentation for constants defined by this function.
 	 */
 	public static function loadConfiguration() {
 
@@ -165,22 +163,27 @@ final class Configuration {
 		if(!is_string(self::getConfig('proxy', 'url')))
 			die('Parameter [proxy] => "url" is not a valid string! Please check "config.ini.php"!');
 
-		if(!empty(self::getConfig('proxy', 'url')))
+		if(!empty(self::getConfig('proxy', 'url'))) {
+			/** URL of the proxy server */
 			define('PROXY_URL', self::getConfig('proxy', 'url'));
+		}
 
 		if(!is_bool(self::getConfig('proxy', 'by_bridge')))
 			die('Parameter [proxy] => "by_bridge" is not a valid Boolean! Please check "config.ini.php"!');
 
+		/** True if proxy usage can be enabled selectively for each bridge */
 		define('PROXY_BYBRIDGE', self::getConfig('proxy', 'by_bridge'));
 
 		if(!is_string(self::getConfig('proxy', 'name')))
 			die('Parameter [proxy] => "name" is not a valid string! Please check "config.ini.php"!');
 
+		/** Name of the proxy server */
 		define('PROXY_NAME', self::getConfig('proxy', 'name'));
 
 		if(!is_bool(self::getConfig('cache', 'custom_timeout')))
 			die('Parameter [cache] => "custom_timeout" is not a valid Boolean! Please check "config.ini.php"!');
 
+		/** True if the cache timeout can be specified by the user */
 		define('CUSTOM_CACHE_TIMEOUT', self::getConfig('cache', 'custom_timeout'));
 
 		if(!is_bool(self::getConfig('authentication', 'enable')))
