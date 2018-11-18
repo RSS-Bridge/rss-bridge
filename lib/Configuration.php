@@ -199,18 +199,16 @@ final class Configuration {
 	}
 
 	/**
-	 * Returns the value of a parameter identified by category and key.
+	 * Returns the value of a parameter identified by section and key.
 	 *
-	 * @param string $category The section name (category).
+	 * @param string $section The section name.
 	 * @param string $key The property name (key).
 	 * @return mixed|null The parameter value.
-	 *
-	 * @todo Rename $category to $section for clarity.
 	 */
-	public static function getConfig($category, $key) {
+	public static function getConfig($section, $key) {
 
-		if(array_key_exists($category, self::$config) && array_key_exists($key, self::$config[$category])) {
-			return self::$config[$category][$key];
+		if(array_key_exists($section, self::$config) && array_key_exists($key, self::$config[$section])) {
+			return self::$config[$section][$key];
 		}
 
 		return null;
