@@ -160,8 +160,6 @@ function defaultLinkTo($content, $server){
  * @param string $end End delimiter, e.g. `<`
  * @return string|bool Extracted string, e.g. `John Doe`, or false if the
  * delimiters were not found.
- *
- * @todo This function can possibly be simplified to use a single `substr` command.
  */
 function extractFromDelimiters($string, $start, $end) {
 	if (strpos($string, $start) !== false) {
@@ -178,8 +176,6 @@ function extractFromDelimiters($string, $start, $end) {
  * @param string $start Start delimiter, e.g. `<script`
  * @param string $end End delimiter, e.g. `</script>`
  * @return string Cleaned string, e.g. `foobar`
- *
- * @todo This function can possibly be simplified to use a single `substr` command.
  */
 function stripWithDelimiters($string, $start, $end) {
 	while(strpos($string, $start) !== false) {
