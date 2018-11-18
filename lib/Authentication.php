@@ -25,14 +25,22 @@
  * @link https://httpd.apache.org/docs/2.4/howto/htaccess.html Apache HTTP Server
  * Tutorial: .htaccess files
  *
- * @todo This class should respond with an error when creating an object from it.
- * See {@see Bridge}, {@see Cache} or {@see Format} for reference.
  * @todo Configuration parameters should be stored internally instead of accessing
  * the configuration class directly.
  * @todo Add functions to detect if a user is authenticated or not. This can be
  * utilized for limiting access to authorized users only.
  */
 class Authentication {
+
+	/**
+	 * Throw an exception when trying to create a new instance of this class.
+	 * Use {@see Authentication::showPromptIfNeeded()} instead!
+	 *
+	 * @throws \LogicException if called.
+	 */
+	public function __construct(){
+		throw new \LogicException('Use ' . __CLASS__ . '::showPromptIfNeeded()!');
+	}
 
 	/**
 	 * Requests the user for login credentials if necessary.
