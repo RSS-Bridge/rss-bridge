@@ -14,24 +14,22 @@
 /**
  * Removes unwanted tags from a given HTML text.
  *
- * @param string $textToSanitize The HTML text to sanitize.
- * @param array $removedTags A list of tags to remove from the DOM.
- * @param array $keptAttributes A list of attributes to keep on tags (other
+ * @param string $html The HTML text to sanitize.
+ * @param array $tags_to_remove A list of tags to remove from the DOM.
+ * @param array $attributes_to_keep A list of attributes to keep on tags (other
  * attributes are removed).
- * @param array $keptText A list of tags where the innertext replaces the tag
+ * @param array $text_to_keep A list of tags where the innertext replaces the tag
  * (i.e. `<p>Hello World!</p>` becomes `Hello World!`).
  * @return object A simplehtmldom object of the remaining contents.
  *
  * @todo Check if this implementation is still necessary, because simplehtmldom
  * already removes some of the tags (search for `remove_noise` in simple_html_dom.php).
- * @todo Rename parameters to make more sense. `$textToSanitize` must be HTML,
- * `$removedTags`, `$keptAttributes` and `$keptText` are past tense.
  */
-function sanitize($textToSanitize,
-$removedTags = array('script', 'iframe', 'input', 'form'),
-$keptAttributes = array('title', 'href', 'src'),
-$keptText = array()){
-	$htmlContent = str_get_html($textToSanitize);
+function sanitize($html,
+$tags_to_remove = array('script', 'iframe', 'input', 'form'),
+$attributes_to_keep = array('title', 'href', 'src'),
+$text_to_keep = array()){
+	$htmlContent = str_get_html($html);
 
 	/*
 	 * Notice: simple_html_dom currently doesn't support "->find(*)", which is a
@@ -45,13 +43,13 @@ $keptText = array()){
 	 * "b38fd2b1fe7f4747d6b1c1254ccd055e" is very unlikely to appear in any DOM.
 	 */
 	foreach($htmlContent->find('*[!b38fd2b1fe7f4747d6b1c1254ccd055e]') as $element) {
-		if(in_array($element->tag, $keptText)) {
+		if(in_array($element->tag, $text_to_keep)) {
 			$element->outertext = $element->plaintext;
-		} elseif(in_array($element->tag, $removedTags)) {
+		} elseif(in_array($element->tag, $tags_to_remove)) {
 			$element->outertext = '';
 		} else {
 			foreach($element->getAllAttributes() as $attributeName => $attribute) {
-				if(!in_array($attributeName, $keptAttributes))
+				if(!in_array($attributeName, $attributes_to_keep))
 					$element->removeAttribute($attributeName);
 			}
 		}
