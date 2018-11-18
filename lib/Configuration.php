@@ -37,10 +37,8 @@ final class Configuration {
 	 * Use {@see Configuration::getConfig()} instead.
 	 *
 	 * @var array|null
-	 *
-	 * @todo Change the scope of this property to protected or private
 	 */
-	public static $config = null;
+	private static $config = null;
 
 	/**
 	 * Throw an exception when trying to create a new instance of this class.
