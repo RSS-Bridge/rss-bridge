@@ -15,10 +15,8 @@
  * Configuration module for RSS-Bridge.
  *
  * This class implements a configuration module for RSS-Bridge.
- *
- * @todo Make this class final.
  */
-class Configuration {
+final class Configuration {
 
 	/**
 	 * Holds the current release version of RSS-Bridge.
