@@ -124,9 +124,6 @@ function backgroundToImg($htmlContent) {
  * @param string|object $content The HTML content. Supports HTML objects or string objects
  * @param string $server Fully qualified URL to the page containing relative links
  * @return object Content with fixed URLs.
- *
- * @todo If the input type was a string, this function should return a string as
- * well. This is currently done implicitly by how the simplehtmldom object works.
  */
 function defaultLinkTo($content, $server){
 	$string_convert = false;
