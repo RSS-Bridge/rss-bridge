@@ -55,7 +55,6 @@ try {
 	$showInactive = filter_input(INPUT_GET, 'show_inactive', FILTER_VALIDATE_BOOLEAN);
 	$action = array_key_exists('action', $params) ? $params['action'] : null;
 	$bridge = array_key_exists('bridge', $params) ? $params['bridge'] : null;
-	$targetURL = array_key_exists('url', $params) ? $params['url'] : null;
 
 	// Return list of bridges as JSON formatted text
 	if($action === 'list') {
@@ -97,20 +96,27 @@ try {
 		header('Content-Type: application/json');
 		echo json_encode($list, JSON_PRETTY_PRINT);
 
-	} elseif($action === 'detect' && !empty($url)) {
+	} elseif($action === 'detect') {
+
+		$targetURL = $params['url']
+			or returnClientError('You must specify a url!');
 
 		$format = $params['format']
 			or returnClientError('You must specify a format!');
 
 		foreach(Bridge::listBridges() as $bridgeName) {
 
-			$bridge = Bridge::create($bridgeName);
-
-			if($bridge === false || (!Bridge::isWhitelisted($bridgeName))) {
+			if(!Bridge::isWhitelisted($bridgeName)) {
 				continue;
 			}
 
-			$bridgeParams = $bridge->detectParameters($url);
+			$bridge = Bridge::create($bridgeName);
+
+			if($bridge === false) {
+				continue;
+			}
+
+			$bridgeParams = $bridge->detectParameters($targetURL);
 
 			if(is_null($bridgeParams)) {
 				continue;
@@ -124,7 +130,7 @@ try {
 
 		}
 
-		returnClientError('No bridge found for given URL: ' . $url);
+		returnClientError('No bridge found for given URL: ' . $targetURL);
 
 	} elseif($action === 'display' && !empty($bridge)) {
 
