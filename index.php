@@ -55,7 +55,7 @@ try {
 	$showInactive = filter_input(INPUT_GET, 'show_inactive', FILTER_VALIDATE_BOOLEAN);
 	$action = array_key_exists('action', $params) ? $params['action'] : null;
 	$bridge = array_key_exists('bridge', $params) ? $params['bridge'] : null;
-	$url = array_key_exists('url', $params) ? $params['url'] : null;
+	$targetURL = array_key_exists('url', $params) ? $params['url'] : null;
 
 	// Return list of bridges as JSON formatted text
 	if($action === 'list') {
@@ -112,14 +112,14 @@ try {
 
 			$bridgeParams = $bridge->detectParameters($url);
 
-			if($bridgeParams === null) {
+			if(is_null($bridgeParams)) {
 				continue;
 			}
 
 			$bridgeParams['bridge'] = $bridgeName;
 			$bridgeParams['format'] = $format;
 
-			header('Location: ?action=display&' . http_build_query($bridgeParams));
+			header('Location: ?action=display&' . http_build_query($bridgeParams), true, 301);
 			die();
 
 		}

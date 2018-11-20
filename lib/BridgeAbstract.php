@@ -185,6 +185,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 		return static::CACHE_TIMEOUT;
 	}
 
+	/** {@inheritdoc} */
 	public function detectParameters($url){
 		$regex = '/^(https?:\/\/)?(www\.)?(.+?)(\/)?$/';
 		if(empty(static::PARAMETERS)
