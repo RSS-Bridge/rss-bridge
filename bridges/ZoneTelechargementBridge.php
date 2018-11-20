@@ -3,9 +3,9 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 
 	/*  This bridge was initally done for the Website Zone Telechargement,
 	 *  but the website changed it's name and URL.
-	 *  Therefor, the class name and filename does not correspond to the
+	 *  Therefore, the class name and filename does not correspond to the
 	 *  name of the bridge. This permits to keep the same RSS Feed URL.
-	 */  
+	 */
 
 	const NAME = 'Annuaire Telechargement';
 	const URI = 'https://www.annuaire-telechargement.com/';
