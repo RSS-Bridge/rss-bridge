@@ -287,15 +287,22 @@ class FeedItem {
 	/**
 	 * Set item content.
 	 *
+	 * Note: This function casts objects of type simple_html_dom to string.
+	 *
 	 * Use {@see FeedItem::getContent()} to get the current item content.
 	 *
-	 * @param string $content The item content.
+	 * @param string|object $content The item content as text or simple_html_dom
+	 * object.
 	 * @return self
 	 *
 	 * @throws \InvalidArgumentException if $content is not a string
 	 */
 	public function setContent($content) {
 		$this->content = null; // Clear previous data
+
+		if($content instanceof simple_html_dom) {
+			$content = (string)$content;
+		}
 
 		if(!is_string($content)) {
 			throw new \InvalidArgumentException('Content must be a string!');
