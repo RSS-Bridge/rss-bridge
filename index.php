@@ -294,7 +294,21 @@ try {
 		// Data transformation
 		try {
 			$format = Format::create($format);
-			$format->setItems($items);
+
+			// Transform "legacy" items to FeedItems if necessary.
+			// Remove this code when support for "legacy" items ends!
+			if($items[0] instanceof \FeedItem) { // Assume all are feed items!
+				$format->setItems($items);
+			} else {
+				$feedItems = array();
+
+				foreach($items as $item) {
+					$feedItems[] = new \FeedItem($item);
+				}
+
+				$format->setItems($feedItems);
+			}
+
 			$format->setExtraInfos($infos);
 			$format->setLastModified($cache->getTime());
 			$format->display();
