@@ -9,31 +9,31 @@ class HtmlFormat extends FormatAbstract {
 
 		$entries = '';
 		foreach($this->getItems() as $item) {
-			$entryAuthor = isset($item['author']) ? '<br /><p class="author">by: ' . $item['author'] . '</p>' : '';
-			$entryTitle = isset($item['title']) ? $this->sanitizeHtml(strip_tags($item['title'])) : '';
-			$entryUri = isset($item['uri']) ? $item['uri'] : $uri;
+			$entryAuthor = $item->getAuthor() ? '<br /><p class="author">by: ' . $item->getAuthor() . '</p>' : '';
+			$entryTitle = $this->sanitizeHtml(strip_tags($item->getTitle()));
+			$entryUri = $item->getURI() ?: $uri;
 
 			$entryTimestamp = '';
-			if(isset($item['timestamp'])) {
+			if($item->getTimestamp()) {
 				$entryTimestamp = '<time datetime="'
-				. date(DATE_ATOM, $item['timestamp'])
+				. date(DATE_ATOM, $item->getTimestamp())
 				. '">'
-				. date(DATE_ATOM, $item['timestamp'])
+				. date(DATE_ATOM, $item->getTimestamp())
 				. '</time>';
 			}
 
 			$entryContent = '';
-			if(isset($item['content'])) {
+			if($item->getContent()) {
 				$entryContent = '<div class="content">'
-				. $this->sanitizeHtml($item['content'])
+				. $this->sanitizeHtml($item->getContent())
 				. '</div>';
 			}
 
 			$entryEnclosures = '';
-			if(isset($item['enclosures'])) {
+			if(!empty($item->getEnclosures())) {
 				$entryEnclosures = '<div class="attachments"><p>Attachments:</p>';
 
-				foreach($item['enclosures'] as $enclosure) {
+				foreach($item->getEnclosures() as $enclosure) {
 					$url = $this->sanitizeHtml($enclosure);
 
 					$entryEnclosures .= '<li class="enclosure"><a href="'
@@ -47,10 +47,10 @@ class HtmlFormat extends FormatAbstract {
 			}
 
 			$entryCategories = '';
-			if(isset($item['categories']) && count($item['categories']) > 0) {
+			if(!empty($item->getCategories())) {
 				$entryCategories = '<div class="categories"><p>Categories:</p>';
 
-				foreach($item['categories'] as $category) {
+				foreach($item->getCategories() as $category) {
 
 					$entryCategories .= '<li class="category">'
 					. $this->sanitizeHtml($category)
