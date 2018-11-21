@@ -10,6 +10,7 @@
 	<testsuites>
 		<testsuite name="Standard test suite">
 		<file>tests/BridgeImplementationTest.php</file>
+		<file>tests/FeedItemTest.php</file>
 		</testsuite>
 	</testsuites>
 
