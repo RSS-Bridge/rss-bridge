@@ -117,7 +117,7 @@ function buildTransformException($e, $bridge){
 	$body = 'Error message: `'
 	. $e->getMessage()
 	. "`\nQuery string: `";
-	if (isset($_SERVER['QUERY_STRING'])) 
+	if (isset($_SERVER['QUERY_STRING']))
 		$body .= $_SERVER['QUERY_STRING'];
 	$body .= '`';
 
