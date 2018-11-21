@@ -224,7 +224,7 @@ try {
 					$item['title'] = 'Bridge returned error ' . $e->getCode() . '! (' . $params['_error_time'] . ')';
 				}
 
-				if (isset($_SERVER['REQUEST_URI'])) 
+				if (isset($_SERVER['REQUEST_URI']))
 					$item['uri'] = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 				else
 					$item['uri'] = '';
@@ -241,7 +241,7 @@ try {
 				// Create "new" error message every 24 hours
 				$params['_error_time'] = urlencode((int)(time() / 86400));
 
-				if (isset($_SERVER['REQUEST_URI'])) 
+				if (isset($_SERVER['REQUEST_URI']))
 					$item['uri'] = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 				else
 					$item['uri'] = '';
