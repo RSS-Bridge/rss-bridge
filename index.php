@@ -297,7 +297,7 @@ try {
 
 			// Transform "legacy" items to FeedItems if necessary.
 			// Remove this code when support for "legacy" items ends!
-			if($items[0] instanceof \FeedItem) { // Assume all are feed items!
+			if(!empty($items) && $items[0] instanceof \FeedItem) { // Assume all are feed items!
 				$format->setItems($items);
 			} else {
 				$feedItems = array();
