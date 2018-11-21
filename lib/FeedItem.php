@@ -459,13 +459,13 @@ class FeedItem {
 	 */
 	function __set($name, $value) {
 		switch($name) {
-			case 'uri': $this->setURI($value);
-			case 'title': $this->setTitle($value);
-			case 'timestamp': $this->setTimestamp($value);
-			case 'author': $this->setAuthor($value);
-			case 'content': $this->setContent($value);
-			case 'enclosures': $this->setEnclosures($value);
-			case 'categories': $this->setCategories($value);
+			case 'uri': $this->setURI($value); break;
+			case 'title': $this->setTitle($value); break;
+			case 'timestamp': $this->setTimestamp($value); break;
+			case 'author': $this->setAuthor($value); break;
+			case 'content': $this->setContent($value); break;
+			case 'enclosures': $this->setEnclosures($value); break;
+			case 'categories': $this->setCategories($value); break;
 			default: $this->addMisc($name, $value);
 		}
 	}
