@@ -202,27 +202,32 @@ class FeedItem {
 	/**
 	 * Set timestamp of first release.
 	 *
-	 * _Note_: The timestamp must represent the number of seconds since
+	 * _Note_: The timestamp should represent the number of seconds since
 	 * January 1 1970 00:00:00 GMT (Unix time).
+	 *
+	 * _Remarks_: If the provided timestamp is a string (not numeric), this
+	 * function automatically attempts to parse the string using
+	 * [strtotime](http://php.net/manual/en/function.strtotime.php)
 	 *
 	 * @link http://php.net/manual/en/function.strtotime.php strtotime (PHP)
 	 * @link https://en.wikipedia.org/wiki/Unix_time Unix time (Wikipedia)
 	 *
-	 * @param int $timestamp A timestamp of when the item was first released
+	 * @param string|int $timestamp A timestamp of when the item was first released
 	 * @return self
 	 */
 	public function setTimestamp($timestamp) {
 		$this->timestamp = null; // Clear previous data
 
-		if(!is_numeric($timestamp)) {
-			Debug::log('Timestamp must be a numeric!');
+		if(!is_numeric($timestamp)
+		&& !$timestamp = strtotime($timestamp)) {
+			Debug::log('Unable to parse timestamp!');
 		}
 
 		if($timestamp <= 0) {
 			Debug::log('Timestamp must be greater than zero!');
+		} else {
+			$this->timestamp = $timestamp;
 		}
-
-		$this->timestamp = $timestamp;
 
 		return $this;
 	}
