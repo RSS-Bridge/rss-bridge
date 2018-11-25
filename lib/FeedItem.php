@@ -127,11 +127,24 @@ class FeedItem {
 	 *
 	 * _Note_: Removes whitespace from the beginning and end of the URI.
 	 *
-	 * @param string $uri URI to the full article.
+	 * _Remarks_: Uses the attribute "href" or "src" if the provided URI is an
+	 * object of simple_html_dom_node.
+	 *
+	 * @param object|string $uri URI to the full article.
 	 * @return self
 	 */
 	public function setURI($uri) {
 		$this->uri = null; // Clear previous data
+
+		if($uri instanceof simple_html_dom_node) {
+			if($uri->hasAttribute('href')) { // Anchor
+				$uri = $uri->href;
+			} elseif($uri->hasAttribute('src')) { // Image
+				$uri = $uri->src;
+			} else {
+				Debug::log('The item provided as URI is unknown!');
+			}
+		}
 
 		if(!is_string($uri)) {
 			Debug::log('URI must be a string!');
