@@ -214,8 +214,8 @@ class FeedItem {
 	public function setTimestamp($timestamp) {
 		$this->timestamp = null; // Clear previous data
 
-		if(!is_int($timestamp)) {
-			Debug::log('Timestamp must be an integer!');
+		if(!is_numeric($timestamp)) {
+			Debug::log('Timestamp must be a numeric!');
 		}
 
 		if($timestamp <= 0) {
