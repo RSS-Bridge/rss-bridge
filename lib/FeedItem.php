@@ -288,7 +288,8 @@ class FeedItem {
 	/**
 	 * Set item content.
 	 *
-	 * Note: This function casts objects of type simple_html_dom to string.
+	 * Note: This function casts objects of type simple_html_dom and
+	 * simple_html_dom_node to string.
 	 *
 	 * Use {@see FeedItem::getContent()} to get the current item content.
 	 *
@@ -299,9 +300,12 @@ class FeedItem {
 	public function setContent($content) {
 		$this->content = null; // Clear previous data
 
-		if($content instanceof simple_html_dom) {
+		if($content instanceof simple_html_dom
+		|| $content instanceof simple_html_dom_node) {
 			$content = (string)$content;
-		} elseif(!is_string($content)) {
+		}
+
+		if(!is_string($content)) {
 			Debug::log('Content must be a string!');
 		} else {
 			$this->content = $content;
