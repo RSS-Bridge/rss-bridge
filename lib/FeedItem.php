@@ -135,22 +135,20 @@ class FeedItem {
 
 		if(!is_string($uri)) {
 			Debug::log('URI must be a string!');
-		}
-
-		if(!filter_var(
+		} elseif(!filter_var(
 			$uri,
 			FILTER_VALIDATE_URL,
 			FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED)) {
 			Debug::log('URI must include a scheme, host and path!');
+		} else {
+			$scheme = parse_url($uri, PHP_URL_SCHEME);
+
+			if($scheme !== 'http' && $scheme !== 'https') {
+				Debug::log('URI scheme must be "http" or "https"!');
+			} else {
+				$this->uri = trim($uri);
+			}
 		}
-
-		$scheme = parse_url($uri, PHP_URL_SCHEME);
-
-		if($scheme !== 'http' && $scheme !== 'https') {
-			Debug::log('URI scheme must be "http" or "https"!');
-		}
-
-		$this->uri = trim($uri);
 
 		return $this;
 	}
@@ -181,9 +179,9 @@ class FeedItem {
 
 		if(!is_string($title)) {
 			Debug::log('Title must be a string!');
+		} else {
+			$this->title = trim($title);
 		}
-
-		$this->title = trim($title);
 
 		return $this;
 	}
@@ -256,9 +254,9 @@ class FeedItem {
 
 		if(!is_string($author)) {
 			Debug::log('Author must be a string!');
+		} else {
+			$this->author = $author;
 		}
-
-		$this->author = $author;
 
 		return $this;
 	}
@@ -290,13 +288,11 @@ class FeedItem {
 
 		if($content instanceof simple_html_dom) {
 			$content = (string)$content;
-		}
-
-		if(!is_string($content)) {
+		} elseif(!is_string($content)) {
 			Debug::log('Content must be a string!');
+		} else {
+			$this->content = $content;
 		}
-
-		$this->content = $content;
 
 		return $this;
 	}
@@ -326,20 +322,18 @@ class FeedItem {
 
 		if(!is_array($enclosures)) {
 			Debug::log('Enclosures must be an array!');
-		}
-
-		foreach($enclosures as $enclosure) {
-
-			if(!filter_var(
-				$enclosure,
-				FILTER_VALIDATE_URL,
-				FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED)) {
-				Debug::log('Each enclosure must contain a scheme, host and path!');
+		} else {
+			foreach($enclosures as $enclosure) {
+				if(!filter_var(
+					$enclosure,
+					FILTER_VALIDATE_URL,
+					FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED)) {
+					Debug::log('Each enclosure must contain a scheme, host and path!');
+				} else {
+					$this->enclosures[] = $enclosure;
+				}
 			}
-
 		}
-
-		$this->enclosures = $enclosures;
 
 		return $this;
 	}
@@ -369,17 +363,15 @@ class FeedItem {
 
 		if(!is_array($categories)) {
 			Debug::log('Categories must be an array!');
-		}
-
-		foreach($categories as $category) {
-
-			if(!is_string($category)) {
-				Debug::log('Category must be a string!');
+		} else {
+			foreach($categories as $category) {
+				if(!is_string($category)) {
+					Debug::log('Category must be a string!');
+				} else {
+					$this->categories[] = $category;
+				}
 			}
-
 		}
-
-		$this->categories = $categories;
 
 		return $this;
 	}
@@ -395,13 +387,11 @@ class FeedItem {
 
 		if(!is_string($key)) {
 			Debug::log('Key must be a string!');
-		}
-
-		if(in_array($key, get_object_vars($this))) {
+		} elseif(in_array($key, get_object_vars($this))) {
 			Debug::log('Key must be unique!');
+		} else {
+			$this->misc[$key] = $value;
 		}
-
-		$this->misc[$key] = $value;
 
 		return $this;
 	}
