@@ -105,7 +105,7 @@ class FeedItem {
 			Debug::log('Item must be an array!');
 
 		foreach($item as $key => $value) {
-			$this->{$key} = $value;
+			$this->__set($key, $value);
 		}
 	}
 
