@@ -229,7 +229,10 @@ try {
 			$cached = $cache->loadData();
 
 			if(isset($cached['items']) && isset($cached['extraInfos'])) {
-				$items = $cached['items'];
+				foreach($cached['items'] as $item) {
+					$items[] = new \FeedItem($item);
+				}
+
 				$infos = $cached['extraInfos'];
 			}
 
@@ -240,6 +243,19 @@ try {
 				$bridge->collectData();
 
 				$items = $bridge->getItems();
+
+				// Transform "legacy" items to FeedItems if necessary.
+				// Remove this code when support for "legacy" items ends!
+				if(is_array($items[0])) {
+					$feedItems = array();
+
+					foreach($items as $item) {
+						$feedItems[] = new \FeedItem($item);
+					}
+
+					$items = $feedItems;
+				}
+
 				$infos = array(
 					'name' => $bridge->getName(),
 					'uri'  => $bridge->getURI(),
@@ -285,7 +301,7 @@ try {
 
 			// Store data in cache
 			$cache->saveData(array(
-				'items' => $items,
+				'items' => array_map(function($i){ return $i->toArray(); }, $items),
 				'extraInfos' => $infos
 			));
 
@@ -294,21 +310,7 @@ try {
 		// Data transformation
 		try {
 			$format = Format::create($format);
-
-			// Transform "legacy" items to FeedItems if necessary.
-			// Remove this code when support for "legacy" items ends!
-			if(!empty($items) && $items[0] instanceof \FeedItem) { // Assume all are feed items!
-				$format->setItems($items);
-			} else {
-				$feedItems = array();
-
-				foreach($items as $item) {
-					$feedItems[] = new \FeedItem($item);
-				}
-
-				$format->setItems($feedItems);
-			}
-
+			$format->setItems($items);
 			$format->setExtraInfos($infos);
 			$format->setLastModified($cache->getTime());
 			$format->display();
