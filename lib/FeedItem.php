@@ -102,7 +102,7 @@ class FeedItem {
 	 */
 	public function __construct($item = array()) {
 		if(!is_array($item))
-			throw new \InvalidArgumentException('Item must be an array!');
+			Debug::log('Item must be an array!');
 
 		foreach($item as $key => $value) {
 			$this->{$key} = $value;
@@ -129,31 +129,25 @@ class FeedItem {
 	 *
 	 * @param string $uri URI to the full article.
 	 * @return self
-	 *
-	 * @throws \InvalidArgumentException if the provided URI is not a string
-	 * @throws \InvalidArgumentException if the provided URI is not a valid URI.
-	 * A valid URI **must** include a scheme, host and path.
-	 * @throws \InvalidArgumentException if the scheme of the provided URI is not
-	 * "http" or "https".
 	 */
 	public function setURI($uri) {
 		$this->uri = null; // Clear previous data
 
 		if(!is_string($uri)) {
-			throw new \InvalidArgumentException('URI must be a string!');
+			Debug::log('URI must be a string!');
 		}
 
 		if(!filter_var(
 			$uri,
 			FILTER_VALIDATE_URL,
 			FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED)) {
-			throw new \InvalidArgumentException('URI must include a scheme, host and path!');
+			Debug::log('URI must include a scheme, host and path!');
 		}
 
 		$scheme = parse_url($uri, PHP_URL_SCHEME);
 
 		if($scheme !== 'http' && $scheme !== 'https') {
-			throw new \InvalidArgumentException('URI scheme must be "http" or "https"!');
+			Debug::log('URI scheme must be "http" or "https"!');
 		}
 
 		$this->uri = trim($uri);
@@ -181,14 +175,12 @@ class FeedItem {
 	 *
 	 * @param string $title The title
 	 * @return self
-	 *
-	 * @throws \InvalidArgumentException if the provided title is not a string.
 	 */
 	public function setTitle($title) {
 		$this->title = null; // Clear previous data
 
 		if(!is_string($title)) {
-			throw new \InvalidArgumentException('Title must be a string!');
+			Debug::log('Title must be a string!');
 		}
 
 		$this->title = trim($title);
@@ -218,21 +210,16 @@ class FeedItem {
 	 *
 	 * @param int $timestamp A timestamp of when the item was first released
 	 * @return self
-	 *
-	 * @throws \InvalidArgumentException if the provided timestamp is not an
-	 * integer.
-	 * @throws \LogicException if the provided timestamp is less than or equal
-	 * to zero
 	 */
 	public function setTimestamp($timestamp) {
 		$this->timestamp = null; // Clear previous data
 
 		if(!is_int($timestamp)) {
-			throw new \InvalidArgumentException('Timestamp must be an integer!');
+			Debug::log('Timestamp must be an integer!');
 		}
 
 		if($timestamp <= 0) {
-			throw new \LogicException('Timestamp must be greater than zero!');
+			Debug::log('Timestamp must be greater than zero!');
 		}
 
 		$this->timestamp = $timestamp;
@@ -258,14 +245,12 @@ class FeedItem {
 	 *
 	 * @param string $author The author name.
 	 * @return self
-	 *
-	 * @throws \InvalidArgumentException if $author is not a string.
 	 */
 	public function setAuthor($author) {
 		$this->author = null; // Clear previous data
 
 		if(!is_string($author)) {
-			throw new \InvalidArgumentException('Author must be a string!');
+			Debug::log('Author must be a string!');
 		}
 
 		$this->author = $author;
@@ -294,8 +279,6 @@ class FeedItem {
 	 * @param string|object $content The item content as text or simple_html_dom
 	 * object.
 	 * @return self
-	 *
-	 * @throws \InvalidArgumentException if $content is not a string
 	 */
 	public function setContent($content) {
 		$this->content = null; // Clear previous data
@@ -305,7 +288,7 @@ class FeedItem {
 		}
 
 		if(!is_string($content)) {
-			throw new \InvalidArgumentException('Content must be a string!');
+			Debug::log('Content must be a string!');
 		}
 
 		$this->content = $content;
@@ -332,16 +315,12 @@ class FeedItem {
 	 * @param array $enclosures Array of enclosures, where each element links to
 	 * one enclosure.
 	 * @return self
-	 *
-	 * @throws \InvalidArgumentException if $enclosures is not an array.
-	 * @throws \InvalidArgumentException if any of the elements of $enclosures
-	 * is not a valid URI. A valid URI **must** include a scheme, host and path.
 	 */
 	public function setEnclosures($enclosures) {
 		$this->enclosures = array(); // Clear previous data
 
 		if(!is_array($enclosures)) {
-			throw new \InvalidArgumentException('Enclosures must be an array!');
+			Debug::log('Enclosures must be an array!');
 		}
 
 		foreach($enclosures as $enclosure) {
@@ -350,7 +329,7 @@ class FeedItem {
 				$enclosure,
 				FILTER_VALIDATE_URL,
 				FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED)) {
-				throw new \InvalidArgumentException('Each enclosure must contain a scheme, host and path!');
+				Debug::log('Each enclosure must contain a scheme, host and path!');
 			}
 
 		}
@@ -379,22 +358,18 @@ class FeedItem {
 	 * @param array $categories Array of categories, where each element defines
 	 * a single category name.
 	 * @return self
-	 *
-	 * @throws \InvalidArgumentException if $categories is not an array.
-	 * @throws \InvalidArgumentException if any of the elements of $categories
-	 * is not a string.
 	 */
 	public function setCategories($categories) {
 		$this->categories = array(); // Clear previous data
 
 		if(!is_array($categories)) {
-			throw new \InvalidArgumentException('Categories must be an array!');
+			Debug::log('Categories must be an array!');
 		}
 
 		foreach($categories as $category) {
 
 			if(!is_string($category)) {
-				throw new \InvalidArgumentException('Category must be a string!');
+				Debug::log('Category must be a string!');
 			}
 
 		}
@@ -410,19 +385,15 @@ class FeedItem {
 	 * @param string $key Name of the element.
 	 * @param mixed $value Value of the element.
 	 * @return self
-	 *
-	 * @throws \InvalidArgumentException if $key is not a string.
-	 * @throws \LogicException if $key is any of the standard parameters (uri,
-	 * title, timestamp, author, etc...)
 	 */
 	public function addMisc($key, $value) {
 
 		if(!is_string($key)) {
-			throw new \InvalidArgumentException('Key must be a string!');
+			Debug::log('Key must be a string!');
 		}
 
 		if(in_array($key, get_object_vars($this))) {
-			throw new \LogicException('Key must be unique!');
+			Debug::log('Key must be unique!');
 		}
 
 		$this->misc[$key] = $value;
