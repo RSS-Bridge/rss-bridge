@@ -122,6 +122,18 @@ function getContents($url, $header = array(), $opts = array()){
 		case 200: // Contents received
 			Debug::log('New contents received');
 			$data = substr($data, $headerSize);
+			// Disable caching if the server responds with "Cache-Control: no-cache"
+			$finalHeader = array_change_key_case($finalHeader, CASE_LOWER);
+			if(array_key_exists('cache-control', $finalHeader)) {
+				Debug::log('Server responded with "Cache-Control" header');
+				$directives = explode(',', $finalHeader['cache-control']);
+				$directives = array_map('trim', $directives);
+				if(in_array('no-cache', $directives)) { // Skip caching
+					Debug::log('Skip server side caching');
+					return $data;
+				}
+			}
+			Debug::log('Store response to cache');
 			$cache->saveData($data);
 			return $data;
 		case 304: // Not modified, use cached data
