@@ -66,6 +66,41 @@ class TwitterBridge extends BridgeAbstract {
 		)
 	);
 
+	public function detectParameters($url){
+		$params = array();
+
+		// By keyword or hashtag (search)
+		$regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/search.*(\?|&)q=([^\/&?\n]+)/';
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['q'] = urldecode($matches[4]);
+			return $params;
+		}
+
+		// By hashtag
+		$regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/hashtag\/([^\/?\n]+)/';
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['q'] = urldecode($matches[3]);
+			return $params;
+		}
+
+		// By list
+		$regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/([^\/?\n]+)\/lists\/([^\/?\n]+)/';
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['user'] = urldecode($matches[3]);
+			$params['list'] = urldecode($matches[4]);
+			return $params;
+		}
+
+		// By username
+		$regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/([^\/?\n]+)/';
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['u'] = urldecode($matches[3]);
+			return $params;
+		}
+
+		return null;
+	}
+
 	public function getName(){
 		switch($this->queriedContext) {
 		case 'By keyword or hashtag':

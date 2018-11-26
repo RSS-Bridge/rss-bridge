@@ -114,4 +114,12 @@ interface BridgeInterface {
 	 * @return int Cache timeout
 	 */
 	public function getCacheTimeout();
+
+	/**
+	 * Returns parameters from given URL or null if URL is not applicable
+	 *
+	 * @param string $url URL to extract parameters from
+	 * @return array|null List of bridge parameters or null if detection failed.
+	 */
+	public function detectParameters($url);
 }

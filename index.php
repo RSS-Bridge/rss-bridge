@@ -96,6 +96,42 @@ try {
 		header('Content-Type: application/json');
 		echo json_encode($list, JSON_PRETTY_PRINT);
 
+	} elseif($action === 'detect') {
+
+		$targetURL = $params['url']
+			or returnClientError('You must specify a url!');
+
+		$format = $params['format']
+			or returnClientError('You must specify a format!');
+
+		foreach(Bridge::listBridges() as $bridgeName) {
+
+			if(!Bridge::isWhitelisted($bridgeName)) {
+				continue;
+			}
+
+			$bridge = Bridge::create($bridgeName);
+
+			if($bridge === false) {
+				continue;
+			}
+
+			$bridgeParams = $bridge->detectParameters($targetURL);
+
+			if(is_null($bridgeParams)) {
+				continue;
+			}
+
+			$bridgeParams['bridge'] = $bridgeName;
+			$bridgeParams['format'] = $format;
+
+			header('Location: ?action=display&' . http_build_query($bridgeParams), true, 301);
+			die();
+
+		}
+
+		returnClientError('No bridge found for given URL: ' . $targetURL);
+
 	} elseif($action === 'display' && !empty($bridge)) {
 
 		$format = $params['format']
