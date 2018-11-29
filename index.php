@@ -104,7 +104,7 @@ try {
 		$format = $params['format']
 			or returnClientError('You must specify a format!');
 
-		foreach(Bridge::listBridges() as $bridgeName) {
+		foreach(Bridge::getBridgeNames() as $bridgeName) {
 
 			if(!Bridge::isWhitelisted($bridgeName)) {
 				continue;
