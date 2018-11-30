@@ -9,7 +9,7 @@ class MozillaSecurityBridge extends BridgeAbstract {
 	const WEBROOT = 'https://www.mozilla.org';
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM(self::URI) 
+		$html = getSimpleHTMLDOM(self::URI)
 			or returnServerError('Could not request MSA.');
 
 		$html = defaultLinkTo($html, self::WEBROOT);
