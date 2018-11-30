@@ -12,6 +12,8 @@ class MozillaSecurityBridge extends BridgeAbstract {
 					$html = getSimpleHTMLDOM(self::URI)
 							or returnServerError('Could not request MSA.');
 
+					$html = defaultLinkTo($html, self::WEBROOT);
+
 					$item = array();
 					$articles = $html->find('div[itemprop="articleBody"] h2');
 
