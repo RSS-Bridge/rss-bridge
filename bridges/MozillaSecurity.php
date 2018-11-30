@@ -20,7 +20,7 @@ class MozillaSecurityBridge extends BridgeAbstract {
 					foreach ($articles as $element) {
 							$item['title'] = $element->innertext;
 							$item['timestamp'] = strtotime($element->innertext);
-							$item['content'] = str_replace('href="/', 'href="' . self::WEBROOT, $element->next_sibling()->innertext);
+							$item['content'] = $element->next_sibling()->innertext;
 							$item['uri'] = self::URI;
 					$this->items[] = $item;
 					}
