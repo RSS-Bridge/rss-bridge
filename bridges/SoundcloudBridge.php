@@ -41,6 +41,9 @@ class SoundCloudBridge extends BridgeAbstract {
 			. '/stream?client_id='
 			. self::CLIENT_ID
 			. '">';
+			$item['enclosures'] = array($tracks[$i]->uri
+			. '/stream?client_id='
+			. self::CLIENT_ID);
 
 			$item['id'] = self::URI
 				. urlencode($this->getInput('u'))
