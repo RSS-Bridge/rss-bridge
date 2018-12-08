@@ -153,6 +153,7 @@ EOD
 			returnError(<<<EOD
 The requested resource cannot be found!
 Please make sure your input parameters are correct!
+cUrl error: $curlError ($curlErrno)
 EOD
 			, $errorCode);
 	}
