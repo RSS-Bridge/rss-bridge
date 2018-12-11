@@ -63,7 +63,7 @@ define('HDOM_INFO_ENDSPACE',7);
 define('DEFAULT_TARGET_CHARSET', 'UTF-8');
 define('DEFAULT_BR_TEXT', "\r\n");
 define('DEFAULT_SPAN_TEXT', " ");
-define('MAX_FILE_SIZE', 600000);
+define('MAX_FILE_SIZE', 10000000);
 
 /** Contents between curly braces "{" and "}" are interpreted as text */
 define('HDOM_SMARTY_AS_TEXT', 1);
