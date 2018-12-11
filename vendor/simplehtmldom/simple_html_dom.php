@@ -34,7 +34,7 @@
  * @author S.C. Chen <me578022@gmail.com>
  * @author John Schlick
  * @author Rus Carroll
- * @version 1.5 ($Rev: 208 $)
+ * @version Rev. 1.7 (214)
  * @package PlaceLocalInclude
  * @subpackage simple_html_dom
  */
@@ -63,20 +63,27 @@ define('HDOM_INFO_ENDSPACE',7);
 define('DEFAULT_TARGET_CHARSET', 'UTF-8');
 define('DEFAULT_BR_TEXT', "\r\n");
 define('DEFAULT_SPAN_TEXT', " ");
-define('MAX_FILE_SIZE', 10000000);
+define('MAX_FILE_SIZE', 600000);
+
+/** Contents between curly braces "{" and "}" are interpreted as text */
+define('HDOM_SMARTY_AS_TEXT', 1);
+
 // helper functions
 // -----------------------------------------------------------------------------
 // get html dom from file
 // $maxlen is defined in the code as PHP_STREAM_COPY_ALL which is defined as -1.
-function file_get_html($url, $use_include_path = false, $context=null, $offset = -1, $maxLen=-1, $lowercase = true, $forceTagsClosed=true, $target_charset = DEFAULT_TARGET_CHARSET, $stripRN=true, $defaultBRText=DEFAULT_BR_TEXT, $defaultSpanText=DEFAULT_SPAN_TEXT)
+function file_get_html($url, $use_include_path = false, $context=null, $offset = 0, $maxLen=-1, $lowercase = true, $forceTagsClosed=true, $target_charset = DEFAULT_TARGET_CHARSET, $stripRN=true, $defaultBRText=DEFAULT_BR_TEXT, $defaultSpanText=DEFAULT_SPAN_TEXT)
 {
+	// Ensure maximum length is greater than zero
+	if($maxLen <= 0) { $maxLen = MAX_FILE_SIZE; }
+
 	// We DO force the tags to be terminated.
 	$dom = new simple_html_dom(null, $lowercase, $forceTagsClosed, $target_charset, $stripRN, $defaultBRText, $defaultSpanText);
-	// For sourceforge users: uncomment the next line and comment the retreive_url_contents line 2 lines down if it is not already done.
-	$contents = file_get_contents($url, $use_include_path, $context, $offset);
+	// For sourceforge users: uncomment the next line and comment the retrieve_url_contents line 2 lines down if it is not already done.
+	$contents = file_get_contents($url, $use_include_path, $context, $offset, $maxLen);
 	// Paperg - use our own mechanism for getting the contents as we want to control the timeout.
 	//$contents = retrieve_url_contents($url);
-	if (empty($contents) || strlen($contents) > MAX_FILE_SIZE)
+	if (empty($contents) || strlen($contents) > $maxLen)
 	{
 		return false;
 	}
@@ -114,17 +121,68 @@ function dump_html_tree($node, $show_attr=true, $deep=0)
  */
 class simple_html_dom_node
 {
+	/**
+	 * Node type
+	 *
+	 * Default is {@see HDOM_TYPE_TEXT}
+	 *
+	 * @var int
+	 */
 	public $nodetype = HDOM_TYPE_TEXT;
+
+	/**
+	 * Tag name
+	 *
+	 * Default is 'text'
+	 *
+	 * @var string
+	 */
 	public $tag = 'text';
+
+	/**
+	 * List of attributes
+	 *
+	 * @var array
+	 */
 	public $attr = array();
+
+	/**
+	 * List of child node objects
+	 *
+	 * @var array
+	 */
 	public $children = array();
 	public $nodes = array();
+
+	/**
+	 * The parent node object
+	 *
+	 * @var object|null
+	 */
 	public $parent = null;
+
 	// The "info" array - see HDOM_INFO_... for what each element contains.
 	public $_ = array();
+
+	/**
+	 * Start position of the tag in the document
+	 *
+	 * @var int
+	 */
 	public $tag_start = 0;
+
+	/**
+	 * The DOM object
+	 *
+	 * @var object|null
+	 */
 	private $dom = null;
 
+	/**
+	 * Construct new node object
+	 *
+	 * Adds itself to the list of DOM Nodes {@see simple_html_dom::$nodes}
+	 */
 	function __construct($dom)
 	{
 		$this->dom = $dom;
@@ -240,8 +298,13 @@ class simple_html_dom_node
 		}
 	}
 
-	// returns the parent of node
-	// If a node is passed in, it will reset the parent of the current node to that one.
+	/**
+	 * Return or set parent node
+	 *
+	 * @param object|null $parent (optional) The parent node, `null` to return
+	 * the current parent node.
+	 * @return object|null The parent node
+	 */
 	function parent($parent=null)
 	{
 		// I am SURE that this doesn't work properly.
@@ -256,13 +319,22 @@ class simple_html_dom_node
 		return $this->parent;
 	}
 
-	// verify that node has children
+	/**
+	 * @return bool True if the node has at least one child node
+	 */
 	function has_child()
 	{
 		return !empty($this->children);
 	}
 
-	// returns children of node
+	/**
+	 * Get child node at specified index
+	 *
+	 * @param int $idx The index of the child node to return, `-1` to return all
+	 * child nodes.
+	 * @return object|array|null The child node at the specified index, all child
+	 * nodes or null if the index is invalid.
+	 */
 	function children($idx=-1)
 	{
 		if ($idx===-1)
@@ -276,7 +348,15 @@ class simple_html_dom_node
 		return null;
 	}
 
-	// returns the first child of node
+	/**
+	 * Get first child node
+	 *
+	 * @return object|null The first child node or null if the current node has
+	 * no child nodes.
+	 *
+	 * @todo Use `empty()` instead of `count()` to improve performance on large
+	 * arrays.
+	 */
 	function first_child()
 	{
 		if (count($this->children)>0)
@@ -286,7 +366,14 @@ class simple_html_dom_node
 		return null;
 	}
 
-	// returns the last child of node
+	/**
+	 * Get last child node
+	 *
+	 * @return object|null The last child node or null if the current node has
+	 * no child nodes.
+	 *
+	 * @todo Use `end()` to slightly improve performance on large arrays.
+	 */
 	function last_child()
 	{
 		if (($count=count($this->children))>0)
@@ -296,7 +383,12 @@ class simple_html_dom_node
 		return null;
 	}
 
-	// returns the next sibling of node
+	/**
+	 * Get next sibling node
+	 *
+	 * @return object|null The sibling node or null if the current node has no
+	 * sibling nodes.
+	 */
 	function next_sibling()
 	{
 		if ($this->parent===null)
@@ -317,7 +409,12 @@ class simple_html_dom_node
 		return $this->parent->children[$idx];
 	}
 
-	// returns the previous sibling of node
+	/**
+	 * Get previous sibling node
+	 *
+	 * @return object|null The sibling node or null if the current node has no
+	 * sibling nodes.
+	 */
 	function prev_sibling()
 	{
 		if ($this->parent===null) return null;
@@ -329,7 +426,16 @@ class simple_html_dom_node
 		return $this->parent->children[$idx];
 	}
 
-	// function to locate a specific ancestor tag in the path to the root.
+	/**
+	 * Traverse ancestors to the first matching tag.
+	 *
+	 * @param string $tag Tag to find
+	 * @return object|null First matching node in the DOM tree or null if no
+	 * match was found.
+	 *
+	 * @todo Null is returned implicitly by calling ->parent on the root node.
+	 * This behaviour could change at any time, rendering this function invalid.
+	 */
 	function find_ancestor_tag($tag)
 	{
 		global $debug_object;
@@ -351,7 +457,11 @@ class simple_html_dom_node
 		return $returnDom;
 	}
 
-	// get dom node's inner html
+	/**
+	 * Get node's inner text (everything inside the opening and closing tags)
+	 *
+	 * @return string
+	 */
 	function innertext()
 	{
 		if (isset($this->_[HDOM_INFO_INNER])) return $this->_[HDOM_INFO_INNER];
@@ -363,7 +473,11 @@ class simple_html_dom_node
 		return $ret;
 	}
 
-	// get dom node's outer text (with tag)
+	/**
+	 * Get node's outer text (everything including the opening and closing tags)
+	 *
+	 * @return string
+	 */
 	function outertext()
 	{
 		global $debug_object;
@@ -423,7 +537,11 @@ class simple_html_dom_node
 		return $ret;
 	}
 
-	// get dom node's plain text
+	/**
+	 * Get node's plain text (everything excluding all tags)
+	 *
+	 * @return string
+	 */
 	function text()
 	{
 		if (isset($this->_[HDOM_INFO_INNER])) return $this->_[HDOM_INFO_INNER];
@@ -444,20 +562,29 @@ class simple_html_dom_node
 		{
 			foreach ($this->nodes as $n)
 			{
+				// Start paragraph after a blank line
+				if ($n->tag == 'p')
+				{
+					$ret .= "\n\n";
+				}
+
 				$ret .= $this->convert_text($n->text());
+
+				// If this node is a span... add a space at the end of it so multiple spans don't run into each other.  This is plaintext after all.
+				if ($n->tag == "span")
+				{
+					$ret .= $this->dom->default_span_text;
+				}
 			}
-
-			// If this node is a span... add a space at the end of it so multiple spans don't run into each other.  This is plaintext after all.
-			if ($this->tag == "span")
-			{
-				$ret .= $this->dom->default_span_text;
-			}
-
-
 		}
-		return $ret;
+		return trim($ret);
 	}
 
+	/**
+	 * Get node's xml text (inner text as a CDATA section)
+	 *
+	 * @return string
+	 */
 	function xmltext()
 	{
 		$ret = $this->innertext();
@@ -686,7 +813,7 @@ class simple_html_dom_node
 // This implies that an html attribute specifier may start with an @ sign that is NOT captured by the expression.
 // farther study is required to determine of this should be documented or removed.
 //		$pattern = "/([\w-:\*]*)(?:\#([\w-]+)|\.([\w-]+))?(?:\[@?(!?[\w-]+)(?:([!*^$]?=)[\"']?(.*?)[\"']?)?\])?([\/, ]+)/is";
-		$pattern = "/([\w-:\*]*)(?:\#([\w-]+)|\.([\w-]+))?(?:\[@?(!?[\w-:]+)(?:([!*^$]?=)[\"']?(.*?)[\"']?)?\])?([\/, ]+)/is";
+		$pattern = "/([\w:\*-]*)(?:\#([\w-]+)|\.([\w-]+))?(?:\[@?(!?[\w:-]+)(?:([!*^$]?=)[\"']?(.*?)[\"']?)?\])?([\/, ]+)/is";
 		preg_match_all($pattern, trim($selector_string).' ', $matches, PREG_SET_ORDER);
 		if (is_object($debug_object)) {$debug_object->debug_log(2, "Matches Array: ", $matches);}
 
@@ -986,49 +1113,262 @@ class simple_html_dom_node
  */
 class simple_html_dom
 {
+	/**
+	 * The root node of the document
+	 *
+	 * @var object
+	 */
 	public $root = null;
+
+	/**
+	 * List of nodes in the current DOM
+	 *
+	 * @var array
+	 */
 	public $nodes = array();
+
+	/**
+	 * Callback function to run for each element in the DOM.
+	 *
+	 * @var callable|null
+	 */
 	public $callback = null;
+
+	/**
+	 * Indicates how tags and attributes are matched
+	 *
+	 * @var bool When set to **true** tags and attributes will be converted to
+	 * lowercase before matching.
+	 */
 	public $lowercase = false;
-	// Used to keep track of how large the text was when we started.
+
+	/**
+	 * Original document size
+	 *
+	 * Holds the original document size.
+	 *
+	 * @var int
+	 */
 	public $original_size;
+
+	/**
+	 * Current document size
+	 *
+	 * Holds the current document size. The document size is determined by the
+	 * string length of ({@see simple_html_dom::$doc}).
+	 *
+	 * _Note_: Using this variable is more efficient than calling `strlen($doc)`
+	 *
+	 * @var int
+	 * */
 	public $size;
+
+	/**
+	 * Current position in the document
+	 *
+	 * @var int
+	 */
 	protected $pos;
+
+	/**
+	 * The document
+	 *
+	 * @var string
+	 */
 	protected $doc;
+
+	/**
+	 * Current character
+	 *
+	 * Holds the current character at position {@see simple_html_dom::$pos} in
+	 * the document {@see simple_html_dom::$doc}
+	 *
+	 * _Note_: Using this variable is more efficient than calling `substr($doc, $pos, 1)`
+	 *
+	 * @var string
+	 */
 	protected $char;
+
 	protected $cursor;
+
+	/**
+	 * Parent node of the next node detected by the parser
+	 *
+	 * @var object
+	 */
 	protected $parent;
 	protected $noise = array();
+
+	/**
+	 * Tokens considered blank in HTML
+	 *
+	 * @var string
+	 */
 	protected $token_blank = " \t\r\n";
+
+	/**
+	 * Tokens to identify the equal sign for attributes, stopping either at the
+	 * closing tag ("/" i.e. "<html />") or the end of an opening tag (">" i.e.
+	 * "<html>")
+	 *
+	 * @var string
+	 */
 	protected $token_equal = ' =/>';
+
+	/**
+	 * Tokens to identify the end of a tag name. A tag name either ends on the
+	 * ending slash ("/" i.e. "<html/>") or whitespace ("\s\r\n\t")
+	 *
+	 * @var string
+	 */
 	protected $token_slash = " />\r\n\t";
+
+	/**
+	 * Tokens to identify the end of an attribute
+	 *
+	 * @var string
+	 */
 	protected $token_attr = ' >';
+
 	// Note that this is referenced by a child node, and so it needs to be public for that node to see this information.
 	public $_charset = '';
 	public $_target_charset = '';
+
+	/**
+	 * Innertext for <br> elements
+	 *
+	 * @var string
+	 */
 	protected $default_br_text = "";
+
+	/**
+	 * Suffix for <span> elements
+	 *
+	 * @var string
+	 */
 	public $default_span_text = "";
 
-	// use isset instead of in_array, performance boost about 30%...
-	protected $self_closing_tags = array('img'=>1, 'br'=>1, 'input'=>1, 'meta'=>1, 'link'=>1, 'hr'=>1, 'base'=>1, 'embed'=>1, 'spacer'=>1);
-	protected $block_tags = array('root'=>1, 'body'=>1, 'form'=>1, 'div'=>1, 'span'=>1, 'table'=>1);
-	// Known sourceforge issue #2977341
-	// B tags that are not closed cause us to return everything to the end of the document.
-	protected $optional_closing_tags = array(
-		'tr'=>array('tr'=>1, 'td'=>1, 'th'=>1),
-		'th'=>array('th'=>1),
-		'td'=>array('td'=>1),
-		'li'=>array('li'=>1),
-		'dt'=>array('dt'=>1, 'dd'=>1),
-		'dd'=>array('dd'=>1, 'dt'=>1),
-		'dl'=>array('dd'=>1, 'dt'=>1),
-		'p'=>array('p'=>1),
-		'nobr'=>array('nobr'=>1),
-		'b'=>array('b'=>1),
-		'option'=>array('option'=>1),
+	/**
+	 * Defines a list of self-closing tags (Void elements) according to the HTML
+	 * Specification
+	 *
+	 * _Remarks_:
+	 * - Use `isset()` instead of `in_array()` on array elements to boost
+	 * performance about 30%
+	 * - Sort elements by name for better readability!
+	 *
+	 * @link https://www.w3.org/TR/html HTML Specification
+	 * @link https://www.w3.org/TR/html/syntax.html#void-elements Void elements
+	 */
+	protected $self_closing_tags = array(
+		'area'=>1,
+		'base'=>1,
+		'br'=>1,
+		'col'=>1,
+		'embed'=>1,
+		'hr'=>1,
+		'img'=>1,
+		'input'=>1,
+		'link'=>1,
+		'meta'=>1,
+		'param'=>1,
+		'source'=>1,
+		'track'=>1,
+		'wbr'=>1
 	);
 
-	function __construct($str=null, $lowercase=true, $forceTagsClosed=true, $target_charset=DEFAULT_TARGET_CHARSET, $stripRN=true, $defaultBRText=DEFAULT_BR_TEXT, $defaultSpanText=DEFAULT_SPAN_TEXT)
+	/**
+	 * Defines a list of tags which - if closed - close all optional closing
+	 * elements within if they haven't been closed yet. (So, an element where
+	 * neither opening nor closing tag is omissible consistently closes every
+	 * optional closing element within)
+	 *
+	 * _Remarks_:
+	 * - Use `isset()` instead of `in_array()` on array elements to boost
+	 * performance about 30%
+	 * - Sort elements by name for better readability!
+	 */
+	protected $block_tags = array(
+		'body'=>1,
+		'div'=>1,
+		'form'=>1,
+		'root'=>1,
+		'span'=>1,
+		'table'=>1
+	);
+
+	/**
+	 * Defines elements whose end tag is omissible.
+	 *
+	 * * key = Name of an element whose end tag is omissible.
+	 * * value = Names of elements whose end tag is omissible, that are closed
+	 * by the current element.
+	 *
+	 * _Remarks_:
+	 * - Use `isset()` instead of `in_array()` on array elements to boost
+	 * performance about 30%
+	 * - Sort elements by name for better readability!
+	 *
+	 * **Example**
+	 *
+	 * An `li` element’s end tag may be omitted if the `li` element is immediately
+	 * followed by another `li` element. To do that, add following element to the
+	 * array:
+	 *
+	 * ```php
+	 * 'li' => array('li'),
+	 * ```
+	 *
+	 * With this, the following two examples are considered equal. Note that the
+	 * second example is missing the closing tags on `li` elements.
+	 *
+	 * ```html
+	 * <ul><li>First Item</li><li>Second Item</li></ul>
+	 * ```
+	 *
+	 * <ul><li>First Item</li><li>Second Item</li></ul>
+	 *
+	 * ```html
+	 * <ul><li>First Item<li>Second Item</ul>
+	 * ```
+	 *
+	 * <ul><li>First Item<li>Second Item</ul>
+	 *
+	 * @var array A two-dimensional array where the key is the name of an
+	 * element whose end tag is omissible and the value is an array of elements
+	 * whose end tag is omissible, that are closed by the current element.
+	 *
+	 * @link https://www.w3.org/TR/html/syntax.html#optional-tags Optional tags
+	 *
+	 * @todo The implementation of optional closing tags doesn't work in all cases
+	 * because it only consideres elements who close other optional closing
+	 * tags, not taking into account that some (non-blocking) tags should close
+	 * these optional closing tags. For example, the end tag for "p" is omissible
+	 * and can be closed by an "address" element, whose end tag is NOT omissible.
+	 * Currently a "p" element without closing tag stops at the next "p" element
+	 * or blocking tag, even if it contains other elements.
+	 *
+	 * @todo Known sourceforge issue #2977341
+	 * B tags that are not closed cause us to return everything to the end of
+	 * the document.
+	 */
+	protected $optional_closing_tags = array(
+		'b'=>array('b'=>1), // Not optional, see https://www.w3.org/TR/html/textlevel-semantics.html#the-b-element
+		'dd'=>array('dd'=>1, 'dt'=>1),
+		'dl'=>array('dd'=>1, 'dt'=>1), // Not optional, see https://www.w3.org/TR/html/grouping-content.html#the-dl-element
+		'dt'=>array('dd'=>1, 'dt'=>1),
+		'li'=>array('li'=>1),
+		'optgroup'=>array('optgroup'=>1, 'option'=>1),
+		'option'=>array('optgroup'=>1, 'option'=>1),
+		'p'=>array('p'=>1),
+		'rp'=>array('rp'=>1, 'rt'=>1),
+		'rt'=>array('rp'=>1, 'rt'=>1),
+		'td'=>array('td'=>1, 'th'=>1),
+		'th'=>array('td'=>1, 'th'=>1),
+		'tr'=>array('td'=>1, 'th'=>1, 'tr'=>1),
+	);
+
+	function __construct($str=null, $lowercase=true, $forceTagsClosed=true, $target_charset=DEFAULT_TARGET_CHARSET, $stripRN=true, $defaultBRText=DEFAULT_BR_TEXT, $defaultSpanText=DEFAULT_SPAN_TEXT, $options=0)
 	{
 		if ($str)
 		{
@@ -1038,7 +1378,7 @@ class simple_html_dom
 			}
 			else
 			{
-				$this->load($str, $lowercase, $stripRN, $defaultBRText, $defaultSpanText);
+				$this->load($str, $lowercase, $stripRN, $defaultBRText, $defaultSpanText, $options);
 			}
 		}
 		// Forcing tags to be closed implies that we don't trust the html, but it can lead to parsing errors if we SHOULD trust the html.
@@ -1054,21 +1394,32 @@ class simple_html_dom
 	}
 
 	// load html from string
-	function load($str, $lowercase=true, $stripRN=true, $defaultBRText=DEFAULT_BR_TEXT, $defaultSpanText=DEFAULT_SPAN_TEXT)
+	function load($str, $lowercase=true, $stripRN=true, $defaultBRText=DEFAULT_BR_TEXT, $defaultSpanText=DEFAULT_SPAN_TEXT, $options=0)
 	{
 		global $debug_object;
 
 		// prepare
-		$this->prepare($str, $lowercase, $stripRN, $defaultBRText, $defaultSpanText);
-		// strip out cdata
-		$this->remove_noise("'<!\[CDATA\[(.*?)\]\]>'is", true);
-		// strip out comments
-		$this->remove_noise("'<!--(.*?)-->'is");
+		$this->prepare($str, $lowercase, $defaultBRText, $defaultSpanText);
+
 		// Per sourceforge http://sourceforge.net/tracker/?func=detail&aid=2949097&group_id=218559&atid=1044037
 		// Script tags removal now preceeds style tag removal.
 		// strip out <script> tags
 		$this->remove_noise("'<\s*script[^>]*[^/]>(.*?)<\s*/\s*script\s*>'is");
 		$this->remove_noise("'<\s*script\s*>(.*?)<\s*/\s*script\s*>'is");
+
+		// strip out the \r \n's if we are told to.
+		if ($stripRN) {
+			$this->doc = str_replace("\r", " ", $this->doc);
+			$this->doc = str_replace("\n", " ", $this->doc);
+
+			// set the length of content since we have changed it.
+			$this->size = strlen($this->doc);
+		}
+
+		// strip out cdata
+		$this->remove_noise("'<!\[CDATA\[(.*?)\]\]>'is", true);
+		// strip out comments
+		$this->remove_noise("'<!--(.*?)-->'is");
 		// strip out <style> tags
 		$this->remove_noise("'<\s*style[^>]*[^/]>(.*?)<\s*/\s*style\s*>'is");
 		$this->remove_noise("'<\s*style\s*>(.*?)<\s*/\s*style\s*>'is");
@@ -1076,11 +1427,13 @@ class simple_html_dom
 		$this->remove_noise("'<\s*(?:code)[^>]*>(.*?)<\s*/\s*(?:code)\s*>'is");
 		// strip out server side scripts
 		$this->remove_noise("'(<\?)(.*?)(\?>)'s", true);
-		// strip smarty scripts
-		$this->remove_noise("'(\{\w)(.*?)(\})'s", true);
+
+		if($options & HDOM_SMARTY_AS_TEXT) { // Strip Smarty scripts
+			$this->remove_noise("'(\{\w)(.*?)(\})'s", true);
+		}
 
 		// parsing
-		while ($this->parse());
+		$this->parse();
 		// end
 		$this->root->_[HDOM_INFO_END] = $this->cursor;
 		$this->parse_charset();
@@ -1094,21 +1447,31 @@ class simple_html_dom
 	function load_file()
 	{
 		$args = func_get_args();
-		$this->load(call_user_func_array('file_get_contents', $args), true);
-		// Throw an error if we can't properly load the dom.
-		if (($error=error_get_last())!==null) {
-			$this->clear();
+
+		if($doc = call_user_func_array('file_get_contents', $args) !== false) {
+			$this->load($doc, true);
+		} else {
 			return false;
 		}
 	}
 
-	// set callback function
+	/**
+	 * Set the callback function
+	 *
+	 * @param callable $function_name Callback function to run for each element
+	 * in the DOM.
+	 * @return void
+	 */
 	function set_callback($function_name)
 	{
 		$this->callback = $function_name;
 	}
 
-	// remove callback function
+	/**
+	 * Remove callback function
+	 *
+	 * @return void
+	 */
 	function remove_callback()
 	{
 		$this->callback = null;
@@ -1147,25 +1510,13 @@ class simple_html_dom
 	}
 
 	// prepare HTML data and init everything
-	protected function prepare($str, $lowercase=true, $stripRN=true, $defaultBRText=DEFAULT_BR_TEXT, $defaultSpanText=DEFAULT_SPAN_TEXT)
+	protected function prepare($str, $lowercase=true, $defaultBRText=DEFAULT_BR_TEXT, $defaultSpanText=DEFAULT_SPAN_TEXT)
 	{
 		$this->clear();
 
-		// set the length of content before we do anything to it.
-		$this->size = strlen($str);
-		// Save the original size of the html that we got in.  It might be useful to someone.
-		$this->original_size = $this->size;
-
-		//before we save the string as the doc...  strip out the \r \n's if we are told to.
-		if ($stripRN) {
-			$str = str_replace("\r", " ", $str);
-			$str = str_replace("\n", " ", $str);
-
-			// set the length of content since we have changed it.
-			$this->size = strlen($str);
-		}
-
-		$this->doc = $str;
+		$this->doc = trim($str);
+		$this->size = strlen($this->doc);
+		$this->original_size = $this->size; // Save the original size of the html that we got in.  It might be useful to someone.
 		$this->pos = 0;
 		$this->cursor = 1;
 		$this->noise = array();
@@ -1181,20 +1532,31 @@ class simple_html_dom
 		if ($this->size>0) $this->char = $this->doc[0];
 	}
 
-	// parse html content
+	/**
+	 * Parse HTML content
+	 *
+	 * @return bool True on success
+	 */
 	protected function parse()
 	{
-		if (($s = $this->copy_until_char('<'))==='')
-		{
-			return $this->read_tag();
-		}
+		while (true) {
+			// Read next tag if there is no text between current position and the
+			// next opening tag.
+			if (($s = $this->copy_until_char('<'))==='')
+			{
+				if($this->read_tag()) {
+					continue;
+				} else {
+					return true;
+				}
+			}
 
-		// text
-		$node = new simple_html_dom_node($this);
-		++$this->cursor;
-		$node->_[HDOM_INFO_TEXT] = $s;
-		$this->link_nodes($node, false);
-		return true;
+			// Add a text node for text between tags
+			$node = new simple_html_dom_node($this);
+			++$this->cursor;
+			$node->_[HDOM_INFO_TEXT] = $s;
+			$this->link_nodes($node, false);
+		}
 	}
 
 	// PAPERG - dkchou - added this to try to identify the character set of the page we have just parsed so we know better how to spit it out later.
@@ -1220,7 +1582,7 @@ class simple_html_dom
 
 		if (empty($charset))
 		{
-			$el = $this->root->find('meta[http-equiv=Content-Type]',0);
+			$el = $this->root->find('meta[http-equiv=Content-Type]',0, true);
 			if (!empty($el))
 			{
 				$fullvalue = $el->content;
@@ -1228,7 +1590,7 @@ class simple_html_dom
 
 				if (!empty($fullvalue))
 				{
-					$success = preg_match('/charset=(.+)/', $fullvalue, $matches);
+					$success = preg_match('/charset=(.+)/i', $fullvalue, $matches);
 					if ($success)
 					{
 						$charset = $matches[1];
@@ -1251,7 +1613,7 @@ class simple_html_dom
 			if (function_exists('mb_detect_encoding'))
 			{
 				// Have php try to detect the encoding from the text given to us.
-				$charset = mb_detect_encoding($this->root->plaintext . "ascii", $encoding_list = array( "UTF-8", "CP1252" ) );
+				$charset = mb_detect_encoding($this->doc . "ascii", $encoding_list = array( "UTF-8", "CP1252" ) );
 				if (is_object($debug_object)) {$debug_object->debug_log(2, 'mb_detect found: ' . $charset);}
 			}
 
@@ -1275,9 +1637,14 @@ class simple_html_dom
 		return $this->_charset = $charset;
 	}
 
-	// read tag info
+	/**
+	 * Parse tag from current document position.
+	 *
+	 * @return bool True if a tag was found, false otherwise
+	 */
 	protected function read_tag()
 	{
+		// Set end position if no further tags found
 		if ($this->char!=='<')
 		{
 			$this->root->_[HDOM_INFO_END] = $this->cursor;
@@ -1290,28 +1657,35 @@ class simple_html_dom
 		if ($this->char==='/')
 		{
 			$this->char = (++$this->pos<$this->size) ? $this->doc[$this->pos] : null; // next
-			// This represents the change in the simple_html_dom trunk from revision 180 to 181.
-			// $this->skip($this->token_blank_t);
+
+			// Skip whitespace in end tags (i.e. in "</   html>")
 			$this->skip($this->token_blank);
 			$tag = $this->copy_until_char('>');
 
-			// skip attributes in end tag
+			// Skip attributes in end tags
 			if (($pos = strpos($tag, ' '))!==false)
 				$tag = substr($tag, 0, $pos);
 
 			$parent_lower = strtolower($this->parent->tag);
 			$tag_lower = strtolower($tag);
 
+			// The end tag is supposed to close the parent tag. Handle situations
+			// when it doesn't
 			if ($parent_lower!==$tag_lower)
 			{
+				// Parent tag does not have to be closed necessarily (optional closing tag)
+				// Current tag is a block tag, so it may close an ancestor
 				if (isset($this->optional_closing_tags[$parent_lower]) && isset($this->block_tags[$tag_lower]))
 				{
 					$this->parent->_[HDOM_INFO_END] = 0;
 					$org_parent = $this->parent;
 
+					// Traverse ancestors to find a matching opening tag
+					// Stop at root node
 					while (($this->parent->parent) && strtolower($this->parent->tag)!==$tag_lower)
 						$this->parent = $this->parent->parent;
 
+					// If we don't have a match add current tag as text node
 					if (strtolower($this->parent->tag)!==$tag_lower) {
 						$this->parent = $org_parent; // restore origonal parent
 						if ($this->parent->parent) $this->parent = $this->parent->parent;
@@ -1319,14 +1693,18 @@ class simple_html_dom
 						return $this->as_text_node($tag);
 					}
 				}
+				// Grandparent exists and current tag is a block tag, so our parent doesn't have an end tag
 				else if (($this->parent->parent) && isset($this->block_tags[$tag_lower]))
 				{
-					$this->parent->_[HDOM_INFO_END] = 0;
+					$this->parent->_[HDOM_INFO_END] = 0; // No end tag
 					$org_parent = $this->parent;
 
+					// Traverse ancestors to find a matching opening tag
+					// Stop at root node
 					while (($this->parent->parent) && strtolower($this->parent->tag)!==$tag_lower)
 						$this->parent = $this->parent->parent;
 
+					// If we don't have a match add current tag as text node
 					if (strtolower($this->parent->tag)!==$tag_lower)
 					{
 						$this->parent = $org_parent; // restore origonal parent
@@ -1334,15 +1712,17 @@ class simple_html_dom
 						return $this->as_text_node($tag);
 					}
 				}
+				// Grandparent exists and current tag closes it
 				else if (($this->parent->parent) && strtolower($this->parent->parent->tag)===$tag_lower)
 				{
 					$this->parent->_[HDOM_INFO_END] = 0;
 					$this->parent = $this->parent->parent;
 				}
-				else
+				else // Random tag, add as text node
 					return $this->as_text_node($tag);
 			}
 
+			// Set end position of parent tag to current cursor position
 			$this->parent->_[HDOM_INFO_END] = $this->cursor;
 			if ($this->parent->parent) $this->parent = $this->parent->parent;
 
@@ -1350,20 +1730,24 @@ class simple_html_dom
 			return true;
 		}
 
+		// start tag
 		$node = new simple_html_dom_node($this);
 		$node->_[HDOM_INFO_BEGIN] = $this->cursor;
 		++$this->cursor;
-		$tag = $this->copy_until($this->token_slash);
+		$tag = $this->copy_until($this->token_slash); // Get tag name
 		$node->tag_start = $begin_tag_pos;
 
 		// doctype, cdata & comments...
+		// <!DOCTYPE html>
+		// <![CDATA[ ... ]]>
+		// <!-- Comment -->
 		if (isset($tag[0]) && $tag[0]==='!') {
 			$node->_[HDOM_INFO_TEXT] = '<' . $tag . $this->copy_until_char('>');
 
-			if (isset($tag[2]) && $tag[1]==='-' && $tag[2]==='-') {
+			if (isset($tag[2]) && $tag[1]==='-' && $tag[2]==='-') { // Comment ("<!--")
 				$node->nodetype = HDOM_TYPE_COMMENT;
 				$node->tag = 'comment';
-			} else {
+			} else { // Could be doctype or CDATA but we don't care
 				$node->nodetype = HDOM_TYPE_UNKNOWN;
 				$node->tag = 'unknown';
 			}
@@ -1373,7 +1757,8 @@ class simple_html_dom
 			return true;
 		}
 
-		// text
+		// The start tag cannot contain another start tag, if so add as text
+		// i.e. "<<html>"
 		if ($pos=strpos($tag, '<')!==false) {
 			$tag = '<' . substr($tag, 0, -1);
 			$node->_[HDOM_INFO_TEXT] = $tag;
@@ -1382,20 +1767,24 @@ class simple_html_dom
 			return true;
 		}
 
-		if (!preg_match("/^[\w-:]+$/", $tag)) {
+		// Handle invalid tag names (i.e. "<html#doc>")
+		if (!preg_match("/^\w[\w:-]*$/", $tag)) {
 			$node->_[HDOM_INFO_TEXT] = '<' . $tag . $this->copy_until('<>');
+
+			// Next char is the beginning of a new tag, don't touch it.
 			if ($this->char==='<') {
 				$this->link_nodes($node, false);
 				return true;
 			}
 
+			// Next char closes current tag, add and be done with it.
 			if ($this->char==='>') $node->_[HDOM_INFO_TEXT].='>';
 			$this->link_nodes($node, false);
 			$this->char = (++$this->pos<$this->size) ? $this->doc[$this->pos] : null; // next
 			return true;
 		}
 
-		// begin tag
+		// begin tag, add new node
 		$node->nodetype = HDOM_TYPE_ELEMENT;
 		$tag_lower = strtolower($tag);
 		$node->tag = ($this->lowercase) ? $tag_lower : $tag;
@@ -1403,6 +1792,7 @@ class simple_html_dom
 		// handle optional closing tags
 		if (isset($this->optional_closing_tags[$tag_lower]) )
 		{
+			// Traverse ancestors to close all optional closing tags
 			while (isset($this->optional_closing_tags[$tag_lower][strtolower($this->parent->tag)]))
 			{
 				$this->parent->_[HDOM_INFO_END] = 0;
@@ -1412,17 +1802,20 @@ class simple_html_dom
 		}
 
 		$guard = 0; // prevent infinity loop
-		$space = array($this->copy_skip($this->token_blank), '', '');
+		$space = array($this->copy_skip($this->token_blank), '', ''); // [0] Space between tag and first attribute
 
 		// attributes
 		do
 		{
-			if ($this->char!==null && $space[0]==='')
+			// Everything until the first equal sign should be the attribute name
+			$name = $this->copy_until($this->token_equal);
+
+			if ($name==='' && $this->char!==null && $space[0]==='')
 			{
 				break;
 			}
-			$name = $this->copy_until($this->token_equal);
-			if ($guard===$this->pos)
+
+			if ($guard===$this->pos) // Escape infinite loop
 			{
 				$this->char = (++$this->pos<$this->size) ? $this->doc[$this->pos] : null; // next
 				continue;
@@ -1430,7 +1823,7 @@ class simple_html_dom
 			$guard = $this->pos;
 
 			// handle endless '<'
-			if ($this->pos>=$this->size-1 && $this->char!=='>') {
+			if ($this->pos>=$this->size-1 && $this->char!=='>') { // Out of bounds before the tag ended
 				$node->nodetype = HDOM_TYPE_TEXT;
 				$node->_[HDOM_INFO_END] = 0;
 				$node->_[HDOM_INFO_TEXT] = '<'.$tag . $space[0] . $name;
@@ -1440,7 +1833,7 @@ class simple_html_dom
 			}
 
 			// handle mismatch '<'
-			if ($this->doc[$this->pos-1]=='<') {
+			if ($this->doc[$this->pos-1]=='<') { // Attributes cannot start after opening tag
 				$node->nodetype = HDOM_TYPE_TEXT;
 				$node->tag = 'text';
 				$node->attr = array();
@@ -1452,13 +1845,13 @@ class simple_html_dom
 				return true;
 			}
 
-			if ($name!=='/' && $name!=='') {
-				$space[1] = $this->copy_skip($this->token_blank);
-				$name = $this->restore_noise($name);
+			if ($name!=='/' && $name!=='') { // this is a attribute name
+				$space[1] = $this->copy_skip($this->token_blank); // [1] Whitespace after attribute name
+				$name = $this->restore_noise($name); // might be a noisy name
 				if ($this->lowercase) $name = strtolower($name);
-				if ($this->char==='=') {
+				if ($this->char==='=') { // attribute with value
 					$this->char = (++$this->pos<$this->size) ? $this->doc[$this->pos] : null; // next
-					$this->parse_attr($node, $name, $space);
+					$this->parse_attr($node, $name, $space); // get attribute value
 				}
 				else {
 					//no value attr: nowrap, checked selected...
@@ -1467,17 +1860,17 @@ class simple_html_dom
 					if ($this->char!='>') $this->char = $this->doc[--$this->pos]; // prev
 				}
 				$node->_[HDOM_INFO_SPACE][] = $space;
-				$space = array($this->copy_skip($this->token_blank), '', '');
+				$space = array($this->copy_skip($this->token_blank), '', ''); // prepare for next attribute
 			}
-			else
+			else // no more attributes
 				break;
-		} while ($this->char!=='>' && $this->char!=='/');
+		} while ($this->char!=='>' && $this->char!=='/'); // go until the tag ended
 
 		$this->link_nodes($node, true);
 		$node->_[HDOM_INFO_ENDSPACE] = $space[0];
 
-		// check self closing
-		if ($this->copy_until_char_escape('>')==='/')
+		// handle empty tags (i.e. "<div/>")
+		if ($this->copy_until_char('>')==='/')
 		{
 			$node->_[HDOM_INFO_ENDSPACE] .= '/';
 			$node->_[HDOM_INFO_END] = 0;
@@ -1500,31 +1893,39 @@ class simple_html_dom
 		return true;
 	}
 
-	// parse attributes
+	/**
+	 * Parse attribute from current document position
+	 *
+	 * @param object $node Node for the attributes
+	 * @param string $name Name of the current attribute
+	 * @param array $space Array for spacing information
+	 * @return void
+	 */
 	protected function parse_attr($node, $name, &$space)
 	{
 		// Per sourceforge: http://sourceforge.net/tracker/?func=detail&aid=3061408&group_id=218559&atid=1044037
-		// If the attribute is already defined inside a tag, only pay atetntion to the first one as opposed to the last one.
+		// If the attribute is already defined inside a tag, only pay attention to the first one as opposed to the last one.
+		// https://stackoverflow.com/a/26341866
 		if (isset($node->attr[$name]))
 		{
 			return;
 		}
 
-		$space[2] = $this->copy_skip($this->token_blank);
+		$space[2] = $this->copy_skip($this->token_blank); // [2] Whitespace between "=" and the value
 		switch ($this->char) {
-			case '"':
+			case '"': // value is anything between double quotes
 				$node->_[HDOM_INFO_QUOTE][] = HDOM_QUOTE_DOUBLE;
 				$this->char = (++$this->pos<$this->size) ? $this->doc[$this->pos] : null; // next
-				$node->attr[$name] = $this->restore_noise($this->copy_until_char_escape('"'));
+				$node->attr[$name] = $this->restore_noise($this->copy_until_char('"'));
 				$this->char = (++$this->pos<$this->size) ? $this->doc[$this->pos] : null; // next
 				break;
-			case '\'':
+			case '\'': // value is anything between single quotes
 				$node->_[HDOM_INFO_QUOTE][] = HDOM_QUOTE_SINGLE;
 				$this->char = (++$this->pos<$this->size) ? $this->doc[$this->pos] : null; // next
-				$node->attr[$name] = $this->restore_noise($this->copy_until_char_escape('\''));
+				$node->attr[$name] = $this->restore_noise($this->copy_until_char('\''));
 				$this->char = (++$this->pos<$this->size) ? $this->doc[$this->pos] : null; // next
 				break;
-			default:
+			default: // value is anything until the first space or end tag
 				$node->_[HDOM_INFO_QUOTE][] = HDOM_QUOTE_NO;
 				$node->attr[$name] = $this->restore_noise($this->copy_until($this->token_attr));
 		}
@@ -1537,6 +1938,13 @@ class simple_html_dom
 		}
 	}
 
+	/**
+	 * Link node to parent node
+	 *
+	 * @param object $node Node to link to parent
+	 * @param bool $is_child True if the node is a child of parent
+	 * @return void
+	 */
 	// link node's parent
 	protected function link_nodes(&$node, $is_child)
 	{
@@ -1548,7 +1956,12 @@ class simple_html_dom
 		}
 	}
 
-	// as a text node
+	/**
+	 * Add tag as text node to current node
+	 *
+	 * @param string $tag Tag name
+	 * @return bool True on success
+	 */
 	protected function as_text_node($tag)
 	{
 		$node = new simple_html_dom_node($this);
@@ -1559,12 +1972,28 @@ class simple_html_dom
 		return true;
 	}
 
+	/**
+	 * Seek from the current document position to the first occurrence of a
+	 * character not defined by the provided string. Update the current document
+	 * position to the new position.
+	 *
+	 * @param string $chars A string containing every allowed character.
+	 * @return void
+	 */
 	protected function skip($chars)
 	{
 		$this->pos += strspn($this->doc, $chars, $this->pos);
 		$this->char = ($this->pos<$this->size) ? $this->doc[$this->pos] : null; // next
 	}
 
+	/**
+	 * Copy substring from the current document position to the first occurrence
+	 * of a character not defined by the provided string.
+	 *
+	 * @param string $chars A string containing every allowed character.
+	 * @return string Substring from the current document position to the first
+	 * occurrence of a character not defined by the provided string.
+	 */
 	protected function copy_skip($chars)
 	{
 		$pos = $this->pos;
@@ -1575,6 +2004,14 @@ class simple_html_dom
 		return substr($this->doc, $pos, $len);
 	}
 
+	/**
+	 * Copy substring from the current document position to the first occurrence
+	 * of any of the provided characters.
+	 *
+	 * @param string $chars A string containing every character to stop at.
+	 * @return string Substring from the current document position to the first
+	 * occurrence of any of the provided characters.
+	 */
 	protected function copy_until($chars)
 	{
 		$pos = $this->pos;
@@ -1584,6 +2021,14 @@ class simple_html_dom
 		return substr($this->doc, $pos, $len);
 	}
 
+	/**
+	 * Copy substring from the current document position to the first occurrence
+	 * of the provided string.
+	 *
+	 * @param string $char The string to stop at.
+	 * @return string Substring from the current document position to the first
+	 * occurrence of the provided string.
+	 */
 	protected function copy_until_char($char)
 	{
 		if ($this->char===null) return '';
@@ -1602,37 +2047,15 @@ class simple_html_dom
 		return substr($this->doc, $pos_old, $pos-$pos_old);
 	}
 
-	protected function copy_until_char_escape($char)
-	{
-		if ($this->char===null) return '';
-
-		$start = $this->pos;
-		while (1)
-		{
-			if (($pos = strpos($this->doc, $char, $start))===false)
-			{
-				$ret = substr($this->doc, $this->pos, $this->size-$this->pos);
-				$this->char = null;
-				$this->pos = $this->size;
-				return $ret;
-			}
-
-			if ($pos===$this->pos) return '';
-
-			if ($this->doc[$pos-1]==='\\') {
-				$start = $pos+1;
-				continue;
-			}
-
-			$pos_old = $this->pos;
-			$this->char = $this->doc[$pos];
-			$this->pos = $pos;
-			return substr($this->doc, $pos_old, $pos-$pos_old);
-		}
-	}
-
-	// remove noise from html content
-	// save the noise in the $this->noise array.
+	/**
+	 * Remove noise from HTML content
+	 *
+	 * Noise is stored to {@see simple_html_dom::$noise}
+	 *
+	 * @param string $pattern The regex pattern used for finding noise
+	 * @param bool $remove_tag True to remove the entire match. Default is false
+	 * to only remove the captured data.
+	 */
 	protected function remove_noise($pattern, $remove_tag=false)
 	{
 		global $debug_object;
@@ -1644,7 +2067,7 @@ class simple_html_dom
 		{
 			$key = '___noise___'.sprintf('% 5d', count($this->noise)+1000);
 			if (is_object($debug_object)) { $debug_object->debug_log(2, 'key is: ' . $key); }
-			$idx = ($remove_tag) ? 0 : 1;
+			$idx = ($remove_tag) ? 0 : 1; // 0 = entire match, 1 = submatch
 			$this->noise[$key] = $matches[$i][$idx][0];
 			$this->doc = substr_replace($this->doc, $key, $matches[$i][$idx][1], strlen($matches[$i][$idx][0]));
 		}
@@ -1657,7 +2080,14 @@ class simple_html_dom
 		}
 	}
 
-	// restore noise to html content
+	/**
+	 * Restore noise to HTML content
+	 *
+	 * Noise is restored from {@see simple_html_dom::$noise}
+	 *
+	 * @param string $text A subset of HTML containing noise
+	 * @return string The same content with noise restored
+	 */
 	function restore_noise($text)
 	{
 		global $debug_object;
@@ -1667,7 +2097,7 @@ class simple_html_dom
 		{
 			// Sometimes there is a broken piece of markup, and we don't GET the pos+11 etc... token which indicates a problem outside of us...
 			if (strlen($text) > $pos+15)
-			{
+			{	// todo: "___noise___1000" (or any number with four or more digits) in the DOM causes an infinite loop which could be utilized by malicious software
 				$key = '___noise___'.$text[$pos+11].$text[$pos+12].$text[$pos+13].$text[$pos+14].$text[$pos+15];
 				if (is_object($debug_object)) { $debug_object->debug_log(2, 'located key of: ' . $key); }
 
