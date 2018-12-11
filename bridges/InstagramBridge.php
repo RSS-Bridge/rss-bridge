@@ -83,10 +83,12 @@ class InstagramBridge extends BridgeAbstract {
 			$item['uri'] = self::URI . 'p/' . $media->shortcode . '/';
 
 			if (isset($media->edge_media_to_caption->edges[0]->node->text)) {
-				$item['title'] = $media->edge_media_to_caption->edges[0]->node->text;
+				$textContent = $media->edge_media_to_caption->edges[0]->node->text;
 			} else {
-				$item['title'] = basename($media->display_url);
+				$textContent = basename($media->display_url);
 			}
+			
+			$item['title'] = self::truncate($textContent, 120);
 
 			if(!is_null($this->getInput('u')) && $media->__typename == 'GraphSidecar') {
 				$data = $this->getInstagramStory($item['uri']);
@@ -94,6 +96,9 @@ class InstagramBridge extends BridgeAbstract {
 				$item['enclosures'] = $data[1];
 			} else {
 				$item['content'] = '<img src="' . htmlentities($media->display_url) . '" alt="' . $item['title'] . '" />';
+				if (mb_strlen($item['title']) != mb_strlen($textContent)) {
+					$item['content'] .= '<br><br>' . htmlentities($textContent);
+				}
 				$item['enclosures'] = array($media->display_url);
 			}
 
@@ -160,4 +165,15 @@ class InstagramBridge extends BridgeAbstract {
 		}
 		return parent::getURI();
 	}
+	
+	/** Truncate a string after n chars
+	 * @param string $string The string to truncate
+	 * @param int $n Maximum number of chars
+	 * @param string $append To string to append if trucation is done (default: '...') */
+	private static function truncate($string, $n, $append = '...') {
+		$n = intval($n);
+		if (mb_strlen($string) <= $n) return $string;
+		return (mb_substr($string, 0, $n) . $append);
+	}
+	
 }
