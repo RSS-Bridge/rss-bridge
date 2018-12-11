@@ -97,7 +97,17 @@ function getContents($url, $header = array(), $opts = array()){
 	// Enables logging for the outgoing header
 	curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 
-	$data = curl_exec($ch);
+	if(php_sapi_name() == 'cli' && ini_get('curl.cainfo') == '') {
+		$data = file_get_contents($url);
+		if($data)
+			$errorCode = 200;
+		else
+			$errorCode = 500;
+	} else {
+		$data = curl_exec($ch);
+		$errorCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	}
+		
 	$curlError = curl_error($ch);
 	$curlErrno = curl_errno($ch);
 	$curlInfo = curl_getinfo($ch);
@@ -108,7 +118,6 @@ function getContents($url, $header = array(), $opts = array()){
 		Debug::log('Cant\'t download ' . $url . ' cUrl error: ' . $curlError . ' (' . $curlErrno . ')');
 
 	$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-	$errorCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 	$header = substr($data, 0, $headerSize);
 
 	Debug::log('Response header: ' . $header);
