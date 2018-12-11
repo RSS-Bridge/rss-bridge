@@ -87,7 +87,7 @@ class InstagramBridge extends BridgeAbstract {
 			} else {
 				$textContent = basename($media->display_url);
 			}
-			
+
 			$item['title'] = self::truncate($textContent, 120);
 
 			if(!is_null($this->getInput('u')) && $media->__typename == 'GraphSidecar') {
@@ -165,7 +165,7 @@ class InstagramBridge extends BridgeAbstract {
 		}
 		return parent::getURI();
 	}
-	
+
 	/** Truncate a string after n chars
 	 * @param string $string The string to truncate
 	 * @param int $n Maximum number of chars
@@ -175,5 +175,5 @@ class InstagramBridge extends BridgeAbstract {
 		if (mb_strlen($string) <= $n) return $string;
 		return (mb_substr($string, 0, $n) . $append);
 	}
-	
+
 }
