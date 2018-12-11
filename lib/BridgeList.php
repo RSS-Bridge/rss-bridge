@@ -1,6 +1,31 @@
 <?php
+/**
+ * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
+ * Atom feeds for websites that don't have one.
+ *
+ * For the full license information, please view the UNLICENSE file distributed
+ * with this source code.
+ *
+ * @package	Core
+ * @license	http://unlicense.org/ UNLICENSE
+ * @link	https://github.com/rss-bridge/rss-bridge
+ */
+
+/**
+ * A generator class for the home page of RSS-Bridge.
+ *
+ * This class generates the HTML content for displaying all bridges on the home
+ * page of RSS-Bridge.
+ *
+ * @todo Return error if a caller creates an object of this class.
+ */
 final class BridgeList {
 
+	/**
+	 * Get the document head
+	 *
+	 * @return string The document head
+	 */
 	private static function getHead() {
 		return <<<EOD
 <head>
@@ -22,6 +47,15 @@ final class BridgeList {
 EOD;
 	}
 
+	/**
+	 * Get the document body for all bridge cards
+	 *
+	 * @param bool $showInactive Inactive bridges are visible on the home page if
+	 * enabled.
+	 * @param int $totalBridges (ref) Returns the total number of bridges.
+	 * @param int $totalActiveBridges (ref) Returns the number of active bridges.
+	 * @return string The document body for all bridge cards.
+	 */
 	private static function getBridges($showInactive, &$totalBridges, &$totalActiveBridges) {
 
 		$body = '';
@@ -54,6 +88,11 @@ EOD;
 		return $body;
 	}
 
+	/**
+	 * Get the document header
+	 *
+	 * @return string The document header
+	 */
 	private static function getHeader() {
 		$warning = '';
 
@@ -80,6 +119,11 @@ EOD;
 EOD;
 	}
 
+	/**
+	 * Get the searchbar
+	 *
+	 * @return string The searchbar
+	 */
 	private static function getSearchbar() {
 		$query = filter_input(INPUT_GET, 'q');
 
@@ -93,6 +137,16 @@ EOD;
 EOD;
 	}
 
+	/**
+	 * Get the document footer
+	 *
+	 * @param int $totalBridges The total number of bridges, shown in the footer
+	 * @param int $totalActiveBridges The total number of active bridges, shown
+	 * in the footer.
+	 * @param bool $showInactive Sets the 'Show active'/'Show inactive' text in
+	 * the footer.
+	 * @return string The document footer
+	 */
 	private static function getFooter($totalBridges, $totalActiveBridges, $showInactive) {
 		$version = Configuration::getVersion();
 
@@ -131,6 +185,13 @@ EOD;
 EOD;
 	}
 
+	/**
+	 * Create the entire home page
+	 *
+	 * @param bool $showInactive Inactive bridges are displayed on the home page,
+	 * if enabled.
+	 * @return string The home page
+	 */
 	static function create($showInactive = true) {
 
 		$totalBridges = 0;

@@ -1,5 +1,4 @@
 dist: trusty
-sudo: false
 language: php
 
 install:
@@ -17,10 +16,10 @@ install:
 script:
   - phpenv rehash
   # Run PHP_CodeSniffer on all versions
-  - ~/.composer/vendor/bin/phpcs . --standard=phpcs.xml --warning-severity=0 --extensions=php -p;
+  - ~/.config/composer/vendor/bin/phpcs . --standard=phpcs.xml --warning-severity=0 --extensions=php -p;
   # Check PHP compatibility for the lowest supported version
   - if [[ $TRAVIS_PHP_VERSION == "5.6" ]]; then
-      ~/.composer/vendor/bin/phpcs . --standard=phpcompatibility.xml --warning-severity=0 --extensions=php -p;
+      ~/.config/composer/vendor/bin/phpcs . --standard=phpcompatibility.xml --warning-severity=0 --extensions=php -p;
     fi
   # Run unit tests (stable)
   - if [[ $TRAVIS_PHP_VERSION == "7.0" ]]; then
@@ -30,7 +29,7 @@ script:
   # Check PHP compatibility for all versions, starting at the lowest supported version in order to detect breaking changes
   - if [[ $TRAVIS_PHP_VERSION == "nightly" ]]; then
       phpunit --configuration=phpunit.xml --include-path=lib/;
-      ~/.composer/vendor/bin/phpcs . --standard=PHPCompatibility --warning-severity=0 --extensions=php -p --runtime-set testVersion 5.6-;
+      ~/.config/composer/vendor/bin/phpcs . --standard=PHPCompatibility --warning-severity=0 --extensions=php -p --runtime-set testVersion 5.6-;
     fi
 
 matrix:

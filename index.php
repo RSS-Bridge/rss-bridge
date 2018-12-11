@@ -96,6 +96,42 @@ try {
 		header('Content-Type: application/json');
 		echo json_encode($list, JSON_PRETTY_PRINT);
 
+	} elseif($action === 'detect') {
+
+		$targetURL = $params['url']
+			or returnClientError('You must specify a url!');
+
+		$format = $params['format']
+			or returnClientError('You must specify a format!');
+
+		foreach(Bridge::getBridgeNames() as $bridgeName) {
+
+			if(!Bridge::isWhitelisted($bridgeName)) {
+				continue;
+			}
+
+			$bridge = Bridge::create($bridgeName);
+
+			if($bridge === false) {
+				continue;
+			}
+
+			$bridgeParams = $bridge->detectParameters($targetURL);
+
+			if(is_null($bridgeParams)) {
+				continue;
+			}
+
+			$bridgeParams['bridge'] = $bridgeName;
+			$bridgeParams['format'] = $format;
+
+			header('Location: ?action=display&' . http_build_query($bridgeParams), true, 301);
+			die();
+
+		}
+
+		returnClientError('No bridge found for given URL: ' . $targetURL);
+
 	} elseif($action === 'display' && !empty($bridge)) {
 
 		$format = $params['format']
@@ -109,7 +145,7 @@ try {
 
 		// whitelist control
 		if(!Bridge::isWhitelisted($bridge)) {
-			throw new \HttpException('This bridge is not whitelisted', 401);
+			throw new \Exception('This bridge is not whitelisted', 401);
 			die;
 		}
 
@@ -224,7 +260,8 @@ try {
 					$item['title'] = 'Bridge returned error ' . $e->getCode() . '! (' . $params['_error_time'] . ')';
 				}
 
-				$item['uri'] = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) . '?' . http_build_query($params);
+				$item['uri'] = (isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '')
+				. '?' . http_build_query($params);
 				$item['timestamp'] = time();
 				$item['content'] = buildBridgeException($e, $bridge);
 
@@ -237,7 +274,8 @@ try {
 				// Create "new" error message every 24 hours
 				$params['_error_time'] = urlencode((int)(time() / 86400));
 
-				$item['uri'] = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) . '?' . http_build_query($params);
+				$item['uri'] = (isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '')
+				. '?' . http_build_query($params);
 				$item['title'] = 'Bridge returned error ' . $e->getCode() . '! (' . $params['_error_time'] . ')';
 				$item['timestamp'] = time();
 				$item['content'] = buildBridgeException($e, $bridge);
@@ -272,11 +310,8 @@ try {
 	} else {
 		echo BridgeList::create($showInactive);
 	}
-} catch(HttpException $e) {
-	error_log($e);
-	header('Content-Type: text/plain', true, $e->getCode());
-	die($e->getMessage());
 } catch(\Exception $e) {
 	error_log($e);
+	header('Content-Type: text/plain', true, $e->getCode());
 	die($e->getMessage());
 }

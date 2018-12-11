@@ -34,13 +34,13 @@ class SoundCloudBridge extends BridgeAbstract {
 
 		for($i = 0; $i < 10; $i++) {
 			$item = array();
-			$item['author'] = $tracks[$i]->user->username . ' - ' . $tracks[$i]->title;
+			$item['author'] = $tracks[$i]->user->username;
 			$item['title'] = $tracks[$i]->user->username . ' - ' . $tracks[$i]->title;
-			$item['content'] = '<audio src="'
-			. $tracks[$i]->uri
+			$item['timestamp'] = strtotime($tracks[$i]->created_at);
+			$item['content'] = $tracks[$i]->description;
+			$item['enclosures'] = array($tracks[$i]->uri
 			. '/stream?client_id='
-			. self::CLIENT_ID
-			. '">';
+			. self::CLIENT_ID);
 
 			$item['id'] = self::URI
 				. urlencode($this->getInput('u'))

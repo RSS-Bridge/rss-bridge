@@ -93,7 +93,7 @@ class WordPressBridge extends FeedExpander {
 		}
 		try{
 			$this->collectExpandableDatas($this->getURI() . '/feed/atom/');
-		} catch (HttpException $e) {
+		} catch (Exception $e) {
 			$this->collectExpandableDatas($this->getURI() . '/?feed=atom');
 		}
 

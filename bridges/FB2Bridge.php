@@ -103,7 +103,7 @@ EOD;
 				$timestamp = 0;
 
 			$item['uri'] = html_entity_decode('http://touch.facebook.com'
-			. $content->find("div[class='_52jc _5qc4 _24u0 _36xo']", 0)->find('a', 0)->getAttribute('href'), ENT_QUOTES);
+			. $content->find("div[class='_52jc _5qc4 _78cz _24u0 _36xo']", 0)->find('a', 0)->getAttribute('href'), ENT_QUOTES);
 
 			//Decode images
 			$imagecleaned = preg_replace_callback('/<i [^>]* style="[^"]*url\(\'(.*?)\'\).*?><\/i>/m', function ($matches) {
