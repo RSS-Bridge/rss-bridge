@@ -98,12 +98,13 @@ function getContents($url, $header = array(), $opts = array()){
 	curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 
 	// Use file_get_contents if in CLI mode with no root certificates defined
-	if(php_sapi_name() == 'cli' && ini_get('curl.cainfo') == '') {
+	if(php_sapi_name() === 'cli' && ini_get('curl.cainfo') === '') {
 		$data = file_get_contents($url);
-		if($data)
-			$errorCode = 200;
-		else
+		if($data === false) {
 			$errorCode = 500;
+		} else {
+			$errorCode = 200;
+		}
 	} else {
 		$data = curl_exec($ch);
 		$errorCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
