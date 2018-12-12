@@ -61,9 +61,9 @@ function getContents($url, $header = array(), $opts = array()){
 		} else {
 			$errorCode = 200;
 		}
-		
-		$curlError = "";
-		$curlErrno = "";
+
+		$curlError = '';
+		$curlErrno = '';
 		$headerSize = 0;
 		$finalHeader = array();
 	} else {
@@ -114,7 +114,7 @@ function getContents($url, $header = array(), $opts = array()){
 
 		$data = curl_exec($ch);
 		$errorCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		
+
 		$curlError = curl_error($ch);
 		$curlErrno = curl_errno($ch);
 		$curlInfo = curl_getinfo($ch);
