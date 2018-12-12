@@ -89,11 +89,9 @@ class InstagramBridge extends BridgeAbstract {
 			}
 
 			$item['title'] = trim($textContent);
-			if (strlen($item['title']) > 120) {
-				$titleLinePos = strpos(wordwrap($item['title'], 120), "\n");
-				if ($titleLinePos != false) {
-					$item['title'] = substr($item['title'], 0, $titleLinePos) . '...';
-				}
+			$titleLinePos = strpos(wordwrap($item['title'], 120), "\n");
+			if ($titleLinePos != false) {
+				$item['title'] = substr($item['title'], 0, $titleLinePos) . '...';
 			}
 
 			if(!is_null($this->getInput('u')) && $media->__typename == 'GraphSidecar') {
