@@ -83,9 +83,15 @@ class InstagramBridge extends BridgeAbstract {
 			$item['uri'] = self::URI . 'p/' . $media->shortcode . '/';
 
 			if (isset($media->edge_media_to_caption->edges[0]->node->text)) {
-				$item['title'] = $media->edge_media_to_caption->edges[0]->node->text;
+				$textContent = $media->edge_media_to_caption->edges[0]->node->text;
 			} else {
-				$item['title'] = basename($media->display_url);
+				$textContent = basename($media->display_url);
+			}
+
+			$item['title'] = trim($textContent);
+			$titleLinePos = strpos(wordwrap($item['title'], 120), "\n");
+			if ($titleLinePos != false) {
+				$item['title'] = substr($item['title'], 0, $titleLinePos) . '...';
 			}
 
 			if(!is_null($this->getInput('u')) && $media->__typename == 'GraphSidecar') {
@@ -94,6 +100,7 @@ class InstagramBridge extends BridgeAbstract {
 				$item['enclosures'] = $data[1];
 			} else {
 				$item['content'] = '<img src="' . htmlentities($media->display_url) . '" alt="' . $item['title'] . '" />';
+				$item['content'] .= '<br><br>' . nl2br(htmlentities($textContent));
 				$item['enclosures'] = array($media->display_url);
 			}
 
@@ -160,4 +167,5 @@ class InstagramBridge extends BridgeAbstract {
 		}
 		return parent::getURI();
 	}
+
 }
