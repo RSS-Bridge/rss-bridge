@@ -88,7 +88,7 @@ class InstagramBridge extends BridgeAbstract {
 				$textContent = basename($media->display_url);
 			}
 
-			$item['title'] = trim($textContent);
+			$item['title'] = ($media->is_video ? '▶ ' : '') . trim($textContent);
 			$titleLinePos = strpos(wordwrap($item['title'], 120), "\n");
 			if ($titleLinePos != false) {
 				$item['title'] = substr($item['title'], 0, $titleLinePos) . '...';
