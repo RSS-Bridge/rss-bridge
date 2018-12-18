@@ -214,6 +214,13 @@ class BadDragonBridge extends BridgeAbstract {
 				$item['uri'] = $this->getURI() . '/' . $sale->slug;
 
 				$contentHTML = '<p><img src="' . $sale->image->url . '"></p>';
+				if(isset($sale->endDate)) {
+					$contentHTML .= '<p><b>This promotion ends on '
+						. gmdate('M j, Y \a\t g:i A T', strtotime($sale->endDate))
+						. '</b></p>';
+				} else {
+					$contentHTML .= '<p><b>This promotion never ends</b></p>';
+				}
 				$ul = false;
 				$content = json_decode($sale->content);
 				foreach($content->blocks as $block) {
