@@ -32,7 +32,8 @@ class SoundCloudBridge extends BridgeAbstract {
 			. self::CLIENT_ID
 		)) or returnServerError('No results for this user');
 
-		for($i = 0; $i < 10; $i++) {
+		$numTracks = min(count($tracks), 10);
+		for($i = 0; $i < $numTracks; $i++) {
 			$item = array();
 			$item['author'] = $tracks[$i]->user->username;
 			$item['title'] = $tracks[$i]->user->username . ' - ' . $tracks[$i]->title;
