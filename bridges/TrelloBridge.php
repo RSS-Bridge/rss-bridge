@@ -24,7 +24,7 @@ class TrelloBridge extends BridgeAbstract {
 		)
 	);
 
-	private const ACTIONTEXTS = array(
+	const ACTION_TEXTS = array(
 		'action_accept_enterprise_join_request'
 			=> '{memberCreator} added team {organization} to the enterprise {enterprise}',
 		'action_add_attachment_to_card'
@@ -471,7 +471,7 @@ class TrelloBridge extends BridgeAbstract {
 			=> '{memberCreator} withdrew a request to add team {organization} to the enterprise {enterprise}'
 	);
 
-	private const REQUESTACTIONS = array(
+	const REQUEST_ACTIONS = array(
 		'addAttachmentToCard',
 		'addChecklistToCard',
 		'addMemberToCard',
@@ -533,7 +533,7 @@ class TrelloBridge extends BridgeAbstract {
 			} elseif($type === 'date') {
 				$string = gmdate('M j, Y \a\t g:i A T', strtotime($entity->date));
 			} elseif($type === 'translatable') {
-				$string = self::ACTIONTEXTS[$entity->translationKey];
+				$string = self::ACTION_TEXTS[$entity->translationKey];
 			} else {
 				if(isset($entity->text)) {
 					$string = $entity->text;
@@ -546,13 +546,13 @@ class TrelloBridge extends BridgeAbstract {
 
 		return str_replace(array_keys($strings),
 			array_values($strings),
-			self::ACTIONTEXTS[$action->display->translationKey]);
+			self::ACTION_TEXTS[$action->display->translationKey]);
 	}
 
 	public function collectData() {
 		$apiParams = array(
 			'actions_display' => 'true',
-			'actions' => implode(',', self::REQUESTACTIONS),
+			'actions' => implode(',', self::REQUEST_ACTIONS),
 			'fields' => 'name,url'
 		);
 		switch($this->queriedContext) {
