@@ -24,6 +24,12 @@ class TrelloBridge extends BridgeAbstract {
 		)
 	);
 
+	/*
+	 * This was extracted from webpack on a Trello page, e.g. trello.com/b/g9mdhdzg
+	 * In the browser's inspector/debugger go to the Debugger (Firefox) or
+	 * Sources (Chromium) tab, these values can be found at:
+	 * webpack:///resources/strings/actions/en.json
+	 */
 	const ACTION_TEXTS = array(
 		'action_accept_enterprise_join_request'
 			=> '{memberCreator} added team {organization} to the enterprise {enterprise}',
