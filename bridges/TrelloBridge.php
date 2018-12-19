@@ -475,9 +475,55 @@ class TrelloBridge extends BridgeAbstract {
 			=> 'voting',
 		'action_withdraw_enterprise_join_request'
 			=> '{memberCreator} withdrew a request to add team {organization} to the enterprise {enterprise}'
+		);
+
+	const REQUEST_ACTIONS_BOARDS = array(
+		'addAttachmentToCard',
+		'addChecklistToCard',
+		'addMemberToCard',
+		'commentCard',
+		'copyCommentCard',
+		'convertToCardFromCheckItem',
+		'createCard',
+		'copyCard',
+		'deleteAttachmentFromCard',
+		'emailCard',
+		'moveCardFromBoard',
+		'moveCardToBoard',
+		'removeChecklistFromCard',
+		'removeMemberFromCard',
+		'updateCard:idList',
+		'updateCard:closed',
+		'updateCard:due',
+		'updateCard:dueComplete',
+		'updateCheckItemStateOnCard',
+		'updateCustomFieldItem',
+		'addMemberToBoard',
+		'addToOrganizationBoard',
+		'copyBoard',
+		'createBoard',
+		'createCustomField',
+		'createList',
+		'deleteCard',
+		'deleteCustomField',
+		'disablePlugin',
+		'disablePowerUp',
+		'enablePlugin',
+		'enablePowerUp',
+		'makeAdminOfBoard',
+		'makeNormalMemberOfBoard',
+		'makeObserverOfBoard',
+		'moveListFromBoard',
+		'moveListToBoard',
+		'removeFromOrganizationBoard',
+		'unconfirmedBoardInvitation',
+		'unconfirmedOrganizationInvitation',
+		'updateBoard',
+		'updateCustomField',
+		'updateList:closed'
 	);
 
-	const REQUEST_ACTIONS = array(
+	const REQUEST_ACTIONS_CARDS = array(
 		'addAttachmentToCard',
 		'addChecklistToCard',
 		'addMemberToCard',
@@ -513,6 +559,10 @@ class TrelloBridge extends BridgeAbstract {
 	}
 
 	private function renderAction($action, $textOnly = false) {
+		if(!array_key_exists($action->display->translationKey, self::ACTION_TEXTS)) {
+			return '';
+		}
+
 		$strings = array();
 		$entities = (array)$action->display->entities;
 
@@ -558,14 +608,15 @@ class TrelloBridge extends BridgeAbstract {
 	public function collectData() {
 		$apiParams = array(
 			'actions_display' => 'true',
-			'actions' => implode(',', self::REQUEST_ACTIONS),
 			'fields' => 'name,url'
 		);
 		switch($this->queriedContext) {
 		case 'Board':
+			$apiParams['actions'] = implode(',', self::REQUEST_ACTIONS_BOARDS);
 			$data = $this->queryAPI('boards/' . $this->getInput('b'), $apiParams);
 			break;
 		case 'Card':
+			$apiParams['actions'] = implode(',', self::REQUEST_ACTIONS_CARDS);
 			$data = $this->queryAPI('cards/' . $this->getInput('c'), $apiParams);
 			break;
 		default:
@@ -578,19 +629,24 @@ class TrelloBridge extends BridgeAbstract {
 		foreach($data->actions as $action) {
 			$item = array();
 
-			$item['uri'] = 'https://trello.com/c/'
-				. $action->data->card->shortLink
-				. '#action-'
-				. $action->id;
 			$item['title'] = $this->renderAction($action, true);
 			$item['timestamp'] = strtotime($action->date);
 			$item['author'] = $action->memberCreator->fullName;
 			$item['categories'] = array(
 				'trello',
-				$action->data->card->name,
 				$action->data->board->name,
 				$action->type
 			);
+			if(isset($action->data->card)) {
+				$item['categories'][] = $action->data->card->name;
+				$item['uri'] = 'https://trello.com/c/'
+					. $action->data->card->shortLink
+					. '#action-'
+					. $action->id;
+			} else {
+				$item['uri'] = 'https://trello.com/b/'
+					. $action->data->board->shortLink;
+			}
 			$item['content'] = $this->renderAction($action, false);
 			if(isset($action->data->attachment)) {
 				$item['enclosures'] = array($action->data->attachment->url);
