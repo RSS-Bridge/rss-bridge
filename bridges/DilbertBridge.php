@@ -3,7 +3,7 @@ class DilbertBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'kranack';
 	const NAME = 'Dilbert Daily Strip';
-	const URI = 'http://dilbert.com';
+	const URI = 'https://dilbert.com';
 	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = 'The Unofficial Dilbert Daily Comic Strip';
 
@@ -17,9 +17,9 @@ class DilbertBridge extends BridgeAbstract {
 			$img = $element->find('img', 0);
 			$link = $element->find('a', 0);
 			$comic = $img->src;
-			$title = $link->alt;
+			$title = $img->alt;
 			$url = $link->href;
-			$date = substr($url, 25);
+			$date = substr(strrchr($url, '/'), 1);
 			if (empty($title))
 				$title = 'Dilbert Comic Strip on ' . $date;
 			$date = strtotime($date);
