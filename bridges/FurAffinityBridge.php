@@ -821,6 +821,7 @@ class FurAffinityBridge extends BridgeAbstract {
 				$description = $submissionHTML
 					->find('.maintable .maintable tbody tr td.alt1', -1);
 				$this->makeLinksAbsolute($description);
+				$this->setImgReferrerPolicy($description);
 				$description = $description->innertext;
 
 				/*
@@ -846,6 +847,12 @@ EOD;
 			}
 
 			$this->items[] = $item;
+		}
+	}
+
+	private function setImgReferrerPolicy(&$html) {
+		foreach($html->find('img') as $img) {
+			$img->referrerpolicy = 'no-referrer';
 		}
 	}
 
