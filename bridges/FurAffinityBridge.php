@@ -806,7 +806,7 @@ class FurAffinityBridge extends BridgeAbstract {
 				$stats = $submissionHTML->find('.stats-container', 0);
 				$item['timestamp'] = strtotime($stats->find('.popup_date', 0)->plaintext);
 				$item['enclosures'] = array(
-					$submissionHTML->find('.actions a[href^=//d.facdn]', 0)->href
+					'https:' . $submissionHTML->find('.actions a[href^=//d.facdn]', 0)->href
 				);
 				foreach($stats->find('#keywords a') as $keyword) {
 					$item['categories'][] = $keyword->plaintext;
@@ -823,9 +823,15 @@ class FurAffinityBridge extends BridgeAbstract {
 				$this->makeLinksAbsolute($description);
 				$description = $description->innertext;
 
+				/*
+				 * Note: Without the no-referrer policy their CDN sometimes denies requests.
+				 * We can't control this for enclosures sadly.
+				 * At least tt-rss adds the referrerpolicy on its own.
+				 * Alternatively we could not use https for images, but that's not ideal.
+				 */
 				$item['content'] = <<<EOD
 <a href="$submissionURL">
-	<img src="{$imgURL}" />
+	<img src="{$imgURL}" referrerpolicy="no-referrer" />
 </a>
 <p>
 {$description}
@@ -834,7 +840,7 @@ EOD;
 			} else {
 				$item['content'] = <<<EOD
 <a href="$submissionURL">
-	<img src="$imgURL" />
+	<img src="$imgURL" referrerpolicy="no-referrer" />
 </a>
 EOD;
 			}
