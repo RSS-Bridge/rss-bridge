@@ -756,7 +756,7 @@ class FurAffinityBridge extends BridgeAbstract {
 
 			$item = array();
 
-			$this->makeLinksAbsolute($journal);
+			$this->cleanupHTMLDOM($journal);
 
 			$item['uri'] = $journal->find('a', 0)->href;
 			$item['title'] = $journal->find('a', 0)->plaintext;
@@ -772,7 +772,7 @@ class FurAffinityBridge extends BridgeAbstract {
 	}
 
 	private function itemsFromJournal($html) {
-		$this->makeLinksAbsolute($html);
+		$this->cleanupHTMLDOM($html);
 		$item = array();
 
 		$item['uri'] = $this->getURI();
@@ -820,16 +820,9 @@ class FurAffinityBridge extends BridgeAbstract {
 
 				$description = $submissionHTML
 					->find('.maintable .maintable tbody tr td.alt1', -1);
-				$this->makeLinksAbsolute($description);
-				$this->setImgReferrerPolicy($description);
+				$this->cleanupHTMLDOM($description);
 				$description = $description->innertext;
 
-				/*
-				 * Note: Without the no-referrer policy their CDN sometimes denies requests.
-				 * We can't control this for enclosures sadly.
-				 * At least tt-rss adds the referrerpolicy on its own.
-				 * Alternatively we could not use https for images, but that's not ideal.
-				 */
 				$item['content'] = <<<EOD
 <a href="$submissionURL">
 	<img src="{$imgURL}" referrerpolicy="no-referrer" />
@@ -850,13 +843,20 @@ EOD;
 		}
 	}
 
-	private function setImgReferrerPolicy(&$html) {
+	private function cleanupHTMLDOM(&$html) {
 		foreach($html->find('img') as $img) {
+			/*
+			 * Note: Without the no-referrer policy their CDN sometimes denies requests.
+			 * We can't control this for enclosures sadly.
+			 * At least tt-rss adds the referrerpolicy on its own.
+			 * Alternatively we could not use https for images, but that's not ideal.
+			 */
 			$img->referrerpolicy = 'no-referrer';
+			if(preg_match('/^\/\//', $img->src)) {
+				$img->src = 'https:' . $img->src;
+			}
 		}
-	}
-
-	private function makeLinksAbsolute(&$html) {
+		// Make hrefs absolute
 		foreach($html->find('*[href]') as $link) {
 			if(preg_match('/^\/[^\/]/', $link->href)) {
 				$link->href = self::URI . $link->href;
