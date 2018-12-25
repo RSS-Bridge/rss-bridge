@@ -951,6 +951,6 @@ QUOTES
 		);
 
 		$i = round(fmod(hexdec(hash('crc32', $seed)), count($quotes)), 0);
-		return trim($quotes[$i]);
+		return trim(str_replace(array("\r\n", "\n", "\r"), ' ', $quotes[$i]));
 	}
 }
