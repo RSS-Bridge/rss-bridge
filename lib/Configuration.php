@@ -95,7 +95,8 @@ final class Configuration {
 		if(!extension_loaded('simplexml'))
 			die('"simplexml" extension not loaded. Please check "php.ini"');
 
-		if(!extension_loaded('curl'))
+		// Allow RSS-Bridge to run without curl module in CLI mode without root certificates
+		if(!extension_loaded('curl') && !(php_sapi_name() === 'cli' && empty(ini_get('curl.cainfo'))))
 			die('"curl" extension not loaded. Please check "php.ini"');
 
 		if(!extension_loaded('json'))
