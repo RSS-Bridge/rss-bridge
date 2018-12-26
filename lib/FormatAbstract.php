@@ -113,7 +113,7 @@ abstract class FormatAbstract implements FormatInterface {
 	 * @param array $items {@inheritdoc}
 	 */
 	public function setItems(array $items){
-		$this->items = array_map(array($this, 'array_trim'), $items);
+		$this->items = $items;
 
 		return $this;
 	}

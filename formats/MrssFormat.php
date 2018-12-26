@@ -25,24 +25,24 @@ class MrssFormat extends FormatAbstract {
 
 		$items = '';
 		foreach($this->getItems() as $item) {
-			$itemAuthor = isset($item['author']) ? $this->xml_encode($item['author']) : '';
-			$itemTitle = strip_tags(isset($item['title']) ? $this->xml_encode($item['title']) : '');
-			$itemUri = isset($item['uri']) ? $this->xml_encode($item['uri']) : '';
-			$itemTimestamp = isset($item['timestamp']) ? $this->xml_encode(date(DATE_RFC2822, $item['timestamp'])) : '';
-			$itemContent = isset($item['content']) ? $this->xml_encode($this->sanitizeHtml($item['content'])) : '';
+			$itemAuthor = $this->xml_encode($item->getAuthor());
+			$itemTitle = $this->xml_encode($item->getTitle());
+			$itemUri = $this->xml_encode($item->getURI());
+			$itemTimestamp = $this->xml_encode(date(DATE_RFC2822, $item->getTimestamp()));
+			$itemContent = $this->xml_encode($this->sanitizeHtml($item->getContent()));
 
 			$entryEnclosuresWarning = '';
 			$entryEnclosures = '';
-			if(isset($item['enclosures'])) {
+			if(!empty($item->getEnclosures())) {
 				$entryEnclosures .= '<enclosure url="'
-				. $this->xml_encode($item['enclosures'][0])
-				. '" type="' . getMimeType($item['enclosures'][0]) . '" />';
+				. $this->xml_encode($item->getEnclosures()[0])
+				. '" type="' . getMimeType($item->getEnclosures()[0]) . '" />';
 
-				if(count($item['enclosures']) > 1) {
+				if(count($item->getEnclosures()) > 1) {
 					$entryEnclosures .= PHP_EOL;
 					$entryEnclosuresWarning = '&lt;br&gt;Warning:
 Some media files might not be shown to you. Consider using the ATOM format instead!';
-					foreach($item['enclosures'] as $enclosure) {
+					foreach($item->getEnclosures() as $enclosure) {
 						$entryEnclosures .= '<atom:link rel="enclosure" href="'
 						. $enclosure . '" type="' . getMimeType($enclosure) . '" />'
 						. PHP_EOL;
@@ -51,13 +51,10 @@ Some media files might not be shown to you. Consider using the ATOM format inste
 			}
 
 			$entryCategories = '';
-			if(isset($item['categories'])) {
-
-				foreach($item['categories'] as $category) {
-					$entryCategories .= '<category>'
-					. $category . '</category>'
-					. PHP_EOL;
-				}
+			foreach($item->getCategories() as $category) {
+				$entryCategories .= '<category>'
+				. $category . '</category>'
+				. PHP_EOL;
 			}
 
 			$items .= <<<EOD

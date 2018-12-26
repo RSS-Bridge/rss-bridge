@@ -27,30 +27,26 @@ class AtomFormat extends FormatAbstract{
 
 		$entries = '';
 		foreach($this->getItems() as $item) {
-			$entryAuthor = isset($item['author']) ? $this->xml_encode($item['author']) : '';
-			$entryTitle = isset($item['title']) ? $this->xml_encode($item['title']) : '';
-			$entryUri = isset($item['uri']) ? $this->xml_encode($item['uri']) : '';
-			$entryTimestamp = isset($item['timestamp']) ? $this->xml_encode(date(DATE_ATOM, $item['timestamp'])) : '';
-			$entryContent = isset($item['content']) ? $this->xml_encode($this->sanitizeHtml($item['content'])) : '';
+			$entryAuthor = $this->xml_encode($item->getAuthor());
+			$entryTitle = $this->xml_encode($item->getTitle());
+			$entryUri = $this->xml_encode($item->getURI());
+			$entryTimestamp = $this->xml_encode(date(DATE_ATOM, $item->getTimestamp()));
+			$entryContent = $this->xml_encode($this->sanitizeHtml($item->getContent()));
 
 			$entryEnclosures = '';
-			if(isset($item['enclosures'])) {
-				foreach($item['enclosures'] as $enclosure) {
-					$entryEnclosures .= '<link rel="enclosure" href="'
-					. $this->xml_encode($enclosure)
-					. '" type="' . getMimeType($enclosure) . '" />'
-					. PHP_EOL;
-				}
+			foreach($item->getEnclosures() as $enclosure) {
+				$entryEnclosures .= '<link rel="enclosure" href="'
+				. $this->xml_encode($enclosure)
+				. '" type="' . getMimeType($enclosure) . '" />'
+				. PHP_EOL;
 			}
 
 			$entryCategories = '';
-			if(isset($item['categories'])) {
-				foreach($item['categories'] as $category) {
-					$entryCategories .= '<category term="'
-					. $this->xml_encode($category)
-					. '"/>'
-					. PHP_EOL;
-				}
+			foreach($item->getCategories() as $category) {
+				$entryCategories .= '<category term="'
+				. $this->xml_encode($category)
+				. '"/>'
+				. PHP_EOL;
 			}
 
 			$entries .= <<<EOD

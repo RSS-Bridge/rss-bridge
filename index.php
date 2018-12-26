@@ -229,7 +229,10 @@ try {
 			$cached = $cache->loadData();
 
 			if(isset($cached['items']) && isset($cached['extraInfos'])) {
-				$items = $cached['items'];
+				foreach($cached['items'] as $item) {
+					$items[] = new \FeedItem($item);
+				}
+
 				$infos = $cached['extraInfos'];
 			}
 
@@ -240,6 +243,19 @@ try {
 				$bridge->collectData();
 
 				$items = $bridge->getItems();
+
+				// Transform "legacy" items to FeedItems if necessary.
+				// Remove this code when support for "legacy" items ends!
+				if(is_array($items[0])) {
+					$feedItems = array();
+
+					foreach($items as $item) {
+						$feedItems[] = new \FeedItem($item);
+					}
+
+					$items = $feedItems;
+				}
+
 				$infos = array(
 					'name' => $bridge->getName(),
 					'uri'  => $bridge->getURI(),
@@ -248,44 +264,52 @@ try {
 			} catch(Error $e) {
 				error_log($e);
 
-				$item = array();
+				$item = new \FeedItem();
 
 				// Create "new" error message every 24 hours
 				$params['_error_time'] = urlencode((int)(time() / 86400));
 
 				// Error 0 is a special case (i.e. "trying to get property of non-object")
 				if($e->getCode() === 0) {
-					$item['title'] = 'Bridge encountered an unexpected situation! (' . $params['_error_time'] . ')';
+					$item->setTitle('Bridge encountered an unexpected situation! (' . $params['_error_time'] . ')');
 				} else {
-					$item['title'] = 'Bridge returned error ' . $e->getCode() . '! (' . $params['_error_time'] . ')';
+					$item->setTitle('Bridge returned error ' . $e->getCode() . '! (' . $params['_error_time'] . ')');
 				}
 
-				$item['uri'] = (isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '')
-				. '?' . http_build_query($params);
-				$item['timestamp'] = time();
-				$item['content'] = buildBridgeException($e, $bridge);
+				$item->setURI(
+					(isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '')
+					. '?'
+					. http_build_query($params)
+				);
+
+				$item->setTimestamp(time());
+				$item->setContent(buildBridgeException($e, $bridge));
 
 				$items[] = $item;
 			} catch(Exception $e) {
 				error_log($e);
 
-				$item = array();
+				$item = new \FeedItem();
 
 				// Create "new" error message every 24 hours
 				$params['_error_time'] = urlencode((int)(time() / 86400));
 
-				$item['uri'] = (isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '')
-				. '?' . http_build_query($params);
-				$item['title'] = 'Bridge returned error ' . $e->getCode() . '! (' . $params['_error_time'] . ')';
-				$item['timestamp'] = time();
-				$item['content'] = buildBridgeException($e, $bridge);
+				$item->setURI(
+					(isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '')
+					. '?'
+					. http_build_query($params)
+				);
+
+				$item->setTitle('Bridge returned error ' . $e->getCode() . '! (' . $params['_error_time'] . ')');
+				$item->setTimestamp(time());
+				$item->setContent(buildBridgeException($e, $bridge));
 
 				$items[] = $item;
 			}
 
 			// Store data in cache
 			$cache->saveData(array(
-				'items' => $items,
+				'items' => array_map(function($i){ return $i->toArray(); }, $items),
 				'extraInfos' => $infos
 			));
 
