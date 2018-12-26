@@ -804,7 +804,6 @@ EOD;
 EOD;
 	}
 
-
 	/**
 	 * Checks if the reported skimfeed version is compatible
 	 */
@@ -821,5 +820,4 @@ EOD;
 
 		return false;
 	}
-
 }

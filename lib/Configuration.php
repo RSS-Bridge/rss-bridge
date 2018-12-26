@@ -242,5 +242,4 @@ final class Configuration {
 		return Configuration::$VERSION;
 
 	}
-
 }

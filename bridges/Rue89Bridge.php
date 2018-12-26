@@ -6,7 +6,6 @@ class Rue89Bridge extends BridgeAbstract {
 	const URI = 'https://www.nouvelobs.com/rue89/';
 	const DESCRIPTION = 'Returns the newest posts from Rue89';
 
-
 	public function collectData() {
 
 		$jsonArticles = getContents('https://appdata.nouvelobs.com/rue89/feed.json')
@@ -46,5 +45,4 @@ class Rue89Bridge extends BridgeAbstract {
 		return $item;
 
 	}
-
 }

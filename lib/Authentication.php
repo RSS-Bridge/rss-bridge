@@ -31,7 +31,6 @@
  * utilized for limiting access to authorized users only.
  */
 class Authentication {
-
 	/**
 	 * Throw an exception when trying to create a new instance of this class.
 	 * Use {@see Authentication::showPromptIfNeeded()} instead!
@@ -83,5 +82,4 @@ class Authentication {
 		return false;
 
 	}
-
 }

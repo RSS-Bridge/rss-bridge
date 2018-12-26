@@ -236,5 +236,4 @@ class DesoutterBridge extends BridgeAbstract {
 
 		echo $list;
 	}
-
 }

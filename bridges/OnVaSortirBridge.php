@@ -116,6 +116,7 @@ class OnVaSortirBridge extends FeedExpander {
 			)
 		)
 	);
+
 	protected function parseItem($item){
 		$item = parent::parseItem($item);
 		$html = getSimpleHTMLDOMCached($item['uri']);
@@ -123,6 +124,7 @@ class OnVaSortirBridge extends FeedExpander {
 		$item['content'] = utf8_encode($text);
 		return $item;
 	}
+
 	public function collectData(){
 		$this->collectExpandableDatas('https://' .
 			$this->getInput('city') . '.onvasortir.com/rss.php');

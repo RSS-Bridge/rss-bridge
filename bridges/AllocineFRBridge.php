@@ -83,5 +83,4 @@ class AllocineFRBridge extends BridgeAbstract {
 			}
 		}
 	}
-
 }

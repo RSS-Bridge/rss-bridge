@@ -168,5 +168,4 @@ class InstagramBridge extends BridgeAbstract {
 		}
 		return parent::getURI();
 	}
-
 }

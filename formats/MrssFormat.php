@@ -4,7 +4,6 @@
 * Documentation Source http://www.rssboard.org/media-rss
 */
 class MrssFormat extends FormatAbstract {
-
 	public function stringify(){
 		$https = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 's' : '';
 		$httpHost = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';

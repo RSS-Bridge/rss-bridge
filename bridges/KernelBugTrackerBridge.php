@@ -150,5 +150,4 @@ class KernelBugTrackerBridge extends BridgeAbstract {
 
 		return $html;
 	}
-
 }

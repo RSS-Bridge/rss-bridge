@@ -143,5 +143,4 @@ class ElloBridge extends BridgeAbstract {
 
 		return parent::getName();
 	}
-
 }

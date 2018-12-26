@@ -1,6 +1,5 @@
 <?php
 class HtmlFormat extends FormatAbstract {
-
 	public function stringify(){
 		$extraInfos = $this->getExtraInfos();
 		$title = htmlspecialchars($extraInfos['name']);

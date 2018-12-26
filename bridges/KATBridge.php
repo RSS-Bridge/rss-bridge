@@ -53,6 +53,7 @@ class KATBridge extends BridgeAbstract {
 				$guessedDate['tm_year'] + 1900);
 				return $timestamp;
 		}
+
 		$catBool = $this->getInput('cat_check');
 		if($catBool) {
 			$catNum = $this->getInput('cat');

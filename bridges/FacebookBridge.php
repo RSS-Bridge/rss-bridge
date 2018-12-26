@@ -687,7 +687,6 @@ EOD;
 			}
 		}
 	}
-
 	#endregion (User)
 
 }

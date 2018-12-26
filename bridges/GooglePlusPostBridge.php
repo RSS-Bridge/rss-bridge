@@ -205,5 +205,4 @@ class GooglePlusPostBridge extends BridgeAbstract{
 		return implode('', [$scheme, $user, $pass, $host, $port, $path, $query, $fragment]);
 
 	}
-
 }

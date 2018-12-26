@@ -458,5 +458,4 @@ class XenForoBridge extends BridgeAbstract {
 		return date_format($df, 'U');
 
 	}
-
 }

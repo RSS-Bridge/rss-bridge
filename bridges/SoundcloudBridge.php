@@ -55,6 +55,7 @@ class SoundCloudBridge extends BridgeAbstract {
 		}
 
 	}
+
 	public function getName(){
 		if(!is_null($this->getInput('u'))) {
 			return self::NAME . ' - ' . $this->getInput('u');

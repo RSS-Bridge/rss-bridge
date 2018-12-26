@@ -1224,7 +1224,6 @@ class PepperBridgeAbstract extends BridgeAbstract {
 		}
 	}
 
-
 	/**
 	 * Get the Shipping costs from a Deal if it exists
 	 * @return string String of the deal shipping Cost
@@ -1457,8 +1456,6 @@ class PepperBridgeAbstract extends BridgeAbstract {
 		}
 	}
 
-
-
 	/**
 	 * This is some "localisation" function that returns the needed content using
 	 * the "$lang" class variable in the local class
@@ -1472,5 +1469,4 @@ class PepperBridgeAbstract extends BridgeAbstract {
 			return null;
 		}
 	}
-
 }

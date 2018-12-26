@@ -41,7 +41,6 @@ class OneFortuneADayBridge extends BridgeAbstract {
 	const LIMIT_ITEMS = 7;
 	const DAY_SECS = 86400;
 
-
 	public function collectData() {
 		$time = gmmktime((int)$this->getInput('time'), 0, 0);
 		if ($time > time())
@@ -61,7 +60,6 @@ class OneFortuneADayBridge extends BridgeAbstract {
 			$time -= self::DAY_SECS;
 		}
 	}
-
 
 	private function getQuote($seed) {
 		$quotes = explode('//', <<<QUOTES

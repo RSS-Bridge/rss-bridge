@@ -5,7 +5,6 @@ class OsmAndBlogBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Get the latest news from OsmAnd.net';
 	const MAINTAINER = 'fulmeek';
 
-
 	public function collectData() {
 		$html = getSimpleHTMLDOM(self::URI . 'blog')
 			or returnServerError('Could not load content');
@@ -44,13 +43,11 @@ class OsmAndBlogBridge extends BridgeAbstract {
 		}
 	}
 
-
 	private function filterURL($url) {
 		if (strpos($url, '://') === false)
 			return self::URI . ltrim($url, '/');
 		return $url;
 	}
-
 
 	private function cleanupContent($content, ...$removeItems) {
 		foreach ($removeItems as $obj) {

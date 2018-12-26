@@ -83,5 +83,4 @@ class BundesbankBridge extends BridgeAbstract {
 		}
 
 	}
-
 }

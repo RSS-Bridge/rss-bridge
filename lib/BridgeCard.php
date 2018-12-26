@@ -20,7 +20,6 @@
  * @todo Return error if a caller creates an object of this class.
  */
 final class BridgeCard {
-
 	/**
 	 * Build a HTML document string of buttons for each of the provided formats
 	 *

@@ -4,7 +4,6 @@
 * Returns $this->items as raw php data.
 */
 class PlaintextFormat extends FormatAbstract {
-
 	public function stringify(){
 		$items = $this->getItems();
 		$toReturn = print_r($items, true);

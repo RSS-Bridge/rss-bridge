@@ -163,5 +163,4 @@ class ThingiverseBridge extends BridgeAbstract {
 
 		return parent::getURI();
 	}
-
 }

@@ -101,5 +101,4 @@ EOD;
 
 		return $html->find('[id="article-body"]', 0);
 	}
-
 }

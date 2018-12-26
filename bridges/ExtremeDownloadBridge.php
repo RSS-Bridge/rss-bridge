@@ -100,5 +100,4 @@ class ExtremeDownloadBridge extends BridgeAbstract {
 
 		return $return;
 	}
-
 }

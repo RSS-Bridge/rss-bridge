@@ -15,7 +15,6 @@ class ModelKarteiBridge extends BridgeAbstract {
 
 	private $feedName = '';
 
-
 	public function collectData() {
 		$model_id = preg_replace('/[^0-9]/', '', $this->getInput('model_id'));
 		if (empty($model_id))
@@ -93,7 +92,6 @@ class ModelKarteiBridge extends BridgeAbstract {
 			$this->items[] = $item;
 		}
 	}
-
 
 	public function getName(){
 		if(!empty($this->feedName)) {

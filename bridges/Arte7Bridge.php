@@ -119,5 +119,4 @@ class Arte7Bridge extends BridgeAbstract {
 			$this->items[] = $item;
 		}
 	}
-
 }

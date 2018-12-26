@@ -19,7 +19,6 @@
  * @todo Return self more often (to allow call chaining)
  */
 interface FormatInterface {
-
 	/**
 	 * Generate a string representation of the current data
 	 *

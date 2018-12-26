@@ -5,7 +5,6 @@
 * http://tools.ietf.org/html/rfc4287
 */
 class AtomFormat extends FormatAbstract{
-
 	public function stringify(){
 		$https = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 's' : '';
 		$httpHost = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';

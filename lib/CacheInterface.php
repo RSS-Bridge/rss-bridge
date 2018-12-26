@@ -19,7 +19,6 @@
  * @todo Return self more often (to allow call chaining)
  */
 interface CacheInterface {
-
 	/**
 	 * Loads data from cache
 	 *

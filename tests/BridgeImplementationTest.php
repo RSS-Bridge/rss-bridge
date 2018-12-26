@@ -18,7 +18,6 @@ require_once __DIR__ . '/../lib/rssbridge.php';
  *   CACHE_TIMEOUT and PARAMETERS are optional
  */
 final class BridgeImplementationTest extends TestCase {
-
 	private function CheckBridgePublicFunctions($bridgeName){
 
 		$parent_methods = array();
