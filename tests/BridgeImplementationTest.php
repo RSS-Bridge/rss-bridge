@@ -3,13 +3,11 @@ require_once __DIR__ . '/../lib/rssbridge.php';
 
 use PHPUnit\Framework\TestCase;
 
-
 class BridgeImplementationTest extends TestCase {
 	const PATH_BRIDGES = __DIR__ . '/../bridges/';
 
 	private $class;
 	private $obj;
-
 
 	/**
 	 * @dataProvider dataBridgesProvider
@@ -19,7 +17,6 @@ class BridgeImplementationTest extends TestCase {
 		$this->assertTrue($this->class === ucfirst($this->class), 'class name must start with uppercase character');
 	}
 
-
 	/**
 	 * @dataProvider dataBridgesProvider
 	 */
@@ -27,7 +24,6 @@ class BridgeImplementationTest extends TestCase {
 		$this->setBridge($path);
 		$this->assertInstanceOf('BridgeAbstract', $this->obj);
 	}
-
 
 	/**
 	 * @dataProvider dataBridgesProvider
@@ -48,7 +44,6 @@ class BridgeImplementationTest extends TestCase {
 		$this->assertInternalType('int', $this->obj::CACHE_TIMEOUT, 'class::CACHE_TIMEOUT');
 		$this->assertGreaterThanOrEqual(0, $this->obj::CACHE_TIMEOUT, 'class::CACHE_TIMEOUT');
 	}
-
 
 	/**
 	 * @dataProvider dataBridgesProvider
@@ -78,54 +73,53 @@ class BridgeImplementationTest extends TestCase {
 			$paramsSeen[] = $params;
 
 			foreach ($params as $field => $options) {
-				$this->assertInternalType('string', $field, $field.': invalid id');
-				$this->assertNotEmpty($field, $field.':empty id');
+				$this->assertInternalType('string', $field, $field . ': invalid id');
+				$this->assertNotEmpty($field, $field . ':empty id');
 
-				$this->assertInternalType('string', $options['name'], $field.': invalid name');
-				$this->assertNotEmpty($options['name'], $field.': empty name');
+				$this->assertInternalType('string', $options['name'], $field . ': invalid name');
+				$this->assertNotEmpty($options['name'], $field . ': empty name');
 
 				if (isset($options['type'])) {
-					$this->assertInternalType('string', $options['type'], $field.': invalid type');
-					$this->assertContains($options['type'], $allowedTypes, $field.': unknown type');
+					$this->assertInternalType('string', $options['type'], $field . ': invalid type');
+					$this->assertContains($options['type'], $allowedTypes, $field . ': unknown type');
 
 					if ($options['type'] == 'list') {
-						$this->assertArrayHasKey('values', $options, $field.': missing list values');
-						$this->assertInternalType('array', $options['values'], $field.': invalid list values');
-						$this->assertNotEmpty($options['values'], $field.': empty list values');
+						$this->assertArrayHasKey('values', $options, $field . ': missing list values');
+						$this->assertInternalType('array', $options['values'], $field . ': invalid list values');
+						$this->assertNotEmpty($options['values'], $field . ': empty list values');
 
 						foreach ($options['values'] as $valueName => $value) {
-							$this->assertInternalType('string', $valueName, $field.': invalid value name');
+							$this->assertInternalType('string', $valueName, $field . ': invalid value name');
 						}
 					}
 				}
 
 				if (isset($options['required'])) {
-					$this->assertInternalType('bool', $options['required'], $field.': invalid required');
+					$this->assertInternalType('bool', $options['required'], $field . ': invalid required');
 				}
 
 				if (isset($options['title'])) {
-					$this->assertInternalType('string', $options['title'], $field.': invalid title');
-					$this->assertNotEmpty($options['title'], $field.': empty title');
+					$this->assertInternalType('string', $options['title'], $field . ': invalid title');
+					$this->assertNotEmpty($options['title'], $field . ': empty title');
 				}
 
 				if (isset($options['pattern'])) {
-					$this->assertInternalType('string', $options['pattern'], $field.': invalid pattern');
-					$this->assertNotEmpty($options['pattern'], $field.': empty pattern');
+					$this->assertInternalType('string', $options['pattern'], $field . ': invalid pattern');
+					$this->assertNotEmpty($options['pattern'], $field . ': empty pattern');
 				}
 
 				if (isset($options['exampleValue'])) {
-					$this->assertNotEmpty($options['exampleValue'], $field.': empty exampleValue');
+					$this->assertNotEmpty($options['exampleValue'], $field . ': empty exampleValue');
 				}
 
 				if (isset($options['defaultValue'])) {
-					$this->assertNotEmpty($options['defaultValue'], $field.': empty defaultValue');
+					$this->assertNotEmpty($options['defaultValue'], $field . ': empty defaultValue');
 				}
 			}
 		}
 
 		$this->assertTrue(true);
 	}
-
 
 	/**
 	 * @dataProvider dataBridgesProvider
@@ -146,7 +140,6 @@ class BridgeImplementationTest extends TestCase {
 			$this->assertEquals($allowedBridgeAbstract, $methods);
 		}
 	}
-
 
 	/**
 	 * @dataProvider dataBridgesProvider
@@ -174,7 +167,6 @@ class BridgeImplementationTest extends TestCase {
 		$this->assertInternalType('string', $value, '$class->getIcon()');
 	}
 
-
 	/**
 	 * @dataProvider dataBridgesProvider
 	 */
@@ -185,9 +177,7 @@ class BridgeImplementationTest extends TestCase {
 		$this->checkUrl($this->obj->getURI());
 	}
 
-
 	////////////////////////////////////////////////////////////////////////////
-
 
 	public function dataBridgesProvider() {
 		$bridges = array();
@@ -197,13 +187,11 @@ class BridgeImplementationTest extends TestCase {
 		return $bridges;
 	}
 
-
 	private function setBridge($path) {
 		require_once $path;
 		$this->class = basename($path, '.php');
 		$this->obj = new $this->class();
 	}
-
 
 	private function checkUrl($url) {
 		$this->assertNotFalse(filter_var($url, FILTER_VALIDATE_URL), 'no valid URL');
