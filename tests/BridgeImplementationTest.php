@@ -51,7 +51,9 @@ class BridgeImplementationTest extends TestCase {
 	public function testParameters($path) {
 		$this->setBridge($path);
 
-		$multiContexts = (count($this->obj::PARAMETERS) > 1);
+		$multiMinimum = 2;
+		if (isset($this->obj::PARAMETERS['global'])) ++$multiMinimum;
+		$multiContexts = (count($this->obj::PARAMETERS) >= $multiMinimum);
 		$paramsSeen = array();
 
 		$allowedTypes = array(
