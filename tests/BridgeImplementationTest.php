@@ -107,15 +107,17 @@ class BridgeImplementationTest extends TestCase {
 
 				if (isset($options['pattern'])) {
 					$this->assertInternalType('string', $options['pattern'], $field . ': invalid pattern');
-					$this->assertNotEmpty($options['pattern'], $field . ': empty pattern');
+					$this->assertNotEquals('', $options['pattern'], $field . ': empty pattern');
 				}
 
 				if (isset($options['exampleValue'])) {
-					$this->assertNotEmpty($options['exampleValue'], $field . ': empty exampleValue');
+					if (is_string($options['exampleValue']))
+						$this->assertNotEquals('', $options['exampleValue'], $field . ': empty exampleValue');
 				}
 
 				if (isset($options['defaultValue'])) {
-					$this->assertNotEmpty($options['defaultValue'], $field . ': empty defaultValue');
+					if (is_string($options['defaultValue']))
+						$this->assertNotEquals('', $options['defaultValue'], $field . ': empty defaultValue');
 				}
 			}
 		}
