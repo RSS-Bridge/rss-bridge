@@ -111,8 +111,7 @@ class OnVaSortirBridge extends FeedExpander {
 					'Valence' => 'valence',
 					'Vannes' => 'vannes',
 					'Zurich' => 'zurich',
-				),
-				'defaultValue' => ''
+				)
 			)
 		)
 	);
