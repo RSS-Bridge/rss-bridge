@@ -150,8 +150,7 @@ class FeedItem {
 			Debug::log('URI must be a string!');
 		} elseif(!filter_var(
 			$uri,
-			FILTER_VALIDATE_URL,
-			FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED)) {
+			FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
 			Debug::log('URI must include a scheme, host and path!');
 		} else {
 			$scheme = parse_url($uri, PHP_URL_SCHEME);
@@ -343,8 +342,7 @@ class FeedItem {
 			foreach($enclosures as $enclosure) {
 				if(!filter_var(
 					$enclosure,
-					FILTER_VALIDATE_URL,
-					FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED)) {
+					FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
 					Debug::log('Each enclosure must contain a scheme, host and path!');
 				} else {
 					$this->enclosures[] = $enclosure;
