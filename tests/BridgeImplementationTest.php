@@ -15,6 +15,8 @@ class BridgeImplementationTest extends TestCase {
 	public function testClassName($path) {
 		$this->setBridge($path);
 		$this->assertTrue($this->class === ucfirst($this->class), 'class name must start with uppercase character');
+		$this->assertEquals(0, substr_count($this->class, ' '), 'class name must not contain spaces');
+		$this->assertStringEndsWith('Bridge', $this->class, 'class name must end with "Bridge"');
 	}
 
 	/**
@@ -22,7 +24,7 @@ class BridgeImplementationTest extends TestCase {
 	 */
 	public function testClassType($path) {
 		$this->setBridge($path);
-		$this->assertInstanceOf('BridgeAbstract', $this->obj);
+		$this->assertInstanceOf(BridgeInterface::class, $this->obj);
 	}
 
 	/**
@@ -129,9 +131,9 @@ class BridgeImplementationTest extends TestCase {
 	 * @dataProvider dataBridgesProvider
 	 */
 	public function testVisibleMethods($path) {
-		$allowedBridgeAbstract = get_class_methods('BridgeAbstract');
+ 		$allowedBridgeAbstract = get_class_methods(BridgeAbstract::class);
 		sort($allowedBridgeAbstract);
-		$allowedFeedExpander = get_class_methods('FeedExpander');
+ 		$allowedFeedExpander = get_class_methods(FeedExpander::class);
 		sort($allowedFeedExpander);
 
 		$this->setBridge($path);
@@ -185,7 +187,7 @@ class BridgeImplementationTest extends TestCase {
 
 	public function dataBridgesProvider() {
 		$bridges = array();
-		foreach (glob(self::PATH_BRIDGES . '*Bridge.php') as $path) {
+		foreach (glob(self::PATH_BRIDGES . '*.php') as $path) {
 			$bridges[basename($path, '.php')] = array($path);
 		}
 		return $bridges;
@@ -193,12 +195,12 @@ class BridgeImplementationTest extends TestCase {
 
 	private function setBridge($path) {
 		require_once $path;
-		$this->class = basename($path, '.php');
+ 		$this->class = basename($path, '.php');
+ 		$this->assertTrue(class_exists($this->class), 'class ' . $this->class . ' doesn\'t exist');
 		$this->obj = new $this->class();
 	}
 
 	private function checkUrl($url) {
 		$this->assertNotFalse(filter_var($url, FILTER_VALIDATE_URL), 'no valid URL: ' . $url);
-		//$this->assertContains('https://', $url);
 	}
 }
