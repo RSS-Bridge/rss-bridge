@@ -186,8 +186,7 @@ class GlassdoorBridge extends BridgeAbstract {
 		 * redirection and strange naming conventions.
 		 */
 		if(!filter_var($uri,
-			FILTER_VALIDATE_URL,
-			FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED)) {
+			FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
 			returnClientError('The specified URL is invalid!');
 		}
 
