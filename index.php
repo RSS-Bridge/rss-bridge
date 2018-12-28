@@ -246,7 +246,7 @@ try {
 
 				// Transform "legacy" items to FeedItems if necessary.
 				// Remove this code when support for "legacy" items ends!
-				if(is_array($items[0])) {
+				if(isset($items[0]) && is_array($items[0])) {
 					$feedItems = array();
 
 					foreach($items as $item) {
