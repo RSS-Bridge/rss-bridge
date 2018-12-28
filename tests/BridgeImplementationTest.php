@@ -4,8 +4,6 @@ require_once __DIR__ . '/../lib/rssbridge.php';
 use PHPUnit\Framework\TestCase;
 
 class BridgeImplementationTest extends TestCase {
-	const PATH_BRIDGES = __DIR__ . '/../bridges/';
-
 	private $class;
 	private $obj;
 
@@ -187,7 +185,7 @@ class BridgeImplementationTest extends TestCase {
 
 	public function dataBridgesProvider() {
 		$bridges = array();
-		foreach (glob(self::PATH_BRIDGES . '*.php') as $path) {
+		foreach (glob(PATH_LIB_BRIDGES . '*.php') as $path) {
 			$bridges[basename($path, '.php')] = array($path);
 		}
 		return $bridges;
