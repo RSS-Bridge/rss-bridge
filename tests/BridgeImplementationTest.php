@@ -129,9 +129,9 @@ class BridgeImplementationTest extends TestCase {
 	 * @dataProvider dataBridgesProvider
 	 */
 	public function testVisibleMethods($path) {
- 		$allowedBridgeAbstract = get_class_methods(BridgeAbstract::class);
+		$allowedBridgeAbstract = get_class_methods(BridgeAbstract::class);
 		sort($allowedBridgeAbstract);
- 		$allowedFeedExpander = get_class_methods(FeedExpander::class);
+		$allowedFeedExpander = get_class_methods(FeedExpander::class);
 		sort($allowedFeedExpander);
 
 		$this->setBridge($path);
@@ -193,8 +193,8 @@ class BridgeImplementationTest extends TestCase {
 
 	private function setBridge($path) {
 		require_once $path;
- 		$this->class = basename($path, '.php');
- 		$this->assertTrue(class_exists($this->class), 'class ' . $this->class . ' doesn\'t exist');
+		$this->class = basename($path, '.php');
+		$this->assertTrue(class_exists($this->class), 'class ' . $this->class . ' doesn\'t exist');
 		$this->obj = new $this->class();
 	}
 
