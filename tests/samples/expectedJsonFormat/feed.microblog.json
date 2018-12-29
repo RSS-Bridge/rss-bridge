@@ -1,0 +1,19 @@
+{
+	"version": "https://jsonfeed.org/version/1",
+	"title": "Sample microblog feed",
+	"home_page_url": "https://example.com/blog/",
+	"feed_url": "https://example.com/feed",
+	"icon": "https://example.com/logo.png",
+	"favicon": "https://example.com/logo.png",
+	"items": [
+		{
+			"id": "1918f084648b82057c1dd3faa3d091da82a6fac2",
+			"date_modified": "2018-10-07T16:53:03+00:00",
+			"content_text": "Oh 😲 I found three monkeys 🙈🙉🙊"
+		},{
+			"id": "e62189168a06dfa74f61c621c79c33c4c8517e1f",
+			"date_modified": "2018-10-07T16:38:17+00:00",
+			"content_text": "Something happened"
+		}
+	]
+}

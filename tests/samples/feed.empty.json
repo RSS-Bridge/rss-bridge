@@ -1,0 +1,13 @@
+{
+	"server": {
+		"HTTPS": "on",
+		"HTTP_HOST": "example.com",
+		"REQUEST_URI": "/feed"
+	},
+	"meta": {
+		"name": "Sample feed with minimum data",
+		"uri": "",
+		"icon": ""
+	},
+	"items": []
+}
