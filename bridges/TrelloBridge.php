@@ -568,7 +568,9 @@ class TrelloBridge extends BridgeAbstract {
 
 		foreach($entities as $entity_name => $entity) {
 			$type = $entity->type;
-			if($type === 'attachmentPreview' && !$textOnly) {
+			if($type === 'attachmentPreview'
+				&& !$textOnly
+				&& isset($entity->originalUrl)) {
 				$string = '<p><a href="'
 					. $entity->originalUrl
 					. '"><img src="'
@@ -648,7 +650,7 @@ class TrelloBridge extends BridgeAbstract {
 					. $action->data->board->shortLink;
 			}
 			$item['content'] = $this->renderAction($action, false);
-			if(isset($action->data->attachment)) {
+			if(isset($action->data->attachment->url)) {
 				$item['enclosures'] = array($action->data->attachment->url);
 			}
 
