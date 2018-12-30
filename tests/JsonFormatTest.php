@@ -51,7 +51,6 @@ class JsonFormatTest extends TestCase {
 		return $samples;
 	}
 
-
 	private function setSample($path) {
 		$data = json_decode(file_get_contents($path), true);
 		if (isset($data['meta']) && isset($data['items'])) {
@@ -84,7 +83,7 @@ class JsonFormatTest extends TestCase {
 		$this->format->setLastModified(time());
 
 		$this->data = $this->getActualOutput($this->format->display());
-		$this->assertNotNull(json_decode($this->data), 'invalid JSON output: '. json_last_error_msg());
+		$this->assertNotNull(json_decode($this->data), 'invalid JSON output: ' . json_last_error_msg());
 		ob_clean();
 	}
 }
