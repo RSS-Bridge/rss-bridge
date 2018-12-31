@@ -77,10 +77,10 @@ class JsonFormatTest extends TestCase {
 	}
 
 	private function initFormat() {
-		$this->format = Format::create('Json');
+		$this->format = \Format::create('Json');
 		$this->format->setItems($this->sample->items);
 		$this->format->setExtraInfos($this->sample->meta);
-		$this->format->setLastModified(time());
+		$this->format->setLastModified(strtotime('2000-01-01 12:00:00 UTC'));
 
 		$this->data = $this->getActualOutput($this->format->display());
 		$this->assertNotNull(json_decode($this->data), 'invalid JSON output: ' . json_last_error_msg());
