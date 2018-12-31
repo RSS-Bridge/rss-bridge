@@ -41,7 +41,6 @@ class JsonFormat extends FormatAbstract {
 		$items = array();
 		foreach ($this->getItems() as $item) {
 			$entry = array();
-			$hash = '';
 
 			$entryAuthor		= $item->getAuthor();
 			$entryTitle			= $item->getTitle();
@@ -60,7 +59,6 @@ class JsonFormat extends FormatAbstract {
 
 			if (!empty($entryTitle)) {
 				$entry['title'] = $entryTitle;
-				$hash .= $entryTitle;
 			}
 			if (!empty($entryAuthor)) {
 				$entry['author'] = array(
@@ -79,7 +77,6 @@ class JsonFormat extends FormatAbstract {
 				} else {
 					$entry['content_text'] = $entryContent;
 				}
-				$hash .= $entryContent;
 			}
 			if (!empty($entryEnclosures)) {
 				$entry['attachments'] = array();
@@ -101,7 +98,7 @@ class JsonFormat extends FormatAbstract {
 			}
 
 			if (empty($entry['id']))
-				$entry['id'] = hash('sha1', $hash);
+				$entry['id'] = hash('sha1', $entryTitle . $entryContent);
 
 			$items[] = $entry;
 		}
