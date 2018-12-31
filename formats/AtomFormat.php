@@ -1,20 +1,27 @@
 <?php
 /**
-* Atom
-* Documentation Source http://en.wikipedia.org/wiki/Atom_%28standard%29 and
-* http://tools.ietf.org/html/rfc4287
-*/
+ * AtomFormat - RFC 4287: The Atom Syndication Format
+ * https://tools.ietf.org/html/rfc4287
+ *
+ * Validator:
+ * https://validator.w3.org/feed/
+ */
 class AtomFormat extends FormatAbstract{
-	public function stringify(){
-		$https = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 's' : '';
-		$httpHost = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
-		$httpInfo = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
+	const LIMIT_TITLE = 140;
 
-		$serverRequestUri = isset($_SERVER['REQUEST_URI']) ? $this->xml_encode($_SERVER['REQUEST_URI']) : '';
+	public function stringify(){
+		$urlScheme	= (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
+		$urlHost	= (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '';
+		$urlPath	= (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : '';
+		$urlRequest	= (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
 
 		$extraInfos = $this->getExtraInfos();
 		$title = $this->xml_encode($extraInfos['name']);
 		$uri = !empty($extraInfos['uri']) ? $extraInfos['uri'] : REPOSITORY;
+
+		// since we can't guarantee that all items have an author,
+		// a global feed author is mandatory
+		$feedAuthor = !empty($extraInfos['author']) ? $extraInfos['author'] : 'RSS-Bridge';
 
 		$uriparts = parse_url($uri);
 		if(!empty($extraInfos['icon'])) {
@@ -27,11 +34,31 @@ class AtomFormat extends FormatAbstract{
 
 		$entries = '';
 		foreach($this->getItems() as $item) {
-			$entryAuthor = $this->xml_encode($item->getAuthor());
-			$entryTitle = $this->xml_encode($item->getTitle());
-			$entryUri = $this->xml_encode($item->getURI());
-			$entryTimestamp = $this->xml_encode(date(DATE_ATOM, $item->getTimestamp()));
-			$entryContent = $this->xml_encode($this->sanitizeHtml($item->getContent()));
+			$entryTimestamp	= $item->getTimestamp();
+			$entryTitle		= $this->xml_encode($item->getTitle());
+			$entryContent	= $item->getContent();
+			$entryUri		= $item->getURI();
+
+			// the item id must be a valid unique URI
+			$entryID = (!empty($entryUri)) ? $entryUri : 'urn:sha1:' . hash('sha1', $entryTitle . $entryContent);
+
+			if (empty($entryTimestamp))
+				$entryTimestamp = $this->lastModified;
+
+			if (empty($entryTitle)) {
+				$entryTitle = strip_tags($entryContent);
+				if (strlen($entryTitle) > self::LIMIT_TITLE)
+					$entryTitle = substr($entryTitle, 0, self::LIMIT_TITLE) . '...';
+			}
+
+			if (empty($entryContent))
+				$entryContent = $entryTitle;
+
+			$entryAuthor	= $this->xml_encode($item->getAuthor());
+			$entryTitle		= $this->xml_encode($entryTitle);
+			$entryUri		= $this->xml_encode($entryUri);
+			$entryTimestamp	= $this->xml_encode(gmdate(DATE_ATOM, $entryTimestamp));
+			$entryContent	= $this->xml_encode($this->sanitizeHtml($entryContent));
 
 			$entryEnclosures = '';
 			foreach($item->getEnclosures() as $enclosure) {
@@ -49,16 +76,27 @@ class AtomFormat extends FormatAbstract{
 				. PHP_EOL;
 			}
 
+			$entryLinkAlternate = '';
+			if (!empty($entryUri)) {
+				$entryLinkAlternate = '<link rel="alternate" type="text/html" href="'
+				. $entryUri
+				. '"/>';
+			}
+
+			if (!empty($entryAuthor)) {
+				$entryAuthor = '<author>'
+				. '<name>' . $entryAuthor . '</name>'
+				. '</author>';
+			}
+
 			$entries .= <<<EOD
 
 	<entry>
-		<author>
-			<name>{$entryAuthor}</name>
-		</author>
 		<title type="html">{$entryTitle}</title>
-		<link rel="alternate" type="text/html" href="{$entryUri}" />
-		<id>{$entryUri}</id>
 		<updated>{$entryTimestamp}</updated>
+		<id>{$entryID}</id>
+		{$entryLinkAlternate}
+		{$entryAuthor}
 		<content type="html">{$entryContent}</content>
 		{$entryEnclosures}
 		{$entryCategories}
@@ -67,21 +105,24 @@ class AtomFormat extends FormatAbstract{
 EOD;
 		}
 
-	$feedTimestamp = date(DATE_ATOM, time());
-	$charset = $this->getCharset();
+		$feedTimestamp = gmdate(DATE_ATOM, $this->lastModified);
+		$charset = $this->getCharset();
 
 		/* Data are prepared, now let's begin the "MAGIE !!!" */
 		$toReturn = <<<EOD
 <?xml version="1.0" encoding="{$charset}"?>
-<feed xmlns="http://www.w3.org/2005/Atom" xmlns:thr="http://purl.org/syndication/thread/1.0">
+<feed xmlns="http://www.w3.org/2005/Atom">
 
 	<title type="text">{$title}</title>
-	<id>http{$https}://{$httpHost}{$httpInfo}/</id>
+	<id>{$urlScheme}{$urlHost}{$urlRequest}</id>
 	<icon>{$icon}</icon>
 	<logo>{$icon}</logo>
 	<updated>{$feedTimestamp}</updated>
+	<author>
+		<name>{$feedAuthor}</name>
+	</author>
 	<link rel="alternate" type="text/html" href="{$uri}" />
-	<link rel="self" href="http{$https}://{$httpHost}{$serverRequestUri}" />
+	<link rel="self" type="application/atom+xml" href="{$urlScheme}{$urlHost}{$urlRequest}" />
 {$entries}
 </feed>
 EOD;
