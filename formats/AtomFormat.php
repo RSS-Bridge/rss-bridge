@@ -84,9 +84,9 @@ class AtomFormat extends FormatAbstract{
 			}
 
 			if (!empty($entryAuthor)) {
-				$entryAuthor = '<author>'
-				. '<name>' . $entryAuthor . '</name>'
-				. '</author>';
+				$entryAuthor = '<author><name>'
+				. $entryAuthor
+				. '</name></author>';
 			}
 
 			$entries .= <<<EOD
