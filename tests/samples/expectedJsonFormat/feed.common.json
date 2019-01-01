@@ -2,7 +2,7 @@
 	"version": "https://jsonfeed.org/version/1",
 	"title": "Sample feed with common data",
 	"home_page_url": "https://example.com/blog/",
-	"feed_url": "https://example.com/feed",
+	"feed_url": "https://example.com/feed?type=common&items=4",
 	"icon": "https://example.com/logo.png",
 	"favicon": "https://example.com/logo.png",
 	"items": [

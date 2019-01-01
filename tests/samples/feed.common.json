@@ -2,7 +2,7 @@
 	"server": {
 		"HTTPS": "on",
 		"HTTP_HOST": "example.com",
-		"REQUEST_URI": "/feed"
+		"REQUEST_URI": "/feed?type=common&items=4"
 	},
 	"meta": {
 		"name": "Sample feed with common data",
