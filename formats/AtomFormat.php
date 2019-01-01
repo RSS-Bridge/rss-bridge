@@ -15,6 +15,8 @@ class AtomFormat extends FormatAbstract{
 		$urlPath	= (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : '';
 		$urlRequest	= (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
 
+		$feedUri = $this->xml_encode($urlScheme . $urlHost . $urlRequest);
+
 		$extraInfos = $this->getExtraInfos();
 		$title = $this->xml_encode($extraInfos['name']);
 		$uri = !empty($extraInfos['uri']) ? $extraInfos['uri'] : REPOSITORY;
@@ -40,7 +42,9 @@ class AtomFormat extends FormatAbstract{
 			$entryUri		= $item->getURI();
 
 			// the item id must be a valid unique URI
-			$entryID = (!empty($entryUri)) ? $entryUri : 'urn:sha1:' . hash('sha1', $entryTitle . $entryContent);
+			$entryID = $this->xml_encode($entryUri);
+			if (empty($entryID))
+				$entryID = 'urn:sha1:' . hash('sha1', $entryTitle . $entryContent);
 
 			if (empty($entryTimestamp))
 				$entryTimestamp = $this->lastModified;
@@ -114,7 +118,7 @@ EOD;
 <feed xmlns="http://www.w3.org/2005/Atom">
 
 	<title type="text">{$title}</title>
-	<id>{$urlScheme}{$urlHost}{$urlRequest}</id>
+	<id>{$feedUri}</id>
 	<icon>{$icon}</icon>
 	<logo>{$icon}</logo>
 	<updated>{$feedTimestamp}</updated>
@@ -122,7 +126,7 @@ EOD;
 		<name>{$feedAuthor}</name>
 	</author>
 	<link rel="alternate" type="text/html" href="{$uri}" />
-	<link rel="self" type="application/atom+xml" href="{$urlScheme}{$urlHost}{$urlRequest}" />
+	<link rel="self" type="application/atom+xml" href="{$feedUri}" />
 {$entries}
 </feed>
 EOD;
