@@ -35,8 +35,7 @@ class EliteDangerousGalnetBridge extends BridgeAbstract {
 			$uri = 'https://community.elitedangerous.com/' . $language . $uri;
 			$item['uri'] = $uri;
 
-			$title = $element->find('h3 a', 0)->plaintext;
-			$item['title'] = substr($title, 1); //remove the space between icon and title
+			$item['title'] = $element->find('h3 a', 0)->plaintext;
 
 			$content = $element->find('p', -1)->innertext;
 			$item['content'] = $content;
