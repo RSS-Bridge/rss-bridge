@@ -82,6 +82,10 @@ class InstagramBridge extends BridgeAbstract {
 			$item = array();
 			$item['uri'] = self::URI . 'p/' . $media->shortcode . '/';
 
+			if (isset($media->owner->username)) {
+				$item['author'] = $media->owner->username;
+			}
+
 			if (isset($media->edge_media_to_caption->edges[0]->node->text)) {
 				$textContent = $media->edge_media_to_caption->edges[0]->node->text;
 			} else {
