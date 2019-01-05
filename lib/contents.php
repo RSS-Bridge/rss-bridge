@@ -167,14 +167,14 @@ EOD
 				);
 			}
 
-			$error_get_last = error_get_last();
-			if($error_get_last !== null)
-				$error_get_last = $error_get_last['message'];
+			$lastError = error_get_last();
+			if($lastError !== null)
+				$lastError = $lastError['message'];
 			returnError(<<<EOD
 The requested resource cannot be found!
 Please make sure your input parameters are correct!
 cUrl error: $curlError ($curlErrno)
-PHP error: $error_get_last
+PHP error: $lastError
 EOD
 			, $errorCode);
 	}
