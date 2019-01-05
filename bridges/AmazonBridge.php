@@ -72,6 +72,9 @@ class AmazonBridge extends BridgeAbstract {
 
 			// Title
 			$title = $element->find('h2', 0);
+			if ($title == null) {
+				continue;
+			}
 
 			$item['title'] = html_entity_decode($title->innertext, ENT_QUOTES);
 
