@@ -7,19 +7,19 @@ class InstagramBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns the newest images';
 
 	const PARAMETERS = array(
-		array(
+		'Username' => array(
 			'u' => array(
 				'name' => 'username',
 				'required' => true
 			)
 		),
-		array(
+		'Hashtag' => array(
 			'h' => array(
 				'name' => 'hashtag',
 				'required' => true
 			)
 		),
-		array(
+		'Location' => array(
 			'l' => array(
 				'name' => 'location',
 				'required' => true

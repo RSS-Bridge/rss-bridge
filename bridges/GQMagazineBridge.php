@@ -9,7 +9,6 @@
  */
 class GQMagazineBridge extends BridgeAbstract
 {
-
 	const MAINTAINER = 'Riduidel';
 
 	const NAME = 'GQMagazine';
@@ -20,18 +19,18 @@ class GQMagazineBridge extends BridgeAbstract
 	const CACHE_TIMEOUT = 7200; // 2h
 	const DESCRIPTION = 'GQMagazine section extractor bridge. This bridge allows you get only a specific section.';
 
+	const DEFAULT_DOMAIN = 'www.gqmagazine.fr';
+
 	const PARAMETERS = array( array(
 		'domain' => array(
 			'name' => 'Domain to use',
 			'required' => true,
-			'values' => array(
-				'www.gqmagazine.fr' => 'www.gqmagazine.fr'
-			),
-			'defaultValue' => 'www.gqmagazine.fr'
+			'defaultValue' => self::DEFAULT_DOMAIN
 		),
 		'page' => array(
 			'name' => 'Initial page to load',
-			'required' => true
+			'required' => true,
+			'exampleValue' => 'sexe/news'
 		),
 	));
 
@@ -42,7 +41,12 @@ class GQMagazineBridge extends BridgeAbstract
 	);
 
 	private function getDomain() {
-		return $this->getInput('domain');
+		$domain = $this->getInput('domain');
+		if (empty($domain))
+			$domain = self::DEFAULT_DOMAIN;
+		if (strpos($domain, '://') === false)
+			$domain = 'https://' . $domain;
+		return $domain;
 	}
 
 	public function getURI()

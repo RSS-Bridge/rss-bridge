@@ -22,8 +22,7 @@ class DevToBridge extends BridgeAbstract {
 				'name' => 'Full article',
 				'type' => 'checkbox',
 				'required' => false,
-				'title' => 'Enable to receive the full article for each item',
-				'defaultValue' => false
+				'title' => 'Enable to receive the full article for each item'
 			)
 		)
 	);
