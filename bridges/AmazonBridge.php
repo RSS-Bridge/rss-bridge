@@ -72,7 +72,7 @@ class AmazonBridge extends BridgeAbstract {
 
 			// Title
 			$title = $element->find('h2', 0);
-			if ($title == null) {
+			if (is_null($title)) {
 				continue;
 			}
 
