@@ -54,7 +54,7 @@ function getContents($url, $header = array(), $opts = array()){
 
 	// Use file_get_contents if in CLI mode with no root certificates defined
 	if(php_sapi_name() === 'cli' && empty(ini_get('curl.cainfo'))) {
-		$data = file_get_contents($url);
+		$data = @file_get_contents($url);
 
 		if($data === false) {
 			$errorCode = 500;
@@ -167,10 +167,14 @@ EOD
 				);
 			}
 
+			$lastError = error_get_last();
+			if($lastError !== null)
+				$lastError = $lastError['message'];
 			returnError(<<<EOD
 The requested resource cannot be found!
 Please make sure your input parameters are correct!
 cUrl error: $curlError ($curlErrno)
+PHP error: $lastError
 EOD
 			, $errorCode);
 	}
