@@ -202,7 +202,7 @@ try {
 		);
 
 		// Initialize cache
-		$cache = Cache::create('FileCache');
+		$cache = Cache::create('MemcachedCache');
 		$cache->setPath(PATH_CACHE);
 		$cache->purgeCache(86400); // 24 hours
 		$cache->setParameters($cache_params);
