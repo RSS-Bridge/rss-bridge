@@ -1,7 +1,4 @@
 <?php
-/**
-* Cache with file system
-*/
 class MemcachedCache implements CacheInterface {
 
 	protected $path;
