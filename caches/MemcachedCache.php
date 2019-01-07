@@ -13,7 +13,7 @@ class MemcachedCache implements CacheInterface {
 
 	public function __construct() {
 		$conn = new Memcached();
-		$conn->addServer('localhost', 11211) or die ("Could not connect to memcached server");
+		$conn->addServer('localhost', 11211) or die ('Could not connect to memcached server');
 		$this->conn = $conn;
 	}
 
