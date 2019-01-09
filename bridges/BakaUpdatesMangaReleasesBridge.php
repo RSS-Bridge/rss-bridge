@@ -8,6 +8,7 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 		'series_id' => array(
 			'name'		=> 'Series ID',
 			'type'		=> 'number',
+			'required'	=> true,
 			'exampleValue'	=> '12345'
 		)
 	));
@@ -16,11 +17,7 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 	private $feedName = '';
 
 	public function collectData() {
-		$series_id = $this->getInput('series_id');
-		if (empty($series_id))
-			returnServerError('Invalid series ID');
-
-		$html = getSimpleHTMLDOM(self::URI . 'releases.html?search=' . $series_id . '&stype=series')
+		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Series not found');
 
 		$objTitle = $html->find('td[class="text pad"]', 1);
@@ -74,6 +71,14 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 
 			--$limit;
 		}
+	}
+
+	public function getURI(){
+		$series_id = $this->getInput('series_id');
+		if (!empty($series_id)) {
+			return self::URI . 'releases.html?search=' . $series_id . '&stype=series';
+		}
+		return self::URI;
 	}
 
 	public function getName(){
