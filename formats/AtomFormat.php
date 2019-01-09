@@ -23,7 +23,7 @@ class AtomFormat extends FormatAbstract{
 
 		// since we can't guarantee that all items have an author,
 		// a global feed author is mandatory
-		$feedAuthor = !empty($extraInfos['author']) ? $extraInfos['author'] : 'RSS-Bridge';
+		$feedAuthor = 'RSS-Bridge';
 
 		$uriparts = parse_url($uri);
 		if(!empty($extraInfos['icon'])) {
