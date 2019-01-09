@@ -6,7 +6,8 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 	const MAINTAINER = 'fulmeek';
 	const PARAMETERS = array(array(
 		'series_id' => array(
-			'name'			=> 'Series ID',
+			'name'		=> 'Series ID',
+			'type'		=> 'number',
 			'exampleValue'	=> '12345'
 		)
 	));
@@ -15,7 +16,7 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 	private $feedName = '';
 
 	public function collectData() {
-		$series_id = preg_replace('/[^0-9]/', '', $this->getInput('series_id'));
+		$series_id = $this->getInput('series_id');
 		if (empty($series_id))
 			returnServerError('Invalid series ID');
 
