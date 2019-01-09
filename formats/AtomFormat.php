@@ -15,7 +15,7 @@ class AtomFormat extends FormatAbstract{
 		$urlPath	= (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : '';
 		$urlRequest	= (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
 
-		$feedUri = $this->xml_encode($urlScheme . $urlHost . $urlRequest);
+		$feedUrl = $this->xml_encode($urlScheme . $urlHost . $urlRequest);
 
 		$extraInfos = $this->getExtraInfos();
 		$title = $this->xml_encode($extraInfos['name']);
@@ -118,7 +118,7 @@ EOD;
 <feed xmlns="http://www.w3.org/2005/Atom">
 
 	<title type="text">{$title}</title>
-	<id>{$feedUri}</id>
+	<id>{$feedUrl}</id>
 	<icon>{$icon}</icon>
 	<logo>{$icon}</logo>
 	<updated>{$feedTimestamp}</updated>
@@ -126,7 +126,7 @@ EOD;
 		<name>{$feedAuthor}</name>
 	</author>
 	<link rel="alternate" type="text/html" href="{$uri}" />
-	<link rel="self" type="application/atom+xml" href="{$feedUri}" />
+	<link rel="self" type="application/atom+xml" href="{$feedUrl}" />
 {$entries}
 </feed>
 EOD;
