@@ -65,7 +65,7 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 			}
 
 			$item['title']	= implode(' ', $title);
-			$item['uri']	= 'urn:sha1:' . hash('sha1', $item['title']);
+			$item['uri']	= $this->getURI() . '#' . hash('sha1', $item['title']);
 
 			$this->items[] = $item;
 
