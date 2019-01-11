@@ -14,12 +14,14 @@
 
 	<entry>
 		<title type="html">Oh 😲 I found three monkeys 🙈🙉🙊</title>
+		<published>2018-10-07T16:53:03+00:00</published>
 		<updated>2018-10-07T16:53:03+00:00</updated>
 		<id>urn:sha1:1918f084648b82057c1dd3faa3d091da82a6fac2</id>
 		<content type="html">Oh 😲 I found three monkeys 🙈🙉🙊</content>
 	</entry>
 	<entry>
 		<title type="html">Something happened</title>
+		<published>2018-10-07T16:38:17+00:00</published>
 		<updated>2018-10-07T16:38:17+00:00</updated>
 		<id>urn:sha1:e62189168a06dfa74f61c621c79c33c4c8517e1f</id>
 		<content type="html">Something happened</content>

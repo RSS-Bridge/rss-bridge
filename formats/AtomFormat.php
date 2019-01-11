@@ -97,6 +97,7 @@ class AtomFormat extends FormatAbstract{
 
 	<entry>
 		<title type="html">{$entryTitle}</title>
+		<published>{$entryTimestamp}</published>
 		<updated>{$entryTimestamp}</updated>
 		<id>{$entryID}</id>
 		{$entryLinkAlternate}

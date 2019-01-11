@@ -14,6 +14,7 @@
 
 	<entry>
 		<title type="html">Test Entry</title>
+		<published>2018-12-01T12:00:00+00:00</published>
 		<updated>2018-12-01T12:00:00+00:00</updated>
 		<id>http://example.com/blog/test-entry</id>
 		<link href="http://example.com/blog/test-entry" rel="alternate" type="text/html"/>
@@ -27,6 +28,7 @@
 	</entry>
 	<entry>
 		<title type="html">Announcing JSON Feed</title>
+		<published>2017-05-17T13:02:12+00:00</published>
 		<updated>2017-05-17T13:02:12+00:00</updated>
 		<id>https://jsonfeed.org/2017/05/17/announcing_json_feed</id>
 		<link href="https://jsonfeed.org/2017/05/17/announcing_json_feed" rel="alternate" type="text/html"/>
@@ -53,6 +55,7 @@
 	</entry>
 	<entry>
 		<title type="html">Atom draft-07 snapshot</title>
+		<published>2005-07-31T12:29:29+00:00</published>
 		<updated>2005-07-31T12:29:29+00:00</updated>
 		<id>http://example.org/2005/04/02/atom</id>
 		<link href="http://example.org/2005/04/02/atom" rel="alternate" type="text/html"/>
@@ -64,6 +67,7 @@
 	</entry>
 	<entry>
 		<title type="html">Star City</title>
+		<published>2003-06-03T09:39:21+00:00</published>
 		<updated>2003-06-03T09:39:21+00:00</updated>
 		<id>http://liftoff.msfc.nasa.gov/news/2003/news-starcity.asp</id>
 		<link href="http://liftoff.msfc.nasa.gov/news/2003/news-starcity.asp" rel="alternate" type="text/html"/>
