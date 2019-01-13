@@ -117,7 +117,7 @@ class GlassdoorBridge extends BridgeAbstract {
 			$item['title'] = $post->find('header', 0)->plaintext;
 			$item['content'] = $post->find('div[class="excerpt-content"]', 0)->plaintext;
 			$item['enclosures'] = array(
-				$this->getFullSizeImageURI($post->find('div[class="post-thumb"]', 0)->{'data-original'})
+				$this->getFullSizeImageURI($post->find('div[class*="post-thumb"]', 0)->{'data-original'})
 			);
 
 			// optionally load full articles
