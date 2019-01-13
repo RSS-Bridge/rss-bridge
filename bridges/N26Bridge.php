@@ -27,7 +27,8 @@ class N26Bridge extends BridgeAbstract
 			$fullArticle = getSimpleHTMLDOM($item['uri'])
 				or returnServerError('Error while downloading the full article');
 
-			$item['timestamp'] = strtotime($fullArticle->find('.fk.fl.de.ch.fm.by'));
+			$dateElement = $fullArticle->find('span[class="fk fl de ch fm by"]', 0);
+			$item['timestamp'] = strtotime($dateElement->plaintext);
 			$item['content'] = $fullArticle->find('main article', 0)->innertext;
 
 			$this->items[] = $item;
