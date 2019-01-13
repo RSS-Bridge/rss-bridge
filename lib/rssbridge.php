@@ -65,6 +65,7 @@ require_once PATH_LIB . 'error.php';
 require_once PATH_LIB . 'contents.php';
 
 // Vendor
+define('MAX_FILE_SIZE', 10000000); /* Allow larger files for simple_html_dom */
 require_once PATH_LIB_VENDOR . 'simplehtmldom/simple_html_dom.php';
 require_once PATH_LIB_VENDOR . 'php-urljoin/src/urljoin.php';
 
