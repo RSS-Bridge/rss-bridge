@@ -24,7 +24,8 @@ class N26Bridge extends BridgeAbstract
 			$item['uri'] = self::URI . $article->find('h2 a', 0)->href;
 			$item['title'] = $article->find('h2 a', 0)->plaintext;
 
-			$fullArticle = getSimpleHTMLDOM($item['uri']);
+			$fullArticle = getSimpleHTMLDOM($item['uri'])
+				or returnServerError('Error while downloading the full article');
 
 			$item['timestamp'] = strtotime($fullArticle->find('.fk.fl.de.ch.fm.by'));
 			$item['content'] = $fullArticle->find('main article', 0)->innertext;
