@@ -68,7 +68,7 @@ class FurAffinityBridge extends BridgeAbstract {
 				'defaultValue' => 'checked'
 			),
 			'mode' => array(
-				'name' => 'Match Mode',
+				'name' => 'Match mode',
 				'type' => 'list',
 				'required' => true,
 				'values' => array(
@@ -85,11 +85,17 @@ class FurAffinityBridge extends BridgeAbstract {
 				'title' => 'Limit number of submissions to return. -1 for unlimited.'
 			),
 			'full' => array(
-				'name' => 'Full View',
+				'name' => 'Full view',
+				'title' => 'Include description, tags, date and larger image in article. Uses more bandwidth.',
+				'type' => 'checkbox',
+				'defaultValue' => 'checked'
+			),
+			'cache' => array(
+				'name' => 'Cache submission pages',
+				'title' => 'Reduces requests to FA when Full view is enabled. Changes to submission details may be delayed.',
 				'type' => 'checkbox',
 				'defaultValue' => 'checked'
 			)
-
 		),
 		'Browse' => array(
 			'cat' => array(
@@ -431,7 +437,14 @@ class FurAffinityBridge extends BridgeAbstract {
 				'title' => 'Limit number of submissions to return. -1 for unlimited.'
 			),
 			'full' => array(
-				'name' => 'Full View',
+				'name' => 'Full view',
+				'title' => 'Include description, tags, date and larger image in article. Uses more bandwidth.',
+				'type' => 'checkbox',
+				'defaultValue' => 'checked'
+			),
+			'cache' => array(
+				'name' => 'Cache submission pages',
+				'title' => 'Reduces requests to FA when Full view is enabled. Changes to submission details may be delayed.',
 				'type' => 'checkbox',
 				'defaultValue' => 'checked'
 			)
@@ -472,7 +485,14 @@ class FurAffinityBridge extends BridgeAbstract {
 				'title' => 'Limit number of submissions to return. -1 for unlimited.'
 			),
 			'full' => array(
-				'name' => 'Full View',
+				'name' => 'Full view',
+				'title' => 'Include description, tags, date and larger image in article. Uses more bandwidth.',
+				'type' => 'checkbox',
+				'defaultValue' => 'checked'
+			),
+			'cache' => array(
+				'name' => 'Cache submission pages',
+				'title' => 'Reduces requests to FA when Full view is enabled. Changes to submission details may be delayed.',
 				'type' => 'checkbox',
 				'defaultValue' => 'checked'
 			)
@@ -490,7 +510,14 @@ class FurAffinityBridge extends BridgeAbstract {
 				'title' => 'Limit number of submissions to return. -1 for unlimited.'
 			),
 			'full' => array(
-				'name' => 'Full View',
+				'name' => 'Full view',
+				'title' => 'Include description, tags, date and larger image in article. Uses more bandwidth.',
+				'type' => 'checkbox',
+				'defaultValue' => 'checked'
+			),
+			'cache' => array(
+				'name' => 'Cache submission pages',
+				'title' => 'Reduces requests to FA when Full view is enabled. Changes to submission details may be delayed.',
 				'type' => 'checkbox',
 				'defaultValue' => 'checked'
 			)
@@ -508,7 +535,14 @@ class FurAffinityBridge extends BridgeAbstract {
 				'title' => 'Limit number of submissions to return. -1 for unlimited.'
 			),
 			'full' => array(
-				'name' => 'Full View',
+				'name' => 'Full view',
+				'title' => 'Include description, tags, date and larger image in article. Uses more bandwidth.',
+				'type' => 'checkbox',
+				'defaultValue' => 'checked'
+			),
+			'cache' => array(
+				'name' => 'Cache submission pages',
+				'title' => 'Reduces requests to FA when Full view is enabled. Changes to submission details may be delayed.',
 				'type' => 'checkbox',
 				'defaultValue' => 'checked'
 			)
@@ -532,7 +566,14 @@ class FurAffinityBridge extends BridgeAbstract {
 				'title' => 'Limit number of submissions to return. -1 for unlimited.'
 			),
 			'full' => array(
-				'name' => 'Full View',
+				'name' => 'Full view',
+				'title' => 'Include description, tags, date and larger image in article. Uses more bandwidth.',
+				'type' => 'checkbox',
+				'defaultValue' => 'checked'
+			),
+			'cache' => array(
+				'name' => 'Cache submission pages',
+				'title' => 'Reduces requests to FA when Full view is enabled. Changes to submission details may be delayed.',
 				'type' => 'checkbox',
 				'defaultValue' => 'checked'
 			)
@@ -741,11 +782,15 @@ class FurAffinityBridge extends BridgeAbstract {
 			return getSimpleHTMLDOM($this->getURI(), $header, $opts);
 	}
 
-	private function getFASimpleHTMLDOM($url) {
+	private function getFASimpleHTMLDOM($url, $cache = false) {
 			$header = array(
 				'Cookie: ' . self::FA_AUTH_COOKIE
 			);
-			return getSimpleHTMLDOM($url, $header);
+			if($cache) {
+				return getSimpleHTMLDOMCached($url, 86400, $header); // 24 hours
+			} else {
+				return getSimpleHTMLDOM($url, $header);
+			}
 	}
 
 	private function itemsFromJournalList($html) {
@@ -787,6 +832,7 @@ class FurAffinityBridge extends BridgeAbstract {
 
 	private function itemsFromSubmissionList($html) {
 		$limit = (is_int($this->getInput('limit')) ? $this->getInput('limit') : 10);
+		$cache = ($this->getInput('cache') === true);
 
 		foreach($html->find('section.gallery figure') as $figure) {
 			if($limit-- === 0) break;
@@ -801,7 +847,7 @@ class FurAffinityBridge extends BridgeAbstract {
 			$item['author'] = $figure->find('figcaption p a[href^=/user]', 0)->title;
 
 			if($this->getInput('full') === true) {
-				$submissionHTML = $this->getFASimpleHTMLDOM($submissionURL);
+				$submissionHTML = $this->getFASimpleHTMLDOM($submissionURL, $cache);
 
 				$stats = $submissionHTML->find('.stats-container', 0);
 				$item['timestamp'] = strtotime($stats->find('.popup_date', 0)->plaintext);
