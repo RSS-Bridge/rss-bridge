@@ -41,25 +41,25 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 
 			$item['content'] = '';
 
-			$objDate = $element->find('td[class="text pad"]', 0);
+			$objDate = $cols[0];
 			if ($objDate)
 				$item['timestamp'] = strtotime($objDate->plaintext);
 
-			$objTitle = $element->find('td[class="text pad"]', 1);
+			$objTitle = $cols[1];
 			if ($objTitle) {
 				$title[] = html_entity_decode($objTitle->plaintext);
 				$item['content'] .= '<p>Series: ' . $objTitle->innertext . '</p>';
 			}
 
-			$objVolume = $element->find('td[class="text pad"]', 2);
+			$objVolume = $cols[2];
 			if ($objVolume && !empty($objVolume->plaintext))
 				$title[] = 'Vol.' . $objVolume->plaintext;
 
-			$objChapter = $element->find('td[class="text pad"]', 3);
+			$objChapter = $cols[3];
 			if ($objChapter && !empty($objChapter->plaintext))
 				$title[] = 'Chp.' . $objChapter->plaintext;
 
-			$objAuthor = $element->find('td[class="text pad"]', 4);
+			$objAuthor = $cols[4];
 			if ($objAuthor && !empty($objAuthor->plaintext)) {
 				$item['author'] = html_entity_decode($objAuthor->plaintext);
 				$item['content'] .= '<p>Groups: ' . $objAuthor->innertext . '</p>';
