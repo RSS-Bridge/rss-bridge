@@ -30,7 +30,8 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 
 		$limit = self::LIMIT_ITEMS;
 		foreach($itemlist as $element) {
-			if (!$element->find('td[class="text pad"]', 0))
+			$cols = $element->find('td[class="text pad"]');
+			if (!$cols)
 				continue;
 			if ($limit <= 0)
 				break;
@@ -69,7 +70,9 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 
 			$this->items[] = $item;
 
-			--$limit;
+			if(count($this->items) >= $limit) {
+				break;
+			}
 		}
 	}
 
