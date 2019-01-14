@@ -50,9 +50,11 @@ class AtomFormat extends FormatAbstract{
 				$entryTimestamp = $this->lastModified;
 
 			if (empty($entryTitle)) {
-				$entryTitle = strip_tags($entryContent);
-				if (strlen($entryTitle) > self::LIMIT_TITLE)
-					$entryTitle = substr($entryTitle, 0, self::LIMIT_TITLE) . '...';
+				$entryTitle = str_replace("\n", ' ', strip_tags($entryContent));
+				if (strlen($entryTitle) > self::LIMIT_TITLE) {
+					$wrapPos = strpos(wordwrap($entryTitle, self::LIMIT_TITLE), "\n");
+					$entryTitle = substr($entryTitle, 0, $wrapPos) . '...';
+				}
 			}
 
 			if (empty($entryContent))
