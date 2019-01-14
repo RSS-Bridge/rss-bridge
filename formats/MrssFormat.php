@@ -30,12 +30,12 @@ class MrssFormat extends FormatAbstract {
 	);
 
 	public function stringify(){
-		$urlScheme	= (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
+		$urlPrefix	= (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
 		$urlHost	= (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '';
 		$urlPath	= (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : '';
 		$urlRequest	= (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
 
-		$feedUri = $this->xml_encode($urlScheme . $urlHost . $urlRequest);
+		$feedUrl = $this->xml_encode($urlPrefix . $urlHost . $urlRequest);
 
 		$extraInfos	= $this->getExtraInfos();
 		$title		= $this->xml_encode($extraInfos['name']);
@@ -130,7 +130,7 @@ EOD;
 		<description>{$title}</description>
 		{$feedImage}
 		<atom:link rel="alternate" type="text/html" href="{$uri}"/>
-		<atom:link rel="self" href="{$feedUri}" type="application/atom+xml"/>
+		<atom:link rel="self" href="{$feedUrl}" type="application/atom+xml"/>
 		{$items}
 	</channel>
 </rss>
