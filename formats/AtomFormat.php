@@ -10,10 +10,10 @@ class AtomFormat extends FormatAbstract{
 	const LIMIT_TITLE = 140;
 
 	public function stringify(){
-		$urlPrefix	= (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
-		$urlHost	= (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '';
-		$urlPath	= (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : '';
-		$urlRequest	= (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
+		$urlPrefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
+		$urlHost = (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '';
+		$urlPath = (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : '';
+		$urlRequest = (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
 
 		$feedUrl = $this->xml_encode($urlPrefix . $urlHost . $urlRequest);
 
@@ -36,10 +36,10 @@ class AtomFormat extends FormatAbstract{
 
 		$entries = '';
 		foreach($this->getItems() as $item) {
-			$entryTimestamp	= $item->getTimestamp();
-			$entryTitle	= $this->xml_encode($item->getTitle());
-			$entryContent	= $item->getContent();
-			$entryUri	= $item->getURI();
+			$entryTimestamp = $item->getTimestamp();
+			$entryTitle = $this->xml_encode($item->getTitle());
+			$entryContent = $item->getContent();
+			$entryUri = $item->getURI();
 
 			// the item id must be a valid unique URI
 			$entryID = $this->xml_encode($entryUri);
@@ -60,11 +60,11 @@ class AtomFormat extends FormatAbstract{
 			if (empty($entryContent))
 				$entryContent = $entryTitle;
 
-			$entryAuthor	= $this->xml_encode($item->getAuthor());
-			$entryTitle	= $this->xml_encode($entryTitle);
-			$entryUri	= $this->xml_encode($entryUri);
-			$entryTimestamp	= $this->xml_encode(gmdate(DATE_ATOM, $entryTimestamp));
-			$entryContent	= $this->xml_encode($this->sanitizeHtml($entryContent));
+			$entryAuthor = $this->xml_encode($item->getAuthor());
+			$entryTitle = $this->xml_encode($entryTitle);
+			$entryUri = $this->xml_encode($entryUri);
+			$entryTimestamp = $this->xml_encode(gmdate(DATE_ATOM, $entryTimestamp));
+			$entryContent = $this->xml_encode($this->sanitizeHtml($entryContent));
 
 			$entryEnclosures = '';
 			foreach($item->getEnclosures() as $enclosure) {
