@@ -30,16 +30,16 @@ class MrssFormat extends FormatAbstract {
 	);
 
 	public function stringify(){
-		$urlPrefix	= (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
-		$urlHost	= (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '';
-		$urlPath	= (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : '';
-		$urlRequest	= (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
+		$urlPrefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
+		$urlHost = (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '';
+		$urlPath = (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : '';
+		$urlRequest = (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
 
 		$feedUrl = $this->xml_encode($urlPrefix . $urlHost . $urlRequest);
 
-		$extraInfos	= $this->getExtraInfos();
-		$title		= $this->xml_encode($extraInfos['name']);
-		$icon		= $extraInfos['icon'];
+		$extraInfos = $this->getExtraInfos();
+		$title = $this->xml_encode($extraInfos['name']);
+		$icon = $extraInfos['icon'];
 
 		if(!empty($extraInfos['uri'])) {
 			$uri = $this->xml_encode($extraInfos['uri']);
@@ -49,10 +49,10 @@ class MrssFormat extends FormatAbstract {
 
 		$items = '';
 		foreach($this->getItems() as $item) {
-			$itemTimestamp	= $item->getTimestamp();
-			$itemTitle		= $this->xml_encode($item->getTitle());
-			$itemUri		= $this->xml_encode($item->getURI());
-			$itemContent	= $this->xml_encode($this->sanitizeHtml($item->getContent()));
+			$itemTimestamp = $item->getTimestamp();
+			$itemTitle = $this->xml_encode($item->getTitle());
+			$itemUri = $this->xml_encode($item->getURI());
+			$itemContent = $this->xml_encode($this->sanitizeHtml($item->getContent()));
 
 			$entryID = $this->xml_encode($itemUri);
 			if (empty($entryID))
