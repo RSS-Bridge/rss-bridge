@@ -1,12 +1,13 @@
 <?php
 
-class StockFilingsBridge extends BridgeAbstract {
+class StockFilingsBridge extends FeedExpander {
 	const MAINTAINER = 'captn3m0';
 	const NAME = 'SEC Stock filings';
 	const URI = 'https://www.sec.gov/edgar/searchedgar/companysearch.html';
 	const CACHE_TIMEOUT = 3600; // 1h
 	const DESCRIPTION = 'Tracks SEC Filings for a single company';
 	const SEARCH_URL = 'https://www.sec.gov/cgi-bin/browse-edgar?owner=exclude&action=getcompany&CIK=';
+	const WEBSITE_ROOT = 'https://www.sec.gov';
 
 	const PARAMETERS = array(
 		array(
@@ -31,30 +32,23 @@ class StockFilingsBridge extends BridgeAbstract {
 	/**
 	 * Returns the Company Name
 	 */
-	private function getTitle($html) {
-		$titleTag = $html->find('span.companyName', 0);
+	private function getRssFeed($html) {
+		$links = $html->find('#contentDiv a');
 
-		if (!$titleTag) {
-			return "No Such Company";
-		} else {
-			// Remove <acronym> and <a> tags
-			foreach($titleTag->children as $child) {
-				$child->outertext = "";
+		foreach ($links as $link) {
+			$href = $link->href;
+
+			if (substr($href, 0, 4) !== 'http') {
+				$href = self::WEBSITE_ROOT . $href;
 			}
-			return substr($titleTag->innertext, 0, -4);
-		}
-	}
+			parse_str(html_entity_decode(parse_url($href, PHP_URL_QUERY)), $query);
 
-	/**
-	 * Returns name for the feed
-	 * Uses title (already scraped) if it has one
-	 */
-	public function getName() {
-		if (isset($this->title)) {
-			return $this->title;
-		} else {
-			return parent::getName();
+			if (isset($query['output']) and ($query['output'] == 'atom')) {
+				return $href;
+			}
 		}
+
+		return false;
 	}
 
 	/**
@@ -68,26 +62,21 @@ class StockFilingsBridge extends BridgeAbstract {
 	}
 
 	/**
-	 * Scrape method for Amazon product page
-	 * @return [type] [description]
+	 * Scrape the SEC Stock Filings RSS Feed URL
+	 * and redirect there
 	 */
 	public function collectData() {
 		$html = $this->getHtml();
-		$this->title = $this->getTitle($html);
-		$this->
+		$rssFeedUrl = $this->getRssFeed($html);
 
-		// $data = $this->scrapePriceFromMetrics($html) ?: $this->scrapePriceGeneric($html);
+		if ($rssFeedUrl) {
+			parent::collectExpandableDatas($rssFeedUrl);
+		} else {
+			returnClientError('Could not find RSS Feed URL. Are you sure you used a valid CIK?');
+		}
+	}
 
-		// $item = array(
-		// 	'title' 	=> $this->title,
-		// 	'uri' 		=> $this->getURI(),
-		// 	'content' 	=> "$imageTag<br/>Price: {$data['price']} {$data['currency']}",
-		// );
-
-		// if ($data['shipping'] !== '0') {
-		// 	$item['content'] .= "<br>Shipping: {$data['shipping']} {$data['currency']}</br>";
-		// }
-
-		// $this->items[] = $item;
+	protected function parseItem($newsItem) {
+		return parent::parseATOMItem($newsItem);
 	}
 }
