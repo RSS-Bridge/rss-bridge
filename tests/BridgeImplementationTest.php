@@ -98,6 +98,19 @@ class BridgeImplementationTest extends TestCase {
 
 				if (isset($options['required'])) {
 					$this->assertInternalType('bool', $options['required'], $field . ': invalid required');
+
+					if($options['required'] === true && isset($options['type'])) {
+						switch($options['type']) {
+							case 'list':
+							case 'checkbox':
+								$this->assertArrayNotHasKey(
+									'required',
+									$options,
+									$field . ': "required" attribute not supported for ' . $options['type']
+								);
+								break;
+						}
+					}
 				}
 
 				if (isset($options['title'])) {
