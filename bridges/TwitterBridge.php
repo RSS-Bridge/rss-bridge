@@ -190,7 +190,7 @@ class TwitterBridge extends BridgeAbstract {
 			// get author
 			$item['author'] = $item['fullname'] . ' (@' . $item['username'] . ')';
 			if ($tweet->getAttribute('data-screen-name') !== $this->getInput('u'))
-				$item['author'] .= ' RT: @' . htmlspecialchars_decode($this->getInput('u'), ENT_QUOTES);
+				$item['author'] .= ' RT: @' . $this->getInput('u');
 			// get avatar link
 			$item['avatar'] = $tweet->find('img', 0)->src;
 			// get TweetID
