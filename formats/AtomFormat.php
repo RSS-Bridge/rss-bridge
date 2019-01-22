@@ -41,9 +41,13 @@ class AtomFormat extends FormatAbstract{
 			$entryContent = $item->getContent();
 			$entryUri = $item->getURI();
 
-			// the item id must be a valid unique URI
-			$entryID = $this->xml_encode($entryUri);
-			if (empty($entryID))
+			if (!empty($item->getUid()))
+				$entryID = 'urn:sha1:' . $item->getUid();
+
+			if (empty($entryID)) // Fallback to provided URI
+				$entryID = $this->xml_encode($entryUri);
+
+			if (empty($entryID)) // Fallback to title and content
 				$entryID = 'urn:sha1:' . hash('sha1', $entryTitle . $entryContent);
 
 			if (empty($entryTimestamp))
