@@ -21,8 +21,7 @@ class NotAlwaysBridge extends BridgeAbstract {
 								'Friendly' => 'friendly',
 								'Hopeless' => 'hopeless',
 								'Unfiltered' => 'unfiltered'
-						),
-						'required' => true
+						)
 				)
 		));
 

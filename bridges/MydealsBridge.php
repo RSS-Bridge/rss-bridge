@@ -17,13 +17,11 @@ class MydealsBridge extends PepperBridgeAbstract {
 			'hide_expired' => array(
 				'name' => 'Abgelaufenes ausblenden',
 				'type' => 'checkbox',
-				'required' => true
 			),
 			'hide_local' => array(
 				'name' => 'Lokales ausblenden',
 				'type' => 'checkbox',
 				'title' => 'Deals im physischen Geschäft ausblenden',
-				'required' => true
 			),
 			'priceFrom' => array(
 				'name' => 'Minimaler Preis',
@@ -43,7 +41,6 @@ class MydealsBridge extends PepperBridgeAbstract {
 			'group' => array(
 				'name' => 'Gruppen',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Gruppe, deren Deals angezeigt werden müssen',
 				'values' => array(
 					'Elektronik' => 'elektronik',
@@ -66,7 +63,6 @@ class MydealsBridge extends PepperBridgeAbstract {
 			'order' => array(
 				'name' => 'sortieren nach',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Sortierung der deals',
 				'values' => array(
 					'Vom heißesten zum kältesten Deal' => '',

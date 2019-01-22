@@ -11,7 +11,6 @@ class FDroidBridge extends BridgeAbstract {
 		'u' => array(
 			'name' => 'Widget selection',
 			'type' => 'list',
-			'required' => true,
 			'values' => array(
 				'Latest added apps' => 'added',
 				'Latest updated apps' => 'updated'

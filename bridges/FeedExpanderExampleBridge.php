@@ -11,7 +11,6 @@ class FeedExpanderExampleBridge extends FeedExpander {
 			'version' => array(
 				'name' => 'Version',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Select your feed format/version',
 				'defaultValue' => 'RSS 2.0',
 				'values' => array(

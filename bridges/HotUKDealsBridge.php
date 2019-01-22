@@ -17,13 +17,11 @@ class HotUKDealsBridge extends PepperBridgeAbstract {
 			'hide_expired' => array(
 				'name' => 'Hide expired deals',
 				'type' => 'checkbox',
-				'required' => true
 			),
 			'hide_local' => array(
 				'name' => 'Hide local deals',
 				'type' => 'checkbox',
 				'title' => 'Hide deals in physical store',
-				'required' => true
 			),
 			'priceFrom' => array(
 				'name' => 'Minimal Price',
@@ -43,7 +41,6 @@ class HotUKDealsBridge extends PepperBridgeAbstract {
 			'group' => array(
 				'name' => 'Group',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Group whose deals must be displayed',
 				'values' => array(
 					'2DS' => '2ds',
@@ -1317,7 +1314,6 @@ class HotUKDealsBridge extends PepperBridgeAbstract {
 			'order' => array(
 				'name' => 'Order by',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Sort order of deals',
 				'values' => array(
 					'From the most to the least hot deal' => '-hot',
