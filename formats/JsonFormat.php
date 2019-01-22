@@ -16,6 +16,7 @@ class JsonFormat extends FormatAbstract {
 		'content',
 		'enclosures',
 		'categories',
+		'uid',
 	);
 
 	public function stringify(){

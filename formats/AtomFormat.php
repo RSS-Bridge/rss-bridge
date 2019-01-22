@@ -40,6 +40,7 @@ class AtomFormat extends FormatAbstract{
 			$entryTitle = $this->xml_encode($item->getTitle());
 			$entryContent = $item->getContent();
 			$entryUri = $item->getURI();
+			$entryID = '';
 
 			if (!empty($item->getUid()))
 				$entryID = 'urn:sha1:' . $item->getUid();
