@@ -207,7 +207,7 @@ This bridge is not fetching its content through a secure connection</div>';
 	 * @return string The list input field
 	 */
 	private static function getListInput($entry, $id, $name) {
-		if(isset($entry['required'])) {
+		if(isset($entry['required']) && $entry['required'] === true) {
 			Debug::log('The "required" attribute is not supported for lists.');
 			unset($entry['required']);
 		}
@@ -272,7 +272,7 @@ This bridge is not fetching its content through a secure connection</div>';
 	 * @return string The checkbox input field
 	 */
 	private static function getCheckboxInput($entry, $id, $name) {
-		if(isset($entry['required'])) {
+		if(isset($entry['required']) && $entry['required'] === true) {
 			Debug::log('The "required" attribute is not supported for checkboxes.');
 			unset($entry['required']);
 		}
