@@ -57,7 +57,7 @@
 		<title type="html">Atom draft-07 snapshot</title>
 		<published>2005-07-31T12:29:29+00:00</published>
 		<updated>2005-07-31T12:29:29+00:00</updated>
-		<id>http://example.org/2005/04/02/atom</id>
+		<id>urn:sha1:dd6b6c920d3b340ab9e07faf6682f2a7c4f70134</id>
 		<link href="http://example.org/2005/04/02/atom" rel="alternate" type="text/html"/>
 		<author>
 			<name>Mark Pilgrim</name>
