@@ -4,7 +4,7 @@ class FeedReducerBridge extends FeedExpander {
 	const MAINTAINER = 'mdemoss';
 	const NAME = 'Feed Reducer';
 	const URI = '';
-	const DESCRIPTION = 'Choose a percentage of a feed you want to see, or choose the desired average number of items per day.';
+	const DESCRIPTION = 'Choose a percentage of a feed you want to see.';
 	const PARAMETERS = array( array(
 		'url' => array(
 			'name' => 'Feed URI',
