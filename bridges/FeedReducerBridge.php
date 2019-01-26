@@ -52,6 +52,9 @@ class FeedReducerBridge extends FeedExpander {
 		return $filteredItems;
 	}
 	
-	// @TODO: Make a note of the percentage in the feed title.
+	public function getName(){
+		$trimmedPercentage = preg_replace('/[^0-9]/', '', $this->getInput('percentage'));
+		return parent::getName() . ' [' . $trimmedPercentage . '%]';
+	}
     
 }
