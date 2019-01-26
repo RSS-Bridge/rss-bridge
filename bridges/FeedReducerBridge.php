@@ -32,12 +32,12 @@ class FeedReducerBridge extends FeedExpander {
 		$intPercentage = (int)preg_replace('/[^0-9]/', '', $this->getInput('percentage'));
 
 		foreach ($this->items as $thisItem) {
-			// Because the URL is included in the hash:
+			// The URL is included in the hash:
 			//  - so you can change the output by adding a local-part to the URL
 			//  - so items with the same URI in different feeds won't be correlated
 
 			// $pseudoRandomInteger will be a 16 bit unsigned int mod 100.
-			// This won't be exact, but should be close enough.
+			// This won't be uniformly distributed 1-100, but should be close enough.
 
 			$pseudoRandomInteger = unpack(
 				'S', // unsigned 16-bit int
@@ -56,5 +56,7 @@ class FeedReducerBridge extends FeedExpander {
 		$trimmedPercentage = preg_replace('/[^0-9]/', '', $this->getInput('percentage'));
 		return parent::getName() . ' [' . $trimmedPercentage . '%]';
 	}
+	
+	// @TODO: copy over description and author info, unless that's the parent class' job
 
 }
