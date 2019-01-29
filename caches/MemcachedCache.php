@@ -10,7 +10,7 @@ class MemcachedCache implements CacheInterface {
 
 	public function __construct() {
 		$conn = new Memcached();
-		$conn->addServer('localhost', 11211) or die ('Could not connect to memcached server');
+		$conn->addServer('localhost', 11211) or returnServerError('Could not connect to memcached server');
 		$this->conn = $conn;
 	}
 
@@ -35,7 +35,7 @@ class MemcachedCache implements CacheInterface {
 		$result = $this->conn->set($this->getCacheName(), $object_to_save, $this->expiration);
 
 		if($result === false) {
-			throw new \Exception('Cannot write the cache to memcached server');
+			returnServerError('Cannot write the cache to memcached server');
 		}
 
 		$this->time = $time;
@@ -81,7 +81,7 @@ class MemcachedCache implements CacheInterface {
 	*/
 	protected function getCacheName(){
 		if(is_null($this->param)) {
-			throw new \Exception('Call "setParameters" first!');
+			returnServerError('Call "setParameters" first!');
 		}
 
 		// Change character when making incompatible changes to prevent loading
