@@ -101,7 +101,7 @@ class GQMagazineBridge extends BridgeAbstract
 			// List the CSS classes of that div
 			$classes = $div->class;
 			// I can't directly lookup that class since GQ since to generate random names like "ArticleBodySection-fkggUW"
-			if(strpos($classes, 'ArticleBodySection') !== false) {
+			if(strpos($classes, 'ArticleWrapper') !== false) {
 				return $div;
 			}
 		}
