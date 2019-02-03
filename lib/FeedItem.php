@@ -55,6 +55,9 @@ class FeedItem {
 	/** @var array List of category names or tags */
 	protected $categories = array();
 
+	/** @var string Unique ID for the current item */
+	protected $uid = null;
+
 	/** @var array Associative list of additional parameters */
 	protected $misc = array(); // Custom parameters
 
@@ -392,6 +395,37 @@ class FeedItem {
 	}
 
 	/**
+	 * Get unique id
+	 *
+	 * Use {@see FeedItem::setUid()} to set the unique id.
+	 *
+	 * @param string The unique id.
+	 */
+	public function getUid() {
+		return $this->uid;
+	}
+
+	/**
+	 * Set unique id.
+	 *
+	 * Use {@see FeedItem::getUid()} to get the unique id.
+	 *
+	 * @param string $uid A string that uniquely identifies the current item
+	 * @return self
+	 */
+	public function setUid($uid) {
+		$this->uid = null; // Clear previous data
+
+		if(!is_string($uid)) {
+			Debug::log('Unique id must be a string!');
+		} else {
+			$this->uid = sha1($uid);
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Add miscellaneous elements to the item.
 	 *
 	 * @param string $key Name of the element.
@@ -426,6 +460,7 @@ class FeedItem {
 				'content' => $this->content,
 				'enclosures' => $this->enclosures,
 				'categories' => $this->categories,
+				'uid' => $this->uid,
 			), $this->misc
 		);
 	}
@@ -454,6 +489,7 @@ class FeedItem {
 			case 'content': $this->setContent($value); break;
 			case 'enclosures': $this->setEnclosures($value); break;
 			case 'categories': $this->setCategories($value); break;
+			case 'uid': $this->setUid($value); break;
 			default: $this->addMisc($name, $value);
 		}
 	}
@@ -476,6 +512,7 @@ class FeedItem {
 			case 'content': return $this->getContent();
 			case 'enclosures': return $this->getEnclosures();
 			case 'categories': return $this->getCategories();
+			case 'uid': return $this->getUid();
 			default:
 				if(array_key_exists($name, $this->misc))
 					return $this->misc[$name];
