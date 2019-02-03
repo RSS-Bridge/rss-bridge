@@ -20,18 +20,18 @@ class JsonFormat extends FormatAbstract {
 	);
 
 	public function stringify(){
-		$urlScheme	= (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
-		$urlHost	= (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '';
-		$urlPath	= (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : '';
-		$urlRequest	= (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
+		$urlPrefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
+		$urlHost = (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '';
+		$urlPath = (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : '';
+		$urlRequest = (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
 
 		$extraInfos = $this->getExtraInfos();
 
 		$data = array(
-			'version'		=> 'https://jsonfeed.org/version/1',
-			'title'			=> (!empty($extraInfos['name'])) ? $extraInfos['name'] : $urlHost,
-			'home_page_url'	=> (!empty($extraInfos['uri'])) ? $extraInfos['uri'] : REPOSITORY,
-			'feed_url'		=> $urlScheme . $urlHost . $urlRequest
+			'version' => 'https://jsonfeed.org/version/1',
+			'title' => (!empty($extraInfos['name'])) ? $extraInfos['name'] : $urlHost,
+			'home_page_url' => (!empty($extraInfos['uri'])) ? $extraInfos['uri'] : REPOSITORY,
+			'feed_url' => $urlPrefix . $urlHost . $urlRequest
 		);
 
 		if (!empty($extraInfos['icon'])) {
@@ -43,20 +43,24 @@ class JsonFormat extends FormatAbstract {
 		foreach ($this->getItems() as $item) {
 			$entry = array();
 
-			$entryAuthor		= $item->getAuthor();
-			$entryTitle			= $item->getTitle();
-			$entryUri			= $item->getURI();
-			$entryTimestamp		= $item->getTimestamp();
-			$entryContent		= $this->sanitizeHtml($item->getContent());
-			$entryEnclosures	= $item->getEnclosures();
-			$entryCategories	= $item->getCategories();
+			$entryAuthor = $item->getAuthor();
+			$entryTitle = $item->getTitle();
+			$entryUri = $item->getURI();
+			$entryTimestamp = $item->getTimestamp();
+			$entryContent = $this->sanitizeHtml($item->getContent());
+			$entryEnclosures = $item->getEnclosures();
+			$entryCategories = $item->getCategories();
 
 			$vendorFields = $item->toArray();
 			foreach (self::VENDOR_EXCLUDES as $key) {
 				unset($vendorFields[$key]);
 			}
 
-			$entry['id'] = $entryUri;
+			$entry['id'] = $item->getUid();
+
+			if (empty($entry['id'])) {
+				$entry['id'] = $entryUri;
+			}
 
 			if (!empty($entryTitle)) {
 				$entry['title'] = $entryTitle;
@@ -83,8 +87,8 @@ class JsonFormat extends FormatAbstract {
 				$entry['attachments'] = array();
 				foreach ($entryEnclosures as $enclosure) {
 					$entry['attachments'][] = array(
-						'url'		=> $enclosure,
-						'mime_type'	=> getMimeType($enclosure)
+						'url' => $enclosure,
+						'mime_type' => getMimeType($enclosure)
 					);
 				}
 			}

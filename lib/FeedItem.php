@@ -489,7 +489,7 @@ class FeedItem {
 			case 'content': $this->setContent($value); break;
 			case 'enclosures': $this->setEnclosures($value); break;
 			case 'categories': $this->setCategories($value); break;
-			case 'uid': $this->setUid($uid); break;
+			case 'uid': $this->setUid($value); break;
 			default: $this->addMisc($name, $value);
 		}
 	}
