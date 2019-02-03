@@ -28,11 +28,11 @@ class FormatImplementationTest extends TestCase {
 	////////////////////////////////////////////////////////////////////////////
 
 	public function dataFormatsProvider() {
-		$bridges = array();
+		$formats = array();
 		foreach (glob(PATH_LIB_FORMATS . '*.php') as $path) {
-			$bridges[basename($path, '.php')] = array($path);
+			$formats[basename($path, '.php')] = array($path);
 		}
-		return $bridges;
+		return $formats;
 	}
 
 	private function setFormat($path) {
