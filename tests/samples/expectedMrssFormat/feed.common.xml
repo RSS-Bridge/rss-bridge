@@ -48,7 +48,7 @@
 		<item>
 			<title>Atom draft-07 snapshot</title>
 			<link>http://example.org/2005/04/02/atom</link>
-			<guid isPermaLink="false">http://example.org/2005/04/02/atom</guid>
+			<guid isPermaLink="false">dd6b6c920d3b340ab9e07faf6682f2a7c4f70134</guid>
 			<pubDate>Sun, 31 Jul 2005 12:29:29 +0000</pubDate>
 			<description>&lt;p&gt;&lt;i&gt;[Update: The Atom draft is finished.]&lt;/i&gt;&lt;/p&gt;</description>
 			<media:content url="http://example.org/audio/ph34r_my_podcast.mp3" type="audio/mpeg"/>

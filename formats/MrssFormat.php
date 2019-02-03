@@ -53,9 +53,12 @@ class MrssFormat extends FormatAbstract {
 			$itemTitle = $this->xml_encode($item->getTitle());
 			$itemUri = $this->xml_encode($item->getURI());
 			$itemContent = $this->xml_encode($this->sanitizeHtml($item->getContent()));
+			$entryID = $item->getUid();
 
-			$entryID = $this->xml_encode($itemUri);
-			if (empty($entryID))
+			if (empty($entryID)) // Fallback to provided URI
+				$entryID = $itemUri;
+
+			if (empty($entryID)) // Fallback to title and content
 				$entryID = hash('sha1', $itemTitle . $itemContent);
 
 			$entryTitle = '';
