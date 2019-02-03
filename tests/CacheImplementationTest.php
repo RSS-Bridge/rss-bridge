@@ -28,11 +28,11 @@ class CacheImplementationTest extends TestCase {
 	////////////////////////////////////////////////////////////////////////////
 
 	public function dataCachesProvider() {
-		$bridges = array();
+		$caches = array();
 		foreach (glob(PATH_LIB_CACHES . '*.php') as $path) {
-			$bridges[basename($path, '.php')] = array($path);
+			$caches[basename($path, '.php')] = array($path);
 		}
-		return $bridges;
+		return $caches;
 	}
 
 	private function setCache($path) {
