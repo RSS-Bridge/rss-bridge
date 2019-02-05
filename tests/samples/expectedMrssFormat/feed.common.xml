@@ -15,7 +15,7 @@
 		<item>
 			<title>Test Entry</title>
 			<link>http://example.com/blog/test-entry</link>
-			<guid isPermaLink="false">http://example.com/blog/test-entry</guid>
+			<guid isPermaLink="true">http://example.com/blog/test-entry</guid>
 			<pubDate>Sat, 01 Dec 2018 12:00:00 +0000</pubDate>
 			<description>Hello world, this is a test entry.</description>
 			<category>test</category>
@@ -25,7 +25,7 @@
 		<item>
 			<title>Announcing JSON Feed</title>
 			<link>https://jsonfeed.org/2017/05/17/announcing_json_feed</link>
-			<guid isPermaLink="false">https://jsonfeed.org/2017/05/17/announcing_json_feed</guid>
+			<guid isPermaLink="true">https://jsonfeed.org/2017/05/17/announcing_json_feed</guid>
 			<pubDate>Wed, 17 May 2017 13:02:12 +0000</pubDate>
 			<description>&lt;p&gt;We — Manton Reece and Brent Simmons — have noticed that JSON has become the developers’ choice for APIs, and that developers will often go out of their way to avoid XML. JSON is simpler to read and write, and it’s less prone to bugs.&lt;/p&gt;
 
@@ -56,7 +56,7 @@
 		<item>
 			<title>Star City</title>
 			<link>http://liftoff.msfc.nasa.gov/news/2003/news-starcity.asp</link>
-			<guid isPermaLink="false">http://liftoff.msfc.nasa.gov/news/2003/news-starcity.asp</guid>
+			<guid isPermaLink="true">http://liftoff.msfc.nasa.gov/news/2003/news-starcity.asp</guid>
 			<pubDate>Tue, 03 Jun 2003 09:39:21 +0000</pubDate>
 			<description>How do Americans get ready to work with Russians aboard the International Space Station? They take a crash course in culture, language and protocol at Russia's &lt;a href="http://howe.iki.rssi.ru/GCTC/gctc_e.htm"&gt;Star City&lt;/a&gt;.</description>
 		</item>

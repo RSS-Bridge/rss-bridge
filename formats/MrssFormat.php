@@ -54,9 +54,12 @@ class MrssFormat extends FormatAbstract {
 			$itemUri = $this->xml_encode($item->getURI());
 			$itemContent = $this->xml_encode($this->sanitizeHtml($item->getContent()));
 			$entryID = $item->getUid();
+			$isPermaLink = 'false';
 
-			if (empty($entryID)) // Fallback to provided URI
+			if (empty($entryID) && !empty($itemUri)) { // Fallback to provided URI
 				$entryID = $itemUri;
+				$isPermaLink = 'true';
+			}
 
 			if (empty($entryID)) // Fallback to title and content
 				$entryID = hash('sha1', $itemTitle . $itemContent);
@@ -100,7 +103,7 @@ class MrssFormat extends FormatAbstract {
 	<item>
 		{$entryTitle}
 		{$entryLink}
-		<guid isPermaLink="false">{$entryID}</guid>
+		<guid isPermaLink="{$isPermaLink}">{$entryID}</guid>
 		{$entryPublished}
 		{$entryDescription}
 		{$entryEnclosures}
