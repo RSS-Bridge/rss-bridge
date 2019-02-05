@@ -66,9 +66,6 @@ class GQMagazineBridge extends BridgeAbstract
 			$date = $link->find('time', 0);
 
 			$item = array();
-			$author = $link->find('span[itemprop=name]', 0);
-			$item['author'] = $author->plaintext;
-			$item['title'] = $title->plaintext;
 			if(substr($uri, 0, 1) === 'h') { // absolute uri
 				$item['uri'] = $uri;
 			} else if(substr($uri, 0, 1) === '/') { // domain relative url
@@ -79,13 +76,14 @@ class GQMagazineBridge extends BridgeAbstract
 
 			$article = $this->loadFullArticle($item['uri']);
 			if($article) {
-				$item['content'] = $this->replaceUriInHtmlElement($article);
-			} else {
-				$item['content'] = "<strong>Article body couldn't be loaded</strong>. It must be a bug!";
+			    $author = $link->find('span[itemprop=name]', 0);
+			    $item['author'] = $author->plaintext;
+			    $item['title'] = $title->plaintext;
+			    $item['content'] = $this->replaceUriInHtmlElement($article);
+				$short_date = $date->datetime;
+				$item['timestamp'] = strtotime($short_date);
+				$this->items[] = $item;
 			}
-			$short_date = $date->datetime;
-			$item['timestamp'] = strtotime($short_date);
-			$this->items[] = $item;
 		}
 	}
 
