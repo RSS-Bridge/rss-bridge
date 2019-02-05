@@ -14,6 +14,12 @@ class MrssFormat extends FormatAbstract {
 		$extraInfos = $this->getExtraInfos();
 		$title = $this->xml_encode($extraInfos['name']);
 
+		if(!empty($extraInfos['description'])) {
+			$description = $this->xml_encode($extraInfos['description']);
+		} else {
+			$description = $title;
+		}
+
 		if(!empty($extraInfos['uri'])) {
 			$uri = $this->xml_encode($extraInfos['uri']);
 		} else {
@@ -87,7 +93,8 @@ xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
 		<title>{$title}</title>
 		<link>http{$https}://{$httpHost}{$httpInfo}/</link>
-		<description>{$title}</description>
+        <description>{$description}</description>
+
 		<image url="{$icon}" title="{$imageTitle}" link="{$uri}"/>
 		<atom:link rel="alternate" type="text/html" href="{$uri}" />
 		<atom:link rel="self" href="http{$https}://{$httpHost}{$serverRequestUri}" />

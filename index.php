@@ -259,7 +259,8 @@ try {
 				$infos = array(
 					'name' => $bridge->getName(),
 					'uri'  => $bridge->getURI(),
-					'icon' => $bridge->getIcon()
+					'icon' => $bridge->getIcon(),
+					'description' => $bridge->getDescription()
 				);
 			} catch(Error $e) {
 				error_log($e);
