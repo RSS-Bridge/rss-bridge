@@ -76,10 +76,10 @@ class GQMagazineBridge extends BridgeAbstract
 
 			$article = $this->loadFullArticle($item['uri']);
 			if($article) {
-			    $author = $link->find('span[itemprop=name]', 0);
-			    $item['author'] = $author->plaintext;
-			    $item['title'] = $title->plaintext;
-			    $item['content'] = $this->replaceUriInHtmlElement($article);
+				$author = $link->find('span[itemprop=name]', 0);
+				$item['author'] = $author->plaintext;
+				$item['title'] = $title->plaintext;
+				$item['content'] = $this->replaceUriInHtmlElement($article);
 				$short_date = $date->datetime;
 				$item['timestamp'] = strtotime($short_date);
 				$this->items[] = $item;
