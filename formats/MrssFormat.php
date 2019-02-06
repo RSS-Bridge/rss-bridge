@@ -1,18 +1,45 @@
 <?php
 /**
-* Mrss
-* Documentation Source http://www.rssboard.org/media-rss
-*/
+ * MrssFormat - RSS 2.0 + Media RSS
+ * http://www.rssboard.org/rss-specification
+ * http://www.rssboard.org/media-rss
+ *
+ * Validators:
+ * https://validator.w3.org/feed/
+ * http://www.rssboard.org/rss-validator/
+ *
+ * Notes about the implementation:
+ *
+ * - The item author is not supported as it needs to be an e-mail address to be
+ *   valid.
+ * - The RSS specification does not explicitly allow to have more than one
+ *   enclosure as every item is meant to provide one "story", thus having
+ *   multiple enclosures per item may lead to unexpected behavior.
+ *   On top of that, it requires to have a length specified, which RSS-Bridge
+ *   can't provide.
+ * - The Media RSS extension comes in handy, since it allows to have multiple
+ *   enclosures, even though they recommend to have only one enclosure because
+ *   of the one-story-per-item reason. It only requires to specify the URL,
+ *   everything else is optional.
+ * - Since the Media RSS extension has its own namespace, the output is a valid
+ *   RSS 2.0 feed that works with feed readers that don't support the extension.
+ */
 class MrssFormat extends FormatAbstract {
-	public function stringify(){
-		$https = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 's' : '';
-		$httpHost = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
-		$httpInfo = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
+	const ALLOWED_IMAGE_EXT = array(
+		'.gif', '.jpg', '.png'
+	);
 
-		$serverRequestUri = isset($_SERVER['REQUEST_URI']) ? $this->xml_encode($_SERVER['REQUEST_URI']) : '';
+	public function stringify(){
+		$urlPrefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
+		$urlHost = (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '';
+		$urlPath = (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : '';
+		$urlRequest = (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
+
+		$feedUrl = $this->xml_encode($urlPrefix . $urlHost . $urlRequest);
 
 		$extraInfos = $this->getExtraInfos();
 		$title = $this->xml_encode($extraInfos['name']);
+		$icon = $extraInfos['icon'];
 
 		if(!empty($extraInfos['description'])) {
 			$description = $this->xml_encode($extraInfos['description']);
@@ -26,34 +53,48 @@ class MrssFormat extends FormatAbstract {
 			$uri = REPOSITORY;
 		}
 
-		$uriparts = parse_url($uri);
-		$icon = $this->xml_encode($uriparts['scheme'] . '://' . $uriparts['host'] . '/favicon.ico');
-
 		$items = '';
 		foreach($this->getItems() as $item) {
-			$itemAuthor = $this->xml_encode($item->getAuthor());
+			$itemTimestamp = $item->getTimestamp();
 			$itemTitle = $this->xml_encode($item->getTitle());
 			$itemUri = $this->xml_encode($item->getURI());
-			$itemTimestamp = $this->xml_encode(date(DATE_RFC2822, $item->getTimestamp()));
 			$itemContent = $this->xml_encode($this->sanitizeHtml($item->getContent()));
+			$entryID = $item->getUid();
+			$isPermaLink = 'false';
 
-			$entryEnclosuresWarning = '';
+			if (empty($entryID) && !empty($itemUri)) { // Fallback to provided URI
+				$entryID = $itemUri;
+				$isPermaLink = 'true';
+			}
+
+			if (empty($entryID)) // Fallback to title and content
+				$entryID = hash('sha1', $itemTitle . $itemContent);
+
+			$entryTitle = '';
+			if (!empty($itemTitle))
+				$entryTitle = '<title>' . $itemTitle . '</title>';
+
+			$entryLink = '';
+			if (!empty($itemUri))
+				$entryLink = '<link>' . $itemUri . '</link>';
+
+			$entryPublished = '';
+			if (!empty($itemTimestamp)) {
+				$entryPublished = '<pubDate>'
+				. $this->xml_encode(gmdate(DATE_RFC2822, $itemTimestamp))
+				. '</pubDate>';
+			}
+
+			$entryDescription = '';
+			if (!empty($itemContent))
+				$entryDescription = '<description>' . $itemContent . '</description>';
+
 			$entryEnclosures = '';
-			if(!empty($item->getEnclosures())) {
-				$entryEnclosures .= '<enclosure url="'
-				. $this->xml_encode($item->getEnclosures()[0])
-				. '" type="' . getMimeType($item->getEnclosures()[0]) . '" />';
-
-				if(count($item->getEnclosures()) > 1) {
-					$entryEnclosures .= PHP_EOL;
-					$entryEnclosuresWarning = '&lt;br&gt;Warning:
-Some media files might not be shown to you. Consider using the ATOM format instead!';
-					foreach($item->getEnclosures() as $enclosure) {
-						$entryEnclosures .= '<atom:link rel="enclosure" href="'
-						. $enclosure . '" type="' . getMimeType($enclosure) . '" />'
-						. PHP_EOL;
-					}
-				}
+			foreach($item->getEnclosures() as $enclosure) {
+				$entryEnclosures .= '<media:content url="'
+				. $this->xml_encode($enclosure)
+				. '" type="' . getMimeType($enclosure) . '"/>'
+				. PHP_EOL;
 			}
 
 			$entryCategories = '';
@@ -66,12 +107,11 @@ Some media files might not be shown to you. Consider using the ATOM format inste
 			$items .= <<<EOD
 
 	<item>
-		<title>{$itemTitle}</title>
-		<link>{$itemUri}</link>
-		<guid isPermaLink="true">{$itemUri}</guid>
-		<pubDate>{$itemTimestamp}</pubDate>
-		<description>{$itemContent}{$entryEnclosuresWarning}</description>
-		<author>{$itemAuthor}</author>
+		{$entryTitle}
+		{$entryLink}
+		<guid isPermaLink="{$isPermaLink}">{$entryID}</guid>
+		{$entryPublished}
+		{$entryDescription}
 		{$entryEnclosures}
 		{$entryCategories}
 	</item>
@@ -81,23 +121,28 @@ EOD;
 
 		$charset = $this->getCharset();
 
-		/* xml attributes need to have certain characters escaped to be w3c compliant */
-		$imageTitle = htmlspecialchars($title, ENT_COMPAT);
+		$feedImage = '';
+		if (!empty($icon) && in_array(substr($icon, -4), self::ALLOWED_IMAGE_EXT)) {
+			$feedImage .= <<<EOD
+		<image>
+			<url>{$icon}</url>
+			<title>{$title}</title>
+			<link>{$uri}</link>
+		</image>
+EOD;
+		}
+
 		/* Data are prepared, now let's begin the "MAGIE !!!" */
 		$toReturn = <<<EOD
 <?xml version="1.0" encoding="{$charset}"?>
-<rss version="2.0"
-xmlns:dc="http://purl.org/dc/elements/1.1/"
-xmlns:media="http://search.yahoo.com/mrss/"
-xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
 		<title>{$title}</title>
-		<link>http{$https}://{$httpHost}{$httpInfo}/</link>
-        <description>{$description}</description>
-
-		<image url="{$icon}" title="{$imageTitle}" link="{$uri}"/>
-		<atom:link rel="alternate" type="text/html" href="{$uri}" />
-		<atom:link rel="self" href="http{$https}://{$httpHost}{$serverRequestUri}" />
+		<link>{$uri}</link>
+		<description>{description}</description>
+		{$feedImage}
+		<atom:link rel="alternate" type="text/html" href="{$uri}"/>
+		<atom:link rel="self" href="{$feedUrl}" type="application/atom+xml"/>
 		{$items}
 	</channel>
 </rss>
