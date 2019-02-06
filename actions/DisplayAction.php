@@ -85,7 +85,7 @@ class DisplayAction extends ActionAbstract {
 		);
 
 		// Initialize cache
-		$cache = Cache::create('FileCache');
+		$cache = Cache::create(Configuration::getConfig('cache', 'type'));
 		$cache->setPath(PATH_CACHE);
 		$cache->purgeCache(86400); // 24 hours
 		$cache->setParameters($cache_params);

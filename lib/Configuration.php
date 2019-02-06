@@ -179,6 +179,9 @@ final class Configuration {
 		/** Name of the proxy server */
 		define('PROXY_NAME', self::getConfig('proxy', 'name'));
 
+		if(!is_string(self::getConfig('cache', 'type')))
+			die('Parameter [cache] => "type" is not a valid string! Please check "config.ini.php"!');
+
 		if(!is_bool(self::getConfig('cache', 'custom_timeout')))
 			die('Parameter [cache] => "custom_timeout" is not a valid Boolean! Please check "config.ini.php"!');
 

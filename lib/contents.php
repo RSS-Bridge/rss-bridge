@@ -45,7 +45,7 @@ function getContents($url, $header = array(), $opts = array()){
 	Debug::log('Reading contents from "' . $url . '"');
 
 	// Initialize cache
-	$cache = Cache::create('FileCache');
+	$cache = Cache::create(Configuration::getConfig('cache', 'type'));
 	$cache->setPath(PATH_CACHE . 'server/');
 	$cache->purgeCache(86400); // 24 hours (forced)
 
@@ -268,7 +268,7 @@ $defaultSpanText = DEFAULT_SPAN_TEXT){
 	Debug::log('Caching url ' . $url . ', duration ' . $duration);
 
 	// Initialize cache
-	$cache = Cache::create('FileCache');
+	$cache = Cache::create(Configuration::getConfig('cache', 'type'));
 	$cache->setPath(PATH_CACHE . 'pages/');
 	$cache->purgeCache(86400); // 24 hours (forced)
 
