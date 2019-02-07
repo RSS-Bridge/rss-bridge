@@ -4,7 +4,7 @@ language: php
 install:
   - composer global require dealerdirect/phpcodesniffer-composer-installer;
   - composer global require phpcompatibility/php-compatibility;
-  - pecl install memcached
+  - sudo apt-get install php-memcached
   # Use PHPUnit 6 for unit tests (stable), requires PHP 7
   - if [[ $TRAVIS_PHP_VERSION == "7.0" ]]; then
       composer global require phpunit/phpunit ^6;
