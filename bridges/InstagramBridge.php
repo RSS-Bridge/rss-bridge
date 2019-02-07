@@ -7,19 +7,19 @@ class InstagramBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns the newest images';
 
 	const PARAMETERS = array(
-		array(
+		'Username' => array(
 			'u' => array(
 				'name' => 'username',
 				'required' => true
 			)
 		),
-		array(
+		'Hashtag' => array(
 			'h' => array(
 				'name' => 'hashtag',
 				'required' => true
 			)
 		),
-		array(
+		'Location' => array(
 			'l' => array(
 				'name' => 'location',
 				'required' => true
@@ -81,6 +81,10 @@ class InstagramBridge extends BridgeAbstract {
 
 			$item = array();
 			$item['uri'] = self::URI . 'p/' . $media->shortcode . '/';
+
+			if (isset($media->owner->username)) {
+				$item['author'] = $media->owner->username;
+			}
 
 			if (isset($media->edge_media_to_caption->edges[0]->node->text)) {
 				$textContent = $media->edge_media_to_caption->edges[0]->node->text;

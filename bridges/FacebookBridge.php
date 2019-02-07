@@ -179,8 +179,7 @@ class FacebookBridge extends BridgeAbstract {
 
 		if(filter_var(
 			$group,
-			FILTER_VALIDATE_URL,
-			FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED)) {
+			FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
 			// User provided a URL
 
 			$urlparts = parse_url($group);

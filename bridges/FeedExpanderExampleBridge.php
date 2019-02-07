@@ -3,7 +3,7 @@ class FeedExpanderExampleBridge extends FeedExpander {
 
 	const MAINTAINER = 'logmanoriginal';
 	const NAME = 'FeedExpander Example';
-	const URI = '#';
+	const URI = 'http://github.com/RSS-Bridge/rss-bridge/';
 	const DESCRIPTION = 'Example bridge to test FeedExpander';
 
 	const PARAMETERS = array(
@@ -11,7 +11,6 @@ class FeedExpanderExampleBridge extends FeedExpander {
 			'version' => array(
 				'name' => 'Version',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Select your feed format/version',
 				'defaultValue' => 'RSS 2.0',
 				'values' => array(

@@ -18,7 +18,6 @@ class SkimfeedBridge extends BridgeAbstract {
 			'box_channel' => array(
 				'name' => 'Channel',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Select your channel',
 				'values' => array(
 					'Hacker News' => '/news/hacker-news.html',
@@ -68,7 +67,6 @@ class SkimfeedBridge extends BridgeAbstract {
 			'tech_channel' => array(
 				'name' => 'Tech channel',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Select your tech channel',
 				'values' => array(
 					'Agg' => array(

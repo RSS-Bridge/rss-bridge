@@ -29,6 +29,9 @@ define('PATH_LIB_FORMATS', __DIR__ . '/../formats/');
 /** Path to the caches library */
 define('PATH_LIB_CACHES', __DIR__ . '/../caches/');
 
+/** Path to the actions library */
+define('PATH_LIB_ACTIONS', __DIR__ . '/../actions/');
+
 /** Path to the cache folder */
 define('PATH_CACHE', __DIR__ . '/../cache/');
 
@@ -39,11 +42,13 @@ define('WHITELIST', __DIR__ . '/../whitelist.txt');
 define('REPOSITORY', 'https://github.com/RSS-Bridge/rss-bridge/');
 
 // Interfaces
+require_once PATH_LIB . 'ActionInterface.php';
 require_once PATH_LIB . 'BridgeInterface.php';
 require_once PATH_LIB . 'CacheInterface.php';
 require_once PATH_LIB . 'FormatInterface.php';
 
 // Classes
+require_once PATH_LIB . 'FactoryAbstract.php';
 require_once PATH_LIB . 'FeedItem.php';
 require_once PATH_LIB . 'Debug.php';
 require_once PATH_LIB . 'Exceptions.php';
@@ -58,6 +63,8 @@ require_once PATH_LIB . 'Configuration.php';
 require_once PATH_LIB . 'BridgeCard.php';
 require_once PATH_LIB . 'BridgeList.php';
 require_once PATH_LIB . 'ParameterValidator.php';
+require_once PATH_LIB . 'ActionFactory.php';
+require_once PATH_LIB . 'ActionAbstract.php';
 
 // Functions
 require_once PATH_LIB . 'html.php';
@@ -65,6 +72,7 @@ require_once PATH_LIB . 'error.php';
 require_once PATH_LIB . 'contents.php';
 
 // Vendor
+define('MAX_FILE_SIZE', 10000000); /* Allow larger files for simple_html_dom */
 require_once PATH_LIB_VENDOR . 'simplehtmldom/simple_html_dom.php';
 require_once PATH_LIB_VENDOR . 'php-urljoin/src/urljoin.php';
 

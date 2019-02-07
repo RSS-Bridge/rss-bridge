@@ -8,7 +8,7 @@
   <!--
 
   -->
-  <config name="testVersion" value="5.6"/>
+  <config name="testVersion" value="5.6-"/>
   <rule ref="PHPCompatibility">
     <!--
     "PHP 7 changes how most errors are reported by PHP. Instead of reporting

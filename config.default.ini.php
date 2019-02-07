@@ -6,6 +6,10 @@
 
 [cache]
 
+; Defines the cache type used by RSS-Bridge
+; "file" = FileCache (default)
+type = "file"
+
 ; Allow users to specify custom timeout for specific requests.
 ; true  = enabled
 ; false = disabled (default)

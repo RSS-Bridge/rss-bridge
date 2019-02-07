@@ -45,7 +45,7 @@ function getContents($url, $header = array(), $opts = array()){
 	Debug::log('Reading contents from "' . $url . '"');
 
 	// Initialize cache
-	$cache = Cache::create('FileCache');
+	$cache = Cache::create(Configuration::getConfig('cache', 'type'));
 	$cache->setPath(PATH_CACHE . 'server/');
 	$cache->purgeCache(86400); // 24 hours (forced)
 
@@ -54,7 +54,7 @@ function getContents($url, $header = array(), $opts = array()){
 
 	// Use file_get_contents if in CLI mode with no root certificates defined
 	if(php_sapi_name() === 'cli' && empty(ini_get('curl.cainfo'))) {
-		$data = file_get_contents($url);
+		$data = @file_get_contents($url);
 
 		if($data === false) {
 			$errorCode = 500;
@@ -167,10 +167,14 @@ EOD
 				);
 			}
 
+			$lastError = error_get_last();
+			if($lastError !== null)
+				$lastError = $lastError['message'];
 			returnError(<<<EOD
 The requested resource cannot be found!
 Please make sure your input parameters are correct!
 cUrl error: $curlError ($curlErrno)
+PHP error: $lastError
 EOD
 			, $errorCode);
 	}
@@ -264,7 +268,7 @@ $defaultSpanText = DEFAULT_SPAN_TEXT){
 	Debug::log('Caching url ' . $url . ', duration ' . $duration);
 
 	// Initialize cache
-	$cache = Cache::create('FileCache');
+	$cache = Cache::create(Configuration::getConfig('cache', 'type'));
 	$cache->setPath(PATH_CACHE . 'pages/');
 	$cache->purgeCache(86400); // 24 hours (forced)
 

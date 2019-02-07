@@ -213,7 +213,7 @@ class Bridge {
 			// Create initial whitelist or load from disk
 			if (!file_exists(WHITELIST) && !empty(self::$whitelist)) {
 				file_put_contents(WHITELIST, implode("\n", self::$whitelist));
-			} else {
+			} elseif(file_exists(WHITELIST)) {
 
 				$contents = trim(file_get_contents(WHITELIST));
 

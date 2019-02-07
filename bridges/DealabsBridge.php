@@ -15,27 +15,23 @@ class DealabsBridge extends PepperBridgeAbstract {
 			'hide_expired' => array(
 				'name' => 'Masquer les éléments expirés',
 				'type' => 'checkbox',
-				'required' => 'true'
 			),
 			'hide_local' => array(
 				'name' => 'Masquer les deals locaux',
 				'type' => 'checkbox',
 				'title' => 'Masquer les deals en magasins physiques',
-				'required' => 'true'
 			),
 			'priceFrom' => array(
 				'name' => 'Prix minimum',
 				'type' => 'text',
 				'title' => 'Prix mnimum en euros',
-				'required' => 'false',
-				'defaultValue' => ''
+				'required' => false
 			),
 			'priceTo' => array(
 				'name' => 'Prix maximum',
 				'type' => 'text',
 				'title' => 'Prix maximum en euros',
-				'required' => 'false',
-				'defaultValue' => ''
+				'required' => false
 			),
 		),
 
@@ -43,7 +39,6 @@ class DealabsBridge extends PepperBridgeAbstract {
 			'group' => array(
 				'name' => 'Groupe',
 				'type' => 'list',
-				'required' => 'true',
 				'title' => 'Groupe dont il faut afficher les deals',
 				'values' => array(
 					'Abonnements internet' => 'abonnements-internet',
@@ -959,7 +954,6 @@ class DealabsBridge extends PepperBridgeAbstract {
 			'order' => array(
 				'name' => 'Trier par',
 				'type' => 'list',
-				'required' => 'true',
 				'title' => 'Ordre de tri des deals',
 				'values' => array(
 					'Du deal le plus Hot au moins Hot' => '',

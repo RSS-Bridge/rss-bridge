@@ -13,7 +13,6 @@ class MangareaderBridge extends BridgeAbstract {
 			'category' => array(
 				'name' => 'Category',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'All' => 'all',
 					'Action' => 'action',
