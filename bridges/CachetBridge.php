@@ -111,7 +111,7 @@ class CachetBridge extends BridgeAbstract {
 				}
 
 				$title = $incident->human_status . ': ' . $incident->name;
-				$content = str_replace("\r\n", "\n<br>", $incident->message);
+				$content = nl2br($incident->message);
 				$componentName = $this->getComponentName($incident->component_id);
 				$uidOrig = $permalink . $incident->created_at;
 				$uid = hash('sha512', $uidOrig);
