@@ -12,6 +12,10 @@ class CachetBridge extends BridgeAbstract {
 				'required' => true,
 				'title' => 'The URL of the Cache installation',
 				'exampleValue' => 'https://demo.cachethq.io/',
+			), 'additional_info' => array(
+				'name' => 'Additional Timestamps',
+				'type' => 'checkbox',
+				'title' => 'Weither to include the given timestamps'
 			)
 		)
 	);
@@ -111,7 +115,24 @@ class CachetBridge extends BridgeAbstract {
 				}
 
 				$title = $incident->human_status . ': ' . $incident->name;
-				$content = nl2br($incident->message);
+				$message = '';
+				if ($this->getInput('additional_info')) {
+					if (isset($incident->occurred_at)) {
+						$message .= 'Occurred at: ' . $incident->occurred_at . "\r\n";
+					}
+					if (isset($incident->scheduled_at)) {
+						$message .= 'Scheduled at: ' . $incident->scheduled_at . "\r\n";
+					}
+					if (isset($incident->created_at)) {
+						$message .= 'Created at: ' . $incident->created_at . "\r\n";
+					}
+					if (isset($incident->updated_at)) {
+						$message .= 'Updated at: ' . $incident->updated_at . "\r\n\r\n";
+					}
+				}
+
+				$message .= $incident->message;
+				$content = nl2br($message);
 				$componentName = $this->getComponentName($incident->component_id);
 				$uidOrig = $permalink . $incident->created_at;
 				$uid = hash('sha512', $uidOrig);
