@@ -16,7 +16,7 @@ class CachetBridge extends BridgeAbstract {
 			), 'additional_info' => array(
 				'name' => 'Additional Timestamps',
 				'type' => 'checkbox',
-				'title' => 'Weither to include the given timestamps'
+				'title' => 'Whether to include the given timestamps'
 			)
 		)
 	);
@@ -29,26 +29,16 @@ class CachetBridge extends BridgeAbstract {
 	}
 
 	/**
-	 * Validates if a string is valid JSON
-	 *
-	 * @param string $string
-	 * @return boolean
-	 */
-	private function isValidJSON($string) {
-		return json_decode($string);
-	}
-
-	/**
 	 * Validates the ping request to the cache API
 	 *
 	 * @param string $ping
 	 * @return boolean
 	 */
 	private function validatePing($ping) {
-		if (!$this->isValidJSON($ping)) {
+		$ping = json_decode($ping);
+		if ($ping === null) {
 			return false;
 		}
-		$ping = json_decode($ping);
 		return $ping->data === 'Pong!';
 	}
 
@@ -67,10 +57,10 @@ class CachetBridge extends BridgeAbstract {
 		}
 
 		$component = getContents($this->getURI() . '/api/v1/components/' . $id);
-		if (!$this->isValidJSON($component)) {
+		$component = json_decode($component);
+		if ($component === null) {
 			return '';
 		}
-		$component = json_decode($component);
 		return $component->data->name;
 	}
 
@@ -82,11 +72,10 @@ class CachetBridge extends BridgeAbstract {
 
 		$url = urljoin($this->getURI(), '/api/v1/incidents?sort=id&order=desc');
 		$incidents = getContents($url);
-		if (!$this->isValidJSON($incidents)) {
+		$incidents = json_decode($incidents);
+		if ($incidents === null) {
 			returnClientError('/api/v1/incidents returned no valid json');
 		}
-
-		$incidents = json_decode($incidents);
 
 		usort($incidents->data, function ($a, $b) {
 			$timeA = strtotime($a->updated_at);
