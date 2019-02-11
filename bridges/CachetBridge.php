@@ -11,7 +11,7 @@ class CachetBridge extends BridgeAbstract {
 				'name' => 'Cachet installation',
 				'type' => 'text',
 				'required' => true,
-				'title' => 'The URL of the Cache installation',
+				'title' => 'The URL of the Cachet installation',
 				'exampleValue' => 'https://demo.cachethq.io/',
 			), 'additional_info' => array(
 				'name' => 'Additional Timestamps',
