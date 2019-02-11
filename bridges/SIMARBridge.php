@@ -1,0 +1,49 @@
+<?php
+class SIMARBridge extends BridgeAbstract {
+	const NAME = 'SIMAR';
+	const URI = 'http://www.simar-louresodivelas.pt/';
+	const DESCRIPTION = 'Verificar estado da rede SIMAR';
+	const MAINTAINER = 'somini';
+	const PARAMETERS = array(
+		'Público' => array(
+			'interventions' => array(
+				'type' => 'checkbox',
+				'name' => 'Incluir Intervenções?',
+				'defaultValue' => 'checked',
+			)
+		)
+	);
+
+	public function collectData() {
+		$html = getSimpleHTMLDOM(self::getURI())
+			or returnServerError('Could not load content');
+		$e_home = $html->find('#home', 0)
+			or returnServerError('Invalid site structure');
+
+		foreach($e_home->find('span') as $element) {
+			$item = array();
+
+			$item['title'] = $element->plaintext;
+			$item['content'] = $element->innertext;
+			$item['uri'] = 'urn:sha1:' . hash('sha1', $item['content']);
+
+			$this->items[] = $item;
+		}
+
+		if ($this->getInput('interventions')) {
+			$e_main1 = $html->find('#menu1', 0)
+				or returnServerError('Invalid site structure');
+
+			foreach ($e_main1->find('a') as $element) {
+				$item = array();
+
+				$item['title'] = $element->plaintext;
+				$item['uri'] = self::getURI() . $element->href;
+				/* TODO: fetch the URI and get `.auto-style59' */
+				$item['content'] = $element->innertext;
+				
+				$this->items[] = $item;
+			}
+		}
+	}
+}
