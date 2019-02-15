@@ -23,7 +23,7 @@ class SIMARBridge extends BridgeAbstract {
 		foreach($e_home->find('span') as $element) {
 			$item = array();
 
-			$item['title'] = $element->plaintext;
+			$item['title'] = 'Rotura: ' . $element->plaintext;
 			$item['content'] = $element->innertext;
 			$item['uri'] = 'urn:sha1:' . hash('sha1', $item['content']);
 
@@ -37,11 +37,11 @@ class SIMARBridge extends BridgeAbstract {
 			foreach ($e_main1->find('a') as $element) {
 				$item = array();
 
-				$item['title'] = $element->plaintext;
+				$item['title'] = 'Intervenção: ' . $element->plaintext;
 				$item['uri'] = self::getURI() . $element->href;
 				/* TODO: fetch the URI and get `.auto-style59' */
 				$item['content'] = $element->innertext;
-				
+
 				$this->items[] = $item;
 			}
 		}
