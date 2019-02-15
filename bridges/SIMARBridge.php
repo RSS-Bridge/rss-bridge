@@ -39,8 +39,22 @@ class SIMARBridge extends BridgeAbstract {
 
 				$item['title'] = 'Intervenção: ' . $element->plaintext;
 				$item['uri'] = self::getURI() . $element->href;
-				/* TODO: fetch the URI and get `.auto-style59' */
 				$item['content'] = $element->innertext;
+
+				/* Try to get the actual contents for this kind of item */
+				$item_html = getSimpleHTMLDOM($item['uri']);
+				if ($item_html) {
+					$e_item = $item_html->find('.auto-style59', 0);
+					foreach($e_item->find('p') as $paragraph) {
+						/* Remove empty paragraphs */
+						if (preg_match('/^(\W|&nbsp;)+$/', $paragraph->innertext) == 1) {
+							$paragraph->outertext = '';
+						}
+					}
+					if ($e_item) {
+						$item['content'] = $e_item->innertext;
+					}
+				}
 
 				$this->items[] = $item;
 			}
