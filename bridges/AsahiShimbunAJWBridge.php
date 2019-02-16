@@ -59,6 +59,11 @@ class AsahiShimbunAJWBridge extends BridgeAbstract {
 				$item['timestamp'] = strtotime($e_date->innertext);
 				$e_date->outertext = '';
 			}
+			$e_video = $element->find('span.EnVideo', 0);
+			if ($e_video) {
+				$e_video->outertext = '';
+				$element->innertext = "VIDEO: $element->innertext";
+			}
 			$item['title'] = $element->innertext;
 
 			$this->items[] = $item;
