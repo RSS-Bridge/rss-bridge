@@ -1,7 +1,7 @@
 <?php
 class AsahiShimbunAJWBridge extends BridgeAbstract {
 	const NAME = 'Asahi Shimbun AJW';
-	const BASE_URI =  'http://www.asahi.com';
+	const BASE_URI = 'http://www.asahi.com';
 	const URI = self::BASE_URI . '/ajw/';
 	const DESCRIPTION = 'Asahi Shimbun - Asia & Japan Watch';
 	const MAINTAINER = 'somini';
@@ -39,20 +39,19 @@ class AsahiShimbunAJWBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getSectionURI($this->getInput('section')))
 			or returnServerError('Could not load content');
 
-		foreach($html->find("#MainInner li a") as $element) {
-			if ($element->parent()->class == "HeadlineTopImage-S") {
-				Debug::log("Skip Headline, it is repeated below");
+		foreach($html->find('#MainInner li a') as $element) {
+			if ($element->parent()->class == 'HeadlineTopImage-S') {
+				Debug::log('Skip Headline, it is repeated below');
 				continue;
 			}
 			$item = array();
-			
+
 			$item['uri'] = self::BASE_URI . $element->href;
-			$e_lead = $element->find("span.Lead", 0);
+			$e_lead = $element->find('span.Lead', 0);
 			if ($e_lead) {
 				$item['content'] = $e_lead->innertext;
 				$e_lead->outertext = '';
-			}
-			else {
+			} else {
 				$item['content'] = $element->innertext;
 			}
 			$e_date = $element->find('span.EnDate', 0);
@@ -61,7 +60,6 @@ class AsahiShimbunAJWBridge extends BridgeAbstract {
 				$e_date->outertext = '';
 			}
 			$item['title'] = $element->innertext;
-
 
 			$this->items[] = $item;
 		}
