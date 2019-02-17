@@ -35,11 +35,19 @@ class OneFortuneADayBridge extends BridgeAbstract {
 				'23:00'	=> 23,
 			),
 			'defaultValue' => 5
+		),
+		'lucky' => array(
+			'name' => 'Lucky number (optional)',
+			'type' => 'text'
 		)
 	));
 
 	const LIMIT_ITEMS = 7;
 	const DAY_SECS = 86400;
+
+	public function getDescription(){
+		return self::DESCRIPTION . '<br/>Set a lucky number to get your personal quotes, like ' . mt_rand();
+	}
 
 	public function collectData() {
 		$time = gmmktime((int)$this->getInput('time'), 0, 0);
@@ -47,7 +55,7 @@ class OneFortuneADayBridge extends BridgeAbstract {
 			$time -= self::DAY_SECS;
 
 		for ($i = self::LIMIT_ITEMS; $i > 0; --$i) {
-			$seed = date('Ymd', $time);
+			$seed = date('Ymd', $time) . $this->getInput('lucky');
 			$quote = $this->getQuote($seed);
 
 			$item['title']		= strftime('%A, %x', $time);
