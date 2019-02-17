@@ -61,7 +61,7 @@ class OneFortuneADayBridge extends BridgeAbstract {
 			$item['title']		= strftime('%A, %x', $time);
 			$item['content']	= htmlentities($quote, ENT_QUOTES, 'UTF-8');
 			$item['timestamp']	= $time;
-			$item['uri']		= 'urn:sha1:' . hash('sha1', $seed);
+			$item['uid']		= hash('sha1', $seed);
 
 			$this->items[] = $item;
 
