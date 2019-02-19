@@ -8,9 +8,21 @@ class SQLiteCache implements CacheInterface {
 
 	private $db = null;
 
-	public function loadData(){
-		$this->initDB();
+	public function __construct() {
+		$file = PATH_CACHE . 'cache.sqlite';
 
+		if (!is_file($file)) {
+			$this->db = new SQLite3($file);
+			$this->db->enableExceptions(true);
+			$this->db->exec("CREATE TABLE storage ('key' BLOB PRIMARY KEY, 'value' BLOB, 'updated' INTEGER)");
+		} else {
+			$this->db = new SQLite3($file);
+			$this->db->enableExceptions(true);
+		}
+		$this->db->busyTimeout(5000);
+	}
+
+	public function loadData(){
 		$Qselect = $this->db->prepare('SELECT value FROM storage WHERE key = :key');
 		$Qselect->bindValue(':key', $this->getCacheKey());
 		$result = $Qselect->execute();
@@ -25,8 +37,6 @@ class SQLiteCache implements CacheInterface {
 	}
 
 	public function saveData($datas){
-		$this->initDB();
-
 		$Qupdate = $this->db->prepare('INSERT OR REPLACE INTO storage (key, value, updated) VALUES (:key, :value, :updated)');
 		$Qupdate->bindValue(':key', $this->getCacheKey());
 		$Qupdate->bindValue(':value', serialize($datas));
@@ -37,8 +47,6 @@ class SQLiteCache implements CacheInterface {
 	}
 
 	public function getTime(){
-		$this->initDB();
-
 		$Qselect = $this->db->prepare('SELECT updated FROM storage WHERE key = :key');
 		$Qselect->bindValue(':key', $this->getCacheKey());
 		$result = $Qselect->execute();
@@ -53,8 +61,6 @@ class SQLiteCache implements CacheInterface {
 	}
 
 	public function purgeCache($duration){
-		$this->initDB();
-
 		$Qdelete = $this->db->prepare('DELETE FROM storage WHERE updated < :expired');
 		$Qdelete->bindValue(':expired', time() - $duration);
 		$Qdelete->execute();
@@ -79,23 +85,6 @@ class SQLiteCache implements CacheInterface {
 	}
 
 	////////////////////////////////////////////////////////////////////////////
-
-	protected function initDB() {
-		// initialize on first use
-		if ($this->db !== null) return;
-
-		$file = PATH_CACHE . 'cache.sqlite';
-
-		if (!is_file($file)) {
-			$this->db = new SQLite3($file);
-			$this->db->enableExceptions(true);
-			$this->db->exec("CREATE TABLE storage ('key' BLOB PRIMARY KEY, 'value' BLOB, 'updated' INTEGER)");
-		} else {
-			$this->db = new SQLite3($file);
-			$this->db->enableExceptions(true);
-		}
-		$this->db->busyTimeout(5000);
-	}
 
 	protected function getCacheKey(){
 		if(is_null($this->param)) {
