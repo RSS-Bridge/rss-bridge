@@ -1376,8 +1376,12 @@ class PepperBridgeAbstract extends BridgeAbstract {
 
 		// Add the Hour and minutes
 		$date_str .= ' 00:00';
-
 		$date = DateTime::createFromFormat('j F Y H:i', $date_str);
+		// In some case, the date is not recognized : as a workaround the actual date is taken
+		if($date === FALSE)
+		{
+			$date = new DateTime();
+		}
 		return $date->getTimestamp();
 	}
 
