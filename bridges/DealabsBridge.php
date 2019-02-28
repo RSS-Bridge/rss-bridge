@@ -1378,8 +1378,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 		$date_str .= ' 00:00';
 		$date = DateTime::createFromFormat('j F Y H:i', $date_str);
 		// In some case, the date is not recognized : as a workaround the actual date is taken
-		if($date === FALSE)
-		{
+		if($date === false) {
 			$date = new DateTime();
 		}
 		return $date->getTimestamp();
