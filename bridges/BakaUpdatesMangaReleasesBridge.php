@@ -35,6 +35,8 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 		}
 
 		foreach($rows as $cols) {
+			if (count($cols) < 5) continue;
+
 			$item = array();
 			$title = array();
 
