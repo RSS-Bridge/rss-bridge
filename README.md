@@ -66,6 +66,7 @@ RSS-Bridge requires PHP 5.6 or higher with following extensions enabled:
   - [`simplexml`](https://secure.php.net/manual/en/book.simplexml.php)
   - [`curl`](https://secure.php.net/manual/en/book.curl.php)
   - [`json`](https://secure.php.net/manual/en/book.json.php)
+  - [`sqlite3`](http://php.net/manual/en/book.sqlite3.php) (only when using SQLiteCache)
 
 Find more information on our [Wiki](https://github.com/rss-bridge/rss-bridge/wiki)
 
