@@ -12,6 +12,7 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 			'exampleValue'	=> '12345'
 		)
 	));
+	const LIMIT_COLS = 5;
 	const LIMIT_ITEMS = 10;
 
 	private $feedName = '';
@@ -20,21 +21,21 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Series not found');
 
-		$objTitle = $html->find('td[class="text pad"]', 1);
-		if ($objTitle)
-			$this->feedName = $objTitle->plaintext;
-
-		$itemlist = $html->find('td#main_content table table table tr');
-		if (!$itemlist)
+		// content is an unstructured pile of divs, ugly to parse
+		$cols = $html->find('div#main_content div.row > div.text');
+		if (!$cols)
 			returnServerError('No releases');
 
-		$limit = self::LIMIT_ITEMS;
-		foreach($itemlist as $element) {
-			$cols = $element->find('td[class="text pad"]');
-			if (!$cols)
-				continue;
-			if ($limit <= 0)
-				break;
+		$rows = array_slice(
+			array_chunk($cols, self::LIMIT_COLS), 0, self::LIMIT_ITEMS
+		);
+
+		if (isset($rows[0][1])) {
+			$this->feedName = html_entity_decode($rows[0][1]->plaintext);
+		}
+
+		foreach($rows as $cols) {
+			if (count($cols) < self::LIMIT_COLS) continue;
 
 			$item = array();
 			$title = array();
@@ -65,14 +66,11 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 				$item['content'] .= '<p>Groups: ' . $objAuthor->innertext . '</p>';
 			}
 
-			$item['title']	= implode(' ', $title);
-			$item['uri']	= $this->getURI() . '#' . hash('sha1', $item['title']);
+			$item['title'] = implode(' ', $title);
+			$item['uri'] = $this->getURI();
+			$item['uid'] = hash('sha1', $item['title']);
 
 			$this->items[] = $item;
-
-			if(count($this->items) >= $limit) {
-				break;
-			}
 		}
 	}
 
