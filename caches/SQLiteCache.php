@@ -9,6 +9,9 @@ class SQLiteCache implements CacheInterface {
 	private $db = null;
 
 	public function __construct() {
+		if (!extension_loaded('sqlite3'))
+			die('"sqlite3" extension not loaded. Please check "php.ini"');
+
 		$file = PATH_CACHE . 'cache.sqlite';
 
 		if (!is_file($file)) {
