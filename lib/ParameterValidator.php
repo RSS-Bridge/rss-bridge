@@ -197,9 +197,9 @@ class ParameterValidator {
 					$queriedContexts[$context] = true;
 				} elseif(isset($properties['required'])
 				&& $properties['required'] === true
-				&& isset($properties['type'])
-				&& $properties['type'] !== 'checkbox'
-				&& $properties['type'] !== 'list') {
+				&& !(isset($properties['type'])
+				&& ($properties['type'] === 'checkbox'
+				|| $properties['type'] === 'list'))) {
 					$queriedContexts[$context] = false;
 					break;
 				}
