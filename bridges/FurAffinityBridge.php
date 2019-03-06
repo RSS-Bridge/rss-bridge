@@ -27,7 +27,6 @@ class FurAffinityBridge extends BridgeAbstract {
 			'range' => array(
 				'name' => 'Time range',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'A Day' => 'day',
 					'3 Days' => '3days',
@@ -70,7 +69,6 @@ class FurAffinityBridge extends BridgeAbstract {
 			'mode' => array(
 				'name' => 'Match mode',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'All of the words' => 'all',
 					'Any of the words' => 'any',
@@ -101,7 +99,6 @@ class FurAffinityBridge extends BridgeAbstract {
 			'cat' => array(
 				'name' => 'Category',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Visual Art' => array(
 						'All' => 1,
@@ -150,7 +147,6 @@ class FurAffinityBridge extends BridgeAbstract {
 			'atype' => array(
 				'name' => 'Type',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'General Things' => array(
 						'All' => 1,
@@ -213,7 +209,6 @@ class FurAffinityBridge extends BridgeAbstract {
 			'species' => array(
 				'name' => 'Species',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Unspecified / Any' => 1,
 					'Amphibian' => array(
@@ -405,7 +400,6 @@ class FurAffinityBridge extends BridgeAbstract {
 			'gender' => array(
 				'name' => 'Gender',
 				'type' => 'list',
-				'required' => false,
 				'values' => array(
 					'Any' => 0,
 					'Male' => 2,
@@ -430,9 +424,10 @@ class FurAffinityBridge extends BridgeAbstract {
 				'name' => 'Adult',
 				'type' => 'checkbox',
 			),
-			'limit' => array(
+			'limit-browse' => array(
 				'name' => 'Limit',
 				'type' => 'number',
+				'required' => true,
 				'defaultValue' => 10,
 				'title' => 'Limit number of submissions to return. -1 for unlimited.'
 			),
@@ -735,7 +730,8 @@ class FurAffinityBridge extends BridgeAbstract {
 				'mode' => $this->getInput('mode')
 			);
 			$html = $this->postFASimpleHTMLDOM($data);
-			$this->itemsFromSubmissionList($html);
+			$limit = (is_int($this->getInput('limit')) ? $this->getInput('limit') : 10);
+			$this->itemsFromSubmissionList($html, $limit);
 			break;
 		case 'Browse':
 			$data = array(
@@ -749,11 +745,13 @@ class FurAffinityBridge extends BridgeAbstract {
 				'rating_adult' => ($this->getInput('rating_adult') === true ? 'on' : 0)
 			);
 			$html = $this->postFASimpleHTMLDOM($data);
-			$this->itemsFromSubmissionList($html);
+			$limit = (is_int($this->getInput('limit-browse')) ? $this->getInput('limit-browse') : 10);
+			$this->itemsFromSubmissionList($html, $limit);
 			break;
 		case 'Journals':
 			$html = $this->getFASimpleHTMLDOM($this->getURI());
-			$this->itemsFromJournalList($html);
+			$limit = (is_int($this->getInput('limit')) ? $this->getInput('limit') : -1);
+			$this->itemsFromJournalList($html, $limit);
 			break;
 		case 'Single Journal':
 			$html = $this->getFASimpleHTMLDOM($this->getURI());
@@ -764,7 +762,8 @@ class FurAffinityBridge extends BridgeAbstract {
 		case 'Favorites':
 		case 'Gallery Folder':
 			$html = $this->getFASimpleHTMLDOM($this->getURI());
-			$this->itemsFromSubmissionList($html);
+			$limit = (is_int($this->getInput('limit')) ? $this->getInput('limit') : 10);
+			$this->itemsFromSubmissionList($html, $limit);
 			break;
 		}
 	}
@@ -793,9 +792,7 @@ class FurAffinityBridge extends BridgeAbstract {
 			}
 	}
 
-	private function itemsFromJournalList($html) {
-		$limit = (is_int($this->getInput('limit')) ? $this->getInput('limit') : 10);
-
+	private function itemsFromJournalList($html, $limit) {
 		foreach($html->find('table[id^=jid:]') as $journal) {
 			if($limit-- === 0) break;
 
@@ -830,8 +827,7 @@ class FurAffinityBridge extends BridgeAbstract {
 		$this->items[] = $item;
 	}
 
-	private function itemsFromSubmissionList($html) {
-		$limit = (is_int($this->getInput('limit')) ? $this->getInput('limit') : 10);
+	private function itemsFromSubmissionList($html, $limit) {
 		$cache = ($this->getInput('cache') === true);
 
 		foreach($html->find('section.gallery figure') as $figure) {
@@ -865,7 +861,7 @@ class FurAffinityBridge extends BridgeAbstract {
 				}
 
 				$description = $submissionHTML
-					->find('.maintable .maintable tbody tr td.alt1', -1);
+					->find('.maintable .maintable tr td.alt1', -1);
 				$this->cleanupHTMLDOM($description);
 				$description = $description->innertext;
 
