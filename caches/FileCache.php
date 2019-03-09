@@ -11,12 +11,14 @@ class FileCache implements CacheInterface {
 		if(file_exists($this->getCacheFile())) {
 			return unserialize(file_get_contents($this->getCacheFile()));
 		}
+
+		return null;
 	}
 
-	public function saveData($datas){
+	public function saveData($data){
 		// Notice: We use plain serialize() here to reduce memory footprint on
 		// large input data.
-		$writeStream = file_put_contents($this->getCacheFile(), serialize($datas));
+		$writeStream = file_put_contents($this->getCacheFile(), serialize($data));
 
 		if($writeStream === false) {
 			throw new \Exception('Cannot write the cache... Do you have the right permissions ?');
@@ -29,13 +31,14 @@ class FileCache implements CacheInterface {
 		$cacheFile = $this->getCacheFile();
 		clearstatcache(false, $cacheFile);
 		if(file_exists($cacheFile)) {
-			return filemtime($cacheFile);
+			$time = filemtime($cacheFile);
+			return ($time !== false) ? $time : null;
 		}
 
-		return false;
+		return null;
 	}
 
-	public function purgeCache($duration){
+	public function purgeCache($seconds){
 		$cachePath = $this->getPath();
 		if(file_exists($cachePath)) {
 			$cacheIterator = new RecursiveIteratorIterator(
@@ -47,7 +50,7 @@ class FileCache implements CacheInterface {
 				if(in_array($cacheFile->getBasename(), array('.', '..', '.gitkeep')))
 					continue;
 				elseif($cacheFile->isFile()) {
-					if(filemtime($cacheFile->getPathname()) < time() - $duration)
+					if(filemtime($cacheFile->getPathname()) < time() - $seconds)
 						unlink($cacheFile->getPathname());
 				}
 			}

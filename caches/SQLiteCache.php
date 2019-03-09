@@ -39,10 +39,10 @@ class SQLiteCache implements CacheInterface {
 		return null;
 	}
 
-	public function saveData($datas){
+	public function saveData($data){
 		$Qupdate = $this->db->prepare('INSERT OR REPLACE INTO storage (key, value, updated) VALUES (:key, :value, :updated)');
 		$Qupdate->bindValue(':key', $this->getCacheKey());
-		$Qupdate->bindValue(':value', serialize($datas));
+		$Qupdate->bindValue(':value', serialize($data));
 		$Qupdate->bindValue(':updated', time());
 		$Qupdate->execute();
 
@@ -63,9 +63,9 @@ class SQLiteCache implements CacheInterface {
 		return false;
 	}
 
-	public function purgeCache($duration){
+	public function purgeCache($seconds){
 		$Qdelete = $this->db->prepare('DELETE FROM storage WHERE updated < :expired');
-		$Qdelete->bindValue(':expired', time() - $duration);
+		$Qdelete->bindValue(':expired', time() - $seconds);
 		$Qdelete->execute();
 	}
 

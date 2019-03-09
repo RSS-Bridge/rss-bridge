@@ -22,29 +22,29 @@ interface CacheInterface {
 	/**
 	 * Loads data from cache
 	 *
-	 * @return mixed The cache data
+	 * @return mixed The cached data or null
 	 */
 	public function loadData();
 
 	/**
 	 * Stores data to the cache
 	 *
-	 * @param mixed $datas The data to store
+	 * @param mixed $data The data to store
 	 * @return self The cache object
 	 */
-	public function saveData($datas);
+	public function saveData($data);
 
 	/**
-	 * Returns the timestamp for the curent cache file
+	 * Returns the timestamp for the curent cache data
 	 *
-	 * @return int Timestamp
+	 * @return int Timestamp or null
 	 */
 	public function getTime();
 
 	/**
-	 * Removes any data that is older than the specified duration from cache
+	 * Removes any data that is older than the specified age from cache
 	 *
-	 * @param int $duration The cache duration in seconds
+	 * @param int $seconds The cache age in seconds
 	 */
-	public function purgeCache($duration);
+	public function purgeCache($seconds);
 }
