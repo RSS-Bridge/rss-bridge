@@ -4,7 +4,7 @@
 */
 class FileCache implements CacheInterface {
 	protected $path;
-	protected $param;
+	protected $key;
 
 	public function loadData(){
 		if(file_exists($this->getCacheFile())) {
@@ -57,7 +57,7 @@ class FileCache implements CacheInterface {
 	}
 
 	/**
-	* Set cache scope
+	* Set scope
 	* @return self
 	*/
 	public function setScope($scope){
@@ -71,12 +71,20 @@ class FileCache implements CacheInterface {
 	}
 
 	/**
-	* Set HTTP GET parameters
+	* Set key
 	* @return self
 	*/
-	public function setParameters(array $param){
-		$this->param = array_map('strtolower', $param);
+	public function setKey($key){
+		if (!empty($key) && is_array($key)) {
+			$key = array_map('strtolower', $key);
+		}
+		$key = json_encode($key);
 
+		if (!is_string($key)) {
+			throw new \Exception('The given key is invalid!');
+		}
+
+		$this->key = $key;
 		return $this;
 	}
 
@@ -111,12 +119,10 @@ class FileCache implements CacheInterface {
 	* return string
 	*/
 	protected function getCacheName(){
-		if(is_null($this->param)) {
-			throw new \Exception('Call "setParameters" first!');
+		if(is_null($this->key)) {
+			throw new \Exception('Call "setKey" first!');
 		}
 
-		// Change character when making incompatible changes to prevent loading
-		// errors due to incompatible file contents         \|/
-		return hash('md5', http_build_query($this->param) . 'A') . '.cache';
+		return hash('md5', $this->key) . '.cache';
 	}
 }

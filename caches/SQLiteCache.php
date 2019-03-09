@@ -4,7 +4,7 @@
  */
 class SQLiteCache implements CacheInterface {
 	protected $scope;
-	protected $param;
+	protected $key;
 
 	private $db = null;
 
@@ -71,7 +71,7 @@ class SQLiteCache implements CacheInterface {
 	}
 
 	/**
-	* Set cache path
+	* Set scope
 	* @return self
 	*/
 	public function setScope($scope){
@@ -84,21 +84,30 @@ class SQLiteCache implements CacheInterface {
 	}
 
 	/**
-	* Set HTTP GET parameters
+	* Set key
 	* @return self
 	*/
-	public function setParameters(array $param){
-		$this->param = array_map('strtolower', $param);
+	public function setKey($key){
+		if (!empty($key) && is_array($key)) {
+			$key = array_map('strtolower', $key);
+		}
+		$key = json_encode($key);
+
+		if (!is_string($key)) {
+			throw new \Exception('The given key is invalid!');
+		}
+
+		$this->key = $key;
 		return $this;
 	}
 
 	////////////////////////////////////////////////////////////////////////////
 
 	protected function getCacheKey(){
-		if(is_null($this->param)) {
-			throw new \Exception('Call "setParameters" first!');
+		if(is_null($this->key)) {
+			throw new \Exception('Call "setKey" first!');
 		}
 
-		return hash('sha1', $this->scope . http_build_query($this->param), true);
+		return hash('sha1', $this->scope . $this->key, true);
 	}
 }

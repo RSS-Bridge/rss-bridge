@@ -50,7 +50,7 @@ function getContents($url, $header = array(), $opts = array()){
 	$cache->purgeCache(86400); // 24 hours (forced)
 
 	$params = [$url];
-	$cache->setParameters($params);
+	$cache->setKey($params);
 
 	// Use file_get_contents if in CLI mode with no root certificates defined
 	if(php_sapi_name() === 'cli' && empty(ini_get('curl.cainfo'))) {
@@ -273,7 +273,7 @@ $defaultSpanText = DEFAULT_SPAN_TEXT){
 	$cache->purgeCache(86400); // 24 hours (forced)
 
 	$params = [$url];
-	$cache->setParameters($params);
+	$cache->setKey($params);
 
 	// Determine if cached file is within duration
 	$time = $cache->getTime();
