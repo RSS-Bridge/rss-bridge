@@ -13,9 +13,6 @@
 
 /**
  * The cache interface
- *
- * @todo Add missing function to the interface
- * @todo Return self more often (to allow call chaining)
  */
 interface CacheInterface {
 	/**

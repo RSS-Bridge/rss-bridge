@@ -69,7 +69,7 @@ class SQLiteCache implements CacheInterface {
 			}
 		}
 
-		return false;
+		return null;
 	}
 
 	public function purgeCache($seconds){
