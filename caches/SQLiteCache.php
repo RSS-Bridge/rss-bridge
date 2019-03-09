@@ -3,14 +3,15 @@
  * Cache based on SQLite 3 <https://www.sqlite.org>
  */
 class SQLiteCache implements CacheInterface {
-	protected $path;
+	protected $scope;
 	protected $param;
 
 	private $db = null;
 
 	public function __construct() {
-		if (!extension_loaded('sqlite3'))
+		if (!extension_loaded('sqlite3')) {
 			die('"sqlite3" extension not loaded. Please check "php.ini"');
+		}
 
 		$file = PATH_CACHE . 'cache.sqlite';
 
@@ -73,8 +74,12 @@ class SQLiteCache implements CacheInterface {
 	* Set cache path
 	* @return self
 	*/
-	public function setPath($path){
-		$this->path = $path;
+	public function setScope($scope){
+		if(is_null($scope) || !is_string($scope)) {
+			throw new \Exception('The given scope is invalid!');
+		}
+
+		$this->scope = $scope;
 		return $this;
 	}
 
@@ -94,6 +99,6 @@ class SQLiteCache implements CacheInterface {
 			throw new \Exception('Call "setParameters" first!');
 		}
 
-		return hash('sha1', $this->path . http_build_query($this->param), true);
+		return hash('sha1', $this->scope . http_build_query($this->param), true);
 	}
 }

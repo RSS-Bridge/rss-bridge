@@ -15,10 +15,18 @@
  * The cache interface
  *
  * @todo Add missing function to the interface
- * @todo Explain parameters and return values in more detail
  * @todo Return self more often (to allow call chaining)
  */
 interface CacheInterface {
+	/**
+	 * Set scope of the current cache
+	 *
+	 * If $scope is an empty string, the cache is set to a global context.
+	 *
+	 * @param string $scope The scope the data is related to
+	 */
+	public function setScope($scope);
+
 	/**
 	 * Loads data from cache
 	 *

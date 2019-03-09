@@ -3,7 +3,6 @@
 * Cache with file system
 */
 class FileCache implements CacheInterface {
-
 	protected $path;
 	protected $param;
 
@@ -58,23 +57,15 @@ class FileCache implements CacheInterface {
 	}
 
 	/**
-	* Set cache path
+	* Set cache scope
 	* @return self
 	*/
-	public function setPath($path){
-		if(is_null($path) || !is_string($path)) {
-			throw new \Exception('The given path is invalid!');
+	public function setScope($scope){
+		if(is_null($scope) || !is_string($scope)) {
+			throw new \Exception('The given scope is invalid!');
 		}
 
-		$this->path = $path;
-
-		// Make sure path ends with '/' or '\'
-		$lastchar = substr($this->path, -1, 1);
-		if($lastchar !== '/' && $lastchar !== '\\')
-			$this->path .= '/';
-
-		if(!is_dir($this->path))
-			mkdir($this->path, 0755, true);
+		$this->path = PATH_CACHE . trim($scope, " \t\n\r\0\x0B\\\/") . '/';
 
 		return $this;
 	}
@@ -95,7 +86,13 @@ class FileCache implements CacheInterface {
 	*/
 	protected function getPath(){
 		if(is_null($this->path)) {
-			throw new \Exception('Call "setPath" first!');
+			throw new \Exception('Call "setScope" first!');
+		}
+
+		if(!is_dir($this->path)) {
+			if (mkdir($this->path, 0755, true) !== true) {
+				throw new \Exception('Unable to create ' . $this->path);
+			}
 		}
 
 		return $this->path;
