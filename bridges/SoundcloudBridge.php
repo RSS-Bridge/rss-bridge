@@ -14,7 +14,7 @@ class SoundCloudBridge extends BridgeAbstract {
 		)
 	));
 
-	const CLIENT_ID = '4jkoEFmZEDaqjwJ9Eih4ATNhcH3vMVfp';
+	const CLIENT_ID = 'W0KEWWILAjDiRH89X0jpwzuq6rbSK08R';
 
 	public function collectData(){
 
