@@ -55,7 +55,7 @@ class OneFortuneADayBridge extends BridgeAbstract {
 			$time -= self::DAY_SECS;
 
 		for ($i = self::LIMIT_ITEMS; $i > 0; --$i) {
-			$seed = date('Ymd', $time) . $this->getInput('lucky');
+			$seed = gmdate('Ymd', $time) . $this->getInput('lucky');
 			$quote = $this->getQuote($seed);
 
 			$item['title']		= strftime('%A, %x', $time);
