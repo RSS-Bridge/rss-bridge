@@ -31,7 +31,7 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 		);
 
 		if (isset($rows[0][1])) {
-			$this->feedName = html_entity_decode($rows[0][1]->plaintext);
+			$this->feedName = $this->filterHTML($rows[0][1]->plaintext);
 		}
 
 		foreach($rows as $cols) {
@@ -48,8 +48,8 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 
 			$objTitle = $cols[1];
 			if ($objTitle) {
-				$title[] = html_entity_decode($objTitle->plaintext);
-				$item['content'] .= '<p>Series: ' . $objTitle->innertext . '</p>';
+				$title[] = $this->filterHTML($objTitle->plaintext);
+				$item['content'] .= '<p>Series: ' . $this->filterText($objTitle->innertext) . '</p>';
 			}
 
 			$objVolume = $cols[2];
@@ -62,8 +62,8 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 
 			$objAuthor = $cols[4];
 			if ($objAuthor && !empty($objAuthor->plaintext)) {
-				$item['author'] = html_entity_decode($objAuthor->plaintext);
-				$item['content'] .= '<p>Groups: ' . $objAuthor->innertext . '</p>';
+				$item['author'] = $this->filterHTML($objAuthor->plaintext);
+				$item['content'] .= '<p>Groups: ' . $this->filterText($objAuthor->innertext) . '</p>';
 			}
 
 			$item['title'] = implode(' ', $title);
@@ -87,5 +87,13 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 			return $this->feedName . ' - ' . self::NAME;
 		}
 		return parent::getName();
+	}
+
+	private function filterText($text) {
+		return rtrim($text, '*');
+	}
+
+	private function filterHTML($text) {
+		return $this->filterText(html_entity_decode($text));
 	}
 }
