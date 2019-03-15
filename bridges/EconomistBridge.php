@@ -18,7 +18,7 @@ class EconomistBridge extends BridgeAbstract {
 
 			$a = $element->find('a', 0);
 			$href = self::URI . $a->href;
-			$full = getSimpleHTMLDOM($href);
+			$full = getSimpleHTMLDOMCached($href);
 			$article = $full->find('article', 0);
 
 			$header = $article->find('h1', 0);
