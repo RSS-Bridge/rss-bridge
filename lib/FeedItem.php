@@ -76,7 +76,7 @@ class FeedItem {
 	 * $item['uri'] = 'https://www.github.com/rss-bridge/rss-bridge/';
 	 * $item['title'] = 'Title';
 	 * $item['timestamp'] = strtotime('now');
-	 * $item['autor'] = 'Unknown author';
+	 * $item['author'] = 'Unknown author';
 	 * $item['content'] = 'Hello World!';
 	 * $item['enclosures'] = array('https://github.com/favicon.ico');
 	 * $item['categories'] = array('php', 'rss-bridge', 'awesome');
