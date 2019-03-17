@@ -4,17 +4,17 @@ class EconomistBridge extends BridgeAbstract {
 	const URI = 'https://www.economist.com';
 	const DESCRIPTION = 'Fetches the latest updates from the Economist.';
 	const MAINTAINER = 'thefranke';
-	const CACHE_TIMEOUT = 60 * 60; // 1h
+	const CACHE_TIMEOUT = 3600; // 1h
+
+	public function getIcon() {
+		return 'https://www.economist.com/sites/default/files/econfinal_favicon.ico';
+	}
 
 	public function collectData() {
 		$html = getSimpleHTMLDOM(self::URI . '/latest/')
 			or returnServerError('Could not fetch latest updates form The Economist.');
 
-		$limit = 0;
-
 		foreach($html->find('article') as $element) {
-			if($limit >= 10)
-				break;
 
 			$a = $element->find('a', 0);
 			$href = self::URI . $a->href;
@@ -40,8 +40,6 @@ class EconomistBridge extends BridgeAbstract {
 			if ($nextprev)
 				$nextprev->outertext = '';
 
-			$full->save();
-
 			$section = [ $article->find('h3[itemprop="articleSection"]', 0)->plaintext ];
 
 			$item = array();
@@ -56,7 +54,8 @@ class EconomistBridge extends BridgeAbstract {
 			$item['content'] = '<img style="max-width: 100%" src="'
 				. $a->find('img', 0)->src . '">' . $content->innertext;
 
-			$limit++;
+			if (count($this->items) >= 10)
+				break;
 
 			$this->items[] = $item;
 		}
