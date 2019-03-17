@@ -12,15 +12,17 @@ class StockFilingsBridge extends FeedExpander {
 	const PARAMETERS = array(
 		array(
 		'ticker' => array(
-			'name' 			=> 'cik',
-			'required' 		=> true,
-			'exampleValue' 	=> 'AMD',
+			'name'          => 'cik',
+			'required'      => true,
+			'exampleValue'  => 'AMD',
 			// https://stackoverflow.com/a/12827734
-			'pattern'		=> '[A-Za-z0-9]+',
+			'pattern'       => '[A-Za-z0-9]+',
 		),
 	));
 
-	protected $title;
+	public function getIcon() {
+		return 'https://www.sec.gov/favicon.ico';
+	}
 
 	/**
 	 * Generates search URL
@@ -74,9 +76,5 @@ class StockFilingsBridge extends FeedExpander {
 		} else {
 			returnClientError('Could not find RSS Feed URL. Are you sure you used a valid CIK?');
 		}
-	}
-
-	protected function parseItem($newsItem) {
-		return parent::parseATOMItem($newsItem);
 	}
 }
