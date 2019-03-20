@@ -160,8 +160,18 @@ class NationalGeographicBridge extends BridgeAbstract {
 
 		$content = '';
 
-		foreach($html->find('.content > .smartbody.text') as $paragraph) {
-			$content .= $paragraph->outertext;
+		foreach($html->find('
+			.content > .smartbody.text,
+			.content > .section.image script[type="text/json"]
+			') as $element) {
+			if ($element->tag === 'script') {
+				$json = json_decode($element->innertext, true);
+				if (isset($json['src'])) {
+					$content .= '<img src="' . $json['src'] . '" width="100%" alt="' . $json['alt'] . '">';
+				}
+			} else {
+				$content .= $element->outertext;
+			}
 		}
 
 		return $content;
