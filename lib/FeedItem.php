@@ -347,7 +347,7 @@ class FeedItem {
 					$enclosure,
 					FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
 					Debug::log('Each enclosure must contain a scheme, host and path!');
-				} else {
+				} elseif(!in_array($enclosure, $this->enclosures)) {
 					$this->enclosures[] = $enclosure;
 				}
 			}
