@@ -121,7 +121,6 @@ class NationalGeographicBridge extends BridgeAbstract {
 
 		$item = array();
 
-		$item['uid'] = $story['id'];
 		$item['uri'] = $story['uri'];
 		$item['title'] = $title;
 
