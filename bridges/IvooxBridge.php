@@ -19,27 +19,6 @@ class IvooxBridge extends BridgeAbstract {
 		)
 	);
 
-	private function ivGetSimpleHTMLDOM($url) {
-		return getSimpleHTMLDOM(
-		$url,
-		$use_include_path = false,
-		$context = null,
-		$offset = 0,
-		$maxLen = null,
-		$lowercase = true,
-		$forceTagsClosed = true,
-		$target_charset = DEFAULT_TARGET_CHARSET,
-		$stripRN = false,
-		$defaultBRText = DEFAULT_BR_TEXT,
-		$defaultSpanText = DEFAULT_SPAN_TEXT);
-	}
-
-	private function printIfDebug($text) {
-		if(defined('DEBUG') && DEBUG === true) {
-			print_r($text . '<br/>' . "\r\n");
-		}
-	}
-
 	private function ivBridgeAddItem(
 	$episode_link,
 	$podcast_name,
@@ -119,14 +98,12 @@ class IvooxBridge extends BridgeAbstract {
 		$originalLocales = explode(';', setlocale(LC_ALL, 0));
 		setlocale(LC_ALL, 'es_ES.utf8');
 
-		$this->printIfDebug('debug mode active');
 		$xml = '';
 		$html = '';
 		$url_feed = '';
 		if($this->getInput('s')) { /* Search  modes */
 			$this->request = str_replace(' ', '-', $this->getInput('s'));
 			$url_feed = self::URI . urlencode($this->request) . '_sb_f_1.html?o=uploaddate';
-			$this->printIfDebug($url_feed);
 		} else {
 			returnClientError('Not valid mode at IvooxBridge');
 		}
