@@ -4,8 +4,7 @@
  * Returns the latest search result
  * TODO: support podcast episodes list
  */
-class IvooxBridge extends BridgeAbstract
-{
+class IvooxBridge extends BridgeAbstract {
 	const NAME = 'Ivoox Bridge';
 	const URI = 'https://www.ivoox.com/';
 	const CACHE_TIMEOUT = 10800; // 3h
@@ -19,8 +18,8 @@ class IvooxBridge extends BridgeAbstract
 			)
 		)
 	);
-	private function ivGetSimpleHTMLDOM($url)
-	{
+
+	private function ivGetSimpleHTMLDOM($url) {
 		return getSimpleHTMLDOM(
 		$url,
 		$use_include_path = false,
@@ -35,29 +34,32 @@ class IvooxBridge extends BridgeAbstract
 		$defaultSpanText = DEFAULT_SPAN_TEXT);
 	}
 
-	private function printIfDebug($text)
-	{
+	private function printIfDebug($text) {
 		if(defined('DEBUG') && DEBUG === true) {
 			print_r($text . '<br/>' . "\r\n");
 		}
 	}
 
-	private function ivBridgeAddItem($episode_link, $podcast_name, $episode_title, $author_name,
-	    $episode_description, $publication_date, $episode_duration)
-	{
+	private function ivBridgeAddItem(
+	$episode_link,
+	$podcast_name,
+	$episode_title,
+	$author_name,
+	$episode_description,
+	$publication_date,
+	$episode_duration) {
 		$item = array();
-		$item['title'] = $podcast_name . ':' . $episode_title;
+		$item['title'] = htmlspecialchars_decode($podcast_name . ': ' . $episode_title);
 		$item['author'] = $author_name;
 		$item['timestamp'] = $publication_date;
 		$item['uri'] = $episode_link;
-		$item['content'] = '<a href="' . $episode_link . '">' . $podcast_name . ': ' . $episode_title . '</a>'
-			. '<br />Duration: ' . $episode_duration . '"'
-			. "<br />Description:<br />' . $episode_description;
+		$item['content'] = '<a href="' . $episode_link . '">' . $podcast_name . ': ' . $episode_title
+			. '</a><br />Duration: ' . $episode_duration
+			. '<br />Description:<br />' . $episode_description;
 		$this->items[] = $item;
 	}
 
-	private function ivBridgeParseHtmlListing($html)
-	{
+	private function ivBridgeParseHtmlListing($html) {
 		$limit = 4;
 		$count = 0;
 
@@ -74,12 +76,10 @@ class IvooxBridge extends BridgeAbstract
 						if ($linkcount == 0) {
 							$episode_link = $link->href;
 							$episode_title = $link->title;
-						}
-						elseif ($linkcount == 1) {
+						} elseif ($linkcount == 1) {
 							$author_link = $link->href;
 							$author_name = $link->title;
-						}
-						elseif ($linkcount == 2) {
+						} elseif ($linkcount == 2) {
 							$podcast_link = $link->href;
 							$podcast_name = $link->title;
 						}
@@ -99,19 +99,25 @@ class IvooxBridge extends BridgeAbstract
 				$a = strptime($publication_date, '%H:%M - %d de %b. de %Y'); // obsolete function, uses c libraries
 				$publication_date = mktime(0, 0, 0, $a['tm_mon'] + 1, $a['tm_mday'], $a['tm_year'] + 1900);
 
-				$this->ivBridgeAddItem($episode_link, $podcast_name, $episode_title, $author_name, $episode_description,
-										$publication_date, $episode_duration);
+				$this->ivBridgeAddItem(
+					$episode_link,
+					$podcast_name,
+					$episode_title,
+					$author_name,
+					$episode_description,
+					$publication_date,
+					$episode_duration
+				);
 				$count++;
 			}
 		}
 	}
 
-	public function collectData()
-	{
+	public function collectData() {
 
 		// store locale, change to spanish
-		$originalLocales = explode(";", setlocale(LC_ALL, 0));
-		setlocale(LC_ALL, "es_ES.utf8");
+		$originalLocales = explode(';', setlocale(LC_ALL, 0));
+		setlocale(LC_ALL, 'es_ES.utf8');
 
 		$this->printIfDebug('debug mode active');
 		$xml = '';
@@ -121,21 +127,20 @@ class IvooxBridge extends BridgeAbstract
 			$this->request = str_replace(' ', '-', $this->getInput('s'));
 			$url_feed = self::URI . urlencode($this->request) . '_sb_f_1.html?o=uploaddate';
 			$this->printIfDebug($url_feed);
-		}
-		else {
-			returnClientError("Not valid mode at IvooxBridge");
+		} else {
+			returnClientError('Not valid mode at IvooxBridge');
 		}
 
-		$dom = $this->ivGetSimpleHTMLDOM($url_feed) or returnServerError("Could not request iVoox. Tried:\n - $url_feed");
+		$dom = getSimpleHTMLDOM($url_feed)
+			or returnServerError('Could not request ' . $url_feed);
 		$this->ivBridgeParseHtmlListing($dom);
 
 		// restore locale
 
 		foreach($originalLocales as $localeSetting) {
-			if(strpos($localeSetting, "=") !== false) {
-				list($category, $locale) = explode("=", $localeSetting);
-			}
-			else {
+			if(strpos($localeSetting, '=') !== false) {
+				list($category, $locale) = explode('=', $localeSetting);
+			} else {
 				$category = LC_ALL;
 				$locale = $localeSetting;
 			}
