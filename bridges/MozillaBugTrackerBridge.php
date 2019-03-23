@@ -150,5 +150,4 @@ class MozillaBugTrackerBridge extends BridgeAbstract {
 
 		return $html;
 	}
-
 }
