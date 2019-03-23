@@ -162,7 +162,7 @@ class FacebookBridge extends BridgeAbstract {
 		$ogtitle = $html->find('meta[property="og:title"]', 0)
 			or returnServerError('Unable to find group title!');
 
-		return html_entity_decode($ogtitle->content);
+		return html_entity_decode($ogtitle->content, ENT_QUOTES);
 	}
 
 	private function extractGroupURI($post) {
