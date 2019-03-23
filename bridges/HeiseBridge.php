@@ -11,10 +11,14 @@ class HeiseBridge extends FeedExpander {
 			'name' => 'Category',
 			'type' => 'list',
 			'values' => array(
-				'Alle News' => 'https://www.heise.de/newsticker/heise-atom.xml',
-				'Top-News' => 'https://www.heise.de/newsticker/heise-top-atom.xml',
-				'Internet-Störungen' => 'https://www.heise.de/netze/netzwerk-tools/imonitor-internet-stoerungen/feed/aktuelle-meldungen/',
-				'Alle News von heise Developer' => 'https://www.heise.de/developer/rss/news-atom.xml'
+				'Alle News'
+				=> 'https://www.heise.de/newsticker/heise-atom.xml',
+				'Top-News'
+				=> 'https://www.heise.de/newsticker/heise-top-atom.xml',
+				'Internet-Störungen'
+				=> 'https://www.heise.de/netze/netzwerk-tools/imonitor-internet-stoerungen/feed/aktuelle-meldungen/',
+				'Alle News von heise Developer'
+				=> 'https://www.heise.de/developer/rss/news-atom.xml'
 			)
 		),
 		'limit' => array(
@@ -28,46 +32,43 @@ class HeiseBridge extends FeedExpander {
 	const LIMIT = 5;
 
 	public function collectData() {
-		$this->collectExpandableDatas($this->getInput('category'));
-		// or returnServerError('Error while downloading the website content');
+		$this->collectExpandableDatas(
+			$this->getInput('category'),
+			$this->getInput('limit') ?: static::LIMIT
+		);
 	}
 
 	protected function parseItem($feedItem) {
 		$item = parent::parseItem($feedItem);
+		$uri = $item['uri'];
 
-		$limit = $this->getInput('limit') ?: static::LIMIT;
+		do {
+			$article = getSimpleHTMLDOMCached($uri)
+				or returnServerError('Could not open article: ' . $uri);
 
-		if(count($this->items) >= $limit) {
-			return $item;
+			$article = defaultLinkTo($article, $uri);
+			$item = $this->addArticleToItem($item, $article);
+
+			if($next = $article->find('.pagination a[rel="next"]', 0))
+				$uri = $next->href;
+		} while ($next);
+
+		return $item;
+	}
+
+	private function addArticleToItem($item, $article) {
+		if($author = $article->find('[itemprop="author"]', 0))
+			$item['author'] = $author->plaintext;
+
+		$content = $article->find('div[class*="article-content"]', 0);
+
+		foreach($content->find('p, h3, ul, table, pre, img') as $element) {
+			$item['content'] .= $element;
 		}
 
-		$article = getSimpleHTMLDOMCached($item['uri']) or returnServerError('Could not open article: ' . $item['uri']);
-
-		//remove ads
-		foreach ($article->find('section.widget-werbung') as &$ad) {
-			$ad = '';
+		foreach($content->find('img') as $img) {
+			$item['enclosures'][] = $img->src;
 		}
-
-		switch ($article->find('body', 0)->class) {
-			case 'ct':
-				$article = $article->find('div.ct__main__content', 0);
-				$author = $article->find('li.article_page_info_author', 0)->find('a', 0);
-				break;
-			case 'developer':
-			case 'ho':
-				$author = $article->find('span.ISI_IGNORE', 0);
-				$article = $article->find('div.article-content', 0);
-				break;
-		}
-
-		$filter = array(
-			'<embetty-tweet>', '<iframe>', '<span>', '<p>', '<a>', '<br>',
-			'<h1>', '<h2>', '<h3>', '<img>', '<table>', '<tbody>', '<tr>',
-			'<td>', '<strong>'
-		);
-
-		if(isset($author)) $item['author'] = $author;
-		$item['content'] = strip_tags($article, implode('', $filter));
 
 		return $item;
 	}
