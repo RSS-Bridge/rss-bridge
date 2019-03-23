@@ -66,7 +66,7 @@ class HeiseBridge extends FeedExpander {
 			'<td>', '<strong>'
 		);
 
-		$item['author'] = $author;
+		if(isset($author)) $item['author'] = $author;
 		$item['content'] = strip_tags($article, implode('', $filter));
 
 		return $item;
