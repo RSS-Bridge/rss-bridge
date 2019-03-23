@@ -10,7 +10,6 @@ class HeiseBridge extends FeedExpander {
 		'category' => array(
 			'name' => 'Category',
 			'type' => 'list',
-			'required' => true,
 			'values' => array(
 				'Alle News' => 'https://www.heise.de/newsticker/heise-atom.xml',
 				'Top-News' => 'https://www.heise.de/newsticker/heise-top-atom.xml',
@@ -29,7 +28,8 @@ class HeiseBridge extends FeedExpander {
 	const LIMIT = 5;
 
 	public function collectData() {
-		$this->collectExpandableDatas($this->getInput('category')); // or returnServerError('Error while downloading the website content');
+		$this->collectExpandableDatas($this->getInput('category'));
+		// or returnServerError('Error while downloading the website content');
 	}
 
 	protected function parseItem($feedItem) {
@@ -60,8 +60,14 @@ class HeiseBridge extends FeedExpander {
 				break;
 		}
 
+		$filter = array(
+			'<embetty-tweet>', '<iframe>', '<span>', '<p>', '<a>', '<br>',
+			'<h1>', '<h2>', '<h3>', '<img>', '<table>', '<tbody>', '<tr>',
+			'<td>', '<strong>'
+		);
+
 		$item['author'] = $author;
-		$item['content'] = strip_tags($article, '<embetty-tweet><iframe><span><p><a><br><h1><h2><h3><img><table><tbody><tr><td><strong>');
+		$item['content'] = strip_tags($article, implode('', $filter));
 
 		return $item;
 	}
