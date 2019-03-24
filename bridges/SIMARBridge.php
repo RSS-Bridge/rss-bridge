@@ -25,7 +25,7 @@ class SIMARBridge extends BridgeAbstract {
 
 			$item['title'] = 'Rotura: ' . $element->plaintext;
 			$item['content'] = $element->innertext;
-			$item['uri'] = 'urn:sha1:' . hash('sha1', $item['content']);
+			$item['uid'] = 'urn:sha1:' . hash('sha1', $item['content']);
 
 			$this->items[] = $item;
 		}
@@ -42,7 +42,7 @@ class SIMARBridge extends BridgeAbstract {
 				$item['content'] = $element->innertext;
 
 				/* Try to get the actual contents for this kind of item */
-				$item_html = getSimpleHTMLDOM($item['uri']);
+				$item_html = getSimpleHTMLDOMCached($item['uri']);
 				if ($item_html) {
 					$e_item = $item_html->find('.auto-style59', 0);
 					foreach($e_item->find('p') as $paragraph) {
