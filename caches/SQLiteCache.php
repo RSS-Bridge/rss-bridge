@@ -111,7 +111,7 @@ class SQLiteCache implements CacheInterface {
 
 	////////////////////////////////////////////////////////////////////////////
 
-	protected function getCacheKey(){
+	private function getCacheKey(){
 		if(is_null($this->key)) {
 			throw new \Exception('Call "setKey" first!');
 		}

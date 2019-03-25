@@ -92,13 +92,13 @@ class FileCache implements CacheInterface {
 	* Return cache path (and create if not exist)
 	* @return string Cache path
 	*/
-	protected function getPath(){
+	private function getPath(){
 		if(is_null($this->path)) {
 			throw new \Exception('Call "setScope" first!');
 		}
 
 		if(!is_dir($this->path)) {
-			if (mkdir($this->path, 0644, true) !== true) {
+			if (mkdir($this->path, 0755, true) !== true) {
 				throw new \Exception('Unable to create ' . $this->path);
 			}
 		}
@@ -110,7 +110,7 @@ class FileCache implements CacheInterface {
 	* Get the file name use for cache store
 	* @return string Path to the file cache
 	*/
-	protected function getCacheFile(){
+	private function getCacheFile(){
 		return $this->getPath() . $this->getCacheName();
 	}
 
@@ -118,7 +118,7 @@ class FileCache implements CacheInterface {
 	* Determines file name for store the cache
 	* return string
 	*/
-	protected function getCacheName(){
+	private function getCacheName(){
 		if(is_null($this->key)) {
 			throw new \Exception('Call "setKey" first!');
 		}
