@@ -98,7 +98,7 @@ class FileCache implements CacheInterface {
 		}
 
 		if(!is_dir($this->path)) {
-			if (mkdir($this->path, 0755, true) !== true) {
+			if (mkdir($this->path, 0644, true) !== true) {
 				throw new \Exception('Unable to create ' . $this->path);
 			}
 		}
