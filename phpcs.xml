@@ -79,7 +79,22 @@
   <!-- Do not add a whitespace before a semicolon -->
   <rule ref="Squiz.WhiteSpace.SemicolonSpacing"/>
   <!-- Do not add whitespace at start or end of a file or end of a line -->
-  <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace"/>
+  <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace">
+    <properties>
+      <!--
+      This fixes an issue in combination with PSR2
+      https://github.com/squizlabs/PHP_CodeSniffer/issues/600
+      -->
+      <property name="ignoreBlankLines" value="false"/>
+    </properties>
+  </rule>
+  <rule ref="Squiz.WhiteSpace.FunctionSpacing">
+    <properties>
+      <property name="spacing" value="1" />
+      <property name="spacingBeforeFirst" value="0" />
+      <property name="spacingAfterLast" value="0" />
+    </properties>
+  </rule>
   <!-- Whenever possible use single quote strings -->
   <rule ref="Squiz.Strings.DoubleQuoteUsage">
     <exclude name="Squiz.Strings.DoubleQuoteUsage.ContainsVar" />

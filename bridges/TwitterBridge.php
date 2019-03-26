@@ -16,6 +16,11 @@ class TwitterBridge extends BridgeAbstract {
 				'name' => 'Hide images in tweets',
 				'type' => 'checkbox',
 				'title' => 'Activate to hide images in tweets'
+			),
+			'noimgscaling' => array(
+				'name' => 'Disable image scaling',
+				'type' => 'checkbox',
+				'title' => 'Activate to disable image scaling in tweets (keeps original image)'
 			)
 		),
 		'By keyword or hashtag' => array(
@@ -160,7 +165,7 @@ class TwitterBridge extends BridgeAbstract {
 
 			// Skip retweets?
 			if($this->getInput('noretweet')
-			&& $tweet->getAttribute('data-screen-name') !== $this->getInput('u')) {
+			&& strcasecmp($tweet->getAttribute('data-screen-name'), $this->getInput('u'))) {
 				continue;
 			}
 
@@ -184,6 +189,9 @@ class TwitterBridge extends BridgeAbstract {
 			$item['fullname'] = htmlspecialchars_decode($tweet->getAttribute('data-name'), ENT_QUOTES);
 			// get author
 			$item['author'] = $item['fullname'] . ' (@' . $item['username'] . ')';
+			if(strcasecmp($tweet->getAttribute('data-screen-name'), $this->getInput('u'))) {
+				$item['author'] .= ' RT: @' . $this->getInput('u');
+			}
 			// get avatar link
 			$item['avatar'] = $tweet->find('img', 0)->src;
 			// get TweetID
@@ -239,14 +247,18 @@ EOD;
 			$image_html = '';
 			$image = $this->getImageURI($tweet);
 			if(!$this->getInput('noimg') && !is_null($image)) {
+				// Set image scaling
+				$image_orig = $this->getInput('noimgscaling') ? $image : $image . ':orig';
+				$image_thumb = $this->getInput('noimgscaling') ? $image : $image . ':thumb';
+
 				// add enclosures
-				$item['enclosures'] = array($image . ':orig');
+				$item['enclosures'] = array($image_orig);
 
 				$image_html = <<<EOD
-<a href="{$image}:orig">
+<a href="{$image_orig}">
 <img
 	style="align:top; max-width:558px; border:1px solid black;"
-	src="{$image}:thumb" />
+	src="{$image_thumb}" />
 </a>
 EOD;
 			}
@@ -281,14 +293,18 @@ EOD;
 				$quotedImage_html = '';
 				$quotedImage = $this->getQuotedImageURI($tweet);
 				if(!$this->getInput('noimg') && !is_null($quotedImage)) {
+					// Set image scaling
+					$quotedImage_orig = $this->getInput('noimgscaling') ? $quotedImage : $quotedImage . ':orig';
+					$quotedImage_thumb = $this->getInput('noimgscaling') ? $quotedImage : $quotedImage . ':thumb';
+
 					// add enclosures
-					$item['enclosures'] = array($quotedImage . ':orig');
+					$item['enclosures'] = array($quotedImage_orig);
 
 					$quotedImage_html = <<<EOD
-<a href="{$quotedImage}:orig">
+<a href="{$quotedImage_orig}">
 <img
 	style="align:top; max-width:558px; border:1px solid black;"
-	src="{$quotedImage}:thumb" />
+	src="{$quotedImage_thumb}" />
 </a>
 EOD;
 				}

@@ -11,7 +11,6 @@ class NineGagBridge extends BridgeAbstract {
 			'd' => array(
 				'name' => 'Section',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Hot' => 'hot',
 					'Trending' => 'trending',
@@ -28,7 +27,6 @@ class NineGagBridge extends BridgeAbstract {
 			'g' => array(
 				'name' => 'Section',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Animals' => 'cute',
 					'Anime & Manga' => 'anime-manga',
@@ -88,7 +86,6 @@ class NineGagBridge extends BridgeAbstract {
 			't' => array(
 				'name' => 'Type',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Hot' => 'hot',
 					'Fresh' => 'fresh',

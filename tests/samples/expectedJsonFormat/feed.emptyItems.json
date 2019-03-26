@@ -1,0 +1,15 @@
+{
+	"version": "https://jsonfeed.org/version/1",
+	"title": "Sample feed with minimum data",
+	"home_page_url": "https://github.com/RSS-Bridge/rss-bridge/",
+	"feed_url": "https://example.com/feed",
+	"items": [
+		{
+			"id": "29f59918d266c56a935da13e4122b524298e5a39",
+			"title": "Sample Item #1"
+		},{
+			"id": "edf358cad1a7ae255d6bc97640dd9d27738f1b7b",
+			"title": "Sample Item #2"
+		}
+	]
+}

@@ -16,7 +16,6 @@ class AmazonBridge extends BridgeAbstract {
 		'sort' => array(
 			'name' => 'Sort by',
 			'type' => 'list',
-			'required' => false,
 			'values' => array(
 				'Relevance' => 'relevanceblender',
 				'Price: Low to High' => 'price-asc-rank',
@@ -29,7 +28,6 @@ class AmazonBridge extends BridgeAbstract {
 		'tld' => array(
 			'name' => 'Country',
 			'type' => 'list',
-			'required' => true,
 			'values' => array(
 				'Australia' => 'com.au',
 				'Brazil' => 'com.br',
@@ -72,6 +70,9 @@ class AmazonBridge extends BridgeAbstract {
 
 			// Title
 			$title = $element->find('h2', 0);
+			if (is_null($title)) {
+				continue;
+			}
 
 			$item['title'] = html_entity_decode($title->innertext, ENT_QUOTES);
 

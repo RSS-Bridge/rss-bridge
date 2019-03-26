@@ -15,7 +15,6 @@ class DesoutterBridge extends BridgeAbstract {
 			'news_lang' => array(
 				'name' => 'Language',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Select your language',
 				'defaultValue' => 'Corporate',
 				'values' => array(
@@ -66,7 +65,6 @@ class DesoutterBridge extends BridgeAbstract {
 			'industry_lang' => array(
 				'name' => 'Language',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Select your language',
 				'defaultValue' => 'Corporate',
 				'values' => array(
@@ -117,7 +115,6 @@ class DesoutterBridge extends BridgeAbstract {
 			'full' => array(
 				'name' => 'Load full articles',
 				'type' => 'checkbox',
-				'required' => false,
 				'title' => 'Enable to load the full article for each item'
 			)
 		)
@@ -236,5 +233,4 @@ class DesoutterBridge extends BridgeAbstract {
 
 		echo $list;
 	}
-
 }

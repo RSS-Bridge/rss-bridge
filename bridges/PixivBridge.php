@@ -15,7 +15,6 @@ class PixivBridge extends BridgeAbstract {
 		),
 	));
 
-
 	public function collectData(){
 
 		$html = getContents(static::URI . 'search.php?word=' . urlencode($this->getInput('tag')))
@@ -70,5 +69,4 @@ class PixivBridge extends BridgeAbstract {
 		return 'cache/pixiv_img/' . $illustId . '.jpeg';
 
 	}
-
 }

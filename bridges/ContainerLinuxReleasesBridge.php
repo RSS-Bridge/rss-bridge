@@ -15,7 +15,6 @@ class ContainerLinuxReleasesBridge extends BridgeAbstract {
 			'channel' => [
 				'name' => 'Release Channel',
 				'type' => 'list',
-				'required' => true,
 				'defaultValue' => self::STABLE,
 				'values' => [
 					'Stable' => self::STABLE,

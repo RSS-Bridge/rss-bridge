@@ -43,5 +43,4 @@ class BlaguesDeMerdeBridge extends BridgeAbstract {
 		}
 
 	}
-
 }

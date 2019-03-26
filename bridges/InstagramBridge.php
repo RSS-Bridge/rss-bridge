@@ -7,19 +7,19 @@ class InstagramBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns the newest images';
 
 	const PARAMETERS = array(
-		array(
+		'Username' => array(
 			'u' => array(
 				'name' => 'username',
 				'required' => true
 			)
 		),
-		array(
+		'Hashtag' => array(
 			'h' => array(
 				'name' => 'hashtag',
 				'required' => true
 			)
 		),
-		array(
+		'Location' => array(
 			'l' => array(
 				'name' => 'location',
 				'required' => true
@@ -82,10 +82,20 @@ class InstagramBridge extends BridgeAbstract {
 			$item = array();
 			$item['uri'] = self::URI . 'p/' . $media->shortcode . '/';
 
+			if (isset($media->owner->username)) {
+				$item['author'] = $media->owner->username;
+			}
+
 			if (isset($media->edge_media_to_caption->edges[0]->node->text)) {
-				$item['title'] = $media->edge_media_to_caption->edges[0]->node->text;
+				$textContent = $media->edge_media_to_caption->edges[0]->node->text;
 			} else {
-				$item['title'] = basename($media->display_url);
+				$textContent = basename($media->display_url);
+			}
+
+			$item['title'] = ($media->is_video ? '▶ ' : '') . trim($textContent);
+			$titleLinePos = strpos(wordwrap($item['title'], 120), "\n");
+			if ($titleLinePos != false) {
+				$item['title'] = substr($item['title'], 0, $titleLinePos) . '...';
 			}
 
 			if(!is_null($this->getInput('u')) && $media->__typename == 'GraphSidecar') {
@@ -93,7 +103,9 @@ class InstagramBridge extends BridgeAbstract {
 				$item['content'] = $data[0];
 				$item['enclosures'] = $data[1];
 			} else {
-				$item['content'] = '<img src="' . htmlentities($media->display_url) . '" alt="' . $item['title'] . '" />';
+				$item['content'] = '<a href="' . htmlentities($item['uri']) . '" target="_blank">';
+				$item['content'] .= '<img src="' . htmlentities($media->display_url) . '" alt="' . $item['title'] . '" />';
+				$item['content'] .= '</a><br><br>' . nl2br(htmlentities($textContent));
 				$item['enclosures'] = array($media->display_url);
 			}
 

@@ -55,6 +55,7 @@ class WhydBridge extends BridgeAbstract {
 			$this->items[] = $item;
 		}
 	}
+
 	public function getName(){
 		return (!empty($this->userName) ? $this->userName . ' - ' : '') . 'Whyd Bridge';
 	}

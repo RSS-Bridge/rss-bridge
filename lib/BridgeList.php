@@ -20,7 +20,6 @@
  * @todo Return error if a caller creates an object of this class.
  */
 final class BridgeList {
-
 	/**
 	 * Get the document head
 	 *

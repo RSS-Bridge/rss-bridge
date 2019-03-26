@@ -179,8 +179,7 @@ class FacebookBridge extends BridgeAbstract {
 
 		if(filter_var(
 			$group,
-			FILTER_VALIDATE_URL,
-			FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED)) {
+			FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
 			// User provided a URL
 
 			$urlparts = parse_url($group);
@@ -220,8 +219,7 @@ class FacebookBridge extends BridgeAbstract {
 		$ogtitle = $html->find('meta[property="og:title"]', 0)
 			or returnServerError('Unable to find group title!');
 
-		return htmlspecialchars_decode($ogtitle->content, ENT_QUOTES);
-
+		return html_entity_decode($ogtitle->content, ENT_QUOTES);
 	}
 
 	private function extractGroupURI($post) {
@@ -687,7 +685,6 @@ EOD;
 			}
 		}
 	}
-
 	#endregion (User)
 
 }

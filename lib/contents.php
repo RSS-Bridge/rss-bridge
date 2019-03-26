@@ -45,78 +45,95 @@ function getContents($url, $header = array(), $opts = array()){
 	Debug::log('Reading contents from "' . $url . '"');
 
 	// Initialize cache
-	$cache = Cache::create('FileCache');
+	$cache = Cache::create(Configuration::getConfig('cache', 'type'));
 	$cache->setPath(PATH_CACHE . 'server/');
 	$cache->purgeCache(86400); // 24 hours (forced)
 
 	$params = [$url];
 	$cache->setParameters($params);
 
-	$ch = curl_init($url);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+	// Use file_get_contents if in CLI mode with no root certificates defined
+	if(php_sapi_name() === 'cli' && empty(ini_get('curl.cainfo'))) {
+		$data = @file_get_contents($url);
 
-	if(is_array($header) && count($header) !== 0) {
-
-		Debug::log('Setting headers: ' . json_encode($header));
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-
-	}
-
-	curl_setopt($ch, CURLOPT_USERAGENT, ini_get('user_agent'));
-	curl_setopt($ch, CURLOPT_ENCODING, '');
-	curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
-
-	if(is_array($opts) && count($opts) !== 0) {
-
-		Debug::log('Setting options: ' . json_encode($opts));
-
-		foreach($opts as $key => $value) {
-			curl_setopt($ch, $key, $value);
+		if($data === false) {
+			$errorCode = 500;
+		} else {
+			$errorCode = 200;
 		}
 
+		$curlError = '';
+		$curlErrno = '';
+		$headerSize = 0;
+		$finalHeader = array();
+	} else {
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+
+		if(is_array($header) && count($header) !== 0) {
+
+			Debug::log('Setting headers: ' . json_encode($header));
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+
+		}
+
+		curl_setopt($ch, CURLOPT_USERAGENT, ini_get('user_agent'));
+		curl_setopt($ch, CURLOPT_ENCODING, '');
+		curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
+
+		if(is_array($opts) && count($opts) !== 0) {
+
+			Debug::log('Setting options: ' . json_encode($opts));
+
+			foreach($opts as $key => $value) {
+				curl_setopt($ch, $key, $value);
+			}
+
+		}
+
+		if(defined('PROXY_URL') && !defined('NOPROXY')) {
+
+			Debug::log('Setting proxy url: ' . PROXY_URL);
+			curl_setopt($ch, CURLOPT_PROXY, PROXY_URL);
+
+		}
+
+		// We always want the response header as part of the data!
+		curl_setopt($ch, CURLOPT_HEADER, true);
+
+		// Build "If-Modified-Since" header
+		if(!Debug::isEnabled() && $time = $cache->getTime()) { // Skip if cache file doesn't exist
+			Debug::log('Adding If-Modified-Since');
+			curl_setopt($ch, CURLOPT_TIMEVALUE, $time);
+			curl_setopt($ch, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
+		}
+
+		// Enables logging for the outgoing header
+		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+
+		$data = curl_exec($ch);
+		$errorCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+		$curlError = curl_error($ch);
+		$curlErrno = curl_errno($ch);
+		$curlInfo = curl_getinfo($ch);
+
+		Debug::log('Outgoing header: ' . json_encode($curlInfo));
+
+		if($data === false)
+			Debug::log('Cant\'t download ' . $url . ' cUrl error: ' . $curlError . ' (' . $curlErrno . ')');
+
+		$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+		$header = substr($data, 0, $headerSize);
+
+		Debug::log('Response header: ' . $header);
+
+		$headers = parseResponseHeader($header);
+		$finalHeader = end($headers);
+
+		curl_close($ch);
 	}
-
-	if(defined('PROXY_URL') && !defined('NOPROXY')) {
-
-		Debug::log('Setting proxy url: ' . PROXY_URL);
-		curl_setopt($ch, CURLOPT_PROXY, PROXY_URL);
-
-	}
-
-	// We always want the response header as part of the data!
-	curl_setopt($ch, CURLOPT_HEADER, true);
-
-	// Build "If-Modified-Since" header
-	if(!Debug::isEnabled() && $time = $cache->getTime()) { // Skip if cache file doesn't exist
-		Debug::log('Adding If-Modified-Since');
-		curl_setopt($ch, CURLOPT_TIMEVALUE, $time);
-		curl_setopt($ch, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
-	}
-
-	// Enables logging for the outgoing header
-	curl_setopt($ch, CURLINFO_HEADER_OUT, true);
-
-	$data = curl_exec($ch);
-	$curlError = curl_error($ch);
-	$curlErrno = curl_errno($ch);
-	$curlInfo = curl_getinfo($ch);
-
-	Debug::log('Outgoing header: ' . json_encode($curlInfo));
-
-	if($data === false)
-		Debug::log('Cant\'t download ' . $url . ' cUrl error: ' . $curlError . ' (' . $curlErrno . ')');
-
-	$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-	$errorCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-	$header = substr($data, 0, $headerSize);
-
-	Debug::log('Response header: ' . $header);
-
-	$headers = parseResponseHeader($header);
-	$finalHeader = end($headers);
-
-	curl_close($ch);
 
 	switch($errorCode) {
 		case 200: // Contents received
@@ -150,10 +167,14 @@ EOD
 				);
 			}
 
+			$lastError = error_get_last();
+			if($lastError !== null)
+				$lastError = $lastError['message'];
 			returnError(<<<EOD
 The requested resource cannot be found!
 Please make sure your input parameters are correct!
 cUrl error: $curlError ($curlErrno)
+PHP error: $lastError
 EOD
 			, $errorCode);
 	}
@@ -186,14 +207,15 @@ EOD
  * @return string Contents as simplehtmldom object.
  */
 function getSimpleHTMLDOM($url,
-$header = array(),
-$opts = array(),
-$lowercase = true,
-$forceTagsClosed = true,
-$target_charset = DEFAULT_TARGET_CHARSET,
-$stripRN = true,
-$defaultBRText = DEFAULT_BR_TEXT,
-$defaultSpanText = DEFAULT_SPAN_TEXT){
+	$header = array(),
+	$opts = array(),
+	$lowercase = true,
+	$forceTagsClosed = true,
+	$target_charset = DEFAULT_TARGET_CHARSET,
+	$stripRN = true,
+	$defaultBRText = DEFAULT_BR_TEXT,
+	$defaultSpanText = DEFAULT_SPAN_TEXT){
+
 	$content = getContents($url, $header, $opts);
 	return str_get_html($content,
 	$lowercase,
@@ -235,19 +257,20 @@ $defaultSpanText = DEFAULT_SPAN_TEXT){
  * @return string Contents as simplehtmldom object.
  */
 function getSimpleHTMLDOMCached($url,
-$duration = 86400,
-$header = array(),
-$opts = array(),
-$lowercase = true,
-$forceTagsClosed = true,
-$target_charset = DEFAULT_TARGET_CHARSET,
-$stripRN = true,
-$defaultBRText = DEFAULT_BR_TEXT,
-$defaultSpanText = DEFAULT_SPAN_TEXT){
+	$duration = 86400,
+	$header = array(),
+	$opts = array(),
+	$lowercase = true,
+	$forceTagsClosed = true,
+	$target_charset = DEFAULT_TARGET_CHARSET,
+	$stripRN = true,
+	$defaultBRText = DEFAULT_BR_TEXT,
+	$defaultSpanText = DEFAULT_SPAN_TEXT){
+
 	Debug::log('Caching url ' . $url . ', duration ' . $duration);
 
 	// Initialize cache
-	$cache = Cache::create('FileCache');
+	$cache = Cache::create(Configuration::getConfig('cache', 'type'));
 	$cache->setPath(PATH_CACHE . 'pages/');
 	$cache->purgeCache(86400); // 24 hours (forced)
 

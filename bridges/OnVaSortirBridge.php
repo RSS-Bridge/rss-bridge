@@ -9,7 +9,6 @@ class OnVaSortirBridge extends FeedExpander {
 			'city' => array(
 				'name' => 'City',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Agen' => 'Agen',
 					'Ajaccio' => 'Ajaccio',
@@ -111,11 +110,11 @@ class OnVaSortirBridge extends FeedExpander {
 					'Valence' => 'valence',
 					'Vannes' => 'vannes',
 					'Zurich' => 'zurich',
-				),
-				'defaultValue' => ''
+				)
 			)
 		)
 	);
+
 	protected function parseItem($item){
 		$item = parent::parseItem($item);
 		$html = getSimpleHTMLDOMCached($item['uri']);
@@ -123,6 +122,7 @@ class OnVaSortirBridge extends FeedExpander {
 		$item['content'] = utf8_encode($text);
 		return $item;
 	}
+
 	public function collectData(){
 		$this->collectExpandableDatas('https://' .
 			$this->getInput('city') . '.onvasortir.com/rss.php');

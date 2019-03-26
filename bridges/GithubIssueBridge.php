@@ -28,7 +28,7 @@ class GithubIssueBridge extends BridgeAbstract {
 			'i' => array(
 				'name' => 'Issue number',
 				'type' => 'number',
-				'required' => 'true'
+				'required' => true
 			)
 		)
 	);

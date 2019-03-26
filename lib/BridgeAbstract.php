@@ -290,5 +290,4 @@ abstract class BridgeAbstract implements BridgeInterface {
 			return null;
 		}
 	}
-
 }

@@ -117,7 +117,7 @@ class GlassdoorBridge extends BridgeAbstract {
 			$item['title'] = $post->find('header', 0)->plaintext;
 			$item['content'] = $post->find('div[class="excerpt-content"]', 0)->plaintext;
 			$item['enclosures'] = array(
-				$this->getFullSizeImageURI($post->find('div[class="post-thumb"]', 0)->{'data-original'})
+				$this->getFullSizeImageURI($post->find('div[class*="post-thumb"]', 0)->{'data-original'})
 			);
 
 			// optionally load full articles
@@ -186,8 +186,7 @@ class GlassdoorBridge extends BridgeAbstract {
 		 * redirection and strange naming conventions.
 		 */
 		if(!filter_var($uri,
-			FILTER_VALIDATE_URL,
-			FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED)) {
+			FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
 			returnClientError('The specified URL is invalid!');
 		}
 

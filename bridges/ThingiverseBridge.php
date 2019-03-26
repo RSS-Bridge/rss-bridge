@@ -112,8 +112,7 @@ class ThingiverseBridge extends BridgeAbstract {
 					'3D Printer Parts' => '128',
 					'3D Printers' => '126',
 					'3D Printing Tests' => '129',
-				),
-				'defaultValue' => ''
+				)
 			),
 			'showimage' => array(
 				'name' => 'Show image in content',
@@ -163,5 +162,4 @@ class ThingiverseBridge extends BridgeAbstract {
 
 		return parent::getURI();
 	}
-
 }

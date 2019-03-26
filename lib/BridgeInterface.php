@@ -53,7 +53,6 @@
  * The default cache timeout for the bridge.
  */
 interface BridgeInterface {
-
 	/**
 	 * Collects data from the site
 	 */

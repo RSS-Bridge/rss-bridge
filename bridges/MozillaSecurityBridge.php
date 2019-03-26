@@ -21,7 +21,8 @@ class MozillaSecurityBridge extends BridgeAbstract {
 			$item['title'] = $element->innertext;
 			$item['timestamp'] = strtotime($element->innertext);
 			$item['content'] = $element->next_sibling()->innertext;
-			$item['uri'] = self::URI;
+			$item['uri'] = self::URI . '?' . $item['timestamp'];
+			$item['uid'] = self::URI . '?' . $item['timestamp'];
 			$this->items[] = $item;
 		}
 	}

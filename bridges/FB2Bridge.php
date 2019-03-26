@@ -198,7 +198,6 @@ EOD;
 
 	}
 
-
 	//Builds the HTML from the encoded JS that Facebook provides.
 	private function buildContent($pageContent){
 		// The html ends with:
@@ -212,7 +211,6 @@ EOD;
 
 		return str_get_html($htmlContent);
 	}
-
 
 	//Builds the cookie from the page, as Facebook sometimes refuses to give
 	//the page if no cookie is provided.
@@ -289,5 +287,4 @@ EOD;
 	public function getURI(){
 		return 'http://facebook.com';
 	}
-
 }

@@ -28,7 +28,7 @@ final class Configuration {
 	 *
 	 * @todo Replace this property by a constant.
 	 */
-	public static $VERSION = 'dev.2018-12-11';
+	public static $VERSION = 'dev.2019-03-17';
 
 	/**
 	 * Holds the configuration data.
@@ -95,7 +95,8 @@ final class Configuration {
 		if(!extension_loaded('simplexml'))
 			die('"simplexml" extension not loaded. Please check "php.ini"');
 
-		if(!extension_loaded('curl'))
+		// Allow RSS-Bridge to run without curl module in CLI mode without root certificates
+		if(!extension_loaded('curl') && !(php_sapi_name() === 'cli' && empty(ini_get('curl.cainfo'))))
 			die('"curl" extension not loaded. Please check "php.ini"');
 
 		if(!extension_loaded('json'))
@@ -178,6 +179,9 @@ final class Configuration {
 		/** Name of the proxy server */
 		define('PROXY_NAME', self::getConfig('proxy', 'name'));
 
+		if(!is_string(self::getConfig('cache', 'type')))
+			die('Parameter [cache] => "type" is not a valid string! Please check "config.ini.php"!');
+
 		if(!is_bool(self::getConfig('cache', 'custom_timeout')))
 			die('Parameter [cache] => "custom_timeout" is not a valid Boolean! Please check "config.ini.php"!');
 
@@ -242,5 +246,4 @@ final class Configuration {
 		return Configuration::$VERSION;
 
 	}
-
 }

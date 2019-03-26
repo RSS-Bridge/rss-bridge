@@ -182,5 +182,4 @@ class FlickrBridge extends BridgeAbstract {
 		return $url;
 
 	}
-
 }
