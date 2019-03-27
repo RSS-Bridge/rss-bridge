@@ -76,7 +76,7 @@ class FeedItem {
 	 * $item['uri'] = 'https://www.github.com/rss-bridge/rss-bridge/';
 	 * $item['title'] = 'Title';
 	 * $item['timestamp'] = strtotime('now');
-	 * $item['autor'] = 'Unknown author';
+	 * $item['author'] = 'Unknown author';
 	 * $item['content'] = 'Hello World!';
 	 * $item['enclosures'] = array('https://github.com/favicon.ico');
 	 * $item['categories'] = array('php', 'rss-bridge', 'awesome');
@@ -347,7 +347,7 @@ class FeedItem {
 					$enclosure,
 					FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
 					Debug::log('Each enclosure must contain a scheme, host and path!');
-				} else {
+				} elseif(!in_array($enclosure, $this->enclosures)) {
 					$this->enclosures[] = $enclosure;
 				}
 			}
