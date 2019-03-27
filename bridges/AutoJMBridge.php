@@ -171,7 +171,7 @@ class AutoJMBridge extends BridgeAbstract {
 			if (strpos($hdr, 'Set-Cookie') !== false) {
 				$cLine = explode(':', $hdr)[1];
 				$cLine = explode(';', $cLine)[0];
-				$cookies .= ';'.$cLine;
+				$cookies .= ';' . $cLine;
 			}
 		}
 		$this->cookies = trim(substr($cookies, 1));
@@ -182,5 +182,4 @@ class AutoJMBridge extends BridgeAbstract {
 		$this->token = $token->value;
 
 	}
-
 }
