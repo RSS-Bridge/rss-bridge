@@ -49,7 +49,7 @@ class AutoJMBridge extends BridgeAbstract {
 			'priceMin' => array(
 				'name' => 'Prix minimum',
 				'type' => 'number',
-				'required' => 'false',
+				'required' => false,
 				'title' => 'Prix minimum du véhicule',
 				'exampleValue' => '10000',
 				'defaultValue' => '0'
@@ -57,7 +57,7 @@ class AutoJMBridge extends BridgeAbstract {
 			'priceMax' => array(
 				'name' => 'Prix maximum',
 				'type' => 'number',
-				'required' => 'false',
+				'required' => false,
 				'title' => 'Prix maximum du véhicule',
 				'exampleValue' => '15000',
 				'defaultValue' => '150000'
