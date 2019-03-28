@@ -110,9 +110,12 @@ class BandcampBridge extends BridgeAbstract {
 			for($i = 0; $i < $num_albums; $i++) {
 				$album_basic_data = $band_data->discography[$i];
 
+				// 'a' or 't' for albums and individual tracks respectively
+				$tralbum_type = substr($album_basic_data->item_type, 0, 1);
+
 				$query_data = array(
 					'band_id' => $band_id,
-					'tralbum_type' => 'a',
+					'tralbum_type' => $tralbum_type,
 					'tralbum_id' => $album_basic_data->item_id
 				);
 				$album_data = $this->apiGet('mobile/22/tralbum_details', $query_data);
