@@ -49,7 +49,6 @@ class BadDragonBridge extends BridgeAbstract {
 			'category' => array(
 				'name' => 'Category',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'All' => 'all',
 					'Accessories' => 'accessories',
@@ -82,12 +81,13 @@ class BadDragonBridge extends BridgeAbstract {
 			'maxprice' => array(
 				'name' => 'Max Price',
 				'type' => 'number',
-				'exampleValue' => 300
+				'required' => true,
+				'defaultValue' => 300
 			),
 			'minprice' => array(
 				'name' => 'Min Price',
 				'type' => 'number',
-				'exampleValue' => 0
+				'defaultValue' => 0
 			),
 			'cumtube' => array(
 				'name' => 'Cumtube',
