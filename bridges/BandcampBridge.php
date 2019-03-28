@@ -231,4 +231,25 @@ class BandcampBridge extends BridgeAbstract {
 
 		return parent::getName();
 	}
+
+	public function detectParameters($url) {
+		$params = array();
+
+		// By band
+		$regex = '/^(https?:\/\/)?([^\/.&?\n]+?)\.bandcamp\.com/';
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['band'] = urldecode($matches[2]);
+			$params['tracks'] = 'on';
+			return $params;
+		}
+
+		// By tag
+		$regex = '/^(https?:\/\/)?bandcamp\.com\/tag\/([^\/.&?\n]+)/';
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['tag'] = urldecode($matches[2]);
+			return $params;
+		}
+
+		return null;
+	}
 }
