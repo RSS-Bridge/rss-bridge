@@ -54,10 +54,10 @@ class EconomistBridge extends BridgeAbstract {
 			$item['content'] = '<img style="max-width: 100%" src="'
 				. $a->find('img', 0)->src . '">' . $content->innertext;
 
+			$this->items[] = $item;
+
 			if (count($this->items) >= 10)
 				break;
-
-			$this->items[] = $item;
 		}
 	}
 }
