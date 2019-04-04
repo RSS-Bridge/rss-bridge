@@ -236,3 +236,7 @@ config.ini.php
 
 #Builder
 .buildconfig
+
+#Auth
+.htaccess
+.htpasswd
