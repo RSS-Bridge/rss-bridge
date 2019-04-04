@@ -35,21 +35,14 @@ class RoadAndTrackBridge extends BridgeAbstract {
 		)
 	);
 
+	const API_TOKEN = '2e18e904-d9cd-4911-b30c-1817b1e0b04b';
 	const SIG_URL = 'https://cloud.mazdigital.com/feeds/production/comboapp/204/api/v3/';
+	const GSIG_URL = 'https://dashboard.mazsystems.com/services/cf_access?app_id=204&app_type=comboapp&api_token=';
 
 	public function collectData() {
 
-		//Magic
-		$signVal  = '?Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9jbG91ZC5tYXpkaWd';
-		$signVal .= 'pdGFsLmNvbS9mZWVkcy9wcm9kdWN0aW9uL2NvbWJvYXBwLzIwNC8qIiwiQ29uZGl0aW9uIj';
-		$signVal .= 'p7IkRhdGVMZXNzVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNTUyNTU5MDUzfSwiSXBBZGRyZ';
-		$signVal .= 'XNzIjp7IkFXUzpTb3VyY2VJcCI6IjAuMC4wLjAvMCJ9fX1dfQ__&Signature=jgS~Jccjs';
-		$signVal .= 'lXMMywWesmwDpUbHvEmrADRP7iBRzT~OiP-O~zI-8TtQzqTP7GUrpB9~v69CvhO7-JVtw94';
-		$signVal .= 'VC3N6lQrwsxTTIhpS57YGeV~MbZx~P653yUV7jb3jpJE2yUawfXnEkD-XzOIn8-caMo~14i';
-		$signVal .= 'KuWV9KNDkTJaRgOMy0rrVpWqiuBjCu5s5B8Ylt2qwcpOvHjXSqG9IY5c7GUIXKsk8yXzGFi';
-		$signVal .= 'yzy8hfuGgdx0n7fgl7c4-EoDgQaz~U76g0epejPxV5Csj16rCCfAqBU5kZJnACZ1vvOvRcV';
-		$signVal .= 'Wiu8KUuUuCS04SPmJ73Y5XoY8~uXRScxZG1kAFTIAhT4nYVlg__&Key-Pair-Id=APKAIZB';
-		$signVal .= 'QNNSW4WGIFP4Q';
+		$signVal = json_decode(getContents(self::GSIG_URL . self::API_TOKEN));
+		$signVal = $signVal->signature;
 
 		$newsElements = array();
 		if($this->getInput('new-cars')) {
