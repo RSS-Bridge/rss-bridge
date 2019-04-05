@@ -20,7 +20,7 @@ class GithubSearchBridge extends BridgeAbstract {
 										'o' => 'desc',
 										'type' => 'Repositories');
 		$url = self::URI . 'search?' . http_build_query($params);
- 
+
 		$html = getSimpleHTMLDOM($url)
 			or returnServerError('Error while downloading the website content');
 
