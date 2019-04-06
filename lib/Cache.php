@@ -193,7 +193,7 @@ class Cache {
 			}
 
 			// Trim trailing 'Cache' if exists
-			if(preg_match('/(.+)(?:Cache)/i', $name, $matches)) {
+			if(preg_match('/(.+)(?:Cache)$/i', $name, $matches)) {
 				$name = $matches[1];
 			}
 

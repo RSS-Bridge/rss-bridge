@@ -207,14 +207,15 @@ EOD
  * @return string Contents as simplehtmldom object.
  */
 function getSimpleHTMLDOM($url,
-$header = array(),
-$opts = array(),
-$lowercase = true,
-$forceTagsClosed = true,
-$target_charset = DEFAULT_TARGET_CHARSET,
-$stripRN = true,
-$defaultBRText = DEFAULT_BR_TEXT,
-$defaultSpanText = DEFAULT_SPAN_TEXT){
+	$header = array(),
+	$opts = array(),
+	$lowercase = true,
+	$forceTagsClosed = true,
+	$target_charset = DEFAULT_TARGET_CHARSET,
+	$stripRN = true,
+	$defaultBRText = DEFAULT_BR_TEXT,
+	$defaultSpanText = DEFAULT_SPAN_TEXT){
+
 	$content = getContents($url, $header, $opts);
 	return str_get_html($content,
 	$lowercase,
@@ -256,15 +257,16 @@ $defaultSpanText = DEFAULT_SPAN_TEXT){
  * @return string Contents as simplehtmldom object.
  */
 function getSimpleHTMLDOMCached($url,
-$duration = 86400,
-$header = array(),
-$opts = array(),
-$lowercase = true,
-$forceTagsClosed = true,
-$target_charset = DEFAULT_TARGET_CHARSET,
-$stripRN = true,
-$defaultBRText = DEFAULT_BR_TEXT,
-$defaultSpanText = DEFAULT_SPAN_TEXT){
+	$duration = 86400,
+	$header = array(),
+	$opts = array(),
+	$lowercase = true,
+	$forceTagsClosed = true,
+	$target_charset = DEFAULT_TARGET_CHARSET,
+	$stripRN = true,
+	$defaultBRText = DEFAULT_BR_TEXT,
+	$defaultSpanText = DEFAULT_SPAN_TEXT){
+
 	Debug::log('Caching url ' . $url . ', duration ' . $duration);
 
 	// Initialize cache

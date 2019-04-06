@@ -26,9 +26,10 @@
  * already removes some of the tags (search for `remove_noise` in simple_html_dom.php).
  */
 function sanitize($html,
-$tags_to_remove = array('script', 'iframe', 'input', 'form'),
-$attributes_to_keep = array('title', 'href', 'src'),
-$text_to_keep = array()){
+	$tags_to_remove = array('script', 'iframe', 'input', 'form'),
+	$attributes_to_keep = array('title', 'href', 'src'),
+	$text_to_keep = array()){
+
 	$htmlContent = str_get_html($html);
 
 	/*
