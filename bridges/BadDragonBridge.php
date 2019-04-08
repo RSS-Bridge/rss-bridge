@@ -104,6 +104,24 @@ class BadDragonBridge extends BridgeAbstract {
 		)
 	);
 
+	/*
+	 * This sets index $strFrom (or $strTo if set) in $outArr to 'on' if
+	 * $inArr[$param] contains $strFrom.
+	 * It is used for translating BD's shop filter URLs into something we can use.
+	 *
+	 * For the query '?type[]=ready_made&type[]=flop' we would have an array like:
+	 * Array (
+	 *     [type] => Array (
+	 *             [0] => ready_made
+	 *             [1] => flop
+	 *         )
+	 * )
+	 * which could be translated into:
+	 * Array (
+	 *     [ready_made] => on
+	 *     [flop] => on
+	 * )
+	 * */
 	private function setParam($inArr, &$outArr, $param, $strFrom, $strTo = null) {
 		if(isset($inArr[$param]) && in_array($strFrom, $inArr[$param])) {
 			$outArr[($strTo ?: $strFrom)] = 'on';
