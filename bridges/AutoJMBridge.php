@@ -194,5 +194,4 @@ class AutoJMBridge extends BridgeAbstract {
 		$token = $html->find('input[type=hidden][id=form__token]', 0);
 		$this->token = $token->value;
 	}
-
 }
