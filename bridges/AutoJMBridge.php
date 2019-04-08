@@ -70,6 +70,19 @@ class AutoJMBridge extends BridgeAbstract {
 		return self::URI . 'favicon.ico';
 	}
 
+	public function getName() {
+		switch($this->queriedContext) {
+		case 'Afficher les offres de véhicules disponible en fonction des critères du site AutoJM':
+			$html = getSimpleHTMLDOMCached(self::URI . $this->getInput('url'), 86400);
+			$name = html_entity_decode($html->find('title', 0)->plaintext);
+			return $name;
+			break;
+		default:
+			return parent::getName();
+		}
+
+	}
+
 	public function collectData() {
 
 		$model_url = self::URI . $this->getInput('url');
@@ -180,6 +193,6 @@ class AutoJMBridge extends BridgeAbstract {
 		$html = str_get_html($content);
 		$token = $html->find('input[type=hidden][id=form__token]', 0);
 		$this->token = $token->value;
-
 	}
+
 }
