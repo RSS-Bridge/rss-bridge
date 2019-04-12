@@ -801,7 +801,7 @@ class FurAffinityBridge extends BridgeAbstract {
 			$this->cleanupHTMLDOM($journal);
 
 			$item['uri'] = $journal->find('a', 0)->href;
-			$item['title'] = $journal->find('a', 0)->plaintext;
+			$item['title'] = html_entity_decode($journal->find('a', 0)->plaintext);
 			$item['author'] = $this->getInput('username-journals');
 			$item['timestamp'] = strtotime(
 				$journal->find('span.popup_date', 0)->plaintext);
@@ -818,7 +818,12 @@ class FurAffinityBridge extends BridgeAbstract {
 		$item = array();
 
 		$item['uri'] = $this->getURI();
-		$item['title'] = $html->find('.journal-title-box .no_overflow', 0)->plaintext;
+
+		$title = $html->find('.journal-title-box .no_overflow', 0)->plaintext;
+		$title = html_entity_decode($title);
+		$title = trim($title, " \t\n\r\0\x0B" . chr(0xC2) . chr(0xA0));
+		$item['title'] = $title;
+
 		$item['author'] = $html->find('.journal-title-box a', 0)->plaintext;
 		$item['timestamp'] = strtotime(
 			$html->find('.journal-title-box span.popup_date', 0)->plaintext);
@@ -839,7 +844,8 @@ class FurAffinityBridge extends BridgeAbstract {
 			$imgURL = 'https:' . $figure->find('b u a img', 0)->src;
 
 			$item['uri'] = $submissionURL;
-			$item['title'] = $figure->find('figcaption p a[href^=/view]', 0)->title;
+			$item['title'] = html_entity_decode(
+				$figure->find('figcaption p a[href^=/view]', 0)->title);
 			$item['author'] = $figure->find('figcaption p a[href^=/user]', 0)->title;
 
 			if($this->getInput('full') === true) {
