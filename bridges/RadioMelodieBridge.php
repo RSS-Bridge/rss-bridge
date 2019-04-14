@@ -69,7 +69,7 @@ class RadioMelodieBridge extends BridgeAbstract {
 				$textDOM->find('div[id=author]', 0)->outertext = '';
 				$article->save();
 				$text = $textDOM->innertext;
-				$item['content'] = '<h1>'. $item['title']. '</h1>' .$date_category  . $header . $text;
+				$item['content'] = '<h1>' . $item['title'] . '</h1>' . $date_category . $header . $text;
 				$this->items[] = $item;
 			}
 		}
