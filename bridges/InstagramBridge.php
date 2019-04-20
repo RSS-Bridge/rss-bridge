@@ -89,7 +89,7 @@ class InstagramBridge extends BridgeAbstract {
 			if (isset($media->edge_media_to_caption->edges[0]->node->text)) {
 				$textContent = $media->edge_media_to_caption->edges[0]->node->text;
 			} else {
-				$textContent = basename($media->display_url);
+				$textContent = '(no text)';
 			}
 
 			$item['title'] = ($media->is_video ? '▶ ' : '') . trim($textContent);
@@ -103,10 +103,11 @@ class InstagramBridge extends BridgeAbstract {
 				$item['content'] = $data[0];
 				$item['enclosures'] = $data[1];
 			} else {
+				$mediaURI = self::URI . 'p/' . $media->shortcode . '/media?size=l';
 				$item['content'] = '<a href="' . htmlentities($item['uri']) . '" target="_blank">';
-				$item['content'] .= '<img src="' . htmlentities($media->display_url) . '" alt="' . $item['title'] . '" />';
+				$item['content'] .= '<img src="' . htmlentities($mediaURI) . '" alt="' . $item['title'] . '" />';
 				$item['content'] .= '</a><br><br>' . nl2br(htmlentities($textContent));
-				$item['enclosures'] = array($media->display_url);
+				$item['enclosures'] = array($mediaURI);
 			}
 
 			$item['timestamp'] = $media->taken_at_timestamp;
