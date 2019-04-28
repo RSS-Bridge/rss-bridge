@@ -4,7 +4,7 @@ class AO3Bridge extends BridgeAbstract {
 	const NAME = 'AO3';
 	const URI = 'https://archiveofourown.org/';
 	const CACHE_TIMEOUT = 1800;
-	const DESCRIPTION = 'Works list (browse, search, filter) OR Work chapters';
+	const DESCRIPTION = 'Returns works or chapters from Archive of Our Own';
 	const MAINTAINER = 'Obsidienne';
 	const PARAMETERS = array(
 		'List' => array(
@@ -12,7 +12,16 @@ class AO3Bridge extends BridgeAbstract {
 				'name' => 'url',
 				'required' => true,
 				// Example: F/F tag, complete works only
-				'exampleValue' => 'https://archiveofourown.org/works?work_search[complete]=T&tag_id=F*s*F',
+				'exampleValue' => self::URI
+					. 'works?work_search[complete]=T&tag_id=F*s*F',
+			),
+		),
+		'Bookmarks' => array(
+			'user' => array(
+				'name' => 'user',
+				'required' => true,
+				// Example: Nyaaru's bookmarks
+				'exampleValue' => 'Nyaaru',
 			),
 		),
 		'Work' => array(
@@ -44,7 +53,9 @@ class AO3Bridge extends BridgeAbstract {
 			$strdate = $element->find('div p.datetime', 0)->plaintext;
 			$item['timestamp'] = strtotime($strdate);
 
-			$chapters = $element->find('dl dd.chapters', 0)->plaintext;
+			$chapters = $element->find('dl dd.chapters', 0);
+			// bookmarked series and external works do not have a chapters count
+			$chapters = (isset($chapters) ? $chapters->plaintext : 0);
 			$item['uid'] = $item['uri'] . "/$strdate/$chapters";
 
 			$this->items[] = $item;
@@ -52,8 +63,7 @@ class AO3Bridge extends BridgeAbstract {
 	}
 
 	// Feed for recent chapters of a specific work.
-	private function collectWork() {
-		$id = $this->getInput('id');
+	private function collectWork($id) {
 		$url = self::URI . "/works/$id/navigate";
 		$html = getSimpleHTMLDOM($url)
 			or returnServerError('could not request AO3');
@@ -83,8 +93,19 @@ class AO3Bridge extends BridgeAbstract {
 
 	public function collectData() {
 		switch($this->queriedContext) {
-			case 'List': return $this->collectList();
-			case 'Work': return $this->collectWork();
+			case 'Bookmarks':
+				$user = $this->getInput('user');
+				$this->title = $user;
+				$url = self::URI
+					. '/users/' . $user
+					. '/bookmarks?bookmark_search[sort_column]=bookmarkable_date';
+				return $this->collectList($url);
+			case 'List': return $this->collectList(
+				$this->getInput('url')
+			);
+			case 'Work': return $this->collectWork(
+				$this->getInput('id')
+			);
 		}
 	}
 
