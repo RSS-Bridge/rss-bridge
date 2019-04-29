@@ -138,13 +138,19 @@ class NationalGeographicBridge extends BridgeAbstract {
 			}
 		}
 
-		if (isset($story['lead_media']) && empty($item['enclosures'])) {
+		if (isset($story['lead_media'])) {
 			$media = $story['lead_media'];
 			switch($media['content_type']) {
 				case 'image': {
-					$item['enclosures'][] = $media['image']['uri'];
+					// Don't add if promo_image was added
+					if (empty($item['enclosures']))
+						$item['enclosures'][] = $media['image']['uri'];
 				} break;
-				// Note: immersive_media holds the same image, no need to add
+				case 'image_gallery': {
+					foreach($media['image_gallery']['images'] as $image) {
+						$item['enclosures'][] = $image['uri'];
+					}
+				} break;
 			}
 		}
 
