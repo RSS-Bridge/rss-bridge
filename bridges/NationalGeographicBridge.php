@@ -168,12 +168,21 @@ class NationalGeographicBridge extends BridgeAbstract {
 		foreach($html->find('
 			.content > .smartbody.text,
 			.content > .section.image script[type="text/json"],
-			.content > .section.image span[itemprop="caption"]
+			.content > .section.image span[itemprop="caption"],
+			.content > .section.inline script[type="text/json"]
 			') as $element) {
 			if ($element->tag === 'script') {
 				$json = json_decode($element->innertext, true);
 				if (isset($json['src'])) {
 					$content .= '<img src="' . $json['src'] . '" width="100%" alt="' . $json['alt'] . '">';
+				} elseif (isset($json['galleryType']) && isset($json['endpoint'])) {
+					$doc = getContents($json['endpoint'])
+						or returnServerError('Could not load ' . $json['endpoint']);
+					$json = json_decode($doc, true);
+					foreach($json['items'] as $item) {
+						$content .= '<p>' . $item['caption'] . '</p>';
+						$content .= '<img src="' . $item['url'] . '" width="100%" alt="' . $item['caption'] . '">';
+					}
 				}
 			} else {
 				$content .= $element->outertext;
