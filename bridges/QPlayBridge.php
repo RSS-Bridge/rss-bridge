@@ -12,6 +12,13 @@ class QPlayBridge extends BridgeAbstract {
 				'required' => true,
 			),
 		),
+		'Catalog' => array(
+			'all_pages' => array(
+				'name' => 'All Pages',
+				'type' => 'checkbox',
+				'defaultValue' => false,
+			),
+		),
 	);
 
 	public function getIcon() {
@@ -26,6 +33,10 @@ class QPlayBridge extends BridgeAbstract {
 		switch ($this->queriedContext) {
 			case 'Program':
 				$uri .= '/programs/' . $this->getInput('program');
+				break;
+			case 'Catalog':
+				$uri .= '/catalog';
+				break;
 		}
 		return $uri;
 	}
@@ -37,6 +48,9 @@ class QPlayBridge extends BridgeAbstract {
 					or returnServerError('Could not load content');
 
 				return $html->find('h1.program--title', 0)->innertext;
+				break;
+			case 'Catalog':
+				return self::NAME . ' | Programas';
 				break;
 		}
 
@@ -67,6 +81,57 @@ class QPlayBridge extends BridgeAbstract {
 
 				$this->items[] = $item;
 			}
+
+			break;
+		case 'Catalog':
+			$json_raw = getContents($this->getCatalogURI(1))
+				or returnServerError('Could not load catalog content');
+
+			$json = json_decode($json_raw);
+			$total_pages = $json->total_pages;
+
+			foreach($this->parseCatalogPage($json) as $item) {
+				$this->items[] = $item;
+			}
+
+			if ($this->getInput('all_pages') == true) {
+				foreach(range(2, $total_pages) as $page) {
+					$json_raw = getContents($this->getCatalogURI($page))
+						or returnServerError('Could not load catalog content (all pages)');
+
+					$json = json_decode($json_raw);
+
+					foreach($this->parseCatalogPage($json) as $item) {
+						$this->items[] = $item;
+					}
+				}
+			}
+
+			break;
 		}
+	}
+
+	private function getCatalogURI($page) {
+		return self::URI . '/catalog.json?page=' . $page;
+	}
+
+	private function parseCatalogPage($json) {
+		$items = array();
+
+		foreach($json->records as $record) {
+			$item = array();
+
+			$item['title'] = $record->title;
+			$item['content'] = $record->description . '<div>Duration: '.$record->duration.'</div>';
+			$item['timestamp'] = strtotime($record->release_date);
+			$item['uri'] = self::URI . $record->url;
+			$item['enclosures'] = array(
+				$record->main_poster,
+			);
+
+			$items[] = $item;
+		}
+
+		return $items;
 	}
 }
