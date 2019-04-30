@@ -3,16 +3,25 @@
  * Cache based on SQLite 3 <https://www.sqlite.org>
  */
 class SQLiteCache implements CacheInterface {
-	protected $path;
-	protected $param;
+	protected $scope;
+	protected $key;
 
 	private $db = null;
 
 	public function __construct() {
-		if (!extension_loaded('sqlite3'))
+		if (!extension_loaded('sqlite3')) {
 			die('"sqlite3" extension not loaded. Please check "php.ini"');
+		}
 
-		$file = PATH_CACHE . 'cache.sqlite';
+		$file = Configuration::getConfig(get_called_class(), 'file');
+		if (empty($file)) {
+			die('Configuration for ' . get_called_class() . ' missing. Please check your config.ini.php');
+		}
+		if (dirname($file) == '.') {
+			$file = PATH_CACHE . $file;
+		} elseif (!is_dir(dirname($file))) {
+			die('Invalid configuration for ' . get_called_class() . '. Please check your config.ini.php');
+		}
 
 		if (!is_file($file)) {
 			$this->db = new SQLite3($file);
@@ -39,10 +48,10 @@ class SQLiteCache implements CacheInterface {
 		return null;
 	}
 
-	public function saveData($datas){
+	public function saveData($data){
 		$Qupdate = $this->db->prepare('INSERT OR REPLACE INTO storage (key, value, updated) VALUES (:key, :value, :updated)');
 		$Qupdate->bindValue(':key', $this->getCacheKey());
-		$Qupdate->bindValue(':value', serialize($datas));
+		$Qupdate->bindValue(':value', serialize($data));
 		$Qupdate->bindValue(':updated', time());
 		$Qupdate->execute();
 
@@ -60,40 +69,53 @@ class SQLiteCache implements CacheInterface {
 			}
 		}
 
-		return false;
+		return null;
 	}
 
-	public function purgeCache($duration){
+	public function purgeCache($seconds){
 		$Qdelete = $this->db->prepare('DELETE FROM storage WHERE updated < :expired');
-		$Qdelete->bindValue(':expired', time() - $duration);
+		$Qdelete->bindValue(':expired', time() - $seconds);
 		$Qdelete->execute();
 	}
 
 	/**
-	* Set cache path
+	* Set scope
 	* @return self
 	*/
-	public function setPath($path){
-		$this->path = $path;
+	public function setScope($scope){
+		if(is_null($scope) || !is_string($scope)) {
+			throw new \Exception('The given scope is invalid!');
+		}
+
+		$this->scope = $scope;
 		return $this;
 	}
 
 	/**
-	* Set HTTP GET parameters
+	* Set key
 	* @return self
 	*/
-	public function setParameters(array $param){
-		$this->param = array_map('strtolower', $param);
+	public function setKey($key){
+		if (!empty($key) && is_array($key)) {
+			$key = array_map('strtolower', $key);
+		}
+		$key = json_encode($key);
+
+		if (!is_string($key)) {
+			throw new \Exception('The given key is invalid!');
+		}
+
+		$this->key = $key;
 		return $this;
 	}
 
 	////////////////////////////////////////////////////////////////////////////
 
-	protected function getCacheKey(){
-		if(is_null($this->param)) {
-			throw new \Exception('Call "setParameters" first!');
+	private function getCacheKey(){
+		if(is_null($this->key)) {
+			throw new \Exception('Call "setKey" first!');
 		}
 
-		return hash('sha1', $this->path . http_build_query($this->param), true);
+		return hash('sha1', $this->scope . $this->key, true);
 	}
 }

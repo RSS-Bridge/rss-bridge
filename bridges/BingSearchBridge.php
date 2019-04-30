@@ -75,7 +75,7 @@ class BingSearchBridge extends BridgeAbstract
 	public function getName()
 	{
 		if ($this->getInput('category')) {
-			if (isset(self::IMAGE_DISCOVER_CATEGORIES[$this->getInput('categories')])) {
+			if (self::IMAGE_DISCOVER_CATEGORIES[$this->getInput('categories')] !== null) {
 				$category = self::IMAGE_DISCOVER_CATEGORIES[$this->getInput('categories')];
 			} else {
 				$category = 'Unknown';

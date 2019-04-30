@@ -52,3 +52,8 @@ username = ""
 ; The password for authentication. Insert this password when prompted for login.
 ; Use a strong password to prevent others from guessing your login!
 password = ""
+
+; --- Cache specific configuration ---------------------------------------------
+
+[SQLiteCache]
+file = "cache.sqlite"
