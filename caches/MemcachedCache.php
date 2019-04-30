@@ -1,22 +1,44 @@
 <?php
 class MemcachedCache implements CacheInterface {
 
-	protected $path;
-	protected $param;
-	protected $conn;
-	protected $expiration = 0;
-	protected $time = false;
-	protected $data = null;
+	private $scope;
+	private $key;
+	private $conn;
+	private $expiration = 0;
+	private $time = false;
+	private $data = null;
 
 	public function __construct() {
+		if (!extension_loaded('memcached')) {
+			returnServerError('"memcached" extension not loaded. Please check "php.ini"');
+		}
+
+		$host = Configuration::getConfig(get_called_class(), 'host');
+		$port = Configuration::getConfig(get_called_class(), 'port');
+		if (empty($host) && empty($port)) {
+			returnServerError('Configuration for ' . get_called_class() . ' missing. Please check your config.ini.php');
+		} else if (empty($host)) {
+			returnServerError('"host" param is not set for ' . get_called_class() . '. Please check your config.ini.php');
+		} else if (empty($port)) {
+			returnServerError('"port" param is not set for ' . get_called_class() . '. Please check your config.ini.php');
+		} else if (!ctype_digit($port)) {
+			returnServerError('"port" param is invalid for ' . get_called_class() . '. Please check your config.ini.php');
+		}
+
+		$port = intval($port);
+
+		if ($port < 1 || $port > 65535) {
+			returnServerError('"port" param is invalid for ' . get_called_class() . '. Please check your config.ini.php');
+		}
+
 		$conn = new Memcached();
-		$conn->addServer('localhost', 11211) or returnServerError('Could not connect to memcached server');
+		$conn->addServer($host, $port) or returnServerError('Could not connect to memcached server');
 		$this->conn = $conn;
 	}
 
 	public function loadData(){
 		if ($this->data) return $this->data;
-		$result = $this->conn->get($this->getCacheName());
+		$result = $this->conn->get($this->getCacheKey());
 		if ($result === false) {
 			return false;
 		}
@@ -32,7 +54,7 @@ class MemcachedCache implements CacheInterface {
 			'data' => $datas,
 			'time' => $time,
 		);
-		$result = $this->conn->set($this->getCacheName(), $object_to_save, $this->expiration);
+		$result = $this->conn->set($this->getCacheKey(), $object_to_save, $this->expiration);
 
 		if($result === false) {
 			returnServerError('Cannot write the cache to memcached server');
@@ -57,35 +79,37 @@ class MemcachedCache implements CacheInterface {
 	}
 
 	/**
-	* Set cache path
+	* Set scope
 	* @return self
 	*/
-	public function setPath($path){
-		// Note: don't know what it should do
+	public function setScope($scope){
+		$this->scope = $scope;
 		return $this;
 	}
 
 	/**
-	* Set HTTP GET parameters
+	* Set key
 	* @return self
 	*/
-	public function setParameters(array $param){
-		$this->param = array_map('strtolower', $param);
+	public function setKey($key){
+		if (!empty($key) && is_array($key)) {
+			$key = array_map('strtolower', $key);
+		}
+		$key = json_encode($key);
 
-		return $this;
-	}
-
-	/**
-	* Determines file name for store the cache
-	* return string
-	*/
-	protected function getCacheName(){
-		if(is_null($this->param)) {
-			returnServerError('Call "setParameters" first!');
+		if (!is_string($key)) {
+			throw new \Exception('The given key is invalid!');
 		}
 
-		// Change character when making incompatible changes to prevent loading
-		// errors due to incompatible file contents                               \|/
-		return 'rss_bridge_cache_' . hash('md5', http_build_query($this->param) . 'A');
+		$this->key = $key;
+		return $this;
+	}
+
+	private function getCacheKey(){
+		if(is_null($this->key)) {
+			returnServerError('Call "setKey" first!');
+		}
+
+		return 'rss_bridge_cache_' . hash('md5', $this->scope . $this->key . 'A');
 	}
 }
