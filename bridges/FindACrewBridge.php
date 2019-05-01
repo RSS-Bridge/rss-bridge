@@ -62,11 +62,17 @@ class FindACrewBridge extends BridgeAbstract {
 		foreach ($annonces as $annonce) {
 			$item = array();
 
-			$img = parent::getURI() . $annonce->find('.lst-pic img', 0)->getAttribute('src');
+			$link = parent::getURI() . $annonce->find('.lst-ctrls a', 0)->href;
+			$htmlDetail = getSimpleHTMLDOMCached($link . '?mdl=2'); // add ?mdl=2 for xhr content not full html page
+
+			$img = parent::getURI() . $htmlDetail->find('img.img-responsive', 0)->getAttribute('src');
 			$item['title'] = $annonce->find('.lst-tags span', 0)->plaintext;
-			$item['uri'] = parent::getURI() . $annonce->find('.lst-ctrls a', 0)->href;
-			$content = $annonce->find('.lst-dtl', 0)->innertext;
-			$item['content'] = "<img src='$img' /><br>$content";
+			$item['uri'] = $link;
+			$content = $htmlDetail->find('.panel-body div.clearfix.row > div', 1)->innertext;
+			$content .= $htmlDetail->find('.panel-body > div', 1)->innertext;
+			$content = str_replace('src="/', 'src="' . parent::getURI() . '/', $content);
+			$content = str_replace('href="/', 'href="' . parent::getURI() . '/', $content);
+			$item['content'] = $content;
 			$item['enclosures'] = array($img);
 			$item['categories'] = array($annonce->find('.css_AccLocCur', 0)->plaintext);
 			$this->items[] = $item;
