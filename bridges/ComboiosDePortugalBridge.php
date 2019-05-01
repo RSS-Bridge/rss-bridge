@@ -14,7 +14,7 @@ class ComboiosDePortugalBridge extends BridgeAbstract {
 			$item = array();
 
 			$item['title'] = $element->innertext;
-			$item['uri'] = self::BASE_URI . $element->href;
+			$item['uri'] = self::BASE_URI . implode('/', array_map('urlencode', explode('/', $element->href)));
 
 			$this->items[] = $item;
 		}

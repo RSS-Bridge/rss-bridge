@@ -68,7 +68,7 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 
 			$item['title'] = implode(' ', $title);
 			$item['uri'] = $this->getURI();
-			$item['uid'] = hash('sha1', $item['title']);
+			$item['uid'] = $this->getSanitizedHash($item['title']);
 
 			$this->items[] = $item;
 		}
@@ -89,8 +89,12 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 		return parent::getName();
 	}
 
+	private function getSanitizedHash($string) {
+		return hash('sha1', preg_replace('/[^a-zA-Z0-9\-\.]/', '', ucwords(strtolower($string))));
+	}
+
 	private function filterText($text) {
-		return rtrim($text, '*');
+		return rtrim($text, '* ');
 	}
 
 	private function filterHTML($text) {

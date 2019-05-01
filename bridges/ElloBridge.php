@@ -121,8 +121,8 @@ class ElloBridge extends BridgeAbstract {
 
 	private function getAPIKey() {
 		$cache = Cache::create(Configuration::getConfig('cache', 'type'));
-		$cache->setPath(PATH_CACHE);
-		$cache->setParameters(['key']);
+		$cache->setScope(get_called_class());
+		$cache->setKey(['key']);
 		$key = $cache->loadData();
 
 		if($key == null) {

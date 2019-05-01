@@ -13,6 +13,10 @@ class VkBridge extends BridgeAbstract
 			'u' => array(
 				'name' => 'Group or user name',
 				'required' => true
+			),
+			'hide_reposts' => array(
+				'name' => 'Hide reposts',
+				'type' => 'checkbox',
 			)
 		)
 	);
@@ -234,6 +238,9 @@ class VkBridge extends BridgeAbstract
 			}
 
 			if (is_object($post->find('div.copy_quote', 0))) {
+				if ($this->getInput('hide_reposts') === true) {
+					continue;
+				}
 				$copy_quote = $post->find('div.copy_quote', 0);
 				if ($copy_post_header = $copy_quote->find('div.copy_post_header', 0)) {
 					$copy_post_header->outertext = '';

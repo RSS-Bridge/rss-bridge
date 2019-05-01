@@ -195,16 +195,14 @@ class ParameterValidator {
 			foreach($set as $id => $properties) {
 				if(isset($data[$id]) && !empty($data[$id])) {
 					$queriedContexts[$context] = true;
-				} elseif(isset($properties['required'])
-				&& $properties['required'] === true
-				&& isset($properties['type'])
-				&& $properties['type'] !== 'checkbox'
-				&& $properties['type'] !== 'list') {
+				} elseif (isset($properties['type'])
+					&& ($properties['type'] === 'checkbox' || $properties['type'] === 'list')) {
+					continue;
+				} elseif(isset($properties['required']) && $properties['required'] === true) {
 					$queriedContexts[$context] = false;
 					break;
 				}
 			}
-
 		}
 
 		// Abort if one of the globally required parameters is not satisfied
