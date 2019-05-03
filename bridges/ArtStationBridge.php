@@ -68,7 +68,7 @@ class ArtStationBridge extends BridgeAbstract {
 			$item['categories'] = implode(',', $jsonProject->tags);
 
 			$item['content'] = '<a href="'
-				. $media->url 
+				. $media->url
 				. '"><img style="max-width: 100%" src="'
 				. $jsonProject->cover_url
 				. '"></a><p>'
