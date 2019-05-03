@@ -23,7 +23,7 @@ class ArtStationBridge extends BridgeAbstract {
 		return self::NAME . ': ' . $this->getInput('q');
 	}
 
-	public function fetchSearch($searchQuery) {
+	private function fetchSearch($searchQuery) {
 		$data = '{"query":"' . $searchQuery . '","page":1,"per_page":50,"sorting":"date",';
 		$data .= '"pro_first":"1","filters":[],"additional_fields":[]}';
 
