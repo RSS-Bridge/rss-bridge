@@ -24,13 +24,8 @@ class ArtStationBridge extends BridgeAbstract {
 	}
 
 	public function fetchSearch($searchQuery) {
-		$data = '{"query":"' . $searchQuery .
-				'","page":1,' .
-				'"per_page":50,' .
-				'"sorting":"date",' .
-				'"pro_first":"1", ' .
-				'"filters":[],' .
-				'"additional_fields":[]}';
+		$data = '{"query":"' . $searchQuery . '","page":1,"per_page":50,"sorting":"date",' .
+				'"pro_first":"1","filters":[],"additional_fields":[]}';
 
 		$header = array(
 			'Content-Type: application/json',
