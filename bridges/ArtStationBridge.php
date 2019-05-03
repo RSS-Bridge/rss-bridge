@@ -67,15 +67,22 @@ class ArtStationBridge extends BridgeAbstract {
 			$item['author'] = $media->user->full_name;
 			$item['categories'] = implode(',', $jsonProject->tags);
 
-			$item['content'] = '<a href="' . $media->url . '">
-								<img style="max-width: 100%" src="' . $jsonProject->cover_url . '">
-								</a>' . $jsonProject->description;
+			$item['content'] = '<a href="' 
+				. $media->url . '">'
+			    . '<img style="max-width: 100%" src="'
+			    . $jsonProject->cover_url
+			    . '"></a><p>'
+			    . $jsonProject->description
+			    . '</p>';
 
 			$numAssets = count($jsonProject->assets);
 
 			if ($numAssets > 1)
-				$item['content'] .= '<p><a href="' . $media->url . '">Project contains ' . ($numAssets - 1) .
-									' more item(s).</a></p>';
+				$item['content'] .= '<p><a href="'
+					. $media->url
+					. '">Project contains '
+					. ($numAssets - 1)
+					. ' more item(s).</a></p>';
 
 			$this->items[] = $item;
 
