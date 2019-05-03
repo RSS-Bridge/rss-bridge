@@ -29,16 +29,12 @@ class QPlayBridge extends BridgeAbstract {
 	}
 
 	public function getURI() {
-		$uri = self::URI;
 		switch ($this->queriedContext) {
 			case 'Program':
-				$uri .= '/programs/' . $this->getInput('program');
-				break;
+				return self::URI . '/programs/' . $this->getInput('program');
 			case 'Catalog':
-				$uri .= '/catalog';
-				break;
+				return self::URI . '/catalog';
 		}
-		return $uri;
 	}
 
 	public function getName() {
@@ -48,10 +44,8 @@ class QPlayBridge extends BridgeAbstract {
 					or returnServerError('Could not load content');
 
 				return $html->find('h1.program--title', 0)->innertext;
-				break;
 			case 'Catalog':
 				return self::NAME . ' | Programas';
-				break;
 		}
 
 		return parent::getName();
@@ -94,7 +88,7 @@ class QPlayBridge extends BridgeAbstract {
 				$this->items[] = $item;
 			}
 
-			if ($this->getInput('all_pages') == true) {
+			if ($this->getInput('all_pages') === true) {
 				foreach(range(2, $total_pages) as $page) {
 					$json_raw = getContents($this->getCatalogURI($page))
 						or returnServerError('Could not load catalog content (all pages)');
