@@ -39,7 +39,8 @@ class ArtStationBridge extends BridgeAbstract {
 		);
 
 		$jsonSearchURL = self::URI . '/api/v2/search/projects.json';
-		$jsonSearchStr = getContents($jsonSearchURL, $header, $opts) or die('Could not fetch JSON for search query.');
+		$jsonSearchStr = getContents($jsonSearchURL, $header, $opts)
+			or returnServerError('Could not fetch JSON for search query.');
 		return json_decode($jsonSearchStr);
 	}
 
