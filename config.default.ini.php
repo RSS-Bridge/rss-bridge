@@ -57,3 +57,7 @@ password = ""
 
 [SQLiteCache]
 file = "cache.sqlite"
+
+[MemcachedCache]
+host = "localhost"
+port = 11211
