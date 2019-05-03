@@ -46,7 +46,8 @@ class ArtStationBridge extends BridgeAbstract {
 
 	public function fetchProject($hashID) {
 		$jsonProjectURL = self::URI . '/projects/' . $hashID . '.json';
-		$jsonProjectStr = getContents($jsonProjectURL) or die('Could not fetch JSON for project.');
+		$jsonProjectStr = getContents($jsonProjectURL)
+			or returnServerError('Could not fetch JSON for project.');
 		return json_decode($jsonProjectStr);
 	}
 
