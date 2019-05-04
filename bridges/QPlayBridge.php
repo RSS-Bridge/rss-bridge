@@ -35,6 +35,7 @@ class QPlayBridge extends BridgeAbstract {
 			case 'Catalog':
 				return self::URI . '/catalog';
 		}
+		return parent::getURI();
 	}
 
 	public function getName() {
