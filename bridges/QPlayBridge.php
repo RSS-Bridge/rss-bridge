@@ -24,7 +24,7 @@ class QPlayBridge extends BridgeAbstract {
 	public function getIcon() {
 		$html = getSimpleHTMLDOMCached(self::URI)
 			or returnServerError('Could not load content');
-		
+
 		return $html->find('head link[rel="apple-touch-icon"]', 0)->getAttribute('href');
 	}
 
@@ -116,7 +116,8 @@ class QPlayBridge extends BridgeAbstract {
 			$item = array();
 
 			$item['title'] = $record->title;
-			$item['content'] = $record->description . '<div>Duration: '.$record->duration.'</div>';
+			$item['content'] = $record->description
+				. '<div>Duration: ' . $record->duration.'</div>';
 			$item['timestamp'] = strtotime($record->release_date);
 			$item['uri'] = self::URI . $record->url;
 			$item['enclosures'] = array(
