@@ -45,7 +45,7 @@ class MeetupBridge extends BridgeAbstract {
 				$result->venue->name . '<br />' .
 				$result->venue->address_1 . '<br />' .
 				$result->venue->city . '-' . $result->venue->localized_country_name . '<br /><br />' .
-				(new DateTime('@' . intval($result->time) / 1000))->format("d/m/Y - H:i") . '<br /><br />' .
+				(new DateTime('@' . intval($result->time) / 1000))->format('d/m/Y - H:i') . '<br /><br />' .
 				$result->description
 
 			);
