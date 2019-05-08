@@ -15,6 +15,7 @@ Supported sites/pages (examples)
 * `DuckDuckGo`: Most recent results from [DuckDuckGo.com](https://duckduckgo.com/)
 * `Facebook` : Returns the latest posts on a page or profile on [Facebook](https://facebook.com/)
 * `FlickrExplore` : [Latest interesting images](http://www.flickr.com/explore) from Flickr
+* `GooglePlus` : Most recent posts of user timeline
 * `GoogleSearch` : Most recent results from Google Search
 * `Identi.ca` : Identica user timeline (Should be compatible with other Pump.io instances)
 * `Instagram`: Most recent photos from an Instagram user
@@ -133,8 +134,11 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
   * [da2x](https://github.com/da2x)
   * [Daiyousei](https://github.com/Daiyousei)
   * [disk0x](https://github.com/disk0x)
+  * [DJCrashdummy](https://github.com/DJCrashdummy)
   * [Djuuu](https://github.com/Djuuu)
+  * [DnAp](https://github.com/DnAp)
   * [Draeli](https://github.com/Draeli)
+  * [Dreckiger-Dan](https://github.com/Dreckiger-Dan)
   * [em92](https://github.com/em92)
   * [eMerzh](https://github.com/eMerzh)
   * [EtienneM](https://github.com/EtienneM)
@@ -178,6 +182,7 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
   * [nel50n](https://github.com/nel50n)
   * [niawag](https://github.com/niawag)
   * [Nono-m0le](https://github.com/Nono-m0le)
+  * [ObsidianWitch](https://github.com/ObsidianWitch)
   * [ORelio](https://github.com/ORelio)
   * [PaulVayssiere](https://github.com/PaulVayssiere)
   * [pellaeon](https://github.com/pellaeon)
@@ -185,6 +190,7 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
   * [pit-fgfjiudghdf](https://github.com/pit-fgfjiudghdf)
   * [pitchoule](https://github.com/pitchoule)
   * [pmaziere](https://github.com/pmaziere)
+  * [Pofilo](https://github.com/Pofilo)
   * [prysme01](https://github.com/prysme01)
   * [quentinus95](https://github.com/quentinus95)
   * [regisenguehard](https://github.com/regisenguehard)
@@ -199,6 +205,7 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
   * [sysadminstory](https://github.com/sysadminstory)
   * [tameroski](https://github.com/tameroski)
   * [teromene](https://github.com/teromene)
+  * [thefranke](https://github.com/thefranke)
   * [TheRadialActive](https://github.com/TheRadialActive)
   * [triatic](https://github.com/triatic)
   * [WalterBarrett](https://github.com/WalterBarrett)
