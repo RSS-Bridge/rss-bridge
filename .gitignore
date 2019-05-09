@@ -240,3 +240,6 @@ config.ini.php
 #Auth
 .htaccess
 .htpasswd
+
+#Crawler
+robots.txt
