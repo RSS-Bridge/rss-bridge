@@ -29,7 +29,7 @@ class MediapartBridge extends FeedExpander {
 
 	protected function parseItem($newsItem) {
 		$item = parent::parseItem($newsItem);
-		
+
 		// Enable single page mode?
 		if ($this->getInput('single_page_mode') === true) {
 			$item['uri'] .= '?onglet=full';
@@ -44,8 +44,8 @@ class MediapartBridge extends FeedExpander {
 
 			// Get the page
 			$articlePage = getSimpleHTMLDOM(
-				$newsItem->link . '?onglet=full', 
-				array(), 
+				$newsItem->link . '?onglet=full',
+				array(),
 				$opt);
 
 			// Extract the article content
