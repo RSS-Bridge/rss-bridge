@@ -25,18 +25,15 @@ class MediapartBridge extends FeedExpander {
 		$item = parent::parseItem($newsItem);
 		$item['uri'] .= '?onglet=full';
 
-		$opt = array();
 		$mpsessid = $this->getInput('MPSESSID');
 		if (!empty($mpsessid)) {
+			$opt = array();
 			$opt[CURLOPT_COOKIE] = 'MPSESSID=' . $mpsessid;
+			$articlePage = getSimpleHTMLDOM($item['uri'], array(), $opt);
+			$content = sanitize($articlePage->find('div.content-article', 0)->innertext);
+			$content = defaultLinkTo($content, static::URI);
+			$item['content'] .= $content;
 		}
-
-		$articlePage = getSimpleHTMLDOM($item['uri'], array(), $opt);
-		$introduction = $articlePage->find('div.introduction', 0)->innertext;
-		$article = $articlePage->find('div.content-article', 0)->innertext;
-		$content = sanitize($introduction . $article);
-		$content = defaultLinkTo($content, static::URI);
-		$item['content'] = $content;
 
 		return $item;
 	}
