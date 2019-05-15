@@ -1,4 +1,4 @@
-<?PHP
+<?php
 
 class MediapartBridge extends FeedExpander {
 	const MAINTAINER = 'killruana';
