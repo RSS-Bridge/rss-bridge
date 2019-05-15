@@ -61,7 +61,8 @@ class QPlayBridge extends BridgeAbstract {
 			foreach($html->find('.cce--thumbnails-video-chapter') as $element) {
 				$cid = $element->getAttribute('data-id');
 				$item['title'] = $element->find('.cce--chapter-title', 0)->innertext;
-				$item['content'] = $element->find('.cce--thumbnails-image-block', 0) . $element->find('.cce--chapter-body', 0)->innertext;
+				$item['content'] = $element->find('.cce--thumbnails-image-block', 0)
+					. $element->find('.cce--chapter-body', 0)->innertext;
 				$item['uri'] = $this->getURI() . '?cid=' . $cid;
 
 				/* TODO: Suport login credentials? */
@@ -116,7 +117,7 @@ class QPlayBridge extends BridgeAbstract {
 
 			$item['title'] = $record->title;
 			$item['content'] = $record->description
-				. '<div>Duration: ' . $record->duration.'</div>';
+				. '<div>Duration: ' . $record->duration . '</div>';
 			$item['timestamp'] = strtotime($record->release_date);
 			$item['uri'] = self::URI . $record->url;
 			$item['enclosures'] = array(
