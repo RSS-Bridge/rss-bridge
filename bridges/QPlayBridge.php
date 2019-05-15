@@ -22,10 +22,8 @@ class QPlayBridge extends BridgeAbstract {
 	);
 
 	public function getIcon() {
-		$html = getSimpleHTMLDOMCached(self::URI)
-			or returnServerError('Could not load content');
-
-		return $html->find('head link[rel="apple-touch-icon"]', 0)->getAttribute('href');
+		# This should be the favicon served on `self::URI`
+		return 'https://s3.amazonaws.com/unode1/assets/4957/r3T9Lm9LTLmpAEX6FlSA_apple-touch-icon.png';
 	}
 
 	public function getURI() {
