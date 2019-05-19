@@ -31,12 +31,12 @@ class SteamCommunityBridge extends BridgeAbstract {
 	}
 
 	public function getName() {
-		return self::NAME  . ': ' . ucwords($this->getInput('category'));
+		return self::NAME . ': ' . ucwords($this->getInput('category'));
 	}
 
 	public function getURI() {
 		return self::URI . '/app/'
-			. $this->getInput('i') . '/' 
+			. $this->getInput('i') . '/'
 			. $this->getInput('category');
 	}
 
@@ -80,10 +80,8 @@ class SteamCommunityBridge extends BridgeAbstract {
 				$downloadURI = 'https://www.youtube.com/watch?v=' . $youtubeID;
 			}
 
-			$item['content'] = '<p>'
-				. '<a href="' . $downloadURI . '">'
-				. '<img src="' . $mediaURI 
-				. '"/></a></p>';
+			$item['content'] = '<p><a href="' . $downloadURI . '">'
+				. '<img src="' . $mediaURI . '"/></a></p>';
 
 			if ($category == 'images') {
 				$desc = $htmlCard->find('div.nonScreenshotDescription', 0)->innertext;
