@@ -39,7 +39,7 @@ class BinanceBridge extends BridgeAbstract {
 			or returnServerError('Could not fetch Binance blog data.');
 
 		foreach($html->find('div[direction="row"]') as $element) {
-			
+
 			$date = $element->find('div[direction="column"]', 0);
 			$day = $date->find('div', 0)->innertext;
 			$month = $date->find('div', 1)->innertext;
@@ -72,8 +72,7 @@ class BinanceBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not fetch Zendesk announcement data.');
 
-		foreach($html->find('a.article-list-link') as $a)
-		{
+		foreach($html->find('a.article-list-link') as $a) {
 			$title = $a->innertext;
 			$uri = 'https://binance.zendesk.com' . $a->href;
 
@@ -82,7 +81,7 @@ class BinanceBridge extends BridgeAbstract {
 			$date = $full->find('time', 0)->getAttribute('datetime');
 
 			$item = array();
-			
+
 			$item['title'] = $title;
 			$item['uri'] = $uri;
 			$item['timestamp'] = strtotime($date);
