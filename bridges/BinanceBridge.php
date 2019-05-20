@@ -4,7 +4,7 @@ class BinanceBridge extends BridgeAbstract {
 	const URI = 'https://www.binance.com';
 	const DESCRIPTION = 'Subscribe to the Binance blog or the Binance Zendesk announcements.';
 	const MAINTAINER = 'thefranke';
-	const CACHE_TIMEOUT = 0; // 1h
+	const CACHE_TIMEOUT = 3600; // 1h
 
 	const PARAMETERS = array( array(
 		'category' => array(
@@ -58,7 +58,6 @@ class BinanceBridge extends BridgeAbstract {
 			$item['uri'] = $uri;
 			$item['timestamp'] = strtotime($extractedDate);
 			$item['author'] = 'Binance';
-			$item['categories'] = '';
 			$item['content'] = $content;
 
 			$this->items[] = $item;
@@ -86,7 +85,6 @@ class BinanceBridge extends BridgeAbstract {
 			$item['uri'] = $uri;
 			$item['timestamp'] = strtotime($date);
 			$item['author'] = 'Binance';
-			$item['categories'] = '';
 			$item['content'] = $content;
 
 			$this->items[] = $item;
