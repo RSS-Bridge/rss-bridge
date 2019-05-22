@@ -31,7 +31,7 @@ class SteamCommunityBridge extends BridgeAbstract {
 	}
 
 	public function getName() {
-		return self::NAME . ': ' . ucwords($this->getInput('category'));
+		return self::NAME . ' ' . $this->getInput('i') .': ' . ucwords($this->getInput('category'));
 	}
 
 	public function getURI() {
@@ -54,6 +54,8 @@ class SteamCommunityBridge extends BridgeAbstract {
 			$htmlCard = getSimpleHTMLDOMCached($uri);
 
 			$author = $card->find('div.apphub_CardContentAuthorName', 0)->innertext;
+			$author = strip_tags($author);
+
 			$title = $author . '\'s screenshot';
 
 			if ($category != 'screenshots')
@@ -66,7 +68,7 @@ class SteamCommunityBridge extends BridgeAbstract {
 			$item['title'] = $title;
 			$item['uri'] = $uri;
 			$item['timestamp'] = strtotime($date);
-			$item['author'] = strip_tags($author);
+			$item['author'] = $author;
 			$item['categories'] = $category;
 
 			$media = $htmlCard->getElementById('ActualMedia');
