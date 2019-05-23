@@ -100,7 +100,7 @@ class SteamCommunityBridge extends BridgeAbstract {
 				$downloadURI = 'https://www.youtube.com/watch?v=' . $youtubeID;
 			}
 
-			$desc = "";
+			$desc = '';
 
 			if ($category == 'screenshots') {
 				$descItem = $htmlCard->find('div.screenshotDescription', 0);
