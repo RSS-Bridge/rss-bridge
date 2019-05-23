@@ -30,8 +30,29 @@ class SteamCommunityBridge extends BridgeAbstract {
 		return self::URI . '/favicon.ico';
 	}
 
+	protected function getMainPage() {
+		$category = $this->getInput('category');
+		$html = getSimpleHTMLDOM($this->getURI() . '/?p=1&browsefilter=mostrecent')
+			or returnServerError('Could not fetch Steam data.');
+
+		return $html;
+	}
+
 	public function getName() {
-		return self::NAME . ' ' . $this->getInput('i') .': ' . ucwords($this->getInput('category'));
+		$category = $this->getInput('category');
+
+		if (is_null('i') || is_null($category)) {
+			return self::NAME;
+		}
+
+		$html = $this->getMainPage();
+
+		$titleItem = $html->find('div.apphub_AppName', 0);
+
+		if (!$titleItem)
+			return self::NAME;
+
+		return $titleItem->innertext . ' (' . ucwords($category) . ')';
 	}
 
 	public function getURI() {
@@ -42,10 +63,7 @@ class SteamCommunityBridge extends BridgeAbstract {
 
 	public function collectData() {
 		$category = $this->getInput('category');
-
-		$html = getSimpleHTMLDOM($this->getURI() . '/?p=1&browsefilter=mostrecent')
-			or returnServerError('Could not fetch Steam data.');
-
+		$html = $this->getMainPage();
 		$cards = $html->find('div.apphub_Card');
 
 		foreach($cards as $card) {
@@ -82,13 +100,23 @@ class SteamCommunityBridge extends BridgeAbstract {
 				$downloadURI = 'https://www.youtube.com/watch?v=' . $youtubeID;
 			}
 
-			$item['content'] = '<p><a href="' . $downloadURI . '"><img src="' . $mediaURI . '"/></a></p>';
+			$desc = "";
+
+			if ($category == 'screenshots') {
+				$descItem = $htmlCard->find('div.screenshotDescription', 0);
+				if ($descItem)
+					$desc = $descItem->innertext;
+			}
 
 			if ($category == 'images') {
-				$desc = $htmlCard->find('div.nonScreenshotDescription', 0)->innertext;
-				$item['content'] .= '<p>' . $desc . '</p>';
+				$descItem = $htmlCard->find('div.nonScreenshotDescription', 0);
+				if ($descItem)
+					$desc = $descItem->innertext;
 				$downloadURI = $htmlCard->find('a.downloadImage', 0)->href;
 			}
+
+			$item['content'] = '<p><a href="' . $downloadURI . '"><img src="' . $mediaURI . '"/></a></p>';
+			$item['content'] .= '<p>' . $desc . '</p>';
 
 			$this->items[] = $item;
 
