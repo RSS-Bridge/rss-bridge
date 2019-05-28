@@ -73,11 +73,14 @@ class SteamBridge extends BridgeAbstract {
 				}
 			}
 
+			$coverUrl = str_replace('_292x136', '', strtok($element->capsule, '?'));
+			$picturesPath = pathinfo($coverUrl)['dirname'] . '/';
+
 			$item = array();
 			$item['uri'] = "http://store.steampowered.com/app/$id/";
 			$item['title'] = $element->name;
 			$item['type'] = $appType;
-			$item['cover'] = str_replace('_292x136', '', $element->capsule);
+			$item['cover'] = $coverUrl;
 			$item['timestamp'] = $element->added;
 			$item['isBuyable'] = $appIsBuyable;
 			$item['hasDiscount'] = $appHasDiscount;
@@ -97,10 +100,10 @@ class SteamBridge extends BridgeAbstract {
 			}
 
 			$item['enclosures'] = array();
-			$item['enclosures'][] = str_replace('_292x136', '', $element->capsule);
+			$item['enclosures'][] = $coverUrl;
 
-			foreach($element->screenshots as $screenshot) {
-				$item['enclosures'][] = substr($element->capsule, 0, -31) . $screenshot;
+			foreach($element->screenshots as $screenshotFileName) {
+				$item['enclosures'][] = $picturesPath . $screenshotFileName;
 			}
 
 			$sort[$id] = $element->priority;
