@@ -8,44 +8,12 @@ class SteamBridge extends BridgeAbstract {
 	const MAINTAINER = 'jacknumber';
 	const PARAMETERS = array(
 		'Wishlist' => array(
-			'username' => array(
-				'name' => 'Username',
+			'userid' => array(
+				'name' => 'Steamid64 (find it on steamid.io)',
+				'title' => 'User ID (17 digits). Find your user ID with steamid.io or steamidfinder.com',
 				'required' => true,
-			),
-			'currency' => array(
-				'name' => 'Currency',
-				'type' => 'list',
-				'values' => array(
-					// source: http://steam.steamlytics.xyz/currencies
-					'USD' => 'us',
-					'GBP' => 'gb',
-					'EUR' => 'fr',
-					'CHF' => 'ch',
-					'RUB' => 'ru',
-					'BRL' => 'br',
-					'JPY' => 'jp',
-					'SEK' => 'se',
-					'IDR' => 'id',
-					'MYR' => 'my',
-					'PHP' => 'ph',
-					'SGD' => 'sg',
-					'THB' => 'th',
-					'KRW' => 'kr',
-					'TRY' => 'tr',
-					'MXN' => 'mx',
-					'CAD' => 'ca',
-					'NZD' => 'nz',
-					'CNY' => 'cn',
-					'INR' => 'in',
-					'CLP' => 'cl',
-					'PEN' => 'pe',
-					'COP' => 'co',
-					'ZAR' => 'za',
-					'HKD' => 'hk',
-					'TWD' => 'tw',
-					'SRD' => 'sr',
-					'AED' => 'ae',
-				),
+				'exampleValue' => '76561198821231205',
+				'pattern' => '[0-9]{17}',
 			),
 			'only_discount' => array(
 				'name' => 'Only discount',
@@ -56,27 +24,15 @@ class SteamBridge extends BridgeAbstract {
 
 	public function collectData(){
 
-		$username = $this->getInput('username');
-		$params = array(
-			'cc' => $this->getInput('currency')
-		);
+		$userid = $this->getInput('userid');
 
-		$url = self::URI . 'wishlist/id/' . $username . '?' . http_build_query($params);
-
-		$targetVariable = 'g_rgAppInfo';
+		$sourceUrl = self::URI . 'wishlist/profiles/' . $userid . '/wishlistdata?p=0';
 		$sort = array();
 
-		$html = '';
-		$html = getSimpleHTMLDOM($url)
-			or returnServerError("Could not request Steam Wishlist. Tried:\n - $url");
+		$json = getContents($sourceUrl)
+			or returnServerError('Could not get content from wishlistdata (' . $sourceUrl . ')');
 
-		$jsContent = $html->find('.responsive_page_template_content script', 0)->innertext;
-
-		if(preg_match('/var ' . $targetVariable . ' = (.*?);/s', $jsContent, $matches)) {
-			$appsData = json_decode($matches[1]);
-		} else {
-			returnServerError("Could not parse JS variable ($targetVariable) in page content.");
-		}
+		$appsData = json_decode($json);
 
 		foreach($appsData as $id => $element) {
 
