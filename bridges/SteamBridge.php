@@ -43,6 +43,8 @@ class SteamBridge extends BridgeAbstract {
 
 			if($element->subs) {
 				$appIsBuyable = 1;
+				$priceBlock = str_get_html($element->subs[0]->discount_block);
+				$appPrice = str_replace('--', '00', $priceBlock->find('.discount_final_price', 0)->plaintext);
 
 				if($element->subs[0]->discount_pct) {
 
@@ -50,8 +52,6 @@ class SteamBridge extends BridgeAbstract {
 					$discountBlock = str_get_html($element->subs[0]->discount_block);
 					$appDiscountValue = $discountBlock->find('.discount_pct', 0)->plaintext;
 					$appOldPrice = $discountBlock->find('.discount_original_price', 0)->plaintext;
-					$appNewPrice = $discountBlock->find('.discount_final_price', 0)->plaintext;
-					$appPrice = $appNewPrice;
 
 				} else {
 
@@ -59,7 +59,6 @@ class SteamBridge extends BridgeAbstract {
 						continue;
 					}
 
-					$appPrice = $element->subs[0]->price / 100;
 				}
 
 			} else {
@@ -88,14 +87,21 @@ class SteamBridge extends BridgeAbstract {
 			$item['priority'] = $element->priority;
 
 			if($appIsBuyable) {
+
 				$item['price'] = floatval(str_replace(',', '.', $appPrice));
+				$item['content'] = $appPrice;
+
+			}
+
+			if($appIsFree) {
+				$item['content'] = 'Free';
 			}
 
 			if($appHasDiscount) {
 
 				$item['discount']['value'] = $appDiscountValue;
-				$item['discount']['oldPrice'] = floatval(str_replace(',', '.', $appOldPrice));
-				$item['discount']['newPrice'] = floatval(str_replace(',', '.', $appNewPrice));
+				$item['discount']['oldPrice'] = $appOldPrice;
+				$item['content'] = '<s>' . $appOldPrice . '</s> <b>' . $appPrice . '</b> (' . $appDiscountValue . ')';
 
 			}
 
