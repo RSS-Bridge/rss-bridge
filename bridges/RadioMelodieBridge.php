@@ -48,7 +48,7 @@ class RadioMelodieBridge extends BridgeAbstract {
 					$article->save();
 				}
 
-				// Remove Radio Melodie Logo 
+				// Remove Radio Melodie Logo
 				$logoHTML = $article->find('div[id=logoArticleRM]', 0);
 				$logoHTML->outertext = '';
 				$article->save();
