@@ -32,7 +32,7 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 		$breaches = array();
 
 		foreach($html->find('div.row') as $breach) {
-			$item = array();	
+			$item = array();
 
 			if ($breach->class != 'row') {
 				continue;
@@ -74,7 +74,7 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 
 		$sortBy = $this->getInput('order');
 		$sort = array();
-		
+
 		foreach ($this->breaches as $key => $item) {
 			$sort[$key] = $item[$sortBy];
 		}
