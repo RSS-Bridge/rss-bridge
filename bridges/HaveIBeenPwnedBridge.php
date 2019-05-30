@@ -15,74 +15,74 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 			'defaultValue' => 'dateAdded',
 		)
 	));
-	
+
 	const CACHE_TIMEOUT = 3600;
-	
+
 	private $breachDateRegex = '/Breach date: ([0-9]{1,2} [A-Z-a-z]+ [0-9]{4})/';
 	private $dateAddedRegex = '/Date added to HIBP: ([0-9]{1,2} [A-Z-a-z]+ [0-9]{4})/';
 	private $accountsRegex = '/Compromised accounts: ([0-9,]+)/';
-	
+
 	private $breaches = array();
-	
+
 	public function collectData() {
-			
+
 		$html = getSimpleHTMLDOM(self::URI . '/PwnedWebsites')
 			or returnServerError('Could not request: ' . self::URI . '/PwnedWebsites');
-			
+
 		$breaches = array();
-		
+
 		foreach($html->find('div.row') as $breach) {
 			$item = array();	
-			
+
 			if ($breach->class != 'row') {
 				continue;
 			}
-			
-			preg_match($this->breachDateRegex, $breach->find('p', 1)->plaintext, $breachDate) 
+
+			preg_match($this->breachDateRegex, $breach->find('p', 1)->plaintext, $breachDate)
 				or returnServerError('Could not extract details');
-			
-			preg_match($this->dateAddedRegex, $breach->find('p', 1)->plaintext, $dateAdded) 
+
+			preg_match($this->dateAddedRegex, $breach->find('p', 1)->plaintext, $dateAdded)
 				or returnServerError('Could not extract details');
-			
-			preg_match($this->accountsRegex, $breach->find('p', 1)->plaintext, $accounts) 
+
+			preg_match($this->accountsRegex, $breach->find('p', 1)->plaintext, $accounts)
 				or returnServerError('Could not extract details');
-			
+
 			$permalink = $breach->find('p', 1)->find('a', 0)->href;
-			
+
 			// Remove permalink
 			$breach->find('p', 1)->find('a', 0)->outertext = '';
-			
-			$item['title'] = $breach->find('h3', 0)->plaintext . ' - ' . $accounts[1] . '  breached accounts';
+
+			$item['title'] = $breach->find('h3', 0)->plaintext . ' - ' . $accounts[1] . ' breached accounts';
 			$item['dateAdded'] = strtotime($dateAdded[1]);
 			$item['breachDate'] = strtotime($breachDate[1]);
 			$item['uri'] = self::URI . '/PwnedWebsites' . $permalink;
-			
+
 			$item['content'] = '<p>' . $breach->find('p', 0)->innertext . '<p>';
 			$item['content'] .= '<p>' . $breach->find('p', 1)->innertext . '<p>';
-				
+
 			$this->breaches[] = $item;
 		}
-		
+
 		$this->orderBreaches();
 		$this->createItems();
 	}
-	
+
 	/**
 	 * Order Breaches by date added or date breached
 	 */
 	private function orderBreaches() {
-		
+
 		$sortBy = $this->getInput('order');
 		$sort = array();
 		
 		foreach ($this->breaches as $key => $item) {
 			$sort[$key] = $item[$sortBy];
 		}
-		
+
 		array_multisort($sort, SORT_DESC, $this->breaches);
-		
+
 	}
-	
+
 	/**
 	 * Create items from breaches array
 	 */
@@ -90,13 +90,13 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 
 		foreach ($this->breaches as $breach) {
 			$item = array();
-			
+
 			$item['title'] = $breach['title'];
 			$item['timestamp'] = $breach[$this->getInput('order')];
 			$item['uri'] = $breach['uri'];
 			$item['content'] = $breach['content'];
-			
+
 			$this->items[] = $item;
-		}	
+		}
 	}
 }
