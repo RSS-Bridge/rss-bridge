@@ -25,7 +25,7 @@ class RadioMelodieBridge extends BridgeAbstract {
 				$picture = array();
 
 				// Get the Main picture URL
-				$picture[] = $this->rewriteImage($article->find('div[id=pictureTitleSupport]', 0)->find('img',0)->src);
+				$picture[] = $this->rewriteImage($article->find('div[id=pictureTitleSupport]', 0)->find('img', 0)->src);
 				$audioHTML = $article->find('audio');
 
 				// Add the audio element to the enclosure
@@ -52,7 +52,6 @@ class RadioMelodieBridge extends BridgeAbstract {
 				$logoHTML = $article->find('div[id=logoArticleRM]', 0);
 				$logoHTML->outertext = '';
 				$article->save();
-				
 
 				$author = $article->find('p[class=AuthorName]', 0)->plaintext;
 
@@ -63,7 +62,7 @@ class RadioMelodieBridge extends BridgeAbstract {
 				$date = $article->find('p[class*=date]', 0)->plaintext;
 
 				// Header Image
-				$header = '<img src="' . $picture[0]. '"/>';
+				$header = '<img src="' . $picture[0] . '"/>';
 
 				// Remove the Date and Author part
 				$textDOM->find('div[class=AuthorDate]', 0)->outertext = '';
