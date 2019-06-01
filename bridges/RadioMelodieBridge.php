@@ -12,11 +12,12 @@ class RadioMelodieBridge extends BridgeAbstract {
 	public function collectData(){
 		$html = getSimpleHTMLDOM(self::URI . '/actu/')
 			or returnServerError('Could not request Radio Melodie.');
-		$list = $html->find('div[class=actu_col1]', 0)->children();;
+		$list = $html->find('div[class=displayList]', 0)->children();
 		foreach($list as $element) {
 			if($element->tag == 'a') {
 				$articleURL = self::URI . $element->href;
 				$article = getSimpleHTMLDOM($articleURL);
+				$textDOM = $article->find('article', 0);
 
 				// Initialise arrays
 				$item = array();
@@ -24,52 +25,50 @@ class RadioMelodieBridge extends BridgeAbstract {
 				$picture = array();
 
 				// Get the Main picture URL
-				$picture[] = $this->rewriteImage($article->find('img[id=picturearticle]', 0)->src);
-				$audioHTML = $article->find('div[class=sm2-playlist-wrapper]');
+				$picture[] = $this->rewriteImage($article->find('div[id=pictureTitleSupport]', 0)->find('img', 0)->src);
+				$audioHTML = $article->find('audio');
 
-				// Remove the audio placeholder under the Audio player with an <audio>
-				// element and add the audio element to the enclosure
+				// Add the audio element to the enclosure
 				foreach($audioHTML as $audioElement) {
-					$audioURL = $audioElement->find('a', 0)->href;
+					$audioURL = $audioElement->src;
 					$audio[] = $audioURL;
-					$audioElement->outertext = '<audio controls src="' . $audioURL . '"></audio>';
-					$article->save();
 				}
 
 				// Rewrite pictures URL
-				$imgs = $article->find('img[src^="https://www.radiomelodie.com/image.php]');
+				$imgs = $textDOM->find('img[src^="http://www.radiomelodie.com/image.php]');
 				foreach($imgs as $img) {
 					$img->src = $this->rewriteImage($img->src);
 					$article->save();
 				}
 
-				// Remove inline audio player HTML
-				$inlinePlayers = $article->find('div[class*=sm2-main-controls]');
-				foreach($inlinePlayers as $inlinePlayer) {
-					$inlinePlayer->outertext = '';
-					$article->save();
-				}
-
 				// Remove Google Ads
-				$ads = $article->find('div[style^=margin:25px 0;  position:relative; height:auto;]');
+				$ads = $article->find('div[class=adInline]');
 				foreach($ads as $ad) {
 					$ad->outertext = '';
 					$article->save();
 				}
 
-				$author = $article->find('div[id=author]', 0)->find('span', 0)->plaintext;
+				// Remove Radio Melodie Logo
+				$logoHTML = $article->find('div[id=logoArticleRM]', 0);
+				$logoHTML->outertext = '';
+				$article->save();
+
+				$author = $article->find('p[class=AuthorName]', 0)->plaintext;
 
 				$item['enclosures'] = array_merge($picture, $audio);
 				$item['author'] = $author;
 				$item['uri'] = $articleURL;
 				$item['title'] = $article->find('meta[property=og:title]', 0)->content;
-				$date_category = $article->find('div[class*=date]', 0)->plaintext;
-				$header = $article->find('a[class=fancybox]', 0)->innertext;
-				$textDOM = $article->find('div[class=text_content]', 0);
-				$textDOM->find('div[id=author]', 0)->outertext = '';
+				$date = $article->find('p[class*=date]', 0)->plaintext;
+
+				// Header Image
+				$header = '<img src="' . $picture[0] . '"/>';
+
+				// Remove the Date and Author part
+				$textDOM->find('div[class=AuthorDate]', 0)->outertext = '';
 				$article->save();
 				$text = $textDOM->innertext;
-				$item['content'] = '<h1>' . $item['title'] . '</h1>' . $date_category . $header . $text;
+				$item['content'] = '<h1>' . $item['title'] . '</h1>' . $date . '<br/>' . $header . $text;
 				$this->items[] = $item;
 			}
 		}
@@ -81,7 +80,7 @@ class RadioMelodieBridge extends BridgeAbstract {
 	private function rewriteImage($url)
 	{
 		$parts = explode('?', $url);
-		parse_str($parts[1], $params);
+		parse_str(html_entity_decode($parts[1]), $params);
 		return self::URI . '/' . $params['image'];
 
 	}
