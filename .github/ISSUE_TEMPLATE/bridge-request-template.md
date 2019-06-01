@@ -1,6 +1,9 @@
 ---
 name: Bridge request template
 about: Use this template for requesting a new bridge
+title: Bridge request for ...
+labels: Bridge-Request
+assignees: ''
 
 ---
 
