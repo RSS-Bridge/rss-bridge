@@ -16,6 +16,8 @@ class SoundCloudBridge extends BridgeAbstract {
 
 	const CLIENT_ID = 'W0KEWWILAjDiRH89X0jpwzuq6rbSK08R';
 
+	private $feedIcon = null;
+
 	public function collectData(){
 
 		$res = json_decode(getContents(
@@ -24,6 +26,8 @@ class SoundCloudBridge extends BridgeAbstract {
 			. '&client_id='
 			. self::CLIENT_ID
 		)) or returnServerError('No results for this query');
+
+		$this->feedIcon = $res->avatar_url;
 
 		$tracks = json_decode(getContents(
 			'https://api.soundcloud.com/users/'
@@ -54,6 +58,14 @@ class SoundCloudBridge extends BridgeAbstract {
 			$this->items[] = $item;
 		}
 
+	}
+
+	public function getIcon(){
+		if ($this->feedIcon) {
+			return $this->feedIcon;
+		}
+
+		return parent::getIcon();
 	}
 
 	public function getName(){
