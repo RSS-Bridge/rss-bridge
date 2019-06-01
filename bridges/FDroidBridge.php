@@ -11,7 +11,6 @@ class FDroidBridge extends BridgeAbstract {
 		'u' => array(
 			'name' => 'Widget selection',
 			'type' => 'list',
-			'required' => true,
 			'values' => array(
 				'Latest added apps' => 'added',
 				'Latest updated apps' => 'updated'
@@ -19,20 +18,24 @@ class FDroidBridge extends BridgeAbstract {
 		)
 	));
 
+	public function getIcon() {
+		return self::URI . 'assets/favicon.ico?v=8j6PKzW9Mk';
+	}
+
 	public function collectData(){
 		$url = self::URI;
 		$html = getSimpleHTMLDOM($url)
 			or returnServerError('Could not request F-Droid.');
 
 		// targetting the corresponding widget based on user selection
-		// "updated" is the 4th widget on the page, "added" is the 5th
+		// "updated" is the 5th widget on the page, "added" is the 6th
 
 		switch($this->getInput('u')) {
 			case 'updated':
-				$html_widget = $html->find('div.sidebar-widget', 4);
+				$html_widget = $html->find('div.sidebar-widget', 5);
 				break;
 			default:
-				$html_widget = $html->find('div.sidebar-widget', 5);
+				$html_widget = $html->find('div.sidebar-widget', 6);
 				break;
 		}
 
@@ -45,9 +48,9 @@ class FDroidBridge extends BridgeAbstract {
 				$item['icon'] = $element->find('img', 0)->src;
 				$item['summary'] = $element->find('span.package-summary', 0)->plaintext;
 				$item['content'] = '
-					<a href="'.$item['uri'].'">
-						<img alt="" style="max-height:128px" src="'.$item['icon'].'">
-					</a><br>'.$item['summary'];
+					<a href="' . $item['uri'] . '">
+						<img alt="" style="max-height:128px" src="' . $item['icon'] . '">
+					</a><br>' . $item['summary'];
 				$this->items[] = $item;
 		}
 	}

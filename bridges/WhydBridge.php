@@ -16,6 +16,11 @@ class WhydBridge extends BridgeAbstract {
 
 	private $userName = '';
 
+	public function getIcon() {
+		return self::URI . 'assets/favicons/
+32-6b62a9f14d5e1a9213090d8f00f286bba3a6022381a76390d1d0926493b12593.png?v=6';
+	}
+
 	public function collectData(){
 		$html = '';
 		if(strlen(preg_replace('/[^0-9a-f]/', '', $this->getInput('u'))) == 24) {
@@ -50,6 +55,7 @@ class WhydBridge extends BridgeAbstract {
 			$this->items[] = $item;
 		}
 	}
+
 	public function getName(){
 		return (!empty($this->userName) ? $this->userName . ' - ' : '') . 'Whyd Bridge';
 	}

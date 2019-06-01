@@ -158,6 +158,10 @@ class TheTVDBBridge extends BridgeAbstract {
 		}
 	}
 
+	public function getIcon() {
+		return self::URI . 'application/themes/thetvdb/images/logo.png';
+	}
+
 	public function collectData(){
 		$serie_id = $this->getInput('serie_id');
 		$nbepisode = $this->getInput('nb_episode');

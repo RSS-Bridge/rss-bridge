@@ -1,0 +1,21 @@
+{
+	"server": {
+		"HTTPS": "on",
+		"HTTP_HOST": "example.com",
+		"REQUEST_URI": "/feed"
+	},
+	"meta": {
+		"name": "Sample microblog feed",
+		"uri": "https://example.com/blog/",
+		"icon": "https://example.com/logo.png"
+	},
+	"items": [
+		{
+			"timestamp": 1538931183,
+			"content": "Oh 😲 I found three monkeys 🙈🙉🙊"
+		},{
+			"timestamp": 1538930297,
+			"content": "Something happened"
+		}
+	]
+}

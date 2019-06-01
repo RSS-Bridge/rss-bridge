@@ -7,10 +7,14 @@ class RainbowSixSiegeBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 7200; // 2h
 	const DESCRIPTION = 'Latest articles from the Rainbow Six Siege blog';
 
+	public function getIcon() {
+		return 'https://ubistatic19-a.akamaihd.net/resource/en-us/game/rainbow6/siege-v3/r6s-favicon_316592.ico';
+	}
+
 	public function collectData(){
 		$dlUrl = 'https://prod-tridionservice.ubisoft.com/live/v1/News/Latest?templateId=tcm%3A152-7677';
-		$dlUrl .= '8-32&pageIndex=0&pageSize=10&language=en-US&detailPageId=tcm%3A152-194572-64';
-		$dlUrl .= '&keywordList=175426&siteId=undefined&useSeoFriendlyUrl=true';
+		$dlUrl .= '8-32&pageIndex=0&pageSize=10&language=en-US&detailPageId=tcm%3A150-194572-64';
+		$dlUrl .= '&keywordList=233416%2C316144%2C233418%2C233417&siteId=undefined&useSeoFriendlyUrl=true';
 		$jsonString = getContents($dlUrl) or returnServerError('Error while downloading the website content');
 
 		$json = json_decode($jsonString, true);

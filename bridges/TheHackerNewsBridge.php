@@ -16,13 +16,13 @@ class TheHackerNewsBridge extends BridgeAbstract {
 			if($limit < 5) {
 
 				$article_url = $element->find('a.story-link', 0)->href;
-				$article_author = trim($element->find('i.fa-user', 0)->parent()->plaintext);
+				$article_author = trim($element->find('i.icon-user', 0)->parent()->plaintext);
 				$article_title = $element->find('h2.home-title', 0)->plaintext;
 
 				//Date without time
 				$article_timestamp = strtotime(
 					extractFromDelimiters(
-						$element->find('i.fa-calendar', 0)->parent()->outertext,
+						$element->find('i.icon-calendar', 0)->parent()->outertext,
 						'</i>',
 						'<span>'
 					)

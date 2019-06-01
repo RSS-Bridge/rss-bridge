@@ -1,46 +1,112 @@
 <?php
-require_once(__DIR__ . '/BridgeInterface.php');
+/**
+ * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
+ * Atom feeds for websites that don't have one.
+ *
+ * For the full license information, please view the UNLICENSE file distributed
+ * with this source code.
+ *
+ * @package	Core
+ * @license	http://unlicense.org/ UNLICENSE
+ * @link	https://github.com/rss-bridge/rss-bridge
+ */
+
+/**
+ * An abstract class for bridges
+ *
+ * This class implements {@see BridgeInterface} with most common functions in
+ * order to reduce code duplication. Bridges should inherit from this class
+ * instead of implementing the interface manually.
+ *
+ * @todo Move constants to the interface (this is supported by PHP)
+ * @todo Change visibility of constants to protected
+ * @todo Return `self` on more functions to allow chaining
+ * @todo Add specification for PARAMETERS ()
+ * @todo Add specification for $items
+ */
 abstract class BridgeAbstract implements BridgeInterface {
 
+	/**
+	 * Name of the bridge
+	 *
+	 * Use {@see BridgeAbstract::getName()} to read this parameter
+	 */
 	const NAME = 'Unnamed bridge';
+
+	/**
+	 * URI to the site the bridge is intended to be used for.
+	 *
+	 * Use {@see BridgeAbstract::getURI()} to read this parameter
+	 */
 	const URI = '';
+
+	/**
+	 * A brief description of what the bridge can do
+	 *
+	 * Use {@see BridgeAbstract::getDescription()} to read this parameter
+	 */
 	const DESCRIPTION = 'No description provided';
+
+	/**
+	 * The name of the maintainer. Multiple maintainers can be separated by comma
+	 *
+	 * Use {@see BridgeAbstract::getMaintainer()} to read this parameter
+	 */
 	const MAINTAINER = 'No maintainer';
+
+	/**
+	 * The default cache timeout for the bridge
+	 *
+	 * Use {@see BridgeAbstract::getCacheTimeout()} to read this parameter
+	 */
 	const CACHE_TIMEOUT = 3600;
+
+	/**
+	 * Parameters for the bridge
+	 *
+	 * Use {@see BridgeAbstract::getParameters()} to read this parameter
+	 */
 	const PARAMETERS = array();
 
-	protected $cache;
-	protected $extraInfos;
+	/**
+	 * Holds the list of items collected by the bridge
+	 *
+	 * Items must be collected by {@see BridgeInterface::collectData()}
+	 *
+	 * Use {@see BridgeAbstract::getItems()} to access items.
+	 *
+	 * @var array
+	 */
 	protected $items = array();
+
+	/**
+	 * Holds the list of input parameters used by the bridge
+	 *
+	 * Do not access this parameter directly!
+	 * Use {@see BridgeAbstract::setInputs()} and {@see BridgeAbstract::getInput()} instead!
+	 *
+	 * @var array
+	 */
 	protected $inputs = array();
+
+	/**
+	 * Holds the name of the queried context
+	 *
+	 * @var string
+	 */
 	protected $queriedContext = '';
-	protected $cacheTimeout;
 
-	/**
-	* Return cachable datas (extrainfos and items) stored in the bridge
-	* @return mixed
-	*/
-	public function getCachable(){
-		return array(
-			'items' => $this->getItems(),
-			'extraInfos' => $this->getExtraInfos()
-		);
-	}
-
-	/**
-	* Return items stored in the bridge
-	* @return mixed
-	*/
+	/** {@inheritdoc} */
 	public function getItems(){
 		return $this->items;
 	}
 
 	/**
-	 * Sets the input values for a given context. Existing values are
-	 * overwritten.
+	 * Sets the input values for a given context.
 	 *
 	 * @param array $inputs Associative array of inputs
-	 * @param string $context The context name
+	 * @param string $queriedContext The context name
+	 * @return void
 	 */
 	protected function setInputs(array $inputs, $queriedContext){
 		// Import and assign all inputs to their context
@@ -117,35 +183,25 @@ abstract class BridgeAbstract implements BridgeInterface {
 	}
 
 	/**
-	* Defined datas with parameters depending choose bridge
-	* Note : you can define a cache with "setCache"
-	* @param array array with expected bridge paramters
-	*/
+	 * Set inputs for the bridge
+	 *
+	 * Returns errors and aborts execution if the provided input parameters are
+	 * invalid.
+	 *
+	 * @param array List of input parameters. Each element in this list must
+	 * relate to an item in {@see BridgeAbstract::PARAMETERS}
+	 * @return void
+	 */
 	public function setDatas(array $inputs){
-		if(!is_null($this->cache)) {
-			$time = $this->cache->getTime();
-			if($time !== false
-			&& (time() - $this->getCacheTimeout() < $time)
-			&& (!defined('DEBUG') || DEBUG !== true)) {
-				$cached = $this->cache->loadData();
-				if(isset($cached['items']) && isset($cached['extraInfos'])) {
-					$this->items = $cached['items'];
-					$this->extraInfos = $cached['extraInfos'];
-					return;
-				}
-			}
-		}
 
 		if(empty(static::PARAMETERS)) {
+
 			if(!empty($inputs)) {
 				returnClientError('Invalid parameters value(s)');
 			}
 
-			$this->collectData();
-			if(!is_null($this->cache)) {
-				$this->cache->saveData($this->getCachable());
-			}
 			return;
+
 		}
 
 		$validator = new ParameterValidator();
@@ -172,18 +228,13 @@ abstract class BridgeAbstract implements BridgeInterface {
 
 		$this->setInputs($inputs, $this->queriedContext);
 
-		$this->collectData();
-
-		if(!is_null($this->cache)) {
-			$this->cache->saveData($this->getCachable());
-		}
 	}
 
 	/**
 	 * Returns the value for the provided input
 	 *
 	 * @param string $input The input name
-	 * @return mixed Returns the input value or null if the input is not defined
+	 * @return mixed|null The input value or null if the input is not defined
 	 */
 	protected function getInput($input){
 		if(!isset($this->inputs[$this->queriedContext][$input]['value'])) {
@@ -192,90 +243,51 @@ abstract class BridgeAbstract implements BridgeInterface {
 		return $this->inputs[$this->queriedContext][$input]['value'];
 	}
 
+	/** {@inheritdoc} */
 	public function getDescription(){
 		return static::DESCRIPTION;
 	}
 
+	/** {@inheritdoc} */
 	public function getMaintainer(){
 		return static::MAINTAINER;
 	}
 
+	/** {@inheritdoc} */
 	public function getName(){
-		// Return cached name when bridge is using cached data
-		if(isset($this->extraInfos)) {
-			return $this->extraInfos['name'];
-		}
-
 		return static::NAME;
 	}
 
+	/** {@inheritdoc} */
 	public function getIcon(){
-		// Return cached icon when bridge is using cached data
-		if(isset($this->extraInfos)) {
-			return $this->extraInfos['icon'];
-		}
-
 		return '';
 	}
 
+	/** {@inheritdoc} */
 	public function getParameters(){
 		return static::PARAMETERS;
 	}
 
+	/** {@inheritdoc} */
 	public function getURI(){
-		// Return cached uri when bridge is using cached data
-		if(isset($this->extraInfos)) {
-			return $this->extraInfos['uri'];
-		}
-
 		return static::URI;
 	}
 
-	public function getExtraInfos(){
-		return array(
-			'name' => $this->getName(),
-			'uri' => $this->getURI(),
-			'icon' => $this->getIcon()
-		);
-	}
-
-	public function setCache(\CacheInterface $cache){
-		$this->cache = $cache;
-	}
-
-	public function setCacheTimeout($timeout){
-		if(is_numeric($timeout) && ($timeout < 1 || $timeout > 86400)) {
-			$this->cacheTimeout = static::CACHE_TIMEOUT;
-			return;
-		}
-
-		$this->cacheTimeout = $timeout;
-	}
-
+	/** {@inheritdoc} */
 	public function getCacheTimeout(){
-		return isset($this->cacheTimeout) ? $this->cacheTimeout : static::CACHE_TIMEOUT;
+		return static::CACHE_TIMEOUT;
 	}
 
-	public function getCacheTime(){
-		return !is_null($this->cache) ? $this->cache->getTime() : false;
-	}
-
-	public function dieIfNotModified(){
-		if ((defined('DEBUG') && DEBUG === true)) return; // disabled in debug mode
-
-		$if_modified_since = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
-		if (!$if_modified_since) return; // If-Modified-Since value is required
-
-		$last_modified = $this->getCacheTime();
-		if (!$last_modified) return; // did not detect cache time
-
-		if (time() - $this->getCacheTimeout() > $last_modified) return; // cache timeout
-
-		$last_modified = (gmdate('D, d M Y H:i:s ', $last_modified) . 'GMT');
-
-		if ($if_modified_since == $last_modified) {
-			header('HTTP/1.1 304 Not Modified');
-			die();
+	/** {@inheritdoc} */
+	public function detectParameters($url){
+		$regex = '/^(https?:\/\/)?(www\.)?(.+?)(\/)?$/';
+		if(empty(static::PARAMETERS)
+		&& preg_match($regex, $url, $urlMatches) > 0
+		&& preg_match($regex, static::URI, $bridgeUriMatches) > 0
+		&& $urlMatches[3] === $bridgeUriMatches[3]) {
+			return array();
+		} else {
+			return null;
 		}
 	}
 }

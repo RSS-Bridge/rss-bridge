@@ -16,6 +16,11 @@ class TwitterBridge extends BridgeAbstract {
 				'name' => 'Hide images in tweets',
 				'type' => 'checkbox',
 				'title' => 'Activate to hide images in tweets'
+			),
+			'noimgscaling' => array(
+				'name' => 'Disable image scaling',
+				'type' => 'checkbox',
+				'title' => 'Activate to disable image scaling in tweets (keeps original image)'
 			)
 		),
 		'By keyword or hashtag' => array(
@@ -65,6 +70,41 @@ class TwitterBridge extends BridgeAbstract {
 			)
 		)
 	);
+
+	public function detectParameters($url){
+		$params = array();
+
+		// By keyword or hashtag (search)
+		$regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/search.*(\?|&)q=([^\/&?\n]+)/';
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['q'] = urldecode($matches[4]);
+			return $params;
+		}
+
+		// By hashtag
+		$regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/hashtag\/([^\/?\n]+)/';
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['q'] = urldecode($matches[3]);
+			return $params;
+		}
+
+		// By list
+		$regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/([^\/?\n]+)\/lists\/([^\/?\n]+)/';
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['user'] = urldecode($matches[3]);
+			$params['list'] = urldecode($matches[4]);
+			return $params;
+		}
+
+		// By username
+		$regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/([^\/?\n]+)/';
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['u'] = urldecode($matches[3]);
+			return $params;
+		}
+
+		return null;
+	}
 
 	public function getName(){
 		switch($this->queriedContext) {
@@ -125,7 +165,7 @@ class TwitterBridge extends BridgeAbstract {
 
 			// Skip retweets?
 			if($this->getInput('noretweet')
-			&& $tweet->getAttribute('data-screen-name') !== $this->getInput('u')) {
+			&& strcasecmp($tweet->getAttribute('data-screen-name'), $this->getInput('u'))) {
 				continue;
 			}
 
@@ -144,11 +184,14 @@ class TwitterBridge extends BridgeAbstract {
 
 			$item = array();
 			// extract username and sanitize
-			$item['username'] = $tweet->getAttribute('data-screen-name');
+			$item['username'] = htmlspecialchars_decode($tweet->getAttribute('data-screen-name'), ENT_QUOTES);
 			// extract fullname (pseudonym)
-			$item['fullname'] = $tweet->getAttribute('data-name');
+			$item['fullname'] = htmlspecialchars_decode($tweet->getAttribute('data-name'), ENT_QUOTES);
 			// get author
 			$item['author'] = $item['fullname'] . ' (@' . $item['username'] . ')';
+			if(strcasecmp($tweet->getAttribute('data-screen-name'), $this->getInput('u'))) {
+				$item['author'] .= ' RT: @' . $this->getInput('u');
+			}
 			// get avatar link
 			$item['avatar'] = $tweet->find('img', 0)->src;
 			// get TweetID
@@ -158,7 +201,8 @@ class TwitterBridge extends BridgeAbstract {
 			// extract tweet timestamp
 			$item['timestamp'] = $tweet->find('span.js-short-timestamp', 0)->getAttribute('data-time');
 			// generate the title
-			$item['title'] = strip_tags($this->fixAnchorSpacing($tweet->find('p.js-tweet-text', 0), '<a>'));
+			$item['title'] = strip_tags($this->fixAnchorSpacing(htmlspecialchars_decode(
+				$tweet->find('p.js-tweet-text', 0), ENT_QUOTES), '<a>'));
 
 			switch($this->queriedContext) {
 				case 'By list':
@@ -203,14 +247,18 @@ EOD;
 			$image_html = '';
 			$image = $this->getImageURI($tweet);
 			if(!$this->getInput('noimg') && !is_null($image)) {
+				// Set image scaling
+				$image_orig = $this->getInput('noimgscaling') ? $image : $image . ':orig';
+				$image_thumb = $this->getInput('noimgscaling') ? $image : $image . ':thumb';
+
 				// add enclosures
-				$item['enclosures'] = array($image . ':orig');
+				$item['enclosures'] = array($image_orig);
 
 				$image_html = <<<EOD
-<a href="{$image}:orig">
+<a href="{$image_orig}">
 <img
 	style="align:top; max-width:558px; border:1px solid black;"
-	src="{$image}:thumb" />
+	src="{$image_thumb}" />
 </a>
 EOD;
 			}
@@ -245,29 +293,34 @@ EOD;
 				$quotedImage_html = '';
 				$quotedImage = $this->getQuotedImageURI($tweet);
 				if(!$this->getInput('noimg') && !is_null($quotedImage)) {
+					// Set image scaling
+					$quotedImage_orig = $this->getInput('noimgscaling') ? $quotedImage : $quotedImage . ':orig';
+					$quotedImage_thumb = $this->getInput('noimgscaling') ? $quotedImage : $quotedImage . ':thumb';
+
 					// add enclosures
-					$item['enclosures'] = array($quotedImage . ':orig');
+					$item['enclosures'] = array($quotedImage_orig);
 
 					$quotedImage_html = <<<EOD
-<a href="{$quotedImage}:orig">
+<a href="{$quotedImage_orig}">
 <img
 	style="align:top; max-width:558px; border:1px solid black;"
-	src="{$quotedImage}:thumb" />
+	src="{$quotedImage_thumb}" />
 </a>
 EOD;
 				}
 
 				$item['content'] = <<<EOD
+{$item['content']}
+<hr>
 <div style="display: inline-block; vertical-align: top;">
 	<blockquote>{$cleanedQuotedTweet}</blockquote>
 </div>
 <div style="display: block; vertical-align: top;">
 	<blockquote>{$quotedImage_html}</blockquote>
 </div>
-<hr>
-{$item['content']}
 EOD;
 			}
+			$item['content'] = htmlspecialchars_decode($item['content'], ENT_QUOTES);
 
 			// put out
 			$this->items[] = $item;

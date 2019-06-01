@@ -1,8 +1,15 @@
 <?php
 class ZoneTelechargementBridge extends BridgeAbstract {
-	const NAME = 'Zone Telechargement';
-	const URI = 'https://ww2.zone-telechargement1.org/';
-	const DESCRIPTION = 'Suivi de série sur Zone Telechargement';
+
+	/*  This bridge was initally done for the Website Zone Telechargement,
+	 *  but the website changed it's name and URL.
+	 *  Therefore, the class name and filename does not correspond to the
+	 *  name of the bridge. This permits to keep the same RSS Feed URL.
+	 */
+
+	const NAME = 'Annuaire Telechargement';
+	const URI = 'https://www.annuaire-telechargement.com/';
+	const DESCRIPTION = 'Suivi de série sur Annuaire Telechargement';
 	const MAINTAINER = 'sysadminstory';
 	const PARAMETERS = array(
 		'Suivre la publication des épisodes d\'une série en cours de diffusion' => array(
@@ -10,11 +17,15 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 				'name' => 'URL de la série',
 				'type' => 'text',
 				'required' => true,
-				'title' => 'URL d\'une série sans le https://ww2.zone-telechargement1.org/',
+				'title' => 'URL d\'une série sans le https://www.annuaire-telechargement.com/',
 				'exampleValue' => 'telecharger-series/31079-halt-and-catch-fire-saison-4-french-hd720p.html'
-				)
 			)
-		);
+		)
+	);
+
+	public function getIcon() {
+		return 'https://www.annuaire-telechargement.com/templates/Default/images/favicon.ico';
+	}
 
 	public function collectData(){
 		$html = getSimpleHTMLDOM(self::URI . $this->getInput('url'))
@@ -22,8 +33,8 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 
 		// Get the TV show title
 		$qualityselector = 'div[style=font-size: 18px;margin: 10px auto;color:red;font-weight:bold;text-align:center;]';
-		$show = $html->find('div[style*=font-weight: bold;text-align: center;margin: 25px;]', 0)->plaintext;
-		$quality = explode("\n", $html->find($qualityselector, 0)->plaintext)[0];
+		$show = trim($html->find('div[class=smallsep]', 0)->next_sibling()->plaintext);
+		$quality = trim(explode("\n", $html->find($qualityselector, 0)->plaintext)[0]);
 		$this->showTitle = $show . ' ' . $quality;
 
 		// Get the post content
@@ -39,7 +50,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 			$hoster = $this->findLinkHoster($element);
 
 			// Format the link and add the link to the corresponding episode table
-			$episodes[$epnumber][] = '<a href="' . $element->href . '">'. $hoster . ' - '
+			$episodes[$epnumber][] = '<a href="' . $element->href . '">' . $hoster . ' - '
 				. $this->showTitle . ' Episode ' . $epnumber . '</a>';
 
 		}
@@ -47,27 +58,28 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 		// Finally construct the items array
 		foreach($episodes as $epnum => $episode) {
 			$item = array();
-			$item['uri'] = self::URI . $this->getInput('url');
 			// Add every link available in the episode table separated by a <br/> tag
 			$item['content'] = implode('<br/>', $episode);
-			$item['title'] = $this->showTitle . 'Episode ' . $epnum;
+			$item['title'] = $this->showTitle . ' Episode ' . $epnum;
+			// As RSS Bridge use the URI as GUID they need to be unique : adding a md5 hash of the title element
+			// should geneerate unique URI to prevent confusion for RSS readers
+			$item['uri'] = self::URI . $this->getInput('url') . '#' . hash('md5', $item['title']);
 			// Insert the episode at the beginning of the item list, to show the newest episode first
 			array_unshift($this->items, $item);
 		}
 	}
 
-	public function getName(){
+	public function getName() {
 		switch($this->queriedContext) {
 		case 'Suivre la publication des épisodes d\'une série en cours de diffusion':
-			return $this->showTitle . '  - ' . self::NAME;
+			return $this->showTitle . ' - ' . self::NAME;
 			break;
 		default:
 			return self::NAME;
 		}
 	}
 
-	private function findLinkHoster($element)
-	{
+	private function findLinkHoster($element) {
 		// The hoster name is one level higher than the link tag : get the parent element
 		$element = $element->parent();
 		//echo "PARENT : $element \n";

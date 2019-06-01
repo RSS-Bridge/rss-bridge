@@ -13,44 +13,72 @@ class BandcampBridge extends BridgeAbstract {
 			'required' => true
 		)
 	));
+	const IMGURI = 'https://f4.bcbits.com/';
+	const IMGSIZE_300PX = 23;
+	const IMGSIZE_700PX = 16;
+
+	public function getIcon() {
+		return 'https://s4.bcbits.com/img/bc_favicon.ico';
+	}
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('No results for this query.');
+		$url = self::URI . 'api/hub/1/dig_deeper';
+		$data = $this->buildRequestJson();
+		$header = array(
+			'Content-Type: application/json',
+			'Content-Length: ' . strlen($data)
+		);
+		$opts = array(
+			CURLOPT_CUSTOMREQUEST => 'POST',
+			CURLOPT_POSTFIELDS => $data
+		);
+		$content = getContents($url, $header, $opts)
+			or returnServerError('Could not complete request to: ' . $url);
 
-		foreach($html->find('li.item') as $release) {
-			$script = $release->find('div.art', 0)->getAttribute('onclick');
-			$uri = ltrim($script, "return 'url(");
-			$uri = rtrim($uri, "')");
+		$json = json_decode($content);
 
-			$item = array();
-			$item['author'] = $release->find('div.itemsubtext', 0)->plaintext
-			. ' - '
-			. $release->find('div.itemtext', 0)->plaintext;
+		if ($json->ok !== true) {
+			returnServerError('Invalid response');
+		}
 
-			$item['title'] = $release->find('div.itemsubtext', 0)->plaintext
-			. ' - '
-			. $release->find('div.itemtext', 0)->plaintext;
+		foreach ($json->items as $entry) {
+			$url = $entry->tralbum_url;
+			$artist = $entry->artist;
+			$title = $entry->title;
+			// e.g. record label is the releaser, but not the artist
+			$releaser = $entry->band_name !== $entry->artist ? $entry->band_name : null;
 
-			$item['content'] = '<img src="'
-			. $uri
-			. '"/><br/>'
-			. $release->find('div.itemsubtext', 0)->plaintext
-			. ' - '
-			. $release->find('div.itemtext', 0)->plaintext;
+			$full_title = $artist . ' - ' . $title;
+			$full_artist = $artist;
+			if (isset($releaser)) {
+				$full_title .= ' (' . $releaser . ')';
+				$full_artist .= ' (' . $releaser . ')';
+			}
+			$small_img = $this->getImageUrl($entry->art_id, self::IMGSIZE_300PX);
+			$img = $this->getImageUrl($entry->art_id, self::IMGSIZE_700PX);
 
-			$item['id'] = $release->find('a', 0)->getAttribute('href');
-			$item['uri'] = $release->find('a', 0)->getAttribute('href');
+			$item = array(
+				'uri' => $url,
+				'author' => $full_artist,
+				'title' => $full_title
+			);
+			$item['content'] = "<img src='$small_img' /><br/>$full_title";
+			$item['enclosures'] = array($img);
 			$this->items[] = $item;
 		}
 	}
 
-	public function getURI(){
-		if(!is_null($this->getInput('tag'))) {
-			return self::URI . 'tag/' . urlencode($this->getInput('tag')) . '?sort_field=date';
-		}
+	private function buildRequestJson(){
+		$requestJson = array(
+			'tag' => $this->getInput('tag'),
+			'page' => 1,
+			'sort' => 'date'
+		);
+		return json_encode($requestJson);
+	}
 
-		return parent::getURI();
+	private function getImageUrl($id, $size){
+		return self::IMGURI . 'img/a' . $id . '_' . $size . '.jpg';
 	}
 
 	public function getName(){

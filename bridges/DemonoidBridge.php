@@ -6,72 +6,75 @@ class DemonoidBridge extends BridgeAbstract {
 	const URI = 'https://www.demonoid.pw/';
 	const DESCRIPTION = 'Returns results from search';
 
-	const PARAMETERS = array(array(
-		'q' => array(
-			'name' => 'keywords',
-			'exampleValue' => 'keyword1 keyword2…',
-			'required' => true,
+	const PARAMETERS = array(
+		'Keywords' => array(
+			'q' => array(
+				'name' => 'keywords',
+				'exampleValue' => 'keyword1 keyword2…',
+				'required' => true,
+				),
+			'category' => array(
+				'name' => 'Category',
+				'type' => 'list',
+				'values' => array(
+					'All' => 0,
+					'Movies' => 1,
+					'Music' => 2,
+					'TV' => 3,
+					'Games' => 4,
+					'Applications' => 5,
+					'Pictures' => 8,
+					'Anime' => 9,
+					'Comics' => 10,
+					'Books' => 11,
+					'Audiobooks' => 17
+					)
+				)
 			),
-		'category' => array(
-			'name' => 'Category',
-			'type' => 'list',
-			'values' => array(
-				'All' => 0,
-				'Movies' => 1,
-				'Music' => 2,
-				'TV' => 3,
-				'Games' => 4,
-				'Applications' => 5,
-				'Pictures' => 8,
-				'Anime' => 9,
-				'Comics' => 10,
-				'Books' => 11,
-				'Audiobooks' => 17
+		'Category Only' => array(
+			'catOnly' => array(
+				'name' => 'Category',
+				'type' => 'list',
+				'values' => array(
+					'All' => 0,
+					'Movies' => 1,
+					'Music' => 2,
+					'TV' => 3,
+					'Games' => 4,
+					'Applications' => 5,
+					'Pictures' => 8,
+					'Anime' => 9,
+					'Comics' => 10,
+					'Books' => 11,
+					'Audiobooks' => 17
+					)
 				)
-			)
-		), array(
-		'catOnly' => array(
-			'name' => 'Category',
-			'type' => 'list',
-			'values' => array(
-				'All' => 0,
-				'Movies' => 1,
-				'Music' => 2,
-				'TV' => 3,
-				'Games' => 4,
-				'Applications' => 5,
-				'Pictures' => 8,
-				'Anime' => 9,
-				'Comics' => 10,
-				'Books' => 11,
-				'Audiobooks' => 17
-				)
-			)
-		), array(
-		'userid' => array(
-			'name' => 'user id',
-			'exampleValue' => '00000',
-			'required' => true,
-			'type' => 'number'
 			),
-		'category' => array(
-			'name' => 'Category',
-			'type' => 'list',
-			'values' => array(
-				'All' => 0,
-				'Movies' => 1,
-				'Music' => 2,
-				'TV' => 3,
-				'Games' => 4,
-				'Applications' => 5,
-				'Pictures' => 8,
-				'Anime' => 9,
-				'Comics' => 10,
-				'Books' => 11,
-				'Audiobooks' => 17
+		'User ID' => array(
+			'userid' => array(
+				'name' => 'user id',
+				'exampleValue' => '00000',
+				'required' => true,
+				'type' => 'number'
+				),
+			'category' => array(
+				'name' => 'Category',
+				'type' => 'list',
+				'values' => array(
+					'All' => 0,
+					'Movies' => 1,
+					'Music' => 2,
+					'TV' => 3,
+					'Games' => 4,
+					'Applications' => 5,
+					'Pictures' => 8,
+					'Anime' => 9,
+					'Comics' => 10,
+					'Books' => 11,
+					'Audiobooks' => 17
+					)
 				)
 			)
-		)
 	);
 
 	public function collectData() {

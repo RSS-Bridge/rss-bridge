@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+	<title type="text">Sample feed with common data</title>
+	<id>https://example.com/feed?type=common&amp;items=4</id>
+	<icon>https://example.com/logo.png</icon>
+	<logo>https://example.com/logo.png</logo>
+	<updated>2000-01-01T12:00:00+00:00</updated>
+	<author>
+		<name>RSS-Bridge</name>
+	</author>
+	<link href="https://example.com/blog/" rel="alternate" type="text/html"/>
+	<link href="https://example.com/feed?type=common&amp;items=4" rel="self" type="application/atom+xml"/>
+
+	<entry>
+		<title type="html">Test Entry</title>
+		<published>2018-12-01T12:00:00+00:00</published>
+		<updated>2018-12-01T12:00:00+00:00</updated>
+		<id>http://example.com/blog/test-entry</id>
+		<link href="http://example.com/blog/test-entry" rel="alternate" type="text/html"/>
+		<author>
+			<name>fulmeek</name>
+		</author>
+		<content type="html">Hello world, this is a test entry.</content>
+		<category term="test"/>
+		<category term="Hello World"/>
+		<category term="example"/>
+	</entry>
+	<entry>
+		<title type="html">Announcing JSON Feed</title>
+		<published>2017-05-17T13:02:12+00:00</published>
+		<updated>2017-05-17T13:02:12+00:00</updated>
+		<id>https://jsonfeed.org/2017/05/17/announcing_json_feed</id>
+		<link href="https://jsonfeed.org/2017/05/17/announcing_json_feed" rel="alternate" type="text/html"/>
+		<author>
+			<name>Brent Simmons and Manton Reece</name>
+		</author>
+		<content type="html">&lt;p&gt;We — Manton Reece and Brent Simmons — have noticed that JSON has become the developers’ choice for APIs, and that developers will often go out of their way to avoid XML. JSON is simpler to read and write, and it’s less prone to bugs.&lt;/p&gt;
+
+&lt;p&gt;So we developed JSON Feed, a format similar to &lt;a href="http://cyber.harvard.edu/rss/rss.html"&gt;RSS&lt;/a&gt; and &lt;a href="https://tools.ietf.org/html/rfc4287"&gt;Atom&lt;/a&gt; but in JSON. It reflects the lessons learned from our years of work reading and publishing feeds.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="https://jsonfeed.org/version/1"&gt;See the spec&lt;/a&gt;. It’s at version 1, which may be the only version ever needed. If future versions are needed, version 1 feeds will still be valid feeds.&lt;/p&gt;
+
+&lt;h4&gt;Notes&lt;/h4&gt;
+
+&lt;p&gt;We have a &lt;a href="https://github.com/manton/jsonfeed-wp"&gt;WordPress plugin&lt;/a&gt; and, coming soon, a JSON Feed Parser for Swift. As more code is written, by us and others, we’ll update the &lt;a href="https://jsonfeed.org/code"&gt;code&lt;/a&gt; page.&lt;/p&gt;
+
+&lt;p&gt;See &lt;a href="https://jsonfeed.org/mappingrssandatom"&gt;Mapping RSS and Atom to JSON Feed&lt;/a&gt; for more on the similarities between the formats.&lt;/p&gt;
+
+&lt;p&gt;This website — the Markdown files and supporting resources — &lt;a href="https://github.com/brentsimmons/JSONFeed"&gt;is up on GitHub&lt;/a&gt;, and you’re welcome to comment there.&lt;/p&gt;
+
+&lt;p&gt;This website is also a blog, and you can subscribe to the &lt;a href="https://jsonfeed.org/xml/rss.xml"&gt;RSS feed&lt;/a&gt; or the &lt;a href="https://jsonfeed.org/feed.json"&gt;JSON feed&lt;/a&gt; (if your reader supports it).&lt;/p&gt;
+
+&lt;p&gt;We worked with a number of people on this over the course of several months. We list them, and thank them, at the bottom of the &lt;a href="https://jsonfeed.org/version/1"&gt;spec&lt;/a&gt;. But — most importantly — &lt;a href="http://furbo.org/"&gt;Craig Hockenberry&lt;/a&gt; spent a little time making it look pretty. :)&lt;/p&gt;</content>
+	</entry>
+	<entry>
+		<title type="html">Atom draft-07 snapshot</title>
+		<published>2005-07-31T12:29:29+00:00</published>
+		<updated>2005-07-31T12:29:29+00:00</updated>
+		<id>urn:sha1:dd6b6c920d3b340ab9e07faf6682f2a7c4f70134</id>
+		<link href="http://example.org/2005/04/02/atom" rel="alternate" type="text/html"/>
+		<author>
+			<name>Mark Pilgrim</name>
+		</author>
+		<content type="html">&lt;p&gt;&lt;i&gt;[Update: The Atom draft is finished.]&lt;/i&gt;&lt;/p&gt;</content>
+		<link rel="enclosure" type="audio/mpeg" href="http://example.org/audio/ph34r_my_podcast.mp3"/>
+	</entry>
+	<entry>
+		<title type="html">Star City</title>
+		<published>2003-06-03T09:39:21+00:00</published>
+		<updated>2003-06-03T09:39:21+00:00</updated>
+		<id>http://liftoff.msfc.nasa.gov/news/2003/news-starcity.asp</id>
+		<link href="http://liftoff.msfc.nasa.gov/news/2003/news-starcity.asp" rel="alternate" type="text/html"/>
+		<content type="html">How do Americans get ready to work with Russians aboard the International Space Station? They take a crash course in culture, language and protocol at Russia's &lt;a href="http://howe.iki.rssi.ru/GCTC/gctc_e.htm"&gt;Star City&lt;/a&gt;.</content>
+	</entry>
+
+</feed>

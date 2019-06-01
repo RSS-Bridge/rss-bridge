@@ -15,7 +15,6 @@ class ExtremeDownloadBridge extends BridgeAbstract {
 			'filter' => array(
 				'name' => 'Type de contenu',
 				'type' => 'list',
-				'required' => 'true',
 				'title' => 'Type de contenu à suivre : Téléchargement, Streaming ou les deux',
 				'values' => array(
 					'Streaming et Téléchargement' => 'both',
@@ -32,16 +31,22 @@ class ExtremeDownloadBridge extends BridgeAbstract {
 
 		$filter = $this->getInput('filter');
 
+		$typesText = array(
+			'download' => 'Téléchargement',
+			'streaming' => 'Streaming'
+		);
+
 		// Get the TV show title
-		$this->showTitle = $html->find('span[id=news-title]', 0)->plaintext;
+		$this->showTitle = trim($html->find('span[id=news-title]', 0)->plaintext);
 
 		$list = $html->find('div[class=prez_7]');
 		foreach($list as $element) {
 			$add = false;
+			// Link type is needed is needed to generate an unique link
+			$type = $this->findLinkType($element);
 			if($filter == 'both') {
 				$add = true;
 			} else {
-				$type = $this->findLinkType($element);
 				if($type == $filter) {
 					$add = true;
 				}
@@ -55,9 +60,11 @@ class ExtremeDownloadBridge extends BridgeAbstract {
 				// Get thee element links
 				$links = $element->next_sibling()->innertext;
 
-				$item['uri'] = self::URI . $this->getInput('url');
 				$item['content'] = $links;
-				$item['title'] = $this->showTitle . ' ' . $title;
+				$item['title'] = $this->showTitle . ' ' . $title . ' - ' . $typesText[$type];
+				// As RSS Bridge use the URI as GUID they need to be unique : adding a md5 hash of the title element
+				// should geneerate unique URI to prevent confusion for RSS readers
+				$item['uri'] = self::URI . $this->getInput('url') . '#' . hash('md5', $item['title']);
 
 				$this->items[] = $item;
 			}
@@ -67,7 +74,7 @@ class ExtremeDownloadBridge extends BridgeAbstract {
 	public function getName(){
 		switch($this->queriedContext) {
 		case 'Suivre la publication des épisodes d\'une série en cours de diffusion':
-			return $this->showTitle . '  - ' . self::NAME;
+			return $this->showTitle . ' - ' . self::NAME;
 			break;
 		default:
 			return self::NAME;

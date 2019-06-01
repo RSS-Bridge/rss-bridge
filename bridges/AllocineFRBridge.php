@@ -10,7 +10,6 @@ class AllocineFRBridge extends BridgeAbstract {
 		'category' => array(
 			'name' => 'category',
 			'type' => 'list',
-			'required' => true,
 			'exampleValue' => 'Faux Raccord',
 			'title' => 'Select your category',
 			'values' => array(
@@ -45,7 +44,7 @@ class AllocineFRBridge extends BridgeAbstract {
 	public function getName(){
 		if(!is_null($this->getInput('category'))) {
 			return self::NAME . ' : '
-				.array_search(
+				. array_search(
 					$this->getInput('category'),
 					self::PARAMETERS[$this->queriedContext]['category']['values']
 				);
@@ -83,5 +82,4 @@ class AllocineFRBridge extends BridgeAbstract {
 			}
 		}
 	}
-
 }

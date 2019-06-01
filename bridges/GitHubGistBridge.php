@@ -54,7 +54,7 @@ class GitHubGistBridge extends BridgeAbstract {
 		DEFAULT_SPAN_TEXT)
 			or returnServerError('Could not request ' . $this->getURI());
 
-		$html = defaultLinkTo($html, static::URI);
+		$html = defaultLinkTo($html, $this->getURI());
 
 		$fileinfo = $html->find('[class="file-info"]', 0)
 			or returnServerError('Could not find file info!');
@@ -69,7 +69,7 @@ class GitHubGistBridge extends BridgeAbstract {
 
 		foreach($comments as $comment) {
 
-			$uri = $comment->find('a[href^=#gistcomment]', 0)
+			$uri = $comment->find('a[href*=#gistcomment]', 0)
 				or returnServerError('Could not find comment anchor!');
 
 			$title = $comment->find('div[class="unminimized-comment"] h3[class="timeline-comment-header-text"]', 0)
@@ -86,7 +86,7 @@ class GitHubGistBridge extends BridgeAbstract {
 
 			$item = array();
 
-			$item['uri'] = $this->getURI() . $uri->href;
+			$item['uri'] = $uri->href;
 			$item['title'] = str_replace('commented', 'commented on', $title->plaintext);
 			$item['timestamp'] = strtotime($datetime->datetime);
 			$item['author'] = '<a href="' . $author->href . '">' . $author->plaintext . '</a>';
@@ -160,5 +160,4 @@ EOD;
 		return $content;
 
 	}
-
 }

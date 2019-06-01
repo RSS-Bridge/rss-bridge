@@ -62,7 +62,11 @@ class DiscogsBridge extends BridgeAbstract {
 				$item['id'] = $release['id'];
 				$resId = array_key_exists('main_release', $release) ? $release['main_release'] : $release['id'];
 				$item['uri'] = self::URI . $this->getInput('artistid') . '/release/' . $resId;
-				$item['timestamp'] = DateTime::createFromFormat('Y', $release['year'])->getTimestamp();
+
+				if(isset($release['year'])) {
+					$item['timestamp'] = DateTime::createFromFormat('Y', $release['year'])->getTimestamp();
+				}
+
 				$item['content'] = $item['author'] . ' - ' . $item['title'];
 				$this->items[] = $item;
 			}
@@ -81,7 +85,7 @@ class DiscogsBridge extends BridgeAbstract {
 						. $this->getInput('username_folder')
 						. '/collection/folders/'
 						. $this->getInput('folderid')
-						.'/releases?sort=added&sort_order=desc')
+						. '/releases?sort=added&sort_order=desc')
 						or returnServerError('Unable to query discogs !');
 				$jsonData = json_decode($data, true)['releases'];
 			}

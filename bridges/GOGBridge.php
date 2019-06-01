@@ -62,5 +62,4 @@ class GOGBridge extends BridgeAbstract {
 		return $content;
 
 	}
-
 }

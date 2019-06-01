@@ -6,10 +6,20 @@
 
 [cache]
 
+; Defines the cache type used by RSS-Bridge
+; "file" = FileCache (default)
+type = "file"
+
 ; Allow users to specify custom timeout for specific requests.
 ; true  = enabled
 ; false = disabled (default)
 custom_timeout = false
+
+[admin]
+; Advertise an email address where people can reach the administrator.
+; This address is displayed on the main page, visible to everyone!
+; ""    = Disabled (default)
+email = ""
 
 [proxy]
 
@@ -42,3 +52,12 @@ username = ""
 ; The password for authentication. Insert this password when prompted for login.
 ; Use a strong password to prevent others from guessing your login!
 password = ""
+
+; --- Cache specific configuration ---------------------------------------------
+
+[SQLiteCache]
+file = "cache.sqlite"
+
+[MemcachedCache]
+host = "localhost"
+port = 11211

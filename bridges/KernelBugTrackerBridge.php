@@ -38,6 +38,10 @@ class KernelBugTrackerBridge extends BridgeAbstract {
 	private $bugid = '';
 	private $bugdesc = '';
 
+	public function getIcon() {
+		return self::URI . '/images/favicon.ico';
+	}
+
 	public function collectData(){
 		$limit = $this->getInput('limit');
 		$sorting = $this->getInput('sorting');
@@ -146,5 +150,4 @@ class KernelBugTrackerBridge extends BridgeAbstract {
 
 		return $html;
 	}
-
 }

@@ -8,8 +8,14 @@
 	timeoutForLargeTests="6" >
 
 	<testsuites>
-		<testsuite name="Standard test suite">
-		<file>tests/BridgeImplementationTest.php</file>
+		<testsuite name="implementations">
+			<directory suffix="ImplementationTest.php">tests</directory>
+		</testsuite>
+		<testsuite name="formats">
+			<directory suffix="FormatTest.php">tests</directory>
+		</testsuite>
+		<testsuite name="actions">
+			<directory suffix="ActionTest.php">tests</directory>
 		</testsuite>
 	</testsuites>
 

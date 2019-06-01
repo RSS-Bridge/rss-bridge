@@ -25,6 +25,10 @@ class PinterestBridge extends FeedExpander {
 		)
 	);
 
+	public function getIcon() {
+		return 'https://s.pinimg.com/webapp/style/images/favicon-9f8f9adf.png';
+	}
+
 	public function collectData(){
 		switch($this->queriedContext) {
 			case 'By username and board':

@@ -25,12 +25,12 @@ class TheYeteeBridge extends BridgeAbstract {
 				$item['author'] = $author;
 
 				$uri = $element->find('div[class=controls] a', 0)->href;
-				$item['uri'] = static::URI.$uri;
+				$item['uri'] = static::URI . $uri;
 
-				$content = '<p>'.$element->find('section[class=product-listing-info] p', -1)->plaintext.'</p>';
+				$content = '<p>' . $element->find('section[class=product-listing-info] p', -1)->plaintext . '</p>';
 				$photos = $element->find('a[class=js-modaal-gallery] img');
 				foreach($photos as $photo) {
-					$content = $content."<br /><img src='$photo->src' />";
+					$content = $content . "<br /><img src='$photo->src' />";
 					$item['enclosures'][] = $photo->src;
 				}
 				$item['content'] = $content;

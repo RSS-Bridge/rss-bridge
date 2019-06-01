@@ -7,6 +7,11 @@ class DribbbleBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 1800;
 	const DESCRIPTION = 'Returns the newest popular shots from Dribbble.';
 
+	public function getIcon() {
+		return 'https://cdn.dribbble.com/assets/
+favicon-63b2904a073c89b52b19aa08cebc16a154bcf83fee8ecc6439968b1e6db569c7.ico';
+	}
+
 	public function collectData(){
 		$html = getSimpleHTMLDOM(self::URI . '/shots')
 			or returnServerError('Error while downloading the website content');

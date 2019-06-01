@@ -54,6 +54,10 @@ class NyaaTorrentsBridge extends BridgeAbstract {
 		)
 	);
 
+	public function getIcon() {
+		return self::URI . 'static/favicon.png';
+	}
+
 	public function collectData() {
 
 		// Build Search URL from user-provided parameters

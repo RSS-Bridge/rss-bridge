@@ -7,6 +7,10 @@ class BlaguesDeMerdeBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 7200; // 2h
 	const DESCRIPTION = 'Blagues De Merde';
 
+	public function getIcon() {
+		return self::URI . 'assets/img/favicon.ico';
+	}
+
 	public function collectData(){
 
 		$html = getSimpleHTMLDOM(self::URI)
@@ -39,5 +43,4 @@ class BlaguesDeMerdeBridge extends BridgeAbstract {
 		}
 
 	}
-
 }

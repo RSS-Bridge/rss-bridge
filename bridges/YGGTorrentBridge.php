@@ -115,6 +115,7 @@ class YGGTorrentBridge extends BridgeAbstract {
 			$item = array();
 			$item['timestamp'] = $row->find('.hidden', 1)->plaintext;
 			$item['title'] = $row->find('a', 1)->plaintext;
+			$item['uri'] = $row->find('a', 1)->href;
 			$torrentData = $this->collectTorrentData($row->find('a', 1)->href);
 			$item['author'] = $torrentData['author'];
 			$item['content'] = $torrentData['content'];

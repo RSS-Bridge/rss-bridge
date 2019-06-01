@@ -14,7 +14,7 @@ class SoundCloudBridge extends BridgeAbstract {
 		)
 	));
 
-	const CLIENT_ID = '4jkoEFmZEDaqjwJ9Eih4ATNhcH3vMVfp';
+	const CLIENT_ID = 'W0KEWWILAjDiRH89X0jpwzuq6rbSK08R';
 
 	public function collectData(){
 
@@ -32,15 +32,16 @@ class SoundCloudBridge extends BridgeAbstract {
 			. self::CLIENT_ID
 		)) or returnServerError('No results for this user');
 
-		for($i = 0; $i < 10; $i++) {
+		$numTracks = min(count($tracks), 10);
+		for($i = 0; $i < $numTracks; $i++) {
 			$item = array();
-			$item['author'] = $tracks[$i]->user->username . ' - ' . $tracks[$i]->title;
+			$item['author'] = $tracks[$i]->user->username;
 			$item['title'] = $tracks[$i]->user->username . ' - ' . $tracks[$i]->title;
-			$item['content'] = '<audio src="'
-			. $tracks[$i]->uri
+			$item['timestamp'] = strtotime($tracks[$i]->created_at);
+			$item['content'] = $tracks[$i]->description;
+			$item['enclosures'] = array($tracks[$i]->uri
 			. '/stream?client_id='
-			. self::CLIENT_ID
-			. '">';
+			. self::CLIENT_ID);
 
 			$item['id'] = self::URI
 				. urlencode($this->getInput('u'))
@@ -54,6 +55,7 @@ class SoundCloudBridge extends BridgeAbstract {
 		}
 
 	}
+
 	public function getName(){
 		if(!is_null($this->getInput('u'))) {
 			return self::NAME . ' - ' . $this->getInput('u');

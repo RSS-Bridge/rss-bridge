@@ -7,6 +7,10 @@ class FierPandaBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = 'Returns latest articles from Fier Panda.';
 
+	public function getIcon() {
+		return self::URI . 'wp-content/themes/fier-panda/img/favicon.png';
+	}
+
 	public function collectData(){
 
 		$html = getSimpleHTMLDOM(self::URI)

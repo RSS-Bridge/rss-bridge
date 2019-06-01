@@ -31,6 +31,10 @@ class BloombergBridge extends BridgeAbstract
 		return parent::getName();
 	}
 
+	public function getIcon() {
+		return 'https://assets.bwbx.io/s3/javelin/public/hub/images/favicon-black-63fe5249d3.png';
+	}
+
 	public function collectData()
 	{
 		switch($this->queriedContext) {

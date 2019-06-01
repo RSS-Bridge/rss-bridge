@@ -11,7 +11,6 @@ class NineGagBridge extends BridgeAbstract {
 			'd' => array(
 				'name' => 'Section',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Hot' => 'hot',
 					'Trending' => 'trending',
@@ -28,7 +27,6 @@ class NineGagBridge extends BridgeAbstract {
 			'g' => array(
 				'name' => 'Section',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Animals' => 'cute',
 					'Anime & Manga' => 'anime-manga',
@@ -88,7 +86,6 @@ class NineGagBridge extends BridgeAbstract {
 			't' => array(
 				'name' => 'Type',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Hot' => 'hot',
 					'Fresh' => 'fresh',
@@ -117,7 +114,7 @@ class NineGagBridge extends BridgeAbstract {
 		$cursor = 'c=10';
 		$posts = array();
 		for ($i = 0; $i < $this->getPages(); ++$i) {
-			$content = getContents($url.$cursor);
+			$content = getContents($url . $cursor);
 			$json = json_decode($content, true);
 			$posts = array_merge($posts, $json['data']['posts']);
 			$cursor = $json['data']['nextCursor'];
@@ -156,7 +153,7 @@ class NineGagBridge extends BridgeAbstract {
 			$uri = $this->getInput('t');
 		}
 
-		return self::URI.$uri;
+		return self::URI . $uri;
 	}
 
 	protected function getGroup() {

@@ -15,7 +15,6 @@ class ContainerLinuxReleasesBridge extends BridgeAbstract {
 			'channel' => [
 				'name' => 'Release Channel',
 				'type' => 'list',
-				'required' => true,
 				'defaultValue' => self::STABLE,
 				'values' => [
 					'Stable' => self::STABLE,
@@ -30,6 +29,10 @@ class ContainerLinuxReleasesBridge extends BridgeAbstract {
 		$json = getContents($jsonUrl)
 			or returnServerError('Could not request Core OS Website.');
 		return json_decode($json, true);
+	}
+
+	public function getIcon() {
+		return 'https://coreos.com/assets/ico/favicon.png';
 	}
 
 	public function collectData() {
