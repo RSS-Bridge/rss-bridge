@@ -32,18 +32,7 @@ function sanitize($html,
 
 	$htmlContent = str_get_html($html);
 
-	/*
-	 * Notice: simple_html_dom currently doesn't support "->find(*)", which is a
-	 * known issue: https://sourceforge.net/p/simplehtmldom/bugs/157/
-	 *
-	 * A solution to this is to find all nodes WITHOUT a specific attribute. If
-	 * the attribute is very unlikely to appear in the DOM, this is essentially
-	 * returning all nodes.
-	 *
-	 * "*[!b38fd2b1fe7f4747d6b1c1254ccd055e]" is doing exactly that. The attrib
-	 * "b38fd2b1fe7f4747d6b1c1254ccd055e" is very unlikely to appear in any DOM.
-	 */
-	foreach($htmlContent->find('*[!b38fd2b1fe7f4747d6b1c1254ccd055e]') as $element) {
+	foreach($htmlContent->find('*') as $element) {
 		if(in_array($element->tag, $text_to_keep)) {
 			$element->outertext = $element->plaintext;
 		} elseif(in_array($element->tag, $tags_to_remove)) {
@@ -90,18 +79,7 @@ function backgroundToImg($htmlContent) {
 	$regex = '/background-image[ ]{0,}:[ ]{0,}url\([\'"]{0,}(.*?)[\'"]{0,}\)/';
 	$htmlContent = str_get_html($htmlContent);
 
-	/*
-	 * Notice: simple_html_dom currently doesn't support "->find(*)", which is a
-	 * known issue: https://sourceforge.net/p/simplehtmldom/bugs/157/
-	 *
-	 * A solution to this is to find all nodes WITHOUT a specific attribute. If
-	 * the attribute is very unlikely to appear in the DOM, this is essentially
-	 * returning all nodes.
-	 *
-	 * "*[!b38fd2b1fe7f4747d6b1c1254ccd055e]" is doing exactly that. The attrib
-	 * "b38fd2b1fe7f4747d6b1c1254ccd055e" is very unlikely to appear in any DOM.
-	 */
-	foreach($htmlContent->find('*[!b38fd2b1fe7f4747d6b1c1254ccd055e]') as $element) {
+	foreach($htmlContent->find('*') as $element) {
 
 		if(preg_match($regex, $element->style, $matches) > 0) {
 
