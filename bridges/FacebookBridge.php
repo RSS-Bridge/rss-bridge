@@ -584,7 +584,7 @@ EOD;
 
 						foreach($content_filters as $filter) {
 							foreach($content->find($filter) as $subject) {
-								$subject->outertext = '';
+								$subject->remove();
 							}
 						}
 

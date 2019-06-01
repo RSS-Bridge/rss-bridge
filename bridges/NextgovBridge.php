@@ -61,7 +61,7 @@ class NextgovBridge extends FeedExpander {
 			return 'Could not request Nextgov: ' . $url;
 
 		$contents = $article->find('div.wysiwyg', 0);
-		$contents->find('svg.content-tombstone', 0)->outertext = '';
+		$contents->find('svg.content-tombstone', 0)->remove();
 		$contents = $contents->innertext;
 		$contents = stripWithDelimiters($contents, '<div class="ad-container">', '</div>');
 		$contents = stripWithDelimiters($contents, '<div', '</div>'); //ad outer div

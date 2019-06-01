@@ -62,9 +62,8 @@ class VkBridge extends BridgeAbstract
 			$this->pageName = htmlspecialchars_decode($pageName);
 		}
 		foreach ($html->find('div.replies') as $comment_block) {
-			$comment_block->outertext = '';
+			$comment_block->remove();
 		}
-		$html->load($html->save());
 
 		$pinned_post_item = null;
 		$last_post_id = 0;
@@ -82,7 +81,7 @@ class VkBridge extends BridgeAbstract
 
 			if (is_object($post->find('a.wall_post_more', 0))) {
 				//delete link "show full" in content
-				$post->find('a.wall_post_more', 0)->outertext = '';
+				$post->find('a.wall_post_more', 0)->remove();
 			}
 
 			$content_suffix = '';
@@ -114,7 +113,7 @@ class VkBridge extends BridgeAbstract
 
 			foreach($external_link_selectors_to_remove as $sel) {
 				if (is_object($post->find($sel, 0))) {
-					$post->find($sel, 0)->outertext = '';
+					$post->find($sel, 0)->remove();
 				}
 			}
 
@@ -140,7 +139,7 @@ class VkBridge extends BridgeAbstract
 					$content_suffix .= "<br><img src='" . $matches[1] . "'>";
 				}
 				$content_suffix .= "<br>Article: <a href='$article_link'>$article_title ($article_author)</a>";
-				$article->outertext = '';
+				$article->remove();
 			}
 
 			// get video on post
@@ -150,7 +149,7 @@ class VkBridge extends BridgeAbstract
 				$video_title = $video->find('div.post_video_title', 0)->plaintext;
 				$video_link = $video->find('a.lnk', 0)->getAttribute('href');
 				$this->appendVideo($video_title, $video_link, $content_suffix, $post_videos);
-				$video->outertext = '';
+				$video->remove();
 				$main_video_link = $video_link;
 			}
 
@@ -161,14 +160,14 @@ class VkBridge extends BridgeAbstract
 				if (count($temp) > 1) $video_title = $temp[1];
 				$video_link = $a->getAttribute('href');
 				if ($video_link != $main_video_link) $this->appendVideo($video_title, $video_link, $content_suffix, $post_videos);
-				$a->outertext = '';
+				$a->remove();
 			}
 
 			// get all photos
 			foreach($post->find('div.wall_text > a.page_post_thumb_wrap') as $a) {
 				$result = $this->getPhoto($a);
 				if ($result == null) continue;
-				$a->outertext = '';
+				$a->remove();
 				$content_suffix .= "<br>$result";
 			}
 
@@ -177,7 +176,7 @@ class VkBridge extends BridgeAbstract
 				$a = $el->find('.page_album_link', 0);
 				$album_title = $a->find('.page_album_title_text', 0)->getAttribute('title');
 				$album_link = $a->getAttribute('href');
-				$el->outertext = '';
+				$el->remove();
 				$content_suffix .= "<br>Album: <a href='$album_link'>$album_title</a>";
 			}
 
@@ -200,7 +199,7 @@ class VkBridge extends BridgeAbstract
 
 				}
 
-				$a->outertext = '';
+				$a->remove();
 			}
 
 			// get other documents
@@ -217,7 +216,7 @@ class VkBridge extends BridgeAbstract
 
 				}
 
-				$div->outertext = '';
+				$div->remove();
 			}
 
 			// get polls
@@ -227,14 +226,14 @@ class VkBridge extends BridgeAbstract
 				foreach($div->find('div.page_poll_text') as $poll_stat_title) {
 					$content_suffix .= '<br>- ' . $poll_stat_title->innertext;
 				}
-				$div->outertext = '';
+				$div->remove();
 			}
 
 			// get sign
 			$post_author = $pageName;
 			foreach($post->find('a.wall_signed_by') as $a) {
 				$post_author = $a->innertext;
-				$a->outertext = '';
+				$a->remove();
 			}
 
 			if (is_object($post->find('div.copy_quote', 0))) {
@@ -243,7 +242,7 @@ class VkBridge extends BridgeAbstract
 				}
 				$copy_quote = $post->find('div.copy_quote', 0);
 				if ($copy_post_header = $copy_quote->find('div.copy_post_header', 0)) {
-					$copy_post_header->outertext = '';
+					$copy_post_header->remove();
 				}
 				$copy_quote_content = $copy_quote->innertext;
 				$copy_quote->outertext = "<br>Reposted: <br>$copy_quote_content";

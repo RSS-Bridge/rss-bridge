@@ -18,7 +18,7 @@ class ScmbBridge extends BridgeAbstract {
 			$item['title'] = $article->find('header h1 a', 0)->innertext;
 
 			// remove text "En savoir plus" from anecdote content
-			$article->find('span.read-more', 0)->outertext = '';
+			$article->find('span.read-more', 0)->remove();
 			$content = $article->find('p.summary a', 0)->innertext;
 
 			// remove superfluous spaces at the end

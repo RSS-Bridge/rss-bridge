@@ -239,16 +239,16 @@ class JustETFBridge extends BridgeAbstract {
 			or returnServerError('Article body not found!');
 
 		// Remove teaser image
-		$element->find('img.teaser-img', 0)->outertext = '';
+		$element->find('img.teaser-img', 0)->remove();
 
 		// Remove self advertisements
 		foreach($element->find('.call-action') as $adv) {
-			$adv->outertext = '';
+			$adv->remove();
 		}
 
 		// Remove tips
 		foreach($element->find('.panel-edu') as $tip) {
-			$tip->outertext = '';
+			$tip->remove();
 		}
 
 		// Remove inline scripts (used for i.e. interactive graphs) as they are
@@ -318,7 +318,7 @@ class JustETFBridge extends BridgeAbstract {
 		$description = $description->parent();
 
 		foreach($description->find('div') as $div) {
-			$div->outertext = '';
+			$div->remove();
 		}
 
 		$quote = $html->find('div.infobox div.val', 0)

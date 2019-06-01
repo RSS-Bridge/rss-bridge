@@ -44,7 +44,7 @@ class WorldOfTanksBridge extends FeedExpander {
 
 		// Remove the scripts, please
 		foreach($content->find('script') as $script) {
-			$script->outertext = '';
+			$script->remove();
 		}
 
 		return $content->innertext;

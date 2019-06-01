@@ -36,7 +36,7 @@ function sanitize($html,
 		if(in_array($element->tag, $text_to_keep)) {
 			$element->outertext = $element->plaintext;
 		} elseif(in_array($element->tag, $tags_to_remove)) {
-			$element->outertext = '';
+			$element->remove();
 		} else {
 			foreach($element->getAllAttributes() as $attributeName => $attribute) {
 				if(!in_array($attributeName, $attributes_to_keep))

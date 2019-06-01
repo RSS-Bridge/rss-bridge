@@ -50,18 +50,18 @@ class AsahiShimbunAJWBridge extends BridgeAbstract {
 			$e_lead = $element->find('span.Lead', 0);
 			if ($e_lead) {
 				$item['content'] = $e_lead->innertext;
-				$e_lead->outertext = '';
+				$e_lead->remove();
 			} else {
 				$item['content'] = $element->innertext;
 			}
 			$e_date = $element->find('span.EnDate', 0);
 			if ($e_date) {
 				$item['timestamp'] = strtotime($e_date->innertext);
-				$e_date->outertext = '';
+				$e_date->remove();
 			}
 			$e_video = $element->find('span.EnVideo', 0);
 			if ($e_video) {
-				$e_video->outertext = '';
+				$e_video->remove();
 				$element->innertext = "VIDEO: $element->innertext";
 			}
 			$item['title'] = $element->innertext;

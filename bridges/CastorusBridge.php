@@ -58,7 +58,7 @@ class CastorusBridge extends BridgeAbstract {
 			returnServerError('Cannot find nodes!');
 
 		foreach($nodes as $node) {
-			$node->outertext = '';
+			$node->remove();
 		}
 
 		return strtotime($activity->innertext);

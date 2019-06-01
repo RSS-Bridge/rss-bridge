@@ -55,7 +55,7 @@ class BundesbankBridge extends BridgeAbstract {
 			$title = $study->find('.teasable__title div.h2', 0);
 
 			foreach($title->children as &$child) {
-				$child->outertext = '';
+				$child->remove();
 			}
 
 			$item['title'] = $title->innertext;

@@ -48,7 +48,7 @@ class SIMARBridge extends BridgeAbstract {
 					foreach($e_item->find('p') as $paragraph) {
 						/* Remove empty paragraphs */
 						if (preg_match('/^(\W|&nbsp;)+$/', $paragraph->innertext) == 1) {
-							$paragraph->outertext = '';
+							$paragraph->remove();
 						}
 					}
 					if ($e_item) {

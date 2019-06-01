@@ -141,7 +141,7 @@ class WikipediaBridge extends BridgeAbstract {
 	$anchorFallbackIndex = 0){
 		// Clean the bottom of the featured article
 		if ($element->find('div', -1))
-			$element->find('div', -1)->outertext = '';
+			$element->find('div', -1)->remove();
 
 		// The title and URI of the article can be found in an anchor containing
 		// the string '...' in most wikis ('full article ...')
@@ -202,10 +202,10 @@ class WikipediaBridge extends BridgeAbstract {
 		// Let's remove a couple of things from the article
 		$table = $content->find('#toc', 0); // Table of contents
 		if(!$table === false)
-			$table->outertext = '';
+			$table->remove();
 
 		foreach($content->find('ol.references') as $reference) // References
-			$reference->outertext = '';
+			$reference->remove();
 
 		return str_replace('href="/', 'href="' . $this->getURI() . '/', $content->innertext);
 	}
