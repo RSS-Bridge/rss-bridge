@@ -83,7 +83,7 @@ function buildBridgeException($e, $bridge){
 	. '`';
 
 	$body_html = nl2br($body);
-	$link = buildGitHubIssueQuery($title, $body, 'bug report', $bridge->getMaintainer());
+	$link = buildGitHubIssueQuery($title, $body, 'Bridge-Broken', $bridge->getMaintainer());
 
 	$header = buildHeader($e, $bridge);
 	$message = <<<EOD
@@ -119,7 +119,7 @@ function buildTransformException($e, $bridge){
 	. (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '')
 	. '`';
 
-	$link = buildGitHubIssueQuery($title, $body, 'bug report', $bridge->getMaintainer());
+	$link = buildGitHubIssueQuery($title, $body, 'Bridge-Broken', $bridge->getMaintainer());
 	$header = buildHeader($e, $bridge);
 	$message = "RSS-Bridge was unable to transform the contents returned by
 <strong>{$bridge->getName()}</strong>!";
