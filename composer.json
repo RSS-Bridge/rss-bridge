@@ -1,7 +1,12 @@
 {
     "require": {
 	"php": "^7.1",
-        "ext-mbstring": "*",
-	"ext-sqlite3": "*"
+	"ext-mbstring": "*",
+	"ext-sqlite3": "*",
+	"ext-curl": "*",
+	"ext-openssl": "*",
+	"ext-libxml": "*",
+	"ext-simplexml": "*",
+	"ext-json": "*"
     }
 }
