@@ -171,7 +171,7 @@ class TwitterBridge extends BridgeAbstract {
 
 			// remove 'invisible' content
 			foreach($tweet->find('.invisible') as $invisible) {
-				$invisible->remove();
+				$invisible->outertext = '';
 			}
 
 			// Skip protmoted tweets

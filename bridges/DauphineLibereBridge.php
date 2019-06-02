@@ -50,7 +50,7 @@ class DauphineLibereBridge extends FeedExpander {
 	private function extractContent($url){
 		$html2 = getSimpleHTMLDOMCached($url);
 		foreach ($html2->find('.noprint, link, script, iframe, .shareTool, .contentInfo') as $remove) {
-			$remove->remove();
+			$remove->outertext = '';
 		}
 		return $html2->find('div.content', 0)->innertext;
 	}

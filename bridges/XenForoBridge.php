@@ -193,7 +193,7 @@ class XenForoBridge extends BridgeAbstract {
 
 			// Remove script tags
 			foreach($content->find('script') as $script) {
-				$script->remove();
+				$script->outertext = '';
 			}
 
 			$item['content'] = $content->innertext;

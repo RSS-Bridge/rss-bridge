@@ -29,16 +29,16 @@ class EconomistBridge extends BridgeAbstract {
 			// Remove newsletter subscription box
 			$newsletter = $content->find('div[class="newsletter-form__message"]', 0);
 			if ($newsletter)
-				$newsletter->remove();
+				$newsletter->outertext = '';
 
 			$newsletterForm = $content->find('form', 0);
 			if ($newsletterForm)
-				$newsletterForm->remove();
+				$newsletterForm->outertext = '';
 
 			// Remove next and previous article URLs at the bottom
 			$nextprev = $content->find('div[class="blog-post__next-previous-wrapper"]', 0);
 			if ($nextprev)
-				$nextprev->remove();
+				$nextprev->outertext = '';
 
 			$section = [ $article->find('h3[itemprop="articleSection"]', 0)->plaintext ];
 

@@ -83,7 +83,7 @@ class PikabuBridge extends BridgeAbstract {
 
 			foreach($el_to_remove_selectors as $el_to_remove_selector) {
 				foreach($post->find($el_to_remove_selector) as $el) {
-					$el->remove();
+					$el->outertext = '';
 				}
 			}
 

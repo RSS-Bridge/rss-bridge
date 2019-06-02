@@ -51,7 +51,7 @@ class OsmAndBlogBridge extends BridgeAbstract {
 
 	private function cleanupContent($content, ...$removeItems) {
 		foreach ($removeItems as $obj) {
-			if ($obj) $obj->remove();
+			if ($obj) $obj->outertext = '';
 		}
 		foreach ($content->find('img') as $obj) {
 			$obj->src = $this->filterURL($obj->src);

@@ -50,7 +50,7 @@ class WordPressBridge extends FeedExpander {
 
 		foreach ($article->find('h1.entry-title') as $title)
 			if ($title->plaintext == $item['title'])
-				$title->remove();
+				$title->outertext = '';
 
 		$article_image = $article_html->find('img.wp-post-image', 0);
 		if(!empty($item['content']) && (!is_object($article_image) || empty($article_image->src))) {

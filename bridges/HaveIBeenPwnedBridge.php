@@ -50,7 +50,7 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 			$permalink = $breach->find('p', 1)->find('a', 0)->href;
 
 			// Remove permalink
-			$breach->find('p', 1)->find('a', 0)->remove();
+			$breach->find('p', 1)->find('a', 0)->outertext = '';
 
 			$item['title'] = $breach->find('h3', 0)->plaintext . ' - ' . $accounts[1] . ' breached accounts';
 			$item['dateAdded'] = strtotime($dateAdded[1]);

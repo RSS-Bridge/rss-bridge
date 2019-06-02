@@ -38,17 +38,20 @@ class RadioMelodieBridge extends BridgeAbstract {
 				$imgs = $textDOM->find('img[src^="http://www.radiomelodie.com/image.php]');
 				foreach($imgs as $img) {
 					$img->src = $this->rewriteImage($img->src);
+					$article->save();
 				}
 
 				// Remove Google Ads
 				$ads = $article->find('div[class=adInline]');
 				foreach($ads as $ad) {
-					$ad->remove();
+					$ad->outertext = '';
+					$article->save();
 				}
 
 				// Remove Radio Melodie Logo
 				$logoHTML = $article->find('div[id=logoArticleRM]', 0);
-				$logoHTML->remove();
+				$logoHTML->outertext = '';
+				$article->save();
 
 				$author = $article->find('p[class=AuthorName]', 0)->plaintext;
 
@@ -62,7 +65,8 @@ class RadioMelodieBridge extends BridgeAbstract {
 				$header = '<img src="' . $picture[0] . '"/>';
 
 				// Remove the Date and Author part
-				$textDOM->find('div[class=AuthorDate]', 0)->remove();
+				$textDOM->find('div[class=AuthorDate]', 0)->outertext = '';
+				$article->save();
 				$text = $textDOM->innertext;
 				$item['content'] = '<h1>' . $item['title'] . '</h1>' . $date . '<br/>' . $header . $text;
 				$this->items[] = $item;
