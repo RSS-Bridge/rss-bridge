@@ -38,6 +38,9 @@ define('PATH_CACHE', __DIR__ . '/../cache/');
 /** Path to the whitelist file */
 define('WHITELIST', __DIR__ . '/../whitelist.txt');
 
+/** Path to the default whitelist file */
+define('WHITELIST_DEFAULT', __DIR__ . '/../whitelist.default.txt');
+
 /** URL to the RSS-Bridge repository */
 define('REPOSITORY', 'https://github.com/RSS-Bridge/rss-bridge/');
 

@@ -192,7 +192,8 @@ class Bridge {
 	/**
 	 * Returns the whitelist.
 	 *
-	 * On first call this function reads the whitelist from {@see WHITELIST}.
+	 * On first call this function reads the whitelist from {@see WHITELIST} if
+	 * the file exists, {@see WHITELIST_DEFAULT} otherwise.
 	 * * Each line in the file specifies one bridge on the whitelist.
 	 * * An empty file disables all bridges.
 	 * * If the file only only contains `*`, all bridges are whitelisted.
@@ -210,19 +211,21 @@ class Bridge {
 
 		if($firstCall) {
 
-			// Create initial whitelist or load from disk
-			if (!file_exists(WHITELIST) && !empty(self::$whitelist)) {
-				file_put_contents(WHITELIST, implode("\n", self::$whitelist));
-			} elseif(file_exists(WHITELIST)) {
-
+			if(file_exists(WHITELIST)) {
 				$contents = trim(file_get_contents(WHITELIST));
+			} elseif(file_exists(WHITELIST_DEFAULT)) {
+				$contents = trim(file_get_contents(WHITELIST_DEFAULT));
+			} else {
+				$contents = '';
+			}
 
-				if($contents === '*') { // Whitelist all bridges
-					self::$whitelist = self::getBridgeNames();
-				} else {
-					self::$whitelist = array_map('self::sanitizeBridgeName', explode("\n", $contents));
+			if($contents === '*') { // Whitelist all bridges
+				self::$whitelist = self::getBridgeNames();
+			} else {
+				//self::$whitelist = array_map('self::sanitizeBridgeName', explode("\n", $contents));
+				foreach(explode("\n", $contents) as $bridgeName) {
+					self::$whitelist[] = self::sanitizeBridgeName($bridgeName);
 				}
-
 			}
 
 		}

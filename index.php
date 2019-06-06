@@ -29,27 +29,8 @@ define('USER_AGENT',
 
 ini_set('user_agent', USER_AGENT);
 
-// default whitelist
-$whitelist_default = array(
-	'BandcampBridge',
-	'CryptomeBridge',
-	'DansTonChatBridge',
-	'DuckDuckGoBridge',
-	'FacebookBridge',
-	'FlickrBridge',
-	'GoogleSearchBridge',
-	'IdenticaBridge',
-	'InstagramBridge',
-	'OpenClassroomsBridge',
-	'PinterestBridge',
-	'ScmbBridge',
-	'TwitterBridge',
-	'WikipediaBridge',
-	'YoutubeBridge');
-
 try {
 
-	Bridge::setWhitelist($whitelist_default);
 	$actionFac = new \ActionFactory();
 	$actionFac->setWorkingDir(PATH_LIB_ACTIONS);
 
