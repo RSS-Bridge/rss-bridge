@@ -283,6 +283,12 @@ class Bridge {
 				$name = $matches[1];
 			}
 
+			// Improve performance for correctly written bridge names
+			if(in_array($name, self::getBridgeNames())) {
+				$index = array_search($name, self::getBridgeNames());
+				return self::getBridgeNames()[$index];
+			}
+
 			// The name is valid if a corresponding bridge file is found on disk
 			if(in_array(strtolower($name), array_map('strtolower', self::getBridgeNames()))) {
 				$index = array_search(strtolower($name), array_map('strtolower', self::getBridgeNames()));
