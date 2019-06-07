@@ -80,31 +80,31 @@ final class Configuration {
 
 		// Check PHP version
 		if(version_compare(PHP_VERSION, '5.6.0') === -1)
-			die('RSS-Bridge requires at least PHP version 5.6.0!');
+			self::reportError('RSS-Bridge requires at least PHP version 5.6.0!');
 
 		// extensions check
 		if(!extension_loaded('openssl'))
-			die('"openssl" extension not loaded. Please check "php.ini"');
+			self::reportError('"openssl" extension not loaded. Please check "php.ini"');
 
 		if(!extension_loaded('libxml'))
-			die('"libxml" extension not loaded. Please check "php.ini"');
+			self::reportError('"libxml" extension not loaded. Please check "php.ini"');
 
 		if(!extension_loaded('mbstring'))
-			die('"mbstring" extension not loaded. Please check "php.ini"');
+			self::reportError('"mbstring" extension not loaded. Please check "php.ini"');
 
 		if(!extension_loaded('simplexml'))
-			die('"simplexml" extension not loaded. Please check "php.ini"');
+			self::reportError('"simplexml" extension not loaded. Please check "php.ini"');
 
 		// Allow RSS-Bridge to run without curl module in CLI mode without root certificates
 		if(!extension_loaded('curl') && !(php_sapi_name() === 'cli' && empty(ini_get('curl.cainfo'))))
-			die('"curl" extension not loaded. Please check "php.ini"');
+			self::reportError('"curl" extension not loaded. Please check "php.ini"');
 
 		if(!extension_loaded('json'))
-			die('"json" extension not loaded. Please check "php.ini"');
+			self::reportError('"json" extension not loaded. Please check "php.ini"');
 
 		// Check cache folder permissions (write permissions required)
 		if(!is_writable(PATH_CACHE))
-			die('RSS-Bridge does not have write permissions for ' . PATH_CACHE . '!');
+			self::reportError('RSS-Bridge does not have write permissions for ' . PATH_CACHE . '!');
 
 	}
 
@@ -135,11 +135,11 @@ final class Configuration {
 	public static function loadConfiguration() {
 
 		if(!file_exists(FILE_CONFIG_DEFAULT))
-			die('The default configuration file "' . FILE_CONFIG_DEFAULT . '" is missing!');
+			self::reportError('The default configuration file is missing at ' . FILE_CONFIG_DEFAULT);
 
 		Configuration::$config = parse_ini_file(FILE_CONFIG_DEFAULT, true, INI_SCANNER_TYPED);
 		if(!Configuration::$config)
-			die('Error parsing ' . FILE_CONFIG_DEFAULT);
+			self::reportError('Error parsing ' . FILE_CONFIG_DEFAULT);
 
 		if(file_exists(FILE_CONFIG)) {
 			// Replace default configuration with custom settings
@@ -155,12 +155,12 @@ final class Configuration {
 
 		if(!is_string(self::getConfig('system', 'timezone'))
 		|| !in_array(self::getConfig('system', 'timezone'), timezone_identifiers_list(DateTimeZone::ALL_WITH_BC)))
-			die('Parameter [system] => "timezone" is invalid! Please check ' . FILE_CONFIG);
+			self::reportConfigurationError('system', 'timezone');
 
 		date_default_timezone_set(self::getConfig('system', 'timezone'));
 
 		if(!is_string(self::getConfig('proxy', 'url')))
-			die('Parameter [proxy] => "url" is not a valid string! Please check ' . FILE_CONFIG);
+			self::reportConfigurationError('proxy', 'url', 'Is not a valid string');
 
 		if(!empty(self::getConfig('proxy', 'url'))) {
 			/** URL of the proxy server */
@@ -168,38 +168,38 @@ final class Configuration {
 		}
 
 		if(!is_bool(self::getConfig('proxy', 'by_bridge')))
-			die('Parameter [proxy] => "by_bridge" is not a valid Boolean! Please check ' . FILE_CONFIG);
+			self::reportConfigurationError('proxy', 'by_bridge', 'Is not a valid Boolean');
 
 		/** True if proxy usage can be enabled selectively for each bridge */
 		define('PROXY_BYBRIDGE', self::getConfig('proxy', 'by_bridge'));
 
 		if(!is_string(self::getConfig('proxy', 'name')))
-			die('Parameter [proxy] => "name" is not a valid string! Please check ' . FILE_CONFIG);
+			self::reportConfigurationError('proxy', 'name', 'Is not a valid string');
 
 		/** Name of the proxy server */
 		define('PROXY_NAME', self::getConfig('proxy', 'name'));
 
 		if(!is_string(self::getConfig('cache', 'type')))
-			die('Parameter [cache] => "type" is not a valid string! Please check ' . FILE_CONFIG);
+			self::reportConfigurationError('cache', 'type', 'Is not a valid string');
 
 		if(!is_bool(self::getConfig('cache', 'custom_timeout')))
-			die('Parameter [cache] => "custom_timeout" is not a valid Boolean! Please check ' . FILE_CONFIG);
+			self::reportConfigurationError('cache', 'custom_timeout', 'Is not a valid Boolean');
 
 		/** True if the cache timeout can be specified by the user */
 		define('CUSTOM_CACHE_TIMEOUT', self::getConfig('cache', 'custom_timeout'));
 
 		if(!is_bool(self::getConfig('authentication', 'enable')))
-			die('Parameter [authentication] => "enable" is not a valid Boolean! Please check ' . FILE_CONFIG);
+			self::reportConfigurationError('authentication', 'enable', 'Is not a valid Boolean');
 
 		if(!is_string(self::getConfig('authentication', 'username')))
-			die('Parameter [authentication] => "username" is not a valid string! Please check ' . FILE_CONFIG);
+			self::reportConfigurationError('authentication', 'username', 'Is not a valid string');
 
 		if(!is_string(self::getConfig('authentication', 'password')))
-			die('Parameter [authentication] => "password" is not a valid string! Please check ' . FILE_CONFIG);
+			self::reportConfigurationError('authentication', 'password', 'Is not a valid string');
 
 		if(!empty(self::getConfig('admin', 'email'))
 		&& !filter_var(self::getConfig('admin', 'email'), FILTER_VALIDATE_EMAIL))
-			die('Parameter [admin] => "email" is not a valid email address! Please check ' . FILE_CONFIG);
+			self::reportConfigurationError('admin', 'email', 'Is not a valid email address');
 
 	}
 
@@ -244,6 +244,48 @@ final class Configuration {
 		}
 
 		return Configuration::$VERSION;
+
+	}
+
+	/**
+	 * Reports an configuration error for the specified section and key to the
+	 * user and ends execution
+	 *
+	 * @param string $section The section name
+	 * @param string $key The configuration key
+	 * @param string $message An optional message to the user
+	 *
+	 * @return void
+	 */
+	private static function reportConfigurationError($section, $key, $message = '') {
+
+		$report = "Parameter [{$section}] => \"{$key}\" is invalid!" . PHP_EOL;
+
+		if(file_exists(FILE_CONFIG)) {
+			$report .= 'Please check your configuration file at ' . FILE_CONFIG . PHP_EOL;
+		} elseif(!file_exists(FILE_CONFIG_DEFAULT)) {
+			$report .= 'The default configuration file is missing at ' . FILE_CONFIG_DEFAULT . PHP_EOL;
+		} else {
+			$report .= 'The default configuration file is broken.' . PHP_EOL
+			. 'Restore the original file from ' . REPOSITORY . PHP_EOL;
+		}
+
+		$report .= $message;
+		self::reportError($report);
+
+	}
+
+	/**
+	 * Reports an error message to the user and ends execution
+	 *
+	 * @param string $message The error message
+	 *
+	 * @return void
+	 */
+	private static function reportError($message) {
+
+		header('Content-Type: text/plain', true, 500);
+		die('Configuration error' . PHP_EOL . $message);
 
 	}
 }
