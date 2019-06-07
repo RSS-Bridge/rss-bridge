@@ -41,6 +41,12 @@ define('WHITELIST', __DIR__ . '/../whitelist.txt');
 /** Path to the default whitelist file */
 define('WHITELIST_DEFAULT', __DIR__ . '/../whitelist.default.txt');
 
+/** Path to the configuration file */
+define('FILE_CONFIG', PATH_ROOT . 'config.ini.php');
+
+/** Path to the default configuration file */
+define('FILE_CONFIG_DEFAULT', PATH_ROOT . 'config.default.ini.php');
+
 /** URL to the RSS-Bridge repository */
 define('REPOSITORY', 'https://github.com/RSS-Bridge/rss-bridge/');
 

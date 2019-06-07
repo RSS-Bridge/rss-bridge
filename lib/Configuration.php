@@ -114,15 +114,13 @@ final class Configuration {
 	 * Returns an error message and aborts execution if the configuration is invalid.
 	 *
 	 * The RSS-Bridge configuration is split into two files:
-	 * - `config.default.ini.php`: The default configuration file that ships with
-	 * every release of RSS-Bridge (do not modify this file!).
-	 * - `config.ini.php`: The local configuration file that can be modified by
-	 * server administrators.
+	 * - {@see FILE_CONFIG_DEFAULT} The default configuration file that ships
+	 * with every release of RSS-Bridge (do not modify this file!).
+	 * - {@see FILE_CONFIG} The local configuration file that can be modified
+	 * by server administrators.
 	 *
-	 * The files must be located at {@see PATH_ROOT}
-	 *
-	 * RSS-Bridge will first load `config.default.ini.php` into memory and then
-	 * replace parameters with the contents of `config.ini.php`. That way new
+	 * RSS-Bridge will first load {@see FILE_CONFIG_DEFAULT} into memory and then
+	 * replace parameters with the contents of {@see FILE_CONFIG}. That way new
 	 * parameters are automatically initialized with default values and custom
 	 * configurations can be reduced to the minimum set of parametes necessary
 	 * (only the ones that changed).
@@ -136,16 +134,16 @@ final class Configuration {
 	 */
 	public static function loadConfiguration() {
 
-		if(!file_exists(PATH_ROOT . 'config.default.ini.php'))
-			die('The default configuration file "config.default.ini.php" is missing!');
+		if(!file_exists(FILE_CONFIG_DEFAULT))
+			die('The default configuration file "' . FILE_CONFIG_DEFAULT . '" is missing!');
 
-		Configuration::$config = parse_ini_file(PATH_ROOT . 'config.default.ini.php', true, INI_SCANNER_TYPED);
+		Configuration::$config = parse_ini_file(FILE_CONFIG_DEFAULT, true, INI_SCANNER_TYPED);
 		if(!Configuration::$config)
-			die('Error parsing config.default.ini.php');
+			die('Error parsing ' . FILE_CONFIG_DEFAULT);
 
-		if(file_exists(PATH_ROOT . 'config.ini.php')) {
+		if(file_exists(FILE_CONFIG)) {
 			// Replace default configuration with custom settings
-			foreach(parse_ini_file(PATH_ROOT . 'config.ini.php', true, INI_SCANNER_TYPED) as $header => $section) {
+			foreach(parse_ini_file(FILE_CONFIG, true, INI_SCANNER_TYPED) as $header => $section) {
 				foreach($section as $key => $value) {
 					// Skip unknown sections and keys
 					if(array_key_exists($header, Configuration::$config) && array_key_exists($key, Configuration::$config[$header])) {
@@ -157,12 +155,12 @@ final class Configuration {
 
 		if(!is_string(self::getConfig('system', 'timezone'))
 		|| !in_array(self::getConfig('system', 'timezone'), timezone_identifiers_list(DateTimeZone::ALL_WITH_BC)))
-			die('Parameter [system] => "timezone" is invalid! Please check "config.ini.php"!');
+			die('Parameter [system] => "timezone" is invalid! Please check ' . FILE_CONFIG);
 
 		date_default_timezone_set(self::getConfig('system', 'timezone'));
 
 		if(!is_string(self::getConfig('proxy', 'url')))
-			die('Parameter [proxy] => "url" is not a valid string! Please check "config.ini.php"!');
+			die('Parameter [proxy] => "url" is not a valid string! Please check ' . FILE_CONFIG);
 
 		if(!empty(self::getConfig('proxy', 'url'))) {
 			/** URL of the proxy server */
@@ -170,38 +168,38 @@ final class Configuration {
 		}
 
 		if(!is_bool(self::getConfig('proxy', 'by_bridge')))
-			die('Parameter [proxy] => "by_bridge" is not a valid Boolean! Please check "config.ini.php"!');
+			die('Parameter [proxy] => "by_bridge" is not a valid Boolean! Please check ' . FILE_CONFIG);
 
 		/** True if proxy usage can be enabled selectively for each bridge */
 		define('PROXY_BYBRIDGE', self::getConfig('proxy', 'by_bridge'));
 
 		if(!is_string(self::getConfig('proxy', 'name')))
-			die('Parameter [proxy] => "name" is not a valid string! Please check "config.ini.php"!');
+			die('Parameter [proxy] => "name" is not a valid string! Please check ' . FILE_CONFIG);
 
 		/** Name of the proxy server */
 		define('PROXY_NAME', self::getConfig('proxy', 'name'));
 
 		if(!is_string(self::getConfig('cache', 'type')))
-			die('Parameter [cache] => "type" is not a valid string! Please check "config.ini.php"!');
+			die('Parameter [cache] => "type" is not a valid string! Please check ' . FILE_CONFIG);
 
 		if(!is_bool(self::getConfig('cache', 'custom_timeout')))
-			die('Parameter [cache] => "custom_timeout" is not a valid Boolean! Please check "config.ini.php"!');
+			die('Parameter [cache] => "custom_timeout" is not a valid Boolean! Please check ' . FILE_CONFIG);
 
 		/** True if the cache timeout can be specified by the user */
 		define('CUSTOM_CACHE_TIMEOUT', self::getConfig('cache', 'custom_timeout'));
 
 		if(!is_bool(self::getConfig('authentication', 'enable')))
-			die('Parameter [authentication] => "enable" is not a valid Boolean! Please check "config.ini.php"!');
+			die('Parameter [authentication] => "enable" is not a valid Boolean! Please check ' . FILE_CONFIG);
 
 		if(!is_string(self::getConfig('authentication', 'username')))
-			die('Parameter [authentication] => "username" is not a valid string! Please check "config.ini.php"!');
+			die('Parameter [authentication] => "username" is not a valid string! Please check ' . FILE_CONFIG);
 
 		if(!is_string(self::getConfig('authentication', 'password')))
-			die('Parameter [authentication] => "password" is not a valid string! Please check "config.ini.php"!');
+			die('Parameter [authentication] => "password" is not a valid string! Please check ' . FILE_CONFIG);
 
 		if(!empty(self::getConfig('admin', 'email'))
 		&& !filter_var(self::getConfig('admin', 'email'), FILTER_VALIDATE_EMAIL))
-			die('Parameter [admin] => "email" is not a valid email address! Please check "config.ini.php"!');
+			die('Parameter [admin] => "email" is not a valid email address! Please check ' . FILE_CONFIG);
 
 	}
 
