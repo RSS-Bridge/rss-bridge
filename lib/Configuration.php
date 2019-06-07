@@ -155,6 +155,12 @@ final class Configuration {
 			}
 		}
 
+		if(!is_string(self::getConfig('system', 'timezone'))
+		|| !in_array(self::getConfig('system', 'timezone'), timezone_identifiers_list(DateTimeZone::ALL_WITH_BC)))
+			die('Parameter [system] => "timezone" is invalid! Please check "config.ini.php"!');
+
+		date_default_timezone_set(self::getConfig('system', 'timezone'));
+
 		if(!is_string(self::getConfig('proxy', 'url')))
 			die('Parameter [proxy] => "url" is not a valid string! Please check "config.ini.php"!');
 
