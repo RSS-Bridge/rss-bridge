@@ -34,8 +34,7 @@ class BrutBridge extends BridgeAbstract {
 		)
 	);
 
-	//const CACHE_TIMEOUT = 1800; // 30 mins
-	const CACHE_TIMEOUT = 0;
+	const CACHE_TIMEOUT = 1800; // 30 mins
 
 	private $feedURI = '';
 
