@@ -36,7 +36,9 @@ class BrutBridge extends BridgeAbstract {
 
 	const CACHE_TIMEOUT = 1800; // 30 mins
 
-	private $videoImageRegex = '/https:\/\/img\.brut\.media\/thumbnail\/(?:[a-z0-9-]+)-([a-z0-9]+-[a-z0-9]+-[a-z0-9]+-[a-z0-9]+-[a-z0-9]+)-(square|landscape|portrait)(?:-auto)?\.jpg/';
+	private $videoId = '';
+	private $videoType = '';
+	private $videoImage = '';
 
 	public function collectData() {
 
@@ -57,13 +59,9 @@ class BrutBridge extends BridgeAbstract {
 			$videoPageHtml = getSimpleHTMLDOMCached($videoPath, 3600)
 				or returnServerError('Could not request: ' . $videoPath);
 
-			$videoImage = $videoPageHtml->find("meta[name=twitter:image]")[0]->content;
+			$this->videoImage = $videoPageHtml->find("meta[name=twitter:image]", 0)->content;
 			
-			preg_match($this->videoImageRegex, $videoImage, $matches)
-				or returnServerError('Could not extract video id and type from image url: ' . $videoImage);
-
-			$videoId = $matches[1];
-			$videoType = $matches[2];
+			$this->processTwitterImage();
 
 			$description = $videoPageHtml->find('div.description', 0);
 
@@ -75,14 +73,11 @@ class BrutBridge extends BridgeAbstract {
 			}
 
 			$item['content'] = $this->processContent(
-				$description, 
-				$videoId,
-				$videoType,
-				$videoImage
+				$description,
 			);
 
 			$item['timestamp'] = $this->processDate($description);
-			$item['enclosures'][] = $videoImage;
+			$item['enclosures'][] = $this->videoImage;
 
 			$this->items[] = $item;
 		}
@@ -107,10 +102,10 @@ class BrutBridge extends BridgeAbstract {
 		return strtotime($description->find('div.date', 0)->innertext);
 	}
 
-	private function processContent($description, $videoId, $videoType, $videoImage) {
+	private function processContent($description) {
 
-		$content = '<video controls poster="' . $videoImage . '" preload="none">
-			<source src="https://content.brut.media/video/' . $videoId . '-' . $videoType . '-web.mp4"
+		$content = '<video controls poster="' . $this->videoImage . '" preload="none">
+			<source src="https://content.brut.media/video/' . $this->videoId . '-' . $this->videoType . '-web.mp4"
             type="video/mp4">
 			</video>';
 		$content .= '<p>' . $description->find('h2.mb-1', 0)->innertext . '</p>';
@@ -120,5 +115,28 @@ class BrutBridge extends BridgeAbstract {
 		}
 
 		return $content;
+	}
+
+	private function processTwitterImage() {
+		/**
+		 * Extract video ID + type from twitter image
+		 *
+		 * Example (wrapped):
+		 *  https://img.brut.media/thumbnail/
+		 *  the-life-of-rita-moreno-2cce75b5-d448-44d2-a97c-ca50d6470dd4-square.jpg
+		 *  ?ts=1559337892
+		 */
+		$fpath = parse_url($this->videoImage, PHP_URL_PATH);
+		$fname = basename($fpath);
+		$fname = substr($fname, 0, strrpos($fname, '.'));
+		$parts = explode('-', $fname);
+
+		if (end($parts) === 'auto') {
+			$key = array_search('auto', $parts);
+			unset($parts[$key]);
+		}
+
+		$this->videoId = implode('-', array_splice($parts, -6, 5));
+		$this->videoType = end($parts);
 	}
 }
