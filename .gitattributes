@@ -40,3 +40,8 @@ phpcs.xml               export-ignore
 phpcompatibility.xml    export-ignore
 tests/                  export-ignore
 cache/.gitkeep          export-ignore
+## Composer
+composer.json           export-ignore
+composer.lock           export-ignore
+## Heroku
+app.json                export-ignore
