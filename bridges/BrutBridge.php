@@ -73,7 +73,7 @@ class BrutBridge extends BridgeAbstract {
 			}
 
 			$item['content'] = $this->processContent(
-				$description,
+				$description
 			);
 
 			$item['timestamp'] = $this->processDate($description);
