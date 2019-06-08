@@ -130,7 +130,9 @@ class ConnectivityAction extends ActionAbstract {
 
 			table.appendChild(thead);
 			table.appendChild(tbody);
-			document.body.appendChild(table);
+
+			var content = document.getElementById('main-content');
+			content.appendChild(table);
 
 			// Walk through the list
 			for (var bridge in list.bridges) {
@@ -199,8 +201,10 @@ class ConnectivityAction extends ActionAbstract {
 				</script>
 			</head>
 			<body>
-				<div class="alert alert-primary" id="status-message"></div>
-				<input type="text" class="form-control" id="search" onkeyup="search()" placeholder="Search for bridge..">
+				<div id="main-content" class="container">
+					<div class="alert alert-primary" id="status-message"></div>
+					<input type="text" class="form-control" id="search" onkeyup="search()" placeholder="Search for bridge..">
+				</div>
 			</body>
 		</html>
 EOD;
