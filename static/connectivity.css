@@ -1,0 +1,5 @@
+input:focus::-webkit-input-placeholder { opacity: 0; }
+input:focus::-moz-placeholder { opacity: 0; }
+input:focus::placeholder { opacity: 0; }
+input:focus:-moz-placeholder { opacity: 0; }
+input:focus:-ms-input-placeholder { opacity: 0; }
