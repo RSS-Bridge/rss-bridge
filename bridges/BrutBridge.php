@@ -78,7 +78,7 @@ class BrutBridge extends BridgeAbstract {
 			$this->items[] = $item;
 
 			if (count($this->items) >= 5) {
-				break;	
+				break;
 			}
 		}
 	}
