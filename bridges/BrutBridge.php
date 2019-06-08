@@ -78,7 +78,7 @@ class BrutBridge extends BridgeAbstract {
 				$description->find('div.date', 0)->children(0)->outertext = '';
 			}
 
-			$item['content'] = $this->processConent(
+			$item['content'] = $this->processContent(
 				$description, 
 				$videoId,
 				$videoType,
@@ -111,7 +111,7 @@ class BrutBridge extends BridgeAbstract {
 		return strtotime($description->find('div.date', 0)->innertext);
 	}
 
-	private function processConent($description, $videoId, $videoType, $videoImage) {
+	private function processContent($description, $videoId, $videoType, $videoImage) {
 
 		$content = '<video controls poster="' . $videoImage . '" preload="none">
 			<source src="https://content.brut.media/video/' . $videoId . '-' . $videoType . '-web.mp4"
