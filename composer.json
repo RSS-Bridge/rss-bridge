@@ -1,6 +1,6 @@
 {
     "require": {
-	"php": "^7.1",
+	"php": ">=5.6",
 	"ext-mbstring": "*",
 	"ext-sqlite3": "*",
 	"ext-curl": "*",
