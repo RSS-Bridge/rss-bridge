@@ -22,13 +22,19 @@
 *.RTF	 diff=astextplain
 
 # Ignore files in git archive (i.e. GitHub release builds)
+## Docker
 Dockerfile              export-ignore
+.dockerignore           export-ignore
+## Travis
 .travis.yml             export-ignore
+## GitHub
 .github/                export-ignore
+## Git
 .gitattributes          export-ignore
 .gitignore              export-ignore
-.dockerignore           export-ignore
+## Scalingo
 scalingo.json           export-ignore
+## RSS-Bridge
 phpunit.xml             export-ignore
 phpcs.xml               export-ignore
 phpcompatibility.xml    export-ignore
