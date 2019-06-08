@@ -50,10 +50,6 @@ class BrutBridge extends BridgeAbstract {
 		foreach($results->find('li.col-6.col-sm-4.col-md-3.col-lg-2.px-2.pb-4') as $index => $li) {
 			$item = array();
 
-			if ($index > 5) {
-				break;
-			}
-
 			$videoPath = self::URI . $li->children(0)->href;
 
 			$videoPageHtml = getSimpleHTMLDOMCached($videoPath, 3600)
@@ -80,6 +76,10 @@ class BrutBridge extends BridgeAbstract {
 			$item['enclosures'][] = $this->videoImage;
 
 			$this->items[] = $item;
+
+			if (count($this->items) >= 5) {
+				break;	
+			}
 		}
 	}
 
