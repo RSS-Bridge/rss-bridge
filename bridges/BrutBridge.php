@@ -59,8 +59,8 @@ class BrutBridge extends BridgeAbstract {
 			$videoPageHtml = getSimpleHTMLDOMCached($videoPath, 3600)
 				or returnServerError('Could not request: ' . $videoPath);
 
-			$this->videoImage = $videoPageHtml->find("meta[name=twitter:image]", 0)->content;
-			
+			$this->videoImage = $videoPageHtml->find('meta[name="twitter:image"]', 0)->content;
+
 			$this->processTwitterImage();
 
 			$description = $videoPageHtml->find('div.description', 0);
