@@ -36,16 +36,12 @@ class BrutBridge extends BridgeAbstract {
 
 	const CACHE_TIMEOUT = 1800; // 30 mins
 
-	private $feedURI = '';
-
 	private $videoImageRegex = '/https:\/\/img\.brut\.media\/thumbnail\/(?:[a-z0-9-]+)-([a-z0-9]+-[a-z0-9]+-[a-z0-9]+-[a-z0-9]+-[a-z0-9]+)-(square|landscape|portrait)(?:-auto)?\.jpg/';
 
 	public function collectData() {
 
-		$this->feedURI = self::URI . '/' . $this->getInput('edition') . '/' . $this->getInput('category');
-
-		$html = getSimpleHTMLDOM($this->feedURI)
-			or returnServerError('Could not request: ' . $this->feedURI);
+		$html = getSimpleHTMLDOM($this->getURI())
+			or returnServerError('Could not request: ' . $this->getURI());
 
 		$results = $html->find('div.results', 0);
 
@@ -94,8 +90,8 @@ class BrutBridge extends BridgeAbstract {
 
 	public function getURI() {
 
-		if ($this->feedURI) {
-			return $this->feedURI;
+		if (!is_null($this->getInput('edition')) && !is_null($this->getInput('category'))) {
+			return self::URI . '/' . $this->getInput('edition') . '/' . $this->getInput('category');
 		}
 
 		return parent::getURI();
