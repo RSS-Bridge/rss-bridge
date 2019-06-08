@@ -6,8 +6,6 @@ Configuration::loadConfiguration();
 
 Authentication::showPromptIfNeeded();
 
-date_default_timezone_set('UTC');
-
 /*
 Move the CLI arguments to the $_GET array, in order to be able to use
 rss-bridge from the command line
