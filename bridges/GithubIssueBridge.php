@@ -66,10 +66,21 @@ class GithubIssueBridge extends BridgeAbstract {
 		return parent::getURI();
 	}
 
-	protected function extractIssueEvent($issueNbr, $title, $comment){
-		$comment = $comment->firstChild();
-		$uri = static::URI . $this->getInput('u') . '/' . $this->getInput('p')
-			. '/issues/' . $issueNbr . '#' . $comment->getAttribute('id');
+	private function buildGitHubIssueCommentUri($issue_number, $comment_id) {
+		// https://github.com/<user>/<project>/issues/<issue-number>#<id>
+		return static::URI
+		. $this->getInput('u')
+		. '/'
+		. $this->getInput('p')
+		. '/issues/'
+		. $issue_number
+		. '#'
+		. $comment_id;
+	}
+
+	private function extractIssueEvent($issueNbr, $title, $comment){
+
+		$uri = buildGitHubIssueCommentUri($issueNbr, $comment->getAttribute('id'));
 
 		$author = $comment->find('.author', 0)->plaintext;
 
@@ -94,22 +105,21 @@ class GithubIssueBridge extends BridgeAbstract {
 		return $item;
 	}
 
-	protected function extractIssueComment($issueNbr, $title, $comment){
-		$uri = static::URI . $this->getInput('u') . '/'
-			. $this->getInput('p') . '/issues/' . $issueNbr;
+	private function extractIssueComment($issueNbr, $title, $comment){
+
+		$uri = buildGitHubIssueCommentUri($issueNbr, $comment->id);
 
 		$author = $comment->find('.author', 0)->plaintext;
 
 		$title .= ' / ' . trim(
-			$comment->find('.comment .timeline-comment-header-text', 0)->plaintext
+			$comment->find('.timeline-comment-header-text', 0)->plaintext
 		);
 
 		$content = $comment->find('.comment-body', 0)->innertext;
 
 		$item = array();
 		$item['author'] = $author;
-		$item['uri'] = $uri
-			. '#' . $comment->firstChild()->nextSibling()->getAttribute('id');
+		$item['uri'] = $uri;
 		$item['title'] = html_entity_decode($title, ENT_QUOTES, 'UTF-8');
 		$item['timestamp'] = strtotime(
 			$comment->find('relative-time', 0)->getAttribute('datetime')
@@ -118,25 +128,32 @@ class GithubIssueBridge extends BridgeAbstract {
 		return $item;
 	}
 
-	protected function extractIssueComments($issue){
+	private function extractIssueComments($issue){
 		$items = array();
 		$title = $issue->find('.gh-header-title', 0)->plaintext;
 		$issueNbr = trim(
 			substr($issue->find('.gh-header-number', 0)->plaintext, 1)
 		);
-		$comments = $issue->find('.js-discussion', 0);
-		foreach($comments->children() as $comment) {
+
+		$comments = $issue->find('
+			[id^="issue-"] > .comment,
+			[id^="issuecomment-"] > .comment,
+			[id^="event-"],
+			[id^="ref-"]
+			');
+		foreach($comments as $comment) {
+
 			if (!$comment->hasChildNodes()) {
 				continue;
 			}
-			$comment = $comment->firstChild();
-			$classes = explode(' ', $comment->getAttribute('class'));
-			if (in_array('timeline-comment-wrapper', $classes)) {
+
+			if (!$comment->hasClass('discussion-item-header')) {
 				$item = $this->extractIssueComment($issueNbr, $title, $comment);
 				$items[] = $item;
 				continue;
 			}
-			while (in_array('discussion-item', $classes)) {
+
+			while ($comment->hasClass('discussion-item-header')) {
 				$item = $this->extractIssueEvent($issueNbr, $title, $comment);
 				$items[] = $item;
 				$comment = $comment->nextSibling();
@@ -145,6 +162,7 @@ class GithubIssueBridge extends BridgeAbstract {
 				}
 				$classes = explode(' ', $comment->getAttribute('class'));
 			}
+
 		}
 		return $items;
 	}
