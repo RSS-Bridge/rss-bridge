@@ -63,7 +63,8 @@ class ConnectivityAction extends ActionAbstract {
 
 		$retVal = array(
 			'bridge' => $bridgeName,
-			'successful' => false
+			'successful' => false,
+			'http_code' => 200,
 		);
 
 		$bridge = Bridge::create($bridgeName);
@@ -78,10 +79,15 @@ class ConnectivityAction extends ActionAbstract {
 		);
 
 		try {
-			$html = getContents($bridge::URI, array(), $curl_opts);
+			$reply = getContents($bridge::URI, array(), $curl_opts, true);
 
-			if($html) {
+			if($reply) {
 				$retVal['successful'] = true;
+				if (isset($reply['header'])) {
+					if (strpos($reply['header'], 'HTTP/1.1 301 Moved Permanently') !== false) {
+						$retVal['http_code'] = 301;
+					}
+				}
 			}
 		} catch(Exception $e) {
 			$retVal['successful'] = false;
