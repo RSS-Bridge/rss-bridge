@@ -80,7 +80,7 @@ class GithubIssueBridge extends BridgeAbstract {
 
 	private function extractIssueEvent($issueNbr, $title, $comment){
 
-		$uri = buildGitHubIssueCommentUri($issueNbr, $comment->getAttribute('id'));
+		$uri = $this->buildGitHubIssueCommentUri($issueNbr, $comment->id);
 
 		$author = $comment->find('.author', 0)->plaintext;
 
@@ -107,7 +107,7 @@ class GithubIssueBridge extends BridgeAbstract {
 
 	private function extractIssueComment($issueNbr, $title, $comment){
 
-		$uri = buildGitHubIssueCommentUri($issueNbr, $comment->id);
+		$uri = $this->buildGitHubIssueCommentUri($issueNbr, $comment->parent->id);
 
 		$author = $comment->find('.author', 0)->plaintext;
 
