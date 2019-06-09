@@ -159,13 +159,13 @@ class DesoutterBridge extends BridgeAbstract {
 		foreach($html->find('article') as $article) {
 			$item = array();
 
-			$item['uri'] = $article->find('[itemprop="name"]', 0)->href;
-			$item['title'] = $article->find('[itemprop="name"]', 0)->title;
+			$item['uri'] = $article->find('a', 0)->href;
+			$item['title'] = $article->find('a[title]', 0)->title;
 
 			if($this->getInput('full')) {
 				$item['content'] = $this->getFullNewsArticle($item['uri']);
 			} else {
-				$item['content'] = $article->find('[itemprop="description"]', 0)->plaintext;
+				$item['content'] = $article->find('div.tile-body p', 0)->plaintext;
 			}
 
 			$this->items[] = $item;
