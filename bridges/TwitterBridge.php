@@ -296,7 +296,7 @@ EOD;
 				// Add embeded image to content
 				$quotedImage_html = '';
 				$quotedImages = $this->getQuotedImageURI($tweet);
-				
+
 				if(!$this->getInput('noimg') && !is_null($quotedImages)) {
 
 					foreach ($quotedImages as $image) {
