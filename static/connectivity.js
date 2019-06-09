@@ -59,9 +59,9 @@ function buildTable(bridgeList) {
 		var td_result = document.createElement('td');
 
 		if (bridgeList.bridges[bridge].status === 'active') {
-			td_result.innerHTML = '<i class="fas fa-hourglass-start"></i>';
+			td_result.innerHTML = '<i title="Scheduled" class="fas fa-hourglass-start"></i>';
 		} else {
-			td_result.innerHTML = '<i class="fas fa-times-circle"></i>';
+			td_result.innerHTML = '<i title="Inactive" class="fas fa-times-circle"></i>';
 		}
 
 		tr.appendChild(td_result);
@@ -139,30 +139,35 @@ function abortChecks() {
 function processBridgeResultAsync(result) {
 	return new Promise((resolve, reject) => {
 		if (result.successful) {
-			resolve(result.bridge);
+			resolve(result);
 		} else {
-			reject(result.bridge);
+			reject(result);
 		}
 	});
 }
 
-function markBridgeSuccessful(bridge) {
+function markBridgeSuccessful(result) {
 	return new Promise((resolve) => {
-		var tr = document.getElementById(bridge);
+		var tr = document.getElementById(result.bridge);
 		tr.classList.remove('bg-secondary');
-		tr.classList.add('bg-success');
-		tr.children[1].innerHTML = '<i class="fas fa-check"></i>';
+		if (result.http_code == 200) {
+			tr.classList.add('bg-success');
+			tr.children[1].innerHTML = '<i title="Successful" class="fas fa-check"></i>';
+		} else {
+			tr.classList.add('bg-primary');
+			tr.children[1].innerHTML = '<i title="Redirected" class="fas fa-directions"></i>';
+		}
 
 		resolve();
 	});
 }
 
-function markBridgeFailed(bridge) {
+function markBridgeFailed(result) {
 	return new Promise((resolve) => {
-		var tr = document.getElementById(bridge);
+		var tr = document.getElementById(result.bridge);
 		tr.classList.remove('bg-secondary');
 		tr.classList.add('bg-danger');
-		tr.children[1].innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+		tr.children[1].innerHTML = '<i title="Failed" class="fas fa-exclamation-triangle"></i>';
 
 		resolve();
 	});
@@ -173,7 +178,7 @@ function markBridgeAborted(bridge) {
 		var tr = document.getElementById(bridge);
 		tr.classList.remove('bg-secondary');
 		tr.classList.add('bg-warning');
-		tr.children[1].innerHTML = '<i class="fas fa-ban"></i>';
+		tr.children[1].innerHTML = '<i title="Aborted" class="fas fa-ban"></i>';
 
 		resolve();
 	});
