@@ -89,11 +89,15 @@ function buildBridgeQueue(bridgeList) {
 function checkNextBridgeAsync() {
 	return new Promise((resolve) => {
 		var msg = document.getElementById('status-message');
+		var icon = document.getElementById('status-icon');
 
 		if (bridges.length === 0) {
 			msg.classList.remove('alert-primary');
 			msg.classList.add('alert-success');
 			msg.getElementsByTagName('span')[0].textContent = 'Done';
+
+			icon.classList.remove('fa-sync');
+			icon.classList.add('fa-check');
 		} else {
 			var bridge = bridges.shift();
 
@@ -119,6 +123,10 @@ function abortChecks() {
 		msg.classList.remove('alert-primary');
 		msg.classList.add('alert-warning');
 		msg.getElementsByTagName('span')[0].textContent = 'Aborted';
+
+		var icon = document.getElementById('status-icon');
+		icon.classList.remove('fa-sync');
+		icon.classList.add('fa-ban');
 
 		bridges.forEach((bridge) => {
 			markBridgeAborted(bridge);
