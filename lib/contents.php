@@ -205,7 +205,7 @@ EOD
 			, $errorCode);
 	}
 
-	return ($returnHeader === true) ? $retVal : $retval['content'];
+	return ($returnHeader === true) ? $retVal : $retVal['content'];
 }
 
 /**
