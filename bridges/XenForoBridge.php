@@ -118,7 +118,7 @@ class XenForoBridge extends BridgeAbstract {
 		// Notice: The DOM structure changes depending on the XenForo version used
 		if($mainContent = $html->find('div.mainContent', 0)) {
 			$this->version = self::XENFORO_VERSION_1;
-		} elseif ($mainContent = $html->find('div[class="p-body"]', 0)) {
+		} elseif ($mainContent = $html->find('div[class~="p-body"]', 0)) {
 			$this->version = self::XENFORO_VERSION_2;
 		} else {
 			returnServerError('This forum is currently not supported!');
@@ -140,7 +140,7 @@ class XenForoBridge extends BridgeAbstract {
 
 			case self::XENFORO_VERSION_2:
 
-				$titleBar = $mainContent->find('div[class="p-title"] h1', 0)
+				$titleBar = $mainContent->find('div[class~="p-title"] h1', 0)
 					or returnServerError('Error finding title bar!');
 
 				$this->title = $titleBar->plaintext;
@@ -255,7 +255,7 @@ class XenForoBridge extends BridgeAbstract {
 
 		$lang = $html->find('html', 0)->lang;
 
-		$messageList = $html->find('div[class="block-body"] article')
+		$messageList = $html->find('div[class~="block-body"] article')
 			or returnServerError('Error finding message list!');
 
 		foreach($messageList as $post) {
@@ -268,13 +268,17 @@ class XenForoBridge extends BridgeAbstract {
 
 			$item['uri'] = $url . '#' . $post->getAttribute('id');
 
-			$title = $post->find('div[class="message-content"] article', 0)->plaintext;
+			$title = $post->find('div[class~="message-content"] article', 0)->plaintext;
 			$end = strpos($title, ' ', 70);
 			$item['title'] = substr($title, 0, $end);
 
-			$item['timestamp'] = $this->fixDate($post->find('time', 0)->title, $lang);
+			if ($post->find('time[datetime]', 0)) {
+				$item['timestamp'] = $post->find('time[datetime]', 0)->datetime;
+			} else {
+				$item['timestamp'] = $this->fixDate($post->find('time', 0)->title, $lang);
+			}
 			$item['author'] = $post->getAttribute('data-author');
-			$item['content'] = $post->find('div[class="message-content"] article', 0);
+			$item['content'] = $post->find('div[class~="message-content"] article', 0);
 
 			// Bridge specific properties
 			$item['id'] = $post->getAttribute('id');
@@ -305,7 +309,7 @@ class XenForoBridge extends BridgeAbstract {
 			// Load at least the last page
 			do {
 
-				$pageurl = $hosturl . str_replace($sentinel, $lastpage, $baseurl);
+				$pageurl = str_replace($sentinel, $lastpage, $baseurl);
 
 				// We can optimize performance by caching all but the last page
 				if($page != $lastpage) {
@@ -353,7 +357,7 @@ class XenForoBridge extends BridgeAbstract {
 			// Load at least the last page
 			do {
 
-				$pageurl = $hosturl . str_replace($sentinel, $lastpage, $baseurl);
+				$pageurl = str_replace($sentinel, $lastpage, $baseurl);
 
 				// We can optimize performance by caching all but the last page
 				if($page != $lastpage) {
@@ -364,9 +368,9 @@ class XenForoBridge extends BridgeAbstract {
 						or returnServerError('Error loading contents from ' . $pageurl . '!');
 				}
 
-				$html = defaultLinkTo($html, $this->hosturl);
+				$html = defaultLinkTo($html, $hosturl);
 
-				$this->extractThreadPostsV2($html, $this->pageurl);
+				$this->extractThreadPostsV2($html, $pageurl);
 
 				$page--;
 
