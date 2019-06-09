@@ -112,7 +112,7 @@ class ConnectivityAction extends ActionAbstract {
 	</head>
 	<body>
 		<div id="main-content" class="container">
-			<div id="status-message" class="alert alert-primary alert-dismissible fade show" role="alert">
+			<div id="status-message" class="sticky-top alert alert-primary alert-dismissible fade show" role="alert">
 				<span>...</span>
 				<button type="button" class="close" data-dismiss="alert" aria-label="Close" onclick="stopConnectivityChecks()">
 					<span aria-hidden="true">&times;</span>
