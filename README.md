@@ -15,7 +15,6 @@ Supported sites/pages (examples)
 * `DuckDuckGo`: Most recent results from [DuckDuckGo.com](https://duckduckgo.com/)
 * `Facebook` : Returns the latest posts on a page or profile on [Facebook](https://facebook.com/)
 * `FlickrExplore` : [Latest interesting images](http://www.flickr.com/explore) from Flickr
-* `GooglePlus` : Most recent posts of user timeline
 * `GoogleSearch` : Most recent results from Google Search
 * `Identi.ca` : Identica user timeline (Should be compatible with other Pump.io instances)
 * `Instagram`: Most recent photos from an Instagram user
