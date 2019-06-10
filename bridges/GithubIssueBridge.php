@@ -239,4 +239,63 @@ class GithubIssueBridge extends BridgeAbstract {
 			$item['title'] = preg_replace('/\s+/', ' ', $item['title']);
 		});
 	}
+
+	public function detectParameters($url) {
+
+		$help = <<<EOD
+
+
+Usage:
+For project issues the URL must include /<user>/<project>
+For issue comments the URL must include /<user>/<project>/issues/<issue-number>
+
+Examples:
+- https://github.com/rss-bridge/rss-bridge
+- https://github.com/rss-bridge/rss-bridge/issues/1
+
+Issue comments for project issues are enabled if the URL points to issues
+https://github.com/rss-bridge/rss-bridge/issues
+EOD;
+
+		if(filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) === false
+		|| strpos($url, self::URI) !== 0) {
+			returnClientError('Invalid URL' . $help);
+			return null;
+		}
+
+		$url_components = parse_url($url);
+		$path_segments = array_values(array_filter(explode('/', $url_components['path'])));
+
+		switch(count($path_segments)) {
+			case 2: { // Project issues
+				list($user, $project) = $path_segments;
+				$show_comments = 'off';
+			} break;
+			case 3: { // Project issues with issue comments
+				if($path_segments[2] !== 'issues') {
+					returnClientError('Invalid path. Expected "/issues/", found "/'
+						. $path_segments[2]
+						. '/"'
+						. $help
+					);
+				}
+				list($user, $project) = $path_segments;
+				$show_comments = 'on';
+			} break;
+			case 4: { // Issue comments
+				list($user, $project, /* issues */, $issue) = $path_segments;
+			} break;
+			default: {
+				returnClientError('Invalid path.' . $help);
+			}
+		}
+
+		return array(
+			'u' => $user,
+			'p' => $project,
+			'c' => isset($show_comments) ? $show_comments : null,
+			'i' => isset($issue) ? $issue : null,
+		);
+
+	}
 }
