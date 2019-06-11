@@ -28,7 +28,31 @@ class TwitterBridge extends BridgeAbstract {
 				'name' => 'Keyword or #hashtag',
 				'required' => true,
 				'exampleValue' => 'rss-bridge, #rss-bridge',
-				'title' => 'Insert a keyword or hashtag'
+				'title' => <<<EOD
+* To search for multiple words (must contain all of these words), put a space between them.
+
+Example: `rss-bridge release`.
+
+* To search for multiple words (contains any of these words), put "OR" between them.
+
+Example: `rss-bridge OR rssbridge`.
+
+* To search for an exact phrase (including whitespace), put double-quotes around them.
+
+Example: `"rss-bridge release"`
+
+* If you want to search for anything **but** a specific word, put a hyphen before it.
+
+Example: `rss-bridge -release` (ignores "release")
+
+* Of course, this also works for hashtags.
+
+Example: `#rss-bridge OR #rssbridge`
+
+* And you can combine them in any shape or form you like.
+
+Example: `#rss-bridge OR #rssbridge -release`
+EOD
 			)
 		),
 		'By username' => array(
