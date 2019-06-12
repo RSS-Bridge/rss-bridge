@@ -118,6 +118,9 @@ class ConnectivityAction extends ActionAbstract {
 	</head>
 	<body>
 		<div id="main-content" class="container">
+			<div class="progress">
+				<div class="progress-bar" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+			</div>
 			<div id="status-message" class="sticky-top alert alert-primary alert-dismissible fade show" role="alert">
 				<i id="status-icon" class="fas fa-sync"></i>
 				<span>...</span>

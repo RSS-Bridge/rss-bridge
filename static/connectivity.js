@@ -114,6 +114,7 @@ function checkNextBridgeAsync() {
 			.catch(console.log.bind(console));
 
 			search(); // Dynamically update search results
+			updateProgressBar();
 
 		}
 
@@ -198,6 +199,22 @@ function checkAbortAsync() {
 
 		resolve();
 	});
+}
+
+function updateProgressBar() {
+
+	// This will break if the table changes
+	var total = document.getElementsByTagName('tr').length - 1;
+	var current = bridges.length;
+	var progress = (total - current) * 100 / total;
+
+	var progressBar = document.getElementsByClassName('progress-bar')[0];
+
+	if(progressBar){
+		progressBar.setAttribute('aria-valuenow', progress.toFixed(0));
+		progressBar.style.width = progress.toFixed(0) + '%';
+	}
+
 }
 
 function stopConnectivityChecks() {
