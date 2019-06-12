@@ -189,7 +189,7 @@ EOD
 
 			// Skip retweets?
 			if($this->getInput('noretweet')
-			&& strcasecmp($tweet->getAttribute('data-screen-name'), $this->getInput('u'))) {
+			&& $tweet->find('div.context span.js-retweet-text a', 0)) {
 				continue;
 			}
 
@@ -213,8 +213,8 @@ EOD
 			$item['fullname'] = htmlspecialchars_decode($tweet->getAttribute('data-name'), ENT_QUOTES);
 			// get author
 			$item['author'] = $item['fullname'] . ' (@' . $item['username'] . ')';
-			if(strcasecmp($tweet->getAttribute('data-screen-name'), $this->getInput('u'))) {
-				$item['author'] .= ' RT: @' . $this->getInput('u');
+			if($rt = $tweet->find('div.context span.js-retweet-text a', 0)) {
+				$item['author'] .= ' RT: @' . $rt->plaintext;
 			}
 			// get avatar link
 			$item['avatar'] = $tweet->find('img', 0)->src;
