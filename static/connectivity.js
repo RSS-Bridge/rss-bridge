@@ -113,6 +113,8 @@ function checkNextBridgeAsync() {
 			.then(checkNextBridgeAsync, abortChecks)
 			.catch(console.log.bind(console));
 
+			search(); // Dynamically update search results
+
 		}
 
 		resolve();
@@ -211,13 +213,20 @@ function search() {
 
 	for (var i = 0; i < tr.length; i++) {
 
-		var td = tr[i].getElementsByTagName('td')[0];
+		var td1 = tr[i].getElementsByTagName('td')[0];
+		var td2 = tr[i].getElementsByTagName('td')[1];
 
-		if (td) {
+		if (td1) {
 
-			var txtValue = td.textContent || td.innerText;
+			var txtValue = td1.textContent || td1.innerText;
 
-			if (txtValue.toUpperCase().indexOf(filter) > -1) {
+			var title = '';
+			if(td2.getElementsByTagName('i')[0]) {
+				title = td2.getElementsByTagName('i')[0].title;
+			}
+
+			if (txtValue.toUpperCase().indexOf(filter) > -1
+			|| title.toUpperCase().indexOf(filter) > -1) {
 				tr[i].style.display = '';
 			} else {
 				tr[i].style.display = 'none';
