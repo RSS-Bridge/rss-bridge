@@ -5,10 +5,11 @@ var abort = false;
 window.onload = function() {
 
 	fetch(remote + '/index.php?action=list').then(function(response) {
-		return response.text().then(function(data){
-			processBridgeList(data);
-		});
-	});
+		return response.text()
+	}).then(function(data){
+		processBridgeList(data);
+	}).catch(console.log.bind(console)
+	);
 
 }
 
@@ -109,7 +110,9 @@ function checkNextBridgeAsync() {
 			.then(processBridgeResultAsync)
 			.then(markBridgeSuccessful, markBridgeFailed)
 			.then(checkAbortAsync)
-			.then(checkNextBridgeAsync, abortChecks);
+			.then(checkNextBridgeAsync, abortChecks)
+			.catch(console.log.bind(console));
+
 		}
 
 		resolve();
