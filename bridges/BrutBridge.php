@@ -97,7 +97,7 @@ class BrutBridge extends BridgeAbstract {
 		if (!is_null($this->getInput('edition')) && !is_null($this->getInput('category'))) {
 			$parameters = $this->getParameters();
 
-			$editionVKeys = array_flip($parameters[0]['edition']['values']);
+			$editionValues = array_flip($parameters[0]['edition']['values']);
 			$categoryValues = array_flip($parameters[0]['category']['values']);
 
 			return $categoryValues[$this->getInput('category')] . ' - ' . 
