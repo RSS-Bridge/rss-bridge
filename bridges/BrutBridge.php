@@ -100,13 +100,13 @@ class BrutBridge extends BridgeAbstract {
 			$editionValues = array_flip($parameters[0]['edition']['values']);
 			$categoryValues = array_flip($parameters[0]['category']['values']);
 
-			return $categoryValues[$this->getInput('category')] . ' - ' . 
-				$editionValues[$this->getInput('edition')] .' - Brut.';
+			return $categoryValues[$this->getInput('category')] . ' - ' .
+				$editionValues[$this->getInput('edition')] . ' - Brut.';
 		}
 
 		return parent::getName();
 	}
-	
+
 	private function processDate($description) {
 
 		if ($this->getInput('edition') === 'uk') {
