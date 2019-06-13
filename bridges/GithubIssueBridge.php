@@ -242,24 +242,8 @@ class GithubIssueBridge extends BridgeAbstract {
 
 	public function detectParameters($url) {
 
-		$help = <<<EOD
-
-
-Usage:
-For project issues the URL must include /<user>/<project>
-For issue comments the URL must include /<user>/<project>/issues/<issue-number>
-
-Examples:
-- https://github.com/rss-bridge/rss-bridge
-- https://github.com/rss-bridge/rss-bridge/issues/1
-
-Issue comments for project issues are enabled if the URL points to issues
-https://github.com/rss-bridge/rss-bridge/issues
-EOD;
-
 		if(filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) === false
 		|| strpos($url, self::URI) !== 0) {
-			returnClientError('Invalid URL' . $help);
 			return null;
 		}
 
@@ -273,11 +257,7 @@ EOD;
 			} break;
 			case 3: { // Project issues with issue comments
 				if($path_segments[2] !== 'issues') {
-					returnClientError('Invalid path. Expected "/issues/", found "/'
-						. $path_segments[2]
-						. '/"'
-						. $help
-					);
+					return null;
 				}
 				list($user, $project) = $path_segments;
 				$show_comments = 'on';
@@ -286,7 +266,7 @@ EOD;
 				list($user, $project, /* issues */, $issue) = $path_segments;
 			} break;
 			default: {
-				returnClientError('Invalid path.' . $help);
+				return null;
 			}
 		}
 
