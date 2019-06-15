@@ -52,7 +52,7 @@ class VkBridge extends BridgeAbstract
 		$text_html = $this->getContents()
 		or returnServerError('No results for group or user name "' . $this->getInput('u') . '".');
 
-		$text_html = iconv('windows-1251', 'utf-8', $text_html);
+		$text_html = iconv('windows-1251', 'utf-8//ignore', $text_html);
 		// makes album link generating work correctly
 		$text_html = str_replace('"class="page_album_link">', '" class="page_album_link">', $text_html);
 		$html = str_get_html($text_html);

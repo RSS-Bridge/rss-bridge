@@ -4,6 +4,14 @@
 ; file, it will be replaced on the next update of RSS-Bridge! You can specify
 ; your own configuration in 'config.ini.php' (copy this file).
 
+[system]
+
+; Defines the timezone used by RSS-Bridge
+; Find a list of supported timezones at
+; https://www.php.net/manual/en/timezones.php
+; timezone = "UTC" (default)
+timezone = "UTC"
+
 [cache]
 
 ; Defines the cache type used by RSS-Bridge

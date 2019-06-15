@@ -15,28 +15,37 @@
 define('PATH_ROOT', __DIR__ . '/../');
 
 /** Path to the core library */
-define('PATH_LIB', __DIR__ . '/../lib/'); // Path to core library
+define('PATH_LIB', PATH_ROOT . 'lib/');
 
 /** Path to the vendor library */
-define('PATH_LIB_VENDOR', __DIR__ . '/../vendor/');
+define('PATH_LIB_VENDOR', PATH_ROOT . 'vendor/');
 
 /** Path to the bridges library */
-define('PATH_LIB_BRIDGES', __DIR__ . '/../bridges/');
+define('PATH_LIB_BRIDGES', PATH_ROOT . 'bridges/');
 
 /** Path to the formats library */
-define('PATH_LIB_FORMATS', __DIR__ . '/../formats/');
+define('PATH_LIB_FORMATS', PATH_ROOT . 'formats/');
 
 /** Path to the caches library */
-define('PATH_LIB_CACHES', __DIR__ . '/../caches/');
+define('PATH_LIB_CACHES', PATH_ROOT . 'caches/');
 
 /** Path to the actions library */
-define('PATH_LIB_ACTIONS', __DIR__ . '/../actions/');
+define('PATH_LIB_ACTIONS', PATH_ROOT . 'actions/');
 
 /** Path to the cache folder */
-define('PATH_CACHE', __DIR__ . '/../cache/');
+define('PATH_CACHE', PATH_ROOT . 'cache/');
 
 /** Path to the whitelist file */
-define('WHITELIST', __DIR__ . '/../whitelist.txt');
+define('WHITELIST', PATH_ROOT . 'whitelist.txt');
+
+/** Path to the default whitelist file */
+define('WHITELIST_DEFAULT', PATH_ROOT . 'whitelist.default.txt');
+
+/** Path to the configuration file */
+define('FILE_CONFIG', PATH_ROOT . 'config.ini.php');
+
+/** Path to the default configuration file */
+define('FILE_CONFIG_DEFAULT', PATH_ROOT . 'config.default.ini.php');
 
 /** URL to the RSS-Bridge repository */
 define('REPOSITORY', 'https://github.com/RSS-Bridge/rss-bridge/');
