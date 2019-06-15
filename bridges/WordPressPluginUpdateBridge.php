@@ -64,24 +64,11 @@ class WordPressPluginUpdateBridge extends BridgeAbstract {
 
 	}
 
-
 	public function getName(){
 		if(!is_null($this->getInput('q'))) {
 			return $this->getInput('q') . ' : ' . self::NAME;
 		}
 
 		return parent::getName();
-	}
-
-	private function getCachedDate($url){
-		debugMessage('getting pubdate from url ' . $url . '');
-		// Initialize cache
-		$cache = Cache::create('FileCache');
-		$cache->setPath(CACHE_DIR . '/pages');
-		$params = [$url];
-		$cache->setParameters($params);
-		// Get cachefile timestamp
-		$time = $cache->getTime();
-		return ($time !== false ? $time : time());
 	}
 }

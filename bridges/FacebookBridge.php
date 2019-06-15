@@ -179,8 +179,7 @@ class FacebookBridge extends BridgeAbstract {
 
 		if(filter_var(
 			$group,
-			FILTER_VALIDATE_URL,
-			FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED)) {
+			FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
 			// User provided a URL
 
 			$urlparts = parse_url($group);
@@ -220,8 +219,7 @@ class FacebookBridge extends BridgeAbstract {
 		$ogtitle = $html->find('meta[property="og:title"]', 0)
 			or returnServerError('Unable to find group title!');
 
-		return htmlspecialchars_decode($ogtitle->content, ENT_QUOTES);
-
+		return html_entity_decode($ogtitle->content, ENT_QUOTES);
 	}
 
 	private function extractGroupURI($post) {
@@ -365,6 +363,26 @@ class FacebookBridge extends BridgeAbstract {
 	}
 
 	/**
+	 * Remove Facebook's tracking code
+	 */
+	private function remove_tracking_codes($content){
+		return preg_replace_callback('/ href=\"([^"]+)\"/i', function($matches){
+			if(is_array($matches) && count($matches) > 1) {
+
+				$link = $matches[1];
+
+				if(strpos($link, 'facebook.com') !== false) {
+					if(strpos($link, '?') !== false) {
+						$link = substr($link, 0, strpos($link, '?'));
+					}
+				}
+				return ' href="' . $link . '"';
+
+			}
+		}, $content);
+	}
+
+	/**
 	 * Convert textual representation of emoticons back to ASCII emoticons.
 	 * i.e. "<i><u>smile emoticon</u></i>" => ":)"
 	 */
@@ -426,8 +444,7 @@ class FacebookBridge extends BridgeAbstract {
 		// Show captcha filling form to the viewer, proxying the captcha image
 		$img = base64_encode(getContents($captcha->find('img', 0)->src));
 
-		http_response_code(500);
-		header('Content-Type: text/html');
+		header('Content-Type: text/html', true, 500);
 
 		$message = <<<EOD
 <form method="post" action="?{$_SERVER['QUERY_STRING']}">
@@ -519,7 +536,7 @@ EOD;
 
 		if(isset($element)) {
 
-			$author = str_replace(' | Facebook', '', $html->find('title#pageTitle', 0)->innertext);
+			$author = str_replace(' - Posts | Facebook', '', $html->find('title#pageTitle', 0)->innertext);
 
 			$profilePic = $html->find('meta[property="og:image"]', 0)->content;
 
@@ -558,10 +575,28 @@ EOD;
 
 						$content = $post->find('.userContentWrapper', 0);
 
-						$content = preg_replace(
-							'/(?i)><div class=\"_59tj([^>]+)>(.+?)<\/div><\/div><a/i',
-							'',
-							$content);
+						// This array specifies filters applied to all posts in order of appearance
+						$content_filters = array(
+							'._5mly', // Remove embedded videos (the preview image remains)
+							'._2ezg', // Remove "Views ..."
+							'.hidden_elem', // Remove hidden elements (they are hidden anyway)
+						);
+
+						foreach($content_filters as $filter) {
+							foreach($content->find($filter) as $subject) {
+								$subject->outertext = '';
+							}
+						}
+
+						// Change origin tag for embedded media from div to paragraph
+						foreach($content->find('._59tj') as $subject) {
+							$subject->outertext = '<p>' . $subject->innertext . '</p>';
+						}
+
+						// Change title tag for embedded media from anchor to paragraph
+						foreach($content->find('._3n1k a') as $anchor) {
+							$anchor->outertext = '<p>' . $anchor->innertext . '</p>';
+						}
 
 						$content = preg_replace(
 							'/(?i)><div class=\"_3dp([^>]+)>(.+?)div\ class=\"[^u]+userContent\"/i',
@@ -611,6 +646,8 @@ EOD;
 						// Restore links in the content before adding to the item
 						$content = defaultLinkTo($content, self::URI);
 
+						$content = $this->remove_tracking_codes($content);
+
 						// Retrieve date of the post
 						$date = $post->find('abbr')[0];
 
@@ -620,14 +657,8 @@ EOD;
 							$date = 0;
 						}
 
-						// Build title from username and content
-						$title = $author;
-
-						if(strlen($title) > 24)
-							$title = substr($title, 0, strpos(wordwrap($title, 24), "\n")) . '...';
-
-						$title = $title . ' | ' . strip_tags($content);
-
+						// Build title from content
+						$title = strip_tags($post->find('.userContent', 0)->innertext);
 						if(strlen($title) > 64)
 							$title = substr($title, 0, strpos(wordwrap($title, 64), "\n")) . '...';
 
@@ -638,10 +669,10 @@ EOD;
 						}
 
 						//Build and add final item
-						$item['uri'] = htmlspecialchars_decode($uri);
-						$item['content'] = htmlspecialchars_decode($content);
-						$item['title'] = $title;
-						$item['author'] = $author;
+						$item['uri'] = htmlspecialchars_decode($uri, ENT_QUOTES);
+						$item['content'] = htmlspecialchars_decode($content, ENT_QUOTES);
+						$item['title'] = htmlspecialchars_decode($title, ENT_QUOTES);
+						$item['author'] = htmlspecialchars_decode($author, ENT_QUOTES);
 						$item['timestamp'] = $date;
 
 						if(strpos($item['content'], '<img') === false) {
@@ -654,7 +685,6 @@ EOD;
 			}
 		}
 	}
-
 	#endregion (User)
 
 }

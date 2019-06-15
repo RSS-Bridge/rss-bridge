@@ -1,8 +1,15 @@
 <?php
 class ZoneTelechargementBridge extends BridgeAbstract {
-	const NAME = 'Zone Telechargement';
-	const URI = 'https://www.zone-telechargement1.org/';
-	const DESCRIPTION = 'Suivi de série sur Zone Telechargement';
+
+	/*  This bridge was initally done for the Website Zone Telechargement,
+	 *  but the website changed it's name and URL.
+	 *  Therefore, the class name and filename does not correspond to the
+	 *  name of the bridge. This permits to keep the same RSS Feed URL.
+	 */
+
+	const NAME = 'Annuaire Telechargement';
+	const URI = 'https://www.annuaire-telechargement.com/';
+	const DESCRIPTION = 'Suivi de série sur Annuaire Telechargement';
 	const MAINTAINER = 'sysadminstory';
 	const PARAMETERS = array(
 		'Suivre la publication des épisodes d\'une série en cours de diffusion' => array(
@@ -10,14 +17,14 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 				'name' => 'URL de la série',
 				'type' => 'text',
 				'required' => true,
-				'title' => 'URL d\'une série sans le https://ww4.zone-telechargement1.org/',
+				'title' => 'URL d\'une série sans le https://www.annuaire-telechargement.com/',
 				'exampleValue' => 'telecharger-series/31079-halt-and-catch-fire-saison-4-french-hd720p.html'
 			)
 		)
 	);
 
 	public function getIcon() {
-		return 'https://ww7.zone-telechargement1.org/templates/Default/images/favicon.ico';
+		return 'https://www.annuaire-telechargement.com/templates/Default/images/favicon.ico';
 	}
 
 	public function collectData(){
@@ -43,7 +50,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 			$hoster = $this->findLinkHoster($element);
 
 			// Format the link and add the link to the corresponding episode table
-			$episodes[$epnumber][] = '<a href="' . $element->href . '">'. $hoster . ' - '
+			$episodes[$epnumber][] = '<a href="' . $element->href . '">' . $hoster . ' - '
 				. $this->showTitle . ' Episode ' . $epnumber . '</a>';
 
 		}

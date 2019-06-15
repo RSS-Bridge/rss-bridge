@@ -140,7 +140,7 @@ class AnidexBridge extends BridgeAbstract {
 			if (strpos($link->href, '/torrent/') === 0 && !in_array($link->href, $results))
 				$results[] = $link->href;
 		if (empty($results) && empty($this->getInput('q')))
-			returnServerError('No results from Anidex: '.$search_url);
+			returnServerError('No results from Anidex: ' . $search_url);
 
 		//Process each item individually
 		foreach ($results as $element) {
@@ -156,7 +156,7 @@ class AnidexBridge extends BridgeAbstract {
 			if ($torrent_id != 0 && ctype_digit($torrent_id)) {
 
 				//Retrieve data for this torrent ID
-				$item_uri = self::URI . 'torrent/'.$torrent_id;
+				$item_uri = self::URI . 'torrent/' . $torrent_id;
 
 				//Retrieve full description from torrent page
 				if ($item_html = getSimpleHTMLDOMCached($item_uri)) {

@@ -57,5 +57,4 @@ class SupInfoBridge extends BridgeAbstract {
 		return $item;
 
 	}
-
 }

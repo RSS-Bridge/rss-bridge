@@ -1,38 +1,46 @@
 dist: trusty
-sudo: false
 language: php
 
 install:
-  - if [[ $TRAVIS_PHP_VERSION == "hhvm" ]]; then
-      composer global require squizlabs/PHP_CodeSniffer;
-    else
-      pear channel-update pear.php.net;
-      pear install PHP_CodeSniffer;
-    fi
-  - if [[ $TRAVIS_PHP_VERSION == "7.0" ]]; then
-      composer global require phpunit/phpunit ^6;
+  - composer global require dealerdirect/phpcodesniffer-composer-installer;
+  - composer global require phpcompatibility/php-compatibility;
+  - if [[ "$PHPUNIT" ]]; then
+      composer global require phpunit/phpunit ^$PHPUNIT;
     fi
 
 script:
   - phpenv rehash
-  - if [[ $TRAVIS_PHP_VERSION == "hhvm" ]]; then
-      /home/travis/.composer/vendor/bin/phpcs . --standard=phpcs.xml --warning-severity=0 --extensions=php -p;
-    else
-      phpcs . --standard=phpcs.xml --warning-severity=0 --extensions=php -p;
+  # Run PHP_CodeSniffer on all versions
+  - ~/.config/composer/vendor/bin/phpcs . --standard=phpcs.xml --warning-severity=0 --extensions=php -p;
+  # Check PHP compatibility for the lowest and highest supported version
+  - if [[ $TRAVIS_PHP_VERSION == "5.6" || $TRAVIS_PHP_VERSION == "7.3" ]]; then
+      ~/.config/composer/vendor/bin/phpcs . --standard=phpcompatibility.xml --extensions=php -p;
     fi
-  - if [[ $TRAVIS_PHP_VERSION == "7.0" ]]; then
-      phpunit --configuration=phpunit.xml --include-path=lib/;
+  # Run unit tests on highest major version
+  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" ]]; then
+      ~/.config/composer/vendor/bin/phpunit --configuration=phpunit.xml --include-path=lib/;
     fi
+
+php:
+  - 7.3
+
+env:
+  - PHPUNIT=6
+  - PHPUNIT=7
+  - PHPUNIT=8
 
 matrix:
   fast_finish: true
 
   include:
     - php: 5.6
+      env: PHPUNIT=
     - php: 7.0
-    - php: hhvm
-    - php: nightly
+    - php: 7.1
+    - php: 7.2
 
   allow_failures:
-    - php: hhvm
-    - php: nightly
+    - php: 7.3
+      env: PHPUNIT=7
+    - php: 7.3
+      env: PHPUNIT=8

@@ -137,5 +137,4 @@ class AnimeUltimeBridge extends BridgeAbstract {
 
 		return parent::getName();
 	}
-
 }

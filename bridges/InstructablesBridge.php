@@ -21,7 +21,6 @@ class InstructablesBridge extends BridgeAbstract {
 			'category' => array(
 				'name' => 'Category',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Play' => array(
 						'All' => '/play/',
@@ -240,7 +239,6 @@ class InstructablesBridge extends BridgeAbstract {
 			'filter' => array(
 				'name' => 'Filter',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Featured' => ' ',
 					'Recent' => 'recent/',

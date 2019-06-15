@@ -13,6 +13,13 @@
   <rule ref="Generic.CodeAnalysis.UnnecessaryFinalModifier"/>
   <!-- Do not override methods to call their parent -->
   <rule ref="Generic.CodeAnalysis.UselessOverridingMethod"/>
+  <!-- Make sure the concatenation operator has spaces around it -->
+  <rule ref="Squiz.Strings.ConcatenationSpacing">
+    <properties>
+      <property name="spacing" value="1"/>
+      <property name="ignoreNewlines" value="true"/>
+    </properties>
+  </rule>
   <!-- One line should not have more than 80 characters -->
   <!-- One line must never exceed 120 characters -->
   <rule ref="Generic.Files.LineLength">
@@ -40,6 +47,9 @@
   <rule ref="PEAR.Functions.ValidDefaultValue"/>
   <!-- Use PascalCase for class names -->
   <rule ref="PEAR.NamingConventions.ValidClassName"/>
+  <!-- abstract and final declarations MUST precede the visibility declaration -->
+  <!-- static declaration MUST come after the visibility declaration -->
+  <rule ref="PSR2.Methods.MethodDeclaration" />
   <!-- Use 'elseif' instead of 'else if' -->
   <rule ref="PSR2.ControlStructures.ElseIfDeclaration"/>
   <!-- Do not add spaces after opening or before closing bracket -->
@@ -69,7 +79,22 @@
   <!-- Do not add a whitespace before a semicolon -->
   <rule ref="Squiz.WhiteSpace.SemicolonSpacing"/>
   <!-- Do not add whitespace at start or end of a file or end of a line -->
-  <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace"/>
+  <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace">
+    <properties>
+      <!--
+      This fixes an issue in combination with PSR2
+      https://github.com/squizlabs/PHP_CodeSniffer/issues/600
+      -->
+      <property name="ignoreBlankLines" value="false"/>
+    </properties>
+  </rule>
+  <rule ref="Squiz.WhiteSpace.FunctionSpacing">
+    <properties>
+      <property name="spacing" value="1" />
+      <property name="spacingBeforeFirst" value="0" />
+      <property name="spacingAfterLast" value="0" />
+    </properties>
+  </rule>
   <!-- Whenever possible use single quote strings -->
   <rule ref="Squiz.Strings.DoubleQuoteUsage">
     <exclude name="Squiz.Strings.DoubleQuoteUsage.ContainsVar" />

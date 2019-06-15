@@ -106,5 +106,4 @@ class UsbekEtRicaBridge extends BridgeAbstract {
 	private function replaceUriInHtmlElement($element){
 		return str_replace('href="/', 'href="' . $this->getURI() . '/', $element->innertext);
 	}
-
 }

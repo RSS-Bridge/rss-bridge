@@ -1,6 +1,31 @@
 <?php
-final class BridgeCard {
+/**
+ * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
+ * Atom feeds for websites that don't have one.
+ *
+ * For the full license information, please view the UNLICENSE file distributed
+ * with this source code.
+ *
+ * @package	Core
+ * @license	http://unlicense.org/ UNLICENSE
+ * @link	https://github.com/rss-bridge/rss-bridge
+ */
 
+/**
+ * A generator class for a single bridge card on the home page of RSS-Bridge.
+ *
+ * This class generates the HTML content for a single bridge card for the home
+ * page of RSS-Bridge.
+ *
+ * @todo Return error if a caller creates an object of this class.
+ */
+final class BridgeCard {
+	/**
+	 * Build a HTML document string of buttons for each of the provided formats
+	 *
+	 * @param array $formats A list of format names
+	 * @return string The document string
+	 */
 	private static function buildFormatButtons($formats) {
 		$buttons = '';
 
@@ -16,6 +41,13 @@ final class BridgeCard {
 		return $buttons;
 	}
 
+	/**
+	 * Get the form header for a bridge card
+	 *
+	 * @param string $bridgeName The bridge name
+	 * @param bool $isHttps If disabled, adds a warning to the form
+	 * @return string The form header
+	 */
 	private static function getFormHeader($bridgeName, $isHttps = false) {
 		$form = <<<EOD
 			<form method="GET" action="?">
@@ -31,13 +63,24 @@ This bridge is not fetching its content through a secure connection</div>';
 		return $form;
 	}
 
+	/**
+	 * Get the form body for a bridge
+	 *
+	 * @param string $bridgeName The bridge name
+	 * @param array $formats A list of supported formats
+	 * @param bool $isActive Indicates if a bridge is enabled or not
+	 * @param bool $isHttps Indicates if a bridge uses HTTPS or not
+	 * @param string $parameterName Sets the bridge context for the current form
+	 * @param array $parameters The bridge parameters
+	 * @return string The form body
+	 */
 	private static function getForm($bridgeName,
 	$formats,
 	$isActive = false,
 	$isHttps = false,
 	$parameterName = '',
 	$parameters = array()) {
-		$form = BridgeCard::getFormHeader($bridgeName, $isHttps);
+		$form = self::getFormHeader($bridgeName, $isHttps);
 
 		if(count($parameters) > 0) {
 
@@ -65,13 +108,13 @@ This bridge is not fetching its content through a secure connection</div>';
 					. PHP_EOL;
 
 				if(!isset($inputEntry['type']) || $inputEntry['type'] === 'text') {
-					$form .= BridgeCard::getTextInput($inputEntry, $idArg, $id);
+					$form .= self::getTextInput($inputEntry, $idArg, $id);
 				} elseif($inputEntry['type'] === 'number') {
-					$form .= BridgeCard::getNumberInput($inputEntry, $idArg, $id);
+					$form .= self::getNumberInput($inputEntry, $idArg, $id);
 				} else if($inputEntry['type'] === 'list') {
-					$form .= BridgeCard::getListInput($inputEntry, $idArg, $id);
+					$form .= self::getListInput($inputEntry, $idArg, $id);
 				} elseif($inputEntry['type'] === 'checkbox') {
-					$form .= BridgeCard::getCheckboxInput($inputEntry, $idArg, $id);
+					$form .= self::getCheckboxInput($inputEntry, $idArg, $id);
 				}
 			}
 
@@ -80,7 +123,7 @@ This bridge is not fetching its content through a secure connection</div>';
 		}
 
 		if($isActive) {
-			$form .= BridgeCard::buildFormatButtons($formats);
+			$form .= self::buildFormatButtons($formats);
 		} else {
 			$form .= '<span style="font-weight: bold;">Inactive</span>';
 		}
@@ -88,6 +131,12 @@ This bridge is not fetching its content through a secure connection</div>';
 		return $form . '</form>' . PHP_EOL;
 	}
 
+	/**
+	 * Get input field attributes
+	 *
+	 * @param array $entry The current entry
+	 * @return string The input field attributes
+	 */
 	private static function getInputAttributes($entry) {
 		$retVal = '';
 
@@ -103,9 +152,17 @@ This bridge is not fetching its content through a secure connection</div>';
 		return $retVal;
 	}
 
+	/**
+	 * Get text input
+	 *
+	 * @param array $entry The current entry
+	 * @param string $id The field ID
+	 * @param string $name The field name
+	 * @return string The text input field
+	 */
 	private static function getTextInput($entry, $id, $name) {
 		return '<input '
-		. BridgeCard::getInputAttributes($entry)
+		. self::getInputAttributes($entry)
 		. ' id="'
 		. $id
 		. '" type="text" value="'
@@ -118,9 +175,17 @@ This bridge is not fetching its content through a secure connection</div>';
 		. PHP_EOL;
 	}
 
+	/**
+	 * Get number input
+	 *
+	 * @param array $entry The current entry
+	 * @param string $id The field ID
+	 * @param string $name The field name
+	 * @return string The number input field
+	 */
 	private static function getNumberInput($entry, $id, $name) {
 		return '<input '
-		. BridgeCard::getInputAttributes($entry)
+		. self::getInputAttributes($entry)
 		. ' id="'
 		. $id
 		. '" type="number" value="'
@@ -133,9 +198,22 @@ This bridge is not fetching its content through a secure connection</div>';
 		. PHP_EOL;
 	}
 
+	/**
+	 * Get list input
+	 *
+	 * @param array $entry The current entry
+	 * @param string $id The field ID
+	 * @param string $name The field name
+	 * @return string The list input field
+	 */
 	private static function getListInput($entry, $id, $name) {
+		if(isset($entry['required']) && $entry['required'] === true) {
+			Debug::log('The "required" attribute is not supported for lists.');
+			unset($entry['required']);
+		}
+
 		$list = '<select '
-		. BridgeCard::getInputAttributes($entry)
+		. self::getInputAttributes($entry)
 		. ' id="'
 		. $id
 		. '" name="'
@@ -185,9 +263,22 @@ This bridge is not fetching its content through a secure connection</div>';
 		return $list;
 	}
 
+	/**
+	 * Get checkbox input
+	 *
+	 * @param array $entry The current entry
+	 * @param string $id The field ID
+	 * @param string $name The field name
+	 * @return string The checkbox input field
+	 */
 	private static function getCheckboxInput($entry, $id, $name) {
+		if(isset($entry['required']) && $entry['required'] === true) {
+			Debug::log('The "required" attribute is not supported for checkboxes.');
+			unset($entry['required']);
+		}
+
 		return '<input '
-		. BridgeCard::getInputAttributes($entry)
+		. self::getInputAttributes($entry)
 		. ' id="'
 		. $id
 		. '" type="checkbox" name="'
@@ -198,6 +289,14 @@ This bridge is not fetching its content through a secure connection</div>';
 		. PHP_EOL;
 	}
 
+	/**
+	 * Gets a single bridge card
+	 *
+	 * @param string $bridgeName The bridge name
+	 * @param array $formats A list of formats
+	 * @param bool $isActive Indicates if the bridge is active or not
+	 * @return string The bridge card
+	 */
 	static function displayBridgeCard($bridgeName, $formats, $isActive = true){
 
 		$bridge = Bridge::create($bridgeName);
@@ -240,7 +339,7 @@ CARD;
 		if(count($parameters) === 0
 		|| count($parameters) === 1 && array_key_exists('global', $parameters)) {
 
-			$card .= BridgeCard::getForm($bridgeName, $formats, $isActive, $isHttps);
+			$card .= self::getForm($bridgeName, $formats, $isActive, $isHttps);
 
 		} else {
 
@@ -254,7 +353,7 @@ CARD;
 				if(!is_numeric($parameterName))
 					$card .= '<h5>' . $parameterName . '</h5>' . PHP_EOL;
 
-				$card .= BridgeCard::getForm($bridgeName, $formats, $isActive, $isHttps, $parameterName, $parameter);
+				$card .= self::getForm($bridgeName, $formats, $isActive, $isHttps, $parameterName, $parameter);
 			}
 
 		}

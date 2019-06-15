@@ -99,7 +99,7 @@ class ETTVBridge extends BridgeAbstract {
 	public function collectData(){
 		// No control on inputs, because all defaultValue are set
 		$query_str = 'torrents-search.php';
-		$query_str .= '?search=' . urlencode('+'.str_replace(' ', ' +', $this->getInput('query')));
+		$query_str .= '?search=' . urlencode('+' . str_replace(' ', ' +', $this->getInput('query')));
 		$query_str .= '&cat=' . $this->getInput('cat');
 		$query_str .= '&incldead=' . $this->getInput('status');
 		$query_str .= '&lang=' . $this->getInput('lang');

@@ -69,7 +69,7 @@ class FourchanBridge extends BridgeAbstract {
 				. '" src="'
 				. $item['imageThumb']
 				. '" /></a><br>'
-				.$item['content'];
+				. $item['content'];
 			}
 			$this->items[] = $item;
 		}

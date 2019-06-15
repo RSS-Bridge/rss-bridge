@@ -15,27 +15,23 @@ class DealabsBridge extends PepperBridgeAbstract {
 			'hide_expired' => array(
 				'name' => 'Masquer les éléments expirés',
 				'type' => 'checkbox',
-				'required' => 'true'
 			),
 			'hide_local' => array(
 				'name' => 'Masquer les deals locaux',
 				'type' => 'checkbox',
 				'title' => 'Masquer les deals en magasins physiques',
-				'required' => 'true'
 			),
 			'priceFrom' => array(
 				'name' => 'Prix minimum',
 				'type' => 'text',
 				'title' => 'Prix mnimum en euros',
-				'required' => 'false',
-				'defaultValue' => ''
+				'required' => false
 			),
 			'priceTo' => array(
 				'name' => 'Prix maximum',
 				'type' => 'text',
 				'title' => 'Prix maximum en euros',
-				'required' => 'false',
-				'defaultValue' => ''
+				'required' => false
 			),
 		),
 
@@ -43,7 +39,6 @@ class DealabsBridge extends PepperBridgeAbstract {
 			'group' => array(
 				'name' => 'Groupe',
 				'type' => 'list',
-				'required' => 'true',
 				'title' => 'Groupe dont il faut afficher les deals',
 				'values' => array(
 					'Abonnements internet' => 'abonnements-internet',
@@ -959,7 +954,6 @@ class DealabsBridge extends PepperBridgeAbstract {
 			'order' => array(
 				'name' => 'Trier par',
 				'type' => 'list',
-				'required' => 'true',
 				'title' => 'Ordre de tri des deals',
 				'values' => array(
 					'Du deal le plus Hot au moins Hot' => '',
@@ -1074,10 +1068,10 @@ class PepperBridgeAbstract extends BridgeAbstract {
 		$url = $this->i8n('bridge-uri')
 			. '/search/advanced?q='
 			. urlencode($q)
-			. '&hide_expired='. $hide_expired
-			. '&hide_local='. $hide_local
-			. '&priceFrom='. $priceFrom
-			. '&priceTo='. $priceTo
+			. '&hide_expired=' . $hide_expired
+			. '&hide_local=' . $hide_local
+			. '&priceFrom=' . $priceFrom
+			. '&priceTo=' . $priceTo
 			/* Some default parameters
 			 * search_fields : Search in Titres & Descriptions & Codes
 			 * sort_by : Sort the search by new deals
@@ -1152,30 +1146,30 @@ class PepperBridgeAbstract extends BridgeAbstract {
 			foreach ($list as $deal) {
 				$item = array();
 				$item['uri'] = $deal->find('div[class=threadGrid-title]', 0)->find('a', 0)->href;
-				$item['title'] = $deal->find('a[class*='. $selectorLink .']', 0
+				$item['title'] = $deal->find('a[class*=' . $selectorLink . ']', 0
 				)->plaintext;
 				$item['author'] = $deal->find('span.thread-username', 0)->plaintext;
 				$item['content'] = '<table><tr><td><a href="'
 					. $deal->find(
-						'a[class*='. $selectorImageLink .']', 0)->href
+						'a[class*=' . $selectorImageLink . ']', 0)->href
 						. '"><img src="'
 						. $this->getImage($deal)
 						. '"/></td><td><h2><a href="'
-						. $deal->find('a[class*='. $selectorLink .']', 0)->href
+						. $deal->find('a[class*=' . $selectorLink . ']', 0)->href
 						. '">'
-						. $deal->find('a[class*='. $selectorLink .']', 0)->innertext
+						. $deal->find('a[class*=' . $selectorLink . ']', 0)->innertext
 						. '</a></h2>'
 						. $this->getPrice($deal)
 						. $this->getDiscount($deal)
 						. $this->getShipsFrom($deal)
 						. $this->getShippingCost($deal)
 						. $this->GetSource($deal)
-						. $deal->find('div[class*='. $selectorDescription .']', 0)->innertext
+						. $deal->find('div[class*=' . $selectorDescription . ']', 0)->innertext
 						. '</td><td>'
-						. $deal->find('div[class*='. $selectorHot .']', 0)
+						. $deal->find('div[class*=' . $selectorHot . ']', 0)
 						->find('span', 1)->outertext
 						. '</td></table>';
-				$dealDateDiv = $deal->find('div[class*='. $selectorDate .']', 0)
+				$dealDateDiv = $deal->find('div[class*=' . $selectorDate . ']', 0)
 					->find('span[class=hide--toW3]');
 				$itemDate = end($dealDateDiv)->plaintext;
 				// In case of a Local deal, there is no date, but we can use
@@ -1214,7 +1208,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	{
 		if ($deal->find(
 			'span[class*=thread-price]', 0) != null) {
-			return '<div>'.$this->i8n('price') .' : '
+			return '<div>' . $this->i8n('price') . ' : '
 				. $deal->find(
 					'span[class*=thread-price]', 0
 				)->plaintext
@@ -1224,7 +1218,6 @@ class PepperBridgeAbstract extends BridgeAbstract {
 		}
 	}
 
-
 	/**
 	 * Get the Shipping costs from a Deal if it exists
 	 * @return string String of the deal shipping Cost
@@ -1233,11 +1226,11 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	{
 		if ($deal->find('span[class*=cept-shipping-price]', 0) != null) {
 			if ($deal->find('span[class*=cept-shipping-price]', 0)->children(0) != null) {
-				return '<div>'. $this->i8n('shipping') .' : '
+				return '<div>' . $this->i8n('shipping') . ' : '
 					. $deal->find('span[class*=cept-shipping-price]', 0)->children(0)->innertext
 					. '</div>';
 			} else {
-				return '<div>'. $this->i8n('shipping') .' : '
+				return '<div>' . $this->i8n('shipping') . ' : '
 					. $deal->find('span[class*=cept-shipping-price]', 0)->innertext
 					. '</div>';
 			}
@@ -1253,7 +1246,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	private function GetSource($deal)
 	{
 		if ($deal->find('a[class=text--color-greyShade]', 0) != null) {
-			return '<div>'. $this->i8n('origin') .' : '
+			return '<div>' . $this->i8n('origin') . ' : '
 				. $deal->find('a[class=text--color-greyShade]', 0)->outertext
 				. '</div>';
 		} else {
@@ -1274,7 +1267,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 			} else {
 				$discount = '';
 			}
-			return '<div>'. $this->i8n('discount') .' : <span style="text-decoration: line-through;">'
+			return '<div>' . $this->i8n('discount') . ' : <span style="text-decoration: line-through;">'
 				. $deal->find(
 					'span[class*=mute--text text--lineThrough]', 0
 				)->plaintext
@@ -1315,13 +1308,13 @@ class PepperBridgeAbstract extends BridgeAbstract {
 				'cept-thread-img'
 			)
 		);
-		if ($deal->find('img[class='. $selectorLazy .']', 0) != null) {
+		if ($deal->find('img[class=' . $selectorLazy . ']', 0) != null) {
 			return json_decode(
 				html_entity_decode(
-					$deal->find('img[class='. $selectorLazy .']', 0)
+					$deal->find('img[class=' . $selectorLazy . ']', 0)
 					->getAttribute('data-lazy-img')))->{'src'};
 		} else {
-			return $deal->find('img[class*='. $selectorPlain .']', 0	)->src;
+			return $deal->find('img[class*=' . $selectorPlain . ']', 0	)->src;
 		}
 	}
 
@@ -1340,9 +1333,9 @@ class PepperBridgeAbstract extends BridgeAbstract {
 				'text--color-greyShade'
 			)
 		);
-		if ($deal->find('span[class='. $selector .']', 0) != null) {
+		if ($deal->find('span[class=' . $selector . ']', 0) != null) {
 			return '<div>'
-				. $deal->find('span[class='. $selector .']', 0)->children(2)->plaintext
+				. $deal->find('span[class=' . $selector . ']', 0)->children(2)->plaintext
 				. '</div>';
 		} else {
 			return '';
@@ -1383,8 +1376,11 @@ class PepperBridgeAbstract extends BridgeAbstract {
 
 		// Add the Hour and minutes
 		$date_str .= ' 00:00';
-
 		$date = DateTime::createFromFormat('j F Y H:i', $date_str);
+		// In some case, the date is not recognized : as a workaround the actual date is taken
+		if($date === false) {
+			$date = new DateTime();
+		}
 		return $date->getTimestamp();
 	}
 
@@ -1445,19 +1441,17 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	public function getName(){
 		switch($this->queriedContext) {
 			case $this->i8n('context-keyword'):
-				return $this->i8n('bridge-name') . ' - '. $this->i8n('title-keyword') .' : '. $this->getInput('q');
+				return $this->i8n('bridge-name') . ' - ' . $this->i8n('title-keyword') . ' : ' . $this->getInput('q');
 				break;
 			case $this->i8n('context-group'):
 				$values = $this->getParameters()[$this->i8n('context-group')]['group']['values'];
 				$group = array_search($this->getInput('group'), $values);
-				return $this->i8n('bridge-name') . ' - '. $this->i8n('title-group'). ' : '. $group;
+				return $this->i8n('bridge-name') . ' - ' . $this->i8n('title-group') . ' : ' . $group;
 				break;
 			default: // Return default value
 				return static::NAME;
 		}
 	}
-
-
 
 	/**
 	 * This is some "localisation" function that returns the needed content using
@@ -1472,5 +1466,4 @@ class PepperBridgeAbstract extends BridgeAbstract {
 			return null;
 		}
 	}
-
 }

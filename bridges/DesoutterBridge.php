@@ -15,7 +15,6 @@ class DesoutterBridge extends BridgeAbstract {
 			'news_lang' => array(
 				'name' => 'Language',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Select your language',
 				'defaultValue' => 'Corporate',
 				'values' => array(
@@ -66,7 +65,6 @@ class DesoutterBridge extends BridgeAbstract {
 			'industry_lang' => array(
 				'name' => 'Language',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Select your language',
 				'defaultValue' => 'Corporate',
 				'values' => array(
@@ -117,7 +115,6 @@ class DesoutterBridge extends BridgeAbstract {
 			'full' => array(
 				'name' => 'Load full articles',
 				'type' => 'checkbox',
-				'required' => false,
 				'title' => 'Enable to load the full article for each item'
 			)
 		)
@@ -162,13 +159,13 @@ class DesoutterBridge extends BridgeAbstract {
 		foreach($html->find('article') as $article) {
 			$item = array();
 
-			$item['uri'] = $article->find('[itemprop="name"]', 0)->href;
-			$item['title'] = $article->find('[itemprop="name"]', 0)->title;
+			$item['uri'] = $article->find('a', 0)->href;
+			$item['title'] = $article->find('a[title]', 0)->title;
 
 			if($this->getInput('full')) {
 				$item['content'] = $this->getFullNewsArticle($item['uri']);
 			} else {
-				$item['content'] = $article->find('[itemprop="description"]', 0)->plaintext;
+				$item['content'] = $article->find('div.tile-body p', 0)->plaintext;
 			}
 
 			$this->items[] = $item;
@@ -236,5 +233,4 @@ class DesoutterBridge extends BridgeAbstract {
 
 		echo $list;
 	}
-
 }

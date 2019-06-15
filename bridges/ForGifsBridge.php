@@ -37,5 +37,4 @@ class ForGifsBridge extends FeedExpander {
 		return $item;
 
 	}
-
 }

@@ -28,7 +28,7 @@ class GithubIssueBridge extends BridgeAbstract {
 			'i' => array(
 				'name' => 'Issue number',
 				'type' => 'number',
-				'required' => 'true'
+				'required' => true
 			)
 		)
 	);
@@ -37,10 +37,9 @@ class GithubIssueBridge extends BridgeAbstract {
 		$name = $this->getInput('u') . '/' . $this->getInput('p');
 		switch($this->queriedContext) {
 		case 'Project Issues':
+			$prefix = static::NAME . 's for ';
 			if($this->getInput('c')) {
 				$prefix = static::NAME . 's comments for ';
-			} else {
-				$prefix = static::NAME . 's for ';
 			}
 			$name = $prefix . $name;
 			break;
@@ -53,8 +52,9 @@ class GithubIssueBridge extends BridgeAbstract {
 	}
 
 	public function getURI(){
-		if(!is_null($this->getInput('u')) && !is_null($this->getInput('p'))) {
-			$uri = static::URI . $this->getInput('u') . '/' . $this->getInput('p') . '/issues';
+		if(null !== $this->getInput('u') && null !== $this->getInput('p')) {
+			$uri = static::URI . $this->getInput('u') . '/'
+				. $this->getInput('p') . '/issues';
 			if($this->queriedContext === 'Issue comments') {
 				$uri .= '/' . $this->getInput('i');
 			} elseif($this->getInput('c')) {
@@ -66,80 +66,112 @@ class GithubIssueBridge extends BridgeAbstract {
 		return parent::getURI();
 	}
 
-	protected function extractIssueComment($issueNbr, $title, $comment){
-		$class = $comment->getAttribute('class');
-		$classes = explode(' ', $class);
-		$event = false;
-		if(in_array('discussion-item', $classes)) {
-			$event = true;
-		}
+	private function buildGitHubIssueCommentUri($issue_number, $comment_id) {
+		// https://github.com/<user>/<project>/issues/<issue-number>#<id>
+		return static::URI
+		. $this->getInput('u')
+		. '/'
+		. $this->getInput('p')
+		. '/issues/'
+		. $issue_number
+		. '#'
+		. $comment_id;
+	}
 
-		$author = 'unknown';
-		if($comment->find('.author', 0)) {
-			$author = $comment->find('.author', 0)->plaintext;
-		}
+	private function extractIssueEvent($issueNbr, $title, $comment){
 
-		$uri = static::URI . $this->getInput('u') . '/' . $this->getInput('p') . '/issues/' . $issueNbr;
+		$uri = $this->buildGitHubIssueCommentUri($issueNbr, $comment->id);
 
-		$comment = $comment->firstChild();
-		if(!$event) {
-			$comment = $comment->nextSibling();
-		}
+		$author = $comment->find('.author', 0)->plaintext;
 
-		if($event) {
-			$title .= ' / ' . substr($class, strpos($class, 'discussion-item-') + strlen('discussion-item-'));
-			if(!$comment->hasAttribute('id')) {
-				$items = array();
-				$timestamp = strtotime($comment->find('relative-time', 0)->getAttribute('datetime'));
-				$content = $comment->innertext;
-				while($comment = $comment->nextSibling()) {
-					$item = array();
-					$item['author'] = $author;
-					$item['title'] = html_entity_decode($title, ENT_QUOTES, 'UTF-8');
-					$item['timestamp'] = $timestamp;
-					$item['content'] = $content . '<p>' . $comment->children(1)->innertext . '</p>';
-					$item['uri'] = $uri . '#' . $comment->children(1)->getAttribute('id');
-					$items[] = $item;
-				}
-				return $items;
+		$title .= ' / ' . trim($comment->plaintext);
+
+		$content = $title;
+		if (null !== $comment->nextSibling()) {
+			$content = $comment->nextSibling()->innertext;
+			if ($comment->nextSibling()->nodeName() === 'span') {
+				$content = $comment->nextSibling()->nextSibling()->innertext;
 			}
-			$content = $comment->parent()->innertext;
-		} else {
-			$title .= ' / ' . trim($comment->firstChild()->plaintext);
-			$content = '<pre>' . $comment->find('.comment-body', 0)->innertext . '</pre>';
 		}
 
 		$item = array();
 		$item['author'] = $author;
-		$item['uri'] = $uri . '#' . $comment->getAttribute('id');
+		$item['uri'] = $uri;
 		$item['title'] = html_entity_decode($title, ENT_QUOTES, 'UTF-8');
-		$item['timestamp'] = strtotime($comment->find('relative-time', 0)->getAttribute('datetime'));
+		$item['timestamp'] = strtotime(
+			$comment->find('relative-time', 0)->getAttribute('datetime')
+		);
 		$item['content'] = $content;
 		return $item;
 	}
 
-	protected function extractIssueComments($issue){
+	private function extractIssueComment($issueNbr, $title, $comment){
+
+		$uri = $this->buildGitHubIssueCommentUri($issueNbr, $comment->parent->id);
+
+		$author = $comment->find('.author', 0)->plaintext;
+
+		$title .= ' / ' . trim(
+			$comment->find('.timeline-comment-header-text', 0)->plaintext
+		);
+
+		$content = $comment->find('.comment-body', 0)->innertext;
+
+		$item = array();
+		$item['author'] = $author;
+		$item['uri'] = $uri;
+		$item['title'] = html_entity_decode($title, ENT_QUOTES, 'UTF-8');
+		$item['timestamp'] = strtotime(
+			$comment->find('relative-time', 0)->getAttribute('datetime')
+		);
+		$item['content'] = $content;
+		return $item;
+	}
+
+	private function extractIssueComments($issue){
 		$items = array();
 		$title = $issue->find('.gh-header-title', 0)->plaintext;
-		$issueNbr = trim(substr($issue->find('.gh-header-number', 0)->plaintext, 1));
-		$comments = $issue->find('.js-discussion', 0);
-		foreach($comments->children() as $comment) {
-			$classes = explode(' ', $comment->getAttribute('class'));
-			if(in_array('discussion-item', $classes)
-			|| in_array('timeline-comment-wrapper', $classes)) {
-				$item = $this->extractIssueComment($issueNbr, $title, $comment);
-				if(array_keys($item) !== range(0, count($item) - 1)) {
-					$item = array($item);
-				}
-				$items = array_merge($items, $item);
+		$issueNbr = trim(
+			substr($issue->find('.gh-header-number', 0)->plaintext, 1)
+		);
+
+		$comments = $issue->find('
+			[id^="issue-"] > .comment,
+			[id^="issuecomment-"] > .comment,
+			[id^="event-"],
+			[id^="ref-"]
+			');
+		foreach($comments as $comment) {
+
+			if (!$comment->hasChildNodes()) {
+				continue;
 			}
+
+			if (!$comment->hasClass('discussion-item-header')) {
+				$item = $this->extractIssueComment($issueNbr, $title, $comment);
+				$items[] = $item;
+				continue;
+			}
+
+			while ($comment->hasClass('discussion-item-header')) {
+				$item = $this->extractIssueEvent($issueNbr, $title, $comment);
+				$items[] = $item;
+				$comment = $comment->nextSibling();
+				if (null == $comment) {
+					break;
+				}
+				$classes = explode(' ', $comment->getAttribute('class'));
+			}
+
 		}
 		return $items;
 	}
 
 	public function collectData(){
 		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('No results for Github Issue ' . $this->getURI());
+			or returnServerError(
+				'No results for Github Issue ' . $this->getURI()
+			);
 
 		switch($this->queriedContext) {
 		case 'Issue comments':
@@ -148,31 +180,45 @@ class GithubIssueBridge extends BridgeAbstract {
 		case 'Project Issues':
 			foreach($html->find('.js-active-navigation-container .js-navigation-item') as $issue) {
 				$info = $issue->find('.opened-by', 0);
-				$issueNbr = substr(trim($info->plaintext), 1, strpos(trim($info->plaintext), ' '));
+				$issueNbr = substr(
+					trim($info->plaintext), 1, strpos(trim($info->plaintext), ' ')
+				);
 
 				$item = array();
 				$item['content'] = '';
 
 				if($this->getInput('c')) {
-					$uri = static::URI . $this->getInput('u') . '/' . $this->getInput('p') . '/issues/' . $issueNbr;
+					$uri = static::URI . $this->getInput('u')
+						. '/' . $this->getInput('p') . '/issues/' . $issueNbr;
 					$issue = getSimpleHTMLDOMCached($uri, static::CACHE_TIMEOUT);
 					if($issue) {
-						$this->items = array_merge($this->items, $this->extractIssueComments($issue));
+						$this->items = array_merge(
+							$this->items,
+							$this->extractIssueComments($issue)
+						);
 						continue;
 					}
 					$item['content'] = 'Can not extract comments from ' . $uri;
 				}
 
 				$item['author'] = $info->find('a', 0)->plaintext;
-				$item['timestamp'] = strtotime($info->find('relative-time', 0)->getAttribute('datetime'));
+				$item['timestamp'] = strtotime(
+					$info->find('relative-time', 0)->getAttribute('datetime')
+				);
 				$item['title'] = html_entity_decode(
 					$issue->find('.js-navigation-open', 0)->plaintext,
 					ENT_QUOTES,
 					'UTF-8'
 				);
-				$comments = $issue->find('.col-5', 0)->plaintext;
-				$item['content'] .= "\n" . 'Comments: ' . ($comments ? $comments : '0');
-				$item['uri'] = self::URI . $issue->find('.js-navigation-open', 0)->getAttribute('href');
+
+				$comment_count = 0;
+				if($span = $issue->find('a[aria-label*="comment"] span', 0)) {
+					$comment_count = $span->plaintext;
+				}
+
+				$item['content'] .= "\n" . 'Comments: ' . $comment_count;
+				$item['uri'] = self::URI
+					. $issue->find('.js-navigation-open', 0)->getAttribute('href');
 				$this->items[] = $item;
 			}
 			break;
@@ -180,7 +226,11 @@ class GithubIssueBridge extends BridgeAbstract {
 
 		array_walk($this->items, function(&$item){
 			$item['content'] = preg_replace('/\s+/', ' ', $item['content']);
-			$item['content'] = str_replace('href="/', 'href="' . static::URI, $item['content']);
+			$item['content'] = str_replace(
+				'href="/',
+				'href="' . static::URI,
+				$item['content']
+			);
 			$item['content'] = str_replace(
 				'href="#',
 				'href="' . substr($item['uri'], 0, strpos($item['uri'], '#') + 1),
@@ -188,5 +238,44 @@ class GithubIssueBridge extends BridgeAbstract {
 			);
 			$item['title'] = preg_replace('/\s+/', ' ', $item['title']);
 		});
+	}
+
+	public function detectParameters($url) {
+
+		if(filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) === false
+		|| strpos($url, self::URI) !== 0) {
+			return null;
+		}
+
+		$url_components = parse_url($url);
+		$path_segments = array_values(array_filter(explode('/', $url_components['path'])));
+
+		switch(count($path_segments)) {
+			case 2: { // Project issues
+				list($user, $project) = $path_segments;
+				$show_comments = 'off';
+			} break;
+			case 3: { // Project issues with issue comments
+				if($path_segments[2] !== 'issues') {
+					return null;
+				}
+				list($user, $project) = $path_segments;
+				$show_comments = 'on';
+			} break;
+			case 4: { // Issue comments
+				list($user, $project, /* issues */, $issue) = $path_segments;
+			} break;
+			default: {
+				return null;
+			}
+		}
+
+		return array(
+			'u' => $user,
+			'p' => $project,
+			'c' => isset($show_comments) ? $show_comments : null,
+			'i' => isset($issue) ? $issue : null,
+		);
+
 	}
 }

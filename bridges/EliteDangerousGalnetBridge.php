@@ -6,25 +6,36 @@ class EliteDangerousGalnetBridge extends BridgeAbstract {
 	const URI = 'https://community.elitedangerous.com/galnet/';
 	const CACHE_TIMEOUT = 7200; // 2h
 	const DESCRIPTION = 'Returns the latest page of news from Galnet';
-
-	public function getIcon() {
-		return 'https://community.elitedangerous.com/sites/
-EDSITE_COMM/themes/bootstrap/bootstrap_community/favicon.ico';
-	}
+	const PARAMETERS = array(
+		array(
+			'language' => array(
+				'name' => 'Language',
+				'type' => 'list',
+				'values' => array(
+					'English' => 'en',
+					'French' => 'fr',
+					'German' => 'de'
+				),
+				'defaultValue' => 'en'
+			)
+		)
+	);
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM(self::URI)
+		$language = $this->getInput('language');
+		$url = 'https://community.elitedangerous.com/';
+		$url = $url . $language . '/galnet';
+		$html = getSimpleHTMLDOM($url)
 			or returnServerError('Error while downloading the website content');
 
 		foreach($html->find('div.article') as $element) {
 			$item = array();
 
 			$uri = $element->find('h3 a', 0)->href;
-			$uri = self::URI . substr($uri, strlen('/galnet/'));
+			$uri = 'https://community.elitedangerous.com/' . $language . $uri;
 			$item['uri'] = $uri;
 
-			$title = $element->find('h3 a', 0)->plaintext;
-			$item['title'] = substr($title, 1); //remove the space between icon and title
+			$item['title'] = $element->find('h3 a', 0)->plaintext;
 
 			$content = $element->find('p', -1)->innertext;
 			$item['content'] = $content;

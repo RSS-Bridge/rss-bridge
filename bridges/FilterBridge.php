@@ -94,7 +94,7 @@ class FilterBridge extends FeedExpander {
 		}
 		try{
 			$this->collectExpandableDatas($this->getURI());
-		} catch (HttpException $e) {
+		} catch (Exception $e) {
 			$this->collectExpandableDatas($this->getURI());
 		}
 	}

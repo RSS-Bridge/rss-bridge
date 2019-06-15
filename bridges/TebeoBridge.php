@@ -35,7 +35,7 @@ class TebeoBridge extends FeedExpander {
 			$item['uri'] = $element->find('a', 0)->href;
 			$item['title'] = $element->find('h3', 0)->plaintext;
 			$item['timestamp'] = strtotime($element->find('p.moment-format-day', 0)->plaintext);
-			$item['content'] = '<a href="'.$item['uri'].'"><img alt="" src="'.$element->find('img', 0)->src.'"></a>';
+			$item['content'] = '<a href="' . $item['uri'] . '"><img alt="" src="' . $element->find('img', 0)->src . '"></a>';
 			$this->items[] = $item;
 		}
 	}

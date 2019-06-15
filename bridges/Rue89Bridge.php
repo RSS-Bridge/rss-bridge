@@ -1,25 +1,49 @@
 <?php
-class Rue89Bridge extends FeedExpander {
+class Rue89Bridge extends BridgeAbstract {
 
-	const MAINTAINER = 'pit-fgfjiudghdf';
+	const MAINTAINER = 'teromene';
 	const NAME = 'Rue89';
-	const URI = 'http://rue89.nouvelobs.com/';
-	const DESCRIPTION = 'Returns the 5 newest posts from Rue89 (full text)';
+	const URI = 'https://www.nouvelobs.com/rue89/';
+	const DESCRIPTION = 'Returns the newest posts from Rue89';
 
-	protected function parseItem($item){
-		$item = parent::parseItem($item);
+	public function collectData() {
 
-		$url = 'http://api.rue89.nouvelobs.com/export/mobile2/node/'
-		. str_replace(' ', '', substr($item['uri'], -8))
-		. '/full';
+		$jsonArticles = getContents('https://appdata.nouvelobs.com/rue89/feed.json')
+				or returnServerError('Unable to query Rue89 !');
+		$articles = json_decode($jsonArticles)->items;
+		foreach($articles as $article) {
+			$this->items[] = $this->getArticle($article);
+		}
 
-		$datas = json_decode(getContents($url), true);
-		$item['content'] = $datas['node']['body'];
-
-		return $item;
 	}
 
-	public function collectData(){
-		$this->collectExpandableDatas('http://api.rue89.nouvelobs.com/feed');
+	private function getArticle($articleInfo) {
+
+		$articleJson = getContents($articleInfo->json_url)
+			or returnServerError('Unable to get article !');
+		$article = json_decode($articleJson);
+		$item = array();
+		$item['title'] = $article->title;
+		$item['uri'] = $article->url;
+		if($article->content_premium !== null) {
+			$item['content'] = $article->content_premium;
+		} else {
+			$item['content'] = $article->content;
+		}
+		$item['timestamp'] = $article->date_publi;
+		$item['author'] = $article->author->show_name;
+
+		$item['enclosures'] = array();
+		foreach($article->images as $image) {
+			$item['enclosures'][] = $image->url;
+		}
+
+		$item['categories'] = array();
+		foreach($article->categories as $category) {
+			$item['categories'][] = $category->title;
+		}
+
+		return $item;
+
 	}
 }

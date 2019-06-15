@@ -4,10 +4,15 @@
 * Returns $this->items as raw php data.
 */
 class PlaintextFormat extends FormatAbstract {
-
 	public function stringify(){
 		$items = $this->getItems();
-		$toReturn = print_r($items, true);
+		$data = array();
+
+		foreach($items as $item) {
+			$data[] = $item->toArray();
+		}
+
+		$toReturn = print_r($data, true);
 
 		// Remove invalid non-UTF8 characters
 		ini_set('mbstring.substitute_character', 'none');

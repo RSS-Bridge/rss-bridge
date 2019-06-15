@@ -1,0 +1,12 @@
+{
+    "require": {
+	"php": ">=5.6",
+	"ext-mbstring": "*",
+	"ext-sqlite3": "*",
+	"ext-curl": "*",
+	"ext-openssl": "*",
+	"ext-libxml": "*",
+	"ext-simplexml": "*",
+	"ext-json": "*"
+    }
+}

@@ -11,7 +11,6 @@ class KununuBridge extends BridgeAbstract {
 			'site' => array(
 				'name' => 'Site',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Select your site',
 				'values' => array(
 					'Austria' => 'at',
@@ -23,7 +22,6 @@ class KununuBridge extends BridgeAbstract {
 			'full' => array(
 				'name' => 'Load full article',
 				'type' => 'checkbox',
-				'required' => false,
 				'exampleValue' => 'checked',
 				'title' => 'Activate to load full article'
 			)

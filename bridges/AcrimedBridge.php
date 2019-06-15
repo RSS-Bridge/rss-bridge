@@ -21,5 +21,4 @@ class AcrimedBridge extends FeedExpander {
 
 		return $item;
 	}
-
 }

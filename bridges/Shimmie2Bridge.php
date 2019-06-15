@@ -35,5 +35,4 @@ class Shimmie2Bridge extends DanbooruBridge {
 
 		return $item;
 	}
-
 }

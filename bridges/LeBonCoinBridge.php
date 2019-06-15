@@ -419,7 +419,6 @@ class LeBonCoinBridge extends BridgeAbstract {
 		}
 	}
 
-
 	private function buildRequestJson() {
 
 		$requestJson = new StdClass();
@@ -534,5 +533,4 @@ class LeBonCoinBridge extends BridgeAbstract {
 		return json_encode($requestJson);
 
 	}
-
 }

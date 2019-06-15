@@ -13,6 +13,10 @@ class VkBridge extends BridgeAbstract
 			'u' => array(
 				'name' => 'Group or user name',
 				'required' => true
+			),
+			'hide_reposts' => array(
+				'name' => 'Hide reposts',
+				'type' => 'checkbox',
 			)
 		)
 	);
@@ -48,7 +52,7 @@ class VkBridge extends BridgeAbstract
 		$text_html = $this->getContents()
 		or returnServerError('No results for group or user name "' . $this->getInput('u') . '".');
 
-		$text_html = iconv('windows-1251', 'utf-8', $text_html);
+		$text_html = iconv('windows-1251', 'utf-8//ignore', $text_html);
 		// makes album link generating work correctly
 		$text_html = str_replace('"class="page_album_link">', '" class="page_album_link">', $text_html);
 		$html = str_get_html($text_html);
@@ -234,6 +238,9 @@ class VkBridge extends BridgeAbstract
 			}
 
 			if (is_object($post->find('div.copy_quote', 0))) {
+				if ($this->getInput('hide_reposts') === true) {
+					continue;
+				}
 				$copy_quote = $post->find('div.copy_quote', 0);
 				if ($copy_post_header = $copy_quote->find('div.copy_post_header', 0)) {
 					$copy_post_header->outertext = '';
@@ -377,7 +384,7 @@ class VkBridge extends BridgeAbstract
 			);
 			$post_videos[] = $video_id;
 		} else {
-			$content_suffix .= '<br>Video: <a href="'.htmlspecialchars($video_link).'">'.$video_title.'</a>';
+			$content_suffix .= '<br>Video: <a href="' . htmlspecialchars($video_link) . '">' . $video_title . '</a>';
 		}
 	}
 
@@ -390,7 +397,7 @@ class VkBridge extends BridgeAbstract
 		if (isset($result['error'])) return;
 
 		foreach($result['response']['items'] as $item) {
-			$video_id = strval($item['owner_id']).'_'.strval($item['id']);
+			$video_id = strval($item['owner_id']) . '_' . strval($item['id']);
 			$this->videos[$video_id]['url'] = $item['player'];
 		}
 
@@ -398,7 +405,7 @@ class VkBridge extends BridgeAbstract
 			foreach($item['videos'] as $video_id) {
 				$video_link = $this->videos[$video_id]['url'];
 				$video_title = $this->videos[$video_id]['title'];
-				$item['content'] .= '<br>Video: <a href="'.htmlspecialchars($video_link).'">'.$video_title.'</a>';
+				$item['content'] .= '<br>Video: <a href="' . htmlspecialchars($video_link) . '">' . $video_title . '</a>';
 			}
 			unset($item['videos']);
 		}
@@ -408,6 +415,6 @@ class VkBridge extends BridgeAbstract
 	{
 		$params['v'] = '5.80';
 		$params['access_token'] = $this->getAccessToken();
-		return json_decode( getContents('https://api.vk.com/method/'.$method.'?'.http_build_query($params)), true );
+		return json_decode( getContents('https://api.vk.com/method/' . $method . '?' . http_build_query($params)), true );
 	}
 }
