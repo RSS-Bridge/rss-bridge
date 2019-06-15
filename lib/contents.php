@@ -322,8 +322,8 @@ function parseResponseHeader($header) {
 				$header['http_code'] = $line;
 			} else {
 
-				list ($key, $value) = explode(': ', $line);
-				$header[$key] = $value;
+				list ($key, $value) = explode(':', $line);
+				$header[$key] = trim($value);
 
 			}
 

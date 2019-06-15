@@ -65,7 +65,7 @@ class YoutubeBridge extends BridgeAbstract {
 	private $feedName = '';
 
 	private function ytBridgeQueryVideoInfo($vid, &$author, &$desc, &$time){
-		$html = $this->ytGetSimpleHTMLDOM(self::URI . "watch?v=$vid");
+		$html = $this->ytGetSimpleHTMLDOM(self::URI . "watch?v=$vid", true);
 
 		// Skip unavailable videos
 		if(!strpos($html->innertext, 'IS_UNAVAILABLE_PAGE')) {
@@ -127,7 +127,6 @@ class YoutubeBridge extends BridgeAbstract {
 	}
 
 	private function ytBridgeParseHtmlListing($html, $element_selector, $title_selector, $add_parsed_items = true) {
-		$limit = $add_parsed_items ? 10 : INF;
 		$count = 0;
 
 		$duration_min = $this->getInput('duration_min') ?: -1;
@@ -141,40 +140,38 @@ class YoutubeBridge extends BridgeAbstract {
 		}
 
 		foreach($html->find($element_selector) as $element) {
-			if($count < $limit) {
-				$author = '';
-				$desc = '';
-				$time = 0;
-				$vid = str_replace('/watch?v=', '', $element->find('a', 0)->href);
-				$vid = substr($vid, 0, strpos($vid, '&') ?: strlen($vid));
-				$title = trim($this->ytBridgeFixTitle($element->find($title_selector, 0)->plaintext));
+			$author = '';
+			$desc = '';
+			$time = 0;
+			$vid = str_replace('/watch?v=', '', $element->find('a', 0)->href);
+			$vid = substr($vid, 0, strpos($vid, '&') ?: strlen($vid));
+			$title = trim($this->ytBridgeFixTitle($element->find($title_selector, 0)->plaintext));
 
-				if (strpos($vid, 'googleads') !== false
-					|| $title == '[Private video]'
-					|| $title == '[Deleted video]'
-				) {
-					continue;
-				}
-
-				// The duration comes in one of the formats:
-				// hh:mm:ss / mm:ss / m:ss
-				// 01:03:30 / 15:06 / 1:24
-				$durationText = trim($element->find('div.timestamp span', 0)->plaintext);
-				$durationText = preg_replace('/([\d]{1,2})\:([\d]{2})/', '00:$1:$2', $durationText);
-
-				sscanf($durationText, '%d:%d:%d', $hours, $minutes, $seconds);
-				$duration = $hours * 3600 + $minutes * 60 + $seconds;
-
-				if($duration < $duration_min || $duration > $duration_max) {
-					continue;
-				}
-
-				if ($add_parsed_items) {
-					$this->ytBridgeQueryVideoInfo($vid, $author, $desc, $time);
-					$this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
-				}
-				$count++;
+			if (strpos($vid, 'googleads') !== false
+				|| $title == '[Private video]'
+				|| $title == '[Deleted video]'
+			) {
+				continue;
 			}
+
+			// The duration comes in one of the formats:
+			// hh:mm:ss / mm:ss / m:ss
+			// 01:03:30 / 15:06 / 1:24
+			$durationText = trim($element->find('div.timestamp span', 0)->plaintext);
+			$durationText = preg_replace('/([\d]{1,2})\:([\d]{2})/', '00:$1:$2', $durationText);
+
+			sscanf($durationText, '%d:%d:%d', $hours, $minutes, $seconds);
+			$duration = $hours * 3600 + $minutes * 60 + $seconds;
+
+			if($duration < $duration_min || $duration > $duration_max) {
+				continue;
+			}
+
+			if ($add_parsed_items) {
+				$this->ytBridgeQueryVideoInfo($vid, $author, $desc, $time);
+				$this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
+			}
+			$count++;
 		}
 		return $count;
 	}
@@ -184,18 +181,38 @@ class YoutubeBridge extends BridgeAbstract {
 		return html_entity_decode($title, ENT_QUOTES, 'UTF-8');
 	}
 
-	private function ytGetSimpleHTMLDOM($url){
+	private function ytGetSimpleHTMLDOM($url, $cached = false){
+		$header = array(
+			'Accept-Language: en-US'
+		);
+		$opts = array();
+		$lowercase = true;
+		$forceTagsClosed = true;
+		$target_charset = DEFAULT_TARGET_CHARSET;
+		$stripRN = false;
+		$defaultBRText = DEFAULT_BR_TEXT;
+		$defaultSpanText = DEFAULT_SPAN_TEXT;
+		if ($cached) {
+			return getSimpleHTMLDOMCached($url,
+				86400,
+				$header,
+				$opts,
+				$lowercase,
+				$forceTagsClosed,
+				$target_charset,
+				$stripRN,
+				$defaultBRText,
+				$defaultSpanText);
+		}
 		return getSimpleHTMLDOM($url,
-			$header = array(
-				'Accept-Language: en-US'
-			),
-			$opts = array(),
-			$lowercase = true,
-			$forceTagsClosed = true,
-			$target_charset = DEFAULT_TARGET_CHARSET,
-			$stripRN = false,
-			$defaultBRText = DEFAULT_BR_TEXT,
-			$defaultSpanText = DEFAULT_SPAN_TEXT);
+			$header,
+			$opts,
+			$lowercase,
+			$forceTagsClosed,
+			$target_charset,
+			$stripRN,
+			$defaultBRText,
+			$defaultSpanText);
 	}
 
 	public function collectData(){

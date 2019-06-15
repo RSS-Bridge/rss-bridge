@@ -1,6 +1,6 @@
 rss-bridge
 ===
-[![LICENSE](https://img.shields.io/badge/license-UNLICENSE-blue.svg)](UNLICENSE) [![GitHub release](https://img.shields.io/github/release/rss-bridge/rss-bridge.svg)](https://github.com/rss-bridge/rss-bridge/releases/latest) [![Debian Release](https://img.shields.io/badge/dynamic/json.svg?label=debian%20release&url=https%3A%2F%2Fsources.debian.org%2Fapi%2Fsrc%2Frss-bridge%2F&query=%24.versions%5B0%5D.version&colorB=blue)](https://tracker.debian.org/pkg/rss-bridge) [![Guix Release](https://img.shields.io/badge/guix%20release-unknown-light--gray.svg)](https://www.gnu.org/software/guix/packages/R/) [![Build Status](https://travis-ci.org/RSS-Bridge/rss-bridge.svg?branch=master)](https://travis-ci.org/RSS-Bridge/rss-bridge) [![Docker Build Status](https://img.shields.io/docker/build/rssbridge/rss-bridge.svg)](https://hub.docker.com/r/rssbridge/rss-bridge/)
+[![LICENSE](https://img.shields.io/badge/license-UNLICENSE-blue.svg)](UNLICENSE) [![GitHub release](https://img.shields.io/github/release/rss-bridge/rss-bridge.svg?logo=github)](https://github.com/rss-bridge/rss-bridge/releases/latest) [![Debian Release](https://img.shields.io/badge/dynamic/json.svg?logo=debian&label=debian%20release&url=https%3A%2F%2Fsources.debian.org%2Fapi%2Fsrc%2Frss-bridge%2F&query=%24.versions%5B0%5D.version&colorB=blue)](https://tracker.debian.org/pkg/rss-bridge) [![Guix Release](https://img.shields.io/badge/guix%20release-unknown-blue.svg)](https://www.gnu.org/software/guix/packages/R/) [![Build Status](https://travis-ci.org/RSS-Bridge/rss-bridge.svg?branch=master)](https://travis-ci.org/RSS-Bridge/rss-bridge) [![Docker Build Status](https://img.shields.io/docker/build/rssbridge/rss-bridge.svg?logo=docker)](https://hub.docker.com/r/rssbridge/rss-bridge/)
 
 RSS-Bridge is a PHP project capable of generating RSS and Atom feeds for websites which don't have one. It can be used on webservers or as stand alone application in CLI mode.
 
@@ -15,7 +15,6 @@ Supported sites/pages (examples)
 * `DuckDuckGo`: Most recent results from [DuckDuckGo.com](https://duckduckgo.com/)
 * `Facebook` : Returns the latest posts on a page or profile on [Facebook](https://facebook.com/)
 * `FlickrExplore` : [Latest interesting images](http://www.flickr.com/explore) from Flickr
-* `GooglePlus` : Most recent posts of user timeline
 * `GoogleSearch` : Most recent results from Google Search
 * `Identi.ca` : Identica user timeline (Should be compatible with other Pump.io instances)
 * `Instagram`: Most recent photos from an Instagram user
@@ -85,7 +84,7 @@ Deploy
 Thanks to the community, hosting your own instance of RSS-Bridge is as easy as clicking a button!
 
 [![Deploy on Scalingo](https://cdn.scalingo.com/deploy/button.svg)](https://my.scalingo.com/deploy?source=https://github.com/sebsauvage/rss-bridge)
-[![Deploy to Docker Cloud](https://files.cloud.docker.com/images/deploy-to-dockercloud.svg)](https://cloud.docker.com/stack/deploy/?repo=https://github.com/rss-bridge/rss-bridge)
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
 Getting involved
 ===
@@ -116,13 +115,14 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
   * [Ahiles3005](https://github.com/Ahiles3005)
   * [Albirew](https://github.com/Albirew)
   * [aledeg](https://github.com/aledeg)
+  * [alex73](https://github.com/alex73)
   * [alexAubin](https://github.com/alexAubin)
   * [AmauryCarrade](https://github.com/AmauryCarrade)
-  * [AntoineTurmel](https://github.com/AntoineTurmel)
   * [ArthurHoaro](https://github.com/ArthurHoaro)
   * [Astalaseven](https://github.com/Astalaseven)
   * [Astyan-42](https://github.com/Astyan-42)
   * [az5he6ch](https://github.com/az5he6ch)
+  * [azdkj532](https://github.com/azdkj532)
   * [b1nj](https://github.com/b1nj)
   * [benasse](https://github.com/benasse)
   * [captn3m0](https://github.com/captn3m0)
@@ -134,8 +134,11 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
   * [da2x](https://github.com/da2x)
   * [Daiyousei](https://github.com/Daiyousei)
   * [disk0x](https://github.com/disk0x)
+  * [DJCrashdummy](https://github.com/DJCrashdummy)
   * [Djuuu](https://github.com/Djuuu)
+  * [DnAp](https://github.com/DnAp)
   * [Draeli](https://github.com/Draeli)
+  * [Dreckiger-Dan](https://github.com/Dreckiger-Dan)
   * [em92](https://github.com/em92)
   * [eMerzh](https://github.com/eMerzh)
   * [EtienneM](https://github.com/EtienneM)
@@ -153,6 +156,7 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
   * [jdigilio](https://github.com/jdigilio)
   * [JeremyRand](https://github.com/JeremyRand)
   * [Jocker666z](https://github.com/Jocker666z)
+  * [killruana](https://github.com/killruana)
   * [klimplant](https://github.com/klimplant)
   * [kranack](https://github.com/kranack)
   * [kraoc](https://github.com/kraoc)
@@ -170,7 +174,6 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
   * [mdemoss](https://github.com/mdemoss)
   * [melangue](https://github.com/melangue)
   * [metaMMA](https://github.com/metaMMA)
-  * [mickael-bertrand](https://github.com/mickael-bertrand)
   * [mitsukarenai](https://github.com/mitsukarenai)
   * [MonsieurPoutounours](https://github.com/MonsieurPoutounours)
   * [mr-flibble](https://github.com/mr-flibble)
@@ -179,6 +182,7 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
   * [nel50n](https://github.com/nel50n)
   * [niawag](https://github.com/niawag)
   * [Nono-m0le](https://github.com/Nono-m0le)
+  * [ObsidianWitch](https://github.com/ObsidianWitch)
   * [ORelio](https://github.com/ORelio)
   * [PaulVayssiere](https://github.com/PaulVayssiere)
   * [pellaeon](https://github.com/pellaeon)
@@ -186,6 +190,7 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
   * [pit-fgfjiudghdf](https://github.com/pit-fgfjiudghdf)
   * [pitchoule](https://github.com/pitchoule)
   * [pmaziere](https://github.com/pmaziere)
+  * [Pofilo](https://github.com/Pofilo)
   * [prysme01](https://github.com/prysme01)
   * [quentinus95](https://github.com/quentinus95)
   * [regisenguehard](https://github.com/regisenguehard)
@@ -200,10 +205,13 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
   * [sysadminstory](https://github.com/sysadminstory)
   * [tameroski](https://github.com/tameroski)
   * [teromene](https://github.com/teromene)
+  * [thefranke](https://github.com/thefranke)
   * [TheRadialActive](https://github.com/TheRadialActive)
   * [triatic](https://github.com/triatic)
+  * [VerifiedJoseph](https://github.com/VerifiedJoseph)
   * [WalterBarrett](https://github.com/WalterBarrett)
   * [wtuuju](https://github.com/wtuuju)
+  * [xurxof](https://github.com/xurxof)
   * [yardenac](https://github.com/yardenac)
   * [ZeNairolf](https://github.com/ZeNairolf)
 

@@ -72,15 +72,15 @@ class FB2Bridge extends BridgeAbstract {
 			$pageInfo = $this->getPageInfos($page, $cookies);
 
 			if($pageInfo['userId'] === null) {
-				echo <<<EOD
+				returnClientError(<<<EOD
 Unable to get the page id. You should consider getting the ID by hand, then importing it into FB2Bridge
-EOD;
-				die();
+EOD
+			);
 			} elseif($pageInfo['userId'] == -1) {
-				echo <<<EOD
+				returnClientError(<<<EOD
 This page is not accessible without being logged in.
-EOD;
-				die();
+EOD
+			);
 			}
 		}
 
@@ -95,7 +95,7 @@ EOD;
 		foreach($html->find('article') as $content) {
 
 			$item = array();
-			//echo $content; die();
+
 			preg_match('/publish_time\\\":([0-9]+),/', $content->getAttribute('data-store', 0), $match);
 			if(isset($match[1]))
 				$timestamp = $match[1];

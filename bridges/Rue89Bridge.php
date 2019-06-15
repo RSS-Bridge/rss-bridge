@@ -9,7 +9,7 @@ class Rue89Bridge extends BridgeAbstract {
 	public function collectData() {
 
 		$jsonArticles = getContents('https://appdata.nouvelobs.com/rue89/feed.json')
-				or die('Unable to query Rue89 !');
+				or returnServerError('Unable to query Rue89 !');
 		$articles = json_decode($jsonArticles)->items;
 		foreach($articles as $article) {
 			$this->items[] = $this->getArticle($article);
@@ -19,7 +19,8 @@ class Rue89Bridge extends BridgeAbstract {
 
 	private function getArticle($articleInfo) {
 
-		$articleJson = getContents($articleInfo->json_url) or die('Unable to get article !');
+		$articleJson = getContents($articleInfo->json_url)
+			or returnServerError('Unable to get article !');
 		$article = json_decode($articleJson);
 		$item = array();
 		$item['title'] = $article->title;

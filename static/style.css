@@ -84,6 +84,12 @@ input[type="number"]:focus {
 	border-color: #888;
 }
 
+input:focus::-webkit-input-placeholder { opacity: 0; }
+input:focus::-moz-placeholder { opacity: 0; }
+input:focus::placeholder { opacity: 0; }
+input:focus:-moz-placeholder { opacity: 0; }
+input:focus:-ms-input-placeholder { opacity: 0; }
+
 .searchbar {
 	width: 40%;
 	margin: 40px auto 100px;
@@ -99,13 +105,6 @@ input[type="number"]:focus {
 
 .searchbar input[type="text"]::placeholder {
 	text-align: center;
-}
-
-.searchbar input[type="text"]:focus::-webkit-input-placeholder,
-.searchbar input[type="text"]:focus::-moz-placeholder,
-.searchbar input[type="text"]:focus:-moz-placeholder,
-.searchbar input[type="text"]:focus:-ms-input-placeholder {
-	opacity: 0;
 }
 
 .searchbar > h3 {

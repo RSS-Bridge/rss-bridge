@@ -15,12 +15,12 @@ class SQLiteCache implements CacheInterface {
 
 		$file = Configuration::getConfig(get_called_class(), 'file');
 		if (empty($file)) {
-			die('Configuration for ' . get_called_class() . ' missing. Please check your config.ini.php');
+			die('Configuration for ' . get_called_class() . ' missing. Please check your ' . FILE_CONFIG);
 		}
 		if (dirname($file) == '.') {
 			$file = PATH_CACHE . $file;
 		} elseif (!is_dir(dirname($file))) {
-			die('Invalid configuration for ' . get_called_class() . '. Please check your config.ini.php');
+			die('Invalid configuration for ' . get_called_class() . '. Please check your ' . FILE_CONFIG);
 		}
 
 		if (!is_file($file)) {

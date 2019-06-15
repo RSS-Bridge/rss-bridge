@@ -28,7 +28,31 @@ class TwitterBridge extends BridgeAbstract {
 				'name' => 'Keyword or #hashtag',
 				'required' => true,
 				'exampleValue' => 'rss-bridge, #rss-bridge',
-				'title' => 'Insert a keyword or hashtag'
+				'title' => <<<EOD
+* To search for multiple words (must contain all of these words), put a space between them.
+
+Example: `rss-bridge release`.
+
+* To search for multiple words (contains any of these words), put "OR" between them.
+
+Example: `rss-bridge OR rssbridge`.
+
+* To search for an exact phrase (including whitespace), put double-quotes around them.
+
+Example: `"rss-bridge release"`
+
+* If you want to search for anything **but** a specific word, put a hyphen before it.
+
+Example: `rss-bridge -release` (ignores "release")
+
+* Of course, this also works for hashtags.
+
+Example: `#rss-bridge OR #rssbridge`
+
+* And you can combine them in any shape or form you like.
+
+Example: `#rss-bridge OR #rssbridge -release`
+EOD
 			)
 		),
 		'By username' => array(
@@ -165,7 +189,7 @@ class TwitterBridge extends BridgeAbstract {
 
 			// Skip retweets?
 			if($this->getInput('noretweet')
-			&& strcasecmp($tweet->getAttribute('data-screen-name'), $this->getInput('u'))) {
+			&& $tweet->find('div.context span.js-retweet-text a', 0)) {
 				continue;
 			}
 
@@ -189,8 +213,8 @@ class TwitterBridge extends BridgeAbstract {
 			$item['fullname'] = htmlspecialchars_decode($tweet->getAttribute('data-name'), ENT_QUOTES);
 			// get author
 			$item['author'] = $item['fullname'] . ' (@' . $item['username'] . ')';
-			if(strcasecmp($tweet->getAttribute('data-screen-name'), $this->getInput('u'))) {
-				$item['author'] .= ' RT: @' . $this->getInput('u');
+			if($rt = $tweet->find('div.context span.js-retweet-text a', 0)) {
+				$item['author'] .= ' RT: @' . $rt->plaintext;
 			}
 			// get avatar link
 			$item['avatar'] = $tweet->find('img', 0)->src;
@@ -245,22 +269,26 @@ EOD;
 
 			// Add embeded image to content
 			$image_html = '';
-			$image = $this->getImageURI($tweet);
-			if(!$this->getInput('noimg') && !is_null($image)) {
-				// Set image scaling
-				$image_orig = $this->getInput('noimgscaling') ? $image : $image . ':orig';
-				$image_thumb = $this->getInput('noimgscaling') ? $image : $image . ':thumb';
+			$images = $this->getImageURI($tweet);
+			if(!$this->getInput('noimg') && !is_null($images)) {
 
-				// add enclosures
-				$item['enclosures'] = array($image_orig);
+				foreach ($images as $image) {
 
-				$image_html = <<<EOD
+					// Set image scaling
+					$image_orig = $this->getInput('noimgscaling') ? $image : $image . ':orig';
+					$image_thumb = $this->getInput('noimgscaling') ? $image : $image . ':thumb';
+
+					// add enclosures
+					$item['enclosures'][] = $image_orig;
+
+					$image_html .= <<<EOD
 <a href="{$image_orig}">
 <img
 	style="align:top; max-width:558px; border:1px solid black;"
 	src="{$image_thumb}" />
 </a>
 EOD;
+				}
 			}
 
 			// add content
@@ -291,22 +319,27 @@ EOD;
 
 				// Add embeded image to content
 				$quotedImage_html = '';
-				$quotedImage = $this->getQuotedImageURI($tweet);
-				if(!$this->getInput('noimg') && !is_null($quotedImage)) {
-					// Set image scaling
-					$quotedImage_orig = $this->getInput('noimgscaling') ? $quotedImage : $quotedImage . ':orig';
-					$quotedImage_thumb = $this->getInput('noimgscaling') ? $quotedImage : $quotedImage . ':thumb';
+				$quotedImages = $this->getQuotedImageURI($tweet);
 
-					// add enclosures
-					$item['enclosures'] = array($quotedImage_orig);
+				if(!$this->getInput('noimg') && !is_null($quotedImages)) {
 
-					$quotedImage_html = <<<EOD
-<a href="{$quotedImage_orig}">
+					foreach ($quotedImages as $image) {
+
+						// Set image scaling
+						$image_orig = $this->getInput('noimgscaling') ? $image : $image . ':orig';
+						$image_thumb = $this->getInput('noimgscaling') ? $image : $image . ':thumb';
+
+						// add enclosures
+						$item['enclosures'][] = $image_orig;
+
+						$quotedImage_html .= <<<EOD
+<a href="{$image_orig}">
 <img
 	style="align:top; max-width:558px; border:1px solid black;"
-	src="{$quotedImage_thumb}" />
+	src="{$image_thumb}" />
 </a>
 EOD;
+					}
 				}
 
 				$item['content'] = <<<EOD
@@ -360,9 +393,18 @@ EOD;
 
 	private function getImageURI($tweet){
 		// Find media in tweet
+		$images = array();
+
 		$container = $tweet->find('div.AdaptiveMedia-container', 0);
+
 		if($container && $container->find('img', 0)) {
-			return $container->find('img', 0)->src;
+			foreach ($container->find('img') as $img) {
+				$images[] = $img->src;
+			}
+		}
+
+		if (!empty($images)) {
+			return $images;
 		}
 
 		return null;
@@ -370,9 +412,18 @@ EOD;
 
 	private function getQuotedImageURI($tweet){
 		// Find media in tweet
+		$images = array();
+
 		$container = $tweet->find('div.QuoteMedia-container', 0);
+
 		if($container && $container->find('img', 0)) {
-			return $container->find('img', 0)->src;
+			foreach ($container->find('img') as $img) {
+				$images[] = $img->src;
+			}
+		}
+
+		if (!empty($images)) {
+			return $images;
 		}
 
 		return null;

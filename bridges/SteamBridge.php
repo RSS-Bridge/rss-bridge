@@ -8,44 +8,12 @@ class SteamBridge extends BridgeAbstract {
 	const MAINTAINER = 'jacknumber';
 	const PARAMETERS = array(
 		'Wishlist' => array(
-			'username' => array(
-				'name' => 'Username',
+			'userid' => array(
+				'name' => 'Steamid64 (find it on steamid.io)',
+				'title' => 'User ID (17 digits). Find your user ID with steamid.io or steamidfinder.com',
 				'required' => true,
-			),
-			'currency' => array(
-				'name' => 'Currency',
-				'type' => 'list',
-				'values' => array(
-					// source: http://steam.steamlytics.xyz/currencies
-					'USD' => 'us',
-					'GBP' => 'gb',
-					'EUR' => 'fr',
-					'CHF' => 'ch',
-					'RUB' => 'ru',
-					'BRL' => 'br',
-					'JPY' => 'jp',
-					'SEK' => 'se',
-					'IDR' => 'id',
-					'MYR' => 'my',
-					'PHP' => 'ph',
-					'SGD' => 'sg',
-					'THB' => 'th',
-					'KRW' => 'kr',
-					'TRY' => 'tr',
-					'MXN' => 'mx',
-					'CAD' => 'ca',
-					'NZD' => 'nz',
-					'CNY' => 'cn',
-					'INR' => 'in',
-					'CLP' => 'cl',
-					'PEN' => 'pe',
-					'COP' => 'co',
-					'ZAR' => 'za',
-					'HKD' => 'hk',
-					'TWD' => 'tw',
-					'SRD' => 'sr',
-					'AED' => 'ae',
-				),
+				'exampleValue' => '76561198821231205',
+				'pattern' => '[0-9]{17}',
 			),
 			'only_discount' => array(
 				'name' => 'Only discount',
@@ -56,27 +24,15 @@ class SteamBridge extends BridgeAbstract {
 
 	public function collectData(){
 
-		$username = $this->getInput('username');
-		$params = array(
-			'cc' => $this->getInput('currency')
-		);
+		$userid = $this->getInput('userid');
 
-		$url = self::URI . 'wishlist/id/' . $username . '?' . http_build_query($params);
-
-		$targetVariable = 'g_rgAppInfo';
+		$sourceUrl = self::URI . 'wishlist/profiles/' . $userid . '/wishlistdata?p=0';
 		$sort = array();
 
-		$html = '';
-		$html = getSimpleHTMLDOM($url)
-			or returnServerError("Could not request Steam Wishlist. Tried:\n - $url");
+		$json = getContents($sourceUrl)
+			or returnServerError('Could not get content from wishlistdata (' . $sourceUrl . ')');
 
-		$jsContent = $html->find('.responsive_page_template_content script', 0)->innertext;
-
-		if(preg_match('/var ' . $targetVariable . ' = (.*?);/s', $jsContent, $matches)) {
-			$appsData = json_decode($matches[1]);
-		} else {
-			returnServerError("Could not parse JS variable ($targetVariable) in page content.");
-		}
+		$appsData = json_decode($json);
 
 		foreach($appsData as $id => $element) {
 
@@ -87,6 +43,8 @@ class SteamBridge extends BridgeAbstract {
 
 			if($element->subs) {
 				$appIsBuyable = 1;
+				$priceBlock = str_get_html($element->subs[0]->discount_block);
+				$appPrice = str_replace('--', '00', $priceBlock->find('.discount_final_price', 0)->plaintext);
 
 				if($element->subs[0]->discount_pct) {
 
@@ -94,8 +52,6 @@ class SteamBridge extends BridgeAbstract {
 					$discountBlock = str_get_html($element->subs[0]->discount_block);
 					$appDiscountValue = $discountBlock->find('.discount_pct', 0)->plaintext;
 					$appOldPrice = $discountBlock->find('.discount_original_price', 0)->plaintext;
-					$appNewPrice = $discountBlock->find('.discount_final_price', 0)->plaintext;
-					$appPrice = $appNewPrice;
 
 				} else {
 
@@ -103,7 +59,6 @@ class SteamBridge extends BridgeAbstract {
 						continue;
 					}
 
-					$appPrice = $element->subs[0]->price / 100;
 				}
 
 			} else {
@@ -117,11 +72,14 @@ class SteamBridge extends BridgeAbstract {
 				}
 			}
 
+			$coverUrl = str_replace('_292x136', '', strtok($element->capsule, '?'));
+			$picturesPath = pathinfo($coverUrl)['dirname'] . '/';
+
 			$item = array();
 			$item['uri'] = "http://store.steampowered.com/app/$id/";
 			$item['title'] = $element->name;
 			$item['type'] = $appType;
-			$item['cover'] = str_replace('_292x136', '', $element->capsule);
+			$item['cover'] = $coverUrl;
 			$item['timestamp'] = $element->added;
 			$item['isBuyable'] = $appIsBuyable;
 			$item['hasDiscount'] = $appHasDiscount;
@@ -129,22 +87,29 @@ class SteamBridge extends BridgeAbstract {
 			$item['priority'] = $element->priority;
 
 			if($appIsBuyable) {
+
 				$item['price'] = floatval(str_replace(',', '.', $appPrice));
+				$item['content'] = $appPrice;
+
+			}
+
+			if($appIsFree) {
+				$item['content'] = 'Free';
 			}
 
 			if($appHasDiscount) {
 
 				$item['discount']['value'] = $appDiscountValue;
-				$item['discount']['oldPrice'] = floatval(str_replace(',', '.', $appOldPrice));
-				$item['discount']['newPrice'] = floatval(str_replace(',', '.', $appNewPrice));
+				$item['discount']['oldPrice'] = $appOldPrice;
+				$item['content'] = '<s>' . $appOldPrice . '</s> <b>' . $appPrice . '</b> (' . $appDiscountValue . ')';
 
 			}
 
 			$item['enclosures'] = array();
-			$item['enclosures'][] = str_replace('_292x136', '', $element->capsule);
+			$item['enclosures'][] = $coverUrl;
 
-			foreach($element->screenshots as $screenshot) {
-				$item['enclosures'][] = substr($element->capsule, 0, -31) . $screenshot;
+			foreach($element->screenshots as $screenshotFileName) {
+				$item['enclosures'][] = $picturesPath . $screenshotFileName;
 			}
 
 			$sort[$id] = $element->priority;

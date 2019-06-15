@@ -13,7 +13,7 @@ class ShanaprojectBridge extends BridgeAbstract {
 		if(!$html)
 			returnServerError('Could not load \'seasons\' page!');
 
-		$season = $html->find('div.follows_menu/a', 1);
+		$season = $html->find('div.follows_menu a', 1);
 		if(!$season)
 			returnServerError('Could not find \'Season Anime List\'!');
 
