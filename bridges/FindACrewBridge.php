@@ -70,8 +70,7 @@ class FindACrewBridge extends BridgeAbstract {
 			$item['uri'] = $link;
 			$content = $htmlDetail->find('.panel-body div.clearfix.row > div', 1)->innertext;
 			$content .= $htmlDetail->find('.panel-body > div', 1)->innertext;
-			$content = str_replace('src="/', 'src="' . parent::getURI() . '/', $content);
-			$content = str_replace('href="/', 'href="' . parent::getURI() . '/', $content);
+			$content = defaultLinkTo($content, parent::getURI());
 			$item['content'] = $content;
 			$item['enclosures'] = array($img);
 			$item['categories'] = array($annonce->find('.css_AccLocCur', 0)->plaintext);
