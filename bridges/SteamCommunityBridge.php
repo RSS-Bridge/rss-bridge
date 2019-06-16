@@ -58,9 +58,8 @@ class SteamCommunityBridge extends BridgeAbstract {
 
 	public function getURI() {
 		if ($this->getInput('category') == 'workshop')
-			return self::URI . '/workshop/browse/'
-				. '?appid=' . $this->getInput('i')
-				. '&browsesort=mostrecent';
+			return self::URI . '/workshop/browse/?appid=' 
+				. $this->getInput('i') . '&browsesort=mostrecent';
 
 		return self::URI . '/app/'
 			. $this->getInput('i') . '/'
@@ -174,9 +173,8 @@ class SteamCommunityBridge extends BridgeAbstract {
 			$item['categories'] = $category;
 
 			$item['content'] = '<p><a href="' . $uri . '">'
-				.$previewImage . '</a></p>'
-				. '<p>' . $fileRating . '</p>'
-				. '<p>' . $description . '</p>';
+				.$previewImage . '</a></p><p>' . $fileRating
+				. '</p><p>' . $description . '</p>';
 
 			$this->items[] = $item;
 
