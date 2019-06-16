@@ -22,18 +22,24 @@
 *.RTF   diff=astextplain
 
 # Ignore files in git archive (i.e. GitHub release builds)
+
 ## Docker
 Dockerfile                              export-ignore
 .dockerignore                           export-ignore
+
 ## Travis
 .travis.yml                             export-ignore
+
 ## GitHub
 .github/                                export-ignore
+
 ## Git
 .gitattributes                          export-ignore
 .gitignore                              export-ignore
+
 ## Scalingo
 scalingo.json                           export-ignore
+
 ## RSS-Bridge
 phpunit.xml                             export-ignore
 phpcs.xml                               export-ignore
@@ -42,8 +48,22 @@ tests/                                  export-ignore
 cache/.gitkeep                          export-ignore
 bridges/DemoBridge.php                  export-ignore
 bridges/FeedExpanderExampleBridge.php   export-ignore
+
 ## Composer
-composer.json                           export-ignore
-composer.lock                           export-ignore
+#
+# Keep the following lines commented out. Heroku does
+# not function if the composer files are ignored during
+# export. For more information see
+# https://github.com/rss-bridge/rss-bridge/issues/1165
+#
+# composer.json                         export-ignore
+# composer.lock                         export-ignore
+
 ## Heroku
-app.json                                export-ignore
+#
+# Keep the following line commented out. Heroku does
+# not function if app.json is ignored during export.
+# For more information see
+# https://github.com/rss-bridge/rss-bridge/issues/1165
+#
+# app.json                              export-ignore
