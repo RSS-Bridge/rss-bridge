@@ -57,7 +57,7 @@ class SteamCommunityBridge extends BridgeAbstract {
 	}
 
 	public function getURI() {
-		if ($this->getInput('category') == 'workshop')
+		if ($this->getInput('category') === 'workshop')
 			return self::URI . '/workshop/browse/?appid='
 				. $this->getInput('i') . '&browsesort=mostrecent';
 
@@ -67,7 +67,7 @@ class SteamCommunityBridge extends BridgeAbstract {
 			. '/?p=1&browsefilter=mostrecent';
 	}
 
-	public function collectMedia() {
+	private function collectMedia() {
 		$category = $this->getInput('category');
 		$html = $this->getMainPage();
 		$cards = $html->find('div.apphub_Card');
@@ -131,14 +131,14 @@ class SteamCommunityBridge extends BridgeAbstract {
 		}
 	}
 
-	public function collectWorkshop() {
+	private function collectWorkshop() {
 		$category = $this->getInput('category');
 		$html = $this->getMainPage();
 		$workShopItems = $html->find('div.workshopItem');
 
 		foreach($workShopItems as $workShopItem) {
 			$author = $workShopItem->find('div.workshopItemAuthorName', 0)->find('a', 0);
-			$author = strip_tags($author);
+			$author = $author->innertext;
 
 			$fileRating = $workShopItem->find('img.fileRating', 0);
 
@@ -157,7 +157,7 @@ class SteamCommunityBridge extends BridgeAbstract {
 			$tags = '';
 
 			foreach($htmlTags as $htmlTag) {
-				if ($tags != '')
+				if ($tags !== '')
 					$tags .= ',';
 
 				$tags .= $htmlTag->find('a', 0)->innertext;
@@ -183,7 +183,7 @@ class SteamCommunityBridge extends BridgeAbstract {
 	}
 
 	public function collectData() {
-		if ($this->getInput('category') == 'workshop')
+		if ($this->getInput('category') === 'workshop')
 			$this->collectWorkshop();
 		else
 			$this->collectMedia();
