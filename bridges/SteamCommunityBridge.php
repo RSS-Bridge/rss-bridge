@@ -20,7 +20,8 @@ class SteamCommunityBridge extends BridgeAbstract {
 				'values' => array(
 					'Artwork' => 'images',
 					'Screenshots' => 'screenshots',
-					'Videos' => 'videos'
+					'Videos' => 'videos',
+					'Workshop' => 'workshop'
 				)
 			)
 		)
@@ -32,7 +33,7 @@ class SteamCommunityBridge extends BridgeAbstract {
 
 	protected function getMainPage() {
 		$category = $this->getInput('category');
-		$html = getSimpleHTMLDOM($this->getURI() . '/?p=1&browsefilter=mostrecent')
+		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not fetch Steam data.');
 
 		return $html;
@@ -56,12 +57,17 @@ class SteamCommunityBridge extends BridgeAbstract {
 	}
 
 	public function getURI() {
+		if ($this->getInput('category') === 'workshop')
+			return self::URI . '/workshop/browse/?appid='
+				. $this->getInput('i') . '&browsesort=mostrecent';
+
 		return self::URI . '/app/'
 			. $this->getInput('i') . '/'
-			. $this->getInput('category');
+			. $this->getInput('category')
+			. '/?p=1&browsefilter=mostrecent';
 	}
 
-	public function collectData() {
+	private function collectMedia() {
 		$category = $this->getInput('category');
 		$html = $this->getMainPage();
 		$cards = $html->find('div.apphub_Card');
@@ -123,5 +129,63 @@ class SteamCommunityBridge extends BridgeAbstract {
 			if (count($this->items) >= 10)
 				break;
 		}
+	}
+
+	private function collectWorkshop() {
+		$category = $this->getInput('category');
+		$html = $this->getMainPage();
+		$workShopItems = $html->find('div.workshopItem');
+
+		foreach($workShopItems as $workShopItem) {
+			$author = $workShopItem->find('div.workshopItemAuthorName', 0)->find('a', 0);
+			$author = $author->innertext;
+
+			$fileRating = $workShopItem->find('img.fileRating', 0);
+
+			$uri = $workShopItem->find('a.ugc', 0)->getAttribute('href');
+
+			$htmlItem = getSimpleHTMLDOMCached($uri);
+
+			$title = $htmlItem->find('div.workshopItemTitle', 0)->innertext;
+			$date = $htmlItem->find('div.detailsStatRight', 0)->innertext;
+			$description = $htmlItem->find('div.workshopItemDescription', 0)->innertext;
+
+			$previewImage = $htmlItem->find('#previewImage', 0);
+
+			$htmlTags = $htmlItem->find('div.workshopTags');
+
+			$tags = '';
+
+			foreach($htmlTags as $htmlTag) {
+				if ($tags !== '')
+					$tags .= ',';
+
+				$tags .= $htmlTag->find('a', 0)->innertext;
+			}
+
+			// create item
+			$item = array();
+			$item['title'] = $title;
+			$item['uri'] = $uri;
+			$item['timestamp'] = strtotime($date);
+			$item['author'] = $author;
+			$item['categories'] = $category;
+
+			$item['content'] = '<p><a href="' . $uri . '">'
+				. $previewImage . '</a></p><p>' . $fileRating
+				. '</p><p>' . $description . '</p>';
+
+			$this->items[] = $item;
+
+			if (count($this->items) >= 10)
+				break;
+		}
+	}
+
+	public function collectData() {
+		if ($this->getInput('category') === 'workshop')
+			$this->collectWorkshop();
+		else
+			$this->collectMedia();
 	}
 }
