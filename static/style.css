@@ -198,7 +198,7 @@ form {
 	line-height: 22px;
 	text-align: center;
 	color: #fff;
-	background: #1182DB;
+	background-image: radial-gradient(#49afff, #1182DB);
 	-webkit-border-radius: 16px;
 	-moz-border-radius: 16px;
 	border-radius: 16px;
