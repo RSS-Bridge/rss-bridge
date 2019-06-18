@@ -18,14 +18,17 @@ class DisplayAction extends ActionAbstract {
 		$format = $this->userData['format']
 			or returnClientError('You must specify a format!');
 
+		$bridgeFac = new \BridgeFactory();
+		$bridgeFac->setWorkingDir(PATH_LIB_BRIDGES);
+
 		// whitelist control
-		if(!Bridge::isWhitelisted($bridge)) {
+		if(!$bridgeFac->isWhitelisted($bridge)) {
 			throw new \Exception('This bridge is not whitelisted', 401);
 			die;
 		}
 
 		// Data retrieval
-		$bridge = Bridge::create($bridge);
+		$bridge = $bridgeFac->create($bridge);
 
 		$noproxy = array_key_exists('_noproxy', $this->userData)
 			&& filter_var($this->userData['_noproxy'], FILTER_VALIDATE_BOOLEAN);
