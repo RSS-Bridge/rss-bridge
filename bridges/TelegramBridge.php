@@ -193,11 +193,17 @@ EOD;
 	
 	private function processPhoto($messageDiv) {
 	
-		preg_match($this->backgroundImageRegex, $messageDiv->find('a.tgme_widget_message_photo_wrap', 0)->style, $photo);
+		$photos = '';
 
-		return <<<EOD
-<a href="{$messageDiv->find('a.tgme_widget_message_photo_wrap', 0)->href}"><img src="{$photo[1]}"/></a>
-EOD;
+		foreach ($messageDiv->find('a.tgme_widget_message_photo_wrap') as $photoWrap) {
+			preg_match($this->backgroundImageRegex, $photoWrap->style, $photo);
+			
+			$photos .= <<<EOD
+<a href="{$photoWrap->href}"><img src="{$photo[1]}"/></a><br>
+EOD;	
+		}
+
+		return $photos;
 
 	}
 	
