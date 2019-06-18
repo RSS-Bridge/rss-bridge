@@ -4,7 +4,7 @@ class SplCenterBridge extends FeedExpander {
 	const NAME = 'Southern Poverty Law Center Bridge';
 	const URI = 'https://www.splcenter.org';
 	const DESCRIPTION = 'Returns the newest posts from the Southern Poverty Law Center';
-	const MAINTAINER = 'VerifiedJoseph';	
+	const MAINTAINER = 'VerifiedJoseph';
 	const PARAMETERS = array(array(
 			'content' => array(
 				'name' => 'Content',
@@ -25,9 +25,9 @@ class SplCenterBridge extends FeedExpander {
 
 		$articleHtml = getSimpleHTMLDOMCached($item['uri'])
 			or returnServerError('Could not request: ' . $item['uri']);
-		
+
 		foreach ($articleHtml->find('.file') as $index => $media) {
-			$articleHtml->find('div.file', $index)->outertext = '<em>' . $media->outertext . '</em>'; 
+			$articleHtml->find('div.file', $index)->outertext = '<em>' . $media->outertext . '</em>';
 		}
 
 		$item['content'] = $articleHtml->find('div#group-content-container', 0)->innertext;
@@ -35,11 +35,11 @@ class SplCenterBridge extends FeedExpander {
 
 		return $item;
 	}
-	
-    public function collectData() {
-        $this->collectExpandableDatas($this->getURI() . '/rss.xml');
-    }
-	
+
+	public function collectData() {
+		$this->collectExpandableDatas($this->getURI() . '/rss.xml');
+	}
+
 	public function getURI() {
 
 		if (!is_null($this->getInput('content'))) {
@@ -48,7 +48,7 @@ class SplCenterBridge extends FeedExpander {
 
 		return parent::getURI();
 	}
-	
+
 	public function getName() {
 
 		if (!is_null($this->getInput('content'))) {
@@ -61,5 +61,4 @@ class SplCenterBridge extends FeedExpander {
 
 		return parent::getName();
 	}
-	
 }
