@@ -18,12 +18,6 @@ class DisplayAction extends ActionAbstract {
 		$format = $this->userData['format']
 			or returnClientError('You must specify a format!');
 
-		// DEPRECATED: 'nameFormat' scheme is replaced by 'name' in format parameter values
-		//             this is to keep compatibility until futher complete removal
-		if(($pos = strpos($format, 'Format')) === (strlen($format) - strlen('Format'))) {
-			$format = substr($format, 0, $pos);
-		}
-
 		// whitelist control
 		if(!Bridge::isWhitelisted($bridge)) {
 			throw new \Exception('This bridge is not whitelisted', 401);

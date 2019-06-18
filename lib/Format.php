@@ -68,7 +68,7 @@ class Format {
 			throw new \InvalidArgumentException('Format name invalid!');
 		}
 
-		$name = $name . 'Format';
+		$name = self::sanitizeFormatName($name) . 'Format';
 		$pathFormat = self::getWorkingDir() . $name . '.php';
 
 		if(!file_exists($pathFormat)) {
@@ -162,5 +162,56 @@ class Format {
 		}
 
 		return $formatNames;
+	}
+
+	/**
+	 * Returns the sanitized format name.
+	 *
+	 * The format name can be specified in various ways:
+	 * * The PHP file name (i.e. `AtomFormat.php`)
+	 * * The PHP file name without file extension (i.e. `AtomFormat`)
+	 * * The format name (i.e. `Atom`)
+	 *
+	 * Casing is ignored (i.e. `ATOM` and `atom` are the same).
+	 *
+	 * A format file matching the given format name must exist in the working
+	 * directory!
+	 *
+	 * @param string $name The format name
+	 * @return string|null The sanitized format name if the provided name is
+	 * valid, null otherwise.
+	 */
+	protected static function sanitizeFormatName($name) {
+
+		if(is_string($name)) {
+
+			// Trim trailing '.php' if exists
+			if(preg_match('/(.+)(?:\.php)/', $name, $matches)) {
+				$name = $matches[1];
+			}
+
+			// Trim trailing 'Format' if exists
+			if(preg_match('/(.+)(?:Format)/i', $name, $matches)) {
+				$name = $matches[1];
+			}
+
+			// Improve performance for correctly written format names
+			if(in_array($name, self::getFormatNames())) {
+				$index = array_search($name, self::getFormatNames());
+				return self::getFormatNames()[$index];
+			}
+
+			// The name is valid if a corresponding format file is found on disk
+			if(in_array(strtolower($name), array_map('strtolower', self::getFormatNames()))) {
+				$index = array_search(strtolower($name), array_map('strtolower', self::getFormatNames()));
+				return self::getFormatNames()[$index];
+			}
+
+			Debug::log('Invalid format name: "' . $name . '"!');
+
+		}
+
+		return null; // Bad parameter
+
 	}
 }
