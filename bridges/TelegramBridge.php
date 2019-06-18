@@ -82,6 +82,10 @@ class TelegramBridge extends BridgeAbstract {
 	private function processContent($messageDiv) {
 		$message = '';
 
+		if ($messageDiv->find('div.tgme_widget_message_forwarded_from', 0)) {
+			$message = $messageDiv->find('div.tgme_widget_message_forwarded_from', 0)->innertext . '<br><br>';
+		}
+		
 		if ($messageDiv->find('a.tgme_widget_message_reply', 0)) {
 			$message = $this->processReply($messageDiv);
 		}
