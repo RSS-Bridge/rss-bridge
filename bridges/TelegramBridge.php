@@ -16,6 +16,8 @@ class TelegramBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 600; // 15 mins
 
 	private $feedName = '';
+	private $enclosures = array();
+
 	private $backgroundImageRegex = "/background-image:url\('(.*)'\)/";
 	
 	public function collectData() {
@@ -27,13 +29,14 @@ class TelegramBridge extends BridgeAbstract {
 		$this->feedName = $channelTitle . ' (@' . $this->processUsername() . ')';
 		
 		foreach($html->find('div.tgme_widget_message_wrap.js-widget_message_wrap') as $index => $messageDiv) {
+			$this->enclosures = array();
 			$item = array();
 
 			$item['uri'] = $this->processUri($messageDiv);
 			//$item['title']
 			$item['content'] = $this->processContent($messageDiv);
 			$item['timestamp'] = $this->processDate($messageDiv);
-			//$item['enclosures'][];
+			$item['enclosures'] = $this->enclosures;
 
 			$this->items[] = $item;
 		}
@@ -128,6 +131,8 @@ EOD;
 		
 		preg_match($this->backgroundImageRegex, $stickerDiv->find('i', 0)->style, $sticker);
 		
+		$this->enclosures[] = $sticker[1];
+		
 		return <<<EOD
 <a href="{$stickerDiv->children(0)->herf}"><img src="{$sticker[1]}"></a>
 EOD;
@@ -172,6 +177,7 @@ EOD;
 		   preg_match($this->backgroundImageRegex, $preview->find('i', 0)->style, $photo)) {
 
 			$image = '<img src="' . $photo[1] . '"/>';
+			$this->enclosures[] = $photo[1];
 		}
 
 		if ($preview->find('div.link_preview_title', 0)) {
@@ -197,6 +203,8 @@ EOD;
 
 		preg_match($this->backgroundImageRegex, $messageDiv->find('i.tgme_widget_message_video_thumb', 0)->style, $photo);
 
+		$this->enclosures[] = $photo[1];
+		
 		return <<<EOD
 <video controls="" poster="{$photo[1]}" preload="none">
 	<source src="{$messageDiv->find('video', 0)->src}" type="video/mp4">
@@ -211,6 +219,8 @@ EOD;
 
 		foreach ($messageDiv->find('a.tgme_widget_message_photo_wrap') as $photoWrap) {
 			preg_match($this->backgroundImageRegex, $photoWrap->style, $photo);
+			
+			$this->enclosures[] = $photo[1];
 			
 			$photos .= <<<EOD
 <a href="{$photoWrap->href}"><img src="{$photo[1]}"/></a><br>
