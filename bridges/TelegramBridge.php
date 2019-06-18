@@ -101,6 +101,10 @@ class TelegramBridge extends BridgeAbstract {
 			$message .= $messageDiv->find('div.tgme_widget_message_text.js-message_text', 0);
 		}
 
+		if ($messageDiv->find('a.tgme_widget_message_link_preview', 0)) {
+			$message .= $this->processLinkPreview($messageDiv);
+		}
+
 		return $message;
 
 	}
@@ -128,6 +132,28 @@ EOD;
 
 	}
 	
+	private function processLinkPreview($messageDiv) {
+
+		$image = '';
+		$preview = $messageDiv->find('a.tgme_widget_message_link_preview', 0);
+
+		if($preview->find('i', 0) &&  
+		   preg_match($this->backgroundImageRegex, $preview->find('i', 0)->style, $photo)) {
+
+			$image = '<img src="' . $photo[1] . '"/>';
+		}
+
+		$title = $preview->find('div.link_preview_title', 0)->plaintext;
+		$site = $preview->find('div.link_preview_site_name', 0)->plaintext;
+		$description = $preview->find('div.link_preview_description', 0)->plaintext;
+
+		return <<<EOD
+<blockquote><a href="{$preview->href}">$image</a><br><a href="{$preview->href}">
+{$title} - {$site}</a><br>{$description}</blockquote>
+EOD;
+
+	}
+	
 	private function processVideo($messageDiv) {
 
 		preg_match($this->backgroundImageRegex, $messageDiv->find('i.tgme_widget_message_video_thumb', 0)->style, $photo);
@@ -146,7 +172,8 @@ EOD;
 
 		return <<<EOD
 <a href="{$messageDiv->find('a.tgme_widget_message_photo_wrap', 0)->href}"><img src="{$photo[1]}"/></a>
-EOD;	
+EOD;
+
 	}
 	
 	private function processDate($messageDiv) {
