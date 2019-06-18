@@ -215,7 +215,9 @@ class DisplayAction extends ActionAbstract {
 
 		// Data transformation
 		try {
-			$format = Format::create($format);
+			$formatFac = new FormatFactory();
+			$formatFac->setWorkingDir(PATH_LIB_FORMATS);
+			$format = $formatFac->create($format);
 			$format->setItems($items);
 			$format->setExtraInfos($infos);
 			$format->setLastModified($cache->getTime());

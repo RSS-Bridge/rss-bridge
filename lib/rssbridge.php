@@ -61,7 +61,7 @@ require_once PATH_LIB . 'FactoryAbstract.php';
 require_once PATH_LIB . 'FeedItem.php';
 require_once PATH_LIB . 'Debug.php';
 require_once PATH_LIB . 'Exceptions.php';
-require_once PATH_LIB . 'Format.php';
+require_once PATH_LIB . 'FormatFactory.php';
 require_once PATH_LIB . 'FormatAbstract.php';
 require_once PATH_LIB . 'BridgeFactory.php';
 require_once PATH_LIB . 'BridgeAbstract.php';
@@ -84,12 +84,3 @@ require_once PATH_LIB . 'contents.php';
 define('MAX_FILE_SIZE', 10000000); /* Allow larger files for simple_html_dom */
 require_once PATH_LIB_VENDOR . 'simplehtmldom/simple_html_dom.php';
 require_once PATH_LIB_VENDOR . 'php-urljoin/src/urljoin.php';
-
-// Initialize static members
-try {
-	Format::setWorkingDir(PATH_LIB_FORMATS);
-} catch(Exception $e) {
-	error_log($e);
-	header('Content-type: text/plain', true, 500);
-	die($e->getMessage());
-}

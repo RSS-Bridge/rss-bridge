@@ -63,9 +63,11 @@ EOD;
 
 		$bridgeFac = new \BridgeFactory();
 		$bridgeFac->setWorkingDir(PATH_LIB_BRIDGES);
-
 		$bridgeList = $bridgeFac->getBridgeNames();
-		$formats = Format::getFormatNames();
+
+		$formatFac = new FormatFactory();
+		$formatFac->setWorkingDir(PATH_LIB_FORMATS);
+		$formats = $formatFac->getFormatNames();
 
 		$totalBridges = count($bridgeList);
 
