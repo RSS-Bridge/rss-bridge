@@ -45,7 +45,9 @@ function getContents($url, $header = array(), $opts = array()){
 	Debug::log('Reading contents from "' . $url . '"');
 
 	// Initialize cache
-	$cache = Cache::create(Configuration::getConfig('cache', 'type'));
+	$cacheFac = new CacheFactory();
+	$cacheFac->setWorkingDir(PATH_LIB_CACHES);
+	$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
 	$cache->setScope('server');
 	$cache->purgeCache(86400); // 24 hours (forced)
 
@@ -270,7 +272,9 @@ function getSimpleHTMLDOMCached($url,
 	Debug::log('Caching url ' . $url . ', duration ' . $duration);
 
 	// Initialize cache
-	$cache = Cache::create(Configuration::getConfig('cache', 'type'));
+	$cacheFac = new CacheFactory();
+	$cacheFac->setWorkingDir(PATH_LIB_CACHES);
+	$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
 	$cache->setScope('pages');
 	$cache->purgeCache(86400); // 24 hours (forced)
 

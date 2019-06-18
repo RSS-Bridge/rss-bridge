@@ -66,7 +66,7 @@ require_once PATH_LIB . 'FormatAbstract.php';
 require_once PATH_LIB . 'BridgeFactory.php';
 require_once PATH_LIB . 'BridgeAbstract.php';
 require_once PATH_LIB . 'FeedExpander.php';
-require_once PATH_LIB . 'Cache.php';
+require_once PATH_LIB . 'CacheFactory.php';
 require_once PATH_LIB . 'Authentication.php';
 require_once PATH_LIB . 'Configuration.php';
 require_once PATH_LIB . 'BridgeCard.php';
@@ -88,7 +88,6 @@ require_once PATH_LIB_VENDOR . 'php-urljoin/src/urljoin.php';
 // Initialize static members
 try {
 	Format::setWorkingDir(PATH_LIB_FORMATS);
-	Cache::setWorkingDir(PATH_LIB_CACHES);
 } catch(Exception $e) {
 	error_log($e);
 	header('Content-type: text/plain', true, 500);
