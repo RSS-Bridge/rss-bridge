@@ -15,6 +15,7 @@ class TelegramBridge extends BridgeAbstract {
 
 	const CACHE_TIMEOUT = 600; // 15 mins
 
+	private $feedName = '';
 	private $backgroundImageRegex = "/background-image:url\('(.*)'\)/";
 	
 	public function collectData() {
@@ -22,6 +23,9 @@ class TelegramBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not request: ' . $this->getURI());
 
+		$channelTitle = $html->find('div.tgme_channel_info_header_title span', 0)->plaintext;
+		$this->feedName = $channelTitle . ' (@' . $this->processUsername() . ')';
+		
 		foreach($html->find('div.tgme_widget_message_wrap.js-widget_message_wrap') as $index => $messageDiv) {
 			$item = array();
 
@@ -44,20 +48,14 @@ class TelegramBridge extends BridgeAbstract {
 		return parent::getURI();
 	}
 
-	/*public function getName() {
+	public function getName() {
 
-		if (!is_null($this->getInput('edition')) && !is_null($this->getInput('category'))) {
-			$parameters = $this->getParameters();
-
-			$editionValues = array_flip($parameters[0]['edition']['values']);
-			$categoryValues = array_flip($parameters[0]['category']['values']);
-
-			return $categoryValues[$this->getInput('category')] . ' - ' .
-				$editionValues[$this->getInput('edition')] . ' - Brut.';
+		if (!empty($this->feedName)) {
+			return $this->feedName  . ' - Telegram';
 		}
 
 		return parent::getName();
-	}*/
+	}
 
 	private function processUsername() {
 
