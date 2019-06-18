@@ -160,17 +160,33 @@ EOD;
 	private function processLinkPreview($messageDiv) {
 
 		$image = '';
+		$title = '';
+		$site = '';
+		$description = '';
+		
 		$preview = $messageDiv->find('a.tgme_widget_message_link_preview', 0);
-
+		
+		if (trim($preview->innertext) != '') {
+			return '';
+		}
+		
 		if($preview->find('i', 0) &&  
 		   preg_match($this->backgroundImageRegex, $preview->find('i', 0)->style, $photo)) {
 
 			$image = '<img src="' . $photo[1] . '"/>';
 		}
 
-		$title = $preview->find('div.link_preview_title', 0)->plaintext;
-		$site = $preview->find('div.link_preview_site_name', 0)->plaintext;
-		$description = $preview->find('div.link_preview_description', 0)->plaintext;
+		if ($preview->find('div.link_preview_title', 0)) {
+			$title = $preview->find('div.link_preview_title', 0)->plaintext;
+		}
+		
+		if ($preview->find('div.link_preview_site_name', 0)) {
+			$site = $preview->find('div.link_preview_site_name', 0)->plaintext;
+		}
+		
+		if ($preview->find('div.link_preview_description', 0)) {
+			$description = $preview->find('div.link_preview_description', 0)->plaintext;
+		}
 
 		return <<<EOD
 <blockquote><a href="{$preview->href}">$image</a><br><a href="{$preview->href}">
