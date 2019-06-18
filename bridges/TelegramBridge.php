@@ -84,6 +84,10 @@ class TelegramBridge extends BridgeAbstract {
 		if ($messageDiv->find('a.tgme_widget_message_reply', 0)) {
 			$message = $this->processReply($messageDiv);
 		}
+
+		if ($messageDiv->find('div.tgme_widget_message_sticker_wrap', 0)) {
+			$message .= $this->processSticker($messageDiv);
+		}
 		
 		if ($messageDiv->find('div.tgme_widget_message_poll', 0)) {
 			$message .= $this->processPoll($messageDiv);
@@ -116,6 +120,18 @@ class TelegramBridge extends BridgeAbstract {
 		return <<<EOD
 <blockquote>{$reply->find('span.tgme_widget_message_author_name', 0)->plaintext}<br>
 {$reply->find('div.tgme_widget_message_text', 0)->innertext} <a href="{$reply->href}">{$reply->href}</a></blockquote><hr>
+EOD;
+
+	}
+	
+	private function processSticker($messageDiv) {
+
+		$stickerDiv = $messageDiv->find('div.tgme_widget_message_sticker_wrap', 0);
+		
+		preg_match($this->backgroundImageRegex, $stickerDiv->find('i', 0)->style, $sticker);
+		
+		return <<<EOD
+<a href="{$stickerDiv->children(0)->herf}"><img src="{$sticker[1]}"></a>
 EOD;
 
 	}
