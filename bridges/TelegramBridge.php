@@ -164,7 +164,7 @@ EOD;
 		
 		$preview = $messageDiv->find('a.tgme_widget_message_link_preview', 0);
 		
-		if (trim($preview->innertext) != '') {
+		if (trim($preview->innertext) === '') {
 			return '';
 		}
 		
