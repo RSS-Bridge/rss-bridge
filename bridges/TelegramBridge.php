@@ -86,15 +86,15 @@ class TelegramBridge extends BridgeAbstract {
 		}
 		
 		if ($messageDiv->find('div.tgme_widget_message_poll', 0)) {
-			//$message .= $messageDiv->find('div.tgme_widget_message_poll', 0);
+			$message .= $this->processPoll($messageDiv);
 		}
 
 		if ($messageDiv->find('video', 0)) {
-			$message = $this->processVideo($messageDiv);
+			$message .= $this->processVideo($messageDiv);
 		}
 
 		if ($messageDiv->find('a.tgme_widget_message_photo_wrap', 0)) {
-			$message = $this->processPhoto($messageDiv);
+			$message .= $this->processPhoto($messageDiv);
 		}
 
 		if ($messageDiv->find('div.tgme_widget_message_text.js-message_text', 0)) {
@@ -122,12 +122,21 @@ EOD;
 	
 	private function processPoll($messageDiv) {
 
-		preg_match($this->backgroundImageRegex, $messageDiv->find('i.tgme_widget_message_video_thumb', 0)->style, $photo);
+		$poll = $messageDiv->find('div.tgme_widget_message_poll', 0);
 
+		$title = $poll->find('div.tgme_widget_message_poll_question', 0)->plaintext;
+		$type = $poll->find('div.tgme_widget_message_poll_type', 0)->plaintext;
+		
+		$pollOptions = '<ul>';
+		
+		foreach ($poll->find('div.tgme_widget_message_poll_option') as $option) {
+			$pollOptions .= '<li>' . $option->children(0)->plaintext . ' - ' . 
+				$option->find('div.tgme_widget_message_poll_option_text', 0)->plaintext . '</li>';
+		}
+		$pollOptions .= '</ul>';
+		
 		return <<<EOD
-<video controls="" poster="{$photo[1]}" preload="none">
-	<source src="{$messageDiv->find('video', 0)->src}" type="video/mp4">
-</video>
+			{$title}<br><small>$type</small><br>{$pollOptions}
 EOD;
 
 	}
