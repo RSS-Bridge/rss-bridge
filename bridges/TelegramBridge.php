@@ -17,6 +17,7 @@ class TelegramBridge extends BridgeAbstract {
 
 	private $feedName = '';
 	private $enclosures = array();
+	private $itemTitle = '';
 
 	private $backgroundImageRegex = "/background-image:url\('(.*)'\)/";
 	
@@ -32,12 +33,13 @@ class TelegramBridge extends BridgeAbstract {
 		$this->feedName = $channelTitle . ' (@' . $this->processUsername() . ')';
 		
 		foreach($html->find('div.tgme_widget_message_wrap.js-widget_message_wrap') as $index => $messageDiv) {
+			$this->itemTitle = '';
 			$this->enclosures = array();
 			$item = array();
 
 			$item['uri'] = $this->processUri($messageDiv);
-			//$item['title']
 			$item['content'] = $this->processContent($messageDiv);
+			$item['title'] = $this->itemTitle;
 			$item['timestamp'] = $this->processDate($messageDiv);
 			$item['enclosures'] = $this->enclosures;
 
@@ -114,6 +116,7 @@ class TelegramBridge extends BridgeAbstract {
 
 		if ($messageDiv->find('div.tgme_widget_message_text.js-message_text', 0)) {
 			$message .= $messageDiv->find('div.tgme_widget_message_text.js-message_text', 0);
+			$this->itemTitle = $this->ellipsisTitle($messageDiv->find('div.tgme_widget_message_text.js-message_text', 0)->plaintext);
 		}
 
 		if ($messageDiv->find('a.tgme_widget_message_link_preview', 0)) {
@@ -137,6 +140,10 @@ EOD;
 	
 	private function processSticker($messageDiv) {
 
+		if (empty($this->itemTitle)) {
+			$this->itemTitle = '@' . $this->processUsername() . ' posted a sticker'; 
+		}
+		
 		$stickerDiv = $messageDiv->find('div.tgme_widget_message_sticker_wrap', 0);
 		
 		preg_match($this->backgroundImageRegex, $stickerDiv->find('i', 0)->style, $sticker);
@@ -156,6 +163,10 @@ EOD;
 		$title = $poll->find('div.tgme_widget_message_poll_question', 0)->plaintext;
 		$type = $poll->find('div.tgme_widget_message_poll_type', 0)->plaintext;
 		
+		if (empty($this->itemTitle)) {
+			$this->itemTitle = $title;
+		}
+
 		$pollOptions = '<ul>';
 		
 		foreach ($poll->find('div.tgme_widget_message_poll_option') as $option) {
@@ -211,6 +222,10 @@ EOD;
 	
 	private function processVideo($messageDiv) {
 
+		if (empty($this->itemTitle)) {
+			$this->itemTitle = '@' . $this->processUsername() . ' posted a video'; 
+		}
+		
 		preg_match($this->backgroundImageRegex, $messageDiv->find('i.tgme_widget_message_video_thumb', 0)->style, $photo);
 
 		$this->enclosures[] = $photo[1];
@@ -225,6 +240,10 @@ EOD;
 	
 	private function processPhoto($messageDiv) {
 	
+		if (empty($this->itemTitle)) {
+			$this->itemTitle = '@' . $this->processUsername() . ' posted a photo'; 
+		}
+		
 		$photos = '';
 
 		foreach ($messageDiv->find('a.tgme_widget_message_photo_wrap') as $photoWrap) {
@@ -246,4 +265,16 @@ EOD;
 		return $messageDiv->find('time', 0)->datetime;
 
 	}
+	
+	private function ellipsisTitle($text) {
+
+		$length = 100;
+		
+		if (strlen($text) > $length) {
+			$text = explode('<br>', wordwrap($text, $length, '<br>'));
+    		return $text[0] . '...';
+		}
+		return $text;
+	}
+
 }
