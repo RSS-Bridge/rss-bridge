@@ -4,8 +4,21 @@ class HtmlFormat extends FormatAbstract {
 		$extraInfos = $this->getExtraInfos();
 		$title = htmlspecialchars($extraInfos['name']);
 		$uri = htmlspecialchars($extraInfos['uri']);
-		$atomquery = str_replace('format=Html', 'format=Atom', htmlentities($_SERVER['QUERY_STRING']));
-		$mrssquery = str_replace('format=Html', 'format=Mrss', htmlentities($_SERVER['QUERY_STRING']));
+
+		// Dynamically build buttons for all formats (except HTML)
+		$formatFac = new FormatFactory();
+		$formatFac->setWorkingDir(PATH_LIB_FORMATS);
+
+		$buttons = '';
+
+		foreach($formatFac->getFormatNames() as $format) {
+			if(strcasecmp($format, 'HTML') === 0) {
+				continue;
+			}
+
+			$query = str_replace('format=Html', 'format=' . $format, htmlentities($_SERVER['QUERY_STRING']));
+			$buttons .= $this->buildButton($format, $query) . PHP_EOL;
+		}
 
 		$entries = '';
 		foreach($this->getItems() as $item) {
@@ -84,16 +97,13 @@ EOD;
 	<meta charset="{$charset}">
 	<title>{$title}</title>
 	<link href="static/HtmlFormat.css" rel="stylesheet">
-	<link rel="alternate" type="application/atom+xml" title="Atom" href="./?{$atomquery}" />
-	<link rel="alternate" type="application/rss+xml" title="RSS" href="/?{$mrssquery}" />
 	<meta name="robots" content="noindex, follow">
 </head>
 <body>
 	<h1 class="pagetitle"><a href="{$uri}" target="_blank">{$title}</a></h1>
 	<div class="buttons">
 		<a href="./#bridge-{$_GET['bridge']}"><button class="backbutton">← back to rss-bridge</button></a>
-		<a href="./?{$atomquery}"><button class="rss-feed">RSS feed (ATOM)</button></a>
-		<a href="./?{$mrssquery}"><button class="rss-feed">RSS feed (MRSS)</button></a>
+		{$buttons}
 	</div>
 {$entries}
 </body>
@@ -112,5 +122,11 @@ EOD;
 			->callContentType();
 
 		return parent::display();
+	}
+
+	private function buildButton($format, $query) {
+		return <<<EOD
+<a href="./?{$query}"><button class="rss-feed">{$format}</button></a>
+EOD;
 	}
 }
