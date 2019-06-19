@@ -85,7 +85,7 @@ class TelegramBridge extends BridgeAbstract {
 		if ($messageDiv->find('div.tgme_widget_message_forwarded_from', 0)) {
 			$message = $messageDiv->find('div.tgme_widget_message_forwarded_from', 0)->innertext . '<br><br>';
 		}
-		
+
 		if ($messageDiv->find('a.tgme_widget_message_reply', 0)) {
 			$message = $this->processReply($messageDiv);
 		}
@@ -93,7 +93,7 @@ class TelegramBridge extends BridgeAbstract {
 		if ($messageDiv->find('div.tgme_widget_message_sticker_wrap', 0)) {
 			$message .= $this->processSticker($messageDiv);
 		}
-		
+
 		if ($messageDiv->find('div.tgme_widget_message_poll', 0)) {
 			$message .= $this->processPoll($messageDiv);
 		}
@@ -120,21 +120,22 @@ class TelegramBridge extends BridgeAbstract {
 
 		return $message;
 	}
-	
+
 	private function processReply($messageDiv) {
 
 		$reply = $messageDiv->find('a.tgme_widget_message_reply', 0);
 
 		return <<<EOD
 <blockquote>{$reply->find('span.tgme_widget_message_author_name', 0)->plaintext}<br>
-{$reply->find('div.tgme_widget_message_text', 0)->innertext} <a href="{$reply->href}">{$reply->href}</a></blockquote><hr>
+{$reply->find('div.tgme_widget_message_text', 0)->innertext} 
+<a href="{$reply->href}">{$reply->href}</a></blockquote><hr>
 EOD;
 	}
 
 	private function processSticker($messageDiv) {
 
 		if (empty($this->itemTitle)) {
-			$this->itemTitle = '@' . $this->processUsername() . ' posted a sticker'; 
+			$this->itemTitle = '@' . $this->processUsername() . ' posted a sticker';
 		}
 
 		$stickerDiv = $messageDiv->find('div.tgme_widget_message_sticker_wrap', 0);
@@ -154,19 +155,19 @@ EOD;
 
 		$title = $poll->find('div.tgme_widget_message_poll_question', 0)->plaintext;
 		$type = $poll->find('div.tgme_widget_message_poll_type', 0)->plaintext;
-		
+
 		if (empty($this->itemTitle)) {
 			$this->itemTitle = $title;
 		}
 
 		$pollOptions = '<ul>';
-		
+
 		foreach ($poll->find('div.tgme_widget_message_poll_option') as $option) {
-			$pollOptions .= '<li>' . $option->children(0)->plaintext . ' - ' . 
+			$pollOptions .= '<li>' . $option->children(0)->plaintext . ' - ' .
 				$option->find('div.tgme_widget_message_poll_option_text', 0)->plaintext . '</li>';
 		}
 		$pollOptions .= '</ul>';
-		
+
 		return <<<EOD
 			{$title}<br><small>$type</small><br>{$pollOptions}
 EOD;
@@ -180,12 +181,12 @@ EOD;
 		$description = '';
 
 		$preview = $messageDiv->find('a.tgme_widget_message_link_preview', 0);
-		
+
 		if (trim($preview->innertext) === '') {
 			return '';
 		}
 
-		if($preview->find('i', 0) &&  
+		if($preview->find('i', 0) &&
 		   preg_match($this->backgroundImageRegex, $preview->find('i', 0)->style, $photo)) {
 
 			$image = '<img src="' . $photo[1] . '"/>';
@@ -195,11 +196,11 @@ EOD;
 		if ($preview->find('div.link_preview_title', 0)) {
 			$title = $preview->find('div.link_preview_title', 0)->plaintext;
 		}
-		
+
 		if ($preview->find('div.link_preview_site_name', 0)) {
 			$site = $preview->find('div.link_preview_site_name', 0)->plaintext;
 		}
-		
+
 		if ($preview->find('div.link_preview_description', 0)) {
 			$description = $preview->find('div.link_preview_description', 0)->plaintext;
 		}
@@ -213,7 +214,7 @@ EOD;
 	private function processVideo($messageDiv) {
 
 		if (empty($this->itemTitle)) {
-			$this->itemTitle = '@' . $this->processUsername() . ' posted a video'; 
+			$this->itemTitle = '@' . $this->processUsername() . ' posted a video';
 		}
 
 		preg_match($this->backgroundImageRegex, $messageDiv->find('i.tgme_widget_message_video_thumb', 0)->style, $photo);
@@ -228,23 +229,22 @@ EOD;
 	}
 
 	private function processPhoto($messageDiv) {
-	
+
 		if (empty($this->itemTitle)) {
-			$this->itemTitle = '@' . $this->processUsername() . ' posted a photo'; 
+			$this->itemTitle = '@' . $this->processUsername() . ' posted a photo';
 		}
 
 		$photos = '';
 
 		foreach ($messageDiv->find('a.tgme_widget_message_photo_wrap') as $photoWrap) {
 			preg_match($this->backgroundImageRegex, $photoWrap->style, $photo);
-			
+
 			$this->enclosures[] = $photo[1];
-			
+
 			$photos .= <<<EOD
 <a href="{$photoWrap->href}"><img src="{$photo[1]}"/></a><br>
-EOD;	
+EOD;
 		}
-
 		return $photos;
 	}
 
@@ -258,9 +258,8 @@ EOD;
 
 		if (strlen($text) > $length) {
 			$text = explode('<br>', wordwrap($text, $length, '<br>'));
-    		return $text[0] . '...';
+			return $text[0] . '...';
 		}
 		return $text;
 	}
-
 }
