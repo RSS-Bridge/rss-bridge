@@ -43,6 +43,9 @@ class TelegramBridge extends BridgeAbstract {
 
 			$this->items[] = $item;
 		}
+
+		$this->items = array_reverse($this->items);
+
 	}
 
 	public function getURI() {
