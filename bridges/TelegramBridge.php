@@ -13,7 +13,7 @@ class TelegramBridge extends BridgeAbstract {
 		)
 	);
 
-	const CACHE_TIMEOUT = 600; // 15 mins
+	const CACHE_TIMEOUT = 900; // 15 mins
 
 	private $feedName = '';
 	private $enclosures = array();
