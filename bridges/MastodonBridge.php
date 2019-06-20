@@ -4,7 +4,7 @@ class MastodonBridge extends FeedExpander {
 
 	const MAINTAINER = 'husim0';
 	const NAME = 'Mastodon Bridge';
-	const CACHE_TIMEOUT = 0; // 1h
+	const CACHE_TIMEOUT = 900; // 15mn
 	const DESCRIPTION = 'Returns toots';
 	const URI = 'https://mastodon.social';
 
