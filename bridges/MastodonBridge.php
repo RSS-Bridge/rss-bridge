@@ -29,7 +29,7 @@ class MastodonBridge extends FeedExpander {
 	public function getName(){
 		switch($this->queriedContext) {
 		case 'By username':
-			$param = 'canusername';
+			return $this->getInput('canusername');
 			break;
 		default: return parent::getName();
 		}
