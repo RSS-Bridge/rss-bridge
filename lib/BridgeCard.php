@@ -48,12 +48,18 @@ final class BridgeCard {
 	 * @param bool $isHttps If disabled, adds a warning to the form
 	 * @return string The form header
 	 */
-	private static function getFormHeader($bridgeName, $isHttps = false) {
+	private static function getFormHeader($bridgeName, $isHttps = false, $parameterName = '') {
 		$form = <<<EOD
 			<form method="GET" action="?">
 				<input type="hidden" name="action" value="display" />
 				<input type="hidden" name="bridge" value="{$bridgeName}" />
 EOD;
+
+		if(!empty($parameterName)) {
+			$form .= <<<EOD
+				<input type="hidden" name="context" value="{$parameterName}" />
+EOD;
+		}
 
 		if(!$isHttps) {
 			$form .= '<div class="secure-warning">Warning :
@@ -80,7 +86,7 @@ This bridge is not fetching its content through a secure connection</div>';
 	$isHttps = false,
 	$parameterName = '',
 	$parameters = array()) {
-		$form = self::getFormHeader($bridgeName, $isHttps);
+		$form = self::getFormHeader($bridgeName, $isHttps, $parameterName);
 
 		if(count($parameters) > 0) {
 

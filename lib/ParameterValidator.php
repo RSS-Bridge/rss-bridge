@@ -214,6 +214,7 @@ class ParameterValidator {
 
 		switch(array_sum($queriedContexts)) {
 		case 0: // Found no match, is there a context without parameters?
+			if(isset($data['context'])) return $data['context'];
 			foreach($queriedContexts as $context => $queried) {
 				if(is_null($queried)) {
 					return $context;

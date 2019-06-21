@@ -194,6 +194,11 @@ abstract class BridgeAbstract implements BridgeInterface {
 	 */
 	public function setDatas(array $inputs){
 
+		if(isset($inputs['context'])) { // Context hinting (optional)
+			$this->queriedContext = $inputs['context'];
+			unset($inputs['context']);
+		}
+
 		if(empty(static::PARAMETERS)) {
 
 			if(!empty($inputs)) {
@@ -218,8 +223,11 @@ abstract class BridgeAbstract implements BridgeInterface {
 			);
 		}
 
-		// Guess the paramter context from input data
-		$this->queriedContext = $validator->getQueriedContext($inputs, static::PARAMETERS);
+		// Guess the context from input data
+		if(empty($this->queriedContext)) {
+			$this->queriedContext = $validator->getQueriedContext($inputs, static::PARAMETERS);
+		}
+
 		if(is_null($this->queriedContext)) {
 			returnClientError('Required parameter(s) missing');
 		} elseif($this->queriedContext === false) {
