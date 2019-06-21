@@ -51,7 +51,7 @@ class MastodonBridge extends FeedExpander {
 				return null;
 			}
 
-			preg_match("/shared a status by (\S{0,})/", $title, $matches);
+			preg_match('/shared a status by (\S{0,})/', $title, $matches);
 			$item['title'] = 'Boost ' . $matches[1] . ' ' . $item['title'];
 			$item['author'] = $matches[1];
 		} else {
@@ -59,7 +59,7 @@ class MastodonBridge extends FeedExpander {
 		}
 
 		// Check if it's a initial toot or a response
-		if($this->getInput('norep') && preg_match("/^@.+/", trim($content->plaintext))) {
+		if($this->getInput('norep') && preg_match('/^@.+/', trim($content->plaintext))) {
 			return null;
 		}
 
@@ -67,12 +67,12 @@ class MastodonBridge extends FeedExpander {
 	}
 
 	public function getInstance(){
-		preg_match("/^@[a-zA-Z0-9_]+@(.+)/", $this->getInput('canusername'), $matches);
+		preg_match('/^@[a-zA-Z0-9_]+@(.+)/', $this->getInput('canusername'), $matches);
 		return $matches[1];
 	}
 
 	public function getUsername(){
-		preg_match("/^@([a-zA-Z_0-9_]+)@.+/", $this->getInput('canusername'), $matches);
+		preg_match('/^@([a-zA-Z_0-9_]+)@.+/', $this->getInput('canusername'), $matches);
 		return $matches[1];
 	}
 
