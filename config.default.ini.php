@@ -70,6 +70,9 @@ password = ""
 ; "none" = No errors are reported
 output = "feed"
 
+; Defines how often an error must occur before it is reported to the user
+report_limit = 1
+
 ; --- Cache specific configuration ---------------------------------------------
 
 [SQLiteCache]
