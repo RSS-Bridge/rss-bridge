@@ -8,33 +8,30 @@ class MastodonBridge extends FeedExpander {
 	const DESCRIPTION = 'Returns toots';
 	const URI = 'https://mastodon.social';
 
-	const PARAMETERS = [[
-		'canusername' => [
+	const PARAMETERS = array(array(
+		'canusername' => array(
 			'name' => 'Canonical username (ex : @sebsauvage@framapiaf.org)',
 			'required' => true,
-		],
-		'norep' => [
+		),
+		'norep' => array(
 			'name' => 'Without replies',
 			'type' => 'checkbox',
 			'title' => 'Only return initial toots'
-		],
-		'noboost' => [
+		),
+		'noboost' => array(
 			'name' => 'Without boosts',
 			'required' => false,
 			'type' => 'checkbox',
 			'title' => 'Hide boosts'
-		]
-	]];
+			)
+		));
 
 	public function getName(){
 		switch($this->queriedContext) {
 		case 'By username':
 			return $this->getInput('canusername');
-			break;
 		default: return parent::getName();
 		}
-		
-		return $this->getInput($param);
 	}
 
 	protected function parseItem($newItem){
@@ -44,6 +41,7 @@ class MastodonBridge extends FeedExpander {
 		$title = str_get_html($item['title']);
 
 		$item['title'] = $content->plaintext;
+
 		if(strlen($item['title']) > 75) {
 			$item['title'] = substr($item['title'], 0, strpos(wordwrap($item['title'], 75), "\n")) . '...';
 		}
@@ -83,10 +81,6 @@ class MastodonBridge extends FeedExpander {
 	}
 
 	public function collectData(){
-		try{
-			$this->collectExpandableDatas($this->getURI());
-		} catch (Exception $e) {
-			$this->collectExpandableDatas($this->getURI());
-		}
+		return $this->collectExpandableDatas($this->getURI());
 	}
 }
