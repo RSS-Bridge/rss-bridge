@@ -77,7 +77,10 @@ class MastodonBridge extends FeedExpander {
 	}
 
 	public function getURI(){
-		return 'https://' . $this->getInstance() . '/users/' . $this->getUsername() . '.atom';
+		if($this->getInput('canusername'))
+			return 'https://' . $this->getInstance() . '/users/' . $this->getUsername() . '.atom';
+		
+		return parent::getURI();
 	}
 
 	public function collectData(){
