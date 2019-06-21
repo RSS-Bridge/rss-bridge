@@ -43,7 +43,10 @@ class MastodonBridge extends FeedExpander {
 		$content = str_get_html($item['content']);
 		$title = str_get_html($item['title']);
 
-		$item['title'] = substr($content->plaintext,0,75) . (strlen($content->plaintext) >= 75 ? '...' : '');
+		$item['title'] = $content->plaintext;
+		if(strlen($item['title']) > 75) {
+			$item['title'] = substr($item['title'], 0, strpos(wordwrap($item['title'], 75), "\n")) . '...';
+		}
 
 		if(strpos($title, 'shared a status by') !== false) {
 			if($this->getInput('noboost')) {
