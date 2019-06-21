@@ -95,6 +95,7 @@ EOD;
 <html>
 <head>
 	<meta charset="{$charset}">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>{$title}</title>
 	<link href="static/HtmlFormat.css" rel="stylesheet">
 	<meta name="robots" content="noindex, follow">

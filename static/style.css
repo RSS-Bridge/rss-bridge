@@ -199,6 +199,7 @@ form {
 
 	.parameters label {
 		text-align: right;
+		line-height: 1.5em;
 	}
 
 	.parameters label::before {
@@ -302,4 +303,55 @@ h5 {
 
 .advice > li {
 	text-align: left;
+}
+
+@media screen and (max-width: 767px) {
+	body {
+		font-size: 75%;
+	}
+
+	header > section.warning {
+		width: 90%;
+	}
+
+	header > section.critical-warning {
+		width: 90%;
+	}
+
+	.searchbar {
+		width: 90%;
+		margin: 0 auto;
+	}
+
+	section {
+		width: 90%;
+		margin: 10px auto;
+		overflow: hidden;
+	}
+
+	button {
+		display: inline-block;
+		width: 40%;
+		padding: 5px auto;
+		margin: 3px auto 0;
+	}
+
+	@supports (display: grid) {
+
+		.parameters {
+			grid-template-columns: auto auto;
+			grid-column-gap: 5px;
+		}
+
+		.parameters label {
+			line-height: 2em;
+			word-break: break-word;
+		}
+
+	} /* @supports (display: grid) */
+
+	.secure-warning {
+		width: 100%;
+	}
+
 }
