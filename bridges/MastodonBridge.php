@@ -71,7 +71,7 @@ class MastodonBridge extends FeedExpander {
 		return $matches[1];
 	}
 
-	public function getUsername(){
+	private function getUsername(){
 		preg_match('/^@([a-zA-Z_0-9_]+)@.+/', $this->getInput('canusername'), $matches);
 		return $matches[1];
 	}
