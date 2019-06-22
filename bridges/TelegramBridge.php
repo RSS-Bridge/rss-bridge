@@ -107,6 +107,10 @@ class TelegramBridge extends BridgeAbstract {
 		if ($messageDiv->find('a.tgme_widget_message_photo_wrap', 0)) {
 			$message .= $this->processPhoto($messageDiv);
 		}
+		
+		if ($messageDiv->find('a.not_supported', 0)) {
+			$message .= $this->processNotSupported($messageDiv);
+		}
 
 		if ($messageDiv->find('div.tgme_widget_message_text.js-message_text', 0)) {
 			$message .= $messageDiv->find('div.tgme_widget_message_text.js-message_text', 0);
@@ -248,6 +252,24 @@ EOD;
 EOD;
 		}
 		return $photos;
+	}
+
+	private function processNotSupported($messageDiv) {
+
+		if (empty($this->itemTitle)) {
+			$this->itemTitle = '@' . $this->processUsername() . ' posted a video';
+		}
+
+		preg_match($this->backgroundImageRegex, $messageDiv->find('i.tgme_widget_message_video_thumb', 0)->style, $photo);
+
+		$this->enclosures[] = $photo[1];
+		$uri = $this->processUri($messageDiv);
+
+		return <<<EOD
+<a href="$uri">{$messageDiv->find('div.message_media_not_supported_label', 0)->innertext}<br><br>
+{$messageDiv->find('span.message_media_view_in_telegram', 0)->innertext}<br><br>
+<img src="{$photo[1]}"/></a>
+EOD;
 	}
 
 	private function processDate($messageDiv) {
