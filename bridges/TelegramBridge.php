@@ -42,7 +42,7 @@ class TelegramBridge extends BridgeAbstract {
 			$item['title'] = $this->itemTitle;
 			$item['timestamp'] = $this->processDate($messageDiv);
 			$item['enclosures'] = $this->enclosures;
-			$item['author'] = trim($messageDiv->find('a.tgme_widget_message_owner_name', 0)->plaintext);
+			$item['author'] = html_entity_decode(trim($messageDiv->find('a.tgme_widget_message_owner_name', 0)->plaintext), ENT_QUOTES);
 
 			$this->items[] = $item;
 		}
