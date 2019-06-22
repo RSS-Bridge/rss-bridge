@@ -357,6 +357,10 @@ h5 {
 		margin: 3px auto 0;
 	}
 
+	.info {
+		display: none;
+	}
+
 	@supports (display: grid) {
 
 		.parameters {
