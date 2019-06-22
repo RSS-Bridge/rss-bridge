@@ -249,7 +249,10 @@ EOD;
 	}
 
 	private function processDate($messageDiv) {
-		return $messageDiv->find('time', 0)->datetime;
+
+		$messageMeta = $messageDiv->find('span.tgme_widget_message_meta', 0);
+		return $messageMeta->find('time', 0)->datetime;
+
 	}
 
 	private function ellipsisTitle($text) {
