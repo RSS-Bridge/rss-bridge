@@ -249,7 +249,11 @@ EOD;
 	}
 
 	private function processDate($messageDiv) {
-		return $messageDiv->find('time', 0)->datetime;
+		if ($messageDiv->find('time', 0)->datetime) {
+			return $messageDiv->find('time', 0)->datetime;
+		} else {
+			return $messageDiv->find('time', 1)->datetime;
+		}
 	}
 
 	private function ellipsisTitle($text) {
