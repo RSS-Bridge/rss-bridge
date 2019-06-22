@@ -107,7 +107,7 @@ class TelegramBridge extends BridgeAbstract {
 		if ($messageDiv->find('a.tgme_widget_message_photo_wrap', 0)) {
 			$message .= $this->processPhoto($messageDiv);
 		}
-		
+
 		if ($messageDiv->find('a.not_supported', 0)) {
 			$message .= $this->processNotSupported($messageDiv);
 		}
