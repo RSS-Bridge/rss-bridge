@@ -107,7 +107,7 @@ class TelegramBridge extends BridgeAbstract {
 		if ($messageDiv->find('a.tgme_widget_message_photo_wrap', 0)) {
 			$message .= $this->processPhoto($messageDiv);
 		}
-
+		
 		if ($messageDiv->find('a.not_supported', 0)) {
 			$message .= $this->processNotSupported($messageDiv);
 		}
@@ -263,10 +263,10 @@ EOD;
 		preg_match($this->backgroundImageRegex, $messageDiv->find('i.tgme_widget_message_video_thumb', 0)->style, $photo);
 
 		$this->enclosures[] = $photo[1];
-		$uri = $this->processUri($messageDiv);
 
 		return <<<EOD
-<a href="$uri">{$messageDiv->find('div.message_media_not_supported_label', 0)->innertext}<br><br>
+<a href="{$messageDiv->find('a.not_supported', 0)->href}">
+{$messageDiv->find('div.message_media_not_supported_label', 0)->innertext}<br><br>
 {$messageDiv->find('span.message_media_view_in_telegram', 0)->innertext}<br><br>
 <img src="{$photo[1]}"/></a>
 EOD;
