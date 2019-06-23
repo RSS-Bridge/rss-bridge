@@ -161,5 +161,4 @@ class FicbookBridge extends BridgeAbstract {
 		return $fixed_date;
 
 	}
-
 }
