@@ -572,8 +572,6 @@ class FurAffinityBridge extends BridgeAbstract {
 				'type' => 'checkbox',
 				'defaultValue' => 'checked'
 			)
-
-
 		)
 	);
 
@@ -778,18 +776,27 @@ class FurAffinityBridge extends BridgeAbstract {
 				'Content-Type: application/x-www-form-urlencoded',
 				'Cookie: ' . self::FA_AUTH_COOKIE
 			);
-			return getSimpleHTMLDOM($this->getURI(), $header, $opts);
+
+			$html = getSimpleHTMLDOM($this->getURI(), $header, $opts);
+			$html = defaultLinkTo($html, $this->getURI());
+
+			return $html;
 	}
 
 	private function getFASimpleHTMLDOM($url, $cache = false) {
 			$header = array(
 				'Cookie: ' . self::FA_AUTH_COOKIE
 			);
+
 			if($cache) {
-				return getSimpleHTMLDOMCached($url, 86400, $header); // 24 hours
+				$html = getSimpleHTMLDOMCached($url, 86400, $header); // 24 hours
 			} else {
-				return getSimpleHTMLDOM($url, $header);
+				$html = getSimpleHTMLDOM($url, $header);
 			}
+
+			$html = defaultLinkTo($html, $url);
+
+			return $html;
 	}
 
 	private function itemsFromJournalList($html, $limit) {
@@ -798,7 +805,7 @@ class FurAffinityBridge extends BridgeAbstract {
 
 			$item = array();
 
-			$this->cleanupHTMLDOM($journal);
+			$this->setReferrerPolicy($journal);
 
 			$item['uri'] = $journal->find('a', 0)->href;
 			$item['title'] = html_entity_decode($journal->find('a', 0)->plaintext);
@@ -814,7 +821,7 @@ class FurAffinityBridge extends BridgeAbstract {
 	}
 
 	private function itemsFromJournal($html) {
-		$this->cleanupHTMLDOM($html);
+		$this->setReferrerPolicy($html);
 		$item = array();
 
 		$item['uri'] = $this->getURI();
@@ -840,21 +847,21 @@ class FurAffinityBridge extends BridgeAbstract {
 
 			$item = array();
 
-			$submissionURL = self::URI . $figure->find('b u a', 0)->href;
+			$submissionURL = $figure->find('b u a', 0)->href;
 			$imgURL = 'https:' . $figure->find('b u a img', 0)->src;
 
 			$item['uri'] = $submissionURL;
 			$item['title'] = html_entity_decode(
-				$figure->find('figcaption p a[href^=/view]', 0)->title);
-			$item['author'] = $figure->find('figcaption p a[href^=/user]', 0)->title;
+				$figure->find('figcaption p a[href*=/view/]', 0)->title);
+			$item['author'] = $figure->find('figcaption p a[href*=/user/]', 0)->title;
 
 			if($this->getInput('full') === true) {
 				$submissionHTML = $this->getFASimpleHTMLDOM($submissionURL, $cache);
 
 				$stats = $submissionHTML->find('.stats-container', 0);
-				$item['timestamp'] = strtotime($stats->find('.popup_date', 0)->plaintext);
+				$item['timestamp'] = strtotime($stats->find('.popup_date', 0)->title);
 				$item['enclosures'] = array(
-					'https:' . $submissionHTML->find('.actions a[href^=//d.facdn]', 0)->href
+					$submissionHTML->find('.actions a[href^=https://d.facdn]', 0)->href
 				);
 				foreach($stats->find('#keywords a') as $keyword) {
 					$item['categories'][] = $keyword->plaintext;
@@ -868,7 +875,7 @@ class FurAffinityBridge extends BridgeAbstract {
 
 				$description = $submissionHTML
 					->find('.maintable .maintable tr td.alt1', -1);
-				$this->cleanupHTMLDOM($description);
+				$this->setReferrerPolicy($description);
 				$description = $description->innertext;
 
 				$item['content'] = <<<EOD
@@ -891,7 +898,7 @@ EOD;
 		}
 	}
 
-	private function cleanupHTMLDOM(&$html) {
+	private function setReferrerPolicy(&$html) {
 		foreach($html->find('img') as $img) {
 			/*
 			 * Note: Without the no-referrer policy their CDN sometimes denies requests.
@@ -900,15 +907,6 @@ EOD;
 			 * Alternatively we could not use https for images, but that's not ideal.
 			 */
 			$img->referrerpolicy = 'no-referrer';
-			if(preg_match('/^\/\//', $img->src)) {
-				$img->src = 'https:' . $img->src;
-			}
-		}
-		// Make hrefs absolute
-		foreach($html->find('*[href]') as $link) {
-			if(preg_match('/^\/[^\/]/', $link->href)) {
-				$link->href = self::URI . $link->href;
-			}
 		}
 	}
 }
