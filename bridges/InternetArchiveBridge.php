@@ -115,9 +115,8 @@ class InternetArchiveBridge extends BridgeAbstract {
 <p>Media Type: {$result->attr['data-mediatype']}<br>
 Collection: <a href="{$collectionLink}">{$collectionTitle}</a></p>
 EOD;
-
-
-		//$item['enclosures'];
+		
+		$item['enclosures'][] = self::URI . $result->find('img.item-img', 0)->source;
 		
 		return $item;
 	}	
