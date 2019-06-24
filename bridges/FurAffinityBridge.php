@@ -805,6 +805,7 @@ class FurAffinityBridge extends BridgeAbstract {
 
 	private function itemsFromJournalList($html, $limit) {
 		foreach($html->find('table[id^=jid:]') as $journal) {
+			# allows limit = -1 to mean 'unlimited'
 			if($limit-- === 0) break;
 
 			$item = array();
@@ -847,6 +848,7 @@ class FurAffinityBridge extends BridgeAbstract {
 		$cache = ($this->getInput('cache') === true);
 
 		foreach($html->find('section.gallery figure') as $figure) {
+			# allows limit = -1 to mean 'unlimited'
 			if($limit-- === 0) break;
 
 			$item = array();
