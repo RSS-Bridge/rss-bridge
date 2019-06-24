@@ -11,8 +11,7 @@ class StoriesIGBridge extends BridgeAbstract {
                                 'name' => 'Instagram username',
                                 'type' => 'text',
                                 'required' => true,
-                                'title' => 'Insert the username here',
-                                'exampleValue' => ''
+                                'title' => 'Insert the username here'
                         ),
                 )
         );
