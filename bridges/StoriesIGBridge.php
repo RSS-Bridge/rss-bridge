@@ -44,5 +44,4 @@ class StoriesIGBridge extends BridgeAbstract {
 
 		return parent::getURI();
 	}
-
 }
