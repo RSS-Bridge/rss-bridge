@@ -59,26 +59,10 @@ class InternetArchiveBridge extends BridgeAbstract {
 					$item = $this->processCollection($result);
 				}
 
-				$description = '';
+				$hiddenDetails = $this->processHiddenDetails($html, $detailsDivNumber, $item);
 
-				// Move this to a function
-				if ($html->find('div.details-ia.hidden-tiles', $detailsDivNumber)) {
-					$detailsDiv = $html->find('div.details-ia.hidden-tiles', $detailsDivNumber);
-					
-					$description = $detailsDiv->find('div.C234', 0)->children(0)->plaintext;
-					
-					$detailsDiv->find('div.C234', 0)->children(0)->innertext = '';
-					
-					$topics = trim($detailsDiv->find('div.C234', 0)->plaintext);
-					$topics = trim(substr($topics, 7));
-					
-					$item['categories'] = explode(',', $topics);
-					$item['content'] = '<p>' . $description . '</p>' . $item['content'];
-					
-				}
-				
-				$this->items[] = $item;
-				
+				$this->items[] = array_merge($item, $hiddenDetails);
+
 				$detailsDivNumber++;
 			}
 		}
@@ -145,5 +129,33 @@ EOD;
 		$item['content'] = '';
 		
 		return $item;
-	}	
+	}
+	
+	private function processHiddenDetails($html, $detailsDivNumber, $item) {
+
+		$description = '';
+
+		if ($html->find('div.details-ia.hidden-tiles', $detailsDivNumber)) {
+			$detailsDiv = $html->find('div.details-ia.hidden-tiles', $detailsDivNumber);
+
+			if ($detailsDiv->find('div.C234', 0)->children(0)) {
+				$description = $detailsDiv->find('div.C234', 0)->children(0)->plaintext;
+				
+				$detailsDiv->find('div.C234', 0)->children(0)->innertext = '';
+			}
+
+			$topics = trim($detailsDiv->find('div.C234', 0)->plaintext);
+			
+			if (!empty($topics)) {
+				$topics = trim($detailsDiv->find('div.C234', 0)->plaintext);
+				$topics = trim(substr($topics, 7));
+
+				$item['categories'] = explode(',', $topics);	
+			}
+
+			$item['content'] = '<p>' . $description . '</p>' . $item['content'];
+		}
+
+		return $item;
+	}
 }
