@@ -30,10 +30,58 @@ class InternetArchiveBridge extends BridgeAbstract {
 
 	private $feedName = '';
 
+	private $skipClasses = array(
+		'item-ia mobile-header hidden-tiles',
+		'item-ia account-ia'
+	);
+	
 	public function collectData() {
 
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not request: ' . $this->getURI());
+
+		if ($this->getInput('content') === 'uploads' || $this->getInput('content') === 'collections') {
+
+			$detailsDivNumber = 0;
+
+			foreach ($html->find('div.results > div[data-id]') as $index => $result) {
+				$item = array();
+				
+				if (in_array($result->class, $this->skipClasses)) {
+					continue;
+				}
+
+				if ($result->class === 'item-ia') {
+					$item = $this->processUpload($result);
+				}
+
+				if ($result->class === 'item-ia collection-ia') {
+					$item = $this->processCollection($result);
+				}
+
+				$description = '';
+
+				// Move this to a function
+				if ($html->find('div.details-ia.hidden-tiles', $detailsDivNumber)) {
+					$detailsDiv = $html->find('div.details-ia.hidden-tiles', $detailsDivNumber);
+					
+					$description = $detailsDiv->find('div.C234', 0)->children(0)->plaintext;
+					
+					$detailsDiv->find('div.C234', 0)->children(0)->innertext = '';
+					
+					$topics = trim($detailsDiv->find('div.C234', 0)->plaintext);
+					$topics = trim(substr($topics, 7));
+					
+					$item['categories'] = explode(',', $topics);
+					$item['content'] = '<p>' . $description . '</p>' . $item['content'];
+					
+				}
+				
+				$this->items[] = $item;
+				
+				$detailsDivNumber++;
+			}
+		}
 	}
 
 	public function getURI() {
@@ -62,4 +110,40 @@ class InternetArchiveBridge extends BridgeAbstract {
 
 		return $this->getInput('username');
 	}
+	
+	private function processUpload($result) {
+
+		$item = array();
+		
+		$collection = $result->find('a.stealth', 0);
+		$collectionLink = self::URI . $collection->href;
+		$collectionTitle = $collection->find('div.item-parent-ttl', 0)->innertext;
+		
+		$item['title'] = trim($result->find('div.ttl', 0)->innertext);
+		$item['timestamp'] = strtotime($result->find('div.hidden-tiles.pubdate.C.C3', 0)->children(0)->innertext);
+		$item['uri'] = self::URI . $result->find('div.item-ttl.C.C2 > a' , 0)->href;
+		
+		if ($result->find('div.by.C.C4', 0)->children(2)) {
+			$item['author'] = $result->find('div.by.C.C4', 0)->children(2)->plaintext;
+		}
+		
+		$item['content'] = <<<EOD
+<p>Media Type: {$result->attr['data-mediatype']}<br>
+Collection: <a href="{$collectionLink}">{$collectionTitle}</a></p>
+EOD;
+
+
+		//$item['enclosures'];
+		
+		return $item;
+	}	
+	
+	private function processCollection($result) {
+
+		$item = array();
+		
+		$item['content'] = '';
+		
+		return $item;
+	}	
 }
