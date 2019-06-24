@@ -625,13 +625,17 @@ class FurAffinityBridge extends BridgeAbstract {
 				. $this->getInput('q');
 		case 'Browse':
 			return 'Browse';
-		case 'Journals': return $this->getInput('username-journals');
+		case 'Journals':
+			return $this->getInput('username-journals');
 		case 'Single Journal':
 			return 'Journal '
 				. $this->getInput('journal-id');
-		case 'Gallery': return $this->getInput('username-gallery');
-		case 'Scraps': return $this->getInput('username-scraps');
-		case 'Favorites': return $this->getInput('username-favorites');
+		case 'Gallery':
+			return $this->getInput('username-gallery');
+		case 'Scraps':
+			return $this->getInput('username-scraps');
+		case 'Favorites':
+			return $this->getInput('username-favorites');
 		case 'Gallery Folder':
 			return $this->getInput('username-folder')
 				. '\'s Folder '
