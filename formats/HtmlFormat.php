@@ -98,6 +98,7 @@ EOD;
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>{$title}</title>
 	<link href="static/HtmlFormat.css" rel="stylesheet">
+	<link rel="icon" type="image/png" href="static/favicon.png">
 	<meta name="robots" content="noindex, follow">
 </head>
 <body>

@@ -33,6 +33,7 @@ final class BridgeList {
 	<meta name="description" content="RSS-Bridge" />
 	<title>RSS-Bridge</title>
 	<link href="static/style.css" rel="stylesheet">
+	<link rel="icon" type="image/png" href="static/favicon.png">
 	<script src="static/search.js"></script>
 	<script src="static/select.js"></script>
 	<noscript>
@@ -116,8 +117,7 @@ EOD;
 
 		return <<<EOD
 <header>
-	<h1>RSS-Bridge</h1>
-	<h2>Reconnecting the Web</h2>
+	<div class="logo"></div>
 	{$warning}
 </header>
 EOD;

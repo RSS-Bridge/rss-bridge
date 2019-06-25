@@ -43,14 +43,11 @@ header {
 	color: #1182DB;
 }
 
-header > h1 {
-	font-size: 500%;
-	font-weight: bold;
-}
-
-header > h2 {
-	margin-left: 1em;
-	font-size: 200%;
+header > div.logo {
+	background-image: url(logo_600px.png);
+	width: 599px;
+	height: 177px;
+	margin: auto;
 }
 
 header > section.warning {
@@ -308,6 +305,12 @@ h5 {
 @media screen and (max-width: 767px) {
 	body {
 		font-size: 75%;
+	}
+
+	header > div.logo {
+		background-image: url(logo_300px.png);
+		width: 300px;
+		height: 89px;
 	}
 
 	header > section.warning {
