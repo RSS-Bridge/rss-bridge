@@ -130,14 +130,17 @@ EOD;
 
 		$item = array();
 
-		$item['title'] = trim($result->find('div.collection-title.C.C2', 0)->children(0)->plaintext);
+		$title = trim($result->find('div.collection-title.C.C2', 0)->children(0)->plaintext);
+		$itemCount = strtolower(trim($result->find('div.num-items.topinblock', 0)->plaintext));
+		
+		$item['title'] = $title . ' (' . $itemCount . ')';
 		$item['timestamp'] = strtotime($result->find('div.hidden-tiles.pubdate.C.C3', 0)->children(0)->plaintext);
 		$item['uri'] = self::URI . $result->find('div.collection-title.C.C2 > a', 0)->href;
 
 		$item['content'] = '';
 
-		if ($result->find('img.tile-img', 0)) {
-			$item['enclosures'][] = self::URI . $result->find('img.tile-img', 0)->source;
+		if ($result->find('img.item-img.clipW.clipH', 0)) {
+			$item['enclosures'][] = self::URI . $result->find('img.item-img.clipW.clipH', 0)->source;
 		}
 
 		return $item;
