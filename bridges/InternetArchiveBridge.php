@@ -66,6 +66,10 @@ class InternetArchiveBridge extends BridgeAbstract {
 				$detailsDivNumber++;
 			}
 		}
+		
+		if ($this->getInput('content') === 'posts') {
+			$this->items = $this->processPosts($html);
+		}
 	}
 
 	public function getURI() {
@@ -172,5 +176,59 @@ EOD;
 		}
 
 		return $item;
+	}
+	
+	private function processPosts($html) {
+
+		$uri = self::URI;
+		$items = array();
+
+		foreach ($html->find('table.forumTable > tr') as $index => $tr) {
+			$item = array();
+
+			if ($index === 0) {
+				continue;
+			}
+
+			$item['title'] = $tr->find('td', 0)->plaintext;
+			$item['timestamp'] = strtotime($tr->find('td', 4)->children(0)->plaintext);	
+			$item['uri'] = self::URI . $tr->find('td', 0)->children(0)->href;
+			
+			$formLink = <<<EOD
+<a href="{$uri}{$tr->find('td', 2)->children(0)->href}">{$tr->find('td', 2)->children(0)->plaintext}</a>
+EOD;
+
+			$postDate = $tr->find('td', 4)->children(0)->plaintext;
+			
+			$postPageHtml = getSimpleHTMLDOMCached($item['uri'], 3600)
+				or returnServerError('Could not request: ' . $item['uri']);
+
+			$post = $postPageHtml->find('div.box.well.well-sm', 0);
+			
+			$parentLink = '';
+			$replyLink = <<<EOD
+<a href="{$uri}{$post->find('a', 0)->href}">Reply</a>
+EOD;
+
+			if ($post->find('a', 1)->innertext = 'See parent post') {
+				$parentLink = <<<EOD
+<a href="{$uri}{$post->find('a', 1)->href}">View parent post</a>
+EOD;
+			}
+
+			$post->find('h1', 0)->outertext = '';
+			$post->find('h2', 0)->outertext = '';
+
+			$item['content'] = <<<EOD
+<p>{$post->innertext}</p>{$replyLink} - {$parentLink} - Posted in {$formLink} on {$postDate}
+EOD;
+
+			$items[] = $item;
+			
+			if (count($items) >= 10) {
+				break;
+			}
+		}
+		return $items;
 	}
 }
