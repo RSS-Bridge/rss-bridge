@@ -40,7 +40,8 @@ class InternetArchiveBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not request: ' . $this->getURI());
 
-		if ($this->getInput('content') === 'uploads' || $this->getInput('content') === 'collections') {
+		if ($this->getInput('content') === 'uploads' || $this->getInput('content') === 'collections' 
+			|| $this->getInput('content') === 'web-archive') {
 
 			$detailsDivNumber = 0;
 
@@ -53,6 +54,10 @@ class InternetArchiveBridge extends BridgeAbstract {
 
 				if ($result->class === 'item-ia') {
 					$item = $this->processUpload($result);
+				}
+				
+				if ($result->class === 'item-ia url-item') {
+					$item = $this->processWeArchives($result);
 				}
 
 				if ($result->class === 'item-ia collection-ia') {
@@ -126,6 +131,23 @@ Collection: <a href="{$collectionLink}">{$collectionTitle}</a></p>
 EOD;
 
 		$item['enclosures'][] = self::URI . $result->find('img.item-img', 0)->source;
+
+		return $item;
+	}
+	
+	private function processWeArchives($result) {
+
+		$item = array();
+
+		$item['title'] = trim($result->find('div.ttl', 0)->plaintext);
+		$item['timestamp'] = strtotime($result->find('div.hidden-lists', 0)->children(0)->plaintext);
+		$item['uri'] = $result->find('div.item-ttl.C.C2 > a', 0)->href;
+
+		$item['content'] = <<<EOD
+{$this->processUsername()} archived <a href="{$item['uri']}">{$result->find('div.ttl', 0)->plaintext}</a>
+EOD;
+
+		$item['enclosures'][] = $result->find('img.item-img', 0)->source;
 
 		return $item;
 	}
