@@ -139,8 +139,8 @@ EOD;
 
 		$item['content'] = '';
 
-		if ($result->find('img.item-img.clipW.clipH', 0)) {
-			$item['enclosures'][] = self::URI . $result->find('img.item-img.clipW.clipH', 0)->source;
+		if ($result->find('img.item-img', 0)) {
+			$item['enclosures'][] = self::URI . $result->find('img.item-img', 0)->source;
 		}
 
 		return $item;
