@@ -18,7 +18,7 @@ class InternetArchiveBridge extends BridgeAbstract {
 					'Uploads' => 'uploads',
 					'Posts' => 'posts',
 					'Reviews' => 'reviews',
-					'collections' => 'collections',
+					'Collections' => 'collections',
 					'Web Archives' => 'web-archive',
 				),
 				'defaultValue' => 'uploads',
@@ -79,8 +79,13 @@ class InternetArchiveBridge extends BridgeAbstract {
 
 	public function getName() {
 
-		if (!empty($this->feedName)) {
-			return $this->feedName . ' - Internet Archive';
+		if (!is_null($this->getInput('username')) && !is_null($this->getInput('content'))) {
+			$parameters = $this->getParameters();
+			
+			$contentValues = array_flip($parameters['Account']['content']['values']);
+
+			return $contentValues[$this->getInput('content')] . ' - '
+				. $this->processUsername() . ' - Internet Archive';
 		}
 
 		return parent::getName();
