@@ -28,8 +28,6 @@ class InternetArchiveBridge extends BridgeAbstract {
 
 	const CACHE_TIMEOUT = 900; // 15 mins
 
-	private $feedName = '';
-
 	private $skipClasses = array(
 		'item-ia mobile-header hidden-tiles',
 		'item-ia account-ia'
