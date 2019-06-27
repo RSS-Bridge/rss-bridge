@@ -320,24 +320,32 @@ class InstructablesBridge extends BridgeAbstract {
 	 * parameters list)
 	 */
 	private function listCategories(){
-		// Use arbitrary category to receive full list
-		$html = getSimpleHTMLDOM(self::URI . '/technology/');
 
-		foreach($html->find('.channel a') as $channel) {
-			$name = html_entity_decode(trim($channel->innertext));
+		// Use home page to acquire main categories
+		$html = getSimpleHTMLDOM(self::URI);
+		$html = defaultLinkTo($html, self::URI);
 
-			// Remove unwanted entities
-			$name = str_replace("'", '', $name);
-			$name = str_replace('&#39;', '', $name);
+		foreach($html->find('.home-content-explore-link') as $category) {
 
-			$uri = $channel->href;
+			// Use arbitrary category to receive full list
+			$html = getSimpleHTMLDOM($category->href);
 
-			$category = explode('/', $uri)[1];
+			foreach($html->find('.channel-thumbnail a') as $channel) {
+				$name = html_entity_decode(trim($channel->title));
 
-			if(!isset($categories)
-			|| !array_key_exists($category, $categories)
-			|| !in_array($uri, $categories[$category]))
-				$categories[$category][$name] = $uri;
+				// Remove unwanted entities
+				$name = str_replace("'", '', $name);
+				$name = str_replace('&#39;', '', $name);
+
+				$uri = $channel->href;
+
+				$category_name = explode('/', $uri)[1];
+
+				if(!isset($categories)
+				|| !array_key_exists($category_name, $categories)
+				|| !in_array($uri, $categories[$category_name]))
+					$categories[$category_name][$name] = $uri;
+			}
 		}
 
 		// Build PHP array manually
