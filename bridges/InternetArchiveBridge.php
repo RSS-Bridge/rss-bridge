@@ -38,8 +38,7 @@ class InternetArchiveBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not request: ' . $this->getURI());
 
-		if ($this->getInput('content') === 'uploads' || $this->getInput('content') === 'collections' 
-			|| $this->getInput('content') === 'web-archive') {
+		if ($this->getInput('content') != 'posts') {
 
 			$detailsDivNumber = 0;
 
@@ -50,7 +49,11 @@ class InternetArchiveBridge extends BridgeAbstract {
 					continue;
 				}
 
-				if ($result->class === 'item-ia') {
+				if ($result->class === 'item-ia' && $this->getInput('content') === 'reviews') {
+					$item = $this->processReview($result);	
+				}
+				
+				if ($result->class === 'item-ia' && $this->getInput('content') === 'uploads') {
 					$item = $this->processUpload($result);
 				}
 				
@@ -62,9 +65,15 @@ class InternetArchiveBridge extends BridgeAbstract {
 					$item = $this->processCollection($result);
 				}
 
-				$hiddenDetails = $this->processHiddenDetails($html, $detailsDivNumber, $item);
+				if ($this->getInput('content') != 'reviews') {
+					$hiddenDetails = $this->processHiddenDetails($html, $detailsDivNumber, $item);
 
-				$this->items[] = array_merge($item, $hiddenDetails);
+					$this->items[] = array_merge($item, $hiddenDetails);
+				} else {
+					
+					$this->items[] = $item;
+					
+				}
 
 				$detailsDivNumber++;
 			}
@@ -126,6 +135,32 @@ class InternetArchiveBridge extends BridgeAbstract {
 		$item['content'] = <<<EOD
 <p>Media Type: {$result->attr['data-mediatype']}<br>
 Collection: <a href="{$collectionLink}">{$collectionTitle}</a></p>
+EOD;
+
+		$item['enclosures'][] = self::URI . $result->find('img.item-img', 0)->source;
+
+		return $item;
+	}
+	
+	private function processReview($result) {
+
+		$item = array();
+
+		$collection = $result->find('a.stealth', 0);
+		$collectionLink = self::URI . $collection->href;
+		$collectionTitle = $collection->find('div.item-parent-ttl', 0)->innertext;
+
+		$item['title'] = trim($result->find('div.ttl', 0)->innertext);
+		$item['timestamp'] = strtotime($result->find('div.hidden-tiles.pubdate.C.C3', 0)->children(0)->innertext);
+		$item['uri'] = self::URI . $result->find('div.review-title', 0)->children(0)->href;
+
+		if ($result->find('div.by.C.C4', 0)->children(2)) {
+			$item['author'] = $result->find('div.by.C.C4', 0)->children(2)->plaintext;
+		}
+
+		$item['content'] = <<<EOD
+<p><strong>Subject: {$result->find('div.review-title', 0)->plaintext}</strong></p>
+<p>{$result->find('div.hidden-lists.review' , 0)->children(1)->plaintext}</p>
 EOD;
 
 		$item['enclosures'][] = self::URI . $result->find('img.item-img', 0)->source;
