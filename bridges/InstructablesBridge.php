@@ -215,7 +215,7 @@ class InstructablesBridge extends BridgeAbstract {
 					),
 				),
 				'title' => 'Select your category (required)',
-				'defaultValue' => 'Technology'
+				'defaultValue' => 'Circuits'
 			),
 			'filter' => array(
 				'name' => 'Filter',
@@ -233,65 +233,70 @@ class InstructablesBridge extends BridgeAbstract {
 		)
 	);
 
-	private $uri;
-
 	public function collectData() {
 		// Enable the following line to get the category list (dev mode)
 		// $this->listCategories();
 
-		$this->uri = static::URI;
+		$html = getSimpleHTMLDOM($this->getURI())
+				or returnServerError('Error loading category ' . $this->getURI());
+		$html = defaultLinkTo($html, $this->getURI());
 
-		switch($this->queriedContext) {
-			case 'Category': $this->uri .= $this->getInput('category') . $this->getInput('filter');
-		}
+		$covers = $html->find('
+			.category-projects-list > div,
+			.category-landing-projects-list > div,
+		');
 
-		$html = getSimpleHTMLDOM($this->uri)
-				or returnServerError('Error loading category ' . $this->uri);
-
-		foreach($html->find('ul.explore-covers-list li') as $cover) {
+		foreach($covers as $cover) {
 			$item = array();
 
-			$item['uri'] = static::URI . $cover->find('a.cover-image', 0)->href;
-			$item['title'] = $cover->find('.title', 0)->innertext;
+			$item['uri'] = $cover->find('a.ible-title', 0)->href;
+			$item['title'] = $cover->find('a.ible-title', 0)->innertext;
 			$item['author'] = $this->getCategoryAuthor($cover);
 			$item['content'] = '<a href='
 			. $item['uri']
 			. '><img src='
-			. $cover->find('a.cover-image img', 0)->src
+			. $cover->find('img', 0)->getAttribute('data-src')
 			. '></a>';
 
-			$image = str_replace('.RECTANGLE1', '.LARGE', $cover->find('a.cover-image img', 0)->src);
-			$item['enclosures'] = [$image];
+			$item['enclosures'][] = str_replace(
+				'.RECTANGLE1',
+				'.LARGE',
+				$cover->find('img', 0)->getAttribute('data-src')
+			);
 
 			$this->items[] = $item;
 		}
 	}
 
 	public function getName() {
-		if(!is_null($this->getInput('category'))
-		&& !is_null($this->getInput('filter'))) {
-			foreach(self::PARAMETERS[$this->queriedContext]['category']['values'] as $key => $value) {
-				$subcategory = array_search($this->getInput('category'), $value);
+		switch($this->queriedContext) {
+			case 'Category': {
+				foreach(self::PARAMETERS[$this->queriedContext]['category']['values'] as $key => $value) {
+					$subcategory = array_search($this->getInput('category'), $value);
 
-				if($subcategory !== false)
-					break;
-			}
+					if($subcategory !== false)
+						break;
+				}
 
-			$filter = array_search(
-				$this->getInput('filter'),
-				self::PARAMETERS[$this->queriedContext]['filter']['values']
-			);
+				$filter = array_search(
+					$this->getInput('filter'),
+					self::PARAMETERS[$this->queriedContext]['filter']['values']
+				);
 
-			return $subcategory . ' (' . $filter . ') - ' . static::NAME;
+				return $subcategory . ' (' . $filter . ') - ' . static::NAME;
+			} break;
 		}
 
 		return parent::getName();
 	}
 
 	public function getURI() {
-		if(!is_null($this->getInput('category'))
-		&& !is_null($this->getInput('filter'))) {
-			return $this->uri;
+		switch($this->queriedContext) {
+			case 'Category': {
+				return self::URI
+				. $this->getInput('category')
+				. $this->getInput('filter');
+			} break;
 		}
 
 		return parent::getURI();
@@ -349,9 +354,9 @@ class InstructablesBridge extends BridgeAbstract {
 	 */
 	private function getCategoryAuthor($cover) {
 		return '<a href='
-		. static::URI . $cover->find('span.author a', 0)->href
+		. $cover->find('.ible-author a', 0)->href
 		. '>'
-		. $cover->find('span.author a', 0)->innertext
+		. $cover->find('.ible-author a', 0)->innertext
 		. '</a>';
 	}
 }
