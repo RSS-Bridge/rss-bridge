@@ -55,7 +55,7 @@ class InternetArchiveBridge extends BridgeAbstract {
 				}
 				
 				if ($result->class === 'item-ia url-item') {
-					$item = $this->processWeArchives($result);
+					$item = $this->processWebArchives($result);
 				}
 
 				if ($result->class === 'item-ia collection-ia') {
@@ -133,7 +133,7 @@ EOD;
 		return $item;
 	}
 	
-	private function processWeArchives($result) {
+	private function processWebArchives($result) {
 
 		$item = array();
 
