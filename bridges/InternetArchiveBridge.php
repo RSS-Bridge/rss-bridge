@@ -50,12 +50,14 @@ class InternetArchiveBridge extends BridgeAbstract {
 					continue;
 				}
 
-				if ($result->class === 'item-ia' && $this->getInput('content') === 'reviews') {
-					$item = $this->processReview($result);
-				}
+				if ($result->class === 'item-ia') {
+					if ($this->getInput('content') === 'reviews') {
+						$item = $this->processReview($result);
+					}
 
-				if ($result->class === 'item-ia' && $this->getInput('content') === 'uploads') {
-					$item = $this->processUpload($result);
+					if ($this->getInput('content') === 'uploads') {
+						$item = $this->processUpload($result);
+					}
 				}
 
 				if ($result->class === 'item-ia url-item') {
