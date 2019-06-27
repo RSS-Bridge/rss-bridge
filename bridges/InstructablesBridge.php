@@ -1,8 +1,7 @@
 <?php
 /**
 * This class implements a bridge for http://www.instructables.com, supporting
-* general feeds and feeds by category. Instructables doesn't support HTTPS as
-* of now (23.06.2018), so all connections are insecure!
+* general feeds and feeds by category.
 *
 * Remarks:
 * - For some reason it is very important to have the category URI end with a
@@ -13,7 +12,7 @@
 */
 class InstructablesBridge extends BridgeAbstract {
 	const NAME = 'Instructables Bridge';
-	const URI = 'http://www.instructables.com';
+	const URI = 'https://www.instructables.com';
 	const DESCRIPTION = 'Returns general feeds and feeds by category';
 	const MAINTAINER = 'logmanoriginal';
 	const PARAMETERS = array(
