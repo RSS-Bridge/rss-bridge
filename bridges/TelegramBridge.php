@@ -8,6 +8,7 @@ class TelegramBridge extends BridgeAbstract {
 			'username' => array(
 				'name' => 'Username',
 				'type' => 'text',
+				'required' => true,
 				'exampleValue' => '@telegram',
 			)
 		)
