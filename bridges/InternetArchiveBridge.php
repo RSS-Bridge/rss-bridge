@@ -51,13 +51,13 @@ class InternetArchiveBridge extends BridgeAbstract {
 				}
 
 				if ($result->class === 'item-ia' && $this->getInput('content') === 'reviews') {
-					$item = $this->processReview($result);	
+					$item = $this->processReview($result);
 				}
-				
+
 				if ($result->class === 'item-ia' && $this->getInput('content') === 'uploads') {
 					$item = $this->processUpload($result);
 				}
-				
+
 				if ($result->class === 'item-ia url-item') {
 					$item = $this->processWebArchives($result);
 				}
@@ -71,15 +71,15 @@ class InternetArchiveBridge extends BridgeAbstract {
 
 					$this->items[] = array_merge($item, $hiddenDetails);
 				} else {
-					
+
 					$this->items[] = $item;
-					
+
 				}
 
 				$detailsDivNumber++;
 			}
 		}
-		
+
 		if ($this->getInput('content') === 'posts') {
 			$this->items = $this->processPosts($html);
 		}
@@ -98,7 +98,7 @@ class InternetArchiveBridge extends BridgeAbstract {
 
 		if (!is_null($this->getInput('username')) && !is_null($this->getInput('content'))) {
 			$parameters = $this->getParameters();
-			
+
 			$contentValues = array_flip($parameters['Account']['content']['values']);
 
 			return $contentValues[$this->getInput('content')] . ' - '
@@ -142,7 +142,7 @@ EOD;
 
 		return $item;
 	}
-	
+
 	private function processReview($result) {
 
 		$item = array();
@@ -168,7 +168,7 @@ EOD;
 
 		return $item;
 	}
-	
+
 	private function processWebArchives($result) {
 
 		$item = array();
@@ -192,7 +192,7 @@ EOD;
 
 		$title = trim($result->find('div.collection-title.C.C2', 0)->children(0)->plaintext);
 		$itemCount = strtolower(trim($result->find('div.num-items.topinblock', 0)->plaintext));
-		
+
 		$item['title'] = $title . ' (' . $itemCount . ')';
 		$item['timestamp'] = strtotime($result->find('div.hidden-tiles.pubdate.C.C3', 0)->children(0)->plaintext);
 		$item['uri'] = self::URI . $result->find('div.collection-title.C.C2 > a', 0)->href;
@@ -233,7 +233,7 @@ EOD;
 
 		return $item;
 	}
-	
+
 	private function processPosts($html) {
 
 		$uri = self::URI;
@@ -247,20 +247,20 @@ EOD;
 			}
 
 			$item['title'] = $tr->find('td', 0)->plaintext;
-			$item['timestamp'] = strtotime($tr->find('td', 4)->children(0)->plaintext);	
+			$item['timestamp'] = strtotime($tr->find('td', 4)->children(0)->plaintext);
 			$item['uri'] = self::URI . $tr->find('td', 0)->children(0)->href;
-			
+
 			$formLink = <<<EOD
 <a href="{$uri}{$tr->find('td', 2)->children(0)->href}">{$tr->find('td', 2)->children(0)->plaintext}</a>
 EOD;
 
 			$postDate = $tr->find('td', 4)->children(0)->plaintext;
-			
+
 			$postPageHtml = getSimpleHTMLDOMCached($item['uri'], 3600)
 				or returnServerError('Could not request: ' . $item['uri']);
 
 			$post = $postPageHtml->find('div.box.well.well-sm', 0);
-			
+
 			$parentLink = '';
 			$replyLink = <<<EOD
 <a href="{$uri}{$post->find('a', 0)->href}">Reply</a>
@@ -280,7 +280,7 @@ EOD;
 EOD;
 
 			$items[] = $item;
-			
+
 			if (count($items) >= 10) {
 				break;
 			}
