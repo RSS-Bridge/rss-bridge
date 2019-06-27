@@ -275,7 +275,7 @@ EOD;
 	private function processDate($messageDiv) {
 
 		$messageMeta = $messageDiv->find('span.tgme_widget_message_meta', 0);
-		return $messageMeta->find('time', 0)->datetime;
+		return strtotime($messageMeta->find('time', 0)->datetime);
 
 	}
 
