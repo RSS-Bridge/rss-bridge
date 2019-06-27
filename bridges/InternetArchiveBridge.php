@@ -9,6 +9,7 @@ class InternetArchiveBridge extends BridgeAbstract {
 			'username' => array(
 				'name' => 'Username',
 				'type' => 'text',
+				'required' => true,
 				'exampleValue' => '@verifiedjoseph',
 			),
 			'content' => array(
