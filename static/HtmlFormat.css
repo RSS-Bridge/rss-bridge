@@ -32,7 +32,6 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
 	width: 60%;
 	margin: 30px auto;
 	padding: 15px 15px;
-	text-align: center;
 	box-shadow: 0 6px 15px rgba(0, 0, 0, 0.09);
 	border-radius: 4px;
 }
@@ -60,6 +59,18 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
  section > div.content, section > div.attachments {
 	padding: 10px;
 }
+ section h1, section h2, section h3, section b, section strong {
+	font-weight: bold;
+}
+ section i, section em {
+	font-style: italic;
+}
+ section p:not(:last-child) {
+	margin-bottom: 1em;
+}
+ section li {
+	margin-left: 1em;
+}
  section > div.attachments > li.enclosure {
 	list-style-type: circle;
 	list-style-position: inside;
@@ -84,4 +95,21 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
 }
  button:hover {
 	background: #49afff;
+}
+
+@media screen and (max-width: 767px) {
+
+	section {
+		width: 100%;
+		padding: 0;
+
+	}
+
+	button {
+		display: inline-block;
+		width: 40%;
+		padding: 5px auto;
+		margin: 3px auto 0;
+	}
+
 }

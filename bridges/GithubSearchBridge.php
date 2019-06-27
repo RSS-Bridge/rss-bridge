@@ -24,7 +24,7 @@ class GithubSearchBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($url)
 			or returnServerError('Error while downloading the website content');
 
-		foreach($html->find('div.repo-list-item') as $element) {
+		foreach($html->find('li.repo-list-item') as $element) {
 			$item = array();
 
 			$uri = $element->find('h3 a', 0)->href;

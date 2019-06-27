@@ -8,8 +8,8 @@ class GOGBridge extends BridgeAbstract {
 
 	public function collectData() {
 
-		$values = getContents('https://www.gog.com/games/ajax/filtered?limit=25&sort=new') or
-			die('Unable to get the news pages from GOG !');
+		$values = getContents('https://www.gog.com/games/ajax/filtered?limit=25&sort=new')
+			or returnServerError('Unable to get the news pages from GOG !');
 		$decodedValues = json_decode($values);
 
 		$limit = 0;
@@ -38,8 +38,8 @@ class GOGBridge extends BridgeAbstract {
 
 	private function buildGameContentPage($game) {
 
-		$gameDescriptionText = getContents('https://api.gog.com/products/' . $game->id . '?expand=description') or
-			die('Unable to get game description from GOG !');
+		$gameDescriptionText = getContents('https://api.gog.com/products/' . $game->id . '?expand=description')
+			or returnServerError('Unable to get game description from GOG !');
 
 		$gameDescriptionValue = json_decode($gameDescriptionText);
 

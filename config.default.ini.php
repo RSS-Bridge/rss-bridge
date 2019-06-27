@@ -4,7 +4,19 @@
 ; file, it will be replaced on the next update of RSS-Bridge! You can specify
 ; your own configuration in 'config.ini.php' (copy this file).
 
+[system]
+
+; Defines the timezone used by RSS-Bridge
+; Find a list of supported timezones at
+; https://www.php.net/manual/en/timezones.php
+; timezone = "UTC" (default)
+timezone = "UTC"
+
 [cache]
+
+; Defines the cache type used by RSS-Bridge
+; "file" = FileCache (default)
+type = "file"
 
 ; Allow users to specify custom timeout for specific requests.
 ; true  = enabled
@@ -48,3 +60,12 @@ username = ""
 ; The password for authentication. Insert this password when prompted for login.
 ; Use a strong password to prevent others from guessing your login!
 password = ""
+
+; --- Cache specific configuration ---------------------------------------------
+
+[SQLiteCache]
+file = "cache.sqlite"
+
+[MemcachedCache]
+host = "localhost"
+port = 11211

@@ -45,12 +45,14 @@ function getContents($url, $header = array(), $opts = array()){
 	Debug::log('Reading contents from "' . $url . '"');
 
 	// Initialize cache
-	$cache = Cache::create('FileCache');
-	$cache->setPath(PATH_CACHE . 'server/');
+	$cacheFac = new CacheFactory();
+	$cacheFac->setWorkingDir(PATH_LIB_CACHES);
+	$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+	$cache->setScope('server');
 	$cache->purgeCache(86400); // 24 hours (forced)
 
 	$params = [$url];
-	$cache->setParameters($params);
+	$cache->setKey($params);
 
 	// Use file_get_contents if in CLI mode with no root certificates defined
 	if(php_sapi_name() === 'cli' && empty(ini_get('curl.cainfo'))) {
@@ -207,14 +209,15 @@ EOD
  * @return string Contents as simplehtmldom object.
  */
 function getSimpleHTMLDOM($url,
-$header = array(),
-$opts = array(),
-$lowercase = true,
-$forceTagsClosed = true,
-$target_charset = DEFAULT_TARGET_CHARSET,
-$stripRN = true,
-$defaultBRText = DEFAULT_BR_TEXT,
-$defaultSpanText = DEFAULT_SPAN_TEXT){
+	$header = array(),
+	$opts = array(),
+	$lowercase = true,
+	$forceTagsClosed = true,
+	$target_charset = DEFAULT_TARGET_CHARSET,
+	$stripRN = true,
+	$defaultBRText = DEFAULT_BR_TEXT,
+	$defaultSpanText = DEFAULT_SPAN_TEXT){
+
 	$content = getContents($url, $header, $opts);
 	return str_get_html($content,
 	$lowercase,
@@ -256,24 +259,27 @@ $defaultSpanText = DEFAULT_SPAN_TEXT){
  * @return string Contents as simplehtmldom object.
  */
 function getSimpleHTMLDOMCached($url,
-$duration = 86400,
-$header = array(),
-$opts = array(),
-$lowercase = true,
-$forceTagsClosed = true,
-$target_charset = DEFAULT_TARGET_CHARSET,
-$stripRN = true,
-$defaultBRText = DEFAULT_BR_TEXT,
-$defaultSpanText = DEFAULT_SPAN_TEXT){
+	$duration = 86400,
+	$header = array(),
+	$opts = array(),
+	$lowercase = true,
+	$forceTagsClosed = true,
+	$target_charset = DEFAULT_TARGET_CHARSET,
+	$stripRN = true,
+	$defaultBRText = DEFAULT_BR_TEXT,
+	$defaultSpanText = DEFAULT_SPAN_TEXT){
+
 	Debug::log('Caching url ' . $url . ', duration ' . $duration);
 
 	// Initialize cache
-	$cache = Cache::create('FileCache');
-	$cache->setPath(PATH_CACHE . 'pages/');
+	$cacheFac = new CacheFactory();
+	$cacheFac->setWorkingDir(PATH_LIB_CACHES);
+	$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+	$cache->setScope('pages');
 	$cache->purgeCache(86400); // 24 hours (forced)
 
 	$params = [$url];
-	$cache->setParameters($params);
+	$cache->setKey($params);
 
 	// Determine if cached file is within duration
 	$time = $cache->getTime();
@@ -320,8 +326,8 @@ function parseResponseHeader($header) {
 				$header['http_code'] = $line;
 			} else {
 
-				list ($key, $value) = explode(': ', $line);
-				$header[$key] = $value;
+				list ($key, $value) = explode(':', $line);
+				$header[$key] = trim($value);
 
 			}
 

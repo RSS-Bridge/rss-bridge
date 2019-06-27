@@ -31,29 +31,7 @@
  * $format = Format::create('Atom');
  * ```
  */
-class Format {
-
-	/**
-	 * Holds a path to the working directory.
-	 *
-	 * Do not access this property directly!
-	 * Use {@see Format::setWorkingDir()} and {@see Format::getWorkingDir()} instead.
-	 *
-	 * @var string|null
-	 */
-	protected static $workingDir = null;
-
-	/**
-	 * Throws an exception when trying to create a new instance of this class.
-	 * Use {@see Format::create()} to create a new format object from the working
-	 * directory.
-	 *
-	 * @throws \LogicException if called.
-	 */
-	public function __construct(){
-		throw new \LogicException('Use ' . __CLASS__ . '::create($name) to create cache objects!');
-	}
-
+class FormatFactory extends FactoryAbstract {
 	/**
 	 * Creates a new format object from the working directory.
 	 *
@@ -63,13 +41,13 @@ class Format {
 	 * @param string $name Name of the format object.
 	 * @return object|bool The format object or false if the class is not instantiable.
 	 */
-	public static function create($name){
-		if(!self::isFormatName($name)) {
+	public function create($name){
+		if(!$this->isFormatName($name)) {
 			throw new \InvalidArgumentException('Format name invalid!');
 		}
 
-		$name = $name . 'Format';
-		$pathFormat = self::getWorkingDir() . $name . '.php';
+		$name = $this->sanitizeFormatName($name) . 'Format';
+		$pathFormat = $this->getWorkingDir() . $name . '.php';
 
 		if(!file_exists($pathFormat)) {
 			throw new \Exception('Format file ' . $filePath . ' does not exist!');
@@ -85,48 +63,6 @@ class Format {
 	}
 
 	/**
-	 * Sets the working directory.
-	 *
-	 * @param string $dir Path to a directory containing cache classes
-	 * @throws \InvalidArgumentException if $dir is not a string.
-	 * @throws \Exception if the working directory doesn't exist.
-	 * @throws \InvalidArgumentException if $dir is not a directory.
-	 * @return void
-	 */
-	public static function setWorkingDir($dir){
-		self::$workingDir = null;
-
-		if(!is_string($dir)) {
-			throw new \InvalidArgumentException('Dir format must be a string.');
-		}
-
-		if(!file_exists($dir)) {
-			throw new \Exception('Working directory does not exist!');
-		}
-
-		if(!is_dir($dir)) {
-			throw new \InvalidArgumentException('Working directory is not a directory!');
-		}
-
-		self::$workingDir = realpath($dir) . '/';
-	}
-
-	/**
-	 * Returns the working directory.
-	 * The working directory must be set with {@see Format::setWorkingDir()}!
-	 *
-	 * @throws \LogicException if the working directory is not set.
-	 * @return string The current working directory.
-	 */
-	public static function getWorkingDir(){
-		if(is_null(self::$workingDir)) {
-			throw new \LogicException('Working directory is not set!');
-		}
-
-		return self::$workingDir;
-	}
-
-	/**
 	 * Returns true if the provided name is a valid format name.
 	 *
 	 * A valid format name starts with a capital letter ([A-Z]), followed by
@@ -135,7 +71,7 @@ class Format {
 	 * @param string $name The format name.
 	 * @return bool true if the name is a valid format name, false otherwise.
 	 */
-	public static function isFormatName($name){
+	public function isFormatName($name){
 		return is_string($name) && preg_match('/^[A-Z][a-zA-Z0-9-]*$/', $name) === 1;
 	}
 
@@ -146,11 +82,11 @@ class Format {
 	 *
 	 * @return array List of format names
 	 */
-	public static function getFormatNames(){
+	public function getFormatNames(){
 		static $formatNames = array(); // Initialized on first call
 
 		if(empty($formatNames)) {
-			$files = scandir(self::getWorkingDir());
+			$files = scandir($this->getWorkingDir());
 
 			if($files !== false) {
 				foreach($files as $file) {
@@ -162,5 +98,56 @@ class Format {
 		}
 
 		return $formatNames;
+	}
+
+	/**
+	 * Returns the sanitized format name.
+	 *
+	 * The format name can be specified in various ways:
+	 * * The PHP file name (i.e. `AtomFormat.php`)
+	 * * The PHP file name without file extension (i.e. `AtomFormat`)
+	 * * The format name (i.e. `Atom`)
+	 *
+	 * Casing is ignored (i.e. `ATOM` and `atom` are the same).
+	 *
+	 * A format file matching the given format name must exist in the working
+	 * directory!
+	 *
+	 * @param string $name The format name
+	 * @return string|null The sanitized format name if the provided name is
+	 * valid, null otherwise.
+	 */
+	protected function sanitizeFormatName($name) {
+
+		if(is_string($name)) {
+
+			// Trim trailing '.php' if exists
+			if(preg_match('/(.+)(?:\.php)/', $name, $matches)) {
+				$name = $matches[1];
+			}
+
+			// Trim trailing 'Format' if exists
+			if(preg_match('/(.+)(?:Format)/i', $name, $matches)) {
+				$name = $matches[1];
+			}
+
+			// Improve performance for correctly written format names
+			if(in_array($name, $this->getFormatNames())) {
+				$index = array_search($name, $this->getFormatNames());
+				return $this->getFormatNames()[$index];
+			}
+
+			// The name is valid if a corresponding format file is found on disk
+			if(in_array(strtolower($name), array_map('strtolower', $this->getFormatNames()))) {
+				$index = array_search(strtolower($name), array_map('strtolower', $this->getFormatNames()));
+				return $this->getFormatNames()[$index];
+			}
+
+			Debug::log('Invalid format name: "' . $name . '"!');
+
+		}
+
+		return null; // Bad parameter
+
 	}
 }

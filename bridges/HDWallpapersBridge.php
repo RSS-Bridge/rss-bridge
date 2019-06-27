@@ -16,13 +16,13 @@ class HDWallpapersBridge extends BridgeAbstract {
 		),
 		'r' => array(
 			'name' => 'resolution',
-			'defaultValue' => '1920x1200',
-			'exampleValue' => '1920x1200, 1680x1050,…'
+			'defaultValue' => 'HD',
+			'exampleValue' => 'HD, 1920x1200, 1680x1050,…'
 		)
 	));
 
 	public function collectData(){
-		$category = $this->category;
+		$category = $this->getInput('c');
 		if(strrpos($category, 'wallpapers') !== strlen($category) - strlen('wallpapers')) {
 			$category .= '-desktop-wallpapers';
 		}
@@ -45,13 +45,12 @@ class HDWallpapersBridge extends BridgeAbstract {
 				$thumbnail = $element->find('img', 0);
 
 				$item = array();
-				// http://www.hdwallpapers.in/download/yosemite_reflections-1680x1050.jpg
 				$item['uri'] = self::URI
 				. '/download'
 				. str_replace('wallpapers.html', $this->getInput('r') . '.jpg', $element->href);
 
 				$item['timestamp'] = time();
-				$item['title'] = $element->find('p', 0)->text();
+				$item['title'] = $element->find('em1', 0)->text();
 				$item['content'] = $item['title']
 				. '<br><a href="'
 				. $item['uri']
@@ -60,6 +59,7 @@ class HDWallpapersBridge extends BridgeAbstract {
 				. $thumbnail->src
 				. '" /></a>';
 
+				$item['enclosures'] = array($item['uri']);
 				$this->items[] = $item;
 
 				$num++;

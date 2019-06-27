@@ -35,17 +35,7 @@
  * $bridge = Bridge::create('GitHubIssue');
  * ```
  */
-class Bridge {
-
-	/**
-	 * Holds a path to the working directory.
-	 *
-	 * Do not access this property directly!
-	 * Use {@see Bridge::setWorkingDir()} and {@see Bridge::getWorkingDir()} instead.
-	 *
-	 * @var string|null
-	 */
-	protected static $workingDir = null;
+class BridgeFactory extends FactoryAbstract {
 
 	/**
 	 * Holds a list of whitelisted bridges.
@@ -55,18 +45,7 @@ class Bridge {
 	 *
 	 * @var array
 	 */
-	protected static $whitelist = array();
-
-	/**
-	 * Throws an exception when trying to create a new instance of this class.
-	 * Use {@see Bridge::create()} to instanciate a new bridge from the working
-	 * directory.
-	 *
-	 * @throws \LogicException if called.
-	 */
-	public function __construct(){
-		throw new \LogicException('Use ' . __CLASS__ . '::create($name) to create bridge objects!');
-	}
+	protected $whitelist = array();
 
 	/**
 	 * Creates a new bridge object from the working directory.
@@ -77,13 +56,13 @@ class Bridge {
 	 * @param string $name Name of the bridge object.
 	 * @return object|bool The bridge object or false if the class is not instantiable.
 	 */
-	public static function create($name){
-		if(!self::isBridgeName($name)) {
+	public function create($name){
+		if(!$this->isBridgeName($name)) {
 			throw new \InvalidArgumentException('Bridge name invalid!');
 		}
 
-		$name = self::sanitizeBridgeName($name) . 'Bridge';
-		$filePath = self::getWorkingDir() . $name . '.php';
+		$name = $this->sanitizeBridgeName($name) . 'Bridge';
+		$filePath = $this->getWorkingDir() . $name . '.php';
 
 		if(!file_exists($filePath)) {
 			throw new \Exception('Bridge file ' . $filePath . ' does not exist!');
@@ -99,48 +78,6 @@ class Bridge {
 	}
 
 	/**
-	 * Sets the working directory.
-	 *
-	 * @param string $dir Path to the directory containing bridges.
-	 * @throws \LogicException if the provided path is not a valid string.
-	 * @throws \Exception if the provided path does not exist.
-	 * @throws \InvalidArgumentException if $dir is not a directory.
-	 * @return void
-	 */
-	public static function setWorkingDir($dir){
-		self::$workingDir = null;
-
-		if(!is_string($dir)) {
-			throw new \InvalidArgumentException('Working directory is not a valid string!');
-		}
-
-		if(!file_exists($dir)) {
-			throw new \Exception('Working directory does not exist!');
-		}
-
-		if(!is_dir($dir)) {
-			throw new \InvalidArgumentException('Working directory is not a directory!');
-		}
-
-		self::$workingDir = realpath($dir) . '/';
-	}
-
-	/**
-	 * Returns the working directory.
-	 * The working directory must be specified with {@see Bridge::setWorkingDir()}!
-	 *
-	 * @throws \LogicException if the working directory is not set.
-	 * @return string The current working directory.
-	 */
-	public static function getWorkingDir(){
-		if(is_null(self::$workingDir)) {
-			throw new \LogicException('Working directory is not set!');
-		}
-
-		return self::$workingDir;
-	}
-
-	/**
 	 * Returns true if the provided name is a valid bridge name.
 	 *
 	 * A valid bridge name starts with a capital letter ([A-Z]), followed by
@@ -149,7 +86,7 @@ class Bridge {
 	 * @param string $name The bridge name.
 	 * @return bool true if the name is a valid bridge name, false otherwise.
 	 */
-	public static function isBridgeName($name){
+	public function isBridgeName($name){
 		return is_string($name) && preg_match('/^[A-Z][a-zA-Z0-9-]*$/', $name) === 1;
 	}
 
@@ -160,12 +97,12 @@ class Bridge {
 	 *
 	 * @return array List of bridge names
 	 */
-	public static function getBridgeNames(){
+	public function getBridgeNames(){
 
 		static $bridgeNames = array(); // Initialized on first call
 
 		if(empty($bridgeNames)) {
-			$files = scandir(self::getWorkingDir());
+			$files = scandir($this->getWorkingDir());
 
 			if($files !== false) {
 				foreach($files as $file) {
@@ -185,14 +122,15 @@ class Bridge {
 	 * @param string $name Name of the bridge.
 	 * @return bool True if the bridge is whitelisted.
 	 */
-	public static function isWhitelisted($name){
-		return in_array(self::sanitizeBridgeName($name), self::getWhitelist());
+	public function isWhitelisted($name){
+		return in_array($this->sanitizeBridgeName($name), $this->getWhitelist());
 	}
 
 	/**
 	 * Returns the whitelist.
 	 *
-	 * On first call this function reads the whitelist from {@see WHITELIST}.
+	 * On first call this function reads the whitelist from {@see WHITELIST} if
+	 * the file exists, {@see WHITELIST_DEFAULT} otherwise.
 	 * * Each line in the file specifies one bridge on the whitelist.
 	 * * An empty file disables all bridges.
 	 * * If the file only only contains `*`, all bridges are whitelisted.
@@ -204,30 +142,32 @@ class Bridge {
 	 *
 	 * @return array Array of whitelisted bridges
 	 */
-	public static function getWhitelist() {
+	public function getWhitelist() {
 
 		static $firstCall = true; // Initialized on first call
 
 		if($firstCall) {
 
-			// Create initial whitelist or load from disk
-			if (!file_exists(WHITELIST) && !empty(self::$whitelist)) {
-				file_put_contents(WHITELIST, implode("\n", self::$whitelist));
-			} else {
-
+			if(file_exists(WHITELIST)) {
 				$contents = trim(file_get_contents(WHITELIST));
+			} elseif(file_exists(WHITELIST_DEFAULT)) {
+				$contents = trim(file_get_contents(WHITELIST_DEFAULT));
+			} else {
+				$contents = '';
+			}
 
-				if($contents === '*') { // Whitelist all bridges
-					self::$whitelist = self::getBridgeNames();
-				} else {
-					self::$whitelist = array_map('self::sanitizeBridgeName', explode("\n", $contents));
+			if($contents === '*') { // Whitelist all bridges
+				$this->whitelist = $this->getBridgeNames();
+			} else {
+				//$this->$whitelist = array_map('$this->sanitizeBridgeName', explode("\n", $contents));
+				foreach(explode("\n", $contents) as $bridgeName) {
+					$this->whitelist[] = $this->sanitizeBridgeName($bridgeName);
 				}
-
 			}
 
 		}
 
-		return self::$whitelist;
+		return $this->whitelist;
 
 	}
 
@@ -245,8 +185,8 @@ class Bridge {
 	 * @param array $default The whitelist as array of bridge names.
 	 * @return void
 	 */
-	public static function setWhitelist($default = array()) {
-		self::$whitelist = array_map('self::sanitizeBridgeName', $default);
+	public function setWhitelist($default = array()) {
+		$this->whitelist = array_map('$this->sanitizeBridgeName', $default);
 	}
 
 	/**
@@ -266,7 +206,7 @@ class Bridge {
 	 * @return string|null The sanitized bridge name if the provided name is
 	 * valid, null otherwise.
 	 */
-	protected static function sanitizeBridgeName($name) {
+	protected function sanitizeBridgeName($name) {
 
 		if(is_string($name)) {
 
@@ -280,10 +220,16 @@ class Bridge {
 				$name = $matches[1];
 			}
 
+			// Improve performance for correctly written bridge names
+			if(in_array($name, $this->getBridgeNames())) {
+				$index = array_search($name, $this->getBridgeNames());
+				return $this->getBridgeNames()[$index];
+			}
+
 			// The name is valid if a corresponding bridge file is found on disk
-			if(in_array(strtolower($name), array_map('strtolower', self::getBridgeNames()))) {
-				$index = array_search(strtolower($name), array_map('strtolower', self::getBridgeNames()));
-				return self::getBridgeNames()[$index];
+			if(in_array(strtolower($name), array_map('strtolower', $this->getBridgeNames()))) {
+				$index = array_search(strtolower($name), array_map('strtolower', $this->getBridgeNames()));
+				return $this->getBridgeNames()[$index];
 			}
 
 			Debug::log('Invalid bridge name specified: "' . $name . '"!');

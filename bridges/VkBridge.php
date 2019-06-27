@@ -13,6 +13,10 @@ class VkBridge extends BridgeAbstract
 			'u' => array(
 				'name' => 'Group or user name',
 				'required' => true
+			),
+			'hide_reposts' => array(
+				'name' => 'Hide reposts',
+				'type' => 'checkbox',
 			)
 		)
 	);
@@ -48,7 +52,7 @@ class VkBridge extends BridgeAbstract
 		$text_html = $this->getContents()
 		or returnServerError('No results for group or user name "' . $this->getInput('u') . '".');
 
-		$text_html = iconv('windows-1251', 'utf-8', $text_html);
+		$text_html = iconv('windows-1251', 'utf-8//ignore', $text_html);
 		// makes album link generating work correctly
 		$text_html = str_replace('"class="page_album_link">', '" class="page_album_link">', $text_html);
 		$html = str_get_html($text_html);
@@ -234,6 +238,9 @@ class VkBridge extends BridgeAbstract
 			}
 
 			if (is_object($post->find('div.copy_quote', 0))) {
+				if ($this->getInput('hide_reposts') === true) {
+					continue;
+				}
 				$copy_quote = $post->find('div.copy_quote', 0);
 				if ($copy_post_header = $copy_quote->find('div.copy_post_header', 0)) {
 					$copy_post_header->outertext = '';
