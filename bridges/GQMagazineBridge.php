@@ -86,14 +86,14 @@ class GQMagazineBridge extends BridgeAbstract
 				$item['author'] = $author->plaintext;
 				$item['title'] = $this->findTitleOf($link);
 				switch(substr($uri, 0, 1)) {
-				    case 'h': // absolute uri
-				        $item['uri'] = $uri;
-				        break;
-				    case '/': // domain relative uri
-				        $item['uri'] = $this->getDomain() . $uri;
-				        break;
-				    default:
-				        $item['uri'] = $this->getDomain() . '/' . $uri;
+					case 'h': // absolute uri
+						$item['uri'] = $uri;
+						break;
+					case '/': // domain relative uri
+						$item['uri'] = $this->getDomain() . $uri;
+						break;
+					default:
+						$item['uri'] = $this->getDomain() . '/' . $uri;
 				}
 				$article = $this->loadFullArticle($item['uri']);
 				if($article) {
