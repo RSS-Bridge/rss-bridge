@@ -83,7 +83,7 @@ class CastorusBridge extends BridgeAbstract {
 		if(!$html)
 			returnServerError('Could not load data from ' . self::URI . '!');
 
-		$activities = $html->find('div#activite/li');
+		$activities = $html->find('div#activite > li');
 
 		if(!$activities)
 			returnServerError('Failed to find activities!');
