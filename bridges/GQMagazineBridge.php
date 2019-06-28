@@ -63,7 +63,7 @@ class GQMagazineBridge extends BridgeAbstract
 		foreach (self::POSSIBLE_TITLES as $tag) {
 			$title = $link->find($tag, 0);
 			if($title !== null) {
-				if($title->plaintext != null) {
+				if($title->plaintext !== null) {
 					return $title->plaintext;
 				}
 			}
