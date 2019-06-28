@@ -39,6 +39,8 @@ class InternetArchiveBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not request: ' . $this->getURI());
 
+		$html = defaultLinkTo($html, $this->getURI());
+
 		if ($this->getInput('content') !== 'posts') {
 
 			$detailsDivNumber = 0;
@@ -157,7 +159,7 @@ EOD;
 
 		$item['title'] = trim($result->find('div.ttl', 0)->innertext);
 		$item['timestamp'] = strtotime($result->find('div.hidden-tiles.pubdate.C.C3', 0)->children(0)->plaintext);
-		$item['uri'] = self::URI . $result->find('div.review-title', 0)->children(0)->href;
+		$item['uri'] = $result->find('div.review-title', 0)->children(0)->href;
 
 		if ($result->find('div.by.C.C4', 0)->children(2)) {
 			$item['author'] = $result->find('div.by.C.C4', 0)->children(2)->plaintext;
@@ -199,7 +201,7 @@ EOD;
 
 		$item['title'] = $title . ' (' . $itemCount . ')';
 		$item['timestamp'] = strtotime($result->find('div.hidden-tiles.pubdate.C.C3', 0)->children(0)->plaintext);
-		$item['uri'] = self::URI . $result->find('div.collection-title.C.C2 > a', 0)->href;
+		$item['uri'] = $result->find('div.collection-title.C.C2 > a', 0)->href;
 
 		$item['content'] = '';
 
@@ -240,7 +242,6 @@ EOD;
 
 	private function processPosts($html) {
 
-		$uri = self::URI;
 		$items = array();
 
 		foreach ($html->find('table.forumTable > tr') as $index => $tr) {
@@ -252,10 +253,10 @@ EOD;
 
 			$item['title'] = $tr->find('td', 0)->plaintext;
 			$item['timestamp'] = strtotime($tr->find('td', 4)->children(0)->plaintext);
-			$item['uri'] = self::URI . $tr->find('td', 0)->children(0)->href;
+			$item['uri'] = $tr->find('td', 0)->children(0)->href;
 
 			$formLink = <<<EOD
-<a href="{$uri}{$tr->find('td', 2)->children(0)->href}">{$tr->find('td', 2)->children(0)->plaintext}</a>
+<a href="{$tr->find('td', 2)->children(0)->href}">{$tr->find('td', 2)->children(0)->plaintext}</a>
 EOD;
 
 			$postDate = $tr->find('td', 4)->children(0)->plaintext;
@@ -263,16 +264,18 @@ EOD;
 			$postPageHtml = getSimpleHTMLDOMCached($item['uri'], 3600)
 				or returnServerError('Could not request: ' . $item['uri']);
 
+			$postPageHtml = defaultLinkTo($postPageHtml, $this->getURI());
+
 			$post = $postPageHtml->find('div.box.well.well-sm', 0);
 
 			$parentLink = '';
 			$replyLink = <<<EOD
-<a href="{$uri}{$post->find('a', 0)->href}">Reply</a>
+<a href="{$post->find('a', 0)->href}">Reply</a>
 EOD;
 
 			if ($post->find('a', 1)->innertext = 'See parent post') {
 				$parentLink = <<<EOD
-<a href="{$uri}{$post->find('a', 1)->href}">View parent post</a>
+<a href="{$post->find('a', 1)->href}">View parent post</a>
 EOD;
 			}
 
