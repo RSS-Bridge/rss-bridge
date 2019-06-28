@@ -153,10 +153,6 @@ EOD;
 
 		$item = array();
 
-		$collection = $result->find('a.stealth', 0);
-		$collectionLink = self::URI . $collection->href;
-		$collectionTitle = $collection->find('div.item-parent-ttl', 0)->plaintext;
-
 		$item['title'] = trim($result->find('div.ttl', 0)->innertext);
 		$item['timestamp'] = strtotime($result->find('div.hidden-tiles.pubdate.C.C3', 0)->children(0)->plaintext);
 		$item['uri'] = $result->find('div.review-title', 0)->children(0)->href;
