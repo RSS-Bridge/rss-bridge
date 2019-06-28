@@ -68,7 +68,7 @@ class InternetArchiveBridge extends BridgeAbstract {
 					$item = $this->processCollection($result);
 				}
 
-				if ($this->getInput('content') != 'reviews') {
+				if ($this->getInput('content') !== 'reviews') {
 					$hiddenDetails = $this->processHiddenDetails($html, $detailsDivNumber, $item);
 
 					$this->items[] = array_merge($item, $hiddenDetails);
