@@ -53,17 +53,17 @@ class InternetArchiveBridge extends BridgeAbstract {
 				}
 
 				switch($result->class) {
-					case 'item-ia': 
-						
+					case 'item-ia':
+
 						switch($this->getInput('content')) {
-							case 'reviews': 
+							case 'reviews':
 								$item = $this->processReview($result);
 								break;
 							case 'uploads':
 								$item = $this->processUpload($result);
 							break;
 						}
-						
+
 						break;
 					case 'item-ia url-item':
 						$item = $this->processWebArchives($result);
