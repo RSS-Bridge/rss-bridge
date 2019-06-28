@@ -52,7 +52,8 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 			// Remove permalink
 			$breach->find('p', 1)->find('a', 0)->outertext = '';
 
-			$item['title'] = $breach->find('h3', 0)->plaintext . ' - ' . $accounts[1] . ' breached accounts';
+			$item['title'] = html_entity_decode($breach->find('h3', 0)->plaintext, ENT_QUOTES)
+				. ' - ' . $accounts[1] . ' breached accounts';
 			$item['dateAdded'] = strtotime($dateAdded[1]);
 			$item['breachDate'] = strtotime($breachDate[1]);
 			$item['uri'] = self::URI . '/PwnedWebsites' . $permalink;
