@@ -39,7 +39,7 @@ class InternetArchiveBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not request: ' . $this->getURI());
 
-		if ($this->getInput('content') != 'posts') {
+		if ($this->getInput('content') !== 'posts') {
 
 			$detailsDivNumber = 0;
 
