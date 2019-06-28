@@ -87,7 +87,7 @@ class GQMagazineBridge extends BridgeAbstract
 				$item['title'] = $this->findTitleOf($link);
 				if(substr($uri, 0, 1) === 'h') { // absolute uri
 					$item['uri'] = $uri;
-				} else if(substr($uri, 0, 1) === '/') { // domain relative url
+				} elseif(substr($uri, 0, 1) === '/') { // domain relative url
 					$item['uri'] = $this->getDomain() . $uri;
 				} else {
 					$item['uri'] = $this->getDomain() . '/' . $uri;
