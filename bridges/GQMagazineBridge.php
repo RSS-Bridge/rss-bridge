@@ -82,7 +82,7 @@ class GQMagazineBridge extends BridgeAbstract
 
 			$item = array();
 			$author = $link->find('span[itemprop=name]', 0);
-			if($author != null) {
+			if($author !== null) {
 				$item['author'] = $author->plaintext;
 				$item['title'] = $this->findTitleOf($link);
 				if(substr($uri, 0, 1) === 'h') { // absolute uri
