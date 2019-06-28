@@ -41,8 +41,8 @@ class GQMagazineBridge extends BridgeAbstract
 	);
 
 	const POSSIBLE_TITLES = array(
-	    'h2',
-	    'h3'
+		'h2',
+		'h3'
 	);
 
 	private function getDomain() {
@@ -60,14 +60,14 @@ class GQMagazineBridge extends BridgeAbstract
 	}
 
 	private function findTitleOf($link) {
-	    foreach (self::POSSIBLE_TITLES as $tag) {
-	        $title = $link->find($tag, 0);
-	        if($title != null) {
-		        if($title->plaintext != null) {
-		            return $title->plaintext;
-		        }
-	        }
-	    }
+		foreach (self::POSSIBLE_TITLES as $tag) {
+			$title = $link->find($tag, 0);
+			if($title != null) {
+				if($title->plaintext != null) {
+					return $title->plaintext;
+				}
+			}
+		}
 	}
 
 	public function collectData()
