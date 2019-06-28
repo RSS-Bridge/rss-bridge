@@ -21,8 +21,8 @@ class WorldOfTanksBridge extends FeedExpander {
 			)
 		)
 	));
-	
-	const POSSIBLE_ARTICLES = array("article", "rich-article");
+
+	const POSSIBLE_ARTICLES = array('article', 'rich-article');
 
 	public function collectData() {
 		$this->collectExpandableDatas(sprintf('https://worldoftanks.eu/%s/rss/news/', $this->getInput('lang')));
