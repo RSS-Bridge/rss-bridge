@@ -50,22 +50,25 @@ class InternetArchiveBridge extends BridgeAbstract {
 					continue;
 				}
 
-				if ($result->class === 'item-ia') {
-					if ($this->getInput('content') === 'reviews') {
-						$item = $this->processReview($result);
-					}
-
-					if ($this->getInput('content') === 'uploads') {
-						$item = $this->processUpload($result);
-					}
-				}
-
-				if ($result->class === 'item-ia url-item') {
-					$item = $this->processWebArchives($result);
-				}
-
-				if ($result->class === 'item-ia collection-ia') {
-					$item = $this->processCollection($result);
+				switch($result->class) {
+					case 'item-ia': 
+						
+						switch($this->getInput('content')) {
+							case 'reviews': 
+								$item = $this->processReview($result);
+								break;
+							case 'uploads':
+								$item = $this->processUpload($result);
+							break;
+						}
+						
+						break;
+					case 'item-ia url-item':
+						$item = $this->processWebArchives($result);
+						break;
+					case 'item-ia collection-ia':
+						$item = $this->processCollection($result);
+						break;
 				}
 
 				if ($this->getInput('content') !== 'reviews') {
