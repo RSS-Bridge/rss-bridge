@@ -62,8 +62,8 @@ class GQMagazineBridge extends BridgeAbstract
 	private function findTitleOf($link) {
 		foreach (self::POSSIBLE_TITLES as $tag) {
 			$title = $link->find($tag, 0);
-			if($title != null) {
-				if($title->plaintext != null) {
+			if($title !== null) {
+				if($title->plaintext !== null) {
 					return $title->plaintext;
 				}
 			}
@@ -82,17 +82,19 @@ class GQMagazineBridge extends BridgeAbstract
 
 			$item = array();
 			$author = $link->find('span[itemprop=name]', 0);
-			if($author != null) {
+			if($author !== null) {
 				$item['author'] = $author->plaintext;
 				$item['title'] = $this->findTitleOf($link);
-				if(substr($uri, 0, 1) === 'h') { // absolute uri
-					$item['uri'] = $uri;
-				} else if(substr($uri, 0, 1) === '/') { // domain relative url
-					$item['uri'] = $this->getDomain() . $uri;
-				} else {
-					$item['uri'] = $this->getDomain() . '/' . $uri;
+				switch(substr($uri, 0, 1)) {
+					case 'h': // absolute uri
+						$item['uri'] = $uri;
+						break;
+					case '/': // domain relative uri
+						$item['uri'] = $this->getDomain() . $uri;
+						break;
+					default:
+						$item['uri'] = $this->getDomain() . '/' . $uri;
 				}
-
 				$article = $this->loadFullArticle($item['uri']);
 				if($article) {
 					$item['content'] = $this->replaceUriInHtmlElement($article);
