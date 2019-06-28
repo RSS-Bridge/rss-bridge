@@ -39,7 +39,7 @@ class GQMagazineBridge extends BridgeAbstract
 		'src' => 'src',
 		'data-original' => 'src'
 	);
-	
+
 	const POSSIBLE_TITLES = array(
 	    'h2',
 	    'h3'
@@ -58,17 +58,17 @@ class GQMagazineBridge extends BridgeAbstract
 	{
 		return $this->getDomain() . '/' . $this->getInput('page');
 	}
-	
+
 	private function findTitleOf($link) {
 	    foreach (self::POSSIBLE_TITLES as $tag) {
 	        $title = $link->find($tag, 0);
-	        if($title!=NULL) {
-    	        if($title->plaintext!=NULL) {
-    	            return $title->plaintext;
-    	        }
+	        if($title != null) {
+		        if($title->plaintext != null) {
+		            return $title->plaintext;
+		        }
 	        }
 	    }
-    }
+	}
 
 	public function collectData()
 	{
@@ -82,26 +82,26 @@ class GQMagazineBridge extends BridgeAbstract
 
 			$item = array();
 			$author = $link->find('span[itemprop=name]', 0);
-			if($author!=NULL) {
-    			$item['author'] = $author->plaintext;
-    			$item['title'] = $this->findTitleOf($link);
-    			if(substr($uri, 0, 1) === 'h') { // absolute uri
-    				$item['uri'] = $uri;
-    			} else if(substr($uri, 0, 1) === '/') { // domain relative url
-    				$item['uri'] = $this->getDomain() . $uri;
-    			} else {
-    				$item['uri'] = $this->getDomain() . '/' . $uri;
-    			}
-    
-    			$article = $this->loadFullArticle($item['uri']);
-    			if($article) {
-    				$item['content'] = $this->replaceUriInHtmlElement($article);
-    			} else {
-    				$item['content'] = "<strong>Article body couldn't be loaded</strong>. It must be a bug!";
-    			}
-    			$short_date = $date->datetime;
-    			$item['timestamp'] = strtotime($short_date);
-    			$this->items[] = $item;
+			if($author != null) {
+				$item['author'] = $author->plaintext;
+				$item['title'] = $this->findTitleOf($link);
+				if(substr($uri, 0, 1) === 'h') { // absolute uri
+					$item['uri'] = $uri;
+				} else if(substr($uri, 0, 1) === '/') { // domain relative url
+					$item['uri'] = $this->getDomain() . $uri;
+				} else {
+					$item['uri'] = $this->getDomain() . '/' . $uri;
+				}
+
+				$article = $this->loadFullArticle($item['uri']);
+				if($article) {
+					$item['content'] = $this->replaceUriInHtmlElement($article);
+				} else {
+					$item['content'] = "<strong>Article body couldn't be loaded</strong>. It must be a bug!";
+				}
+				$short_date = $date->datetime;
+				$item['timestamp'] = strtotime($short_date);
+				$this->items[] = $item;
 			}
 		}
 	}
@@ -113,7 +113,7 @@ class GQMagazineBridge extends BridgeAbstract
 	 */
 	private function loadFullArticle($uri){
 		$html = getSimpleHTMLDOMCached($uri);
-		return $html->find("section[data-test-id=ArticleBodyContent]", 0);
+		return $html->find('section[data-test-id=ArticleBodyContent]', 0);
 	}
 
 	/**
