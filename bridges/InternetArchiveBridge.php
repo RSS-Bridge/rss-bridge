@@ -112,7 +112,7 @@ class InternetArchiveBridge extends BridgeAbstract {
 
 	private function processUsername() {
 
-		if (substr($this->getInput('username'), 0, 1) != '@') {
+		if (substr($this->getInput('username'), 0, 1) !== '@') {
 			return '@' . $this->getInput('username');
 		}
 
