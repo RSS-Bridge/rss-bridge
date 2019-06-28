@@ -43,16 +43,15 @@ class WorldOfTanksBridge extends FeedExpander {
 		$html = getSimpleHTMLDOMCached($uri);
 
 		foreach(self::POSSIBLE_ARTICLES as $article_class) {
-    		$content = $html->find('article', 0);
-    		
-    		if($content!=NULL) {
-        		// Remove the scripts, please
-        		foreach($content->find('script') as $script) {
-        			$script->outertext = '';
-        		}
-        
-        		return $content->innertext;
-    		}
+			$content = $html->find('article', 0);
+
+			if($content != null) {
+				// Remove the scripts, please
+				foreach($content->find('script') as $script) {
+					$script->outertext = '';
+				}
+				return $content->innertext;
+			}
 		}
 		return null;
 	}
