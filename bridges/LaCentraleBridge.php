@@ -14,6 +14,8 @@ class LaCentraleBridge extends BridgeAbstract {
 				'Voiture' => 'car',
 				'Camion/Pickup' => 'truck',
 				'Moto' => 'moto',
+				'Scooter' => 'scooter',
+				'Quad' => 'quad',
 				'Caravane/Camping-car' => 'mobileHome'
 			)
 		),
@@ -40,6 +42,26 @@ class LaCentraleBridge extends BridgeAbstract {
 				'50 km' => '3',
 				'100 km' => '4',
 				'200 km' => '5'
+			)
+		),
+		'region' => array(
+			'name' => 'Région',
+			'type' => 'list',
+			'values' => array(
+				'' => '',
+				'Auvergne-Rhône-Alpes' => 'FR-ARA',
+				'Bourgogne-Franche-Comté' => 'FR-BFC',
+				'Bretagne' => 'FR-BRE',
+				'Centre-Val de Loire' => 'FR-CVL',
+				'Corse' => 'FR-COR',
+				'Grand Est' => 'FR-GES',
+				'Hauts-de-France' => 'FR-HDF',
+				'Île-de-France' => 'FR-IDF',
+				'Normandie' => 'FR-NOR',
+				'Nouvelle-Aquitaine' => 'FR-PAC',
+				'Occitanie' => 'FR-PDL',
+				'Pays de la Loire' => 'FR-OCC',
+				'Provence-Alpes-Côte d\'Azur' => 'FR-NAQ'
 			)
 		),
 		'mileagemin' => array(
@@ -78,6 +100,27 @@ class LaCentraleBridge extends BridgeAbstract {
 				'GPL' => 'gpl',
 				'Bioéthanol' => 'eth',
 				'Autre' => 'alt'
+			)
+		),
+		'gearbox' => array(
+			'name' => 'Boite de vitesse',
+			'type' => 'list',
+			'values' => array(
+				'' => '',
+				'Boite automatique' => 'AUTO',
+				'Boite mécanique' => 'MANUAL'
+			)
+		),
+		'doors' => array(
+			'name' => 'Nombre de portes',
+			'type' => 'list',
+			'values' => array(
+				'' => '',
+				'2 portes' => '2',
+				'3 portes' => '3',
+				'4 portes' => '4',
+				'5 portes' => '5',
+				'6 portes ou plus' => '6'
 			)
 		),
 		'firsthand' => array(
@@ -124,6 +167,7 @@ class LaCentraleBridge extends BridgeAbstract {
 			'priceMax' => $this->getInput('pricemax'),
 			'dptCp' => $this->getInput('location'),
 			'distance' => $this->getInput('distance'),
+			'regions' => $this->getInput('region'),
 			'mileageMin' => $this->getInput('mileagemin'),
 			'mileageMax' => $this->getInput('mileagemax'),
 			'yearMin' => $this->getInput('yearmin'),
@@ -132,6 +176,8 @@ class LaCentraleBridge extends BridgeAbstract {
 			'cubicMax' => $this->getInput('cubiccapacitymax'),
 			'energies' => $this->getInput('fuel'),
 			'firstHand' => $this->getInput('firsthand') ? 'true' : 'false',
+			'gearbox' => $this->getInput('gearbox'),
+			'doors' => $this->getInput('doors'),
 			'sortBy' => $this->getInput('sort')
 		);
 		$url = self::URI . 'listing?' . http_build_query($params);
