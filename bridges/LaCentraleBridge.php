@@ -17,6 +17,55 @@ class LaCentraleBridge extends BridgeAbstract {
 				'Caravane/Camping-car' => 'mobileHome'
 			)
 		),
+		'pricemin' => array(
+			'name' => 'Prix min',
+			'type' => 'number'
+		),
+		'pricemax' => array(
+			'name' => 'Prix max',
+			'type' => 'number'
+		),
+		'location' => array(
+			'name' => 'CP ou département',
+			'type' => 'number',
+			'title' => 'Only one'
+		),
+		'distance' => array(
+			'name' => 'Rayon de recherche',
+			'type' => 'list',
+			'values' => array(
+				'' => '',
+				'10 km' => '1',
+				'20 km' => '2',
+				'50 km' => '3',
+				'100 km' => '4',
+				'200 km' => '5'
+			)
+		),
+		'mileagemin' => array(
+			'name' => 'Kilométrage min',
+			'type' => 'number'
+		),
+		'mileagemax' => array(
+			'name' => 'Kilométrage max',
+			'type' => 'number'
+		),
+		'yearmin' => array(
+			'name' => 'Année min',
+			'type' => 'number'
+		),
+		'yearmax' => array(
+			'name' => 'Année max',
+			'type' => 'number'
+		),
+		'cubiccapacitymin' => array(
+			'name' => 'Cylindrée min',
+			'type' => 'number'
+		),
+		'cubiccapacitymax' => array(
+			'name' => 'Cylindrée max',
+			'type' => 'number'
+		),
 		'fuel' => array(
 			'name' => 'Énergie',
 			'type' => 'list',
@@ -29,6 +78,19 @@ class LaCentraleBridge extends BridgeAbstract {
 				'GPL' => 'gpl',
 				'Bioéthanol' => 'eth',
 				'Autre' => 'alt'
+			)
+		),
+		'firsthand' => array(
+			'name' => 'Première main',
+			'type' => 'checkbox'
+		),
+		'seller' => array(
+			'name' => 'Vendeur',
+			'type' => 'list',
+			'values' => array(
+				'' => '',
+				'Particulier' => 'PART',
+				'Professionel' => 'PRO'
 			)
 		),
 		'sort' => array(
@@ -50,10 +112,27 @@ class LaCentraleBridge extends BridgeAbstract {
 	));
 
 	public function collectData(){
+		// check data
+		if(!empty($this->getInput('distance'))
+		&& is_null($this->getInput('location'))) {
+			returnClientError('You need a place ("CP ou département") to search arround.');
+		}
+
 		$params = array(
 			'vertical' => $this->getInput('type'),
+			'priceMin' => $this->getInput('pricemin'),
+			'priceMax' => $this->getInput('pricemax'),
+			'dptCp' => $this->getInput('location'),
+			'distance' => $this->getInput('distance'),
+			'mileageMin' => $this->getInput('mileagemin'),
+			'mileageMax' => $this->getInput('mileagemax'),
+			'yearMin' => $this->getInput('yearmin'),
+			'yearMax' => $this->getInput('yearmax'),
+			'cubicMin' => $this->getInput('cubiccapacitymin'),
+			'cubicMax' => $this->getInput('cubiccapacitymax'),
 			'energies' => $this->getInput('fuel'),
-			'sortBy' => $this->getInput('sort'),
+			'firstHand' => $this->getInput('firsthand') ? 'true' : 'false',
+			'sortBy' => $this->getInput('sort')
 		);
 		$url = self::URI . 'listing?' . http_build_query($params);
 		$html = getSimpleHTMLDOM($url)
