@@ -7,20 +7,55 @@ class LaCentraleBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns most recent vehicules ads from LaCentrale';
 
 	const PARAMETERS = array( array(
-			'vertical' => array(
-				'name' => 'Type de véhicule',
-				'type' => 'list',
-				'values' => array(
-					'Voiture' => 'car',
-					'Camion/Pickup' => 'truck',
-					'Moto' => 'moto',
-					'Caravane/Camping-car' => 'mobileHome'
-				)
-			),
+		'type' => array(
+			'name' => 'Type de véhicule',
+			'type' => 'list',
+			'values' => array(
+				'Voiture' => 'car',
+				'Camion/Pickup' => 'truck',
+				'Moto' => 'moto',
+				'Caravane/Camping-car' => 'mobileHome'
+			)
+		),
+		'fuel' => array(
+			'name' => 'Énergie',
+			'type' => 'list',
+			'values' => array(
+				'' => '',
+				'Diesel' => 'dies',
+				'Essence' => 'ess',
+				'Électrique' => 'elec',
+				'Hybride' => 'hyb',
+				'GPL' => 'gpl',
+				'Bioéthanol' => 'eth',
+				'Autre' => 'alt'
+			)
+		),
+		'sort' => array(
+			'name' => 'Tri',
+			'type' => 'list',
+			'values' => array(
+				'Prix (croissant)' => 'priceAsc',
+				'Prix (décroissant)' => 'priceDesc',
+				'Marque (croissant)' => 'makeAsc',
+				'Marque (décroissant)' => 'makeDesc',
+				'Kilométrage (croissant)' => 'mileageAsc',
+				'Kilométrage (décroissant)' => 'mileageDesc',
+				'Année (croissant)' => 'yearAsc',
+				'Année (décroissant)' => 'yearDesc',
+				'Département (croissant)' => 'visitPlaceAsc',
+				'Département (décroissant)' => 'visitPlaceDesc'
+			)
+		),
 	));
 
 	public function collectData(){
-		$url = self::URI . 'listing?vertical=moto';
+		$params = array(
+			'vertical' => $this->getInput('type'),
+			'energies' => $this->getInput('fuel'),
+			'sortBy' => $this->getInput('sort'),
+		);
+		$url = self::URI . 'listing?' . http_build_query($params);
 		$html = getSimpleHTMLDOM($url)
 			or returnServerError('Could not request LaCentrale.');
 
