@@ -98,6 +98,10 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 			$item['content'] = $breach['content'];
 
 			$this->items[] = $item;
+			
+			if (count($this->items) >= 20) {
+				break;
+			}
 		}
 	}
 }
