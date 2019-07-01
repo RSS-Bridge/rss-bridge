@@ -2,7 +2,7 @@
 class TelegramBridge extends BridgeAbstract {
 	const NAME = 'Telegram Bridge';
 	const URI = 'https://t.me';
-	const DESCRIPTION = 'Returns newest post from a public Telegram channel';
+	const DESCRIPTION = 'Returns newest posts from a public Telegram channel';
 	const MAINTAINER = 'VerifiedJoseph';
 	const PARAMETERS = array(array(
 			'username' => array(
