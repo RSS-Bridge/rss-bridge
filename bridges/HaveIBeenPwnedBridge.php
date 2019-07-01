@@ -58,9 +58,9 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 			$item['breachDate'] = strtotime($breachDate[1]);
 			$item['uri'] = self::URI . '/PwnedWebsites' . $permalink;
 
-			$item['content'] = '<p>' . $breach->find('p', 0)->innertext . '<p>';
-			$item['content'] .= $this->breachType($breach);
-			$item['content'] .= '<p>' . $breach->find('p', 1)->innertext . '<p>';
+			$item['content'] = '<p>' . $breach->find('p', 0)->innertext . '</p>';
+			$item['content'] .= '<p>' . $this->breachType($breach) . '</p>';
+			$item['content'] .= '<p>' . $breach->find('p', 1)->innertext . '</p>';
 
 			$this->breaches[] = $item;
 		}
