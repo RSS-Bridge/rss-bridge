@@ -69,7 +69,6 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 		$this->createItems();
 	}
 
-	
 	/**
 	 * Extract data breach type(s)
 	 */
@@ -78,17 +77,17 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 		$content = '';
 
 		if ($breach->find('h3 > i', 0)) {
-	
+
 			foreach ($breach->find('h3 > i') as $i) {
 				$content .= $i->title . '.<br>';
 			}
-	
+
 		}
 
 		return $content;
 
 	}
-	
+
 	/**
 	 * Order Breaches by date added or date breached
 	 */
