@@ -4,6 +4,28 @@ class ShanaprojectBridge extends BridgeAbstract {
 	const NAME = 'Shanaproject Bridge';
 	const URI = 'https://www.shanaproject.com';
 	const DESCRIPTION = 'Returns a list of anime from the current Season Anime List';
+	const PARAMETERS = array(
+		array(
+			'min_episodes' => array(
+				'name' => 'Minimum Episodes',
+				'type' => 'number',
+				'title' => 'Minimum number of episodes before including in feed',
+				'defaultValue' => 0,
+			),
+			'min_total_episodes' => array(
+				'name' => 'Minimum Total Episodes',
+				'type' => 'number',
+				'title' => 'Minimum total number of episodes before including in feed',
+				'defaultValue' => 0,
+			),
+			'require_banner' => array(
+				'name' => 'Require Banner',
+				'type' => 'checkbox',
+				'title' => 'Only include anime with custom banner image',
+				'defaultValue' => false,
+			),
+		),
+	);
 
 	private $uri;
 
@@ -17,14 +39,41 @@ class ShanaprojectBridge extends BridgeAbstract {
 		$animes = $html->find('div.header_display_box_info')
 			or returnServerError('Could not find anime headers!');
 
+		$min_episodes = $this->getInput('min_episodes') ?: 0;
+		$min_total_episodes = $this->getInput('min_total_episodes') ?: 0;
+
 		foreach($animes as $anime) {
+
+			list(
+				$episodes_released,
+				/* of */,
+				$episodes_total
+			) = explode(' ', $this->extractAnimeEpisodeInformation($anime));
+
+			// Skip if not enough episodes yet
+			if ($episodes_released < $min_episodes) {
+				continue;
+			}
+
+			// Skip if too many episodes in total
+			if ($episodes_total !== '?' && $episodes_total < $min_total_episodes) {
+				continue;
+			}
+
+			// Skip if https://static.shanaproject.com/no-art.jpg
+			if ($this->getInput('require_banner')
+			&& strpos($this->extractAnimeBackgroundImage($anime), 'no-art') !== false) {
+				continue;
+			}
+
 			$this->items[] = array(
 				'title' => $this->extractAnimeTitle($anime),
-				'author' => $this->extractAnimeTitle($anime),
+				'author' => $this->extractAnimeAuthor($anime),
 				'uri' => $this->extractAnimeUri($anime),
 				'timestamp' => $this->extractAnimeTimestamp($anime),
 				'content' => $this->buildAnimeContent($anime),
 			);
+
 		}
 	}
 
@@ -94,7 +143,11 @@ class ShanaprojectBridge extends BridgeAbstract {
 	private function extractAnimeEpisodeInformation($anime){
 		$episode = $anime->find('div.header_info_episode', 0)
 			or returnServerError('Could not find anime episode information!');
-		return preg_replace('/\r|\n/', ' ', $episode->plaintext);
+
+		$retVal = preg_replace('/\r|\n/', ' ', $episode->plaintext);
+		$retVal = preg_replace('/\s+/', ' ', $retVal);
+
+		return $retVal;
 	}
 
 	// Extracts the background image
