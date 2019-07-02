@@ -5,6 +5,12 @@ class ShanaprojectBridge extends BridgeAbstract {
 	const URI = 'https://www.shanaproject.com';
 	const DESCRIPTION = 'Returns a list of anime from the current Season Anime List';
 
+	private $uri;
+
+	public function getURI() {
+		return isset($this->uri) ? $this->uri : parent::getURI();
+	}
+
 	public function collectData(){
 		$html = $this->loadSeasonAnimeList();
 
@@ -39,6 +45,8 @@ class ShanaprojectBridge extends BridgeAbstract {
 				. $season->innertext
 				. '\'!'
 			);
+
+		$this->uri = $season->href;
 
 		$html = defaultLinkTo($html, $season->href);
 
