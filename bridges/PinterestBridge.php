@@ -23,17 +23,9 @@ class PinterestBridge extends FeedExpander {
 		return 'https://s.pinimg.com/webapp/style/images/favicon-9f8f9adf.png';
 	}
 
-	public function collectData(){
-		switch($this->queriedContext) {
-			case 'By username and board':
-				$this->collectExpandableDatas($this->getURI() . '.rss');
-				$this->fixLowRes();
-				break;
-			case 'From search':
-			default:
-				$html = getSimpleHTMLDOMCached($this->getURI());
-				$this->getSearchResults($html);
-		}
+	public function collectData() {
+		$this->collectExpandableDatas($this->getURI());
+		$this->fixLowRes();
 	}
 
 	private function fixLowRes() {
