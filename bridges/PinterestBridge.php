@@ -41,7 +41,7 @@ class PinterestBridge extends FeedExpander {
 
 	}
 
-	public function getURI(){
+	public function getURI() {
 
 		if ($this->queriedContext === 'By username and board') {
 			return self::URI . '/' . urlencode($this->getInput('u')) . '/' . urlencode($this->getInput('b')) . '.rss';
