@@ -50,28 +50,20 @@ class PinterestBridge extends FeedExpander {
 	}
 
 	public function getURI(){
-		switch($this->queriedContext) {
-		case 'By username and board':
-			$uri = self::URI . '/' . urlencode($this->getInput('u')) . '/' . urlencode($this->getInput('b'));// . '.rss';
-			break;
-		case 'From search':
-			$uri = self::URI . '/search/?q=' . urlencode($this->getInput('q'));
-			break;
-		default: return parent::getURI();
+
+		if ($this->queriedContext === 'By username and board') {
+			return self::URI . '/' . urlencode($this->getInput('u')) . '/' . urlencode($this->getInput('b')) . '.rss';
 		}
-		return $uri;
+
+		return parent::getURI();
 	}
 
-	public function getName(){
-		switch($this->queriedContext) {
-		case 'By username and board':
-			$specific = $this->getInput('u') . ' - ' . $this->getInput('b');
-		break;
-		case 'From search':
-			$specific = $this->getInput('q');
-		break;
-		default: return parent::getName();
+	public function getName() {
+		
+		if ($this->queriedContext === 'By username and board') {
+			return $this->getInput('u') . ' - ' . $this->getInput('b') . ' - ' . self::NAME;
 		}
-		return $specific . ' - ' . self::NAME;
+		
+		return parent::getName();
 	}
 }
