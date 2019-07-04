@@ -51,11 +51,11 @@ class PinterestBridge extends FeedExpander {
 	}
 
 	public function getName() {
-		
+
 		if ($this->queriedContext === 'By username and board') {
 			return $this->getInput('u') . ' - ' . $this->getInput('b') . ' - ' . self::NAME;
 		}
-		
+
 		return parent::getName();
 	}
 }
