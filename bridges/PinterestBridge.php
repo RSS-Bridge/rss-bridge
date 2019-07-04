@@ -16,12 +16,6 @@ class PinterestBridge extends FeedExpander {
 				'name' => 'board',
 				'required' => true
 			)
-		),
-		'From search' => array(
-			'q' => array(
-				'name' => 'Keyword',
-				'required' => true
-			)
 		)
 	);
 
