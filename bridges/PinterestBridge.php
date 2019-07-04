@@ -24,7 +24,7 @@ class PinterestBridge extends FeedExpander {
 	}
 
 	public function collectData() {
-		$this->collectExpandableDatas($this->getURI());
+		$this->collectExpandableDatas($this->getURI() . '.rss');
 		$this->fixLowRes();
 	}
 
@@ -44,7 +44,7 @@ class PinterestBridge extends FeedExpander {
 	public function getURI() {
 
 		if ($this->queriedContext === 'By username and board') {
-			return self::URI . '/' . urlencode($this->getInput('u')) . '/' . urlencode($this->getInput('b')) . '.rss';
+			return self::URI . '/' . urlencode($this->getInput('u')) . '/' . urlencode($this->getInput('b'));
 		}
 
 		return parent::getURI();
