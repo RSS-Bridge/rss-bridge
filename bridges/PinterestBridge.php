@@ -55,48 +55,6 @@ class PinterestBridge extends FeedExpander {
 
 	}
 
-	private function getSearchResults($html){
-		$json = json_decode($html->find('#jsInit1', 0)->innertext, true);
-		$results = $json['resourceDataCache'][0]['data']['results'];
-
-		foreach($results as $result) {
-			$item = array();
-
-			$item['uri'] = self::URI . $result['board']['url'];
-
-			// Some use regular titles, others provide 'advanced' infos, a few
-			// provide even less info. Thus we attempt multiple options.
-			$item['title'] = trim($result['title']);
-
-			if($item['title'] === '')
-				$item['title'] = trim($result['rich_summary']['display_name']);
-
-			if($item['title'] === '')
-				$item['title'] = trim($result['grid_description']);
-
-			$item['timestamp'] = strtotime($result['created_at']);
-			$item['username'] = $result['pinner']['username'];
-			$item['fullname'] = $result['pinner']['full_name'];
-			$item['avatar'] = $result['pinner']['image_small_url'];
-			$item['author'] = $item['username'] . ' (' . $item['fullname'] . ')';
-			$item['content'] = '<img align="left" style="margin: 2px 4px;" src="'
-				. htmlentities($item['avatar'])
-				. '" /><p><strong>'
-				. $item['username']
-				. '</strong><br>'
-				. $item['fullname']
-				. '</p><br><img src="'
-				. $result['images']['736x']['url']
-				. '" alt="" /><br><p>'
-				. $result['description']
-				. '</p>';
-
-			$item['enclosures'] = array($result['images']['orig']['url']);
-
-			$this->items[] = $item;
-		}
-	}
-
 	public function getURI(){
 		switch($this->queriedContext) {
 		case 'By username and board':
