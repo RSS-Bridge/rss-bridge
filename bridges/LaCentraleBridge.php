@@ -461,15 +461,14 @@ class LaCentraleBridge extends BridgeAbstract {
 			$item['thumbnail'] = $element->find('.imgContent img', 0)->src;
 			$item['enclosures'] = array($item['thumbnail']);
 
-			$item['content'] = ''
-			. '<img src="' . $item['thumbnail'] . '">'
-			. '<br>Variation : ' . $item['version']
+			$item['content'] = '
+			<img src="' . $item['thumbnail'] . '">
+			<br>Variation : ' . $item['version']
 			. '<br>Prix : ' . $item['price']
 			. '<br>Année : ' . $item['year']
 			. '<br>Kilométrage : ' . $item['mileage']
 			. '<br>Département : ' . $item['departement']
-			. '<br>Type de vendeur : ' . $item['sellerType']
-			;
+			. '<br>Type de vendeur : ' . $item['sellerType'];
 
 			$this->items[] = $item;
 
