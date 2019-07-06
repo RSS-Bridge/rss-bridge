@@ -58,14 +58,34 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 			$item['breachDate'] = strtotime($breachDate[1]);
 			$item['uri'] = self::URI . '/PwnedWebsites' . $permalink;
 
-			$item['content'] = '<p>' . $breach->find('p', 0)->innertext . '<p>';
-			$item['content'] .= '<p>' . $breach->find('p', 1)->innertext . '<p>';
+			$item['content'] = '<p>' . $breach->find('p', 0)->innertext . '</p>';
+			$item['content'] .= '<p>' . $this->breachType($breach) . '</p>';
+			$item['content'] .= '<p>' . $breach->find('p', 1)->innertext . '</p>';
 
 			$this->breaches[] = $item;
 		}
 
 		$this->orderBreaches();
 		$this->createItems();
+	}
+
+	/**
+	 * Extract data breach type(s)
+	 */
+	private function breachType($breach) {
+
+		$content = '';
+
+		if ($breach->find('h3 > i', 0)) {
+
+			foreach ($breach->find('h3 > i') as $i) {
+				$content .= $i->title . '.<br>';
+			}
+
+		}
+
+		return $content;
+
 	}
 
 	/**
