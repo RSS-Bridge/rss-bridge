@@ -127,7 +127,7 @@ class XenForoBridge extends BridgeAbstract {
 		switch($this->version) {
 			case self::XENFORO_VERSION_1:
 
-				$titleBar = $mainContent->find('div.titleBar h1', 0)
+				$titleBar = $mainContent->find('div.titleBar > h1', 0)
 					or returnServerError('Error finding title bar!');
 
 				$this->title = $titleBar->plaintext;
@@ -166,7 +166,7 @@ class XenForoBridge extends BridgeAbstract {
 		$lang = $html->find('html', 0)->lang;
 
 		// Posts are contained in an "ol"
-		$messageList = $html->find('#messageList li')
+		$messageList = $html->find('#messageList > li')
 			or returnServerError('Error finding message list!');
 
 		foreach($messageList as $post) {
@@ -179,7 +179,7 @@ class XenForoBridge extends BridgeAbstract {
 
 			$item['uri'] = $url . '#' . $post->getAttribute('id');
 
-			$content = $post->find('.messageContent article', 0);
+			$content = $post->find('.messageContent > article', 0);
 
 			// Add some style to quotes
 			foreach($content->find('.bbCodeQuote') as $quote) {
@@ -343,7 +343,7 @@ class XenForoBridge extends BridgeAbstract {
 			}
 
 			// Manually extract baseurl and inject sentinel
-			$baseurl = $pageNav->find('li a', -1)->href;
+			$baseurl = $pageNav->find('li > a', -1)->href;
 			$baseurl = str_replace('page-' . $lastpage, 'page-{{sentinel}}', $baseurl);
 
 			$sentinel = '{{sentinel}}';

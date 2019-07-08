@@ -2,7 +2,7 @@
 class TelegramBridge extends BridgeAbstract {
 	const NAME = 'Telegram Bridge';
 	const URI = 'https://t.me';
-	const DESCRIPTION = 'Returns newest post from a public Telegram channel';
+	const DESCRIPTION = 'Returns newest posts from a public Telegram channel';
 	const MAINTAINER = 'VerifiedJoseph';
 	const PARAMETERS = array(array(
 			'username' => array(
@@ -224,7 +224,11 @@ EOD;
 			$this->itemTitle = '@' . $this->processUsername() . ' posted a video';
 		}
 
-		preg_match($this->backgroundImageRegex, $messageDiv->find('i.tgme_widget_message_video_thumb', 0)->style, $photo);
+		if ($messageDiv->find('i.tgme_widget_message_video_thumb')) {
+			preg_match($this->backgroundImageRegex, $messageDiv->find('i.tgme_widget_message_video_thumb', 0)->style, $photo);
+		} elseif ($messageDiv->find('i.link_preview_video_thumb')) {
+			preg_match($this->backgroundImageRegex, $messageDiv->find('i.link_preview_video_thumb', 0)->style, $photo);
+		}
 
 		$this->enclosures[] = $photo[1];
 
@@ -261,7 +265,11 @@ EOD;
 			$this->itemTitle = '@' . $this->processUsername() . ' posted a video';
 		}
 
-		preg_match($this->backgroundImageRegex, $messageDiv->find('i.tgme_widget_message_video_thumb', 0)->style, $photo);
+		if ($messageDiv->find('i.tgme_widget_message_video_thumb')) {
+			preg_match($this->backgroundImageRegex, $messageDiv->find('i.tgme_widget_message_video_thumb', 0)->style, $photo);
+		} elseif ($messageDiv->find('i.link_preview_video_thumb')) {
+			preg_match($this->backgroundImageRegex, $messageDiv->find('i.link_preview_video_thumb', 0)->style, $photo);
+		}
 
 		$this->enclosures[] = $photo[1];
 
