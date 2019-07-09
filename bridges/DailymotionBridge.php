@@ -82,22 +82,22 @@ class DailymotionBridge extends BridgeAbstract {
 				$this->items[] = $item;
 			}
 		}
-		
+
 		if ($this->queriedContext === 'From search results') {
-		
+
 			$html = getSimpleHTMLDOM($this->getURI())
 				or returnServerError('Could not request Dailymotion.');
 
 			foreach($html->find('div.media a.preview_link') as $element) {
 				$item = array();
-				
+
 				$item['id'] = str_replace('/video/', '', strtok($element->href, '_'));
 				$metadata = $this->getMetadata($item['id']);
-				
+
 				if(empty($metadata)) {
 					continue;
 				}
-				
+
 				$item['uri'] = $metadata['uri'];
 				$item['title'] = $metadata['title'];
 				$item['timestamp'] = $metadata['timestamp'];
@@ -117,7 +117,7 @@ class DailymotionBridge extends BridgeAbstract {
 				if (count($this->items) >= 5) {
 					break;
 				}
-			}	
+			}
 		}
 	}
 
@@ -149,7 +149,7 @@ class DailymotionBridge extends BridgeAbstract {
 			break;
 		case 'From search results':
 			$uri .= 'search/' . urlencode($this->getInput('s'));
-				
+
 			if(!is_null($this->getInput('pa'))) {
 				$pa = $this->getInput('pa');
 
@@ -164,16 +164,16 @@ class DailymotionBridge extends BridgeAbstract {
 		}
 		return $uri;
 	}
-	
+
 	private function getApiUrl() {
 
 		switch($this->queriedContext) {
 			case 'By username':
-				return $this->apiUrl . '/user/' . $this->getInput('u') 
+				return $this->apiUrl . '/user/' . $this->getInput('u')
 					. '/videos?fields=' . urlencode($this->apiFields) . '&availability=1&sort=recent&limit=5';
 				break;
 			case 'By playlist id':
-				return $this->apiUrl . '/playlist/' . $this->getInput('p') 
+				return $this->apiUrl . '/playlist/' . $this->getInput('p')
 					. '/videos?fields=' . urlencode($this->apiFields) . '&limit=5';
 				break;
 		}
