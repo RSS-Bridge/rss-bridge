@@ -27,7 +27,8 @@ class DailymotionBridge extends BridgeAbstract {
 			),
 			'pa' => array(
 				'name' => 'Page',
-				'type' => 'number'
+				'type' => 'number',
+				'defaultValue' => 1,
 			)
 		)
 	);
