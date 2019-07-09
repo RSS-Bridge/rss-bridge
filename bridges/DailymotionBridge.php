@@ -57,7 +57,6 @@ class DailymotionBridge extends BridgeAbstract {
 	}
 
 	public function collectData() {
-		$html = '';
 
 		if ($this->queriedContext === 'By username' || $this->queriedContext === 'By playlist id') {
 
