@@ -55,6 +55,7 @@ class DailymotionBridge extends BridgeAbstract {
 		return 'https://static1-ssl.dmcdn.net/images/neon/favicons/android-icon-36x36.png.vf806ca4ed0deed812';
 	}
 
+	public function collectData() {
 		$html = '';
 		$limit = 5;
 		$count = 0;
@@ -117,7 +118,7 @@ class DailymotionBridge extends BridgeAbstract {
 		}
 	}
 
-	public function getName(){
+	public function getName() {
 		switch($this->queriedContext) {
 		case 'By username':
 			$specific = $this->getInput('u');
@@ -131,7 +132,7 @@ class DailymotionBridge extends BridgeAbstract {
 		default: return parent::getName();
 		}
 
-		return $specific . ' : Dailymotion Bridge';
+		return $specific . ' : Dailymotion';
 	}
 
 	public function getURI(){
