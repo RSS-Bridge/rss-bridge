@@ -58,8 +58,6 @@ class DailymotionBridge extends BridgeAbstract {
 
 	public function collectData() {
 		$html = '';
-		$limit = 5;
-		$count = 0;
 
 		if ($this->queriedContext === 'By username' || $this->queriedContext === 'By playlist id') {
 
@@ -91,18 +89,20 @@ class DailymotionBridge extends BridgeAbstract {
 				or returnServerError('Could not request Dailymotion.');
 
 			foreach($html->find('div.media a.preview_link') as $element) {
-				if($count < $limit) {
-					$item = array();
-					$item['id'] = str_replace('/video/', '', strtok($element->href, '_'));
-					$metadata = $this->getMetadata($item['id']);
-					if(empty($metadata)) {
-						continue;
-					}
-					$item['uri'] = $metadata['uri'];
-					$item['title'] = $metadata['title'];
-					$item['timestamp'] = $metadata['timestamp'];
+				$item = array();
+				
+				$item['id'] = str_replace('/video/', '', strtok($element->href, '_'));
+				$metadata = $this->getMetadata($item['id']);
+				
+				if(empty($metadata)) {
+					continue;
+				}
+				
+				$item['uri'] = $metadata['uri'];
+				$item['title'] = $metadata['title'];
+				$item['timestamp'] = $metadata['timestamp'];
 
-					$item['content'] = '<a href="'
+				$item['content'] = '<a href="'
 					. $item['uri']
 					. '"><img src="'
 					. $metadata['thumbnailUri']
@@ -112,8 +112,10 @@ class DailymotionBridge extends BridgeAbstract {
 					. $item['title']
 					. '</a>';
 
-					$this->items[] = $item;
-					$count++;
+				$this->items[] = $item;
+
+				if (count($this->items) >= 5) {
+					break;
 				}
 			}	
 		}
