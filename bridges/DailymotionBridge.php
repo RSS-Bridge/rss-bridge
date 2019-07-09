@@ -55,39 +55,65 @@ class DailymotionBridge extends BridgeAbstract {
 		return 'https://static1-ssl.dmcdn.net/images/neon/favicons/android-icon-36x36.png.vf806ca4ed0deed812';
 	}
 
-	public function collectData(){
 		$html = '';
 		$limit = 5;
 		$count = 0;
 
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request Dailymotion.');
+		if ($this->queriedContext === 'By username' || $this->queriedContext === 'By playlist id') {
 
-		foreach($html->find('div.media a.preview_link') as $element) {
-			if($count < $limit) {
+			$apiJson = getContents($this->getApiUrl())
+				or returnServerError('Could not request: ' . $this->getApiUrl());
+
+			$apiData = json_decode($apiJson, true);
+
+			foreach ($apiData['list'] as $apiItem) {
 				$item = array();
-				$item['id'] = str_replace('/video/', '', strtok($element->href, '_'));
-				$metadata = $this->getMetadata($item['id']);
-				if(empty($metadata)) {
-					continue;
-				}
-				$item['uri'] = $metadata['uri'];
-				$item['title'] = $metadata['title'];
-				$item['timestamp'] = $metadata['timestamp'];
 
-				$item['content'] = '<a href="'
-				. $item['uri']
-				. '"><img src="'
-				. $metadata['thumbnailUri']
-				. '" /></a><br><a href="'
-				. $item['uri']
-				. '">'
-				. $item['title']
-				. '</a>';
+				$item['uri'] = $apiItem['url'];
+				$item['uid'] = $apiItem['id'];
+				$item['title'] = $apiItem['title'];
+				$item['timestamp'] = $apiItem['created_time'];
+				$item['author'] = $apiItem['owner.screenname'];
+				$item['content'] = '<p><a href="' . $apiItem['url'] . '">
+					<img src="' . $apiItem['thumbnail_url'] . '"></a></p><p>' . $apiItem['description'] . '</p>';
+				$item['categories'] = $apiItem['tags'];
+				$item['enclosures'][] = $apiItem['thumbnail_url'];
 
 				$this->items[] = $item;
-				$count++;
 			}
+		}
+		
+		if ($this->queriedContext === 'From search results') {
+		
+			$html = getSimpleHTMLDOM($this->getURI())
+				or returnServerError('Could not request Dailymotion.');
+
+			foreach($html->find('div.media a.preview_link') as $element) {
+				if($count < $limit) {
+					$item = array();
+					$item['id'] = str_replace('/video/', '', strtok($element->href, '_'));
+					$metadata = $this->getMetadata($item['id']);
+					if(empty($metadata)) {
+						continue;
+					}
+					$item['uri'] = $metadata['uri'];
+					$item['title'] = $metadata['title'];
+					$item['timestamp'] = $metadata['timestamp'];
+
+					$item['content'] = '<a href="'
+					. $item['uri']
+					. '"><img src="'
+					. $metadata['thumbnailUri']
+					. '" /></a><br><a href="'
+					. $item['uri']
+					. '">'
+					. $item['title']
+					. '</a>';
+
+					$this->items[] = $item;
+					$count++;
+				}
+			}	
 		}
 	}
 
