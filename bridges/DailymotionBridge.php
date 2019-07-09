@@ -142,7 +142,7 @@ class DailymotionBridge extends BridgeAbstract {
 		$uri = self::URI;
 		switch($this->queriedContext) {
 		case 'By username':
-			$uri .= 'user/' . urlencode($this->getInput('u')) . '/1';
+			$uri .= 'user/' . urlencode($this->getInput('u'));
 			break;
 		case 'By playlist id':
 			$uri .= 'playlist/' . urlencode(strtok($this->getInput('p'), '_'));
