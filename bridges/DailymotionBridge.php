@@ -32,6 +32,9 @@ class DailymotionBridge extends BridgeAbstract {
 		)
 	);
 
+	private $apiUrl = 'https://api.dailymotion.com';
+	private $apiFields = 'created_time,description,id,owner.screenname,tags,thumbnail_url,title,url';
+
 	protected function getMetadata($id){
 		$metadata = array();
 		$html2 = getSimpleHTMLDOM(self::URI . 'video/' . $id);
@@ -123,5 +126,19 @@ class DailymotionBridge extends BridgeAbstract {
 		default: return parent::getURI();
 		}
 		return $uri;
+	}
+	
+	private function getApiUrl() {
+
+		switch($this->queriedContext) {
+			case 'By username':
+				return $this->apiUrl . '/user/' . $this->getInput('u') 
+					. '/videos?fields=' . urlencode($this->apiFields) . '&availability=1&sort=recent&limit=5';
+				break;
+			case 'By playlist id':
+				return $this->apiUrl . '/playlist/' . $this->getInput('p') 
+					. '/videos?fields=' . urlencode($this->apiFields) . '&limit=5';
+				break;
+		}
 	}
 }
