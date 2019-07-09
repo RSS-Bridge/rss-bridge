@@ -147,8 +147,15 @@ class DailymotionBridge extends BridgeAbstract {
 			break;
 		case 'From search results':
 			$uri .= 'search/' . urlencode($this->getInput('s'));
-			if($this->getInput('pa')) {
-				$uri .= '/' . $this->getInput('pa');
+				
+			if(!is_null($this->getInput('pa'))) {
+				$pa = $this->getInput('pa');
+
+				if ($this->getInput('pa') < 1) {
+					$pa = 1;
+				}
+
+				$uri .= '/' . $pa;
 			}
 			break;
 		default: return parent::getURI();
