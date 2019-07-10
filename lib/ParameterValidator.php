@@ -191,6 +191,10 @@ class ParameterValidator {
 		foreach($parameters as $context => $set) {
 			$queriedContexts[$context] = null;
 
+			// Ensure all user data exist in the context
+			if(sizeof(array_diff_key($data, $set)) > 0)
+				continue;
+
 			// Check if all parameters of the context are satisfied
 			foreach($set as $id => $properties) {
 				if(isset($data[$id]) && !empty($data[$id])) {
