@@ -36,19 +36,21 @@ class DailymotionBridge extends BridgeAbstract {
 	private $apiUrl = 'https://api.dailymotion.com';
 	private $apiFields = 'created_time,description,id,owner.screenname,tags,thumbnail_url,title,url';
 
-	protected function getMetadata($id){
+	protected function getMetadata($id) {
 		$metadata = array();
-		$html2 = getSimpleHTMLDOM(self::URI . 'video/' . $id);
-		if(!$html2) {
+
+		$html = getSimpleHTMLDOM(self::URI . 'video/' . $id);
+
+		if(!$html) {
 			return $metadata;
 		}
 
-		$metadata['title'] = $html2->find('meta[property=og:title]', 0)->getAttribute('content');
+		$metadata['title'] = $html->find('meta[property=og:title]', 0)->getAttribute('content');
 		$metadata['timestamp'] = strtotime(
-			$html2->find('meta[property=video:release_date]', 0)->getAttribute('content')
+			$html->find('meta[property=video:release_date]', 0)->getAttribute('content')
 		);
-		$metadata['thumbnailUri'] = $html2->find('meta[property=og:image]', 0)->getAttribute('content');
-		$metadata['uri'] = $html2->find('meta[property=og:url]', 0)->getAttribute('content');
+		$metadata['thumbnailUri'] = $html->find('meta[property=og:image]', 0)->getAttribute('content');
+		$metadata['uri'] = $html->find('meta[property=og:url]', 0)->getAttribute('content');
 		return $metadata;
 	}
 
