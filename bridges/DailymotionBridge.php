@@ -33,6 +33,8 @@ class DailymotionBridge extends BridgeAbstract {
 		)
 	);
 
+	private $feedName = '';
+
 	private $apiUrl = 'https://api.dailymotion.com';
 	private $apiFields = 'created_time,description,id,owner.screenname,tags,thumbnail_url,title,url';
 
@@ -48,6 +50,8 @@ class DailymotionBridge extends BridgeAbstract {
 				or returnServerError('Could not request: ' . $this->getApiUrl());
 
 			$apiData = json_decode($apiJson, true);
+
+			$this->feedName = $this->getPlaylistTitle($this->getInput('p'));
 
 			foreach ($apiData['list'] as $apiItem) {
 				$item = array();
@@ -111,6 +115,11 @@ class DailymotionBridge extends BridgeAbstract {
 			break;
 		case 'By playlist id':
 			$specific = strtok($this->getInput('p'), '_');
+
+			if ($this->feedName) {
+				$specific = $this->feedName;
+			}
+
 			break;
 		case 'From search results':
 			$specific = $this->getInput('s');
@@ -165,7 +174,19 @@ class DailymotionBridge extends BridgeAbstract {
 		$metadata['uri'] = $html->find('meta[property=og:url]', 0)->getAttribute('content');
 		return $metadata;
 	}
-	
+
+	private function getPlaylistTitle($id) {
+		$title = '';
+
+		$url = self::URI . 'playlist/' . $id;
+
+		$html = getSimpleHTMLDOM($url)
+			or returnServerError('Could not request: ' . $url);
+
+		$title = $html->find('meta[property=og:title]', 0)->getAttribute('content');
+		return $title;
+	}
+
 	private function getApiUrl() {
 
 		switch($this->queriedContext) {
