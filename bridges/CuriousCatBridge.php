@@ -2,7 +2,7 @@
 class CuriousCatBridge extends BridgeAbstract {
 	const NAME = 'Curious Cat Bridge';
 	const URI = 'https://curiouscat.me';
-	const DESCRIPTION = 'Returns list of newest answers';
+	const DESCRIPTION = 'Returns list of newest questions and answers for a user profile';
 	const MAINTAINER = 'VerifiedJoseph';
 	const PARAMETERS = array(array(
 		'username' => array(
