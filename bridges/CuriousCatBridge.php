@@ -108,7 +108,11 @@ EOD;
 					continue;
 				}
 
-				$content = str_replace($match[0], '<a target="_blank" href="' . $match[0] . '">' . $match[0] . '</a>', $content);
+				$link = <<<EOD
+<a target="_blank" href="{$match[0]}">{$match[0]}</a>
+EOD;
+
+				$content = str_replace($match[0], $link, $content);
 			}
 		}
 
