@@ -80,7 +80,7 @@ EOD;
 
 		$content = <<<EOD
 <p>{$author} asked:</p>
-<blockquote>{$question}</blockquote>
+<blockquote>{$question}</blockquote><br/>
 <p>{$post['addresseeData']['username']} answered:</p>
 <blockquote>{$answer}</blockquote>
 EOD;
