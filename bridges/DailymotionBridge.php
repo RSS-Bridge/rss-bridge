@@ -36,24 +36,6 @@ class DailymotionBridge extends BridgeAbstract {
 	private $apiUrl = 'https://api.dailymotion.com';
 	private $apiFields = 'created_time,description,id,owner.screenname,tags,thumbnail_url,title,url';
 
-	protected function getMetadata($id) {
-		$metadata = array();
-
-		$html = getSimpleHTMLDOM(self::URI . 'video/' . $id);
-
-		if(!$html) {
-			return $metadata;
-		}
-
-		$metadata['title'] = $html->find('meta[property=og:title]', 0)->getAttribute('content');
-		$metadata['timestamp'] = strtotime(
-			$html->find('meta[property=video:release_date]', 0)->getAttribute('content')
-		);
-		$metadata['thumbnailUri'] = $html->find('meta[property=og:image]', 0)->getAttribute('content');
-		$metadata['uri'] = $html->find('meta[property=og:url]', 0)->getAttribute('content');
-		return $metadata;
-	}
-
 	public function getIcon() {
 		return 'https://static1-ssl.dmcdn.net/images/neon/favicons/android-icon-36x36.png.vf806ca4ed0deed812';
 	}
@@ -166,6 +148,24 @@ class DailymotionBridge extends BridgeAbstract {
 		return $uri;
 	}
 
+	private function getMetadata($id) {
+		$metadata = array();
+
+		$html = getSimpleHTMLDOM(self::URI . 'video/' . $id);
+
+		if(!$html) {
+			return $metadata;
+		}
+
+		$metadata['title'] = $html->find('meta[property=og:title]', 0)->getAttribute('content');
+		$metadata['timestamp'] = strtotime(
+			$html->find('meta[property=video:release_date]', 0)->getAttribute('content')
+		);
+		$metadata['thumbnailUri'] = $html->find('meta[property=og:image]', 0)->getAttribute('content');
+		$metadata['uri'] = $html->find('meta[property=og:url]', 0)->getAttribute('content');
+		return $metadata;
+	}
+	
 	private function getApiUrl() {
 
 		switch($this->queriedContext) {
