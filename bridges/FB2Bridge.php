@@ -2,7 +2,7 @@
 class FB2Bridge extends BridgeAbstract {
 
 	const MAINTAINER = 'teromene';
-	const NAME = 'Facebook Alternate';
+	const NAME = 'Facebook Bridge | Touch Site';
 	const URI = 'https://www.facebook.com/';
 	const CACHE_TIMEOUT = 1000;
 	const DESCRIPTION = 'Input a page title or a profile log. For a profile log,
@@ -102,7 +102,7 @@ EOD
 			else
 				$timestamp = 0;
 
-			$item['uri'] = html_entity_decode('http://touch.facebook.com'
+			$item['uri'] = html_entity_decode('https://touch.facebook.com'
 			. $content->find("div[class='_52jc _5qc4 _78cz _24u0 _36xo']", 0)->find('a', 0)->getAttribute('href'), ENT_QUOTES);
 
 			//Decode images
@@ -281,10 +281,20 @@ EOD
 	}
 
 	public function getName(){
-		return (isset($this->name) ? $this->name . ' - ' : '') . 'Facebook Bridge';
+		$username = $this->getInput('u');
+		if (isset($username)) {
+			return $this->getInput('u') . ' | Facebook';
+		} else {
+			return 'Facebook Bridge | v2';
+		}
 	}
 
 	public function getURI(){
-		return 'http://facebook.com';
+		$username = $this->getInput('u');
+		if (isset($username)) {
+			return 'https://facebook.com/' . $this->getInput('u') . '/posts';
+		} else {
+			return self::URI;
+		}
 	}
 }
