@@ -12,7 +12,12 @@ class FB2Bridge extends BridgeAbstract {
 		'u' => array(
 			'name' => 'Username',
 			'required' => true
-		)
+		),
+		'abbrev_name' => array(
+			'name' => 'Abbreviate author name in title',
+			'type' => 'checkbox',
+			'defaultValue' => true,
+		),
 	));
 
 	public function getIcon() {
@@ -182,8 +187,10 @@ EOD
 			$item['content'] = html_entity_decode($content, ENT_QUOTES);
 
 			$title = $author;
-			if (strlen($title) > 24)
-				$title = substr($title, 0, strpos(wordwrap($title, 24), "\n")) . '...';
+			if ($this->getInput('abbrev_name') === true) {
+				if (strlen($title) > 24)
+					$title = substr($title, 0, strpos(wordwrap($title, 24), "\n")) . '...';
+			}
 			$title = $title . ' | ' . strip_tags($content);
 			if (strlen($title) > 64)
 				$title = substr($title, 0, strpos(wordwrap($title, 64), "\n")) . '...';
