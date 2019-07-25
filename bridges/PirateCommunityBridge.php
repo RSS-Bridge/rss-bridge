@@ -9,12 +9,14 @@ class PirateCommunityBridge extends BridgeAbstract {
 		'f' => array(
 			'name' => 'Forum ID',
 			'type' => 'number',
-			'title' => 'Forum ID from topic URL. If URL contains f=12 then the ID is 12.'
+			'title' => 'Forum ID from topic URL. If the URL contains f=12 the ID is 12.',
+			'required' => true
 		),
 		't' => array(
 			'name' => 'Topic ID',
 			'type' => 'number',
-			'title' => 'Topic ID from topic URL. If URL contains t=12 then the ID is 12.'
+			'title' => 'Topic ID from topic URL. If the URL contains t=12 the ID is 12.',
+			'required' => true
 		)));
 
 	private $feedName = '';
