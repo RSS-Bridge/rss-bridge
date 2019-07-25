@@ -6,12 +6,6 @@ class PirateCommunityBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns replies to topics';
 	const MAINTAINER = 'Roliga';
 	const PARAMETERS = array( array(
-		'f' => array(
-			'name' => 'Forum ID',
-			'type' => 'number',
-			'title' => 'Forum ID from topic URL. If the URL contains f=12 the ID is 12.',
-			'required' => true
-		),
 		't' => array(
 			'name' => 'Topic ID',
 			'type' => 'number',
@@ -30,12 +24,8 @@ class PirateCommunityBridge extends BridgeAbstract {
 		parse_str($parsed_url['query'], $parsed_query);
 
 		if($parsed_url['path'] === '/forum/viewtopic.php'
-		&& array_key_exists('f', $parsed_query)
 		&& array_key_exists('t', $parsed_query)) {
-			return array(
-				'f' => $parsed_query['f'],
-				't' => $parsed_query['t'],
-			);
+			return array('t' => $parsed_query['t']);
 		}
 
 		return null;
@@ -49,11 +39,9 @@ class PirateCommunityBridge extends BridgeAbstract {
 	}
 
 	public function getURI(){
-		if(!is_null($this->getInput('f')) && !is_null($this->getInput('t'))) {
+		if(!is_null($this->getInput('t'))) {
 			return self::URI
-				. 'forum/viewtopic.php?f='
-				. $this->getInput('f')
-				. '&t='
+				. 'forum/viewtopic.php?t='
 				. $this->getInput('t')
 				. '&sd=d'; // sort posts decending by ate so first page has latest posts
 		}
