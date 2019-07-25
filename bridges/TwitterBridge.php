@@ -171,7 +171,9 @@ EOD
 	public function collectData(){
 		$html = '';
 
-		$html = getSimpleHTMLDOM($this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI(),
+			array(),
+			array(CURLOPT_COOKIEFILE => ''));
 		if(!$html) {
 			switch($this->queriedContext) {
 			case 'By keyword or hashtag':
