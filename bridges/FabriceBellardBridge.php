@@ -12,20 +12,19 @@ class FabriceBellardBridge extends BridgeAbstract {
 		foreach ($html->find('p') as $obj) {
 			$item = array();
 
-			$links = $obj->find('a');
+			$html = defaultLinkTo($html, $this->getURI());
 
-			$link_uri = self::URI;
+			$links = $obj->find('a');
 			if (count($links) > 0) {
-				/* Fix relative links */
-				foreach ($links as $link) {
-					if (strpos($link, '://') === false) {
-						$link->href = self::URI . $link->href;
-					}
-				}
 				$link_uri = $links[0]->href;
-				if ($link_uri[-1] !== '/') {
-					$link_uri = $link_uri . '/';
-				}
+			}
+			else {
+				$link_uri = $this->getURI();
+			}
+
+			/* try to make sure the link is valid */
+			if ($link_uri[-1] !== '/' && strpos($link_uri, '/') === false) {
+				$link_uri = $link_uri . '/';
 			}
 
 			$item['title'] = strip_tags($obj->innertext);
