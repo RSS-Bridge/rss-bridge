@@ -1,132 +1,134 @@
 <?php
 class AtmoNouvelleAquitaineBridge extends BridgeAbstract {
 
-        const NAME = 'Atmo Nouvelle Aquitaine';
-        const URI = 'https://www.atmo-nouvelleaquitaine.org/monair/commune/33063';
-        const DESCRIPTION = 'Fetches the latest air polution of Bordeaux from Atmo Nouvelle Aquitaine';
-        const MAINTAINER = 'floviolleau';
-        const PARAMETERS = array();
-        const CACHE_TIMEOUT = 7200;
+	const NAME = 'Atmo Nouvelle Aquitaine';
+	const URI = 'https://www.atmo-nouvelleaquitaine.org/monair/commune/33063';
+	const DESCRIPTION = 'Fetches the latest air polution of Bordeaux from Atmo Nouvelle Aquitaine';
+	const MAINTAINER = 'floviolleau';
+	const PARAMETERS = array();
+	const CACHE_TIMEOUT = 7200;
 
-        private $dom;
+	private $dom;
 
-        private function getClosest($search, $arr) {
-                $closest = null;
-                foreach ($arr as $key => $value) {
-                        if ($closest === null || abs((int)$search - $closest) > abs((int)$key - (int)$search)) {
-                                $closest = (int)$key;
-                        }
-                }
-                return $arr[$closest];
-        }
+	private function getClosest($search, $arr) {
+		$closest = null;
+		foreach ($arr as $key => $value) {
+			if ($closest === null || abs((int)$search - $closest) > abs((int)$key - (int)$search)) {
+				$closest = (int)$key;
+			}
+		}
+		return $arr[$closest];
+	}
 
-        public function collectData() {
-                $uri = self::URI;
+	public function collectData() {
+		$uri = self::URI;
 
-                $html = getSimpleHTMLDOM($uri)
-                        or returnServerError('Could not request ' . $uri);
+		$html = getSimpleHTMLDOM($uri)
+				or returnServerError('Could not request ' . $uri);
 
-                $this->dom = $html->find('#block-system-main .city-prevision-map', 0);
+		$this->dom = $html->find('#block-system-main .city-prevision-map', 0);
 
+		$message = $this->getIndexMessage() . ' ' . $this->getQualityMessage();
+		$message .= ' ' . $this->getTomorrowTrendIndexMessage() . ' ' . $this->getTomorrowTrendQualityMessage();
 
-                $message = $this->getIndexMessage().' '.$this->getQualityMessage().' '.$this->getTomorrowTrendIndexMessage().' '.$this->getTomorrowTrendQualityMessage();
+		$item['uri'] = $uri;
+		$today = date('d/m/Y');
+		$item['title'] = "Bulletin de l'air du $today pour la région Nouvelle Aquitaine.";
+		$item['title'] .= " Retrouvez plus d'informations en allant sur atmo-nouvelleaquitaine.org #QualiteAir.";
+		$item['author'] = 'floviolleau';
+		$item['content'] = $message;
 
-                $item['uri'] = $uri;
-                $today = date('d/m/Y');
-                $item['title'] = "Bulletin de l'air du $today pour la région Nouvelle Aquitaine. Retrouvez plus d'informations en allant sur atmo-nouvelleaquitaine.org #QualiteAir.";
-                $item['author'] = 'floviolleau';
-                $item['content'] = $message;
+		$this->items[] = $item;
+	}
 
-                $this->items[] = $item;
-        }
+	private function getIndex() {
+		return $this->dom->find('.indice', 0)->innertext;
+	}
 
-        private function getIndex() {
-                return $this->dom->find('.indice', 0)->innertext;
-        }
+	private function getMaxIndexText() {
+		// will return the string '/100'
+		return $this->dom->find('.pourcent', 0)->innertext;
+	}
 
-        private function getMaxIndexText() {
-                // will return the string '/100'
-                return $this->dom->find('.pourcent', 0)->innertext;
-        }
+	private function getQualityText($index, $indexes) {
+		return $this->getClosest($index, $indexes);
+	}
 
-        private function getQualityText($index, $indexes) {
-                return $this->getClosest($index, $indexes);
-        }
+	private function getLegendIndexes() {
+		$rawIndexes = $this->dom->find('.prevision-legend .prevision-legend-label');
+		$indexes = [];
+		for ($i = 0; $i < count($rawIndexes); $i++) {
+			if ($rawIndexes[$i]->hasAttribute('data-color')) {
+				$indexes[$rawIndexes[$i]->getAttribute('data-color')] = $rawIndexes[$i]->innertext;
+			}
+		}
 
-        private function getLegendIndexes() {
-                $rawIndexes = $this->dom->find('.prevision-legend .prevision-legend-label');
-                $indexes = [];
-                for ($i = 0; $i < count($rawIndexes); $i++) {
-                        if ($rawIndexes[$i]->hasAttribute('data-color')) {
-                                $indexes[$rawIndexes[$i]->getAttribute('data-color')] = $rawIndexes[$i]->innertext;
-                        }
-                }
+		return $indexes;
+	}
 
-                return $indexes;
-        }
+	private function getTomorrowTrendIndex() {
+		$tomorrowTrendDomNode = $this->dom
+			->find('.day-controls.raster-controls .list-raster-controls .raster-control', 2);
+		$tomorrowTrendIndexNode = $tomorrowTrendDomNode->find('.raster-control-link', 0);
+		if ($tomorrowTrendIndexNode && $tomorrowTrendIndexNode->hasAttribute('data-index')) {
+			$tomorrowTrendIndex = $tomorrowTrendIndexNode->getAttribute('data-index');
+		} else {
+			$tomorrowTrendIndex == 'XX';
+		}
 
-        private function getTomorrowTrendIndex() {
-                $tomorrowTrendDomNode = $this->dom->find('.day-controls.raster-controls .list-raster-controls .raster-control', 2);
-                $tomorrowTrendIndexNode = $tomorrowTrendDomNode->find('.raster-control-link', 0);
-                if ($tomorrowTrendIndexNode && $tomorrowTrendIndexNode->hasAttribute('data-index')) {
-                        $tomorrowTrendIndex = $tomorrowTrendIndexNode->getAttribute('data-index');
-                } else {
-                        $tomorrowTrendIndex == 'XX';
-                }
+		if ($tomorrowTrendIndex == 'XX') {
+			return -1;
+		}
 
-                if ($tomorrowTrendIndex == 'XX') {
-                        return -1;
-                }
+		return $tomorrowTrendIndex;
+	}
 
-                return $tomorrowTrendIndex;
-        }
+	private function getTomorrowTrendQualityText($trendIndex, $indexes) {
+		if ($trendIndex == -1) {
+			if (array_key_exists('no-available', $indexes)) {
+				return $indexes['no-available'];
+			}
 
-        private function getTomorrowTrendQualityText($trendIndex, $indexes) {
-                if ($trendIndex == -1) {
-                        if (array_key_exists('no-available', $indexes)) {
-                                return $indexes['no-available'];
-                        }
+			return 'Aucune donnée';
+		}
 
-                        return 'Aucune donnée';
-                }
+		return $this->getClosest($trendIndex, $indexes);
+	}
 
-                return $this->getClosest($trendIndex, $indexes);
-        }
+	private function getIndexMessage() {
+		$index = $this->getIndex();
+		$maxIndexText = $this->getMaxIndexText();
 
-        private function getIndexMessage() {
-                $index = $this->getIndex();
-                $maxIndexText = $this->getMaxIndexText();
+		return "L'indice d'aujourd'hui est $index$maxIndexText.";
+	}
 
-                return "L'indice d'aujourd'hui est $index$maxIndexText.";
-        }
+	private function getQualityMessage() {
+		$index = $index = $this->getIndex();
+		$indexes = $this->getLegendIndexes();
+		$quality = $this->getQualityText($index, $indexes);
 
-        private function getQualityMessage() {
-                $index = $index = $this->getIndex();
-                $indexes = $this->getLegendIndexes();
-                $quality = $this->getQualityText($index, $indexes);
+		return "La qualité de l'air est $quality.";
+	}
 
-                return "La qualité de l'air est $quality.";
-        }
+	private function getTomorrowTrendIndexMessage() {
+		$trendIndex = $this->getTomorrowTrendIndex();
+		$maxIndexText = $this->getMaxIndexText();
 
-        private function getTomorrowTrendIndexMessage() {
-                $trendIndex = $this->getTomorrowTrendIndex();
-                $maxIndexText = $this->getMaxIndexText();
+		if ($trendIndex == -1) {
+			return 'Aucune donnée pour l\'indice prévu demain.';
+		}
 
-                if ($trendIndex == -1) {
-                        return 'Aucune donnée pour l\'indice prévu demain.';
-                }
+		return "L'indice prévu pour demain est $trendIndex$maxIndexText.";
+	}
 
-                return "L'indice prévu pour demain est $trendIndex$maxIndexText.";
-        }
+	private function getTomorrowTrendQualityMessage() {
+		$trendIndex = $this->getTomorrowTrendIndex();
+		$indexes = $this->getLegendIndexes();
+		$trendQuality = $this->getTomorrowTrendQualityText($trendIndex, $indexes);
 
-        private function getTomorrowTrendQualityMessage() {
-                $trendIndex = $this->getTomorrowTrendIndex();
-                $indexes = $this->getLegendIndexes();
-                $trendQuality = $this->getTomorrowTrendQualityText($trendIndex, $indexes);
-
-                if ($trendIndex == -1) {
-                        return 'Aucune donnée pour la qualité de l\'air.';
-                }
-                return "La qualite de l'air pour demain sera $trendQuality.";
-        }
+		if ($trendIndex == -1) {
+			return 'Aucune donnée pour la qualité de l\'air.';
+		}
+		return "La qualite de l'air pour demain sera $trendQuality.";
+	}
 }
