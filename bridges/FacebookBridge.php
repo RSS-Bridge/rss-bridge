@@ -580,6 +580,8 @@ EOD;
 							'._5mly', // Remove embedded videos (the preview image remains)
 							'._2ezg', // Remove "Views ..."
 							'.hidden_elem', // Remove hidden elements (they are hidden anyway)
+							'.timestampContent', // Remove relative timestamp
+							'._6spk', // Remove redundant separator
 						);
 
 						foreach($content_filters as $filter) {
