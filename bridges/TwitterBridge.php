@@ -170,8 +170,10 @@ EOD
 
 	public function collectData(){
 		$html = '';
+		$page = $this->getURI();
+		$cookies = $this->getCookies($page);
 
-		$html = getSimpleHTMLDOM($this->getURI());
+		$html = getSimpleHTMLDOM($page, array("Cookie: $cookies"));
 		if(!$html) {
 			switch($this->queriedContext) {
 			case 'By keyword or hashtag':
@@ -428,4 +430,28 @@ EOD;
 
 		return null;
 	}
+	
+	private function getCookies($pageURL){
+
+		$ctx = stream_context_create(array(
+			'http' => array(
+				'follow_location' => false
+				)
+			)
+		);
+		$a = file_get_contents($pageURL, 0, $ctx);
+
+		//First request to get the cookie
+		$cookies = '';
+		foreach($http_response_header as $hdr) {
+			if(stripos($hdr, 'Set-Cookie') !== false) {
+				$cLine = explode(':', $hdr)[1];
+				$cLine = explode(';', $cLine)[0];
+				$cookies .= ';' . $cLine;
+			}
+		}
+
+		return substr($cookies, 2);
+	}
+
 }
