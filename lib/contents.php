@@ -60,8 +60,8 @@ function getContents($url, $header = array(), $opts = array()){
 		$httpHeaders = array();
 
 		foreach ($header as $headerL) {
-			$key = explode(":", $headerL)[0];
-			$value = explode(":", $headerL)[1];
+			$key = explode(':', $headerL)[0];
+			$value = explode(':', $headerL)[1];
 			$httpHeaders[$key] = trim($value);
 		}
 
