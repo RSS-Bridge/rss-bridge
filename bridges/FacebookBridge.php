@@ -143,7 +143,7 @@ class FacebookBridge extends BridgeAbstract {
 	private function collectGroupData() {
 
 		if(getEnv('HTTP_ACCEPT_LANGUAGE')) {
-			$header = array('Accept-Language: ' . getEnv('HTTP_ACCEPT_LANGUAGE') . "\r\n");
+			$header = array('Accept-Language: ' . getEnv('HTTP_ACCEPT_LANGUAGE'));
 		} else {
 			$header = array();
 		}
