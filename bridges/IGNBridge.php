@@ -28,7 +28,7 @@ class IGNBridge extends FeedExpander {
 		// For Articles
 		$article = $articlePage->find('section.article-page', 0);
 		// add in verdicts in articles, reviews etc
-		foreach($articlePage->find('div.article-section') as $element){
+		foreach($articlePage->find('div.article-section') as $element) {
 			$article = $article . $element;
 		}
 
@@ -38,12 +38,12 @@ class IGNBridge extends FeedExpander {
 			'.feedback-container',
 			'.paging-container'
 		);
-		foreach($articlePage->find('.wiki-page') as $wikiContents){
+		foreach($articlePage->find('.wiki-page') as $wikiContents) {
 			$copy = clone $wikiContents;
 			// Remove useless elements present in IGN wiki/howtos
-			foreach($uselessWikiElements as $uslElement){
+			foreach($uselessWikiElements as $uslElement) {
 				$toRemove = $wikiContents->find($uslElement, 0);
-				$copy = str_replace($toRemove, "", $copy);
+				$copy = str_replace($toRemove, '', $copy);
 			}
 			$article = $article . $copy;
 		}
