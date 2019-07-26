@@ -70,7 +70,7 @@ function getContents($url, $header = array(), $opts = array()){
 			)
 		);
 
-		$data = file_get_contents($url, 0, $ctx);
+		$data = @file_get_contents($url, 0, $ctx);
 
 		if($data === false) {
 			$errorCode = 500;
