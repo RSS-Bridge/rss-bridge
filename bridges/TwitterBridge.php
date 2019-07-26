@@ -430,7 +430,7 @@ EOD;
 
 		return null;
 	}
-	
+
 	private function getCookies($pageURL){
 
 		$ctx = stream_context_create(array(
@@ -453,5 +453,4 @@ EOD;
 
 		return substr($cookies, 2);
 	}
-
 }
