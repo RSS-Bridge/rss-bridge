@@ -34,7 +34,7 @@ class AtmoNouvelleAquitaineBridge extends BridgeAbstract {
 		$item['uri'] = $uri;
 		$today = date('d/m/Y');
 		$item['title'] = "Bulletin de l'air du $today pour la région Nouvelle Aquitaine.";
-		$item['title'] .= " Retrouvez plus d'informations en allant sur atmo-nouvelleaquitaine.org #QualiteAir.";
+		$item['title'] .= ' Retrouvez plus d\'informations en allant sur atmo-nouvelleaquitaine.org #QualiteAir.';
 		$item['author'] = 'floviolleau';
 		$item['content'] = $message;
 
@@ -42,15 +42,29 @@ class AtmoNouvelleAquitaineBridge extends BridgeAbstract {
 	}
 
 	private function getIndex() {
-		return $this->dom->find('.indice', 0)->innertext;
+		$index = $this->dom->find('.indice', 0)->innertext;
+
+		if ($index == 'XX') {
+			return -1;
+		}
+
+		return $index;
 	}
 
 	private function getMaxIndexText() {
-		// will return the string '/100'
+		// will return '/100'
 		return $this->dom->find('.pourcent', 0)->innertext;
 	}
 
 	private function getQualityText($index, $indexes) {
+		if ($index == -1) {
+			if (array_key_exists('no-available', $indexes)) {
+				return $indexes['no-available'];
+			}
+
+			return 'Aucune donnée';
+		}
+
 		return $this->getClosest($index, $indexes);
 	}
 
@@ -99,6 +113,10 @@ class AtmoNouvelleAquitaineBridge extends BridgeAbstract {
 		$index = $this->getIndex();
 		$maxIndexText = $this->getMaxIndexText();
 
+		if ($index == -1) {
+			return 'Aucune donnée pour l\'indice.';
+		}
+
 		return "L'indice d'aujourd'hui est $index$maxIndexText.";
 	}
 
@@ -106,6 +124,10 @@ class AtmoNouvelleAquitaineBridge extends BridgeAbstract {
 		$index = $index = $this->getIndex();
 		$indexes = $this->getLegendIndexes();
 		$quality = $this->getQualityText($index, $indexes);
+
+		if ($index == -1) {
+			return 'Aucune donnée pour la qualité de l\'air.';
+		}
 
 		return "La qualité de l'air est $quality.";
 	}
@@ -127,7 +149,7 @@ class AtmoNouvelleAquitaineBridge extends BridgeAbstract {
 		$trendQuality = $this->getTomorrowTrendQualityText($trendIndex, $indexes);
 
 		if ($trendIndex == -1) {
-			return 'Aucune donnée pour la qualité de l\'air.';
+			return 'Aucune donnée pour la qualité de l\'air de demain.';
 		}
 		return "La qualite de l'air pour demain sera $trendQuality.";
 	}
