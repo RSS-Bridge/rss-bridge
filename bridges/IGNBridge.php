@@ -4,7 +4,7 @@ class IGNBridge extends FeedExpander {
 	const MAINTAINER = 'IceWreck';
 	const NAME = 'IGN Bridge';
 	const URI = 'https://www.ign.com/';
-	const CACHE_TIMEOUT = 10;
+	const CACHE_TIMEOUT = 3600;
 	const DESCRIPTION = 'RSS Feed For IGN';
 
 	public function collectData(){
