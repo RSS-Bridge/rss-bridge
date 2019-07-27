@@ -17,8 +17,7 @@ class FabriceBellardBridge extends BridgeAbstract {
 			$links = $obj->find('a');
 			if (count($links) > 0) {
 				$link_uri = $links[0]->href;
-			}
-			else {
+			} else {
 				$link_uri = $this->getURI();
 			}
 
