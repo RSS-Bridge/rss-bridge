@@ -89,6 +89,10 @@ class TwitchBridge extends BridgeAbstract {
 				. '</li>';
 
 			if(isset($markers->game_changes)) {
+				usort($markers->game_changes, function($a, $b) {
+					return $a->time - $b->time;
+				});
+
 				foreach($markers->game_changes as $game_change) {
 					$item['categories'][] = $game_change->label;
 					$item['content'] .= '<li><a href="'
