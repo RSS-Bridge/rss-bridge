@@ -60,14 +60,31 @@ class TwitchBridge extends BridgeAbstract {
 				'author' => $video->channel->display_name,
 			);
 
+			// Add categories for tags and played game
 			$item['categories'] = array_filter(explode(' ', $video->tag_list));
 			if(!empty($video->game))
 				$item['categories'][] = $video->game;
 
+			// Add enclosures for thumbnails from a few points in the video
 			$item['enclosures'] = array();
 			foreach($video->thumbnails->large as $thumbnail)
 				$item['enclosures'][] = $thumbnail->url;
 
+			/*
+			 * Content format example:
+			 *
+			 * [Preview Image]
+			 *
+			 * Some optional video description.
+			 *
+			 * Duration: 1:23:45
+			 * Views: 123
+			 *
+			 * Played games:
+			 * * 00:00:00 Game 1
+			 * * 00:12:34 Game 2
+			 *
+			 */
 			$item['content'] = '<p><a href="'
 				. $video->url
 				. '"><img src="'
@@ -80,6 +97,7 @@ class TwitchBridge extends BridgeAbstract {
 				. $video->views
 				. '</p>';
 
+			// Add played games list to content
 			$video_id = trim($video->_id, 'v'); // _id gives 'v1234' but API wants '1234'
 			$markers = $this->apiGet('videos/' . $video_id . '/markers')->markers;
 			$item['content'] .= '<p><b>Played games:</b></b><ul><li><a href="'
@@ -87,12 +105,10 @@ class TwitchBridge extends BridgeAbstract {
 				. '">00:00:00</a> - '
 				. $video->game
 				. '</li>';
-
 			if(isset($markers->game_changes)) {
 				usort($markers->game_changes, function($a, $b) {
 					return $a->time - $b->time;
 				});
-
 				foreach($markers->game_changes as $game_change) {
 					$item['categories'][] = $game_change->label;
 					$item['content'] .= '<li><a href="'
@@ -106,7 +122,6 @@ class TwitchBridge extends BridgeAbstract {
 						. '</li>';
 				}
 			}
-
 			$item['content'] .= '</ul></p>';
 
 			$this->items[] = $item;
