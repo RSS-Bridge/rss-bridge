@@ -91,7 +91,7 @@ class AtmoNouvelleAquitaineBridge extends BridgeAbstract {
                 if ($tomorrowTrendIndexNode && $tomorrowTrendIndexNode->hasAttribute('data-index')) {
                         $tomorrowTrendIndex = $tomorrowTrendIndexNode->getAttribute('data-index');
                 } else {
-                        return -1
+                        return -1;
                 }
 
 		return $tomorrowTrendIndex;
