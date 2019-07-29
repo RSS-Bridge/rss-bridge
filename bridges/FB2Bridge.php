@@ -292,7 +292,7 @@ EOD
 		if (isset($username)) {
 			return $this->getInput('u') . ' | Facebook';
 		} else {
-			return 'Facebook Bridge | v2';
+			return self::NAME;
 		}
 	}
 

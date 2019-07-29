@@ -66,14 +66,13 @@ class FacebookBridge extends BridgeAbstract {
 
 			case 'User':
 				if(!empty($this->authorName)) {
-					return isset($this->extraInfos['name']) ? $this->extraInfos['name'] : $this->authorName
-					. ' - ' . static::NAME;
+					return isset($this->extraInfos['name']) ? $this->extraInfos['name'] : $this->authorName;
 				}
 				break;
 
 			case 'Group':
 				if(!empty($this->groupName)) {
-					return $this->groupName . ' - ' . static::NAME;
+					return $this->groupName;
 				}
 				break;
 
