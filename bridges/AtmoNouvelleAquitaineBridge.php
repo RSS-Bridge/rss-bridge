@@ -83,16 +83,16 @@ class AtmoNouvelleAquitaineBridge extends BridgeAbstract {
 	private function getTomorrowTrendIndex() {
 		$tomorrowTrendDomNode = $this->dom
 			->find('.day-controls.raster-controls .list-raster-controls .raster-control', 2);
-		
-		if ($tomorrowTrendDomNode) {
-                        $tomorrowTrendIndexNode = $tomorrowTrendDomNode->find('.raster-control-link', 0);
-                }
 
-                if ($tomorrowTrendIndexNode && $tomorrowTrendIndexNode->hasAttribute('data-index')) {
-                        $tomorrowTrendIndex = $tomorrowTrendIndexNode->getAttribute('data-index');
-                } else {
-                        return -1;
-                }
+		if ($tomorrowTrendDomNode) {
+			$tomorrowTrendIndexNode = $tomorrowTrendDomNode->find('.raster-control-link', 0);
+		}
+
+		if ($tomorrowTrendIndexNode && $tomorrowTrendIndexNode->hasAttribute('data-index')) {
+			$tomorrowTrendIndex = $tomorrowTrendIndexNode->getAttribute('data-index');
+		} else {
+			return -1;
+		}
 
 		return $tomorrowTrendIndex;
 	}
