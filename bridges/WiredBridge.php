@@ -95,7 +95,7 @@ class WiredBridge extends FeedExpander {
 			$content = trim(explode('<hr', $content)[0]);
 		}
 
-		$content = str_replace('href="/', 'href="'.$this->getURI().'/', $content);
+		$content = str_replace('href="/', 'href="' . $this->getURI() . '/', $content);
 
 		return $content;
 	}
