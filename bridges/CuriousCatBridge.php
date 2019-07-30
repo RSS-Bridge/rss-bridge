@@ -15,8 +15,6 @@ class CuriousCatBridge extends BridgeAbstract {
 
 	const CACHE_TIMEOUT = 3600;
 
-	private $urlRegex = '/https?:\/\/(?:www\.)?(?:[a-zA-Z0-9-.]{2,256}\.[a-z]{2,20})(\:[0-9]{2,4})?(?:\/[a-zA-Z0-9@:%_\+.~#?&\/\/=\-*]+|\/)?/';
-
 	public function collectData() {
 
 		$url = self::URI . '/api/v2/profile?username=' . urlencode($this->getInput('username'));
@@ -101,21 +99,11 @@ EOD;
 
 	private function formatUrls($content) {
 
-		if(preg_match_all($this->urlRegex, $content, $matches)) {
-			foreach ($matches as $match) {
+		return = preg_replace(
+			'/(http[s]{0,1}\:\/\/[a-zA-Z0-9.\/\?\&=\-_]{4,})/ims',
+			'<a target="_blank" href="$1" target="_blank">$1</a> ',
+			$content
+		);
 
-				if (empty($match[0])) {
-					continue;
-				}
-
-				$link = <<<EOD
-<a target="_blank" href="{$match[0]}">{$match[0]}</a>
-EOD;
-
-				$content = str_replace($match[0], $link, $content);
-			}
-		}
-
-		return $content;
 	}
 }
