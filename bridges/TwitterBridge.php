@@ -176,7 +176,7 @@ EOD
 			$cookies = $this->getCookies($page);
 			$html = getSimpleHTMLDOM($page, array("Cookie: $cookies"));
 		} else {
-			$html = getSimpleHTMLDOM($this->getURI(), array(), array(CURLOPT_COOKIEFILE => ''));
+			$html = getSimpleHTMLDOM($page, array(), array(CURLOPT_COOKIEFILE => ''));
 		}
 
 		if(!$html) {
