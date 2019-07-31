@@ -6,7 +6,6 @@ class DavesTrailerPageBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Last trailers in HD thanks to Dave.';
 
 	public function collectData(){
-	$html = '';
 	$html = getSimpleHTMLDOM(static::URI)
 	or returnClientError('No results for this query.');
 
@@ -17,7 +16,7 @@ class DavesTrailerPageBridge extends BridgeAbstract {
 		$item['title'] = $tr->find('td', 0)->find('b', 0)->plaintext;
 
 		// content
-		$item['content'] = $tr->find('ul',1);
+		$item['content'] = $tr->find('ul', 1);
 
 		// uri
 		$item['uri'] = $tr->find('a', 3)->getAttribute('href');
