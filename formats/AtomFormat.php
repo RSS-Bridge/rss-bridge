@@ -37,7 +37,7 @@ class AtomFormat extends FormatAbstract{
 		$entries = '';
 		foreach($this->getItems() as $item) {
 			$entryTimestamp = $item->getTimestamp();
-			$entryTitle = $this->xml_encode($item->getTitle());
+			$entryTitle = $item->getTitle();
 			$entryContent = $item->getContent();
 			$entryUri = $item->getURI();
 			$entryID = '';
