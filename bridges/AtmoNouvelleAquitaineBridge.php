@@ -43,6 +43,7 @@ class AtmoNouvelleAquitaineBridge extends BridgeAbstract {
 		$item['title'] .= ' Retrouvez plus d\'informations en allant sur atmo-nouvelleaquitaine.org #QualiteAir.';
 		$item['author'] = 'floviolleau';
 		$item['content'] = $message;
+		$item['uid'] = hash('sha256', $message);
 
 		$this->items[] = $item;
 	}
