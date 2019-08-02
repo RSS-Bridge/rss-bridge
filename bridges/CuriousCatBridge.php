@@ -99,7 +99,7 @@ EOD;
 
 	private function formatUrls($content) {
 
-		return = preg_replace(
+		return preg_replace(
 			'/(http[s]{0,1}\:\/\/[a-zA-Z0-9.\/\?\&=\-_]{4,})/ims',
 			'<a target="_blank" href="$1" target="_blank">$1</a> ',
 			$content
