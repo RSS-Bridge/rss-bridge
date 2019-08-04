@@ -11,7 +11,7 @@ class GuardianBridge extends FeedExpander {
 			'type' => 'list',
 			'values' => array(
 				'World News' => 'world/rss',
-				'US News' => '/us-news/rss',			
+				'US News' => '/us-news/rss',
 				'UK News' => '/uk-news/rss',
 				'Europe News' => '/world/europe-news/rss',
 				'Asia News' => '/world/asia/rss',
@@ -32,16 +32,16 @@ class GuardianBridge extends FeedExpander {
 
 		Example:
 
-    	https://feeds.theguardian.com/theguardian/uk-news/rss
+		https://feeds.theguardian.com/theguardian/uk-news/rss
 		https://feeds.theguardian.com/theguardian/us-news/rss
-		
-		Or simply 
+
+		Or simply
 
 		https://www.theguardian.com/world/rss
 
 		Just add that topic as a value in the PARAMETERS const.
-    
-    	*/
+		
+		*/
 
 
 	));
@@ -81,7 +81,7 @@ class GuardianBridge extends FeedExpander {
 			'youtube-media-atom',
 			'svg'
 		);
-		
+
 		// Remove the listed crap
 		foreach($uselessElements as $uslElement) {
 			foreach($articlePage->find($uslElement) as $uslElementLoc) {
