@@ -40,7 +40,7 @@ class GuardianBridge extends FeedExpander {
 		https://www.theguardian.com/world/rss
 
 		Just add that topic as a value in the PARAMETERS const.
-		
+
 		*/
 
 
@@ -90,7 +90,7 @@ class GuardianBridge extends FeedExpander {
 		}
 
 		$item['content'] = $article;
-		
+
 		return $item;
 	}
 }
