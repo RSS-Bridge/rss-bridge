@@ -1,5 +1,5 @@
 <?php
-class GuardianBridge extends FeedExpander {
+class TheGuardianBridge extends FeedExpander {
 	const MAINTAINER = 'IceWreck';
 	const NAME = 'The Guardian Bridge';
 	const URI = 'https://www.theguardian.com/';
