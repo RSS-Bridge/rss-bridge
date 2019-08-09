@@ -50,7 +50,6 @@ class PirateCommunityBridge extends BridgeAbstract {
 	}
 
 	public function collectData(){
-		// use decending sort order, so latest posts are on the first page
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not retrieve topic page at ' . $this->getURI());
 
