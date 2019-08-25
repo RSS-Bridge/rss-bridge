@@ -86,6 +86,7 @@ class PatreonBridge extends BridgeAbstract {
 				'title' => $post->attributes->title,
 				'timestamp' => $post->attributes->published_at,
 				'content' => '',
+				'uid' => 'patreon.com/' . $post->id
 			);
 
 			$user = $this->findInclude($posts,
