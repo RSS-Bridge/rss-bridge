@@ -356,6 +356,7 @@ class LeBonCoinBridge extends BridgeAbstract {
 		$data = $this->buildRequestJson();
 
 		$header = array(
+			'User-Agent: LBC;Android;Null;Null;Null;Null;Null;Null;Null;Null',
 			'Content-Type: application/json',
 			'Content-Length: ' . strlen($data),
 			'api_key: ' . self::$LBC_API_KEY
