@@ -149,11 +149,12 @@ class ThePirateBayBridge extends BridgeAbstract {
 				|| !is_null($element->find('img[alt=VIP]', 0))
 				|| !is_null($element->find('img[alt=Trusted]', 0))) {
 					$item = array();
-					$item['uri'] = $element->find('a', 3)->href;
+					$item['uri'] = self::URI . $element->find('a.detLink', 0)->href;
 					$item['id'] = self::URI . $element->find('a.detLink', 0)->href;
 					$item['timestamp'] = parseDateTimestamp($element);
 					$item['author'] = $element->find('a.detDesc', 0)->plaintext;
 					$item['title'] = $element->find('a.detLink', 0)->plaintext;
+					$item['magnet'] = $element->find('a', 3)->href;
 					$item['seeders'] = (int)$element->find('td', 2)->plaintext;
 					$item['leechers'] = (int)$element->find('td', 3)->plaintext;
 					$item['content'] = $element->find('font', 0)->plaintext
@@ -163,7 +164,11 @@ class ThePirateBayBridge extends BridgeAbstract {
 					. $item['leechers']
 					. '<br><a href="'
 					. $item['id']
-					. '">info page</a>';
+					. '">info page</a>'
+					. '<br><a href="'
+					. $item['magnet']
+					. '">magnet link</a>';
+
 
 					if(isset($item['title']))
 						$this->items[] = $item;
