@@ -1,11 +1,11 @@
 <?php
 
 require_once(__DIR__ . '/DealabsBridge.php');
-class MydealsBridge extends PepperBridgeAbstract {
+class MydealzBridge extends PepperBridgeAbstract {
 
-	const NAME = 'Mydeals bridge';
+	const NAME = 'Mydealz bridge';
 	const URI = 'https://www.mydealz.de/';
-	const DESCRIPTION = 'Zeigt die Deals von mydeals.de';
+	const DESCRIPTION = 'Zeigt die Deals von mydealz.de';
 	const MAINTAINER = 'sysadminstory';
 	const PARAMETERS = array(
 		'Suche nach Stichworten' => array (
@@ -26,7 +26,7 @@ class MydealsBridge extends PepperBridgeAbstract {
 			'priceFrom' => array(
 				'name' => 'Minimaler Preis',
 				'type' => 'text',
-				'title' => 'Minmaler Preis in Euros',
+				'title' => 'Minmaler Preis in Euro',
 				'required' => false
 			),
 			'priceTo' => array(
@@ -63,11 +63,11 @@ class MydealsBridge extends PepperBridgeAbstract {
 			'order' => array(
 				'name' => 'sortieren nach',
 				'type' => 'list',
-				'title' => 'Sortierung der deals',
+				'title' => 'Sortierung der Deals',
 				'values' => array(
 					'Vom heißesten zum kältesten Deal' => '',
-					'Vom jüngsten Deal zum ältesten' => '-new',
-					'Vom am meisten kommentierten Deal zum am wenigsten kommentierten Deal' => '-discussed'
+					'Vom jüngsten zum ältesten Deal' => '-new',
+					'Vom meistkommentierten zum am wenigsten kommentierten Deal' => '-discussed'
 				)
 			)
 		)
@@ -79,7 +79,7 @@ class MydealsBridge extends PepperBridgeAbstract {
 		'context-keyword' => 'Suche nach Stichworten',
 		'context-group' => 'Deals pro Gruppen',
 		'uri-group' => '/gruppe/',
-		'request-error' => 'Could not request mydeals',
+		'request-error' => 'Could not request mydealz',
 		'no-results' => 'Ups, wir konnten keine Deals zu',
 		'relative-date-indicator' => array(
 			'vor',
