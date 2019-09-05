@@ -133,7 +133,7 @@ class InternetArchiveBridge extends BridgeAbstract {
 
 		$item['title'] = trim($result->find('div.ttl', 0)->innertext);
 		$item['timestamp'] = strtotime($result->find('div.hidden-tiles.pubdate.C.C3', 0)->children(0)->plaintext);
-		$item['uri'] = self::URI . $result->find('div.item-ttl.C.C2 > a', 0)->href;
+		$item['uri'] = $result->find('div.item-ttl.C.C2 > a', 0)->href;
 
 		if ($result->find('div.by.C.C4', 0)->children(2)) {
 			$item['author'] = $result->find('div.by.C.C4', 0)->children(2)->plaintext;

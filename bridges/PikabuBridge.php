@@ -32,6 +32,13 @@ class PikabuBridge extends BridgeAbstract {
 				'required' => true
 			),
 			'filter' => self::PARAMETERS_FILTER
+		),
+		'По пользователю' => array(
+			'user' => array(
+				'name' => 'Пользователь',
+				'exampleValue' => 'admin',
+				'required' => true
+			)
 		)
 	);
 
@@ -40,6 +47,8 @@ class PikabuBridge extends BridgeAbstract {
 	public function getURI() {
 		if ($this->getInput('tag')) {
 			return self::URI . '/tag/' . rawurlencode($this->getInput('tag')) . '/' . rawurlencode($this->getInput('filter'));
+		} else if ($this->getInput('user')) {
+			return self::URI . '/@' . rawurlencode($this->getInput('user'));
 		} else if ($this->getInput('community')) {
 			$uri = self::URI . '/community/' . rawurlencode($this->getInput('community'));
 			if ($this->getInput('filter') != 'hot') {
