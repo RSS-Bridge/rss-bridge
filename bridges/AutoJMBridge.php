@@ -15,16 +15,6 @@ class AutoJMBridge extends BridgeAbstract {
 				'title' => 'URL d\'une recherche avec filtre de véhicules sans le http://www.autojm.fr/',
 				'exampleValue' => 'achat-voitures-neuves-peugeot-nouvelle-308-5p'
 			),
-			'isDispo' => array(
-				'name' => 'Disponibilité',
-				'type' => 'list',
-				'values' => array(
-					'-' => '',
-					'En stock' => 1,
-					'Sur commande' => 0
-				),
-				'title' => 'Critère de disponibilité'
-			),
 			'energy' => array(
 				'name' => 'Carburant',
 				'type' => 'list',
@@ -92,7 +82,6 @@ class AutoJMBridge extends BridgeAbstract {
 
 		// Build the form
 		$post_data = array(
-			'form[isDispo]' => $this->getInput('isDispo'),
 			'form[energy]' => $this->getInput('energy'),
 			'form[transmission]' => $this->getInput('transmission'),
 			'form[priceMin]' => $this->getInput('priceMin'),
@@ -121,7 +110,7 @@ class AutoJMBridge extends BridgeAbstract {
 		$html = str_get_html($data->content);
 
 		// Go through every finisha of the model
-		$list = $html->find('h2');
+		$list = $html->find('h3');
 		foreach ($list as $finish) {
 			$finish_name = $finish->plaintext;
 			$motorizations = $finish->next_sibling()->find('li');
