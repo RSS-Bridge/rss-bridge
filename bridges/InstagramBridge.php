@@ -42,6 +42,29 @@ class InstagramBridge extends BridgeAbstract {
 
 	);
 
+	const USER_QUERY_HASH = '58b6785bea111c67129decbe6a448951';
+	const TAG_QUERY_HASH = '174a5243287c5f3a7de741089750ab3b';
+
+	protected function getInstagramUserId($username) {
+
+		if(is_numeric($username)) return $username;
+
+		$cacheFac = new CacheFactory();
+		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
+		$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+		$cache->setScope(get_called_class());
+		$cache->setKey([$username]);
+		$key = $cache->loadData();
+
+		if($key == null) {
+				$data = getContents(self::URI . 'web/search/topsearch/?query=' . $username);
+				$key = json_decode($data)->users[0]->user->pk;
+				$cache->saveData($key);
+		}
+		return $key;
+
+	}
+
 	public function collectData(){
 
 		if(is_null($this->getInput('u')) && $this->getInput('media_type') == 'story') {
@@ -51,9 +74,9 @@ class InstagramBridge extends BridgeAbstract {
 		$data = $this->getInstagramJSON($this->getURI());
 
 		if(!is_null($this->getInput('u'))) {
-			$userMedia = $data->entry_data->ProfilePage[0]->graphql->user->edge_owner_to_timeline_media->edges;
+			$userMedia = $data->data->user->edge_owner_to_timeline_media->edges;
 		} elseif(!is_null($this->getInput('h'))) {
-			$userMedia = $data->entry_data->TagPage[0]->graphql->hashtag->edge_hashtag_to_media->edges;
+			$userMedia = $data->data->hashtag->edge_hashtag_to_media->edges;
 		} elseif(!is_null($this->getInput('l'))) {
 			$userMedia = $data->entry_data->LocationsPage[0]->graphql->location->edge_location_to_media->edges;
 		}
@@ -145,13 +168,38 @@ class InstagramBridge extends BridgeAbstract {
 
 	protected function getInstagramJSON($uri) {
 
-		$html = getContents($uri)
-			or returnServerError('Could not request Instagram.');
-		$scriptRegex = '/window\._sharedData = (.*);<\/script>/';
+		if(!is_null($this->getInput('u'))) {
 
-		preg_match($scriptRegex, $html, $matches, PREG_OFFSET_CAPTURE, 0);
+			$userId = $this->getInstagramUserId($this->getInput('u'));
 
-		return json_decode($matches[1][0]);
+			$data = getContents(self::URI .
+								'graphql/query/?query_hash=' .
+								 self::USER_QUERY_HASH .
+								 '&variables={"id"%3A"' .
+								$userId .
+								'"%2C"first"%3A10}');
+			return json_decode($data);
+
+		} elseif(!is_null($this->getInput('h'))) {
+			$data = getContents(self::URI .
+					'graphql/query/?query_hash=' .
+					 self::TAG_QUERY_HASH .
+					 '&variables={"tag_name"%3A"' .
+					$this->getInput('h') .
+					'"%2C"first"%3A10}');
+			return json_decode($data);
+
+		} else {
+
+			$html = getContents($uri)
+				or returnServerError('Could not request Instagram.');
+			$scriptRegex = '/window\._sharedData = (.*);<\/script>/';
+
+			preg_match($scriptRegex, $html, $matches, PREG_OFFSET_CAPTURE, 0);
+
+			return json_decode($matches[1][0]);
+
+		}
 
 	}
 
