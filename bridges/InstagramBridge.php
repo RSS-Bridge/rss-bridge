@@ -44,6 +44,7 @@ class InstagramBridge extends BridgeAbstract {
 
 	const USER_QUERY_HASH = '58b6785bea111c67129decbe6a448951';
 	const TAG_QUERY_HASH = '174a5243287c5f3a7de741089750ab3b';
+	const STORY_QUERY_HASH = '865589822932d1b43dfe312121dd353a';
 
 	protected function getInstagramUserId($username) {
 
@@ -56,9 +57,17 @@ class InstagramBridge extends BridgeAbstract {
 		$cache->setKey([$username]);
 		$key = $cache->loadData();
 
-		if($key == null) {
+		if($key == null || true) {
 				$data = getContents(self::URI . 'web/search/topsearch/?query=' . $username);
-				$key = json_decode($data)->users[0]->user->pk;
+
+				foreach(json_decode($data)->users as $user) {
+					if($user->user->username === $username) {
+						$key = $user->user->pk;
+					}
+				}
+				if($key == null) {
+					returnServerError('Unable to find username in search result.');
+				}
 				$cache->saveData($key);
 		}
 		return $key;
@@ -122,6 +131,7 @@ class InstagramBridge extends BridgeAbstract {
 			}
 
 			if(!is_null($this->getInput('u')) && $media->__typename == 'GraphSidecar') {
+
 				$data = $this->getInstagramStory($item['uri']);
 				$item['content'] = $data[0];
 				$item['enclosures'] = $data[1];
@@ -141,8 +151,15 @@ class InstagramBridge extends BridgeAbstract {
 
 	protected function getInstagramStory($uri) {
 
-		$data = $this->getInstagramJSON($uri);
-		$mediaInfo = $data->entry_data->PostPage[0]->graphql->shortcode_media;
+		$shortcode = explode('/', $uri)[4];
+		$data = getContents(self::URI .
+					'graphql/query/?query_hash=' .
+					 self::STORY_QUERY_HASH .
+					 '&variables={"shortcode"%3A"' .
+					$shortcode .
+					'"}');
+
+		$mediaInfo = json_decode($data)->data->shortcode_media;
 
 		//Process the first element, that isn't in the node graph
 		if (count($mediaInfo->edge_media_to_caption->edges) > 0) {
