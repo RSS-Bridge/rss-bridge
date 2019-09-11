@@ -57,7 +57,7 @@ class InstagramBridge extends BridgeAbstract {
 		$cache->setKey([$username]);
 		$key = $cache->loadData();
 
-		if($key == null || true) {
+		if($key == null) {
 				$data = getContents(self::URI . 'web/search/topsearch/?query=' . $username);
 
 				foreach(json_decode($data)->users as $user) {
