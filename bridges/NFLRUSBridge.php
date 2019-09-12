@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 class NFLRUSBridge extends BridgeAbstract {
 
 	const NAME = 'NFLRUS';
@@ -42,7 +42,7 @@ class NFLRUSBridge extends BridgeAbstract {
 		return 0;
 	}
 
-    public function collectData() {
+	public function collectData() {
 		$html = getSimpleHTMLDOM(self::URI)
 			or returnServerError('Unable to get any articles from NFLRUS');
 		$html = defaultLinkTo($html, self::URI);
