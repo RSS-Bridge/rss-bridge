@@ -354,6 +354,8 @@ class VkBridge extends BridgeAbstract
 				}
 
 				$date = date_parse($strdate);
+			} elseif ($date['hour'] === false) {
+				$date['hour'] = $date['minute'] = '00';
 			}
 			return strtotime($date['day'] . '-' . $date['month'] . '-' . $date['year'] . ' ' .
 				$date['hour'] . ':' . $date['minute']);
