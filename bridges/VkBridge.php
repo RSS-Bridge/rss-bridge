@@ -3,7 +3,9 @@
 class VkBridge extends BridgeAbstract
 {
 
-	const MAINTAINER = 'ahiles3005';
+	const MAINTAINER = 'em92';
+	// const MAINTAINER = 'pmaziere';
+	// const MAINTAINER = 'ahiles3005';
 	const NAME = 'VK.com';
 	const URI = 'https://vk.com/';
 	const CACHE_TIMEOUT = 300; // 5min
