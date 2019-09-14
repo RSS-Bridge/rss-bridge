@@ -165,7 +165,7 @@ class VkBridge extends BridgeAbstract
 			}
 
 			// get all photos
-			foreach($post->find('div.wall_text > a.page_post_thumb_wrap') as $a) {
+			foreach($post->find('div.wall_text a.page_post_thumb_wrap') as $a) {
 				$result = $this->getPhoto($a);
 				if ($result == null) continue;
 				$a->outertext = '';
