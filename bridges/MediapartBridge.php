@@ -33,7 +33,7 @@ class MediapartBridge extends FeedExpander {
 		// Mediapart provide multiple type of contents.
 		// We only process items relative to the newspaper
 		// See issue #1292 - https://github.com/RSS-Bridge/rss-bridge/issues/1292
-		if (strpos($item['uri'], self::URI . "journal/") === 0) {
+		if (strpos($item['uri'], self::URI . 'journal/') === 0) {
 			// Enable single page mode?
 			if ($this->getInput('single_page_mode') === true) {
 				$item['uri'] .= '?onglet=full';
