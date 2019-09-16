@@ -110,6 +110,10 @@ class PikabuBridge extends BridgeAbstract {
 					}
 				}
 				$img->outertext = '<img src="' . $src . '">';
+
+				// it is assumed, that img's parents are links to post itself
+				// we don't need them
+				$img->parent()->outertext = $img->outertext;
 			}
 
 			$categories = array();
@@ -125,7 +129,10 @@ class PikabuBridge extends BridgeAbstract {
 			$item['categories'] = $categories;
 			$item['author'] = $post->find('.user__nick', 0)->innertext;
 			$item['title'] = $title->plaintext;
-			$item['content'] = strip_tags(backgroundToImg($post->find('.story__content-inner', 0)->innertext), '<br><p><img>');
+			$item['content'] = strip_tags(
+				backgroundToImg($post->find('.story__content-inner', 0)->innertext),
+				'<br><p><img><a>
+			');
 			$item['uri'] = $title->href;
 			$item['timestamp'] = strtotime($time->getAttribute('datetime'));
 			$this->items[] = $item;
