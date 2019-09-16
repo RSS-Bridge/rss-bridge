@@ -167,7 +167,7 @@ class VkBridge extends BridgeAbstract
 			}
 
 			// get all photos
-			foreach($post->find('div.wall_text > a.page_post_thumb_wrap') as $a) {
+			foreach($post->find('div.wall_text a.page_post_thumb_wrap') as $a) {
 				$result = $this->getPhoto($a);
 				if ($result == null) continue;
 				$a->outertext = '';
@@ -356,6 +356,8 @@ class VkBridge extends BridgeAbstract
 				}
 
 				$date = date_parse($strdate);
+			} elseif ($date['hour'] === false) {
+				$date['hour'] = $date['minute'] = '00';
 			}
 			return strtotime($date['day'] . '-' . $date['month'] . '-' . $date['year'] . ' ' .
 				$date['hour'] . ':' . $date['minute']);
