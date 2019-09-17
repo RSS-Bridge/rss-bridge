@@ -3,8 +3,8 @@ class AutoPodcasterBridge extends FeedExpander {
     const MAINTAINER='boyska';
     const NAME='Auto Podcaster';
     const URI = '';
-    const CACHE_TIMEOUT = 0;
-    const DESCRIPTION='Crea un podcast multimediale a partire da un feed normale';
+    const CACHE_TIMEOUT = 300; // 5 minuti
+    const DESCRIPTION='Make a "multimedia" podcast out of a normal feed';
     const PARAMETERS = array('url' => array(
         'url' => array(
             'name' => 'URL',
