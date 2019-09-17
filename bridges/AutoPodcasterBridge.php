@@ -32,7 +32,7 @@ class AutoPodcasterBridge extends FeedExpander {
                 $sources[] = $sourceEl->src;
             }
             if($sources) {
-                $audios[$sources[0]] = ['sources' => [$sources]];
+                $audios[$sources[0]] = ['sources' => $sources];
             }
         }
 
