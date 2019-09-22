@@ -164,11 +164,9 @@ class ThePirateBayBridge extends BridgeAbstract {
 					. $item['leechers']
 					. '<br><a href="'
 					. $item['id']
-					. '">info page</a>'
-					. '<br><a href="'
+					. '">info page</a><br><a href="'
 					. $item['magnet']
 					. '">magnet link</a>';
-
 
 					if(isset($item['title']))
 						$this->items[] = $item;
