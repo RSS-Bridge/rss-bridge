@@ -4,6 +4,8 @@
 * Returns $this->items as raw php data.
 */
 class PlaintextFormat extends FormatAbstract {
+	const MIME_TYPE = 'text/plain';
+
 	public function stringify(){
 		$items = $this->getItems();
 		$data = array();
@@ -22,7 +24,7 @@ class PlaintextFormat extends FormatAbstract {
 
 	public function display(){
 		$this
-			->setContentType('text/plain; charset=' . $this->getCharset())
+			->setContentType(self::MIME_TYPE . '; charset=' . $this->getCharset())
 			->callContentType();
 
 		return parent::display();

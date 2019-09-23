@@ -1,5 +1,7 @@
 <?php
 class HtmlFormat extends FormatAbstract {
+	const MIME_TYPE = 'text/html';
+
 	public function stringify(){
 		$extraInfos = $this->getExtraInfos();
 		$title = htmlspecialchars($extraInfos['name']);
@@ -120,7 +122,7 @@ EOD;
 
 	public function display() {
 		$this
-			->setContentType('text/html; charset=' . $this->getCharset())
+			->setContentType(self::MIME_TYPE . '; charset=' . $this->getCharset())
 			->callContentType();
 
 		return parent::display();
