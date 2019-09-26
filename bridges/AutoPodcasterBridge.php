@@ -16,13 +16,8 @@ class AutoPodcasterBridge extends FeedExpander {
             strpos($formatString, 'Ogg') === 0;
     }
 
-	protected function parseItem($newItem){
-		$item = parent::parseItem($newItem);
-
-		$dom = getSimpleHTMLDOMCached($item['uri']);
+    private function extractAudio($dom) {
         $audios = [];
-
-        /* 1st extraction method: by "audio" tag */
         foreach($dom->find('audio') as $audioEl) {
             $sources = [];
             if($audioEl->src !== false) {
@@ -35,8 +30,11 @@ class AutoPodcasterBridge extends FeedExpander {
                 $audios[$sources[0]] = ['sources' => $sources];
             }
         }
+        return $audios;
+    }
+    private function extractIframeArchive($dom) {
+        $audios = [];
 
-        /* 2nd extraction method: by "iframe" tag */
         foreach($dom->find('iframe') as $iframeEl) {
             if(strpos($iframeEl->src, "https://archive.org/embed/") === 0) {
                 $listURL = preg_replace("/\/embed\//", "/details/", $iframeEl->src, 1) . "?output=json";
@@ -59,7 +57,29 @@ class AutoPodcasterBridge extends FeedExpander {
             }
         }
 
+        return $audios;
+    }
 
+	protected function parseItem($newItem){
+		$item = parent::parseItem($newItem);
+
+		$dom = getSimpleHTMLDOMCached($item['uri']);
+        $audios = [];
+        if ($dom !== false) {
+            /* 1st extraction method: by "audio" tag */
+            $audios = array_merge($audios, $this->extractAudio($dom));
+
+            /* 2nd extraction method: by "iframe" tag */
+            $audios = array_merge($audios, $this->extractIframeArchive($dom));
+        }
+        elseif($item['content'] !== NULL) {
+            /* 1st extraction method: by "audio" tag */
+            $audios = array_merge($audios, $this->extractAudio(str_get_html($item['content'])));
+
+            /* 2nd extraction method: by "iframe" tag */
+            $audios = array_merge($audios,
+                $this->extractIframeArchive(str_get_html($item['content'])));
+        }
 
         if(count($audios) === 0) {
             return null;
