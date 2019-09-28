@@ -191,7 +191,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	 * @param string $key Given key
 	 * @return string Requested value
 	 */
-	protected function getConfig(string $key) {
+	protected function getConfig($key) {
 		return Configuration::getConfig(get_called_class(), $key);
 	}
 
