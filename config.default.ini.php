@@ -69,3 +69,5 @@ file = "cache.sqlite"
 [MemcachedCache]
 host = "localhost"
 port = 11211
+
+; --- Bridge specific configuration --------------------------------------------

@@ -183,6 +183,19 @@ abstract class BridgeAbstract implements BridgeInterface {
 	}
 
 	/**
+	 * Get bridge specific configuration value for the given key
+	 *
+	 * Each bridge has its own section in the central configuration file
+	 * using the same name as its class name.
+	 *
+	 * @param string $key Given key
+	 * @return string Requested value
+	 */
+	protected function getConfig(string $key) {
+		return Configuration::getConfig(get_called_class(), $key);
+	}
+
+	/**
 	 * Set inputs for the bridge
 	 *
 	 * Returns errors and aborts execution if the provided input parameters are
