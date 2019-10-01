@@ -53,16 +53,18 @@ class GithubLastCommitBranchBridge extends BridgeAbstract {
 		$item['uid'] = $commit->node_id;
 
 		if (sizeof($commit->files) > 0) {
-			$item['content'] .= "<br/>Files modified: <br/>";
+			$item['content'] .= '<br/>Files modified: <br/>';
 		}
 
 		foreach($commit->files as $file) {
-			$item['content'] .= "    - $file->additions additions, $file->deletions deletions, $file->changes changes | $file->filename: <br/>";
+			$item['content'] .= "    - $file->additions additions, $file->deletions deletions, $file->changes changes";
+			$item['content'] .= " | $file->filename: <br/>";
 		}
 
 		$totalAdditions = $commit->stats->additions;
 		$totalDeletions = $commit->stats->deletions;
-		$item['content'] .= '</br>Total ' . count($commit->files) . " changed files with $totalAdditions additions and $totalDeletions deletions.";
+		$item['content'] .= '</br>Total ' . count($commit->files) . " changed files with $totalAdditions additions";
+		$item['content'] .= " and $totalDeletions deletions.";
 
 		$this->items[] = $item;
 	}
