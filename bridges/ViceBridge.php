@@ -2,7 +2,7 @@
 class ViceBridge extends FeedExpander {
 	const MAINTAINER = 'IceWreck';
 	const NAME = 'Vice Bridge';
-	const URI = 'https://www.theguardian.com/';
+	const URI = 'https://www.vice.com/';
 	const CACHE_TIMEOUT = 10; // This is a news site, so don't cache for more than 10 mins
 	const DESCRIPTION = 'RSS feed for vice publications like Vice News, Munchies, Motherboard, etc.';
 	const PARAMETERS = array( array(
