@@ -10,7 +10,7 @@ class PlantUMLReleasesBridge extends BridgeAbstract
 	const MAINTAINER = 'Riduidel';
 
 	const NAME = 'PlantUML Releases';
-	
+
 	const AUTHOR = 'PlantUML team';
 
 	// URI is no more valid, since we can address the whole gq galaxy
@@ -54,16 +54,14 @@ class PlantUMLReleasesBridge extends BridgeAbstract
 			$item = array();
 			$item['author'] = self::AUTHOR;
 			$release_text = $release->innertext;
-			if (preg_match("/(.+) \((.*)\)/", $release_text, $matches)) {
-    			$item['title'] = $matches[1];
-    			// And now, build the date from the date text
-//    			$date = date_parse_from_format("d M,Y", $matches[2]);
-    			$item['timestamp'] = strtotime($matches[2]);
+			if (preg_match('/(.+) \((.*)\)/', $release_text, $matches)) {
+				$item['title'] = $matches[1];
+				// And now, build the date from the date text
+				$item['timestamp'] = strtotime($matches[2]);
 			}
-	        $item['uri'] = $this->getURI();
-	        $item['content'] = $release->next_sibling ();
+			$item['uri'] = $this->getURI();
+			$item['content'] = $release->next_sibling ();
 			$this->items[] = $item;
 		}
 	}
-
 }
