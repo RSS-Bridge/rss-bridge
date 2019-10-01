@@ -19,7 +19,7 @@ class VieDeMerdeBridge extends BridgeAbstract {
 		$limit = $this->getInput('item_limit');
 
 		if ($limit < 1) {
-		    $limit = 20;
+			$limit = 20;
 		}
 
 		$html = getSimpleHTMLDOM(self::URI, array(), $opts)
@@ -27,7 +27,7 @@ class VieDeMerdeBridge extends BridgeAbstract {
 
 		$quotes = $html->find('article.article-panel');
 		if(sizeof($quotes) === 0) {
-		    return;
+			return;
 		}
 
 		foreach($quotes as $quote) {
@@ -54,4 +54,3 @@ class VieDeMerdeBridge extends BridgeAbstract {
 		}
 	}
 }
-
