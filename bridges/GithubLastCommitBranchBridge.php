@@ -40,7 +40,7 @@ class GithubLastCommitBranchBridge extends BridgeAbstract {
 			'Content-Type: application/json',
 		);
 
-		$content = getContents($url, $header, $opts)
+		$content = getContents($url, $header)
 			or returnServerError('Could not request Github api . Tried: ' . $url);
 
 		$commit = json_decode($content);
