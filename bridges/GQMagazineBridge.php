@@ -117,7 +117,7 @@ class GQMagazineBridge extends BridgeAbstract
 	 */
 	private function loadFullArticle($uri){
 		$html = getSimpleHTMLDOMCached($uri);
-		return $html->find('section[data-test-id=ArticleBodyContent]', 0);
+		return $html->find('section[data-test-id=MainContentWrapper]', 0);
 	}
 
 	/**
