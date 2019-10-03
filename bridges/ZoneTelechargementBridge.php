@@ -7,9 +7,9 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 	 *  name of the bridge. This permits to keep the same RSS Feed URL.
 	 */
 
-	const NAME = 'Annuaire Telechargement';
-	const URI = 'https://www.annuaire-telechargement.com/';
-	const DESCRIPTION = 'Suivi de série sur Annuaire Telechargement';
+	const NAME = 'Zone Telechargement';
+	const URI = 'https://www.zone-telechargement.net/';
+	const DESCRIPTION = 'Suivi de série sur Zone Telechargement';
 	const MAINTAINER = 'sysadminstory';
 	const PARAMETERS = array(
 		'Suivre la publication des épisodes d\'une série en cours de diffusion' => array(
@@ -17,14 +17,14 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 				'name' => 'URL de la série',
 				'type' => 'text',
 				'required' => true,
-				'title' => 'URL d\'une série sans le https://www.annuaire-telechargement.com/',
+				'title' => 'URL d\'une série sans le https://wwv.zone-telechargement.net/',
 				'exampleValue' => 'telecharger-series/31079-halt-and-catch-fire-saison-4-french-hd720p.html'
 			)
 		)
 	);
 
 	public function getIcon() {
-		return 'https://www.annuaire-telechargement.com/templates/Default/images/favicon.ico';
+		return self::URI . '/templates/Default/images/favicon.ico';
 	}
 
 	public function collectData(){
