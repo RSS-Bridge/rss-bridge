@@ -37,6 +37,10 @@ class InstagramBridge extends BridgeAbstract {
 					'Picture' => 'picture',
 				),
 				'defaultValue' => 'all'
+			),
+			'direct_links' => array(
+				'name' => 'Use direct image links',
+				'type' => 'checkbox',
 			)
 		)
 
@@ -79,6 +83,8 @@ class InstagramBridge extends BridgeAbstract {
 		if(is_null($this->getInput('u')) && $this->getInput('media_type') == 'story') {
 			returnClientError('Stories are not supported for hashtags nor locations!');
 		}
+
+		$directLink = !is_null($this->getInput('direct_links')) && $this->getInput('direct_links');
 
 		$data = $this->getInstagramJSON($this->getURI());
 
@@ -136,7 +142,11 @@ class InstagramBridge extends BridgeAbstract {
 				$item['content'] = $data[0];
 				$item['enclosures'] = $data[1];
 			} else {
-				$mediaURI = self::URI . 'p/' . $media->shortcode . '/media?size=l';
+				if($directLink) {
+					$mediaURI = $media->display_url;
+				} else {
+					$mediaURI = self::URI . 'p/' . $media->shortcode . '/media?size=l';
+				}
 				$item['content'] = '<a href="' . htmlentities($item['uri']) . '" target="_blank">';
 				$item['content'] .= '<img src="' . htmlentities($mediaURI) . '" alt="' . $item['title'] . '" />';
 				$item['content'] .= '</a><br><br>' . nl2br(htmlentities($textContent));
