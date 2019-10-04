@@ -1,7 +1,7 @@
 <?php
 class BandcampBridge extends BridgeAbstract {
 
-	const MAINTAINER = 'sebsauvage';
+	const MAINTAINER = 'sebsauvage, Roliga';
 	const NAME = 'Bandcamp Bridge';
 	const URI = 'https://bandcamp.com/';
 	const CACHE_TIMEOUT = 600; // 10min
