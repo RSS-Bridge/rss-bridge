@@ -11,7 +11,7 @@ class YahtzeeDevDiaryBridge extends BridgeAbstract {
 
 		foreach($html->find('blockquote.wp-embedded-content a') as $element) {
 			$item = array();
-			
+
 			$item['title'] = $element->innertext;
 			$item['uri'] = $element->href;
 
