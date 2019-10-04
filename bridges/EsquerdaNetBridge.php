@@ -26,10 +26,6 @@ class EsquerdaNetBridge extends FeedExpander {
 		return self::URI . '/rss/' . $type;
 	}
 
-/* 	public function getName() { */
-/* 		return self::NAME . ' - ' . 'NAME from VALUES'; */
-/* 	} */
-
 	public function getIcon() {
 		return 'https://www.esquerda.net/sites/default/files/favicon_0.ico';
 	}
