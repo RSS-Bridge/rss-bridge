@@ -32,7 +32,7 @@ class YouTubeAPIBridge extends BridgeAbstract {
 	private $description;
 
 	public function collectData() {
-		$this->getConfig();
+		$this->getApiConfig();
 
 		$channelID = $this->getInput('channel');
 
@@ -96,7 +96,7 @@ class YouTubeAPIBridge extends BridgeAbstract {
 	}
 
 	public function getDescription(){
-		$this->getConfig();
+		$this->getApiConfig();
 
 		$description = (!empty($this->description)) ? $this->description : self::DESCRIPTION;
 
@@ -107,7 +107,7 @@ class YouTubeAPIBridge extends BridgeAbstract {
 		return $description;
 	}
 
-	private function getConfig() {
+	private function getApiConfig() {
 		$this->apiKey = Configuration::getConfig(get_called_class(), 'api_key');
 	}
 
