@@ -82,6 +82,34 @@ class FacebookBridge extends BridgeAbstract {
 		return parent::getName();
 	}
 
+	public function detectParameters($url){
+		$params = array();
+
+		// By profile
+		$regex = '/^(https?:\/\/)?(www\.)?facebook\.com\/profile\.php\?id\=([^\/?&\n]+)?(.*)/';
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['u'] = urldecode($matches[3]);
+			return $params;
+		}
+					
+		// By group
+		$regex = '/^(https?:\/\/)?(www\.)?facebook\.com\/groups\/([^\/?\n]+)?(.*)/';
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['g'] = urldecode($matches[3]);
+			return $params;
+		}	
+
+		// By username
+		$regex = '/^(https?:\/\/)?(www\.)?facebook\.com\/([^\/?\n]+)/';
+		
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['u'] = urldecode($matches[3]);
+			return $params;
+		}			
+
+		return null;
+	}
+	
 	public function getURI() {
 		$uri = self::URI;
 
