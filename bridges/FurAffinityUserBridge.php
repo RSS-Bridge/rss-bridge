@@ -65,8 +65,8 @@ class FurAffinityUserBridge extends BridgeAbstract {
 		$fields =
 			'action=login&' .
 			'retard_protection=1&' .
-			'name=' . urlencode($this->getInput('loginUsername'))' . '&' .
-			'pass=' . urlencode($this->getInput('loginPassword'))' . '&' .
+			'name=' . urlencode($this->getInput('loginUsername')) . '&' .
+			'pass=' . urlencode($this->getInput('loginPassword')) . '&' .
 			'login=Login to Furaffinity';
 
 		curl_setopt($ch,CURLOPT_POST, 5);
