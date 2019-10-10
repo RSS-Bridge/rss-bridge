@@ -26,7 +26,7 @@ class FurAffinityUserBridge extends BridgeAbstract {
 
 	public function collectData() {
 		$cookies = self::login();
-		$url = self::URI.'/gallery/'.$this->getInput('searchUsername');
+		$url = self::URI . '/gallery/' . $this->getInput('searchUsername');
 
 		$html = getSimpleHTMLDOM($url, $cookies)
 			or returnServerError('Could not load the user\'s galary page.');
@@ -54,7 +54,7 @@ class FurAffinityUserBridge extends BridgeAbstract {
 	}
 
 	public function login() {
-		$ch = curl_init("{self::URI}/login/");
+		$ch = curl_init(self::URI . '/login/');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
@@ -69,8 +69,8 @@ class FurAffinityUserBridge extends BridgeAbstract {
 			'pass=' . urlencode($this->getInput('loginPassword')) . '&' .
 			'login=Login to Furaffinity';
 
-		curl_setopt($ch,CURLOPT_POST, 5);
-		curl_setopt($ch,CURLOPT_POSTFIELDS, $fields);
+		curl_setopt($ch, CURLOPT_POST, 5);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
 
 		if(defined('PROXY_URL') && !defined('NOPROXY')) {
 			curl_setopt($ch, CURLOPT_PROXY, PROXY_URL);
