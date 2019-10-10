@@ -53,7 +53,7 @@ class FurAffinityUserBridge extends BridgeAbstract {
 		return self::URI . '/user/' . $this->getInput('searchUsername');
 	}
 
-	public function login() {
+	private function login() {
 		$ch = curl_init(self::URI . '/login/');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
