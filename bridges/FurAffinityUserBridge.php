@@ -26,7 +26,7 @@ class FurAffinityUserBridge extends BridgeAbstract {
 
 	public function collectData() {
 		$cookies = self::login();
-		$url = "{self::URI}/gallery/{$this->getInput('searchUsername')}";
+		$url = self::URI.'/gallery/'.$this->getInput('searchUsername');
 
 		$html = getSimpleHTMLDOM($url, $cookies)
 			or returnServerError('Could not load the user\'s galary page.');
@@ -46,11 +46,11 @@ class FurAffinityUserBridge extends BridgeAbstract {
 	}
 
 	public function getName() {
-		return "{self::NAME} for {$this->getInput('searchUsername')}";
+		return self::NAME . ' for ' . $this->getInput('searchUsername');
 	}
 
 	public function getURI() {
-		return "{self::URI}/user/{$this->getInput('searchUsername')}";
+		return self::URI . '/user/' . $this->getInput('searchUsername');
 	}
 
 	public function login() {
@@ -65,8 +65,8 @@ class FurAffinityUserBridge extends BridgeAbstract {
 		$fields =
 			'action=login&' .
 			'retard_protection=1&' .
-			"name={urlencode($this->getInput('loginUsername'))}&" .
-			"pass={urlencode($this->getInput('loginPassword'))}&" .
+			'name=' . urlencode($this->getInput('loginUsername'))' . '&' .
+			'pass=' . urlencode($this->getInput('loginPassword'))' . '&' .
 			'login=Login to Furaffinity';
 
 		curl_setopt($ch,CURLOPT_POST, 5);
