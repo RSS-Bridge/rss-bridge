@@ -61,7 +61,7 @@ class GoogleSearchBridge extends BridgeAbstract {
 
 		return parent::getURI();
 	}
-	
+
 	public function getName(){
 		if(!is_null($this->getInput('q'))) {
 			return $this->getInput('q') . ' - Google search';
