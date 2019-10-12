@@ -12,7 +12,7 @@ class AppleAppStoreBridge extends BridgeAbstract {
 		'id' => array(
 			'name' => 'Application ID',
 			'required' => true,
-			'defaultValue' => '310633997'
+			'exampleValue' => '310633997'
 		),
 		'p' => array(
 			'name' => 'Platform',
@@ -24,7 +24,7 @@ class AppleAppStoreBridge extends BridgeAbstract {
 				'iPhone' => 'iphone',
 				'Mac' => 'mac',
 			),
-			'defaultValue' => 'web',
+			'defaultValue' => 'iphone',
 		),
 		'country' => array(
 			'name' => 'Store Country',
@@ -38,11 +38,11 @@ class AppleAppStoreBridge extends BridgeAbstract {
 		),
 	));
 
-	private function makeHtmlUrl($id){
-	return "https://apps.apple.com/in/app/whatsapp-messenger/id$id";
+	private function makeHtmlUrl($id, $country){
+		return "https://apps.apple.com/" . $country . "/app/id" . $id;
 	}
 
-	private function makeJsonUrl($id, $platform = 'iphone', $country = 'US'){
+	private function makeJsonUrl($id, $platform, $country){
 		return "https://amp-api.apps.apple.com/v1/catalog/$country/apps/$id?platform=$platform&extend=versionHistory";
 	}
 
@@ -52,7 +52,7 @@ class AppleAppStoreBridge extends BridgeAbstract {
 		$country = $this->getInput('country');
 		$platform = $this->getInput('p');
 
-		$uri = $this->makeHtmlUrl($id);
+		$uri = $this->makeHtmlUrl($id, $country);
 
 		$html = getSimpleHTMLDOM($uri);
 
@@ -68,27 +68,34 @@ class AppleAppStoreBridge extends BridgeAbstract {
 
 		$headers = [
 			'Authorization' => "Bearer $token",
-			'Accept'		=> 'application/json',
-			'User-Agent'	=> 'rss-bridge',
+			'Accept' => 'application/json',
 		];
 
-		// var_dump($uri, $headers);die;
 
-		$json = json_decode(getSimpleHTMLDOM($uri, $headers), true);
+		$json_contents = getContents($uri, $headers);
 
-		$json = $json['JSON']['data'];
+		$json = json_decode($json_contents, true);
 
-		$data = $json['attributes']['platformAttributes'][$platform]['versionHistory'];
+		$json = $json['data'][0];
+
+		/* var_dump($json);die; */
+
+		/* TODO: Get the platform from somewhere??? */
+		/* iphone -> ios */
+		$data = $json['attributes']['platformAttributes']['ios']['versionHistory'];
 		$name = $json['attributes']['name'];
 		$author = $json['attributes']['artistName'];
 
-		foreach ($data as $row){
-			$item = [
-				'content' => $row['releaseNotes'],
-				'title'   => $name " - " $row['versionDisplay'],
-				'timestamp' => $row['releaseDate'],
-				'author'	=> 
-			];
+		foreach ($data as $row) {
+			$item = array();
+
+			$item['content'] = $row['releaseNotes'];
+			/* TODO: Move this $name to the feed name */
+			$item['title'] = $name . " - " . $row['versionDisplay'];
+			$item['timestamp'] = $row['releaseDate'];
+			$item['author'] = 'TODO';
+
+			$this->items[] = $item;
 		}
 	}
 }
