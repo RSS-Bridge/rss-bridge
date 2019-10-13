@@ -44,7 +44,7 @@ class StoriesIGBridge extends BridgeAbstract {
 
 		return parent::getURI();
 	}
-	
+
 	public function getName() {
 
 		if (!is_null($this->getInput('username'))) {
