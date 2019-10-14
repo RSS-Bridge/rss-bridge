@@ -5,19 +5,19 @@
 	<title>RSS-Bridge</title>
 	<link href="static/style.css" rel="stylesheet">
 	<link rel="icon" type="image/png" href="static/favicon.png">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="static/jquery-3.1.1.min.js"></script>
     <script>
-            $(document).ready(function(){
-            $('#searchfield').change(function(){
-                //Selected value
-                var inputValue = $(this).val();
+	$(document).ready(function(){
+	    $('#searchfield').change(function(){
+		//Selected value
+		var inputValue = $(this).val();
 
-                //Ajax for calling php function
-                $.post('index.php?action=translate&url=' + inputValue, function(data){
-                    document.getElementById("resultfield").value = data;
-                });
-            });
-    });
+		//Ajax for calling php function
+		$.post('index.php?action=translate&url=' + inputValue, function(data){
+		    document.getElementById("resultfield").value = data;
+		});
+	    });
+	});
     </script>
 </head>
 <body>
