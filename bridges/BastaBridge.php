@@ -3,7 +3,7 @@ class BastaBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'qwertygc';
 	const NAME = 'Bastamag Bridge';
-	const URI = 'http://www.bastamag.net/';
+	const URI = 'https://www.bastamag.net/';
 	const CACHE_TIMEOUT = 7200; // 2h
 	const DESCRIPTION = 'Returns the newest articles.';
 
