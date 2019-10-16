@@ -25,10 +25,7 @@ class GoogleSearchBridge extends BridgeAbstract {
 	public function collectData(){
 		$html = '';
 
-		$html = getSimpleHTMLDOM(self::URI
-		. 'search?q='
-		. urlencode($this->getInput('q'))
-		. '&num=100&complete=0&tbs=qdr:y,sbd:1')
+		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('No results for this query.');
 
 		$emIsRes = $html->find('div[id=ires]', 0);
@@ -52,6 +49,17 @@ class GoogleSearchBridge extends BridgeAbstract {
 				$this->items[] = $item;
 			}
 		}
+	}
+
+	public function getURI() {
+		if (!is_null($this->getInput('q'))) {
+			return self::URI
+				. 'search?q='
+				. urlencode($this->getInput('q'))
+				. '&num=100&complete=0&tbs=qdr:y,sbd:1';
+		}
+
+		return parent::getURI();
 	}
 
 	public function getName(){
