@@ -3,7 +3,7 @@ class ScoopItBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'Pitchoule';
 	const NAME = 'ScoopIt';
-	const URI = 'http://www.scoop.it/';
+	const URI = 'https://www.scoop.it/';
 	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = 'Returns most recent results from ScoopIt.';
 

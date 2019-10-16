@@ -2,7 +2,7 @@
 class CastorusBridge extends BridgeAbstract {
 	const MAINTAINER = 'logmanoriginal';
 	const NAME = 'Castorus Bridge';
-	const URI = 'http://www.castorus.com';
+	const URI = 'https://www.castorus.com';
 	const CACHE_TIMEOUT = 600; // 10min
 	const DESCRIPTION = 'Returns the latest changes';
 
