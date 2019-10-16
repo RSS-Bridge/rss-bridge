@@ -28,7 +28,7 @@ class GoogleSearchBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('No results for this query.');
 
-		$emIsRes = $html->find('div[id=ires]', 0);
+		$emIsRes = $html->find('div[id=res]', 0);
 
 		if(!is_null($emIsRes)) {
 			foreach($emIsRes->find('div[class=g]') as $element) {
