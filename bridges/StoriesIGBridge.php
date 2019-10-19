@@ -29,6 +29,7 @@ class StoriesIGBridge extends BridgeAbstract {
 			$item['title'] = $this->getInput('username') . ' story';
 			$item['uri'] = $result->find('div.download', 0)->find('a', 0)->href;
 			$item['author'] = $this->getInput('username');
+			$item['timestamp'] = strtotime($result->find('time', 0)->datetime);
 			$item['uid'] = $result->find('time', 0)->datetime;
 
 			$item['content'] = $result;
@@ -43,5 +44,14 @@ class StoriesIGBridge extends BridgeAbstract {
 		return $uri;
 
 		return parent::getURI();
+	}
+
+	public function getName() {
+
+		if (!is_null($this->getInput('username'))) {
+			return $this->getInput('username') . ' - ' . self::NAME;
+		}
+
+		return parent::getName();
 	}
 }

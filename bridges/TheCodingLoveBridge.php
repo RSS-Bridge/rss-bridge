@@ -3,7 +3,7 @@ class TheCodingLoveBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'superbaillot.net';
 	const NAME = 'The Coding Love';
-	const URI = 'http://thecodinglove.com/';
+	const URI = 'https://thecodinglove.com/';
 	const CACHE_TIMEOUT = 7200; // 2h
 	const DESCRIPTION = 'The Coding Love';
 
