@@ -71,9 +71,9 @@ class RevolutBridge extends BridgeAbstract {
 			$videoId = end($urlParts);
 			$thumbnailUrl = 'https://img.youtube.com/vi/' . $videoId . '/0.jpg';
 			$videoUrl = 'https://www.youtube.com/watch?v=' . $videoId;
-			$videoReplacement = '<a href="' . $videoUrl . '">'
-				. '<img src="' . $thumbnailUrl . '" />'
-				. '</a>';
+			$videoReplacement = str_get_html('<a><img /></a>');
+			$videoReplacement->find('a', 0)->href = $videoUrl;
+			$videoReplacement->find('img', 0)->src = $thumbnailUrl;
 			return $videoReplacement;
 		}
 		return $iframe->outertext;
