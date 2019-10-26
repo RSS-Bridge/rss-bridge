@@ -38,6 +38,10 @@ class AppleAppStoreBridge extends BridgeAbstract {
 		),
 	));
 
+	const PLATFORM_MAPPING = array(
+		'iphone' => 'ios'
+	);
+
 	private function makeHtmlUrl($id, $country){
 		return "https://apps.apple.com/" . $country . "/app/id" . $id;
 	}
@@ -46,54 +50,62 @@ class AppleAppStoreBridge extends BridgeAbstract {
 		return "https://amp-api.apps.apple.com/v1/catalog/$country/apps/$id?platform=$platform&extend=versionHistory";
 	}
 
-	public function collectData() {
-
-		$id = $this->getInput('id');
-		$country = $this->getInput('country');
-		$platform = $this->getInput('p');
-
+	private function getJWTToken($id, $platform, $country){
 		$uri = $this->makeHtmlUrl($id, $country);
 
-		$html = getSimpleHTMLDOM($uri);
+		$html = getSimpleHTMLDOM($uri, 3600);
 
 		$meta = $html->find('meta[name="web-experience-app/config/environment"]', 0);
 
 		$json = urldecode($meta->content);
 
-		$json = json_decode(urldecode($meta->content));
+		$json = json_decode($json);
 
-		$token = $json->MEDIA_API->token;
+		return $json->MEDIA_API->token;
+	}
 
+	private function getAppData($id, $platform, $country, $token){
 		$uri = $this->makeJsonUrl($id, $platform, $country);
 
 		$headers = [
-			'Authorization' => "Bearer $token",
-			'Accept' => 'application/json',
+			"Authorization: Bearer $token",
 		];
 
+		$json = json_decode(getSimpleHTMLDOM($uri, $headers), true);
 
-		$json_contents = getContents($uri, $headers);
+		return $json['data'][0];
+	}
 
-		$json = json_decode($json_contents, true);
+	/**
+	 * Parses the version history from the data received
+	 * @return array list of versions with details on each element
+	 */
+	private function getVersionHistory($data, $platform){
+		$os = self::PLATFORM_MAPPING[$platform];
+		return $data['attributes']['platformAttributes'][$os]['versionHistory'];
+	}
 
-		$json = $json['data'][0];
+	public function collectData() {
+		$id = $this->getInput('id');
+		$country = $this->getInput('country');
+		$platform = $this->getInput('p');
 
-		/* var_dump($json);die; */
+		$token = $this->getJWTToken($id, $platform, $country);
+		$data = $this->getAppData($id, $platform, $country, $token);
+		$versionHistory = $this->getVersionHistory($data, $platform);
 
-		/* TODO: Get the platform from somewhere??? */
-		/* iphone -> ios */
-		$data = $json['attributes']['platformAttributes']['ios']['versionHistory'];
-		$name = $json['attributes']['name'];
-		$author = $json['attributes']['artistName'];
+		$name = $data['attributes']['name'];
+		$author = $data['attributes']['artistName'];
 
-		foreach ($data as $row) {
+		foreach ($versionHistory as $row) {
 			$item = array();
 
-			$item['content'] = $row['releaseNotes'];
-			/* TODO: Move this $name to the feed name */
+			$item['content'] = nl2br($row['releaseNotes']);
 			$item['title'] = $name . " - " . $row['versionDisplay'];
 			$item['timestamp'] = $row['releaseDate'];
-			$item['author'] = 'TODO';
+			$item['author'] = $author;
+
+			$item['uri'] = $this->makeHtmlUrl($id, $country);
 
 			$this->items[] = $item;
 		}
