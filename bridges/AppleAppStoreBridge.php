@@ -10,44 +10,60 @@ class AppleAppStoreBridge extends BridgeAbstract {
 
 	const PARAMETERS = array(array(
 		'id' => array(
-			'name' => 'Application ID',
-			'required' => true,
-			'exampleValue' => '310633997'
+			'name' 			=> 'Application ID',
+			'required' 		=> true,
+			'exampleValue' 	=> '310633997'
 		),
 		'p' => array(
-			'name' => 'Platform',
-			'type' => 'list',
-			'values' => array(
-				'Web' => 'web',
-				'Apple TV' => 'appletv',
-				'iPad' => 'ipad',
-				'iPhone' => 'iphone',
-				'Mac' => 'mac',
+			'name' 		=> 'Platform',
+			'type' 		=> 'list',
+			'values' 	=> array(
+				'iPad' 		=> 'ipad',
+				'iPhone' 	=> 'iphone',
+				'Mac' 		=> 'mac',
+
+				// The following 2 are present in responses
+				// but not yet tested
+				'Web' 		=> 'web',
+				'Apple TV' 	=> 'appletv',
 			),
 			'defaultValue' => 'iphone',
 		),
 		'country' => array(
-			'name' => 'Store Country',
-			'type' => 'list',
-			'values' => array(
-				'US'	=> 'US',
-				'India'	=> 'IN',
-				'Canada'=> 'CA'
+			'name' 			=> 'Store Country',
+			'type' 			=> 'list',
+			'values' 		=> array(
+				'US'	 => 'US',
+				'India'	 => 'IN',
+				'Canada' => 'CA'
 			),
-			'defaultValue' => 'US',
+			'defaultValue' 	=> 'US',
 		),
 	));
 
 	const PLATFORM_MAPPING = array(
-		'iphone' => 'ios'
+		'iphone' 	=> 'ios',
+		'ipad'		=> 'ios',
 	);
 
 	private function makeHtmlUrl($id, $country){
-		return "https://apps.apple.com/" . $country . "/app/id" . $id;
+		return 'https://apps.apple.com/' . $country . '/app/id' . $id;
 	}
 
 	private function makeJsonUrl($id, $platform, $country){
 		return "https://amp-api.apps.apple.com/v1/catalog/$country/apps/$id?platform=$platform&extend=versionHistory";
+	}
+
+	/**
+	 * In case of some platforms, the data is present in the initial response
+	 */
+	private function getDataFromShoebox($id, $platform, $country){
+		$uri = $this->makeHtmlUrl($id, $country);
+		$html = getSimpleHTMLDOM($uri, 3600);
+		$script = $html->find('script[id="shoebox-ember-data-store"]', 0);
+
+		$json = json_decode($script->innertext, true);
+		return $json['data'];
 	}
 
 	private function getJWTToken($id, $platform, $country){
@@ -81,8 +97,14 @@ class AppleAppStoreBridge extends BridgeAbstract {
 	 * @return array list of versions with details on each element
 	 */
 	private function getVersionHistory($data, $platform){
-		$os = self::PLATFORM_MAPPING[$platform];
-		return $data['attributes']['platformAttributes'][$os]['versionHistory'];
+		switch($platform) {
+			case 'mac':
+				return $data['relationships']['platforms']['data'][0]['attributes']['versionHistory'];
+				break;
+			default:
+				$os = self::PLATFORM_MAPPING[$platform];
+				return $data['attributes']['platformAttributes'][$os]['versionHistory'];
+		}
 	}
 
 	public function collectData() {
@@ -90,10 +112,18 @@ class AppleAppStoreBridge extends BridgeAbstract {
 		$country = $this->getInput('country');
 		$platform = $this->getInput('p');
 
-		$token = $this->getJWTToken($id, $platform, $country);
-		$data = $this->getAppData($id, $platform, $country, $token);
-		$versionHistory = $this->getVersionHistory($data, $platform);
+		switch ($platform) {
+			case 'mac':
+				$data = $this->getDataFromShoebox($id, $platform, $country);
+				break;
 
+			default:
+				$token = $this->getJWTToken($id, $platform, $country);
+				$data = $this->getAppData($id, $platform, $country, $token);
+				break;
+		}
+
+		$versionHistory = $this->getVersionHistory($data, $platform);
 		$name = $data['attributes']['name'];
 		$author = $data['attributes']['artistName'];
 
@@ -101,7 +131,7 @@ class AppleAppStoreBridge extends BridgeAbstract {
 			$item = array();
 
 			$item['content'] = nl2br($row['releaseNotes']);
-			$item['title'] = $name . " - " . $row['versionDisplay'];
+			$item['title'] = $name . ' - ' . $row['versionDisplay'];
 			$item['timestamp'] = $row['releaseDate'];
 			$item['author'] = $author;
 
