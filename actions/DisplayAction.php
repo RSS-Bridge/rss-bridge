@@ -122,6 +122,7 @@ class DisplayAction extends ActionAbstract {
 
 			try {
 				$bridge->setDatas($bridge_params);
+				$bridge->loadBridgeConfiguration();
 				$bridge->collectData();
 
 				$items = $bridge->getItems();

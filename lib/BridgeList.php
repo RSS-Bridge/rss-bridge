@@ -74,7 +74,7 @@ EOD;
 
 		foreach($bridgeList as $bridgeName) {
 
-			if($bridgeFac->isWhitelisted($bridgeName)) {
+			if($bridgeFac->isWhitelisted($bridgeName) && $bridgeFac->create($bridgeName)->isConfigurationValid()) {
 
 				$body .= BridgeCard::displayBridgeCard($bridgeName, $formats);
 				$totalActiveBridges++;

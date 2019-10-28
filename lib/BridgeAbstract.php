@@ -62,6 +62,13 @@ abstract class BridgeAbstract implements BridgeInterface {
 	const CACHE_TIMEOUT = 3600;
 
 	/**
+	 * Configuration for the bridge
+	 *
+	 * Use {@see BridgeAbstract::getConfiguration()} to read this parameter
+	 */
+	const CONFIGURATION = array();
+
+	/**
 	 * Parameters for the bridge
 	 *
 	 * Use {@see BridgeAbstract::getParameters()} to read this parameter
@@ -239,6 +246,52 @@ abstract class BridgeAbstract implements BridgeInterface {
 	}
 
 	/**
+	 * Loads configuration for the bridge
+	 *
+	 * Returns errors and aborts execution if the provided configuration is
+	 * invalid.
+	 *
+	 * @return void
+	 */
+	public function loadBridgeConfiguration() {
+		foreach(static::CONFIGURATION as $optionName => $optionValue) {
+
+			$configurationOption = Configuration::getConfig(get_class($this), $optionName);
+
+			if($configurationOption !== null) {
+				$this->configuration[$optionName] = $configurationOption;
+				continue;
+			}
+
+			if($optionValue['required']) {
+				returnClientError(
+					'Missing configuration option :'
+					. $optionName
+				);
+			} else {
+				$this->configuration[$optionName] = $optionValue['defaultValue'];
+			}
+
+		}
+	}
+
+
+	/**
+	 * Check if configuration allows for this bridge loading
+	 *
+	 * @return boolean
+	 */
+	public function isConfigurationValid() {
+		foreach(static::CONFIGURATION as $optionName => $optionValue) {
+			if($optionValue["required"] && Configuration::getConfig(get_class($this), $optionName) === null) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+
+	/**
 	 * Returns the value for the provided input
 	 *
 	 * @param string $input The input name
@@ -250,6 +303,20 @@ abstract class BridgeAbstract implements BridgeInterface {
 		}
 		return $this->inputs[$this->queriedContext][$input]['value'];
 	}
+
+	/**
+	 * Returns the value for the selected configuration
+	 *
+	 * @param string $input The option name
+	 * @return mixed|null The option value or null if the input is not defined
+	 */
+	protected function getOption($input){
+		if(!isset($this->configuration[$input])) {
+			return null;
+		}
+		return $this->configuration[$input];
+	}
+
 
 	/** {@inheritdoc} */
 	public function getDescription(){
@@ -269,6 +336,11 @@ abstract class BridgeAbstract implements BridgeInterface {
 	/** {@inheritdoc} */
 	public function getIcon(){
 		return '';
+	}
+
+	/** {@inheritdoc} */
+	public function getConfiguration(){
+		return static::CONFIGURATION;
 	}
 
 	/** {@inheritdoc} */
