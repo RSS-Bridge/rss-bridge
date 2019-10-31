@@ -204,6 +204,10 @@ final class Configuration {
 		if(!is_string(self::getConfig('error', 'output')))
 			self::reportConfigurationError('error', 'output', 'Is not a valid String');
 
+		if(!is_numeric(self::getConfig('error', 'report_limit'))
+		|| self::getConfig('error', 'report_limit') < 1)
+			self::reportConfigurationError('admin', 'report_limit', 'Value is invalid');
+
 	}
 
 	/**

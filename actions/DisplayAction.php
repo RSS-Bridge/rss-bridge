@@ -146,20 +146,61 @@ class DisplayAction extends ActionAbstract {
 			} catch(Error $e) {
 				error_log($e);
 
-				if(Configuration::getConfig('error', 'output') === 'feed') {
-					$item = new \FeedItem();
+				if(logBridgeError($bridge::NAME, $e->getCode()) >= Configuration::getConfig('error', 'report_limit')) {
+					if(Configuration::getConfig('error', 'output') === 'feed') {
+						$item = new \FeedItem();
 
-					// Create "new" error message every 24 hours
-					$this->userData['_error_time'] = urlencode((int)(time() / 86400));
+						// Create "new" error message every 24 hours
+						$this->userData['_error_time'] = urlencode((int)(time() / 86400));
 
-					// Error 0 is a special case (i.e. "trying to get property of non-object")
-					if($e->getCode() === 0) {
-						$item->setTitle(
-							'Bridge encountered an unexpected situation! ('
-							. $this->userData['_error_time']
-							. ')'
+						// Error 0 is a special case (i.e. "trying to get property of non-object")
+						if($e->getCode() === 0) {
+							$item->setTitle(
+								'Bridge encountered an unexpected situation! ('
+								. $this->userData['_error_time']
+								. ')'
+							);
+						} else {
+							$item->setTitle(
+								'Bridge returned error '
+								. $e->getCode()
+								. '! ('
+								. $this->userData['_error_time']
+								. ')'
+							);
+						}
+
+						$item->setURI(
+							(isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '')
+							. '?'
+							. http_build_query($this->userData)
 						);
-					} else {
+
+						$item->setTimestamp(time());
+						$item->setContent(buildBridgeException($e, $bridge));
+
+						$items[] = $item;
+					} elseif(Configuration::getConfig('error', 'output') === 'http') {
+						header('Content-Type: text/html', true, $e->getCode());
+						die(buildTransformException($e, $bridge));
+					}
+				}
+			} catch(Exception $e) {
+				error_log($e);
+
+				if(logBridgeError($bridge::NAME, $e->getCode()) >= Configuration::getConfig('error', 'report_limit')) {
+					if(Configuration::getConfig('error', 'output') === 'feed') {
+						$item = new \FeedItem();
+
+						// Create "new" error message every 24 hours
+						$this->userData['_error_time'] = urlencode((int)(time() / 86400));
+
+						$item->setURI(
+							(isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '')
+							. '?'
+							. http_build_query($this->userData)
+						);
+
 						$item->setTitle(
 							'Bridge returned error '
 							. $e->getCode()
@@ -167,51 +208,14 @@ class DisplayAction extends ActionAbstract {
 							. $this->userData['_error_time']
 							. ')'
 						);
+						$item->setTimestamp(time());
+						$item->setContent(buildBridgeException($e, $bridge));
+
+						$items[] = $item;
+					} elseif(Configuration::getConfig('error', 'output') === 'http') {
+						header('Content-Type: text/html', true, $e->getCode());
+						die(buildTransformException($e, $bridge));
 					}
-
-					$item->setURI(
-						(isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '')
-						. '?'
-						. http_build_query($this->userData)
-					);
-
-					$item->setTimestamp(time());
-					$item->setContent(buildBridgeException($e, $bridge));
-
-					$items[] = $item;
-				} elseif(Configuration::getConfig('error', 'output') === 'http') {
-					header('Content-Type: text/html', true, $e->getCode());
-					die(buildTransformException($e, $bridge));
-				}
-			} catch(Exception $e) {
-				error_log($e);
-
-				if(Configuration::getConfig('error', 'output') === 'feed') {
-					$item = new \FeedItem();
-
-					// Create "new" error message every 24 hours
-					$this->userData['_error_time'] = urlencode((int)(time() / 86400));
-
-					$item->setURI(
-						(isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '')
-						. '?'
-						. http_build_query($this->userData)
-					);
-
-					$item->setTitle(
-						'Bridge returned error '
-						. $e->getCode()
-						. '! ('
-						. $this->userData['_error_time']
-						. ')'
-					);
-					$item->setTimestamp(time());
-					$item->setContent(buildBridgeException($e, $bridge));
-
-					$items[] = $item;
-				} elseif(Configuration::getConfig('error', 'output') === 'http') {
-					header('Content-Type: text/html', true, $e->getCode());
-					die(buildTransformException($e, $bridge));
 				}
 			}
 
