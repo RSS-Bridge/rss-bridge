@@ -35,11 +35,6 @@ class ConnectivityAction extends ActionAbstract {
 
 		$bridgeName = $this->userData['bridge'];
 
-		if(!Bridge::isWhitelisted($bridgeName)) {
-			header('Content-Type: text/html');
-			returnServerError('Bridge is not whitelisted!');
-		}
-
 		$this->reportBridgeConnectivity($bridgeName);
 
 	}
@@ -59,6 +54,14 @@ class ConnectivityAction extends ActionAbstract {
 	 */
 	private function reportBridgeConnectivity($bridgeName) {
 
+		$bridgeFac = new \BridgeFactory();
+		$bridgeFac->setWorkingDir(PATH_LIB_BRIDGES);
+
+		if(!$bridgeFac->isWhitelisted($bridgeName)) {
+			header('Content-Type: text/html');
+			returnServerError('Bridge is not whitelisted!');
+		}
+
 		header('Content-Type: text/json');
 
 		$retVal = array(
@@ -67,7 +70,7 @@ class ConnectivityAction extends ActionAbstract {
 			'http_code' => 200,
 		);
 
-		$bridge = Bridge::create($bridgeName);
+		$bridge = $bridgeFac->create($bridgeName);
 
 		if($bridge === false) {
 			echo json_encode($retVal);
