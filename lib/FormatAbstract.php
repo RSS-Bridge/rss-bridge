@@ -21,6 +21,9 @@ abstract class FormatAbstract implements FormatInterface {
 	/** The default charset (UTF-8) */
 	const DEFAULT_CHARSET = 'UTF-8';
 
+	/** MIME type of format output */
+	const MIME_TYPE = 'text/plain';
+
 	/** @var string|null $contentType The content type */
 	protected $contentType = null;
 
@@ -38,6 +41,11 @@ abstract class FormatAbstract implements FormatInterface {
 
 	/** @var array $extraInfos The extra infos */
 	protected $extraInfos;
+
+	/** {@inheritdoc} */
+	public function getMimeType(){
+		return static::MIME_TYPE;
+	}
 
 	/**
 	 * {@inheritdoc}
