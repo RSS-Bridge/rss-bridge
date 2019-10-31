@@ -122,6 +122,11 @@ This bridge is not fetching its content through a secure connection</div>';
 				} elseif($inputEntry['type'] === 'checkbox') {
 					$form .= self::getCheckboxInput($inputEntry, $idArg, $id);
 				}
+
+				if(isset($inputEntry['title']))
+					$form .= '<i class="info" title="' . filter_var($inputEntry['title'], FILTER_SANITIZE_STRING) . '">i</i>';
+				else
+					$form .= '<i></i>';
 			}
 
 			$form .= '</div>';
@@ -151,9 +156,6 @@ This bridge is not fetching its content through a secure connection</div>';
 
 		if(isset($entry['pattern']))
 			$retVal .= ' pattern="' . $entry['pattern'] . '"';
-
-		if(isset($entry['title']))
-			$retVal .= ' title="' . filter_var($entry['title'], FILTER_SANITIZE_STRING) . '"';
 
 		return $retVal;
 	}
