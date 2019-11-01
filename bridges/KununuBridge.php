@@ -34,6 +34,12 @@ class KununuBridge extends BridgeAbstract {
 				'name' => 'Include benefits',
 				'type' => 'checkbox',
 				'title' => 'Activate to include benefits in the feed'
+			),
+			'limit' => array(
+				'name' => 'Limit',
+				'type' => 'number',
+				'defaultValue' => 3,
+				'title' => "Maximum number of items to return in the feed.\n0 = unlimited"
 			)
 		),
 		array(
@@ -108,6 +114,8 @@ class KununuBridge extends BridgeAbstract {
 		$articles = $section->find('article')
 			or returnServerError('Unable to find articles!');
 
+		$limit = $this->getInput('limit') ?: 0;
+
 		// Go through all articles
 		foreach($articles as $article) {
 
@@ -140,6 +148,8 @@ class KununuBridge extends BridgeAbstract {
 			}
 
 			$this->items[] = $item;
+
+			if ($limit > 0 && count($this->items) >= $limit) break;
 
 		}
 	}
