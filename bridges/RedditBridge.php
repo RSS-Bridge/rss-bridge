@@ -47,7 +47,7 @@ class RedditBridge extends FeedExpander {
 				$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 				curl_close($ch);
 
-				if($httpcode !== 403) {
+				if($httpcode !== 403 && $httpcode !== 302) {
 					$this->collectExpandableDatas($url);
 				}
 			} else {
