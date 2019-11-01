@@ -170,8 +170,15 @@ EOD
 
 	public function collectData(){
 		$html = '';
+		$page = $this->getURI();
 
-		$html = getSimpleHTMLDOM($this->getURI());
+		if(php_sapi_name() === 'cli' && empty(ini_get('curl.cainfo'))) {
+			$cookies = $this->getCookies($page);
+			$html = getSimpleHTMLDOM($page, array("Cookie: $cookies"));
+		} else {
+			$html = getSimpleHTMLDOM($page, array(), array(CURLOPT_COOKIEFILE => ''));
+		}
+
 		if(!$html) {
 			switch($this->queriedContext) {
 			case 'By keyword or hashtag':
@@ -427,5 +434,28 @@ EOD;
 		}
 
 		return null;
+	}
+
+	private function getCookies($pageURL){
+
+		$ctx = stream_context_create(array(
+			'http' => array(
+				'follow_location' => false
+				)
+			)
+		);
+		$a = file_get_contents($pageURL, 0, $ctx);
+
+		//First request to get the cookie
+		$cookies = '';
+		foreach($http_response_header as $hdr) {
+			if(stripos($hdr, 'Set-Cookie') !== false) {
+				$cLine = explode(':', $hdr)[1];
+				$cLine = explode(';', $cLine)[0];
+				$cookies .= ';' . $cLine;
+			}
+		}
+
+		return substr($cookies, 2);
 	}
 }

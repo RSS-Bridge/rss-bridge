@@ -1,7 +1,7 @@
 <?php
 class ExtremeDownloadBridge extends BridgeAbstract {
 	const NAME = 'Extreme Download';
-	const URI = 'https://ww1.extreme-d0wn.com/';
+	const URI = 'https://wvw.extreme-down.xyz/';
 	const DESCRIPTION = 'Suivi de série sur Extreme Download';
 	const MAINTAINER = 'sysadminstory';
 	const PARAMETERS = array(

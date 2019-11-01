@@ -1,0 +1,8 @@
+input:focus::-webkit-input-placeholder { opacity: 0; }
+input:focus::-moz-placeholder { opacity: 0; }
+input:focus::placeholder { opacity: 0; }
+input:focus:-moz-placeholder { opacity: 0; }
+input:focus:-ms-input-placeholder { opacity: 0; }
+
+.progress { height: 2px; }
+.progressbar { width: 0%; }

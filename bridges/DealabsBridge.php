@@ -1145,7 +1145,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 		} else {
 			foreach ($list as $deal) {
 				$item = array();
-				$item['uri'] = $deal->find('div[class=threadGrid-title]', 0)->find('a', 0)->href;
+				$item['uri'] = $deal->find('div[class*=threadGrid-title]', 0)->find('a', 0)->href;
 				$item['title'] = $deal->find('a[class*=' . $selectorLink . ']', 0
 				)->plaintext;
 				$item['author'] = $deal->find('span.thread-username', 0)->plaintext;

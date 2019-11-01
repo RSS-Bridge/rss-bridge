@@ -32,6 +32,13 @@ class PikabuBridge extends BridgeAbstract {
 				'required' => true
 			),
 			'filter' => self::PARAMETERS_FILTER
+		),
+		'По пользователю' => array(
+			'user' => array(
+				'name' => 'Пользователь',
+				'exampleValue' => 'admin',
+				'required' => true
+			)
 		)
 	);
 
@@ -40,6 +47,8 @@ class PikabuBridge extends BridgeAbstract {
 	public function getURI() {
 		if ($this->getInput('tag')) {
 			return self::URI . '/tag/' . rawurlencode($this->getInput('tag')) . '/' . rawurlencode($this->getInput('filter'));
+		} else if ($this->getInput('user')) {
+			return self::URI . '/@' . rawurlencode($this->getInput('user'));
 		} else if ($this->getInput('community')) {
 			$uri = self::URI . '/community/' . rawurlencode($this->getInput('community'));
 			if ($this->getInput('filter') != 'hot') {
@@ -101,6 +110,10 @@ class PikabuBridge extends BridgeAbstract {
 					}
 				}
 				$img->outertext = '<img src="' . $src . '">';
+
+				// it is assumed, that img's parents are links to post itself
+				// we don't need them
+				$img->parent()->outertext = $img->outertext;
 			}
 
 			$categories = array();
@@ -116,7 +129,10 @@ class PikabuBridge extends BridgeAbstract {
 			$item['categories'] = $categories;
 			$item['author'] = $post->find('.user__nick', 0)->innertext;
 			$item['title'] = $title->plaintext;
-			$item['content'] = strip_tags(backgroundToImg($post->find('.story__content-inner', 0)->innertext), '<br><p><img>');
+			$item['content'] = strip_tags(
+				backgroundToImg($post->find('.story__content-inner', 0)->innertext),
+				'<br><p><img><a>
+			');
 			$item['uri'] = $title->href;
 			$item['timestamp'] = strtotime($time->getAttribute('datetime'));
 			$this->items[] = $item;
