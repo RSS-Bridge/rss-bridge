@@ -4,7 +4,7 @@ class RedditBridge extends FeedExpander {
 	const MAINTAINER = 'leomaradan';
 	const NAME = 'Reddit Bridge';
 	const URI = 'https://www.reddit.com/';
-	const DESCRIPTION = 'Reddit bridge for Feedly';
+	const DESCRIPTION = 'Reddit RSS Feed fixer';
 
 	const PARAMETERS = array(
 		'single' => array(
@@ -27,33 +27,14 @@ class RedditBridge extends FeedExpander {
 
 	public function collectData(){
 
-		$r = $this->getInput('r');
-		$rs = $this->getInput('rs');
-
-		$subreddits = [];
-
-		if($r !== null) {
-			$subreddits[] = $r;
-		}
-
-		if($rs !== null) {
-			$split = explode(',', $rs);
-			$subreddits = array_merge($split, $subreddits);
-		}
+		switch($this->queriedcontext) {
+			case 'single': $subreddits[] = $this->getInput('r'); break;
+			case 'multi': $subreddits = explode(',', $this->getInput('rs')); break;
+	}
 
 		foreach ($subreddits as $subreddit) {
 			$name = trim($subreddit);
-			$url = "https://www.reddit.com/r/$name/.rss";
-
-			$content = getContents($url) or returnServerError('Could not request ' . $url);
-			$rssContent = simplexml_load_string(trim($content));
-
-			Debug::log('Calling function "collect_ATOM_1_0_data"');
-			$this->collect_ATOM_1_0_data($rssContent, -1);
+			$this->collectExpandableDatas("https://www.reddit.com/r/$name/.rss");
 		}
-	}
-
-	protected function parseItem($newsItem) {
-		return $this->parseATOMItem($newsItem);
 	}
 }
