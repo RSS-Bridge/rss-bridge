@@ -25,7 +25,7 @@ class RoadAndTrackBridge extends BridgeAbstract {
 
 	private function fixImages($content) {
 
-		$enclosures = [];
+		$enclosures = array();
 		foreach($content->find('img') as $image) {
 			$image->src = explode('?', $image->getAttribute('data-src'))[0];
 			$enclosures[] = $image->src;

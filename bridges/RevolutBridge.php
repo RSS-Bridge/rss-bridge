@@ -18,13 +18,13 @@ class RevolutBridge extends BridgeAbstract {
 		$articles = array_slice($articleOverview->find('url'), 0, 15);
 
 		foreach($articles as $article) {
-			$item = [];
+			$item = array();
 
 			$item['uri'] = $article->find('loc', 0)->plaintext;
 			$item['timestamp'] = $article->find('lastmod', 0)->plaintext;
-			$item['enclosures'] = [
+			$item['enclosures'] = array(
 				$article->find('image:loc', 0)->plaintext
-			];
+			);
 
 			$fullArticle = getSimpleHTMLDOMCached($item['uri'])
 				or returnServerError('Error while downloading the full article');

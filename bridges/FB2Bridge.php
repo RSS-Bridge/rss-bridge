@@ -112,7 +112,7 @@ EOD
 
 			//Decode images
 			$imagecleaned = preg_replace_callback('/<i [^>]* style="[^"]*url\(\'(.*?)\'\).*?><\/i>/m', function ($matches) {
-					return "<img src='" . str_replace(['\\3a ', '\\3d ', '\\26 '], [':', '=', '&'], $matches[1]) . "' />";
+					return "<img src='" . str_replace(array('\\3a ', '\\3d ', '\\26 '), array(':', '=', '&'), $matches[1]) . "' />";
 				}, $content);
 			$content = str_get_html($imagecleaned);
 
@@ -164,7 +164,11 @@ EOD
 			$content = preg_replace('/<img src=\'.*?safe_image\.php.*?\' \/>/m', '', $content);
 
 			//Remove the double section tags
-			$content = str_replace(['<section><section>', '</section></section>'], ['<section>', '</section>'], $content);
+			$content = str_replace(
+				array('<section><section>', '</section></section>'),
+				array('<section>', '</section>'),
+				$content
+			);
 
 			//Move the section tag link upper, if it is down
 			$content = str_get_html($content);

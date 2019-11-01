@@ -23,8 +23,8 @@ class CNETFranceBridge extends FeedExpander
 		)
 	);
 
-	private $bannedTitle = [];
-	private $bannedURL = [];
+	private $bannedTitle = array();
+	private $bannedURL = array();
 
 	public function collectData()
 	{

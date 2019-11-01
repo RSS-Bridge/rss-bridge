@@ -19,7 +19,7 @@ class N26Bridge extends BridgeAbstract
 			or returnServerError('Error while downloading the website content');
 
 		foreach($html->find('div[class="ag ah ai aj bs bt dx ea fo gx ie if ih ii ij ik s"]') as $article) {
-			$item = [];
+			$item = array();
 
 			$item['uri'] = self::URI . $article->find('h2 a', 0)->href;
 			$item['title'] = $article->find('h2 a', 0)->plaintext;

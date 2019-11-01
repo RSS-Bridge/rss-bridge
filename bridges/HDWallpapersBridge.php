@@ -72,7 +72,7 @@ class HDWallpapersBridge extends BridgeAbstract {
 	public function getName(){
 		if(!is_null($this->getInput('c')) && !is_null($this->getInput('r'))) {
 			return 'HDWallpapers - '
-			. str_replace(['__', '_'], [' & ', ' '], $this->getInput('c'))
+			. str_replace(array('__', '_'), array(' & ', ' '), $this->getInput('c'))
 			. ' ['
 			. $this->getInput('r')
 			. ']';

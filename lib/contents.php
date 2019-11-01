@@ -53,7 +53,7 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 	$cache->setScope('server');
 	$cache->purgeCache(86400); // 24 hours (forced)
 
-	$params = [$url];
+	$params = array($url);
 	$cache->setKey($params);
 
 	$retVal = array(
@@ -304,7 +304,7 @@ function getSimpleHTMLDOMCached($url,
 	$cache->setScope('pages');
 	$cache->purgeCache(86400); // 24 hours (forced)
 
-	$params = [$url];
+	$params = array($url);
 	$cache->setKey($params);
 
 	// Determine if cached file is within duration

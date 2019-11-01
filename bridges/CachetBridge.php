@@ -22,7 +22,7 @@ class CachetBridge extends BridgeAbstract {
 	);
 	const CACHE_TIMEOUT = 300;
 
-	private $componentCache = [];
+	private $componentCache = array();
 
 	public function getURI() {
 		return $this->getInput('host') === null ? 'https://cachethq.io/' : $this->getInput('host');
@@ -114,13 +114,13 @@ class CachetBridge extends BridgeAbstract {
 			$uidOrig = $permalink . $incident->created_at;
 			$uid = hash('sha512', $uidOrig);
 			$timestamp = strtotime($incident->created_at);
-			$categories = [];
+			$categories = array();
 			$categories[] = $incident->human_status;
 			if ($componentName !== '') {
 				$categories[] = $componentName;
 			}
 
-			$item = [];
+			$item = array();
 			$item['uri'] = $permalink;
 			$item['title'] = $title;
 			$item['timestamp'] = $timestamp;

@@ -58,7 +58,7 @@ class InstagramBridge extends BridgeAbstract {
 		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
 		$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
 		$cache->setScope(get_called_class());
-		$cache->setKey([$username]);
+		$cache->setKey(array($username));
 		$key = $cache->loadData();
 
 		if($key == null) {
@@ -178,7 +178,7 @@ class InstagramBridge extends BridgeAbstract {
 			$caption = '';
 		}
 
-		$enclosures = [$mediaInfo->display_url];
+		$enclosures = array($mediaInfo->display_url);
 		$content = '<img src="' . htmlentities($mediaInfo->display_url) . '" alt="' . $caption . '" />';
 
 		foreach($mediaInfo->edge_sidecar_to_children->edges as $media) {
@@ -189,7 +189,7 @@ class InstagramBridge extends BridgeAbstract {
 			}
 		}
 
-		return [$content, $enclosures];
+		return array($content, $enclosures);
 
 	}
 

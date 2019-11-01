@@ -77,7 +77,7 @@ class AtmoNouvelleAquitaineBridge extends BridgeAbstract {
 
 	private function getLegendIndexes() {
 		$rawIndexes = $this->dom->find('.prevision-legend .prevision-legend-label');
-		$indexes = [];
+		$indexes = array();
 		for ($i = 0; $i < count($rawIndexes); $i++) {
 			if ($rawIndexes[$i]->hasAttribute('data-color')) {
 				$indexes[$rawIndexes[$i]->getAttribute('data-color')] = $rawIndexes[$i]->innertext;
