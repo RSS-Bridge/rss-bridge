@@ -15,11 +15,16 @@ class VarietyBridge extends FeedExpander {
 		$item = parent::parseItem($newsItem);
 		// $articlePage gets the entire page's contents
 		$articlePage = getSimpleHTMLDOM($newsItem->link);
+
+		// Remove Script tags
+		foreach($articlePage->find('script') as $script_tag) {
+			$script_tag->remove();
+		}
 		$article = $articlePage->find('div.c-featured-media', 0);
 		$article = $article . $articlePage->find('.c-content', 0);
+
 		$item['content'] = $article;
-		// I've left the script tags alone because some feed readers support them,
-		// even tho they look ugly in rssbridge's html view
+
 		return $item;
 	}
 }
