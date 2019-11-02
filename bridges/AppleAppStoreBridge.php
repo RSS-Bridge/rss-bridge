@@ -10,40 +10,40 @@ class AppleAppStoreBridge extends BridgeAbstract {
 
 	const PARAMETERS = array(array(
 		'id' => array(
-			'name' 			=> 'Application ID',
-			'required' 		=> true,
-			'exampleValue' 	=> '310633997'
+			'name'	=> 'Application ID',
+			'required'	=> true,
+			'exampleValue'	=> '310633997'
 		),
 		'p' => array(
-			'name' 		=> 'Platform',
-			'type' 		=> 'list',
-			'values' 	=> array(
-				'iPad' 		=> 'ipad',
-				'iPhone' 	=> 'iphone',
-				'Mac' 		=> 'mac',
+			'name'	=> 'Platform',
+			'type'	=> 'list',
+			'values'	=> array(
+				'iPad'	=> 'ipad',
+				'iPhone'	=> 'iphone',
+				'Mac'	=> 'mac',
 
 				// The following 2 are present in responses
 				// but not yet tested
-				'Web' 		=> 'web',
-				'Apple TV' 	=> 'appletv',
+				'Web'	=> 'web',
+				'Apple TV'	=> 'appletv',
 			),
-			'defaultValue' => 'iphone',
+			'defaultValue'	=> 'iphone',
 		),
-		'country' => array(
-			'name' 			=> 'Store Country',
-			'type' 			=> 'list',
-			'values' 		=> array(
-				'US'	 => 'US',
-				'India'	 => 'IN',
-				'Canada' => 'CA'
+		'country'	=> array(
+			'name'	=> 'Store Country',
+			'type'	=> 'list',
+			'values'	=> array(
+				'US'	=> 'US',
+				'India'	=> 'IN',
+				'Canada'	=> 'CA'
 			),
-			'defaultValue' 	=> 'US',
+			'defaultValue'	=> 'US',
 		),
 	));
 
 	const PLATFORM_MAPPING = array(
-		'iphone' 	=> 'ios',
-		'ipad'		=> 'ios',
+		'iphone'	=> 'ios',
+		'ipad'	=> 'ios',
 	);
 
 	private function makeHtmlUrl($id, $country){
@@ -52,6 +52,14 @@ class AppleAppStoreBridge extends BridgeAbstract {
 
 	private function makeJsonUrl($id, $platform, $country){
 		return "https://amp-api.apps.apple.com/v1/catalog/$country/apps/$id?platform=$platform&extend=versionHistory";
+	}
+
+	public function getName(){
+		if (isset($this->name)) {
+			return $this->name . ' - AppStore Updates';
+		}
+
+		return parent::getName();
 	}
 
 	/**
@@ -69,7 +77,7 @@ class AppleAppStoreBridge extends BridgeAbstract {
 	private function getJWTToken($id, $platform, $country){
 		$uri = $this->makeHtmlUrl($id, $country);
 
-		$html = getSimpleHTMLDOM($uri, 3600);
+		$html = getSimpleHTMLDOMCached($uri, 3600);
 
 		$meta = $html->find('meta[name="web-experience-app/config/environment"]', 0);
 
@@ -83,11 +91,11 @@ class AppleAppStoreBridge extends BridgeAbstract {
 	private function getAppData($id, $platform, $country, $token){
 		$uri = $this->makeJsonUrl($id, $platform, $country);
 
-		$headers = [
+		$headers = array(
 			"Authorization: Bearer $token",
-		];
+		);
 
-		$json = json_decode(getSimpleHTMLDOM($uri, $headers), true);
+		$json = json_decode(getContents($uri, $headers), true);
 
 		return $json['data'][0];
 	}
@@ -100,7 +108,6 @@ class AppleAppStoreBridge extends BridgeAbstract {
 		switch($platform) {
 			case 'mac':
 				return $data['relationships']['platforms']['data'][0]['attributes']['versionHistory'];
-				break;
 			default:
 				$os = self::PLATFORM_MAPPING[$platform];
 				return $data['attributes']['platformAttributes'][$os]['versionHistory'];
@@ -120,11 +127,10 @@ class AppleAppStoreBridge extends BridgeAbstract {
 			default:
 				$token = $this->getJWTToken($id, $platform, $country);
 				$data = $this->getAppData($id, $platform, $country, $token);
-				break;
 		}
 
 		$versionHistory = $this->getVersionHistory($data, $platform);
-		$name = $data['attributes']['name'];
+		$name = $this->name = $data['attributes']['name'];
 		$author = $data['attributes']['artistName'];
 
 		foreach ($versionHistory as $row) {
