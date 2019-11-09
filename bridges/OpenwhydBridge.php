@@ -1,9 +1,9 @@
 <?php
-class WhydBridge extends BridgeAbstract {
+class OpenwhydBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'kranack';
-	const NAME = 'Whyd Bridge';
-	const URI = 'http://www.whyd.com/';
+	const NAME = 'Openwhyd Bridge';
+	const URI = 'https://openwhyd.org';
 	const CACHE_TIMEOUT = 600; // 10min
 	const DESCRIPTION = 'Returns 10 newest music from user profile';
 
@@ -17,8 +17,7 @@ class WhydBridge extends BridgeAbstract {
 	private $userName = '';
 
 	public function getIcon() {
-		return self::URI . 'assets/favicons/
-32-6b62a9f14d5e1a9213090d8f00f286bba3a6022381a76390d1d0926493b12593.png?v=6';
+		return self::URI . '/images/favicon.ico';
 	}
 
 	public function collectData(){
@@ -26,11 +25,11 @@ class WhydBridge extends BridgeAbstract {
 		if(strlen(preg_replace('/[^0-9a-f]/', '', $this->getInput('u'))) == 24) {
 			// is input the userid ?
 			$html = getSimpleHTMLDOM(
-				self::URI . 'u/' . preg_replace('/[^0-9a-f]/', '', $this->getInput('u'))
+				self::URI . '/u/' . preg_replace('/[^0-9a-f]/', '', $this->getInput('u'))
 			) or returnServerError('No results for this query.');
 		} else { // input may be the username
 			$html = getSimpleHTMLDOM(
-				self::URI . 'search?q=' . urlencode($this->getInput('u'))
+				self::URI . '/search?q=' . urlencode($this->getInput('u'))
 			) or returnServerError('No results for this query.');
 
 			for($j = 0; $j < 5; $j++) {
@@ -57,6 +56,6 @@ class WhydBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		return (!empty($this->userName) ? $this->userName . ' - ' : '') . 'Whyd Bridge';
+		return (!empty($this->userName) ? $this->userName . ' - ' : '') . 'Openwhyd Bridge';
 	}
 }
