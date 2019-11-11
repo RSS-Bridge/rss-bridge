@@ -21,9 +21,10 @@ class DiarioDoAlentejoBridge extends BridgeAbstract {
 		foreach($html->find('.list_news .item') as $element) {
 			$item = array();
 
-			$item_link = $element->find('a.thumb', 0);
-			$item['uri'] = self::URI . $item_link->href;
-			$item['title'] = $item_link->title;
+			$item_link = $element->find('.body h2.title a', 0);
+			/* Another broken URL, see also `bridges/ComboiosDePortugalBridge.php` */
+			$item['uri'] = self::URI . implode('/', array_map('urlencode', explode('/', $item_link->href)));
+			$item['title'] = $item_link->innertext;
 
 			$item['timestamp'] = str_ireplace(
 				array_map(function($name) { return ' '.$name.' '; }, self::PT_MONTH_NAMES),
