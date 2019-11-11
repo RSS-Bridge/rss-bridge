@@ -3,7 +3,7 @@
 * Retourne les dons d'une recherche filtrée sur le site Donnons.org
 * Example: https://donnons.org/Sport/Ile-de-France
 */
-class GoogleSearchBridge extends BridgeAbstract {
+class DonnonsBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'Binnette';
 	const NAME = 'Donnons.org';
