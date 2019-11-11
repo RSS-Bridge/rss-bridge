@@ -13,7 +13,7 @@ class DonnonsBridge extends BridgeAbstract {
 
 	const PARAMETERS = array(array(
 		'q' => array(
-			'name' => 'keyword',
+			'name' => 'Url de recherche',
 			'required' => true,
 			'exampleValue' 	=> '/Sport/Ile-de-France',
 			'title' => 'Depuis le site, choisir des filtres par exemple Sport et Ile de France et lancez la recherche. Puis copiez ici la fin de l\'url',
@@ -26,7 +26,18 @@ class DonnonsBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('No results for this query.');
 
-		$results = $html->find('div[id=search]', 0);
+		$item = array();
+		
+		$item['uri'] = 'https://donnons.org/don/5546207';
+		$item['title'] = 'Raquette tennis';
+		$item['timestamp'] = 'now';
+		$item['author'] = 'Nathalie';
+		$item['content'] = 'Je suis un test';
+		$item['uid'] = '5546207';
+
+		$this->items[] = $item;
+
+		/*$results = $html->find('div[id=search]', 0);
 
 		if(!is_null($results)) {
 			foreach($results->find('a[class=lst-annonce]') as $element) {
@@ -53,7 +64,7 @@ class DonnonsBridge extends BridgeAbstract {
 
 				$this->items[] = $item;
 			}
-		}
+		}*/
 	}
 
 	public function getURI() {
