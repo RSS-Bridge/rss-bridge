@@ -7,7 +7,19 @@ class DiarioDoAlentejoBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 28800; // 8h
 
 	/* This is used to hack around obtaining a timestamp. It's just a list of Month names in Portuguese ... */
-	const PT_MONTH_NAMES = array('janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro');
+	const PT_MONTH_NAMES = array(
+		'janeiro',
+		'fevereiro',
+		'março',
+		'abril',
+		'maio',
+		'junho',
+		'julho',
+		'agosto',
+		'setembro',
+		'outubro',
+		'novembro',
+		'dezembro');
 
 	public function getIcon() {
 		return 'https://www.diariodoalentejo.pt/images/favicon/apple-touch-icon.png';
@@ -27,7 +39,7 @@ class DiarioDoAlentejoBridge extends BridgeAbstract {
 			$item['title'] = $item_link->innertext;
 
 			$item['timestamp'] = str_ireplace(
-				array_map(function($name) { return ' '.$name.' '; }, self::PT_MONTH_NAMES),
+				array_map(function($name) { return ' ' . $name . ' '; }, self::PT_MONTH_NAMES),
 				array_map(function($num) { return sprintf('-%02d-', $num); }, range(1, sizeof(self::PT_MONTH_NAMES))),
 				$element->find('span.date', 0)->innertext);
 
