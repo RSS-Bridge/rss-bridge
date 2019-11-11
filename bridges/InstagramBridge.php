@@ -123,22 +123,34 @@ class InstagramBridge extends BridgeAbstract {
 				$item['title'] = substr($item['title'], 0, $titleLinePos) . '...';
 			}
 
-			if($media->__typename == 'GraphSidecar') {
-				$data = $this->getInstagramSidecarData($item['uri']);
-				$item['content'] = $data[0];
-				$item['enclosures'] = $data[1];
-			} else {
-				if($directLink) {
-					$mediaURI = $media->display_url;
-				} else {
-					$mediaURI = self::URI . 'p/' . $media->shortcode . '/media?size=l';
-				}
-				$item['content'] = '<a href="' . htmlentities($item['uri']) . '" target="_blank">';
-				$item['content'] .= '<img src="' . htmlentities($mediaURI) . '" alt="' . $item['title'] . '" />';
-				$item['content'] .= '</a><br><br>' . nl2br(htmlentities($textContent));
-				$item['enclosures'] = array($mediaURI);
+			switch($media->__typename) {
+				case 'GraphSidecar':
+					$data = $this->getInstagramSidecarData($item['uri']);
+					$item['content'] = $data[0];
+					$item['enclosures'] = $data[1];
+					break;
+				case 'GraphImage':
+					if($directLink) {
+						$mediaURI = $media->display_url;
+					} else {
+						$mediaURI = self::URI . 'p/' . $media->shortcode . '/media?size=l';
+					}
+					$item['content'] = '<a href="' . htmlentities($item['uri']) . '" target="_blank">';
+					$item['content'] .= '<img src="' . htmlentities($mediaURI) . '" alt="' . $item['title'] . '" />';
+					$item['content'] .= '</a><br><br>' . nl2br(htmlentities($textContent));
+					$item['enclosures'] = array($mediaURI);
+					break;
+				case 'GraphVideo':
+					$data = $this->getInstagramVideoData($item['uri']);
+					$item['content'] = $data[0];
+					if($directLink) {
+						$item['enclosures'] = $data[1];
+					} else {
+						$item['enclosures'] = array(self::URI . 'p/' . $media->shortcode . '/media?size=l');
+					}
+					break;
+				default: break;
 			}
-
 			$item['timestamp'] = $media->taken_at_timestamp;
 
 			$this->items[] = $item;
@@ -147,16 +159,7 @@ class InstagramBridge extends BridgeAbstract {
 
 	// returns Sidecar(a post which has multiple media)'s contents and enclosures
 	protected function getInstagramSidecarData($uri) {
-
-		$shortcode = explode('/', $uri)[4];
-		$data = getContents(self::URI .
-					'graphql/query/?query_hash=' .
-					self::SHORTCODE_QUERY_HASH .
-					'&variables={"shortcode"%3A"' .
-					$shortcode .
-					'"}');
-
-		$mediaInfo = json_decode($data)->data->shortcode_media;
+		$mediaInfo = $this->getSinglePostData($uri);
 
 		$textContent = $this->getTextContent($mediaInfo);
 
@@ -180,6 +183,17 @@ class InstagramBridge extends BridgeAbstract {
 		return array($content, $enclosures);
 	}
 
+	// returns Video post's contents and enclosures
+	protected function getInstagramVideoData($uri) {
+		$mediaInfo = $this->getSinglePostData($uri);
+
+		$textContent = $this->getTextContent($mediaInfo);
+		$content .= '<video controls><source src="' . $mediaInfo->video_url . '" type="video/mp4"></video><br>';
+		$content .= '<br>' . nl2br(htmlentities($textContent));
+
+		return array($content, array($mediaInfo->video_url));
+	}
+
 	protected function getTextContent($media) {
 		$textContent = '(no text)';
 		//Process the first element, that isn't in the node graph
@@ -187,6 +201,18 @@ class InstagramBridge extends BridgeAbstract {
 			$textContent = trim($media->edge_media_to_caption->edges[0]->node->text);
 		}
 		return $textContent;
+	}
+
+	protected function getSinglePostData($uri) {
+		$shortcode = explode('/', $uri)[4];
+		$data = getContents(self::URI .
+					'graphql/query/?query_hash=' .
+					self::SHORTCODE_QUERY_HASH .
+					'&variables={"shortcode"%3A"' .
+					$shortcode .
+					'"}');
+
+		return json_decode($data)->data->shortcode_media;
 	}
 
 	protected function getInstagramJSON($uri) {
