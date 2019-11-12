@@ -7,7 +7,7 @@ class DonnonsBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'Binnette';
 	const NAME = 'Donnons.org';
-	const URI = 'https://donnons.org/';
+	const URI = 'https://donnons.org';
 	const CACHE_TIMEOUT = 1800; // 30min
 	const DESCRIPTION = 'Retourne les dons depuis le site Donnons.org.';
 
@@ -26,45 +26,56 @@ class DonnonsBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('No results for this query.');
 
-		$item = array();
-		
-		$item['uri'] = 'https://donnons.org/don/5546207';
-		$item['title'] = 'Raquette tennis';
-		$item['timestamp'] = 'now';
-		$item['author'] = 'Nathalie';
-		$item['content'] = 'Je suis un test';
-		$item['uid'] = '5546207';
+		$searchDiv = $html->find('div[id=search]', 0);
 
-		$this->items[] = $item;
-
-		/*$results = $html->find('div[id=search]', 0);
-
-		if(!is_null($results)) {
-			foreach($results->find('a[class=lst-annonce]') as $element) {
+		if(!is_null($searchDiv)) {
+			$elements = $searchDiv->find('a.lst-annonce');
+			foreach($elements as $element) {
 				$item = array();
 
 				// Lien vers le don
-				$item['uri'] = $element->href;
+				$item['uri'] = self::URI . $element->href;
+				// Id de l'objet
+				$item['uid'] = $element->getAttribute('data-id');
 
-				// Grab info
-				$json = $element->find('script')->plaintext;
-				$objectName = $element->find('h2[id=title]')->plaintext;
-				$objectCity = $element->find('span[class=city]')->plaintext;
+				// Grab info from json
+				$jsonString = $element->find('script', 0)->innertext;
+				$json = json_decode($jsonString, true);
 
+				$name = $json['name'];
+				$category = $json['category'];
+				$date = $json['availabilityStarts'];
+				$description = $json['description'];
+				$city = $json['availableAtOrFrom']['address']['addressLocality'];
+				$region = $json['availableAtOrFrom']['address']['addressRegion'];
+				
+				// Grab info from HTML
+				$imageSrc = $element->find('img.ima-center', 0)->getAttribute('data-src');
+				$image = self::URI . $imageSrc;
+				$author = $element->find('div.avatar-holder', 0)->plaintext;
+
+				$content = '
+					<img style="margin-right:1em;" src="' . $image . '">
+					<div>
+						<h1>' . $name . '</h1>
+						<p>' . $description . '</p>
+						<p>Lieu : <b>' . $city . '</b> - ' . $region . '</p>
+						<p>Par : ' . $author . '</p>
+						<p>Date : ' . $date . '</p>
+					</div>
+				';
 
 				// Titre du don
-				$item['title'] = $objectName;
-				//$item['timestamp']  // Timestamp of the item in numeric or text format (compatible for strtotime())
-				//$item['author']     // Name of the author for this item
-				//$item['content']    // Content in HTML format
-				$item['content'] = $objectName . ' - ' . $objectCity;
-				//$item['enclosures'] // Array of URIs to an attachments (pictures, files, etc...)
-				//$item['categories'] // Array of categories / tags / topics
-				//$item['uid']        // A unique ID to identify the current item
+				$item['title'] = '[' . $category . '] ' . $name;
+				$item['timestamp'] = $date;
+				$item['author'] = $author;
+				$item['content'] = $content;
+				$item['enclosures'] = array($image);
+				//$item['categories'] = array($category);
 
 				$this->items[] = $item;
 			}
-		}*/
+		}
 	}
 
 	public function getURI() {
