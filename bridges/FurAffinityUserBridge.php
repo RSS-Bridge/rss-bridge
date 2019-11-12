@@ -62,12 +62,13 @@ class FurAffinityUserBridge extends BridgeAbstract {
 		curl_setopt($ch, CURLOPT_ENCODING, '');
 		curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
 
-		$fields =
-			'action=login&' .
-			'retard_protection=1&' .
-			'name=' . urlencode($this->getInput('loginUsername')) . '&' .
-			'pass=' . urlencode($this->getInput('loginPassword')) . '&' .
-			'login=Login to Furaffinity';
+		$fields = implode('&', array(
+			'action=login',
+			'retard_protection=1',
+			'name=' . urlencode($this->getInput('loginUsername')),
+			'pass=' . urlencode($this->getInput('loginPassword')),
+			'login=Login to Faraffinity'
+		));
 
 		curl_setopt($ch, CURLOPT_POST, 5);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
