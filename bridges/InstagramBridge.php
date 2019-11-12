@@ -125,7 +125,7 @@ class InstagramBridge extends BridgeAbstract {
 
 			switch($media->__typename) {
 				case 'GraphSidecar':
-					$data = $this->getInstagramSidecarData($item['uri']);
+					$data = $this->getInstagramSidecarData($item['uri'], $item['title']);
 					$item['content'] = $data[0];
 					$item['enclosures'] = $data[1];
 					break;
@@ -158,7 +158,7 @@ class InstagramBridge extends BridgeAbstract {
 	}
 
 	// returns Sidecar(a post which has multiple media)'s contents and enclosures
-	protected function getInstagramSidecarData($uri) {
+	protected function getInstagramSidecarData($uri, $postTitle) {
 		$mediaInfo = $this->getSinglePostData($uri);
 
 		$textContent = $this->getTextContent($mediaInfo);
@@ -173,7 +173,7 @@ class InstagramBridge extends BridgeAbstract {
 			} else {
 				if(in_array($singleMedia->display_url, $enclosures)) continue; // check if not added yet
 				$content .= '<a href="' . $singleMedia->display_url . '" target="_blank">';
-				$content .= '<img src="' . $singleMedia->display_url . '" alt="' . $item['title'] . '" />';
+				$content .= '<img src="' . $singleMedia->display_url . '" alt="' . $postTitle . '" />';
 				$content .= '</a><br>';
 				array_push($enclosures, $singleMedia->display_url);
 			}
