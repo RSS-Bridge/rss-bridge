@@ -13,8 +13,9 @@ class TheWhiteboardBridge extends BridgeAbstract {
 		$image = $html->find('center', 1)->find('img', 0);
 		$image->src = self::URI . '/' . $image->src;
 
-		$item['title'] = explode("\r\n", $html->find('center', 1)->plaintext)[0];//->find('text')->plaintext;
+		$item['title'] = explode("\r\n", $html->find('center', 1)->plaintext)[0];
 		$item['content'] = $image;
+		$item['timestamp'] = explode("\r\n", $html->find('center', 1)->plaintext)[0];
 
 		$this->items[] = $item;
 	}
