@@ -164,6 +164,7 @@ class InstagramBridge extends BridgeAbstract {
 		$textContent = $this->getTextContent($mediaInfo);
 
 		$enclosures = array();
+		$content = '';
 		foreach($mediaInfo->edge_sidecar_to_children->edges as $singleMedia) {
 			$singleMedia = $singleMedia->node;
 			if($singleMedia->is_video) {
@@ -188,7 +189,7 @@ class InstagramBridge extends BridgeAbstract {
 		$mediaInfo = $this->getSinglePostData($uri);
 
 		$textContent = $this->getTextContent($mediaInfo);
-		$content .= '<video controls><source src="' . $mediaInfo->video_url . '" type="video/mp4"></video><br>';
+		$content = '<video controls><source src="' . $mediaInfo->video_url . '" type="video/mp4"></video><br>';
 		$content .= '<br>' . nl2br(htmlentities($textContent));
 
 		return array($content, array($mediaInfo->video_url));
