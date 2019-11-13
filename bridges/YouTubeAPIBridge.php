@@ -4,21 +4,31 @@ class YouTubeAPIBridge extends BridgeAbstract {
 	const URI = 'https://github.com/fulmeek';
 	const DESCRIPTION = 'Keep track of your favorite channel';
 	const MAINTAINER = 'fulmeek';
-	const PARAMETERS = array(array(
-		'channel' => array(
-			'name' => 'Channel ID',
-			'type' => 'text'
-		),
-		'type' => array(
-			'name' => 'Type of feed',
-			'type' => 'list',
-			'values' => array(
-				'Latest Videos' => 'videos',
-				'Channel Activities' => 'activities'
+	const PARAMETERS = array(
+		'User Channel' => array(
+			'channel' => array(
+				'name' => 'Channel ID',
+				'type' => 'text',
+				'required' => true
 			),
-			'defaultValue' => 'videos'
+			'type' => array(
+				'name' => 'Type of feed',
+				'type' => 'list',
+				'values' => array(
+					'Latest Videos' => 'videos',
+					'Channel Activities' => 'activities'
+				),
+				'defaultValue' => 'videos'
+			)
+		),
+		'Video Playlist' => array(
+			'playlist' => array(
+				'name' => 'Playlist ID',
+				'type' => 'text',
+				'required' => true
+			)
 		)
-	));
+	);
 
 	const API_ENDPOINT = 'https://www.googleapis.com/youtube/v3/';
 	const API_BASELINK = 'https://www.youtube.com/';
@@ -33,14 +43,58 @@ class YouTubeAPIBridge extends BridgeAbstract {
 
 	public function collectData() {
 		$this->getApiConfig();
-
-		$channelID = $this->getInput('channel');
-
 		if (empty($this->apiKey)) {
 			returnServerError('API key required, please see configuration');
 		}
-		if (empty($channelID) || substr($channelID, 0, 2) != 'UC') {
-			returnServerError('Please provide a channel ID');
+
+		switch($this->queriedContext) {
+			case 'User Channel':
+				$this->collectChannelData();
+				break;
+			case 'Video Playlist':
+				$this->collectPlaylistData();
+				break;
+			default:
+				returnClientError('Unknown context');
+		}
+	}
+
+	public function getName(){
+		if (!empty($this->title)) {
+			return $this->title . ' - YouTube';
+		}
+		return self::NAME;
+	}
+
+	public function getURI(){
+		return (!empty($this->link)) ? $this->link : self::URI;
+	}
+
+	public function getIcon(){
+		return self::API_BASELINK . '/favicon.ico';
+	}
+
+	public function getDescription(){
+		$this->getApiConfig();
+
+		$description = (!empty($this->description)) ? $this->description : self::DESCRIPTION;
+
+		if (empty($this->apiKey)) {
+			$description .= '<p>- YouTube Data API v3 key required, please see configuration. -</p>';
+		}
+
+		return $description;
+	}
+
+	private function getApiConfig() {
+		$this->apiKey = Configuration::getConfig(get_called_class(), 'api_key');
+	}
+
+	private function collectChannelData() {
+		$channelID = $this->getInput('channel');
+
+		if (substr($channelID, 0, 2) != 'UC') {
+			returnClientError('Please provide a channel ID');
 		}
 
 		$playlist = null;
@@ -76,39 +130,42 @@ class YouTubeAPIBridge extends BridgeAbstract {
 				$this->collectActivities($channelID);
 				break;
 			default:
-				returnServerError('Unknown type');
+				returnClientError('Unknown type');
 		}
 	}
 
-	public function getName(){
-		if (!empty($this->title)) {
-			return $this->title . ' - YouTube';
-		}
-		return self::NAME;
-	}
+	private function collectPlaylistData() {
+		$playlistID = $this->getInput('playlist');
 
-	public function getURI(){
-		return (!empty($this->link)) ? $this->link : self::URI;
-	}
-
-	public function getIcon(){
-		return self::API_BASELINK . '/favicon.ico';
-	}
-
-	public function getDescription(){
-		$this->getApiConfig();
-
-		$description = (!empty($this->description)) ? $this->description : self::DESCRIPTION;
-
-		if (empty($this->apiKey)) {
-			$description .= '<p>- YouTube Data API v3 key required, please see configuration. -</p>';
+		if (substr($playlistID, 0, 2) != 'PL') {
+			returnClientError('Please provide a playlist ID');
 		}
 
-		return $description;
-	}
+		$data = json_decode(getContents(self::API_ENDPOINT . 'playlists?part=snippet&id=' . $playlistID
+			. '&key=' . $this->apiKey));
+		if (empty($data)) {
+			returnServerError('Unable to fetch data');
+		}
 
-	private function getApiConfig() {
-		$this->apiKey = Configuration::getConfig(get_called_class(), 'api_key');
+		if (!empty($data->items)) {
+			foreach ($data->items as $idx => $item) {
+				if ($item->kind != 'youtube#playlist') {
+					continue;
+				}
+				if (!empty($item->snippet->title)) {
+					$this->title = $item->snippet->title;
+				}
+				if (!empty($item->snippet->channelTitle)) {
+					$this->author = $item->snippet->channelTitle;
+				}
+				if (!empty($item->snippet->description)) {
+					$this->description = $this->hypertextize($this->htmlize($item->snippet->description));
+				}
+				$this->link = self::API_BASELINK . 'playlist?list=' . $playlistID;
+			}
+		}
+
+		$this->collectVideos($playlistID);
 	}
 
 	private function collectVideos($playlist) {
