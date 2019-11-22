@@ -2,7 +2,7 @@
 class FB2Bridge extends BridgeAbstract {
 
 	const MAINTAINER = 'teromene';
-	const NAME = 'Facebook Alternate';
+	const NAME = 'Facebook Bridge | Touch Site';
 	const URI = 'https://www.facebook.com/';
 	const CACHE_TIMEOUT = 1000;
 	const DESCRIPTION = 'Input a page title or a profile log. For a profile log,
@@ -12,7 +12,12 @@ class FB2Bridge extends BridgeAbstract {
 		'u' => array(
 			'name' => 'Username',
 			'required' => true
-		)
+		),
+		'abbrev_name' => array(
+			'name' => 'Abbreviate author name in title',
+			'type' => 'checkbox',
+			'defaultValue' => true,
+		),
 	));
 
 	public function getIcon() {
@@ -102,12 +107,12 @@ EOD
 			else
 				$timestamp = 0;
 
-			$item['uri'] = html_entity_decode('http://touch.facebook.com'
+			$item['uri'] = html_entity_decode('https://touch.facebook.com'
 			. $content->find("div[class='_52jc _5qc4 _78cz _24u0 _36xo']", 0)->find('a', 0)->getAttribute('href'), ENT_QUOTES);
 
 			//Decode images
 			$imagecleaned = preg_replace_callback('/<i [^>]* style="[^"]*url\(\'(.*?)\'\).*?><\/i>/m', function ($matches) {
-					return "<img src='" . str_replace(['\\3a ', '\\3d ', '\\26 '], [':', '=', '&'], $matches[1]) . "' />";
+					return "<img src='" . str_replace(array('\\3a ', '\\3d ', '\\26 '), array(':', '=', '&'), $matches[1]) . "' />";
 				}, $content);
 			$content = str_get_html($imagecleaned);
 
@@ -159,7 +164,11 @@ EOD
 			$content = preg_replace('/<img src=\'.*?safe_image\.php.*?\' \/>/m', '', $content);
 
 			//Remove the double section tags
-			$content = str_replace(['<section><section>', '</section></section>'], ['<section>', '</section>'], $content);
+			$content = str_replace(
+				array('<section><section>', '</section></section>'),
+				array('<section>', '</section>'),
+				$content
+			);
 
 			//Move the section tag link upper, if it is down
 			$content = str_get_html($content);
@@ -182,8 +191,10 @@ EOD
 			$item['content'] = html_entity_decode($content, ENT_QUOTES);
 
 			$title = $author;
-			if (strlen($title) > 24)
-				$title = substr($title, 0, strpos(wordwrap($title, 24), "\n")) . '...';
+			if ($this->getInput('abbrev_name') === true) {
+				if (strlen($title) > 24)
+					$title = substr($title, 0, strpos(wordwrap($title, 24), "\n")) . '...';
+			}
 			$title = $title . ' | ' . strip_tags($content);
 			if (strlen($title) > 64)
 				$title = substr($title, 0, strpos(wordwrap($title, 64), "\n")) . '...';
@@ -281,10 +292,20 @@ EOD
 	}
 
 	public function getName(){
-		return (isset($this->name) ? $this->name . ' - ' : '') . 'Facebook Bridge';
+		$username = $this->getInput('u');
+		if (isset($username)) {
+			return $this->getInput('u') . ' | Facebook';
+		} else {
+			return self::NAME;
+		}
 	}
 
 	public function getURI(){
-		return 'http://facebook.com';
+		$username = $this->getInput('u');
+		if (isset($username)) {
+			return 'https://facebook.com/' . $this->getInput('u') . '/posts';
+		} else {
+			return self::URI;
+		}
 	}
 }

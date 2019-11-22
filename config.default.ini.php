@@ -61,6 +61,18 @@ username = ""
 ; Use a strong password to prevent others from guessing your login!
 password = ""
 
+[error]
+
+; Defines how error messages are returned by RSS-Bridge
+;
+; "feed" = As part of the feed (default)
+; "http" = As HTTP error message
+; "none" = No errors are reported
+output = "feed"
+
+; Defines how often an error must occur before it is reported to the user
+report_limit = 1
+
 ; --- Cache specific configuration ---------------------------------------------
 
 [SQLiteCache]

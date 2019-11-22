@@ -95,7 +95,7 @@ class ElloBridge extends BridgeAbstract {
 
 	private function getEnclosures($post, $postData) {
 
-		$assets = [];
+		$assets = array();
 		foreach($post->links->assets as $asset) {
 			foreach($postData->linked->assets as $assetLink) {
 				if($asset == $assetLink->id) {
@@ -124,7 +124,7 @@ class ElloBridge extends BridgeAbstract {
 		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
 		$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
 		$cache->setScope(get_called_class());
-		$cache->setKey(['key']);
+		$cache->setKey(array('key'));
 		$key = $cache->loadData();
 
 		if($key == null) {

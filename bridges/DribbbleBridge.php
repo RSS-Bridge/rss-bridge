@@ -19,7 +19,7 @@ favicon-63b2904a073c89b52b19aa08cebc16a154bcf83fee8ecc6439968b1e6db569c7.ico';
 		$json = $this->loadEmbeddedJsonData($html);
 
 		foreach($html->find('li[id^="screenshot-"]') as $shot) {
-			$item = [];
+			$item = array();
 
 			$additional_data = $this->findJsonForShot($shot, $json);
 			if ($additional_data === null) {
@@ -38,14 +38,14 @@ favicon-63b2904a073c89b52b19aa08cebc16a154bcf83fee8ecc6439968b1e6db569c7.ico';
 
 			$preview_path = $shot->find('picture source', 0)->attr['srcset'];
 			$item['content'] .= $this->getImageTag($preview_path, $item['title']);
-			$item['enclosures'] = [$this->getFullSizeImagePath($preview_path)];
+			$item['enclosures'] = array($this->getFullSizeImagePath($preview_path));
 
 			$this->items[] = $item;
 		}
 	}
 
 	private function loadEmbeddedJsonData($html){
-		$json = [];
+		$json = array();
 		$scripts = $html->find('script');
 
 		foreach($scripts as $script) {

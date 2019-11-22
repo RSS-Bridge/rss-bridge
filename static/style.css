@@ -184,12 +184,33 @@ form {
 	content: ' :';
 }
 
+.info {
+	cursor: help;
+	opacity: 0.5;
+	width: 24px;
+	height: 24px;
+	font-size: 16px;
+	font-weight: bold;
+	font-style: italic;
+	line-height: 22px;
+	text-align: center;
+	color: #fff;
+	background-image: radial-gradient(#49afff, #1182DB);
+	-webkit-border-radius: 16px;
+	-moz-border-radius: 16px;
+	border-radius: 16px;
+}
+
+.info:hover {
+	opacity: 1;
+}
+
 @supports (display: grid) {
 
 	.parameters {
 		display: grid;
 		padding: 12px 0;
-		grid-template-columns: 40% max-content;
+		grid-template-columns: 40% max-content 24px;
 		grid-column-gap: 10px;
 		grid-row-gap: 5px;
 	}
@@ -337,6 +358,10 @@ h5 {
 		width: 40%;
 		padding: 5px auto;
 		margin: 3px auto 0;
+	}
+
+	.info {
+		display: none;
 	}
 
 	@supports (display: grid) {

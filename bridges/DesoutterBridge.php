@@ -116,6 +116,12 @@ class DesoutterBridge extends BridgeAbstract {
 				'name' => 'Load full articles',
 				'type' => 'checkbox',
 				'title' => 'Enable to load the full article for each item'
+			),
+			'limit' => array(
+				'name' => 'Limit',
+				'type' => 'number',
+				'defaultValue' => 3,
+				'title' => "Maximum number of items to return in the feed.\n0 = unlimited"
 			)
 		)
 	);
@@ -156,6 +162,8 @@ class DesoutterBridge extends BridgeAbstract {
 
 		$this->title = html_entity_decode($html->find('title', 0)->plaintext, ENT_QUOTES);
 
+		$limit = $this->getInput('limit') ?: 0;
+
 		foreach($html->find('article') as $article) {
 			$item = array();
 
@@ -169,6 +177,8 @@ class DesoutterBridge extends BridgeAbstract {
 			}
 
 			$this->items[] = $item;
+
+			if ($limit > 0 && count($this->items) >= $limit) break;
 		}
 
 	}

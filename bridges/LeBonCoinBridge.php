@@ -431,11 +431,11 @@ class LeBonCoinBridge extends BridgeAbstract {
 		);
 
 		if($this->getInput('region') != '') {
-			$requestJson->filters->location['regions'] = [$this->getInput('region')];
+			$requestJson->filters->location['regions'] = array($this->getInput('region'));
 		}
 
 		if($this->getInput('department') != '') {
-			$requestJson->filters->location['departments'] = [$this->getInput('department')];
+			$requestJson->filters->location['departments'] = array($this->getInput('department'));
 		}
 
 		if($this->getInput('cities') != '') {
@@ -467,7 +467,7 @@ class LeBonCoinBridge extends BridgeAbstract {
 		}
 
 		if($this->getInput('estate') != '') {
-			$requestJson->filters->enums['real_estate_type'] = [$this->getInput('estate')];
+			$requestJson->filters->enums['real_estate_type'] = array($this->getInput('estate'));
 		}
 
 		if($this->getInput('roomsmin') != ''
@@ -526,7 +526,7 @@ class LeBonCoinBridge extends BridgeAbstract {
 		}
 
 		if($this->getInput('fuel') != '') {
-			$requestJson->filters->enums['fuel'] = [$this->getInput('fuel')];
+			$requestJson->filters->enums['fuel'] = array($this->getInput('fuel'));
 		}
 
 		$requestJson->limit = 30;

@@ -165,8 +165,8 @@ abstract class BridgeAbstract implements BridgeInterface {
 			foreach(static::PARAMETERS['global'] as $name => $properties) {
 				if(isset($inputs[$name])) {
 					$value = $inputs[$name];
-				} elseif(isset($properties['value'])) {
-					$value = $properties['value'];
+				} elseif(isset($properties['defaultValue'])) {
+					$value = $properties['defaultValue'];
 				} else {
 					continue;
 				}
