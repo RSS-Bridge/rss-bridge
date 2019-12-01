@@ -59,29 +59,29 @@ class TorrentGalaxyBridge extends BridgeAbstract {
 			or returnServerError('Error requiring the server.' . curl_error());
 
 		foreach($html->find('div.tgxtablerow') as $result) {
-			$identity = $result->find('div.tgxtablecell',3)->find('div a',0);
-			$authorid = $result->find('div.tgxtablecell',6)->find('a',0);
-			$creadate = $result->find('div.tgxtablecell',11)->plaintext;
-			$glxlinks = $result->find('div.tgxtablecell',4);
+			$identity = $result->find('div.tgxtablecell', 3)->find('div a', 0);
+			$authorid = $result->find('div.tgxtablecell', 6)->find('a', 0);
+			$creadate = $result->find('div.tgxtablecell', 11)->plaintext;
+			$glxlinks = $result->find('div.tgxtablecell', 4);
 
 			$item = array();
 			$item['uri'] = self::URI . $identity->href;
 			$item['title'] = $identity->plaintext;
 			$item['timestamp'] = DateTime::createFromFormat('d/m/y H:i', $creadate)->format('U');
 			$item['author'] = $authorid->plaintext;
-			$item['content'] =
+			$item['content'] = 
 				'<!DOCTYPE html><html><body>' .
 				'<h1>' . $identity->plaintext . '</h1>' .
 				'<h2>Links</h2>' .
-				'<p><a href="' . $glxlinks->find('a',1)->href . '" title="magnet link">magnet</a></p>' .
-				'<p><a href="' . $glxlinks->find('a',0)->href . '" title="torrent link">torrent</a></p>' .
+				'<p><a href="' . $glxlinks->find('a', 1)->href . '" title="magnet link">magnet</a></p>' .
+				'<p><a href="' . $glxlinks->find('a', 0)->href . '" title="torrent link">torrent</a></p>' .
 				'<h2>Infos</h2>' .
-				'<p>Size: ' . $result->find('div.tgxtablecell',7)->plaintext . '</p>' .
+				'<p>Size: ' . $result->find('div.tgxtablecell', 7)->plaintext . '</p>' .
 				'<p>Added by: <a href="' . $authorid->href . '" title="author profile">' . $authorid->plaintext . '</a></p>' .
 				'<p>Upload time: ' . $creadate . '</p>' .
 				'</body></html>';
-			$item['enclosures'] = array($glxlinks->find('a',0)->href);
-			$item['categories'] = array($result->find('div.tgxtablecell',0)->plaintext);
+			$item['enclosures'] = array($glxlinks->find('a', 0)->href);
+			$item['categories'] = array($result->find('div.tgxtablecell', 0)->plaintext);
 			if (preg_match('#/torrent/([^/]+)/#', self::URI . $identity->href, $torrentid)) {
 				$item['uid'] = $torrentid[1];
 			}
