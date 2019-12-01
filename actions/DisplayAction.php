@@ -190,7 +190,7 @@ class DisplayAction extends ActionAbstract {
 
 						$items[] = $item;
 					} elseif(Configuration::getConfig('error', 'output') === 'http') {
-						header('Content-Type: text/html', true, get_return_code($e));
+						header('Content-Type: text/html', true, $this->get_return_code($e));
 						die(buildTransformException($e, $bridge));
 					}
 				}
@@ -222,7 +222,7 @@ class DisplayAction extends ActionAbstract {
 
 						$items[] = $item;
 					} elseif(Configuration::getConfig('error', 'output') === 'http') {
-						header('Content-Type: text/html', true, get_return_code($e));
+						header('Content-Type: text/html', true, $this->get_return_code($e));
 						die(buildTransformException($e, $bridge));
 					}
 				}
