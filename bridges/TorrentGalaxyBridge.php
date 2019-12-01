@@ -51,12 +51,12 @@ class TorrentGalaxyBridge extends BridgeAbstract {
 	);
 
 	public function collectData(){
-		$url = self::URI . '/torrents.php' .
-			'?search=' . urlencode($this->getInput('search')) .
-			'&lang=' . $this->getInput('lang') .
-			'$sort=id&order=desc';
+		$url = self::URI
+			. '/torrents.php?search=' . urlencode($this->getInput('search'))
+			. '&lang=' . $this->getInput('lang')
+			. '&sort=id&order=desc';
 		$html = getSimpleHTMLDOM($url)
-			or returnServerError('Error requiring the server.' . curl_error());
+			or returnServerError("Error querying the server at $url");
 
 		foreach($html->find('div.tgxtablerow') as $result) {
 			$identity = $result->find('div.tgxtablecell', 3)->find('div a', 0);
@@ -69,17 +69,16 @@ class TorrentGalaxyBridge extends BridgeAbstract {
 			$item['title'] = $identity->plaintext;
 			$item['timestamp'] = DateTime::createFromFormat('d/m/y H:i', $creadate)->format('U');
 			$item['author'] = $authorid->plaintext;
-			$item['content'] = 
-				'<!DOCTYPE html><html><body>' .
-				'<h1>' . $identity->plaintext . '</h1>' .
-				'<h2>Links</h2>' .
-				'<p><a href="' . $glxlinks->find('a', 1)->href . '" title="magnet link">magnet</a></p>' .
-				'<p><a href="' . $glxlinks->find('a', 0)->href . '" title="torrent link">torrent</a></p>' .
-				'<h2>Infos</h2>' .
-				'<p>Size: ' . $result->find('div.tgxtablecell', 7)->plaintext . '</p>' .
-				'<p>Added by: <a href="' . $authorid->href . '" title="author profile">' . $authorid->plaintext . '</a></p>' .
-				'<p>Upload time: ' . $creadate . '</p>' .
-				'</body></html>';
+			$item['content'] = <<<HTML
+<h1>{$identity->plaintext}</h1>
+<h2>Links</h2>
+<p><a href="{$glxlinks->find('a', 1)->href}" title="magnet link">magnet</a></p>
+<p><a href="{$glxlinks->find('a', 0)->href}" title="torrent link">torrent</a></p>
+<h2>Infos</h2>
+<p>Size: {$result->find('div.tgxtablecell', 7)->plaintext}</p>
+<p>Added by: <a href="{$authorid->href}" title="author profile">{$authorid->plaintext}</a></p>
+<p>Upload time: {$creadate}</p>
+HTML;
 			$item['enclosures'] = array($glxlinks->find('a', 0)->href);
 			$item['categories'] = array($result->find('div.tgxtablecell', 0)->plaintext);
 			if (preg_match('#/torrent/([^/]+)/#', self::URI . $identity->href, $torrentid)) {
@@ -98,9 +97,9 @@ class TorrentGalaxyBridge extends BridgeAbstract {
 
 	public function getURI(){
 		if(!is_null($this->getInput('search'))) {
-			return self::URI . '/torrents.php' .
-				'?search=' . urlencode($this->getInput('search')) .
-				'&lang=' . $this->getInput('lang');
+			return self::URI
+				. '/torrents.php?search=' . urlencode($this->getInput('search'))
+				. '&lang=' . $this->getInput('lang');
 		}
 		return parent::getURI();
 	}
