@@ -17,13 +17,27 @@ class DonnonsBridge extends BridgeAbstract {
 			'required' => true,
 			'exampleValue' 	=> '/Sport/Ile-de-France',
 			'title' => 'Depuis le site, choisir des filtres par exemple Sport et Ile de France et lancez la recherche. Puis copiez ici la fin de l\'url',
+		),
+		'p' => array(
+			'name' => 'Nombre de pages à scanner',
+			'type' => 'number',
+			'defaultValue' => 5,
+			'title' => 'Indique le nombre de pages de donnons.org qui seront scannées par le bridge'
 		)
 	));
 
-	public function collectData(){
-		$html = '';
+	public function collectData() {
+		$pages = $this->getInput('p');
 
-		$html = getSimpleHTMLDOM($this->getURI())
+		for($i = 1; $i <= $pages; $i++) {
+			$this->collectDataByPage($i);
+		}
+	}
+
+	private function collectDataByPage(int $page) {
+		$uri = $this->getURI() . "&page=" . $page;
+
+		$html = getSimpleHTMLDOM($uri)
 			or returnServerError('No results for this query.');
 
 		$searchDiv = $html->find('div[id=search]', 0);
@@ -87,7 +101,7 @@ class DonnonsBridge extends BridgeAbstract {
 		return parent::getURI();
 	}
 
-	public function getName(){
+	public function getName() {
 		if(!is_null($this->getInput('q'))) {
 			return 'Donnons.org - ' . $this->getInput('q');
 		}
