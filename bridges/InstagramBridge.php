@@ -149,6 +149,7 @@ class InstagramBridge extends BridgeAbstract {
 					} else {
 						$item['enclosures'] = array($mediaURI);
 					}
+					$item['thumbnail'] = $mediaURI;
 					break;
 				default: break;
 			}
