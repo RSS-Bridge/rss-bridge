@@ -26,8 +26,7 @@ final class BridgeList {
 	 * @return string The document head
 	 */
 	private static function getHead() {
-		return <<<EOD
-<head>
+		$head = <<<EOD
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta name="description" content="RSS-Bridge" />
@@ -43,8 +42,23 @@ final class BridgeList {
 			}
 		</style>
 	</noscript>
-</head>
 EOD;
+
+		if ($gaid = Configuration::getConfig('Google Analytics', 'id')) {
+			$head .= <<<HTML
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={$gaid}"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+
+gtag('config', '$gaid');
+</script>
+HTML;
+		}
+
+		return '<head>' . $head . '</head>';
 	}
 
 	/**

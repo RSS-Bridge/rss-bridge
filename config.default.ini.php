@@ -73,6 +73,13 @@ output = "feed"
 ; Defines how often an error must occur before it is reported to the user
 report_limit = 1
 
+[Google Analytics]
+
+; Defines the Google Analytics Tracking ID for your website
+;
+; "" = disabled
+id = ""
+
 ; --- Cache specific configuration ---------------------------------------------
 
 [SQLiteCache]

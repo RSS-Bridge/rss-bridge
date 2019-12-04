@@ -95,6 +95,21 @@ EOD;
 
 		$charset = $this->getCharset();
 
+		$google_analytics = '';
+		if ($id = Configuration::getConfig('Google Analytics', 'id')) {
+			$google_analytics .= <<<HTML
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={$id}"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+
+gtag('config', '$id');
+</script>
+HTML;
+		}
+
 		/* Data are prepared, now let's begin the "MAGIE !!!" */
 		$toReturn = <<<EOD
 <!DOCTYPE html>
@@ -107,6 +122,7 @@ EOD;
 	<link rel="icon" type="image/png" href="static/favicon.png">
 	{$links}
 	<meta name="robots" content="noindex, follow">
+	{$google_analytics}
 </head>
 <body>
 	<h1 class="pagetitle"><a href="{$uri}" target="_blank">{$title}</a></h1>
