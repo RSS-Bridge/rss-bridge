@@ -77,7 +77,7 @@ report_limit = 1
 
 ; Defines the Google Analytics Tracking ID for your website
 ;
-; "" = disabled
+; "" = disabled (default)
 id = ""
 
 ; --- Cache specific configuration ---------------------------------------------

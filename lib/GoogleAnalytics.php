@@ -17,7 +17,6 @@
  * @link	https://analytics.google.com/analytics/web/ Google Analytics
  */
 class GoogleAnalytics {
-
 	/**
 	 * Checks whether the provided ID is a valid Google Analytics ID in the format
 	 * UA-000000000-0 (number of digits can vary).
@@ -55,5 +54,4 @@ gtag('config', '$id');
 EOD;
 
 	}
-
 }
