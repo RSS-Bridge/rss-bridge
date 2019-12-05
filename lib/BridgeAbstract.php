@@ -312,7 +312,8 @@ abstract class BridgeAbstract implements BridgeInterface {
 		$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
 		$cache->setScope(get_called_class());
 		$cache->setKey($key);
-		$cache->purgeCache($duration);
+		if($cache->getTime() < time() - $duration)
+			return null;
 		return $cache->loadData();
 	}
 
