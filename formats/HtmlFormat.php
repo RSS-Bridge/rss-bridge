@@ -94,21 +94,7 @@ EOD;
 		}
 
 		$charset = $this->getCharset();
-
-		$google_analytics = '';
-		if ($id = Configuration::getConfig('Google Analytics', 'id')) {
-			$google_analytics .= <<<HTML
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id={$id}"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-
-gtag('config', '$id');
-</script>
-HTML;
-		}
+		$google_analytics = GoogleAnalytics::buildGlobalSiteTag();
 
 		/* Data are prepared, now let's begin the "MAGIE !!!" */
 		$toReturn = <<<EOD
