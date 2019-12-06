@@ -45,13 +45,12 @@ class FeedMergeBridge extends FeedExpander {
 	}
 
 	public function getIcon() {
-		$feedicon = 'https://cdn.jsdelivr.net/npm/famfamfam-silk@1.0.0/dist/png' .
-			'/folder_feed.png';
+		$feedicon = 'https://cdn.jsdelivr.net/npm/famfamfam-silk@1.0.0/dist/png/folder_feed.png';
 		return $feedicon;
 	}
 
 	public function getName() {
-		if(isset($feedname)){
+		if(isset($feedname)) {
 			return 'FeedMerge ' . $this->$feedname;
 		} else {
 			return 'FeedMerge';
