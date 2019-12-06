@@ -24,7 +24,7 @@ class FeedMergeBridge extends FeedExpander {
 		);
 		public $feedname = '';
 
-		public function feedName($f){
+		private function feedName($f){
 			$this->$feedname = $this->$feedname . ' / ' . $f;
 		}
 
@@ -51,6 +51,10 @@ class FeedMergeBridge extends FeedExpander {
 	}
 
 	public function getName() {
-		return 'FeedMerge ' . $this->$feedname;
+		if(isset($feedname)){
+			return 'FeedMerge ' . $this->$feedname;
+		} else {
+			return 'FeedMerge';
+		}
 	}
 }
