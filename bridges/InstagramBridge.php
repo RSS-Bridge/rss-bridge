@@ -122,7 +122,7 @@ class InstagramBridge extends BridgeAbstract {
 			if ($titleLinePos != false) {
 				$item['title'] = substr($item['title'], 0, $titleLinePos) . '...';
 			}
-			
+
 			if($directLink) {
 				$mediaURI = $media->display_url;
 			} else {
