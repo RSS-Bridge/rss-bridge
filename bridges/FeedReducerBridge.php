@@ -20,7 +20,7 @@ class FeedReducerBridge extends FeedExpander {
 	const CACHE_TIMEOUT = 3600;
 
 	public function collectData(){
-		if((preg_match('#^http(s?)://#i', $this->getInput('url')) === 1)) {
+		if(preg_match('#^http(s?)://#i', $this->getInput('url'))) {
 			$this->collectExpandableDatas($this->getInput('url'));
 		} else {
 			throw new Exception('URI must begin with http(s)://');
