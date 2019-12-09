@@ -30,29 +30,34 @@ class MediapartBridge extends FeedExpander {
 	protected function parseItem($newsItem) {
 		$item = parent::parseItem($newsItem);
 
-		// Enable single page mode?
-		if ($this->getInput('single_page_mode') === true) {
-			$item['uri'] .= '?onglet=full';
-		}
+		// Mediapart provide multiple type of contents.
+		// We only process items relative to the newspaper
+		// See issue #1292 - https://github.com/RSS-Bridge/rss-bridge/issues/1292
+		if (strpos($item['uri'], self::URI . 'journal/') === 0) {
+			// Enable single page mode?
+			if ($this->getInput('single_page_mode') === true) {
+				$item['uri'] .= '?onglet=full';
+			}
 
-		// If a session cookie is defined, get the full article
-		$mpsessid = $this->getInput('mpsessid');
-		if (!empty($mpsessid)) {
-			// Set the session cookie
-			$opt = array();
-			$opt[CURLOPT_COOKIE] = 'MPSESSID=' . $mpsessid;
+			// If a session cookie is defined, get the full article
+			$mpsessid = $this->getInput('mpsessid');
+			if (!empty($mpsessid)) {
+				// Set the session cookie
+				$opt = array();
+				$opt[CURLOPT_COOKIE] = 'MPSESSID=' . $mpsessid;
 
-			// Get the page
-			$articlePage = getSimpleHTMLDOM(
-				$newsItem->link . '?onglet=full',
-				array(),
-				$opt);
+				// Get the page
+				$articlePage = getSimpleHTMLDOM(
+					$newsItem->link . '?onglet=full',
+					array(),
+					$opt);
 
-			// Extract the article content
-			$content = $articlePage->find('div.content-article', 0)->innertext;
-			$content = sanitize($content);
-			$content = defaultLinkTo($content, static::URI);
-			$item['content'] .= $content;
+				// Extract the article content
+				$content = $articlePage->find('div.content-article', 0)->innertext;
+				$content = sanitize($content);
+				$content = defaultLinkTo($content, static::URI);
+				$item['content'] .= $content;
+			}
 		}
 
 		return $item;

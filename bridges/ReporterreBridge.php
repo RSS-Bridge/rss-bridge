@@ -3,7 +3,7 @@ class ReporterreBridge extends BridgeAbstract {
 
 		const MAINTAINER = 'nyutag';
 		const NAME = 'Reporterre Bridge';
-		const URI = 'http://www.reporterre.net/';
+		const URI = 'https://www.reporterre.net/';
 		const DESCRIPTION = 'Returns the newest articles.';
 
 		private function extractContent($url){

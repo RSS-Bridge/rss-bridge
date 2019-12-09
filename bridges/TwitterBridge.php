@@ -171,9 +171,14 @@ EOD
 	public function collectData(){
 		$html = '';
 		$page = $this->getURI();
-		$cookies = $this->getCookies($page);
 
-		$html = getSimpleHTMLDOM($page, array("Cookie: $cookies"));
+		if(php_sapi_name() === 'cli' && empty(ini_get('curl.cainfo'))) {
+			$cookies = $this->getCookies($page);
+			$html = getSimpleHTMLDOM($page, array("Cookie: $cookies"));
+		} else {
+			$html = getSimpleHTMLDOM($page, array(), array(CURLOPT_COOKIEFILE => ''));
+		}
+
 		if(!$html) {
 			switch($this->queriedContext) {
 			case 'By keyword or hashtag':

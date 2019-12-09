@@ -134,11 +134,11 @@ EOT;
 		// 	data-asin="B00WTHJ5SU" data-asin-price="14.99" data-asin-shipping="0"
 		// 	data-asin-currency-code="USD" data-substitute-count="-1" ... />
 		if ($asinData) {
-			return [
+			return array(
 				'price' 	=> $asinData->getAttribute('data-asin-price'),
 				'currency'	=> $asinData->getAttribute('data-asin-currency-code'),
 				'shipping'	=> $asinData->getAttribute('data-asin-shipping')
-			];
+			);
 		}
 
 		return false;
@@ -150,11 +150,11 @@ EOT;
 		preg_match('/^\s*([A-Z]{3}|£|\$)\s?([\d.,]+)\s*$/', $priceDiv->plaintext, $matches);
 
 		if (count($matches) === 3) {
-			return [
+			return array(
 				'price' 	=> $matches[2],
 				'currency'	=> $matches[1],
 				'shipping'	=> '0'
-			];
+			);
 		}
 
 		return false;

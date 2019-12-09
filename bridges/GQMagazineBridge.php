@@ -61,7 +61,7 @@ class GQMagazineBridge extends BridgeAbstract
 
 	private function findTitleOf($link) {
 		foreach (self::POSSIBLE_TITLES as $tag) {
-			$title = $link->find($tag, 0);
+			$title = $link->parent()->find($tag, 0);
 			if($title !== null) {
 				if($title->plaintext !== null) {
 					return $title->plaintext;
@@ -77,11 +77,13 @@ class GQMagazineBridge extends BridgeAbstract
 		// Since GQ don't want simple class scrapping, let's do it the hard way and ... discover content !
 		$main = $html->find('main', 0);
 		foreach ($main->find('a') as $link) {
+			if(strpos($link, $this->getInput('page')))
+				continue;
 			$uri = $link->href;
-			$date = $link->find('time', 0);
+			$date = $link->parent()->find('time', 0);
 
 			$item = array();
-			$author = $link->find('span[itemprop=name]', 0);
+			$author = $link->parent()->find('span[itemprop=name]', 0);
 			if($author !== null) {
 				$item['author'] = $author->plaintext;
 				$item['title'] = $this->findTitleOf($link);
@@ -115,7 +117,7 @@ class GQMagazineBridge extends BridgeAbstract
 	 */
 	private function loadFullArticle($uri){
 		$html = getSimpleHTMLDOMCached($uri);
-		return $html->find('section[data-test-id=ArticleBodyContent]', 0);
+		return $html->find('section[data-test-id=MainContentWrapper]', 0);
 	}
 
 	/**

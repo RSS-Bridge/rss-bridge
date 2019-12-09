@@ -37,11 +37,13 @@
  * @param array $opts (optional) A list of cURL options as associative array in
  * the format `$opts[$option] = $value;`, where `$option` is any `CURLOPT_XXX`
  * option and `$value` the corresponding value.
+ * @param bool $returnHeader Returns an array of two elements 'header' and
+ * 'content' if enabled.
  *
  * For more information see http://php.net/manual/en/function.curl-setopt.php
  * @return string The contents.
  */
-function getContents($url, $header = array(), $opts = array()){
+function getContents($url, $header = array(), $opts = array(), $returnHeader = false){
 	Debug::log('Reading contents from "' . $url . '"');
 
 	// Initialize cache
@@ -51,12 +53,30 @@ function getContents($url, $header = array(), $opts = array()){
 	$cache->setScope('server');
 	$cache->purgeCache(86400); // 24 hours (forced)
 
-	$params = [$url];
+	$params = array($url);
 	$cache->setKey($params);
+
+	$retVal = array(
+		'header' => '',
+		'content' => '',
+	);
 
 	// Use file_get_contents if in CLI mode with no root certificates defined
 	if(php_sapi_name() === 'cli' && empty(ini_get('curl.cainfo'))) {
-		$data = @file_get_contents($url);
+
+		$httpHeaders = '';
+
+		foreach ($header as $headerL) {
+			$httpHeaders .= $headerL . "\r\n";
+		}
+
+		$ctx = stream_context_create(array(
+			'http' => array(
+				'header' => $httpHeaders
+			)
+		));
+
+		$data = @file_get_contents($url, 0, $ctx);
 
 		if($data === false) {
 			$errorCode = 500;
@@ -128,6 +148,7 @@ function getContents($url, $header = array(), $opts = array()){
 
 		$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 		$header = substr($data, 0, $headerSize);
+		$retVal['header'] = $header;
 
 		Debug::log('Response header: ' . $header);
 
@@ -151,15 +172,18 @@ function getContents($url, $header = array(), $opts = array()){
 				if(in_array('no-cache', $directives)
 				|| in_array('no-store', $directives)) { // Skip caching
 					Debug::log('Skip server side caching');
-					return $data;
+					$retVal['content'] = $data;
+					break;
 				}
 			}
 			Debug::log('Store response to cache');
 			$cache->saveData($data);
-			return $data;
+			$retVal['content'] = $data;
+			break;
 		case 304: // Not modified, use cached data
 			Debug::log('Contents not modified on host, returning cached data');
-			return $cache->loadData();
+			$retVal['content'] = $cache->loadData();
+			break;
 		default:
 			if(array_key_exists('Server', $finalHeader) && strpos($finalHeader['Server'], 'cloudflare') !== false) {
 			returnServerError(<<< EOD
@@ -180,6 +204,8 @@ PHP error: $lastError
 EOD
 			, $errorCode);
 	}
+
+	return ($returnHeader === true) ? $retVal : $retVal['content'];
 }
 
 /**
@@ -278,7 +304,7 @@ function getSimpleHTMLDOMCached($url,
 	$cache->setScope('pages');
 	$cache->purgeCache(86400); // 24 hours (forced)
 
-	$params = [$url];
+	$params = array($url);
 	$cache->setKey($params);
 
 	// Determine if cached file is within duration

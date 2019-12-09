@@ -26,6 +26,7 @@
     <properties>
       <property name="lineLimit" value="80"/>
       <property name="absoluteLineLimit" value="120"/>
+      <property name="ignoreComments" value="true"/>
     </properties>
   </rule>
   <!-- When calling a function: -->
@@ -99,4 +100,6 @@
   <rule ref="Squiz.Strings.DoubleQuoteUsage">
     <exclude name="Squiz.Strings.DoubleQuoteUsage.ContainsVar" />
   </rule>
+  <!-- Always use the long array syntax -->
+  <rule ref="Generic.Arrays.DisallowShortArraySyntax" />
 </ruleset>

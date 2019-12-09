@@ -28,7 +28,7 @@ final class Configuration {
 	 *
 	 * @todo Replace this property by a constant.
 	 */
-	public static $VERSION = 'dev.2019-07-06';
+	public static $VERSION = 'dev.2019-12-01';
 
 	/**
 	 * Holds the configuration data.
@@ -200,6 +200,13 @@ final class Configuration {
 		if(!empty(self::getConfig('admin', 'email'))
 		&& !filter_var(self::getConfig('admin', 'email'), FILTER_VALIDATE_EMAIL))
 			self::reportConfigurationError('admin', 'email', 'Is not a valid email address');
+
+		if(!is_string(self::getConfig('error', 'output')))
+			self::reportConfigurationError('error', 'output', 'Is not a valid String');
+
+		if(!is_numeric(self::getConfig('error', 'report_limit'))
+		|| self::getConfig('error', 'report_limit') < 1)
+			self::reportConfigurationError('admin', 'report_limit', 'Value is invalid');
 
 	}
 

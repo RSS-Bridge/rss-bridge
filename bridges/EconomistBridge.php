@@ -40,7 +40,7 @@ class EconomistBridge extends BridgeAbstract {
 			if ($nextprev)
 				$nextprev->outertext = '';
 
-			$section = [ $article->find('h3[itemprop="articleSection"]', 0)->plaintext ];
+			$section = array( $article->find('h3[itemprop="articleSection"]', 0)->plaintext );
 
 			$item = array();
 			$item['title'] = $header->find('span', 0)->innertext . ': '

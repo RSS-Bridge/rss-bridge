@@ -7,6 +7,8 @@
  * https://validator.w3.org/feed/
  */
 class AtomFormat extends FormatAbstract{
+	const MIME_TYPE = 'application/atom+xml';
+
 	const LIMIT_TITLE = 140;
 
 	public function stringify(){
@@ -37,7 +39,7 @@ class AtomFormat extends FormatAbstract{
 		$entries = '';
 		foreach($this->getItems() as $item) {
 			$entryTimestamp = $item->getTimestamp();
-			$entryTitle = $this->xml_encode($item->getTitle());
+			$entryTitle = $item->getTitle();
 			$entryContent = $item->getContent();
 			$entryUri = $item->getURI();
 			$entryID = '';
@@ -147,7 +149,7 @@ EOD;
 
 	public function display(){
 		$this
-			->setContentType('application/atom+xml; charset=' . $this->getCharset())
+			->setContentType(self::MIME_TYPE . '; charset=' . $this->getCharset())
 			->callContentType();
 
 		return parent::display();

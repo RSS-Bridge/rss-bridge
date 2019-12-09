@@ -3,7 +3,9 @@
 class VkBridge extends BridgeAbstract
 {
 
-	const MAINTAINER = 'ahiles3005';
+	const MAINTAINER = 'em92';
+	// const MAINTAINER = 'pmaziere';
+	// const MAINTAINER = 'ahiles3005';
 	const NAME = 'VK.com';
 	const URI = 'https://vk.com/';
 	const CACHE_TIMEOUT = 300; // 5min
@@ -26,7 +28,7 @@ class VkBridge extends BridgeAbstract
 
 	protected function getAccessToken()
 	{
-		return 'c8071613517c155c6cfbd2a059b2718e9c37b89094c4766834969dda75f657a2c1cbb49bab4c5e649f1db';
+		return 'e69b2db9f6cd4a97c0716893232587165c18be85bc1af1834560125c1d3c8ec281eb407a78cca0ae16776';
 	}
 
 	public function getURI()
@@ -165,7 +167,7 @@ class VkBridge extends BridgeAbstract
 			}
 
 			// get all photos
-			foreach($post->find('div.wall_text > a.page_post_thumb_wrap') as $a) {
+			foreach($post->find('div.wall_text a.page_post_thumb_wrap') as $a) {
 				$result = $this->getPhoto($a);
 				if ($result == null) continue;
 				$a->outertext = '';
@@ -237,6 +239,41 @@ class VkBridge extends BridgeAbstract
 				$a->outertext = '';
 			}
 
+			// fix links and get post hashtags
+			$hashtags = array();
+			foreach($post->find('a') as $a) {
+				$href = $a->getAttribute('href');
+				$innertext = $a->innertext;
+
+				$hashtag_prefix = '/feed?section=search&q=%23';
+				$hashtag = null;
+
+				if ($href && substr($href, 0, strlen($hashtag_prefix)) === $hashtag_prefix) {
+					$hashtag = urldecode(substr($href, strlen($hashtag_prefix)));
+				} else if (substr($innertext, 0, 1) == '#') {
+					$hashtag = $innertext;
+				}
+
+				if ($hashtag) {
+					$a->outertext = $innertext;
+					$hashtags[] = $hashtag;
+					continue;
+				}
+
+				$parsed_url = parse_url($href);
+
+				if (array_key_exists('path', $parsed_url) === false) continue;
+
+				if (strpos($parsed_url['path'], '/away.php') === 0) {
+					parse_str($parsed_url['query'], $parsed_query);
+					$a->setAttribute('href', iconv(
+						'windows-1251',
+						'utf-8//ignore',
+						$parsed_query['to']
+					));
+				}
+			}
+
 			if (is_object($post->find('div.copy_quote', 0))) {
 				if ($this->getInput('hide_reposts') === true) {
 					continue;
@@ -250,21 +287,9 @@ class VkBridge extends BridgeAbstract
 			}
 
 			$item = array();
-			$item['content'] = strip_tags(backgroundToImg($post->find('div.wall_text', 0)->innertext), '<br><img>');
+			$item['content'] = strip_tags(backgroundToImg($post->find('div.wall_text', 0)->innertext), '<a><br><img>');
 			$item['content'] .= $content_suffix;
-			$item['categories'] = array();
-
-			// get post hashtags
-			foreach($post->find('a') as $a) {
-				$href = $a->getAttribute('href');
-				$prefix = '/feed?section=search&q=%23';
-				$innertext = $a->innertext;
-				if ($href && substr($href, 0, strlen($prefix)) === $prefix) {
-					$item['categories'][] = urldecode(substr($href, strlen($prefix)));
-				} else if (substr($innertext, 0, 1) == '#') {
-					$item['categories'][] = $innertext;
-				}
-			}
+			$item['categories'] = $hashtags;
 
 			// get post link
 			$post_link = $post->find('a.post_link', 0)->getAttribute('href');
@@ -354,6 +379,8 @@ class VkBridge extends BridgeAbstract
 				}
 
 				$date = date_parse($strdate);
+			} elseif ($date['hour'] === false) {
+				$date['hour'] = $date['minute'] = '00';
 			}
 			return strtotime($date['day'] . '-' . $date['month'] . '-' . $date['year'] . ' ' .
 				$date['hour'] . ':' . $date['minute']);

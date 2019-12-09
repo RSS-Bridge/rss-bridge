@@ -92,7 +92,7 @@ class BingSearchBridge extends BridgeAbstract
 		or returnServerError('Could not request ' . self::NAME);
 		$sizeKey = $this->getInput('image_size');
 
-		$items = [];
+		$items = array();
 		foreach ($html->find('a.iusc') as $element) {
 			$data = json_decode(htmlspecialchars_decode($element->getAttribute('m')), true);
 

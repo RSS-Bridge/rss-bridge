@@ -17,6 +17,15 @@ class NineGagBridge extends BridgeAbstract {
 					'Fresh' => 'fresh',
 				),
 			),
+			'video' => array(
+				'name' => 'Filter Video',
+				'type' => 'list',
+				'values' => array(
+					'NotFiltred' => 'none',
+					'VideoFiltred' => 'without',
+					'VideoOnly' => 'only',
+				),
+			),
 			'p' => array(
 				'name' => 'Pages',
 				'type' => 'number',
@@ -121,13 +130,32 @@ class NineGagBridge extends BridgeAbstract {
 		}
 
 		foreach ($posts as $post) {
-			$item['uri'] = $post['url'];
-			$item['title'] = $post['title'];
-			$item['content'] = self::getContent($post);
-			$item['categories'] = self::getCategories($post);
-			$item['timestamp'] = self::getTimestamp($post);
+			$AvoidElement = false;
+			switch ($this->getInput('video')) {
+				case 'without':
+					if ($post['type'] === 'Animated') {
+						$AvoidElement = true;
+					}
+					break;
+				case 'only':
+					echo $post['type'];
+					if ($post['type'] !== 'Animated') {
+						$AvoidElement = true;
+					}
+					break;
+				case 'none': default:
+					break;
+			}
 
-			$this->items[] = $item;
+			if (!$AvoidElement) {
+				$item['uri'] = $post['url'];
+				$item['title'] = $post['title'];
+				$item['content'] = self::getContent($post);
+				$item['categories'] = self::getCategories($post);
+				$item['timestamp'] = self::getTimestamp($post);
+
+				$this->items[] = $item;
+			}
 		}
 	}
 
