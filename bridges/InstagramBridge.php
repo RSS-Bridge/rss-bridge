@@ -53,7 +53,7 @@ class InstagramBridge extends BridgeAbstract {
 	const USER_QUERY_HASH = '58b6785bea111c67129decbe6a448951';
 	const TAG_QUERY_HASH = '174a5243287c5f3a7de741089750ab3b';
 	const SHORTCODE_QUERY_HASH = '865589822932d1b43dfe312121dd353a';
-	
+
 	protected $noMediaInText;
 
 	protected function getInstagramUserId($username) {
@@ -144,11 +144,11 @@ class InstagramBridge extends BridgeAbstract {
 					}
 					if ($this->$noMediaInText) {
 						$item['content'] = nl2br(htmlentities($textContent));
-					} else {						
+					} else {
 						$item['content'] = '<a href="' . htmlentities($item['uri']) . '" target="_blank">';
 						$item['content'] .= '<img src="' . htmlentities($mediaURI) . '" alt="' . $item['title'] . '" />';
 						$item['content'] .= '</a><br><br>' . nl2br(htmlentities($textContent));
-					}						
+					}
 					$item['enclosures'] = array($mediaURI);
 					break;
 				case 'GraphVideo':
@@ -182,7 +182,7 @@ class InstagramBridge extends BridgeAbstract {
 				if(in_array($singleMedia->video_url, $enclosures)) continue; // check if not added yet
 				if (!$this->$noMediaInText) {
 					$content .= '<video controls><source src="' . $singleMedia->video_url . '" type="video/mp4"></video><br>';
-				}					
+				}
 				array_push($enclosures, $singleMedia->video_url);
 			} else {
 				if(in_array($singleMedia->display_url, $enclosures)) continue; // check if not added yet
@@ -204,11 +204,11 @@ class InstagramBridge extends BridgeAbstract {
 		$mediaInfo = $this->getSinglePostData($uri);
 
 		$textContent = $this->getTextContent($mediaInfo);
-		
+
 		$content = '';
 		if (!$this->$noMediaInText) {
 			$content .= '<video controls><source src="' . $mediaInfo->video_url . '" type="video/mp4"></video><br><br>';
-		}			
+		}
 		$content .= nl2br(htmlentities($textContent));
 
 		return array($content, array($mediaInfo->video_url));
