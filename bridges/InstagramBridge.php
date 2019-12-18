@@ -41,7 +41,7 @@ class InstagramBridge extends BridgeAbstract {
 			'direct_links' => array(
 				'name' => 'Use direct media links',
 				'type' => 'checkbox',
-			)
+			),
 			'no_media_in_text' => array(
 				'name' => 'Exclude media from text',
 				'type' => 'checkbox',
@@ -176,24 +176,25 @@ class InstagramBridge extends BridgeAbstract {
 
 		$enclosures = array();
 		$content = '';
-		if (!$this->$noMediaInText) {
-			foreach($mediaInfo->edge_sidecar_to_children->edges as $singleMedia) {
-				$singleMedia = $singleMedia->node;
-				if($singleMedia->is_video) {
-					if(in_array($singleMedia->video_url, $enclosures)) continue; // check if not added yet
+		foreach($mediaInfo->edge_sidecar_to_children->edges as $singleMedia) {
+			$singleMedia = $singleMedia->node;
+			if($singleMedia->is_video) {
+				if(in_array($singleMedia->video_url, $enclosures)) continue; // check if not added yet
+				if (!$this->$noMediaInText) {
 					$content .= '<video controls><source src="' . $singleMedia->video_url . '" type="video/mp4"></video><br>';
-					array_push($enclosures, $singleMedia->video_url);
-				} else {
-					if(in_array($singleMedia->display_url, $enclosures)) continue; // check if not added yet
+				}					
+				array_push($enclosures, $singleMedia->video_url);
+			} else {
+				if(in_array($singleMedia->display_url, $enclosures)) continue; // check if not added yet
+				if (!$this->$noMediaInText) {
 					$content .= '<a href="' . $singleMedia->display_url . '" target="_blank">';
 					$content .= '<img src="' . $singleMedia->display_url . '" alt="' . $postTitle . '" />';
 					$content .= '</a><br>';
-					array_push($enclosures, $singleMedia->display_url);
-				}
+				}					
+				array_push($enclosures, $singleMedia->display_url);
 			}
-			$content .= '<br>';
-		}			
-		$content .= nl2br(htmlentities($textContent));
+		}
+		$content .= '<br>' . nl2br(htmlentities($textContent));
 
 		return array($content, $enclosures);
 	}
