@@ -190,7 +190,7 @@ class InstagramBridge extends BridgeAbstract {
 					$content .= '<a href="' . $singleMedia->display_url . '" target="_blank">';
 					$content .= '<img src="' . $singleMedia->display_url . '" alt="' . $postTitle . '" />';
 					$content .= '</a><br>';
-				}					
+				}
 				array_push($enclosures, $singleMedia->display_url);
 			}
 		}
