@@ -42,6 +42,10 @@ class InstagramBridge extends BridgeAbstract {
 				'name' => 'Use direct media links',
 				'type' => 'checkbox',
 			)
+			'no_media_in_text' => array(
+				'name' => 'Exclude media from text',
+				'type' => 'checkbox',
+			)
 		)
 
 	);
@@ -49,6 +53,8 @@ class InstagramBridge extends BridgeAbstract {
 	const USER_QUERY_HASH = '58b6785bea111c67129decbe6a448951';
 	const TAG_QUERY_HASH = '174a5243287c5f3a7de741089750ab3b';
 	const SHORTCODE_QUERY_HASH = '865589822932d1b43dfe312121dd353a';
+	
+	protected $noMediaInText;
 
 	protected function getInstagramUserId($username) {
 
@@ -80,6 +86,7 @@ class InstagramBridge extends BridgeAbstract {
 
 	public function collectData(){
 		$directLink = !is_null($this->getInput('direct_links')) && $this->getInput('direct_links');
+		$this->$noMediaInText = !is_null($this->getInput('no_media_in_text')) && $this->getInput('no_media_in_text');
 
 		$data = $this->getInstagramJSON($this->getURI());
 
@@ -117,7 +124,7 @@ class InstagramBridge extends BridgeAbstract {
 
 			$textContent = $this->getTextContent($media);
 
-			$item['title'] = ($media->is_video ? '▶ ' : '') . $textContent;
+			$item['title'] = ($media->is_video ? 'в–¶ ' : '') . $textContent;
 			$titleLinePos = strpos(wordwrap($item['title'], 120), "\n");
 			if ($titleLinePos != false) {
 				$item['title'] = substr($item['title'], 0, $titleLinePos) . '...';
@@ -135,9 +142,13 @@ class InstagramBridge extends BridgeAbstract {
 					} else {
 						$mediaURI = self::URI . 'p/' . $media->shortcode . '/media?size=l';
 					}
-					$item['content'] = '<a href="' . htmlentities($item['uri']) . '" target="_blank">';
-					$item['content'] .= '<img src="' . htmlentities($mediaURI) . '" alt="' . $item['title'] . '" />';
-					$item['content'] .= '</a><br><br>' . nl2br(htmlentities($textContent));
+					if ($this->$noMediaInText) {
+						$item['content'] = nl2br(htmlentities($textContent));
+					} else {						
+						$item['content'] = '<a href="' . htmlentities($item['uri']) . '" target="_blank">';
+						$item['content'] .= '<img src="' . htmlentities($mediaURI) . '" alt="' . $item['title'] . '" />';
+						$item['content'] .= '</a><br><br>' . nl2br(htmlentities($textContent));
+					}						
 					$item['enclosures'] = array($mediaURI);
 					break;
 				case 'GraphVideo':
@@ -165,21 +176,24 @@ class InstagramBridge extends BridgeAbstract {
 
 		$enclosures = array();
 		$content = '';
-		foreach($mediaInfo->edge_sidecar_to_children->edges as $singleMedia) {
-			$singleMedia = $singleMedia->node;
-			if($singleMedia->is_video) {
-				if(in_array($singleMedia->video_url, $enclosures)) continue; // check if not added yet
-				$content .= '<video controls><source src="' . $singleMedia->video_url . '" type="video/mp4"></video><br>';
-				array_push($enclosures, $singleMedia->video_url);
-			} else {
-				if(in_array($singleMedia->display_url, $enclosures)) continue; // check if not added yet
-				$content .= '<a href="' . $singleMedia->display_url . '" target="_blank">';
-				$content .= '<img src="' . $singleMedia->display_url . '" alt="' . $postTitle . '" />';
-				$content .= '</a><br>';
-				array_push($enclosures, $singleMedia->display_url);
+		if (!$this->$noMediaInText) {
+			foreach($mediaInfo->edge_sidecar_to_children->edges as $singleMedia) {
+				$singleMedia = $singleMedia->node;
+				if($singleMedia->is_video) {
+					if(in_array($singleMedia->video_url, $enclosures)) continue; // check if not added yet
+					$content .= '<video controls><source src="' . $singleMedia->video_url . '" type="video/mp4"></video><br>';
+					array_push($enclosures, $singleMedia->video_url);
+				} else {
+					if(in_array($singleMedia->display_url, $enclosures)) continue; // check if not added yet
+					$content .= '<a href="' . $singleMedia->display_url . '" target="_blank">';
+					$content .= '<img src="' . $singleMedia->display_url . '" alt="' . $postTitle . '" />';
+					$content .= '</a><br>';
+					array_push($enclosures, $singleMedia->display_url);
+				}
 			}
-		}
-		$content .= '<br>' . nl2br(htmlentities($textContent));
+			$content .= '<br>';
+		}			
+		$content .= nl2br(htmlentities($textContent));
 
 		return array($content, $enclosures);
 	}
@@ -189,8 +203,12 @@ class InstagramBridge extends BridgeAbstract {
 		$mediaInfo = $this->getSinglePostData($uri);
 
 		$textContent = $this->getTextContent($mediaInfo);
-		$content = '<video controls><source src="' . $mediaInfo->video_url . '" type="video/mp4"></video><br>';
-		$content .= '<br>' . nl2br(htmlentities($textContent));
+		
+		$content = '';
+		if (!$this->$noMediaInText) {
+			$content .= '<video controls><source src="' . $mediaInfo->video_url . '" type="video/mp4"></video><br><br>';
+		}			
+		$content .= nl2br(htmlentities($textContent));
 
 		return array($content, array($mediaInfo->video_url));
 	}
