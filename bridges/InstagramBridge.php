@@ -124,7 +124,7 @@ class InstagramBridge extends BridgeAbstract {
 
 			$textContent = $this->getTextContent($media);
 
-			$item['title'] = ($media->is_video ? 'в–¶ ' : '') . $textContent;
+			$item['title'] = ($media->is_video ? '▶' : '') . $textContent;
 			$titleLinePos = strpos(wordwrap($item['title'], 120), "\n");
 			if ($titleLinePos != false) {
 				$item['title'] = substr($item['title'], 0, $titleLinePos) . '...';
