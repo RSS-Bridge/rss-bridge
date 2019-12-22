@@ -19,23 +19,13 @@ class GizmodoBridge extends FeedExpander {
 		// Get header image
 		$image = $articleHtml->find('meta[property="og:image"]', 0)->content;
 
-		//  Get article body
-		if ($articleHtml->find('div.js_expandable-container', 0)) {
-			$text = $articleHtml->find('div.js_expandable-container', 0)->innertext;
-
-		} else {
-			$text = $articleHtml->find('div.post-content', 0)->innertext;
-		}
-
-		$item['content'] = <<<EOD
-<img src="{$image}">$text
-EOD;
+		$item['content'] = $articleHtml->find('div.js_post-content', 0)->innertext;
 
 		// Get categories
 		$categories = explode(',', $articleHtml->find('meta[name="keywords"]', 0)->content);
 		$item['categories'] = array_map('trim', $categories);
 
-		$item['enclosures'][] = $image;
+		$item['enclosures'][] = $articleHtml->find('meta[property="og:image"]', 0)->content;
 
 		return $item;
 	}
@@ -66,7 +56,6 @@ EOD;
 				$format = $figure->attr['data-format'];
 
 			} else {
-
 				$img = $figure->find('img', 0);
 				$id = $img->attr['data-chomp-id'];
 				$format = $img->attr['data-format'];
