@@ -54,12 +54,9 @@ class AllocineFRBridge extends BridgeAbstract {
 			);
 
 			$category = $this->getInput('category');
-			if(array_key_exists($category, $categories))
-			{
+			if(array_key_exists($category, $categories)) {
 				return static::URI . $categories[$category];
-			}
-			else
-			{
+			} else {
 				returnClientError('Emission inconnue');
 			}
 		}
@@ -83,13 +80,13 @@ class AllocineFRBridge extends BridgeAbstract {
 
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not request ' . $this->getURI() . ' !');
-		
+
 		$category = array_search(
 				$this->getInput('category'),
 				self::PARAMETERS[$this->queriedContext]['category']['values']
 			);
 
-		foreach($html->find('div[class=col-left]',0)->find('div[class*=video-card]') as $element) {
+		foreach($html->find('div[class=col-left]', 0)->find('div[class*=video-card]') as $element) {
 			$item = array();
 
 			$title = $element->find('a[class*=meta-title-link]', 0);
