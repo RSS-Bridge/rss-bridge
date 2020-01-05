@@ -11,10 +11,10 @@ class PcGamerBridge extends BridgeAbstract
 	{
 		$html = getSimpleHTMLDOMCached($this->getURI(), 300);
 		$stories = $html->find('ul.basic-list li.day-article');
-		$i=0;
+		$i = 0;
 		// Find induvidual stories in the archive page
 		foreach ($stories as $element) {
-			if($i==15) break;
+			if($i == 15) break;
 			$item['uri'] = $element->find('a', 0)->href;
 			// error_log(print_r($item['uri'], TRUE));
 			$articleHtml = getSimpleHTMLDOMCached($item['uri']);
