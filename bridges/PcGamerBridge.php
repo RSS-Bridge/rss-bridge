@@ -4,7 +4,7 @@ class PcGamerBridge extends BridgeAbstract
 	const NAME = 'PC Gamer';
 	const URI = 'https://www.pcgamer.com/archive/';
 	const DESCRIPTION = 'PC Gamer Most Read Stories';
-	const CACHE_TIMEOUT = 10;
+	const CACHE_TIMEOUT = 3600;
 	const MAINTAINER = 'IceWreck, mdemoss';
 
 	public function collectData()
@@ -14,7 +14,7 @@ class PcGamerBridge extends BridgeAbstract
 		$i=0;
 		// Find induvidual stories in the archive page
 		foreach ($stories as $element) {
-			if($i==10) break;
+			if($i==15) break;
 			$item['uri'] = $element->find('a', 0)->href;
 			// error_log(print_r($item['uri'], TRUE));
 			$articleHtml = getSimpleHTMLDOMCached($item['uri']);
