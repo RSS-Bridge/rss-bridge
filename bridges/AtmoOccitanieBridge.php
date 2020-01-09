@@ -56,4 +56,3 @@ class AtmoOccitanieBridge extends BridgeAbstract {
 		$this->items[] = $item;
 	}
 }
-
