@@ -3,7 +3,7 @@ class AtmoNouvelleAquitaineBridge extends BridgeAbstract {
 
 	const NAME = 'Atmo Nouvelle Aquitaine';
 	const URI = 'https://www.atmo-nouvelleaquitaine.org/monair/commune/';
-	const DESCRIPTION = 'Fetches the latest air polution of Bordeaux from Atmo Nouvelle Aquitaine';
+	const DESCRIPTION = 'Fetches the latest air polution of cities in Nouvelle Aquitaine from Atmo';
 	const MAINTAINER = 'floviolleau';
 	const PARAMETERS = array(array(
 		'cities' => array(
