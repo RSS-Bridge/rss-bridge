@@ -3,7 +3,7 @@ class AtmoOccitanieBridge extends BridgeAbstract {
 
 	const NAME = 'Atmo Occitanie';
 	const URI = 'https://www.atmo-occitanie.org/';
-	const DESCRIPTION = 'Fetches the latest air polution of Toulouse from Atmo Occitanie';
+	const DESCRIPTION = 'Fetches the latest air polution of cities in Occitanie from Atmo';
 	const MAINTAINER = 'floviolleau';
 	const PARAMETERS = array(array(
 		'city' => array(
