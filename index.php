@@ -18,7 +18,7 @@ if (isset($argv)) {
 }
 
 define('USER_AGENT',
-	'Mozilla/5.0 (X11; Linux x86_64; rv:30.0) Gecko/20121202 Firefox/30.0(rss-bridge/'
+	'Mozilla/5.0 (X11; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0(rss-bridge/'
 	. Configuration::$VERSION
 	. ';+'
 	. REPOSITORY
