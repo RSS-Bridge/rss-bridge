@@ -374,6 +374,8 @@ class VkBridge extends BridgeAbstract
 				} elseif (strstr($strdate, 'yesterday ') !== false) {
 					$time = time() - 60 * 60 * 24;
 					$strdate = date('d-m-Y', $time) . ' ' . $strdate;
+				} elseif ($date['month'] && intval(date('m')) < $date['month']) {
+					$strdate = $strdate . ' ' . (date('Y') - 1);
 				} else {
 					$strdate = $strdate . ' ' . date('Y');
 				}
