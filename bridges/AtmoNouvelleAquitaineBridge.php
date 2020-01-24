@@ -2,7 +2,7 @@
 class AtmoNouvelleAquitaineBridge extends BridgeAbstract {
 
 	const NAME = 'Atmo Nouvelle Aquitaine';
-	const URI = 'https://www.atmo-nouvelleaquitaine.org/monair/commune/';
+	const URI = 'https://www.atmo-nouvelleaquitaine.org';
 	const DESCRIPTION = 'Fetches the latest air polution of cities in Nouvelle Aquitaine from Atmo';
 	const MAINTAINER = 'floviolleau';
 	const PARAMETERS = array(array(
@@ -27,7 +27,7 @@ class AtmoNouvelleAquitaineBridge extends BridgeAbstract {
 	}
 
 	public function collectData() {
-		$uri = self::URI . $this->getInput('cities');
+		$uri = self::URI . '/monair/commune/' . $this->getInput('cities');
 
 		$html = getSimpleHTMLDOM($uri)
 				or returnServerError('Could not request ' . $uri);
