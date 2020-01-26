@@ -15,7 +15,7 @@ class MozillaSecurityBridge extends BridgeAbstract {
 		$html = defaultLinkTo($html, self::WEBROOT);
 
 		$item = array();
-		$articles = $html->find('div[itemprop="articleBody"] h2');
+		$articles = $html->find('div[id="main-content"] h2');
 
 		foreach ($articles as $element) {
 			$item['title'] = $element->innertext;

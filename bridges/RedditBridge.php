@@ -27,7 +27,7 @@ class RedditBridge extends FeedExpander {
 
 	public function collectData(){
 
-		switch($this->queriedcontext) {
+		switch($this->queriedContext) {
 			case 'single': $subreddits[] = $this->getInput('r'); break;
 			case 'multi': $subreddits = explode(',', $this->getInput('rs')); break;
 	}
