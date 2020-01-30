@@ -1,8 +1,8 @@
 <?php
 /**
-* Retourne les dons d'une recherche filtrée sur le site Donnons.org
-* Example: https://donnons.org/Sport/Ile-de-France
-*/
+ * Retourne les dons d'une recherche filtrée sur le site Donnons.org
+ * Example: https://donnons.org/Sport/Ile-de-France
+ */
 class DonnonsBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'Binnette';
@@ -11,20 +11,22 @@ class DonnonsBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 1800; // 30min
 	const DESCRIPTION = 'Retourne les dons depuis le site Donnons.org.';
 
-	const PARAMETERS = array(array(
-		'q' => array(
-			'name' => 'Url de recherche',
-			'required' => true,
-			'exampleValue' 	=> '/Sport/Ile-de-France',
-			'title' => 'Depuis le site, choisir des filtres par exemple Sport et Ile de France et lancez la recherche. Puis copiez ici la fin de l\'url',
-		),
-		'p' => array(
-			'name' => 'Nombre de pages à scanner',
-			'type' => 'number',
-			'defaultValue' => 5,
-			'title' => 'Indique le nombre de pages de donnons.org qui seront scannées par le bridge'
+	const PARAMETERS = array(
+		array(
+			'q' => array(
+				'name' => 'Url de recherche',
+				'required' => true,
+				'exampleValue' => '/Sport/Ile-de-France',
+				'title' => 'Faites une recherche sur le site. Puis copiez ici la fin de l\'url',
+			),
+			'p' => array(
+				'name' => 'Nombre de pages à scanner',
+				'type' => 'number',
+				'defaultValue' => 5,
+				'title' => 'Indique le nombre de pages de donnons.org qui seront scannées'
+			)
 		)
-	));
+	);
 
 	public function collectData() {
 		$pages = $this->getInput('p');
@@ -35,7 +37,7 @@ class DonnonsBridge extends BridgeAbstract {
 	}
 
 	private function collectDataByPage(int $page) {
-		$uri = $this->getURI() . "&page=" . $page;
+		$uri = $this->getURI() . '&page=' . $page;
 
 		$html = getSimpleHTMLDOM($uri)
 			or returnServerError('No results for this query.');
@@ -62,7 +64,7 @@ class DonnonsBridge extends BridgeAbstract {
 				$description = $json['description'];
 				$city = $json['availableAtOrFrom']['address']['addressLocality'];
 				$region = $json['availableAtOrFrom']['address']['addressRegion'];
-				
+
 				// Grab info from HTML
 				$imageSrc = $element->find('img.ima-center', 0)->getAttribute('data-src');
 				$image = self::URI . $imageSrc;
@@ -85,7 +87,6 @@ class DonnonsBridge extends BridgeAbstract {
 				$item['author'] = $author;
 				$item['content'] = $content;
 				$item['enclosures'] = array($image);
-				//$item['categories'] = array($category);
 
 				$this->items[] = $item;
 			}
@@ -93,9 +94,8 @@ class DonnonsBridge extends BridgeAbstract {
 	}
 
 	public function getURI() {
-		if (!is_null($this->getInput('q'))) {
-			return self::URI
-				. $this->getInput('q');
+		if(!is_null($this->getInput('q'))) {
+			return self::URI . $this->getInput('q');
 		}
 
 		return parent::getURI();
@@ -108,4 +108,5 @@ class DonnonsBridge extends BridgeAbstract {
 
 		return parent::getName();
 	}
+
 }
