@@ -12,6 +12,15 @@
  */
 
 class DisplayAction extends ActionAbstract {
+	private function get_return_code($error) {
+		$returnCode = $error->getCode();
+		if ($returnCode === 301 || $returnCode === 302) {
+			# Don't pass redirect codes to the exterior
+			$returnCode = 508;
+		}
+		return $returnCode;
+	}
+
 	public function execute() {
 		$bridge = array_key_exists('bridge', $this->userData) ? $this->userData['bridge'] : null;
 
@@ -181,7 +190,7 @@ class DisplayAction extends ActionAbstract {
 
 						$items[] = $item;
 					} elseif(Configuration::getConfig('error', 'output') === 'http') {
-						header('Content-Type: text/html', true, $e->getCode());
+						header('Content-Type: text/html', true, $this->get_return_code($e));
 						die(buildTransformException($e, $bridge));
 					}
 				}
@@ -213,7 +222,7 @@ class DisplayAction extends ActionAbstract {
 
 						$items[] = $item;
 					} elseif(Configuration::getConfig('error', 'output') === 'http') {
-						header('Content-Type: text/html', true, $e->getCode());
+						header('Content-Type: text/html', true, $this->get_return_code($e));
 						die(buildTransformException($e, $bridge));
 					}
 				}
