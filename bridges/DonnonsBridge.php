@@ -36,7 +36,7 @@ class DonnonsBridge extends BridgeAbstract {
 		}
 	}
 
-	private function collectDataByPage(int $page) {
+	private function collectDataByPage($page) {
 		$uri = $this->getURI() . '?page=' . $page;
 
 		$html = getSimpleHTMLDOM($uri)
@@ -108,5 +108,4 @@ class DonnonsBridge extends BridgeAbstract {
 
 		return parent::getName();
 	}
-
 }
