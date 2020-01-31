@@ -172,11 +172,15 @@ EOD
 		$html = '';
 		$page = $this->getURI();
 
+		$header = array(
+			'User-Agent: Mozilla/5.0 (Windows NT 9.0; WOW64; Trident/7.0; rv:11.0) like Gecko'
+		);
+
 		if(php_sapi_name() === 'cli' && empty(ini_get('curl.cainfo'))) {
 			$cookies = $this->getCookies($page);
-			$html = getSimpleHTMLDOM($page, array("Cookie: $cookies"));
+			$html = getSimpleHTMLDOM($page, array_merge($header, array("Cookie: $cookies")));
 		} else {
-			$html = getSimpleHTMLDOM($page, array(), array(CURLOPT_COOKIEFILE => ''));
+			$html = getSimpleHTMLDOM($page, $header, array(CURLOPT_COOKIEFILE => ''));
 		}
 
 		if(!$html) {
