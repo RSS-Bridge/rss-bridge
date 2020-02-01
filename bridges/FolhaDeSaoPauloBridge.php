@@ -20,9 +20,15 @@ class FolhaDeSaoPauloBridge extends FeedExpander {
 
 		$articleHTMLContent = getSimpleHTMLDOMCached($item['uri']);
 		if($articleHTMLContent) {
-			$text = $articleHTMLContent->find('div.c-news__body', 0)->innertext;
-			$text = strip_tags($text, '<p><b><a><blockquote><img><em>');
-			$item['content'] = $text;
+			foreach ($articleHTMLContent->find('div.c-news__body .is-hidden') as $toRemove) {
+				$toRemove->innertext = '';
+			}
+			$item_content = $articleHTMLContent->find('div.c-news__body', 0);
+			if ($item_content) {
+				$text = $item_content->innertext;
+				$text = strip_tags($text, '<p><b><a><blockquote><img><em>');
+				$item['content'] = $text;
+			}
 		} else {
 			Debug::log('???: ' . $item['uri']);
 		}
