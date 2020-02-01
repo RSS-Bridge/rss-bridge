@@ -23,8 +23,7 @@ class FolhaDeSaoPauloBridge extends FeedExpander {
 			$text = $articleHTMLContent->find('div.c-news__body', 0)->innertext;
 			$text = strip_tags($text, '<p><b><a><blockquote><img><em>');
 			$item['content'] = $text;
-		}
-		else {
+		} else {
 			Debug::log('???: ' . $item['uri']);
 		}
 
@@ -36,8 +35,7 @@ class FolhaDeSaoPauloBridge extends FeedExpander {
 		if (substr($feed_input, 0, strlen(self::URI)) === self::URI) {
 			Debug::log('Input:: ' . $feed_input);
 			$feed_url = $feed_input;
-		}
-		else {
+		} else {
 			/* TODO: prepend `/` if missing */
 			$feed_url = self::URI . '/' . $this->getInput('feed');
 		}
