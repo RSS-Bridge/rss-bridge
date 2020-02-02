@@ -14,3 +14,14 @@ TelegramBridge
 WallpaperStopBridge
 Yandere
 Lolibooru
+Filter
+FlickrBridge
+GiphyBridge
+PatreonBridge
+PickyWallpapersBridge
+Safebooru
+SteamCommunity
+InstagramStories
+Tbib
+UnsplashBridge
+Xbooru
