@@ -17,7 +17,8 @@ class DonnonsBridge extends BridgeAbstract {
 				'name' => 'Url de recherche',
 				'required' => true,
 				'exampleValue' => '/Sport/Ile-de-France',
-				'title' => 'Faites une recherche sur le site. Puis copiez ici la fin de l\'url',
+				'pattern' => '\/.*',
+				'title' => 'Faites une recherche sur le site. Puis copiez ici la fin de l’url. Doit commencer par /',
 			),
 			'p' => array(
 				'name' => 'Nombre de pages à scanner',
@@ -93,7 +94,7 @@ class DonnonsBridge extends BridgeAbstract {
 		}
 	}
 
-	public function getPageURI($page) {
+	private function getPageURI($page) {
 		$uri = $this->getURI();
 		$haveQueryParams = strpos($uri, '?') !== false;
 
