@@ -84,15 +84,13 @@ class GithubIssueBridge extends BridgeAbstract {
 
 		$author = $comment->find('.author', 0)->plaintext;
 
-		$title .= ' / ' . trim($comment->plaintext);
+		$title .= ' / '
+			. trim(str_replace(
+					array('octicon','-'), array(''),
+					$comment->find('.octicon', 0)->getAttribute('class')
+			));
 
-		$content = $title;
-		if (null !== $comment->nextSibling()) {
-			$content = $comment->nextSibling()->innertext;
-			if ($comment->nextSibling()->nodeName() === 'span') {
-				$content = $comment->nextSibling()->nextSibling()->innertext;
-			}
-		}
+		$content = $comment->plaintext;
 
 		$item = array();
 		$item['author'] = $author;
@@ -135,32 +133,20 @@ class GithubIssueBridge extends BridgeAbstract {
 			substr($issue->find('.gh-header-number', 0)->plaintext, 1)
 		);
 
-		$comments = $issue->find('
-			[id^="issue-"] > .comment,
-			[id^="issuecomment-"] > .comment,
-			[id^="event-"],
-			[id^="ref-"]
-			');
+		$comments = $issue->find(
+			'.comment, .TimelineItem-badge'
+		);
+
 		foreach($comments as $comment) {
-
-			if (!$comment->hasChildNodes()) {
-				continue;
-			}
-
-			if (!$comment->hasClass('discussion-item-header')) {
+			if ($comment->hasClass('comment')) {
+				$comment = $comment->parent;
 				$item = $this->extractIssueComment($issueNbr, $title, $comment);
 				$items[] = $item;
 				continue;
-			}
-
-			while ($comment->hasClass('discussion-item-header')) {
+			} else {
+				$comment = $comment->parent;
 				$item = $this->extractIssueEvent($issueNbr, $title, $comment);
 				$items[] = $item;
-				$comment = $comment->nextSibling();
-				if (null == $comment) {
-					break;
-				}
-				$classes = explode(' ', $comment->getAttribute('class'));
 			}
 
 		}
