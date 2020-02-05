@@ -82,7 +82,12 @@ class GithubIssueBridge extends BridgeAbstract {
 
 		$uri = $this->buildGitHubIssueCommentUri($issueNbr, $comment->id);
 
-		$author = $comment->find('.author', 0)->plaintext;
+		$author = $comment->find('.author', 0);
+		if ($author) {
+			$author = $author->plaintext;
+		} else {
+			$author = '';
+		}
 
 		$title .= ' / '
 			. trim(str_replace(
