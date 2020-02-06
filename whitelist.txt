@@ -26,3 +26,8 @@ Tbib
 UnsplashBridge
 Xbooru
 StoriesIGBridge
+Gelbooru
+F-Droid Bridge
+Konachan
+NASAAPODBridge
+OneFortuneaDay
