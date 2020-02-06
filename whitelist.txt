@@ -21,13 +21,12 @@ PatreonBridge
 PickyWallpapersBridge
 Safebooru
 SteamCommunity
-InstagramStories
 Tbib
 UnsplashBridge
 Xbooru
 StoriesIGBridge
 Gelbooru
-F-Droid Bridge
+F-DroidBridge
 Konachan
 NASAAPODBridge
 OneFortuneaDay
