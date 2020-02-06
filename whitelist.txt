@@ -26,7 +26,7 @@ UnsplashBridge
 Xbooru
 StoriesIGBridge
 Gelbooru
-F-DroidBridge
+FDroidBridge
 Konachan
 NASAAPODBridge
 OneFortuneaDay
