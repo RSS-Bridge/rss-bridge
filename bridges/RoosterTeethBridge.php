@@ -6,6 +6,7 @@ class RoosterTeethBridge extends BridgeAbstract {
 	const NAME = 'Rooster Teeth';
 	const URI = 'https://roosterteeth.com';
 	const DESCRIPTION = 'Gets the latest channel videos from the Rooster Teeth website';
+	const API = 'https://svod-be.roosterteeth.com/';
 
 	const PARAMETERS = array(
 		'Options' => array(
@@ -56,10 +57,8 @@ class RoosterTeethBridge extends BridgeAbstract {
 	);
 
 	public function collectData() {
-		$apiURI = 'https://svod-be.roosterteeth.com/';
-
 		if ($this->getInput('channel') !== 'all') {
-			$uri = $apiURI
+			$uri = self::API
 				. 'api/v1/episodes?per_page='
 				. $this->getInput('limit')
 				. '&channel_id='
@@ -70,7 +69,7 @@ class RoosterTeethBridge extends BridgeAbstract {
 			$htmlJSON = getSimpleHTMLDOM($uri)
 			or returnServerError('Could not contact Rooster Teeth: ' . $uri);
 		} else {
-			$uri = $apiURI
+			$uri = self::API
 				. '/api/v1/episodes?per_page='
 				. $this->getInput('limit')
 				. '&filter=all&order='
