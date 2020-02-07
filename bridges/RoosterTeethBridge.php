@@ -34,7 +34,7 @@ class RoosterTeethBridge extends BridgeAbstract {
 					'Newest -> Oldest' => 'desc',
 					'Oldest -> Newest' => 'asc'
 				),
-				'required' => true
+				'defaultValue' => 'desc'
 			),
 			'first' => array(
 				'type' => 'list',
