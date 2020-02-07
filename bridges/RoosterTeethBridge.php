@@ -69,8 +69,7 @@ class RoosterTeethBridge extends BridgeAbstract {
 
 			$htmlJSON = getSimpleHTMLDOM($uri)
 			or returnServerError('Could not contact Rooster Teeth: ' . $uri);
-		}
-		else {
+		} else {
 			$uri = $apiURI
 				. '/api/v1/episodes?per_page='
 				. $this->getInput('limit')
@@ -94,7 +93,7 @@ class RoosterTeethBridge extends BridgeAbstract {
 			$publicDate = date_create($value['attributes']['member_golive_at']);
 			$dateDiff = date_diff($publicDate, date_create(), false);
 
-			if (!$this->getInput('first') && $dateDiff->invert == 1 ) {
+			if (!$this->getInput('first') && $dateDiff->invert == 1) {
 				continue;
 			}
 
