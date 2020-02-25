@@ -13,8 +13,26 @@ class TinyLetterBridge extends BridgeAbstract {
 		)
 	);
 
+	public function getName() {
+		$username = $this->getInput('username');
+		if (!is_null($username)) {
+			return static::NAME . ' | ' . $username;
+		}
+
+		return parent::getName();
+	}
+
+	public function getURI() {
+		$username = $this->getInput('username');
+		if (!is_null($username)) {
+			return static::URI . urlencode($username);
+		}
+
+		return parent::getURI();
+	}
+
 	public function collectData() {
-		$archives = self::getURI() . $this->getInput('username') . '/archive';
+		$archives = self::getURI() . '/archive';
 		$html = getSimpleHTMLDOMCached($archives)
 			or returnServerError('Could not load content');
 
