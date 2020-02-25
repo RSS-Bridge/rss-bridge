@@ -27,12 +27,12 @@ class PornhubBridge extends BridgeAbstract {
 			'name' => 'Sort by',
 			'type' => 'list',
 			'values' => array(
-				'Most recent' => '',
+				'Most recent' => '?',
 				'Most views' => '?o=mv',
 				'Top rated' => '?o=tr',
 				'Longest' => '?o=lg',
 			),
-			'defaultValue' => '',
+			'defaultValue' => '?',
 		),
 		'show_images' => array(
 			'name' => 'Show thumbnails',
