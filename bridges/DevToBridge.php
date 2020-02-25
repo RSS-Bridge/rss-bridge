@@ -51,15 +51,10 @@ apple-icon-5c6fa9f2bce280428589c6195b7f1924206a53b782b371cfe2d02da932c8c173.png'
 
 		$html = defaultLinkTo($html, static::URI);
 
-		$articles = $html->find('div[class="single-article"]')
+		$articles = $html->find('div.single-article')
 			or returnServerError('Could not find articles!');
 
 		foreach($articles as $article) {
-
-			if($article->find('[class*="cta"]', 0)) { // Skip ads
-				continue;
-			}
-
 			$item = array();
 
 			$item['uri'] = $article->find('a[id*=article-link]', 0)->href;
@@ -90,6 +85,14 @@ EOD;
 			$this->items[] = $item;
 		}
 
+	}
+
+	public function getName() {
+		if (!is_null($this->getInput('tag'))) {
+			return ucfirst($this->getInput('tag')) . ' - dev.to';
+		}
+
+		return parent::getName();
 	}
 
 	private function getFullArticle($url) {
