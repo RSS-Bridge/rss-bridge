@@ -65,7 +65,7 @@ class InstagramBridge extends BridgeAbstract {
 				$data = getContents(self::URI . 'web/search/topsearch/?query=' . $username);
 
 				foreach(json_decode($data)->users as $user) {
-					if($user->user->username === $username) {
+					if(strtolower($user->user->username) === strtolower($username)) {
 						$key = $user->user->pk;
 					}
 				}
