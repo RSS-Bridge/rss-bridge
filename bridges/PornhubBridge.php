@@ -27,12 +27,12 @@ class PornhubBridge extends BridgeAbstract {
 			'name' => 'Sort by',
 			'type' => 'list',
 			'values' => array(
-				'Most recent' => '',
+				'Most recent' => '?',
 				'Most views' => '?o=mv',
 				'Top rated' => '?o=tr',
 				'Longest' => '?o=lg',
 			),
-			'defaultValue' => '',
+			'defaultValue' => '?',
 		),
 		'show_images' => array(
 			'name' => 'Show thumbnails',
@@ -52,7 +52,7 @@ class PornhubBridge extends BridgeAbstract {
 
 		$uri = 'https://www.pornhub.com/' . $this->getInput('type') . '/';
 		switch($this->getInput('type')) {	// select proper permalink format per user type...
-			case 'model': 
+			case 'model':
 				$uri .= urlencode($this->getInput('q')) . '/videos' . $this->getInput('sort'); break;
 			case 'users':
 				$uri .= urlencode($this->getInput('q')) . '/videos/public' . $this->getInput('sort'); break;
@@ -84,13 +84,13 @@ class PornhubBridge extends BridgeAbstract {
 
 			// Content
 			$image = $element->find('img', 0)->getAttribute('data-src');
-			if($show_images == TRUE) {
-				$item['content'] = '<a href="'.$item['uri'].'"><img src="' . $image . '"></a>';
+			if($show_images === true) {
+				$item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $image . '"></a>';
 			}
 
 			// date hack, guess upload YYYYMMDD from thumbnail URL (format: https://ci.phncdn.com/videos/201907/25/--- )
 			$uploaded = explode('/', $image);
-			$uploaded = strtotime($uploaded[4].$uploaded[5]);
+			$uploaded = strtotime($uploaded[4] . $uploaded[5]);
 			$item['timestamp'] = $uploaded;
 
 			$this->items[] = $item;
