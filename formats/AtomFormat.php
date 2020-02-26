@@ -89,6 +89,10 @@ class AtomFormat extends FormatAbstract{
 				. PHP_EOL;
 			}
 
+			$entryThumbnail = $item->thumbnail;
+			if (!empty($entryThumbnail))
+				$entryThumbnail = '<media:thumbnail url="' . $this->xml_encode($entryThumbnail) . '"/>';
+
 			$entryLinkAlternate = '';
 			if (!empty($entryUri)) {
 				$entryLinkAlternate = '<link rel="alternate" type="text/html" href="'
@@ -114,6 +118,7 @@ class AtomFormat extends FormatAbstract{
 		<content type="html">{$entryContent}</content>
 		{$entryEnclosures}
 		{$entryCategories}
+		{$entryThumbnail}
 	</entry>
 
 EOD;
