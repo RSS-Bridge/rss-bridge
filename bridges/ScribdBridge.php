@@ -24,16 +24,14 @@ class ScribdBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not request: ' . $this->getURI());
 
-		$header = $html->find('div.header', 0);
-		$this->feedName = $header->find('a', 0)->plaintext;
+		$this->feedName = $html->find('div.profile_name', 0)->plaintext;
 
-		foreach($html->find('div.content ul li') as $index => $li) {
+		foreach($html->find('div.global_wrapper ul > li') as $index => $li) {
 			$item = array();
 
-			$item['title'] = $li->find('div.under_title', 0)->plaintext;
+			$item['title'] = $li->find('h3.title.document_title', 0)->plaintext;
 			$item['uri'] = $li->find('a', 0)->href;
-			$item['author'] = $li->find('span.uploader', 0)->plaintext;
-			//$item['timestamp'] =
+			$item['author'] = $li->find('span.author', 0)->plaintext;
 			$item['uid'] = $li->find('a', 0)->href;
 
 			$pageHtml = getSimpleHTMLDOMCached($item['uri'], 3600)
