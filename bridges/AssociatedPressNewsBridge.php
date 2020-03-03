@@ -72,7 +72,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 			$item['timestamp'] = $storyContent['published'];
 			$item['author'] = $storyContent['bylines'];
 			$item['content'] = $html;
-			$item['enclosures'][] = 'https://storage.googleapis.com/afs-prod/media/' . $storyContent['media'][0]['id'] . '/800.jpeg';
+			$item['enclosures'][] = 'https://storage.googleapis.com/afs-prod/media/' . $storyContent['leadPhotoId'] . '/800.jpeg';
 
 			foreach ($storyContent['tagObjs'] as $tag) {
 				$item['categories'][] = $tag['name'];
