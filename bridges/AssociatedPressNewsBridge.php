@@ -70,7 +70,13 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 			$item['uri'] = self::URI . $card['contents'][0]['shortId'];
 			$item['title'] = $card['contents'][0]['headline'];
 			$item['timestamp'] = $storyContent['published'];
-			$item['author'] = $storyContent['bylines'];
+
+			if (substr($storyContent['bylines'], 0, 2) == 'By') {
+				$item['author'] =  ltrim($storyContent['bylines'], 'By ');
+			} else {
+				$item['author'] = $storyContent['bylines'];
+			}
+
 			$item['content'] = $html;
 			$item['enclosures'][] = 'https://storage.googleapis.com/afs-prod/media/' . $storyContent['leadPhotoId'] . '/800.jpeg';
 
