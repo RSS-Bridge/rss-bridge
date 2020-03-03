@@ -97,7 +97,8 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 			}
 
 			$item['content'] = $html;
-			$item['enclosures'][] = 'https://storage.googleapis.com/afs-prod/media/' . $storyContent['leadPhotoId'] . '/800.jpeg';
+			$item['enclosures'][] = 'https://storage.googleapis.com/afs-prod/media/'
+				. $storyContent['leadPhotoId'] . '/800.jpeg';
 
 			foreach ($storyContent['tagObjs'] as $tag) {
 				$item['categories'][] = $tag['name'];
@@ -151,7 +152,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 EOD;
 			} elseif ($storyContent['media'][$key]['type'] === 'YouTube') {
 				$div->innertext = <<<EOD
-					<iframe allowfullscreen="1" src="https://www.youtube.com/embed/{$storyContent['media'][$key]['externalId']}" width="560" height="315"></iframe>
+<iframe src="https://www.youtube.com/embed/{$storyContent['media'][$key]['externalId']}" width="560" height="315"></iframe>
 EOD;
 			}
 		}
@@ -166,7 +167,7 @@ EOD;
 					$url = self::URI . $embed['tag']['id'];
 					$div = $html->find('div[id=' . $embed['id'] . ']', 0);
 					$div->innertext = <<<EOD
-						<p><a href="{$url}">{$embed['calloutText']} {$embed['displayName']}</a></p>
+<p><a href="{$url}">{$embed['calloutText']} {$embed['displayName']}</a></p>
 EOD;
 				}
 			}
