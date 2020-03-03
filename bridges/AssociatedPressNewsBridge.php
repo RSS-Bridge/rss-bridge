@@ -55,7 +55,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 		if (empty($tagContents['tagObjs'])) {
 			returnClientError('Topic not found: ' . $this->getInput('topic'));
 		}
-		
+
 		if ($this->getInput('topic') === 'apf-videos') {
 			returnClientError('Video topic feed not currently supported');
 		}
@@ -63,9 +63,9 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 		if ($this->getInput('topic') === 'Podcasts') {
 			returnClientError('Podcasts topic feed is not supported');
 		}
-		
+
 		$this->feedName = $tagContents['tagObjs'][0]['name'];
-		
+
 		foreach ($tagContents['cards'] as $index => $card) {
 			$item = array();
 
@@ -74,7 +74,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 
 			$storyContent = json_decode($json, true);
 			$html = $storyContent['storyHTML'];
-			
+
 			if (empty($storyContent['storyHTML'])) {
 				$html = $storyContent['embedHTML'];
 			}
@@ -91,7 +91,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 			$item['timestamp'] = $storyContent['published'];
 
 			if (substr($storyContent['bylines'], 0, 2) == 'By') {
-				$item['author'] =  ltrim($storyContent['bylines'], 'By ');
+				$item['author'] = ltrim($storyContent['bylines'], 'By ');
 			} else {
 				$item['author'] = $storyContent['bylines'];
 			}
@@ -118,7 +118,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 
 		return parent::getURI();
 	}
-	
+
 	public function getName() {
 		if (!empty($this->feedName)) {
 			return $this->feedName . ' - Associated Press';
@@ -126,7 +126,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 
 		return parent::getName();
 	}
-	
+
 	private function getTagURI() {
 		if (!is_null($this->getInput('topic'))) {
 			return $this->tagEndpoint . $this->getInput('topic');
@@ -134,9 +134,9 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 
 		return parent::getURI();
 	}
-	
+
 	private function processMediaPlaceholders($html, $storyContent) {
-	
+
 		foreach ($html->find('div.media-placeholder') as $div) {
 			$key = array_search($div->id, $storyContent['mediumIds']);
 
@@ -149,7 +149,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 				$div->innertext = <<<EOD
 <figure><img loading="lazy" src="{$mediaUrl}"/><figcaption>{$mediaCaption}</figcaption></figure>
 EOD;
-			} else if ($storyContent['media'][$key]['type'] === 'YouTube') {
+			} elseif ($storyContent['media'][$key]['type'] === 'YouTube') {
 				$div->innertext = <<<EOD
 					<iframe allowfullscreen="1" src="https://www.youtube.com/embed/{$storyContent['media'][$key]['externalId']}" width="560" height="315"></iframe>
 EOD;
@@ -169,17 +169,17 @@ EOD;
 						<p><a href="{$url}">{$embed['calloutText']} {$embed['displayName']}</a></p>
 EOD;
 				}
-			}	
+			}
 		}
 	}
-	
-	// Remove datawrapper.dwcdn.net iframes and related javaScript 
+
+	// Remove datawrapper.dwcdn.net iframes and related javaScript
 	private function processIframes($html) {
-	
+
 		foreach ($html->find('iframe') as $index => $iframe) {
 			if (preg_match('/datawrapper\.dwcdn\.net/', $iframe->src)) {
 				$iframe->outertext = '';
-				
+
 				if ($html->find('script', $index)) {
 					$html->find('script', $index)->outertext = '';
 				}
