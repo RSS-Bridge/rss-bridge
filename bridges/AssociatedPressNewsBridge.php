@@ -152,7 +152,8 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 EOD;
 			} elseif ($storyContent['media'][$key]['type'] === 'YouTube') {
 				$div->innertext = <<<EOD
-<iframe src="https://www.youtube.com/embed/{$storyContent['media'][$key]['externalId']}" width="560" height="315"></iframe>
+<iframe src="https://www.youtube.com/embed/{$storyContent['media'][$key]['externalId']}" width="560" height="315">
+</iframe>
 EOD;
 			}
 		}
