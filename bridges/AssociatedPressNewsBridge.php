@@ -65,6 +65,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 			$html = str_get_html($html);
 
 			$this->processMediaPlaceholders($html, $storyContent);
+			$this->processHubLinks($html, $storyContent);
 			$this->processIframes($html);
 
 			$item['uri'] = self::URI . $card['contents'][0]['shortId'];
@@ -135,6 +136,22 @@ EOD;
 					<iframe allowfullscreen="1" src="https://www.youtube.com/embed/{$storyContent['media'][$key]['externalId']}" width="560" height="315"></iframe>
 EOD;
 			}
+		}
+	}
+
+	private function processHubLinks($html, $storyContent) {
+
+		if (!empty($storyContent['richEmbeds'])) {
+			foreach ($storyContent['richEmbeds'] as $embed) {
+
+				if ($embed['type'] === 'Hub Link') {
+					$url = self::URI . $embed['tag']['id'];
+					$div = $html->find('div[id=' . $embed['id'] . ']', 0);
+					$div->innertext = <<<EOD
+						<p><a href="{$url}">{$embed['calloutText']} {$embed['displayName']}</a></p>
+EOD;
+				}
+			}	
 		}
 	}
 	
