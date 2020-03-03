@@ -57,7 +57,11 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 		}
 		
 		if ($this->getInput('topic') === 'apf-videos') {
-			returnClientError('Video topic not currently supported');
+			returnClientError('Video topic feed not currently supported');
+		}
+
+		if ($this->getInput('topic') === 'Podcasts') {
+			returnClientError('Podcasts topic feed is not supported');
 		}
 		
 		$this->feedName = $tagContents['tagObjs'][0]['name'];
