@@ -101,4 +101,26 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 
 		return parent::getURI();
 	}
+	
+	private function processMediaPlaceholders($html, $storyContent) {
+	
+		foreach ($html->find('div.media-placeholder') as $div) {
+			$key = array_search($div->id, $storyContent['mediumIds']);
+
+			if ($storyContent['media'][$key]['type'] === 'Photo') {
+				$media = $storyContent['media'][$key];
+
+				$mediaUrl = $media['gcsBaseUrl'] . $media['imageRenderedSizes'][0] . $media['imageFileExtension'];
+				$mediaCaption = $media['caption'];
+
+				$div->innertext = <<<EOD
+<figure><img loading="lazy" src="{$mediaUrl}"/><figcaption>{$mediaCaption}</figcaption></figure>
+EOD;
+			} else if ($storyContent['media'][$key]['type'] === 'YouTube') {
+				$div->innertext = <<<EOD
+					<iframe allowfullscreen="1" src="https://www.youtube.com/embed/{$storyContent['media'][$key]['externalId']}" width="560" height="315"></iframe>
+EOD;
+			}
+		}
+	}
 }
