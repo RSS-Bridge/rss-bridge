@@ -105,7 +105,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 
 			$this->items[] = $item;
 
-			if (count($this->items) >= 20) {
+			if (count($this->items) >= 5) {
 				break;
 			}
 		}
