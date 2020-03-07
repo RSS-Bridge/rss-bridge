@@ -46,7 +46,6 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 	private $feedName = '';
 
 	public function collectData() {
-
 		$json = getContents($this->getTagURI())
 			or returnServerError('Could not request: ' . $this->getTagURI());
 
@@ -149,19 +148,21 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 
 		foreach ($html->find('div.media-placeholder') as $div) {
 			$key = array_search($div->id, $storyContent['mediumIds']);
-
-			if ($storyContent['media'][$key]['type'] === 'Photo') {
-				$media = $storyContent['media'][$key];
+			$media = $storyContent['media'][$key];
+			
+			if ($media['type'] === 'Photo') {
 
 				$mediaUrl = $media['gcsBaseUrl'] . $media['imageRenderedSizes'][0] . $media['imageFileExtension'];
 				$mediaCaption = $media['caption'];
 
-				$div->innertext = <<<EOD
+				$div->outertext = <<<EOD
 <figure><img loading="lazy" src="{$mediaUrl}"/><figcaption>{$mediaCaption}</figcaption></figure>
 EOD;
-			} elseif ($storyContent['media'][$key]['type'] === 'YouTube') {
-				$div->innertext = <<<EOD
-<iframe src="https://www.youtube.com/embed/{$storyContent['media'][$key]['externalId']}" width="560" height="315">
+			}
+
+			if ($media['type'] === 'YouTube') {
+				$div->outertext = <<<EOD
+<iframe src="https://www.youtube.com/embed/{$media['externalId']}" width="560" height="315">
 </iframe>
 EOD;
 			}
@@ -176,7 +177,7 @@ EOD;
 				if ($embed['type'] === 'Hub Link') {
 					$url = self::URI . $embed['tag']['id'];
 					$div = $html->find('div[id=' . $embed['id'] . ']', 0);
-					$div->innertext = <<<EOD
+					$div->outertext = <<<EOD
 <p><a href="{$url}">{$embed['calloutText']} {$embed['displayName']}</a></p>
 EOD;
 				}
