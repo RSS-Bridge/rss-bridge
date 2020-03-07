@@ -46,6 +46,11 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 	private $feedName = '';
 
 	public function collectData() {
+
+		if ($this->getInput('topic') === 'Podcasts') {
+			returnClientError('Podcasts topic feed is not supported');
+		}
+
 		$json = getContents($this->getTagURI())
 			or returnServerError('Could not request: ' . $this->getTagURI());
 
@@ -53,10 +58,6 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 
 		if (empty($tagContents['tagObjs'])) {
 			returnClientError('Topic not found: ' . $this->getInput('topic'));
-		}
-
-		if ($this->getInput('topic') === 'Podcasts') {
-			returnClientError('Podcasts topic feed is not supported');
 		}
 
 		$this->feedName = $tagContents['tagObjs'][0]['name'];
