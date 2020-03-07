@@ -56,10 +56,6 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 			returnClientError('Topic not found: ' . $this->getInput('topic'));
 		}
 
-		if ($this->getInput('topic') === 'apf-videos') {
-			returnClientError('Video topic feed not currently supported');
-		}
-
 		if ($this->getInput('topic') === 'Podcasts') {
 			returnClientError('Podcasts topic feed is not supported');
 		}
@@ -75,19 +71,34 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 			$storyContent = json_decode($json, true);
 			$html = $storyContent['storyHTML'];
 
-			if (empty($storyContent['storyHTML'])) {
-				$html = $storyContent['embedHTML'];
+			switch($storyContent['contentType']) {
+				case 'web': // Skip link only content
+					continue 2;
+
+				case 'video':
+					$html = $this->processVideo($storyContent);
+
+					$item['enclosures'][] = 'https://storage.googleapis.com/afs-prod/media/'
+						. $storyContent['media'][0]['id'] . '/800.jpeg';
+					break;
+				default:
+					if (empty($storyContent['storyHTML'])) {
+						continue 2;
+					}
+
+					$html = defaultLinkTo($html, self::URI);
+					$html = str_get_html($html);
+
+					$this->processMediaPlaceholders($html, $storyContent);
+					$this->processHubLinks($html, $storyContent);
+					$this->processIframes($html);
+					
+					$item['enclosures'][] = 'https://storage.googleapis.com/afs-prod/media/'
+						. $storyContent['leadPhotoId'] . '/800.jpeg';
 			}
 
-			$html = defaultLinkTo($html, self::URI);
-			$html = str_get_html($html);
-
-			$this->processMediaPlaceholders($html, $storyContent);
-			$this->processHubLinks($html, $storyContent);
-			$this->processIframes($html);
-
-			$item['uri'] = self::URI . $card['contents'][0]['shortId'];
 			$item['title'] = $card['contents'][0]['headline'];
+			$item['uri'] = self::URI . $card['contents'][0]['shortId'];
 			$item['timestamp'] = $storyContent['published'];
 
 			if (substr($storyContent['bylines'], 0, 2) == 'By') {
@@ -97,8 +108,6 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 			}
 
 			$item['content'] = $html;
-			$item['enclosures'][] = 'https://storage.googleapis.com/afs-prod/media/'
-				. $storyContent['leadPhotoId'] . '/800.jpeg';
 
 			foreach ($storyContent['tagObjs'] as $tag) {
 				$item['categories'][] = $tag['name'];
@@ -173,6 +182,24 @@ EOD;
 				}
 			}
 		}
+	}
+
+	private function processVideo($storyContent) {
+		$video = $storyContent['media'][0];
+
+		if ($video['type'] === 'YouTube') {
+			$html = <<<EOD
+<iframe width="560" height="315" src="https://www.youtube.com/embed/{$video['externalId']}" frameborder="0" allowfullscreen></iframe>
+EOD;
+		} else {
+			$html = <<<EOD
+<video controls poster="https://storage.googleapis.com/afs-prod/media/{$video['id']}/800.jpeg" preload="none">
+	<source src="{$video['gcsBaseUrl']} {$video['videoRenderedSizes'][0]} {$video['videoFileExtension']}" type="video/mp4">
+</video>
+EOD;
+		}
+		
+		return $html;
 	}
 
 	// Remove datawrapper.dwcdn.net iframes and related javaScript
