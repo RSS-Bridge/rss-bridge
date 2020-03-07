@@ -193,8 +193,9 @@ EOD;
 		$video = $storyContent['media'][0];
 
 		if ($video['type'] === 'YouTube') {
+			$url = 'https://www.youtube.com/embed/' . $video['externalId'];
 			$html = <<<EOD
-<iframe width="560" height="315" src="https://www.youtube.com/embed/{$video['externalId']}" frameborder="0" allowfullscreen></iframe>
+<iframe width="560" height="315" src="{$url}" frameborder="0" allowfullscreen></iframe>
 EOD;
 		} else {
 			$html = <<<EOD
