@@ -26,6 +26,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 					'Religion' => 'apf-religion',
 					'Photo Galleries' => 'PhotoGalleries',
 					'Fact Checks' => 'APFactCheck',
+					'Videos' => 'apf-videos',
 				),
 				'defaultValue' => 'apf-topnews',
 			),
