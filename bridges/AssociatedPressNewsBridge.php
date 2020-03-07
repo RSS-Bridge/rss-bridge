@@ -92,7 +92,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 					$this->processMediaPlaceholders($html, $storyContent);
 					$this->processHubLinks($html, $storyContent);
 					$this->processIframes($html);
-					
+
 					$item['enclosures'][] = 'https://storage.googleapis.com/afs-prod/media/'
 						. $storyContent['leadPhotoId'] . '/800.jpeg';
 			}
@@ -150,7 +150,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 		foreach ($html->find('div.media-placeholder') as $div) {
 			$key = array_search($div->id, $storyContent['mediumIds']);
 			$media = $storyContent['media'][$key];
-			
+
 			if ($media['type'] === 'Photo') {
 
 				$mediaUrl = $media['gcsBaseUrl'] . $media['imageRenderedSizes'][0] . $media['imageFileExtension'];
@@ -178,7 +178,7 @@ EOD;
 				if ($embed['type'] === 'Hub Link') {
 					$url = self::URI . $embed['tag']['id'];
 					$div = $html->find('div[id=' . $embed['id'] . ']', 0);
-					
+
 					if ($div) {
 						$div->outertext = <<<EOD
 <p><a href="{$url}">{$embed['calloutText']} {$embed['displayName']}</a></p>
@@ -203,7 +203,7 @@ EOD;
 </video>
 EOD;
 		}
-		
+
 		return $html;
 	}
 
