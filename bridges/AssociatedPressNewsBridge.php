@@ -115,7 +115,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 
 			$this->items[] = $item;
 
-			if (count($this->items) >= 5) {
+			if (count($this->items) >= 20) {
 				break;
 			}
 		}
@@ -178,9 +178,12 @@ EOD;
 				if ($embed['type'] === 'Hub Link') {
 					$url = self::URI . $embed['tag']['id'];
 					$div = $html->find('div[id=' . $embed['id'] . ']', 0);
-					$div->outertext = <<<EOD
+					
+					if ($div) {
+						$div->outertext = <<<EOD
 <p><a href="{$url}">{$embed['calloutText']} {$embed['displayName']}</a></p>
 EOD;
+					}
 				}
 			}
 		}
