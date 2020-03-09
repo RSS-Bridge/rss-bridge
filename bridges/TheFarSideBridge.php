@@ -25,7 +25,7 @@ class TheFarSideBridge extends BridgeAbstract {
 			$image = $card->find('img', 0);
 			$imageUrl = $image->attr['data-src'];
 
-			// To get around the hotlink protection, the images are downloaded, encoded as base64 and then added to the html.
+			// To get around the hotlink protection, images are downloaded, encoded as base64 and then added to the html.
 			$image = getContents($imageUrl, array('Referer: ' . self::URI))
 				or returnServerError('Could not request: ' . $imageUrl);
 
