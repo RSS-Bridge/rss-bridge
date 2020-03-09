@@ -161,7 +161,7 @@ class TheTVDBBridge extends BridgeAbstract {
 	}
 
 	public function getIcon() {
-		return self::URI . 'application/themes/thetvdb/images/logo.png';
+		return 'https://artworks.thetvdb.com/icon.png';
 	}
 
 	public function getName() {
