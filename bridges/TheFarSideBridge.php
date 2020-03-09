@@ -35,7 +35,11 @@ class TheFarSideBridge extends BridgeAbstract {
 			$caption = $card->find('figcaption', 0)->innertext;
 
 			$item['content'] .= <<<EOD
-<figure><img title="{$caption}" src="data:image/jpeg;base64,{$imageBase64}"/><figcaption>{$caption}</figcaption></figure><br/>
+<figure>
+	<img title="{$caption}" src="data:image/jpeg;base64,{$imageBase64}"/>
+	<figcaption>{$caption}</figcaption>
+</figure>
+<br/>
 EOD;
 		}
 
