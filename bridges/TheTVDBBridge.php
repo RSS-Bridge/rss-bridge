@@ -4,7 +4,7 @@ class TheTVDBBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'Astyan';
 	const NAME = 'TheTVDB';
-	const URI = 'http://thetvdb.com/';
+	const URI = 'https://thetvdb.com/';
 	const APIURI = 'https://api.thetvdb.com/';
 	const CACHE_TIMEOUT = 43200; // 12h
 	const DESCRIPTION = 'Returns latest episodes of a serie with theTVDB api. You can contribute to theTVDB.';
