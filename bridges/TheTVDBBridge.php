@@ -27,6 +27,8 @@ class TheTVDBBridge extends BridgeAbstract {
 	const APIKEY = '76DE1887EA401C9A';
 	const APIUSERKEY = 'B52869AC6005330F';
 
+	private $feedName = '';
+
 	private function getApiUri(){
 		return self::APIURI;
 	}
@@ -162,6 +164,14 @@ class TheTVDBBridge extends BridgeAbstract {
 		return self::URI . 'application/themes/thetvdb/images/logo.png';
 	}
 
+	public function getName() {
+		if (!empty($this->feedName)) {
+			return $this->feedName . ' - TheTVDB';
+		}
+
+		return parent::getName();
+	}
+	
 	public function collectData(){
 		$serie_id = $this->getInput('serie_id');
 		$nbepisode = $this->getInput('nb_episode');
@@ -170,6 +180,9 @@ class TheTVDBBridge extends BridgeAbstract {
 		$maxseason = $this->getLatestSeasonNumber($token, $serie_id);
 		$seriename = $this->getSerieName($token, $serie_id);
 		$season = $maxseason;
+
+		$this->feedName = $seriename;
+
 		while(sizeof($episodelist) < $nbepisode && $season >= 1) {
 			$nbepisodetmp = $nbepisode - sizeof($episodelist);
 			$this->getSeasonEpisodes(
