@@ -171,7 +171,7 @@ class TheTVDBBridge extends BridgeAbstract {
 
 		return parent::getName();
 	}
-	
+
 	public function collectData(){
 		$serie_id = $this->getInput('serie_id');
 		$nbepisode = $this->getInput('nb_episode');
