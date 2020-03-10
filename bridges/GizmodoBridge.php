@@ -59,7 +59,7 @@ class GizmodoBridge extends FeedExpander {
 				$img = $figure->find('img', 0);
 				$id = $img->attr['data-chomp-id'];
 				$format = $img->attr['data-format'];
-				$figure->find('div.img-permalink-sub-wrapper', 0)->style = ''; 
+				$figure->find('div.img-permalink-sub-wrapper', 0)->style = '';
 			}
 
 			$imageUrl = 'https://i.kinja-img.com/gawker-media/image/upload/' . $id . '.' . $format;
@@ -67,10 +67,10 @@ class GizmodoBridge extends FeedExpander {
 			$figure->find('span', 0)->outertext = <<<EOD
 <img src="{$imageUrl}">
 EOD;
-		
+
 			$articleHtml->find('figure', $index)->outertext = $figure->outertext;
 		}
-		
+
 		return $articleHtml;
 	}
 }
