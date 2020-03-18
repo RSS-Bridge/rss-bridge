@@ -19,12 +19,12 @@ class SoundCloudBridge extends BridgeAbstract {
 
 	public function collectData(){
 		$res = $this->apiGet('resolve', array(
-			'url' => 'http://www.soundcloud.com/' . $this->getInput('u')
+			'url' => 'https://soundcloud.com/' . $this->getInput('u')
 		)) or returnServerError('No results for this query');
 
 		$this->feedIcon = $res->avatar_url;
 
-		$tracks = $this->apiGet('users/' . urlencode($res->id) . '/tracks')
+		$tracks = $this->apiGet('users/' . urlencode($res->id) . '/tracks')->collection
 			or returnServerError('No results for this user');
 
 		$numTracks = min(count($tracks), 10);
@@ -117,7 +117,7 @@ class SoundCloudBridge extends BridgeAbstract {
 	}
 
 	private function buildAPIURL($endpoint, $parameters){
-		return 'https://api.soundcloud.com/'
+		return 'https://api-v2.soundcloud.com/'
 			. $endpoint
 			. '?'
 			. http_build_query($parameters);
