@@ -51,7 +51,7 @@ class MercariJapanBridge extends BridgeAbstract {
 
 			// Sanitize URL
 			$origurl = $element->find('a', 0)->href;
-			$productid = extractFromDelimiters($origurl, 'item.mercari.com/jp/', '/');
+			$productid = extractFromDelimiters($origurl, 'jp/items/', '/');
 
 			// Link to original size image
 			$imageurl = 'https://static.mercdn.net/item/detail/orig/photos/' . $productid . '_1.jpg';
