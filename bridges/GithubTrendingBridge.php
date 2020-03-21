@@ -596,7 +596,6 @@ class GithubTrendingBridge extends BridgeAbstract {
 
 	);
 
-
 	public function collectData(){
 		$params = array('since' => urlencode($this->getInput('date_range')));
 		$url = self::URI . '/' . $this->getInput('language') . '?' . http_build_query($params);
@@ -604,7 +603,7 @@ class GithubTrendingBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($url)
 			or returnServerError('Error while downloading the website content');
 
-		$this->items = [];
+		$this->items = array();
 		foreach($html->find('.Box-row') as $element) {
 			$item = array();
 
