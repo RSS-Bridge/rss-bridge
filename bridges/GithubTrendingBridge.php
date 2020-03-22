@@ -625,7 +625,9 @@ class GithubTrendingBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		if(!is_null($this->getInput('language'))) {
+		if($this->getInput('language') == '') {
+			return self::NAME . ' - all';
+		} elseif (!is_null($this->getInput('language'))) {
 			return self::NAME . ' - ' . $this->getInput('language');
 		}
 
