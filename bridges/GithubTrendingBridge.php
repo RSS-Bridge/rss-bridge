@@ -5,7 +5,7 @@ class GithubTrendingBridge extends BridgeAbstract {
 	const NAME = 'Github Trending';
 	const URI = 'https://github.com/trending';
 	const URI_ITEM = 'https://github.com';
-	const CACHE_TIMEOUT = 43200; // 12hr
+	const CACHE_TIMEOUT = 86400; // 24hr (minimum since daily)
 	const DESCRIPTION = 'See what the GitHub community is most excited repos.';
 	const PARAMETERS = array(
 		'By language' => array(
