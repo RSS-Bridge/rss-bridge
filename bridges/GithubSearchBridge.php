@@ -27,16 +27,16 @@ class GithubSearchBridge extends BridgeAbstract {
 		foreach($html->find('li.repo-list-item') as $element) {
 			$item = array();
 
-			$uri = $element->find('h3 a', 0)->href;
+			$uri = $element->find('.f4 a', 0)->href;
 			$uri = substr(self::URI, 0, -1) . $uri;
 			$item['uri'] = $uri;
 
-			$title = $element->find('h3', 0)->plaintext;
+			$title = $element->find('.f4', 0)->plaintext;
 			$item['title'] = $title;
 
 			// Description
-			if (count($element->find('p.d-inline-block')) != 0) {
-				$content = $element->find('p.d-inline-block', 0)->innertext;
+			if (count($element->find('p.mb-1')) != 0) {
+				$content = $element->find('p.mb-1', 0)->innertext;
 			} else{
 				$content = 'No description';
 			}

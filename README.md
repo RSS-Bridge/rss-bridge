@@ -109,8 +109,8 @@ We are RSS-Bridge community, a group of developers continuing the project initia
 Use this script to generate the list automatically (using the GitHub API):
 https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 -->
-
 * [16mhz](https://github.com/16mhz)
+* [86423355844265459587182778](https://github.com/86423355844265459587182778)
 * [adamchainz](https://github.com/adamchainz)
 * [Ahiles3005](https://github.com/Ahiles3005)
 * [Albirew](https://github.com/Albirew)
@@ -126,6 +126,7 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [azdkj532](https://github.com/azdkj532)
 * [b1nj](https://github.com/b1nj)
 * [benasse](https://github.com/benasse)
+* [Binnette](https://github.com/Binnette)
 * [captn3m0](https://github.com/captn3m0)
 * [chemel](https://github.com/chemel)
 * [ckiw](https://github.com/ckiw)
@@ -161,10 +162,12 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [IceWreck](https://github.com/IceWreck)
 * [j0k3r](https://github.com/j0k3r)
 * [JackNUMBER](https://github.com/JackNUMBER)
+* [jdesgats](https://github.com/jdesgats)
 * [jdigilio](https://github.com/jdigilio)
 * [JeremyRand](https://github.com/JeremyRand)
 * [Jocker666z](https://github.com/Jocker666z)
 * [johnnygroovy](https://github.com/johnnygroovy)
+* [johnpc](https://github.com/johnpc)
 * [killruana](https://github.com/killruana)
 * [klimplant](https://github.com/klimplant)
 * [kranack](https://github.com/kranack)
@@ -187,7 +190,6 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [metaMMA](https://github.com/metaMMA)
 * [mitsukarenai](https://github.com/mitsukarenai)
 * [MonsieurPoutounours](https://github.com/MonsieurPoutounours)
-* [mr-flibble](https://github.com/mr-flibble)
 * [mro](https://github.com/mro)
 * [mxmehl](https://github.com/mxmehl)
 * [nel50n](https://github.com/nel50n)
@@ -221,6 +223,7 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [sysadminstory](https://github.com/sysadminstory)
 * [tameroski](https://github.com/tameroski)
 * [teromene](https://github.com/teromene)
+* [tgkenney](https://github.com/tgkenney)
 * [thefranke](https://github.com/thefranke)
 * [ThePadawan](https://github.com/ThePadawan)
 * [TheRadialActive](https://github.com/TheRadialActive)
@@ -232,7 +235,7 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [xurxof](https://github.com/xurxof)
 * [yardenac](https://github.com/yardenac)
 * [ZeNairolf](https://github.com/ZeNairolf)
-
+  
 Licenses
 ===
 

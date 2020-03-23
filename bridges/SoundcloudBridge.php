@@ -59,9 +59,13 @@ class SoundCloudBridge extends BridgeAbstract {
 		return parent::getIcon();
 	}
 
+	public function getURI(){
+		return 'https://soundcloud.com/' . $this->getInput('u');
+	}
+
 	public function getName(){
 		if(!is_null($this->getInput('u'))) {
-			return self::NAME . ' - ' . $this->getInput('u');
+			return $this->getInput('u') . ' - ' . self::NAME;
 		}
 
 		return parent::getName();
