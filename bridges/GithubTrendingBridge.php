@@ -5,7 +5,7 @@ class GithubTrendingBridge extends BridgeAbstract {
 	const NAME = 'Github Trending';
 	const URI = 'https://github.com/trending';
 	const URI_ITEM = 'https://github.com';
-	const CACHE_TIMEOUT = 86400; // 24hr (minimum since daily)
+	const CACHE_TIMEOUT = 43200; // 12hr
 	const DESCRIPTION = 'See what the GitHub community is most excited repos.';
 	const PARAMETERS = array(
 		'By language' => array(
@@ -626,9 +626,9 @@ class GithubTrendingBridge extends BridgeAbstract {
 
 	public function getName(){
 		if($this->getInput('language') == '') {
-			return self::NAME . ' - all';
+			return self::NAME . ': All';
 		} elseif (!is_null($this->getInput('language'))) {
-			return self::NAME . ' - ' . $this->getInput('language');
+			return self::NAME . ': ' . ucfirst($this->getInput('language'));
 		}
 
 		return parent::getName();
