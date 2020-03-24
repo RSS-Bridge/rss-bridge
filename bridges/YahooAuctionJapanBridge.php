@@ -50,8 +50,8 @@ class YahooAuctionJapanBridge extends BridgeAbstract {
 
 		foreach($html->find('li.Product') as $element) {
 			$item = array();
-			$item['uri'] = $element->find('a', 0)->href;
-			$item['title'] = $element->find('a', 4)->innertext;
+			$item['uri'] = $element->find('a.Product__imageLink', 0)->href;
+			$item['title'] = $element->find('a.Product__titleLink', 0)->innertext;
 
 			// Content
 			$image = $element->find('img', 0);
