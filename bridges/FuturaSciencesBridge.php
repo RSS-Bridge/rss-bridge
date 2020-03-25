@@ -129,6 +129,7 @@ class FuturaSciencesBridge extends FeedExpander {
 		$contents = stripWithDelimiters($contents, 'fs:xt:clickname="', '"');
 		$contents = StripWithDelimiters($contents, '<section class="module-toretain module-propal-nl', '</section>');
 		$contents = stripWithDelimiters($contents, '<script ', '</script>');
+		$contents = stripWithDelimiters($contents, '<script>', '</script>');
 
 		return $headline . trim($contents);
 	}
