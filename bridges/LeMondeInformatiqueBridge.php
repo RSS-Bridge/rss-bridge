@@ -26,8 +26,8 @@ class LeMondeInformatiqueBridge extends FeedExpander {
 
 		//No response header sets the encoding, explicit conversion is needed or subsequent xml_encode() will fail
 		$content_node = $article_html->find('div.col-primary, div.col-sm-9', 0);
-		$item['content'] = utf8_encode($this->cleanArticle($content_node->innertext));
-		$item['author'] = utf8_encode($article_html->find('div.author-infos', 0)->find('b', 0)->plaintext);
+		$item['content'] = $this->cleanArticle($content_node->innertext);
+		$item['author'] = $article_html->find('div.author-infos', 0)->find('b', 0)->plaintext;
 
 		return $item;
 	}
