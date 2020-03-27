@@ -4,7 +4,7 @@ ENV APACHE_DOCUMENT_ROOT=/app
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
 	&& apt-get --yes update \
-	&& apt-get --yes install libxml2-dev zlib1g-dev libmemcached-dev \
+	&& apt-get --yes install libxml2-dev zlib1g-dev libmemcached-dev python3-pip ffmpeg \
 	&& apt-get clean \
 	&& docker-php-ext-install -j$(nproc) simplexml \
 	&& sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
@@ -20,5 +20,7 @@ RUN curl https://codeload.github.com/php-memcached-dev/php-memcached/tar.gz/v3.1
 	&& docker-php-ext-configure /usr/src/php/ext/memcached --disable-memcached-sasl \
 	&& docker-php-ext-install /usr/src/php/ext/memcached \
 	&& rm -rf /usr/src/php/ext/memcached
+
+RUN pip3 install youtube-dl
 
 COPY --chown=www-data:www-data ./ /app/
