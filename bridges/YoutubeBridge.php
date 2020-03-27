@@ -77,7 +77,9 @@ class YoutubeBridge extends BridgeAbstract {
 					'WAV Audio' => 'audio/wav'
 				),
 				'defaultValue' => '',
-				'title' => 'Tries to download the video in the format specified. Needs youtube-dl installed. Audio formats also need ffmpeg installed.'
+				'title' => 'Tries to download the video in the format specified.
+Needs youtube-dl installed.
+Audio formats also need ffmpeg installed.'
 			),
 		)
 	);
@@ -172,10 +174,10 @@ class YoutubeBridge extends BridgeAbstract {
 
 	/**
 	 * Downloads the video for the given id/format and returns the path it was saved to or null if it could not be saved.
-	 * 
+	 *
 	 * @param string $vid the YouTube video ID
 	 * @param string $format the desired format of the downloaded.
-	 * 
+	 *
 	 * @return string the path to the downloaded file (on disk)
 	 */
 	private function ytBridgeDownloadVideo($vid, $mime_type) {
@@ -216,8 +218,8 @@ class YoutubeBridge extends BridgeAbstract {
 		$args[] = $format;
 		$args[] = $vid;
 		$command = escapeshellcmd('youtube-dl') . ' '
-			. implode(' ', array_map('escapeshellarg', $args)) . ' '
-			. '2>&1'; // Catch error messages in stdout
+			. implode(' ', array_map('escapeshellarg', $args))
+			. ' 2>&1'; // Catch error messages in stdout
 		exec(
 			$command,
 			$output,

@@ -359,7 +359,7 @@ class FeedItem {
 
 	/**
 	 * Normalize the given enclosure for an item into an array
-	 * 
+	 *
 	 * @param string|array $enclosure a URL or an enclosure array, with at least a url key
 	 * @return array the enclosure array with the following keys: url, mime_type
 	 */

@@ -56,8 +56,8 @@ class HtmlFormat extends FormatAbstract {
 					$url = $this->sanitizeHtml($enclosure['url']);
 
 					$entryEnclosures .= '<li class="enclosure"><a '
-					. 'href="' . $url . '" '
-					. 'type="' . $enclosure['mime_type'] . '"'
+					. ('href="' . $url . '" ')
+					. ('type="' . $enclosure['mime_type'] . '"')
 					. '>'
 					. substr($url, strrpos($url, '/') + 1)
 					. '</a></li>';

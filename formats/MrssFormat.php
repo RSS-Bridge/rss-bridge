@@ -88,8 +88,8 @@ class MrssFormat extends FormatAbstract {
 			$entryEnclosures = '';
 			foreach($item->getEnclosures() as $enclosure) {
 				$entryEnclosures .= '<media:content '
-				. 'url="' . $this->xml_encode($enclosure['url']) . '" '
-				. 'type="' . $this->xml_encode($enclosure['mime_type']) . '" '
+				. ('url="' . $this->xml_encode($enclosure['url']) . '" ')
+				. ('type="' . $this->xml_encode($enclosure['mime_type']) . '" ')
 				. (isset($enclosure['length']) ? 'fileSize="' . $this->xml_encode($enclosure['length']) . '" ' : '')
 				. '/>'
 				. PHP_EOL;
