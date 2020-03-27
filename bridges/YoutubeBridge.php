@@ -76,7 +76,6 @@ class YoutubeBridge extends BridgeAbstract {
 					'FLAC Audio' => 'audio/flac',
 					'WAV Audio' => 'audio/wav'
 				),
-				'defaultValue' => '',
 				'title' => 'Tries to download the video in the format specified.
 Needs youtube-dl installed.
 Audio formats also need ffmpeg installed.'
