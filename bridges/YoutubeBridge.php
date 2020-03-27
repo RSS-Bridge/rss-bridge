@@ -58,8 +58,42 @@ class YoutubeBridge extends BridgeAbstract {
 				'type' => 'number',
 				'title' => 'Maximum duration for the video in minutes',
 				'exampleValue' => 10
-			)
+			),
+			'attach_format' => array(
+				'name' => 'Attach videos to the feed as',
+				'type' => 'list',
+				'values' => array(
+					'None' => '',
+					'MP4 Video' => 'video/mp4',
+					'WebM Video' => 'video/webm',
+					'3GP Video' => 'video/3gpp',
+					'FLV Video' => 'video/x-flv',
+					'MP3 Audio' => 'audio/mp3',
+					'MP4 Audio' => 'audio/mp4',
+					'AAC Audio' => 'audio/aac',
+					'Vorbis Audio' => 'audio/ogg',
+					'Opus Audio' => 'audio/opus',
+					'FLAC Audio' => 'audio/flac',
+					'WAV Audio' => 'audio/wav'
+				),
+				'defaultValue' => '',
+				'title' => 'Tries to download the video in the format specified. Needs youtube-dl installed. Audio formats also need ffmpeg installed.'
+			),
 		)
+	);
+
+	const FILE_TYPES = array(
+		'video/mp4' => 'mp4',
+		'video/webm' => 'webm',
+		'video/3gpp' => '3gp',
+		'video/x-flv' => 'flv',
+		'audio/mp3' => 'mp3',
+		'audio/mp4' => 'm4a',
+		'audio/aac' => 'aac',
+		'audio/ogg' => array('extension' => 'ogg', 'format' => 'vorbis'),
+		'audio/opus' => 'opus',
+		'audio/flac' => 'flac',
+		'audio/wav' => 'wav',
 	);
 
 	private $feedName = '';
@@ -102,7 +136,103 @@ class YoutubeBridge extends BridgeAbstract {
 		$item['uri'] = self::URI . 'watch?v=' . $vid;
 		$thumbnailUri = str_replace('/www.', '/img.', self::URI) . 'vi/' . $vid . '/0.jpg';
 		$item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $thumbnailUri . '" /></a><br />' . $desc;
+		$this->ytBridgeAttachVideo($vid, $item);
 		$this->items[] = $item;
+	}
+
+	private function ytBridgeAttachVideo($vid, &$item) {
+		$attach_format = $this->getInput('attach_format');
+
+		if(empty($attach_format)) {
+			return;
+		}
+		$path = $this->ytBridgeDownloadVideo($vid, $attach_format);
+		if($path === null) {
+			return;
+		}
+
+		$path = realpath($path);
+		$mainDir = realpath(PATH_ROOT);
+
+		if(strpos($path, $mainDir) !== 0) {
+			error_log("Downloaded video in $path is not inside $mainDir");
+			return;
+		}
+
+		$urlPrefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
+		$urlHost = (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '';
+
+		// FIXME: Make base URL configurable instead of relying on host header and server vars
+		$url = $urlPrefix . $urlHost . substr($path, strlen($mainDir));
+
+		$item['enclosures'] = array(
+			array('url' => $url, 'mime_type' => $attach_format, 'length' => filesize($path))
+		);
+	}
+
+	/**
+	 * Downloads the video for the given id/format and returns the path it was saved to or null if it could not be saved.
+	 * 
+	 * @param string $vid the YouTube video ID
+	 * @param string $format the desired format of the downloaded.
+	 * 
+	 * @return string the path to the downloaded file (on disk)
+	 */
+	private function ytBridgeDownloadVideo($vid, $mime_type) {
+		$cacheFac = new CacheFactory();
+		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
+		// Needs to be a file cache because it needs to be servable by apache
+		$cache = $cacheFac->create('file');
+		$cache->setScope('youtube-dl');
+		$cache->purgeCache(15 * 24 * 60 * 60); // 15 days
+		$fileType = self::FILE_TYPES[$mime_type];
+		if(is_string($fileType)) {
+			$fileType = array('extension' => $fileType, 'format' => $fileType);
+		}
+		extract($fileType);
+		$path = $cache->getPath() . "$vid.$extension";
+		if(file_exists($path)) {
+			// File was downloaded already
+			if(filesize($path) === 0) {
+				// Previous download failed, do not try again
+				return null;
+			}
+			// Mark the file as fresh so the cache doesn’t delete it
+			touch($path);
+			return $path;
+		}
+		$isAudio = strpos($mime_type, 'audio/') === 0;
+		$args = array(
+			'--output',
+			$cache->getPath() . '%(id)s.%(ext)s',
+			'--no-mtime'
+		);
+		if($isAudio) {
+			$args[] = '--extract-audio';
+			$args[] = '--audio-format';
+		} else {
+			$args[] = '--format';
+		}
+		$args[] = $format;
+		$args[] = $vid;
+		$command = escapeshellcmd('youtube-dl') . ' '
+			. implode(' ', array_map('escapeshellarg', $args)) . ' '
+			. '2>&1'; // Catch error messages in stdout
+		exec(
+			$command,
+			$output,
+			$returnValue
+		);
+		if($returnValue !== 0) {
+			error_log("Downloading the YouTube video $vid using $command failed: " . implode("\n", $output));
+			// Create an empty file to signify that the download need not be re-tried
+			touch($path);
+			return null;
+		} else if(Debug::isEnabled()) {
+			error_log("youtube-dl command $command for video $vid finished with: " . implode("\n", $output));
+		}
+
+		return $path;
 	}
 
 	private function ytBridgeParseXmlFeed($xml) {
