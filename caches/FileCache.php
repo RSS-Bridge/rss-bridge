@@ -92,7 +92,7 @@ class FileCache implements CacheInterface {
 	* Return cache path (and create if not exist)
 	* @return string Cache path
 	*/
-	private function getPath(){
+	public function getPath(){
 		if(is_null($this->path)) {
 			throw new \Exception('Call "setScope" first!');
 		}
