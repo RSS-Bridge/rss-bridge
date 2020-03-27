@@ -321,7 +321,7 @@ class FeedItem {
 	 *
 	 * Use {@see FeedItem::setEnclosures()} to set feed enclosures.
 	 *
-	 * @return array Enclosures as array of enclosure URIs.
+	 * @return array Enclosures as array of enclosure items (array with at least a url and a mime_type key).
 	 */
 	public function getEnclosures() {
 		return $this->enclosures;
@@ -343,8 +343,9 @@ class FeedItem {
 			Debug::log('Enclosures must be an array!');
 		} else {
 			foreach($enclosures as $enclosure) {
+				$enclosure = $this->normalizeEnclosure($enclosure);
 				if(!filter_var(
-					$enclosure,
+					$enclosure['url'],
 					FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
 					Debug::log('Each enclosure must contain a scheme, host and path!');
 				} elseif(!in_array($enclosure, $this->enclosures)) {
@@ -354,6 +355,23 @@ class FeedItem {
 		}
 
 		return $this;
+	}
+
+	/**
+	 * Normalize the given enclosure for an item into an array
+	 * 
+	 * @param string|array $enclosure a URL or an enclosure array, with at least a url key
+	 * @return array the enclosure array with the following keys: url, mime_type
+	 */
+	private function normalizeEnclosure($enclosure) {
+		if(!is_array($enclosure)) {
+			$enclosure = array('url' => $enclosure);
+		}
+		if(!isset($enclosure['mime_type'])) {
+			$enclosure['mime_type'] = getMimeType($enclosure['url']);
+		}
+
+		return $enclosure;
 	}
 
 	/**

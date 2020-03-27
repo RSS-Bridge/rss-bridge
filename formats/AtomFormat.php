@@ -75,9 +75,11 @@ class AtomFormat extends FormatAbstract{
 
 			$entryEnclosures = '';
 			foreach($item->getEnclosures() as $enclosure) {
-				$entryEnclosures .= '<link rel="enclosure" href="'
-				. $this->xml_encode($enclosure)
-				. '" type="' . getMimeType($enclosure) . '" />'
+				$entryEnclosures .= '<link rel="enclosure" '
+				. 'href="' . $this->xml_encode($enclosure['url']) . '" '
+				. 'type="' . $this->xml_encode($enclosure['mime_type']) . '" '
+				. (isset($enclosure['length']) ? 'length="' . $this->xml_encode($enclosure['length']) . '" ' : '')
+				. '/>'
 				. PHP_EOL;
 			}
 

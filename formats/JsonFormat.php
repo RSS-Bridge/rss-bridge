@@ -88,10 +88,7 @@ class JsonFormat extends FormatAbstract {
 			if (!empty($entryEnclosures)) {
 				$entry['attachments'] = array();
 				foreach ($entryEnclosures as $enclosure) {
-					$entry['attachments'][] = array(
-						'url' => $enclosure,
-						'mime_type' => getMimeType($enclosure)
-					);
+					$entry['attachments'][] = $enclosure;
 				}
 			}
 			if (!empty($entryCategories)) {

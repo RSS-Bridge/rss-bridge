@@ -53,11 +53,12 @@ class HtmlFormat extends FormatAbstract {
 				$entryEnclosures = '<div class="attachments"><p>Attachments:</p>';
 
 				foreach($item->getEnclosures() as $enclosure) {
-					$url = $this->sanitizeHtml($enclosure);
+					$url = $this->sanitizeHtml($enclosure['url']);
 
-					$entryEnclosures .= '<li class="enclosure"><a href="'
-					. $url
-					. '">'
+					$entryEnclosures .= '<li class="enclosure"><a '
+					. 'href="' . $url . '" '
+					. 'type="' . $enclosure['mime_type'] . '"'
+					. '>'
 					. substr($url, strrpos($url, '/') + 1)
 					. '</a></li>';
 				}
