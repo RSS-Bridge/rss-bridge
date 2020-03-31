@@ -2,7 +2,7 @@
 class FacebookBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'teromene, logmanoriginal';
-	const NAME = 'Facebook Bridge';
+	const NAME = 'Facebook Bridge | Main Site';
 	const URI = 'https://www.facebook.com/';
 	const CACHE_TIMEOUT = 300; // 5min
 	const DESCRIPTION = 'Input a page title or a profile log. For a profile log,
@@ -66,20 +66,47 @@ class FacebookBridge extends BridgeAbstract {
 
 			case 'User':
 				if(!empty($this->authorName)) {
-					return isset($this->extraInfos['name']) ? $this->extraInfos['name'] : $this->authorName
-					. ' - ' . static::NAME;
+					return isset($this->extraInfos['name']) ? $this->extraInfos['name'] : $this->authorName;
 				}
 				break;
 
 			case 'Group':
 				if(!empty($this->groupName)) {
-					return $this->groupName . ' - ' . static::NAME;
+					return $this->groupName;
 				}
 				break;
 
 		}
 
 		return parent::getName();
+	}
+
+	public function detectParameters($url){
+		$params = array();
+
+		// By profile
+		$regex = '/^(https?:\/\/)?(www\.)?facebook\.com\/profile\.php\?id\=([^\/?&\n]+)?(.*)/';
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['u'] = urldecode($matches[3]);
+			return $params;
+		}
+
+		// By group
+		$regex = '/^(https?:\/\/)?(www\.)?facebook\.com\/groups\/([^\/?\n]+)?(.*)/';
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['g'] = urldecode($matches[3]);
+			return $params;
+		}
+
+		// By username
+		$regex = '/^(https?:\/\/)?(www\.)?facebook\.com\/([^\/?\n]+)/';
+
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['u'] = urldecode($matches[3]);
+			return $params;
+		}
+
+		return null;
 	}
 
 	public function getURI() {
@@ -674,8 +701,15 @@ EOD;
 
 						$uri = $post->find('abbr')[0]->parent()->getAttribute('href');
 
-						if (false !== strpos($uri, '?')) {
-							$uri = substr($uri, 0, strpos($uri, '?'));
+						// Extract fbid and patch link
+						if (strpos($uri, '?') !== false) {
+							$query = substr($uri, strpos($uri, '?') + 1);
+							parse_str($query, $query_params);
+							if (isset($query_params['story_fbid'])) {
+								$uri = self::URI . $query_params['story_fbid'];
+							} else {
+								$uri = substr($uri, 0, strpos($uri, '?'));
+							}
 						}
 
 						//Build and add final item
@@ -695,6 +729,7 @@ EOD;
 			}
 		}
 	}
+
 	#endregion (User)
 
 }

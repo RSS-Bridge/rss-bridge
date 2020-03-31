@@ -5,7 +5,7 @@ class Rule34pahealBridge extends Shimmie2Bridge {
 
 	const MAINTAINER = 'mitsukarenai';
 	const NAME = 'Rule34paheal';
-	const URI = 'http://rule34.paheal.net/';
+	const URI = 'https://rule34.paheal.net/';
 	const DESCRIPTION = 'Returns images from given page';
 
 	protected function getItemFromElement($element){

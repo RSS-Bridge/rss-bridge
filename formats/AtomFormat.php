@@ -7,6 +7,8 @@
  * https://validator.w3.org/feed/
  */
 class AtomFormat extends FormatAbstract{
+	const MIME_TYPE = 'application/atom+xml';
+
 	const LIMIT_TITLE = 140;
 
 	public function stringify(){
@@ -87,6 +89,10 @@ class AtomFormat extends FormatAbstract{
 				. PHP_EOL;
 			}
 
+			$entryThumbnail = $item->thumbnail;
+			if (!empty($entryThumbnail))
+				$entryThumbnail = '<media:thumbnail url="' . $this->xml_encode($entryThumbnail) . '"/>';
+
 			$entryLinkAlternate = '';
 			if (!empty($entryUri)) {
 				$entryLinkAlternate = '<link rel="alternate" type="text/html" href="'
@@ -112,6 +118,7 @@ class AtomFormat extends FormatAbstract{
 		<content type="html">{$entryContent}</content>
 		{$entryEnclosures}
 		{$entryCategories}
+		{$entryThumbnail}
 	</entry>
 
 EOD;
@@ -147,7 +154,7 @@ EOD;
 
 	public function display(){
 		$this
-			->setContentType('application/atom+xml; charset=' . $this->getCharset())
+			->setContentType(self::MIME_TYPE . '; charset=' . $this->getCharset())
 			->callContentType();
 
 		return parent::display();

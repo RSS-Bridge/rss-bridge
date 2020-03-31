@@ -9,22 +9,6 @@ class Releases3DSBridge extends BridgeAbstract {
 
 	public function collectData(){
 
-		function typeToString($type){
-			switch($type) {
-				case 1: return '3DS Game';
-				case 4: return 'eShop';
-				default: return '??? (' . $type . ')';
-			}
-		}
-
-		function cardToString($card){
-			switch($card) {
-				case 1: return 'Regular (CARD1)';
-				case 2: return 'NAND (CARD2)';
-				default: return '??? (' . $card . ')';
-			}
-		}
-
 		$dataUrl = self::URI . 'xml.php';
 		$xml = getContents($dataUrl)
 			or returnServerError('Could not request 3dsdb: ' . $dataUrl);
@@ -95,8 +79,8 @@ class Releases3DSBridge extends BridgeAbstract {
 			. '<br /><b>Release Name: </b>' . $releasename
 			. '<br /><b>Trimmed size: </b>' . intval(intval($trimmedsize) / 1048576)
 			. 'MB<br /><b>Firmware: </b>' . $firmware
-			. '<br /><b>Type: </b>' . typeToString($type)
-			. '<br /><b>Card: </b>' . cardToString($card)
+			. '<br /><b>Type: </b>' . $this->typeToString($type)
+			. '<br /><b>Card: </b>' . $this->cardToString($card)
 			. '<br />';
 
 			//Build search links section to facilitate release search using search engines
@@ -122,6 +106,22 @@ class Releases3DSBridge extends BridgeAbstract {
 			$item['content'] = $ignDescription . $releaseDescription . $releaseSearchLinks;
 			$this->items[] = $item;
 			$limit++;
+		}
+	}
+
+	private function typeToString($type){
+		switch($type) {
+			case 1: return '3DS Game';
+			case 4: return 'eShop';
+			default: return '??? (' . $type . ')';
+		}
+	}
+
+	private function cardToString($card){
+		switch($card) {
+			case 1: return 'Regular (CARD1)';
+			case 2: return 'NAND (CARD2)';
+			default: return '??? (' . $card . ')';
 		}
 	}
 }

@@ -1,5 +1,7 @@
 <?php
 class HtmlFormat extends FormatAbstract {
+	const MIME_TYPE = 'text/html';
+
 	public function stringify(){
 		$extraInfos = $this->getExtraInfos();
 		$title = htmlspecialchars($extraInfos['name']);
@@ -10,6 +12,7 @@ class HtmlFormat extends FormatAbstract {
 		$formatFac->setWorkingDir(PATH_LIB_FORMATS);
 
 		$buttons = '';
+		$links = '';
 
 		foreach($formatFac->getFormatNames() as $format) {
 			if(strcasecmp($format, 'HTML') === 0) {
@@ -18,6 +21,9 @@ class HtmlFormat extends FormatAbstract {
 
 			$query = str_replace('format=Html', 'format=' . $format, htmlentities($_SERVER['QUERY_STRING']));
 			$buttons .= $this->buildButton($format, $query) . PHP_EOL;
+
+			$mime = $formatFac->create($format)->getMimeType();
+			$links .= $this->buildLink($format, $query, $mime) . PHP_EOL;
 		}
 
 		$entries = '';
@@ -99,6 +105,7 @@ EOD;
 	<title>{$title}</title>
 	<link href="static/HtmlFormat.css" rel="stylesheet">
 	<link rel="icon" type="image/png" href="static/favicon.png">
+	{$links}
 	<meta name="robots" content="noindex, follow">
 </head>
 <body>
@@ -120,7 +127,7 @@ EOD;
 
 	public function display() {
 		$this
-			->setContentType('text/html; charset=' . $this->getCharset())
+			->setContentType(self::MIME_TYPE . '; charset=' . $this->getCharset())
 			->callContentType();
 
 		return parent::display();
@@ -129,6 +136,13 @@ EOD;
 	private function buildButton($format, $query) {
 		return <<<EOD
 <a href="./?{$query}"><button class="rss-feed">{$format}</button></a>
+EOD;
+	}
+
+	private function buildLink($format, $query, $mime) {
+		return <<<EOD
+<link href="./?{$query}" title="{$format}" rel="alternate" type="{$mime}">
+
 EOD;
 	}
 }

@@ -12,6 +12,15 @@
  */
 
 class DisplayAction extends ActionAbstract {
+	private function get_return_code($error) {
+		$returnCode = $error->getCode();
+		if ($returnCode === 301 || $returnCode === 302) {
+			# Don't pass redirect codes to the exterior
+			$returnCode = 508;
+		}
+		return $returnCode;
+	}
+
 	public function execute() {
 		$bridge = array_key_exists('bridge', $this->userData) ? $this->userData['bridge'] : null;
 
@@ -146,63 +155,77 @@ class DisplayAction extends ActionAbstract {
 			} catch(Error $e) {
 				error_log($e);
 
-				$item = new \FeedItem();
+				if(logBridgeError($bridge::NAME, $e->getCode()) >= Configuration::getConfig('error', 'report_limit')) {
+					if(Configuration::getConfig('error', 'output') === 'feed') {
+						$item = new \FeedItem();
 
-				// Create "new" error message every 24 hours
-				$this->userData['_error_time'] = urlencode((int)(time() / 86400));
+						// Create "new" error message every 24 hours
+						$this->userData['_error_time'] = urlencode((int)(time() / 86400));
 
-				// Error 0 is a special case (i.e. "trying to get property of non-object")
-				if($e->getCode() === 0) {
-					$item->setTitle(
-						'Bridge encountered an unexpected situation! ('
-						. $this->userData['_error_time']
-						. ')'
-					);
-				} else {
-					$item->setTitle(
-						'Bridge returned error '
-						. $e->getCode()
-						. '! ('
-						. $this->userData['_error_time']
-						. ')'
-					);
+						// Error 0 is a special case (i.e. "trying to get property of non-object")
+						if($e->getCode() === 0) {
+							$item->setTitle(
+								'Bridge encountered an unexpected situation! ('
+								. $this->userData['_error_time']
+								. ')'
+							);
+						} else {
+							$item->setTitle(
+								'Bridge returned error '
+								. $e->getCode()
+								. '! ('
+								. $this->userData['_error_time']
+								. ')'
+							);
+						}
+
+						$item->setURI(
+							(isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '')
+							. '?'
+							. http_build_query($this->userData)
+						);
+
+						$item->setTimestamp(time());
+						$item->setContent(buildBridgeException($e, $bridge));
+
+						$items[] = $item;
+					} elseif(Configuration::getConfig('error', 'output') === 'http') {
+						header('Content-Type: text/html', true, $this->get_return_code($e));
+						die(buildTransformException($e, $bridge));
+					}
 				}
-
-				$item->setURI(
-					(isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '')
-					. '?'
-					. http_build_query($this->userData)
-				);
-
-				$item->setTimestamp(time());
-				$item->setContent(buildBridgeException($e, $bridge));
-
-				$items[] = $item;
 			} catch(Exception $e) {
 				error_log($e);
 
-				$item = new \FeedItem();
+				if(logBridgeError($bridge::NAME, $e->getCode()) >= Configuration::getConfig('error', 'report_limit')) {
+					if(Configuration::getConfig('error', 'output') === 'feed') {
+						$item = new \FeedItem();
 
-				// Create "new" error message every 24 hours
-				$this->userData['_error_time'] = urlencode((int)(time() / 86400));
+						// Create "new" error message every 24 hours
+						$this->userData['_error_time'] = urlencode((int)(time() / 86400));
 
-				$item->setURI(
-					(isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '')
-					. '?'
-					. http_build_query($this->userData)
-				);
+						$item->setURI(
+							(isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '')
+							. '?'
+							. http_build_query($this->userData)
+						);
 
-				$item->setTitle(
-					'Bridge returned error '
-					. $e->getCode()
-					. '! ('
-					. $this->userData['_error_time']
-					. ')'
-				);
-				$item->setTimestamp(time());
-				$item->setContent(buildBridgeException($e, $bridge));
+						$item->setTitle(
+							'Bridge returned error '
+							. $e->getCode()
+							. '! ('
+							. $this->userData['_error_time']
+							. ')'
+						);
+						$item->setTimestamp(time());
+						$item->setContent(buildBridgeException($e, $bridge));
 
-				$items[] = $item;
+						$items[] = $item;
+					} elseif(Configuration::getConfig('error', 'output') === 'http') {
+						header('Content-Type: text/html', true, $this->get_return_code($e));
+						die(buildTransformException($e, $bridge));
+					}
+				}
 			}
 
 			// Store data in cache

@@ -2,7 +2,7 @@
 ===
 [![LICENSE](https://img.shields.io/badge/license-UNLICENSE-blue.svg)](UNLICENSE) [![GitHub release](https://img.shields.io/github/release/rss-bridge/rss-bridge.svg?logo=github)](https://github.com/rss-bridge/rss-bridge/releases/latest) [![Debian Release](https://img.shields.io/badge/dynamic/json.svg?logo=debian&label=debian%20release&url=https%3A%2F%2Fsources.debian.org%2Fapi%2Fsrc%2Frss-bridge%2F&query=%24.versions%5B0%5D.version&colorB=blue)](https://tracker.debian.org/pkg/rss-bridge) [![Guix Release](https://img.shields.io/badge/guix%20release-unknown-blue.svg)](https://www.gnu.org/software/guix/packages/R/) [![Build Status](https://travis-ci.org/RSS-Bridge/rss-bridge.svg?branch=master)](https://travis-ci.org/RSS-Bridge/rss-bridge) [![Docker Build Status](https://img.shields.io/docker/build/rssbridge/rss-bridge.svg?logo=docker)](https://hub.docker.com/r/rssbridge/rss-bridge/)
 
-RSS-Bridge is a PHP project capable of generating RSS and Atom feeds for websites which don't have one. It can be used on webservers or as stand alone application in CLI mode.
+RSS-Bridge is a PHP project capable of generating RSS and Atom feeds for websites that don't have one. It can be used on webservers or as a stand-alone application in CLI mode.
 
 **Important**: RSS-Bridge is __not__ a feed reader or feed aggregator, but a tool to generate feeds that are consumed by feed readers and feed aggregators. Find a list of feed aggregators on [Wikipedia](https://en.wikipedia.org/wiki/Comparison_of_feed_aggregators).
 
@@ -76,7 +76,7 @@ RSS-Bridge allows you to take full control over which bridges are displayed to t
 
 Find more information on the [Wiki](https://github.com/RSS-Bridge/rss-bridge/wiki/Whitelisting)
 
-**Notice**: By default RSS-Bridge will only show a small subset of bridges. Make sure to read up on [whitelisting](https://github.com/RSS-Bridge/rss-bridge/wiki/Whitelisting) to unlock the full potential of RSS-Bridge!
+**Notice**: By default, RSS-Bridge will only show a small subset of bridges. Make sure to read up on [whitelisting](https://github.com/RSS-Bridge/rss-bridge/wiki/Whitelisting) to unlock the full potential of RSS-Bridge!
 
 Deploy
 ===
@@ -109,8 +109,8 @@ We are RSS-Bridge community, a group of developers continuing the project initia
 Use this script to generate the list automatically (using the GitHub API):
 https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 -->
-
 * [16mhz](https://github.com/16mhz)
+* [86423355844265459587182778](https://github.com/86423355844265459587182778)
 * [adamchainz](https://github.com/adamchainz)
 * [Ahiles3005](https://github.com/Ahiles3005)
 * [Albirew](https://github.com/Albirew)
@@ -118,6 +118,7 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [alex73](https://github.com/alex73)
 * [alexAubin](https://github.com/alexAubin)
 * [AmauryCarrade](https://github.com/AmauryCarrade)
+* [AntoineTurmel](https://github.com/AntoineTurmel)
 * [ArthurHoaro](https://github.com/ArthurHoaro)
 * [Astalaseven](https://github.com/Astalaseven)
 * [Astyan-42](https://github.com/Astyan-42)
@@ -125,12 +126,14 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [azdkj532](https://github.com/azdkj532)
 * [b1nj](https://github.com/b1nj)
 * [benasse](https://github.com/benasse)
+* [Binnette](https://github.com/Binnette)
 * [captn3m0](https://github.com/captn3m0)
 * [chemel](https://github.com/chemel)
 * [ckiw](https://github.com/ckiw)
 * [cnlpete](https://github.com/cnlpete)
 * [corenting](https://github.com/corenting)
 * [couraudt](https://github.com/couraudt)
+* [cyberjacob](https://github.com/cyberjacob)
 * [da2x](https://github.com/da2x)
 * [Daiyousei](https://github.com/Daiyousei)
 * [dawidsowa](https://github.com/dawidsowa)
@@ -138,6 +141,7 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [DJCrashdummy](https://github.com/DJCrashdummy)
 * [Djuuu](https://github.com/Djuuu)
 * [DnAp](https://github.com/DnAp)
+* [dominik-th](https://github.com/dominik-th)
 * [Draeli](https://github.com/Draeli)
 * [Dreckiger-Dan](https://github.com/Dreckiger-Dan)
 * [em92](https://github.com/em92)
@@ -149,6 +153,7 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [fulmeek](https://github.com/fulmeek)
 * [Ginko-Aloe](https://github.com/Ginko-Aloe)
 * [Glandos](https://github.com/Glandos)
+* [gloony](https://github.com/gloony)
 * [GregThib](https://github.com/GregThib)
 * [griffaurel](https://github.com/griffaurel)
 * [Grummfy](https://github.com/Grummfy)
@@ -157,10 +162,12 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [IceWreck](https://github.com/IceWreck)
 * [j0k3r](https://github.com/j0k3r)
 * [JackNUMBER](https://github.com/JackNUMBER)
+* [jdesgats](https://github.com/jdesgats)
 * [jdigilio](https://github.com/jdigilio)
 * [JeremyRand](https://github.com/JeremyRand)
 * [Jocker666z](https://github.com/Jocker666z)
 * [johnnygroovy](https://github.com/johnnygroovy)
+* [johnpc](https://github.com/johnpc)
 * [killruana](https://github.com/killruana)
 * [klimplant](https://github.com/klimplant)
 * [kranack](https://github.com/kranack)
@@ -169,11 +176,12 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [laBecasse](https://github.com/laBecasse)
 * [lagaisse](https://github.com/lagaisse)
 * [lalannev](https://github.com/lalannev)
-* [Leomaradan](https://github.com/Leomaradan)
 * [ldidry](https://github.com/ldidry)
+* [Leomaradan](https://github.com/Leomaradan)
 * [Limero](https://github.com/Limero)
 * [LogMANOriginal](https://github.com/LogMANOriginal)
 * [lorenzos](https://github.com/lorenzos)
+* [lukasklinger](https://github.com/lukasklinger)
 * [m0zes](https://github.com/m0zes)
 * [matthewseal](https://github.com/matthewseal)
 * [mcbyte-it](https://github.com/mcbyte-it)
@@ -182,13 +190,14 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [metaMMA](https://github.com/metaMMA)
 * [mitsukarenai](https://github.com/mitsukarenai)
 * [MonsieurPoutounours](https://github.com/MonsieurPoutounours)
-* [mr-flibble](https://github.com/mr-flibble)
 * [mro](https://github.com/mro)
 * [mxmehl](https://github.com/mxmehl)
 * [nel50n](https://github.com/nel50n)
 * [niawag](https://github.com/niawag)
 * [Nono-m0le](https://github.com/Nono-m0le)
 * [ObsidianWitch](https://github.com/ObsidianWitch)
+* [OliverParoczai](https://github.com/OliverParoczai)
+* [oratosquilla-oratoria](https://github.com/oratosquilla-oratoria)
 * [ORelio](https://github.com/ORelio)
 * [PaulVayssiere](https://github.com/PaulVayssiere)
 * [pellaeon](https://github.com/pellaeon)
@@ -204,16 +213,21 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [rogerdc](https://github.com/rogerdc)
 * [Roliga](https://github.com/Roliga)
 * [sebsauvage](https://github.com/sebsauvage)
+* [shutosg](https://github.com/shutosg)
 * [somini](https://github.com/somini)
 * [squeek502](https://github.com/squeek502)
+* [stjohnjohnson](https://github.com/stjohnjohnson)
 * [Strubbl](https://github.com/Strubbl)
 * [sublimz](https://github.com/sublimz)
+* [sunchaserinfo](https://github.com/sunchaserinfo)
 * [sysadminstory](https://github.com/sysadminstory)
 * [tameroski](https://github.com/tameroski)
 * [teromene](https://github.com/teromene)
+* [tgkenney](https://github.com/tgkenney)
 * [thefranke](https://github.com/thefranke)
 * [ThePadawan](https://github.com/ThePadawan)
 * [TheRadialActive](https://github.com/TheRadialActive)
+* [TitiTestScalingo](https://github.com/TitiTestScalingo)
 * [triatic](https://github.com/triatic)
 * [VerifiedJoseph](https://github.com/VerifiedJoseph)
 * [WalterBarrett](https://github.com/WalterBarrett)
@@ -221,7 +235,7 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [xurxof](https://github.com/xurxof)
 * [yardenac](https://github.com/yardenac)
 * [ZeNairolf](https://github.com/ZeNairolf)
-
+  
 Licenses
 ===
 

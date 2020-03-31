@@ -30,7 +30,7 @@ class PinterestBridge extends FeedExpander {
 
 	private function fixLowRes() {
 
-		$newitems = [];
+		$newitems = array();
 		$pattern = '/https\:\/\/i\.pinimg\.com\/[a-zA-Z0-9]*x\//';
 		foreach($this->items as $item) {
 

@@ -40,60 +40,6 @@ class ThePirateBayBridge extends BridgeAbstract {
 
 	public function collectData(){
 
-		function parseDateTimestamp($element){
-				$guessedDate = $element->find('font', 0)->plaintext;
-				$guessedDate = explode('Uploaded ', $guessedDate)[1];
-				$guessedDate = explode(',', $guessedDate)[0];
-
-				if(count(explode(':', $guessedDate)) == 1) {
-					$guessedDate = strptime($guessedDate, '%m-%d&nbsp;%Y');
-					$timestamp = mktime(
-						0,
-						0,
-						0,
-						$guessedDate['tm_mon'] + 1,
-						$guessedDate['tm_mday'],
-						1900 + $guessedDate['tm_year']
-					);
-				} elseif(explode('&nbsp;', $guessedDate)[0] == 'Today') {
-					$guessedDate = strptime(
-						explode('&nbsp;', $guessedDate)[1], '%H:%M'
-					);
-
-					$timestamp = mktime(
-						$guessedDate['tm_hour'],
-						$guessedDate['tm_min'],
-						0,
-						date('m'),
-						date('d'),
-						date('Y')
-					);
-				} elseif(explode('&nbsp;', $guessedDate)[0] == 'Y-day') {
-					$guessedDate = strptime(
-						explode('&nbsp;', $guessedDate)[1], '%H:%M'
-					);
-
-					$timestamp = mktime(
-						$guessedDate['tm_hour'],
-						$guessedDate['tm_min'],
-						0,
-						date('m', time() - 24 * 60 * 60),
-						date('d', time() - 24 * 60 * 60),
-						date('Y', time() - 24 * 60 * 60)
-					);
-				} else {
-					$guessedDate = strptime($guessedDate, '%m-%d&nbsp;%H:%M');
-					$timestamp = mktime(
-						$guessedDate['tm_hour'],
-						$guessedDate['tm_min'],
-						0,
-						$guessedDate['tm_mon'] + 1,
-						$guessedDate['tm_mday'],
-						date('Y'));
-				}
-				return $timestamp;
-		}
-
 		$catBool = $this->getInput('catCheck');
 		if($catBool) {
 			$catNum = $this->getInput('cat');
@@ -151,7 +97,7 @@ class ThePirateBayBridge extends BridgeAbstract {
 					$item = array();
 					$item['uri'] = self::URI . $element->find('a.detLink', 0)->href;
 					$item['id'] = self::URI . $element->find('a.detLink', 0)->href;
-					$item['timestamp'] = parseDateTimestamp($element);
+					$item['timestamp'] = $this->parseDateTimestamp($element);
 					$item['author'] = $element->find('a.detDesc', 0)->plaintext;
 					$item['title'] = $element->find('a.detLink', 0)->plaintext;
 					$item['magnet'] = $element->find('a', 3)->href;
@@ -173,5 +119,59 @@ class ThePirateBayBridge extends BridgeAbstract {
 				}
 			}
 		}
+	}
+
+	private function parseDateTimestamp($element){
+			$guessedDate = $element->find('font', 0)->plaintext;
+			$guessedDate = explode('Uploaded ', $guessedDate)[1];
+			$guessedDate = explode(',', $guessedDate)[0];
+
+			if(count(explode(':', $guessedDate)) == 1) {
+				$guessedDate = strptime($guessedDate, '%m-%d&nbsp;%Y');
+				$timestamp = mktime(
+					0,
+					0,
+					0,
+					$guessedDate['tm_mon'] + 1,
+					$guessedDate['tm_mday'],
+					1900 + $guessedDate['tm_year']
+				);
+			} elseif(explode('&nbsp;', $guessedDate)[0] == 'Today') {
+				$guessedDate = strptime(
+					explode('&nbsp;', $guessedDate)[1], '%H:%M'
+				);
+
+				$timestamp = mktime(
+					$guessedDate['tm_hour'],
+					$guessedDate['tm_min'],
+					0,
+					date('m'),
+					date('d'),
+					date('Y')
+				);
+			} elseif(explode('&nbsp;', $guessedDate)[0] == 'Y-day') {
+				$guessedDate = strptime(
+					explode('&nbsp;', $guessedDate)[1], '%H:%M'
+				);
+
+				$timestamp = mktime(
+					$guessedDate['tm_hour'],
+					$guessedDate['tm_min'],
+					0,
+					date('m', time() - 24 * 60 * 60),
+					date('d', time() - 24 * 60 * 60),
+					date('Y', time() - 24 * 60 * 60)
+				);
+			} else {
+				$guessedDate = strptime($guessedDate, '%m-%d&nbsp;%H:%M');
+				$timestamp = mktime(
+					$guessedDate['tm_hour'],
+					$guessedDate['tm_min'],
+					0,
+					$guessedDate['tm_mon'] + 1,
+					$guessedDate['tm_mday'],
+					date('Y'));
+			}
+			return $timestamp;
 	}
 }

@@ -19,28 +19,6 @@ class JapanExpoBridge extends BridgeAbstract {
 
 	public function collectData(){
 
-		function frenchPubDateToTimestamp($date_to_parse) {
-			return strtotime(
-				strtr(
-					strtolower(str_replace('Publié le ', '', $date_to_parse)),
-					array(
-						'janvier' => 'jan',
-						'février' => 'feb',
-						'mars' => 'march',
-						'avril' => 'apr',
-						'mai' => 'may',
-						'juin' => 'jun',
-						'juillet' => 'jul',
-						'août' => 'aug',
-						'septembre' => 'sep',
-						'octobre' => 'oct',
-						'novembre' => 'nov',
-						'décembre' => 'dec'
-					)
-				)
-			);
-		}
-
 		$convert_article_images = function($matches){
 			if(is_array($matches) && count($matches) > 1) {
 				return '<img src="' . $matches[1] . '" />';
@@ -82,7 +60,7 @@ class JapanExpoBridge extends BridgeAbstract {
 				$content = $headings . $article;
 			} else {
 				$date_text = $element->find('span.date', 0)->plaintext;
-				$timestamp = frenchPubDateToTimestamp($date_text);
+				$timestamp = $this->frenchPubDateToTimestamp($date_text);
 				$title = trim($element->find('span._title', 0)->plaintext);
 				$content = '<img src="'
 				. $thumbnail
@@ -102,5 +80,27 @@ class JapanExpoBridge extends BridgeAbstract {
 			$this->items[] = $item;
 			$count++;
 		}
+	}
+
+	private function frenchPubDateToTimestamp($date_to_parse) {
+		return strtotime(
+			strtr(
+				strtolower(str_replace('Publié le ', '', $date_to_parse)),
+				array(
+					'janvier' => 'jan',
+					'février' => 'feb',
+					'mars' => 'march',
+					'avril' => 'apr',
+					'mai' => 'may',
+					'juin' => 'jun',
+					'juillet' => 'jul',
+					'août' => 'aug',
+					'septembre' => 'sep',
+					'octobre' => 'oct',
+					'novembre' => 'nov',
+					'décembre' => 'dec'
+				)
+			)
+		);
 	}
 }

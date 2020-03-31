@@ -32,11 +32,15 @@ class InstagramBridge extends BridgeAbstract {
 				'required' => false,
 				'values' => array(
 					'All' => 'all',
-					'Story' => 'story',
 					'Video' => 'video',
 					'Picture' => 'picture',
+					'Multiple' => 'multiple',
 				),
 				'defaultValue' => 'all'
+			),
+			'direct_links' => array(
+				'name' => 'Use direct media links',
+				'type' => 'checkbox',
 			)
 		)
 
@@ -44,7 +48,7 @@ class InstagramBridge extends BridgeAbstract {
 
 	const USER_QUERY_HASH = '58b6785bea111c67129decbe6a448951';
 	const TAG_QUERY_HASH = '174a5243287c5f3a7de741089750ab3b';
-	const STORY_QUERY_HASH = '865589822932d1b43dfe312121dd353a';
+	const SHORTCODE_QUERY_HASH = '865589822932d1b43dfe312121dd353a';
 
 	protected function getInstagramUserId($username) {
 
@@ -54,14 +58,14 @@ class InstagramBridge extends BridgeAbstract {
 		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
 		$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
 		$cache->setScope(get_called_class());
-		$cache->setKey([$username]);
+		$cache->setKey(array($username));
 		$key = $cache->loadData();
 
 		if($key == null) {
 				$data = getContents(self::URI . 'web/search/topsearch/?query=' . $username);
 
 				foreach(json_decode($data)->users as $user) {
-					if($user->user->username === $username) {
+					if(strtolower($user->user->username) === strtolower($username)) {
 						$key = $user->user->pk;
 					}
 				}
@@ -75,10 +79,7 @@ class InstagramBridge extends BridgeAbstract {
 	}
 
 	public function collectData(){
-
-		if(is_null($this->getInput('u')) && $this->getInput('media_type') == 'story') {
-			returnClientError('Stories are not supported for hashtags nor locations!');
-		}
+		$directLink = !is_null($this->getInput('direct_links')) && $this->getInput('direct_links');
 
 		$data = $this->getInstagramJSON($this->getURI());
 
@@ -93,22 +94,18 @@ class InstagramBridge extends BridgeAbstract {
 		foreach($userMedia as $media) {
 			$media = $media->node;
 
-			if(!is_null($this->getInput('u'))) {
-				switch($this->getInput('media_type')) {
-					case 'all': break;
-					case 'video':
-						if($media->__typename != 'GraphVideo') continue 2;
-						break;
-					case 'picture':
-						if($media->__typename != 'GraphImage') continue 2;
-						break;
-					case 'story':
-						if($media->__typename != 'GraphSidecar') continue 2;
-						break;
-					default: break;
-				}
-			} else {
-				if($this->getInput('media_type') == 'video' && !$media->is_video) continue;
+			switch($this->getInput('media_type')) {
+				case 'all': break;
+				case 'video':
+					if($media->__typename != 'GraphVideo' || !$media->is_video) continue 2;
+					break;
+				case 'picture':
+					if($media->__typename != 'GraphImage') continue 2;
+					break;
+				case 'multiple':
+					if($media->__typename != 'GraphSidecar') continue 2;
+					break;
+				default: break;
 			}
 
 			$item = array();
@@ -118,69 +115,110 @@ class InstagramBridge extends BridgeAbstract {
 				$item['author'] = $media->owner->username;
 			}
 
-			if (isset($media->edge_media_to_caption->edges[0]->node->text)) {
-				$textContent = $media->edge_media_to_caption->edges[0]->node->text;
-			} else {
-				$textContent = '(no text)';
-			}
+			$textContent = $this->getTextContent($media);
 
-			$item['title'] = ($media->is_video ? '▶ ' : '') . trim($textContent);
+			$item['title'] = ($media->is_video ? '▶ ' : '') . $textContent;
 			$titleLinePos = strpos(wordwrap($item['title'], 120), "\n");
 			if ($titleLinePos != false) {
 				$item['title'] = substr($item['title'], 0, $titleLinePos) . '...';
 			}
 
-			if(!is_null($this->getInput('u')) && $media->__typename == 'GraphSidecar') {
-
-				$data = $this->getInstagramStory($item['uri']);
-				$item['content'] = $data[0];
-				$item['enclosures'] = $data[1];
+			if($directLink) {
+				$mediaURI = $media->display_url;
 			} else {
 				$mediaURI = self::URI . 'p/' . $media->shortcode . '/media?size=l';
-				$item['content'] = '<a href="' . htmlentities($item['uri']) . '" target="_blank">';
-				$item['content'] .= '<img src="' . htmlentities($mediaURI) . '" alt="' . $item['title'] . '" />';
-				$item['content'] .= '</a><br><br>' . nl2br(htmlentities($textContent));
-				$item['enclosures'] = array($mediaURI);
 			}
 
+			switch($media->__typename) {
+				case 'GraphSidecar':
+					$data = $this->getInstagramSidecarData($item['uri'], $item['title']);
+					$item['content'] = $data[0];
+					$item['enclosures'] = $data[1];
+					break;
+				case 'GraphImage':
+					$item['content'] = '<a href="' . htmlentities($item['uri']) . '" target="_blank">';
+					$item['content'] .= '<img src="' . htmlentities($mediaURI) . '" alt="' . $item['title'] . '" />';
+					$item['content'] .= '</a><br><br>' . nl2br(htmlentities($textContent));
+					$item['enclosures'] = array($mediaURI);
+					break;
+				case 'GraphVideo':
+					$data = $this->getInstagramVideoData($item['uri'], $mediaURI);
+					$item['content'] = $data[0];
+					if($directLink) {
+						$item['enclosures'] = $data[1];
+					} else {
+						$item['enclosures'] = array($mediaURI);
+					}
+					$item['thumbnail'] = $mediaURI;
+					break;
+				default: break;
+			}
 			$item['timestamp'] = $media->taken_at_timestamp;
 
 			$this->items[] = $item;
 		}
 	}
 
-	protected function getInstagramStory($uri) {
+	// returns Sidecar(a post which has multiple media)'s contents and enclosures
+	protected function getInstagramSidecarData($uri, $postTitle) {
+		$mediaInfo = $this->getSinglePostData($uri);
 
+		$textContent = $this->getTextContent($mediaInfo);
+
+		$enclosures = array();
+		$content = '';
+		foreach($mediaInfo->edge_sidecar_to_children->edges as $singleMedia) {
+			$singleMedia = $singleMedia->node;
+			if($singleMedia->is_video) {
+				if(in_array($singleMedia->video_url, $enclosures)) continue; // check if not added yet
+				$content .= '<video controls><source src="' . $singleMedia->video_url . '" type="video/mp4"></video><br>';
+				array_push($enclosures, $singleMedia->video_url);
+			} else {
+				if(in_array($singleMedia->display_url, $enclosures)) continue; // check if not added yet
+				$content .= '<a href="' . $singleMedia->display_url . '" target="_blank">';
+				$content .= '<img src="' . $singleMedia->display_url . '" alt="' . $postTitle . '" />';
+				$content .= '</a><br>';
+				array_push($enclosures, $singleMedia->display_url);
+			}
+		}
+		$content .= '<br>' . nl2br(htmlentities($textContent));
+
+		return array($content, $enclosures);
+	}
+
+	// returns Video post's contents and enclosures
+	protected function getInstagramVideoData($uri, $mediaURI) {
+		$mediaInfo = $this->getSinglePostData($uri);
+
+		$textContent = $this->getTextContent($mediaInfo);
+		$content = '<video controls>';
+		$content .= '<source src="' . $mediaInfo->video_url . '" poster="' . $mediaURI . '" type="video/mp4">';
+		$content .= '<img src="' . $mediaURI . '" alt="">';
+		$content .= '</video><br>';
+		$content .= '<br>' . nl2br(htmlentities($textContent));
+
+		return array($content, array($mediaInfo->video_url));
+	}
+
+	protected function getTextContent($media) {
+		$textContent = '(no text)';
+		//Process the first element, that isn't in the node graph
+		if (count($media->edge_media_to_caption->edges) > 0) {
+			$textContent = trim($media->edge_media_to_caption->edges[0]->node->text);
+		}
+		return $textContent;
+	}
+
+	protected function getSinglePostData($uri) {
 		$shortcode = explode('/', $uri)[4];
 		$data = getContents(self::URI .
 					'graphql/query/?query_hash=' .
-					 self::STORY_QUERY_HASH .
-					 '&variables={"shortcode"%3A"' .
+					self::SHORTCODE_QUERY_HASH .
+					'&variables={"shortcode"%3A"' .
 					$shortcode .
 					'"}');
 
-		$mediaInfo = json_decode($data)->data->shortcode_media;
-
-		//Process the first element, that isn't in the node graph
-		if (count($mediaInfo->edge_media_to_caption->edges) > 0) {
-			$caption = $mediaInfo->edge_media_to_caption->edges[0]->node->text;
-		} else {
-			$caption = '';
-		}
-
-		$enclosures = [$mediaInfo->display_url];
-		$content = '<img src="' . htmlentities($mediaInfo->display_url) . '" alt="' . $caption . '" />';
-
-		foreach($mediaInfo->edge_sidecar_to_children->edges as $media) {
-			$display_url = $media->node->display_url;
-			if(!in_array($display_url, $enclosures)) { // add only if not added yet
-				$content .= '<img src="' . htmlentities($display_url) . '" alt="' . $caption . '" />';
-				$enclosures[] = $display_url;
-			}
-		}
-
-		return [$content, $enclosures];
-
+		return json_decode($data)->data->shortcode_media;
 	}
 
 	protected function getInstagramJSON($uri) {
