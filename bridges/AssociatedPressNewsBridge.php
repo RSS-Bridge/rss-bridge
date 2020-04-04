@@ -43,8 +43,21 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 
 	const CACHE_TIMEOUT = 900; // 15 mins
 
+	private $detectParamRegex = '/^https?:\/\/apnews.com\/([\w-]+)$/';
 	private $tagEndpoint = 'https://afs-prod.appspot.com/api/v2/feed/tag?tags=';
 	private $feedName = '';
+
+	public function detectParameters($url) {
+		$params = array();
+
+		if(preg_match($this-->detectParamRegex, $url, $matches) > 0) {
+			$params['topic'] = $matches[1];
+			$params['context'] = 'Standard Topics';
+			return $params;
+		}
+
+		return null;
+	}
 
 	public function collectData() {
 
