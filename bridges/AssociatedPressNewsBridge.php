@@ -50,7 +50,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 	public function detectParameters($url) {
 		$params = array();
 
-		if(preg_match($this-->detectParamRegex, $url, $matches) > 0) {
+		if(preg_match($this->detectParamRegex, $url, $matches) > 0) {
 			$params['topic'] = $matches[1];
 			$params['context'] = 'Standard Topics';
 			return $params;
