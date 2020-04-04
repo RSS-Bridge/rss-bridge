@@ -3,7 +3,7 @@ ini_set('max_execution_time', '300');
 class NordbayernBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'schabi.org';
-	const NAME = 'Nordbayern Bridge';
+	const NAME = 'Nordbayern';
 	const CACHE_TIMEOUT = 3600;
 	const URI = 'https://www.nordbayern.de';
 	const DESCRIPTION = 'Bridge for Bavarian reginoal news site nordbayern.de';
