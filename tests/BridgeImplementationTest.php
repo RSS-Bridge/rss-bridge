@@ -49,9 +49,9 @@ class BridgeImplementationTest extends TestCase {
 	 * @dataProvider dataBridgesProvider
 	 */
 	public function testParameters($path) {
-		$PARAMETERS = $this->obj->getParameters();
-
 		$this->setBridge($path);
+
+		$PARAMETERS = $this->obj->getParameters();
 
 		$multiMinimum = 2;
 		if (isset($PARAMETERS['global'])) ++$multiMinimum;
