@@ -424,6 +424,6 @@ class YoutubeBridge extends BridgeAbstract {
 				)
 			),
 			'global' => $globalParameters,
-		);	
+		);
 	}
 }

@@ -85,7 +85,8 @@ report_limit = 1
 ; WARNING: May use a lot of disk space
 allow_download = false
 
-; Determines how many days to keep downloaded audio/video files after the feed they were requested with was last accessed
+; Determines how many days to keep downloaded audio/video files.
+; Resets whenever a feed that contains them was requested.
 download_cache_days = 15
 
 ; --- Cache specific configuration ---------------------------------------------

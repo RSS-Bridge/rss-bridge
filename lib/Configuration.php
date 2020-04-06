@@ -276,7 +276,7 @@ final class Configuration {
 		return str_replace(
 			array('$PROTO', '$HOST', '$PATH_INFO'),
 			array($proto, $host, $pathInfo),
-			self::getConfig('system','base_url')
+			self::getConfig('system', 'base_url')
 		);
 	}
 
