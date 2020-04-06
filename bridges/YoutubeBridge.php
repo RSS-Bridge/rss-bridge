@@ -14,18 +14,18 @@ class YoutubeBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns the 10 newest videos by username/channel/playlist or search';
 	const MAINTAINER = 'mitsukarenai';
 
-	const FILE_TYPES = array(
-		'video/mp4' => 'mp4',
-		'video/webm' => 'webm',
-		'video/3gpp' => '3gp',
-		'video/x-flv' => 'flv',
-		'audio/mp3' => 'mp3',
-		'audio/mp4' => 'm4a',
-		'audio/aac' => 'aac',
-		'audio/ogg' => array('extension' => 'ogg', 'format' => 'vorbis'),
-		'audio/opus' => 'opus',
-		'audio/flac' => 'flac',
-		'audio/wav' => 'wav',
+	const DOWNLOAD_TYPE = array(
+		'video/mp4' => array('extension' => 'mp4', 'title' => 'MP4 Video'),
+		'video/webm' => array('extension' => 'webm', 'title' => 'WebM Video'),
+		'video/3gpp' => array('extension' => '3gp', 'title' => '3GP Video'),
+		'video/x-flv' => array('extension' => 'flv', 'title' => 'FLV Video'),
+		'audio/mp3' => array('extension' => 'mp3', 'title' => 'MP3 Audio'),
+		'audio/mp4' => array('extension' => 'm4a', 'title' => 'MP4 Audio'),
+		'audio/aac' => array('extension' => 'aac', 'title' => 'AAC Audio'),
+		'audio/ogg' => array('extension' => 'ogg', 'title' => 'Vorbis Audio', 'format' => 'vorbis'),
+		'audio/opus' => array('extension' => 'opus', 'title' => 'Opus Audio'),
+		'audio/flac' => array('extension' => 'flac', 'title' => 'FLAC Audio'),
+		'audio/wav' => array('extension' => 'wav', 'title' => 'WAV Audio'),
 	);
 
 	private $feedName = '';
@@ -120,9 +120,9 @@ class YoutubeBridge extends BridgeAbstract {
 		$cache = $cacheFac->create('file');
 		$cache->setScope('youtube-dl');
 		$cache->purgeCache(15 * 24 * 60 * 60); // 15 days
-		$fileType = self::FILE_TYPES[$mime_type];
-		if(is_string($fileType)) {
-			$fileType = array('extension' => $fileType, 'format' => $fileType);
+		$fileType = self::DOWNLOAD_TYPE[$mime_type];
+		if(!isset($fileType['format'])) {
+			$fileType['format'] = $fileType['extension'];
 		}
 		extract($fileType);
 		$path = $cache->getPath() . "$vid.$extension";
@@ -384,23 +384,15 @@ class YoutubeBridge extends BridgeAbstract {
 				'name' => 'Attach videos to the feed as',
 				'type' => 'list',
 				'values' => array(
-					'None' => '',
-					'MP4 Video' => 'video/mp4',
-					'WebM Video' => 'video/webm',
-					'3GP Video' => 'video/3gpp',
-					'FLV Video' => 'video/x-flv',
-					'MP3 Audio' => 'audio/mp3',
-					'MP4 Audio' => 'audio/mp4',
-					'AAC Audio' => 'audio/aac',
-					'Vorbis Audio' => 'audio/ogg',
-					'Opus Audio' => 'audio/opus',
-					'FLAC Audio' => 'audio/flac',
-					'WAV Audio' => 'audio/wav'
+					'None' => ''
 				),
 				'title' => 'Tries to download the video in the format specified.
 	Needs youtube-dl installed.
 	Audio formats also need ffmpeg installed.'
 			);
+		}
+		foreach(static::DOWNLOAD_TYPE as $mimeType => $info) {
+			$globalParameters['attach_format']['values'][$info['title']] = $mimeType;
 		}
 		return array(
 			'By username' => array(
