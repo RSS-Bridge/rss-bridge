@@ -22,9 +22,7 @@ class JsonFormat extends FormatAbstract {
 	);
 
 	public function stringify(){
-		$urlPrefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
 		$urlHost = (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '';
-		$urlPath = (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : '';
 		$urlRequest = (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
 
 		$extraInfos = $this->getExtraInfos();
@@ -33,7 +31,7 @@ class JsonFormat extends FormatAbstract {
 			'version' => 'https://jsonfeed.org/version/1',
 			'title' => (!empty($extraInfos['name'])) ? $extraInfos['name'] : $urlHost,
 			'home_page_url' => (!empty($extraInfos['uri'])) ? $extraInfos['uri'] : REPOSITORY,
-			'feed_url' => $urlPrefix . $urlHost . $urlRequest
+			'feed_url' => Configuration::getBaseUrl() . $urlRequest
 		);
 
 		if (!empty($extraInfos['icon'])) {

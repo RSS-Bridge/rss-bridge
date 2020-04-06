@@ -159,6 +159,9 @@ final class Configuration {
 
 		date_default_timezone_set(self::getConfig('system', 'timezone'));
 
+		if(!is_string(self::getConfig('system', 'base_url')))
+			self::reportConfigurationError('system', 'base_url', 'Is not a valid string');
+
 		if(!is_string(self::getConfig('proxy', 'url')))
 			self::reportConfigurationError('proxy', 'url', 'Is not a valid string');
 
@@ -258,6 +261,23 @@ final class Configuration {
 
 		return Configuration::$VERSION;
 
+	}
+
+	/**
+	 * Returns the configured base URL for this instance.
+	 *
+	 * @return string The URL under which this instance is accessible, for generating absolute links.
+	 */
+	public static function getBaseUrl() {
+		$proto = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
+		$host = (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : 'localhost';
+		$pathInfo = (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : '';
+
+		return str_replace(
+			array('$PROTO', '$HOST', '$PATH_INFO'),
+			array($proto, $host, $pathInfo),
+			self::getConfig('system','base_url')
+		);
 	}
 
 	/**

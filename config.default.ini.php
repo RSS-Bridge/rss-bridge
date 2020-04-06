@@ -12,6 +12,11 @@
 ; timezone = "UTC" (default)
 timezone = "UTC"
 
+; The URL under which this instance is accessible, for generating absolute links.
+; Should point to the root folder of the rss-bridge installation.
+; Can optionally contain $PROTO, $HOST and $PATH_INFO placeholders which will be replaced.
+base_url = "$PROTO://$HOST"
+
 [cache]
 
 ; Defines the cache type used by RSS-Bridge

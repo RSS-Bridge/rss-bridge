@@ -94,11 +94,7 @@ class YoutubeBridge extends BridgeAbstract {
 			return;
 		}
 
-		$urlPrefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
-		$urlHost = (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '';
-
-		// FIXME: Make base URL configurable instead of relying on host header and server vars
-		$url = $urlPrefix . $urlHost . substr($path, strlen($mainDir));
+		$url = Configuration::getBaseUrl() . substr($path, strlen($mainDir));
 
 		$item['enclosures'] = array(
 			array('url' => $url, 'mime_type' => $attach_format, 'length' => filesize($path))
