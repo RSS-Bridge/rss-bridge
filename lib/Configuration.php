@@ -197,6 +197,9 @@ final class Configuration {
 		if(!is_string(self::getConfig('authentication', 'password')))
 			self::reportConfigurationError('authentication', 'password', 'Is not a valid string');
 
+		if(!is_bool(self::getConfig('YouTube', 'allow_download')))
+			self::reportConfigurationError('YouTube', 'allow_download', 'Is not a valid Boolean');
+
 		if(!empty(self::getConfig('admin', 'email'))
 		&& !filter_var(self::getConfig('admin', 'email'), FILTER_VALIDATE_EMAIL))
 			self::reportConfigurationError('admin', 'email', 'Is not a valid email address');

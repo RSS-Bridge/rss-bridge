@@ -73,6 +73,13 @@ output = "feed"
 ; Defines how often an error must occur before it is reported to the user
 report_limit = 1
 
+[YouTube]
+
+; If enabled, allows creating feeds that download YouTube videos in various formats
+; Needs youtube-dl to be installed
+; WARNING: May use a lot of disk space
+allow_download = false
+
 ; --- Cache specific configuration ---------------------------------------------
 
 [SQLiteCache]

@@ -14,75 +14,6 @@ class YoutubeBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns the 10 newest videos by username/channel/playlist or search';
 	const MAINTAINER = 'mitsukarenai';
 
-	const PARAMETERS = array(
-		'By username' => array(
-			'u' => array(
-				'name' => 'username',
-				'exampleValue' => 'test',
-				'required' => true
-			)
-		),
-		'By channel id' => array(
-			'c' => array(
-				'name' => 'channel id',
-				'exampleValue' => '15',
-				'required' => true
-			)
-		),
-		'By playlist Id' => array(
-			'p' => array(
-				'name' => 'playlist id',
-				'exampleValue' => '15'
-			)
-		),
-		'Search result' => array(
-			's' => array(
-				'name' => 'search keyword',
-				'exampleValue' => 'test'
-			),
-			'pa' => array(
-				'name' => 'page',
-				'type' => 'number',
-				'exampleValue' => 1
-			)
-		),
-		'global' => array(
-			'duration_min' => array(
-				'name' => 'min. duration (minutes)',
-				'type' => 'number',
-				'title' => 'Minimum duration for the video in minutes',
-				'exampleValue' => 5
-			),
-			'duration_max' => array(
-				'name' => 'max. duration (minutes)',
-				'type' => 'number',
-				'title' => 'Maximum duration for the video in minutes',
-				'exampleValue' => 10
-			),
-			'attach_format' => array(
-				'name' => 'Attach videos to the feed as',
-				'type' => 'list',
-				'values' => array(
-					'None' => '',
-					'MP4 Video' => 'video/mp4',
-					'WebM Video' => 'video/webm',
-					'3GP Video' => 'video/3gpp',
-					'FLV Video' => 'video/x-flv',
-					'MP3 Audio' => 'audio/mp3',
-					'MP4 Audio' => 'audio/mp4',
-					'AAC Audio' => 'audio/aac',
-					'Vorbis Audio' => 'audio/ogg',
-					'Opus Audio' => 'audio/opus',
-					'FLAC Audio' => 'audio/flac',
-					'WAV Audio' => 'audio/wav'
-				),
-				'title' => 'Tries to download the video in the format specified.
-Needs youtube-dl installed.
-Audio formats also need ffmpeg installed.'
-			),
-		)
-	);
-
 	const FILE_TYPES = array(
 		'video/mp4' => 'mp4',
 		'video/webm' => 'webm',
@@ -142,6 +73,9 @@ Audio formats also need ffmpeg installed.'
 	}
 
 	private function ytBridgeAttachVideo($vid, &$item) {
+		if(!Configuration::getConfig('YouTube', 'allow_download')) {
+			return;
+		}
 		$attach_format = $this->getInput('attach_format');
 
 		if(empty($attach_format)) {
@@ -426,5 +360,81 @@ Audio formats also need ffmpeg installed.'
 		default:
 			return parent::getName();
 		}
+	}
+
+	/** {@inheritdoc} */
+	public function getParameters() {
+		$youTubeDlAllowed = Configuration::getConfig('YouTube', 'allow_download');
+		$globalParameters = array(
+			'duration_min' => array(
+				'name' => 'min. duration (minutes)',
+				'type' => 'number',
+				'title' => 'Minimum duration for the video in minutes',
+				'exampleValue' => 5
+			),
+			'duration_max' => array(
+				'name' => 'max. duration (minutes)',
+				'type' => 'number',
+				'title' => 'Maximum duration for the video in minutes',
+				'exampleValue' => 10
+			)
+		);
+		if($youTubeDlAllowed) {
+			$globalParameters['attach_format'] = array(
+				'name' => 'Attach videos to the feed as',
+				'type' => 'list',
+				'values' => array(
+					'None' => '',
+					'MP4 Video' => 'video/mp4',
+					'WebM Video' => 'video/webm',
+					'3GP Video' => 'video/3gpp',
+					'FLV Video' => 'video/x-flv',
+					'MP3 Audio' => 'audio/mp3',
+					'MP4 Audio' => 'audio/mp4',
+					'AAC Audio' => 'audio/aac',
+					'Vorbis Audio' => 'audio/ogg',
+					'Opus Audio' => 'audio/opus',
+					'FLAC Audio' => 'audio/flac',
+					'WAV Audio' => 'audio/wav'
+				),
+				'title' => 'Tries to download the video in the format specified.
+	Needs youtube-dl installed.
+	Audio formats also need ffmpeg installed.'
+			);
+		}
+		return array(
+			'By username' => array(
+				'u' => array(
+					'name' => 'username',
+					'exampleValue' => 'test',
+					'required' => true
+				)
+			),
+			'By channel id' => array(
+				'c' => array(
+					'name' => 'channel id',
+					'exampleValue' => '15',
+					'required' => true
+				)
+			),
+			'By playlist Id' => array(
+				'p' => array(
+					'name' => 'playlist id',
+					'exampleValue' => '15'
+				)
+			),
+			'Search result' => array(
+				's' => array(
+					'name' => 'search keyword',
+					'exampleValue' => 'test'
+				),
+				'pa' => array(
+					'name' => 'page',
+					'type' => 'number',
+					'exampleValue' => 1
+				)
+			),
+			'global' => $globalParameters,
+		);	
 	}
 }
