@@ -119,7 +119,8 @@ class YoutubeBridge extends BridgeAbstract {
 		// Needs to be a file cache because it needs to be servable by apache
 		$cache = $cacheFac->create('file');
 		$cache->setScope('youtube-dl');
-		$cache->purgeCache(15 * 24 * 60 * 60); // 15 days
+		$cacheLifetimeDays = Configuration::getConfig('YouTube', 'download_cache_days');
+		$cache->purgeCache($cacheLifetimeDays * 24 * 60 * 60); // days
 		$fileType = self::DOWNLOAD_TYPE[$mime_type];
 		if(!isset($fileType['format'])) {
 			$fileType['format'] = $fileType['extension'];

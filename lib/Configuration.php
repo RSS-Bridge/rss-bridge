@@ -200,6 +200,9 @@ final class Configuration {
 		if(!is_bool(self::getConfig('YouTube', 'allow_download')))
 			self::reportConfigurationError('YouTube', 'allow_download', 'Is not a valid Boolean');
 
+		if(!is_int(self::getConfig('YouTube', 'download_cache_days')))
+			self::reportConfigurationError('YouTube', 'download_cache_days', 'Is not a valid Integer');
+
 		if(!empty(self::getConfig('admin', 'email'))
 		&& !filter_var(self::getConfig('admin', 'email'), FILTER_VALIDATE_EMAIL))
 			self::reportConfigurationError('admin', 'email', 'Is not a valid email address');
