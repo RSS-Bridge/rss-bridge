@@ -387,9 +387,9 @@ class YoutubeBridge extends BridgeAbstract {
 	Needs youtube-dl installed.
 	Audio formats also need ffmpeg installed.'
 			);
-		}
-		foreach(static::DOWNLOAD_TYPE as $mimeType => $info) {
-			$globalParameters['attach_format']['values'][$info['title']] = $mimeType;
+			foreach(static::DOWNLOAD_TYPE as $mimeType => $info) {
+				$globalParameters['attach_format']['values'][$info['title']] = $mimeType;
+			}
 		}
 		return array(
 			'By username' => array(
