@@ -4,7 +4,6 @@
  * http://www.rssboard.org/rss-specification
  * http://www.rssboard.org/media-rss
  */
-require_once __DIR__ . '/../lib/rssbridge.php';
 
 use PHPUnit\Framework\TestCase;
 

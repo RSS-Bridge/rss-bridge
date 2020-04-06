@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/../lib/rssbridge.php';
 
 use PHPUnit\Framework\TestCase;
 

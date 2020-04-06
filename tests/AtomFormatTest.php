@@ -3,7 +3,6 @@
  * AtomFormat - RFC 4287: The Atom Syndication Format
  * https://tools.ietf.org/html/rfc4287
  */
-require_once __DIR__ . '/../lib/rssbridge.php';
 
 use PHPUnit\Framework\TestCase;
 
