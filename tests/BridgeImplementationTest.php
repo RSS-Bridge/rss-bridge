@@ -40,7 +40,7 @@ class BridgeImplementationTest extends TestCase {
 		$this->assertInternalType('string', $this->obj::MAINTAINER, 'class::MAINTAINER');
 		$this->assertNotEmpty($this->obj::MAINTAINER, 'class::MAINTAINER');
 
-		$this->assertInternalType('array', $this->obj::PARAMETERS, 'class::PARAMETERS');
+		$this->assertInternalType('array', $this->obj->getParameters(), 'class::PARAMETERS');
 		$this->assertInternalType('int', $this->obj::CACHE_TIMEOUT, 'class::CACHE_TIMEOUT');
 		$this->assertGreaterThanOrEqual(0, $this->obj::CACHE_TIMEOUT, 'class::CACHE_TIMEOUT');
 	}
@@ -49,11 +49,13 @@ class BridgeImplementationTest extends TestCase {
 	 * @dataProvider dataBridgesProvider
 	 */
 	public function testParameters($path) {
+		$PARAMETERS = $this->obj->getParameters();
+
 		$this->setBridge($path);
 
 		$multiMinimum = 2;
-		if (isset($this->obj::PARAMETERS['global'])) ++$multiMinimum;
-		$multiContexts = (count($this->obj::PARAMETERS) >= $multiMinimum);
+		if (isset($PARAMETERS['global'])) ++$multiMinimum;
+		$multiContexts = (count($PARAMETERS) >= $multiMinimum);
 		$paramsSeen = array();
 
 		$allowedTypes = array(
@@ -63,7 +65,7 @@ class BridgeImplementationTest extends TestCase {
 			'checkbox'
 		);
 
-		foreach($this->obj::PARAMETERS as $context => $params) {
+		foreach($PARAMETERS as $context => $params) {
 			if ($multiContexts) {
 				$this->assertInternalType('string', $context, 'invalid context name');
 				$this->assertNotEmpty($context, 'empty context name');

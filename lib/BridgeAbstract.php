@@ -109,10 +109,11 @@ abstract class BridgeAbstract implements BridgeInterface {
 	 * @return void
 	 */
 	protected function setInputs(array $inputs, $queriedContext){
+		$PARAMETERS = $this->getParameters();
 		// Import and assign all inputs to their context
 		foreach($inputs as $name => $value) {
-			foreach(static::PARAMETERS as $context => $set) {
-				if(array_key_exists($name, static::PARAMETERS[$context])) {
+			foreach($PARAMETERS as $context => $set) {
+				if(array_key_exists($name, $PARAMETERS[$context])) {
 					$this->inputs[$context][$name]['value'] = $value;
 				}
 			}
@@ -120,12 +121,12 @@ abstract class BridgeAbstract implements BridgeInterface {
 
 		// Apply default values to missing data
 		$contexts = array($queriedContext);
-		if(array_key_exists('global', static::PARAMETERS)) {
+		if(array_key_exists('global', $PARAMETERS)) {
 			$contexts[] = 'global';
 		}
 
 		foreach($contexts as $context) {
-			foreach(static::PARAMETERS[$context] as $name => $properties) {
+			foreach($PARAMETERS[$context] as $name => $properties) {
 				if(isset($this->inputs[$context][$name]['value'])) {
 					continue;
 				}
@@ -161,8 +162,8 @@ abstract class BridgeAbstract implements BridgeInterface {
 		}
 
 		// Copy global parameter values to the guessed context
-		if(array_key_exists('global', static::PARAMETERS)) {
-			foreach(static::PARAMETERS['global'] as $name => $properties) {
+		if(array_key_exists('global', $PARAMETERS)) {
+			foreach($PARAMETERS['global'] as $name => $properties) {
 				if(isset($inputs[$name])) {
 					$value = $inputs[$name];
 				} elseif(isset($properties['defaultValue'])) {
@@ -193,13 +194,14 @@ abstract class BridgeAbstract implements BridgeInterface {
 	 * @return void
 	 */
 	public function setDatas(array $inputs){
+		$PARAMETERS = $this->getParameters();
 
 		if(isset($inputs['context'])) { // Context hinting (optional)
 			$this->queriedContext = $inputs['context'];
 			unset($inputs['context']);
 		}
 
-		if(empty(static::PARAMETERS)) {
+		if(empty($PARAMETERS)) {
 
 			if(!empty($inputs)) {
 				returnClientError('Invalid parameters value(s)');
@@ -211,7 +213,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 
 		$validator = new ParameterValidator();
 
-		if(!$validator->validateData($inputs, static::PARAMETERS)) {
+		if(!$validator->validateData($inputs, $PARAMETERS)) {
 			$parameters = array_map(
 				function($i){ return $i['name']; }, // Just display parameter names
 				$validator->getInvalidParameters()
@@ -225,7 +227,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 
 		// Guess the context from input data
 		if(empty($this->queriedContext)) {
-			$this->queriedContext = $validator->getQueriedContext($inputs, static::PARAMETERS);
+			$this->queriedContext = $validator->getQueriedContext($inputs, $PARAMETERS);
 		}
 
 		if(is_null($this->queriedContext)) {
@@ -289,7 +291,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	/** {@inheritdoc} */
 	public function detectParameters($url){
 		$regex = '/^(https?:\/\/)?(www\.)?(.+?)(\/)?$/';
-		if(empty(static::PARAMETERS)
+		if(empty($this->getParameters())
 		&& preg_match($regex, $url, $urlMatches) > 0
 		&& preg_match($regex, static::URI, $bridgeUriMatches) > 0
 		&& $urlMatches[3] === $bridgeUriMatches[3]) {
