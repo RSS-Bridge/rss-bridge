@@ -27,30 +27,6 @@ class BandcampDailyBridge extends BridgeAbstract {
 				'defaultValue' => 'best-ambient',
 			),
 		),
-		'Franchises' => array(
-			'content' => array(
-				'name' => 'content',
-				'type' => 'list',
-				'values' => array(
-					'Lists' => 'lists',
-					'Features' => 'features',
-					'Album of the Day' => 'album-of-the-day',
-					'Acid Test' => 'acid-test',
-					'Bandcamp Navigator' => 'bandcamp-navigator',
-					'Big Ups' => 'big-ups',
-					'Certified' => 'certified',
-					'Gallery' => 'gallery',
-					'Hidden Gems' => 'hidden-gems',
-					'High Scores' => 'high-scores',
-					'Label Profile' => 'label-profile',
-					'Lifetime Achievement' => 'lifetime-achievement',
-					'Scene Report' => 'scene-report',
-					'Seven Essential Releases' => 'seven-essential-releases',
-					'The Merch Table' => 'the-merch-table',
-				),
-				'defaultValue' => 'lists',
-			),
-		),
 		'Genres' => array(
 			'content' => array(
 				'name' => 'content',
@@ -83,6 +59,30 @@ class BandcampDailyBridge extends BridgeAbstract {
 					'World' => 'genres/world',
 				),
 				'defaultValue' => 'genres/acoustic',
+			),
+		),
+		'Franchises' => array(
+			'content' => array(
+				'name' => 'content',
+				'type' => 'list',
+				'values' => array(
+					'Lists' => 'lists',
+					'Features' => 'features',
+					'Album of the Day' => 'album-of-the-day',
+					'Acid Test' => 'acid-test',
+					'Bandcamp Navigator' => 'bandcamp-navigator',
+					'Big Ups' => 'big-ups',
+					'Certified' => 'certified',
+					'Gallery' => 'gallery',
+					'Hidden Gems' => 'hidden-gems',
+					'High Scores' => 'high-scores',
+					'Label Profile' => 'label-profile',
+					'Lifetime Achievement' => 'lifetime-achievement',
+					'Scene Report' => 'scene-report',
+					'Seven Essential Releases' => 'seven-essential-releases',
+					'The Merch Table' => 'the-merch-table',
+				),
+				'defaultValue' => 'lists',
 			),
 		)
 	);
