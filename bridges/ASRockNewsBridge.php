@@ -22,7 +22,7 @@ class ASRockNewsBridge extends BridgeAbstract {
 
 			$articlePageHtml = getSimpleHTMLDOMCached($articlePath, self::CACHE_TIMEOUT)
 				or returnServerError('Could not request: ' . $articlePath);
-			
+
 			$articlePageHtml = defaultLinkTo($articlePageHtml, self::URI);
 
 			$contents = $articlePageHtml->find('div.Contents', 0);
@@ -35,7 +35,6 @@ class ASRockNewsBridge extends BridgeAbstract {
 			$item['content'] = $contents->innertext;
 			$item['timestamp'] = $this->extractDate($a->plaintext);
 			$item['enclosures'][] = $a->find('img', 0)->src;
-			
 			$this->items[] = $item;
 
 			if (count($this->items) >= 10) {
