@@ -78,10 +78,10 @@ class AutoJMBridge extends BridgeAbstract {
 		$model_url = self::URI . $this->getInput('url');
 
 		// Build the GET data
-		$get_data = 'form[energy]=' . $this->getInput('energy') . '&' .
-			'form[transmission]=' . $this->getInput('transmission') . '&' .
-			'form[priceMin]=' . $this->getInput('priceMin') . '&' .
-			'form[priceMin]=' . $this->getInput('priceMin');
+		$get_data = 'form[energy]=' . $this->getInput('energy') .
+			'&form[transmission]=' . $this->getInput('transmission') .
+			'&form[priceMin]=' . $this->getInput('priceMin') .
+			'&form[priceMin]=' . $this->getInput('priceMin');
 
 		// Set the header 'X-Requested-With' like the website does it
 		$header = array(
@@ -142,5 +142,4 @@ class AutoJMBridge extends BridgeAbstract {
 			$this->items[] = $item;
 		}
 	}
-
 }
