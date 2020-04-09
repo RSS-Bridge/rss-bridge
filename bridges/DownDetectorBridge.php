@@ -6125,9 +6125,16 @@ class DownDetectorBridge extends BridgeAbstract {
 			$table = $html->find('table.table-striped', 0);
 
 			$maxCount = 10;
-			foreach ($table->find('tr') as $downEvent) {
-				$downLink = $downEvent->find('td', 1)->find('a', 1);
-				$item = $this->collectArticleData($downLink->getAttribute('href'));
+			foreach ($table->find('tr') as $event) {
+				$td = $event->find('td', 0);
+
+				if (is_null($td)) {
+					continue;
+				}
+
+				$link = $event->find('td', 0)->find('a', 0);
+
+				$item = $this->collectArticleData($link->getAttribute('href'));
 				$this->items[] = $item;
 				if($maxCount == 0) break;
 				$maxCount -= 1;
