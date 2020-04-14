@@ -65,11 +65,11 @@ class SpotifyBridge extends BridgeAbstract {
 		return 'https://www.scdn.co/i/_global/favicon.png';
 	}
 
-	public function getId() {
+	private function getId() {
 		return explode(':', $this->getInput('artisturi'))[2];
 	}
 
-	public function getDate($album_date) {
+	private function getDate($album_date) {
 		if(strlen($album_date) == 4)
 			$album_date .= '-01-01';
 		elseif(strlen($album_date) == 7)
@@ -78,11 +78,11 @@ class SpotifyBridge extends BridgeAbstract {
 		return DateTime::createFromFormat('Y-m-d', $album_date)->getTimestamp();
 	}
 
-	public function getAlbumType() {
+	private function getAlbumType() {
 		return $this->getInput('albumtype');
 	}
 
-	public function getCountry() {
+	private function getCountry() {
 		return $this->getInput('country');
 	}
 
