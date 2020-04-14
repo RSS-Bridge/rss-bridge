@@ -131,7 +131,7 @@ class SpotifyBridge extends BridgeAbstract {
 		while($fetch) {
 			$partial_albums = $this->fetchContent(self::APIURI . 'artists/'
 				. $this->getId()
-				.'/albums?limit=50&include_groups='
+				. '/albums?limit=50&include_groups='
 				. $this->getAlbumType()
 				. '&country='
 				. $this->getCountry()
@@ -187,8 +187,7 @@ class SpotifyBridge extends BridgeAbstract {
 	private function sortAlbums() {
 		Debug::log('Sorting albums');
 		usort($this->albums, function($album1, $album2) {
-			if($this->getDate($album1['release_date']) <
-				$this->getDate($album2['release_date']))
+			if($this->getDate($album1['release_date']) < $this->getDate($album2['release_date']))
 				return 1;
 			else
 				return -1;
@@ -216,8 +215,7 @@ class SpotifyBridge extends BridgeAbstract {
 				. '">';
 
 			if($album['total_tracks'] > 1)
-				$item['content'] .= '<p>'
-					. 'Total tracks: '
+				$item['content'] .= '<p>Total tracks: '
 					. $album['total_tracks']
 					. '</p>';
 
