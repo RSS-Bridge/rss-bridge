@@ -10,22 +10,24 @@ class GizmodoBridge extends FeedExpander {
 	protected function parseItem($item) {
 		$item = parent::parseItem($item);
 
-		$articleHtml = getSimpleHTMLDOMCached($item['uri'])
+		$html = getSimpleHTMLDOMCached($item['uri'])
 			or returnServerError('Could not request: ' . $item['uri']);
 
-		$articleHtml = $this->stripTags($articleHtml);
-		$articleHtml = $this->handleFigureTags($articleHtml);
+		$html = defaultLinkTo($html, $this->getURI());
+		$this->stripTags($html);
+		$this->handleFigureTags($html);
+		$this->handleIframeTags($html);
 
 		// Get header image
-		$image = $articleHtml->find('meta[property="og:image"]', 0)->content;
+		$image = $html->find('meta[property="og:image"]', 0)->content;
 
-		$item['content'] = $articleHtml->find('div.js_post-content', 0)->innertext;
+		$item['content'] = $html->find('div.js_post-content', 0)->innertext;
 
 		// Get categories
-		$categories = explode(',', $articleHtml->find('meta[name="keywords"]', 0)->content);
+		$categories = explode(',', $html->find('meta[name="keywords"]', 0)->content);
 		$item['categories'] = array_map('trim', $categories);
 
-		$item['enclosures'][] = $articleHtml->find('meta[property="og:image"]', 0)->content;
+		$item['enclosures'][] = $html->find('meta[property="og:image"]', 0)->content;
 
 		return $item;
 	}
@@ -34,22 +36,22 @@ class GizmodoBridge extends FeedExpander {
 		$this->collectExpandableDatas(self::URI . '/rss', 20);
 	}
 
-	private function stripTags($articleHtml) {
-
-		foreach ($articleHtml->find('aside') as $index => $aside) {
-			$articleHtml->find('aside', $index)->outertext = '';
+	private function stripTags($html) {
+		foreach ($html->find('aside') as $aside) {
+			$aside->outertext = '';
 		}
 
-		foreach ($articleHtml->find('div.ad-unit') as $index => $aside) {
-			$articleHtml->find('div.ad-unit', $index)->outertext = '';
+		foreach ($html->find('div.ad-unit') as $div) {
+			$div->outertext = '';
 		}
 
-		return $articleHtml;
+		foreach ($html->find('script') as $script) {
+			$script->outertext = '';
+		}
 	}
 
-	private function handleFigureTags($articleHtml) {
-
-		foreach ($articleHtml->find('figure') as $index => $figure) {
+	private function handleFigureTags($html) {
+		foreach ($html->find('figure') as $index => $figure) {
 
 			if (isset($figure->attr['data-id'])) {
 				$id = $figure->attr['data-id'];
@@ -67,10 +69,12 @@ class GizmodoBridge extends FeedExpander {
 			$figure->find('span', 0)->outertext = <<<EOD
 <img src="{$imageUrl}">
 EOD;
-
-			$articleHtml->find('figure', $index)->outertext = $figure->outertext;
 		}
+	}
 
-		return $articleHtml;
+	private function handleIframeTags($html) {
+		foreach($html->find('iframe') as $iframe) {
+			$iframe->src = urljoin($this->getURI(), $iframe->src);
+		}
 	}
 }
