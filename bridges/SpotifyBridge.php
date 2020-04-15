@@ -2,7 +2,7 @@
 class SpotifyBridge extends BridgeAbstract {
 	const NAME = 'Spotify';
 	const URI = 'https://spotify.com/';
-	const DESCRIPTION = 'Fetches the latest ten albums from an artist';
+	const DESCRIPTION = 'Fetches the latest ten albums from one or more artists';
 	const MAINTAINER = 'Paroleen';
 	const CACHE_TIMEOUT = 3600;
 	const PARAMETERS = array( array(
@@ -16,11 +16,11 @@ class SpotifyBridge extends BridgeAbstract {
 			'type' => 'text',
 			'required' => true
 		),
-		'artisturi' => array(
-			'name' => 'Artist URI',
+		'spotifyuri' => array(
+			'name' => 'Spotify URIs',
 			'type' => 'text',
 			'required' => true,
-			'exampleValue' => 'spotify:artist:4lianjyuR1tqf6oUX8kjrZ',
+			'exampleValue' => 'spotify:artist:4lianjyuR1tqf6oUX8kjrZ [,spotify:artist:3JsMj0DEzyWc0VDlHuy9Bx]',
 		),
 		'albumtype' => array(
 			'name' => 'Album type',
@@ -44,7 +44,7 @@ class SpotifyBridge extends BridgeAbstract {
 	private $uri = '';
 	private $name = '';
 	private $token = '';
-	private $artist = array();
+	private $artists = array();
 	private $albums = array();
 
 	public function getURI() {
@@ -65,8 +65,8 @@ class SpotifyBridge extends BridgeAbstract {
 		return 'https://www.scdn.co/i/_global/favicon.png';
 	}
 
-	private function getId() {
-		return explode(':', $this->getInput('artisturi'))[2];
+	private function getId($artist) {
+		return explode(':', $artist)[2];
 	}
 
 	private function getDate($album_date) {
@@ -111,40 +111,50 @@ class SpotifyBridge extends BridgeAbstract {
 	}
 
 	private function getArtist() {
-		if(!is_null($this->getInput('artisturi'))) {
-			$this->artist = $this->fetchContent(self::APIURI . 'artists/'
-				. $this->getId());
-			$this->uri = $this->artist['external_urls']['spotify'];
-			$this->name = $this->artist['name'] . ' - Spotify';
+		if(!is_null($this->getInput('spotifyuri')) && strpos($this->getInput('spotifyuri'), ',') === false) {
+			$artist = $this->fetchContent(self::APIURI . 'artists/'
+				. $this->getId($this->artists[0]));
+			$this->uri = $artist['external_urls']['spotify'];
+			$this->name = $artist['name'] . ' - Spotify';
 		} else {
 			$this->uri = parent::getURI();
 			$this->name = parent::getName();
 		}
 	}
 
+	private function getAllArtists() {
+		Debug::log('Parsing all artists');
+		$this->artists = explode(',', $this->getInput('spotifyuri'));
+	}
+
 	private function getAllAlbums() {
 		$this->albums = array();
-		$fetch = true;
-		$offset = 0;
+
+		$this->getAllArtists();
 
 		Debug::log('Fetching all albums');
-		while($fetch) {
-			$partial_albums = $this->fetchContent(self::APIURI . 'artists/'
-				. $this->getId()
-				. '/albums?limit=50&include_groups='
-				. $this->getAlbumType()
-				. '&country='
-				. $this->getCountry()
-				. '&offset='
-				. $offset);
+		foreach($this->artists as $artist) {
+			$fetch = true;
+			$offset = 0;
 
-			if(!empty($partial_albums['items']))
-				$this->albums = array_merge($this->albums,
-					$partial_albums['items']);
-			else
-				$fetch = false;
+			while($fetch) {
+				$partial_albums = $this->fetchContent(self::APIURI . 'artists/'
+					. $this->getId($artist)
+					. '/albums?limit=50&include_groups='
+					. $this->getAlbumType()
+					. '&country='
+					. $this->getCountry()
+					. '&offset='
+					. $offset);
 
-			$offset += 50;
+				if(!empty($partial_albums['items']))
+					$this->albums = array_merge($this->albums,
+						$partial_albums['items']);
+				else
+					$fetch = false;
+
+				$offset += 50;
+			}
 		}
 	}
 
