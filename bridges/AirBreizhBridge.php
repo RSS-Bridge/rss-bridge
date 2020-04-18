@@ -10,7 +10,6 @@ class AirBreizhBridge extends BridgeAbstract {
 			'theme' => array(
 				'name' => 'Thematique',
 				'type' => 'list',
-				'defaultValue' => '',
 				'values' => array(
 					'Tout' => '',
 					'Rapport d\'activite' => 'rapport-dactivite',
@@ -30,7 +29,7 @@ class AirBreizhBridge extends BridgeAbstract {
 
 	public function collectData(){
 		$html = '';
-		$html = getSimpleHTMLDOM(static::URI . 'publications/?fwp_publications_thematiques='.$this->getInput('theme'))
+		$html = getSimpleHTMLDOM(static::URI . 'publications/?fwp_publications_thematiques=' . $this->getInput('theme'))
 			or returnClientError('No results for this query.');
 
 		foreach ($html->find('article') as $article) {
@@ -46,9 +45,9 @@ class AirBreizhBridge extends BridgeAbstract {
 			<br/>'
 			. $article->find('.card__text', 0)->plaintext;
 			// URL
-			$item['uri'] = $article->find('.publi__buttons',0)->find('a', 0)->getAttribute('href');
+			$item['uri'] = $article->find('.publi__buttons', 0)->find('a', 0)->getAttribute('href');
 			// ID
-			$item['id'] = $article->find('.publi__buttons',0)->find('a', 0)->getAttribute('href');
+			$item['id'] = $article->find('.publi__buttons', 0)->find('a', 0)->getAttribute('href');
 			$this->items[] = $item;
 		}
 	}
