@@ -75,11 +75,8 @@ class MozillaBugTrackerBridge extends BridgeAbstract {
 			$comments = array_slice($comments, count($comments) - $limit, $limit);
 		}
 
-		// Order comments
-		switch($sorting) {
-			case 'lf': $comments = array_reverse($comments, true);
-			case 'of':
-			default: // Nothing to do, keep original order
+		if ($sorting === 'lf') {
+			$comments = array_reverse($comments, true);
 		}
 
 		foreach($comments as $comment) {
@@ -92,11 +89,11 @@ class MozillaBugTrackerBridge extends BridgeAbstract {
 			$item['timestamp'] = strtotime($comment->find('span.rel-time', 0)->title);
 			$item['content'] = '';
 			
-			if ($comment->find('div.comment-text', 0)) {
-				$item['content'] = $comment->find('div.comment-text', 0)->innertext;
+			if ($comment->find('.comment-text', 0)) {
+				$item['content'] = $comment->find('.comment-text', 0)->outertext;
 
 				// Fix line breaks (they use LF)
-				$item['content'] = str_replace("\n", '<br>', $item['content']);
+				//$item['content'] = str_replace("\n", '<br>', $item['content']);
 			}
 
 			if ($comment->find('div.activity', 0)) {
@@ -141,6 +138,10 @@ class MozillaBugTrackerBridge extends BridgeAbstract {
 	private function inlineStyles($html){
 		foreach($html->find('.bz_closed') as $element) {
 			$element->style = 'text-decoration:line-through;';
+		}
+
+		foreach($html->find('pre') as $element) {
+			$element->style = 'white-space: pre-wrap;';
 		}
 
 		return $html;
