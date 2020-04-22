@@ -96,7 +96,7 @@ class MozillaBugTrackerBridge extends BridgeAbstract {
 			if ($comment->find('div.activity', 0)) {
 				$item['content'] .= $comment->find('div.activity', 0)->innertext;
 			}
-			
+
 			$this->items[] = $item;
 		}
 	}
