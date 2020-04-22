@@ -88,12 +88,9 @@ class MozillaBugTrackerBridge extends BridgeAbstract {
 			$item['title'] = $comment->find('h3.change-name', 0)->plaintext;
 			$item['timestamp'] = strtotime($comment->find('span.rel-time', 0)->title);
 			$item['content'] = '';
-			
+
 			if ($comment->find('.comment-text', 0)) {
 				$item['content'] = $comment->find('.comment-text', 0)->outertext;
-
-				// Fix line breaks (they use LF)
-				//$item['content'] = str_replace("\n", '<br>', $item['content']);
 			}
 
 			if ($comment->find('div.activity', 0)) {
@@ -119,7 +116,7 @@ class MozillaBugTrackerBridge extends BridgeAbstract {
 		switch($this->queriedContext) {
 			case 'Bug comments':
 				return $this->bugid
-				. ' tracker for '
+				. ' - '
 				. $this->bugdesc
 				. ' - '
 				. parent::getName();
