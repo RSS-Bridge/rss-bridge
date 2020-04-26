@@ -355,9 +355,9 @@ class VkBridge extends BridgeAbstract
 
 	private function getTitle($content)
 	{
-		preg_match('/^["\w\ \p{Cyrillic}\(\)\?#«»-]+/mu', htmlspecialchars_decode($content), $result);
-		if (count($result) == 0) return 'untitled';
-		return $result[0];
+		$result = substr(htmlspecialchars_decode($content), 0, 280);
+		if (empty($result)) return 'untitled';
+		return $result;
 	}
 
 	private function getTime($post)
