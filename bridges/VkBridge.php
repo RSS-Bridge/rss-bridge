@@ -355,7 +355,7 @@ class VkBridge extends BridgeAbstract
 
 	private function getTitle($content)
 	{
-		$result = substr(htmlspecialchars_decode($content), 0, 280);
+		$result = substr(strip_tags(htmlspecialchars_decode($content)), 0, 280);
 		if (empty($result)) return 'untitled';
 		return $result;
 	}
