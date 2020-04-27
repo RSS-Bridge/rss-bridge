@@ -355,7 +355,7 @@ class VkBridge extends BridgeAbstract
 
 	private function getTitle($content)
 	{
-		preg_match('/^["\w\ \p{Cyrillic}\(\)\?#«»-]+/mu', htmlspecialchars_decode($content), $result);
+		preg_match('/^["\w\ \p{L}\(\)\?#«»-]+/mu', htmlspecialchars_decode($content), $result);
 		if (count($result) == 0) return 'untitled';
 		return $result[0];
 	}
