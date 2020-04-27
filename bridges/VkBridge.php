@@ -355,9 +355,15 @@ class VkBridge extends BridgeAbstract
 
 	private function getTitle($content)
 	{
-		$result = substr(strip_tags(htmlspecialchars_decode($content)), 0, 280);
-		if (empty($result)) return 'untitled';
-		return $result;
+		if (php_sapi_name() === 'cli') {
+			$result = substr(strip_tags(htmlspecialchars_decode($content)), 0, 280);
+			if (empty($result)) return 'untitled';
+			return $result;
+		} else {
+			preg_match('/^["\w\ \p{Cyrillic}\(\)\?#«»-]+/mu', htmlspecialchars_decode($content), $result);
+			if (count($result) == 0) return 'untitled';
+			return $result[0];
+		}
 	}
 
 	private function getTime($post)
