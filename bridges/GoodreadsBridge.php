@@ -19,7 +19,14 @@ class GoodreadsBridge extends BridgeAbstract {
         'title' => 'Should look somewhat like goodreads.com/author/show/',
         'pattern' => '^(https:\/\/)?(www.)?goodreads\.com\/author\/show\/\d+\..*$',
         'exampleValue' => 'https://www.goodreads.com/author/show/38550.Brandon_Sanderson'
-      )
+      ),
+      'published_only' => array(
+        'name' => 'Show published books only',
+        'type' => 'checkbox',
+        'required' => false,
+        'title' => 'If left unchecked, this will return unpublished books as well',
+        'defaultValue' => 'checked',
+      ),
     ),
   );
 
@@ -46,6 +53,9 @@ class GoodreadsBridge extends BridgeAbstract {
         // but we can't pick a dynamic date either to keep clients from getting
         // confused. So we pick a guaranteed date of 1st-Jan instead.
         $date = $matches[1] . "-01-01";
+      } else if ($this->getInput('published_only') !== 'checked') {
+        // We can return unpublished books as well
+        $date = date("Y-01-01");
       } else {
         continue;
       }
