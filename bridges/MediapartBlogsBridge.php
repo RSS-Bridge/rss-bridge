@@ -45,5 +45,4 @@ class MediapartBlogsBridge extends BridgeAbstract {
 		}
 		return parent::getName();
 	}
-
 }
