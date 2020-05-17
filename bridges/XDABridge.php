@@ -35,7 +35,8 @@ class XDABridge extends BridgeAbstract
 		foreach ($html->find('div[id=posts] > div[id^=edit]') as $post) {
 			$item = array();
 			$item['title'] = $title;
-			$item['uri'] = self::URI . '/' . $post->find('a[id^=postcount]', 0)->getAttribute('href');
+			$postID = str_replace('postcount', '', $post->find('a[id^=postcount]', 0)->getAttribute('id'));
+			$item['uri'] = self::URI . '/showpost.php?p=' . $postID;
 			$item['content'] = $post->find('div[id^=post_message_]', 0)->innertext;
 			$item['author'] = $post->find('a[id^=postmenu_]', 0)->innertext;
 			$item['timestamp'] = $post->find('span.time', 0)->innertext;
