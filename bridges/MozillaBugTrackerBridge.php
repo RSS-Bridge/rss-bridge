@@ -61,43 +61,44 @@ class MozillaBugTrackerBridge extends BridgeAbstract {
 		if($html === false)
 			returnServerError('Failed to load page!');
 
+		// Fix relative URLs
+		defaultLinkTo($html, self::URI);
+
 		// Store header information into private members
-		$this->bugid = $html->find('#bugzilla-body', 0)->find('a', 0)->innertext;
-		$this->bugdesc = $html->find('table.bugfields', 0)->find('tr', 0)->find('td', 0)->innertext;
+		$this->bugid = $html->find('#field-value-bug_id', 0)->plaintext;
+		$this->bugdesc = $html->find('h1#field-value-short_desc', 0)->plaintext;
 
 		// Get and limit comments
-		$comments = $html->find('.bz_comment_table div.bz_comment');
+		$comments = $html->find('div.change-set');
 
 		if($limit > 0 && count($comments) > $limit) {
 			$comments = array_slice($comments, count($comments) - $limit, $limit);
 		}
 
-		// Order comments
-		switch($sorting) {
-			case 'lf': $comments = array_reverse($comments, true);
-			case 'of':
-			default: // Nothing to do, keep original order
+		if ($sorting === 'lf') {
+			$comments = array_reverse($comments, true);
 		}
 
 		foreach($comments as $comment) {
 			$comment = $this->inlineStyles($comment);
 
 			$item = array();
-			$item['uri'] = $this->getURI() . '#' . $comment->id;
-			$item['author'] = $comment->find('span.bz_comment_user', 0)->innertext;
-			$item['title'] = $comment->find('span.bz_comment_number', 0)->find('a', 0)->innertext;
-			$item['timestamp'] = strtotime($comment->find('span.bz_comment_time', 0)->innertext);
-			$item['content'] = $comment->find('pre.bz_comment_text', 0)->innertext;
+			$item['uri'] = $comment->find('h3.change-name', 0)->find('a', 0)->href;
+			$item['author'] = $comment->find('td.change-author', 0)->plaintext;
+			$item['title'] = $comment->find('h3.change-name', 0)->plaintext;
+			$item['timestamp'] = strtotime($comment->find('span.rel-time', 0)->title);
+			$item['content'] = '';
 
-			// Fix line breaks (they use LF)
-			$item['content'] = str_replace("\n", '<br>', $item['content']);
+			if ($comment->find('.comment-text', 0)) {
+				$item['content'] = $comment->find('.comment-text', 0)->outertext;
+			}
 
-			// Fix relative URIs
-			$item['content'] = $this->replaceRelativeURI($item['content']);
+			if ($comment->find('div.activity', 0)) {
+				$item['content'] .= $comment->find('div.activity', 0)->innertext;
+			}
 
 			$this->items[] = $item;
 		}
-
 	}
 
 	public function getURI(){
@@ -114,26 +115,14 @@ class MozillaBugTrackerBridge extends BridgeAbstract {
 	public function getName(){
 		switch($this->queriedContext) {
 			case 'Bug comments':
-				return 'Bug '
-				. $this->bugid
-				. ' tracker for '
+				return $this->bugid
+				. ' - '
 				. $this->bugdesc
 				. ' - '
 				. parent::getName();
 				break;
 			default: return parent::getName();
 		}
-	}
-
-	/**
-	 * Replaces all relative URIs with absolute ones
-	 *
-	 * @param string $content The source string
-	 * @return string Returns the source string with all relative URIs replaced
-	 * by absolute ones.
-	 */
-	private function replaceRelativeURI($content){
-		return preg_replace('/href="(?!http)/', 'href="' . self::URI . '/', $content);
 	}
 
 	/**
@@ -144,8 +133,12 @@ class MozillaBugTrackerBridge extends BridgeAbstract {
 	 * attributes.
 	 */
 	private function inlineStyles($html){
-		foreach($html->find('.bz_obsolete') as $element) {
+		foreach($html->find('.bz_closed') as $element) {
 			$element->style = 'text-decoration:line-through;';
+		}
+
+		foreach($html->find('pre') as $element) {
+			$element->style = 'white-space: pre-wrap;';
 		}
 
 		return $html;
