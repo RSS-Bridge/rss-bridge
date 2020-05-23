@@ -92,11 +92,12 @@ class FuturaSciencesBridge extends FeedExpander {
 		$author = $this->extractAuthor($article);
 		if (!empty($author))
 			$item['author'] = $author;
+		unset($article);
 		return $item;
 	}
 
 	private function extractArticleContent($article){
-		$contents = $article->find('section.article-text-classic', 0)->innertext;
+		$contents = $article->find('section.article-text', 1)->innertext;
 		$headline = trim($article->find('p.description', 0)->plaintext);
 		if(!empty($headline))
 			$headline = '<p><b>' . $headline . '</b></p>';
