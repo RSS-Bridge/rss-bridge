@@ -92,7 +92,6 @@ class FuturaSciencesBridge extends FeedExpander {
 		$author = $this->extractAuthor($article);
 		if (!empty($author))
 			$item['author'] = $author;
-		unset($article);
 		return $item;
 	}
 
