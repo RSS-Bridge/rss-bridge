@@ -244,9 +244,13 @@ final class Configuration {
 		if(@is_readable($headFile)) {
 
 			$revisionHashFile = '.git/' . substr(file_get_contents($headFile), 5, -1);
-			$branchName = explode('/', $revisionHashFile)[3];
-			if(file_exists($revisionHashFile)) {
-				return 'git.' . $branchName . '.' . substr(file_get_contents($revisionHashFile), 0, 7);
+			$parts = explode('/', $revisionHashFile);
+
+			if(isset($parts[3])) {
+				$branchName = $parts[3];
+				if(file_exists($revisionHashFile)) {
+					return 'git.' . $branchName . '.' . substr(file_get_contents($revisionHashFile), 0, 7);
+				}
 			}
 		}
 
