@@ -3,7 +3,7 @@
 class MarktplaatsBridge extends BridgeAbstract {
 	const NAME = 'Marktplaats';
 	const URI = 'https://marktplaats.nl';
-	const DESCRIPTION = 'Read search queries from marktplaats'; 
+	const DESCRIPTION = 'Read search queries from marktplaats';
 	const PARAMETERS = array(
 		'Search' => array(
 			'n' => array(
