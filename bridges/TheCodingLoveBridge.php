@@ -11,14 +11,14 @@ class TheCodingLoveBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI)
 			or returnServerError('Could not request The Coding Love.');
 
-		foreach($html->find('div.post') as $element) {
+		foreach($html->find('article.blog-post') as $element) {
 			$item = array();
-			$temp = $element->find('h3 a', 0);
+			$temp = $element->find('h1 a', 0);
 
-			$titre = $temp->innertext;
+			$title = $temp->innertext;
 			$url = $temp->href;
 
-			$temp = $element->find('div.bodytype', 0);
+			$temp = $element->find('div.blog-post-content', 0);
 
 			// retrieve .gif instead of static .jpg
 			$images = $temp->find('p.e img');
@@ -28,17 +28,13 @@ class TheCodingLoveBridge extends BridgeAbstract {
 			}
 			$content = $temp->innertext;
 
-			$auteur = $temp->find('i', 0);
-			$pos = strpos($auteur->innertext, 'by');
-
-			if($pos > 0) {
-				$auteur = trim(str_replace('*/', '', substr($auteur->innertext, ($pos + 2))));
-				$item['author'] = $auteur;
-			}
+			$temp = $element->find('div.post-meta-info', 0);
+			$author = $temp->find('span', 0);
+			$item['author'] = $author->innertext;
 
 			$item['content'] .= trim($content);
 			$item['uri'] = $url;
-			$item['title'] = trim($titre);
+			$item['title'] = trim($title);
 
 			$this->items[] = $item;
 		}
