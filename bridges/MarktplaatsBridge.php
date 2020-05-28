@@ -41,6 +41,18 @@ class MarktplaatsBridge extends BridgeAbstract {
 				'type' => 'checkbox',
 				'required' => false,
 				'title' => 'Include result with negative distance',
+			),
+			'i' => array(
+				'name' => 'includeImage',
+				'type' => 'checkbox',
+				'required' => false,
+				'title' => 'Include the image at the end of the content',
+			),
+			'r' => array(
+				'name' => 'includeRaw',
+				'type' => 'checkbox',
+				'required' => false,
+				'title' => 'Include the raw data behind the content',
 			)
 		)
 	);
@@ -48,7 +60,7 @@ class MarktplaatsBridge extends BridgeAbstract {
 
 	public function collectData() {
 		$query = '';
-		$excludeGlobal = true;
+		$excludeGlobal = false;
 		if(!is_null($this->getInput('z')) && !is_null($this->getInput('d'))) {
 			$query = '&postcode=' . $this->getInput('z') . '&distanceMeters=' . $this->getInput('d');
 		}
@@ -59,8 +71,8 @@ class MarktplaatsBridge extends BridgeAbstract {
 			$query .= '&PriceCentsTo=' . $this->getInput('t');
 		}
 		if(!is_null($this->getInput('s'))) {
-			if($this->getInput('s')) {
-				$excludeGlobal = false;
+			if(!$this->getInput('s')) {
+				$excludeGlobal = true;
 			}
 		}
 		$url = 'https://www.marktplaats.nl/lrp/api/search?query=' . urlencode($this->getInput('q')) . $query;
@@ -73,10 +85,26 @@ class MarktplaatsBridge extends BridgeAbstract {
 				$item['title'] = $listing->title;
 				$item['timestamp'] = $listing->date;
 				$item['author'] = $listing->sellerInformation->sellerName;
-				$item['content'] = $listing->description . "\n\n\nSellerID: " . $listing->sellerInformation->sellerId;
+				$item['content'] = $listing->description;
 				$item['enclosures'] = $listing->imageUrls;
 				$item['categories'] = $listing->verticals;
 				$item['uid'] = $listing->itemId;
+				if(!is_null($this->getInput('i')) && !empty($listing->imageUrls)) {
+					if($this->getInput('i')) {
+						if(is_array($listing->imageUrls)) {
+							foreach($listing->imageUrls as $imgurl) {
+								$item['content'] .= "<br />\n<img src='" . $imgurl . "' />";
+							}
+						} else {
+							$item['content'] .= "<br>\n<img src='" . $listing->imageUrls . "' />";
+						}
+					}
+				}
+				if(!is_null($this->getInput('r'))) {
+					if($this->getInput('r')) {
+						$item['content'] .= "<br />\n<br />\n<br />\n" . json_encode($listing);
+					}
+				}
 				$this->items[] = $item;
 			}
 		}
