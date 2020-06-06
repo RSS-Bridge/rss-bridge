@@ -85,7 +85,7 @@ class AllocineFRBridge extends BridgeAbstract {
 				self::PARAMETERS[$this->queriedContext]['category']['values']
 			);
 
-		foreach($html->find('div[class=col-left]', 0)->find('div[class*=video-card]') as $element) {
+		foreach($html->find('div[class=gd-col-left]', 0)->find('div[class*=video-card]') as $element) {
 			$item = array();
 
 			$title = $element->find('a[class*=meta-title-link]', 0);
