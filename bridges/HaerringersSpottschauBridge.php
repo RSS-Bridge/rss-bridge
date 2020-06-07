@@ -22,6 +22,7 @@ class HaerringersSpottschauBridge extends BridgeAbstract {
 			'content' => '<img src="' . $imgurl . '">',
 			'enclosures' => array($imgurl),
 			'author' => 'Christoph Härringer',
+			'uid' => $imgurl,
 			);
 	}
 }
