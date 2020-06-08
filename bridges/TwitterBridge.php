@@ -258,8 +258,8 @@ EOD;
 			$image_html = '';
 			if(isset($tweet->extended_entities->media) && !$this->getInput('noimg')) {
 				foreach($tweet->extended_entities->media as $media) {
-					$image = $media->media_url_https;
-					$display_image = $media->media_url;
+					$image = $media->media_url_https . '?name=orig';
+					$display_image = $media->media_url_https;
 					// add enclosures
 					$item['enclosures'][] = $image;
 
