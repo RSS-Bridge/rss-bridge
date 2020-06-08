@@ -225,8 +225,8 @@ EOD
 			// extract username and sanitize
 			$user_info = $this->getUserInformation($tweet->user_id_str, $data->globalObjects);
 
-			$item['username'] = $user_info->name;
-			$item['fullname'] = $user_info->screen_name;
+			$item['username'] = $user_info->screen_name;
+			$item['fullname'] = $user_info->name;
 			$item['author'] = $item['fullname'] . ' (@' . $item['username'] . ')';
 			$item['avatar'] = $user_info->profile_image_url_https;
 
