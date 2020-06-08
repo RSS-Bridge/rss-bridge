@@ -144,10 +144,10 @@ EOD;
 					$this->itemTitle = $this->feedName . ' posted an image';
 				}
 
-				$lastKey = array_key_last($attachments->backstageImageRenderer->image->thumbnails);
+				$lastThumb = end($attachments->backstageImageRenderer->image->thumbnails);
 
 				$content = <<<EOD
-<p><img src="{$attachments->backstageImageRenderer->image->thumbnails[$lastKey]->url}"></p>
+<p><img src="{$lastThumb->url}"></p>
 EOD;
 			}
 
