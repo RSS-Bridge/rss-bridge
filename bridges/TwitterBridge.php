@@ -3,6 +3,7 @@ class TwitterBridge extends BridgeAbstract {
 	const NAME = 'Twitter Bridge';
 	const URI = 'https://twitter.com/';
 	const API_URI = 'https://api.twitter.com';
+	const GUEST_TOKEN_USES = 100;
 	const CACHE_TIMEOUT = 300; // 5min
 	const DESCRIPTION = 'returns tweets';
 	const MAINTAINER = 'pmaziere';
@@ -169,7 +170,7 @@ EOD
 		}
 	}
 
-	public function getApiURI() {
+	private function getApiURI() {
 		switch($this->queriedContext) {
 		case 'By keyword or hashtag':
 			return self::API_URI
@@ -225,8 +226,8 @@ EOD
 			// extract username and sanitize
 			$user_info = $this->getUserInformation($tweet->user_id_str, $data->globalObjects);
 
-			$item['username'] = $user_info->name;
-			$item['fullname'] = $user_info->screen_name;
+			$item['username'] = $user_info->screen_name;
+			$item['fullname'] = $user_info->name;
 			$item['author'] = $item['fullname'] . ' (@' . $item['username'] . ')';
 			$item['avatar'] = $user_info->profile_image_url_https;
 
@@ -258,7 +259,7 @@ EOD;
 			if(isset($tweet->extended_entities->media) && !$this->getInput('noimg')) {
 				foreach($tweet->extended_entities->media as $media) {
 					$image = $media->media_url_https;
-					$display_image = $media->display_url;
+					$display_image = $media->media_url;
 					// add enclosures
 					$item['enclosures'][] = $image;
 
@@ -266,6 +267,7 @@ EOD;
 <a href="{$image}">
 <img
 	style="align:top; max-width:558px; border:1px solid black;"
+	referrerpolicy="no-referrer"
 	src="{$display_image}" />
 </a>
 EOD;
@@ -320,25 +322,53 @@ EOD;
 		$cache->setKey(array('api_key'));
 		$data = $cache->loadData();
 
-		if($data === null) {
+		$apiKey = null;
+		if($data === null || !is_array($data) || count($data) != 1) {
 			$twitterPage = getContents('https://twitter.com');
+
 			$jsMainRegex = '/(https:\/\/abs\.twimg\.com\/responsive-web\/web\/main\.[^\.]+\.js)/m';
 			preg_match_all($jsMainRegex, $twitterPage, $jsMainMatches, PREG_SET_ORDER, 0);
 			$jsLink = $jsMainMatches[0][0];
-			$guestTokenRegex = '/gt=([0-9]*)/m';
-			preg_match_all($guestTokenRegex, $twitterPage, $guestTokenMatches, PREG_SET_ORDER, 0);
-			$guestToken = $guestTokenMatches[0][1];
 
 			$jsContent = getContents($jsLink);
 			$apiKeyRegex = '/([a-zA-Z0-9]{59}%[a-zA-Z0-9]{44})/m';
 			preg_match_all($apiKeyRegex, $jsContent, $apiKeyMatches, PREG_SET_ORDER, 0);
 			$apiKey = $apiKeyMatches[0][0];
-			$cache->saveData(array($apiKey, $guestToken));
-			return array($apiKey, $guestToken);
+			$cache->saveData($apiKey);
+		} else {
+			$apiKey = $data;
 		}
 
-		return $data;
+		$cacheFac2 = new CacheFactory();
+		$cacheFac2->setWorkingDir(PATH_LIB_CACHES);
+		$gt_cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+		$gt_cache->setScope(get_called_class());
+		$gt_cache->setKey(array('guest_token'));
+		$guestTokenUses = $gt_cache->loadData();
 
+		$guestToken = null;
+		if($guestTokenUses === null || !is_array($guestTokenUses) || count($guestTokenUses) != 2 || $guestTokenUses[0] <= 0) {
+			$guestToken = $this->getGuestToken();
+			$gt_cache->saveData(array(self::GUEST_TOKEN_USES, $guestToken));
+		} else {
+			$guestTokenUses[0] -= 1;
+			$gt_cache->saveData($guestTokenUses);
+			$guestToken = $guestTokenUses[1];
+		}
+
+		return array($apiKey, $guestToken);
+
+	}
+
+	// Get a guest token. This is different to an API key,
+	// and it seems to change more regularly than the API key.
+	private function getGuestToken() {
+		$pageContent = getContents('https://twitter.com');
+
+		$guestTokenRegex = '/gt=([0-9]*)/m';
+		preg_match_all($guestTokenRegex, $pageContent, $guestTokenMatches, PREG_SET_ORDER, 0);
+		$guestToken = $guestTokenMatches[0][1];
+		return $guestToken;
 	}
 
 	private function getApiContents($uri) {
@@ -376,5 +406,4 @@ EOD;
 			}
 		}
 	}
-
 }
