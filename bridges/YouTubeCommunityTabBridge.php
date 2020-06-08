@@ -40,7 +40,7 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 			if (isset($post->messageRenderer)) {
 				break;
 			}
-	
+
 			$details = $post->backstagePostThreadRenderer->post->backstagePostRenderer;
 
 			$item = array();
