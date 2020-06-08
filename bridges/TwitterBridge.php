@@ -232,7 +232,7 @@ EOD
 			$item['avatar'] = $user_info->profile_image_url_https;
 
 			$item['id'] = $tweet->id_str;
-			$item['uri'] = self::URI . $tweet->user_id_str . '/status/' . $item['id'];
+			$item['uri'] = self::URI . $item['username'] . '/status/' . $item['id'];
 			// extract tweet timestamp
 			$item['timestamp'] = $tweet->created_at;
 
