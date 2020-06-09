@@ -259,13 +259,13 @@ EOD;
 			if(isset($tweet->extended_entities->media) && !$this->getInput('noimg')) {
 				foreach($tweet->extended_entities->media as $media) {
 					switch($media->type) {
-						case 'photo':
-							$image = $media->media_url_https . '?name=orig';
-							$display_image = $media->media_url_https;
-							// add enclosures
-							$item['enclosures'][] = $image;
+					case 'photo':
+						$image = $media->media_url_https . '?name=orig';
+						$display_image = $media->media_url_https;
+						// add enclosures
+						$item['enclosures'][] = $image;
 
-							$media_html .= <<<EOD
+						$media_html .= <<<EOD
 <a href="{$image}">
 <img
 	style="align:top; max-width:558px; border:1px solid black;"
@@ -273,26 +273,26 @@ EOD;
 	src="{$display_image}" />
 </a>
 EOD;
-              break;
-						case 'video':
-            case 'animated_gif':
-							if(isset($media->video_info)) {
-                $link = $media->expanded_url;
-								$poster = $media->media_url_https;
-                $video = null;
-                $maxBitrate = -1;
-                foreach($media->video_info->variants as $variant) {
-                  $bitRate = isset($variant->bitrate) ? $variant->bitrate : -100;
-                  if ($bitRate > $maxBitrate) {
-                    $maxBitrate = $bitRate;
-                    $video = $variant->url;
-                  }
-                }
-                if(!is_null($video)) {
-                  // add enclosures
-                  $item['enclosures'][] = $video;
+						break;
+					case 'video':
+					case 'animated_gif':
+						if(isset($media->video_info)) {
+							$link = $media->expanded_url;
+							$poster = $media->media_url_https;
+							$video = null;
+							$maxBitrate = -1;
+							foreach($media->video_info->variants as $variant) {
+								$bitRate = isset($variant->bitrate) ? $variant->bitrate : -100;
+								if ($bitRate > $maxBitrate) {
+									$maxBitrate = $bitRate;
+									$video = $variant->url;
+								}
+							}
+							if(!is_null($video)) {
+								// add enclosures
+								$item['enclosures'][] = $video;
 
-                  $media_html .= <<<EOD
+								$media_html .= <<<EOD
 <a href="{$link}">
 <video
 	style="align:top; max-width:558px; border:1px solid black;"
@@ -300,11 +300,11 @@ EOD;
 	src="{$video}" poster="{$poster}" />
 </a>
 EOD;
-                }
-              }
-              break;
-						default:
-              Debug::log('Missing support for media type: '.$media->type);
+							}
+						}
+						break;
+					default:
+						Debug::log('Missing support for media type: '.$media->type);
 					}
 				}
 			}
