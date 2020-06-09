@@ -255,15 +255,17 @@ EOD;
 			}
 
 			// Get images
-			$image_html = '';
+			$media_html = '';
 			if(isset($tweet->extended_entities->media) && !$this->getInput('noimg')) {
 				foreach($tweet->extended_entities->media as $media) {
-					$image = $media->media_url_https . '?name=orig';
-					$display_image = $media->media_url_https;
-					// add enclosures
-					$item['enclosures'][] = $image;
+					switch($media->type) {
+						case 'photo':
+							$image = $media->media_url_https . '?name=orig';
+							$display_image = $media->media_url_https;
+							// add enclosures
+							$item['enclosures'][] = $image;
 
-					$image_html .= <<<EOD
+							$media_html .= <<<EOD
 <a href="{$image}">
 <img
 	style="align:top; max-width:558px; border:1px solid black;"
@@ -271,6 +273,30 @@ EOD;
 	src="{$display_image}" />
 </a>
 EOD;
+              break;
+						case 'video':
+            case 'animated_gif':
+							if(isset($media->video_info)) {
+                $link = $media->expanded_url;
+								$poster = $media->media_url_https;
+                /* TODO: Include index with highest "bitrate" */
+                $video = $media->video_info->variants[0]->url;
+								// add enclosures
+								$item['enclosures'][] = $video;
+
+								$media_html .= <<<EOD
+<a href="{$link}">
+<video
+	style="align:top; max-width:558px; border:1px solid black;"
+	referrerpolicy="no-referrer"
+	src="{$video}" poster="{$poster}" />
+</a>
+EOD;
+							}
+              break;
+						default:
+              Debug::log('Missing support for media type: '.$media->type);
+					}
 				}
 			}
 
@@ -294,7 +320,7 @@ EOD;
 	<blockquote>{$cleanedTweet}</blockquote>
 </div>
 <div style="display: block; vertical-align: top;">
-	<blockquote>{$image_html}</blockquote>
+	<blockquote>{$media_html}</blockquote>
 </div>
 EOD;
 
