@@ -279,12 +279,20 @@ EOD;
 							if(isset($media->video_info)) {
                 $link = $media->expanded_url;
 								$poster = $media->media_url_https;
-                /* TODO: Include index with highest "bitrate" */
-                $video = $media->video_info->variants[0]->url;
-								// add enclosures
-								$item['enclosures'][] = $video;
+                $video = null;
+                $maxBitrate = -1;
+                foreach($media->video_info->variants as $variant) {
+                  $bitRate = isset($variant->bitrate) ? $variant->bitrate : -100;
+                  if ($bitRate > $maxBitrate) {
+                    $maxBitrate = $bitRate;
+                    $video = $variant->url;
+                  }
+                }
+                if(!is_null($video)) {
+                  // add enclosures
+                  $item['enclosures'][] = $video;
 
-								$media_html .= <<<EOD
+                  $media_html .= <<<EOD
 <a href="{$link}">
 <video
 	style="align:top; max-width:558px; border:1px solid black;"
@@ -292,7 +300,8 @@ EOD;
 	src="{$video}" poster="{$poster}" />
 </a>
 EOD;
-							}
+                }
+              }
               break;
 						default:
               Debug::log('Missing support for media type: '.$media->type);
