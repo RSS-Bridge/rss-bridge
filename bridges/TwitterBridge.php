@@ -304,7 +304,7 @@ EOD;
 						}
 						break;
 					default:
-						Debug::log('Missing support for media type: '.$media->type);
+						Debug::log('Missing support for media type: ' . $media->type);
 					}
 				}
 			}
