@@ -291,6 +291,7 @@ EOD;
 							if(!is_null($video)) {
 								// add enclosures
 								$item['enclosures'][] = $video;
+								$item['enclosures'][] = $poster;
 
 								$media_html .= <<<EOD
 <a href="{$link}">Video</a>
