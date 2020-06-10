@@ -232,7 +232,7 @@ EOD
 			$item['avatar'] = $user_info->profile_image_url_https;
 
 			$item['id'] = $tweet->id_str;
-			$item['uri'] = self::URI . $tweet->user_id_str . '/status/' . $item['id'];
+			$item['uri'] = self::URI . $item['username'] . '/status/' . $item['id'];
 			// extract tweet timestamp
 			$item['timestamp'] = $tweet->created_at;
 
@@ -255,15 +255,17 @@ EOD;
 			}
 
 			// Get images
-			$image_html = '';
+			$media_html = '';
 			if(isset($tweet->extended_entities->media) && !$this->getInput('noimg')) {
 				foreach($tweet->extended_entities->media as $media) {
-					$image = $media->media_url_https;
-					$display_image = $media->media_url;
-					// add enclosures
-					$item['enclosures'][] = $image;
+					switch($media->type) {
+					case 'photo':
+						$image = $media->media_url_https . '?name=orig';
+						$display_image = $media->media_url_https;
+						// add enclosures
+						$item['enclosures'][] = $image;
 
-					$image_html .= <<<EOD
+						$media_html .= <<<EOD
 <a href="{$image}">
 <img
 	style="align:top; max-width:558px; border:1px solid black;"
@@ -271,6 +273,39 @@ EOD;
 	src="{$display_image}" />
 </a>
 EOD;
+						break;
+					case 'video':
+					case 'animated_gif':
+						if(isset($media->video_info)) {
+							$link = $media->expanded_url;
+							$poster = $media->media_url_https;
+							$video = null;
+							$maxBitrate = -1;
+							foreach($media->video_info->variants as $variant) {
+								$bitRate = isset($variant->bitrate) ? $variant->bitrate : -100;
+								if ($bitRate > $maxBitrate) {
+									$maxBitrate = $bitRate;
+									$video = $variant->url;
+								}
+							}
+							if(!is_null($video)) {
+								// add enclosures
+								$item['enclosures'][] = $video;
+								$item['enclosures'][] = $poster;
+
+								$media_html .= <<<EOD
+<a href="{$link}">Video</a>
+<video
+	style="align:top; max-width:558px; border:1px solid black;"
+	referrerpolicy="no-referrer"
+	src="{$video}" poster="{$poster}" />
+EOD;
+							}
+						}
+						break;
+					default:
+						Debug::log('Missing support for media type: ' . $media->type);
+					}
 				}
 			}
 
@@ -294,7 +329,7 @@ EOD;
 	<blockquote>{$cleanedTweet}</blockquote>
 </div>
 <div style="display: block; vertical-align: top;">
-	<blockquote>{$image_html}</blockquote>
+	<blockquote>{$media_html}</blockquote>
 </div>
 EOD;
 
