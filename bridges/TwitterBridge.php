@@ -293,12 +293,11 @@ EOD;
 								$item['enclosures'][] = $video;
 
 								$media_html .= <<<EOD
-<a href="{$link}">
+<a href="{$link}">Video</a>
 <video
 	style="align:top; max-width:558px; border:1px solid black;"
 	referrerpolicy="no-referrer"
 	src="{$video}" poster="{$poster}" />
-</a>
 EOD;
 							}
 						}
