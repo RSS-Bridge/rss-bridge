@@ -96,7 +96,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 						. $storyContent['media'][0]['id'] . '/800.jpeg';
 					break;
 				default:
-					if (empty($storyContent['storyHTML'])) {
+					if (empty($storyContent['storyHTML'])) { // Skip if no storyHTML
 						continue 2;
 					}
 
@@ -115,6 +115,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 			$item['uri'] = self::URI . $card['contents'][0]['shortId'];
 			$item['timestamp'] = $storyContent['published'];
 
+			// Remove 'By' from the bylines
 			if (substr($storyContent['bylines'], 0, 2) == 'By') {
 				$item['author'] = ltrim($storyContent['bylines'], 'By ');
 			} else {
@@ -166,7 +167,6 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 			$media = $storyContent['media'][$key];
 
 			if ($media['type'] === 'Photo') {
-
 				$mediaUrl = $media['gcsBaseUrl'] . $media['imageRenderedSizes'][0] . $media['imageFileExtension'];
 				$mediaCaption = $media['caption'];
 
@@ -184,6 +184,9 @@ EOD;
 		}
 	}
 
+	/*
+		Create full coverage links (HubLinks)
+	*/
 	private function processHubLinks($html, $storyContent) {
 
 		if (!empty($storyContent['richEmbeds'])) {
