@@ -65,6 +65,10 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 			returnClientError('Podcasts topic feed is not supported');
 		}
 
+		if ($this->getInput('topic') === 'PressReleases') {
+			returnClientError('PressReleases topic feed is not supported');
+		}
+
 		$json = getContents($this->getTagURI())
 			or returnServerError('Could not request: ' . $this->getTagURI());
 
