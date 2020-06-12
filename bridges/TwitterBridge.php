@@ -398,7 +398,8 @@ EOD;
 		$guestTokenUses = $gt_cache->loadData();
 
 		$guestToken = null;
-		if($guestTokenUses === null || !is_array($guestTokenUses) || count($guestTokenUses) != 2 || $guestTokenUses[0] <= 0 || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
+		if($guestTokenUses === null || !is_array($guestTokenUses) || count($guestTokenUses) != 2
+		|| $guestTokenUses[0] <= 0 || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
 			$guestToken = $this->getGuestToken();
 			$gt_cache->saveData(array(self::GUEST_TOKEN_USES, $guestToken));
 			$r_cache->saveData(time());
