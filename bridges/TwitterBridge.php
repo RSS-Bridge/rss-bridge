@@ -216,9 +216,9 @@ EOD
 
 		foreach($data->globalObjects->tweets as $tweet) {
 
-			// Skip retweets?
-			if($this->getInput('noretweet')
-			&& isset($tweet->retweeted_status_id_str)) {
+			/* Debug::log('>>> ' . json_encode($tweet)); */
+			// Skip spurious retweets
+			if (isset($tweet->retweeted_status_id_str) && substr($tweet->full_text, 0, 4) === 'RT @') {
 				continue;
 			}
 
@@ -316,6 +316,11 @@ EOD;
 						if(stripos($cleanedTweet, $this->getInput('filter')) === false) {
 							continue 2; // switch + for-loop!
 						}
+					}
+					break;
+				case 'By username':
+					if ($this->getInput('noretweet') && $item['username'] != $this->getInput('u')) {
+						continue 2; // switch + for-loop!
 					}
 					break;
 				default:
