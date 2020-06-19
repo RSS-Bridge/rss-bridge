@@ -86,7 +86,7 @@ class InstagramBridge extends BridgeAbstract {
 
 	public function collectData(){
 		$directLink = !is_null($this->getInput('direct_links')) && $this->getInput('direct_links');
-		$this->$noMediaInText = !is_null($this->getInput('no_media_in_text')) && $this->getInput('no_media_in_text');
+		$this->noMediaInText = !is_null($this->getInput('no_media_in_text')) && $this->getInput('no_media_in_text');
 
 		$data = $this->getInstagramJSON($this->getURI());
 
@@ -142,7 +142,7 @@ class InstagramBridge extends BridgeAbstract {
 					} else {
 						$mediaURI = self::URI . 'p/' . $media->shortcode . '/media?size=l';
 					}
-					if ($this->$noMediaInText) {
+					if ($this->noMediaInText) {
 						$item['content'] = nl2br(htmlentities($textContent));
 					} else {
 						$item['content'] = '<a href="' . htmlentities($item['uri']) . '" target="_blank">';
@@ -180,13 +180,13 @@ class InstagramBridge extends BridgeAbstract {
 			$singleMedia = $singleMedia->node;
 			if($singleMedia->is_video) {
 				if(in_array($singleMedia->video_url, $enclosures)) continue; // check if not added yet
-				if (!$this->$noMediaInText) {
+				if (!$this->noMediaInText) {
 					$content .= '<video controls><source src="' . $singleMedia->video_url . '" type="video/mp4"></video><br>';
 				}
 				array_push($enclosures, $singleMedia->video_url);
 			} else {
 				if(in_array($singleMedia->display_url, $enclosures)) continue; // check if not added yet
-				if (!$this->$noMediaInText) {
+				if (!$this->noMediaInText) {
 					$content .= '<a href="' . $singleMedia->display_url . '" target="_blank">';
 					$content .= '<img src="' . $singleMedia->display_url . '" alt="' . $postTitle . '" />';
 					$content .= '</a><br>';
@@ -206,7 +206,7 @@ class InstagramBridge extends BridgeAbstract {
 		$textContent = $this->getTextContent($mediaInfo);
 
 		$content = '';
-		if (!$this->$noMediaInText) {
+		if (!$this->noMediaInText) {
 			$content .= '<video controls><source src="' . $mediaInfo->video_url . '" type="video/mp4"></video><br><br>';
 		}
 		$content .= nl2br(htmlentities($textContent));
