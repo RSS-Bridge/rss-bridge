@@ -85,5 +85,5 @@
 	}
 
 	// Initialize search on DOM ready
-	w.addEventListener('DOMContentLoaded', initSearch)
+	d.addEventListener('DOMContentLoaded', initSearch)
 })(window, document)
