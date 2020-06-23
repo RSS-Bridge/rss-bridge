@@ -34,9 +34,19 @@ final class BridgeList {
 	<title>RSS-Bridge</title>
 	<link href="static/style.css" rel="stylesheet">
 	<link rel="icon" type="image/png" href="static/favicon.png">
-	<script src="static/search.js"></script>
-	<script src="static/select.js"></script>
 </head>
+EOD;
+	}
+
+	/**
+	 * Get the document scripts
+	 *
+	 * @return string The document scripts
+	 */
+	private static function getScripts() {
+		return <<<EOD
+<script src="static/search.js"></script>
+<script src="static/select.js"></script>
 EOD;
 	}
 
@@ -130,6 +140,14 @@ EOD;
 	<input type="text" name="searchfield"
 		id="searchfield" placeholder="Insert URL or bridge name"
 		value="{$query}">
+	<div class="extraoptions">
+		<input type="checkbox" id="extraoptions" class="showmore-box">
+		<label for="extraoptions" class="showmore">Show extra settings</label>
+		<div class="toggleable-content">
+			<label><input type="checkbox" id="extraoption-renderFeedUrl"> Render URLs instead of redirecting</label>
+		</div>
+		<label for="extraoptions" class="showless">Hide extra settings</label>
+	</div>
 </section>
 EOD;
 	}
@@ -201,6 +219,7 @@ EOD;
 		. BridgeList::getSearchbar()
 		. BridgeList::getBridges($showInactive, $totalBridges, $totalActiveBridges)
 		. BridgeList::getFooter($totalBridges, $totalActiveBridges, $showInactive)
+		. BridgeList::getScripts()
 		. '</body></html>';
 
 	}

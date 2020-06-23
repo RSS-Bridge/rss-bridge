@@ -12,7 +12,7 @@
 
 	// Intercept clicks on "format" submit buttons and render the feed URL
 	// in a copy-paste-able textarea.
-	function renderFeedUrlOnSubmit (e) {
+	function renderFeedUrl (e) {
 		if (e.target.name === 'format') { // Intercept clicks on button[name="format"]
 			e.preventDefault()
 			var form = e.target.parentNode
@@ -20,7 +20,12 @@
 
 			var params = ['format=' + e.target.value]
 			for (var i = 0; i < inputs.length; i++) {
-				if (['format', 'copyfield'].includes(inputs[i].name)) continue
+				// Skip irrelevant params
+				if (
+					['format', 'copyfield'].includes(inputs[i].name) ||
+					(inputs[i].type === 'checkbox' && !inputs[i].checked)
+				) continue
+				// Use other params
 				params.push(inputs[i].name + '=' + encodeURIComponent(inputs[i].value))
 			}
 
@@ -40,5 +45,27 @@
 			copyField.value = url
 		}
 	}
-	d.addEventListener('click', renderFeedUrlOnSubmit, false)
+
+	function renderFeedUrlInitializer (toggleElement) {
+		toggleElement.addEventListener('change', function () {
+			if (toggleElement.checked) {
+				d.addEventListener('click', renderFeedUrl, false)
+			} else {
+				d.removeEventListener('click', renderFeedUrl, false)
+				d.querySelectorAll('.copyfield').forEach(function (el) {
+					el.remove()
+				})
+			}
+		}, false)
+		if (toggleElement.checked) {
+			d.addEventListener('click', renderFeedUrl, false)
+		}
+	}
+
+	function optionsInitializer () {
+		const renderFeedUrlToggler = d.getElementById('extraoption-renderFeedUrl')
+		renderFeedUrlInitializer(renderFeedUrlToggler)
+	}
+	d.addEventListener('DOMContentLoaded', optionsInitializer)
+
 })(window, document)

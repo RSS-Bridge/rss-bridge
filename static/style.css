@@ -165,7 +165,8 @@ button:hover {
 	background: #49afff;
 }
 
-.description {
+.description,
+.toggleable-content {
 	margin: 10px;
 }
 
@@ -263,17 +264,15 @@ form {
 	margin-bottom: 6px;
 }
 
-form {
+form,
+h5,
+.toggleable-content {
 	display: none;
 }
 
 select {
 	padding: 5px 10px;
 	margin-left: 8px;
-}
-
-h5 {
-	display: none;
 }
 
 /* Show more / less */
@@ -298,7 +297,9 @@ h5 {
 	display: none;
 }
 
-.showmore-box:checked ~ form, .showmore-box:checked ~ h5 {
+.showmore-box:checked ~ form,
+.showmore-box:checked ~ h5,
+.showmore-box:checked ~ .toggleable-content {
 	display: block;
 }
 

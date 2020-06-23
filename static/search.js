@@ -61,7 +61,10 @@
 				newMatchedBridges = allBridges
 			}
 
-			redrawBridgeList(newMatchedBridges)
+			// Only redraw if old and new matches differ
+			if (matchedBridges.toString() !== newMatchedBridges.toString()) {
+				redrawBridgeList(newMatchedBridges)
+			}
 		}
 
 		// Throttle function executions
