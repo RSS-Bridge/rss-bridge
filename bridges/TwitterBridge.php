@@ -4,6 +4,7 @@ class TwitterBridge extends BridgeAbstract {
 	const URI = 'https://twitter.com/';
 	const API_URI = 'https://api.twitter.com';
 	const GUEST_TOKEN_USES = 100;
+	const GUEST_TOKEN_EXPIRY = 300; // 5min
 	const CACHE_TIMEOUT = 300; // 5min
 	const DESCRIPTION = 'returns tweets';
 	const MAINTAINER = 'pmaziere';
@@ -352,6 +353,21 @@ EOD;
 
 		$cacheFac = new CacheFactory();
 		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
+		$r_cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+		$r_cache->setScope(get_called_class());
+		$r_cache->setKey(array('refresh'));
+		$data = $r_cache->loadData();
+
+		$refresh = null;
+		if($data === null) {
+			$refresh = time();
+			$r_cache->saveData($refresh);
+		} else {
+			$refresh = $data;
+		}
+
+		$cacheFac = new CacheFactory();
+		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
 		$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
 		$cache->setScope(get_called_class());
 		$cache->setKey(array('api_key'));
@@ -382,9 +398,11 @@ EOD;
 		$guestTokenUses = $gt_cache->loadData();
 
 		$guestToken = null;
-		if($guestTokenUses === null || !is_array($guestTokenUses) || count($guestTokenUses) != 2 || $guestTokenUses[0] <= 0) {
+		if($guestTokenUses === null || !is_array($guestTokenUses) || count($guestTokenUses) != 2
+		|| $guestTokenUses[0] <= 0 || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
 			$guestToken = $this->getGuestToken();
 			$gt_cache->saveData(array(self::GUEST_TOKEN_USES, $guestToken));
+			$r_cache->saveData(time());
 		} else {
 			$guestTokenUses[0] -= 1;
 			$gt_cache->saveData($guestTokenUses);
