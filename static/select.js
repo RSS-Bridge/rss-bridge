@@ -63,7 +63,7 @@
 	}
 
 	function optionsInitializer () {
-		const renderFeedUrlToggler = d.getElementById('extraoption-renderFeedUrl')
+		var renderFeedUrlToggler = d.getElementById('extraoption-renderFeedUrl')
 		renderFeedUrlInitializer(renderFeedUrlToggler)
 	}
 	d.addEventListener('DOMContentLoaded', optionsInitializer)
