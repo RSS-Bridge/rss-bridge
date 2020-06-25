@@ -416,10 +416,11 @@ EOD;
 	// Get a guest token. This is different to an API key,
 	// and it seems to change more regularly than the API key.
 	private function getGuestToken() {
-		$pageContent = getContents('https://twitter.com');
+		$pageContent = getContents('https://twitter.com', array(), array(), true);
 
 		$guestTokenRegex = '/gt=([0-9]*)/m';
-		preg_match_all($guestTokenRegex, $pageContent, $guestTokenMatches, PREG_SET_ORDER, 0);
+		preg_match_all($guestTokenRegex, $pageContent['header'], $guestTokenMatches, PREG_SET_ORDER, 0);
+		if (!$guestTokenMatches) returnServerError('Could not parse guest token');
 		$guestToken = $guestTokenMatches[0][1];
 		return $guestToken;
 	}
