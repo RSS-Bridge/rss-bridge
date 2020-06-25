@@ -82,6 +82,7 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 			$errorCode = 500;
 		} else {
 			$errorCode = 200;
+			$retVal['header'] = implode("\r\n", $http_response_header);
 		}
 
 		$curlError = '';
