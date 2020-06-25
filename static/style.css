@@ -165,8 +165,7 @@ button:hover {
 	background: #49afff;
 }
 
-.description,
-.toggleable-content {
+.description {
 	margin: 10px;
 }
 
@@ -264,9 +263,7 @@ form {
 	margin-bottom: 6px;
 }
 
-form,
-h5,
-.toggleable-content {
+form, h5 {
 	display: none;
 }
 
@@ -297,9 +294,7 @@ select {
 	display: none;
 }
 
-.showmore-box:checked ~ form,
-.showmore-box:checked ~ h5,
-.showmore-box:checked ~ .toggleable-content {
+.showmore-box:checked ~ form, .showmore-box:checked ~ h5 {
 	display: block;
 }
 

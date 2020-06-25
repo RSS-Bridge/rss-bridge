@@ -141,12 +141,7 @@ EOD;
 		id="searchfield" placeholder="Insert URL or bridge name"
 		value="{$query}">
 	<div class="extraoptions">
-		<input type="checkbox" id="extraoptions" class="showmore-box">
-		<label for="extraoptions" class="showmore">Show extra settings</label>
-		<div class="toggleable-content">
-			<label><input type="checkbox" id="extraoption-renderFeedUrl"> Render URLs instead of redirecting</label>
-		</div>
-		<label for="extraoptions" class="showless">Hide extra settings</label>
+		<label><input type="checkbox" id="extraoption-renderFeedUrl"> Show feed URL instead of redirecting</label>
 	</div>
 </section>
 EOD;
