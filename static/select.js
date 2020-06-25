@@ -16,6 +16,7 @@
 		if (e.target.name === 'format') { // Intercept clicks on button[name="format"]
 			e.preventDefault()
 			var form = e.target.parentNode
+			if (!form.reportValidity()) return
 			var inputs = form.elements
 
 			var params = ['format=' + e.target.value]
