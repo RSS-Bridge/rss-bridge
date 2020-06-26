@@ -239,7 +239,13 @@ EOD
 
 			// generate the title
 			$item['title'] = $tweet->full_text;
-			$cleanedTweet  = $tweet->full_text;
+			$cleanedTweet = $tweet->full_text;
+			$reg_ex = "/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
+			if(preg_match($reg_ex, $tweet->full_text, $url)) {
+				$cleanedTweet = preg_replace($reg_ex, "<a href='{$url[0]}' target='_blank'>{$url[0]}</a> ", $tweet->full_text);
+			} else {
+				$cleanedTweet = $tweet->full_text;
+			}
 
 			// Add avatar
 			$picture_html = '';
@@ -429,7 +435,7 @@ EOD;
 		$apiKeys = $this->getApiKey();
 		$headers = array('authorization: Bearer ' . $apiKeys[0],
 				 'x-guest-token: ' . $apiKeys[1],
-			   );
+				 );
 		return getContents($uri, $headers);
 	}
 
