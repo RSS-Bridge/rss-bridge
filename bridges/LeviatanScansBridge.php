@@ -20,7 +20,7 @@ class LeviatanScansBridge extends BridgeAbstract {
     public function collectData()
     {
         $uri = self::URI
-            . 'comics'
+            . '/comics/'
             . $this->getInput('comic');
 
         $html = getSimpleHTMLDOM($uri) or returnServerError('Could not contact Leviatan Scans');
