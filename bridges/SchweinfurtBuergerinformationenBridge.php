@@ -19,6 +19,11 @@ class SchweinfurtBuergerinformationenBridge extends BridgeAbstract {
 		)
 	);
 
+	public function getIcon()
+	{
+		return 'https://www.schweinfurt.de/__/images/favicon.ico';
+	}
+
 	public function collectData()
 	{
 		// Get number of pages to retrieve. One page is the minimum.
