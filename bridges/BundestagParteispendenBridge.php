@@ -15,6 +15,11 @@ URI;
 <p><b>Eingang der Spende:</b><br>%s</p>
 TMPL;
 
+	public function getIcon()
+	{
+		return 'https://www.bundestag.de/static/appdata/includes/images/layout/favicon.ico';
+	}
+
 	public function collectData()
 	{
 		// Get the main page
