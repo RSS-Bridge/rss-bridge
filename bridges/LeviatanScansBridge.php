@@ -13,13 +13,6 @@ class LeviatanScansBridge extends BridgeAbstract {
 				'type' => 'text',
 				'name' => 'Comic ID (e.g. 68254-legend-of-the-northern-blade)',
 				'title' => 'This is everything after /comics/ of the URL',
-			),
-			'contents' => array(
-				'name' => 'Get Contents',
-				'title' => 'Enables retrieving the full contents of the chapter',
-				'type' => 'checkbox',
-				'required' => false,
-				'defaultValue' => false,
 			)
 		)
 	);
@@ -41,10 +34,6 @@ class LeviatanScansBridge extends BridgeAbstract {
 			$item['title'] = $html->find('h5[class=text-highlight]', 0)->innertext . trim($element->innertext);
 			$item['timestamp'] = time();
 			$item['author'] = self::NAME;
-
-			if ($this->getInput('contents')) {
-				$item['content'] = getContents($item['uri']);
-			}
 
 			$this->items[] = $item;
 		}
