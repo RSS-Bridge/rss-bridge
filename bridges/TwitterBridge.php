@@ -195,11 +195,6 @@ EOD
 	public function collectData(){
 		$html = '';
 		$page = $this->getURI();
-
-		$header = array(
-			'User-Agent: Mozilla/5.0 (Windows NT 9.0; WOW64; Trident/7.0; rv:11.0) like Gecko'
-		);
-
 		$data = json_decode($this->getApiContents($this->getApiURI()));
 
 		if(!$data) {
