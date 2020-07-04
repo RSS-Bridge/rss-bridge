@@ -18,7 +18,7 @@ class StanfordSIRbookreviewBridge extends BridgeAbstract {
 	);
 
 	public function collectData() {
-		switch($this->getInput('style')){
+		switch($this->getInput('style')) {
 		case 'reviews':
 			$url = self::URI . 'reviews';
 			break;
@@ -31,10 +31,10 @@ class StanfordSIRbookreviewBridge extends BridgeAbstract {
 			or returnServerError('shit is real');
 		foreach($html->find('article') as $element) {
 			$item = array();
-			$item['title'] = $element->find('div > h4 > a' , 0)->plaintext;
-			$item['uri'] = $element->find('div > h4 > a' , 0)->href;
+			$item['title'] = $element->find('div > h4 > a', 0)->plaintext;
+			$item['uri'] = $element->find('div > h4 > a', 0)->href;
 			$item['content'] = $element->find('div > div.article-entry > p', 2)->plaintext;
-			$item['author'] = $element->find('div > div > p' , 0)->plaintext;
+			$item['author'] = $element->find('div > div > p', 0)->plaintext;
 			$this->items[] = $item;
 
 		}
