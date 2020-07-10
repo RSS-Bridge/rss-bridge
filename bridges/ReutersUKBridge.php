@@ -28,7 +28,7 @@ class ReutersUKBridge extends BridgeAbstract {
 
 		$this->stories[$uri] = array(
 			'uri' => $uri,        // URI to reach the subject ("https://...")
-			'title '=> $this->getTitle($content),      // Title of the item
+			'title' => $this->getTitle($content),      // Title of the item
 			'timestamp' => $this->getTimestamp($content),  // Timestamp of the item in numeric or text format (compatible for strtotime())
 			'author' => $this->getAuthor($content),     // Name of the author for this item
 			'content' => $this->getContent($content)    // Content in HTML format
