@@ -27,11 +27,11 @@ class ReutersUKBridge extends BridgeAbstract {
 		}
 
 		$this->stories[$uri] = array(
-			'uri'=> $uri,        // URI to reach the subject ("https://...")
-			'title'=> $this->getTitle($content),      // Title of the item
-			'timestamp'=> $this->getTimestamp($content),  // Timestamp of the item in numeric or text format (compatible for strtotime())
-			'author'=> $this->getAuthor($content),     // Name of the author for this item
-			'content'=> $this->getContent($content)    // Content in HTML format
+			'uri' => $uri,        // URI to reach the subject ("https://...")
+			'title '=> $this->getTitle($content),      // Title of the item
+			'timestamp' => $this->getTimestamp($content),  // Timestamp of the item in numeric or text format (compatible for strtotime())
+			'author' => $this->getAuthor($content),     // Name of the author for this item
+			'content' => $this->getContent($content)    // Content in HTML format
 		);
 	}
 
@@ -40,29 +40,29 @@ class ReutersUKBridge extends BridgeAbstract {
 	}
 
 	private function getStoryUri($content){
-		return $content->find('a',0)->getAttribute('href');
+		return $content->find('a', 0)->getAttribute('href');
 	}
 
 	private function getAuthor($content){
-		return NULL;  // author not available from headline listsings - save a page retrieve and set NULL
+		return null;  // author not available from headline listsings - save a page retrieve and set NULL
 	}
 
 	private function getContent($content) {
-		return join('\n',$content->find('p'));
+		return join('\n', $content->find('p'));
 	}
 
 	private function getTitle($content) {
-		$tag = $content->find('h3.story-title',0);
-		if ($tag == NULL) {
-			return NULL;
+		$tag = $content->find('h3.story-title', 0);
+		if ($tag == null) {
+			return null;
 		}
-		return trim($tag->innertext,' ');
+		return trim($tag->innertext, ' ');
 	}
 
 	private function getTimestamp($content) {
-		$tag = $content->find('span.timestamp',0);
-		if ($tag == NULL) {
-			return NULL;
+		$tag = $content->find('span.timestamp', 0);
+		if ($tag == null) {
+			return null;
 		}
 		return strtotime($tag->innertext);
 	}
@@ -75,7 +75,7 @@ class ReutersUKBridge extends BridgeAbstract {
 
 	private function getInterestStories($uri){
 		$html = getSimpleHTMLDOM($uri)
-			or returnServerError('Could not request' . $uri .'.');
+			or returnServerError('Could not request' . $uri . '.');
 
 		foreach($html->find('div.story-content') as $content) {
 			$this->addStory($content);
@@ -84,7 +84,7 @@ class ReutersUKBridge extends BridgeAbstract {
 
 	public function collectData() {
 		$this->stories = array();
-		foreach(explode(',',$this->getInput('interests')) as $interest){
+		foreach(explode(',', $this->getInput('interests')) as $interest) {
 			$uri = $this->makeUri($interest);
 			$this->getInterestStories($uri);
 		}
