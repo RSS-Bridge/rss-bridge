@@ -69,7 +69,7 @@ class ReutersUKBridge extends BridgeAbstract {
 
 	private function sortItems() {
 		usort($this->items, function ($item1, $item2) {
-			 return $item2['timestamp'] <=> $item1['timestamp'];
+    		return $item1['timestamp'] < $item2['timestamp'] ? -1 : ($item1['timestamp'] == $item2['timestamp'] ? 0 : 1);
 		});
 	}
 
