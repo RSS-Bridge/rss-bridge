@@ -1,40 +1,77 @@
 <?php
 class ReutersBridge extends BridgeAbstract {
 
-	const MAINTAINER = 'hollowleviathan';
+	const MAINTAINER = 'hollowleviathan, spraynard';
 	const NAME = 'Reuters Bridge';
 	const URI = 'https://reuters.com/';
 	const CACHE_TIMEOUT = 1800; // 30min
 	const DESCRIPTION = 'Returns news from Reuters';
 
-	const PARAMETERS = array(
+	const ALLOWED_WIREITEM_TYPES = [
+		'story'
+	];
+
+	const ALLOWED_TEMPLATE_TYPES = [
+		'story'
+	];
+
+	const PARAMETERS = array(array(
 		'feed' => array(
-			'name'	=> 'News feed',
+			'name'	=> 'News Feed',
+			'type' => 'list',
 			'required'	=> true,
-			'exampleValue'	=> 'world',
-			'title' => 'Reuters feed. World, US, Tech...'
+			'exampleValue'	=> 'World',
+			'title' => 'Reuters feed. World, US, Tech...',
+			'values' => array(
+				'Tech' => 'tech',
+				'Wire' => 'wire',
+				'Health' => 'health',
+				'Business' => 'business',
+				'World' => 'world',
+				'Politics' => 'politics',
+				'Science' => 'science',
+				'Markets' => 'markets',
+				'Sports' => 'sports',
+				'Pic of the Day' => 'pictures',
+				'USA News' => 'us'
+			)
 		),
-	);
+	));
 
 	private function getJson($feedname) {
 		$uri = "https://wireapi.reuters.com/v8/feed/rapp/us/tabbar/feeds/$feedname";
-		$json = json_decode(getContents($uri), true);
-		return $json['data'][0];
+		$returned_data = getContents($uri);
+		return json_decode($returned_data, true);
 	}
 
 	public function collectData() {
 		$feed = $this->getInput('feed');
 		$data = $this->getJson($feed);
+		$reuters_wireitems = $data['wireitems'];
+		/**
+		 * Gets a list of wire items which are groups of templates
+		 */
+		$reuters_allowed_wireitems = array_filter($reuters_wireitems, function($wireitem) {
+			return in_array($wireitem['wireitem_type'], self::ALLOWED_WIREITEM_TYPES);
+		});
 
-		foreach ($data['wireitems'] as $wire_item) {
-			if ($wire_item["wireitem_type"] == "story") {
-				$item = array();
-				$item['content'] = $wire_item["templates"][1]["story"]["lede"];
-				$item['title'] = $wire_item["templates"][1]["story"]["hed"];
-				$item['timestamp'] = $wire_item["templates"][1]["story"]["updated_at"];
-				$item['uri'] = $wire_item["templates"][1]["template_action"]["url"];
-				$this->items[] = $item;
-			}
+		/**
+		 * Gets a list of "Templates", which is data containing a story
+		 */
+		$reuters_wireitem_templates = array_reduce($reuters_allowed_wireitems, function (array $carry, array $wireitem) {
+			$wireitem_templates = $wireitem['templates'];
+			return array_merge($carry, array_filter($wireitem_templates, function(array $template_data) {
+				return in_array($template_data['type'], self::ALLOWED_TEMPLATE_TYPES);
+			}));
+		}, []);
+
+		foreach ($reuters_wireitem_templates as $story) {
+			$item['content'] = $story['story']['lede'];
+			$item['title'] = $story['story']['hed'];
+			$item['timestamp'] = $story['story']['updated_at'];
+			$item['uri'] = $story['template_action']['url'];
+
+			$this->items[] = $item;
 		}
 	}
 }
