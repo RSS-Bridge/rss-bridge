@@ -55,6 +55,9 @@ favicon-63b2904a073c89b52b19aa08cebc16a154bcf83fee8ecc6439968b1e6db569c7.ico';
 
 				// fix JavaScript JSON (why do they not adhere to the standard?)
 				$script->innertext = preg_replace('/^(\s*)(\w+):/im', '\1"\2":', $script->innertext);
+				
+				// fix relative dates, so they are recognized by strtotime
+				$script->innertext = preg_replace('/"about ([0-9]+ hours? ago)"(,?)$/im', '"\1"\2', $script->innertext);
 
 				// find beginning of JSON array
 				$start = strpos($script->innertext, '[');
