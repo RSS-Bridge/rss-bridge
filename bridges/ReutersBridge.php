@@ -7,19 +7,18 @@ class ReutersBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 1800; // 30min
 	const DESCRIPTION = 'Returns news from Reuters';
 
-	const ALLOWED_WIREITEM_TYPES = [
+	const ALLOWED_WIREITEM_TYPES = array(
 		'story'
-	];
+	);
 
-	const ALLOWED_TEMPLATE_TYPES = [
+	const ALLOWED_TEMPLATE_TYPES = array(
 		'story'
-	];
+	);
 
 	const PARAMETERS = array(array(
 		'feed' => array(
 			'name'	=> 'News Feed',
 			'type' => 'list',
-			'required'	=> true,
 			'exampleValue'	=> 'World',
 			'title' => 'Reuters feed. World, US, Tech...',
 			'values' => array(
@@ -63,7 +62,7 @@ class ReutersBridge extends BridgeAbstract {
 			return array_merge($carry, array_filter($wireitem_templates, function(array $template_data) {
 				return in_array($template_data['type'], self::ALLOWED_TEMPLATE_TYPES);
 			}));
-		}, []);
+		}, array());
 
 		foreach ($reuters_wireitem_templates as $story) {
 			$item['content'] = $story['story']['lede'];
