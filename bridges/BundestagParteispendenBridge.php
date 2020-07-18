@@ -2,9 +2,7 @@
 class BundestagParteispendenBridge extends BridgeAbstract {
 	const MAINTAINER = 'mibe';
 	const NAME = 'Deutscher Bundestag - Parteispenden';
-	const URI = <<<URI
-https://www.bundestag.de/ajax/filterlist/de/parlament/praesidium/parteienfinanzierung/fundstellen50000/462002-462002
-URI;
+	const URI = 'https://www.bundestag.de/parlament/praesidium/parteienfinanzierung/fundstellen50000';
 
 	const CACHE_TIMEOUT = 86400; // 24h
 	const DESCRIPTION = 'Returns the latest "soft money" donations to parties represented in the German Bundestag.';
@@ -22,9 +20,12 @@ TMPL;
 
 	public function collectData()
 	{
+		$ajaxUri = <<<URI
+https://www.bundestag.de/ajax/filterlist/de/parlament/praesidium/parteienfinanzierung/fundstellen50000/462002-462002
+URI;
 		// Get the main page
-		$html = getSimpleHTMLDOMCached(self::URI, self::CACHE_TIMEOUT)
-			or returnServerError('Could not request ' . self::URI);
+		$html = getSimpleHTMLDOMCached($ajaxUri, self::CACHE_TIMEOUT)
+			or returnServerError('Could not request AJAX list.');
 
 		// Build the URL from the first anchor element. The list is sorted by year, descending, so the first element is the current year.
 		$firstAnchor = $html->find('a', 0)
