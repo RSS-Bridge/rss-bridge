@@ -2,7 +2,7 @@
 class SchweinfurtBuergerinformationenBridge extends BridgeAbstract {
 	const MAINTAINER = 'mibe';
 	const NAME = 'Schweinfurt Bürgerinformationen';
-	const URI = 'https://www.schweinfurt.de/rathaus-politik/pressestelle/buergerinformationen/index.html?art_pager=%d';
+	const URI = 'https://www.schweinfurt.de/rathaus-politik/pressestelle/buergerinformationen/index.html';
 	const ARTICLE_URI = 'https://www.schweinfurt.de/rathaus-politik/pressestelle/buergerinformationen/%d.html';
 	const INDEX_CACHE_TIMEOUT = 10800; // 3h
 	const ARTICLE_CACHE_TIMEOUT = 21600; // 6h
@@ -48,7 +48,7 @@ class SchweinfurtBuergerinformationenBridge extends BridgeAbstract {
 
 	private function getArticleIDsFromPage($page)
 	{
-		$url = sprintf(self::URI, $page);
+		$url = sprintf(self::URI . '?art_pager=%d', $page);
 		$html = getSimpleHTMLDOMCached($url, self::INDEX_CACHE_TIMEOUT)
 			or returnServerError('Could not retrieve ' . $url);
 
