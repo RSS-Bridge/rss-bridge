@@ -608,7 +608,9 @@ class GithubTrendingBridge extends BridgeAbstract {
 			$item['title'] = str_replace('  ', '', trim(strip_tags($element->find('h1 a', 0)->plaintext)));
 
 			// Description
-			$item['content'] = trim(strip_tags($element->find('p.text-gray', 0)->innertext));
+			$description = $element->find('p.text-gray', 0);
+			if ($description != null)
+				$item['content'] = trim(strip_tags($description->innertext));
 
 			// Time
 			$item['timestamp'] = time();
