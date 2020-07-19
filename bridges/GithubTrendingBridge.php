@@ -8,6 +8,7 @@ class GithubTrendingBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 43200; // 12hr
 	const DESCRIPTION = 'See what the GitHub community is most excited repos.';
 	const PARAMETERS = array(
+	// If you are changing context and/or parameter names, change them also in getName().
 		'By language' => array(
 			'language' => array(
 				'name' => 'Select language',
@@ -621,10 +622,9 @@ class GithubTrendingBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		if($this->getInput('language') == '') {
-			return self::NAME . ': all';
-		} elseif (!is_null($this->getInput('language'))) {
-			return self::NAME . ': ' . $this->getInput('language');
+		if (!is_null($this->getInput('language'))) {
+			$language = array_search($this->getInput('language'), self::PARAMETERS['By language']['language']['values']);
+			return self::NAME . ': ' . $language;
 		}
 
 		return parent::getName();
