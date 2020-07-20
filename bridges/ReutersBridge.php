@@ -1,12 +1,15 @@
 <?php
 class ReutersBridge extends BridgeAbstract {
 
+
 	const MAINTAINER = 'hollowleviathan, spraynard, csisoap';
+	const MAINTAINER = 'hollowleviathan, spraynard';
 	const NAME = 'Reuters Bridge';
 	const URI = 'https://reuters.com/';
 	const CACHE_TIMEOUT = 1800; // 30min
 	const DESCRIPTION = 'Returns news from Reuters';
 	private $feedName = self::NAME;
+
 
 	const ALLOWED_WIREITEM_TYPES = array(
 		'story'
@@ -38,6 +41,10 @@ class ReutersBridge extends BridgeAbstract {
 				'USA News' => 'us',
 				'China' => 'china',
 				'Top News' => 'home/topnews',
+				'Markets' => 'markets',
+				'Sports' => 'sports',
+				'Pic of the Day' => 'pictures',
+				'USA News' => 'us'
 			)
 		),
 	));
@@ -48,10 +55,11 @@ class ReutersBridge extends BridgeAbstract {
 		return json_decode($returned_data, true);
 	}
 
-	
+
 	public function getName() {
 		return $this->feedName;
 	}
+
 
 	public function collectData() {
 		$feed = $this->getInput('feed');
