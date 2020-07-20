@@ -64,7 +64,7 @@ class ReutersBridge extends BridgeAbstract {
 		$feed = $this->getInput('feed');
 		$data = $this->getJson($feed);
 		$reuters_wireitems = $data['wireitems'];
-		$this->feedName = $data['wire_name'] . '| Reuters';
+		$this->feedName = $data['wire_name'] . ' | Reuters';
 		/**
 		 * Gets a list of wire items which are groups of templates
 		 */
