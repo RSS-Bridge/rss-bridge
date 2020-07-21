@@ -9,10 +9,14 @@ class ImgurBridge extends BridgeAbstract {
 			'u' => array(
 				'name' => 'Username',
 				'exampleValue' => 'Sarah',
+				'title' => 'only ascii letters, numbers, underscores, dashes',
+				'pattern' => '[a-zA-Z0-9-_]+',
 				'required' => true
 			),
 			'clientId' => array(
 				'name' => '(your) Client ID',
+				'title' => 'register an application and use the ID',
+				'pattern' => '[0-9a-z]{15}',
 				'required' => true
 			)
 		),
@@ -20,10 +24,14 @@ class ImgurBridge extends BridgeAbstract {
 			't' => array(
 				'name' => 'tag name',
 				'exampleValue' => 'movies_and_tv',
+				'title' => 'only ascii letters, numbers, underscores, dashes',
+				'pattern' => '[a-zA-Z0-9-_]+',
 				'required' => true
 			),
 			'clientId' => array(
 				'name' => '(your) Client ID',
+				'title' => 'register an application and use the ID',
+				'pattern' => '[0-9a-z]{15}',
 				'required' => true
 			)),
 		'Gallery' => array(
@@ -65,6 +73,8 @@ class ImgurBridge extends BridgeAbstract {
 			),
 			'clientId' => array(
 				'name' => '(your) Client ID',
+				'title' => 'register an application and use the ID',
+				'pattern' => '[0-9a-z]{15}',
 				'required' => true
 			)
 		)
@@ -77,6 +87,7 @@ class ImgurBridge extends BridgeAbstract {
 		switch($this->queriedContext) {
 
 			case 'User':
+
 				$url .= 'account/'
 					. $this->getInput('u')
 					. '/submissions/0/newest';
@@ -179,5 +190,9 @@ class ImgurBridge extends BridgeAbstract {
 		]);
 		$result = file_get_contents($url, false, $context);
 		return json_decode($result, false);
+	}
+
+	private function paramIsValid($txt) {
+		return preg_match('/[^a-zA-Z_]/', $txt) === 0;
 	}
 }
