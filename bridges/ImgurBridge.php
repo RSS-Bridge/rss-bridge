@@ -8,6 +8,7 @@ class ImgurBridge extends BridgeAbstract {
 		'User' => array(
 			'u' => array(
 				'name' => 'Username',
+				'exampleValue' => 'Sarah',
 				'required' => true
 			),
 			'clientId' => array(
@@ -18,13 +19,50 @@ class ImgurBridge extends BridgeAbstract {
 		'Tag' => array(
 			't' => array(
 				'name' => 'tag name',
+				'exampleValue' => 'movies_and_tv',
 				'required' => true
 			),
 			'clientId' => array(
 				'name' => '(your) Client ID',
 				'required' => true
 			)),
-		'Most Viral' => array(
+		'Gallery' => array(
+			'section' => array(
+				'name' => 'type',
+				'type' => 'list',
+				'required' => true,
+				'values' => array(
+					'Hot' => 'hot',
+					'Top' => 'top',
+					'User' => 'user'
+				),
+				'defaultValue' => 'hot'
+			),
+			'sort' => array(
+				'name' => 'type',
+				'type' => 'list',
+				'required' => true,
+				'values' => array(
+					'Viral' => 'viral',
+					'Top' => 'top',
+					'Time' => 'time',
+					'Rising' => 'rising'
+				),
+				'defaultValue' => 'viral'
+			),
+			'window' => array(
+				'name' => 'type',
+				'type' => 'list',
+				'required' => true,
+				'values' => array(
+					'Day' => 'day',
+					'Week' => 'week',
+					'Month' => 'month',
+					'Year' => 'year',
+					'All' => 'all'
+				),
+				'defaultValue' => 'day'
+			),
 			'clientId' => array(
 				'name' => '(your) Client ID',
 				'required' => true
@@ -58,8 +96,14 @@ class ImgurBridge extends BridgeAbstract {
 
 				break;
 
-			case 'Most Viral': //todo: allow
-				$url .= 'gallery/hot/viral';
+			case 'Gallery':
+
+				$url .= 'gallery/'
+					. $this->getInput('section')
+					. '/'
+					. $this->getInput('sort')
+					. '/'
+					. $this->getInput('window');
 
 				$response = $this->simpleGetFromJson($url);
 
