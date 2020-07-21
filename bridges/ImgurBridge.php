@@ -34,7 +34,7 @@ class ImgurBridge extends BridgeAbstract {
 		),
 		'Gallery' => array(
 			'section' => array(
-				'name' => 'type',
+				'name' => 'section',
 				'type' => 'list',
 				'required' => true,
 				'values' => array(
@@ -45,7 +45,7 @@ class ImgurBridge extends BridgeAbstract {
 				'defaultValue' => 'hot'
 			),
 			'sort' => array(
-				'name' => 'type',
+				'name' => 'sort',
 				'type' => 'list',
 				'required' => true,
 				'values' => array(
@@ -57,7 +57,7 @@ class ImgurBridge extends BridgeAbstract {
 				'defaultValue' => 'viral'
 			),
 			'window' => array(
-				'name' => 'type',
+				'name' => 'window',
 				'type' => 'list',
 				'required' => true,
 				'values' => array(
