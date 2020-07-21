@@ -1,5 +1,12 @@
 <?php
 class ImgurBridge extends BridgeAbstract {
+	const PARAM_CLIENTID = array(
+				'name' => '(your) Client ID',
+				'title' => 'register an application and use the ID',
+				'pattern' => '[0-9a-z]{15}',
+				'required' => true
+			);
+
 	const NAME = 'Imgur Bridge via API';
 	const URI = 'https://imgur.com/';
 	const DESCRIPTION = 'get imgur stuff with your own API key';
@@ -13,12 +20,7 @@ class ImgurBridge extends BridgeAbstract {
 				'pattern' => '[a-zA-Z0-9-_]+',
 				'required' => true
 			),
-			'clientId' => array(
-				'name' => '(your) Client ID',
-				'title' => 'register an application and use the ID',
-				'pattern' => '[0-9a-z]{15}',
-				'required' => true
-			)
+			'clientId' => ImgurBridge::PARAM_CLIENTID
 		),
 		'Tag' => array(
 			't' => array(
@@ -28,12 +30,8 @@ class ImgurBridge extends BridgeAbstract {
 				'pattern' => '[a-zA-Z0-9-_]+',
 				'required' => true
 			),
-			'clientId' => array(
-				'name' => '(your) Client ID',
-				'title' => 'register an application and use the ID',
-				'pattern' => '[0-9a-z]{15}',
-				'required' => true
-			)),
+			'clientId' => ImgurBridge::PARAM_CLIENTID
+		),
 		'Gallery' => array(
 			'section' => array(
 				'name' => 'type',
@@ -71,14 +69,50 @@ class ImgurBridge extends BridgeAbstract {
 				),
 				'defaultValue' => 'day'
 			),
-			'clientId' => array(
-				'name' => '(your) Client ID',
-				'title' => 'register an application and use the ID',
-				'pattern' => '[0-9a-z]{15}',
-				'required' => true
-			)
-		)
+			'clientId' => ImgurBridge::PARAM_CLIENTID
+		),
+		'Leaderboard' => array(
+			'clientId' => ImgurBridge::PARAM_CLIENTID
+		),
 	);
+
+	
+	public function getName() {
+
+		switch($this->queriedContext) {
+
+			case 'User':
+
+				return $this->getInput('u');
+
+				break;
+
+			case 'Tag':
+
+				return 'tag: ' . $this->getInput('t');
+
+				break;
+
+			case 'Gallery':
+
+				return 'gallery: '
+					. $this->getInput('section')
+					. '/'
+					. $this->getInput('sort')
+					. '/'
+					. $this->getInput('window');
+
+				break;
+
+			case 'Leaderboard':
+				return 'Leaderboard';
+
+				break;
+		}
+
+		return parent::getName();
+
+	}
 
 	public function collectData() {
 
@@ -122,6 +156,12 @@ class ImgurBridge extends BridgeAbstract {
 
 				break;
 
+			case 'Leaderboard':
+
+				$this->itemizeTopComments();
+
+				break;
+
 			default:
 				returnClientError(
 					'Unknown context: "'
@@ -157,6 +197,38 @@ class ImgurBridge extends BridgeAbstract {
 				//the album is only 1 image
 				$item['content'] .= $this->albumImage2Html($album);
 			}
+
+			$this->items[] = $item;
+		}
+	}
+
+	private function withOrdinal($number) {
+		//from https://stackoverflow.com/a/3110033/1173856
+	    $ends = array('th','st','nd','rd','th','th','th','th','th','th');
+	    if ((($number % 100) >= 11) && (($number%100) <= 13))
+	        return $number . 'th';
+	    else
+	        return $number . $ends[$number % 10];
+	}
+
+	private function itemizeTopComments(){
+		$url = 'https://api.imgur.com/comment/v1/comments/top?client_id='
+			. $this->getInput('clientId');
+		$response = $this->simpleGetFromJson($url);
+
+		for ($i=0; $i < count($response->data); $i++) { 
+			$comment = $response->data[$i];
+
+			$item = array();
+
+			$item['uri'] = 'https://imgur.com/gallery/'
+				. $comment->post->id
+				. '/comment/'
+				. $comment->id;
+			$item['title'] = $this->withOrdinal($i + 1);
+			$item['timestamp'] = $comment->created_at;
+			$item['author'] = $comment->account->username;
+			$item['content'] = $comment->comment;
 
 			$this->items[] = $item;
 		}
