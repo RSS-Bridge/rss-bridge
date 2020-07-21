@@ -34,15 +34,11 @@ class ReutersBridge extends BridgeAbstract {
 				'Science' => 'science',
 				'Energy' => 'energy',
 				'Aerospace and Defence' => 'aerospace',
-				'Markets' => 'markets',
-				'Sports' => 'sports',
-				'Pic of the Day' => 'pictures',
-				'USA News' => 'us',
 				'China' => 'china',
 				'Top News' => 'home/topnews',
 				'Markets' => 'markets',
 				'Sports' => 'sports',
-				'Pic of the Day' => 'pictures',
+				'Pic of the Day' => 'pictures', //This have different configuration than others.
 				'USA News' => 'us'
 			)
 		),
@@ -83,7 +79,7 @@ class ReutersBridge extends BridgeAbstract {
 		}, array());
 
 
-		// Check if there have Editor's Highlight sections in the first index.
+		// Check to see if there have Editor's Highlight sections in the first index.
 		if($reuters_wireitems[0]['wireitem_type'] == 'headlines') {
 			$top_highlight = $reuters_wireitems[0]["templates"][1]["headlines"];
 
