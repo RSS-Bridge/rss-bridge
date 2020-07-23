@@ -355,7 +355,7 @@ class VkBridge extends BridgeAbstract
 
 	private function getTitle($content)
 	{
-		preg_match('/^["\w\ \p{Cyrillic}\(\)\?#«»-]+/mu', htmlspecialchars_decode($content), $result);
+		preg_match('/^["\w\ \p{L}\(\)\?#«»-]+/mu', htmlspecialchars_decode($content), $result);
 		if (count($result) == 0) return 'untitled';
 		return $result[0];
 	}
@@ -374,6 +374,8 @@ class VkBridge extends BridgeAbstract
 				} elseif (strstr($strdate, 'yesterday ') !== false) {
 					$time = time() - 60 * 60 * 24;
 					$strdate = date('d-m-Y', $time) . ' ' . $strdate;
+				} elseif ($date['month'] && intval(date('m')) < $date['month']) {
+					$strdate = $strdate . ' ' . (date('Y') - 1);
 				} else {
 					$strdate = $strdate . ' ' . date('Y');
 				}

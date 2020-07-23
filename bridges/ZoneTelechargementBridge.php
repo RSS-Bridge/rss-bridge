@@ -8,7 +8,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 	 */
 
 	const NAME = 'Zone Telechargement';
-	const URI = 'https://www.zone-telechargement.net/';
+	const URI = 'https://www.zone-annuaire.com/';
 	const DESCRIPTION = 'Suivi de série sur Zone Telechargement';
 	const MAINTAINER = 'sysadminstory';
 	const PARAMETERS = array(
@@ -17,7 +17,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 				'name' => 'URL de la série',
 				'type' => 'text',
 				'required' => true,
-				'title' => 'URL d\'une série sans le https://wwv.zone-telechargement.net/',
+				'title' => 'URL d\'une série sans le https://www.zone-annuaire.com/',
 				'exampleValue' => 'telecharger-series/31079-halt-and-catch-fire-saison-4-french-hd720p.html'
 			)
 		)

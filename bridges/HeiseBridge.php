@@ -62,6 +62,9 @@ class HeiseBridge extends FeedExpander {
 
 		$content = $article->find('div[class*="article-content"]', 0);
 
+		if ($content == null)
+			$content = $article->find('#article_content', 0);
+
 		foreach($content->find('p, h3, ul, table, pre, img') as $element) {
 			$item['content'] .= $element;
 		}

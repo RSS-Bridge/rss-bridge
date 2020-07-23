@@ -65,7 +65,7 @@ class InstagramBridge extends BridgeAbstract {
 				$data = getContents(self::URI . 'web/search/topsearch/?query=' . $username);
 
 				foreach(json_decode($data)->users as $user) {
-					if($user->user->username === $username) {
+					if(strtolower($user->user->username) === strtolower($username)) {
 						$key = $user->user->pk;
 					}
 				}
@@ -123,6 +123,12 @@ class InstagramBridge extends BridgeAbstract {
 				$item['title'] = substr($item['title'], 0, $titleLinePos) . '...';
 			}
 
+			if($directLink) {
+				$mediaURI = $media->display_url;
+			} else {
+				$mediaURI = self::URI . 'p/' . $media->shortcode . '/media?size=l';
+			}
+
 			switch($media->__typename) {
 				case 'GraphSidecar':
 					$data = $this->getInstagramSidecarData($item['uri'], $item['title']);
@@ -130,24 +136,20 @@ class InstagramBridge extends BridgeAbstract {
 					$item['enclosures'] = $data[1];
 					break;
 				case 'GraphImage':
-					if($directLink) {
-						$mediaURI = $media->display_url;
-					} else {
-						$mediaURI = self::URI . 'p/' . $media->shortcode . '/media?size=l';
-					}
 					$item['content'] = '<a href="' . htmlentities($item['uri']) . '" target="_blank">';
 					$item['content'] .= '<img src="' . htmlentities($mediaURI) . '" alt="' . $item['title'] . '" />';
 					$item['content'] .= '</a><br><br>' . nl2br(htmlentities($textContent));
 					$item['enclosures'] = array($mediaURI);
 					break;
 				case 'GraphVideo':
-					$data = $this->getInstagramVideoData($item['uri']);
+					$data = $this->getInstagramVideoData($item['uri'], $mediaURI);
 					$item['content'] = $data[0];
 					if($directLink) {
 						$item['enclosures'] = $data[1];
 					} else {
-						$item['enclosures'] = array(self::URI . 'p/' . $media->shortcode . '/media?size=l');
+						$item['enclosures'] = array($mediaURI);
 					}
+					$item['thumbnail'] = $mediaURI;
 					break;
 				default: break;
 			}
@@ -185,11 +187,14 @@ class InstagramBridge extends BridgeAbstract {
 	}
 
 	// returns Video post's contents and enclosures
-	protected function getInstagramVideoData($uri) {
+	protected function getInstagramVideoData($uri, $mediaURI) {
 		$mediaInfo = $this->getSinglePostData($uri);
 
 		$textContent = $this->getTextContent($mediaInfo);
-		$content = '<video controls><source src="' . $mediaInfo->video_url . '" type="video/mp4"></video><br>';
+		$content = '<video controls>';
+		$content .= '<source src="' . $mediaInfo->video_url . '" poster="' . $mediaURI . '" type="video/mp4">';
+		$content .= '<img src="' . $mediaURI . '" alt="">';
+		$content .= '</video><br>';
 		$content .= '<br>' . nl2br(htmlentities($textContent));
 
 		return array($content, array($mediaInfo->video_url));
