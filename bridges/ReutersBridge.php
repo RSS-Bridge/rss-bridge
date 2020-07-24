@@ -1,11 +1,14 @@
 <?php
 class ReutersBridge extends BridgeAbstract {
 
-	const MAINTAINER = 'hollowleviathan, spraynard';
+
+	const MAINTAINER = 'hollowleviathan, spraynard, csisoap';
 	const NAME = 'Reuters Bridge';
 	const URI = 'https://reuters.com/';
 	const CACHE_TIMEOUT = 1800; // 30min
 	const DESCRIPTION = 'Returns news from Reuters';
+	private $feedName = self::NAME;
+
 
 	const ALLOWED_WIREITEM_TYPES = array(
 		'story'
@@ -29,9 +32,14 @@ class ReutersBridge extends BridgeAbstract {
 				'World' => 'world',
 				'Politics' => 'politics',
 				'Science' => 'science',
+				'Energy' => 'energy',
+				'Aerospace and Defence' => 'aerospace',
+				'China' => 'china',
+				'Top News' => 'home/topnews',
+				'Lifestyle' => 'lifestyle',
 				'Markets' => 'markets',
 				'Sports' => 'sports',
-				'Pic of the Day' => 'pictures',
+				'Pic of the Day' => 'pictures', //This have different configuration than others.
 				'USA News' => 'us'
 			)
 		),
@@ -43,10 +51,17 @@ class ReutersBridge extends BridgeAbstract {
 		return json_decode($returned_data, true);
 	}
 
+
+	public function getName() {
+		return $this->feedName;
+	}
+
+
 	public function collectData() {
 		$feed = $this->getInput('feed');
 		$data = $this->getJson($feed);
 		$reuters_wireitems = $data['wireitems'];
+		$this->feedName = $data['wire_name'] . ' | Reuters';
 		/**
 		 * Gets a list of wire items which are groups of templates
 		 */
@@ -63,6 +78,16 @@ class ReutersBridge extends BridgeAbstract {
 				return in_array($template_data['type'], self::ALLOWED_TEMPLATE_TYPES);
 			}));
 		}, array());
+
+
+		// Check to see if there have Editor's Highlight sections in the first index.
+		if($reuters_wireitems[0]['wireitem_type'] == 'headlines') {
+			$top_highlight = $reuters_wireitems[0]["templates"][1]["headlines"];
+
+			$reuters_wireitem_templates = array_merge($top_highlight, $reuters_wireitem_templates);
+		}
+
+
 
 		foreach ($reuters_wireitem_templates as $story) {
 			$item['content'] = $story['story']['lede'];
