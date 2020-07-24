@@ -11,6 +11,15 @@ class SoundCloudBridge extends BridgeAbstract {
 		'u' => array(
 			'name' => 'username',
 			'required' => true
+		),
+		't' => array(
+			'name' => 'type',
+			'type' => 'list',
+			'defaultValue' => 'tracks',
+			'values' => array(
+				'Tracks' => 'tracks',
+				'Playlists' => 'playlists'
+			)
 		)
 	));
 
@@ -19,13 +28,13 @@ class SoundCloudBridge extends BridgeAbstract {
 
 	public function collectData(){
 		$res = $this->apiGet('resolve', array(
-			'url' => 'http://www.soundcloud.com/' . $this->getInput('u')
+			'url' => 'https://soundcloud.com/' . $this->getInput('u')
 		)) or returnServerError('No results for this query');
 
 		$this->feedIcon = $res->avatar_url;
 
-		$tracks = $this->apiGet('users/' . urlencode($res->id) . '/tracks')
-			or returnServerError('No results for this user');
+		$tracks = $this->apiGet('users/' . urlencode($res->id) . '/' . $this->getInput('t'))->collection
+			or returnServerError('No results for this user/playlist');
 
 		$numTracks = min(count($tracks), 10);
 		for($i = 0; $i < $numTracks; $i++) {
@@ -33,10 +42,10 @@ class SoundCloudBridge extends BridgeAbstract {
 			$item['author'] = $tracks[$i]->user->username;
 			$item['title'] = $tracks[$i]->user->username . ' - ' . $tracks[$i]->title;
 			$item['timestamp'] = strtotime($tracks[$i]->created_at);
-			$item['content'] = $tracks[$i]->description;
+			$item['content'] = nl2br($tracks[$i]->description);
 			$item['enclosures'] = array($tracks[$i]->uri
-			. '/stream?client_id='
-			. $this->getClientID());
+				. '/stream?client_id='
+				. $this->getClientID());
 
 			$item['id'] = self::URI
 				. urlencode($this->getInput('u'))
@@ -99,14 +108,14 @@ class SoundCloudBridge extends BridgeAbstract {
 
 		// Without url=http, this returns a 404
 		$playerHTML = getContents('https://w.soundcloud.com/player/?url=http')
-			or returnServerError('Unable to get player page.');
+		or returnServerError('Unable to get player page.');
 		$regex = '/widget-.+?\.js/';
 		if(preg_match($regex, $playerHTML, $matches) == false)
 			returnServerError('Unable to find widget JS URL.');
 		$widgetURL = 'https://widget.sndcdn.com/' . $matches[0];
 
 		$widgetJS = getContents($widgetURL)
-			or returnServerError('Unable to get widget JS page.');
+		or returnServerError('Unable to get widget JS page.');
 		$regex = '/client_id.*?"(.+?)"/';
 		if(preg_match($regex, $widgetJS, $matches) == false)
 			returnServerError('Unable to find client ID.');
@@ -117,7 +126,7 @@ class SoundCloudBridge extends BridgeAbstract {
 	}
 
 	private function buildAPIURL($endpoint, $parameters){
-		return 'https://api.soundcloud.com/'
+		return 'https://api-v2.soundcloud.com/'
 			. $endpoint
 			. '?'
 			. http_build_query($parameters);

@@ -195,11 +195,6 @@ EOD
 	public function collectData(){
 		$html = '';
 		$page = $this->getURI();
-
-		$header = array(
-			'User-Agent: Mozilla/5.0 (Windows NT 9.0; WOW64; Trident/7.0; rv:11.0) like Gecko'
-		);
-
 		$data = json_decode($this->getApiContents($this->getApiURI()));
 
 		if(!$data) {
@@ -377,7 +372,7 @@ EOD;
 		if($data === null || !is_array($data) || count($data) != 1) {
 			$twitterPage = getContents('https://twitter.com');
 
-			$jsMainRegex = '/(https:\/\/abs\.twimg\.com\/responsive-web\/web\/main\.[^\.]+\.js)/m';
+			$jsMainRegex = '/(https:\/\/abs\.twimg\.com\/responsive-web\/web_legacy\/main\.[^\.]+\.js)/m';
 			preg_match_all($jsMainRegex, $twitterPage, $jsMainMatches, PREG_SET_ORDER, 0);
 			$jsLink = $jsMainMatches[0][0];
 
@@ -420,6 +415,8 @@ EOD;
 
 		$guestTokenRegex = '/gt=([0-9]*)/m';
 		preg_match_all($guestTokenRegex, $pageContent['header'], $guestTokenMatches, PREG_SET_ORDER, 0);
+		if (!$guestTokenMatches)
+				preg_match_all($guestTokenRegex, $pageContent['content'], $guestTokenMatches, PREG_SET_ORDER, 0);
 		if (!$guestTokenMatches) returnServerError('Could not parse guest token');
 		$guestToken = $guestTokenMatches[0][1];
 		return $guestToken;
