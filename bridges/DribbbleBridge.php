@@ -24,14 +24,14 @@ favicon-63b2904a073c89b52b19aa08cebc16a154bcf83fee8ecc6439968b1e6db569c7.ico';
 			$additional_data = $this->findJsonForShot($shot, $json);
 			if ($additional_data === null) {
 				$item['uri'] = self::URI . $shot->find('a', 0)->href;
-				$item['title'] = $shot->find('.dribbble-over strong', 0)->plaintext;
+				$item['title'] = $shot->find('.shot-title', 0)->plaintext;
 			} else {
 				$item['timestamp'] = strtotime($additional_data['published_at']);
 				$item['uri'] = self::URI . $additional_data['path'];
 				$item['title'] = $additional_data['title'];
 			}
 
-			$item['author'] = trim($shot->find('.attribution-user a', 0)->plaintext);
+			$item['author'] = trim($shot->find('.user-information .display-name', 0)->plaintext);
 
 			$description = $shot->find('.comment', 0);
 			$item['content'] = $description === null ? '' : $description->plaintext;
@@ -51,10 +51,13 @@ favicon-63b2904a073c89b52b19aa08cebc16a154bcf83fee8ecc6439968b1e6db569c7.ico';
 		foreach($scripts as $script) {
 			if(strpos($script->innertext, 'newestShots') !== false) {
 				// fix single quotes
-				$script->innertext = str_replace('\'', '"', $script->innertext);
+				$script->innertext = preg_replace('/\'(.*)\'(,?)$/im', '"\1"\2', $script->innertext);
 
 				// fix JavaScript JSON (why do they not adhere to the standard?)
-				$script->innertext = preg_replace('/(\w+):/i', '"\1":', $script->innertext);
+				$script->innertext = preg_replace('/^(\s*)(\w+):/im', '\1"\2":', $script->innertext);
+
+				// fix relative dates, so they are recognized by strtotime
+				$script->innertext = preg_replace('/"about ([0-9]+ hours? ago)"(,?)$/im', '"\1"\2', $script->innertext);
 
 				// find beginning of JSON array
 				$start = strpos($script->innertext, '[');
