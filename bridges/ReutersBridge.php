@@ -1,15 +1,17 @@
 <?php
 class ReutersBridge extends BridgeAbstract {
 
-	const MAINTAINER = 'hollowleviathan, spraynard, csisoap';
+	const MAINTAINER = 'hollowleviathan, spraynard';
 	const NAME = 'Reuters Bridge';
 	const URI = 'https://reuters.com/';
-	const CACHE_TIMEOUT = 1800; // 30min
+	const CACHE_TIMEOUT = 120; // 30min
 	const DESCRIPTION = 'Returns news from Reuters';
 	private $feedName = self::NAME;
+	private $feedDesc = self::DESCRIPTION;
 
 	const ALLOWED_WIREITEM_TYPES = array(
-		'story'
+		'story',
+		'headlines'
 	);
 
 	const ALLOWED_TEMPLATE_TYPES = array(
@@ -30,6 +32,7 @@ class ReutersBridge extends BridgeAbstract {
 				'World' => 'world',
 				'Politics' => 'politics',
 				'Science' => 'science',
+				'Lifestyle' => 'life',
 				'Energy' => 'energy',
 				'Aerospace and Defence' => 'aerospace',
 				'Markets' => 'markets',
@@ -53,11 +56,16 @@ class ReutersBridge extends BridgeAbstract {
 		return $this->feedName;
 	}
 
+	public function getDescription() {
+		return $this->feedDesc;
+	}
+
 	public function collectData() {
 		$feed = $this->getInput('feed');
 		$data = $this->getJson($feed);
 		$reuters_wireitems = $data['wireitems'];
-		$this->feedName = $data['wire_name'] . '| Reuters';
+		$this->feedName = $data['wire_name'] . ' | Reuters';
+		$this->feedDesc = $data['wire_description'];
 		/**
 		 * Gets a list of wire items which are groups of templates
 		 */
@@ -76,17 +84,25 @@ class ReutersBridge extends BridgeAbstract {
 		}, array());
 
 
-		// Check if there have Editor's Highlight sections in the first index.
-		if($reuters_wireitems[0]['wireitem_type'] == 'headlines') {
-			$top_highlight = $reuters_wireitems[0]["templates"][1]["headlines"];
+		// Merge all articles from Editor's Highlight section into existing array of templates.
+		$top_newslist = reset($reuters_allowed_wireitems);
+		if($top_newslist['wireitem_type'] == 'headlines') {
+			$top_articles = $top_newslist['templates'][1]['headlines'];
 
-			$reuters_wireitem_templates = array_merge($top_highlight, $reuters_wireitem_templates);
+			$reuters_wireitem_templates = array_merge($top_articles, $reuters_wireitem_templates);
 		}
 
 
 
 		foreach ($reuters_wireitem_templates as $story) {
-			$item['content'] = $story['story']['lede'];
+			$item['uid'] = $story['story']['usn'];
+			$description = $story['story']['lede'];
+			$image_url = $story['image']['url'];
+			if(!(bool)$image_url) {
+				$image_url = 'https://s4.reutersmedia.net/resources_v2/images/rcom-default.png';
+			}
+			$item['content'] = "$description \n
+					   <img src=\"$image_url\">";
 			$item['title'] = $story['story']['hed'];
 			$item['timestamp'] = $story['story']['updated_at'];
 			$item['uri'] = $story['template_action']['url'];
