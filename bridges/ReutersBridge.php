@@ -1,8 +1,8 @@
 <?php
 class ReutersBridge extends BridgeAbstract {
 
-	const MAINTAINER = 'hollowleviathan, spraynard';
-	const NAME = 'Reuters Bridge';
+	const MAINTAINER = 'hollowleviathan, spraynard, csisoap';
+	const NAME = 'Test Reuters Bridge';
 	const URI = 'https://reuters.com/';
 	const CACHE_TIMEOUT = 120; // 30min
 	const DESCRIPTION = 'Returns news from Reuters';
@@ -56,7 +56,7 @@ class ReutersBridge extends BridgeAbstract {
 		return $this->feedName;
 	}
 
-	public function getDescription() {
+	public function getDescription() { //This won't work.
 		return $this->feedDesc;
 	}
 
@@ -69,6 +69,7 @@ class ReutersBridge extends BridgeAbstract {
 		/**
 		 * Gets a list of wire items which are groups of templates
 		 */
+
 		$reuters_allowed_wireitems = array_filter($reuters_wireitems, function($wireitem) {
 			return in_array($wireitem['wireitem_type'], self::ALLOWED_WIREITEM_TYPES);
 		});
@@ -79,20 +80,24 @@ class ReutersBridge extends BridgeAbstract {
 		$reuters_wireitem_templates = array_reduce($reuters_allowed_wireitems, function (array $carry, array $wireitem) {
 			$wireitem_templates = $wireitem['templates'];
 			return array_merge($carry, array_filter($wireitem_templates, function(array $template_data) {
+				// Merge all articles from Editor's Highlight section into existing array of templates.
+				if(reset($template_data)['type'] == 'headline') {
+					$processed_data = array_filter($reuters_wireitems, function($wireitem) {
+						return in_array($wireitem['wireitem_type'], 'headlines');
+					});
+					$template_data = array_merge($processed_data['headlines'], $template_data);
+				}
 				return in_array($template_data['type'], self::ALLOWED_TEMPLATE_TYPES);
 			}));
 		}, array());
 
-
 		// Merge all articles from Editor's Highlight section into existing array of templates.
-		$top_newslist = reset($reuters_allowed_wireitems);
-		if($top_newslist['wireitem_type'] == 'headlines') {
-			$top_articles = $top_newslist['templates'][1]['headlines'];
+		// $top_newslist = reset($reuters_allowed_wireitems);
+		// if($top_newslist['wireitem_type'] == 'headlines') {
+		// 	$top_articles = $top_newslist['templates'][1]['headlines'];
 
-			$reuters_wireitem_templates = array_merge($top_articles, $reuters_wireitem_templates);
-		}
-
-
+		// 	$reuters_wireitem_templates = array_merge($top_articles, $reuters_wireitem_templates);
+		// }
 
 		foreach ($reuters_wireitem_templates as $story) {
 			$item['uid'] = $story['story']['usn'];
