@@ -81,11 +81,11 @@ class ReutersBridge extends BridgeAbstract {
 			$wireitem_templates = $wireitem['templates'];
 			return array_merge($carry, array_filter($wireitem_templates, function(array $template_data) {
 				// Merge all articles from Editor's Highlight section into existing array of templates.
-				if(reset($template_data)['type'] == 'headline') {
-					$processed_data = array_filter($reuters_wireitems, function($wireitem) {
+				if(reset($template_data)['type'] == 'headlines') {
+					$processed_data = array_filter($template_data, function($wireitem) {
 						return in_array($wireitem['wireitem_type'], 'headlines');
 					});
-					$template_data = array_merge($processed_data['headlines'], $template_data);
+					$template_data = array_merge($processed_data['headlines'], $template_data)
 				}
 				return in_array($template_data['type'], self::ALLOWED_TEMPLATE_TYPES);
 			}));
