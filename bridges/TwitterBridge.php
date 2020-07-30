@@ -374,7 +374,7 @@ EOD;
 		$data = $cache->loadData();
 
 		$apiKey = null;
-		if($data === null || !is_array($data) || count($data) != 1) {
+		if($data === null || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
 			$twitterPage = getContents('https://twitter.com');
 
 			$jsMainRegex = '/(https:\/\/abs\.twimg\.com\/responsive-web\/web_legacy\/main\.[^\.]+\.js)/m';
