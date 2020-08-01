@@ -212,9 +212,9 @@ EOD
 
 		foreach($data->globalObjects->tweets as $tweet) {
 
-			// Skip retweets?
-			if($this->getInput('noretweet')
-			&& isset($tweet->retweeted_status_id_str)) {
+			/* Debug::log('>>> ' . json_encode($tweet)); */
+			// Skip spurious retweets
+			if (isset($tweet->retweeted_status_id_str) && substr($tweet->full_text, 0, 4) === 'RT @') {
 				continue;
 			}
 
@@ -314,6 +314,11 @@ EOD;
 						}
 					}
 					break;
+				case 'By username':
+					if ($this->getInput('noretweet') && $item['username'] != $this->getInput('u')) {
+						continue 2; // switch + for-loop!
+					}
+					break;
 				default:
 			}
 
@@ -369,7 +374,7 @@ EOD;
 		$data = $cache->loadData();
 
 		$apiKey = null;
-		if($data === null || !is_array($data) || count($data) != 1) {
+		if($data === null || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
 			$twitterPage = getContents('https://twitter.com');
 
 			$jsMainRegex = '/(https:\/\/abs\.twimg\.com\/responsive-web\/web_legacy\/main\.[^\.]+\.js)/m';
