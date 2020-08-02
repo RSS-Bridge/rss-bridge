@@ -4,7 +4,6 @@ class OMGUbuntuBridge extends FeedExpander {
 	const URI = 'https://omgubuntu.com/';
 	const DESCRIPTION = 'News about Ubuntu, Linux and open-source software.';
 	const MAINTAINER = 't0stiman';
-	const CACHE_TIMEOUT = 20;
 
 	public function collectData() {
 		$this->collectExpandableDatas('http://feeds.feedburner.com/d0od');
