@@ -218,6 +218,11 @@ EOD
 				continue;
 			}
 
+			// Skip tweets with source "Twitter for Advertisers"
+			if (strpos($tweet->source, "ads-api.twitter.com") !== false) {
+				continue;
+			}
+
 			$item = array();
 			// extract username and sanitize
 			$user_info = $this->getUserInformation($tweet->user_id_str, $data->globalObjects);
