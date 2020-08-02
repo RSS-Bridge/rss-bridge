@@ -80,22 +80,30 @@ class ReutersBridge extends BridgeAbstract {
 		}, array());
 
 
-		// Check to see if there have Editor's Highlight sections in the first index.
-		if($reuters_wireitems[0]['wireitem_type'] == 'headlines') {
-			$top_highlight = $reuters_wireitems[0]["templates"][1]["headlines"];
+		// Merge all articles from Editor's Highlight section into existing array of templates.
+		$top_section = reset($reuters_allowed_wireitems);
+                if($top_section['wireitem_type'] == 'headlines') {
+                        $top_articles = $top_section['templates'][1]['headlines'];
 
-			$reuters_wireitem_templates = array_merge($top_highlight, $reuters_wireitem_templates);
-		}
+                        $reuters_wireitem_templates = array_merge($top_articles, $reuters_wireitem_templates);
+                }
 
 
 
-		foreach ($reuters_wireitem_templates as $story) {
-			$item['content'] = $story['story']['lede'];
-			$item['title'] = $story['story']['hed'];
-			$item['timestamp'] = $story['story']['updated_at'];
-			$item['uri'] = $story['template_action']['url'];
+		 foreach ($reuters_wireitem_templates as $story) {
+                #       $item['uid'] = $story['story']['usn'];
+                        $description = $story['story']['lede'];
+                        $image_url = $story['image']['url'];
+                        if(!(bool)$image_url) {
+                                $image_url = 'https://s4.reutersmedia.net/resources_v2/images/rcom-default.png'; //In case some article doesn't include image.
+                        }
+                        $item['content'] = "$description \n
+                                           <img src=\"$image_url\">";
+                        $item['title'] = $story['story']['hed'];
+                        $item['timestamp'] = $story['story']['updated_at'];
+                        $item['uri'] = $story['template_action']['url'];
 
-			$this->items[] = $item;
-		}
+                        $this->items[] = $item;
+                }
 	}
 }
