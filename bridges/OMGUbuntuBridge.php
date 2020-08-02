@@ -1,7 +1,7 @@
 <?php
 class OMGUbuntuBridge extends FeedExpander {
 	const NAME = 'OMG! Ubuntu! News';
-	const URI = 'https://omgubuntu.com/';
+	const URI = 'https://omgubuntu.co.uk/';
 	const DESCRIPTION = 'News about Ubuntu, Linux and open-source software.';
 	const MAINTAINER = 't0stiman';
 
