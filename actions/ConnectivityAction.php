@@ -58,6 +58,16 @@ class ConnectivityAction extends ActionAbstract {
 		$bridgeFac->setWorkingDir(PATH_LIB_BRIDGES);
 
 		if(!$bridgeFac->isWhitelisted($bridgeName)) {
+			$origin = $_SERVER['HTTP_ORIGIN'];
+			$allowed_domains = [
+				'http://127.0.0.1:3000',
+				'http://127.0.0.1:3001',
+				'rgvcovid19cases.com'
+			];
+
+			if (in_array($origin, $allowed_domains)) {
+				header('Access-Control-Allow-Origin: ' . $origin);
+			}
 			header('Content-Type: text/html');
 			returnServerError('Bridge is not whitelisted!');
 		}

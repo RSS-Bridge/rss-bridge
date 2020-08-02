@@ -102,6 +102,16 @@ abstract class FormatAbstract implements FormatInterface {
 		if(!is_string($this->contentType))
 			throw new \LogicException('Content-Type must be a string!');
 
+		$origin = $_SERVER['HTTP_ORIGIN'];
+		$allowed_domains = [
+			'http://127.0.0.1:3000',
+			'http://127.0.0.1:3001',
+			'rgvcovid19cases.com'
+		];
+
+		if (in_array($origin, $allowed_domains)) {
+			header('Access-Control-Allow-Origin: ' . $origin);
+		}
 		header('Content-Type: ' . $this->contentType);
 	}
 

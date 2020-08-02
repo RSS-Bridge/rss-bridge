@@ -476,6 +476,16 @@ class FacebookBridge extends BridgeAbstract {
 		$img = base64_encode(getContents($captcha->find('img', 0)->src));
 
 		header('Content-Type: text/html', true, 500);
+		$origin = $_SERVER['HTTP_ORIGIN'];
+		$allowed_domains = [
+			'http://127.0.0.1:3000',
+			'http://127.0.0.1:3001',
+			'rgvcovid19cases.com'
+		];
+
+		if (in_array($origin, $allowed_domains)) {
+			header('Access-Control-Allow-Origin: ' . $origin);
+		}
 
 		$message = <<<EOD
 <form method="post" action="?{$_SERVER['QUERY_STRING']}">
