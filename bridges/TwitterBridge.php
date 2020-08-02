@@ -219,7 +219,7 @@ EOD
 			}
 
 			// Skip tweets with source "Twitter for Advertisers"
-			if (strpos($tweet->source, "ads-api.twitter.com") !== false) {
+			if (strpos($tweet->source, 'ads-api.twitter.com') !== false) {
 				continue;
 			}
 
