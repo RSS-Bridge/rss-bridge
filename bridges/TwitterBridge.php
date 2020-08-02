@@ -177,7 +177,7 @@ EOD
 			return self::API_URI
 			. '/2/search/adaptive.json?q='
 			. urlencode($this->getInput('q'))
-			. '&tweet_mode=extended';
+			. '&tweet_mode=extended&tweet_search_mode=live';
 		case 'By username':
 			return self::API_URI
 			. '/2/timeline/profile/'
