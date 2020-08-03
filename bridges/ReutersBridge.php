@@ -11,7 +11,8 @@ class ReutersBridge extends BridgeAbstract {
 
 
 	const ALLOWED_WIREITEM_TYPES = array(
-		'story'
+		'story',
+		'headlines'
 	);
 
 	const ALLOWED_TEMPLATE_TYPES = array(
@@ -91,7 +92,7 @@ class ReutersBridge extends BridgeAbstract {
 
 
 		 foreach ($reuters_wireitem_templates as $story) {
-                #       $item['uid'] = $story['story']['usn'];
+                        $item['uid'] = $story['story']['usn'];
                         $description = $story['story']['lede'];
                         $image_url = $story['image']['url'];
                         if(!(bool)$image_url) {
