@@ -2,13 +2,11 @@
 class RaceDepartmentBridge extends FeedExpander {
 	const NAME = 'RaceDepartment News';
 	const URI = 'https://racedepartment.com/';
-	const DESCRIPTION = 'todo';
+	const DESCRIPTION = 'Get the latest (sim)racing news from RaceDepartment.';
 	const MAINTAINER = 't0stiman';
-	const CACHE_TIMEOUT = 10;	//todo
 
 	public function collectData() {
-		//feed returns 70 items by default, made FastCGI run out of memory
-		$this->collectExpandableDatas('https://www.racedepartment.com/news/archive.rss', 20);
+		$this->collectExpandableDatas('https://www.racedepartment.com/news/archive.rss', 10);
 	}
 
 	protected function parseItem($feedItem) {
