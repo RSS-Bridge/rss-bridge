@@ -20,10 +20,10 @@ class RaceDepartmentBridge extends FeedExpander {
 
 		//convert iframes to links. meant for embedded videos.
 		foreach($item['content']->find('iframe') as $found) {
-			$pattern = "/src=\"(.+?)\"/i";
+			$pattern = '/src="(.+?)"/i';
 			if(preg_match($pattern, $found->outertext, $match)) {
 				$iframeUrl = $match[1];
-				$found->outertext = '<a href="'.$iframeUrl.'">'.$iframeUrl.'</a>';
+				$found->outertext = '<a href="' . $iframeUrl . '">' . $iframeUrl . '</a>';
 			}
 		}
 
