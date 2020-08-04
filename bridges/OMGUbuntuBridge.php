@@ -6,21 +6,43 @@ class OMGUbuntuBridge extends FeedExpander {
 	const MAINTAINER = 't0stiman';
 
 	public function collectData() {
-		$this->collectExpandableDatas('http://feeds.feedburner.com/d0od');
+		$this->collectExpandableDatas('http://feeds.feedburner.com/d0od', 20);
 	}
 
 	protected function parseItem($feedItem) {
 		$item = parent::parseItem($feedItem);
 
 		$articlePage = getSimpleHTMLDOMCached($feedItem->link);
-		$article = $articlePage->find('div.post-content', 0);
+		$item['content'] = $articlePage->find('div.post-content', 0);
+
+		//convert iframes to links. meant for embedded videos.
+		foreach($item['content']->find('iframe') as $found) {
+			$pattern = '/src="(.+?)"/i';
+			if(preg_match($pattern, $found->outertext, $match)) {
+				$iframeUrl = $match[1];
+				$found->outertext = '<a href="' . $iframeUrl . '">' . $iframeUrl . '</a>';
+			}
+		}
+
+		//category
+		$categoryContainer = $item['content']->find('div.post-links--tags', 0);
+		foreach ($categoryContainer->find('a') as $a) {
+			$category = $a->innertext;
+			//remove # at start
+			$item['categories'][] = preg_replace('/^ +?#/', '', $category);
+		}
 
 		//get rid of some elements we don't need
-		$article = str_replace('<ul class="omg-socials">', '<ul style="display: none;">', $article);
-		$article = str_replace('<div class="post-links"', '<div style="display: none;">', $article);
-		$article = str_replace('<div class="post-links post-links--tags"', '<div style="display: none;">', $article);
+		$to_remove_selectors = array(
+			'ul.omg-socials',
+			'div.post-links'
+		);
 
-		$item['content'] = $article;
+		foreach($to_remove_selectors as $selector) {
+			foreach($item['content']->find($selector) as $found) {
+				$found->outertext = '';
+			}
+		}
 
 		return $item;
 	}
