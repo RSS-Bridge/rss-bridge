@@ -6,7 +6,7 @@ class OMGUbuntuBridge extends FeedExpander {
 	const MAINTAINER = 't0stiman';
 
 	public function collectData() {
-		$this->collectExpandableDatas('http://feeds.feedburner.com/d0od', 20);
+		$this->collectExpandableDatas('https://www.omgubuntu.co.uk/feed', 20);
 	}
 
 	protected function parseItem($feedItem) {
