@@ -127,7 +127,7 @@ class ReutersBridge extends BridgeAbstract {
 			$content_detail = $this->getArticle($article_uri);
 			$description = $content_detail['content'];
 			$author = $content_detail['author'];
-			$item['author'] = "$author";
+			$item['author'] = $author;
 			if(!(bool)$description) {
 				$description = $story['story']['lede'];
 			}
