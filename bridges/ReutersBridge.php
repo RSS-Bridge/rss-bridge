@@ -99,7 +99,7 @@ class ReutersBridge extends BridgeAbstract {
 			if(strpos($data, '.png') !== false || strpos($data, '.jpg') !== false) {
 				$description = $description . "<img src=\"$data\">";
 		      	} else {
-				if($content['type'] == 'inline_items') {
+				if($content['type'] == 'inline_items') { //Fix issue with some content included brand name or company name.
                                         $item_list = $content['items'];
                                         $description = $description . '<p>';
                                         foreach($item_list as $item) {
@@ -108,7 +108,7 @@ class ReutersBridge extends BridgeAbstract {
                                         $description = $description . '</p>';
                                 }
                                 else {
-					if(strtoupper($data) == $data) {
+					if(strtoupper($data) == $data) { //Add heading for any part of content served as header.
 						$description = $description . "<h3>$data</h3>";
 					} else {
 						$description = $description . "<p>$data</p>";
