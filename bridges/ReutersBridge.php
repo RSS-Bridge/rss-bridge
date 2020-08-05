@@ -117,7 +117,7 @@ class ReutersBridge extends BridgeAbstract {
 
 
 		// Merge all articles from Editor's Highlight section into existing array of templates.
-		$top_section = reset($reuters_allowed_wireitems);
+		$top_section = reset($processedData);
 		if($top_section['wireitem_type'] == 'headlines') {
 			$top_articles = $top_section['templates'][1]['headlines'];
 
@@ -125,7 +125,7 @@ class ReutersBridge extends BridgeAbstract {
 		}
 
 
-		foreach ($reuters_wireitem_templates as $story) {
+		foreach ($processedData as $story) {
 			$item['uid'] = $story['story']['usn'];
 			$article_uri = $story['template_action']['api_path'];
 			$content_detail = $this->getArticle($article_uri);
