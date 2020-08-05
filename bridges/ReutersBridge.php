@@ -95,7 +95,11 @@ class ReutersBridge extends BridgeAbstract {
 		$description = '';
 		foreach($article_content as $content) {
 			$data = $content['content'];
-			$description = $description . "<p>$data</p>";
+			 if(strpos($data, '.png') !== false || strpos($data, '.jpg') !== false) {
+                                $description = $description . "<img src=\"$data\">";
+                        } else {
+                                $description = $description . "<p>$data</p>";
+                        }
 		}
 		
 		$content_detail = array(
