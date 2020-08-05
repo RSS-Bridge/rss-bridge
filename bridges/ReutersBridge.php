@@ -54,27 +54,36 @@ class ReutersBridge extends BridgeAbstract {
 	public function getName() {
 		return $this->feedName;
 	}
+	
+	private function processData($data) {
+		/**
+		 * Gets a list of wire items which are groups of templates
+		 */
+		$reuters_allowed_wireitems = array_filter($data, function($wireitem) {
+			return in_array($wireitem['wireitem_type'], self::ALLOWED_WIREITEM_TYPES);
+		});
+
+		/*
+		 * Gets a list of "Templates", which is data containing a story
+		 */
+		$reuters_wireitem_templates = array_reduce($reuters_allowed_wireitems, function (array $carry, array $wireitem) {
+			$wireitem_templates = $wireitem['templates'];
+			return array_merge($carry, array_filter($wireitem_templates, function(array $template_data) {
+				return in_array($template_data['type'], self::ALLOWED_TEMPLATE_TYPES);
+			}));
+		}, array());
+		
+		return $reuters_wireitem_templates;
+	}
 
 	private function getArticle($feed_uri) {
 		$uri = "https://wireapi.reuters.com/v8$feed_uri";
 		$data = getContents($uri);
 		$process_data = json_decode($data, true);
 		$reuters_wireitems = $process_data['wireitems'];
-
-		$reuters_allowed_wireitems = array_filter($reuters_wireitems, function($wireitem) {
-			return in_array($wireitem['wireitem_type'], self::ALLOWED_WIREITEM_TYPES);
-		});
-
-		/*
-		*                  * Gets a list of "Templates", which is data containing a story
-		*                                   */
-		$reuters_wireitem_templates = array_reduce($reuters_allowed_wireitems, function (array $carry, array $wireitem) {
-			$wireitem_templates = $wireitem['templates'];
-			return array_merge($carry, array_filter($wireitem_templates, function(array $template_data) {
-												                                			return in_array($template_data['type'], self::ALLOWED_TEMPLATE_TYPES);
- 																                }));
-		}, array());
-		$first = reset($reuters_wireitem_templates);
+		$processedData = $this->processData($reuters_wireitems);
+		
+		$first = reset($processedData);
 		$article_content = $first['story']['body_items'];
 		$authorlist = $first['story']['authors'];
 		
@@ -104,22 +113,7 @@ class ReutersBridge extends BridgeAbstract {
 		$data = $this->getJson($feed);
 		$reuters_wireitems = $data['wireitems'];
 		$this->feedName = $data['wire_name'] . ' | Reuters';
-		/**
-		 * Gets a list of wire items which are groups of templates
-		 */
-		$reuters_allowed_wireitems = array_filter($reuters_wireitems, function($wireitem) {
-			return in_array($wireitem['wireitem_type'], self::ALLOWED_WIREITEM_TYPES);
-		});
-
-		/*
-		 * Gets a list of "Templates", which is data containing a story
-		 */
-		$reuters_wireitem_templates = array_reduce($reuters_allowed_wireitems, function (array $carry, array $wireitem) {
-			$wireitem_templates = $wireitem['templates'];
-			return array_merge($carry, array_filter($wireitem_templates, function(array $template_data) {
-				return in_array($template_data['type'], self::ALLOWED_TEMPLATE_TYPES);
-			}));
-		}, array());
+		$processedData = $this->processData($reuters_wireitems);
 
 
 		// Merge all articles from Editor's Highlight section into existing array of templates.
