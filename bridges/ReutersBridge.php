@@ -95,6 +95,7 @@ class ReutersBridge extends BridgeAbstract {
 		$description = '';
 		foreach($article_content as $content) {
 			$data = $content['content'];
+			// This will check whether that content is a image URL or not.
 			 if(strpos($data, '.png') !== false || strpos($data, '.jpg') !== false) {
                                 $description = $description . "<img src=\"$data\">";
                         } else {
