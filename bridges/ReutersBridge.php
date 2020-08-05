@@ -1,7 +1,7 @@
 <?php
 class ReutersBridge extends BridgeAbstract {
 
-	const MAINTAINER = 'hollowleviathan, spraynard';
+	const MAINTAINER = 'hollowleviathan, spraynard, csisoap';
 	const NAME = 'Reuters Bridge';
 	const URI = 'https://reuters.com/';
 	const CACHE_TIMEOUT = 120; // 30min
@@ -49,7 +49,6 @@ class ReutersBridge extends BridgeAbstract {
 		$returned_data = getContents($uri);
 		return json_decode($returned_data, true);
 	}
-
 	
 	public function getName() {
 		return $this->feedName;
@@ -87,23 +86,22 @@ class ReutersBridge extends BridgeAbstract {
 		$article_content = $first['story']['body_items'];
 		$authorlist = $first['story']['authors'];
 		
-		$author = "";
+		$author = '';
 		foreach($authorlist as $data) {
 			$name = $data['name'];
 			$author = $author . "$name, ";
 		}
 		
-		$description = "";
+		$description = '';
 		foreach($article_content as $content) {
 			$data = $content['content'];
 			$description = $description . "<p>$data</p>";
 		}
-
+		
 		$content_detail = array(
-			"content" => $description,
-			"author" => $author
+			'content' => $description,
+			'author' => $author
 		);
-
 		return $content_detail;
 	}
 
@@ -115,7 +113,6 @@ class ReutersBridge extends BridgeAbstract {
 		$this->feedName = $data['wire_name'] . ' | Reuters';
 		$processedData = $this->processData($reuters_wireitems);
 
-
 		// Merge all articles from Editor's Highlight section into existing array of templates.
 		$top_section = reset($processedData);
 		if($top_section['wireitem_type'] == 'headlines') {
@@ -123,7 +120,6 @@ class ReutersBridge extends BridgeAbstract {
 
 			$reuters_wireitem_templates = array_merge($top_articles, $reuters_wireitem_templates);
 		}
-
 
 		foreach ($processedData as $story) {
 			$item['uid'] = $story['story']['usn'];
