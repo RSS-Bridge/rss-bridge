@@ -1,14 +1,11 @@
 <?php
 class ReutersBridge extends BridgeAbstract {
-
-
 	const MAINTAINER = 'hollowleviathan, spraynard, csisoap';
 	const NAME = 'Reuters Bridge';
 	const URI = 'https://reuters.com/';
 	const CACHE_TIMEOUT = 120; // 30min
 	const DESCRIPTION = 'Returns news from Reuters';
 	private $feedName = self::NAME;
-
 
 	const ALLOWED_WIREITEM_TYPES = array(
 		'story',
@@ -143,6 +140,7 @@ class ReutersBridge extends BridgeAbstract {
 			$item['title'] = $story['story']['hed'];
 			$item['timestamp'] = $story['story']['updated_at'];
 			$item['uri'] = $story['template_action']['url'];
-      $this->items[] = $item;
+      			$this->items[] = $item;
+		}
 	}
 }
