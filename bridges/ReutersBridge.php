@@ -54,7 +54,7 @@ class ReutersBridge extends BridgeAbstract {
 		return $this->feedName;
 	}
 	
-	private function processData($data) {
+	private function processData($data) { 
 		/**
 		 * Gets a list of wire items which are groups of templates
 		 */
@@ -75,7 +75,7 @@ class ReutersBridge extends BridgeAbstract {
 		return $reuters_wireitem_templates;
 	}
 
-	private function getArticle($feed_uri) {
+	private function getArticle($feed_uri) { // This will make another request to API to get full detail of article and author's name.
 		$uri = "https://wireapi.reuters.com/v8$feed_uri";
 		$data = getContents($uri);
 		$process_data = json_decode($data, true);
@@ -117,11 +117,10 @@ class ReutersBridge extends BridgeAbstract {
 		$processedData = $this->processData($reuters_wireitems);
 
 		// Merge all articles from Editor's Highlight section into existing array of templates.
-		$top_section = reset($processedData);
+		$top_section = reset($reuters_wireitems);
 		if($top_section['wireitem_type'] == 'headlines') {
 			$top_articles = $top_section['templates'][1]['headlines'];
-
-			$reuters_wireitem_templates = array_merge($top_articles, $reuters_wireitem_templates);
+			$processedData = array_merge($top_articles, $processedData);
 		}
 
 		foreach ($processedData as $story) {
@@ -132,12 +131,12 @@ class ReutersBridge extends BridgeAbstract {
 			$author = $content_detail['author'];
 			$item['author'] = $author;
 			if(!(bool)$description) {
-				$description = $story['story']['lede'];
+				$description = $story['story']['lede']; // Just in case the content doesn't have anything.
 			}
 			#	$description = $story['story']['lede'];
 			$image_url = $story['image']['url'];
 			if(!(bool)$image_url) {
-				$image_url = 'https://s4.reutersmedia.net/resources_v2/images/rcom-default.png';
+				$image_url = 'https://s4.reutersmedia.net/resources_v2/images/rcom-default.png'; //Just in case if there aren't any pictures.
 			}
 			$item['content'] = "$description \n
 					   <img src=\"$image_url\">";
