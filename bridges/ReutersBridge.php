@@ -38,8 +38,8 @@ class ReutersBridge extends BridgeAbstract {
 				'Lifestyle' => 'lifestyle',
 				'Markets' => 'markets',
 				'Sports' => 'sports',
-				'Pic of the Day' => 'pictures', //This have different configuration than others.
-				'USA News' => 'us'
+				'Pic of the Day' => 'pictures', // This has a different configuration than the others.
+        'USA News' => 'us'
 			)
 		),
 	));
@@ -53,7 +53,7 @@ class ReutersBridge extends BridgeAbstract {
 	public function getName() {
 		return $this->feedName;
 	}
-	
+
 	private function processData($data) { 
 		/**
 		 * Gets a list of wire items which are groups of templates
@@ -96,11 +96,11 @@ class ReutersBridge extends BridgeAbstract {
 		foreach($article_content as $content) {
 			$data = $content['content'];
 			// This will check whether that content is a image URL or not.
-			 if(strpos($data, '.png') !== false || strpos($data, '.jpg') !== false) {
-                                $description = $description . "<img src=\"$data\">";
-                        } else {
-                                $description = $description . "<p>$data</p>";
-                        }
+      if(strpos($data, '.png') !== false || strpos($data, '.jpg') !== false) {
+        $description = $description . "<img src=\"$data\">";
+      } else {
+        $description = $description . "<p>$data</p>";
+      }
 		}
 		
 		$content_detail = array(
@@ -116,14 +116,14 @@ class ReutersBridge extends BridgeAbstract {
 		$reuters_wireitems = $data['wireitems'];
 		$this->feedName = $data['wire_name'] . ' | Reuters';
 		$processedData = $this->processData($reuters_wireitems);
-
+    
 		// Merge all articles from Editor's Highlight section into existing array of templates.
 		$top_section = reset($reuters_wireitems);
 		if($top_section['wireitem_type'] == 'headlines') {
 			$top_articles = $top_section['templates'][1]['headlines'];
 			$processedData = array_merge($top_articles, $processedData);
 		}
-
+    
 		foreach ($processedData as $story) {
 			$item['uid'] = $story['story']['usn'];
 			$article_uri = $story['template_action']['api_path'];
