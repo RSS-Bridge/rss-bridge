@@ -1,12 +1,14 @@
 <?php
 class ReutersBridge extends BridgeAbstract {
 
+
 	const MAINTAINER = 'hollowleviathan, spraynard, csisoap';
 	const NAME = 'Reuters Bridge';
 	const URI = 'https://reuters.com/';
 	const CACHE_TIMEOUT = 120; // 30min
 	const DESCRIPTION = 'Returns news from Reuters';
 	private $feedName = self::NAME;
+
 
 	const ALLOWED_WIREITEM_TYPES = array(
 		'story',
@@ -34,12 +36,13 @@ class ReutersBridge extends BridgeAbstract {
 				'Lifestyle' => 'life',
 				'Energy' => 'energy',
 				'Aerospace and Defence' => 'aerospace',
-				'Markets' => 'markets',
-				'Sports' => 'sports',
-				'Pic of the Day' => 'pictures',
-				'USA News' => 'us',
 				'China' => 'china',
 				'Top News' => 'home/topnews',
+				'Lifestyle' => 'lifestyle',
+				'Markets' => 'markets',
+				'Sports' => 'sports',
+				'Pic of the Day' => 'pictures', //This have different configuration than others.
+				'USA News' => 'us'
 			)
 		),
 	));
@@ -48,8 +51,8 @@ class ReutersBridge extends BridgeAbstract {
 		$uri = "https://wireapi.reuters.com/v8/feed/rapp/us/tabbar/feeds/$feedname";
 		$returned_data = getContents($uri);
 		return json_decode($returned_data, true);
-	}
-	
+  }
+  
 	public function getName() {
 		return $this->feedName;
 	}
@@ -105,7 +108,6 @@ class ReutersBridge extends BridgeAbstract {
 		return $content_detail;
 	}
 
-
 	public function collectData() {
 		$feed = $this->getInput('feed');
 		$data = $this->getJson($feed);
@@ -141,8 +143,6 @@ class ReutersBridge extends BridgeAbstract {
 			$item['title'] = $story['story']['hed'];
 			$item['timestamp'] = $story['story']['updated_at'];
 			$item['uri'] = $story['template_action']['url'];
-
-			$this->items[] = $item;
-		}
+      $this->items[] = $item;
 	}
 }
