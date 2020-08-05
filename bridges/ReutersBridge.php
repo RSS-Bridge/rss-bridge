@@ -39,7 +39,7 @@ class ReutersBridge extends BridgeAbstract {
 				'Markets' => 'markets',
 				'Sports' => 'sports',
 				'Pic of the Day' => 'pictures', // This has a different configuration than the others.
-        'USA News' => 'us'
+        			'USA News' => 'us'
 			)
 		),
 	));
@@ -96,11 +96,11 @@ class ReutersBridge extends BridgeAbstract {
 		foreach($article_content as $content) {
 			$data = $content['content'];
 			// This will check whether that content is a image URL or not.
-      if(strpos($data, '.png') !== false || strpos($data, '.jpg') !== false) {
-        $description = $description . "<img src=\"$data\">";
-      } else {
-        $description = $description . "<p>$data</p>";
-      }
+			if(strpos($data, '.png') !== false || strpos($data, '.jpg') !== false) {
+				$description = $description . "<img src=\"$data\">";
+		      	} else {
+				$description = $description . "<p>$data</p>";
+		      	}
 		}
 		
 		$content_detail = array(
