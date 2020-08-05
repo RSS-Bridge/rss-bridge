@@ -48,7 +48,7 @@ class ReutersBridge extends BridgeAbstract {
 		$uri = "https://wireapi.reuters.com/v8/feed/rapp/us/tabbar/feeds/$feedname";
 		$returned_data = getContents($uri);
 		return json_decode($returned_data, true);
-  }
+ 	}
   
 	public function getName() {
 		return $this->feedName;
