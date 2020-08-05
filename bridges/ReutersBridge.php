@@ -108,7 +108,11 @@ class ReutersBridge extends BridgeAbstract {
                                         $description = $description . '</p>';
                                 }
                                 else {
-                                        $description = $description . "<p>$data</p>";
+					if(strtoupper($data) == $data) {
+						$description = $description . "<h3>$data</h3>";
+					} else {
+						$description = $description . "<p>$data</p>";
+					}
                                 }
 		      	}
 		}
