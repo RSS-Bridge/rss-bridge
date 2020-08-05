@@ -99,7 +99,17 @@ class ReutersBridge extends BridgeAbstract {
 			if(strpos($data, '.png') !== false || strpos($data, '.jpg') !== false) {
 				$description = $description . "<img src=\"$data\">";
 		      	} else {
-				$description = $description . "<p>$data</p>";
+				if($content['type'] == 'inline_items') {
+                                        $item_list = $content['items'];
+                                        $description = $description . '<p>';
+                                        foreach($item_list as $item) {
+                                                $description = $description . $item['content'];
+                                        }
+                                        $description = $description . '</p>';
+                                }
+                                else {
+                                        $description = $description . "<p>$data</p>";
+                                }
 		      	}
 		}
 		
