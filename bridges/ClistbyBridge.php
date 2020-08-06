@@ -22,15 +22,17 @@ class ClistbyBridge extends BridgeAbstract {
 
 				$item['uri'] = $element->find('div[class*="col-md-7 col-sm-8"]', 0)
 									   ->find('span[class=contest_title]', 0)->find('a[title]', 0)->href;
-				$item['categories']['start_end_time'] = 'Start-time ' . $element->find('div[class*="col-md-5 col-sm-4"]', 0)
-											->find('div[class*=start-time]', 0)->plaintext;
-				$item['categories']['Duration'] = 'Duration ' . $element->find('div[class*="col-md-5 col-sm-4"]', 0)
-										  ->find('div[class*=duration]', 0)->plaintext;
-				$item['categories']['Timeleft']
+				$start_end_time = 'Start-time ' . $element->find('div[class*="col-md-5 col-sm-4"]', 0)
+														  ->find('div[class*=start-time]', 0)->plaintext;
+				$Duration = 'Duration ' . $element->find('div[class*="col-md-5 col-sm-4"]', 0)
+												  ->find('div[class*=duration]', 0)->plaintext;
+				$Timeleft
 					= 'Timeleft ' . $element->find('div[class*="col-md-5 col-sm-4"]', 0)
 											->find('div[class*=countdown]', 0)->plaintext;
-				$item['categories']['Link'] = $element->find('div[class*="col-md-7 col-sm-8"]', 0)
-									   ->find('span[class=contest_title]', 0)->find('a[title]', 0)->href;
+				$Link = $element->find('div[class*="col-md-7 col-sm-8"]', 0)
+								->find('span[class=contest_title]', 0)->find('a[title]', 0)->href;
+				$item['content'] = $start_end_time . '😸<br>' . $Duration
+					. '😸<br>' . $Timeleft . '😸<br>' . $Link;
 				$this->items[] = $item;
 
 			}
