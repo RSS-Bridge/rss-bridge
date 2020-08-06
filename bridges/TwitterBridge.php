@@ -377,8 +377,15 @@ EOD;
 		if($data === null || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
 			$twitterPage = getContents('https://twitter.com');
 
-			$jsMainRegex = '/(https:\/\/abs\.twimg\.com\/responsive-web\/web_legacy\/main\.[^\.]+\.js)/m';
+			$jsMainRegex = '/(https:\/\/abs\.twimg\.com\/responsive-web\/web\/main\.[^\.]+\.js)/m';
 			preg_match_all($jsMainRegex, $twitterPage, $jsMainMatches, PREG_SET_ORDER, 0);
+			if (!$jsMainMatches) {
+				$jsMainRegex = '/(https:\/\/abs\.twimg\.com\/responsive-web\/web_legacy\/main\.[^\.]+\.js)/m';
+				preg_match_all($jsMainRegex, $twitterPage, $jsMainMatches, PREG_SET_ORDER, 0);
+			}
+			if (!$jsMainMatches) {
+				 returnServerError('Could not locate main.js link');
+			}
 			$jsLink = $jsMainMatches[0][0];
 
 			$jsContent = getContents($jsLink);
