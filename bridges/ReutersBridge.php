@@ -87,8 +87,13 @@ class ReutersBridge extends BridgeAbstract {
 		$authorlist = $first['story']['authors'];
 		
 		$author = '';
-		foreach($authorlist as $data) {
+		$counter = 0;
+		foreach($authorlist as $data) { //Formatting author's name.
+			$counter++;
 			$name = $data['name'];
+			if($counter == count($authorlist)) {
+				$author = $author . $name;
+			}
 			$author = $author . "$name, ";
 		}
 		
@@ -108,7 +113,7 @@ class ReutersBridge extends BridgeAbstract {
                                         $description = $description . '</p>';
                                 }
                                 else {
-					if(strtoupper($data) == $data) { //Add heading for any part of content served as header.
+					if(strtoupper($data) == $data || $content['type'] == 'heading') { //Add heading for any part of content served as header.
 						$description = $description . "<h3>$data</h3>";
 					} else {
 						$description = $description . "<p>$data</p>";
@@ -153,8 +158,8 @@ class ReutersBridge extends BridgeAbstract {
 			if(!(bool)$image_url) {
 				$image_url = 'https://s4.reutersmedia.net/resources_v2/images/rcom-default.png'; //Just in case if there aren't any pictures.
 			}
-			$item['content'] = "$description \n
-					   <img src=\"$image_url\">";
+			$item['content'] = "<img src=\"$image_url\"> \n
+					   $description";
 			$item['title'] = $story['story']['hed'];
 			$item['timestamp'] = $story['story']['updated_at'];
 			$item['uri'] = $story['template_action']['url'];
