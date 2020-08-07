@@ -163,11 +163,6 @@ class ReutersBridge extends BridgeAbstract {
 			$item['title'] = $story['story']['hed'];
 			$item['timestamp'] = $story['story']['updated_at'];
 			$item['uri'] = $story['template_action']['url'];
-<<<<<<< HEAD
       		$this->items[] = $item;
-=======
-      			$this->items[] = $item;
-		}
->>>>>>> d8b06ccdeffb07d0e4d9ae4a856a5c0db91d4381
 	}
 }
