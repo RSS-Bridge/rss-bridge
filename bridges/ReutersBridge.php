@@ -103,23 +103,23 @@ class ReutersBridge extends BridgeAbstract {
 			// This will check whether that content is a image URL or not.
 			if(strpos($data, '.png') !== false || strpos($data, '.jpg') !== false) {
 				$description = $description . "<img src=\"$data\">";
-		      	} else {
+		    } else {
 				if($content['type'] == 'inline_items') { //Fix issue with some content included brand name or company name.
-                                        $item_list = $content['items'];
-                                        $description = $description . '<p>';
-                                        foreach($item_list as $item) {
-                                                $description = $description . $item['content'];
-                                        }
-                                        $description = $description . '</p>';
-                                }
-                                else {
+                    $item_list = $content['items'];
+                    $description = $description . '<p>';
+                    foreach($item_list as $item) {
+                        $description = $description . $item['content'];
+                    }
+                    $description = $description . '</p>';
+                }
+                else {
 					if(strtoupper($data) == $data || $content['type'] == 'heading') { //Add heading for any part of content served as header.
 						$description = $description . "<h3>$data</h3>";
 					} else {
 						$description = $description . "<p>$data</p>";
 					}
-                                }
-		      	}
+                }
+		    }
 		}
 		
 		$content_detail = array(
