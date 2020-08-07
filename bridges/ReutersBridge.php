@@ -143,6 +143,6 @@ class ReutersBridge extends BridgeAbstract {
 			$item['title'] = $story['story']['hed'];
 			$item['timestamp'] = $story['story']['updated_at'];
 			$item['uri'] = $story['template_action']['url'];
-      $this->items[] = $item;
+      		$this->items[] = $item;
 	}
 }
