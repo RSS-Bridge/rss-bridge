@@ -112,8 +112,9 @@ class ReutersBridge extends BridgeAbstract
             $name = $data['name'];
             if ($counter == count($authorlist)) {
                 $author = $author . $name;
+            } else {
+                $author = $author . "$name, ";
             }
-            $author = $author . "$name, ";
         }
 
         $description = '';
