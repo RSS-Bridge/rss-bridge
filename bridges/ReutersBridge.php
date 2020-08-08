@@ -184,11 +184,13 @@ class ReutersBridge extends BridgeAbstract
             #	$description = $story['story']['lede'];
             $image_url = $story['image']['url'];
             if (!(bool) $image_url) {
-                $image_url =
-                    'https://s4.reutersmedia.net/resources_v2/images/rcom-default.png'; //Just in case if there aren't any pictures.
-            }
-            $item['content'] = "<img src=\"$image_url\"> \n
+                // $image_url =
+                // 'https://s4.reutersmedia.net/resources_v2/images/rcom-default.png'; //Just in case if there aren't any pictures.
+                $item['content'] = $description;
+            } else {
+                $item['content'] = "<img src=\"$image_url\"> \n
 					   $description";
+            }
             $item['title'] = $story['story']['hed'];
             $item['timestamp'] = $story['story']['updated_at'];
             $item['uri'] = $story['template_action']['url'];
