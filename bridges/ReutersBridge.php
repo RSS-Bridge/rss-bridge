@@ -9,12 +9,12 @@ class ReutersBridge extends BridgeAbstract
 	private $feedName = self::NAME;
 
 	const ALLOWED_WIREITEM_TYPES = array(
-	'story', 
-	'headlines'
+		'story', 
+		'headlines'
 	);
 
 	const ALLOWED_TEMPLATE_TYPES = array(
-	'story'
+		'story'
 	);
 
 	const PARAMETERS = array(
@@ -129,8 +129,8 @@ class ReutersBridge extends BridgeAbstract
 		foreach ($article_content as $content) {
 			$data = $content['content'];
 			// This will check whether that content is a image URL or not.
-			if (strpos($data, '.png') !== false 
-				|| strpos($data, '.jpg') !== false 
+			if (strpos($data, '.png') !== false
+				|| strpos($data, '.jpg') !== false
 				|| strpos($data, '.PNG') !== false
 			) {
 				$description = $description . "<img src=\"$data\">";
@@ -144,7 +144,7 @@ class ReutersBridge extends BridgeAbstract
 					}
 					$description = $description . '</p>';
 				} else {
-					if (strtoupper($data) == $data 
+					if (strtoupper($data) == $data
 						|| $content['type'] == 'heading'
 					) {
 						//Add heading for any part of content served as header.
@@ -157,8 +157,8 @@ class ReutersBridge extends BridgeAbstract
 		}
 
 		$content_detail = array(
-		'content' => $description,
-		'author' => $author,
+			'content' => $description,
+			'author' => $author,
 		);
 		return $content_detail;
 	}
@@ -203,5 +203,5 @@ class ReutersBridge extends BridgeAbstract
 			$item['uri'] = $story['template_action']['url'];
 			$this->items[] = $item;
 		}
-    }
+	}
 }
