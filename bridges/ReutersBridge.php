@@ -32,7 +32,6 @@ class ReutersBridge extends BridgeAbstract
                     'Aerospace and Defence' => 'aerospace',
                     'China' => 'china',
                     'Top News' => 'home/topnews',
-                    'Lifestyle' => 'lifestyle',
                     'Markets' => 'markets',
                     'Sports' => 'sports',
                     'Pic of the Day' => 'pictures', // This has a different configuration than the others.
