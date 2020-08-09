@@ -58,12 +58,14 @@ class ReutersBridge extends BridgeAbstract
         /**
          * Gets a list of wire items which are groups of templates
          */
-        $reuters_allowed_wireitems = array_filter($data, function ($wireitem) {
-            return in_array(
-                $wireitem['wireitem_type'],
-                self::ALLOWED_WIREITEM_TYPES
-            );
-        });
+        $reuters_allowed_wireitems = array_filter(
+            $data, function ($wireitem) {
+                return in_array(
+                    $wireitem['wireitem_type'],
+                    self::ALLOWED_WIREITEM_TYPES
+                );
+            }
+        );
 
         /*
          * Gets a list of "Templates", which is data containing a story
@@ -74,14 +76,16 @@ class ReutersBridge extends BridgeAbstract
                 $wireitem_templates = $wireitem['templates'];
                 return array_merge(
                     $carry,
-                    array_filter($wireitem_templates, function (
-                        array $template_data
-                    ) {
-                        return in_array(
-                            $template_data['type'],
-                            self::ALLOWED_TEMPLATE_TYPES
-                        );
-                    })
+                    array_filter(
+                        $wireitem_templates, function (
+                            array $template_data
+                        ) {
+                            return in_array(
+                                $template_data['type'],
+                                self::ALLOWED_TEMPLATE_TYPES
+                            );
+                        }
+                    )
                 );
             },
             []
@@ -120,10 +124,9 @@ class ReutersBridge extends BridgeAbstract
         foreach ($article_content as $content) {
             $data = $content['content'];
             // This will check whether that content is a image URL or not.
-            if (
-                strpos($data, '.png') !== false ||
-                strpos($data, '.jpg') !== false ||
-                strpos($data, '.PNG') !== false
+            if (strpos($data, '.png') !== false 
+                || strpos($data, '.jpg') !== false 
+                || strpos($data, '.PNG') !== false
             ) {
                 $description = $description . "<img src=\"$data\">";
             } else {
@@ -136,9 +139,8 @@ class ReutersBridge extends BridgeAbstract
                     }
                     $description = $description . '</p>';
                 } else {
-                    if (
-                        strtoupper($data) == $data ||
-                        $content['type'] == 'heading'
+                    if (strtoupper($data) == $data 
+                        || $content['type'] == 'heading'
                     ) {
                         //Add heading for any part of content served as header.
                         $description = $description . "<h3>$data</h3>";
@@ -181,7 +183,7 @@ class ReutersBridge extends BridgeAbstract
             if (!(bool) $description) {
                 $description = $story['story']['lede']; // Just in case the content doesn't have anything.
             }
-            #	$description = $story['story']['lede'];
+            // $description = $story['story']['lede'];
             $image_url = $story['image']['url'];
             if (!(bool) $image_url) {
                 // $image_url =
