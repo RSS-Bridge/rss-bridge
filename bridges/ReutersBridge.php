@@ -24,7 +24,7 @@ class ReutersBridge extends BridgeAbstract
                 'type' => 'list',
                 'exampleValue' => 'World',
                 'title' => 'Reuters feed. World, US, Tech...',
-                'values' => [
+                'values' => array(
                     'Tech' => 'tech',
                     'Wire' => 'wire',
                     'Health' => 'health',
