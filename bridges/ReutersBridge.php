@@ -9,7 +9,7 @@ class ReutersBridge extends BridgeAbstract
 	private $feedName = self::NAME;
 
 	const ALLOWED_WIREITEM_TYPES = array(
-		'story', 
+		'story',
 		'headlines'
 	);
 
