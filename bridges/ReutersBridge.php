@@ -8,18 +8,18 @@ class ReutersBridge extends BridgeAbstract
     const DESCRIPTION = 'Returns news from Reuters';
     private $feedName = self::NAME;
 
-    const ALLOWED_WIREITEM_TYPES = ['story', 'headlines'];
+    const ALLOWED_WIREITEM_TYPES = array('story', 'headlines');
 
-    const ALLOWED_TEMPLATE_TYPES = ['story'];
+    const ALLOWED_TEMPLATE_TYPES = array('story');
 
-    const PARAMETERS = [
-        [
-            'feed' => [
+    const PARAMETERS = array(
+    array(
+    'feed' => array(
                 'name' => 'News Feed',
                 'type' => 'list',
                 'exampleValue' => 'World',
                 'title' => 'Reuters feed. World, US, Tech...',
-                'values' => [
+                'values' => array(
                     'Tech' => 'tech',
                     'Wire' => 'wire',
                     'Health' => 'health',
@@ -36,10 +36,10 @@ class ReutersBridge extends BridgeAbstract
                     'Sports' => 'sports',
                     'Pic of the Day' => 'pictures', // This has a different configuration than the others.
                     'USA News' => 'us',
-                ],
-            ],
-        ],
-    ];
+                ),
+    ),
+    ),
+    );
 
     private function getJson($feedname)
     {
@@ -68,8 +68,8 @@ class ReutersBridge extends BridgeAbstract
         );
 
         /*
-         * Gets a list of "Templates", which is data containing a story
-         */
+        * Gets a list of "Templates", which is data containing a story
+        */
         $reuters_wireitem_templates = array_reduce(
             $reuters_allowed_wireitems,
             function (array $carry, array $wireitem) {
@@ -88,7 +88,7 @@ class ReutersBridge extends BridgeAbstract
                     )
                 );
             },
-            []
+            array()
         );
 
         return $reuters_wireitem_templates;
@@ -124,8 +124,8 @@ class ReutersBridge extends BridgeAbstract
         foreach ($article_content as $content) {
             $data = $content['content'];
             // This will check whether that content is a image URL or not.
-            if (strpos($data, '.png') !== false 
-                || strpos($data, '.jpg') !== false 
+            if (strpos($data, '.png') !== false
+                || strpos($data, '.jpg') !== false
                 || strpos($data, '.PNG') !== false
             ) {
                 $description = $description . "<img src=\"$data\">";
@@ -139,7 +139,7 @@ class ReutersBridge extends BridgeAbstract
                     }
                     $description = $description . '</p>';
                 } else {
-                    if (strtoupper($data) == $data 
+                    if (strtoupper($data) == $data
                         || $content['type'] == 'heading'
                     ) {
                         //Add heading for any part of content served as header.
@@ -151,10 +151,10 @@ class ReutersBridge extends BridgeAbstract
             }
         }
 
-        $content_detail = [
-            'content' => $description,
-            'author' => $author,
-        ];
+        $content_detail = array(
+        'content' => $description,
+        'author' => $author,
+        );
         return $content_detail;
     }
 
