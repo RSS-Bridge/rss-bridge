@@ -122,7 +122,8 @@ class ReutersBridge extends BridgeAbstract
             // This will check whether that content is a image URL or not.
             if (
                 strpos($data, '.png') !== false ||
-                strpos($data, '.jpg') !== false
+                strpos($data, '.jpg') !== false ||
+                strpos($data, '.PNG') !== false
             ) {
                 $description = $description . "<img src=\"$data\">";
             } else {
