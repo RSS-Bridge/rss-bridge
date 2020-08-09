@@ -19,28 +19,28 @@ class ReutersBridge extends BridgeAbstract
 
 	const PARAMETERS = array(
 		array(
-		'feed' => array(
-					'name' => 'News Feed',
-					'type' => 'list',
-					'exampleValue' => 'World',
-					'title' => 'Reuters feed. World, US, Tech...',
-					'values' => array(
-						'Tech' => 'tech',
-						'Wire' => 'wire',
-						'Health' => 'health',
-						'Business' => 'business',
-						'World' => 'world',
-						'Politics' => 'politics',
-						'Science' => 'science',
-						'Lifestyle' => 'life',
-						'Energy' => 'energy',
-						'Aerospace and Defence' => 'aerospace',
-						'China' => 'china',
-						'Top News' => 'home/topnews',
-						'Markets' => 'markets',
-						'Sports' => 'sports',
-						'Pic of the Day' => 'pictures', // This has a different configuration than the others.
-						'USA News' => 'us',
+			'feed' => array(
+				'name' => 'News Feed',
+				'type' => 'list',
+				'exampleValue' => 'World',
+				'title' => 'Reuters feed. World, US, Tech...',
+				'values' => array(
+					'Tech' => 'tech',
+					'Wire' => 'wire',
+					'Health' => 'health',
+					'Business' => 'business',
+					'World' => 'world',
+					'Politics' => 'politics',
+					'Science' => 'science',
+					'Lifestyle' => 'life',
+					'Energy' => 'energy',
+					'Aerospace and Defence' => 'aerospace',
+					'China' => 'china',
+					'Top News' => 'home/topnews',
+					'Markets' => 'markets',
+					'Sports' => 'sports',
+					'Pic of the Day' => 'pictures', // This has a different configuration than the others.
+					'USA News' => 'us',
 				),
 			),
 		),
