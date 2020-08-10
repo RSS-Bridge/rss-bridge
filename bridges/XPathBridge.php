@@ -1,8 +1,6 @@
 <?php
-require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR
-	. 'BridgeXPathAbstract.php';
 
-class XPathBridge extends BridgeXPathAbstract {
+class XPathBridge extends XPathAbstract {
 	const NAME = 'XPathBridge';
 	const URI = 'https://github.com/rss-bridge/rss-bridge';
 	const DESCRIPTION

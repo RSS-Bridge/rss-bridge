@@ -1,8 +1,6 @@
 <?php
-require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR
-	. 'BridgeXPathAbstract.php';
 
-class BlizzardNewsBridge extends BridgeXPathAbstract {
+class BlizzardNewsBridge extends XPathAbstract {
 
 	const NAME = 'Blizzard News';
 	const URI = 'https://news.blizzard.com';

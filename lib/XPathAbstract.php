@@ -1,13 +1,28 @@
 <?php
 
-abstract class BridgeXPathAbstract extends BridgeAbstract {
+/**
+ * An alternative abstract class for bridges utilizing XPath expressions
+ *
+ * This class is meant as an alternative base class for bridge implementations.
+ * It offers preliminary functionality for generating feeds based on XPath
+ * expressions.
+ * As a minimum, extending classes should define XPath expressions pointing
+ * to the feed items contents in the class constants below. In case there is
+ * more manual fine tuning required, it offers a bunch of methods which can
+ * be overridden, for example in order to specify formatting of field values
+ * or more flexible definition of dynamic XPath expressions.
+ *
+ * This class extends {@see BridgeAbstract}, which means it incorporates and
+ * extends all of its functionality.
+ **/
+abstract class XPathAbstract extends BridgeAbstract {
 
 	/**
 	 * Source Web page URL (should provide either HTML or XML content)
 	 * You can specify any website URL which serves data suited for display in RSS feeds
 	 * (for example a news blog).
 	 *
-	 * Use {@see BridgeXPathAbstract::getSourceUrl()} to read this parameter
+	 * Use {@see XPathAbstract::getSourceUrl()} to read this parameter
 	 */
 	const FEED_SOURCE_URL = '';
 
@@ -16,7 +31,7 @@ abstract class BridgeXPathAbstract extends BridgeAbstract {
 	 * If this is left blank or does not provide any data {@see BridgeAbstract::getName()}
 	 * is used instead as the feed's title.
 	 *
-	 * Use {@see BridgeXPathAbstract::getExpressionTitle()} to read this parameter
+	 * Use {@see XPathAbstract::getExpressionTitle()} to read this parameter
 	 */
 	const XPATH_EXPRESSION_FEED_TITLE = './/title';
 
@@ -25,7 +40,7 @@ abstract class BridgeXPathAbstract extends BridgeAbstract {
 	 * If this is left blank or does not provide any data {@see BridgeAbstract::getIcon()}
 	 * is used instead as the feed's favicon URL.
 	 *
-	 * Use {@see BridgeXPathAbstract::getExpressionIcon()} to read this parameter
+	 * Use {@see XPathAbstract::getExpressionIcon()} to read this parameter
 	 */
 	const XPATH_EXPRESSION_FEED_ICON = './/link[@rel="icon"]/@href';
 
@@ -36,7 +51,7 @@ abstract class BridgeXPathAbstract extends BridgeAbstract {
 	 * be the context nodes for all of the following expressions. This expression usually
 	 * starts with a single forward slash.
 	 *
-	 * Use {@see BridgeXPathAbstract::getExpressionItem()} to read this parameter
+	 * Use {@see XPathAbstract::getExpressionItem()} to read this parameter
 	 */
 	const XPATH_EXPRESSION_ITEM = '';
 
@@ -46,7 +61,7 @@ abstract class BridgeXPathAbstract extends BridgeAbstract {
 	 * containing the article headline. It should start with a dot followed by two
 	 * forward slashes, referring to any descendant nodes of the article item node.
 	 *
-	 * Use {@see BridgeXPathAbstract::getExpressionItemTitle()} to read this parameter
+	 * Use {@see XPathAbstract::getExpressionItemTitle()} to read this parameter
 	 */
 	const XPATH_EXPRESSION_ITEM_TITLE = '';
 
@@ -57,7 +72,7 @@ abstract class BridgeXPathAbstract extends BridgeAbstract {
 	 * followed by two forward slashes, referring to any descendant nodes of the
 	 * article item node.
 	 *
-	 * Use {@see BridgeXPathAbstract::getExpressionItemContent()} to read this parameter
+	 * Use {@see XPathAbstract::getExpressionItemContent()} to read this parameter
 	 */
 	const XPATH_EXPRESSION_ITEM_CONTENT = '';
 
@@ -69,7 +84,7 @@ abstract class BridgeXPathAbstract extends BridgeAbstract {
 	 * the article item node. Attributes can be selected by prepending an @ char
 	 * before the attributes name.
 	 *
-	 * Use {@see BridgeXPathAbstract::getExpressionItemUri()} to read this parameter
+	 * Use {@see XPathAbstract::getExpressionItemUri()} to read this parameter
 	 */
 	const XPATH_EXPRESSION_ITEM_URI = '';
 
@@ -80,7 +95,7 @@ abstract class BridgeXPathAbstract extends BridgeAbstract {
 	 * followed by two forward slashes, referring to any descendant nodes of
 	 * the article item node.
 	 *
-	 * Use {@see BridgeXPathAbstract::getExpressionItemAuthor()} to read this parameter
+	 * Use {@see XPathAbstract::getExpressionItemAuthor()} to read this parameter
 	 */
 	const XPATH_EXPRESSION_ITEM_AUTHOR = '';
 
@@ -92,7 +107,7 @@ abstract class BridgeXPathAbstract extends BridgeAbstract {
 	 * any descendant nodes of the article item node. Attributes can be
 	 * selected by prepending an @ char before the attributes name.
 	 *
-	 * Use {@see BridgeXPathAbstract::getExpressionItemTimestamp()} to read this parameter
+	 * Use {@see XPathAbstract::getExpressionItemTimestamp()} to read this parameter
 	 */
 	const XPATH_EXPRESSION_ITEM_TIMESTAMP = '';
 
@@ -105,7 +120,7 @@ abstract class BridgeXPathAbstract extends BridgeAbstract {
 	 * referring to any descendant nodes of the article item node. Attributes
 	 * can be selected by prepending an @ char before the attributes name.
 	 *
-	 * Use {@see BridgeXPathAbstract::getExpressionItemEnclosures()} to read this parameter
+	 * Use {@see XPathAbstract::getExpressionItemEnclosures()} to read this parameter
 	 */
 	const XPATH_EXPRESSION_ITEM_ENCLOSURES = '';
 
@@ -119,7 +134,7 @@ abstract class BridgeXPathAbstract extends BridgeAbstract {
 	 * item node. Attributes can be selected by prepending an @ char
 	 * before the attributes name.
 	 *
-	 * Use {@see BridgeXPathAbstract::getExpressionItemCategories()} to read this parameter
+	 * Use {@see XPathAbstract::getExpressionItemCategories()} to read this parameter
 	 */
 	const XPATH_EXPRESSION_ITEM_CATEGORIES = '';
 
@@ -130,7 +145,7 @@ abstract class BridgeXPathAbstract extends BridgeAbstract {
 	 * "weird" characters in your feed where you'd normally expect umlauts
 	 * or any other non-ascii characters.
 	 *
-	 * Use {@see BridgeXPathAbstract::getSettingFixEncoding()} to read this parameter
+	 * Use {@see XPathAbstract::getSettingFixEncoding()} to read this parameter
 	 */
 	const SETTING_FIX_ENCODING = false;
 
@@ -301,7 +316,7 @@ abstract class BridgeXPathAbstract extends BridgeAbstract {
 	/**
 	 * Should provide the source website HTML content
 	 * can be easily overwritten for example if special headers or auth infos are required
-	 * @return string|string[]
+	 * @return string
 	 */
 	protected function provideWebsiteContent() {
 		return getContents($this->feedUri);
@@ -311,7 +326,7 @@ abstract class BridgeXPathAbstract extends BridgeAbstract {
 	 * Should provide the feeds title
 	 *
 	 * @param DOMXPath $xpath
-	 * @return string|string[]
+	 * @return string
 	 */
 	protected function provideFeedTitle(DOMXPath $xpath) {
 		$title = $xpath->query($this->getParam('feed_title'));
@@ -324,7 +339,7 @@ abstract class BridgeXPathAbstract extends BridgeAbstract {
 	 * Should provide the URL of the feed's favicon
 	 *
 	 * @param DOMXPath $xpath
-	 * @return string|string[]
+	 * @return string
 	 */
 	protected function provideFeedIcon(DOMXPath $xpath) {
 		$icon = $xpath->query($this->getParam('feed_icon'));
@@ -396,7 +411,7 @@ abstract class BridgeXPathAbstract extends BridgeAbstract {
 	/**
 	 * @param $param
 	 * @param $value
-	 * @return array|false|int|string|string[]|void[]
+	 * @return string|array
 	 */
 	protected function formatParamValue($param, $value)
 	{
@@ -540,6 +555,7 @@ abstract class BridgeXPathAbstract extends BridgeAbstract {
 		} elseif(is_string($typedResult) && strlen($typedResult) > 0) {
 			return trim($typedResult);
 		}
+		returnServerError('Unknown type of XPath expression result.');
 	}
 
 	/**
@@ -556,6 +572,8 @@ abstract class BridgeXPathAbstract extends BridgeAbstract {
 	}
 
 	/**
+	 * Allows overriding default mechanism determining items Uid's
+	 *
 	 * @param FeedItem $item
 	 * @return string|null
 	 */

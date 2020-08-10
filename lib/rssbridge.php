@@ -74,6 +74,7 @@ require_once PATH_LIB . 'BridgeList.php';
 require_once PATH_LIB . 'ParameterValidator.php';
 require_once PATH_LIB . 'ActionFactory.php';
 require_once PATH_LIB . 'ActionAbstract.php';
+require_once PATH_LIB . 'XPathAbstract.php';
 
 // Functions
 require_once PATH_LIB . 'html.php';
