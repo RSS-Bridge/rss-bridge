@@ -4,14 +4,30 @@ class Releases3DSBridge extends BridgeAbstract {
 	const MAINTAINER = 'ORelio';
 	const NAME = '3DS Scene Releases';
 	const URI = 'http://www.3dsdb.com/';
+	const URI_SWITCH = 'http://www.nswdb.com/';
 	const CACHE_TIMEOUT = 10800; // 3h
-	const DESCRIPTION = 'Returns the newest scene releases.';
+	const DESCRIPTION = 'Returns the newest scene releases for Nintendo 3DS or Switch.';
+	const PARAMETERS = array(
+		array(
+			'console' => array(
+				'name' => 'Console',
+				'type' => 'list',
+				'values' => array(
+					'3DS' => '3ds',
+					'Switch' => 'switch'
+				)
+			)
+		)
+	);
 
 	public function collectData(){
 
-		$dataUrl = self::URI . 'xml.php';
+		$baseUrl = self::URI;
+		if ($this->getInput('console') == 'switch')
+			$baseUrl = self::URI_SWITCH;
+		$dataUrl = $baseUrl . 'xml.php';
 		$xml = getContents($dataUrl)
-			or returnServerError('Could not request 3dsdb: ' . $dataUrl);
+			or returnServerError('Could not request URL: ' . $dataUrl);
 		$limit = 0;
 
 		foreach(array_reverse(explode('<release>', $xml)) as $element) {
