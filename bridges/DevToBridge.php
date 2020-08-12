@@ -45,24 +45,22 @@ apple-icon-5c6fa9f2bce280428589c6195b7f1924206a53b782b371cfe2d02da932c8c173.png'
 	}
 
 	public function collectData() {
-
 		$html = getSimpleHTMLDOMCached($this->getURI())
 			or returnServerError('Could not request ' . $this->getURI());
 
 		$html = defaultLinkTo($html, static::URI);
 
-		$articles = $html->find('div.single-article')
+		$articles = $html->find('div.crayons-story')
 			or returnServerError('Could not find articles!');
 
 		foreach($articles as $article) {
 			$item = array();
 
 			$item['uri'] = $article->find('a[id*=article-link]', 0)->href;
-			$item['title'] = $article->find('h3', 0)->plaintext;
+			$item['title'] = $article->find('h2 > a', 0)->plaintext;
 
-			// i.e. "Charlie Harrington・Sep 21"
-			$item['timestamp'] = strtotime(explode('・', $article->find('h4 a', 0)->plaintext, 2)[1]);
-			$item['author'] = explode('・', $article->find('h4 a', 0)->plaintext, 2)[0];
+			$item['timestamp'] = $article->find('time', 0)->datetime;
+			$item['author'] = $article->find('a.crayons-story__secondary.fw-medium', 0)->plaintext;
 
 			// Profile image
 			$item['enclosures'] = array($article->find('img', 0)->src);
@@ -70,7 +68,6 @@ apple-icon-5c6fa9f2bce280428589c6195b7f1924206a53b782b371cfe2d02da932c8c173.png'
 			if($this->getInput('full')) {
 				$fullArticle = $this->getFullArticle($item['uri']);
 				$item['content'] = <<<EOD
-<img src="{$item['enclosures'][0]}" alt="{$item['author']}">
 <p>{$fullArticle}</p>
 EOD;
 			} else {
@@ -80,11 +77,13 @@ EOD;
 EOD;
 			}
 
-			$item['categories'] = array_map(function($e){ return $e->plaintext; }, $article->find('div.tags span.tag'));
+			// categories
+			foreach ($article->find('a.crayons-tag') as $tag) {
+				$item['categories'][] = str_replace('#', '', $tag->plaintext);
+			}
 
 			$this->items[] = $item;
 		}
-
 	}
 
 	public function getName() {
@@ -100,6 +99,10 @@ EOD;
 			or returnServerError('Unable to load article from "' . $url . '"!');
 
 		$html = defaultLinkTo($html, static::URI);
+
+		if ($html->find('div.crayons-article__cover', 0)) {
+			return $html->find('div.crayons-article__cover', 0) . $html->find('[id="article-body"]', 0);
+		}
 
 		return $html->find('[id="article-body"]', 0);
 	}
