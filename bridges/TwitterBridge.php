@@ -384,6 +384,10 @@ EOD;
 				preg_match_all($jsMainRegex, $twitterPage, $jsMainMatches, PREG_SET_ORDER, 0);
 			}
 			if (!$jsMainMatches) {
+				$jsMainRegex = '/(https:\/\/abs\.twimg\.com\/responsive-web\/client-web\/main\.[^\.]+\.js)/m';
+				preg_match_all($jsMainRegex, $twitterPage, $jsMainMatches, PREG_SET_ORDER, 0);
+			}
+			if (!$jsMainMatches) {
 				 returnServerError('Could not locate main.js link');
 			}
 			$jsLink = $jsMainMatches[0][0];
