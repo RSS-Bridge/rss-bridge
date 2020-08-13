@@ -35,6 +35,7 @@ class ReutersBridge extends BridgeAbstract
 					'Lifestyle' => 'life',
 					'Energy' => 'energy',
 					'Aerospace and Defence' => 'aerospace',
+					'Special Reports' => 'special-reports',
 					'China' => 'china',
 					'Top News' => 'home/topnews',
 					'Markets' => 'markets',
