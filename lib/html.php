@@ -207,7 +207,7 @@ function markdownToHtml($string) {
 
 	//For more details about how these regex work:
 	// https://github.com/RSS-Bridge/rss-bridge/pull/802#discussion_r216138702
-	// Images: https://regex101.com/r/JW9Evr/1
+	// Images: https://regex101.com/r/JW9Evr/2
 	// Links: https://regex101.com/r/eRGVe7/1
 	// Bold: https://regex101.com/r/2p40Y0/1
 	// Italic: https://regex101.com/r/xJkET9/1
@@ -215,7 +215,7 @@ function markdownToHtml($string) {
 	// Plain URL: https://regex101.com/r/2JHYwb/1
 	// Site name: https://regex101.com/r/qIuKYE/1
 
-	$string = preg_replace('/\!\[([^\]]+)\]\(([^\) ]+)(?: [^\)]+)?\)/', '<img src="$2" alt="$1" />', $string);
+	$string = preg_replace('/\!\[([^\]]*)\]\(([^\) ]+)(?: [^\)]+)?\)/', '<img src="$2" alt="$1" />', $string);
 	$string = preg_replace('/\[([^\]]+)\]\(([^\)]+)\)/', '<a href="$2">$1</a>', $string);
 	$string = preg_replace('/\*\*(.*)\*\*/U', '<b>$1</b>', $string);
 	$string = preg_replace('/\*(.*)\*/U', '<i>$1</i>', $string);
