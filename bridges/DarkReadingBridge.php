@@ -53,6 +53,8 @@ class DarkReadingBridge extends FeedExpander {
 
 	protected function parseItem($newsItem){
 		$item = parent::parseItem($newsItem);
+		if (empty($item['content']))
+			return null; //ignore dummy articles
 		$article = getSimpleHTMLDOMCached($item['uri'])
 			or returnServerError('Could not request Dark Reading: ' . $item['uri']);
 		$item['content'] = $this->extractArticleContent($article);
