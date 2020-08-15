@@ -460,7 +460,7 @@ EOD;
 		$apiKeys = $this->getApiKey();
 		$headers = array('authorization: Bearer ' . $apiKeys[0],
 				 'x-guest-token: ' . $apiKeys[1],
-				 );
+			   );
 		return getContents($uri, $headers);
 	}
 
