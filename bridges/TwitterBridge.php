@@ -234,11 +234,24 @@ EOD
 
 			// generate the title
 			$item['title'] = $tweet->full_text;
-			$reg_ex = '/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/';
-			if(preg_match($reg_ex, $tweet->full_text, $url)) {
-				$cleanedTweet = preg_replace($reg_ex, "<a href='{$url[0]}' target='_blank'>{$url[0]}</a> ", $tweet->full_text);
+
+			// Convert plain text URLs into HTML hyperlinks
+			if (isset($tweet->entities->media)) {
+				foreach($tweet->entities->media as $media) {
+					$cleanedTweet = str_replace($media->url, '<a href="' . $media->expanded_url . '">' . $media->display_url . '</a>', $tweet->full_text);
+				}
+			} elseif (isset($tweet->entities->urls)) {
+				foreach($tweet->entities->urls as $url) {
+					$cleanedTweet = str_replace($url->url, '<a href="' . $url->expanded_url . '">' . $url->display_url . '</a>', $tweet->full_text);
+				}
 			} else {
-				$cleanedTweet = $tweet->full_text;
+				// fallback to regex'es
+				$reg_ex = '/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/';
+				if(preg_match($reg_ex, $tweet->full_text, $url)) {
+					$cleanedTweet = preg_replace($reg_ex, "<a href='{$url[0]}' target='_blank'>{$url[0]}</a> ", $tweet->full_text);
+				} else {
+					$cleanedTweet = $tweet->full_text;
+				}
 			}
 
 			// Add avatar
