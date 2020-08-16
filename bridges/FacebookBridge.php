@@ -30,7 +30,7 @@ class FacebookBridge extends BridgeAbstract {
 				'type' => 'checkbox',
 				'required' => false,
 				'defaultValue' => false,
-				'title' => 'Feed includes reviews when checked'
+				'title' => 'Feed includes reviews when unchecked'
 			)
 		),
 		'Group' => array(
