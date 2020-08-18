@@ -68,17 +68,25 @@ class Releases3DSBridge extends BridgeAbstract {
 
 			$ignSearchUrl = 'https://www.ign.com/search?q=' . urlencode($name);
 			if($ignResult = getSimpleHTMLDOMCached($ignSearchUrl)) {
-				$ignCoverArt = $ignResult->find('div.search-item-media', 0)->find('img', 0)->src;
-				$ignDesc = $ignResult->find('div.search-item-description', 0)->plaintext;
-				$ignLink = $ignResult->find('div.search-item-sub-title', 0)->find('a', 1)->href;
-				$ignDate = strtotime(trim($ignResult->find('span.publish-date', 0)->plaintext));
-				$ignDescription = '<div><img src="'
-				. $ignCoverArt
-				. '" /></div><div>'
-				. $ignDesc
-				. ' <a href="'
-				. $ignLink
-				. '">More at IGN</a></div>';
+				$ignCoverArt = $ignResult->find('div.search-item-media', 0);
+				$ignDesc = $ignResult->find('div.search-item-description', 0);
+				$ignLink = $ignResult->find('div.search-item-sub-title', 0);
+				$ignDate = $ignResult->find('span.publish-date', 0);
+				if (is_object($ignCoverArt))
+					$ignCoverArt = $ignCoverArt->find('img', 0);
+				if (is_object($ignLink))
+					$ignLink = $ignLink->find('a', 1);
+				if (is_object($ignDate))
+					$ignDate = strtotime(trim($ignDate->plaintext));
+				if (is_object($ignCoverArt) && is_object($ignDesc) && is_object($ignLink)) {
+					$ignDescription = '<div><img src="'
+					. $ignCoverArt->src
+					. '" /></div><div>'
+					. $ignDesc->plaintext
+					. ' <a href="'
+					. $ignLink->href
+					. '">More at IGN</a></div>';
+				}
 			}
 
 			//Main section : Release description from 3DS database
