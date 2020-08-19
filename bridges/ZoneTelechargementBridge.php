@@ -8,7 +8,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 	 */
 
 	const NAME = 'Zone Telechargement';
-	const URI = 'https://www.zone-annuaire.com/';
+	const URI = 'https://www.zt-za.com/';
 	const DESCRIPTION = 'Suivi de série sur Zone Telechargement';
 	const MAINTAINER = 'sysadminstory';
 	const PARAMETERS = array(
@@ -17,18 +17,21 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 				'name' => 'URL de la série',
 				'type' => 'text',
 				'required' => true,
-				'title' => 'URL d\'une série sans le https://www.zone-annuaire.com/',
+				'title' => 'URL d\'une série sans le https://www.zt-za.com/',
 				'exampleValue' => 'telecharger-series/31079-halt-and-catch-fire-saison-4-french-hd720p.html'
 			)
 		)
 	);
+
+	// This is an URL that is not protected by robot protection
+	const UNPROTECED_URI = 'https://www.zone-annuaire.com/';
 
 	public function getIcon() {
 		return self::URI . '/templates/Default/images/favicon.ico';
 	}
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM(self::URI . $this->getInput('url'))
+		$html = getSimpleHTMLDOM(self::UNPROTECED_URI . $this->getInput('url'))
 			or returnServerError('Could not request Zone Telechargement.');
 
 		// Get the TV show title
