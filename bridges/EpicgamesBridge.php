@@ -25,8 +25,22 @@ class EpicgamesBridge extends BridgeAbstract {
 			'name' => 'Language',
 			'type' => 'list',
 			'values' => array(
-				'Eng' => 'en',
-				'Rus' => 'ru',
+				'English' => 'en',
+				'العربية' => 'ar',
+				'Deutsch' => 'de',
+				'Español (Spain)' => 'es-ES',
+				'Español (LA)' => 'es-MX',
+				'Français' => 'fr',
+				'Italiano' => 'it',
+				'日本語' => 'ja',
+				'한국어' => 'ko',
+				'Polski' => 'pl',
+				'Português (Brasil)' => 'pt-BR',
+				'Русский' => 'ru',
+				'ไทย' => 'th',
+				'Türkçe' => 'tr',
+				'简体中文' => 'zh-CN',
+				'繁體中文' => 'zh-Hant',
 			 ),
 			'title' => 'Language of blog posts',
 			'defaultValue' => 'en',
@@ -47,15 +61,21 @@ class EpicgamesBridge extends BridgeAbstract {
 			$item['uri'] = self::URI . $value->url;
 			$item['title'] = $value->title;
 			$item['timestamp'] = $value->date;
-			$item['author'] = $value->author;
-
-			$content = $value->content;
-			$content = str_replace('href="/', 'href="' . self::URI . '/', $content);
-			$item['content'] = $content;
-
-			$item['enclosures'][] = $value->image;
+			$item['author'] = 'EpicGames';
+			if(!empty($value->author)) {
+				$item['author'] = $value->author;
+			}
+			if(!empty($value->content)) {
+				$content = $value->content;
+				$content = str_replace('href="/', 'href="' . self::URI . '/', $content);
+				$item['content'] = $content;
+			}
+			if(!empty($value->image)) {
+				$item['enclosures'][] = $value->image;
+			}
 			$item['uid'] = $value->_id;
-			$item['id'] = $value->_id;	
+			$item['id'] = $value->_id;
+
 			$this->items[] = $item;
 		}
 	}
