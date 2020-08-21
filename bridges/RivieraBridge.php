@@ -1,10 +1,10 @@
 <?php
 
 class RivieraBridge extends BridgeAbstract {
-	const NAME = 'Riviera';
+	const NAME = 'Sala La Riviera';
 	const URI = 'https://salariviera.com/conciertos-riviera/';
-	const DESCRIPTION = 'No description provided';
-	const MAINTAINER = 'No maintainer';
+	const DESCRIPTION = 'Concerts in Sala La Riviera, Madrid';
+	const MAINTAINER = 'danoloan';
 	const PARAMETERS = array(); // Can be omitted!
 	const CACHE_TIMEOUT = 1;
 
@@ -14,7 +14,7 @@ class RivieraBridge extends BridgeAbstract {
 		$event_status_wrapper = $event->find('.event-status-wrapper', 0);
 
 		$date  = $event_date_day->innertext . ' ' . $month;
-		$title = $event_title->innertext;
+		$title = $event_title->find('a', 0)->innertext;
 		$link  = $event_title->find('a', 0)->href;
 		//$buy   = $event_status_wrapper->innertext;
 
