@@ -233,7 +233,6 @@ EOD
 			$item['timestamp'] = $tweet->created_at;
 
 			// Convert plain text URLs into HTML hyperlinks
-			$item['title'] = $tweet->full_text;
 			$cleanedTweet = $tweet->full_text;
 			$foundUrls = false;
 
@@ -242,9 +241,6 @@ EOD
 					$cleanedTweet = str_replace($media->url,
 						'<a href="' . $media->expanded_url . '">' . $media->display_url . '</a>',
 						$cleanedTweet);
-					$item['title'] = str_replace($media->url,
-						$media->expanded_url,
-						$item['title']);
 					$foundUrls = true;
 				}
 			}
@@ -253,9 +249,6 @@ EOD
 					$cleanedTweet = str_replace($url->url,
 						'<a href="' . $url->expanded_url . '">' . $url->display_url . '</a>',
 						$cleanedTweet);
-					$item['title'] = str_replace($url->url,
-						$url->expanded_url,
-						$item['title']);
 					$foundUrls = true;
 				}
 			}
@@ -268,6 +261,8 @@ EOD
 						$cleanedTweet);
 				}
 			}
+      // generate the title
+			$item['title'] = strip_tags($cleanedTweet);
 
 			// Add avatar
 			$picture_html = '';
