@@ -261,7 +261,7 @@ EOD
 						$cleanedTweet);
 				}
 			}
-      // generate the title
+			// generate the title
 			$item['title'] = strip_tags($cleanedTweet);
 
 			// Add avatar
