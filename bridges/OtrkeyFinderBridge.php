@@ -63,29 +63,27 @@ class OtrkeyFinderBridge extends BridgeAbstract {
 
 	public function collectData() {
 		$pages = $this->getInput('pages');
-		
-		for($page = 1; $page <= $pages; $page++)
-		{
+
+		for($page = 1; $page <= $pages; $page++) {
 			$uri = $this->buildUri($page);
-			
+
 			$html = getSimpleHTMLDOMCached($uri, self::CACHE_TIMEOUT)
 				or returnServerError('Could not request ' . $uri);
-				
+
 			$keys = $html->find('div.otrkey');
-			
-			foreach($keys as $key)
-			{
+
+			foreach($keys as $key) {
 				$temp = $this->buildItem($key);
-				
+
 				if ($temp != null)
 					$this->items[] = $temp;
 			}
-			
+
 			// Sleep for 0.5 seconds to don't hammer the server.
 			usleep(500000);
 		}
 	}
-	
+
 	private function buildUri($page) {
 		$searchterm = $this->getInput('searchterm');
 		$station = $this->getInput('station');
@@ -95,55 +93,54 @@ class OtrkeyFinderBridge extends BridgeAbstract {
 		$search = implode(' ', array($searchterm, $station, $type));
 		$search = trim($search);
 		$search = urlencode($search);
-		
+
 		return sprintf(self::URI_TEMPLATE, $search, $page);
 	}
-	
+
 	private function buildItem(simple_html_dom_node $node) {
 		$file = $this->getFilename($node);
-		
+
 		if ($file == null)
 			return null;
 
 		$minTime = $this->getInput('minTime');
 		$maxTime = $this->getInput('maxTime');
-		
+
 		// Do we need to check the running time?
-		if ($minTime != 0 || $maxTime != 0)
-		{
+		if ($minTime != 0 || $maxTime != 0) {
 			if ($maxTime > 0 && $maxTime < $minTime)
 				returnClientError('The minimum running time must be less than the maximum running time.');
-				
+
 			preg_match(self::FILENAME_REGEX, $file, $matches);
-			
+
 			if (!isset($matches[1]))
 				return null;
-			
+
 			$time = (integer)$matches[1];
-			
+
 			// Check for minimum running time
 			if ($minTime > 0 && $minTime > $time)
 				return null;
-				
+
 			// Check for maximum running time
 			if ($maxTime > 0 && $maxTime < $time)
 				return null;
 		}
-		
+
 		$item = array();
 		$item['title'] = $file;
-		
+
 		// The URI_TEMPLATE for querying the site can be reused here
 		$item['uri'] = sprintf(self::URI_TEMPLATE, $file, 1);
-		
+
 		$content = $this->buildContent($node);
-		
+
 		if ($content != null)
 			$item['content'] = $content;
-		
+
 		return $item;
 	}
-	
+
 	private function getFilename(simple_html_dom_node $node) {
 		$file = $node->find('.file', 0);
 
@@ -152,18 +149,17 @@ class OtrkeyFinderBridge extends BridgeAbstract {
 		else
 			return trim($file->innertext);
 	}
-	
+
 	private function buildContent(simple_html_dom_node $node) {
 		$mirrors = $node->find('div.mirror');
 		$list = '';
-		
+
 		// Build list of available mirrors
-		foreach($mirrors as $mirror)
-		{
+		foreach($mirrors as $mirror) {
 			$anchor = $mirror->find('a', 0);
 			$list .= sprintf(self::MIRROR_TEMPLATE, $anchor->href, $anchor->innertext);
 		}
-		
+
 		return sprintf(self::CONTENT_TEMPLATE, $list);
 	}
 }
