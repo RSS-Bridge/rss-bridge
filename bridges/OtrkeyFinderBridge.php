@@ -60,6 +60,8 @@ class OtrkeyFinderBridge extends BridgeAbstract {
 	// Example: Terminator_20.04.13_02-25_sf2_100_TVOON_DE.mpg.avi.otrkey
 	// The first group is the running time in minutes
 	const FILENAME_REGEX = '/_(\d+)_TVOON_DE\.mpg\..+\.otrkey/';
+	// year.month.day_hour-minute with leading zeros
+	const TIME_REGEX = '/\d{2}\.\d{2}\.\d{2}_\d{2}-\d{2}/';
 	const CONTENT_TEMPLATE = '<ul>%s</ul>';
 	const MIRROR_TEMPLATE = '<li><a href="https://otrkeyfinder.com%s">%s</a></li>';
 
@@ -139,6 +141,10 @@ class OtrkeyFinderBridge extends BridgeAbstract {
 
 		if ($content != null)
 			$item['content'] = $content;
+
+		if (preg_match(self::TIME_REGEX, $file, $matches) === 1) {
+			$item['timestamp'] = DateTime::createFromFormat('y.m.d_H-i', $matches[0], new DateTimeZone('Europe/Berlin'))->getTimestamp();
+		}
 
 		return $item;
 	}
