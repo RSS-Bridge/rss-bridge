@@ -235,9 +235,37 @@ EOD
 			// extract tweet timestamp
 			$item['timestamp'] = $tweet->created_at;
 
+			// Convert plain text URLs into HTML hyperlinks
+			$cleanedTweet = $tweet->full_text;
+			$foundUrls = false;
+
+			if (isset($tweet->entities->media)) {
+				foreach($tweet->entities->media as $media) {
+					$cleanedTweet = str_replace($media->url,
+						'<a href="' . $media->expanded_url . '">' . $media->display_url . '</a>',
+						$cleanedTweet);
+					$foundUrls = true;
+				}
+			}
+			if (isset($tweet->entities->urls)) {
+				foreach($tweet->entities->urls as $url) {
+					$cleanedTweet = str_replace($url->url,
+						'<a href="' . $url->expanded_url . '">' . $url->display_url . '</a>',
+						$cleanedTweet);
+					$foundUrls = true;
+				}
+			}
+			if ($foundUrls === false) {
+				// fallback to regex'es
+				$reg_ex = '/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/';
+				if(preg_match($reg_ex, $tweet->full_text, $url)) {
+					$cleanedTweet = preg_replace($reg_ex,
+						"<a href='{$url[0]}' target='_blank'>{$url[0]}</a> ",
+						$cleanedTweet);
+				}
+			}
 			// generate the title
-			$item['title'] = $tweet->full_text;
-			$cleanedTweet  = $tweet->full_text;
+			$item['title'] = strip_tags($cleanedTweet);
 
 			// Add avatar
 			$picture_html = '';
