@@ -12,6 +12,7 @@ class OtrkeyFinderBridge extends BridgeAbstract {
 				'name' => 'Search term',
 				'exampleValue' => 'Terminator',
 				'defaultValue' => '',
+				'title' => 'The search term is case-insensitive',
 			),
 			'station' => array(
 				'name' => 'Station name',
@@ -28,7 +29,7 @@ class OtrkeyFinderBridge extends BridgeAbstract {
 						'AC3' => 'HD.ac3',
 						'HD &amp; AC3' => 'HD.',
 						'HQ' => 'HQ.avi',
-						'AVI' => 'g.avi',	// 'g.' to exclude HD.avi and HQ.avi
+						'AVI' => 'g.avi',	// 'g.' to exclude HD.avi and HQ.avi (filename always contains 'mpg.')
 						'MP4' => '.mp4',
 					),
 				),
@@ -36,13 +37,14 @@ class OtrkeyFinderBridge extends BridgeAbstract {
 			'minTime' => array(
 				'name' => 'Min. running time',
 				'type' => 'number',
-				'title' => '',
+				'title' => 'The minimum running time in minutes. The resolution is 5 minutes.',
 				'exampleValue' => '90',
 				'defaultValue' => '0',
 			),
 			'maxTime' => array(
 				'name' => 'Max. running time',
 				'type' => 'number',
+				'title' => 'The maximum running time in minutes. The resolution is 5 minutes.',
 				'exampleValue' => '120',
 				'defaultValue' => '0',
 			),
