@@ -56,12 +56,12 @@ class OtrkeyFinderBridge extends BridgeAbstract {
 		)
 	);
 	// Example: Terminator_20.04.13_02-25_sf2_100_TVOON_DE.mpg.avi.otrkey
+	// The first group is the running time in minutes
 	const FILENAME_REGEX = '/_(\d+)_TVOON_DE\.mpg\..+\.otrkey/';
 	const CONTENT_TEMPLATE = '<ul>%s</ul>';
 	const MIRROR_TEMPLATE = '<li><a href="https://otrkeyfinder.com%s">%s</a></li>';
 
-	public function collectData()
-	{
+	public function collectData() {
 		$pages = $this->getInput('pages');
 		
 		for($page = 1; $page <= $pages; $page++)
@@ -86,12 +86,12 @@ class OtrkeyFinderBridge extends BridgeAbstract {
 		}
 	}
 	
-	private function buildUri($page)
-	{
+	private function buildUri($page) {
 		$searchterm = $this->getInput('searchterm');
 		$station = $this->getInput('station');
 		$type = $this->getInput('type');
 
+		// Combine all three parts to a search query by separating them with white space
 		$search = implode(' ', array($searchterm, $station, $type));
 		$search = trim($search);
 		$search = urlencode($search);
@@ -99,8 +99,7 @@ class OtrkeyFinderBridge extends BridgeAbstract {
 		return sprintf(self::URI_TEMPLATE, $search, $page);
 	}
 	
-	private function buildItem(simple_html_dom_node $node)
-	{
+	private function buildItem(simple_html_dom_node $node) {
 		$file = $this->getFilename($node);
 		
 		if ($file == null)
@@ -122,15 +121,19 @@ class OtrkeyFinderBridge extends BridgeAbstract {
 			
 			$time = (integer)$matches[1];
 			
+			// Check for minimum running time
 			if ($minTime > 0 && $minTime > $time)
 				return null;
 				
+			// Check for maximum running time
 			if ($maxTime > 0 && $maxTime < $time)
 				return null;
 		}
 		
 		$item = array();
 		$item['title'] = $file;
+		
+		// The URI_TEMPLATE for querying the site can be reused here
 		$item['uri'] = sprintf(self::URI_TEMPLATE, $file, 1);
 		
 		$content = $this->buildContent($node);
@@ -141,22 +144,20 @@ class OtrkeyFinderBridge extends BridgeAbstract {
 		return $item;
 	}
 	
-	private function getFilename(simple_html_dom_node $node)
-	{
-		$a = $node->find('a.otrkey', 0);
-		
-		if (!isset($a->href))
+	private function getFilename(simple_html_dom_node $node) {
+		$file = $node->find('.file', 0);
+
+		if ($file == null)
 			return null;
-			
-		$href = $a->href;
-		return substr($href, strpos($href, '=') + 1);
+		else
+			return trim($file->innertext);
 	}
 	
-	private function buildContent(simple_html_dom_node $node)
-	{
+	private function buildContent(simple_html_dom_node $node) {
 		$mirrors = $node->find('div.mirror');
 		$list = '';
 		
+		// Build list of available mirrors
 		foreach($mirrors as $mirror)
 		{
 			$anchor = $mirror->find('a', 0);
