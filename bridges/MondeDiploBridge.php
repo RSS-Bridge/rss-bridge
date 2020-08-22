@@ -3,7 +3,7 @@ class MondeDiploBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'Pitchoule';
 	const NAME = 'Monde Diplomatique';
-	const URI = 'http://www.monde-diplomatique.fr/';
+	const URI = 'https://www.monde-diplomatique.fr';
 	const CACHE_TIMEOUT = 21600; //6h
 	const DESCRIPTION = 'Returns most recent results from MondeDiplo.';
 
