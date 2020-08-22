@@ -93,10 +93,10 @@ class MarktplaatsBridge extends BridgeAbstract {
 					if($this->getInput('i')) {
 						if(is_array($listing->imageUrls)) {
 							foreach($listing->imageUrls as $imgurl) {
-								$item['content'] .= "<br />\n<img src='" . $imgurl . "' />";
+								$item['content'] .= "<br />\n<img src='https:" . $imgurl . "' />";
 							}
 						} else {
-							$item['content'] .= "<br>\n<img src='" . $listing->imageUrls . "' />";
+							$item['content'] .= "<br>\n<img src='https:" . $listing->imageUrls . "' />";
 						}
 					}
 				}
