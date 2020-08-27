@@ -4,34 +4,44 @@ class FM4Bridge extends BridgeAbstract
 {
 	const MAINTAINER = 'joni1993';
 	const NAME = 'FM4 Bridge';
-	const URI = 'https://fm4.orf.at/tags/';
+	const URI = 'https://fm4.orf.at';
 	const CACHE_TIMEOUT = 1800; // 30min
 	const DESCRIPTION = 'Feed for FM4 articles by tags (authors)';
 	const PARAMETERS = array(
 		array(
 			'tag' => array(
-				'name' => 'Tag (author)',
-				'title' => 'Tag to retrieve (usually the author)',
-				'required' => true,
+				'name' => 'Tag (author, category, ...)',
+				'title' => 'Tag to retrieve',
+				'exampleValue' => 'musik'
 			),
 			'loadcontent' => array(
 				'name' => 'Load Full Article Content',
 				'title' => 'Retrieve full content of articles (may take longer)',
 				'type' => 'checkbox'
+			),
+			'pages' => array(
+				'name' => 'Pages',
+				'title' => 'Amount of pages to load',
+				'type' => 'number',
+				'defaultValue' => 1
 			)
 		)
 	);
-	const LIMIT = 10;
 
-	public function collectData()
-	{
-		$uri = self::URI . $this->getInput('tag');
+	public function getPageData($tag, $page) {
+		if($tag)
+			$uri = self::URI . "/tags/" . $tag;
+		else
+			$uri = self::URI;
+
+		$uri = $uri . '?page=' . $page;
 
 		$html = getSimpleHTMLDOM($uri)
 		or returnServerError('Error while downloading the website content');
 
+		$page_items = array();
 
-		foreach ($html->find('div.listItem') as $article) {
+		foreach ($html->find('div[class*=listItem]') as $article) {
 			$item = array();
 
 			$item['uri'] = $article->find('a', 0)->href;
@@ -44,7 +54,13 @@ class FM4Bridge extends BridgeAbstract
 				or returnServerError('Error while downloading the full article');
 			}
 
-			$this->items[] = $item;
+			$page_items[] = $item;
+		}
+		return $page_items;
+	}
+	public function collectData() {
+		for ($cur_page = 1; $cur_page <= $this->getInput('pages'); $cur_page++) {
+			$this->items = array_merge($this->items,$this->getPageData($this->getInput('tag'), $cur_page));
 		}
 	}
 }
