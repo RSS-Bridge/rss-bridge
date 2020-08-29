@@ -24,9 +24,7 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 
 		$html = defaultLinkTo($html, $this->getURI());
 
-		$json = $this->extractJson(
-			$html->find('script', 26)->innertext
-		);
+		$json = $this->extractJson($html->find('body', 0)->innertext);
 
 		$this->feedName = $json->header->c4TabbedHeaderRenderer->title;
 
@@ -81,9 +79,9 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 	/**
 	 * Extract JSON from page
 	 */
-	private function extractJson($script) {
+	private function extractJson($html) {
 
-		if (preg_match('/window\["ytInitialData"\] = (.*);/', $script, $parts) === false) {
+		if (!preg_match('/window\["ytInitialData"\] = (.*);/', $html, $parts)) {
 			returnServerError('Failed to extract data from page');
 		}
 
