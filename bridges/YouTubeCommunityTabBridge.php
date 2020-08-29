@@ -178,7 +178,7 @@ EOD;
 	}
 
 	/*
-		From TelegramBridge
+		Ellipsis text for title
 	*/
 	private function ellipsisTitle($text) {
 		$length = 100;
