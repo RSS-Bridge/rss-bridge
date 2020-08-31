@@ -17,26 +17,37 @@ class FolhaDeSaoPauloBridge extends FeedExpander {
 				'type' => 'number',
 				'defaultValue' => 15,
 			),
+			'deep_crawl' => array(
+				'name' => 'Deep Crawl',
+				'description' => 'Crawl each item "deeply", that is, return the article contents',
+				'type' => 'checkbox',
+				'defaultValue' => true,
+			),
 		)
 	);
 
 	protected function parseItem($item){
 		$item = parent::parseItem($item);
 
-		$articleHTMLContent = getSimpleHTMLDOMCached($item['uri']);
-		if($articleHTMLContent) {
-			foreach ($articleHTMLContent->find('div.c-news__body .is-hidden') as $toRemove) {
-				$toRemove->innertext = '';
+		if ($this->getInput('deep_crawl')) {
+			$articleHTMLContent = getSimpleHTMLDOMCached($item['uri']);
+			if($articleHTMLContent) {
+				foreach ($articleHTMLContent->find('div.c-news__body .is-hidden') as $toRemove) {
+					$toRemove->innertext = '';
+				}
+				$item_content = $articleHTMLContent->find('div.c-news__body', 0);
+				if ($item_content) {
+					$text = $item_content->innertext;
+					$text = strip_tags($text, '<p><b><a><blockquote><figure><figcaption><img><strong><em>');
+					$item['content'] = $text;
+					$item['uri'] = explode('*', $item['uri'])[1];
+				}
+			} else {
+				Debug::log('???: ' . $item['uri']);
 			}
-			$item_content = $articleHTMLContent->find('div.c-news__body', 0);
-			if ($item_content) {
-				$text = $item_content->innertext;
-				$text = strip_tags($text, '<p><b><a><blockquote><figure><figcaption><img><strong><em>');
-				$item['content'] = $text;
-				$item['uri'] = explode('*', $item['uri'])[1];
-			}
-		} else {
-			Debug::log('???: ' . $item['uri']);
+		}
+		else {
+			$item['uri'] = explode('*', $item['uri'])[1];
 		}
 
 		return $item;
