@@ -38,7 +38,7 @@ class FolhaDeSaoPauloBridge extends FeedExpander {
 				$item_content = $articleHTMLContent->find('div.c-news__body', 0);
 				if ($item_content) {
 					$text = $item_content->innertext;
-					$text = strip_tags($text, '<p><b><a><blockquote><figure><figcaption><img><strong><em>');
+					$text = strip_tags($text, '<p><b><a><blockquote><figure><figcaption><img><strong><em><ul><li>');
 					$item['content'] = $text;
 					$item['uri'] = explode('*', $item['uri'])[1];
 				}
