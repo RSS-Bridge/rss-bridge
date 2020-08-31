@@ -11,7 +11,12 @@ class FolhaDeSaoPauloBridge extends FeedExpander {
 				'type' => 'text',
 				'title' => 'Select the sub-feed (see https://www1.folha.uol.com.br/feed/)',
 				'exampleValue' => 'emcimadahora/rss091.xml',
-			)
+			),
+			'amount' => array(
+				'name' => 'Amount of items to fetch',
+				'type' => 'number',
+				'defaultValue' => 15,
+			),
 		)
 	);
 
@@ -47,6 +52,6 @@ class FolhaDeSaoPauloBridge extends FeedExpander {
 			$feed_url = self::URI . '/' . $this->getInput('feed');
 		}
 		Debug::log('URL: ' . $feed_url);
-		$this->collectExpandableDatas($feed_url);
+		$this->collectExpandableDatas($feed_url, $this->getInput('amount'));
 	}
 }
