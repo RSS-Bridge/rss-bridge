@@ -47,7 +47,7 @@ class InstagramBridge extends BridgeAbstract {
 	);
 
 	const USER_QUERY_HASH = '58b6785bea111c67129decbe6a448951';
-	const TAG_QUERY_HASH = '174a5243287c5f3a7de741089750ab3b';
+	const TAG_QUERY_HASH = '9b498c08113f1e09617a1703c22b2f32';
 	const SHORTCODE_QUERY_HASH = '865589822932d1b43dfe312121dd353a';
 
 	protected function getInstagramUserId($username) {
