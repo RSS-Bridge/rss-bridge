@@ -47,7 +47,6 @@ class InstagramBridge extends BridgeAbstract {
 	);
 
 	const USER_QUERY_HASH = '58b6785bea111c67129decbe6a448951';
-	const TAG_QUERY_HASH = '9b498c08113f1e09617a1703c22b2f32';
 	const SHORTCODE_QUERY_HASH = '865589822932d1b43dfe312121dd353a';
 
 	protected function getInstagramUserId($username) {
@@ -76,6 +75,50 @@ class InstagramBridge extends BridgeAbstract {
 		}
 		return $key;
 
+	}
+
+	/**
+	 * Extract and cache tag query ID
+	 *
+	 * To extract the ID, this function makes two requests.
+	 * The first to fetch the tag page to extract the name of the needed JS file.
+	 * And the second to fetch the JS file and extract the ID.
+	 */
+	protected function getTagQueryId() {
+		$cacheFac = new CacheFactory();
+		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
+		$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+		$cache->setScope(get_called_class());
+		$cache->setKey(array('tagQueryId'));
+		$key = $cache->loadData();
+
+		if($key == null) {
+			$html = getSimpleHTMLDOM(self::URI . 'explore/tags/' . $this->getInput('h'));
+
+			if (!preg_match(
+				'/<link rel="preload" href="(\/static\/bundles\/es6\/TagPageContainer\.js\/[\w]+\.js)"/',
+				$html->find('head', 0),
+				$match
+			)) {
+				returnServerError('Unable to extract TagPageContainer.js file path.');
+			}
+
+			$data = getContents(self::URI . substr($match[1], 1));
+
+			if (!preg_match(
+				'/t\.tagMedia\.byTagName\.get\(n\)\)\.pagination,queryId:"([a-z0-9]+)"/',
+				$data,
+				$match
+			)) {
+				returnServerError('Unable to extract tag query id.');
+			}
+
+			$key = $match[1];
+
+			$cache->saveData($key);
+		}
+
+		return $key;
 	}
 
 	public function collectData(){
@@ -236,9 +279,11 @@ class InstagramBridge extends BridgeAbstract {
 			return json_decode($data);
 
 		} elseif(!is_null($this->getInput('h'))) {
+			$tagQueryId = $this->getTagQueryId();
+
 			$data = getContents(self::URI .
 					'graphql/query/?query_hash=' .
-					 self::TAG_QUERY_HASH .
+					 $tagQueryId .
 					 '&variables={"tag_name"%3A"' .
 					$this->getInput('h') .
 					'"%2C"first"%3A10}');
