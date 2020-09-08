@@ -48,13 +48,22 @@ class EpicgamesBridge extends BridgeAbstract {
 	));
 
 	public function collectData() {
-		// Example: https://store-content.ak.epicgames.com/api/ru/content/blog?limit=25
 		$api = 'https://store-content.ak.epicgames.com/api/';
-		$url = $api . $this->getInput('language') . '/content/blog?limit=' . $this->getInput('postcount');
 
-		$data = getContents($url)
+		// Get sticky posts first
+		// Example: https://store-content.ak.epicgames.com/api/ru/content/blog/sticky?locale=ru
+		$urlSticky = $api . $this->getInput('language') . '/content/blog/sticky';
+		// Then get posts
+		// Example: https://store-content.ak.epicgames.com/api/ru/content/blog?limit=25
+		$urlBlog = $api . $this->getInput('language') . '/content/blog?limit=' . $this->getInput('postcount');
+
+		$dataSticky = getContents($urlSticky)
 			or returnServerError('Unable to get the news pages from epicgames.com!');
-		$decodedData = json_decode($data);
+		$dataBlog = getContents($urlBlog)
+			or returnServerError('Unable to get the news pages from epicgames.com!');
+
+		// Merge data
+		$decodedData = array_merge(json_decode($dataSticky), json_decode($dataBlog));
 
 		foreach($decodedData as $key => $value) {
 			$item = array();
@@ -76,5 +85,21 @@ class EpicgamesBridge extends BridgeAbstract {
 
 			$this->items[] = $item;
 		}
+
+		// Sort data
+		$this->orderItems();
+		// Limit data
+		$this->items = array_slice($this->items, 0, $this->getInput('postcount'));
+	}
+
+	// Order posts by date added
+	private function orderItems() {
+		$sort = array();
+
+		foreach ($this->items as $key => $value) {
+			$sort[$key] = $value['timestamp'];
+		}
+
+		array_multisort($sort, SORT_DESC, $this->items);
 	}
 }
