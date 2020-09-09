@@ -58,9 +58,9 @@ class EpicgamesBridge extends BridgeAbstract {
 		$urlBlog = $api . $this->getInput('language') . '/content/blog?limit=' . $this->getInput('postcount');
 
 		$dataSticky = getContents($urlSticky)
-			or returnServerError('Unable to get the news pages from epicgames.com!');
+			or returnServerError('Unable to get the sticky posts from epicgames.com!');
 		$dataBlog = getContents($urlBlog)
-			or returnServerError('Unable to get the news pages from epicgames.com!');
+			or returnServerError('Unable to get the news posts from epicgames.com!');
 
 		// Merge data
 		$decodedData = array_merge(json_decode($dataSticky), json_decode($dataBlog));
@@ -87,19 +87,14 @@ class EpicgamesBridge extends BridgeAbstract {
 		}
 
 		// Sort data
-		$this->orderItems();
+		usort($this->items, function ($item1, $item2) {
+			if ($item2['timestamp'] == $item1['timestamp']) {
+				return 0;
+			}
+			return ($item2['timestamp'] < $item1['timestamp']) ? -1 : 1;
+		});
+
 		// Limit data
 		$this->items = array_slice($this->items, 0, $this->getInput('postcount'));
-	}
-
-	// Order posts by date added
-	private function orderItems() {
-		$sort = array();
-
-		foreach ($this->items as $key => $value) {
-			$sort[$key] = $value['timestamp'];
-		}
-
-		array_multisort($sort, SORT_DESC, $this->items);
 	}
 }
