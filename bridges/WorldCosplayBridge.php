@@ -25,7 +25,8 @@ class WorldCosplayBridge extends BridgeAbstract {
 				'name' => 'Character ID',
 				'type' => 'number',
 				'required' => true,
-				'title' => 'WorldCosplay character ID'
+				'title' => 'WorldCosplay character ID',
+				'exampleValue' => 18204
 			)
 		),
 		'Cosplayer' => array(
@@ -33,7 +34,8 @@ class WorldCosplayBridge extends BridgeAbstract {
 				'name' => 'Cosplayer ID',
 				'type' => 'number',
 				'required' => true,
-				'title' => 'Cosplayer\'s WorldCosplay profile ID'
+				'title' => 'Cosplayer\'s WorldCosplay profile ID',
+				'exampleValue' => 406782
 			)
 		),
 		'Series' => array(
@@ -41,7 +43,8 @@ class WorldCosplayBridge extends BridgeAbstract {
 				'name' => 'Series ID',
 				'type' => 'number',
 				'required' => true,
-				'title' => 'WorldCosplay series ID'
+				'title' => 'WorldCosplay series ID',
+				'exampleValue' => 3139
 			)
 		),
 		'Tag' => array(
@@ -49,7 +52,8 @@ class WorldCosplayBridge extends BridgeAbstract {
 				'name' => 'Tag ID',
 				'type' => 'number',
 				'required' => true,
-				'title' => 'WorldCosplay tag ID'
+				'title' => 'WorldCosplay tag ID',
+				'exampleValue' => 33643
 			)
 		),
 		'global' => array(
@@ -58,6 +62,7 @@ class WorldCosplayBridge extends BridgeAbstract {
 				'type' => 'number',
 				'required' => false,
 				'title' => 'Maximum number of photos to return',
+				'exampleValue' => 5,
 				'defaultValue' => 5
 			)
 		)
