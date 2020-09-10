@@ -210,6 +210,17 @@ EOD
 
 		$hidePictures = $this->getInput('nopic');
 
+		$promotedTweetIds = array_reduce($data->timeline->instructions[0]->addEntries->entries, function($carry, $entry) {
+			if (!isset($entry->content->item)) {
+				return $carry;
+			}
+			$tweet = $entry->content->item->content->tweet;
+			if (isset($tweet->promotedMetadata)) {
+				$carry[] = $tweet->id;
+			}
+			return $carry;
+		}, array());
+
 		foreach($data->globalObjects->tweets as $tweet) {
 
 			/* Debug::log('>>> ' . json_encode($tweet)); */
@@ -218,8 +229,8 @@ EOD
 				continue;
 			}
 
-			// Skip tweets with source "Twitter for Advertisers"
-			if (strpos($tweet->source, 'ads-api.twitter.com') !== false) {
+			// Skip promoted tweets
+			if (in_array($tweet->id_str, $promotedTweetIds)) {
 				continue;
 			}
 
