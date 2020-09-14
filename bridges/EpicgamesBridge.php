@@ -48,13 +48,22 @@ class EpicgamesBridge extends BridgeAbstract {
 	));
 
 	public function collectData() {
-		// Example: https://store-content.ak.epicgames.com/api/ru/content/blog?limit=25
 		$api = 'https://store-content.ak.epicgames.com/api/';
-		$url = $api . $this->getInput('language') . '/content/blog?limit=' . $this->getInput('postcount');
 
-		$data = getContents($url)
-			or returnServerError('Unable to get the news pages from epicgames.com!');
-		$decodedData = json_decode($data);
+		// Get sticky posts first
+		// Example: https://store-content.ak.epicgames.com/api/ru/content/blog/sticky?locale=ru
+		$urlSticky = $api . $this->getInput('language') . '/content/blog/sticky';
+		// Then get posts
+		// Example: https://store-content.ak.epicgames.com/api/ru/content/blog?limit=25
+		$urlBlog = $api . $this->getInput('language') . '/content/blog?limit=' . $this->getInput('postcount');
+
+		$dataSticky = getContents($urlSticky)
+			or returnServerError('Unable to get the sticky posts from epicgames.com!');
+		$dataBlog = getContents($urlBlog)
+			or returnServerError('Unable to get the news posts from epicgames.com!');
+
+		// Merge data
+		$decodedData = array_merge(json_decode($dataSticky), json_decode($dataBlog));
 
 		foreach($decodedData as $key => $value) {
 			$item = array();
@@ -76,5 +85,16 @@ class EpicgamesBridge extends BridgeAbstract {
 
 			$this->items[] = $item;
 		}
+
+		// Sort data
+		usort($this->items, function ($item1, $item2) {
+			if ($item2['timestamp'] == $item1['timestamp']) {
+				return 0;
+			}
+			return ($item2['timestamp'] < $item1['timestamp']) ? -1 : 1;
+		});
+
+		// Limit data
+		$this->items = array_slice($this->items, 0, $this->getInput('postcount'));
 	}
 }
