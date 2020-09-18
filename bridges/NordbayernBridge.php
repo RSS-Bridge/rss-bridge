@@ -48,12 +48,11 @@ class NordbayernBridge extends BridgeAbstract {
 	));
 
 	private function getImageUrlFromScript($script) {
-		preg_match("#src=\\\\'(https:[-:\\.\\\\/a-zA-Z0-9_]*\\.jpg)#", $script->innertext, $matches, PREG_OFFSET_CAPTURE);
+		preg_match("#src=\\\\'(https:[-:\\.\\\\/a-zA-Z0-9%_]*\\.(jpg|JPG))#", $script->innertext, $matches, PREG_OFFSET_CAPTURE);
 		if(isset($matches[1][0])) {
 			return stripcslashes($matches[1][0]) . '?w=800';
-		} else {
-			return null;
 		}
+        return null;
 	}
 
 	private function handleArticle($link) {
@@ -105,15 +104,15 @@ class NordbayernBridge extends BridgeAbstract {
 
 	private function handleNewsblock($listSite, $readPoliceReports) {
 		$newsBlocks = $listSite->find('section[class*=newsblock]');
-		$policeBlock = $newsBlocks[0];
-		$regionalNewsBlock = $newsBlocks[1];
+		$regionalNewsBlock = $newsBlocks[0];
+		$policeBlock = $newsBlocks[1];
+		foreach($regionalNewsBlock->find('h2') as $headline) {
+			self::handleArticle(self::URI . $headline->find('a', 0)->href);
+		}
 		if($readPoliceReports === true) {
 			foreach($policeBlock->find('h2') as $headline) {
 				self::handleArticle(self::URI . $headline->find('a', 0)->href);
 			}
-		}
-		foreach($regionalNewsBlock->find('h2') as $headline) {
-			self::handleArticle(self::URI . $headline->find('a', 0)->href);
 		}
 	}
 
