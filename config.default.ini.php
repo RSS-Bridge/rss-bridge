@@ -3,7 +3,7 @@
 ; This file contains the default settings for RSS-Bridge. Do not change this
 ; file, it will be replaced on the next update of RSS-Bridge! You can specify
 ; your own configuration in 'config.ini.php' (copy this file).
-	;;
+;	;;
 
 [system]
 
