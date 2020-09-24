@@ -46,9 +46,7 @@ class SoundCloudBridge extends BridgeAbstract {
 			$item['title'] = $track->user->username . ' - ' . $track->title;
 			$item['timestamp'] = strtotime($track->created_at);
 			$item['content'] = nl2br($track->description);
-			/*$item['enclosures'][] = $track->uri
-				. '/stream?client_id='
-				. $this->getClientID();*/
+			$item['enclosures'][] = $track->artwork_url;
 
 			$item['id'] = self::URI
 				. urlencode($this->getInput('u'))
