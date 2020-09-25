@@ -75,6 +75,8 @@ class FlickrBridge extends BridgeAbstract {
 		)
 	);
 
+	private $username = '';
+
 	public function collectData() {
 
 		switch($this->queriedContext) {
@@ -96,6 +98,8 @@ class FlickrBridge extends BridgeAbstract {
 			$filter = 'photo-lite-models';
 			$html = getSimpleHTMLDOM($this->getURI())
 				or returnServerError('Requested username can\'t be found.');
+
+				$this->username = $html->find('span.search-pill-name', 0)->plaintext;
 			break;
 
 		default:
@@ -156,6 +160,26 @@ class FlickrBridge extends BridgeAbstract {
 			default:
 				return parent::getURI();
 		}
+	}
+
+	public function getName() {
+
+		switch($this->queriedContext) {
+			case 'Explore':
+				return 'Explore - ' . self::NAME;
+				break;
+			case 'By keyword':
+				return $this->getInput('q') . '- keyword - ' . self::NAME;
+				break;
+			case 'By username':
+				return $this->username . ' - ' . self::NAME;
+				break;
+
+			default:
+				return parent::getName();
+		}
+
+		return parent::getName();
 	}
 
 	private function extractJsonModel($html) {
