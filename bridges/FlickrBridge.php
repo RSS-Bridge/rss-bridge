@@ -118,12 +118,12 @@ class FlickrBridge extends BridgeAbstract {
 			* the author is part of the owner data.
 			*/
 			if(array_key_exists('username', $model)) {
-				$item['author'] = $model['username'];
+				$item['author'] = urldecode($model['username']);
 			} elseif (array_key_exists('owner', reset($model_json)[0])) {
-				$item['author'] = reset($model_json)[0]['owner']['username'];
+				$item['author'] = urldecode(reset($model_json)[0]['owner']['username']);
 			}
 
-			$item['title'] = (array_key_exists('title', $model) ? $model['title'] : 'Untitled');
+			$item['title'] = urldecode((array_key_exists('title', $model) ? $model['title'] : 'Untitled'));
 			$item['uri'] = self::URI . 'photo.gne?id=' . $model['id'];
 
 			$description = (array_key_exists('description', $model) ? $model['description'] : '');
@@ -133,7 +133,7 @@ class FlickrBridge extends BridgeAbstract {
 			. '"><img src="'
 			. $this->extractContentImage($model)
 			. '" style="max-width: 640px; max-height: 480px;"/></a><br><p>'
-			. $description
+			. urldecode($description)
 			. '</p>';
 
 			$item['enclosures'] = $this->extractEnclosures($model);
@@ -169,7 +169,7 @@ class FlickrBridge extends BridgeAbstract {
 				return 'Explore - ' . self::NAME;
 				break;
 			case 'By keyword':
-				return $this->getInput('q') . '- keyword - ' . self::NAME;
+				return $this->getInput('q') . ' - keyword - ' . self::NAME;
 				break;
 			case 'By username':
 				return $this->username . ' - ' . self::NAME;
