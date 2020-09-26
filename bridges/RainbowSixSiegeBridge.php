@@ -12,8 +12,8 @@ class RainbowSixSiegeBridge extends BridgeAbstract {
 	}
 
 	public function collectData(){
-		$dlUrl = 'https://www.ubisoft.com/api/updates/items?categoriesFilter=all';
-		$dlUrl = $dlUrl . '&limit=6&mediaFilter=all&skip=0&startIndex=undefined&locale=en-us';
+		$dlUrl = 'https://www.ubisoft.com/api/updates/items?locale=en-us&categoriesFilter=all';
+		$dlUrl = $dlUrl . '&limit=6&mediaFilter=news&skip=0&startIndex=undefined&tags=BR-rainbow-six%20GA-siege';
 		$jsonString = getContents($dlUrl) or returnServerError('Error while downloading the website content');
 
 		$json = json_decode($jsonString, true);
@@ -29,38 +29,14 @@ class RainbowSixSiegeBridge extends BridgeAbstract {
 			$thumbnail = '<img src="' . $jsonItem['thumbnail']['url'] . '" alt="Thumbnail">';
 			$content = $thumbnail . '<br />' . $jsonItem['content'];
 
-			// Markdown parsing from https://gist.github.com/jbroadway/2836900
-
 			// Line breaks
 			$content = preg_replace("/\r\n|\r|\n/", '<br/>', $content);
-
-			// Links
-			$regex = '/\[([^\[]+)\]\(([^\)]+)\)/';
-			$replacement = '<a href=\'\2\'>\1</a>';
-			$content = preg_replace($regex, $replacement, $content);
-
-			// Bold text
-			$regex = '/(\*\*|__)(.*?)\1/';
-			$replacement = '<strong>\2</strong>';
-			$content = preg_replace($regex, $replacement, $content);
-
-			// Lists
-			$regex = '/\n\s*[\*|\-](.*)/';
-			$content = preg_replace_callback($regex, function($regs) {
-				$item = $regs[1];
-				return sprintf ('<ul><li>%s</li></ul>', trim ($item));
-			}, $content);
-
-			// Italic text
-			$regex = '/(\*\*|\*)(.*?)\1/';
-			$replacement = '<i>\2</i>';
-			$content = preg_replace($regex, $replacement, $content);
 
 			$item = array();
 			$item['uri'] = $uri;
 			$item['id'] = $jsonItem['id'];
 			$item['title'] = $jsonItem['title'];
-			$item['content'] = $content;
+			$item['content'] = markdownToHtml($content);
 			$item['timestamp'] = strtotime($jsonItem['date']);
 
 			$this->items[] = $item;

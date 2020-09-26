@@ -177,7 +177,7 @@ EOD
 			return self::API_URI
 			. '/2/search/adaptive.json?q='
 			. urlencode($this->getInput('q'))
-			. '&tweet_mode=extended';
+			. '&tweet_mode=extended&tweet_search_mode=live';
 		case 'By username':
 			return self::API_URI
 			. '/2/timeline/profile/'
@@ -195,11 +195,6 @@ EOD
 	public function collectData(){
 		$html = '';
 		$page = $this->getURI();
-
-		$header = array(
-			'User-Agent: Mozilla/5.0 (Windows NT 9.0; WOW64; Trident/7.0; rv:11.0) like Gecko'
-		);
-
 		$data = json_decode($this->getApiContents($this->getApiURI()));
 
 		if(!$data) {
@@ -215,11 +210,27 @@ EOD
 
 		$hidePictures = $this->getInput('nopic');
 
+		$promotedTweetIds = array_reduce($data->timeline->instructions[0]->addEntries->entries, function($carry, $entry) {
+			if (!isset($entry->content->item)) {
+				return $carry;
+			}
+			$tweet = $entry->content->item->content->tweet;
+			if (isset($tweet->promotedMetadata)) {
+				$carry[] = $tweet->id;
+			}
+			return $carry;
+		}, array());
+
 		foreach($data->globalObjects->tweets as $tweet) {
 
-			// Skip retweets?
-			if($this->getInput('noretweet')
-			&& isset($tweet->retweeted_status_id_str)) {
+			/* Debug::log('>>> ' . json_encode($tweet)); */
+			// Skip spurious retweets
+			if (isset($tweet->retweeted_status_id_str) && substr($tweet->full_text, 0, 4) === 'RT @') {
+				continue;
+			}
+
+			// Skip promoted tweets
+			if (in_array($tweet->id_str, $promotedTweetIds)) {
 				continue;
 			}
 
@@ -230,6 +241,9 @@ EOD
 			$item['username'] = $user_info->screen_name;
 			$item['fullname'] = $user_info->name;
 			$item['author'] = $item['fullname'] . ' (@' . $item['username'] . ')';
+			if (null !== $this->getInput('u') && $item['username'] != $this->getInput('u')) {
+				$item['author'] .= ' RT: @' . $this->getInput('u');
+			}
 			$item['avatar'] = $user_info->profile_image_url_https;
 
 			$item['id'] = $tweet->id_str;
@@ -237,9 +251,37 @@ EOD
 			// extract tweet timestamp
 			$item['timestamp'] = $tweet->created_at;
 
+			// Convert plain text URLs into HTML hyperlinks
+			$cleanedTweet = $tweet->full_text;
+			$foundUrls = false;
+
+			if (isset($tweet->entities->media)) {
+				foreach($tweet->entities->media as $media) {
+					$cleanedTweet = str_replace($media->url,
+						'<a href="' . $media->expanded_url . '">' . $media->display_url . '</a>',
+						$cleanedTweet);
+					$foundUrls = true;
+				}
+			}
+			if (isset($tweet->entities->urls)) {
+				foreach($tweet->entities->urls as $url) {
+					$cleanedTweet = str_replace($url->url,
+						'<a href="' . $url->expanded_url . '">' . $url->display_url . '</a>',
+						$cleanedTweet);
+					$foundUrls = true;
+				}
+			}
+			if ($foundUrls === false) {
+				// fallback to regex'es
+				$reg_ex = '/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/';
+				if(preg_match($reg_ex, $tweet->full_text, $url)) {
+					$cleanedTweet = preg_replace($reg_ex,
+						"<a href='{$url[0]}' target='_blank'>{$url[0]}</a> ",
+						$cleanedTweet);
+				}
+			}
 			// generate the title
-			$item['title'] = $tweet->full_text;
-			$cleanedTweet  = $tweet->full_text;
+			$item['title'] = strip_tags($cleanedTweet);
 
 			// Add avatar
 			$picture_html = '';
@@ -319,6 +361,11 @@ EOD;
 						}
 					}
 					break;
+				case 'By username':
+					if ($this->getInput('noretweet') && $item['username'] != $this->getInput('u')) {
+						continue 2; // switch + for-loop!
+					}
+					break;
 				default:
 			}
 
@@ -374,11 +421,22 @@ EOD;
 		$data = $cache->loadData();
 
 		$apiKey = null;
-		if($data === null || !is_array($data) || count($data) != 1) {
+		if($data === null || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
 			$twitterPage = getContents('https://twitter.com');
 
 			$jsMainRegex = '/(https:\/\/abs\.twimg\.com\/responsive-web\/web\/main\.[^\.]+\.js)/m';
 			preg_match_all($jsMainRegex, $twitterPage, $jsMainMatches, PREG_SET_ORDER, 0);
+			if (!$jsMainMatches) {
+				$jsMainRegex = '/(https:\/\/abs\.twimg\.com\/responsive-web\/web_legacy\/main\.[^\.]+\.js)/m';
+				preg_match_all($jsMainRegex, $twitterPage, $jsMainMatches, PREG_SET_ORDER, 0);
+			}
+			if (!$jsMainMatches) {
+				$jsMainRegex = '/(https:\/\/abs\.twimg\.com\/responsive-web\/client-web\/main\.[^\.]+\.js)/m';
+				preg_match_all($jsMainRegex, $twitterPage, $jsMainMatches, PREG_SET_ORDER, 0);
+			}
+			if (!$jsMainMatches) {
+				 returnServerError('Could not locate main.js link');
+			}
 			$jsLink = $jsMainMatches[0][0];
 
 			$jsContent = getContents($jsLink);
@@ -420,6 +478,8 @@ EOD;
 
 		$guestTokenRegex = '/gt=([0-9]*)/m';
 		preg_match_all($guestTokenRegex, $pageContent['header'], $guestTokenMatches, PREG_SET_ORDER, 0);
+		if (!$guestTokenMatches)
+				preg_match_all($guestTokenRegex, $pageContent['content'], $guestTokenMatches, PREG_SET_ORDER, 0);
 		if (!$guestTokenMatches) returnServerError('Could not parse guest token');
 		$guestToken = $guestTokenMatches[0][1];
 		return $guestToken;

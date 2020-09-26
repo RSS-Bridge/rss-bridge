@@ -86,19 +86,27 @@ class MarktplaatsBridge extends BridgeAbstract {
 				$item['timestamp'] = $listing->date;
 				$item['author'] = $listing->sellerInformation->sellerName;
 				$item['content'] = $listing->description;
-				$item['enclosures'] = $listing->imageUrls;
 				$item['categories'] = $listing->verticals;
 				$item['uid'] = $listing->itemId;
 				if(!is_null($this->getInput('i')) && !empty($listing->imageUrls)) {
-					if($this->getInput('i')) {
-						if(is_array($listing->imageUrls)) {
-							foreach($listing->imageUrls as $imgurl) {
-								$item['content'] .= "<br />\n<img src='" . $imgurl . "' />";
-							}
-						} else {
-							$item['content'] .= "<br>\n<img src='" . $listing->imageUrls . "' />";
+					$item['enclosures'] = $listing->imageUrls;
+					if(is_array($listing->imageUrls)) {
+						foreach($listing->imageUrls as $imgurl) {
+							$item['content'] .= "<br />\n<img src='https:" . $imgurl . "' />";
 						}
+					} else {
+						$item['content'] .= "<br>\n<img src='https:" . $listing->imageUrls . "' />";
 					}
+				}
+				if(!is_null($this->getInput('r'))) {
+					if($this->getInput('r')) {
+						$item['content'] .= "<br />\n<br />\n<br />\n" . json_encode($listing);
+					}
+				}
+				$item['content'] .= "<br>\n<br>\nPrice: " . $listing->priceInfo->priceCents/100;
+				$item['content'] .= "&nbsp;&nbsp;(" . $listing->priceInfo->priceType .")";
+				if(!empty($listing->location->cityName)) {
+					$item['content'] .= "<br><br>\n" . $listing->location->cityName;
 				}
 				if(!is_null($this->getInput('r'))) {
 					if($this->getInput('r')) {
@@ -109,4 +117,11 @@ class MarktplaatsBridge extends BridgeAbstract {
 			}
 		}
 	}
+	
+	public function getName(){
+                if(!is_null($this->getInput('q'))) {
+                        return $this->getInput('q') . ' - Marktplaats';
+                }
+                return parent::getName();
+        }
 }

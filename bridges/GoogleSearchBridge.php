@@ -35,14 +35,8 @@ class GoogleSearchBridge extends BridgeAbstract {
 
 				$item = array();
 
-				// Extract direct URL from google href (eg. /url?q=...)
 				$t = $element->find('a[href]', 0)->href;
-				$item['uri'] = '' . $t;
-				parse_str(parse_url($t, PHP_URL_QUERY), $parameters);
-				if(isset($parameters['q'])) {
-					$item['uri'] = $parameters['q'];
-				}
-
+				$item['uri'] = htmlspecialchars_decode($t);
 				$item['title'] = $element->find('h3', 0)->plaintext;
 				$item['content'] = $element->find('span[class=st]', 0)->plaintext;
 

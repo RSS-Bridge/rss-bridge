@@ -102,7 +102,6 @@ class AnimeUltimeBridge extends BridgeAbstract {
 							$item_description = defaultLinkTo($item_description, self::URI);
 							$item_description = str_replace("\r", '', $item_description);
 							$item_description = str_replace("\n", '', $item_description);
-							$item_description = utf8_encode($item_description);
 
 							//Build and add final item
 							$item = array();

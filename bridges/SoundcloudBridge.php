@@ -23,6 +23,7 @@ class SoundCloudBridge extends BridgeAbstract {
 		)
 	));
 
+	private $feedTitle = null;
 	private $feedIcon = null;
 	private $clientIDCache = null;
 
@@ -31,33 +32,36 @@ class SoundCloudBridge extends BridgeAbstract {
 			'url' => 'https://soundcloud.com/' . $this->getInput('u')
 		)) or returnServerError('No results for this query');
 
+		$this->feedTitle = $res->username;
 		$this->feedIcon = $res->avatar_url;
 
-		$tracks = $this->apiGet('users/' . urlencode($res->id) . '/' . $this->getInput('t'))->collection
-			or returnServerError('No results for this user/playlist');
+		$tracks = $this->apiGet(
+			'users/' . urlencode($res->id) . '/' . $this->getInput('t'),
+			array('limit' => 31)
+		) or returnServerError('No results for this user/playlist');
 
-		$numTracks = min(count($tracks), 10);
-		for($i = 0; $i < $numTracks; $i++) {
+		foreach ($tracks->collection as $index => $track) {
 			$item = array();
-			$item['author'] = $tracks[$i]->user->username;
-			$item['title'] = $tracks[$i]->user->username . ' - ' . $tracks[$i]->title;
-			$item['timestamp'] = strtotime($tracks[$i]->created_at);
-			$item['content'] = nl2br($tracks[$i]->description);
-			$item['enclosures'] = array($tracks[$i]->uri
-				. '/stream?client_id='
-				. $this->getClientID());
+			$item['author'] = $track->user->username;
+			$item['title'] = $track->user->username . ' - ' . $track->title;
+			$item['timestamp'] = strtotime($track->created_at);
+			$item['content'] = nl2br($track->description);
+			$item['enclosures'][] = $track->artwork_url;
 
 			$item['id'] = self::URI
 				. urlencode($this->getInput('u'))
 				. '/'
-				. urlencode($tracks[$i]->permalink);
+				. urlencode($track->permalink);
 			$item['uri'] = self::URI
 				. urlencode($this->getInput('u'))
 				. '/'
-				. urlencode($tracks[$i]->permalink);
+				. urlencode($track->permalink);
 			$this->items[] = $item;
-		}
 
+			if (count($this->items) >= 10) {
+				break;
+			}
+		}
 	}
 
 	public function getIcon(){
@@ -73,8 +77,8 @@ class SoundCloudBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-		if(!is_null($this->getInput('u'))) {
-			return $this->getInput('u') . ' - ' . self::NAME;
+		if($this->feedTitle) {
+			return $this->feedTitle . ' - ' . self::NAME;
 		}
 
 		return parent::getName();
@@ -132,7 +136,7 @@ class SoundCloudBridge extends BridgeAbstract {
 			. http_build_query($parameters);
 	}
 
-	private function apiGet($endpoint, $parameters = array()){
+	private function apiGet($endpoint, $parameters = array()) {
 		$parameters['client_id'] = $this->getClientID();
 
 		try {
