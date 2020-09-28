@@ -97,7 +97,7 @@ class FicbookBridge extends BridgeAbstract {
 	}
 
 	private function collectUpdatesData($html) {
-		foreach($html->find('ul.comment-container > li') as $chapter) {
+		foreach($html->find('ul.list-of-fanfic-parts > li') as $chapter) {
 			$item = array(
 				'uri' => $chapter->find('a', 0)->href,
 				'title' => $chapter->find('a', 0)->plaintext,
