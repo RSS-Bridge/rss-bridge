@@ -434,6 +434,7 @@ EOD;
 			foreach ($jsMainRegexArray as $jsMainRegex) {
 				if (preg_match_all($jsMainRegex, $twitterPage, $jsMainMatches, PREG_SET_ORDER, 0)) {
 					$jsLink = $jsMainMatches[0][0];
+					break;
 				}
 			}
 			if (!$jsLink) {
