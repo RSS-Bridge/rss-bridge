@@ -41,16 +41,19 @@ class HeiseBridge extends FeedExpander {
 	protected function parseItem($feedItem) {
 		$item = parent::parseItem($feedItem);
 		$uri = $item['uri'];
+        $next = null;
 
 		do {
 			$article = getSimpleHTMLDOMCached($uri)
 				or returnServerError('Could not open article: ' . $uri);
 
 			$article = defaultLinkTo($article, $uri);
-			$item = $this->addArticleToItem($item, $article);
+			if ($article) {
+                $item = $this->addArticleToItem($item, $article);
 
-			if($next = $article->find('.pagination a[rel="next"]', 0))
-				$uri = $next->href;
+                if ($next = $article->find('.pagination a[rel="next"]', 0))
+                    $uri = $next->href;
+            }
 		} while ($next);
 
 		return $item;
