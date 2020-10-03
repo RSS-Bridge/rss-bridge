@@ -18,7 +18,7 @@ class NasaApodBridge extends BridgeAbstract {
 			$line = $list[$i];
 			$item = array();
 
-			$uri_page = $html->find('a', $i + 3)->href;
+			$uri_page = $html->find('a', $i + 4)->href;
 			$uri = self::URI . $uri_page;
 			$item['uri'] = $uri;
 
@@ -26,9 +26,14 @@ class NasaApodBridge extends BridgeAbstract {
 			$picture_html_string = $picture_html->innertext;
 
 			//Extract image and explanation
-			$media = $picture_html->find('p', 1)->innertext;
-			$media = strstr($media, '<br>');
-			$media = preg_replace('/<br>/', '', $media, 1);
+			$image_wrapper = $picture_html->find('a',1);
+			$image_path = $image_wrapper->href;
+			$img_placeholder = $image_wrapper->find('img', 0);
+			$img_alt = $img_placeholder->alt;
+			$img_style = $img_placeholder->style;
+			$image_uri = self::URI . $image_path;
+			$new_img_placeholder = "<img src=\"$image_uri\" alt=\"$img_alt\" style=\"$img_style\">";
+			$media = "<a href=\"$image_uri\">$new_img_placeholder</a>";
 			$explanation = $picture_html->find('p', 2)->innertext;
 
 			//Extract date from the picture page
