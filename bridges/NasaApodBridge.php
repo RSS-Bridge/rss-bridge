@@ -12,12 +12,7 @@ class NasaApodBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI . 'archivepix.html')
 			or returnServerError('Error while downloading the website content');
 
-		$list = explode('<br>', $html->find('b', 0)->innertext);
-
 		for($i = 0; $i < 3; $i++) {
-			$line = $list[$i];
-			$item = array();
-
 			$uri_page = $html->find('a', $i + 4)->href;
 			$uri = self::URI . $uri_page;
 			$item['uri'] = $uri;
