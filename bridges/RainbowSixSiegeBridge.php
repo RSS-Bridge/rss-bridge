@@ -27,16 +27,13 @@ class RainbowSixSiegeBridge extends BridgeAbstract {
 			$uri = $uri . $jsonItem['button']['buttonUrl'];
 
 			$thumbnail = '<img src="' . $jsonItem['thumbnail']['url'] . '" alt="Thumbnail">';
-			$content = $thumbnail . '<br />' . $jsonItem['content'];
-
-			// Line breaks
-			$content = preg_replace("/\r\n|\r|\n/", '<br/>', $content);
+			$content = $thumbnail . '<br />' . markdownToHtml($jsonItem['content']);
 
 			$item = array();
 			$item['uri'] = $uri;
 			$item['id'] = $jsonItem['id'];
 			$item['title'] = $jsonItem['title'];
-			$item['content'] = markdownToHtml($content);
+			$item['content'] = $content;
 			$item['timestamp'] = strtotime($jsonItem['date']);
 
 			$this->items[] = $item;
