@@ -72,12 +72,12 @@ class CeskaTelevizeBridge extends BridgeAbstract {
     }
   }
 
-	public function getUri() {
+  public function getUri() {
     return $this->feedUri
       ?: parent::getUri();
   }
 
-	public function getName() {
+  public function getName() {
     return $this->feedName
       ?: parent::getName();
   }
