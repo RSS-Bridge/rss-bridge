@@ -14,8 +14,8 @@ class NasaApodBridge extends BridgeAbstract {
 
 		$list = explode('<br>', $html->find('b', 0)->innertext);
 
-		for($i = 0; $i < 3; $i++) {
-			$line = $list[$i];
+		// Start at 1 to skip the "APOD Full Archive" on top of the page
+		for($i = 1; $i < 4; $i++) {
 			$item = array();
 
 			$uri_page = $html->find('a', $i + 3)->href;
