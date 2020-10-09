@@ -100,7 +100,9 @@ class NyaaTorrentsBridge extends BridgeAbstract {
 
 					//Retrieve data from page contents
 					$item_title = str_replace(' :: Nyaa', '', $item_html->find('title', 0)->plaintext);
-					$item_desc = str_get_html(markdownToHtml($item_html->find('#torrent-description', 0)->innertext));
+					$item_desc = str_get_html(
+						markdownToHtml(html_entity_decode($item_html->find('#torrent-description', 0)->innertext))
+					);
 					$item_author = extractFromDelimiters($item_html->outertext, 'href="/user/', '"');
 					$item_date = intval(extractFromDelimiters($item_html->outertext, 'data-timestamp="', '"'));
 
