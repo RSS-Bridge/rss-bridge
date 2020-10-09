@@ -195,7 +195,7 @@ function stripRecursiveHTMLSection($string, $tag_name, $tag_start){
 }
 
 /**
- * Convert Markdown into HTML. Only a subset of the Markdown syntax is implemented.
+ * Convert Markdown into HTML with Parsedown.
  *
  * @link https://daringfireball.net/projects/markdown/ Markdown
  * @link https://github.github.com/gfm/ GitHub Flavored Markdown Spec
@@ -205,40 +205,6 @@ function stripRecursiveHTMLSection($string, $tag_name, $tag_start){
  */
 function markdownToHtml($string) {
 
-	//For more details about how these regex work:
-	// https://github.com/RSS-Bridge/rss-bridge/pull/802#discussion_r216138702
-	// Images: https://regex101.com/r/JW9Evr/2
-	// Links: https://regex101.com/r/eRGVe7/1
-	// Bold: https://regex101.com/r/2p40Y0/1
-	// Italic: https://regex101.com/r/xJkET9/1
-	// Separator: https://regex101.com/r/ZBEqFP/1
-	// Plain URL: https://regex101.com/r/2JHYwb/1
-	// Site name: https://regex101.com/r/qIuKYE/1
-
-	$string = preg_replace('/\!\[([^\]]*)\]\(([^\) ]+)(?: [^\)]+)?\)/', '<img src="$2" alt="$1" />', $string);
-	$string = preg_replace('/\[([^\]]+)\]\(([^\)]+)\)/', '<a href="$2">$1</a>', $string);
-	$string = preg_replace('/\*\*(.*)\*\*/U', '<b>$1</b>', $string);
-	$string = preg_replace('/\*(.*)\*/U', '<i>$1</i>', $string);
-	$string = preg_replace('/__(.*)__/U', '<b>$1</b>', $string);
-	$string = preg_replace('/_(.*)_/U', '<i>$1</i>', $string);
-	$string = preg_replace('/[-]{6,99}/', '<hr />', $string);
-	$string = str_replace('&#10;', '<br />', $string);
-	$string = preg_replace('/([^"])(https?:\/\/[^ "<]+)([^"])/', '$1<a href="$2">$2</a>$3', $string . ' ');
-	$string = preg_replace('/([^"\/])(www\.[^ "<]+)([^"])/', '$1<a href="http://$2">$2</a>$3', $string . ' ');
-
-	//As the regex are not perfect, we need to fix <i> and </i> that are introduced in URLs
-	// Fixup regex <i>: https://regex101.com/r/NTRPf6/1
-	// Fixup regex </i>: https://regex101.com/r/aNklRp/1
-
-	$count = 1;
-	while($count > 0) {
-		$string = preg_replace('/ (src|href)="([^"]+)<i>([^"]+)"/U', ' $1="$2_$3"', $string, -1, $count);
-	}
-
-	$count = 1;
-	while($count > 0) {
-		$string = preg_replace('/ (src|href)="([^"]+)<\/i>([^"]+)"/U', ' $1="$2_$3"', $string, -1, $count);
-	}
-
-	return '<div>' . trim($string) . '</div>';
+	$Parsedown = new Parsedown();
+	return $Parsedown->text($string);
 }

@@ -235,7 +235,7 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [xurxof](https://github.com/xurxof)
 * [yardenac](https://github.com/yardenac)
 * [ZeNairolf](https://github.com/ZeNairolf)
-  
+
 Licenses
 ===
 
@@ -243,6 +243,7 @@ The source code for RSS-Bridge is [Public Domain](UNLICENSE).
 
 RSS-Bridge uses third party libraries with their own license:
 
+  * [`Parsedown`](https://github.com/erusev/parsedown) licensed under the [MIT License](http://opensource.org/licenses/MIT)
   * [`PHP Simple HTML DOM Parser`](http://simplehtmldom.sourceforge.net/) licensed under the [MIT License](http://opensource.org/licenses/MIT)
   * [`php-urljoin`](https://github.com/fluffy-critter/php-urljoin) licensed under the [MIT License](http://opensource.org/licenses/MIT)
 
