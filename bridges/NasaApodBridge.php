@@ -12,8 +12,6 @@ class NasaApodBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI . 'archivepix.html')
 			or returnServerError('Error while downloading the website content');
 
-		$list = explode('<br>', $html->find('b', 0)->innertext);
-
 		// Start at 1 to skip the "APOD Full Archive" on top of the page
 		for($i = 1; $i < 4; $i++) {
 			$item = array();
@@ -26,9 +24,14 @@ class NasaApodBridge extends BridgeAbstract {
 			$picture_html_string = $picture_html->innertext;
 
 			//Extract image and explanation
-			$media = $picture_html->find('p', 1)->innertext;
-			$media = strstr($media, '<br>');
-			$media = preg_replace('/<br>/', '', $media, 1);
+			$image_wrapper = $picture_html->find('a',1);
+			$image_path = $image_wrapper->href;
+			$img_placeholder = $image_wrapper->find('img', 0);
+			$img_alt = $img_placeholder->alt;
+			$img_style = $img_placeholder->style;
+			$image_uri = self::URI . $image_path;
+			$new_img_placeholder = "<img src=\"$image_uri\" alt=\"$img_alt\" style=\"$img_style\">";
+			$media = "<a href=\"$image_uri\">$new_img_placeholder</a>";
 			$explanation = $picture_html->find('p', 2)->innertext;
 
 			//Extract date from the picture page
