@@ -228,22 +228,22 @@ class FacebookBridge extends BridgeAbstract {
 	}
 
 	private function validateHost($provided_host) {
-        // Handle mobile links
-        if (strpos($provided_host, "m.") === 0) {
-            $provided_host = substr($provided_host, strlen("m."));
-        }
+		// Handle mobile links
+		if (strpos($provided_host, 'm.') === 0) {
+			$provided_host = substr($provided_host, strlen('m.'));
+		}
 
-        $facebook_host = parse_url(self::URI)['host'];
+		$facebook_host = parse_url(self::URI)['host'];
 
-        if ($provided_host !== $facebook_host
-            && 'www.' . $provided_host !== $facebook_host) {
-            returnClientError('The host you provided is invalid! Received "'
-                . $provided_host
-                . '", expected "'
-                . $facebook_host
-                . '"!');
-        }
-    }
+		if ($provided_host !== $facebook_host
+			&& 'www.' . $provided_host !== $facebook_host) {
+			returnClientError('The host you provided is invalid! Received "'
+				. $provided_host
+				. '", expected "'
+				. $facebook_host
+				. '"!');
+		}
+	}
 
 	private function isPublicGroup($html) {
 
