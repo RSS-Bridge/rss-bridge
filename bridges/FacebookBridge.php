@@ -215,15 +215,7 @@ class FacebookBridge extends BridgeAbstract {
 
 			$urlparts = parse_url($group);
 
-			if(!$this->validateHost($urlparts['host'])) {
-
-				returnClientError('The host you provided is invalid! Received "'
-				. $urlparts['host']
-				. '", expected "'
-				. parse_url(self::URI)['host']
-				. '"!');
-
-			}
+			$this->validateHost($urlparts['host']);
 
 			return explode('/', $urlparts['path'])[2];
 
@@ -243,8 +235,14 @@ class FacebookBridge extends BridgeAbstract {
 
         $facebook_host = parse_url(self::URI)['host'];
 
-        return ($provided_host !== $facebook_host
-            && 'www.' . $provided_host !== $facebook_host);
+        if ($provided_host !== $facebook_host
+            && 'www.' . $provided_host !== $facebook_host) {
+            returnClientError('The host you provided is invalid! Received "'
+                . $provided_host
+                . '", expected "'
+                . $facebook_host
+                . '"!');
+        }
     }
 
 	private function isPublicGroup($html) {
@@ -359,13 +357,7 @@ class FacebookBridge extends BridgeAbstract {
 
 			$urlparts = parse_url($user);
 
-			if(!$this->validateHost($urlparts['host'])) {
-				returnClientError('The host you provided is invalid! Received "'
-				. $urlparts['host']
-				. '", expected "'
-				. parse_url(self::URI)['host']
-				. '"!');
-			}
+			$this->validateHost($urlparts['host']);
 
 			if(!array_key_exists('path', $urlparts)
 			|| $urlparts['path'] === '/') {
