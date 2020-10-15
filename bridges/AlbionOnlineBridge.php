@@ -10,13 +10,7 @@ class AlbionOnlineBridge extends BridgeAbstract {
 	const PARAMETERS = array( array(
 		'postcount' => array(
 			'name' => 'Limit',
-			'type' => 'list',
-			'values' => array(
-				'2' => 2,
-				'5' => 5,
-				'10' => 10,
-				'15' => 15,
-			 ),
+			'type' => 'number',
 			'title' => 'Maximum number of items to return',
 			'defaultValue' => 5,
 		),
