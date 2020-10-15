@@ -22,6 +22,12 @@ class WordPressBridge extends FeedExpander {
 	protected function parseItem($newItem){
 		$item = parent::parseItem($newItem);
 
+		// Limit expanding to the first 20 items
+		static $expand_count = 1;
+		if ($expand_count > 20)
+			return $item;
+		$expand_count++;
+
 		$article_html = getSimpleHTMLDOMCached($item['uri']);
 
 		$article = null;
