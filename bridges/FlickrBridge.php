@@ -59,7 +59,7 @@ class FlickrBridge extends BridgeAbstract {
 					'Photos' => 'photos',
 					'Videos' => 'videos',
 				),
-				'defaultValue' => '',
+				'defaultValue' => 'all',
 			),
 			'sort' => array(
 				'name' => 'Sort By',
