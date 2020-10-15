@@ -24,7 +24,7 @@ class NasaApodBridge extends BridgeAbstract {
 			$picture_html_string = $picture_html->innertext;
 
 			//Extract image and explanation
-			$image_wrapper = $picture_html->find('a',1);
+			$image_wrapper = $picture_html->find('a', 1);
 			$image_path = $image_wrapper->href;
 			$img_placeholder = $image_wrapper->find('img', 0);
 			$img_alt = $img_placeholder->alt;

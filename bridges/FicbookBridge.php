@@ -82,7 +82,7 @@ class FicbookBridge extends BridgeAbstract {
 
 		$html = defaultLinkTo($html, self::URI);
 
-		if ($this->queriedContext == 'Fiction Updates' or $this->queriedContext == 'Fiction Comments' ) {
+		if ($this->queriedContext == 'Fiction Updates' or $this->queriedContext == 'Fiction Comments') {
 			$this->titleName = $html->find('.fanfic-main-info > h1', 0)->innertext;
 		}
 

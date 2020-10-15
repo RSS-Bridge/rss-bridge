@@ -48,11 +48,16 @@ class NordbayernBridge extends BridgeAbstract {
 	));
 
 	private function getImageUrlFromScript($script) {
-		preg_match("#src=\\\\'(https:[-:\\.\\\\/a-zA-Z0-9%_]*\\.(jpg|JPG))#", $script->innertext, $matches, PREG_OFFSET_CAPTURE);
+		preg_match(
+			"#src=\\\\'(https:[-:\\.\\\\/a-zA-Z0-9%_]*\\.(jpg|JPG))#",
+			$script->innertext,
+			$matches,
+			PREG_OFFSET_CAPTURE
+		);
 		if(isset($matches[1][0])) {
 			return stripcslashes($matches[1][0]) . '?w=800';
 		}
-        return null;
+		return null;
 	}
 
 	private function handleArticle($link) {

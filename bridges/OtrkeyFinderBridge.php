@@ -143,7 +143,11 @@ class OtrkeyFinderBridge extends BridgeAbstract {
 			$item['content'] = $content;
 
 		if (preg_match(self::TIME_REGEX, $file, $matches) === 1) {
-			$item['timestamp'] = DateTime::createFromFormat('y.m.d_H-i', $matches[0], new DateTimeZone('Europe/Berlin'))->getTimestamp();
+			$item['timestamp'] = DateTime::createFromFormat(
+				'y.m.d_H-i',
+				$matches[0],
+				new DateTimeZone('Europe/Berlin')
+			)->getTimestamp();
 		}
 
 		return $item;
