@@ -61,6 +61,8 @@ class KernelBugTrackerBridge extends BridgeAbstract {
 		if($html === false)
 			returnServerError('Failed to load page!');
 
+		$html = defaultLinkTo($html, self::URI);
+
 		// Store header information into private members
 		$this->bugid = $html->find('#bugzilla-body', 0)->find('a', 0)->innertext;
 		$this->bugdesc = $html->find('table.bugfields', 0)->find('tr', 0)->find('td', 0)->innertext;
@@ -93,7 +95,7 @@ class KernelBugTrackerBridge extends BridgeAbstract {
 			$item['content'] = str_replace("\n", '<br>', $item['content']);
 
 			// Fix relative URIs
-			$item['content'] = $this->replaceRelativeURI($item['content']);
+			$item['content'] = $item['content'];
 
 			$this->items[] = $item;
 		}
@@ -123,17 +125,6 @@ class KernelBugTrackerBridge extends BridgeAbstract {
 				break;
 			default: return parent::getName();
 		}
-	}
-
-	/**
-	 * Replaces all relative URIs with absolute ones
-	 *
-	 * @param string $content The source string
-	 * @return string Returns the source string with all relative URIs replaced
-	 * by absolute ones.
-	 */
-	private function replaceRelativeURI($content){
-		return preg_replace('/href="(?!http)/', 'href="' . self::URI . '/', $content);
 	}
 
 	/**
