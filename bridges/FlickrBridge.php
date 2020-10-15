@@ -99,7 +99,11 @@ class FlickrBridge extends BridgeAbstract {
 			$html = getSimpleHTMLDOM($this->getURI())
 				or returnServerError('Requested username can\'t be found.');
 
-				$this->username = $html->find('span.search-pill-name', 0)->plaintext;
+				$this->username = $this->getInput('u');
+
+				if ($html->find('span.search-pill-name', 0)) {
+					$this->username = $html->find('span.search-pill-name', 0)->plaintext;
+				}
 			break;
 
 		default:
