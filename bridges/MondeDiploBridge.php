@@ -7,9 +7,9 @@ class MondeDiploBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 21600; //6h
 	const DESCRIPTION = 'Returns most recent results from MondeDiplo.';
 
-        private function cleanText($text) {
-            return trim(str_replace(['&nbsp;', '&nbsp'], ' ', $text));
-        }
+		private function cleanText($text) {
+			return trim(str_replace(array('&nbsp;', '&nbsp'), ' ', $text));
+		}
 
 	public function collectData(){
 		$html = getSimpleHTMLDOM(self::URI)
@@ -22,7 +22,7 @@ class MondeDiploBridge extends BridgeAbstract {
 			$item = array();
 			$item['uri'] = self::URI . $element->href;
 			$item['title'] = $this->cleanText($title) . ' - ' . $this->cleanText($datesAuteurs);
-			$item['content'] = $this->cleanText(str_replace([$title, $datesAuteurs], '', $element->plaintext));
+			$item['content'] = $this->cleanText(str_replace(array($title, $datesAuteurs), '', $element->plaintext));
 
 			$this->items[] = $item;
 		}

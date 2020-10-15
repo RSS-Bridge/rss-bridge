@@ -94,6 +94,6 @@ favicon-63b2904a073c89b52b19aa08cebc16a154bcf83fee8ecc6439968b1e6db569c7.ico';
 	}
 
 	private function getFullSizeImagePath($preview_path){
-		return explode("?compress=1", $preview_path)[0];
+		return explode('?compress=1', $preview_path)[0];
 	}
 }

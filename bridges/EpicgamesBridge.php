@@ -10,14 +10,7 @@ class EpicgamesBridge extends BridgeAbstract {
 	const PARAMETERS = array( array(
 		'postcount' => array(
 			'name' => 'Limit',
-			'type' => 'list',
-			'values' => array(
-				'5' => 5,
-				'10' => 10,
-				'15' => 15,
-				'20' => 20,
-				'25' => 25,
-			 ),
+			'type' => 'number',
 			'title' => 'Maximum number of items to return',
 			'defaultValue' => 10,
 		),
