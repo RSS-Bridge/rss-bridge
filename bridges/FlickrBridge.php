@@ -25,11 +25,11 @@ class FlickrBridge extends BridgeAbstract {
 				'name' => 'Media',
 				'type' => 'list',
 				'values' => array(
-					'All (Photos & videos)' => '',
+					'All (Photos & videos)' => 'all',
 					'Photos' => 'photos',
 					'Videos' => 'videos',
 				),
-				'defaultValue' => '',
+				'defaultValue' => 'all',
 			),
 			'sort' => array(
 				'name' => 'Sort By',
@@ -55,7 +55,7 @@ class FlickrBridge extends BridgeAbstract {
 				'name' => 'Media',
 				'type' => 'list',
 				'values' => array(
-					'All (Photos & videos)' => '',
+					'All (Photos & videos)' => 'all',
 					'Photos' => 'photos',
 					'Videos' => 'videos',
 				),
