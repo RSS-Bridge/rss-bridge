@@ -155,11 +155,11 @@ class FlickrBridge extends BridgeAbstract {
 				return self::URI . 'explore';
 				break;
 			case 'By keyword':
-				return self::URI . 'search/?q=' . urlencode($this->getInput('q')) 
+				return self::URI . 'search/?q=' . urlencode($this->getInput('q'))
 					. '&s=rec&media=' . $this->getInput('media');
 				break;
 			case 'By username':
-				return self::URI . 'search/?user_id=' . urlencode($this->getInput('u')) 
+				return self::URI . 'search/?user_id=' . urlencode($this->getInput('u'))
 					. '&sort=date-posted-desc&media=' . $this->getInput('media');
 				break;
 
