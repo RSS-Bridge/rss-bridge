@@ -28,7 +28,7 @@ class FM4Bridge extends BridgeAbstract
 		)
 	);
 
-	public function getPageData($tag, $page) {
+	private function getPageData($tag, $page) {
 		if($tag)
 			$uri = self::URI . '/tags/' . $tag;
 		else
