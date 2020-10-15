@@ -9,10 +9,12 @@
  */
 class LeMondeChroniclesBridge extends BridgeAbstract
 {
-    const ENGLISH_MONTHS = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
-    const FRENCH_MONTHS = array('janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre');
-    
-    const MAINTAINER = 'Riduidel';
+	const ENGLISH_MONTHS = array('January', 'February', 'March', 'April', 'May', 'June',
+								'July', 'August', 'September', 'October', 'November', 'December');
+	const FRENCH_MONTHS = array('janvier', 'février', 'mars', 'avril', 'mai', 'juin',
+								'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre');
+	
+	const MAINTAINER = 'Riduidel';
 
 	const NAME = 'Le Monde chronicles';
 
@@ -84,21 +86,21 @@ class LeMondeChroniclesBridge extends BridgeAbstract
 				$item['title'] = $link->plaintext;
 				$item['uri'] = $uri;
 				$item['content'] = $this->loadFullArticle($item['uri']);
-    			$date = $element->find('span.meta__date', 0);
-    			$sentences = explode('-', $date->plaintext);
-    			// Now get the first sentence and parse date in
-    			$published = trim($sentences[0]);
-    			$published = trim(substr($published, strlen('Publié le ')));
-    			$published = strtolower($published);
-    			$published = str_replace(self::FRENCH_MONTHS, self::ENGLISH_MONTHS, $published );
-    			
-    			$date_details = date_parse_from_format("d M Y \à H\hi*", $published);
-    			if($date_details) {
-    			    $date_object = new DateTime();
-    			    $date_object->setDate($date_details['year'], $date_details['month'], $date_details['day']);
-    			    $date_object->setTime($date_details['hour'], $date_details['minute']);
-    			    $item['timestamp'] = $date_object->getTimestamp();
-    			}
+				$date = $element->find('span.meta__date', 0);
+				$sentences = explode('-', $date->plaintext);
+				// Now get the first sentence and parse date in
+				$published = trim($sentences[0]);
+				$published = trim(substr($published, strlen('Publié le ')));
+				$published = strtolower($published);
+				$published = str_replace(self::FRENCH_MONTHS, self::ENGLISH_MONTHS, $published );
+				
+				$date_details = date_parse_from_format('d M Y \à H\hi*', $published);
+				if($date_details) {
+				    $date_object = new DateTime();
+				    $date_object->setDate($date_details['year'], $date_details['month'], $date_details['day']);
+				    $date_object->setTime($date_details['hour'], $date_details['minute']);
+				    $item['timestamp'] = $date_object->getTimestamp();
+				}
 				$this->items[] = $item;
 			}
 		}
@@ -117,32 +119,32 @@ class LeMondeChroniclesBridge extends BridgeAbstract
 		// Now it is time to rebuild content, as things may not be so good
 		foreach($content->children() as $child) {
 		    switch($child->tag) {
-		        case "figure":
+		        case 'figure':
 		            # We just remove the caption
 		            $caption = $child->find('figcaption', 0);
 		            if($caption)
 		                $caption->outertext = '';
-		        case "img":
+		        case 'img':
 		            // Find img, and if img has a data-src tag replace value of src with that data
 		            foreach($child->find('img') as $img) {
 		                if($img->getAttribute('data-src')) {
 		                    $img->setAttribute('src', $img->getAttribute('data-src'));
 		                }
 		            }
-		        case "p":
+		        case 'p':
 		            # The author is already processed in header, so don't use it
 		            if(strstr($child->getAttribute('class'), 'article__fact--false')) {
 		                break;
 		            }
-		        case "h1":
-		        case "h2":
-		        case "h3":
-		        case "h4":
-		        case "h5":
-		        case "h6":
-		        case "h7":
-        		    $returned = $returned.$child->outertext;
-        		    break;
+		        case 'h1':
+		        case 'h2':
+		        case 'h3':
+		        case 'h4':
+		        case 'h5':
+		        case 'h6':
+		        case 'h7':
+				    $returned = $returned.$child->outertext;
+				    break;
 		    }
 		}
 		return $returned;
