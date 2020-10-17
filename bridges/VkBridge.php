@@ -232,11 +232,16 @@ class VkBridge extends BridgeAbstract
 				$div->outertext = '';
 			}
 
-			// get sign
+			// get sign / post author
 			$post_author = $pageName;
-			foreach($post->find('a.wall_signed_by') as $a) {
-				$post_author = $a->innertext;
-				$a->outertext = '';
+			$author_selectors = array('a.wall_signed_by', 'a.author');
+			foreach($author_selectors as $author_selector) {
+				$a = $post->find($author_selector, 0);
+				if (is_object($a)) {
+					$post_author = $a->innertext;
+					$a->outertext = '';
+					break;
+				}
 			}
 
 			// fix links and get post hashtags
