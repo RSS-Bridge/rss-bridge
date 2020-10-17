@@ -279,16 +279,17 @@ class VkBridge extends BridgeAbstract
 				}
 			}
 
-			if (is_object($post->find('div.copy_quote', 0))) {
+			$copy_quote = $post->find('div.copy_quote', 0);
+			if (is_object($copy_quote)) {
 				if ($this->getInput('hide_reposts') === true) {
 					continue;
 				}
-				$copy_quote = $post->find('div.copy_quote', 0);
 				if ($copy_post_header = $copy_quote->find('div.copy_post_header', 0)) {
 					$copy_post_header->outertext = '';
 				}
+				$copy_quote_author = $copy_quote->find('a.copy_author', 0)->outertext;
 				$copy_quote_content = $copy_quote->innertext;
-				$copy_quote->outertext = "<br>Reposted: <br>$copy_quote_content";
+				$copy_quote->outertext = "<br>Reposted ($copy_quote_author): <br>$copy_quote_content";
 			}
 
 			$item = array();
