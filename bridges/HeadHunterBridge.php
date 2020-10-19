@@ -4,11 +4,12 @@ class HeadHunterBridge extends FeedExpander {
 	const NAME = 'HeadHunter';
 	const DESCRIPTION = 'Расширяет ленту путем добавления полного описания вакансии';
 	const MAINTAINER = 'em92';
+	const URI = 'https://hh.ru';
 
 	const PARAMETERS = array(
 		array('url' => array(
 			'name' => 'Ссылка на ленту',
-			'exampleValue' => 'https://ufa.hh.ru/search/vacancy/rss?area=99&clusters=true&enable_snippets=true&text=php',o
+			'exampleValue' => 'https://ufa.hh.ru/search/vacancy/rss?area=99&clusters=true&enable_snippets=true&text=php',
 			'required' => true,
 		)),
 	);
@@ -42,5 +43,4 @@ class HeadHunterBridge extends FeedExpander {
 		// TODO: check .hh.ru/search/vacancy/rss
 		$this->collectExpandableDatas($this->getInput('url'));
 	}
-
 }
