@@ -10,10 +10,7 @@ class SeznamZpravyBridge extends BridgeAbstract {
 				'name' => 'Author String',
 				'type' => 'text',
 				'required' => true,
-				'title' => <<<EOD
-				The dash-separated author string, as shown in the URL bar
-				on an author page, including the number at the end.
-				EOD,
+				'title' => 'The dash-separated author string, as shown in the URL bar.',
 				'pattern' => '[a-z]+-[a-z]+-[0-9]+',
 				'exampleValue' => 'janek-rubes-506'
 			),
