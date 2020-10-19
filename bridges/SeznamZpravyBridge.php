@@ -10,7 +10,8 @@ class SeznamZpravyBridge extends BridgeAbstract {
 				'name' => 'Author String',
 				'type' => 'text',
 				'required' => true,
-				'title' => 'The dash-separated author string, as shown in the URL bar on an author page, including the number at the end.',
+                                'title' => 'The dash-separated author string, as shown in the URL bar'
+					. 'on an author page, including the number at the end.',
 				'pattern' => '[a-z]+-[a-z]+-[0-9]+',
 				'exampleValue' => 'janek-rubes-506'
 			),
@@ -44,7 +45,7 @@ class SeznamZpravyBridge extends BridgeAbstract {
 			$main_breadcrumbs = $html->find($selectors['breadcrumbs'], 0);
 			$author = $main_breadcrumbs->last_child()->plaintext
 				or returnServerError('Could not get author on: ' . $this->getURI());
-			$this->feedName = $author . " - Seznam Zprávy";
+			$this->feedName = $author . ' - Seznam Zprávy';
 
 			$articles = $html->find($selectors['article_list'])
 				or returnServerError('Could not find articles on: ' . $this->getURI());
