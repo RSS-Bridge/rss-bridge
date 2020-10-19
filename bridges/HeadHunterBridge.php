@@ -8,6 +8,7 @@ class HeadHunterBridge extends FeedExpander {
 	const PARAMETERS = array(
 		array('url' => array(
 			'name' => 'Ссылка на ленту',
+			'exampleValue' => 'https://ufa.hh.ru/search/vacancy/rss?area=99&clusters=true&enable_snippets=true&text=php',o
 			'required' => true,
 		)),
 	);
@@ -38,6 +39,7 @@ class HeadHunterBridge extends FeedExpander {
 
 	public function collectData(){
 		// TODO: check if host ends with .hh.ru
+		// TODO: check .hh.ru/search/vacancy/rss
 		$this->collectExpandableDatas($this->getInput('url'));
 	}
 
