@@ -22,12 +22,6 @@ class WordPressBridge extends FeedExpander {
 	protected function parseItem($newItem){
 		$item = parent::parseItem($newItem);
 
-		// Limit feed to the first 20 items
-		static $expand_count = 1;
-		if ($expand_count > 20)
-			return null;
-		$expand_count++;
-
 		$article_html = getSimpleHTMLDOMCached($item['uri']);
 
 		$article = null;
@@ -98,9 +92,9 @@ class WordPressBridge extends FeedExpander {
 			returnClientError('The url parameter must either refer to http or https protocol.');
 		}
 		try{
-			$this->collectExpandableDatas($this->getURI() . '/feed/atom/');
+			$this->collectExpandableDatas($this->getURI() . '/feed/atom/', 20);
 		} catch (Exception $e) {
-			$this->collectExpandableDatas($this->getURI() . '/?feed=atom');
+			$this->collectExpandableDatas($this->getURI() . '/?feed=atom', 20);
 		}
 
 	}
