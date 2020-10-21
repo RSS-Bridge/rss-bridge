@@ -21,7 +21,7 @@ class HeadHunterBridge extends FeedExpander {
 		$html = defaultLinkTo($html, $item['uri']);
 
 		$content = '';
-		$skills = [];
+		$skills = array();
 
 		// get skilltags
 		foreach($html->find('.bloko-tag-list span') as $skill) {
@@ -44,7 +44,7 @@ class HeadHunterBridge extends FeedExpander {
 			'.tmpl_hh_head',
 			'.tmpl_hh_slider',
 			'.tmplt_hh-slider',
-			// TODO: remove skills elements
+			// TODO: remove parent of .bloko-tag-list (skills elements)
 		);
 		foreach($unwanted_element_selectors as $unwanted_element_selector) {
 			foreach($description->find($unwanted_element_selector) as $el) {
@@ -63,6 +63,8 @@ class HeadHunterBridge extends FeedExpander {
 	public function collectData(){
 		// TODO: check if host ends with .hh.ru
 		// TODO: check .hh.ru/search/vacancy/rss
+		// TODO: also accept .hh.ru/search/vacancy?area=99&clusters=true&enable_snippets=true&text=php
+		// TODO: that link must be retunred in getURI
 		$this->collectExpandableDatas($this->getInput('url'));
 	}
 }
