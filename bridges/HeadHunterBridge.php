@@ -25,7 +25,7 @@ class HeadHunterBridge extends FeedExpander {
 
 		// get skilltags
 		foreach($html->find('.bloko-tag-list span') as $skill) {
-			$skills[] = $skill->outertext;
+			$skills[] = $skill->innertext;
 		}
 
 		// add salary to content
