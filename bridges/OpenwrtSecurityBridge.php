@@ -12,28 +12,26 @@ class OpenwrtSecurityBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI)
 			or returnServerError('Could not request entries');
 
-		$advisories = $html->find('div[class=plugin_nspages]',0);
+		$advisories = $html->find('div[class=plugin_nspages]', 0);
 
 		foreach($advisories->find('a[class=wikilink1]') as $element) {
 			$item = array();
 
 			$row = $element->innertext;
 
-			$item['title'] = substr($row, 0, strpos($row, " - "));
+			$item['title'] = substr($row, 0, strpos($row, ' - '));
 			$item['timestamp'] = $this->getDate($element->href);
 			$item['uri'] = self::WEBROOT . $element->href;
 			$item['uid'] = self::WEBROOT . $element->href;
-			$item['content'] = substr($row, strpos($row, " - ") + 3);
-			$item['author'] = "OpenWrt Project";
+			$item['content'] = substr($row, strpos($row, ' - ') + 3);
+			$item['author'] = 'OpenWrt Project';
 
 			$this->items[] = $item;
 		}
 	}
 
 	private function getDate($href) {
-		$date = substr($href, -12);	
+		$date = substr($href, -12);
 		return $date;
 	}
-
 }
-
