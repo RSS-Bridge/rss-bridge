@@ -18,22 +18,44 @@ class HeadHunterBridge extends FeedExpander {
 		$item = parent::parseItem($newItem);
 
 		$html = getSimpleHTMLDOMCached($item['uri']);
+		$html = defaultLinkTo($html, $item['uri']);
 
-		$vacancy_header = $html->find('.vacancy-salary', 0)->outertext;
-		$vacancy_company = $html->find('.vacancy-company-wrapper', 0)->outertext;
-		$vacancy_description = $html->find('.vacancy-description', 0);
+		$content = '';
+		$skills = [];
 
-		$unwanted_element_selectors = array('script', 'style', '.tmpl_hh_head', '.tmpl_hh_slider');
+		// get skilltags
+		foreach($html->find('.bloko-tag-list span') as $skill) {
+			$skills[] = $skill->outertext;
+		}
+
+		// add salary to content
+		$content .= $html->find('.vacancy-salary', 0)->outertext;
+
+		// prepare employer content and add it
+		$employer = $html->find('.vacancy-company-wrapper', 0);
+		$item['author'] = $employer->find('.vacancy-company-name-wrapper span', 0)->innertext;
+		$content .= $employer->outertext;
+
+		// clean up description and add it
+		$description = $html->find('.vacancy-description', 0);
+		$unwanted_element_selectors = array(
+			'script',
+			'style',
+			'.tmpl_hh_head',
+			'.tmpl_hh_slider',
+			'.tmplt_hh-slider',
+			// TODO: remove skills elements
+		);
 		foreach($unwanted_element_selectors as $unwanted_element_selector) {
-			foreach($vacancy_description->find($unwanted_element_selector) as $el) {
+			foreach($description->find($unwanted_element_selector) as $el) {
 				$el->outertext = '';
 			}
 		}
-		$vacancy_description = $vacancy_description->outertext;
-
-		$content = $vacancy_header . $vacancy_company . $vacancy_description;
+		$content .= $description->outertext;
 
 		$item['content'] = $content;
+		$item['categories'] = $skills;
+
 		return $item;
 
 	}
