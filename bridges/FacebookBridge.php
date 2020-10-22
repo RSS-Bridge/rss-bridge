@@ -254,13 +254,15 @@ class FacebookBridge extends BridgeAbstract {
 		}
 	}
 
+	/**
+	 * @param $html simple_html_dom
+	 * @return bool
+	 */
 	private function isPublicGroup($html) {
 
-		// Facebook redirects to the groups about page for non-public groups
-		$about = $html->find('#pagelet_group_about', 0);
-
-		return !($about);
-
+		// Facebook touch just presents a login page for non-public groups
+		$title = $html->find('title', 0);
+		return $title->plaintext !== 'Log in to Facebook | Facebook';
 	}
 
 	private function extractGroupName($html) {
