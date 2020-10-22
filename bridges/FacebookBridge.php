@@ -232,6 +232,9 @@ class FacebookBridge extends BridgeAbstract {
 		if (strpos($provided_host, 'm.') === 0) {
 			$provided_host = substr($provided_host, strlen('m.'));
 		}
+		if (strpos($provided_host, 'touch.') === 0) {
+			$provided_host = substr($provided_host, strlen('touch.'));
+		}
 
 		$facebook_host = parse_url(self::URI)['host'];
 
