@@ -558,7 +558,7 @@ EOD;
 		}
 
 		// No captcha? We can carry on retrieving page contents :)
-		// First, we check wether the page is public or not
+		// First, we check whether the page is public or not
 		$loginForm = $html->find('._585r', 0);
 
 		if($loginForm != null) {
