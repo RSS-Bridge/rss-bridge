@@ -233,7 +233,7 @@ EOD
  * when returning plaintext.
  * @param string $defaultSpanText Specifies the replacement text for `<span />`
  * tags when returning plaintext.
- * @return string Contents as simplehtmldom object.
+ * @return false|simple_html_dom Contents as simplehtmldom object.
  */
 function getSimpleHTMLDOM($url,
 	$header = array(),
