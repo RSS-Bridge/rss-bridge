@@ -175,7 +175,13 @@ class FacebookBridge extends BridgeAbstract {
 			$header = array();
 		}
 
-		$html = getSimpleHTMLDOM($this->getURI(), $header)
+		$touchURI = str_replace(
+			'https://www.facebook',
+			'https://touch.facebook',
+			$this->getURI()
+		);
+
+		$html = getSimpleHTMLDOM($touchURI, $header)
 			or returnServerError('Failed loading facebook page: ' . $this->getURI());
 
 		if(!$this->isPublicGroup($html)) {
