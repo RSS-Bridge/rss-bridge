@@ -68,6 +68,10 @@ class FacebookBridgeTest extends TestCase
 			)),
 			array(array(
 				'context' => 'Group',
+				'g' => 'cambridgefurs'
+			)),
+			array(array(
+				'context' => 'Group',
 				'g' => 'foreignerswholiveinistanbul'
 			)),
 			array(array(
@@ -89,5 +93,19 @@ class FacebookBridgeTest extends TestCase
 				'u' => 'mglaofficial'
 			)
 			));
+	}
+
+	public function testPrivateGroup()
+	{
+		try {
+			$this->testCollectData(
+				array(
+					'context' => 'Group',
+					'g' => 'cambridgefurs'
+				));
+			$this->fail('Exception should have been thrown');
+		} catch (\Exception $e) {
+			$this->assertStringContainsString("This group is not public", $e->getMessage());
+		}
 	}
 }
