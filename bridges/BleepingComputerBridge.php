@@ -16,10 +16,7 @@ class BleepingComputerBridge extends FeedExpander {
 		}
 
 		$article_content = $article_html->find('div.articleBody', 0)->innertext;
-		// $article_content = stripWithDelimiters($article_content, '<script', '</script>');
 		$article_content = stripRecursiveHTMLSection($article_content, 'div', '<div class="cz-related-article-wrapp');
-		// $article_content = stripRecursiveHTMLSection($article_content, 'div', '<div class="similar-articles');
-		// $article_content = stripRecursiveHTMLSection($article_content, 'span', '<span class="meta');
 		$item['content'] = trim($article_content);
 
 		return $item;
