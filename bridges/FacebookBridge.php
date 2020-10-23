@@ -267,10 +267,10 @@ class FacebookBridge extends BridgeAbstract {
 
 	private function extractGroupName($html) {
 
-		$ogtitle = $html->find('meta[property="og:title"]', 0)
+		$ogtitle = $html->find('._de1', 0)
 			or returnServerError('Unable to find group title!');
 
-		return html_entity_decode($ogtitle->content, ENT_QUOTES);
+		return html_entity_decode($ogtitle->plaintext, ENT_QUOTES);
 	}
 
 	private function extractGroupURI($post) {
