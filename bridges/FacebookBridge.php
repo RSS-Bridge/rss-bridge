@@ -192,7 +192,7 @@ class FacebookBridge extends BridgeAbstract {
 
 		$this->groupName = $this->extractGroupName($html);
 
-		$posts = $html->find('div.userContentWrapper')
+		$posts = $html->find('div.story_body_container')
 			or returnServerError('Failed finding posts!');
 
 		foreach($posts as $post) {
