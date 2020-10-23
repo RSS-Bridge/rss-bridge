@@ -199,12 +199,12 @@ class FacebookBridge extends BridgeAbstract {
 
 			$item = array();
 
-			$item['uri'] = $this->extractGroupURI($post);
-			$item['title'] = $this->extractGroupTitle($post);
-			$item['author'] = $this->extractGroupAuthor($post);
-			$item['content'] = $this->extractGroupContent($post);
-			$item['timestamp'] = $this->extractGroupTimestamp($post);
-			$item['enclosures'] = $this->extractGroupEnclosures($post);
+			$item['uri'] = $this->extractGroupPostURI($post);
+			$item['title'] = $this->extractGroupPostTitle($post);
+			$item['author'] = $this->extractGroupPostAuthor($post);
+			$item['content'] = $this->extractGroupPostContent($post);
+			$item['timestamp'] = $this->extractGroupPostTimestamp($post);
+			$item['enclosures'] = $this->extractGroupPostEnclosures($post);
 
 			$this->items[] = $item;
 
@@ -273,7 +273,7 @@ class FacebookBridge extends BridgeAbstract {
 		return html_entity_decode($ogtitle->plaintext, ENT_QUOTES);
 	}
 
-	private function extractGroupURI($post) {
+	private function extractGroupPostURI($post) {
 
 		$elements = $post->find('a')
 			or returnServerError('Unable to find URI!');
@@ -291,7 +291,7 @@ class FacebookBridge extends BridgeAbstract {
 
 	}
 
-	private function extractGroupContent($post) {
+	private function extractGroupPostContent($post) {
 
 		$content = $post->find('div.userContent', 0)
 			or returnServerError('Unable to find user content!');
@@ -300,7 +300,7 @@ class FacebookBridge extends BridgeAbstract {
 
 	}
 
-	private function extractGroupTimestamp($post) {
+	private function extractGroupPostTimestamp($post) {
 
 		$element = $post->find('abbr[data-utime]', 0)
 			or returnServerError('Unable to find timestamp!');
@@ -309,7 +309,7 @@ class FacebookBridge extends BridgeAbstract {
 
 	}
 
-	private function extractGroupAuthor($post) {
+	private function extractGroupPostAuthor($post) {
 
 		$element = $post->find('img', 0)
 			or returnServerError('Unable to find author information!');
@@ -318,7 +318,7 @@ class FacebookBridge extends BridgeAbstract {
 
 	}
 
-	private function extractGroupEnclosures($post) {
+	private function extractGroupPostEnclosures($post) {
 
 		$elements = $post->find('div.userContent', 0)->next_sibling()->find('img');
 
@@ -332,16 +332,16 @@ class FacebookBridge extends BridgeAbstract {
 
 	}
 
-	private function extractGroupTitle($post) {
+	private function extractGroupPostTitle($post) {
 
 		$element = $post->find('h5', 0)
 			or returnServerError('Unable to find title!');
 
 		if(strpos($element->plaintext, 'shared') === false) {
 
-			$content = strip_tags($this->extractGroupContent($post));
+			$content = strip_tags($this->extractGroupPostContent($post));
 
-			return $this->extractGroupAuthor($post)
+			return $this->extractGroupPostAuthor($post)
 			. ' posted: '
 			. substr(
 					$content,
