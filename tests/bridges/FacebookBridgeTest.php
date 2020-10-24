@@ -67,14 +67,6 @@ class FacebookBridgeTest extends TestCase
 				'g' => 'sailors.worldwide'
 			)),
 			array(array(
-				'context' => 'Group',
-				'g' => 'cambridgefurs'
-			)),
-			array(array(
-				'context' => 'Group',
-				'g' => 'foreignerswholiveinistanbul'
-			)),
-			array(array(
 				'context' => 'User',
 				'u' => 'BubbaWatsonGolf',
 				'media_type' => 'all',
