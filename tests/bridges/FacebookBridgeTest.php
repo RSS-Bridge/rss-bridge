@@ -29,8 +29,7 @@ class FacebookBridgeTest extends TestCase
 		$bridge = new \FacebookBridge();
 		$bridge->setDatas($bridgeData);
 		putenv('HTTP_ACCEPT_LANGUAGE=en-GB,en;q=0.5');
-		$userAgent = 'Mozilla/5.0 (X11; Linux x86_64; rv:72.0) Gecko/20100101 '
-			. 'Firefox/72.0(rss-bridge/'
+		$userAgent = 'Mozilla/5.0 (X11; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0(rss-bridge/'
 			. \Configuration::$VERSION
 			. ';+'
 			. REPOSITORY
@@ -97,7 +96,7 @@ class FacebookBridgeTest extends TestCase
 				));
 			$this->fail('Exception should have been thrown');
 		} catch (\Exception $e) {
-			$this->assertStringContainsString("This group is not public", $e->getMessage());
+			$this->assertStringContainsString('This group is not public', $e->getMessage());
 		}
 	}
 }
