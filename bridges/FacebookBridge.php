@@ -293,39 +293,52 @@ class FacebookBridge extends BridgeAbstract {
 
 	private function extractGroupPostContent($post) {
 
-		$content = $post->find('div.userContent', 0)
+		$content = $post->find('div._5rgt', 0)
 			or returnServerError('Unable to find user content!');
 
-		return $content->innertext . $content->next_sibling()->innertext;
+		$context_text = $content->innertext;
+		if ($content->next_sibling() !== null) {
+			$context_text .= $content->next_sibling()->innertext;
+		}
+		return $context_text;
 
 	}
 
 	private function extractGroupPostTimestamp($post) {
 
-		$element = $post->find('abbr[data-utime]', 0)
+		$element = $post->find('abbr', 0)
 			or returnServerError('Unable to find timestamp!');
 
-		return $element->getAttribute('data-utime');
+		return $element->plaintext;
 
 	}
 
 	private function extractGroupPostAuthor($post) {
 
-		$element = $post->find('img', 0)
+		$element = $post->find('h3 a', 0)
 			or returnServerError('Unable to find author information!');
 
-		return $element->{'aria-label'};
+		return $element->plaintext;
 
 	}
 
 	private function extractGroupPostEnclosures($post) {
 
-		$elements = $post->find('div.userContent', 0)->next_sibling()->find('img');
+		$elements = $post->find('span._6qdm');
+		if ($post->find('div._5rgt', 0)->next_sibling() !== null) {
+			array_push($elements, ...$post->find('div._5rgt', 0)->next_sibling()->find('i.img'));
+		}
 
 		$enclosures = array();
 
+		$background_img_regex = '/background-image: ?url\\((.+?)\\);/';
+
 		foreach($elements as $enclosure) {
-			$enclosures[] = $enclosure->src;
+			if(preg_match($background_img_regex, $enclosure, $matches) > 0) {
+				$bg_img_value = trim(html_entity_decode($matches[1], ENT_QUOTES), "'\"");
+				$bg_img_url = urldecode(preg_replace('/\\\([0-9a-z]{2}) /', '%$1', $bg_img_value));
+				$enclosures[] = urldecode($bg_img_url);
+			}
 		}
 
 		return empty($enclosures) ? null : $enclosures;
@@ -334,7 +347,7 @@ class FacebookBridge extends BridgeAbstract {
 
 	private function extractGroupPostTitle($post) {
 
-		$element = $post->find('h5', 0)
+		$element = $post->find('h3', 0)
 			or returnServerError('Unable to find title!');
 
 		if(strpos($element->plaintext, 'shared') === false) {
