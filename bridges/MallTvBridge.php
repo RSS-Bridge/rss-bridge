@@ -63,8 +63,8 @@ class MallTvBridge extends BridgeAbstract {
 		}
 	}
 
-	public function getUri() {
-		return isset($this->feedUri) ? $this->feedUri : parent::getUri();
+	public function getURI() {
+		return isset($this->feedUri) ? $this->feedUri : parent::getURI();
 	}
 
 	public function getName() {
