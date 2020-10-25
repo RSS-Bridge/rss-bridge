@@ -2,7 +2,7 @@
 class WorldCosplayBridge extends BridgeAbstract {
 	const NAME = 'WorldCosplay Bridge';
 	const URI = 'https://worldcosplay.net/';
-	const DESCRIPTION ='Returns WorldCosplay photos';
+	const DESCRIPTION = 'Returns WorldCosplay photos';
 	const MAINTAINER = 'AxorPL';
 
 	const API_CHARACTER = 'api/photo/list.json?character_id=%u&limit=%u';
@@ -95,14 +95,12 @@ class WorldCosplayBridge extends BridgeAbstract {
 
 		$json = json_decode(getContents($url))
 			or returnServerError(sprintf(self::ERR_QUERY, $url));
-		if($json->has_error)
-		{
+		if($json->has_error) {
 			returnServerError($json->message);
 		}
 		$list = $json->list;
 
-		foreach($list as $img)
-		{
+		foreach($list as $img) {
 			$item = array();
 			$item['uri'] = self::URI . substr($img->photo->url, 1);
 			$item['title'] = $img->photo->subject;

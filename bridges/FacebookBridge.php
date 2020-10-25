@@ -215,16 +215,7 @@ class FacebookBridge extends BridgeAbstract {
 
 			$urlparts = parse_url($group);
 
-			if($urlparts['host'] !== parse_url(self::URI)['host']
-			&& 'www.' . $urlparts['host'] !== parse_url(self::URI)['host']) {
-
-				returnClientError('The host you provided is invalid! Received "'
-				. $urlparts['host']
-				. '", expected "'
-				. parse_url(self::URI)['host']
-				. '"!');
-
-			}
+			$this->validateHost($urlparts['host']);
 
 			return explode('/', $urlparts['path'])[2];
 
@@ -234,6 +225,24 @@ class FacebookBridge extends BridgeAbstract {
 			return $group;
 		}
 
+	}
+
+	private function validateHost($provided_host) {
+		// Handle mobile links
+		if (strpos($provided_host, 'm.') === 0) {
+			$provided_host = substr($provided_host, strlen('m.'));
+		}
+
+		$facebook_host = parse_url(self::URI)['host'];
+
+		if ($provided_host !== $facebook_host
+			&& 'www.' . $provided_host !== $facebook_host) {
+			returnClientError('The host you provided is invalid! Received "'
+				. $provided_host
+				. '", expected "'
+				. $facebook_host
+				. '"!');
+		}
 	}
 
 	private function isPublicGroup($html) {
@@ -348,13 +357,7 @@ class FacebookBridge extends BridgeAbstract {
 
 			$urlparts = parse_url($user);
 
-			if($urlparts['host'] !== parse_url(self::URI)['host']) {
-				returnClientError('The host you provided is invalid! Received "'
-				. $urlparts['host']
-				. '", expected "'
-				. parse_url(self::URI)['host']
-				. '"!');
-			}
+			$this->validateHost($urlparts['host']);
 
 			if(!array_key_exists('path', $urlparts)
 			|| $urlparts['path'] === '/') {

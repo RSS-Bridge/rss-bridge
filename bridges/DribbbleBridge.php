@@ -13,7 +13,7 @@ favicon-63b2904a073c89b52b19aa08cebc16a154bcf83fee8ecc6439968b1e6db569c7.ico';
 	}
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM(self::URI . '/shots')
+		$html = getSimpleHTMLDOM(self::URI)
 			or returnServerError('Error while downloading the website content');
 
 		$json = $this->loadEmbeddedJsonData($html);
@@ -36,7 +36,7 @@ favicon-63b2904a073c89b52b19aa08cebc16a154bcf83fee8ecc6439968b1e6db569c7.ico';
 			$description = $shot->find('.comment', 0);
 			$item['content'] = $description === null ? '' : $description->plaintext;
 
-			$preview_path = $shot->find('picture source', 0)->attr['srcset'];
+			$preview_path = $shot->find('figure img', 1)->attr['data-srcset'];
 			$item['content'] .= $this->getImageTag($preview_path, $item['title']);
 			$item['enclosures'] = array($this->getFullSizeImagePath($preview_path));
 
@@ -94,6 +94,6 @@ favicon-63b2904a073c89b52b19aa08cebc16a154bcf83fee8ecc6439968b1e6db569c7.ico';
 	}
 
 	private function getFullSizeImagePath($preview_path){
-		return str_replace('_1x', '', $preview_path);
+		return explode('?compress=1', $preview_path)[0];
 	}
 }
