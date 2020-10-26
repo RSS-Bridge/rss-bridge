@@ -129,7 +129,7 @@ EOD;
 	 * @return string The searchbar
 	 */
 	private static function getSearchbar() {
-		$query = filter_input(INPUT_GET, 'q');
+		$query = filter_input(INPUT_GET, 'q', FILTER_SANITIZE_SPECIAL_CHARS);
 
 		return <<<EOD
 <section class="searchbar">
