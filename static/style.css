@@ -360,7 +360,7 @@ h5 {
 		margin: 3px auto 0;
 	}
 
-	.info {
+	.info, .no-info {
 		display: none;
 	}
 

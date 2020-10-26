@@ -126,7 +126,7 @@ This bridge is not fetching its content through a secure connection</div>';
 				if(isset($inputEntry['title']))
 					$form .= '<i class="info" title="' . filter_var($inputEntry['title'], FILTER_SANITIZE_STRING) . '">i</i>';
 				else
-					$form .= '<i></i>';
+					$form .= '<i class="no-info"></i>';
 			}
 
 			$form .= '</div>';
