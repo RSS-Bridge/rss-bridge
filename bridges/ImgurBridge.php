@@ -1,5 +1,7 @@
 <?php
-class ImgurBridge extends BridgeAbstract {
+
+class ImgurBridge extends BridgeAbstract
+{
 
 	const MAINTAINER = 'joshcoales';
 	const NAME = 'Imgur Bridge';
@@ -16,8 +18,33 @@ class ImgurBridge extends BridgeAbstract {
 		)
 	);
 
+	public function getURI()
+	{
+		return self::URI
+			. '/search/time/?q='
+			. filter_var($this->getInput('g'), FILTER_SANITIZE_URL)
+			. '&qs=list';
+	}
+
 	public function collectData()
 	{
-		// TODO: Implement collectData() method.
+		$html = getSimpleHTMLDOM($this->getURI());
+
+		$posts = $html->find('div.post-list')
+		or returnServerError('Failed finding posts!');
+
+		foreach ($posts as $post) {
+
+			$item = array();
+
+			$item['uri'] = $this::URI . $post->find('a', 0)->href;
+			$item['title'] = $post->find('p.search-item-title', 0)->plaintext;
+			$item['author'] = $post->find('div.post-byline a.account', 0)->plaintext;
+			$item['content'] = '';  // TODO
+			$item['timestamp'] = ''; // TODO
+			$item['enclosures'] = ''; // TODO
+
+			$this->items[] = $item;
+		}
 	}
 }
