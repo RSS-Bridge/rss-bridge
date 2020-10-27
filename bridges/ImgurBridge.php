@@ -22,7 +22,7 @@ class ImgurBridge extends BridgeAbstract
 	{
 		return self::URI
 			. '/search/time/?q='
-			. filter_var($this->getInput('g'), FILTER_SANITIZE_URL)
+			. filter_var($this->getInput('q'), FILTER_SANITIZE_URL)
 			. '&qs=list';
 	}
 
@@ -37,14 +37,25 @@ class ImgurBridge extends BridgeAbstract
 
 			$item = array();
 
-			$item['uri'] = $this::URI . $post->find('a', 0)->href;
-			$item['title'] = $post->find('p.search-item-title', 0)->plaintext;
+			$item['uri'] = $this->getPostUrl($post);
+			$item['title'] = $this->getPostTitle($post);
 			$item['author'] = $post->find('div.post-byline a.account', 0)->plaintext;
-			$item['content'] = '';  // TODO
 			$item['timestamp'] = ''; // TODO
-			$item['enclosures'] = ''; // TODO
 
 			$this->items[] = $item;
 		}
+	}
+
+	private function getPostUrl($post)
+	{
+		return $this::URI . ltrim($post->find('a', 0)->href, '/');
+	}
+
+	private function getPostTitle($post)
+	{
+		return html_entity_decode(
+			$post->find('p.search-item-title', 0)->plaintext,
+			ENT_QUOTES
+		);
 	}
 }
