@@ -175,7 +175,13 @@ class FacebookBridge extends BridgeAbstract {
 			$header = array();
 		}
 
-		$html = getSimpleHTMLDOM($this->getURI(), $header)
+		$touchURI = str_replace(
+			'https://www.facebook',
+			'https://touch.facebook',
+			$this->getURI()
+		);
+
+		$html = getSimpleHTMLDOM($touchURI, $header)
 			or returnServerError('Failed loading facebook page: ' . $this->getURI());
 
 		if(!$this->isPublicGroup($html)) {
@@ -186,19 +192,19 @@ class FacebookBridge extends BridgeAbstract {
 
 		$this->groupName = $this->extractGroupName($html);
 
-		$posts = $html->find('div.userContentWrapper')
+		$posts = $html->find('div.story_body_container')
 			or returnServerError('Failed finding posts!');
 
 		foreach($posts as $post) {
 
 			$item = array();
 
-			$item['uri'] = $this->extractGroupURI($post);
-			$item['title'] = $this->extractGroupTitle($post);
-			$item['author'] = $this->extractGroupAuthor($post);
-			$item['content'] = $this->extractGroupContent($post);
-			$item['timestamp'] = $this->extractGroupTimestamp($post);
-			$item['enclosures'] = $this->extractGroupEnclosures($post);
+			$item['uri'] = $this->extractGroupPostURI($post);
+			$item['title'] = $this->extractGroupPostTitle($post);
+			$item['author'] = $this->extractGroupPostAuthor($post);
+			$item['content'] = $this->extractGroupPostContent($post);
+			$item['timestamp'] = $this->extractGroupPostTimestamp($post);
+			$item['enclosures'] = $this->extractGroupPostEnclosures($post);
 
 			$this->items[] = $item;
 
@@ -232,6 +238,9 @@ class FacebookBridge extends BridgeAbstract {
 		if (strpos($provided_host, 'm.') === 0) {
 			$provided_host = substr($provided_host, strlen('m.'));
 		}
+		if (strpos($provided_host, 'touch.') === 0) {
+			$provided_host = substr($provided_host, strlen('touch.'));
+		}
 
 		$facebook_host = parse_url(self::URI)['host'];
 
@@ -245,24 +254,26 @@ class FacebookBridge extends BridgeAbstract {
 		}
 	}
 
+	/**
+	 * @param $html simple_html_dom
+	 * @return bool
+	 */
 	private function isPublicGroup($html) {
 
-		// Facebook redirects to the groups about page for non-public groups
-		$about = $html->find('#pagelet_group_about', 0);
-
-		return !($about);
-
+		// Facebook touch just presents a login page for non-public groups
+		$title = $html->find('title', 0);
+		return $title->plaintext !== 'Log in to Facebook | Facebook';
 	}
 
 	private function extractGroupName($html) {
 
-		$ogtitle = $html->find('meta[property="og:title"]', 0)
+		$ogtitle = $html->find('._de1', 0)
 			or returnServerError('Unable to find group title!');
 
-		return html_entity_decode($ogtitle->content, ENT_QUOTES);
+		return html_entity_decode($ogtitle->plaintext, ENT_QUOTES);
 	}
 
-	private function extractGroupURI($post) {
+	private function extractGroupPostURI($post) {
 
 		$elements = $post->find('a')
 			or returnServerError('Unable to find URI!');
@@ -280,57 +291,70 @@ class FacebookBridge extends BridgeAbstract {
 
 	}
 
-	private function extractGroupContent($post) {
+	private function extractGroupPostContent($post) {
 
-		$content = $post->find('div.userContent', 0)
+		$content = $post->find('div._5rgt', 0)
 			or returnServerError('Unable to find user content!');
 
-		return $content->innertext . $content->next_sibling()->innertext;
+		$context_text = $content->innertext;
+		if ($content->next_sibling() !== null) {
+			$context_text .= $content->next_sibling()->innertext;
+		}
+		return $context_text;
 
 	}
 
-	private function extractGroupTimestamp($post) {
+	private function extractGroupPostTimestamp($post) {
 
-		$element = $post->find('abbr[data-utime]', 0)
+		$element = $post->find('abbr', 0)
 			or returnServerError('Unable to find timestamp!');
 
-		return $element->getAttribute('data-utime');
+		return $element->plaintext;
 
 	}
 
-	private function extractGroupAuthor($post) {
+	private function extractGroupPostAuthor($post) {
 
-		$element = $post->find('img', 0)
+		$element = $post->find('h3 a', 0)
 			or returnServerError('Unable to find author information!');
 
-		return $element->{'aria-label'};
+		return $element->plaintext;
 
 	}
 
-	private function extractGroupEnclosures($post) {
+	private function extractGroupPostEnclosures($post) {
 
-		$elements = $post->find('div.userContent', 0)->next_sibling()->find('img');
+		$elements = $post->find('span._6qdm');
+		if ($post->find('div._5rgt', 0)->next_sibling() !== null) {
+			array_push($elements, ...$post->find('div._5rgt', 0)->next_sibling()->find('i.img'));
+		}
 
 		$enclosures = array();
 
+		$background_img_regex = '/background-image: ?url\\((.+?)\\);/';
+
 		foreach($elements as $enclosure) {
-			$enclosures[] = $enclosure->src;
+			if(preg_match($background_img_regex, $enclosure, $matches) > 0) {
+				$bg_img_value = trim(html_entity_decode($matches[1], ENT_QUOTES), "'\"");
+				$bg_img_url = urldecode(preg_replace('/\\\([0-9a-z]{2}) /', '%$1', $bg_img_value));
+				$enclosures[] = urldecode($bg_img_url);
+			}
 		}
 
 		return empty($enclosures) ? null : $enclosures;
 
 	}
 
-	private function extractGroupTitle($post) {
+	private function extractGroupPostTitle($post) {
 
-		$element = $post->find('h5', 0)
+		$element = $post->find('h3', 0)
 			or returnServerError('Unable to find title!');
 
 		if(strpos($element->plaintext, 'shared') === false) {
 
-			$content = strip_tags($this->extractGroupContent($post));
+			$content = strip_tags($this->extractGroupPostContent($post));
 
-			return $this->extractGroupAuthor($post)
+			return $this->extractGroupPostAuthor($post)
 			. ' posted: '
 			. substr(
 					$content,
@@ -558,7 +582,7 @@ EOD;
 		}
 
 		// No captcha? We can carry on retrieving page contents :)
-		// First, we check wether the page is public or not
+		// First, we check whether the page is public or not
 		$loginForm = $html->find('._585r', 0);
 
 		if($loginForm != null) {
