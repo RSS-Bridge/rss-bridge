@@ -53,6 +53,9 @@ class HeadHunterBridge extends FeedExpander {
 		}
 		$content .= $description->outertext;
 
+		# vacancy on the same uri can be republished
+		# so adding timestamp (publication date) to url to show it again in feed
+		$item['uid'] = $item['uri'] . '#' . strval($item['timestamp']);
 		$item['content'] = $content;
 		$item['categories'] = $skills;
 
