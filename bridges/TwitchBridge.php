@@ -221,7 +221,7 @@ EOD;
 
 		if(isset($response->errors)) {
 			$messages = array_column($response->errors, 'message');
-			returnServerError('API error(s): ' . implode($messages, "\n"));
+			returnServerError('API error(s): ' . implode("\n", $messages));
 		}
 
 		return $response->data;
