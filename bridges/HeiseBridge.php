@@ -46,9 +46,9 @@ class HeiseBridge extends FeedExpander {
 			or returnServerError('Could not open article: ' . $uri);
 
 		if ($article) {
-            $article = defaultLinkTo($article, $uri);
-            $item = $this->addArticleToItem($item, $article);
-        }
+			$article = defaultLinkTo($article, $uri);
+			$item = $this->addArticleToItem($item, $article);
+		}
 
 		return $item;
 	}
