@@ -287,6 +287,13 @@ class VkBridge extends BridgeAbstract
 				if ($copy_post_header = $copy_quote->find('div.copy_post_header', 0)) {
 					$copy_post_header->outertext = '';
 				}
+
+				$second_copy_quote = $copy_quote->find('div.published_sec_quote', 0);
+				if (is_object($second_copy_quote)) {
+					$second_copy_quote_author = $second_copy_quote->find('a.copy_author', 0)->outertext;
+					$second_copy_quote_content = $second_copy_quote->find('a.reply_parent_link', 0)->outertext;
+					$second_copy_quote->outertext = "<br>Reposted ($second_copy_quote_author): $second_copy_quote_content";
+				}
 				$copy_quote_author = $copy_quote->find('a.copy_author', 0)->outertext;
 				$copy_quote_content = $copy_quote->innertext;
 				$copy_quote->outertext = "<br>Reposted ($copy_quote_author): <br>$copy_quote_content";
