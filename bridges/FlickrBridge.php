@@ -70,7 +70,7 @@ class FlickrBridge extends BridgeAbstract {
 					'Date taken' => 'date-taken-desc',
 					'Interesting' => 'interestingness-desc',
 				),
-				'defaultValue' => 'relevance',
+				'defaultValue' => 'date-posted-desc',
 			)
 		)
 	);
