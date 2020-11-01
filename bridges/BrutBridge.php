@@ -26,6 +26,7 @@ class BrutBridge extends BridgeAbstract {
 						'United States' => 'us',
 						'United Kingdom' => 'uk',
 						'France' => 'fr',
+						'Spain' => 'es',
 						'India' => 'in',
 						'Mexico' => 'mx',
 				),
