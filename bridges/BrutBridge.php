@@ -16,6 +16,7 @@ class BrutBridge extends BridgeAbstract {
 					'Entertainment' => 'entertainment',
 					'Sports' => 'sport',
 					'Nature' => 'nature',
+					'Health' => 'health',
 				),
 				'defaultValue' => 'news',
 			),
