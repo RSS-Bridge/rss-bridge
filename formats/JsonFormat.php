@@ -8,6 +8,8 @@
  * https://github.com/vigetlabs/json-feed-validator
  */
 class JsonFormat extends FormatAbstract {
+	const MIME_TYPE = 'application/json';
+
 	const VENDOR_EXCLUDES = array(
 		'author',
 		'title',
@@ -119,7 +121,7 @@ class JsonFormat extends FormatAbstract {
 
 	public function display(){
 		$this
-			->setContentType('application/json; charset=' . $this->getCharset())
+			->setContentType(self::MIME_TYPE . '; charset=' . $this->getCharset())
 			->callContentType();
 
 		return parent::display();

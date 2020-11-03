@@ -2,19 +2,18 @@
 class RainbowSixSiegeBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'corenting';
-	const NAME = 'Rainbow Six Siege Blog';
-	const URI = 'https://rainbow6.ubisoft.com/siege/en-us/news/';
+	const NAME = 'Rainbow Six Siege News';
+	const URI = 'https://www.ubisoft.com/en-us/game/rainbow-six/siege/news-updates';
 	const CACHE_TIMEOUT = 7200; // 2h
-	const DESCRIPTION = 'Latest articles from the Rainbow Six Siege blog';
+	const DESCRIPTION = 'Latest news about Rainbow Six Siege';
 
 	public function getIcon() {
-		return 'https://ubistatic19-a.akamaihd.net/resource/en-us/game/rainbow6/siege-v3/r6s-favicon_316592.ico';
+		return 'https://static-dm.akamaized.net/siege/prod/favicon-144x144.png';
 	}
 
 	public function collectData(){
-		$dlUrl = 'https://prod-tridionservice.ubisoft.com/live/v1/News/Latest?templateId=tcm%3A152-7677';
-		$dlUrl .= '8-32&pageIndex=0&pageSize=10&language=en-US&detailPageId=tcm%3A150-194572-64';
-		$dlUrl .= '&keywordList=233416%2C316144%2C233418%2C233417&siteId=undefined&useSeoFriendlyUrl=true';
+		$dlUrl = 'https://www.ubisoft.com/api/updates/items?locale=en-us&categoriesFilter=all';
+		$dlUrl = $dlUrl . '&limit=6&mediaFilter=news&skip=0&startIndex=undefined&tags=BR-rainbow-six%20GA-siege';
 		$jsonString = getContents($dlUrl) or returnServerError('Error while downloading the website content');
 
 		$json = json_decode($jsonString, true);
@@ -22,17 +21,20 @@ class RainbowSixSiegeBridge extends BridgeAbstract {
 
 		// Start at index 2 to remove highlighted articles
 		for($i = 0; $i < count($json); $i++) {
-			$jsonItem = $json[$i]['Content'];
-			$article = str_get_html($jsonItem);
+			$jsonItem = $json[$i];
+
+			$uri = 'https://www.ubisoft.com/en-us/game/rainbow-six/siege';
+			$uri = $uri . $jsonItem['button']['buttonUrl'];
+
+			$thumbnail = '<img src="' . $jsonItem['thumbnail']['url'] . '" alt="Thumbnail">';
+			$content = $thumbnail . '<br />' . markdownToHtml($jsonItem['content']);
 
 			$item = array();
-
-			$uri = $article->find('h3 a', 0)->href;
-			$uri = 'https://rainbow6.ubisoft.com' . $uri;
 			$item['uri'] = $uri;
-			$item['title'] = $article->find('h3', 0)->plaintext;
-			$item['content'] = $article->find('img', 0)->outertext . '<br />' . $article->find('strong', 0)->plaintext;
-			$item['timestamp'] = strtotime($article->find('p.news_date', 0)->plaintext);
+			$item['id'] = $jsonItem['id'];
+			$item['title'] = $jsonItem['title'];
+			$item['content'] = $content;
+			$item['timestamp'] = strtotime($jsonItem['date']);
 
 			$this->items[] = $item;
 		}

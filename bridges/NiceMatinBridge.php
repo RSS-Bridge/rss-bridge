@@ -3,7 +3,7 @@ class NiceMatinBridge extends FeedExpander {
 
 	const MAINTAINER = 'pit-fgfjiudghdf';
 	const NAME = 'NiceMatin';
-	const URI = 'http://www.nicematin.com/';
+	const URI = 'https://www.nicematin.com/';
 	const DESCRIPTION = 'Returns the 10 newest posts from NiceMatin (full text)';
 
 	public function collectData(){

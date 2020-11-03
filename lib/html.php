@@ -26,23 +26,13 @@
  * already removes some of the tags (search for `remove_noise` in simple_html_dom.php).
  */
 function sanitize($html,
-$tags_to_remove = array('script', 'iframe', 'input', 'form'),
-$attributes_to_keep = array('title', 'href', 'src'),
-$text_to_keep = array()){
+	$tags_to_remove = array('script', 'iframe', 'input', 'form'),
+	$attributes_to_keep = array('title', 'href', 'src'),
+	$text_to_keep = array()){
+
 	$htmlContent = str_get_html($html);
 
-	/*
-	 * Notice: simple_html_dom currently doesn't support "->find(*)", which is a
-	 * known issue: https://sourceforge.net/p/simplehtmldom/bugs/157/
-	 *
-	 * A solution to this is to find all nodes WITHOUT a specific attribute. If
-	 * the attribute is very unlikely to appear in the DOM, this is essentially
-	 * returning all nodes.
-	 *
-	 * "*[!b38fd2b1fe7f4747d6b1c1254ccd055e]" is doing exactly that. The attrib
-	 * "b38fd2b1fe7f4747d6b1c1254ccd055e" is very unlikely to appear in any DOM.
-	 */
-	foreach($htmlContent->find('*[!b38fd2b1fe7f4747d6b1c1254ccd055e]') as $element) {
+	foreach($htmlContent->find('*') as $element) {
 		if(in_array($element->tag, $text_to_keep)) {
 			$element->outertext = $element->plaintext;
 		} elseif(in_array($element->tag, $tags_to_remove)) {
@@ -89,18 +79,7 @@ function backgroundToImg($htmlContent) {
 	$regex = '/background-image[ ]{0,}:[ ]{0,}url\([\'"]{0,}(.*?)[\'"]{0,}\)/';
 	$htmlContent = str_get_html($htmlContent);
 
-	/*
-	 * Notice: simple_html_dom currently doesn't support "->find(*)", which is a
-	 * known issue: https://sourceforge.net/p/simplehtmldom/bugs/157/
-	 *
-	 * A solution to this is to find all nodes WITHOUT a specific attribute. If
-	 * the attribute is very unlikely to appear in the DOM, this is essentially
-	 * returning all nodes.
-	 *
-	 * "*[!b38fd2b1fe7f4747d6b1c1254ccd055e]" is doing exactly that. The attrib
-	 * "b38fd2b1fe7f4747d6b1c1254ccd055e" is very unlikely to appear in any DOM.
-	 */
-	foreach($htmlContent->find('*[!b38fd2b1fe7f4747d6b1c1254ccd055e]') as $element) {
+	foreach($htmlContent->find('*') as $element) {
 
 		if(preg_match($regex, $element->style, $matches) > 0) {
 
@@ -216,7 +195,7 @@ function stripRecursiveHTMLSection($string, $tag_name, $tag_start){
 }
 
 /**
- * Convert Markdown into HTML. Only a subset of the Markdown syntax is implemented.
+ * Convert Markdown into HTML with Parsedown.
  *
  * @link https://daringfireball.net/projects/markdown/ Markdown
  * @link https://github.github.com/gfm/ GitHub Flavored Markdown Spec
@@ -226,40 +205,6 @@ function stripRecursiveHTMLSection($string, $tag_name, $tag_start){
  */
 function markdownToHtml($string) {
 
-	//For more details about how these regex work:
-	// https://github.com/RSS-Bridge/rss-bridge/pull/802#discussion_r216138702
-	// Images: https://regex101.com/r/JW9Evr/1
-	// Links: https://regex101.com/r/eRGVe7/1
-	// Bold: https://regex101.com/r/2p40Y0/1
-	// Italic: https://regex101.com/r/xJkET9/1
-	// Separator: https://regex101.com/r/ZBEqFP/1
-	// Plain URL: https://regex101.com/r/2JHYwb/1
-	// Site name: https://regex101.com/r/qIuKYE/1
-
-	$string = preg_replace('/\!\[([^\]]+)\]\(([^\) ]+)(?: [^\)]+)?\)/', '<img src="$2" alt="$1" />', $string);
-	$string = preg_replace('/\[([^\]]+)\]\(([^\)]+)\)/', '<a href="$2">$1</a>', $string);
-	$string = preg_replace('/\*\*(.*)\*\*/U', '<b>$1</b>', $string);
-	$string = preg_replace('/\*(.*)\*/U', '<i>$1</i>', $string);
-	$string = preg_replace('/__(.*)__/U', '<b>$1</b>', $string);
-	$string = preg_replace('/_(.*)_/U', '<i>$1</i>', $string);
-	$string = preg_replace('/[-]{6,99}/', '<hr />', $string);
-	$string = str_replace('&#10;', '<br />', $string);
-	$string = preg_replace('/([^"])(https?:\/\/[^ "<]+)([^"])/', '$1<a href="$2">$2</a>$3', $string . ' ');
-	$string = preg_replace('/([^"\/])(www\.[^ "<]+)([^"])/', '$1<a href="http://$2">$2</a>$3', $string . ' ');
-
-	//As the regex are not perfect, we need to fix <i> and </i> that are introduced in URLs
-	// Fixup regex <i>: https://regex101.com/r/NTRPf6/1
-	// Fixup regex </i>: https://regex101.com/r/aNklRp/1
-
-	$count = 1;
-	while($count > 0) {
-		$string = preg_replace('/ (src|href)="([^"]+)<i>([^"]+)"/U', ' $1="$2_$3"', $string, -1, $count);
-	}
-
-	$count = 1;
-	while($count > 0) {
-		$string = preg_replace('/ (src|href)="([^"]+)<\/i>([^"]+)"/U', ' $1="$2_$3"', $string, -1, $count);
-	}
-
-	return '<div>' . trim($string) . '</div>';
+	$Parsedown = new Parsedown();
+	return $Parsedown->text($string);
 }

@@ -43,14 +43,11 @@ header {
 	color: #1182DB;
 }
 
-header > h1 {
-	font-size: 500%;
-	font-weight: bold;
-}
-
-header > h2 {
-	margin-left: 1em;
-	font-size: 200%;
+header > div.logo {
+	background-image: url(logo_600px.png);
+	width: 599px;
+	height: 177px;
+	margin: auto;
 }
 
 header > section.warning {
@@ -84,6 +81,12 @@ input[type="number"]:focus {
 	border-color: #888;
 }
 
+input:focus::-webkit-input-placeholder { opacity: 0; }
+input:focus::-moz-placeholder { opacity: 0; }
+input:focus::placeholder { opacity: 0; }
+input:focus:-moz-placeholder { opacity: 0; }
+input:focus:-ms-input-placeholder { opacity: 0; }
+
 .searchbar {
 	width: 40%;
 	margin: 40px auto 100px;
@@ -99,13 +102,6 @@ input[type="number"]:focus {
 
 .searchbar input[type="text"]::placeholder {
 	text-align: center;
-}
-
-.searchbar input[type="text"]:focus::-webkit-input-placeholder,
-.searchbar input[type="text"]:focus::-moz-placeholder,
-.searchbar input[type="text"]:focus:-moz-placeholder,
-.searchbar input[type="text"]:focus:-ms-input-placeholder {
-	opacity: 0;
 }
 
 .searchbar > h3 {
@@ -188,18 +184,40 @@ form {
 	content: ' :';
 }
 
+.info {
+	cursor: help;
+	opacity: 0.5;
+	width: 24px;
+	height: 24px;
+	font-size: 16px;
+	font-weight: bold;
+	font-style: italic;
+	line-height: 22px;
+	text-align: center;
+	color: #fff;
+	background-image: radial-gradient(#49afff, #1182DB);
+	-webkit-border-radius: 16px;
+	-moz-border-radius: 16px;
+	border-radius: 16px;
+}
+
+.info:hover {
+	opacity: 1;
+}
+
 @supports (display: grid) {
 
 	.parameters {
 		display: grid;
 		padding: 12px 0;
-		grid-template-columns: 40% max-content;
+		grid-template-columns: 40% max-content 24px;
 		grid-column-gap: 10px;
 		grid-row-gap: 5px;
 	}
 
 	.parameters label {
 		text-align: right;
+		line-height: 1.5em;
 	}
 
 	.parameters label::before {
@@ -303,4 +321,65 @@ h5 {
 
 .advice > li {
 	text-align: left;
+}
+
+@media screen and (max-width: 767px) {
+	body {
+		font-size: 75%;
+	}
+
+	header > div.logo {
+		background-image: url(logo_300px.png);
+		width: 300px;
+		height: 89px;
+	}
+
+	header > section.warning {
+		width: 90%;
+	}
+
+	header > section.critical-warning {
+		width: 90%;
+	}
+
+	.searchbar {
+		width: 90%;
+		margin: 0 auto;
+	}
+
+	section {
+		width: 90%;
+		margin: 10px auto;
+		overflow: hidden;
+	}
+
+	button {
+		display: inline-block;
+		width: 40%;
+		padding: 5px auto;
+		margin: 3px auto 0;
+	}
+
+	.info, .no-info {
+		display: none;
+	}
+
+	@supports (display: grid) {
+
+		.parameters {
+			grid-template-columns: auto auto;
+			grid-column-gap: 5px;
+		}
+
+		.parameters label {
+			line-height: 2em;
+			word-break: break-word;
+		}
+
+	} /* @supports (display: grid) */
+
+	.secure-warning {
+		width: 100%;
+	}
+
 }

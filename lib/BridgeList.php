@@ -33,6 +33,7 @@ final class BridgeList {
 	<meta name="description" content="RSS-Bridge" />
 	<title>RSS-Bridge</title>
 	<link href="static/style.css" rel="stylesheet">
+	<link rel="icon" type="image/png" href="static/favicon.png">
 	<script src="static/search.js"></script>
 	<script src="static/select.js"></script>
 	<noscript>
@@ -61,14 +62,19 @@ EOD;
 		$totalActiveBridges = 0;
 		$inactiveBridges = '';
 
-		$bridgeList = Bridge::getBridgeNames();
-		$formats = Format::getFormatNames();
+		$bridgeFac = new \BridgeFactory();
+		$bridgeFac->setWorkingDir(PATH_LIB_BRIDGES);
+		$bridgeList = $bridgeFac->getBridgeNames();
+
+		$formatFac = new FormatFactory();
+		$formatFac->setWorkingDir(PATH_LIB_FORMATS);
+		$formats = $formatFac->getFormatNames();
 
 		$totalBridges = count($bridgeList);
 
 		foreach($bridgeList as $bridgeName) {
 
-			if(Bridge::isWhitelisted($bridgeName)) {
+			if($bridgeFac->isWhitelisted($bridgeName)) {
 
 				$body .= BridgeCard::displayBridgeCard($bridgeName, $formats);
 				$totalActiveBridges++;
@@ -111,8 +117,7 @@ EOD;
 
 		return <<<EOD
 <header>
-	<h1>RSS-Bridge</h1>
-	<h2>Reconnecting the Web</h2>
+	<div class="logo"></div>
 	{$warning}
 </header>
 EOD;
@@ -124,13 +129,13 @@ EOD;
 	 * @return string The searchbar
 	 */
 	private static function getSearchbar() {
-		$query = filter_input(INPUT_GET, 'q');
+		$query = filter_input(INPUT_GET, 'q', FILTER_SANITIZE_SPECIAL_CHARS);
 
 		return <<<EOD
 <section class="searchbar">
 	<h3>Search</h3>
 	<input type="text" name="searchfield"
-		id="searchfield" placeholder="Enter the bridge you want to search for"
+		id="searchfield" placeholder="Insert URL or bridge name"
 		onchange="search()" onkeyup="search()" value="{$query}">
 </section>
 EOD;

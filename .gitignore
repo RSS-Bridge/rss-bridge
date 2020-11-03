@@ -236,3 +236,10 @@ config.ini.php
 
 #Builder
 .buildconfig
+
+#Auth
+.htaccess
+.htpasswd
+
+#Crawler
+robots.txt

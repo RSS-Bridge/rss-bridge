@@ -3,7 +3,7 @@ class WorldOfTanksBridge extends FeedExpander {
 
 	const MAINTAINER = 'Riduidel';
 	const NAME = 'World of Tanks';
-	const URI = 'http://worldoftanks.eu/';
+	const URI = 'https://worldoftanks.eu/';
 	const DESCRIPTION = 'News about the tank slaughter game.';
 
 	const PARAMETERS = array( array(
@@ -21,6 +21,8 @@ class WorldOfTanksBridge extends FeedExpander {
 			)
 		)
 	));
+
+	const POSSIBLE_ARTICLES = array('article', 'rich-article');
 
 	public function collectData() {
 		$this->collectExpandableDatas(sprintf('https://worldoftanks.eu/%s/rss/news/', $this->getInput('lang')));
@@ -40,13 +42,17 @@ class WorldOfTanksBridge extends FeedExpander {
 	private function loadFullArticle($uri){
 		$html = getSimpleHTMLDOMCached($uri);
 
-		$content = $html->find('article', 0);
+		foreach(self::POSSIBLE_ARTICLES as $article_class) {
+			$content = $html->find('article', 0);
 
-		// Remove the scripts, please
-		foreach($content->find('script') as $script) {
-			$script->outertext = '';
+			if($content !== null) {
+				// Remove the scripts, please
+				foreach($content->find('script') as $script) {
+					$script->outertext = '';
+				}
+				return $content->innertext;
+			}
 		}
-
-		return $content->innertext;
+		return null;
 	}
 }

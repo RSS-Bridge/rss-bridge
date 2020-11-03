@@ -19,13 +19,16 @@ class DetectAction extends ActionAbstract {
 		$format = $this->userData['format']
 			or returnClientError('You must specify a format!');
 
-		foreach(Bridge::getBridgeNames() as $bridgeName) {
+		$bridgeFac = new \BridgeFactory();
+		$bridgeFac->setWorkingDir(PATH_LIB_BRIDGES);
 
-			if(!Bridge::isWhitelisted($bridgeName)) {
+		foreach($bridgeFac->getBridgeNames() as $bridgeName) {
+
+			if(!$bridgeFac->isWhitelisted($bridgeName)) {
 				continue;
 			}
 
-			$bridge = Bridge::create($bridgeName);
+			$bridge = $bridgeFac->create($bridgeName);
 
 			if($bridge === false) {
 				continue;

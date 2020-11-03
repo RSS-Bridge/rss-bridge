@@ -4,41 +4,43 @@ language: php
 install:
   - composer global require dealerdirect/phpcodesniffer-composer-installer;
   - composer global require phpcompatibility/php-compatibility;
-  # Use PHPUnit 6 for unit tests (stable), requires PHP 7
-  - if [[ $TRAVIS_PHP_VERSION == "7.0" ]]; then
-      composer global require phpunit/phpunit ^6;
-    fi
-  # Use latest PHPUnit on nightly to detect breaking changes
-  - if [[ $TRAVIS_PHP_VERSION == "nightly" ]]; then
-      composer global require phpunit/phpunit;
+  - if [[ "$PHPUNIT" ]]; then
+      composer global require phpunit/phpunit ^$PHPUNIT;
     fi
 
 script:
   - phpenv rehash
   # Run PHP_CodeSniffer on all versions
   - ~/.config/composer/vendor/bin/phpcs . --standard=phpcs.xml --warning-severity=0 --extensions=php -p;
-  # Check PHP compatibility for the lowest supported version
-  - if [[ $TRAVIS_PHP_VERSION == "5.6" ]]; then
+  # Check PHP compatibility for the lowest and highest supported version
+  - if [[ $TRAVIS_PHP_VERSION == "5.6" || $TRAVIS_PHP_VERSION == "7.3" ]]; then
       ~/.config/composer/vendor/bin/phpcs . --standard=phpcompatibility.xml --extensions=php -p;
     fi
-  # Run unit tests (stable)
-  - if [[ $TRAVIS_PHP_VERSION == "7.0" ]]; then
-      phpunit --configuration=phpunit.xml --include-path=lib/;
+  # Run unit tests on highest major version
+  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" ]]; then
+      ~/.config/composer/vendor/bin/phpunit --configuration=phpunit.xml --include-path=lib/;
     fi
-  # Run unit tests (latest/nightly)
-  # Check PHP compatibility for all versions, starting at the lowest supported version in order to detect breaking changes
-  - if [[ $TRAVIS_PHP_VERSION == "nightly" ]]; then
-      phpunit --configuration=phpunit.xml --include-path=lib/;
-      ~/.config/composer/vendor/bin/phpcs . --standard=PHPCompatibility --extensions=php -p --runtime-set testVersion 5.6-;
-    fi
+
+php:
+  - 7.3
+
+env:
+  - PHPUNIT=6
+  - PHPUNIT=7
+  - PHPUNIT=8
 
 matrix:
   fast_finish: true
 
   include:
     - php: 5.6
+      env: PHPUNIT=
     - php: 7.0
-    - php: nightly
+    - php: 7.1
+    - php: 7.2
 
   allow_failures:
-    - php: nightly
+    - php: 7.3
+      env: PHPUNIT=7
+    - php: 7.3
+      env: PHPUNIT=8

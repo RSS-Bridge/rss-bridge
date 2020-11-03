@@ -67,6 +67,13 @@ interface FormatInterface {
 	public function getExtraInfos();
 
 	/**
+	 * Return MIME type
+	 *
+	 * @return string The MIME type
+	 */
+	public function getMimeType();
+
+	/**
 	 * Set charset
 	 *
 	 * @param string $charset The charset

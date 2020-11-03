@@ -55,9 +55,7 @@ class BAEBridge extends BridgeAbstract {
 
 			$content .= '<hr>';
 			$content .= $htmlDetail->find('section', 0)->innertext;
-			$content = str_replace('src="/', 'src="' . parent::getURI() . '/', $content);
-			$content = str_replace('href="/', 'href="' . parent::getURI() . '/', $content);
-			$item['content'] = $content;
+			$item['content'] = defaultLinkTo($content, parent::getURI());
 			$image = $htmlDetail->find('#zoom', 0);
 			if ($image) {
 				$item['enclosures'] = array(parent::getURI() . $image->getAttribute('src'));
