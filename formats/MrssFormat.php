@@ -25,6 +25,8 @@
  *   RSS 2.0 feed that works with feed readers that don't support the extension.
  */
 class MrssFormat extends FormatAbstract {
+	const MIME_TYPE = 'application/rss+xml';
+
 	const ALLOWED_IMAGE_EXT = array(
 		'.gif', '.jpg', '.png'
 	);
@@ -150,7 +152,7 @@ EOD;
 
 	public function display(){
 		$this
-			->setContentType('application/rss+xml; charset=' . $this->getCharset())
+			->setContentType(self::MIME_TYPE . '; charset=' . $this->getCharset())
 			->callContentType();
 
 		return parent::display();

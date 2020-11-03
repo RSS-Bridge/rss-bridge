@@ -2,7 +2,7 @@
 class HDWallpapersBridge extends BridgeAbstract {
 	const MAINTAINER = 'nel50n';
 	const NAME = 'HD Wallpapers Bridge';
-	const URI = 'http://www.hdwallpapers.in/';
+	const URI = 'https://www.hdwallpapers.in/';
 	const CACHE_TIMEOUT = 43200; //12h
 	const DESCRIPTION = 'Returns the latests wallpapers from HDWallpapers';
 
@@ -72,7 +72,7 @@ class HDWallpapersBridge extends BridgeAbstract {
 	public function getName(){
 		if(!is_null($this->getInput('c')) && !is_null($this->getInput('r'))) {
 			return 'HDWallpapers - '
-			. str_replace(['__', '_'], [' & ', ' '], $this->getInput('c'))
+			. str_replace(array('__', '_'), array(' & ', ' '), $this->getInput('c'))
 			. ' ['
 			. $this->getInput('r')
 			. ']';

@@ -4,6 +4,14 @@
 ; file, it will be replaced on the next update of RSS-Bridge! You can specify
 ; your own configuration in 'config.ini.php' (copy this file).
 
+[system]
+
+; Defines the timezone used by RSS-Bridge
+; Find a list of supported timezones at
+; https://www.php.net/manual/en/timezones.php
+; timezone = "UTC" (default)
+timezone = "UTC"
+
 [cache]
 
 ; Defines the cache type used by RSS-Bridge
@@ -52,6 +60,18 @@ username = ""
 ; The password for authentication. Insert this password when prompted for login.
 ; Use a strong password to prevent others from guessing your login!
 password = ""
+
+[error]
+
+; Defines how error messages are returned by RSS-Bridge
+;
+; "feed" = As part of the feed (default)
+; "http" = As HTTP error message
+; "none" = No errors are reported
+output = "feed"
+
+; Defines how often an error must occur before it is reported to the user
+report_limit = 1
 
 ; --- Cache specific configuration ---------------------------------------------
 

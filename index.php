@@ -6,8 +6,6 @@ Configuration::loadConfiguration();
 
 Authentication::showPromptIfNeeded();
 
-date_default_timezone_set('UTC');
-
 /*
 Move the CLI arguments to the $_GET array, in order to be able to use
 rss-bridge from the command line
@@ -20,7 +18,7 @@ if (isset($argv)) {
 }
 
 define('USER_AGENT',
-	'Mozilla/5.0 (X11; Linux x86_64; rv:30.0) Gecko/20121202 Firefox/30.0(rss-bridge/'
+	'Mozilla/5.0 (X11; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0(rss-bridge/'
 	. Configuration::$VERSION
 	. ';+'
 	. REPOSITORY
@@ -29,27 +27,8 @@ define('USER_AGENT',
 
 ini_set('user_agent', USER_AGENT);
 
-// default whitelist
-$whitelist_default = array(
-	'BandcampBridge',
-	'CryptomeBridge',
-	'DansTonChatBridge',
-	'DuckDuckGoBridge',
-	'FacebookBridge',
-	'FlickrBridge',
-	'GoogleSearchBridge',
-	'IdenticaBridge',
-	'InstagramBridge',
-	'OpenClassroomsBridge',
-	'PinterestBridge',
-	'ScmbBridge',
-	'TwitterBridge',
-	'WikipediaBridge',
-	'YoutubeBridge');
-
 try {
 
-	Bridge::setWhitelist($whitelist_default);
 	$actionFac = new \ActionFactory();
 	$actionFac->setWorkingDir(PATH_LIB_ACTIONS);
 

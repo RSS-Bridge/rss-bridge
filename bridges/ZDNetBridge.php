@@ -185,7 +185,8 @@ class ZDNetBridge extends FeedExpander {
 			'<div class="downloadNow',
 			'<div data-shortcode',
 			'<div id="sharethrough',
-			'<div id="inpage-video'
+			'<div id="inpage-video',
+			'<div class="share-bar-wrapper"',
 		) as $div_start) {
 			$contents = stripRecursiveHtmlSection($contents, 'div', $div_start);
 		}

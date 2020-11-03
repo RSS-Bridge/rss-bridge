@@ -5,29 +5,16 @@ class Releases3DSBridge extends BridgeAbstract {
 	const NAME = '3DS Scene Releases';
 	const URI = 'http://www.3dsdb.com/';
 	const CACHE_TIMEOUT = 10800; // 3h
-	const DESCRIPTION = 'Returns the newest scene releases.';
+	const DESCRIPTION = 'Returns the newest scene releases for Nintendo 3DS.';
 
 	public function collectData(){
+		$this->collectDataUrl(self::URI . 'xml.php');
+	}
 
-		function typeToString($type){
-			switch($type) {
-				case 1: return '3DS Game';
-				case 4: return 'eShop';
-				default: return '??? (' . $type . ')';
-			}
-		}
+	protected function collectDataUrl($dataUrl){
 
-		function cardToString($card){
-			switch($card) {
-				case 1: return 'Regular (CARD1)';
-				case 2: return 'NAND (CARD2)';
-				default: return '??? (' . $card . ')';
-			}
-		}
-
-		$dataUrl = self::URI . 'xml.php';
 		$xml = getContents($dataUrl)
-			or returnServerError('Could not request 3dsdb: ' . $dataUrl);
+			or returnServerError('Could not request URL: ' . $dataUrl);
 		$limit = 0;
 
 		foreach(array_reverse(explode('<release>', $xml)) as $element) {
@@ -68,17 +55,25 @@ class Releases3DSBridge extends BridgeAbstract {
 
 			$ignSearchUrl = 'https://www.ign.com/search?q=' . urlencode($name);
 			if($ignResult = getSimpleHTMLDOMCached($ignSearchUrl)) {
-				$ignCoverArt = $ignResult->find('div.search-item-media', 0)->find('img', 0)->src;
-				$ignDesc = $ignResult->find('div.search-item-description', 0)->plaintext;
-				$ignLink = $ignResult->find('div.search-item-sub-title', 0)->find('a', 1)->href;
-				$ignDate = strtotime(trim($ignResult->find('span.publish-date', 0)->plaintext));
-				$ignDescription = '<div><img src="'
-				. $ignCoverArt
-				. '" /></div><div>'
-				. $ignDesc
-				. ' <a href="'
-				. $ignLink
-				. '">More at IGN</a></div>';
+				$ignCoverArt = $ignResult->find('div.search-item-media', 0);
+				$ignDesc = $ignResult->find('div.search-item-description', 0);
+				$ignLink = $ignResult->find('div.search-item-sub-title', 0);
+				$ignDate = $ignResult->find('span.publish-date', 0);
+				if (is_object($ignCoverArt))
+					$ignCoverArt = $ignCoverArt->find('img', 0);
+				if (is_object($ignLink))
+					$ignLink = $ignLink->find('a', 1);
+				if (is_object($ignDate))
+					$ignDate = strtotime(trim($ignDate->plaintext));
+				if (is_object($ignCoverArt) && is_object($ignDesc) && is_object($ignLink)) {
+					$ignDescription = '<div><img src="'
+					. $ignCoverArt->src
+					. '" /></div><div>'
+					. $ignDesc->plaintext
+					. ' <a href="'
+					. $ignLink->href
+					. '">More at IGN</a></div>';
+				}
 			}
 
 			//Main section : Release description from 3DS database
@@ -95,8 +90,8 @@ class Releases3DSBridge extends BridgeAbstract {
 			. '<br /><b>Release Name: </b>' . $releasename
 			. '<br /><b>Trimmed size: </b>' . intval(intval($trimmedsize) / 1048576)
 			. 'MB<br /><b>Firmware: </b>' . $firmware
-			. '<br /><b>Type: </b>' . typeToString($type)
-			. '<br /><b>Card: </b>' . cardToString($card)
+			. '<br /><b>Type: </b>' . $this->typeToString($type)
+			. '<br /><b>Card: </b>' . $this->cardToString($card)
 			. '<br />';
 
 			//Build search links section to facilitate release search using search engines
@@ -122,6 +117,22 @@ class Releases3DSBridge extends BridgeAbstract {
 			$item['content'] = $ignDescription . $releaseDescription . $releaseSearchLinks;
 			$this->items[] = $item;
 			$limit++;
+		}
+	}
+
+	private function typeToString($type){
+		switch($type) {
+			case 1: return 'Card Game';
+			case 4: return 'eShop';
+			default: return '??? (' . $type . ')';
+		}
+	}
+
+	private function cardToString($card){
+		switch($card) {
+			case 1: return 'Regular (CARD1)';
+			case 2: return 'NAND (CARD2)';
+			default: return '??? (' . $card . ')';
 		}
 	}
 }

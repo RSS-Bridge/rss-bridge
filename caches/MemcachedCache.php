@@ -16,19 +16,19 @@ class MemcachedCache implements CacheInterface {
 		$host = Configuration::getConfig(get_called_class(), 'host');
 		$port = Configuration::getConfig(get_called_class(), 'port');
 		if (empty($host) && empty($port)) {
-			returnServerError('Configuration for ' . get_called_class() . ' missing. Please check your config.ini.php');
+			returnServerError('Configuration for ' . get_called_class() . ' missing. Please check your ' . FILE_CONFIG);
 		} else if (empty($host)) {
-			returnServerError('"host" param is not set for ' . get_called_class() . '. Please check your config.ini.php');
+			returnServerError('"host" param is not set for ' . get_called_class() . '. Please check your ' . FILE_CONFIG);
 		} else if (empty($port)) {
-			returnServerError('"port" param is not set for ' . get_called_class() . '. Please check your config.ini.php');
+			returnServerError('"port" param is not set for ' . get_called_class() . '. Please check your ' . FILE_CONFIG);
 		} else if (!ctype_digit($port)) {
-			returnServerError('"port" param is invalid for ' . get_called_class() . '. Please check your config.ini.php');
+			returnServerError('"port" param is invalid for ' . get_called_class() . '. Please check your ' . FILE_CONFIG);
 		}
 
 		$port = intval($port);
 
 		if ($port < 1 || $port > 65535) {
-			returnServerError('"port" param is invalid for ' . get_called_class() . '. Please check your config.ini.php');
+			returnServerError('"port" param is invalid for ' . get_called_class() . '. Please check your ' . FILE_CONFIG);
 		}
 
 		$conn = new Memcached();
@@ -40,7 +40,7 @@ class MemcachedCache implements CacheInterface {
 		if ($this->data) return $this->data;
 		$result = $this->conn->get($this->getCacheKey());
 		if ($result === false) {
-			return false;
+			return null;
 		}
 
 		$this->time = $result['time'];

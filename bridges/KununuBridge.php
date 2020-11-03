@@ -24,6 +24,22 @@ class KununuBridge extends BridgeAbstract {
 				'type' => 'checkbox',
 				'exampleValue' => 'checked',
 				'title' => 'Activate to load full article'
+			),
+			'include_ratings' => array(
+				'name' => 'Include ratings',
+				'type' => 'checkbox',
+				'title' => 'Activate to include ratings in the feed'
+			),
+			'include_benefits' => array(
+				'name' => 'Include benefits',
+				'type' => 'checkbox',
+				'title' => 'Activate to include benefits in the feed'
+			),
+			'limit' => array(
+				'name' => 'Limit',
+				'type' => 'number',
+				'defaultValue' => 3,
+				'title' => "Maximum number of items to return in the feed.\n0 = unlimited"
 			)
 		),
 		array(
@@ -98,6 +114,8 @@ class KununuBridge extends BridgeAbstract {
 		$articles = $section->find('article')
 			or returnServerError('Unable to find articles!');
 
+		$limit = $this->getInput('limit') ?: 0;
+
 		// Go through all articles
 		foreach($articles as $article) {
 
@@ -116,7 +134,7 @@ class KununuBridge extends BridgeAbstract {
 			$item = array();
 
 			$item['author'] = $this->extractArticleAuthorPosition($article);
-			$item['timestamp'] = strtotime($date);
+			$item['timestamp'] = strtotime($date->content);
 			$item['title'] = $rating->getAttribute('aria-label')
 			. ' : '
 			. strip_tags($summary->innertext);
@@ -130,6 +148,8 @@ class KununuBridge extends BridgeAbstract {
 			}
 
 			$this->items[] = $item;
+
+			if ($limit > 0 && count($this->items) >= $limit) break;
 
 		}
 	}
@@ -175,7 +195,32 @@ class KununuBridge extends BridgeAbstract {
 		$description = $article->find('[itemprop=reviewBody]', 0)
 			or returnServerError('Cannot find article description!');
 
-		return $description->innertext;
+		$retVal = $description->innertext;
+
+		if($this->getInput('include_ratings')
+		&& ($ratings = $article->find('.review-ratings .rating-group'))) {
+			$retVal .= (empty($retVal) ? '' : '<hr>') . '<table>';
+			foreach($ratings as $rating) {
+				$retVal .= <<<EOD
+<tr>
+	<td>{$rating->find('.rating-title', 0)->plaintext}
+	<td>{$rating->find('.rating-badge', 0)->plaintext}
+</tr>
+EOD;
+			}
+			$retVal .= '</table>';
+		}
+
+		if($this->getInput('include_benefits')
+		&& ($benefits = $article->find('benefit'))) {
+			$retVal .= (empty($retVal) ? '' : '<hr>') . '<ul>';
+			foreach($benefits as $benefit) {
+				$retVal .= "<li>{$benefit->plaintext}</li>";
+			}
+			$retVal .= '</ul>';
+		}
+
+		return $retVal;
 	}
 
 	/**

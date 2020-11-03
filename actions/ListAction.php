@@ -17,9 +17,12 @@ class ListAction extends ActionAbstract {
 		$list->bridges = array();
 		$list->total = 0;
 
-		foreach(Bridge::getBridgeNames() as $bridgeName) {
+		$bridgeFac = new \BridgeFactory();
+		$bridgeFac->setWorkingDir(PATH_LIB_BRIDGES);
 
-			$bridge = Bridge::create($bridgeName);
+		foreach($bridgeFac->getBridgeNames() as $bridgeName) {
+
+			$bridge = $bridgeFac->create($bridgeName);
 
 			if($bridge === false) { // Broken bridge, show as inactive
 
@@ -31,7 +34,7 @@ class ListAction extends ActionAbstract {
 
 			}
 
-			$status = Bridge::isWhitelisted($bridgeName) ? 'active' : 'inactive';
+			$status = $bridgeFac->isWhitelisted($bridgeName) ? 'active' : 'inactive';
 
 			$list->bridges[$bridgeName] = array(
 				'status' => $status,

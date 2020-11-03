@@ -3,7 +3,7 @@ class ElsevierBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'Pierre Mazière';
 	const NAME = 'Elsevier journals recent articles';
-	const URI = 'http://www.journals.elsevier.com/';
+	const URI = 'https://www.journals.elsevier.com/';
 	const CACHE_TIMEOUT = 43200; //12h
 	const DESCRIPTION = 'Returns the recent articles published in Elsevier journals';
 

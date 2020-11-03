@@ -25,33 +25,35 @@ class GoogleSearchBridge extends BridgeAbstract {
 	public function collectData(){
 		$html = '';
 
-		$html = getSimpleHTMLDOM(self::URI
-		. 'search?q='
-		. urlencode($this->getInput('q'))
-		. '&num=100&complete=0&tbs=qdr:y,sbd:1')
+		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('No results for this query.');
 
-		$emIsRes = $html->find('div[id=ires]', 0);
+		$emIsRes = $html->find('div[id=res]', 0);
 
 		if(!is_null($emIsRes)) {
 			foreach($emIsRes->find('div[class=g]') as $element) {
 
 				$item = array();
 
-				// Extract direct URL from google href (eg. /url?q=...)
 				$t = $element->find('a[href]', 0)->href;
-				$item['uri'] = '' . $t;
-				parse_str(parse_url($t, PHP_URL_QUERY), $parameters);
-				if(isset($parameters['q'])) {
-					$item['uri'] = $parameters['q'];
-				}
-
+				$item['uri'] = htmlspecialchars_decode($t);
 				$item['title'] = $element->find('h3', 0)->plaintext;
-				$item['content'] = $element->find('span[class=st]', 0)->plaintext;
+				$item['content'] = $element->find('span[class=aCOpRe]', 0)->plaintext;
 
 				$this->items[] = $item;
 			}
 		}
+	}
+
+	public function getURI() {
+		if (!is_null($this->getInput('q'))) {
+			return self::URI
+				. 'search?q='
+				. urlencode($this->getInput('q'))
+				. '&num=100&complete=0&tbs=qdr:y,sbd:1';
+		}
+
+		return parent::getURI();
 	}
 
 	public function getName(){

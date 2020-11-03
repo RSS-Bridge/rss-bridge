@@ -346,7 +346,7 @@ abstract class FeedExpander extends BridgeAbstract {
 				if($attribute === 'isPermaLink'
 					&& ($value === 'true' || (
 							filter_var($feedItem->guid, FILTER_VALIDATE_URL)
-							&& !filter_var($item['uri'], FILTER_VALIDATE_URL)
+							&& (empty($item['uri']) || !filter_var($item['uri'], FILTER_VALIDATE_URL))
 						)
 					)
 				) {

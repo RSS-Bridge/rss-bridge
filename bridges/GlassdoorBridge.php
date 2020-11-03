@@ -141,7 +141,7 @@ class GlassdoorBridge extends BridgeAbstract {
 	}
 
 	private function collectReviewData($html, $limit) {
-		$reviews = $html->find('#EmployerReviews li[id^="empReview]')
+		$reviews = $html->find('#ReviewsFeed li[id^="empReview]')
 			or returnServerError('Unable to find reviews!');
 
 		foreach($reviews as $review) {
@@ -153,7 +153,19 @@ class GlassdoorBridge extends BridgeAbstract {
 			$item['timestamp'] = strtotime($review->find('time', 0)->datetime);
 
 			$mainText = $review->find('p.mainText', 0)->plaintext;
-			$description = $review->find('div.prosConsAdvice', 0)->innertext;
+
+			$description = '';
+			foreach($review->find('div.description p') as $p) {
+
+				if ($p->hasClass('strong')) {
+					$p->tag = 'strong';
+					$p->removeClass('strong');
+				}
+
+				$description .= $p;
+
+			}
+
 			$item['content'] = "<p>{$mainText}</p><p>{$description}</p>";
 
 			$this->items[] = $item;
