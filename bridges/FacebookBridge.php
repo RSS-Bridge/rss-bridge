@@ -281,7 +281,8 @@ class FacebookBridge extends BridgeAbstract {
 
 			// Find the one that is a permalink
 			if(strpos($anchor->href, 'permalink') !== false) {
-				return $anchor->href;
+				$arr = explode('?', $anchor->href, 2);
+				return $arr[0];
 			}
 
 		}
