@@ -203,7 +203,7 @@ class FacebookBridge extends BridgeAbstract {
 			$item['title'] = $this->extractGroupPostTitle($post);
 			$item['author'] = $this->extractGroupPostAuthor($post);
 			$item['content'] = $this->extractGroupPostContent($post);
-			$item['enclosures'] = $this->exteractGroupPostEnclosures($post);
+			$item['enclosures'] = $this->extractGroupPostEnclosures($post);
 
 			$this->items[] = $item;
 
