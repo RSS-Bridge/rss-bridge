@@ -41,7 +41,7 @@
  * 'content' if enabled.
  *
  * For more information see http://php.net/manual/en/function.curl-setopt.php
- * @return string The contents.
+ * @return string|array The contents.
  */
 function getContents($url, $header = array(), $opts = array(), $returnHeader = false){
 	Debug::log('Reading contents from "' . $url . '"');
@@ -233,7 +233,7 @@ EOD
  * when returning plaintext.
  * @param string $defaultSpanText Specifies the replacement text for `<span />`
  * tags when returning plaintext.
- * @return string Contents as simplehtmldom object.
+ * @return false|simple_html_dom Contents as simplehtmldom object.
  */
 function getSimpleHTMLDOM($url,
 	$header = array(),
@@ -283,7 +283,7 @@ function getSimpleHTMLDOM($url,
  * when returning plaintext.
  * @param string $defaultSpanText Specifies the replacement text for `<span />`
  * tags when returning plaintext.
- * @return string Contents as simplehtmldom object.
+ * @return false|simple_html_dom Contents as simplehtmldom object.
  */
 function getSimpleHTMLDOMCached($url,
 	$duration = 86400,
