@@ -45,8 +45,10 @@ class HeiseBridge extends FeedExpander {
 		$article = getSimpleHTMLDOMCached($uri)
 			or returnServerError('Could not open article: ' . $uri);
 
-		$article = defaultLinkTo($article, $uri);
-		$item = $this->addArticleToItem($item, $article);
+		if ($article) {
+			$article = defaultLinkTo($article, $uri);
+			$item = $this->addArticleToItem($item, $article);
+		}
 
 		return $item;
 	}
