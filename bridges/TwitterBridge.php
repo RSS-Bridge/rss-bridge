@@ -95,6 +95,20 @@ EOD
 				'required' => false,
 				'title' => 'Specify term to search for'
 			)
+		),
+		'By list ID' => array(
+			'listid' => array(
+				'name' => 'List ID',
+				'exampleValue' => '31748',
+				'required' => true,
+				'title' => 'Insert the list id'
+			),
+			'filter' => array(
+				'name' => 'Filter',
+				'exampleValue' => '#rss-bridge',
+				'required' => false,
+				'title' => 'Specify term to search for'
+			)
 		)
 	);
 
@@ -145,6 +159,8 @@ EOD
 			break;
 		case 'By list':
 			return $this->getInput('list') . ' - Twitter list by ' . $this->getInput('user');
+		case 'By list ID':
+			return 'Twitter List #' . $this->getInput('listid');
 		default: return parent::getName();
 		}
 		return 'Twitter ' . $specific . $this->getInput($param);
@@ -167,6 +183,10 @@ EOD
 			. urlencode($this->getInput('user'))
 			. '/lists/'
 			. str_replace(' ', '-', strtolower($this->getInput('list')));
+		case 'By list ID':
+			return self::URI
+			. 'i/lists/'
+			. urlencode($this->getInput('listid'));
 		default: return parent::getURI();
 		}
 	}
@@ -187,6 +207,11 @@ EOD
 			return self::API_URI
 			. '/2/timeline/list.json?list_id='
 			. $this->getListId($this->getInput('user'), $this->getInput('list'))
+			. '&tweet_mode=extended';
+		case 'By list ID':
+			return self::API_URI
+			. '/2/timeline/list.json?list_id='
+			. $this->getInput('listid')
 			. '&tweet_mode=extended';
 		default: returnServerError('Invalid query context !');
 		}
@@ -354,6 +379,7 @@ EOD;
 
 			switch($this->queriedContext) {
 				case 'By list':
+				case 'By list ID':
 					// Check if filter applies to list (using raw content)
 					if($this->getInput('filter')) {
 						if(stripos($cleanedTweet, $this->getInput('filter')) === false) {
