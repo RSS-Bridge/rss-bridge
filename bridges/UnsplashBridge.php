@@ -90,11 +90,12 @@ class UnsplashBridge extends BridgeAbstract
 			}
 			$content .= ' | Image on <a href="'
 				. $json_item['links']['html']
-				. '">Unsplash</a><br>'
-				. '<a href="'
+				. '">Unsplash</a><br><a href="'
 				. $uri
 				. '"><img src="'
 				. $json_item['urls'][$previewQuality]
+				. '" alt="Image from '
+				. $filteredUser
 				. '" /></a>';
 			$item['content'] = $content;
 
