@@ -11,9 +11,9 @@ class UnsplashBridge extends BridgeAbstract
 	const PARAMETERS = array(array(
 		'u' => array(
 			'name' => 'Filter by username (optional)',
-			'exampleValue' => 'danielsessler',
+			'exampleValue' => 'SomeUser',
 			'type' => 'text',
-			'defaultValue' => ''
+			'defaultValue' => 'unsplash'
 		),
 		'm' => array(
 			'name' => 'Max number of photos',
@@ -37,11 +37,13 @@ class UnsplashBridge extends BridgeAbstract
 			'name' => 'Max download width (optional)',
 			'exampleValue' => 1920,
 			'type' => 'number',
+			'defaultValue' => 1920,
 		),
 		'jpg_q' => array(
 			'name' => 'Max JPEG quality (optional)',
 			'exampleValue' => 75,
 			'type' => 'number',
+			'defaultValue' => 75,
 		)
 	));
 
