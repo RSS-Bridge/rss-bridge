@@ -83,7 +83,7 @@ class WebfailBridge extends BridgeAbstract {
 			if(!is_null($element->find('div.wf-news-description', 0))) {
 				$description = $element->find('div.wf-news-description', 0)->innertext;
 			}
-			
+
 			$infoElement = $element->find('div.wf-small', 0);
 			if (!is_null($infoElement)) {
 				if (preg_match('/(\d{2}\.\d{2}\.\d{4})/m', $infoElement->innertext, $matches) === 1 && count($matches) == 2) {
