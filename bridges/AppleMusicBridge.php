@@ -27,6 +27,8 @@ class AppleMusicBridge extends BridgeAbstract {
 
 		$imgSize = $this->getInput('imgSize');
 
+		$this->title = $html->find('title', 0)->innertext;
+
 		// Grab the json data from the page
 		$html = $html->find('script[id=shoebox-ember-data-store]', 0);
 		$html = strstr($html, '{');
@@ -58,5 +60,9 @@ class AppleMusicBridge extends BridgeAbstract {
 		usort($this->items, function($a, $b){
 			return $a['timestamp'] < $b['timestamp'];
 		});
+	}
+
+	public function getName() {
+		return $this->title ?: parent::getName();
 	}
 }
