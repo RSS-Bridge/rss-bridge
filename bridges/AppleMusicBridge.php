@@ -20,6 +20,8 @@ class AppleMusicBridge extends BridgeAbstract {
 	));
 	const CACHE_TIMEOUT = 21600; // 6 hours
 
+	private $title;
+
 	public function collectData() {
 		$url = $this->getInput('url');
 		$html = getSimpleHTMLDOM($url)
