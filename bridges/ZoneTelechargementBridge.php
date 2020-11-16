@@ -103,9 +103,9 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 				// Add every link available in the episode table separated by a <br/> tag
 				$item['content'] = implode('<br/>', $episode['ddl']);
 				$item['title'] = $this->showTitle . ' Episode ' . $epnum . ' - Téléchargement';
-				// As RSS Bridge use the URI as GUID they need to be unique : adding a md5 hash of the title element
-				// should geneerate unique URI to prevent confusion for RSS readers
-				$item['uri'] = self::URI . $this->getInput('url') . '#' . hash('md5', $item['title']);
+				// Generate an unique UID by hashing the item title to prevent confusion for RSS readers
+				$item['uid'] = hash('md5', $item['title']);
+				$item['uri'] = self::URI . $this->getInput('url');
 				// Insert the episode at the beginning of the item list, to show the newest episode first
 				array_unshift($this->items, $item);
 			}
@@ -115,9 +115,9 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 				// Add every link available in the episode table separated by a <br/> tag
 				$item['content'] = implode('<br/>', $episode['streaming']);
 				$item['title'] = $this->showTitle . ' Episode ' . $epnum . ' - Streaming';
-				// As RSS Bridge use the URI as GUID they need to be unique : adding a md5 hash of the title element
-				// should geneerate unique URI to prevent confusion for RSS readers
-				$item['uri'] = self::URI . $this->getInput('url') . '#' . hash('md5', $item['title']);
+				// Generate an unique UID by hashing the item title to prevent confusion for RSS readers
+				$item['uid'] = hash('md5', $item['title']);
+				$item['uri'] = self::URI . $this->getInput('url');
 				// Insert the episode at the beginning of the item list, to show the newest episode first
 				array_unshift($this->items, $item);
 			}
