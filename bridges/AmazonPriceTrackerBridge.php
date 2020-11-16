@@ -32,6 +32,7 @@ class AmazonPriceTrackerBridge extends BridgeAbstract {
 				'Mexico' 		=> 'com.mx',
 				'Netherlands'	=> 'nl',
 				'Spain' 		=> 'es',
+				'Sweden' 		=> 'se',
 				'United Kingdom'	=> 'co.uk',
 				'United States'		=> 'com',
 			),
