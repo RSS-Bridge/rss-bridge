@@ -109,7 +109,7 @@ class BandcampDailyBridge extends BridgeAbstract {
 			$item['uri'] = $articlePath;
 			$item['title'] = $articlePageHtml->find('article-title', 0)->innertext;
 			$item['author'] = $articlePageHtml->find('article-credits > a', 0)->innertext;
-			$item['content'] = html_entity_decode($articlePageHtml->find('meta[name="Description"]', 0)->content, ENT_QUOTES);
+			$item['content'] = html_entity_decode($articlePageHtml->find('meta[name="description"]', 0)->content, ENT_QUOTES);
 			$item['timestamp'] = $articlePageHtml->find('meta[property="article:published_time"]', 0)->content;
 			$item['categories'][] = $articlePageHtml->find('meta[property="article:section"]', 0)->content;
 
