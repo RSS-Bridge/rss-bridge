@@ -168,7 +168,7 @@ class FlickrBridge extends BridgeAbstract {
 					. '&sort=' . $this->getInput('sort') . '&media=' . $this->getInput('media');
 				break;
 			case 'By username':
-				$uri = self::URI . 'search/?user_id=' . urlencode($this->getInput('u')) 
+				$uri = self::URI . 'search/?user_id=' . urlencode($this->getInput('u'))
 					. '&sort=date-posted-desc&media=' . $this->getInput('media');
 
 				if ($this->getInput('content') === 'faves') {
