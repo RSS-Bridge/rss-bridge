@@ -19,13 +19,13 @@ class EconomistBridge extends BridgeAbstract {
 			$a = $element->find('a.headline-link', 0);
 			$href = $a->href;
 
-			if (substr($href, 0, 4) != "http")
+			if (substr($href, 0, 4) != 'http')
 				$href = self::URI . $a->href;
 
 			$full = getSimpleHTMLDOMCached($href);
 			$article = $full->find('article', 0);
 			$header = $article->find('span[itemprop="headline"]', 0);
-			$headerimg = $article->find('div[itemprop="image"]', 0)->find("img", 0);
+			$headerimg = $article->find('div[itemprop="image"]', 0)->find('img', 0);
 			$author = $article->find('p[itemprop="byline"]', 0);
 			$time = $article->find('time', 0);
 			$content = $article->find('div[itemprop="text"]', 0);
@@ -35,7 +35,7 @@ class EconomistBridge extends BridgeAbstract {
 			if ($author)
 				$author = substr($author->innertext, 3, strlen($author));
 			else
-				$author = "The Economist";
+				$author = 'The Economist';
 
 			// Remove newsletter subscription box
 			$newsletter = $content->find('div[class="newsletter-form__message"]', 0);
