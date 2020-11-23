@@ -35,7 +35,7 @@ class GoogleSearchBridge extends BridgeAbstract {
 				$t = $element->find('a[href]', 0)->href;
 				$item['uri'] = htmlspecialchars_decode($t);
 				$item['title'] = $element->find('h3', 0)->plaintext;
-				$item['content'] = $element->find('span[class=aCOpRe]', 0)->plaintext;;
+				$item['content'] = $element->find('span[class=aCOpRe]', 0)->plaintext;
 
 				if ($element->find('span[class=f]', 0)) {
 					$item['timestamp'] = str_replace('— ', '', $element->find('span[class=f]', 0)->plaintext);
