@@ -155,10 +155,9 @@ class ZLibraryBridge extends BridgeAbstract {
 	public function detectParameters($url) {
 		$params = array();
 
-		$regex = 
-			'/https:\/\/(b-ok\.cc|booksc\.xyz)\/s\/' .
+		$regex = '/https:\/\/(b-ok\.cc|booksc\.xyz)\/s\/' .
 			'(?:(.+)\/)?\?' .
-			'(?:&?e=([^&]*))' . 
+			'(?:&?e=([^&]*))' .
 			'?(?:&?yearFrom=([^&]*))' .
 			'?(?:&?yearTo=([^&]*))' .
 			'?(?:&?language=([^&]*))' .
@@ -194,8 +193,7 @@ class ZLibraryBridge extends BridgeAbstract {
 	public function getName() {
 		if($this->name) {
 			return $this->name;
-		}
-		else {
+		} else {
 			return self::NAME;
 		}
 	}
@@ -203,8 +201,7 @@ class ZLibraryBridge extends BridgeAbstract {
 	public function getURI() {
 		if($this->uri) {
 			return $this->uri;
-		}
-		else {
+		} else {
 			return self::URI;
 		}
 	}
@@ -235,7 +232,7 @@ class ZLibraryBridge extends BridgeAbstract {
 		$this->uri = $root;
 
 		foreach($html->find('.resItemBox') as $item) {
-			$uri = 'https://' . $host . 
+			$uri = 'https://' . $host .
 				$item->find('h3 > a', 0)->href;
 			$title = $item->find('h3 > a', 0)->innertext;
 			$author = strip_tags($item->find('.authors',
@@ -246,13 +243,11 @@ class ZLibraryBridge extends BridgeAbstract {
 				$image = str_replace('100', '',
 					$item->find('.cover',
 					0)->getAttribute('data-src'));
-			}
-			else {
+			} else {
 				$image = '';
 			}
 
-			$content =
-				defaultLinkTo(($image ? '<a href="' . $uri .
+			$content = defaultLinkTo(($image ? '<a href="' . $uri .
 				'"><img src="' . $image .
 				'" style="max-Width: 299px"></a>' .
 				'<br>' : '') .
@@ -281,4 +276,3 @@ class ZLibraryBridge extends BridgeAbstract {
 		}
 	}
 }
-
