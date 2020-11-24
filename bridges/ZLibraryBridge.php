@@ -154,13 +154,7 @@ class ZLibraryBridge extends BridgeAbstract {
 		$params = array();
 
 		$regex = <<<EOD
-/https:\/\/(b-ok\.cc|booksc\.xyz)\/s\/(?:(.+)\/)?\?
-(?:&?e=([^&]*))?
-(?:&?yearFrom=([^&]*))?
-(?:&?yearTo=([^&]*))?
-(?:&?language=([^&]*))?
-(?:&?extension=([^&]*))?
-(?:&?order=([^&]*))?/
+/https:\/\/(b-ok\.cc|booksc\.xyz)\/s\/(?:(.+)\/)?\?(?:&?e=([^&]*))?(?:&?yearFrom=([^&]*))?(?:&?yearTo=([^&]*))?(?:&?language=([^&]*))?(?:&?extension=([^&]*))?(?:&?order=([^&]*))?/
 EOD;
 		if(preg_match($regex, $url, $matches) > 0) {
 			$params['host'] = urldecode($matches[1]);
