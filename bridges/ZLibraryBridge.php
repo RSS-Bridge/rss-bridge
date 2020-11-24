@@ -153,10 +153,11 @@ class ZLibraryBridge extends BridgeAbstract {
 	public function detectParameters($url) {
 		$params = array();
 
-		$regex = <<<EOD
-/https:\/\/(b-ok\.cc|booksc\.xyz)\/s\/(?:(.+)\/)?\?(?:&?e=([^&]*))?(?:&?yearFrom=([^&]*))?(?:&?yearTo=([^&]*))?(?:&?language=([^&]*))?(?:&?extension=([^&]*))?(?:&?order=([^&]*))?/
-EOD;
-		if(preg_match($regex, $url, $matches) > 0) {
+		$regex = '/https:\/\/(b-ok\.cc|booksc\.xyz)\/s\/(?:(.+)\/)?\?';
+		$r2 = '(?:&?e=([^&]*))?(?:&?yearFrom=([^&]*))?';
+		$r3 = '(?:&?yearTo=([^&]*))?(?:&?language=([^&]*))?';
+		$r4 = '(?:&?extension=([^&]*))?(?:&?order=([^&]*))?/';
+		if(preg_match($regex . $r2 . $r3 . $r4, $url, $matches) > 0) {
 			$params['host'] = urldecode($matches[1]);
 			$params['search'] = urldecode($matches[2]);
 			$params['exact'] = urldecode($matches[3]);
