@@ -10,7 +10,7 @@ class ZLibraryBridge extends BridgeAbstract {
 			'host' => array(
 				'name' => 'Type',
 				'type' => 'list',
-				'defaultValue' => '',
+				'defaultValue' => 'b-ok.cc',
 				'values' => array(
 					'Books' => 'b-ok.cc',
 					'Articles' => 'booksc.xyz'
@@ -18,13 +18,11 @@ class ZLibraryBridge extends BridgeAbstract {
 			),
 			'yearFrom' => array(
 				'name' => 'Year from',
-				'type' => 'number',
-				'defaultValue' => ''
+				'type' => 'number'
 			),
 			'yearTo' => array(
 				'name' => 'Year to',
-				'type' => 'number',
-				'defaultValue' => ''
+				'type' => 'number'
 			),
 			'language' => array(
 				'name' => 'Language',
@@ -105,7 +103,7 @@ class ZLibraryBridge extends BridgeAbstract {
 				'name' => 'Extension',
 				'type' => 'list',
 				'title' => 'Only works for books',
-				'defaultValue' => '',
+				'defaultValue' => 'Any Extention',
 				'values' => array(
 					'Any Extention' => '',
 					'pdf' => 'pdf',
