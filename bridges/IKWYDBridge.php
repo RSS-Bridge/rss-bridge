@@ -4,8 +4,7 @@ class IKWYDBridge extends BridgeAbstract {
 	const NAME = 'I Know What You Download';
 	const URI = 'https://iknowwhatyoudownload.com/';
 	const CACHE_TIMEOUT = 3600; // 1h
-	const DESCRIPTION = 'Returns torrent downloads and distributions ' .
-		'for an IP address';
+	const DESCRIPTION = 'Returns torrent downloads and distributions for an IP address';
 	const PARAMETERS = array(
 		array(
 			'ip' => array(
@@ -15,8 +14,7 @@ class IKWYDBridge extends BridgeAbstract {
 			'update' => array(
 				'name' => 'Update last seen',
 				'type' => 'checkbox',
-				'title' => 'Update timestamp every time ' .
-				'"last seen" changes'
+				'title' => 'Update timestamp every time "last seen" changes'
 			)
 		)
 	);
@@ -26,15 +24,15 @@ class IKWYDBridge extends BridgeAbstract {
 	public function detectParameters($url) {
 		$params = array();
 
-		$regex = '/^(https?:\/\/)?iknowwhatyoudownload\.com\/' . 
-			'(?:en|ru)\/peer\/\?ip=(\d+\.\d+\.\d+\.\d+)/';
+		$regex = '/^(https?:\/\/)?iknowwhatyoudownload\.com\/'; 
+		$regex .= '(?:en|ru)\/peer\/\?ip=(\d+\.\d+\.\d+\.\d+)/';
 		if(preg_match($regex, $url, $matches) > 0) {
 			$params['ip'] = urldecode($matches[2]);
 			return $params;
 		}
 
-		$regex = '/^(https?:\/\/)?iknowwhatyoudownload\.com\/' .
-			'(?:(?:en|ru)\/peer\/)?/';
+		$regex = '/^(https?:\/\/)?iknowwhatyoudownload\.com\/';
+		$regex .= '(?:(?:en|ru)\/peer\/)?/';
 		if(preg_match($regex, $url, $matches) > 0) {
 			$params['ip'] = $_SERVER['REMOTE_ADDR'];
 			return $params;
@@ -46,8 +44,7 @@ class IKWYDBridge extends BridgeAbstract {
 	public function getName() {
 		if($this->name) {
 			return $this->name;
-		}
-		else {
+		} else {
 			return self::NAME;
 		}
 	}
@@ -55,8 +52,7 @@ class IKWYDBridge extends BridgeAbstract {
 	public function getURI() {
 		if($this->uri) {
 			return $this->uri;
-		}
-		else {
+		} else {
 			return self::URI;
 		}
 	}
@@ -82,28 +78,26 @@ class IKWYDBridge extends BridgeAbstract {
 				0);
 			$tortitle = strip_tags($torlink);
 			$size = $download->find('td', 4)->innertext;
-
 			$title = $tortitle;
 			$author = 'IKWYD';
+
 			if($this->getInput('update')) {
 				$timestamp = strtotime($lastSeen);
-			}
-			else {
+			} else {
 				$timestamp = strtotime($firstSeen);
 			}
 
 			$uri = $torlink->href;
-			$content =
-				'IP address: <a href="' . $root . '">' . $ip .
-				'</a><br>' .
-				'First seen: ' . $firstSeen . '<br>' .
-				($this->getInput('update') ?
-				'Last seen: ' . $lastSeen . '<br>' : '') .
-				($category ?
-				'Category: ' . $category . '<br>' : '') .
-				'Title: ' . $torlink .
-				'<br>' .
-				'Size: ' . $size;
+
+			$content = 'IP address: <a href="' . $root . '">';
+			$content .= $ip . '</a><br>';
+			$content .= 'First seen: ' . $firstSeen . '<br>';
+			$content .= ($this->getInput('update') ?
+				'Last seen: ' . $lastSeen . '<br>' : '');
+			$content .= ($category ?
+				'Category: ' . $category . '<br>' : '');
+			$content .= 'Title: ' . $torlink . '<br>';
+			$content .= 'Size: ' . $size;
 
 			$item = array();
 			$item['uri'] = $uri;
