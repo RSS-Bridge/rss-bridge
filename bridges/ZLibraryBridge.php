@@ -155,14 +155,15 @@ class ZLibraryBridge extends BridgeAbstract {
 	public function detectParameters($url) {
 		$params = array();
 
-		$regex = '/https:\/\/(b-ok\.cc|booksc\.xyz)\/s\/' .
-			'(?:(.+)\/)?\?' .
-			'(?:&?e=([^&]*))' .
-			'?(?:&?yearFrom=([^&]*))' .
-			'?(?:&?yearTo=([^&]*))' .
-			'?(?:&?language=([^&]*))' .
-			'?(?:&?extension=([^&]*))' .
-			'?(?:&?order=([^&]*))?/';
+		$regex = <<<EOD
+/https:\/\/(b-ok\.cc|booksc\.xyz)\/s\/(?:(.+)\/)?\?
+(?:&?e=([^&]*))?
+(?:&?yearFrom=([^&]*))?
+(?:&?yearTo=([^&]*))?
+(?:&?language=([^&]*))?
+(?:&?extension=([^&]*))?
+(?:&?order=([^&]*))?/
+EOD;
 		if(preg_match($regex, $url, $matches) > 0) {
 			$params['host'] = urldecode($matches[1]);
 			$params['search'] = urldecode($matches[2]);
@@ -249,8 +250,7 @@ class ZLibraryBridge extends BridgeAbstract {
 
 			$content = defaultLinkTo(($image ? '<a href="' . $uri .
 				'"><img src="' . $image .
-				'" style="max-Width: 299px"></a>' .
-				'<br>' : '') .
+				'" style="max-Width: 299px"></a><br>' : '') .
 				$item->find('h3 > a', 0)->outertext . '<br>' .
 				$item->find('.authors', 0)->innertext . '<br>',
 				'https://' . $host);
