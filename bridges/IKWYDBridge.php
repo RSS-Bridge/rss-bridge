@@ -24,7 +24,7 @@ class IKWYDBridge extends BridgeAbstract {
 	public function detectParameters($url) {
 		$params = array();
 
-		$regex = '/^(https?:\/\/)?iknowwhatyoudownload\.com\/'; 
+		$regex = '/^(https?:\/\/)?iknowwhatyoudownload\.com\/';
 		$regex .= '(?:en|ru)\/peer\/\?ip=(\d+\.\d+\.\d+\.\d+)/';
 		if(preg_match($regex, $url, $matches) > 0) {
 			$params['ip'] = urldecode($matches[2]);
@@ -92,10 +92,10 @@ class IKWYDBridge extends BridgeAbstract {
 			$content = 'IP address: <a href="' . $root . '">';
 			$content .= $ip . '</a><br>';
 			$content .= 'First seen: ' . $firstSeen . '<br>';
-			$content .= ($this->getInput('update') ?
-				'Last seen: ' . $lastSeen . '<br>' : '');
-			$content .= ($category ?
-				'Category: ' . $category . '<br>' : '');
+			$content .= ($this->getInput('update') ? 'Last seen: ' .
+				$lastSeen . '<br>' : '');
+			$content .= ($category ? 'Category: ' .
+				$category . '<br>' : '');
 			$content .= 'Title: ' . $torlink . '<br>';
 			$content .= 'Size: ' . $size;
 
@@ -112,4 +112,3 @@ class IKWYDBridge extends BridgeAbstract {
 		}
 	}
 }
-
