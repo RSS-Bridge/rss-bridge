@@ -79,7 +79,7 @@ class IKWYDBridge extends BridgeAbstract {
 			$tortitle = strip_tags($torlink);
 			$size = $download->find('td', 4)->innertext;
 			$title = $tortitle;
-			$author = 'IKWYD';
+			$author = $ip;
 
 			if($this->getInput('update')) {
 				$timestamp = strtotime($lastSeen);
