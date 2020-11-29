@@ -346,7 +346,7 @@ class VkBridge extends BridgeAbstract
 		$data = json_decode($arg, true);
 		if ($data == null) return;
 
-		$thumb = $data['temp']['base'] . $data['temp']['x_'][0] . '.jpg';
+		$thumb = $data['temp']['base'] . $data['temp']['x_'][0];
 		$original = '';
 		foreach(array('y_', 'z_', 'w_') as $key) {
 			if (!isset($data['temp'][$key])) continue;
@@ -356,7 +356,7 @@ class VkBridge extends BridgeAbstract
 			} else {
 				$base = $data['temp']['base'];
 			}
-			$original = $base . $data['temp'][$key][0] . '.jpg';
+			$original = $base . $data['temp'][$key][0];
 		}
 
 		if ($original) {
