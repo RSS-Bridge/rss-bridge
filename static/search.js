@@ -35,7 +35,6 @@ function search() {
         uriValue.hostname = uriValue.hostname.substr(4);
       }
     }
-    console.log(textValue);
     if (textValue != null || uriValue != null) {
       if (
         textValue.match(regexMatch) != null ||
