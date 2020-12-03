@@ -431,7 +431,7 @@ of deleted comments in the place of those comments.',
 			$plaintext = $body->find('.wall_post_text')[0]->outertext;
 			$plaintext = preg_replace('!</?div.*?>!', '', $plaintext);
 			$plaintext = preg_replace('!</?a.*?>!', '', $plaintext);
-			$plaintext = html_entity_decode($plaintext);
+			$plaintext = html_entity_decode($plaintext, ENT_QUOTES | ENT_HTML5);
 			$text['plaintext'] = preg_replace('/<br\/?>/u', "\n", $plaintext);
 		}
 		return $text;
@@ -896,7 +896,7 @@ of deleted comments in the place of those comments.',
 		}
 
 		if($this->getInput('inlineComments') === true) {
-			$content .= $this->formatComments($post['comments']);
+			$content .= $this->formatComments($post['comments'], $post['id']);
 		}
 
 		return $content;
@@ -1155,7 +1155,7 @@ of deleted comments in the place of those comments.',
 
 	private function formatExpandedLink($link) {
 		$content = '';
-		if(!empty($post['expandedLink'])) {
+		if(!empty($link)) {
 			$content .= '<br/><br/><i>Link: </i>';
 				$content .= "<a href='$link[url]'>$link[title]</a><br/>";
 			$content .= '<i>Image: </i><br/>';
