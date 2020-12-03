@@ -671,8 +671,8 @@ of deleted comments in the place of those comments.',
 			$this->assertc($this->has($body, '.media_voting_option_text'),
 				'extractPool() failed to find .media_voting_option_text');
 			foreach($body->find('.media_voting_option_text') as $optionElem) {
-    				// again innertext is buggy and removes all cyrillic chars from innertext, so using outertext
-    				preg_match('/>(.*?)</u', $optionElem->outertext, $matches);
+				// again innertext is buggy and removes all cyrillic chars from innertext, so using outertext
+				preg_match('/>(.*?)</u', $optionElem->outertext, $matches);
 				$this->assertc(isset($matches[1]), 'extractPool() failed to extract pool option');
 				$pool['options'][] = $matches[1];
 			}
