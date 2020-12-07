@@ -268,7 +268,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 
 	/** {@inheritdoc} */
 	public function getIcon(){
-		return '';
+		return static::URI . '/favicon.ico';
 	}
 
 	/** {@inheritdoc} */
