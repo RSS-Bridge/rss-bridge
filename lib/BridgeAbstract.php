@@ -310,7 +310,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	 * @param string $input The option name
 	 * @return mixed|null The option value or null if the input is not defined
 	 */
-	protected function getOption($name){
+	public function getOption($name){
 		if(!isset($this->configuration[$name])) {
 			return null;
 		}
