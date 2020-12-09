@@ -1,7 +1,7 @@
 <?php
 class InstagramBridge extends BridgeAbstract {
 
-	const MAINTAINER = 'pauder';
+	// const MAINTAINER = 'pauder';
 	const NAME = 'Instagram Bridge';
 	const URI = 'https://www.instagram.com/';
 	const DESCRIPTION = 'Returns the newest images';
