@@ -253,7 +253,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	 *
 	 * @return void
 	 */
-	public function loadBridgeConfiguration() {
+	public function loadConfiguration() {
 		foreach(static::CONFIGURATION as $optionName => $optionValue) {
 
 			$configurationOption = Configuration::getConfig(get_class($this), $optionName);
@@ -263,18 +263,17 @@ abstract class BridgeAbstract implements BridgeInterface {
 				continue;
 			}
 
-			if($optionValue['required']) {
-				returnClientError(
+			if(isset($optionValue['required']) && $optionValue['required'] === true) {
+				returnServerError(
 					'Missing configuration option :'
 					. $optionName
 				);
-			} else {
+			} elseif(isset($optionValue['defaultValue'])) {
 				$this->configuration[$optionName] = $optionValue['defaultValue'];
 			}
 
 		}
 	}
-
 
 	/**
 	 * Check if configuration allows for this bridge loading
@@ -283,13 +282,14 @@ abstract class BridgeAbstract implements BridgeInterface {
 	 */
 	public function isConfigurationValid() {
 		foreach(static::CONFIGURATION as $optionName => $optionValue) {
-			if($optionValue["required"] && Configuration::getConfig(get_class($this), $optionName) === null) {
+			if(isset($optionValue['required'])
+				&& $optionValue['required'] === true
+				&& Configuration::getConfig(get_class($this), $optionName) === null) {
 				return false;
 			}
 		}
 		return true;
 	}
-
 
 	/**
 	 * Returns the value for the provided input
@@ -310,13 +310,12 @@ abstract class BridgeAbstract implements BridgeInterface {
 	 * @param string $input The option name
 	 * @return mixed|null The option value or null if the input is not defined
 	 */
-	protected function getOption($input){
-		if(!isset($this->configuration[$input])) {
+	protected function getOption($name){
+		if(!isset($this->configuration[$name])) {
 			return null;
 		}
-		return $this->configuration[$input];
+		return $this->configuration[$name];
 	}
-
 
 	/** {@inheritdoc} */
 	public function getDescription(){
