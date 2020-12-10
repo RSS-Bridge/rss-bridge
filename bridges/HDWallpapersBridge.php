@@ -32,7 +32,7 @@ class HDWallpapersBridge extends BridgeAbstract {
 		$lastpage = 1;
 
 		for($page = 1; $page <= $lastpage; $page++) {
-			$link = self::URI . '/' . $category . '/page/' . $page;
+			$link = rtrim(self::URI,"/") . '/' . $category . '/page/' . $page;
 			$html = getSimpleHTMLDOM($link)
 				or returnServerError('No results for this query.');
 
@@ -45,7 +45,7 @@ class HDWallpapersBridge extends BridgeAbstract {
 				$thumbnail = $element->find('img', 0);
 
 				$item = array();
-				$item['uri'] = self::URI
+				$item['uri'] = rtrim(self::URI,"/")
 				. '/download'
 				. str_replace('wallpapers.html', $this->getInput('r') . '.jpg', $element->href);
 
@@ -55,7 +55,7 @@ class HDWallpapersBridge extends BridgeAbstract {
 				. '<br><a href="'
 				. $item['uri']
 				. '"><img src="'
-				. self::URI
+				. rtrim(self::URI,"/")
 				. $thumbnail->src
 				. '" /></a>';
 
