@@ -10,14 +10,14 @@ class VkAlternativeBridge extends BridgeAbstract {
 	const MAINTAINER = 'd7sd6u';
 	const PARAMETERS = array(
 		array(
-			'sourceId' => array(
+			'u' => array( // this parameter name is called "u" for compatibility with old VkBridge urls
 				'name' => 'Group or user id',
 				'required' => true,
 				'title' => 'User or group ID is a string after the VK domain in a direct link
 to this user or group. For example, if the link is https://vk.com/durov, then the ID is "durov" (without quotes).',
 				'exampleValue' => 'durov'
-			),
-			'removeReposts' => array(
+			), // again, this parameter and last option are named this way for compatibility
+			'hide_reposts' => array(
 				'name' => 'Remove reposts',
 				'title' => 'Check "Repost-only", if you don\'t want repost-only posts,
 or check "All", if you don\'t want posts with reposts at all.',
@@ -25,7 +25,7 @@ or check "All", if you don\'t want posts with reposts at all.',
 				'values' => array(
 					'None' => 'none',
 					'Repost-only' => 'only',
-					'All' => 'all'
+					'All' => 'on'
 				)
 			),
 			'dontConvertEmoji' => array(
@@ -87,7 +87,7 @@ of deleted comments in the place of those comments.',
 	private $postsExtractingTime = array(); // for debug purposes only
 
 	public function getName(){
-		$sourceId = $this->getInput('sourceId');
+		$sourceId = $this->getInput('u');
 
 		if($sourceId != '') {
 			$sourceDom = getSimpleHTMLDOMCached('https://vk.com/' . $sourceId); // default 24 hours timeout
@@ -103,7 +103,7 @@ of deleted comments in the place of those comments.',
 	}
 
 	public function getURI(){
-		$sourceId = $this->getInput('sourceId');
+		$sourceId = $this->getInput('u');
 		if($sourceId != '') {
 			return 'https://vk.com/' . $sourceId;
 		} else {
@@ -114,7 +114,7 @@ of deleted comments in the place of those comments.',
 	public function collectData() {
 		$this->totalExecutionTime = -microtime(true);
 
-		$sourceId = $this->getInput('sourceId');
+		$sourceId = $this->getInput('u');
 
 		foreach($this->getPosts($sourceId) as $post) {
 			$item = $this->getItem($post);
@@ -839,8 +839,8 @@ of deleted comments in the place of those comments.',
 		$item = array();
 
 		if(isset($post['repost'])) {
-			$type = $this->getInput('removeReposts');
-			if($type === 'all' || $type === 'only' && $this->postIsEmpty($post)) {
+			$type = $this->getInput('hide_reposts');
+			if($type === 'on' || $type === 'only' && $this->postIsEmpty($post)) {
 				$itemFormattingTime += microtime(true); // DEBUG
 				$this->postsExtractingTime[$post['id']]['formatting'] = $itemFormattingTime;
 				return 'Removed';
