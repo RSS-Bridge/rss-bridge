@@ -145,10 +145,7 @@ final class Configuration {
 			// Replace default configuration with custom settings
 			foreach(parse_ini_file(FILE_CONFIG, true, INI_SCANNER_TYPED) as $header => $section) {
 				foreach($section as $key => $value) {
-					// Skip unknown sections and keys
-					if(array_key_exists($header, Configuration::$config) && array_key_exists($key, Configuration::$config[$header])) {
-						Configuration::$config[$header][$key] = $value;
-					}
+					Configuration::$config[$header][$key] = $value;
 				}
 			}
 		}
@@ -218,13 +215,11 @@ final class Configuration {
 	 * @return mixed|null The parameter value.
 	 */
 	public static function getConfig($section, $key) {
-
 		if(array_key_exists($section, self::$config) && array_key_exists($key, self::$config[$section])) {
 			return self::$config[$section][$key];
 		}
 
 		return null;
-
 	}
 
 	/**
