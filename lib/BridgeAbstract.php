@@ -276,22 +276,6 @@ abstract class BridgeAbstract implements BridgeInterface {
 	}
 
 	/**
-	 * Check if configuration allows for this bridge loading
-	 *
-	 * @return boolean
-	 */
-	public function isConfigurationValid() {
-		foreach(static::CONFIGURATION as $optionName => $optionValue) {
-			if(isset($optionValue['required'])
-				&& $optionValue['required'] === true
-				&& Configuration::getConfig(get_class($this), $optionName) === null) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
 	 * Returns the value for the provided input
 	 *
 	 * @param string $input The input name
