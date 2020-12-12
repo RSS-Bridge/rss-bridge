@@ -21,13 +21,12 @@ class RaceDepartmentBridge extends FeedExpander {
 		//convert iframes to links. meant for embedded videos.
 		foreach($item['content']->find('iframe') as $found) {
 
-			$iframeUrl = $found->getAttribute("src");
+			$iframeUrl = $found->getAttribute('src');
 
-            if ($iframeUrl) {
-                $found->outertext = '<a href="' . $iframeUrl . '">' . $iframeUrl . '</a>';
-            }
+			if ($iframeUrl) {
+				$found->outertext = '<a href="' . $iframeUrl . '">' . $iframeUrl . '</a>';
+			}
 		}
-		
 
 		//get rid of some elements we don't need
 		$to_remove_selectors = array(
