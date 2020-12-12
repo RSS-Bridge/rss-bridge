@@ -63,7 +63,7 @@ class InstagramBridge extends BridgeAbstract {
 		$key = $cache->loadData();
 
 		if($key == null) {
-			$headers = array("Authorization: Bearer $token");
+			$headers = array();
 			if (CSRF_TOKEN != "") $headers[] = "X-CSRFToken: " . CSRF_TOKEN;
 			$data = getContents(self::URI . 'web/search/topsearch/?query=' . $username, $headers);
 
@@ -214,7 +214,7 @@ class InstagramBridge extends BridgeAbstract {
 
 	protected function getSinglePostData($uri) {
 		$shortcode = explode('/', $uri)[4];
-		$headers = array("Authorization: Bearer $token");
+		$headers = array();
 		if (CSRF_TOKEN != "") $headers[] = "X-CSRFToken: " . CSRF_TOKEN;
 		$data = getContents(self::URI .
 					'graphql/query/?query_hash=' .
@@ -227,7 +227,7 @@ class InstagramBridge extends BridgeAbstract {
 	}
 
 	protected function getInstagramJSON($uri) {
-		$headers = array("Authorization: Bearer $token");
+		$headers = array();
 		if (CSRF_TOKEN != "") $headers[] = "X-CSRFToken: " . CSRF_TOKEN;
 
 		if(!is_null($this->getInput('u'))) {
