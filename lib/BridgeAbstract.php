@@ -265,7 +265,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 
 			if(isset($optionValue['required']) && $optionValue['required'] === true) {
 				returnServerError(
-					'Missing configuration option :'
+					'Missing configuration option: '
 					. $optionName
 				);
 			} elseif(isset($optionValue['defaultValue'])) {
