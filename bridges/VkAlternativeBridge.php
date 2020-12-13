@@ -138,7 +138,7 @@ of deleted comments in the place of those comments.',
 			false, true);
 
 		foreach($sourceDom->find('.post') as $postElement) {
-			//$postElement = $sourceDom->find('.post')[0]; // DEBUG
+			//$postElement = $sourceDom->find('.post')[6]; // DEBUG
 
 			// Id attribute of a post element is: post<post id>
 			$postId = substr($postElement->getAttribute('id'), 4);
@@ -170,9 +170,9 @@ of deleted comments in the place of those comments.',
 
 		$post['author'] = $this->extractAuthor($postDom);
 
-		$this->assertc($this->has($postDom, '.post_header'),
-			'getPost() failed to find .post_header element for cutting context for timestamp extracting');
-		$post['timestamp'] = $this->extractTimestamp($postDom->find('.post_header')[0]);
+		$this->assertc($this->has($postDom, '.post_header .rel_date'),
+			'getPost() failed to find .rel_date element for cutting context for timestamp extracting');
+		$post['timestamp'] = $this->extractTimestamp($postDom->find('.post_header .rel_date')[0]);
 
 		$this->assertc($this->has($postDom, '.post_header .author'),
 			'getPost() failed to find .post_header .author element for use in source extracting');
@@ -199,7 +199,17 @@ of deleted comments in the place of those comments.',
 
 		if($this->has($postDom, '.copy_quote')) {
 			$repostId = $postDom->find('.copy_author')[0]->getAttribute('data-post-id');
-			$post['repost'] = $this->getPost($repostId);
+			$repostUrl = $postDom->find('.copy_post_date .published_by_date')[0]->getAttribute('href');
+			// if repost is comment
+			if(preg_match('/wall(-?\d+_\d+).+reply=\d+/', $repostUrl, $matches)) {
+				$repostDom = $this->getPostDom($matches[1]);
+
+				$repostElem = $postDom->find('.copy_quote')[0];
+
+				$post['repost'] = $this->extractRepostedComment($repostElem);
+			} else {
+				$post['repost'] = $this->getPost($repostId);
+			}
 		}
 
 		$postParsingTime += microtime(true);
@@ -209,6 +219,56 @@ of deleted comments in the place of those comments.',
 		);
 
 		return $post;
+	}
+
+	private function extractRepostedComment($repostElem) {
+		$repost = array();
+
+		$this->assertc($this->has($repostElem, '.copy_author'),
+			'extractRepostedComment() failed to extract comment author');
+		$repost['source'] = $repost['author'] = $repostElem->find('.copy_author')[0]->plaintext;
+
+		$this->assertc($this->has($repostElem, '.copy_post_date .published_by_date'),
+			'extractRepostedComment() failed to extract comment timestamp');
+		$repost['timestamp'] = $this->extractTimestamp($repostElem->find('.copy_post_date .published_by_date')[0]);
+
+		$repost['text'] = $this->extractPostText($repostElem);
+
+		$this->assertc($this->hasAttr($repostElem, 'href', '.copy_post_date .published_by_date'),
+			'extractRepostedComment() failed to extract comment url');
+		$repost['url'] = $repostElem->find('.copy_post_date .published_by_date')[0]->getAttribute('href');
+
+		if(preg_match('/wall(-?\d+_\d+)/', $repost['url'], $matches)) {
+			$repost['id'] = $matches[1];
+		} else {
+			$this->assertc(false, 'extractRepostedComment() failed to extract comment id');
+		}
+
+		$repost['images'] = $this->extractImages($repostElem);
+		$repost['files'] = $this->extractFiles($repostElem);
+		$repost['audios'] = $this->extractAudios($repostElem);
+		$repost['videos'] = $this->extractVideos($repostElem);
+
+		return $repost;
+	}
+
+	private function formatCommentAsPost($comment) {
+		$repost['id'] = $comment['id'];
+		$repost['url'] = $comment['url'];
+		$repost['timestamp'] = $comment['timestamp'];
+		$repost['source'] = $repost['author'] = $comment['author']['name'];
+
+		$repost['text']['html'] = $comment['text'];
+
+		$repost['images'] = $comment['images'];
+		$repost['videos'] = $comment['videos'];
+		$repost['files'] = $comment['files'];
+		$repost['audios'] = $comment['audios'];
+
+		$repost['comments'] = $repost['tags'] = $repost['pool'] = $repost['poster'] = array();
+		$repost['article'] = $repost['expandedLink'] = $repost['map'] = $repost['map'] = array();
+
+		return $repost;
 	}
 
 	private function getPostDom($postId, $isMobile = false) {
@@ -253,10 +313,7 @@ of deleted comments in the place of those comments.',
 		}
 	}
 
-	private function extractTimestamp($body) {
-		$this->assertc(count($body->find('.rel_date')) === 1,
-			'extractTimestamp() failed to find .rel_date element for use in timestamp extracting');
-		$stampElem = $body->find('.rel_date')[0];
+	private function extractTimestamp($stampElem) {
 		// if post is less then few hours old, then .rel-date element has "time" attribute, which contains valid Unix timestamp:
 		if($stampElem->getAttribute('time') != '') {
 			return $stampElem->getAttribute('time');
@@ -351,19 +408,26 @@ of deleted comments in the place of those comments.',
 			$comment['files'] = $this->extractFiles($body);
 			$comment['audios'] = $this->extractAudios($body);
 		}
-		$comment['timestamp'] = $this->extractTimestamp($commentElem);
+		$this->assertc($this->has($commentElem, '.rel_date'),
+			'extractComment() failed to find .rel_date for timestamp extracting');
+		$comment['timestamp'] = $this->extractTimestamp($commentElem->find('.rel_date')[0]);
 
 		$comment['id'] = $this->extractCommentId($commentElem);
 		// if this comment is reply to other comment in it's branch
 		$comment['replyId'] = $this->extractReplyId($commentElem);
+		$comment['url'] = $this->getCommentUrl($comment['id']);
 
 		$this->currentCommentId = null;
 
 		return $comment;
 	}
 
+	private function getCommentUrl($id) {
+		return 'https://vk.com/wall' . $id;
+	}
+
 	private function extractCommentId($body) {
-		preg_match('/post-?\d+_(\d+)/', $body->getAttribute('id'), $matches);
+		preg_match('/post(-?\d+_\d+)/', $body->getAttribute('id'), $matches);
 		$this->assertc(isset($matches[1]), 'extractCommentId() failed to extract comment id');
 		return $matches[1];
 	}
@@ -383,17 +447,18 @@ of deleted comments in the place of those comments.',
 
 	private function extractReplyId($comment) {
 		if($this->has($comment, '.reply_to')) {
-			preg_match('/return wall\.showReply\(this, \'-?\d+_\d+\', \'-?\d+_(\d+)\'/',
+			preg_match('/return wall\.showReply\(this, \'-?\d+_\d+\', \'(-?\d+_\d+)\'/',
 				$comment->find('.reply_to')[0]->getAttribute('onclick'),
 				$matches);
 			$id = $matches[1];
 		// else this comment is...
 		} else {
-			preg_match('/\?reply=(\d+)(&thread=(\d+))?/', $comment->find('.wd_lnk')[0]->getAttribute('href'), $matches);
-			if(isset($matches[3])) {
-				$id = $matches[3]; // reply to a branch root
+			preg_match('/wall(-?\d+)_\d+\?reply=(\d+)(&thread=(\d+))?/',
+				$comment->find('.wd_lnk')[0]->getAttribute('href'), $matches);
+			if(isset($matches[4])) {
+				$id = $matches[1] . $matches[4]; // reply to a branch root
 			} else {
-				$id = $matches[1]; // reply to post itself
+				$id = $matches[1] . $matches[2]; // reply to post itself
 			}
 		}
 		$this->assertc(isset($id), 'Comment reply id extraction failed');
@@ -418,22 +483,35 @@ of deleted comments in the place of those comments.',
 			'plaintext' => '',
 			'html' => ''
 		);
+
 		if($this->has($body, '.wall_post_text')) {
-			if(!$this->getInput('dontConvertEmoji')) {
-				$this->cleanEmojis($body->find('.wall_post_text')[0]);
-			}
-			// innertext doesn't work here :/, seems like bug in simple_html_dom, maybe caused by encoding or cyrillic characters, so using this hack instead:
-			$text['html'] = $body->find('.wall_post_text')[0]->outertext;
-			$text['html'] = preg_replace('!</?div.*?>!', '', $text['html']);
-
-			$this->cleanEmojis($body->find('.wall_post_text')[0]);
-
-			$plaintext = $body->find('.wall_post_text')[0]->outertext;
-			$plaintext = preg_replace('!</?div.*?>!', '', $plaintext);
-			$plaintext = preg_replace('!</?a.*?>!', '', $plaintext);
-			$plaintext = html_entity_decode($plaintext, ENT_QUOTES | ENT_HTML5);
-			$text['plaintext'] = preg_replace('/<br\/?>/u', "\n", $plaintext);
+			$text = $this->extractText($body->find('.wall_post_text')[0]);
 		}
+
+		return $text;
+	}
+
+	private function extractText($textElem) {
+		$text = array(
+			'plaintext' => '',
+			'html' => ''
+		);
+
+		if(!$this->getInput('dontConvertEmoji')) {
+			$this->cleanEmojis($textElem);
+		}
+		// innertext doesn't work here :/, seems like bug in simple_html_dom, maybe caused by encoding or cyrillic characters, so using this hack instead:
+		$text['html'] = $textElem->outertext;
+		$text['html'] = preg_replace('!</?div.*?>!', '', $text['html']);
+
+		$this->cleanEmojis($textElem);
+
+		$plaintext = $textElem->outertext;
+		$plaintext = preg_replace('!</?div.*?>!', '', $plaintext);
+		$plaintext = preg_replace('!</?a.*?>!', '', $plaintext);
+		$plaintext = html_entity_decode($plaintext, ENT_QUOTES | ENT_HTML5);
+		$text['plaintext'] = preg_replace('/<br\/?>/u', "\n", $plaintext);
+
 		return $text;
 	}
 
@@ -882,19 +960,6 @@ of deleted comments in the place of those comments.',
 	private function formatPost($post) {
 		$content = $this->formatPostContent($post);
 
-		if(isset($post['repost'])) {
-			if(!empty($content)) {
-				$content .= '<br/><br/><br/>';
-			}
-			$content .= '<i>Repost:</i><br/><br/>';
-			$content .= "<i>Source: </i><a href='{$post['repost']['url']}'>{$post['repost']['source']}</a><br/>";
-			$content .= "<i>Author: </i>{$post['repost']['author']}<br/>";
-			$content .= '<i>Timestamp: </i>';
-			$content .= strftime('%c', $post['repost']['timestamp']);
-			$content .= '<br/><br/>';
-			$content .= $this->formatPostContent($post['repost']);
-		}
-
 		if($this->getInput('inlineComments') === true) {
 			$content .= $this->formatComments($post['comments'], $post['id']);
 		}
@@ -1034,6 +1099,19 @@ of deleted comments in the place of those comments.',
 		$content .= $this->formatMap($post['map']);
 		$content .= $this->formatPoster($post['poster']);
 		$content .= $this->formatExpandedLink($post['expandedLink']);
+
+		if(isset($post['repost'])) {
+			if(!empty($content)) {
+				$content .= '<br/><br/><br/>';
+			}
+			$content .= '<i>Repost:</i><br/><br/>';
+			$content .= "<i>Source: </i><a href='{$post['repost']['url']}'>{$post['repost']['source']}</a><br/>";
+			$content .= "<i>Author: </i>{$post['repost']['author']}<br/>";
+			$content .= '<i>Timestamp: </i>';
+			$content .= strftime('%c', $post['repost']['timestamp']);
+			$content .= '<br/><br/>';
+			$content .= $this->formatPostContent($post['repost']);
+		}
 
 		return $content;
 	}
