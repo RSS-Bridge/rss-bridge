@@ -94,7 +94,9 @@ of deleted comments in the place of those comments.',
 
 			$this->assertc($this->has($sourceDom, '.page_name'), 'getName() failed to extract page name');
 
-			return $sourceDom->find('.page_name')[0]->plaintext;
+			$nameRaw = $sourceDom->find('.page_name')[0]->plaintext;
+
+			return html_entity_decode($nameRaw, ENT_QUOTES | ENT_HTML5);
 		} else {
 			return self::NAME;
 		}
