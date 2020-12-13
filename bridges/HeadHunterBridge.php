@@ -33,7 +33,7 @@ class HeadHunterBridge extends FeedExpander {
 
 		// prepare employer content and add it
 		$employer = $html->find('.vacancy-company-wrapper', 0);
-		$item['author'] = $employer->find('.vacancy-company-name-wrapper span', 0)->innertext;
+		$item['author'] = $employer->find('.vacancy-company-name span', 0)->innertext;
 		$content .= $employer->outertext;
 
 		// clean up description and add it
