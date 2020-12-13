@@ -134,7 +134,7 @@ class RedditBridge extends BridgeAbstract {
 					// Youtube link
 
 					$item['content'] = $this->template(
-						$this->encodePermalink($data->url),
+						$data->url,
 						$data->media->oembed->thumbnail_url,
 						'YouTube');
 
