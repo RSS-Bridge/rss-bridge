@@ -4,7 +4,7 @@ function search() {
 	var searchableElements = document.getElementsByTagName('section');
 
 	var regexMatch = new RegExp(searchTerm, 'i');
-
+	var ignoreSection = ['searchbar', 'footer'];
 	// Attempt to create anchor from search term (will default to 'localhost' on failure)
 	var searchTermUri = document.createElement('a');
 	searchTermUri.href = searchTerm;
@@ -21,6 +21,11 @@ function search() {
 	}
 
 	for(var i = 0; i < searchableElements.length; i++) {
+
+		if(ignoreSection.includes(searchableElements[i].className)) { 
+			// checking whether that section has the same class name with those in the array ignoreSection on line 7.
+			continue;
+		}
 
 		var textValue = searchableElements[i].getAttribute('data-ref');
 		var anchors = searchableElements[i].getElementsByTagName('a');
