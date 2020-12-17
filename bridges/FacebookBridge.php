@@ -653,6 +653,11 @@ EOD;
 							$anchor->outertext = '<p>' . $anchor->innertext . '</p>';
 						}
 
+						// Change to the hires avatar
+						foreach($content->find('._38vo') as $anchor) {
+							$anchor->outertext = '<div><img src="' . $profilePic . '" alt="" aria-label="Arte" role="img"></div>';
+						}
+
 						$content = preg_replace(
 							'/(?i)><div class=\"_3dp([^>]+)>(.+?)div\ class=\"[^u]+userContent\"/i',
 							'',
