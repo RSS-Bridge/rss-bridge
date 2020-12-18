@@ -36,7 +36,7 @@ function search() {
 
 		}
 
-		if(textValue != null || uriValue != null) {
+		if(textValue != null && uriValue != null) {
 
 			if(textValue.match(regexMatch) != null ||
 				uriValue.hostname.match(regexMatch) ||
