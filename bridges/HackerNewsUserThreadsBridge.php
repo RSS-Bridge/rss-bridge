@@ -23,13 +23,22 @@ class HackerNewsUserThreadsBridge extends BridgeAbstract {
 
 		$item = array();
 		$articles = $html->find('tr[class*="comtr"]');
+		$story = '';
 
 		foreach ($articles as $element) {
 			$id = $element->getAttribute('id');
 			$item['uri'] = 'https://news.ycombinator.com/item?id=' . $id;
-			$title = $element->find('span[class*="comhead"]', 0)->innertext;
+
+			$author = $element->find('span[class*="comhead"]', 0)->find('a[class="hnuser"]', 0)->innertext;
+			$newstory = $element->find('span[class*="comhead"]', 0)->find('span[class="storyon"]', 0);
+			if (count($newstory->find('a')) > 0) {
+				$story = $newstory->find('a', 0)->innertext;
+			}
+
+			$title = $author . ' | on ' . $story;
+			$item['author'] = $author;
 			$item['title'] = $title;
-			$item['timestamp'] = strtotime($element->find('span[class*="age"]', 0)->find('a', 0)->innertext);
+			$item['timestamp'] = $element->find('span[class*="age"]', 0)->find('a', 0)->innertext;
 			$item['content'] = $element->find('span[class*="commtext"]', 0)->innertext;
 
 			$this->items[] = $item;
