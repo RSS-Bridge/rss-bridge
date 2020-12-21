@@ -40,14 +40,17 @@ class HDWallpapersBridge extends BridgeAbstract {
 				preg_match('/page\/(\d+)$/', $html->find('.pagination a', -2)->href, $matches);
 				$lastpage = min($matches[1], ceil($max / 14));
 			}
-			
+
 			$html = defaultLinkTo($html, self::URI);
 
 			foreach($html->find('.wallpapers .wall a') as $element) {
 				$thumbnail = $element->find('img', 0);
 
+				$search = array(self::URI, 'wallpapers.html');
+				$replace = array(self::URI . 'download/', $this->getInput('r') . '.jpg');
+
 				$item = array();
-				$item['uri'] = str_replace(array(self::URI, 'wallpapers.html'), array(self::URI . 'download/', $this->getInput('r') . '.jpg'), $element->href);
+				$item['uri'] = str_replace($search, $replace, $element->href);
 
 				$item['timestamp'] = time();
 				$item['title'] = $element->find('em1', 0)->text();
