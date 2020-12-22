@@ -15,12 +15,12 @@ class HetznerBridge extends BridgeAbstract {
 			$url = 'https://www.hetzner.com' . $element->find('a', 0)->href;
 			$title = $element->find('h4', 0)->plaintext;
 			$date = strtotime($element->find('p small', 0)->plaintext);
-			
+
 			$contenthtml = getSimpleHTMLDOM($url) or returnServerError('Could not request Hetzner News: ' . $url);
 			$content = $contenthtml->find('ul.list-unstyled.list-card li p');
 			array_shift($content);
 			array_shift($content);
-			
+
 			$item = array();
 			$item['uri'] = $url;
 			$item['title'] = $title;
