@@ -18,21 +18,36 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 				'type' => 'text',
 				'required' => true,
 				'title' => 'URL d\'une série sans le https://www.zt-za.com/',
-				'exampleValue' => 'telecharger-series/31079-halt-and-catch-fire-saison-4-french-hd720p.html'
+				'exampleValue' => 'telecharger-series/31079-halt-and-catch-fire-saison-4-french-hd720p.html'),
+			'filter' => array(
+				'name' => 'Type de contenu',
+				'type' => 'list',
+				'title' => 'Type de contenu à suivre : Téléchargement, Streaming ou les deux',
+				'values' => array(
+					'Streaming et Téléchargement' => 'both',
+					'Téléchargement' => 'download',
+					'Streaming' => 'streaming'
+					),
+				'defaultValue' => 'both'
 			)
 		)
 	);
 
-	// This is an URL that is not protected by robot protection
+	// This is an URL that is not protected by robot protection for Direct Download
 	const UNPROTECED_URI = 'https://www.zone-annuaire.com/';
 
+	// This is an URL that is not protected by robot protection for Streaming Links
+	const UNPROTECED_URI_STREAMING = 'https://zone-telechargement.stream/';
+
 	public function getIcon() {
-		return self::URI . '/templates/Default/images/favicon.ico';
+		return self::UNPROTECED_URI . '/templates/Default/images/favicon.ico';
 	}
 
 	public function collectData(){
 		$html = getSimpleHTMLDOM(self::UNPROTECED_URI . $this->getInput('url'))
 			or returnServerError('Could not request Zone Telechargement.');
+
+		$filter = $this->getInput('filter');
 
 		// Get the TV show title
 		$qualityselector = 'div[style=font-size: 18px;margin: 10px auto;color:red;font-weight:bold;text-align:center;]';
@@ -40,35 +55,72 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 		$quality = trim(explode("\n", $html->find($qualityselector, 0)->plaintext)[0]);
 		$this->showTitle = $show . ' ' . $quality;
 
-		// Get the post content
-		$linkshtml = $html->find('div[class=postinfo]', 0);
-
 		$episodes = array();
 
-		$list = $linkshtml->find('a');
-		// Construct the tabble of episodes using the links
-		foreach($list as $element) {
-			// Retrieve episode number from link text
-			$epnumber = explode(' ', $element->plaintext)[1];
-			$hoster = $this->findLinkHoster($element);
+		// Handle the Direct Download links
+		if($filter == 'both' || $filter == 'download') {
+			// Get the post content
+			$linkshtml = $html->find('div[class=postinfo]', 0);
 
-			// Format the link and add the link to the corresponding episode table
-			$episodes[$epnumber][] = '<a href="' . $element->href . '">' . $hoster . ' - '
-				. $this->showTitle . ' Episode ' . $epnumber . '</a>';
+			$list = $linkshtml->find('a');
+			// Construct the table of episodes using the links
+			foreach($list as $element) {
+				// Retrieve episode number from link text
+				$epnumber = explode(' ', $element->plaintext)[1];
+				$hoster = $this->findLinkHoster($element);
 
+				// Format the link and add the link to the corresponding episode table
+				$episodes[$epnumber]['ddl'][] = '<a href="' . $element->href . '">' . $hoster . ' - '
+					. $this->showTitle . ' Episode ' . $epnumber . '</a>';
+
+			}
+		}
+
+		// Handle the Streaming links
+		if($filter == 'both' || $filter == 'streaming') {
+			// Get the post content, on the dedicated streaming website
+			$htmlstreaming = getSimpleHTMLDOM(self::UNPROTECED_URI_STREAMING . $this->getInput('url'))
+				or returnServerError('Could not request Zone Telechargement.');
+			// Get the HTML element containing all the links
+			$streaminglinkshtml = $htmlstreaming->find('p[style=background-color: #FECC00;]', 1)->parent()->next_sibling();
+			// Get all streaming Links
+			$liststreaming = $streaminglinkshtml->find('a');
+			foreach($liststreaming as $elementstreaming) {
+				// Retrieve the episode number from the link text
+				$epnumber = explode(' ', $elementstreaming->plaintext)[1];
+
+				// Format the link and add the link to the corresponding episode table
+				$episodes[$epnumber]['streaming'][] = '<a href="' . $elementstreaming->href . '">'
+					. $this->showTitle . ' Episode ' . $epnumber . '</a>';
+			}
 		}
 
 		// Finally construct the items array
 		foreach($episodes as $epnum => $episode) {
-			$item = array();
-			// Add every link available in the episode table separated by a <br/> tag
-			$item['content'] = implode('<br/>', $episode);
-			$item['title'] = $this->showTitle . ' Episode ' . $epnum;
-			// As RSS Bridge use the URI as GUID they need to be unique : adding a md5 hash of the title element
-			// should geneerate unique URI to prevent confusion for RSS readers
-			$item['uri'] = self::URI . $this->getInput('url') . '#' . hash('md5', $item['title']);
-			// Insert the episode at the beginning of the item list, to show the newest episode first
-			array_unshift($this->items, $item);
+			// Handle the Direct Download links
+			if(array_key_exists('ddl', $episode)) {
+				$item = array();
+				// Add every link available in the episode table separated by a <br/> tag
+				$item['content'] = implode('<br/>', $episode['ddl']);
+				$item['title'] = $this->showTitle . ' Episode ' . $epnum . ' - Téléchargement';
+				// Generate an unique UID by hashing the item title to prevent confusion for RSS readers
+				$item['uid'] = hash('md5', $item['title']);
+				$item['uri'] = self::URI . $this->getInput('url');
+				// Insert the episode at the beginning of the item list, to show the newest episode first
+				array_unshift($this->items, $item);
+			}
+			// Handle the streaming link
+			if(array_key_exists('streaming', $episode)) {
+				$item = array();
+				// Add every link available in the episode table separated by a <br/> tag
+				$item['content'] = implode('<br/>', $episode['streaming']);
+				$item['title'] = $this->showTitle . ' Episode ' . $epnum . ' - Streaming';
+				// Generate an unique UID by hashing the item title to prevent confusion for RSS readers
+				$item['uid'] = hash('md5', $item['title']);
+				$item['uri'] = self::URI . $this->getInput('url');
+				// Insert the episode at the beginning of the item list, to show the newest episode first
+				array_unshift($this->items, $item);
+			}
 		}
 	}
 
@@ -85,8 +137,6 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 	private function findLinkHoster($element) {
 		// The hoster name is one level higher than the link tag : get the parent element
 		$element = $element->parent();
-		//echo "PARENT : $element \n";
-		$continue = true;
 		// Walk through all elements in the reverse order until finding the one with a div and that is not a <br/>
 		while(!($element->find('div', 0) != null && $element->tag != 'br')) {
 			$element = $element->prev_sibling();
