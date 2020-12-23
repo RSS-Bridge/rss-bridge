@@ -198,8 +198,7 @@ EOD
 			if($lastError !== null)
 				$lastError = $lastError['message'];
 			returnError(<<<EOD
-The requested resource cannot be found!
-Please make sure your input parameters are correct!
+Unexpected response from upstream.
 cUrl error: $curlError ($curlErrno)
 PHP error: $lastError
 EOD
