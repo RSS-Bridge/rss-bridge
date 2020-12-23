@@ -13,7 +13,7 @@ script:
   # Run PHP_CodeSniffer on all versions
   - ~/.config/composer/vendor/bin/phpcs . --standard=phpcs.xml --warning-severity=0 --extensions=php -p;
   # Check PHP compatibility for the lowest and highest supported version
-  - if [[ $TRAVIS_PHP_VERSION == "5.6" || $TRAVIS_PHP_VERSION == "7.3" ]]; then
+  - if [[ $TRAVIS_PHP_VERSION == "5.6" || $TRAVIS_PHP_VERSION == "7.4" ]]; then
       ~/.config/composer/vendor/bin/phpcs . --standard=phpcompatibility.xml --extensions=php -p;
     fi
   # Run unit tests on highest major version
@@ -22,7 +22,7 @@ script:
     fi
 
 php:
-  - 7.3
+  - 7.4
 
 env:
   - PHPUNIT=6
@@ -38,9 +38,4 @@ matrix:
     - php: 7.0
     - php: 7.1
     - php: 7.2
-
-  allow_failures:
     - php: 7.3
-      env: PHPUNIT=7
-    - php: 7.3
-      env: PHPUNIT=8
