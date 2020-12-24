@@ -269,6 +269,9 @@ of deleted comments in the place of those comments.',
 		$repost['audios'] = $this->extractAudios($repostElem);
 		$repost['videos'] = $this->extractVideos($repostElem);
 
+		$repost['comments'] = $repost['tags'] = $repost['pool'] = $repost['poster'] = array();
+		$repost['article'] = $repost['expandedLink'] = $repost['map'] = $repost['map'] = array();
+
 		return $repost;
 	}
 
