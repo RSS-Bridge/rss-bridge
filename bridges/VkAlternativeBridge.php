@@ -172,6 +172,8 @@ of deleted comments in the place of those comments.',
 
 		$post['author'] = $this->extractAuthor($postDom);
 
+		$post['origin'] = $this->extractOrigin($postDom);
+
 		$this->assertc($this->has($postDom, '.post_header .rel_date'),
 			'getPost() failed to find .rel_date element for cutting context for timestamp extracting');
 		$post['timestamp'] = $this->extractTimestamp($postDom->find('.post_header .rel_date')[0]);
@@ -221,6 +223,22 @@ of deleted comments in the place of those comments.',
 		);
 
 		return $post;
+	}
+
+	private function extractOrigin($postElem) {
+		$origin = array();
+		if($this->has($postElem, '.Post__copyrightLink')) {
+			$originElem = $postElem->find('.Post__copyrightLink')[0];
+
+			preg_match('/^Source: (.*)$/', $originElem->plaintext, $matches);
+			$this->assertc(isset($matches[1]), 'extractOrigin() failed to extract post\'s origin');
+			$origin['name'] = $matches[1];
+
+			$this->assertc($this->hasAttr($originElem, 'href'), 'extractOrigin() failed to extract origin\'s link');
+			$origin['link'] = $originElem->getAttribute('href');
+
+			return $origin;
+		}
 	}
 
 	private function extractRepostedComment($repostElem) {
@@ -1113,6 +1131,11 @@ of deleted comments in the place of those comments.',
 			$content .= strftime('%c', $post['repost']['timestamp']);
 			$content .= '<br/><br/>';
 			$content .= $this->formatPostContent($post['repost']);
+		}
+
+		if(isset($post['origin'])) {
+			$content .= '<br/><br/>';
+			$content .= "<i>Source: </i><a href='{$post['origin']['link']}'>{$post['origin']['name']}</a>";
 		}
 
 		return $content;
