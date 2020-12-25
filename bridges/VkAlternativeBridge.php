@@ -80,17 +80,20 @@ of deleted comments in the place of those comments.',
 	const CACHE_TIMEOUT = 600;
 	const POST_CACHE_TIMEOUT = 3600;
 
+	private $preDownloaded = array();
+
 	private $currentPostId; // for debug purposes only
 	private $currentCommentId; // for debug purposes only
 
 	private $totalExecutionTime; // for debug purposes only
+	private $preDownloadExecutionTime; // for debug purposes only
 	private $postsExtractingTime = array(); // for debug purposes only
 
 	public function getName(){
 		$sourceId = $this->getInput('u');
 
 		if($sourceId != '') {
-			$sourceDom = getSimpleHTMLDOMCached('https://vk.com/' . $sourceId, 86400, array('Accept-language: en')); // max 24 hours timeout
+			$sourceDom = $this->getDom('https://vk.com/' . $sourceId, 86400, array('Accept-language: en')); // max 24 hours timeout
 
 			$this->assertc($this->has($sourceDom, '.page_name'), 'getName() failed to extract page name');
 
@@ -133,7 +136,13 @@ of deleted comments in the place of those comments.',
 	private function getPosts($sourceId) {
 		$posts = array();
 
-		$sourceDom = getSimpleHTMLDOM('https://vk.com/' . $sourceId);
+		$sourceDom = $this->getDom('https://vk.com/' . $sourceId);
+
+		$this->preDownloadExecutionTime = -microtime(true);
+
+		$this->preDownloadSourceUrls($sourceDom, 0, array('Accept-language: en'));
+
+		$this->preDownloadExecutionTime += microtime(true);
 
 		$this->assertc($this->has($sourceDom, '.post'),
 			'No post elements were found in this source: ' . $sourceId,
@@ -155,6 +164,101 @@ of deleted comments in the place of those comments.',
 		}
 
 		return $posts;
+	}
+
+	private function getDom($url, $cacheTimeout = 0, $headers = array()) {
+		if(isset($this->preDownloaded[$url])) {
+			return $this->preDownloaded[$url];
+		} else {
+			// Actually getSimpleHTMLDOMCached is more powerful than described in wiki, for example it allows to change header for requests
+			// See: https://github.com/RSS-Bridge/rss-bridge/blob/07551815554d506f662b56386284d4cef6ddbd1e/lib/contents.php#L288
+			return getSimpleHTMLDOMCached($url, $cacheTimeout, $headers);
+		}
+	}
+
+	private function preDownloadSourceUrls($sourceDom, $timeout, $header) {
+		$urls = array();
+
+		foreach($sourceDom->find('.post') as $postElement) {
+			$this->assertc($this->hasAttr($postElement, 'id'), 'preDownloadPages() failed to extract post\'s id');
+			$postId = substr($postElement->getAttribute('id'), 4);
+			$urls[] = $this->getPostUrl($postId);
+
+			if($this->has($postElement, '.copy_quote')) {
+				$this->assertc($this->has($postElement, '.copy_post_date .published_by_date'),
+					'preDownloadPages() failed to extract repost url');
+				$repostUrl = $postElement->find('.copy_post_date .published_by_date')[0]->getAttribute('href');
+				// if not comment was reposted
+				if(!preg_match('/wall(-?\d+_\d+).+reply=\d+/', $repostUrl, $matches)) {
+					$urls[] = 'https://vk.com/' . $repostUrl;
+				} else {
+					$urls[] = $matches[1];
+				}
+			}
+
+			if($this->has($postElement, '.page_media_place')) {
+				$urls[] = $this->getPostUrl($postId, true);
+			}
+
+			foreach($postElement->find('.page_post_thumb_video') as $videoElem) {
+				$video = array();
+
+				preg_match('!video(-?\d+_\d+)(\?list=\w+)?!', $videoElem->getAttribute('href'), $matches);
+				$this->assertc(isset($matches[1]), 'preDownloadPages() failed to extract video id');
+				$videoUrl = 'https://m.vk.com/' . $matches[0];
+				$urls[] = $videoUrl;
+			}
+		}
+
+		$this->preDownloadUrls($urls, $timeout, $header);
+	}
+
+	private function preDownloadUrls($urls, $timeout = 0, $header = array()) {
+		foreach($urls as $pos => $url) {
+			if(in_array($url, $this->preDownloaded)) {
+				unset($urls[$pos]);
+			}
+		}
+
+		$handles = array();
+
+		$multiHandle = curl_multi_init();
+
+		foreach($urls as $url) {
+			$handle = curl_init($url);
+
+			curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($handle, CURLOPT_FOLLOWLOCATION, true);
+			curl_setopt($handle, CURLOPT_USERAGENT, ini_get('user_agent'));
+			curl_setopt($handle, CURLOPT_ENCODING, '');
+			curl_setopt($handle, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
+
+			if(is_array($header) && count($header) !== 0) {
+				curl_setopt($handle, CURLOPT_HTTPHEADER, $header);
+			}
+
+			if(defined('PROXY_URL') && !defined('NOPROXY')) {
+				curl_setopt($handle, CURLOPT_PROXY, PROXY_URL);
+			}
+
+			$handles[$url] = $handle;
+			curl_multi_add_handle($multiHandle, $handle);
+		}
+
+		do {
+			$status = curl_multi_exec($multiHandle, $active);
+			if ($active) {
+				curl_multi_select($multiHandle);
+			}
+		} while ($active && $status == CURLM_OK);
+
+		foreach($handles as $url => $handle) {
+			$rawPage = curl_multi_getcontent($handle);
+			$this->preDownloaded[$url] = str_get_html($rawPage);
+			curl_multi_remove_handle($multiHandle, $handle);
+		}
+
+		curl_multi_close($multiHandle);
 	}
 
 	private function getPost($postId) {
@@ -295,9 +399,7 @@ of deleted comments in the place of those comments.',
 	}
 
 	private function getPostDom($postId, $isMobile = false) {
-			// Actually getSimpleHTMLDOMCached is more powerful than described in wiki, for example it allows to change header for requests
-			// See: https://github.com/RSS-Bridge/rss-bridge/blob/07551815554d506f662b56386284d4cef6ddbd1e/lib/contents.php#L288
-			$dom = getSimpleHTMLDOMCached($this->getPostUrl($postId, $isMobile),
+			$dom = $this->getDom($this->getPostUrl($postId, $isMobile),
 				self::POST_CACHE_TIMEOUT,
 				array('Accept-language: en'));
 			$dom = $this->cleanRedirects($dom);
@@ -694,7 +796,7 @@ of deleted comments in the place of those comments.',
 			// TODO: fix high quality video sources
 
 			// use url with "list" parameter which sometimes allows to access private videos
-			$videoDom = getSimpleHTMLDOMCached($video['nativeUrl'], self::POST_CACHE_TIMEOUT, array('Accept-language: en'));
+			$videoDom = $this->getDom($video['nativeUrl'], self::POST_CACHE_TIMEOUT, array('Accept-language: en'));
 
 			$video['urls'] = array();
 
@@ -1368,6 +1470,14 @@ of deleted comments in the place of those comments.',
 
 	private function showExecutionTimes() {
 		trigger_error('Data collected in ' . $this->totalExecutionTime . ' seconds', E_USER_NOTICE);
+
+		trigger_error('Predownload took ' . $this->preDownloadExecutionTime . ' seconds', E_USER_NOTICE);
+
+		$pre = 'Predownloaded: ';
+		foreach($this->preDownloaded as $url => $data) {
+			$pre .= $url . ' ';
+		}
+		trigger_error($pre, E_USER_NOTICE);
 
 		$totalDownloading = 0.0;
 		$totalParsing = 0.0;
