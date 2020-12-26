@@ -222,9 +222,9 @@ of deleted comments in the place of those comments.',
 				$repostUrl = $postElement->find('.copy_post_date .published_by_date')[0]->getAttribute('href');
 				// if not comment was reposted
 				if(!preg_match('/wall(-?\d+_\d+).+reply=\d+/', $repostUrl, $matches)) {
-					$urls[] = 'https://vk.com/' . $repostUrl;
+					$urls[] = 'https://vk.com' . $repostUrl;
 				} else {
-					$urls[] = $matches[1];
+					$urls[] = 'https://vk.com/wall' . $matches[1];
 				}
 			}
 
