@@ -136,11 +136,11 @@ of deleted comments in the place of those comments.',
 	private function getPosts($sourceId) {
 		$posts = array();
 
-		$sourceDom = $this->getDom('https://vk.com/' . $sourceId);
+		$sourceDom = $this->getDom('https://vk.com/' . $sourceId, 0, array('Accept-language: en'), false);
 
 		$this->preDownloadExecutionTime = -microtime(true);
 
-		$this->preDownloadSourceUrls($sourceDom, 0, array('Accept-language: en'));
+		$this->preDownloadSourceUrls($sourceDom);
 
 		$this->preDownloadExecutionTime += microtime(true);
 
@@ -166,17 +166,20 @@ of deleted comments in the place of those comments.',
 		return $posts;
 	}
 
-	private function getDom($url, $cacheTimeout = 0, $headers = array()) {
-		if(isset($this->preDownloaded[$url])) {
+	private function getDom($url, $timeout = 0, $headers = array(), $preDownload = true) {
+		if(isset($this->preDownloaded[$url]) && $preDownload) {
 			return $this->preDownloaded[$url];
 		} else {
+			if(Debug::isEnabled() && $preDownload) {
+				trigger_error("Predownload missed '$url' url", E_USER_NOTICE);
+			}
 			// Actually getSimpleHTMLDOMCached is more powerful than described in wiki, for example it allows to change header for requests
 			// See: https://github.com/RSS-Bridge/rss-bridge/blob/07551815554d506f662b56386284d4cef6ddbd1e/lib/contents.php#L288
-			return getSimpleHTMLDOMCached($url, $cacheTimeout, $headers);
+			return getSimpleHTMLDOMCached($url, $timeout, $headers);
 		}
 	}
 
-	private function preDownloadSourceUrls($sourceDom, $timeout, $header) {
+	private function preDownloadSourceUrls($sourceDom) {
 		$urls = array();
 
 		foreach($sourceDom->find('.post') as $postElement) {
@@ -210,7 +213,7 @@ of deleted comments in the place of those comments.',
 			}
 		}
 
-		$this->preDownloadUrls($urls, $timeout, $header);
+		$this->preDownloadUrls($urls, self::POST_CACHE_TIMEOUT, array('Accept-language: en'));
 	}
 
 	private function preDownloadUrls($urls, $timeout = 0, $header = array()) {
@@ -220,26 +223,111 @@ of deleted comments in the place of those comments.',
 			}
 		}
 
+		$pages = $this->getSimpleHTMLDOMCachedParallel($urls, $timeout, $header);
+		$this->preDownloaded = array_merge($this->preDownloaded, $pages);
+	}
+
+	private function getSimpleHTMLDOMCachedParallel($urls,
+		$duration = 86400,
+		$header = array(),
+		$opts = array(),
+		$lowercase = true,
+		$forceTagsClosed = true,
+		$target_charset = DEFAULT_TARGET_CHARSET,
+		$stripRN = true,
+		$defaultBRText = DEFAULT_BR_TEXT,
+		$defaultSpanText = DEFAULT_SPAN_TEXT) {
+
+		$results = array();
+
+		$cacheFac = new CacheFactory();
+		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
+		$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+		$cache->setScope('pages');
+		$cache->purgeCache(86400); // 24 hours (forced)
+
+		foreach($urls as $pos => $url) {
+			$params = array($url);
+			$cache->setKey($params);
+			$time = $cache->getTime();
+
+			if($time !== false && (time() - $duration < $time) && !Debug::isEnabled()) { // Contents within duration
+				$results[$url] = $cache->loadData();
+				unset($urls[$pos]);
+			}
+
+		}
+
+		$rawContents = $this->getContentsParallel($urls, $header, $opts);
+
+		foreach($rawContents as $url => $rawContent) {
+			$params = array($url);
+			$cache->setKey($params);
+
+			$results[$url] = str_get_html($rawContent,
+				$lowercase,
+				$forceTagsClosed,
+				$target_charset,
+				$stripRN,
+				$defaultBRText,
+				$defaultSpanText);
+
+			$cache->saveData($results[$url]);
+		}
+
+		return $results;
+	}
+
+	private function getContentsParallel($urls, $header = array(), $opts = array(), $returnHeader = false) {
+		$results = array();
+
+		if(count($urls) === 0) {
+			return $results;
+		}
+
+		$cacheFac = new CacheFactory();
+		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
+		$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+		$cache->setScope('server');
+		$cache->purgeCache(86400); // 24 hours (forced)
+
 		$handles = array();
 
 		$multiHandle = curl_multi_init();
 
 		foreach($urls as $url) {
+			$params = array($url);
+			$cache->setKey($params);
+
 			$handle = curl_init($url);
 
 			curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($handle, CURLOPT_FOLLOWLOCATION, true);
-			curl_setopt($handle, CURLOPT_USERAGENT, ini_get('user_agent'));
-			curl_setopt($handle, CURLOPT_ENCODING, '');
-			curl_setopt($handle, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
 
 			if(is_array($header) && count($header) !== 0) {
 				curl_setopt($handle, CURLOPT_HTTPHEADER, $header);
 			}
 
+			curl_setopt($handle, CURLOPT_USERAGENT, ini_get('user_agent'));
+			curl_setopt($handle, CURLOPT_ENCODING, '');
+			curl_setopt($handle, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
+
+			if(is_array($opts) && count($opts) !== 0) {
+				foreach($opts as $key => $value) {
+					curl_setopt($ch, $key, $value);
+				}
+			}
+
 			if(defined('PROXY_URL') && !defined('NOPROXY')) {
 				curl_setopt($handle, CURLOPT_PROXY, PROXY_URL);
 			}
+
+			if(!Debug::isEnabled() && $time = $cache->getTime()) { // Skip if cache file doesn't exist
+				curl_setopt($handle, CURLOPT_TIMEVALUE, $time);
+				curl_setopt($handle, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
+			}
+
+			curl_setopt($handle, CURLOPT_HEADER, true);
 
 			$handles[$url] = $handle;
 			curl_multi_add_handle($multiHandle, $handle);
@@ -253,12 +341,81 @@ of deleted comments in the place of those comments.',
 		} while ($active && $status == CURLM_OK);
 
 		foreach($handles as $url => $handle) {
-			$rawPage = curl_multi_getcontent($handle);
-			$this->preDownloaded[$url] = str_get_html($rawPage);
+			$data = curl_multi_getcontent($handle);
+
+			$params = array($url);
+			$cache->setKey($params);
+
+			$result = $this->getResultDataAndHeader($data, $handle, $cache);
+			$results[$url] = ($returnHeader === true) ? $result : $result['content'];
+
 			curl_multi_remove_handle($multiHandle, $handle);
 		}
 
 		curl_multi_close($multiHandle);
+
+		return $results;
+	}
+
+	private function getResultDataAndHeader($data, $handle, $cache) {
+		$headerSize = curl_getinfo($handle, CURLINFO_HEADER_SIZE);
+
+		$errorCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+
+		$curlError = curl_error($handle);
+
+		$curlErrno = curl_errno($handle);
+
+		$curlInfo = curl_getinfo($handle);
+
+		$header = substr($data, 0, $headerSize);
+
+		$result['header'] = $header;
+
+		$headers = parseResponseHeader($header);
+		$finalHeader = end($headers);
+
+		switch($errorCode) {
+			case 200:
+				$data = substr($data, $headerSize);
+				$finalHeader = array_change_key_case($finalHeader, CASE_LOWER);
+				if(array_key_exists('cache-control', $finalHeader)) {
+					$directives = explode(',', $finalHeader['cache-control']);
+					$directives = array_map('trim', $directives);
+					if(in_array('no-cache', $directives)
+					|| in_array('no-store', $directives)) { // Skip caching
+						$result['content'] = $data;
+						break;
+					}
+				}
+				$cache->saveData($data);
+				$result['content'] = $data;
+				break;
+			case 304:
+				$result['content'] = $cache->loadData();
+				break;
+			default:
+				if(array_key_exists('Server', $finalHeader) && strpos($finalHeader['Server'], 'cloudflare') !== false) {
+					returnServerError(<<< EOD
+The server responded with a Cloudflare challenge, which is not supported by RSS-Bridge!
+If this error persists longer than a week, please consider opening an issue on GitHub!
+EOD
+					);
+				}
+
+				$lastError = error_get_last();
+
+				if($lastError !== null)
+					$lastError = $lastError['message'];
+				returnError(<<<EOD
+Unexpected response from upstream.
+cUrl error: $curlError ($curlErrno)
+PHP error: $lastError
+EOD
+				, $errorCode);
+		}
+
+		return $result;
 	}
 
 	private function getPost($postId) {
