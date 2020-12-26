@@ -1297,7 +1297,7 @@ EOD
 		if($commentsAmount === 0) {
 			$content .= '<br/>No comments.';
 		} else {
-			$content .= "<br/><details><summary>$commentsAmount+ comments:</summary>";
+			$content .= "<br/><details><summary>$commentsAmount+ comments:</summary><br/>";
 		}
 
 		$firstIteration = true;
