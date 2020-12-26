@@ -460,7 +460,9 @@ EOD
 		$post['id'] = $postId;
 		$post['url'] = $this->getPostUrl($postId);
 
-		$post['comments'] = $this->extractComments($postDom);
+		if($this->getInput('inlineComments') === true) {
+			$post['comments'] = $this->extractComments($postDom);
+		}
 
 		if($this->has($postDom, '.copy_quote')) {
 			$repostId = $postDom->find('.copy_author')[0]->getAttribute('data-post-id');
