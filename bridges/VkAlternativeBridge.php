@@ -83,8 +83,8 @@ of deleted comments in the place of those comments.',
 			)
 		)
 	);
-	const CACHE_TIMEOUT = 600;
-	const POST_CACHE_TIMEOUT = 3600;
+	const CACHE_TIMEOUT = 2700; // 45 min
+	const POST_CACHE_TIMEOUT = 3600; // 60 min
 
 	private $preDownloaded = array();
 
