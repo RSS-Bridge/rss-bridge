@@ -16,6 +16,12 @@ class VkAlternativeBridge extends BridgeAbstract {
 				'title' => 'User or group ID is a string after the VK domain in a direct link
 to this user or group. For example, if the link is https://vk.com/durov, then the ID is "durov" (without quotes).',
 				'exampleValue' => 'durov'
+			),
+			'postAmount' => array(
+				'name' => 'Number of posts to download and parse (maximum 10 posts)',
+				'title' => 'Use this to speed up feed generating',
+				'defaultValue' => 5,
+				'type' => 'number'
 			), // again, this parameter and last option are named this way for compatibility
 			'hide_reposts' => array(
 				'name' => 'Remove reposts',
@@ -148,8 +154,18 @@ of deleted comments in the place of those comments.',
 			'No post elements were found in this source: ' . $sourceId,
 			false, true);
 
+		$amount = $this->getInput('postAmount');
+		if($amount > 10) {
+			$amount = 10;
+		} else if($amount < 1) {
+			$amount = 1;
+		}
+
 		foreach($sourceDom->find('.post') as $postElement) {
 			//$postElement = $sourceDom->find('.post')[6]; // DEBUG
+			if($amount < 1) {
+				break;
+			}
 
 			// Id attribute of a post element is: post<post id>
 			$postId = substr($postElement->getAttribute('id'), 4);
@@ -161,6 +177,8 @@ of deleted comments in the place of those comments.',
 			$this->currentPostId = $postId;
 
 			$posts[] = $this->getPost($postId);
+
+			$amount--;
 		}
 
 		return $posts;
@@ -182,7 +200,18 @@ of deleted comments in the place of those comments.',
 	private function preDownloadSourceUrls($sourceDom) {
 		$urls = array();
 
+		$amount = $this->getInput('postAmount');
+		if($amount > 10) {
+			$amount = 10;
+		} else if($amount < 1) {
+			$amount = 1;
+		}
+
 		foreach($sourceDom->find('.post') as $postElement) {
+			if($amount < 0) {
+				break;
+			}
+
 			$this->assertc($this->hasAttr($postElement, 'id'), 'preDownloadPages() failed to extract post\'s id');
 			$postId = substr($postElement->getAttribute('id'), 4);
 			$urls[] = $this->getPostUrl($postId);
@@ -211,6 +240,8 @@ of deleted comments in the place of those comments.',
 				$videoUrl = 'https://m.vk.com/' . $matches[0];
 				$urls[] = $videoUrl;
 			}
+
+			$amount--;
 		}
 
 		$this->preDownloadUrls($urls, self::POST_CACHE_TIMEOUT, array('Accept-language: en'));
