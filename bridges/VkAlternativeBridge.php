@@ -965,15 +965,17 @@ EOD
 				// TODO: optionally convert youtube links to invidious (or similar project's) links
 				$video['iframe'] = 'https:' . $videoDom->find('.VideoPage__video iframe')[0]->getAttribute('src');
 			} elseif($this->has($videoDom, 'source')) {
-				foreach($videoDom->find('source') as $source) {
-					$this->assertc($this->hasAttr($source, 'src'),
+				foreach($videoDom->find('source') as $sourceElem) {
+					$this->assertc($this->hasAttr($sourceElem, 'src'),
 						'In extractVideos() source\'s "src" attribute is empty or doesn\'t exist', true);
-					if($this->hasAttr($source, 'src')) {
-						$video['urls'][] = $source->getAttribute('src');
+					if($this->hasAttr($sourceElem, 'src')) {
+						$source = $sourceElem->getAttribute('src');
+
+						if(!preg_match('/video_hls\.php/', $source)) {
+							$video['urls'][] = $source;
+						}
 					}
 				}
-				$this->assertc(count($video['urls']) > 1,
-					'In extractVideos() $video["urls"] only has one url (a broken .m3u8)', true);
 			} else {
 				$this->assertc(false, 'In extractVideos() no iframe or source element was found', true);
 			}
@@ -1541,9 +1543,9 @@ EOD
 		}
 
 		foreach($post['videos'] as $video) {
-			// highest quality video, but not broken .m3u8
-			if(isset($video['urls'][1])) {
-				$enclosures[] = $video['urls'][1];
+			// highest quality video
+			if(isset($video['urls'][0])) {
+				$enclosures[] = $video['urls'][0];
 			}
 		}
 
