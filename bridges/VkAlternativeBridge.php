@@ -1306,6 +1306,9 @@ EOD
 			$hard = $this->getInput('hardDescendingCommentThreshold');
 			$offset = $this->getInput('descendingCommentThresholdOffset');
 			$addAmount = !$this->getInput('dontAddDeletedAmount');
+
+			$separator = '<br/><hr/>';
+
 			// if no descending comment was found, then $i <= $lastValidComment should be always false
 			// therefore $lastValidComment by default equals to -1
 			$lastValidComment = -1;
@@ -1323,7 +1326,7 @@ EOD
 				if($firstIteration) {
 					$firstIteration = false;
 				} else {
-					$content .= '<hr/>';
+					$content .= $separator;
 				}
 
 				$content .= "<br/><i id='$comment[id]'>Comment: </i><br/>";
@@ -1345,7 +1348,7 @@ EOD
 							$content .= ' was filtered out';
 							$deletedAmount = 0;
 						}
-						$content .= '<hr/>';
+						$content .= $separator;
 						$content .= "<br/><i><a id='$reply[id]' href='#$reply[replyId]'>Reply: </a></i><br/>";
 						$content .= $this->formatComment($reply, $postId);
 					}
@@ -1356,7 +1359,8 @@ EOD
 				// add notice about comments filtered after last valid reply
 				$deletedAmount = count($comment['replies']) - $lastValidComment - $offset - 1;
 				if($addAmount && $deletedAmount >= 1) {
-					$content .= "<hr/><i>$deletedAmount repl";
+					$content .= $separator;
+					$content .= "<i>$deletedAmount repl";
 					if($deletedAmount > 1) {
 						$content .= 'ies';
 					} else {
@@ -1369,7 +1373,7 @@ EOD
 				if($firstIteration) {
 					$firstIteration = false;
 				} else {
-					$content .= '<hr/>';
+					$content .= $separator;
 				}
 
 				$deletedAmount = 1 + count($comment['replies']);
