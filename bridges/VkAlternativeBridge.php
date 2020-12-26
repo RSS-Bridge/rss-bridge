@@ -93,7 +93,7 @@ of deleted comments in the place of those comments.',
 		$sourceId = $this->getInput('u');
 
 		if($sourceId != '') {
-			$sourceDom = $this->getDom('https://vk.com/' . $sourceId, 86400, array('Accept-language: en')); // max 24 hours timeout
+			$sourceDom = $this->getDom('https://vk.com/' . $sourceId, 86400, array('Accept-language: en'), false); // max 24 hours timeout
 
 			$this->assertc($this->has($sourceDom, '.page_name'), 'getName() failed to extract page name');
 
