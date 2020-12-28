@@ -43,7 +43,7 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 
 			$item = array();
 			$item['uri'] = self::URI . '/post/' . $details->postId;
-			$item['author'] = $details->authorText->simpleText;
+			$item['author'] = $details->authorText->runs[0]->text;
 			$item['content'] = '';
 
 			if (isset($details->contentText)) {
