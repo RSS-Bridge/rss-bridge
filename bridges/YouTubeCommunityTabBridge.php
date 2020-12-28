@@ -81,7 +81,7 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 	 */
 	private function extractJson($html) {
 
-		if (!preg_match('/window\["ytInitialData"\] = (.*);/', $html, $parts)) {
+		if (!preg_match('/var ytInitialData = (.*);<\/script>/', $html, $parts)) {
 			returnServerError('Failed to extract data from page');
 		}
 
