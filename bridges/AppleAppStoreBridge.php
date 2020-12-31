@@ -19,7 +19,7 @@ class AppleAppStoreBridge extends BridgeAbstract {
 			'type'	=> 'list',
 			'values'	=> array(
 				'iPad'	=> 'ipad',
-				'iPhone'	=> 'iphone',
+				'iPhone'=> 'iphone',
 				'Mac'	=> 'mac',
 
 				// The following 2 are present in responses
@@ -33,9 +33,9 @@ class AppleAppStoreBridge extends BridgeAbstract {
 			'name'	=> 'Store Country',
 			'type'	=> 'list',
 			'values'	=> array(
-				'US'	=> 'US',
-				'India'	=> 'IN',
-				'Canada'	=> 'CA'
+				'US'	=> 'us',
+				'India'	=> 'in',
+				'Canada'=> 'ca'
 			),
 			'defaultValue'	=> 'US',
 		),
