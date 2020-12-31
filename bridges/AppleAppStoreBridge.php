@@ -18,9 +18,9 @@ class AppleAppStoreBridge extends BridgeAbstract {
 			'name'	=> 'Platform',
 			'type'	=> 'list',
 			'values'	=> array(
-				'iPad'	=> 'ipad',
-				'iPhone'=> 'iphone',
-				'Mac'	=> 'mac',
+				'iPad'	 => 'ipad',
+				'iPhone' => 'iphone',
+				'Mac'	 => 'mac',
 
 				// The following 2 are present in responses
 				// but not yet tested
