@@ -33,9 +33,9 @@ class AppleAppStoreBridge extends BridgeAbstract {
 			'name'	=> 'Store Country',
 			'type'	=> 'list',
 			'values'	=> array(
-				'US'	=> 'us',
-				'India'	=> 'in',
-				'Canada'=> 'ca'
+				'US'	 => 'us',
+				'India'	 => 'in',
+				'Canada' => 'ca'
 			),
 			'defaultValue'	=> 'US',
 		),
