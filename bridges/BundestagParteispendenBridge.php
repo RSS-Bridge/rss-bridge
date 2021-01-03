@@ -64,18 +64,25 @@ URI;
 		$date   = $row->children[3]->children[0]->innertext;
 		$dip    = $row->children[4]->children[0]->find('a.dipLink', 0);
 
+		// Strip whitespace from date string.
+		$date = str_replace(' ', '', $date);
+
 		$content = sprintf(self::CONTENT_TEMPLATE, $party, $amount, $donor, $date);
 
 		$item = array(
 			'title' => $party . ': ' . $amount,
 			'content' => $content,
 			'uid' => sha1($content),
-			'timestamp' => DateTime::createFromFormat('d.m.Y', $date)->getTimestamp(),
 			);
 
 		// Try to get the link to the official document
 		if ($dip != null)
 			$item['enclosures'] = array($dip->href);
+
+		// Try to parse the date
+		$dateTime = DateTime::createFromFormat('d.m.Y', $date);
+		if ($dateTime !== FALSE)
+			$item['timestamp'] = $dateTime->getTimestamp();
 
 		return $item;
 	}
