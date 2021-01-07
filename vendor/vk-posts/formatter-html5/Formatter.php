@@ -232,14 +232,14 @@ class Formatter {
 
 	private function formatPool() {
 		$content = '';
-		if(!empty($this->pool)) {
-			$content .= "<br/><br/><i>Pool: </i>{$this->pool['title']}<br/><br/>";
-			$content .= "<i>Author: </i>{$this->pool['author']}<br/>";
-			$content .= "<i>Type: </i>{$this->pool['type']}<br/><br/>";
-			foreach($this->pool['options'] as $option) {
+		if(!empty($this->post['pool'])) {
+			$content .= "<br/><br/><i>Pool: </i>{$this->post['pool']['title']}<br/><br/>";
+			$content .= "<i>Author: </i>{$this->post['pool']['author']}<br/>";
+			$content .= "<i>Type: </i>{$this->post['pool']['type']}<br/><br/>";
+			foreach($this->post['pool']['options'] as $option) {
 				$content .= "<i>Option: </i>$option<br/>";
 			}
-			$content .= "<br/><i>Total voted: </i>{$this->pool['total']}<br/>";
+			$content .= "<br/><i>Total voted: </i>{$this->post['pool']['total']}<br/>";
 		}
 		return $content;
 	}
