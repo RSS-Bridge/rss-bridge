@@ -203,7 +203,7 @@ or check "Both", if you want content AND errors reports.',
 			$str = curl_multi_getcontent($handle);
 
 			if(!mb_detect_encoding($str, 'UTF-8', true)) {
-				$str = iconv('windows-1251', 'utf-8//ignore', $str);
+				$str = iconv('windows-1251', 'utf-8', $str);
 			}
 
 			try {
