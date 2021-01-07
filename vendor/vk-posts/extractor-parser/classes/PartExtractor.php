@@ -12,7 +12,7 @@ class PartExtractor extends GenericExtractor {
 				return $stampElem->getAttribute('time');
 			} else {
 				// clean timestamp from all strange chars
-				$stampRaw = preg_replace('/[^\w:]/u', ' ', $stampElem->plaintext);
+				$stampRaw = preg_replace('/[^\w:]/u', ' ', $stampElem->text());
 				// post timestamp is in one of the following formats:
 				// "today<or yesterday> at <time(with meridian)>", "<day of month> <short month name> at <time>", "<day of month> <short month name> <year>", "<day of month> <short month name>, <year> at <time>"
 				// but strtotime() understands those:
@@ -25,7 +25,7 @@ class PartExtractor extends GenericExtractor {
 				}
 
 				assertc(strtotime($stampRaw) !== false,
-					'Incorrectly parsed time: "' . $stampElem->plaintext . '" in timestamp: "' . $stampRaw . '"');
+					'Incorrectly parsed time: "' . $stampElem->text() . '" in timestamp: "' . $stampRaw . '"');
 
 				return strtotime($stampRaw);
 			}
@@ -149,7 +149,7 @@ class PartExtractor extends GenericExtractor {
 
 	private function extractArticleTitle($body) {
 		if(has($body, '.article_snippet__title')) {
-			return $body->find('.article_snippet__title')[0]->plaintext;
+			return $body->first('.article_snippet__title')->text();
 		} else {
 			$this->log('Failed to extract article title');
 		}
@@ -157,7 +157,7 @@ class PartExtractor extends GenericExtractor {
 
 	private function extractArticleAuthor($body) {
 		if(has($body, '.article_snippet__author')) {
-			return $body->find('.article_snippet__author')[0]->plaintext;
+			return $body->first('.article_snippet__author')->text();
 		} else {
 			$this->log('Failed to extract article author');
 		}
@@ -165,7 +165,7 @@ class PartExtractor extends GenericExtractor {
 
 	private function extractArticleUrl($body) {
 		if(hasAttr($body, 'href', '.article_snippet')) {
-			return $body->find('.article_snippet')[0]->getAttribute('href');
+			return $body->first('.article_snippet')->getAttribute('href');
 		} else {
 			$this->log('Failed to extract article url');
 		}
@@ -174,7 +174,7 @@ class PartExtractor extends GenericExtractor {
 	private function extractArticleImage($body) {
 		try {
 			assertc(has($body, '.article_snippet__image'), 'Failed to extract article image');
-			return extractBackgroundImage($body->find('.article_snippet__image')[0]);
+			return extractBackgroundImage($body->first('.article_snippet__image'));
 		} catch(\Exception $e) {
 			$this->log($e->getMessage());
 		}
@@ -286,7 +286,7 @@ class PartExtractor extends GenericExtractor {
 		$isIframe = has($videoDom, '.VideoPage__video iframe');
 		if($isIframe) {
 			if(hasAttr($videoDom, 'src', '.VideoPage__video iframe')) {
-				return 'https:' . $videoDom->find('.VideoPage__video iframe')[0]->getAttribute('src');
+				return 'https:' . $videoDom->first('.VideoPage__video iframe')->getAttribute('src');
 			} else {
 				$this->log('In extractVideos() iframe\'s "src" attribute is empty or doesn\'t exist');
 			}
@@ -308,7 +308,7 @@ class PartExtractor extends GenericExtractor {
 
 	private function extractAudioTitle($audioElem) {
 		if(check($audioElem, '.audio_row__performer_title a')) {
-			return $audioElem->find('.audio_row__performer_title a')[0]->plaintext;
+			return $audioElem->first('.audio_row__performer_title a')->text();
 		} else {
 			$this->log('Failed to extract audio title');
 		}
@@ -339,50 +339,18 @@ class PartExtractor extends GenericExtractor {
 			$textElem = $textElemFound[0];
 		}
 
-		$textElem = $this->cleanUrls($textElem);
+		$text['emojis'] = $textElem->innerHtml();
 
-		// innertext doesn't work here :/, seems like bug in simple_html_dom, maybe caused by encoding or cyrillic characters, so using this hack instead:
-		$text['emojis'] = $textElem->outertext;
-		$text['emojis'] = preg_replace('!</?div.*?>!', '', $text['emojis']);
+		// find img elements, which should be emojis, and replace them with unicode replacements hidden in img's "alt" attribute
+		$text['html'] = preg_replace('!<img.*?alt=("|\')(.*?)("|\').*?>!', '\2', $text['emojis']);
 
-		try {
-			cleanEmojis($textElem);
-		} catch(\Exception $e) {
-			$this->log($e->getMessage());
-			$text['html'] = null;
-			$text['plaintext'] = null;
-
-			return $text;
-		}
-
-		$text['html'] = $textElem->outertext;
-		$text['html'] = preg_replace('!</?div.*?>!', '', $text['html']);
-
-		$plaintext = $textElem->outertext;
-		$plaintext = preg_replace('!</?div.*?>!', '', $plaintext);
+		$plaintext = $text['html'];
 		$plaintext = preg_replace('!</?a.*?>!', '', $plaintext);
 		$plaintext = html_entity_decode($plaintext, ENT_QUOTES | ENT_HTML5);
 		$text['plaintext'] = preg_replace('/<br\/?>/u', "\n", $plaintext);
 
 
 		return $text;
-	}
-
-	private function cleanUrls($dom) {
-		foreach($dom->find('a') as $link) {
-			// check if url in link is redirect, i.e. /away.php?to=<canonical url>&<some vk's parameters>
-			// first subexpression is canonical url: all chars after "/away.php?to=", except other possible parameters in "dirty" url
-			if(preg_match('#^/away.php\?to=(.*?)(&.*)*$#', $link->getAttribute('href'), $matches)) {
-				$clean_url = $matches[1];
-				$link->setAttribute('href', urldecode($clean_url));
-			}
-			// check if url is relative
-			if(preg_match('#^/.*$#', $link->getAttribute('href'), $matches)) {
-				$clean_url = 'https://vk.com' . $matches[0];
-				$link->setAttribute('href', $clean_url);
-			}
-		}
-		return $dom;
 	}
 
 	public function extractFiles($body) {
@@ -401,8 +369,8 @@ class PartExtractor extends GenericExtractor {
 	}
 
 	private function extractFileTitle($fileElem) {
-		if(!empty($fileElem->plaintext)) {
-			return $fileElem->plaintext;
+		if(!empty($fileElem->text())) {
+			return $fileElem->text();
 		} else {
 			$this->log('Failed to extract file name');
 		}
@@ -429,14 +397,6 @@ class PartExtractor extends GenericExtractor {
 			return getFileDirectUrlById($fileId);
 		} else {
 			$this->log('Failed to extract file url');
-		}
-	}
-
-	private function cleanEmojis(&$body) {
-		foreach($body->find('img.emoji') as $emojiElem) {
-			assertc(!empty($emojiElem->getAttribute('alt')), 'extractContent() failed to extract emojis');
-			$emoji = $emojiElem->getAttribute('alt');
-			$emojiElem->outertext = $emoji;
 		}
 	}
 

@@ -3,6 +3,7 @@
 use d7sd6u\VKPostsExtractorParser\Extractor;
 use d7sd6u\VKPostsTitleGenerator\Generator as TitleGenerator;
 use d7sd6u\VKPostsFormatterHTML5\Formatter;
+use DiDom\Document;
 
 class VkAlternativeBridge extends BridgeAbstract {
 	const NAME = 'Alternative VK.com bridge';
@@ -103,6 +104,7 @@ or check "Both", if you want content AND errors reports.',
 	const POST_CACHE_TIMEOUT = 3600; // 60 min
 
 	private $logs = array();
+	private $sourceName;
 
 	public function collectData() {
 		$showErrors = $this->getInput('showErrors');
@@ -112,6 +114,8 @@ or check "Both", if you want content AND errors reports.',
 		} catch(\Exception $e) {
 			returnServerError($e->getMessage());
 		}
+
+		$this->sourceName = $posts[0]['source'];
 
 		foreach($posts as $post) {
 			if(is_array($post)) {
@@ -129,18 +133,8 @@ or check "Both", if you want content AND errors reports.',
 	}
 
 	public function getName() {
-		$sourceId = $this->getInput('u');
-
-		if($sourceId != '') {
-			$sourceDom = getSimpleHTMLDOMCached("https://vk.com/$sourceId", 86400, array('Accept-language: en')); // max 24 hours timeout
-
-			if(count($sourceDom->find('.page_name')) !== 0) {
-				$nameRaw = $sourceDom->find('.page_name')[0]->plaintext;
-
-				return html_entity_decode($nameRaw, ENT_QUOTES | ENT_HTML5);
-			} else {
-				return self::NAME;
-			}
+		if($this->sourceName !== null) {
+			return $this->sourceName;
 		} else {
 			return self::NAME;
 		}
@@ -207,12 +201,15 @@ or check "Both", if you want content AND errors reports.',
 	
 		foreach($handles as $url => $handle) {
 			$str = curl_multi_getcontent($handle);
-	
-			$dom = str_get_html($str);
 
-			if($dom instanceof simple_html_dom) {
+			if(!mb_detect_encoding($str, 'UTF-8', true)) {
+				$str = iconv('windows-1251', 'utf-8//ignore', $str);
+			}
+
+			try {
+				$dom = new Document($str);
 				$doms[$url] = $dom;
-			} else {
+			} catch(\Exception $e) {
 				$doms[$url] = null;
 			}
 	

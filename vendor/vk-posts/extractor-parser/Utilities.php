@@ -25,14 +25,6 @@ function getFileDirectUrlById($fileId) {
 	return $fileUrl;
 }
 
-function cleanEmojis($body) {
-	foreach($body->find('img.emoji') as $emojiElem) {
-		assertc(!empty($emojiElem->getAttribute('alt')), 'extractContent() failed to extract emojis');
-		$emoji = $emojiElem->getAttribute('alt');
-		$emojiElem->outertext = $emoji;
-	}
-}
-
 function extractBackgroundImage($elem) {
 	preg_match('/background(-image)?: url\((.+?)\)/', $elem->getAttribute('style'), $matches);
 	assertc(isset($matches[2]), 'extractBackgroundImage() failed to extract image from element"');
@@ -49,14 +41,31 @@ function has($elem, ...$selectors) {
 
 // checks if any descendent of element matches selector and has not empty plaintext
 function check($elem, $selector) {
-	return has($elem, $selector) && !empty(trim($elem->find($selector)[0]->plaintext));
+	return has($elem, $selector) && !empty(trim($elem->first($selector)->text()));
+}
+
+function cleanUrls($dom) {
+	foreach($dom->findInDocument('a') as $link) {
+		// check if url in link is redirect, i.e. /away.php?to=<canonical url>&<some vk's parameters>
+		// first subexpression is canonical url: all chars after "/away.php?to=", except other possible parameters in "dirty" url
+		if(preg_match('#^/away.php\?to=(.*?)(&.*)*$#', $link->getAttribute('href'), $matches)) {
+			$clean_url = $matches[1];
+			$link->setAttribute('href', urldecode($clean_url));
+		}
+		// check if url is relative
+		if(preg_match('#^/.*$#', $link->getAttribute('href'), $matches)) {
+			$clean_url = 'https://vk.com' . $matches[0];
+			$link->setAttribute('href', $clean_url);
+		}
+	}
+	return $dom;
 }
 
 function hasAttr($elem, $attr, $selector = false) {
 	if($selector === false) {
 		return !empty(trim($elem->getAttribute($attr)));
 	} else {
-		return !empty(trim($elem->find($selector)[0]->getAttribute($attr)));
+		return !empty(trim($elem->first($selector)->getAttribute($attr)));
 	}
 }
 

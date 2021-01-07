@@ -51,7 +51,7 @@ class PostExtractor extends GenericExtractor {
 		
 		$this->postDom = $postDom;
 
-		$this->postBody = $this->postDom->find('.wall_post_cont')[0];
+		$this->postBody = cleanUrls($postDom->first('.wall_post_cont'));
 	}
 
 	public function setMobileDom($mobilePostDom) {
@@ -102,7 +102,7 @@ class PostExtractor extends GenericExtractor {
 	private function extractPostAuthor() {
 		$authorIsSpecified = has($this->postDom, '.wall_post_cont .wall_signed_by');
 		if($authorIsSpecified) {
-			return $this->postDom->find('.wall_post_cont .wall_signed_by')[0]->plaintext;
+			return $this->postDom->find('.wall_post_cont .wall_signed_by')[0]->text();
 		} else {
 			return $this->extractPostSource();
 		}
@@ -110,7 +110,7 @@ class PostExtractor extends GenericExtractor {
 
 	private function extractPostSource() {
 		if(has($this->postDom, '.post_author .author')) {
-			return $this->postDom->find('.post_author .author')[0]->plaintext;
+			return $this->postDom->find('.post_author .author')[0]->text();
 		} else {
 			$this->log('Failed to extract post\'s source');
 			return null;
@@ -130,7 +130,7 @@ class PostExtractor extends GenericExtractor {
 	}
 
 	private function extractPostOriginName($originElem) {
-		if(preg_match('/^Source: (.*)$/', $originElem->plaintext, $matches)) {
+		if(preg_match('/^Source: (.*)$/', $originElem->text(), $matches)) {
 			return $matches[1];
 		} else {
 			$this->log('Failed to extract post\'s origin name');
@@ -159,7 +159,7 @@ class PostExtractor extends GenericExtractor {
 		$links = $this->postBody->find('.wall_post_text > a');
 		foreach($links as $link) {
 			// if link is valid tag: #<tag's word chars(classic word char and all unicode letters)>@<optional group name's chars>
-			if(preg_match('/^#([\w\pL]+)(@[\w\pL]+)?$/u', $link->plaintext, $matches)) {
+			if(preg_match('/^#([\w\pL]+)(@[\w\pL]+)?$/u', $link->text(), $matches)) {
 				$categories[] = $matches[1]; // then take real tag
 			}
 		}
@@ -217,8 +217,8 @@ class PostExtractor extends GenericExtractor {
 
 	private function extractPostMapTitle($mapElem) {
 		if(has($this->mobilePostDom, '.medias_map_first_line', '.medias_map_second_line')) {
-			$firstLine = $this->mobilePostDom->find('.medias_map_first_line')[0]->plaintext;
-			$secondLine = $this->mobilePostDom->find('.medias_map_second_line')[0]->plaintext;
+			$firstLine = $this->mobilePostDom->find('.medias_map_first_line')[0]->text();
+			$secondLine = $this->mobilePostDom->find('.medias_map_second_line')[0]->text();
 
 			return (empty($firstLine) ? 'Unknown' : $firstLine) . ', ' . (empty($secondLine) ? 'Unknown' : $secondLine);
 		} else {
@@ -254,7 +254,7 @@ class PostExtractor extends GenericExtractor {
 
 	private function extractPostShrinkedMapTitle($mapElem) {
 		if(has($mapElem, '.medias_link_title')) {
-			return $mapElem->find('.medias_link_title')[0]->plaintext;
+			return $mapElem->find('.medias_link_title')[0]->text();
 		} else {
 			$this->log('Failed to extract shrinked map title');
 		}
@@ -285,7 +285,7 @@ class PostExtractor extends GenericExtractor {
 
 	private function extractPostPoolTitle($poolElem) {
 		if(has($poolElem, '.media_voting_question')) {
-			return $poolElem->find('.media_voting_question')[0]->plaintext;
+			return $poolElem->find('.media_voting_question')[0]->text();
 		} else {
 			$this->log('Failed to extract pool title');
 		}
@@ -293,7 +293,7 @@ class PostExtractor extends GenericExtractor {
 
 	private function extractPostPoolAuthor($poolElem) {
 		if(has($poolElem, '.media_voting_author')) {
-			return $poolElem->find('.media_voting_author')[0]->plaintext;
+			return $poolElem->find('.media_voting_author')[0]->text();
 		} else {
 			$this->log('Failed to extract pool author');
 		}
@@ -301,7 +301,7 @@ class PostExtractor extends GenericExtractor {
 
 	private function extractPostPoolType($poolElem) {
 		if(has($poolElem, '.media_voting_subtitle')) {
-			return $poolElem->find('.media_voting_subtitle')[0]->plaintext;
+			return $poolElem->find('.media_voting_subtitle')[0]->text();
 		} else {
 			$this->log('Failed to extract pool type');
 		}
@@ -312,9 +312,7 @@ class PostExtractor extends GenericExtractor {
 			$options = array();
 
 			foreach($poolElem->find('.media_voting_option_text') as $optionElem) {
-				// again innertext is buggy and removes all cyrillic chars from innertext, so using outertext
-				preg_match('/>(.*?)</u', $optionElem->outertext, $matches);
-				$options[] = $matches[1];
+				$options[] = $optionElem->firstChild()->text();
 			}
 
 			return $options;
@@ -326,7 +324,7 @@ class PostExtractor extends GenericExtractor {
 	private function extractPostPoolTotal($poolElem) {
 		$hasTotal = has($this->postBody, '._media_voting_footer_voted_text b');
 		if($hasTotal) {
-			return $this->postBody->find('._media_voting_footer_voted_text b')[0]->plaintext;
+			return $this->postBody->find('._media_voting_footer_voted_text b')[0]->text();
 		} else {
 			return 0;
 		}
@@ -346,7 +344,7 @@ class PostExtractor extends GenericExtractor {
 
 	private function extractPostPosterText($posterElem) {
 		if(has($posterElem, '.poster__text')) {
-			return $posterElem->find('.poster__text')[0]->plaintext;
+			return $posterElem->find('.poster__text')[0]->text();
 		} else {
 			$this->log('Failed to extract poster text');
 		}
@@ -390,7 +388,7 @@ class PostExtractor extends GenericExtractor {
 
 	private function extractPostThumbedLinkTitle($linkElem) {
 		if(has($linkElem, '.thumbed_link__title')) {
-			return $linkElem->find('.thumbed_link__title')[0]->plaintext;
+			return $linkElem->find('.thumbed_link__title')[0]->text();
 		} else {
 			$this->log('Failed to extract thumbed link title');
 		}
@@ -418,7 +416,7 @@ class PostExtractor extends GenericExtractor {
 
 	private function extractPostMediaLinkTitle($linkElem) {
 		if(has($linkElem, '.media_link__title')) {
-			return $linkElem->find('.media_link__title')[0]->plaintext;
+			return $linkElem->find('.media_link__title')[0]->text();
 		} else {
 			$this->log('Failed to extract media link title');
 		}
@@ -602,7 +600,7 @@ class PostExtractor extends GenericExtractor {
 
 	private function extractPostRepostedCommentAuthor($repostElem) {
 		if(has($repostElem, '.copy_author')) {
-			return $repostElem->find('.copy_author')[0]->plaintext;
+			return $repostElem->find('.copy_author')[0]->text();
 		} else {
 			$this->log('Failed to extract reposted comment author');
 		}

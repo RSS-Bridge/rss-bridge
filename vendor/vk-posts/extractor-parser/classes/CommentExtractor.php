@@ -41,7 +41,7 @@ class CommentExtractor extends GenericExtractor {
 	}
 
 	public function setComment($commentElem) {
-		$this->commentElem = $commentElem;
+		$this->commentElem = cleanUrls($commentElem);
 	}
 
 	public function extractComment() {
@@ -105,7 +105,7 @@ class CommentExtractor extends GenericExtractor {
 
 	private function extractCommentAuthorName() {
 		if(has($this->commentElem, '.author')) {
-			return $this->commentElem->find('.author')[0]->plaintext;
+			return $this->commentElem->first('.author')->text();
 		} else {
 			$this->log('Failed to extract comment author name');
 		}
@@ -113,7 +113,7 @@ class CommentExtractor extends GenericExtractor {
 
 	private function extractCommentAuthorLink() {
 		if(hasAttr($this->commentElem, 'href', '.reply_image')) {
-			return 'https://vk.com' . $this->commentElem->find('.reply_image')[0]->getAttribute('href');
+			return $this->commentElem->first('.reply_image')->getAttribute('href');
 		} else {
 			$this->log('Failed to extract comment author link');
 		}
@@ -121,7 +121,7 @@ class CommentExtractor extends GenericExtractor {
 
 	private function extractCommentAuthorAvatar() {
 		if(hasAttr($this->commentElem, 'src', '.reply_img')) {
-			return $this->commentElem->find('.reply_img')[0]->getAttribute('src');
+			return $this->commentElem->first('.reply_img')->getAttribute('src');
 		} else {
 			$this->log('Failed to extract comment author avatar');
 		}
@@ -133,7 +133,7 @@ class CommentExtractor extends GenericExtractor {
 
 	private function extractCommentLikes() {
 		if(has($this->commentElem, '.like_button_count')) {
-			$likes = $this->commentElem->find('.like_button_count')[0]->plaintext;
+			$likes = $this->commentElem->first('.like_button_count')->text();
 			return empty($likes) ? 0 : $likes;
 		} else {
 			$this->log('extractCommentLikes() failed to find .like_button_count');
@@ -158,7 +158,7 @@ class CommentExtractor extends GenericExtractor {
 
 	private function extractCommentTimestamp() {
 		if(has($this->commentElem, '.rel_date')) {
-			$timestampElem = $this->commentElem->find('.rel_date')[0];
+			$timestampElem = $this->commentElem->first('.rel_date');
 			return $this->partExtractor->extractTimestamp($timestampElem);
 		} else {
 			$this->log('extractCommentTimestamp() failed to find .rel_date');
@@ -168,14 +168,14 @@ class CommentExtractor extends GenericExtractor {
 	private function extractCommentReplyId() {
 		if(has($this->commentElem, '.reply_to')) {
 			preg_match('/return wall\.showReply\(this, \'-?\d+_\d+\', \'(-?\d+_\d+)\'/',
-				$this->commentElem->find('.reply_to')[0]->getAttribute('onclick'),
+				$this->commentElem->first('.reply_to')->getAttribute('onclick'),
 				$matches);
 
 			$id = $matches[1];
 		// else this comment is...
 		} elseif(has($this->commentElem, '.wd_lnk')) {
 			preg_match('/wall(-?\d+_)\d+\?reply=(\d+)(&thread=(\d+))?/',
-				$this->commentElem->find('.wd_lnk')[0]->getAttribute('href'), $matches);
+				$this->commentElem->first('.wd_lnk')->getAttribute('href'), $matches);
 
 			if(isset($matches[4])) {
 				$id = $matches[1] . $matches[4]; // reply to a branch root
