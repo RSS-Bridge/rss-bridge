@@ -31,17 +31,28 @@ function extractBackgroundImage($elem) {
 	return $matches[2];
 }
 
-function has($elem, ...$selectors) {
-	$cond = true;
-	foreach($selectors as $selector) {
-		$cond = $cond && count($elem->find($selector)) != 0;
+function has($elem, $selector, &$first = null) {
+	$results = $elem->find($selector);
+	if(count($results) > 0) {
+		$first = $results[0];
+		return true;
+	} else {
+		return false;
 	}
-	return $cond;
 }
 
-// checks if any descendent of element matches selector and has not empty plaintext
-function check($elem, $selector) {
-	return has($elem, $selector) && !empty(trim($elem->first($selector)->text()));
+// checks if any descendent of element matches selector and has plaintext
+function check($elem, $selector, &$plaintext = null) {
+	if(has($elem, $selector, $target)) {
+		$plaintext = $target->text();
+		if(!empty(trim($plaintext))) {
+			return true;
+		} else {
+			return false;
+		}
+	} else {
+		return false;
+	}
 }
 
 function cleanUrls($dom) {
@@ -61,11 +72,17 @@ function cleanUrls($dom) {
 	return $dom;
 }
 
-function hasAttr($elem, $attr, $selector = false) {
+function hasAttr($elem, $attr, $selector = false, &$result = null) {
 	if($selector === false) {
-		return !empty(trim($elem->getAttribute($attr)));
+		$result = $elem->getAttribute($attr);
+		return !empty(trim($result));
 	} else {
-		return !empty(trim($elem->first($selector)->getAttribute($attr)));
+		if(has($elem, $selector, $target)) {
+			$result = $target->getAttribute($attr);
+			return !empty(trim($result));
+		} else {
+			return false;
+		}
 	}
 }
 

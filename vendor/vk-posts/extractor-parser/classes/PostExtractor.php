@@ -52,11 +52,11 @@ class PostExtractor extends GenericExtractor {
 	}
 
 	public function setDom($postDom) {
-		assertc(has($postDom, '.wall_post_cont'), 'setDom() failed to find .wall_post_cont');
+		assertc(has($postDom, '.wall_post_cont', $contElem), 'setDom() failed to find .wall_post_cont');
 		
 		$this->postDom = $postDom;
 
-		$this->postBody = cleanUrls($postDom->first('.wall_post_cont'));
+		$this->postBody = cleanUrls($contElem);
 
 		$this->post = array();
 	}
@@ -64,9 +64,8 @@ class PostExtractor extends GenericExtractor {
 	public function getNeededUrls() {
 		$urls = array();
 		
-		$hasRepost = has($this->postDom, '.copy_quote');
+		$hasRepost = has($this->postDom, '.copy_quote', $repostElem);
 		if($hasRepost) {
-			$repostElem = $this->postDom->first('.copy_quote');
 			$repostUrl = $this->extractPostRepostUrl($repostElem);
 			$repostIsComment = preg_match('/wall(-?\d+_\d+).+reply=\d+/', $repostUrl, $matches);
 			if(!$repostIsComment) {
@@ -126,17 +125,17 @@ class PostExtractor extends GenericExtractor {
 	}
 
 	private function extractPostAuthor() {
-		$authorIsSpecified = has($this->postDom, '.wall_post_cont .wall_signed_by');
+		$authorIsSpecified = has($this->postDom, '.wall_post_cont .wall_signed_by', $authorElem);
 		if($authorIsSpecified) {
-			return $this->postDom->find('.wall_post_cont .wall_signed_by')[0]->text();
+			return $authorElem->text();
 		} else {
 			return $this->extractPostSource();
 		}
 	}
 
 	private function extractPostSource() {
-		if(has($this->postDom, '.post_author .author')) {
-			return $this->postDom->find('.post_author .author')[0]->text();
+		if(has($this->postDom, '.post_author .author', $sourceElem)) {
+			return $sourceElem->text();
 		} else {
 			$this->log('Failed to extract post\'s source');
 			return null;
@@ -145,10 +144,8 @@ class PostExtractor extends GenericExtractor {
 
 	private function extractPostOrigin() {
 		$origin = array();
-		$hasOrigin = has($this->postDom, '.Post__copyrightLink');
+		$hasOrigin = has($this->postDom, '.Post__copyrightLink', $originElem);
 		if($hasOrigin) {
-			$originElem = $this->postDom->find('.Post__copyrightLink')[0];
-
 			$origin['name'] = $this->extractPostOriginName($originElem);
 			$origin['link'] = $this->extractPostOriginLink($originElem);
 		}
@@ -164,16 +161,15 @@ class PostExtractor extends GenericExtractor {
 	}
 
 	private function extractPostOriginLink($originElem) {
-		if(hasAttr($originElem, 'href')) {
-			return $originElem->getAttribute('href');
+		if(hasAttr($originElem, 'href', false, $hrefAttr)) {
+			return $hrefAttr;
 		} else {
 			$this->log('extractOrigin() failed to extract origin\'s link');
 		}
 	}
 
 	private function extractPostTimestamp() {
-		if(has($this->postDom, '.post_header .rel_date')) {
-			$timestampElem = $this->postDom->find('.post_header .rel_date')[0];
+		if(has($this->postDom, '.post_header .rel_date', $timestampElem)) {
 			return $this->partExtractor->extractTimestamp($timestampElem);
 		} else {
 			$this->log('Failed to find timestamp element');
@@ -215,37 +211,35 @@ class PostExtractor extends GenericExtractor {
 	private function extractPostMap() {
 		$map = array();
 		if(has($this->postBody, '.page_media_place')) {
-			$mobilePostDom = $this->getDom(getMobilePostUrlFromId($this->extractPostId()));
 			// if post has other media other than map, than map will be hidden, but on mobile version that is not the case
 			// ...also desktop version doesn't have link to map, therefore extracting map from mobile version
-			$isNormalMap = has($mobilePostDom, '.medias_map');
-			// sometimes map is shrinked down even on mobile
-			$isShrinkedMap = has($mobilePostDom, '.medias_link[href*="https://maps.google.com"]');
+			$mobilePostDom = $this->getDom(getMobilePostUrlFromId($this->extractPostId()));
 
+			$isNormalMap = has($mobilePostDom, '.medias_map', $mapElem);
 			if($isNormalMap) {
-				$mapElem = $mobilePostDom->find('.medias_map')[0];
-
 				$map['text'] = $this->extractPostMapText($mapElem);
 				$map['image'] = $this->extractPostMapImage($mapElem);
 				$map['url'] = $this->extractPostMapUrl($mapElem);
-			} elseif($isShrinkedMap) {
-				$mapElem = $mobilePostDom->find('.medias_link[href*="https://maps.google.com"]')[0];
-
-				$map['text'] = $this->extractPostShrinkedMapTitle($mapElem);
-				$map['image'] = null;
-				$map['url'] = $this->extractPostShrinkedMapUrl($mapElem);
 			} else {
-				$this->log('Failed to extract map');
-				return null;
+				// sometimes map is shrinked down even on mobile
+				$isShrinkedMap = has($mobilePostDom, '.medias_link[href*="https://maps.google.com"]', $mapElem);
+				if($isShrinkedMap) {
+					$map['text'] = $this->extractPostShrinkedMapTitle($mapElem);
+					$map['image'] = null;
+					$map['url'] = $this->extractPostShrinkedMapUrl($mapElem);
+				} else {
+					$this->log('Failed to extract map');
+					return null;
+				}
 			}
 		}
 		return $map;
 	}
 
 	private function extractPostMapTitle($mapElem) {
-		if(has($mapElem, '.medias_map_first_line', '.medias_map_second_line')) {
-			$firstLine = $mapElem->find('.medias_map_first_line')[0]->text();
-			$secondLine = $mapElem->find('.medias_map_second_line')[0]->text();
+		if(has($mapElem, '.medias_map_first_line', $firstElem) && has($mapElem, '.medias_map_second_line', $secondElem)) {
+			$firstLine = $firstElem->text();
+			$secondLine = $secondElem->text();
 
 			return (empty($firstLine) ? 'Unknown' : $firstLine) . ', ' . (empty($secondLine) ? 'Unknown' : $secondLine);
 		} else {
@@ -254,9 +248,7 @@ class PostExtractor extends GenericExtractor {
 	}
 
 	private function extractPostMapImage($mapElem) {
-		if(has($mapElem, '.medias_map_img')) {
-			$imageElem = $mapElem->find('.medias_map_img')[0];
-
+		if(has($mapElem, '.medias_map_img', $imageElem)) {
 			try {
 				$rawImage = 'https:' . extractBackgroundImage($imageElem);
 			} catch (\Exception $e) {
@@ -272,24 +264,24 @@ class PostExtractor extends GenericExtractor {
 	}
 
 	private function extractPostMapUrl($mapElem) {
-		if(hasAttr($mapElem, 'href', '.medias_map_fill')) {
-			return $mapElem->find('.medias_map_fill')[0]->getAttribute('href');
+		if(hasAttr($mapElem, 'href', '.medias_map_fill', $hrefAttr)) {
+			return $hrefAttr;
 		} else {
 			$this->log('Failed to extract map url');
 		}
 	}
 
 	private function extractPostShrinkedMapTitle($mapElem) {
-		if(has($mapElem, '.medias_link_title')) {
-			return $mapElem->find('.medias_link_title')[0]->text();
+		if(has($mapElem, '.medias_link_title', $titleElem)) {
+			return $titleElem->text();
 		} else {
 			$this->log('Failed to extract shrinked map title');
 		}
 	}
 
 	private function extractPostShrinkedMapUrl($mapElem) {
-		if(hasAttr($mapElem, 'href')) {
-			return $mapElem->getAttribute('href');
+		if(hasAttr($mapElem, 'href', $hrefAttr)) {
+			return $hrefAttr;
 		} else {
 			$this->log('Failed to extract shrinked map url');
 		}
@@ -297,10 +289,8 @@ class PostExtractor extends GenericExtractor {
 
 	private function extractPostPool() {
 		$pool = array();
-		$hasPool = has($this->postBody, '.post_media_voting');
+		$hasPool = has($this->postBody, '.post_media_voting', $poolElem);
 		if($hasPool) {
-			$poolElem = $this->postBody->find('.post_media_voting')[0];
-
 			$pool['title'] = $this->extractPostPoolTitle($poolElem);
 			$pool['author'] = $this->extractPostPoolAuthor($poolElem);
 			$pool['type'] = $this->extractPostPoolType($poolElem);
@@ -311,24 +301,24 @@ class PostExtractor extends GenericExtractor {
 	}
 
 	private function extractPostPoolTitle($poolElem) {
-		if(has($poolElem, '.media_voting_question')) {
-			return $poolElem->find('.media_voting_question')[0]->text();
+		if(has($poolElem, '.media_voting_question', $questionElem)) {
+			return $questionElem->text();
 		} else {
 			$this->log('Failed to extract pool title');
 		}
 	}
 
 	private function extractPostPoolAuthor($poolElem) {
-		if(has($poolElem, '.media_voting_author')) {
-			return $poolElem->find('.media_voting_author')[0]->text();
+		if(has($poolElem, '.media_voting_author', $authorElem)) {
+			return $authorElem->text();
 		} else {
 			$this->log('Failed to extract pool author');
 		}
 	}
 
 	private function extractPostPoolType($poolElem) {
-		if(has($poolElem, '.media_voting_subtitle')) {
-			return $poolElem->find('.media_voting_subtitle')[0]->text();
+		if(has($poolElem, '.media_voting_subtitle', $subtitleElem)) {
+			return $subtitleElem->text();
 		} else {
 			$this->log('Failed to extract pool type');
 		}
@@ -349,9 +339,9 @@ class PostExtractor extends GenericExtractor {
 	}
 
 	private function extractPostPoolTotal($poolElem) {
-		$hasTotal = has($this->postBody, '._media_voting_footer_voted_text b');
+		$hasTotal = has($this->postBody, '._media_voting_footer_voted_text b', $totalElem);
 		if($hasTotal) {
-			return $this->postBody->find('._media_voting_footer_voted_text b')[0]->text();
+			return $totalElem->text();
 		} else {
 			return 0;
 		}
@@ -359,10 +349,8 @@ class PostExtractor extends GenericExtractor {
 
 	private function extractPostPoster() {
 		$poster = array();
-		$hasPoster = has($this->postBody, '.poster');
+		$hasPoster = has($this->postBody, '.poster', $posterElem);
 		if($hasPoster) {
-			$posterElem = $this->postBody->find('.poster')[0];
-
 			$poster['text'] = $this->extractPostPosterText($posterElem);
 			$poster['image'] = $this->extractPostPosterImage($posterElem);
 		}
@@ -370,17 +358,17 @@ class PostExtractor extends GenericExtractor {
 	}
 
 	private function extractPostPosterText($posterElem) {
-		if(has($posterElem, '.poster__text')) {
-			return $posterElem->find('.poster__text')[0]->text();
+		if(has($posterElem, '.poster__text', $textElem)) {
+			return $textElem->text();
 		} else {
 			$this->log('Failed to extract poster text');
 		}
 	}
 
 	private function extractPostPosterImage($posterElem) {
-		if(has($posterElem, '.poster__image')) {
+		if(has($posterElem, '.poster__image', $imageElem)) {
 			try {
-				return extractBackgroundImage($posterElem->find('.poster__image')[0]);
+				return extractBackgroundImage($imageElem);
 			} catch (\Exception $e) {
 				$this->log('Failed to extract background image in extractPostPosterImage(): ' . $e->getMessage());
 			}
@@ -396,15 +384,11 @@ class PostExtractor extends GenericExtractor {
 	private function extractPostExpandedLink() {
 		$link = array();
 
-		if(has($this->postBody, '.thumbed_link')) {
-			$linkElem = $this->postBody->find('.thumbed_link')[0];
-
+		if(has($this->postBody, '.thumbed_link', $linkElem)) {
 			$link['title'] = $this->extractPostThumbedLinkTitle($linkElem);
 			$link['url'] = $this->extractPostThumbedLinkUrl($linkElem);
 			$link['image'] = $this->extractPostThumbedLinkImage($linkElem);
-		} elseif(has($this->postBody, '.media_link')) {
-			$linkElem = $this->postBody->find('.media_link')[0];
-
+		} elseif(has($this->postBody, '.media_link', $linkElem)) {
 			$link['title'] = $this->extractPostMediaLinkTitle($linkElem);
 			$link['url'] = $this->extractPostMediaLinkUrl($linkElem);
 			$link['image'] = $this->extractPostMediaLinkImage($linkElem);
@@ -414,25 +398,25 @@ class PostExtractor extends GenericExtractor {
 	}
 
 	private function extractPostThumbedLinkTitle($linkElem) {
-		if(has($linkElem, '.thumbed_link__title')) {
-			return $linkElem->find('.thumbed_link__title')[0]->text();
+		if(has($linkElem, '.thumbed_link__title', $titleElem)) {
+			return $titleElem->text();
 		} else {
 			$this->log('Failed to extract thumbed link title');
 		}
 	}
 
 	private function extractPostThumbedLinkUrl($linkElem) {
-		if(hasAttr($linkElem, 'href', '.thumbed_link__title')) {
-			return $linkElem->find('.thumbed_link__title')[0]->getAttribute('href');
+		if(hasAttr($linkElem, 'href', '.thumbed_link__title', $hrefAttr)) {
+			return $hrefAttr;
 		} else {
 			$this->log('Failed to extract thumbed link url');
 		}
 	}
 
 	private function extractPostThumbedLinkImage($linkElem) {
-		if(has($linkElem, '.thumbed_link__thumb')) {
+		if(has($linkElem, '.thumbed_link__thumb', $thumbElem)) {
 			try {
-				return extractBackgroundImage($linkElem->find('.thumbed_link__thumb')[0]);
+				return extractBackgroundImage($thumbElem);
 			} catch (\Exception $e) {
 				$this->log('Failed to extract background image in extractPostThumbedLinkImage(): ' . $e->getMessage());
 			}
@@ -442,33 +426,31 @@ class PostExtractor extends GenericExtractor {
 	}
 
 	private function extractPostMediaLinkTitle($linkElem) {
-		if(has($linkElem, '.media_link__title')) {
-			return $linkElem->find('.media_link__title')[0]->text();
+		if(has($linkElem, '.media_link__title', $titleElem)) {
+			return $titleElem->text();
 		} else {
 			$this->log('Failed to extract media link title');
 		}
 	}
 
 	private function extractPostMediaLinkUrl($linkElem) {
-		if(hasAttr($linkElem, 'href', '.media_link__media')) {
-			return $linkElem->find('.media_link__media')[0]->getAttribute('href');
+		if(hasAttr($linkElem, 'href', '.media_link__media', $hrefAttr)) {
+			return $hrefAttr;
 		} else {
 			$this->log('Failed to extract media link url');
 		}
 	}
 
 	private function extractPostMediaLinkImage($linkElem) {
-		if(hasAttr($linkElem, 'src', '.media_link__photo')) {
-			return $linkElem->find('.media_link__photo')[0]->getAttribute('src');
+		if(hasAttr($linkElem, 'src', '.media_link__photo', $srcAttr)) {
+			return $srcAttr;
 		} else {
 			$this->log('Failed to extract media link image');
 		}
 	}
 
 	private function extractPostId() {
-		if(has($this->postDom, '.post')) {
-			$postElem = $this->postDom->find('.post')[0];
-
+		if(has($this->postDom, '.post', $postElem)) {
 			$postId = substr($postElem->getAttribute('id'), 4);
 
 			if(preg_match('/^-?\d+_\d+$/', $postId)) {
@@ -495,12 +477,10 @@ class PostExtractor extends GenericExtractor {
 	private function extractPostComments() {
 		$comments = array();
 
-		if(!has($this->postDom, '.replies_list')) {
+		if(!has($this->postDom, '.replies_list', $commentsElem)) {
 			$this->log('Failed to extract comments');
 			return null;
 		}
-
-		$commentsElem = $this->postDom->find('.replies_list')[0];
 
 		foreach($commentsElem->children() as $branchPart) {
 			// if it is branch root
@@ -525,14 +505,14 @@ class PostExtractor extends GenericExtractor {
 	}
 
 	private function extractPostCommentsBranchRemainder($remainderElem) {
-		if(has($remainderElem, '.reply')) {
-			$remainder = array();
+		$remainder = array();
 
-			foreach($remainderElem->find('.reply') as $commentElem) {
-				$this->commentExtractor->setComment($commentElem);
-				$remainder[] = $this->commentExtractor->extractComment();
-			}
+		foreach($remainderElem->find('.reply') as $commentElem) {
+			$this->commentExtractor->setComment($commentElem);
+			$remainder[] = $this->commentExtractor->extractComment();
+		}
 
+		if(!empty($remainder)) {
 			return $remainder;
 		} else {
 			$this->log('Failed to extract comment branch remainder');
@@ -541,10 +521,8 @@ class PostExtractor extends GenericExtractor {
 
 	private function extractPostRepost() {
 		$repost = array();
-		$hasRepost = has($this->postDom, '.copy_quote');
+		$hasRepost = has($this->postDom, '.copy_quote', $repostElem);
 		if($hasRepost) {
-			$repostElem = $this->postDom->find('.copy_quote')[0];
-
 			$repostId = $this->extractPostRepostId($repostElem);
 			$repostUrl = $this->extractPostRepostUrl($repostElem);
 
@@ -568,23 +546,23 @@ class PostExtractor extends GenericExtractor {
 	}
 
 	private function extractPostRepostId($repostElem) {
-		if(hasAttr($repostElem, 'data-post-id', '.copy_author')) {
-			return $repostElem->find('.copy_author')[0]->getAttribute('data-post-id');
+		if(hasAttr($repostElem, 'data-post-id', '.copy_author', $dataAttr)) {
+			return $dataAttr;
 		} else {
 			$this->log('Failed to extract repost id');
 		}
 	}
 
 	private function extractPostRepostUrl($repostElem) {
-		if(hasAttr($this->postDom, 'href', '.copy_post_date .published_by_date')) {
-			return 'https://vk.com' . $this->postDom->find('.copy_post_date .published_by_date')[0]->getAttribute('href');
+		if(hasAttr($this->postDom, 'href', '.copy_post_date .published_by_date', $hrefAttr)) {
+			return 'https://vk.com' . $hrefAttr;
 		} else {
 			$this->log('Failed to extract repost url');
 		}
 	}
 
 	private function extractPostRepostedComment() {
-		$repostElem = $this->postDom->find('.copy_quote')[0];
+		$repostElem = $this->postDom->first('.copy_quote');
 
 		$repost = array();
 
@@ -621,51 +599,34 @@ class PostExtractor extends GenericExtractor {
 	}
 
 	private function extractPostRepostedCommentId($repostElem) {
-		if(hasAttr($repostElem, 'data-post-id', '.copy_author')) {
-			return $repostElem->find('.copy_author')[0]->getAttribute('data-post-id');
+		if(hasAttr($repostElem, 'data-post-id', '.copy_author', $dataAttr)) {
+			return $dataAttr;
 		} else {
 			$this->log('Failed to extract reposted comment id');
 		}
 	}
 
 	private function extractPostRepostedCommentAuthor($repostElem) {
-		if(has($repostElem, '.copy_author')) {
-			return $repostElem->find('.copy_author')[0]->text();
+		if(has($repostElem, '.copy_author', $authorElem)) {
+			return $authorElem->text();
 		} else {
 			$this->log('Failed to extract reposted comment author');
 		}
 	}
 
 	private function extractPostRepostedCommentTimestamp($repostElem) {
-		if(has($repostElem, '.copy_post_date .published_by_date')) {
-			return $this->partExtractor->extractTimestamp($repostElem->find('.copy_post_date .published_by_date')[0]);
+		if(has($repostElem, '.copy_post_date .published_by_date', $timestampElem)) {
+			return $this->partExtractor->extractTimestamp($timestampElem);
 		} else {
 			$this->log('Failed to extract reposted comment timestamp');
 		}
 	}
 
 	private function extractPostRepostedCommentUrl($repostElem) {
-		if(hasAttr($repostElem, 'href', '.copy_post_date .published_by_date')) {
-			return $repostElem->find('.copy_post_date .published_by_date')[0]->getAttribute('href');
+		if(hasAttr($repostElem, 'href', '.copy_post_date .published_by_date', $hrefAttr)) {
+			return $hrefAttr;
 		} else {
 			$this->log('Failed to extract reposted comment url');
 		}
-	}
-
-	private function extractPostRepostedPost($repostId) {
-		$predownloadedGetDoms = function($urls, $context) {
-			$cacheHits = array();
-			foreach ($urls as $pos => $url) {
-				if(array_key_exists($url, $this->predownloadedUrls)) {
-					$cacheHits[$url] = $this->predownloadedUrls($url);
-					unset($urls[$pos]);
-				}
-			}
-			$cacheMisses = ($this->getDoms)($urls);
-			foreach ($cacheMisses as $url => $dom) {
-				$this->predownloadedUrls[$url] = $dom;
-			}
-			return array_merge($cacheHits, $cacheMisses);
-		};
 	}
 }

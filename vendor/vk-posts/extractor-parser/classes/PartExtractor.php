@@ -148,24 +148,24 @@ class PartExtractor extends GenericExtractor {
 	}
 
 	private function extractArticleTitle($body) {
-		if(has($body, '.article_snippet__title')) {
-			return $body->first('.article_snippet__title')->text();
+		if(has($body, '.article_snippet__title', $titleElem)) {
+			return $titleElem->text();
 		} else {
 			$this->log('Failed to extract article title');
 		}
 	}
 
 	private function extractArticleAuthor($body) {
-		if(has($body, '.article_snippet__author')) {
-			return $body->first('.article_snippet__author')->text();
+		if(has($body, '.article_snippet__author', $authorElem)) {
+			return $authorElem->text();
 		} else {
 			$this->log('Failed to extract article author');
 		}
 	}
 
 	private function extractArticleUrl($body) {
-		if(hasAttr($body, 'href', '.article_snippet')) {
-			return $body->first('.article_snippet')->getAttribute('href');
+		if(hasAttr($body, 'href', '.article_snippet', $hrefAttr)) {
+			return $hrefAttr;
 		} else {
 			$this->log('Failed to extract article url');
 		}
@@ -173,8 +173,8 @@ class PartExtractor extends GenericExtractor {
 
 	private function extractArticleImage($body) {
 		try {
-			assertc(has($body, '.article_snippet__image'), 'Failed to extract article image');
-			return extractBackgroundImage($body->first('.article_snippet__image'));
+			assertc(has($body, '.article_snippet__image', $imageElem), 'Failed to extract article image');
+			return extractBackgroundImage($imageElem);
 		} catch(\Exception $e) {
 			$this->log($e->getMessage());
 		}
@@ -258,12 +258,13 @@ class PartExtractor extends GenericExtractor {
 	}
 
 	private function extractVideoUrls($videoDom) {
-		if(has($videoDom, 'source')) {
+		$sourceElems = $videoDom->find('source');
+		if(count($sourceElems) > 0) {
 			$urls = array();
 
-			foreach($videoDom->find('source') as $sourceElem) {
-				if(hasAttr($sourceElem, 'src')) {
-					$source = $sourceElem->getAttribute('src');
+			foreach($sourceElems as $sourceElem) {
+				if(hasAttr($sourceElem, 'src', false, $srcAttr)) {
+					$source = $srcAttr;
 
 					if(!preg_match('/video_hls\.php/', $source)) {
 						$urls[] = $source;
@@ -283,12 +284,13 @@ class PartExtractor extends GenericExtractor {
 	}
 
 	private function extractVideoIframe($videoDom) {
-		$isIframe = has($videoDom, '.VideoPage__video iframe');
+		$isIframe = has($videoDom, '.VideoPage__video iframe', $iframeElem);
 		if($isIframe) {
-			if(hasAttr($videoDom, 'src', '.VideoPage__video iframe')) {
-				return 'https:' . $videoDom->first('.VideoPage__video iframe')->getAttribute('src');
+			$url = 'https:' . $iframeElem->getAttribute('src');
+			if(preg_match('#^https://+?#', $url)) {
+				return $url;
 			} else {
-				$this->log('In extractVideos() iframe\'s "src" attribute is empty or doesn\'t exist');
+				$this->log('extractVideoIframe() failed to extract valid iframe url');
 			}
 		}
 	}
@@ -307,8 +309,8 @@ class PartExtractor extends GenericExtractor {
 	}
 
 	private function extractAudioTitle($audioElem) {
-		if(check($audioElem, '.audio_row__performer_title a')) {
-			return $audioElem->first('.audio_row__performer_title a')->text();
+		if(check($audioElem, '.audio_row__performer_title a', $text)) {
+			return $text;
 		} else {
 			$this->log('Failed to extract audio title');
 		}
@@ -377,8 +379,8 @@ class PartExtractor extends GenericExtractor {
 	}
 
 	private function extractFileNativeUrl($fileElem) {
-		if(hasAttr($fileElem, 'href')) {
-			return $fileElem->getAttribute('href');
+		if(hasAttr($fileElem, 'href', false, $hrefAttr)) {
+			return $hrefAttr;
 		} else {
 			$this->log('Failed to extract file native url');
 		}
@@ -402,9 +404,7 @@ class PartExtractor extends GenericExtractor {
 
 	private function extractImage($elem) {
 		try {
-			assertc(hasAttr($elem, 'onclick'), 'extractImage() failed to find "onclick" attribute');
-
-			$attr = $elem->getAttribute('onclick');
+			assertc(hasAttr($elem, 'onclick', false, $attr), 'extractImage() failed to find "onclick" attribute');
 
 			$image = array();
 
