@@ -35,18 +35,25 @@ class Formatter {
 		} else {
 			$content = $this->post['text']['html'];
 		}
+		if(!empty($content)) {
+			$content .= '<br/><br/>';
+		}
 
-		$content .= $this->formatImages($this->post['images']);
-		$content .= $this->formatVideos($this->post['videos']);
-		$content .= $this->formatFiles($this->post['files']);
-		$content .= $this->formatAudios($this->post['audios']);
-		$content .= $this->formatPool();
-		$content .= $this->formatArticle();
-		$content .= $this->formatMap();
-		$content .= $this->formatPoster();
-		$content .= $this->formatExpandedLink();
-		$content .= $this->formatRepost();
-		$content .= $this->formatOrigin();
+		$pieces = array();
+
+		$pieces[] = $this->formatImages($this->post['images']);
+		$pieces[] = $this->formatVideos($this->post['videos']);
+		$pieces[] = $this->formatFiles($this->post['files']);
+		$pieces[] = $this->formatAudios($this->post['audios']);
+		$pieces[] = $this->formatPool();
+		$pieces[] = $this->formatArticle();
+		$pieces[] = $this->formatMap();
+		$pieces[] = $this->formatPoster();
+		$pieces[] = $this->formatExpandedLink();
+		$pieces[] = $this->formatRepost();
+		$pieces[] = $this->formatOrigin();
+
+		$content .= implode('<br/><br/><br/>', array_filter($pieces));
 
 		return $content;
 	}
@@ -176,8 +183,8 @@ class Formatter {
 			$content .= $comment['text']['html'];
 		}
 
-		$content .= $this->formatImages($comment['images']);
-		$content .= $this->formatVideos($comment['videos']);
+		$content .= $this->formatImages($comment['images']) . '<br/>';
+		$content .= $this->formatVideos($comment['videos']) . '<br/>';
 		$content .= $this->formatAudios($comment['audios']);
 
 		$content .= "<br/><br/><i>Likes: </i>$comment[likes]";
@@ -187,59 +194,76 @@ class Formatter {
 
 	private function formatImages($images) {
 		$content = '';
-		foreach($images as $image) {
-			$content .= "<br/><a href='$image[original]'><img src='$image[thumb]'/></a><br/>";
+		if(!empty($images)) {
+			$pieces = array();
+			foreach($images as $image) {
+				$pieces[] = $this->formatImage($image);
+			}
+			$content .= implode('<br/><br/>', $pieces);
 		}
 		return $content;
+	}
+
+	private function formatImage($image) {
+		return "<a href='$image[original]'><img src='$image[thumb]'/></a>";
 	}
 
 	private function formatVideos($videos) {
 		$content = '';
 		if(!empty($videos)) {
-			$content .= '<br/><br/><i>Attached videos:</i><br/><br/>';
+			$content .= '<i>Attached videos:</i><br/>';
+			$pieces = array();
 			foreach($videos as $video) {
-				// TODO: handle blocked videos
-				// if successfully extracted video preview, add it to fallback
-				if(empty($video['image'])) {
-					$videoPreview = $video['title'];
-				} else {
-					$videoPreview = "<img src='$video[image]'/>";
-				}
-
-				if(isset($video['iframe'])) {
-					$content .= "<a href='$video[iframe]'>$videoPreview</a>";
-				} elseif(!empty($video['urls'])) {
-					$content .= '<video controls>';
-					foreach($video['urls'] as $source) {
-						$content .= "<source src='$source'/>";
-					}
-					if(count($video['urls']) > 1) {
-						$content .= "<a href='{$video['urls'][1]}'>$videoPreview</a>";
-					} else {
-						// there is no reason to attach broken direct url, so attach native url instead
-						$content .= "<a href='$video[nativeUrl]'>$videoPreview</a>";
-					}
-					$content .= '</video><br/>';
-				} else {
-					// if no iframe or video was found, then it is most likely private video and only link to video in post will work, not direct one
-					$postId = $this->post['id'];
-					$content .= "<a href='https://vk.com/post$postId?z=video$video[id]'>$videoPreview</a><br/>";
-				}
+				$pieces[] = $this->formatVideo($video);
 			}
+			$content .= implode("<br/>", $pieces);
 		}
+		return $content;
+	}
+
+	private function formatVideo($video) {
+		$content = '';
+		// TODO: handle blocked videos
+		// if successfully extracted video preview, add it to fallback
+		if(empty($video['image'])) {
+			$videoPreview = $video['title'];
+		} else {
+			$videoPreview = "<img src='$video[image]'/>";
+		}
+
+		if(isset($video['iframe'])) {
+			$content .= "<a href='$video[iframe]'>$videoPreview</a>";
+		} elseif(!empty($video['urls'])) {
+			$content .= '<video controls>';
+			foreach($video['urls'] as $source) {
+				$content .= "<source src='$source'/>";
+			}
+			if(count($video['urls']) > 1) {
+				$content .= "<a href='{$video['urls'][1]}'>$videoPreview</a>";
+			} else {
+				// there is no reason to attach broken direct url, so attach native url instead
+				$content .= "<a href='$video[nativeUrl]'>$videoPreview</a>";
+			}
+			$content .= '</video><br/>';
+		} else {
+			// if no iframe or video was found, then it is most likely private video and only link to video in post will work, not direct one
+			$postId = $this->post['id'];
+			$content .= "<a href='https://vk.com/post$postId?z=video$video[id]'>$videoPreview</a><br/>";
+		}
+
 		return $content;
 	}
 
 	private function formatPool() {
 		$content = '';
 		if(!empty($this->post['pool'])) {
-			$content .= "<br/><br/><i>Pool: </i>{$this->post['pool']['title']}<br/><br/>";
+			$content .= "<i>Pool: </i>{$this->post['pool']['title']}<br/><br/>";
 			$content .= "<i>Author: </i>{$this->post['pool']['author']}<br/>";
 			$content .= "<i>Type: </i>{$this->post['pool']['type']}<br/><br/>";
 			foreach($this->post['pool']['options'] as $option) {
 				$content .= "<i>Option: </i>$option<br/>";
 			}
-			$content .= "<br/><i>Total voted: </i>{$this->post['pool']['total']}<br/>";
+			$content .= "<br/><i>Total voted: </i>{$this->post['pool']['total']}";
 		}
 		return $content;
 	}
@@ -247,33 +271,43 @@ class Formatter {
 	private function formatFiles($files) {
 		$content = '';
 		if(!empty($files)) {
-			$content .= '<br/><br/><i>Attached files:</i><br/><br/>';
+			$content .= '<i>Attached files:</i><br/><br/>';
+			$pieces = array();
 			foreach($files as $file) {
-				$content .= "<a href='$file[url]'>$file[title]</a><br/>";
+				$pieces[] = $this->formatFile($file);
 			}
+			$content .= implode("<br/>", $pieces);
 		}
 		return $content;
+	}
+
+	private function formatFile($file) {
+		return "<a href='$file[url]'>$file[title]</a>";
 	}
 
 	private function formatAudios($audios) {
 		$content = '';
 		if(!empty($audios)) {
-			$content .= '<br/><br/><i>Attached audio:</i><br/><br/>';
+			$content .= '<i>Attached audios:</i><br/><br/>';
+			$pieces = array();
 			foreach($audios as $audio) {
-				//$content .= '<audio src="' . $audio['url'] . '" controls>';
-				$content .= "Audio: <a href='$audio[url]'>$audio[title]</a><br/>";
-				//$content .= '</audio>';
+				$pieces[] = $this->formatAudio($audio);
 			}
+			$content .= implode("<br/>", $pieces);
 		}
 		return $content;
+	}
+
+	private function formatAudio($audio) {
+		return "Audio: <a href='$audio[url]'>$audio[title]</a>";
 	}
 
 	private function formatPoster() {
 		$content = '';
 		if(!empty($this->post['poster'])) {
-			$content .= '<br/><br/><i>Poster:</i><br/><br/>';
+			$content .= '<i>Poster:</i><br/><br/>';
 			$content .= $this->post['poster']['text'];
-			$content .= "<br/><img src='{$this->post['poster']['image']}'/><br/>";
+			$content .= "<br/><img src='{$this->post['poster']['image']}'/>";
 		}
 		return $content;
 	}
@@ -281,9 +315,9 @@ class Formatter {
 	private function formatMap() {
 		$content = '';
 		if(!empty($this->post['map'])) {
-			$content .= "<br/><br/><i>Location: </i>{$this->post['map']['text']}<br/>";
+			$content .= "<i>Location: </i>{$this->post['map']['text']}<br/>";
 			$content .= '<i>Map:</i><br/>';
-			$content .= "<a href='{$this->post['map']['url']}'><img src='{$this->post['map']['image']}'/></a><br/>";
+			$content .= "<a href='{$this->post['map']['url']}'><img src='{$this->post['map']['image']}'/></a>";
 		}
 		return $content;
 	}
@@ -291,12 +325,12 @@ class Formatter {
 	private function formatArticle() {
 		$content = '';
 		if(!empty($this->post['article'])) {
-			$content .= '<br/><br/><i>Article: </i>';
+			$content .= '<i>Article: </i>';
 			$content .= "<a href='{$this->post['article']['url']}'>{$this->post['article']['title']}</a><br/>";
 			$content .= "<i>Author: </i>{$this->post['article']['author']}<br/>";
 			$content .= "<i>Image: </i><br/><a href='{$this->post['article']['url']}'>";
 			$content .= "<img src='{$this->post['article']['image']}'/>";
-			$content .= '</a><br/>';
+			$content .= '</a>';
 		}
 		return $content;
 	}
@@ -304,12 +338,12 @@ class Formatter {
 	private function formatExpandedLink() {
 		$content = '';
 		if(!empty($this->post['link'])) {
-			$content .= '<br/><br/><i>Link: </i>';
+			$content .= '<i>Link: </i>';
 				$content .= "<a href='{$this->post['link']['url']}'>{$this->post['link']['title']}</a><br/>";
 			$content .= '<i>Image: </i><br/>';
 			$content .= "<a href='{$this->post['link']['url']}'>";
 			$content .= "<img src='{$this->post['link']['image']}'/>";
-			$content .= '</a><br/>';
+			$content .= '</a>';
 		}
 		return $content;
 	}
@@ -318,9 +352,6 @@ class Formatter {
 		$content = '';
 
 		if(!empty($this->post['repost'])) {
-			if(!empty($content)) {
-				$content .= '<br/><br/><br/>';
-			}
 			$content .= '<i>Repost:</i><br/><br/>';
 			$content .= "<i>Source: </i><a href='{$this->post['repost']['url']}'>{$this->post['repost']['source']}</a><br/>";
 			$content .= "<i>Author: </i>{$this->post['repost']['author']}<br/>";
@@ -341,7 +372,6 @@ class Formatter {
 		$content = '';
 
 		if(!empty($this->post['origin'])) {
-			$content .= '<br/><br/>';
 			$content .= "<i>Source: </i><a href='{$this->post['origin']['link']}'>{$this->post['origin']['name']}</a>";
 		}
 
