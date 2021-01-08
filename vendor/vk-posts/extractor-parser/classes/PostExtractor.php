@@ -7,7 +7,6 @@ require_once "PartExtractor.php";
 
 class PostExtractor extends GenericExtractor {
 	private $postDom;
-	private $mobilePostDom;
 
 	private $postBody;
 
@@ -16,8 +15,10 @@ class PostExtractor extends GenericExtractor {
 
 	private $post;
 
-	public function __construct($getDoms, $log, $options) {
+	public function __construct($getDoms, $log, $options, $predownload) {
 		parent::__construct($getDoms, $log, $options);
+
+		$this->predownload = $predownload;
 
 		$postLog = function($message) {
 			$this->log($message);
@@ -26,6 +27,10 @@ class PostExtractor extends GenericExtractor {
 		$this->partExtractor = new PartExtractor($getDoms, $postLog, $this->options);
 
 		$this->commentExtractor = new CommentExtractor($getDoms, $postLog, $this->options);
+	}
+
+	private function predownload($urls) {
+		($this->predownload)($urls);
 	}
 
 	protected function log($message) {
@@ -52,14 +57,35 @@ class PostExtractor extends GenericExtractor {
 		$this->postDom = $postDom;
 
 		$this->postBody = cleanUrls($postDom->first('.wall_post_cont'));
+
+		$this->post = array();
 	}
 
-	public function setMobileDom($mobilePostDom) {
-		$this->mobilePostDom = $mobilePostDom;
-	}
+	public function getNeededUrls() {
+		$urls = array();
+		
+		$hasRepost = has($this->postDom, '.copy_quote');
+		if($hasRepost) {
+			$repostElem = $this->postDom->first('.copy_quote');
+			$repostUrl = $this->extractPostRepostUrl($repostElem);
+			$repostIsComment = preg_match('/wall(-?\d+_\d+).+reply=\d+/', $repostUrl, $matches);
+			if(!$repostIsComment) {
+				$urls[] = $repostUrl;
+			}
+		}
 
-	public function needsMobileDom() {
-		return has($this->postDom, '.page_media_place');
+		$needsMobileDom = has($this->postDom, '.page_media_place');
+		if($needsMobileDom) {
+			$urls[] = getMobilePostUrlFromId($this->extractPostId());
+		}
+
+		foreach($this->postDom->find('.page_post_thumb_video') as $videoElem) {
+			if(preg_match('!video(-?\d+_\d+)(\?list=\w+)?!', $videoElem->getAttribute('href'), $matches)) {
+				$urls[] = 'https://m.vk.com/' . $matches[0];
+			}
+		}
+
+		return $urls;
 	}
 
 	public function extractPost() {
@@ -189,20 +215,21 @@ class PostExtractor extends GenericExtractor {
 	private function extractPostMap() {
 		$map = array();
 		if(has($this->postBody, '.page_media_place')) {
+			$mobilePostDom = $this->getDom(getMobilePostUrlFromId($this->extractPostId()));
 			// if post has other media other than map, than map will be hidden, but on mobile version that is not the case
 			// ...also desktop version doesn't have link to map, therefore extracting map from mobile version
-			$isNormalMap = has($this->mobilePostDom, '.medias_map');
+			$isNormalMap = has($mobilePostDom, '.medias_map');
 			// sometimes map is shrinked down even on mobile
-			$isShrinkedMap = has($this->mobilePostDom, '.medias_link[href*="https://maps.google.com"]');
+			$isShrinkedMap = has($mobilePostDom, '.medias_link[href*="https://maps.google.com"]');
 
 			if($isNormalMap) {
-				$mapElem = $this->mobilePostDom->find('.medias_map')[0];
+				$mapElem = $mobilePostDom->find('.medias_map')[0];
 
 				$map['text'] = $this->extractPostMapText($mapElem);
 				$map['image'] = $this->extractPostMapImage($mapElem);
 				$map['url'] = $this->extractPostMapUrl($mapElem);
 			} elseif($isShrinkedMap) {
-				$mapElem = $this->mobilePostDom->find('.medias_link[href*="https://maps.google.com"]')[0];
+				$mapElem = $mobilePostDom->find('.medias_link[href*="https://maps.google.com"]')[0];
 
 				$map['text'] = $this->extractPostShrinkedMapTitle($mapElem);
 				$map['image'] = null;
@@ -216,9 +243,9 @@ class PostExtractor extends GenericExtractor {
 	}
 
 	private function extractPostMapTitle($mapElem) {
-		if(has($this->mobilePostDom, '.medias_map_first_line', '.medias_map_second_line')) {
-			$firstLine = $this->mobilePostDom->find('.medias_map_first_line')[0]->text();
-			$secondLine = $this->mobilePostDom->find('.medias_map_second_line')[0]->text();
+		if(has($mapElem, '.medias_map_first_line', '.medias_map_second_line')) {
+			$firstLine = $mapElem->find('.medias_map_first_line')[0]->text();
+			$secondLine = $mapElem->find('.medias_map_second_line')[0]->text();
 
 			return (empty($firstLine) ? 'Unknown' : $firstLine) . ', ' . (empty($secondLine) ? 'Unknown' : $secondLine);
 		} else {
@@ -447,10 +474,12 @@ class PostExtractor extends GenericExtractor {
 			if(preg_match('/^-?\d+_\d+$/', $postId)) {
 				return $postId;
 			} else {
-				$this->log('extractPostId() failed to extract post id');
+				throw new \Exception('extractPostId() failed to extract post id');
+				//$this->log('extractPostId() failed to extract post id');
 			}
 		} else {
-			$this->log('extractPostId() failed to find post element');
+			throw new \Exception('extractPostId() failed to find post element');
+			//$this->log('extractPostId() failed to find post element');
 		}
 	}
 
@@ -529,8 +558,9 @@ class PostExtractor extends GenericExtractor {
 			} else {
 				$repostCleanUrl = getPostUrlFromId($repostId);
 				$repostDom = $this->getDom($repostCleanUrl, 'post');
-				$repostExtractor = new PostExtractor($this->getDoms, $this->inheritedLog, $this->options);
+				$repostExtractor = new PostExtractor($this->getDoms, $this->inheritedLog, $this->options, $this->predownload);
 				$repostExtractor->setDom($repostDom);
+				$this->predownload($repostExtractor->getNeededUrls());
 				$repost = $repostExtractor->extractPost();
 			}
 		}
@@ -547,7 +577,7 @@ class PostExtractor extends GenericExtractor {
 
 	private function extractPostRepostUrl($repostElem) {
 		if(hasAttr($this->postDom, 'href', '.copy_post_date .published_by_date')) {
-			return $this->postDom->find('.copy_post_date .published_by_date')[0]->getAttribute('href');
+			return 'https://vk.com' . $this->postDom->find('.copy_post_date .published_by_date')[0]->getAttribute('href');
 		} else {
 			$this->log('Failed to extract repost url');
 		}
@@ -620,5 +650,22 @@ class PostExtractor extends GenericExtractor {
 		} else {
 			$this->log('Failed to extract reposted comment url');
 		}
+	}
+
+	private function extractPostRepostedPost($repostId) {
+		$predownloadedGetDoms = function($urls, $context) {
+			$cacheHits = array();
+			foreach ($urls as $pos => $url) {
+				if(array_key_exists($url, $this->predownloadedUrls)) {
+					$cacheHits[$url] = $this->predownloadedUrls($url);
+					unset($urls[$pos]);
+				}
+			}
+			$cacheMisses = ($this->getDoms)($urls);
+			foreach ($cacheMisses as $url => $dom) {
+				$this->predownloadedUrls[$url] = $dom;
+			}
+			return array_merge($cacheHits, $cacheMisses);
+		};
 	}
 }

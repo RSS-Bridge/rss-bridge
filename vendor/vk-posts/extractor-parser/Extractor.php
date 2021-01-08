@@ -8,6 +8,7 @@ require_once "Utilities.php";
 
 class Extractor extends GenericExtractor {
 	private $postExtractor;
+	private $predownloadedUrls = array();
 
 	const defaultOptions = array(
 		'extractComments' => true,
@@ -17,6 +18,28 @@ class Extractor extends GenericExtractor {
 	public function __construct($getDoms, $log, $options = array()) {
 		parent::__construct($getDoms, $log, $options);
 
+		$predownloadedGetDoms = function($urls, $context) {
+			$cacheHits = array();
+			foreach ($urls as $pos => $url) {
+				if(array_key_exists($url, $this->predownloadedUrls)) {
+					$cacheHits[$url] = $this->predownloadedUrls[$url];
+					unset($urls[$pos]);
+				}
+			}
+			$cacheMisses = ($this->getDoms)($urls, 'part');
+			foreach ($cacheMisses as $url => $dom) {
+				$this->predownloadedUrls[$url] = $dom;
+			}
+			return array_merge($cacheHits, $cacheMisses);
+		};
+
+		$predownload = function($urls) {
+			$doms = ($this->getDoms)($urls, 'part');
+			foreach ($doms as $url => $dom) {
+				$this->predownloadedUrls[$url] = $dom;
+			}
+		};
+
 		foreach(self::defaultOptions as $name => $value) {
 			if(!isset($options[$name])) {
 				$this->options[$name] = self::defaultOptions[$name];
@@ -25,7 +48,7 @@ class Extractor extends GenericExtractor {
 			}
 		}
 
-		$this->postExtractor = new PostExtractor($getDoms, $log, $this->options);
+		$this->postExtractor = new PostExtractor($predownloadedGetDoms, $log, $this->options, $predownload);
 	}
 
 	public function getPostsFromSource($sourceId) {
@@ -58,6 +81,8 @@ class Extractor extends GenericExtractor {
 
 		$postsDoms = $this->getDoms($urls, 'post');
 
+		$this->predownloadUrls($postsDoms);
+
 		foreach($postsDoms as $url => $postDom) {
 			if($postDom === null) {
 				$this->log("Failed to extract post: failed to get post dom from this url: $url");
@@ -66,20 +91,6 @@ class Extractor extends GenericExtractor {
 			}
 
 			$this->postExtractor->setDom($postDom);
-
-			if($this->postExtractor->needsMobileDom()) {
-				$postId = getPostIdFromUrl($url);
-				$mobilePostUrl = getMobilePostUrlFromId($postId);
-				$mobileDom = $this->getDom($mobilePostUrl, 'page');
-
-				if($mobileDom === null) {
-					$this->log("Failed to extract post: failed to get post\'s mobile dom from this url: $mobilePostUrl");
-					$posts[] = null;
-					continue;
-				}
-
-				$this->postExtractor->setMobileDom($mobileDom);
-			}
 
 			try {
 				$posts[] = $this->postExtractor->extractPost();
@@ -92,6 +103,16 @@ class Extractor extends GenericExtractor {
 		return $posts;
 	}
 
+	private function predownloadUrls($doms) {
+		$urls = array();
+		foreach($doms as $dom) {
+			$this->postExtractor->setDom($dom);
+			$urls = array_merge($urls, $this->postExtractor->getNeededUrls());
+		}
+		$newPredownloadedUrls = $this->getDoms($urls, 'part');
+		$this->predownloadedUrls = array_merge($newPredownloadedUrls, $this->predownloadedUrls);
+	}
+
    	public function getPostById($postId) {
 		$url = getPostUrlFromId($postId);
 
@@ -101,15 +122,6 @@ class Extractor extends GenericExtractor {
 		}
 
 		$this->postExtractor->setDom($postDom);
-
-		if($this->postExtractor->needsMobileDom()) {
-			$mobilePostUrl = getMobilePostUrlFromId($postId);
-			$mobileDom = $this->getDom($mobilePostUrl, 'post');
-			if($mobileDom === null) {
-				throw new \Exception('Failed to get post\'s mobile dom from this url: ' . $mobilePostUrl);
-			}
-			$this->postExtractor->setMobileDom($mobileDom);
-		}
 
 		return $this->postExtractor->extractPost();
 	}
