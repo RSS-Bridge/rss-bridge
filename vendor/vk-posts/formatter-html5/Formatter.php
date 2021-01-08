@@ -12,7 +12,9 @@ class Formatter {
 		'dontAddDeletedAmount' => false,
 		'topCommentThreshold' => 0,
 		'branchCommentThreshold' => 0,
-		'dontConvertEmoji' => false
+		'dontConvertEmoji' => false,
+		'wrapImagesInLinks' => false,
+		'wrapArticleThumbnailsInLinks' => true
 	);
 
 	public function __construct($options = array()) {
@@ -205,7 +207,11 @@ class Formatter {
 	}
 
 	private function formatImage($image) {
-		return "<a href='$image[original]'><img src='$image[thumb]'/></a>";
+		if($this->options['wrapImagesInLinks']) {
+			return "<a href='$image[original]'><img src='$image[thumb]'/></a>";
+		} else {
+			return "<img src='$image[thumb]'/>";
+		}
 	}
 
 	private function formatVideos($videos) {
@@ -328,9 +334,14 @@ class Formatter {
 			$content .= '<i>Article: </i>';
 			$content .= "<a href='{$this->post['article']['url']}'>{$this->post['article']['title']}</a><br/>";
 			$content .= "<i>Author: </i>{$this->post['article']['author']}<br/>";
-			$content .= "<i>Image: </i><br/><a href='{$this->post['article']['url']}'>";
-			$content .= "<img src='{$this->post['article']['image']}'/>";
-			$content .= '</a>';
+			$content .= "<i>Image: </i><br/>";
+			if($this->options['wrapArticleThumbnailsInLinks']) {
+				$content .= "<a href='{$this->post['article']['url']}'>";
+				$content .= "<img src='{$this->post['article']['image']}'/>";
+				$content .= '</a>';
+			} else {
+				$content .= "<img src='{$this->post['article']['image']}'/>";
+			}
 		}
 		return $content;
 	}

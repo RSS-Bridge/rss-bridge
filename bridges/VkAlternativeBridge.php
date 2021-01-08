@@ -98,6 +98,18 @@ or check "Both", if you want content AND errors reports.',
 					'Both' => 'both'
 				)
 			),
+			'wrapImagesInLinks' => array(
+				'name' => 'Wrap images in links to originals',
+				'title' => 'Check this, if you want to open images originals 
+from feed item by tapping\clicking on thumbnail.',
+				'type' => 'checkbox'
+			),
+			'dontWrapArticleThumbnailsInLinks' => array(
+				'name' => 'Don\'t wrap article thumbnail in link to article',
+				'title' => 'Check this, if you don\'t want to open article 
+from feed item by tapping\clicking on thumbnail.',
+				'type' => 'checkbox'
+			),
 		)
 	);
 	const CACHE_TIMEOUT = 2700; // 45 min
@@ -417,6 +429,8 @@ or check "Both", if you want content AND errors reports.',
 			'descendingCommentThresholdOffset' => $this->getInput('descendingCommentThresholdOffset'),
 			'dontAddDeletedAmount' => $this->getInput('dontAddDeletedAmount'),
 			'dontConvertEmoji' => $this->getInput('dontConvertEmoji'),
+			'wrapImagesInLinks' => $this->getInput('wrapImagesInLinks'),
+			'wrapArticleThumbnailsInLinks' => !$this->getInput('dontWrapArticleThumbnailsInLinks'),
 		);
 	}
 	
