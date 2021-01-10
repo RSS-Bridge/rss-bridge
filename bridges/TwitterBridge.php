@@ -266,7 +266,7 @@ EOD
 			$item['username'] = $user_info->screen_name;
 			$item['fullname'] = $user_info->name;
 			$item['author'] = $item['fullname'] . ' (@' . $item['username'] . ')';
-			if (null !== $this->getInput('u') && $item['username'] != $this->getInput('u')) {
+			if (null !== $this->getInput('u') && strtolower($item['username']) != strtolower($this->getInput('u'))) {
 				$item['author'] .= ' RT: @' . $this->getInput('u');
 			}
 			$item['avatar'] = $user_info->profile_image_url_https;
@@ -388,7 +388,7 @@ EOD;
 					}
 					break;
 				case 'By username':
-					if ($this->getInput('noretweet') && $item['username'] != $this->getInput('u')) {
+					if ($this->getInput('noretweet') && strtolower($item['username']) != strtolower($this->getInput('u'))) {
 						continue 2; // switch + for-loop!
 					}
 					break;
