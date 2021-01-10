@@ -76,7 +76,6 @@ class Generator {
 				$extras = array_values($extras);
 				if(empty($extras)) {
 					$title .= 'unknown message';
-					$this->assertc(false, 'formatTitle() encountered unknown payload in post', true);
 				} else {
 					for($pos = 0; $pos < count($extras); $pos++) {
 						switch($extras[$pos]['type']) {

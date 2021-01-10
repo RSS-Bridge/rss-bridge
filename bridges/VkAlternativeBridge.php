@@ -234,7 +234,7 @@ from feed item by tapping\clicking on thumbnail.',
 	}
 
 	private function log($message) {
-		$logs[] = $message;
+		$this->logs[] = $message;
 	}
 
 	private function getItem($post) {
@@ -357,10 +357,9 @@ from feed item by tapping\clicking on thumbnail.',
 			$content .= 'Failed to extract post\'s id';
 		} else {
 			foreach($this->logs as $pos => $message) {
-				$content .= $message['text'];
 				if(isset($message['postId']) && $message['postId'] === $postId) {
 					$content .= $this->formatError($message) . '<br/>';
-					unset($this->logs[$post]);
+					unset($this->logs[$pos]);
 				}
 			}
 		}
@@ -377,7 +376,7 @@ from feed item by tapping\clicking on thumbnail.',
 
 		if(isset($message['postId'])) {
 			if($message['postId'] !== null) {
-				$content .= " at post $message[postId]";
+				$content .= " at post <a href='https://vk.com/wall$message[postId]'>$message[postId]</a>";
 			} else {
 				$content .= " at unknown post";
 			}
@@ -385,7 +384,7 @@ from feed item by tapping\clicking on thumbnail.',
 
 		if(isset($message['commentId'])) {
 			if($message['commentId'] !== null) {
-				$content .= " at comment $message[commentId]";
+				$content .= " at comment <a href='https://vk.com/wall$message[commentId]'>$message[commentId]</a>";
 			} else {
 				$content .= " at unknown comment";
 			}
