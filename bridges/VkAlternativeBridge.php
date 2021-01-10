@@ -120,7 +120,7 @@ from feed item by tapping\clicking on thumbnail.',
 
 	public function collectData() {
 		$showErrors = $this->getInput('showErrors');
-		
+
 		try {
 			$posts = $this->getPosts();
 		} catch(\Exception $e) {
@@ -132,13 +132,13 @@ from feed item by tapping\clicking on thumbnail.',
 		foreach($posts as $post) {
 			if(is_array($post)) {
 				$item = $this->getItem($post);
-				
+
 				if($item !== 'Removed' && $showErrors !== 'errors') {
 					$this->items[] = $item;
 				}
 			}
 		}
-		
+
 		if(($showErrors === 'errors' || $showErrors === 'both') && count($this->logs) !== 0) {
 			$this->items[] = $this->getErrorsItem();
 		}
@@ -175,7 +175,7 @@ from feed item by tapping\clicking on thumbnail.',
 		};
 
 		$extractor = new Extractor($getDoms, $log, $extractorOptions);
-		
+
 		$posts = $extractor->getPostsFromSource($sourceId);
 
 		return $posts;
@@ -183,34 +183,34 @@ from feed item by tapping\clicking on thumbnail.',
 
 	private function parallelDownload($urls) {
 		$doms = array();
-	
+
 		$handles = array();
-	
+
 		$multiHandle = curl_multi_init();
-	
+
 		foreach($urls as $url) {
 			$handle = curl_init($url);
-	
+
 			curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($handle, CURLOPT_FOLLOWLOCATION, true);
-	
+
 			curl_setopt($handle, CURLOPT_HTTPHEADER, array('Accept-language: en'));
-	
+
 			curl_setopt($handle, CURLOPT_USERAGENT, ini_get('user_agent'));
 			curl_setopt($handle, CURLOPT_ENCODING, '');
 			curl_setopt($handle, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
-	
+
 			$handles[$url] = $handle;
 			curl_multi_add_handle($multiHandle, $handle);
 		}
-	
+
 		do {
 			$status = curl_multi_exec($multiHandle, $active);
 			if ($active) {
 				curl_multi_select($multiHandle);
 			}
 		} while ($active && $status == CURLM_OK);
-	
+
 		foreach($handles as $url => $handle) {
 			$str = curl_multi_getcontent($handle);
 
@@ -224,10 +224,10 @@ from feed item by tapping\clicking on thumbnail.',
 			} catch(\Exception $e) {
 				$doms[$url] = null;
 			}
-	
+
 			curl_multi_remove_handle($multiHandle, $handle);
 		}
-	
+
 		curl_multi_close($multiHandle);
 
 		return $doms;
@@ -345,7 +345,7 @@ from feed item by tapping\clicking on thumbnail.',
 	private function getItemCategories($post) {
 		return $post['tags'];
 	}
-	
+
 	private function getItemUID($post) {
 		return $post['id'];
 	}
@@ -378,7 +378,7 @@ from feed item by tapping\clicking on thumbnail.',
 			if($message['postId'] !== null) {
 				$content .= " at post <a href='https://vk.com/wall$message[postId]'>$message[postId]</a>";
 			} else {
-				$content .= " at unknown post";
+				$content .= ' at unknown post';
 			}
 		}
 
@@ -386,7 +386,7 @@ from feed item by tapping\clicking on thumbnail.',
 			if($message['commentId'] !== null) {
 				$content .= " at comment <a href='https://vk.com/wall$message[commentId]'>$message[commentId]</a>";
 			} else {
-				$content .= " at unknown comment";
+				$content .= ' at unknown comment';
 			}
 		}
 
@@ -397,10 +397,17 @@ from feed item by tapping\clicking on thumbnail.',
 		$item = array();
 
 		$item['uri'] = '';
-		$item['title'] = count($this->logs) . ' error' . (count($this->logs) === 1) ? '' : 's' . ' were found';
+
+		$errorsAmount = count($this->logs);
+		if($errorsAmount > 1) {
+			$item['title'] = "$errorsAmount errors were found";
+		} else {
+			$item['title'] = '1 error was found';
+		}
+
 		$item['timestamp'] = '@' . time();
 		$item['author'] = 'RSS-Bridge';
-		
+
 		$item['content'] = '';
 		foreach ($this->logs as $message) {
 			$item['content'] .= $this->formatError($message) . '<br/>';
@@ -432,12 +439,11 @@ from feed item by tapping\clicking on thumbnail.',
 			'wrapArticleThumbnailsInLinks' => !$this->getInput('dontWrapArticleThumbnailsInLinks'),
 		);
 	}
-	
+
 	private function getExtractorOptions() {
 		return array(
 			'extractComments' => $this->getInput('inlineComments'),
 			'postsAmount' => $this->getInput('postAmount')
 		);
 	}
-	
 }
