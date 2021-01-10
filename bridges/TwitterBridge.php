@@ -388,7 +388,7 @@ EOD;
 					}
 					break;
 				case 'By username':
-					if ($this->getInput('noretweet') && $item['username'] != $this->getInput('u')) {
+					if ($this->getInput('noretweet') && strtolower($item['username']) != strtolower($this->getInput('u'))) {
 						continue 2; // switch + for-loop!
 					}
 					break;
