@@ -33,7 +33,7 @@ class ItchioBridge extends BridgeAbstract {
 		// NOTE: At the time of writing it is not clear under which conditions
 		// itch updates the timestamp. In case they don't always update it,
 		// we include the file list as well when computing the UID hash.
-		$uidContent = $timestampFormatted . $content
+		$uidContent = $timestampFormatted . $content;
 
 		$item = array();
 		$item['uri'] = $url;
