@@ -75,6 +75,12 @@ EOD
 				'required' => false,
 				'type' => 'checkbox',
 				'title' => 'Hide retweets'
+			),
+			'nopinned' => array(
+				'name' => 'Without pinned tweet',
+				'required' => false,
+				'type' => 'checkbox',
+				'title' => 'Hide pinned tweet'
 			)
 		),
 		'By list' => array(
@@ -246,6 +252,14 @@ EOD
 			return $carry;
 		}, array());
 
+		$hidePinned = $this->getInput('nopinned');
+		if ($hidePinned) {
+			$pinnedTweetId = null;
+			if (isset($data->timeline->instructions[1]) && isset($data->timeline->instructions[1]->pinEntry)) {
+				$pinnedTweetId = $data->timeline->instructions[1]->pinEntry->entry->content->item->content->tweet->id;
+			}
+		}
+
 		foreach($data->globalObjects->tweets as $tweet) {
 
 			/* Debug::log('>>> ' . json_encode($tweet)); */
@@ -256,6 +270,11 @@ EOD
 
 			// Skip promoted tweets
 			if (in_array($tweet->id_str, $promotedTweetIds)) {
+				continue;
+			}
+
+			// Skip pinned tweet
+			if ($hidePinned && $tweet->id_str === $pinnedTweetId) {
 				continue;
 			}
 
