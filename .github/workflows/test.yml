@@ -1,0 +1,22 @@
+name: Unit tests
+
+on:
+  push:
+    branches: [ master, github-actions ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  phpunit:
+    runs-on: ubuntu-16.04
+    strategy:
+      matrix:
+        php-versions: ['7.0', '7.1', '7.2', '7.3', '7.4']
+        phpunit-versions: ['6', '7', '8']
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          tools: phpunit
+      - run: phpunit --configuration=phpunit.xml --include-path=lib/
