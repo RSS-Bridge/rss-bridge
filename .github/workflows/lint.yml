@@ -2,7 +2,7 @@ name: Lint
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, github-actions ]
   pull_request:
     branches: [ master ]
 
