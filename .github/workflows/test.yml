@@ -7,16 +7,28 @@ on:
     branches: [ master ]
 
 jobs:
-  phpunit:
+  phpunit6:
     runs-on: ubuntu-16.04
     strategy:
       matrix:
-        php-versions: ['7.0', '7.1', '7.2', '7.3', '7.4']
-        phpunit-versions: ['6.5.14', '7.5.20', '8.5.13']
+        php-versions: ['7.0', '7.1', '7.2']
     steps:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-          tools: phpunit:${{ matrix.phpunit-versions }}
+          tools: phpunit:6.5.14
+      - run: phpunit --configuration=phpunit.xml --include-path=lib/
+
+  phpunit7:
+    runs-on: ubuntu-16.04
+    strategy:
+      matrix:
+        php-versions: ['7.1', '7.2', '7.3']
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          tools: phpunit:7
       - run: phpunit --configuration=phpunit.xml --include-path=lib/
