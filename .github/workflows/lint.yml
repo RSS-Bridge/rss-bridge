@@ -1,0 +1,11 @@
+name: Lint
+jobs:
+  build:
+    runs-on: ubuntu-16.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '5.6'
+          tools: php-cs-fixer
+      - run: phpcs . --standard=phpcs.xml --warning-severity=0 --extensions=php -p
