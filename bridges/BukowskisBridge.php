@@ -194,14 +194,13 @@ class BukowskisBridge extends BridgeAbstract
 		foreach ($html->find('div.c-lot-index-lot') as $lot) {
 			$title = $lot->find('a.c-lot-index-lot__title', 0)->plaintext;
 			$relative_url = $lot->find('a.c-lot-index-lot__link', 0)->href;
-			$images = array(
-				...json_decode(
+			$images = json_decode(
 				htmlspecialchars_decode(
 					$lot
 						->find('img.o-aspect-ratio__image', 0)
 						->getAttribute('data-thumbnails')
 				)
-			));
+			);
 
 			$this->items[] = array(
 				'title' => $title,
