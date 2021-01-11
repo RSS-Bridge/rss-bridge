@@ -206,9 +206,7 @@ class BukowskisBridge extends BridgeAbstract
 				'title' => $title,
 				'uri' => $baseUrl . $relative_url,
 				'uid' => $lot->getAttribute('data-lot-id'),
-				'content' => count($images) > 0
-					? "<img src='$images[0]'/><br/>$title"
-					: $title,
+				'content' => count($images) > 0 ? "<img src='$images[0]'/><br/>$title" : $title,
 				'enclosures' => array_slice($images, 1),
 			);
 		}
