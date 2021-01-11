@@ -2,7 +2,7 @@ name: Tests
 
 on:
   push:
-    branches: [ master, github-actions ]
+    branches: [ master ]
   pull_request:
     branches: [ master ]
 
