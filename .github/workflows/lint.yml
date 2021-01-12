@@ -31,4 +31,4 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
       - run: composer global require phpcompatibility/php-compatibility
-      - run: vendor/bin/phpcs . --standard=phpcompatibility.xml --warning-severity=0 --extensions=php -p
+      - run: ~/.config/composer/vendor/bin/phpcs . --standard=phpcompatibility.xml --warning-severity=0 --extensions=php -p
