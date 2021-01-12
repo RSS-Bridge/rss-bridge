@@ -30,5 +30,6 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-          tools: phpcs
-      - run: phpcs . --standard=phpcompatibility.xml --warning-severity=0 --extensions=php -p
+      - run: composer global require dealerdirect/phpcodesniffer-composer-installer
+      - run: composer global require phpcompatibility/php-compatibility
+      - run: ~/.composer/vendor/bin/phpcs . --standard=phpcompatibility.xml --warning-severity=0 --extensions=php -p
