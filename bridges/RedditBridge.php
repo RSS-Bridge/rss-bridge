@@ -23,6 +23,19 @@ class RedditBridge extends BridgeAbstract {
 				'exampleValue' => 'selfhosted, php',
 				'title' => 'SubReddit names, separated by commas'
 			)
+		),
+		'user' => array(
+			'u' => array(
+				'name' => 'User',
+				'required' => true,
+				'title' => 'User name'
+			),
+			'comments' => array(
+				'type' => 'checkbox',
+				'name' => 'Comments',
+				'title' => 'Whether to return comments',
+				'defaultValue' => false
+			)
 		)
 	);
 
@@ -39,6 +52,10 @@ class RedditBridge extends BridgeAbstract {
 	}
 
 	public function collectData() {
+
+		$user = false;
+		$comments = false;
+
 		switch ($this->queriedContext) {
 			case 'single':
 				$subreddits[] = $this->getInput('r');
@@ -46,21 +63,36 @@ class RedditBridge extends BridgeAbstract {
 			case 'multi':
 				$subreddits = explode(',', $this->getInput('rs'));
 				break;
+			case 'user':
+				$subreddits[] = $this->getInput('u');
+				$user = true;
+				$comments = $this->getInput('comments');
+				break;
 		}
 
 		foreach ($subreddits as $subreddit) {
 			$name = trim($subreddit);
 
-			$values = getContents(self::URI . '/r/' . $name . '.json')
+			$values = getContents(self::URI . ($user ? '/user/' : '/r/') . $name . '.json')
 			or returnServerError('Unable to fetch posts!');
 			$decodedValues = json_decode($values);
 
 			foreach ($decodedValues->data->children as $post) {
+				if ($post->kind == 't1' && !$comments) {
+					continue;
+				}
+
 				$data = $post->data;
 
 				$item = array();
 				$item['author'] = $data->author;
-				$item['title'] = $data->title;
+
+				if ($post->kind == 't1') {
+					$item['title'] = 'Comment: ' . $data->link_title;
+				} else {
+					$item['title'] = $data->title;
+				}
+
 				$item['uid'] = $data->id;
 				$item['timestamp'] = $data->created_utc;
 				$item['uri'] = $this->encodePermalink($data->permalink);
@@ -72,7 +104,13 @@ class RedditBridge extends BridgeAbstract {
 				$item['categories'][] = $data->spoiler ? 'Spoiler' : null;
 				$item['categories'] = array_filter($item['categories']);
 
-				if ($data->is_self) {
+				if ($post->kind == 't1') {
+					// Comment
+
+					$item['content']
+						= htmlspecialchars_decode($data->body_html);
+
+				} elseif ($data->is_self) {
 					// Text post
 
 					$item['content']
