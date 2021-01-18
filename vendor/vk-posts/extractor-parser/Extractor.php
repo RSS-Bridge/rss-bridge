@@ -13,6 +13,7 @@ class Extractor extends GenericExtractor {
 	const defaultOptions = array(
 		'extractComments' => true,
 		'postsAmount' => 20,
+		'baseTimestamp' => null
 	);
 
 	public function __construct($getDoms, $log, $options = array()) {
@@ -59,7 +60,15 @@ class Extractor extends GenericExtractor {
 		$sourceDom = $this->getDom($sourceUrl, 'source');
 
 		if($sourceDom === null) {
-			throw new \Exception('Failed to get source dom from this url: ' . $sourceUrl);
+			throw new \Exception("Failed to get source dom from this url: $sourceUrl");
+		}
+
+		if(has($sourceDom, '.profile_deleted_text')) {
+			throw new \Exception("User page was deleted: $sourceId");
+		}
+		
+		if(has($sourceDom, '.group_info_private')) {
+			throw new \Exception("This group is private: $sourceId");
 		}
 
 		$postsProcessed = 0;

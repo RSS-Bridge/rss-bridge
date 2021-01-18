@@ -24,10 +24,10 @@ class PartExtractor extends GenericExtractor {
 					$stampRaw = $matches[0] . ' ' . preg_replace('/\d?\d:\d\d (am|pm)/u', '', $stampRaw);
 				}
 
-				assertc(strtotime($stampRaw) !== false,
+				assertc(strtotime($stampRaw, $this->options['baseTimestamp']) !== false,
 					'Incorrectly parsed time: "' . $stampElem->text() . '" in timestamp: "' . $stampRaw . '"');
 
-				return strtotime($stampRaw);
+				return strtotime($stampRaw, $this->options['baseTimestamp']);
 			}
 		} catch(\Exception $e) {
 			$this->log($e->getMessage());
