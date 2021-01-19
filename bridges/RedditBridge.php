@@ -152,7 +152,7 @@ class RedditBridge extends BridgeAbstract {
 						$id = $media->media_id;
 						$type = $data->media_metadata->$id->m == 'image/gif' ? 'gif' : 'u';
 						$src = $data->media_metadata->$id->s->$type;
-						$images[] = '<img src="' . $src . '"/>';
+						$images[] = '<figure><img src="' . $src . '"/></figure>';
 					}
 
 					$item['content'] = implode('', $images);
