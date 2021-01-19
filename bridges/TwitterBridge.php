@@ -260,7 +260,35 @@ EOD
 			}
 		}
 
-		foreach($data->globalObjects->tweets as $tweet) {
+		$tweets = array();
+
+		// Extract tweets from timeline property when in username mode
+		// This fixes number of issues:
+		// * If there's a retweet of a quote tweet, the quoted tweet will not appear in results (since it wasn't retweeted directly)
+		// * Pinned tweets do not get stuck at the bottom
+		if ($this->queriedContext === 'By username') {
+			foreach($data->timeline->instructions[0]->addEntries->entries as $tweet) {
+				if (!isset($tweet->content->item)) continue;
+				$tweetId = $tweet->content->item->content->tweet->id;
+				$selectedTweet = $this->getTweet($tweetId, $data->globalObjects);
+				if (!$selectedTweet) continue;
+				// If this is a retweet, it will contain shorter text and will point to the original full tweet (retweeted_status_id_str).
+				// Let's use the original tweet text.
+				if (isset($selectedTweet->retweeted_status_id_str)) {
+					$tweetId = $selectedTweet->retweeted_status_id_str;
+					$selectedTweet = $this->getTweet($selectedTweet->retweeted_status_id_str, $data->globalObjects);
+					if (!$selectedTweet) continue;
+				}
+				// use $tweetId as key to avoid duplicates (e.g. user retweeting their own tweet)
+				$tweets[$tweetId] = $selectedTweet;
+			}
+		} else {
+			foreach($data->globalObjects->tweets as $tweet) {
+				$tweets[] = $tweet;
+			}
+		}
+
+		foreach($tweets as $tweet) {
 
 			/* Debug::log('>>> ' . json_encode($tweet)); */
 			// Skip spurious retweets
@@ -565,6 +593,14 @@ EOD;
 			if($user->id_str == $userId) {
 				return $user;
 			}
+		}
+	}
+
+	private function getTweet($tweetId, $apiData) {
+		if (property_exists($apiData->tweets, $tweetId)) {
+			return $apiData->tweets->$tweetId;
+		} else {
+			return null;
 		}
 	}
 }
