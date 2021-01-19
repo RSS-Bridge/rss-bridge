@@ -46,6 +46,8 @@ class RedditBridge extends BridgeAbstract {
 	public function getName() {
 		if ($this->queriedContext == 'single') {
 			return 'Reddit r/' . $this->getInput('r');
+		} elseif ($this->queriedContext == 'user') {
+			return 'Reddit u/' . $this->getInput('u');
 		} else {
 			return self::NAME;
 		}
