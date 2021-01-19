@@ -14,6 +14,13 @@ class RedditBridge extends BridgeAbstract {
 				'required' => true,
 				'exampleValue' => 'selfhosted',
 				'title' => 'SubReddit name'
+			),
+			'score' => array(
+				'name' => 'Minimal score',
+				'required' => false,
+				'type' => 'number',
+				'exampleValue' => 100,
+				'title' => 'Filter out posts with lower score'
 			)
 		),
 		'multi' => array(
@@ -22,6 +29,13 @@ class RedditBridge extends BridgeAbstract {
 				'required' => true,
 				'exampleValue' => 'selfhosted, php',
 				'title' => 'SubReddit names, separated by commas'
+			),
+			'score' => array(
+				'name' => 'Minimal score',
+				'required' => false,
+				'type' => 'number',
+				'exampleValue' => 100,
+				'title' => 'Filter out posts with lower score'
 			)
 		),
 		'user' => array(
@@ -35,6 +49,13 @@ class RedditBridge extends BridgeAbstract {
 				'name' => 'Comments',
 				'title' => 'Whether to return comments',
 				'defaultValue' => false
+			),
+			'score' => array(
+				'name' => 'Minimal score',
+				'required' => false,
+				'type' => 'number',
+				'exampleValue' => 100,
+				'title' => 'Filter out posts with lower score'
 			)
 		)
 	);
@@ -85,6 +106,10 @@ class RedditBridge extends BridgeAbstract {
 				}
 
 				$data = $post->data;
+
+				if ($data->score < $this->getInput('score')) {
+					continue;
+				}
 
 				$item = array();
 				$item['author'] = $data->author;
