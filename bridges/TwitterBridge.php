@@ -205,10 +205,21 @@ EOD
 			. urlencode($this->getInput('q'))
 			. '&tweet_mode=extended&tweet_search_mode=live';
 		case 'By username':
-			return self::API_URI
-			. '/2/timeline/profile/'
-			. $this->getRestId($this->getInput('u'))
-			. '.json?tweet_mode=extended';
+			// use search endpoint if without replies or without retweets enabled
+			if ($this->getInput('noretweet') || $this->getInput('norep')) {
+				$query = 'from:'.$this->getInput('u');
+				if ($this->getInput('noretweet')) $query .= ' exclude:retweets';
+				if ($this->getInput('norep')) $query .= ' exclude:replies';
+				return self::API_URI
+				. '/2/search/adaptive.json?q='
+				. urlencode($query)
+				. '&tweet_mode=extended&tweet_search_mode=live';
+			} else {
+				return self::API_URI
+				. '/2/timeline/profile/'
+				. $this->getRestId($this->getInput('u'))
+				. '.json?tweet_mode=extended';
+			}
 		case 'By list':
 			return self::API_URI
 			. '/2/timeline/list.json?list_id='
@@ -276,7 +287,7 @@ EOD
 				// Let's use the original tweet text.
 				if (isset($selectedTweet->retweeted_status_id_str)) {
 					$tweetId = $selectedTweet->retweeted_status_id_str;
-					$selectedTweet = $this->getTweet($selectedTweet->retweeted_status_id_str, $data->globalObjects);
+					$selectedTweet = $this->getTweet($tweetId, $data->globalObjects);
 					if (!$selectedTweet) continue;
 				}
 				// use $tweetId as key to avoid duplicates (e.g. user retweeting their own tweet)
