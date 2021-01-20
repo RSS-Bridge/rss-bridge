@@ -207,7 +207,7 @@ EOD
 		case 'By username':
 			// use search endpoint if without replies or without retweets enabled
 			if ($this->getInput('noretweet') || $this->getInput('norep')) {
-				$query = 'from:'.$this->getInput('u');
+				$query = 'from:' . $this->getInput('u');
 				if ($this->getInput('noretweet')) $query .= ' exclude:retweets';
 				if ($this->getInput('norep')) $query .= ' exclude:replies';
 				return self::API_URI
