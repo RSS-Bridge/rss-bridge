@@ -208,7 +208,8 @@ EOD
 			// use search endpoint if without replies or without retweets enabled
 			if ($this->getInput('noretweet') || $this->getInput('norep')) {
 				$query = 'from:' . $this->getInput('u');
-				if ($this->getInput('noretweet')) $query .= ' exclude:retweets';
+				// Twitter's from: search excludes retweets by default
+				if (!$this->getInput('noretweet')) $query .= ' include:nativeretweets';
 				if ($this->getInput('norep')) $query .= ' exclude:replies';
 				return self::API_URI
 				. '/2/search/adaptive.json?q='
