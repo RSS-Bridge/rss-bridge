@@ -1,7 +1,7 @@
 <?php
 class Arte7Bridge extends BridgeAbstract {
 
-	const MAINTAINER = 'mitsukarenai';
+	// const MAINTAINER = 'mitsukarenai';
 	const NAME = 'Arte +7';
 	const URI = 'https://www.arte.tv/';
 	const CACHE_TIMEOUT = 1800; // 30min
