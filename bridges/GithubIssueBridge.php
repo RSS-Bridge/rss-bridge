@@ -170,7 +170,7 @@ class GithubIssueBridge extends BridgeAbstract {
 		case 'Project Issues':
 			foreach($html->find('.js-active-navigation-container .js-navigation-item') as $issue) {
 				$info = $issue->find('.opened-by', 0);
-				
+
 				preg_match('/\/([0-9]+)$/', $issue->find('a', 0)->href, $match);
 				$issueNbr = $match[1];
 
