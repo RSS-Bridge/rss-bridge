@@ -123,7 +123,7 @@ class DownDetectorBridge extends BridgeAbstract {
 			case 'Australia':
 			case 'UK':
 				$date = DateTime::createFromFormat('d/m/Y', $date);
-				return strtotime($date->format('Y-m-d') . $time);
+				return $date->format('Y-m-d') . $time;
 			case 'Brasil':
 			case 'Chile':
 			case 'Colombia':
@@ -133,12 +133,12 @@ class DownDetectorBridge extends BridgeAbstract {
 			case 'Perú':
 			case 'Portugal':
 				$date = DateTime::createFromFormat('d/m/Y', $date);
-				return strtotime($date->format('Y-m-d') . $time);
+				return $date->format('Y-m-d') . $time;
 			case 'Magyarország':
 				$date = DateTime::createFromFormat('Y.m.d.', $date);
-				return strtotime($date->format('Y-m-d'). $time);
+				return $date->format('Y-m-d') . $time;
 			default:
-				return $dateTime;
+				return $date . $time;
 		}
 	}
 }
