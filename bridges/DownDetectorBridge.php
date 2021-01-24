@@ -108,7 +108,7 @@ class DownDetectorBridge extends BridgeAbstract {
 			$countryValues = array_flip($parameters['All Websites']['country']['values']);
 			$country = $countryValues[$this->getInput('country')];
 
-			return $country . ' - ' . self::NAME;
+			return $country . ' - DownDetector';
 		}
 
 		return self::NAME;
