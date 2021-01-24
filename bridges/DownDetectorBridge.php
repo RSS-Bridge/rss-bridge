@@ -122,15 +122,11 @@ class DownDetectorBridge extends BridgeAbstract {
 		$countryValues = array_flip($parameters['All Websites']['country']['values']);
 		$country = $countryValues[$this->getInput('country')];
 
-		$dateTime = trim($date . ' ' . $time);
-
 		switch($country) {
 			case 'Australia':
 			case 'UK':
-				$dateTime = str_replace('.', '', $dateTime);
-				$date = DateTime::createFromFormat('d/m/Y H:i a', $dateTime);
-
-				return strtotime($date->format('Y-m-d H:i:s'));
+				$date = DateTime::createFromFormat('d/m/Y', $date);
+				return strtotime($date->format('Y-m-d') . $time);
 			case 'Brasil':
 			case 'Chile':
 			case 'Colombia':
@@ -139,16 +135,11 @@ class DownDetectorBridge extends BridgeAbstract {
 			case 'Italia':
 			case 'Perú':
 			case 'Portugal':
-				$date = DateTime::createFromFormat('d/m/Y H:i', $dateTime);
-
-				return strtotime($date->format('Y-m-d H:i:s'));
-			case 'Magyarország': // Fix this
-				$date = DateTime::createFromFormat('Y.m.d. g.i', $dateTime);
-
-				return strtotime($date->format('Y-m-d H:i:s'));
-			case 'Issues':
-				//$this->extractIssues($html);
-				break;
+				$date = DateTime::createFromFormat('d/m/Y', $date);
+				return strtotime($date->format('Y-m-d') . $time);
+			case 'Magyarország':
+				$date = DateTime::createFromFormat('Y.m.d.', $date);
+				return strtotime($date->format('Y-m-d'). $time);
 			default:
 				return $dateTime;
 		}
