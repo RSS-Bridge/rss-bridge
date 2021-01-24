@@ -62,8 +62,6 @@ class DownDetectorBridge extends BridgeAbstract {
 		),
 	);
 
-	const API_TOKEN = 'YW5kcm9pZF9hcGlfdXNlcl92MTpxTkRyenZSczY1bW1ESlk0ZVNIWmtobFY=';
-
 	public function collectData(){
 
 		if($this->queriedContext == 'All Websites') {
@@ -112,7 +110,7 @@ class DownDetectorBridge extends BridgeAbstract {
 			$parameters = $this->getParameters();
 			$countryValues = array_flip($parameters['All Websites']['country']['values']);
 			$country = $countryValues[$this->getInput('country')];
-		
+
 			return $country . ' - ' . self::NAME;
 		}
 
