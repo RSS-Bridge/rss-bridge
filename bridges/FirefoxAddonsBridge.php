@@ -18,6 +18,7 @@ class FirefoxAddonsBridge extends BridgeAbstract {
 
 	private $feedName = '';
 	private $releaseDateRegex = '/Released ([\w, ]+) - ([\w. ]+)/';
+	private $xpiFileRegex = '/([A-Za-z0-9_.-]+)\.xpi$/';
 	private $outgoingRegex = '/https:\/\/outgoing.prod.mozaws.net\/v1\/(?:[A-z0-9]+)\//';
 
 	public function collectData() {
@@ -39,18 +40,24 @@ class FirefoxAddonsBridge extends BridgeAbstract {
 				$size = $match[2];
 			}
 
+			$compatibility = $div->find('div.AddonVersionCard-compatibility', 0)->plaintext;
+			$license = $div->find('p.AddonVersionCard-license', 0)->innertext;
 			$downloadlink = $div->find('a.InstallButtonWrapper-download-link', 0)->href;
 			$releaseNotes = $this->removeOutgoinglink($div->find('div.AddonVersionCard-releaseNotes', 0));
+
+			if (preg_match($this->xpiFileRegex, $downloadlink, $match)) {
+				$xpiFilename = $match[0];
+			}
 
 			$item['content'] = <<<EOD
 <strong>Release Notes</strong>
 <p>{$releaseNotes}</p>
 <strong>Compatibility</strong>
-<p>{$div->find('div.AddonVersionCard-compatibility', 0)->plaintext}</p>
+<p>{$compatibility}</p>
 <strong>License</strong>
-<p>{$div->find('p.AddonVersionCard-license', 0)->innertext}</p>
+<p>{$license}</p>
 <strong>Download</strong>
-<p><a href="{$downloadlink}">{$downloadlink}</a> ($size)</p>
+<p><a href="{$downloadlink}">{$xpiFilename}</a> ($size)</p>
 EOD;
 
 			$this->items[] = $item;
