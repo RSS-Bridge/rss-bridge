@@ -83,7 +83,8 @@ class DownDetectorBridge extends BridgeAbstract {
 					$item['uri'] = $event->find('td', 0)->find('a', 0)->href;
 					$item['title'] = $event->find('td', 0)->find('a', 0)->plaintext
 						. '(' . trim($event->find('td', 1)->plaintext) . ' ' . trim($event->find('td', 2)->plaintext) . ')';
-					$item['content'] = 'User reports indicate problems at' . $event->find('td', 0)->find('a', 0)->plaintext . ' since ' . $event->find('td', 2)->plaintext;  
+					$item['content'] = 'User reports indicate problems at' . $event->find('td', 0)->find('a', 0)->plaintext 
+						. ' since ' . $event->find('td', 2)->plaintext;
 					$item['timestamp'] = $this->formatDate(
 						trim($event->find('td', 1)->plaintext),
 						trim($event->find('td', 2)->plaintext)
