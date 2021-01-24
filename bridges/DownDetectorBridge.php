@@ -67,8 +67,6 @@ class DownDetectorBridge extends BridgeAbstract {
 	public function collectData(){
 
 		if($this->queriedContext == 'All Websites') {
-			echo $this->getURI() . '/archive/';
-			
 			$html = getSimpleHTMLDOM($this->getURI() . '/archive/')
 				or returnClientError('Could not request website!.');
 
