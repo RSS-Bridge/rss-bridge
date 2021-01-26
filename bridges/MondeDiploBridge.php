@@ -20,7 +20,7 @@ class MondeDiploBridge extends BridgeAbstract {
 			$title = $element->find('h3', 0)->plaintext;
 			$datesAuteurs = $element->find('div.dates_auteurs', 0)->plaintext;
 			$item = array();
-			$item['uri'] = self::URI . $element->href;
+			$item['uri'] = urljoin(self::URI, $element->href);
 			$item['title'] = $this->cleanText($title) . ' - ' . $this->cleanText($datesAuteurs);
 			$item['content'] = $this->cleanText(str_replace(array($title, $datesAuteurs), '', $element->plaintext));
 
