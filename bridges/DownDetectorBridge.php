@@ -78,7 +78,7 @@ class DownDetectorBridge extends BridgeAbstract {
 	private	$statusUrlRegex = '/\/([a-zA-z0-9ö.]+)\/(?:statu(?:s|t)|problemas?|nu-merge
 |(?:feil-)?problem(y|i)?(?:-storningar)?(?:-fejl)?|stoerung|durum|storing|fora-do-ar|ne-rabotaet
 |masalah|shougai|ei-toimi)\/([a-zA-Z0-9-]+)/';
-	
+
 	public function collectData(){
 		if ($this->queriedContext == 'Specific Website') {
 			preg_match($this->statusUrlRegex, $this->getInput('page'), $match)
