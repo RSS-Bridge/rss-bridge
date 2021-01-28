@@ -60,45 +60,75 @@ class DownDetectorBridge extends BridgeAbstract {
 				)
 			)
 		),
+		'Specific Website' => array(
+			'page' => array(
+				'type' => 'text',
+				'name' => 'Status page',
+				'required' => true,
+				'exampleValue' => 'https://downdetector.com/status/rainbow-six',
+				'title' => 'URL of a DownDetector status page e.g: https://downdetector.com/status/rainbow-six/',
+			)
+		),
 	);
+
+	private $statusUrlRegex = '/\/([a-zA-z0-9ö.]+)\/(?:statu(?:s|t)|problemas?|nu-merge|(?:feil-)?problem(y|i)?(?:-storningar)'
+		. '?(?:-fejl)?|stoerung|durum|storing|fora-do-ar|ne-rabotaet|masalah|shougai|ei-toimi)\/([a-zA-Z0-9-]+)/';
+
+	private $hostname = '';
+	private $statusPageId = '';
+	private $feedname = '';
 
 	public function collectData(){
 
-		if($this->queriedContext == 'All Websites') {
-			$html = getSimpleHTMLDOM($this->getURI() . '/archive/')
-				or returnClientError('Could not request website!.');
+		if ($this->queriedContext == 'Specific Website') {
+			preg_match($this->statusUrlRegex, $this->getInput('page'), $match)
+				or returnClientError('Given URL does not seem to at a DownDetector status page!');
 
-			$html = defaultLinkTo($html, $this->getURI());
-
-			$table = $html->find('table.table-striped', 0);
-
-			if ($table) {
-				foreach ($table->find('tr') as $event) {
-					$td = $event->find('td', 0);
-
-					if (is_null($td)) {
-						continue;
-					}
-
-					$item['uri'] = $event->find('td', 0)->find('a', 0)->href;
-					$item['title'] = $event->find('td', 0)->find('a', 0)->plaintext .
-						'(' . trim($event->find('td', 1)->plaintext) . ' ' . trim($event->find('td', 2)->plaintext) . ')';
-					$item['content'] = 'User reports indicate problems at' . $event->find('td', 0)->find('a', 0)->plaintext .
-						' since ' . $event->find('td', 2)->plaintext;
-					$item['timestamp'] = $this->formatDate(
-						trim($event->find('td', 1)->plaintext),
-						trim($event->find('td', 2)->plaintext)
-					);
-
-					$this->items[] = $item;
-				}
-			}
+			$this->hostname = $match[1];
+			$this->statusPageId = $match[3];
 		}
+
+		$html = getSimpleHTMLDOM($this->getURI() . '/archive/')
+			or returnClientError('Could not request website!.');
+
+		$html = defaultLinkTo($html, $this->getURI());
+
+		if ($this->getInput('page')) {
+			$this->feedname = $html->find('li.breadcrumb-item.active', 0)->plaintext;
+		}
+		
+		$table = $html->find('table.table-striped', 0);
+
+		if ($table) {
+			foreach ($table->find('tr') as $event) {
+				$td = $event->find('td', 0);
+
+				if (is_null($td)) {
+					continue;
+				}
+
+				$item['uri'] = $event->find('td', 0)->find('a', 0)->href;
+				$item['title'] = $event->find('td', 0)->find('a', 0)->plaintext .
+					'(' . trim($event->find('td', 1)->plaintext) . ' ' . trim($event->find('td', 2)->plaintext) . ')';
+				$item['content'] = 'User reports indicate problems at' . $event->find('td', 0)->find('a', 0)->plaintext .
+					' since ' . $event->find('td', 2)->plaintext;
+				$item['timestamp'] = $this->formatDate(
+					trim($event->find('td', 1)->plaintext),
+					trim($event->find('td', 2)->plaintext),
+				);
+
+				$this->items[] = $item;
+			}
+		}		
 	}
 
-	public function getURI() {
+	public function getURI() {	
 		if($this->getInput('country')) {
 			return $this->getInput('country');
+
+		} else if ($this->getInput('page')) {
+			return 'https://' . $this->hostname . '/status/' . $this->statusPageId;  
+
 		} else {
 			return self::URI;
 		}
@@ -106,22 +136,20 @@ class DownDetectorBridge extends BridgeAbstract {
 
 	public function getName() {
 		if($this->getInput('country')) {
-			$parameters = $this->getParameters();
-			$countryValues = array_flip($parameters['All Websites']['country']['values']);
-			$country = $countryValues[$this->getInput('country')];
-
+			$country = $this->getCountry($this->getInput('country'));
 			return $country . ' - DownDetector';
+		}
+
+		if ($this->getInput('page')) {
+			$country = $this->getCountry($this->hostname);
+			return $this->feedname .  ' - ' . $country . '  - DownDetector';
 		}
 
 		return self::NAME;
 	}
 
 	private function formatDate($date, $time) {
-		$parameters = $this->getParameters();
-		$countryValues = array_flip($parameters['All Websites']['country']['values']);
-		$country = $countryValues[$this->getInput('country')];
-
-		switch($country) {
+		switch($this->getCountry()) {
 			case 'Australia':
 			case 'UK':
 				$date = DateTime::createFromFormat('d/m/Y', $date);
