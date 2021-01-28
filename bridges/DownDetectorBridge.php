@@ -143,4 +143,24 @@ class DownDetectorBridge extends BridgeAbstract {
 				return $date . $time;
 		}
 	}
+
+	private function getCountry() {
+		if($this->getInput('country')) {
+			$input = $this->getInput('country');
+		}
+
+		if ($this->getInput('page')) {
+			if (empty($this->hostname)) {
+				return 'N/A';
+			}
+
+			$input = 'https://' . $this->hostname;
+		}
+
+		$parameters = $this->getParameters();
+		$countryValues = array_flip($parameters['All Websites']['country']['values']);
+		$country = $countryValues[$input];
+
+		return $country;
+	}
 }
