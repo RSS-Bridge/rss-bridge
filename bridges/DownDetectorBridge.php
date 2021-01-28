@@ -71,8 +71,9 @@ class DownDetectorBridge extends BridgeAbstract {
 		),
 	);
 
-	private $statusUrlRegex = '/\/([a-zA-z0-9ö.]+)\/(?:statu(?:s|t)|problemas?|nu-merge|(?:feil-)?problem(y|i)?(?:-storningar)'
-		. '?(?:-fejl)?|stoerung|durum|storing|fora-do-ar|ne-rabotaet|masalah|shougai|ei-toimi)\/([a-zA-Z0-9-]+)/';
+	private $statusUrlRegex = '/\/([a-zA-z0-9ö.]+)\/(?:statu(?:s|t)|problemas?|nu-merge|(?:feil-)?problem(y|i)?' .
+		'(?:-storningar)?(?:-fejl)?|stoerung|durum|storing|fora-do-ar|' .
+		'ne-rabotaet|masalah|shougai|ei-toimi)\/([a-zA-Z0-9-]+)/';
 
 	private $hostname = '';
 	private $statusPageId = '';
@@ -96,7 +97,7 @@ class DownDetectorBridge extends BridgeAbstract {
 		if ($this->getInput('page')) {
 			$this->feedname = $html->find('li.breadcrumb-item.active', 0)->plaintext;
 		}
-		
+
 		$table = $html->find('table.table-striped', 0);
 
 		if ($table) {
@@ -119,15 +120,15 @@ class DownDetectorBridge extends BridgeAbstract {
 
 				$this->items[] = $item;
 			}
-		}		
+		}
 	}
 
-	public function getURI() {	
+	public function getURI() {
 		if($this->getInput('country')) {
 			return $this->getInput('country');
 
-		} else if ($this->getInput('page')) {
-			return 'https://' . $this->hostname . '/status/' . $this->statusPageId;  
+		} elseif ($this->getInput('page')) {
+			return 'https://' . $this->hostname . '/status/' . $this->statusPageId;
 
 		} else {
 			return self::URI;
@@ -142,7 +143,7 @@ class DownDetectorBridge extends BridgeAbstract {
 
 		if ($this->getInput('page')) {
 			$country = $this->getCountry($this->hostname);
-			return $this->feedname .  ' - ' . $country . '  - DownDetector';
+			return $this->feedname . ' - ' . $country . '  - DownDetector';
 		}
 
 		return self::NAME;
