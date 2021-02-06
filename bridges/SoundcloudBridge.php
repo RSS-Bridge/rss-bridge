@@ -134,7 +134,7 @@ class SoundCloudBridge extends BridgeAbstract {
 				$clientID = $matches[1];
 				$this->clientIDCache->saveData($clientID);
 
-				return $clientID;		
+				return $clientID;
 			}
 		}
 
