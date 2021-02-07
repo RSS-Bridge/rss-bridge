@@ -109,8 +109,7 @@ class GithubIssueBridge extends BridgeAbstract {
 	}
 
 	private function extractIssueComment($issueNbr, $title, $comment){
-
-		$uri = $this->buildGitHubIssueCommentUri($issueNbr, $comment->parent->id);
+		$uri = $this->buildGitHubIssueCommentUri($issueNbr, $comment->id);
 
 		$author = $comment->find('.author', 0)->plaintext;
 
@@ -171,9 +170,9 @@ class GithubIssueBridge extends BridgeAbstract {
 		case 'Project Issues':
 			foreach($html->find('.js-active-navigation-container .js-navigation-item') as $issue) {
 				$info = $issue->find('.opened-by', 0);
-				$issueNbr = substr(
-					trim($info->plaintext), 1, strpos(trim($info->plaintext), ' ')
-				);
+
+				preg_match('/\/([0-9]+)$/', $issue->find('a', 0)->href, $match);
+				$issueNbr = $match[1];
 
 				$item = array();
 				$item['content'] = '';

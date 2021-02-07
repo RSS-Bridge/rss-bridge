@@ -86,7 +86,7 @@ favicon-63b2904a073c89b52b19aa08cebc16a154bcf83fee8ecc6439968b1e6db569c7.ico';
 
 	private function getImageTag($preview_path, $title){
 		return sprintf(
-			'<br /> <a href="%s"><img src="%s" alt="%s" /></a>',
+			'<br /> <a href="%s"><img srcset="%s" alt="%s" /></a>',
 			$this->getFullSizeImagePath($preview_path),
 			$preview_path,
 			$title
@@ -94,6 +94,11 @@ favicon-63b2904a073c89b52b19aa08cebc16a154bcf83fee8ecc6439968b1e6db569c7.ico';
 	}
 
 	private function getFullSizeImagePath($preview_path){
-		return explode('?compress=1', $preview_path)[0];
+		// Get last image from srcset
+		$src_set_urls = explode(',', $preview_path);
+		$url = end($src_set_urls);
+		$url = explode(' ', $url)[1];
+
+		return htmlspecialchars_decode($url);
 	}
 }

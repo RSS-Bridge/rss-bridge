@@ -8,7 +8,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 	 */
 
 	const NAME = 'Zone Telechargement';
-	const URI = 'https://www.zt-za.com/';
+	const URI = 'https://www.zt-za.net/';
 	const DESCRIPTION = 'Suivi de série sur Zone Telechargement';
 	const MAINTAINER = 'sysadminstory';
 	const PARAMETERS = array(
@@ -34,17 +34,17 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 	);
 
 	// This is an URL that is not protected by robot protection for Direct Download
-	const UNPROTECED_URI = 'https://www.zone-annuaire.com/';
+	const UNPROTECTED_URI = 'https://www.zone-telechargement.net/';
 
 	// This is an URL that is not protected by robot protection for Streaming Links
-	const UNPROTECED_URI_STREAMING = 'https://zone-telechargement.stream/';
+	const UNPROTECTED_URI_STREAMING = 'https://zone-telechargement.stream/';
 
 	public function getIcon() {
-		return self::UNPROTECED_URI . '/templates/Default/images/favicon.ico';
+		return self::UNPROTECTED_URI . '/templates/Default/images/favicon.ico';
 	}
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM(self::UNPROTECED_URI . $this->getInput('url'))
+		$html = getSimpleHTMLDOM(self::UNPROTECTED_URI . $this->getInput('url'))
 			or returnServerError('Could not request Zone Telechargement.');
 
 		$filter = $this->getInput('filter');
@@ -79,7 +79,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 		// Handle the Streaming links
 		if($filter == 'both' || $filter == 'streaming') {
 			// Get the post content, on the dedicated streaming website
-			$htmlstreaming = getSimpleHTMLDOM(self::UNPROTECED_URI_STREAMING . $this->getInput('url'))
+			$htmlstreaming = getSimpleHTMLDOM(self::UNPROTECTED_URI_STREAMING . $this->getInput('url'))
 				or returnServerError('Could not request Zone Telechargement.');
 			// Get the HTML element containing all the links
 			$streaminglinkshtml = $htmlstreaming->find('p[style=background-color: #FECC00;]', 1)->parent()->next_sibling();
