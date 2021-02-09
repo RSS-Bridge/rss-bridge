@@ -122,7 +122,7 @@ class FormatFactory extends FactoryAbstract {
 	 * valid, null otherwise.
 	 */
 	protected function sanitizeFormatName($name) {
-		$name = ucfirst($name);
+		$name = ucfirst(strtolower($name));
 
 		if(is_string($name)) {
 
