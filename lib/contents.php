@@ -311,7 +311,7 @@ function getSimpleHTMLDOMCached($url,
 	$time = $cache->getTime();
 	if($time !== false
 	&& (time() - $duration < $time)
-	&& Debug::isEnabled()) { // Contents within duration
+	&& !Debug::isEnabled()) { // Contents within duration
 		$content = $cache->loadData();
 	} else { // Content not within duration
 		$content = getContents($url, $header, $opts);
