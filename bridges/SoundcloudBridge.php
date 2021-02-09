@@ -27,6 +27,9 @@ class SoundCloudBridge extends BridgeAbstract {
 	private $feedIcon = null;
 	private $clientIDCache = null;
 
+	private $clientIdRegex = '/client_id.*?"(.+?)"/';
+	private $widgetRegex = '/widget-.+?\.js/';
+
 	public function collectData(){
 		$res = $this->apiGet('resolve', array(
 			'url' => 'https://soundcloud.com/' . $this->getInput('u')
@@ -112,21 +115,32 @@ class SoundCloudBridge extends BridgeAbstract {
 
 		// Without url=http, this returns a 404
 		$playerHTML = getContents('https://w.soundcloud.com/player/?url=http')
-		or returnServerError('Unable to get player page.');
-		$regex = '/widget-.+?\.js/';
-		if(preg_match($regex, $playerHTML, $matches) == false)
+			or returnServerError('Unable to get player page.');
+
+		// Extract widget JS filenames from player page
+		if(preg_match_all($this->widgetRegex, $playerHTML, $matches) == false)
 			returnServerError('Unable to find widget JS URL.');
-		$widgetURL = 'https://widget.sndcdn.com/' . $matches[0];
 
-		$widgetJS = getContents($widgetURL)
-		or returnServerError('Unable to get widget JS page.');
-		$regex = '/client_id.*?"(.+?)"/';
-		if(preg_match($regex, $widgetJS, $matches) == false)
+		$clientID = '';
+
+		// Loop widget js files and extract client ID
+		foreach ($matches[0] as $widgetFile) {
+			$widgetURL = 'https://widget.sndcdn.com/' . $widgetFile;
+
+			$widgetJS = getContents($widgetURL)
+				or returnServerError('Unable to get widget JS page.');
+
+			if(preg_match($this->clientIdRegex, $widgetJS, $matches)) {
+				$clientID = $matches[1];
+				$this->clientIDCache->saveData($clientID);
+
+				return $clientID;
+			}
+		}
+
+		if (empty($clientID)) {
 			returnServerError('Unable to find client ID.');
-		$clientID = $matches[1];
-
-		$this->clientIDCache->saveData($clientID);
-		return $clientID;
+		}
 	}
 
 	private function buildAPIURL($endpoint, $parameters){
