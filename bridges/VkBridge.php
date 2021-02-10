@@ -379,6 +379,7 @@ class VkBridge extends BridgeAbstract
 			return $time;
 		} else {
 			$strdate = $post->find('span.rel_date', 0)->plaintext;
+			$strdate = preg_replace('/[\x00-\x1F\x7F-\xFF]/', ' ', $strdate);
 
 			$date = date_parse($strdate);
 			if (!$date['year']) {
