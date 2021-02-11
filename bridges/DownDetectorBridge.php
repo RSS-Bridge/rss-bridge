@@ -126,7 +126,7 @@ class DownDetectorBridge extends BridgeAbstract {
 		if($this->getInput('country')) {
 			return $this->getInput('country');
 		}
-		
+
 		if ($this->getInput('page')) {
 			return 'https://' . $this->hostname . '/status/' . $this->statusPageId;
 		}
