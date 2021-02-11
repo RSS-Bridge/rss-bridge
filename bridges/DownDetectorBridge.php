@@ -125,13 +125,13 @@ class DownDetectorBridge extends BridgeAbstract {
 	public function getURI() {
 		if($this->getInput('country')) {
 			return $this->getInput('country');
-
-		} elseif ($this->getInput('page')) {
-			return 'https://' . $this->hostname . '/status/' . $this->statusPageId;
-
-		} else {
-			return self::URI;
 		}
+		
+		if ($this->getInput('page')) {
+			return 'https://' . $this->hostname . '/status/' . $this->statusPageId;
+		}
+
+		return self::URI;
 	}
 
 	public function getName() {
