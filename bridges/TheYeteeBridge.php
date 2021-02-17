@@ -26,7 +26,7 @@ class TheYeteeBridge extends BridgeAbstract {
 
 				$item['uri'] = static::URI;
 
-				$content = '<p>'.$title.' by '.$author.'</p>';
+				$content = '<p>' . $title . ' by ' . $author . '</p>';
 				$photos = $element->find('a.img');
 				foreach($photos as $photo) {
 					$content = $content . "<br /><img src='$photo->href' />";
