@@ -34,7 +34,7 @@ class RedisCache implements CacheInterface {
 		}
 		$conn = new Redis();
 		$conn->connect($host, $port) or returnServerError('Could not connect to redis server');
-		if ($password && strlen($password) > 0)
+		if ($password && strlen($password)>0)
 			$conn->auth($password);
 
 		$this->conn = $conn;
@@ -42,11 +42,10 @@ class RedisCache implements CacheInterface {
 
 	public function loadData(){
 		if ($this->data) return $this->data;
-		$result = $this->conn->get($this->getCacheKey());
+		$result = json_decode($this->conn->get($this->getCacheKey()),true);
 		if ($result === false) {
 			return null;
 		}
-
 		$this->time = $result['time'];
 		$this->data = $result['data'];
 		return $result['data'];
@@ -54,10 +53,10 @@ class RedisCache implements CacheInterface {
 
 	public function saveData($datas){
 		$time = time();
-		$object_to_save = array(
+		$object_to_save = json_encode(array(
 			'data' => $datas,
 			'time' => $time,
-		);
+		));
 		$result = $this->conn->set($this->getCacheKey(), $object_to_save, $this->expiration);
 
 		if($result === false) {
@@ -78,7 +77,7 @@ class RedisCache implements CacheInterface {
 
 	public function purgeCache($duration){
 		// Note: does not purges cache right now
-		// Just sets cache expiration and leave cache purging for redis itself
+		// Just sets cache expiration and leave cache purging for memcached itself
 		$this->expiration = $duration;
 	}
 
