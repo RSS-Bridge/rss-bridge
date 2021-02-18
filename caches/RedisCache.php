@@ -34,7 +34,7 @@ class RedisCache implements CacheInterface {
 		}
 		$conn = new Redis();
 		$conn->connect($host, $port) or returnServerError('Could not connect to redis server');
-		if ($password && strlen($password)>0)
+		if ($password && strlen($password) > 0)
 			$conn->auth($password);
 
 		$this->conn = $conn;
@@ -42,7 +42,7 @@ class RedisCache implements CacheInterface {
 
 	public function loadData(){
 		if ($this->data) return $this->data;
-		$result = json_decode($this->conn->get($this->getCacheKey()),true);
+		$result = json_decode($this->conn->get($this->getCacheKey()), true);
 		if ($result === false) {
 			return null;
 		}
