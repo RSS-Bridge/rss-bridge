@@ -33,6 +33,8 @@ class DockerhubBridge extends BridgeAbstract {
 		foreach ($data->results as $result) {
 			$item = array();
 
+			$lastPushed = date('Y-m-d H:i:s', strtotime($result->tag_last_pushed));
+
 			$item['title'] = $result->name;
 			$item['uid'] = $result->id;
 			$item['uri'] = $this->getTagUrl($result->name);
@@ -42,7 +44,7 @@ class DockerhubBridge extends BridgeAbstract {
 <Strong>Tag</strong><br>
 <p>{$result->name}</p>
 <Strong>Last pushed</strong><br>
-<p>{$result->tag_last_pushed}</p>
+<p>{$lastPushed}</p>
 <Strong>Images</strong><br>
 {$this->getImages($result)}
 EOD;
