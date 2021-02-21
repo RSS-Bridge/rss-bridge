@@ -12,7 +12,7 @@ class TheYeteeBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI)
 			or returnServerError('Could not request The Yetee.');
 
-		$div = $html->find('.hero-col');
+		$div = $html->find('.module_timed-item.is--full');
 		foreach($div as $element) {
 
 				$item = array();
@@ -21,16 +21,15 @@ class TheYeteeBridge extends BridgeAbstract {
 				$title = $element->find('h2', 0)->plaintext;
 				$item['title'] = $title;
 
-				$author = trim($element->find('div[class=credit]', 0)->plaintext);
+				$author = trim($element->find('.module_timed-item--artist a', 0)->plaintext);
 				$item['author'] = $author;
 
-				$uri = $element->find('div[class=controls] a', 0)->href;
-				$item['uri'] = static::URI . $uri;
+				$item['uri'] = static::URI;
 
-				$content = '<p>' . $element->find('section[class=product-listing-info] p', -1)->plaintext . '</p>';
-				$photos = $element->find('a[class=js-modaal-gallery] img');
+				$content = '<p>' . $title . ' by ' . $author . '</p>';
+				$photos = $element->find('a.img');
 				foreach($photos as $photo) {
-					$content = $content . "<br /><img src='$photo->src' />";
+					$content = $content . "<br /><img src='$photo->href' />";
 					$item['enclosures'][] = $photo->src;
 				}
 				$item['content'] = $content;
