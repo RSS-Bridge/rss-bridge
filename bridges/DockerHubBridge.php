@@ -1,6 +1,6 @@
 <?php
-class DockerhubBridge extends BridgeAbstract {
-	const NAME = 'Dockerhub Bridge';
+class DockerHubBridge extends BridgeAbstract {
+	const NAME = 'Docker Hub Bridge';
 	const URI = 'https://hub.docker.com';
 	const DESCRIPTION = 'Returns new images for a container';
 	const MAINTAINER = 'VerifiedJoseph';
@@ -64,7 +64,7 @@ EOD;
 
 	public function getName() {
 		if ($this->getInput('user')) {
-			return $this->getRepo() . ' - Dockerhub';
+			return $this->getRepo() . ' - Docker Hub';
 		}
 
 		return parent::getName();
@@ -100,7 +100,6 @@ EOD;
 				<td><a href="{$layersUrl}">{$id}</a></td>
 				<td>{$image->os}/{$image->architecture}</td>
 			</tr>
-<!--<a href="{$layersUrl}">{$id}</a> {$image->os}/{$image->architecture}-->
 EOD;
 		}
 
