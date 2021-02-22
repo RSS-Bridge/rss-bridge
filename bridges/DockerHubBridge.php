@@ -100,7 +100,6 @@ EOD;
 				<td><a href="{$layersUrl}">{$id}</a></td>
 				<td>{$image->os}/{$image->architecture}</td>
 			</tr>
-<!--<a href="{$layersUrl}">{$id}</a> {$image->os}/{$image->architecture}-->
 EOD;
 		}
 
