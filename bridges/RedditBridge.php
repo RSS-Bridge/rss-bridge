@@ -88,22 +88,23 @@ class RedditBridge extends BridgeAbstract {
 
 				$item = array();
 				$item['author'] = $data->author;
+				$item['uid'] = $data->id;
+				$item['timestamp'] = $data->created_utc;
+				['uri'] = $this->encodePermalink($data->permalink);
+
+				$item['categories'] = array();
 
 				if ($post->kind == 't1') {
 					$item['title'] = 'Comment: ' . $data->link_title;
 				} else {
 					$item['title'] = $data->title;
+
+					$item['categories'][] = $data->link_flair_text;
+					$item['categories'][] = $data->pinned ? 'Pinned' : null;
+					$item['categories'][] = $data->spoiler ? 'Spoiler' : null;
 				}
 
-				$item['uid'] = $data->id;
-				$item['timestamp'] = $data->created_utc;
-				$item['uri'] = $this->encodePermalink($data->permalink);
-
-				$item['categories'] = array();
-				$item['categories'][] = $data->link_flair_text;
-				$item['categories'][] = $data->pinned ? 'Pinned' : null;
 				$item['categories'][] = $data->over_18 ? 'NSFW' : null;
-				$item['categories'][] = $data->spoiler ? 'Spoiler' : null;
 				$item['categories'] = array_filter($item['categories']);
 
 				if ($post->kind == 't1') {
