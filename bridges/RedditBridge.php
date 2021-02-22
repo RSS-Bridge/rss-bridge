@@ -90,7 +90,7 @@ class RedditBridge extends BridgeAbstract {
 				$item['author'] = $data->author;
 				$item['uid'] = $data->id;
 				$item['timestamp'] = $data->created_utc;
-				['uri'] = $this->encodePermalink($data->permalink);
+				$item['uri'] = $this->encodePermalink($data->permalink);
 
 				$item['categories'] = array();
 
