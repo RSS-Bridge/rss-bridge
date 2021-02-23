@@ -26,7 +26,7 @@ class NordbayernBridge extends BridgeAbstract {
 				'Gunzenhausen' => 'gunzenhausen',
 				'Hersbruck' => 'hersbruck',
 				'Herzogenaurach' => 'herzogenaurach',
-				'Hilpolstein' => 'holpolstein',
+				'Hilpoltstein' => 'hilpoltstein',
 				'Höchstadt' => 'hoechstadt',
 				'Lauf' => 'lauf',
 				'Neumarkt' => 'neumarkt',
