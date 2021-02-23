@@ -1,5 +1,6 @@
 <?php
 class TwitterBridge extends BridgeAbstract {
+	private $icon = "none";
 	const NAME = 'Twitter Bridge';
 	const URI = 'https://twitter.com/';
 	const API_URI = 'https://api.twitter.com';
@@ -153,6 +154,10 @@ EOD
 		return null;
 	}
 
+	public function getIcon(){
+		return $this->icon;
+	}
+
 	public function getName(){
 		switch($this->queriedContext) {
 		case 'By keyword or hashtag':
@@ -290,6 +295,7 @@ EOD
 			}
 			$item['avatar'] = $user_info->profile_image_url_https;
 
+
 			$item['id'] = $tweet->id_str;
 			$item['uri'] = self::URI . $item['username'] . '/status/' . $item['id'];
 			// extract tweet timestamp
@@ -326,6 +332,7 @@ EOD
 			}
 			// generate the title
 			$item['title'] = strip_tags($cleanedTweet);
+			//$item["title"] = "Tweet by @".$user_info->screen_name;
 
 			// Add avatar
 			$picture_html = '';
@@ -350,7 +357,7 @@ EOD;
 						$image = $media->media_url_https . '?name=orig';
 						$display_image = $media->media_url_https;
 						// add enclosures
-						$item['enclosures'][] = $image;
+						//$item['enclosures'][] = $image;
 
 						$media_html .= <<<EOD
 <a href="{$image}">
@@ -415,19 +422,16 @@ EOD;
 			}
 
 			$item['content'] = <<<EOD
-<div style="display: inline-block; vertical-align: top;">
-	{$picture_html}
-</div>
-<div style="display: inline-block; vertical-align: top;">
-	<blockquote>{$cleanedTweet}</blockquote>
-</div>
-<div style="display: block; vertical-align: top;">
-	<blockquote>{$media_html}</blockquote>
-</div>
+{$picture_html}
+{$cleanedTweet}
+{$media_html}
+
 EOD;
-
+			// use list icon as profile icon
+			$this->icon = $item['avatar'];
+			
 			$item['content'] = htmlspecialchars_decode($item['content'], ENT_QUOTES);
-
+			$item['content'] = "[". self::URI . $item['username'] . "/status/" . $item['id'] ."]";
 			// put out
 			$this->items[] = $item;
 		}

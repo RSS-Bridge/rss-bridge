@@ -101,7 +101,7 @@ class YoutubeBridge extends BridgeAbstract {
 		$item['timestamp'] = $time;
 		$item['uri'] = self::URI . 'watch?v=' . $vid;
 		$thumbnailUri = str_replace('/www.', '/img.', self::URI) . 'vi/' . $vid . '/0.jpg';
-		$item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $thumbnailUri . '" /></a><br />' . $desc;
+		$item['content'] = '['.$item['uri'].']\n'. $desc;
 		$this->items[] = $item;
 	}
 
@@ -278,6 +278,11 @@ class YoutubeBridge extends BridgeAbstract {
 			returnClientError("You must either specify either:\n - YouTube
  username (?u=...)\n - Channel id (?c=...)\n - Playlist id (?p=...)\n - Search (?s=...)");
 		}
+	}
+
+	public function getURI()
+	{
+		return "https://www.youtube.com/channel/".$this->getInput('c');
 	}
 
 	private function skipFeeds() {

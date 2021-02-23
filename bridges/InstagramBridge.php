@@ -6,6 +6,8 @@ class InstagramBridge extends BridgeAbstract {
 	const URI = 'https://www.instagram.com/';
 	const DESCRIPTION = 'Returns the newest images';
 
+	private $icon = "none";
+
 	const PARAMETERS = array(
 		'Username' => array(
 			'u' => array(
@@ -50,30 +52,35 @@ class InstagramBridge extends BridgeAbstract {
 	const TAG_QUERY_HASH = '9b498c08113f1e09617a1703c22b2f32';
 	const SHORTCODE_QUERY_HASH = '865589822932d1b43dfe312121dd353a';
 
+	public function getIcon(){
+		return $this->icon;
+	}
+	
 	protected function getInstagramUserId($username) {
 
 		if(is_numeric($username)) return $username;
-
+		
 		$cacheFac = new CacheFactory();
 		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
 		$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
 		$cache->setScope(get_called_class());
 		$cache->setKey(array($username));
 		$key = $cache->loadData();
-
-		if($key == null) {
+		
+		//if($key == null) {
 				$data = getContents(self::URI . 'web/search/topsearch/?query=' . $username);
 
 				foreach(json_decode($data)->users as $user) {
 					if(strtolower($user->user->username) === strtolower($username)) {
 						$key = $user->user->pk;
+						$this->icon = htmlentities($user->user->profile_pic_url);
 					}
 				}
 				if($key == null) {
 					returnServerError('Unable to find username in search result.');
 				}
-				$cache->saveData($key);
-		}
+				//$cache->saveData($key);
+		//}
 		return $key;
 
 	}
@@ -110,7 +117,6 @@ class InstagramBridge extends BridgeAbstract {
 
 			$item = array();
 			$item['uri'] = self::URI . 'p/' . $media->shortcode . '/';
-
 			if (isset($media->owner->username)) {
 				$item['author'] = $media->owner->username;
 			}
@@ -132,18 +138,16 @@ class InstagramBridge extends BridgeAbstract {
 			switch($media->__typename) {
 				case 'GraphSidecar':
 					$data = $this->getInstagramSidecarData($item['uri'], $item['title'], $media, $textContent);
-					$item['content'] = $data[0];
 					$item['enclosures'] = $data[1];
 					break;
 				case 'GraphImage':
-					$item['content'] = '<a href="' . htmlentities($item['uri']) . '" target="_blank">';
-					$item['content'] .= '<img src="' . htmlentities($mediaURI) . '" alt="' . $item['title'] . '" />';
-					$item['content'] .= '</a><br><br>' . nl2br(htmlentities($textContent));
+					// $item['content'] = '<a href="' . htmlentities($item['uri']) . '" target="_blank">';
+					// $item['content'] .= '<img src="' . htmlentities($mediaURI) . '" alt="' . $item['title'] . '" />';
+					// $item['content'] .= '</a>' . htmlentities($textContent);
 					$item['enclosures'] = array($mediaURI);
 					break;
 				case 'GraphVideo':
 					$data = $this->getInstagramVideoData($item['uri'], $mediaURI, $media, $textContent);
-					$item['content'] = $data[0];
 					if($directLink) {
 						$item['enclosures'] = $data[1];
 					} else {
@@ -253,7 +257,7 @@ class InstagramBridge extends BridgeAbstract {
 
 	public function getName(){
 		if(!is_null($this->getInput('u'))) {
-			return $this->getInput('u') . ' - Instagram Bridge';
+			return $this->getInput('u') . ' - Instagram';
 		}
 
 		return parent::getName();

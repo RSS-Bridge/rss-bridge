@@ -16,7 +16,7 @@ timezone = "UTC"
 
 ; Defines the cache type used by RSS-Bridge
 ; "file" = FileCache (default)
-type = "file"
+type = "redis"
 
 ; Allow users to specify custom timeout for specific requests.
 ; true  = enabled
@@ -83,6 +83,6 @@ host = "localhost"
 port = 11211
 
 [RedisCache]
-host = "localhost"
+host = 127.0.0.1
 port = 6379
-password = 
+password = foobared 
