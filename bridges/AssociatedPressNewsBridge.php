@@ -80,8 +80,13 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 
 		$this->feedName = $tagContents['tagObjs'][0]['name'];
 
-		foreach ($tagContents['cards'] as $index => $card) {
+		foreach ($tagContents['cards'] as $index => &$card) {
 			$item = array();
+
+			// Skip cards without a gcs URL
+			if (isset($card['contents'][0]['gcsUrl']) === false) {
+				continue;
+			}
 
 			$json = getContents($card['contents'][0]['gcsUrl'])
 				or returnServerError('Could not request: ' . $card['contents'][0]['gcsUrl']);
