@@ -36,7 +36,7 @@ class DockerHubBridge extends BridgeAbstract {
 
 		return null;
 	}
-	
+
 	public function collectData() {
 		$json = getContents($this->getApiUrl())
 			or returnServerError('Could not request: ' . $this->getURI());
