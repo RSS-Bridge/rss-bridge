@@ -30,7 +30,7 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 
 		return null;
 	}
-	
+
 	public function collectData() {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not request: ' . $this->getURI());
