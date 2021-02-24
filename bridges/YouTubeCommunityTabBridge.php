@@ -18,6 +18,19 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 	private $feedName = '';
 	private $itemTitle = '';
 
+	private $urlRegex = '/youtube\.com\/channel\/(UC[\w-]+)\/community/';
+
+	public function detectParameters($url) {
+		$params = array();
+
+		if(preg_match($this->urlRegex, $url, $matches)) {
+			$params['channel'] = $matches[1];
+			return $params;
+		}
+
+		return null;
+	}
+	
 	public function collectData() {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not request: ' . $this->getURI());
