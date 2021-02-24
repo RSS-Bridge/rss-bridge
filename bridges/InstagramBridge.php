@@ -67,7 +67,7 @@ class InstagramBridge extends BridgeAbstract {
 		$cache->setKey(array($username));
 		$key = $cache->loadData();
 		
-		//if($key == null) {
+		if($key == null) {
 				$data = getContents(self::URI . 'web/search/topsearch/?query=' . $username);
 
 				foreach(json_decode($data)->users as $user) {
@@ -79,8 +79,8 @@ class InstagramBridge extends BridgeAbstract {
 				if($key == null) {
 					returnServerError('Unable to find username in search result.');
 				}
-				//$cache->saveData($key);
-		//}
+				$cache->saveData($key);
+		}
 		return $key;
 
 	}
