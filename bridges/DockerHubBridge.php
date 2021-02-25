@@ -101,7 +101,8 @@ EOD;
 
 	private function getLayerUrl($name, $digest) {
 		if ($this->queriedContext === 'Official Image') {
-			return self::URI . '/layers/' . $this->getRepo() . '/library/' .  $this->getRepo() . '/' . $name . '/images/' . $digest;
+			return self::URI . '/layers/' . $this->getRepo() . '/library/' .
+				$this->getRepo() . '/' . $name . '/images/' . $digest;
 		}
 
 		return self::URI . '/layers/' . $this->getRepo() . '/' . $name . '/images/' . $digest;
