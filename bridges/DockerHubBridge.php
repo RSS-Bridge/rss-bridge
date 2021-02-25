@@ -37,9 +37,18 @@ class DockerHubBridge extends BridgeAbstract {
 	public function detectParameters($url) {
 		$params = array();
 
-		if(preg_match($this->urlRegex, $url, $matches)) {
+		// user submitted image
+		if(preg_match($this->imageUrlRegex, $url, $matches)) {
+			$params['context'] = 'User Submitted Image';
 			$params['user'] = $matches[1];
 			$params['repo'] = $matches[2];
+			return $params;
+		}
+
+		// official image
+		if(preg_match($this->officialImageUrlRegex, $url, $matches)) {
+			$params['context'] = 'Official Image';
+			$params['repo'] = $matches[1];
 			return $params;
 		}
 
