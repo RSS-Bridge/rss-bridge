@@ -20,14 +20,14 @@ class SymfonyCastsBridge extends BridgeAbstract {
 			$type = $div->find('h5', 0);
 			$title = $div->find('span', 0);
 			$dateString = $div->find('h5.font-gray', 0);
-			$href = $div->find('a',  0);
+			$href = $div->find('a', 0);
 			$url = 'https://symfonycasts.com' . $href->getAttribute('href');
 
 			$item = array(); // Create an empty item
 			$item['uid'] = $id;
 			$item['title'] = $title->innertext;
 			$item['timestamp'] = $dateString->innertext;
-			$item['content'] = $type->plaintext. '<a href="' . $url . '">' . $title . '</a>';
+			$item['content'] = $type->plaintext . '<a href="' . $url . '">' . $title . '</a>';
 			$item['uri'] = $url;
 			$this->items[] = $item; // Add item to the list
 		}
