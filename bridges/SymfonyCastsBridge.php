@@ -4,7 +4,7 @@ class SymfonyCastsBridge extends BridgeAbstract {
 	const NAME = 'SymfonyCasts Bridge';
 	const URI = 'https://symfonycasts.com/';
 	const DESCRIPTION = 'Follow new updates on symfonycasts.com';
-	const MAINTAINER = 'No maintainer';
+	const MAINTAINER = 'Park0';
 	const CACHE_TIMEOUT = 3600;
 
 	public function collectData() {
@@ -14,8 +14,6 @@ class SymfonyCastsBridge extends BridgeAbstract {
 
 		/* @var simple_html_dom $div */
 		foreach ($dives as $div) {
-			//var_dump($div);die();
-			//dump_html_tree($div);die();
 			$id = $div->getAttribute('data-mark-update-id-value');
 			$type = $div->find('h5', 0);
 			$title = $div->find('span', 0);
