@@ -21,6 +21,18 @@ class TelegramBridge extends BridgeAbstract {
 	private $itemTitle = '';
 
 	private $backgroundImageRegex = "/background-image:url\('(.*)'\)/";
+	private $detectParamsRegex = '/^https?:\/\/t.me\/(?:s\/)?([\w]+)$/';
+
+	public function detectParameters($url) {
+		$params = array();
+
+		if(preg_match($this->detectParamsRegex, $url, $matches) > 0) {
+			$params['username'] = $matches[1];
+			return $params;
+		}
+
+		return null;
+	}
 
 	public function collectData() {
 
