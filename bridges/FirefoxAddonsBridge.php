@@ -21,7 +21,7 @@ class FirefoxAddonsBridge extends BridgeAbstract {
 	private $xpiFileRegex = '/([A-Za-z0-9_.-]+)\.xpi$/';
 	private $outgoingRegex = '/https:\/\/outgoing.prod.mozaws.net\/v1\/(?:[A-z0-9]+)\//';
 
-	private $urlRegex = '/addons\.mozilla\.org\/[\w-]+\/firefox\/addon\/([\w-]+)/';
+	private $urlRegex = '/addons\.mozilla\.org\/(?:[\w-]+\/)?firefox\/addon\/([\w-]+)/';
 
 	public function detectParameters($url) {
 		$params = array();
