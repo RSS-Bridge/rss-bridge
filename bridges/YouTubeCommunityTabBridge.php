@@ -60,8 +60,10 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 			$item['content'] = '';
 
 			if (isset($details->contentText)) {
-				$this->itemTitle = $this->ellipsisTitle(nl2br($details->contentText->runs[0]->text));
-				$item['content'] = nl2br($details->contentText->runs[0]->text);
+				$text = $this->getText($details->contentText->runs);
+
+				$this->itemTitle = $this->ellipsisTitle($text);
+				$item['content'] = $text;
 			}
 
 			$item['content'] .= $this->getAttachments($details);
@@ -133,6 +135,28 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 		}
 	}
 
+	/**
+	 * Get text content for a post
+	 */
+	private function getText($runs) {
+		$text = '';
+
+		foreach ($runs as $part) {
+			$text .= $this->formatUrls($part->text);		
+		} 
+		
+		return nl2br($text);
+	}
+	
+	private function formatUrls($content) {
+		return preg_replace(
+			'/(http[s]{0,1}\:\/\/[a-zA-Z0-9.\/\?\&=\-_]{4,})/ims',
+			'<a target="_blank" href="$1" target="_blank">$1</a> ',
+			$content
+		);
+
+	}
+	
 	/**
 	 * Get attachments for posts
 	 */
