@@ -142,8 +142,8 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 		$text = '';
 
 		foreach ($runs as $part) {
-			$text .= $this->formatUrls($part->text);		
-		} 
+			$text .= $this->formatUrls($part->text);
+		}
 
 		return nl2br($text);
 	}
