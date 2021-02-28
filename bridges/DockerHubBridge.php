@@ -4,7 +4,8 @@ class DockerHubBridge extends BridgeAbstract {
 	const URI = 'https://hub.docker.com';
 	const DESCRIPTION = 'Returns new images for a container';
 	const MAINTAINER = 'VerifiedJoseph';
-	const PARAMETERS = array(array(
+	const PARAMETERS = array(
+		'User Submitted Image' => array(
 			'user' => array(
 				'name' => 'User',
 				'type' => 'text',
@@ -17,7 +18,15 @@ class DockerHubBridge extends BridgeAbstract {
 				'required' => true,
 				'exampleValue' => 'rss-bridge',
 			)
-		)
+		),
+		'Official Image' => array(
+			'repo' => array(
+				'name' => 'Repository',
+				'type' => 'text',
+				'required' => true,
+				'exampleValue' => 'postgres',
+			)
+		),
 	);
 
 	const CACHE_TIMEOUT = 3600; // 1 hour
@@ -55,7 +64,11 @@ EOD;
 	}
 
 	public function getURI() {
-		if ($this->getInput('user')) {
+		if ($this->queriedContext === 'Official Image') {
+			return self::URI . '/_/' . $this->getRepo();
+		}
+
+		if ($this->getInput('repo')) {
 			return self::URI . '/r/' . $this->getRepo();
 		}
 
@@ -63,7 +76,7 @@ EOD;
 	}
 
 	public function getName() {
-		if ($this->getInput('user')) {
+		if ($this->getInput('repo')) {
 			return $this->getRepo() . ' - Docker Hub';
 		}
 
@@ -71,18 +84,35 @@ EOD;
 	}
 
 	private function getRepo() {
+		if ($this->queriedContext === 'Official Image') {
+			return $this->getInput('repo');
+		}
+
 		return $this->getInput('user') . '/' . $this->getInput('repo');
 	}
 
 	private function getApiUrl() {
+		if ($this->queriedContext === 'Official Image') {
+			return $this->apiURL . 'library/' . $this->getRepo() . '/tags/?page_size=25&page=1';
+		}
+
 		return $this->apiURL . $this->getRepo() . '/tags/?page_size=25&page=1';
 	}
 
 	private function getLayerUrl($name, $digest) {
+		if ($this->queriedContext === 'Official Image') {
+			return self::URI . '/layers/' . $this->getRepo() . '/library/' .
+				$this->getRepo() . '/' . $name . '/images/' . $digest;
+		}
+
 		return self::URI . '/layers/' . $this->getRepo() . '/' . $name . '/images/' . $digest;
 	}
 
 	private function getTagUrl($name) {
+		if ($this->queriedContext === 'Official Image') {
+			return self::URI . '/_/' . $this->getRepo() . '?tab=tags&name=' . $name;
+		}
+
 		return self::URI . '/r/' . $this->getRepo() . '/tags?name=' . $name;
 	}
 
