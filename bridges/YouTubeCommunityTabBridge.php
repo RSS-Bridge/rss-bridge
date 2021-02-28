@@ -144,19 +144,10 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 		foreach ($runs as $part) {
 			$text .= $this->formatUrls($part->text);		
 		} 
-		
+
 		return nl2br($text);
 	}
-	
-	private function formatUrls($content) {
-		return preg_replace(
-			'/(http[s]{0,1}\:\/\/[a-zA-Z0-9.\/\?\&=\-_]{4,})/ims',
-			'<a target="_blank" href="$1" target="_blank">$1</a> ',
-			$content
-		);
 
-	}
-	
 	/**
 	 * Get attachments for posts
 	 */
@@ -226,5 +217,13 @@ EOD;
 		}
 
 		return $text;
+	}
+
+	private function formatUrls($content) {
+		return preg_replace(
+			'/(http[s]{0,1}\:\/\/[a-zA-Z0-9.\/\?\&=\-_]{4,})/ims',
+			'<a target="_blank" href="$1" target="_blank">$1</a> ',
+			$content
+		);
 	}
 }
