@@ -133,7 +133,7 @@ class TelegramBridge extends BridgeAbstract {
 			);
 		}
 		if ($messageDiv->find('div.tgme_widget_message_document', 0)) {
-			$message .= "Attachments:";
+			$message .= 'Attachments:';
 			foreach ($messageDiv->find('div.tgme_widget_message_document') as $attachments) {
 				$message .= $attachments->find('div.tgme_widget_message_document_title.accent_color', 0);
 			}
