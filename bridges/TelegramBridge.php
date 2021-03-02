@@ -132,7 +132,6 @@ class TelegramBridge extends BridgeAbstract {
 				$messageDiv->find('div.tgme_widget_message_text.js-message_text', 0)->plaintext
 			);
 		}
-		
 		if ($messageDiv->find('div.tgme_widget_message_document', 0)) {
 			$message .= "Attachments:";
 			
