@@ -1,7 +1,7 @@
 <?php
 class InstagramBridge extends BridgeAbstract {
 
-	const MAINTAINER = 'pauder';
+	// const MAINTAINER = 'pauder';
 	const NAME = 'Instagram Bridge';
 	const URI = 'https://www.instagram.com/';
 	const DESCRIPTION = 'Returns the newest images';
@@ -47,7 +47,7 @@ class InstagramBridge extends BridgeAbstract {
 	);
 
 	const USER_QUERY_HASH = '58b6785bea111c67129decbe6a448951';
-	const TAG_QUERY_HASH = '174a5243287c5f3a7de741089750ab3b';
+	const TAG_QUERY_HASH = '9b498c08113f1e09617a1703c22b2f32';
 	const SHORTCODE_QUERY_HASH = '865589822932d1b43dfe312121dd353a';
 
 	protected function getInstagramUserId($username) {
@@ -131,7 +131,7 @@ class InstagramBridge extends BridgeAbstract {
 
 			switch($media->__typename) {
 				case 'GraphSidecar':
-					$data = $this->getInstagramSidecarData($item['uri'], $item['title']);
+					$data = $this->getInstagramSidecarData($item['uri'], $item['title'], $media, $textContent);
 					$item['content'] = $data[0];
 					$item['enclosures'] = $data[1];
 					break;
@@ -142,7 +142,7 @@ class InstagramBridge extends BridgeAbstract {
 					$item['enclosures'] = array($mediaURI);
 					break;
 				case 'GraphVideo':
-					$data = $this->getInstagramVideoData($item['uri'], $mediaURI);
+					$data = $this->getInstagramVideoData($item['uri'], $mediaURI, $media, $textContent);
 					$item['content'] = $data[0];
 					if($directLink) {
 						$item['enclosures'] = $data[1];
@@ -160,11 +160,7 @@ class InstagramBridge extends BridgeAbstract {
 	}
 
 	// returns Sidecar(a post which has multiple media)'s contents and enclosures
-	protected function getInstagramSidecarData($uri, $postTitle) {
-		$mediaInfo = $this->getSinglePostData($uri);
-
-		$textContent = $this->getTextContent($mediaInfo);
-
+	protected function getInstagramSidecarData($uri, $postTitle, $mediaInfo, $textContent) {
 		$enclosures = array();
 		$content = '';
 		foreach($mediaInfo->edge_sidecar_to_children->edges as $singleMedia) {
@@ -187,10 +183,7 @@ class InstagramBridge extends BridgeAbstract {
 	}
 
 	// returns Video post's contents and enclosures
-	protected function getInstagramVideoData($uri, $mediaURI) {
-		$mediaInfo = $this->getSinglePostData($uri);
-
-		$textContent = $this->getTextContent($mediaInfo);
+	protected function getInstagramVideoData($uri, $mediaURI, $mediaInfo, $textContent) {
 		$content = '<video controls poster="' . $mediaURI . '">';
 		$content .= '<source src="' . $mediaInfo->video_url . '" type="video/mp4">';
 		$content .= '<img src="' . $mediaURI . '" alt="">';

@@ -96,7 +96,7 @@ class FuturaSciencesBridge extends FeedExpander {
 	}
 
 	private function extractArticleContent($article){
-		$contents = $article->find('section.article-text-classic', 0)->innertext;
+		$contents = $article->find('section.article-text', 1)->innertext;
 		$headline = trim($article->find('p.description', 0)->plaintext);
 		if(!empty($headline))
 			$headline = '<p><b>' . $headline . '</b></p>';
@@ -129,6 +129,7 @@ class FuturaSciencesBridge extends FeedExpander {
 		$contents = stripWithDelimiters($contents, 'fs:xt:clickname="', '"');
 		$contents = StripWithDelimiters($contents, '<section class="module-toretain module-propal-nl', '</section>');
 		$contents = stripWithDelimiters($contents, '<script ', '</script>');
+		$contents = stripWithDelimiters($contents, '<script>', '</script>');
 
 		return $headline . trim($contents);
 	}

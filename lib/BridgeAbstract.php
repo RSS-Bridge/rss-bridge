@@ -62,6 +62,13 @@ abstract class BridgeAbstract implements BridgeInterface {
 	const CACHE_TIMEOUT = 3600;
 
 	/**
+	 * Configuration for the bridge
+	 *
+	 * Use {@see BridgeAbstract::getConfiguration()} to read this parameter
+	 */
+	const CONFIGURATION = array();
+
+	/**
 	 * Parameters for the bridge
 	 *
 	 * Use {@see BridgeAbstract::getParameters()} to read this parameter
@@ -239,6 +246,36 @@ abstract class BridgeAbstract implements BridgeInterface {
 	}
 
 	/**
+	 * Loads configuration for the bridge
+	 *
+	 * Returns errors and aborts execution if the provided configuration is
+	 * invalid.
+	 *
+	 * @return void
+	 */
+	public function loadConfiguration() {
+		foreach(static::CONFIGURATION as $optionName => $optionValue) {
+
+			$configurationOption = Configuration::getConfig(get_class($this), $optionName);
+
+			if($configurationOption !== null) {
+				$this->configuration[$optionName] = $configurationOption;
+				continue;
+			}
+
+			if(isset($optionValue['required']) && $optionValue['required'] === true) {
+				returnServerError(
+					'Missing configuration option: '
+					. $optionName
+				);
+			} elseif(isset($optionValue['defaultValue'])) {
+				$this->configuration[$optionName] = $optionValue['defaultValue'];
+			}
+
+		}
+	}
+
+	/**
 	 * Returns the value for the provided input
 	 *
 	 * @param string $input The input name
@@ -249,6 +286,19 @@ abstract class BridgeAbstract implements BridgeInterface {
 			return null;
 		}
 		return $this->inputs[$this->queriedContext][$input]['value'];
+	}
+
+	/**
+	 * Returns the value for the selected configuration
+	 *
+	 * @param string $input The option name
+	 * @return mixed|null The option value or null if the input is not defined
+	 */
+	public function getOption($name){
+		if(!isset($this->configuration[$name])) {
+			return null;
+		}
+		return $this->configuration[$name];
 	}
 
 	/** {@inheritdoc} */
@@ -268,7 +318,12 @@ abstract class BridgeAbstract implements BridgeInterface {
 
 	/** {@inheritdoc} */
 	public function getIcon(){
-		return '';
+		return static::URI . '/favicon.ico';
+	}
+
+	/** {@inheritdoc} */
+	public function getConfiguration(){
+		return static::CONFIGURATION;
 	}
 
 	/** {@inheritdoc} */

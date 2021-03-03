@@ -126,7 +126,7 @@ This bridge is not fetching its content through a secure connection</div>';
 				if(isset($inputEntry['title']))
 					$form .= '<i class="info" title="' . filter_var($inputEntry['title'], FILTER_SANITIZE_STRING) . '">i</i>';
 				else
-					$form .= '<i></i>';
+					$form .= '<i class="no-info"></i>';
 			}
 
 			$form .= '</div>';
@@ -347,10 +347,12 @@ This bridge is not fetching its content through a secure connection</div>';
 CARD;
 
 		// If we don't have any parameter for the bridge, we print a generic form to load it.
-		if(count($parameters) === 0
-		|| count($parameters) === 1 && array_key_exists('global', $parameters)) {
-
+		if (count($parameters) === 0) {
 			$card .= self::getForm($bridgeName, $formats, $isActive, $isHttps);
+
+		// Display form with cache timeout and/or noproxy options (if enabled) when bridge has no parameters
+		} else if (count($parameters) === 1 && array_key_exists('global', $parameters)) {
+			$card .= self::getForm($bridgeName, $formats, $isActive, $isHttps, '', $parameters['global']);
 
 		} else {
 

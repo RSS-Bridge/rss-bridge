@@ -28,7 +28,7 @@ final class Configuration {
 	 *
 	 * @todo Replace this property by a constant.
 	 */
-	public static $VERSION = 'dev.2020-02-26';
+	public static $VERSION = 'dev.2020-11-10';
 
 	/**
 	 * Holds the configuration data.
@@ -145,10 +145,7 @@ final class Configuration {
 			// Replace default configuration with custom settings
 			foreach(parse_ini_file(FILE_CONFIG, true, INI_SCANNER_TYPED) as $header => $section) {
 				foreach($section as $key => $value) {
-					// Skip unknown sections and keys
-					if(array_key_exists($header, Configuration::$config) && array_key_exists($key, Configuration::$config[$header])) {
-						Configuration::$config[$header][$key] = $value;
-					}
+					Configuration::$config[$header][$key] = $value;
 				}
 			}
 		}
@@ -218,13 +215,11 @@ final class Configuration {
 	 * @return mixed|null The parameter value.
 	 */
 	public static function getConfig($section, $key) {
-
 		if(array_key_exists($section, self::$config) && array_key_exists($key, self::$config[$section])) {
 			return self::$config[$section][$key];
 		}
 
 		return null;
-
 	}
 
 	/**
@@ -244,9 +239,13 @@ final class Configuration {
 		if(@is_readable($headFile)) {
 
 			$revisionHashFile = '.git/' . substr(file_get_contents($headFile), 5, -1);
-			$branchName = explode('/', $revisionHashFile)[3];
-			if(file_exists($revisionHashFile)) {
-				return 'git.' . $branchName . '.' . substr(file_get_contents($revisionHashFile), 0, 7);
+			$parts = explode('/', $revisionHashFile);
+
+			if(isset($parts[3])) {
+				$branchName = $parts[3];
+				if(file_exists($revisionHashFile)) {
+					return 'git.' . $branchName . '.' . substr(file_get_contents($revisionHashFile), 0, 7);
+				}
 			}
 		}
 

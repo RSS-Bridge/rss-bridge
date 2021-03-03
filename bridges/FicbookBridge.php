@@ -35,6 +35,8 @@ class FicbookBridge extends BridgeAbstract {
 		),
 	);
 
+	protected $titleName;
+
 	public function getURI() {
 		switch($this->queriedContext) {
 			case 'Site News': {
@@ -56,6 +58,21 @@ class FicbookBridge extends BridgeAbstract {
 		}
 	}
 
+	public function getName() {
+		switch($this->queriedContext) {
+			case 'Site News': {
+				return $this->queriedContext . ' | ' . self::NAME;
+			}
+			case 'Fiction Updates': {
+				return $this->titleName . ' | ' . self::NAME;
+			}
+			case 'Fiction Comments': {
+				return $this->titleName . ' | Comments | ' . self::NAME;
+			}
+			default: return self::NAME;
+		}
+	}
+
 	public function collectData() {
 
 		$header = array('Accept-Language: en-US');
@@ -64,6 +81,10 @@ class FicbookBridge extends BridgeAbstract {
 			or returnServerError('Could not request ' . $this->getURI());
 
 		$html = defaultLinkTo($html, self::URI);
+
+		if ($this->queriedContext == 'Fiction Updates' or $this->queriedContext == 'Fiction Comments') {
+			$this->titleName = $html->find('.fanfic-main-info > h1', 0)->innertext;
+		}
 
 		switch($this->queriedContext) {
 			case 'Site News': return $this->collectSiteNews($html);
@@ -84,7 +105,7 @@ class FicbookBridge extends BridgeAbstract {
 	}
 
 	private function collectCommentsData($html) {
-		foreach($html->find('article.post') as $article) {
+		foreach($html->find('article.comment-container') as $article) {
 			$this->items[] = array(
 				'uri' => $article->find('.comment_link_to_fic > a', 0)->href,
 				'title' => $article->find('.comment_author', 0)->plaintext,
@@ -97,7 +118,7 @@ class FicbookBridge extends BridgeAbstract {
 	}
 
 	private function collectUpdatesData($html) {
-		foreach($html->find('ul.table-of-contents > li') as $chapter) {
+		foreach($html->find('ul.list-of-fanfic-parts > li') as $chapter) {
 			$item = array(
 				'uri' => $chapter->find('a', 0)->href,
 				'title' => $chapter->find('a', 0)->plaintext,
@@ -130,10 +151,10 @@ class FicbookBridge extends BridgeAbstract {
 			'июня',
 			'июля',
 			'августа',
-			'Сентября',
+			'сентября',
 			'октября',
-			'Ноября',
-			'Декабря',
+			'ноября',
+			'декабря',
 		);
 
 		$en_month = array(

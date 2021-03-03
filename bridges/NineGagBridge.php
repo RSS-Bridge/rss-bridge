@@ -148,7 +148,7 @@ class NineGagBridge extends BridgeAbstract {
 			}
 
 			if (!$AvoidElement) {
-				$item['uri'] = $post['url'];
+				$item['uri'] = preg_replace('/^http:/i', 'https:', $post['url']);
 				$item['title'] = $post['title'];
 				$item['content'] = self::getContent($post);
 				$item['categories'] = self::getCategories($post);

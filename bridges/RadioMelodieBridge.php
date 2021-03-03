@@ -25,7 +25,7 @@ class RadioMelodieBridge extends BridgeAbstract {
 				$picture = array();
 
 				// Get the Main picture URL
-				$picture[] = $this->rewriteImage($article->find('div[id=pictureTitleSupport]', 0)->find('img', 0)->src);
+				$picture[] = self::URI . $article->find('div[id=pictureTitleSupport]', 0)->find('img', 0)->src;
 				$audioHTML = $article->find('audio');
 
 				// Add the audio element to the enclosure

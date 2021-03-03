@@ -40,18 +40,15 @@ class HeiseBridge extends FeedExpander {
 
 	protected function parseItem($feedItem) {
 		$item = parent::parseItem($feedItem);
-		$uri = $item['uri'];
+		$uri = $item['uri'] . '&seite=all';
 
-		do {
-			$article = getSimpleHTMLDOMCached($uri)
-				or returnServerError('Could not open article: ' . $uri);
+		$article = getSimpleHTMLDOMCached($uri)
+			or returnServerError('Could not open article: ' . $uri);
 
+		if ($article) {
 			$article = defaultLinkTo($article, $uri);
 			$item = $this->addArticleToItem($item, $article);
-
-			if($next = $article->find('.pagination a[rel="next"]', 0))
-				$uri = $next->href;
-		} while ($next);
+		}
 
 		return $item;
 	}
@@ -61,6 +58,9 @@ class HeiseBridge extends FeedExpander {
 			$item['author'] = $author->plaintext;
 
 		$content = $article->find('div[class*="article-content"]', 0);
+
+		if ($content == null)
+			$content = $article->find('#article_content', 0);
 
 		foreach($content->find('p, h3, ul, table, pre, img') as $element) {
 			$item['content'] .= $element;

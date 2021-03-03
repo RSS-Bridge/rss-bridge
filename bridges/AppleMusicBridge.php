@@ -20,12 +20,16 @@ class AppleMusicBridge extends BridgeAbstract {
 	));
 	const CACHE_TIMEOUT = 21600; // 6 hours
 
+	private $title;
+
 	public function collectData() {
 		$url = $this->getInput('url');
 		$html = getSimpleHTMLDOM($url)
 			or returnServerError('Could not request: ' . $url);
 
 		$imgSize = $this->getInput('imgSize');
+
+		$this->title = $html->find('title', 0)->innertext;
 
 		// Grab the json data from the page
 		$html = $html->find('script[id=shoebox-ember-data-store]', 0);
@@ -58,5 +62,9 @@ class AppleMusicBridge extends BridgeAbstract {
 		usort($this->items, function($a, $b){
 			return $a['timestamp'] < $b['timestamp'];
 		});
+	}
+
+	public function getName() {
+		return $this->title ?: parent::getName();
 	}
 }
