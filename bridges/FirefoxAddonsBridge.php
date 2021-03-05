@@ -32,6 +32,7 @@ class FirefoxAddonsBridge extends BridgeAbstract {
 			$item = array();
 
 			$item['title'] = $div->find('h2.AddonVersionCard-version', 0)->plaintext;
+			$item['uid'] = $item['title'];
 			$item['uri'] = $this->getURI();
 			$item['author'] = $author;
 
