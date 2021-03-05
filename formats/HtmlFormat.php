@@ -19,7 +19,7 @@ class HtmlFormat extends FormatAbstract {
 				continue;
 			}
 
-			$query = str_replace('format=Html', 'format=' . $format, htmlentities($_SERVER['QUERY_STRING']));
+			$query = str_ireplace('format=Html', 'format=' . $format, htmlentities($_SERVER['QUERY_STRING']));
 			$buttons .= $this->buildButton($format, $query) . PHP_EOL;
 
 			$mime = $formatFac->create($format)->getMimeType();
