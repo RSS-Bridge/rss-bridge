@@ -21,7 +21,8 @@ class ReutersBridge extends BridgeAbstract
 	 * Wireitem template types allowed in the final story output
 	 */
 	const ALLOWED_TEMPLATE_TYPES = array(
-		'story'
+		'story',
+		'headlines'
 	);
 
 	const PARAMETERS = array(
@@ -127,9 +128,20 @@ class ReutersBridge extends BridgeAbstract
 		$authorlist = $first['story']['authors'];
 		$category = $first['story']['channel']['name'];
 		$image_list = $first['story']['images'];
+
+		$content_detail = array(
+			'content' => $this->handleArticleContent($article_content),
+			'author' => $this->handleAuthorName($authorlist),
+			'category' => $category,
+			'images' => $this->handleImage($image_list),
+		);
+		return $content_detail;
+	}
+
+	private function handleImage($images) {
 		$img_placeholder = '';
 
-		foreach($image_list as $image) { // Add more image to article.
+		foreach($images as $image) { // Add more image to article.
 			$image_url = $image['url'];
 			$image_caption = $image['caption'];
 			$img = "<img src=\"$image_url\">";
@@ -138,21 +150,29 @@ class ReutersBridge extends BridgeAbstract
 			$img_placeholder = $img_placeholder . $figure;
 		}
 
+		return $img_placeholder;
+	}
+
+	private function handleAuthorName($authors) {
 		$author = '';
 		$counter = 0;
-		foreach ($authorlist as $data) {
+		foreach ($authors as $data) {
 			//Formatting author's name.
 			$counter++;
 			$name = $data['name'];
-			if ($counter == count($authorlist)) {
+			if ($counter == count($authors)) {
 				$author = $author . $name;
 			} else {
 				$author = $author . "$name, ";
 			}
 		}
 
+		return $author;
+	}
+
+	private function handleArticleContent($contents) {
 		$description = '';
-		foreach ($article_content as $content) {
+		foreach ($contents as $content) {
 			$data;
 			if(isset($content['content'])) {
 				$data = $content['content'];
@@ -185,13 +205,7 @@ class ReutersBridge extends BridgeAbstract
 			}
 		}
 
-		$content_detail = array(
-			'content' => $description,
-			'author' => $author,
-			'category' => $category,
-			'images' => $img_placeholder,
-		);
-		return $content_detail;
+		return $description;
 	}
 
 	public function getName() {
@@ -216,10 +230,11 @@ class ReutersBridge extends BridgeAbstract
 		$processedData = $this->processData($reuters_wireitems);
 
 		// Merge all articles from Editor's Highlight section into existing array of templates.
-		$top_section = reset($reuters_wireitems);
-		if ($top_section['wireitem_type'] == 'headlines') {
-			$top_articles = $top_section['templates'][1]['headlines'];
-			$processedData = array_merge($top_articles, $processedData);
+		$top_section = reset($processedData);
+		if ($top_section['type'] == 'headlines') {
+			$top_section = array_shift($processedData);
+			$articles = $top_section['headlines'];
+			$processedData = array_merge($articles, $processedData);
 		}
 
 		foreach ($processedData as $story) {
