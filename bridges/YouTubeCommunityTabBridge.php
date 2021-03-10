@@ -55,8 +55,6 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not request: ' . $this->getURI());
 
-		$html = defaultLinkTo($html, $this->getURI());
-
 		$json = $this->extractJson($html->find('body', 0)->innertext);
 
 		$this->feedName = $json->header->c4TabbedHeaderRenderer->title;
