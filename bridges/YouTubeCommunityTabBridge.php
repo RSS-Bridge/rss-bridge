@@ -48,8 +48,8 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 		foreach ($this->getCommunityPosts($json) as $post) {
 			$this->itemTitle = '';
 
-			if (isset($post->messageRenderer)) {
-				break;
+			if (!isset($post->backstagePostThreadRenderer)) {
+				continue;
 			}
 
 			$details = $post->backstagePostThreadRenderer->post->backstagePostRenderer;
