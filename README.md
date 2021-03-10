@@ -293,6 +293,6 @@ You're not social when you hamper sharing by removing feeds. You're happy to hav
 
 We want to share with friends, using open protocols: RSS, Atom, XMPP, whatever. Because no one wants to have *your* service with *your* applications using *your* API force-feeding them. Friends must be free to choose whatever software and service they want.
 
-We are rebuilding bridges you have wilfully destroyed.
+We are rebuilding bridges you have willfully destroyed.
 
 Get your shit together: Put RSS/Atom back in.
