@@ -4,27 +4,47 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 	const URI = 'https://www.youtube.com';
 	const DESCRIPTION = 'Returns posts from a channel\'s community tab';
 	const MAINTAINER = 'VerifiedJoseph';
-	const PARAMETERS = array(array(
-		'channel' => array(
-			'name' => 'Channel ID',
-			'type' => 'text',
-			'required' => true,
-			'exampleValue' => 'UCULkRHBdLC5ZcEQBaL0oYHQ'
+	const PARAMETERS = array(
+		'By channel ID' => array(
+			'channel' => array(
+				'name' => 'Channel ID',
+				'type' => 'text',
+				'required' => true,
+				'exampleValue' => 'UCULkRHBdLC5ZcEQBaL0oYHQ'
+			)
 		),
-	));
+		'By username' => array(
+			'username' => array(
+				'name' => 'Username',
+				'type' => 'text',
+				'required' => true,
+				'exampleValue' => 'YouTubeUK'
+			),
+		)
+	);
 
 	const CACHE_TIMEOUT = 3600; // 1 hour
 
 	private $feedName = '';
 	private $itemTitle = '';
 
-	private $urlRegex = '/youtube\.com\/channel\/(UC[\w-]+)\/community/';
+	private $urlRegex = '/youtube\.com\/(channel|user)\/([\w]+)\/community/';
+	private $jsonRegex = '/var ytInitialData = (.*);<\/script>/';
 
 	public function detectParameters($url) {
 		$params = array();
 
 		if(preg_match($this->urlRegex, $url, $matches)) {
-			$params['channel'] = $matches[1];
+			if ($matches[1] === 'channel') {
+				$params['context'] = 'By channel ID';
+				$params['channel'] = $matches[2];
+			}
+
+			if ($matches[1] === 'user') {
+				$params['context'] = 'By username';
+				$params['username'] = $matches[2];
+			}
+
 			return $params;
 		}
 
@@ -79,6 +99,10 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 			return self::URI . '/channel/' . $this->getInput('channel') . '/community';
 		}
 
+		if (!is_null($this->getInput('username'))) {
+			return self::URI . '/user/' . $this->getInput('username') . '/community';
+		}
+
 		return parent::getURI();
 	}
 
@@ -96,7 +120,7 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 	 */
 	private function extractJson($html) {
 
-		if (!preg_match('/var ytInitialData = (.*);<\/script>/', $html, $parts)) {
+		if (!preg_match($this->jsonRegex, $html, $parts)) {
 			returnServerError('Failed to extract data from page');
 		}
 
