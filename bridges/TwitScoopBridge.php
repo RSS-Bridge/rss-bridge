@@ -137,7 +137,7 @@ EOD;
 	}
 
 	public function getName() {
-		if (!empty($this->getInput('country'))) {
+		if (!is_null($this->getInput('country'))) {
 			$parameters = $this->getParameters();
 			$values = array_flip($parameters[0]['country']['values']);
 
