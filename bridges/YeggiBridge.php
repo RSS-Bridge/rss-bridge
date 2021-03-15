@@ -90,5 +90,4 @@ class YeggiBridge extends BridgeAbstract {
 
 		return parent::getURI();
 	}
-
 }
