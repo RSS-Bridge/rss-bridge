@@ -125,9 +125,11 @@ class BandcampBridge extends BridgeAbstract {
 		case 'By album':
 			$html = getSimpleHTMLDOMCached($this->getURI(), 86400);
 
-			$titleElement = $html->find('head meta[name=title]', 0)
-				or returnServerError('Unable to find title on: ' . $this->getURI());
-			$this->feedName = $titleElement->content;
+			if ($html->find('meta[name=title]', 0)) {
+				$this->feedName = $html->find('meta[name=title]', 0)->content;
+			} else {
+				$this->feedName = str_replace('Music | ', '', $html->find('title', 0)->plaintext);
+			}
 
 			$regex = '/band_id=(\d+)/';
 			if(preg_match($regex, $html, $matches) == false)
