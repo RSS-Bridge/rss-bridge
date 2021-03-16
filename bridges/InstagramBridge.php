@@ -50,6 +50,18 @@ class InstagramBridge extends BridgeAbstract {
 	const TAG_QUERY_HASH = '9b498c08113f1e09617a1703c22b2f32';
 	const SHORTCODE_QUERY_HASH = '865589822932d1b43dfe312121dd353a';
 
+	protected function getContents($url) {
+		try {
+			$this->dieIfCoolingDown(array($this->queriedContext));
+			return getContents($url);
+		} catch(\Exception $e) {
+			if ($e->getCode() === 429) {
+				$this->coolDown(array($this->queriedContext), 1800);
+			}
+			throw $e;
+		}
+	}
+
 	protected function getInstagramUserId($username) {
 
 		if(is_numeric($username)) return $username;
@@ -62,7 +74,7 @@ class InstagramBridge extends BridgeAbstract {
 		$key = $cache->loadData();
 
 		if($key == null) {
-				$data = getContents(self::URI . 'web/search/topsearch/?query=' . $username);
+				$data = $this->getContents(self::URI . 'web/search/topsearch/?query=' . $username);
 
 				foreach(json_decode($data)->users as $user) {
 					if(strtolower($user->user->username) === strtolower($username)) {
@@ -204,7 +216,7 @@ class InstagramBridge extends BridgeAbstract {
 
 	protected function getSinglePostData($uri) {
 		$shortcode = explode('/', $uri)[4];
-		$data = getContents(self::URI .
+		$data = $this->getContents(self::URI .
 					'graphql/query/?query_hash=' .
 					self::SHORTCODE_QUERY_HASH .
 					'&variables={"shortcode"%3A"' .
@@ -220,7 +232,7 @@ class InstagramBridge extends BridgeAbstract {
 
 			$userId = $this->getInstagramUserId($this->getInput('u'));
 
-			$data = getContents(self::URI .
+			$data = $this->getContents(self::URI .
 								'graphql/query/?query_hash=' .
 								 self::USER_QUERY_HASH .
 								 '&variables={"id"%3A"' .
@@ -229,7 +241,7 @@ class InstagramBridge extends BridgeAbstract {
 			return json_decode($data);
 
 		} elseif(!is_null($this->getInput('h'))) {
-			$data = getContents(self::URI .
+			$data = $this->getContents(self::URI .
 					'graphql/query/?query_hash=' .
 					 self::TAG_QUERY_HASH .
 					 '&variables={"tag_name"%3A"' .
@@ -239,7 +251,7 @@ class InstagramBridge extends BridgeAbstract {
 
 		} else {
 
-			$html = getContents($uri)
+			$html = $this->getContents($uri)
 				or returnServerError('Could not request Instagram.');
 			$scriptRegex = '/window\._sharedData = (.*);<\/script>/';
 

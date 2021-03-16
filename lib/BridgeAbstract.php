@@ -353,4 +353,32 @@ abstract class BridgeAbstract implements BridgeInterface {
 			return null;
 		}
 	}
+
+	protected function prepareCoolDownCache($context, $scope) {
+		$cacheFac = new CacheFactory();
+		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
+		$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+		$cache->setScope($scope);
+		$cache->setKey($context);
+		return $cache;
+	}
+
+	protected function dieIfCoolingDown($context) {
+		$cache = $this->prepareCoolDownCache($context, get_called_class() . "-cooldown");
+		$cooldownExpireTime = $cache->loadData();
+		$time = time();
+		if (is_null($cooldownExpireTime)) {
+			return;
+		} else if ($time >= $cooldownExpireTime){
+			return;
+		}
+
+		header("Retry-After: " . strval($cooldownExpireTime - $time), true, 429);
+		die("Cooling down...");
+	}
+
+	protected function coolDown($context, $extraTime) {
+		$cache = $this->prepareCoolDownCache($context, get_called_class() . "-cooldown");
+		$cache->saveData(time() + $extraTime);
+	}
 }
