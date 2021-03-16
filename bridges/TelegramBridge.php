@@ -132,6 +132,12 @@ class TelegramBridge extends BridgeAbstract {
 				$messageDiv->find('div.tgme_widget_message_text.js-message_text', 0)->plaintext
 			);
 		}
+		if ($messageDiv->find('div.tgme_widget_message_document', 0)) {
+			$message .= 'Attachments:';
+			foreach ($messageDiv->find('div.tgme_widget_message_document') as $attachments) {
+				$message .= $attachments->find('div.tgme_widget_message_document_title.accent_color', 0);
+			}
+		}
 
 		if ($messageDiv->find('a.tgme_widget_message_link_preview', 0)) {
 			$message .= $this->processLinkPreview($messageDiv);
