@@ -102,15 +102,16 @@ class GithubIssueBridge extends BridgeAbstract {
 			));
 
 		$time = $comment->find('relative-time', 0);
+		if ($time === null) {
+			return;
+		}
 		$content = $comment->plaintext;
 
 		$item = array();
 		$item['author'] = $author;
 		$item['uri'] = $uri;
 		$item['title'] = html_entity_decode($title, ENT_QUOTES, 'UTF-8');
-		if ($time) {
-			$item['timestamp'] = strtotime($time->getAttribute('datetime'));
-		}
+		$item['timestamp'] = strtotime($time->getAttribute('datetime'));
 		$item['content'] = $content;
 		return $item;
 	}
@@ -125,6 +126,9 @@ class GithubIssueBridge extends BridgeAbstract {
 		);
 
 		$time = $comment->find('relative-time', 0);
+		if ($time === null) {
+			return;
+		}
 
 		$content = $comment->find('.comment-body', 0)->innertext;
 
@@ -132,9 +136,7 @@ class GithubIssueBridge extends BridgeAbstract {
 		$item['author'] = $author;
 		$item['uri'] = $uri;
 		$item['title'] = html_entity_decode($title, ENT_QUOTES, 'UTF-8');
-		if ($time) {
-			$item['timestamp'] = strtotime($time->getAttribute('datetime'));
-		}
+		$item['timestamp'] = strtotime($time->getAttribute('datetime'));
 		$item['content'] = $content;
 		return $item;
 	}
@@ -154,12 +156,16 @@ class GithubIssueBridge extends BridgeAbstract {
 			if ($comment->hasClass('comment')) {
 				$comment = $comment->parent;
 				$item = $this->extractIssueComment($issueNbr, $title, $comment);
-				$items[] = $item;
+				if ($item !== null) {
+					$items[] = $item;
+				}
 				continue;
 			} else {
 				$comment = $comment->parent;
 				$item = $this->extractIssueEvent($issueNbr, $title, $comment);
-				$items[] = $item;
+				if ($item !== null) {
+					$items[] = $item;
+				}
 			}
 
 		}
