@@ -166,7 +166,7 @@ final class Configuration {
 
 		if(!is_string(self::getConfig('proxy', 'username')))
 			self::reportConfigurationError('proxy', 'username', 'Is not a valid string');
-		
+
 		if(!empty(self::getConfig('proxy', 'username'))) {
 			/** Username for the proxy server */
 			define('PROXY_USERNAME', self::getConfig('proxy', 'username'));
