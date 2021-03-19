@@ -176,7 +176,7 @@ final class Configuration {
 			self::reportConfigurationError('proxy', 'password', 'Is not a valid string');
 
 		if(!empty(self::getConfig('proxy', 'password'))) {
-			/** PAssword for the proxy server */
+			/** Password for the proxy server */
 			define('PROXY_PASSWORD', self::getConfig('proxy', 'password'));
 		}
 
