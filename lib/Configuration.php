@@ -164,6 +164,22 @@ final class Configuration {
 			define('PROXY_URL', self::getConfig('proxy', 'url'));
 		}
 
+		if(!is_string(self::getConfig('proxy', 'username')))
+			self::reportConfigurationError('proxy', 'username', 'Is not a valid string');
+		
+		if(!empty(self::getConfig('proxy', 'username'))) {
+			/** Username for the proxy server */
+			define('PROXY_USERNAME', self::getConfig('proxy', 'username'));
+		}
+
+		if(!is_string(self::getConfig('proxy', 'password')))
+			self::reportConfigurationError('proxy', 'password', 'Is not a valid string');
+
+		if(!empty(self::getConfig('proxy', 'password'))) {
+			/** PAssword for the proxy server */
+			define('PROXY_PASSWORD', self::getConfig('proxy', 'password'));
+		}
+
 		if(!is_bool(self::getConfig('proxy', 'by_bridge')))
 			self::reportConfigurationError('proxy', 'by_bridge', 'Is not a valid Boolean');
 

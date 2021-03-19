@@ -120,6 +120,9 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 			Debug::log('Setting proxy url: ' . PROXY_URL);
 			curl_setopt($ch, CURLOPT_PROXY, PROXY_URL);
 
+			if(defined('PROXY_USERNAME') && defined('PROXY_PASSWORD')) {
+				curl_setopt($ch, CURLOPT_USERPWD, PROXY_USERNAME . ':' . PROXY_PASSWORD);
+			}
 		}
 
 		// We always want the response header as part of the data!

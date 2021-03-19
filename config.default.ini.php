@@ -35,6 +35,14 @@ email = ""
 ; ""    = Proxy disabled (default)
 url = ""
 
+; Sets username for the proxy
+; ""    = No username (default)
+username = ""
+
+; Sets password for the proxy
+; ""    = No password (default)
+password = ""
+
 ; Sets the proxy name that is shown on the bridge instead of the proxy url.
 ; ""    = Show proxy url
 name = "Hidden proxy name"
