@@ -32,7 +32,11 @@ class TheFarSideBridge extends BridgeAbstract {
 			// Encode image as base64
 			$imageBase64 = base64_encode($image);
 
-			$caption = $card->find('figcaption', 0)->innertext;
+			$caption = '';
+
+			if ($card->find('figcaption', 0)) {
+				$caption = $card->find('figcaption', 0)->innertext;
+			}
 
 			$item['content'] .= <<<EOD
 <figure>
