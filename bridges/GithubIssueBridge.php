@@ -105,6 +105,10 @@ class GithubIssueBridge extends BridgeAbstract {
 		if ($time === null) {
 			return;
 		}
+
+		foreach($comment->find('.Details-content--hidden, .btn') as $el) {
+			$el->innertext = '';
+		}
 		$content = $comment->plaintext;
 
 		$item = array();
