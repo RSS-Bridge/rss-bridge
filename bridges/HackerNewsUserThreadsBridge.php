@@ -4,7 +4,7 @@ class HackerNewsUserThreadsBridge extends BridgeAbstract {
 	const MAINTAINER = 'rakoo';
 	const NAME = 'Hacker News User Threads';
 	const URI = 'https://news.ycombinator.com';
-	const CACHE_TIMEOUT = 7200; // 2h
+	const CACHE_TIMEOUT = 7200; // 2 hours
 	const DESCRIPTION = 'Hacker News threads for a user (at https://news.ycombinator.com/threads?id=xxx)';
 	const PARAMETERS = array( array(
 		'user' => array(
