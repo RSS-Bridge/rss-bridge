@@ -123,17 +123,25 @@ class PikabuBridge extends BridgeAbstract {
 				}
 			}
 
-			$title = $post->find('.story__title-link', 0);
+			$title_element = $post->find('.story__title-link', 0);
+
+			$title = $title_element->plaintext;
+			$community_link = $post->find('.story__community-link', 0);
+			// adding special marker for "Maybe News" section
+			// these posts are fake
+			if (!is_null($community_link) && $community_link->getAttribute('href') == '/community/maybenews') {
+				$title = '[' . $community_link->innertext . '] ' . $title;
+			}
 
 			$item = array();
 			$item['categories'] = $categories;
 			$item['author'] = $post->find('.user__nick', 0)->innertext;
-			$item['title'] = $title->plaintext;
+			$item['title'] = $title;
 			$item['content'] = strip_tags(
 				backgroundToImg($post->find('.story__content-inner', 0)->innertext),
 				'<br><p><img><a>
 			');
-			$item['uri'] = $title->href;
+			$item['uri'] = $title_element->href;
 			$item['timestamp'] = strtotime($time->getAttribute('datetime'));
 			$this->items[] = $item;
 		}
