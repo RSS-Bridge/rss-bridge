@@ -1,6 +1,6 @@
 <?php
-class WallmineBridge extends BridgeAbstract {
-	const NAME = 'Wallmine Bridge';
+class WallmineNewsBridge extends BridgeAbstract {
+	const NAME = 'Wallmine News Bridge';
 	const URI = 'https://wallmine.com';
 	const DESCRIPTION = 'Returns financial news';
 	const MAINTAINER = 'VerifiedJoseph';
