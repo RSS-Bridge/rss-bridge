@@ -110,11 +110,11 @@ class TwitScoopBridge extends BridgeAbstract {
 
 			$item['title'] = '#' . $number . ' - ' . $name . ' (' . $tweets . ' tweets)';
 			$item['uri'] = 'https://twitter.com/search?q=' . rawurlencode($name);
-			
+
 			if ($tweets === '10K') {
 				$tweets = 'less than 10K';
 			}
-			
+
 			$item['content'] = <<<EOD
 <strong>Rank</strong><br>
 <p>{$number}</p>
