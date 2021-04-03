@@ -42,7 +42,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 	// This function use curl library with curl as User Agent instead of
 	// simple_html_dom to load the HTML content as the website has some captcha
 	// request for otther user agents
-	private function loadURL($url) {
+	private function loadURL($url){
 		$header = array();
 		$opts = array(CURLOPT_USERAGENT => 'curl/7.64.0');
 		$html = getContents($url, $header, $opts)
@@ -50,8 +50,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 		return str_get_html($html);
 	}
 
-
-	public function getIcon() {
+	public function getIcon(){
 		return self::UNPROTECTED_URI . '/templates/Default/images/favicon.ico';
 	}
 
