@@ -39,11 +39,10 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 	// This is an URL that is not protected by robot protection for Streaming Links
 	const UNPROTECTED_URI_STREAMING = 'https://zone-telechargement.stream/';
 
-	// This function use curl library with curl as User Agent instead of 
-	// simple_html_dom to load the HTML content as the website has some captcha 
+	// This function use curl library with curl as User Agent instead of
+	// simple_html_dom to load the HTML content as the website has some captcha
 	// request for otther user agents
-	private function loadURL($url)
-	{
+	private function loadURL($url) {
 		$header = array();
 		$opts = array(CURLOPT_USERAGENT => 'curl/7.64.0');
 		$html = getContents($url, $header, $opts)
