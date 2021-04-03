@@ -38,9 +38,9 @@ class GenshinImpactBridge extends BridgeAbstract {
 				or returnServerError('Error while downloading the website content');
 			$article_json = json_decode($article_res, true);
 			$article_time = $article_json['data']['start_time'];
-			$timezone= 'Asia/Shanghai';
+			$timezone = 'Asia/Shanghai';
 			$article_timestamp = new DateTime($articletime, new DateTimeZone($timezone));
-			
+
 			$item = array();
 
 			$item['title'] = $article_json['data']['title'];
