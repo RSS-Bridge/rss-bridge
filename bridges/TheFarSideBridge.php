@@ -12,20 +12,19 @@ class TheFarSideBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI)
 			or returnServerError('Could not request: ' . self::URI);
 
+		$div = $html->find('div.tfs-page-container__cows', 0);
+
 		$item = array();
-		$item['uri'] = self::URI . date('/Y/m/d', strtotime($html->find('h3', 0)->innertext));
-		$item['title'] = $html->find('h3', 0)->innertext;
-		$item['timestamp'] = $html->find('h3', 0)->innertext;
-
+		$item['uri'] = $html->find('meta[property="og:url"]', 0)->content;
+		$item['title'] = $div->find('h3', 0)->innertext;
+		$item['timestamp'] = $div->find('h3', 0)->innertext;
 		$item['content'] = '';
-
-		$div = $html->find('div.tfs-content.js-daily-dose', 0);
 
 		foreach($div->find('div.card-body') as $index => $card) {
 			$image = $card->find('img', 0);
 			$imageUrl = $image->attr['data-src'];
 
-			// To get around the hotlink protection, images are downloaded, encoded as base64 and then added to the html.
+			// Images are downloaded to bypass the hotlink protection.
 			$image = getContents($imageUrl, array('Referer: ' . self::URI))
 				or returnServerError('Could not request: ' . $imageUrl);
 
