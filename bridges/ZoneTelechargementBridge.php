@@ -34,19 +34,28 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 	);
 
 	// This is an URL that is not protected by robot protection for Direct Download
-	const UNPROTECTED_URI = 'https://www.zone-telechargement.net/';
+	const UNPROTECTED_URI = 'https://www.zt-za.com/';
 
 	// This is an URL that is not protected by robot protection for Streaming Links
 	const UNPROTECTED_URI_STREAMING = 'https://zone-telechargement.stream/';
 
-	public function getIcon() {
+	// This function use curl library with curl as User Agent instead of
+	// simple_html_dom to load the HTML content as the website has some captcha
+	// request for other user agents
+	private function loadURL($url){
+		$header = array();
+		$opts = array(CURLOPT_USERAGENT => 'curl/7.64.0');
+		$html = getContents($url, $header, $opts)
+			or returnServerError('Could not request Zone Telechargement.');
+		return str_get_html($html);
+	}
+
+	public function getIcon(){
 		return self::UNPROTECTED_URI . '/templates/Default/images/favicon.ico';
 	}
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM(self::UNPROTECTED_URI . $this->getInput('url'))
-			or returnServerError('Could not request Zone Telechargement.');
-
+		$html = $this->loadURL(self::UNPROTECTED_URI . $this->getInput('url'));
 		$filter = $this->getInput('filter');
 
 		// Get the TV show title
@@ -79,8 +88,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 		// Handle the Streaming links
 		if($filter == 'both' || $filter == 'streaming') {
 			// Get the post content, on the dedicated streaming website
-			$htmlstreaming = getSimpleHTMLDOM(self::UNPROTECTED_URI_STREAMING . $this->getInput('url'))
-				or returnServerError('Could not request Zone Telechargement.');
+			$htmlstreaming = $this->loadURL(self::UNPROTECTED_URI_STREAMING . $this->getInput('url'));
 			// Get the HTML element containing all the links
 			$streaminglinkshtml = $htmlstreaming->find('p[style=background-color: #FECC00;]', 1)->parent()->next_sibling();
 			// Get all streaming Links
