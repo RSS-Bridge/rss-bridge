@@ -8,13 +8,7 @@ class RedditBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Return hot submissions from Reddit';
 
 	const PARAMETERS = array(
-		'single' => array(
-			'r' => array(
-				'name' => 'SubReddit',
-				'required' => true,
-				'exampleValue' => 'selfhosted',
-				'title' => 'SubReddit name'
-			),
+		'global' => array(
 			'score' => array(
 				'name' => 'Minimal score',
 				'required' => false,
@@ -23,19 +17,20 @@ class RedditBridge extends BridgeAbstract {
 				'title' => 'Filter out posts with lower score'
 			)
 		),
+		'single' => array(
+			'r' => array(
+				'name' => 'SubReddit',
+				'required' => true,
+				'exampleValue' => 'selfhosted',
+				'title' => 'SubReddit name'
+			)
+		),
 		'multi' => array(
 			'rs' => array(
 				'name' => 'SubReddits',
 				'required' => true,
 				'exampleValue' => 'selfhosted, php',
 				'title' => 'SubReddit names, separated by commas'
-			),
-			'score' => array(
-				'name' => 'Minimal score',
-				'required' => false,
-				'type' => 'number',
-				'exampleValue' => 100,
-				'title' => 'Filter out posts with lower score'
 			)
 		),
 		'user' => array(
@@ -49,13 +44,6 @@ class RedditBridge extends BridgeAbstract {
 				'name' => 'Comments',
 				'title' => 'Whether to return comments',
 				'defaultValue' => false
-			),
-			'score' => array(
-				'name' => 'Minimal score',
-				'required' => false,
-				'type' => 'number',
-				'exampleValue' => 100,
-				'title' => 'Filter out posts with lower score'
 			)
 		)
 	);
