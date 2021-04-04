@@ -41,7 +41,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 
 	// This function use curl library with curl as User Agent instead of
 	// simple_html_dom to load the HTML content as the website has some captcha
-	// request for otther user agents
+	// request for other user agents
 	private function loadURL($url){
 		$header = array();
 		$opts = array(CURLOPT_USERAGENT => 'curl/7.64.0');
