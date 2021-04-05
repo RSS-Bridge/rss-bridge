@@ -24,8 +24,7 @@ class DisplayAction extends ActionAbstract {
 	public function execute() {
 		$bridge = array_key_exists('bridge', $this->userData) ? $this->userData['bridge'] : null;
 
-		$format = $this->userData['format']
-			or returnClientError('You must specify a format!');
+		$format = array_key_exists('format', $this->userData) ? $this->userData['format'] : returnClientError('You must specify a format!');
 
 		$bridgeFac = new \BridgeFactory();
 		$bridgeFac->setWorkingDir(PATH_LIB_BRIDGES);
