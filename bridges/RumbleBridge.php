@@ -14,36 +14,36 @@ class RumbleBridge extends BridgeAbstract {
 				'exampleValue' => 'test',
 				'required' => true
 			),
-				'sort' => array(
-					'type' => 'list',
-					'name' => 'Sort by',
-					'values' => array(
-						'Most recent' => '',
-						'Shares' => 'shares',
-						'Views' => 'views',
-						'Virality' => 'virality',
-					)
-				),
-				'date' => array(
-					'type' => 'list',
-					'name' => 'Date',
-					'values' => array(
-						'All Time' => '',
-						'Last year' => 'this-year',
-						'Last month' => 'this-month',
-						'Last week' => 'this-week',
-						'Today' => 'today'
-					)
-				),
-				'duration' => array(
-					'type' => 'list',
-					'name' => 'Duration',
-					'values' => array(
-						'All' => '',
-						'Short' => 'short',
-						'Long' => 'long'
-					)
+			'sort' => array(
+				'type' => 'list',
+				'name' => 'Sort by',
+				'values' => array(
+					'Most recent' => '',
+					'Shares' => 'shares',
+					'Views' => 'views',
+					'Virality' => 'virality',
 				)
+			),
+			'date' => array(
+				'type' => 'list',
+				'name' => 'Date',
+				'values' => array(
+					'All Time' => '',
+					'Last year' => 'this-year',
+					'Last month' => 'this-month',
+					'Last week' => 'this-week',
+					'Today' => 'today'
+				)
+			),
+			'duration' => array(
+				'type' => 'list',
+				'name' => 'Duration',
+				'values' => array(
+					'All' => '',
+					'Short' => 'short',
+					'Long' => 'long'
+				)
+			)
 		),
 
 		'By channel id' => array(
@@ -52,36 +52,36 @@ class RumbleBridge extends BridgeAbstract {
 				'exampleValue' => 'c-123456',
 				'required' => true
 			),
-				'sort' => array(
-					'type' => 'list',
-					'name' => 'Sort by',
-					'values' => array(
-						'Most recent' => '',
-						'Shares' => 'shares',
-						'Views' => 'views',
-						'Virality' => 'virality',
-					)
-				),
-				'date' => array(
-					'type' => 'list',
-					'name' => 'Date',
-					'values' => array(
-						'All Time' => '',
-						'Last year' => 'this-year',
-						'Last month' => 'this-month',
-						'Last week' => 'this-week',
-						'Today' => 'today'
-					)
-				),
-				'duration' => array(
-					'type' => 'list',
-					'name' => 'Duration',
-					'values' => array(
-						'All' => '',
-						'Short' => 'short',
-						'Long' => 'long'
-					)
+			'sort' => array(
+				'type' => 'list',
+				'name' => 'Sort by',
+				'values' => array(
+					'Most recent' => '',
+					'Shares' => 'shares',
+					'Views' => 'views',
+					'Virality' => 'virality',
 				)
+			),
+			'date' => array(
+				'type' => 'list',
+				'name' => 'Date',
+				'values' => array(
+					'All Time' => '',
+					'Last year' => 'this-year',
+					'Last month' => 'this-month',
+					'Last week' => 'this-week',
+					'Today' => 'today'
+				)
+			),
+			'duration' => array(
+				'type' => 'list',
+				'name' => 'Duration',
+				'values' => array(
+					'All' => '',
+					'Short' => 'short',
+					'Long' => 'long'
+				)
+			)
 		),
 
 		'By search' => array(
@@ -90,51 +90,50 @@ class RumbleBridge extends BridgeAbstract {
 				'exampleValue' => 'key words',
 				'required' => true
 			),
-				'what' => array(
-					'type' => 'list',
-					'name' => 'What',
-					'values' => array(
-						'Videos' => 'video',
-						'Channels' => 'channel'
-					)
-				),
-				'sort' => array(
-					'type' => 'list',
-					'name' => 'Sort by',
-					'values' => array(
-						'Most recent' => '',
-						'Shares' => 'shares',
-						'Views' => 'views',
-						'Virality' => 'virality',
-					)
-				),
-				'date' => array(
-					'type' => 'list',
-					'name' => 'Date',
-					'values' => array(
-						'All Time' => '',
-						'Last year' => 'this-year',
-						'Last month' => 'this-month',
-						'Last week' => 'this-week',
-						'Today' => 'today'
-					)
-				),
-				'duration' => array(
-					'type' => 'list',
-					'name' => 'Duration',
-					'values' => array(
-						'All' => '',
-						'Short' => 'short',
-						'Long' => 'long'
-					)
+			'what' => array(
+				'type' => 'list',
+				'name' => 'What',
+				'values' => array(
+					'Videos' => 'video',
+					'Channels' => 'channel'
 				)
+			),
+			'sort' => array(
+				'type' => 'list',
+				'name' => 'Sort by',
+				'values' => array(
+					'Most recent' => '',
+					'Shares' => 'shares',
+					'Views' => 'views',
+					'Virality' => 'virality',
+				)
+			),
+			'date' => array(
+				'type' => 'list',
+				'name' => 'Date',
+				'values' => array(
+					'All Time' => '',
+					'Last year' => 'this-year',
+					'Last month' => 'this-month',
+					'Last week' => 'this-week',
+					'Today' => 'today'
+				)
+			),
+			'duration' => array(
+				'type' => 'list',
+				'name' => 'Duration',
+				'values' => array(
+					'All' => '',
+					'Short' => 'short',
+					'Long' => 'long'
+				)
+			)
 		),
 
 		'By category' => array(
 			'cat' => array(
 				'type' => 'list',
 				'name' => 'Category',
-				'required' => true,
 				'values' => array(
 					'News' => 'category/news',
 					'Viral' => 'category/viral',

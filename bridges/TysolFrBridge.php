@@ -14,7 +14,6 @@ class TysolFrBridge extends BridgeAbstract {
 		'body' => array(
 			'name' => 'Chapô seul',
 			'type' => 'list',
-			'required' => true,
 			'values' => array(
 				'Oui' => true,
 				'Non' => false
@@ -24,7 +23,6 @@ class TysolFrBridge extends BridgeAbstract {
 		'show' => array(
 			'name' => 'what',
 			'type' => 'list',
-			'required' => true,
 			'values' => array(
 				'Actualites' => self::SHOW_ACTU,
 				'Opinions' => self::SHOW_OPIN
