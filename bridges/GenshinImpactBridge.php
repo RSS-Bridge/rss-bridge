@@ -37,11 +37,14 @@ class GenshinImpactBridge extends BridgeAbstract {
 			$article_res = getContents($article_url)
 				or returnServerError('Error while downloading the website content');
 			$article_json = json_decode($article_res, true);
+			$article_time = $article_json['data']['start_time'];
+			$timezone = 'Asia/Shanghai';
+			$article_timestamp = new DateTime($article_time, new DateTimeZone($timezone));
 
 			$item = array();
 
 			$item['title'] = $article_json['data']['title'];
-			$item['timestamp'] = strtotime($article_json['data']['start_time']);
+			$item['timestamp'] = $article_timestamp->format('U');
 			$item['content'] = $article_json['data']['content'];
 			$item['uri'] = $this->getArticleUri($json_item);
 			$item['id'] = $json_item['contentId'];
