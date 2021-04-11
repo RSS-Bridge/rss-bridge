@@ -141,7 +141,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 			return self::NAME;
 		}
 	}
-	
+
 	public function getURI() {
 		switch($this->queriedContext) {
 		case 'Suivre la publication des épisodes d\'une série en cours de diffusion':
