@@ -81,6 +81,16 @@ class ExtremeDownloadBridge extends BridgeAbstract {
 		}
 	}
 
+	public function getURI() {
+		switch($this->queriedContext) {
+		case 'Suivre la publication des épisodes d\'une série en cours de diffusion':
+			return self::URI . $this->getInput('url');
+			break;
+		default:
+			return self::URI;
+		}
+	}
+
 	private function findLinkType($element)
 	{
 		$return = '';
