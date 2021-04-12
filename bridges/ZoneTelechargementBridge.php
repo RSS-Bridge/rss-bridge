@@ -34,7 +34,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 	);
 
 	// This is an URL that is not protected by robot protection for Direct Download
-	const UNPROTECTED_URI = 'https://www.zt-za.com/';
+	const UNPROTECTED_URI = 'https://www.zone-telechargement.net/';
 
 	// This is an URL that is not protected by robot protection for Streaming Links
 	const UNPROTECTED_URI_STREAMING = 'https://zone-telechargement.stream/';
@@ -139,6 +139,16 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 			break;
 		default:
 			return self::NAME;
+		}
+	}
+
+	public function getURI() {
+		switch($this->queriedContext) {
+		case 'Suivre la publication des épisodes d\'une série en cours de diffusion':
+			return self::URI . $this->getInput('url');
+			break;
+		default:
+			return self::URI;
 		}
 	}
 
