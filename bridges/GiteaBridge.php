@@ -19,8 +19,8 @@ class GiteaBridge extends GogsBridge {
 
 		foreach($releases as $release) {
 			$this->items[] = array(
-				'uri' => $release->find('a', 0)->href,
-				'title' => 'Release ' . $release->find('h3', 0)->plaintext,
+				'uri' => $release->find('h4 a', 0)->href,
+				'title' => 'Release ' . $release->find('h4 a', 0)->plaintext,
 			);
 		}
 	}
