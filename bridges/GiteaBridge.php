@@ -17,9 +17,9 @@ class GiteaBridge extends GogsBridge {
 		'global' => array(
 			'host' => array(
 				'name' => 'Host',
-				'exampleValue' => 'notabug.org',
+				'exampleValue' => 'https://notabug.org',
 				'required' => true,
-				'title' => 'Host name without trailing slash',
+				'title' => 'Host name with its protocol, without trailing slash',
 			),
 			'user' => array(
 				'name' => 'Username',
@@ -59,8 +59,46 @@ class GiteaBridge extends GogsBridge {
 			),
 		),
 		'Releases' => array(),
+		'Tags' => array(),
 	);
 
+	public function getURI() {
+		switch($this->queriedContext) {
+			case 'Tags': {
+				return $this->getInput('host')
+				. '/' . $this->getInput('user')
+				. '/' . $this->getInput('project')
+				. '/tags/';
+			} break;
+			default: return parent::getURI();
+		}
+	}
+
+	public function collectData() {
+		$html = getSimpleHTMLDOM($this->getURI())
+			or returnServerError('Could not request ' . $this->getURI());
+		$html = defaultLinkTo($html, $this->getURI());
+
+		$this->title = $html->find('[property="og:title"]', 0)->content;
+
+		switch($this->queriedContext) {
+			case 'Commits': {
+				$this->collectCommitsData($html);
+			} break;
+			case 'Issues': {
+				$this->collectIssuesData($html);
+			} break;
+			case 'Single issue': {
+				$this->collectSingleIssueData($html);
+			} break;
+			case 'Releases': {
+				$this->collectReleasesData($html);
+			} break;
+			case 'Tags': {
+				$this->collectTagsData($html);
+			} break;
+		}
+	}
 
 	protected function collectReleasesData($html) {
 		$releases = $html->find('#release-list > li')
@@ -70,6 +108,18 @@ class GiteaBridge extends GogsBridge {
 			$this->items[] = array(
 				'uri' => $release->find('a', 0)->href,
 				'title' => 'Release ' . $release->find('h3', 0)->plaintext,
+			);
+		}
+	}
+
+	protected function collectTagsData($html) {
+		$tags = $html->find('table#tags-table > tbody > tr')
+			or returnServerError('Unable to find tags');
+
+		foreach($tags as $tag) {
+			$this->items[] = array(
+				'uri' => $tag->find('a', 0)->href,
+				'title' => 'Tag ' . $tag->find('.release-tag-name > a', 0)->plaintext,
 			);
 		}
 	}
