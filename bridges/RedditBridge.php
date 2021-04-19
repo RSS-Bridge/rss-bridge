@@ -8,6 +8,15 @@ class RedditBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Return hot submissions from Reddit';
 
 	const PARAMETERS = array(
+		'global' => array(
+			'score' => array(
+				'name' => 'Minimal score',
+				'required' => false,
+				'type' => 'number',
+				'exampleValue' => 100,
+				'title' => 'Filter out posts with lower score'
+			)
+		),
 		'single' => array(
 			'r' => array(
 				'name' => 'SubReddit',
@@ -85,6 +94,10 @@ class RedditBridge extends BridgeAbstract {
 				}
 
 				$data = $post->data;
+
+				if ($data->score < $this->getInput('score')) {
+					continue;
+				}
 
 				$item = array();
 				$item['author'] = $data->author;
