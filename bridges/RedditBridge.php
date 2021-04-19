@@ -48,6 +48,26 @@ class RedditBridge extends BridgeAbstract {
 		)
 	);
 
+	public function detectParameters($url) {
+		$parsed_url = parse_url($url);
+
+		if ($parsed_url['host'] != 'www.reddit.com' && $parsed_url['host'] != 'old.reddit.com') return null;
+
+		$path = explode('/', $parsed_url['path']);
+
+		if ($path[1] == 'r') {
+			return array(
+				'r' => $path[2]
+			);
+		} elseif ($path[1] == 'user') {
+			return array(
+				'u' => $path[2]
+			);
+		} else {
+			return null;
+		}
+	}
+
 	public function getIcon() {
 		return 'https://www.redditstatic.com/desktop2x/img/favicon/favicon-96x96.png';
 	}
