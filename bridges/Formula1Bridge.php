@@ -36,18 +36,7 @@ class Formula1Bridge extends BridgeAbstract {
 		$limit = min(self::LIMIT_MAX, max(self::LIMIT_MIN, $limit));
 		$url = sprintf(self::API_URL, $limit);
 
-		$curl = curl_init();
-		curl_setopt($curl, CURLOPT_HTTPHEADER, array('apikey: ' . self::API_KEY));
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($curl, CURLOPT_URL, sprintf(self::API_URL, $limit));
-		$response = curl_exec($curl);
-		$code = curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
-		if($code !== 200) {
-			returnServerError(curl_error($curl));
-		}
-		curl_close($curl);
-
-		$json = json_decode($response)
+		$json = json_decode(getContents($url, array('apikey: ' . self::API_KEY)))
 			or returnServerError(sprintf(self::ERR_QUERY, $url));
 		if($json->error) {
 			returnServerError($json->message);
