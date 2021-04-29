@@ -135,7 +135,7 @@ EOD;
 	<channel>
 		<title>{$title}</title>
 		<link>{$uri}</link>
-		<description>{description}</description>
+		<description>{$title}</description>
 		{$feedImage}
 		<atom:link rel="alternate" type="text/html" href="{$uri}"/>
 		<atom:link rel="self" href="{$feedUrl}" type="application/atom+xml"/>
