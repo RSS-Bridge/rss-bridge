@@ -62,6 +62,13 @@ abstract class BridgeAbstract implements BridgeInterface {
 	const CACHE_TIMEOUT = 3600;
 
 	/**
+	 * Configuration for the bridge
+	 *
+	 * Use {@see BridgeAbstract::getConfiguration()} to read this parameter
+	 */
+	const CONFIGURATION = array();
+
+	/**
 	 * Parameters for the bridge
 	 *
 	 * Use {@see BridgeAbstract::getParameters()} to read this parameter
@@ -165,8 +172,8 @@ abstract class BridgeAbstract implements BridgeInterface {
 			foreach(static::PARAMETERS['global'] as $name => $properties) {
 				if(isset($inputs[$name])) {
 					$value = $inputs[$name];
-				} elseif(isset($properties['value'])) {
-					$value = $properties['value'];
+				} elseif(isset($properties['defaultValue'])) {
+					$value = $properties['defaultValue'];
 				} else {
 					continue;
 				}
@@ -194,6 +201,11 @@ abstract class BridgeAbstract implements BridgeInterface {
 	 */
 	public function setDatas(array $inputs){
 
+		if(isset($inputs['context'])) { // Context hinting (optional)
+			$this->queriedContext = $inputs['context'];
+			unset($inputs['context']);
+		}
+
 		if(empty(static::PARAMETERS)) {
 
 			if(!empty($inputs)) {
@@ -218,8 +230,11 @@ abstract class BridgeAbstract implements BridgeInterface {
 			);
 		}
 
-		// Guess the paramter context from input data
-		$this->queriedContext = $validator->getQueriedContext($inputs, static::PARAMETERS);
+		// Guess the context from input data
+		if(empty($this->queriedContext)) {
+			$this->queriedContext = $validator->getQueriedContext($inputs, static::PARAMETERS);
+		}
+
 		if(is_null($this->queriedContext)) {
 			returnClientError('Required parameter(s) missing');
 		} elseif($this->queriedContext === false) {
@@ -228,6 +243,36 @@ abstract class BridgeAbstract implements BridgeInterface {
 
 		$this->setInputs($inputs, $this->queriedContext);
 
+	}
+
+	/**
+	 * Loads configuration for the bridge
+	 *
+	 * Returns errors and aborts execution if the provided configuration is
+	 * invalid.
+	 *
+	 * @return void
+	 */
+	public function loadConfiguration() {
+		foreach(static::CONFIGURATION as $optionName => $optionValue) {
+
+			$configurationOption = Configuration::getConfig(get_class($this), $optionName);
+
+			if($configurationOption !== null) {
+				$this->configuration[$optionName] = $configurationOption;
+				continue;
+			}
+
+			if(isset($optionValue['required']) && $optionValue['required'] === true) {
+				returnServerError(
+					'Missing configuration option: '
+					. $optionName
+				);
+			} elseif(isset($optionValue['defaultValue'])) {
+				$this->configuration[$optionName] = $optionValue['defaultValue'];
+			}
+
+		}
 	}
 
 	/**
@@ -241,6 +286,19 @@ abstract class BridgeAbstract implements BridgeInterface {
 			return null;
 		}
 		return $this->inputs[$this->queriedContext][$input]['value'];
+	}
+
+	/**
+	 * Returns the value for the selected configuration
+	 *
+	 * @param string $input The option name
+	 * @return mixed|null The option value or null if the input is not defined
+	 */
+	public function getOption($name){
+		if(!isset($this->configuration[$name])) {
+			return null;
+		}
+		return $this->configuration[$name];
 	}
 
 	/** {@inheritdoc} */
@@ -260,7 +318,12 @@ abstract class BridgeAbstract implements BridgeInterface {
 
 	/** {@inheritdoc} */
 	public function getIcon(){
-		return '';
+		return static::URI . '/favicon.ico';
+	}
+
+	/** {@inheritdoc} */
+	public function getConfiguration(){
+		return static::CONFIGURATION;
 	}
 
 	/** {@inheritdoc} */

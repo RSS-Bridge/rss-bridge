@@ -17,6 +17,7 @@ class TheHackerNewsBridge extends BridgeAbstract {
 
 				$article_url = $element->find('a.story-link', 0)->href;
 				$article_author = trim($element->find('i.icon-user', 0)->parent()->plaintext);
+				$article_author = str_replace('&#59396;', '', $article_author);
 				$article_title = $element->find('h2.home-title', 0)->plaintext;
 
 				//Date without time

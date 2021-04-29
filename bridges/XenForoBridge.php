@@ -118,7 +118,7 @@ class XenForoBridge extends BridgeAbstract {
 		// Notice: The DOM structure changes depending on the XenForo version used
 		if($mainContent = $html->find('div.mainContent', 0)) {
 			$this->version = self::XENFORO_VERSION_1;
-		} elseif ($mainContent = $html->find('div[class="p-body"]', 0)) {
+		} elseif ($mainContent = $html->find('div[class~="p-body"]', 0)) {
 			$this->version = self::XENFORO_VERSION_2;
 		} else {
 			returnServerError('This forum is currently not supported!');
@@ -127,7 +127,7 @@ class XenForoBridge extends BridgeAbstract {
 		switch($this->version) {
 			case self::XENFORO_VERSION_1:
 
-				$titleBar = $mainContent->find('div.titleBar h1', 0)
+				$titleBar = $mainContent->find('div.titleBar > h1', 0)
 					or returnServerError('Error finding title bar!');
 
 				$this->title = $titleBar->plaintext;
@@ -140,7 +140,7 @@ class XenForoBridge extends BridgeAbstract {
 
 			case self::XENFORO_VERSION_2:
 
-				$titleBar = $mainContent->find('div[class="p-title"] h1', 0)
+				$titleBar = $mainContent->find('div[class~="p-title"] h1', 0)
 					or returnServerError('Error finding title bar!');
 
 				$this->title = $titleBar->plaintext;
@@ -166,7 +166,7 @@ class XenForoBridge extends BridgeAbstract {
 		$lang = $html->find('html', 0)->lang;
 
 		// Posts are contained in an "ol"
-		$messageList = $html->find('#messageList li')
+		$messageList = $html->find('#messageList > li')
 			or returnServerError('Error finding message list!');
 
 		foreach($messageList as $post) {
@@ -179,7 +179,7 @@ class XenForoBridge extends BridgeAbstract {
 
 			$item['uri'] = $url . '#' . $post->getAttribute('id');
 
-			$content = $post->find('.messageContent article', 0);
+			$content = $post->find('.messageContent > article', 0);
 
 			// Add some style to quotes
 			foreach($content->find('.bbCodeQuote') as $quote) {
@@ -255,7 +255,7 @@ class XenForoBridge extends BridgeAbstract {
 
 		$lang = $html->find('html', 0)->lang;
 
-		$messageList = $html->find('div[class="block-body"] article')
+		$messageList = $html->find('div[class~="block-body"] article')
 			or returnServerError('Error finding message list!');
 
 		foreach($messageList as $post) {
@@ -268,13 +268,17 @@ class XenForoBridge extends BridgeAbstract {
 
 			$item['uri'] = $url . '#' . $post->getAttribute('id');
 
-			$title = $post->find('div[class="message-content"] article', 0)->plaintext;
+			$title = $post->find('div[class~="message-content"] article', 0)->plaintext;
 			$end = strpos($title, ' ', 70);
 			$item['title'] = substr($title, 0, $end);
 
-			$item['timestamp'] = $this->fixDate($post->find('time', 0)->title, $lang);
+			if ($post->find('time[datetime]', 0)) {
+				$item['timestamp'] = $post->find('time[datetime]', 0)->datetime;
+			} else {
+				$item['timestamp'] = $this->fixDate($post->find('time', 0)->title, $lang);
+			}
 			$item['author'] = $post->getAttribute('data-author');
-			$item['content'] = $post->find('div[class="message-content"] article', 0);
+			$item['content'] = $post->find('div[class~="message-content"] article', 0);
 
 			// Bridge specific properties
 			$item['id'] = $post->getAttribute('id');
@@ -305,7 +309,7 @@ class XenForoBridge extends BridgeAbstract {
 			// Load at least the last page
 			do {
 
-				$pageurl = $hosturl . str_replace($sentinel, $lastpage, $baseurl);
+				$pageurl = str_replace($sentinel, $lastpage, $baseurl);
 
 				// We can optimize performance by caching all but the last page
 				if($page != $lastpage) {
@@ -339,7 +343,7 @@ class XenForoBridge extends BridgeAbstract {
 			}
 
 			// Manually extract baseurl and inject sentinel
-			$baseurl = $pageNav->find('li a', -1)->href;
+			$baseurl = $pageNav->find('li > a', -1)->href;
 			$baseurl = str_replace('page-' . $lastpage, 'page-{{sentinel}}', $baseurl);
 
 			$sentinel = '{{sentinel}}';
@@ -353,7 +357,7 @@ class XenForoBridge extends BridgeAbstract {
 			// Load at least the last page
 			do {
 
-				$pageurl = $hosturl . str_replace($sentinel, $lastpage, $baseurl);
+				$pageurl = str_replace($sentinel, $lastpage, $baseurl);
 
 				// We can optimize performance by caching all but the last page
 				if($page != $lastpage) {
@@ -364,9 +368,9 @@ class XenForoBridge extends BridgeAbstract {
 						or returnServerError('Error loading contents from ' . $pageurl . '!');
 				}
 
-				$html = defaultLinkTo($html, $this->hosturl);
+				$html = defaultLinkTo($html, $hosturl);
 
-				$this->extractThreadPostsV2($html, $this->pageurl);
+				$this->extractThreadPostsV2($html, $pageurl);
 
 				$page--;
 
@@ -391,7 +395,7 @@ class XenForoBridge extends BridgeAbstract {
 	 */
 	private function fixDate($date, $lang = 'en-US') {
 
-		$mnamesen = [
+		$mnamesen = array(
 			'January',
 			'Feburary',
 			'March',
@@ -404,7 +408,7 @@ class XenForoBridge extends BridgeAbstract {
 			'October',
 			'November',
 			'December'
-		];
+		);
 
 		switch($lang) {
 			case 'en-US': // example: Jun 9, 2018 at 11:46 PM
@@ -414,7 +418,7 @@ class XenForoBridge extends BridgeAbstract {
 
 			case 'de-DE': // example: 19 Juli 2018 um 19:27 Uhr
 
-				$mnamesde = [
+				$mnamesde = array(
 					'Januar',
 					'Februar',
 					'März',
@@ -427,9 +431,9 @@ class XenForoBridge extends BridgeAbstract {
 					'Oktober',
 					'November',
 					'Dezember'
-				];
+				);
 
-				$mnamesdeshort = [
+				$mnamesdeshort = array(
 					'Jan.',
 					'Feb.',
 					'Mär.',
@@ -442,7 +446,7 @@ class XenForoBridge extends BridgeAbstract {
 					'Okt.',
 					'Nov.',
 					'Dez.'
-				];
+				);
 
 				$date = str_ireplace($mnamesde, $mnamesen, $date);
 				$date = str_ireplace($mnamesdeshort, $mnamesen, $date);

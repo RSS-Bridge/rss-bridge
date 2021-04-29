@@ -47,5 +47,8 @@ class EliteDangerousGalnetBridge extends BridgeAbstract {
 
 			$this->items[] = $item;
 		}
+
+		//Remove duplicates that sometimes show up on the website
+		$this->items = array_unique($this->items, SORT_REGULAR);
 	}
 }

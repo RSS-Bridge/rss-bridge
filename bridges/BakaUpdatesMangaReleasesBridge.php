@@ -12,6 +12,7 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 			'exampleValue'	=> '12345'
 		)
 	));
+	const LIMIT_COLS = 5;
 	const LIMIT_ITEMS = 10;
 
 	private $feedName = '';
@@ -20,21 +21,21 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Series not found');
 
-		$objTitle = $html->find('td[class="text pad"]', 1);
-		if ($objTitle)
-			$this->feedName = $objTitle->plaintext;
-
-		$itemlist = $html->find('td#main_content table table table tr');
-		if (!$itemlist)
+		// content is an unstructured pile of divs, ugly to parse
+		$cols = $html->find('div#main_content div.row > div.text');
+		if (!$cols)
 			returnServerError('No releases');
 
-		$limit = self::LIMIT_ITEMS;
-		foreach($itemlist as $element) {
-			$cols = $element->find('td[class="text pad"]');
-			if (!$cols)
-				continue;
-			if ($limit <= 0)
-				break;
+		$rows = array_slice(
+			array_chunk($cols, self::LIMIT_COLS), 0, self::LIMIT_ITEMS
+		);
+
+		if (isset($rows[0][1])) {
+			$this->feedName = $this->filterHTML($rows[0][1]->plaintext);
+		}
+
+		foreach($rows as $cols) {
+			if (count($cols) < self::LIMIT_COLS) continue;
 
 			$item = array();
 			$title = array();
@@ -47,8 +48,8 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 
 			$objTitle = $cols[1];
 			if ($objTitle) {
-				$title[] = html_entity_decode($objTitle->plaintext);
-				$item['content'] .= '<p>Series: ' . $objTitle->innertext . '</p>';
+				$title[] = $this->filterHTML($objTitle->plaintext);
+				$item['content'] .= '<p>Series: ' . $this->filterText($objTitle->innertext) . '</p>';
 			}
 
 			$objVolume = $cols[2];
@@ -61,18 +62,15 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 
 			$objAuthor = $cols[4];
 			if ($objAuthor && !empty($objAuthor->plaintext)) {
-				$item['author'] = html_entity_decode($objAuthor->plaintext);
-				$item['content'] .= '<p>Groups: ' . $objAuthor->innertext . '</p>';
+				$item['author'] = $this->filterHTML($objAuthor->plaintext);
+				$item['content'] .= '<p>Groups: ' . $this->filterText($objAuthor->innertext) . '</p>';
 			}
 
-			$item['title']	= implode(' ', $title);
-			$item['uri']	= $this->getURI() . '#' . hash('sha1', $item['title']);
+			$item['title'] = implode(' ', $title);
+			$item['uri'] = $this->getURI();
+			$item['uid'] = $this->getSanitizedHash($item['title']);
 
 			$this->items[] = $item;
-
-			if(count($this->items) >= $limit) {
-				break;
-			}
 		}
 	}
 
@@ -89,5 +87,17 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 			return $this->feedName . ' - ' . self::NAME;
 		}
 		return parent::getName();
+	}
+
+	private function getSanitizedHash($string) {
+		return hash('sha1', preg_replace('/[^a-zA-Z0-9\-\.]/', '', ucwords(strtolower($string))));
+	}
+
+	private function filterText($text) {
+		return rtrim($text, '* ');
+	}
+
+	private function filterHTML($text) {
+		return $this->filterText(html_entity_decode($text));
 	}
 }

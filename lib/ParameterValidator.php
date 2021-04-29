@@ -135,6 +135,9 @@ class ParameterValidator {
 			return false;
 
 		foreach($data as $name => $value) {
+			// Some RSS readers add a cache-busting parameter (_=<timestamp>) to feed URLs, detect and ignore them.
+			if ($name === '_') continue;
+
 			$registered = false;
 			foreach($parameters as $context => $set) {
 				if(array_key_exists($name, $set)) {
@@ -191,20 +194,25 @@ class ParameterValidator {
 		foreach($parameters as $context => $set) {
 			$queriedContexts[$context] = null;
 
+			// Ensure all user data exist in the current context
+			$notInContext = array_diff_key($data, $set);
+			if(array_key_exists('global', $parameters))
+				$notInContext = array_diff_key($notInContext, $parameters['global']);
+			if(sizeof($notInContext) > 0)
+				continue;
+
 			// Check if all parameters of the context are satisfied
 			foreach($set as $id => $properties) {
 				if(isset($data[$id]) && !empty($data[$id])) {
 					$queriedContexts[$context] = true;
-				} elseif(isset($properties['required'])
-				&& $properties['required'] === true
-				&& isset($properties['type'])
-				&& $properties['type'] !== 'checkbox'
-				&& $properties['type'] !== 'list') {
+				} elseif (isset($properties['type'])
+					&& ($properties['type'] === 'checkbox' || $properties['type'] === 'list')) {
+					continue;
+				} elseif(isset($properties['required']) && $properties['required'] === true) {
 					$queriedContexts[$context] = false;
 					break;
 				}
 			}
-
 		}
 
 		// Abort if one of the globally required parameters is not satisfied
@@ -216,6 +224,7 @@ class ParameterValidator {
 
 		switch(array_sum($queriedContexts)) {
 		case 0: // Found no match, is there a context without parameters?
+			if(isset($data['context'])) return $data['context'];
 			foreach($queriedContexts as $context => $queried) {
 				if(is_null($queried)) {
 					return $context;

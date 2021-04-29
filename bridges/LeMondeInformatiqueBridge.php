@@ -20,13 +20,14 @@ class LeMondeInformatiqueBridge extends FeedExpander {
 			str_replace(
 				'/grande/',
 				'/petite/',
-				$article_html->find('.article-image', 0)->find('img', 0)->src
+				$article_html->find('.article-image > img, figure > img', 0)->src
 			)
 		);
 
 		//No response header sets the encoding, explicit conversion is needed or subsequent xml_encode() will fail
-		$item['content'] = utf8_encode($this->cleanArticle($article_html->find('div.col-primary', 0)->innertext));
-		$item['author'] = utf8_encode($article_html->find('div.author-infos', 0)->find('b', 0)->plaintext);
+		$content_node = $article_html->find('div.col-primary, div.col-sm-9', 0);
+		$item['content'] = $this->cleanArticle($content_node->innertext);
+		$item['author'] = $article_html->find('div.author-infos', 0)->find('b', 0)->plaintext;
 
 		return $item;
 	}

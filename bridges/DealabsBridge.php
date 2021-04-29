@@ -1145,7 +1145,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 		} else {
 			foreach ($list as $deal) {
 				$item = array();
-				$item['uri'] = $deal->find('div[class=threadGrid-title]', 0)->find('a', 0)->href;
+				$item['uri'] = $deal->find('div[class*=threadGrid-title]', 0)->find('a', 0)->href;
 				$item['title'] = $deal->find('a[class*=' . $selectorLink . ']', 0
 				)->plaintext;
 				$item['author'] = $deal->find('span.thread-username', 0)->plaintext;
@@ -1376,8 +1376,11 @@ class PepperBridgeAbstract extends BridgeAbstract {
 
 		// Add the Hour and minutes
 		$date_str .= ' 00:00';
-
 		$date = DateTime::createFromFormat('j F Y H:i', $date_str);
+		// In some case, the date is not recognized : as a workaround the actual date is taken
+		if($date === false) {
+			$date = new DateTime();
+		}
 		return $date->getTimestamp();
 	}
 

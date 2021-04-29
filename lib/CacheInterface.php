@@ -13,38 +13,54 @@
 
 /**
  * The cache interface
- *
- * @todo Add missing function to the interface
- * @todo Explain parameters and return values in more detail
- * @todo Return self more often (to allow call chaining)
  */
 interface CacheInterface {
 	/**
+	 * Set scope of the current cache
+	 *
+	 * If $scope is an empty string, the cache is set to a global context.
+	 *
+	 * @param string $scope The scope the data is related to
+	 */
+	public function setScope($scope);
+
+	/**
+	 * Set key to assign the current data
+	 *
+	 * Since $key can be anything, the cache implementation must ensure to
+	 * assign the related data reliably; most commonly by serializing and
+	 * hashing the key in an appropriate way.
+	 *
+	 * @param array $key The key the data is related to
+	 */
+	public function setKey($key);
+
+	/**
 	 * Loads data from cache
 	 *
-	 * @return mixed The cache data
+	 * @return mixed The cached data or null
 	 */
 	public function loadData();
 
 	/**
 	 * Stores data to the cache
 	 *
-	 * @param mixed $datas The data to store
+	 * @param mixed $data The data to store
 	 * @return self The cache object
 	 */
-	public function saveData($datas);
+	public function saveData($data);
 
 	/**
-	 * Returns the timestamp for the curent cache file
+	 * Returns the timestamp for the curent cache data
 	 *
-	 * @return int Timestamp
+	 * @return int Timestamp or null
 	 */
 	public function getTime();
 
 	/**
-	 * Removes any data that is older than the specified duration from cache
+	 * Removes any data that is older than the specified age from cache
 	 *
-	 * @param int $duration The cache duration in seconds
+	 * @param int $seconds The cache age in seconds
 	 */
-	public function purgeCache($duration);
+	public function purgeCache($seconds);
 }

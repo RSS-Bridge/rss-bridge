@@ -48,12 +48,18 @@ final class BridgeCard {
 	 * @param bool $isHttps If disabled, adds a warning to the form
 	 * @return string The form header
 	 */
-	private static function getFormHeader($bridgeName, $isHttps = false) {
+	private static function getFormHeader($bridgeName, $isHttps = false, $parameterName = '') {
 		$form = <<<EOD
 			<form method="GET" action="?">
 				<input type="hidden" name="action" value="display" />
 				<input type="hidden" name="bridge" value="{$bridgeName}" />
 EOD;
+
+		if(!empty($parameterName)) {
+			$form .= <<<EOD
+				<input type="hidden" name="context" value="{$parameterName}" />
+EOD;
+		}
 
 		if(!$isHttps) {
 			$form .= '<div class="secure-warning">Warning :
@@ -80,7 +86,7 @@ This bridge is not fetching its content through a secure connection</div>';
 	$isHttps = false,
 	$parameterName = '',
 	$parameters = array()) {
-		$form = self::getFormHeader($bridgeName, $isHttps);
+		$form = self::getFormHeader($bridgeName, $isHttps, $parameterName);
 
 		if(count($parameters) > 0) {
 
@@ -116,6 +122,11 @@ This bridge is not fetching its content through a secure connection</div>';
 				} elseif($inputEntry['type'] === 'checkbox') {
 					$form .= self::getCheckboxInput($inputEntry, $idArg, $id);
 				}
+
+				if(isset($inputEntry['title']))
+					$form .= '<i class="info" title="' . filter_var($inputEntry['title'], FILTER_SANITIZE_STRING) . '">i</i>';
+				else
+					$form .= '<i class="no-info"></i>';
 			}
 
 			$form .= '</div>';
@@ -145,9 +156,6 @@ This bridge is not fetching its content through a secure connection</div>';
 
 		if(isset($entry['pattern']))
 			$retVal .= ' pattern="' . $entry['pattern'] . '"';
-
-		if(isset($entry['title']))
-			$retVal .= ' title="' . filter_var($entry['title'], FILTER_SANITIZE_STRING) . '"';
 
 		return $retVal;
 	}
@@ -299,7 +307,10 @@ This bridge is not fetching its content through a secure connection</div>';
 	 */
 	static function displayBridgeCard($bridgeName, $formats, $isActive = true){
 
-		$bridge = Bridge::create($bridgeName);
+		$bridgeFac = new \BridgeFactory();
+		$bridgeFac->setWorkingDir(PATH_LIB_BRIDGES);
+
+		$bridge = $bridgeFac->create($bridgeName);
 
 		if($bridge == false)
 			return '';
@@ -336,10 +347,12 @@ This bridge is not fetching its content through a secure connection</div>';
 CARD;
 
 		// If we don't have any parameter for the bridge, we print a generic form to load it.
-		if(count($parameters) === 0
-		|| count($parameters) === 1 && array_key_exists('global', $parameters)) {
-
+		if (count($parameters) === 0) {
 			$card .= self::getForm($bridgeName, $formats, $isActive, $isHttps);
+
+		// Display form with cache timeout and/or noproxy options (if enabled) when bridge has no parameters
+		} else if (count($parameters) === 1 && array_key_exists('global', $parameters)) {
+			$card .= self::getForm($bridgeName, $formats, $isActive, $isHttps, '', $parameters['global']);
 
 		} else {
 

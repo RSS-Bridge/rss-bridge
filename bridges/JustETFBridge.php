@@ -347,5 +347,6 @@ class JustETFBridge extends BridgeAbstract {
 
 		return $element->plaintext;
 	}
+
 	#endregion
 }

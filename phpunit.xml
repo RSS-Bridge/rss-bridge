@@ -14,6 +14,9 @@
 		<testsuite name="formats">
 			<directory suffix="FormatTest.php">tests</directory>
 		</testsuite>
+		<testsuite name="actions">
+			<directory suffix="ActionTest.php">tests</directory>
+		</testsuite>
 	</testsuites>
 
 </phpunit>

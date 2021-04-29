@@ -1,0 +1,47 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  phpunit6:
+    runs-on: ubuntu-16.04
+    strategy:
+      matrix:
+        php-versions: ['7.0', '7.1', '7.2']
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+      - run: composer global require phpunit/phpunit ^6
+      - run: phpunit --configuration=phpunit.xml --include-path=lib/
+
+  phpunit7:
+    runs-on: ubuntu-16.04
+    strategy:
+      matrix:
+        php-versions: ['7.1', '7.2', '7.3']
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+      - run: composer global require phpunit/phpunit ^7
+      - run: phpunit --configuration=phpunit.xml --include-path=lib/
+
+  phpunit8:
+    runs-on: ubuntu-16.04
+    strategy:
+      matrix:
+        php-versions: ['7.3', '7.4']
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+      - run: composer global require phpunit/phpunit ^8
+      - run: phpunit --configuration=phpunit.xml --include-path=lib/

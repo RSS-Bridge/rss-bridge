@@ -5,7 +5,7 @@ class GiphyBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'kraoc';
 	const NAME = 'Giphy Bridge';
-	const URI = 'http://giphy.com/';
+	const URI = 'https://giphy.com/';
 	const CACHE_TIMEOUT = 300; //5min
 	const DESCRIPTION = 'Bridge for giphy.com';
 

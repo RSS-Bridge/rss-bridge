@@ -1,7 +1,7 @@
 <?php
 class Arte7Bridge extends BridgeAbstract {
 
-	const MAINTAINER = 'mitsukarenai';
+	// const MAINTAINER = 'mitsukarenai';
 	const NAME = 'Arte +7';
 	const URI = 'https://www.arte.tv/';
 	const CACHE_TIMEOUT = 1800; // 30min
@@ -91,7 +91,8 @@ class Arte7Bridge extends BridgeAbstract {
 			'Authorization: Bearer ' . self::API_TOKEN
 		);
 
-		$input = getContents($url, $header) or die('Could not request ARTE.');
+		$input = getContents($url, $header)
+			or returnServerError('Could not request ARTE.');
 		$input_json = json_decode($input, true);
 
 		foreach($input_json['videos'] as $element) {

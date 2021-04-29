@@ -3,7 +3,9 @@ class AnidexBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'ORelio';
 	const NAME = 'Anidex';
-	const URI = 'https://anidex.info/';
+	const URI = 'http://anidex.info/'; // anidex.info has ddos-guard so we need to use anidex.moe
+	const ALTERNATE_URI = 'https://anidex.moe/'; // anidex.moe returns 301 unless Host is set to anidex.info
+	const ALTERNATE_HOST = 'anidex.info'; // Correct host for requesting anidex.moe without 301 redirect
 	const DESCRIPTION = 'Returns the newest torrents, with optional search criteria.';
 	const PARAMETERS = array(
 		array(
@@ -108,7 +110,7 @@ class AnidexBridge extends BridgeAbstract {
 	public function collectData() {
 
 		// Build Search URL from user-provided parameters
-		$search_url = self::URI . '?s=upload_timestamp&o=desc';
+		$search_url = self::ALTERNATE_URI . '?s=upload_timestamp&o=desc';
 		foreach (array('id', 'lang_id', 'group_id') as $param_name) {
 			$param = $this->getInput($param_name);
 			if (!empty($param) && intval($param) != 0 && ctype_digit(str_replace(',', '', $param))) {
@@ -131,8 +133,16 @@ class AnidexBridge extends BridgeAbstract {
 			$opt[CURLOPT_COOKIE] = 'anidex_h_toggle=' . $h;
 		}
 
+		// We need to use a different Host HTTP header to reach the correct page on ALTERNATE_URI
+		$headers = array('Host: ' . self::ALTERNATE_HOST);
+
+		// The HTTPS certificate presented by anidex.moe is for anidex.info. We need to ignore this.
+		// As a consequence, the bridge is intentionally marked as insecure by setting self::URI to http://
+		$opt[CURLOPT_SSL_VERIFYHOST] = 0;
+		$opt[CURLOPT_SSL_VERIFYPEER] = 0;
+
 		// Retrieve torrent listing from search results, which does not contain torrent description
-		$html = getSimpleHTMLDOM($search_url, array(), $opt)
+		$html = getSimpleHTMLDOM($search_url, $headers, $opt)
 		or returnServerError('Could not request Anidex: ' . $search_url);
 		$links = $html->find('a');
 		$results = array();
@@ -156,10 +166,11 @@ class AnidexBridge extends BridgeAbstract {
 			if ($torrent_id != 0 && ctype_digit($torrent_id)) {
 
 				//Retrieve data for this torrent ID
-				$item_uri = self::URI . 'torrent/' . $torrent_id;
+				$item_browse_uri = self::URI . 'torrent/' . $torrent_id;
+				$item_fetch_uri = self::ALTERNATE_URI . 'torrent/' . $torrent_id;
 
-				//Retrieve full description from torrent page
-				if ($item_html = getSimpleHTMLDOMCached($item_uri)) {
+				//Retrieve full description from torrent page (cached for 24 hours: 86400 seconds)
+				if ($item_html = getSimpleHTMLDOMCached($item_fetch_uri, 86400, $headers, $opt)) {
 
 					//Retrieve data from page contents
 					$item_title = str_replace(' (Torrent) - AniDex ', '', $item_html->find('title', 0)->plaintext);
@@ -191,7 +202,7 @@ class AnidexBridge extends BridgeAbstract {
 
 					//Build and add final item
 					$item = array();
-					$item['uri'] = $item_uri;
+					$item['uri'] = $item_browse_uri;
 					$item['title'] = $item_title;
 					$item['author'] = $item_author;
 					$item['timestamp'] = $item_date;

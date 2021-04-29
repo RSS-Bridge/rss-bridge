@@ -1,7 +1,14 @@
 .git
+.gitattributes
+.github/*
+.travis.yml
 cache/*
+CONTRIBUTING.md
 DEBUG
 Dockerfile
-whitelist.txt
+phpcompatibility.xml
 phpcs.xml
-CONTRIBUTING.md
+phpcs.xml
+scalingo.json
+tests/*
+whitelist.txt

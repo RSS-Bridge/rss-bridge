@@ -3,7 +3,7 @@ class CollegeDeFranceBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'pit-fgfjiudghdf';
 	const NAME = 'CollegeDeFrance';
-	const URI = 'http://www.college-de-france.fr/';
+	const URI = 'https://www.college-de-france.fr/';
 	const CACHE_TIMEOUT = 10800; // 3h
 	const DESCRIPTION = 'Returns the latest audio and video from CollegeDeFrance';
 

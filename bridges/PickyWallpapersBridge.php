@@ -3,7 +3,7 @@ class PickyWallpapersBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'nel50n';
 	const NAME = 'PickyWallpapers Bridge';
-	const URI = 'http://www.pickywallpapers.com/';
+	const URI = 'https://www.pickywallpapers.com/';
 	const CACHE_TIMEOUT = 43200; // 12h
 	const DESCRIPTION = 'Returns the latests wallpapers from PickyWallpapers';
 

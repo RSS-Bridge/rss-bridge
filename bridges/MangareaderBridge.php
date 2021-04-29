@@ -3,7 +3,7 @@ class MangareaderBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'logmanoriginal';
 	const NAME = 'Mangareader Bridge';
-	const URI = 'http://www.mangareader.net';
+	const URI = 'https://www.mangareader.net';
 	const CACHE_TIMEOUT = 10800; // 3h
 	const DESCRIPTION = 'Returns the latest updates, popular mangas or manga updates (new chapters)';
 

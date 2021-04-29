@@ -77,7 +77,9 @@ class AtomFormatTest extends TestCase {
 	}
 
 	private function initFormat() {
-		$this->format = \Format::create('Atom');
+		$formatFac = new FormatFactory();
+		$formatFac->setWorkingDir(PATH_LIB_FORMATS);
+		$this->format = $formatFac->create('Atom');
 		$this->format->setItems($this->sample->items);
 		$this->format->setExtraInfos($this->sample->meta);
 		$this->format->setLastModified(strtotime('2000-01-01 12:00:00 UTC'));

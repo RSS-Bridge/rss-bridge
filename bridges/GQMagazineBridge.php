@@ -40,6 +40,11 @@ class GQMagazineBridge extends BridgeAbstract
 		'data-original' => 'src'
 	);
 
+	const POSSIBLE_TITLES = array(
+		'h2',
+		'h3'
+	);
+
 	private function getDomain() {
 		$domain = $this->getInput('domain');
 		if (empty($domain))
@@ -54,6 +59,17 @@ class GQMagazineBridge extends BridgeAbstract
 		return $this->getDomain() . '/' . $this->getInput('page');
 	}
 
+	private function findTitleOf($link) {
+		foreach (self::POSSIBLE_TITLES as $tag) {
+			$title = $link->parent()->find($tag, 0);
+			if($title !== null) {
+				if($title->plaintext !== null) {
+					return $title->plaintext;
+				}
+			}
+		}
+	}
+
 	public function collectData()
 	{
 		$html = getSimpleHTMLDOM($this->getURI()) or returnServerError('Could not request ' . $this->getURI());
@@ -61,31 +77,36 @@ class GQMagazineBridge extends BridgeAbstract
 		// Since GQ don't want simple class scrapping, let's do it the hard way and ... discover content !
 		$main = $html->find('main', 0);
 		foreach ($main->find('a') as $link) {
+			if(strpos($link, $this->getInput('page')))
+				continue;
 			$uri = $link->href;
-			$title = $link->find('h2', 0);
-			$date = $link->find('time', 0);
+			$date = $link->parent()->find('time', 0);
 
 			$item = array();
-			$author = $link->find('span[itemprop=name]', 0);
-			$item['author'] = $author->plaintext;
-			$item['title'] = $title->plaintext;
-			if(substr($uri, 0, 1) === 'h') { // absolute uri
-				$item['uri'] = $uri;
-			} else if(substr($uri, 0, 1) === '/') { // domain relative url
-				$item['uri'] = $this->getDomain() . $uri;
-			} else {
-				$item['uri'] = $this->getDomain() . '/' . $uri;
+			$author = $link->parent()->find('span[itemprop=name]', 0);
+			if($author !== null) {
+				$item['author'] = $author->plaintext;
+				$item['title'] = $this->findTitleOf($link);
+				switch(substr($uri, 0, 1)) {
+					case 'h': // absolute uri
+						$item['uri'] = $uri;
+						break;
+					case '/': // domain relative uri
+						$item['uri'] = $this->getDomain() . $uri;
+						break;
+					default:
+						$item['uri'] = $this->getDomain() . '/' . $uri;
+				}
+				$article = $this->loadFullArticle($item['uri']);
+				if($article) {
+					$item['content'] = $this->replaceUriInHtmlElement($article);
+				} else {
+					$item['content'] = "<strong>Article body couldn't be loaded</strong>. It must be a bug!";
+				}
+				$short_date = $date->datetime;
+				$item['timestamp'] = strtotime($short_date);
+				$this->items[] = $item;
 			}
-
-			$article = $this->loadFullArticle($item['uri']);
-			if($article) {
-				$item['content'] = $this->replaceUriInHtmlElement($article);
-			} else {
-				$item['content'] = "<strong>Article body couldn't be loaded</strong>. It must be a bug!";
-			}
-			$short_date = $date->datetime;
-			$item['timestamp'] = strtotime($short_date);
-			$this->items[] = $item;
 		}
 	}
 
@@ -96,16 +117,7 @@ class GQMagazineBridge extends BridgeAbstract
 	 */
 	private function loadFullArticle($uri){
 		$html = getSimpleHTMLDOMCached($uri);
-		// Once again, that generated css classes madness is an obstacle ... which i can go over easily
-		foreach($html->find('div') as $div) {
-			// List the CSS classes of that div
-			$classes = $div->class;
-			// I can't directly lookup that class since GQ since to generate random names like "ArticleBodySection-fkggUW"
-			if(strpos($classes, 'ArticleBodySection') !== false) {
-				return $div;
-			}
-		}
-		return null;
+		return $html->find('section[data-test-id=MainContentWrapper]', 0);
 	}
 
 	/**

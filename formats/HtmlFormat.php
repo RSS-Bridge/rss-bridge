@@ -1,11 +1,30 @@
 <?php
 class HtmlFormat extends FormatAbstract {
+	const MIME_TYPE = 'text/html';
+
 	public function stringify(){
 		$extraInfos = $this->getExtraInfos();
 		$title = htmlspecialchars($extraInfos['name']);
 		$uri = htmlspecialchars($extraInfos['uri']);
-		$atomquery = str_replace('format=Html', 'format=Atom', htmlentities($_SERVER['QUERY_STRING']));
-		$mrssquery = str_replace('format=Html', 'format=Mrss', htmlentities($_SERVER['QUERY_STRING']));
+
+		// Dynamically build buttons for all formats (except HTML)
+		$formatFac = new FormatFactory();
+		$formatFac->setWorkingDir(PATH_LIB_FORMATS);
+
+		$buttons = '';
+		$links = '';
+
+		foreach($formatFac->getFormatNames() as $format) {
+			if(strcasecmp($format, 'HTML') === 0) {
+				continue;
+			}
+
+			$query = str_ireplace('format=Html', 'format=' . $format, htmlentities($_SERVER['QUERY_STRING']));
+			$buttons .= $this->buildButton($format, $query) . PHP_EOL;
+
+			$mime = $formatFac->create($format)->getMimeType();
+			$links .= $this->buildLink($format, $query, $mime) . PHP_EOL;
+		}
 
 		$entries = '';
 		foreach($this->getItems() as $item) {
@@ -82,18 +101,18 @@ EOD;
 <html>
 <head>
 	<meta charset="{$charset}">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>{$title}</title>
 	<link href="static/HtmlFormat.css" rel="stylesheet">
-	<link rel="alternate" type="application/atom+xml" title="Atom" href="./?{$atomquery}" />
-	<link rel="alternate" type="application/rss+xml" title="RSS" href="/?{$mrssquery}" />
+	<link rel="icon" type="image/png" href="static/favicon.png">
+	{$links}
 	<meta name="robots" content="noindex, follow">
 </head>
 <body>
 	<h1 class="pagetitle"><a href="{$uri}" target="_blank">{$title}</a></h1>
 	<div class="buttons">
 		<a href="./#bridge-{$_GET['bridge']}"><button class="backbutton">← back to rss-bridge</button></a>
-		<a href="./?{$atomquery}"><button class="rss-feed">RSS feed (ATOM)</button></a>
-		<a href="./?{$mrssquery}"><button class="rss-feed">RSS feed (MRSS)</button></a>
+		{$buttons}
 	</div>
 {$entries}
 </body>
@@ -108,9 +127,22 @@ EOD;
 
 	public function display() {
 		$this
-			->setContentType('text/html; charset=' . $this->getCharset())
+			->setContentType(self::MIME_TYPE . '; charset=' . $this->getCharset())
 			->callContentType();
 
 		return parent::display();
+	}
+
+	private function buildButton($format, $query) {
+		return <<<EOD
+<a href="./?{$query}"><button class="rss-feed">{$format}</button></a>
+EOD;
+	}
+
+	private function buildLink($format, $query, $mime) {
+		return <<<EOD
+<link href="./?{$query}" title="{$format}" rel="alternate" type="{$mime}">
+
+EOD;
 	}
 }

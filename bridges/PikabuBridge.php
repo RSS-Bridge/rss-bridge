@@ -6,6 +6,16 @@ class PikabuBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Выводит посты по тегу';
 	const MAINTAINER = 'em92';
 
+	const PARAMETERS_FILTER = array(
+		'name' => 'Фильтр',
+		'type' => 'list',
+		'values' => array(
+			'Горячее' => 'hot',
+			'Свежее' => 'new',
+		),
+		'defaultValue' => 'hot'
+	);
+
 	const PARAMETERS = array(
 		'По тегу' => array(
 			'tag' => array(
@@ -13,21 +23,38 @@ class PikabuBridge extends BridgeAbstract {
 				'exampleValue' => 'it',
 				'required' => true
 			),
-			'filter' => array(
-				'name' => 'Фильтр',
-				'type' => 'list',
-				'values' => array(
-					'Горячее' => 'hot',
-					'Свежее' => 'new',
-				),
-				'defaultValue' => 'hot'
+			'filter' => self::PARAMETERS_FILTER
+		),
+		'По сообществу' => array(
+			'community' => array(
+				'name' => 'Сообщество',
+				'exampleValue' => 'linux',
+				'required' => true
+			),
+			'filter' => self::PARAMETERS_FILTER
+		),
+		'По пользователю' => array(
+			'user' => array(
+				'name' => 'Пользователь',
+				'exampleValue' => 'admin',
+				'required' => true
 			)
 		)
 	);
 
+	protected $title = null;
+
 	public function getURI() {
 		if ($this->getInput('tag')) {
 			return self::URI . '/tag/' . rawurlencode($this->getInput('tag')) . '/' . rawurlencode($this->getInput('filter'));
+		} else if ($this->getInput('user')) {
+			return self::URI . '/@' . rawurlencode($this->getInput('user'));
+		} else if ($this->getInput('community')) {
+			$uri = self::URI . '/community/' . rawurlencode($this->getInput('community'));
+			if ($this->getInput('filter') != 'hot') {
+				$uri .= '/' . rawurlencode($this->getInput('filter'));
+			}
+			return $uri;
 		} else {
 			return parent::getURI();
 		}
@@ -38,10 +65,10 @@ class PikabuBridge extends BridgeAbstract {
 	}
 
 	public function getName() {
-		if (is_string($this->getInput('tag'))) {
-			return $this->getInput('tag') . ' - ' . parent::getName();
-		} else {
+		if (is_null($this->title)) {
 			return parent::getName();
+		} else {
+			return $this->title . ' - ' . parent::getName();
 		}
 	}
 
@@ -51,6 +78,8 @@ class PikabuBridge extends BridgeAbstract {
 		$text_html = getContents($link) or returnServerError('Could not fetch ' . $link);
 		$text_html = iconv('windows-1251', 'utf-8', $text_html);
 		$html = str_get_html($text_html);
+
+		$this->title = $html->find('title', 0)->innertext;
 
 		foreach($html->find('article.story') as $post) {
 			$time = $post->find('time.story__datetime', 0);
@@ -67,6 +96,11 @@ class PikabuBridge extends BridgeAbstract {
 				}
 			}
 
+			foreach($post->find('[data-type=gifx]') as $el) {
+				$src = $el->getAttribute('data-source');
+				$el->outertext = '<img src="' . $src . '">';
+			}
+
 			foreach($post->find('img') as $img) {
 				$src = $img->getAttribute('src');
 				if (!$src) {
@@ -76,6 +110,10 @@ class PikabuBridge extends BridgeAbstract {
 					}
 				}
 				$img->outertext = '<img src="' . $src . '">';
+
+				// it is assumed, that img's parents are links to post itself
+				// we don't need them
+				$img->parent()->outertext = $img->outertext;
 			}
 
 			$categories = array();
@@ -85,14 +123,25 @@ class PikabuBridge extends BridgeAbstract {
 				}
 			}
 
-			$title = $post->find('.story__title-link', 0);
+			$title_element = $post->find('.story__title-link', 0);
+
+			$title = $title_element->plaintext;
+			$community_link = $post->find('.story__community-link', 0);
+			// adding special marker for "Maybe News" section
+			// these posts are fake
+			if (!is_null($community_link) && $community_link->getAttribute('href') == '/community/maybenews') {
+				$title = '[' . $community_link->innertext . '] ' . $title;
+			}
 
 			$item = array();
 			$item['categories'] = $categories;
 			$item['author'] = $post->find('.user__nick', 0)->innertext;
-			$item['title'] = $title->plaintext;
-			$item['content'] = strip_tags(backgroundToImg($post->find('.story__content-inner', 0)->innertext), '<br><p><img>');
-			$item['uri'] = $title->href;
+			$item['title'] = $title;
+			$item['content'] = strip_tags(
+				backgroundToImg($post->find('.story__content-inner', 0)->innertext),
+				'<br><p><img><a>
+			');
+			$item['uri'] = $title_element->href;
 			$item['timestamp'] = strtotime($time->getAttribute('datetime'));
 			$this->items[] = $item;
 		}

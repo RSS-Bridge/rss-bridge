@@ -12,6 +12,15 @@
  */
 
 /**
+ * Builds a GitHub search query to find open bugs for the current bridge
+ */
+function buildGitHubSearchQuery($bridgeName){
+	return REPOSITORY
+	. 'issues?q='
+	. urlencode('is:issue is:open ' . $bridgeName);
+}
+
+/**
  * Returns an URL that automatically populates a new issue on GitHub based
  * on the information provided
  *
@@ -83,7 +92,8 @@ function buildBridgeException($e, $bridge){
 	. '`';
 
 	$body_html = nl2br($body);
-	$link = buildGitHubIssueQuery($title, $body, 'bug report', $bridge->getMaintainer());
+	$link = buildGitHubIssueQuery($title, $body, 'Bridge-Broken', $bridge->getMaintainer());
+	$searchQuery = buildGitHubSearchQuery($bridge::NAME);
 
 	$header = buildHeader($e, $bridge);
 	$message = <<<EOD
@@ -91,7 +101,7 @@ function buildBridgeException($e, $bridge){
 remote website's content!<br>
 {$body_html}
 EOD;
-	$section = buildSection($e, $bridge, $message, $link);
+	$section = buildSection($e, $bridge, $message, $link, $searchQuery);
 
 	return $section;
 }
@@ -119,11 +129,12 @@ function buildTransformException($e, $bridge){
 	. (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '')
 	. '`';
 
-	$link = buildGitHubIssueQuery($title, $body, 'bug report', $bridge->getMaintainer());
+	$link = buildGitHubIssueQuery($title, $body, 'Bridge-Broken', $bridge->getMaintainer());
+	$searchQuery = buildGitHubSearchQuery($bridge::NAME);
 	$header = buildHeader($e, $bridge);
 	$message = "RSS-Bridge was unable to transform the contents returned by
 <strong>{$bridge->getName()}</strong>!";
-	$section = buildSection($e, $bridge, $message, $link);
+	$section = buildSection($e, $bridge, $message, $link, $searchQuery);
 
 	return buildPage($title, $header, $section);
 }
@@ -154,11 +165,12 @@ EOD;
  * @param object $bridge The bridge object
  * @param string $message The message to display
  * @param string $link The link to include in the anchor
+ * @param string $searchQuery A GitHub search query for the current bridge
  * @return string The HTML section
  *
  * @todo This function belongs inside a class
  */
-function buildSection($e, $bridge, $message, $link){
+function buildSection($e, $bridge, $message, $link, $searchQuery){
 	return <<<EOD
 <section>
 	<p class="exception-message">{$message}</p>
@@ -166,9 +178,13 @@ function buildSection($e, $bridge, $message, $link){
 		<ul class="advice">
 			<li>Press Return to check your input parameters</li>
 			<li>Press F5 to retry</li>
+			<li>Check if this issue was already reported on <a href="{$searchQuery}">GitHub</a> (give it a thumbs-up)</li>
 			<li>Open a <a href="{$link}">GitHub Issue</a> if this error persists</li>
 		</ul>
 	</div>
+	<a href="{$searchQuery}" title="Opens GitHub to search for similar issues">
+		<button>Search GitHub Issues</button>
+	</a>
 	<a href="{$link}" title="After clicking this button you can review
 	the issue before submitting it"><button>Open GitHub Issue</button></a>
 	<p class="maintainer">{$bridge->getMaintainer()}</p>

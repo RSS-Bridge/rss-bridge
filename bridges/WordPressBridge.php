@@ -92,9 +92,9 @@ class WordPressBridge extends FeedExpander {
 			returnClientError('The url parameter must either refer to http or https protocol.');
 		}
 		try{
-			$this->collectExpandableDatas($this->getURI() . '/feed/atom/');
+			$this->collectExpandableDatas($this->getURI() . '/feed/atom/', 20);
 		} catch (Exception $e) {
-			$this->collectExpandableDatas($this->getURI() . '/?feed=atom');
+			$this->collectExpandableDatas($this->getURI() . '/?feed=atom', 20);
 		}
 
 	}

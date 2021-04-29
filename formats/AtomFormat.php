@@ -7,6 +7,8 @@
  * https://validator.w3.org/feed/
  */
 class AtomFormat extends FormatAbstract{
+	const MIME_TYPE = 'application/atom+xml';
+
 	const LIMIT_TITLE = 140;
 
 	public function stringify(){
@@ -37,7 +39,7 @@ class AtomFormat extends FormatAbstract{
 		$entries = '';
 		foreach($this->getItems() as $item) {
 			$entryTimestamp = $item->getTimestamp();
-			$entryTitle = $this->xml_encode($item->getTitle());
+			$entryTitle = $item->getTitle();
 			$entryContent = $item->getContent();
 			$entryUri = $item->getURI();
 			$entryID = '';
@@ -87,6 +89,10 @@ class AtomFormat extends FormatAbstract{
 				. PHP_EOL;
 			}
 
+			$entryThumbnail = $item->thumbnail;
+			if (!empty($entryThumbnail))
+				$entryThumbnail = '<media:thumbnail url="' . $this->xml_encode($entryThumbnail) . '"/>';
+
 			$entryLinkAlternate = '';
 			if (!empty($entryUri)) {
 				$entryLinkAlternate = '<link rel="alternate" type="text/html" href="'
@@ -112,6 +118,7 @@ class AtomFormat extends FormatAbstract{
 		<content type="html">{$entryContent}</content>
 		{$entryEnclosures}
 		{$entryCategories}
+		{$entryThumbnail}
 	</entry>
 
 EOD;
@@ -123,7 +130,7 @@ EOD;
 		/* Data are prepared, now let's begin the "MAGIE !!!" */
 		$toReturn = <<<EOD
 <?xml version="1.0" encoding="{$charset}"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
 
 	<title type="text">{$title}</title>
 	<id>{$feedUrl}</id>
@@ -147,7 +154,7 @@ EOD;
 
 	public function display(){
 		$this
-			->setContentType('application/atom+xml; charset=' . $this->getCharset())
+			->setContentType(self::MIME_TYPE . '; charset=' . $this->getCharset())
 			->callContentType();
 
 		return parent::display();

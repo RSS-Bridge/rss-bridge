@@ -5,7 +5,6 @@ use PHPUnit\Framework\TestCase;
 
 class CacheImplementationTest extends TestCase {
 	private $class;
-	private $obj;
 
 	/**
 	 * @dataProvider dataCachesProvider
@@ -22,7 +21,7 @@ class CacheImplementationTest extends TestCase {
 	 */
 	public function testClassType($path) {
 		$this->setCache($path);
-		$this->assertInstanceOf(CacheInterface::class, $this->obj);
+		$this->assertTrue(is_subclass_of($this->class, CacheInterface::class), 'class must be subclass of CacheInterface');
 	}
 
 	////////////////////////////////////////////////////////////////////////////
@@ -39,6 +38,5 @@ class CacheImplementationTest extends TestCase {
 		require_once $path;
 		$this->class = basename($path, '.php');
 		$this->assertTrue(class_exists($this->class), 'class ' . $this->class . ' doesn\'t exist');
-		$this->obj = new $this->class();
 	}
 }

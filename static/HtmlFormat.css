@@ -96,3 +96,20 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
  button:hover {
 	background: #49afff;
 }
+
+@media screen and (max-width: 767px) {
+
+	section {
+		width: 100%;
+		padding: 0;
+
+	}
+
+	button {
+		display: inline-block;
+		width: 40%;
+		padding: 5px auto;
+		margin: 3px auto 0;
+	}
+
+}

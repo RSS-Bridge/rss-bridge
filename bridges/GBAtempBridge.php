@@ -113,8 +113,8 @@ class GBAtempBridge extends BridgeAbstract {
 			break;
 		case 'T':
 			foreach($html->find('li.portal-tutorial') as $tutorialItem) {
-				$url = self::URI . $tutorialItem->find('a', 0)->href;
-				$title = $tutorialItem->find('a', 0)->plaintext;
+				$url = self::URI . $tutorialItem->find('a', 1)->href;
+				$title = $tutorialItem->find('a', 1)->plaintext;
 				$time = $this->findItemDate($tutorialItem);
 				$author = $tutorialItem->find('a.username', 0)->plaintext;
 				$content = $this->fetchPostContent($url, self::URI);

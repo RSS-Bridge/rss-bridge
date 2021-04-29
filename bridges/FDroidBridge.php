@@ -28,14 +28,14 @@ class FDroidBridge extends BridgeAbstract {
 			or returnServerError('Could not request F-Droid.');
 
 		// targetting the corresponding widget based on user selection
-		// "updated" is the 4th widget on the page, "added" is the 5th
+		// "updated" is the 5th widget on the page, "added" is the 6th
 
 		switch($this->getInput('u')) {
 			case 'updated':
-				$html_widget = $html->find('div.sidebar-widget', 4);
+				$html_widget = $html->find('div.sidebar-widget', 5);
 				break;
 			default:
-				$html_widget = $html->find('div.sidebar-widget', 5);
+				$html_widget = $html->find('div.sidebar-widget', 6);
 				break;
 		}
 

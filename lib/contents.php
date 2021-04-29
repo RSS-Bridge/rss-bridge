@@ -37,29 +37,52 @@
  * @param array $opts (optional) A list of cURL options as associative array in
  * the format `$opts[$option] = $value;`, where `$option` is any `CURLOPT_XXX`
  * option and `$value` the corresponding value.
+ * @param bool $returnHeader Returns an array of two elements 'header' and
+ * 'content' if enabled.
  *
  * For more information see http://php.net/manual/en/function.curl-setopt.php
- * @return string The contents.
+ * @return string|array The contents.
  */
-function getContents($url, $header = array(), $opts = array()){
+function getContents($url, $header = array(), $opts = array(), $returnHeader = false){
 	Debug::log('Reading contents from "' . $url . '"');
 
 	// Initialize cache
-	$cache = Cache::create('FileCache');
-	$cache->setPath(PATH_CACHE . 'server/');
+	$cacheFac = new CacheFactory();
+	$cacheFac->setWorkingDir(PATH_LIB_CACHES);
+	$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+	$cache->setScope('server');
 	$cache->purgeCache(86400); // 24 hours (forced)
 
-	$params = [$url];
-	$cache->setParameters($params);
+	$params = array($url);
+	$cache->setKey($params);
+
+	$retVal = array(
+		'header' => '',
+		'content' => '',
+	);
 
 	// Use file_get_contents if in CLI mode with no root certificates defined
 	if(php_sapi_name() === 'cli' && empty(ini_get('curl.cainfo'))) {
-		$data = @file_get_contents($url);
+
+		$httpHeaders = '';
+
+		foreach ($header as $headerL) {
+			$httpHeaders .= $headerL . "\r\n";
+		}
+
+		$ctx = stream_context_create(array(
+			'http' => array(
+				'header' => $httpHeaders
+			)
+		));
+
+		$data = @file_get_contents($url, 0, $ctx);
 
 		if($data === false) {
 			$errorCode = 500;
 		} else {
 			$errorCode = 200;
+			$retVal['header'] = implode("\r\n", $http_response_header);
 		}
 
 		$curlError = '';
@@ -126,6 +149,7 @@ function getContents($url, $header = array(), $opts = array()){
 
 		$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 		$header = substr($data, 0, $headerSize);
+		$retVal['header'] = $header;
 
 		Debug::log('Response header: ' . $header);
 
@@ -149,15 +173,18 @@ function getContents($url, $header = array(), $opts = array()){
 				if(in_array('no-cache', $directives)
 				|| in_array('no-store', $directives)) { // Skip caching
 					Debug::log('Skip server side caching');
-					return $data;
+					$retVal['content'] = $data;
+					break;
 				}
 			}
 			Debug::log('Store response to cache');
 			$cache->saveData($data);
-			return $data;
+			$retVal['content'] = $data;
+			break;
 		case 304: // Not modified, use cached data
 			Debug::log('Contents not modified on host, returning cached data');
-			return $cache->loadData();
+			$retVal['content'] = $cache->loadData();
+			break;
 		default:
 			if(array_key_exists('Server', $finalHeader) && strpos($finalHeader['Server'], 'cloudflare') !== false) {
 			returnServerError(<<< EOD
@@ -171,13 +198,14 @@ EOD
 			if($lastError !== null)
 				$lastError = $lastError['message'];
 			returnError(<<<EOD
-The requested resource cannot be found!
-Please make sure your input parameters are correct!
+Unexpected response from upstream.
 cUrl error: $curlError ($curlErrno)
 PHP error: $lastError
 EOD
 			, $errorCode);
 	}
+
+	return ($returnHeader === true) ? $retVal : $retVal['content'];
 }
 
 /**
@@ -204,17 +232,18 @@ EOD
  * when returning plaintext.
  * @param string $defaultSpanText Specifies the replacement text for `<span />`
  * tags when returning plaintext.
- * @return string Contents as simplehtmldom object.
+ * @return false|simple_html_dom Contents as simplehtmldom object.
  */
 function getSimpleHTMLDOM($url,
-$header = array(),
-$opts = array(),
-$lowercase = true,
-$forceTagsClosed = true,
-$target_charset = DEFAULT_TARGET_CHARSET,
-$stripRN = true,
-$defaultBRText = DEFAULT_BR_TEXT,
-$defaultSpanText = DEFAULT_SPAN_TEXT){
+	$header = array(),
+	$opts = array(),
+	$lowercase = true,
+	$forceTagsClosed = true,
+	$target_charset = DEFAULT_TARGET_CHARSET,
+	$stripRN = true,
+	$defaultBRText = DEFAULT_BR_TEXT,
+	$defaultSpanText = DEFAULT_SPAN_TEXT){
+
 	$content = getContents($url, $header, $opts);
 	return str_get_html($content,
 	$lowercase,
@@ -253,33 +282,36 @@ $defaultSpanText = DEFAULT_SPAN_TEXT){
  * when returning plaintext.
  * @param string $defaultSpanText Specifies the replacement text for `<span />`
  * tags when returning plaintext.
- * @return string Contents as simplehtmldom object.
+ * @return false|simple_html_dom Contents as simplehtmldom object.
  */
 function getSimpleHTMLDOMCached($url,
-$duration = 86400,
-$header = array(),
-$opts = array(),
-$lowercase = true,
-$forceTagsClosed = true,
-$target_charset = DEFAULT_TARGET_CHARSET,
-$stripRN = true,
-$defaultBRText = DEFAULT_BR_TEXT,
-$defaultSpanText = DEFAULT_SPAN_TEXT){
+	$duration = 86400,
+	$header = array(),
+	$opts = array(),
+	$lowercase = true,
+	$forceTagsClosed = true,
+	$target_charset = DEFAULT_TARGET_CHARSET,
+	$stripRN = true,
+	$defaultBRText = DEFAULT_BR_TEXT,
+	$defaultSpanText = DEFAULT_SPAN_TEXT){
+
 	Debug::log('Caching url ' . $url . ', duration ' . $duration);
 
 	// Initialize cache
-	$cache = Cache::create('FileCache');
-	$cache->setPath(PATH_CACHE . 'pages/');
+	$cacheFac = new CacheFactory();
+	$cacheFac->setWorkingDir(PATH_LIB_CACHES);
+	$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+	$cache->setScope('pages');
 	$cache->purgeCache(86400); // 24 hours (forced)
 
-	$params = [$url];
-	$cache->setParameters($params);
+	$params = array($url);
+	$cache->setKey($params);
 
 	// Determine if cached file is within duration
 	$time = $cache->getTime();
 	if($time !== false
 	&& (time() - $duration < $time)
-	&& Debug::isEnabled()) { // Contents within duration
+	&& !Debug::isEnabled()) { // Contents within duration
 		$content = $cache->loadData();
 	} else { // Content not within duration
 		$content = getContents($url, $header, $opts);
@@ -320,8 +352,8 @@ function parseResponseHeader($header) {
 				$header['http_code'] = $line;
 			} else {
 
-				list ($key, $value) = explode(': ', $line);
-				$header[$key] = $value;
+				list ($key, $value) = explode(':', $line);
+				$header[$key] = trim($value);
 
 			}
 

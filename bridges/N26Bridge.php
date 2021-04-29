@@ -15,11 +15,11 @@ class N26Bridge extends BridgeAbstract
 
 	public function collectData()
 	{
-		$html = getSimpleHTMLDOM(self::URI . '/en-fr/blog-archive')
+		$html = getSimpleHTMLDOM(self::URI . '/en-eu/blog-archive')
 			or returnServerError('Error while downloading the website content');
 
-		foreach($html->find('div.ga') as $article) {
-			$item = [];
+		foreach($html->find('div[class="ag ah ai aj bs bt dx ea fo gx ie if ih ii ij ik s"]') as $article) {
+			$item = array();
 
 			$item['uri'] = self::URI . $article->find('h2 a', 0)->href;
 			$item['title'] = $article->find('h2 a', 0)->plaintext;
@@ -27,9 +27,9 @@ class N26Bridge extends BridgeAbstract
 			$fullArticle = getSimpleHTMLDOM($item['uri'])
 				or returnServerError('Error while downloading the full article');
 
-			$dateElement = $fullArticle->find('span[class="fk fl de ch fm by"]', 0);
+			$dateElement = $fullArticle->find('time', 0);
 			$item['timestamp'] = strtotime($dateElement->plaintext);
-			$item['content'] = $fullArticle->find('main article', 0)->innertext;
+			$item['content'] = $fullArticle->find('div[class="af ag ah ai an"]', 1)->innertext;
 
 			$this->items[] = $item;
 		}

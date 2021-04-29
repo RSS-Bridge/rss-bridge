@@ -2,7 +2,7 @@
 class CastorusBridge extends BridgeAbstract {
 	const MAINTAINER = 'logmanoriginal';
 	const NAME = 'Castorus Bridge';
-	const URI = 'http://www.castorus.com';
+	const URI = 'https://www.castorus.com';
 	const CACHE_TIMEOUT = 600; // 10min
 	const DESCRIPTION = 'Returns the latest changes';
 
@@ -83,7 +83,7 @@ class CastorusBridge extends BridgeAbstract {
 		if(!$html)
 			returnServerError('Could not load data from ' . self::URI . '!');
 
-		$activities = $html->find('div#activite/li');
+		$activities = $html->find('div#activite > li');
 
 		if(!$activities)
 			returnServerError('Failed to find activities!');

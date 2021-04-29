@@ -28,7 +28,7 @@ class GoComicsBridge extends BridgeAbstract {
 
 			$page = getSimpleHTMLDOM($link)
 				or returnServerError('Could not request GoComics: ' . $link);
-			$imagelink = $page->find('.img-fluid', 1)->src;
+			$imagelink = $page->find('.comic.container', 0)->getAttribute('data-image');
 			$date = explode('/', $link);
 
 			$item['id'] = $imagelink;

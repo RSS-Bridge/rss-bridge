@@ -59,6 +59,19 @@ interface BridgeInterface {
 	public function collectData();
 
 	/**
+	* Get the user's supplied configuration for the bridge
+	*/
+	public function getConfiguration();
+
+	/**
+	 * Returns the value for the selected configuration
+	 *
+	 * @param string $input The option name
+	 * @return mixed|null The option value or null if the input is not defined
+	 */
+	public function getOption($name);
+
+	/**
 	 * Returns the description
 	 *
 	 * @return string Description

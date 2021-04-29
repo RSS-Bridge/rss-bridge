@@ -15,49 +15,66 @@
 define('PATH_ROOT', __DIR__ . '/../');
 
 /** Path to the core library */
-define('PATH_LIB', __DIR__ . '/../lib/'); // Path to core library
+define('PATH_LIB', PATH_ROOT . 'lib/');
 
 /** Path to the vendor library */
-define('PATH_LIB_VENDOR', __DIR__ . '/../vendor/');
+define('PATH_LIB_VENDOR', PATH_ROOT . 'vendor/');
 
 /** Path to the bridges library */
-define('PATH_LIB_BRIDGES', __DIR__ . '/../bridges/');
+define('PATH_LIB_BRIDGES', PATH_ROOT . 'bridges/');
 
 /** Path to the formats library */
-define('PATH_LIB_FORMATS', __DIR__ . '/../formats/');
+define('PATH_LIB_FORMATS', PATH_ROOT . 'formats/');
 
 /** Path to the caches library */
-define('PATH_LIB_CACHES', __DIR__ . '/../caches/');
+define('PATH_LIB_CACHES', PATH_ROOT . 'caches/');
+
+/** Path to the actions library */
+define('PATH_LIB_ACTIONS', PATH_ROOT . 'actions/');
 
 /** Path to the cache folder */
-define('PATH_CACHE', __DIR__ . '/../cache/');
+define('PATH_CACHE', PATH_ROOT . 'cache/');
 
 /** Path to the whitelist file */
-define('WHITELIST', __DIR__ . '/../whitelist.txt');
+define('WHITELIST', PATH_ROOT . 'whitelist.txt');
+
+/** Path to the default whitelist file */
+define('WHITELIST_DEFAULT', PATH_ROOT . 'whitelist.default.txt');
+
+/** Path to the configuration file */
+define('FILE_CONFIG', PATH_ROOT . 'config.ini.php');
+
+/** Path to the default configuration file */
+define('FILE_CONFIG_DEFAULT', PATH_ROOT . 'config.default.ini.php');
 
 /** URL to the RSS-Bridge repository */
 define('REPOSITORY', 'https://github.com/RSS-Bridge/rss-bridge/');
 
 // Interfaces
+require_once PATH_LIB . 'ActionInterface.php';
 require_once PATH_LIB . 'BridgeInterface.php';
 require_once PATH_LIB . 'CacheInterface.php';
 require_once PATH_LIB . 'FormatInterface.php';
 
 // Classes
+require_once PATH_LIB . 'FactoryAbstract.php';
 require_once PATH_LIB . 'FeedItem.php';
 require_once PATH_LIB . 'Debug.php';
 require_once PATH_LIB . 'Exceptions.php';
-require_once PATH_LIB . 'Format.php';
+require_once PATH_LIB . 'FormatFactory.php';
 require_once PATH_LIB . 'FormatAbstract.php';
-require_once PATH_LIB . 'Bridge.php';
+require_once PATH_LIB . 'BridgeFactory.php';
 require_once PATH_LIB . 'BridgeAbstract.php';
 require_once PATH_LIB . 'FeedExpander.php';
-require_once PATH_LIB . 'Cache.php';
+require_once PATH_LIB . 'CacheFactory.php';
 require_once PATH_LIB . 'Authentication.php';
 require_once PATH_LIB . 'Configuration.php';
 require_once PATH_LIB . 'BridgeCard.php';
 require_once PATH_LIB . 'BridgeList.php';
 require_once PATH_LIB . 'ParameterValidator.php';
+require_once PATH_LIB . 'ActionFactory.php';
+require_once PATH_LIB . 'ActionAbstract.php';
+require_once PATH_LIB . 'XPathAbstract.php';
 
 // Functions
 require_once PATH_LIB . 'html.php';
@@ -66,16 +83,6 @@ require_once PATH_LIB . 'contents.php';
 
 // Vendor
 define('MAX_FILE_SIZE', 10000000); /* Allow larger files for simple_html_dom */
-require_once PATH_LIB_VENDOR . 'simplehtmldom/simple_html_dom.php';
+require_once PATH_LIB_VENDOR . 'parsedown/Parsedown.php';
 require_once PATH_LIB_VENDOR . 'php-urljoin/src/urljoin.php';
-
-// Initialize static members
-try {
-	Bridge::setWorkingDir(PATH_LIB_BRIDGES);
-	Format::setWorkingDir(PATH_LIB_FORMATS);
-	Cache::setWorkingDir(PATH_LIB_CACHES);
-} catch(Exception $e) {
-	error_log($e);
-	header('Content-type: text/plain', true, 500);
-	die($e->getMessage());
-}
+require_once PATH_LIB_VENDOR . 'simplehtmldom/simple_html_dom.php';

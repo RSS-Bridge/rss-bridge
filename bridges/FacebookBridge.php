@@ -2,7 +2,7 @@
 class FacebookBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'teromene, logmanoriginal';
-	const NAME = 'Facebook Bridge';
+	const NAME = 'Facebook Bridge | Main Site';
 	const URI = 'https://www.facebook.com/';
 	const CACHE_TIMEOUT = 300; // 5min
 	const DESCRIPTION = 'Input a page title or a profile log. For a profile log,
@@ -30,7 +30,7 @@ class FacebookBridge extends BridgeAbstract {
 				'type' => 'checkbox',
 				'required' => false,
 				'defaultValue' => false,
-				'title' => 'Feed includes reviews when checked'
+				'title' => 'Feed includes reviews when unchecked'
 			)
 		),
 		'Group' => array(
@@ -66,20 +66,47 @@ class FacebookBridge extends BridgeAbstract {
 
 			case 'User':
 				if(!empty($this->authorName)) {
-					return isset($this->extraInfos['name']) ? $this->extraInfos['name'] : $this->authorName
-					. ' - ' . static::NAME;
+					return isset($this->extraInfos['name']) ? $this->extraInfos['name'] : $this->authorName;
 				}
 				break;
 
 			case 'Group':
 				if(!empty($this->groupName)) {
-					return $this->groupName . ' - ' . static::NAME;
+					return $this->groupName;
 				}
 				break;
 
 		}
 
 		return parent::getName();
+	}
+
+	public function detectParameters($url){
+		$params = array();
+
+		// By profile
+		$regex = '/^(https?:\/\/)?(www\.)?facebook\.com\/profile\.php\?id\=([^\/?&\n]+)?(.*)/';
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['u'] = urldecode($matches[3]);
+			return $params;
+		}
+
+		// By group
+		$regex = '/^(https?:\/\/)?(www\.)?facebook\.com\/groups\/([^\/?\n]+)?(.*)/';
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['g'] = urldecode($matches[3]);
+			return $params;
+		}
+
+		// By username
+		$regex = '/^(https?:\/\/)?(www\.)?facebook\.com\/([^\/?\n]+)/';
+
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['u'] = urldecode($matches[3]);
+			return $params;
+		}
+
+		return null;
 	}
 
 	public function getURI() {
@@ -142,9 +169,19 @@ class FacebookBridge extends BridgeAbstract {
 
 	private function collectGroupData() {
 
-		$header = array('Accept-Language: ' . getEnv('HTTP_ACCEPT_LANGUAGE') . "\r\n");
+		if(getEnv('HTTP_ACCEPT_LANGUAGE')) {
+			$header = array('Accept-Language: ' . getEnv('HTTP_ACCEPT_LANGUAGE'));
+		} else {
+			$header = array();
+		}
 
-		$html = getSimpleHTMLDOM($this->getURI(), $header)
+		$touchURI = str_replace(
+			'https://www.facebook',
+			'https://touch.facebook',
+			$this->getURI()
+		);
+
+		$html = getSimpleHTMLDOM($touchURI, $header)
 			or returnServerError('Failed loading facebook page: ' . $this->getURI());
 
 		if(!$this->isPublicGroup($html)) {
@@ -155,19 +192,18 @@ class FacebookBridge extends BridgeAbstract {
 
 		$this->groupName = $this->extractGroupName($html);
 
-		$posts = $html->find('div.userContentWrapper')
+		$posts = $html->find('div.story_body_container')
 			or returnServerError('Failed finding posts!');
 
 		foreach($posts as $post) {
 
 			$item = array();
 
-			$item['uri'] = $this->extractGroupURI($post);
-			$item['title'] = $this->extractGroupTitle($post);
-			$item['author'] = $this->extractGroupAuthor($post);
-			$item['content'] = $this->extractGroupContent($post);
-			$item['timestamp'] = $this->extractGroupTimestamp($post);
-			$item['enclosures'] = $this->extractGroupEnclosures($post);
+			$item['uri'] = $this->extractGroupPostURI($post);
+			$item['title'] = $this->extractGroupPostTitle($post);
+			$item['author'] = $this->extractGroupPostAuthor($post);
+			$item['content'] = $this->extractGroupPostContent($post);
+			$item['enclosures'] = $this->extractGroupPostEnclosures($post);
 
 			$this->items[] = $item;
 
@@ -184,16 +220,7 @@ class FacebookBridge extends BridgeAbstract {
 
 			$urlparts = parse_url($group);
 
-			if($urlparts['host'] !== parse_url(self::URI)['host']
-			&& 'www.' . $urlparts['host'] !== parse_url(self::URI)['host']) {
-
-				returnClientError('The host you provided is invalid! Received "'
-				. $urlparts['host']
-				. '", expected "'
-				. parse_url(self::URI)['host']
-				. '"!');
-
-			}
+			$this->validateHost($urlparts['host']);
 
 			return explode('/', $urlparts['path'])[2];
 
@@ -205,25 +232,47 @@ class FacebookBridge extends BridgeAbstract {
 
 	}
 
+	private function validateHost($provided_host) {
+		// Handle mobile links
+		if (strpos($provided_host, 'm.') === 0) {
+			$provided_host = substr($provided_host, strlen('m.'));
+		}
+		if (strpos($provided_host, 'touch.') === 0) {
+			$provided_host = substr($provided_host, strlen('touch.'));
+		}
+
+		$facebook_host = parse_url(self::URI)['host'];
+
+		if ($provided_host !== $facebook_host
+			&& 'www.' . $provided_host !== $facebook_host) {
+			returnClientError('The host you provided is invalid! Received "'
+				. $provided_host
+				. '", expected "'
+				. $facebook_host
+				. '"!');
+		}
+	}
+
+	/**
+	 * @param $html simple_html_dom
+	 * @return bool
+	 */
 	private function isPublicGroup($html) {
 
-		// Facebook redirects to the groups about page for non-public groups
-		$about = $html->find('#pagelet_group_about', 0);
-
-		return !($about);
-
+		// Facebook touch just presents a login page for non-public groups
+		$title = $html->find('title', 0);
+		return $title->plaintext !== 'Log in to Facebook | Facebook';
 	}
 
 	private function extractGroupName($html) {
 
-		$ogtitle = $html->find('meta[property="og:title"]', 0)
+		$ogtitle = $html->find('._de1', 0)
 			or returnServerError('Unable to find group title!');
 
-		return htmlspecialchars_decode($ogtitle->content, ENT_QUOTES);
-
+		return html_entity_decode($ogtitle->plaintext, ENT_QUOTES);
 	}
 
-	private function extractGroupURI($post) {
+	private function extractGroupPostURI($post) {
 
 		$elements = $post->find('a')
 			or returnServerError('Unable to find URI!');
@@ -232,7 +281,8 @@ class FacebookBridge extends BridgeAbstract {
 
 			// Find the one that is a permalink
 			if(strpos($anchor->href, 'permalink') !== false) {
-				return $anchor->href;
+				$arr = explode('?', $anchor->href, 2);
+				return $arr[0];
 			}
 
 		}
@@ -241,57 +291,61 @@ class FacebookBridge extends BridgeAbstract {
 
 	}
 
-	private function extractGroupContent($post) {
+	private function extractGroupPostContent($post) {
 
-		$content = $post->find('div.userContent', 0)
+		$content = $post->find('div._5rgt', 0)
 			or returnServerError('Unable to find user content!');
 
-		return $content->innertext . $content->next_sibling()->innertext;
+		$context_text = $content->innertext;
+		if ($content->next_sibling() !== null) {
+			$context_text .= $content->next_sibling()->innertext;
+		}
+		return $context_text;
 
 	}
 
-	private function extractGroupTimestamp($post) {
+	private function extractGroupPostAuthor($post) {
 
-		$element = $post->find('abbr[data-utime]', 0)
-			or returnServerError('Unable to find timestamp!');
-
-		return $element->getAttribute('data-utime');
-
-	}
-
-	private function extractGroupAuthor($post) {
-
-		$element = $post->find('img', 0)
+		$element = $post->find('h3 a', 0)
 			or returnServerError('Unable to find author information!');
 
-		return $element->{'aria-label'};
+		return $element->plaintext;
 
 	}
 
-	private function extractGroupEnclosures($post) {
+	private function extractGroupPostEnclosures($post) {
 
-		$elements = $post->find('div.userContent', 0)->next_sibling()->find('img');
+		$elements = $post->find('span._6qdm');
+		if ($post->find('div._5rgt', 0)->next_sibling() !== null) {
+			array_push($elements, ...$post->find('div._5rgt', 0)->next_sibling()->find('i.img'));
+		}
 
 		$enclosures = array();
 
+		$background_img_regex = '/background-image: ?url\\((.+?)\\);/';
+
 		foreach($elements as $enclosure) {
-			$enclosures[] = $enclosure->src;
+			if(preg_match($background_img_regex, $enclosure, $matches) > 0) {
+				$bg_img_value = trim(html_entity_decode($matches[1], ENT_QUOTES), "'\"");
+				$bg_img_url = urldecode(preg_replace('/\\\([0-9a-z]{2}) /', '%$1', $bg_img_value));
+				$enclosures[] = urldecode($bg_img_url);
+			}
 		}
 
 		return empty($enclosures) ? null : $enclosures;
 
 	}
 
-	private function extractGroupTitle($post) {
+	private function extractGroupPostTitle($post) {
 
-		$element = $post->find('h5', 0)
+		$element = $post->find('h3', 0)
 			or returnServerError('Unable to find title!');
 
 		if(strpos($element->plaintext, 'shared') === false) {
 
-			$content = strip_tags($this->extractGroupContent($post));
+			$content = strip_tags($this->extractGroupPostContent($post));
 
-			return $this->extractGroupAuthor($post)
+			return $this->extractGroupPostAuthor($post)
 			. ' posted: '
 			. substr(
 					$content,
@@ -318,13 +372,7 @@ class FacebookBridge extends BridgeAbstract {
 
 			$urlparts = parse_url($user);
 
-			if($urlparts['host'] !== parse_url(self::URI)['host']) {
-				returnClientError('The host you provided is invalid! Received "'
-				. $urlparts['host']
-				. '", expected "'
-				. parse_url(self::URI)['host']
-				. '"!');
-			}
+			$this->validateHost($urlparts['host']);
 
 			if(!array_key_exists('path', $urlparts)
 			|| $urlparts['path'] === '/') {
@@ -506,7 +554,11 @@ EOD;
 		// Retrieve page contents
 		if(is_null($html)) {
 
-			$header = array('Accept-Language: ' . getEnv('HTTP_ACCEPT_LANGUAGE'));
+			if(getEnv('HTTP_ACCEPT_LANGUAGE')) {
+				$header = array('Accept-Language: ' . getEnv('HTTP_ACCEPT_LANGUAGE'));
+			} else {
+				$header = array();
+			}
 
 			$html = getSimpleHTMLDOM($this->getURI(), $header)
 				or returnServerError('No results for this query.');
@@ -521,7 +573,7 @@ EOD;
 		}
 
 		// No captcha? We can carry on retrieving page contents :)
-		// First, we check wether the page is public or not
+		// First, we check whether the page is public or not
 		$loginForm = $html->find('._585r', 0);
 
 		if($loginForm != null) {
@@ -581,6 +633,8 @@ EOD;
 							'._5mly', // Remove embedded videos (the preview image remains)
 							'._2ezg', // Remove "Views ..."
 							'.hidden_elem', // Remove hidden elements (they are hidden anyway)
+							'.timestampContent', // Remove relative timestamp
+							'._6spk', // Remove redundant separator
 						);
 
 						foreach($content_filters as $filter) {
@@ -665,8 +719,15 @@ EOD;
 
 						$uri = $post->find('abbr')[0]->parent()->getAttribute('href');
 
-						if (false !== strpos($uri, '?')) {
-							$uri = substr($uri, 0, strpos($uri, '?'));
+						// Extract fbid and patch link
+						if (strpos($uri, '?') !== false) {
+							$query = substr($uri, strpos($uri, '?') + 1);
+							parse_str($query, $query_params);
+							if (isset($query_params['story_fbid'])) {
+								$uri = self::URI . $query_params['story_fbid'];
+							} else {
+								$uri = substr($uri, 0, strpos($uri, '?'));
+							}
 						}
 
 						//Build and add final item
@@ -686,6 +747,7 @@ EOD;
 			}
 		}
 	}
+
 	#endregion (User)
 
 }
