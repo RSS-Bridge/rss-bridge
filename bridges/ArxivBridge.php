@@ -40,12 +40,4 @@ class ArxivBridge extends BridgeAbstract {
 	public function getName(){
 		return parent::getName();
 	}
-
-	public function getDescription(){
-		if(!is_null($this->getInput('post_id'))) {
-			$post = $this->getPost();
-			return $post->{'content'};
-		}
-		return parent::getName();
-	}
 }
