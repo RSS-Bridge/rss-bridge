@@ -43,12 +43,6 @@ class MrssFormat extends FormatAbstract {
 		$title = $this->xml_encode($extraInfos['name']);
 		$icon = $extraInfos['icon'];
 
-		if(!empty($extraInfos['description'])) {
-			$description = $this->xml_encode($extraInfos['description']);
-		} else {
-			$description = $title;
-		}
-
 		if(!empty($extraInfos['uri'])) {
 			$uri = $this->xml_encode($extraInfos['uri']);
 		} else {
