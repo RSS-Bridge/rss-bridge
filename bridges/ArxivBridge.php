@@ -3,7 +3,7 @@ class ArxivBridge extends BridgeAbstract {
 	const MAINTAINER = 'l1n';
 	const NAME = 'arXiv Bridge';
 	const URI = 'http://export.arxiv.org';
-	const CACHE_TIMEOUT = 3600*12; // 5 minutes 3600; // 1 hour
+	const CACHE_TIMEOUT = 3600 * 12; // 5 minutes 3600; // 1 hour
 	const DESCRIPTION = 'Converts arXiv RDF feeds to standard RSS feeds :eyeroll:';
 	const PARAMETERS = array(
 		'global' => array(),
@@ -23,10 +23,9 @@ class ArxivBridge extends BridgeAbstract {
 		foreach ($rdf->item as $article) {
 			$item = array();
 
-			$item['content'] = "" . $article->description;
-			$item['uri'] = "" . $article->link;
-			# $item['author'] = "" . $article->creator;
-			$item['title'] = "" . $article->title;
+			$item['content'] = '' . $article->description;
+			$item['uri'] = '' . $article->link;
+			$item['title'] = '' . $article->title;
 			$this->items[] = $item;
 		}
 	}
@@ -35,7 +34,6 @@ class ArxivBridge extends BridgeAbstract {
 		$url = parent::getURI() . '/rss/' . $this->getInput('class');
 		return $url;
 	}
-
 
 	public function getName(){
 		return parent::getName();
