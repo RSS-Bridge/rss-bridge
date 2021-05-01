@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-# Find custom files in the /config folder and copy them to the respective folders in /app. 
-# Look for bridges that end in 'Bridge.php' and for the whitelist and config.ini files. Everything else is ignored
-# This will overwrite previous configs and bridges. It also uses the default paths of the configs and bridges, so if there is no file that matches, rss-bridge works like default.
+# - Find custom files (bridges, whitelist, config.ini) in the /config folder
+# - Copy them to the respective folders in /app
+# This will overwrite previous configs and bridges of same name
+# If there are no matching files, rss-bridge works like default.
 
 for file in `find /config/ -type f`; do
     file_name="$(basename "$file")" # Strip leading path
