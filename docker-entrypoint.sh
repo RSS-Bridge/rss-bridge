@@ -6,7 +6,7 @@
 
 for file in `find /config/ -type f`; do
     file_name="$(basename "$file")" # Strip leading path
-    if [[ $file_name= *" "* ]]; then
+    if [[ $file_name = *" "* ]]; then
         printf 'Custom Bridge %s has a space in the name and will be skipped.\n' "$file_name"
         break
     fi
