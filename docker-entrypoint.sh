@@ -12,13 +12,13 @@ for file in `find /config/ -type f`; do
     fi
     case "$file_name" in
     *Bridge.php)    yes | cp "$file" /app/bridges/ ;
-                    chown www-data:www-data /app/bridges/$file_name;
+                    chown www-data:www-data "/app/bridges/$file_name";
                     printf "Custom Bridge %s added.\n" $file_name;;
     config.ini.php) yes | cp "$file" /app/ ;
-                    chown www-data:www-data /app/$file_name;
+                    chown www-data:www-data "/app/$file_name";
                     printf "Custom config.ini.php added.\n";;
     whitelist.txt)  yes | cp "$file" /app/ ;
-                    chown www-data:www-data /app/$file_name;
+                    chown www-data:www-data "/app/$file_name";
                     printf "Custom whitelist.txt added.\n";;
     esac
 done
