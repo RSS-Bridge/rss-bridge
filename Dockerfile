@@ -17,4 +17,4 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
 
 COPY --chown=www-data:www-data ./ /app/
 
-CMD ["/app/start-rssbridge"]
+CMD ["/app/docker-entrypoint.sh"]
