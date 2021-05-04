@@ -322,6 +322,10 @@ This bridge is not fetching its content through a secure connection</div>';
 		$icon = $bridge->getIcon();
 		$description = $bridge->getDescription();
 		$parameters = $bridge->getParameters();
+		$donationUri = $bridge->getDonationURI();
+		$maintainer = $bridge->getMaintainer();
+
+		$donationsAllowed = Configuration::getConfig('admin', 'donations');
 
 		if(defined('PROXY_URL') && PROXY_BYBRIDGE) {
 			$parameters['global']['_noproxy'] = array(
@@ -372,7 +376,12 @@ CARD;
 		}
 
 		$card .= '<label class="showless" for="showmore-' . $bridgeName . '">Show less</label>';
-		$card .= '<p class="maintainer">' . $bridge->getMaintainer() . '</p>';
+		if($donationUri !== '' && $donationsAllowed){
+			$card .= '<p class="maintainer">' . $maintainer . ' ~ <a href="' . $donationUri . '">Donate</a></p>';
+		}
+		else {
+			$card .= '<p class="maintainer">' . $maintainer . '</p>';
+		}
 		$card .= '</section>';
 
 		return $card;

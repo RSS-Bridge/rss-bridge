@@ -154,6 +154,7 @@ EOD;
 	private static function getFooter($totalBridges, $totalActiveBridges, $showInactive) {
 		$version = Configuration::getVersion();
 
+		$donationsAllowed = Configuration::getConfig('admin', 'donations');
 		$email = Configuration::getConfig('admin', 'email');
 		$admininfo = '';
 		if (!empty($email)) {
@@ -178,10 +179,14 @@ EOD;
 
 		}
 
+		if($donationsAllowed){
+			$donation = ' ~ <a href="http://www.google.com">Donate</a>';
+		}
+
 		return <<<EOD
 <section class="footer">
 	<a href="https://github.com/rss-bridge/rss-bridge">RSS-Bridge ~ Public Domain</a><br>
-	<p class="version">{$version}</p>
+	<p class="version">{$version}{$donation}</p>
 	{$totalActiveBridges}/{$totalBridges} active bridges.<br>
 	{$inactive}
 	{$admininfo}
