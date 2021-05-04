@@ -113,7 +113,7 @@ This bridge is not fetching its content through a secure connection</div>';
 		}
 
 		if($isActive) {
-			$form .= '<button type="submit" name="format" value="Html">Show Feed</button>';
+			$form .= '<button type="submit" name="format" value="Html">Generate Feed</button>';
 		} else {
 			$form .= '<span style="font-weight: bold;">Inactive</span>';
 		}
