@@ -13,6 +13,17 @@ class RadioMelodieBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI . '/actu/')
 			or returnServerError('Could not request Radio Melodie.');
 		$list = $html->find('div[class=displayList]', 0)->children();
+
+		$dateFormat = 'EEEE  d LLLL yyyy à HH:mm';
+		$dateFormatter = new IntlDateFormatter(
+			'fr_FR',
+			IntlDateFormatter::SHORT,
+			IntlDateFormatter::SHORT,
+			'Europe/Paris',
+			null,
+			$dateFormat
+		);
+
 		foreach($list as $element) {
 			if($element->tag == 'a') {
 				$articleURL = self::URI . $element->href;
@@ -55,20 +66,35 @@ class RadioMelodieBridge extends BridgeAbstract {
 
 				$author = $article->find('p[class=AuthorName]', 0)->plaintext;
 
+				// Handle date to timestamp
+				$dateHTML = $article->find('p[class=date]', 0)->plaintext;
+				preg_match('/\| (.*)( -|$)/', $dateHTML, $matches);
+				$dateText = $matches[1];
+				$timestamp = $dateFormatter->parse($dateText);
+
 				$item['enclosures'] = array_merge($picture, $audio);
 				$item['author'] = $author;
 				$item['uri'] = $articleURL;
 				$item['title'] = $article->find('meta[property=og:title]', 0)->content;
-				$date = $article->find('p[class*=date]', 0)->plaintext;
+				if($timestamp !== false) {
+					$item['timestamp'] = $timestamp;
+				}
 
 				// Header Image
 				$header = '<img src="' . $picture[0] . '"/>';
 
 				// Remove the Date and Author part
 				$textDOM->find('div[class=AuthorDate]', 0)->outertext = '';
+
+				// Remove Facebook javascript
+				$textDOM->find('script[src^=https://connect.facebook.net]', 0)->outertext = '';
+
+				// Rewrite relative Links
+				$textDOM = defaultLinkTo($textDOM, self::URI . '/');
+
 				$article->save();
 				$text = $textDOM->innertext;
-				$item['content'] = '<h1>' . $item['title'] . '</h1>' . $date . '<br/>' . $header . $text;
+				$item['content'] = '<h1>' . $item['title'] . '</h1>' . $dateHTML . '<br/>' . $header . $text;
 				$this->items[] = $item;
 			}
 		}
