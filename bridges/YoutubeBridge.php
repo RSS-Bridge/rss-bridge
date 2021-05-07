@@ -296,4 +296,38 @@ class YoutubeBridge extends BridgeAbstract {
 			return parent::getName();
 		}
 	}
+
+	public function detectParameters($url)
+	{
+		$params = array();
+
+		// By username
+		$regex = '/^(https?:\/\/)?(www\.)?youtube\.com\/user\/(.*)/';
+
+		if (preg_match($regex, $url, $matches) > 0) {
+			$params['u'] = $matches[3];
+
+			return $params;
+		}
+
+		// By channel id
+		$regex = '/^(https?:\/\/)?(www\.)?youtube\.com\/channel\/(.*)/';
+
+		if (preg_match($regex, $url, $matches) > 0) {
+			$params['c'] = $matches[3];
+
+			return $params;
+		}
+
+		// By playlist id
+		$regex = '/^(https?:\/\/)?(www\.)?youtube\.com\/playlist?list=\/(.*)/';
+
+		if (preg_match($regex, $url, $matches) > 0) {
+			$params['p'] = $matches[3];
+
+			return $params;
+		}
+
+		return null;
+	}
 }
