@@ -51,8 +51,7 @@ class PresidenciaPTBridge extends BridgeAbstract {
 		foreach(array_keys($this->getParameters()['Section']) as $k) {
 			Debug::log('Key: ' . var_export($k, true));
 			if($this->getInput($k)) {
-				$html = getSimpleHTMLDOMCached($this->getURI() . $k)
-					or returnServerError('Could not load content');
+				$html = getSimpleHTMLDOMCached($this->getURI() . $k);
 
 				foreach($html->find('#atualidade-list article.card-block') as $element) {
 					$item = array();
