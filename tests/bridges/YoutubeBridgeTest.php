@@ -16,5 +16,6 @@ class YoutubeBridgeTest extends TestCase
 			$b->detectParameters('https://www.youtube.com/playlist?list=PL0lo9MOBetEFEzIm3OP9_5jtkilBobdKB'),
 			array('p' => 'PL0lo9MOBetEFEzIm3OP9_5jtkilBobdKB')
 		);
+		$this->assertEqual(true, false);
 	}
 }
