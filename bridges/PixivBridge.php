@@ -1,72 +1,109 @@
 <?php
 class PixivBridge extends BridgeAbstract {
 
-	const MAINTAINER = 'teromene';
+	const MAINTAINER = 'Yaman Qalieh';
 	const NAME = 'Pixiv Bridge';
 	const URI = 'https://www.pixiv.net/';
 	const DESCRIPTION = 'Returns the tag search from pixiv.net';
+	const CACHE_TIMEOUT = 21600; // 6h
 
 
 	const PARAMETERS = array( array(
+		'mode' => array(
+			'name' => 'Post Type',
+			'type' => 'list',
+			'values' => array('Illustration' => 'illustrations/',
+							  'Manga' => 'manga/',
+							  'Novel' => 'novels/')
+		),
 		'tag' => array(
-			'name' => 'Tag to search',
-			'exampleValue' => 'example',
+			'name' => 'Query to search',
+			'exampleValue' => '葬送のフリーレン',
 			'required' => true
 		),
+		'posts' => array(
+			'name' => 'Post Limit',
+			'type' => 'number',
+			'defaultValue' => '10'
+		),
+		'fullsize' => array(
+			'name' => 'Full-size Image',
+			'type' => 'checkbox'
+		)
 	));
 
-	public function collectData(){
+	const JSON_KEY_MAP = array(
+		'illustrations/' => 'illust',
+		'manga/' => 'manga',
+		'novels/' => 'novel'
+	);
+	const WORK_LINK_MAP = array(
+		'illustrations/' => 'artworks/',
+		'manga/' => 'artworks/',
+		'novels/' => 'novel/show.php?id='
+	);
 
-		$html = getContents(static::URI . 'search.php?word=' . urlencode($this->getInput('tag')))
-			or returnClientError('Unable to query pixiv.net');
-		$regex = '/<input type="hidden"id="js-mount-point-search-result-list"data-items="([^"]*)/';
-		$timeRegex = '/img\/([0-9]{4})\/([0-9]{2})\/([0-9]{2})\/([0-9]{2})\/([0-9]{2})\/([0-9]{2})\//';
+	public function collectData() {
+		$content = getContents($this->getSearchURI())
+				 or returnClientError('Unable to query pixiv.net');
+		$content = json_decode($content, true);
 
-		preg_match_all($regex, $html, $matches, PREG_SET_ORDER, 0);
-		if(!$matches) return;
-
-		$content = json_decode(html_entity_decode($matches[0][1]), true);
+		$key = self::JSON_KEY_MAP[$this->getInput('mode')];
 		$count = 0;
-		foreach($content as $result) {
-			if($count == 10) break;
+		foreach($content['body'][$key]['data'] as $result) {
 			$count++;
+			if ($count > $this->getInput('posts')) {
+				break;
+			}
 
 			$item = array();
-			$item['id'] = $result['illustId'];
-			$item['uri'] = 'https://www.pixiv.net/member_illust.php?mode=medium&illust_id=' . $result['illustId'];
-			$item['title'] = $result['illustTitle'];
+			$item['id'] = $result['id'];
+			$item['uri'] = 'https://www.pixiv.net/' . self::WORK_LINK_MAP[$this->getInput('mode')] . $result['id'];
+			$item['title'] = $result['title'];
 			$item['author'] = $result['userName'];
-
-			preg_match_all($timeRegex, $result['url'], $dt, PREG_SET_ORDER, 0);
-			$elementDate = DateTime::createFromFormat('YmdHis',
-						$dt[0][1] . $dt[0][2] . $dt[0][3] . $dt[0][4] . $dt[0][5] . $dt[0][6],
-						new DateTimeZone('Asia/Tokyo'));
-			$item['timestamp'] = $elementDate->getTimestamp();
-
+			$item['timestamp'] = $result['updateDate'];
 			$item['content'] = "<img src='" . $this->cacheImage($result['url'], $item['id']) . "' />";
+
 			$this->items[] = $item;
 		}
 	}
 
-	private function cacheImage($url, $illustId) {
+	private function getSearchURI() {
+		$query = urlencode($this->getInput('tag'));
 
-		$url = str_replace('_master1200', '', $url);
-		$url = str_replace('c/240x240/img-master/', 'img-original/', $url);
+		$uri = static::URI . 'ajax/search/' . $this->getInput('mode')
+			 . $query . '?word=' . $query . '&order=date_d&mode=all&p=1';
+
+		return $uri;
+	}
+
+	private function cacheImage($url, $illustId) {
+		$originalurl = $url;
+
+		if ($this->getInput('fullsize')) {
+
+			$url = preg_replace(array(0 => '/pximg\.net\/c\/250x250_80_a2\/.*\/img/m',
+							   1 => '/p0_.*\./m'),
+						 array(0 => 'pximg.net/img-original/img',
+							   1 => 'p0.'),
+						 $url);
+			$illustId .= '_fullsize';
+		}
 		$path = PATH_CACHE . 'pixiv_img/';
 
 		if(!is_dir($path))
 			mkdir($path, 0755, true);
 
-		if(!is_file($path . '/' . $illustId . '.jpeg')) {
-			$headers = array('Referer:  https://www.pixiv.net/member_illust.php?mode=medium&illust_id=' . $illustId);
-			$illust = getContents($url, $headers);
-			if(strpos($illust, '404 Not Found') !== false) {
-				$illust = getContents(str_replace('jpg', 'png', $url), $headers);
+		if(!is_file($path . '/' . $illustId . '.jpg')) {
+			$headers = array('Referer:  https://www.pixiv.net/');
+			try {
+				$illust = getContents($url, $headers);
+			} catch (Exception $e) {
+				$illust = getContents($originalurl, $headers);
 			}
-			file_put_contents($path . '/' . $illustId . '.jpeg', $illust);
+			file_put_contents($path . '/' . $illustId . '.jpg', $illust);
 		}
 
-		return 'cache/pixiv_img/' . $illustId . '.jpeg';
-
+		return 'cache/pixiv_img/' . $illustId . '.jpg';
 	}
 }
