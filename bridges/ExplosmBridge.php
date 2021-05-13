@@ -15,8 +15,8 @@ class ExplosmBridge extends FeedExpander {
 		$item = parent::parseItem($feedItem);
 		$comicpage = getSimpleHTMLDOM($item['uri']);
 		$image = $comicpage->find('div[id=comic-wrap]', 0)->find('img', 0)->getAttribute('src');
-		$item['content'] = '<img src="http:' . $image . '" />';
+		$item['content'] = '<img src="https:' . $image . '" />';
 
 		return $item;
-    }
+	}
 }
