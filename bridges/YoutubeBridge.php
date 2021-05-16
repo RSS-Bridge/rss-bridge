@@ -234,16 +234,28 @@ class YoutubeBridge extends BridgeAbstract {
 				returnServerError("Could not request YouTube. Tried:\n - $url_feed\n - $url_listing");
 			}
 		} elseif($this->getInput('p')) { /* playlist mode */
+			// TODO: this mode makes a lot of excess video query requests.
+			// To make less requests, we need to cache following dictionary "videoId -> datePublished, duration"
+			// This cache will be used to find out, which videos to fetch
+			// to make feed of 100 items or more, if there a lot of videos published on that date.
 			$this->request = $this->getInput('p');
 			$url_feed = self::URI . 'feeds/videos.xml?playlist_id=' . urlencode($this->request);
 			$url_listing = self::URI . 'playlist?list=' . urlencode($this->request);
 			$html = $this->ytGetSimpleHTMLDOM($url_listing)
 				or returnServerError("Could not request YouTube. Tried:\n - $url_listing");
-			$item_count = $this->ytBridgeParseHtmlListing($html, 'tr.pl-video', '.pl-video-title a', false);
+			$scriptRegex = '/var ytInitialData = (.*);<\/script>/';
+			preg_match($scriptRegex, $html, $matches, PREG_OFFSET_CAPTURE, 0);
+			// TODO: this method returns only first 100 video items
+			// if it has more videos, playlistVideoListRenderer will have continuationItemRenderer as last element
+			$json_data = json_decode($matches[1][0]);
+			$json_data = $json_data->contents->twoColumnBrowseResultsRenderer->tabs[0];
+			$json_data = $json_data->tabRenderer->content->sectionListRenderer->contents[0]->itemSectionRenderer;
+			$json_data = $json_data->contents[0]->playlistVideoListRenderer->contents;
+			$item_count = count($json_data);
 			if ($item_count <= 15 && !$this->skipFeeds() && ($xml = $this->ytGetSimpleHTMLDOM($url_feed))) {
 				$this->ytBridgeParseXmlFeed($xml);
 			} else {
-				$this->ytBridgeParseHtmlListing($html, 'tr.pl-video', '.pl-video-title a');
+				$this->parseJsonPlaylist($json_data);
 			}
 			$this->feedName = 'Playlist: ' . str_replace(' - YouTube', '', $html->find('title', 0)->plaintext); // feedName will be used by getName()
 			usort($this->items, function ($item1, $item2) {
@@ -277,6 +289,15 @@ class YoutubeBridge extends BridgeAbstract {
 		return ($this->getInput('duration_min') || $this->getInput('duration_max'));
 	}
 
+	public function getURI()
+	{
+		if (!is_null($this->getInput('p'))) {
+			return static::URI . 'playlist?list=' . $this->getInput('p');
+		}
+
+		return parent::getURI();
+	}
+
 	public function getName(){
 	  // Name depends on queriedContext:
 		switch($this->queriedContext) {
@@ -287,6 +308,37 @@ class YoutubeBridge extends BridgeAbstract {
 			return $this->feedName . ' - YouTube'; // We already know it's a bridge, right?
 		default:
 			return parent::getName();
+		}
+	}
+
+	private function parseJsonPlaylist($json_data) {
+		$duration_min = $this->getInput('duration_min') ?: -1;
+		$duration_min = $duration_min * 60;
+
+		$duration_max = $this->getInput('duration_max') ?: INF;
+		$duration_max = $duration_max * 60;
+
+		if($duration_max < $duration_min) {
+			returnClientError('Max duration must be greater than min duration!');
+		}
+
+		foreach($json_data as $item) {
+			if (!isset($item->playlistVideoRenderer)) {
+				continue;
+			}
+			$vid = $item->playlistVideoRenderer->videoId;
+			$title = $item->playlistVideoRenderer->title->runs[0]->text;
+
+			$author = '';
+			$desc = '';
+			$time = 0;
+			$duration = intval($item->playlistVideoRenderer->lengthSeconds);
+			if($duration < $duration_min || $duration > $duration_max) {
+				continue;
+			}
+
+			$this->ytBridgeQueryVideoInfo($vid, $author, $desc, $time);
+			$this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
 		}
 	}
 }
