@@ -77,13 +77,26 @@ class YoutubeBridge extends BridgeAbstract {
 			$author = $elAuthor->getAttribute('content');
 		}
 
-		$elDescription = $html->find('meta[itemprop=description]', 0);
-		if(!is_null($elDescription))
-			$desc = $elDescription->getAttribute('content');
-
 		$elDatePublished = $html->find('meta[itemprop=datePublished]', 0);
 		if(!is_null($elDatePublished))
 			$time = strtotime($elDatePublished->getAttribute('content'));
+
+		$scriptRegex = '/var ytInitialData = (.*);<\/script>/';
+		preg_match($scriptRegex, $html, $matches) or returnServerError('Could not find ytInitialData');
+		$jsonData = json_decode($matches[1]);
+		$jsonData = $jsonData->contents->twoColumnWatchNextResults->results->results->contents;
+
+		$videoSecondaryInfo = null;
+		foreach($jsonData as $item) {
+			if (isset($item->videoSecondaryInfoRenderer)) {
+				$videoSecondaryInfo = $item->videoSecondaryInfoRenderer;
+				break;
+			}
+		}
+		if (!$videoSecondaryInfo) {
+			returnServerError('Could not find videoSecondaryInfoRenderer');
+		}
+		$desc = nl2br($videoSecondaryInfo->description->runs[0]->text);
 	}
 
 	private function ytBridgeAddItem($vid, $title, $author, $desc, $time){
@@ -244,18 +257,18 @@ class YoutubeBridge extends BridgeAbstract {
 			$html = $this->ytGetSimpleHTMLDOM($url_listing)
 				or returnServerError("Could not request YouTube. Tried:\n - $url_listing");
 			$scriptRegex = '/var ytInitialData = (.*);<\/script>/';
-			preg_match($scriptRegex, $html, $matches, PREG_OFFSET_CAPTURE, 0);
+			preg_match($scriptRegex, $html, $matches) or returnServerError('Could not find ytInitialData');
 			// TODO: this method returns only first 100 video items
 			// if it has more videos, playlistVideoListRenderer will have continuationItemRenderer as last element
-			$json_data = json_decode($matches[1][0]);
-			$json_data = $json_data->contents->twoColumnBrowseResultsRenderer->tabs[0];
-			$json_data = $json_data->tabRenderer->content->sectionListRenderer->contents[0]->itemSectionRenderer;
-			$json_data = $json_data->contents[0]->playlistVideoListRenderer->contents;
-			$item_count = count($json_data);
+			$jsonData = json_decode($matches[1]);
+			$jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[0];
+			$jsonData = $jsonData->tabRenderer->content->sectionListRenderer->contents[0]->itemSectionRenderer;
+			$jsonData = $jsonData->contents[0]->playlistVideoListRenderer->contents;
+			$item_count = count($jsonData);
 			if ($item_count <= 15 && !$this->skipFeeds() && ($xml = $this->ytGetSimpleHTMLDOM($url_feed))) {
 				$this->ytBridgeParseXmlFeed($xml);
 			} else {
-				$this->parseJsonPlaylist($json_data);
+				$this->parseJsonPlaylist($jsonData);
 			}
 			$this->feedName = 'Playlist: ' . str_replace(' - YouTube', '', $html->find('title', 0)->plaintext); // feedName will be used by getName()
 			usort($this->items, function ($item1, $item2) {
@@ -305,13 +318,13 @@ class YoutubeBridge extends BridgeAbstract {
 		case 'By channel id':
 		case 'By playlist Id':
 		case 'Search result':
-			return $this->feedName . ' - YouTube'; // We already know it's a bridge, right?
+			return htmlspecialchars_decode($this->feedName) . ' - YouTube'; // We already know it's a bridge, right?
 		default:
 			return parent::getName();
 		}
 	}
 
-	private function parseJsonPlaylist($json_data) {
+	private function parseJsonPlaylist($jsonData) {
 		$duration_min = $this->getInput('duration_min') ?: -1;
 		$duration_min = $duration_min * 60;
 
@@ -322,7 +335,7 @@ class YoutubeBridge extends BridgeAbstract {
 			returnClientError('Max duration must be greater than min duration!');
 		}
 
-		foreach($json_data as $item) {
+		foreach($jsonData as $item) {
 			if (!isset($item->playlistVideoRenderer)) {
 				continue;
 			}
