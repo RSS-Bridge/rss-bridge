@@ -68,29 +68,22 @@ class YoutubeBridge extends BridgeAbstract {
 		$html = $this->ytGetSimpleHTMLDOM(self::URI . "watch?v=$vid", true);
 
 		// Skip unavailable videos
-		if(!strpos($html->innertext, 'IS_UNAVAILABLE_PAGE')) {
+		if(strpos($html->innertext, 'IS_UNAVAILABLE_PAGE') !== false) {
 			return;
 		}
 
-		foreach($html->find('script') as $script) {
-			$data = trim($script->innertext);
-
-			if(strpos($data, '{') !== 0)
-				continue; // Wrong script
-
-			$json = json_decode($data);
-
-			if(!isset($json->itemListElement))
-				continue; // Wrong script
-
-			$author = $json->itemListElement[0]->item->name;
+		$elAuthor = $html->find('span[itemprop=author] > link[itemprop=name]', 0);
+		if (!is_null($elAuthor)) {
+			$author = $elAuthor->getAttribute('content');
 		}
 
-		if(!is_null($html->find('#watch-description-text', 0)))
-			$desc = $html->find('#watch-description-text', 0)->innertext;
+		$elDescription = $html->find('meta[itemprop=description]', 0);
+		if(!is_null($elDescription))
+			$desc = $elDescription->getAttribute('content');
 
-		if(!is_null($html->find('meta[itemprop=datePublished]', 0)))
-			$time = strtotime($html->find('meta[itemprop=datePublished]', 0)->getAttribute('content'));
+		$elDatePublished = $html->find('meta[itemprop=datePublished]', 0);
+		if(!is_null($elDatePublished))
+			$time = strtotime($elDatePublished->getAttribute('content'));
 	}
 
 	private function ytBridgeAddItem($vid, $title, $author, $desc, $time){
