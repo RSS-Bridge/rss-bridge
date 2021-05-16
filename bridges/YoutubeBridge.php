@@ -12,7 +12,7 @@ class YoutubeBridge extends BridgeAbstract {
 	const URI = 'https://www.youtube.com/';
 	const CACHE_TIMEOUT = 10800; // 3h
 	const DESCRIPTION = 'Returns the 10 newest videos by username/channel/playlist or search';
-	const MAINTAINER = 'mitsukarenai';
+	const MAINTAINER = 'em92';
 
 	const PARAMETERS = array(
 		'By username' => array(
