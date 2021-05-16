@@ -250,7 +250,7 @@ class YoutubeBridge extends BridgeAbstract {
 			// TODO: this mode makes a lot of excess video query requests.
 			// To make less requests, we need to cache following dictionary "videoId -> datePublished, duration"
 			// This cache will be used to find out, which videos to fetch
-			// to make feed of 100 items or more, if there a lot of videos published on that date.
+			// to make feed of 15 items or more, if there a lot of videos published on that date.
 			$this->request = $this->getInput('p');
 			$url_feed = self::URI . 'feeds/videos.xml?playlist_id=' . urlencode($this->request);
 			$url_listing = self::URI . 'playlist?list=' . urlencode($this->request);
