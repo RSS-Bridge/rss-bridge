@@ -14,15 +14,10 @@ class RadioMelodieBridge extends BridgeAbstract {
 			or returnServerError('Could not request Radio Melodie.');
 		$list = $html->find('div[class=displayList]', 0)->children();
 
-		$dateFormat = 'EEEE  d LLLL yyyy à HH:mm';
-		$dateFormatter = new IntlDateFormatter(
-			'fr_FR',
-			IntlDateFormatter::SHORT,
-			IntlDateFormatter::SHORT,
-			'Europe/Paris',
-			null,
-			$dateFormat
-		);
+		$dateFormat = '%A  %e %B %Y à %H:%M';
+		// Set locale and Timezone to parse the date
+		setlocale (LC_TIME, 'fr_FR.utf8');
+		date_default_timezone_set('Europe/Paris');
 
 		foreach($list as $element) {
 			if($element->tag == 'a') {
@@ -68,9 +63,17 @@ class RadioMelodieBridge extends BridgeAbstract {
 
 				// Handle date to timestamp
 				$dateHTML = $article->find('p[class=date]', 0)->plaintext;
-				preg_match('/\| (.*)( -|$)/', $dateHTML, $matches);
+				preg_match('/\| ([^-]*)( - .*|)$/', $dateHTML, $matches);
 				$dateText = $matches[1];
-				$timestamp = $dateFormatter->parse($dateText);
+				$dateArray = strptime($dateText, $dateFormat);
+				$timestamp = mktime(
+					$dateArray['tm_hour'],
+					$dateArray['tm_min'],
+					$dateArray['tm_sec'],
+					$dateArray['tm_mon'] + 1,
+					$dateArray['tm_mday'],
+					$dateArray['tm_year'] + 1900,
+				);
 
 				$item['enclosures'] = array_merge($picture, $audio);
 				$item['author'] = $author;
