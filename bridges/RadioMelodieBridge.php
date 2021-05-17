@@ -72,7 +72,7 @@ class RadioMelodieBridge extends BridgeAbstract {
 					$dateArray['tm_sec'],
 					$dateArray['tm_mon'] + 1,
 					$dateArray['tm_mday'],
-					$dateArray['tm_year'] + 1900,
+					$dateArray['tm_year'] + 1900
 				);
 
 				$item['enclosures'] = array_merge($picture, $audio);
