@@ -11,27 +11,12 @@ class SimpleLoginBridge extends BridgeAbstract {
 	public function collectData() {
 		$html = getSimpleHTMLDOMCached(self::BLOG_URI, self::CACHE_TIMEOUT)
 			or returnServerError('Unable to load posts from "' . self::BLOG_URI . '"!');
+		$html = defaultLinkTo($html, self::URI);
 
 		// loop through each blog post div
 		foreach ($html->find('div.mb-5') as $post) {
 			// get the children for this post
 			$post_children = $post->children();
-
-			// recursively loop through all child elements and fix HREF locations
-			// that are relative to this domain
-			$fix_href_children = $post_children;
-			while ($fix_href_children) {
-				$child = array_pop($fix_href_children);
-				$children = $child->children();
-				if ($children) {
-					$fix_href_children += $children;
-				}
-
-				// if the HREF starts with a /, prepend the URI to make a valid link
-				if (isset($child->href) && $child->href[0] == '/') {
-					$child->href = self::URI . $child->href;
-				}
-			}
 
 			$this->items[] = array(
 				'uri'       => $post_children[0]->href,
