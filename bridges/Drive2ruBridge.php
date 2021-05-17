@@ -18,7 +18,7 @@ class Drive2ruBridge extends BridgeAbstract {
 	);
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM($this->getInput('url')) or returnServerError('No results for this query.');
+		$html = getSimpleHTMLDOM($this->getInput('url'));
 		$articles = $html->find('div.js-entity');
 		foreach ($articles as $article) {
 			$item = array();
