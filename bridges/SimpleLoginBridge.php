@@ -9,10 +9,8 @@ class SimpleLoginBridge extends BridgeAbstract {
 	const BLOG_URI = 'https://simplelogin.io/blog';
 
 	public function collectData() {
-		$html = getSimpleHTMLDOMCached(self::BLOG_URI, self::CACHE_TIMEOUT);
-		if (!$html) {
-			returnServerError('Unable to load posts from "' . self::BLOG_URI . '"!');
-		}
+		$html = getSimpleHTMLDOMCached(self::BLOG_URI, self::CACHE_TIMEOUT)
+			or returnServerError('Unable to load posts from "' . self::BLOG_URI . '"!');
 
 		// loop through each blog post div
 		foreach ($html->find('div.mb-5') as $post) {
