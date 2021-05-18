@@ -14,6 +14,10 @@ class Drive2ruBridge extends BridgeAbstract {
 				'title' => 'Например: https://www.drive2.ru/experience/suzuki/g4895/',
 				'exampleValue' => 'https://www.drive2.ru/experience/suzuki/g4895/'
 			),
+			'full_articles' => array(
+				'name' => 'Загружать в ленту полный текст',
+				'type' => 'checkbox',
+			)
 		)
 	);
 
@@ -22,9 +26,7 @@ class Drive2ruBridge extends BridgeAbstract {
 	public function collectData(){
 		$url = $this->getInput('url');
 		$validUrl = '/^https:\/\/www.drive2.ru\/experience/';
-		if (!preg_match($validUrl, $url)) {
-			returnServerError('Invalid url');
-		}
+		if (!preg_match($validUrl, $url)) returnServerError('Invalid url');
 		$html = getSimpleHTMLDOM($this->getInput('url'));
 		$this->title = $html->find('title', 0)->innertext;
 		$articles = $html->find('div.js-entity');
@@ -32,12 +34,26 @@ class Drive2ruBridge extends BridgeAbstract {
 			$item = array();
 			$item['title'] = $article->find('a.c-link--text', 0)->plaintext;
 			$item['uri'] = self::URI . $article->find('a.c-link--text', 0)->href;
-			$item['content'] = 
-				str_replace(
-					'<button class="c-post-preview__more r-button-unstyled c-link c-link--text" '.
-					'data-action="post.show" data-ym-target="post_read">Читать дальше</button>',
-					'', $article->find('div.c-post-preview__lead', 0)) .
-					'<br><a href="' . $item['uri'] . '">Читать далее</a>';
+			if($this->getInput('full_articles')) {
+				$content = getSimpleHTMLDOM($item['uri'])->find('div.c-post__body', 0);
+				foreach($content->find('div') as $div)
+					foreach ($div->getAllAttributes() as $attr => $val)
+						$div->removeAttribute($attr);
+				foreach($content->find('span') as $span) 
+					foreach ($span->getAllAttributes() as $attr => $val) 
+						$span->removeAttribute($attr);
+				foreach ($content->find('script') as $node) 
+					$node->outertext = '';
+				foreach ($content->find('iframe') as $node) 
+					$node->outertext = '<a href="'.$node->src.'">'.$node->src.'</a>';
+				$item['content'] = $content->innertext;
+			} else {
+				$content = $article->find('div.c-post-preview__lead', 0);
+				if (!is_null($content)) 
+					$item['content'] = preg_replace('!\s+!', ' ', str_replace('Читать дальше', '', $content->plaintext)) .
+						'<br><a href="' . $item['uri'] . '">Читать далее</a>';
+				else $item['content'] = '';
+			}
 			$item['author'] = $article->find('a.c-username--wrap', 0)->plaintext;
 			$item['enclosures'][] = $article->find('img', 1)->src;
 			$this->items[] = $item;
