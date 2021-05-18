@@ -1,7 +1,7 @@
 <?php
 class Drive2ruBridge extends BridgeAbstract {
 
-	const MAINTAINER = 'dotter-ak ';
+	const MAINTAINER = 'dotter-ak';
 	const NAME = 'Бортжурналы на Drive2.ru';
 	const URI = 'https://drive2.ru/';
 	const DESCRIPTION = 'Лента бортжурналов по выбранной марке или машине. Также работает с фильтром по категориям';
@@ -39,13 +39,13 @@ class Drive2ruBridge extends BridgeAbstract {
 				foreach($content->find('div') as $div)
 					foreach ($div->getAllAttributes() as $attr => $val)
 						$div->removeAttribute($attr);
-				foreach($content->find('span') as $span) 
-					foreach ($span->getAllAttributes() as $attr => $val) 
+				foreach($content->find('span') as $span)
+					foreach ($span->getAllAttributes() as $attr => $val)
 						$span->removeAttribute($attr);
-				foreach ($content->find('script') as $node) 
+				foreach ($content->find('script') as $node)
 					$node->outertext = '';
-				foreach ($content->find('iframe') as $node) 
-					$node->outertext = '<a href="'.$node->src.'">'.$node->src.'</a>';
+				foreach ($content->find('iframe') as $node)
+					$node->outertext = '<a href="' . $node->src.'">' . $node->src . '</a>';
 				$item['content'] = $content->innertext;
 			} else {
 				$content = $article->find('div.c-post-preview__lead', 0);
