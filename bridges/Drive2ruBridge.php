@@ -16,9 +16,9 @@ class Drive2ruBridge extends BridgeAbstract {
 			),
 		)
 	);
-	
+
 	private $title;
-	
+
 	public function collectData(){
 		$url = $this->getInput('url');
 		$validUrl = '/^https:\/\/www.drive2.ru\/experience/';
@@ -32,7 +32,12 @@ class Drive2ruBridge extends BridgeAbstract {
 			$item = array();
 			$item['title'] = $article->find('a.c-link--text', 0)->plaintext;
 			$item['uri'] = self::URI . $article->find('a.c-link--text', 0)->href;
-			$item['content'] = str_replace('<button class="c-post-preview__more r-button-unstyled c-link c-link--text" data-action="post.show" data-ym-target="post_read">Читать дальше</button>', '', $article->find('div.c-post-preview__lead', 0)) . '<br><a href="' . $item['uri'] . '">Читать далее</a>';
+			$item['content'] = 
+				str_replace(
+					'<button class="c-post-preview__more r-button-unstyled c-link c-link--text" '.
+					'data-action="post.show" data-ym-target="post_read">Читать дальше</button>',
+					'', $article->find('div.c-post-preview__lead', 0)) .
+					'<br><a href="' . $item['uri'] . '">Читать далее</a>';
 			$item['author'] = $article->find('a.c-username--wrap', 0)->plaintext;
 			$item['enclosures'][] = $article->find('img', 1)->src;
 			$this->items[] = $item;
