@@ -49,7 +49,7 @@ class NordbayernBridge extends BridgeAbstract {
 
 	private function getImageUrlFromScript($script) {
 		preg_match(
-			"#src=\\\\'(https:[-:\\.\\\\/a-zA-Z0-9%_]*\\.(jpg|JPG))#",
+			"#src=\\\\'(https:[-:\\.\\\\/a-zA-Z0-9%_]*\\.(jpg|JPG|jpeg))#",
 			$script->innertext,
 			$matches,
 			PREG_OFFSET_CAPTURE
