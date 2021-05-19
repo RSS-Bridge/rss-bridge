@@ -64,6 +64,13 @@ class NordbayernBridge extends BridgeAbstract {
 		$item = array();
 		$article = getSimpleHTMLDOM($link);
 		$content = $article->find('div[class*=article-content]', 0);
+		if(is_null($content)) {
+			// If content is null its most likely a slideshow.
+			// we do not support slideshows right now as I (theScrabi)
+			// think there is to little informational value in these
+			// to actually add support to them.
+			return;
+		}
 		$item['uri'] = $link;
 		$item['title'] = $article->find('h1', 0)->innertext;
 		$item['content'] = '';
