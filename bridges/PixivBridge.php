@@ -44,8 +44,7 @@ class PixivBridge extends BridgeAbstract {
 	);
 
 	public function collectData() {
-		$content = getContents($this->getSearchURI())
-				 or returnClientError('Unable to query pixiv.net');
+		$content = getContents($this->getSearchURI());
 		$content = json_decode($content, true);
 
 		$key = self::JSON_KEY_MAP[$this->getInput('mode')];
@@ -58,7 +57,7 @@ class PixivBridge extends BridgeAbstract {
 
 			$item = array();
 			$item['id'] = $result['id'];
-			$item['uri'] = 'https://www.pixiv.net/' . self::WORK_LINK_MAP[$this->getInput('mode')] . $result['id'];
+			$item['uri'] = static::URI . self::WORK_LINK_MAP[$this->getInput('mode')] . $result['id'];
 			$item['title'] = $result['title'];
 			$item['author'] = $result['userName'];
 			$item['timestamp'] = $result['updateDate'];
@@ -78,32 +77,37 @@ class PixivBridge extends BridgeAbstract {
 	}
 
 	private function cacheImage($url, $illustId) {
-		$originalurl = $url;
+		$illustId = preg_replace('/[^0-9]/', '', $illustId);
+		$thumbnailurl = $url;
 
-		if ($this->getInput('fullsize')) {
-
-			$url = preg_replace(array(0 => '/pximg\.net\/c\/250x250_80_a2\/.*\/img/m',
-							   1 => '/p0_.*\./m'),
-						 array(0 => 'pximg.net/img-original/img',
-							   1 => 'p0.'),
-						 $url);
-			$illustId .= '_fullsize';
-		}
 		$path = PATH_CACHE . 'pixiv_img/';
-
 		if(!is_dir($path))
 			mkdir($path, 0755, true);
 
-		if(!is_file($path . '/' . $illustId . '.jpg')) {
-			$headers = array('Referer:  https://www.pixiv.net/');
+		$path .= $illustId;
+		if ($this->getInput('fullsize')) {
+			$path .= '_fullsize';
+		}
+		$path .= '.jpg';
+
+		if(!is_file($path)) {
+
+			// Get fullsize URL
+			if (!$this->getInput('mode') !== 'novels/' && $this->getInput('fullsize')) {
+				$ajax_uri = static::URI . 'ajax/illust/' . $illustId;
+				$imagejson = json_decode(getContents($ajax_uri), true);
+				$url = $imagejson['body']['urls']['original'];
+			}
+
+			$headers = array('Referer: ' . static::URI);
 			try {
 				$illust = getContents($url, $headers);
 			} catch (Exception $e) {
-				$illust = getContents($originalurl, $headers);
+				$illust = getContents($thumbnailurl, $headers); // Original thumbnail
 			}
-			file_put_contents($path . '/' . $illustId . '.jpg', $illust);
+			file_put_contents($path, $illust);
 		}
 
-		return 'cache/pixiv_img/' . $illustId . '.jpg';
+		return 'cache/pixiv_img/' . preg_replace('/.*\//', '', $path);
 	}
 }
