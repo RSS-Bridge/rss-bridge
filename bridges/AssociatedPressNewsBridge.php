@@ -83,13 +83,8 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 		foreach ($tagContents['cards'] as $index => &$card) {
 			$item = array();
 
-			// Skip cards without a gcs URL
-			if (isset($card['contents'][0]['gcsUrl']) === false) {
-				continue;
-			}
-
-			$json = getContents($card['contents'][0]['gcsUrl'])
-				or returnServerError('Could not request: ' . $card['contents'][0]['gcsUrl']);
+			$json = getContents('https://storage.googleapis.com/afs-prod/contents/' . $card['contents'][0]['id'])
+				or returnServerError('Could not request: ' . 'https://storage.googleapis.com/afs-prod/contents/' . $card['contents'][0]['id']);
 
 			$storyContent = json_decode($json, true);
 			$html = $storyContent['storyHTML'];
@@ -116,8 +111,10 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 					$this->processHubLinks($html, $storyContent);
 					$this->processIframes($html);
 
-					$item['enclosures'][] = 'https://storage.googleapis.com/afs-prod/media/'
-						. $storyContent['leadPhotoId'] . '/800.jpeg';
+					if (!is_null($storyContent['leadPhotoId'])) {
+						$item['enclosures'][] = 'https://storage.googleapis.com/afs-prod/media/'
+							. $storyContent['leadPhotoId'] . '/800.jpeg';	
+					}
 			}
 
 			$item['title'] = $card['contents'][0]['headline'];
