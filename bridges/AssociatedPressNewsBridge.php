@@ -119,7 +119,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 			}
 
 			$item['title'] = $card['contents'][0]['headline'];
-			$item['uri'] = self::URI . $card['contents'][0]['shortId'];
+			$item['uri'] = $card['contents'][0]['localLinkUrl'];
 			$item['timestamp'] = $storyContent['published'];
 
 			// Remove 'By' from the bylines
