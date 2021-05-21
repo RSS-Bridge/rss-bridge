@@ -45,6 +45,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 
 	private $detectParamRegex = '/^https?:\/\/(?:www.)?apnews.com\/(?:tag\/)?([\w-]+)$/';
 	private $tagEndpoint = 'https://afs-prod.appspot.com/api/v2/feed/tag?tags=';
+	private $storyEndpoint = 'https://storage.googleapis.com/afs-prod/contents/';
 	private $feedName = '';
 
 	public function detectParameters($url) {
@@ -83,8 +84,8 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 		foreach ($tagContents['cards'] as $index => &$card) {
 			$item = array();
 
-			$json = getContents('https://storage.googleapis.com/afs-prod/contents/' . $card['contents'][0]['id'])
-				or returnServerError('Could not request: ' . 'https://storage.googleapis.com/afs-prod/contents/' . $card['contents'][0]['id']);
+			$json = getContents($this->getStoryURI($card['contents'][0]['id']))
+				or returnServerError('Could not request: ' . $this->getStoryURI($card['contents'][0]['id']));
 
 			$storyContent = json_decode($json, true);
 			$html = $storyContent['storyHTML'];
@@ -164,6 +165,10 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 		}
 
 		return parent::getURI();
+	}
+
+	private function getStoryURI($id) {
+		return $this->storyEndpoint . $id;
 	}
 
 	private function processMediaPlaceholders($html, $storyContent) {
