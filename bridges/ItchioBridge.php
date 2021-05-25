@@ -29,8 +29,8 @@ class ItchioBridge extends BridgeAbstract {
 		}
 
 		// On 2021-04-28/29, itch.io changed their project page format so that the
-		// 'last updated' timestamp is only shown to logged-in users. 
-		// Since we can't use the last-updated date to identify a post, we include 
+		// 'last updated' timestamp is only shown to logged-in users.
+		// Since we can't use the last-updated date to identify a post, we include
 		// the description text in the input for the UID hash so that if the
 		// project posts an update that changes the description but does not add
 		// or rename any files, we'll still flag it as an update.
