@@ -158,20 +158,25 @@ EOD;
 	}
 
 	private function processSticker($messageDiv) {
-
 		if (empty($this->itemTitle)) {
 			$this->itemTitle = '@' . $this->processUsername() . ' posted a sticker';
 		}
 
 		$stickerDiv = $messageDiv->find('div.tgme_widget_message_sticker_wrap', 0);
 
-		preg_match($this->backgroundImageRegex, $stickerDiv->find('i', 0)->style, $sticker);
+		if ($stickerDiv->find('picture', 0)) {
+			$stickerDiv->find('picture', 0)->find('div', 0)->style = '';
+			$stickerDiv->find('picture', 0)->style = '';
 
-		$this->enclosures[] = $sticker[1];
+			return $stickerDiv;
 
-		return <<<EOD
-<a href="{$stickerDiv->children(0)->herf}"><img src="{$sticker[1]}"></a>
-EOD;
+		} elseif (preg_match($this->backgroundImageRegex, $stickerDiv->find('i', 0)->style, $sticker)) {
+			$this->enclosures[] = $sticker[1];
+
+			return <<<EOD
+				<a href="{$stickerDiv->children(0)->herf}"><img src="{$sticker[1]}"></a>
+				EOD;
+		}
 	}
 
 	private function processPoll($messageDiv) {
