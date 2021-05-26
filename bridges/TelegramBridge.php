@@ -175,7 +175,7 @@ EOD;
 
 			return <<<EOD
 				<a href="{$stickerDiv->children(0)->herf}"><img src="{$sticker[1]}"></a>
-				EOD;
+EOD;
 		}
 	}
 
