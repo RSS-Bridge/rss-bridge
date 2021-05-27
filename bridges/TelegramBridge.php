@@ -102,7 +102,7 @@ class TelegramBridge extends BridgeAbstract {
 		}
 
 		if ($messageDiv->find('a.tgme_widget_message_reply', 0)) {
-			$message = $this->processReply($messageDiv);
+			$message .= $this->processReply($messageDiv);
 		}
 
 		if ($messageDiv->find('div.tgme_widget_message_sticker_wrap', 0)) {
