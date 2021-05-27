@@ -145,12 +145,21 @@ class TelegramBridge extends BridgeAbstract {
 	}
 
 	private function processReply($messageDiv) {
-
 		$reply = $messageDiv->find('a.tgme_widget_message_reply', 0);
+		$author = $reply->find('span.tgme_widget_message_author_name', 0)->plaintext;
+		$text = '';
+
+		if ($reply->find('div.tgme_widget_message_metatext', 0)) {
+			$text = $reply->find('div.tgme_widget_message_metatext', 0)->innertext;
+		}
+
+		if ($reply->find('div.tgme_widget_message_text', 0)) {
+			$text = $reply->find('div.tgme_widget_message_text', 0)->innertext;
+		}
 
 		return <<<EOD
-<blockquote>{$reply->find('span.tgme_widget_message_author_name', 0)->plaintext}<br>
-{$reply->find('div.tgme_widget_message_metatext', 0)->innertext}
+<blockquote>{$author}<br>
+{$text}
 <a href="{$reply->href}">{$reply->href}</a></blockquote><hr>
 EOD;
 	}
