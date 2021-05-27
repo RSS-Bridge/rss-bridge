@@ -132,11 +132,9 @@ class TelegramBridge extends BridgeAbstract {
 				$messageDiv->find('div.tgme_widget_message_text.js-message_text', 0)->plaintext
 			);
 		}
+
 		if ($messageDiv->find('div.tgme_widget_message_document', 0)) {
-			$message .= 'Attachments:';
-			foreach ($messageDiv->find('div.tgme_widget_message_document') as $attachments) {
-				$message .= $attachments->find('div.tgme_widget_message_document_title.accent_color', 0);
-			}
+			$message .= $this->processAttachment($messageDiv);
 		}
 
 		if ($messageDiv->find('a.tgme_widget_message_link_preview', 0)) {
@@ -302,6 +300,23 @@ EOD;
 {$messageDiv->find('span.message_media_view_in_telegram', 0)->innertext}<br><br>
 <img src="{$photo[1]}"/></a>
 EOD;
+	}
+
+	private function processAttachment($messageDiv) {
+		$attachments = 'Attachments:';
+
+		if (empty($this->itemTitle)) {
+			$this->itemTitle = '@' . $this->processUsername() . ' posted an attachment';
+		}
+
+		foreach ($messageDiv->find('div.tgme_widget_message_document') as $document) {
+			$attachments .= <<<EOD
+<br>{$document->find('div.tgme_widget_message_document_title', 0)->plaintext}<br>
+{$document->find('div.tgme_widget_message_document_extra', 0)->plaintext}
+EOD;
+		}
+
+		return $attachments;
 	}
 
 	private function processDate($messageDiv) {
