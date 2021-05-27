@@ -152,7 +152,7 @@ class TelegramBridge extends BridgeAbstract {
 
 		return <<<EOD
 <blockquote>{$reply->find('span.tgme_widget_message_author_name', 0)->plaintext}<br>
-{$reply->find('div.tgme_widget_message_text', 0)->innertext} 
+{$reply->find('div.tgme_widget_message_metatext', 0)->innertext}
 <a href="{$reply->href}">{$reply->href}</a></blockquote><hr>
 EOD;
 	}
