@@ -5,8 +5,6 @@ class Formula1Bridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns latest official Formula 1 news';
 	const MAINTAINER = 'AxorPL';
 
-	const ERR_QUERY = 'Unable to query: %s';
-
 	const API_KEY = 'qPgPPRJyGCIPxFT3el4MF7thXHyJCzAP';
 	const API_URL = 'https://api.formula1.com/v1/editorial/articles?limit=%u';
 
@@ -36,14 +34,19 @@ class Formula1Bridge extends BridgeAbstract {
 		$limit = min(self::LIMIT_MAX, max(self::LIMIT_MIN, $limit));
 		$url = sprintf(self::API_URL, $limit);
 
-		$json = json_decode(getContents($url, array('apikey: ' . self::API_KEY)))
-			or returnServerError(sprintf(self::ERR_QUERY, $url));
-		if($json->error) {
+		$json = json_decode(getContents($url, array('apikey: ' . self::API_KEY)));
+		if(property_exists($json, 'error')) {
 			returnServerError($json->message);
 		}
 		$list = $json->items;
 
 		foreach($list as $article) {
+			if(property_exists($article->thumbnail, 'caption')) {
+				$caption = $article->thumbnail->caption;
+			} else {
+				$caption = $article->thumbnail->image->title;
+			}
+
 			$item = array();
 			$item['uri'] = sprintf(self::ARTICLE_URL, $article->slug, $article->id);
 			$item['title'] = $article->title;
@@ -54,10 +57,10 @@ class Formula1Bridge extends BridgeAbstract {
 			$item['content'] = sprintf(
 				self::ARTICLE_HTML,
 				$article->metaDescription,
-				$item['title'],
+				$item['uri'],
 				$item['enclosures'][0],
-				$article->thumbnail->image->title,
-				$article->thumbnail->image->title
+				$caption,
+				$caption
 			);
 			$this->items[] = $item;
 		}
