@@ -20,8 +20,6 @@ class ItchioBridge extends BridgeAbstract {
 			or returnServerError('Could not request: ' . $url);
 
 		$title = $html->find('.game_title', 0)->innertext;
-		$timestampOriginal = $html->find('span.icon-stopwatch', 0)->parent()->title;
-		$timestampFormatted = str_replace('@', '', $timestampOriginal);
 
 		$content = 'The following files are available to download:<br/>';
 		foreach ($html->find('div.upload') as $element) {
@@ -30,17 +28,20 @@ class ItchioBridge extends BridgeAbstract {
 			$content = $content . $filename . ' (' . $filesize . ')<br/>';
 		}
 
-		// NOTE: At the time of writing it is not clear under which conditions
-		// itch updates the timestamp. In case they don't always update it,
-		// we include the file list as well when computing the UID hash.
-		$uidContent = $timestampFormatted . $content;
+		// On 2021-04-28/29, itch.io changed their project page format so that the
+		// 'last updated' timestamp is only shown to logged-in users.
+		// Since we can't use the last-updated date to identify a post, we include
+		// the description text in the input for the UID hash so that if the
+		// project posts an update that changes the description but does not add
+		// or rename any files, we'll still flag it as an update.
+		$project_description = $html->find('div.formatted_description', 0)->plaintext;
+		$uidContent = $project_description . $content;
 
 		$item = array();
 		$item['uri'] = $url;
 		$item['uid'] = $uidContent;
-		$item['title'] = 'New release for ' . $title;
+		$item['title'] = 'Update for ' . $title;
 		$item['content'] = $content;
-		$item['timestamp'] = $timestampFormatted;
 		$this->items[] = $item;
 	}
 }
