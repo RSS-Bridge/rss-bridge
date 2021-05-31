@@ -3,7 +3,7 @@ class ExplosmBridge extends FeedExpander {
 
 	const MAINTAINER = 'bockiii';
 	const NAME = 'Explosm Bridge';
-	const URI = 'https://www.explosm.com/';
+	const URI = 'https://www.explosm.net/';
 	const CACHE_TIMEOUT = 4800; //2hours
 	const DESCRIPTION = 'Returns the last 5 comics';
 
