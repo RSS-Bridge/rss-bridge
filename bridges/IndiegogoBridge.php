@@ -19,14 +19,7 @@ class IndiegogoBridge extends BridgeAbstract {
 				'defaultValue' => 'Just Launched'
 			),
 		),
-		'All Categories' => array(
-			'all' => array(
-				'name' => 'All Categories',
-				'type' => 'checkbox',
-				'required' => false,
-				'defaultValue' => 'checked'
-			),
-		),
+		'All Categories' => array(),
 		'Tech & Innovation' => array(
 			'tech' => array(
 				'name' => 'Tech & Innovation',
