@@ -150,14 +150,14 @@ final class Configuration {
 			}
 		}
 
-		foreach (getenv() as $envkey=>$value) {
+		foreach (getenv() as $envkey => $value) {
 			// Replace all settings with their respective environment variable if available
-			$keyArray = explode("_", $envkey);
-			if($keyArray[0] === "RSS"){
-				$header=strtolower($keyArray[1]);
-				$key=strtolower($keyArray[2]);
-				if($value === "true" || $value === "false"){
-					$value=filter_var($value, FILTER_VALIDATE_BOOLEAN);
+			$keyArray = explode('_', $envkey);
+			if($keyArray[0] === 'RSS') {
+				$header = strtolower($keyArray[1]);
+				$key = strtolower($keyArray[2]);
+				if($value === 'true' || $value === 'false') {
+					$value = filter_var($value, FILTER_VALIDATE_BOOLEAN);
 				}
 				Configuration::$config[$header][$key] = $value;
 			}
