@@ -92,7 +92,7 @@ class NationalGeographicBridge extends BridgeAbstract {
 			*
 			*/
 			if(strpos($article_url, '\/graphics\/') !== false) {
-				break;
+				continue;
 			}
 
 			$article_html = getSimpleHTMLDOM($article_url);
