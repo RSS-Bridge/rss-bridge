@@ -23,13 +23,6 @@ class NationalGeographicBridge extends BridgeAbstract {
 				'title' => 'Select your topic',
 				'defaultValue' => 'Magazine'
 			)
-		),
-		'global' => array(
-			self::PARAMETER_FULL_ARTICLE => array(
-				'name' => 'Full Article',
-				'type' => 'checkbox',
-				'title' => 'Enable to load full articles (takes longer)'
-			)
 		)
 	);
 
@@ -51,10 +44,10 @@ class NationalGeographicBridge extends BridgeAbstract {
 
 		switch($this->topicName) {
 			case self::TOPIC_MAGAZINE: {
-				return $this->collectMagazine();
+				return $this->collectStories('magazine');
 			} break;
 			case self::TOPIC_LATEST_STORIES: {
-				return $this->collectLatestStories();
+				return $this->collectStories('latest');
 			} break;
 			default: {
 				returnServerError('Unknown topic: "' . $this->topicName . '"');
@@ -77,116 +70,97 @@ class NationalGeographicBridge extends BridgeAbstract {
 		return array_search($topic, static::PARAMETERS[self::CONTEXT_BY_TOPIC][self::PARAMETER_TOPIC]['values']);
 	}
 
-	private function collectMagazine() {
-		$uri = $this->getURI();
+	private function collectStories($topic) {
 
-		$html = getSimpleHTMLDOM($uri)
-			or returnServerError('Could not request ' . $uri);
-
-		$script = $html->find('#lead-component script')[0];
-
-		$json = json_decode($script->innertext, true);
-
-		// This is probably going to break in the future, fix it then :)
-		foreach($json['body']['0']['multilayout_promo_beta']['stories'] as $story) {
-			$this->addStory($story);
+		$uri = '';
+		if ($topic == 'latest') {
+			$uri = self::URI . '/pages/topic/latest-stories';
+		} else {
+			$uri = $this->getURI();
 		}
+
+		$html = getSimpleHTMLDOM($uri);
+		$articles = $html->find('article');
+
+		foreach($articles as $article) {
+			// Reference: https://simplehtmldom.sourceforge.io/manual_api.htm#api
+			$article_url = $article->childNodes(0)->href;
+
+			/* National Geographic have two types of articles:
+			*	1. Normal article
+			* 2. Interactive (require JS and don't have any useful info like timestamp so it won't supported)
+			*
+			*/
+			if(strpos($article_url, '\/graphics\/') !== false) {
+				break;
+			}
+			
+			$article_html = getSimpleHTMLDOM($article_url);
+
+			$this->addStory($article_html, $article_url);
+		}
+		
 	}
 
-	private function collectLatestStories() {
-		$uri = self::URI . 'latest-stories/_jcr_content/content/hubfeed.promo-hub-feed-all-stories.json';
-
-		$json_raw = getContents($uri)
-			or returnServerError('Could not request ' . $uri);
-
-		foreach(json_decode($json_raw, true) as $story) {
-			$this->addStory($story);
-		}
+	private function getJSONBlock($html, $selector, $index) {
+		$json_block = $html->find($selector, $index)->innertext;
+		return json_decode($json_block, true);
 	}
-
-	private function addStory($story) {
-		$title = 'Unknown title';
-		$content = '';
-
-		foreach($story['components'] as $component) {
-			switch($component['content_type']) {
-				case 'title': {
-					$title = $component['title']['text'];
-				} break;
-				case 'dek': {
-					$content = $component['dek']['text'];
-				} break;
+	
+	private function getArticleInfo($story_html) {
+		$json = $this->getJSONBlock($story_html, 'script[type="application/ld+json"]', 0);
+		$timestamp = $json['datePublished'];
+		$authors = $json['author'];
+		$image = $json['image']['url'];
+		$description = $json['description'];
+		$category = $json['articleSection'];
+		$title = $json['altHeadline'];
+		$authorName = '';
+		$counter = 0;
+		foreach($authors as $author) {
+			$counter++;
+			if($counter == count($authors)) {
+				$authorName .= $author['name'];
+			} else {
+				$authorName .= $author['name'] . ', ';
 			}
 		}
+		return array(
+			'timestamp' => $timestamp,
+			'author' => $authorName,
+			'image' => $image,
+			'category' => $category,
+			'title' => $title
+		);
+	}
+
+	private function addStory($html, $url) {
+		$article_info = $this->getArticleInfo($html);
 
 		$item = array();
 
-		$item['uri'] = $story['uri'];
-		$item['title'] = $title;
-
-		// if full article is requested!
-		if ($this->getInput(self::PARAMETER_FULL_ARTICLE))
-			$item['content'] = $this->getFullArticle($item['uri']);
-		else
-			$item['content'] = $content;
-
-		if (isset($story['promo_image'])) {
-			switch($story['promo_image']['content_type']) {
-				case 'image': {
-					$item['enclosures'][] = $story['promo_image']['image']['uri'];
-				} break;
-			}
-		}
-
-		if (isset($story['lead_media'])) {
-			$media = $story['lead_media'];
-			switch($media['content_type']) {
-				case 'image': {
-					// Don't add if promo_image was added
-					if (empty($item['enclosures']))
-						$item['enclosures'][] = $media['image']['uri'];
-				} break;
-				case 'image_gallery': {
-					foreach($media['image_gallery']['images'] as $image) {
-						$item['enclosures'][] = $image['uri'];
-					}
-				} break;
-			}
-		}
-
+			
+		$item['author'] = $article_info['author'];
+		$item['timestamp'] = $article_info['timestamp'];
+		$item['uri'] = $url;
+		$item['content'] = $this->getFullArticle($html);
+		$item['title'] = $article_info['title'];
+		$item['enclosures'] = array($article_info['image']);
+		$item['categories'] = array($article_info['category']);
 		$this->items[] = $item;
+		
+
+
 	}
 
-	private function getFullArticle($uri) {
-		$html = getSimpleHTMLDOMCached($uri)
-			or returnServerError('Could not load ' . $uri);
+	private function getFullArticle($html) {
 
-		$html = defaultLinkTo($html, $uri);
+		$content = $html->find('.Article__Content', 0)->innertext;
 
-		$content = '';
-
-		foreach($html->find('
-			.content > .smartbody.text,
-			.content > .section.image script[type="text/json"],
-			.content > .section.image span[itemprop="caption"],
-			.content > .section.inline script[type="text/json"]
-			') as $element) {
-			if ($element->tag === 'script') {
-				$json = json_decode($element->innertext, true);
-				if (isset($json['src'])) {
-					$content .= '<img src="' . $json['src'] . '" width="100%" alt="' . $json['alt'] . '">';
-				} elseif (isset($json['galleryType']) && isset($json['endpoint'])) {
-					$doc = getContents($json['endpoint'])
-						or returnServerError('Could not load ' . $json['endpoint']);
-					$json = json_decode($doc, true);
-					foreach($json['items'] as $item) {
-						$content .= '<p>' . $item['caption'] . '</p>';
-						$content .= '<img src="' . $item['url'] . '" width="100%" alt="' . $item['caption'] . '">';
-					}
-				}
-			} else {
-				$content .= $element->outertext;
-			}
+		foreach(array(
+			'<div class="ResponsiveWrapper"'
+		) as $element) {
+			$content = stripRecursiveHtmlSection($content, 'div', $element);
 		}
 
 		return $content;
