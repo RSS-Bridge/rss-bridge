@@ -94,19 +94,19 @@ class NationalGeographicBridge extends BridgeAbstract {
 			if(strpos($article_url, '\/graphics\/') !== false) {
 				break;
 			}
-			
+
 			$article_html = getSimpleHTMLDOM($article_url);
 
 			$this->addStory($article_html, $article_url);
 		}
-		
+
 	}
 
 	private function getJSONBlock($html, $selector, $index) {
 		$json_block = $html->find($selector, $index)->innertext;
 		return json_decode($json_block, true);
 	}
-	
+
 	private function getArticleInfo($story_html) {
 		$json = $this->getJSONBlock($story_html, 'script[type="application/ld+json"]', 0);
 		$timestamp = $json['datePublished'];
@@ -139,7 +139,6 @@ class NationalGeographicBridge extends BridgeAbstract {
 
 		$item = array();
 
-			
 		$item['author'] = $article_info['author'];
 		$item['timestamp'] = $article_info['timestamp'];
 		$item['uri'] = $url;
@@ -148,9 +147,6 @@ class NationalGeographicBridge extends BridgeAbstract {
 		$item['enclosures'] = array($article_info['image']);
 		$item['categories'] = array($article_info['category']);
 		$this->items[] = $item;
-		
-
-
 	}
 
 	private function getFullArticle($html) {
