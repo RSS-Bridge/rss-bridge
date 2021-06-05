@@ -76,6 +76,11 @@ abstract class BridgeAbstract implements BridgeInterface {
 	const PARAMETERS = array();
 
 	/**
+	 * Test cases for detectParameters for the bridge
+	 */
+	const TEST_DETECT_PARAMETERS = array();
+
+	/**
 	 * Holds the list of items collected by the bridge
 	 *
 	 * Items must be collected by {@see BridgeInterface::collectData()}
