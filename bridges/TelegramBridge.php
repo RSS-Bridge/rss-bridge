@@ -13,6 +13,11 @@ class TelegramBridge extends BridgeAbstract {
 			)
 		)
 	);
+	const TEST_DETECT_PARAMETERS = array(
+		'https://t.me/s/durov' => array('username' => 'durov'),
+		'https://t.me/durov' => array('username' => 'durov'),
+		'http://t.me/durov' => array('username' => 'durov'),
+	);
 
 	const CACHE_TIMEOUT = 900; // 15 mins
 
