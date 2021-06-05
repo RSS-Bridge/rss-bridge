@@ -84,14 +84,14 @@ class FilterBridge extends FeedExpander {
 		$filter_fields = array();
 		$filter_target = $this->getInput('filter_target');
 		if(strpos($filter_target, 'title') !== false) {
-			$filter_fields []= $item['title'];
+			$filter_fields[] = $item['title'];
 		}
 		if(strpos($filter_target, 'content') !== false) {
 			$filter_content_limit = intval($this->getInput('filter_content_limit'));
 			if($filter_content_limit > 0) {
-				$filter_fields []= substr($item['content'], 0, $filter_content_limit);
+				$filter_fields[] = substr($item['content'], 0, $filter_content_limit);
 			} else {
-				$filter_fields []= $item['content'];
+				$filter_fields[] = $item['content'];
 			}
 		}
 
