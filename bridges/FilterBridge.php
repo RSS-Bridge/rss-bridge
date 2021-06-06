@@ -17,11 +17,6 @@ class FilterBridge extends FeedExpander {
 			'name' => 'Filter (regular expression)',
 			'required' => false,
 		),
-		'case_insensitive' => array(
-			'name' => 'Case-insensitive regular expression',
-			'type' => 'checkbox',
-			'required' => false,
-		),
 		'filter_type' => array(
 			'name' => 'Filter type',
 			'type' => 'list',
@@ -32,32 +27,42 @@ class FilterBridge extends FeedExpander {
 			),
 			'defaultValue' => 'permit',
 		),
-		'filter_target' => array(
-			'name' => 'Apply regex on field',
-			'type' => 'list',
+		'case_insensitive' => array(
+			'name' => 'Case-insensitive filter',
+			'type' => 'checkbox',
 			'required' => false,
-			'values' => array(
-				'Title' => 'title',
-				'Content' => 'content',
-				'Title and Content' => 'title_content',
-			),
-			'defaultValue' => 'title',
 		),
-		'filter_content_limit' => array(
-			'name' => 'Max content length analyzed by filter (-1: no limit)',
-			'type' => 'number',
+		'fix_encoding' => array(
+			'name' => 'Attempt Latin1/UTF-8 fixes when evaluating filter',
+			'type' => 'checkbox',
 			'required' => false,
-			'defaultValue' => -1,
+		),
+		'target_title' => array(
+			'name' => 'Apply filter on title',
+			'type' => 'checkbox',
+			'required' => false,
+			'defaultValue' => 'checked'
+		),
+		'target_content' => array(
+			'name' => 'Apply filter on content',
+			'type' => 'checkbox',
+			'required' => false,
+		),
+		'target_author' => array(
+			'name' => 'Apply filter on author',
+			'type' => 'checkbox',
+			'required' => false,
 		),
 		'title_from_content' => array(
 			'name' => 'Generate title from content (overwrite existing title)',
 			'type' => 'checkbox',
 			'required' => false,
 		),
-		'fix_encoding' => array(
-			'name' => 'Attempt Latin1/UTF-8 fixes when evaluating regex',
-			'type' => 'checkbox',
+		'length_limit' => array(
+			'name' => 'Max length analyzed by filter (-1: no limit)',
+			'type' => 'number',
 			'required' => false,
+			'defaultValue' => -1,
 		),
 	));
 
@@ -82,22 +87,23 @@ class FilterBridge extends FeedExpander {
 
 		// Retrieve fields to check
 		$filter_fields = array();
-		$filter_target = $this->getInput('filter_target');
-		if(strpos($filter_target, 'title') !== false) {
-			$filter_fields[] = $item['title'];
+		if($this->getInput('target_title')) {
+			$filter_fields []= $item['title'];
 		}
-		if(strpos($filter_target, 'content') !== false) {
-			$filter_content_limit = intval($this->getInput('filter_content_limit'));
-			if($filter_content_limit > 0) {
-				$filter_fields[] = substr($item['content'], 0, $filter_content_limit);
-			} else {
-				$filter_fields[] = $item['content'];
-			}
+		if($this->getInput('target_content')) {
+			$filter_fields []= $item['content'];
+		}
+		if($this->getInput('target_author')) {
+			$filter_fields []= $item['author'];
 		}
 
 		// Apply filter on item
 		$keep_item = false;
+		$length_limit = intval($this->getInput('length_limit'));
 		foreach($filter_fields as $field) {
+			if($length_limit > 0) {
+				$field = substr($field, 0, $length_limit);
+			}
 			$keep_item |= boolval(preg_match($regex, $field));
 			if($this->getInput('fix_encoding')) {
 				$keep_item |= boolval(preg_match($regex, utf8_decode($field)));
