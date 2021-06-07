@@ -84,6 +84,10 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 		foreach ($tagContents['cards'] as $index => &$card) {
 			$item = array();
 
+			if ($card['cardType'] == 'Hub Peek') { // skip hub peeks
+				continue;
+			}
+
 			$json = getContents($this->getStoryURI($card['contents'][0]['id']))
 				or returnServerError('Could not request: ' . $this->getStoryURI($card['contents'][0]['id']));
 
