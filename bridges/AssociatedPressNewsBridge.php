@@ -62,14 +62,50 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 
 	public function collectData() {
 
-		if ($this->getInput('topic') === 'Podcasts') {
-			returnClientError('Podcasts topic feed is not supported');
+		switch($this->getInput('topic')) {
+			case 'Podcasts':
+				returnClientError('Podcasts topic feed is not supported');
+				break;
+			case 'PressReleases':
+				returnClientError('PressReleases topic feed is not supported');
+				break;
+			case 'apf-videos':
+				$this->collectVideoData();
+				break;
+			default:
+				$this->collectCardData();
+		}
+	}
+
+	public function getURI() {
+		if (!is_null($this->getInput('topic'))) {
+			return self::URI . $this->getInput('topic');
 		}
 
-		if ($this->getInput('topic') === 'PressReleases') {
-			returnClientError('PressReleases topic feed is not supported');
+		return parent::getURI();
+	}
+
+	public function getName() {
+		if (!empty($this->feedName)) {
+			return $this->feedName . ' - Associated Press';
 		}
 
+		return parent::getName();
+	}
+
+	private function getTagURI() {
+		if (!is_null($this->getInput('topic'))) {
+			return $this->tagEndpoint . $this->getInput('topic');
+		}
+
+		return parent::getURI();
+	}
+
+	private function getStoryURI($id) {
+		return $this->storyEndpoint . $id;
+	}
+
+	private function collectCardData() {
 		$json = getContents($this->getTagURI())
 			or returnServerError('Could not request: ' . $this->getTagURI());
 
@@ -147,32 +183,36 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 		}
 	}
 
-	public function getURI() {
-		if (!is_null($this->getInput('topic'))) {
-			return self::URI . $this->getInput('topic');
+	private function collectVideoData() {
+		$html = getSimpleHTMLDOM('https://apnews.com/hub/videos')
+			or returnServerError('Could not request: https://apnews.com/hub/videos');
+
+		$this->feedName = 'Videos';
+
+		foreach ($html->find('div.FeedCard.VideoFeature') as $div) {
+			$item = array();
+
+			$item['title'] = $div->find('h1', 0)->plaintext;
+			$item['timestamp'] = $div->find('span.Timestamp', 0)->getAttribute('data-source');
+
+			if ($div->find('div.YoutubeEmbed', 0)) {
+				$imageUrl = $div->find('img', 1)->src;
+
+				preg_match('/https:\/\/img\.youtube\.com\/vi\/([\w-]+)\/0\.jpg/', $imageUrl, $match);
+				$url = 'https://www.youtube.com/embed/' . $match[1];
+
+				$item['enclosures'][] = $imageUrl;
+				$item['content'] = <<<EOD
+<iframe width="560" height="315" src="{$url}" frameborder="0" allowfullscreen></iframe>
+EOD;
+			} elseif ($div->find('div.Video', 0)) {
+				$item['content'] = $div->find('div.Video', 0);
+				$item['enclosures'][] = $div->find('video', 0)->getAttribute('poster');
+			}
+
+			$this->items[] = $item;
 		}
 
-		return parent::getURI();
-	}
-
-	public function getName() {
-		if (!empty($this->feedName)) {
-			return $this->feedName . ' - Associated Press';
-		}
-
-		return parent::getName();
-	}
-
-	private function getTagURI() {
-		if (!is_null($this->getInput('topic'))) {
-			return $this->tagEndpoint . $this->getInput('topic');
-		}
-
-		return parent::getURI();
-	}
-
-	private function getStoryURI($id) {
-		return $this->storyEndpoint . $id;
 	}
 
 	private function processMediaPlaceholders($html, $storyContent) {
