@@ -32,6 +32,29 @@ class DockerHubBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 3600; // 1 hour
 
 	private $apiURL = 'https://hub.docker.com/v2/repositories/';
+	private $imageUrlRegex = '/hub\.docker\.com\/r\/([\w]+)\/([\w-]+)\/?/';
+	private $officialImageUrlRegex = '/hub\.docker\.com\/_\/([\w-]+)\/?/';
+
+	public function detectParameters($url) {
+		$params = array();
+
+		// user submitted image
+		if(preg_match($this->imageUrlRegex, $url, $matches)) {
+			$params['context'] = 'User Submitted Image';
+			$params['user'] = $matches[1];
+			$params['repo'] = $matches[2];
+			return $params;
+		}
+
+		// official image
+		if(preg_match($this->officialImageUrlRegex, $url, $matches)) {
+			$params['context'] = 'Official Image';
+			$params['repo'] = $matches[1];
+			return $params;
+		}
+
+		return null;
+	}
 
 	public function collectData() {
 		$json = getContents($this->getApiUrl())

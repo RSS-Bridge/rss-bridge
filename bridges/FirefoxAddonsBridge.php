@@ -21,6 +21,19 @@ class FirefoxAddonsBridge extends BridgeAbstract {
 	private $xpiFileRegex = '/([A-Za-z0-9_.-]+)\.xpi$/';
 	private $outgoingRegex = '/https:\/\/outgoing.prod.mozaws.net\/v1\/(?:[A-z0-9]+)\//';
 
+	private $urlRegex = '/addons\.mozilla\.org\/(?:[\w-]+\/)?firefox\/addon\/([\w-]+)/';
+
+	public function detectParameters($url) {
+		$params = array();
+
+		if(preg_match($this->urlRegex, $url, $matches)) {
+			$params['id'] = $matches[1];
+			return $params;
+		}
+
+		return null;
+	}
+
 	public function collectData() {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not request: ' . $this->getURI());
@@ -28,22 +41,24 @@ class FirefoxAddonsBridge extends BridgeAbstract {
 		$this->feedName = $html->find('h1[class="AddonTitle"] > a', 0)->innertext;
 		$author = $html->find('span.AddonTitle-author > a', 0)->plaintext;
 
-		foreach ($html->find('div.AddonVersionCard-content') as $div) {
+		foreach ($html->find('li.AddonVersionCard') as $li) {
 			$item = array();
 
-			$item['title'] = $div->find('h2.AddonVersionCard-version', 0)->plaintext;
+			$item['title'] = $li->find('h2.AddonVersionCard-version', 0)->plaintext;
+			$item['title'] = $li->find('h2.AddonVersionCard-version', 0)->plaintext;
+			$item['uid'] = $item['title'];
 			$item['uri'] = $this->getURI();
 			$item['author'] = $author;
 
-			if (preg_match($this->releaseDateRegex, $div->find('div.AddonVersionCard-fileInfo', 0)->plaintext, $match)) {
+			if (preg_match($this->releaseDateRegex, $li->find('div.AddonVersionCard-fileInfo', 0)->plaintext, $match)) {
 				$item['timestamp'] = $match[1];
 				$size = $match[2];
 			}
 
-			$compatibility = $div->find('div.AddonVersionCard-compatibility', 0)->plaintext;
-			$license = $div->find('p.AddonVersionCard-license', 0)->innertext;
-			$downloadlink = $div->find('a.InstallButtonWrapper-download-link', 0)->href;
-			$releaseNotes = $this->removeOutgoinglink($div->find('div.AddonVersionCard-releaseNotes', 0));
+			$compatibility = $li->find('div.AddonVersionCard-compatibility', 0)->plaintext;
+			$license = $li->find('p.AddonVersionCard-license', 0)->innertext;
+			$downloadlink = $li->find('a.InstallButtonWrapper-download-link', 0)->href;
+			$releaseNotes = $this->removeOutgoinglink($li->find('div.AddonVersionCard-releaseNotes', 0));
 
 			if (preg_match($this->xpiFileRegex, $downloadlink, $match)) {
 				$xpiFilename = $match[0];

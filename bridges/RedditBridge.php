@@ -8,6 +8,15 @@ class RedditBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Return hot submissions from Reddit';
 
 	const PARAMETERS = array(
+		'global' => array(
+			'score' => array(
+				'name' => 'Minimal score',
+				'required' => false,
+				'type' => 'number',
+				'exampleValue' => 100,
+				'title' => 'Filter out posts with lower score'
+			)
+		),
 		'single' => array(
 			'r' => array(
 				'name' => 'SubReddit',
@@ -38,6 +47,26 @@ class RedditBridge extends BridgeAbstract {
 			)
 		)
 	);
+
+	public function detectParameters($url) {
+		$parsed_url = parse_url($url);
+
+		if ($parsed_url['host'] != 'www.reddit.com' && $parsed_url['host'] != 'old.reddit.com') return null;
+
+		$path = explode('/', $parsed_url['path']);
+
+		if ($path[1] == 'r') {
+			return array(
+				'r' => $path[2]
+			);
+		} elseif ($path[1] == 'user') {
+			return array(
+				'u' => $path[2]
+			);
+		} else {
+			return null;
+		}
+	}
 
 	public function getIcon() {
 		return 'https://www.redditstatic.com/desktop2x/img/favicon/favicon-96x96.png';
@@ -85,6 +114,10 @@ class RedditBridge extends BridgeAbstract {
 				}
 
 				$data = $post->data;
+
+				if ($data->score < $this->getInput('score')) {
+					continue;
+				}
 
 				$item = array();
 				$item['author'] = $data->author;

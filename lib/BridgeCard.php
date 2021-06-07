@@ -21,27 +21,6 @@
  */
 final class BridgeCard {
 	/**
-	 * Build a HTML document string of buttons for each of the provided formats
-	 *
-	 * @param array $formats A list of format names
-	 * @return string The document string
-	 */
-	private static function buildFormatButtons($formats) {
-		$buttons = '';
-
-		foreach($formats as $name) {
-			$buttons .= '<button type="submit" name="format" value="'
-			. $name
-			. '">'
-			. $name
-			. '</button>'
-			. PHP_EOL;
-		}
-
-		return $buttons;
-	}
-
-	/**
 	 * Get the form header for a bridge card
 	 *
 	 * @param string $bridgeName The bridge name
@@ -134,7 +113,7 @@ This bridge is not fetching its content through a secure connection</div>';
 		}
 
 		if($isActive) {
-			$form .= self::buildFormatButtons($formats);
+			$form .= '<button type="submit" name="format" value="Html">Generate feed</button>';
 		} else {
 			$form .= '<span style="font-weight: bold;">Inactive</span>';
 		}
