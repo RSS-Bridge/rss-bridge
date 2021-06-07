@@ -21,7 +21,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 					'U.S. News' => 'apf-usnews',
 					'Health' => 'apf-Health',
 					'Science' => 'apf-science',
-					'International News' => 'apf-intlnews',
+					'World News' => 'apf-WorldNews',
 					'Politics' => 'apf-politics',
 					'Religion' => 'apf-religion',
 					'Photo Galleries' => 'PhotoGalleries',
