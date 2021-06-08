@@ -355,7 +355,7 @@ CARD;
 			$card .= self::getForm($bridgeName, $formats, $isActive, $isHttps);
 
 		// Display form with cache timeout and/or noproxy options (if enabled) when bridge has no parameters
-		} else if (count($parameters) === 1 && array_key_exists('global', $parameters) ) {
+		} else if (count($parameters) === 1 && array_key_exists('global', $parameters)) {
 			$card .= self::getForm($bridgeName, $formats, $isActive, $isHttps, '', $parameters['global']);
 		} else {
 
@@ -377,8 +377,7 @@ CARD;
 		$card .= '<label class="showless" for="showmore-' . $bridgeName . '">Show less</label>';
 		if($donationUri !== '' && $donationsAllowed) {
 			$card .= '<p class="maintainer">' . $maintainer . ' ~ <a href="' . $donationUri . '">Donate</a></p>';
-		}
-		else {
+		} else {
 			$card .= '<p class="maintainer">' . $maintainer . '</p>';
 		}
 		$card .= '</section>';
