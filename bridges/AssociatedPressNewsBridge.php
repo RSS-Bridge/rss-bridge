@@ -124,10 +124,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 				continue;
 			}
 
-			$json = getContents($this->getStoryURI($card['id']))
-				or returnServerError('Could not request: ' . $this->getStoryURI($card['id']));
-
-			$storyContent = json_decode($json, true);
+			$storyContent = $card['contents'][0];
 			$html = $storyContent['storyHTML'];
 
 			switch($storyContent['contentType']) {
@@ -159,7 +156,12 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 			}
 
 			$item['title'] = $card['contents'][0]['headline'];
-			$item['uri'] = $card['contents'][0]['localLinkUrl'];
+			$item['uri'] = self::URI . $card['shortId'];
+
+			if ($card['contents'][0]['localLinkUrl']) {
+				$item['uri'] = $card['contents'][0]['localLinkUrl'];
+			}
+
 			$item['timestamp'] = $storyContent['published'];
 
 			// Remove 'By' from the bylines
@@ -219,6 +221,11 @@ EOD;
 
 		foreach ($html->find('div.media-placeholder') as $div) {
 			$key = array_search($div->id, $storyContent['mediumIds']);
+
+			if (!isset($storyContent['media'][$key])) {
+				continue;
+			}
+
 			$media = $storyContent['media'][$key];
 
 			if ($media['type'] === 'Photo') {
