@@ -221,6 +221,7 @@ class ReutersBridge extends BridgeAbstract
 							</iframe>";
 					}
 					$description .= $embed;
+					break;
 			}
 		}
 
