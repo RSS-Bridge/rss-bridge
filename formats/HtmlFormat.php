@@ -30,12 +30,12 @@ class HtmlFormat extends FormatAbstract {
 
 		if($donationUri !== '' && $donationsAllowed) {
 			$buttons .= '<a href="'
-						. $donationUri 
-						. '" target="_blank"><button class="highlight">Donate to maintainer</button></a>' 
+						. $donationUri
+						. '" target="_blank"><button class="highlight">Donate to maintainer</button></a>'
 						. PHP_EOL;
-			$links .= '<link href="' 
-						. $donationUri 
-						. ' target="_blank"" title="Donate to Maintainer" rel="alternate">' 
+			$links .= '<link href="'
+						. $donationUri
+						. ' target="_blank"" title="Donate to Maintainer" rel="alternate">'
 						. PHP_EOL;
 		}
 

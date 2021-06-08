@@ -375,7 +375,7 @@ CARD;
 		}
 
 		$card .= '<label class="showless" for="showmore-' . $bridgeName . '">Show less</label>';
-		if($donationUri !== '' && $donationsAllowed){
+		if($donationUri !== '' && $donationsAllowed) {
 			$card .= '<p class="maintainer">' . $maintainer . ' ~ <a href="' . $donationUri . '">Donate</a></p>';
 		}
 		else {
