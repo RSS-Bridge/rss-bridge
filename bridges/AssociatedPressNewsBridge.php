@@ -124,8 +124,8 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 				continue;
 			}
 
-			$json = getContents($this->getStoryURI($card['contents'][0]['id']))
-				or returnServerError('Could not request: ' . $this->getStoryURI($card['contents'][0]['id']));
+			$json = getContents($this->getStoryURI($card['id']))
+				or returnServerError('Could not request: ' . $this->getStoryURI($card['id']));
 
 			$storyContent = json_decode($json, true);
 			$html = $storyContent['storyHTML'];
