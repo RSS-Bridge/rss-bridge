@@ -119,7 +119,6 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 			}
 
 			$storyContent = $card['contents'][0];
-			$html = $storyContent['storyHTML'];
 
 			switch($storyContent['contentType']) {
 				case 'web': // Skip link only content
@@ -136,7 +135,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 						continue 2;
 					}
 
-					$html = defaultLinkTo($html, self::URI);
+					$html = defaultLinkTo($storyContent['storyHTML'], self::URI);
 					$html = str_get_html($html);
 
 					$this->processMediaPlaceholders($html, $storyContent);
