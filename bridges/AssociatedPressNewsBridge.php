@@ -45,7 +45,6 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 
 	private $detectParamRegex = '/^https?:\/\/(?:www.)?apnews.com\/(?:tag\/)?([\w-]+)$/';
 	private $tagEndpoint = 'https://afs-prod.appspot.com/api/v2/feed/tag?tags=';
-	private $storyEndpoint = 'https://storage.googleapis.com/afs-prod/contents/';
 	private $feedName = '';
 
 	public function detectParameters($url) {
@@ -61,7 +60,6 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 	}
 
 	public function collectData() {
-
 		switch($this->getInput('topic')) {
 			case 'Podcasts':
 				returnClientError('Podcasts topic feed is not supported');
@@ -99,10 +97,6 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 		}
 
 		return parent::getURI();
-	}
-
-	private function getStoryURI($id) {
-		return $this->storyEndpoint . $id;
 	}
 
 	private function collectCardData() {
