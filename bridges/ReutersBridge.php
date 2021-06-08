@@ -211,14 +211,14 @@ class ReutersBridge extends BridgeAbstract
 					$embed = '';
 					if($media_type == 'tweet') {
 						$embed .= "<iframe 
-													src=\"https://platform.twitter.com/embed/Tweet.html?id=$cid\" 
-													title=\"Twitter Tweet\"
-													scrolling=\"no\" 
-													frameborder=\"0\" 
-													allowtransparency=\"true\" 
-													allowfullscreen=\"true\" 
-													style=\"width: 550px;height: 225px;\">
-											</iframe>";
+								src=\"https://platform.twitter.com/embed/Tweet.html?id=$cid\" 
+								title=\"Twitter Tweet\"
+								scrolling=\"no\" 
+								frameborder=\"0\" 
+								allowtransparency=\"true\" 
+								allowfullscreen=\"true\" 
+								style=\"width: 550px;height: 225px;\">
+							</iframe>";
 					}
 					$description .= $embed;
 			}
