@@ -197,7 +197,7 @@ final class Configuration {
 		if(!empty(self::getConfig('admin', 'email'))
 		&& !filter_var(self::getConfig('admin', 'email'), FILTER_VALIDATE_EMAIL))
 			self::reportConfigurationError('admin', 'email', 'Is not a valid email address');
-		
+
 		if(!is_bool(self::getConfig('admin', 'donations')))
 		self::reportConfigurationError('admin', 'donations', 'Is not a valid Boolean');
 

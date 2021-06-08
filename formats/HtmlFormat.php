@@ -29,8 +29,14 @@ class HtmlFormat extends FormatAbstract {
 		}
 
 		if($donationUri !== '' && $donationsAllowed) {
-			$buttons .= '<a href="' . $donationUri . '" target="_blank"><button class="highlight">Donate to maintainer</button></a>' . PHP_EOL;
-			$links .= '<link href="' . $donationUri . ' target="_blank"" title="Donate to Maintainer" rel="alternate">' . PHP_EOL;
+			$buttons .= '<a href="'
+						. $donationUri 
+						. '" target="_blank"><button class="highlight">Donate to maintainer</button></a>' 
+						. PHP_EOL;
+			$links .= '<link href="' 
+						. $donationUri 
+						. ' target="_blank"" title="Donate to Maintainer" rel="alternate">' 
+						. PHP_EOL;
 		}
 
 		$entries = '';

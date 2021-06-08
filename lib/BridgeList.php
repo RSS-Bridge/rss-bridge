@@ -179,7 +179,7 @@ EOD;
 
 		}
 
-		if($donationsAllowed){
+		if($donationsAllowed) {
 			$donation = ' ~ <a href="http://www.google.com">Donate</a>';
 		}
 
