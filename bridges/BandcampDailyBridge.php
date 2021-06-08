@@ -90,7 +90,6 @@ class BandcampDailyBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 3600; // 1 hour
 
 	public function collectData() {
-
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not request: ' . $this->getURI());
 
@@ -128,21 +127,19 @@ class BandcampDailyBridge extends BridgeAbstract {
 	}
 
 	public function getURI() {
-
 		switch($this->queriedContext) {
 			case 'Latest articles':
 				return self::URI . '/latest';
+			case 'Best of':
+			case 'Genres':
 			case 'Franchises':
 				return self::URI . '/' . $this->getInput('content');
-			case 'Genres':
-				return self::URI . '/' . $this->getInput('content');
+			default:
+				return parent::getURI();
 		}
-
-		return parent::getURI();
 	}
 
 	public function getName() {
-
 		if ($this->queriedContext === 'Latest articles') {
 			return $this->queriedContext . ' - Bandcamp Daily';
 		}
