@@ -231,12 +231,13 @@ class ReutersBridge extends BridgeAbstract
 							$embed .= "<‌iframe 
 													width=\"560\" 
 													height=\"315\" 
-													src=\"https://www.youtube.com/embed/MOKiCxV2tMc\" 
+													src=\"https://www.youtube.com/embed/$cid\" 
 													frameborder=\"0\" 
 													allowfullscreen>";
 							break;
 					}
 					$description .= $embed;
+					break;
 			}
 		}
 
