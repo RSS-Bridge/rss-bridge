@@ -212,28 +212,29 @@ class ReutersBridge extends BridgeAbstract
 					switch ($media_type) {
 						case 'tweet':
 							$embed .= "<iframe 
-														src=\"https://platform.twitter.com/embed/Tweet.html?id=$cid\" 
-														title=\"Twitter Tweet\"
-														scrolling=\"no\" 
-														frameborder=\"0\" 
-														allowtransparency=\"true\" 
-														allowfullscreen=\"true\" 
-														style=\"width: 550px;height: 225px;\">
-												</iframe>";
+									src=\"https://platform.twitter.com/embed/Tweet.html?id=$cid\" 
+									title=\"Twitter Tweet\"
+									scrolling=\"no\" 
+									frameborder=\"0\" 
+									allowtransparency=\"true\" 
+									allowfullscreen=\"true\" 
+									style=\"width: 550px;height: 225px;\">
+								</iframe>";
 							break;
 						case 'instagram':
 							$embed .= "<img 
-													src=\"https://instagram.com/p/$cid/media/?size=l\" 
-													alt=\"instagram-image-$cid\"
-												>";
+									src=\"https://instagram.com/p/$cid/media/?size=l\" 
+									alt=\"instagram-image-$cid\"
+								>";
 							break;
 						case 'youtube':
 							$embed .= "<‌iframe 
-													width=\"560\" 
-													height=\"315\" 
-													src=\"https://www.youtube.com/embed/$cid\" 
-													frameborder=\"0\" 
-													allowfullscreen>";
+									width=\"560\" 
+									height=\"315\" 
+									src=\"https://www.youtube.com/embed/$cid\" 
+									frameborder=\"0\" 
+									allowfullscreen>
+								</iframe>";
 							break;
 					}
 					$description .= $embed;
