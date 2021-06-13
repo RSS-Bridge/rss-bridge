@@ -211,30 +211,41 @@ class ReutersBridge extends BridgeAbstract
 					$embed = '';
 					switch ($media_type) {
 						case 'tweet':
-							$embed .= "<iframe 
-									src=\"https://platform.twitter.com/embed/Tweet.html?id=$cid\" 
-									title=\"Twitter Tweet\"
-									scrolling=\"no\" 
-									frameborder=\"0\" 
-									allowtransparency=\"true\" 
-									allowfullscreen=\"true\" 
-									style=\"width: 550px;height: 225px;\">
-								</iframe>";
+							$url = "https://platform.twitter.com/embed/Tweet.html?id=$cid";
+							$embed .= <<<EOD
+							<iframe 
+								src="{$url}"
+								title="Twitter Tweet"
+								scrolling="no" 
+								frameborder="0" 
+								allowtransparency="true" 
+								allowfullscreen="true" 
+								style="width: 550px;height: 225px;"
+							>
+							</iframe>
+							EOD;
 							break;
 						case 'instagram':
-							$embed .= "<img 
-									src=\"https://instagram.com/p/$cid/media/?size=l\" 
-									alt=\"instagram-image-$cid\"
-								>";
+							$url = "https://instagram.com/p/$cid/media/?size=l";
+							$embed .= <<<EOD
+							<img 
+								src="{$url}"
+								alt="instagram-image-$cid"
+							>
+							EOD;
 							break;
 						case 'youtube':
-							$embed .= "<‌iframe 
-									width=\"560\" 
-									height=\"315\" 
-									src=\"https://www.youtube.com/embed/$cid\" 
-									frameborder=\"0\" 
-									allowfullscreen>
-								</iframe>";
+							$url = "https://www.youtube.com/embed/$cid";
+							$embed .= <<<EOD
+							<‌iframe
+								width="560" 
+								height="315" 
+								src="{$url}"
+								frameborder="0" 
+								allowfullscreen
+							>
+							</iframe>
+							EOD;
 							break;
 					}
 					$description .= $embed;
