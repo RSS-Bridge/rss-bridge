@@ -46,7 +46,7 @@ class UrlebirdBridge extends BridgeAbstract {
 			$item['content'] = $article_content->find('video', 0)->outertext . '<br>' .
 				$article_content->find('div.music', 0) . '<br>' .
 				$article_content->find('div.info2', 0)->innertext .
-				'<br><br><a href="'.$article_content->find('video', 0)->src.'">Video link</a>';
+				'<br><br><a href="' . $article_content->find('video', 0)->src . '">Video link</a>';
 			$this->items[] = $item;
 		}
 	}
