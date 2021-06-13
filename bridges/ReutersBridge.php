@@ -174,7 +174,6 @@ class ReutersBridge extends BridgeAbstract
 	}
 
 	private function handleArticleContent($contents) {
-		
 		$description = '';
 		foreach ($contents as $content) {
 			$data;
@@ -214,39 +213,39 @@ class ReutersBridge extends BridgeAbstract
 						case 'tweet':
 							$url = "https://platform.twitter.com/embed/Tweet.html?id=$cid";
 							$embed .= <<<EOD
-							<iframe 
-								src="{$url}"
-								title="Twitter Tweet"
-								scrolling="no" 
-								frameborder="0" 
-								allowtransparency="true" 
-								allowfullscreen="true" 
-								style="width: 550px;height: 225px;"
-							>
-							</iframe>
-							EOD;
+<iframe 
+	src="{$url}"
+	title="Twitter Tweet"
+	scrolling="no" 
+	frameborder="0" 
+	allowtransparency="true" 
+	allowfullscreen="true" 
+	style="width: 550px;height: 225px;"
+>
+</iframe>
+EOD;
 							break;
 						case 'instagram':
 							$url = "https://instagram.com/p/$cid/media/?size=l";
 							$embed .= <<<EOD
-							<img 
-								src="{$url}"
-								alt="instagram-image-$cid"
-							>
-							EOD;
+<img 
+	src="{$url}"
+	alt="instagram-image-$cid"
+>
+EOD;
 							break;
 						case 'youtube':
 							$url = "https://www.youtube.com/embed/$cid";
 							$embed .= <<<EOD
-							<‌iframe
-								width="560" 
-								height="315" 
-								src="{$url}"
-								frameborder="0" 
-								allowfullscreen
-							>
-							</iframe>
-							EOD;
+<‌iframe
+	width="560" 
+	height="315" 
+	src="{$url}"
+	frameborder="0" 
+	allowfullscreen
+>
+</iframe>
+EOD;
 							break;
 					}
 					$description .= $embed;
