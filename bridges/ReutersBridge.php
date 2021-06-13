@@ -174,6 +174,7 @@ class ReutersBridge extends BridgeAbstract
 	}
 
 	private function handleArticleContent($contents) {
+		
 		$description = '';
 		foreach ($contents as $content) {
 			$data;
