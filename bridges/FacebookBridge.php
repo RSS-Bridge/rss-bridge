@@ -4,7 +4,7 @@ class FacebookBridge extends BridgeAbstract {
 	const MAINTAINER = 'teromene, logmanoriginal';
 	const NAME = 'Facebook Bridge | Main Site';
 	const URI = 'https://www.facebook.com/';
-	const CACHE_TIMEOUT = 300; // 5min
+	const CACHE_TIMEOUT = 1800; // 30min
 	const DESCRIPTION = 'Input a page title or a profile log. For a profile log,
  please insert the parameter as follow : myExamplePage/132621766841117';
 

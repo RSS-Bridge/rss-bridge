@@ -135,6 +135,10 @@ class BridgeImplementationTest extends TestCase {
 			}
 		}
 
+		foreach($this->obj::TEST_DETECT_PARAMETERS as $url => $params) {
+			$this->assertEquals($this->obj->detectParameters($url), $params);
+		}
+
 		$this->assertTrue(true);
 	}
 
