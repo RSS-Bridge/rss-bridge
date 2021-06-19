@@ -287,7 +287,7 @@ class InstagramBridge extends BridgeAbstract {
 					 '&variables={"tag_name"%3A"' .
 					$this->getInput('h') .
 					'"%2C"first"%3A10}');
-			
+
 			return json_decode($data);
 
 		} else {
