@@ -117,8 +117,8 @@ class InstagramBridge extends BridgeAbstract {
 
 		$data = $this->getInstagramJSON($this->getURI());
 
-		if(isset($data->entry_data->HttpErrorPage)) {
-			returnServerError('Not found any data on this page');
+		if($data == null) {
+			returnServerError('Unable to get data from Instagram');
 		}
 
 		if(!is_null($this->getInput('u'))) {
@@ -281,16 +281,13 @@ class InstagramBridge extends BridgeAbstract {
 
 		// } else
 		if(!is_null($this->getInput('h'))) {
-			$header = array('User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:83.0) Gecko/20100101 Firefox/83.0');
 			$data = getContents(self::URI .
 					'graphql/query/?query_hash=' .
 					 self::TAG_QUERY_HASH .
 					 '&variables={"tag_name"%3A"' .
 					$this->getInput('h') .
-					'"%2C"first"%3A10}', $header);
-			if ($data == null) {
-				returnServerError('Unable to get hashtag from Instagram');
-			}
+					'"%2C"first"%3A10}');
+			
 			return json_decode($data);
 
 		} else {
