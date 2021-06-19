@@ -52,7 +52,7 @@ class InstagramBridge extends BridgeAbstract {
 	const SHORTCODE_QUERY_HASH = '865589822932d1b43dfe312121dd353a';
 
 
-	const BIBLIOGRAM_ACCEPTED = true;
+	const BIBLIOGRAM_ACCEPTED = false;
 	/* 	Video/image from Instagram now can't display due to SameOrigin policy.
 	*		This flag will allow to use Bibliogram to process image/video from Instagram
 	*		Value : {true|false}
