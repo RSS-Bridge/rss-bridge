@@ -279,7 +279,7 @@ class InstagramBridge extends BridgeAbstract {
 		// 						'"%2C"first"%3A10}');
 		// 	return json_decode($data);
 
-		// } else 
+		// } else
 		if(!is_null($this->getInput('h'))) {
 			$header = array('User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:83.0) Gecko/20100101 Firefox/83.0');
 			$data = getContents(self::URI .
