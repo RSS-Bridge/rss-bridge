@@ -122,14 +122,12 @@ class InstagramBridge extends BridgeAbstract {
 		}
 
 		if(!is_null($this->getInput('u'))) {
+			// $userMedia = $data->data->user->edge_owner_to_timeline_media->edges;
 			$userMedia = $data->entry_data->ProfilePage[0]->graphql->user->edge_owner_to_timeline_media->edges;
-			$query_type = 'user';
 		} elseif(!is_null($this->getInput('h'))) {
 			$userMedia = $data->data->hashtag->edge_hashtag_to_media->edges;
-			$query_type = 'hashtag';
 		} elseif(!is_null($this->getInput('l'))) {
 			$userMedia = $data->entry_data->LocationsPage[0]->graphql->location->edge_location_to_media->edges;
-			$query_type = 'location';
 		}
 
 		foreach($userMedia as $media) {
@@ -170,7 +168,7 @@ class InstagramBridge extends BridgeAbstract {
 				$mediaURI = self::URI . 'p/' . $media->shortcode . '/media?size=l';
 			}
 
-			if($query_type == 'user') {
+			if(isset($media->__typename)) {
 				switch($media->__typename) {
 					case 'GraphSidecar':
 						$data = $this->getInstagramSidecarData($item['uri'], $item['title'], $media, $textContent);
@@ -195,7 +193,7 @@ class InstagramBridge extends BridgeAbstract {
 						break;
 					default: break;
 				}
-			} elseif($query_type == 'location') {
+			} else {
 				$item['content'] = '<a href="' . htmlentities($item['uri']) . '" target="_blank">';
 				$item['content'] .= '<img src="' . htmlentities($mediaURI) . '" alt="' . $item['title'] . '" />';
 				$item['content'] .= '</a><br><br>' . nl2br(htmlentities($textContent));
