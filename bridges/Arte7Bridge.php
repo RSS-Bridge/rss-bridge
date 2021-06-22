@@ -18,52 +18,52 @@ class Arte7Bridge extends BridgeAbstract {
 				'defaultValue'	=> false,
 			],
 		],
-		'Catégorie (Français)' => array(
-			'catfr' => array(
+		'Category' => array(
+			'lang' => array(
 				'type' => 'list',
-				'name' => 'Catégorie',
+				'name' => 'Language',
 				'values' => array(
-					'Toutes les vidéos (français)' => null,
-					'Actu & société' => 'ACT',
-					'Séries & fiction' => 'SER',
-					'Cinéma' => 'CIN',
-					'Arts & spectacles classiques' => 'ARS',
-					'Culture pop' => 'CPO',
-					'Découverte' => 'DEC',
-					'Histoire' => 'HIST',
-					'Science' => 'SCI',
-					'Autre' => 'AUT'
-				)
-			)
-		),
-		'Collection (Français)' => array(
-			'colfr' => array(
-				'name' => 'Collection id',
-				'required' => true,
+					'Français' => 'fr',
+					'Deutsch' => 'de',
+					'English' => 'en',
+					'Español' => 'es',
+					'Polski' => 'pl',
+					'Italiano' => 'it'
+				),
 				'title' => 'ex. RC-014095 pour https://www.arte.tv/fr/videos/RC-014095/blow-up/',
 				'exampleValue'	=> 'RC-014095'
-			)
-		),
-		'Catégorie (Allemand)' => array(
-			'catde' => array(
+			),
+			'cat' => array(
 				'type' => 'list',
-				'name' => 'Catégorie',
+				'name' => 'Category',
 				'values' => array(
-					'Alle Videos (deutsch)' => null,
-					'Aktuelles & Gesellschaft' => 'ACT',
-					'Fernsehfilme & Serien' => 'SER',
-					'Kino' => 'CIN',
-					'Kunst & Kultur' => 'ARS',
-					'Popkultur & Alternativ' => 'CPO',
-					'Entdeckung' => 'DEC',
-					'Geschichte' => 'HIST',
-					'Wissenschaft' => 'SCI',
-					'Sonstiges' => 'AUT'
+					'All videos' => null,
+					'News & society' => 'ACT',
+					'Series & fiction' => 'SER',
+					'Cinema' => 'CIN',
+					'Culture' => 'ARS',
+					'Culture pop' => 'CPO',
+					'Discovery' => 'DEC',
+					'History' => 'HIST',
+					'Science' => 'SCI',
+					'Other' => 'AUT'
 				)
-			)
+			),
 		),
-		'Collection (Allemand)' => array(
-			'colde' => array(
+		'Collection' => array(
+			'lang' => array(
+				'type' => 'list',
+				'name' => 'Language',
+				'values' => array(
+					'Français' => 'fr',
+					'Deutsch' => 'de',
+					'English' => 'en',
+					'Español' => 'es',
+					'Polski' => 'pl',
+					'Italiano' => 'it'
+				)
+			),
+			'col' => array(
 				'name' => 'Collection id',
 				'required' => true,
 				'title' => 'ex. RC-014095 pour https://www.arte.tv/de/videos/RC-014095/blow-up/',
@@ -73,26 +73,19 @@ class Arte7Bridge extends BridgeAbstract {
 	);
 
 	public function collectData(){
+		$lang = $this->getInput('lang');
 		switch($this->queriedContext) {
-		case 'Catégorie (Français)':
-			$category = $this->getInput('catfr');
-			$lang = 'fr';
+		case 'Category':
+			$category = $this->getInput('cat');
+			$collectionId = null;
 			break;
-		case 'Collection (Français)':
-			$lang = 'fr';
-			$collectionId = $this->getInput('colfr');
-			break;
-		case 'Catégorie (Allemand)':
-			$category = $this->getInput('catde');
-			$lang = 'de';
-			break;
-		case 'Collection (Allemand)':
-			$lang = 'de';
-			$collectionId = $this->getInput('colde');
+		case 'Collection':
+			$collectionId = $this->getInput('col');
+			$category = null;
 			break;
 		}
 
-		$url = 'https://api.arte.tv/api/opa/v3/videos?sort=-lastModified&limit=10&language='
+		$url = 'https://api.arte.tv/api/opa/v3/videos?sort=-lastModified&limit=15&language='
 			. $lang
 			. ($category != null ? '&category.code=' . $category : '')
 			. ($collectionId != null ? '&collections.collectionId=' . $collectionId : '');
