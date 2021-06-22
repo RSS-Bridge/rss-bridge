@@ -86,7 +86,7 @@ class Drive2ruBridge extends BridgeAbstract {
 			$item['uri'] = urljoin(self::URI, $article->find('a.c-link--text', 0)->href);
 			if($this->getInput('full_articles')) {
 				$item['content'] = $this->addCommentsLink(
-					$this->adjustContent(getSimpleHTMLDOM($item['uri'])->find('div.c-post__body', 0))->innertext,
+					$this->adjustContent(getSimpleHTMLDomCached($item['uri'])->find('div.c-post__body', 0))->innertext,
 					$item['uri']
 				);
 			} else {
@@ -108,7 +108,7 @@ class Drive2ruBridge extends BridgeAbstract {
 			$item['uri'] = urljoin(self::URI, $article->find('a.c-link--text', 0)->href);
 			if($this->getInput('full_articles')) {
 				$item['content'] = $this->addCommentsLink(
-					$this->adjustContent(getSimpleHTMLDOM($item['uri'])->find('div.article', 0))->innertext,
+					$this->adjustContent(getSimpleHTMLDomCached($item['uri'])->find('div.article', 0))->innertext,
 					$item['uri']
 				);
 			} else {
