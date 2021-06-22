@@ -5,14 +5,14 @@ class UrlebirdBridge extends BridgeAbstract {
 	const NAME = 'urlebird.com';
 	const URI = 'https://urlebird.com/';
 	const DESCRIPTION = 'Bridge for urlebird.com';
+	const CACHE_TIMEOUT = 10;
 	const PARAMETERS = array(
-		'Enter @username or #hashtag' => array(
+		array(
 			'query' => array(
 				'name' => '@username or #hashtag',
 				'type' => 'text',
 				'required' => true,
-				'title' => '@username or #hashtag',
-				'exampleValue' => '@username or #hashtag'
+				'title' => '@username or #hashtag'
 			)
 		)
 	);
