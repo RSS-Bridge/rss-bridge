@@ -40,4 +40,11 @@ class WallpaperflareBridge extends XPathAbstract {
                 $feedicon = 'https://www.google.com/s2/favicons?domain=https://www.wallpaperflare.com/';
                 return $feedicon;
         }
+
+
+        public function getName() {
+			$search = $this->getInput('search');
+                        return 'Wallpaperflare - ' . $search;
+                }
+
 }
