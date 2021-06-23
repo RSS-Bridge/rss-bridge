@@ -63,7 +63,6 @@ class NationalGeographicBridge extends BridgeAbstract {
 		$url = 'https://www.nationalgeographic.com/proxy/hub?context='
 						. $context . '&id=' . $id
 						. '&moduleType=InfiniteFeedModule&_xhr=pageContent';
-		print_r($url);
 		return $url;
 	}
 
