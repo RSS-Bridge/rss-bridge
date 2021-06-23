@@ -28,12 +28,22 @@ class NationalGeographicBridge extends BridgeAbstract {
 			self::PARAMETER_FULL_ARTICLE => array(
 				'name' => 'Full Article',
 				'type' => 'checkbox',
-				'title' => 'Enable to load full articles (takes longer)'
+				'title' => 'Enable to load full articles and other infos (takes longer)'
 			)
 		)
 	);
 
 	private $topicName = '';
+	const CONTEXT = 'eyJjb250ZW50VHlwZSI6IlVuaXNvbkh1YiIsInZhcmlhYmxlcyI6eyJsb2NhdG9yIjoiL3BhZ2VzL3RvcGljL2xhdGVzdC1zdG9yaWVzIiwicG9ydGZvbGlvIjoibmF0Z2VvIiwicXVlcnlUeXBlIjoiTE9DQVRPUiJ9LCJtb2R1bGVJZCI6bnVsbH0';
+	const LATEST_STORIES_ID = array(
+		'1df278bb-0e3d-4a67-a0ce-8fae48392822-f2-m1',
+		'1df278bb-0e3d-4a67-a0ce-8fae48392822-f2-m3'
+	);
+	const MAGAZINE_ID = array(
+		'94d87d74-f41a-4a32-9acd-b591ba2df288-f2-m1',
+		'94d87d74-f41a-4a32-9acd-b591ba2df288-f5-m2',
+		'db6d8778-4907-4154-9c14-b7174b646bd2'
+	);
 
 	public function getURI() {
 		switch ($this->queriedContext) {
@@ -44,6 +54,13 @@ class NationalGeographicBridge extends BridgeAbstract {
 				return parent::getURI();
 			}
 		}
+	}
+
+	private function getAPIURL($id) {
+		$url = 'https://www.nationalgeographic.com/proxy/hub?context='
+						. self::CONTEXT . '&id=' . $id
+						. '&moduleType=InfiniteFeedModule&_xhr=pageContent';
+		return $url;
 	}
 
 	public function collectData() {
@@ -78,28 +95,37 @@ class NationalGeographicBridge extends BridgeAbstract {
 	}
 
 	private function collectMagazine() {
-		$uri = $this->getURI();
+		$stories = array();
 
-		$html = getSimpleHTMLDOM($uri)
-			or returnServerError('Could not request ' . $uri);
+		foreach(self::MAGAZINE_ID as $id) {
+			$uri = $this->getAPIURL($id);
 
-		$script = $html->find('#lead-component script')[0];
+			$json_raw = getContents($uri)
+					or returnServerError('Could not request ' . $uri);
+			
+			$json = json_decode($json_raw, true)['tiles'];
+			$stories = array_merge($json, $stories);
+		}
 
-		$json = json_decode($script->innertext, true);
-
-		// This is probably going to break in the future, fix it then :)
-		foreach($json['body']['0']['multilayout_promo_beta']['stories'] as $story) {
+		foreach($stories as $story) {
 			$this->addStory($story);
 		}
 	}
 
 	private function collectLatestStories() {
-		$uri = self::URI . 'latest-stories/_jcr_content/content/hubfeed.promo-hub-feed-all-stories.json';
+		$stories = array();
 
-		$json_raw = getContents($uri)
-			or returnServerError('Could not request ' . $uri);
+		foreach(self::LATEST_STORIES_ID as $id) {
+			$uri = $this->getAPIURL($id);
 
-		foreach(json_decode($json_raw, true) as $story) {
+			$json_raw = getContents($uri)
+					or returnServerError('Could not request ' . $uri);
+			
+			$json = json_decode($json_raw, true)['tiles'];
+			$stories = array_merge($json, $stories);
+		}
+
+		foreach($stories as $story) {
 			$this->addStory($story);
 		}
 	}
@@ -107,88 +133,194 @@ class NationalGeographicBridge extends BridgeAbstract {
 	private function addStory($story) {
 		$title = 'Unknown title';
 		$content = '';
+		$story_type = '';
+		$uri = '';
 
-		foreach($story['components'] as $component) {
-			switch($component['content_type']) {
-				case 'title': {
-					$title = $component['title']['text'];
-				} break;
-				case 'dek': {
-					$content = $component['dek']['text'];
-				} break;
-			}
+		foreach($story['ctas'] as $component) {
+			$uri = $component['url'];
+			$story_type = $component['icon'];
 		}
 
 		$item = array();
-
-		$item['uri'] = $story['uri'];
-		$item['title'] = $title;
+		if(isset($story['description'])) {
+			$content = $story['description'];
+		}
+		$title = $story['title'];
+		$item['uri'] = $uri;
+		$item['title'] = $story['title'];
+		
 
 		// if full article is requested!
-		if ($this->getInput(self::PARAMETER_FULL_ARTICLE))
-			$item['content'] = $this->getFullArticle($item['uri']);
-		else
+		if ($this->getInput(self::PARAMETER_FULL_ARTICLE)) {
+			if($story_type == 'article') {	
+				/* Nat Geo doesn't provided much info about interactive page
+				*		and it requires JS to load the interactive.
+				*/
+				$article_data = $this->getFullArticle($item['uri']);
+				$item['timestamp'] = $article_data['published_date'];
+				$item['author'] = $article_data['authors'];
+				$item['content'] = $article_data['content'];
+			} else {
+				$item['content'] = $content;
+			}
+		} else
 			$item['content'] = $content;
 
-		if (isset($story['promo_image'])) {
-			switch($story['promo_image']['content_type']) {
-				case 'image': {
-					$item['enclosures'][] = $story['promo_image']['image']['uri'];
-				} break;
-			}
-		}
+		$image = $story['img'];
+		$item['enclosures'][] = $image['src'];
 
-		if (isset($story['lead_media'])) {
-			$media = $story['lead_media'];
-			switch($media['content_type']) {
-				case 'image': {
-					// Don't add if promo_image was added
-					if (empty($item['enclosures']))
-						$item['enclosures'][] = $media['image']['uri'];
-				} break;
-				case 'image_gallery': {
-					foreach($media['image_gallery']['images'] as $image) {
-						$item['enclosures'][] = $image['uri'];
-					}
-				} break;
-			}
+		$tags = $story['tags'];
+		foreach($tags as $tag) {
+			$item['categories'][] = $tag['name'];
 		}
 
 		$this->items[] = $item;
 	}
 
+	private function filterArticleData($data) {
+		
+		$article_module = array_filter(
+			$data, function ($item) {
+				if(isset($item['id']) && $item['id'] == 'natgeo-template1-frame-1') {
+					return true;
+				}
+			}
+		);
+	
+		$article_data = array_reduce(
+			$article_module,
+			function (array $carry, array $item) {
+				$module = $item['mods'];
+				return array_merge(
+					$carry,
+					array_filter(
+						$module, function ($data) {
+							return $data['id'] == 'natgeo-template1-frame-1-module-1';
+						}
+					)
+				);
+			},
+			array()
+		);
+
+		return $article_data[0];
+	}
+
+	private function handleImages($image_module) {
+		$image = $image_module['image'];
+		$image_src = $image['src'];
+		$image_alt = '';
+		$image_credit = '';
+		if(isset($image_module['alt'])) {
+			$image_alt = $image_module['alt'];
+		} elseif(isset($image['altText'])) {
+			$image_alt = $image['altText'];
+		}
+		if(isset($image['crdt'])) {
+			$image_credit = $image['crdt'];
+		}
+		$image_caption = $image_module['caption'] . " $image_credit. THIS IMAGE IS COPYRIGHTED. UNAUTHORIZED USE IS PROHIBITED.";	// Most images in Nat Geo page are copyrighted
+		$wrapper = <<<EOD
+<figure>
+<img src="{$image_src}" alt="{$image_alt}">
+<figcaption>$image_caption</figcaption>
+</figure>
+EOD;
+		return $wrapper;
+	}
+
+	private function handleGallery($image) {
+		$image_credit = $image['caption']['credit'];
+		$caption = $image['caption']['text'];
+		$image_src = $image['img']['src'];
+		$image_alt = $image['img']['altText'];
+		$image_caption = $caption . " $image_credit. THIS IMAGE IS COPYRIGHTED. UNAUTHORIZED USE IS PROHIBITED.";	// Most images in Nat Geo page are copyrighted
+		$wrapper = <<<EOD
+<figure>
+<img src="{$image_src}" alt="{$image_alt}">
+<figcaption>$image_caption</figcaption>
+</figure>
+EOD;
+		return $wrapper;
+	}
+
 	private function getFullArticle($uri) {
-		$html = getSimpleHTMLDOMCached($uri)
+		$html = getContents($uri)
 			or returnServerError('Could not load ' . $uri);
 
-		$html = defaultLinkTo($html, $uri);
+		$scriptRegex = '/window\[\'__natgeo__\'\]=(.*);<\/script>/';
 
+		preg_match($scriptRegex, $html, $matches, PREG_OFFSET_CAPTURE, 0);
+
+		$json = json_decode($matches[1][0], true);
+
+		$unfiltered_data = $json['page']['content']['article']['frms'];
+		$filtered_data = $this->filterArticleData($unfiltered_data);
+
+		$article = $filtered_data['edgs'][0];
+
+		$authors = $article['cntrbGrp'][0]['contributors'];
+
+		$authors_name = '';
+		$counter = 0;
+		foreach($authors as $author) {
+			$counter++;
+			if($counter == count($authors)) {
+				$authors_name .= $author['displayName'];
+			} else {
+				$authors_name .= $author['displayName'] . ', ';
+			}
+		}
+		
+		$published_date = $article['pbDt'];
+		$article_body = $article['bdy'];
 		$content = '';
 
-		foreach($html->find('
-			.content > .smartbody.text,
-			.content > .section.image script[type="text/json"],
-			.content > .section.image span[itemprop="caption"],
-			.content > .section.inline script[type="text/json"]
-			') as $element) {
-			if ($element->tag === 'script') {
-				$json = json_decode($element->innertext, true);
-				if (isset($json['src'])) {
-					$content .= '<img src="' . $json['src'] . '" width="100%" alt="' . $json['alt'] . '">';
-				} elseif (isset($json['galleryType']) && isset($json['endpoint'])) {
-					$doc = getContents($json['endpoint'])
-						or returnServerError('Could not load ' . $json['endpoint']);
-					$json = json_decode($doc, true);
-					foreach($json['items'] as $item) {
-						$content .= '<p>' . $item['caption'] . '</p>';
-						$content .= '<img src="' . $item['url'] . '" width="100%" alt="' . $item['caption'] . '">';
+		foreach($article_body as $body) {
+			switch($body['type']) {
+				case 'p':
+					$content .= '<p>' . $body['cntnt']['mrkup'] . '</p>';
+					break;
+				case 'h2':
+					$content .= '<h2>' . $body['cntnt']['mrkup'] . '</h2>';
+					break;
+				case 'inline':
+					$module = $body['cntnt'];
+					switch($module['cmsType']) {
+						case 'image':
+							$content .= $this->handleImages($module);
+							break;
+						case 'imagegroup':
+							$images = $module['images'];
+							foreach($images as $image) {
+								$content .= $this->handleImages($image);
+							}
+							break;
+						case 'editorsNote':
+							$content .= $module['note'];
+							break;
+						case 'listicle':
+							$content .= '<h2>'. $module['title'] . '</h2>';
+							$content .= '<p>'. $module['text'] . '</p>';
+							break;
+						case 'photogallery':
+							$gallery = $body['cntnt']['media'];
+							foreach($gallery as $image) {
+								$content .= $this->handleGallery($image);
+							}
+							break;
 					}
-				}
-			} else {
-				$content .= $element->outertext;
+					break;
+				case 'ul':
+					$content .= $body['cntnt']['mrkup'];
+					break;
 			}
 		}
 
-		return $content;
+		return array(
+			'content' => $content,
+			'published_date' => $published_date,
+			'authors' => $authors_name
+		);
 	}
 }
