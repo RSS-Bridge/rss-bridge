@@ -34,7 +34,9 @@ class NationalGeographicBridge extends BridgeAbstract {
 	);
 
 	private $topicName = '';
-	const CONTEXT = 'eyJjb250ZW50VHlwZSI6IlVuaXNvbkh1YiIsInZhcmlhYmxlcyI6eyJsb2NhdG9yIjoiL3BhZ2VzL3RvcGljL2xhdGVzdC1zdG9yaWVzIiwicG9ydGZvbGlvIjoibmF0Z2VvIiwicXVlcnlUeXBlIjoiTE9DQVRPUiJ9LCJtb2R1bGVJZCI6bnVsbH0';
+	const CONTEXT = 'eyJjb250ZW50VHlwZSI6IlVuaXNvbkh1YiIsInZhcmlhYmxlcyI6eyJsb2NhdG9yIjoiL3
+										BhZ2VzL3RvcGljL2xhdGVzdC1zdG9yaWVzIiwicG9ydGZvbGlvIjoibmF0Z2VvIiwicXVlcnl
+										UeXBlIjoiTE9DQVRPUiJ9LCJtb2R1bGVJZCI6bnVsbH0';
 	const LATEST_STORIES_ID = array(
 		'1df278bb-0e3d-4a67-a0ce-8fae48392822-f2-m1',
 		'1df278bb-0e3d-4a67-a0ce-8fae48392822-f2-m3'
@@ -102,7 +104,7 @@ class NationalGeographicBridge extends BridgeAbstract {
 
 			$json_raw = getContents($uri)
 					or returnServerError('Could not request ' . $uri);
-			
+
 			$json = json_decode($json_raw, true)['tiles'];
 			$stories = array_merge($json, $stories);
 		}
@@ -120,7 +122,7 @@ class NationalGeographicBridge extends BridgeAbstract {
 
 			$json_raw = getContents($uri)
 					or returnServerError('Could not request ' . $uri);
-			
+
 			$json = json_decode($json_raw, true)['tiles'];
 			$stories = array_merge($json, $stories);
 		}
@@ -148,7 +150,7 @@ class NationalGeographicBridge extends BridgeAbstract {
 		$title = $story['title'];
 		$item['uri'] = $uri;
 		$item['title'] = $story['title'];
-		
+
 
 		// if full article is requested!
 		if ($this->getInput(self::PARAMETER_FULL_ARTICLE)) {
@@ -186,7 +188,7 @@ class NationalGeographicBridge extends BridgeAbstract {
 				}
 			}
 		);
-	
+
 		$article_data = array_reduce(
 			$article_module,
 			function (array $carry, array $item) {
@@ -219,7 +221,8 @@ class NationalGeographicBridge extends BridgeAbstract {
 		if(isset($image['crdt'])) {
 			$image_credit = $image['crdt'];
 		}
-		$image_caption = $image_module['caption'] . " $image_credit. THIS IMAGE IS COPYRIGHTED. UNAUTHORIZED USE IS PROHIBITED.";	// Most images in Nat Geo page are copyrighted
+		$image_caption = $image_module['caption'] . " $image_credit. 
+						THIS IMAGE IS COPYRIGHTED. UNAUTHORIZED USE IS PROHIBITED.";	// Most images in Nat Geo page are copyrighted
 		$wrapper = <<<EOD
 <figure>
 <img src="{$image_src}" alt="{$image_alt}">
@@ -271,7 +274,7 @@ EOD;
 				$authors_name .= $author['displayName'] . ', ';
 			}
 		}
-		
+
 		$published_date = $article['pbDt'];
 		$article_body = $article['bdy'];
 		$content = '';
