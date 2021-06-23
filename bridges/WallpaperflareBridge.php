@@ -15,7 +15,7 @@ class WallpaperflareBridge extends XPathAbstract {
         ));
 
 
-	const CACHE_TIMEOUT = 3600;
+	const CACHE_TIMEOUT = 3600; //1 hour
 
 	const XPATH_EXPRESSION_ITEM = './/figure';
 	const XPATH_EXPRESSION_ITEM_TITLE = './/img/@title';
