@@ -151,10 +151,9 @@ class NationalGeographicBridge extends BridgeAbstract {
 		$item['uri'] = $uri;
 		$item['title'] = $story['title'];
 
-
 		// if full article is requested!
 		if ($this->getInput(self::PARAMETER_FULL_ARTICLE)) {
-			if($story_type == 'article') {	
+			if($story_type == 'article') {
 				/* Nat Geo doesn't provided much info about interactive page
 				*		and it requires JS to load the interactive.
 				*/
