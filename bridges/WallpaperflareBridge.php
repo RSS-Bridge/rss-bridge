@@ -25,7 +25,7 @@ class WallpaperflareBridge extends XPathAbstract {
 	const XPATH_EXPRESSION_ITEM_TIMESTAMP = 'N/A';
 	const XPATH_EXPRESSION_ITEM_ENCLOSURES = './/img[@class="lazy"]/@data-src';
 	const XPATH_EXPRESSION_ITEM_CATEGORIES = './/figcaption[@itemprop="caption description"]';
-	const SETTING_FIX_ENCODING = true;
+	const SETTING_FIX_ENCODING = false;
 
 	/**
 	 * Source Web page URL (should provide either HTML or XML content)
