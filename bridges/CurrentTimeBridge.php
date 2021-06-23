@@ -14,7 +14,7 @@ class CurrentTimeBridge extends XPathAbstract {
 	const XPATH_EXPRESSION_ITEM_URI = '.// *[@id="full-clk"]/@href';
 	const XPATH_EXPRESSION_ITEM_AUTHOR = '/html/body/div[6]/main/article/section[1]/div[2]/table/tbody/tr[2]/td/a';
 	const XPATH_EXPRESSION_ITEM_TIMESTAMP = '.// *[@id="ctdat"]';
-	const XPATH_EXPRESSION_ITEM_ENCLOSURES = '';
+	const XPATH_EXPRESSION_ITEM_ENCLOSURES = '/html/body/div[6]/main/article/section[1]/div[3]/a/img[1]/@src';
 	const XPATH_EXPRESSION_ITEM_CATEGORIES = '';
 	const SETTING_FIX_ENCODING = false;
 
