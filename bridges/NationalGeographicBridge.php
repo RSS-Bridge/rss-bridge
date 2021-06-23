@@ -179,7 +179,6 @@ class NationalGeographicBridge extends BridgeAbstract {
 	}
 
 	private function filterArticleData($data) {
-		
 		$article_module = array_filter(
 			$data, function ($item) {
 				if(isset($item['id']) && $item['id'] == 'natgeo-template1-frame-1') {
@@ -302,8 +301,8 @@ EOD;
 							$content .= $module['note'];
 							break;
 						case 'listicle':
-							$content .= '<h2>'. $module['title'] . '</h2>';
-							$content .= '<p>'. $module['text'] . '</p>';
+							$content .= '<h2>' . $module['title'] . '</h2>';
+							$content .= '<p>' . $module['text'] . '</p>';
 							break;
 						case 'photogallery':
 							$gallery = $body['cntnt']['media'];
