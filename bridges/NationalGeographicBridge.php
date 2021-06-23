@@ -59,15 +59,16 @@ class NationalGeographicBridge extends BridgeAbstract {
 	}
 
 	private function getAPIURL($id) {
+		$context = preg_replace('/\s*/m', '', self::CONTEXT);
 		$url = 'https://www.nationalgeographic.com/proxy/hub?context='
-						. self::CONTEXT . '&id=' . $id
+						. $context . '&id=' . $id
 						. '&moduleType=InfiniteFeedModule&_xhr=pageContent';
+		print_r($url);
 		return $url;
 	}
 
 	public function collectData() {
 		$this->topicName = $this->getTopicName($this->getInput(self::PARAMETER_TOPIC));
-
 		switch($this->topicName) {
 			case self::TOPIC_MAGAZINE: {
 				return $this->collectMagazine();
