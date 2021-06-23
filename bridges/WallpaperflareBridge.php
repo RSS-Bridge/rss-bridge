@@ -43,7 +43,7 @@ class WallpaperflareBridge extends XPathAbstract {
 
 
         public function getIcon() {
-                $feedicon = 'https://www.google.com/s2/favicons?domain=https://www.wallpaperflare.com/';
+                $feedicon = 'https://www.google.com/s2/favicons?domain=wallpaperflare.com/';
                 return $feedicon;
         }
 
