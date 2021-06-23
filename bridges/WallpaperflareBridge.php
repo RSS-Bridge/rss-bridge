@@ -22,7 +22,7 @@ class WallpaperflareBridge extends XPathAbstract {
 	const XPATH_EXPRESSION_ITEM_CONTENT = '';
 	const XPATH_EXPRESSION_ITEM_URI = './/a[@itemprop="url"]/@href';
 	const XPATH_EXPRESSION_ITEM_AUTHOR = '/html[1]/body[1]/main[1]/section[1]/h1[1]';
-	const XPATH_EXPRESSION_ITEM_TIMESTAMP = 'N/A';
+	const XPATH_EXPRESSION_ITEM_TIMESTAMP = '';
 	const XPATH_EXPRESSION_ITEM_ENCLOSURES = './/img/@data-src';
 	const XPATH_EXPRESSION_ITEM_CATEGORIES = './/figcaption[@itemprop="caption description"]';
 	const SETTING_FIX_ENCODING = false;
@@ -49,8 +49,13 @@ class WallpaperflareBridge extends XPathAbstract {
 
 
         public function getName() {
-			$search = $this->getInput('search');
-                        return 'Wallpaperflare ' . $search;
+                if(!is_null($this->getInput('search'))) {
+		$search = $this->getInput('search');
+               	        return 'Wallpaperflare - ' . $search;
+        		} else {
+                        return 'Wallpaperflare';
                 }
+
+	}
 
 }
