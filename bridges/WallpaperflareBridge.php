@@ -36,4 +36,8 @@ class WallpaperflareBridge extends XPathAbstract {
 		$search = $this->getInput('search');
 		return 'https://www.wallpaperflare.com/search?wallpaper=' . $search;
 	}
+        public function getIcon() {
+                $feedicon = 'https://www.google.com/s2/favicons?domain=https://www.wallpaperflare.com/';
+                return $feedicon;
+        }
 }
