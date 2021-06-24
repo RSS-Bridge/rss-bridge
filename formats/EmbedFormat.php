@@ -110,17 +110,4 @@ EOD;
 
 		return parent::display();
 	}
-
-	private function buildButton($format, $query) {
-		return <<<EOD
-<a href="./?{$query}"><button class="rss-feed">{$format}</button></a>
-EOD;
-	}
-
-	private function buildLink($format, $query, $mime) {
-		return <<<EOD
-<link href="./?{$query}" title="{$format}" rel="alternate" type="{$mime}">
-
-EOD;
-	}
 }
