@@ -47,11 +47,11 @@ class ProxyBridge extends FeedExpander {
 
 
 
-	public function getName() {
-		if(isset($feedname)) {
-			return '' . $this->$feedname;
-		} else {
-			return 'RSS Proxy';
-		}
-	}
+//	public function getName() {
+//		if(isset($feedname)) {
+//			return '' . $this->$feedname;
+//		} else {
+//			return 'RSS Proxy';
+//		}
+//	}
 }
