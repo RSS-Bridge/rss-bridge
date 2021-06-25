@@ -96,6 +96,13 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
  button:hover {
 	background: #49afff;
 }
+ button.highlight {
+	background: #ff6600;
+}
+ button.highlight:hover {
+	background: #ff8a3b;
+}
+
 
 @media screen and (max-width: 767px) {
 

@@ -6,6 +6,8 @@ class HtmlFormat extends FormatAbstract {
 		$extraInfos = $this->getExtraInfos();
 		$title = htmlspecialchars($extraInfos['name']);
 		$uri = htmlspecialchars($extraInfos['uri']);
+		$donationUri = htmlspecialchars($extraInfos['donationUri']);
+		$donationsAllowed = Configuration::getConfig('admin', 'donations');
 
 		// Dynamically build buttons for all formats (except HTML)
 		$formatFac = new FormatFactory();
@@ -24,6 +26,17 @@ class HtmlFormat extends FormatAbstract {
 
 			$mime = $formatFac->create($format)->getMimeType();
 			$links .= $this->buildLink($format, $query, $mime) . PHP_EOL;
+		}
+
+		if($donationUri !== '' && $donationsAllowed) {
+			$buttons .= '<a href="'
+						. $donationUri
+						. '" target="_blank"><button class="highlight">Donate to maintainer</button></a>'
+						. PHP_EOL;
+			$links .= '<link href="'
+						. $donationUri
+						. ' target="_blank"" title="Donate to Maintainer" rel="alternate">'
+						. PHP_EOL;
 		}
 
 		$entries = '';

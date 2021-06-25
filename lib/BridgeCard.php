@@ -301,6 +301,10 @@ This bridge is not fetching its content through a secure connection</div>';
 		$icon = $bridge->getIcon();
 		$description = $bridge->getDescription();
 		$parameters = $bridge->getParameters();
+		$donationUri = $bridge->getDonationURI();
+		$maintainer = $bridge->getMaintainer();
+
+		$donationsAllowed = Configuration::getConfig('admin', 'donations');
 
 		if(defined('PROXY_URL') && PROXY_BYBRIDGE) {
 			$parameters['global']['_noproxy'] = array(
@@ -332,7 +336,6 @@ CARD;
 		// Display form with cache timeout and/or noproxy options (if enabled) when bridge has no parameters
 		} else if (count($parameters) === 1 && array_key_exists('global', $parameters)) {
 			$card .= self::getForm($bridgeName, $formats, $isActive, $isHttps, '', $parameters['global']);
-
 		} else {
 
 			foreach($parameters as $parameterName => $parameter) {
@@ -351,7 +354,11 @@ CARD;
 		}
 
 		$card .= '<label class="showless" for="showmore-' . $bridgeName . '">Show less</label>';
-		$card .= '<p class="maintainer">' . $bridge->getMaintainer() . '</p>';
+		if($donationUri !== '' && $donationsAllowed) {
+			$card .= '<p class="maintainer">' . $maintainer . ' ~ <a href="' . $donationUri . '">Donate</a></p>';
+		} else {
+			$card .= '<p class="maintainer">' . $maintainer . '</p>';
+		}
 		$card .= '</section>';
 
 		return $card;
