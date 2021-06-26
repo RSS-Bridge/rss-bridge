@@ -21,8 +21,8 @@ class Drive2ruBridge extends BridgeAbstract {
 				'name' => 'Никнейм пользователя на сайте',
 				'type' => 'text',
 				'required' => true,
-				'title' => 'Например: username',
-				'exampleValue' => 'username'
+				'title' => 'Например: Mickey',
+				'exampleValue' => 'Mickey'
 			)
 		),
 		'Публикации по темам (Стоит почитать)' => array(
