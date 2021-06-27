@@ -115,8 +115,8 @@ class RedditBridge extends BridgeAbstract {
 		foreach ($subreddits as $subreddit) {
 			$name = trim($subreddit);
 			$values = getContents(self::URI . ($user ? '/user/' : '/r/')
-														. $name . ((!$user && $section != '') ? "/$section" : '') . '.json'
-														. (($user && $section != '') ? "?sort=$section" : ''))
+				. $name . ((!$user && $section != '') ? "/$section" : '') . '.json'
+				. (($user && $section != '') ? "?sort=$section" : ''))
 			or returnServerError('Unable to fetch posts!');
 			$decodedValues = json_decode($values);
 
