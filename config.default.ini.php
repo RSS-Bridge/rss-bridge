@@ -29,6 +29,13 @@ custom_timeout = false
 ; ""    = Disabled (default)
 email = ""
 
+[bridges]
+; Whitelist all bridges from the config or by environment variable.
+; This will overwrite bridges configured in the whitelist.txt file!
+; false    = disabled (default)
+; true     = enabled
+whitelistall = false
+
 [proxy]
 
 ; Sets the proxy url (i.e. "tcp://192.168.0.0:32")
