@@ -35,9 +35,9 @@ class NationalGeographicBridge extends BridgeAbstract {
 	);
 
 	private $topicName = '';
-	const CONTEXT = 'eyJjb250ZW50VHlwZSI6IlVuaXNvbkh1YiIsInZhcmlhYmxlcyI6eyJsb2NhdG9yIjoiL3'
-									.	'BhZ2VzL3RvcGljL2xhdGVzdC1zdG9yaWVzIiwicG9ydGZvbGlvIjoibmF0Z2VvIiwicXVlcnl'
-									.	'UeXBlIjoiTE9DQVRPUiJ9LCJtb2R1bGVJZCI6bnVsbH0';
+	const CONTEXT = 'eyJjb250ZW50VHlwZSI6IlVuaXNvbkh1YiIsInZhcmlhYmxlcyI6eyJsb2NhdG9yIjoiL3BhZ2VzL3
+			RvcGljL2xhdGVzdC1zdG9yaWVzIiwicG9ydGZvbGlvIjoibmF0Z2VvIiwicXVlcn
+			lUeXBlIjoiTE9DQVRPUiJ9LCJtb2R1bGVJZCI6bnVsbH0';
 	const LATEST_STORIES_ID = array(
 		'1df278bb-0e3d-4a67-a0ce-8fae48392822-f2-m1'
 	);
@@ -58,8 +58,9 @@ class NationalGeographicBridge extends BridgeAbstract {
 	}
 
 	private function getAPIURL($id) {
+		$context = preg_replace('/\s*/m', '', self::CONTEXT);
 		$url = 'https://www.nationalgeographic.com/proxy/hub?context='
-						. self::CONTEXT . '&id=' . $id
+						. $context . '&id=' . $id
 						. '&moduleType=InfiniteFeedModule&_xhr=pageContent';
 		return $url;
 	}
@@ -236,9 +237,9 @@ class NationalGeographicBridge extends BridgeAbstract {
 				$caption = $image_module['description'] . ' Video can be watched on the article\'s page';
 				$image = $image_module['image'];
 				$image_alt = $image['altText'];
-				$image_src = $image['src'];				
+				$image_src = $image['src'];	
 		}
-		
+
 		$image_caption = $caption . ' ' . $image_credit
 					. '. Notes: Some image may have copyrighted on it.';
 		$wrapper = <<<EOD
