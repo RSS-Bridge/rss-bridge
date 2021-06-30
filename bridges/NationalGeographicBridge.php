@@ -144,7 +144,7 @@ class NationalGeographicBridge extends BridgeAbstract {
 
 		$item = array();
 		if(isset($story['description'])) {
-			$content = $story['description'];
+			$content = '<p>' . $story['description'] . '</p>';
 		}
 		$title = $story['title'];
 		$item['uri'] = $uri;
@@ -159,7 +159,7 @@ class NationalGeographicBridge extends BridgeAbstract {
 				$article_data = $this->getFullArticle($item['uri']);
 				$item['timestamp'] = $article_data['published_date'];
 				$item['author'] = $article_data['authors'];
-				$item['content'] = $article_data['content'];
+				$item['content'] = $content . $article_data['content'];
 			} else {
 				$item['content'] = $content;
 			}
@@ -237,7 +237,7 @@ class NationalGeographicBridge extends BridgeAbstract {
 				$caption = $image_module['description'] . ' Video can be watched on the article\'s page';
 				$image = $image_module['image'];
 				$image_alt = $image['altText'];
-				$image_src = $image['src'];	
+				$image_src = $image['src'];
 		}
 
 		$image_caption = $caption . ' ' . $image_credit
