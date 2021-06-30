@@ -10,7 +10,7 @@ class ProxyBridge extends FeedExpander {
 					'name' => 'Feed URL',
 					'type' => 'text',
 					'required' => true,
-					'title' => 'Insert your feed URL | For working feedtitleoutput, use http or https',
+					'title' => 'Insert your feed URL | For working feedlinkoutput, use http or https',
 					'exampleValue' => 'https://myfeed.com'
 				)
 			)
