@@ -1,7 +1,5 @@
 <?php
-
 class WallpaperflareBridge extends XPathAbstract {
-
 	const NAME = 'Wallpaperflare';
 	const URI = 'https://wallpaperflare.com';
 	const DESCRIPTION = 'Wallpapers from Wallpaperflare';
@@ -10,13 +8,10 @@ class WallpaperflareBridge extends XPathAbstract {
 		'' => array(
 			'search' => array(
 				'name' => 'Search',
-	                        'required' => true
-                )
-        ));
-
-
+				'required' => true
+		)
+	));
 	const CACHE_TIMEOUT = 3600; //1 hour
-
 	const XPATH_EXPRESSION_ITEM = './/figure';
 	const XPATH_EXPRESSION_ITEM_TITLE = './/img/@title';
 	const XPATH_EXPRESSION_ITEM_CONTENT = '';
@@ -26,36 +21,20 @@ class WallpaperflareBridge extends XPathAbstract {
 	const XPATH_EXPRESSION_ITEM_ENCLOSURES = './/img/@data-src';
 	const XPATH_EXPRESSION_ITEM_CATEGORIES = './/figcaption[@itemprop="caption description"]';
 	const SETTING_FIX_ENCODING = false;
-
-	/**
-	 * Source Web page URL (should provide either HTML or XML content)
-	 * @return string
-	 */
 	protected function getSourceUrl(){
-
 		$search = $this->getInput('search');
 		return 'https://www.wallpaperflare.com/search?wallpaper=' . $search;
-
 	}
-
-
-
-
-
-        public function getIcon() {
-                $feedicon = 'https://www.google.com/s2/favicons?domain=wallpaperflare.com/';
-                return $feedicon;
-        }
-
-
-        public function getName() {
-                if(!is_null($this->getInput('search'))) {
+	public function getIcon() {
+		$feedicon = 'https://www.google.com/s2/favicons?domain=wallpaperflare.com/';
+		return $feedicon;
+	}
+	public function getName() {
+		if(!is_null($this->getInput('search'))) {
 		$search = $this->getInput('search');
-               	        return 'Wallpaperflare - ' . $search;
-        		} else {
-                        return 'Wallpaperflare';
-                }
-
+			return 'Wallpaperflare - ' . $search;
+			} else {
+			return 'Wallpaperflare';
+		}
 	}
-
 }
