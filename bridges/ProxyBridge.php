@@ -10,7 +10,7 @@ class ProxyBridge extends FeedExpander {
 					'name' => 'Feed URL',
 					'type' => 'text',
 					'required' => true,
-					'title' => 'Insert your feed URL',
+					'title' => 'Insert your feed URL | For working feedtitleoutput, use http or https',
 					'exampleValue' => 'https://myfeed.com'
 				)
 			)
@@ -31,11 +31,6 @@ class ProxyBridge extends FeedExpander {
 		$this->feedName(parent::getName());
 	}
 
-	public function getURI() {
-		return self::URI;
-	}
-
-
 
 
         public function getIcon() {
@@ -45,13 +40,14 @@ class ProxyBridge extends FeedExpander {
         }
 
 
+        public function getURI(){
+                $feed = $this->getInput('feed');
 
+                if(empty($feed)) {
+                        $feed = parent::getURI();
+                }
 
-//	public function getName() {
-//		if(isset($feedname)) {
-//			return '' . $this->$feedname;
-//		} else {
-//			return 'RSS Proxy';
-//		}
-//	}
+                return $feed;
+        }
+
 }
