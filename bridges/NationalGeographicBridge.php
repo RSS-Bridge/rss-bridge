@@ -6,6 +6,7 @@ class NationalGeographicBridge extends BridgeAbstract {
 	const PARAMETER_FULL_ARTICLE = 'full';
 	const TOPIC_MAGAZINE = 'Magazine';
 	const TOPIC_LATEST_STORIES = 'Latest Stories';
+	const CACHE_TIMEOUT = 900; //15 min
 
 	const NAME = 'National Geographic';
 	const URI = 'https://www.nationalgeographic.com/';
@@ -34,17 +35,15 @@ class NationalGeographicBridge extends BridgeAbstract {
 	);
 
 	private $topicName = '';
-	const CONTEXT = 'eyJjb250ZW50VHlwZSI6IlVuaXNvbkh1YiIsInZhcmlhYmxlcyI6eyJsb2NhdG9yIjoiL3
-										BhZ2VzL3RvcGljL2xhdGVzdC1zdG9yaWVzIiwicG9ydGZvbGlvIjoibmF0Z2VvIiwicXVlcnl
-										UeXBlIjoiTE9DQVRPUiJ9LCJtb2R1bGVJZCI6bnVsbH0';
+	const CONTEXT = 'eyJjb250ZW50VHlwZSI6IlVuaXNvbkh1YiIsInZhcmlhYmxlcyI6eyJsb2NhdG9yIjoiL3'
+									.	'BhZ2VzL3RvcGljL2xhdGVzdC1zdG9yaWVzIiwicG9ydGZvbGlvIjoibmF0Z2VvIiwicXVlcnl'
+									.	'UeXBlIjoiTE9DQVRPUiJ9LCJtb2R1bGVJZCI6bnVsbH0';
 	const LATEST_STORIES_ID = array(
-		'1df278bb-0e3d-4a67-a0ce-8fae48392822-f2-m1',
-		'1df278bb-0e3d-4a67-a0ce-8fae48392822-f2-m3'
+		'1df278bb-0e3d-4a67-a0ce-8fae48392822-f2-m1'
 	);
 	const MAGAZINE_ID = array(
 		'94d87d74-f41a-4a32-9acd-b591ba2df288-f2-m1',
 		'94d87d74-f41a-4a32-9acd-b591ba2df288-f5-m2',
-		'db6d8778-4907-4154-9c14-b7174b646bd2'
 	);
 
 	public function getURI() {
@@ -59,9 +58,8 @@ class NationalGeographicBridge extends BridgeAbstract {
 	}
 
 	private function getAPIURL($id) {
-		$context = preg_replace('/\s*/m', '', self::CONTEXT);
 		$url = 'https://www.nationalgeographic.com/proxy/hub?context='
-						. $context . '&id=' . $id
+						. self::CONTEXT . '&id=' . $id
 						. '&moduleType=InfiniteFeedModule&_xhr=pageContent';
 		return $url;
 	}
@@ -124,7 +122,7 @@ class NationalGeographicBridge extends BridgeAbstract {
 					or returnServerError('Could not request ' . $uri);
 
 			$json = json_decode($json_raw, true)['tiles'];
-			$stories = array_merge($json, $stories);
+			$stories = array_merge($stories, $json);
 		}
 
 		foreach($stories as $story) {
@@ -153,7 +151,7 @@ class NationalGeographicBridge extends BridgeAbstract {
 
 		// if full article is requested!
 		if ($this->getInput(self::PARAMETER_FULL_ARTICLE)) {
-			if($story_type == 'article') {
+			if($story_type != 'interactive') {
 				/* Nat Geo doesn't provided much info about interactive page
 				*		and it requires JS to load the interactive.
 				*/
@@ -206,36 +204,43 @@ class NationalGeographicBridge extends BridgeAbstract {
 		return $article_data[0];
 	}
 
-	private function handleImages($image_module) {
-		$image = $image_module['image'];
-		$image_src = $image['src'];
+	private function handleImages($image_module, $image_type) {
 		$image_alt = '';
 		$image_credit = '';
-		if(isset($image_module['alt'])) {
-			$image_alt = $image_module['alt'];
-		} elseif(isset($image['altText'])) {
-			$image_alt = $image['altText'];
+		$image_src = '';
+		$image_caption = '';
+		$caption = '';
+		switch($image_type) {
+			case 'image':
+			case 'imagegroup':
+				$image = $image_module['image'];
+				$image_src = $image['src'];
+				if(isset($image_module['alt'])) {
+					$image_alt = $image_module['alt'];
+				} elseif(isset($image['altText'])) {
+					$image_alt = $image['altText'];
+				}
+				if(isset($image['crdt'])) {
+					$image_credit = $image['crdt'];
+				}
+				$caption = $image_module['caption'];
+				break;
+			case 'photogallery':
+				$image_credit = $image_module['caption']['credit'];
+				$caption = $image_module['caption']['text'];
+				$image_src = $image_module['img']['src'];
+				$image_alt = $image_module['img']['altText'];
+				break;
+			case 'video':
+				$image_credit = $image_module['credit'];
+				$caption = $image_module['description'] . ' Video can be watched on the article\'s page';
+				$image = $image_module['image'];
+				$image_alt = $image['altText'];
+				$image_src = $image['src'];				
 		}
-		if(isset($image['crdt'])) {
-			$image_credit = $image['crdt'];
-		}
-		$image_caption = $image_module['caption'] . " $image_credit. 
-						THIS IMAGE IS COPYRIGHTED. UNAUTHORIZED USE IS PROHIBITED.";	// Most images in Nat Geo page are copyrighted
-		$wrapper = <<<EOD
-<figure>
-<img src="{$image_src}" alt="{$image_alt}">
-<figcaption>$image_caption</figcaption>
-</figure>
-EOD;
-		return $wrapper;
-	}
-
-	private function handleGallery($image) {
-		$image_credit = $image['caption']['credit'];
-		$caption = $image['caption']['text'];
-		$image_src = $image['img']['src'];
-		$image_alt = $image['img']['altText'];
-		$image_caption = $caption . " $image_credit. THIS IMAGE IS COPYRIGHTED. UNAUTHORIZED USE IS PROHIBITED.";	// Most images in Nat Geo page are copyrighted
+		
+		$image_caption = $caption . ' ' . $image_credit
+					. '. Notes: Some image may have copyrighted on it.';
 		$wrapper = <<<EOD
 <figure>
 <img src="{$image_src}" alt="{$image_alt}">
@@ -289,12 +294,12 @@ EOD;
 					$module = $body['cntnt'];
 					switch($module['cmsType']) {
 						case 'image':
-							$content .= $this->handleImages($module);
+							$content .= $this->handleImages($module, $module['cmsType']);
 							break;
 						case 'imagegroup':
 							$images = $module['images'];
 							foreach($images as $image) {
-								$content .= $this->handleImages($image);
+								$content .= $this->handleImages($image, $module['cmsType']);
 							}
 							break;
 						case 'editorsNote':
@@ -302,18 +307,39 @@ EOD;
 							break;
 						case 'listicle':
 							$content .= '<h2>' . $module['title'] . '</h2>';
+							if(isset($module['image'])) {
+								$content .= $this->handleImages($module['image'], $module['image']['cmsType']);
+							}
 							$content .= '<p>' . $module['text'] . '</p>';
 							break;
 						case 'photogallery':
 							$gallery = $body['cntnt']['media'];
 							foreach($gallery as $image) {
-								$content .= $this->handleGallery($image);
+								$content .= $this->handleImages($image, $module['cmsType']);
 							}
+							break;
+						case 'video':
+							$content .= $this->handleImages($module, $module['cmsType']);
+							break;
+						case 'pullquote';
+							$quote = $module['quote'];
+							$author_name = '';
+							foreach($module['byLineProps']['authors'] as $author) {
+								$author_name .= $author['displayName'] . ', ' . $author['authorDesc'];
+							}
+							$content .= <<<EOD
+<figure>
+<blockquote>
+<p>$quote</p>
+</blockquote>
+<figcaption>$author_name</figcaption>
+</figure>
+EOD;
 							break;
 					}
 					break;
 				case 'ul':
-					$content .= $body['cntnt']['mrkup'];
+					$content .= $body['cntnt']['mrkup'] . '<hr>';
 					break;
 			}
 		}
