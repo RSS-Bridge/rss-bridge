@@ -21,14 +21,17 @@ class WallpaperflareBridge extends XPathAbstract {
 	const XPATH_EXPRESSION_ITEM_ENCLOSURES = './/img/@data-src';
 	const XPATH_EXPRESSION_ITEM_CATEGORIES = './/figcaption[@itemprop="caption description"]';
 	const SETTING_FIX_ENCODING = false;
+
 	protected function getSourceUrl(){
 		$search = $this->getInput('search');
 		return 'https://www.wallpaperflare.com/search?wallpaper=' . $search;
 	}
+
 	public function getIcon() {
 		$feedicon = 'https://www.google.com/s2/favicons?domain=wallpaperflare.com/';
 		return $feedicon;
 	}
+
 	public function getName() {
 		if(!is_null($this->getInput('search'))) {
 		$search = $this->getInput('search');
