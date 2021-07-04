@@ -14,7 +14,15 @@ class SpottschauBridge extends BridgeAbstract {
 		$item = array();
 		$item['uri'] = urljoin(self::URI, $html->find('div.strip>a', 0)->attr['href']);
 		$item['title'] = $html->find('div.text>h2', 0)->innertext;
-		$item['timestamp'] = $item['title'];
+
+		$date = preg_replace('/.*, /', '', $item['title']);
+		$date = preg_replace('/\\d\\d\\.\\//', '', $date);
+		try {
+			$item['timestamp'] = DateTime::createFromFormat('d.m.y', $date)
+				->setTimezone(new DateTimeZone('Europe/Berlin'))
+				->setTime(0, 0)
+				->getTimestamp();
+		} catch (Throwable $ignored) {}
 
 		$image = $html->find('div.strip>a>img', 0);
 		$imageUrl = urljoin(self::URI, $image->attr['src']);
