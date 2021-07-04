@@ -9,16 +9,15 @@ class SpottschauBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 3600; // 1 hour
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Could not request: ' . self::URI);
+		$html = getSimpleHTMLDOM(self::URI);
 
 		$item = array();
-		$item['uri'] = self::URI . $html->find('div.strip>a', 0)->attr['href'];
+		$item['uri'] = urljoin(self::URI, $html->find('div.strip>a', 0)->attr['href']);
 		$item['title'] = $html->find('div.text>h2', 0)->innertext;
 		$item['timestamp'] = $item['title'];
 
 		$image = $html->find('div.strip>a>img', 0);
-		$imageUrl = self::URI . $image->attr['src'];
+		$imageUrl = urljoin(self::URI, $image->attr['src']);
 		$imageAlt = $image->attr['alt'];
 
 		$item['content'] = <<<EOD
