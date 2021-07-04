@@ -16,14 +16,13 @@ class NikonDownloadCenterBridge extends BridgeAbstract {
 	}
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request: ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		foreach ($html->find('dd>ul>li') as $element) {
 			$date        = $element->find('.date', 0)->plaintext;
 			$productType = $element->find('.icon>img', 0)->alt;
 			$desc        = $element->find('p>a', 0)->plaintext;
-			$link        = self::URI . $element->find('p>a', 0)->href;
+			$link        = urljoin(self::URI, $element->find('p>a', 0)->href);
 
 			$item = array(
 				'title'     => $desc,
@@ -37,7 +36,7 @@ class NikonDownloadCenterBridge extends BridgeAbstract {
 <p>
  {$date}
 </p>
-EOD,
+EOD
 			);
 			$this->items[] = $item;
 		}
