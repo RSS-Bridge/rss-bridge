@@ -2,7 +2,7 @@
 class WallpaperflareBridge extends XPathAbstract {
 	const NAME = 'Wallpaperflare';
 	const URI = 'https://wallpaperflare.com';
-	const DESCRIPTION = 'Wallpapers from Wallpaperflare';
+	const DESCRIPTION = 'Wallpaperflare is a provider for Wallpapers on nearly every topic, especially for Anime';
 	const MAINTAINER = 'dhuschde';
 	const PARAMETERS = array(
 		'' => array(
