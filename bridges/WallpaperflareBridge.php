@@ -23,13 +23,11 @@ class WallpaperflareBridge extends XPathAbstract {
 	const SETTING_FIX_ENCODING = false;
 
 	protected function getSourceUrl(){
-		$search = $this->getInput('search');
-		return 'https://www.wallpaperflare.com/search?wallpaper=' . $search;
+		$search = $this->getInput('search'); return 'https://www.wallpaperflare.com/search?wallpaper=' . $search;
 	}
 
 	public function getIcon() {
-		$feedicon = 'https://www.google.com/s2/favicons?domain=wallpaperflare.com/';
-		return $feedicon;
+		$feedicon = 'https://www.google.com/s2/favicons?domain=wallpaperflare.com/'; return $feedicon;
 	}
 
 	public function getName() {
