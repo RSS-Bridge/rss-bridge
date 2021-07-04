@@ -32,8 +32,7 @@ class WallpaperflareBridge extends XPathAbstract {
 
 	public function getName() {
 		if(!is_null($this->getInput('search'))) {
-		$search = $this->getInput('search');
-			return 'Wallpaperflare - ' . $search;
+			$search = $this->getInput('search'); return 'Wallpaperflare - ' . $search;
 			} else {
 			return 'Wallpaperflare';
 		}
