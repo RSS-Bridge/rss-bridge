@@ -41,5 +41,4 @@ EOD
 			$this->items[] = $item;
 		}
 	}
-
 }
