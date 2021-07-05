@@ -91,7 +91,6 @@ EOD;
 	<meta name="robots" content="noindex, follow">
 </head>
 <body>
-	<h1 class="pagetitle"><a href="{$uri}" target="_blank">{$title}</a></h1>
 {$entries}
 </body>
 </html>
