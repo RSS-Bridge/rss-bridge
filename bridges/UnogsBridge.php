@@ -122,11 +122,11 @@ class UnogsBridge extends BridgeAbstract {
 		$unogs_url = self::URI . '/title/' . $netflix_id;
 
 		$item['content'] = <<<EOD
-	<img src={$image_url}>
-	$expired_warning
-	<p>$netflix_synopsis</p>
-	<p>Details: <a href={$unogs_url}>$unogs_url</a></p>
-	EOD;
+<img src={$image_url}>
+$expired_warning
+<p>$netflix_synopsis</p>
+<p>Details: <a href={$unogs_url}>$unogs_url</a></p>
+EOD;
 		$this->items[] = $item;
 	}
 
