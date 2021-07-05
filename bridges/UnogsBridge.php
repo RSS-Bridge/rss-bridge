@@ -23,8 +23,8 @@ class UnogsBridge extends BridgeAbstract {
 		'Country' => array(
 			'country_code' => array(
 				'name' => 'Country',
-        'type' => 'list',
-        'title' => 'Choose your preferred country',
+				'type' => 'list',
+				'title' => 'Choose your preferred country',
 				'values' => array(
 					'Argentina' => 21,
 					'Australia' => 23,
