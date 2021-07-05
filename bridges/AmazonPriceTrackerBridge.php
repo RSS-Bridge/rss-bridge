@@ -1,7 +1,7 @@
 <?php
 
 class AmazonPriceTrackerBridge extends BridgeAbstract {
-	const MAINTAINER = 'captn3m0';
+	const MAINTAINER = 'captn3m0, sal0max';
 	const NAME = 'Amazon Price Tracker';
 	const URI = 'https://www.amazon.com/';
 	const CACHE_TIMEOUT = 3600; // 1h
@@ -147,13 +147,17 @@ EOT;
 
 	private function scrapePriceGeneric($html) {
 		$priceDiv = $html->find('span.offer-price', 0) ?: $html->find('.a-color-price', 0);
+		$priceString = $priceDiv->plaintext;
 
-		preg_match('/^\s*([A-Z]{3}|£|\$)\s?([\d.,]+)\s*$/', $priceDiv->plaintext, $matches);
+		preg_match('/[\d.,]+/', $priceString, $matches);
 
-		if (count($matches) === 3) {
+		$price = $matches[0];
+		$currency = trim(str_replace($price, '', $priceString));
+
+		if ($price != null && $currency != null) {
 			return array(
-				'price' 	=> $matches[2],
-				'currency'	=> $matches[1],
+				'price' 	=> $price,
+				'currency'	=> $currency,
 				'shipping'	=> '0'
 			);
 		}
