@@ -107,6 +107,7 @@ class UnogsBridge extends BridgeAbstract {
 	}
 
 	private function handleData($data) {
+
 		$item = array();
 		$item['title'] = $data['title'] . ' - ' . $data['year'];
 		$item['timestamp'] = $data['titledate'];
@@ -159,4 +160,5 @@ class UnogsBridge extends BridgeAbstract {
 			$this->handleData($movie);
 		}
 	}
+	
 }
