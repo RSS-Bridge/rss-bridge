@@ -149,7 +149,7 @@ EOD;
 		if($this->getInput('feed') == 'expiring') {
 			/*  uNoGS API returns movies/series that going to remove
 			*   today according to the day you fetch the data.
-			*   They put items that going to remove in the future on the last 
+			*   They put items that going to remove in the future on the last
 			*   so I reverse this to get those items, not to bothers those that already removed today.
 			*/
 			$movies = array_reverse($movies);
