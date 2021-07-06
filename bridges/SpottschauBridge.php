@@ -22,7 +22,9 @@ class SpottschauBridge extends BridgeAbstract {
 				->setTimezone(new DateTimeZone('Europe/Berlin'))
 				->setTime(0, 0)
 				->getTimestamp();
-		} catch (Throwable $ignored) {}
+		} catch (Throwable $ignored) {
+			$item['timestamp'] = null;
+		}
 
 		$image = $html->find('div.strip>a>img', 0);
 		$imageUrl = urljoin(self::URI, $image->attr['src']);
