@@ -15,39 +15,12 @@ class ProxyBridge extends FeedExpander {
 				)
 			)
 		);
-		public $feedname = '';
-
-		private function feedName($f){
-			$this->$feedname = $this->$feedname . ' / ' . $f;
-		}
-
-	protected function parseItem($item){
-		$item = parent::parseItem($item);
-		return $item;
-	}
 
 	public function collectData(){
-		$this->collectExpandableDatas($this->getInput('feed'));
-		$this->feedName(parent::getName());
+		$feed = $this->getInput('feed'); $this->collectExpandableDatas($feed);
 	}
 
-
-
-        public function getIcon() {
-		$feed = $this->getInput('feed');
-                $feedicon = 'https://www.google.com/s2/favicons?domain=' . $feed;
-                return $feedicon;
-        }
-
-
-        public function getURI(){
-                $feed = $this->getInput('feed');
-
-                if(empty($feed)) {
-                        $feed = parent::getURI();
-                }
-
-                return $feed;
-        }
-
+	public function getIcon() {
+		$feed = $this->getInput('feed'); $feedicon = 'https://www.google.com/s2/favicons?domain=' . $feed; return $feedicon;
+	}
 }
