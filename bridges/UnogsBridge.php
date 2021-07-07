@@ -92,8 +92,7 @@ class UnogsBridge extends BridgeAbstract {
 			'referrer: http://unogs.com'
 		);
 
-		$raw = getContents($url, $header)
-				or returnServerError('Unable to get data from uNoGS');
+		$raw = getContents($url, $header);
 		return json_decode($raw, true);
 	}
 
