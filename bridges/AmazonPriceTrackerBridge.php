@@ -40,6 +40,13 @@ class AmazonPriceTrackerBridge extends BridgeAbstract {
 		),
 	));
 
+	const PRICE_SELECTORS = [
+		'#newBuyBoxPrice',
+		'#tp_price_block_total_price_ww',
+		'span.offer-price',
+		'.a-color-price',
+	];
+
 	protected $title;
 
 	/**
@@ -54,7 +61,7 @@ class AmazonPriceTrackerBridge extends BridgeAbstract {
 	 */
 	public function getURI() {
 		if (!is_null($this->getInput('asin'))) {
-			return $this->getDomainName() . '/dp/' . $this->getInput('asin') . '/';
+			return $this->getDomainName() . '/dp/' . $this->getInput('asin');
 		}
 		return parent::getURI();
 	}
@@ -146,7 +153,19 @@ EOT;
 	}
 
 	private function scrapePriceGeneric($html) {
-		$priceDiv = $html->find('span.offer-price', 0) ?: $html->find('.a-color-price', 0);
+		$priceDiv = null;
+
+		foreach(self::PRICE_SELECTORS as $sel) {
+			$priceDiv = $html->find($sel, 0);
+			if ($priceDiv) {
+				break;
+			}
+		}
+
+		if (!$priceDiv) {
+			return false;
+		}
+
 		$priceString = $priceDiv->plaintext;
 
 		preg_match('/[\d.,]+/', $priceString, $matches);
@@ -170,7 +189,9 @@ EOT;
 	 * @return [type] [description]
 	 */
 	public function collectData() {
-		$html = $this->getHtml();
+		// $html = $this->getHtml();
+		$html = str_get_html(file_get_contents('/tmp/a.html'));
+
 		$this->title = $this->getTitle($html);
 		$imageTag = $this->getImage($html);
 
@@ -180,6 +201,8 @@ EOT;
 			'title' 	=> $this->title,
 			'uri' 		=> $this->getURI(),
 			'content' 	=> "$imageTag<br/>Price: {$data['price']} {$data['currency']}",
+			// This is to ensure that feed readers notice the price change
+			'uid'		=> md5($data['price'])
 		);
 
 		if ($data['shipping'] !== '0') {
