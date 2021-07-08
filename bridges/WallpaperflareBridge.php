@@ -23,18 +23,18 @@ class WallpaperflareBridge extends XPathAbstract {
 	const SETTING_FIX_ENCODING = false;
 
 	protected function getSourceUrl(){
-		$search = $this->getInput('search'); return 'https://www.wallpaperflare.com/search?wallpaper=' . $search;
+		return 'https://www.wallpaperflare.com/search?wallpaper=' . $this->getInput('search');
 	}
 
 	public function getIcon() {
-		$feedicon = 'https://www.google.com/s2/favicons?domain=wallpaperflare.com/'; return $feedicon;
+		return 'https://www.google.com/s2/favicons?domain=wallpaperflare.com/';
 	}
 
 	public function getName() {
 		if(!is_null($this->getInput('search'))) {
-			$search = $this->getInput('search'); return 'Wallpaperflare - ' . $search;
-			} else {
-			return 'Wallpaperflare';
+		return 'Wallpaperflare - ' . $this->getInput('search');
+		} else {
+		return 'Wallpaperflare';
 		}
 	}
 }
