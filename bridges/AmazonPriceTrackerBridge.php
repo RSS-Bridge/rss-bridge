@@ -146,13 +146,13 @@ EOT;
 	}
 
 	private function scrapePriceGeneric($html) {
-		$priceDiv = $html->find('span.offer-price', 0) ?: $html->find('.a-color-price', 0);
+		$priceDiv = $html->find('#priceblock_ourprice', 0) ?: $html->find('.priceBlockBuyingPriceString', 0);
 		$priceString = $priceDiv->plaintext;
 
 		preg_match('/[\d.,]+/', $priceString, $matches);
 
 		$price = $matches[0];
-		$currency = trim(str_replace($price, '', $priceString));
+		$currency = trim(str_replace($price, '', $priceString), " \t\n\r\0\x0B\xC2\xA0");
 
 		if ($price != null && $currency != null) {
 			return array(
