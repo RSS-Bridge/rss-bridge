@@ -40,12 +40,14 @@ class AmazonPriceTrackerBridge extends BridgeAbstract {
 		),
 	));
 
-	const PRICE_SELECTORS = [
+	const PRICE_SELECTORS = array(
+		'#priceblock_ourprice',
+		'.priceBlockBuyingPriceString',
 		'#newBuyBoxPrice',
 		'#tp_price_block_total_price_ww',
 		'span.offer-price',
 		'.a-color-price',
-	];
+	);
 
 	protected $title;
 
@@ -171,7 +173,7 @@ EOT;
 		preg_match('/[\d.,]+/', $priceString, $matches);
 
 		$price = $matches[0];
-		$currency = trim(str_replace($price, '', $priceString));
+		$currency = trim(str_replace($price, '', $priceString), " \t\n\r\0\x0B\xC2\xA0");
 
 		if ($price != null && $currency != null) {
 			return array(
@@ -189,9 +191,7 @@ EOT;
 	 * @return [type] [description]
 	 */
 	public function collectData() {
-		// $html = $this->getHtml();
-		$html = str_get_html(file_get_contents('/tmp/a.html'));
-
+		$html = $this->getHtml();
 		$this->title = $this->getTitle($html);
 		$imageTag = $this->getImage($html);
 
