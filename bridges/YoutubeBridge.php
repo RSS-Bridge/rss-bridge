@@ -77,7 +77,6 @@ class YoutubeBridge extends BridgeAbstract {
 		if(!is_null($elDatePublished))
 			$time = strtotime($elDatePublished->getAttribute('content'));
 
-		
 		$jsonData = $this->getJSONData($html);
 		$jsonData = $jsonData->contents->twoColumnWatchNextResults->results->results->contents;
 
@@ -244,7 +243,7 @@ class YoutubeBridge extends BridgeAbstract {
 				$wrapper = $item->gridVideoRenderer;
 			} elseif(isset($item->videoRenderer)) {
 				$wrapper = $item->videoRenderer;
-			} else 
+			} else
 				continue;
 
 			$vid = $wrapper->videoId;
@@ -279,7 +278,7 @@ class YoutubeBridge extends BridgeAbstract {
 
 			$this->ytBridgeQueryVideoInfo($vid, $author, $desc, $time);
 			$this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
-		}		
+		}
 	}
 
 	public function collectData(){
