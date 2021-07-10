@@ -58,7 +58,7 @@ class YoutubeBridge extends BridgeAbstract {
 	);
 
 	private $feedName = '';
-	private $feeduri = '';
+	private $feeduri = self::URI;
 
 	private function ytBridgeQueryVideoInfo($vid, &$author, &$desc, &$time){
 		$html = $this->ytGetSimpleHTMLDOM(self::URI . "watch?v=$vid", true);
@@ -359,6 +359,7 @@ class YoutubeBridge extends BridgeAbstract {
 			} else {
 				$this->parseJsonPlaylist($jsonData);
 			}
+			$this->feeduri = $url_listing;
 			$this->feedName = 'Playlist: ' . str_replace(' - YouTube', '', $html->find('title', 0)->plaintext); // feedName will be used by getName()
 			usort($this->items, function ($item1, $item2) {
 				return $item2['timestamp'] - $item1['timestamp'];
@@ -397,13 +398,7 @@ class YoutubeBridge extends BridgeAbstract {
 
 	public function getURI()
 	{
-		if (!is_null($this->getInput('p'))) {
-			return static::URI . 'playlist?list=' . $this->getInput('p');
-		} elseif(!is_null($this->feeduri)) {
-			return $this->feeduri;
-		}
-
-		return parent::getURI();
+		return $this->feed_uri;
 	}
 
 	public function getName(){
