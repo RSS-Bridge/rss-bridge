@@ -58,7 +58,7 @@ class YoutubeBridge extends BridgeAbstract {
 	);
 
 	private $feedName = '';
-	private $feeduri = '';
+	private $feeduri = null;
 
 	private function ytBridgeQueryVideoInfo($vid, &$author, &$desc, &$time){
 		$html = $this->ytGetSimpleHTMLDOM(self::URI . "watch?v=$vid", true);
