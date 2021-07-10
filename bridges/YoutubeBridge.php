@@ -58,7 +58,7 @@ class YoutubeBridge extends BridgeAbstract {
 	);
 
 	private $feedName = '';
-	private $feeduri = null;
+	private $feeduri = '';
 
 	private function ytBridgeQueryVideoInfo($vid, &$author, &$desc, &$time){
 		$html = $this->ytGetSimpleHTMLDOM(self::URI . "watch?v=$vid", true);
@@ -262,14 +262,18 @@ class YoutubeBridge extends BridgeAbstract {
 			} else {
 				foreach($wrapper->thumbnailOverlays as $overlay) {
 					if(isset($overlay->thumbnailOverlayTimeStatusRenderer)) {
-						$durationText = $wrapper->thumbnailOverlays[0]->thumbnailOverlayTimeStatusRenderer->text;
+						$durationText = $overlay->thumbnailOverlayTimeStatusRenderer->text;
 						break;
 					}
 				}
 			}
 
 			$durationText = trim($durationText->simpleText);
-			$durationText = preg_replace('/([\d]{1,2})\:([\d]{2})/', '00:$1:$2', $durationText);
+			if(preg_match('/([\d]{1,2}):([\d]{1,2})\:([\d]{2})/', $durationText)) {
+				$durationText = preg_replace('/([\d]{1,2}):([\d]{1,2})\:([\d]{2})/', '$1:$2:$3', $durationText);
+			} else {
+				$durationText = preg_replace('/([\d]{1,2})\:([\d]{2})/', '00:$1:$2', $durationText);
+			}
 			sscanf($durationText, '%d:%d:%d', $hours, $minutes, $seconds);
 			$duration = $hours * 3600 + $minutes * 60 + $seconds;
 			if($duration < $duration_min || $duration > $duration_max) {
@@ -398,7 +402,7 @@ class YoutubeBridge extends BridgeAbstract {
 	{
 		if (!is_null($this->getInput('p'))) {
 			return static::URI . 'playlist?list=' . $this->getInput('p');
-		} elseif(!is_null($this->feeduri)) {
+		} elseif($this->feeduri) {
 			return $this->feeduri;
 		}
 
