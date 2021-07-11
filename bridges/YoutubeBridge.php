@@ -96,7 +96,7 @@ class YoutubeBridge extends BridgeAbstract {
 				if(isset($description->navigationEndpoint->urlEndpoint)) {
 					$url = $description->navigationEndpoint->urlEndpoint->url;
 					$url_components = parse_url($url);
-					if(isset($url_components['query'])) {
+					if(isset($url_components['query']) && strpos($url_components['query'], '&q=') !== false) {
 						parse_str($url_components['query'], $params);
 						$url = urldecode($params['q']);
 					}
