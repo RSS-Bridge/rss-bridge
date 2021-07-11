@@ -330,7 +330,7 @@ class YoutubeBridge extends BridgeAbstract {
 					// Bridge immediately find its user page (/user/nasa) and then nothing happen.
 					// Digging into the data, it appear it's another account, not from NASA itself.
 					// If you use feed, it works normally cause it already raise 404 error
-					if(!isset($jsonData->content)) {	
+					if(!isset($jsonData->content)) {
 						returnServerError('');	// Throw an empty one to trigger try catch
 					}
 				}
@@ -344,7 +344,7 @@ class YoutubeBridge extends BridgeAbstract {
 			if(!$this->skipFeeds()) {
 				return $this->ytBridgeParseXmlFeed($xml);
 			}
-			
+
 			if(isset($jsonData->contents)) {
 				$jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[1];
 				$jsonData = $jsonData->tabRenderer->content->sectionListRenderer->contents[0];
