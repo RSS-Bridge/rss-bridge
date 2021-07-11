@@ -100,7 +100,7 @@ class YoutubeBridge extends BridgeAbstract {
 						parse_str($url_components['query'], $params);
 						$url = urldecode($params['q']);
 					}
-					$desc .= "<a href=\"$url\">$description->text</a>";
+					$desc .= "<a href=\"$url\" target=\"_blank\">$description->text</a>";
 				} else {
 					$desc .= nl2br($description->text);
 				}
