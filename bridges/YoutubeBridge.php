@@ -93,7 +93,17 @@ class YoutubeBridge extends BridgeAbstract {
 
 		if(isset($videoSecondaryInfo->description)) {
 			foreach($videoSecondaryInfo->description->runs as $description) {
-				$desc .= nl2br($description->text);
+				if(isset($description->navigationEndpoint->urlEndpoint)) {
+					$url = $description->navigationEndpoint->urlEndpoint->url;
+					$url_components = parse_url($url);
+					if(isset($url_components['query'])) {
+						parse_str($url_components['query'], $params);
+						$url = urldecode($params['q']);
+					}
+					$desc .= "<a href=\"$url\">$description->text</a>";
+				} else {
+					$desc .= nl2br($description->text);
+				}
 			}
 		}
 	}
@@ -306,38 +316,45 @@ class YoutubeBridge extends BridgeAbstract {
 
 		if(!empty($url_feed) && !empty($url_listing)) {
 			$this->feeduri = $url_listing;
-			if(!$this->skipFeeds()) {
-				$xml = '';
-				try {
+			$xml = '';
+			$html = '';
+			try {
+				if(!$this->skipFeeds()) {
 					$xml = $this->ytGetSimpleHTMLDOM($url_feed);
-				} catch(Exception $e) {
+				} else {
+					$html = $this->ytGetSimpleHTMLDOM($url_listing);
+					$jsonData = $this->getJSONData($html);
+					// Throw an error right here if it doesn't have anything.
+					// Sometimes, Youtube user page have a weird case
+					// For example: NASA. When user write 'nasa' into the username and add limit for duration
+					// Bridge immediately find its user page (/user/nasa) and then nothing happen.
+					// Digging into the data, it appear it's another account, not from NASA itself.
+					// If you use feed, it works normally cause it already raise 404 error
+					if(!isset($jsonData->content)) {	
+						returnServerError('');	// Throw an empty one to trigger try catch
+					}
+				}
+			} catch(Exception $e) {
 					$html = $this->ytGetSimpleHTMLDOM($custom_url);
 					$jsonData = $this->getJSONData($html);
 					$url_feed = $jsonData->metadata->channelMetadataRenderer->rssUrl;
 					$xml = $this->ytGetSimpleHTMLDOM($url_feed);
 					$this->feeduri = $custom_url;
-				}
-				$this->ytBridgeParseXmlFeed($xml);
-			} else {
-				$html = '';
-				try {
-					$html = $this->ytGetSimpleHTMLDOM($url_listing);
-				} catch(Exception $e) {
-					$html = $this->ytGetSimpleHTMLDOM($custom_url);
-					$this->feeduri = $custom_url;
-				}
-				$jsonData = $this->getJSONData($html);
-				if(isset($jsonData->contents)) {
-					$jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[1];
-					$jsonData = $jsonData->tabRenderer->content->sectionListRenderer->contents[0];
-					$jsonData = $jsonData->itemSectionRenderer->contents[0]->gridRenderer->items;
-				} else {
-					returnServerError('Unable to get data from YouTube. Username/Channel: ' . $this->request);
-				}
-
-				$this->parseJSONListing($jsonData);
-				$this->feedName = str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
 			}
+			if(!$this->skipFeeds()) {
+				return $this->ytBridgeParseXmlFeed($xml);
+			}
+			
+			if(isset($jsonData->contents)) {
+				$jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[1];
+				$jsonData = $jsonData->tabRenderer->content->sectionListRenderer->contents[0];
+				$jsonData = $jsonData->itemSectionRenderer->contents[0]->gridRenderer->items;
+			} else {
+				returnServerError('Unable to get data from YouTube. Username/Channel: ' . $this->request);
+			}
+
+			$this->parseJSONListing($jsonData);
+			$this->feedName = str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
 		} elseif($this->getInput('p')) { /* playlist mode */
 			// TODO: this mode makes a lot of excess video query requests.
 			// To make less requests, we need to cache following dictionary "videoId -> datePublished, duration"
