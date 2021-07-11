@@ -59,6 +59,7 @@ class YoutubeBridge extends BridgeAbstract {
 
 	private $feedName = '';
 	private $feeduri = '';
+	private $channel_name = '';
 
 	private function ytBridgeQueryVideoInfo($vid, &$author, &$desc, &$time){
 		$html = $this->ytGetSimpleHTMLDOM(self::URI . "watch?v=$vid", true);
@@ -73,9 +74,11 @@ class YoutubeBridge extends BridgeAbstract {
 			$author = $elAuthor->getAttribute('content');
 		}
 
-		$elDatePublished = $html->find('meta[itemprop=datePublished]', 0);
-		if(!is_null($elDatePublished))
-			$time = strtotime($elDatePublished->getAttribute('content'));
+		if(!$time) {
+			$elDatePublished = $html->find('meta[itemprop=datePublished]', 0);
+			if(!is_null($elDatePublished))
+				$time = strtotime($elDatePublished->getAttribute('content'));
+		}
 
 		$jsonData = $this->getJSONData($html);
 		$jsonData = $jsonData->contents->twoColumnWatchNextResults->results->results->contents;
@@ -258,10 +261,20 @@ class YoutubeBridge extends BridgeAbstract {
 
 			$vid = $wrapper->videoId;
 			$title = $wrapper->title->runs[0]->text;
+			$view_count = $wrapper->viewCountText->simpleText;
+			$accessibilityData = $wrapper->title->accessibility->accessibilityData->label;
+			if(isset($wrapper->ownerText)) {
+				$this->channel_name = $wrapper->ownerText->runs[0]->text;
+			}
+			// Attempted to get correct timestamp from the string
+			$timestamp = explode($title, $accessibilityData);
+			$timestamp = explode($view_count, $timestamp[1]);
+			$timestamp = explode($this->channel_name, $timestamp[0]);
+			$timestamp = strtotime(trim($timestamp[1]));
 
 			$author = '';
 			$desc = '';
-			$time = 0;
+			$time = $timestamp;
 
 			// The duration comes in one of the formats:
 			// hh:mm:ss / mm:ss / m:ss
@@ -330,22 +343,27 @@ class YoutubeBridge extends BridgeAbstract {
 					// Bridge immediately find its user page (/user/nasa) and then nothing happen.
 					// Digging into the data, it appear it's another account, not from NASA itself.
 					// If you use feed, it works normally cause it already raise 404 error
-					if(!isset($jsonData->content)) {
+					if(!isset($jsonData->contents)) {
 						returnServerError('');	// Throw an empty one to trigger try catch
 					}
 				}
 			} catch(Exception $e) {
+				if($custom_url) {
 					$html = $this->ytGetSimpleHTMLDOM($custom_url);
 					$jsonData = $this->getJSONData($html);
 					$url_feed = $jsonData->metadata->channelMetadataRenderer->rssUrl;
 					$xml = $this->ytGetSimpleHTMLDOM($url_feed);
 					$this->feeduri = $custom_url;
+				} else {
+					returnServerError($e->getMessage());
+				}
 			}
 			if(!$this->skipFeeds()) {
 				return $this->ytBridgeParseXmlFeed($xml);
 			}
 
 			if(isset($jsonData->contents)) {
+				$this->channel_name = $jsonData->metadata->channelMetadataRenderer->title;
 				$jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[1];
 				$jsonData = $jsonData->tabRenderer->content->sectionListRenderer->contents[0];
 				$jsonData = $jsonData->itemSectionRenderer->contents[0]->gridRenderer->items;
