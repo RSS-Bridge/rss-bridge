@@ -96,14 +96,27 @@ class YoutubeBridge extends BridgeAbstract {
 
 		if(isset($videoSecondaryInfo->description)) {
 			foreach($videoSecondaryInfo->description->runs as $description) {
-				if(isset($description->navigationEndpoint->urlEndpoint)) {
-					$url = $description->navigationEndpoint->urlEndpoint->url;
-					$url_components = parse_url($url);
-					if(isset($url_components['query']) && strpos($url_components['query'], '&q=') !== false) {
-						parse_str($url_components['query'], $params);
-						$url = urldecode($params['q']);
+				if(isset($description->navigationEndpoint)) {
+					$metadata = $description->navigationEndpoint->commandMetadata->webCommandMetadata;
+					$web_type = $metadata->webPageType;
+					$url = $metadata->url;
+					$text = '';
+					switch ($web_type) {
+						case 'WEB_PAGE_TYPE_UNKNOWN':
+							$url_components = parse_url($url);
+							if(isset($url_components['query']) && strpos($url_components['query'], '&q=') !== false) {
+								parse_str($url_components['query'], $params);
+								$url = urldecode($params['q']);
+							}
+							$text = $url;
+							break;
+						case 'WEB_PAGE_TYPE_WATCH':
+						case 'WEB_PAGE_TYPE_BROWSE':
+							$url = 'https://www.youtube.com' . $url;
+							$text = $description->text;
+							break;
 					}
-					$desc .= "<a href=\"$url\" target=\"_blank\">$url</a>";
+					$desc .= "<a href=\"$url\" target=\"_blank\">$text</a>";
 				} else {
 					$desc .= nl2br($description->text);
 				}
@@ -200,7 +213,12 @@ class YoutubeBridge extends BridgeAbstract {
 			returnClientError('Max duration must be greater than min duration!');
 		}
 
+		$count = 0;
 		foreach($jsonData as $item) {
+			$count++;
+			if($count = 20) {
+				break;
+			}
 			$wrapper = null;
 			if(isset($item->gridVideoRenderer)) {
 				$wrapper = $item->gridVideoRenderer;
@@ -418,4 +436,3 @@ class YoutubeBridge extends BridgeAbstract {
 		}
 	}
 }
-
