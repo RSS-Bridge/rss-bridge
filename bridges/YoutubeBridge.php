@@ -103,7 +103,7 @@ class YoutubeBridge extends BridgeAbstract {
 						parse_str($url_components['query'], $params);
 						$url = urldecode($params['q']);
 					}
-					$desc .= "<a href=\"$url\" target=\"_blank\">$description->text</a>";
+					$desc .= "<a href=\"$url\" target=\"_blank\">$url</a>";
 				} else {
 					$desc .= nl2br($description->text);
 				}
@@ -143,56 +143,6 @@ class YoutubeBridge extends BridgeAbstract {
 		}
 		$this->feedName = $this->ytBridgeFixTitle($xml->find('feed > title', 0)->plaintext);  // feedName will be used by getName()
 	}
-
-	// private function ytBridgeParseHtmlListing($html, $element_selector, $title_selector, $add_parsed_items = true) {
-	// 	$count = 0;
-
-	// 	$duration_min = $this->getInput('duration_min') ?: -1;
-	// 	$duration_min = $duration_min * 60;
-
-	// 	$duration_max = $this->getInput('duration_max') ?: INF;
-	// 	$duration_max = $duration_max * 60;
-
-	// 	if($duration_max < $duration_min) {
-	// 		returnClientError('Max duration must be greater than min duration!');
-	// 	}
-
-	// 	foreach($html->find($element_selector) as $element) {
-	// 		$author = '';
-	// 		$desc = '';
-	// 		$time = 0;
-	// 		$vid = str_replace('/watch?v=', '', $element->find('a', 0)->href);
-	// 		$vid = substr($vid, 0, strpos($vid, '&') ?: strlen($vid));
-	// 		$title = trim($this->ytBridgeFixTitle($element->find($title_selector, 0)->plaintext));
-
-	// 		if (strpos($vid, 'googleads') !== false
-	// 			|| $title == '[Private video]'
-	// 			|| $title == '[Deleted video]'
-	// 		) {
-	// 			continue;
-	// 		}
-
-	// 		// The duration comes in one of the formats:
-	// 		// hh:mm:ss / mm:ss / m:ss
-	// 		// 01:03:30 / 15:06 / 1:24
-	// 		$durationText = trim($element->find('span#text', 0)->plaintext);
-	// 		$durationText = preg_replace('/([\d]{1,2})\:([\d]{2})/', '00:$1:$2', $durationText);
-
-	// 		sscanf($durationText, '%d:%d:%d', $hours, $minutes, $seconds);
-	// 		$duration = $hours * 3600 + $minutes * 60 + $seconds;
-
-	// 		if($duration < $duration_min || $duration > $duration_max) {
-	// 			continue;
-	// 		}
-
-	// 		if ($add_parsed_items) {
-	// 			$this->ytBridgeQueryVideoInfo($vid, $author, $desc, $time);
-	// 			$this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
-	// 		}
-	// 		$count++;
-	// 	}
-	// 	return $count;
-	// }
 
 	private function ytBridgeFixTitle($title) {
 		// convert both &#1234; and &quot; to UTF-8
@@ -256,20 +206,31 @@ class YoutubeBridge extends BridgeAbstract {
 				$wrapper = $item->gridVideoRenderer;
 			} elseif(isset($item->videoRenderer)) {
 				$wrapper = $item->videoRenderer;
+			} elseif(isset($item->playlistVideoRenderer)) {
+				$wrapper = $item->playlistVideoRenderer;
 			} else
 				continue;
 
 			$vid = $wrapper->videoId;
 			$title = $wrapper->title->runs[0]->text;
-			$view_count = $wrapper->viewCountText->simpleText;
 			$accessibilityData = $wrapper->title->accessibility->accessibilityData->label;
 			if(isset($wrapper->ownerText)) {
 				$this->channel_name = $wrapper->ownerText->runs[0]->text;
+			} elseif(isset($wrapper->shortBylineText)) {
+				$this->channel_name = $wrapper->shortBylineText->runs[0]->text;
 			}
 			// Attempted to get correct timestamp from the string
 			$timestamp = explode($title, $accessibilityData);
-			$timestamp = explode($view_count, $timestamp[1]);
-			$timestamp = explode($this->channel_name, $timestamp[0]);
+			if(isset($wrapper->viewCountText->simpleText)) {
+				$view_count = $wrapper->viewCountText->simpleText;
+				$timestamp = explode($view_count, $timestamp[1]);
+				$timestamp = explode($this->channel_name, $timestamp[0]);
+			} else {
+				$timestamp = explode($this->channel_name, $timestamp[1]);
+			}
+			if(strpos($timestamp[1], 'Streamed') !== false) {
+				$timestamp = explode('Streamed', $timestamp[1]);
+			}
 			$timestamp = strtotime(trim($timestamp[1]));
 
 			$author = '';
@@ -279,7 +240,7 @@ class YoutubeBridge extends BridgeAbstract {
 			// The duration comes in one of the formats:
 			// hh:mm:ss / mm:ss / m:ss
 			// 01:03:30 / 15:06 / 1:24
-			$durationText = '';
+			$durationText = 0;
 			if(isset($wrapper->lengthText)) {
 				$durationText = $wrapper->lengthText;
 			} else {
@@ -291,7 +252,9 @@ class YoutubeBridge extends BridgeAbstract {
 				}
 			}
 
-			$durationText = trim($durationText->simpleText);
+			if(isset($durationText->simpleText)) {
+				$durationText = trim($durationText->simpleText);
+			}
 			if(preg_match('/([\d]{1,2}):([\d]{1,2})\:([\d]{2})/', $durationText)) {
 				$durationText = preg_replace('/([\d]{1,2}):([\d]{1,2})\:([\d]{2})/', '$1:$2:$3', $durationText);
 			} else {
@@ -383,11 +346,9 @@ class YoutubeBridge extends BridgeAbstract {
 			$url_listing = self::URI . 'playlist?list=' . urlencode($this->request);
 			$html = $this->ytGetSimpleHTMLDOM($url_listing)
 				or returnServerError("Could not request YouTube. Tried:\n - $url_listing");
-			$scriptRegex = '/var ytInitialData = (.*);<\/script>/';
-			preg_match($scriptRegex, $html, $matches) or returnServerError('Could not find ytInitialData');
+			$jsonData = $this->getJSONData($html);
 			// TODO: this method returns only first 100 video items
 			// if it has more videos, playlistVideoListRenderer will have continuationItemRenderer as last element
-			$jsonData = json_decode($matches[1]);
 			$jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[0];
 			$jsonData = $jsonData->tabRenderer->content->sectionListRenderer->contents[0]->itemSectionRenderer;
 			$jsonData = $jsonData->contents[0]->playlistVideoListRenderer->contents;
@@ -395,7 +356,7 @@ class YoutubeBridge extends BridgeAbstract {
 			if ($item_count <= 15 && !$this->skipFeeds() && ($xml = $this->ytGetSimpleHTMLDOM($url_feed))) {
 				$this->ytBridgeParseXmlFeed($xml);
 			} else {
-				$this->parseJsonPlaylist($jsonData);
+				$this->parseJSONListing($jsonData);
 			}
 			$this->feedName = 'Playlist: ' . str_replace(' - YouTube', '', $html->find('title', 0)->plaintext); // feedName will be used by getName()
 			usort($this->items, function ($item1, $item2) {
@@ -456,35 +417,5 @@ class YoutubeBridge extends BridgeAbstract {
 			return parent::getName();
 		}
 	}
-
-	private function parseJsonPlaylist($jsonData) {
-		$duration_min = $this->getInput('duration_min') ?: -1;
-		$duration_min = $duration_min * 60;
-
-		$duration_max = $this->getInput('duration_max') ?: INF;
-		$duration_max = $duration_max * 60;
-
-		if($duration_max < $duration_min) {
-			returnClientError('Max duration must be greater than min duration!');
-		}
-
-		foreach($jsonData as $item) {
-			if (!isset($item->playlistVideoRenderer)) {
-				continue;
-			}
-			$vid = $item->playlistVideoRenderer->videoId;
-			$title = $item->playlistVideoRenderer->title->runs[0]->text;
-
-			$author = '';
-			$desc = '';
-			$time = 0;
-			$duration = intval($item->playlistVideoRenderer->lengthSeconds);
-			if($duration < $duration_min || $duration > $duration_max) {
-				continue;
-			}
-
-			$this->ytBridgeQueryVideoInfo($vid, $author, $desc, $time);
-			$this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
-		}
-	}
 }
+
