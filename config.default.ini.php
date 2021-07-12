@@ -29,6 +29,13 @@ custom_timeout = false
 ; ""    = Disabled (default)
 email = ""
 
+; Show Donation information for bridges if available.
+; This will display a 'Donate' link on the bridge view
+; and a "Donate" button in the HTML view of the bridges feed.
+; true  = enabled (default)
+; false = disabled
+donations = true
+
 [proxy]
 
 ; Sets the proxy url (i.e. "tcp://192.168.0.0:32")

@@ -5,7 +5,7 @@ class RedditBridge extends BridgeAbstract {
 	const MAINTAINER = 'dawidsowa';
 	const NAME = 'Reddit Bridge';
 	const URI = 'https://www.reddit.com';
-	const DESCRIPTION = 'Return hot submissions from Reddit';
+	const DESCRIPTION = 'Return hot, new and top submissions from Reddit';
 
 	const PARAMETERS = array(
 		'global' => array(
@@ -15,6 +15,16 @@ class RedditBridge extends BridgeAbstract {
 				'type' => 'number',
 				'exampleValue' => 100,
 				'title' => 'Filter out posts with lower score'
+			),
+			'd' => array(
+				'name' => 'Section',
+				'type' => 'list',
+				'title' => 'Choose whether to have new, hot and top submissions',
+				'values' => array(
+					'Hot' => '',	// By default, Reddit displays hot submissions.
+					'New' => 'new',
+					'Top' => 'top'
+				)
 			)
 		),
 		'single' => array(
@@ -86,6 +96,7 @@ class RedditBridge extends BridgeAbstract {
 
 		$user = false;
 		$comments = false;
+		$section = $this->getInput('d');
 
 		switch ($this->queriedContext) {
 			case 'single':
@@ -103,8 +114,9 @@ class RedditBridge extends BridgeAbstract {
 
 		foreach ($subreddits as $subreddit) {
 			$name = trim($subreddit);
-
-			$values = getContents(self::URI . ($user ? '/user/' : '/r/') . $name . '.json')
+			$values = getContents(self::URI . ($user ? '/user/' : '/r/')
+				. $name . ((!$user && $section != '') ? "/$section" : '') . '.json'
+				. (($user && $section != '') ? "?sort=$section" : ''))
 			or returnServerError('Unable to fetch posts!');
 			$decodedValues = json_decode($values);
 
@@ -186,7 +198,7 @@ class RedditBridge extends BridgeAbstract {
 						$id = $media->media_id;
 						$type = $data->media_metadata->$id->m == 'image/gif' ? 'gif' : 'u';
 						$src = $data->media_metadata->$id->s->$type;
-						$images[] = '<figure><img src="' . $src . '"/></figure>';
+						$images[] = '<figure><img src="' . $src . '"/></figure><br>';
 					}
 
 					$item['content'] = implode('', $images);
