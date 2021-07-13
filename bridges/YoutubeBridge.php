@@ -39,6 +39,12 @@ class YoutubeBridge extends BridgeAbstract {
 			's' => array(
 				'name' => 'search keyword',
 				'exampleValue' => 'test'
+			),
+			'pa' => array(
+				'name' => 'page',
+				'type' => 'number',
+				'title' => 'This option is not work anymore, as YouTube will always return the same page',
+				'exampleValue' => 1
 			)
 		),
 		'global' => array(
@@ -216,7 +222,7 @@ class YoutubeBridge extends BridgeAbstract {
 		$count = 0;
 		foreach($jsonData as $item) {
 			$count++;
-			if($count = 20) {
+			if($count == 20) {
 				break;
 			}
 			$wrapper = null;
@@ -401,7 +407,7 @@ class YoutubeBridge extends BridgeAbstract {
 			}
 			$this->parseJSONListing($jsonData);
 			$this->feeduri = $url_listing;
-			$this->feedName = 'Search: ' . str_replace(' - YouTube', '', $html->find('title', 0)->plaintext); // feedName will be used by getName()
+			$this->feedName = 'Search: ' . $this->request; // feedName will be used by getName()
 		} else { /* no valid mode */
 			returnClientError("You must either specify either:\n - YouTube
  username (?u=...)\n - Channel id (?c=...)\n - Playlist id (?p=...)\n - Search (?s=...)");
