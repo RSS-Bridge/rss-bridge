@@ -80,11 +80,9 @@ class YoutubeBridge extends BridgeAbstract {
 			$author = $elAuthor->getAttribute('content');
 		}
 
-		if(!$time) {
-			$elDatePublished = $html->find('meta[itemprop=datePublished]', 0);
+		$elDatePublished = $html->find('meta[itemprop=datePublished]', 0);
 			if(!is_null($elDatePublished))
 				$time = strtotime($elDatePublished->getAttribute('content'));
-		}
 
 		$jsonData = $this->getJSONData($html);
 		$jsonData = $jsonData->contents->twoColumnWatchNextResults->results->results->contents;
@@ -243,23 +241,10 @@ class YoutubeBridge extends BridgeAbstract {
 			} elseif(isset($wrapper->shortBylineText)) {
 				$this->channel_name = $wrapper->shortBylineText->runs[0]->text;
 			}
-			// Attempted to get correct timestamp from the string
-			$timestamp = explode($title, $accessibilityData);
-			if(isset($wrapper->viewCountText->simpleText)) {
-				$view_count = $wrapper->viewCountText->simpleText;
-				$timestamp = explode($view_count, $timestamp[1]);
-				$timestamp = explode($this->channel_name, $timestamp[0]);
-			} else {
-				$timestamp = explode($this->channel_name, $timestamp[1]);
-			}
-			if(strpos($timestamp[1], 'Streamed') !== false) {
-				$timestamp = explode('Streamed', $timestamp[1]);
-			}
-			$timestamp = strtotime(trim($timestamp[1]));
 
 			$author = '';
 			$desc = '';
-			$time = $timestamp;
+			$time = '';
 
 			// The duration comes in one of the formats:
 			// hh:mm:ss / mm:ss / m:ss
