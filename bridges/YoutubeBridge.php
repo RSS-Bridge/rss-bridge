@@ -217,12 +217,7 @@ class YoutubeBridge extends BridgeAbstract {
 			returnClientError('Max duration must be greater than min duration!');
 		}
 
-		$count = 0;
 		foreach($jsonData as $item) {
-			$count++;
-			if($count == 20) {
-				break;
-			}
 			$wrapper = null;
 			if(isset($item->gridVideoRenderer)) {
 				$wrapper = $item->gridVideoRenderer;
