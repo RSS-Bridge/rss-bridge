@@ -81,8 +81,8 @@ class YoutubeBridge extends BridgeAbstract {
 		}
 
 		$elDatePublished = $html->find('meta[itemprop=datePublished]', 0);
-			if(!is_null($elDatePublished))
-				$time = strtotime($elDatePublished->getAttribute('content'));
+		if(!is_null($elDatePublished))
+			$time = strtotime($elDatePublished->getAttribute('content'));
 
 		$jsonData = $this->getJSONData($html);
 		$jsonData = $jsonData->contents->twoColumnWatchNextResults->results->results->contents;
