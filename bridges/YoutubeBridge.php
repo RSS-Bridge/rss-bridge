@@ -29,6 +29,13 @@ class YoutubeBridge extends BridgeAbstract {
 				'required' => true
 			)
 		),
+		'By custom name' => array(
+			'custom' => array(
+				'name' => 'custom name',
+				'exampleValue' => 'nasa',
+				'required' => true
+			)
+		),
 		'By playlist Id' => array(
 			'p' => array(
 				'name' => 'playlist id',
@@ -66,7 +73,16 @@ class YoutubeBridge extends BridgeAbstract {
 	private $feedName = '';
 	private $feeduri = '';
 	private $channel_name = '';
-
+	// This took from repo BetterVideoRss of VerifiedJoseph.
+	const URI_REGEX = '/(https?:\/\/(?:www\.)?(?:[a-zA-Z0-9-.]{2,256}\.[a-z]{2,20})(\:[0-9]{2    ,4})?(?:\/[a-zA-Z0-9@:%_\+.,~#"\'!?&\/\/=\-*]+|\/)?)/ims';
+	
+	/*
+	*	This allow you to use Youtube Data API.
+	*	Enter your API key here.
+	*	To get one, please check out https://developers.google.com/youtube/v3/getting-started
+	*/
+	const API_KEY = '';	// Remember to remove it when commit.
+	
 	private function ytBridgeQueryVideoInfo($vid, &$author, &$desc, &$time){
 		$html = $this->ytGetSimpleHTMLDOM(self::URI . "watch?v=$vid", true);
 
@@ -128,14 +144,17 @@ class YoutubeBridge extends BridgeAbstract {
 		}
 	}
 
-	private function ytBridgeAddItem($vid, $title, $author, $desc, $time){
+	private function ytBridgeAddItem($vid, $title, $author, $desc, $time, $thumbnail = ''){
 		$item = array();
 		$item['id'] = $vid;
 		$item['title'] = $title;
 		$item['author'] = $author;
 		$item['timestamp'] = $time;
 		$item['uri'] = self::URI . 'watch?v=' . $vid;
-		$thumbnailUri = str_replace('/www.', '/img.', self::URI) . 'vi/' . $vid . '/0.jpg';
+		if(!$thumbnail) {
+			$thumbnail = '0';	// Fallback to default thumbnail if there aren't any provided.
+		}
+		$thumbnailUri = str_replace('/www.', '/img.', self::URI) . 'vi/' . $vid . '/' . $thumbnail .'.jpg';
 		$item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $thumbnailUri . '" /></a><br />' . $desc;
 		$this->items[] = $item;
 	}
@@ -149,7 +168,7 @@ class YoutubeBridge extends BridgeAbstract {
 			// Make sure the description is easy on the eye :)
 			$desc = htmlspecialchars($desc);
 			$desc = nl2br($desc);
-			$desc = preg_replace('/(http[s]{0,1}\:\/\/[a-zA-Z0-9.\/\?\&=\-_]{4,})/ims',
+			$desc = preg_replace(self::URI_REGEX,
 				'<a href="$1" target="_blank">$1</a> ',
 				$desc);
 
@@ -200,6 +219,89 @@ class YoutubeBridge extends BridgeAbstract {
 			$defaultSpanText);
 	}
 
+	private function getAPIData($endpoint, $query) {
+		$base_url = 'https://www.googleapis.com/youtube/v3/';
+		$url = $base_url . $endpoint . '?' . http_build_query($query);
+		return json_decode(getContents($url));
+	}
+
+	private function ytBridgeAPIQueryVideosData($id) {
+		$duration_min = $this->getInput('duration_min') ?: -1;
+		$duration_min = $duration_min * 60;
+
+		$duration_max = $this->getInput('duration_max') ?: INF;
+		$duration_max = $duration_max * 60;
+
+		if($duration_max < $duration_min) {
+			returnClientError('Max duration must be greater than min duration!');
+		}
+
+		$vid_list = '';
+		$api_key = self::API_KEY;
+		$base_query = array(
+					'part' => 'contentDetails',
+					'key' => $api_key
+				);
+
+		if (!empty($this->getInput('s'))) {
+			$vid_list = $id;
+		} else {
+			if(!empty($this->getInput('u')) || !empty($this->getInput('c')) || !empty($this->getInput('custom'))) {
+				$query = array_merge($base_query, array(
+					'id' => $id
+				));
+				$jsonData = $this->getAPIData('channels', $query);
+				$id = $jsonData->items[0]->contentDetails->relatedPlaylists->uploads;
+			}
+
+			$query = array_merge($base_query, array(
+				'maxResults' => 50,
+				'playlistId' => $id
+			));
+			$count = 0;
+			$jsonData = $this->getAPIData('playlistItems', $query);
+			foreach($jsonData->items as $item) {
+				$vid_list .= $item->contentDetails->videoId . ',';
+			}
+			$vid_list = substr($vid_list, 0, -1);
+		}
+
+		$query = array_merge($base_query, array(
+			'part' => 'snippet,liveStreamingDetails,contentDetails',
+			'id' => $vid_list
+		));
+
+		$jsonData = $this->getAPIData('videos', $query);
+		foreach($jsonData->items as $item) {
+			if(empty($this->getInput('s'))) {	// Videos from search result won't be filtered again
+				$interval = new DateInterval($item->contentDetails->duration);
+				$duration = $interval->h * 3600 + $interval->i * 60 + $interval->s;
+				if($duration < $duration_min || $duration > $duration_max) {
+					continue;
+				}
+			}
+
+			$snippet = $item->snippet;
+			$title = $snippet->title;
+			$vid = $item->id;
+			$author = $snippet->channelTitle;
+			$time = $snippet->publishedAt;
+			$desc = nl2br($snippet->description);
+			$desc = preg_replace(self::URI_REGEX,
+				'<a href="$1" target="_blank">$1</a> ',
+				$desc);
+
+			$thumbnail = '';
+			if(isset($snippet->thumbnails->maxres)) {
+				$thumbnail = 'maxresdefault';
+			} elseif(isset($snippet->thumbnails->standard)) {
+				$thumbnail = 'sddefault';
+			}
+			
+			$this->ytBridgeAddItem($vid, $title, $author, $desc, $time, $thumbnail);
+		}
+	}
+
 	private function getJSONData($html) {
 		$scriptRegex = '/var ytInitialData = (.*?);<\/script>/';
 		preg_match($scriptRegex, $html, $matches) or returnServerError('Could not find ytInitialData');
@@ -217,6 +319,10 @@ class YoutubeBridge extends BridgeAbstract {
 			returnClientError('Max duration must be greater than min duration!');
 		}
 
+		$vid_list = '';
+		$count = 0;
+		$total = count($jsonData);
+
 		foreach($jsonData as $item) {
 			$wrapper = null;
 			if(isset($item->gridVideoRenderer)) {
@@ -230,7 +336,6 @@ class YoutubeBridge extends BridgeAbstract {
 
 			$vid = $wrapper->videoId;
 			$title = $wrapper->title->runs[0]->text;
-			$accessibilityData = $wrapper->title->accessibility->accessibilityData->label;
 			if(isset($wrapper->ownerText)) {
 				$this->channel_name = $wrapper->ownerText->runs[0]->text;
 			} elseif(isset($wrapper->shortBylineText)) {
@@ -258,7 +363,10 @@ class YoutubeBridge extends BridgeAbstract {
 
 			if(isset($durationText->simpleText)) {
 				$durationText = trim($durationText->simpleText);
+			} else {
+				$durationText = 0;
 			}
+			
 			if(preg_match('/([\d]{1,2}):([\d]{1,2})\:([\d]{2})/', $durationText)) {
 				$durationText = preg_replace('/([\d]{1,2}):([\d]{1,2})\:([\d]{2})/', '$1:$2:$3', $durationText);
 			} else {
@@ -270,9 +378,17 @@ class YoutubeBridge extends BridgeAbstract {
 				continue;
 			}
 
-			$this->ytBridgeQueryVideoInfo($vid, $author, $desc, $time);
-			$this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
+			$vid_list .= $vid . ',';
+			if(!self::API_KEY) {
+				$this->ytBridgeQueryVideoInfo($vid, $author, $desc, $time);
+				$this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
+			}
 		}
+
+		if(self::API_KEY) {
+			$vid_list = substr($vid_list, 0, -1);
+			$this->ytBridgeAPIQueryVideosData($vid_list);
+		} else return;
 	}
 
 	public function collectData(){
@@ -281,13 +397,11 @@ class YoutubeBridge extends BridgeAbstract {
 		$html = '';
 		$url_feed = '';
 		$url_listing = '';
-		$custom_url = '';
 
 		if($this->getInput('u')) { /* User and Channel modes */
 			$this->request = $this->getInput('u');
 			$url_feed = self::URI . 'feeds/videos.xml?user=' . urlencode($this->request);
 			$url_listing = self::URI . 'user/' . urlencode($this->request) . '/videos';
-			$custom_url = self::URI . urlencode($this->request) . '/videos';
 		} elseif($this->getInput('c')) {
 			$this->request = $this->getInput('c');
 			$url_feed = self::URI . 'feeds/videos.xml?channel_id=' . urlencode($this->request);
@@ -296,50 +410,57 @@ class YoutubeBridge extends BridgeAbstract {
 
 		if(!empty($url_feed) && !empty($url_listing)) {
 			$this->feeduri = $url_listing;
-			$xml = '';
-			$html = '';
-			try {
-				if(!$this->skipFeeds()) {
-					$xml = $this->ytGetSimpleHTMLDOM($url_feed);
-				} else {
-					$html = $this->ytGetSimpleHTMLDOM($url_listing);
-					$jsonData = $this->getJSONData($html);
-					// Throw an error right here if it doesn't have anything.
-					// Sometimes, Youtube user page have a weird case
-					// For example: NASA. When user write 'nasa' into the username and add limit for duration
-					// Bridge immediately find its user page (/user/nasa) and then nothing happen.
-					// Digging into the data, it appear it's another account, not from NASA itself.
-					// If you use feed, it works normally cause it already raise 404 error
-					if(!isset($jsonData->contents)) {
-						returnServerError('');	// Throw an empty one to trigger try catch
-					}
-				}
-			} catch(Exception $e) {
-				if($custom_url) {
-					$html = $this->ytGetSimpleHTMLDOM($custom_url);
-					$jsonData = $this->getJSONData($html);
-					$url_feed = $jsonData->metadata->channelMetadataRenderer->rssUrl;
-					$xml = $this->ytGetSimpleHTMLDOM($url_feed);
-					$this->feeduri = $custom_url;
-				} else {
-					returnServerError($e->getMessage());
-				}
-			}
 			if(!$this->skipFeeds()) {
-				return $this->ytBridgeParseXmlFeed($xml);
-			}
-
-			if(isset($jsonData->contents)) {
-				$this->channel_name = $jsonData->metadata->channelMetadataRenderer->title;
-				$jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[1];
-				$jsonData = $jsonData->tabRenderer->content->sectionListRenderer->contents[0];
-				$jsonData = $jsonData->itemSectionRenderer->contents[0]->gridRenderer->items;
+				$html = $this->ytGetSimpleHTMLDOM($url_feed);
+				$this->ytBridgeParseXmlFeed($html);
 			} else {
-				returnServerError('Unable to get data from YouTube. Username/Channel: ' . $this->request);
-			}
+				$html = $this->ytGetSimpleHTMLDOM($url_listing);
+				$jsonData = $this->getJSONData($html);
 
-			$this->parseJSONListing($jsonData);
+				$channel_id = '';
+				if(isset($jsonData->contents)) {
+					$channel_id = $jsonData->metadata->channelMetadataRenderer->externalId;
+					if(self::API_KEY) {
+						$this->ytBridgeAPIQueryVideosData($channel_id);
+					} else {
+						$jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[1];
+						$jsonData = $jsonData->tabRenderer->content->sectionListRenderer->contents[0];
+						$jsonData = $jsonData->itemSectionRenderer->contents[0]->gridRenderer->items;
+						$this->parseJSONListing($jsonData);
+					}
+				} else {
+					returnServerError('Unable to get data from YouTube. Username/Channel: ' . $this->request);
+				}
+			}
 			$this->feedName = str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
+		} elseif($this->getInput('custom')) { // Custom channel name
+			$this->request = $this->getInput('custom');
+			$url_listing = self::URI . urlencode($this->request) . '/videos';
+			$html = $this->ytGetSimpleHTMLDOM($url_listing);
+			$channel_id = '';
+			$url_feed = '';
+			$jsonData = $this->getJSONData($html);
+			$channel_id = $jsonData->metadata->channelMetadataRenderer->externalId;
+			$url_feed = $jsonData->metadata->channelMetadataRenderer->rssUrl;
+			if(!$this->skipFeeds()) {
+				$xml = $this->ytGetSimpleHTMLDOM($url_feed);
+				$this->ytBridgeParseXmlFeed($xml);
+			} else {
+				if(isset($jsonData->contents)) {
+					if(self::API_KEY) {
+						$this->ytBridgeAPIQueryVideosData($channel_id);
+					} else {
+						$jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[1];
+						$jsonData = $jsonData->tabRenderer->content->sectionListRenderer->contents[0];
+						$jsonData = $jsonData->itemSectionRenderer->contents[0]->gridRenderer->items;
+						$this->parseJSONListing($jsonData);
+					}
+				} else {
+					returnServerError('Unable to get data from YouTube. Custom name: ' . $this->request);
+				}
+			}
+			$this->feedName = str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
+			$this->feeduri = $url_listing;
 		} elseif($this->getInput('p')) { /* playlist mode */
 			// TODO: this mode makes a lot of excess video query requests.
 			// To make less requests, we need to cache following dictionary "videoId -> datePublished, duration"
@@ -357,13 +478,23 @@ class YoutubeBridge extends BridgeAbstract {
 			$jsonData = $jsonData->tabRenderer->content->sectionListRenderer->contents[0]->itemSectionRenderer;
 			$jsonData = $jsonData->contents[0]->playlistVideoListRenderer->contents;
 			$item_count = count($jsonData);
+			
 			if ($item_count <= 15 && !$this->skipFeeds() && ($xml = $this->ytGetSimpleHTMLDOM($url_feed))) {
 				$this->ytBridgeParseXmlFeed($xml);
 			} else {
-				$this->parseJSONListing($jsonData);
+				if(self::API_KEY) {
+					// This method returns only first 50 video items
+					$this->ytBridgeAPIQueryVideosData($this->request);
+				} else {
+					$this->parseJSONListing($jsonData);
+				}
 			}
 			$this->feedName = 'Playlist: ' . str_replace(' - YouTube', '', $html->find('title', 0)->plaintext); // feedName will be used by getName()
 			usort($this->items, function ($item1, $item2) {
+				if(!is_int($item1['timestamp']) && !is_int($item2['timestamp'])) {
+					$item1['timestamp'] = strtotime($item1['timestamp']);
+					$item2['timestamp'] = strtotime($item2['timestamp']);
+				}
 				return $item2['timestamp'] - $item1['timestamp'];
 			});
 		} elseif($this->getInput('s')) { /* search mode */
