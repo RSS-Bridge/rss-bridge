@@ -23,7 +23,7 @@ class PokemonTVBridge extends XPathAbstract {
 		return 'https://www.pokemon.com/de/pokemon-folgen/pokemon-tv-staffeln/staffeln-' . $this->getInput('staffel');
 	}
 
-        public function getIcon() {
-                return 'https://www.google.com/s2/favicons?domain=pokemon.com/';
-        }
+	public function getIcon() {
+		return 'https://www.google.com/s2/favicons?domain=pokemon.com/';
+	}
 }
