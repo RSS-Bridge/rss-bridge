@@ -319,8 +319,6 @@ class YoutubeBridge extends BridgeAbstract {
 		}
 
 		$vid_list = '';
-		$count = 0;
-		$total = count($jsonData);
 
 		foreach($jsonData as $item) {
 			$wrapper = null;
