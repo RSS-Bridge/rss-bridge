@@ -75,14 +75,13 @@ class YoutubeBridge extends BridgeAbstract {
 	private $channel_name = '';
 	// This took from repo BetterVideoRss of VerifiedJoseph.
 	const URI_REGEX = '/(https?:\/\/(?:www\.)?(?:[a-zA-Z0-9-.]{2,256}\.[a-z]{2,20})(\:[0-9]{2    ,4})?(?:\/[a-zA-Z0-9@:%_\+.,~#"\'!?&\/\/=\-*]+|\/)?)/ims';
-	
 	/*
 	*	This allow you to use Youtube Data API.
 	*	Enter your API key here.
 	*	To get one, please check out https://developers.google.com/youtube/v3/getting-started
 	*/
 	const API_KEY = '';	// Remember to remove it when commit.
-	
+
 	private function ytBridgeQueryVideoInfo($vid, &$author, &$desc, &$time){
 		$html = $this->ytGetSimpleHTMLDOM(self::URI . "watch?v=$vid", true);
 
@@ -154,7 +153,7 @@ class YoutubeBridge extends BridgeAbstract {
 		if(!$thumbnail) {
 			$thumbnail = '0';	// Fallback to default thumbnail if there aren't any provided.
 		}
-		$thumbnailUri = str_replace('/www.', '/img.', self::URI) . 'vi/' . $vid . '/' . $thumbnail .'.jpg';
+		$thumbnailUri = str_replace('/www.', '/img.', self::URI) . 'vi/' . $vid . '/' . $thumbnail . '.jpg';
 		$item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $thumbnailUri . '" /></a><br />' . $desc;
 		$this->items[] = $item;
 	}
@@ -297,7 +296,7 @@ class YoutubeBridge extends BridgeAbstract {
 			} elseif(isset($snippet->thumbnails->standard)) {
 				$thumbnail = 'sddefault';
 			}
-			
+
 			$this->ytBridgeAddItem($vid, $title, $author, $desc, $time, $thumbnail);
 		}
 	}
@@ -366,7 +365,7 @@ class YoutubeBridge extends BridgeAbstract {
 			} else {
 				$durationText = 0;
 			}
-			
+
 			if(preg_match('/([\d]{1,2}):([\d]{1,2})\:([\d]{2})/', $durationText)) {
 				$durationText = preg_replace('/([\d]{1,2}):([\d]{1,2})\:([\d]{2})/', '$1:$2:$3', $durationText);
 			} else {
@@ -478,7 +477,7 @@ class YoutubeBridge extends BridgeAbstract {
 			$jsonData = $jsonData->tabRenderer->content->sectionListRenderer->contents[0]->itemSectionRenderer;
 			$jsonData = $jsonData->contents[0]->playlistVideoListRenderer->contents;
 			$item_count = count($jsonData);
-			
+
 			if ($item_count <= 15 && !$this->skipFeeds() && ($xml = $this->ytGetSimpleHTMLDOM($url_feed))) {
 				$this->ytBridgeParseXmlFeed($xml);
 			} else {
