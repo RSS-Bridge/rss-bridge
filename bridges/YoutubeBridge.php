@@ -74,7 +74,7 @@ class YoutubeBridge extends BridgeAbstract {
 	private $feeduri = '';
 	private $channel_name = '';
 	// This took from repo BetterVideoRss of VerifiedJoseph.
-	const URI_REGEX = '/(https?:\/\/(?:www\.)?(?:[a-zA-Z0-9-.]{2,256}\.[a-z]{2,20})(\:[0-9]{2    ,4})?(?:\/[a-zA-Z0-9@:%_\+.,~#"\'!?&\/\/=\-*]+|\/)?)/ims';
+	const URI_REGEX = '/(https?:\/\/(?:www\.)?(?:[a-zA-Z0-9-.]{2,256}\.[a-z]{2,20})(\:[0-9]{2    ,4})?(?:\/[a-zA-Z0-9@:%_\+.,~#"\'!?&\/\/=\-*]+|\/)?)/ims'; //phpcs:ignore
 	/*
 	*	This allow you to use Youtube Data API.
 	*	Enter your API key here.
