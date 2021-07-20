@@ -98,6 +98,28 @@ class Drive2ruBridge extends BridgeAbstract {
 		}
 	}
 
+	private function getLogbooksContent($url) {
+		$html = getSimpleHTMLDOM($url);
+		$this->title = $html->find('title', 0)->innertext;
+		$articles = $html->find('div.js-entity');
+		foreach ($articles as $article) {
+			$item = array();
+			$item['title'] = $article->find('a.c-link--text', 1)->plaintext;
+			$item['uri'] = urljoin(self::URI, $article->find('a.c-link--text', 1)->href);
+			if($this->getInput('full_articles')) {
+				$item['content'] = $this->addCommentsLink(
+					$this->adjustContent(getSimpleHTMLDomCached($item['uri'])->find('div.c-post__body', 0))->innertext,
+					$item['uri']
+				);
+			} else {
+				$item['content'] = $this->addReadMoreLink($article->find('div.c-post-preview__lead', 0), $item['uri']);
+			}
+			$item['author'] = $article->find('a.c-username--wrap', 0)->plaintext;
+			if (!is_null($article->find('img', 1))) $item['enclosures'][] = $article->find('img', 1)->src;
+			$this->items[] = $item;
+		}
+	}
+
 	private function getNews() {
 		$html = getSimpleHTMLDOM('https://www.drive2.ru/editorial/');
 		$this->title = $html->find('title', 0)->innertext;
@@ -160,7 +182,7 @@ class Drive2ruBridge extends BridgeAbstract {
 			case 'Бортжурналы (По модели или марке)':
 				if (!preg_match('/^https:\/\/www.drive2.ru\/experience/', $this->getInput('url')))
 					returnServerError('Invalid url');
-				$this->getUserContent($this->getInput('url'));
+				$this->getLogbooksContent($this->getInput('url'));
 				break;
 			case 'Личные блоги':
 				if (!preg_match('/^[a-zA-Z0-9-]{3,16}$/', $this->getInput('username')))
