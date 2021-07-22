@@ -24,6 +24,7 @@ class FeedArticleExpanderBridge extends FeedExpander {
 			'img-src' => array(
 				'name' => 'Image source Attribute',
 				'title' => 'The Attribute src often doesnt work, but data-src, which isnt allways there, does. So please give that Attribute.',
+				'defaultValue' => 'src'
 		)
 	));
 
