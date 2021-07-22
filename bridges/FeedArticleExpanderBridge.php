@@ -20,9 +20,8 @@ class FeedArticleExpanderBridge extends FeedExpander {
 		),
 			'img-ident' => array(
 				'name' => 'Identifier of Image',
-				'title' => 'Sometimes, the Thumbnail is seperated from the Content.<br> If that is the Case, use this.<br> Please use an CSS Class again. If no Image is available, use *',
-				'defaultValue' => '*',
-				'required' => true,
+				'title' => 'Sometimes, the Thumbnail is seperated from the Content.<br> If that is the Case, use this.<br> Please use an CSS Class again.',
+				'exampleValue' => '.wp-post-image',
 		),
 			'img-src' => array(
 				'name' => 'Image source Attribute',
@@ -39,7 +38,9 @@ class FeedArticleExpanderBridge extends FeedExpander {
 		$item = parent::parseItem($feedItem);
 		$articlepage = getSimpleHTMLDOM($item['uri']);
 		$article = $articlepage->find($this->getInput('ident'), 0);
+		if('' !== ($this->getInput('img-ident'))) {
 		$image = $articlepage->find($this->getInput('img-ident'), 0)->getAttribute($this->getInput('img-src'));
+		}
 		$item['content'] = '<img src="' . $image . '" />' . $article;
 		return $item;
 	}
