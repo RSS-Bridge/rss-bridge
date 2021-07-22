@@ -42,7 +42,6 @@ class PokemonTVBridge extends BridgeAbstract {
 		)
 	));
 
-
 	public function collectData(){
 		$link = 'https://www.pokemon.com/api/pokemontv/v2/channels/' . $this->getInput('language');
 
@@ -54,18 +53,18 @@ class PokemonTVBridge extends BridgeAbstract {
 		$filterseason = $this->getInput('filterseason');
 
 		foreach($parsed_json as $element) {
-			if(strlen($filtername) >= 1){
+			if(strlen($filtername) >= 1) {
 				if (!(stristr($element->{'channel_name'}, $filtername) !== false)) {
 					continue;
 				}
 			}
 			foreach($element->{'media'} as $mediaelement) {
-				if(strlen($filterseason) >= 1){
+				if(strlen($filterseason) >= 1) {
 					if ($mediaelement->{'season'} != $filterseason) {
 						continue;
 					}
 				}
-				switch($element->{'media_type'}){
+				switch($element->{'media_type'}) {
 					case 'movie':
 						$itemtitle = $element->{'channel_name'};
 						break;
@@ -80,22 +79,21 @@ class PokemonTVBridge extends BridgeAbstract {
 				$item['uri'] = $streamurl;
 				$item['title'] = $itemtitle;
 				$item['timestamp'] = $mediaelement->{'last_modified'};
-				$item['content'] = '<h1>' . $itemtitle . ' ' . $mediaelement->{'title'} . '</h1><br><br>'
-					. '<a href="'
+				$item['content'] = '<h1>' . $itemtitle . ' ' . $mediaelement->{'title'}
+					. '</h1><br><br><a href="'
 					. $streamurl
 					. '"><img src="'
 					. $mediaelement->{'images'}->{'medium'}
 					. '" /></a><br><br>'
 					. $mediaelement->{'description'}
-					. '<br><br>'
-					. '<a href="' . $mediaelement->{'offline_url'} . '">Download</a>';
+					. '<br><br><a href="' . $mediaelement->{'offline_url'} . '">Download</a>';
 				$this->items[] = $item;
 			}
 		}
 	}
 
-	public function getCountryCode() {
-		switch($this->getInput('language')){
+	private function getCountryCode() {
+		switch($this->getInput('language')) {
 			case 'us':
 				return 'en-us';
 				break;
