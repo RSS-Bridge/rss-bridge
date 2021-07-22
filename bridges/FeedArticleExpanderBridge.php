@@ -15,11 +15,14 @@ class FeedArticleExpanderBridge extends FeedExpander {
 			'ident' => array(
 				'name' => 'Identifier of Content',
 				'title' => 'Please give an CSS Class to identifie the Content with.',
+				'exampleValue' => '.wp-content',
 				'required' => true
 		),
 			'img-ident' => array(
 				'name' => 'Identifier of Image',
-				'title' => 'Sometimes, the Thumbnail is seperated from the Content<br> If that is the Case, use this.<br> Please use an CSS Class again.',
+				'title' => 'Sometimes, the Thumbnail is seperated from the Content.<br> If that is the Case, use this.<br> Please use an CSS Class again. If no Image is available, use *',
+				'defaultValue' => '*',
+				'required' => true,
 		),
 			'img-src' => array(
 				'name' => 'Image source Attribute',
