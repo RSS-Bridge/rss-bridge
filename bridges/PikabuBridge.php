@@ -140,7 +140,7 @@ class PikabuBridge extends BridgeAbstract {
 			$item['title'] = $title;
 			$item['content'] = strip_tags(
 				backgroundToImg($post->find('.story__content-inner', 0)->innertext),
-				'<br><p><img><a>
+				'<br><p><img><a><s>
 			');
 			$item['uri'] = $title_element->href;
 			$item['timestamp'] = strtotime($time->getAttribute('datetime'));
