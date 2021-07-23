@@ -131,7 +131,7 @@ class PikabuBridge extends BridgeAbstract {
 			// adding special marker for "Maybe News" section
 			// these posts are fake
 			if (!is_null($community_link) && $community_link->getAttribute('href') == '/community/maybenews') {
-				$title = '[' . $community_link->innertext . '] ' . $title;
+				$title = '[' . trim($community_link->plaintext) . '] ' . $title;
 			}
 
 			$item = array();
