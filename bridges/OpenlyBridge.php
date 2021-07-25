@@ -86,27 +86,24 @@ class OpenlyBridge extends BridgeAbstract {
 	}
 
 	public function collectData() {
+		$url = $this->getAjaxURI();
 
-		if ($this->queriedContext === 'By Author') { // Get profile page
-			$html = getSimpleHTMLDOM($this->getURI())
-				or returnServerError('Could not request: ' . $this->getURI());
+		if ($this->queriedContext === 'By Author') {
+			$url = $this->getURI();
+		}
 
-			$html = defaultLinkTo($html, $this->getURI());
+		$html = getSimpleHTMLDOM($url)
+			or returnServerError('Could not request: ' . $url);
 
-			if ($html->find('h1', 0)) {
-				$this->feedTitle = $html->find('h1', 0)->plaintext;
-			}
+		$html = defaultLinkTo($html, $this->getURI());
 
-		} else { // Get ajax page
-			$html = getSimpleHTMLDOM($this->getAjaxURI())
-				or returnServerError('Could not request: ' . $this->getAjaxURI());
+		if ($html->find('h1', 0)) {
+			$this->feedTitle = $html->find('h1', 0)->plaintext;
+		}
 
-			$html = defaultLinkTo($html, $this->getURI());
-
-			if ($html->find('h2.title-v4', 0)) {
-				$html->find('span.tooltiptext', 0)->innertext = '';
-				$this->feedTitle = $html->find('a.tooltipitem', 0)->plaintext;
-			}
+		if ($html->find('h2.title-v4', 0)) {
+			$html->find('span.tooltiptext', 0)->innertext = '';
+			$this->feedTitle = $html->find('a.tooltipitem', 0)->plaintext;
 		}
 
 		foreach($html->find('div.item') as $div) {
