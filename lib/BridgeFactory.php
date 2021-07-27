@@ -156,7 +156,7 @@ class BridgeFactory extends FactoryAbstract {
 				$contents = '';
 			}
 
-			if($contents === '*' || Configuration::getConfig('heroku', 'review')) { // Whitelist all bridges
+			if($contents === '*') { // Whitelist all bridges
 				$this->whitelist = $this->getBridgeNames();
 			} else {
 				//$this->$whitelist = array_map('$this->sanitizeBridgeName', explode("\n", $contents));
