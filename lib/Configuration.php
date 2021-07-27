@@ -180,9 +180,6 @@ final class Configuration {
 		if(!is_bool(self::getConfig('proxy', 'by_bridge')))
 			self::reportConfigurationError('proxy', 'by_bridge', 'Is not a valid Boolean');
 
-		if(!is_bool(self::getConfig('bridges', 'whitelistall')))
-			self::reportConfigurationError('bridges', 'whitelistall', 'Is not a valid Boolean');
-
 		/** True if proxy usage can be enabled selectively for each bridge */
 		define('PROXY_BYBRIDGE', self::getConfig('proxy', 'by_bridge'));
 
