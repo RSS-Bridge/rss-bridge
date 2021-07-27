@@ -79,8 +79,8 @@ final class Configuration {
 	public static function verifyInstallation() {
 
 		// Check PHP version
-		if(version_compare(PHP_VERSION, '5.6.0') === -1)
-			self::reportError('RSS-Bridge requires at least PHP version 5.6.0!');
+		if(version_compare(PHP_VERSION, '7.1.0') === -1)
+			self::reportError('RSS-Bridge requires at least PHP version 7.1.0!');
 
 		// extensions check
 		if(!extension_loaded('openssl'))
