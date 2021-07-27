@@ -153,7 +153,7 @@ final class Configuration {
 		foreach (getenv() as $envkey => $value) {
 			// Replace all settings with their respective environment variable if available
 			$keyArray = explode('_', $envkey);
-			if($keyArray[0] === 'RSS') {
+			if($keyArray[0] === 'RSSBRIDGE') {
 				$header = strtolower($keyArray[1]);
 				$key = strtolower($keyArray[2]);
 				if($value === 'true' || $value === 'false') {
