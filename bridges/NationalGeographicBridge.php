@@ -224,16 +224,16 @@ class NationalGeographicBridge extends BridgeAbstract {
 				if(isset($image['crdt'])) {
 					$image_credit = $image['crdt'];
 				}
-				$caption = $image_module['caption'];
+				$caption = (isset($image_module['caption']) ? $image_module['caption'] : '');
 				break;
 			case 'photogallery':
-				$image_credit = $image_module['caption']['credit'];
+				$image_credit = (isset($image_module['caption']['credit']) ? $image_module['caption']['credit'] : '');
 				$caption = $image_module['caption']['text'];
 				$image_src = $image_module['img']['src'];
 				$image_alt = $image_module['img']['altText'];
 				break;
 			case 'video':
-				$image_credit = $image_module['credit'];
+				$image_credit = (isset($image_module['credit']) ? $image_module['credit'] : '');
 				$caption = $image_module['description'] . ' Video can be watched on the article\'s page';
 				$image = $image_module['image'];
 				$image_alt = $image['altText'];
@@ -293,6 +293,8 @@ EOD;
 					break;
 				case 'inline':
 					$module = $body['cntnt'];
+					if(empty($module)) 
+						continue 2;
 					switch($module['cmsType']) {
 						case 'image':
 							$content .= $this->handleImages($module, $module['cmsType']);
@@ -325,7 +327,8 @@ EOD;
 						case 'pullquote';
 							$quote = $module['quote'];
 							$author_name = '';
-							foreach($module['byLineProps']['authors'] as $author) {
+							$authors = (isset($module['byLineProps']['authors']) ? $module['byLineProps']['authors'] : array());
+							foreach($authors as $author) {
 								$author_name .= $author['displayName'] . ', ' . $author['authorDesc'];
 							}
 							$content .= <<<EOD
