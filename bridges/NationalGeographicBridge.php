@@ -293,7 +293,7 @@ EOD;
 					break;
 				case 'inline':
 					$module = $body['cntnt'];
-					if(empty($module)) 
+					if(empty($module))
 						continue 2;
 					switch($module['cmsType']) {
 						case 'image':
