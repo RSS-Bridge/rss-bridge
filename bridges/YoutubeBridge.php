@@ -403,17 +403,26 @@ class YoutubeBridge extends BridgeAbstract {
 			$this->request = $this->getInput('c');
 			$url_feed = self::URI . 'feeds/videos.xml?channel_id=' . urlencode($this->request);
 			$url_listing = self::URI . 'channel/' . urlencode($this->request) . '/videos';
+		} elseif($this->getInput('custom')) {
+			$this->request = $this->getInput('custom');
+			$url_listing = self::URI . urlencode($this->request) . '/videos';
 		}
 
-		if(!empty($url_feed) && !empty($url_listing)) {
+		if(!empty($url_feed) || !empty($url_listing)) {
 			$this->feeduri = $url_listing;
+			if(!empty($this->getInput('custom'))) {
+				$html = $this->ytGetSimpleHTMLDOM($url_listing);
+				$jsonData = $this->getJSONData($html);
+				$url_feed = $jsonData->metadata->channelMetadataRenderer->rssUrl;
+			}
 			if(!$this->skipFeeds()) {
 				$html = $this->ytGetSimpleHTMLDOM($url_feed);
 				$this->ytBridgeParseXmlFeed($html);
 			} else {
-				$html = $this->ytGetSimpleHTMLDOM($url_listing);
-				$jsonData = $this->getJSONData($html);
-
+				if(empty($this->getInput('custom'))) {
+					$html = $this->ytGetSimpleHTMLDOM($url_listing);
+					$jsonData = $this->getJSONData($html);
+				}
 				$channel_id = '';
 				if(isset($jsonData->contents)) {
 					$channel_id = $jsonData->metadata->channelMetadataRenderer->externalId;
@@ -430,34 +439,6 @@ class YoutubeBridge extends BridgeAbstract {
 				}
 			}
 			$this->feedName = str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
-		} elseif($this->getInput('custom')) { // Custom channel name
-			$this->request = $this->getInput('custom');
-			$url_listing = self::URI . urlencode($this->request) . '/videos';
-			$html = $this->ytGetSimpleHTMLDOM($url_listing);
-			$channel_id = '';
-			$url_feed = '';
-			$jsonData = $this->getJSONData($html);
-			$channel_id = $jsonData->metadata->channelMetadataRenderer->externalId;
-			$url_feed = $jsonData->metadata->channelMetadataRenderer->rssUrl;
-			if(!$this->skipFeeds()) {
-				$xml = $this->ytGetSimpleHTMLDOM($url_feed);
-				$this->ytBridgeParseXmlFeed($xml);
-			} else {
-				if(isset($jsonData->contents)) {
-					if(self::API_KEY) {
-						$this->ytBridgeAPIQueryVideosData($channel_id);
-					} else {
-						$jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[1];
-						$jsonData = $jsonData->tabRenderer->content->sectionListRenderer->contents[0];
-						$jsonData = $jsonData->itemSectionRenderer->contents[0]->gridRenderer->items;
-						$this->parseJSONListing($jsonData);
-					}
-				} else {
-					returnServerError('Unable to get data from YouTube. Custom name: ' . $this->request);
-				}
-			}
-			$this->feedName = str_replace(' - YouTube', '', $html->find('title', 0)->plaintext);
-			$this->feeduri = $url_listing;
 		} elseif($this->getInput('p')) { /* playlist mode */
 			// TODO: this mode makes a lot of excess video query requests.
 			// To make less requests, we need to cache following dictionary "videoId -> datePublished, duration"
@@ -542,6 +523,7 @@ class YoutubeBridge extends BridgeAbstract {
 		switch($this->queriedContext) {
 		case 'By username':
 		case 'By channel id':
+		case 'By custom name':
 		case 'By playlist Id':
 		case 'Search result':
 			return htmlspecialchars_decode($this->feedName) . ' - YouTube'; // We already know it's a bridge, right?
