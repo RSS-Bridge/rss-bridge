@@ -45,7 +45,7 @@ class BinanceBridge extends BridgeAbstract {
 
 			$date = $element->postTime;
 			$abstract = $element->brief;
-			$uri = self::URI . "/" . $element->lang . "/blog/" . $element->idStr;
+			$uri = self::URI . '/' . $element->lang . '/blog/' . $element->idStr;
 			$title = $element->title;
 			$content = $element->content;
 
