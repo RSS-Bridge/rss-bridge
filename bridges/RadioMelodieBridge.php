@@ -13,6 +13,12 @@ class RadioMelodieBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI . '/actu/')
 			or returnServerError('Could not request Radio Melodie.');
 		$list = $html->find('div[class=displayList]', 0)->children();
+
+		$dateFormat = '%A  %e %B %Y à %H:%M';
+		// Set locale and Timezone to parse the date
+		setlocale (LC_TIME, 'fr_FR.utf8');
+		date_default_timezone_set('Europe/Paris');
+
 		foreach($list as $element) {
 			if($element->tag == 'a') {
 				$articleURL = self::URI . $element->href;
@@ -25,7 +31,7 @@ class RadioMelodieBridge extends BridgeAbstract {
 				$picture = array();
 
 				// Get the Main picture URL
-				$picture[] = $this->rewriteImage($article->find('div[id=pictureTitleSupport]', 0)->find('img', 0)->src);
+				$picture[] = self::URI . $article->find('div[id=pictureTitleSupport]', 0)->find('img', 0)->src;
 				$audioHTML = $article->find('audio');
 
 				// Add the audio element to the enclosure
@@ -55,20 +61,43 @@ class RadioMelodieBridge extends BridgeAbstract {
 
 				$author = $article->find('p[class=AuthorName]', 0)->plaintext;
 
+				// Handle date to timestamp
+				$dateHTML = $article->find('p[class=date]', 0)->plaintext;
+				preg_match('/\| ([^-]*)( - .*|)$/', $dateHTML, $matches);
+				$dateText = $matches[1];
+				$dateArray = strptime($dateText, $dateFormat);
+				$timestamp = mktime(
+					$dateArray['tm_hour'],
+					$dateArray['tm_min'],
+					$dateArray['tm_sec'],
+					$dateArray['tm_mon'] + 1,
+					$dateArray['tm_mday'],
+					$dateArray['tm_year'] + 1900
+				);
+
 				$item['enclosures'] = array_merge($picture, $audio);
 				$item['author'] = $author;
 				$item['uri'] = $articleURL;
 				$item['title'] = $article->find('meta[property=og:title]', 0)->content;
-				$date = $article->find('p[class*=date]', 0)->plaintext;
+				if($timestamp !== false) {
+					$item['timestamp'] = $timestamp;
+				}
 
 				// Header Image
 				$header = '<img src="' . $picture[0] . '"/>';
 
 				// Remove the Date and Author part
 				$textDOM->find('div[class=AuthorDate]', 0)->outertext = '';
+
+				// Remove Facebook javascript
+				$textDOM->find('script[src^=https://connect.facebook.net]', 0)->outertext = '';
+
+				// Rewrite relative Links
+				$textDOM = defaultLinkTo($textDOM, self::URI . '/');
+
 				$article->save();
 				$text = $textDOM->innertext;
-				$item['content'] = '<h1>' . $item['title'] . '</h1>' . $date . '<br/>' . $header . $text;
+				$item['content'] = '<h1>' . $item['title'] . '</h1>' . $dateHTML . '<br/>' . $header . $text;
 				$this->items[] = $item;
 			}
 		}

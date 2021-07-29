@@ -4,7 +4,7 @@ class FacebookBridge extends BridgeAbstract {
 	const MAINTAINER = 'teromene, logmanoriginal';
 	const NAME = 'Facebook Bridge | Main Site';
 	const URI = 'https://www.facebook.com/';
-	const CACHE_TIMEOUT = 300; // 5min
+	const CACHE_TIMEOUT = 1800; // 30min
 	const DESCRIPTION = 'Input a page title or a profile log. For a profile log,
  please insert the parameter as follow : myExamplePage/132621766841117';
 
@@ -203,7 +203,6 @@ class FacebookBridge extends BridgeAbstract {
 			$item['title'] = $this->extractGroupPostTitle($post);
 			$item['author'] = $this->extractGroupPostAuthor($post);
 			$item['content'] = $this->extractGroupPostContent($post);
-			$item['timestamp'] = $this->extractGroupPostTimestamp($post);
 			$item['enclosures'] = $this->extractGroupPostEnclosures($post);
 
 			$this->items[] = $item;
@@ -282,7 +281,8 @@ class FacebookBridge extends BridgeAbstract {
 
 			// Find the one that is a permalink
 			if(strpos($anchor->href, 'permalink') !== false) {
-				return $anchor->href;
+				$arr = explode('?', $anchor->href, 2);
+				return $arr[0];
 			}
 
 		}
@@ -301,15 +301,6 @@ class FacebookBridge extends BridgeAbstract {
 			$context_text .= $content->next_sibling()->innertext;
 		}
 		return $context_text;
-
-	}
-
-	private function extractGroupPostTimestamp($post) {
-
-		$element = $post->find('abbr', 0)
-			or returnServerError('Unable to find timestamp!');
-
-		return $element->plaintext;
 
 	}
 

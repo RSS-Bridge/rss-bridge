@@ -14,17 +14,28 @@ class EconomistBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM(self::URI . '/latest/')
 			or returnServerError('Could not fetch latest updates form The Economist.');
 
-		foreach($html->find('article') as $element) {
+		foreach($html->find('div.teaser') as $element) {
 
-			$a = $element->find('a', 0);
-			$href = self::URI . $a->href;
+			$a = $element->find('a.headline-link', 0);
+			$href = $a->href;
+
+			if (substr($href, 0, 4) != 'http')
+				$href = self::URI . $a->href;
+
 			$full = getSimpleHTMLDOMCached($href);
 			$article = $full->find('article', 0);
+			$header = $article->find('span[itemprop="headline"]', 0);
+			$headerimg = $article->find('div[itemprop="image"]', 0)->find('img', 0);
+			$author = $article->find('p[itemprop="byline"]', 0);
+			$time = $article->find('time', 0);
+			$content = $article->find('div[itemprop="text"]', 0);
+			$section = array( $article->find('strong[itemprop="articleSection"]', 0)->plaintext );
 
-			$header = $article->find('h1', 0);
-			$author = $article->find('span[itemprop="author"]', 0);
-			$time = $article->find('time[itemprop="dateCreated"]', 0);
-			$content = $article->find('div[itemprop="description"]', 0);
+			// Author
+			if ($author)
+				$author = substr($author->innertext, 3, strlen($author));
+			else
+				$author = 'The Economist';
 
 			// Remove newsletter subscription box
 			$newsletter = $content->find('div[class="newsletter-form__message"]', 0);
@@ -40,19 +51,15 @@ class EconomistBridge extends BridgeAbstract {
 			if ($nextprev)
 				$nextprev->outertext = '';
 
-			$section = array( $article->find('h3[itemprop="articleSection"]', 0)->plaintext );
-
 			$item = array();
-			$item['title'] = $header->find('span', 0)->innertext . ': '
-				. $header->find('span', 1)->innertext;
-
+			$item['title'] = $header->innertext;
 			$item['uri'] = $href;
 			$item['timestamp'] = strtotime($time->datetime);
-			$item['author'] = $author->innertext;
+			$item['author'] = $author;
 			$item['categories'] = $section;
 
 			$item['content'] = '<img style="max-width: 100%" src="'
-				. $a->find('img', 0)->src . '">' . $content->innertext;
+				. $headerimg->src . '">' . $content->innertext;
 
 			$this->items[] = $item;
 

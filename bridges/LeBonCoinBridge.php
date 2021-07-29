@@ -352,12 +352,14 @@ class LeBonCoinBridge extends BridgeAbstract {
 
 	public function collectData(){
 
-		$url = 'https://api.leboncoin.fr/finder/search/';
+		$url = 'https://api.leboncoin.fr/api/adfinder/v1/search';
 		$data = $this->buildRequestJson();
 
 		$header = array(
-			'User-Agent: LBC;Android;Null;Null;Null;Null;Null;Null;Null;Null',
+			'User-Agent: LBC;Android;10;SAMSUNG;phone;0aaaaaaaaaaaaaaa;wifi;8.24.3.8;152437;0',
 			'Content-Type: application/json',
+			'X-LBC-CC: 7',
+			'Accept: application/json,application/hal+json',
 			'Content-Length: ' . strlen($data),
 			'api_key: ' . self::$LBC_API_KEY
 		);

@@ -270,7 +270,9 @@ abstract class FeedExpander extends BridgeAbstract {
 			foreach($feedItem->link as $link) {
 				if(strtolower($link['rel']) === 'alternate') {
 					$item['uri'] = (string)$link['href'];
-					break;
+				}
+				if(strtolower($link['rel']) === 'enclosure') {
+					$item['enclosures'][] = (string)$link['href'];
 				}
 			}
 		}

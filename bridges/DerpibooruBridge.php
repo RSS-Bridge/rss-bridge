@@ -2,7 +2,7 @@
 class DerpibooruBridge extends BridgeAbstract {
 	const NAME = 'Derpibooru Bridge';
 	const URI = 'https://derpibooru.org/';
-	const DESCRIPTION = 'Returns newest posts from a Derpibooru search';
+	const DESCRIPTION = 'Returns newest images from a Derpibooru search';
 	const CACHE_TIMEOUT = 300; // 5min
 	const MAINTAINER = 'Roliga';
 
@@ -73,13 +73,13 @@ class DerpibooruBridge extends BridgeAbstract {
 	public function collectData(){
 		$queryJson = json_decode(getContents(
 			self::URI
-			. 'search.json?filter_id='
+			. 'api/v1/json/search/images?filter_id='
 			. urlencode($this->getInput('f'))
 			. '&q='
 			. urlencode($this->getInput('q'))
 		)) or returnServerError('Failed to query Derpibooru');
 
-		foreach($queryJson->search as $post) {
+		foreach($queryJson->images as $post) {
 			$item = array();
 
 			$postUri = self::URI . $post->id;
@@ -88,25 +88,27 @@ class DerpibooruBridge extends BridgeAbstract {
 			$item['title'] = $post->id;
 			$item['timestamp'] = strtotime($post->created_at);
 			$item['author'] = $post->uploader;
-			$item['enclosures'] = array('https:' . $post->image);
-			$item['categories'] = explode(', ', $post->tags);
+			$item['enclosures'] = array($post->view_url);
+			$item['categories'] = $post->tags;
 
 			$item['content'] = '<p><a href="' // image preview
 				. $postUri
-				. '"><img src="https:'
+				. '"><img src="'
 				. $post->representations->medium
 				. '"></a></p><p>' // description
 				. $post->description
 				. '</p><p><b>Size:</b> ' // image size
 				. $post->width
 				. 'x'
-				. $post->height
-				. '<br><b>Source:</b> <a href="' // source link
+				. $post->height;
+			// source link
+			if ($post->source_url != null) {
+				$item['content'] .= '<br><b>Source:</b> <a href="'
 				. $post->source_url
 				. '">'
 				. $post->source_url
 				. '</a></p>';
-
+			};
 			$this->items[] = $item;
 		}
 	}

@@ -455,6 +455,35 @@ class SkimfeedBridge extends BridgeAbstract {
 
 	}
 
+	public function detectParameters($url) {
+
+		if (0 !== strpos($url, static::URI)) {
+			return null;
+		}
+
+		foreach(self::PARAMETERS as $channels) {
+
+			foreach($channels as $box_name => $box) {
+
+				foreach($box['values'] as $name => $channel_url) {
+
+					if (static::URI . $channel_url === $url) {
+						return array(
+							$box_name => $name,
+						);
+
+					}
+
+				}
+
+			}
+
+		}
+
+		return null;
+
+	}
+
 	public function getName() {
 
 		switch($this->queriedContext) {

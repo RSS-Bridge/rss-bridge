@@ -1,7 +1,7 @@
 <?php
 class InstagramBridge extends BridgeAbstract {
 
-	const MAINTAINER = 'pauder';
+	// const MAINTAINER = 'pauder';
 	const NAME = 'Instagram Bridge';
 	const URI = 'https://www.instagram.com/';
 	const DESCRIPTION = 'Returns the newest images';
@@ -131,7 +131,7 @@ class InstagramBridge extends BridgeAbstract {
 
 			switch($media->__typename) {
 				case 'GraphSidecar':
-					$data = $this->getInstagramSidecarData($item['uri'], $item['title']);
+					$data = $this->getInstagramSidecarData($item['uri'], $item['title'], $media, $textContent);
 					$item['content'] = $data[0];
 					$item['enclosures'] = $data[1];
 					break;
@@ -142,7 +142,7 @@ class InstagramBridge extends BridgeAbstract {
 					$item['enclosures'] = array($mediaURI);
 					break;
 				case 'GraphVideo':
-					$data = $this->getInstagramVideoData($item['uri'], $mediaURI);
+					$data = $this->getInstagramVideoData($item['uri'], $mediaURI, $media, $textContent);
 					$item['content'] = $data[0];
 					if($directLink) {
 						$item['enclosures'] = $data[1];
@@ -160,11 +160,7 @@ class InstagramBridge extends BridgeAbstract {
 	}
 
 	// returns Sidecar(a post which has multiple media)'s contents and enclosures
-	protected function getInstagramSidecarData($uri, $postTitle) {
-		$mediaInfo = $this->getSinglePostData($uri);
-
-		$textContent = $this->getTextContent($mediaInfo);
-
+	protected function getInstagramSidecarData($uri, $postTitle, $mediaInfo, $textContent) {
 		$enclosures = array();
 		$content = '';
 		foreach($mediaInfo->edge_sidecar_to_children->edges as $singleMedia) {
@@ -187,10 +183,7 @@ class InstagramBridge extends BridgeAbstract {
 	}
 
 	// returns Video post's contents and enclosures
-	protected function getInstagramVideoData($uri, $mediaURI) {
-		$mediaInfo = $this->getSinglePostData($uri);
-
-		$textContent = $this->getTextContent($mediaInfo);
+	protected function getInstagramVideoData($uri, $mediaURI, $mediaInfo, $textContent) {
 		$content = '<video controls>';
 		$content .= '<source src="' . $mediaInfo->video_url . '" poster="' . $mediaURI . '" type="video/mp4">';
 		$content .= '<img src="' . $mediaURI . '" alt="">';

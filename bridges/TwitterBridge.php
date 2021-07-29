@@ -75,6 +75,12 @@ EOD
 				'required' => false,
 				'type' => 'checkbox',
 				'title' => 'Hide retweets'
+			),
+			'nopinned' => array(
+				'name' => 'Without pinned tweet',
+				'required' => false,
+				'type' => 'checkbox',
+				'title' => 'Hide pinned tweet'
 			)
 		),
 		'By list' => array(
@@ -88,6 +94,20 @@ EOD
 				'name' => 'List',
 				'required' => true,
 				'title' => 'Insert the list name'
+			),
+			'filter' => array(
+				'name' => 'Filter',
+				'exampleValue' => '#rss-bridge',
+				'required' => false,
+				'title' => 'Specify term to search for'
+			)
+		),
+		'By list ID' => array(
+			'listid' => array(
+				'name' => 'List ID',
+				'exampleValue' => '31748',
+				'required' => true,
+				'title' => 'Insert the list id'
 			),
 			'filter' => array(
 				'name' => 'Filter',
@@ -145,6 +165,8 @@ EOD
 			break;
 		case 'By list':
 			return $this->getInput('list') . ' - Twitter list by ' . $this->getInput('user');
+		case 'By list ID':
+			return 'Twitter List #' . $this->getInput('listid');
 		default: return parent::getName();
 		}
 		return 'Twitter ' . $specific . $this->getInput($param);
@@ -167,6 +189,10 @@ EOD
 			. urlencode($this->getInput('user'))
 			. '/lists/'
 			. str_replace(' ', '-', strtolower($this->getInput('list')));
+		case 'By list ID':
+			return self::URI
+			. 'i/lists/'
+			. urlencode($this->getInput('listid'));
 		default: return parent::getURI();
 		}
 	}
@@ -179,14 +205,31 @@ EOD
 			. urlencode($this->getInput('q'))
 			. '&tweet_mode=extended&tweet_search_mode=live';
 		case 'By username':
-			return self::API_URI
-			. '/2/timeline/profile/'
-			. $this->getRestId($this->getInput('u'))
-			. '.json?tweet_mode=extended';
+			// use search endpoint if without replies or without retweets enabled
+			if ($this->getInput('noretweet') || $this->getInput('norep')) {
+				$query = 'from:' . $this->getInput('u');
+				// Twitter's from: search excludes retweets by default
+				if (!$this->getInput('noretweet')) $query .= ' include:nativeretweets';
+				if ($this->getInput('norep')) $query .= ' exclude:replies';
+				return self::API_URI
+				. '/2/search/adaptive.json?q='
+				. urlencode($query)
+				. '&tweet_mode=extended&tweet_search_mode=live';
+			} else {
+				return self::API_URI
+				. '/2/timeline/profile/'
+				. $this->getRestId($this->getInput('u'))
+				. '.json?tweet_mode=extended';
+			}
 		case 'By list':
 			return self::API_URI
 			. '/2/timeline/list.json?list_id='
 			. $this->getListId($this->getInput('user'), $this->getInput('list'))
+			. '&tweet_mode=extended';
+		case 'By list ID':
+			return self::API_URI
+			. '/2/timeline/list.json?list_id='
+			. $this->getInput('listid')
 			. '&tweet_mode=extended';
 		default: returnServerError('Invalid query context !');
 		}
@@ -221,7 +264,43 @@ EOD
 			return $carry;
 		}, array());
 
-		foreach($data->globalObjects->tweets as $tweet) {
+		$hidePinned = $this->getInput('nopinned');
+		if ($hidePinned) {
+			$pinnedTweetId = null;
+			if (isset($data->timeline->instructions[1]) && isset($data->timeline->instructions[1]->pinEntry)) {
+				$pinnedTweetId = $data->timeline->instructions[1]->pinEntry->entry->content->item->content->tweet->id;
+			}
+		}
+
+		$tweets = array();
+
+		// Extract tweets from timeline property when in username mode
+		// This fixes number of issues:
+		// * If there's a retweet of a quote tweet, the quoted tweet will not appear in results (since it wasn't retweeted directly)
+		// * Pinned tweets do not get stuck at the bottom
+		if ($this->queriedContext === 'By username') {
+			foreach($data->timeline->instructions[0]->addEntries->entries as $tweet) {
+				if (!isset($tweet->content->item)) continue;
+				$tweetId = $tweet->content->item->content->tweet->id;
+				$selectedTweet = $this->getTweet($tweetId, $data->globalObjects);
+				if (!$selectedTweet) continue;
+				// If this is a retweet, it will contain shorter text and will point to the original full tweet (retweeted_status_id_str).
+				// Let's use the original tweet text.
+				if (isset($selectedTweet->retweeted_status_id_str)) {
+					$tweetId = $selectedTweet->retweeted_status_id_str;
+					$selectedTweet = $this->getTweet($tweetId, $data->globalObjects);
+					if (!$selectedTweet) continue;
+				}
+				// use $tweetId as key to avoid duplicates (e.g. user retweeting their own tweet)
+				$tweets[$tweetId] = $selectedTweet;
+			}
+		} else {
+			foreach($data->globalObjects->tweets as $tweet) {
+				$tweets[] = $tweet;
+			}
+		}
+
+		foreach($tweets as $tweet) {
 
 			/* Debug::log('>>> ' . json_encode($tweet)); */
 			// Skip spurious retweets
@@ -234,6 +313,11 @@ EOD
 				continue;
 			}
 
+			// Skip pinned tweet
+			if ($hidePinned && $tweet->id_str === $pinnedTweetId) {
+				continue;
+			}
+
 			$item = array();
 			// extract username and sanitize
 			$user_info = $this->getUserInformation($tweet->user_id_str, $data->globalObjects);
@@ -241,7 +325,7 @@ EOD
 			$item['username'] = $user_info->screen_name;
 			$item['fullname'] = $user_info->name;
 			$item['author'] = $item['fullname'] . ' (@' . $item['username'] . ')';
-			if (null !== $this->getInput('u') && $item['username'] != $this->getInput('u')) {
+			if (null !== $this->getInput('u') && strtolower($item['username']) != strtolower($this->getInput('u'))) {
 				$item['author'] .= ' RT: @' . $this->getInput('u');
 			}
 			$item['avatar'] = $user_info->profile_image_url_https;
@@ -354,6 +438,7 @@ EOD;
 
 			switch($this->queriedContext) {
 				case 'By list':
+				case 'By list ID':
 					// Check if filter applies to list (using raw content)
 					if($this->getInput('filter')) {
 						if(stripos($cleanedTweet, $this->getInput('filter')) === false) {
@@ -362,7 +447,7 @@ EOD;
 					}
 					break;
 				case 'By username':
-					if ($this->getInput('noretweet') && $item['username'] != $this->getInput('u')) {
+					if ($this->getInput('noretweet') && strtolower($item['username']) != strtolower($this->getInput('u'))) {
 						continue 2; // switch + for-loop!
 					}
 					break;
@@ -520,6 +605,14 @@ EOD;
 			if($user->id_str == $userId) {
 				return $user;
 			}
+		}
+	}
+
+	private function getTweet($tweetId, $apiData) {
+		if (property_exists($apiData->tweets, $tweetId)) {
+			return $apiData->tweets->$tweetId;
+		} else {
+			return null;
 		}
 	}
 }

@@ -46,7 +46,13 @@ class FormatFactory extends FactoryAbstract {
 			throw new \InvalidArgumentException('Format name invalid!');
 		}
 
-		$name = $this->sanitizeFormatName($name) . 'Format';
+		$name = $this->sanitizeFormatName($name);
+
+		if (is_null($name)) {
+			throw new \InvalidArgumentException('Unknown format given!');
+		}
+
+		$name .= 'Format';
 		$pathFormat = $this->getWorkingDir() . $name . '.php';
 
 		if(!file_exists($pathFormat)) {
@@ -72,7 +78,7 @@ class FormatFactory extends FactoryAbstract {
 	 * @return bool true if the name is a valid format name, false otherwise.
 	 */
 	public function isFormatName($name){
-		return is_string($name) && preg_match('/^[A-Z][a-zA-Z0-9-]*$/', $name) === 1;
+		return is_string($name) && preg_match('/^[a-zA-Z0-9-]*$/', $name) === 1;
 	}
 
 	/**
@@ -108,8 +114,6 @@ class FormatFactory extends FactoryAbstract {
 	 * * The PHP file name without file extension (i.e. `AtomFormat`)
 	 * * The format name (i.e. `Atom`)
 	 *
-	 * Casing is ignored (i.e. `ATOM` and `atom` are the same).
-	 *
 	 * A format file matching the given format name must exist in the working
 	 * directory!
 	 *
@@ -118,6 +122,7 @@ class FormatFactory extends FactoryAbstract {
 	 * valid, null otherwise.
 	 */
 	protected function sanitizeFormatName($name) {
+		$name = ucfirst(strtolower($name));
 
 		if(is_string($name)) {
 
@@ -131,15 +136,9 @@ class FormatFactory extends FactoryAbstract {
 				$name = $matches[1];
 			}
 
-			// Improve performance for correctly written format names
+			// The name is valid if a corresponding format file is found on disk
 			if(in_array($name, $this->getFormatNames())) {
 				$index = array_search($name, $this->getFormatNames());
-				return $this->getFormatNames()[$index];
-			}
-
-			// The name is valid if a corresponding format file is found on disk
-			if(in_array(strtolower($name), array_map('strtolower', $this->getFormatNames()))) {
-				$index = array_search(strtolower($name), array_map('strtolower', $this->getFormatNames()));
 				return $this->getFormatNames()[$index];
 			}
 

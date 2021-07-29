@@ -140,7 +140,7 @@ abstract class FormatAbstract implements FormatInterface {
 	 * @param array $extraInfos {@inheritdoc}
 	 */
 	public function setExtraInfos(array $extraInfos = array()){
-		foreach(array('name', 'uri', 'icon') as $infoName) {
+		foreach(array('name', 'uri', 'icon', 'donationUri') as $infoName) {
 			if(!isset($extraInfos[$infoName])) {
 				$extraInfos[$infoName] = '';
 			}

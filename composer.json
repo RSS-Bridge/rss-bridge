@@ -34,6 +34,7 @@
     },
     "suggest": {
         "ext-memcached": "Allows to use memcached as cache type",
-        "ext-sqlite3": "Allows to use an SQLite database for caching"
+        "ext-sqlite3": "Allows to use an SQLite database for caching",
+        "ext-dom": "Allows to use some bridges based on XPath expressions"
     }
 }
