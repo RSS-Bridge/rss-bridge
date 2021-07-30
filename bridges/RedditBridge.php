@@ -135,7 +135,7 @@ class RedditBridge extends BridgeAbstract {
 					. $keywords
 					. ($user ? 'author%3A' : 'subreddit%3A')
 					. $name
-					. '&sort=
+					. '&sort='
 					. $this->getInput('d'))
 			or returnServerError('Unable to fetch posts!');
 			$decodedValues = json_decode($values);
