@@ -130,12 +130,12 @@ class RedditBridge extends BridgeAbstract {
 		
 		foreach ($subreddits as $subreddit) {
 			$name = trim($subreddit);
-			$values = getContents(self::URI 
-					. '/search.json?q=' 
-					. $keywords 
-					. ($user ? 'author%3A' : 'subreddit%3A') 
-					. $name 
-					. '&sort='
+			$values = getContents(self::URI
+					. '/search.json?q='
+					. $keywords
+					. ($user ? 'author%3A' : 'subreddit%3A')
+					. $name
+					. '&sort=
 					. $this->getInput('d'))
 			or returnServerError('Unable to fetch posts!');
 			$decodedValues = json_decode($values);
