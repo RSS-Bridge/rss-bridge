@@ -127,7 +127,7 @@ class RedditBridge extends BridgeAbstract {
 		} else {
 			$keywords = '';
 		}
-		
+
 		foreach ($subreddits as $subreddit) {
 			$name = trim($subreddit);
 			$values = getContents(self::URI
