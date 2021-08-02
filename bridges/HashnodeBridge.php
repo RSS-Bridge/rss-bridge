@@ -34,6 +34,9 @@ class HashnodeBridge extends BridgeAbstract {
 					} else {
 						$item['uri'] = vsprintf('https://hashnode.com/post/%s', array($post['slug']));
 					}
+					if(!isset($item['uri'])) {
+						continue;
+					}
 					$this->items[] = $item;
 				}
 			}
