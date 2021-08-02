@@ -41,13 +41,6 @@ class HashnodeBridge extends BridgeAbstract {
 	}
 
 	public function getName(){
-
-		switch ($this->getInput('sort')) {
-			case 'explore':
-		    		return self::NAME . ': Tranding posts';
-		    	break;
-			default:
-				return self::NAME . ': Recent posts';
-		}
+		return self::NAME . ': Recent posts';
 	}
 }
