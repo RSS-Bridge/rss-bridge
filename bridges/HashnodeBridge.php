@@ -16,64 +16,38 @@ class HashnodeBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($url)
 			or returnServerError('Error while downloading the website content');
 
-		$this->items = [];
-		for ($i=0; $i < 1; $i++) {
+		$this->items = array();
+		for ($i = 0; $i < 1; $i++) {
 			$url = self::LATEST_POSTS . $i;
 			$content = file_get_contents($url);
 			$array = json_decode($content, true);
 
 			if($array['posts'] != null) {
 				foreach($array['posts'] as $post) {
-					$item = [];
+					$item = array();
 					$item['title'] = $post['title'];
 					$item['content'] = $post['brief'];
 					$item['timestamp'] = time();
 					if($post['partOfPublication'] === true) {
-						$item['uri'] = vsprintf("https://%s.hashnode.dev/%s", [$post['publication']['username'], $post['slug']]);
+						$item['uri'] = vsprintf('https://%s.hashnode.dev/%s', array($post['publication']['username'], $post['slug']));
 					} else {
-						$item['uri'] = vsprintf("https://hashnode.com/post/%s", [$post['slug']]);
+						$item['uri'] = vsprintf('https://hashnode.com/post/%s', array($post['slug']));
 					}
 					$this->items[] = $item;
 				}
 			}
 		}
-		
 		$this->items = $posts;
-	}
-
-	public function getRecentPosts(){
-		$posts = [];
-		for ($i=0; $i < 1; $i++) {
-			$url = self::LATEST_POSTS . $i;
-			$content = file_get_contents($url);
-			$array = json_decode($content, true);
-
-			if($array['posts'] != null) {
-				foreach($array['posts'] as $post) {
-					$item = [];
-					$item['title'] = $post['title'];
-					$item['content'] = $post['brief'];
-					$item['timestamp'] = time();
-					if($post['partOfPublication'] === true) {
-						$item['uri'] = vsprintf("https://%s.hashnode.dev/%s", [$post['publication']['username'], $post['slug']]);
-					} else {
-						$item['uri'] = vsprintf("https://hashnode.com/post/%s", [$post['slug']]);
-					}
-					$posts[] = $item;
-				}
-			}
-		}
-		return $posts;
 	}
 
 	public function getName(){
 
 		switch ($this->getInput('sort')) {
-		    case 'explore':
-		        return self::NAME . ': Tranding posts';
-		        break;
-		    default:
-		       	return self::NAME . ': Recent posts';
+			case 'explore':
+		    	return self::NAME . ': Tranding posts';
+		    	break;
+			default:
+				return self::NAME . ': Recent posts';
 		}
 	}
 }
