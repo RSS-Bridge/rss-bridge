@@ -17,7 +17,8 @@ class HashnodeBridge extends BridgeAbstract {
 			or returnServerError('Error while downloading the website content');
 
 		$this->items = array();
-		for ($i = 0; $i < 10; $i++) {
+		$time = time();
+		for ($i = 1; $i < 3; $i++) {
 			$url = self::LATEST_POSTS . $i;
 			$content = file_get_contents($url);
 			$array = json_decode($content, true);
@@ -27,7 +28,7 @@ class HashnodeBridge extends BridgeAbstract {
 					$item = array();
 					$item['title'] = $post['title'];
 					$item['content'] = $post['brief'];
-					$item['timestamp'] = time();
+					$item['timestamp'] = --$time;
 					if($post['partOfPublication'] === true) {
 						$item['uri'] = vsprintf('https://%s.hashnode.dev/%s', array($post['publication']['username'], $post['slug']));
 					} else {
