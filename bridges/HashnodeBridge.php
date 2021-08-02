@@ -5,7 +5,7 @@ class HashnodeBridge extends BridgeAbstract {
 	const NAME = 'Hashnode';
 	const URI = 'https://hashnode.com';
 	const URI_ITEM = 'https://hashnode.com';
-	const CACHE_TIMEOUT = 3600; // 12hr
+	const CACHE_TIMEOUT = 3600; // 1hr
 	const DESCRIPTION = 'See trending or latest posts in Hashnode community.';
 	const PARAMETERS = array();
 	const LATEST_POSTS = 'https://hashnode.com/api/stories/recent?page=';
