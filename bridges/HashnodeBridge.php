@@ -5,7 +5,7 @@ class HashnodeBridge extends BridgeAbstract {
 	const NAME = 'Hashnode';
 	const URI = 'https://hashnode.com';
 	const URI_ITEM = 'https://hashnode.com';
-	const CACHE_TIMEOUT = 43200; // 12hr
+	const CACHE_TIMEOUT = 3600; // 12hr
 	const DESCRIPTION = 'See trending or latest posts in Hashnode community.';
 	const PARAMETERS = array();
 	const LATEST_POSTS = 'https://hashnode.com/api/stories/recent?page=';
@@ -18,7 +18,7 @@ class HashnodeBridge extends BridgeAbstract {
 
 		$this->items = array();
 		$time = time();
-		for ($i = 1; $i < 3; $i++) {
+		for ($i = 0; $i < 5; $i++) {
 			$url = self::LATEST_POSTS . $i;
 			$content = file_get_contents($url);
 			$array = json_decode($content, true);
