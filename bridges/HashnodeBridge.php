@@ -17,7 +17,7 @@ class HashnodeBridge extends BridgeAbstract {
 			or returnServerError('Error while downloading the website content');
 
 		$this->items = array();
-		for ($i = 0; $i < 1; $i++) {
+		for ($i = 0; $i < 10; $i++) {
 			$url = self::LATEST_POSTS . $i;
 			$content = file_get_contents($url);
 			$array = json_decode($content, true);
