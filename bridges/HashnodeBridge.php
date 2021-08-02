@@ -37,7 +37,6 @@ class HashnodeBridge extends BridgeAbstract {
 				}
 			}
 		}
-		$this->items = $posts;
 	}
 
 	public function getName(){
