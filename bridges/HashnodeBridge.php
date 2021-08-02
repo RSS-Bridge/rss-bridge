@@ -44,7 +44,7 @@ class HashnodeBridge extends BridgeAbstract {
 
 		switch ($this->getInput('sort')) {
 			case 'explore':
-		    	return self::NAME . ': Tranding posts';
+		    		return self::NAME . ': Tranding posts';
 		    	break;
 			default:
 				return self::NAME . ': Recent posts';
