@@ -7,18 +7,7 @@ class HashnodeBridge extends BridgeAbstract {
 	const URI_ITEM = 'https://hashnode.com';
 	const CACHE_TIMEOUT = 43200; // 12hr
 	const DESCRIPTION = 'See trending or latest posts in Hashnode community.';
-	const PARAMETERS = array( array(
-		// 'sort' => array(
-		// 	'name' => 'Filter items by',
-		// 	'type' => 'list',
-		// 	'required' => false,
-		// 	'values' => array(
-		// 		'Recent' => 'latest',
-		// 		'Trending' => 'explore',
-		// 	),
-		// 	'defaultValue' => 'latest'
-		// )
-	));
+	const PARAMETERS = array();
 	const LATEST_POSTS = 'https://hashnode.com/api/stories/recent?page=';
 
 	public function collectData(){
