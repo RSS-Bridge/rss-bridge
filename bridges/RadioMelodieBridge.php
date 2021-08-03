@@ -23,6 +23,9 @@ class RadioMelodieBridge extends BridgeAbstract {
 			if($element->tag == 'a') {
 				$articleURL = self::URI . $element->href;
 				$article = getSimpleHTMLDOM($articleURL);
+				$this->rewriteAudioPlayers($article);
+				// Reload the modified content
+				$article = str_get_html($article->save());
 				$textDOM = $article->find('article', 0);
 
 				// Initialise arrays
@@ -96,6 +99,7 @@ class RadioMelodieBridge extends BridgeAbstract {
 				$textDOM = defaultLinkTo($textDOM, self::URI . '/');
 
 				$article->save();
+				//$this->rewriteAudioPlayers($textDOM);
 				$text = $textDOM->innertext;
 				$item['content'] = '<h1>' . $item['title'] . '</h1>' . $dateHTML . '<br/>' . $header . $text;
 				$this->items[] = $item;
@@ -111,6 +115,32 @@ class RadioMelodieBridge extends BridgeAbstract {
 		$parts = explode('?', $url);
 		parse_str(html_entity_decode($parts[1]), $params);
 		return self::URI . '/' . $params['image'];
+
+	}
+
+	/*
+	 * Function to rewrite Audio Players to use the <audio> tag and not the javascript audio player
+	 */
+	private function rewriteAudioPlayers($html)
+	{
+		// Find all audio Players
+		$audioPlayers = $html->find('div[class=audioPlayer]');
+
+		foreach($audioPlayers as $audioPlayer) {
+			// Get the javascript content below the player
+			$js = $audioPlayer->next_sibling();
+
+			// Extract the audio file URL
+			preg_match('/wavesurfer[0-9]+.load\(\'(.*)\'\)/m', $js->innertext, $urls);
+
+			// Create the plain HTML <audio> content to play this audio file
+			$content = '<audio style="width: 100%" src="' . $urls[1] . '" controls ></audio>';
+
+			// Replace the <script> tag by the <audio> tag
+			$js->outertext = $content;
+			// Remove the initial Audio Player
+			$audioPlayer->outertext = '';
+		}
 
 	}
 }
