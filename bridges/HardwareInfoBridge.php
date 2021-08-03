@@ -25,7 +25,8 @@ class HardwareInfoBridge extends FeedExpander
 
 		foreach($article->find('*') as $child) {
 
-			if(!$reachedEndOfArticle && isset($child->attr['class']) && $child->attr['class'] == 'article__content__social-bar') {
+			if(!$reachedEndOfArticle && isset($child->attr['class'])
+				&& $child->attr['class'] == 'article__content__social-bar') {
 				$reachedEndOfArticle = true;
 			}
 
