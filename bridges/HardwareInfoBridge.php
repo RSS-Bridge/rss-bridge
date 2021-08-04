@@ -2,7 +2,7 @@
 class HardwareInfoBridge extends FeedExpander
 {
 	const NAME = 'Hardware Info Bridge';
-	const URI = 'https://HardwareInfo.net/';
+	const URI = 'https://nl.hardware.info/';
 	const DESCRIPTION = 'Tech news from hardware.info (Dutch)';
 	const MAINTAINER = 't0stiman';
 
@@ -16,7 +16,7 @@ class HardwareInfoBridge extends FeedExpander
 		$item = parent::parseItem($feedItem);
 
 		//get full article
-		$articlePage = getSimpleHTMLDOMCached('$feedItem->link');
+		$articlePage = getSimpleHTMLDOMCached($feedItem->link);
 
 		$article = $articlePage->find('div.article__content', 0);
 
