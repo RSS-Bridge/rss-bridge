@@ -52,3 +52,4 @@ class CryptomeBridge extends BridgeAbstract {
 		}
 	}
 }
+
