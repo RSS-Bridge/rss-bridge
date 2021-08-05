@@ -171,7 +171,8 @@ class NationalGeographicBridge extends BridgeAbstract {
 
 		$tags = $story['tags'];
 		foreach($tags as $tag) {
-			$item['categories'][] = $tag['name'];
+			$tag_name = $tag['name'];
+			$item['categories'][] = $tag_name;
 		}
 
 		$this->items[] = $item;
