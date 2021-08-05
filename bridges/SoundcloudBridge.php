@@ -1,27 +1,34 @@
 <?php
 class SoundCloudBridge extends BridgeAbstract {
-
 	const MAINTAINER = 'kranack, Roliga';
 	const NAME = 'Soundcloud Bridge';
 	const URI = 'https://soundcloud.com/';
 	const CACHE_TIMEOUT = 600; // 10min
 	const DESCRIPTION = 'Returns 10 newest music from user profile';
 
-	const PARAMETERS = array( array(
+	const PARAMETERS = array(array(
 		'u' => array(
 			'name' => 'username',
 			'required' => true
 		),
 		't' => array(
-			'name' => 'type',
+			'name' => 'Content',
 			'type' => 'list',
 			'defaultValue' => 'tracks',
 			'values' => array(
+				'All' => 'all',
 				'Tracks' => 'tracks',
-				'Playlists' => 'playlists'
+				'Albums' => 'albums',
+				'Playlists' => 'playlists',
+				'Reposts' => 'reposts',
+				'Likes' => 'likes'
 			)
 		)
 	));
+
+	private $apiUrl = 'https://api-v2.soundcloud.com/';
+	private $playerUrl = 'https://w.soundcloud.com/player/?url=http';
+	private $widgetUrl = 'https://widget.sndcdn.com/';
 
 	private $feedTitle = null;
 	private $feedIcon = null;
@@ -30,35 +37,31 @@ class SoundCloudBridge extends BridgeAbstract {
 	private $clientIdRegex = '/client_id.*?"(.+?)"/';
 	private $widgetRegex = '/widget-.+?\.js/';
 
-	public function collectData(){
-		$res = $this->apiGet('resolve', array(
-			'url' => 'https://soundcloud.com/' . $this->getInput('u')
-		)) or returnServerError('No results for this query');
+	public function collectData() {
+		$res = $this->getUser($this->getInput('u'))
+			or returnServerError('No results for this query');
 
 		$this->feedTitle = $res->username;
 		$this->feedIcon = $res->avatar_url;
 
-		$tracks = $this->apiGet(
-			'users/' . urlencode($res->id) . '/' . $this->getInput('t'),
-			array('limit' => 31)
-		) or returnServerError('No results for this user/playlist');
+		$tracks = $this->getUserItems($res->id, $this->getInput('t'))
+			or returnServerError('No results for ' . $this->getInput('t'));
+
+		$hasTrackObject = array('all', 'reposts', 'likes');
 
 		foreach ($tracks->collection as $index => $track) {
+			if (in_array($this->getInput('t'), $hasTrackObject) === true) {
+				$track = $track->track;
+			}
+
 			$item = array();
 			$item['author'] = $track->user->username;
 			$item['title'] = $track->user->username . ' - ' . $track->title;
 			$item['timestamp'] = strtotime($track->created_at);
 			$item['content'] = nl2br($track->description);
 			$item['enclosures'][] = $track->artwork_url;
-
-			$item['id'] = self::URI
-				. urlencode($this->getInput('u'))
-				. '/'
-				. urlencode($track->permalink);
-			$item['uri'] = self::URI
-				. urlencode($this->getInput('u'))
-				. '/'
-				. urlencode($track->permalink);
+			$item['id'] = $track->permalink_url;
+			$item['uri'] = $track->permalink_url;
 			$this->items[] = $item;
 
 			if (count($this->items) >= 10) {
@@ -75,13 +78,17 @@ class SoundCloudBridge extends BridgeAbstract {
 		return parent::getIcon();
 	}
 
-	public function getURI(){
-		return 'https://soundcloud.com/' . $this->getInput('u');
+	public function getURI() {
+		if ($this->getInput('u')) {
+			return self::URI . $this->getInput('u') . '/' . $this->getInput('t');
+		}
+
+		return parent::getURI();
 	}
 
-	public function getName(){
+	public function getName() {
 		if($this->feedTitle) {
-			return $this->feedTitle . ' - ' . self::NAME;
+			return $this->feedTitle . ' - ' . ucfirst($this->getInput('t')) . ' - ' . self::NAME;
 		}
 
 		return parent::getName();
@@ -114,7 +121,7 @@ class SoundCloudBridge extends BridgeAbstract {
 		$this->initClientIDCache();
 
 		// Without url=http, this returns a 404
-		$playerHTML = getContents('https://w.soundcloud.com/player/?url=http')
+		$playerHTML = getContents($this->playerUrl)
 			or returnServerError('Unable to get player page.');
 
 		// Extract widget JS filenames from player page
@@ -125,7 +132,7 @@ class SoundCloudBridge extends BridgeAbstract {
 
 		// Loop widget js files and extract client ID
 		foreach ($matches[0] as $widgetFile) {
-			$widgetURL = 'https://widget.sndcdn.com/' . $widgetFile;
+			$widgetURL = $this->widgetUrl . $widgetFile;
 
 			$widgetJS = getContents($widgetURL)
 				or returnServerError('Unable to get widget JS page.');
@@ -143,22 +150,46 @@ class SoundCloudBridge extends BridgeAbstract {
 		}
 	}
 
-	private function buildAPIURL($endpoint, $parameters){
-		return 'https://api-v2.soundcloud.com/'
+	private function buildApiUrl($endpoint, $parameters) {
+		return $this->apiUrl
 			. $endpoint
 			. '?'
 			. http_build_query($parameters);
 	}
 
-	private function apiGet($endpoint, $parameters = array()) {
+	private function getUser($username) {
+		$parameters = array('url' => self::URI . $username);
+
+		return $this->getApi('resolve', $parameters);
+	}
+
+	private function getUserItems($userId, $type) {
+		$parameters = array('limit' => 10);
+		$endpoint = 'users/' . $userId . '/' . $type;
+
+		if ($type === 'all') {
+			$endpoint = 'stream/users/' . $userId;
+		}
+
+		if ($type === 'reposts') {
+			$endpoint = 'stream/users/' . $userId . '/' . $type;
+		}
+
+		return $this->getApi($endpoint, $parameters);
+	}
+
+	private function getApi($endpoint, $parameters) {
 		$parameters['client_id'] = $this->getClientID();
+		$url = $this->buildApiUrl($endpoint, $parameters);
 
 		try {
-			return json_decode(getContents($this->buildAPIURL($endpoint, $parameters)));
+			return json_decode(getContents($url));
 		} catch (Exception $e) {
 			// Retry once with refreshed client ID
 			$parameters['client_id'] = $this->refreshClientID();
-			return json_decode(getContents($this->buildAPIURL($endpoint, $parameters)));
+			$url = $this->buildApiUrl($endpoint, $parameters);
+
+			return json_decode(getContents($url));
 		}
 	}
 }
