@@ -16,6 +16,11 @@ class CryptomeBridge extends BridgeAbstract {
 		)
 	));
 
+	public function getIcon() {
+		return self::URI . '/favicon.ico';
+	}
+
+
 	public function collectData(){
 		$html = getSimpleHTMLDOM(self::URI)
 			or returnServerError('Could not request Cryptome.');
@@ -27,19 +32,23 @@ class CryptomeBridge extends BridgeAbstract {
 			$num = min($number, 20);
 		}
 
-		foreach($html->find('pre') as $element) {
-			for($i = 0; $i < $num; ++$i) {
+		$i = 0;
+		foreach($html->find('pre', 1)->find('b') as $element) {
+
+			foreach($element->find('a') as $element1) {
+
 				$item = array();
-				$item['uri'] = self::URI . substr($element->find('a', $i)->href, 20);
-				$item['title'] = substr($element->find('b', $i)->plaintext, 22);
-				$item['content'] = preg_replace(
-					'#http://cryptome.org/#',
-					self::URI,
-					$element->find('b', $i)->innertext
-				);
+				$item['uri'] = $element1->href;
+				$item['title'] = $element->plaintext;
 				$this->items[] = $item;
+
+				if ($i > $num) {
+					break 2;
+				}
+				$i++;
+
+
 			}
-			break;
 		}
 	}
 }
