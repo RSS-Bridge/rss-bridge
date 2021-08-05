@@ -16,7 +16,7 @@ class SoundCloudBridge extends BridgeAbstract {
 			'type' => 'list',
 			'defaultValue' => 'tracks',
 			'values' => array(
-				'All' => 'all',
+				'All (except likes)' => 'all',
 				'Tracks' => 'tracks',
 				'Albums' => 'albums',
 				'Playlists' => 'playlists',
@@ -27,6 +27,7 @@ class SoundCloudBridge extends BridgeAbstract {
 	));
 
 	private $apiUrl = 'https://api-v2.soundcloud.com/';
+	// Without url=http, player URL returns a 404
 	private $playerUrl = 'https://w.soundcloud.com/player/?url=http';
 	private $widgetUrl = 'https://widget.sndcdn.com/';
 
@@ -120,7 +121,6 @@ class SoundCloudBridge extends BridgeAbstract {
 	private function refreshClientID(){
 		$this->initClientIDCache();
 
-		// Without url=http, this returns a 404
 		$playerHTML = getContents($this->playerUrl)
 			or returnServerError('Unable to get player page.');
 
