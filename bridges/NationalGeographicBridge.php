@@ -11,7 +11,7 @@ class NationalGeographicBridge extends BridgeAbstract {
 	const NAME = 'National Geographic';
 	const URI = 'https://www.nationalgeographic.com/';
 	const DESCRIPTION = 'Fetches the latest articles from the National Geographic Magazine';
-	const MAINTAINER = 'logmanoriginal';
+	const MAINTAINER = 'csisoap';
 	const PARAMETERS = array(
 		self::CONTEXT_BY_TOPIC => array(
 			self::PARAMETER_TOPIC => array(
