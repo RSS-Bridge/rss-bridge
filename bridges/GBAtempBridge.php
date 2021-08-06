@@ -81,9 +81,9 @@ class GBAtempBridge extends BridgeAbstract {
 
 		switch($this->getInput('type')) {
 		case 'N':
-			foreach($html->find('li[class=news_item full]') as $newsItem) {
+			foreach($html->find('li[class=news_item news full]') as $newsItem) {
 				$url = self::URI . $newsItem->find('a', 0)->href;
-				$img = $this->getURI() . $newsItem->find('img', 0)->src . '#.image';
+				$img = $this->getURI() . extractFromDelimiters($newsItem->find('a.news_image', 0)->style, 'url(', ')') . '#.image';
 				$time = $this->findItemDate($newsItem);
 				$author = $newsItem->find('a.username', 0)->plaintext;
 				$title = $newsItem->find('a', 1)->plaintext;
