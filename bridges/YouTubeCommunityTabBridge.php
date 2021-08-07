@@ -29,7 +29,7 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 	private $itemTitle = '';
 
 	private $urlRegex = '/youtube\.com\/(channel|user)\/([\w]+)\/community/';
-	private $jsonRegex = '/var ytInitialData = (.*);<\/script>/';
+	private $jsonRegex = '/var ytInitialData = (.*);<\/script><link rel="canonical"/';
 
 	public function detectParameters($url) {
 		$params = array();
