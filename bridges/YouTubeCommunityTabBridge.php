@@ -219,7 +219,7 @@ EOD;
 				}
 
 				$content = <<<EOD
-<hr><p>Poll ({$attachments->pollRenderer->totalVotes->runs[0]->text})<br><ul>{$pollChoices}</ul><p>
+<hr><p>Poll ({$attachments->pollRenderer->totalVotes->simpleText})<br><ul>{$pollChoices}</ul><p>
 EOD;
 			}
 		}
