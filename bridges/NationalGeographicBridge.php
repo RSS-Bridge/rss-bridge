@@ -101,8 +101,7 @@ class NationalGeographicBridge extends BridgeAbstract {
 		foreach(self::MAGAZINE_ID as $id) {
 			$uri = $this->getAPIURL($id);
 
-			$json_raw = getContents($uri)
-					or returnServerError('Could not request ' . $uri);
+			$json_raw = getContents($uri);
 
 			$json = json_decode($json_raw, true)['tiles'];
 			$stories = array_merge($json, $stories);
@@ -119,8 +118,7 @@ class NationalGeographicBridge extends BridgeAbstract {
 		foreach(self::LATEST_STORIES_ID as $id) {
 			$uri = $this->getAPIURL($id);
 
-			$json_raw = getContents($uri)
-					or returnServerError('Could not request ' . $uri);
+			$json_raw = getContents($uri);
 
 			$json = json_decode($json_raw, true)['tiles'];
 			$stories = array_merge($stories, $json);
