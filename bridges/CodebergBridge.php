@@ -43,6 +43,27 @@ class CodebergBridge extends BridgeAbstract {
 
 	const CACHE_TIMEOUT = 1800;
 
+	const TEST_DETECT_PARAMETERS = array(
+		'https://codeberg.org/Codeberg/Community/issues/507' => array(
+			'context' => 'Issue Comments', 'username' => 'Codeberg', 'repo' => 'Community', 'issueId' => '507'
+		),
+		'https://codeberg.org/Codeberg/Community/issues' => array(
+			'context' => 'Issues', 'username' => 'Codeberg', 'repo' => 'Community'
+		),
+		'https://codeberg.org/Codeberg/Community/pulls' => array(
+			'context' => 'Pull Requests', 'username' => 'Codeberg', 'repo' => 'Community'
+		),
+		'https://codeberg.org/Codeberg/Community/releases' => array(
+			'context' => 'Releases', 'username' => 'Codeberg', 'repo' => 'Community'
+		),
+		'https://codeberg.org/Codeberg/Community/commits/branch/master' => array(
+			'context' => 'Commits', 'username' => 'Codeberg', 'repo' => 'Community', 'branch' => 'master'
+		),
+		'https://codeberg.org/Codeberg/Community/commits' => array(
+			'context' => 'Commits', 'username' => 'Codeberg', 'repo' => 'Community'
+		)
+	);
+
 	private $defaultBranch = 'main';
 	private $issueTitle = '';
 
