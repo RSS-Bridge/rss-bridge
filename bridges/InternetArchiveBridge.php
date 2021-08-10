@@ -29,6 +29,15 @@ class InternetArchiveBridge extends BridgeAbstract {
 
 	const CACHE_TIMEOUT = 900; // 15 mins
 
+	const TEST_DETECT_PARAMETERS = array(
+		'https://archive.org/details/@verifiedjoseph' => array(
+			'context' => 'Account', 'username' => 'verifiedjoseph', 'content' => 'uploads'
+		),
+		'https://archive.org/details/@verifiedjoseph?tab=collections' => array(
+			'context' => 'Account', 'username' => 'verifiedjoseph', 'content' => 'collections'
+		),
+	);
+
 	private $skipClasses = array(
 		'item-ia mobile-header hidden-tiles',
 		'item-ia account-ia'
