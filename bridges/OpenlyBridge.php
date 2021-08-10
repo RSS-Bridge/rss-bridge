@@ -62,13 +62,13 @@ class OpenlyBridge extends BridgeAbstract {
 			'context' => 'By Author', 'profileId' => '0033z00002XUTepAAH'
 		),
 		'https://www.openlynews.com/news/?page=1&theme=lgbt-law' => array(
-			'context' => 'By Tag', 'content' => 'news', 'tag' => 'theme=lgbt-law'
+			'context' => 'By Tag', 'content' => 'news', 'tag' => 'lgbt-law'
 		),
 		'https://www.openlynews.com/news/?page=1&region=north-america' => array(
 			'context' => 'By Region', 'content' => 'news', 'region' => 'north-america'
 		),
 		'https://www.openlynews.com/news/?theme=lgbt-law' => array(
-			'context' => 'By Tag', 'content' => 'news', 'tag' => 'theme=lgbt-law'
+			'context' => 'By Tag', 'content' => 'news', 'tag' => 'lgbt-law'
 		),
 		'https://www.openlynews.com/news/?region=north-america' => array(
 			'context' => 'By Region', 'content' => 'news', 'region' => 'north-america'
