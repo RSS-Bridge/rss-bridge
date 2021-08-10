@@ -63,22 +63,30 @@ class OpenlyBridge extends BridgeAbstract {
 	private $feedTitle = '';
 	private $itemLimit = 10;
 
-	private $profileRegexUrl = '/openlynews\.com\/profile\/\?id=([a-zA-Z0-9]+)/';
-	private $tagRegexUrl = '/openlynews\.com\/([a-z]+)\/\?(?:page=(?:[0-9]+)&)?theme=([\w-]+)/';
+	private $profileUrlRegex = '/openlynews\.com\/profile\/\?id=([a-zA-Z0-9]+)/';
+	private $tagUrlRegex = '/openlynews\.com\/([a-z]+)\/\?(?:page=(?:[0-9]+)&)?theme=([\w-]+)/';
+	private $regionUrlRegex = '/openlynews\.com\/([a-z]+)\/\?(?:page=(?:[0-9]+)&)?region=([\w-]+)/';
 
 	public function detectParameters($url) {
 		$params = array();
 
-		if(preg_match($this->profileRegexUrl, $url, $matches) > 0) {
+		if(preg_match($this->profileUrlRegex, $url, $matches) > 0) {
 			$params['context'] = 'By Author';
 			$params['profileId'] = $matches[1];
 			return $params;
 		}
 
-		if(preg_match($this->tagRegexUrl, $url, $matches) > 0) {
+		if(preg_match($this->tagUrlRegex, $url, $matches) > 0) {
 			$params['context'] = 'By Tag';
 			$params['content'] = $matches[1];
 			$params['tag'] = $matches[2];
+			return $params;
+		}
+
+		if(preg_match($this->regionUrlRegex, $url, $matches) > 0) {
+			$params['context'] = 'By Region';
+			$params['content'] = $matches[1];
+			$params['region'] = $matches[2];
 			return $params;
 		}
 
