@@ -67,7 +67,7 @@ class CodebergBridge extends BridgeAbstract {
 	private $defaultBranch = 'main';
 	private $issueTitle = '';
 
-	private $urlRegex = '/codeberg\.org\/([\w]+)\/([\w]+)(?:\/src\/branch\/([\w]+))?/';
+	private $urlRegex = '/codeberg\.org\/([\w]+)\/([\w]+)(?:\/commits\/branch\/([\w]+))?/';
 	private $issuesUrlRegex = '/codeberg\.org\/([\w]+)\/([\w]+)\/issues/';
 	private $pullsUrlRegex = '/codeberg\.org\/([\w]+)\/([\w]+)\/pulls/';
 	private $releasesUrlRegex = '/codeberg\.org\/([\w]+)\/([\w]+)\/releases/';
