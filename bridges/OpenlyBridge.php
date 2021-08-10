@@ -92,9 +92,7 @@ class OpenlyBridge extends BridgeAbstract {
 			$url = $this->getURI();
 		}
 
-		$html = getSimpleHTMLDOM($url)
-			or returnServerError('Could not request: ' . $url);
-
+		$html = getSimpleHTMLDOM($url);
 		$html = defaultLinkTo($html, $this->getURI());
 
 		if ($html->find('h1', 0)) {
@@ -198,9 +196,7 @@ class OpenlyBridge extends BridgeAbstract {
 	}
 
 	private function getArticle($url) {
-		$article = getSimpleHTMLDOMCached($url, self::ARTICLE_CACHE_TIMEOUT)
-			or returnServerError('Could not request: ' . $url);
-
+		$article = getSimpleHTMLDOMCached($url, self::ARTICLE_CACHE_TIMEOUT);
 		$article = defaultLinkTo($article, $this->getURI());
 
 		$article->find('span.lead-text', 0)->outertext = ''; // Remove lead text
