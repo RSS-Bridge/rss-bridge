@@ -213,7 +213,7 @@ class OpenlyBridge extends BridgeAbstract {
 		}
 
 		foreach($article->find('div.themes li') as $li) {
-			$item['categories'][] =  trim(htmlspecialchars($li->plaintext, ENT_QUOTES));
+			$item['categories'][] = trim(htmlspecialchars($li->plaintext, ENT_QUOTES));
 		}
 
 		return $item;
