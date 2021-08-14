@@ -225,8 +225,6 @@ class OpenlyBridge extends BridgeAbstract {
 		$article = getSimpleHTMLDOMCached($url, self::ARTICLE_CACHE_TIMEOUT);
 		$article = defaultLinkTo($article, $this->getURI());
 
-		$article->find('span.lead-text', 0)->outertext = ''; // Remove lead text
-
 		$item = array();
 		$item['title'] = $article->find('h1', 0)->plaintext;
 		$item['uri'] = $url;
