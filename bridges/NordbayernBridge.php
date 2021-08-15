@@ -16,6 +16,7 @@ class NordbayernBridge extends BridgeAbstract {
 			'values' => array(
 				'Nürnberg' => 'nuernberg',
 				'Fürth' => 'fuerth',
+				'Erlangen' => 'erlangen',
 				'Altdorf' => 'altdorf',
 				'Ansbach' => 'ansbach',
 				'Bad Windsheim' => 'bad-windsheim',
