@@ -29,10 +29,39 @@ class InternetArchiveBridge extends BridgeAbstract {
 
 	const CACHE_TIMEOUT = 900; // 15 mins
 
+	const TEST_DETECT_PARAMETERS = array(
+		'https://archive.org/details/@verifiedjoseph' => array(
+			'context' => 'Account', 'username' => 'verifiedjoseph', 'content' => 'uploads'
+		),
+		'https://archive.org/details/@verifiedjoseph?tab=collections' => array(
+			'context' => 'Account', 'username' => 'verifiedjoseph', 'content' => 'collections'
+		),
+	);
+
 	private $skipClasses = array(
 		'item-ia mobile-header hidden-tiles',
 		'item-ia account-ia'
 	);
+
+	private $detectParamsRegex = '/https?:\/\/archive\.org\/details\/@([\w]+)(?:\?tab=([a-z-]+))?/';
+
+	public function detectParameters($url) {
+		$params = array();
+
+		if(preg_match($this->detectParamsRegex, $url, $matches) > 0) {
+			$params['context'] = 'Account';
+			$params['username'] = $matches[1];
+			$params['content'] = 'uploads';
+
+			if (isset($matches[2])) {
+				$params['content'] = $matches[2];
+			}
+
+			return $params;
+		}
+
+		return null;
+	}
 
 	public function collectData() {
 
