@@ -26,7 +26,7 @@ class HashnodeBridge extends BridgeAbstract {
 					$item = array();
 					$item['title'] = $post['title'];
 					$item['content'] = $post['brief'];
-					$item['timestamp'] = --$time;
+					$item['timestamp'] = $post['dateAdded'];
 					if($post['partOfPublication'] === true) {
 						$item['uri'] = vsprintf('https://%s.hashnode.dev/%s', array($post['publication']['username'], $post['slug']));
 					} else {
