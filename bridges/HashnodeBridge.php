@@ -17,7 +17,8 @@ class HashnodeBridge extends BridgeAbstract {
 		$time = time();
 		for ($i = 0; $i < 5; $i++) {
 			$url = self::LATEST_POSTS . $i;
-			$content = file_get_contents($url);
+			$content = getContents($url)
+				or returnServerError('Error fetching: ' . $url);
 			$array = json_decode($content, true);
 
 			if($array['posts'] != null) {
