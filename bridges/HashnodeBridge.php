@@ -13,9 +13,6 @@ class HashnodeBridge extends BridgeAbstract {
 	public function collectData(){
 		$url = self::URI . '/' . $this->getInput('sort');
 
-		$html = getSimpleHTMLDOM($url)
-			or returnServerError('Error while downloading the website content');
-
 		$this->items = array();
 		$time = time();
 		for ($i = 0; $i < 5; $i++) {
