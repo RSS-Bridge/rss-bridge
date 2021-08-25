@@ -5,7 +5,7 @@ class RedditBridge extends BridgeAbstract {
 	const MAINTAINER = 'dawidsowa';
 	const NAME = 'Reddit Bridge';
 	const URI = 'https://www.reddit.com';
-	const DESCRIPTION = 'Return hot, new and top submissions from Reddit';
+	const DESCRIPTION = 'Return hot submissions from Reddit';
 
 	const PARAMETERS = array(
 		'global' => array(
@@ -17,14 +17,22 @@ class RedditBridge extends BridgeAbstract {
 				'title' => 'Filter out posts with lower score'
 			),
 			'd' => array(
-				'name' => 'Section',
+				'name' => 'Sort By',
 				'type' => 'list',
-				'title' => 'Choose whether to have new, hot and top submissions',
+				'title' => 'Sort by new, hot, top or relevancy',
 				'values' => array(
-					'Hot' => '',	// By default, Reddit displays hot submissions.
+					'Hot' => 'hot',
+					'Relevance' => 'relevance',
 					'New' => 'new',
 					'Top' => 'top'
-				)
+				),
+				'defaultValue' => 'Hot'
+			),
+			'search' => array(
+				'name' => 'Keyword search',
+				'required' => false,
+				'exampleValue' => 'cats, dogs',
+				'title' => 'Keyword search, separated by commas'
 			)
 		),
 		'single' => array(
@@ -112,11 +120,23 @@ class RedditBridge extends BridgeAbstract {
 				break;
 		}
 
+		if(!($this->getInput('search') === '')) {
+			$keywords = $this->getInput('search');
+			$keywords = str_replace(array(',', ' '), '%20', $keywords);
+			$keywords = $keywords . '%20';
+		} else {
+			$keywords = '';
+		}
+
 		foreach ($subreddits as $subreddit) {
 			$name = trim($subreddit);
-			$values = getContents(self::URI . ($user ? '/user/' : '/r/')
-				. $name . ((!$user && $section != '') ? "/$section" : '') . '.json'
-				. (($user && $section != '') ? "?sort=$section" : ''))
+			$values = getContents(self::URI
+					. '/search.json?q='
+					. $keywords
+					. ($user ? 'author%3A' : 'subreddit%3A')
+					. $name
+					. '&sort='
+					. $this->getInput('d'))
 			or returnServerError('Unable to fetch posts!');
 			$decodedValues = json_decode($values);
 
@@ -243,6 +263,10 @@ class RedditBridge extends BridgeAbstract {
 				$this->items[] = $item;
 			}
 		}
+		// Sort the order to put the latest posts first, even for mixed subreddits
+		usort($this->items, function($a, $b) {
+			return $a['timestamp'] < $b['timestamp'];
+		});
 	}
 
 	private function encodePermalink($link) {
