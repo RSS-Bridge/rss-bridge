@@ -78,7 +78,11 @@ class NordbayernBridge extends BridgeAbstract {
 		defaultLinkTo($article, self::URI);
 
 		$item['uri'] = $link;
-		$item['title'] = $article->find('h2', 0)->innertext;
+		if ($article->find('h2', 0) == null) {
+			$item['title'] = $article->find('h3', 0)->innertext;
+		} else {
+			$item['title'] = $article->find('h2', 0)->innertext;
+		}
 		$item['content'] = '';
 
 		//first get images from content
@@ -88,9 +92,15 @@ class NordbayernBridge extends BridgeAbstract {
 			$item['content'] .= '<img src="' . $bannerUrl . '">';
 		}
 
-		$content = $article->find('section[class*=article__richtext]', 0)
+		if ($article->find('section[class*=article__richtext]', 0) == null) {
+			$content = $article->find('div[class*=modul__teaser]', 0)
+						   ->find('p', 0);
+			$item['content'] .= $content;
+		} else {
+			$content = $article->find('section[class*=article__richtext]', 0)
 						   ->find('div', 0)->find('div', 0);
-		$item['content'] .= self::getUseFullContent($content);
+			$item['content'] .= self::getUseFullContent($content);
+		}
 
 		for($i = 1; $i < count($pictures); $i++) {
 			$imgUrl = $pictures[$i]->find('img', 0)->src;
