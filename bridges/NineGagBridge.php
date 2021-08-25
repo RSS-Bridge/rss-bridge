@@ -96,7 +96,7 @@ class NineGagBridge extends BridgeAbstract {
 					'Wallpaper' => 'wallpaper',
 					'Warhammer' => 'warhammer',
 					'Wholesome' => 'wholesome',
-					'WTF' => 'wtf',					
+					'WTF' => 'wtf',
 				),
 			),
 			't' => array(
