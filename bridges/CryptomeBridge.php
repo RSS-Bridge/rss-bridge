@@ -6,7 +6,6 @@ class CryptomeBridge extends BridgeAbstract {
 	const URI = 'https://cryptome.org/';
 	const CACHE_TIMEOUT = 21600; //6h
 	const DESCRIPTION = 'Returns the N most recent documents.';
-
 	const PARAMETERS = array( array(
 		'n' => array(
 			'name' => 'number of elements',
@@ -20,23 +19,16 @@ class CryptomeBridge extends BridgeAbstract {
 		return self::URI . '/favicon.ico';
 	}
 
-
 	public function collectData(){
 		$html = getSimpleHTMLDOM(self::URI)
 			or returnServerError('Could not request Cryptome.');
-
 		$number = $this->getInput('n');
-
-		/* number of documents */
 		if(!empty($number)) {
 			$num = min($number, 20);
 		}
-
 		$i = 0;
 		foreach($html->find('pre', 1)->find('b') as $element) {
-
 			foreach($element->find('a') as $element1) {
-
 				$item = array();
 				$item['uri'] = $element1->href;
 				$item['title'] = $element->plaintext;
@@ -46,10 +38,7 @@ class CryptomeBridge extends BridgeAbstract {
 					break 2;
 				}
 				$i++;
-
-
 			}
 		}
 	}
 }
-
