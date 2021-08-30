@@ -131,6 +131,7 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [b1nj](https://github.com/b1nj)
 * [benasse](https://github.com/benasse)
 * [Binnette](https://github.com/Binnette)
+* [Bockiii](https://github.com/Bockiii)
 * [captn3m0](https://github.com/captn3m0)
 * [chemel](https://github.com/chemel)
 * [Chouchen](https://github.com/Chouchen)
