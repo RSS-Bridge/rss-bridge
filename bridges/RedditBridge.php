@@ -33,12 +33,6 @@ class RedditBridge extends BridgeAbstract {
 				'required' => false,
 				'exampleValue' => 'cats, dogs',
 				'title' => 'Keyword search, separated by commas'
-			),
-			'nsfw' => array(
-				'name' => 'Include over 18?',
-				'type' => 'checkbox',
-				'required' => false,
-				'title' => 'Check to enable NSFW results'
 			)
 		),
 		'single' => array(
@@ -111,7 +105,6 @@ class RedditBridge extends BridgeAbstract {
 		$user = false;
 		$comments = false;
 		$section = $this->getInput('d');
-		$over18 = $this->getInput('nsfw');
 
 		switch ($this->queriedContext) {
 			case 'single':
@@ -144,8 +137,7 @@ class RedditBridge extends BridgeAbstract {
 					. $name
 					. '&sort='
 					. $this->getInput('d')
-					. '&include_over_18='
-					. ($over18 ? 'on' : 'off'))
+					. '&include_over_18=on')
 			or returnServerError('Unable to fetch posts!');
 			$decodedValues = json_decode($values);
 
