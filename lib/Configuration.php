@@ -56,7 +56,7 @@ final class Configuration {
 	 * not satisfy the requirements of RSS-Bridge.
 	 *
 	 * **Requirements**
-	 * - PHP 5.6.0 or higher
+	 * - PHP 7.1.0 or higher
 	 * - `openssl` extension
 	 * - `libxml` extension
 	 * - `mbstring` extension
