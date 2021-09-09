@@ -229,7 +229,7 @@ class YoutubeBridge extends BridgeAbstract {
 			returnClientError('Max duration must be greater than min duration!');
 		}
 
-		$vid_list = '';
+		// $vid_list = '';
 
 		foreach($jsonData as $item) {
 			$wrapper = null;
@@ -286,7 +286,9 @@ class YoutubeBridge extends BridgeAbstract {
 				continue;
 			}
 
-			$vid_list .= $vid . ',';
+			// $vid_list .= $vid . ',';
+			$this->ytBridgeQueryVideoInfo($vid, $author, $desc, $time);
+			$this->ytBridgeAddItem($vid, $title, $author, $desc, $time);
 		}
 	}
 
