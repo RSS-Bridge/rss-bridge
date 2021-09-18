@@ -51,9 +51,8 @@ class PillowfortBridge extends BridgeAbstract {
 
         $item = array();
 
-        // TODO CONVERT TIMESTAMP
-        $item['timestamp'] = $post['timestamp'];
-        
+        $item['uid'] = $post['id'];
+        $item['timestamp'] = strtotime($post['created_at']);
         
         if($embPost)
         {
@@ -75,7 +74,6 @@ class PillowfortBridge extends BridgeAbstract {
         }
 
         // $item['avatar'] = $post['avatar_url'];
-        $item['uid'] = $post['id'];
 
         //TODO when post has no tags, use original posts' tags. should this be an option?
         if(!$embPost)
@@ -102,6 +100,7 @@ class PillowfortBridge extends BridgeAbstract {
     }
 
     public function collectData() {
+        // Pillowfort pages are dynamically generated from this json file.
         $jsonSite = getContents($this -> getJSONURI())
             or returnServerError('Could not get the feed of' . $this->getUsername());
 
