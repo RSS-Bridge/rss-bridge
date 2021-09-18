@@ -45,24 +45,39 @@ class SoundCloudBridge extends BridgeAbstract {
 		$this->feedTitle = $res->username;
 		$this->feedIcon = $res->avatar_url;
 
-		$tracks = $this->getUserItems($res->id, $this->getInput('t'))
+		$apiItems = $this->getUserItems($res->id, $this->getInput('t'))
 			or returnServerError('No results for ' . $this->getInput('t'));
 
 		$hasTrackObject = array('all', 'reposts', 'likes');
 
-		foreach ($tracks->collection as $index => $track) {
+		foreach ($apiItems->collection as $index => $apiItem) {
 			if (in_array($this->getInput('t'), $hasTrackObject) === true) {
-				$track = $track->track;
+				$apiItem = $apiItem->track;
 			}
 
 			$item = array();
-			$item['author'] = $track->user->username;
-			$item['title'] = $track->user->username . ' - ' . $track->title;
-			$item['timestamp'] = strtotime($track->created_at);
-			$item['content'] = nl2br($track->description);
-			$item['enclosures'][] = $track->artwork_url;
-			$item['id'] = $track->permalink_url;
-			$item['uri'] = $track->permalink_url;
+			$item['author'] = $apiItem->user->username;
+			$item['title'] = $apiItem->user->username . ' - ' . $apiItem->title;
+			$item['timestamp'] = strtotime($apiItem->created_at);
+
+			$description = nl2br($apiItem->description);
+
+			$item['content'] = <<<HTML
+				<p>{$description}</p>
+			HTML;
+
+			if (isset($apiItem->tracks) && $apiItem->track_count > 0) {
+				$list = $this->getTrackList($apiItem->tracks);
+
+				$item['content'] .= <<<HTML
+					<p><strong>Tracks ({$apiItem->track_count})</strong></p>
+					{$list}
+				HTML;
+			}
+
+			$item['enclosures'][] = $apiItem->artwork_url;
+			$item['id'] = $apiItem->permalink_url;
+			$item['uri'] = $apiItem->permalink_url;
 			$this->items[] = $item;
 
 			if (count($this->items) >= 10) {
@@ -195,5 +210,30 @@ class SoundCloudBridge extends BridgeAbstract {
 
 			return json_decode(getContents($url));
 		}
+	}
+
+	private function getTrackList($tracks) {
+		$trackids = '';
+
+		foreach ($tracks as $track) {
+			$trackids .= $track->id . ',';
+		}
+
+		$apiItems = $this->getApi(
+			'tracks', array('ids' => $trackids)
+		);
+
+		$list = '';
+		foreach($apiItems as $track) {
+			$list .= <<<HTML
+				<li>{$track->user->username} — <a href="{$track->permalink_url}">{$track->title}</a></li>
+			HTML;
+		}
+
+		$html = <<<HTML
+			<ul>{$list}</ul>
+		HTML;
+
+		return $html;
 	}
 }
