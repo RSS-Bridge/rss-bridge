@@ -12,10 +12,26 @@ class PillowfortBridge extends BridgeAbstract {
         )
     ));
 
-    const POSTCLASS = 'div.post-container';
+    public function getName()
+    {
+        $name = $this -> getUsername();
+        if($name !='')
+            return $name . ' - ' . self::NAME;
+        else
+            return parent::getName();
+    }
 
-    protected function getFullURI() {
-        return self::URI . '/' . $this -> getUsername() . '/json';
+    public function getURI()
+    {
+        $name = $this -> getUsername();
+        if($name !='')
+            return self::URI . '/' . $name;
+        else
+            return parent::getURI();
+    }
+
+    protected function getJSONURI() {
+        return $this -> getURI() . '/json';
     }
 
     protected function getUsername() {
@@ -24,6 +40,7 @@ class PillowfortBridge extends BridgeAbstract {
 
     protected function getItemFromPost($post) {
         //TODO re-enable avatars to make it look more like twitter bridge.
+        //TODO copy twitter bridge options: (1) scale/(2)hide images, (3)hide reblogs, (4) hide avatars
         //will also need html formatting to make it look good.
 
         //check if its a reblog.
@@ -85,7 +102,7 @@ class PillowfortBridge extends BridgeAbstract {
     }
 
     public function collectData() {
-        $jsonSite = getContents($this -> getFullURI())
+        $jsonSite = getContents($this -> getJSONURI())
             or returnServerError('Could not get the feed of' . $this->getUsername());
 
         $jsonFile = json_decode($jsonSite, true);
