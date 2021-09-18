@@ -64,7 +64,7 @@ class SoundCloudBridge extends BridgeAbstract {
 
 			$item['content'] = <<<HTML
 				<p>{$description}</p>
-			HTML;
+HTML;
 
 			if (isset($apiItem->tracks) && $apiItem->track_count > 0) {
 				$list = $this->getTrackList($apiItem->tracks);
@@ -227,7 +227,7 @@ HTML;
 		foreach($apiItems as $track) {
 			$list .= <<<HTML
 				<li>{$track->user->username} — <a href="{$track->permalink_url}">{$track->title}</a></li>
-			HTML;
+HTML;
 		}
 
 		$html = <<<HTML
