@@ -167,6 +167,10 @@ class SoundCloudBridge extends BridgeAbstract {
 		$parameters = array('limit' => 10);
 		$endpoint = 'users/' . $userId . '/' . $type;
 
+		if ($type === 'playlists') {
+			$endpoint = 'users/' . $userId . '/playlists_without_albums';
+		}
+
 		if ($type === 'all') {
 			$endpoint = 'stream/users/' . $userId;
 		}
