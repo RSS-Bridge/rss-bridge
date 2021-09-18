@@ -72,7 +72,7 @@ class SoundCloudBridge extends BridgeAbstract {
 				$item['content'] .= <<<HTML
 					<p><strong>Tracks ({$apiItem->track_count})</strong></p>
 					{$list}
-				HTML;
+HTML;
 			}
 
 			$item['enclosures'][] = $apiItem->artwork_url;
@@ -232,7 +232,7 @@ class SoundCloudBridge extends BridgeAbstract {
 
 		$html = <<<HTML
 			<ul>{$list}</ul>
-		HTML;
+HTML;
 
 		return $html;
 	}
