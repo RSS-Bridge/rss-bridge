@@ -134,9 +134,13 @@ EOD;
          * 3: reblog has no tags, original has tags. use original tags.
          * 4: reblog has no tags, original has no tags. use reblog tags not that it matters.
          */
-        $item['tags'] = $post['tags'];
-        if($this -> getInput('noretags') || ($embPost && $post['tags'] == null))
-            $item['tags'] = $post['original_post']['tag_list'];
+        $item['categories'] = $post['tags'];
+        if($embPost)
+        {
+            if($this -> getInput('noretags') || ($post['tags'] == null ))
+                $item['categories'] = $post['original_post']['tag_list'];
+        }
+       
 
 
         $avatarText = $this -> genAvatarText($item['author'], $post['avatar_url'], $item['title']);
