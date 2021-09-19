@@ -9,6 +9,11 @@ class PillowfortBridge extends BridgeAbstract {
             'name' => 'Username',
             'type' => 'text',
             'required' => true
+        ),
+        'noava' => array(
+            'name' => 'Hide avatar',
+            'type' => 'checkbox',
+            'title' => 'Check to hide user avatars.'
         )
     ));
 
@@ -38,9 +43,44 @@ class PillowfortBridge extends BridgeAbstract {
         return $this -> getInput('username');
     }
 
+    protected function genAvatarText($author, $avatar_url, $title) {
+        $noava = $this -> getInput('noava');
+
+        if($noava)
+            return '';
+        else
+            return <<<EOD
+<a href="{self::URI}/posts/{$author}">
+<img
+    style="align:top; width:75px; border:1px solid black;"
+    alt="{$author}"
+    src="{$avatar_url}"
+    title="{$title}" />
+</a>
+EOD;
+    }
+
+    protected function genImagesText ($media){
+        $text ='';
+
+        foreach($media as $image)
+        {
+            $imageURL = preg_replace('[ ]', '%20', $image['url']);  //for images with spaces in url
+            $text .= <<<EOD
+<a href="{$imageURL}">
+    <img
+        style="align:top; max-width:558px; border:1px solid black;"
+        src="{$imageURL}" 
+    />
+</a>
+EOD;
+        }
+
+        return $text;
+    }
+
     protected function getItemFromPost($post) {
         //TODO copy twitter bridge options: (1) scale/(2)hide images, (3)hide reblogs, (4) hide avatars
-        //will also need html formatting to make it look good.
 
         //check if its a reblog.
         if($post['original_post_id'] == null)
@@ -83,30 +123,9 @@ class PillowfortBridge extends BridgeAbstract {
             $item['tags'] = $post['$tags'];
 
 
-        $avatarText = <<<EOD
-<a href="{self::URI}/posts/{$item['author']}">
-<img
-	style="align:top; width:75px; border:1px solid black;"
-	alt="{$item['author']}"
-	src="{$post['avatar_url']}"
-	title="{$item['title']}" />
-</a>
-EOD;
-        $imagesText = '';
+        $avatarText = $this -> genAvatarText($item['author'], $post['avatar_url'], $item['title']);
+        $imagesText = $this -> genImagesText($post['media']);
 
-        //TODO option to load images or not? option to load big or small versions? pillowfort users can upload alot of images.
-        foreach($post['media'] as $image)
-        {
-            $imageURL = preg_replace('[ ]', '%20', $image['url']);  //for images with spaces in url
-            $imagesText .= <<<EOD
-<a href="{$imageURL}">
-    <img
-        style="align:top; max-width:558px; border:1px solid black;"
-        src="{$imageURL}" 
-    />
-</a>
-EOD;
-        }
         $item['content'] = <<<EOD
 <div style="display: inline-block; vertical-align: top;">
     {$avatarText}
