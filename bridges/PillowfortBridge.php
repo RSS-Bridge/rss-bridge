@@ -38,19 +38,17 @@ class PillowfortBridge extends BridgeAbstract {
         )
     ));
 
-    public function getName()
-    {
+    public function getName() {
         $name = $this -> getUsername();
-        if($name !='')
+        if($name != '')
             return $name . ' - ' . self::NAME;
         else
             return parent::getName();
     }
 
-    public function getURI()
-    {
+    public function getURI() {
         $name = $this -> getUsername();
-        if($name !='')
+        if($name != '')
             return self::URI . '/' . $name;
         else
             return parent::getURI();
@@ -81,18 +79,17 @@ class PillowfortBridge extends BridgeAbstract {
 EOD;
     }
 
-    protected function genImagesText ($media){
-        $dimensions = $this -> getInput('image'); 
-        $text ='';
+    protected function genImagesText ($media) {
+        $dimensions = $this -> getInput('image');
+        $text = '';
 
-        switch($dimensions)
-        {
-            case 'None':
-            {
-                foreach($media as $image)
-                {
-            $imageURL = preg_replace('[ ]', '%20', $image['url']);  //for images with spaces in url
-            $text .= <<<EOD
+        //preg_replace used for images with spaces in the url
+
+        switch($dimensions) {
+            case 'None': {
+                foreach($media as $image) {
+                    $imageURL = preg_replace('[ ]', '%20', $image['url']);
+                    $text .= <<<EOD
 <a href="{$imageURL}">
     {$imageURL}
 </a>
@@ -100,12 +97,10 @@ EOD;
                 }
                 break;
             }
-            case 'Small':
-            {
-                foreach($media as $image)
-                {
-            $imageURL = preg_replace('[ ]', '%20', $image['small_image_url']);  //for images with spaces in url
-            $text .= <<<EOD
+            case 'Small': {
+                foreach($media as $image) {
+                    $imageURL = preg_replace('[ ]', '%20', $image['small_image_url']);
+                    $text .= <<<EOD
 <a href="{$imageURL}">
     <img
         style="align:top; max-width:558px; border:1px solid black;"
@@ -116,11 +111,9 @@ EOD;
                 }
                 break;
             }
-            case 'Full':
-            {
-                foreach($media as $image)
-                {
-            $imageURL = preg_replace('[ ]', '%20', $image['url']);  //for images with spaces in url
+            case 'Full': {
+                foreach($media as $image) {
+            $imageURL = preg_replace('[ ]', '%20', $image['url']);
             $text .= <<<EOD
 <a href="{$imageURL}">
     <img
@@ -156,8 +149,7 @@ EOD;
         $item['uid'] = $post['id'];
         $item['timestamp'] = strtotime($post['created_at']);
         
-        if($embPost)
-        {
+        if($embPost) {
             $item['uri'] = self::URI . '/posts/' . $post['original_post']['id'];
             $item['author'] = $post['original_username'];
             if($post['original_post']['title'] != '')
@@ -165,8 +157,7 @@ EOD;
             else
                 $item['title'] = '[NO TITLE]';
         }
-        else
-        {
+        else {
             $item['uri'] = self::URI . '/posts/' . $post['id'];
             $item['author'] = $post['username'];
             if($post['title'] != '')
@@ -184,15 +175,16 @@ EOD;
          * 4: reblog has no tags, original has no tags. use reblog tags not that it matters.
          */
         $item['categories'] = $post['tags'];
-        if($embPost)
-        {
+        if($embPost) {
             if($this -> getInput('noretags') || ($post['tags'] == null ))
                 $item['categories'] = $post['original_post']['tag_list'];
         }
        
 
 
-        $avatarText = $this -> genAvatarText($item['author'], $post['avatar_url'], $item['title']);
+        $avatarText = $this -> genAvatarText($item['author'],
+                                                $post['avatar_url'],
+                                                $item['title']);
         $imagesText = $this -> genImagesText($post['media']);
 
         $item['content'] = <<<EOD
@@ -225,8 +217,7 @@ EOD;
         $jsonFile = json_decode($jsonSite, true);
         $posts = $jsonFile['posts'];
 
-        foreach($posts as $post)
-        {
+        foreach($posts as $post) {
             $item = $this->getItemFromPost($post);
             
             //empty when 'noreblogs' is checked and current post is a reblog.
