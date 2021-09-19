@@ -24,6 +24,17 @@ class PillowfortBridge extends BridgeAbstract {
             'name' => 'Prefer original tags',
             'type' => 'checkbox',
             'title' => 'Check to use tags from original post(if available) instead of reblog\'s tags'
+        ),
+        'image' => array(
+            'name' => 'Select image type',
+            'type' => 'list',
+            'title' => 'Decides how the image is displayed, if at all.',
+            'values' => array(
+                'None' => 'None',
+                'Small' => 'Small',
+                'Full' => 'Full'
+            ),
+            'defaultValue' => 'Full'
         )
     ));
 
@@ -71,10 +82,44 @@ EOD;
     }
 
     protected function genImagesText ($media){
+        $dimensions = $this -> getInput('image'); 
         $text ='';
 
-        foreach($media as $image)
+        switch($dimensions)
         {
+            case 'None':
+            {
+                foreach($media as $image)
+                {
+            $imageURL = preg_replace('[ ]', '%20', $image['url']);  //for images with spaces in url
+            $text .= <<<EOD
+<a href="{$imageURL}">
+    {$imageURL}
+</a>
+EOD;
+                }
+                break;
+            }
+            case 'Small':
+            {
+                foreach($media as $image)
+                {
+            $imageURL = preg_replace('[ ]', '%20', $image['small_image_url']);  //for images with spaces in url
+            $text .= <<<EOD
+<a href="{$imageURL}">
+    <img
+        style="align:top; max-width:558px; border:1px solid black;"
+        src="{$imageURL}" 
+    />
+</a>
+EOD;
+                }
+                break;
+            }
+            case 'Full':
+            {
+                foreach($media as $image)
+                {
             $imageURL = preg_replace('[ ]', '%20', $image['url']);  //for images with spaces in url
             $text .= <<<EOD
 <a href="{$imageURL}">
@@ -84,14 +129,18 @@ EOD;
     />
 </a>
 EOD;
+                }
+                break;
+            }
+            default:
+                break;
         }
+
 
         return $text;
     }
 
     protected function getItemFromPost($post) {
-        //TODO copy twitter bridge options: (1) scale/(2)hide images
-
         //check if its a reblog.
         if($post['original_post_id'] == null)
             $embPost = false;
