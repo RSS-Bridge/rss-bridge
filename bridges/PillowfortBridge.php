@@ -39,7 +39,6 @@ class PillowfortBridge extends BridgeAbstract {
     }
 
     protected function getItemFromPost($post) {
-        //TODO re-enable avatars to make it look more like twitter bridge.
         //TODO copy twitter bridge options: (1) scale/(2)hide images, (3)hide reblogs, (4) hide avatars
         //will also need html formatting to make it look good.
 
@@ -73,8 +72,6 @@ class PillowfortBridge extends BridgeAbstract {
                 $item['title'] = '[NO TITLE]';
         }
 
-        // $item['avatar'] = $post['avatar_url'];
-
         //TODO when post has no tags, use original posts' tags. should this be an option?
         if(!$embPost)
             $item['tags'] = $post['tags'];
@@ -85,16 +82,42 @@ class PillowfortBridge extends BridgeAbstract {
         else    //when post has tags and original post has no tags.
             $item['tags'] = $post['$tags'];
 
-        // $mainText = '<img src=' . $post['avatar_url'] . '>';
 
-        //TODO same for original and emb? double check this.
-        $mainText = $post['content'];
+        $avatarText = <<<EOD
+<a href="{self::URI}/posts/{$item['author']}">
+<img
+	style="align:top; width:75px; border:1px solid black;"
+	alt="{$item['author']}"
+	src="{$post['avatar_url']}"
+	title="{$item['title']}" />
+</a>
+EOD;
+        $imagesText = '';
 
         //TODO option to load images or not? option to load big or small versions? pillowfort users can upload alot of images.
         foreach($post['media'] as $image)
-            $mainText .= '<img src=' . preg_replace('[ ]', '%20', $image['url']) . '>'; //for images with spaces in url
-            
-        $item['content'] = $mainText;
+        {
+            $imageURL = preg_replace('[ ]', '%20', $image['url']);  //for images with spaces in url
+            $imagesText .= <<<EOD
+<a href="{$imageURL}">
+    <img
+        style="align:top; max-width:558px; border:1px solid black;"
+        src="{$imageURL}" 
+    />
+</a>
+EOD;
+        }
+        $item['content'] = <<<EOD
+<div style="display: inline-block; vertical-align: top;">
+    {$avatarText}
+</div>
+<div style="display: inline-block; vertical-align: top;">
+    {$post['content']}
+</div>
+<div style="display: block; vertical-align: top;">
+    {$imagesText}
+</div>
+EOD;
 
         return $item;
     }
