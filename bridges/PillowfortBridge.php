@@ -19,6 +19,11 @@ class PillowfortBridge extends BridgeAbstract {
             'name' => 'Hide reblogs',
             'type' => 'checkbox',
             'title' => 'Check to only show original posts.'
+        ),
+        'noretags' => array(
+            'name' => 'Prefer original tags',
+            'type' => 'checkbox',
+            'title' => 'Check to use tags from original post(if available) instead of reblog\'s tags'
         )
     ));
 
@@ -121,15 +126,17 @@ EOD;
                 $item['title'] = '[NO TITLE]';
         }
 
-        //TODO when post has no tags, use original posts' tags. should this be an option?
-        if(!$embPost)
-            $item['tags'] = $post['tags'];
-        else if($embPost && $post['tags'] !=null) //when post and original post both have tags. use post tags.
-            $item['tags'] = $post['tags'];
-        else if($embPost && $post['tags'] == null) //when post has no tags and original post has tags. OPTION. default, use orignal posts
+
+        /**
+         * 4 cases if it is a reblog.
+         * 1: reblog has tags, original has tags. defer to option.
+         * 2: reblog has tags, original has no tags. use reblog tags.
+         * 3: reblog has no tags, original has tags. use original tags.
+         * 4: reblog has no tags, original has no tags. use reblog tags not that it matters.
+         */
+        $item['tags'] = $post['tags'];
+        if($this -> getInput('noretags') || ($embPost && $post['tags'] == null))
             $item['tags'] = $post['original_post']['tag_list'];
-        else    //when post has tags and original post has no tags.
-            $item['tags'] = $post['$tags'];
 
 
         $avatarText = $this -> genAvatarText($item['author'], $post['avatar_url'], $item['title']);
