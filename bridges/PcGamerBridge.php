@@ -20,7 +20,7 @@ class PcGamerBridge extends BridgeAbstract
 			$item['content'] = html_entity_decode($articleHtml->find('meta[name=description]', 0)->content);
 			$item['author'] = $articleHtml->find('meta[name=parsely-author]', 0)->content;
 			$item['enclosures'][] = $articleHtml->find('meta[name=parsely-image-url]', 0)->content;
-			$item['tags'] = $articleHtml->find('meta[name=parsely-tags]', 0)->content;
+			$item['categories'] = explode(",", $articleHtml->find('meta[name=parsely-tags]', 0)->content);
 			$item['timestamp'] = strtotime($articleHtml->find('meta[name=pub_date]', 0)->content);
 			$this->items[] = $item;
 		}
