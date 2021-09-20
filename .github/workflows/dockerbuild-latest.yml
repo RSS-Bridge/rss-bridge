@@ -1,0 +1,46 @@
+name: Build Image On Commit
+
+on:
+  push:
+    branches: [ master ]
+
+env:
+  DOCKERHUB_SLUG: rssbridge/rss-bridge
+
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2.3.4
+      -  
+        name: Docker meta
+        id: docker_meta
+        uses: docker/metadata-action@v3.3.0
+        with:
+          images: |
+            ${{ env.DOCKERHUB_SLUG }}
+          tags: |
+            type=raw,value=latest
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1.3.0
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v1.9.0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      -
+        name: Build and push
+        uses: docker/bake-action@v1.4.2
+        with:
+          files: |
+            ./docker-bake.hcl
+            ${{ steps.docker_meta.outputs.bake-file }}
+          targets: image-all
+          push: true
