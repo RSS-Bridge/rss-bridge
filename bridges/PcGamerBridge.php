@@ -11,12 +11,13 @@ class PcGamerBridge extends BridgeAbstract
 		$html = getSimpleHTMLDOMCached($this->getURI(), 300);
 		$stories = $html->find('a.article-link');
 		foreach ($stories as $element) {
-			$item['uri'] = $element->find('a', 0)->href;
+			$item = array();
+			$item['uri'] = $element->href;
 			$articleHtml = getSimpleHTMLDOMCached($item['uri']);
 			
 			// Relying on meta tags ought to be more reliable.
 			$item['title'] = $articleHtml->find('meta[name=parsely-title]', 0)->content;
-			$item['content'] = $articleHtml->find('meta[name=description]', 0)->content;
+			$item['content'] = html_entity_decode($articleHtml->find('meta[name=description]', 0)->content);
 			$item['author'] = $articleHtml->find('meta[name=parsely-author]', 0)->content;
 			$item['enclosures'][] = $articleHtml->find('meta[name=parsely-image-url]', 0)->content;
 			$item['tags'] = $articleHtml->find('meta[name=parsely-tags]', 0)->content;
