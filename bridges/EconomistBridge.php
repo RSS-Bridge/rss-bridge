@@ -7,7 +7,7 @@ class EconomistBridge extends FeedExpander {
 	const CACHE_TIMEOUT = 3600; //1hour
 	const DESCRIPTION = 'Returns the latest articles for the selected category';
 
-	const PARAMETERS = array( 
+	const PARAMETERS = array(
 		'global' => array(
 			'limit' => array(
 				'name' => 'Feed Item Limit',
@@ -80,7 +80,7 @@ class EconomistBridge extends FeedExpander {
 			case 'Blogs':
 				$category = $this->getInput('blog');
 				break;
-			default: 
+			default:
 				$category = 'latest';
 		}
 		// limit the returned articles to 30 at max
@@ -95,14 +95,14 @@ class EconomistBridge extends FeedExpander {
 
 	protected function parseItem($feedItem){
 		$item = parent::parseItem($feedItem);
-		
+
 		$article = getSimpleHTMLDOM($item['uri'])
 			or returnServerError('Could not request Site: ' . $item['title']);
 		// before the article can be added, it needs to be cleaned up, thus, the extra function
 		$item['content'] = $this->cleanContent($article);
 		// only the article lead image is retained
 		$item['enclosures'][] = $article->find('div.article__lead-image', 0)->find('img', 0)->getAttribute('src');
-		
+
 		return $item;
 	}
 
@@ -116,7 +116,7 @@ class EconomistBridge extends FeedExpander {
 			$content = stripRecursiveHTMLSection($content, 'div', $tag_start);
 		}
 		// now remove embedded iframes. The podcast postings contain these for example
-		$content = preg_replace('/<iframe.*?\/iframe>/i','', $content);
+		$content = preg_replace('/<iframe.*?\/iframe>/i' , '' , $content);
 		// fix the relative links
 		$content = defaultLinkTo($content, $this->getURI());
 
