@@ -4,7 +4,7 @@ class PcGamerBridge extends BridgeAbstract
 	const NAME = 'PC Gamer';
 	const URI = 'https://www.pcgamer.com/';
 	const DESCRIPTION = 'PC Gamer is your source for exclusive reviews, demos, 
-		updates and news on all your favorite PC gaming franchises.'
+		updates and news on all your favorite PC gaming franchises.';
 	const MAINTAINER = 'IceWreck, mdemoss';
 
 	public function collectData()
