@@ -116,7 +116,7 @@ class EconomistBridge extends FeedExpander {
 			$content = stripRecursiveHTMLSection($content, 'div', $tag_start);
 		}
 		// now remove embedded iframes. The podcast postings contain these for example
-		$content = preg_replace('/<iframe.*?\/iframe>/i' , '' , $content);
+		$content = preg_replace('/<iframe.*?\/iframe>/i', '', $content);
 		// fix the relative links
 		$content = defaultLinkTo($content, $this->getURI());
 
