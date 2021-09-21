@@ -20,7 +20,9 @@ class TwitchBridge extends BridgeAbstract {
 				'All' => 'all',
 				'Archive' => 'archive',
 				'Highlights' => 'highlight',
-				'Uploads' => 'upload'
+				'Uploads' => 'upload',
+				'Past Premieres' => 'past_premiere',
+				'Premiere Uploads' => 'premiere_upload'
 			),
 			'defaultValue' => 'archive'
 		)
@@ -32,43 +34,90 @@ class TwitchBridge extends BridgeAbstract {
 	 */
 	const CLIENT_ID = 'kimne78kx3ncx6brgo4mv6wki5h1ko';
 
+	const API_ENDPOINT = 'https://gql.twitch.tv/gql';
+	const BROADCAST_TYPES = array(
+		'all' => array(
+			'ARCHIVE',
+			'HIGHLIGHT',
+			'UPLOAD',
+			'PAST_PREMIERE',
+			'PREMIERE_UPLOAD'
+		),
+		'archive' => 'ARCHIVE',
+		'highlight' => 'HIGHLIGHT',
+		'upload' => 'UPLOAD',
+		'past_premiere' => 'PAST_PREMIERE',
+		'premiere_upload' => 'PREMIERE_UPLOAD'
+	);
+
 	public function collectData(){
-		// get channel user
-		$query_data = array(
-			'login' => $this->getInput('channel')
+		$query = <<<'EOD'
+query VODList($channel: String!, $types: [BroadcastType!]) {
+  user(login: $channel) {
+    displayName
+    videos(types: $types, sort: TIME) {
+      edges {
+        node {
+          id
+          title
+          publishedAt
+          lengthSeconds
+          viewCount
+          thumbnailURLs(width: 640, height: 360)
+          previewThumbnailURL(width: 640, height: 360)
+          description
+          tags
+          contentTags {
+            isLanguageTag
+            localizedName
+          }
+          game {
+            displayName
+          }
+          moments(momentRequestType: VIDEO_CHAPTER_MARKERS) {
+            edges {
+              node {
+                description
+                positionMilliseconds
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+EOD;
+		$variables = array(
+			'channel' => $this->getInput('channel'),
+			'types' => self::BROADCAST_TYPES[$this->getInput('type')]
 		);
-		$users = $this->apiGet('users', $query_data)->users;
-		if(count($users) === 0)
-			returnClientError('User "'
-			. $this->getInput('channel')
-			. '" could not be found');
-		$user = $users[0];
+		$data = $this->apiRequest($query, $variables);
 
-		// get video list
-		$query_endpoint = 'channels/' . $user->_id . '/videos';
-		$query_data = array(
-			'broadcast_type' => $this->getInput('type'),
-			'limit' => 10
-		);
-		$videos = $this->apiGet($query_endpoint, $query_data)->videos;
+		$user = $data->user;
+		foreach($user->videos->edges as $edge) {
+			$video = $edge->node;
 
-		foreach($videos as $video) {
+			$url = 'https://www.twitch.tv/videos/' . $video->id;
+
 			$item = array(
-				'uri' => $video->url,
+				'uri' => $url,
 				'title' => $video->title,
-				'timestamp' => $video->published_at,
-				'author' => $video->channel->display_name,
+				'timestamp' => $video->publishedAt,
+				'author' => $user->displayName,
 			);
 
 			// Add categories for tags and played game
-			$item['categories'] = array_filter(explode(' ', $video->tag_list));
-			if(!empty($video->game))
-				$item['categories'][] = $video->game;
+			$item['categories'] = $video->tags;
+			if(!is_null($video->game))
+				$item['categories'][] = $video->game->displayName;
+			foreach($video->contentTags as $tag)
+				if(!$tag->isLanguageTag)
+					$item['categories'][] = $tag->localizedName;
 
 			// Add enclosures for thumbnails from a few points in the video
-			$item['enclosures'] = array();
-			foreach($video->thumbnails->large as $thumbnail)
-				$item['enclosures'][] = $thumbnail->url;
+			// Thumbnail list has duplicate entries sometimes so remove those
+			$item['enclosures'] = array_unique($video->thumbnailURLs);
 
 			/*
 			 * Content format example:
@@ -86,43 +135,44 @@ class TwitchBridge extends BridgeAbstract {
 			 *
 			 */
 			$item['content'] = '<p><a href="'
-				. $video->url
+				. $url
 				. '"><img src="'
-				. $video->preview->large
+				. $video->previewThumbnailURL
 				. '" /></a></p><p>'
-				. $video->description_html
+				. $video->description // in markdown format
 				. '</p><p><b>Duration:</b> '
-				. $this->formatTimestampTime($video->length)
+				. $this->formatTimestampTime($video->lengthSeconds)
 				. '<br/><b>Views:</b> '
-				. $video->views
+				. $video->viewCount
 				. '</p>';
 
 			// Add played games list to content
-			$video_id = trim($video->_id, 'v'); // _id gives 'v1234' but API wants '1234'
-			$markers = $this->apiGet('videos/' . $video_id . '/markers')->markers;
-			$item['content'] .= '<p><b>Played games:</b></b><ul><li><a href="'
-				. $video->url
-				. '">00:00:00</a> - '
-				. $video->game
-				. '</li>';
-			if(isset($markers->game_changes)) {
-				usort($markers->game_changes, function($a, $b) {
-					return $a->time - $b->time;
-				});
-				foreach($markers->game_changes as $game_change) {
-					$item['categories'][] = $game_change->label;
+			$item['content'] .= '<p><b>Played games:</b><ul>';
+			if(count($video->moments->edges) > 0) {
+				foreach($video->moments->edges as $edge) {
+					$moment = $edge->node;
+
+					$item['categories'][] = $moment->description;
 					$item['content'] .= '<li><a href="'
-						. $video->url
+						. $url
 						. '?t='
-						. $this->formatQueryTime($game_change->time)
+						. $this->formatQueryTime($moment->positionMilliseconds / 1000)
 						. '">'
-						. $this->formatTimestampTime($game_change->time)
+						. $this->formatTimestampTime($moment->positionMilliseconds / 1000)
 						. '</a> - '
-						. $game_change->label
+						. $moment->description
 						. '</li>';
 				}
+			} else {
+				$item['content'] .= '<li><a href="'
+					. $url
+					. '">00:00:00</a> - '
+					. ($video->game ? $video->game->displayName : 'No Game')
+					. '</li>';
 			}
 			$item['content'] .= '</ul></p>';
+
+			$item['categories'] = array_unique($item['categories']);
 
 			$this->items[] = $item;
 		}
@@ -144,25 +194,37 @@ class TwitchBridge extends BridgeAbstract {
 			$seconds % 60);
 	}
 
-	/*
-	 * Ideally the new 'helix' API should be used as v5/'kraken' is deprecated.
-	 * The new API however still misses many features (markers, played game..) of
-	 * the old one, so let's use the old one for as long as it's available.
-	 */
-	private function apiGet($endpoint, $query_data = array()) {
-		$query_data['api_version'] = 5;
-		$url = 'https://api.twitch.tv/kraken/'
-			. $endpoint
-			. '?'
-			. http_build_query($query_data);
+	// GraphQL: https://graphql.org/
+	// Tool for developing/testing queries: https://github.com/skevy/graphiql-app
+	private function apiRequest($query, $variables) {
+		$request = array(
+			'query' => $query,
+			'variables' => $variables
+		);
 		$header = array(
 			'Client-ID: ' . self::CLIENT_ID
 		);
+		$opts = array(
+			CURLOPT_CUSTOMREQUEST => 'POST',
+			CURLOPT_POSTFIELDS => json_encode($request)
+		);
 
-		$data = json_decode(getContents($url, $header))
-			or returnServerError('API request to "' . $url . '" failed.');
+		Debug::log("Sending GraphQL query:\n" . $query);
+		Debug::log("Sending GraphQL variables:\n"
+			. json_encode($variables, JSON_PRETTY_PRINT));
 
-		return $data;
+		$response = json_decode(getContents(self::API_ENDPOINT, $header, $opts))
+			or returnServerError('API request to "' . self::API_ENDPOINT . '" failed.');
+
+		Debug::log("Got GraphQL response:\n"
+			. json_encode($response, JSON_PRETTY_PRINT));
+
+		if(isset($response->errors)) {
+			$messages = array_column($response->errors, 'message');
+			returnServerError('API error(s): ' . implode("\n", $messages));
+		}
+
+		return $response->data;
 	}
 
 	public function getName(){

@@ -69,6 +69,10 @@ class BridgeImplementationTest extends TestCase {
 				$this->assertNotEmpty($context, 'empty context name');
 			}
 
+			if (empty($params)) {
+				continue;
+			}
+
 			foreach ($paramsSeen as $seen) {
 				$this->assertNotEquals($seen, $params, 'same set of parameters not allowed');
 			}
@@ -133,6 +137,10 @@ class BridgeImplementationTest extends TestCase {
 						$this->assertNotEquals('', $options['defaultValue'], $field . ': empty defaultValue');
 				}
 			}
+		}
+
+		foreach($this->obj::TEST_DETECT_PARAMETERS as $url => $params) {
+			$this->assertEquals($this->obj->detectParameters($url), $params);
 		}
 
 		$this->assertTrue(true);

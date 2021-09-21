@@ -42,6 +42,7 @@ class DiarioDeNoticiasBridge extends BridgeAbstract {
 		}
 		return $name;
 	}
+
 	public function getURI() {
 		switch($this->queriedContext) {
 		case 'Tag':

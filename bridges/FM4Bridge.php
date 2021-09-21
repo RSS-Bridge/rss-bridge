@@ -28,9 +28,9 @@ class FM4Bridge extends BridgeAbstract
 		)
 	);
 
-	public function getPageData($tag, $page) {
+	private function getPageData($tag, $page) {
 		if($tag)
-			$uri = self::URI . "/tags/" . $tag;
+			$uri = self::URI . '/tags/' . $tag;
 		else
 			$uri = self::URI;
 
@@ -47,7 +47,7 @@ class FM4Bridge extends BridgeAbstract
 			$item['uri'] = $article->find('a', 0)->href;
 			$item['title'] = $article->find('h2', 0)->plaintext;
 			$item['author'] = $article->find('p[class*=keyword]', 0)->plaintext;
-			$item["timestamp"] = strtotime($article->find('p[class*=time]', 0)->plaintext);
+			$item['timestamp'] = strtotime($article->find('p[class*=time]', 0)->plaintext);
 
 			if ($this->getInput('loadcontent')) {
 				$item['content'] = getSimpleHTMLDOM($item['uri'])->find('div[class=storyText]', 0)->innertext
@@ -58,9 +58,10 @@ class FM4Bridge extends BridgeAbstract
 		}
 		return $page_items;
 	}
+
 	public function collectData() {
 		for ($cur_page = 1; $cur_page <= $this->getInput('pages'); $cur_page++) {
-			$this->items = array_merge($this->items,$this->getPageData($this->getInput('tag'), $cur_page));
+			$this->items = array_merge($this->items, $this->getPageData($this->getInput('tag'), $cur_page));
 		}
 	}
 }

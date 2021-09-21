@@ -103,8 +103,8 @@ class MarktplaatsBridge extends BridgeAbstract {
 						$item['content'] .= "<br />\n<br />\n<br />\n" . json_encode($listing);
 					}
 				}
-				$item['content'] .= "<br>\n<br>\nPrice: " . $listing->priceInfo->priceCents/100;
-				$item['content'] .= "&nbsp;&nbsp;(" . $listing->priceInfo->priceType .")";
+				$item['content'] .= "<br>\n<br>\nPrice: " . $listing->priceInfo->priceCents / 100;
+				$item['content'] .= '&nbsp;&nbsp;(' . $listing->priceInfo->priceType . ')';
 				if(!empty($listing->location->cityName)) {
 					$item['content'] .= "<br><br>\n" . $listing->location->cityName;
 				}
@@ -117,11 +117,11 @@ class MarktplaatsBridge extends BridgeAbstract {
 			}
 		}
 	}
-	
+
 	public function getName(){
-                if(!is_null($this->getInput('q'))) {
-                        return $this->getInput('q') . ' - Marktplaats';
-                }
-                return parent::getName();
-        }
+				if(!is_null($this->getInput('q'))) {
+						return $this->getInput('q') . ' - Marktplaats';
+				}
+				return parent::getName();
+		}
 }

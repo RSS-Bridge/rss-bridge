@@ -46,36 +46,6 @@ class Releases3DSBridge extends BridgeAbstract {
 			$type = extractFromDelimiters($element, '<type>', '</type>');
 			$card = extractFromDelimiters($element, '<card>', '</card>');
 
-			//Retrieve cover art and short desc from IGN?
-			$ignResult = false;
-			$ignDescription = '';
-			$ignLink = '';
-			$ignDate = time();
-			$ignCoverArt = '';
-
-			$ignSearchUrl = 'https://www.ign.com/search?q=' . urlencode($name);
-			if($ignResult = getSimpleHTMLDOMCached($ignSearchUrl)) {
-				$ignCoverArt = $ignResult->find('div.search-item-media', 0);
-				$ignDesc = $ignResult->find('div.search-item-description', 0);
-				$ignLink = $ignResult->find('div.search-item-sub-title', 0);
-				$ignDate = $ignResult->find('span.publish-date', 0);
-				if (is_object($ignCoverArt))
-					$ignCoverArt = $ignCoverArt->find('img', 0);
-				if (is_object($ignLink))
-					$ignLink = $ignLink->find('a', 1);
-				if (is_object($ignDate))
-					$ignDate = strtotime(trim($ignDate->plaintext));
-				if (is_object($ignCoverArt) && is_object($ignDesc) && is_object($ignLink)) {
-					$ignDescription = '<div><img src="'
-					. $ignCoverArt->src
-					. '" /></div><div>'
-					. $ignDesc->plaintext
-					. ' <a href="'
-					. $ignLink->href
-					. '">More at IGN</a></div>';
-				}
-			}
-
 			//Main section : Release description from 3DS database
 			$releaseDescription = '<h3>Release Details</h3><b>Release ID: </b>' . $id
 			. '<br /><b>Game Name: </b>' . $name

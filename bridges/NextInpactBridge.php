@@ -97,9 +97,10 @@ class NextInpactBridge extends FeedExpander {
 			return 'Failed to request NextInpact: ' . $url;
 
 		// Filter premium and brief articles?
+		$brief_selector = 'div.brief-container';
 		foreach(array(
 			'filter_premium' => 'p.red-msg',
-			'filter_brief' => 'div.brief-container'
+			'filter_brief' => $brief_selector
 		) as $param_name => $selector) {
 			$param_val = intval($this->getInput($param_name));
 			if ($param_val != 0) {
@@ -119,7 +120,7 @@ class NextInpactBridge extends FeedExpander {
 
 			// Subtitle
 			$subtitle = $html->find('small.subtitle', 0);
-			if(!is_object($subtitle)) {
+			if(!is_object($subtitle) && !is_object($html->find($brief_selector, 0))) {
 				$subtitle = $html->find('small', 0);
 			}
 			if(!is_object($subtitle)) {

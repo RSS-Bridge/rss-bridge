@@ -38,25 +38,21 @@ class BinanceBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI())
 			or returnServerError('Could not fetch Binance blog data.');
 
-		foreach($html->find('div[direction="row"]') as $element) {
+		$appData = $html->find('script[id="__APP_DATA"]');
+		$appDataJson = json_decode($appData[0]->innertext);
 
-			$date = $element->find('div[direction="column"]', 0);
-			$day = $date->find('div', 0)->innertext;
-			$month = $date->find('div', 1)->innertext;
-			$extractedDate = $day . ' ' . $month;
+		foreach($appDataJson->pageData->redux->blogList->blogList as $element) {
 
-			$abstract = $element->find('div[direction="column"]', 1);
-			$a = $abstract->find('a', 0);
-			$uri = self::URI . $a->href;
-			$title = $a->innertext;
-
-			$full = getSimpleHTMLDOMCached($uri);
-			$content = $full->find('div.desc', 1);
+			$date = $element->postTime;
+			$abstract = $element->brief;
+			$uri = self::URI . '/' . $element->lang . '/blog/' . $element->idStr;
+			$title = $element->title;
+			$content = $element->content;
 
 			$item = array();
 			$item['title'] = $title;
 			$item['uri'] = $uri;
-			$item['timestamp'] = strtotime($extractedDate);
+			$item['timestamp'] = substr($date, 0, -3);
 			$item['author'] = 'Binance';
 			$item['content'] = $content;
 

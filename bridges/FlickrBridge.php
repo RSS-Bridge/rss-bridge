@@ -20,6 +20,27 @@ class FlickrBridge extends BridgeAbstract {
 				'required' => true,
 				'title' => 'Insert keyword',
 				'exampleValue' => 'bird'
+			),
+			'media' => array(
+				'name' => 'Media',
+				'type' => 'list',
+				'values' => array(
+					'All (Photos & videos)' => 'all',
+					'Photos' => 'photos',
+					'Videos' => 'videos',
+				),
+				'defaultValue' => 'all',
+			),
+			'sort' => array(
+				'name' => 'Sort By',
+				'type' => 'list',
+				'values' => array(
+					'Relevance' => 'relevance',
+					'Date uploaded' => 'date-posted-desc',
+					'Date taken' => 'date-taken-desc',
+					'Interesting' => 'interestingness-desc',
+				),
+				'defaultValue' => 'relevance',
 			)
 		),
 		'By username' => array(
@@ -29,30 +50,60 @@ class FlickrBridge extends BridgeAbstract {
 				'required' => true,
 				'title' => 'Insert username (as shown in the address bar)',
 				'exampleValue' => 'flickr'
+			),
+			'media' => array(
+				'name' => 'Media',
+				'type' => 'list',
+				'values' => array(
+					'All (Photos & videos)' => 'all',
+					'Photos' => 'photos',
+					'Videos' => 'videos',
+				),
+				'defaultValue' => 'all',
+			),
+			'sort' => array(
+				'name' => 'Sort By',
+				'type' => 'list',
+				'values' => array(
+					'Relevance' => 'relevance',
+					'Date uploaded' => 'date-posted-desc',
+					'Date taken' => 'date-taken-desc',
+					'Interesting' => 'interestingness-desc',
+				),
+				'defaultValue' => 'date-posted-desc',
 			)
 		)
 	);
 
-	public function collectData(){
+	private $username = '';
+
+	public function collectData() {
 
 		switch($this->queriedContext) {
 
 		case 'Explore':
 			$filter = 'photo-lite-models';
-			$html = getSimpleHTMLDOM(self::URI . 'explore')
+			$html = getSimpleHTMLDOM($this->getURI())
 				or returnServerError('Could not request Flickr.');
 			break;
 
 		case 'By keyword':
 			$filter = 'photo-lite-models';
-			$html = getSimpleHTMLDOM(self::URI . 'search/?q=' . urlencode($this->getInput('q')) . '&s=rec')
+			$html = getSimpleHTMLDOM($this->getURI())
 				or returnServerError('No results for this query.');
 			break;
 
 		case 'By username':
-			$filter = 'photo-models';
-			$html = getSimpleHTMLDOM(self::URI . 'photos/' . urlencode($this->getInput('u')))
+			//$filter = 'photo-models';
+			$filter = 'photo-lite-models';
+			$html = getSimpleHTMLDOM($this->getURI())
 				or returnServerError('Requested username can\'t be found.');
+
+				$this->username = $this->getInput('u');
+
+				if ($html->find('span.search-pill-name', 0)) {
+					$this->username = $html->find('span.search-pill-name', 0)->plaintext;
+				}
 			break;
 
 		default:
@@ -64,7 +115,6 @@ class FlickrBridge extends BridgeAbstract {
 		$photo_models = $this->getPhotoModels($model_json, $filter);
 
 		foreach($photo_models as $model) {
-
 			$item = array();
 
 			/* Author name depends on scope. On a keyword search the
@@ -72,12 +122,12 @@ class FlickrBridge extends BridgeAbstract {
 			* the author is part of the owner data.
 			*/
 			if(array_key_exists('username', $model)) {
-				$item['author'] = $model['username'];
+				$item['author'] = urldecode($model['username']);
 			} elseif (array_key_exists('owner', reset($model_json)[0])) {
-				$item['author'] = reset($model_json)[0]['owner']['username'];
+				$item['author'] = urldecode(reset($model_json)[0]['owner']['username']);
 			}
 
-			$item['title'] = (array_key_exists('title', $model) ? $model['title'] : 'Untitled');
+			$item['title'] = urldecode((array_key_exists('title', $model) ? $model['title'] : 'Untitled'));
 			$item['uri'] = self::URI . 'photo.gne?id=' . $model['id'];
 
 			$description = (array_key_exists('description', $model) ? $model['description'] : '');
@@ -87,7 +137,7 @@ class FlickrBridge extends BridgeAbstract {
 			. '"><img src="'
 			. $this->extractContentImage($model)
 			. '" style="max-width: 640px; max-height: 480px;"/></a><br><p>'
-			. $description
+			. urldecode($description)
 			. '</p>';
 
 			$item['enclosures'] = $this->extractEnclosures($model);
@@ -96,6 +146,46 @@ class FlickrBridge extends BridgeAbstract {
 
 		}
 
+	}
+
+	public function getURI() {
+
+		switch($this->queriedContext) {
+			case 'Explore':
+				return self::URI . 'explore';
+				break;
+			case 'By keyword':
+				return self::URI . 'search/?q=' . urlencode($this->getInput('q'))
+					. '&sort=' . $this->getInput('sort') . '&media=' . $this->getInput('media');
+				break;
+			case 'By username':
+				return self::URI . 'search/?user_id=' . urlencode($this->getInput('u'))
+					. '&sort=' . $this->getInput('sort') . '&media=' . $this->getInput('media');
+				break;
+
+			default:
+				return parent::getURI();
+		}
+	}
+
+	public function getName() {
+
+		switch($this->queriedContext) {
+			case 'Explore':
+				return 'Explore - ' . self::NAME;
+				break;
+			case 'By keyword':
+				return $this->getInput('q') . ' - keyword - ' . self::NAME;
+				break;
+			case 'By username':
+				return $this->username . ' - ' . self::NAME;
+				break;
+
+			default:
+				return parent::getName();
+		}
+
+		return parent::getName();
 	}
 
 	private function extractJsonModel($html) {

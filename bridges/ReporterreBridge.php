@@ -8,6 +8,7 @@ class ReporterreBridge extends BridgeAbstract {
 
 		private function extractContent($url){
 			$html2 = getSimpleHTMLDOM($url);
+			$html2 = defaultLinkTo($html2, self::URI);
 
 			foreach($html2->find('div[style=text-align:justify]') as $e) {
 				$text = $e->outertext;
@@ -15,13 +16,6 @@ class ReporterreBridge extends BridgeAbstract {
 
 			$html2->clear();
 			unset($html2);
-
-			// Replace all relative urls with absolute ones
-			$text = preg_replace(
-				'/(href|src)(\=[\"\'])(?!http)([^"\']+)/ims',
-				'$1$2' . self::URI . '$3',
-				$text
-			);
 
 			$text = strip_tags($text, '<p><br><a><img>');
 			return $text;

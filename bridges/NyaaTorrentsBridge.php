@@ -1,5 +1,5 @@
 <?php
-class NyaaTorrentsBridge extends BridgeAbstract {
+class NyaaTorrentsBridge extends FeedExpander {
 
 	const MAINTAINER = 'ORelio';
 	const NAME = 'NyaaTorrents';
@@ -50,6 +50,11 @@ class NyaaTorrentsBridge extends BridgeAbstract {
 				'name' => 'Keyword',
 				'description' => 'Keyword(s)',
 				'type' => 'text'
+			),
+			'u' => array(
+				'name' => 'User',
+				'description' => 'User',
+				'type' => 'text'
 			)
 		)
 	);
@@ -58,74 +63,45 @@ class NyaaTorrentsBridge extends BridgeAbstract {
 		return self::URI . 'static/favicon.png';
 	}
 
-	public function collectData() {
+	public function collectData(){
+		$this->collectExpandableDatas(
+			self::URI . '?page=rss&s=id&o=desc&'
+			. http_build_query(array(
+				'f' => $this->getInput('f'),
+				'c' => $this->getInput('c'),
+				'q' => $this->getInput('q'),
+				'u' => $this->getInput('u')
+			)), 20);
+	}
 
-		// Build Search URL from user-provided parameters
-		$search_url = self::URI . '?s=id&o=desc&'
-		. http_build_query(array(
-			'f' => $this->getInput('f'),
-			'c' => $this->getInput('c'),
-			'q' => $this->getInput('q')
-		));
+	protected function parseItem($newItem){
+		$item = parent::parseItem($newItem);
 
-		// Retrieve torrent listing from search results, which does not contain torrent description
-		$html = getSimpleHTMLDOM($search_url)
-		or returnServerError('Could not request Nyaa: ' . $search_url);
-		$links = $html->find('a');
-		$results = array();
-		foreach ($links as $link)
-			if (strpos($link->href, '/view/') === 0 && !in_array($link->href, $results))
-				$results[] = $link->href;
-		if (empty($results) && empty($this->getInput('q')))
-			returnServerError('No results from Nyaa: ' . $url, 500);
+		//Convert URI from torrent file to web page
+		$item['uri'] = str_replace('/download/', '/view/', $item['uri']);
+		$item['uri'] = str_replace('.torrent', '', $item['uri']);
 
-		//Process each item individually
-		foreach ($results as $element) {
+		if ($item_html = getSimpleHTMLDOMCached($item['uri'])) {
 
-			//Limit total amount of requests
-			if(count($this->items) >= 20) {
-				break;
-			}
+			//Retrieve full description from page contents
+			$item_desc = str_get_html(
+				markdownToHtml(html_entity_decode($item_html->find('#torrent-description', 0)->innertext))
+			);
 
-			$torrent_id = str_replace('/view/', '', $element);
-
-			//Ignore entries without valid torrent ID
-			if ($torrent_id != 0 && ctype_digit($torrent_id)) {
-
-				//Retrieve data for this torrent ID
-				$item_uri = self::URI . 'view/' . $torrent_id;
-
-				//Retrieve full description from torrent page
-				if ($item_html = getSimpleHTMLDOMCached($item_uri)) {
-
-					//Retrieve data from page contents
-					$item_title = str_replace(' :: Nyaa', '', $item_html->find('title', 0)->plaintext);
-					$item_desc = str_get_html(markdownToHtml($item_html->find('#torrent-description', 0)->innertext));
-					$item_author = extractFromDelimiters($item_html->outertext, 'href="/user/', '"');
-					$item_date = intval(extractFromDelimiters($item_html->outertext, 'data-timestamp="', '"'));
-
-					//Retrieve image for thumbnail or generic logo fallback
-					$item_image = $this->getURI() . 'static/img/avatar/default.png';
-					foreach ($item_desc->find('img') as $img) {
-						if (strpos($img->src, 'prez') === false) {
-							$item_image = $img->src;
-							break;
-						}
-					}
-
-					//Build and add final item
-					$item = array();
-					$item['uri'] = $item_uri;
-					$item['title'] = $item_title;
-					$item['author'] = $item_author;
-					$item['timestamp'] = $item_date;
-					$item['enclosures'] = array($item_image);
-					$item['content'] = $item_desc;
-					$this->items[] = $item;
+			//Retrieve image for thumbnail or generic logo fallback
+			$item_image = $this->getURI() . 'static/img/avatar/default.png';
+			foreach ($item_desc->find('img') as $img) {
+				if (strpos($img->src, 'prez') === false) {
+					$item_image = $img->src;
+					break;
 				}
 			}
-			$element = null;
+
+			//Add expanded fields to the current item
+			$item['enclosures'] = array($item_image);
+			$item['content'] = $item_desc;
 		}
-		$results = null;
+
+		return $item;
 	}
 }

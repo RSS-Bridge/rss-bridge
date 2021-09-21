@@ -41,7 +41,7 @@
  * 'content' if enabled.
  *
  * For more information see http://php.net/manual/en/function.curl-setopt.php
- * @return string The contents.
+ * @return string|array The contents.
  */
 function getContents($url, $header = array(), $opts = array(), $returnHeader = false){
 	Debug::log('Reading contents from "' . $url . '"');
@@ -198,8 +198,7 @@ EOD
 			if($lastError !== null)
 				$lastError = $lastError['message'];
 			returnError(<<<EOD
-The requested resource cannot be found!
-Please make sure your input parameters are correct!
+Unexpected response from upstream.
 cUrl error: $curlError ($curlErrno)
 PHP error: $lastError
 EOD
@@ -233,7 +232,7 @@ EOD
  * when returning plaintext.
  * @param string $defaultSpanText Specifies the replacement text for `<span />`
  * tags when returning plaintext.
- * @return string Contents as simplehtmldom object.
+ * @return false|simple_html_dom Contents as simplehtmldom object.
  */
 function getSimpleHTMLDOM($url,
 	$header = array(),
@@ -283,7 +282,7 @@ function getSimpleHTMLDOM($url,
  * when returning plaintext.
  * @param string $defaultSpanText Specifies the replacement text for `<span />`
  * tags when returning plaintext.
- * @return string Contents as simplehtmldom object.
+ * @return false|simple_html_dom Contents as simplehtmldom object.
  */
 function getSimpleHTMLDOMCached($url,
 	$duration = 86400,
@@ -312,7 +311,7 @@ function getSimpleHTMLDOMCached($url,
 	$time = $cache->getTime();
 	if($time !== false
 	&& (time() - $duration < $time)
-	&& Debug::isEnabled()) { // Contents within duration
+	&& !Debug::isEnabled()) { // Contents within duration
 		$content = $cache->loadData();
 	} else { // Content not within duration
 		$content = getContents($url, $header, $opts);

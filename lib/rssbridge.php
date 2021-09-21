@@ -74,6 +74,7 @@ require_once PATH_LIB . 'BridgeList.php';
 require_once PATH_LIB . 'ParameterValidator.php';
 require_once PATH_LIB . 'ActionFactory.php';
 require_once PATH_LIB . 'ActionAbstract.php';
+require_once PATH_LIB . 'XPathAbstract.php';
 
 // Functions
 require_once PATH_LIB . 'html.php';
@@ -82,5 +83,6 @@ require_once PATH_LIB . 'contents.php';
 
 // Vendor
 define('MAX_FILE_SIZE', 10000000); /* Allow larger files for simple_html_dom */
-require_once PATH_LIB_VENDOR . 'simplehtmldom/simple_html_dom.php';
+require_once PATH_LIB_VENDOR . 'parsedown/Parsedown.php';
 require_once PATH_LIB_VENDOR . 'php-urljoin/src/urljoin.php';
+require_once PATH_LIB_VENDOR . 'simplehtmldom/simple_html_dom.php';

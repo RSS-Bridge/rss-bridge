@@ -38,7 +38,7 @@ class GoogleSearchBridge extends BridgeAbstract {
 				$t = $element->find('a[href]', 0)->href;
 				$item['uri'] = htmlspecialchars_decode($t);
 				$item['title'] = $element->find('h3', 0)->plaintext;
-				$item['content'] = $element->find('span[class=st]', 0)->plaintext;
+				$item['content'] = $element->find('span[class=aCOpRe]', 0)->plaintext;
 
 				$this->items[] = $item;
 			}

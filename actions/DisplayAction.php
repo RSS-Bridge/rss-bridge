@@ -131,6 +131,7 @@ class DisplayAction extends ActionAbstract {
 
 			try {
 				$bridge->setDatas($bridge_params);
+				$bridge->loadConfiguration();
 				$bridge->collectData();
 
 				$items = $bridge->getItems();
@@ -150,6 +151,7 @@ class DisplayAction extends ActionAbstract {
 				$infos = array(
 					'name' => $bridge->getName(),
 					'uri'  => $bridge->getURI(),
+					'donationUri'  => $bridge->getDonationURI(),
 					'icon' => $bridge->getIcon()
 				);
 			} catch(Error $e) {

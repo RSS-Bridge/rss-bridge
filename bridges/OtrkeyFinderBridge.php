@@ -11,13 +11,11 @@ class OtrkeyFinderBridge extends BridgeAbstract {
 			'searchterm' => array(
 				'name' => 'Search term',
 				'exampleValue' => 'Terminator',
-				'defaultValue' => '',
 				'title' => 'The search term is case-insensitive',
 			),
 			'station' => array(
 				'name' => 'Station name',
 				'exampleValue' => 'ARD',
-				'defaultValue' => '',
 			),
 			'type' => array(
 				'name' => 'Media type',
@@ -143,7 +141,11 @@ class OtrkeyFinderBridge extends BridgeAbstract {
 			$item['content'] = $content;
 
 		if (preg_match(self::TIME_REGEX, $file, $matches) === 1) {
-			$item['timestamp'] = DateTime::createFromFormat('y.m.d_H-i', $matches[0], new DateTimeZone('Europe/Berlin'))->getTimestamp();
+			$item['timestamp'] = DateTime::createFromFormat(
+				'y.m.d_H-i',
+				$matches[0],
+				new DateTimeZone('Europe/Berlin')
+			)->getTimestamp();
 		}
 
 		return $item;

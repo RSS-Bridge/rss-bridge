@@ -1,7 +1,7 @@
 <?php
 class ExtremeDownloadBridge extends BridgeAbstract {
 	const NAME = 'Extreme Download';
-	const URI = 'https://www.extreme-down.ninja/';
+	const URI = 'https://www.extreme-down.tv/';
 	const DESCRIPTION = 'Suivi de série sur Extreme Download';
 	const MAINTAINER = 'sysadminstory';
 	const PARAMETERS = array(
@@ -78,6 +78,16 @@ class ExtremeDownloadBridge extends BridgeAbstract {
 			break;
 		default:
 			return self::NAME;
+		}
+	}
+
+	public function getURI() {
+		switch($this->queriedContext) {
+		case 'Suivre la publication des épisodes d\'une série en cours de diffusion':
+			return self::URI . $this->getInput('url');
+			break;
+		default:
+			return self::URI;
 		}
 	}
 
