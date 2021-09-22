@@ -211,19 +211,14 @@ class ReutersBridge extends BridgeAbstract
 					$embed = '';
 					switch ($media_type) {
 						case 'tweet':
-							$url = "https://platform.twitter.com/embed/Tweet.html?id=$cid";
-							$embed .= <<<EOD
-<iframe 
-	src="{$url}"
-	title="Twitter Tweet"
-	scrolling="no" 
-	frameborder="0" 
-	allowtransparency="true" 
-	allowfullscreen="true" 
-	style="width: 550px;height: 225px;"
->
-</iframe>
-EOD;
+							try {
+								$tweet_url = "https://twitter.com/dummyname/statuses/$cid";
+								$get_embed_url = 'https://publish.twitter.com/oembed?url=' . urlencode($tweet_url) . '&partner=&hide_thread=false';
+								$oembed_json = json_decode(getContents($get_embed_url), true);
+								$embed .= $oembed_json['html'];
+							} catch (Exception $e) { // In case not found any tweet.
+								$embed .= '';
+							}
 							break;
 						case 'instagram':
 							$url = "https://instagram.com/p/$cid/media/?size=l";
