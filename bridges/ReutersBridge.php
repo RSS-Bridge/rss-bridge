@@ -214,7 +214,7 @@ class ReutersBridge extends BridgeAbstract
 							try {
 								$tweet_url = "https://twitter.com/dummyname/statuses/$cid";
 								$get_embed_url = 'https://publish.twitter.com/oembed?url='
-																 . urlencode($tweet_url) . 
+																 . urlencode($tweet_url) .
 																'&partner=&hide_thread=false';
 								$oembed_json = json_decode(getContents($get_embed_url), true);
 								$embed .= $oembed_json['html'];
