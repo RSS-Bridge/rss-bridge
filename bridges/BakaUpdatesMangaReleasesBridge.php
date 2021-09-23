@@ -44,7 +44,7 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 		}
 		else	//queriedContext == 'By list'
 			return self::RELEASES_URL;
-			
+
 		return self::URI;
 	}
 
@@ -73,8 +73,8 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 			preg_match('/id=([0-9]*)/', $this -> filterHTML($manga -> find('a', 0) -> href), $match);
 			return $match[1];
 		}
-		else 
-			return 0;	
+		else
+			return 0;
 	}
 
 	private function collectDataBySeries() {
