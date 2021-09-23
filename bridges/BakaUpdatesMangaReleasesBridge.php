@@ -127,7 +127,7 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 
 			$item['title'] = implode(' ', $title);
 			$item['uri'] = $this->getURI();
-			$item['uid'] = $this->getSanitizedHash($item['title']);
+			$item['uid'] = $this->getSanitizedHash($item['title'] . $item['author']);
 
 			$this->items[] = $item;
 		}
@@ -179,7 +179,7 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 			}
 			
 			$item['title'] = implode(' ', $title);
-			$item['uri'] = 'https://www.mangaupdates.com/series.html?id=' . $id;
+			$item['uri'] = self::URI . 'releases.html?search=' . $id . '&stype=series';
 			$item['uid'] = $this->getSanitizedHash($item['title'] . $item['author']);
 
 			$this->items[] = $item;
