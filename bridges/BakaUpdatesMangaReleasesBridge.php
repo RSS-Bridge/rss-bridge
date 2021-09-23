@@ -29,8 +29,56 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 	private $feedName = '';
 
 	public function collectData() {
+		if($this -> queriedContext == 'By series')
+			$this -> collectDataBySeries();
+		else	//queriedContext == 'By list'
+			$this -> collectDataByList();	
+	}
+
+	public function getURI(){
 		if($this -> queriedContext == 'By series') {
-			$html = getSimpleHTMLDOM($this->getURI())
+			$series_id = $this->getInput('series_id');
+			if (!empty($series_id)) {
+				return self::URI . 'releases.html?search=' . $series_id . '&stype=series';
+			}
+		}
+		else	//queriedContext == 'By list'
+			return self::RELEASES_URL;
+			
+		return self::URI;
+	}
+
+	public function getName(){
+		if(!empty($this->feedName)) {
+			return $this->feedName . ' - ' . self::NAME;
+		}
+		return parent::getName();
+	}
+
+	private function getSanitizedHash($string) {
+		return hash('sha1', preg_replace('/[^a-zA-Z0-9\-\.]/', '', ucwords(strtolower($string))));
+	}
+
+	private function filterText($text) {
+		return rtrim($text, '* ');
+	}
+
+	private function filterHTML($text) {
+		return $this->filterText(html_entity_decode($text));
+	}
+
+	private function findID($manga) {
+		// sometimes new series are on the release list that have no ID. just drop them.
+		if(@$this -> filterHTML($manga -> find('a', 0) -> href) != null) {
+			preg_match('/id=([0-9]*)/', $this -> filterHTML($manga -> find('a', 0) -> href), $match);
+			return $match[1];
+		}
+		else 
+			return 0;	
+	}
+
+	private function collectDataBySeries() {
+		$html = getSimpleHTMLDOM($this->getURI())
 				or returnServerError('Series not found');
 
 			// content is an unstructured pile of divs, ugly to parse
@@ -84,9 +132,10 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 
 				$this->items[] = $item;
 			}
-		}
-		else {	//queriedContext == 'By list'
-			$this -> feedName = 'Releases';
+	}
+
+	private function collectDataByList() {
+		$this -> feedName = 'Releases';
 			$list = array();
 
 			$releasesHTML = getSimpleHTMLDOM(self::RELEASES_URL)
@@ -138,48 +187,5 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 
 				$this->items[] = $item;
 			}
-		}
-	}
-
-	public function getURI(){
-		if($this -> queriedContext == 'By series') {
-			$series_id = $this->getInput('series_id');
-			if (!empty($series_id)) {
-				return self::URI . 'releases.html?search=' . $series_id . '&stype=series';
-			}
-		}
-		else	//queriedContext == 'By list'
-			return self::RELEASES_URL;
-			
-		return self::URI;
-	}
-
-	public function getName(){
-		if(!empty($this->feedName)) {
-			return $this->feedName . ' - ' . self::NAME;
-		}
-		return parent::getName();
-	}
-
-	private function getSanitizedHash($string) {
-		return hash('sha1', preg_replace('/[^a-zA-Z0-9\-\.]/', '', ucwords(strtolower($string))));
-	}
-
-	private function filterText($text) {
-		return rtrim($text, '* ');
-	}
-
-	private function filterHTML($text) {
-		return $this->filterText(html_entity_decode($text));
-	}
-
-	private function findID($manga) {
-		// sometimes new series are on the release list that have no ID. just drop them.
-		if(@$this -> filterHTML($manga -> find('a', 0) -> href) != null) {
-			preg_match('/id=([0-9]*)/', $this -> filterHTML($manga -> find('a', 0) -> href), $match);
-			return $match[1];
-		}
-		else 
-			return 0;	
 	}
 }
