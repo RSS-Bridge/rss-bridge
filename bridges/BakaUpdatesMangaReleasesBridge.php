@@ -78,114 +78,111 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 	}
 
 	private function collectDataBySeries() {
-		$html = getSimpleHTMLDOM($this->getURI())
-				or returnServerError('Series not found');
+		$html = getSimpleHTMLDOM($this->getURI());
 
-			// content is an unstructured pile of divs, ugly to parse
-			$cols = $html->find('div#main_content div.row > div.text');
-			if (!$cols)
-				returnServerError('No releases');
+		// content is an unstructured pile of divs, ugly to parse
+		$cols = $html->find('div#main_content div.row > div.text');
+		if (!$cols)
+			returnServerError('No releases');
 
-			$rows = array_slice(
-				array_chunk($cols, self::LIMIT_COLS), 0, self::LIMIT_ITEMS
-			);
+		$rows = array_slice(
+			array_chunk($cols, self::LIMIT_COLS), 0, self::LIMIT_ITEMS
+		);
 
-			if (isset($rows[0][1])) {
-				$this->feedName = $this->filterHTML($rows[0][1]->plaintext);
+		if (isset($rows[0][1])) {
+			$this->feedName = $this->filterHTML($rows[0][1]->plaintext);
+		}
+
+		foreach($rows as $cols) {
+			if (count($cols) < self::LIMIT_COLS) continue;
+
+			$item = array();
+			$title = array();
+
+			$item['content'] = '';
+
+			$objDate = $cols[0];
+			if ($objDate)
+				$item['timestamp'] = strtotime($objDate->plaintext);
+
+			$objTitle = $cols[1];
+			if ($objTitle) {
+				$title[] = $this->filterHTML($objTitle->plaintext);
+				$item['content'] .= '<p>Series: ' . $this->filterText($objTitle->innertext) . '</p>';
 			}
 
-			foreach($rows as $cols) {
-				if (count($cols) < self::LIMIT_COLS) continue;
+			$objVolume = $cols[2];
+			if ($objVolume && !empty($objVolume->plaintext))
+				$title[] = 'Vol.' . $objVolume->plaintext;
 
-				$item = array();
-				$title = array();
+			$objChapter = $cols[3];
+			if ($objChapter && !empty($objChapter->plaintext))
+				$title[] = 'Chp.' . $objChapter->plaintext;
 
-				$item['content'] = '';
-
-				$objDate = $cols[0];
-				if ($objDate)
-					$item['timestamp'] = strtotime($objDate->plaintext);
-
-				$objTitle = $cols[1];
-				if ($objTitle) {
-					$title[] = $this->filterHTML($objTitle->plaintext);
-					$item['content'] .= '<p>Series: ' . $this->filterText($objTitle->innertext) . '</p>';
-				}
-
-				$objVolume = $cols[2];
-				if ($objVolume && !empty($objVolume->plaintext))
-					$title[] = 'Vol.' . $objVolume->plaintext;
-
-				$objChapter = $cols[3];
-				if ($objChapter && !empty($objChapter->plaintext))
-					$title[] = 'Chp.' . $objChapter->plaintext;
-
-				$objAuthor = $cols[4];
-				if ($objAuthor && !empty($objAuthor->plaintext)) {
-					$item['author'] = $this->filterHTML($objAuthor->plaintext);
-					$item['content'] .= '<p>Groups: ' . $this->filterText($objAuthor->innertext) . '</p>';
-				}
-
-				$item['title'] = implode(' ', $title);
-				$item['uri'] = $this->getURI();
-				$item['uid'] = $this->getSanitizedHash($item['title']);
-
-				$this->items[] = $item;
+			$objAuthor = $cols[4];
+			if ($objAuthor && !empty($objAuthor->plaintext)) {
+				$item['author'] = $this->filterHTML($objAuthor->plaintext);
+				$item['content'] .= '<p>Groups: ' . $this->filterText($objAuthor->innertext) . '</p>';
 			}
+
+			$item['title'] = implode(' ', $title);
+			$item['uri'] = $this->getURI();
+			$item['uid'] = $this->getSanitizedHash($item['title']);
+
+			$this->items[] = $item;
+		}
 	}
 
 	private function collectDataByList() {
 		$this -> feedName = 'Releases';
-			$list = array();
+		$list = array();
 
-			$releasesHTML = getSimpleHTMLDOM(self::RELEASES_URL)
-				or returnServerError('Could not connect to releases page.');
+		$releasesHTML = getSimpleHTMLDOM(self::RELEASES_URL);
 
-			$list_id = $this -> getInput('list_id');
-			$listHTML = getSimpleHTMLDOM('https://www.mangaupdates.com/mylist.html?id=' . $list_id)
-				or returnServerError('List does not exist or is not publicly visible.');
+		$list_id = $this -> getInput('list_id');
+		$listHTML = getSimpleHTMLDOM('https://www.mangaupdates.com/mylist.html?id=' . $list_id);
 
-			//get ids of the manga that the user follows,
-			$parts = $listHTML -> find('table#ptable tr > td.pl');
-			foreach($parts as $part) {
-				$list[] = $this -> findID($part);
+		//get ids of the manga that the user follows,
+		$parts = $listHTML -> find('table#ptable tr > td.pl');
+		foreach($parts as $part) {
+			$list[] = $this -> findID($part);
+		}
+
+		//similar to above, but the divs are in groups of 3.
+		$cols = $releasesHTML -> find('div#main_content div.row > div.pbreak');
+		$rows = array_slice(array_chunk($cols, 3), 0);
+
+		foreach($rows as $cols) {
+			//check if current manga is in user's list.
+			$id = $this -> findId($cols[0]);
+			if(!array_search($id, $list)) continue;
+
+			$item = array();
+			$title = array();
+
+			$item['content'] = '';
+
+			$objTitle = $cols[0];
+			if ($objTitle) {
+				$title[] = $this->filterHTML($objTitle->plaintext);
+				$item['content'] .= '<p>Series: ' . $this->filterHTML($objTitle -> innertext) . '</p>';
 			}
 
-			//similar to above, but the divs are in groups of 3.
-			$cols = $releasesHTML -> find('div#main_content div.row > div.pbreak');
-			$rows = array_slice(array_chunk($cols, 3), 0);
+			$objVolChap = $cols[1];
+			if ($objVolChap && !empty($objVolChap->plaintext))
+				$title[] = $this -> filterHTML($objVolChap -> innertext);
 
-			foreach($rows as $cols) {
-				//check if current manga is in user's list.
-				$id = $this -> findId($cols[0]);
-				if(!array_search($id, $list)) continue;
-
-				$item = array();
-				$title = array();
-
-				$item['content'] = '';
-
-				$objTitle = $cols[0];
-				if ($objTitle) {
-					$title[] = $this->filterHTML($objTitle->plaintext);
-					$item['content'] .= '<p>Series: ' . $this->filterHTML($objTitle -> innertext) . '</p>';
-				}
-
-				$objVolChap = $cols[1];
-				if ($objVolChap && !empty($objVolChap->plaintext))
-					$title[] = $this -> filterHTML($objVolChap -> innertext);
-
-				$objAuthor = $cols[2];
-				if ($objAuthor && !empty($objAuthor->plaintext)) {
-					$item['author'] = $this->filterHTML($objAuthor -> plaintext);
-					$item['content'] .= '<p>Groups: ' . $this->filterHTML($objAuthor -> innertext) . '</p>';
-				}
-				
-				$item['title'] = implode(' ', $title);
-				$item['uri'] = 'https://www.mangaupdates.com/series.html?id=' . $id;
-				$item['uid'] = $this->getSanitizedHash($item['title'] . $item['author']);
-
-				$this->items[] = $item;
+			$objAuthor = $cols[2];
+			if ($objAuthor && !empty($objAuthor->plaintext)) {
+				$item['author'] = $this->filterHTML($objAuthor -> plaintext);
+				$item['content'] .= '<p>Groups: ' . $this->filterHTML($objAuthor -> innertext) . '</p>';
 			}
+			
+			$item['title'] = implode(' ', $title);
+			$item['uri'] = 'https://www.mangaupdates.com/series.html?id=' . $id;
+			$item['uid'] = $this->getSanitizedHash($item['title'] . $item['author']);
+
+			$this->items[] = $item;
+		}
 	}
 }
