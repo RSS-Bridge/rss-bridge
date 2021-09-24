@@ -61,7 +61,7 @@ class DiscogsBridge extends BridgeAbstract {
 				$item['title'] = $release['title'];
 				$item['id'] = $release['id'];
 				$resId = array_key_exists('main_release', $release) ? $release['main_release'] : $release['id'];
-				$item['uri'] = self::URI . $this->getInput('artistid') . '/release/' . $resId;
+				$item['uri'] = self::URI . $this->getInput('artistid') . 'release/' . $resId;
 
 				if(isset($release['year'])) {
 					$item['timestamp'] = DateTime::createFromFormat('Y', $release['year'])->getTimestamp();
@@ -96,7 +96,7 @@ class DiscogsBridge extends BridgeAbstract {
 				$item['title'] = $infos['title'];
 				$item['author'] = $infos['artists'][0]['name'];
 				$item['id'] = $infos['artists'][0]['id'];
-				$item['uri'] = self::URI . $infos['artists'][0]['id'] . '/release/' . $infos['id'];
+				$item['uri'] = self::URI . $infos['artists'][0]['id'] . 'release/' . $infos['id'];
 				$item['timestamp'] = strtotime($element['date_added']);
 				$item['content'] = $item['author'] . ' - ' . $item['title'];
 				$this->items[] = $item;
