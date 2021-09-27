@@ -47,8 +47,8 @@ jobs:
         uses: docker/login-action@v1.10.0
         with:
           registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GHCR_PAT }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       -
         name: Build and push
         uses: docker/bake-action@v1.6.0
