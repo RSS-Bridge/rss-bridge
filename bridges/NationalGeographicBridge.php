@@ -266,7 +266,11 @@ EOD;
 
 		$article = $filtered_data['edgs'][0];
 
-		$authors = $article['cntrbGrp'][0]['contributors'];
+		$contributors = $article['cntrbGrp'];
+		$authors = array();
+		if(count($contributors) > 0) {
+			$authors = $contributors[0]['contributors'];
+		}
 
 		$authors_name = '';
 		$counter = 0;
