@@ -59,11 +59,7 @@ class PicukiBridge extends BridgeAbstract
 
 			$is_video = (bool) $element->find('.video-icon', 0);
 			$item['content'] = ($is_video) ? '(video) ' : '';
-			$item['content'] .= str_replace(
-				'src="',
-				'src="' . trim(self::URI, '/'),
-				$element->find('.photo', 0)->outertext
-			);
+			$item['content'] .= $element->find('.photo', 0)->outertext;
 
 			$item['enclosures'] = array(
 					// just add `.jpg` extension to get the correct mime type. All Instagram posts are JPG
