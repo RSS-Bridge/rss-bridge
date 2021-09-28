@@ -74,7 +74,7 @@ class UnogsBridge extends BridgeAbstract {
 		if($this->queriedContext == 'Global') {
 			$feedName .= 'Netflix Global - ';
 		} elseif($this->queriedContext == 'Country') {
-			$feedName .= 'Netflix Country Code: ' . $this->getInput('country_code') . ' - ';
+			$feedName .= 'Netflix ' . $this->getParametersKey('country_code') . ' - ';
 		}
 		if($this->getInput('feed') == 'expiring') {
 			$feedName .= 'Expiring title';
@@ -84,6 +84,20 @@ class UnogsBridge extends BridgeAbstract {
 			$feedName = self::NAME;
 		}
 		return $feedName;
+	}
+
+	private function getParametersKey($input = '') {
+		$params = $this->getParameters();
+		$tab = 'Country';
+		if (!isset($params[$tab][$input])) {
+			return '';
+		}
+
+		return array_search(
+			$this->getInput($input),
+			$params[$tab][$input]['values']
+		);
+
 	}
 
 	private function getJSON($url) {
