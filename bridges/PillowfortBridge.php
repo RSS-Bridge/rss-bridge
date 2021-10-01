@@ -154,8 +154,7 @@ EOD;
 				$item['title'] = $post['original_post']['title'];
 			else
 				$item['title'] = '[NO TITLE]';
-		}
-		else {
+		} else {
 			$item['uri'] = self::URI . '/posts/' . $post['id'];
 			$item['author'] = $post['username'];
 			if($post['title'] != '')
@@ -214,7 +213,7 @@ EOD;
 
 		foreach($posts as $post) {
 			$item = $this->getItemFromPost($post);
-	
+
 			//empty when 'noreblogs' is checked and current post is a reblog.
 			if(!empty($item))
 				$this->items[] = $item;
