@@ -32,7 +32,7 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 		if($this -> queriedContext == 'By series')
 			$this -> collectDataBySeries();
 		else	//queriedContext == 'By list'
-			$this -> collectDataByList();	
+			$this -> collectDataByList();
 	}
 
 	public function getURI(){
@@ -41,8 +41,7 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 			if (!empty($series_id)) {
 				return self::URI . 'releases.html?search=' . $series_id . '&stype=series';
 			}
-		}
-		else	//queriedContext == 'By list'
+		} else	//queriedContext == 'By list'
 			return self::RELEASES_URL;
 
 		return self::URI;
@@ -72,8 +71,7 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 		if(@$this -> filterHTML($manga -> find('a', 0) -> href) != null) {
 			preg_match('/id=([0-9]*)/', $this -> filterHTML($manga -> find('a', 0) -> href), $match);
 			return $match[1];
-		}
-		else
+		} else
 			return 0;
 	}
 
@@ -177,7 +175,7 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 				$item['author'] = $this->filterHTML($objAuthor -> plaintext);
 				$item['content'] .= '<p>Groups: ' . $this->filterHTML($objAuthor -> innertext) . '</p>';
 			}
-			
+
 			$item['title'] = implode(' ', $title);
 			$item['uri'] = self::URI . 'releases.html?search=' . $id . '&stype=series';
 			$item['uid'] = $this->getSanitizedHash($item['title'] . $item['author']);
