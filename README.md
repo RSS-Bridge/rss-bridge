@@ -253,6 +253,7 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [Roliga](https://github.com/Roliga)
 * [ronansalmon](https://github.com/ronansalmon)
 * [rremizov](https://github.com/rremizov)
+* [sal0max](https://github.com/sal0max)
 * [sebsauvage](https://github.com/sebsauvage)
 * [shutosg](https://github.com/shutosg)
 * [simon816](https://github.com/simon816)
