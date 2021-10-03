@@ -25,7 +25,6 @@ Once a project reaches 10,000 supporters, it gets reviewed by the lego experts.'
 					'On Shelves' => 'idea_on_shelves',
 					'Expired Ideas' => 'idea_expired_ideas',
 				),
-				'required' => true,
 				'defaultValue' => 'idea_gathering_support'
 			)
 		)
