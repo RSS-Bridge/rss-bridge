@@ -91,16 +91,17 @@ EOD
 	 * Returns the API query
 	 */
 	private function getHttpPostData() {
+
 		$phase = $this->getInput('idea_phase');
 		$minSupporters = $this->getInput('support_value_min');
 
 		return <<<EOD
-			{ "filters": {
-				 "idea_phase": [ "$phase" ],
-				 "support_value": [ $minSupporters, 10000 ]
-			},
-			"sort": [ "most_recent:desc" ]
-			}
-			EOD;
+{ "filters": {
+	 "idea_phase": [ "$phase" ],
+	 "support_value": [ $minSupporters, 10000 ]
+},
+"sort": [ "most_recent:desc" ]
+}
+EOD;
 	}
 }
