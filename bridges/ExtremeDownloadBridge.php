@@ -1,7 +1,7 @@
 <?php
 class ExtremeDownloadBridge extends BridgeAbstract {
 	const NAME = 'Extreme Download';
-	const URI = 'https://www.extreme-down.tv/';
+	const URI = 'https://www.extreme-down.plus/';
 	const DESCRIPTION = 'Suivi de série sur Extreme Download';
 	const MAINTAINER = 'sysadminstory';
 	const PARAMETERS = array(
@@ -10,7 +10,7 @@ class ExtremeDownloadBridge extends BridgeAbstract {
 				'name' => 'URL de la série',
 				'type' => 'text',
 				'required' => true,
-				'title' => 'URL d\'une série sans le https://ww1.extreme-d0wn.com/',
+				'title' => 'URL d\'une série sans le https://www.extreme-down.plus/',
 				'exampleValue' => 'series-hd/hd-series-vostfr/46631-halt-and-catch-fire-saison-04-vostfr-hdtv-720p.html'),
 			'filter' => array(
 				'name' => 'Type de contenu',
