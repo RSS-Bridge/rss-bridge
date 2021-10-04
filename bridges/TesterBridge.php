@@ -24,25 +24,26 @@ class TesterBridge extends FeedExpander {
         foreach($html->find('section[id]') as $element) {
             $item = array();
             $title = $element->find('h2', 0)->innertext;
+            $item['title'] = $title;
             $blockedbridges = array('Tester', 'Anime', 'Blizzard');
+            $bridgeerrors = array('RSS-Bridge-Error');
             if($this->strContainsArr($title, $blockedbridges)){
                 continue;
             }
-            $bridgestring = $this->getInput('url') . "/?action=display&format=Json&bridge=";
-            $bridgestring = $bridgestring . $element->find('input[name=bridge]',0)->value;
-			$item['title'] = $title;
+            $bridgestring = $this->getInput('url') . "/?action=display&format=Json&bridge="  . $element->find('input[name=bridge]',0)->value;
             $parameters = $this->getParametersFromBridge($element);
             if (empty($parameters)) {
                 $item['content'] = $bridgestring;
                 #$item['content'] = 'Amount of items: ' . $this->getBridgeFeed($bridgestring);
-            } else {
+            } elseif ($this->strContainsArr($parameters, $bridgeerrors)){
+                $item['content'] = $parameters;
+            }
+            else {
                 $item['content'] = $bridgestring . $parameters;
             }
 
 			$this->items[] = $item;
 		}
-
-		#$this->collectExpandableDatas(static::URI . 'spip.php?page=backend');
 	}
     private function getParametersFromBridge($element){
         $paramstrings = array();
@@ -56,7 +57,8 @@ class TesterBridge extends FeedExpander {
                         case "number":
                             if (empty($input->placeholder)) {
                                 if (empty($input->value)) {
-                                    $value = "0";
+                                    $errormsg = $errormsg . 'RSS-Bridge-Error: Number ' . $input->name  . ' contains no example or default value<br>';
+                                    #$value = "0";
                                 } else {
                                     $value = $input->value;
                                 }
@@ -68,7 +70,8 @@ class TesterBridge extends FeedExpander {
                         case "text":
                             if (empty($input->placeholder)){
                                 if (empty($input->value)){
-                                    $value = "FillMe";
+                                    $errormsg = $errormsg . 'RSS-Bridge-Error: Text ' . $input->name  . ' contains no example or default value<br>';
+                                    #$value = "FillMe";
                                 } else {
                                     $value = $input->value;
                                 }
@@ -99,6 +102,9 @@ class TesterBridge extends FeedExpander {
                 }
             }
             $paramstrings[] = $paramstring;
+        }
+        if (isset($errormsg)) {
+            return $errormsg;
         }
         return $paramstrings[array_rand($paramstrings)];
     }
