@@ -59,7 +59,7 @@ class TesterBridge extends FeedExpander {
                         case "number":
                             if (empty($input->placeholder)) {
                                 if (empty($input->value)) {
-                                    $errormsg = $errormsg . 'RSS-Bridge-Error: Number ' . $input->name  . ' contains no example or default value<br>';
+                                    $errormsg = $errormsg . 'RSS-Bridge-Error: No exampleValue for Numberfield "' . $input->name  . '"<br>';
                                 } else {
                                     $value = $input->value;
                                 }
@@ -71,7 +71,7 @@ class TesterBridge extends FeedExpander {
                         case "text":
                             if (empty($input->placeholder)){
                                 if (empty($input->value)){
-                                    $errormsg = $errormsg . 'RSS-Bridge-Error: Text ' . $input->name  . ' contains no example or default value<br>';
+                                    $errormsg = $errormsg . 'RSS-Bridge-Error: No exampleValue for Textfield "' . $input->name  . '"<br>';
                                 } else {
                                     $value = $input->value;
                                 }
@@ -123,11 +123,18 @@ class TesterBridge extends FeedExpander {
                 if (strpos($feed->items[0]->title, "Bridge returned error") !== false){
                     $returnarray[] =  $feed->items[0]->title;
                     $returnarray[] = 'broken';
+                } else {
+                    $returnarray[] =  'Bridge returns ' . count($feed->items) . ' items for url ' . $url;
+                    $returnarray[] =  'working';
                 }
                 break;
             default:
                 $returnarray[] =  'Bridge returns ' . count($feed->items) . ' items for url ' . $url;
-                $returnarray[] =  'working';
+                if (count($feed->items) >= 40) {
+                    $returnarray[] =  'sizewarning';
+                } else {
+                    $returnarray[] =  'working';
+                }
         }
         return $returnarray;
     }
