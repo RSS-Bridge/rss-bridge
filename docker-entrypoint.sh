@@ -22,6 +22,9 @@ while IFS= read -r -d '' file; do
     whitelist.txt)  yes | cp "$file" /app/ ;
                     chown www-data:www-data "/app/$file_name";
                     printf "Custom whitelist.txt added.\n";;
+    DEBUG)          yes | cp "$file" /app/ ;
+                    chown www-data:www-data "/app/$file_name";
+                    printf "DEBUG file added.\n";;
     esac
 done
 
