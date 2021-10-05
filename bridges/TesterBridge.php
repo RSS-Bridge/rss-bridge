@@ -25,7 +25,7 @@ class TesterBridge extends FeedExpander {
             $item = array();
             $title = $element->find('h2', 0)->innertext;
             $item['title'] = $title;
-            $blockedbridges = array('Tester', 'Anime', 'Blizzard');
+            $blockedbridges = array('Tester', 'Anime', 'Blizzard', 'Demo', 'Flickr');
             $bridgeerrors = array('RSS-Bridge-Error');
             if($this->strContainsArr($title, $blockedbridges)){
                 continue;
@@ -33,13 +33,17 @@ class TesterBridge extends FeedExpander {
             $bridgestring = $this->getInput('url') . "/?action=display&format=Json&bridge="  . $element->find('input[name=bridge]',0)->value;
             $parameters = $this->getParametersFromBridge($element);
             if (empty($parameters)) {
-                $item['content'] = $bridgestring;
-                #$item['content'] = 'Amount of items: ' . $this->getBridgeFeed($bridgestring);
+                #$item['content'] = $bridgestring;
+                $returnarray = $this->getBridgeFeed($bridgestring);
+                $item['content'] = $returnarray[0];
+                $item['categories'][] = $returnarray[1];
             } elseif ($this->strContainsArr($parameters, $bridgeerrors)){
                 $item['content'] = $parameters;
+                $item['categories'][] = 'missingparameter';
             }
             else {
                 $item['content'] = $bridgestring . $parameters;
+                $item['categories'][] = 'untested';
             }
 
 			$this->items[] = $item;
@@ -49,16 +53,13 @@ class TesterBridge extends FeedExpander {
         $paramstrings = array();
         foreach( $element->getElementsByTagName('form') as $form ){
             $paramstring = '';
-            #$paramstring = $paramstring . $form . ' NEXT ';
             foreach( $form->getElementsByTagName('div') as $parameter ){
-                #$paramstring = $paramstring . $parameter . ' NEXT ';
                 foreach( $parameter->getElementsByTagName('input') as $input ){
                     switch ($input->type) {
                         case "number":
                             if (empty($input->placeholder)) {
                                 if (empty($input->value)) {
                                     $errormsg = $errormsg . 'RSS-Bridge-Error: Number ' . $input->name  . ' contains no example or default value<br>';
-                                    #$value = "0";
                                 } else {
                                     $value = $input->value;
                                 }
@@ -71,7 +72,6 @@ class TesterBridge extends FeedExpander {
                             if (empty($input->placeholder)){
                                 if (empty($input->value)){
                                     $errormsg = $errormsg . 'RSS-Bridge-Error: Text ' . $input->name  . ' contains no example or default value<br>';
-                                    #$value = "FillMe";
                                 } else {
                                     $value = $input->value;
                                 }
@@ -113,7 +113,23 @@ class TesterBridge extends FeedExpander {
         $html = getContents($url)
             or returnServerError('Could not request ' . $url);
         $feed = json_decode($html);
-        return count($feed->items);
+        $returnarray = array();
+        switch (count($feed->items)) {
+            case 0:
+                $returnarray[] = 'Bridge returns no items for url "' . $url . '"';
+                $returnarray[] = 'broken';
+                break;
+            case 1:
+                if (strpos($feed->items[0]->title, "Bridge returned error") !== false){
+                    $returnarray[] =  $feed->items[0]->title;
+                    $returnarray[] = 'broken';
+                }
+                break;
+            default:
+                $returnarray[] =  'Bridge returns ' . count($feed->items) . ' items for url ' . $url;
+                $returnarray[] =  'working';
+        }
+        return $returnarray;
     }
 
     private function strContainsArr($str, array $arr)
