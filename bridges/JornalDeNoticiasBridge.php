@@ -30,8 +30,7 @@ class JornalDeNoticiasBridge extends BridgeAbstract {
 
 	public function collectData() {
 		$archives = self::getURI();
-		$html = getSimpleHTMLDOMCached($archives)
-			or returnServerError('Could not load content');
+		$html = getSimpleHTMLDOMCached($archives);
 
 		foreach($html->find('article') as $element) {
 			$item = array();
@@ -53,4 +52,3 @@ class JornalDeNoticiasBridge extends BridgeAbstract {
 		}
 	}
 }
-
