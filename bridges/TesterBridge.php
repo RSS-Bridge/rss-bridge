@@ -26,7 +26,7 @@ class TesterBridge extends FeedExpander {
             $title = $element->find('h2', 0)->innertext;
             $item['title'] = $title;
             $blockedbridges = array('Tester', 'Anime', 'Blizzard', 'Demo', 'Flickr');
-            $bridgeerrors = array('RSS-Bridge-Error');
+            $bridgeerrors = array('exampleValue');
             if($this->strContainsArr($title, $blockedbridges)){
                 continue;
             }
@@ -42,6 +42,9 @@ class TesterBridge extends FeedExpander {
                 $item['categories'][] = 'missingparameter';
             }
             else {
+                #$returnarray = $this->getBridgeFeed($bridgestring . $parameters);
+                #$item['content'] = $returnarray[0];
+                #$item['categories'][] = $returnarray[1];
                 $item['content'] = $bridgestring . $parameters;
                 $item['categories'][] = 'untested';
             }
@@ -51,15 +54,19 @@ class TesterBridge extends FeedExpander {
 	}
     private function getParametersFromBridge($element){
         $paramstrings = array();
+        $title = $element->find('h2', 0)->innertext;
         foreach( $element->getElementsByTagName('form') as $form ){
             $paramstring = '';
             foreach( $form->getElementsByTagName('div') as $parameter ){
                 foreach( $parameter->getElementsByTagName('input') as $input ){
+                    #if (!isset($input->required)) {
+                    #    continue;
+                    #}
                     switch ($input->type) {
                         case "number":
                             if (empty($input->placeholder)) {
                                 if (empty($input->value)) {
-                                    $errormsg = $errormsg . 'RSS-Bridge-Error: No exampleValue for Numberfield "' . $input->name  . '"<br>';
+                                    $errormsg = $errormsg . $title . ': No exampleValue or defaultValue for Numberfield "' . $input->name  . '"<br>';
                                 } else {
                                     $value = $input->value;
                                 }
@@ -71,7 +78,7 @@ class TesterBridge extends FeedExpander {
                         case "text":
                             if (empty($input->placeholder)){
                                 if (empty($input->value)){
-                                    $errormsg = $errormsg . 'RSS-Bridge-Error: No exampleValue for Textfield "' . $input->name  . '"<br>';
+                                    $errormsg = $errormsg . $title . ': No exampleValue or defaultValue for Textfield "' . $input->name  . '"<br>';
                                 } else {
                                     $value = $input->value;
                                 }
@@ -89,6 +96,9 @@ class TesterBridge extends FeedExpander {
                     }
                 }
                 foreach( $parameter->getElementsByTagName('select') as $select ){
+                    #if (!isset($select->required)) {
+                    #    continue;
+                    #}
                     $value = '';
                     foreach($select->getElementsByTagName('option') as $option) {
                         if (isset($option->selected)) {
@@ -145,6 +155,5 @@ class TesterBridge extends FeedExpander {
             if (stripos($str,$a) !== false) return true;
         }
         return false;
-    }
-    
+    }   
 }
