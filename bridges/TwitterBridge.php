@@ -88,7 +88,7 @@ EOD
 				'name' => 'username',
 				'required' => true,
 				'exampleValue' => 'sebsauvage',
-				'title' => 'Insert a user name'	
+				'title' => 'Insert a user name'
 			),
 			'timeline' => array(
 				'name' => 'Type',
@@ -190,7 +190,7 @@ EOD
 			$param = 'u';
 			break;
 		case 'By timeline':
-			return 'Twitter @' . $this->getInput('u') . " : " . $this->getInput('timeline'); 
+			return 'Twitter @' . $this->getInput('u') . ' : ' . $this->getInput('timeline');
 		case 'By list':
 			return $this->getInput('list') . ' - Twitter list by ' . $this->getInput('user');
 		case 'By list ID':
@@ -256,7 +256,7 @@ EOD
 		case 'By timeline':
 			if($this->getInput('timeline') == 'tweets')
 				$query = 'profile';
-			else 
+			else
 				$query = 'media';
 			return self::API_URI
 			. '/2/timeline/'
