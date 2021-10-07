@@ -83,6 +83,24 @@ EOD
 				'title' => 'Hide pinned tweet'
 			)
 		),
+		'By timeline' => array(
+			'u' => array(
+				'name' => 'username',
+				'required' => true,
+				'exampleValue' => 'sebsauvage',
+				'title' => 'Insert a user name'	
+			),
+			'timeline' => array(
+				'name' => 'Type',
+				'type' => 'list',
+				'values' => array(
+					'Tweets' => 'tweets',
+					'Media' => 'media'
+				),
+				'default_value' => 'tweets',
+				'title' => 'Tweets is the default timeline for a user.'
+			)
+		),
 		'By list' => array(
 			'user' => array(
 				'name' => 'User',
@@ -150,6 +168,14 @@ EOD
 			return $params;
 		}
 
+		//By timeline
+		$regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/([^\/?\n]+)\/([tweets|media]+)/';
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['u'] = urldecode($matches[3]);
+			$params['timeline'] = urldecode($matches[4]);
+			return $params;
+		}
+
 		return null;
 	}
 
@@ -163,6 +189,8 @@ EOD
 			$specific = '@';
 			$param = 'u';
 			break;
+		case 'By timeline':
+			return 'Twitter @' . $this->getInput('u') . " : " . $this->getInput('timeline'); 
 		case 'By list':
 			return $this->getInput('list') . ' - Twitter list by ' . $this->getInput('user');
 		case 'By list ID':
@@ -184,6 +212,10 @@ EOD
 			. urlencode($this->getInput('u'));
 			// Always return without replies!
 			// . ($this->getInput('norep') ? '' : '/with_replies');
+		case 'By timeline':
+			return self::URI
+			. urlencode($this->getInput('u'))
+			. urlencode($this->getInput('timeline'));
 		case 'By list':
 			return self::URI
 			. urlencode($this->getInput('user'))
@@ -221,6 +253,16 @@ EOD
 				. $this->getRestId($this->getInput('u'))
 				. '.json?tweet_mode=extended';
 			}
+		case 'By timeline':
+			if($this->getInput('timeline') == 'tweets')
+				$query = 'profile';
+			else 
+				$query = 'media';
+			return self::API_URI
+			. '/2/timeline/'
+			. urlencode($query) . '/'
+			. $this->getRestId($this->getInput('u'))
+			. '.json?tweet_mode=extended';
 		case 'By list':
 			return self::API_URI
 			. '/2/timeline/list.json?list_id='
