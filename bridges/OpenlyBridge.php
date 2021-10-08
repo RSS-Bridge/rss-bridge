@@ -11,7 +11,6 @@ class OpenlyBridge extends BridgeAbstract {
 			'region' => array(
 				'name' => 'Region',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Africa' => 'africa',
 					'Asia Pacific' => 'asia-pacific',
@@ -24,7 +23,6 @@ class OpenlyBridge extends BridgeAbstract {
 			'content' => array(
 				'name' => 'Content',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'News' => 'news',
 					'Opinion' => 'people'
@@ -42,7 +40,6 @@ class OpenlyBridge extends BridgeAbstract {
 			'content' => array(
 				'name' => 'Content',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'News' => 'news',
 					'Opinion' => 'people'

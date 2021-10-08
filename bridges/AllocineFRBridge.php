@@ -11,7 +11,6 @@ class AllocineFRBridge extends BridgeAbstract {
 			'name' => 'Emission',
 			'type' => 'list',
 			'title' => 'Sélectionner l\'emission',
-			'required' => true,
 			'values' => array(
 				'Faux Raccord' => 'faux-raccord',
 				'Fanzone' => 'fanzone',

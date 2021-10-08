@@ -28,7 +28,6 @@ class FurAffinityBridge extends BridgeAbstract {
 			'range' => array(
 				'name' => 'Time range',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'A Day' => 'day',
 					'3 Days' => '3days',
@@ -71,7 +70,6 @@ class FurAffinityBridge extends BridgeAbstract {
 			'mode' => array(
 				'name' => 'Match mode',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'All of the words' => 'all',
 					'Any of the words' => 'any',
@@ -103,7 +101,6 @@ class FurAffinityBridge extends BridgeAbstract {
 			'cat' => array(
 				'name' => 'Category',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Visual Art' => array(
 						'All' => 1,
@@ -152,7 +149,6 @@ class FurAffinityBridge extends BridgeAbstract {
 			'atype' => array(
 				'name' => 'Type',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'General Things' => array(
 						'All' => 1,
@@ -215,7 +211,6 @@ class FurAffinityBridge extends BridgeAbstract {
 			'species' => array(
 				'name' => 'Species',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Unspecified / Any' => 1,
 					'Amphibian' => array(
@@ -407,7 +402,6 @@ class FurAffinityBridge extends BridgeAbstract {
 			'gender' => array(
 				'name' => 'Gender',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Any' => 0,
 					'Male' => 2,

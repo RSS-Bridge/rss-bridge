@@ -10,7 +10,6 @@ class IndiegogoBridge extends BridgeAbstract {
 			'timing' => array(
 				'name' => 'Project Timing',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'All' => 'all',
 					'Launching Soon' => 'launching_soon',
@@ -25,7 +24,6 @@ class IndiegogoBridge extends BridgeAbstract {
 			'tech' => array(
 				'name' => 'Tech & Innovation',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'All' => 'all',
 					'Audio' => 'Audio',
@@ -47,7 +45,6 @@ class IndiegogoBridge extends BridgeAbstract {
 			'creative' => array(
 				'name' => 'Creative Works',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'All' => 'all',
 					'Comics' => 'Comics',
@@ -67,7 +64,6 @@ class IndiegogoBridge extends BridgeAbstract {
 			'community' => array(
 				'name' => 'Community Projects',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'All' => 'all',
 					'Culture' => 'Culture',

@@ -11,7 +11,6 @@ class ZDNetBridge extends FeedExpander {
 		'feed' => array(
 			'name' => 'Feed',
 			'type' => 'list',
-			'required' => true,
 			'values' => array(
 				'Subscribe to ZDNet RSS Feeds' => array(
 					'All Blogs' => 'blog',

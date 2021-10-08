@@ -10,7 +10,6 @@ class FuturaSciencesBridge extends FeedExpander {
 		'feed' => array(
 			'name' => 'Feed',
 			'type' => 'list',
-			'required' => true,
 			'values' => array(
 				'Les flux multi-magazines' => array(
 					'Les dernières actualités de Futura-Sciences' => 'actualites',

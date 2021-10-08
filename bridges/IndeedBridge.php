@@ -21,7 +21,6 @@ class IndeedBridge extends BridgeAbstract {
 			'language' => array(
 				'name' => 'Language Code',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Choose your language code',
 				'defaultValue' => 'en-US',
 				'values' => array(

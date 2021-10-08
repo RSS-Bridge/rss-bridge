@@ -10,7 +10,6 @@ class TebeoBridge extends FeedExpander {
 		'cat' => array(
 			'name' => 'Catégorie',
 			'type' => 'list',
-			'required' => true,
 			'values' => array(
 				'Toutes les vidéos' => '/',
 				'Actualité' => '/14-actualite',

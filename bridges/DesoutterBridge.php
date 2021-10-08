@@ -15,7 +15,6 @@ class DesoutterBridge extends BridgeAbstract {
 			'news_lang' => array(
 				'name' => 'Language',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Select your language',
 				'defaultValue' => 'Corporate',
 				'values' => array(
@@ -66,7 +65,6 @@ class DesoutterBridge extends BridgeAbstract {
 			'industry_lang' => array(
 				'name' => 'Language',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Select your language',
 				'defaultValue' => 'Corporate',
 				'values' => array(

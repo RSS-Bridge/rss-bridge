@@ -9,7 +9,6 @@ class FindACrewBridge extends BridgeAbstract {
 			'type' => array(
 				'name' => 'Type of search',
 				'title' => 'Choose between finding a boat or a crew',
-				'required' => true,
 				'type' => 'list',
 				'values' => array(
 					'Find a boat' => 'boat',

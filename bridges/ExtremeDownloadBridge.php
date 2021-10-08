@@ -15,7 +15,6 @@ class ExtremeDownloadBridge extends BridgeAbstract {
 			'filter' => array(
 				'name' => 'Type de contenu',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Type de contenu à suivre : Téléchargement, Streaming ou les deux',
 				'values' => array(
 					'Streaming et Téléchargement' => 'both',

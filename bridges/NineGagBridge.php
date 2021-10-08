@@ -11,7 +11,6 @@ class NineGagBridge extends BridgeAbstract {
 			'd' => array(
 				'name' => 'Section',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Hot' => 'hot',
 					'Trending' => 'trending',
@@ -37,7 +36,6 @@ class NineGagBridge extends BridgeAbstract {
 			'g' => array(
 				'name' => 'Section',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Among Us' => 'among-us',
 					'Animals' => 'animals',

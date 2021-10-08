@@ -26,7 +26,6 @@ class BandcampBridge extends BridgeAbstract {
 			'type' => array(
 				'name' => 'Articles are',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Releases' => 'releases',
 					'Releases, new one when track list changes' => 'changes',
@@ -60,7 +59,6 @@ class BandcampBridge extends BridgeAbstract {
 			'type' => array(
 				'name' => 'Articles are',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Releases' => 'releases',
 					'Releases, new one when track list changes' => 'changes',

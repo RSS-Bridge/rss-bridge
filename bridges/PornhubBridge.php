@@ -17,7 +17,6 @@ class PornhubBridge extends BridgeAbstract {
 		'type' => array(
 			'name' => 'User type',
 			'type' => 'list',
-			'required' => true,
 			'values' => array(
 				'user' => 'users',
 				'model' => 'model',

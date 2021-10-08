@@ -33,7 +33,6 @@ class GlassdoorBridge extends BridgeAbstract {
 			self::PARAM_BLOG_TYPE => array(
 				'name' => 'Blog type',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Select the blog you want to follow',
 				'values' => array(
 					self::BLOG_TYPE_HOME				=> 'blog/',

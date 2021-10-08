@@ -9,7 +9,6 @@ class ViceBridge extends FeedExpander {
 		'feed' => array(
 			'name' => 'Feed',
 			'type' => 'list',
-			'required' => true,
 			'values' => array(
 				'Vice News' => 'rss',
 				'Motherboard - Tech' => 'en_us/rss/topic/tech',

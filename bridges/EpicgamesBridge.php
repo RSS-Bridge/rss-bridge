@@ -18,7 +18,6 @@ class EpicgamesBridge extends BridgeAbstract {
 		'language' => array(
 			'name' => 'Language',
 			'type' => 'list',
-			'required' => true,
 			'values' => array(
 				'English' => 'en',
 				'العربية' => 'ar',

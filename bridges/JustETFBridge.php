@@ -36,7 +36,6 @@ class JustETFBridge extends BridgeAbstract {
 			'lang' => array(
 				'name' => 'Language',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Englisch' => 'en',
 					'Deutsch'  => 'de',

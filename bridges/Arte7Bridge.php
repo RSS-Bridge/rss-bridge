@@ -14,7 +14,6 @@ class Arte7Bridge extends BridgeAbstract {
 			'catfr' => array(
 				'type' => 'list',
 				'name' => 'Catégorie',
-				'required' => true,
 				'values' => array(
 					'Toutes les vidéos (français)' => null,
 					'Actu & société' => 'ACT',
@@ -41,7 +40,6 @@ class Arte7Bridge extends BridgeAbstract {
 			'catde' => array(
 				'type' => 'list',
 				'name' => 'Catégorie',
-				'required' => true,
 				'values' => array(
 					'Alle Videos (deutsch)' => null,
 					'Aktuelles & Gesellschaft' => 'ACT',

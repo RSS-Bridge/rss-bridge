@@ -11,7 +11,6 @@ class NotAlwaysBridge extends BridgeAbstract {
 				'filter' => array(
 						'type' => 'list',
 						'name' => 'Filter',
-						'required' => true,
 						'values' => array(
 								'All' => 'all',
 								'Right' => 'right',

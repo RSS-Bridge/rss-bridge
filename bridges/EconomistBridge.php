@@ -22,7 +22,6 @@ class EconomistBridge extends FeedExpander {
 				'name' => 'Topics',
 				'type' => 'list',
 				'title' => 'Select a Topic',
-				'required' => true,
 				'defaultValue' => 'latest',
 				'values' => array(
 					'Latest' => 'latest',
@@ -53,7 +52,6 @@ class EconomistBridge extends FeedExpander {
 			'blog' => array(
 				'name' => 'Blogs',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Select a Blog',
 				'values' => array(
 					'Bagehots notebook' => 'bagehots-notebook',

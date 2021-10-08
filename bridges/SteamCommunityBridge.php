@@ -16,7 +16,6 @@ class SteamCommunityBridge extends BridgeAbstract {
 			'category' => array(
 				'name' => 'category',
 				'type' => 'list',
-				'required' => true,
 				'exampleValue' => 'Artwork',
 				'title' => 'Select a category',
 				'values' => array(

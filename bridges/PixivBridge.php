@@ -12,7 +12,6 @@ class PixivBridge extends BridgeAbstract {
 		'mode' => array(
 			'name' => 'Post Type',
 			'type' => 'list',
-			'required' => true,
 			'values' => array('Illustration' => 'illustrations/',
 							  'Manga' => 'manga/',
 							  'Novel' => 'novels/')

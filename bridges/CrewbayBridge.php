@@ -14,7 +14,6 @@ class CrewbayBridge extends BridgeAbstract {
 				'name' => 'Type of search',
 				'title' => 'Choose between finding a boat or a crew',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Find a boat' => 'boats',
 					'Find a crew' => 'crew'
@@ -24,7 +23,6 @@ class CrewbayBridge extends BridgeAbstract {
 				'name' => 'Status on the boat',
 				'title' => 'Choose between recreational or professional classified ads',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Recreational' => 'recreational',
 					'Professional' => 'professional'

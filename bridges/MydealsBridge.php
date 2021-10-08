@@ -42,7 +42,6 @@ class MydealsBridge extends PepperBridgeAbstract {
 			'group' => array(
 				'name' => 'Gruppen',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Gruppe, deren Deals angezeigt werden müssen',
 				'values' => array(
 					'1Password' => '1password',
@@ -1991,7 +1990,6 @@ class MydealsBridge extends PepperBridgeAbstract {
 			'order' => array(
 				'name' => 'sortieren nach',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Sortierung der deals',
 				'values' => array(
 					'Vom heißesten zum kältesten Deal' => '',

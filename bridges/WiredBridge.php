@@ -9,7 +9,6 @@ class WiredBridge extends FeedExpander {
 		'feed' => array(
 			'name' => 'Feed',
 			'type' => 'list',
-			'required' => true,
 			'values' => array(
 				'WIRED Top Stories' => 'rss',			// /feed/rss
 				'Business' => 'business',				// /feed/category/business/latest/rss

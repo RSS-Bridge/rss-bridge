@@ -28,7 +28,6 @@ class Drive2ruBridge extends BridgeAbstract {
 		'Публикации по темам (Стоит почитать)' => array(
 			'topic' => array(
 				'name' => 'Темы',
-				'required' => true,
 				'type' => 'list',
 				'values' => array(
 					'Автозвук' => '16',

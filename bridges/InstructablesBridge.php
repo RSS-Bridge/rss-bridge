@@ -20,7 +20,6 @@ class InstructablesBridge extends BridgeAbstract {
 			'category' => array(
 				'name' => 'Category',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Circuits' => array(
 						'All' => '/circuits/',
@@ -221,7 +220,6 @@ class InstructablesBridge extends BridgeAbstract {
 			'filter' => array(
 				'name' => 'Filter',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'Featured' => ' ',
 					'Recent' => 'recent/',

@@ -12,7 +12,6 @@ class GithubTrendingBridge extends BridgeAbstract {
 			'language' => array(
 				'name' => 'Select language',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'All languages' => '',
 					'C++' => 'c++',
@@ -585,7 +584,6 @@ class GithubTrendingBridge extends BridgeAbstract {
 			'date_range' => array(
 				'name' => 'Date range',
 				'type' => 'list',
-				'required' => false,
 				'values' => array(
 					'Today' => 'today',
 					'Weekly' => 'weekly',

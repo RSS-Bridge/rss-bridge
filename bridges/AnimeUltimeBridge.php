@@ -10,7 +10,6 @@ class AnimeUltimeBridge extends BridgeAbstract {
 		'type' => array(
 		'name' => 'Type',
 		'type' => 'list',
-		'required' => true,
 		'values' => array(
 			'Everything' => '',
 			'Anime' => 'A',

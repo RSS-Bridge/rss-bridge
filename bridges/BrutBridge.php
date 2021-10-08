@@ -8,7 +8,6 @@ class BrutBridge extends BridgeAbstract {
 			'category' => array(
 				'name' => 'Category',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					'News' => 'news',
 					'International' => 'international',
@@ -24,7 +23,6 @@ class BrutBridge extends BridgeAbstract {
 			'edition' => array(
 				'name' => ' Edition',
 				'type' => 'list',
-				'required' => true,
 					'values' => array(
 						'United States' => 'us',
 						'United Kingdom' => 'uk',

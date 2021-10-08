@@ -17,7 +17,6 @@ class AmazonBridge extends BridgeAbstract {
 		'sort' => array(
 			'name' => 'Sort by',
 			'type' => 'list',
-			'required' => true,
 			'values' => array(
 				'Relevance' => 'relevanceblender',
 				'Price: Low to High' => 'price-asc-rank',
@@ -30,7 +29,6 @@ class AmazonBridge extends BridgeAbstract {
 		'tld' => array(
 			'name' => 'Country',
 			'type' => 'list',
-			'required' => true,
 			'values' => array(
 				'Australia' => 'com.au',
 				'Brazil' => 'com.br',

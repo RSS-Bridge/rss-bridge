@@ -19,7 +19,6 @@ class RedditBridge extends BridgeAbstract {
 			'd' => array(
 				'name' => 'Sort By',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Sort by new, hot, top or relevancy',
 				'values' => array(
 					'Hot' => 'hot',

@@ -9,7 +9,6 @@ class WikiLeaksBridge extends BridgeAbstract {
 			'category' => array(
 				'name' => 'Category',
 				'type' => 'list',
-				'required' => true,
 				'title' => 'Select your category',
 				'values' => array(
 					'News' => '-News-',

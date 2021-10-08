@@ -15,7 +15,6 @@ class SoundCloudBridge extends BridgeAbstract {
 		't' => array(
 			'name' => 'Content',
 			'type' => 'list',
-			'required' => true,
 			'defaultValue' => 'tracks',
 			'values' => array(
 				'All (except likes)' => 'all',
