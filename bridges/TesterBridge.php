@@ -22,10 +22,11 @@ class TesterBridge extends FeedExpander {
         or returnServerError('could not request ' . $this->getInput('url'));
 
         foreach($html->find('section[id]') as $element) {
+            $start = $this->milliseconds();
             $item = array();
             $title = $element->find('h2', 0)->innertext;
             $item['title'] = $title;
-            $blockedbridges = array('Tester', 'Anime', 'Blizzard', 'Demo', 'Flickr');
+            $blockedbridges = array('Tester', 'Anime', 'Blizzard', 'Demo', 'Flickr', 'Facebook', 'Portuguesa', 'Q Play', 'Filter');
             $bridgeerrors = array('exampleValue');
             if($this->strContainsArr($title, $blockedbridges)){
                 continue;
@@ -35,18 +36,21 @@ class TesterBridge extends FeedExpander {
             if (empty($parameters)) {
                 #$item['content'] = $bridgestring;
                 $returnarray = $this->getBridgeFeed($bridgestring);
-                $item['content'] = $returnarray[0];
+                $runtime = $this->milliseconds() - $start;
+                $item['content'] = $returnarray[0] . '<br>Runtime: ' . $runtime;
                 $item['categories'][] = $returnarray[1];
             } elseif ($this->strContainsArr($parameters, $bridgeerrors)){
-                $item['content'] = $parameters;
+                $runtime = $this->milliseconds() - $start;
+                $item['content'] = $parameters . '<br>Runtime: ' . $runtime;
                 $item['categories'][] = 'missingparameter';
             }
             else {
-                #$returnarray = $this->getBridgeFeed($bridgestring . $parameters);
-                #$item['content'] = $returnarray[0];
-                #$item['categories'][] = $returnarray[1];
-                $item['content'] = $bridgestring . $parameters;
-                $item['categories'][] = 'untested';
+                $returnarray = $this->getBridgeFeed($bridgestring . $parameters);
+                $runtime = $this->milliseconds() - $start;
+                $item['content'] = $returnarray[0] . '<br>Runtime: ' . $runtime;
+                $item['categories'][] = $returnarray[1];
+                #$item['content'] = $bridgestring . $parameters;
+                #$item['categories'][] = 'untested';
             }
 
 			$this->items[] = $item;
@@ -59,9 +63,9 @@ class TesterBridge extends FeedExpander {
             $paramstring = '';
             foreach( $form->getElementsByTagName('div') as $parameter ){
                 foreach( $parameter->getElementsByTagName('input') as $input ){
-                    #if (!isset($input->required)) {
-                    #    continue;
-                    #}
+                    if (!isset($input->required)) {
+                        continue;
+                    }
                     switch ($input->type) {
                         case "number":
                             if (empty($input->placeholder)) {
@@ -95,21 +99,21 @@ class TesterBridge extends FeedExpander {
                         default:
                     }
                 }
-                foreach( $parameter->getElementsByTagName('select') as $select ){
+                #foreach( $parameter->getElementsByTagName('select') as $select ){
                     #if (!isset($select->required)) {
                     #    continue;
                     #}
-                    $value = '';
-                    foreach($select->getElementsByTagName('option') as $option) {
-                        if (isset($option->selected)) {
-                            $value = $option->value;
-                        }
-                    }
-                    if (empty($value)) {
-                        $value = $select->getElementsByTagName('option')[0]->value;
-                    }
-                    $paramstring = $paramstring . '&' . $select->name . '=' . $value;
-                }
+                #    $value = '';
+                #    foreach($select->getElementsByTagName('option') as $option) {
+                #        if (isset($option->selected)) {
+                #            $value = $option->value;
+                #        }
+                #    }
+                #    if (empty($value)) {
+                #        $value = $select->getElementsByTagName('option')[0]->value;
+                #    }
+                #    $paramstring = $paramstring . '&' . $select->name . '=' . $value;
+                #}
             }
             $paramstrings[] = $paramstring;
         }
@@ -155,5 +159,10 @@ class TesterBridge extends FeedExpander {
             if (stripos($str,$a) !== false) return true;
         }
         return false;
-    }   
+    }
+
+    private function milliseconds() : int {
+        $mt = explode(' ', microtime());
+        return ((int)$mt[1]) * 1000 + ((int)round($mt[0] * 1000));
+    }
 }
