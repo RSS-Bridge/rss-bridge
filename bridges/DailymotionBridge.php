@@ -19,14 +19,14 @@ class DailymotionBridge extends BridgeAbstract {
 			'p' => array(
 				'name' => 'playlist id',
 				'required' => true,
-				'exampleValue' => 'x6xyc6',				
+				'exampleValue' => 'x6xyc6',
 			)
 		),
 		'From search results' => array(
 			's' => array(
 				'name' => 'Search keyword',
 				'required' => true,
-				'exampleValue' => 'matrix',	
+				'exampleValue' => 'matrix',
 			),
 			'pa' => array(
 				'name' => 'Page',
