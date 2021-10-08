@@ -144,7 +144,6 @@ class BukowskisBridge extends BridgeAbstract
 		'sort_order' => array(
 			'name' => 'Sort order',
 			'type' => 'list',
-			'required' => true,
 			'values' => array(
 				'Ending soon' => 'ending',
 				'Most recent' => 'recent',
