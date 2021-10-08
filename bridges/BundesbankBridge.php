@@ -17,6 +17,7 @@ class BundesbankBridge extends BridgeAbstract {
 			self::PARAM_LANG => array(
 				'name' => 'Language',
 				'type' => 'list',
+				'required' => true,
 				'defaultValue' => self::LANG_DE,
 				'values' => array(
 					'English' => self::LANG_EN,

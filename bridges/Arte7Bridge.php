@@ -14,6 +14,7 @@ class Arte7Bridge extends BridgeAbstract {
 			'catfr' => array(
 				'type' => 'list',
 				'name' => 'Catégorie',
+				'required' => true,
 				'values' => array(
 					'Toutes les vidéos (français)' => null,
 					'Actu & société' => 'ACT',
@@ -32,13 +33,15 @@ class Arte7Bridge extends BridgeAbstract {
 			'colfr' => array(
 				'name' => 'Collection id',
 				'required' => true,
-				'title' => 'ex. RC-014095 pour https://www.arte.tv/fr/videos/RC-014095/blow-up/'
+				'title' => 'ex. RC-014095 pour https://www.arte.tv/fr/videos/RC-014095/blow-up/',
+				'exampleValue'	=> 'RC-014095'
 			)
 		),
 		'Catégorie (Allemand)' => array(
 			'catde' => array(
 				'type' => 'list',
 				'name' => 'Catégorie',
+				'required' => true,
 				'values' => array(
 					'Alle Videos (deutsch)' => null,
 					'Aktuelles & Gesellschaft' => 'ACT',
@@ -57,7 +60,8 @@ class Arte7Bridge extends BridgeAbstract {
 			'colde' => array(
 				'name' => 'Collection id',
 				'required' => true,
-				'title' => 'ex. RC-014095 pour https://www.arte.tv/de/videos/RC-014095/blow-up/'
+				'title' => 'ex. RC-014095 pour https://www.arte.tv/de/videos/RC-014095/blow-up/',
+				'exampleValue'	=> 'RC-014095'
 			)
 		)
 	);

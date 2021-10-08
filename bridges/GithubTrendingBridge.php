@@ -12,6 +12,7 @@ class GithubTrendingBridge extends BridgeAbstract {
 			'language' => array(
 				'name' => 'Select language',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'All languages' => '',
 					'C++' => 'c++',

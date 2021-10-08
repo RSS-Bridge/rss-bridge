@@ -9,6 +9,7 @@ class AtmoNouvelleAquitaineBridge extends BridgeAbstract {
 		'cities' => array(
 			'name' => 'Choisir une ville',
 			'type' => 'list',
+			'required' => true,
 			'values' => self::CITIES
 		)
 	));

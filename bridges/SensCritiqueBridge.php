@@ -10,7 +10,8 @@ class SensCritiqueBridge extends BridgeAbstract {
 	const PARAMETERS = array( array(
 		's' => array(
 			'name' => 'Series',
-			'type' => 'checkbox'
+			'type' => 'checkbox',
+			'defaultValue' => 'checked'
 		),
 		'g' => array(
 			'name' => 'Video Games',

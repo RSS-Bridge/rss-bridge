@@ -10,6 +10,7 @@ class WorldOfTanksBridge extends FeedExpander {
 		'lang' => array(
 			'name' => 'Langue',
 			'type' => 'list',
+			'required' => true,
 			'values' => array(
 				'Français' => 'fr',
 				'English' => 'en',

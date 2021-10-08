@@ -17,6 +17,7 @@ class NationalGeographicBridge extends BridgeAbstract {
 			self::PARAMETER_TOPIC => array(
 				'name' => 'Topic',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					self::TOPIC_MAGAZINE => 'magazine',
 					self::TOPIC_LATEST_STORIES => 'latest-stories'

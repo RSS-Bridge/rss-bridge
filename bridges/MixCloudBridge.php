@@ -12,6 +12,7 @@ class MixCloudBridge extends BridgeAbstract {
 		'u' => array(
 			'name' => 'username',
 			'required' => true,
+			'exampleValue' => 'DJJazzyJeff',
 		)
 	));
 

@@ -12,7 +12,7 @@ class YeggiBridge extends BridgeAbstract {
 				'type' => 'text',
 				'required' => true,
 				'title' => 'Insert your search term here',
-				'exampleValue' => 'Enter your search term'
+				'exampleValue' => 'vase'
 			),
 			'sortby' => array(
 				'name' => 'Sort by',

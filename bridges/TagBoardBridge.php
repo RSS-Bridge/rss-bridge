@@ -10,6 +10,7 @@ class TagBoardBridge extends BridgeAbstract {
 	const PARAMETERS = array( array(
 		'u' => array(
 			'name' => 'keyword',
+			'exampleValue' => 'bridgebroken',
 			'required' => true
 		)
 	));

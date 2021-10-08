@@ -9,10 +9,12 @@ class FSecureBlogBridge extends BridgeAbstract {
 		'' => array(
 			'categories' => array(
 				'name' => 'Blog categories',
+				'required' => true,
 				'exampleValue' => 'home-security',
 			),
 			'language' => array(
 				'name' => 'Language',
+				'required' => true,
 				'defaultValue' => 'en',
 			),
 			'oldest_date' => array(

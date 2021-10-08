@@ -11,6 +11,7 @@ class DerpibooruBridge extends BridgeAbstract {
 			'f' => array(
 				'name' => 'Filter',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'Everything' => 56027,
 					'18+ R34' => 37432,
@@ -24,7 +25,8 @@ class DerpibooruBridge extends BridgeAbstract {
 			),
 			'q' => array(
 				'name' => 'Query',
-				'required' => true
+				'required' => true,
+				'exampleValue' => 'dog',
 			)
 		)
 	);

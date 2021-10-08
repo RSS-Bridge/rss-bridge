@@ -9,6 +9,7 @@ class SplCenterBridge extends FeedExpander {
 			'content' => array(
 				'name' => 'Content',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'News' => 'news',
 					'Hatewatch' => 'hatewatch',

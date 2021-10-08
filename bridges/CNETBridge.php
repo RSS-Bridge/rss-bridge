@@ -11,6 +11,7 @@ class CNETBridge extends BridgeAbstract {
 			'topic' => array(
 				'name' => 'Topic',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'All articles' => '',
 					'Apple' => 'apple',

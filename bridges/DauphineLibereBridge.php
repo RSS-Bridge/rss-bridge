@@ -11,6 +11,7 @@ class DauphineLibereBridge extends FeedExpander {
 		'u' => array(
 			'name' => 'Catégorie de l\'article',
 			'type' => 'list',
+			'required' => true,
 			'values' => array(
 				'À la une' => '',
 				'France Monde' => 'france-monde',

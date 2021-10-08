@@ -10,6 +10,7 @@ class PokemonTVBridge extends BridgeAbstract {
 		'language' => array(
 			'name' => 'Language',
 			'type' => 'list',
+			'required' => true,
 			'title' => 'Select your language',
 			'values' => array(
 				'Danish' => 'dk',

@@ -10,6 +10,7 @@ class GBAtempBridge extends BridgeAbstract {
 		'type' => array(
 			'name' => 'Type',
 			'type' => 'list',
+			'required' => true,
 			'values' => array(
 				'News' => 'N',
 				'Reviews' => 'R',

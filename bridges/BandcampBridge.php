@@ -11,7 +11,8 @@ class BandcampBridge extends BridgeAbstract {
 			'tag' => array(
 				'name' => 'tag',
 				'type' => 'text',
-				'required' => true
+				'required' => true,
+				'exampleValue'	=> 'hip-hop-rap'
 			)
 		),
 		'By band' => array(
@@ -19,11 +20,13 @@ class BandcampBridge extends BridgeAbstract {
 				'name' => 'band',
 				'type' => 'text',
 				'title' => 'Band name as seen in the band page URL',
-				'required' => true
+				'required' => true,
+				'exampleValue'	=> 'aesoprock'
 			),
 			'type' => array(
 				'name' => 'Articles are',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'Releases' => 'releases',
 					'Releases, new one when track list changes' => 'changes',
@@ -34,6 +37,7 @@ class BandcampBridge extends BridgeAbstract {
 			'limit' => array(
 				'name' => 'limit',
 				'type' => 'number',
+				'required' => true,
 				'title' => 'Number of releases to return',
 				'defaultValue' => 5
 			)
@@ -43,17 +47,20 @@ class BandcampBridge extends BridgeAbstract {
 				'name' => 'band',
 				'type' => 'text',
 				'title' => 'Band name as seen in the album page URL',
-				'required' => true
+				'required' => true,
+				'exampleValue'	=> 'aesoprock'
 			),
 			'album' => array(
 				'name' => 'album',
 				'type' => 'text',
 				'title' => 'Album name as seen in the album page URL',
-				'required' => true
+				'required' => true,
+				'exampleValue'	=> 'appleseed'
 			),
 			'type' => array(
 				'name' => 'Articles are',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'Releases' => 'releases',
 					'Releases, new one when track list changes' => 'changes',

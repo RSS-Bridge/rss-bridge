@@ -11,17 +11,19 @@ class PornhubBridge extends BridgeAbstract {
 	const PARAMETERS = array(array(
 		'q' => array(
 			'name' => 'User name',
+			'exampleValue' => 'asa-akira',
 			'required' => true,
 		),
 		'type' => array(
 			'name' => 'User type',
 			'type' => 'list',
+			'required' => true,
 			'values' => array(
 				'user' => 'users',
 				'model' => 'model',
 				'pornstar' => 'pornstar',
 			),
-			'defaultValue' => 'users',
+			'defaultValue' => 'pornstar',
 		),
 		'sort' => array(
 			'name' => 'Sort by',

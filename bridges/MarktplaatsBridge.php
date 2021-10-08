@@ -9,6 +9,7 @@ class MarktplaatsBridge extends BridgeAbstract {
 			'q' => array(
 				'name' => 'query',
 				'type' => 'text',
+				'exampleValue' => 'lamp',
 				'required' => true,
 				'title' => 'The search string for marktplaats',
 			),

@@ -9,6 +9,7 @@ class NewOnNetflixBridge extends BridgeAbstract {
 		'country' => array(
 			'name' => 'Country',
 			'type' => 'list',
+			'required' => true,
 			'values' => array(
 				'Australia/New Zealand' => 'anz',
 				'Canada' => 'can',

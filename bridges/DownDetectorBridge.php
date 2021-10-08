@@ -10,6 +10,7 @@ class DownDetectorBridge extends BridgeAbstract {
 		'All Websites' => array(
 			'country' => array(
 				'type' => 'list',
+				'required' => true,
 				'name' => 'Country',
 				'values' => array(
 					'Argentina' => 'https://downdetector.com.ar',

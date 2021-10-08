@@ -23,6 +23,7 @@ class DonnonsBridge extends BridgeAbstract {
 			'p' => array(
 				'name' => 'Nombre de pages à scanner',
 				'type' => 'number',
+				'required' => true,
 				'defaultValue' => 5,
 				'title' => 'Indique le nombre de pages de donnons.org qui seront scannées'
 			)

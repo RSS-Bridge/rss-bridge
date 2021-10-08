@@ -12,8 +12,7 @@ class AO3Bridge extends BridgeAbstract {
 				'name' => 'url',
 				'required' => true,
 				// Example: F/F tag, complete works only
-				'exampleValue' => self::URI
-					. 'works?work_search[complete]=T&tag_id=F*s*F',
+				'exampleValue' => 'https://archiveofourown.org/works?work_search[complete]=T&tag_id=F*s*F',
 			),
 		),
 		'Bookmarks' => array(

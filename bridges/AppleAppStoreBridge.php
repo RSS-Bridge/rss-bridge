@@ -17,6 +17,7 @@ class AppleAppStoreBridge extends BridgeAbstract {
 		'p' => array(
 			'name'	=> 'Platform',
 			'type'	=> 'list',
+			'required'	=> true,
 			'values'	=> array(
 				'iPad'	=> 'ipad',
 				'iPhone'	=> 'iphone',
@@ -32,6 +33,7 @@ class AppleAppStoreBridge extends BridgeAbstract {
 		'country'	=> array(
 			'name'	=> 'Store Country',
 			'type'	=> 'list',
+			'required'	=> true,
 			'values'	=> array(
 				'US'	=> 'US',
 				'India'	=> 'IN',

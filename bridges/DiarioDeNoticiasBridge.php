@@ -8,6 +8,7 @@ class DiarioDeNoticiasBridge extends BridgeAbstract {
 		'Tag' => array(
 			'n' => array(
 				'name' => 'Tag Name',
+				'required' => true,
 				'exampleValue' => 'rogerio-casanova',
 			)
 		)

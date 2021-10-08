@@ -24,6 +24,7 @@ class FlickrBridge extends BridgeAbstract {
 			'media' => array(
 				'name' => 'Media',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'All (Photos & videos)' => 'all',
 					'Photos' => 'photos',
@@ -34,6 +35,7 @@ class FlickrBridge extends BridgeAbstract {
 			'sort' => array(
 				'name' => 'Sort By',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'Relevance' => 'relevance',
 					'Date uploaded' => 'date-posted-desc',
@@ -54,6 +56,7 @@ class FlickrBridge extends BridgeAbstract {
 			'media' => array(
 				'name' => 'Media',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'All (Photos & videos)' => 'all',
 					'Photos' => 'photos',
@@ -64,6 +67,7 @@ class FlickrBridge extends BridgeAbstract {
 			'sort' => array(
 				'name' => 'Sort By',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'Relevance' => 'relevance',
 					'Date uploaded' => 'date-posted-desc',

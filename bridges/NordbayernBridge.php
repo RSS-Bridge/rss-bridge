@@ -11,6 +11,7 @@ class NordbayernBridge extends BridgeAbstract {
 		'region' => array(
 			'name' => 'region',
 			'type' => 'list',
+			'required' => true,
 			'exampleValue' => 'Nürnberg',
 			'title' => 'Select a region',
 			'values' => array(

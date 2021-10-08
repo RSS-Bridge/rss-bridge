@@ -11,18 +11,26 @@ class DiscogsBridge extends BridgeAbstract {
 			'artistid' => array(
 				'name' => 'Artist ID',
 				'type' => 'number',
+				'required' => true,
+				'exampleValue' => '28104',
+				'title' => 'Only the ID from an artist page. EG /artist/28104-Aesop-Rock is 28104'
 			)
 		),
 		'Label Releases' => array(
 			'labelid' => array(
 				'name' => 'Label ID',
 				'type' => 'number',
+				'required' => true,
+				'exampleValue' => '8201',
+				'title' => 'Only the ID from a label page. EG /label/8201-Rhymesayers-Entertainment is 8201'
 			)
 		),
 		'User Wantlist' => array(
 			'username_wantlist' => array(
 				'name' => 'Username',
 				'type' => 'text',
+				'required' => true,
+				'exampleValue' => 'TheBlindMaster',
 			)
 		),
 		'User Folder' => array(

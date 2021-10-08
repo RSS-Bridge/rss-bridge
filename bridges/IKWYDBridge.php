@@ -9,6 +9,7 @@ class IKWYDBridge extends BridgeAbstract {
 		array(
 			'ip' => array(
 				'name' => 'IP Address',
+				'exampleValue' => '8.8.8.8',
 				'required' => true
 			),
 			'update' => array(

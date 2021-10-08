@@ -9,6 +9,8 @@ class GithubSearchBridge extends BridgeAbstract {
 	const PARAMETERS = array( array(
 		's' => array(
 			'type' => 'text',
+			'required' => true,
+			'exampleValue' => 'rss-bridge',
 			'name' => 'Search query'
 		)
 	));

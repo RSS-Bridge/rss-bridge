@@ -8,6 +8,7 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 		'order' => array(
 			'name' => 'Order by',
 			'type' => 'list',
+			'required' => true,
 			'values' => array(
 				'Breach date' => 'breachDate',
 				'Date added to HIBP' => 'dateAdded',
@@ -17,6 +18,7 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 		'item_limit' => array(
 			'name' => 'Limit number of returned items',
 			'type' => 'number',
+			'required' => true,
 			'defaultValue' => 20,
 		)
 	));

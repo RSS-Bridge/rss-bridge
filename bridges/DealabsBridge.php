@@ -10,6 +10,7 @@ class DealabsBridge extends PepperBridgeAbstract {
 			'q' => array(
 				'name' => 'Mot(s) clé(s)',
 				'type' => 'text',
+				'exampleValue' => 'lamp',
 				'required' => true
 			),
 			'hide_expired' => array(
@@ -39,6 +40,7 @@ class DealabsBridge extends PepperBridgeAbstract {
 			'group' => array(
 				'name' => 'Groupe',
 				'type' => 'list',
+				'required' => true,
 				'title' => 'Groupe dont il faut afficher les deals',
 				'values' => array(
 					'Abattants WC' => 'abattants-wc',
@@ -1872,6 +1874,7 @@ class DealabsBridge extends PepperBridgeAbstract {
 			'order' => array(
 				'name' => 'Trier par',
 				'type' => 'list',
+				'required' => true,
 				'title' => 'Ordre de tri des deals',
 				'values' => array(
 					'Du deal le plus Hot au moins Hot' => '',

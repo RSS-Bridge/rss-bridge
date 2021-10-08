@@ -10,6 +10,7 @@ class NextgovBridge extends FeedExpander {
 		'category' => array(
 			'name' => 'Category',
 			'type' => 'list',
+			'required' => true,
 			'values' => array(
 				'All' => 'all',
 				'Technology News' => 'technology-news',

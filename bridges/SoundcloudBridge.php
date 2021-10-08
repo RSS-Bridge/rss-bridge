@@ -9,11 +9,13 @@ class SoundCloudBridge extends BridgeAbstract {
 	const PARAMETERS = array(array(
 		'u' => array(
 			'name' => 'username',
+			'exampleValue' => 'thekidlaroi',
 			'required' => true
 		),
 		't' => array(
 			'name' => 'Content',
 			'type' => 'list',
+			'required' => true,
 			'defaultValue' => 'tracks',
 			'values' => array(
 				'All (except likes)' => 'all',

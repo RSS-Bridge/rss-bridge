@@ -7,7 +7,8 @@ class ModelKarteiBridge extends BridgeAbstract {
 	const PARAMETERS = array(array(
 		'model_id' => array(
 			'name'			=> 'Model ID',
-			'exampleValue'	=> '123456'
+			'required' => true,
+			'exampleValue'	=> '614931'
 		)
 	));
 

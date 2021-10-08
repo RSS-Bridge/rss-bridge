@@ -11,6 +11,7 @@ class BlizzardNewsBridge extends XPathAbstract {
 			'locale' => array(
 				'name' => 'Language',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'Deutsch' => 'de-de',
 					'English (EU)' => 'en-gb',

@@ -10,6 +10,7 @@ class GoComicsBridge extends BridgeAbstract {
 		'comicname' => array(
 			'name' => 'comicname',
 			'type' => 'text',
+			'exampleValue' => 'heartofthecity',
 			'required' => true
 		)
 	));

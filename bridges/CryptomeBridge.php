@@ -11,7 +11,7 @@ class CryptomeBridge extends BridgeAbstract {
 		'n' => array(
 			'name' => 'number of elements',
 			'type' => 'number',
-			'defaultValue' => 20,
+			'required' => true,
 			'exampleValue' => 10
 		)
 	));

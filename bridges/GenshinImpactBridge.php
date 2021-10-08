@@ -11,6 +11,7 @@ class GenshinImpactBridge extends BridgeAbstract {
 			'category' => array(
 				'name' => 'Category',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'Latest' => 10,
 					'Info' => 11,

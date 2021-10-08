@@ -11,6 +11,7 @@ class NextInpactBridge extends FeedExpander {
 		'feed' => array(
 			'name' => 'Feed',
 			'type' => 'list',
+			'required' => true,
 			'values' => array(
 				'Nos actualités' => array(
 					'Toutes nos publications' => 'news',

@@ -10,6 +10,7 @@ class AirBreizhBridge extends BridgeAbstract {
 			'theme' => array(
 				'name' => 'Thematique',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'Tout' => '',
 					'Rapport d\'activite' => 'rapport-dactivite',

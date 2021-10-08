@@ -30,7 +30,7 @@ class TwitterBridge extends BridgeAbstract {
 			'q' => array(
 				'name' => 'Keyword or #hashtag',
 				'required' => true,
-				'exampleValue' => 'rss-bridge, #rss-bridge',
+				'exampleValue' => 'rss-bridge',
 				'title' => <<<EOD
 * To search for multiple words (must contain all of these words), put a space between them.
 
@@ -93,6 +93,7 @@ EOD
 			'list' => array(
 				'name' => 'List',
 				'required' => true,
+				'exampleValue' => 'provideAlistExample',
 				'title' => 'Insert the list name'
 			),
 			'filter' => array(

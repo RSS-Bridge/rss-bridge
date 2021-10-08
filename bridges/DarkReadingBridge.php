@@ -9,6 +9,7 @@ class DarkReadingBridge extends FeedExpander {
 		'feed' => array(
 			'name' => 'Feed',
 			'type' => 'list',
+			'required' => true,
 			'values' => array(
 				'All Dark Reading Stories' => '000_AllArticles',
 				'Attacks/Breaches' => '644_Attacks/Breaches',

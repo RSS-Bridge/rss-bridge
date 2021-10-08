@@ -13,6 +13,7 @@ class DuckDuckGoBridge extends BridgeAbstract {
 	const PARAMETERS = array( array(
 		'u' => array(
 			'name' => 'keyword',
+			'exampleValue' => 'duck',
 			'required' => true
 		),
 		'sort' => array(

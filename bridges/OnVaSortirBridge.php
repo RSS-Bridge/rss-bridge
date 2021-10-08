@@ -9,6 +9,7 @@ class OnVaSortirBridge extends FeedExpander {
 			'city' => array(
 				'name' => 'City',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'Agen' => 'Agen',
 					'Ajaccio' => 'Ajaccio',

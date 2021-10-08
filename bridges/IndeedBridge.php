@@ -21,6 +21,7 @@ class IndeedBridge extends BridgeAbstract {
 			'language' => array(
 				'name' => 'Language Code',
 				'type' => 'list',
+				'required' => true,
 				'title' => 'Choose your language code',
 				'defaultValue' => 'en-US',
 				'values' => array(
@@ -74,6 +75,7 @@ class IndeedBridge extends BridgeAbstract {
 			'limit' => array(
 				'name' => 'Limit',
 				'type' => 'number',
+				'required' => true,
 				'title' => 'Maximum number of items to return',
 				'exampleValue' => 20,
 			)

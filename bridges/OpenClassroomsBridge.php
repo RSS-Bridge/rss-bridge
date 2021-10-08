@@ -11,6 +11,7 @@ class OpenClassroomsBridge extends BridgeAbstract {
 		'u' => array(
 			'name' => 'Catégorie',
 			'type' => 'list',
+			'required' => true,
 			'values' => array(
 				'Arts & Culture' => 'arts',
 				'Code' => 'code',

@@ -19,6 +19,7 @@ class RedditBridge extends BridgeAbstract {
 			'd' => array(
 				'name' => 'Sort By',
 				'type' => 'list',
+				'required' => true,
 				'title' => 'Sort by new, hot, top or relevancy',
 				'values' => array(
 					'Hot' => 'hot',
@@ -55,6 +56,7 @@ class RedditBridge extends BridgeAbstract {
 			'u' => array(
 				'name' => 'User',
 				'required' => true,
+				'exampleValue' => 'shwikibot',
 				'title' => 'User name'
 			),
 			'comments' => array(

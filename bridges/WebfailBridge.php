@@ -9,6 +9,7 @@ class WebfailBridge extends BridgeAbstract {
 			'language' => array(
 				'name' => 'Language',
 				'type' => 'list',
+				'required' => true,
 				'title' => 'Select your language',
 				'values' => array(
 					'English' => 'en',
@@ -19,6 +20,7 @@ class WebfailBridge extends BridgeAbstract {
 			'type' => array(
 				'name' => 'Type',
 				'type' => 'list',
+				'required' => true,
 				'title' => 'Select your content type',
 				'values' => array(
 					'None' => '/',

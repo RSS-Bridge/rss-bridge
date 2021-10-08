@@ -12,6 +12,7 @@ class HotUKDealsBridge extends PepperBridgeAbstract {
 			'q' => array(
 				'name' => 'Keyword(s)',
 				'type' => 'text',
+				'exampleValue' => 'lamp',
 				'required' => true
 			),
 			'hide_expired' => array(
@@ -41,6 +42,7 @@ class HotUKDealsBridge extends PepperBridgeAbstract {
 			'group' => array(
 				'name' => 'Group',
 				'type' => 'list',
+				'required' => true
 				'title' => 'Group whose deals must be displayed',
 				'values' => array(
 					'3D Blu-ray' => '3d-bluray',
@@ -3240,6 +3242,7 @@ class HotUKDealsBridge extends PepperBridgeAbstract {
 			'order' => array(
 				'name' => 'Order by',
 				'type' => 'list',
+				'required' => true,
 				'title' => 'Sort order of deals',
 				'values' => array(
 					'From the most to the least hot deal' => '-hot',

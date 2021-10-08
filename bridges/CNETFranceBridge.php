@@ -12,13 +12,13 @@ class CNETFranceBridge extends FeedExpander
 				'name' => 'Exclude by title',
 				'required' => false,
 				'title' => 'Title term, separated by semicolon (;)',
-				'defaultValue' => 'bon plan;bons plans;au meilleur prix;des meilleures offres;Amazon Prime Day;RED by SFR ou B&You'
+				'exampleValue' => 'bon plan;bons plans;au meilleur prix;des meilleures offres;Amazon Prime Day;RED by SFR ou B&You'
 			),
 			'url' => array(
 				'name' => 'Exclude by url',
 				'required' => false,
 				'title' => 'URL term, separated by semicolon (;)',
-				'defaultValue' => 'bon-plan;bons-plans'
+				'exampleValue' => 'bon-plan;bons-plans'
 			)
 		)
 	);

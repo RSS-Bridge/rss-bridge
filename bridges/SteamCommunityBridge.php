@@ -10,11 +10,13 @@ class SteamCommunityBridge extends BridgeAbstract {
 		array(
 			'i' => array(
 				'name' => 'App ID',
+				'exampleValue' => '730',
 				'required' => true
 			),
 			'category' => array(
 				'name' => 'category',
 				'type' => 'list',
+				'required' => true,
 				'exampleValue' => 'Artwork',
 				'title' => 'Select a category',
 				'values' => array(

@@ -14,6 +14,7 @@ class BAEBridge extends BridgeAbstract {
 				'name' => 'Type de recherche',
 				'title' => 'Afficher seuleument un certain type d\'annonce',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'Toutes les annonces' => false,
 					'Les embarquements' => 'boat',

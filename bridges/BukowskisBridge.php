@@ -10,6 +10,7 @@ class BukowskisBridge extends BridgeAbstract
 		'category' => array(
 			'name' => 'Category',
 			'type' => 'list',
+			'required' => true,
 			'values' => array(
 				'All categories' => '',
 				'Art' => array(
@@ -144,6 +145,7 @@ class BukowskisBridge extends BridgeAbstract
 		'sort_order' => array(
 			'name' => 'Sort order',
 			'type' => 'list',
+			'required' => true,
 			'values' => array(
 				'Ending soon' => 'ending',
 				'Most recent' => 'recent',
@@ -159,6 +161,7 @@ class BukowskisBridge extends BridgeAbstract
 		'language' => array(
 			'name' => 'Language',
 			'type' => 'list',
+			'required' => true,
 			'values' => array(
 				'English' => 'en',
 				'Swedish' => 'sv',

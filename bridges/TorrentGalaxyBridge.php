@@ -13,6 +13,7 @@ class TorrentGalaxyBridge extends BridgeAbstract {
 			'search' => array(
 				'name' => 'search',
 				'required' => true,
+				'exampleValue' => 'simpsons',
 				'title' => 'Type your query'
 			),
 			'lang' => array(

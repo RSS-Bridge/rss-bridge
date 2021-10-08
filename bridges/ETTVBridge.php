@@ -10,11 +10,13 @@ class ETTVBridge extends BridgeAbstract {
 	const PARAMETERS = array( array(
 		'query' => array(
 			'name' => 'Keywords',
+			'exampleValue' => 'thrones',
 			'required' => true
 		),
 		'cat' => array(
 			'type' => 'list',
 			'name' => 'Category',
+			'required' => true,
 			'values' => array(
 				'(ALL TYPES)' => '0',
 				'Anime: Movies' => '73',
@@ -60,6 +62,7 @@ class ETTVBridge extends BridgeAbstract {
 		'status' => array(
 			'type' => 'list',
 			'name' => 'Status',
+			'required' => true,
 			'values' => array(
 				'Active Transfers' => '0',
 				'Included Dead' => '1',
@@ -70,6 +73,7 @@ class ETTVBridge extends BridgeAbstract {
 		'lang' => array(
 			'type' => 'list',
 			'name' => 'Lang',
+			'required' => true,
 			'values' => array(
 				'(ALL)' => '0',
 				'Arabic' => '17',

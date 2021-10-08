@@ -10,6 +10,7 @@ class HeiseBridge extends FeedExpander {
 		'category' => array(
 			'name' => 'Category',
 			'type' => 'list',
+			'required' => true,
 			'values' => array(
 				'Alle News'
 				=> 'https://www.heise.de/newsticker/heise-atom.xml',

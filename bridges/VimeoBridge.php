@@ -12,6 +12,7 @@ class VimeoBridge extends BridgeAbstract {
 			'q' => array(
 				'name' => 'Search Query',
 				'type' => 'text',
+				'exampleValue' => 'birds',
 				'required' => true
 			),
 			'type' => array(

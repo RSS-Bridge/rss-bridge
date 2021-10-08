@@ -10,6 +10,7 @@ class PickyWallpapersBridge extends BridgeAbstract {
 	const PARAMETERS = array( array(
 		'c' => array(
 			'name' => 'category',
+			'exampleValue' => 'funny',
 			'required' => true
 		),
 		's' => array(

@@ -15,6 +15,7 @@ class YGGTorrentBridge extends BridgeAbstract {
 			'cat' => array(
 				'name' => 'category',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'Toute les catégories' => 'all.all',
 					'Film/Vidéo - Toutes les sous-catégories' => '2145.all',

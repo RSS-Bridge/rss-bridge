@@ -30,6 +30,7 @@ class ReutersBridge extends BridgeAbstract
 			'feed' => array(
 				'name' => 'News Feed',
 				'type' => 'list',
+				'required' => true,
 				'title' => 'Feeds from Reuters U.S/International edition',
 				'values' => array(
 					'Aerospace and Defense' => 'aerospace',

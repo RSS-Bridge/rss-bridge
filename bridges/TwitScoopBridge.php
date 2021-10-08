@@ -9,6 +9,7 @@ class TwitScoopBridge extends BridgeAbstract {
 			'country' => array(
 				'name' => 'Country',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'Worldwide' => 'worldwide',
 					'Algeria' => 'algeria',

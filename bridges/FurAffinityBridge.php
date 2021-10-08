@@ -9,7 +9,8 @@ class FurAffinityBridge extends BridgeAbstract {
 		'Search' => array(
 			'q' => array(
 				'name' => 'Query',
-				'required' => true
+				'required' => true,
+				'exampleValue' => 'dog',
 			),
 			'rating-general' => array(
 				'name' => 'General',
@@ -27,6 +28,7 @@ class FurAffinityBridge extends BridgeAbstract {
 			'range' => array(
 				'name' => 'Time range',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'A Day' => 'day',
 					'3 Days' => '3days',
@@ -69,6 +71,7 @@ class FurAffinityBridge extends BridgeAbstract {
 			'mode' => array(
 				'name' => 'Match mode',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'All of the words' => 'all',
 					'Any of the words' => 'any',
@@ -79,6 +82,7 @@ class FurAffinityBridge extends BridgeAbstract {
 			'limit' => array(
 				'name' => 'Limit',
 				'type' => 'number',
+				'required' => true,
 				'defaultValue' => 10,
 				'title' => 'Limit number of submissions to return. -1 for unlimited.'
 			),
@@ -99,6 +103,7 @@ class FurAffinityBridge extends BridgeAbstract {
 			'cat' => array(
 				'name' => 'Category',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'Visual Art' => array(
 						'All' => 1,
@@ -147,6 +152,7 @@ class FurAffinityBridge extends BridgeAbstract {
 			'atype' => array(
 				'name' => 'Type',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'General Things' => array(
 						'All' => 1,
@@ -209,6 +215,7 @@ class FurAffinityBridge extends BridgeAbstract {
 			'species' => array(
 				'name' => 'Species',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'Unspecified / Any' => 1,
 					'Amphibian' => array(
@@ -400,6 +407,7 @@ class FurAffinityBridge extends BridgeAbstract {
 			'gender' => array(
 				'name' => 'Gender',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'Any' => 0,
 					'Male' => 2,
@@ -449,6 +457,7 @@ class FurAffinityBridge extends BridgeAbstract {
 			'username-journals' => array(
 				'name' => 'Username',
 				'required' => true,
+				'exampleValue' => 'dhw',
 				'title' => 'Lowercase username as seen in URLs'
 			),
 			'limit' => array(
@@ -463,6 +472,7 @@ class FurAffinityBridge extends BridgeAbstract {
 			'journal-id' => array(
 				'name' => 'Journal ID',
 				'required' => true,
+				'exampleValue' => '10008853',
 				'type' => 'number',
 				'title' => 'Number seen in journal URL'
 			)
@@ -471,11 +481,13 @@ class FurAffinityBridge extends BridgeAbstract {
 			'username-gallery' => array(
 				'name' => 'Username',
 				'required' => true,
+				'exampleValue' => 'dhw',
 				'title' => 'Lowercase username as seen in URLs'
 			),
 			'limit' => array(
 				'name' => 'Limit',
 				'type' => 'number',
+				'required' => true,
 				'defaultValue' => 10,
 				'title' => 'Limit number of submissions to return. -1 for unlimited.'
 			),
@@ -496,11 +508,13 @@ class FurAffinityBridge extends BridgeAbstract {
 			'username-scraps' => array(
 				'name' => 'Username',
 				'required' => true,
+				'exampleValue' => 'dhw',
 				'title' => 'Lowercase username as seen in URLs'
 			),
 			'limit' => array(
 				'name' => 'Limit',
 				'type' => 'number',
+				'required' => true,
 				'defaultValue' => 10,
 				'title' => 'Limit number of submissions to return. -1 for unlimited.'
 			),
@@ -521,11 +535,13 @@ class FurAffinityBridge extends BridgeAbstract {
 			'username-favorites' => array(
 				'name' => 'Username',
 				'required' => true,
+				'exampleValue' => 'dhw',
 				'title' => 'Lowercase username as seen in URLs'
 			),
 			'limit' => array(
 				'name' => 'Limit',
 				'type' => 'number',
+				'required' => true,
 				'defaultValue' => 10,
 				'title' => 'Limit number of submissions to return. -1 for unlimited.'
 			),
@@ -546,17 +562,20 @@ class FurAffinityBridge extends BridgeAbstract {
 			'username-folder' => array(
 				'name' => 'Username',
 				'required' => true,
+				'exampleValue' => 'kopk',
 				'title' => 'Lowercase username as seen in URLs'
 			),
 			'folder-id' => array(
 				'name' => 'Folder ID',
 				'required' => true,
+				'exampleValue' => '1031990',
 				'type' => 'number',
 				'title' => 'Number seen in folder URL'
 			),
 			'limit' => array(
 				'name' => 'Limit',
 				'type' => 'number',
+				'required' => true,
 				'defaultValue' => 10,
 				'title' => 'Limit number of submissions to return. -1 for unlimited.'
 			),

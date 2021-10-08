@@ -13,6 +13,7 @@ class TheTVDBBridge extends BridgeAbstract {
 			'serie_id' => array(
 				'type' => 'number',
 				'name' => 'ID',
+				'exampleValue' => '71663',
 				'required' => true,
 			),
 			'nb_episode' => array(

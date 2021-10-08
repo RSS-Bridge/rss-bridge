@@ -15,6 +15,7 @@ class DesoutterBridge extends BridgeAbstract {
 			'news_lang' => array(
 				'name' => 'Language',
 				'type' => 'list',
+				'required' => true,
 				'title' => 'Select your language',
 				'defaultValue' => 'Corporate',
 				'values' => array(
@@ -65,6 +66,7 @@ class DesoutterBridge extends BridgeAbstract {
 			'industry_lang' => array(
 				'name' => 'Language',
 				'type' => 'list',
+				'required' => true,
 				'title' => 'Select your language',
 				'defaultValue' => 'Corporate',
 				'values' => array(
@@ -120,6 +122,7 @@ class DesoutterBridge extends BridgeAbstract {
 			'limit' => array(
 				'name' => 'Limit',
 				'type' => 'number',
+				'required' => true,
 				'defaultValue' => 3,
 				'title' => "Maximum number of items to return in the feed.\n0 = unlimited"
 			)

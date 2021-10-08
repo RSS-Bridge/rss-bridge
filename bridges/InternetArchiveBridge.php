@@ -15,6 +15,7 @@ class InternetArchiveBridge extends BridgeAbstract {
 			'content' => array(
 				'name' => 'Content',
 				'type' => 'list',
+				'required' => true,
 				'values' => array(
 					'Uploads' => 'uploads',
 					'Posts' => 'posts',

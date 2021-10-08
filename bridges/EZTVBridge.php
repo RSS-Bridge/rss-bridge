@@ -10,7 +10,8 @@ on EZTV. Get showID from URLs in https://eztv.ch/shows/showID/show-full-name.';
 	const PARAMETERS = array( array(
 		'i' => array(
 			'name' => 'Show ids',
-			'exampleValue' => 'showID1,showID2,…',
+			'exampleValue' => '1017,249',
+			'title' => 'One of more showids as a comma separated list',
 			'required' => true
 		)
 	));

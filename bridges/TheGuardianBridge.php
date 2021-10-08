@@ -9,6 +9,7 @@ class TheGuardianBridge extends FeedExpander {
 		'feed' => array(
 			'name' => 'Feed',
 			'type' => 'list',
+			'required' => true,
 			'values' => array(
 				'World News' => 'world/rss',
 				'US News' => '/us-news/rss',
