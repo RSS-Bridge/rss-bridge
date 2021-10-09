@@ -27,9 +27,9 @@ done
 
 # This feature can set the internal port that apache uses to something else.
 # If docker is run on network:service mode, no two containers can use port 80
-# To use this, start the container with the additional environment variable "PORT"
-if [ ! -z ${PORT} ]; then
-	sed -i "s/80/$PORT/g" /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf
+# To use this, start the container with the additional environment variable "HTTP_PORT"
+if [ ! -z ${HTTP_PORT} ]; then
+	sed -i "s/80/$HTTP_PORT/g" /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf
 fi
 
 
