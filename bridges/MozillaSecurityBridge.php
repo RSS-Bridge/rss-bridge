@@ -18,6 +18,10 @@ class MozillaSecurityBridge extends BridgeAbstract {
 		$articles = $html->find('div[id="main-content"] h2');
 
 		foreach ($articles as $element) {
+			//Limit total amount of requests
+			if(count($this->items) >= 20) {
+				break;
+			}
 			$item['title'] = $element->innertext;
 			$item['timestamp'] = strtotime($element->innertext);
 			$item['content'] = $element->next_sibling()->innertext;
