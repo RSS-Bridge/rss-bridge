@@ -7,7 +7,7 @@ class FlashbackBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns post from forum';
 	const CACHE_TIMEOUT = 10800; // 3h
 
-const PARAMETERS = array(
+	const PARAMETERS = array(
 		'Category' => array(
 			'c' => array(
 				'name' => 'Category number',
@@ -58,6 +58,7 @@ const PARAMETERS = array(
 			)
 		)
 	);
+
 	public function getName() {
 		if($this->getInput('c')) {
 			$category = $this->getInput('c');
@@ -75,22 +76,22 @@ const PARAMETERS = array(
 			$search = $this->getInput('s');
 			return 'Search: ' . $search . ' - Flashback';
 		}
-		
+
 		return self::NAME;
 	}
-	
+
 	public function collectData(){
-		if($this->getInput('c')) {
+		if( $this->getInput('c') ) {
 			$page = self::URI . '/f' .$this->getInput('c');
-		} elseif($this->getInput('a')) {
+		} elseif( $this->getInput('a') ) {
 			$page = self::URI . '/find_threads_by_tag.php?tag=' .$this->getInput('a');
-		} elseif($this->getInput('t')) {
+		} elseif( $this->getInput('t') ) {
 			$page = self::URI . '/t' .$this->getInput('t');
 			$page = $page . 's'; #last-page
-		} elseif($this->getInput('u')) {
+		} elseif( $this->getInput('u') ) {
 			$page = self::URI . '/find_posts_by_user.php?userid=' .$this->getInput('u');
-		} elseif($this->getInput('s')) {
-			if($this->getInput('type') == 'posts') {
+		} elseif( $this->getInput('s') ) {
+			if( $this->getInput('type') == 'posts' ) {
 				$page = self::URI . '/sok/?query=' .$this->getInput('s') . '&search_post=1&sp=1&so=pd';
 			} else {
 				$page = self::URI . '/sok/?query=' .$this->getInput('s') . '&search_post=0&sp=1&so=pd';
@@ -99,9 +100,8 @@ const PARAMETERS = array(
 		
 		$html = getSimpleHTMLDOM($page)
 				or returnServerError('Could not request Flashback page.');
-		
 			
-		if($this->getInput('c') || $this->getInput('a')) {
+		if( $this->getInput('c') || $this->getInput('a') ) {
 			$category = $this->getInput('c');
 			$array = $html->find('table#threadslist tbody tr');
 			foreach($array as $key => $element) {
@@ -111,17 +111,17 @@ const PARAMETERS = array(
 				$item['author'] = trim(utf8_encode($element->find('td.td_title span.thread-poster span', 0)->innertext));
 				$item['timestamp'] = strtotime(str_replace(array('Ig&aring;r', 'Idag'), array('yesterday', 'today'), trim($element->find('td.td_last_post div', 0)->plaintext)));
 				$item['content'] = $item['title'] . '<br />' . trim(preg_replace('/\t+/', '', $element->find('td.td_replies', 0)->innertext));
-				$item['uid'] = preg_split( "/(\/)/", $element->find('td.td_title a', 0)->href)[1];
+				$item['uid'] = preg_split( '/(\/)/', $element->find('td.td_title a', 0)->href)[1];
 				$this->items[] = $item;
 			}
-		} elseif($this->getInput('t')) {
+		} elseif( $this->getInput('t') ) {
 			$tags = $html->find('div.hidden-xs a.tag');
 			$array = $html->find('div.post');
-			
-			foreach($array as $key => $element) {
+
+			foreach( $array as $key => $element ) {
 				$item = array();
 				$item['uri_post'] = self::URI . $element->find('div.post-heading a', 2)->href;
-				$item['uri'] = self::URI . '/' .preg_split("/(\/s)/", $item['uri_post'])[1] . '#' . preg_split( "/(\/s)/", $item['uri_post'])[1];
+				$item['uri'] = self::URI . '/' .preg_split('/(\/s)/', $item['uri_post'])[1] . '#' . preg_split( '/(\/s)/', $item['uri_post'])[1];
 				$item['uri_thread'] = $page;
 				$item['author'] = utf8_encode($element->find('div.post-user ul li', 0)->innertext);
 				$item['author_link'] = self::URI . $element->find('div.post-user ul li a', 0)->href;
@@ -130,19 +130,19 @@ const PARAMETERS = array(
 				if ($element->find('div.smallfont strong', 0)) {
 					$item['title'] = trim(utf8_encode($element->find('div.smallfont strong', 0)->innertext));
 				}
-				if (empty($item['title'])) {
-					$item['title'] = date("D j M y H:i", $item['timestamp']);
+				if ( empty($item['title']) ) {
+					$item['title'] = date('D j M y H:i', $item['timestamp']);
 				}
 				$item['content'] = trim(preg_replace('/\t+/', '', $element->find('div.post_message', 0)));
-				$item['uid'] = preg_split( "/(\#|\/)/", $element->find('div.post-heading a', 2)->href)[1];
+				$item['uid'] = preg_split( '/(\#|\/)/', $element->find('div.post-heading a', 2)->href)[1];
 				foreach($tags as $tag_key => $tag) {
 					$item['categories'][] = trim(utf8_encode($tag->innertext));
 				}
 				$this->items[] = $item;
 			}
-		} elseif($this->getInput('u')) {
+		#} elseif( $this->getInput('u') ) {
 				
-		} elseif($this->getInput('s')) {
+		} elseif( $this->getInput('s') ) {
 			$array = $html->find('div.post');
 			foreach($array as $key => $element) {
 				$item = array();
@@ -150,21 +150,19 @@ const PARAMETERS = array(
 				$item['uri_thread'] = $page . $element->find('div.post-heading a', 0)->href .'s';
 				$item['author'] = $element->find('div.post-body a', 1)->innertext;
 				$item['author_link'] = self::URI . $element->find('div.post-body a', 1)->href;
-				$time = preg_split( "/(\>)/",$element->find('div.post-heading', 0)->innertext);
+				$time = preg_split( '/(\>)/',$element->find('div.post-heading', 0)->innertext);
 				$item['timestamp'] = strtotime(trim(end($time)));
 				$item['title'] = trim(utf8_encode($element->find('div.post-body strong', 0)->innertext));
-				if (empty($item['title'])) {
-					$item['title'] = date("D j M y H:i", $item['timestamp']);
+				if ( empty($item['title']) ) {
+					$item['title'] = date('D j M y H:i', $item['timestamp']);
 				}
-				
+
 				$item['datetime'] = (trim(end($time)));
 				$item['categories'][] = trim(utf8_encode($element->find('div.post-heading a', 0)->innertext));
 				$item['content'] = trim(preg_replace('/\t+/', '', $element->find('div.post_message', 0)));
-				$item['uid'] = preg_split( "/(\#|\/)/", $element->find('div.post-body a', 0)->href)[1];
+				$item['uid'] = preg_split( '/(\#|\/)/', $element->find('div.post-body a', 0)->href)[1];
 				$this->items[] = $item;
 			}
 		}
-			
 	}
-
 }
