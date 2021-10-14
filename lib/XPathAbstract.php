@@ -428,9 +428,9 @@ abstract class XPathAbstract extends BridgeAbstract {
 			case 'timestamp':
 				return $this->formatItemTimestamp($value);
 			case 'enclosures':
-				return array($this->cleanImageUrl($value));
+				return $this->formatItemEnclosures($value);
 			case 'categories':
-				return array($this->fixEncoding($value));
+				return $this->formatItemCategories($value);
 		}
 		return $value;
 	}
