@@ -39,11 +39,6 @@ Once a project reaches 10,000 supporters, it gets reviewed by the lego experts.'
 			. '&sort=most_recent';
 	}
 
-	public function getIcon(){
-		$html = getSimpleHTMLDOM(self::URI);
-		return $html->find('link[rel=icon]', 3)->attr['href'];
-	}
-
 	public function collectData() {
 		$header = array(
 			'Content-Type: application/json',
