@@ -87,13 +87,13 @@ EOD
 			'user' => array(
 				'name' => 'User',
 				'required' => true,
-				'exampleValue' => 'sebsauvage',
+				'exampleValue' => 'Scobleizer',
 				'title' => 'Insert a user name'
 			),
 			'list' => array(
 				'name' => 'List',
 				'required' => true,
-				'exampleValue' => 'provideAlistExample',
+				'exampleValue' => 'Tech-News',
 				'title' => 'Insert the list name'
 			),
 			'filter' => array(
