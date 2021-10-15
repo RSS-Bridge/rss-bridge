@@ -16,7 +16,8 @@ class BooruprojectBridge extends GelbooruBridge {
 			't' => array(
 				'name' => 'tags',
 				'required' => true,
-				'exampleValue'	=> 'tagme'
+				'exampleValue'	=> 'tagme',
+				'title'	=> 'Use "all" to get all posts'
 			)
 		),
 		'Booru subdomain (subdomain.booru.org)' => array(
