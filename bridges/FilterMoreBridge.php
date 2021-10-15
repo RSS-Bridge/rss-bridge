@@ -8,7 +8,8 @@ class FilterMoreBridge extends FeedExpander {
 	const DESCRIPTION = 'Filters a feed of your choice';
 	const URI = 'https://git.lattuta.net/boyska/rss-bridge';
 
-	const PARAMETERS = array(array(
+    const PARAMETERS = [
+        [
 		'url' => array(
 			'name' => 'Feed URL',
 			'required' => true,
@@ -62,7 +63,31 @@ class FilterMoreBridge extends FeedExpander {
 			'required' => false,
 			'defaultValue' => false,
 		),
-	));
+
+        'sort_by' => [
+            'name' => 'Sort by',
+            'type' => 'list',
+            'required' => true,
+            'values' => [
+                "Don't sort" => 'none',
+                'Date' => 'timestamp',
+                'Title' => 'title',
+                'Random' => 'random',
+            ],
+            'defaultValue' => 'date',
+        ],
+        'sort_dir' => [
+            'name' => 'Sort direction',
+            'type' => 'list',
+            'required' => true,
+            'values' => [
+                'Ascending' => 'asc',
+                'Descending' => 'desc',
+            ],
+            'defaultValue' => 'asc',
+        ],
+
+	]];
 
 	protected function parseItem($newItem){
 		$item = parent::parseItem($newItem);
@@ -117,6 +142,27 @@ class FilterMoreBridge extends FeedExpander {
         else
             return null;
 	}
+
+    protected function sortItemKey($item) {
+        $sort_by = $this->getInput('sort_by');
+        $key = $item[$sort_by];
+        return $key;
+    }
+    public function collectExpandableDatas($url, $maxItems = -1){
+        parent::collectExpandableDatas($url, $maxItems);
+        if($this->getInput('sort_by') === 'random') {
+            shuffle($this->items);
+        } elseif($this->getInput('sort_by') !== 'none') {
+            usort($this->items, function($itemA, $itemB) {
+                $valA = $this->sortItemKey($itemA);
+                $valB = $this->sortItemKey($itemB);
+                $cmp = strcmp($valA, $valB);
+                return $cmp;
+            });
+        }
+        if($this->getInput('sort_dir') === 'desc')
+            $this->items = array_reverse($this->items);
+    }
 
     private function cmp($a, $b) {
         if($a > $b) return 1;
