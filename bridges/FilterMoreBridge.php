@@ -59,6 +59,26 @@ class FilterMoreBridge extends FeedExpander {
 
 	protected function parseItem($newItem){
 		$item = parent::parseItem($newItem);
+        $item['enclosures'] = [];
+        if(isset($newItem->enclosure)) {
+            foreach($newItem->enclosure as $encl) {
+                $serialized = [];
+                foreach($encl->attributes() as $key => $value) {
+                    $serialized[$key] = (string)$value;
+                }
+                $serialized["length"] = intval($serialized["length"]);
+                $item['enclosures'][] = $serialized;
+            }
+        }
+        if(isset($newItem->link)) {
+            foreach($newItem->link as $el) {
+                if(((string)$el['rel']) !== 'enclosure') continue;
+                $serialized = [];
+                $serialized['url'] = (string)$el['href'];
+
+                $item['enclosures'][] = $serialized;
+            }
+        }
 
         $filters = ['filterByTitle', 'filterByBody', 'filterByAuthor', 'filterByDateNewer', 'filterByDateOlder'];
         $results = [];
@@ -67,6 +87,12 @@ class FilterMoreBridge extends FeedExpander {
             $filter_res = $this->$filter($item);
             if($filter_res === null) continue;
             $results[] = $filter_res;
+        }
+
+        $old_enclosures = $item['enclosures'];
+        $item['enclosures'] = [];
+        foreach($old_enclosures as $e) {
+            $item['enclosures'][] = $e['url'];
         }
         if(count($results) === 0) {
             return $item;
