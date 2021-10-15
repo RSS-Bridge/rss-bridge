@@ -18,7 +18,7 @@ class PixivBridge extends BridgeAbstract {
 		),
 		'tag' => array(
 			'name' => 'Query to search',
-			'exampleValue' => 'birds',
+			'exampleValue' => 'オリジナル',
 			'required' => true
 		),
 		'posts' => array(
