@@ -49,6 +49,13 @@ class FilterMoreBridge extends FeedExpander {
             'exampleValue' => '-1 hour',
 		),
 
+		'has_media' => array(
+			'name' => 'Has at least 1 media inside',
+			'type' => 'checkbox',
+			'required' => false,
+			'defaultValue' => false,
+		),
+
 		'invert_filter' => array(
 			'name' => 'Invert filter result',
 			'type' => 'checkbox',
@@ -80,7 +87,7 @@ class FilterMoreBridge extends FeedExpander {
             }
         }
 
-        $filters = ['filterByTitle', 'filterByBody', 'filterByAuthor', 'filterByDateNewer', 'filterByDateOlder'];
+        $filters = ['filterByTitle', 'filterByBody', 'filterByAuthor', 'filterByDateNewer', 'filterByDateOlder', 'filterByMedia'];
         $results = [];
 
         foreach($filters as $filter) {
@@ -151,6 +158,11 @@ class FilterMoreBridge extends FeedExpander {
 	protected function filterByDateOlder($item){
         return $this->filterByDate($item, 'older_than', -1);
 	}
+    protected function filterByMedia($item) {
+        if(!$this->getInput('has_media')) return null;
+        if(count($item['enclosures']) > 0) return true;
+        return false;
+    }
 
 	protected function getConjType(){
 		return $this->getInput('conj_type');
