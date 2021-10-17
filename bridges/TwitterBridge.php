@@ -214,7 +214,7 @@ EOD
 			// . ($this->getInput('norep') ? '' : '/with_replies');
 		case 'By timeline':
 			return self::URI
-			. urlencode($this->getInput('u'))
+			. urlencode($this->getInput('u')) . '/'
 			. urlencode($this->getInput('timeline'));
 		case 'By list':
 			return self::URI
