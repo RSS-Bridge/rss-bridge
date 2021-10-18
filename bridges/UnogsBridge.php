@@ -113,9 +113,15 @@ class UnogsBridge extends BridgeAbstract {
 	private function getImage($nfid) {
 		$url = self::URI . '/api/title/bgimages?netflixid=' . $nfid;
 		$json = $this->getJSON($url);
-		end($json['bo1280x448']);
-		$position = key($json['bo1280x448']);
-		$image_link = $json['bo1280x448'][$position]['url'];
+		$image_wrapper = '';
+		if(isset($json['bo1280x448'])) {
+			$image_wrapper = 'bo1280x448';
+		} else {
+			$image_wrapper = 'bo665x375';
+		}
+		end($json[$image_wrapper]);
+		$position = key($json[$image_wrapper]);
+		$image_link = $json[$image_wrapper][$position]['url'];
 		return $image_link;
 	}
 
