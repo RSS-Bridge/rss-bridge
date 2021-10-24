@@ -56,12 +56,12 @@ class GitHubGistBridge extends BridgeAbstract {
 
 		$html = defaultLinkTo($html, $this->getURI());
 
-		$fileinfo = $html->find('[class="file-info"]', 0)
+		$fileinfo = $html->find('[class~="file-info"]', 0)
 			or returnServerError('Could not find file info!');
 
 		$this->filename = $fileinfo->plaintext;
 
-		$comments = $html->find('div[class="timeline-comment-wrapper"]');
+		$comments = $html->find('div[class~="TimelineItem"]');
 
 		if(is_null($comments)) { // no comments yet
 			return;
@@ -72,7 +72,7 @@ class GitHubGistBridge extends BridgeAbstract {
 			$uri = $comment->find('a[href*=#gistcomment]', 0)
 				or returnServerError('Could not find comment anchor!');
 
-			$title = $comment->find('div[class="unminimized-comment"] h3[class="timeline-comment-header-text"]', 0)
+			$title = $comment->find('div[class~="unminimized-comment"] h3[class~="timeline-comment-header-text"]', 0)
 				or returnServerError('Could not find comment header text!');
 
 			$datetime = $comment->find('[datetime]', 0)
@@ -81,7 +81,7 @@ class GitHubGistBridge extends BridgeAbstract {
 			$author = $comment->find('a.author', 0)
 				or returnServerError('Could not find author name!');
 
-			$message = $comment->find('[class="comment-body"]', 0)
+			$message = $comment->find('[class~="comment-body"]', 0)
 				or returnServerError('Could not find comment body!');
 
 			$item = array();
