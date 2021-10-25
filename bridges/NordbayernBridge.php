@@ -78,6 +78,7 @@ class NordbayernBridge extends BridgeAbstract {
 		defaultLinkTo($article, self::URI);
 
 		$item['uri'] = $link;
+		$item['author'] = $article->find('[class=article__author extrabold]', 0)->plaintext;
 		if ($article->find('h2', 0) == null) {
 			$item['title'] = $article->find('h3', 0)->innertext;
 		} else {
