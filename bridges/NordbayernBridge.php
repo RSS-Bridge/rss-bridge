@@ -6,7 +6,7 @@ class NordbayernBridge extends BridgeAbstract {
 	const NAME = 'Nordbayern';
 	const CACHE_TIMEOUT = 3600;
 	const URI = 'https://www.nordbayern.de';
-	const DESCRIPTION = 'Bridge for Bavarian reginoal news site nordbayern.de';
+	const DESCRIPTION = 'Bridge for Bavarian regional news site nordbayern.de';
 	const PARAMETERS = array( array(
 		'region' => array(
 			'name' => 'region',
@@ -107,7 +107,7 @@ class NordbayernBridge extends BridgeAbstract {
 			$item['content'] .= '<img src="' . $imgUrl . '">';
 		}
 
-		// exclude police reports if descired
+		// exclude police reports if desired
 		if($this->getInput('policeReports') ||
 			!self::contains($item['content'], 'Hier geht es zu allen aktuellen Polizeimeldungen.')) {
 			$this->items[] = $item;
