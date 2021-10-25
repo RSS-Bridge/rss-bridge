@@ -73,6 +73,11 @@ class VkBridge extends BridgeAbstract
 
 		foreach ($html->find('.post') as $post) {
 
+			if ($post->find('.wall_post_text_deleted')) {
+				// repost of deleted post
+				continue;
+			}
+
 			defaultLinkTo($post, self::URI);
 
 			$post_videos = array();
@@ -159,8 +164,6 @@ class VkBridge extends BridgeAbstract
 			// get all other videos
 			foreach($post->find('a.page_post_thumb_video') as $a) {
 				$video_title = htmlspecialchars_decode($a->getAttribute('aria-label'));
-				$temp = explode(' ', $video_title, 2);
-				if (count($temp) > 1) $video_title = $temp[1];
 				$video_link = $a->getAttribute('href');
 				if ($video_link != $main_video_link) $this->appendVideo($video_title, $video_link, $content_suffix, $post_videos);
 				$a->outertext = '';
