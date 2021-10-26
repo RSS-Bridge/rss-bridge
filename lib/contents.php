@@ -160,7 +160,9 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 	}
 
 	switch($errorCode) {
-		case 200: // Contents received
+		case 200: // Contents OK
+		case 201: // Contents Created
+		case 202: // Contents Accepted
 			Debug::log('New contents received');
 			$data = substr($data, $headerSize);
 			// Disable caching if the server responds with "Cache-Control: no-cache"
