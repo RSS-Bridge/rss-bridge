@@ -3,7 +3,7 @@ ini_set('max_execution_time', '300');
 class NordbayernBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'schabi.org';
-	const NAME = 'Nordbayern Bridge';
+	const NAME = 'Nordbayern';
 	const CACHE_TIMEOUT = 3600;
 	const URI = 'https://www.nordbayern.de';
 	const DESCRIPTION = 'Bridge for Bavarian reginoal news site nordbayern.de';
@@ -16,6 +16,7 @@ class NordbayernBridge extends BridgeAbstract {
 			'values' => array(
 				'Nürnberg' => 'nuernberg',
 				'Fürth' => 'fuerth',
+				'Erlangen' => 'erlangen',
 				'Altdorf' => 'altdorf',
 				'Ansbach' => 'ansbach',
 				'Bad Windsheim' => 'bad-windsheim',
@@ -34,7 +35,6 @@ class NordbayernBridge extends BridgeAbstract {
 				'Pegnitz' => 'pegnitz',
 				'Roth' => 'roth',
 				'Rothenburg o.d.T.' => 'rothenburg-o-d-t',
-				'Schwabach' => 'schwabach',
 				'Treuchtlingen' => 'treuchtlingen',
 				'Weißenburg' => 'weissenburg'
 			)
@@ -43,96 +43,94 @@ class NordbayernBridge extends BridgeAbstract {
 			'name' => 'Police Reports',
 			'type' => 'checkbox',
 			'exampleValue' => 'checked',
-			'title' => 'Read Police Reports',
+			'title' => 'Include Police Reports',
 		)
 	));
 
-	private function getImageUrlFromScript($script) {
-		preg_match(
-			"#src=\\\\'(https:[-:\\.\\\\/a-zA-Z0-9%_]*\\.(jpg|JPG|jpeg))#",
-			$script->innertext,
-			$matches,
-			PREG_OFFSET_CAPTURE
-		);
-		if(isset($matches[1][0])) {
-			return stripcslashes($matches[1][0]) . '?w=800';
+	private function startsWith($string, $startString) {
+		$len = strlen($startString);
+		return (substr($string, 0, $len) === $startString);
+	}
+
+	private function contains($haystack, $needle) {
+		return (strpos($haystack, $needle) !== false);
+	}
+
+	private function getUseFullContent($rawContent) {
+		$content = '';
+		foreach($rawContent->children as $element) {
+			if($element->tag === 'p' || $element->tag === 'h3') {
+				$content .= $element;
+			}
+			if($element->tag === 'main') {
+				$content .= self::getUseFullContent($element->find('article', 0));
+			}
+			if($element->tag === 'header') {
+				$content .= self::getUseFullContent($element);
+			}
 		}
-		return null;
+		return $content;
 	}
 
 	private function handleArticle($link) {
 		$item = array();
 		$article = getSimpleHTMLDOM($link);
-		$content = $article->find('div[class*=article-content]', 0);
-		if(is_null($content)) {
-			// If content is null its most likely a slideshow.
-			// we do not support slideshows right now as I (theScrabi)
-			// think there is to little informational value in these
-			// to actually add support to them.
-			return;
-		}
+		defaultLinkTo($article, self::URI);
+
 		$item['uri'] = $link;
-		$item['title'] = $article->find('h1', 0)->innertext;
+		if ($article->find('h2', 0) == null) {
+			$item['title'] = $article->find('h3', 0)->innertext;
+		} else {
+			$item['title'] = $article->find('h2', 0)->innertext;
+		}
 		$item['content'] = '';
 
-		//first get image from block/modul
-		$figure = $article->find('figure[class*=panorama]', 0);
-		if($figure !== null) {
-			$imgUrl = self::getImageUrlFromScript($figure->find('script', 0));
-			if($imgUrl === null) {
-				$imgUrl = self::getImageUrlFromScript($figure->find('script', 1));
-			}
+		//first get images from content
+		$pictures = $article->find('picture');
+		if(!empty($pictures)) {
+			$bannerUrl = $pictures[0]->find('img', 0)->src;
+			$item['content'] .= '<img src="' . $bannerUrl . '">';
+		}
+
+		if ($article->find('section[class*=article__richtext]', 0) == null) {
+			$content = $article->find('div[class*=modul__teaser]', 0)
+						   ->find('p', 0);
+			$item['content'] .= $content;
+		} else {
+			$content = $article->find('section[class*=article__richtext]', 0)
+						   ->find('div', 0)->find('div', 0);
+			$item['content'] .= self::getUseFullContent($content);
+		}
+
+		for($i = 1; $i < count($pictures); $i++) {
+			$imgUrl = $pictures[$i]->find('img', 0)->src;
 			$item['content'] .= '<img src="' . $imgUrl . '">';
 		}
 
-		// get regular paragraphs
-		foreach($content->children() as $child) {
-			if($child->tag === 'p') {
-				$item['content'] .= $child;
-			}
+		// exclude police reports if descired
+		if($this->getInput('policeReports') ||
+			!self::contains($item['content'], 'Hier geht es zu allen aktuellen Polizeimeldungen.')) {
+			$this->items[] = $item;
 		}
 
-		//get image divs
-		foreach($content->find('div[class*=article-slideshow]') as $slides) {
-			foreach($slides->children() as $child) {
-				switch($child->tag) {
-					case 'p':
-						$item['content'] .= $child;
-						break;
-					case 'h5':
-						$item['content'] .= '<h5><a href="'
-							. self::URI . $child->find('a', 0)->href . '">' . $child->plaintext . '</a></h5>';
-						break;
-					case 'a':
-						$url = self::getImageUrlFromScript($child->find('script', 0));
-						$item['content'] .= '<img src="' . $url . '">';
-						break;
-				}
-			}
-		}
-		$this->items[] = $item;
 		$article->clear();
 	}
 
-	private function handleNewsblock($listSite, $readPoliceReports) {
-		$newsBlocks = $listSite->find('section[class*=newsblock]');
-		$regionalNewsBlock = $newsBlocks[0];
-		$policeBlock = $newsBlocks[1];
-		foreach($regionalNewsBlock->find('h2') as $headline) {
-			self::handleArticle(self::URI . $headline->find('a', 0)->href);
-		}
-		if($readPoliceReports === true) {
-			foreach($policeBlock->find('h2') as $headline) {
-				self::handleArticle(self::URI . $headline->find('a', 0)->href);
-			}
+	private function handleNewsblock($listSite) {
+		$main = $listSite->find('main', 0);
+		foreach($main->find('article') as $article) {
+			self::handleArticle(self::URI . $article->find('a', 0)->href);
 		}
 	}
 
 	public function collectData() {
 		$item = array();
 		$region = $this->getInput('region');
+		if($region === 'rothenburg-o-d-t') {
+			$region = 'rothenburg-ob-der-tauber';
+		}
 		$listSite = getSimpleHTMLDOM(self::URI . '/region/' . $region);
 
-		self::handleNewsblock($listSite, $this->getInput('policeReports'));
+		self::handleNewsblock($listSite);
 	}
 }

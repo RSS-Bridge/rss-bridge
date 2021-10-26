@@ -131,7 +131,7 @@ class PikabuBridge extends BridgeAbstract {
 			// adding special marker for "Maybe News" section
 			// these posts are fake
 			if (!is_null($community_link) && $community_link->getAttribute('href') == '/community/maybenews') {
-				$title = '[' . $community_link->innertext . '] ' . $title;
+				$title = '[' . trim($community_link->plaintext) . '] ' . $title;
 			}
 
 			$item = array();
@@ -140,7 +140,7 @@ class PikabuBridge extends BridgeAbstract {
 			$item['title'] = $title;
 			$item['content'] = strip_tags(
 				backgroundToImg($post->find('.story__content-inner', 0)->innertext),
-				'<br><p><img><a>
+				'<br><p><img><a><s>
 			');
 			$item['uri'] = $title_element->href;
 			$item['timestamp'] = strtotime($time->getAttribute('datetime'));

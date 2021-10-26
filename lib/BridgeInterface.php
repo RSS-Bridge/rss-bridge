@@ -121,6 +121,13 @@ interface BridgeInterface {
 	public function getURI();
 
 	/**
+	 * Returns the bridge Donation URI
+	 *
+	 * @return string Bridge Donation URI
+	 */
+	public function getDonationURI();
+
+	/**
 	 * Returns the cache timeout
 	 *
 	 * @return int Cache timeout

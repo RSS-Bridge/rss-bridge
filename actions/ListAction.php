@@ -39,6 +39,7 @@ class ListAction extends ActionAbstract {
 			$list->bridges[$bridgeName] = array(
 				'status' => $status,
 				'uri' => $bridge->getURI(),
+				'donationUri' => $bridge->getDonationURI(),
 				'name' => $bridge->getName(),
 				'icon' => $bridge->getIcon(),
 				'parameters' => $bridge->getParameters(),

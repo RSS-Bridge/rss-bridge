@@ -151,6 +151,7 @@ class DisplayAction extends ActionAbstract {
 				$infos = array(
 					'name' => $bridge->getName(),
 					'uri'  => $bridge->getURI(),
+					'donationUri'  => $bridge->getDonationURI(),
 					'icon' => $bridge->getIcon()
 				);
 			} catch(Error $e) {
