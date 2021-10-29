@@ -48,22 +48,25 @@ class DarkReadingBridge extends FeedExpander {
 		if ($feed_id != '000') {
 			$feed_url .= '?f_n=' . $feed_id . '&f_ln=' . $feed_name;
 		}
-		$this->collectExpandableDatas($feed_url);
+		$this->collectExpandableDatas($feed_url, 20);
 	}
 
 	protected function parseItem($newsItem){
 		$item = parent::parseItem($newsItem);
-		if (empty($item['content']))
-			return null; //ignore dummy articles
 		$article = getSimpleHTMLDOMCached($item['uri'])
 			or returnServerError('Could not request Dark Reading: ' . $item['uri']);
 		$item['content'] = $this->extractArticleContent($article);
 		$item['enclosures'] = array(); //remove author profile picture
+		$image = $article->find('meta[property="og:image"]', 0);
+		if (is_object($image)) {
+			$image = $image->content;
+			$item['enclosures'] = array($image);
+		}
 		return $item;
 	}
 
 	private function extractArticleContent($article){
-		$content = $article->find('div#article-main', 0)->innertext;
+		$content = $article->find('div.article-content', 0)->innertext;
 
 		foreach (array(
 			'<div class="divsplitter',
@@ -73,8 +76,6 @@ class DarkReadingBridge extends FeedExpander {
 		) as $div_start) {
 			$content = stripRecursiveHTMLSection($content, 'div', $div_start);
 		}
-
-		$content = stripWithDelimiters($content, '<h1 ', '</h1>');
 
 		return $content;
 	}
