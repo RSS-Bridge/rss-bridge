@@ -47,15 +47,6 @@ class NordbayernBridge extends BridgeAbstract {
 		)
 	));
 
-	private function startsWith($string, $startString) {
-		$len = strlen($startString);
-		return (substr($string, 0, $len) === $startString);
-	}
-
-	private function contains($haystack, $needle) {
-		return (strpos($haystack, $needle) !== false);
-	}
-
 	private function getUseFullContent($rawContent) {
 		$content = '';
 		foreach($rawContent->children as $element) {
@@ -109,7 +100,7 @@ class NordbayernBridge extends BridgeAbstract {
 
 		// exclude police reports if descired
 		if($this->getInput('policeReports') ||
-			!self::contains($item['content'], 'Hier geht es zu allen aktuellen Polizeimeldungen.')) {
+			!str_contains($item['content'], 'Hier geht es zu allen aktuellen Polizeimeldungen.')) {
 			$this->items[] = $item;
 		}
 
