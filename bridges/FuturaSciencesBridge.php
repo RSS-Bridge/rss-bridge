@@ -85,7 +85,7 @@ class FuturaSciencesBridge extends FeedExpander {
 
 	protected function parseItem($newsItem){
 		$item = parent::parseItem($newsItem);
-		$item['uri'] = str_replace('#xtor=RSS-8', '', $item['uri']);
+		$item['uri'] = str_replace('#xtor%3DRSS-8', '', $item['uri']);
 		$article = getSimpleHTMLDOMCached($item['uri'])
 			or returnServerError('Could not request Futura-Sciences: ' . $item['uri']);
 		$item['content'] = $this->extractArticleContent($article);
@@ -96,30 +96,46 @@ class FuturaSciencesBridge extends FeedExpander {
 	}
 
 	private function extractArticleContent($article){
-		$contents = $article->find('section.article-text', 1)->innertext;
-		$headline = trim($article->find('p.description', 0)->plaintext);
-		if(!empty($headline))
-			$headline = '<p><b>' . $headline . '</b></p>';
+		$contents = $article->find('section.article-text', 1);
 
-		foreach (array(
-			'<div class="clear',
-			'<div class="sharebar2',
-			'<div class="diaporamafullscreen"',
-			'<div class="module social-button',
-			'<div class="module social-share',
-			'<div style="margin-bottom:10px;" class="noprint"',
-			'<div class="ficheprevnext',
-			'<div class="bar noprint',
-			'<div class="toolbar noprint',
-			'<div class="addthis_toolbox',
-			'<div class="noprint',
-			'<div class="bg bglight border border-full noprint',
-			'<div class="httplogbar-wrapper noprint',
-			'<div id="forumcomments',
-			'<div ng-if="active"'
-		) as $div_start) {
-			$contents = stripRecursiveHTMLSection($contents, 'div', $div_start);
+		foreach($contents->find('img') as $img) {
+			if(!empty($img->getAttribute('data-src'))) {
+				$img->src = $img->getAttribute('data-src');
+			}
 		}
+
+		foreach($contents->find('a.tooltip-link') as $a) {
+			$a->outertext = $a->plaintext;
+		}
+
+		foreach(array(
+			'clear',
+			'sharebar2',
+			'diaporamafullscreen',
+			'module.social-button',
+			'module.social-share',
+			'ficheprevnext',
+			'addthis_toolbox',
+			'noprint',
+			'hubbottom',
+			'hubbottom2'
+		) as $div_class_remove) {
+			foreach($contents->find('div.' . $div_class_remove) as $div) {
+				$keep_div = false;
+				foreach(array(
+					'didyouknow'
+				) as $div_class_dont_remove) {
+					if(strpos($div->getAttribute('class'), $div_class_dont_remove) !== false) {
+						$keep_div = true;
+					}
+				}
+				if(!$keep_div) {
+					$div->outertext = '';
+				}
+			}
+		}
+
+		$contents = $contents->innertext;
 
 		$contents = stripWithDelimiters($contents, '<hr ', '/>');
 		$contents = stripWithDelimiters($contents, '<p class="content-date', '</p>');
@@ -131,7 +147,7 @@ class FuturaSciencesBridge extends FeedExpander {
 		$contents = stripWithDelimiters($contents, '<script ', '</script>');
 		$contents = stripWithDelimiters($contents, '<script>', '</script>');
 
-		return $headline . trim($contents);
+		return trim($contents);
 	}
 
 	// Extracts the author from an article or element
