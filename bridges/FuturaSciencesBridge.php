@@ -125,7 +125,7 @@ class FuturaSciencesBridge extends FeedExpander {
 				foreach(array(
 					'didyouknow'
 				) as $div_class_dont_remove) {
-					if(strpos($div->getAttribute('class'), $div_class_dont_remove) !== false){
+					if(strpos($div->getAttribute('class'), $div_class_dont_remove) !== false) {
 						$keep_div = true;
 					}
 				}
