@@ -1887,7 +1887,7 @@ class DealabsBridge extends PepperBridgeAbstract {
 		'bridge-name' => SELF::NAME,
 		'context-keyword' => 'Recherche par Mot(s) clé(s)',
 		'context-group' => 'Deals par groupe',
-		'uri-group' => '/groupe/',
+		'uri-group' => 'groupe/',
 		'request-error' => 'Could not request Dealabs',
 		'no-results' => 'Il n&#039;y a rien à afficher pour le moment :(',
 		'relative-date-indicator' => array(
@@ -1962,12 +1962,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	 */
 	protected function collectDataGroup()
 	{
-
-		$group = $this->getInput('group');
-		$order = $this->getInput('order');
-
-		$url = $this->i8n('bridge-uri')
-			. $this->i8n('uri-group') . $group . $order;
+		$url = $this->getGroupURI();
 		$this->collectDeals($url);
 	}
 
@@ -1976,26 +1971,8 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	 */
 	protected function collectDataKeywords()
 	{
-		$q = $this->getInput('q');
-		$hide_expired = $this->getInput('hide_expired');
-		$hide_local = $this->getInput('hide_local');
-		$priceFrom = $this->getInput('priceFrom');
-		$priceTo = $this->getInput('priceFrom');
-
 		/* Even if the original website uses POST with the search page, GET works too */
-		$url = $this->i8n('bridge-uri')
-			. '/search/advanced?q='
-			. urlencode($q)
-			. '&hide_expired=' . $hide_expired
-			. '&hide_local=' . $hide_local
-			. '&priceFrom=' . $priceFrom
-			. '&priceTo=' . $priceTo
-			/* Some default parameters
-			 * search_fields : Search in Titres & Descriptions & Codes
-			 * sort_by : Sort the search by new deals
-			 * time_frame : Search will not be on a limited timeframe
-			 */
-			. '&search_fields[]=1&search_fields[]=2&search_fields[]=3&sort_by=new&time_frame=0';
+		$url = $this->getSearchURI();
 		$this->collectDeals($url);
 	}
 
@@ -2369,6 +2346,62 @@ class PepperBridgeAbstract extends BridgeAbstract {
 			default: // Return default value
 				return static::NAME;
 		}
+	}
+
+	/**
+	 * Returns the RSS Feed title according to the parameters
+	 * @return string the RSS feed Title
+	 */
+	public function getURI(){
+		switch($this->queriedContext) {
+			case $this->i8n('context-keyword'):
+				return $this->getSearchURI();
+				break;
+			case $this->i8n('context-group'):
+				return $this->getGroupURI();
+				break;
+			default: // Return default value
+				return static::URI;
+		}
+	}
+
+	/**
+	 * Returns the RSS Feed URI for a keyword Feed
+	 * @return string the RSS feed URI
+	 */
+	private function getSearchURI(){
+		$q = $this->getInput('q');
+		$hide_expired = $this->getInput('hide_expired');
+		$hide_local = $this->getInput('hide_local');
+		$priceFrom = $this->getInput('priceFrom');
+		$priceTo = $this->getInput('priceFrom');
+		$url = $this->i8n('bridge-uri')
+			. 'search/advanced?q='
+			. urlencode($q)
+			. '&hide_expired=' . $hide_expired
+			. '&hide_local=' . $hide_local
+			. '&priceFrom=' . $priceFrom
+			. '&priceTo=' . $priceTo
+			/* Some default parameters
+			 * search_fields : Search in Titres & Descriptions & Codes
+			 * sort_by : Sort the search by new deals
+			 * time_frame : Search will not be on a limited timeframe
+			 */
+			. '&search_fields[]=1&search_fields[]=2&search_fields[]=3&sort_by=new&time_frame=0';
+		return $url;
+	}
+
+	/**
+	 * Returns the RSS Feed URI for a group Feed
+	 * @return string the RSS feed URI
+	 */
+	private function getGroupURI(){
+		$group = $this->getInput('group');
+		$order = $this->getInput('order');
+
+		$url = $this->i8n('bridge-uri')
+			. $this->i8n('uri-group') . $group . $order;
+		return $url;
 	}
 
 	/**
