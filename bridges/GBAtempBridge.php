@@ -32,12 +32,6 @@ class GBAtempBridge extends BridgeAbstract {
 		return $item;
 	}
 
-	private function strEndsWith($haystack, $needle){
-		// str_ends_with is not available below PHP 8
-		$length = strlen($needle);
-		return $length > 0 ? substr($haystack, -$length) === $needle : true;
-	}
-
 	private function decodeHtmlEntities($text) {
 		$text = html_entity_decode($text);
 		$convmap = array(0x0, 0x2FFFF, 0, 0xFFFF);
@@ -45,19 +39,11 @@ class GBAtempBridge extends BridgeAbstract {
 	}
 
 	private function cleanupPostContent($content, $site_url){
-		$content = str_replace('src="/', 'src="' . $site_url, $content);
-		$content = str_replace('href="/', 'href="' . $site_url, $content);
+		$content = defaultLinkTo($content, self::URI);
 		$content = stripWithDelimiters($content, '<script', '</script>');
 		$content = stripWithDelimiters($content, '<svg', '</svg>');
 		$content = stripRecursiveHTMLSection($content, 'div', '<div class="reactionsBar');
 		return $this->decodeHtmlEntities($content);
-	}
-
-	private function makeAbsoluteUrl($link) {
-		if (strpos($link, '/') === 0) {
-			$link = substr($link, 1);
-		}
-		return self::URI . $link;
 	}
 
 	private function findItemDate($item){
@@ -75,10 +61,10 @@ class GBAtempBridge extends BridgeAbstract {
 		if ($paramPos !== false) {
 			$img = substr($img, 0, $paramPos);
 		}
-		if (!$this->strEndsWith($img, '.png') && !$this->strEndsWith($img, '.jpg')) {
+		if (!str_ends_with($img, '.png') && !str_ends_with($img, '.jpg')) {
 			$img = $img . '#.image';
 		}
-		return $this->makeAbsoluteUrl($img);
+		return urljoin(self::URI, $img);
 	}
 
 	private function fetchPostContent($uri, $site_url){
@@ -99,7 +85,7 @@ class GBAtempBridge extends BridgeAbstract {
 		switch($this->getInput('type')) {
 		case 'N':
 			foreach($html->find('li.news_item.full') as $newsItem) {
-				$url = $this->makeAbsoluteUrl($newsItem->find('a', 0)->href);
+				$url = urljoin(self::URI, $newsItem->find('a', 0)->href);
 				$img = $this->findItemImage($newsItem, 'a.news_image');
 				$time = $this->findItemDate($newsItem);
 				$author = $newsItem->find('a.username', 0)->plaintext;
@@ -111,7 +97,7 @@ class GBAtempBridge extends BridgeAbstract {
 			break;
 		case 'R':
 			foreach($html->find('li.portal_review') as $reviewItem) {
-				$url = $this->makeAbsoluteUrl($reviewItem->find('a.review_boxart', 0)->href);
+				$url = urljoin(self::URI, $reviewItem->find('a.review_boxart', 0)->href);
 				$img = $this->findItemImage($reviewItem, 'a.review_boxart');
 				$title = $this->decodeHtmlEntities($reviewItem->find('h2.review_title', 0)->plaintext);
 				$content = getSimpleHTMLDOMCached($url)
@@ -127,7 +113,7 @@ class GBAtempBridge extends BridgeAbstract {
 			break;
 		case 'T':
 			foreach($html->find('li.portal-tutorial') as $tutorialItem) {
-				$url = $this->makeAbsoluteUrl($tutorialItem->find('a', 1)->href);
+				$url = urljoin(self::URI, $tutorialItem->find('a', 1)->href);
 				$title = $this->decodeHtmlEntities($tutorialItem->find('a', 1)->plaintext);
 				$time = $this->findItemDate($tutorialItem);
 				$author = $tutorialItem->find('a.username', 0)->plaintext;
@@ -138,7 +124,7 @@ class GBAtempBridge extends BridgeAbstract {
 			break;
 		case 'F':
 			foreach($html->find('li.rc_item') as $postItem) {
-				$url = $this->makeAbsoluteUrl($postItem->find('a', 1)->href);
+				$url = urljoin(self::URI, $postItem->find('a', 1)->href);
 				$title = $this->decodeHtmlEntities($postItem->find('a', 1)->plaintext);
 				$time = $this->findItemDate($postItem);
 				$author = $postItem->find('a.username', 0)->plaintext;
