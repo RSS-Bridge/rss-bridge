@@ -532,7 +532,7 @@ abstract class XPathAbstract extends BridgeAbstract {
 	 */
 	protected function cleanImageUrl($imageUrl)
 	{
-		$result = preg_match('~(?:http(?:s)?:)?[\/a-zA-Z0-9\-_\.]+\.(?:jpg|gif|png|jpeg|ico){1}~', $imageUrl, $matches);
+		$result = preg_match('~(?:http(?:s)?:)?[\/a-zA-Z0-9\-_\.]+\.(?:jpg|gif|png|jpeg|ico|mp3){1}~', $imageUrl, $matches);
 		if(1 !== $result) {
 			return;
 		}
@@ -551,6 +551,8 @@ abstract class XPathAbstract extends BridgeAbstract {
 				return trim($item->nodeValue);
 			} elseif ($item instanceof DOMAttr) {
 				return trim($item->value);
+			} elseif ($item instanceof DOMText) {
+				return trim($item->wholeText);
 			}
 		} elseif(is_string($typedResult) && strlen($typedResult) > 0) {
 			return trim($typedResult);
