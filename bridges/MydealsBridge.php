@@ -2004,7 +2004,7 @@ class MydealsBridge extends PepperBridgeAbstract {
 		'bridge-name' => SELF::NAME,
 		'context-keyword' => 'Suche nach Stichworten',
 		'context-group' => 'Deals pro Gruppen',
-		'uri-group' => '/gruppe/',
+		'uri-group' => 'gruppe/',
 		'request-error' => 'Could not request mydeals',
 		'no-results' => 'Ups, wir konnten keine Deals zu',
 		'relative-date-indicator' => array(

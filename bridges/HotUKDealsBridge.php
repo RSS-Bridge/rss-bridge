@@ -3255,7 +3255,7 @@ class HotUKDealsBridge extends PepperBridgeAbstract {
 		'bridge-name' => SELF::NAME,
 		'context-keyword' => 'Search by keyword(s))',
 		'context-group' => 'Deals per group',
-		'uri-group' => '/tag/',
+		'uri-group' => 'tag/',
 		'request-error' => 'Could not request HotUKDeals',
 		'no-results' => 'Ooops, looks like we could',
 		'relative-date-indicator' => array(
