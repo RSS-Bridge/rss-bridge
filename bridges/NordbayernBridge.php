@@ -93,7 +93,16 @@ class NordbayernBridge extends BridgeAbstract {
 		$pictures = $article->find('picture');
 		$images = self::getValidImages($pictures);
 		if(!empty($images)) {
-			$bannerUrl = $images[0];
+			//if there is an author info blog
+			//the first immage will be the image of the author
+			//and not the article banner. The banner in this
+			//case will be the second image.
+			if ($article->find('div[class=authorinfo]', 0) == null) {
+				$bannerUrl = $images[0];
+			} else {
+				$bannerUrl = $images[1];
+			}
+
 			$item['content'] .= '<img src="' . $bannerUrl . '">';
 		}
 
@@ -107,7 +116,7 @@ class NordbayernBridge extends BridgeAbstract {
 			$item['content'] .= self::getUseFullContent($content);
 		}
 
-		for($i = 1; $i < count($images); $i++) {
+		for($i = 0; $i < count($images); $i++) {
 			$item['content'] .= '<img src="' . $images[$i] . '">';
 		}
 
