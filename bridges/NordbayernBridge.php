@@ -63,6 +63,19 @@ class NordbayernBridge extends BridgeAbstract {
 		return $content;
 	}
 
+	private function getValidImages($pictures) {
+		$images = array();
+		if(!empty($pictures)) {
+			for($i = 0; $i < count($pictures); $i++) {
+				$imgUrl = $pictures[$i]->find('img', 0)->src;
+				if(strcmp($imgUrl, 'https://www.nordbayern.de/img/nb/logo-vnp.png') !== 0) {
+					array_push($images, $imgUrl);
+				}
+			}
+		}
+		return $images;
+	}
+
 	private function handleArticle($link) {
 		$item = array();
 		$article = getSimpleHTMLDOM($link);
@@ -78,8 +91,18 @@ class NordbayernBridge extends BridgeAbstract {
 
 		//first get images from content
 		$pictures = $article->find('picture');
-		if(!empty($pictures)) {
-			$bannerUrl = $pictures[0]->find('img', 0)->src;
+		$images = self::getValidImages($pictures);
+		if(!empty($images)) {
+			// If there is an author info block
+			// the first immage will be the portrait of the author
+			// and not the article banner. The banner in this
+			// case will be the second image.
+			if ($article->find('div[class=authorinfo]', 0) == null) {
+				$bannerUrl = $images[0];
+			} else {
+				$bannerUrl = $images[1];
+			}
+
 			$item['content'] .= '<img src="' . $bannerUrl . '">';
 		}
 
@@ -93,9 +116,8 @@ class NordbayernBridge extends BridgeAbstract {
 			$item['content'] .= self::getUseFullContent($content);
 		}
 
-		for($i = 1; $i < count($pictures); $i++) {
-			$imgUrl = $pictures[$i]->find('img', 0)->src;
-			$item['content'] .= '<img src="' . $imgUrl . '">';
+		for($i = 0; $i < count($images); $i++) {
+			$item['content'] .= '<img src="' . $images[$i] . '">';
 		}
 
 		// exclude police reports if descired
