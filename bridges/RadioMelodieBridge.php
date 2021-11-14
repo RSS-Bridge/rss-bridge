@@ -12,7 +12,7 @@ class RadioMelodieBridge extends BridgeAbstract {
 	public function collectData(){
 		$html = getSimpleHTMLDOM(self::URI . '/actu/')
 			or returnServerError('Could not request Radio Melodie.');
-		$list = $html->find('div[class=displayList]', 0)->children();
+		$list = $html->find('div[class=listArticles]', 0)->children();
 
 		$dateFormat = '%A  %e %B %Y à %H:%M';
 		// Set locale and Timezone to parse the date
@@ -34,7 +34,7 @@ class RadioMelodieBridge extends BridgeAbstract {
 				$picture = array();
 
 				// Get the Main picture URL
-				$picture[] = self::URI . $article->find('div[id=pictureTitleSupport]', 0)->find('img', 0)->src;
+				$picture[] = self::URI . $article->find('figure[class=photoviewer]', 0)->find('img', 0)->src;
 				$audioHTML = $article->find('audio');
 
 				// Add the audio element to the enclosure
@@ -57,16 +57,12 @@ class RadioMelodieBridge extends BridgeAbstract {
 					$article->save();
 				}
 
-				// Remove Radio Melodie Logo
-				$logoHTML = $article->find('div[id=logoArticleRM]', 0);
-				$logoHTML->outertext = '';
-				$article->save();
-
-				$author = $article->find('p[class=AuthorName]', 0)->plaintext;
+				// Extract the author
+				$author = $article->find('div[class=author]', 0)->children(1)->children(0)->plaintext;
 
 				// Handle date to timestamp
-				$dateHTML = $article->find('p[class=date]', 0)->plaintext;
-				preg_match('/\| ([^-]*)( - .*|)$/', $dateHTML, $matches);
+				$dateHTML = $article->find('div[class=author]', 0)->children(1)->plaintext;
+				preg_match('/([a-z]{4,10} [0-9]{1,2} [a-z]{4,10} [0-9]{4} à [0-9]{2}:[0-9]{2})/ms', $dateHTML, $matches);
 				$dateText = $matches[1];
 				$dateArray = strptime($dateText, $dateFormat);
 				$timestamp = mktime(
@@ -86,22 +82,15 @@ class RadioMelodieBridge extends BridgeAbstract {
 					$item['timestamp'] = $timestamp;
 				}
 
-				// Header Image
-				$header = '<img src="' . $picture[0] . '"/>';
-
-				// Remove the Date and Author part
-				$textDOM->find('div[class=AuthorDate]', 0)->outertext = '';
-
-				// Remove Facebook javascript
-				$textDOM->find('script[src^=https://connect.facebook.net]', 0)->outertext = '';
+				// Remove the share article part
+				$textDOM->find('div[class=share]', 0)->outertext = '';
 
 				// Rewrite relative Links
 				$textDOM = defaultLinkTo($textDOM, self::URI . '/');
 
 				$article->save();
-				//$this->rewriteAudioPlayers($textDOM);
 				$text = $textDOM->innertext;
-				$item['content'] = '<h1>' . $item['title'] . '</h1>' . $dateHTML . '<br/>' . $header . $text;
+				$item['content'] = '<h1>' . $item['title'] . '</h1>' . $dateText . '<br/>' . $text;
 				$this->items[] = $item;
 			}
 		}
