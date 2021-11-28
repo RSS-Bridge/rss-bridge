@@ -193,6 +193,4 @@ class RadioMelodieBridge extends BridgeAbstract {
 		return $timestamp;
 
 	}
-
-
 }
