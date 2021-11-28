@@ -41,7 +41,10 @@ class ThePirateBayBridge extends BridgeAbstract {
 			'name' => 'Only get results from Trusted or VIP users ?',
 		),
 	));
-	const CATEGORIES = [
+
+	const STATIC_SERVER = 'https://torrindex.net';
+
+	const CATEGORIES = array(
 		'1' => 'Audio',
 		'2' => 'Video',
 		'3' => 'Applications',
@@ -92,7 +95,7 @@ class ThePirateBayBridge extends BridgeAbstract {
 		'604' => 'Covers',
 		'605' => 'Physibles',
 		'699' => 'Other',
-	];
+	);
 
 	public function collectData() {
 		$keywords = explode(';', $this->getInput('q'));
@@ -110,7 +113,11 @@ class ThePirateBayBridge extends BridgeAbstract {
 				$catCheck = $this->getInput('catCheck');
 				if ($catCheck) {
 					$categories = $this->getInput('cat');
-					$query = sprintf('/q.php?q=%s&cat=%s', rawurlencode($keyword), rawurlencode($categories));
+					$query = sprintf(
+						'/q.php?q=%s&cat=%s',
+						rawurlencode($keyword),
+						rawurlencode($categories)
+					);
 				} else {
 					$query = sprintf('/q.php?q=%s', rawurlencode($keyword));
 				}
@@ -133,7 +140,9 @@ class ThePirateBayBridge extends BridgeAbstract {
 		}
 		foreach ($result as $torrent) {
 			// This is the check for whether to include results from Trusted or VIP users
-			if ($this->getInput('trusted') && !in_array($torrent->status, ['vip', 'trusted'])) {
+			if ($this->getInput('trusted')
+				&& !in_array($torrent->status, array('vip', 'trusted'))
+			) {
 				continue;
 			}
 			$this->processTorrent($torrent);
@@ -143,7 +152,7 @@ class ThePirateBayBridge extends BridgeAbstract {
 	private function processTorrent($torrent)
 	{
 		// Extracted these trackers from the magnet links on thepiratebay.org
-		$trackers = [
+		$trackers = array(
 			'udp://tracker.coppersurfer.tk:6969/announce',
 			'udp://tracker.openbittorrent.com:6969/announce',
 			'udp://9.rarbg.to:2710/announce',
@@ -154,9 +163,13 @@ class ThePirateBayBridge extends BridgeAbstract {
 			'udp://tracker.torrent.eu.org:451/announce',
 			'udp://tracker.tiny-vps.com:6969/announce',
 			'udp://open.stealth.si:80/announce',
-		];
+		);
 
-		$magnetLink = sprintf('magnet:?xt=urn:btih:%s&dn=%s', $torrent->info_hash, rawurlencode($torrent->name));
+		$magnetLink = sprintf(
+			'magnet:?xt=urn:btih:%s&dn=%s',
+			$torrent->info_hash,
+			rawurlencode($torrent->name)
+		);
 		foreach ($trackers as $tracker) {
 			// Build magnet link manually instead of using http_build_query because it
 			// creates undesirable query such as ?tr[0]=foo&tr[1]=bar&tr[2]=baz
@@ -172,11 +185,13 @@ class ThePirateBayBridge extends BridgeAbstract {
 		$item['timestamp'] = $torrent->added;
 		$item['author'] = $torrent->username;
 
-		$content  = '<b>Type:</b> ' . $this->renderCategory($torrent->category) . '<br>';
+		$content  = '<b>Type:</b> '
+			. $this->renderCategory($torrent->category) . '<br>';
 		$content .= "<b>Files:</b> $torrent->num_files<br>";
 		$content .= '<b>Size:</b> ' . $this->renderSize($torrent->size) . '<br><br>';
 
-		$content .= '<b>Uploaded:</b> ' . $this->renderUploadDate($torrent->added) . '<br>';
+		$content .= '<b>Uploaded:</b> '
+			. $this->renderUploadDate($torrent->added) . '<br>';
 		$content .= '<b>By:</b> ' . $this->renderUser($torrent) . '<br>';
 
 		$content .= "<b>Seeders:</b> {$torrent->seeders}<br>";
@@ -184,10 +199,17 @@ class ThePirateBayBridge extends BridgeAbstract {
 		$content .= "<b>Info hash:</b> {$torrent->info_hash}<br><br>";
 
 		if ($torrent->imdb) {
-			$content .= "<b>Imdb:</b> " . $this->renderImdbLink($torrent->imdb) . '<br><br>';
+			$content .= '<b>Imdb:</b> '
+				. $this->renderImdbLink($torrent->imdb) . '<br><br>';
 		}
 
-		$content .= "<a href='$magnetLink'><img src='https://torrindex.net/images/icon-magnet.gif'> GET THIS TORRENT</a><br>";
+		$html = <<<HTML
+<a href="%s">
+	<img src="%s/images/icon-magnet.gif"> GET THIS TORRENT
+</a>
+<br>
+HTML;
+		$content .= sprintf($html, $magnetLink, self::STATIC_SERVER);
 
 		$item['content'] = $content;
 
@@ -196,12 +218,12 @@ class ThePirateBayBridge extends BridgeAbstract {
 
 	private function renderSize($size)
 	{
-		if ($size < 1024**1)	return $size . ' B';
-		if ($size < 1024**2)	return round($size / 1024, 2) . ' KB';
-		if ($size < 1024**3)	return round($size / 1024**2, 2) . ' MB';
-		if ($size < 1024**4)	return round($size / 1024**3, 2) . ' GB';
+		if ($size < 1024)			return $size . ' B';
+		if ($size < pow(1024, 2))	return round($size / 1024, 2) . ' KB';
+		if ($size < pow(1024, 3))	return round($size / pow(1024, 2), 2) . ' MB';
+		if ($size < pow(1024, 4))	return round($size / pow(1024, 3), 2) . ' GB';
 
-		return round($size / 1024**4, 2) . ' TB';
+		return round($size / pow(1024, 4), 2) . ' TB';
 	}
 
 	private function renderUploadDate($added)
@@ -244,12 +266,36 @@ class ThePirateBayBridge extends BridgeAbstract {
 
 	private function renderStatusImage($status)
 	{
-		if ($status == 'trusted')	return '<img src="' . 'https://torrindex.net/images/trusted.png" title="Trusted"/>';
-		if ($status == 'vip')		return '<img src="' . 'https://torrindex.net/images/vip.gif" title="VIP"/>';
-		if ($status == 'helper')	return '<img src="' . 'https://torrindex.net/images/helper.png" title="Helper"/>';
-		if ($status == 'moderator')	return '<img src="' . 'https://torrindex.net/images/moderator.gif" title="Moderator"/>';
-		if ($status == 'supermod')	return '<img src="' . 'https://torrindex.net/images/supermod.png" title="Super Mod"/>';
-		if ($status == 'admin')		return '<img src="' . 'https://torrindex.net/images/admin.gif" title="Admin"/>';
+		if ($status == 'trusted')
+			return sprintf(
+				'<img src="%s/images/trusted.png" title="Trusted"/>',
+				self::STATIC_SERVER
+			);
+		if ($status == 'vip')
+			return sprintf(
+				'<img src="%s/images/vip.gif" title="VIP"/>',
+				self::STATIC_SERVER
+			);
+		if ($status == 'helper')
+			return sprintf(
+				'<img src="%s/images/helper.png" title="Helper"/>',
+				self::STATIC_SERVER
+			);
+		if ($status == 'moderator')
+			return sprintf(
+				'<img src="%s/images/moderator.gif" title="Moderator"/>',
+				self::STATIC_SERVER
+			);
+		if ($status == 'supermod')
+			return sprintf(
+				'<img src="%s/images/supermod.png" title="Super Mod"/>',
+				self::STATIC_SERVER
+			);
+		if ($status == 'admin')
+			return sprintf(
+				'<img src="%s/images/admin.gif" title="Admin"/>',
+				self::STATIC_SERVER
+			);
 
 		return '';
 	}
