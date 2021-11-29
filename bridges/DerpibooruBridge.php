@@ -85,7 +85,7 @@ class DerpibooruBridge extends BridgeAbstract {
 			$postUri = self::URI . $post->id;
 
 			$item['uri'] = $postUri;
-			$item['title'] = $post->id;
+			$item['title'] = $post->name;
 			$item['timestamp'] = strtotime($post->created_at);
 			$item['author'] = $post->uploader;
 			$item['enclosures'] = array($post->view_url);
