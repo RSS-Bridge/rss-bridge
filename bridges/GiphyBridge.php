@@ -1,12 +1,11 @@
 <?php
-define('GIPHY_LIMIT', 10);
 
 class GiphyBridge extends BridgeAbstract {
 
-	const MAINTAINER = 'kraoc';
+	const MAINTAINER = 'dvikan';
 	const NAME = 'Giphy Bridge';
 	const URI = 'https://giphy.com/';
-	const CACHE_TIMEOUT = 300; //5min
+	const CACHE_TIMEOUT = 60 * 60 * 8; // 8h
 	const DESCRIPTION = 'Bridge for giphy.com';
 
 	const PARAMETERS = array( array(
@@ -15,62 +14,53 @@ class GiphyBridge extends BridgeAbstract {
 			'required' => true
 		),
 		'n' => array(
-			'name' => 'max number of returned items',
-			'type' => 'number'
+			'name' => 'max number of returned items (max 50)',
+			'type' => 'number',
+			'exampleValue' => 3,
 		)
 	));
 
-	public function collectData(){
-		$html = '';
-		$base_url = 'http://giphy.com';
-		$html = getSimpleHTMLDOM(self::URI . '/search/' . urlencode($this->getInput('s') . '/'))
-			or returnServerError('No results for this query.');
+	public function collectData() {
+		/**
+		 * This uses a public beta key which has severe rate limiting.
+		 *
+		 * https://giphy.api-docs.io/1.0/welcome/access-and-api-keys
+		 * https://giphy.api-docs.io/1.0/gifs/search-1
+		 */
+		$apiKey = 'dc6zaTOxFJmzC';
+		$limit = min($this->getInput('n') ?: 10, 50);
+		$uri = sprintf(
+			'https://api.giphy.com/v1/gifs/search?q=%s&limit=%s&api_key=%s',
+			rawurlencode($this->getInput('s')),
+			$limit,
+			$apiKey
+		);
 
-		$max = GIPHY_LIMIT;
-		if($this->getInput('n')) {
-			$max = $this->getInput('n');
+		$result = json_decode(getContents($uri))
+			or returnServerError('Unable to fetch and decode json');
+
+		foreach($result->data as $entry) {
+			$createdAt = new \DateTime($entry->import_datetime);
+
+			$this->items[] = array(
+				'id'		=> $entry->id,
+				'uri'		=> $entry->url,
+				'author'	=> $entry->username,
+				'timestamp'	=> $createdAt->format('U'),
+				'title'		=> $entry->title,
+				'content'	=> <<<HTML
+<a href="{$entry->url}">
+<img
+	src="{$entry->images->downsized->url}"
+	width="{$entry->images->downsized->width}"
+	height="{$entry->images->downsized->height}" />
+</a>
+HTML
+			);
 		}
 
-		$limit = 0;
-		$kw = urlencode($this->getInput('s'));
-		foreach($html->find('div.hoverable-gif') as $entry) {
-			if($limit < $max) {
-				$node = $entry->first_child();
-				$href = $node->getAttribute('href');
-
-				$html2 = getSimpleHTMLDOM(self::URI . $href)
-					or returnServerError('No results for this query.');
-				$figure = $html2->getElementByTagName('figure');
-				$img = $figure->firstChild();
-				$caption = $figure->lastChild();
-
-				$item = array();
-				$item['id'] = $img->getAttribute('data-gif_id');
-				$item['uri'] = $img->getAttribute('data-bitly_gif_url');
-				$item['username'] = 'Giphy - ' . ucfirst($kw);
-				$title = $caption->innertext();
-					$title = preg_replace('/\s+/', ' ', $title);
-					$title = str_replace('animated GIF', '', $title);
-					$title = str_replace($kw, '', $title);
-					$title = preg_replace('/\s+/', ' ', $title);
-					$title = trim($title);
-					if(strlen($title) <= 0) {
-						$title = $item['id'];
-					}
-				$item['title'] = trim($title);
-				$item['content'] = '<a href="'
-				. $item['uri']
-				. '"><img src="'
-				. $img->getAttribute('src')
-				. '" width="'
-				. $img->getAttribute('data-original-width')
-				. '" height="'
-				. $img->getAttribute('data-original-height')
-				. '" /></a>';
-
-				$this->items[] = $item;
-				$limit++;
-			}
-		}
+		usort($this->items, function ($a, $b) {
+			return $a['timestamp'] < $b['timestamp'];
+		});
 	}
 }
