@@ -20,12 +20,14 @@ class CVEDetailsBridge extends BridgeAbstract {
 			'name' => 'Vendor ID',
 			'type' => 'number',
 			'required' => true,
+			'exampleValue' => 74, // PHP
 		),
 		// The optional Product ID can be taken from the URL as well
 		'product_id' => array(
 			'name' => 'Product ID',
 			'type' => 'number',
 			'required' => false,
+			'exampleValue' => 128, // PHP
 		),
 	));
 
