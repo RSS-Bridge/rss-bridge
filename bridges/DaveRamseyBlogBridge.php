@@ -9,16 +9,13 @@ class DaveRamseyBlogBridge extends BridgeAbstract {
 
 	public function collectData()
 	{
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Could not request daveramsey.com.');
-
-		foreach ($html->find('.Post') as $element) {
-			$this->items[] = array(
-				'uri' => 'https://www.daveramsey.com' . $element->find('header > a', 0)->href,
-				'title' => $element->find('header > h2 > a', 0)->plaintext,
-				'tags' => $element->find('.Post-topic', 0)->plaintext,
-				'content' => $element->find('.Post-body', 0)->plaintext,
-			);
-		}
+		$this->items[] = array(
+			'uri'		=> 'https://www.ramseysolutions.com/articles',
+			'title' 	=> self::NAME,
+			'content'	=> <<<'CONTENT'
+The blog https://www.daveramsey.com/blog is retired. <br><br>
+See https://www.ramseysolutions.com/articles
+CONTENT
+		);
 	}
 }
