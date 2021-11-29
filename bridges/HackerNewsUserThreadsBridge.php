@@ -30,7 +30,7 @@ class HackerNewsUserThreadsBridge extends BridgeAbstract {
 			$item['uri'] = 'https://news.ycombinator.com/item?id=' . $id;
 
 			$author = $element->find('span[class*="comhead"]', 0)->find('a[class="hnuser"]', 0)->innertext;
-			$newstory = $element->find('span[class*="comhead"]', 0)->find('span[class="storyon"]', 0);
+			$newstory = $element->find('span[class*="comhead"]', 0)->find('span[class="onstory"]', 0);
 			if (count($newstory->find('a')) > 0) {
 				$story = $newstory->find('a', 0)->innertext;
 			}
