@@ -51,7 +51,7 @@ class ReutersBridge extends BridgeAbstract
 						'UK' => 'chan:61leiu7j',
 						'USA News' => 'us',
 						'The Great Reboot' => '/world/the-great-reboot',
-    				'Reuters Next' => '/world/reuters-next'
+						'Reuters Next' => '/world/reuters-next'
 					),
 					'Business' => array(
 						'Business' => 'business',
@@ -94,7 +94,7 @@ class ReutersBridge extends BridgeAbstract
 					'Technology' => array(
 						'Technology' => 'tech',
 						'Disrupted' => '/technology/disrupted',
-    				'Reuters Momentum' => '/technology/reuters-momentum',
+						'Reuters Momentum' => '/technology/reuters-momentum',
 					),
 					'Sports' => array(
 						'Sports' => 'sports',
