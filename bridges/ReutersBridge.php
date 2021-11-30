@@ -428,7 +428,7 @@ EOD;
 						$table .= $tr;
 					}
 					$table .= '</table>';
-					$description = $table;
+					$description .= $table;
 					break;
 				case 'image':
 					$description .= $this->handleImages(array($content));
