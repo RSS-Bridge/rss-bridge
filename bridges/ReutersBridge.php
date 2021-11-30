@@ -38,76 +38,77 @@ class ReutersBridge extends BridgeAbstract
 					'Entertainment' => 'chan:8ym8q8dl',
 					'Politics' => 'politics',
 					'Wire' => 'wire',
+					'Breakingviews' => '/breakingviews',
 					'World' => array(
 						'World' => 'world',
-						'Africa' => "/world/africa",
-						'Americas' => "/world/americas",
-						'Asia-Pacific' => "/world/asia-pacific",
+						'Africa' => '/world/africa',
+						'Americas' => '/world/americas',
+						'Asia-Pacific' => '/world/asia-pacific',
 						'China' => 'china',
-						'europe' => "/world/europe",
-						'India' => "/world/india",
-						'Middle East' => "/world/middle-east",
+						'europe' => '/world/europe',
+						'India' => '/world/india',
+						'Middle East' => '/world/middle-east',
 						'UK' => 'chan:61leiu7j',
 						'USA News' => 'us',
-						'The Great Reboot' => "/world/the-great-reboot",
-    				'Reuters Next' => "/world/reuters-next",
+						'The Great Reboot' => '/world/the-great-reboot',
+    				'Reuters Next' => '/world/reuters-next'
 					),
 					'Business' => array(
 						'Business' => 'business',
 						'Aerospace and Defense' => 'aerospace',
-						'Autos Transportation' => "/business/autos-transportation",
+						'Autos Transportation' => '/business/autos-transportation',
 						'Energy' => 'energy',
-						'Finance' => "/business/finance",
+						'Finance' => '/business/finance',
 						'Health' => 'chan:8hw7807a',
-						'Media Telecom' => "/business/media-telecom",
-						'Retail Consumer' => "/business/retail-consumer",
-						'Sustainable Business' => "/business/sustainable-business",
-						'Change Suite' => "/business/change-suite",
-						'Future of Health' => "/business/future-of-health",
-						'Future of Money' => "/business/future-of-money",
-						'Take Five' => "/business/take-five",
-						'Reuters Impact' => "/business/reuters-impact",
+						'Media Telecom' => '/business/media-telecom',
+						'Retail Consumer' => '/business/retail-consumer',
+						'Sustainable Business' => '/business/sustainable-business',
+						'Change Suite' => '/business/change-suite',
+						'Future of Health' => '/business/future-of-health',
+						'Future of Money' => '/business/future-of-money',
+						'Take Five' => '/business/take-five',
+						'Reuters Impact' => '/business/reuters-impact',
 					),
 					'Legal' => array(
-						'Legal' => "/legal",
-						'Government' => "/legal/government",
-						'Legal Industry' => "/legal/legalindustry",
-						'Litigation' => "/legal/litigation",
-						'Transactional' => "/legal/transactional",
+						'Legal' => '/legal',
+						'Government' => '/legal/government',
+						'Legal Industry' => '/legal/legalindustry',
+						'Litigation' => '/legal/litigation',
+						'Transactional' => '/legal/transactional',
 					),
 					'Markets' => array(
-						'Markets' => "markets",
-						'Asian Markets' => "/markets/asia",
-						'Commodities' => "/markets/commodities",
-						'Currencies' => "/markets/currencies",
-						'Deals' => "/markets/deals",
-						'European Markets' => "/markets/europe",
-						'Funds' => "/markets/funds",
-						'Global Market Data' => "/markets/global-market-data",
-						'Rates & Bonds' => "/markets/rates-bonds",
-						'Stocks' => "/markets/stocks",
-						'U.S Markets' => "/markets/us",
-						'Wealth' => "/markets/wealth",
-						'Macro Matters' => "/markets/macromatters",
+						'Markets' => 'markets',
+						'Asian Markets' => '/markets/asia',
+						'Commodities' => '/markets/commodities',
+						'Currencies' => '/markets/currencies',
+						'Deals' => '/markets/deals',
+						'European Markets' => '/markets/europe',
+						'Funds' => '/markets/fund',
+						'Global Market Data' => '/markets/global-market-data',
+						'Rates & Bonds' => '/markets/rates-bonds',
+						'Stocks' => '/markets/stocks',
+						'U.S Markets' => '/markets/us',
+						'Wealth' => '/markets/wealth',
+						'Macro Matters' => '/markets/macromatters',
 					),
 					'Technology' => array(
 						'Technology' => 'tech',
-						'Disrupted' => "/technology/disrupted",
-    				'Reuters Momentum' => "/technology/reuters-momentum",
+						'Disrupted' => '/technology/disrupted',
+    				'Reuters Momentum' => '/technology/reuters-momentum',
 					),
 					'Sports' => array(
 						'Sports' => 'sports',
-						'Athletics' => "/lifestyle/sports/athletics",
-						'Cricket' => "/lifestyle/sports/cricket",
-						'Cycling' => "/lifestyle/sports/cycling",
-						'Golf' => "/lifestyle/sports/golf",
-						'Motor Sports' => "/lifestyle/sports/motor-sports",
-						'Soccer' => "/lifestyle/sports/soccer",
-						'Tennis' => "/lifestyle/sports/tennis",
+						'Athletics' => '/lifestyle/sports/athletics',
+						'Cricket' => '/lifestyle/sports/cricket',
+						'Cycling' => '/lifestyle/sports/cycling',
+						'Golf' => '/lifestyle/sports/golf',
+						'Motor Sports' => '/lifestyle/sports/motor-sports',
+						'Soccer' => '/lifestyle/sports/soccer',
+						'Tennis' => '/lifestyle/sports/tennis',
 					),
 					'Lifestyle' => array(
 						'Lifestyle' => 'life',
-						'Oddly Enough' => "/lifestyle/oddly-enough",
+						'Oddly Enough' => '/lifestyle/oddly-enough',
 						'Science' => 'science',
 					)
 				)
@@ -116,21 +117,20 @@ class ReutersBridge extends BridgeAbstract
 	);
 
 	const BACKWARD_COMPATIBILITY = array(
-		'world' => "/world",
-		'china' => "/world/china",
-		'chan:61leiu7j' => "/world/uk",
-		'us' => "/world/us",
-		'business' => "/business",
-		'aerospace' => "/business/aerospace-defense",
-		'energy' => "/business/energy",
-		'environment' => "/business/environment",
-		'chan:8hw7807a' => "/business/healthcare-pharmaceuticals",
-		'markets' => "/markets",
-		"/breakingviews",
-		'tech' => "/technology",
-		'sports' => "/lifestyle/sports",
-		'life' => "/lifestyle",
-		'science' => "/lifestyle/science",
+		'world' => '/world',
+		'china' => '/world/china',
+		'chan:61leiu7j' => '/world/uk',
+		'us' => '/world/us',
+		'business' => '/business',
+		'aerospace' => '/business/aerospace-defense',
+		'energy' => '/business/energy',
+		'environment' => '/business/environment',
+		'chan:8hw7807a' => '/business/healthcare-pharmaceuticals',
+		'markets' => '/markets',
+		'tech' => '/technology',
+		'sports' => '/lifestyle/sports',
+		'life' => '/lifestyle',
+		'science' => '/lifestyle/science',
 	);
 
 	const OLD_WIRE_SECTION = array(
@@ -266,7 +266,7 @@ class ReutersBridge extends BridgeAbstract
 		if($this->useWireAPI) {
 			$reuters_wireitems = $rawData['wireitems'];
 			$processedData = $this->processData($reuters_wireitems);
-	
+
 			$first = reset($processedData);
 			$article_content = $first['story']['body_items'];
 			$authorlist = $first['story']['authors'];
@@ -301,7 +301,7 @@ class ReutersBridge extends BridgeAbstract
 
 	private function handleImage($images) {
 		$img_placeholder = '';
-		
+
 		foreach($images as $image) { // Add more image to article.
 			$image_url = $image['url'];
 			$image_caption = $image['caption'];
@@ -428,6 +428,10 @@ EOD;
 						$table .= $tr;
 					}
 					$table .= '</table>';
+					$description = $table;
+					break;
+				case 'image':
+					$description .= $this->handleImages(array($content));
 			}
 		}
 
