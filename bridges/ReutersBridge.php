@@ -431,7 +431,7 @@ EOD;
 					$description .= $table;
 					break;
 				case 'image':
-					$description .= $this->handleImages(array($content));
+					$description .= $this->handleImage(array($content));
 			}
 		}
 
