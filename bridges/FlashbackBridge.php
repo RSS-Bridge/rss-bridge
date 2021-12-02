@@ -101,8 +101,7 @@ class FlashbackBridge extends BridgeAbstract
 			}
 		}
 
-		$html = getSimpleHTMLDOM($page)
-		or returnServerError('Could not request Flashback page.');
+		$html = getSimpleHTMLDOM($page);
 
 		if ($this->getInput('c') || $this->getInput('a')) {
 			$category = $this->getInput('c');
