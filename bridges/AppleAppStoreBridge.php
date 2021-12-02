@@ -35,7 +35,8 @@ class AppleAppStoreBridge extends BridgeAbstract {
 			'values'	=> array(
 				'US'	=> 'US',
 				'India'	=> 'IN',
-				'Canada'	=> 'CA'
+				'Canada' => 'CA',
+				'Germany' => 'DE',
 			),
 			'defaultValue'	=> 'US',
 		),
