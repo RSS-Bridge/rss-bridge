@@ -1,7 +1,7 @@
 <?php
 class FacebookBridge extends BridgeAbstract {
 
-	const MAINTAINER = 'teromene, logmanoriginal';
+	// const MAINTAINER = 'teromene, logmanoriginal';
 	const NAME = 'Facebook Bridge | Main Site';
 	const URI = 'https://www.facebook.com/';
 	const CACHE_TIMEOUT = 1800; // 30min
