@@ -150,6 +150,19 @@ final class Configuration {
 			}
 		}
 
+		foreach (getenv() as $envkey => $value) {
+			// Replace all settings with their respective environment variable if available
+			$keyArray = explode('_', $envkey);
+			if($keyArray[0] === 'RSSBRIDGE') {
+				$header = strtolower($keyArray[1]);
+				$key = strtolower($keyArray[2]);
+				if($value === 'true' || $value === 'false') {
+					$value = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+				}
+				Configuration::$config[$header][$key] = $value;
+			}
+		}
+
 		if(!is_string(self::getConfig('system', 'timezone'))
 		|| !in_array(self::getConfig('system', 'timezone'), timezone_identifiers_list(DateTimeZone::ALL_WITH_BC)))
 			self::reportConfigurationError('system', 'timezone');
