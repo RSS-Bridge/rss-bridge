@@ -57,7 +57,7 @@ class RadioMelodieBridge extends BridgeAbstract {
 
 				// Handle date to timestamp
 				$dateHTML = $article->find('div[class=author]', 0)->children(1)->plaintext;
-				preg_match('/([a-z]{4,10} [0-9]{1,2} [a-z]{4,10} [0-9]{4} à [0-9]{2}:[0-9]{2})/ms', $dateHTML, $matches);
+				preg_match('/([a-z]{4,10}[ ]{1,2}[0-9]{1,2} [\p{L}]{4,10} [0-9]{4} à [0-9]{2}:[0-9]{2})/mus', $dateHTML, $matches);
 				$dateText = $matches[1];
 				$timestamp = $this->parseDate($dateText);
 
@@ -159,7 +159,6 @@ class RadioMelodieBridge extends BridgeAbstract {
 			'july',
 			'august',
 			'september',
-			'november',
 			'october',
 			'november',
 			'december',
