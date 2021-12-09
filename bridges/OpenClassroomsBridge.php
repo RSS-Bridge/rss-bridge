@@ -1,7 +1,7 @@
 <?php
 class OpenClassroomsBridge extends BridgeAbstract {
 
-	const MAINTAINER = 'sebsauvage';
+	//const MAINTAINER = 'sebsauvage';
 	const NAME = 'OpenClassrooms Bridge';
 	const URI = 'https://openclassrooms.com/';
 	const CACHE_TIMEOUT = 21600; // 6h
