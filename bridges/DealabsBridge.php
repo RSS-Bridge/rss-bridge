@@ -1875,8 +1875,7 @@ class DealabsBridge extends PepperBridgeAbstract {
 				'title' => 'Ordre de tri des deals',
 				'values' => array(
 					'Du deal le plus Hot au moins Hot' => '-hot',
-					'Du deal le plus récent au plus ancien' => '',
-					'Du deal le plus commentés au moins commentés' => '-commentes'
+					'Du deal le plus récent au plus ancien' => '-nouveaux',
 				)
 			)
 		)

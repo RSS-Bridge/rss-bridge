@@ -3243,8 +3243,7 @@ class HotUKDealsBridge extends PepperBridgeAbstract {
 				'title' => 'Sort order of deals',
 				'values' => array(
 					'From the most to the least hot deal' => '-hot',
-					'From the most recent deal to the oldest' => '',
-					'From the most commented deal to the least commented deal' => '-discussed'
+					'From the most recent deal to the oldest' => '-new',
 				)
 			)
 		)

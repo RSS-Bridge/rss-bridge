@@ -1991,9 +1991,8 @@ class MydealsBridge extends PepperBridgeAbstract {
 				'type' => 'list',
 				'title' => 'Sortierung der deals',
 				'values' => array(
-					'Vom heißesten zum kältesten Deal' => '',
+					'Vom heißesten zum kältesten Deal' => '-hot',
 					'Vom jüngsten Deal zum ältesten' => '-new',
-					'Vom am meisten kommentierten Deal zum am wenigsten kommentierten Deal' => '-discussed'
 				)
 			)
 		)
