@@ -1874,8 +1874,8 @@ class DealabsBridge extends PepperBridgeAbstract {
 				'type' => 'list',
 				'title' => 'Ordre de tri des deals',
 				'values' => array(
-					'Du deal le plus Hot au moins Hot' => '',
-					'Du deal le plus récent au plus ancien' => '-nouveaux',
+					'Du deal le plus Hot au moins Hot' => '-hot',
+					'Du deal le plus récent au plus ancien' => '',
 					'Du deal le plus commentés au moins commentés' => '-commentes'
 				)
 			)
@@ -2040,20 +2040,16 @@ class PepperBridgeAbstract extends BridgeAbstract {
 		} else {
 			foreach ($list as $deal) {
 				$item = array();
-				$item['uri'] = $deal->find('div[class*=threadGrid-title]', 0)->find('a', 0)->href;
-				$item['title'] = $deal->find('a[class*=' . $selectorLink . ']', 0
-				)->plaintext;
+				$item['uri'] = $this->getDealURI($deal);
+				$item['title'] = $this->GetTitle($deal);
 				$item['author'] = $deal->find('span.thread-username', 0)->plaintext;
+
 				$item['content'] = '<table><tr><td><a href="'
-					. $deal->find(
-						'a[class*=' . $selectorImageLink . ']', 0)->href
+					. $item['uri']
 						. '"><img src="'
 						. $this->getImage($deal)
-						. '"/></td><td><h2><a href="'
-						. $deal->find('a[class*=' . $selectorLink . ']', 0)->href
-						. '">'
-						. $deal->find('a[class*=' . $selectorLink . ']', 0)->innertext
-						. '</a></h2>'
+						. '"/></td><td>'
+						. $this->getHTMLTitle($item)
 						. $this->getPrice($deal)
 						. $this->getDiscount($deal)
 						. $this->getShipsFrom($deal)
@@ -2111,6 +2107,62 @@ class PepperBridgeAbstract extends BridgeAbstract {
 		} else {
 			return '';
 		}
+	}
+
+	/**
+	 * Get the Title from a Deal if it exists
+	 * @return string String of the deal title
+	 */
+	private function getTitle($deal)
+	{
+
+		$titleRoot  = $deal->find('div[class*=threadGrid-title]', 0);
+		$titleA = $titleRoot->find('a[class*=thread-link]', 0);
+		$titleFirstChild = $titleRoot->first_child();
+		if($titleA !== null) {
+			$title = $titleA->plaintext;
+		} else {
+		// Inb ssome case, expired deals have a different format
+			$title = $titleRoot->find('span', 0)->plaintext;
+		}
+
+		return $title;
+
+	}
+
+	/**
+	 * Get the HTML Title code from an item
+	 * @return string String of the deal title
+	 */
+	private function getHTMLTitle($item)
+	{
+		if($item['uri'] == '') {
+			$html = '<h2>' . $item['title'] . '</h2>';
+		} else {
+			$html = '<h2><a href="' . $item['uri'] . '">'
+				. $item['title'] . '</a></h2>';
+		}
+
+		return $html;
+
+	}
+
+	/**
+	 * Get the URI from a Deal if it exists
+	 * @return string String of the deal URI
+	 */
+	private function getDealURI($deal)
+	{
+
+		$uriA = $deal->find('div[class*=threadGrid-title]', 0)->find('a[class*=thread-link]', 0);
+		if($uriA === null) {
+			$uri = '';
+		} else 	{
+			$uri = $uriA->href;
+		}
+
+		return $uri;
+
 	}
 
 	/**
