@@ -28,9 +28,9 @@ class ASRockNewsBridge extends BridgeAbstract {
 			$contents = $articlePageHtml->find('div.Contents', 0);
 
 			$item['uri'] = $articlePath;
-			$item['title'] = $contents->find('h5', 0)->innertext;
+			$item['title'] = $contents->find('h3', 0)->innertext;
 
-			$contents->find('h5', 0)->outertext = '';
+			$contents->find('h3', 0)->outertext = '';
 
 			$item['content'] = $contents->innertext;
 			$item['timestamp'] = $this->extractDate($a->plaintext);
