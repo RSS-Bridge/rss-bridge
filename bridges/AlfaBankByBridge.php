@@ -5,7 +5,7 @@ class AlfaBankByBridge extends BridgeAbstract {
 	const NAME = 'AlfaBank.by Новости';
 	const URI = 'https://www.alfabank.by';
 	const DESCRIPTION = 'Уведомления Alfa-Now — новости от Альфа-Банка';
-	const CACHE_TIMEOUT = 0;
+	const CACHE_TIMEOUT = 3600; // 1 hour
 	const PARAMETERS = array(
 		'News' => array(
 			'business' => array(
