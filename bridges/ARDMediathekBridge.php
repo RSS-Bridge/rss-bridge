@@ -60,10 +60,10 @@ class ARDMediathekBridge extends BridgeAbstract {
 		if (count($pathComponents) < 2) {
 			$showID = $pathComponents[0];
 		} else {
-			$lastKey = array_key_last($pathComponents);
+			$lastKey = count($pathComponents) - 1;
 			$showID = $pathComponents[$lastKey];
 			if (strlen($showID) === 0) {
-				$showID = $pathComponents[$lastKey-1];
+				$showID = $pathComponents[$lastKey - 1];
 			}
 		}
 
