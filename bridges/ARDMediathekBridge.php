@@ -42,10 +42,10 @@ class ARDMediathekBridge extends BridgeAbstract {
 	const PARAMETERS = array(
 		array(
 			'path' => array(
-				'name' => 'Path',
+				'name' => 'Show Link or ID',
 				'required' => true,
-				'title' => 'Enter without trailing slash',
-				'defaultValue' => '45-min/Y3JpZDovL25kci5kZS8xMzkx'
+				'title' => 'Link to the show page or just its alphanumeric suffix',
+				'defaultValue' => 'https://www.ardmediathek.de/sendung/45-min/Y3JpZDovL25kci5kZS8xMzkx/'
 			)
 		)
 	);
