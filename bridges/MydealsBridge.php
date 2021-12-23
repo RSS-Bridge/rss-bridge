@@ -2007,7 +2007,6 @@ class MydealsBridge extends PepperBridgeAbstract {
 			'only_with_url' => array(
 				'name' => 'Kommentare ohne URL ausschließen',
 				'type' => 'checkbox',
-				'required' => true,
 				'title' => 'Kommentare, die keine URL enthalten, im Feed ausschließen',
 				'defaultValue' => false,
 				)

@@ -1891,7 +1891,6 @@ class DealabsBridge extends PepperBridgeAbstract {
 			'only_with_url' => array(
 				'name' => 'Exclure les commentaires sans URL',
 				'type' => 'checkbox',
-				'required' => true,
 				'title' => 'Exclure les commentaires ne contenant pas d\'URL dans le flux',
 				'defaultValue' => false,
 				)

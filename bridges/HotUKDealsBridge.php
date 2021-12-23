@@ -3258,7 +3258,6 @@ class HotUKDealsBridge extends PepperBridgeAbstract {
 			'only_with_url' => array(
 				'name' => 'Exclude comments without URL',
 				'type' => 'checkbox',
-				'required' => true,
 				'title' => 'Exclude comments that does not contains URL in the feed',
 				'defaultValue' => false,
 				)
