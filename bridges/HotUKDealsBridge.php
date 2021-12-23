@@ -3246,7 +3246,25 @@ class HotUKDealsBridge extends PepperBridgeAbstract {
 					'From the most recent deal to the oldest' => '-new',
 				)
 			)
-		)
+		),
+		'Discussion Monitoring' => array(
+			'url' => array(
+				'name' => 'Discussion URL',
+				'type' => 'text',
+				'required' => true,
+				'title' => 'Discussion URL to monitor. Ex: https://www.hotukdeals.com/discussions/the-hukd-lego-thread-3599357',
+				'exampleValue' => 'https://www.hotukdeals.com/discussions/the-hukd-lego-thread-3599357',
+				),
+			'only_with_url' => array(
+				'name' => 'Exclude comments without URL',
+				'type' => 'checkbox',
+				'required' => true,
+				'title' => 'Exclude comments that does not contains URL in the feed',
+				'defaultValue' => false,
+				)
+			)
+
+
 	);
 
 	public $lang = array(
@@ -3254,8 +3272,10 @@ class HotUKDealsBridge extends PepperBridgeAbstract {
 		'bridge-name' => SELF::NAME,
 		'context-keyword' => 'Search by keyword(s))',
 		'context-group' => 'Deals per group',
+		'context-talk' => 'Discussion Monitoring',
 		'uri-group' => 'tag/',
 		'request-error' => 'Could not request HotUKDeals',
+		'thread-error' => 'Unable to determine the thread ID. Check the URL you entered',
 		'no-results' => 'Ooops, looks like we could',
 		'relative-date-indicator' => array(
 			'ago',
@@ -3266,6 +3286,7 @@ class HotUKDealsBridge extends PepperBridgeAbstract {
 		'discount' => 'Discount',
 		'title-keyword' => 'Search',
 		'title-group' => 'Group',
+		'title-talk' => 'Discussion Monitoring',
 		'local-months' => array(
 			'Jan',
 			'Feb',

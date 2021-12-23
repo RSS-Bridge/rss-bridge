@@ -1878,7 +1878,27 @@ class DealabsBridge extends PepperBridgeAbstract {
 					'Du deal le plus récent au plus ancien' => '-nouveaux',
 				)
 			)
-		)
+		),
+		'Surveillance Discussion' => array(
+			'url' => array(
+				'name' => 'URL de la discussion',
+				'type' => 'text',
+				'required' => true,
+				'title' => 'URL discussion à surveiller: https://www.dealabs.com/discussions/titre-1234',
+				'exampleValue' => 'https://www.dealabs.com/discussions/titre-1234',
+				),
+
+			'only_with_url' => array(
+				'name' => 'Exclure les commentaires sans URL',
+				'type' => 'checkbox',
+				'required' => true,
+				'title' => 'Exclure les commentaires ne contenant pas d\'URL dans le flux',
+				'defaultValue' => false,
+				)
+
+
+			)
+
 	);
 
 	public $lang = array(
@@ -1886,8 +1906,10 @@ class DealabsBridge extends PepperBridgeAbstract {
 		'bridge-name' => SELF::NAME,
 		'context-keyword' => 'Recherche par Mot(s) clé(s)',
 		'context-group' => 'Deals par groupe',
+		'context-talk' => 'Surveillance Discussion',
 		'uri-group' => 'groupe/',
-		'request-error' => 'Could not request Dealabs',
+		'request-error' => 'Impossible de joindre Dealabs',
+		'thread-error' => 'Impossible de déterminer l\'ID de la discussion. Vérifiez l\'URL que vous avez entré',
 		'no-results' => 'Il n&#039;y a rien à afficher pour le moment :(',
 		'relative-date-indicator' => array(
 			'il y a',
@@ -1898,6 +1920,7 @@ class DealabsBridge extends PepperBridgeAbstract {
 		'discount' => 'Réduction',
 		'title-keyword' => 'Recherche',
 		'title-group' => 'Groupe',
+		'title-talk' => 'Surveillance Discussion',
 		'local-months' => array(
 			'janvier',
 			'février',
@@ -1952,6 +1975,9 @@ class PepperBridgeAbstract extends BridgeAbstract {
 			break;
 		case $this->i8n('context-group'):
 			return $this->collectDataGroup();
+			break;
+		case $this->i8n('context-talk'):
+			return $this->collectDataTalk();
 			break;
 		}
 	}
@@ -2077,6 +2103,128 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	}
 
 	/**
+	 * Get the Talk lastest comments
+	 */
+	protected function collectDataTalk(){
+		$threadURL = $this->getInput('url');
+		$onlyWithUrl = $this->getInput('only_with_url');
+
+		// Get Thread ID from url passed in parameter
+		$threadSearch = preg_match('/-([0-9]{1,20})$/', $threadURL, $matches);
+
+		// Show an error message if we can't find the thread ID in the URL sent by the user
+		if($threadSearch !== 1) {
+			returnClientError($this->i8n('thread-error'));
+		}
+		$threadID = $matches[1];
+
+		$url = $this->i8n('bridge-uri') . 'graphql';
+
+		// Get Cookies header to do the query
+		$cookies = $this->getCookies($url);
+
+		// Construct the GraphQL query string
+		$graphqlArray = array(
+			'query comments($filter:CommentFilter!,$limit:Int,$page:Int){comments(filter:$filter,limit:$li',
+			'mit,page:$page){items{...commentFields}pagination{...paginationFields}}}fragment commentField',
+			's on Comment{commentId threadId url preparedHtmlContent user{...userMediumAvatarFields...user',
+			'NameFields...userPersonaFields bestBadge{...badgeFields}}reactionCounts{type count}deletable ',
+			'currentUserReaction{type}reported reportable source status createdAt updatedAt ignored popula',
+			'r deletedBy{username}notes{content createdAt user{username}}lastEdit{reason timeAgo userId}}f',
+			'ragment userMediumAvatarFields on User{userId isDeletedOrPendingDeletion imageUrls(slot:"defa',
+			'ult",variations:["user_small_avatar"])}fragment userNameFields on User{userId username isUser',
+			'ProfileHidden isDeletedOrPendingDeletion}fragment userPersonaFields on User{persona{type text',
+			'}}fragment badgeFields on Badge{badgeId level{...badgeLevelFields}}fragment badgeLevelFields ',
+			'on BadgeLevel{key name description}fragment paginationFields on Pagination{count current last',
+			' next previous size order}'
+		);
+		$graphqlString = implode('', $graphqlArray);
+
+		// Construct the JSON object to send to the Website
+		$queryArray = array (
+			'query' => $graphqlString,
+			'variables' => array (
+				'filter' => array (
+					'threadId' => array (
+						'eq' => $threadID,
+						),
+					'order' => array (
+						'direction' => 'Descending',
+						),
+
+					),
+				'page' => 1,
+				),
+			);
+		$queryJSON = json_encode($queryArray);
+
+		// HTTP headers
+		$header = array(
+				'Content-Type: application/json',
+				'Accept: application/json, text/plain, */*',
+				'X-Pepper-Txn: threads.show',
+				'X-Request-Type: application/vnd.pepper.v1+json',
+				'X-Requested-With: XMLHttpRequest',
+				$cookies,
+			);
+		// CURL Options
+		$opts = array(
+				CURLOPT_POST => 1,
+				CURLOPT_POSTFIELDS => $queryJSON
+				);
+		$json = getContents($url, $header, $opts)
+			or returnServerError($this->i8n('request-error'));
+		$objects = json_decode($json);
+		foreach($objects->data->comments->items as $comment) {
+			$item = array();
+			$item['uri'] = $comment->url;
+			$item['title'] = $comment->user->username . ' - ' . $comment->createdAt;
+			$item['author'] = $comment->user->username;
+			$item['content'] = $comment->preparedHtmlContent;
+			$item['uid'] = $comment->commentId;
+			// Timestamp handling needs a new parsing function
+			if($onlyWithUrl == true) {
+				// Count Links and Quote Links
+				$content = str_get_html($item['content']);
+				$countLinks = count($content->find('a[href]'));
+				$countQuoteLinks = count($content->find('a[href][class=userHtml-quote-source]'));
+				// Only add element if there are Links ans more links tant Quote links
+				if($countLinks > 0 && $countLinks > $countQuoteLinks) {
+					$this->items[] = $item;
+				}
+			} else {
+				$this->items[] = $item;
+			}
+		}
+	}
+
+	/**
+	 * Extract the cookies obtained from the URL
+	 * @return array the array containing the cookies set by the URL
+	 */
+	private function getCookies($url)
+	{
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		// get headers too with this line
+		curl_setopt($ch, CURLOPT_HEADER, 1);
+		$result = curl_exec($ch);
+		// get cookie
+		// multi-cookie variant contributed by @Combuster in comments
+		preg_match_all('/^Set-Cookie:\s*([^;]*)/mi', $result, $matches);
+		$cookies = array();
+		foreach($matches[1] as $item) {
+			parse_str($item, $cookie);
+			$cookies = array_merge($cookies, $cookie);
+		}
+		$header = 'Cookie: ';
+		foreach($cookies as $name => $content) {
+			$header .= $name . '=' . $content . '; ';
+		}
+		return $header;
+	}
+
+	/**
 	 * Check if the string $str contains any of the string of the array $arr
 	 * @return boolean true if the string matched anything otherwise false
 	 */
@@ -2115,7 +2263,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	private function getTitle($deal)
 	{
 
-		$titleRoot  = $deal->find('div[class*=threadGrid-title]', 0);
+		$titleRoot = $deal->find('div[class*=threadGrid-title]', 0);
 		$titleA = $titleRoot->find('a[class*=thread-link]', 0);
 		$titleFirstChild = $titleRoot->first_child();
 		if($titleA !== null) {
@@ -2125,6 +2273,18 @@ class PepperBridgeAbstract extends BridgeAbstract {
 			$title = $titleRoot->find('span', 0)->plaintext;
 		}
 
+		return $title;
+
+	}
+
+	/**
+	 * Get the Title from a Talk if it exists
+	 * @return string String of the Talk title
+	 */
+	private function getTalkTitle()
+	{
+		$html = getSimpleHTMLDOMCached($this->getInput('url'));
+		$title = $html->find('h1[class=thread-title]', 0)->plaintext;
 		return $title;
 
 	}
@@ -2394,13 +2554,16 @@ class PepperBridgeAbstract extends BridgeAbstract {
 				$group = array_search($this->getInput('group'), $values);
 				return $this->i8n('bridge-name') . ' - ' . $this->i8n('title-group') . ' : ' . $group;
 				break;
+			case $this->i8n('context-talk'):
+				return $this->i8n('bridge-name') . ' - ' . $this->i8n('title-talk') . ' : ' . $this->getTalkTitle();
+				break;
 			default: // Return default value
 				return static::NAME;
 		}
 	}
 
 	/**
-	 * Returns the RSS Feed title according to the parameters
+	 * Returns the RSS Feed URI according to the parameters
 	 * @return string the RSS feed Title
 	 */
 	public function getURI(){
@@ -2410,6 +2573,9 @@ class PepperBridgeAbstract extends BridgeAbstract {
 				break;
 			case $this->i8n('context-group'):
 				return $this->getGroupURI();
+				break;
+			case $this->i8n('context-talk'):
+				return $this->getTalkURI();
 				break;
 			default: // Return default value
 				return static::URI;
@@ -2425,7 +2591,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 		$hide_expired = $this->getInput('hide_expired');
 		$hide_local = $this->getInput('hide_local');
 		$priceFrom = $this->getInput('priceFrom');
-		$priceTo = $this->getInput('priceFrom');
+		$priceTo = $this->getInput('priceTo');
 		$url = $this->i8n('bridge-uri')
 			. 'search/advanced?q='
 			. urlencode($q)
@@ -2452,6 +2618,15 @@ class PepperBridgeAbstract extends BridgeAbstract {
 
 		$url = $this->i8n('bridge-uri')
 			. $this->i8n('uri-group') . $group . $order;
+		return $url;
+	}
+
+	/**
+	 * Returns the RSS Feed URI for a Talk Feed
+	 * @return string the RSS feed URI
+	 */
+	private function getTalkURI(){
+		$url = $this->getInput('url');
 		return $url;
 	}
 
