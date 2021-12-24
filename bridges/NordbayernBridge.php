@@ -97,10 +97,11 @@ class NordbayernBridge extends BridgeAbstract {
 			// the first immage will be the portrait of the author
 			// and not the article banner. The banner in this
 			// case will be the second image.
-			if ($article->find('div[class=authorinfo]', 0) == null) {
-				$bannerUrl = $images[0];
+			// Also skip first image, as its always NN logo.
+			if ($article->find('a[id="openAuthor"]', 0) == null) {
+				$bannerUrl = isset($images[1]) ? $images[1] : null;
 			} else {
-				$bannerUrl = $images[1];
+				$bannerUrl = isset($images[2]) ? $images[2] : null;
 			}
 
 			$item['content'] .= '<img src="' . $bannerUrl . '">';
@@ -116,7 +117,7 @@ class NordbayernBridge extends BridgeAbstract {
 			$item['content'] .= self::getUseFullContent($content);
 		}
 
-		for($i = 0; $i < count($images); $i++) {
+		for($i = 1; $i < count($images); $i++) {
 			$item['content'] .= '<img src="' . $images[$i] . '">';
 		}
 
