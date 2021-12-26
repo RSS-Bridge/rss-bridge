@@ -45,8 +45,7 @@ class AutoJMBridge extends BridgeAbstract {
 		);
 
 		// Get the JSON content of the form
-		$json = getContents($search_url, $header)
-			or returnServerError('Could not request AutoJM.');
+		$json = getContents($search_url, $header);
 
 		// Extract the HTML content from the JSON result
 		$data = json_decode($json);
@@ -129,8 +128,7 @@ class AutoJMBridge extends BridgeAbstract {
 		$search_url = self::URI . $search_data . '&open=energy&onlyFilters=false';
 
 		// Get the HTML content of the page
-		$html = getSimpleHTMLDOMCached($search_url)
-			or returnServerError('Could not request AutoJM.');
+		$html = getSimpleHTMLDOMCached($search_url);
 
 		return $html;
 	}
