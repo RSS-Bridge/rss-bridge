@@ -546,8 +546,16 @@ EOD;
 		if($guestTokenUses === null || !is_array($guestTokenUses) || count($guestTokenUses) != 2
 		|| $guestTokenUses[0] <= 0 || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
 			$guestToken = $this->getGuestToken();
-			$gt_cache->saveData(array(self::GUEST_TOKEN_USES, $guestToken));
-			$r_cache->saveData(time());
+			if ($guestToken === null) {
+				if($guestTokenUses === null) {
+					returnServerError('Could not parse guest token');
+				} else {
+					$guestToken = $guestTokenUses[1];
+				}
+			} else {
+				$gt_cache->saveData(array(self::GUEST_TOKEN_USES, $guestToken));
+				$r_cache->saveData(time());
+			}
 		} else {
 			$guestTokenUses[0] -= 1;
 			$gt_cache->saveData($guestTokenUses);
