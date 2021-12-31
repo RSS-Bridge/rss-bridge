@@ -575,7 +575,7 @@ EOD;
 		preg_match_all($guestTokenRegex, $pageContent['header'], $guestTokenMatches, PREG_SET_ORDER, 0);
 		if (!$guestTokenMatches)
 				preg_match_all($guestTokenRegex, $pageContent['content'], $guestTokenMatches, PREG_SET_ORDER, 0);
-		if (!$guestTokenMatches) returnServerError('Could not parse guest token');
+		if (!$guestTokenMatches) return null;
 		$guestToken = $guestTokenMatches[0][1];
 		return $guestToken;
 	}
