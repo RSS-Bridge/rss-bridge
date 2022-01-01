@@ -25,10 +25,12 @@ class OpenwhydBridge extends BridgeAbstract {
 		if(strlen(preg_replace('/[^0-9a-f]/', '', $this->getInput('u'))) == 24) {
 			// is input the userid ?
 			$html = getSimpleHTMLDOM(
-				self::URI . '/u/' . preg_replace('/[^0-9a-f]/', '', $this->getInput('u'));
+				self::URI . '/u/' . preg_replace('/[^0-9a-f]/', '', $this->getInput('u'))
+			);
 		} else { // input may be the username
 			$html = getSimpleHTMLDOM(
-				self::URI . '/search?q=' . urlencode($this->getInput('u'));
+				self::URI . '/search?q=' . urlencode($this->getInput('u'))
+			);
 
 			for($j = 0; $j < 5; $j++) {
 				if(strtolower($html->find('div.user', $j)->find('a', 0)->plaintext) == strtolower($this->getInput('u'))) {
