@@ -35,7 +35,8 @@ class OpenwhydBridge extends BridgeAbstract {
 			for($j = 0; $j < 5; $j++) {
 				if(strtolower($html->find('div.user', $j)->find('a', 0)->plaintext) == strtolower($this->getInput('u'))) {
 					$html = getSimpleHTMLDOM(
-						self::URI . $html->find('div.user', $j)->find('a', 0)->getAttribute('href');
+						self::URI . $html->find('div.user', $j)->find('a', 0)->getAttribute('href')
+					);
 					break;
 				}
 			}
