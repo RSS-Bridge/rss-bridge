@@ -1,0 +1,27 @@
+{
+	"server": {
+		"HTTPS": "on",
+		"HTTP_HOST": "example.com",
+		"REQUEST_URI": "/feed"
+	},
+	"meta": {
+		"name": "Sample feed with cases from https://github.com/RSS-Bridge/rss-bridge/issues/2381",
+		"uri": "",
+		"icon": ""
+	},
+	"items": [
+		{
+			"uri": "http://example.com/blog/test-entry",
+			"content": "Test category with amp",
+			"categories": ["foo&bar"]
+		},{
+			"uri": "http://example.com/blog/test-entry",
+			"content": "Test category with tags",
+			"categories": ["foo<script>alert('hi')</script>"]
+		},{
+			"uri": "http://example.com/blog/test-entry",
+			"content": "Test category with double quotex",
+			"categories": ["foo \" bar"]
+		}
+	]
+}
