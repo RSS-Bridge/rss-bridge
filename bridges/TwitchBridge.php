@@ -213,8 +213,7 @@ EOD;
 		Debug::log("Sending GraphQL variables:\n"
 			. json_encode($variables, JSON_PRETTY_PRINT));
 
-		$response = json_decode(getContents(self::API_ENDPOINT, $header, $opts))
-			or returnServerError('API request to "' . self::API_ENDPOINT . '" failed.');
+		$response = json_decode(getContents(self::API_ENDPOINT, $header, $opts));
 
 		Debug::log("Got GraphQL response:\n"
 			. json_encode($response, JSON_PRETTY_PRINT));

@@ -8,8 +8,7 @@ class HentaiHavenBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns releases from Hentai Haven';
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Could not request Hentai Haven.');
+		$html = getSimpleHTMLDOM(self::URI);
 
 		foreach($html->find('div.zoe-grid') as $element) {
 			$item = array();

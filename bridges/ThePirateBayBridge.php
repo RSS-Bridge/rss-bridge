@@ -57,7 +57,7 @@ class ThePirateBayBridge extends BridgeAbstract {
 						'search/' .
 						rawurlencode($keywords) .
 						'/0/3/0'
-					) or returnServerError('Could not request TPB.');
+					);
 				} else {
 					$html = getSimpleHTMLDOM(
 						self::URI .
@@ -65,7 +65,7 @@ class ThePirateBayBridge extends BridgeAbstract {
 						rawurlencode($keywords) .
 						'/0/3/' .
 						rawurlencode($catNum)
-						) or returnServerError('Could not request TPB.');
+						);
 				}
 				break;
 			case 'cat':
@@ -74,7 +74,7 @@ class ThePirateBayBridge extends BridgeAbstract {
 					'browse/' .
 					rawurlencode($keywords) .
 					'/0/3/0'
-				) or returnServerError('Could not request TPB.');
+				);
 				break;
 			case 'usr':
 				$html = getSimpleHTMLDOM(
@@ -82,7 +82,7 @@ class ThePirateBayBridge extends BridgeAbstract {
 					'user/' .
 					rawurlencode($keywords) .
 					'/0/3/0'
-				) or returnServerError('Could not request TPB.');
+				);
 				break;
 			}
 

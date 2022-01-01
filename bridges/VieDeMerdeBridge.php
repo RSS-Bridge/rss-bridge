@@ -22,8 +22,7 @@ class VieDeMerdeBridge extends BridgeAbstract {
 			$limit = 20;
 		}
 
-		$html = getSimpleHTMLDOM(self::URI, array())
-			or returnServerError('Could not request VieDeMerde.');
+		$html = getSimpleHTMLDOM(self::URI, array());
 
 		$quotes = $html->find('article.article-panel');
 		if(sizeof($quotes) === 0) {

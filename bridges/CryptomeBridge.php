@@ -17,8 +17,7 @@ class CryptomeBridge extends BridgeAbstract {
 	));
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Could not request Cryptome.');
+		$html = getSimpleHTMLDOM(self::URI);
 
 		$number = $this->getInput('n');
 

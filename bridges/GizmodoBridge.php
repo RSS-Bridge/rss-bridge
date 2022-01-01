@@ -10,8 +10,7 @@ class GizmodoBridge extends FeedExpander {
 	protected function parseItem($item) {
 		$item = parent::parseItem($item);
 
-		$html = getSimpleHTMLDOMCached($item['uri'])
-			or returnServerError('Could not request: ' . $item['uri']);
+		$html = getSimpleHTMLDOMCached($item['uri']);
 
 		$html = defaultLinkTo($html, $this->getURI());
 		$this->stripTags($html);

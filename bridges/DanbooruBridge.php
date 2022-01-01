@@ -57,8 +57,7 @@ class DanbooruBridge extends BridgeAbstract {
 	}
 
 	public function collectData(){
-		$content = getContents($this->getFullURI())
-			or returnServerError('Could not request ' . $this->getName());
+		$content = getContents($this->getFullURI());
 
 		$html = Fix_Simple_Html_Dom::str_get_html($content);
 

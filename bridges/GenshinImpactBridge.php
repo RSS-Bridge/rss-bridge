@@ -27,15 +27,13 @@ class GenshinImpactBridge extends BridgeAbstract {
 
 		$url = 'https://genshin.mihoyo.com/content/yuanshen/getContentList';
 		$url = $url . '?pageSize=3&pageNum=1&channelId=' . $category;
-		$api_response = getContents($url)
-			or returnServerError('Error while downloading the website content');
+		$api_response = getContents($url);
 		$json_list = json_decode($api_response, true);
 
 		foreach($json_list['data']['list'] as $json_item) {
 			$article_url = 'https://genshin.mihoyo.com/content/yuanshen/getContent';
 			$article_url = $article_url . '?contentId=' . $json_item['contentId'];
-			$article_res = getContents($article_url)
-				or returnServerError('Error while downloading the website content');
+			$article_res = getContents($article_url);
 			$article_json = json_decode($article_res, true);
 			$article_time = $article_json['data']['start_time'];
 			$timezone = 'Asia/Shanghai';

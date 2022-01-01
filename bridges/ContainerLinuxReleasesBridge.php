@@ -26,8 +26,7 @@ class ContainerLinuxReleasesBridge extends BridgeAbstract {
 	);
 
 	private function getReleaseFeed($jsonUrl) {
-		$json = getContents($jsonUrl)
-			or returnServerError('Could not request Core OS Website.');
+		$json = getContents($jsonUrl);
 		return json_decode($json, true);
 	}
 

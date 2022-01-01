@@ -9,8 +9,7 @@ class DaveRamseyBlogBridge extends BridgeAbstract {
 
 	public function collectData()
 	{
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Could not request daveramsey.com.');
+		$html = getSimpleHTMLDOM(self::URI);
 
 		foreach ($html->find('.Post') as $element) {
 			$this->items[] = array(

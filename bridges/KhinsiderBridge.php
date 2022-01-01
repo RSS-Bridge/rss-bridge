@@ -10,7 +10,7 @@ class KhinsiderBridge extends BridgeAbstract
 
 	public function collectData()
 	{
-		$html = getSimpleHTMLDOM(self::URI) or returnServerError('Could not request Khinsider.');
+		$html = getSimpleHTMLDOM(self::URI);
 
 		$dates = $html->find('#EchoTopic h3');
 		foreach ($dates as $date) {

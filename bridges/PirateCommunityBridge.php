@@ -50,8 +50,7 @@ class PirateCommunityBridge extends BridgeAbstract {
 	}
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not retrieve topic page at ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$this->feedName = $html->find('head title', 0)->plaintext;
 

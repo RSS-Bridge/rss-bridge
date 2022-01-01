@@ -15,20 +15,17 @@ class ComicsKingdomBridge extends BridgeAbstract {
 	));
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM($this->getURI(), array(), array(), true, false)
-			or returnServerError('Could not request Comics Kingdom: ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI(), array(), array(), true, false);
 
 		// Get author from first page
-		$author = $html->find('div.author p', 0)->plaintext
-			or returnServerError('Comics Kingdom comic does not exist: ' . $this->getURI());;
+		$author = $html->find('div.author p', 0);;
 
 		// Get current date/link
 		$link = $html->find('meta[property=og:url]', 0)->content;
 		for($i = 0; $i < 5; $i++) {
 			$item = array();
 
-			$page = getSimpleHTMLDOM($link)
-				or returnServerError('Could not request Comics Kingdom: ' . $link);
+			$page = getSimpleHTMLDOM($link);
 
 			$imagelink = $page->find('meta[property=og:image]', 0)->content;
 			$prevSlug = $page->find('slider-arrow[:is-left-arrow=true]', 0);

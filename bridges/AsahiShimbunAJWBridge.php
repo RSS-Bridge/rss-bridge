@@ -36,8 +36,7 @@ class AsahiShimbunAJWBridge extends BridgeAbstract {
 	}
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM($this->getSectionURI($this->getInput('section')))
-			or returnServerError('Could not load content');
+		$html = getSimpleHTMLDOM($this->getSectionURI($this->getInput('section')));
 
 		foreach($html->find('#MainInner li a') as $element) {
 			if ($element->parent()->class == 'HeadlineTopImage-S') {

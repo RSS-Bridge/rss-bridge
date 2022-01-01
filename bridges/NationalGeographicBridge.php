@@ -252,8 +252,7 @@ EOD;
 	}
 
 	private function getFullArticle($uri) {
-		$html = getContents($uri)
-			or returnServerError('Could not load ' . $uri);
+		$html = getContents($uri);
 
 		$scriptRegex = '/window\[\'__natgeo__\'\]=(.*);<\/script>/';
 

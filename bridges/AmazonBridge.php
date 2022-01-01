@@ -61,8 +61,7 @@ class AmazonBridge extends BridgeAbstract {
 		$uri = 'https://www.amazon.' . $this->getInput('tld') . '/';
 		$uri .= 's/?field-keywords=' . urlencode($this->getInput('q')) . '&sort=' . $this->getInput('sort');
 
-		$html = getSimpleHTMLDOM($uri)
-			or returnServerError('Could not request Amazon.');
+		$html = getSimpleHTMLDOM($uri);
 
 		foreach($html->find('li.s-result-item') as $element) {
 

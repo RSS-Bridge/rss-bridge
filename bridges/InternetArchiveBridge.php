@@ -65,8 +65,7 @@ class InternetArchiveBridge extends BridgeAbstract {
 
 	public function collectData() {
 
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request: ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$html = defaultLinkTo($html, $this->getURI());
 
@@ -277,8 +276,7 @@ EOD;
 
 			$postDate = $tr->find('td', 4)->children(0)->plaintext;
 
-			$postPageHtml = getSimpleHTMLDOMCached($item['uri'], 3600)
-				or returnServerError('Could not request: ' . $item['uri']);
+			$postPageHtml = getSimpleHTMLDOMCached($item['uri'], 3600);
 
 			$postPageHtml = defaultLinkTo($postPageHtml, $this->getURI());
 

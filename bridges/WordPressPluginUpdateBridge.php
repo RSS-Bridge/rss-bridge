@@ -21,8 +21,7 @@ class WordPressPluginUpdateBridge extends BridgeAbstract {
 		$request = str_replace('/', '', $this->getInput('pluginUrl'));
 		$page = self::URI . $request . '/changelog/';
 
-		$html = getSimpleHTMLDOM($page)
-			or returnServerError('No results for this query.');
+		$html = getSimpleHTMLDOM($page);
 
 		$content = $html->find('.block-content', 0);
 

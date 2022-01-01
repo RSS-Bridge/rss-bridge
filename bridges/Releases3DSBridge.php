@@ -13,8 +13,7 @@ class Releases3DSBridge extends BridgeAbstract {
 
 	protected function collectDataUrl($dataUrl){
 
-		$xml = getContents($dataUrl)
-			or returnServerError('Could not request URL: ' . $dataUrl);
+		$xml = getContents($dataUrl);
 		$limit = 0;
 
 		foreach(array_reverse(explode('<release>', $xml)) as $element) {

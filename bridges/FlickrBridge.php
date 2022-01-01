@@ -83,21 +83,18 @@ class FlickrBridge extends BridgeAbstract {
 
 		case 'Explore':
 			$filter = 'photo-lite-models';
-			$html = getSimpleHTMLDOM($this->getURI())
-				or returnServerError('Could not request Flickr.');
+			$html = getSimpleHTMLDOM($this->getURI());
 			break;
 
 		case 'By keyword':
 			$filter = 'photo-lite-models';
-			$html = getSimpleHTMLDOM($this->getURI())
-				or returnServerError('No results for this query.');
+			$html = getSimpleHTMLDOM($this->getURI());
 			break;
 
 		case 'By username':
 			//$filter = 'photo-models';
 			$filter = 'photo-lite-models';
-			$html = getSimpleHTMLDOM($this->getURI())
-				or returnServerError('Requested username can\'t be found.');
+			$html = getSimpleHTMLDOM($this->getURI());
 
 				$this->username = $this->getInput('u');
 

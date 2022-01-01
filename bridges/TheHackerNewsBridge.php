@@ -8,8 +8,7 @@ class TheHackerNewsBridge extends BridgeAbstract {
 
 	public function collectData(){
 
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request TheHackerNews: ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 		$limit = 0;
 
 		foreach($html->find('div.body-post') as $element) {

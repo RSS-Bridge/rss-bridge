@@ -20,11 +20,9 @@ class SupInfoBridge extends BridgeAbstract {
 	public function collectData() {
 
 		if(empty($this->getInput('tag'))) {
-			$html = getSimpleHTMLDOM(self::URI . '/articles/')
-				or returnServerError('Unable to fetch articles !');
+			$html = getSimpleHTMLDOM(self::URI . '/articles/');
 		} else {
-			$html = getSimpleHTMLDOM(self::URI . '/articles/tag/' . $this->getInput('tag'))
-				or returnServerError('Unable to fetch articles !');
+			$html = getSimpleHTMLDOM(self::URI . '/articles/tag/' . $this->getInput('tag'));
 		}
 		$content = $html->find('#latest', 0)->find('ul[class=courseContent]', 0);
 
@@ -37,8 +35,7 @@ class SupInfoBridge extends BridgeAbstract {
 
 	private function fetchArticle($link) {
 
-		$articleHTML = getSimpleHTMLDOM(self::URI . $link)
-			or returnServerError('Unable to fetch article !');
+		$articleHTML = getSimpleHTMLDOM(self::URI . $link);
 
 		$article = $articleHTML->find('div[id=courseDocZero]', 0);
 		$item = array();

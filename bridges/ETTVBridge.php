@@ -107,8 +107,7 @@ class ETTVBridge extends BridgeAbstract {
 
 		// Get results page
 		$this->results_link = self::URI . $query_str;
-		$html = getSimpleHTMLDOM($this->results_link)
-			or returnServerError('Could not request ' . $this->getName());
+		$html = getSimpleHTMLDOM($this->results_link);
 
 		// Loop on each entry
 		foreach($html->find('table.table tr') as $element) {
@@ -117,8 +116,7 @@ class ETTVBridge extends BridgeAbstract {
 
 			// retrieve result page to get more details
 			$link = rtrim(self::URI, '/') . $entry->href;
-			$page = getSimpleHTMLDOM($link)
-				or returnServerError('Could not request page ' . $link);
+			$page = getSimpleHTMLDOM($link);
 
 			// get details & download links
 			$details = $page->find('fieldset.download table', 0); // WHAT?? It should be the second one…

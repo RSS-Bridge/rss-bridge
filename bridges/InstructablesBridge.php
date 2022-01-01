@@ -237,8 +237,7 @@ class InstructablesBridge extends BridgeAbstract {
 		// Enable the following line to get the category list (dev mode)
 		// $this->listCategories();
 
-		$html = getSimpleHTMLDOM($this->getURI())
-				or returnServerError('Error loading category ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 		$html = defaultLinkTo($html, $this->getURI());
 
 		$covers = $html->find('

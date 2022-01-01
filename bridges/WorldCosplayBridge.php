@@ -93,8 +93,7 @@ class WorldCosplayBridge extends BridgeAbstract {
 		}
 		$url = self::URI . sprintf($url, $id, $limit);
 
-		$json = json_decode(getContents($url))
-			or returnServerError(sprintf(self::ERR_QUERY, $url));
+		$json = json_decode(getContents($url));
 		if($json->has_error) {
 			returnServerError($json->message);
 		}

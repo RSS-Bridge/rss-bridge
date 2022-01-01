@@ -21,8 +21,7 @@ class ScribdBridge extends BridgeAbstract {
 
 	public function collectData() {
 
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request: ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$header = $html->find('div.header', 0);
 		$this->feedName = $header->find('a', 0)->plaintext;
@@ -36,8 +35,7 @@ class ScribdBridge extends BridgeAbstract {
 			//$item['timestamp'] =
 			$item['uid'] = $li->find('a', 0)->href;
 
-			$pageHtml = getSimpleHTMLDOMCached($item['uri'], 3600)
-				or returnServerError('Could not request: ' . $item['uri']);
+			$pageHtml = getSimpleHTMLDOMCached($item['uri'], 3600);
 
 			$image = $pageHtml->find('meta[property="og:image"]', 0)->content;
 			$description = $pageHtml->find('meta[property="og:description"]', 0)->content;
