@@ -76,7 +76,8 @@ class DerpibooruBridge extends BridgeAbstract {
 			. 'api/v1/json/search/images?filter_id='
 			. urlencode($this->getInput('f'))
 			. '&q='
-			. urlencode($this->getInput('q'));
+			. urlencode($this->getInput('q'))
+		));
 
 		foreach($queryJson->images as $post) {
 			$item = array();
