@@ -2171,8 +2171,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 				CURLOPT_POST => 1,
 				CURLOPT_POSTFIELDS => $queryJSON
 				);
-		$json = getContents($url, $header, $opts)
-			or returnServerError($this->i8n('request-error'));
+		$json = getContents($url, $header, $opts);
 		$objects = json_decode($json);
 		foreach($objects->data->comments->items as $comment) {
 			$item = array();
