@@ -2122,22 +2122,22 @@ class PepperBridgeAbstract extends BridgeAbstract {
 		// Get Cookies header to do the query
 		$cookies = $this->getCookies($url);
 
-		// Construct the GraphQL query string
-		$graphqlArray = array(
-			'query comments($filter:CommentFilter!,$limit:Int,$page:Int){comments(filter:$filter,limit:$li',
-			'mit,page:$page){items{...commentFields}pagination{...paginationFields}}}fragment commentField',
-			's on Comment{commentId threadId url preparedHtmlContent user{...userMediumAvatarFields...user',
-			'NameFields...userPersonaFields bestBadge{...badgeFields}}reactionCounts{type count}deletable ',
-			'currentUserReaction{type}reported reportable source status createdAt updatedAt ignored popula',
-			'r deletedBy{username}notes{content createdAt user{username}}lastEdit{reason timeAgo userId}}f',
-			'ragment userMediumAvatarFields on User{userId isDeletedOrPendingDeletion imageUrls(slot:"defa',
-			'ult",variations:["user_small_avatar"])}fragment userNameFields on User{userId username isUser',
-			'ProfileHidden isDeletedOrPendingDeletion}fragment userPersonaFields on User{persona{type text',
-			'}}fragment badgeFields on Badge{badgeId level{...badgeLevelFields}}fragment badgeLevelFields ',
-			'on BadgeLevel{key name description}fragment paginationFields on Pagination{count current last',
-			' next previous size order}'
-		);
-		$graphqlString = implode('', $graphqlArray);
+		// GraphQL String 
+		// This was extracted from https://www.dealabs.com/assets/js/modern/common_211b99.js
+		// This string was extracted during a Website visit, and minified using this neat tool :
+		// https://codepen.io/dangodev/pen/Baoqmoy
+		$graphqlString = <<<'HEREDOC'
+query comments($filter:CommentFilter!,$limit:Int,$page:Int){comments(filter:$filter,limit:$limit,page:$page){
+items{...commentFields}pagination{...paginationFields}}}fragment commentFields on Comment{commentId threadId url 
+preparedHtmlContent user{...userMediumAvatarFields...userNameFields...userPersonaFields bestBadge{...badgeFields}}
+reactionCounts{type count}deletable currentUserReaction{type}reported reportable source status createdAt updatedAt 
+ignored popular deletedBy{username}notes{content createdAt user{username}}lastEdit{reason timeAgo userId}}fragment 
+userMediumAvatarFields on User{userId isDeletedOrPendingDeletion imageUrls(slot:"default",variations:
+["user_small_avatar"])}fragment userNameFields on User{userId username isUserProfileHidden isDeletedOrPendingDeletion}
+fragment userPersonaFields on User{persona{type text}}fragment badgeFields on Badge{badgeId level{...badgeLevelFields}}
+fragment badgeLevelFields on BadgeLevel{key name description}fragment paginationFields on Pagination{count current last
+ next previous size order}
+HEREDOC;
 
 		// Construct the JSON object to send to the Website
 		$queryArray = array (
