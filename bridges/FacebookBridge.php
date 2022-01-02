@@ -181,8 +181,7 @@ class FacebookBridge extends BridgeAbstract {
 			$this->getURI()
 		);
 
-		$html = getSimpleHTMLDOM($touchURI, $header)
-			or returnServerError('Failed loading facebook page: ' . $this->getURI());
+		$html = getSimpleHTMLDOM($touchURI, $header);
 
 		if(!$this->isPublicGroup($html)) {
 			returnClientError('This group is not public! RSS-Bridge only supports public groups!');
@@ -534,8 +533,7 @@ EOD;
 					CURLOPT_POSTFIELDS => http_build_query($captcha_fields)
 				);
 
-				$html = getSimpleHTMLDOM($captcha_action, $header, $opts)
-					or returnServerError('Failed to submit captcha response back to Facebook');
+				$html = getSimpleHTMLDOM($captcha_action, $header, $opts);
 
 				return $html;
 			}
@@ -560,8 +558,7 @@ EOD;
 				$header = array();
 			}
 
-			$html = getSimpleHTMLDOM($this->getURI(), $header)
-				or returnServerError('No results for this query.');
+			$html = getSimpleHTMLDOM($this->getURI(), $header);
 
 		}
 

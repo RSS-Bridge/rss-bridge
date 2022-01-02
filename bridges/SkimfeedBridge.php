@@ -531,8 +531,7 @@ class SkimfeedBridge extends BridgeAbstract {
 		// $this->exportBoxChannels(); die;
 		// $this->exportTechChannels(); die;
 
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Request to ' . $this->getURI() . ' failed!');
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		defaultLinkTo($html, static::URI);
 

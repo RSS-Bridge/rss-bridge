@@ -59,8 +59,7 @@ class IPBBridge extends FeedExpander {
 		}
 
 		// No valid feed, so do it the hard way
-		$html = getSimpleHTMLDOM($uri)
-			or returnServerError('Could not request ' . $this->getInput('uri') . '!');
+		$html = getSimpleHTMLDOM($uri);
 
 		$limit = $this->getInput('limit');
 

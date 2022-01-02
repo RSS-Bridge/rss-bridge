@@ -20,8 +20,7 @@ class MediapartBlogsBridge extends BridgeAbstract {
 	}
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM(self::BASE_URI . '/' . $this->getInput('slug') . '/blog')
-			or returnServerError('Could not load content');
+		$html = getSimpleHTMLDOM(self::BASE_URI . '/' . $this->getInput('slug') . '/blog');
 
 		foreach($html->find('ul.post-list li') as $element) {
 			$item = array();

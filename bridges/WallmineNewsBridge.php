@@ -9,8 +9,7 @@ class WallmineNewsBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 900; // 15 mins
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM($this->getURI() . '/news/')
-			or returnServerError('Could not request: ' . $this->getURI() . '/news/');
+		$html = getSimpleHTMLDOM($this->getURI() . '/news/');
 
 		$html = defaultLinkTo($html, self::URI);
 
@@ -20,8 +19,7 @@ class WallmineNewsBridge extends BridgeAbstract {
 
 			$image = $div->find('img.img-fluid', 0)->src;
 
-			$page = getSimpleHTMLDOMCached($item['uri'], 7200)
-				or returnServerError('Could not request: ' . $item['uri']);
+			$page = getSimpleHTMLDOMCached($item['uri'], 7200);
 
 			$article = $page->find('div.container.article-container', 0);
 

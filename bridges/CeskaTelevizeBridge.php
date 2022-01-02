@@ -46,8 +46,7 @@ class CeskaTelevizeBridge extends BridgeAbstract {
 		$category = isset($match[4]) ? $match[4] : 'nove';
 		$fixedUrl = "{$match[1]}dily/{$category}/";
 
-		$html = getSimpleHTMLDOM($fixedUrl)
-			or returnServerError('Could not request Česká televize');
+		$html = getSimpleHTMLDOM($fixedUrl);
 
 		$this->feedUri = $fixedUrl;
 		$this->feedName = str_replace('Přehled dílů — ', '', $this->fixChars($html->find('title', 0)->plaintext));

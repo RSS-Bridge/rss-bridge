@@ -47,8 +47,7 @@ class SensCritiqueBridge extends BridgeAbstract {
 				case 'mu': $uri .= 'musique/actualite';
 				break;
 				}
-				$html = getSimpleHTMLDOM($uri)
-					or returnServerError('No results for this query.');
+				$html = getSimpleHTMLDOM($uri);
 				$list = $html->find('ul.elpr-list', 0);
 
 				$this->extractDataFromList($list);

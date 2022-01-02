@@ -62,8 +62,7 @@ class PornhubBridge extends BridgeAbstract {
 
 		$show_images = $this->getInput('show_images');
 
-		$html = getSimpleHTMLDOM($uri)
-			or returnServerError('Could not request PornHub.');
+		$html = getSimpleHTMLDOM($uri);
 
 		foreach($html->find('div.videoUList ul.videos li.videoblock') as $element) {
 

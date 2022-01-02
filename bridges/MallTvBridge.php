@@ -23,8 +23,7 @@ class MallTvBridge extends BridgeAbstract {
 	}
 
 	private function getUploadTimeFromUrl($url) {
-		$html = getSimpleHTMLDOM($url)
-			or returnServerError('Could not request MALL.TV detail page');
+		$html = getSimpleHTMLDOM($url);
 
 		$scriptLdJson = $html->find('script[type="application/ld+json"]', 0)->innertext;
 		if (!preg_match('/[\'"]uploadDate[\'"]\s*:\s*[\'"](\d{4}-\d{2}-\d{2})[\'"]/', $scriptLdJson, $match)) {
@@ -41,8 +40,7 @@ class MallTvBridge extends BridgeAbstract {
 			returnServerError('Invalid url');
 		}
 
-		$html = getSimpleHTMLDOM($url)
-			or returnServerError('Could not request MALL.TV');
+		$html = getSimpleHTMLDOM($url);
 
 		$this->feedUri = $url;
 		$this->feedName = $this->fixChars($html->find('title', 0)->plaintext);

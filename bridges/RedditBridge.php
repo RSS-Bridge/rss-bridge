@@ -137,8 +137,7 @@ class RedditBridge extends BridgeAbstract {
 					. $name
 					. '&sort='
 					. $this->getInput('d')
-					. '&include_over_18=on')
-			or returnServerError('Unable to fetch posts!');
+					. '&include_over_18=on');
 			$decodedValues = json_decode($values);
 
 			foreach ($decodedValues->data->children as $post) {

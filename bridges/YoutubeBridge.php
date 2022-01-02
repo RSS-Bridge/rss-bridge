@@ -347,8 +347,7 @@ class YoutubeBridge extends BridgeAbstract {
 			$this->request = $this->getInput('p');
 			$url_feed = self::URI . 'feeds/videos.xml?playlist_id=' . urlencode($this->request);
 			$url_listing = self::URI . 'playlist?list=' . urlencode($this->request);
-			$html = $this->ytGetSimpleHTMLDOM($url_listing)
-				or returnServerError("Could not request YouTube. Tried:\n - $url_listing");
+			$html = $this->ytGetSimpleHTMLDOM($url_listing);
 			$jsonData = $this->getJSONData($html);
 			// TODO: this method returns only first 100 video items
 			// if it has more videos, playlistVideoListRenderer will have continuationItemRenderer as last element
@@ -377,8 +376,7 @@ class YoutubeBridge extends BridgeAbstract {
 			. urlencode($this->request)
 			. '&sp=CAI%253D';
 
-			$html = $this->ytGetSimpleHTMLDOM($url_listing)
-				or returnServerError("Could not request YouTube. Tried:\n - $url_listing");
+			$html = $this->ytGetSimpleHTMLDOM($url_listing);
 
 			$jsonData = $this->getJSONData($html);
 			$jsonData = $jsonData->contents->twoColumnSearchResultsRenderer->primaryContents;

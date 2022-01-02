@@ -36,8 +36,7 @@ class GiphyBridge extends BridgeAbstract {
 			$apiKey
 		);
 
-		$result = json_decode(getContents($uri))
-			or returnServerError('Unable to fetch and decode json');
+		$result = json_decode(getContents($uri));
 
 		foreach($result->data as $entry) {
 			$createdAt = new \DateTime($entry->import_datetime);

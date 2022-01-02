@@ -14,7 +14,7 @@ class RainbowSixSiegeBridge extends BridgeAbstract {
 	public function collectData(){
 		$dlUrl = 'https://www.ubisoft.com/api/updates/items?locale=en-us&categoriesFilter=all';
 		$dlUrl = $dlUrl . '&limit=6&mediaFilter=news&skip=0&startIndex=undefined&tags=BR-rainbow-six%20GA-siege';
-		$jsonString = getContents($dlUrl) or returnServerError('Error while downloading the website content');
+		$jsonString = getContents($dlUrl);
 
 		$json = json_decode($jsonString, true);
 		$json = $json['items'];

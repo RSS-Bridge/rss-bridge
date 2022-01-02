@@ -16,8 +16,7 @@ class AskfmBridge extends BridgeAbstract {
 	);
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Requested username can\'t be found.');
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$html = defaultLinkTo($html, self::URI);
 

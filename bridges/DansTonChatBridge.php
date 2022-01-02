@@ -9,8 +9,7 @@ class DansTonChatBridge extends BridgeAbstract {
 
 	public function collectData(){
 
-		$html = getSimpleHTMLDOM(self::URI . 'latest.html')
-			or returnServerError('Could not request DansTonChat.');
+		$html = getSimpleHTMLDOM(self::URI . 'latest.html');
 
 		foreach($html->find('div.item') as $element) {
 			$item = array();

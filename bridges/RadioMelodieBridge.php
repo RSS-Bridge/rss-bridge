@@ -10,8 +10,7 @@ class RadioMelodieBridge extends BridgeAbstract {
 	}
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM(self::URI . '/actu/')
-			or returnServerError('Could not request Radio Melodie.');
+		$html = getSimpleHTMLDOM(self::URI . '/actu/');
 		$list = $html->find('div[class=listArticles]', 0)->children();
 
 		foreach($list as $element) {

@@ -9,8 +9,7 @@ class NasaApodBridge extends BridgeAbstract {
 
 	public function collectData(){
 
-		$html = getSimpleHTMLDOM(self::URI . 'archivepix.html')
-			or returnServerError('Error while downloading the website content');
+		$html = getSimpleHTMLDOM(self::URI . 'archivepix.html');
 
 		// Start at 1 to skip the "APOD Full Archive" on top of the page
 		for($i = 1; $i < 4; $i++) {

@@ -25,8 +25,7 @@ class GoogleSearchBridge extends BridgeAbstract {
 	public function collectData(){
 		$html = '';
 
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('No results for this query.');
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$emIsRes = $html->find('div[id=res]', 0);
 

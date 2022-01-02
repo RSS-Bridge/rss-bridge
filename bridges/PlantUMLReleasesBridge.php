@@ -46,7 +46,7 @@ class PlantUMLReleasesBridge extends BridgeAbstract
 
 	public function collectData()
 	{
-		$html = getSimpleHTMLDOM($this->getURI()) or returnServerError('Could not request ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		// Since GQ don't want simple class scrapping, let's do it the hard way and ... discover content !
 		$main = $html->find('div[id=root]', 0);

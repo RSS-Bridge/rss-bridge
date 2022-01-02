@@ -33,8 +33,7 @@ class HDWallpapersBridge extends BridgeAbstract {
 
 		for($page = 1; $page <= $lastpage; $page++) {
 			$link = self::URI . $category . '/page/' . $page;
-			$html = getSimpleHTMLDOM($link)
-				or returnServerError('No results for this query.');
+			$html = getSimpleHTMLDOM($link);
 
 			if($page === 1) {
 				preg_match('/page\/(\d+)$/', $html->find('.pagination a', -2)->href, $matches);

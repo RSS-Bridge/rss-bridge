@@ -39,8 +39,7 @@ class SoundCloudBridge extends BridgeAbstract {
 	private $widgetRegex = '/widget-.+?\.js/';
 
 	public function collectData() {
-		$res = $this->getUser($this->getInput('u'))
-			or returnServerError('No results for this query');
+		$res = $this->getUser($this->getInput('u'));
 
 		$this->feedTitle = $res->username;
 		$this->feedIcon = $res->avatar_url;
@@ -136,8 +135,7 @@ HTML;
 	private function refreshClientID(){
 		$this->initClientIDCache();
 
-		$playerHTML = getContents($this->playerUrl)
-			or returnServerError('Unable to get player page.');
+		$playerHTML = getContents($this->playerUrl);
 
 		// Extract widget JS filenames from player page
 		if(preg_match_all($this->widgetRegex, $playerHTML, $matches) == false)
@@ -149,8 +147,7 @@ HTML;
 		foreach ($matches[0] as $widgetFile) {
 			$widgetURL = $this->widgetUrl . $widgetFile;
 
-			$widgetJS = getContents($widgetURL)
-				or returnServerError('Unable to get widget JS page.');
+			$widgetJS = getContents($widgetURL);
 
 			if(preg_match($this->clientIdRegex, $widgetJS, $matches)) {
 				$clientID = $matches[1];

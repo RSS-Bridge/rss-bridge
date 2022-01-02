@@ -7,8 +7,7 @@ class FootitoBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Footito';
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Could not request Footito.');
+		$html = getSimpleHTMLDOM(self::URI);
 
 		foreach($html->find('div.post') as $element) {
 			$item = array();

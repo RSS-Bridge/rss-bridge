@@ -51,8 +51,7 @@ class GitHubGistBridge extends BridgeAbstract {
 		DEFAULT_TARGET_CHARSET,
 		false, // Do NOT remove line breaks
 		DEFAULT_BR_TEXT,
-		DEFAULT_SPAN_TEXT)
-			or returnServerError('Could not request ' . $this->getURI());
+		DEFAULT_SPAN_TEXT);
 
 		$html = defaultLinkTo($html, $this->getURI());
 

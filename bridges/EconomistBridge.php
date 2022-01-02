@@ -96,8 +96,7 @@ class EconomistBridge extends FeedExpander {
 	protected function parseItem($feedItem){
 		$item = parent::parseItem($feedItem);
 
-		$article = getSimpleHTMLDOM($item['uri'])
-			or returnServerError('Could not request Site: ' . $item['title']);
+		$article = getSimpleHTMLDOM($item['uri']);
 		// before the article can be added, it needs to be cleaned up, thus, the extra function
 		$item['content'] = $this->cleanContent($article);
 		// only the article lead image is retained

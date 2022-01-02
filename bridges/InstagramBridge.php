@@ -239,8 +239,7 @@ class InstagramBridge extends BridgeAbstract {
 
 		} else {
 
-			$html = getContents($uri)
-				or returnServerError('Could not request Instagram.');
+			$html = getContents($uri);
 			$scriptRegex = '/window\._sharedData = (.*);<\/script>/';
 
 			preg_match($scriptRegex, $html, $matches, PREG_OFFSET_CAPTURE, 0);

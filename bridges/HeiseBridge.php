@@ -42,8 +42,7 @@ class HeiseBridge extends FeedExpander {
 		$item = parent::parseItem($feedItem);
 		$uri = $item['uri'] . '&seite=all';
 
-		$article = getSimpleHTMLDOMCached($uri)
-			or returnServerError('Could not open article: ' . $uri);
+		$article = getSimpleHTMLDOMCached($uri);
 
 		if ($article) {
 			$article = defaultLinkTo($article, $uri);

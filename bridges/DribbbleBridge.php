@@ -13,8 +13,7 @@ favicon-63b2904a073c89b52b19aa08cebc16a154bcf83fee8ecc6439968b1e6db569c7.ico';
 	}
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Error while downloading the website content');
+		$html = getSimpleHTMLDOM(self::URI);
 
 		$json = $this->loadEmbeddedJsonData($html);
 

@@ -45,8 +45,7 @@ class WallpaperStopBridge extends BridgeAbstract {
 			. $page
 			. '.html';
 
-			$html = getSimpleHTMLDOM($link)
-				or returnServerError('No results for this query.');
+			$html = getSimpleHTMLDOM($link);
 
 			if($page === 1) {
 				preg_match('/-(\d+)\.html$/', $html->find('.pagination > .last', 0)->href, $matches);

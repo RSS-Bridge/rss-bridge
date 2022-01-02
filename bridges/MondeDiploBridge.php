@@ -12,8 +12,7 @@ class MondeDiploBridge extends BridgeAbstract {
 		}
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Could not request MondeDiplo. for : ' . self::URI);
+		$html = getSimpleHTMLDOM(self::URI);
 
 		foreach($html->find('div.unarticle') as $article) {
 			$element = $article->parent();

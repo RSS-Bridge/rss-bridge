@@ -177,10 +177,7 @@ class GithubIssueBridge extends BridgeAbstract {
 	}
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError(
-				'No results for ' . static::NAME . ' ' . $this->getURI()
-			);
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		switch($this->queriedContext) {
 		case static::BRIDGE_OPTIONS[1]: // Issue comments

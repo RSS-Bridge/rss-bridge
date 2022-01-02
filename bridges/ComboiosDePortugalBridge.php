@@ -7,8 +7,7 @@ class ComboiosDePortugalBridge extends BridgeAbstract {
 	const MAINTAINER = 'somini';
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM($this->getURI() . '/consultar-horarios/avisos')
-			or returnServerError('Could not load content');
+		$html = getSimpleHTMLDOM($this->getURI() . '/consultar-horarios/avisos');
 
 		foreach($html->find('.warnings-table a') as $element) {
 			$item = array();

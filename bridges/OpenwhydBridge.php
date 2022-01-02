@@ -26,17 +26,17 @@ class OpenwhydBridge extends BridgeAbstract {
 			// is input the userid ?
 			$html = getSimpleHTMLDOM(
 				self::URI . '/u/' . preg_replace('/[^0-9a-f]/', '', $this->getInput('u'))
-			) or returnServerError('No results for this query.');
+			);
 		} else { // input may be the username
 			$html = getSimpleHTMLDOM(
 				self::URI . '/search?q=' . urlencode($this->getInput('u'))
-			) or returnServerError('No results for this query.');
+			);
 
 			for($j = 0; $j < 5; $j++) {
 				if(strtolower($html->find('div.user', $j)->find('a', 0)->plaintext) == strtolower($this->getInput('u'))) {
 					$html = getSimpleHTMLDOM(
 						self::URI . $html->find('div.user', $j)->find('a', 0)->getAttribute('href')
-					) or returnServerError('No results for this query');
+					);
 					break;
 				}
 			}

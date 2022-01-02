@@ -17,7 +17,7 @@ class HackerNewsUserThreadsBridge extends BridgeAbstract {
 
 	public function collectData(){
 		$url = 'https://news.ycombinator.com/threads?id=' . $this->getInput('user');
-		$html = getSimpleHTMLDOM($url) or returnServerError('Could not request HN.');
+		$html = getSimpleHTMLDOM($url);
 		Debug::log('queried ' . $url);
 		Debug::log('found ' . $html);
 

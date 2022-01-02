@@ -35,8 +35,7 @@ on EZTV. Get showID from URLs in https://eztv.ch/shows/showID/show-full-name.';
 		foreach($showList as $showID) {
 
 			// Get show page
-			$html = getSimpleHTMLDOM(self::URI . 'shows/' . rawurlencode($showID) . '/')
-				or returnServerError('Could not request EZTV for id "' . $showID . '"');
+			$html = getSimpleHTMLDOM(self::URI . 'shows/' . rawurlencode($showID) . '/');
 
 			// Loop on each element that look like an episode entry...
 			foreach($html->find('.forum_header_border') as $element) {

@@ -25,8 +25,7 @@ class JapanExpoBridge extends BridgeAbstract {
 			}
 		};
 
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Could not request JapanExpo: ' . self::URI);
+		$html = getSimpleHTMLDOM(self::URI);
 		$fullcontent = $this->getInput('mode');
 		$count = 0;
 
@@ -44,8 +43,7 @@ class JapanExpoBridge extends BridgeAbstract {
 					break;
 				}
 
-				$article_html = getSimpleHTMLDOMCached($url)
-				or returnServerError('Could not request JapanExpo: ' . $url);
+				$article_html = getSimpleHTMLDOMCached($url);
 				$header = $article_html->find('header.pageHeadBox', 0);
 				$timestamp = strtotime($header->find('time', 0)->datetime);
 				$title_html = $header->find('div.section', 0)->next_sibling();

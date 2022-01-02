@@ -40,8 +40,7 @@ class DonnonsBridge extends BridgeAbstract {
 	private function collectDataByPage($page) {
 		$uri = $this->getPageURI($page);
 
-		$html = getSimpleHTMLDOM($uri)
-			or returnServerError('No results for this query.');
+		$html = getSimpleHTMLDOM($uri);
 
 		$searchDiv = $html->find('div[id=search]', 0);
 

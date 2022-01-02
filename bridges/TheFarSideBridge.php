@@ -9,8 +9,7 @@ class TheFarSideBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 3600; // 1 hour
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Could not request: ' . self::URI);
+		$html = getSimpleHTMLDOM(self::URI);
 
 		$div = $html->find('div.tfs-page-container__cows', 0);
 
@@ -25,8 +24,7 @@ class TheFarSideBridge extends BridgeAbstract {
 			$imageUrl = $image->attr['data-src'];
 
 			// Images are downloaded to bypass the hotlink protection.
-			$image = getContents($imageUrl, array('Referer: ' . self::URI))
-				or returnServerError('Could not request: ' . $imageUrl);
+			$image = getContents($imageUrl, array('Referer: ' . self::URI));
 
 			// Encode image as base64
 			$imageBase64 = base64_encode($image);

@@ -46,8 +46,7 @@ class JustETFBridge extends BridgeAbstract {
 	);
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Failed loading contents from ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		defaultLinkTo($html, static::URI);
 

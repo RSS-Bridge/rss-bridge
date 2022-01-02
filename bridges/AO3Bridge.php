@@ -37,8 +37,7 @@ class AO3Bridge extends BridgeAbstract {
 	// Feed for lists of works (e.g. recent works, search results, filtered tags,
 	// bookmarks, series, collections).
 	private function collectList($url) {
-		$html = getSimpleHTMLDOM($url)
-			or returnServerError('could not request AO3');
+		$html = getSimpleHTMLDOM($url);
 		$html = defaultLinkTo($html, self::URI);
 
 		foreach($html->find('.index.group > li') as $element) {
@@ -65,8 +64,7 @@ class AO3Bridge extends BridgeAbstract {
 	// Feed for recent chapters of a specific work.
 	private function collectWork($id) {
 		$url = self::URI . "/works/$id/navigate";
-		$html = getSimpleHTMLDOM($url)
-			or returnServerError('could not request AO3');
+		$html = getSimpleHTMLDOM($url);
 		$html = defaultLinkTo($html, self::URI);
 
 		$this->title = $html->find('h2 a', 0)->plaintext;

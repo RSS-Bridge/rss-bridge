@@ -1980,8 +1980,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 	 * Get the Deal data using the given URL
 	 */
 	protected function collectDeals($url){
-		$html = getSimpleHTMLDOM($url)
-			or returnServerError($this->i8n('request-error'));
+		$html = getSimpleHTMLDOM($url);
 		$list = $html->find('article[id]');
 
 		// Deal Image Link CSS Selector

@@ -6,8 +6,7 @@ class OsmAndBlogBridge extends BridgeAbstract {
 	const MAINTAINER = 'fulmeek';
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM(self::URI . 'blog')
-			or returnServerError('Could not load content');
+		$html = getSimpleHTMLDOM(self::URI . 'blog');
 
 		foreach($html->find('div.article') as $element) {
 			$item = array();

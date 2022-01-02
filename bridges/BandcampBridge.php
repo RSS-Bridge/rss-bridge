@@ -110,8 +110,7 @@ class BandcampBridge extends BridgeAbstract {
 				CURLOPT_CUSTOMREQUEST => 'POST',
 				CURLOPT_POSTFIELDS => $data
 			);
-			$content = getContents($url, $header, $opts)
-				or returnServerError('Could not complete request to: ' . $url);
+			$content = getContents($url, $header, $opts);
 
 			$json = json_decode($content);
 
@@ -300,8 +299,7 @@ class BandcampBridge extends BridgeAbstract {
 
 	private function apiGet($endpoint, $query_data) {
 		$url = self::URI . 'api/' . $endpoint . '?' . http_build_query($query_data);
-		$data = json_decode(getContents($url))
-			or returnServerError('API request to "' . $url . '" failed.');
+		$data = json_decode(getContents($url));
 		return $data;
 	}
 
