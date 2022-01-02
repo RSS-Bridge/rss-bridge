@@ -2122,7 +2122,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 		// Get Cookies header to do the query
 		$cookies = $this->getCookies($url);
 
-		// GraphQL String 
+		// GraphQL String
 		// This was extracted from https://www.dealabs.com/assets/js/modern/common_211b99.js
 		// This string was extracted during a Website visit, and minified using this neat tool :
 		// https://codepen.io/dangodev/pen/Baoqmoy
