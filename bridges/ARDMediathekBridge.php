@@ -68,7 +68,7 @@ class ARDMediathekBridge extends BridgeAbstract {
 		}
 
 		$url = SELF::APIENDPOINT . $showID . '/?pageSize=' . SELF::PAGESIZE;
-		$rawJSON = getContents($url) or returnServerError('Could not load content');
+		$rawJSON = getContents($url);
 		$processedJSON = json_decode($rawJSON);
 
 		foreach($processedJSON->teasers as $video) {
