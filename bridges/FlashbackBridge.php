@@ -138,7 +138,7 @@ class FlashbackBridge extends BridgeAbstract
 				$item['post_nr'] = $element->find('div.post-heading a strong', 0)->innertext;
 				$item['timestamp'] = strtotime(
 					str_replace(
-						array('Ig&aring;r', 'Idag'), array('yesterday', 'today'), \
+						array('Ig&aring;r', 'Idag'), array('yesterday', 'today'),
 						current(explode("\t", str_replace("\t\t", "\t", trim(
 							$element->find('div.post-heading', 0)->plaintext)
 							)))
