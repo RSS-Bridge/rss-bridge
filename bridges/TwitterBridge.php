@@ -5,6 +5,7 @@ class TwitterBridge extends BridgeAbstract {
 	const API_URI = 'https://api.twitter.com';
 	const GUEST_TOKEN_USES = 100;
 	const GUEST_TOKEN_EXPIRY = 10800; // 3hrs
+	const API_RETRIES = 3;
 	const CACHE_TIMEOUT = 300; // 5min
 	const DESCRIPTION = 'returns tweets';
 	const MAINTAINER = 'pmaziere';
@@ -481,7 +482,7 @@ EOD;
 
 	//The aim of this function is to get an API key and a guest token
 	//This function takes 2 requests, and therefore is cached
-	private function getApiKey() {
+	private function getApiKey($dumpToken) {
 
 		$cacheFac = new CacheFactory();
 		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
@@ -506,7 +507,7 @@ EOD;
 		$data = $cache->loadData();
 
 		$apiKey = null;
-		if($data === null || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
+		if($dumpToken || $data === null || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
 			$twitterPage = getContents('https://twitter.com');
 
 			$jsLink = false;
@@ -543,7 +544,7 @@ EOD;
 		$guestTokenUses = $gt_cache->loadData();
 
 		$guestToken = null;
-		if($guestTokenUses === null || !is_array($guestTokenUses) || count($guestTokenUses) != 2
+		if($dumpToken || $guestTokenUses === null || !is_array($guestTokenUses) || count($guestTokenUses) != 2
 		|| $guestTokenUses[0] <= 0 || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
 			$guestToken = $this->getGuestToken($apiKey);
 			if ($guestToken === null) {
@@ -583,11 +584,37 @@ EOD;
 	}
 
 	private function getApiContents($uri) {
-		$apiKeys = $this->getApiKey();
-		$headers = array('authorization: Bearer ' . $apiKeys[0],
-				 'x-guest-token: ' . $apiKeys[1],
-			   );
-		return getContents($uri, $headers);
+		$dump = false;
+		$lastCode = 500;
+		for ($i = 1; $i <= self::API_RETRIES; $i++) {
+			$apiKeys = $this->getApiKey($dump);
+			$headers = array('authorization: Bearer ' . $apiKeys[0],
+					 'x-guest-token: ' . $apiKeys[1],
+				   );
+			try {
+				$answer = getContents($uri, $headers);
+				return $answer;
+			} catch (Exception $e) {
+				// Sometimes Twitter invalidates our cached guest token,
+				// and returns 403.  When this happens, dump the cached token,
+				// and retry.
+				$lastCode = $e->getCode();
+				if ($lastCode == 403) {
+					$dump = true;
+				} else {
+					throw $e;
+				}
+			}
+		}
+		// If we reach here, either we never got a guestToken (500), or the token was invalid (403),
+		// so return a meaningful error.
+		if ($lastCode == 500) {
+			returnError("Could not obtain a guest token", 503);
+		} else if ($lastCode = 403) {
+			returnError("Our guest token is not valid", 503);
+		} else {
+			returnServerError("Unable to obtain contents");
+		}
 	}
 
 	private function getRestId($username) {
