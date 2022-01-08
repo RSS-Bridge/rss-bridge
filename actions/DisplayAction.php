@@ -224,7 +224,11 @@ class DisplayAction extends ActionAbstract {
 
 						$items[] = $item;
 					} elseif(Configuration::getConfig('error', 'output') === 'http') {
-						header('Content-Type: text/html', true, $this->get_return_code($e));
+						$code = $this->get_return_code($e);
+						if ($code == 503) {
+							header('Retry-After: 600', true);
+						}
+						header('Content-Type: text/html', true, $code);
 						die(buildTransformException($e, $bridge));
 					}
 				}
