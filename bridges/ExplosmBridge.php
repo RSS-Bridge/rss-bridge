@@ -30,15 +30,16 @@ class ExplosmBridge extends BridgeAbstract {
 		$comic_id = $reg_array[1];
 		$comic_id = substr($comic_id, 0, strpos($comic_id, '\\'));
 		$item = array();
-		$item['uri'] = $this::URI . "comics/" . $comic_id;
-		$item['uid'] = $this::URI . "comics/" . $comic_id;
-		$item['title'] = "Comic for " . $date_string;
+		$item['uri'] = $this::URI . 'comics/' . $comic_id;
+		$item['uid'] = $this::URI . 'comics/' . $comic_id;
+		$item['title'] = 'Comic for ' . $date_string;
 		$item['timestamp'] = strtotime($date_string);
 		$item['author'] = $latest->find('p[class*=Author__P]', 2)->innertext;
 		$item['content'] = '<img src="' . $image . '" />';
 		$this->items[] = $item;
-		
-		$next_comic = substr($this::URI, 0, -1) . $latest->find('div[class*=MainComic__Selector]', 0)->find('a', 0)->getAttribute('href');
+
+		$next_comic = substr($this::URI, 0, -1)
+			. $latest->find('div[class*=MainComic__Selector]', 0)->find('a', 0)->getAttribute('href');
 		// use index 1 as the latest comic was already found
 		for ($i = 1; $i <= $limit; $i++) {
 			$this_comic = getSimpleHTMLDOM($next_comic);
@@ -47,12 +48,13 @@ class ExplosmBridge extends BridgeAbstract {
 			$item = array();
 			$item['uri'] = $next_comic;
 			$item['uid'] = $next_comic;
-			$item['title'] = "Comic for " . $date_string;
+			$item['title'] = 'Comic for ' . $date_string;
 			$item['timestamp'] = strtotime($date_string);
 			$item['author'] = $this_comic->find('p[class*=Author__P]', 2)->innertext;
 			$item['content'] = '<img src="' . $image . '" />';
 			$this->items[] = $item;
-			$next_comic = substr($this::URI, 0, -1) . $this_comic->find('div[class*=MainComic__Selector]', 0)->find('a', 0)->getAttribute('href'); // get next comic link
+			$next_comic = substr($this::URI, 0, -1)
+				. $this_comic->find('div[class*=MainComic__Selector]', 0)->find('a', 0)->getAttribute('href'); // get next comic link
 		}
 	}
 }
