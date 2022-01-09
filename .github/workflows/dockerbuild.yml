@@ -28,6 +28,7 @@ jobs:
             ${{ env.GHCR_SLUG }}
           tags: |
             type=raw,value=latest
+            type=sha
             type=ref,event=tag,enable=${{ startsWith(github.ref, 'refs/tags/20') }}
             type=raw,value=stable,enable=${{ startsWith(github.ref, 'refs/tags/20') }}
       -
