@@ -11,7 +11,6 @@ class ExplosmBridge extends BridgeAbstract {
 			'limit' => array(
 				'name' => 'Posts limit',
 				'type' => 'number',
-				'required' => true,
 				'title' => 'Maximum number of items to return',
 				'defaultValue' => 5
 				)
