@@ -612,11 +612,11 @@ EOD;
 		// If we reach here, either we never got a guestToken (500), or the token was invalid (403),
 		// so return a meaningful error.
 		if ($lastCode == 500) {
-			returnError("Could not obtain a guest token", 503);
+			returnError('Could not obtain a guest token', 503);
 		} else if ($lastCode = 403) {
-			returnError("Our guest token is not valid", 503);
+			returnError('Our guest token is not valid', 503);
 		} else {
-			returnServerError("Unable to obtain contents");
+			returnServerError('Unable to obtain contents');
 		}
 	}
 
