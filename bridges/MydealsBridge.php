@@ -1991,12 +1991,26 @@ class MydealsBridge extends PepperBridgeAbstract {
 				'type' => 'list',
 				'title' => 'Sortierung der deals',
 				'values' => array(
-					'Vom heißesten zum kältesten Deal' => '',
+					'Vom heißesten zum kältesten Deal' => '-hot',
 					'Vom jüngsten Deal zum ältesten' => '-new',
-					'Vom am meisten kommentierten Deal zum am wenigsten kommentierten Deal' => '-discussed'
+				)
+			),
+		),
+		'Überwachung Diskussion' => array(
+			'url' => array(
+				'name' => 'URL der Diskussion',
+				'type' => 'text',
+				'required' => true,
+				'title' => 'URL-Diskussion zu überwachen:  https://www.mydealz.de/diskussion/title-123',
+				'exampleValue' => '://www.mydealz.de/diskussion/title-123',
+				),
+			'only_with_url' => array(
+				'name' => 'Kommentare ohne URL ausschließen',
+				'type' => 'checkbox',
+				'title' => 'Kommentare, die keine URL enthalten, im Feed ausschließen',
+				'defaultValue' => false,
 				)
 			)
-		)
 	);
 
 	public $lang = array(
@@ -2004,8 +2018,10 @@ class MydealsBridge extends PepperBridgeAbstract {
 		'bridge-name' => SELF::NAME,
 		'context-keyword' => 'Suche nach Stichworten',
 		'context-group' => 'Deals pro Gruppen',
+		'context-talk' => 'Überwachung Diskussion',
 		'uri-group' => 'gruppe/',
 		'request-error' => 'Could not request mydeals',
+		'thread-error' => 'Die ID der Diskussion kann nicht ermittelt werden. Überprüfen Sie die eingegebene URL',
 		'no-results' => 'Ups, wir konnten keine Deals zu',
 		'relative-date-indicator' => array(
 			'vor',
@@ -2017,6 +2033,7 @@ class MydealsBridge extends PepperBridgeAbstract {
 		'discount' => 'Rabatte',
 		'title-keyword' => 'Suche',
 		'title-group' => 'Gruppe',
+		'title-talk' => 'Überwachung Diskussion',
 		'local-months' => array(
 			'Jan',
 			'Feb',
