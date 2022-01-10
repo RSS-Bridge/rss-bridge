@@ -577,9 +577,12 @@ EOD;
 			CURLOPT_POST => 1,
 		);
 
-		$pageContent = getContents('https://api.twitter.com/1.1/guest/activate.json', $headers, $opts, true);
-		$guestToken = json_decode($pageContent['content'])->guest_token;
-
+		try {
+			$pageContent = getContents('https://api.twitter.com/1.1/guest/activate.json', $headers, $opts, true);
+			$guestToken = json_decode($pageContent['content'])->guest_token;
+		} catch (Exception $e) {
+			$guestToken = null;
+		}
 		return $guestToken;
 	}
 
