@@ -55,7 +55,14 @@ class FirefoxAddonsBridge extends BridgeAbstract {
 
 			$compatibility = $li->find('div.AddonVersionCard-compatibility', 0)->plaintext;
 			$license = $li->find('p.AddonVersionCard-license', 0)->innertext;
-			$downloadlink = $li->find('a.InstallButtonWrapper-download-link', 0)->href;
+
+			if ($li->find('a.InstallButtonWrapper-download-link', 0)) {
+				$downloadlink = $li->find('a.InstallButtonWrapper-download-link', 0)->href;
+
+			} elseif ($li->find('a.Button.Button--action.AMInstallButton-button.Button--puffy', 0)) {
+				$downloadlink = $li->find('a.Button.Button--action.AMInstallButton-button.Button--puffy', 0)->href;
+			}
+
 			$releaseNotes = $this->removeOutgoinglink($li->find('div.AddonVersionCard-releaseNotes', 0));
 
 			if (preg_match($this->xpiFileRegex, $downloadlink, $match)) {
