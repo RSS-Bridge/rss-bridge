@@ -13,7 +13,7 @@ class CeskaTelevizeBridge extends BridgeAbstract {
 			'url' => array(
 				'name' => 'url to the show',
 				'required' => true,
-				'exampleValue' => 'https://www.ceskatelevize.cz/porady/1097181328-udalosti/dily/'
+				'exampleValue' => 'https://www.ceskatelevize.cz/porady/1097181328-udalosti/'
 			)
 		)
 	);
