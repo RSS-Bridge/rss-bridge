@@ -99,8 +99,12 @@ class EconomistBridge extends FeedExpander {
 		$article = getSimpleHTMLDOM($item['uri']);
 		// before the article can be added, it needs to be cleaned up, thus, the extra function
 		$item['content'] = $this->cleanContent($article);
-		// only the article lead image is retained
-		$item['enclosures'][] = $article->find('div.article__lead-image', 0)->find('img', 0)->getAttribute('src');
+		// only the article lead image is retained if it's there
+		if (!is_null($article->find('div.article__lead-image', 0))) {
+			$item['enclosures'][] = $article->find('div.article__lead-image', 0)->find('img', 0)->getAttribute('src');
+		} else {
+			$item['enclosures'][] = '';
+		}
 
 		return $item;
 	}
