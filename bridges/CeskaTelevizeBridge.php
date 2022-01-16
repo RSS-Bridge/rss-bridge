@@ -13,7 +13,7 @@ class CeskaTelevizeBridge extends BridgeAbstract {
 			'url' => array(
 				'name' => 'url to the show',
 				'required' => true,
-				'exampleValue' => 'https://www.ceskatelevize.cz/porady/1097181328-udalosti/dily/'
+				'exampleValue' => 'https://www.ceskatelevize.cz/porady/1097181328-udalosti/'
 			)
 		)
 	);
@@ -38,7 +38,7 @@ class CeskaTelevizeBridge extends BridgeAbstract {
 	public function collectData() {
 		$url = $this->getInput('url');
 
-		$validUrl = '/^(https:\/\/www\.ceskatelevize\.cz\/porady\/\d+-[a-z0-9-]+\/)(dily\/((nove|vysilani)\/)?)?$/';
+		$validUrl = '/^(https:\/\/www\.ceskatelevize\.cz\/porady\/\d+-[a-z0-9-]+\/)(bonus\/)?$/';
 		if (!preg_match($validUrl, $url, $match)) {
 			returnServerError('Invalid url');
 		}
@@ -54,17 +54,17 @@ class CeskaTelevizeBridge extends BridgeAbstract {
 			$this->feedName .= " ({$category})";
 		}
 
-		foreach ($html->find('.episodes-broadcast-content a.episode_list_item') as $element) {
-			$itemTitle = $element->find('.episode_list_item-title', 0);
-			$itemContent = $element->find('.episode_list_item-desc', 0);
-			$itemDate = $element->find('.episode_list_item-date', 0);
+		foreach ($html->find('#episodeListSection a[data-testid=next-link]') as $element) {
+			$itemTitle = $element->find('h3', 0);
+			$itemContent = $element->find('div[class^=content-]', 0);
+			$itemDate = $element->find('div[class^=playTime-] span', 0);
 			$itemThumbnail = $element->find('img', 0);
 			$itemUri = self::URI . $element->getAttribute('href');
 
 			$item = array(
 				'title' => $this->fixChars($itemTitle->plaintext),
 				'uri' => $itemUri,
-				'content' => '<img src="https:' . $itemThumbnail->getAttribute('src') . '" /><br />'
+				'content' => '<img src="' . $itemThumbnail->getAttribute('src') . '" /><br />'
 					. $this->fixChars($itemContent->plaintext),
 				'timestamp' => $this->getUploadTimeFromString($itemDate->plaintext)
 			);
