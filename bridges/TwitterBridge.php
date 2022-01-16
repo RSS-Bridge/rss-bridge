@@ -545,7 +545,7 @@ EOD;
 		$guestToken = null;
 		if($guestTokenUses === null || !is_array($guestTokenUses) || count($guestTokenUses) != 2
 		|| $guestTokenUses[0] <= 0 || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
-			$guestToken = $this->getGuestToken();
+			$guestToken = $this->getGuestToken($apiKey);
 			if ($guestToken === null) {
 				if($guestTokenUses === null) {
 					returnServerError('Could not parse guest token');
@@ -568,15 +568,20 @@ EOD;
 
 	// Get a guest token. This is different to an API key,
 	// and it seems to change more regularly than the API key.
-	private function getGuestToken() {
-		$pageContent = getContents('https://twitter.com', array(), array(), true);
+	private function getGuestToken($apiKey) {
+		$headers = array(
+			'authorization: Bearer ' . $apiKey,
+		);
+		$opts = array(
+			CURLOPT_POST => 1,
+		);
 
-		$guestTokenRegex = '/gt=([0-9]*)/m';
-		preg_match_all($guestTokenRegex, $pageContent['header'], $guestTokenMatches, PREG_SET_ORDER, 0);
-		if (!$guestTokenMatches)
-				preg_match_all($guestTokenRegex, $pageContent['content'], $guestTokenMatches, PREG_SET_ORDER, 0);
-		if (!$guestTokenMatches) return null;
-		$guestToken = $guestTokenMatches[0][1];
+		try {
+			$pageContent = getContents('https://api.twitter.com/1.1/guest/activate.json', $headers, $opts, true);
+			$guestToken = json_decode($pageContent['content'])->guest_token;
+		} catch (Exception $e) {
+			$guestToken = null;
+		}
 		return $guestToken;
 	}
 
