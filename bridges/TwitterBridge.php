@@ -7,7 +7,7 @@ class TwitterBridge extends BridgeAbstract {
 	const GUEST_TOKEN_EXPIRY = 10800; // 3hrs
 	const CACHE_TIMEOUT = 300; // 5min
 	const DESCRIPTION = 'returns tweets';
-	const MAINTAINER = 'pmaziere';
+	const MAINTAINER = 'arnd-s';
 	const PARAMETERS = array(
 		'global' => array(
 			'nopic' => array(
