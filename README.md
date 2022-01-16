@@ -108,7 +108,7 @@ We are RSS-Bridge community, a group of developers continuing the project initia
 **Contributors** (sorted alphabetically):
 <!--
 Use this script to generate the list automatically (using the GitHub API):
-https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
+./contrib/prepare_release/fetch_contributors.php
 -->
 
 * [16mhz](https://github.com/16mhz)
