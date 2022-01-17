@@ -14,6 +14,30 @@ class YoutubeBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns the 10 newest videos by username/channel/playlist or search';
 	const MAINTAINER = 'em92';
 
+	const TEST_DETECT_PARAMETERS = array(
+		'https://www.youtube.com/channel/UC7c3Kb6jYCRj4JOHHZTxKsQ' => array(
+			'c' => 'UC7c3Kb6jYCRj4JOHHZTxKsQ',
+		),
+		'https://www.youtube.com/playlist?list=PLJYf0JdTApCqAbZImkQagXEuByh-b_7To' => array(
+			'p' => 'PLJYf0JdTApCqAbZImkQagXEuByh-b_7To',
+		),
+		'https://www.youtube.com/c/GitHub/videos' => array(
+			'custom' => 'GitHub',
+		),
+		'https://www.youtube.com/c/GitHub' => array(
+			'custom' => 'GitHub',
+		),
+		'https://www.youtube.com/results?search_query=Front+Mission+3' => array(
+			's' => 'Front Mission 3',
+		),
+		'https://www.youtube.com/user/EmperorTigerstar/videos' => array(
+			'u' => 'EmperorTigerstar',
+		),
+		'https://www.youtube.com/user/EmperorTigerstar' => array(
+			'u' => 'EmperorTigerstar',
+		),
+	);
+
 	const PARAMETERS = array(
 		'By username' => array(
 			'u' => array(
@@ -69,6 +93,37 @@ class YoutubeBridge extends BridgeAbstract {
 			)
 		)
 	);
+
+	private $detectParamsChannelIdRegex = '/^https?:\/\/(www\.)?youtube\.com\/channel\/([A-Za-z0-9_-]+)';
+	private $detectParamsPlaylistRegex = '/^https?:\/\/(www\.)?youtube\.com\/playlist\?list=([A-Za-z0-9_-]+)';
+	private $detectParamsUserRegex = '/^https?:\/\/(www\.)?youtube\.com\/user\/([A-Za-z0-9_-]+)';
+	private $detectParamsCustomRegex = '/^https?:\/\/(www\.)?youtube\.com\/c\/([A-Za-z0-9_-]+)';
+
+	public function detectParameters($url) {
+		$params = array();
+
+		if (preg_match($this->detectParamsChannelIdRegex, $url, $matches) > 0) {
+			$params['c'] = $matches[2];
+			return $params;
+		}
+
+		if (preg_match($this->detectParamsPlaylistRegex, $url, $matches) > 0) {
+			$params['p'] = $matches[2];
+			return $params;
+		}
+
+		if (preg_match($this->detectParamsUserRegex, $url, $matches) > 0) {
+			$params['u'] = $matches[2];
+			return $params;
+		}
+
+		if (preg_match($this->detectParamsCustomRegex, $url, $matches) > 0) {
+			$params['custom'] = $matches[2];
+			return $params;
+		}
+
+		return null;
+	}
 
 	private $feedName = '';
 	private $feeduri = '';
