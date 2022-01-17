@@ -94,10 +94,10 @@ class YoutubeBridge extends BridgeAbstract {
 		)
 	);
 
-	private $detectParamsChannelIdRegex = '/^https?:\/\/(www\.)?youtube\.com\/channel\/([A-Za-z0-9_-]+)';
-	private $detectParamsPlaylistRegex = '/^https?:\/\/(www\.)?youtube\.com\/playlist\?list=([A-Za-z0-9_-]+)';
-	private $detectParamsUserRegex = '/^https?:\/\/(www\.)?youtube\.com\/user\/([A-Za-z0-9_-]+)';
-	private $detectParamsCustomRegex = '/^https?:\/\/(www\.)?youtube\.com\/c\/([A-Za-z0-9_-]+)';
+	private $detectParamsChannelIdRegex = '/^https?:\/\/(www\.)?youtube\.com\/channel\/([A-Za-z0-9_-]+).*/';
+	private $detectParamsPlaylistRegex = '/^https?:\/\/(www\.)?youtube\.com\/playlist\?list=([A-Za-z0-9_-]+).*/';
+	private $detectParamsUserRegex = '/^https?:\/\/(www\.)?youtube\.com\/user\/([A-Za-z0-9_-]+).*/';
+	private $detectParamsCustomRegex = '/^https?:\/\/(www\.)?youtube\.com\/c\/([A-Za-z0-9_-]+).*/';
 
 	public function detectParameters($url) {
 		$params = array();
