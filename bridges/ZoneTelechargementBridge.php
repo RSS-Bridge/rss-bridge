@@ -34,9 +34,9 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 	);
 
 	// This is an URL that is not protected by robot protection for Direct Download
-	const UNPROTECTED_URI = 'https://www.zone-telechargement.net/';
+	const UNPROTECTED_URI = 'https://zone-telechargement.net/';
 
-	// This is an URL that is not protected by robot protection for Streaming Links
+	// This is an URL that is not protected by robot protection for Streaming Links ; This domain has expired
 	const UNPROTECTED_URI_STREAMING = 'https://zone-telechargement.stream/';
 
 	// This function use curl library with curl as User Agent instead of
@@ -44,9 +44,29 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 	// request for other user agents
 	private function loadURL($url){
 		$header = array();
-		$opts = array(CURLOPT_USERAGENT => 'curl/7.64.0');
+		$opts = array(CURLOPT_USERAGENT => 'curl/7.64.0',
+				CURLOPT_RESOLVE => $this->getCurlResolve()
+			);
 		$html = getContents($url, $header, $opts);
 		return str_get_html($html);
+	}
+
+	// This function construct the array of string needed by CURLOPT_RESOLVE
+	// The Domain zone-telechargement.stream expired, but Cloudflare can still "host" the website
+	// We use the CURLOPT_RESOLVE option to tell curl to ask Cloudflare for the content, instead of the
+	// parking page
+	private function getCurlResolve()
+	{
+		// Extract the Host of the DDL URI
+		$ddlhost = parse_url(self::UNPROTECTED_URI, PHP_URL_HOST);
+		// Extract the Streaming URI
+		$streaminghost = parse_url(self::UNPROTECTED_URI_STREAMING, PHP_URL_HOST);
+		// Get the IP of the DDL URI
+		$ip = gethostbyname($ddlhost);
+
+		// Return the CURLOPT_RESOLVE array to use the DDL URI IP for the Streaming URI in HTTPS (443)
+		return array($streaminghost . ':443:' . $ip);
+
 	}
 
 	public function getIcon(){
