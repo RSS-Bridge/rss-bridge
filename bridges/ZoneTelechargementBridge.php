@@ -98,7 +98,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 				$hoster = $this->findLinkHoster($element);
 
 				// Format the link and add the link to the corresponding episode table
-				$episodes[$epnumber]['ddl'][] = '<a href="' . $element->href . '">' . $hoster . ' - '
+				$episodes[$epnumber]['ddl'][] = '<a href="' . $this->rewriteProtectedLink($element->href) . '">' . $hoster . ' - '
 					. $this->showTitle . ' Episode ' . $epnumber . '</a>';
 
 			}
@@ -117,7 +117,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 				$epnumber = explode(' ', $elementstreaming->plaintext)[1];
 
 				// Format the link and add the link to the corresponding episode table
-				$episodes[$epnumber]['streaming'][] = '<a href="' . $elementstreaming->href . '">'
+				$episodes[$epnumber]['streaming'][] = '<a href="' . $this->rewriteProtectedLink($elementstreaming->href) . '">'
 					. $this->showTitle . ' Episode ' . $epnumber . '</a>';
 			}
 		}
@@ -181,5 +181,14 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 		// Return the text of the div : it's the file hoster name !
 		return $element->find('div', 0)->plaintext;
 
+	}
+
+	// Rewrite the links to use the new URL Protection system
+	private function rewriteProtectedLink($url)
+	{
+		// Split the link using '/'
+		$parts = explode('/', $url);
+		// return the new URL using the new Link Protection system
+		return 'https://liens.onaregarde-pourvous.com/171-2/?link=' . end($parts);
 	}
 }
