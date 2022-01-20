@@ -37,7 +37,7 @@ while($next) { /* Collect all contributors */
 	foreach($links as $link) {
 		list($url, $type) = explode(';', $link, 2);
 
-		if(trim($type) === 'rel="next"'){
+		if(trim($type) === 'rel="next"') {
 			$url = trim(preg_replace('/([<>])/', '', $url));
 			$next = true;
 			break;
