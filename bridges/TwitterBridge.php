@@ -330,7 +330,7 @@ EOD
 
 			$item = array();
 			// extract username and sanitize
-			$user_info = $this->getUserInformation($tweet->user->id_str, $data->globalObjects);
+			//$user_info = $this->getUserInformation($tweet->user->id_str, $data->globalObjects);
 
 			// $item['username'] = $user_info->screen_name;
 			// $item['fullname'] = $user_info->name;
@@ -387,7 +387,7 @@ EOD
 			if ($foundUrls === false) {
 				// fallback to regex'es
 				$reg_ex = '/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/';
-				if(preg_match($reg_ex, $tweet->full_text, $url)) {
+				if(preg_match($reg_ex, $tweet->text, $url)) {
 					$cleanedTweet = preg_replace($reg_ex,
 						"<a href='{$url[0]}' target='_blank'>{$url[0]}</a> ",
 						$cleanedTweet);
