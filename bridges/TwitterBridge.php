@@ -217,9 +217,9 @@ EOD
 				. '&tweet_mode=extended&tweet_search_mode=live';
 			} else {
 				return self::API_URI
-					. '/1.1/statuses/user_timeline.json?user_id='
-					. $this->getRestId($this->getInput('u'));
-
+				. '/1.1/statuses/user_timeline.json?user_id='
+				. $this->getRestId($this->getInput('u'))
+				. '&tweet_mode=extended';
 				return self::API_URI
 				. '/2/timeline/profile/'
 				. $this->getRestId($this->getInput('u'))
@@ -361,7 +361,7 @@ EOD
 			$item['timestamp'] = $tweet->created_at;
 
 			// Convert plain text URLs into HTML hyperlinks
-			$cleanedTweet = $tweet->text;
+			$cleanedTweet = $tweet->full_text;
 			$foundUrls = false;
 
 			if (substr($cleanedTweet, 0, 4) === 'RT @') {
@@ -387,7 +387,7 @@ EOD
 			if ($foundUrls === false) {
 				// fallback to regex'es
 				$reg_ex = '/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/';
-				if(preg_match($reg_ex, $tweet->text, $url)) {
+				if(preg_match($reg_ex, $tweet->full_text, $url)) {
 					$cleanedTweet = preg_replace($reg_ex,
 						"<a href='{$url[0]}' target='_blank'>{$url[0]}</a> ",
 						$cleanedTweet);
