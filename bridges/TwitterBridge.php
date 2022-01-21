@@ -217,6 +217,10 @@ EOD
 				. '&tweet_mode=extended&tweet_search_mode=live';
 			} else {
 				return self::API_URI
+					. '/1.1/statuses/user_timeline.json?user_id='
+					. $this->getRestId($this->getInput('u'));
+
+				return self::API_URI
 				. '/2/timeline/profile/'
 				. $this->getRestId($this->getInput('u'))
 				. '.json?tweet_mode=extended';
@@ -238,7 +242,8 @@ EOD
 	public function collectData(){
 		$html = '';
 		$page = $this->getURI();
-		$data = json_decode($this->getApiContents($this->getApiURI()));
+		$result = $this->getApiContents($this->getApiURI());
+		$data = json_decode($result);
 
 		if(!$data) {
 			switch($this->queriedContext) {
@@ -251,26 +256,31 @@ EOD
 			}
 		}
 
+		// $datadump = explode("\n", json_encode($data, JSON_PRETTY_PRINT));
+		// foreach ($datadump as $h) {
+		//	   error_log($h);
+		// }
+
 		$hidePictures = $this->getInput('nopic');
 
-		$promotedTweetIds = array_reduce($data->timeline->instructions[0]->addEntries->entries, function($carry, $entry) {
-			if (!isset($entry->content->item)) {
-				return $carry;
-			}
-			$tweet = $entry->content->item->content->tweet;
-			if (isset($tweet->promotedMetadata)) {
-				$carry[] = $tweet->id;
-			}
-			return $carry;
-		}, array());
+		// $promotedTweetIds = array_reduce($data->timeline->instructions[0]->addEntries->entries, function($carry, $entry) {
+		//	if (!isset($entry->content->item)) {
+		//		return $carry;
+		//	}
+		//	$tweet = $entry->content->item->content->tweet;
+		//	if (isset($tweet->promotedMetadata)) {
+		//		$carry[] = $tweet->id;
+		//	}
+		//	return $carry;
+		// }, array());
 
 		$hidePinned = $this->getInput('nopinned');
-		if ($hidePinned) {
-			$pinnedTweetId = null;
-			if (isset($data->timeline->instructions[1]) && isset($data->timeline->instructions[1]->pinEntry)) {
-				$pinnedTweetId = $data->timeline->instructions[1]->pinEntry->entry->content->item->content->tweet->id;
-			}
-		}
+		// if ($hidePinned) {
+		//	$pinnedTweetId = null;
+		//	if (isset($data->timeline->instructions[1]) && isset($data->timeline->instructions[1]->pinEntry)) {
+		//		$pinnedTweetId = $data->timeline->instructions[1]->pinEntry->entry->content->item->content->tweet->id;
+		//	}
+		// }
 
 		$tweets = array();
 
@@ -278,57 +288,65 @@ EOD
 		// This fixes number of issues:
 		// * If there's a retweet of a quote tweet, the quoted tweet will not appear in results (since it wasn't retweeted directly)
 		// * Pinned tweets do not get stuck at the bottom
-		if ($this->queriedContext === 'By username') {
-			foreach($data->timeline->instructions[0]->addEntries->entries as $tweet) {
-				if (!isset($tweet->content->item)) continue;
-				$tweetId = $tweet->content->item->content->tweet->id;
-				$selectedTweet = $this->getTweet($tweetId, $data->globalObjects);
-				if (!$selectedTweet) continue;
-				// If this is a retweet, it will contain shorter text and will point to the original full tweet (retweeted_status_id_str).
-				// Let's use the original tweet text.
-				if (isset($selectedTweet->retweeted_status_id_str)) {
-					$tweetId = $selectedTweet->retweeted_status_id_str;
-					$selectedTweet = $this->getTweet($tweetId, $data->globalObjects);
-					if (!$selectedTweet) continue;
-				}
-				// use $tweetId as key to avoid duplicates (e.g. user retweeting their own tweet)
-				$tweets[$tweetId] = $selectedTweet;
-			}
-		} else {
-			foreach($data->globalObjects->tweets as $tweet) {
-				$tweets[] = $tweet;
-			}
-		}
+		// if ($this->queriedContext === 'By username') {
+		//	foreach($data->timeline->instructions[0]->addEntries->entries as $tweet) {
+		//		if (!isset($tweet->content->item)) continue;
+		//		$tweetId = $tweet->content->item->content->tweet->id;
+		//		$selectedTweet = $this->getTweet($tweetId, $data->globalObjects);
+		//		if (!$selectedTweet) continue;
+		//		// If this is a retweet, it will contain shorter text and will point to the original full tweet (retweeted_status_id_str).
+		//		// Let's use the original tweet text.
+		//		if (isset($selectedTweet->retweeted_status_id_str)) {
+		//			$tweetId = $selectedTweet->retweeted_status_id_str;
+		//			$selectedTweet = $this->getTweet($tweetId, $data->globalObjects);
+		//			if (!$selectedTweet) continue;
+		//		}
+		//		// use $tweetId as key to avoid duplicates (e.g. user retweeting their own tweet)
+		//		$tweets[$tweetId] = $selectedTweet;
+		//	}
+		// } else {
+		//	foreach($data->globalObjects->tweets as $tweet) {
+		//		$tweets[] = $tweet;
+		//	}
+		// }
 
-		foreach($tweets as $tweet) {
+		foreach($data as $tweet) {
 
 			/* Debug::log('>>> ' . json_encode($tweet)); */
 			// Skip spurious retweets
-			if (isset($tweet->retweeted_status_id_str) && substr($tweet->full_text, 0, 4) === 'RT @') {
+			if (isset($tweet->retweeted_status) && substr($tweet->text, 0, 4) === 'RT @') {
 				continue;
 			}
 
-			// Skip promoted tweets
-			if (in_array($tweet->id_str, $promotedTweetIds)) {
-				continue;
-			}
+			// // Skip promoted tweets
+			// if (in_array($tweet->id_str, $promotedTweetIds)) {
+			//	continue;
+			// }
 
-			// Skip pinned tweet
-			if ($hidePinned && $tweet->id_str === $pinnedTweetId) {
-				continue;
-			}
+			// // Skip pinned tweet
+			// if ($hidePinned && $tweet->id_str === $pinnedTweetId) {
+			//	continue;
+			// }
 
 			$item = array();
 			// extract username and sanitize
-			$user_info = $this->getUserInformation($tweet->user_id_str, $data->globalObjects);
+			$user_info = $this->getUserInformation($tweet->user->id_str, $data->globalObjects);
 
-			$item['username'] = $user_info->screen_name;
-			$item['fullname'] = $user_info->name;
+			// $item['username'] = $user_info->screen_name;
+			// $item['fullname'] = $user_info->name;
+			// $item['author'] = $item['fullname'] . ' (@' . $item['username'] . ')';
+			// if (null !== $this->getInput('u') && strtolower($item['username']) != strtolower($this->getInput('u'))) {
+			//	$item['author'] .= ' RT: @' . $this->getInput('u');
+			// }
+			// $item['avatar'] = $user_info->profile_image_url_https;
+
+			$item['username'] = $tweet->user->screen_name;
+			$item['fullname'] = $tweet->user->name;
 			$item['author'] = $item['fullname'] . ' (@' . $item['username'] . ')';
 			if (null !== $this->getInput('u') && strtolower($item['username']) != strtolower($this->getInput('u'))) {
 				$item['author'] .= ' RT: @' . $this->getInput('u');
 			}
-			$item['avatar'] = $user_info->profile_image_url_https;
+			$item['avatar'] = $tweet->user->profile_image_url_https;
 
 			$item['id'] = $tweet->id_str;
 			$item['uri'] = self::URI . $item['username'] . '/status/' . $item['id'];
@@ -336,7 +354,7 @@ EOD
 			$item['timestamp'] = $tweet->created_at;
 
 			// Convert plain text URLs into HTML hyperlinks
-			$cleanedTweet = $tweet->full_text;
+			$cleanedTweet = $tweet->text;
 			$foundUrls = false;
 
 			if (isset($tweet->entities->media)) {
