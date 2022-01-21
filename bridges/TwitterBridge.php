@@ -344,7 +344,7 @@ EOD
 				$item['username'] = $tweet->retweeted_status->user->screen_name;
 				$item['fullname'] = $tweet->retweeted_status->user->name;
 				$item['avatar'] = $tweet->retweeted_status->user->profile_image_url_https;
-				$item['author'] = 'RT: '.$item['fullname'] . ' (@' . $item['username'] . ')';
+				$item['author'] = 'RT: ' . $item['fullname'] . ' (@' . $item['username'] . ')';
 			} else {
 				$item['username'] = $tweet->user->screen_name;
 				$item['fullname'] = $tweet->user->name;
@@ -365,7 +365,7 @@ EOD
 			$foundUrls = false;
 
 			if (substr($cleanedTweet, 0, 4) === 'RT @') {
-				$cleanedTweet = substr($cleanedTweet,3);
+				$cleanedTweet = substr($cleanedTweet, 3);
 			}
 
 			if (isset($tweet->entities->media)) {
