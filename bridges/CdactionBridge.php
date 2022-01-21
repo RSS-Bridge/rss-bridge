@@ -12,7 +12,7 @@ class CdactionBridge extends BridgeAbstract {
 		$newsJson = $html->find('script#__NEXT_DATA__', 0)->innertext;
 		$newsJson = json_decode($newsJson);
 		foreach ($newsJson->props->pageProps->dehydratedState->queries[1]->state->data->results as $news) {
-			$item = [];
+			$item = array();
 			$item['uri'] = $this->getURI() . '/' . $news->slug;
 			$item['title'] = $news->title;
 			$item['timestamp'] = $news->publishedAt;
