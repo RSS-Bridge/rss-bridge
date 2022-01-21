@@ -314,9 +314,9 @@ EOD
 
 			/* Debug::log('>>> ' . json_encode($tweet)); */
 			// Skip spurious retweets
-			if (isset($tweet->retweeted_status) && substr($tweet->text, 0, 4) === 'RT @') {
-				continue;
-			}
+			// if (isset($tweet->retweeted_status) && substr($tweet->text, 0, 4) === 'RT @') {
+			// 	continue;
+			// }
 
 			// // Skip promoted tweets
 			// if (in_array($tweet->id_str, $promotedTweetIds)) {
@@ -340,13 +340,20 @@ EOD
 			// }
 			// $item['avatar'] = $user_info->profile_image_url_https;
 
-			$item['username'] = $tweet->user->screen_name;
-			$item['fullname'] = $tweet->user->name;
-			$item['author'] = $item['fullname'] . ' (@' . $item['username'] . ')';
-			if (null !== $this->getInput('u') && strtolower($item['username']) != strtolower($this->getInput('u'))) {
-				$item['author'] .= ' RT: @' . $this->getInput('u');
+			if (isset($tweet->retweeted_status)) {
+				$item['username'] = $tweet->retweeted_status->user->screen_name;
+				$item['fullname'] = $tweet->retweeted_status->user->name;
+				$item['avatar'] = $tweet->retweeted_status->user->profile_image_url_https;
+				$item['author'] = 'RT: '.$item['fullname'] . ' (@' . $item['username'] . ')';
+			} else {
+				$item['username'] = $tweet->user->screen_name;
+				$item['fullname'] = $tweet->user->name;
+				$item['avatar'] = $tweet->user->profile_image_url_https;
+				$item['author'] = $item['fullname'] . ' (@' . $item['username'] . ')';
 			}
-			$item['avatar'] = $tweet->user->profile_image_url_https;
+			// if (null !== $this->getInput('u') && strtolower($item['username']) != strtolower($this->getInput('u'))) {
+			// 	$item['author'] .= ' RT: @' . $this->getInput('u');
+			// }
 
 			$item['id'] = $tweet->id_str;
 			$item['uri'] = self::URI . $item['username'] . '/status/' . $item['id'];
@@ -356,6 +363,10 @@ EOD
 			// Convert plain text URLs into HTML hyperlinks
 			$cleanedTweet = $tweet->text;
 			$foundUrls = false;
+
+			if (substr($cleanedTweet, 0, 4) === 'RT @') {
+				$cleanedTweet = substr($cleanedTweet,3);
+			}
 
 			if (isset($tweet->entities->media)) {
 				foreach($tweet->entities->media as $media) {
