@@ -10,7 +10,10 @@ class CdactionBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI());
 
 		$newsJson = $html->find('script#__NEXT_DATA__', 0)->innertext;
-		$newsJson = json_decode($newsJson);
+		if (!$newsJson = json_decode($newsJson)) {
+			return;
+		}
+
 		foreach ($newsJson->props->pageProps->dehydratedState->queries[1]->state->data->results as $news) {
 			$item = array();
 			$item['uri'] = $this->getURI() . '/' . $news->slug;
