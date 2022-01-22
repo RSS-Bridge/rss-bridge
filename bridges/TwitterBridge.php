@@ -361,7 +361,12 @@ EOD
 			$item['timestamp'] = $tweet->created_at;
 
 			// Convert plain text URLs into HTML hyperlinks
-			$cleanedTweet = $tweet->full_text;
+			$fulltext = $tweet->full_text;
+			if (isset($tweet->retweeted_status->id)) {
+				$fulltext = $tweet->retweeted_status->full_text;
+			}
+			$cleanedTweet = $fulltext;
+
 			$foundUrls = false;
 
 			if (substr($cleanedTweet, 0, 4) === 'RT @') {
