@@ -246,7 +246,6 @@ EOD
 		// Array of all found tweets
 		$tweets = array();
 
-
 		// STEP 1 - Try to get all tweets
 		switch($this->queriedContext) {
 		case 'By username':
