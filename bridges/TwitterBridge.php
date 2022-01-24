@@ -259,7 +259,6 @@ EOD
 			break;
 
 		case 'By keyword or hashtag':
-
 			$params					= array(
 				'q'					=> urlencode($this->getInput('q')),
 				'tweet_mode'		=> 'extended',
@@ -360,6 +359,13 @@ EOD
 			// // Skip pinned tweet
 			if ($hidePinned && $tweet->id_str === $pinnedTweetId) {
 				continue;
+			}
+
+			switch($this->queriedContext) {
+				case 'By username':
+					if ($this->getInput('norep') && isset($tweet->in_reply_to_status_id))
+						continue 2;
+					break;
 			}
 
 			$item = array();
@@ -681,21 +687,21 @@ EOD;
 		return $searchResult->data->user_by_screen_name->list->id_str;
 	}
 
-	private function getUserInformation($userId, $apiData) {
-		foreach($apiData->users as $user) {
-			if($user->id_str == $userId) {
-				return $user;
-			}
-		}
-	}
+	// private function getUserInformation($userId, $apiData) {
+	// 	foreach($apiData->users as $user) {
+	// 		if($user->id_str == $userId) {
+	// 			return $user;
+	// 		}
+	// 	}
+	// }
 
-	private function getTweet($tweetId, $apiData) {
-		if (property_exists($apiData->tweets, $tweetId)) {
-			return $apiData->tweets->$tweetId;
-		} else {
-			return null;
-		}
-	}
+	// private function getTweet($tweetId, $apiData) {
+	// 	if (property_exists($apiData->tweets, $tweetId)) {
+	// 		return $apiData->tweets->$tweetId;
+	// 	} else {
+	// 		return null;
+	// 	}
+	// }
 
 	/**
 	 * Tries to make an API call to twitter.
