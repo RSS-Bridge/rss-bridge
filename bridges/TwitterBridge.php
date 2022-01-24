@@ -265,7 +265,7 @@ EOD
 				'tweet_search_mode' => 'live',
 			);
 
-			$data = $this->makeApiCall('/1.1/search/tweets.json',$params)->statuses;
+			$data = $this->makeApiCall('/1.1/search/tweets.json', $params)->statuses;
 
 			foreach ($data as $tweet) {
 				if (isset($tweet->retweeted_status) && substr($tweet->full_text, 0, 4) === 'RT @') {
