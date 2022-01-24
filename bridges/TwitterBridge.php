@@ -118,6 +118,9 @@ EOD
 		)
 	);
 
+	private $apiKey	    = null;
+	private $guestToken = null;
+
 	public function detectParameters($url){
 		$params = array();
 
@@ -557,6 +560,10 @@ EOD;
 	//This function takes 2 requests, and therefore is cached
 	private function getApiKey() {
 
+		if ($this->apiKey != null && $this->guestToken != null) {
+			return array($this->apiKey, $this->guestToken);
+		}
+
 		$cacheFac = new CacheFactory();
 		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
 		$r_cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
@@ -635,6 +642,9 @@ EOD;
 			$gt_cache->saveData($guestTokenUses);
 			$guestToken = $guestTokenUses[1];
 		}
+
+		$this->apiKey	  = $apiKey;
+		$this->guestToken = $guestToken;
 
 		return array($apiKey, $guestToken);
 
