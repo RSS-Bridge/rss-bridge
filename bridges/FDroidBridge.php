@@ -36,11 +36,11 @@ class FDroidBridge extends BridgeAbstract {
 		$curlError = curl_error($ch);
 		curl_close($ch);
 		if(!empty($curlError))
-			return FALSE;
-		$curlHeaders = explode("\n",$curlHeaders);
-		$timestamp=FALSE;
+			return false;
+		$curlHeaders = explode("\n", $curlHeaders);
+		$timestamp = false;
 		foreach($curlHeaders as $header) {
-			if(strpos($header, 'Last-Modified') !== FALSE) {
+			if(strpos($header, 'Last-Modified') !== false) {
 				$timestamp = str_replace('Last-Modified: ', '', $header);
 				$timestamp = strtotime($timestamp);
 			}
