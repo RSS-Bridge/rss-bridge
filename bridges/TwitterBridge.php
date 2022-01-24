@@ -239,13 +239,15 @@ EOD
 	}
 
 	public function collectData(){
-		// $data will contain an array of all found tweets
+		// $data will contain an array of all found tweets (unfiltered)
 		$data = null;
 		// Contains user data (when in by username context)
 		$user = null;
 		// Array of all found tweets
 		$tweets = array();
 
+
+		// STEP 1 - Try to get all tweets
 		switch($this->queriedContext) {
 		case 'By username':
 			$user = $this->makeApiCall('/1.1/users/show.json', array('screen_name' => $this->getInput('u')));
@@ -258,26 +260,17 @@ EOD
 				'tweet_mode' => 'extended'
 			);
 
-			$tweets = $this->makeApiCall('/1.1/statuses/user_timeline.json', $params);
+			$data = $this->makeApiCall('/1.1/statuses/user_timeline.json', $params);
 			break;
 
 		case 'By keyword or hashtag':
-			$params					= array(
+			$params = array(
 				'q'					=> urlencode($this->getInput('q')),
 				'tweet_mode'		=> 'extended',
 				'tweet_search_mode' => 'live',
 			);
 
 			$data = $this->makeApiCall('/1.1/search/tweets.json', $params)->statuses;
-
-			foreach ($data as $tweet) {
-				if (isset($tweet->retweeted_status) && substr($tweet->full_text, 0, 4) === 'RT @') {
-					continue;
-				}
-
-				$tweets[] = $tweet;
-			}
-
 			break;
 
 		default:
@@ -286,7 +279,7 @@ EOD
 			$data = json_decode($result);
 		}
 
-		if(!$tweets) {
+		if(!$data) {
 			switch($this->queriedContext) {
 			case 'By keyword or hashtag':
 				returnServerError('No results for this query.');
@@ -295,6 +288,16 @@ EOD
 			case 'By list':
 				returnServerError('Requested username or list can\'t be found');
 			}
+		}
+
+		// STEP 2 - Filter out unwanted tweets
+		foreach ($data as $tweet) {
+			// Filter out retweets to remove possible duplicates of original tweet
+			if (isset($tweet->retweeted_status) && substr($tweet->full_text, 0, 4) === 'RT @') {
+				continue;
+			}
+
+			$tweets[] = $tweet;
 		}
 
 		$hidePictures = $this->getInput('nopic');
@@ -346,12 +349,13 @@ EOD
 		//	}
 		// }
 
+		// STEP 3 - Create output array with all required elements for each tweet
 		foreach($tweets as $tweet) {
 
 			/* Debug::log('>>> ' . json_encode($tweet)); */
 			// Skip spurious retweets
 			// if (isset($tweet->retweeted_status) && substr($tweet->text, 0, 4) === 'RT @') {
-			// 	continue;
+			//	continue;
 			// }
 
 			// // Skip promoted tweets
