@@ -220,10 +220,10 @@ EOD
 				. '/1.1/statuses/user_timeline.json?user_id='
 				. $this->getRestId($this->getInput('u'))
 				. '&tweet_mode=extended';
-				return self::API_URI
-				. '/2/timeline/profile/'
-				. $this->getRestId($this->getInput('u'))
-				. '.json?tweet_mode=extended';
+				// return self::API_URI
+				// . '/2/timeline/profile/'
+				// . $this->getRestId($this->getInput('u'))
+				// . '.json?tweet_mode=extended';
 			}
 		case 'By list':
 			return self::API_URI
@@ -244,6 +244,7 @@ EOD
 		$page = $this->getURI();
 		$result = $this->getApiContents($this->getApiURI());
 		$data = json_decode($result);
+		$user = null;
 
 		if(!$data) {
 			switch($this->queriedContext) {
@@ -254,6 +255,13 @@ EOD
 			case 'By list':
 				returnServerError('Requested username or list can\'t be found');
 			}
+		}
+
+		switch($this->queriedContext) {
+			case 'By username':
+				if ($this->getInput('trace')) {
+					$user = $this->getUserShow($this->getInput('u'));
+				}
 		}
 
 		// $datadump = explode("\n", json_encode($data, JSON_PRETTY_PRINT));
@@ -275,8 +283,14 @@ EOD
 		// }, array());
 
 		$hidePinned = $this->getInput('nopinned');
-		// if ($hidePinned) {
-		//	$pinnedTweetId = null;
+		if ($hidePinned) {
+			$pinnedTweetId = null;
+			if ($user) {
+				if ($user->pinned_tweet_ids_str) {
+					$pinnedTweetId = $user->pinned_tweet_ids_str;
+				}
+			}
+		}
 		//	if (isset($data->timeline->instructions[1]) && isset($data->timeline->instructions[1]->pinEntry)) {
 		//		$pinnedTweetId = $data->timeline->instructions[1]->pinEntry->entry->content->item->content->tweet->id;
 		//	}
@@ -324,9 +338,9 @@ EOD
 			// }
 
 			// // Skip pinned tweet
-			// if ($hidePinned && $tweet->id_str === $pinnedTweetId) {
-			//	continue;
-			// }
+			if ($hidePinned && $tweet->id_str === $pinnedTweetId) {
+				continue;
+			}
 
 			$item = array();
 			// extract username and sanitize
@@ -662,4 +676,22 @@ EOD;
 			return null;
 		}
 	}
+
+	private function getUserShow($username) {
+		$apiKeys = $this->getApiKey();
+		$headers = array(
+			'authorization: Bearer ' . $apiKeys[0],
+			'x-guest-token: ' . $apiKeys[1],
+		);
+		$params='screen_name=' . strtolower($username);
+		$URL = self::API_URI . '/1.1/users/show.json?' . $params;
+		$result = $this->getApiContents($URL,$headers);
+		$result = json_decode($result);
+		if ($this->getInput('trace')) {
+			if (!file_put_contents(PATH_ROOT . 'traces/user.json', json_encode($result, JSON_PRETTY_PRINT)))
+				error_log("Oops! Error creating json file failed: traces/user.json");
+		}
+		return $result;
+	}
+
 }
