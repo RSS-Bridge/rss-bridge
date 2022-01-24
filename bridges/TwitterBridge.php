@@ -220,10 +220,6 @@ EOD
 				. '/1.1/statuses/user_timeline.json?user_id='
 				. $this->getRestId($this->getInput('u'))
 				. '&tweet_mode=extended';
-				// return self::API_URI
-				// . '/2/timeline/profile/'
-				// . $this->getRestId($this->getInput('u'))
-				// . '.json?tweet_mode=extended';
 			}
 		case 'By list':
 			return self::API_URI
@@ -240,11 +236,27 @@ EOD
 	}
 
 	public function collectData(){
-		$html = '';
-		$page = $this->getURI();
-		$result = $this->getApiContents($this->getApiURI());
-		$data = json_decode($result);
+		$data = null;
 		$user = null;
+
+		switch($this->queriedContext) {
+		case 'By username':
+			$user = $this->makeApiCall('/1.1/users/show.json', array('screen_name' => $this->getInput('u')));
+			if (!$user) {
+				returnServerError('Requested username can\'t be found.');
+			}
+
+			$params = array(
+				'user_id'	 => $user->id,
+				'tweet_mode' => 'extended'
+			);
+
+			$data = $this->makeApiCall('/1.1/statuses/user_timeline.json', $params);
+
+		default:
+			$result = $this->getApiContents($this->getApiURI());
+			$data = json_decode($result);
+		}
 
 		if(!$data) {
 			switch($this->queriedContext) {
@@ -256,18 +268,6 @@ EOD
 				returnServerError('Requested username or list can\'t be found');
 			}
 		}
-
-		switch($this->queriedContext) {
-			case 'By username':
-				if ($this->getInput('trace')) {
-					$user = $this->getUserShow($this->getInput('u'));
-				}
-		}
-
-		// $datadump = explode("\n", json_encode($data, JSON_PRETTY_PRINT));
-		// foreach ($datadump as $h) {
-		//	   error_log($h);
-		// }
 
 		$hidePictures = $this->getInput('nopic');
 
@@ -677,21 +677,18 @@ EOD;
 		}
 	}
 
-	private function getUserShow($username) {
+	private function makeApiCall($api, $params) {
 		$apiKeys = $this->getApiKey();
 		$headers = array(
 			'authorization: Bearer ' . $apiKeys[0],
 			'x-guest-token: ' . $apiKeys[1],
 		);
-		$params='screen_name=' . strtolower($username);
-		$URL = self::API_URI . '/1.1/users/show.json?' . $params;
-		$result = $this->getApiContents($URL,$headers);
-		$result = json_decode($result);
-		if ($this->getInput('trace')) {
-			if (!file_put_contents(PATH_ROOT . 'traces/user.json', json_encode($result, JSON_PRETTY_PRINT)))
-				error_log("Oops! Error creating json file failed: traces/user.json");
-		}
-		return $result;
-	}
 
+		$uri = self::API_URI . $api . '?' . http_build_query($params);
+
+		$result = getContents($uri, $headers);
+		$data = json_decode($result);
+
+		return $data;
+	}
 }
