@@ -236,8 +236,12 @@ EOD
 	}
 
 	public function collectData(){
+		// $data will contain an array of all found tweets
 		$data = null;
+		// Contains user data (when in by username context)
 		$user = null;
+		// Array of all found tweets
+		$tweets = array();
 
 		switch($this->queriedContext) {
 		case 'By username':
@@ -251,14 +255,36 @@ EOD
 				'tweet_mode' => 'extended'
 			);
 
-			$data = $this->makeApiCall('/1.1/statuses/user_timeline.json', $params);
+			$tweets = $this->makeApiCall('/1.1/statuses/user_timeline.json', $params);
+			break;
+
+		case 'By keyword or hashtag':
+
+			$params					= array(
+				'q'					=> urlencode($this->getInput('q')),
+				'tweet_mode'		=> 'extended',
+				'tweet_search_mode' => 'live',
+			);
+
+			$data = $this->makeApiCall('/1.1/search/tweets.json',$params)->statuses;
+
+			foreach ($data as $tweet) {
+				if (isset($tweet->retweeted_status) && substr($tweet->full_text, 0, 4) === 'RT @') {
+					continue;
+				}
+
+				$tweets[] = $tweet;
+			}
+
+			break;
 
 		default:
+			// Contexts which aren't ported to V1.1
 			$result = $this->getApiContents($this->getApiURI());
 			$data = json_decode($result);
 		}
 
-		if(!$data) {
+		if(!$tweets) {
 			switch($this->queriedContext) {
 			case 'By keyword or hashtag':
 				returnServerError('No results for this query.');
@@ -291,12 +317,6 @@ EOD
 				}
 			}
 		}
-		//	if (isset($data->timeline->instructions[1]) && isset($data->timeline->instructions[1]->pinEntry)) {
-		//		$pinnedTweetId = $data->timeline->instructions[1]->pinEntry->entry->content->item->content->tweet->id;
-		//	}
-		// }
-
-		$tweets = array();
 
 		// Extract tweets from timeline property when in username mode
 		// This fixes number of issues:
@@ -324,7 +344,7 @@ EOD
 		//	}
 		// }
 
-		foreach($data as $tweet) {
+		foreach($tweets as $tweet) {
 
 			/* Debug::log('>>> ' . json_encode($tweet)); */
 			// Skip spurious retweets
@@ -677,6 +697,12 @@ EOD;
 		}
 	}
 
+	/**
+	 * Tries to make an API call to twitter.
+	 * @param $api string API entry point
+	 * @param $params array additional URI parmaeters
+	 * @return object json data
+	 */
 	private function makeApiCall($api, $params) {
 		$apiKeys = $this->getApiKey();
 		$headers = array(
