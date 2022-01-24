@@ -392,20 +392,21 @@ EOD
 				$item['fullname'] = $tweet->retweeted_status->user->name;
 				$item['avatar'] = $tweet->retweeted_status->user->profile_image_url_https;
 				$item['author'] = 'RT: ' . $item['fullname'] . ' (@' . $item['username'] . ')';
+				$item['timestamp'] = $tweet->retweeted_status->created_at;
 			} else {
 				$item['username'] = $tweet->user->screen_name;
 				$item['fullname'] = $tweet->user->name;
 				$item['avatar'] = $tweet->user->profile_image_url_https;
 				$item['author'] = $item['fullname'] . ' (@' . $item['username'] . ')';
+				$item['timestamp'] = $tweet->created_at;
 			}
 			// if (null !== $this->getInput('u') && strtolower($item['username']) != strtolower($this->getInput('u'))) {
-			// 	$item['author'] .= ' RT: @' . $this->getInput('u');
+			//	$item['author'] .= ' RT: @' . $this->getInput('u');
 			// }
 
 			$item['id'] = $tweet->id_str;
 			$item['uri'] = self::URI . $item['username'] . '/status/' . $item['id'];
 			// extract tweet timestamp
-			$item['timestamp'] = $tweet->created_at;
 
 			// Convert plain text URLs into HTML hyperlinks
 			$fulltext = $tweet->full_text;
