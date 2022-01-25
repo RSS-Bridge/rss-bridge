@@ -2,7 +2,7 @@
  InstagramBridge
 =================
 
-To somehow bypass `rate limiting issue <https://github.com/RSS-Bridge/rss-bridge/issues/1891>`,
+To somehow bypass `rate limiting issue <https://github.com/RSS-Bridge/rss-bridge/issues/1891>`_,
 it is suggested to deploy private RSS-Bridge that uses working Instagram account.
 
 Configuration
