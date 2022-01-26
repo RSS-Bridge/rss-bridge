@@ -289,13 +289,13 @@ EOD
 			}
 		}
 
-		// STEP 2 - Filter out unwanted tweets
+		// Filter out unwanted tweets
 		foreach ($data as $tweet) {
 			// Filter out retweets to remove possible duplicates of original tweet
 			switch($this->queriedContext) {
 			case 'By keyword or hashtag':
 				if (isset($tweet->retweeted_status) && substr($tweet->full_text, 0, 4) === 'RT @') {
-					continue;
+					continue 2;
 				}
 				break;
 			}
