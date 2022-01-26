@@ -120,6 +120,7 @@ EOD
 
 	private $apiKey	    = null;
 	private $guestToken = null;
+	private $authHeader = array();
 
 	public function detectParameters($url){
 		$params = array();
@@ -246,7 +247,10 @@ EOD
 		// Array of all found tweets
 		$tweets = array();
 
-		// STEP 1 - Try to get all tweets
+		// Get authentication information
+		$this->getApiKey();
+
+		// Try to get all tweets
 		switch($this->queriedContext) {
 		case 'By username':
 			$user = $this->makeApiCall('/1.1/users/show.json', array('screen_name' => $this->getInput('u')));
@@ -351,7 +355,7 @@ EOD
 		//	}
 		// }
 
-		// STEP 3 - Create output array with all required elements for each tweet
+		// Create output array with all required elements for each tweet
 		foreach($tweets as $tweet) {
 
 			/* Debug::log('>>> ' . json_encode($tweet)); */
@@ -570,11 +574,7 @@ EOD;
 
 	//The aim of this function is to get an API key and a guest token
 	//This function takes 2 requests, and therefore is cached
-	private function getApiKey() {
-
-		if ($this->apiKey != null && $this->guestToken != null) {
-			return array($this->apiKey, $this->guestToken);
-		}
+	private function getApiKey($forceNew = 0) {
 
 		$cacheFac = new CacheFactory();
 		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
@@ -599,7 +599,7 @@ EOD;
 		$data = $cache->loadData();
 
 		$apiKey = null;
-		if($data === null || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
+		if($forceNew || $data === null || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
 			$twitterPage = getContents('https://twitter.com');
 
 			$jsLink = false;
@@ -636,7 +636,7 @@ EOD;
 		$guestTokenUses = $gt_cache->loadData();
 
 		$guestToken = null;
-		if($guestTokenUses === null || !is_array($guestTokenUses) || count($guestTokenUses) != 2
+		if($forceNew || $guestTokenUses === null || !is_array($guestTokenUses) || count($guestTokenUses) != 2
 		|| $guestTokenUses[0] <= 0 || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
 			$guestToken = $this->getGuestToken($apiKey);
 			if ($guestToken === null) {
@@ -658,8 +658,12 @@ EOD;
 		$this->apiKey	  = $apiKey;
 		$this->guestToken = $guestToken;
 
-		return array($apiKey, $guestToken);
+		$this->authHeaders = array(
+			'authorization: Bearer ' . $apiKey,
+			'x-guest-token: ' . $guestToken,
+		);
 
+		return array($apiKey, $guestToken);
 	}
 
 	// Get a guest token. This is different to an API key,
@@ -682,11 +686,11 @@ EOD;
 	}
 
 	private function getApiContents($uri) {
-		$apiKeys = $this->getApiKey();
-		$headers = array('authorization: Bearer ' . $apiKeys[0],
-				 'x-guest-token: ' . $apiKeys[1],
-			   );
-		return getContents($uri, $headers);
+		// $apiKeys = $this->getApiKey();
+		// $headers = array('authorization: Bearer ' . $apiKeys[0],
+		// 		 'x-guest-token: ' . $apiKeys[1],
+		// 	   );
+		return getContents($uri, $this->authHeaders);
 	}
 
 	private function getRestId($username) {
@@ -732,15 +736,27 @@ EOD;
 	 * @return object json data
 	 */
 	private function makeApiCall($api, $params) {
-		$apiKeys = $this->getApiKey();
-		$headers = array(
-			'authorization: Bearer ' . $apiKeys[0],
-			'x-guest-token: ' . $apiKeys[1],
-		);
-
 		$uri = self::API_URI . $api . '?' . http_build_query($params);
 
-		$result = getContents($uri, $headers);
+		$retries = 1;
+		$retry = 0;
+		do {
+			$retry = 0;
+			try {
+				$result = getContents($uri, $this->authHeaders);
+			} catch (Exception $e) {
+				$lastCode = $e->getCode();
+				if ($lastCode == 403) {
+					if ($retries) {
+						$retries--;
+						$retry = 1;
+						continue;
+					}
+				}
+				returnServerError('Failed to make api call: $api returns ' . $e->getCode());
+			}
+		} while ($retry);
+
 		$data = json_decode($result);
 
 		return $data;
