@@ -24,9 +24,11 @@ It is NOT recommended to use existing account, that is used for common interacti
 
 - Click on "Fetch/XHR"
 
+- Refresh web page
+
 - Click on any item from table with http requests
 
-- In new fram open "Headers" tab and scroll to "Request headers"
+- In new frame open "Headers" tab and scroll to "Request headers"
 
 - There will be cookie param will lots of "key=value" text. You need the value of "sessionid" key. Copy it
 
