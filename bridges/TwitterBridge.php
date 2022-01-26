@@ -387,24 +387,29 @@ EOD
 			// $item['avatar'] = $user_info->profile_image_url_https;
 
 			if (isset($tweet->retweeted_status)) {
+				// Tweet is a Retweet, so set fields based on original tweet
 				$item['username'] = $tweet->retweeted_status->user->screen_name;
 				$item['fullname'] = $tweet->retweeted_status->user->name;
 				$item['avatar'] = $tweet->retweeted_status->user->profile_image_url_https;
 				$item['author'] = 'RT: ' . $item['fullname'] . ' (@' . $item['username'] . ')';
 				$item['timestamp'] = $tweet->retweeted_status->created_at;
+				$item['id'] = $tweet->retweeted_status->id_str;
+
 			} else {
 				$item['username'] = $tweet->user->screen_name;
 				$item['fullname'] = $tweet->user->name;
 				$item['avatar'] = $tweet->user->profile_image_url_https;
 				$item['author'] = $item['fullname'] . ' (@' . $item['username'] . ')';
 				$item['timestamp'] = $tweet->created_at;
+				$item['id'] = $tweet->id_str;
 			}
+
+			$item['uri'] = self::URI . $item['username'] . '/status/' . $item['id'];
+
 			// if (null !== $this->getInput('u') && strtolower($item['username']) != strtolower($this->getInput('u'))) {
 			//	$item['author'] .= ' RT: @' . $this->getInput('u');
 			// }
 
-			$item['id'] = $tweet->id_str;
-			$item['uri'] = self::URI . $item['username'] . '/status/' . $item['id'];
 			// extract tweet timestamp
 
 			// Convert plain text URLs into HTML hyperlinks
