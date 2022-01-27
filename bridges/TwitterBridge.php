@@ -276,6 +276,25 @@ EOD
 			$data = $this->makeApiCall('/1.1/search/tweets.json', $params)->statuses;
 			break;
 
+		case 'By list':
+			$params = array(
+				'slug'				=> strtolower($this->getInput('list')),
+				'owner_screen_name' => strtolower($this->getInput('user')),
+				'tweet_mode'		=> 'extended',
+			);
+
+			$data = $this->makeApiCall('/1.1/lists/statuses.json', $params);
+			break;
+
+		case 'By list ID':
+			$params = array(
+				'list_id'			=> $this->getInput('listid'),
+				'tweet_mode'		=> 'extended',
+			);
+
+			$data = $this->makeApiCall('/1.1/lists/statuses.json', $params);
+			break;
+
 		default:
 			// Contexts which aren't ported to V1.1
 			$result = $this->getApiContents($this->getApiURI());
