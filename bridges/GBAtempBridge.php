@@ -99,7 +99,7 @@ class GBAtempBridge extends BridgeAbstract {
 				$url = urljoin(self::URI, $reviewItem->find('a.review_boxart', 0)->href);
 				$img = $this->findItemImage($reviewItem, 'a.review_boxart');
 				$title = $this->decodeHtmlEntities($reviewItem->find('h2.review_title', 0)->plaintext);
-				$content = getSimpleHTMLDOMCached($url)
+				$content = getSimpleHTMLDOMCached($url);
 				$author = $content->find('span.author--name', 0)->plaintext;
 				$time = $this->findItemDate($content);
 				$intro = '<p><b>' . ($content->find('div#review_introduction', 0)->plaintext) . '</b></p>';
