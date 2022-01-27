@@ -742,23 +742,115 @@ EOD;
 		$retry = 0;
 		do {
 			$retry = 0;
-			try {
-				$result = getContents($uri, $this->authHeaders);
-			} catch (Exception $e) {
-				$lastCode = $e->getCode();
-				if ($lastCode == 403) {
-					if ($retries) {
-						$retries--;
-						$retry = 1;
-						continue;
-					}
+
+			$result = $this->getContents($uri, $this->authHeaders, array(), true);
+
+			switch($result['errorcode']) {
+			case 200: // Contents OK
+			case 201: // Contents Created
+			case 202: // Contents Accepted
+				break;
+
+			case 401:
+			case 403:
+				if ($retries) {
+					$retries--;
+					$retry = 1;
+					$this->getApiKey(1);
+					continue 2;
 				}
-				returnServerError('Failed to make api call: ' . $api . ' returns ' . $e->getCode());
+			default:
+				$code = $result['errorcode'];
+				$data = $result['content'];
+				returnServerError(<<<EOD
+Failed to make api call: $api
+HTTP Status: $code
+Errormessage: $data
+EOD
+				);
+				break;
 			}
 		} while ($retry);
 
-		$data = json_decode($result);
+		$data = json_decode($result['content']);
 
 		return $data;
+	}
+
+	private function getContents($url, $header = array(), $opts = array(), $returnHeader = false){
+		Debug::log('Reading contents from "' . $url . '"');
+
+		$retVal = array(
+			'header' => '',
+			'content' => '',
+			'errorcode' => 0,
+		);
+
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+
+		if(is_array($header) && count($header) !== 0) {
+
+			Debug::log('Setting headers: ' . json_encode($header));
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+
+		}
+
+		curl_setopt($ch, CURLOPT_USERAGENT, ini_get('user_agent'));
+		curl_setopt($ch, CURLOPT_ENCODING, '');
+		curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
+
+		if(is_array($opts) && count($opts) !== 0) {
+
+			Debug::log('Setting options: ' . json_encode($opts));
+
+			foreach($opts as $key => $value) {
+				curl_setopt($ch, $key, $value);
+			}
+
+		}
+
+		if(defined('PROXY_URL') && !defined('NOPROXY')) {
+
+			Debug::log('Setting proxy url: ' . PROXY_URL);
+			curl_setopt($ch, CURLOPT_PROXY, PROXY_URL);
+
+		}
+
+		// We always want the response header as part of the data!
+		curl_setopt($ch, CURLOPT_HEADER, true);
+
+		// Enables logging for the outgoing header
+		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+
+		$data = curl_exec($ch);
+		$errorCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		$retVal['errorcode'] = $errorCode;
+
+		$curlError = curl_error($ch);
+		$curlErrno = curl_errno($ch);
+		$curlInfo = curl_getinfo($ch);
+
+		Debug::log('Outgoing header: ' . json_encode($curlInfo));
+		if($data === false)
+			Debug::log('Cant\'t download ' . $url . ' cUrl error: ' . $curlError . ' (' . $curlErrno . ')');
+
+		$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+		$header = substr($data, 0, $headerSize);
+		$retVal['header'] = $header;
+
+		Debug::log('Response header: ' . $header);
+
+		$headers = parseResponseHeader($header);
+
+		$finalHeader = end($headers);
+
+		curl_close($ch);
+
+		$data = substr($data, $headerSize);
+		$retVal['content'] = $data;
+
+		return ($returnHeader === true) ? $retVal : $retVal['content'];
 	}
 }
