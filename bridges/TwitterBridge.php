@@ -753,7 +753,7 @@ EOD;
 						continue;
 					}
 				}
-				returnServerError('Failed to make api call: $api returns ' . $e->getCode());
+				returnServerError('Failed to make api call: ' . $api . ' returns ' . $e->getCode());
 			}
 		} while ($retry);
 
