@@ -45,8 +45,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 	private function loadURL($url){
 		$header = array();
 		$opts = array(CURLOPT_USERAGENT => 'curl/7.64.0');
-		$html = getContents($url, $header, $opts)
-			or returnServerError('Could not request Zone Telechargement.');
+		$html = getContents($url, $header, $opts);
 		return str_get_html($html);
 	}
 

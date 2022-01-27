@@ -108,8 +108,7 @@ class GogsBridge extends BridgeAbstract {
 
 	public function collectData() {
 
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$html = defaultLinkTo($html, $this->getURI());
 

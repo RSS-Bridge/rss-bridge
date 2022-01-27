@@ -137,8 +137,7 @@ class IndeedBridge extends BridgeAbstract {
 
 		do {
 
-			$html = getSimpleHTMLDOM($url)
-				or returnServerError('Could not request ' . $url);
+			$html = getSimpleHTMLDOM($url);
 
 			$html = defaultLinkTo($html, $url);
 

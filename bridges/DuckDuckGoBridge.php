@@ -28,14 +28,13 @@ class DuckDuckGoBridge extends BridgeAbstract {
 	));
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM(self::URI . 'html/?kd=-1&q=' . $this->getInput('u') . $this->getInput('sort'))
-			or returnServerError('Could not request DuckDuckGo.');
+		$html = getSimpleHTMLDOM(self::URI . 'html/?kd=-1&q=' . $this->getInput('u') . $this->getInput('sort'));
 
-		foreach($html->find('div.results_links') as $element) {
+		foreach($html->find('div.result') as $element) {
 			$item = array();
-			$item['uri'] = $element->find('a', 0)->href;
-			$item['title'] = $element->find('a', 1)->innertext;
-			$item['content'] = $element->find('div.snippet', 0)->plaintext;
+			$item['uri'] = $element->find('a.result__a', 0)->href;
+			$item['title'] = $element->find('h2.result__title', 0)->plaintext;
+			$item['content'] = $element->find('a.result__snippet', 0)->plaintext;
 			$this->items[] = $item;
 		}
 	}

@@ -31,17 +31,17 @@ class BridgeImplementationTest extends TestCase {
 	public function testConstants($path) {
 		$this->setBridge($path);
 
-		$this->assertInternalType('string', $this->obj::NAME, 'class::NAME');
+		$this->assertIsString($this->obj::NAME, 'class::NAME');
 		$this->assertNotEmpty($this->obj::NAME, 'class::NAME');
-		$this->assertInternalType('string', $this->obj::URI, 'class::URI');
+		$this->assertIsString($this->obj::URI, 'class::URI');
 		$this->assertNotEmpty($this->obj::URI, 'class::URI');
-		$this->assertInternalType('string', $this->obj::DESCRIPTION, 'class::DESCRIPTION');
+		$this->assertIsString($this->obj::DESCRIPTION, 'class::DESCRIPTION');
 		$this->assertNotEmpty($this->obj::DESCRIPTION, 'class::DESCRIPTION');
-		$this->assertInternalType('string', $this->obj::MAINTAINER, 'class::MAINTAINER');
+		$this->assertIsString($this->obj::MAINTAINER, 'class::MAINTAINER');
 		$this->assertNotEmpty($this->obj::MAINTAINER, 'class::MAINTAINER');
 
-		$this->assertInternalType('array', $this->obj::PARAMETERS, 'class::PARAMETERS');
-		$this->assertInternalType('int', $this->obj::CACHE_TIMEOUT, 'class::CACHE_TIMEOUT');
+		$this->assertIsArray($this->obj::PARAMETERS, 'class::PARAMETERS');
+		$this->assertIsInt($this->obj::CACHE_TIMEOUT, 'class::CACHE_TIMEOUT');
 		$this->assertGreaterThanOrEqual(0, $this->obj::CACHE_TIMEOUT, 'class::CACHE_TIMEOUT');
 	}
 
@@ -65,7 +65,7 @@ class BridgeImplementationTest extends TestCase {
 
 		foreach($this->obj::PARAMETERS as $context => $params) {
 			if ($multiContexts) {
-				$this->assertInternalType('string', $context, 'invalid context name');
+				$this->assertIsString($context, 'invalid context name');
 				$this->assertNotEmpty($context, 'empty context name');
 			}
 
@@ -79,29 +79,29 @@ class BridgeImplementationTest extends TestCase {
 			$paramsSeen[] = $params;
 
 			foreach ($params as $field => $options) {
-				$this->assertInternalType('string', $field, $field . ': invalid id');
+				$this->assertIsString($field, $field . ': invalid id');
 				$this->assertNotEmpty($field, $field . ':empty id');
 
-				$this->assertInternalType('string', $options['name'], $field . ': invalid name');
+				$this->assertIsString($options['name'], $field . ': invalid name');
 				$this->assertNotEmpty($options['name'], $field . ': empty name');
 
 				if (isset($options['type'])) {
-					$this->assertInternalType('string', $options['type'], $field . ': invalid type');
+					$this->assertIsString($options['type'], $field . ': invalid type');
 					$this->assertContains($options['type'], $allowedTypes, $field . ': unknown type');
 
 					if ($options['type'] == 'list') {
 						$this->assertArrayHasKey('values', $options, $field . ': missing list values');
-						$this->assertInternalType('array', $options['values'], $field . ': invalid list values');
+						$this->assertIsArray($options['values'], $field . ': invalid list values');
 						$this->assertNotEmpty($options['values'], $field . ': empty list values');
 
 						foreach ($options['values'] as $valueName => $value) {
-							$this->assertInternalType('string', $valueName, $field . ': invalid value name');
+							$this->assertIsString($valueName, $field . ': invalid value name');
 						}
 					}
 				}
 
 				if (isset($options['required'])) {
-					$this->assertInternalType('bool', $options['required'], $field . ': invalid required');
+					$this->assertIsBool($options['required'], $field . ': invalid required');
 
 					if($options['required'] === true && isset($options['type'])) {
 						switch($options['type']) {
@@ -118,12 +118,12 @@ class BridgeImplementationTest extends TestCase {
 				}
 
 				if (isset($options['title'])) {
-					$this->assertInternalType('string', $options['title'], $field . ': invalid title');
+					$this->assertIsString($options['title'], $field . ': invalid title');
 					$this->assertNotEmpty($options['title'], $field . ': empty title');
 				}
 
 				if (isset($options['pattern'])) {
-					$this->assertInternalType('string', $options['pattern'], $field . ': invalid pattern');
+					$this->assertIsString($options['pattern'], $field . ': invalid pattern');
 					$this->assertNotEquals('', $options['pattern'], $field . ': empty pattern');
 				}
 
@@ -173,23 +173,23 @@ class BridgeImplementationTest extends TestCase {
 		$this->setBridge($path);
 
 		$value = $this->obj->getDescription();
-		$this->assertInternalType('string', $value, '$class->getDescription()');
+		$this->assertIsString($value, '$class->getDescription()');
 		$this->assertNotEmpty($value, '$class->getDescription()');
 
 		$value = $this->obj->getMaintainer();
-		$this->assertInternalType('string', $value, '$class->getMaintainer()');
+		$this->assertIsString($value, '$class->getMaintainer()');
 		$this->assertNotEmpty($value, '$class->getMaintainer()');
 
 		$value = $this->obj->getName();
-		$this->assertInternalType('string', $value, '$class->getName()');
+		$this->assertIsString($value, '$class->getName()');
 		$this->assertNotEmpty($value, '$class->getName()');
 
 		$value = $this->obj->getURI();
-		$this->assertInternalType('string', $value, '$class->getURI()');
+		$this->assertIsString($value, '$class->getURI()');
 		$this->assertNotEmpty($value, '$class->getURI()');
 
 		$value = $this->obj->getIcon();
-		$this->assertInternalType('string', $value, '$class->getIcon()');
+		$this->assertIsString($value, '$class->getIcon()');
 	}
 
 	/**

@@ -130,8 +130,7 @@ class CodebergBridge extends BridgeAbstract {
 	}
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request: ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$html = defaultLinkTo($html, $this->getURI());
 
@@ -246,8 +245,7 @@ class CodebergBridge extends BridgeAbstract {
 			$item['author'] = $li->find('p.desc', 0)->find('a', 0)->plaintext;
 
 			// Fetch issue page
-			$issuePage = getSimpleHTMLDOMCached($item['uri'], 3600)
-				or returnServerError('Could not request: ' . $item['uri']);
+			$issuePage = getSimpleHTMLDOMCached($item['uri'], 3600);
 
 			$issuePage = defaultLinkTo($issuePage, self::URI);
 
@@ -301,8 +299,7 @@ class CodebergBridge extends BridgeAbstract {
 			$item['author'] = $li->find('p.desc', 0)->find('a', 0)->plaintext;
 
 			// Fetch pull request page
-			$pullRequestPage = getSimpleHTMLDOMCached($item['uri'], 3600)
-				or returnServerError('Could not request: ' . $item['uri']);
+			$pullRequestPage = getSimpleHTMLDOMCached($item['uri'], 3600);
 
 			$pullRequestPage = defaultLinkTo($pullRequestPage, self::URI);
 

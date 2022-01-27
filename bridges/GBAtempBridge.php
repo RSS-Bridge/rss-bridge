@@ -79,8 +79,7 @@ class GBAtempBridge extends BridgeAbstract {
 
 	public function collectData(){
 
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Could not request GBAtemp.');
+		$html = getSimpleHTMLDOM(self::URI);
 
 		switch($this->getInput('type')) {
 		case 'N':
@@ -101,7 +100,6 @@ class GBAtempBridge extends BridgeAbstract {
 				$img = $this->findItemImage($reviewItem, 'a.review_boxart');
 				$title = $this->decodeHtmlEntities($reviewItem->find('h2.review_title', 0)->plaintext);
 				$content = getSimpleHTMLDOMCached($url)
-					or returnServerError('Could not request GBAtemp: ' . $uri);
 				$author = $content->find('span.author--name', 0)->plaintext;
 				$time = $this->findItemDate($content);
 				$intro = '<p><b>' . ($content->find('div#review_introduction', 0)->plaintext) . '</b></p>';

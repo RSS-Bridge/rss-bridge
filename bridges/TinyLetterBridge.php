@@ -33,8 +33,7 @@ class TinyLetterBridge extends BridgeAbstract {
 
 	public function collectData() {
 		$archives = self::getURI() . '/archive';
-		$html = getSimpleHTMLDOMCached($archives)
-			or returnServerError('Could not load content');
+		$html = getSimpleHTMLDOMCached($archives);
 
 		foreach($html->find('.message-list li') as $element) {
 			$item = array();

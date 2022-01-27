@@ -39,8 +39,7 @@ class QPlayBridge extends BridgeAbstract {
 	public function getName() {
 		switch ($this->queriedContext) {
 			case 'Program':
-				$html = getSimpleHTMLDOMCached($this->getURI())
-					or returnServerError('Could not load content');
+				$html = getSimpleHTMLDOMCached($this->getURI());
 
 				return $html->find('h1.program--title', 0)->innertext;
 			case 'Catalog':
@@ -55,8 +54,7 @@ class QPlayBridge extends BridgeAbstract {
 		switch ($this->queriedContext) {
 		case 'Program':
 			$program = $this->getInput('program');
-			$html = getSimpleHTMLDOMCached($this->getURI())
-				or returnServerError('Could not load content');
+			$html = getSimpleHTMLDOMCached($this->getURI());
 
 			foreach($html->find('.cce--thumbnails-video-chapter') as $element) {
 				$cid = $element->getAttribute('data-id');
@@ -67,8 +65,7 @@ class QPlayBridge extends BridgeAbstract {
 
 				/* TODO: Suport login credentials? */
 				/* # Get direct video URL */
-				/* $json_source = getContents(self::URI . '/chapters/' . $cid, array('Cookie: _uscreen2_session=???;')) */
-				/* 	or returnServerError('Could not request chapter JSON'); */
+				/* $json_source = getContents(self::URI . '/chapters/' . $cid, array('Cookie: _uscreen2_session=???;')); */
 				/* $json = json_decode($json_source); */
 
 				/* $item['enclosures'] = [$json->fallback]; */
@@ -78,8 +75,7 @@ class QPlayBridge extends BridgeAbstract {
 
 			break;
 		case 'Catalog':
-			$json_raw = getContents($this->getCatalogURI(1))
-				or returnServerError('Could not load catalog content');
+			$json_raw = getContents($this->getCatalogURI(1));
 
 			$json = json_decode($json_raw);
 			$total_pages = $json->total_pages;
@@ -90,8 +86,7 @@ class QPlayBridge extends BridgeAbstract {
 
 			if ($this->getInput('all_pages') === true) {
 				foreach(range(2, $total_pages) as $page) {
-					$json_raw = getContents($this->getCatalogURI($page))
-						or returnServerError('Could not load catalog content (all pages)');
+					$json_raw = getContents($this->getCatalogURI($page));
 
 					$json = json_decode($json_raw);
 

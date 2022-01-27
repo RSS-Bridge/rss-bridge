@@ -91,8 +91,7 @@ class Arte7Bridge extends BridgeAbstract {
 			'Authorization: Bearer ' . self::API_TOKEN
 		);
 
-		$input = getContents($url, $header)
-			or returnServerError('Could not request ARTE.');
+		$input = getContents($url, $header);
 		$input_json = json_decode($input, true);
 
 		foreach($input_json['videos'] as $element) {

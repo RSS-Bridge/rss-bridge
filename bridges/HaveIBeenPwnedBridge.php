@@ -31,8 +31,7 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 
 	public function collectData() {
 
-		$html = getSimpleHTMLDOM(self::URI . '/PwnedWebsites')
-			or returnServerError('Could not request: ' . self::URI . '/PwnedWebsites');
+		$html = getSimpleHTMLDOM(self::URI . '/PwnedWebsites');
 
 		$breaches = array();
 

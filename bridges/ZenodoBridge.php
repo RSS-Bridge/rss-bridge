@@ -7,8 +7,7 @@ class ZenodoBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns the newest content of Zenodo';
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('zenodo.org not reachable.');
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		foreach($html->find('div.record-elem') as $element) {
 			$item = array();

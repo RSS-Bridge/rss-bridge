@@ -77,7 +77,7 @@ class DerpibooruBridge extends BridgeAbstract {
 			. urlencode($this->getInput('f'))
 			. '&q='
 			. urlencode($this->getInput('q'))
-		)) or returnServerError('Failed to query Derpibooru');
+		));
 
 		foreach($queryJson->images as $post) {
 			$item = array();
@@ -85,7 +85,7 @@ class DerpibooruBridge extends BridgeAbstract {
 			$postUri = self::URI . $post->id;
 
 			$item['uri'] = $postUri;
-			$item['title'] = $post->id;
+			$item['title'] = $post->name;
 			$item['timestamp'] = strtotime($post->created_at);
 			$item['author'] = $post->uploader;
 			$item['enclosures'] = array($post->view_url);

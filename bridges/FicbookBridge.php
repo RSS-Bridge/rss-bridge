@@ -77,8 +77,7 @@ class FicbookBridge extends BridgeAbstract {
 
 		$header = array('Accept-Language: en-US');
 
-		$html = getSimpleHTMLDOM($this->getURI(), $header)
-			or returnServerError('Could not request ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI(), $header);
 
 		$html = defaultLinkTo($html, self::URI);
 

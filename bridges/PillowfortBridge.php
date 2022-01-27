@@ -205,8 +205,7 @@ EOD;
 	 * to the Twitter bridge for formatting.
 	 */
 	public function collectData() {
-		$jsonSite = getContents($this -> getJSONURI())
-			or returnServerError('Could not get the feed of' . $this->getUsername());
+		$jsonSite = getContents($this -> getJSONURI());
 
 		$jsonFile = json_decode($jsonSite, true);
 		$posts = $jsonFile['posts'];

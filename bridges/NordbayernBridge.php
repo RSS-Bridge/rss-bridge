@@ -47,15 +47,6 @@ class NordbayernBridge extends BridgeAbstract {
 		)
 	));
 
-	private function startsWith($string, $startString) {
-		$len = strlen($startString);
-		return (substr($string, 0, $len) === $startString);
-	}
-
-	private function contains($haystack, $needle) {
-		return (strpos($haystack, $needle) !== false);
-	}
-
 	private function getUseFullContent($rawContent) {
 		$content = '';
 		foreach($rawContent->children as $element) {
@@ -70,6 +61,19 @@ class NordbayernBridge extends BridgeAbstract {
 			}
 		}
 		return $content;
+	}
+
+	private function getValidImages($pictures) {
+		$images = array();
+		if(!empty($pictures)) {
+			for($i = 0; $i < count($pictures); $i++) {
+				$imgUrl = $pictures[$i]->find('img', 0)->src;
+				if(strcmp($imgUrl, 'https://www.nordbayern.de/img/nb/logo-vnp.png') !== 0) {
+					array_push($images, $imgUrl);
+				}
+			}
+		}
+		return $images;
 	}
 
 	private function handleArticle($link) {
@@ -87,8 +91,19 @@ class NordbayernBridge extends BridgeAbstract {
 
 		//first get images from content
 		$pictures = $article->find('picture');
-		if(!empty($pictures)) {
-			$bannerUrl = $pictures[0]->find('img', 0)->src;
+		$images = self::getValidImages($pictures);
+		if(!empty($images)) {
+			// If there is an author info block
+			// the first immage will be the portrait of the author
+			// and not the article banner. The banner in this
+			// case will be the second image.
+			// Also skip first image, as its always NN logo.
+			if ($article->find('a[id="openAuthor"]', 0) == null) {
+				$bannerUrl = isset($images[1]) ? $images[1] : null;
+			} else {
+				$bannerUrl = isset($images[2]) ? $images[2] : null;
+			}
+
 			$item['content'] .= '<img src="' . $bannerUrl . '">';
 		}
 
@@ -102,14 +117,13 @@ class NordbayernBridge extends BridgeAbstract {
 			$item['content'] .= self::getUseFullContent($content);
 		}
 
-		for($i = 1; $i < count($pictures); $i++) {
-			$imgUrl = $pictures[$i]->find('img', 0)->src;
-			$item['content'] .= '<img src="' . $imgUrl . '">';
+		for($i = 1; $i < count($images); $i++) {
+			$item['content'] .= '<img src="' . $images[$i] . '">';
 		}
 
 		// exclude police reports if descired
 		if($this->getInput('policeReports') ||
-			!self::contains($item['content'], 'Hier geht es zu allen aktuellen Polizeimeldungen.')) {
+			!str_contains($item['content'], 'Hier geht es zu allen aktuellen Polizeimeldungen.')) {
 			$this->items[] = $item;
 		}
 

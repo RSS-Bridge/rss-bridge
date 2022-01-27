@@ -38,6 +38,30 @@ class BandcampBridge extends BridgeAbstract {
 				'defaultValue' => 5
 			)
 		),
+		'By label' => array(
+			'label' => array(
+				'name' => 'label',
+				'type' => 'text',
+				'title' => 'label name as seen in the label page URL',
+				'required' => true
+			),
+			'type' => array(
+				'name' => 'Articles are',
+				'type' => 'list',
+				'values' => array(
+					'Releases' => 'releases',
+					'Releases, new one when track list changes' => 'changes',
+					'Individual tracks' => 'tracks'
+				),
+				'defaultValue' => 'changes'
+			),
+			'limit' => array(
+				'name' => 'limit',
+				'type' => 'number',
+				'title' => 'Number of releases to return',
+				'defaultValue' => 5
+			)
+		),
 		'By album' => array(
 			'band' => array(
 				'name' => 'band',
@@ -86,8 +110,7 @@ class BandcampBridge extends BridgeAbstract {
 				CURLOPT_CUSTOMREQUEST => 'POST',
 				CURLOPT_POSTFIELDS => $data
 			);
-			$content = getContents($url, $header, $opts)
-				or returnServerError('Could not complete request to: ' . $url);
+			$content = getContents($url, $header, $opts);
 
 			$json = json_decode($content);
 
@@ -122,6 +145,7 @@ class BandcampBridge extends BridgeAbstract {
 			}
 			break;
 		case 'By band':
+		case 'By label':
 		case 'By album':
 			$html = getSimpleHTMLDOMCached($this->getURI(), 86400);
 
@@ -139,6 +163,7 @@ class BandcampBridge extends BridgeAbstract {
 			$tralbums = array();
 			switch($this->queriedContext) {
 			case 'By band':
+			case 'By label':
 				$query_data = array(
 					'band_id' => $band_id
 				);
@@ -274,8 +299,7 @@ class BandcampBridge extends BridgeAbstract {
 
 	private function apiGet($endpoint, $query_data) {
 		$url = self::URI . 'api/' . $endpoint . '?' . http_build_query($query_data);
-		$data = json_decode(getContents($url))
-			or returnServerError('API request to "' . $url . '" failed.');
+		$data = json_decode(getContents($url));
 		return $data;
 	}
 
@@ -287,6 +311,13 @@ class BandcampBridge extends BridgeAbstract {
 				. 'tag/'
 				. urlencode($this->getInput('tag'))
 				. '?sort_field=date';
+			}
+			break;
+		case 'By label':
+			if(!is_null($this->getInput('label'))) {
+				return 'https://'
+					. $this->getInput('label')
+					. '.bandcamp.com/music';
 			}
 			break;
 		case 'By band':
@@ -321,6 +352,13 @@ class BandcampBridge extends BridgeAbstract {
 				return $this->feedName . ' - Bandcamp Band';
 			} elseif(!is_null($this->getInput('band'))) {
 				return $this->getInput('band') . ' - Bandcamp Band';
+			}
+			break;
+		case 'By label':
+			if(isset($this->feedName)) {
+				return $this->feedName . ' - Bandcamp Label';
+			} elseif(!is_null($this->getInput('label'))) {
+				return $this->getInput('label') . ' - Bandcamp Label';
 			}
 			break;
 		case 'By album':

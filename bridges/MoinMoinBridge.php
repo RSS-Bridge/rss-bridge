@@ -76,8 +76,7 @@ class MoinMoinBridge extends BridgeAbstract {
 		 *     <a class="interwiki" href="/GPL" title="MoinMoin">GNU GPL license</a>.
 		 * ...
 		 */
-		$html = getSimpleHTMLDOM($this->getInput('source'))
-			or returnServerError('Could not load ' . $this->getInput('source'));
+		$html = getSimpleHTMLDOM($this->getInput('source'));
 
 		// Some anchors link to local sites or local IDs (both don't work well
 		// in feeds)

@@ -77,8 +77,7 @@ class AllocineFRBridge extends BridgeAbstract {
 
 	public function collectData(){
 
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request ' . $this->getURI() . ' !');
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$category = array_search(
 				$this->getInput('category'),

@@ -370,8 +370,7 @@ class LeBonCoinBridge extends BridgeAbstract {
 
 		);
 
-		$content = getContents($url, $header, $opts)
-			or returnServerError('Could not request LeBonCoin. Tried: ' . $url);
+		$content = getContents($url, $header, $opts);
 
 		$json = json_decode($content);
 

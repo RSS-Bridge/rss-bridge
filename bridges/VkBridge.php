@@ -51,8 +51,7 @@ class VkBridge extends BridgeAbstract
 
 	public function collectData()
 	{
-		$text_html = $this->getContents()
-		or returnServerError('No results for group or user name "' . $this->getInput('u') . '".');
+		$text_html = $this->getContents();
 
 		$text_html = iconv('windows-1251', 'utf-8//ignore', $text_html);
 		// makes album link generating work correctly

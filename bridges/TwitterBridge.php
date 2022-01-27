@@ -4,10 +4,10 @@ class TwitterBridge extends BridgeAbstract {
 	const URI = 'https://twitter.com/';
 	const API_URI = 'https://api.twitter.com';
 	const GUEST_TOKEN_USES = 100;
-	const GUEST_TOKEN_EXPIRY = 300; // 5min
+	const GUEST_TOKEN_EXPIRY = 10800; // 3hrs
 	const CACHE_TIMEOUT = 300; // 5min
 	const DESCRIPTION = 'returns tweets';
-	const MAINTAINER = 'pmaziere';
+	const MAINTAINER = 'arnd-s';
 	const PARAMETERS = array(
 		'global' => array(
 			'nopic' => array(
@@ -545,9 +545,17 @@ EOD;
 		$guestToken = null;
 		if($guestTokenUses === null || !is_array($guestTokenUses) || count($guestTokenUses) != 2
 		|| $guestTokenUses[0] <= 0 || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
-			$guestToken = $this->getGuestToken();
-			$gt_cache->saveData(array(self::GUEST_TOKEN_USES, $guestToken));
-			$r_cache->saveData(time());
+			$guestToken = $this->getGuestToken($apiKey);
+			if ($guestToken === null) {
+				if($guestTokenUses === null) {
+					returnServerError('Could not parse guest token');
+				} else {
+					$guestToken = $guestTokenUses[1];
+				}
+			} else {
+				$gt_cache->saveData(array(self::GUEST_TOKEN_USES, $guestToken));
+				$r_cache->saveData(time());
+			}
 		} else {
 			$guestTokenUses[0] -= 1;
 			$gt_cache->saveData($guestTokenUses);
@@ -560,15 +568,20 @@ EOD;
 
 	// Get a guest token. This is different to an API key,
 	// and it seems to change more regularly than the API key.
-	private function getGuestToken() {
-		$pageContent = getContents('https://twitter.com', array(), array(), true);
+	private function getGuestToken($apiKey) {
+		$headers = array(
+			'authorization: Bearer ' . $apiKey,
+		);
+		$opts = array(
+			CURLOPT_POST => 1,
+		);
 
-		$guestTokenRegex = '/gt=([0-9]*)/m';
-		preg_match_all($guestTokenRegex, $pageContent['header'], $guestTokenMatches, PREG_SET_ORDER, 0);
-		if (!$guestTokenMatches)
-				preg_match_all($guestTokenRegex, $pageContent['content'], $guestTokenMatches, PREG_SET_ORDER, 0);
-		if (!$guestTokenMatches) returnServerError('Could not parse guest token');
-		$guestToken = $guestTokenMatches[0][1];
+		try {
+			$pageContent = getContents('https://api.twitter.com/1.1/guest/activate.json', $headers, $opts, true);
+			$guestToken = json_decode($pageContent['content'])->guest_token;
+		} catch (Exception $e) {
+			$guestToken = null;
+		}
 		return $guestToken;
 	}
 

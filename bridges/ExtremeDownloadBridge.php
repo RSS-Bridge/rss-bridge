@@ -26,8 +26,7 @@ class ExtremeDownloadBridge extends BridgeAbstract {
 		);
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM(self::URI . $this->getInput('url'))
-			or returnServerError('Could not request Extreme Download.');
+		$html = getSimpleHTMLDOM(self::URI . $this->getInput('url'));
 
 		$filter = $this->getInput('filter');
 

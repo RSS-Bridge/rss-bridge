@@ -6,6 +6,15 @@ class InstagramBridge extends BridgeAbstract {
 	const URI = 'https://www.instagram.com/';
 	const DESCRIPTION = 'Returns the newest images';
 
+	const CONFIGURATION = array(
+		'session_id' => array(
+			'required' => false,
+		),
+		'cache_timeout' => array(
+			'required' => false,
+		),
+	);
+
 	const PARAMETERS = array(
 		'Username' => array(
 			'u' => array(
@@ -50,6 +59,20 @@ class InstagramBridge extends BridgeAbstract {
 	const TAG_QUERY_HASH = '9b498c08113f1e09617a1703c22b2f32';
 	const SHORTCODE_QUERY_HASH = '865589822932d1b43dfe312121dd353a';
 
+	public function getCacheTimeout() {
+		$customTimeout = $this->getOption('cache_timeout');
+		return $customTimeout || parent::getCacheTimeout();
+	}
+
+	protected function getContents($uri) {
+		$headers = array();
+		$sessionId = $this->getOption('session_id');
+		if ($sessionId) {
+			$headers[] = 'cookie: sessionid=' . $sessionId;
+		}
+		return getContents($uri, $headers);
+	}
+
 	protected function getInstagramUserId($username) {
 
 		if(is_numeric($username)) return $username;
@@ -62,8 +85,7 @@ class InstagramBridge extends BridgeAbstract {
 		$key = $cache->loadData();
 
 		if($key == null) {
-				$data = getContents(self::URI . 'web/search/topsearch/?query=' . $username);
-
+				$data = $this->getContents(self::URI . 'web/search/topsearch/?query=' . $username);
 				foreach(json_decode($data)->users as $user) {
 					if(strtolower($user->user->username) === strtolower($username)) {
 						$key = $user->user->pk;
@@ -202,25 +224,12 @@ class InstagramBridge extends BridgeAbstract {
 		return $textContent;
 	}
 
-	protected function getSinglePostData($uri) {
-		$shortcode = explode('/', $uri)[4];
-		$data = getContents(self::URI .
-					'graphql/query/?query_hash=' .
-					self::SHORTCODE_QUERY_HASH .
-					'&variables={"shortcode"%3A"' .
-					$shortcode .
-					'"}');
-
-		return json_decode($data)->data->shortcode_media;
-	}
-
 	protected function getInstagramJSON($uri) {
 
 		if(!is_null($this->getInput('u'))) {
 
 			$userId = $this->getInstagramUserId($this->getInput('u'));
-
-			$data = getContents(self::URI .
+			$data = $this->getContents(self::URI .
 								'graphql/query/?query_hash=' .
 								 self::USER_QUERY_HASH .
 								 '&variables={"id"%3A"' .
@@ -229,18 +238,18 @@ class InstagramBridge extends BridgeAbstract {
 			return json_decode($data);
 
 		} elseif(!is_null($this->getInput('h'))) {
-			$data = getContents(self::URI .
+			$data = $this->getContents(self::URI .
 					'graphql/query/?query_hash=' .
 					 self::TAG_QUERY_HASH .
 					 '&variables={"tag_name"%3A"' .
 					$this->getInput('h') .
 					'"%2C"first"%3A10}');
+
 			return json_decode($data);
 
 		} else {
 
-			$html = getContents($uri)
-				or returnServerError('Could not request Instagram.');
+			$html = getContents($uri);
 			$scriptRegex = '/window\._sharedData = (.*);<\/script>/';
 
 			preg_match($scriptRegex, $html, $matches, PREG_OFFSET_CAPTURE, 0);
