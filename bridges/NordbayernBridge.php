@@ -39,12 +39,6 @@ class NordbayernBridge extends BridgeAbstract {
 				'Weißenburg' => 'weissenburg'
 			)
 		),
-		'policeReports' => array(
-			'name' => 'Police Reports',
-			'type' => 'checkbox',
-			'exampleValue' => 'checked',
-			'title' => 'Include Police Reports',
-		)
 	));
 
 	private function getUseFullContent($rawContent) {
@@ -73,7 +67,9 @@ class NordbayernBridge extends BridgeAbstract {
 			$img = $pictures[$i]->find('img', 0);
 			if ($img) {
 				$imgUrl = $img->src;
-				if (strcmp($imgUrl, 'https://www.nordbayern.de/img/nb/logo-vnp.png') !== 0) {
+				if(($imgUrl != '/img/nb/logo-vnp.png')  &&
+					($imgUrl != '/img/nn/logo-vnp.png') &&
+					($imgUrl != '/img/nb/logo-nuernberger-nachrichten.png')) {
 					array_push($images, $imgUrl);
 				}
 			}
@@ -84,11 +80,10 @@ class NordbayernBridge extends BridgeAbstract {
 	private function handleArticle($link) {
 		$item = array();
 		$article = getSimpleHTMLDOM($link);
-		defaultLinkTo($article, self::URI);
-
+		$content = $article->find('article[id=article]', 0);
 		$item['uri'] = $link;
 
-		$author = $article->find('[class=article__author extrabold]', 0);
+		$author = $article->find('[id="openAuthor"]', 0);
 		if ($author) {
 			$item['author'] = $author->plaintext;
 		}
