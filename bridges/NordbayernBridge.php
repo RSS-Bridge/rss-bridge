@@ -39,13 +39,13 @@ class NordbayernBridge extends BridgeAbstract {
 				'Weißenburg' => 'weissenburg'
 			)
 		),
-		'policeReports' => array(
-			'name' => 'Police Reports',
-			'type' => 'checkbox',
-			'exampleValue' => 'checked',
-			'title' => 'Include Police Reports',
-		)
 	));
+
+	private function startsWith($haystack, $needle)
+	{
+		$length = strlen($needle);
+		return (substr($haystack, 0, $length) === $needle);
+	}
 
 	private function getUseFullContent($rawContent) {
 		$content = '';
@@ -68,7 +68,9 @@ class NordbayernBridge extends BridgeAbstract {
 		if(!empty($pictures)) {
 			for($i = 0; $i < count($pictures); $i++) {
 				$imgUrl = $pictures[$i]->find('img', 0)->src;
-				if(strcmp($imgUrl, 'https://www.nordbayern.de/img/nb/logo-vnp.png') !== 0) {
+				if((strcmp($imgUrl, '/img/nb/logo-vnp.png') !== 0) &&
+					(strcmp($imgUrl, '/img/nn/logo-vnp.png') !== 0) &&
+					(strcmp($imgUrl, '/img/nb/logo-nuernberger-nachrichten.png') !== 0)) {
 					array_push($images, $imgUrl);
 				}
 			}
@@ -79,14 +81,9 @@ class NordbayernBridge extends BridgeAbstract {
 	private function handleArticle($link) {
 		$item = array();
 		$article = getSimpleHTMLDOM($link);
-		defaultLinkTo($article, self::URI);
-
+		$content = $article->find('article[id=article]', 0);
 		$item['uri'] = $link;
-		if ($article->find('h2', 0) == null) {
-			$item['title'] = $article->find('h3', 0)->innertext;
-		} else {
-			$item['title'] = $article->find('h2', 0)->innertext;
-		}
+		$item['title'] = $article->find('h2', 0)->innertext;
 		$item['content'] = '';
 
 		//first get images from content
@@ -131,9 +128,14 @@ class NordbayernBridge extends BridgeAbstract {
 	}
 
 	private function handleNewsblock($listSite) {
-		$main = $listSite->find('main', 0);
-		foreach($main->find('article') as $article) {
-			self::handleArticle(self::URI . $article->find('a', 0)->href);
+		$newsBlocks = $listSite->find('article');
+		foreach($newsBlocks as $newsBlock) {
+			$href = $newsBlock->find('a', 0)->href;
+			if(self::startsWith($href, 'http')) {
+				self::handleArticle($href);
+			} else {
+				self::handleArticle(self::URI . $href);
+			}
 		}
 	}
 
