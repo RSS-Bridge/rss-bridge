@@ -39,7 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
-          if find -name "*.php" -type f -print -exec false {} +
+          if find -name "*.php" -executable -type f -print -exec false {} +
           then
             echo 'Good, no executable php scripts found'
           else
