@@ -259,8 +259,8 @@ EOD
 			}
 
 			$params = array(
-				'user_id'	 => $user->id,
-				'tweet_mode' => 'extended'
+				'user_id'       => $user->id_str,
+				'tweet_mode'    => 'extended'
 			);
 
 			$data = $this->makeApiCall('/1.1/statuses/user_timeline.json', $params);
