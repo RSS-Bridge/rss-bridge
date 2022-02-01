@@ -401,18 +401,10 @@ EOD
 			}
 
 			$item = array();
-			// extract username and sanitize
-			//$user_info = $this->getUserInformation($tweet->user->id_str, $data->globalObjects);
 
-			// $item['username'] = $user_info->screen_name;
-			// $item['fullname'] = $user_info->name;
-			// $item['author'] = $item['fullname'] . ' (@' . $item['username'] . ')';
-			// if (null !== $this->getInput('u') && strtolower($item['username']) != strtolower($this->getInput('u'))) {
-			//	$item['author'] .= ' RT: @' . $this->getInput('u');
-			// }
-			// $item['avatar'] = $user_info->profile_image_url_https;
-
+			$realtweet = $tweet;
 			if (isset($tweet->retweeted_status)) {
+				$realtweet = $tweet->retweeted_status;
 				// Tweet is a Retweet, so set fields based on original tweet
 				$item['username'] = $tweet->retweeted_status->user->screen_name;
 				$item['fullname'] = $tweet->retweeted_status->user->name;
@@ -432,17 +424,8 @@ EOD
 
 			$item['uri'] = self::URI . $item['username'] . '/status/' . $item['id'];
 
-			// if (null !== $this->getInput('u') && strtolower($item['username']) != strtolower($this->getInput('u'))) {
-			//	$item['author'] .= ' RT: @' . $this->getInput('u');
-			// }
-
-			// extract tweet timestamp
-
 			// Convert plain text URLs into HTML hyperlinks
-			$fulltext = $tweet->full_text;
-			if (isset($tweet->retweeted_status->id)) {
-				$fulltext = $tweet->retweeted_status->full_text;
-			}
+			$fulltext = $realtweet->full_text;
 			$cleanedTweet = $fulltext;
 
 			$foundUrls = false;
@@ -451,16 +434,16 @@ EOD
 				$cleanedTweet = substr($cleanedTweet, 3);
 			}
 
-			if (isset($tweet->entities->media)) {
-				foreach($tweet->entities->media as $media) {
+			if (isset($realtweet->entities->media)) {
+				foreach($realtweet->entities->media as $media) {
 					$cleanedTweet = str_replace($media->url,
 						'<a href="' . $media->expanded_url . '">' . $media->display_url . '</a>',
 						$cleanedTweet);
 					$foundUrls = true;
 				}
 			}
-			if (isset($tweet->entities->urls)) {
-				foreach($tweet->entities->urls as $url) {
+			if (isset($realtweet->entities->urls)) {
+				foreach($realtweet->entities->urls as $url) {
 					$cleanedTweet = str_replace($url->url,
 						'<a href="' . $url->expanded_url . '">' . $url->display_url . '</a>',
 						$cleanedTweet);
@@ -470,7 +453,7 @@ EOD
 			if ($foundUrls === false) {
 				// fallback to regex'es
 				$reg_ex = '/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/';
-				if(preg_match($reg_ex, $tweet->full_text, $url)) {
+				if(preg_match($reg_ex, $realtweet->full_text, $url)) {
 					$cleanedTweet = preg_replace($reg_ex,
 						"<a href='{$url[0]}' target='_blank'>{$url[0]}</a> ",
 						$cleanedTweet);
@@ -495,8 +478,8 @@ EOD;
 
 			// Get images
 			$media_html = '';
-			if(isset($tweet->extended_entities->media) && !$this->getInput('noimg')) {
-				foreach($tweet->extended_entities->media as $media) {
+			if(isset($realtweet->extended_entities->media) && !$this->getInput('noimg')) {
+				foreach($realtweet->extended_entities->media as $media) {
 					switch($media->type) {
 					case 'photo':
 						$image = $media->media_url_https . '?name=orig';
