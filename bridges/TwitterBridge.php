@@ -372,7 +372,10 @@ EOD
 			$item['timestamp'] = $realtweet->created_at;
 			$item['id']        = $realtweet->id_str;
 			$item['uri']       = self::URI . $item['username'] . '/status/' . $item['id'];
-			$item['author']    = (isset($tweet->retweeted_status) ? 'RT: ' : '' ) . $item['fullname'] . ' (@' . $item['username'] . ')';
+			$item['author']    = (isset($tweet->retweeted_status) ? 'RT: ' : '' )
+						 . $item['fullname']
+						 . ' (@'
+						 . $item['username'] . ')';
 
 			// Convert plain text URLs into HTML hyperlinks
 			$fulltext = $realtweet->full_text;
