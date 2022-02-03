@@ -335,6 +335,11 @@ EOD
 		// Create output array with all required elements for each tweet
 		foreach($tweets as $tweet) {
 
+			// Skip own Retweets...
+			if (isset($tweet->retweeted_status) && $tweet->retweeted_status->user->id_str === $tweet->user->id_str) {
+				continue;
+			}
+
 			/* Debug::log('>>> ' . json_encode($tweet)); */
 			// Skip spurious retweets
 			// if (isset($tweet->retweeted_status) && substr($tweet->text, 0, 4) === 'RT @') {
