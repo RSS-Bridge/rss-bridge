@@ -4,7 +4,6 @@ class RtsBridge extends BridgeAbstract {
 	const NAME = 'Radio Télévision Suisse';
 	const URI = 'https://www.rts.ch/';
 	const MAINTAINER = 'imagoiq';
-	const CACHE_TIMEOUT = 0; // 30min
 	const DESCRIPTION = 'Returns newest videos from RTS';
 
 	const PARAMETERS = array(
