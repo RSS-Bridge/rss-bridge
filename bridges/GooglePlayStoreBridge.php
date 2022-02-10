@@ -22,15 +22,18 @@ class GooglePlayStoreBridge extends BridgeAbstract {
 
 	public function collectData() {
 		$appuri = static::URI . '/details?id=' . $this->getInput('id');
-		$html = getSimpleHTMLDOM($appuri)
-			  or returnClientError('App not found.');
+		$html = getSimpleHTMLDOM($appuri);
 
+		$item = array();
 		$item['uri'] = $appuri;
 		$item['content'] = $html->find('div[itemprop=description]', 1)->innertext;
 
 		// Find other fields from Additional Information section
 		foreach($html->find('.hAyfc') as $info) {
-			$index = self::INFORMATION_MAP[$info->first_child()->plaintext];
+			$index = self::INFORMATION_MAP[$info->first_child()->plaintext] ?? null;
+			if (is_null($index)) {
+				continue;
+			}
 			$item[$index] = $info->children(1)->plaintext;
 		}
 
