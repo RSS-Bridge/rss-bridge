@@ -6,6 +6,12 @@ class GooglePlayStoreBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 3600; // 1h
 	const DESCRIPTION = 'Returns the most recent version of an app with its changelog';
 
+	const TEST_DETECT_PARAMETERS = array(
+		'https://play.google.com/store/apps/details?id=com.ichi2.anki' => array(
+			'id' => 'com.ichi2.anki'
+		)
+	);
+
 	const PARAMETERS = array(array(
 		'id' => array(
 			'name' => 'Application ID',
@@ -38,5 +44,18 @@ class GooglePlayStoreBridge extends BridgeAbstract {
 		}
 
 		$this->items[] = $item;
+	}
+
+	public function detectParameters($url) {
+		// Example: https://play.google.com/store/apps/details?id=com.ichi2.anki
+
+		$params = array();
+		$regex = '/^(https?:\/\/)?play\.google\.com\/store\/apps\/details\?id=([^\/&?\n]+)/';
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['id'] = urldecode($matches[2]);
+			return $params;
+		}
+
+		return null;
 	}
 }
