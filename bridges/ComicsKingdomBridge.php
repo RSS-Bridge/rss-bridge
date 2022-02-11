@@ -28,8 +28,6 @@ class ComicsKingdomBridge extends BridgeAbstract {
 			$page = getSimpleHTMLDOM($link);
 
 			$imagelink = $page->find('meta[property=og:image]', 0)->content;
-			$link = $page->find('div.comic-viewer-inline a', 0)->href;
-			if (empty($link)) break; // site only goes back 3 comics (appears to be a new bug on their end)
 
 			$date = explode('/', $link);
 
@@ -41,6 +39,8 @@ class ComicsKingdomBridge extends BridgeAbstract {
 			$item['content'] = '<img src="' . $imagelink . '" />';
 
 			$this->items[] = $item;
+			$link = $page->find('div.comic-viewer-inline a', 0)->href;
+			if (empty($link)) break; // site only goes back 3 comics (appears to be a new bug on their end)
 		}
 	}
 
