@@ -3,7 +3,7 @@ class ComicsKingdomBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'stjohnjohnson';
 	const NAME = 'Comics Kingdom Unofficial RSS';
-	const URI = 'https://www.comicskingdom.com/';
+	const URI = 'https://comicskingdom.com/';
 	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = 'Comics Kingdom Unofficial RSS';
 	const PARAMETERS = array( array(
