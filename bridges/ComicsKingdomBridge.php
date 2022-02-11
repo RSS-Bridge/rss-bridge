@@ -28,8 +28,8 @@ class ComicsKingdomBridge extends BridgeAbstract {
 			$page = getSimpleHTMLDOM($link);
 
 			$imagelink = $page->find('meta[property=og:image]', 0)->content;
-			$prevSlug = $page->find('slider-arrow[:is-left-arrow=true]', 0);
-			$link = $this->getURI() . '/' . $prevSlug->getAttribute('date-slug');
+			$link = $page->find('div.comic-viewer-inline a', 0)->href;
+			if (empty($link)) break; // site only goes back 3 comics (appears to be a new bug on their end)
 
 			$date = explode('/', $link);
 
