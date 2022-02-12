@@ -27,7 +27,7 @@ class GetContentsException extends \Exception {
 	}
 
 	protected function getMessageHeading() {
-		return "Could not get contents";
+		return 'Could not get contents';
 	}
 }
 
@@ -56,7 +56,7 @@ class UnexpectedResponseException extends \GetContentsException {
 	private $responseBody;
 
 	protected function getMessageHeading() {
-		return "Unexpected response from upstream";
+		return 'Unexpected response from upstream';
 	}
 
 	public function __construct($responseBody, $responseHeaders, $responseCode = 500, Throwable $previous = null) {
