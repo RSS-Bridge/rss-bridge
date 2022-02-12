@@ -44,8 +44,7 @@ class RtsBridge extends BridgeAbstract {
 		}
 
 		$header = array();
-		$input = getContents($url, $header)
-			or returnServerError('Could not request RTS.');
+		$input = getContents($url, $header);
 		$input_json = json_decode($input, true);
 
 		foreach($input_json['data']['data'] as $element) {
