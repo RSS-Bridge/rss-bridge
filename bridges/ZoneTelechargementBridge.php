@@ -34,17 +34,18 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 	);
 
 	// This is an URL that is not protected by robot protection for Direct Download
-	const UNPROTECTED_URI = 'https://www.zone-telechargement.net/';
+	const UNPROTECTED_URI = 'https://zone-telechargement.net/';
 
-	// This is an URL that is not protected by robot protection for Streaming Links
-	const UNPROTECTED_URI_STREAMING = 'https://zone-telechargement.stream/';
+	// This is an URL that is not protected by robot protection for Streaming Links ; This domain has expired
+	const UNPROTECTED_URI_STREAMING = 'https://mail.zone-telechargement.cam/';
 
 	// This function use curl library with curl as User Agent instead of
 	// simple_html_dom to load the HTML content as the website has some captcha
 	// request for other user agents
 	private function loadURL($url){
 		$header = array();
-		$opts = array(CURLOPT_USERAGENT => 'curl/7.64.0');
+		$opts = array(CURLOPT_USERAGENT => 'curl/7.64.0',
+			);
 		$html = getContents($url, $header, $opts);
 		return str_get_html($html);
 	}
@@ -78,7 +79,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 				$hoster = $this->findLinkHoster($element);
 
 				// Format the link and add the link to the corresponding episode table
-				$episodes[$epnumber]['ddl'][] = '<a href="' . $element->href . '">' . $hoster . ' - '
+				$episodes[$epnumber]['ddl'][] = '<a href="' . $this->rewriteProtectedLink($element->href) . '">' . $hoster . ' - '
 					. $this->showTitle . ' Episode ' . $epnumber . '</a>';
 
 			}
@@ -97,7 +98,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 				$epnumber = explode(' ', $elementstreaming->plaintext)[1];
 
 				// Format the link and add the link to the corresponding episode table
-				$episodes[$epnumber]['streaming'][] = '<a href="' . $elementstreaming->href . '">'
+				$episodes[$epnumber]['streaming'][] = '<a href="' . $this->rewriteProtectedLink($elementstreaming->href) . '">'
 					. $this->showTitle . ' Episode ' . $epnumber . '</a>';
 			}
 		}
@@ -161,5 +162,14 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 		// Return the text of the div : it's the file hoster name !
 		return $element->find('div', 0)->plaintext;
 
+	}
+
+	// Rewrite the links to use the new URL Protection system
+	private function rewriteProtectedLink($url)
+	{
+		// Split the link using '/'
+		$parts = explode('/', $url);
+		// return the new URL using the new Link Protection system
+		return 'https://liens.onaregarde-pourvous.com/171-2/?link=' . end($parts);
 	}
 }
