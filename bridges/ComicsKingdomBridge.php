@@ -24,7 +24,7 @@ class ComicsKingdomBridge extends BridgeAbstract {
 
 		// Get current date/link
 		$link = $html->find('meta[property=og:url]', 0)->content;
-		for($i = 0; $i < 5; $i++) {
+		for($i = 0; $i < 3; $i++) {
 			$item = array();
 
 			$page = getSimpleHTMLDOM($link);
@@ -42,7 +42,7 @@ class ComicsKingdomBridge extends BridgeAbstract {
 
 			$this->items[] = $item;
 			$link = $page->find('div.comic-viewer-inline a', 0)->href;
-			if (empty($link)) break; // site only goes back 3 comics (appears to be a new bug on their end)
+			if (empty($link)) break; // allow bridge to continue if there's less than 3 comics
 		}
 	}
 
