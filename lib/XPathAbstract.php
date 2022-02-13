@@ -475,7 +475,7 @@ abstract class XPathAbstract extends BridgeAbstract {
 			return $value;
 		}
 
-		return urljoin($this->feedUri, $value);
+		return defaultLinkTo($value, $this->feedUri);
 	}
 
 	/**
