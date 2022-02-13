@@ -3,13 +3,15 @@ class ComicsKingdomBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'stjohnjohnson';
 	const NAME = 'Comics Kingdom Unofficial RSS';
-	const URI = 'https://www.comicskingdom.com/';
+	const URI = 'https://comicskingdom.com/';
 	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = 'Comics Kingdom Unofficial RSS';
 	const PARAMETERS = array( array(
 		'comicname' => array(
 			'name' => 'comicname',
 			'type' => 'text',
+			'exampleValue' => 'mutts',
+			'title' => 'The name of the comic in the URL after https://comicskingdom.com/',
 			'required' => true
 		)
 	));
@@ -22,14 +24,12 @@ class ComicsKingdomBridge extends BridgeAbstract {
 
 		// Get current date/link
 		$link = $html->find('meta[property=og:url]', 0)->content;
-		for($i = 0; $i < 5; $i++) {
+		for($i = 0; $i < 3; $i++) {
 			$item = array();
 
 			$page = getSimpleHTMLDOM($link);
 
 			$imagelink = $page->find('meta[property=og:image]', 0)->content;
-			$prevSlug = $page->find('slider-arrow[:is-left-arrow=true]', 0);
-			$link = $this->getURI() . '/' . $prevSlug->getAttribute('date-slug');
 
 			$date = explode('/', $link);
 
@@ -41,6 +41,8 @@ class ComicsKingdomBridge extends BridgeAbstract {
 			$item['content'] = '<img src="' . $imagelink . '" />';
 
 			$this->items[] = $item;
+			$link = $page->find('div.comic-viewer-inline a', 0)->href;
+			if (empty($link)) break; // allow bridge to continue if there's less than 3 comics
 		}
 	}
 
