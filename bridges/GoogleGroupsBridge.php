@@ -50,14 +50,8 @@ class GoogleGroupsBridge extends XPathAbstract {
 		return $source . '/g/' . $this->getInput('group');
 	}
 
-	public function collectData() {
-		parent::collectData();
-
-		# There is duplication in the original item url, so this fixes that
-		$replace_len = strlen(self::getSourceUrl()) - strlen($this->getInput('group')) - 1;
-		foreach ($this->items as $item) {
-			$item->setURI(substr_replace($item->getURI(), self::URI, 0, $replace_len));
-		}
+	protected function provideWebsiteContent() {
+		return defaultLinkTo(getContents($this->getSourceUrl()), self::URI);
 	}
 
 	const URL_REGEX = '/^https:\/\/groups.google.com(?:\/a\/(?<account>\S+))?(?:\/g\/(?<group>\S+))/';
