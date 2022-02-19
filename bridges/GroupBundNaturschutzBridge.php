@@ -3,6 +3,7 @@
 class GroupBundNaturschutzBridge extends XPathAbstract
 {
 	const NAME = 'BUND Naturschutz in Bayern e.V. - Kreisgruppen';
+	const URI = 'https://www.bund-naturschutz.de/ueber-uns/organisation/kreisgruppen-ortsgruppen';
 	const DESCRIPTION = 'Returns the latest news from specified BUND Naturschutz in Bayern e.V. local group (Germany)';
 	const MAINTAINER = 'dweipert';
 
@@ -11,7 +12,6 @@ class GroupBundNaturschutzBridge extends XPathAbstract
 			'group' => array(
 				'name' => 'Group',
 				'type' => 'list',
-				'required' => true,
 				'values' => array(
 					// 'Aichach-Friedberg' => 'bn-aic.de', # non-uniform page
 					'Altötting' => 'altoetting',
@@ -101,7 +101,7 @@ class GroupBundNaturschutzBridge extends XPathAbstract
 	const XPATH_EXPRESSION_ITEM_TIMESTAMP = './/*[@itemprop="datePublished"]/@datetime';
 	const XPATH_EXPRESSION_ITEM_ENCLOSURES = './/img/@src';
 
-	public function getSourceUrl() {
+	protected function getSourceUrl() {
 		return 'https://' . $this->getInput('group') . '.bund-naturschutz.de/aktuelles';
 	}
 }
