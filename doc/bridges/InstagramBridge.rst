@@ -2,17 +2,17 @@
  InstagramBridge
 =================
 
-To somehow bypass `rate limiting issue <https://github.com/RSS-Bridge/rss-bridge/issues/1891>`_,
-it is suggested to deploy private RSS-Bridge that uses working Instagram account.
+To somehow bypass the `rate limiting issue <https://github.com/RSS-Bridge/rss-bridge/issues/1891>`_,
+it is suggested to deploy a private RSS-Bridge instance that uses a working Instagram account.
 
 Configuration
 -------------
 
 1. Retreiving session id.
-Following steps describe how to get it using Chromium based browser.
+The following steps describe how to get the session id using a Chromium-based browser.
 
-- Create Instagram account, that you will use for your RSS-Bridge instance.
-It is NOT recommended to use existing account, that is used for common interaction with Instagram services.
+- Create an Instagram account, that you will use for your RSS-Bridge instance.
+It is NOT recommended to use your existing account that is used for common interaction with Instagram services.
 
 - Login to Instagram
 
@@ -20,19 +20,19 @@ It is NOT recommended to use existing account, that is used for common interacti
 
 - Open "Networks tab"
 
-- In "Filter" field input "i.instagram.com"
+- In the "Filter" field input "i.instagram.com"
 
 - Click on "Fetch/XHR"
 
 - Refresh web page
 
-- Click on any item from table with http requests
+- Click on any item from the table of http requests
 
-- In new frame open "Headers" tab and scroll to "Request headers"
+- In the new frame open the "Headers" tab and scroll to "Request Headers"
 
-- There will be cookie param will lots of "key=value" text. You need the value of "sessionid" key. Copy it
+- There will be a cookie param will lots of ``<key>=<value>;`` text. You need the value of the "sessionid" key. Copy it.
 
-2. Configurating RSS-Bridge
+2. Configuring RSS-Bridge
 
 - In config.ini.php add following configuration:
 
@@ -42,5 +42,5 @@ It is NOT recommended to use existing account, that is used for common interacti
    session_id = %sessionid from step 1%
    cache_timeout = %cache timeout in seconds%
 
-The more cache_timeout value, less chances for RSS-Bridge to throw 429 errors.
+The bigger the cache_timeout value, the smaller the chance for RSS-Bridge to throw 429 errors.
 Default cache_timeout is 3600 seconds (1 hour).
