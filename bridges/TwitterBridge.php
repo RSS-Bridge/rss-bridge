@@ -466,8 +466,6 @@ EOD;
 </div>
 EOD;
 
-			$item['content'] = htmlspecialchars_decode($item['content'], ENT_QUOTES);
-
 			// put out
 			$this->items[] = $item;
 		}
