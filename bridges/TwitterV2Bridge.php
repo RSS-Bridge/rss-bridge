@@ -1,4 +1,24 @@
 <?php
+/**
+ * TwitterV2Bridge leverages Twitter V2 API
+ * 
+ * The V1.1 API, at least when using the standard public dummy Bearer Key,
+ * sometimes omits tweets containing "Sensitive Content".
+ * 
+ * To use this bridge, you must:
+ * 1. Sign up for a Twitter Developer account
+ * 2. Create a new Project and App
+ * 3. Generate a Bearer Token in the App
+ * 4. Put that Bearer Token into config.ini.php
+ * 
+ * If config.ini.php does not exist in the rss-bridge root,
+ * create it by copying config.default.ini.php
+ * 
+ * Add a new section to config.ini.php:
+ * [TwitterV2Bridge]
+ * twitterv2apitoken = "<Your Bearer Token>"
+ * 
+ */
 class TwitterV2Bridge extends BridgeAbstract {
 	const NAME = 'Twitter V2 Bridge';
 	const URI = 'https://twitter.com/';
@@ -6,7 +26,7 @@ class TwitterV2Bridge extends BridgeAbstract {
 	const DESCRIPTION = 'returns tweets (using Twitter V2 API)';
 	const MAINTAINER = 'quickwick';
 	const CONFIGURATION = array(
-		'twitterv2apikey' => array(
+		'twitterv2apitoken' => array(
 			'required' => true,
 		)
 	);
@@ -102,48 +122,10 @@ EOD
 		)
 	);
 
-	private $apiKey     = null;
+	private $apiToken     = null;
 	private $authHeaders = array();
 
-	/*
-	public function detectParameters($url){
-		Debug::log('detectParameters function was called');
-		$params = array();
-
-		// By keyword or hashtag (search)
-		$regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/search.*(\?|&)q=([^\/&?\n]+)/';
-		if(preg_match($regex, $url, $matches) > 0) {
-			$params['query'] = urldecode($matches[4]);
-			return $params;
-		}
-
-		// By hashtag
-		$regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/hashtag\/([^\/?\n]+)/';
-		if(preg_match($regex, $url, $matches) > 0) {
-			$params['query'] = urldecode($matches[3]);
-			return $params;
-		}
-
-		// By list
-		$regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/([^\/?\n]+)\/lists\/([^\/?\n]+)/';
-		if(preg_match($regex, $url, $matches) > 0) {
-			$params['user'] = urldecode($matches[3]);
-			$params['list'] = urldecode($matches[4]);
-			return $params;
-		}
-
-		// By username
-		$regex = '/^(https?:\/\/)?(www\.)?twitter\.com\/([^\/?\n]+)/';
-		if(preg_match($regex, $url, $matches) > 0) {
-			$params['u'] = urldecode($matches[3]);
-			return $params;
-		}
-
-		return null;
-	}
-	*/
-
-	public function getName(){
+	public function getName() {
 		Debug::log('getName function was called');
 		switch($this->queriedContext) {
 			case 'By keyword or hashtag':
@@ -162,30 +144,7 @@ EOD
 		return 'Twitter ' . $specific . $this->getInput($param);
 	}
 
-	/*
-	public function getURI(){
-		Debug::log('getURI function was called');
-		switch($this->queriedContext) {
-			case 'By keyword or hashtag':
-				return self::URI
-				. 'search?q='
-				. urlencode($this->getInput('q'))
-				. '&f=tweets';
-			case 'By username':
-				return self::URI
-				. urlencode($this->getInput('u'));
-				// Always return without replies!
-				// . ($this->getInput('norep') ? '' : '/with_replies');
-			case 'By list ID':
-				return self::URI
-				. 'i/lists/'
-				. urlencode($this->getInput('listid'));
-			default: return parent::getURI();
-		}
-	}
-	*/
-
-	public function collectData(){
+	public function collectData() {
 		// $data will contain an array of all found tweets
 		$data = null;
 		// Contains user data (when in by username context)
@@ -200,74 +159,83 @@ EOD
 		$hidePinned = $this->getInput('nopinned');
 		$maxResults = $this->getInput('maxresults');
 
-		// Read API key from config.ini.php, put into Header
-		$this->apiKey     = $this->getOption('twitterv2apikey');
+		// Read API token from config.ini.php, put into Header
+		$this->apiToken     = $this->getOption('twitterv2apitoken');
 		$this->authHeaders = array(
-			'authorization: Bearer ' . $this->apiKey,
+			'authorization: Bearer ' . $this->apiToken,
 		);
 
 		// Try to get all tweets
 		switch($this->queriedContext) {
-			case 'By username':
-				//Get id from username
-				$params = array(
-					'user.fields'	=> 'pinned_tweet_id,profile_image_url'
-				);
-				$user = $this->makeApiCall('/users/by/username/' . $this->getInput('u'), $params);
-				Debug::log('User JSON: ' . json_encode($user));
-				
-				if (!$user) {
-					returnServerError('Requested username can\'t be found.');
-				}
+		case 'By username':
+			//Get id from username
+			$params = array(
+				'user.fields'	=> 'pinned_tweet_id,profile_image_url'
+			);
+			$user = $this->makeApiCall('/users/by/username/' . 
+			$this->getInput('u'), $params);
+			Debug::log('User JSON: ' . json_encode($user));
+			
+			if(!$user) {
+				returnServerError('Requested username can\'t be found.');
+			}
 
-				// Set default params
-				$params = array(
-					'max_results'	=> (empty($maxResults) ? '10' : $maxResults ),
-					'tweet.fields'  => 'created_at,referenced_tweets,entities,attachments',
-					'user.fields'	=> 'pinned_tweet_id',
-					'expansions'	=> 'referenced_tweets.id.author_id,entities.mentions.username,attachments.media_keys',
-					'media.fields'	=> 'type,url,preview_image_url'
-				);
-				
-				// Set params to filter out replies and/or retweets
-				if ($hideReplies && $hideRetweets){
-					$params['exclude'] = 'replies,retweets';
-				} elseif ($hideReplies){
-					$params['exclude'] = 'replies';
-				} elseif ($hideRetweets){
-					$params['exclude'] = 'retweets';
-				}
+			// Set default params
+			$params = array(
+				'max_results'	=> (empty($maxResults) ? '10' : $maxResults ),
+				'tweet.fields'  => 
+				'created_at,referenced_tweets,entities,attachments',
+				'user.fields'	=> 'pinned_tweet_id',
+				'expansions'	=> 
+				'referenced_tweets.id.author_id,entities.mentions.username,attachments.media_keys',
+				'media.fields'	=> 'type,url,preview_image_url'
+			);
+			
+			// Set params to filter out replies and/or retweets
+			if($hideReplies && $hideRetweets) {
+				$params['exclude'] = 'replies,retweets';
+			} elseif($hideReplies) {
+				$params['exclude'] = 'replies';
+			} elseif($hideRetweets) {
+				$params['exclude'] = 'retweets';
+			}
 
-				// Get the tweets
-				$data = $this->makeApiCall('/users/' . $user->data->id . '/tweets', $params);
-				break;
+			// Get the tweets
+			$data = $this->makeApiCall('/users/' . $user->data->id . 
+			'/tweets', $params);
+			break;
 
-			case 'By keyword or hashtag':
-				$params = array(
-					'query'			=> $this->getInput('query'),
-					'max_results'	=> (empty($maxResults) ? '10' : $maxResults ),
-					'tweet.fields'  => 'created_at,referenced_tweets,entities,attachments',
-					'expansions'	=> 'referenced_tweets.id.author_id,entities.mentions.username,attachments.media_keys',
-					'media.fields'	=> 'type,url,preview_image_url'
-				);
+		case 'By keyword or hashtag':
+			$params = array(
+				'query'			=> $this->getInput('query'),
+				'max_results'	=> (empty($maxResults) ? '10' : $maxResults ),
+				'tweet.fields'	=> 
+				'created_at,referenced_tweets,entities,attachments',
+				'expansions'	=> 
+				'referenced_tweets.id.author_id,entities.mentions.username,attachments.media_keys',
+				'media.fields'	=> 'type,url,preview_image_url'
+			);
 
-				$data = $this->makeApiCall('/tweets/search/recent', $params);
-				break;
+			$data = $this->makeApiCall('/tweets/search/recent', $params);
+			break;
 
-			case 'By list ID':
-				// Set default params
-				$params = array(
-					'max_results'	=> (empty($maxResults) ? '10' : $maxResults ),
-					'tweet.fields'  => 'created_at,referenced_tweets,entities,attachments',
-					'expansions'	=> 'referenced_tweets.id.author_id,entities.mentions.username,attachments.media_keys',
-					'media.fields'	=> 'type,url,preview_image_url'
-				);
+		case 'By list ID':
+			// Set default params
+			$params = array(
+				'max_results' => (empty($maxResults) ? '10' : $maxResults ),
+				'tweet.fields' => 
+				'created_at,referenced_tweets,entities,attachments',
+				'expansions' =>
+				'referenced_tweets.id.author_id,entities.mentions.username,attachments.media_keys',
+				'media.fields'	=> 'type,url,preview_image_url'
+			);
 
-				$data = $this->makeApiCall('/lists/' . $this->getInput('listid') . '/tweets', $params);
-				break;
+			$data = $this->makeApiCall('/lists/' . $this->getInput('listid') .
+			'/tweets', $params);
+			break;
 
-			default:
-				returnServerError('Invalid query context !');
+		default:
+			returnServerError('Invalid query context !');
 		}
 
 		if(!$data) {
@@ -282,37 +250,40 @@ EOD
 		}
 
 		// figure out the Pinned Tweet Id
-		if ($hidePinned) {
+		if($hidePinned) {
 			$pinnedTweetId = null;
-			if (isset($user) && isset($user->data->pinned_tweet_id)) {
+			if(isset($user) && isset($user->data->pinned_tweet_id)) {
 				$pinnedTweetId = $user->data->pinned_tweet_id;
 			}
 		}
 
 		// Extract Media data into array
-		isset($data->includes->media) ? $includesMedia = $data->includes->media : $includesMedia = null;
+		isset($data->includes->media) ? 
+		$includesMedia = $data->includes->media : $includesMedia = null;
 
 		// Extract additional Users data into array
-		isset($data->includes->users) ? $includesUsers = $data->includes->users : $includesUsers = null;
+		isset($data->includes->users) ? 
+		$includesUsers = $data->includes->users : $includesUsers = null;
 		//Debug::log('Tweets Users JSON: ' . json_encode($includesUsers));
 
 		// Extract additional Tweets data into array
-		isset($data->includes->tweets) ? $includesTweets = $data->includes->tweets : $includesTweets = null;
-		Debug::log('Includes Tweets JSON: ' . json_encode($includesTweets));
+		isset($data->includes->tweets) ? 
+		$includesTweets = $data->includes->tweets : $includesTweets = null;
+		//Debug::log('Includes Tweets JSON: ' . json_encode($includesTweets));
 		
 		// Extract main Tweets data into array
 		$tweets = $data->data;
-		Debug::log('Tweets JSON: ' . json_encode($tweets));
+		//Debug::log('Tweets JSON: ' . json_encode($tweets));
 
 		// Make another API call to get user and media info for retweets
 		// Is there some way to get this info included in original API call?
 		$retweetedData = null;
 		$retweetedMedia = null;
 		$retweetedUsers = null;
-		if (!$hideImages && !$hideRetweets && isset($includesTweets)){
+		if(!$hideImages && !$hideRetweets && isset($includesTweets)) {
 			// There has to be a better PHP way to extract the tweet Ids?
 			$includesTweetsIds = array();
-			foreach ($includesTweets as $includesTweet){
+			foreach($includesTweets as $includesTweet) {
 				$includesTweetsIds[] = $includesTweet->id;
 			}
 			Debug::log('includesTweetsIds: ' . join(",",$includesTweetsIds));
@@ -337,14 +308,14 @@ EOD
 			Debug::log('Tweet JSON: ' . json_encode($tweet));
 
 			// Skip pinned tweet
-			if ($hidePinned && $tweet->id === $pinnedTweetId) {
+			if($hidePinned && $tweet->id === $pinnedTweetId) {
 				continue;
 			}
 
 			// Check if Retweet
 			$isRetweet = false;
-			if (isset($tweet->referenced_tweets)){
-				if ($tweet->referenced_tweets[0]->type === 'retweeted'){
+			if(isset($tweet->referenced_tweets)) {
+				if($tweet->referenced_tweets[0]->type === 'retweeted') {
 					$isRetweet = true;
 				}
 			}
@@ -353,12 +324,14 @@ EOD
 			$item = array();
 
 			// Start setting values needed for HTML output
-			if ($isRetweet || is_null($user)) {
+			if($isRetweet || is_null($user)) {
 				// Replace tweet object with original retweeted object
-				if ($isRetweet){
-					foreach ($includesTweets as $includesTweet){
-						Debug::log('Includes Tweet JSON: ' . json_encode($includesTweet));
-						if ($includesTweet->id === $tweet->referenced_tweets[0]->id){
+				if($isRetweet) {
+					foreach($includesTweets as $includesTweet) {
+						Debug::log('Includes Tweet JSON: ' 
+						. json_encode($includesTweet));
+						if($includesTweet->id === 
+						$tweet->referenced_tweets[0]->id) {
 							$tweet = $includesTweet;
 							break;
 						}
@@ -366,25 +339,23 @@ EOD
 				}
 
 				// Skip self-Retweets (can cause duplicate entries in output)
-				if (isset($user) && $tweet->author_id === $user->data->id) {
+				if(isset($user) && $tweet->author_id === $user->data->id) {
 					continue;
 				}
 				
 				// Get user object for retweeted tweet
 				$originalUser = (object)[]; // make the linter stop complaining
-				if (isset($retweetedUsers)){
-					foreach ($retweetedUsers as $retweetedUser){
-						//if ($includesUser->id === $tweet->entities->mentions[0]->id){
-						if ($retweetedUser->id === $tweet->author_id){
+				if(isset($retweetedUsers)) {
+					foreach($retweetedUsers as $retweetedUser) {
+						if($retweetedUser->id === $tweet->author_id) {
 							$originalUser = $retweetedUser;
 							break;
 						}
 					}
 				}
-				if (isset($includesUsers)){
-					foreach ($includesUsers as $includesUser){
-						//if ($includesUser->id === $tweet->entities->mentions[0]->id){
-						if ($includesUser->id === $tweet->author_id){
+				if(isset($includesUsers)) {
+					foreach($includesUsers as $includesUser) {
+						if($includesUser->id === $tweet->author_id) {
 							$originalUser = $includesUser;
 							break;
 						}
@@ -393,7 +364,7 @@ EOD
 				
 				$item['username']  = $originalUser->username;
 				$item['fullname']  = $originalUser->name;
-				if (isset($originalUser->profile_image_url)){
+				if(isset($originalUser->profile_image_url)) {
 					$item['avatar']    = $originalUser->profile_image_url;	
 				}
 				else{
@@ -406,7 +377,8 @@ EOD
 			}
 			$item['id']        = $tweet->id;
 			$item['timestamp'] = $tweet->created_at;
-			$item['uri']       = self::URI . $item['username'] . '/status/' . $item['id'];
+			$item['uri']       = 
+			self::URI . $item['username'] . '/status/' . $item['id'];
 			$item['author']    = ($isRetweet ? 'RT: ' : '' )
 						 . $item['fullname']
 						 . ' (@'
@@ -418,23 +390,26 @@ EOD
 
 			// Remove 'RT @' from tweet text
 			// To Do: also remove the full username being retweeted?
-			if (substr($cleanedTweet, 0, 4) === 'RT @') {
+			if(substr($cleanedTweet, 0, 4) === 'RT @') {
 				$cleanedTweet = substr($cleanedTweet, 3);
 			}
 
 			// Perform filtering (skip some tweets)
 			switch($this->queriedContext) {
 				case 'By list ID':
-					// Check if list tweet contains desired filter keyword (using raw content)
+					// Check if list tweet contains desired filter keyword 
+					// (using raw content)
 					if($this->getInput('filter')) {
-						if(stripos($cleanedTweet, $this->getInput('filter')) === false) {
+						if(stripos($cleanedTweet, 
+						$this->getInput('filter')) === false) {
 							continue 2; // switch + for-loop!
 						}
 					}
 					break;
 				case 'By username':
 					/* This section should be unnecessary, let's confirm
-					if ($hideRetweets && strtolower($item['username']) != strtolower($this->getInput('u'))) {
+					if($hideRetweets && strtolower($item['username']) != 
+					strtolower($this->getInput('u'))) {
 						continue 2; // switch + for-loop!
 					}
 					break;
@@ -444,15 +419,16 @@ EOD
 
 			// Search for and replace URLs in Tweet text
 			$foundUrls = false;
-			if (isset($tweet->entities->urls)) {
+			if(isset($tweet->entities->urls)) {
 				foreach($tweet->entities->urls as $url) {
 					$cleanedTweet = str_replace($url->url,
-						'<a href="' . $url->expanded_url . '">' . $url->display_url . '</a>',
+						'<a href="' . $url->expanded_url 
+						. '">' . $url->display_url . '</a>',
 						$cleanedTweet);
 					$foundUrls = true;
 				}
 			}
-			if ($foundUrls === false) {
+			if($foundUrls === false) {
 				// fallback to regex'es
 				$reg_ex = '/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/';
 				if(preg_match($reg_ex, $cleanedTweet, $url)) {
@@ -483,20 +459,23 @@ EOD;
 			$media_html = '';
 			if(!$hideImages && isset($tweet->attachments->media_keys)) {
 
-				// Match media_keys in tweet to media list from, put matches into new array
+				// Match media_keys in tweet to media list from, put matches 
+				// into new array
 				$tweetMedia = array();
 				// Start by checking the original list of tweet Media includes
-				if (isset($includesMedia)){
-					foreach ($includesMedia as $includesMedium) {
-						if (in_array ($includesMedium->media_key, $tweet->attachments->media_keys)){
+				if(isset($includesMedia)) {
+					foreach($includesMedia as $includesMedium) {
+						if(in_array ($includesMedium->media_key, 
+						$tweet->attachments->media_keys)) {
 							$tweetMedia[] = $includesMedium;
 						}
 					}
 				}
 				// If no matches found, check the retweet Media includes
-				if (empty($tweetMedia) && isset($retweetedMedia)){
-					foreach ($retweetedMedia as $retweetedMedium) {
-						if (in_array ($retweetedMedium->media_key, $tweet->attachments->media_keys)){
+				if(empty($tweetMedia) && isset($retweetedMedia)) {
+					foreach($retweetedMedia as $retweetedMedium) {
+						if(in_array ($retweetedMedium->media_key, 
+						$tweet->attachments->media_keys)) {
 							$tweetMedia[] = $retweetedMedium;
 						}
 					}
@@ -520,7 +499,8 @@ EOD;
 EOD;
 						break;
 					case 'video':
-						// To Do: Is there a way to easily match this to a URL for a link?
+						// To Do: Is there a way to easily match this
+						// to a URL for a link?
 						$display_image = $media->preview_image_url;
 
 						$media_html .= <<<EOD
@@ -531,7 +511,8 @@ EOD;
 EOD;
 						break;
 					case 'animated_gif':
-						// To Do: Is there a way to easily match this to a URL for a link?
+						// To Do: Is there a way to easily match this to a 
+						// URL for a link?
 						$display_image = $media->preview_image_url;
 
 						$media_html .= <<<EOD
@@ -542,7 +523,8 @@ EOD;
 EOD;
 						break;
 					default:
-						Debug::log('Missing support for media type: ' . $media->type);
+						Debug::log('Missing support for media type: ' . 
+						$media->type);
 					}
 				}
 			}
@@ -559,7 +541,8 @@ EOD;
 </div>
 EOD;
 
-			$item['content'] = htmlspecialchars_decode($item['content'], ENT_QUOTES);
+			$item['content'] = htmlspecialchars_decode($item['content'], 
+			ENT_QUOTES);
 
 			// put out
 			$this->items[] = $item;
@@ -570,7 +553,8 @@ EOD;
 	}
 
 	private static function compareTweetDate($tweet1, $tweet2) {
-		return (strtotime($tweet1['timestamp']) < strtotime($tweet2['timestamp']) ? 1 : -1);
+		return (strtotime($tweet1['timestamp']) < 
+		strtotime($tweet2['timestamp']) ? 1 : -1);
 	}
 
 	/**
@@ -580,7 +564,7 @@ EOD;
 	 * @return object json data
 	 */
 	private function makeApiCall($api, $params) {
-		if ($params) {
+		if($params) {
 			$uri = self::API_URI . $api . '?' . http_build_query($params);
 		}
 		else{
@@ -612,7 +596,8 @@ EOD
 		return $data;
 	}
 
-	private function getContents($url, $header = array(), $opts = array(), $returnHeader = false){
+	private function getContents($url, $header = array(), $opts = array(), 
+	$returnHeader = false) {
 		Debug::log('Reading contents from "' . $url . '"');
 
 		$retVal = array(
@@ -669,7 +654,8 @@ EOD
 
 		Debug::log('Outgoing header: ' . json_encode($curlInfo));
 		if($data === false)
-			Debug::log('Cant\'t download ' . $url . ' cUrl error: ' . $curlError . ' (' . $curlErrno . ')');
+			Debug::log('Cant\'t download ' . $url . ' cUrl error: ' . 
+			$curlError . ' (' . $curlErrno . ')');
 
 		$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 		$header = substr($data, 0, $headerSize);
