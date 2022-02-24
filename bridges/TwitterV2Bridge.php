@@ -126,7 +126,6 @@ EOD
 	private $authHeaders = array();
 
 	public function getName() {
-		Debug::log('getName function was called');
 		switch($this->queriedContext) {
 			case 'By keyword or hashtag':
 				$specific = 'search ';
@@ -174,7 +173,7 @@ EOD
 			);
 			$user = $this->makeApiCall('/users/by/username/' . 
 			$this->getInput('u'), $params);
-			Debug::log('User JSON: ' . json_encode($user));
+			//Debug::log('User JSON: ' . json_encode($user));
 			
 			if(!$user) {
 				returnServerError('Requested username can\'t be found.');
@@ -286,7 +285,8 @@ EOD
 			foreach($includesTweets as $includesTweet) {
 				$includesTweetsIds[] = $includesTweet->id;
 			}
-			Debug::log('includesTweetsIds: ' . join(",",$includesTweetsIds));
+			//Debug::log('includesTweetsIds: ' . join(",",$includesTweetsIds));
+
 			// Set default params for API query
 			$params = array(
 				'ids'			=> join(",",$includesTweetsIds),
@@ -305,7 +305,7 @@ EOD
 
 		// Create output array with all required elements for each tweet
 		foreach($tweets as $tweet) {
-			Debug::log('Tweet JSON: ' . json_encode($tweet));
+			//Debug::log('Tweet JSON: ' . json_encode($tweet));
 
 			// Skip pinned tweet
 			if($hidePinned && $tweet->id === $pinnedTweetId) {
@@ -328,8 +328,7 @@ EOD
 				// Replace tweet object with original retweeted object
 				if($isRetweet) {
 					foreach($includesTweets as $includesTweet) {
-						Debug::log('Includes Tweet JSON: ' 
-						. json_encode($includesTweet));
+						//Debug::log('Includes Tweet JSON: ' . json_encode($includesTweet));
 						if($includesTweet->id === 
 						$tweet->referenced_tweets[0]->id) {
 							$tweet = $includesTweet;
@@ -386,7 +385,7 @@ EOD
 
 			// Convert plain text URLs into HTML hyperlinks
 			$cleanedTweet = $tweet->text;
-			Debug::log('cleanedTweet: ' . $cleanedTweet);
+			//Debug::log('cleanedTweet: ' . $cleanedTweet);
 
 			// Remove 'RT @' from tweet text
 			// To Do: also remove the full username being retweeted?
