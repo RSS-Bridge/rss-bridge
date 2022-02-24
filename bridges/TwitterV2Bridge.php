@@ -1,23 +1,23 @@
 <?php
 /**
  * TwitterV2Bridge leverages Twitter V2 API
- * 
+ *
  * The V1.1 API, at least when using the standard public dummy Bearer Key,
  * sometimes omits tweets containing "Sensitive Content".
- * 
+ *
  * To use this bridge, you must:
  * 1. Sign up for a Twitter Developer account
  * 2. Create a new Project and App
  * 3. Generate a Bearer Token in the App
  * 4. Put that Bearer Token into config.ini.php
- * 
+ *
  * If config.ini.php does not exist in the rss-bridge root,
  * create it by copying config.default.ini.php
- * 
+ *
  * Add a new section to config.ini.php:
  * [TwitterV2Bridge]
  * twitterv2apitoken = "<Your Bearer Token>"
- * 
+ *
  */
 class TwitterV2Bridge extends BridgeAbstract {
 	const NAME = 'Twitter V2 Bridge';
@@ -142,7 +142,7 @@ EOD
 				break;
 			case 'By list ID':
 				return 'Twitter List #' . $this->getInput('listid');
-			default: 
+			default:
 				return parent::getName();
 		}
 		return 'Twitter ' . $specific . $this->getInput($param);
@@ -176,8 +176,8 @@ EOD
 			$params = array(
 				'user.fields'	=> 'pinned_tweet_id,profile_image_url'
 			);
-			$user = $this->makeApiCall('/users/by/username/' . 
-			$this->getInput('u'), $params);
+			$user = $this->makeApiCall('/users/by/username/'
+			. $this->getInput('u'), $params);
 			//Debug::log('User JSON: ' . json_encode($user));
 			
 			if(!$user) {
@@ -187,10 +187,10 @@ EOD
 			// Set default params
 			$params = array(
 				'max_results'	=> (empty($maxResults) ? '10' : $maxResults ),
-				'tweet.fields'  => 
+				'tweet.fields'  =>
 				'created_at,referenced_tweets,entities,attachments',
 				'user.fields'	=> 'pinned_tweet_id',
-				'expansions'	=> 
+				'expansions'	=>
 				'referenced_tweets.id.author_id,entities.mentions.username,attachments.media_keys',
 				'media.fields'	=> 'type,url,preview_image_url'
 			);
@@ -205,7 +205,7 @@ EOD
 			}
 
 			// Get the tweets
-			$data = $this->makeApiCall('/users/' . $user->data->id 
+			$data = $this->makeApiCall('/users/' . $user->data->id
 			. '/tweets', $params);
 			break;
 
@@ -213,9 +213,9 @@ EOD
 			$params = array(
 				'query'			=> $this->getInput('query'),
 				'max_results'	=> (empty($maxResults) ? '10' : $maxResults ),
-				'tweet.fields'	=> 
+				'tweet.fields'	=>
 				'created_at,referenced_tweets,entities,attachments',
-				'expansions'	=> 
+				'expansions'	=>
 				'referenced_tweets.id.author_id,entities.mentions.username,attachments.media_keys',
 				'media.fields'	=> 'type,url,preview_image_url'
 			);
@@ -227,7 +227,7 @@ EOD
 			// Set default params
 			$params = array(
 				'max_results' => (empty($maxResults) ? '10' : $maxResults ),
-				'tweet.fields' => 
+				'tweet.fields' =>
 				'created_at,referenced_tweets,entities,attachments',
 				'expansions' =>
 				'referenced_tweets.id.author_id,entities.mentions.username,attachments.media_keys',
@@ -262,17 +262,14 @@ EOD
 		}
 
 		// Extract Media data into array
-		isset($data->includes->media) ? 
-		$includesMedia = $data->includes->media : $includesMedia = null;
+		isset($data->includes->media) ? $includesMedia = $data->includes->media : $includesMedia = null;
 
 		// Extract additional Users data into array
-		isset($data->includes->users) ? 
-		$includesUsers = $data->includes->users : $includesUsers = null;
+		isset($data->includes->users) ? $includesUsers = $data->includes->users : $includesUsers = null;
 		//Debug::log('Tweets Users JSON: ' . json_encode($includesUsers));
 
 		// Extract additional Tweets data into array
-		isset($data->includes->tweets) ? 
-		$includesTweets = $data->includes->tweets : $includesTweets = null;
+		isset($data->includes->tweets) ? $includesTweets = $data->includes->tweets : $includesTweets = null;
 		//Debug::log('Includes Tweets JSON: ' . json_encode($includesTweets));
 		
 		// Extract main Tweets data into array
@@ -294,7 +291,7 @@ EOD
 
 			// Set default params for API query
 			$params = array(
-				'ids'			=> join(",",$includesTweetsIds),
+				'ids'			=> join(',',$includesTweetsIds),
 				'tweet.fields'  => 'entities,attachments',
 				'expansions'	=> 'author_id,attachments.media_keys',
 				'media.fields'	=> 'type,url,preview_image_url',
@@ -334,8 +331,7 @@ EOD
 				if($isRetweet) {
 					foreach($includesTweets as $includesTweet) {
 						//Debug::log('Includes Tweet JSON: ' . json_encode($includesTweet));
-						if($includesTweet->id === 
-						$tweet->referenced_tweets[0]->id) {
+						if($includesTweet->id === $tweet->referenced_tweets[0]->id) {
 							$tweet = $includesTweet;
 							break;
 						}
@@ -348,7 +344,7 @@ EOD
 				}
 				
 				// Get user object for retweeted tweet
-				$originalUser = (object)[]; // make the linter stop complaining
+				$originalUser = new stdClass(); // make the linters stop complaining
 				if(isset($retweetedUsers)) {
 					foreach($retweetedUsers as $retweetedUser) {
 						if($retweetedUser->id === $tweet->author_id) {
@@ -372,16 +368,17 @@ EOD
 					$item['avatar']    = $originalUser->profile_image_url;	
 				}
 				else{
-					$item['avatar'] = null; 
+					$item['avatar'] = null;
 				}
-			} else{
+			}
+			else{
 				$item['username']  = $user->data->username;
 				$item['fullname']  = $user->data->name;	
 				$item['avatar']    = $user->data->profile_image_url;
 			}
 			$item['id']        = $tweet->id;
 			$item['timestamp'] = $tweet->created_at;
-			$item['uri']       = 
+			$item['uri']       =
 			self::URI . $item['username'] . '/status/' . $item['id'];
 			$item['author']    = ($isRetweet ? 'RT: ' : '' )
 						 . $item['fullname']
@@ -401,10 +398,10 @@ EOD
 			// Perform filtering (skip some tweets)
 			switch($this->queriedContext) {
 				case 'By list ID':
-					// Check if list tweet contains desired filter keyword 
+					// Check if list tweet contains desired filter keyword
 					// (using raw content)
 					if($this->getInput('filter')) {
-						if(stripos($cleanedTweet, 
+						if(stripos($cleanedTweet,
 						$this->getInput('filter')) === false) {
 							continue 2; // switch + for-loop!
 						}
@@ -412,7 +409,7 @@ EOD
 					break;
 				case 'By username':
 					/* This section should be unnecessary, let's confirm
-					if($hideRetweets && strtolower($item['username']) != 
+					if($hideRetweets && strtolower($item['username']) !=
 					strtolower($this->getInput('u'))) {
 						continue 2; // switch + for-loop!
 					}
@@ -426,7 +423,7 @@ EOD
 			if(isset($tweet->entities->urls)) {
 				foreach($tweet->entities->urls as $url) {
 					$cleanedTweet = str_replace($url->url,
-						'<a href="' . $url->expanded_url 
+						'<a href="' . $url->expanded_url
 						. '">' . $url->display_url . '</a>',
 						$cleanedTweet);
 					$foundUrls = true;
@@ -463,13 +460,13 @@ EOD;
 			$media_html = '';
 			if(!$hideImages && isset($tweet->attachments->media_keys)) {
 
-				// Match media_keys in tweet to media list from, put matches 
+				// Match media_keys in tweet to media list from, put matches
 				// into new array
 				$tweetMedia = array();
 				// Start by checking the original list of tweet Media includes
 				if(isset($includesMedia)) {
 					foreach($includesMedia as $includesMedium) {
-						if(in_array ($includesMedium->media_key, 
+						if(in_array ($includesMedium->media_key,
 						$tweet->attachments->media_keys)) {
 							$tweetMedia[] = $includesMedium;
 						}
@@ -478,7 +475,7 @@ EOD;
 				// If no matches found, check the retweet Media includes
 				if(empty($tweetMedia) && isset($retweetedMedia)) {
 					foreach($retweetedMedia as $retweetedMedium) {
-						if(in_array ($retweetedMedium->media_key, 
+						if(in_array ($retweetedMedium->media_key,
 						$tweet->attachments->media_keys)) {
 							$tweetMedia[] = $retweetedMedium;
 						}
@@ -520,7 +517,7 @@ EOD;
 EOD;
 						break;
 					case 'animated_gif':
-						// To Do: Is there a way to easily match this to a 
+						// To Do: Is there a way to easily match this to a
 						// URL for a link?
 						$display_image = $media->preview_image_url;
 
@@ -532,8 +529,8 @@ EOD;
 EOD;
 						break;
 					default:
-						Debug::log('Missing support for media type: ' . 
-						$media->type);
+						Debug::log('Missing support for media type: '
+						. $media->type);
 					}
 				}
 			}
@@ -550,8 +547,7 @@ EOD;
 </div>
 EOD;
 
-			$item['content'] = htmlspecialchars_decode($item['content'], 
-			ENT_QUOTES);
+			$item['content'] = htmlspecialchars_decode($item['content'], ENT_QUOTES);
 
 			// put out
 			$this->items[] = $item;
@@ -562,8 +558,7 @@ EOD;
 	}
 
 	private static function compareTweetDate($tweet1, $tweet2) {
-		return (strtotime($tweet1['timestamp']) < 
-		strtotime($tweet2['timestamp']) ? 1 : -1);
+		return (strtotime($tweet1['timestamp']) < strtotime($tweet2['timestamp']) ? 1 : -1);
 	}
 
 	/**
@@ -605,7 +600,7 @@ EOD
 		return $data;
 	}
 
-	private function getContents($url, $header = array(), $opts = array(), 
+	private function getContents($url, $header = array(), $opts = array(),
 	$returnHeader = false) {
 		Debug::log('Reading contents from "' . $url . '"');
 
@@ -663,8 +658,8 @@ EOD
 
 		Debug::log('Outgoing header: ' . json_encode($curlInfo));
 		if($data === false)
-			Debug::log('Cant\'t download ' . $url . ' cUrl error: ' . 
-			$curlError . ' (' . $curlErrno . ')');
+			Debug::log('Cant\'t download ' . $url . ' cUrl error: '
+			. $curlError . ' (' . $curlErrno . ')');
 
 		$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 		$header = substr($data, 0, $headerSize);
