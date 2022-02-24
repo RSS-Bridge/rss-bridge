@@ -179,7 +179,7 @@ EOD
 			$user = $this->makeApiCall('/users/by/username/'
 			. $this->getInput('u'), $params);
 			//Debug::log('User JSON: ' . json_encode($user));
-			
+
 			if(!$user) {
 				returnServerError('Requested username can\'t be found.');
 			}
@@ -187,14 +187,14 @@ EOD
 			// Set default params
 			$params = array(
 				'max_results'	=> (empty($maxResults) ? '10' : $maxResults ),
-				'tweet.fields'  =>
-				'created_at,referenced_tweets,entities,attachments',
+				'tweet.fields'
+				=> 'created_at,referenced_tweets,entities,attachments',
 				'user.fields'	=> 'pinned_tweet_id',
-				'expansions'	=>
-				'referenced_tweets.id.author_id,entities.mentions.username,attachments.media_keys',
+				'expansions'
+				=> 'referenced_tweets.id.author_id,entities.mentions.username,attachments.media_keys',
 				'media.fields'	=> 'type,url,preview_image_url'
 			);
-			
+
 			// Set params to filter out replies and/or retweets
 			if($hideReplies && $hideRetweets) {
 				$params['exclude'] = 'replies,retweets';
@@ -213,10 +213,10 @@ EOD
 			$params = array(
 				'query'			=> $this->getInput('query'),
 				'max_results'	=> (empty($maxResults) ? '10' : $maxResults ),
-				'tweet.fields'	=>
-				'created_at,referenced_tweets,entities,attachments',
-				'expansions'	=>
-				'referenced_tweets.id.author_id,entities.mentions.username,attachments.media_keys',
+				'tweet.fields'
+				=> 'created_at,referenced_tweets,entities,attachments',
+				'expansions'
+				=> 'referenced_tweets.id.author_id,entities.mentions.username,attachments.media_keys',
 				'media.fields'	=> 'type,url,preview_image_url'
 			);
 
@@ -227,10 +227,10 @@ EOD
 			// Set default params
 			$params = array(
 				'max_results' => (empty($maxResults) ? '10' : $maxResults ),
-				'tweet.fields' =>
-				'created_at,referenced_tweets,entities,attachments',
-				'expansions' =>
-				'referenced_tweets.id.author_id,entities.mentions.username,attachments.media_keys',
+				'tweet.fields'
+				=> 'created_at,referenced_tweets,entities,attachments',
+				'expansions'
+				=> 'referenced_tweets.id.author_id,entities.mentions.username,attachments.media_keys',
 				'media.fields'	=> 'type,url,preview_image_url'
 			);
 
@@ -271,7 +271,7 @@ EOD
 		// Extract additional Tweets data into array
 		isset($data->includes->tweets) ? $includesTweets = $data->includes->tweets : $includesTweets = null;
 		//Debug::log('Includes Tweets JSON: ' . json_encode($includesTweets));
-		
+
 		// Extract main Tweets data into array
 		$tweets = $data->data;
 		//Debug::log('Tweets JSON: ' . json_encode($tweets));
@@ -291,7 +291,7 @@ EOD
 
 			// Set default params for API query
 			$params = array(
-				'ids'			=> join(',',$includesTweetsIds),
+				'ids'			=> join(',', $includesTweetsIds),
 				'tweet.fields'  => 'entities,attachments',
 				'expansions'	=> 'author_id,attachments.media_keys',
 				'media.fields'	=> 'type,url,preview_image_url',
@@ -342,7 +342,7 @@ EOD
 				if(isset($user) && $tweet->author_id === $user->data->id) {
 					continue;
 				}
-				
+
 				// Get user object for retweeted tweet
 				$originalUser = new stdClass(); // make the linters stop complaining
 				if(isset($retweetedUsers)) {
@@ -361,25 +361,23 @@ EOD
 						}
 					}
 				}
-				
+
 				$item['username']  = $originalUser->username;
 				$item['fullname']  = $originalUser->name;
 				if(isset($originalUser->profile_image_url)) {
-					$item['avatar']    = $originalUser->profile_image_url;	
-				}
-				else{
+					$item['avatar']    = $originalUser->profile_image_url;
+				} else{
 					$item['avatar'] = null;
 				}
-			}
-			else{
+			} else{
 				$item['username']  = $user->data->username;
-				$item['fullname']  = $user->data->name;	
+				$item['fullname']  = $user->data->name;
 				$item['avatar']    = $user->data->profile_image_url;
 			}
 			$item['id']        = $tweet->id;
 			$item['timestamp'] = $tweet->created_at;
-			$item['uri']       =
-			self::URI . $item['username'] . '/status/' . $item['id'];
+			$item['uri']
+			= self::URI . $item['username'] . '/status/' . $item['id'];
 			$item['author']    = ($isRetweet ? 'RT: ' : '' )
 						 . $item['fullname']
 						 . ' (@'
@@ -486,10 +484,9 @@ EOD;
 					switch($media->type) {
 					case 'photo':
 						$image = $media->url . '?name=orig';
-						if ($this->getInput('noimgscaling')){
+						if ($this->getInput('noimgscaling')) {
 							$display_image = $media->url;
-						}
-						else{
+						} else{
 							$display_image = $media->url . '?name=thumb';
 						}
 						// add enclosures
@@ -570,8 +567,7 @@ EOD;
 	private function makeApiCall($api, $params) {
 		if($params) {
 			$uri = self::API_URI . $api . '?' . http_build_query($params);
-		}
-		else{
+		} else{
 			$uri = self::API_URI . $api;
 		}
 
