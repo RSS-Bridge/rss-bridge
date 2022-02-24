@@ -40,12 +40,12 @@ class HeiseBridge extends FeedExpander {
 
 	protected function parseItem($feedItem) {
 		$item = parent::parseItem($feedItem);
-		$uri = $item['uri'] . '&seite=all';
+		$item['uri'] = explode('?', $item['uri'])[0] . '?seite=all';
 
-		$article = getSimpleHTMLDOMCached($uri);
+		$article = getSimpleHTMLDOMCached($item['uri']);
 
 		if ($article) {
-			$article = defaultLinkTo($article, $uri);
+			$article = defaultLinkTo($article, $item['uri']);
 			$item = $this->addArticleToItem($item, $article);
 		}
 
