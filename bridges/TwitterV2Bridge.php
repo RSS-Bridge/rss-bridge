@@ -47,6 +47,11 @@ class TwitterV2Bridge extends BridgeAbstract {
 				'name' => 'Hide images in tweets',
 				'type' => 'checkbox',
 				'title' => 'Activate to hide images in tweets'
+			),
+			'noimgscaling' => array(
+				'name' => 'Disable image scaling',
+				'type' => 'checkbox',
+				'title' => 'Activate to disable image scaling in tweets (keeps original image)'
 			)
 		),
 		'By username' => array(
@@ -200,8 +205,8 @@ EOD
 			}
 
 			// Get the tweets
-			$data = $this->makeApiCall('/users/' . $user->data->id . 
-			'/tweets', $params);
+			$data = $this->makeApiCall('/users/' . $user->data->id 
+			. '/tweets', $params);
 			break;
 
 		case 'By keyword or hashtag':
@@ -484,7 +489,12 @@ EOD;
 					switch($media->type) {
 					case 'photo':
 						$image = $media->url . '?name=orig';
-						$display_image = $media->url;
+						if ($this->getInput('noimgscaling')){
+							$display_image = $media->url;
+						}
+						else{
+							$display_image = $media->url . '?name=thumb';
+						}
 						// add enclosures
 						$item['enclosures'][] = $image;
 
