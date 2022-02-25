@@ -1,8 +1,8 @@
 <?php
-class Rule34ApiBridge extends BridgeAbstract {
+class Rule34Bridge extends BridgeAbstract {
 
 	const MAINTAINER = 'mitsukarenai';
-	const NAME = 'Rule34Api';
+	const NAME = 'Rule34';
 	const URI = 'https://api.rule34.xxx/';
 	const DESCRIPTION = 'Returns images from given page';
 
