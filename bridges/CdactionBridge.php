@@ -12,23 +12,23 @@ class CdactionBridge extends BridgeAbstract {
 			'values' => array(
 				'Newsy' => 'newsy',
 				'Recenzje' => 'recenzje',
-				'Teksty' => [
+				'Teksty' => array(
 					'Publicystyka' => 'publicystyka',
 					'Zapowiedzi' => 'zapowiedzi',
 					'Już graliśmy' => 'juz-gralismy',
 					'Poradniki' => 'poradniki',
-				],
+                ),
 				'Kultura' => 'kultura',
 				'Wideo' => 'wideo',
 				'Czasopismo' => 'czasopismo',
-				'Technologie' => [
+				'Technologie' => array(
 					'Artykuły' => 'artykuly',
 					'Testy' => 'testy',
-				],
-				'Na luzie' => [
+                ),
+				'Na luzie' => array(
 					'Konkursy' => 'konkursy',
 					'Nadgodziny' => 'nadgodziny',
-				]
+                )
 			)
 		))
 	);
@@ -43,7 +43,7 @@ class CdactionBridge extends BridgeAbstract {
 
 		foreach ($newsJson->props->pageProps->dehydratedState->queries[1]->state->data->results as $news) {
 			$item = array();
-			$item['uri'] = $this->getURI() . '/' . $this->getInput('category') . '/'. $news->slug;
+			$item['uri'] = $this->getURI() . '/' . $this->getInput('category') . '/' . $news->slug;
 			$item['title'] = $news->title;
 			$item['timestamp'] = $news->publishedAt;
 			$item['author'] = $news->editor->fullName;
