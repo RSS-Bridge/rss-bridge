@@ -5,33 +5,33 @@ class CdactionBridge extends BridgeAbstract {
 	const URI = 'https://cdaction.pl';
 	const DESCRIPTION = 'Fetches the latest posts from given category.';
 	const MAINTAINER = 'tomaszkane';
-    const PARAMETERS = array( array(
-        'category' => array(
-            'name' => 'Kategoria',
-            'type' => 'list',
-            'values' => array(
-                'Newsy' => 'newsy',
-                'Recenzje' => 'recenzje',
-                'Teksty' => [
-                    'Publicystyka' => 'publicystyka',
-                    'Zapowiedzi' => 'zapowiedzi',
-                    'Już graliśmy' => 'juz-gralismy',
-                    'Poradniki' => 'poradniki',
-                ],
-                'Kultura' => 'kultura',
-                'Wideo' => 'wideo',
-                'Czasopismo' => 'czasopismo',
-                'Technologie' => [
-                    'Artykuły' => 'artykuly',
-                    'Testy' => 'testy',
-                ],
-                'Na luzie' => [
-                    'Konkursy' => 'konkursy',
-                    'Nadgodziny' => 'nadgodziny',
-                ]
-            )
-        ))
-    );
+	const PARAMETERS = array( array(
+		'category' => array(
+			'name' => 'Kategoria',
+			'type' => 'list',
+			'values' => array(
+				'Newsy' => 'newsy',
+				'Recenzje' => 'recenzje',
+				'Teksty' => [
+					'Publicystyka' => 'publicystyka',
+					'Zapowiedzi' => 'zapowiedzi',
+					'Już graliśmy' => 'juz-gralismy',
+					'Poradniki' => 'poradniki',
+				],
+				'Kultura' => 'kultura',
+				'Wideo' => 'wideo',
+				'Czasopismo' => 'czasopismo',
+				'Technologie' => [
+					'Artykuły' => 'artykuly',
+					'Testy' => 'testy',
+				],
+				'Na luzie' => [
+					'Konkursy' => 'konkursy',
+					'Nadgodziny' => 'nadgodziny',
+				]
+			)
+		))
+	);
 
 	public function collectData() {
 		$html = getSimpleHTMLDOM($this->getURI() . '/' . $this->getInput('category'));
