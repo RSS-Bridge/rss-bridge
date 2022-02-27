@@ -24,7 +24,7 @@ class CdactionBridge extends BridgeAbstract {
 				'Technologie' => array(
 					'Artykuły' => 'artykuly',
 					'Testy' => 'testy',
-                ),
+				),
 				'Na luzie' => array(
 					'Konkursy' => 'konkursy',
 					'Nadgodziny' => 'nadgodziny',
