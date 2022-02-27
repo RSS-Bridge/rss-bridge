@@ -17,7 +17,7 @@ class CdactionBridge extends BridgeAbstract {
 					'Zapowiedzi' => 'zapowiedzi',
 					'Już graliśmy' => 'juz-gralismy',
 					'Poradniki' => 'poradniki',
-                ),
+				),
 				'Kultura' => 'kultura',
 				'Wideo' => 'wideo',
 				'Czasopismo' => 'czasopismo',
@@ -28,7 +28,7 @@ class CdactionBridge extends BridgeAbstract {
 				'Na luzie' => array(
 					'Konkursy' => 'konkursy',
 					'Nadgodziny' => 'nadgodziny',
-                )
+				)
 			)
 		))
 	);
