@@ -307,7 +307,7 @@ class ReutersBridge extends BridgeAbstract
 			$image_caption = $image['caption'];
 			$image_alt_text = '';
 			if(isset($image['alt_text'])) {
-				$image_alt_text =  $image['alt_text'];
+				$image_alt_text = $image['alt_text'];
 			} else {
 				$image_alt_text = $image_caption;
 			}
@@ -524,7 +524,6 @@ EOD;
 				$timestamp = $content_detail['published_at'];
 			}
 
-			$item['uid'] = $uid;
 			$item['categories'] = $category;
 			$item['author'] = $author;
 			$item['content'] = $content;
