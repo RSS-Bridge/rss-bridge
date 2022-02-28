@@ -13,7 +13,32 @@ on EZTV. Get IMDB IDs from IMDB.';
 				'name' => 'Show IMDB IDs',
 				'exampleValue' => 'showID1,showID2,…',
 				'required' => true
-			)
+			),
+			'no480' => array(
+				'name' => 'No 480p',
+				'type' => 'checkbox',
+				'title' => 'Activate to exclude 480p torrents'
+			),
+			'no720' => array(
+				'name' => 'No 720p',
+				'type' => 'checkbox',
+				'title' => 'Activate to exclude 720p torrents'
+			),
+			'no1080' => array(
+				'name' => 'No 1080p',
+				'type' => 'checkbox',
+				'title' => 'Activate to exclude 1080p torrents'
+			),
+			'no2160' => array(
+				'name' => 'No 2160p',
+				'type' => 'checkbox',
+				'title' => 'Activate to exclude 2160p torrents'
+			),
+			'noUnknownRes' => array(
+				'name' => 'No Unknown resolution',
+				'type' => 'checkbox',
+				'title' => 'Activate to exclude unknown resolution torrents'
+			),
 		)
 	);
 
@@ -60,6 +85,21 @@ on EZTV. Get IMDB IDs from IMDB.';
 			$content = getContents($eztvUri);
 			$torrents = json_decode($content)->torrents;
 			foreach($torrents as $torrent) {
+				$title = $torrent->title;
+				$regex480 = '/480p/';
+				$regex720 = '/720p/';
+				$regex1080 = '/1080p/';
+				$regex2160 = '/2160p/';
+				$regexUnknown = '/(480p|720p|1080p|2160p)/';
+				// Skip unwanted resolution torrents
+				if ((preg_match($regex480, $title) === 1 && $this->getInput('no480'))
+				|| (preg_match($regex720, $title) === 1 && $this->getInput('no720'))
+				|| (preg_match($regex1080, $title) === 1 && $this->getInput('no1080'))
+				|| (preg_match($regex2160, $title) === 1 && $this->getInput('no2160'))
+				|| (preg_match($regexUnknown, $title) !== 1 && $this->getInput('noUnknownRes'))) {
+					continue;
+				}
+
 				$this->items[] = $this->getItemFromTorrent($torrent);
 			}
 		}
