@@ -8,5 +8,8 @@ class TbibBridge extends GelbooruBridge {
 	const URI = 'https://tbib.org/';
 	const DESCRIPTION = 'Returns images from given page';
 
-	const PIDBYPAGE = 50;
+	protected function buildThumbnailURI($element){
+		return $this->getURI() . 'thumbnails/' . $element->directory
+		. '/thumbnail_' . substr($element->image, 0, -3) . 'jpg';
+	}
 }
