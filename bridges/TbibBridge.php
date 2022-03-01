@@ -9,7 +9,8 @@ class TbibBridge extends GelbooruBridge {
 	const DESCRIPTION = 'Returns images from given page';
 
 	protected function buildThumbnailURI($element){
+		$regex = '/\.\w+$/';
 		return $this->getURI() . 'thumbnails/' . $element->directory
-		. '/thumbnail_' . substr($element->image, 0, -3) . 'jpg';
+		. '/thumbnail_' . preg_replace($regex, '.jpg', $element->image);
 	}
 }

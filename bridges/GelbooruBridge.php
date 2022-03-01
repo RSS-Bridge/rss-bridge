@@ -76,6 +76,10 @@ class GelbooruBridge extends BridgeAbstract {
 			$posts = $posts->post;
 		}
 
+		if (is_null($posts)) {
+			returnServerError('No posts found.');
+		}
+
 		foreach($posts as $post) {
 			$this->items[] = $this->getItemFromElement($post);
 		}
