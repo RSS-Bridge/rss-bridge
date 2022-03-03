@@ -58,7 +58,13 @@ class CraigslistBridge extends BridgeAbstract {
 		$uri = $this->getURI();
 		$html = getSimpleHTMLDOM($uri);
 
-		$results = $html->find('.result-row');
+		// Check if no results page is shown (nearby results)
+		if ($html->find('.displaycountShow', 0)->plaintext == '0') {
+			return;
+		}
+
+		// Search for "more from nearby areas" banner in order to skip those results
+		$results = $html->find('.result-row, h4.nearby');
 
 		// Limit the number of posts
 		if ($this->getInput('limit') > 0) {
@@ -66,6 +72,12 @@ class CraigslistBridge extends BridgeAbstract {
 		}
 
 		foreach($results as $post) {
+
+			// Skip "nearby results" banner and results
+			if ($post->tag == 'h4') {
+				break;
+			}
+
 			$item = array();
 
 			$heading = $post->find('.result-heading a', 0);
