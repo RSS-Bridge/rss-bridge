@@ -23,7 +23,7 @@ class ComicsKingdomBridge extends BridgeAbstract {
 		$author = $html->find('div.author p', 0);;
 
 		// Get current date/link
-		$link = $html->find('meta[property=og:url]', 0)->content;
+		$link = $html->find('meta[property=og:url]', -1)->content;
 		for($i = 0; $i < 3; $i++) {
 			$item = array();
 
