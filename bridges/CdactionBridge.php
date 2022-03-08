@@ -10,6 +10,7 @@ class CdactionBridge extends BridgeAbstract {
 			'name' => 'Kategoria',
 			'type' => 'list',
 			'values' => array(
+				'Najnowsze (wszystkie)' => 'najnowsze',
 				'Newsy' => 'newsy',
 				'Recenzje' => 'recenzje',
 				'Teksty' => array(
