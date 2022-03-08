@@ -42,7 +42,8 @@ class CdactionBridge extends BridgeAbstract {
 			return;
 		}
 
-		foreach ($newsJson->props->pageProps->dehydratedState->queries[1]->state->data->results as $news) {
+		$queriesIndex = $this->getInput('category') === 'najnowsze' ? 0 : 1;
+		foreach ($newsJson->props->pageProps->dehydratedState->queries[$queriesIndex]->state->data->results as $news) {
 			$item = array();
 			$item['uri'] = $this->getURI() . '/' . $this->getInput('category') . '/' . $news->slug;
 			$item['title'] = $news->title;
