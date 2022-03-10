@@ -131,6 +131,7 @@ class ReutersBridge extends BridgeAbstract
 		'sports' => '/lifestyle/sports',
 		'life' => '/lifestyle',
 		'science' => '/lifestyle/science',
+		'home/topnews' => '/home',
 	);
 
 	const OLD_WIRE_SECTION = array(
@@ -211,11 +212,12 @@ class ReutersBridge extends BridgeAbstract
 	}
 
 	/**
-	* @param string $endpoint - Provide section's endpoint to Reuters API.
+	* @param string $endpoint - A endpoint is provided could be article URI or ID.
 	* @param string $fetch_type - Provide what kind of fetch do you want? Article or Section.
+	* @param boolean $is_article_uid {true|false} - A boolean flag to determined if using UID instead of url to fetch.
 	* @return string A completed API URL to fetch data
 	*/
-	private function getAPIURL($endpoint, $fetch_type) {
+	private function getAPIURL($endpoint, $fetch_type, $is_article_uid = false) {
 		$base_url = self::URI . '/pf/api/v3/content/fetch/';
 		$wire_url = 'https://wireapi.reuters.com/v8';
 		switch($fetch_type) {
@@ -223,10 +225,23 @@ class ReutersBridge extends BridgeAbstract
 				if($this->useWireAPI) {
 					return $wire_url . $endpoint;
 				}
-				$query = array(
-					'website_url' => $endpoint,
-					'website' => 'reuters'
+
+				$base_query = array(
+					'website' => 'reuters',
 				);
+				$query = array();
+
+				if ($is_article_uid) {
+					$query = array(
+						'id' => $endpoint
+					);
+				} else {
+					$query = array(
+						'website_url' => $endpoint,
+					);
+				}
+
+				$query = array_merge($base_query, $query);
 				$json_query = json_encode($query);
 				return $base_url . 'article-by-id-or-url-v1?query=' . $json_query;
 				break;
@@ -241,11 +256,17 @@ class ReutersBridge extends BridgeAbstract
 					return $wire_url . $feed_uri;
 				}
 				$query = array(
-					'fetch_type' => 'section',
 					'section_id' => $endpoint,
 					'size' => 30,
 					'website' => 'reuters'
 				);
+
+				if ($endpoint != '/home') {
+					$query = array_merge($query, array(
+						'fetch_type' => 'section',
+					));
+				}
+
 				$json_query = json_encode($query);
 				return $base_url . 'articles-by-section-alias-or-id-v1?query=' . $json_query;
 				break;
@@ -253,10 +274,21 @@ class ReutersBridge extends BridgeAbstract
 		returnServerError('unsupported endpoint');
 	}
 
-	private function getArticle($feed_uri)
+	private function addStories($title, $content, $timestamp, $author, $url, $category) {
+		$item = array();
+		$item['categories'] = $category;
+		$item['author'] = $author;
+		$item['content'] = $content;
+		$item['title'] = $title;
+		$item['timestamp'] = $timestamp;
+		$item['uri'] = $url;
+		$this->items[] = $item;
+	}
+
+	private function getArticle($feed_uri, $is_article_uid = false)
 	{
 		// This will make another request to API to get full detail of article and author's name.
-		$url = $this->getAPIURL($feed_uri, 'article');
+		$url = $this->getAPIURL($feed_uri, 'article', $is_article_uid);
 		$rawData = $this->getJson($url);
 		$article_content = '';
 		$authorlist = '';
@@ -444,6 +476,23 @@ EOD;
 		return $description;
 	}
 
+	/**
+	 * @param array $stories
+	 */
+	private function addRelatedStories($stories) {
+		foreach($stories as $story) {
+			$story_data = $this->getArticle($story['url']);
+			$title = $story['caption'];
+			$url = self::URI . $story['url'];
+			$article_body = defaultLinkTo($story_data['content'], $this->getURI());
+			$content = $article_body . $story_data['images'];
+			$timestamp = $story_data['published_at'];
+			$category = $story_data['category'];
+			$author = $story_data['author'];
+			$this->addStories($title, $content, $timestamp, $author, $url, $category);
+		}
+	}
+
 	public function getName() {
 		return $this->feedName;
 	}
@@ -500,11 +549,14 @@ EOD;
 				$title = $story['title'];
 				$article_uri = $story['canonical_url'];
 				$source_type = $story['source']['name'];
+				if (isset($story['related_stories'])) {
+					$this->addRelatedStories($story['related_stories']);
+				}
 			}
 
 			// Some article cause unexpected behaviour like redirect to another site not API.
 			// Attempt to check article source type to avoid this.
-			if($source_type == 'composer') { // Only Reuters PF api have this, Wire don't.
+			if($source_type != 'Package') { // Only Reuters PF api have this, Wire don't.
 				$author = $this->handleAuthorName($story['authors']);
 				$timestamp = $story['published_time'];
 				$image_placeholder = '';
@@ -512,6 +564,7 @@ EOD;
 					$image_placeholder = $this->handleImage(array($story['thumbnail']));
 				}
 				$content = $story['description'] . $image_placeholder;
+				$category = array($story['primary_section']['name']);
 			} else {
 				$content_detail = $this->getArticle($article_uri);
 				$description = $content_detail['content'];
@@ -524,13 +577,8 @@ EOD;
 				$timestamp = $content_detail['published_at'];
 			}
 
-			$item['categories'] = $category;
-			$item['author'] = $author;
-			$item['content'] = $content;
-			$item['title'] = $title;
-			$item['timestamp'] = $timestamp;
-			$item['uri'] = $url;
-			$this->items[] = $item;
+			$this->addStories($title, $content, $timestamp, $author, $url, $category);
+			
 		}
 	}
 }
