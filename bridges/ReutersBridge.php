@@ -578,7 +578,7 @@ EOD;
 			}
 
 			$this->addStories($title, $content, $timestamp, $author, $url, $category);
-			
+
 		}
 	}
 }
