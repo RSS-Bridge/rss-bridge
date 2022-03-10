@@ -108,7 +108,7 @@ class EconomistBridge extends FeedExpander {
 			$categoryNode = 'span.ern1uyf0';
 		}
 
-		$item['content'] = $this->cleanContent($article,$contentNode);
+		$item['content'] = $this->cleanContent($article, $contentNode);
 		// only the article lead image is retained if it's there
 		if (!is_null($article->find($imgNode, 0))) {
 			$item['enclosures'][] = $article->find($imgNode, 0)->find('img', 0)->getAttribute('src');
@@ -122,7 +122,7 @@ class EconomistBridge extends FeedExpander {
 		return $item;
 	}
 
-	private function cleanContent($article,$contentNode){
+	private function cleanContent($article, $contentNode){
 		// the actual article is in this div
 		$content = $article->find($contentNode, 0)->innertext;
 		// clean the article content. Remove all div's since the text is in paragraph elements
