@@ -11,6 +11,75 @@
  * @link	https://github.com/rss-bridge/rss-bridge
  */
 
+
+/**
+ * Exception class to handle all errors, when executing getContents
+ */
+class GetContentsException extends \Exception {
+	public function __construct($details, $code = 0, Throwable $previous = null) {
+		$message = trim($this->getMessageHeading() . "\n$details");
+
+		$lastError = error_get_last();
+		if($lastError !== null)
+			$message .= "\nLast PHP Error: " . $lastError['message'];
+
+		parent::__construct($message, $code, $previous);
+	}
+
+	protected function getMessageHeading() {
+		return 'Could not get contents';
+	}
+}
+
+/**
+ * Exception class to handle HTTP responses with Cloudflare challenges
+ **/
+class CloudflareChallengeException extends \Exception {
+	public function __construct($code = 0, Throwable $previous = null) {
+		if (!$message) {
+			$message = <<<EOD
+The server responded with a Cloudflare challenge, which is not supported by RSS-Bridge!
+If this error persists longer than a week, please consider opening an issue on GitHub!
+EOD;
+		}
+
+		parent::__construct($message, $code, $previous);
+	}
+}
+
+/**
+ * Exception class to handle non-20x HTTP responses
+ **/
+class UnexpectedResponseException extends \GetContentsException {
+	private $responseCode;
+	private $responseHeaders;
+	private $responseBody;
+
+	protected function getMessageHeading() {
+		return 'Unexpected response from upstream';
+	}
+
+	public function __construct($responseBody, $responseHeaders, $responseCode = 500, Throwable $previous = null) {
+		$this->responseCode = $responseCode;
+		$this->responseHeaders = $responseHeaders;
+		$this->responseBody = $responseBody;
+
+		parent::__construct('', $responseCode, $previous);
+	}
+
+	public function getResponseCode() {
+		return $this->responseCode;
+	}
+
+	public function getResponseHeaders() {
+		return $this->responseHeaders;
+	}
+
+	public function getResponseBody() {
+		return $this->responseBody();
+	}
+}
+
 /**
  * Gets contents from the Internet.
  *
@@ -189,22 +258,14 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 			break;
 		default:
 			if(array_key_exists('Server', $finalHeader) && strpos($finalHeader['Server'], 'cloudflare') !== false) {
-			returnServerError(<<< EOD
-The server responded with a Cloudflare challenge, which is not supported by RSS-Bridge!
-If this error persists longer than a week, please consider opening an issue on GitHub!
-EOD
-				);
+				throw new CloudflareChallengeException($errorCode);
 			}
 
-			$lastError = error_get_last();
-			if($lastError !== null)
-				$lastError = $lastError['message'];
-			returnError(<<<EOD
-Unexpected response from upstream.
-cUrl error: $curlError ($curlErrno)
-PHP error: $lastError
-EOD
-			, $errorCode);
+			if ($curlError || $curlErrno) {
+				throw new GetContentsException('cURL error: ' . $curlError . ' (' . $curlErrno . ')');
+			}
+
+			throw new UnexpectedResponseException($retval['content'], $retval['header'], $errorCode);
 	}
 
 	return ($returnHeader === true) ? $retVal : $retVal['content'];
