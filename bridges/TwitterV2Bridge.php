@@ -36,7 +36,7 @@ class TwitterV2Bridge extends BridgeAbstract {
 				'name' => 'Maximum results',
 				'required' => false,
 				'exampleValue' => '20',
-				'title' => 'Maximum number of tweets to retrieve'
+				'title' => 'Maximum number of tweets to retrieve (limit is 100)'
 			),
 			'nopic' => array(
 				'name' => 'Hide profile pictures',
@@ -83,7 +83,7 @@ class TwitterV2Bridge extends BridgeAbstract {
 			'query' => array(
 				'name' => 'Keyword or #hashtag',
 				'required' => true,
-				'exampleValue' => 'rss-bridge, #rss-bridge',
+				'exampleValue' => 'rss-bridge OR #rss-bridge',
 				'title' => <<<EOD
 * To search for multiple words (must contain all of these words), put a space between them.
 
@@ -162,6 +162,9 @@ EOD
 		$hideRetweets = $this->getInput('noretweet');
 		$hidePinned = $this->getInput('nopinned');
 		$maxResults = $this->getInput('maxresults');
+		if ($maxResults > 100) {
+			$maxResults = 100;
+		}
 
 		// Read API token from config.ini.php, put into Header
 		$this->apiToken     = $this->getOption('twitterv2apitoken');
@@ -178,9 +181,10 @@ EOD
 			);
 			$user = $this->makeApiCall('/users/by/username/'
 			. $this->getInput('u'), $params);
-			//Debug::log('User JSON: ' . json_encode($user));
 
-			if(!$user) {
+			//Debug::log('User JSON: ' . json_encode($user));
+			if(isset($user->errors)) {
+				Debug::log('User JSON: ' . json_encode($user));
 				returnServerError('Requested username can\'t be found.');
 			}
 
@@ -242,7 +246,10 @@ EOD
 			returnServerError('Invalid query context !');
 		}
 
-		if(!$data) {
+		//Debug::log('Data JSON: ' . json_encode($data));
+		if((isset($data->errors) && !isset($data->data)) ||
+		(isset($data->meta) && $data->meta->result_count === 0)) {
+			Debug::log('Data JSON: ' . json_encode($data));
 			switch($this->queriedContext) {
 			case 'By keyword or hashtag':
 				returnServerError('No results for this query.');
@@ -287,7 +294,7 @@ EOD
 			foreach($includesTweets as $includesTweet) {
 				$includesTweetsIds[] = $includesTweet->id;
 			}
-			//Debug::log('includesTweetsIds: ' . join(",",$includesTweetsIds));
+			//Debug::log('includesTweetsIds: ' . join(',', $includesTweetsIds));
 
 			// Set default params for API query
 			$params = array(
@@ -300,9 +307,15 @@ EOD
 
 			// Get the retweeted tweets
 			$retweetedData = $this->makeApiCall('/tweets', $params);
+			//Debug::log('retweetedData JSON: ' . json_encode($retweetedData));
 
-			$retweetedMedia = $retweetedData->includes->media;
-			$retweetedUsers = $retweetedData->includes->users;
+			// Extract retweets Media data into array
+			isset($retweetedData->includes->media) ? $retweetedMedia
+			= $retweetedData->includes->media : $retweetedMedia = null;
+
+			// Extract retweets additional Users data into array
+			isset($retweetedData->includes->users) ? $retweetedUsers
+			= $retweetedData->includes->users : $retweetedUsers = null;
 		}
 
 		// Create output array with all required elements for each tweet
