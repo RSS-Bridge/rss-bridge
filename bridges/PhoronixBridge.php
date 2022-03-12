@@ -6,9 +6,18 @@ class PhoronixBridge extends FeedExpander {
 	const URI = 'https://www.phoronix.com';
 	const CACHE_TIMEOUT = 3600;
 	const DESCRIPTION = 'RSS feed for Linux news website Phoronix';
+	const PARAMETERS = array(array(
+		'n' => array(
+			'name' => 'Limit',
+			'type' => 'number',
+			'required' => false,
+			'title' => 'Maximum number of items to return',
+			'defaultValue' => 10
+		)
+	));
 
 	public function collectData(){
-		$this->collectExpandableDatas('https://www.phoronix.com/rss.php', 15);
+		$this->collectExpandableDatas('https://www.phoronix.com/rss.php', $this->getInput('n'));
 	}
 
 	protected function parseItem($newsItem){
