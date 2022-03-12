@@ -1,0 +1,34 @@
+name: Documentation
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  documentation:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        persist-credentials: false
+    - name: Setup PHP
+      uses: shivammathur/setup-php@2.17.1
+      with:
+        php-version: 8.0
+        extensions: mbstring, dom, intl, iconv
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+    - name: Generate documentation
+      run: bin/daux generate --value html.plausible_domain=github.io
+    - name: Deploy same repository 🚀
+      uses: JamesIves/github-pages-deploy-action@v4.2.5
+      with:
+        folder: "static"
+        branch: gh-pages
+    - name: Deploy daux.io 🚀
+      uses: JamesIves/github-pages-deploy-action@v4.2.5
+      with:
+        folder: "static"
+        token: ${{ secrets.GITHUB_TOKEN }}
+        branch: master
+        repository-name: bockiii/bockiii.github.io
