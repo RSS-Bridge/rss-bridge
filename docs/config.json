@@ -4,7 +4,7 @@
     "author": "RSS-Bridge Contributors",
     "image": "/images/rssbridgelogo.png",
     "ignore": {
-            "files": ["Work_In_Progress.md"],
+            "files": ["Work_In_Progress.md", "readme.md"],
             "folders": ["99_Not_Ready"]
     },
     "live": {
@@ -28,7 +28,5 @@
             "Docker Images": "https://github.com/RSS-Bridge/rss-bridge/pkgs/container/rss-bridge"
         },
         "powered_by": "Powered by Daux.io"
-    },
-    "languages": {"en": "English"},
-    "language": "en"
+    }
 }

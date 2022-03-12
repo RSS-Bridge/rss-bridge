@@ -2,7 +2,7 @@
 
 ## A Web server* with:
 
-  - PHP 5.6 (or higher) => (Read [this](RSS-Bridge-on-PHP-5.4) for PHP 5.4)
+  - PHP 7.1 (or higher)
   - [`openssl`](https://secure.php.net/manual/en/book.openssl.php) extension
   - [`libxml`](https://secure.php.net/manual/en/book.libxml.php) extension (enabled by default, see [PHP Manual](http://php.net/manual/en/libxml.installation.php))
   - [`mbstring`](https://secure.php.net/manual/en/book.mbstring.php) extension
@@ -20,4 +20,4 @@ Enable extensions by un-commenting the corresponding line in your PHP configurat
  - Docker server configured (Any recent version should do)
  - 100MB of disk space
 
-To setup RSS Bridge using Docker, see the [Docker Guide](../03_For_Hosts/03_Docker.md) on installing RSS Bridge.
+To setup RSS Bridge using Docker, see the [Docker Guide](../03_For_Hosts/03_Docker_Installation.md) on installing RSS Bridge.

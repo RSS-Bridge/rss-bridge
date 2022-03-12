@@ -15,11 +15,11 @@ These steps are described in more detail below. At the end of this document you'
 
 <details><summary>Show pictures</summary><div>
 
-![example card](../../images/screenshot_bridgeabstract_example_card.png)
+![example card](../images/screenshot_bridgeabstract_example_card.png)
 
 ***
 
-![example atom](../../images/screenshot_bridgeabstract_example_atom.png)
+![example atom](../images/screenshot_bridgeabstract_example_atom.png)
 
 </div></details><br>
 
@@ -180,7 +180,7 @@ const PARAMETERS = array(
 
 **Output**
 
-![bridge context named](../../images/bridge_context_named.png)
+![bridge context named](../images/bridge_context_named.png)
 
 </div></details><br>
 
@@ -244,7 +244,7 @@ const PARAMETERS = array(
 
 **Output**
 
-![context parameter](../../images/context_parameter_example.png)
+![context parameter](../images/context_parameter_example.png)
 
 </div></details>
 

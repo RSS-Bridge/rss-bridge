@@ -14,7 +14,7 @@ _Notice_:
 
 RSS-Bridge will give you a visual feedback when debug mode is enabled:
 
-![twitter bridge](../../images/debug_mode.png)
+![twitter bridge](../images/debug_mode.png)
 
 While debug mode is active, RSS-Bridge will write additional data to your servers `error.log`.
 

@@ -12,7 +12,7 @@ You can simply press the button below to easily deploy RSS Bridge on Heroku and 
 ## Manual deploy
 1. Fork this repo by clicking the Fork button at the top right of this page (only on desktop site)
 
-![image](../../images/fork_button.png)
+![image](../images/fork_button.png)
 
 2. To customise what bridges can be used if need, create a `whitelist.txt` file in your fork and follow the instructions given [here](../03_For_Hosts/05_Whitelisting.md). You don’t need to do this if you’re fine with the default bridges.
 
@@ -20,6 +20,6 @@ You can simply press the button below to easily deploy RSS Bridge on Heroku and 
 
 4. Go to Deploy, select the GitHub option and connect your GitHub account. Search for the repo named `yourusername/rss-bridge`
 
-![image](../../images/heroku_deploy.png)
+![image](../images/heroku_deploy.png)
 
 5. Deploy the master branch.

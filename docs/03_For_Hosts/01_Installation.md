@@ -9,4 +9,4 @@ For linux hosts:
 
 You have successfully installed RSS-Bridge.
 
-Instructions for Docker setups are at [Docker Installation](../03_For_Hosts/03_Docker.md)
+Instructions for Docker setups are at [Docker Installation](../03_For_Hosts/03_Docker_Installation.md)
