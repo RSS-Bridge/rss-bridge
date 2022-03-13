@@ -265,7 +265,7 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 				throw new GetContentsException('cURL error: ' . $curlError . ' (' . $curlErrno . ')');
 			}
 
-			throw new UnexpectedResponseException($retval['content'], $retval['header'], $errorCode);
+			throw new UnexpectedResponseException($retVal['content'], $retVal['header'], $errorCode);
 	}
 
 	return ($returnHeader === true) ? $retVal : $retVal['content'];
