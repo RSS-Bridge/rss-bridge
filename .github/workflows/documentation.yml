@@ -2,7 +2,8 @@ name: Documentation
 
 on:
   push:
-    branches: [ master ]
+    paths:
+    - 'docs/**'
 
 jobs:
   documentation:
