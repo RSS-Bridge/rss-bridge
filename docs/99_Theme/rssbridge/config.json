@@ -1,0 +1,9 @@
+{
+    "favicon": "<theme_url>img/favicon.png",
+    "js": [
+        "<theme_url>js/daux.min.js"
+    ],
+    "css": [
+        "<theme_url>css/theme.min.css"
+    ]
+}

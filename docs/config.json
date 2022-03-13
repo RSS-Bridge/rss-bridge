@@ -2,10 +2,10 @@
     "title": "RSS-Bridge",
     "tagline": "The RSS feed for websites missing it",
     "author": "RSS-Bridge Contributors",
-    "image": "/images/rssbridgelogo.png",
+    "image": "./images/rssbridgelogo.png",
     "ignore": {
             "files": ["Work_In_Progress.md", "readme.md"],
-            "folders": ["99_Not_Ready"]
+            "folders": ["99_Theme"]
     },
     "live": {
         "clean_urls": true
