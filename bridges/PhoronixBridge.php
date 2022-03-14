@@ -24,8 +24,30 @@ class PhoronixBridge extends FeedExpander {
 		$item = parent::parseItem($newsItem);
 		// $articlePage gets the entire page's contents
 		$articlePage = getSimpleHTMLDOM($newsItem->link);
-		$article = $articlePage->find('.content', 0);
-		$item['content'] = $article;
+		// Extract final link. From Facebook's like plugin.
+		parse_str(parse_url($articlePage->find('iframe[src^=//www.facebook.com/plugins]', 0), PHP_URL_QUERY), $facebookQuery);
+		if (array_key_exists('href', $facebookQuery)) {
+			$newsItem->link = $facebookQuery['href'];
+		}
+		$item['content'] = $this->extractContent($articlePage);
+
+		$pages = $articlePage->find('.pagination a[!title]');
+		foreach ($pages as $page) {
+			$pageURI = urljoin($newsItem->link, html_entity_decode($page->href));
+			$page = getSimpleHTMLDOM($pageURI);
+			$item['content'] .= $this->extractContent($page);
+		}
 		return $item;
+	}
+
+	private function extractContent($page){
+		$content = $page->find('.content', 0);
+		$objects = $content->find('script[src^=//openbenchmarking.org]');
+		foreach ($objects as $object) {
+			$objectSrc = preg_replace('/p=0/', 'p=2', $object->src);
+			$object->outertext = '<object data="' . $objectSrc . '" type="image/svg+xml"></object>';
+		}
+		$content = stripWithDelimiters($content, '<script', '</script>');
+		return $content;
 	}
 }
