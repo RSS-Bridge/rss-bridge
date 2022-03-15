@@ -287,9 +287,15 @@ class ReutersBridge extends BridgeAbstract
 
 	private function getArticle($feed_uri, $is_article_uid = false)
 	{
+		print_r($feed_uri . '<br>');
 		// This will make another request to API to get full detail of article and author's name.
 		$url = $this->getAPIURL($feed_uri, 'article', $is_article_uid);
 		$rawData = $this->getJson($url);
+
+		if(json_last_error() != JSON_ERROR_NONE) { // Checking whether a valid JSON or not
+			return handleRedirectedArticle($url);
+		}
+
 		$article_content = '';
 		$authorlist = '';
 		$category = array();
@@ -329,6 +335,38 @@ class ReutersBridge extends BridgeAbstract
 			'published_at' => $published_at
 		);
 		return $content_detail;
+	}
+
+	private function handleRedirectedArticle($url) {
+		$html = getSimpleHTMLDOMCached($url, 86400); // Duration 24h
+
+		$description = '';
+		$author = '';
+		$images = '';
+		$meta_items = $html->find('meta');
+		foreach($meta_items as $meta) {
+			switch ($meta->type) {
+				case 'description':
+					$description = $meta->content;
+					break;
+				case 'author':
+				case 'twitter:creator':
+					$author = $meta->content;
+					break;
+				case 'og:image':
+					$url = $meta->content;
+					$images = "<img src=$url" . '>';
+					break;
+			}
+		}
+
+		return array(
+			'content' => $description,
+			'author' => $author,
+			'category' => '',
+			'images' => $images,
+			'published_at' => ''
+		);
 	}
 
 	private function handleImage($images) {
@@ -556,7 +594,7 @@ EOD;
 
 			// Some article cause unexpected behaviour like redirect to another site not API.
 			// Attempt to check article source type to avoid this.
-			if($source_type != 'Package') { // Only Reuters PF api have this, Wire don't.
+			if(!$this->useWireAPI && $source_type != 'Package') { // Only Reuters PF api have this, Wire don't.
 				$author = $this->handleAuthorName($story['authors']);
 				$timestamp = $story['published_time'];
 				$image_placeholder = '';
