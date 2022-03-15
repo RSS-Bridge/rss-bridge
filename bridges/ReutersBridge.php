@@ -287,7 +287,6 @@ class ReutersBridge extends BridgeAbstract
 
 	private function getArticle($feed_uri, $is_article_uid = false)
 	{
-		print_r($feed_uri . '<br>');
 		// This will make another request to API to get full detail of article and author's name.
 		$url = $this->getAPIURL($feed_uri, 'article', $is_article_uid);
 		$rawData = $this->getJson($url);
