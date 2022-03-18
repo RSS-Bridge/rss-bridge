@@ -51,8 +51,6 @@ class ARDMediathekBridge extends BridgeAbstract {
 	);
 
 	public function collectData() {
-		date_default_timezone_set('Europe/Berlin');
-
 		$pathComponents = explode('/', $this->getInput('path'));
 		if (empty($pathComponents)) {
 			returnClientError('Path may not be empty');
