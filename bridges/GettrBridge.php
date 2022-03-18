@@ -33,11 +33,6 @@ class GettrBridge extends BridgeAbstract
 			max($this->getInput('limit'), 20)
 		);
 		$data = json_decode(getContents($api), false, JSON_THROW_ON_ERROR);
-		$responseCode = $data->rc;
-
-		if ($responseCode !== "OK") {
-			// Do something useful here, e.g. retry or print the error message from gettr
-		}
 
 		foreach ($data->result->aux->post as $post) {
 			$this->items[] = [
