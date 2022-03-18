@@ -249,7 +249,7 @@ final class Configuration {
 	 */
 	public static function getVersion() {
 
-		$headFile = PATH_ROOT . '.git/HEAD';
+		$headFile = __DIR__ . '/../.git/HEAD';
 
 		// '@' is used to mute open_basedir warning
 		if(@is_readable($headFile)) {
