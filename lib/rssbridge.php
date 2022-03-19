@@ -92,6 +92,10 @@ foreach (glob(PATH_LIB_FORMATS . '/*.php') as $formatFile) {
 	require $formatFile;
 }
 
+foreach (glob(PATH_LIB_ACTIONS . '/*.php') as $actionFile) {
+	require $actionFile;
+}
+
 // Allow larger files for simple_html_dom
 const MAX_FILE_SIZE = 10000000;
 

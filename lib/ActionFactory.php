@@ -27,8 +27,6 @@ class ActionFactory extends FactoryAbstract {
 			throw new \Exception('Action ' . $name . ' does not exist!');
 		}
 
-		require_once $filePath;
-
 		$class = $this->buildClassName($name);
 
 		if((new \ReflectionClass($class))->isInstantiable()) {
