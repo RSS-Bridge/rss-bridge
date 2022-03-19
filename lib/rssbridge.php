@@ -88,6 +88,10 @@ foreach (glob(PATH_LIB_CACHES . '/*.php') as $cacheFile) {
 	require $cacheFile;
 }
 
+foreach (glob(PATH_LIB_FORMATS . '/*.php') as $formatFile) {
+	require $formatFile;
+}
+
 // Allow larger files for simple_html_dom
 const MAX_FILE_SIZE = 10000000;
 

@@ -59,8 +59,6 @@ class FormatFactory extends FactoryAbstract {
 			throw new \Exception('Format file ' . $filePath . ' does not exist!');
 		}
 
-		require_once $pathFormat;
-
 		if((new \ReflectionClass($name))->isInstantiable()) {
 			return new $name();
 		}
