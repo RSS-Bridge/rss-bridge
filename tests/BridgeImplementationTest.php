@@ -209,6 +209,11 @@ class BridgeImplementationTest extends TestCase {
 		foreach (glob(PATH_LIB_BRIDGES . '*.php') as $path) {
 			$bridges[basename($path, '.php')] = array($path);
 		}
+
+		// Remove a few files that are not bridges
+		unset($bridges['PepperBridgeAbstract']);
+		unset($bridges['DanbooruBridge_Fix_Simple_Html_Dom']);
+
 		return $bridges;
 	}
 
