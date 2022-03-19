@@ -68,8 +68,6 @@ class BridgeFactory extends FactoryAbstract {
 			throw new \Exception('Bridge file ' . $filePath . ' does not exist!');
 		}
 
-		require_once $filePath;
-
 		if((new \ReflectionClass($name))->isInstantiable()) {
 			return new $name();
 		}

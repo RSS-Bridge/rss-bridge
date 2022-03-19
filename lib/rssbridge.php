@@ -108,3 +108,7 @@ $vendorFiles = [
 foreach ($vendorFiles as $vendorFile) {
 	require_once $vendorFile;
 }
+
+foreach (glob(__DIR__ . '/../bridges/*.php') as $bridgeFile) {
+	require_once $bridgeFile;
+}
