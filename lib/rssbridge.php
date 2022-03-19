@@ -82,6 +82,12 @@ foreach ($libFiles as $libFile) {
 	require_once __DIR__ . '/' . $libFile;
 }
 
+// We only have three cache backends.
+// Considering just three static requires instead
+foreach (glob(PATH_LIB_CACHES . '/*.php') as $cacheFile) {
+	require $cacheFile;
+}
+
 // Allow larger files for simple_html_dom
 const MAX_FILE_SIZE = 10000000;
 
