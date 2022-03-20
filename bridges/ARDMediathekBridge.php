@@ -51,6 +51,10 @@ class ARDMediathekBridge extends BridgeAbstract {
 	);
 
 	public function collectData() {
+		$oldTz = date_default_timezone_get();
+
+		date_default_timezone_set('Europe/Berlin');
+
 		$pathComponents = explode('/', $this->getInput('path'));
 		if (empty($pathComponents)) {
 			returnClientError('Path may not be empty');
@@ -85,5 +89,7 @@ class ARDMediathekBridge extends BridgeAbstract {
 			$item['author'] = $video->publicationService->name;
 			$this->items[] = $item;
 		}
+
+		date_default_timezone_set($oldTz);
 	}
 }
