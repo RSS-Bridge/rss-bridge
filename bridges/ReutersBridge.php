@@ -344,7 +344,7 @@ class ReutersBridge extends BridgeAbstract
 		$images = '';
 		$meta_items = $html->find('meta');
 		foreach($meta_items as $meta) {
-			switch ($meta->type) {
+			switch ($meta->name) {
 				case 'description':
 					$description = $meta->content;
 					break;
@@ -352,7 +352,8 @@ class ReutersBridge extends BridgeAbstract
 				case 'twitter:creator':
 					$author = $meta->content;
 					break;
-				case 'og:image':
+				case 'twitter:image:src':
+				case 'twitter:image':
 					$url = $meta->content;
 					$images = "<img src=$url" . '>';
 					break;
@@ -364,7 +365,8 @@ class ReutersBridge extends BridgeAbstract
 			'author' => $author,
 			'category' => '',
 			'images' => $images,
-			'published_at' => ''
+			'published_at' => '',
+			'status' => 'redirected'
 		);
 	}
 
@@ -521,7 +523,11 @@ EOD;
 			$story_data = $this->getArticle($story['url']);
 			$title = $story['caption'];
 			$url = self::URI . $story['url'];
-			$article_body = defaultLinkTo($story_data['content'], $this->getURI());
+			if(isset($story_data['status']) && $story_data['status'] != 'redirected') {
+				$article_body = defaultLinkTo($story_data['content'], $this->getURI());
+			} else {
+				$article_body = $story_data['content'];
+			}
 			$content = $article_body . $story_data['images'];
 			$timestamp = $story_data['published_at'];
 			$category = $story_data['category'];
