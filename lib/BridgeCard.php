@@ -78,6 +78,18 @@ This bridge is not fetching its content through a secure connection</div>';
 				if(!isset($inputEntry['defaultValue']))
 					$inputEntry['defaultValue'] = '';
 
+				/**
+				 * Copy over example value (placeholder) into default value (value)
+				 * but only if example value exists and the default value is empty
+				 *
+				 * Ideally, bridges should define a proper default value.
+				 *
+				 * So consider this a convenience.
+				 */
+				if ($inputEntry['exampleValue'] && !$inputEntry['defaultValue']) {
+					$inputEntry['defaultValue'] = $inputEntry['exampleValue'];
+				}
+
 				$idArg = 'arg-'
 					. urlencode($bridgeName)
 					. '-'
