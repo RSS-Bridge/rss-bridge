@@ -44,71 +44,35 @@ const FILE_CONFIG_DEFAULT = __DIR__ . '/../config.default.ini.php';
 /** URL to the RSS-Bridge repository */
 const REPOSITORY = 'https://github.com/RSS-Bridge/rss-bridge/';
 
-$libFiles = [
-	// Interfaces
-	'ActionInterface.php',
-	'BridgeInterface.php',
-	'CacheInterface.php',
-	'FormatInterface.php',
-
-	// Classes
-	'FactoryAbstract.php',
-	'FeedItem.php',
-	'Debug.php',
-	'Exceptions.php',
-	'FormatFactory.php',
-	'FormatAbstract.php',
-	'BridgeFactory.php',
-	'BridgeAbstract.php',
-	'FeedExpander.php',
-	'CacheFactory.php',
-	'Authentication.php',
-	'Configuration.php',
-	'BridgeCard.php',
-	'BridgeList.php',
-	'ParameterValidator.php',
-	'ActionFactory.php',
-	'ActionAbstract.php',
-	'XPathAbstract.php',
-
-	// functions
-	'html.php',
-	'error.php',
-	'contents.php',
-	'php8backports.php',
-];
-
-foreach ($libFiles as $libFile) {
-	require_once __DIR__ . '/' . $libFile;
-}
-
-// We only have three cache backends.
-// Considering just three static requires instead
-foreach (glob(PATH_LIB_CACHES . '/*.php') as $cacheFile) {
-	require $cacheFile;
-}
-
-foreach (glob(PATH_LIB_FORMATS . '/*.php') as $formatFile) {
-	require $formatFile;
-}
-
-foreach (glob(PATH_LIB_ACTIONS . '/*.php') as $actionFile) {
-	require $actionFile;
-}
-
 // Allow larger files for simple_html_dom
 const MAX_FILE_SIZE = 10000000;
 
-$vendorFiles = [
+$files = [
+	__DIR__ . '/html.php',
+	__DIR__ . '/error.php',
+	__DIR__ . '/contents.php',
+	__DIR__ . '/php8backports.php',
 	__DIR__ . '/../vendor/parsedown/Parsedown.php',
 	__DIR__ . '/../vendor/php-urljoin/src/urljoin.php',
 	__DIR__ . '/../vendor/simplehtmldom/simple_html_dom.php',
 ];
 
-foreach ($vendorFiles as $vendorFile) {
-	require_once $vendorFile;
+foreach ($files as $file) {
+	require $file;
 }
 
-foreach (glob(__DIR__ . '/../bridges/*.php') as $bridgeFile) {
-	require_once $bridgeFile;
-}
+spl_autoload_register(function ($class) {
+	$folders = [
+		__DIR__ . '/../actions/',
+		__DIR__ . '/../bridges/',
+		__DIR__ . '/../caches/',
+		__DIR__ . '/../formats/',
+		__DIR__ . '/../lib/',
+	];
+	foreach ($folders as $folder) {
+		$file = $folder . $class . '.php';
+		if (is_file($file)) {
+			require $file;
+		}
+	}
+});
