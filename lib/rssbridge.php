@@ -48,6 +48,7 @@ const REPOSITORY = 'https://github.com/RSS-Bridge/rss-bridge/';
 const MAX_FILE_SIZE = 10000000;
 
 $files = [
+	__DIR__ . '/Exceptions.php',
 	__DIR__ . '/html.php',
 	__DIR__ . '/error.php',
 	__DIR__ . '/contents.php',
