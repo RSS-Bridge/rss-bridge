@@ -50,6 +50,7 @@ class GiphyBridge extends BridgeAbstract {
 				'content'	=> <<<HTML
 <a href="{$entry->url}">
 <img
+	loading="lazy"
 	src="{$entry->images->downsized->url}"
 	width="{$entry->images->downsized->width}"
 	height="{$entry->images->downsized->height}" />
