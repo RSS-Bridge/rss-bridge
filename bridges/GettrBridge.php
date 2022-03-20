@@ -15,13 +15,13 @@ class GettrBridge extends BridgeAbstract
 				'required' => true,
 				'exampleValue' => 'joerogan',
 			],
-			'limit' => array(
+			'limit' => [
 				'name' => 'Limit',
 				'type' => 'number',
 				'title' => 'Maximum number of items to return (maximum 20)',
 				'defaultValue' => 5,
 				'required' => true,
-			),
+			],
 		]
 	];
 
