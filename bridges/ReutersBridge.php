@@ -292,7 +292,7 @@ class ReutersBridge extends BridgeAbstract
 		$rawData = $this->getJson($url);
 
 		if(json_last_error() != JSON_ERROR_NONE) { // Checking whether a valid JSON or not
-			return handleRedirectedArticle($url);
+			return $this->handleRedirectedArticle($url);
 		}
 
 		$article_content = '';
