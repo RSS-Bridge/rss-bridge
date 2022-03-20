@@ -16,12 +16,12 @@ class CarThrottleBridge extends FeedExpander {
 		$articlePage = getSimpleHTMLDOMCached($feedItem->link)
 			or returnServerError('Could not retrieve ' . $feedItem->link);
 
-		// $subtitle = $articlePage->find('div.headline-container > p.standfirst', 0);
-		// $article = $articlePage->find('div.content_field', 0);
+		$subtitle = $articlePage->find('div.headline-container > p.standfirst', 0);
+		$article = $articlePage->find('div.content_field', 0);
 
-		$item['content'] = $articlePage->find('div.content_field', 0);
+		$item['content'] = str_get_html($subtitle . $article);
 
-		//convert iframes to links. meant for embedded videos.
+		//convert <iframe>s to <a>s. meant for embedded videos.
 		foreach($item['content']->find('iframe') as $found) {
 
 			$iframeUrl = $found->getAttribute('src');
@@ -31,7 +31,7 @@ class CarThrottleBridge extends FeedExpander {
 			}
 		}
 
-		//remove scripts instead of just 'defusing' them
+		//remove scripts from the text
 		foreach ($item['content']->find('script') as $remove) {
 			$remove->outertext = '';
 		}
