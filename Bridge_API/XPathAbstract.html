@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+    <title>XPathAbstract - RSS-Bridge</title>
+    <meta name="description" content="The RSS feed for websites missing it">
+    <meta name="author" content="RSS-Bridge Contributors">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <link rel="icon" href="../themes/daux/img/favicon-blue.png" type="image/x-icon">
+
+    <!-- Mobile -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- JS -->
+    <script>
+        window.base_url = "../";
+        document.documentElement.classList.remove('no-js');
+    </script>
+
+    <!-- Font -->
+    
+    <!-- CSS -->
+            <link href='../themes/daux/css/theme-blue.min.css' rel='stylesheet' type='text/css'>
+            <link href='../daux_libraries/search.css' rel='stylesheet' type='text/css'>
+    </head>
+<body class="">
+    <div class="Columns content">
+    <aside class="Columns__left Collapsible">
+        <button type="button" class="Button Collapsible__trigger" aria-controls="sidebar_content" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="Collapsible__trigger__bar"></span>
+            <span class="Collapsible__trigger__bar"></span>
+            <span class="Collapsible__trigger__bar"></span>
+        </button>
+
+        <a class="Brand" href="../index.html">RSS-Bridge</a>
+
+    <form role='search' action="/" method="get" class="Search" id="search_form">
+        <label for="search_input">
+            <span class='u-visuallyHidden'>Search</span>
+        </label>
+        <input
+            type="search"
+            id="search_input"
+            class="Search__field"
+            placeholder="Search..."
+            aria-label="Search..."
+            autocomplete="on"
+            results=25
+            autosave=text_search
+        >
+        <label>
+            <input type="submit" class='u-visuallyHidden' />
+            <span class='u-visuallyHidden'>Search...</span>
+            <svg class="Search__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 451 451">
+                <path d="M447.05 428l-109.6-109.6c29.4-33.8 47.2-77.9 47.2-126.1C384.65 86.2 298.35 0 192.35 0 86.25 0 .05 86.3.05 192.3s86.3 192.3 192.3 192.3c48.2 0 92.3-17.8 126.1-47.2L428.05 447c2.6 2.6 6.1 4 9.5 4s6.9-1.3 9.5-4c5.2-5.2 5.2-13.8 0-19zM26.95 192.3c0-91.2 74.2-165.3 165.3-165.3 91.2 0 165.3 74.2 165.3 165.3s-74.1 165.4-165.3 165.4c-91.1 0-165.3-74.2-165.3-165.4z"/>
+            </svg>
+        </label>
+    </form>
+
+        <div class="Collapsible__content" id="sidebar_content">
+            <!-- Navigation -->
+            <ul class='Nav'><li class='Nav__item  has-children'><a href="../General/Project_goals.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>General</a><ul class='Nav'><li class='Nav__item '><a href="../General/Project_goals.html">Project-goals</a></li><li class='Nav__item '><a href="../General/Contribute.html">Contribute</a></li><li class='Nav__item '><a href="../General/Requirements.html">Requirements</a></li><li class='Nav__item '><a href="../General/Screenshots.html">Screenshots</a></li><li class='Nav__item '><a href="../General/FAQ.html">FAQ</a></li><li class='Nav__item '><a href="../General/Public_Hosts.html">Public Hosts</a></li></ul></li><li class='Nav__item '><a href="../CLI/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>CLI</a><ul class='Nav'></ul></li><li class='Nav__item  has-children'><a href="../For_Hosts/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>For Hosts</a><ul class='Nav'><li class='Nav__item '><a href="../For_Hosts/Installation.html">Installation</a></li><li class='Nav__item '><a href="../For_Hosts/Updating.html">Updating</a></li><li class='Nav__item '><a href="../For_Hosts/Docker_Installation.html">Docker Installation</a></li><li class='Nav__item '><a href="../For_Hosts/Heroku_Installation.html">Heroku Installation</a></li><li class='Nav__item '><a href="../For_Hosts/Whitelisting.html">Whitelisting</a></li><li class='Nav__item '><a href="../For_Hosts/Authentication.html">Authentication</a></li><li class='Nav__item '><a href="../For_Hosts/Customizations.html">Customizations</a></li><li class='Nav__item '><a href="../For_Hosts/Custom_Configuration.html">Custom Configuration</a></li></ul></li><li class='Nav__item  has-children'><a href="../For_Developers/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>For Developers</a><ul class='Nav'><li class='Nav__item '><a href="../For_Developers/Coding_style_policy.html">Coding style policy</a></li><li class='Nav__item '><a href="../For_Developers/Pull_Request_policy.html">Pull Request policy</a></li><li class='Nav__item '><a href="../For_Developers/Folder_structure.html">Folder structure</a></li><li class='Nav__item '><a href="../For_Developers/Actions.html">Actions</a></li><li class='Nav__item '><a href="../For_Developers/Debug_mode.html">Debug mode</a></li></ul></li><li class='Nav__item Nav__item--open has-children'><a href="../Bridge_API/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Bridge API</a><ul class='Nav'><li class='Nav__item '><a href="../Bridge_API/How_to_create_a_new_bridge.html">How to create a new bridge</a></li><li class='Nav__item '><a href="../Bridge_API/BridgeAbstract.html">BridgeAbstract</a></li><li class='Nav__item '><a href="../Bridge_API/FeedExpander.html">FeedExpander</a></li><li class='Nav__item Nav__item--active'><a href="../Bridge_API/XPathAbstract.html">XPathAbstract</a></li></ul></li><li class='Nav__item '><a href="../Helper_functions/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Helper functions</a><ul class='Nav'></ul></li><li class='Nav__item  has-children'><a href="../Cache_API/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Cache API</a><ul class='Nav'><li class='Nav__item '><a href="../Cache_API/How_to_create_a_new_cache.html">How to create a new cache</a></li><li class='Nav__item '><a href="../Cache_API/CacheInterface.html">CacheInterface</a></li></ul></li><li class='Nav__item  has-children'><a href="../Format_API/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Format API</a><ul class='Nav'><li class='Nav__item '><a href="../Format_API/How_to_create_a_new_format.html">How to create a new format</a></li><li class='Nav__item '><a href="../Format_API/FormatInterface.html">FormatInterface</a></li><li class='Nav__item '><a href="../Format_API/FormatAbstract.html">FormatAbstract</a></li></ul></li><li class='Nav__item '><a href="../Technical_recommendations/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Technical recommendations</a><ul class='Nav'></ul></li></ul>
+            <div class="Links">
+                                    <hr/>
+                                            <a href="https://github.com/RSS-Bridge/rss-bridge" target="_blank"  rel="noopener noreferrer">GitHub Repository</a>
+                        <br />
+                                            <a href="https://github.com/RSS-Bridge/rss-bridge/issues" target="_blank"  rel="noopener noreferrer">Help/Support/Bugs</a>
+                        <br />
+                                            <a href="https://github.com/RSS-Bridge/rss-bridge/pkgs/container/rss-bridge" target="_blank"  rel="noopener noreferrer">Docker Images</a>
+                        <br />
+                                                </div>
+
+                            <div class="CodeToggler">
+                    <hr/>
+                    <label class="Checkbox">Show Code Blocks                        <input type="checkbox" class="CodeToggler__button--main" checked="checked"/>
+                        <div class="Checkbox__indicator"></div>
+                    </label>
+                </div>
+            
+                
+                                    <div class="PoweredBy">
+                        <hr/>
+                        Powered by Daux.io                    </div>
+                        </div>
+    </aside>
+    <div class="Columns__right">
+        <div class="Columns__right__content">
+            <div class="doc_content">
+                <article class="Page">
+
+    <div class="Page__header">
+        <h1><a href="../Bridge_API/index.html">Bridge API</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../Bridge_API/XPathAbstract.html">XPathAbstract</a></h1>
+                <span class="ModifiedDate">
+            March 22, 2022 at 1:33 PM        </span>
+                        <span class="EditOn">
+            <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/05_Bridge_API/04_XPathAbstract.md" target="_blank">
+                Edit on GitHub            </a>
+        </span>
+            </div>
+
+    <div class="s-content">
+        <p><code>XPathAbstract</code> extends <a href="BridgeAbstract.html"><code>BridgeAbstract</code></a> and adds functionality for generating feeds based on <em>XPath expressions</em>. It makes creation of new bridges easy and if you’re familiar with XPath expressions this class is probably the right point for you to start with.</p>
+<p>At the end of this document you’ll find a complete <a href="#template">template</a> based on these instructions.</p>
+<hr />
+<h1><a id="required-constants" href="#required-constants" class="Permalink" aria-hidden="true" title="Permalink">#</a>Required constants</h1>
+<p>To create a new Bridge based on <code>XPathAbstract</code> your inheriting class should specify a set of constants describing the feed and the XPath expressions.</p>
+<p>It is advised to override constants inherited from <a href="BridgeAbstract.html#step-3---add-general-constants-to-the-class"><code>BridgeAbstract</code></a> aswell.</p>
+<h2><a id="class-constant-feed-source-url" href="#class-constant-feed-source-url" class="Permalink" aria-hidden="true" title="Permalink">#</a>Class constant <code>FEED_SOURCE_URL</code></h2>
+<p>Source Web page URL (should provide either HTML or XML content). You can specify any website URL which serves data suited for display in RSS feeds</p>
+<h2><a id="class-constant-xpath-expression-feed-title" href="#class-constant-xpath-expression-feed-title" class="Permalink" aria-hidden="true" title="Permalink">#</a>Class constant <code>XPATH_EXPRESSION_FEED_TITLE</code></h2>
+<p>XPath expression for extracting the feed title from the source page. If this is left blank or does not provide any data <code>BridgeAbstract::getName()</code> is used instead as the feed’s title.</p>
+<h2><a id="class-constant-xpath-expression-feed-icon" href="#class-constant-xpath-expression-feed-icon" class="Permalink" aria-hidden="true" title="Permalink">#</a>Class constant <code>XPATH_EXPRESSION_FEED_ICON</code></h2>
+<p>XPath expression for extracting the feed favicon URL from the source page. If this is left blank or does not provide any data <code>BridgeAbstract::getIcon()</code> is used instead as the feed’s favicon URL.</p>
+<h2><a id="class-constant-xpath-expression-item" href="#class-constant-xpath-expression-item" class="Permalink" aria-hidden="true" title="Permalink">#</a>Class constant <code>XPATH_EXPRESSION_ITEM</code></h2>
+<p>XPath expression for extracting the feed items from the source page. Enter an XPath expression matching a list of dom nodes, each node containing one feed article item in total (usually a surrounding <code>&lt;div&gt;</code> or <code>&lt;span&gt;</code> tag). This will be the context nodes for all of the following expressions. This expression usually starts with a single forward slash.</p>
+<h2><a id="class-constant-xpath-expression-item-title" href="#class-constant-xpath-expression-item-title" class="Permalink" aria-hidden="true" title="Permalink">#</a>Class constant <code>XPATH_EXPRESSION_ITEM_TITLE</code></h2>
+<p>XPath expression for extracting an item title from the item context. This expression should match a node contained within each article item node containing the article headline. It should start with a dot followed by two forward slashes, referring to any descendant nodes of the article item node.</p>
+<h2><a id="class-constant-xpath-expression-item-content" href="#class-constant-xpath-expression-item-content" class="Permalink" aria-hidden="true" title="Permalink">#</a>Class constant <code>XPATH_EXPRESSION_ITEM_CONTENT</code></h2>
+<p>XPath expression for extracting an item’s content from the item context. This expression should match a node contained within each article item node containing the article content or description. It should start with a dot followed by two forward slashes, referring to any descendant nodes of the article item node.</p>
+<h2><a id="class-constant-xpath-expression-item-uri" href="#class-constant-xpath-expression-item-uri" class="Permalink" aria-hidden="true" title="Permalink">#</a>Class constant <code>XPATH_EXPRESSION_ITEM_URI</code></h2>
+<p>XPath expression for extracting an item link from the item context. This expression should match a node’s attribute containing the article URL (usually the href attribute of an <code>&lt;a&gt;</code> tag). It should start with a dot followed by two forward slashes, referring to any descendant nodes of the article item node. Attributes can be selected by prepending an <code>@</code> char before the attributes name.</p>
+<h2><a id="class-constant-xpath-expression-item-author" href="#class-constant-xpath-expression-item-author" class="Permalink" aria-hidden="true" title="Permalink">#</a>Class constant <code>XPATH_EXPRESSION_ITEM_AUTHOR</code></h2>
+<p>XPath expression for extracting an item author from the item context. This expression should match a node contained within each article item node containing the article author’s name. It should start with a dot followed by two forward slashes, referring to any descendant nodes of the article item node.</p>
+<h2><a id="class-constant-xpath-expression-item-timestamp" href="#class-constant-xpath-expression-item-timestamp" class="Permalink" aria-hidden="true" title="Permalink">#</a>Class constant <code>XPATH_EXPRESSION_ITEM_TIMESTAMP</code></h2>
+<p>XPath expression for extracting an item timestamp from the item context. This expression should match a node or node’s attribute containing the article timestamp or date (parsable by PHP’s strtotime function). It should start with a dot followed by two forward slashes, referring to any descendant nodes of the article item node. Attributes can be selected by prepending an <code>@</code> char before the attributes name.</p>
+<h2><a id="class-constant-xpath-expression-item-enclosures" href="#class-constant-xpath-expression-item-enclosures" class="Permalink" aria-hidden="true" title="Permalink">#</a>Class constant <code>XPATH_EXPRESSION_ITEM_ENCLOSURES</code></h2>
+<p>XPath expression for extracting item enclosures (media content like images or movies) from the item context. This expression should match a node’s attribute containing an article image URL (usually the src attribute of an <img> tag or a style attribute). It should start with a dot followed by two forward slashes, referring to any descendant nodes of the article item node. Attributes can be selected by prepending an <code>@</code> char before the attributes name.</p>
+<h2><a id="class-constant-xpath-expression-item-categories" href="#class-constant-xpath-expression-item-categories" class="Permalink" aria-hidden="true" title="Permalink">#</a>Class constant <code>XPATH_EXPRESSION_ITEM_CATEGORIES</code></h2>
+<p>XPath expression for extracting an item category from the item context. This expression should match a node or node’s attribute contained within each article item node containing the article category. This could be inside <div> or <span> tags or sometimes be hidden in a data attribute. It should start with a dot followed by two forward slashes, referring to any descendant nodes of the article item node. Attributes can be selected by prepending an <code>@</code> char before the attributes name.</p>
+<h2><a id="class-constant-setting-fix-encoding" href="#class-constant-setting-fix-encoding" class="Permalink" aria-hidden="true" title="Permalink">#</a>Class constant <code>SETTING_FIX_ENCODING</code></h2>
+<p>Turns on automatic fixing of encoding errors. Set this to true for fixing feed encoding by invoking PHP’s <code>utf8_decode</code> function on all extracted texts. Try this in case you see “broken” or “weird” characters in your feed where you’d normally expect umlauts or any other non-ascii characters.</p>
+<h1><a id="optional-methods" href="#optional-methods" class="Permalink" aria-hidden="true" title="Permalink">#</a>Optional methods</h1>
+<p><code>XPathAbstract</code> offers a set of methods which can be overridden by derived classes for fine tuning and customization. This is optional. The methods provided for overriding can be grouped into three categories.</p>
+<h2><a id="methods-for-providing-xpath-expressions" href="#methods-for-providing-xpath-expressions" class="Permalink" aria-hidden="true" title="Permalink">#</a>Methods for providing XPath expressions</h2>
+<p>Usually XPath expressions are defined in the class constants described above. By default the following base methods just return the value of its corresponding class constant. However deriving classed can override them in case if XPath expressions need to be formed dynamically or based on conditions. In case any of these methods is defined, the method’s return value is used instead of the corresponding constant for providing the value.</p>
+<h3><a id="method-getsourceurl" href="#method-getsourceurl" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>getSourceUrl()</code></h3>
+<p>Should return the source Web page URL used as a base for applying the XPath expressions.</p>
+<h3><a id="method-getexpressiontitle" href="#method-getexpressiontitle" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>getExpressionTitle()</code></h3>
+<p>Should return the XPath expression for extracting the feed title from the source page.</p>
+<h3><a id="method-getexpressionicon" href="#method-getexpressionicon" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>getExpressionIcon()</code></h3>
+<p>Should return the XPath expression for extracting the feed favicon from the source page.</p>
+<h3><a id="method-getexpressionitem" href="#method-getexpressionitem" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>getExpressionItem()</code></h3>
+<p>Should return the XPath expression for extracting the feed items from the source page.</p>
+<h3><a id="method-getexpressionitemtitle" href="#method-getexpressionitemtitle" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>getExpressionItemTitle()</code></h3>
+<p>Should return the XPath expression for extracting an item title from the item context.</p>
+<h3><a id="method-getexpressionitemcontent" href="#method-getexpressionitemcontent" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>getExpressionItemContent()</code></h3>
+<p>Should return the XPath expression for extracting an item’s content from the item context.</p>
+<h3><a id="method-getexpressionitemuri" href="#method-getexpressionitemuri" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>getExpressionItemUri()</code></h3>
+<p>Should return the XPath expression for extracting an item link from the item context.</p>
+<h3><a id="method-getexpressionitemauthor" href="#method-getexpressionitemauthor" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>getExpressionItemAuthor()</code></h3>
+<p>Should return the XPath expression for extracting an item author from the item context.</p>
+<h3><a id="method-getexpressionitemtimestamp" href="#method-getexpressionitemtimestamp" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>getExpressionItemTimestamp()</code></h3>
+<p>Should return the XPath expression for extracting an item timestamp from the item context.</p>
+<h3><a id="method-getexpressionitemenclosures" href="#method-getexpressionitemenclosures" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>getExpressionItemEnclosures()</code></h3>
+<p>Should return the XPath expression for extracting item enclosures (media content like images or movies) from the item context.</p>
+<h3><a id="method-getexpressionitemcategories" href="#method-getexpressionitemcategories" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>getExpressionItemCategories()</code></h3>
+<p>Should return the XPath expression for extracting an item category from the item context.</p>
+<h3><a id="method-getsettingfixencoding" href="#method-getsettingfixencoding" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>getSettingFixEncoding()</code></h3>
+<p>Should return the Fix encoding setting value (bool true or false).</p>
+<h2><a id="methods-for-providing-feed-data" href="#methods-for-providing-feed-data" class="Permalink" aria-hidden="true" title="Permalink">#</a>Methods for providing feed data</h2>
+<p>Those methods are invoked for providing the HTML source as a base for applying the XPath expressions as well as feed meta data as the title and icon.</p>
+<h3><a id="method-providewebsitecontent" href="#method-providewebsitecontent" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>provideWebsiteContent()</code></h3>
+<p>This method should return the HTML source as a base for the XPath expressions. Usually it merely returns the HTML content of the URL specified in the constant <code>FEED_SOURCE_URL</code> retrieved by curl. Some sites however require user authentication mechanisms, the use of special cookies and/or headers, where the direct retrival using standard curl would not suffice. In that case this method should be overridden and take care of the page retrival.</p>
+<h3><a id="method-providefeedtitle" href="#method-providefeedtitle" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>provideFeedTitle()</code></h3>
+<p>This method should provide the feed title. Usually the XPath expression defined in <code>XPATH_EXPRESSION_FEED_TITLE</code> is used for extracting the title directly from the page source.</p>
+<h3><a id="method-providefeedicon" href="#method-providefeedicon" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>provideFeedIcon()</code></h3>
+<p>This method should provide the feed title. Usually the XPath expression defined in <code>XPATH_EXPRESSION_FEED_ICON</code> is used for extracting the title directly from the page source.</p>
+<h3><a id="method-providefeeditems" href="#method-providefeeditems" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>provideFeedItems()</code></h3>
+<p>This method should provide the feed items. Usually the XPath expression defined in <code>XPATH_EXPRESSION_ITEM</code> is used for extracting the items from the page source. All other XPath expressions are applied on a per-item basis, item by item, and only on the item’s contents.</p>
+<h2><a id="methods-for-formatting-and-filtering-feed-item-attributes" href="#methods-for-formatting-and-filtering-feed-item-attributes" class="Permalink" aria-hidden="true" title="Permalink">#</a>Methods for formatting and filtering feed item attributes</h2>
+<p>The following methods are invoked after extraction of the feed items from the source. Each of them expect one parameter, the value of the corresponding field, which then can be processed and transformed by the method. You can override these methods in order to format or filter parts of the feed output.</p>
+<h3><a id="method-formatitemtitle" href="#method-formatitemtitle" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>formatItemTitle()</code></h3>
+<p>Accepts the items title values as parameter, processes and returns it. Should return a string.</p>
+<h3><a id="method-formatitemcontent" href="#method-formatitemcontent" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>formatItemContent()</code></h3>
+<p>Accepts the items content as parameter, processes and returns it. Should return a string.</p>
+<h3><a id="method-formatitemuri" href="#method-formatitemuri" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>formatItemUri()</code></h3>
+<p>Accepts the items link URL as parameter, processes and returns it. Should return a string.</p>
+<h3><a id="method-formatitemauthor" href="#method-formatitemauthor" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>formatItemAuthor()</code></h3>
+<p>Accepts the items author as parameter, processes and returns it. Should return a string.</p>
+<h3><a id="method-formatitemtimestamp" href="#method-formatitemtimestamp" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>formatItemTimestamp()</code></h3>
+<p>Accepts the items creation timestamp as parameter, processes and returns it. Should return a unix timestamp as integer.</p>
+<h3><a id="method-cleanimageurl" href="#method-cleanimageurl" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>cleanImageUrl()</code></h3>
+<p>Method invoked for cleaning feed icon and item image URL’s. Extracts the image URL from the passed parameter, stripping any additional content. Furthermore makes sure that relative image URL’s get transformed to absolute ones.</p>
+<h3><a id="method-fixencoding" href="#method-fixencoding" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>fixEncoding()</code></h3>
+<p>Only invoked when class constant <code>SETTING_FIX_ENCODING</code> is set to true. It then passes all extracted string values through PHP’s <code>utf8_decode</code> function.</p>
+<h3><a id="method-generateitemid" href="#method-generateitemid" class="Permalink" aria-hidden="true" title="Permalink">#</a>Method <code>generateItemId()</code></h3>
+<p>This method plays in important role for generating feed item ids for all extracted items. Every feed item needs an unique identifier (Uid), so that your feed reader updates the original item instead of adding a duplicate in case an items content is updated on the source site. Usually the items link URL is a good candidate the the Uid.</p>
+<hr />
+<h1><a id="template" href="#template" class="Permalink" aria-hidden="true" title="Permalink">#</a>Template</h1>
+<p>Use this template to create your own bridge. Please remove any unnecessary comments and parameters.</p>
+<pre><code class="language-PHP">&lt;?php
+
+class TestBridge extends XPathAbstract {
+    const NAME = 'Test';
+    const URI = 'https://www.unbemerkt.eu/de/blog/';
+    const DESCRIPTION = 'Test';
+    const MAINTAINER = 'your name';
+    const CACHE_TIMEOUT = 3600;
+
+    const FEED_SOURCE_URL = 'https://www.unbemerkt.eu/de/blog/';
+    const XPATH_EXPRESSION_ITEM = '/html[1]/body[1]/section[1]/section[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[*]/article[1]';
+    const XPATH_EXPRESSION_ITEM_TITLE = './/a[@target=&quot;_self&quot;]';
+    const XPATH_EXPRESSION_ITEM_CONTENT = './/div[@class=&quot;post-content&quot;]';
+    const XPATH_EXPRESSION_ITEM_URI = './/a[@class=&quot;more-btn&quot;]/@href';
+    const XPATH_EXPRESSION_ITEM_AUTHOR = '/html[1]/body[1]/section[1]/div[2]/div[1]/div[1]/h1[1]';
+    const XPATH_EXPRESSION_ITEM_TIMESTAMP = './/time/@datetime';
+    const XPATH_EXPRESSION_ITEM_ENCLOSURES = './/img/@data-src';
+    const SETTING_FIX_ENCODING = false;
+}
+</code></pre>
+    </div>
+
+        <nav>
+        <ul class="Pager">
+            <li class=Pager--prev><a href="../Bridge_API/FeedExpander.html">Previous</a></li>            <li class=Pager--next><a href="../Helper_functions/index.html">Next</a></li>        </ul>
+    </nav>
+    </article>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+    <!-- JS -->
+            <script src="../themes/daux/js/daux.min.js"></script>
+    
+        <script>
+        
+        window.searchLanguage = "";
+        window.searchTranslation = {"Search_one_result":"1 result","Search_results":"!count results","Search_no_results":"Nothing found","Search_common_words_ignored":"Common words are largely ignored","Search_too_short":"Search too short","Search_one_character_or_more":"Should be one character or more","Search_should_be_x_or_more":"Should be !min characters or more","Link_previous":"Previous","Link_next":"Next"};
+    </script>
+
+    <!-- Search -->
+    <script type="text/javascript" src="../daux_libraries/search.min.js"></script>
+
+    <script>
+        window.search({'base_url': '../'})
+    </script>
+</body>
+</html>

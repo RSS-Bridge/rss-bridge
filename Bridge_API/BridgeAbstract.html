@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+    <title>BridgeAbstract - RSS-Bridge</title>
+    <meta name="description" content="The RSS feed for websites missing it">
+    <meta name="author" content="RSS-Bridge Contributors">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <link rel="icon" href="../themes/daux/img/favicon-blue.png" type="image/x-icon">
+
+    <!-- Mobile -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- JS -->
+    <script>
+        window.base_url = "../";
+        document.documentElement.classList.remove('no-js');
+    </script>
+
+    <!-- Font -->
+    
+    <!-- CSS -->
+            <link href='../themes/daux/css/theme-blue.min.css' rel='stylesheet' type='text/css'>
+            <link href='../daux_libraries/search.css' rel='stylesheet' type='text/css'>
+    </head>
+<body class="">
+    <div class="Columns content">
+    <aside class="Columns__left Collapsible">
+        <button type="button" class="Button Collapsible__trigger" aria-controls="sidebar_content" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="Collapsible__trigger__bar"></span>
+            <span class="Collapsible__trigger__bar"></span>
+            <span class="Collapsible__trigger__bar"></span>
+        </button>
+
+        <a class="Brand" href="../index.html">RSS-Bridge</a>
+
+    <form role='search' action="/" method="get" class="Search" id="search_form">
+        <label for="search_input">
+            <span class='u-visuallyHidden'>Search</span>
+        </label>
+        <input
+            type="search"
+            id="search_input"
+            class="Search__field"
+            placeholder="Search..."
+            aria-label="Search..."
+            autocomplete="on"
+            results=25
+            autosave=text_search
+        >
+        <label>
+            <input type="submit" class='u-visuallyHidden' />
+            <span class='u-visuallyHidden'>Search...</span>
+            <svg class="Search__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 451 451">
+                <path d="M447.05 428l-109.6-109.6c29.4-33.8 47.2-77.9 47.2-126.1C384.65 86.2 298.35 0 192.35 0 86.25 0 .05 86.3.05 192.3s86.3 192.3 192.3 192.3c48.2 0 92.3-17.8 126.1-47.2L428.05 447c2.6 2.6 6.1 4 9.5 4s6.9-1.3 9.5-4c5.2-5.2 5.2-13.8 0-19zM26.95 192.3c0-91.2 74.2-165.3 165.3-165.3 91.2 0 165.3 74.2 165.3 165.3s-74.1 165.4-165.3 165.4c-91.1 0-165.3-74.2-165.3-165.4z"/>
+            </svg>
+        </label>
+    </form>
+
+        <div class="Collapsible__content" id="sidebar_content">
+            <!-- Navigation -->
+            <ul class='Nav'><li class='Nav__item  has-children'><a href="../General/Project_goals.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>General</a><ul class='Nav'><li class='Nav__item '><a href="../General/Project_goals.html">Project-goals</a></li><li class='Nav__item '><a href="../General/Contribute.html">Contribute</a></li><li class='Nav__item '><a href="../General/Requirements.html">Requirements</a></li><li class='Nav__item '><a href="../General/Screenshots.html">Screenshots</a></li><li class='Nav__item '><a href="../General/FAQ.html">FAQ</a></li><li class='Nav__item '><a href="../General/Public_Hosts.html">Public Hosts</a></li></ul></li><li class='Nav__item '><a href="../CLI/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>CLI</a><ul class='Nav'></ul></li><li class='Nav__item  has-children'><a href="../For_Hosts/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>For Hosts</a><ul class='Nav'><li class='Nav__item '><a href="../For_Hosts/Installation.html">Installation</a></li><li class='Nav__item '><a href="../For_Hosts/Updating.html">Updating</a></li><li class='Nav__item '><a href="../For_Hosts/Docker_Installation.html">Docker Installation</a></li><li class='Nav__item '><a href="../For_Hosts/Heroku_Installation.html">Heroku Installation</a></li><li class='Nav__item '><a href="../For_Hosts/Whitelisting.html">Whitelisting</a></li><li class='Nav__item '><a href="../For_Hosts/Authentication.html">Authentication</a></li><li class='Nav__item '><a href="../For_Hosts/Customizations.html">Customizations</a></li><li class='Nav__item '><a href="../For_Hosts/Custom_Configuration.html">Custom Configuration</a></li></ul></li><li class='Nav__item  has-children'><a href="../For_Developers/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>For Developers</a><ul class='Nav'><li class='Nav__item '><a href="../For_Developers/Coding_style_policy.html">Coding style policy</a></li><li class='Nav__item '><a href="../For_Developers/Pull_Request_policy.html">Pull Request policy</a></li><li class='Nav__item '><a href="../For_Developers/Folder_structure.html">Folder structure</a></li><li class='Nav__item '><a href="../For_Developers/Actions.html">Actions</a></li><li class='Nav__item '><a href="../For_Developers/Debug_mode.html">Debug mode</a></li></ul></li><li class='Nav__item Nav__item--open has-children'><a href="../Bridge_API/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Bridge API</a><ul class='Nav'><li class='Nav__item '><a href="../Bridge_API/How_to_create_a_new_bridge.html">How to create a new bridge</a></li><li class='Nav__item Nav__item--active'><a href="../Bridge_API/BridgeAbstract.html">BridgeAbstract</a></li><li class='Nav__item '><a href="../Bridge_API/FeedExpander.html">FeedExpander</a></li><li class='Nav__item '><a href="../Bridge_API/XPathAbstract.html">XPathAbstract</a></li></ul></li><li class='Nav__item '><a href="../Helper_functions/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Helper functions</a><ul class='Nav'></ul></li><li class='Nav__item  has-children'><a href="../Cache_API/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Cache API</a><ul class='Nav'><li class='Nav__item '><a href="../Cache_API/How_to_create_a_new_cache.html">How to create a new cache</a></li><li class='Nav__item '><a href="../Cache_API/CacheInterface.html">CacheInterface</a></li></ul></li><li class='Nav__item  has-children'><a href="../Format_API/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Format API</a><ul class='Nav'><li class='Nav__item '><a href="../Format_API/How_to_create_a_new_format.html">How to create a new format</a></li><li class='Nav__item '><a href="../Format_API/FormatInterface.html">FormatInterface</a></li><li class='Nav__item '><a href="../Format_API/FormatAbstract.html">FormatAbstract</a></li></ul></li><li class='Nav__item '><a href="../Technical_recommendations/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Technical recommendations</a><ul class='Nav'></ul></li></ul>
+            <div class="Links">
+                                    <hr/>
+                                            <a href="https://github.com/RSS-Bridge/rss-bridge" target="_blank"  rel="noopener noreferrer">GitHub Repository</a>
+                        <br />
+                                            <a href="https://github.com/RSS-Bridge/rss-bridge/issues" target="_blank"  rel="noopener noreferrer">Help/Support/Bugs</a>
+                        <br />
+                                            <a href="https://github.com/RSS-Bridge/rss-bridge/pkgs/container/rss-bridge" target="_blank"  rel="noopener noreferrer">Docker Images</a>
+                        <br />
+                                                </div>
+
+                            <div class="CodeToggler">
+                    <hr/>
+                    <label class="Checkbox">Show Code Blocks                        <input type="checkbox" class="CodeToggler__button--main" checked="checked"/>
+                        <div class="Checkbox__indicator"></div>
+                    </label>
+                </div>
+            
+                
+                                    <div class="PoweredBy">
+                        <hr/>
+                        Powered by Daux.io                    </div>
+                        </div>
+    </aside>
+    <div class="Columns__right">
+        <div class="Columns__right__content">
+            <div class="doc_content">
+                <article class="Page">
+
+    <div class="Page__header">
+        <h1><a href="../Bridge_API/index.html">Bridge API</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../Bridge_API/BridgeAbstract.html">BridgeAbstract</a></h1>
+                <span class="ModifiedDate">
+            March 22, 2022 at 1:33 PM        </span>
+                        <span class="EditOn">
+            <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/05_Bridge_API/02_BridgeAbstract.md" target="_blank">
+                Edit on GitHub            </a>
+        </span>
+            </div>
+
+    <div class="s-content">
+        <p><code>BridgeAbstract</code> is a base class for standard bridges. It implements the most common functions to simplify the process of adding new bridges.</p>
+<hr />
+<h1><a id="creating-a-new-bridge" href="#creating-a-new-bridge" class="Permalink" aria-hidden="true" title="Permalink">#</a>Creating a new bridge</h1>
+<p>You need four basic steps in order to create a new bridge:</p>
+<p><a href="#step-1---create-a-new-file"><strong>Step 1</strong></a> - Create a new file<br />
+<a href="#step-2---add-a-class-extending-bridgeabstract"><strong>Step 2</strong></a> - Add a class, extending <code>BridgeAbstract</code><br />
+<a href="#step-3---add-general-constants-to-the-class"><strong>Step 3</strong></a> - Add general constants to the class<br />
+<a href="#step-4---implement-a-function-to-collect-feed-data"><strong>Step 4</strong></a> - Implement a function to collect feed data</p>
+<p>These steps are described in more detail below. At the end of this document you’ll find a complete <a href="#template">template</a> based on these instructions. The pictures below show an example based on these instructions:</p>
+<details><summary>Show pictures</summary><div>
+<p><img src="../images/screenshot_bridgeabstract_example_card.png" alt="example card" /></p>
+<hr />
+<p><img src="../images/screenshot_bridgeabstract_example_atom.png" alt="example atom" /></p>
+</div></details><br>
+<p>Make sure to read these instructions carefully. Please don’t hesitate to open an <a href="https://github.com/RSS-Bridge/rss-bridge/issues" class="Link--external" rel="noopener noreferrer">Issue</a> if you have further questions (or suggestions). Once your bridge is finished, please open a <a href="https://github.com/RSS-Bridge/rss-bridge/pulls" class="Link--external" rel="noopener noreferrer">Pull Request</a>, in order to get your bridge merge into RSS-Bridge.</p>
+<hr />
+<h2><a id="step-1-create-a-new-file" href="#step-1-create-a-new-file" class="Permalink" aria-hidden="true" title="Permalink">#</a>Step 1 - Create a new file</h2>
+<p>Please read <a href="How_to_create_a_new_bridge.html">these instructions</a> on how to create a new file for RSS-Bridge.</p>
+<h2><a id="step-2-add-a-class-extending-bridgeabstract" href="#step-2-add-a-class-extending-bridgeabstract" class="Permalink" aria-hidden="true" title="Permalink">#</a>Step 2 - Add a class, extending <code>BridgeAbstract</code></h2>
+<p>Your bridge needs to be a class, which extends <code>BridgeAbstract</code>. The class name must <strong>exactly</strong> match the name of the file, without the file extension.</p>
+<p>For example: <code>MyBridge.php</code> =&gt; <code>MyBridge</code></p>
+<details><summary>Show example</summary><div>
+<pre><code class="language-PHP">&lt;?PHP
+class MyBridge extends BridgeAbstract {
+
+}
+// This line is empty (just imagine it!)
+</code></pre>
+</div></details>
+<h2><a id="step-3-add-general-constants-to-the-class" href="#step-3-add-general-constants-to-the-class" class="Permalink" aria-hidden="true" title="Permalink">#</a>Step 3 - Add general constants to the class</h2>
+<p>In order to present your bridge on the front page, RSS-Bridge requires a few constants:</p>
+<pre><code class="language-PHP">const NAME          // Name of the Bridge (default: &quot;Unnamed Bridge&quot;)
+const URI           // URI to the target website of the bridge (default: empty)
+const DESCRIPTION   // A brief description of the Bridge (default: &quot;No description provided&quot;)
+const MAINTAINER    // Name of the maintainer, i.e. your name on GitHub (default: &quot;No maintainer&quot;)
+const PARAMETERS    // (optional) Definition of additional parameters (default: empty)
+const CACHE_TIMEOUT // (optional) Defines the maximum duration for the cache in seconds (default: 3600)
+</code></pre>
+<details><summary>Show example</summary><div>
+<pre><code class="language-PHP">&lt;?PHP
+class MyBridge extends BridgeAbstract {
+	const NAME        = 'My Bridge';
+	const URI         = 'https://github.com/RSS-Bridge/rss-bridge/wiki/BridgeAbstract';
+	const DESCRIPTION = 'Returns &quot;Hello World!&quot;';
+	const MAINTAINER  = 'ghost';
+}
+// This line is empty (just imagine it!)
+</code></pre>
+</div></details><br>
+<p><strong>Notice</strong>: <code>const PARAMETERS</code> can be used to request information from the user. Refer to <a href="#parameters">these instructions</a> for more information.</p>
+<h2><a id="step-4-implement-a-function-to-collect-feed-data" href="#step-4-implement-a-function-to-collect-feed-data" class="Permalink" aria-hidden="true" title="Permalink">#</a>Step 4 - Implement a function to collect feed data</h2>
+<p>In order for RSS-Bridge to collect data, you must implement the <strong>public</strong> function <code>collectData</code>. This function takes no arguments and returns nothing. It generates a list of feed elements, which must be placed into the variable <code>$this-&gt;items</code>.</p>
+<details><summary>Show example</summary><div>
+<pre><code class="language-PHP">&lt;?PHP
+class MyBridge extends BridgeAbstract {
+	const NAME        = 'My Bridge';
+	const URI         = 'https://github.com/RSS-Bridge/rss-bridge/wiki/BridgeAbstract';
+	const DESCRIPTION = 'Returns &quot;Hello World!&quot;';
+	const MAINTAINER  = 'ghost';
+
+	public function collectData() {
+		$item = array(); // Create an empty item
+
+		$item['title'] = 'Hello World!';
+
+		$this-&gt;items[] = $item; // Add item to the list
+	}
+}
+// This line is empty (just imagine it!)
+</code></pre>
+</div></details><br>
+<p>For more details on the <code>collectData</code> function refer to <a href="#collectdata">these instructions</a>.</p>
+<hr />
+<h1><a id="template" href="#template" class="Permalink" aria-hidden="true" title="Permalink">#</a>Template</h1>
+<p>Use this template to create your own bridge. Please remove any unnecessary comments and parameters.</p>
+<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyBridge</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">BridgeAbstract</span> </span>{
+	<span class="hljs-keyword">const</span> NAME = <span class="hljs-string">'Unnamed bridge'</span>;
+	<span class="hljs-keyword">const</span> URI = <span class="hljs-string">''</span>;
+	<span class="hljs-keyword">const</span> DESCRIPTION = <span class="hljs-string">'No description provided'</span>;
+	<span class="hljs-keyword">const</span> MAINTAINER = <span class="hljs-string">'No maintainer'</span>;
+	<span class="hljs-keyword">const</span> PARAMETERS = <span class="hljs-keyword">array</span>(); <span class="hljs-comment">// Can be omitted!</span>
+	<span class="hljs-keyword">const</span> CACHE_TIMEOUT = <span class="hljs-number">3600</span>; <span class="hljs-comment">// Can be omitted!</span>
+
+	<span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">collectData</span><span class="hljs-params">()</span> </span>{
+		$item = <span class="hljs-keyword">array</span>(); <span class="hljs-comment">// Create an empty item</span>
+
+		$item[<span class="hljs-string">'title'</span>] = <span class="hljs-string">'Hello World!'</span>;
+
+		<span class="hljs-keyword">$this</span>-&gt;items[] = $item; <span class="hljs-comment">// Add item to the list</span>
+	}
+}
+<span class="hljs-comment">// This line is empty (just imagine it!)</span>
+</code></pre>
+<h1><a id="parameters" href="#parameters" class="Permalink" aria-hidden="true" title="Permalink">#</a>PARAMETERS</h1>
+<p>You can specify additional parameters in order to customize the bridge (i.e. to specify how many items to return). This document explains how to specify those parameters and which options are available to you.</p>
+<p>For information on how to read parameter values during execution, please refer to the <a href="../Helper_functions/index.html#getinput">getInput</a> function.</p>
+<hr />
+<h2><a id="adding-parameters-to-a-bridge" href="#adding-parameters-to-a-bridge" class="Permalink" aria-hidden="true" title="Permalink">#</a>Adding parameters to a bridge</h2>
+<p>Parameters are specified as part of the bridge class. An empty list of parameters is defined as <code>const PARAMETERS = array();</code></p>
+<details><summary>Show example</summary><div>
+<pre><code class="language-PHP">&lt;?PHP
+class MyBridge extends BridgeAbstract {
+	/* ... */
+	const PARAMETERS = array(); // Empty list of parameters (can be omitted)
+	/* ... */
+}
+</code></pre>
+</div></details><br>
+<p>Parameters are organized in two levels:</p>
+<p><a href="##level-1---context"><strong>Level 1</strong></a> - Context<br />
+<a href="##level-2---parameter"><strong>Level 2</strong></a> - Parameter</p>
+<h2><a id="level-1-context" href="#level-1-context" class="Permalink" aria-hidden="true" title="Permalink">#</a>Level 1 - Context</h2>
+<p>A context is defined as a associative array of parameters. The name of a context is displayed by RSS-Bridge.</p>
+<details><summary>Show example</summary><div>
+<pre><code class="language-PHP">const PARAMETERS = array(
+	'My Context 1' =&gt; array(),
+	'My Context 2' =&gt; array()
+);
+</code></pre>
+<p><strong>Output</strong></p>
+<p><img src="../images/bridge_context_named.png" alt="bridge context named" /></p>
+</div></details><br>
+<p><em>Notice</em>: The name of a context can be left empty if only one context is needed!</p>
+<details><summary>Show example</summary><div>
+<pre><code class="language-PHP">const PARAMETERS = array(
+	array()
+);
+</code></pre>
+</div></details><br>
+<p>You can also define a set of parameters that will be applied to every possible context of your bridge. To do this, specify a context named <code>global</code>.</p>
+<details><summary>Show example</summary><div>
+<pre><code class="language-PHP">const PARAMETERS = array(
+	'global' =&gt; array() // Applies to all contexts!
+);
+</code></pre>
+</div></details>
+<h2><a id="level-2-parameter" href="#level-2-parameter" class="Permalink" aria-hidden="true" title="Permalink">#</a>Level 2 - Parameter</h2>
+<p>Parameters are placed inside a context. They are defined as associative array of parameter specifications. Each parameter is defined by it’s internal input name, a definition in the form <code>'n' =&gt; array();</code>, where <code>n</code> is the name with which the bridge can access the parameter during execution.</p>
+<details><summary>Show example</summary><div>
+<pre><code class="language-PHP">const PARAMETERS = array(
+	'My Context' =&gt; array(
+		'n' =&gt; array()
+	)
+);
+</code></pre>
+</div></details><br>
+<p>The parameter specification consists of various fields, listed in the table below.</p>
+<details><summary>Show example</summary><div>
+<pre><code class="language-PHP">const PARAMETERS = array(
+	'My Context' =&gt; array(
+		'n' =&gt; array(
+			'name' =&gt; 'Limit',
+			'type' =&gt; 'number',
+			'required' =&gt; false,
+			'title' =&gt; 'Maximum number of items to return',
+			'defaultValue' =&gt; 10
+		)
+	)
+);
+</code></pre>
+<p><strong>Output</strong></p>
+<p><img src="../images/context_parameter_example.png" alt="context parameter" /></p>
+</div></details>
+<hr />
+<table>
+<thead>
+<tr>
+<th>Parameter Name</th>
+<th>Required</th>
+<th>Type</th>
+<th>Supported values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><strong>yes</strong></td>
+<td>Text</td>
+<td></td>
+<td>Input name as displayed to the user</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>no</td>
+<td>Text</td>
+<td><code>text</code>, <code>number</code>, <code>list</code>, <code>checkbox</code></td>
+<td>Type of the input (default: <code>text</code>)</td>
+</tr>
+<tr>
+<td><code>required</code></td>
+<td>no</td>
+<td>Boolean</td>
+<td><code>true</code>, <code>false</code></td>
+<td>Specifies if the parameter is required or not (default: <code>false</code>). Not supported for lists and checkboxes.</td>
+</tr>
+<tr>
+<td><a href="#list-values"><code>values</code></a></td>
+<td>no</td>
+<td>associative array</td>
+<td></td>
+<td>name/value pairs used by the HTML option tag, required for type ‘<code>list</code>’</td>
+</tr>
+<tr>
+<td><code>title</code></td>
+<td>no</td>
+<td>Text</td>
+<td></td>
+<td>Used as tool-tip when mouse-hovering over the input box</td>
+</tr>
+<tr>
+<td><code>pattern</code></td>
+<td>no</td>
+<td>Text</td>
+<td></td>
+<td>Defines a pattern for an element of type <code>text</code>. The pattern should be mentioned in the <code>title</code> attribute!</td>
+</tr>
+<tr>
+<td><code>exampleValue</code></td>
+<td>no</td>
+<td>Text</td>
+<td></td>
+<td>Defines an example value displayed for elements of type <code>text</code> and <code>number</code> when no data has been entered yet</td>
+</tr>
+<tr>
+<td><a href="#defaultvalue"><code>defaultValue</code></a></td>
+<td>no</td>
+<td></td>
+<td></td>
+<td>Defines the default value if left blank by the user</td>
+</tr>
+</tbody>
+</table>
+<h4><a id="list-values" href="#list-values" class="Permalink" aria-hidden="true" title="Permalink">#</a>List values</h4>
+<p>List values are defined in an associative array where keys are the string displayed in the combo list of the <strong>RSS-Bridge</strong> web interface, and values are the content of the &lt;option&gt; HTML tag value attribute.</p>
+<pre><code class="language-PHP">...
+    'type' =&gt; 'list',
+    'values' =&gt; array(
+        'Item A' =&gt; 'itemA'
+        'Item B' =&gt; 'itemB'
+     )
+...
+</code></pre>
+<p>If a more complex organization is required to display the values, the above key/value can be used to set a title as a key and another array as a value:</p>
+<pre><code class="language-PHP">... 
+    'type' =&gt; 'list',
+    'values' =&gt; array(
+        'Item A' =&gt; 'itemA',
+        'List 1' =&gt; array(
+            'Item C' =&gt; 'itemC',
+            'Item D' =&gt; 'itemD'
+        ),
+        'List 2' =&gt; array(
+            'Item E' =&gt; 'itemE',
+            'Item F' =&gt; 'itemF'
+        ),
+        'Item B' =&gt; 'itemB'
+    )
+...
+</code></pre>
+<h4><a id="defaultvalue" href="#defaultvalue" class="Permalink" aria-hidden="true" title="Permalink">#</a>defaultValue</h4>
+<p>This attribute defines the default value for your parameter. Its behavior depends on the <code>type</code>:</p>
+<ul>
+<li>
+<code>text</code>: Allows any text</li>
+<li>
+<code>number</code>: Allows any number</li>
+<li>
+<code>list</code>: Must match either name or value of one element</li>
+<li>
+<code>checkbox</code>: Must be “checked” to activate the checkbox</li>
+</ul>
+<hr />
+<h1><a id="queriedcontext" href="#queriedcontext" class="Permalink" aria-hidden="true" title="Permalink">#</a>queriedContext</h1>
+<p>The queried context is defined via <code>PARAMETERS</code> and can be accessed via <code>$this-&gt;queriedContext</code>.
+It provides a way to identify which context the bridge is called with.</p>
+<p>Example:</p>
+<pre><code class="language-PHP">...
+	const PARAMETERS = array(
+		'By user name' =&gt; array(
+			'u' =&gt; array('name' =&gt; 'Username')
+		),
+		'By user ID' =&gt; array(
+			'id' =&gt; array('name' =&gt; 'User ID')
+		)
+	);
+
+...
+</code></pre>
+<p>In this example <code>$this-&gt;queriedContext</code> will either return <strong>By user name</strong> or <strong>By user ID</strong>. The queried context might return no value, so the best way to handle it is by using a case-structure:</p>
+<pre><code class="language-PHP">switch($this-&gt;queriedContext){
+	case 'By user name':
+		break;
+	case 'By user ID':
+		break;
+	default: // Return default value
+}
+</code></pre>
+<h1><a id="collectdata" href="#collectdata" class="Permalink" aria-hidden="true" title="Permalink">#</a>collectData</h1>
+<p>The <code>collectData</code> function is responsible for collecting data and adding items to generate feeds from. If you are unsure how to solve a specific problem, please don’t hesitate to open an <a href="https://github.com/RSS-Bridge/rss-bridge/issues" class="Link--external" rel="noopener noreferrer">Issue</a> on GitHub. Existing bridges are also a good source to learn implementing your own bridge.</p>
+<h2><a id="implementing-the-collectdata-function" href="#implementing-the-collectdata-function" class="Permalink" aria-hidden="true" title="Permalink">#</a>Implementing the <code>collectData</code> function</h2>
+<p>Implementation for the <code>collectData</code> function is specific to each bridge. However, there are certain reoccurring elements, described below. RSS-Bridge also provides functions to simplify the process of collecting and parsing HTML data (see “Helper Functions” on the sidebar)</p>
+<p>Elements collected by this function must be stored in <code>$this-&gt;items</code>. The <code>items</code> variable is an array of item elements, each of which is an associative array that may contain arbitrary keys. RSS-Bridge specifies common keys which are used to generate most common feed formats.</p>
+<details><summary>Show example</summary><div>
+<pre><code class="language-PHP">
+$item = array(); // Create a new item
+
+$item['title'] = 'Hello World!';
+
+$this-&gt;items[] = $item; // Add item to the list
+
+</code></pre>
+</div></details><br>
+Additional keys may be added for custom APIs (ignored by RSS-Bridge).
+<h2><a id="item-parameters" href="#item-parameters" class="Permalink" aria-hidden="true" title="Permalink">#</a>Item parameters</h2>
+<p>The item array should provide as much information as possible for RSS-Bridge to generate feature rich feeds. Find below list of keys supported by RSS-Bridge.</p>
+<pre><code class="language-PHP">$item['uri']        // URI to reach the subject (&quot;https://...&quot;)
+$item['title']      // Title of the item
+$item['timestamp']  // Timestamp of the item in numeric or text format (compatible for strtotime())
+$item['author']     // Name of the author for this item
+$item['content']    // Content in HTML format
+$item['enclosures'] // Array of URIs to an attachments (pictures, files, etc...)
+$item['categories'] // Array of categories / tags / topics
+$item['uid']        // A unique ID to identify the current item
+</code></pre>
+<p>All formats support these parameters. The formats <code>Plaintext</code> and <code>JSON</code> also support custom parameters.</p>
+<h1><a id="getdescription" href="#getdescription" class="Permalink" aria-hidden="true" title="Permalink">#</a>getDescription</h1>
+<p>The <code>getDescription</code> function returns the description for a bridge.</p>
+<p><strong>Notice:</strong> By default <strong>RSS-Bridge</strong> returns the contents of <code>const DESCRIPTION</code>, so you only have to implement this function if you require different behavior!</p>
+<pre><code class="language-PHP">	public function getDescription(){
+		return self::DESCRIPTION;
+	}
+</code></pre>
+<h1><a id="getmaintainer" href="#getmaintainer" class="Permalink" aria-hidden="true" title="Permalink">#</a>getMaintainer</h1>
+<p>The <code>getMaintainer</code> function returns the name of the maintainer for a bridge.</p>
+<p><strong>Notice:</strong> By default <strong>RSS-Bridge</strong> returns <code>const MAINTAINER</code>, so you only have to implement this function if you require different behavior!</p>
+<pre><code class="language-PHP">	public function getMaintainer(){
+		return self::MAINTAINER;
+	}
+</code></pre>
+<h1><a id="getname" href="#getname" class="Permalink" aria-hidden="true" title="Permalink">#</a>getName</h1>
+<p>The <code>getName</code> function returns the name of a bridge.</p>
+<p><strong>Notice:</strong> By default <strong>RSS-Bridge</strong> returns <code>const NAME</code>, so you only have to implement this function if you require different behavior!</p>
+<pre><code class="language-PHP">	public function getName(){
+		return self::NAME;
+	}
+</code></pre>
+<h1><a id="geturi" href="#geturi" class="Permalink" aria-hidden="true" title="Permalink">#</a>getURI</h1>
+<p>The <code>getURI</code> function returns the base URI for a bridge.</p>
+<p><strong>Notice:</strong> By default <strong>RSS-Bridge</strong> returns <code>const URI</code>, so you only have to implement this function if you require different behavior!</p>
+<pre><code class="language-PHP">	public function getURI(){
+		return self::URI;
+	}
+</code></pre>
+<h1><a id="geticon" href="#geticon" class="Permalink" aria-hidden="true" title="Permalink">#</a>getIcon</h1>
+<p>The <code>getIcon</code> function returns the URI for an icon, used as favicon in feeds.</p>
+<p>If no icon is specified by the bridge, RSS-Bridge will use a default location: <code>static::URI . '/favicon.ico'</code> (i.e. “https://github.com/favicon.ico”) which may or may not exist.</p>
+<pre><code class="language-PHP">	public function getIcon(){
+		return static::URI . '/favicon.ico';
+	}
+</code></pre>
+<h1><a id="detectparameters" href="#detectparameters" class="Permalink" aria-hidden="true" title="Permalink">#</a>detectParameters</h1>
+<p>The <code>detectParameters</code> function takes a URL and attempts to extract a valid set of parameters for the current bridge.</p>
+<p>If the passed URL is valid for this bridge the function should return an array of parameter -&gt; value pairs that can be used by this bridge, or an empty array if the bridge requires no parameters. If the URL is not relevant for this bridge the function should return <code>null</code>.</p>
+<p><strong>Notice:</strong> Implementing this function is optional. By default <strong>RSS-Bridge</strong> tries to match the supplied URL to the <code>URI</code> constant defined in the bridge which may be enough for bridges without any parameters defined.</p>
+<pre><code class="language-PHP">public function detectParameters($url){
+	$regex = '/^(https?:\/\/)?(www\.)?(.+?)(\/)?$/';
+	if(empty(static::PARAMETERS)
+	&amp;&amp; preg_match($regex, $url, $urlMatches) &gt; 0
+	&amp;&amp; preg_match($regex, static::URI, $bridgeUriMatches) &gt; 0
+	&amp;&amp; $urlMatches[3] === $bridgeUriMatches[3]) {
+		return array();
+	} else {
+		return null;
+	}
+}
+</code></pre>
+    </div>
+
+        <nav>
+        <ul class="Pager">
+            <li class=Pager--prev><a href="../Bridge_API/How_to_create_a_new_bridge.html">Previous</a></li>            <li class=Pager--next><a href="../Bridge_API/FeedExpander.html">Next</a></li>        </ul>
+    </nav>
+    </article>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+    <!-- JS -->
+            <script src="../themes/daux/js/daux.min.js"></script>
+    
+        <script>
+        
+        window.searchLanguage = "";
+        window.searchTranslation = {"Search_one_result":"1 result","Search_results":"!count results","Search_no_results":"Nothing found","Search_common_words_ignored":"Common words are largely ignored","Search_too_short":"Search too short","Search_one_character_or_more":"Should be one character or more","Search_should_be_x_or_more":"Should be !min characters or more","Link_previous":"Previous","Link_next":"Next"};
+    </script>
+
+    <!-- Search -->
+    <script type="text/javascript" src="../daux_libraries/search.min.js"></script>
+
+    <script>
+        window.search({'base_url': '../'})
+    </script>
+</body>
+</html>

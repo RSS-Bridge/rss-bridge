@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+    <title>Actions - RSS-Bridge</title>
+    <meta name="description" content="The RSS feed for websites missing it">
+    <meta name="author" content="RSS-Bridge Contributors">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <link rel="icon" href="../themes/daux/img/favicon-blue.png" type="image/x-icon">
+
+    <!-- Mobile -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- JS -->
+    <script>
+        window.base_url = "../";
+        document.documentElement.classList.remove('no-js');
+    </script>
+
+    <!-- Font -->
+    
+    <!-- CSS -->
+            <link href='../themes/daux/css/theme-blue.min.css' rel='stylesheet' type='text/css'>
+            <link href='../daux_libraries/search.css' rel='stylesheet' type='text/css'>
+    </head>
+<body class="">
+    <div class="Columns content">
+    <aside class="Columns__left Collapsible">
+        <button type="button" class="Button Collapsible__trigger" aria-controls="sidebar_content" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="Collapsible__trigger__bar"></span>
+            <span class="Collapsible__trigger__bar"></span>
+            <span class="Collapsible__trigger__bar"></span>
+        </button>
+
+        <a class="Brand" href="../index.html">RSS-Bridge</a>
+
+    <form role='search' action="/" method="get" class="Search" id="search_form">
+        <label for="search_input">
+            <span class='u-visuallyHidden'>Search</span>
+        </label>
+        <input
+            type="search"
+            id="search_input"
+            class="Search__field"
+            placeholder="Search..."
+            aria-label="Search..."
+            autocomplete="on"
+            results=25
+            autosave=text_search
+        >
+        <label>
+            <input type="submit" class='u-visuallyHidden' />
+            <span class='u-visuallyHidden'>Search...</span>
+            <svg class="Search__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 451 451">
+                <path d="M447.05 428l-109.6-109.6c29.4-33.8 47.2-77.9 47.2-126.1C384.65 86.2 298.35 0 192.35 0 86.25 0 .05 86.3.05 192.3s86.3 192.3 192.3 192.3c48.2 0 92.3-17.8 126.1-47.2L428.05 447c2.6 2.6 6.1 4 9.5 4s6.9-1.3 9.5-4c5.2-5.2 5.2-13.8 0-19zM26.95 192.3c0-91.2 74.2-165.3 165.3-165.3 91.2 0 165.3 74.2 165.3 165.3s-74.1 165.4-165.3 165.4c-91.1 0-165.3-74.2-165.3-165.4z"/>
+            </svg>
+        </label>
+    </form>
+
+        <div class="Collapsible__content" id="sidebar_content">
+            <!-- Navigation -->
+            <ul class='Nav'><li class='Nav__item  has-children'><a href="../General/Project_goals.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>General</a><ul class='Nav'><li class='Nav__item '><a href="../General/Project_goals.html">Project-goals</a></li><li class='Nav__item '><a href="../General/Contribute.html">Contribute</a></li><li class='Nav__item '><a href="../General/Requirements.html">Requirements</a></li><li class='Nav__item '><a href="../General/Screenshots.html">Screenshots</a></li><li class='Nav__item '><a href="../General/FAQ.html">FAQ</a></li><li class='Nav__item '><a href="../General/Public_Hosts.html">Public Hosts</a></li></ul></li><li class='Nav__item '><a href="../CLI/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>CLI</a><ul class='Nav'></ul></li><li class='Nav__item  has-children'><a href="../For_Hosts/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>For Hosts</a><ul class='Nav'><li class='Nav__item '><a href="../For_Hosts/Installation.html">Installation</a></li><li class='Nav__item '><a href="../For_Hosts/Updating.html">Updating</a></li><li class='Nav__item '><a href="../For_Hosts/Docker_Installation.html">Docker Installation</a></li><li class='Nav__item '><a href="../For_Hosts/Heroku_Installation.html">Heroku Installation</a></li><li class='Nav__item '><a href="../For_Hosts/Whitelisting.html">Whitelisting</a></li><li class='Nav__item '><a href="../For_Hosts/Authentication.html">Authentication</a></li><li class='Nav__item '><a href="../For_Hosts/Customizations.html">Customizations</a></li><li class='Nav__item '><a href="../For_Hosts/Custom_Configuration.html">Custom Configuration</a></li></ul></li><li class='Nav__item Nav__item--open has-children'><a href="../For_Developers/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>For Developers</a><ul class='Nav'><li class='Nav__item '><a href="../For_Developers/Coding_style_policy.html">Coding style policy</a></li><li class='Nav__item '><a href="../For_Developers/Pull_Request_policy.html">Pull Request policy</a></li><li class='Nav__item '><a href="../For_Developers/Folder_structure.html">Folder structure</a></li><li class='Nav__item Nav__item--active'><a href="../For_Developers/Actions.html">Actions</a></li><li class='Nav__item '><a href="../For_Developers/Debug_mode.html">Debug mode</a></li></ul></li><li class='Nav__item  has-children'><a href="../Bridge_API/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Bridge API</a><ul class='Nav'><li class='Nav__item '><a href="../Bridge_API/How_to_create_a_new_bridge.html">How to create a new bridge</a></li><li class='Nav__item '><a href="../Bridge_API/BridgeAbstract.html">BridgeAbstract</a></li><li class='Nav__item '><a href="../Bridge_API/FeedExpander.html">FeedExpander</a></li><li class='Nav__item '><a href="../Bridge_API/XPathAbstract.html">XPathAbstract</a></li></ul></li><li class='Nav__item '><a href="../Helper_functions/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Helper functions</a><ul class='Nav'></ul></li><li class='Nav__item  has-children'><a href="../Cache_API/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Cache API</a><ul class='Nav'><li class='Nav__item '><a href="../Cache_API/How_to_create_a_new_cache.html">How to create a new cache</a></li><li class='Nav__item '><a href="../Cache_API/CacheInterface.html">CacheInterface</a></li></ul></li><li class='Nav__item  has-children'><a href="../Format_API/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Format API</a><ul class='Nav'><li class='Nav__item '><a href="../Format_API/How_to_create_a_new_format.html">How to create a new format</a></li><li class='Nav__item '><a href="../Format_API/FormatInterface.html">FormatInterface</a></li><li class='Nav__item '><a href="../Format_API/FormatAbstract.html">FormatAbstract</a></li></ul></li><li class='Nav__item '><a href="../Technical_recommendations/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Technical recommendations</a><ul class='Nav'></ul></li></ul>
+            <div class="Links">
+                                    <hr/>
+                                            <a href="https://github.com/RSS-Bridge/rss-bridge" target="_blank"  rel="noopener noreferrer">GitHub Repository</a>
+                        <br />
+                                            <a href="https://github.com/RSS-Bridge/rss-bridge/issues" target="_blank"  rel="noopener noreferrer">Help/Support/Bugs</a>
+                        <br />
+                                            <a href="https://github.com/RSS-Bridge/rss-bridge/pkgs/container/rss-bridge" target="_blank"  rel="noopener noreferrer">Docker Images</a>
+                        <br />
+                                                </div>
+
+                            <div class="CodeToggler">
+                    <hr/>
+                    <label class="Checkbox">Show Code Blocks                        <input type="checkbox" class="CodeToggler__button--main" checked="checked"/>
+                        <div class="Checkbox__indicator"></div>
+                    </label>
+                </div>
+            
+                
+                                    <div class="PoweredBy">
+                        <hr/>
+                        Powered by Daux.io                    </div>
+                        </div>
+    </aside>
+    <div class="Columns__right">
+        <div class="Columns__right__content">
+            <div class="doc_content">
+                <article class="Page">
+
+    <div class="Page__header">
+        <h1><a href="../For_Developers/index.html">For Developers</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../For_Developers/Actions.html">Actions</a></h1>
+                <span class="ModifiedDate">
+            March 22, 2022 at 1:33 PM        </span>
+                        <span class="EditOn">
+            <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/04_For_Developers/04_Actions.md" target="_blank">
+                Edit on GitHub            </a>
+        </span>
+            </div>
+
+    <div class="s-content">
+        <p>RSS-Bridge currently supports three ‘actions’ which it can operate:</p>
+<ol>
+<li>
+<a href="#display">Display</a> (<code>?action=display</code>)</li>
+<li>
+<a href="#detect">Detect</a> (<code>?action=detect</code>)</li>
+<li>
+<a href="#list">List</a> (<code>?action=list</code>)</li>
+</ol>
+<h2><a id="display" href="#display" class="Permalink" aria-hidden="true" title="Permalink">#</a>Display</h2>
+<p>The <code>display</code> action returns feeds generated by <a href="../Bridge_API/index.html">bridges</a>. It requires additional parameter, some of which are specific to each bridge (see implementation details for your specific bridge). The following list contains mandatory parameter applicable to all bridges, excluding parameters that require <a href="../For_Hosts/Custom_Configuration.html">additional options</a>. Errors are returned for missing mandatory parameters:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bridge</code></td>
+<td>yes</td>
+<td>Specifies the name of the bridge to display. Possible values are determined from the bridges available to the current instance of RSS-Bridge and the <a href="../For_Hosts/Whitelisting.html">whitelist</a>.</td>
+</tr>
+<tr>
+<td><code>format</code></td>
+<td>yes</td>
+<td>Specifies the name of the format to use for displaying the feed. Possible values are determined from the formats available to the current instance of RSS-Bridge.</td>
+</tr>
+</tbody>
+</table>
+<h2><a id="detect" href="#detect" class="Permalink" aria-hidden="true" title="Permalink">#</a>Detect</h2>
+<p>The <code>detect</code> action attempts to redirect the user to an appropriate <code>display</code> action for a feed based on a supplied URL. As bridges have to individually implement this it may not work for every bridge.</p>
+<p>If an appropriate bridge is found, a <code>301 Moved Permanently</code> HTTP status code is returned with a relative location for a <code>display</code> action. If no appropriate bridge is found or a required parameter is missing, a <code>400 Bad Request</code> status code is returned.</p>
+<p>The parameters for this action are listed bellow:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>url</code></td>
+<td>yes</td>
+<td>Specifies the URL to attempt to find a feed from. The value of this should be URL encoded.</td>
+</tr>
+<tr>
+<td><code>format</code></td>
+<td>yes</td>
+<td>Specifies the name of the format to use for displaying the feed. This is passed to the detected <code>display</code> action. Possible values are determined from the formats available to the current instance of RSS-Bridge.</td>
+</tr>
+</tbody>
+</table>
+<h2><a id="list" href="#list" class="Permalink" aria-hidden="true" title="Permalink">#</a>List</h2>
+<p>The <code>list</code> action returns a JSON formatted text containing information on all bridges available to the current instance of RSS-Bridge. Inactive bridges (not <a href="../For_Hosts/Whitelisting.html">whitelisted</a>) are included as well. Broken bridges are also included, but with limited parameters (only <code>&quot;status&quot;: &quot;inactive&quot;</code>).</p>
+<p>This example shows JSON data for a single bridge:</p>
+<pre><code class="language-JSON">{
+    &quot;bridges&quot;: {
+        &quot;ABCTabs&quot;: {
+            &quot;status&quot;: &quot;active&quot;,
+            &quot;uri&quot;: &quot;https:\/\/www.abc-tabs.com\/&quot;,
+            &quot;name&quot;: &quot;ABC Tabs Bridge&quot;,
+            &quot;parameters&quot;: [],
+            &quot;maintainer&quot;: &quot;kranack&quot;,
+            &quot;description&quot;: &quot;Returns 22 newest tabs&quot;
+        }
+    },
+    &quot;total&quot;: 1
+}
+</code></pre>
+<p>The top-level JSON object contains two parameters:</p>
+<ul>
+<li>
+<a href="#bridges"><code>bridges</code></a>: A collection of bridges</li>
+<li>
+<a href="#total"><code>total</code></a>: The total number of bridges</li>
+</ul>
+<pre><code class="language-JSON">{
+  &quot;bridges&quot;: { },
+  &quot;total&quot;: 0
+}
+</code></pre>
+<h3><a id="bridges" href="#bridges" class="Permalink" aria-hidden="true" title="Permalink">#</a><code>bridges</code></h3>
+<p>The <code>bridges</code> parameter is a collection of bridge objects. The name of each object represents the name of the bridge as needed for the <a href="#display"><code>display</code> action</a>. Each object contains parameters, most of which are optional. The following table summarizes the parameters:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Optional</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>status</code></td>
+<td>No</td>
+<td>Indicates the status of the bridge. Possible values are ‘<code>active</code>’ and ‘<code>inactive</code>’. Only <code>active</code> bridges can be used for the <a href="#display"><code>display</code> action</a>.</td>
+</tr>
+<tr>
+<td><code>uri</code></td>
+<td>Yes</td>
+<td>Returns the URI of the bridge, as returned by the <a href="../Bridge_API/BridgeAbstract.html#geturi"><code>getURI</code></a> function of the bridge.</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>Yes</td>
+<td>Returns the name of the bridge, as returned by the <a href="../Bridge_API/BridgeAbstract.html#getname"><code>getName</code></a> function of the bridge.</td>
+</tr>
+<tr>
+<td><code>parameters</code></td>
+<td>Yes</td>
+<td>Returns the <code>PARAMETERS</code> object of the bridge</td>
+</tr>
+<tr>
+<td><code>maintainer</code></td>
+<td>Yes</td>
+<td>Returns the name(s) of maintainer(s) for the bridge</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>Yes</td>
+<td>Returns the description of the bridge</td>
+</tr>
+</tbody>
+</table>
+<h3><a id="total" href="#total" class="Permalink" aria-hidden="true" title="Permalink">#</a><code>total</code></h3>
+<p>This parameter represents the total number of bridges available to the current instance of RSS-Bridge.</p>
+    </div>
+
+        <nav>
+        <ul class="Pager">
+            <li class=Pager--prev><a href="../For_Developers/Folder_structure.html">Previous</a></li>            <li class=Pager--next><a href="../For_Developers/Debug_mode.html">Next</a></li>        </ul>
+    </nav>
+    </article>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+    <!-- JS -->
+            <script src="../themes/daux/js/daux.min.js"></script>
+    
+        <script>
+        
+        window.searchLanguage = "";
+        window.searchTranslation = {"Search_one_result":"1 result","Search_results":"!count results","Search_no_results":"Nothing found","Search_common_words_ignored":"Common words are largely ignored","Search_too_short":"Search too short","Search_one_character_or_more":"Should be one character or more","Search_should_be_x_or_more":"Should be !min characters or more","Link_previous":"Previous","Link_next":"Next"};
+    </script>
+
+    <!-- Search -->
+    <script type="text/javascript" src="../daux_libraries/search.min.js"></script>
+
+    <script>
+        window.search({'base_url': '../'})
+    </script>
+</body>
+</html>

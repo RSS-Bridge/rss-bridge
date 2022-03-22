@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+    <title>Public Hosts - RSS-Bridge</title>
+    <meta name="description" content="The RSS feed for websites missing it">
+    <meta name="author" content="RSS-Bridge Contributors">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <link rel="icon" href="../themes/daux/img/favicon-blue.png" type="image/x-icon">
+
+    <!-- Mobile -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- JS -->
+    <script>
+        window.base_url = "../";
+        document.documentElement.classList.remove('no-js');
+    </script>
+
+    <!-- Font -->
+    
+    <!-- CSS -->
+            <link href='../themes/daux/css/theme-blue.min.css' rel='stylesheet' type='text/css'>
+            <link href='../daux_libraries/search.css' rel='stylesheet' type='text/css'>
+    </head>
+<body class="">
+    <div class="Columns content">
+    <aside class="Columns__left Collapsible">
+        <button type="button" class="Button Collapsible__trigger" aria-controls="sidebar_content" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="Collapsible__trigger__bar"></span>
+            <span class="Collapsible__trigger__bar"></span>
+            <span class="Collapsible__trigger__bar"></span>
+        </button>
+
+        <a class="Brand" href="../index.html">RSS-Bridge</a>
+
+    <form role='search' action="/" method="get" class="Search" id="search_form">
+        <label for="search_input">
+            <span class='u-visuallyHidden'>Search</span>
+        </label>
+        <input
+            type="search"
+            id="search_input"
+            class="Search__field"
+            placeholder="Search..."
+            aria-label="Search..."
+            autocomplete="on"
+            results=25
+            autosave=text_search
+        >
+        <label>
+            <input type="submit" class='u-visuallyHidden' />
+            <span class='u-visuallyHidden'>Search...</span>
+            <svg class="Search__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 451 451">
+                <path d="M447.05 428l-109.6-109.6c29.4-33.8 47.2-77.9 47.2-126.1C384.65 86.2 298.35 0 192.35 0 86.25 0 .05 86.3.05 192.3s86.3 192.3 192.3 192.3c48.2 0 92.3-17.8 126.1-47.2L428.05 447c2.6 2.6 6.1 4 9.5 4s6.9-1.3 9.5-4c5.2-5.2 5.2-13.8 0-19zM26.95 192.3c0-91.2 74.2-165.3 165.3-165.3 91.2 0 165.3 74.2 165.3 165.3s-74.1 165.4-165.3 165.4c-91.1 0-165.3-74.2-165.3-165.4z"/>
+            </svg>
+        </label>
+    </form>
+
+        <div class="Collapsible__content" id="sidebar_content">
+            <!-- Navigation -->
+            <ul class='Nav'><li class='Nav__item Nav__item--open has-children'><a href="../General/Project_goals.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>General</a><ul class='Nav'><li class='Nav__item '><a href="../General/Project_goals.html">Project-goals</a></li><li class='Nav__item '><a href="../General/Contribute.html">Contribute</a></li><li class='Nav__item '><a href="../General/Requirements.html">Requirements</a></li><li class='Nav__item '><a href="../General/Screenshots.html">Screenshots</a></li><li class='Nav__item '><a href="../General/FAQ.html">FAQ</a></li><li class='Nav__item Nav__item--active'><a href="../General/Public_Hosts.html">Public Hosts</a></li></ul></li><li class='Nav__item '><a href="../CLI/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>CLI</a><ul class='Nav'></ul></li><li class='Nav__item  has-children'><a href="../For_Hosts/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>For Hosts</a><ul class='Nav'><li class='Nav__item '><a href="../For_Hosts/Installation.html">Installation</a></li><li class='Nav__item '><a href="../For_Hosts/Updating.html">Updating</a></li><li class='Nav__item '><a href="../For_Hosts/Docker_Installation.html">Docker Installation</a></li><li class='Nav__item '><a href="../For_Hosts/Heroku_Installation.html">Heroku Installation</a></li><li class='Nav__item '><a href="../For_Hosts/Whitelisting.html">Whitelisting</a></li><li class='Nav__item '><a href="../For_Hosts/Authentication.html">Authentication</a></li><li class='Nav__item '><a href="../For_Hosts/Customizations.html">Customizations</a></li><li class='Nav__item '><a href="../For_Hosts/Custom_Configuration.html">Custom Configuration</a></li></ul></li><li class='Nav__item  has-children'><a href="../For_Developers/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>For Developers</a><ul class='Nav'><li class='Nav__item '><a href="../For_Developers/Coding_style_policy.html">Coding style policy</a></li><li class='Nav__item '><a href="../For_Developers/Pull_Request_policy.html">Pull Request policy</a></li><li class='Nav__item '><a href="../For_Developers/Folder_structure.html">Folder structure</a></li><li class='Nav__item '><a href="../For_Developers/Actions.html">Actions</a></li><li class='Nav__item '><a href="../For_Developers/Debug_mode.html">Debug mode</a></li></ul></li><li class='Nav__item  has-children'><a href="../Bridge_API/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Bridge API</a><ul class='Nav'><li class='Nav__item '><a href="../Bridge_API/How_to_create_a_new_bridge.html">How to create a new bridge</a></li><li class='Nav__item '><a href="../Bridge_API/BridgeAbstract.html">BridgeAbstract</a></li><li class='Nav__item '><a href="../Bridge_API/FeedExpander.html">FeedExpander</a></li><li class='Nav__item '><a href="../Bridge_API/XPathAbstract.html">XPathAbstract</a></li></ul></li><li class='Nav__item '><a href="../Helper_functions/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Helper functions</a><ul class='Nav'></ul></li><li class='Nav__item  has-children'><a href="../Cache_API/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Cache API</a><ul class='Nav'><li class='Nav__item '><a href="../Cache_API/How_to_create_a_new_cache.html">How to create a new cache</a></li><li class='Nav__item '><a href="../Cache_API/CacheInterface.html">CacheInterface</a></li></ul></li><li class='Nav__item  has-children'><a href="../Format_API/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Format API</a><ul class='Nav'><li class='Nav__item '><a href="../Format_API/How_to_create_a_new_format.html">How to create a new format</a></li><li class='Nav__item '><a href="../Format_API/FormatInterface.html">FormatInterface</a></li><li class='Nav__item '><a href="../Format_API/FormatAbstract.html">FormatAbstract</a></li></ul></li><li class='Nav__item '><a href="../Technical_recommendations/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Technical recommendations</a><ul class='Nav'></ul></li></ul>
+            <div class="Links">
+                                    <hr/>
+                                            <a href="https://github.com/RSS-Bridge/rss-bridge" target="_blank"  rel="noopener noreferrer">GitHub Repository</a>
+                        <br />
+                                            <a href="https://github.com/RSS-Bridge/rss-bridge/issues" target="_blank"  rel="noopener noreferrer">Help/Support/Bugs</a>
+                        <br />
+                                            <a href="https://github.com/RSS-Bridge/rss-bridge/pkgs/container/rss-bridge" target="_blank"  rel="noopener noreferrer">Docker Images</a>
+                        <br />
+                                                </div>
+
+                            <div class="CodeToggler">
+                    <hr/>
+                    <label class="Checkbox">Show Code Blocks                        <input type="checkbox" class="CodeToggler__button--main" checked="checked"/>
+                        <div class="Checkbox__indicator"></div>
+                    </label>
+                </div>
+            
+                
+                                    <div class="PoweredBy">
+                        <hr/>
+                        Powered by Daux.io                    </div>
+                        </div>
+    </aside>
+    <div class="Columns__right">
+        <div class="Columns__right__content">
+            <div class="doc_content">
+                <article class="Page">
+
+    <div class="Page__header">
+        <h1><a href="../General/Project_goals.html">General</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../General/Public_Hosts.html">Public Hosts</a></h1>
+                <span class="ModifiedDate">
+            March 22, 2022 at 1:33 PM        </span>
+                        <span class="EditOn">
+            <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/01_General/06_Public_Hosts.md" target="_blank">
+                Edit on GitHub            </a>
+        </span>
+            </div>
+
+    <div class="s-content">
+        <table>
+<thead>
+<tr>
+<th align="center">Flag</th>
+<th>Host</th>
+<th>Status</th>
+<th>Contact</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"><img src="https://iplookup.flagfox.net/images/h16/IN.png" alt="🇮🇳" /></td>
+<td><img src="https://www.google.com/s2/favicons?sz=16&amp;domain_url=https://rss-bridge.bb8.fun" alt="" /> <a href="https://rss-bridge.bb8.fun" class="Link--external" rel="noopener noreferrer">rss-bridge.bb8.fun</a></td>
+<td><img src="https://img.shields.io/website/https/rss-bridge.bb8.fun.svg" alt="Status" /></td>
+<td><a href="https://github.com/captn3m0" class="Link--external" rel="noopener noreferrer">@captn3m0</a></td>
+<td>Hosted in Bengaluru, India</td>
+</tr>
+<tr>
+<td align="center"><img src="https://iplookup.flagfox.net/images/h16/NL.png" alt="🇳🇱" /></td>
+<td><img src="https://www.google.com/s2/favicons?domain=feed.eugenemolotov.ru" alt="" /> <a href="https://feed.eugenemolotov.ru" class="Link--external" rel="noopener noreferrer">feed.eugenemolotov.ru</a></td>
+<td><img src="https://img.shields.io/website/https/feed.eugenemolotov.ru.svg" alt="Status" /></td>
+<td><a href="https://github.com/em92" class="Link--external" rel="noopener noreferrer">@em92</a></td>
+<td>Hosted in Amsterdam, Netherlands</td>
+</tr>
+<tr>
+<td align="center"><img src="https://iplookup.flagfox.net/images/h16/FR.png" alt="🇫🇷" /></td>
+<td><img src="https://www.google.com/s2/favicons?domain=bridge.suumitsu.eu" alt="" /> <a href="https://bridge.suumitsu.eu/" class="Link--external" rel="noopener noreferrer">bridge.suumitsu.eu</a></td>
+<td><img src="https://img.shields.io/website/https/bridge.suumitsu.eu.svg" alt="Status" /></td>
+<td><a href="https://github.com/mitsukarenai" class="Link--external" rel="noopener noreferrer">@mitsukarenai</a></td>
+<td>Hosted in Paris, France</td>
+</tr>
+<tr>
+<td align="center"><img src="https://iplookup.flagfox.net/images/h16/FR.png" alt="🇫🇷" /></td>
+<td><img src="https://www.google.com/s2/favicons?sz=16&amp;domain_url=https://sebsauvage.net/rss-bridge/" alt="" /> <a href="https://sebsauvage.net/rss-bridge/" class="Link--external" rel="noopener noreferrer">sebsauvage.net/rss-bridge</a></td>
+<td><img src="https://img.shields.io/website/https/sebsauvage.net/rss-bridge.svg" alt="Status" /></td>
+<td><a href="https://github.com/sebsauvage/" class="Link--external" rel="noopener noreferrer">@sebsauvage</a></td>
+<td>Hosted in France</td>
+</tr>
+<tr>
+<td align="center"><img src="https://iplookup.flagfox.net/images/h16/FI.png" alt="🇫🇮" /></td>
+<td><img src="https://www.google.com/s2/favicons?domain=rss-bridge.snopyta.org" alt="" /> <a href="https://rss-bridge.snopyta.org" class="Link--external" rel="noopener noreferrer">rss-bridge.snopyta.org</a></td>
+<td><img src="https://img.shields.io/website/https/rss-bridge.snopyta.org.svg" alt="Status" /></td>
+<td><a href="https://github.com/Perflyst" class="Link--external" rel="noopener noreferrer">@Perflyst</a></td>
+<td>Hosted in Helsinki, Finland</td>
+</tr>
+<tr>
+<td align="center"><img src="https://iplookup.flagfox.net/images/h16/DE.png" alt="🇩🇪" /></td>
+<td><img src="https://www.google.com/s2/favicons?domain=rss.nixnet.xyz" alt="" /> <a href="https://rss.nixnet.xyz/" class="Link--external" rel="noopener noreferrer">rss.nixnet.xyz</a></td>
+<td><img src="https://img.shields.io/website/https/rss.nixnet.xyz.svg" alt="Status" /></td>
+<td><a href="https://nixnet.xyz/contact" class="Link--external" rel="noopener noreferrer">@amolith</a></td>
+<td>Hosted in Wunstorf, Germany</td>
+</tr>
+<tr>
+<td align="center"><img src="https://iplookup.flagfox.net/images/h16/FR.png" alt="🇫🇷" /></td>
+<td><img src="https://www.google.com/s2/favicons?sz=16&amp;domain_url=https://myrss4fun.xyz/" alt="" /> <a href="https://myrss4fun.xyz" class="Link--external" rel="noopener noreferrer">myrss4fun.xyz</a></td>
+<td><img src="https://img.shields.io/website/https/rss-bridge.bb8.fun.svg" alt="Status" /></td>
+<td><a href="https://github.com/mrcoding/" class="Link--external" rel="noopener noreferrer">@mrcoding</a></td>
+<td>Latest GitHub Release</td>
+</tr>
+<tr>
+<td align="center"><img src="https://iplookup.flagfox.net/images/h16/FR.png" alt="🇫🇷" /></td>
+<td><img src="https://www.google.com/s2/favicons?domain=bridge.easter.fr" alt="" /> <a href="https://bridge.easter.fr/" class="Link--external" rel="noopener noreferrer">bridge.easter.fr</a></td>
+<td><img src="https://img.shields.io/website/https/bridge.easter.fr.svg" alt="Status" /></td>
+<td><a href="https://github.com/chatainsim" class="Link--external" rel="noopener noreferrer">@chatainsim</a></td>
+<td>Hosted in Roubaix, France</td>
+</tr>
+<tr>
+<td align="center"><img src="https://iplookup.flagfox.net/images/h16/FR.png" alt="🇫🇷" /></td>
+<td><img src="https://www.google.com/s2/favicons?sz=16&amp;domain_url=https://wtf.roflcopter.fr/rss-bridge" alt="" /> <a href="https://wtf.roflcopter.fr/rss-bridge/" class="Link--external" rel="noopener noreferrer">wtf.roflcopter.fr/rss-bridge</a></td>
+<td><img src="https://img.shields.io/website/https/wtf.roflcopter.fr/rss-bridge.svg" alt="Status" /></td>
+<td><a href="https://wtf.roflcopter.fr/" class="Link--external" rel="noopener noreferrer">roflcopter.fr</a></td>
+<td>Hosted in France</td>
+</tr>
+<tr>
+<td align="center"><img src="https://iplookup.flagfox.net/images/h16/LT.png" alt="LT" /></td>
+<td><img src="https://www.google.com/s2/favicons?domain=rssbridge.fossdaily.xyz" alt="" /> <a href="https://rssbridge.fossdaily.xyz" class="Link--external" rel="noopener noreferrer">rssbridge.fossdaily.xyz</a></td>
+<td><img src="https://img.shields.io/website/https/rssbridge.fossdaily.xyz.svg" alt="Status" /></td>
+<td></td>
+<td>Hosted in Vilnius, Lithuania</td>
+</tr>
+<tr>
+<td align="center"><img src="https://iplookup.flagfox.net/images/h16/AT.png" alt="AT" /></td>
+<td><a href="https://rss-bridge.ggc-project.de" class="Link--external" rel="noopener noreferrer">https://rss-bridge.ggc-project.de</a></td>
+<td><img src="https://img.shields.io/website/https/rss-bridge.ggc-project.de" alt="Status" /></td>
+<td><a href="https://social.dev-wiki.de/@ggc_project" class="Link--external" rel="noopener noreferrer">@ggc-project.de</a></td>
+<td>Hosted in Steyr, Austria</td>
+</tr>
+<tr>
+<td align="center"><img src="https://iplookup.flagfox.net/images/h16/US.png" alt="US" /></td>
+<td><a href="https://bridge.noisebridge.info" class="Link--external" rel="noopener noreferrer">https://bridge.noisebridge.info</a></td>
+<td><img src="https://img.shields.io/website/https/bridge.noisebridge.info" alt="Status" /></td>
+<td><a href="https://discuss.noisebridge.info" class="Link--external" rel="noopener noreferrer">Discuss Forum</a></td>
+<td>Hosted in United States</td>
+</tr>
+<tr>
+<td align="center"><img src="https://iplookup.flagfox.net/images/h16/NL.png" alt="🇳🇱" /></td>
+<td><img src="https://www.google.com/s2/favicons?sz=16&amp;domain_url=https://feeds.proxeuse.com" alt="" /> <a href="https://feeds.proxeuse.com/" class="Link--external" rel="noopener noreferrer">feeds.proxeuse.com</a></td>
+<td><img src="https://img.shields.io/website/https/feeds.proxeuse.com" alt="Status" /></td>
+<td><a href="https://www.proxeuse.com/en/contact-us" class="Link--external" rel="noopener noreferrer">Proxeuse</a></td>
+<td>Hosted in Germany</td>
+</tr>
+<tr>
+<td align="center"><img src="https://iplookup.flagfox.net/images/h16/RU.png" alt="🇷🇺" /></td>
+<td><img src="https://www.google.com/s2/favicons?domain_url=ololbu.ru/rss-bridge" alt="" /> <a href="https://ololbu.ru/rss-bridge" class="Link--external" rel="noopener noreferrer">ololbu.ru/rss-bridge/</a></td>
+<td><img src="https://img.shields.io/website/https/ololbu.ru" alt="Status" /></td>
+<td><a href="https://github.com/Ololbu" class="Link--external" rel="noopener noreferrer">@Ololbu</a></td>
+<td>Hosted in Moscow, Russia</td>
+</tr>
+<tr>
+<td align="center"><img src="https://iplookup.flagfox.net/images/h16/DE.png" alt="🇩🇪" /></td>
+<td><img src="https://www.google.com/s2/favicons?domain=tools.bheil.net/rss-bridge/" alt="" /> <a href="https://tools.bheil.net/rss-bridge/" class="Link--external" rel="noopener noreferrer">tools.bheil.net/rss-bridge/</a></td>
+<td><img src="https://img.shields.io/website/https/tools.bheil.net.svg" alt="Status" /></td>
+<td><a href="https://www.bheil.net" class="Link--external" rel="noopener noreferrer">@bheil</a></td>
+<td>Hosted in Germany</td>
+</tr>
+<tr>
+<td align="center"><img src="https://iplookup.flagfox.net/images/h16/DE.png" alt="🇩🇪" /></td>
+<td><img src="https://www.google.com/s2/favicons?domain=rss-bridge.mediani.de" alt="" /> <a href="https://rss-bridge.mediani.de/" class="Link--external" rel="noopener noreferrer">rss-bridge.mediani.de</a></td>
+<td><img src="https://img.shields.io/website/https/rss-bridge.mediani.de.svg" alt="Status" /></td>
+<td><a href="https://github.com/sokai" class="Link--external" rel="noopener noreferrer">@sokai</a></td>
+<td>Hosted with Netcup, Germany</td>
+</tr>
+<tr>
+<td align="center"><img src="https://iplookup.flagfox.net/images/h16/FR.png" alt="🇫🇷" /></td>
+<td><img src="https://www.google.com/s2/favicons?domain=rssbridge" alt="" /> <a href="https://rssbridge.boldair.dev/" class="Link--external" rel="noopener noreferrer">rssbridge.boldair.dev</a></td>
+<td><img src="https://img.shields.io/website?down_color=red&amp;down_message=down&amp;up_color=lime&amp;up_message=up&amp;url=https%3A%2F%2Frssbridge.boldair.dev" alt="Status" /></td>
+<td><a href="https://github.com/Boldairdev" class="Link--external" rel="noopener noreferrer">@Boldairdev</a></td>
+<td>Latest Github release, Hosted on PHP 8.0 in Roubaix, France</td>
+</tr>
+<tr>
+<td align="center"><img src="https://iplookup.flagfox.net/images/h16/CA.png" alt="🇨🇦" /></td>
+<td><img src="https://www.google.com/s2/favicons?sz=16&amp;domain_url=https://rss-bridge.esmailelbob.xyz/" alt="" /> <a href="https://rss-bridge.esmailelbob.xyz/" class="Link--external" rel="noopener noreferrer">rss-bridge.esmailelbob.xyz</a></td>
+<td><img src="https://img.shields.io/website/https/rss-bridge.esmailelbob.xyz.svg" alt="Status" /></td>
+<td><a href="https://github.com/esmailelbobve2/" class="Link--external" rel="noopener noreferrer">@esmaiellbobdev2</a></td>
+<td>Latest GitHub Release</td>
+</tr>
+</tbody>
+</table>
+    </div>
+
+        <nav>
+        <ul class="Pager">
+            <li class=Pager--prev><a href="../General/FAQ.html">Previous</a></li>            <li class=Pager--next><a href="../CLI/index.html">Next</a></li>        </ul>
+    </nav>
+    </article>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+    <!-- JS -->
+            <script src="../themes/daux/js/daux.min.js"></script>
+    
+        <script>
+        
+        window.searchLanguage = "";
+        window.searchTranslation = {"Search_one_result":"1 result","Search_results":"!count results","Search_no_results":"Nothing found","Search_common_words_ignored":"Common words are largely ignored","Search_too_short":"Search too short","Search_one_character_or_more":"Should be one character or more","Search_should_be_x_or_more":"Should be !min characters or more","Link_previous":"Previous","Link_next":"Next"};
+    </script>
+
+    <!-- Search -->
+    <script type="text/javascript" src="../daux_libraries/search.min.js"></script>
+
+    <script>
+        window.search({'base_url': '../'})
+    </script>
+</body>
+</html>

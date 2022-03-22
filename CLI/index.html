@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+    <title>CLI - RSS-Bridge</title>
+    <meta name="description" content="The RSS feed for websites missing it">
+    <meta name="author" content="RSS-Bridge Contributors">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <link rel="icon" href="../themes/daux/img/favicon-blue.png" type="image/x-icon">
+
+    <!-- Mobile -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- JS -->
+    <script>
+        window.base_url = "../";
+        document.documentElement.classList.remove('no-js');
+    </script>
+
+    <!-- Font -->
+    
+    <!-- CSS -->
+            <link href='../themes/daux/css/theme-blue.min.css' rel='stylesheet' type='text/css'>
+            <link href='../daux_libraries/search.css' rel='stylesheet' type='text/css'>
+    </head>
+<body class="">
+    <div class="Columns content">
+    <aside class="Columns__left Collapsible">
+        <button type="button" class="Button Collapsible__trigger" aria-controls="sidebar_content" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="Collapsible__trigger__bar"></span>
+            <span class="Collapsible__trigger__bar"></span>
+            <span class="Collapsible__trigger__bar"></span>
+        </button>
+
+        <a class="Brand" href="../index.html">RSS-Bridge</a>
+
+    <form role='search' action="/" method="get" class="Search" id="search_form">
+        <label for="search_input">
+            <span class='u-visuallyHidden'>Search</span>
+        </label>
+        <input
+            type="search"
+            id="search_input"
+            class="Search__field"
+            placeholder="Search..."
+            aria-label="Search..."
+            autocomplete="on"
+            results=25
+            autosave=text_search
+        >
+        <label>
+            <input type="submit" class='u-visuallyHidden' />
+            <span class='u-visuallyHidden'>Search...</span>
+            <svg class="Search__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 451 451">
+                <path d="M447.05 428l-109.6-109.6c29.4-33.8 47.2-77.9 47.2-126.1C384.65 86.2 298.35 0 192.35 0 86.25 0 .05 86.3.05 192.3s86.3 192.3 192.3 192.3c48.2 0 92.3-17.8 126.1-47.2L428.05 447c2.6 2.6 6.1 4 9.5 4s6.9-1.3 9.5-4c5.2-5.2 5.2-13.8 0-19zM26.95 192.3c0-91.2 74.2-165.3 165.3-165.3 91.2 0 165.3 74.2 165.3 165.3s-74.1 165.4-165.3 165.4c-91.1 0-165.3-74.2-165.3-165.4z"/>
+            </svg>
+        </label>
+    </form>
+
+        <div class="Collapsible__content" id="sidebar_content">
+            <!-- Navigation -->
+            <ul class='Nav'><li class='Nav__item  has-children'><a href="../General/Project_goals.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>General</a><ul class='Nav'><li class='Nav__item '><a href="../General/Project_goals.html">Project-goals</a></li><li class='Nav__item '><a href="../General/Contribute.html">Contribute</a></li><li class='Nav__item '><a href="../General/Requirements.html">Requirements</a></li><li class='Nav__item '><a href="../General/Screenshots.html">Screenshots</a></li><li class='Nav__item '><a href="../General/FAQ.html">FAQ</a></li><li class='Nav__item '><a href="../General/Public_Hosts.html">Public Hosts</a></li></ul></li><li class='Nav__item Nav__item--open'><a href="../CLI/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>CLI</a><ul class='Nav'></ul></li><li class='Nav__item  has-children'><a href="../For_Hosts/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>For Hosts</a><ul class='Nav'><li class='Nav__item '><a href="../For_Hosts/Installation.html">Installation</a></li><li class='Nav__item '><a href="../For_Hosts/Updating.html">Updating</a></li><li class='Nav__item '><a href="../For_Hosts/Docker_Installation.html">Docker Installation</a></li><li class='Nav__item '><a href="../For_Hosts/Heroku_Installation.html">Heroku Installation</a></li><li class='Nav__item '><a href="../For_Hosts/Whitelisting.html">Whitelisting</a></li><li class='Nav__item '><a href="../For_Hosts/Authentication.html">Authentication</a></li><li class='Nav__item '><a href="../For_Hosts/Customizations.html">Customizations</a></li><li class='Nav__item '><a href="../For_Hosts/Custom_Configuration.html">Custom Configuration</a></li></ul></li><li class='Nav__item  has-children'><a href="../For_Developers/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>For Developers</a><ul class='Nav'><li class='Nav__item '><a href="../For_Developers/Coding_style_policy.html">Coding style policy</a></li><li class='Nav__item '><a href="../For_Developers/Pull_Request_policy.html">Pull Request policy</a></li><li class='Nav__item '><a href="../For_Developers/Folder_structure.html">Folder structure</a></li><li class='Nav__item '><a href="../For_Developers/Actions.html">Actions</a></li><li class='Nav__item '><a href="../For_Developers/Debug_mode.html">Debug mode</a></li></ul></li><li class='Nav__item  has-children'><a href="../Bridge_API/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Bridge API</a><ul class='Nav'><li class='Nav__item '><a href="../Bridge_API/How_to_create_a_new_bridge.html">How to create a new bridge</a></li><li class='Nav__item '><a href="../Bridge_API/BridgeAbstract.html">BridgeAbstract</a></li><li class='Nav__item '><a href="../Bridge_API/FeedExpander.html">FeedExpander</a></li><li class='Nav__item '><a href="../Bridge_API/XPathAbstract.html">XPathAbstract</a></li></ul></li><li class='Nav__item '><a href="../Helper_functions/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Helper functions</a><ul class='Nav'></ul></li><li class='Nav__item  has-children'><a href="../Cache_API/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Cache API</a><ul class='Nav'><li class='Nav__item '><a href="../Cache_API/How_to_create_a_new_cache.html">How to create a new cache</a></li><li class='Nav__item '><a href="../Cache_API/CacheInterface.html">CacheInterface</a></li></ul></li><li class='Nav__item  has-children'><a href="../Format_API/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Format API</a><ul class='Nav'><li class='Nav__item '><a href="../Format_API/How_to_create_a_new_format.html">How to create a new format</a></li><li class='Nav__item '><a href="../Format_API/FormatInterface.html">FormatInterface</a></li><li class='Nav__item '><a href="../Format_API/FormatAbstract.html">FormatAbstract</a></li></ul></li><li class='Nav__item '><a href="../Technical_recommendations/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Technical recommendations</a><ul class='Nav'></ul></li></ul>
+            <div class="Links">
+                                    <hr/>
+                                            <a href="https://github.com/RSS-Bridge/rss-bridge" target="_blank"  rel="noopener noreferrer">GitHub Repository</a>
+                        <br />
+                                            <a href="https://github.com/RSS-Bridge/rss-bridge/issues" target="_blank"  rel="noopener noreferrer">Help/Support/Bugs</a>
+                        <br />
+                                            <a href="https://github.com/RSS-Bridge/rss-bridge/pkgs/container/rss-bridge" target="_blank"  rel="noopener noreferrer">Docker Images</a>
+                        <br />
+                                                </div>
+
+                            <div class="CodeToggler">
+                    <hr/>
+                    <label class="Checkbox">Show Code Blocks                        <input type="checkbox" class="CodeToggler__button--main" checked="checked"/>
+                        <div class="Checkbox__indicator"></div>
+                    </label>
+                </div>
+            
+                
+                                    <div class="PoweredBy">
+                        <hr/>
+                        Powered by Daux.io                    </div>
+                        </div>
+    </aside>
+    <div class="Columns__right">
+        <div class="Columns__right__content">
+            <div class="doc_content">
+                <article class="Page">
+
+    <div class="Page__header">
+        <h1><a href="../CLI/index.html">CLI</a></h1>
+                <span class="ModifiedDate">
+            March 22, 2022 at 1:33 PM        </span>
+                        <span class="EditOn">
+            <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/02_CLI/index.md" target="_blank">
+                Edit on GitHub            </a>
+        </span>
+            </div>
+
+    <div class="s-content">
+        <p>RSS-Bridge supports calls via CLI. You can use the same parameters as you would normally use via the URI. Example:</p>
+<p><code>php index.php action=display bridge=DansTonChat format=Json</code></p>
+<h2><a id="required-parameters" href="#required-parameters" class="Permalink" aria-hidden="true" title="Permalink">#</a>Required parameters</h2>
+<p>RSS-Bridge requires a few parameters that must be specified on every call. Omitting these parameters will result in error messages:</p>
+<h3><a id="action" href="#action" class="Permalink" aria-hidden="true" title="Permalink">#</a>action</h3>
+<p>Defines how RSS-Bridge responds to the request.</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>action=list</code></td>
+<td>Returns a JSON formatted list of bridges. Other parameters are ignored.</td>
+</tr>
+<tr>
+<td><code>action=display</code></td>
+<td>Returns (displays) a feed.</td>
+</tr>
+</tbody>
+</table>
+<h3><a id="bridge" href="#bridge" class="Permalink" aria-hidden="true" title="Permalink">#</a>bridge</h3>
+<p>This parameter specifies the name of the bridge RSS-Bridge should return feeds from. The name of the bridge equals the class name of the bridges in the ./bridges/ folder without the ‘Bridge’ prefix. For example: DansTonChatBridge =&gt; DansTonChat.</p>
+<h3><a id="format" href="#format" class="Permalink" aria-hidden="true" title="Permalink">#</a>format</h3>
+<p>This parameter specifies the format in which RSS-Bridge returns the contents. RSS-Bridge currently supports five formats: <code>Atom</code>, <code>Html</code>, <code>Json</code>, <code>Mrss</code>and <code>Plaintext</code>.</p>
+<h2><a id="optional-parameters" href="#optional-parameters" class="Permalink" aria-hidden="true" title="Permalink">#</a>Optional parameters</h2>
+<p>RSS-Bridge supports optional parameters. These parameters are only valid if the options have been enabled in the index.php script.</p>
+<h3><a id="noproxy" href="#noproxy" class="Permalink" aria-hidden="true" title="Permalink">#</a>_noproxy</h3>
+<p>This parameter is only available if a proxy server has been specified via <code>PROXY_URL</code> and ‘PROXY_BYBRIDGE’ has been enabled. This is a Boolean parameter that can be set to ‘1’ (true) or ‘0’ (false).</p>
+<h2><a id="bridge-parameters" href="#bridge-parameters" class="Permalink" aria-hidden="true" title="Permalink">#</a>Bridge parameters</h2>
+<p>Each bridge can specify its own set of parameters. As in the example above, some bridges don’t specify any parameters or only optional parameters that can be neglected. For more details read the <code>PARAMETERS</code> definition for your bridge.</p>
+    </div>
+
+        <nav>
+        <ul class="Pager">
+            <li class=Pager--prev><a href="../General/Public_Hosts.html">Previous</a></li>            <li class=Pager--next><a href="../For_Hosts/index.html">Next</a></li>        </ul>
+    </nav>
+    </article>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+    <!-- JS -->
+            <script src="../themes/daux/js/daux.min.js"></script>
+    
+        <script>
+        
+        window.searchLanguage = "";
+        window.searchTranslation = {"Search_one_result":"1 result","Search_results":"!count results","Search_no_results":"Nothing found","Search_common_words_ignored":"Common words are largely ignored","Search_too_short":"Search too short","Search_one_character_or_more":"Should be one character or more","Search_should_be_x_or_more":"Should be !min characters or more","Link_previous":"Previous","Link_next":"Next"};
+    </script>
+
+    <!-- Search -->
+    <script type="text/javascript" src="../daux_libraries/search.min.js"></script>
+
+    <script>
+        window.search({'base_url': '../'})
+    </script>
+</body>
+</html>
