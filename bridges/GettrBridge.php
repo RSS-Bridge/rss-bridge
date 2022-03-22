@@ -32,7 +32,7 @@ class GettrBridge extends BridgeAbstract
 			$this->getInput('user'),
 			max($this->getInput('limit'), 20)
 		);
-		$data = json_decode(getContents($api), false, JSON_THROW_ON_ERROR);
+		$data = json_decode(getContents($api), false);
 
 		foreach ($data->result->aux->post as $post) {
 			$this->items[] = [
