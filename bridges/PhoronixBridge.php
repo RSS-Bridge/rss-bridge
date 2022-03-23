@@ -13,7 +13,13 @@ class PhoronixBridge extends FeedExpander {
 			'required' => false,
 			'title' => 'Maximum number of items to return',
 			'defaultValue' => 10
-		)
+		),
+		'svgAsImg' => array(
+			'name' => 'SVG in "image" tag',
+			'type' => 'checkbox',
+			'title' => 'Some benchmarks are exported as SVG with "object" tag, but some RSS readers don\'t support this. "img" tag are supported by most browsers',
+			'defaultValue' => false
+		),
 	));
 
 	public function collectData(){
@@ -45,7 +51,11 @@ class PhoronixBridge extends FeedExpander {
 		$objects = $content->find('script[src^=//openbenchmarking.org]');
 		foreach ($objects as $object) {
 			$objectSrc = preg_replace('/p=0/', 'p=2', $object->src);
-			$object->outertext = '<object data="' . $objectSrc . '" type="image/svg+xml"></object>';
+			if ($this->getInput('svgAsImg')) {
+				$object->outertext = '<a href="' . $objectSrc . '"><img src="' . $objectSrc . '"/></a>';
+			} else {
+				$object->outertext = '<object data="' . $objectSrc . '" type="image/svg+xml"></object>';
+			}
 		}
 		$content = stripWithDelimiters($content, '<script', '</script>');
 		return $content;
