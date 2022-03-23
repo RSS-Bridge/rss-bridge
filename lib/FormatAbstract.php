@@ -178,6 +178,12 @@ abstract class FormatAbstract implements FormatInterface {
 		//create HTML dom object
 		$html_obj = str_get_html($html);
 
+		//$html was empty or exceeded the max file size.
+		//explicitly return empty string to avoid large file escaping sanitation
+		if($html_obj == false){
+			return "";
+		}
+
 		//remove script, link
 		foreach ($html_obj->find('script, link') as $remove) {
 			$remove->outertext = '';
