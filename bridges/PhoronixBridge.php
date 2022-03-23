@@ -17,7 +17,8 @@ class PhoronixBridge extends FeedExpander {
 		'svgAsImg' => array(
 			'name' => 'SVG in "image" tag',
 			'type' => 'checkbox',
-			'title' => 'Some benchmarks are exported as SVG with "object" tag, but some RSS readers don\'t support this. "img" tag are supported by most browsers',
+			'title' => 'Some benchmarks are exported as SVG with "object" tag,
+but some RSS readers don\'t support this. "img" tag are supported by most browsers',
 			'defaultValue' => false
 		),
 	));
