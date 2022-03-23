@@ -56,9 +56,9 @@ class InstagramBridge extends BridgeAbstract {
 	);
 
 	const TEST_DETECT_PARAMETERS = array(
-		'https://www.instagram.com/metaverse' => array('username' => 'metaverse'),
-		'https://instagram.com/metaverse' => array('username' => 'metaverse'),
-		'http://www.instagram.com/metaverse' => array('username' => 'metaverse'),
+		'https://www.instagram.com/metaverse' => array('u' => 'metaverse'),
+		'https://instagram.com/metaverse' => array('u' => 'metaverse'),
+		'http://www.instagram.com/metaverse' => array('u' => 'metaverse'),
 	);
 
 	const USER_QUERY_HASH = '58b6785bea111c67129decbe6a448951';
