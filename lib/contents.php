@@ -130,8 +130,8 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 		'content' => '',
 	);
 
-	// Use file_get_contents if in CLI mode with no root certificates defined
-	if(php_sapi_name() === 'cli' && empty(ini_get('curl.cainfo'))) {
+	// Use file_get_contents() if curl module is not installed
+	if(! function_exists('curl_version')) {
 
 		$httpHeaders = '';
 
