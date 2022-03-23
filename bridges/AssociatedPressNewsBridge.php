@@ -154,11 +154,13 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 
 			$item['timestamp'] = $storyContent['published'];
 
-			// Remove 'By' from the bylines
-			if (substr($storyContent['bylines'], 0, 2) == 'By') {
-				$item['author'] = ltrim($storyContent['bylines'], 'By ');
-			} else {
-				$item['author'] = $storyContent['bylines'];
+			if (is_null($storyContent['bylines']) === false) {
+				// Remove 'By' from the bylines
+				if (substr($storyContent['bylines'], 0, 2) == 'By') {
+					$item['author'] = ltrim($storyContent['bylines'], 'By ');
+				} else {
+					$item['author'] = $storyContent['bylines'];
+				}
 			}
 
 			$item['content'] = $html;
