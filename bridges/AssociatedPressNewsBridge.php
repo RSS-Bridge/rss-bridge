@@ -67,9 +67,6 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 			case 'PressReleases':
 				returnClientError('PressReleases topic feed is not supported');
 				break;
-			case 'apf-videos':
-				$this->collectVideoData();
-				break;
 			default:
 				$this->collectCardData();
 		}
@@ -176,38 +173,6 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 				break;
 			}
 		}
-	}
-
-	private function collectVideoData() {
-		$html = getSimpleHTMLDOM('https://apnews.com/hub/videos')
-			or returnServerError('Could not request: https://apnews.com/hub/videos');
-
-		$this->feedName = 'Videos';
-
-		foreach ($html->find('div.FeedCard.VideoFeature') as $div) {
-			$item = array();
-
-			$item['title'] = $div->find('h1', 0)->plaintext;
-			$item['timestamp'] = $div->find('span.Timestamp', 0)->getAttribute('data-source');
-
-			if ($div->find('div.YoutubeEmbed', 0)) {
-				$imageUrl = $div->find('img', 1)->src;
-
-				preg_match('/https:\/\/img\.youtube\.com\/vi\/([\w-]+)\/0\.jpg/', $imageUrl, $match);
-				$url = 'https://www.youtube.com/embed/' . $match[1];
-
-				$item['enclosures'][] = $imageUrl;
-				$item['content'] = <<<EOD
-<iframe width="560" height="315" src="{$url}" frameborder="0" allowfullscreen></iframe>
-EOD;
-			} elseif ($div->find('div.Video', 0)) {
-				$item['content'] = $div->find('div.Video', 0);
-				$item['enclosures'][] = $div->find('video', 0)->getAttribute('poster');
-			}
-
-			$this->items[] = $item;
-		}
-
 	}
 
 	private function processMediaPlaceholders($html, $storyContent) {
