@@ -55,6 +55,12 @@ class InstagramBridge extends BridgeAbstract {
 
 	);
 
+	const TEST_DETECT_PARAMETERS = array(
+		'https://www.instagram.com/metaverse' => array('u' => 'metaverse'),
+		'https://instagram.com/metaverse' => array('u' => 'metaverse'),
+		'http://www.instagram.com/metaverse' => array('u' => 'metaverse'),
+	);
+
 	const USER_QUERY_HASH = '58b6785bea111c67129decbe6a448951';
 	const TAG_QUERY_HASH = '9b498c08113f1e09617a1703c22b2f32';
 	const SHORTCODE_QUERY_HASH = '865589822932d1b43dfe312121dd353a';
@@ -277,5 +283,19 @@ class InstagramBridge extends BridgeAbstract {
 			return self::URI . 'explore/locations/' . urlencode($this->getInput('l'));
 		}
 		return parent::getURI();
+	}
+
+	public function detectParameters($url){
+		$params = array();
+
+		// By username
+		$regex = '/^(https?:\/\/)?(www\.)?instagram\.com\/([^\/?\n]+)/';
+
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['u'] = urldecode($matches[3]);
+			return $params;
+		}
+
+		return null;
 	}
 }
