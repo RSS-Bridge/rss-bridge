@@ -267,27 +267,25 @@ class WikipediaBridge extends BridgeAbstract {
 				break;
 		}
 	}
-	
-	
+
 	/**
 	* Implementation for ru.wikipedia.org
 	*/
-	private function getContentsEn($html, $subject, $fullArticle){
+	private function getContentsRu($html, $subject, $fullArticle){
 		switch($subject) {
 			case WIKIPEDIA_SUBJECT_TFA:
-				$element = $html->find('div[id=mp-tfa]', 0);
+				$element = $html->find('div[id=main-tfa]', 0);
 				$this->addTodaysFeaturedArticleGeneric($element, $fullArticle, -1);
 				break;
 			case WIKIPEDIA_SUBJECT_DYK:
-				$element = $html->find('div[id=mp-dyk]', 0);
+				$element = $html->find('div[id=main-dyk]', 0);
 				$this->addDidYouKnowGeneric($element, $fullArticle);
 				break;
 			default:
 				break;
 		}
 	}
-	
-	
+
 	/**
 	* Implementation for eo.wikipedia.org
 	*/
