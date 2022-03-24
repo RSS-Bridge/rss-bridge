@@ -71,8 +71,7 @@ class GitHubGistBridge extends BridgeAbstract {
 			$uri = $comment->find('a[href*=#gistcomment]', 0)
 				or returnServerError('Could not find comment anchor!');
 
-			$title = $comment->find('div[class~="unminimized-comment"] h3[class~="timeline-comment-header-text"]', 0)
-				or returnServerError('Could not find comment header text!');
+			$title = $comment->find('h3', 0);
 
 			$datetime = $comment->find('[datetime]', 0)
 				or returnServerError('Could not find comment datetime!');
@@ -86,7 +85,7 @@ class GitHubGistBridge extends BridgeAbstract {
 			$item = array();
 
 			$item['uri'] = $uri->href;
-			$item['title'] = str_replace('commented', 'commented on', $title->plaintext);
+			$item['title'] = str_replace('commented', 'commented on', $title->plaintext ?? '');
 			$item['timestamp'] = strtotime($datetime->datetime);
 			$item['author'] = '<a href="' . $author->href . '">' . $author->plaintext . '</a>';
 			$item['content'] = $this->fixContent($message);
