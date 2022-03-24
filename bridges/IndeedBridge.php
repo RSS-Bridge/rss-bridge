@@ -143,24 +143,17 @@ class IndeedBridge extends BridgeAbstract {
 
 			$this->title = $html->find('h1', 0)->innertext;
 
-			// Use local translation of the word "Rating"
-			$rating_local = $html->find('a[data-id="rating_desc"]', 0)->plaintext;
-
-			foreach($html->find('#cmp-content [id^="cmp-review-"]') as $review) {
+			foreach($html->find('.cmp-ReviewsList div[itemprop="review"]') as $review) {
 				$item = array();
 
-				$rating = $review->find('.cmp-ratingNumber', 0)->plaintext;
-				$title = $review->find('.cmp-review-title > span', 0)->plaintext;
-				$comment = $this->beautifyComment($review->find('.cmp-review-content-container', 0));
+				$title = $review->find('h2[data-testid="title"]', 0)->innertext;
+				$rating = $review->find('meta[itemprop="ratingValue"]', 0)->getAttribute('content');
+				$comment = $review->find('span[itemprop="reviewBody"]', 0)->innertext;
 
-				$item['uri'] = $review->find('.cmp-review-share-popup-item-link--copylink', 0)->href;
-				$item['title'] = "{$rating_local} {$rating} / {$title}";
-				$item['timestamp'] = $review->find('.cmp-review-date-created', 0)->plaintext;
-				$item['author'] = $review->find('.cmp-reviewer', 0)->plaintext;
+				$item['uri'] = $review->find('a[data-tn-element="individualReviewLink"]', 0)->href;
+				$item['title'] = "$title | ($rating)";
+				$item['author'] = $review->find('span > meta[itemprop="name"]', 0)->getAttribute('content');
 				$item['content'] = $comment;
-				//$item['enclosures']
-				$item['categories'][] = $review->find('.cmp-reviewer-job-location', 0)->plaintext;
-				//$item['uid']
 
 				$this->items[] = $item;
 
@@ -168,16 +161,7 @@ class IndeedBridge extends BridgeAbstract {
 					break;
 				}
 			}
-
-			// Break if no more pages available.
-			if($next = $html->find('a[data-tn-element="next-page"]', 0)) {
-				$url = $next->href;
-			} else {
-				break;
-			}
-
 		} while(count($this->items) < $limit);
-
 	}
 
 	public function getURI() {
@@ -231,14 +215,5 @@ class IndeedBridge extends BridgeAbstract {
 			'language' => $language,
 			'limit' => $limit,
 		);
-	}
-
-	private function beautifyComment($comment) {
-		foreach($comment->find('.cmp-bold') as $bold) {
-			$bold->tag = 'strong';
-			$bold->removeClass('cmp-bold');
-		}
-
-		return $comment;
 	}
 }
