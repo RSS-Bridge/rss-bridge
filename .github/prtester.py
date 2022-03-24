@@ -26,6 +26,7 @@ def testBridges(bridges,status):
                 formstring = ''
                 errormessages = []
                 parameters = form.find_all("input")
+                lists = form.find_all("select")
                 # this for/if mess cycles through all available input parameters, checks if it required, then pulls
                 # the default or examplevalue and then combines it all together into the formstring
                 # if an example or default value is missing for a required attribute, it will throw an error
@@ -44,6 +45,8 @@ def testBridges(bridges,status):
                     if parameter.get('type') == 'checkbox':
                         if parameter.has_attr('checked'):
                             formstring = formstring + '&' + parameter.get('name') + '=on'
+                for list in lists:
+                    formstring = formstring + '&' + list.get('name') + '=' + list.contents[0].get('value')
                 if not errormessages:
                     # if all example/default values are present, form the full request string, run the request, replace the static css
                     # file with the url of em's public instance and then write it all to file.
