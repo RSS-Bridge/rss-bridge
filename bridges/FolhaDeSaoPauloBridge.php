@@ -46,8 +46,7 @@ class FolhaDeSaoPauloBridge extends FeedExpander {
 			} else {
 				Debug::log('???: ' . $item['uri']);
 			}
-		}
-		else {
+		} else {
 			$item['uri'] = explode('*', $item['uri'])[1];
 		}
 
