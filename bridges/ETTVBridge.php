@@ -10,7 +10,6 @@ class ETTVBridge extends BridgeAbstract {
 	const PARAMETERS = array( array(
 		'query' => array(
 			'name' => 'Keywords',
-			'exampleValue' => 'thrones',
 			'required' => true
 		),
 		'cat' => array(
