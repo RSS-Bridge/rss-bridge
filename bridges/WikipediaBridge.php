@@ -17,7 +17,6 @@ class WikipediaBridge extends BridgeAbstract {
 			'exampleValue' => 'English',
 			'values' => array(
 				'English' => 'en',
-				'Русский' => 'ru',
 				'Dutch' => 'nl',
 				'Esperanto' => 'eo',
 				'French' => 'fr',
@@ -267,27 +266,7 @@ class WikipediaBridge extends BridgeAbstract {
 				break;
 		}
 	}
-	
-	
-	/**
-	* Implementation for ru.wikipedia.org
-	*/
-	private function getContentsEn($html, $subject, $fullArticle){
-		switch($subject) {
-			case WIKIPEDIA_SUBJECT_TFA:
-				$element = $html->find('div[id=mp-tfa]', 0);
-				$this->addTodaysFeaturedArticleGeneric($element, $fullArticle, -1);
-				break;
-			case WIKIPEDIA_SUBJECT_DYK:
-				$element = $html->find('div[id=mp-dyk]', 0);
-				$this->addDidYouKnowGeneric($element, $fullArticle);
-				break;
-			default:
-				break;
-		}
-	}
-	
-	
+
 	/**
 	* Implementation for eo.wikipedia.org
 	*/
