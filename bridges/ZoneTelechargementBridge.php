@@ -173,7 +173,7 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 		// Split the link using '/'
 		$parts = explode('/', $url);
 		// return the new URL using the new Link Protection system
-		return 'https://protecte.cam//171-2/?link=' . end($parts);
+		return 'https://ztprotecte.cam//171-2/?link=' . end($parts);
 	}
 
 	// Function to get the CURL_RESOLVE content
