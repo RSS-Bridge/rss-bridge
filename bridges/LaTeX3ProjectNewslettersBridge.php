@@ -4,9 +4,9 @@ class LaTeX3ProjectNewslettersBridge extends BridgeAbstract {
 	const MAINTAINER = 'µKöff';
 	const NAME = 'LaTeX3 Project Newsletters';
 	const URI = 'https://www.latex-project.org';
-	const DESCRIPTION = 'Newsletters by the LaTeX3 project team covering topics of interest in the area of'
-		. 'LaTeX3/expl3 development. They appear in irregular intervals and are not necessarily tied to individual'
-		. 'releases of the software (as the LaTeX3 kernel code is updated rather often).';
+	const DESCRIPTION = 'Newsletters by the LaTeX3 project team covering topics of interest in the area of
+		LaTeX3/expl3 development. They appear in irregular intervals and are not necessarily tied to individual
+		releases of the software (as the LaTeX3 kernel code is updated rather often).';
 
 	public function collectData(){
 		$html = getSimpleHTMLDOM(static::URI . '/news/latex3-news/') or returnServerError('No contents received!');
