@@ -11,6 +11,7 @@ class GiphyBridge extends BridgeAbstract {
 	const PARAMETERS = array( array(
 		's' => array(
 			'name' => 'search tag',
+			'exampleValue' => 'bird',
 			'required' => true
 		),
 		'n' => array(
