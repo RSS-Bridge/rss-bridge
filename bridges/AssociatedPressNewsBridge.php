@@ -187,22 +187,22 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 
 			foreach ($html->find('div.media-placeholder') as $div) {
 				$key = array_search($div->id, $storyContent['mediumIds']);
-	
+
 				if (!isset($storyContent['media'][$key])) {
 					continue;
 				}
-	
+
 				$media = $storyContent['media'][$key];
-	
+
 				if ($media['type'] === 'Photo') {
 					$mediaUrl = $media['gcsBaseUrl'] . $media['imageRenderedSizes'][0] . $media['imageFileExtension'];
 					$mediaCaption = $media['caption'];
-	
+
 					$div->outertext = <<<EOD
 	<figure><img loading="lazy" src="{$mediaUrl}"/><figcaption>{$mediaCaption}</figcaption></figure>
 	EOD;
 				}
-	
+
 				if ($media['type'] === 'YouTube') {
 					$div->outertext = <<<EOD
 	<iframe src="https://www.youtube.com/embed/{$media['externalId']}" width="560" height="315">
