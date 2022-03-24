@@ -69,7 +69,7 @@ class DonnonsBridge extends BridgeAbstract {
 				// Grab info from HTML
 				$imageSrc = $element->find('img.ima-center', 0)->getAttribute('src');
 				// Use large image instead of small one
-				$imageSrc = str_replace("/xs/", "/lg/", $imageSrc);
+				$imageSrc = str_replace('/xs/', '/lg/', $imageSrc);
 				$image = self::URI . $imageSrc;
 				$author = $element->find('div.avatar-holder', 0)->plaintext;
 
