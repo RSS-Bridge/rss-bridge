@@ -36,7 +36,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 				'name' => 'Topic',
 				'type' => 'text',
 				'required' => true,
-				'exampleValue' => 'Election2020'
+				'exampleValue' => 'europe'
 			),
 		)
 	);
@@ -111,7 +111,8 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 		foreach ($tagContents['cards'] as $index => &$card) {
 			$item = array();
 
-			if ($card['cardType'] == 'Hub Peek') { // skip hub peeks
+			 // skip hub peeks & Notifications
+			if ($card['cardType'] == 'Hub Peek' || $card['cardType'] == 'Notification') {
 				continue;
 			}
 
@@ -135,7 +136,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 					$html = defaultLinkTo($storyContent['storyHTML'], self::URI);
 					$html = str_get_html($html);
 
-					$this->processMediaPlaceholders($html, $storyContent);
+					$this->processMediaPlaceholders($html, $storyContent['id']);
 					$this->processHubLinks($html, $storyContent);
 					$this->processIframes($html);
 
@@ -171,37 +172,43 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 
 			$this->items[] = $item;
 
-			if (count($this->items) >= 20) {
+			if (count($this->items) >= 15) {
 				break;
 			}
 		}
 	}
 
-	private function processMediaPlaceholders($html, $storyContent) {
+	private function processMediaPlaceholders($html, $id) {
 
-		foreach ($html->find('div.media-placeholder') as $div) {
-			$key = array_search($div->id, $storyContent['mediumIds']);
+		if ($html->find('div.media-placeholder', 0)) {
+			// Fetch page content
+			$json = getContents('https://afs-prod.appspot.com/api/v2/content/' . $id);
+			$storyContent = json_decode($json, true);
 
-			if (!isset($storyContent['media'][$key])) {
-				continue;
-			}
-
-			$media = $storyContent['media'][$key];
-
-			if ($media['type'] === 'Photo') {
-				$mediaUrl = $media['gcsBaseUrl'] . $media['imageRenderedSizes'][0] . $media['imageFileExtension'];
-				$mediaCaption = $media['caption'];
-
-				$div->outertext = <<<EOD
-<figure><img loading="lazy" src="{$mediaUrl}"/><figcaption>{$mediaCaption}</figcaption></figure>
-EOD;
-			}
-
-			if ($media['type'] === 'YouTube') {
-				$div->outertext = <<<EOD
-<iframe src="https://www.youtube.com/embed/{$media['externalId']}" width="560" height="315">
-</iframe>
-EOD;
+			foreach ($html->find('div.media-placeholder') as $div) {
+				$key = array_search($div->id, $storyContent['mediumIds']);
+	
+				if (!isset($storyContent['media'][$key])) {
+					continue;
+				}
+	
+				$media = $storyContent['media'][$key];
+	
+				if ($media['type'] === 'Photo') {
+					$mediaUrl = $media['gcsBaseUrl'] . $media['imageRenderedSizes'][0] . $media['imageFileExtension'];
+					$mediaCaption = $media['caption'];
+	
+					$div->outertext = <<<EOD
+	<figure><img loading="lazy" src="{$mediaUrl}"/><figcaption>{$mediaCaption}</figcaption></figure>
+	EOD;
+				}
+	
+				if ($media['type'] === 'YouTube') {
+					$div->outertext = <<<EOD
+	<iframe src="https://www.youtube.com/embed/{$media['externalId']}" width="560" height="315">
+	</iframe>
+	EOD;
+				}
 			}
 		}
 	}
