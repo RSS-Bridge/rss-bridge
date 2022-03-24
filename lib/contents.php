@@ -36,12 +36,10 @@ class GetContentsException extends \Exception {
  **/
 class CloudflareChallengeException extends \Exception {
 	public function __construct($code = 0, Throwable $previous = null) {
-		if (!$message) {
-			$message = <<<EOD
+		$message = <<<EOD
 The server responded with a Cloudflare challenge, which is not supported by RSS-Bridge!
 If this error persists longer than a week, please consider opening an issue on GitHub!
 EOD;
-		}
 
 		parent::__construct($message, $code, $previous);
 	}
