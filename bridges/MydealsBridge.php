@@ -12,6 +12,7 @@ class MydealsBridge extends PepperBridgeAbstract {
 			'q' => array(
 				'name' => 'Stichworten',
 				'type' => 'text',
+				'exampleValue' => 'watch',
 				'required' => true
 			),
 			'hide_expired' => array(

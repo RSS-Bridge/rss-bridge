@@ -584,7 +584,6 @@ class GithubTrendingBridge extends BridgeAbstract {
 			'date_range' => array(
 				'name' => 'Date range',
 				'type' => 'list',
-				'required' => false,
 				'values' => array(
 					'Today' => 'today',
 					'Weekly' => 'weekly',

@@ -11,6 +11,7 @@ class ViadeoCompanyBridge extends BridgeAbstract {
 	const PARAMETERS = array( array(
 		'c' => array(
 			'name' => 'Company name',
+			'exampleValue' => 'apple',
 			'required' => true
 		)
 	));

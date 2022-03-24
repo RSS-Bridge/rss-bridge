@@ -120,6 +120,7 @@ class DesoutterBridge extends BridgeAbstract {
 			'limit' => array(
 				'name' => 'Limit',
 				'type' => 'number',
+				'required' => true,
 				'defaultValue' => 3,
 				'title' => "Maximum number of items to return in the feed.\n0 = unlimited"
 			)

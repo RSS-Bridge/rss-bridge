@@ -10,7 +10,8 @@ class MastodonBridge extends FeedExpander {
 
 	const PARAMETERS = array(array(
 		'canusername' => array(
-			'name' => 'Canonical username (ex : @sebsauvage@framapiaf.org)',
+			'name' => 'Canonical username',
+			'exampleValue' => '@sebsauvage@framapiaf.org',
 			'required' => true,
 		),
 		'norep' => array(

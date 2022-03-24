@@ -9,6 +9,7 @@ class QPlayBridge extends BridgeAbstract {
 			'program' => array(
 				'name' => 'Program Name',
 				'type' => 'text',
+				'exampleValue' => 'bridgebroken',
 				'required' => true,
 			),
 		),

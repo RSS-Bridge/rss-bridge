@@ -9,6 +9,7 @@ class HDWallpapersBridge extends BridgeAbstract {
 	const PARAMETERS = array( array(
 		'c' => array(
 			'name' => 'category',
+			'required' => true,
 			'defaultValue' => 'latest_wallpapers'
 		),
 		'm' => array(
@@ -16,8 +17,9 @@ class HDWallpapersBridge extends BridgeAbstract {
 		),
 		'r' => array(
 			'name' => 'resolution',
+			'required' => true,
 			'defaultValue' => 'HD',
-			'exampleValue' => 'HD, 1920x1200, 1680x1050,…'
+			'title' => 'e.g=HD OR 1920x1200 OR 1680x1050'
 		)
 	));
 

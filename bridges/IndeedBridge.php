@@ -74,6 +74,7 @@ class IndeedBridge extends BridgeAbstract {
 			'limit' => array(
 				'name' => 'Limit',
 				'type' => 'number',
+				'required' => true,
 				'title' => 'Maximum number of items to return',
 				'exampleValue' => 20,
 			)

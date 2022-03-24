@@ -14,6 +14,7 @@ class VkBridge extends BridgeAbstract
 		array(
 			'u' => array(
 				'name' => 'Group or user name',
+				'exampleValue' => 'elonmusk_tech',
 				'required' => true
 			),
 			'hide_reposts' => array(

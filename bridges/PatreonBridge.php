@@ -10,6 +10,7 @@ class PatreonBridge extends BridgeAbstract {
 			'name' => 'Creator',
 			'type' => 'text',
 			'required' => true,
+			'exampleValue' => 'sanityinc',
 			'title' => 'Creator name as seen in their page URL'
 		)
 	));

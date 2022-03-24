@@ -9,6 +9,7 @@ class FolhaDeSaoPauloBridge extends FeedExpander {
 			'feed' => array(
 				'name' => 'Feed sub-URL',
 				'type' => 'text',
+				'required' => true,
 				'title' => 'Select the sub-feed (see https://www1.folha.uol.com.br/feed/)',
 				'exampleValue' => 'emcimadahora/rss091.xml',
 			)

@@ -4,7 +4,7 @@ class AllocineFRBridge extends BridgeAbstract {
 	const MAINTAINER = 'superbaillot.net';
 	const NAME = 'Allo Cine Bridge';
 	const CACHE_TIMEOUT = 25200; // 7h
-	const URI = 'http://www.allocine.fr/';
+	const URI = 'https://www.allocine.fr/';
 	const DESCRIPTION = 'Bridge for allocine.fr';
 	const PARAMETERS = array( array(
 		'category' => array(

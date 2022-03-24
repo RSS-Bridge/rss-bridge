@@ -14,7 +14,7 @@ class GitHubGistBridge extends BridgeAbstract {
 			'type' => 'text',
 			'required' => true,
 			'title' => 'Insert Gist ID or URI',
-			'exampleValue' => '2646763, https://gist.github.com/2646763'
+			'exampleValue' => '2646763'
 		)
 	));
 
