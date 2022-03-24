@@ -553,8 +553,7 @@ class TrelloBridge extends BridgeAbstract {
 		$data = json_decode(getContents('https://trello.com/1/'
 			. $path
 			. '?'
-			. http_build_query($params)))
-			or returnServerError('Failed to query trello API');
+			. http_build_query($params)));
 		return $data;
 	}
 

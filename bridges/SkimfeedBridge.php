@@ -402,8 +402,8 @@ class SkimfeedBridge extends BridgeAbstract {
 				'name' => 'Configuration',
 				'type' => 'text',
 				'required' => true,
-				'title' => 'Enter feed numbers from Skimfeed!',
-				'exampleValue' => '5,8,2,l,p,9,23'
+				'title' => 'Enter feed numbers from Skimfeed! e.g: 5,8,2,l,p,9,23',
+				'exampleValue' => '5'
 			)
 		),
 		'global' => array(
@@ -455,6 +455,35 @@ class SkimfeedBridge extends BridgeAbstract {
 
 	}
 
+	public function detectParameters($url) {
+
+		if (0 !== strpos($url, static::URI)) {
+			return null;
+		}
+
+		foreach(self::PARAMETERS as $channels) {
+
+			foreach($channels as $box_name => $box) {
+
+				foreach($box['values'] as $name => $channel_url) {
+
+					if (static::URI . $channel_url === $url) {
+						return array(
+							$box_name => $name,
+						);
+
+					}
+
+				}
+
+			}
+
+		}
+
+		return null;
+
+	}
+
 	public function getName() {
 
 		switch($this->queriedContext) {
@@ -502,8 +531,7 @@ class SkimfeedBridge extends BridgeAbstract {
 		// $this->exportBoxChannels(); die;
 		// $this->exportTechChannels(); die;
 
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Request to ' . $this->getURI() . ' failed!');
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		defaultLinkTo($html, static::URI);
 

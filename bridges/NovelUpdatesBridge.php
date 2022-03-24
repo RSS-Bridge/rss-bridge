@@ -25,8 +25,7 @@ class NovelUpdatesBridge extends BridgeAbstract {
 	}
 
 	public function collectData(){
-		$fullhtml = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request NovelUpdates, novel "' . $this->getInput('n') . '" not found');
+		$fullhtml = getSimpleHTMLDOM($this->getURI());
 
 		$this->seriesTitle = $fullhtml->find('h4.seriestitle', 0)->plaintext;
 		// dirty fix for nasty simpledom bug: https://github.com/sebsauvage/rss-bridge/issues/259

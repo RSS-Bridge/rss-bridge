@@ -40,27 +40,27 @@ class HeiseBridge extends FeedExpander {
 
 	protected function parseItem($feedItem) {
 		$item = parent::parseItem($feedItem);
-		$uri = $item['uri'];
+		$item['uri'] = explode('?', $item['uri'])[0] . '?seite=all';
 
-		do {
-			$article = getSimpleHTMLDOMCached($uri)
-				or returnServerError('Could not open article: ' . $uri);
+		$article = getSimpleHTMLDOMCached($item['uri']);
 
-			$article = defaultLinkTo($article, $uri);
+		if ($article) {
+			$article = defaultLinkTo($article, $item['uri']);
 			$item = $this->addArticleToItem($item, $article);
-
-			if($next = $article->find('.pagination a[rel="next"]', 0))
-				$uri = $next->href;
-		} while ($next);
+		}
 
 		return $item;
 	}
 
 	private function addArticleToItem($item, $article) {
-		if($author = $article->find('[itemprop="author"]', 0))
-			$item['author'] = $author->plaintext;
+		$authors = $article->find('.a-creator__names', 0)->find('.a-creator__name');
+		if ($authors)
+			$item['author'] = implode(', ', array_map(function ($e) { return $e->plaintext; }, $authors ));
 
 		$content = $article->find('div[class*="article-content"]', 0);
+
+		if ($content == null)
+			$content = $article->find('#article_content', 0);
 
 		foreach($content->find('p, h3, ul, table, pre, img') as $element) {
 			$item['content'] .= $element;

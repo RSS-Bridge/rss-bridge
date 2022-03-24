@@ -2,9 +2,12 @@
 class TwitterBridge extends BridgeAbstract {
 	const NAME = 'Twitter Bridge';
 	const URI = 'https://twitter.com/';
+	const API_URI = 'https://api.twitter.com';
+	const GUEST_TOKEN_USES = 100;
+	const GUEST_TOKEN_EXPIRY = 10800; // 3hrs
 	const CACHE_TIMEOUT = 300; // 5min
 	const DESCRIPTION = 'returns tweets';
-	const MAINTAINER = 'pmaziere';
+	const MAINTAINER = 'arnd-s';
 	const PARAMETERS = array(
 		'global' => array(
 			'nopic' => array(
@@ -27,7 +30,7 @@ class TwitterBridge extends BridgeAbstract {
 			'q' => array(
 				'name' => 'Keyword or #hashtag',
 				'required' => true,
-				'exampleValue' => 'rss-bridge, #rss-bridge',
+				'exampleValue' => 'rss-bridge',
 				'title' => <<<EOD
 * To search for multiple words (must contain all of these words), put a space between them.
 
@@ -72,19 +75,40 @@ EOD
 				'required' => false,
 				'type' => 'checkbox',
 				'title' => 'Hide retweets'
+			),
+			'nopinned' => array(
+				'name' => 'Without pinned tweet',
+				'required' => false,
+				'type' => 'checkbox',
+				'title' => 'Hide pinned tweet'
 			)
 		),
 		'By list' => array(
 			'user' => array(
 				'name' => 'User',
 				'required' => true,
-				'exampleValue' => 'sebsauvage',
+				'exampleValue' => 'Scobleizer',
 				'title' => 'Insert a user name'
 			),
 			'list' => array(
 				'name' => 'List',
 				'required' => true,
+				'exampleValue' => 'Tech-News',
 				'title' => 'Insert the list name'
+			),
+			'filter' => array(
+				'name' => 'Filter',
+				'exampleValue' => '#rss-bridge',
+				'required' => false,
+				'title' => 'Specify term to search for'
+			)
+		),
+		'By list ID' => array(
+			'listid' => array(
+				'name' => 'List ID',
+				'exampleValue' => '31748',
+				'required' => true,
+				'title' => 'Insert the list id'
 			),
 			'filter' => array(
 				'name' => 'Filter',
@@ -142,6 +166,8 @@ EOD
 			break;
 		case 'By list':
 			return $this->getInput('list') . ' - Twitter list by ' . $this->getInput('user');
+		case 'By list ID':
+			return 'Twitter List #' . $this->getInput('listid');
 		default: return parent::getName();
 		}
 		return 'Twitter ' . $specific . $this->getInput($param);
@@ -164,26 +190,58 @@ EOD
 			. urlencode($this->getInput('user'))
 			. '/lists/'
 			. str_replace(' ', '-', strtolower($this->getInput('list')));
+		case 'By list ID':
+			return self::URI
+			. 'i/lists/'
+			. urlencode($this->getInput('listid'));
 		default: return parent::getURI();
+		}
+	}
+
+	private function getApiURI() {
+		switch($this->queriedContext) {
+		case 'By keyword or hashtag':
+			return self::API_URI
+			. '/2/search/adaptive.json?q='
+			. urlencode($this->getInput('q'))
+			. '&tweet_mode=extended&tweet_search_mode=live';
+		case 'By username':
+			// use search endpoint if without replies or without retweets enabled
+			if ($this->getInput('noretweet') || $this->getInput('norep')) {
+				$query = 'from:' . $this->getInput('u');
+				// Twitter's from: search excludes retweets by default
+				if (!$this->getInput('noretweet')) $query .= ' include:nativeretweets';
+				if ($this->getInput('norep')) $query .= ' exclude:replies';
+				return self::API_URI
+				. '/2/search/adaptive.json?q='
+				. urlencode($query)
+				. '&tweet_mode=extended&tweet_search_mode=live';
+			} else {
+				return self::API_URI
+				. '/2/timeline/profile/'
+				. $this->getRestId($this->getInput('u'))
+				. '.json?tweet_mode=extended';
+			}
+		case 'By list':
+			return self::API_URI
+			. '/2/timeline/list.json?list_id='
+			. $this->getListId($this->getInput('user'), $this->getInput('list'))
+			. '&tweet_mode=extended';
+		case 'By list ID':
+			return self::API_URI
+			. '/2/timeline/list.json?list_id='
+			. $this->getInput('listid')
+			. '&tweet_mode=extended';
+		default: returnServerError('Invalid query context !');
 		}
 	}
 
 	public function collectData(){
 		$html = '';
 		$page = $this->getURI();
+		$data = json_decode($this->getApiContents($this->getApiURI()));
 
-		$header = array(
-			'User-Agent: Mozilla/5.0 (Windows NT 9.0; WOW64; Trident/7.0; rv:11.0) like Gecko'
-		);
-
-		if(php_sapi_name() === 'cli' && empty(ini_get('curl.cainfo'))) {
-			$cookies = $this->getCookies($page);
-			$html = getSimpleHTMLDOM($page, array_merge($header, array("Cookie: $cookies")));
-		} else {
-			$html = getSimpleHTMLDOM($page, $header, array(CURLOPT_COOKIEFILE => ''));
-		}
-
-		if(!$html) {
+		if(!$data) {
 			switch($this->queriedContext) {
 			case 'By keyword or hashtag':
 				returnServerError('No results for this query.');
@@ -196,75 +254,121 @@ EOD
 
 		$hidePictures = $this->getInput('nopic');
 
-		foreach($html->find('div.js-stream-tweet') as $tweet) {
+		$promotedTweetIds = array_reduce($data->timeline->instructions[0]->addEntries->entries, function($carry, $entry) {
+			if (!isset($entry->content->item)) {
+				return $carry;
+			}
+			$tweet = $entry->content->item->content->tweet;
+			if (isset($tweet->promotedMetadata)) {
+				$carry[] = $tweet->id;
+			}
+			return $carry;
+		}, array());
 
-			// Skip retweets?
-			if($this->getInput('noretweet')
-			&& $tweet->find('div.context span.js-retweet-text a', 0)) {
+		$hidePinned = $this->getInput('nopinned');
+		if ($hidePinned) {
+			$pinnedTweetId = null;
+			if (isset($data->timeline->instructions[1]) && isset($data->timeline->instructions[1]->pinEntry)) {
+				$pinnedTweetId = $data->timeline->instructions[1]->pinEntry->entry->content->item->content->tweet->id;
+			}
+		}
+
+		$tweets = array();
+
+		// Extract tweets from timeline property when in username mode
+		// This fixes number of issues:
+		// * If there's a retweet of a quote tweet, the quoted tweet will not appear in results (since it wasn't retweeted directly)
+		// * Pinned tweets do not get stuck at the bottom
+		if ($this->queriedContext === 'By username') {
+			foreach($data->timeline->instructions[0]->addEntries->entries as $tweet) {
+				if (!isset($tweet->content->item)) continue;
+				$tweetId = $tweet->content->item->content->tweet->id;
+				$selectedTweet = $this->getTweet($tweetId, $data->globalObjects);
+				if (!$selectedTweet) continue;
+				// If this is a retweet, it will contain shorter text and will point to the original full tweet (retweeted_status_id_str).
+				// Let's use the original tweet text.
+				if (isset($selectedTweet->retweeted_status_id_str)) {
+					$tweetId = $selectedTweet->retweeted_status_id_str;
+					$selectedTweet = $this->getTweet($tweetId, $data->globalObjects);
+					if (!$selectedTweet) continue;
+				}
+				// use $tweetId as key to avoid duplicates (e.g. user retweeting their own tweet)
+				$tweets[$tweetId] = $selectedTweet;
+			}
+		} else {
+			foreach($data->globalObjects->tweets as $tweet) {
+				$tweets[] = $tweet;
+			}
+		}
+
+		foreach($tweets as $tweet) {
+
+			/* Debug::log('>>> ' . json_encode($tweet)); */
+			// Skip spurious retweets
+			if (isset($tweet->retweeted_status_id_str) && substr($tweet->full_text, 0, 4) === 'RT @') {
 				continue;
 			}
 
-			// remove 'invisible' content
-			foreach($tweet->find('.invisible') as $invisible) {
-				$invisible->outertext = '';
+			// Skip promoted tweets
+			if (in_array($tweet->id_str, $promotedTweetIds)) {
+				continue;
 			}
 
-			// Skip protmoted tweets
-			$heading = $tweet->previousSibling();
-			if(!is_null($heading) &&
-				$heading->getAttribute('class') === 'promoted-tweet-heading'
-			) {
+			// Skip pinned tweet
+			if ($hidePinned && $tweet->id_str === $pinnedTweetId) {
 				continue;
 			}
 
 			$item = array();
 			// extract username and sanitize
-			$item['username'] = htmlspecialchars_decode($tweet->getAttribute('data-screen-name'), ENT_QUOTES);
-			// extract fullname (pseudonym)
-			$item['fullname'] = htmlspecialchars_decode($tweet->getAttribute('data-name'), ENT_QUOTES);
-			// get author
+			$user_info = $this->getUserInformation($tweet->user_id_str, $data->globalObjects);
+
+			$item['username'] = $user_info->screen_name;
+			$item['fullname'] = $user_info->name;
 			$item['author'] = $item['fullname'] . ' (@' . $item['username'] . ')';
-			if($rt = $tweet->find('div.context span.js-retweet-text a', 0)) {
-				$item['author'] .= ' RT: @' . $rt->plaintext;
+			if (null !== $this->getInput('u') && strtolower($item['username']) != strtolower($this->getInput('u'))) {
+				$item['author'] .= ' RT: @' . $this->getInput('u');
 			}
-			// get avatar link
-			$item['avatar'] = $tweet->find('img', 0)->src;
-			// get TweetID
-			$item['id'] = $tweet->getAttribute('data-tweet-id');
-			// get tweet link
-			$item['uri'] = self::URI . substr($tweet->find('a.js-permalink', 0)->getAttribute('href'), 1);
+			$item['avatar'] = $user_info->profile_image_url_https;
+
+			$item['id'] = $tweet->id_str;
+			$item['uri'] = self::URI . $item['username'] . '/status/' . $item['id'];
 			// extract tweet timestamp
-			$item['timestamp'] = $tweet->find('span.js-short-timestamp', 0)->getAttribute('data-time');
-			// generate the title
-			$item['title'] = strip_tags($this->fixAnchorSpacing(htmlspecialchars_decode(
-				$tweet->find('p.js-tweet-text', 0), ENT_QUOTES), '<a>'));
+			$item['timestamp'] = $tweet->created_at;
 
-			switch($this->queriedContext) {
-				case 'By list':
-					// Check if filter applies to list (using raw content)
-					if($this->getInput('filter')) {
-						if(stripos($tweet->find('p.js-tweet-text', 0)->plaintext, $this->getInput('filter')) === false) {
-							continue 2; // switch + for-loop!
-						}
-					}
-					break;
-				default:
+			// Convert plain text URLs into HTML hyperlinks
+			$cleanedTweet = $tweet->full_text;
+			$foundUrls = false;
+
+			if (isset($tweet->entities->media)) {
+				foreach($tweet->entities->media as $media) {
+					$cleanedTweet = str_replace($media->url,
+						'<a href="' . $media->expanded_url . '">' . $media->display_url . '</a>',
+						$cleanedTweet);
+					$foundUrls = true;
+				}
 			}
+			if (isset($tweet->entities->urls)) {
+				foreach($tweet->entities->urls as $url) {
+					$cleanedTweet = str_replace($url->url,
+						'<a href="' . $url->expanded_url . '">' . $url->display_url . '</a>',
+						$cleanedTweet);
+					$foundUrls = true;
+				}
+			}
+			if ($foundUrls === false) {
+				// fallback to regex'es
+				$reg_ex = '/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/';
+				if(preg_match($reg_ex, $tweet->full_text, $url)) {
+					$cleanedTweet = preg_replace($reg_ex,
+						"<a href='{$url[0]}' target='_blank'>{$url[0]}</a> ",
+						$cleanedTweet);
+				}
+			}
+			// generate the title
+			$item['title'] = strip_tags($cleanedTweet);
 
-			$this->processContentLinks($tweet);
-			$this->processEmojis($tweet);
-
-			// get tweet text
-			$cleanedTweet = str_replace(
-				'href="/',
-				'href="' . self::URI,
-				$tweet->find('p.js-tweet-text', 0)->innertext
-			);
-
-			// fix anchors missing spaces in-between
-			$cleanedTweet = $this->fixAnchorSpacing($cleanedTweet);
-
-			// Add picture to content
+			// Add avatar
 			$picture_html = '';
 			if(!$hidePictures) {
 				$picture_html = <<<EOD
@@ -278,31 +382,79 @@ EOD
 EOD;
 			}
 
-			// Add embeded image to content
-			$image_html = '';
-			$images = $this->getImageURI($tweet);
-			if(!$this->getInput('noimg') && !is_null($images)) {
+			// Get images
+			$media_html = '';
+			if(isset($tweet->extended_entities->media) && !$this->getInput('noimg')) {
+				foreach($tweet->extended_entities->media as $media) {
+					switch($media->type) {
+					case 'photo':
+						$image = $media->media_url_https . '?name=orig';
+						$display_image = $media->media_url_https;
+						// add enclosures
+						$item['enclosures'][] = $image;
 
-				foreach ($images as $image) {
-
-					// Set image scaling
-					$image_orig = $this->getInput('noimgscaling') ? $image : $image . ':orig';
-					$image_thumb = $this->getInput('noimgscaling') ? $image : $image . ':thumb';
-
-					// add enclosures
-					$item['enclosures'][] = $image_orig;
-
-					$image_html .= <<<EOD
-<a href="{$image_orig}">
+						$media_html .= <<<EOD
+<a href="{$image}">
 <img
 	style="align:top; max-width:558px; border:1px solid black;"
-	src="{$image_thumb}" />
+	referrerpolicy="no-referrer"
+	src="{$display_image}" />
 </a>
 EOD;
+						break;
+					case 'video':
+					case 'animated_gif':
+						if(isset($media->video_info)) {
+							$link = $media->expanded_url;
+							$poster = $media->media_url_https;
+							$video = null;
+							$maxBitrate = -1;
+							foreach($media->video_info->variants as $variant) {
+								$bitRate = isset($variant->bitrate) ? $variant->bitrate : -100;
+								if ($bitRate > $maxBitrate) {
+									$maxBitrate = $bitRate;
+									$video = $variant->url;
+								}
+							}
+							if(!is_null($video)) {
+								// add enclosures
+								$item['enclosures'][] = $video;
+								$item['enclosures'][] = $poster;
+
+								$media_html .= <<<EOD
+<a href="{$link}">Video</a>
+<video
+	style="align:top; max-width:558px; border:1px solid black;"
+	referrerpolicy="no-referrer"
+	src="{$video}" poster="{$poster}" />
+EOD;
+							}
+						}
+						break;
+					default:
+						Debug::log('Missing support for media type: ' . $media->type);
+					}
 				}
 			}
 
-			// add content
+			switch($this->queriedContext) {
+				case 'By list':
+				case 'By list ID':
+					// Check if filter applies to list (using raw content)
+					if($this->getInput('filter')) {
+						if(stripos($cleanedTweet, $this->getInput('filter')) === false) {
+							continue 2; // switch + for-loop!
+						}
+					}
+					break;
+				case 'By username':
+					if ($this->getInput('noretweet') && strtolower($item['username']) != strtolower($this->getInput('u'))) {
+						continue 2; // switch + for-loop!
+					}
+					break;
+				default:
+			}
+
 			$item['content'] = <<<EOD
 <div style="display: inline-block; vertical-align: top;">
 	{$picture_html}
@@ -311,155 +463,168 @@ EOD;
 	<blockquote>{$cleanedTweet}</blockquote>
 </div>
 <div style="display: block; vertical-align: top;">
-	<blockquote>{$image_html}</blockquote>
+	<blockquote>{$media_html}</blockquote>
 </div>
 EOD;
-
-			// add quoted tweet
-			$quotedTweet = $tweet->find('div.QuoteTweet', 0);
-			if($quotedTweet) {
-				// get tweet text
-				$cleanedQuotedTweet = str_replace(
-					'href="/',
-					'href="' . self::URI,
-					$quotedTweet->find('div.tweet-text', 0)->innertext
-				);
-
-				$this->processContentLinks($quotedTweet);
-				$this->processEmojis($quotedTweet);
-
-				// Add embeded image to content
-				$quotedImage_html = '';
-				$quotedImages = $this->getQuotedImageURI($tweet);
-
-				if(!$this->getInput('noimg') && !is_null($quotedImages)) {
-
-					foreach ($quotedImages as $image) {
-
-						// Set image scaling
-						$image_orig = $this->getInput('noimgscaling') ? $image : $image . ':orig';
-						$image_thumb = $this->getInput('noimgscaling') ? $image : $image . ':thumb';
-
-						// add enclosures
-						$item['enclosures'][] = $image_orig;
-
-						$quotedImage_html .= <<<EOD
-<a href="{$image_orig}">
-<img
-	style="align:top; max-width:558px; border:1px solid black;"
-	src="{$image_thumb}" />
-</a>
-EOD;
-					}
-				}
-
-				$item['content'] = <<<EOD
-{$item['content']}
-<hr>
-<div style="display: inline-block; vertical-align: top;">
-	<blockquote>{$cleanedQuotedTweet}</blockquote>
-</div>
-<div style="display: block; vertical-align: top;">
-	<blockquote>{$quotedImage_html}</blockquote>
-</div>
-EOD;
-			}
-			$item['content'] = htmlspecialchars_decode($item['content'], ENT_QUOTES);
 
 			// put out
 			$this->items[] = $item;
 		}
+
+		usort($this->items, array('TwitterBridge', 'compareTweetId'));
 	}
 
-	private function processEmojis($tweet){
-		// process emojis (reduce size)
-		foreach($tweet->find('img.Emoji') as $img) {
-			$img->style .= ' height: 1em;';
+	private static function compareTweetId($tweet1, $tweet2) {
+		return (intval($tweet1['id']) < intval($tweet2['id']) ? 1 : -1);
+	}
+
+	//The aim of this function is to get an API key and a guest token
+	//This function takes 2 requests, and therefore is cached
+	private function getApiKey() {
+
+		$cacheFac = new CacheFactory();
+		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
+		$r_cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+		$r_cache->setScope(get_called_class());
+		$r_cache->setKey(array('refresh'));
+		$data = $r_cache->loadData();
+
+		$refresh = null;
+		if($data === null) {
+			$refresh = time();
+			$r_cache->saveData($refresh);
+		} else {
+			$refresh = $data;
 		}
-	}
 
-	private function processContentLinks($tweet){
-		// processing content links
-		foreach($tweet->find('a') as $link) {
-			if($link->hasAttribute('data-expanded-url')) {
-				$link->href = $link->getAttribute('data-expanded-url');
+		$cacheFac = new CacheFactory();
+		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
+		$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+		$cache->setScope(get_called_class());
+		$cache->setKey(array('api_key'));
+		$data = $cache->loadData();
+
+		$apiKey = null;
+		if($data === null || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
+			$twitterPage = getContents('https://twitter.com');
+
+			$jsLink = false;
+			$jsMainRegexArray = array(
+				'/(https:\/\/abs\.twimg\.com\/responsive-web\/web\/main\.[^\.]+\.js)/m',
+				'/(https:\/\/abs\.twimg\.com\/responsive-web\/web_legacy\/main\.[^\.]+\.js)/m',
+				'/(https:\/\/abs\.twimg\.com\/responsive-web\/client-web\/main\.[^\.]+\.js)/m',
+				'/(https:\/\/abs\.twimg\.com\/responsive-web\/client-web-legacy\/main\.[^\.]+\.js)/m',
+			);
+			foreach ($jsMainRegexArray as $jsMainRegex) {
+				if (preg_match_all($jsMainRegex, $twitterPage, $jsMainMatches, PREG_SET_ORDER, 0)) {
+					$jsLink = $jsMainMatches[0][0];
+					break;
+				}
 			}
-			$link->removeAttribute('data-expanded-url');
-			$link->removeAttribute('data-query-source');
-			$link->removeAttribute('rel');
-			$link->removeAttribute('class');
-			$link->removeAttribute('target');
-			$link->removeAttribute('title');
+			if (!$jsLink) {
+				 returnServerError('Could not locate main.js link');
+			}
+
+			$jsContent = getContents($jsLink);
+			$apiKeyRegex = '/([a-zA-Z0-9]{59}%[a-zA-Z0-9]{44})/m';
+			preg_match_all($apiKeyRegex, $jsContent, $apiKeyMatches, PREG_SET_ORDER, 0);
+			$apiKey = $apiKeyMatches[0][0];
+			$cache->saveData($apiKey);
+		} else {
+			$apiKey = $data;
 		}
+
+		$cacheFac2 = new CacheFactory();
+		$cacheFac2->setWorkingDir(PATH_LIB_CACHES);
+		$gt_cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+		$gt_cache->setScope(get_called_class());
+		$gt_cache->setKey(array('guest_token'));
+		$guestTokenUses = $gt_cache->loadData();
+
+		$guestToken = null;
+		if($guestTokenUses === null || !is_array($guestTokenUses) || count($guestTokenUses) != 2
+		|| $guestTokenUses[0] <= 0 || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
+			$guestToken = $this->getGuestToken($apiKey);
+			if ($guestToken === null) {
+				if($guestTokenUses === null) {
+					returnServerError('Could not parse guest token');
+				} else {
+					$guestToken = $guestTokenUses[1];
+				}
+			} else {
+				$gt_cache->saveData(array(self::GUEST_TOKEN_USES, $guestToken));
+				$r_cache->saveData(time());
+			}
+		} else {
+			$guestTokenUses[0] -= 1;
+			$gt_cache->saveData($guestTokenUses);
+			$guestToken = $guestTokenUses[1];
+		}
+
+		return array($apiKey, $guestToken);
+
 	}
 
-	private function fixAnchorSpacing($content){
-		// fix anchors missing spaces in-between
-		return str_replace(
-			'<a',
-			' <a',
-			$content
+	// Get a guest token. This is different to an API key,
+	// and it seems to change more regularly than the API key.
+	private function getGuestToken($apiKey) {
+		$headers = array(
+			'authorization: Bearer ' . $apiKey,
 		);
-	}
-
-	private function getImageURI($tweet){
-		// Find media in tweet
-		$images = array();
-
-		$container = $tweet->find('div.AdaptiveMedia-container', 0);
-
-		if($container && $container->find('img', 0)) {
-			foreach ($container->find('img') as $img) {
-				$images[] = $img->src;
-			}
-		}
-
-		if (!empty($images)) {
-			return $images;
-		}
-
-		return null;
-	}
-
-	private function getQuotedImageURI($tweet){
-		// Find media in tweet
-		$images = array();
-
-		$container = $tweet->find('div.QuoteMedia-container', 0);
-
-		if($container && $container->find('img', 0)) {
-			foreach ($container->find('img') as $img) {
-				$images[] = $img->src;
-			}
-		}
-
-		if (!empty($images)) {
-			return $images;
-		}
-
-		return null;
-	}
-
-	private function getCookies($pageURL){
-
-		$ctx = stream_context_create(array(
-			'http' => array(
-				'follow_location' => false
-				)
-			)
+		$opts = array(
+			CURLOPT_POST => 1,
 		);
-		$a = file_get_contents($pageURL, 0, $ctx);
 
-		//First request to get the cookie
-		$cookies = '';
-		foreach($http_response_header as $hdr) {
-			if(stripos($hdr, 'Set-Cookie') !== false) {
-				$cLine = explode(':', $hdr)[1];
-				$cLine = explode(';', $cLine)[0];
-				$cookies .= ';' . $cLine;
+		try {
+			$pageContent = getContents('https://api.twitter.com/1.1/guest/activate.json', $headers, $opts, true);
+			$guestToken = json_decode($pageContent['content'])->guest_token;
+		} catch (Exception $e) {
+			$guestToken = null;
+		}
+		return $guestToken;
+	}
+
+	private function getApiContents($uri) {
+		$apiKeys = $this->getApiKey();
+		$headers = array('authorization: Bearer ' . $apiKeys[0],
+				 'x-guest-token: ' . $apiKeys[1],
+			   );
+		return getContents($uri, $headers);
+	}
+
+	private function getRestId($username) {
+		$searchparams = urlencode('{"screen_name":"' . strtolower($username) . '", "withHighlightedLabel":true}');
+		$searchURL = self::API_URI . '/graphql/-xfUfZsnR_zqjFd-IfrN5A/UserByScreenName?variables=' . $searchparams;
+		$searchResult = $this->getApiContents($searchURL);
+		$searchResult = json_decode($searchResult);
+		return $searchResult->data->user->rest_id;
+	}
+
+	private function getListId($username, $listName) {
+		$searchparams = urlencode('{"screenName":"'
+				. strtolower($username)
+				. '", "listSlug": "'
+				. $listName
+				. '", "withHighlightedLabel":false}');
+		$searchURL = self::API_URI . '/graphql/ErWsz9cObLel1BF-HjuBlA/ListBySlug?variables=' . $searchparams;
+		$searchResult = $this->getApiContents($searchURL);
+		$searchResult = json_decode($searchResult);
+		return $searchResult->data->user_by_screen_name->list->id_str;
+	}
+
+	private function getUserInformation($userId, $apiData) {
+		foreach($apiData->users as $user) {
+			if($user->id_str == $userId) {
+				return $user;
 			}
 		}
+	}
 
-		return substr($cookies, 2);
+	private function getTweet($tweetId, $apiData) {
+		if (property_exists($apiData->tweets, $tweetId)) {
+			return $apiData->tweets->$tweetId;
+		} else {
+			return null;
+		}
 	}
 }

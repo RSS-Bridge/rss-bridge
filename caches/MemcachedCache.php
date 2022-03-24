@@ -40,7 +40,7 @@ class MemcachedCache implements CacheInterface {
 		if ($this->data) return $this->data;
 		$result = $this->conn->get($this->getCacheKey());
 		if ($result === false) {
-			return false;
+			return null;
 		}
 
 		$this->time = $result['time'];

@@ -7,51 +7,14 @@ class AutoJMBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Suivre les offres de véhicules proposés par AutoJM en fonction des critères de filtrages';
 	const MAINTAINER = 'sysadminstory';
 	const PARAMETERS = array(
-		'Afficher les offres de véhicules disponible en fonction des critères du site AutoJM' => array(
+		'Afficher les offres de véhicules disponible sur la recheche AutoJM' => array(
 			'url' => array(
-				'name' => 'URL du modèle',
+				'name' => 'URL de la page de recherche',
 				'type' => 'text',
 				'required' => true,
 				'title' => 'URL d\'une recherche avec filtre de véhicules sans le http://www.autojm.fr/',
-				'exampleValue' => 'achat-voitures-neuves-peugeot-nouvelle-308-5p'
+				'exampleValue' => 'recherche?brands[]=peugeot&ranges[]=peugeot-nouvelle-308-2021-5p'
 			),
-			'energy' => array(
-				'name' => 'Carburant',
-				'type' => 'list',
-				'values' => array(
-					'-' => '',
-					'Diesel' => 1,
-					'Essence' => 3,
-					'Hybride' => 5
-				),
-				'title' => 'Carburant'
-			),
-			'transmission' => array(
-				'name' => 'Transmission',
-				'type' => 'list',
-				'values' => array(
-					'-' => '',
-					'Automatique' => 1,
-					'Manuelle' => 2
-				),
-				'title' => 'Transmission'
-			),
-			'priceMin' => array(
-				'name' => 'Prix minimum',
-				'type' => 'number',
-				'required' => false,
-				'title' => 'Prix minimum du véhicule',
-				'exampleValue' => '10000',
-				'defaultValue' => '0'
-			),
-			'priceMax' => array(
-				'name' => 'Prix maximum',
-				'type' => 'number',
-				'required' => false,
-				'title' => 'Prix maximum du véhicule',
-				'exampleValue' => '15000',
-				'defaultValue' => '150000'
-			)
 		)
 	);
 	const CACHE_TIMEOUT = 3600;
@@ -62,10 +25,8 @@ class AutoJMBridge extends BridgeAbstract {
 
 	public function getName() {
 		switch($this->queriedContext) {
-		case 'Afficher les offres de véhicules disponible en fonction des critères du site AutoJM':
-			$html = getSimpleHTMLDOMCached(self::URI . $this->getInput('url'), 86400);
-			$name = html_entity_decode($html->find('title', 0)->plaintext);
-			return $name;
+		case 'Afficher les offres de véhicules disponible sur la recheche AutoJM':
+			return 'AutoJM | Recherche de véhicules';
 			break;
 		default:
 			return parent::getName();
@@ -75,112 +36,100 @@ class AutoJMBridge extends BridgeAbstract {
 
 	public function collectData() {
 
-		$model_url = self::URI . $this->getInput('url');
+		// Get the number of result for this search
+		$search_url = self::URI . $this->getInput('url') . '&open=energy&onlyFilters=false';
 
-		// Get the session cookies and the form token
-		$this->getInitialParameters($model_url);
-
-		// Build the form
-		$post_data = array(
-			'form[energy]' => $this->getInput('energy'),
-			'form[transmission]' => $this->getInput('transmission'),
-			'form[priceMin]' => $this->getInput('priceMin'),
-			'form[priceMin]' => $this->getInput('priceMin'),
-			'form[_token]' => $this->token
-		);
-
-		// Set the Form request content type
+		// Set the header 'X-Requested-With' like the website does it
 		$header = array(
-			'Content-Type: application/x-www-form-urlencoded; charset=UTF-8',
-		);
-
-		// Set the curl options (POST query and content, and session cookies
-		$curl_opts = array(
-			CURLOPT_POST => true,
-			CURLOPT_POSTFIELDS => http_build_query($post_data),
-			CURLOPT_COOKIE => $this->cookies
+			'X-Requested-With: XMLHttpRequest'
 		);
 
 		// Get the JSON content of the form
-		$json = getContents($model_url, $header, $curl_opts)
-			or returnServerError('Could not request AutoJM.');
+		$json = getContents($search_url, $header);
 
 		// Extract the HTML content from the JSON result
 		$data = json_decode($json);
-		$html = str_get_html($data->content);
 
-		// Go through every finisha of the model
-		$list = $html->find('h3');
-		foreach ($list as $finish) {
-			$finish_name = $finish->plaintext;
-			$motorizations = $finish->next_sibling()->find('li');
-			foreach ($motorizations as $element) {
-				$image = $element->find('div[class=block-product-image]', 0)->{'data-ga-banner'};
-				$serie = $element->find('span[class=model]', 0)->plaintext;
-				$url = self::URI . substr($element->find('a', 0)->href, 1);
-				if ($element->find('span[class*=block-product-nbModel]', 0) != null) {
-					$availability = 'En Stock';
-				} else {
-					$availability = 'Sur commande';
-				}
-				$discount_html = $element->find('span[class*=tag--promo]', 0);
+		$nb_results = $data->nbResults;
+		$total_pages = ceil($nb_results / 15);
+
+		// Limit the number of page to analyse to 10
+		for($page = 1; $page <= $total_pages && $page <= 10; $page++) {
+			// Get the result the next page
+			$html = $this->getResults($page);
+
+			// Go through every car of the search
+			$list = $html->find('div[class*=card-car card-car--listing]');
+			foreach ($list as $car) {
+
+				// Get the info about the car offer
+				$image = $car->find('div[class=card-car__header__img]', 0)->find('img', 0)->src;
+				// Decode HTML attribute JSON data
+				$car_data = json_decode(html_entity_decode($car->{'data-layer'}));
+				$car_model = $car->{'data-title'} . ' ' . $car->{'data-suptitle'};
+				$availability = $car->find('div[class=card-car__modalites]', 0)->find('div[class=col]', 0)->plaintext;
+				$warranty = $car->find('div[data-type=WarrantyCard]', 0)->plaintext;
+				$discount_html = $car->find('div[class=subtext vehicle_reference_element]', 0);
+				// Check if there is any discount info displayed
 				if ($discount_html != null) {
-					$discount = $discount_html->plaintext;
+					$reference_price_value = $discount_html->find('span[data-cfg=vehicle__reference_price]', 0)->plaintext;
+					$discount_percent_value = $discount_html->find('span[data-cfg=vehicle__discount_percent]', 0)->plaintext;
+					$reference_price = '<li>Prix de référence : <s>' . $reference_price_value . '</s></li>';
+					$discount_percent = '<li>Réduction : ' . $discount_percent_value . ' %</li>';
 				} else {
-					$discount = 'inconnue';
+					$reference_price = '';
+					$discount_percent = '';
 				}
-				$price = $element->find('span[class=price red h1]', 0)->plaintext;
+				$price = $car_data->price;
+				$kilometer = $car->find('span[data-cfg=vehicle__kilometer]', 0)->plaintext;
+				$energy = $car->find('span[data-cfg=vehicle__energy__label]', 0)->plaintext;
+				$power = $car->find('span[data-cfg=vehicle__tax_horse_power]', 0)->plaintext;
+				$seats = $car->find('span[data-cfg=vehicle__seats]', 0)->plaintext;
+				$doors = $car->find('span[data-cfg=vehicle__door__label]', 0)->plaintext;
+				$transmission = $car->find('span[data-cfg=vehicle__transmission]', 0)->plaintext;
+				$loa_html = $car->find('span[data-cfg=vehicle__loa]', 0);
+				// Check if any LOA price is displayed
+				if($loa_html != null) {
+					$loa_value = $car->find('span[data-cfg=vehicle__loa]', 0)->plaintext;
+					$loa = '<li>LOA : à partir de ' . $loa_value . ' / mois </li>';
+				} else {
+					$loa = '';
+				}
+
+				// Construct the new item
 				$item = array();
-				$item['title'] = $finish_name . ' ' . $serie;
+				$item['title'] = $car_model;
 				$item['content'] = '<p><img style="vertical-align:middle ; padding: 10px" src="' . $image . '" />'
-					. $finish_name . ' ' . $serie . '</p>';
+					. $car_model . '</p>';
 				$item['content'] .= '<ul><li>Disponibilité : ' . $availability . '</li>';
-				$item['content'] .= '<li>Série : ' . $serie . '</li>';
-				$item['content'] .= '<li>Remise : ' . $discount . '</li>';
-				$item['content'] .= '<li>Prix : ' . $price . '</li></ul>';
-
-				// Add a fictionnal anchor to the RSS element URL, based on the item content ;
-				// As the URL could be identical even if the price change, some RSS reader will not show those offers as new items
-				$item['uri'] = $url . '#' . md5($item['content']);
-
+				$item['content'] .= '<li>Prix : ' . $price . ' €</li>';
+				$item['content'] .= $reference_price;
+				$item['content'] .= $loa;
+				$item['content'] .= $discount_percent;
+				$item['content'] .= '<li>Garantie : ' . $warranty . '</li>';
+				$item['content'] .= '<li>Kilométrage : ' . $kilometer . ' km</li>';
+				$item['content'] .= '<li>Energie : ' . $energy . '</li>';
+				$item['content'] .= '<li>Puissance: ' . $power . ' CV Fiscaux</li>';
+				$item['content'] .= '<li>Nombre de Places : ' . $seats . ' place(s)</li>';
+				$item['content'] .= '<li>Nombre de portes : ' . $doors . '</li>';
+				$item['content'] .= '<li>Boite de vitesse : ' . $transmission . '</li></ul>';
+				$item['uri'] = $car_data->{'uri'};
+				$item['uid'] = hash('md5', $item['content']);
 				$this->items[] = $item;
 			}
 		}
 	}
 
-	/**
-	 * Gets the session cookie and the form token
-	 *
-	 * @param string $pageURL The URL from which to get the values
-	 */
-	private function getInitialParameters($pageURL) {
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $pageURL);
-		curl_setopt($ch, CURLOPT_HEADER, true);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		$data = curl_exec($ch);
+	private function getResults(int $page)
+	{
+		$user_input = $this->getInput('url');
+		$search_data = preg_replace('#(recherche|recherche/[0-9]{1,10})\?#', 'recherche/' . $page . '?', $user_input);
 
-		// Separate the response header and the content
-		$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-		$header = substr($data, 0, $headerSize);
-		$content = substr($data, $headerSize);
-		curl_close($ch);
+		$search_url = self::URI . $search_data . '&open=energy&onlyFilters=false';
 
-		// Extract the cookies from the headers
-		$cookies = '';
-		$http_response_header = explode("\r\n", $header);
-		foreach ($http_response_header as $hdr) {
-			if (strpos($hdr, 'Set-Cookie') !== false) {
-				$cLine = explode(':', $hdr)[1];
-				$cLine = explode(';', $cLine)[0];
-				$cookies .= ';' . $cLine;
-			}
-		}
-		$this->cookies = trim(substr($cookies, 1));
+		// Get the HTML content of the page
+		$html = getSimpleHTMLDOMCached($search_url);
 
-		// Get the token from the content
-		$html = str_get_html($content);
-		$token = $html->find('input[type=hidden][id=form__token]', 0);
-		$this->token = $token->value;
+		return $html;
 	}
 }

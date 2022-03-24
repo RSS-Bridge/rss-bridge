@@ -9,8 +9,7 @@ class MozillaSecurityBridge extends BridgeAbstract {
 	const WEBROOT = 'https://www.mozilla.org';
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Could not request MSA.');
+		$html = getSimpleHTMLDOM(self::URI);
 
 		$html = defaultLinkTo($html, self::WEBROOT);
 
@@ -18,6 +17,10 @@ class MozillaSecurityBridge extends BridgeAbstract {
 		$articles = $html->find('div[id="main-content"] h2');
 
 		foreach ($articles as $element) {
+			//Limit total amount of requests
+			if(count($this->items) >= 20) {
+				break;
+			}
 			$item['title'] = $element->innertext;
 			$item['timestamp'] = strtotime($element->innertext);
 			$item['content'] = $element->next_sibling()->innertext;

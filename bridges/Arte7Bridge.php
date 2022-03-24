@@ -1,7 +1,7 @@
 <?php
 class Arte7Bridge extends BridgeAbstract {
 
-	const MAINTAINER = 'mitsukarenai';
+	// const MAINTAINER = 'mitsukarenai';
 	const NAME = 'Arte +7';
 	const URI = 'https://www.arte.tv/';
 	const CACHE_TIMEOUT = 1800; // 30min
@@ -32,7 +32,8 @@ class Arte7Bridge extends BridgeAbstract {
 			'colfr' => array(
 				'name' => 'Collection id',
 				'required' => true,
-				'title' => 'ex. RC-014095 pour https://www.arte.tv/fr/videos/RC-014095/blow-up/'
+				'title' => 'ex. RC-014095 pour https://www.arte.tv/fr/videos/RC-014095/blow-up/',
+				'exampleValue'	=> 'RC-014095'
 			)
 		),
 		'Catégorie (Allemand)' => array(
@@ -57,7 +58,8 @@ class Arte7Bridge extends BridgeAbstract {
 			'colde' => array(
 				'name' => 'Collection id',
 				'required' => true,
-				'title' => 'ex. RC-014095 pour https://www.arte.tv/de/videos/RC-014095/blow-up/'
+				'title' => 'ex. RC-014095 pour https://www.arte.tv/de/videos/RC-014095/blow-up/',
+				'exampleValue'	=> 'RC-014095'
 			)
 		)
 	);
@@ -91,8 +93,7 @@ class Arte7Bridge extends BridgeAbstract {
 			'Authorization: Bearer ' . self::API_TOKEN
 		);
 
-		$input = getContents($url, $header)
-			or returnServerError('Could not request ARTE.');
+		$input = getContents($url, $header);
 		$input_json = json_decode($input, true);
 
 		foreach($input_json['videos'] as $element) {

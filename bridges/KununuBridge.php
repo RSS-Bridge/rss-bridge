@@ -95,8 +95,7 @@ class KununuBridge extends BridgeAbstract {
 		$full = $this->getInput('full');
 
 		// Load page
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Unable to receive data from ' . $this->getURI() . '!');
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$html = defaultLinkTo($html, static::URI);
 

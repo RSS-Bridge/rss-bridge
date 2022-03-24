@@ -30,8 +30,7 @@ class UnsplashBridge extends BridgeAbstract {
 		$max = $this->getInput('m');
 		$quality = $this->getInput('q');
 
-		$api_response = getContents('https://unsplash.com/napi/photos?page=1&per_page=' . $max)
-			or returnServerError('Could not request Unsplash API.');
+		$api_response = getContents('https://unsplash.com/napi/photos?page=1&per_page=' . $max);
 		$json = json_decode($api_response, true);
 
 		foreach ($json as $json_item) {

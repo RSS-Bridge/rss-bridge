@@ -270,7 +270,9 @@ abstract class FeedExpander extends BridgeAbstract {
 			foreach($feedItem->link as $link) {
 				if(strtolower($link['rel']) === 'alternate') {
 					$item['uri'] = (string)$link['href'];
-					break;
+				}
+				if(strtolower($link['rel']) === 'enclosure') {
+					$item['enclosures'][] = (string)$link['href'];
 				}
 			}
 		}
@@ -346,7 +348,7 @@ abstract class FeedExpander extends BridgeAbstract {
 				if($attribute === 'isPermaLink'
 					&& ($value === 'true' || (
 							filter_var($feedItem->guid, FILTER_VALIDATE_URL)
-							&& !filter_var($item['uri'], FILTER_VALIDATE_URL)
+							&& (empty($item['uri']) || !filter_var($item['uri'], FILTER_VALIDATE_URL))
 						)
 					)
 				) {

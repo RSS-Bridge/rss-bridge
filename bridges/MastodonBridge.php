@@ -10,7 +10,8 @@ class MastodonBridge extends FeedExpander {
 
 	const PARAMETERS = array(array(
 		'canusername' => array(
-			'name' => 'Canonical username (ex : @sebsauvage@framapiaf.org)',
+			'name' => 'Canonical username',
+			'exampleValue' => '@sebsauvage@framapiaf.org',
 			'required' => true,
 		),
 		'norep' => array(
@@ -78,7 +79,7 @@ class MastodonBridge extends FeedExpander {
 
 	public function getURI(){
 		if($this->getInput('canusername'))
-			return 'https://' . $this->getInstance() . '/users/' . $this->getUsername() . '.atom';
+			return 'https://' . $this->getInstance() . '/@' . $this->getUsername() . '.rss';
 
 		return parent::getURI();
 	}

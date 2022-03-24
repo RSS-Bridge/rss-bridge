@@ -6,8 +6,7 @@ class FabriceBellardBridge extends BridgeAbstract {
 	const MAINTAINER = 'somini';
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Could not load content');
+		$html = getSimpleHTMLDOM(self::URI);
 
 		foreach ($html->find('p') as $obj) {
 			$item = array();

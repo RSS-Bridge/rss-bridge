@@ -28,7 +28,7 @@ final class Configuration {
 	 *
 	 * @todo Replace this property by a constant.
 	 */
-	public static $VERSION = 'dev.2020-02-26';
+	public static $VERSION = 'dev.2022-01-20';
 
 	/**
 	 * Holds the configuration data.
@@ -56,7 +56,7 @@ final class Configuration {
 	 * not satisfy the requirements of RSS-Bridge.
 	 *
 	 * **Requirements**
-	 * - PHP 5.6.0 or higher
+	 * - PHP 7.1.0 or higher
 	 * - `openssl` extension
 	 * - `libxml` extension
 	 * - `mbstring` extension
@@ -79,8 +79,8 @@ final class Configuration {
 	public static function verifyInstallation() {
 
 		// Check PHP version
-		if(version_compare(PHP_VERSION, '5.6.0') === -1)
-			self::reportError('RSS-Bridge requires at least PHP version 5.6.0!');
+		if(version_compare(PHP_VERSION, '7.1.0') === -1)
+			self::reportError('RSS-Bridge requires at least PHP version 7.1.0!');
 
 		// extensions check
 		if(!extension_loaded('openssl'))
@@ -145,11 +145,21 @@ final class Configuration {
 			// Replace default configuration with custom settings
 			foreach(parse_ini_file(FILE_CONFIG, true, INI_SCANNER_TYPED) as $header => $section) {
 				foreach($section as $key => $value) {
-					// Skip unknown sections and keys
-					if(array_key_exists($header, Configuration::$config) && array_key_exists($key, Configuration::$config[$header])) {
-						Configuration::$config[$header][$key] = $value;
-					}
+					Configuration::$config[$header][$key] = $value;
 				}
+			}
+		}
+
+		foreach (getenv() as $envkey => $value) {
+			// Replace all settings with their respective environment variable if available
+			$keyArray = explode('_', $envkey);
+			if($keyArray[0] === 'RSSBRIDGE') {
+				$header = strtolower($keyArray[1]);
+				$key = strtolower($keyArray[2]);
+				if($value === 'true' || $value === 'false') {
+					$value = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+				}
+				Configuration::$config[$header][$key] = $value;
 			}
 		}
 
@@ -201,6 +211,9 @@ final class Configuration {
 		&& !filter_var(self::getConfig('admin', 'email'), FILTER_VALIDATE_EMAIL))
 			self::reportConfigurationError('admin', 'email', 'Is not a valid email address');
 
+		if(!is_bool(self::getConfig('admin', 'donations')))
+		self::reportConfigurationError('admin', 'donations', 'Is not a valid Boolean');
+
 		if(!is_string(self::getConfig('error', 'output')))
 			self::reportConfigurationError('error', 'output', 'Is not a valid String');
 
@@ -218,13 +231,11 @@ final class Configuration {
 	 * @return mixed|null The parameter value.
 	 */
 	public static function getConfig($section, $key) {
-
 		if(array_key_exists($section, self::$config) && array_key_exists($key, self::$config[$section])) {
 			return self::$config[$section][$key];
 		}
 
 		return null;
-
 	}
 
 	/**
@@ -244,9 +255,13 @@ final class Configuration {
 		if(@is_readable($headFile)) {
 
 			$revisionHashFile = '.git/' . substr(file_get_contents($headFile), 5, -1);
-			$branchName = explode('/', $revisionHashFile)[3];
-			if(file_exists($revisionHashFile)) {
-				return 'git.' . $branchName . '.' . substr(file_get_contents($revisionHashFile), 0, 7);
+			$parts = explode('/', $revisionHashFile);
+
+			if(isset($parts[3])) {
+				$branchName = $parts[3];
+				if(file_exists($revisionHashFile)) {
+					return 'git.' . $branchName . '.' . substr(file_get_contents($revisionHashFile), 0, 7);
+				}
 			}
 		}
 

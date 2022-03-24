@@ -30,8 +30,7 @@ class NotAlwaysBridge extends BridgeAbstract {
 		}
 
 		public function collectData(){
-				$html = getSimpleHTMLDOM($this->getURI())
-						or returnServerError('Could not request NotAlways.');
+				$html = getSimpleHTMLDOM($this->getURI());
 				foreach($html->find('.post') as $post) {
 						#print_r($post);
 						$item = array();

@@ -10,6 +10,7 @@ class PickyWallpapersBridge extends BridgeAbstract {
 	const PARAMETERS = array( array(
 		'c' => array(
 			'name' => 'category',
+			'exampleValue' => 'funny',
 			'required' => true
 		),
 		's' => array(
@@ -35,8 +36,7 @@ class PickyWallpapersBridge extends BridgeAbstract {
 		$resolution = $this->getInput('r'); // Wide wallpaper default
 
 		for($page = 1; $page <= $lastpage; $page++) {
-			$html = getSimpleHTMLDOM($this->getURI() . '/page-' . $page . '/')
-				or returnServerError('No results for this query.');
+			$html = getSimpleHTMLDOM($this->getURI() . '/page-' . $page . '/');
 
 			if($page === 1) {
 				preg_match('/page-(\d+)\/$/', $html->find('.pages li a', -2)->href, $matches);

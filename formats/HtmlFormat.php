@@ -6,6 +6,8 @@ class HtmlFormat extends FormatAbstract {
 		$extraInfos = $this->getExtraInfos();
 		$title = htmlspecialchars($extraInfos['name']);
 		$uri = htmlspecialchars($extraInfos['uri']);
+		$donationUri = htmlspecialchars($extraInfos['donationUri']);
+		$donationsAllowed = Configuration::getConfig('admin', 'donations');
 
 		// Dynamically build buttons for all formats (except HTML)
 		$formatFac = new FormatFactory();
@@ -19,11 +21,22 @@ class HtmlFormat extends FormatAbstract {
 				continue;
 			}
 
-			$query = str_replace('format=Html', 'format=' . $format, htmlentities($_SERVER['QUERY_STRING']));
+			$query = str_ireplace('format=Html', 'format=' . $format, htmlentities($_SERVER['QUERY_STRING']));
 			$buttons .= $this->buildButton($format, $query) . PHP_EOL;
 
 			$mime = $formatFac->create($format)->getMimeType();
 			$links .= $this->buildLink($format, $query, $mime) . PHP_EOL;
+		}
+
+		if($donationUri !== '' && $donationsAllowed) {
+			$buttons .= '<a href="'
+						. $donationUri
+						. '" target="_blank"><button class="highlight">Donate to maintainer</button></a>'
+						. PHP_EOL;
+			$links .= '<link href="'
+						. $donationUri
+						. ' target="_blank"" title="Donate to Maintainer" rel="alternate">'
+						. PHP_EOL;
 		}
 
 		$entries = '';
@@ -32,13 +45,14 @@ class HtmlFormat extends FormatAbstract {
 			$entryTitle = $this->sanitizeHtml(strip_tags($item->getTitle()));
 			$entryUri = $item->getURI() ?: $uri;
 
-			$entryTimestamp = '';
+			$entryDate = '';
 			if($item->getTimestamp()) {
-				$entryTimestamp = '<time datetime="'
-				. date(DATE_ATOM, $item->getTimestamp())
-				. '">'
-				. date(DATE_ATOM, $item->getTimestamp())
-				. '</time>';
+
+				$entryDate = sprintf(
+					'<time datetime="%s">%s</time>',
+					date('Y-m-d H:i:s', $item->getTimestamp()),
+					date('Y-m-d H:i:s', $item->getTimestamp())
+				);
 			}
 
 			$entryContent = '';
@@ -83,7 +97,7 @@ class HtmlFormat extends FormatAbstract {
 
 <section class="feeditem">
 	<h2><a class="itemtitle" href="{$entryUri}">{$entryTitle}</a></h2>
-	{$entryTimestamp}
+	{$entryDate}
 	{$entryAuthor}
 	{$entryContent}
 	{$entryEnclosures}

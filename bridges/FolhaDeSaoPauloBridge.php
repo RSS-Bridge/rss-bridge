@@ -9,6 +9,7 @@ class FolhaDeSaoPauloBridge extends FeedExpander {
 			'feed' => array(
 				'name' => 'Feed sub-URL',
 				'type' => 'text',
+				'required' => true,
 				'title' => 'Select the sub-feed (see https://www1.folha.uol.com.br/feed/)',
 				'exampleValue' => 'emcimadahora/rss091.xml',
 			)
@@ -26,8 +27,9 @@ class FolhaDeSaoPauloBridge extends FeedExpander {
 			$item_content = $articleHTMLContent->find('div.c-news__body', 0);
 			if ($item_content) {
 				$text = $item_content->innertext;
-				$text = strip_tags($text, '<p><b><a><blockquote><img><em>');
+				$text = strip_tags($text, '<p><b><a><blockquote><figure><figcaption><img><strong><em>');
 				$item['content'] = $text;
+				$item['uri'] = explode('*', $item['uri'])[1];
 			}
 		} else {
 			Debug::log('???: ' . $item['uri']);

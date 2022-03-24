@@ -4,7 +4,7 @@ class AllocineFRBridge extends BridgeAbstract {
 	const MAINTAINER = 'superbaillot.net';
 	const NAME = 'Allo Cine Bridge';
 	const CACHE_TIMEOUT = 25200; // 7h
-	const URI = 'http://www.allocine.fr/';
+	const URI = 'https://www.allocine.fr/';
 	const DESCRIPTION = 'Bridge for allocine.fr';
 	const PARAMETERS = array( array(
 		'category' => array(
@@ -77,15 +77,14 @@ class AllocineFRBridge extends BridgeAbstract {
 
 	public function collectData(){
 
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request ' . $this->getURI() . ' !');
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$category = array_search(
 				$this->getInput('category'),
 				self::PARAMETERS[$this->queriedContext]['category']['values']
 			);
 
-		foreach($html->find('div[class=col-left]', 0)->find('div[class*=video-card]') as $element) {
+		foreach($html->find('div[class=gd-col-left]', 0)->find('div[class*=video-card]') as $element) {
 			$item = array();
 
 			$title = $element->find('a[class*=meta-title-link]', 0);
