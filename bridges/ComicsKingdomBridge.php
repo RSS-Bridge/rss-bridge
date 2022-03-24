@@ -10,8 +10,7 @@ class ComicsKingdomBridge extends BridgeAbstract {
 		'comicname' => array(
 			'name' => 'comicname',
 			'type' => 'text',
-			'required' => true,
-			'exampleValue' => 'zits',
+			'required' => true
 		)
 	));
 
