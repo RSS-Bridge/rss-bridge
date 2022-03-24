@@ -228,6 +228,8 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 		curl_close($ch);
 	}
 
+	$finalHeader = array_change_key_case($finalHeader, CASE_LOWER);
+
 	switch($errorCode) {
 		case 200: // Contents OK
 		case 201: // Contents Created
@@ -236,7 +238,7 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 			$data = substr($data, $headerSize);
 			// Disable caching if the server responds with "Cache-Control: no-cache"
 			// or "Cache-Control: no-store"
-			$finalHeader = array_change_key_case($finalHeader, CASE_LOWER);
+
 			if(array_key_exists('cache-control', $finalHeader)) {
 				Debug::log('Server responded with "Cache-Control" header');
 				$directives = explode(',', $finalHeader['cache-control']);
@@ -257,7 +259,7 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 			$retVal['content'] = $cache->loadData();
 			break;
 		default:
-			if(array_key_exists('Server', $finalHeader) && strpos($finalHeader['Server'], 'cloudflare') !== false) {
+			if(array_key_exists('server', $finalHeader) && stripos($finalHeader['server'], 'cloudflare') !== false) {
 				throw new CloudflareChallengeException($errorCode);
 			}
 
