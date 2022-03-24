@@ -108,7 +108,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract {
 
 		$this->feedName = $tagContents['tagObjs'][0]['name'];
 
-		foreach ($tagContents['cards'] as $index => &$card) {
+		foreach ($tagContents['cards'] as $card) {
 			$item = array();
 
 			 // skip hub peeks & Notifications
