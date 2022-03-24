@@ -81,7 +81,7 @@ URI;
 
 		// Try to parse the date
 		$dateTime = DateTime::createFromFormat('d.m.Y', $date);
-		if ($dateTime !== FALSE)
+		if ($dateTime !== false)
 			$item['timestamp'] = $dateTime->getTimestamp();
 
 		return $item;
