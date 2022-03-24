@@ -12,14 +12,11 @@ class GiphyBridge extends BridgeAbstract {
 	const PARAMETERS = array( array(
 		's' => array(
 			'name' => 'search tag',
-			'required' => true,
-			'exampleValue' => 'bird',
+			'required' => true
 		),
 		'n' => array(
 			'name' => 'max number of returned items',
-			'type' => 'number',
-			'required' => true,
-			'defaultValue' => '10',
+			'type' => 'number'
 		)
 	));
 
