@@ -62,10 +62,11 @@ jobs:
           files: |
             ./results/*.html
       - name: Upload results to PR
-        uses: yamanq/pull-request-artifacts@v1.1.0
+        uses: yamanq/pull-request-artifacts@v1.3.1
         with:
           commit: ${{ github.event.pull_request.head.sha }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           artifacts-branch: artifacts
+          artifacts-prefix-url: "https://htmlpreview.github.io/?"
           artifacts: |
             ${{ steps.artifacts.outputs.paths }}
