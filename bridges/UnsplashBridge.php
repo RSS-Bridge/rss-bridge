@@ -58,9 +58,8 @@ class UnsplashBridge extends BridgeAbstract
 		$url = 'https://unsplash.com/napi';
 		if (strlen($filteredUser) > 0) $url .= '/users/' . $filteredUser;
 		$url .= '/photos?page=1&per_page=' . $max;
+		$api_response = getContents($url);
 
-		$api_response = getContents($url)
-		or returnServerError('Could not request Unsplash API.');
 		$json = json_decode($api_response, true);
 
 		foreach ($json as $json_item) {

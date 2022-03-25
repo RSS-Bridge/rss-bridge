@@ -6,8 +6,7 @@ class YahtzeeDevDiaryBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Yahtzee’s Dev Diary Series';
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not load content');
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		foreach($html->find('blockquote.wp-embedded-content a') as $element) {
 			$item = array();

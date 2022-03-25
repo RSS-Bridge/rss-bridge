@@ -93,21 +93,22 @@ class WorldCosplayBridge extends BridgeAbstract {
 		}
 		$url = self::URI . sprintf($url, $id, $limit);
 
-		$json = json_decode(getContents($url))
-			or returnServerError(sprintf(self::ERR_QUERY, $url));
+		$json = json_decode(getContents($url));
 		if($json->has_error) {
 			returnServerError($json->message);
 		}
 		$list = $json->list;
 
 		foreach($list as $img) {
-			$item = array();
-			$item['uri'] = self::URI . substr($img->photo->url, 1);
-			$item['title'] = $img->photo->subject;
-			$item['timestamp'] = $img->photo->created_at;
-			$item['author'] = $img->member->global_name;
-			$item['enclosures'] = array($img->photo->large_url);
-			$item['uid'] = $img->photo->id;
+			$image = isset($img->photo) ? $img->photo : $img;
+			$item = array(
+				'uri' => self::URI . substr($image->url, 1),
+				'title' => $image->subject,
+				'timestamp' => $image->created_at,
+				'author' => $img->member->global_name,
+				'enclosures' => array($image->large_url),
+				'uid' => $image->id,
+			);
 			$item['content'] = sprintf(
 				self::CONTENT_HTML,
 				$item['uri'],

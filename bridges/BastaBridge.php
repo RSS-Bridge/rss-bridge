@@ -8,8 +8,7 @@ class BastaBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns the newest articles.';
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM(self::URI . 'spip.php?page=backend')
-			or returnServerError('Could not request Bastamag.');
+		$html = getSimpleHTMLDOM(self::URI . 'spip.php?page=backend');
 
 		$limit = 0;
 
@@ -19,13 +18,11 @@ class BastaBridge extends BridgeAbstract {
 				$item['title'] = $element->find('title', 0)->innertext;
 				$item['uri'] = $element->find('guid', 0)->plaintext;
 				$item['timestamp'] = strtotime($element->find('dc:date', 0)->plaintext);
-				// Replaces all relative image URLs by absolute URLs.
-				// Relative URLs always start with 'local/'!
-				$item['content'] = preg_replace(
-					'/src=["\']{1}([^"\']+)/ims',
-					'src=\'' . self::URI . '$1\'',
-					getSimpleHTMLDOM($item['uri'])->find('div.texte', 0)->innertext
-				);
+
+				$html = getSimpleHTMLDOM($item['uri']);
+				$html = defaultLinkTo($html, self::URI);
+
+				$item['content'] = $html->find('div.texte', 0)->innertext;
 				$this->items[] = $item;
 				$limit++;
 			}

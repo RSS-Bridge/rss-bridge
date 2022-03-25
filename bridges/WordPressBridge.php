@@ -1,6 +1,5 @@
 <?php
 class WordPressBridge extends FeedExpander {
-	const MAINTAINER = 'aledeg';
 	const NAME = 'Wordpress Bridge';
 	const URI = 'https://wordpress.org/';
 	const DESCRIPTION = 'Returns the newest full posts of a WordPress powered website';
@@ -8,6 +7,7 @@ class WordPressBridge extends FeedExpander {
 	const PARAMETERS = array( array(
 		'url' => array(
 			'name' => 'Blog URL',
+			'exampleValue' => 'https://www.wpbeginner.com/',
 			'required' => true
 		)
 	));

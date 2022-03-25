@@ -12,15 +12,14 @@ class MondeDiploBridge extends BridgeAbstract {
 		}
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Could not request MondeDiplo. for : ' . self::URI);
+		$html = getSimpleHTMLDOM(self::URI);
 
 		foreach($html->find('div.unarticle') as $article) {
 			$element = $article->parent();
 			$title = $element->find('h3', 0)->plaintext;
 			$datesAuteurs = $element->find('div.dates_auteurs', 0)->plaintext;
 			$item = array();
-			$item['uri'] = self::URI . $element->href;
+			$item['uri'] = urljoin(self::URI, $element->href);
 			$item['title'] = $this->cleanText($title) . ' - ' . $this->cleanText($datesAuteurs);
 			$item['content'] = $this->cleanText(str_replace(array($title, $datesAuteurs), '', $element->plaintext));
 

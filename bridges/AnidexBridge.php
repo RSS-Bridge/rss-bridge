@@ -142,8 +142,7 @@ class AnidexBridge extends BridgeAbstract {
 		$opt[CURLOPT_SSL_VERIFYPEER] = 0;
 
 		// Retrieve torrent listing from search results, which does not contain torrent description
-		$html = getSimpleHTMLDOM($search_url, $headers, $opt)
-		or returnServerError('Could not request Anidex: ' . $search_url);
+		$html = getSimpleHTMLDOM($search_url, $headers, $opt);
 		$links = $html->find('a');
 		$results = array();
 		foreach ($links as $link)

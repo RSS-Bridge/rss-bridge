@@ -43,8 +43,7 @@ class NFLRUSBridge extends BridgeAbstract {
 	}
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Unable to get any articles from NFLRUS');
+		$html = getSimpleHTMLDOM(self::URI);
 		$html = defaultLinkTo($html, self::URI);
 
 		foreach($html->find('article') as $article) {

@@ -74,11 +74,13 @@ require_once PATH_LIB . 'BridgeList.php';
 require_once PATH_LIB . 'ParameterValidator.php';
 require_once PATH_LIB . 'ActionFactory.php';
 require_once PATH_LIB . 'ActionAbstract.php';
+require_once PATH_LIB . 'XPathAbstract.php';
 
 // Functions
 require_once PATH_LIB . 'html.php';
 require_once PATH_LIB . 'error.php';
 require_once PATH_LIB . 'contents.php';
+require_once PATH_LIB . 'php8backports.php';
 
 // Vendor
 define('MAX_FILE_SIZE', 10000000); /* Allow larger files for simple_html_dom */

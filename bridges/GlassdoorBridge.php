@@ -86,8 +86,7 @@ class GlassdoorBridge extends BridgeAbstract {
 	}
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Failed loading contents!');
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$this->host = $html->find('link[rel="canonical"]', 0)->href;
 
@@ -122,8 +121,7 @@ class GlassdoorBridge extends BridgeAbstract {
 
 			// optionally load full articles
 			if($this->getInput(self::PARAM_BLOG_FULL)) {
-				$full_html = getSimpleHTMLDOMCached($item['uri'])
-					or returnServerError('Unable to load full article!');
+				$full_html = getSimpleHTMLDOMCached($item['uri']);
 
 				$full_html = defaultLinkTo($full_html, $this->host);
 

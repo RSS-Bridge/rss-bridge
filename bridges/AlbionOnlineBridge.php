@@ -11,6 +11,7 @@ class AlbionOnlineBridge extends BridgeAbstract {
 		'postcount' => array(
 			'name' => 'Limit',
 			'type' => 'number',
+			'required' => true,
 			'title' => 'Maximum number of items to return',
 			'defaultValue' => 5,
 		),
@@ -42,8 +43,7 @@ class AlbionOnlineBridge extends BridgeAbstract {
 		// Example: https://albiononline.com/en/changelog/1/5
 		$url = $api . $this->getInput('language') . '/changelog/1/' . $this->getInput('postcount');
 
-		$html = getSimpleHTMLDOM($url)
-			or returnServerError('Unable to get changelog data from "' . $url . '"!');
+		$html = getSimpleHTMLDOM($url);
 
 		foreach ($html->find('li') as $data) {
 			$item = array();
@@ -66,8 +66,7 @@ class AlbionOnlineBridge extends BridgeAbstract {
 	}
 
 	private function getFullChangelog($url) {
-		$html = getSimpleHTMLDOMCached($url)
-			or returnServerError('Unable to load changelog post from "' . $url . '"!');
+		$html = getSimpleHTMLDOMCached($url);
 		$html = defaultLinkTo($html, self::URI);
 		return $html->find('div.small-12.columns', 1)->innertext;
 	}

@@ -12,6 +12,7 @@ class MixCloudBridge extends BridgeAbstract {
 		'u' => array(
 			'name' => 'username',
 			'required' => true,
+			'exampleValue' => 'DJJazzyJeff',
 		)
 	));
 
@@ -26,8 +27,7 @@ class MixCloudBridge extends BridgeAbstract {
 	public function collectData(){
 		ini_set('user_agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:53.0) Gecko/20100101 Firefox/53.0');
 
-		$html = getSimpleHTMLDOM(self::URI . '/' . $this->getInput('u'))
-			or returnServerError('Could not request MixCloud.');
+		$html = getSimpleHTMLDOM(self::URI . '/' . $this->getInput('u'));
 
 		foreach($html->find('section.card') as $element) {
 

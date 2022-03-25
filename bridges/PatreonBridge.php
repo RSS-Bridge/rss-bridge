@@ -10,13 +10,13 @@ class PatreonBridge extends BridgeAbstract {
 			'name' => 'Creator',
 			'type' => 'text',
 			'required' => true,
+			'exampleValue' => 'sanityinc',
 			'title' => 'Creator name as seen in their page URL'
 		)
 	));
 
 	public function collectData(){
-		$html = getSimpleHTMLDOMCached($this->getURI(), 86400)
-			or returnServerError('Failed to load creator page at ' . $this->getURI());
+		$html = getSimpleHTMLDOMCached($this->getURI(), 86400);
 		$regex = '#/api/campaigns/([0-9]+)#';
 		if(preg_match($regex, $html->save(), $matches) > 0) {
 			$campaign_id = $matches[1];
@@ -168,8 +168,7 @@ class PatreonBridge extends BridgeAbstract {
 			))
 		);
 
-		$data = json_decode(getContents($url, $header, $opts))
-			or returnServerError('API request to "' . $url . '" failed.');
+		$data = json_decode(getContents($url, $header, $opts));
 
 		return $data;
 	}

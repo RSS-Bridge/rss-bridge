@@ -17,8 +17,7 @@ class MsnMondeBridge extends BridgeAbstract {
 	}
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request MsnMonde.');
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$limit = 0;
 		foreach($html->find('.smalla') as $article) {

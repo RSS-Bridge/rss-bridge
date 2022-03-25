@@ -443,8 +443,7 @@ class LaCentraleBridge extends BridgeAbstract {
 			'sortBy' => $this->getInput('sort')
 		);
 		$url = self::URI . 'listing?' . http_build_query($params);
-		$html = getSimpleHTMLDOM($url)
-			or returnServerError('Could not request LaCentrale.');
+		$html = getSimpleHTMLDOM($url);
 
 		foreach($html->find('.linkAd') as $element) {
 

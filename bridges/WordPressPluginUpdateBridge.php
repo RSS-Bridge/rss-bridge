@@ -11,6 +11,7 @@ class WordPressPluginUpdateBridge extends BridgeAbstract {
 		array(
 			'pluginUrl' => array(
 				'name' => 'URL to the plugin',
+				'exampleValue' => 'https://wordpress.org/plugins/wp-rss-aggregator/',
 				'required' => true
 			)
 		)
@@ -21,8 +22,7 @@ class WordPressPluginUpdateBridge extends BridgeAbstract {
 		$request = str_replace('/', '', $this->getInput('pluginUrl'));
 		$page = self::URI . $request . '/changelog/';
 
-		$html = getSimpleHTMLDOM($page)
-			or returnServerError('No results for this query.');
+		$html = getSimpleHTMLDOM($page);
 
 		$content = $html->find('.block-content', 0);
 

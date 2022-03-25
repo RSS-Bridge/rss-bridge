@@ -101,8 +101,7 @@ class YGGTorrentBridge extends BridgeAbstract {
 					. $category
 					. '&sub_category='
 					. $subcategory
-					. '&do=search&order=desc&sort=publish_date')
-					or returnServerError('Unable to query Yggtorrent !');
+					. '&do=search&order=desc&sort=publish_date');
 
 		$count = 0;
 		$results = $html->find('.results', 0);
@@ -136,7 +135,7 @@ class YGGTorrentBridge extends BridgeAbstract {
 		$url_full[5] = urlencode($url_full[5]);
 		$url_full[6] = urlencode($url_full[6]);
 		$url = implode('/', $url_full);
-		$page = getSimpleHTMLDOMCached($url) or returnServerError('Unable to query Yggtorrent page !');
+		$page = getSimpleHTMLDOMCached($url);
 		$author = $page->find('.informations', 0)->find('a', 4)->plaintext;
 		$content = $page->find('.default', 1);
 		return array('author' => $author, 'content' => $content);
