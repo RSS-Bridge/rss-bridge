@@ -9,7 +9,7 @@ class GoogleGroupsBridge extends XPathAbstract {
 		'group' => array(
 			'name' => 'Group id',
 			'title' => 'The string that follows /g/ in the URL',
-			'exampleValue' => 'announce',
+			'exampleValue' => 'governance',
 			'required' => true
 		),
 		'account' => array(
