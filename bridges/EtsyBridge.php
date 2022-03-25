@@ -33,7 +33,7 @@ class EtsyBridge extends BridgeAbstract {
 	public function collectData(){
 		$html = getSimpleHTMLDOM($this->getURI());
 
-		$results = $html->find('li.tab-reorder');
+		$results = $html->find('li.wt-list-unstyled');
 
 		foreach($results as $result) {
 			// Remove Lazy loading
@@ -44,7 +44,7 @@ class EtsyBridge extends BridgeAbstract {
 
 			$item['title'] = $result->find('a', 0)->title;
 			$item['uri'] = $result->find('a', 0)->href;
-			$item['author'] = $result->find('p.wt-text-gray', 0)->first_child()->plaintext;
+			$item['author'] = $result->find('p.wt-text-gray > span', 2)->plaintext;
 
 			$item['content'] = '<p>'
 			. $result->find('span.currency-symbol', 0)->plaintext
