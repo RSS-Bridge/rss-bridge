@@ -29,7 +29,7 @@ class DockerHubBridge extends BridgeAbstract {
 		),
 	);
 
-	// Change only so the PR can generate an html diff. Will be removed before merge.
+	// Change only so the PR can generate an html diff. Will be removed before merge..
 	const CACHE_TIMEOUT = 3600; // 1 hour
 
 	private $apiURL = 'https://hub.docker.com/v2/repositories/';
