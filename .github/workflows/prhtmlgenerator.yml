@@ -2,7 +2,7 @@ name: 'PR Testing'
 
 on:
   pull_request_target:
-    branches: [ master ]
+    types: [opened,synchronize]
 
 jobs:
   test-pr:
