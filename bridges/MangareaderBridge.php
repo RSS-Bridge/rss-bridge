@@ -62,8 +62,8 @@ class MangareaderBridge extends BridgeAbstract {
 				'name' => 'Path',
 				'required' => true,
 				'pattern' => '[a-zA-Z0-9-_]*',
-				'exampleValue' => 'bleach, umi-no-kishidan',
-				'title' => 'URL part of desired manga'
+				'exampleValue' => 'bleach',
+				'title' => 'URL part of desired manga. e.g= bleach OR umi-no-kishidan'
 			),
 			'limit' => array(
 				'name' => 'Limit',

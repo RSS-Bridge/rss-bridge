@@ -11,7 +11,7 @@ class ElsevierBridge extends BridgeAbstract {
 		'j' => array(
 			'name' => 'Journal name',
 			'required' => true,
-			'exampleValue' => 'academic-pediactrics',
+			'exampleValue' => 'academic-pediatrics',
 			'title' => 'Insert html-part of your journal'
 		)
 	));
@@ -63,8 +63,7 @@ class ElsevierBridge extends BridgeAbstract {
 
 	public function collectData(){
 		$uri = self::URI . $this->getInput('j') . '/recent-articles/';
-		$html = getSimpleHTMLDOM($uri)
-			or returnServerError('No results for Elsevier journal ' . $this->getInput('j'));
+		$html = getSimpleHTMLDOM($uri);
 
 		foreach($html->find('.pod-listing') as $article) {
 			$item = array();

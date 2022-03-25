@@ -9,6 +9,7 @@ class HDWallpapersBridge extends BridgeAbstract {
 	const PARAMETERS = array( array(
 		'c' => array(
 			'name' => 'category',
+			'required' => true,
 			'defaultValue' => 'latest_wallpapers'
 		),
 		'm' => array(
@@ -16,8 +17,9 @@ class HDWallpapersBridge extends BridgeAbstract {
 		),
 		'r' => array(
 			'name' => 'resolution',
+			'required' => true,
 			'defaultValue' => 'HD',
-			'exampleValue' => 'HD, 1920x1200, 1680x1050,…'
+			'title' => 'e.g=HD OR 1920x1200 OR 1680x1050'
 		)
 	));
 
@@ -33,8 +35,7 @@ class HDWallpapersBridge extends BridgeAbstract {
 
 		for($page = 1; $page <= $lastpage; $page++) {
 			$link = self::URI . $category . '/page/' . $page;
-			$html = getSimpleHTMLDOM($link)
-				or returnServerError('No results for this query.');
+			$html = getSimpleHTMLDOM($link);
 
 			if($page === 1) {
 				preg_match('/page\/(\d+)$/', $html->find('.pagination a', -2)->href, $matches);

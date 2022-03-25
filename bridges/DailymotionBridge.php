@@ -11,19 +11,22 @@ class DailymotionBridge extends BridgeAbstract {
 		'By username' => array(
 			'u' => array(
 				'name' => 'username',
-				'required' => true
+				'required' => true,
+				'exampleValue' => 'moviepilot',
 			)
 		),
 		'By playlist id' => array(
 			'p' => array(
 				'name' => 'playlist id',
-				'required' => true
+				'required' => true,
+				'exampleValue' => 'x6xyc6',
 			)
 		),
 		'From search results' => array(
 			's' => array(
 				'name' => 'Search keyword',
-				'required' => true
+				'required' => true,
+				'exampleValue' => 'matrix',
 			),
 			'pa' => array(
 				'name' => 'Page',
@@ -46,8 +49,7 @@ class DailymotionBridge extends BridgeAbstract {
 
 		if ($this->queriedContext === 'By username' || $this->queriedContext === 'By playlist id') {
 
-			$apiJson = getContents($this->getApiUrl())
-				or returnServerError('Could not request: ' . $this->getApiUrl());
+			$apiJson = getContents($this->getApiUrl());
 
 			$apiData = json_decode($apiJson, true);
 
@@ -72,8 +74,7 @@ class DailymotionBridge extends BridgeAbstract {
 
 		if ($this->queriedContext === 'From search results') {
 
-			$html = getSimpleHTMLDOM($this->getURI())
-				or returnServerError('Could not request Dailymotion.');
+			$html = getSimpleHTMLDOM($this->getURI());
 
 			foreach($html->find('div.media a.preview_link') as $element) {
 				$item = array();
@@ -180,8 +181,7 @@ class DailymotionBridge extends BridgeAbstract {
 
 		$url = self::URI . 'playlist/' . $id;
 
-		$html = getSimpleHTMLDOM($url)
-			or returnServerError('Could not request: ' . $url);
+		$html = getSimpleHTMLDOM($url);
 
 		$title = $html->find('meta[property=og:title]', 0)->getAttribute('content');
 		return $title;

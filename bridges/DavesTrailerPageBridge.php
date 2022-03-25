@@ -9,7 +9,14 @@ class DavesTrailerPageBridge extends BridgeAbstract {
 	$html = getSimpleHTMLDOM(static::URI)
 	or returnClientError('No results for this query.');
 
-	foreach ($html->find('tr[!align]') as $tr) {
+	$curr_date = null;
+	foreach ($html->find('tr') as $tr) {
+		// If it's a date row, update the current date
+		if ($tr->align == 'center') {
+			$curr_date = $tr->plaintext;
+			continue;
+		}
+
 		$item = array();
 
 		// title
@@ -20,6 +27,9 @@ class DavesTrailerPageBridge extends BridgeAbstract {
 
 		// uri
 		$item['uri'] = $tr->find('a', 3)->getAttribute('href');
+
+		// date: parsed by FeedItem using strtotime
+		$item['timestamp'] = $curr_date;
 
 		$this->items[] = $item;
 		}

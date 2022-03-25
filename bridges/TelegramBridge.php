@@ -13,6 +13,11 @@ class TelegramBridge extends BridgeAbstract {
 			)
 		)
 	);
+	const TEST_DETECT_PARAMETERS = array(
+		'https://t.me/s/durov' => array('username' => 'durov'),
+		'https://t.me/durov' => array('username' => 'durov'),
+		'http://t.me/durov' => array('username' => 'durov'),
+	);
 
 	const CACHE_TIMEOUT = 900; // 15 mins
 
@@ -36,8 +41,7 @@ class TelegramBridge extends BridgeAbstract {
 
 	public function collectData() {
 
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request: ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$channelTitle = htmlspecialchars_decode(
 			$html->find('div.tgme_channel_info_header_title span', 0)->plaintext,

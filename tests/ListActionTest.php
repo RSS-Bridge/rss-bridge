@@ -32,7 +32,7 @@ class ListActionTest extends TestCase {
 		$this->assertNotNull($items, 'invalid JSON output: ' . json_last_error_msg());
 
 		$this->assertArrayHasKey('total', $items, 'Missing "total" parameter');
-		$this->assertInternalType('int', $items['total'], 'Invalid type');
+		$this->assertIsInt($items['total'], 'Invalid type');
 
 		$this->assertArrayHasKey('bridges', $items, 'Missing "bridges" array');
 

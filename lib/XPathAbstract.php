@@ -344,7 +344,7 @@ abstract class XPathAbstract extends BridgeAbstract {
 	protected function provideFeedIcon(DOMXPath $xpath) {
 		$icon = $xpath->query($this->getParam('feed_icon'));
 		if(count($icon) === 1) {
-			return $this->cleanImageUrl($this->getItemValueOrNodeValue($icon));
+			return $this->cleanMediaUrl($this->getItemValueOrNodeValue($icon));
 		}
 	}
 
@@ -428,9 +428,9 @@ abstract class XPathAbstract extends BridgeAbstract {
 			case 'timestamp':
 				return $this->formatItemTimestamp($value);
 			case 'enclosures':
-				return array($this->cleanImageUrl($value));
+				return $this->formatItemEnclosures($value);
 			case 'categories':
-				return array($this->fixEncoding($value));
+				return $this->formatItemCategories($value);
 		}
 		return $value;
 	}
@@ -511,7 +511,7 @@ abstract class XPathAbstract extends BridgeAbstract {
 	 * @return array
 	 */
 	protected function formatItemEnclosures($value) {
-		return array($this->cleanImageUrl($value));
+		return array($this->cleanMediaUrl($value));
 	}
 
 	/**
@@ -527,12 +527,13 @@ abstract class XPathAbstract extends BridgeAbstract {
 	}
 
 	/**
-	 * @param $imageUrl
+	 * @param $mediaUrl
 	 * @return string|void
 	 */
-	protected function cleanImageUrl($imageUrl)
+	protected function cleanMediaUrl($mediaUrl)
 	{
-		$result = preg_match('~(?:http(?:s)?:)?[\/a-zA-Z0-9\-_\.]+\.(?:jpg|gif|png|jpeg|ico){1}~', $imageUrl, $matches);
+		$pattern = '~(?:http(?:s)?:)?[\/a-zA-Z0-9\-_\.\%]+\.(?:jpg|gif|png|jpeg|ico|mp3){1}~i';
+		$result = preg_match($pattern, $mediaUrl, $matches);
 		if(1 !== $result) {
 			return;
 		}
@@ -551,6 +552,8 @@ abstract class XPathAbstract extends BridgeAbstract {
 				return trim($item->nodeValue);
 			} elseif ($item instanceof DOMAttr) {
 				return trim($item->value);
+			} elseif ($item instanceof DOMText) {
+				return trim($item->wholeText);
 			}
 		} elseif(is_string($typedResult) && strlen($typedResult) > 0) {
 			return trim($typedResult);

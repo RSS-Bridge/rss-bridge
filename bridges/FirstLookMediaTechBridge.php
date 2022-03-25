@@ -14,8 +14,7 @@ class FirstLookMediaTechBridge extends BridgeAbstract {
 	);
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Could not load content');
+		$html = getSimpleHTMLDOM(self::URI);
 
 		if ($this->getInput('projects')) {
 			$top_projects = $html->find('.PromoList-ul', 0);

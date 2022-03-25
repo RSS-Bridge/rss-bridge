@@ -12,7 +12,7 @@ class YeggiBridge extends BridgeAbstract {
 				'type' => 'text',
 				'required' => true,
 				'title' => 'Insert your search term here',
-				'exampleValue' => 'Enter your search term'
+				'exampleValue' => 'vase'
 			),
 			'sortby' => array(
 				'name' => 'Sort by',
@@ -47,8 +47,7 @@ class YeggiBridge extends BridgeAbstract {
 	);
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Failed to receive ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$results = $html->find('div.item_1_A');
 

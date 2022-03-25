@@ -17,6 +17,7 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 		'item_limit' => array(
 			'name' => 'Limit number of returned items',
 			'type' => 'number',
+			'required' => true,
 			'defaultValue' => 20,
 		)
 	));
@@ -31,8 +32,7 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 
 	public function collectData() {
 
-		$html = getSimpleHTMLDOM(self::URI . '/PwnedWebsites')
-			or returnServerError('Could not request: ' . self::URI . '/PwnedWebsites');
+		$html = getSimpleHTMLDOM(self::URI . '/PwnedWebsites');
 
 		$breaches = array();
 

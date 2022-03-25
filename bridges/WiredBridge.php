@@ -47,8 +47,7 @@ class WiredBridge extends FeedExpander {
 
 	protected function parseItem($newsItem){
 		$item = parent::parseItem($newsItem);
-		$article = getSimpleHTMLDOMCached($item['uri'])
-			or returnServerError('Could not request WIRED: ' . $item['uri']);
+		$article = getSimpleHTMLDOMCached($item['uri']);
 		$item['content'] = $this->extractArticleContent($article);
 
 		$headline = strval($newsItem->description);

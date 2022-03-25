@@ -69,8 +69,7 @@ class OtrkeyFinderBridge extends BridgeAbstract {
 		for($page = 1; $page <= $pages; $page++) {
 			$uri = $this->buildUri($page);
 
-			$html = getSimpleHTMLDOMCached($uri, self::CACHE_TIMEOUT)
-				or returnServerError('Could not request ' . $uri);
+			$html = getSimpleHTMLDOMCached($uri, self::CACHE_TIMEOUT);
 
 			$keys = $html->find('div.otrkey');
 

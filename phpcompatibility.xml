@@ -8,40 +8,8 @@
   <!--
 
   -->
-  <config name="testVersion" value="5.6-"/>
+  <config name="testVersion" value="7.1-"/>
   <rule ref="PHPCompatibility">
-    <!--
-    "PHP 7 changes how most errors are reported by PHP. Instead of reporting
-    errors through the traditional error reporting mechanism used by PHP 5,
-    most errors are now reported by throwing Error exceptions."
-
-    from: http://php.net/manual/en/language.errors.php7.php
-
-    Skip this check for PHP 5.6 in order to support PHP 7.x
-
-    Catch Exception and Error separately to support both versions.
-
-    Example:
-
-    <code>
-		try {
-			// Run your code here
-		} catch(Error $e) {
-			// Handle errors (PHP 7.0+)
-		} catch(Exception $e) {
-			// Handle exceptions (PHP 5.6+)
-		}
-    </code>
-    -->
-    <exclude name="PHPCompatibility.Classes.NewClasses.errorFound"/>
-    <!--
-    RSS-Bridge uses parse_ini_file with INI_SCANNER_TYPED to load configuration
-    settings. INI_SCANNER_TYPED was added in PHP 5.6.1. Skip checking for that
-    specific constant.
-
-    References: http://php.net/manual/de/function.parse-ini-file.php
-    -->
-    <exclude name="PHPCompatibility.Constants.NewConstants.ini_scanner_typedFound"/>
   </rule>
 
 </ruleset>

@@ -41,6 +41,13 @@ abstract class BridgeAbstract implements BridgeInterface {
 	const URI = '';
 
 	/**
+	 * Donation URI to the site the bridge is intended to be used for.
+	 *
+	 * Use {@see BridgeAbstract::getDonationURI()} to read this parameter
+	 */
+	const DONATION_URI = '';
+
+	/**
 	 * A brief description of what the bridge can do
 	 *
 	 * Use {@see BridgeAbstract::getDescription()} to read this parameter
@@ -74,6 +81,11 @@ abstract class BridgeAbstract implements BridgeInterface {
 	 * Use {@see BridgeAbstract::getParameters()} to read this parameter
 	 */
 	const PARAMETERS = array();
+
+	/**
+	 * Test cases for detectParameters for the bridge
+	 */
+	const TEST_DETECT_PARAMETERS = array();
 
 	/**
 	 * Holds the list of items collected by the bridge
@@ -334,6 +346,11 @@ abstract class BridgeAbstract implements BridgeInterface {
 	/** {@inheritdoc} */
 	public function getURI(){
 		return static::URI;
+	}
+
+	/** {@inheritdoc} */
+	public function getDonationURI(){
+		return static::DONATION_URI;
 	}
 
 	/** {@inheritdoc} */

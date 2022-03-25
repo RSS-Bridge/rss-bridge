@@ -87,8 +87,7 @@ class TwitScoopBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 900; // 15 mins
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request: ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$updated = $html->find('time', 0)->datetime;
 		$trends = $html->find('div.trends', 0);
@@ -106,10 +105,15 @@ class TwitScoopBridge extends BridgeAbstract {
 
 			$name = rtrim($li->find('span.trend.name', 0)->plaintext, '&nbsp');
 			$tweets = str_replace(' tweets', '', $li->find('span.tweets', 0)->plaintext);
-			$tweets = str_replace('<', '&lt;', $tweets);
+			$tweets = str_replace('<', '', $tweets);
 
 			$item['title'] = '#' . $number . ' - ' . $name . ' (' . $tweets . ' tweets)';
 			$item['uri'] = 'https://twitter.com/search?q=' . rawurlencode($name);
+
+			if ($tweets === '10K') {
+				$tweets = 'less than 10K';
+			}
+
 			$item['content'] = <<<EOD
 <strong>Rank</strong><br>
 <p>{$number}</p>

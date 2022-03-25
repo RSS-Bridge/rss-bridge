@@ -13,6 +13,7 @@ class TorrentGalaxyBridge extends BridgeAbstract {
 			'search' => array(
 				'name' => 'search',
 				'required' => true,
+				'exampleValue' => 'simpsons',
 				'title' => 'Type your query'
 			),
 			'lang' => array(
@@ -55,8 +56,7 @@ class TorrentGalaxyBridge extends BridgeAbstract {
 			. '/torrents.php?search=' . urlencode($this->getInput('search'))
 			. '&lang=' . $this->getInput('lang')
 			. '&sort=id&order=desc';
-		$html = getSimpleHTMLDOM($url)
-			or returnServerError("Error querying the server at $url");
+		$html = getSimpleHTMLDOM($url);
 
 		foreach($html->find('div.tgxtablerow') as $result) {
 			$identity = $result->find('div.tgxtablecell', 3)->find('div a', 0);

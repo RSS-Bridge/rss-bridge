@@ -8,6 +8,33 @@ class RedditBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Return hot submissions from Reddit';
 
 	const PARAMETERS = array(
+		'global' => array(
+			'score' => array(
+				'name' => 'Minimal score',
+				'required' => false,
+				'type' => 'number',
+				'exampleValue' => 100,
+				'title' => 'Filter out posts with lower score'
+			),
+			'd' => array(
+				'name' => 'Sort By',
+				'type' => 'list',
+				'title' => 'Sort by new, hot, top or relevancy',
+				'values' => array(
+					'Hot' => 'hot',
+					'Relevance' => 'relevance',
+					'New' => 'new',
+					'Top' => 'top'
+				),
+				'defaultValue' => 'Hot'
+			),
+			'search' => array(
+				'name' => 'Keyword search',
+				'required' => false,
+				'exampleValue' => 'cats, dogs',
+				'title' => 'Keyword search, separated by commas'
+			)
+		),
 		'single' => array(
 			'r' => array(
 				'name' => 'SubReddit',
@@ -28,6 +55,7 @@ class RedditBridge extends BridgeAbstract {
 			'u' => array(
 				'name' => 'User',
 				'required' => true,
+				'exampleValue' => 'shwikibot',
 				'title' => 'User name'
 			),
 			'comments' => array(
@@ -38,6 +66,26 @@ class RedditBridge extends BridgeAbstract {
 			)
 		)
 	);
+
+	public function detectParameters($url) {
+		$parsed_url = parse_url($url);
+
+		if ($parsed_url['host'] != 'www.reddit.com' && $parsed_url['host'] != 'old.reddit.com') return null;
+
+		$path = explode('/', $parsed_url['path']);
+
+		if ($path[1] == 'r') {
+			return array(
+				'r' => $path[2]
+			);
+		} elseif ($path[1] == 'user') {
+			return array(
+				'u' => $path[2]
+			);
+		} else {
+			return null;
+		}
+	}
 
 	public function getIcon() {
 		return 'https://www.redditstatic.com/desktop2x/img/favicon/favicon-96x96.png';
@@ -57,6 +105,7 @@ class RedditBridge extends BridgeAbstract {
 
 		$user = false;
 		$comments = false;
+		$section = $this->getInput('d');
 
 		switch ($this->queriedContext) {
 			case 'single':
@@ -72,11 +121,24 @@ class RedditBridge extends BridgeAbstract {
 				break;
 		}
 
+		if(!($this->getInput('search') === '')) {
+			$keywords = $this->getInput('search');
+			$keywords = str_replace(array(',', ' '), '%20', $keywords);
+			$keywords = $keywords . '%20';
+		} else {
+			$keywords = '';
+		}
+
 		foreach ($subreddits as $subreddit) {
 			$name = trim($subreddit);
-
-			$values = getContents(self::URI . ($user ? '/user/' : '/r/') . $name . '.json')
-			or returnServerError('Unable to fetch posts!');
+			$values = getContents(self::URI
+					. '/search.json?q='
+					. $keywords
+					. ($user ? 'author%3A' : 'subreddit%3A')
+					. $name
+					. '&sort='
+					. $this->getInput('d')
+					. '&include_over_18=on');
 			$decodedValues = json_decode($values);
 
 			foreach ($decodedValues->data->children as $post) {
@@ -85,6 +147,10 @@ class RedditBridge extends BridgeAbstract {
 				}
 
 				$data = $post->data;
+
+				if ($data->score < $this->getInput('score')) {
+					continue;
+				}
 
 				$item = array();
 				$item['author'] = $data->author;
@@ -153,7 +219,7 @@ class RedditBridge extends BridgeAbstract {
 						$id = $media->media_id;
 						$type = $data->media_metadata->$id->m == 'image/gif' ? 'gif' : 'u';
 						$src = $data->media_metadata->$id->s->$type;
-						$images[] = '<figure><img src="' . $src . '"/></figure>';
+						$images[] = '<figure><img src="' . $src . '"/></figure><br>';
 					}
 
 					$item['content'] = implode('', $images);
@@ -198,6 +264,10 @@ class RedditBridge extends BridgeAbstract {
 				$this->items[] = $item;
 			}
 		}
+		// Sort the order to put the latest posts first, even for mixed subreddits
+		usort($this->items, function($a, $b) {
+			return $a['timestamp'] < $b['timestamp'];
+		});
 	}
 
 	private function encodePermalink($link) {

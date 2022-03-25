@@ -17,6 +17,7 @@ class WikipediaBridge extends BridgeAbstract {
 			'exampleValue' => 'English',
 			'values' => array(
 				'English' => 'en',
+				'Русский' => 'ru',
 				'Dutch' => 'nl',
 				'Esperanto' => 'eo',
 				'French' => 'fr',
@@ -140,12 +141,15 @@ class WikipediaBridge extends BridgeAbstract {
 	$anchorText = '...',
 	$anchorFallbackIndex = 0){
 		// Clean the bottom of the featured article
-		if ($element->find('div', -1))
+		if ($element->find('ul', -1))
+			$element->find('ul', -1)->outertext = '';
+		elseif ($element->find('div', -1)) {
 			$element->find('div', -1)->outertext = '';
+		}
 
 		// The title and URI of the article can be found in an anchor containing
 		// the string '...' in most wikis ('full article ...')
-		$target = $element->find('p/a', $anchorFallbackIndex);
+		$target = $element->find('p a', $anchorFallbackIndex);
 		foreach($element->find('//a') as $anchor) {
 			if(strpos($anchor->innertext, $anchorText) !== false) {
 				$target = $anchor;
@@ -216,11 +220,11 @@ class WikipediaBridge extends BridgeAbstract {
 	private function getContentsDe($html, $subject, $fullArticle){
 		switch($subject) {
 			case WIKIPEDIA_SUBJECT_TFA:
-				$element = $html->find('div[id=mf-tfa]', 0);
+				$element = $html->find('div[id=artikel] div.hauptseite-box-content', 0);
 				$this->addTodaysFeaturedArticleGeneric($element, $fullArticle);
 				break;
 			case WIKIPEDIA_SUBJECT_DYK:
-				$element = $html->find('div[id=mf-dyk]', 0);
+				$element = $html->find('div[id=wissenswertes]', 0);
 				$this->addDidYouKnowGeneric($element, $fullArticle);
 				break;
 			default:
@@ -253,10 +257,28 @@ class WikipediaBridge extends BridgeAbstract {
 		switch($subject) {
 			case WIKIPEDIA_SUBJECT_TFA:
 				$element = $html->find('div[id=mp-tfa]', 0);
-				$this->addTodaysFeaturedArticleGeneric($element, $fullArticle);
+				$this->addTodaysFeaturedArticleGeneric($element, $fullArticle, -1);
 				break;
 			case WIKIPEDIA_SUBJECT_DYK:
 				$element = $html->find('div[id=mp-dyk]', 0);
+				$this->addDidYouKnowGeneric($element, $fullArticle);
+				break;
+			default:
+				break;
+		}
+	}
+
+	/**
+	* Implementation for ru.wikipedia.org
+	*/
+	private function getContentsRu($html, $subject, $fullArticle){
+		switch($subject) {
+			case WIKIPEDIA_SUBJECT_TFA:
+				$element = $html->find('div[id=main-tfa]', 0);
+				$this->addTodaysFeaturedArticleGeneric($element, $fullArticle, -1);
+				break;
+			case WIKIPEDIA_SUBJECT_DYK:
+				$element = $html->find('div[id=main-dyk]', 0);
 				$this->addDidYouKnowGeneric($element, $fullArticle);
 				break;
 			default:
@@ -270,11 +292,12 @@ class WikipediaBridge extends BridgeAbstract {
 	private function getContentsEo($html, $subject, $fullArticle){
 		switch($subject) {
 			case WIKIPEDIA_SUBJECT_TFA:
-				$element = $html->find('div[id=mf-artikolo-de-la-semajno]', 0);
+				$element = $html->find('div[id=mf-artikolo-de-la-monato]', 0);
+				$element->find('div', -2)->outertext = '';
 				$this->addTodaysFeaturedArticleGeneric($element, $fullArticle);
 				break;
 			case WIKIPEDIA_SUBJECT_DYK:
-				$element = $html->find('div[id=mw-content-text]', 0)->find('table', 4)->find('td', 4);
+				$element = $html->find('div.hp', 1)->find('table', 4)->find('td', -1);
 				$this->addDidYouKnowGeneric($element, $fullArticle);
 				break;
 			default:
@@ -288,11 +311,12 @@ class WikipediaBridge extends BridgeAbstract {
 	private function getContentsNl($html, $subject, $fullArticle){
 		switch($subject) {
 			case WIKIPEDIA_SUBJECT_TFA:
-				$element = $html->find('div[id=mf-uitgelicht]', 0);
-				$this->addTodaysFeaturedArticleGeneric($element, $fullArticle, 'Lees meer');
+				$element = $html->find('td[id=segment-Uitgelicht] div', 0);
+				$element->find('p', 1)->outertext = '';
+				$this->addTodaysFeaturedArticleGeneric($element, $fullArticle, 'Lees verder');
 				break;
 			case WIKIPEDIA_SUBJECT_DYK:
-				$element = $html->find('div[id=mw-content-text]', 0)->find('table', 4)->find('td', 2);
+				$element = $html->find('td[id=segment-Wist_je_dat] div', 0);
 				$this->addDidYouKnowGeneric($element, $fullArticle);
 				break;
 			default:
