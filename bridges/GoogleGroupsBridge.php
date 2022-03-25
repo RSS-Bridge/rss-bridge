@@ -42,6 +42,7 @@ class GoogleGroupsBridge extends XPathAbstract {
 
 	protected function getSourceUrl() {
 		$source = self::URI;
+
 		$account = $this->getInput('account');
 		if($account) {
 			$source = $source . '/a/' . $account;
