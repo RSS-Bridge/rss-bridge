@@ -16,7 +16,7 @@ class DesoutterBridge extends BridgeAbstract {
 				'name' => 'Language',
 				'type' => 'list',
 				'title' => 'Select your language',
-				'defaultValue' => 'Corporate',
+				'defaultValue' => 'https://www.desouttertools.com/about-desoutter/news-events',
 				'values' => array(
 					'Corporate'
 					=> 'https://www.desouttertools.com/about-desoutter/news-events',
