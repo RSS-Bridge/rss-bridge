@@ -25,10 +25,11 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 
 	const CACHE_TIMEOUT = 3600; // 1 hour
 
+	private $feedUrl = '';
 	private $feedName = '';
 	private $itemTitle = '';
 
-	private $urlRegex = '/youtube\.com\/(channel|user)\/([\w]+)\/community/';
+	private $urlRegex = '/youtube\.com\/(channel|user|c)\/([\w]+)\/community/';
 	private $jsonRegex = '/var ytInitialData = (.*);<\/script><link rel="canonical"/';
 
 	public function detectParameters($url) {
@@ -52,8 +53,20 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 	}
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request: ' . $this->getURI());
+
+		if (is_null($this->getInput('username')) === false) {
+			try {
+				$this->feedUrl = $this->buildCommunityUri($this->getInput('username'), 'c');
+				$html = getSimpleHTMLDOM($this->feedUrl);
+			
+			} catch (Exception $e) {
+				$this->feedUrl =  $this->buildCommunityUri($this->getInput('username'), 'user');
+				$html = getSimpleHTMLDOM($this->feedUrl);
+			}
+		} else {
+			$this->feedUrl = $this->buildCommunityUri($this->getInput('channel'), 'channel');
+			$html = getSimpleHTMLDOM($this->feedUrl);
+		}
 
 		$json = $this->extractJson($html->find('body', 0)->innertext);
 
@@ -93,12 +106,8 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 
 	public function getURI() {
 
-		if (!is_null($this->getInput('channel'))) {
-			return self::URI . '/channel/' . $this->getInput('channel') . '/community';
-		}
-
-		if (!is_null($this->getInput('username'))) {
-			return self::URI . '/user/' . $this->getInput('username') . '/community';
+		if (!empty($this->feedUri)) {
+			return $this->feedUri;
 		}
 
 		return parent::getURI();
@@ -111,6 +120,15 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 		}
 
 		return parent::getName();
+	}
+
+	/**
+	 * Build Community URI
+	 * 
+	 * @param 
+	 */
+	private function buildCommunityUri($value, $type) {
+		return self::URI . '/'. $type .'/' . $value . '/community';
 	}
 
 	/**
