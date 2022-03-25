@@ -16,18 +16,15 @@ jobs:
           PR=${{github.event.number}};
           mv .github/prtester-requirements.txt ./requirements.txt;
           mv .github/prtester.py .;
-          git clone https://github.com/RSS-Bridge/rss-bridge.git --depth 1;
-          cd rss-bridge;
-          wget https://patch-diff.githubusercontent.com/raw/RSS-Bridge/rss-bridge/pull/$PR.patch;
-          cat $PR.patch | patch -p1;
+          wget https://patch-diff.githubusercontent.com/raw/$GITHUB_REPOSITORY/pull/$PR.patch;
           cat $PR.patch | grep " bridges/.*\.php" | sed "s= bridges/\(.*\)Bridge.php.*=\1=g" | sort | uniq > whitelist.txt
       - name: Start Docker - Current
         run: |
-          docker run -d -v $GITHUB_WORKSPACE/rss-bridge/whitelist.txt:/app/whitelist.txt -p 3000:80 ghcr.io/rss-bridge/rss-bridge:latest
+          docker run -d -v $GITHUB_WORKSPACE/whitelist.txt:/app/whitelist.txt -p 3000:80 ghcr.io/rss-bridge/rss-bridge:latest
       - name: Start Docker - PR
         run: |
-          docker build -t prbuild $GITHUB_WORKSPACE/rss-bridge/;
-          docker run -d -v $GITHUB_WORKSPACE/rss-bridge/whitelist.txt:/app/whitelist.txt -p 3001:80 prbuild
+          docker build -t prbuild .;
+          docker run -d -v $GITHUB_WORKSPACE/whitelist.txt:/app/whitelist.txt -p 3001:80 prbuild
       - name: Setup python
         uses: actions/setup-python@v2
         with:
