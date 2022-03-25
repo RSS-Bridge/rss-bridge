@@ -102,10 +102,12 @@ class EconomistBridge extends FeedExpander {
 			$contentNode = 'div.layout-article-body';
 			$imgNode = 'div.article__lead-image';
 			$categoryNode = 'span.article__subheadline';
-		} else {
-			$contentNode = 'div.e4sqmp1';
-			$imgNode = 'figure.e3y6nua0';
+		} elseif ($article->find('article', 0)->getAttribute('data-test-id') === 'NewArticle') {
+			$contentNode = 'section';
+			$imgNode = 'figure.css-12eysrk.e3y6nua0';
 			$categoryNode = 'span.ern1uyf0';
+		} else {
+			// pass
 		}
 
 		$item['content'] = $this->cleanContent($article, $contentNode);
