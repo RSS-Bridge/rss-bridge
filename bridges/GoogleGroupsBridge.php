@@ -54,7 +54,7 @@ class GoogleGroupsBridge extends XPathAbstract {
 		return defaultLinkTo(getContents($this->getSourceUrl()), self::URI);
 	}
 
-	const URL_REGEX = '/^https:\/\/groups.google.com(?:\/a\/(?<account>\S+))?(?:\/g\/(?<group>\S+))/';
+	const URL_REGEX = '#^https://groups.google.com(?:/a/(?<account>\S+))?(?:/g/(?<group>\S+))#';
 
 	public function detectParameters($url) {
 		$params = array();
