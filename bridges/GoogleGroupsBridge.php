@@ -61,7 +61,8 @@ class GoogleGroupsBridge extends XPathAbstract {
 		if(preg_match(self::URL_REGEX, $url, $matches)) {
 			$params['group'] = $matches['group'];
 			$params['account'] = $matches['account'];
+			return $params;
 		}
-		return $params;
+		return null;
 	}
 }
