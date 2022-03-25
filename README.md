@@ -22,7 +22,7 @@ Supported sites/pages (examples)
 * `FlickrExplore` : [Latest interesting images](http://www.flickr.com/explore) from Flickr
 * `GoogleSearch` : Most recent results from Google Search
 * `Identi.ca` : Identica user timeline (Should be compatible with other Pump.io instances)
-* `Instagram`: Most recent photos from an Instagram user (It is recommended to [configure](doc/bridges/InstagramBridge.rst) this bridge to work)
+* `Instagram`: Most recent photos from an Instagram user (It is recommended to [configure](docs/10_Bridge_Specific/Instagram.md) this bridge to work)
 * `OpenClassrooms`: Lastest tutorials from [fr.openclassrooms.com](http://fr.openclassrooms.com/)
 * `Pinterest`: Most recent photos from user or search
 * `ScmbBridge`: Newest stories from [secouchermoinsbete.fr](http://secouchermoinsbete.fr/)

@@ -1,8 +1,7 @@
-=================
- InstagramBridge
-=================
+InstagramBridge
+===============
 
-To somehow bypass the `rate limiting issue <https://github.com/RSS-Bridge/rss-bridge/issues/1891>`_,
+To somehow bypass the [rate limiting issue](https://github.com/RSS-Bridge/rss-bridge/issues/1891)
 it is suggested to deploy a private RSS-Bridge instance that uses a working Instagram account.
 
 Configuration
@@ -30,17 +29,17 @@ It is NOT recommended to use your existing account that is used for common inter
 
 - In the new frame open the "Headers" tab and scroll to "Request Headers"
 
-- There will be a cookie param will lots of ``<key>=<value>;`` text. You need the value of the "sessionid" key. Copy it.
+- There will be a cookie param will lots of `<key>=<value>;` text. You need the value of the "sessionid" key. Copy it.
 
 2. Configuring RSS-Bridge
 
 - In config.ini.php add following configuration:
 
-.. code-block::
-
-   [InstagramBridge]
-   session_id = %sessionid from step 1%
-   cache_timeout = %cache timeout in seconds%
+```
+[InstagramBridge]
+session_id = %sessionid from step 1%
+cache_timeout = %cache timeout in seconds%
+```
 
 The bigger the cache_timeout value, the smaller the chance for RSS-Bridge to throw 429 errors.
 Default cache_timeout is 3600 seconds (1 hour).
