@@ -107,7 +107,7 @@ class EconomistBridge extends FeedExpander {
 			$imgNode = 'figure.css-12eysrk.e3y6nua0';
 			$categoryNode = 'span.ern1uyf0';
 		} else {
-			// pass
+			return;
 		}
 
 		$item['content'] = $this->cleanContent($article, $contentNode);

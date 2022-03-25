@@ -37,7 +37,7 @@ class SummitsOnTheAirBridge extends BridgeAbstract {
 			Frequency: {$spot['frequency']} MHz<br />
 			Mode: {$spot['mode']}<br />
 			Comments: {$spot['comments']}
-			EOL;
+EOL;
 
 			$this->items[] = array(
 				'uri' => 'https://sotawatch.sota.org.uk/en/',
