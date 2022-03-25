@@ -15,7 +15,7 @@ class Arte7Bridge extends BridgeAbstract {
 				'name' => 'Exclude short videos',
 				'type' => 'checkbox',
 				'title' => 'Exclude videos that are shorter than 3 minutes',
-				'defaultValue'	=> '',
+				'defaultValue'	=> false,
 			],
 		],
 		'Catégorie (Français)' => array(
