@@ -27,7 +27,7 @@ class ABCNewsBridge extends BridgeAbstract {
 
 	public function collectData() {
 		$url = 'https://www.abc.net.au/news/' . $this->getInput('topic');
-		$html = getSimpleHTMLDOM($url)->find('.YAJzu._26IxR._2kxNB._3BZxh', 0);
+		$html = getSimpleHTMLDOM($url)->find('.YAJzu._2FvRw.ZWhbj._3BZxh', 0);
 		$html = defaultLinkTo($html, $this->getURI());
 
 		foreach($html->find('._2H7Su') as $article) {
