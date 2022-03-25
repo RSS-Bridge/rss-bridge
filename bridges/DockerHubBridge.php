@@ -24,7 +24,7 @@ class DockerHubBridge extends BridgeAbstract {
 				'name' => 'Repository',
 				'type' => 'text',
 				'required' => true,
-				'exampleValue' => 'postgres',
+				'exampleValue' => 'php',
 			)
 		),
 	);
