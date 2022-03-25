@@ -9,10 +9,12 @@ class GitHubPullRequestBridge extends GithubIssueBridge {
 		'global' => array(
 			'u' => array(
 				'name' => 'User name',
+				'exampleValue' => 'RSS-Bridge',
 				'required' => true
 			),
 			'p' => array(
 				'name' => 'Project name',
+				'exampleValue' => 'rss-bridge',
 				'required' => true
 			)
 		),
@@ -26,6 +28,7 @@ class GitHubPullRequestBridge extends GithubIssueBridge {
 			'i' => array(
 				'name' => 'Pull Request number',
 				'type' => 'number',
+				'exampleValue' => '2100',
 				'required' => true
 			)
 		)

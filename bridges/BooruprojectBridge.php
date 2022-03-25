@@ -5,7 +5,7 @@ class BooruprojectBridge extends GelbooruBridge {
 
 	const MAINTAINER = 'mitsukarenai';
 	const NAME = 'Booruproject';
-	const URI = 'http://booru.org/';
+	const URI = 'https://booru.org/';
 	const DESCRIPTION = 'Returns images from given page of booruproject';
 	const PARAMETERS = array(
 		'global' => array(
@@ -14,13 +14,17 @@ class BooruprojectBridge extends GelbooruBridge {
 				'type' => 'number'
 			),
 			't' => array(
-				'name' => 'tags'
+				'name' => 'tags',
+				'required' => true,
+				'exampleValue'	=> 'tagme',
+				'title'	=> 'Use "all" to get all posts'
 			)
 		),
 		'Booru subdomain (subdomain.booru.org)' => array(
 			'i' => array(
 				'name' => 'Subdomain',
-				'required' => true
+				'required' => true,
+				'exampleValue'	=> 'rm'
 			)
 		)
 	);
@@ -29,7 +33,7 @@ class BooruprojectBridge extends GelbooruBridge {
 
 	public function getURI(){
 		if(!is_null($this->getInput('i'))) {
-			return 'http://' . $this->getInput('i') . '.booru.org/';
+			return 'https://' . $this->getInput('i') . '.booru.org/';
 		}
 
 		return parent::getURI();

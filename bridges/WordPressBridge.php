@@ -7,6 +7,7 @@ class WordPressBridge extends FeedExpander {
 	const PARAMETERS = array( array(
 		'url' => array(
 			'name' => 'Blog URL',
+			'exampleValue' => 'https://www.wpbeginner.com/',
 			'required' => true
 		)
 	));

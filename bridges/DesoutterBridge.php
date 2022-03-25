@@ -16,7 +16,7 @@ class DesoutterBridge extends BridgeAbstract {
 				'name' => 'Language',
 				'type' => 'list',
 				'title' => 'Select your language',
-				'defaultValue' => 'Corporate',
+				'defaultValue' => 'https://www.desouttertools.com/about-desoutter/news-events',
 				'values' => array(
 					'Corporate'
 					=> 'https://www.desouttertools.com/about-desoutter/news-events',
@@ -120,6 +120,7 @@ class DesoutterBridge extends BridgeAbstract {
 			'limit' => array(
 				'name' => 'Limit',
 				'type' => 'number',
+				'required' => true,
 				'defaultValue' => 3,
 				'title' => "Maximum number of items to return in the feed.\n0 = unlimited"
 			)

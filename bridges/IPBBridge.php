@@ -55,7 +55,7 @@ class IPBBridge extends FeedExpander {
 		$headers = get_headers($uri . '.xml');
 
 		if($headers[0] === 'HTTP/1.1 200 OK') { // Heureka! It's a valid feed!
-			return $this->collectExpandableDatas($uri);
+			return $this->collectExpandableDatas($uri . '.xml');
 		}
 
 		// No valid feed, so do it the hard way

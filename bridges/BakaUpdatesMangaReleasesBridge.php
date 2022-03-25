@@ -10,7 +10,7 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 				'name'		=> 'Series ID',
 				'type'		=> 'number',
 				'required'	=> true,
-				'exampleValue'	=> '12345'
+				'exampleValue'	=> '188066'
 			)
 		),
 		'By list' => array(
@@ -18,7 +18,7 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 				'name' 		=> 'List ID and Type',
 				'type' 		=> 'text',
 				'required' 	=> true,
-				'exampleValue'	=> '123456&list=read'
+				'exampleValue'	=> '4395&list=read'
 			)
 		)
 	);

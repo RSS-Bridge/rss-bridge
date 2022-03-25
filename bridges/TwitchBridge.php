@@ -11,6 +11,7 @@ class TwitchBridge extends BridgeAbstract {
 			'name' => 'Channel',
 			'type' => 'text',
 			'required' => true,
+			'exampleValue' => 'criticalrole',
 			'title' => 'Lowercase channel name as seen in channel URL'
 		),
 		'type' => array(

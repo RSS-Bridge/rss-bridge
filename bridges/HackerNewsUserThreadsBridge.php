@@ -11,6 +11,7 @@ class HackerNewsUserThreadsBridge extends BridgeAbstract {
 			'name' => 'User',
 			'type' => 'text',
 			'required' => true,
+			'exampleValue' => 'nixcraft',
 			'title' => 'User whose threads you want to see'
 		)
 	));

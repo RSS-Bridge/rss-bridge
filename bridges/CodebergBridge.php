@@ -20,6 +20,7 @@ class CodebergBridge extends BridgeAbstract {
 				'name' => 'Issue ID',
 				'type' => 'text',
 				'required' => true,
+				'exampleValue' => '513',
 			)
 		),
 		'Pull Requests' => array(),
@@ -28,14 +29,14 @@ class CodebergBridge extends BridgeAbstract {
 			'username' => array(
 				'name' => 'Username',
 				'type' => 'text',
-				'exampleValue' => 'username',
+				'exampleValue' => 'Codeberg',
 				'title' => 'Username of account that the repository belongs to.',
 				'required' => true,
 			),
 			'repo' => array(
 				'name' => 'Repository',
 				'type' => 'text',
-				'exampleValue' => 'repo',
+				'exampleValue' => 'Community',
 				'required' => true,
 			)
 		)

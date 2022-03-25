@@ -10,7 +10,9 @@ class GlowficBridge extends BridgeAbstract {
 		'Thread' => array(
 			'post_id' => array(
 				'name' => 'Post ID',
-				'title' => 'https://www.glowfic.com/posts/<POST ID>',
+				'title' => 'https://www.glowfic.com/posts/POST ID',
+				'required' => true,
+				'exampleValue' => '2756',
 				'type' => 'number'
 			),
 			'start_page' => array(
