@@ -58,9 +58,9 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 			try {
 				$this->feedUrl = $this->buildCommunityUri($this->getInput('username'), 'c');
 				$html = getSimpleHTMLDOM($this->feedUrl);
-			
+
 			} catch (Exception $e) {
-				$this->feedUrl =  $this->buildCommunityUri($this->getInput('username'), 'user');
+				$this->feedUrl = $this->buildCommunityUri($this->getInput('username'), 'user');
 				$html = getSimpleHTMLDOM($this->feedUrl);
 			}
 		} else {
@@ -124,11 +124,9 @@ class YouTubeCommunityTabBridge extends BridgeAbstract {
 
 	/**
 	 * Build Community URI
-	 * 
-	 * @param 
 	 */
 	private function buildCommunityUri($value, $type) {
-		return self::URI . '/'. $type .'/' . $value . '/community';
+		return self::URI . '/' . $type . '/' . $value . '/community';
 	}
 
 	/**
