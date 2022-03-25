@@ -11,8 +11,9 @@ on EZTV. Get IMDB IDs from IMDB.';
 		array(
 			'ids' => array(
 				'name' => 'Show IMDB IDs',
-				'exampleValue' => 'showID1,showID2,…',
-				'required' => true
+				'exampleValue' => '8740790,1733785',
+				'required' => true,
+				'title' => 'One or more IMDB show IDs (can be found in the IMDB show URL)'
 			),
 			'no480' => array(
 				'name' => 'No 480p',
