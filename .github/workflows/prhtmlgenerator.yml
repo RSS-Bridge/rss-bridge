@@ -4,25 +4,27 @@ on:
   pull_request:
     branches: [ master ]
 
+permissions:
+  actions: write
+  checks: write
+  contents: write
+  deployments: write
+  id-token: write
+  issues: write
+  discussions: write
+  packages: write
+  pages: write
+  pull-requests: write
+  repository-projects: write
+  security-events: write
+  statuses: write
+
+
 jobs:
   test-pr:
     name: Generate HTML
     runs-on: ubuntu-latest
     # Needs additional permissions https://github.com/actions/first-interaction/issues/10#issuecomment-1041402989
-    permissions:
-      actions: write
-      checks: write
-      contents: write
-      deployments: write
-      id-token: write
-      issues: write
-      discussions: write
-      packages: write
-      pages: write
-      pull-requests: write
-      repository-projects: write
-      security-events: write
-      statuses: write
     steps:
       - name: Check out self
         uses: actions/checkout@v2.3.2
@@ -60,7 +62,7 @@ jobs:
           files: |
             ./results/*.html
       - name: Upload results to PR
-        uses: gavv/pull-request-artifacts@v1.0.0
+        uses: yamanq/pull-request-artifacts@v1.1.0
         with:
           commit: ${{ github.event.pull_request.head.sha }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
