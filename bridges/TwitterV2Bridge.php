@@ -1,29 +1,16 @@
 <?php
 /**
- * TwitterV2Bridge leverages Twitter V2 API
- *
- * The V1.1 API, at least when using the standard public dummy Bearer Key,
- * sometimes omits tweets containing "Sensitive Content".
- *
- * To use this bridge, you must:
- * 1. Sign up for a Twitter Developer account
- * 2. Create a new Project and App
- * 3. Generate a Bearer Token in the App
- * 4. Put that Bearer Token into config.ini.php
- *
- * If config.ini.php does not exist in the rss-bridge root,
- * create it by copying config.default.ini.php
- *
- * Add a new section to config.ini.php:
- * [TwitterV2Bridge]
- * twitterv2apitoken = "<Your Bearer Token>"
- *
+ * TwitterV2Bridge leverages Twitter API v2, and requires
+ * a unique API Bearer Token, which requires creation of
+ * a Twitter Dev account. Link to instructions in DESCRIPTION.
  */
 class TwitterV2Bridge extends BridgeAbstract {
 	const NAME = 'Twitter V2 Bridge';
 	const URI = 'https://twitter.com/';
 	const API_URI = 'https://api.twitter.com/2';
-	const DESCRIPTION = 'returns tweets (using Twitter V2 API)';
+	const DESCRIPTION = 'Returns tweets (using Twitter API v2). See the 
+	<a href="https://rss-bridge.github.io/rss-bridge/Bridge_Specific/TwitterV2.html">
+	Configuration Instructions</a>.';
 	const MAINTAINER = 'quickwick';
 	const CONFIGURATION = array(
 		'twitterv2apitoken' => array(
