@@ -10,6 +10,7 @@ class IdenticaBridge extends BridgeAbstract {
 	const PARAMETERS = array( array(
 		'u' => array(
 			'name' => 'username',
+			'exampleValue' => 'jxself',
 			'required' => true
 		)
 	));

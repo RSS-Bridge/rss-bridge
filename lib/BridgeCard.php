@@ -113,7 +113,7 @@ This bridge is not fetching its content through a secure connection</div>';
 		}
 
 		if($isActive) {
-			$form .= '<button type="submit" name="format" value="Html">Generate feed</button>';
+			$form .= '<button type="submit" name="format" formtarget="_blank" value="Html">Generate feed</button>';
 		} else {
 			$form .= '<span style="font-weight: bold;">Inactive</span>';
 		}
@@ -322,7 +322,7 @@ This bridge is not fetching its content through a secure connection</div>';
 		}
 
 		$card = <<<CARD
-			<section id="bridge-{$bridgeName}" data-ref="{$bridgeName}">
+			<section id="bridge-{$bridgeName}" data-ref="{$name}">
 				<h2><a href="{$uri}">{$name}</a></h2>
 				<p class="description">{$description}</p>
 				<input type="checkbox" class="showmore-box" id="showmore-{$bridgeName}" />

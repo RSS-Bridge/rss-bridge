@@ -10,6 +10,7 @@ class OpenwhydBridge extends BridgeAbstract {
 	const PARAMETERS = array( array(
 		'u' => array(
 			'name' => 'username/id',
+			'exampleValue' => '5247f0267e91c862b2b052d0',
 			'required' => true
 		)
 	));

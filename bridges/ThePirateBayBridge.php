@@ -16,7 +16,7 @@ class ThePirateBayBridge extends BridgeAbstract {
 	const PARAMETERS = array( array(
 		'q' => array(
 			'name' => 'keywords/username/category, separated by semicolons',
-			'exampleValue' => 'first list;second list;…',
+			'exampleValue' => 'simpsons',
 			'required' => true
 		),
 		'crit' => array(

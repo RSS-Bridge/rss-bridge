@@ -8,6 +8,7 @@ class TinyLetterBridge extends BridgeAbstract {
 		array(
 			'username' => array(
 				'name' => 'User Name',
+				'required' => true,
 				'exampleValue' => 'forwards',
 			)
 		)

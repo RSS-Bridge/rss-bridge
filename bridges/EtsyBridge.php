@@ -12,7 +12,7 @@ class EtsyBridge extends BridgeAbstract {
 				'type' => 'text',
 				'required' => true,
 				'title' => 'Insert your search term here',
-				'exampleValue' => 'Enter your search term'
+				'exampleValue' => 'lamp'
 			),
 			'queryextension' => array(
 				'name' => 'Query extension',

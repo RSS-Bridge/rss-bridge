@@ -42,6 +42,10 @@ class HeiseBridge extends FeedExpander {
 		$item = parent::parseItem($feedItem);
 		$item['uri'] = explode('?', $item['uri'])[0] . '?seite=all';
 
+		if (strpos($item['uri'], 'https://www.heise.de') !== 0) {
+			return $item;
+		}
+
 		$article = getSimpleHTMLDOMCached($item['uri']);
 
 		if ($article) {
@@ -53,8 +57,9 @@ class HeiseBridge extends FeedExpander {
 	}
 
 	private function addArticleToItem($item, $article) {
-		if($author = $article->find('[itemprop="author"]', 0))
-			$item['author'] = $author->plaintext;
+		$authors = $article->find('.a-creator__names', 0)->find('.a-creator__name');
+		if ($authors)
+			$item['author'] = implode(', ', array_map(function ($e) { return $e->plaintext; }, $authors ));
 
 		$content = $article->find('div[class*="article-content"]', 0);
 

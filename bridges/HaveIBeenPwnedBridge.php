@@ -17,6 +17,7 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 		'item_limit' => array(
 			'name' => 'Limit number of returned items',
 			'type' => 'number',
+			'required' => true,
 			'defaultValue' => 20,
 		)
 	));

@@ -305,7 +305,13 @@ class ReutersBridge extends BridgeAbstract
 		foreach($images as $image) { // Add more image to article.
 			$image_url = $image['url'];
 			$image_caption = $image['caption'];
-			$img = "<img src=\"$image_url\" alt=\"$image_caption\">";
+			$image_alt_text = '';
+			if(isset($image['alt_text'])) {
+				$image_alt_text = $image['alt_text'];
+			} else {
+				$image_alt_text = $image_caption;
+			}
+			$img = "<img src=\"$image_url\" alt=\"$image_alt_text\">";
 			$img_caption = "<figcaption style=\"text-align: center;\"><i>$image_caption</i></figcaption>";
 			$figure = "<figure>$img \t $img_caption</figure>";
 			$img_placeholder = $img_placeholder . $figure;
@@ -482,6 +488,7 @@ EOD;
 			$timestamp = '';
 			$url = '';
 			$article_uri = '';
+			$source_type = '';
 			if($this->useWireAPI) {
 				$uid = $story['story']['usn'];
 				$article_uri = $story['template_action']['api_path'];
@@ -492,18 +499,31 @@ EOD;
 				$url = self::URI . $story['canonical_url'];
 				$title = $story['title'];
 				$article_uri = $story['canonical_url'];
+				$source_type = $story['source']['name'];
 			}
 
-			$content_detail = $this->getArticle($article_uri);
-			$description = $content_detail['content'];
-			$description = defaultLinkTo($description, $this->getURI());
-			$author = $content_detail['author'];
-			$images = $content_detail['images'];
-			$category = $content_detail['category'];
-			$content = "$description  $images";
-			$timestamp = $content_detail['published_at'];
+			// Some article cause unexpected behaviour like redirect to another site not API.
+			// Attempt to check article source type to avoid this.
+			if($source_type == 'composer') { // Only Reuters PF api have this, Wire don't.
+				$author = $this->handleAuthorName($story['authors']);
+				$timestamp = $story['published_time'];
+				$image_placeholder = '';
+				if (isset($story['thumbnail'])) {
+					$image_placeholder = $this->handleImage(array($story['thumbnail']));
+				}
+				$content = $story['description'] . $image_placeholder;
+			} else {
+				$content_detail = $this->getArticle($article_uri);
+				$description = $content_detail['content'];
+				$description = defaultLinkTo($description, $this->getURI());
 
-			$item['uid'] = $uid;
+				$author = $content_detail['author'];
+				$images = $content_detail['images'];
+				$category = $content_detail['category'];
+				$content = "$description  $images";
+				$timestamp = $content_detail['published_at'];
+			}
+
 			$item['categories'] = $category;
 			$item['author'] = $author;
 			$item['content'] = $content;

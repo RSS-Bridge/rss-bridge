@@ -10,6 +10,7 @@ class DealabsBridge extends PepperBridgeAbstract {
 			'q' => array(
 				'name' => 'Mot(s) clé(s)',
 				'type' => 'text',
+				'exampleValue' => 'lamp',
 				'required' => true
 			),
 			'hide_expired' => array(

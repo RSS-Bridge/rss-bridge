@@ -8,7 +8,8 @@ class PillowfortBridge extends BridgeAbstract {
 		'username' => array(
 			'name' => 'Username',
 			'type' => 'text',
-			'required' => true
+			'required' => true,
+			'exampleValue' => 'vaxis2',
 		),
 		'noava' => array(
 			'name' => 'Hide avatar',

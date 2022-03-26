@@ -12,6 +12,7 @@ class HotUKDealsBridge extends PepperBridgeAbstract {
 			'q' => array(
 				'name' => 'Keyword(s)',
 				'type' => 'text',
+				'exampleValue' => 'lamp',
 				'required' => true
 			),
 			'hide_expired' => array(

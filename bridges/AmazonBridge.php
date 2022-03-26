@@ -12,6 +12,7 @@ class AmazonBridge extends BridgeAbstract {
 		'q' => array(
 			'name' => 'Keyword',
 			'required' => true,
+			'exampleValue' => 'watch',
 		),
 		'sort' => array(
 			'name' => 'Sort by',

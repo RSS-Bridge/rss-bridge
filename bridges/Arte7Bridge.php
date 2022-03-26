@@ -10,6 +10,14 @@ class Arte7Bridge extends BridgeAbstract {
 	const API_TOKEN = 'Nzc1Yjc1ZjJkYjk1NWFhN2I2MWEwMmRlMzAzNjI5NmU3NWU3ODg4ODJjOWMxNTMxYzEzZGRjYjg2ZGE4MmIwOA';
 
 	const PARAMETERS = array(
+		'global' => [
+			'video_duration_filter' => [
+				'name' => 'Exclude short videos',
+				'type' => 'checkbox',
+				'title' => 'Exclude videos that are shorter than 3 minutes',
+				'defaultValue'	=> false,
+			],
+		],
 		'Catégorie (Français)' => array(
 			'catfr' => array(
 				'type' => 'list',
@@ -32,7 +40,8 @@ class Arte7Bridge extends BridgeAbstract {
 			'colfr' => array(
 				'name' => 'Collection id',
 				'required' => true,
-				'title' => 'ex. RC-014095 pour https://www.arte.tv/fr/videos/RC-014095/blow-up/'
+				'title' => 'ex. RC-014095 pour https://www.arte.tv/fr/videos/RC-014095/blow-up/',
+				'exampleValue'	=> 'RC-014095'
 			)
 		),
 		'Catégorie (Allemand)' => array(
@@ -57,7 +66,8 @@ class Arte7Bridge extends BridgeAbstract {
 			'colde' => array(
 				'name' => 'Collection id',
 				'required' => true,
-				'title' => 'ex. RC-014095 pour https://www.arte.tv/de/videos/RC-014095/blow-up/'
+				'title' => 'ex. RC-014095 pour https://www.arte.tv/de/videos/RC-014095/blow-up/',
+				'exampleValue'	=> 'RC-014095'
 			)
 		)
 	);
@@ -95,6 +105,11 @@ class Arte7Bridge extends BridgeAbstract {
 		$input_json = json_decode($input, true);
 
 		foreach($input_json['videos'] as $element) {
+			$durationSeconds = $element['durationSeconds'];
+
+			if ($this->getInput('video_duration_filter') && $durationSeconds < 60 * 3) {
+				continue;
+			}
 
 			$item = array();
 			$item['uri'] = $element['url'];
@@ -106,10 +121,10 @@ class Arte7Bridge extends BridgeAbstract {
 			if(!empty($element['subtitle']))
 				$item['title'] = $element['title'] . ' | ' . $element['subtitle'];
 
-			$item['duration'] = round((int)$element['durationSeconds'] / 60);
+			$durationMinutes = round((int)$durationSeconds / 60);
 			$item['content'] = $element['teaserText']
 			. '<br><br>'
-			. $item['duration']
+			. $durationMinutes
 			. 'min<br><a href="'
 			. $item['uri']
 			. '"><img src="'

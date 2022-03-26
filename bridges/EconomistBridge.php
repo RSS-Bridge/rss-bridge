@@ -95,23 +95,38 @@ class EconomistBridge extends FeedExpander {
 
 	protected function parseItem($feedItem){
 		$item = parent::parseItem($feedItem);
-
 		$article = getSimpleHTMLDOM($item['uri']);
 		// before the article can be added, it needs to be cleaned up, thus, the extra function
-		$item['content'] = $this->cleanContent($article);
+		// We also need to distinguish between old style and new style articles
+		if ($article->find('article', 0)->getAttribute('data-test-id') == 'Article') {
+			$contentNode = 'div.layout-article-body';
+			$imgNode = 'div.article__lead-image';
+			$categoryNode = 'span.article__subheadline';
+		} elseif ($article->find('article', 0)->getAttribute('data-test-id') === 'NewArticle') {
+			$contentNode = 'section';
+			$imgNode = 'figure.css-12eysrk.e3y6nua0';
+			$categoryNode = 'span.ern1uyf0';
+		} else {
+			return;
+		}
+
+		$item['content'] = $this->cleanContent($article, $contentNode);
 		// only the article lead image is retained if it's there
-		if (!is_null($article->find('div.article__lead-image', 0))) {
-			$item['enclosures'][] = $article->find('div.article__lead-image', 0)->find('img', 0)->getAttribute('src');
+		if (!is_null($article->find($imgNode, 0))) {
+			$item['enclosures'][] = $article->find($imgNode, 0)->find('img', 0)->getAttribute('src');
 		} else {
 			$item['enclosures'][] = '';
 		}
+		// add the subheadline as category. This will create a link in new articles
+		// and a text in old articles
+		$item['categories'][] = $article->find($categoryNode, 0)->innertext;
 
 		return $item;
 	}
 
-	private function cleanContent($article){
+	private function cleanContent($article, $contentNode){
 		// the actual article is in this div
-		$content = $article->find('div.layout-article-body', 0)->innertext;
+		$content = $article->find($contentNode, 0)->innertext;
 		// clean the article content. Remove all div's since the text is in paragraph elements
 		foreach (array(
 			'<div '
