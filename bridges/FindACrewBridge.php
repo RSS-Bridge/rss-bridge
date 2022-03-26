@@ -62,11 +62,11 @@ class FindACrewBridge extends BridgeAbstract {
 		foreach ($annonces as $annonce) {
 			$item = array();
 
-			$link = parent::getURI() . $annonce->find('.lst-ctrls a', 0)->href;
+			$link = parent::getURI() . $annonce->find('.lstsum-btn-con a', 0)->href;
 			$htmlDetail = getSimpleHTMLDOMCached($link . '?mdl=2'); // add ?mdl=2 for xhr content not full html page
 
 			$img = parent::getURI() . $htmlDetail->find('img.img-responsive', 0)->getAttribute('src');
-			$item['title'] = $annonce->find('.lst-tags span', 0)->plaintext;
+			$item['title'] = $htmlDetail->find('div.label-account', 0)->plaintext;
 			$item['uri'] = $link;
 			$content = $htmlDetail->find('.panel-body div.clearfix.row > div', 1)->innertext;
 			$content .= $htmlDetail->find('.panel-body > div', 1)->innertext;
