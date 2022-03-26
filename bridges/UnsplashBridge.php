@@ -30,8 +30,7 @@ class UnsplashBridge extends BridgeAbstract
 				'small' => 'small',
 				'thumb' => 'thumb',
 			),
-			'defaultValue' => 'regular',
-			'required' => true
+			'defaultValue' => 'regular'
 		),
 		'w' => array(
 			'name' => 'Max download width (optional)',
