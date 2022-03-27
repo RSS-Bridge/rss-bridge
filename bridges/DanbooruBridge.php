@@ -57,9 +57,7 @@ class DanbooruBridge extends BridgeAbstract {
 	}
 
 	public function collectData(){
-		$content = getContents($this->getFullURI());
-
-		$html = Fix_Simple_Html_Dom::str_get_html($content);
+		$html = getSimpleHTMLDOMCached($this->getFullURI());
 
 		foreach($html->find(static::PATHTODATA) as $element) {
 			$this->items[] = $this->getItemFromElement($element);
