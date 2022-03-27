@@ -40,21 +40,27 @@ jobs:
           cd $GITHUB_WORKSPACE
           pip install -r requirements.txt
       - name: Run bridge tests
+        id: testrun
         run: |
           mkdir results;
-          python prtester.py
-      - name: Find result files
-        uses: tj-actions/glob@v7.10
-        id: artifacts
+          python prtester.py;
+          body="$(cat comment.txt)";
+          body="${body//'%'/'%25'}";
+          body="${body//$'\n'/'%0A'}";
+          body="${body//$'\r'/'%0D'}";
+          echo "::set-output name=body::$body"
+      - name: Find Comment
+        uses: peter-evans/find-comment@v2
+        id: fc
         with:
-          files: |
-            ./results/*.html
-      - name: Upload results to PR
-        uses: yamanq/pull-request-artifacts@v1.3.1
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: Generated Views
+      - name: Create or update comment
+        uses: peter-evans/create-or-update-comment@v2
         with:
-          commit: ${{ github.event.pull_request.head.sha }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts-branch: artifacts
-          artifacts-prefix-url: "https://htmlpreview.github.io/?"
-          artifacts: |
-            ${{ steps.artifacts.outputs.paths }}
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ${{ steps.testrun.outputs.body }}
+          edit-mode: replace
