@@ -75,7 +75,7 @@ now = datetime.now()
 date_time = now.strftime("%Y-%m-%d, %H:%M:%S")
 
 with open(os.getcwd() + '/comment.txt', 'w+') as file:
-    file.write(''' ## Generated Views
+    file.write(''' ## Pull request artifacts
 | file | last change |
 | ---- | ------ |''')
 

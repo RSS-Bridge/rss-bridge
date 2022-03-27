@@ -55,7 +55,7 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'github-actions[bot]'
-          body-includes: Generated Views
+          body-includes: Pull request artifacts
       - name: Create or update comment
         uses: peter-evans/create-or-update-comment@v2
         with:
