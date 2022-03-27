@@ -136,6 +136,7 @@ Use this script to generate the list automatically (using the GitHub API):
 * [b1nj](https://github.com/b1nj)
 * [benasse](https://github.com/benasse)
 * [Binnette](https://github.com/Binnette)
+* [BoboTiG](https://github.com/BoboTiG)
 * [Bockiii](https://github.com/Bockiii)
 * [captn3m0](https://github.com/captn3m0)
 * [chemel](https://github.com/chemel)
