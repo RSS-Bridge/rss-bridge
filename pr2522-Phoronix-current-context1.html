@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Phoronix</title>
+	<link href="https://feed.eugenemolotov.ru/static/HtmlFormat.css" rel="stylesheet">
+	<link rel="icon" type="image/png" href="static/favicon.png">
+	<link href="./?action=display&amp;bridge=Phoronix&amp;format=Atom" title="Atom" rel="alternate" type="application/atom+xml">
+
+<link href="./?action=display&amp;bridge=Phoronix&amp;format=Json" title="Json" rel="alternate" type="application/json">
+
+<link href="./?action=display&amp;bridge=Phoronix&amp;format=Mrss" title="Mrss" rel="alternate" type="application/rss+xml">
+
+<link href="./?action=display&amp;bridge=Phoronix&amp;format=Plaintext" title="Plaintext" rel="alternate" type="text/plain">
+
+
+	<meta name="robots" content="noindex, follow">
+</head>
+<body>
+	<h1 class="pagetitle"><a href="https://www.phoronix.com/" target="_blank">Phoronix</a></h1>
+	<div class="buttons">
+		<a href="./#bridge-Phoronix"><button class="backbutton">← back to rss-bridge</button></a>
+		<a href="./?action=display&amp;bridge=Phoronix&amp;format=Atom"><button class="rss-feed">Atom</button></a>
+<a href="./?action=display&amp;bridge=Phoronix&amp;format=Json"><button class="rss-feed">Json</button></a>
+<a href="./?action=display&amp;bridge=Phoronix&amp;format=Mrss"><button class="rss-feed">Mrss</button></a>
+<a href="./?action=display&amp;bridge=Phoronix&amp;format=Plaintext"><button class="rss-feed">Plaintext</button></a>
+
+	</div>
+
+<section class="feeditem">
+	<h2><a class="itemtitle" href="https://www.phoronix.com/scan.php?page=news_item&px=WirePlumber-0.4.9">WirePlumber 0.4.9 Fixes Surround Sound For Some Linux Games</a></h2>
+	<time datetime="2022-03-27 10:48:06">2022-03-27 10:48:06</time>
+	
+	<div class="content"><div class="content"> <div style="float: left; padding: 0 10px 10px;"><img alt="MULTIMEDIA -- " src="assets/categories/multimedia.jpg" width="100" height="100" /></div> WirePlumber is the increasingly used session/policy manager for PipeWire for audio/video streams on the Linux desktop. Out this weekend is WirePlumber 0.4.9 with some important fixes and improvements. <br /> <br />Perhaps most notable with WirePlumber 0.4.9 is ensuring surround sound support is properly exposed for more games on Linux. It was reported that some games within Steam were not able to enjoy 5.1 surround sound with PipeWire in a year-old bug report. A fix landed in WirePlumber a month ago to relax the format parsing within the si-audio-adapter module and this appears to fix up that issue. More details within <a href="https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/876">this bug report</a>. <br /> <br />WirePlumber 0.4.9 also has some crash fixes, addresses a race condition with the Zoom desktop app that could result in audio sharing to fail, Brave / Edge / Vivaldi / Telegram added to the Bluetooth auto-switch application list, and a variety of other fixes and minor improvements. <br /> <br />More details on WirePlumber 0.4.9 via <a href="https://gitlab.freedesktop.org/pipewire/wireplumber/-/releases/0.4.9">FreeDesktop.org GitLab</a>.</div></div>
+	
+	
+</section>
+
+<section class="feeditem">
+	<h2><a class="itemtitle" href="https://www.phoronix.com/scan.php?page=news_item&px=Linux-5.18-USB-Thunderbolt">Linux 5.18 Xen USB Driver To Harden Against Malicious Hosts</a></h2>
+	<time datetime="2022-03-27 10:17:39">2022-03-27 10:17:39</time>
+	
+	<div class="content"><div class="content"> <div style="float: left; padding: 0 10px 10px;"><img alt="HARDWARE -- " src="assets/categories/hardware.jpg" width="100" height="100" /></div> The many USB and Thunderbolt feature patches have landed into the in-development <a href="https://www.phoronix.com/scan.php?page=search&q=Linux+5.18">Linux 5.18</a> kernel. <br /> <br />While there are many USB/Thunderbolt changes this cycle, there isn't much that is particularly notable besides continued work on the USB DWC3 driver, XHCI debug cable fixes, a Richtek rt1719 power delivery driver, and other routine updates. <br /> <br />One interesting bit is the Xen USB driver being hardened against potentially malicious hosts. The <a href="https://www.phoronix.com/scan.php?page=news_item&px=Xen-pvUSB-For-Linux-5.17">Xen pvUSB driver was mainlined in Linux 5.17</a> after being out-of-tree for more than one decade. <br /> <br />But it turns out this new Xen USB driver was missing some verification/sanitization of data around I/O length, interrupt storms, and other missing safeguards. With Linux 5.18 this xen_hcd driver is now hardened against malicious backends/hosts from infiltrating the kernel through this driver's missing checks/safeguards. <br /> <br />The full list of USB/Thunderbolt changes for Linux 5.18 can be found via Greg KH's <a href="https://lore.kernel.org/lkml/Yj7vGtn8fILavjyL@kroah.com/">pull request</a> that was already merged to mainline.</div></div>
+	
+	
+</section>
+
+<section class="feeditem">
+	<h2><a class="itemtitle" href="https://www.phoronix.com/scan.php?page=news_item&px=KDE-Plasma-5.25-Many-Wallpapers">KDE Plasma 5.25 Seeing Touch Gesture Additions, More Fixes & Other Work</a></h2>
+	<time datetime="2022-03-27 09:26:57">2022-03-27 09:26:57</time>
+	
+	<div class="content"><div class="content"> <div style="float: left; padding: 0 10px 10px;"><img alt="KDE -- " src="assets/categories/kde.jpg" width="100" height="100" /></div> KDE developer Nate Graham is out with his usual weekly summary of all the notable KDE changes to land in the past week. <br /> <br />As we approach the end of March, some of the notable changes to the KDE software stack this week included: <br /> <br />- Touch gesture improvements were merged for handling the edge-swipe gesture with KWin and other features for Plasma 5.25. <br /> <br />- Plasma 5.25 will fix an issue where the more images you've added to your wallpaper settings, the the slower it is logging into Plasma. <br /> <br />- When sharing a Samba folder, there is now a folder permission helper window to help ensure the correct file/folder permissions are set. <br /> <br />- KRunner-powered searches are now case-insensitive. <br /> <br />- Correcting cursor/click positioning when running Plasma Wayland session within a virtual machine. <br /> <br />- Lists of recent documents now implement the FreeDesktop.org desktop-bookmark specification. <br /> <br />- Many fixes and other minor improvements. <br /> <br />See more details on this week's KDE development activities via <a href="https://pointieststick.com/2022/03/26/this-week-in-kde-progress-on-gestures-and-15-minute-bugs/">Nate's blog</a>.</div></div>
+	
+	
+</section>
+
+<section class="feeditem">
+	<h2><a class="itemtitle" href="https://www.phoronix.com/scan.php?page=news_item&px=Ceph-For-Linux-5.18">Ceph File-System Updates For Linux 5.18 Address A "Pretty Nasty Problem", Other Bugs</a></h2>
+	<time datetime="2022-03-27 09:17:08">2022-03-27 09:17:08</time>
+	
+	<div class="content"><div class="content"> <div style="float: left; padding: 0 10px 10px;"><img alt="LINUX STORAGE -- " src="assets/categories/linuxstorage.jpg" width="100" height="100" /></div> The Ceph file-system updates for this scalable distributed storage system have landed for <a href="https://www.phoronix.com/scan.php?page=search&q=Linux+5.18">Linux 5.18</a> with some fairly noteworthy fixes. <br /> <br />First up, this new feature pull has fixed a long-standing problem of high KWorker CPU usage and stalls caused by needlessly iterating over all inodes in the snap realm. The situation is summed up in <a href="https://tracker.ceph.com/issues/44100">this 2 year old bug report</a>. It was summed up by one of the developers, Jeff Layton, as a "pretty nasty problem" but after two years and changes to how snap context and realms are tracked, the high CPU usage problem should be resolved. <br /> <br />Ceph with Linux 5.18 also has async file creation fixes to address hangs under certain conditions. There are also memory leak fixes and other issues cleared up with this new Ceph code for Linux 5.18. <br /> <br />If you are a user of this software-defined storage solution, learn more about the Linux 5.18 changes via <a href="https://lore.kernel.org/lkml/20220324172554.12797-1-idryomov@gmail.com/">this pull request</a> that has already been merged to mainline.</div></div>
+	
+	
+</section>
+
+<section class="feeditem">
+	<h2><a class="itemtitle" href="https://www.phoronix.com/scan.php?page=news_item&px=MGLRU-Not-For-5.18">MGLRU Could Land In Linux 5.19 For Improving Performance - Especially Low RAM Situations</a></h2>
+	<time datetime="2022-03-26 22:00:03">2022-03-26 22:00:03</time>
+	
+	<div class="content"><div class="content"> <div style="float: left; padding: 0 10px 10px;"><img alt="LINUX KERNEL -- " src="assets/categories/linuxkernel.jpg" width="100" height="100" /></div> MGLRU is <a href="https://www.phoronix.com/scan.php?page=news_item&px=Linux-MGLRU-v6-Linux">a kernel innovation we've been eager to see merged in 2022</a> and it looks like that could happen for the next cycle, v5.19, for <a href="https://www.phoronix.com/scan.php?page=news_item&px=Multigen-LRU-v5">improving Linux system performance especially in cases of approaching memory pressure</a>.  <br />  <br />MGLRU is short for Multi-Gen LRU and is a rework by Google engineers on how the kernel's page reclamation code is handled. They found the current Linux kernel page reclamation handling is too expensive and can make poor eviction choices, but MGLRU has been showing to be a big improvement both for their internal workloads and by external parties testing the many public patch revisions.  <br />  <br />See <a href="https://www.phoronix.com/scan.php?page=news_item&px=Linux-MGLRU-v9-Promising">some of the enticing MGLRU benchmark results</a> for workloads benefiting the likes of Apache Cassandra, Hadoop, Memcached, PostgreSQL, Redis, MongoDB, FIO, and many other workloads. Or even for cases of running a web browser with many tabs when often facing system memory pressure and SWAP storms, MGLRU has kept systems in a usable state.  <br />  <br />Google's Yu Zhao today sent Linus <a href="https://lore.kernel.org/lkml/20220326010003.3155137-1-yuzhao@google.com/">a pull request for MGLRU</a>. While the Linux 5.18 merge window is going on at the moment, Yu wasn't necessarily for pushing it right away, "<em>This is more of an option than a request for 5.18. I'm sending it to you directly because, in my judgement, it's now as ready as it'll ever be.</em>"  <br />  <br />In the Linux kernel mailing list thread for that pull request, Linus Torvalds said he isn't opposed to it but ultimately isn't going to pull it for Linux 5.18. The basis being that MGLRU hasn't been fully vetted by way of the linux-next tree. He wants to see this big patch series running in Linux-Next for a while to help uncover any issues especially with all the build automation/testing that goes on for Linux-Next.  <br />  <br />So at this stage it looks like Mutli-Gen LRU could enter Linux-Next for a cycle or so and if all goes well it could be merged for Linux 5.19 this summer. There's also more sign-offs that would be appreciated but the main reason for not merging into 5.18 is over the lack of Linux-Next exposure .  <br /><p align="center"><img src="//www.phoronix.net/image.php?id=2022&image=mglru_v6" /><br /><em>Prior MGLRU developer summary.</em></p>  <br />Here's to hoping MGLRU makes it into Linux 5.19!</div></div>
+	
+	
+</section>
+
+<section class="feeditem">
+	<h2><a class="itemtitle" href="https://www.phoronix.com/scan.php?page=news_item&px=Debian-11.3-Released">Debian 11.3 Released With Many Bug Fixes, Security Updates</a></h2>
+	<time datetime="2022-03-26 21:33:17">2022-03-26 21:33:17</time>
+	
+	<div class="content"><div class="content"> <div style="float: left; padding: 0 10px 10px;"><img alt="DEBIAN -- " src="assets/categories/debian.jpg" width="100" height="100" /></div> Debian 12 "Bookworm" is <a href="https://www.phoronix.com/scan.php?page=news_item&px=Debian-12-Tentative-Dates">coming next year</a> while out this weekend is Debian 11.3 as the newest update in the "Bullseye" series. <br /> <br />Debian 11.3 as usual for Debian GNU/Linux point releases is just about delivering bug fixes and security updates. Debian 11.3 has security fixes for Apache's log4j for that notorious vulnerability from the end of last year and follow-up issues. Debian 11.3 also has security fixes for ClamAV, FLAC, Glibc, Golang, XTerm, and a variety of other packages -- including a denial of service vulnerability for the NVIDIA driver. The latest Intel CPU microcode is also included as a result of recent security vulnerability disclosures. <br /> <br />Debian 11.3 also has a newer Linux 5.10 point release, updated Debian installation documentation, and other maintenance updates. <br /> <br />Downloads and more details on Debian 11.3 via <a href="https://www.debian.org/News/2022/20220326">Debian.org</a>. <br /> <br />For those still on the old stable series, <a href="https://www.debian.org/News/2022/2022032602">Debian 10.12</a> was also released today with similar changes where relevant to that older package set.</div></div>
+	
+	
+</section>
+
+<section class="feeditem">
+	<h2><a class="itemtitle" href="https://www.phoronix.com/scan.php?page=news_item&px=Intel-CET-IBT-For-Linux-5.18">Intel CET Indirect Branch Tracking Submitted For Linux 5.18</a></h2>
+	<time datetime="2022-03-26 17:45:16">2022-03-26 17:45:16</time>
+	
+	<div class="content"><div class="content"> <div style="float: left; padding: 0 10px 10px;"><img alt="INTEL -- " src="assets/categories/intel.jpg" width="100" height="100" /></div> Indirect Branch Tracking (IBT) that is part of Intel's Control-Flow Enforcement Technology (CET) found with Tiger Lake CPUs and newer is landing for the Linux 5.18 kernel. <br /> <br />Intel's Peter Zijlstra recently <a href="https://www.phoronix.com/scan.php?page=news_item&px=Indirect-Branch-Tracking-5.18">wrapped up work on the latest IBT patches for the Linux kernel</a> as this newest CPU security feature. IBT helps protect against JUMP/CALL oriented attacks. IBT is hardware-based, course-grain forward-edge Control Flow Integrity (CFI) protection. When enabled for the kernel build, it ensures indirect calls land on an ENDBR instruction. Besides all of the Linux kernel patches to make IBT a reality, there is compiler-side support necessary that means GCC 9 and newer or LLVM Clang 14 and newer. <br /> <br />Zijlstra sums up the CET-IBT functionality for the Linux kernel as: <br /><blockquote>Add support for Intel CET-IBT, available since Tigerlake (11th gen), which is a coarse grained, hardware based, forward edge Control-Flow-Integrity mechanism where any indirect CALL/JMP must target an ENDBR instruction or suffer #CP. <br /> <br />Additionally, since Alderlake (12th gen)/Sapphire-Rapids, speculation is limited to 2 instructions (and typically fewer) on branch targets not starting with ENDBR. CET-IBT also limits speculation of the next sequential instruction after the indirect CALL/JMP. <br /> <br />CET-IBT is fundamentally incompatible with retpolines, but provides, as described above, speculation limits itself.</blockquote> <br /><p align="center"><img src="//www.phoronix.net/image.php?id=2020&image=intel_cet_tiger_med" /><br /><em>Intel has been working on both Shadow Stack and Indirect Branch Tracking support for the Linux kernel.</em></p> <br />With <a href="https://lore.kernel.org/lkml/20220326152646.GT8939@worktop.programming.kicks-ass.net/">this pull</a> IBT is ready to go for Linux 5.18 on Intel's latest processors.</div></div>
+	
+	
+</section>
+
+<section class="feeditem">
+	<h2><a class="itemtitle" href="https://www.phoronix.com/scan.php?page=news_item&px=DXVK-1.10.1-Released">DXVK 1.10.1 Released With Initial Support For Shared Resources, Game Fixes</a></h2>
+	<time datetime="2022-03-26 12:20:11">2022-03-26 12:20:11</time>
+	
+	<div class="content"><div class="content"> <div style="float: left; padding: 0 10px 10px;"><img alt="LINUX GAMING -- " src="assets/categories/linuxgaming.jpg" width="100" height="100" /></div> Building off <a href="https://www.phoronix.com/scan.php?page=news_item&px=DXVK-1.10-Released">DXVK 1.10</a> released at the start of the month, we are now ending out March with DXVK 1.10.1 for this translation layer used for running Direct3D 9/10/11 games over the Vulkan API on Linux systems. <br /> <br />DXVK 1.10.1 introduces initial support for shared resources and in turn fixes video playback for games as well as for UI issues seen with Black Mesa. The shared resources handling does require Wine patches which for right now is only patched with Proton Experimental. Right now this experimental shared resources handling works for 2D texture sharing between D3D9 and D3D11 when using DXVK from both APIs. Resource sharing with D3D12 and Vulkan applications may come in the future. <br /> <br />DXVK 1.10.1 also adds a <em>DXVK_ENABLE_NVAPI</em> environment variable to bypass the vendor ID override, improved shader code generation around local arrays, various Direct3D 9 texture upload issues resolved, and more. <br /> <br />There are known fixes/improvements for Assassin's Creed 3: Black Flag, Frostpunk, God of War, GTA: San Andreas, and Rayman Origins. <br /> <br />For those building DXVK from source while waiting for an updated Proton for Steam Play, head on over to <a href="https://github.com/doitsujin/dxvk/releases/tag/v1.10.1">GitHub</a> for the latest DXVK code.</div></div>
+	
+	
+</section>
+
+<section class="feeditem">
+	<h2><a class="itemtitle" href="https://www.phoronix.com/scan.php?page=news_item&px=Linux-5.18-XFS-Changes">XFS Online Repair Functionality To Undergo A Massive Design Review</a></h2>
+	<time datetime="2022-03-26 11:35:34">2022-03-26 11:35:34</time>
+	
+	<div class="content"><div class="content"> <div style="float: left; padding: 0 10px 10px;"><img alt="LINUX STORAGE -- " src="assets/categories/linuxstorage.jpg" width="100" height="100" /></div> The XFS file-system updates have been submitted and merged for the ongoing <a href="https://www.phoronix.com/scan.php?page=search&q=Linux+5.18">Linux 5.18</a> merge window. <br /> <br />The XFS file-system changes for the Linux 5.18 cycle are mostly about bug fixes. There are a variety of bug fixes throughout the kernel driver code and also a shift that brings the XFS file-system's inode attribute setting code closer to how the kernel VFS code handles it. <br /> <br /><a href="https://lore.kernel.org/lkml/20220323164821.GP8224@magnolia/">The pull request</a> of XFS changes for Linux 5.18 isn't too particularly interesting, but a comment by XFS maintainer Darrick Wong within the email is actually the most interesting: <br /><blockquote>Dave Chinner will be taking over as XFS maintainer for one release cycle, starting from the day 5.18-rc1 drops until 5.19-rc1 is tagged so that I can focus on starting a massive design review for the (feature complete after five years) online repair feature.</blockquote> <br /><a href="https://www.phoronix.com/scan.php?page=news_item&px=Linux-5.7-Better-XFS">XFS online repair has been talked about for years</a> along with online scrubbing and it looks like it's about all buttoned up. Darrick Wong will be spending the next roughly two months focusing on the "massive" design review for XFS online repair code. <br /> <br />XFS online repair has been worked on over the past several years while in the process of a number of rounds of patch review, other portions of the XFS code have been found in need of improvement too and thus has dragged on as a rather lengthy process.</div></div>
+	
+	
+</section>
+
+<section class="feeditem">
+	<h2><a class="itemtitle" href="https://www.phoronix.com/scan.php?page=news_item&px=AMD-More-Linux-CXL-Debug">AMD Recruiting More Linux Engineers For Debug, CXL Enablement & More</a></h2>
+	<time datetime="2022-03-26 11:00:00">2022-03-26 11:00:00</time>
+	
+	<div class="content"><div class="content"> <div style="float: left; padding: 0 10px 10px;"><img alt="AMD -- " src="assets/categories/amd.jpg" width="100" height="100" /></div> I was informed that AMD has a few more Linux positions open at the company. While they have in past years been rather nimble with their Linux staffing, things continue to change thanks to their ongoing successes in the marketplace from the consumer side with Steam Deck through the likes of Tesla's infotainment system up through high-end server platforms.  <br />  <br />AMD over particularly the past 1~2 years has begun significantly ramping up their Linux hires thanks to EPYC servers being well received in the marketplace along with their supercomputer design wins and most of the servers these days running Linux. Then over the past year they have been <a href="https://www.phoronix.com/scan.php?page=news_item&px=AMD-Linux-Client-Hiring-2022">focusing more on the Linux client side too</a> for Ryzen and embedded SoC designs with increasing Linux usage there too.  <br />  <br />In addition to <a href="https://www.phoronix.com/scan.php?page=news_item&px=AMD-Linux-Jobs-March-2022">some of their Linux job postings from earlier this month</a> still being unfilled, they have also opened up some new positions.  <br />  <br />Notable with their latest batch of Linux openings is hiring a <a href="https://jobs.amd.com/job/Austin-Partnership-Engagement-EngineerArchitect-%28Open-Source%29-109981-Texa/779997700/">CXL engineer</a>. This role will focus on AMD's support for Compute Express Link (CXL) hardware enablement under Linux. Intel so far has been leading the development of the Linux kernel's <a href="https://www.phoronix.com/scan.php?page=search&q=Compute+Express+Link">Compute Express Link</a> subsystem. Over the past number of kernels with the still maturing CXL subsystem Intel engineers have been responsible for nearly all of that enablement work for this new open standard. AMD has been part of the CXL organization so it's good to see them now (albeit late) hiring to work on CXL for Linux too.  <br /><p align="center"><img src="//www.phoronix.net/image.php?id=amd-epyc-7773x-linux&image=amd_milanx_8_med" /><br /><em>AMD's newly released EPYC Milan-X processors are a fantastic performer under Linux already but certainly eager to see more timely contributions to the Linux kernel for next-gen platforms and relentless optimizing for new and existing hardware, especially considering Intel's vast open-source/Linux talent pool and their massive scale of open-source work across the board.</em></p>  <br />Over on the client side, another new job opening is for a <a href="https://jobs.amd.com/job/Austin-Client-Platform-Validation-&-Debug-Lead-128221-Texa/820607400/">client Linux platform debug lead</a>. This will focus on desktop/notebook platform debugging for Linux. Great to see they'll have an additional person helping to work through Linux client bugs, including mentioned in the job posting are around power management / system standby -- an area where some modern AMD Ryzen notebooks have had issues on Linux with s2idle, etc, but more recent kernels have begun working through those problems.  <br />  <br />There remains a number of other open Linux engineering positions too. Those on the hunt can see <a href="https://jobs.amd.com/search/?createNewAlert=false&q=Linux&locationsearch=">the AMD Linux job board</a>.</div></div>
+	
+	
+</section>
+
+<section class="feeditem">
+	<h2><a class="itemtitle" href="https://www.phoronix.com/scan.php?page=news_item&px=SDL-Sound-2.0">SDL_sound 2.0 Released As First Update In Nearly 14 Years</a></h2>
+	<time datetime="2022-03-26 10:56:55">2022-03-26 10:56:55</time>
+	
+	<div class="content"><div class="content"> <div style="float: left; padding: 0 10px 10px;"><img alt="LINUX GAMING -- " src="assets/categories/linuxgaming.jpg" width="100" height="100" /></div> Longtime Linux game porter and SDL developer Ryan Gordon released SDL_sound 2.0 as the first release of this sound component to the Simple DirectMedia Library in nearly fourteen years.  <br />  <br />SDL_sound complements SDL by providing easy handling for audio decoding of popular sound formats like WAV and MP3. The last release was SDL_sound 1.0.3 way back in April 2008 while on Friday Ryan "Icculus" Gordon released SDL_sound 2.0.  <br />  <br />SDL_sound 2.0 transitions to using SDL2 with SDL 1.2 no longer being supported, switches over to the Zlib license from LGPLv2, no longer has any external dependencies, supports the CMake build system, and removes support for outdated targets like QuickTime and Speex.  <br />  <br />For game developers and others looking for easy sound file handling with SDL integration, see the <a href="https://github.com/icculus/SDL_sound/releases/tag/v2.0.1">SDL_sound 2.0 announcement</a>.</div></div>
+	
+	
+</section>
+
+<section class="feeditem">
+	<h2><a class="itemtitle" href="https://www.phoronix.com/scan.php?page=news_item&px=Linux-5.18-Does-C11">The Switch Has Been Made From C89 To C11/GNU11 With Linux 5.18</a></h2>
+	<time datetime="2022-03-26 10:05:17">2022-03-26 10:05:17</time>
+	
+	<div class="content"><div class="content"> <div style="float: left; padding: 0 10px 10px;"><img alt="LINUX KERNEL -- " src="assets/categories/linuxkernel.jpg" width="100" height="100" /></div> As we approach the end of the first week of the <a href="https://www.phoronix.com/scan.php?page=search&q=Linux+5.18">Linux 5.18</a> merge window, another note worthy pull request to land is the switching of the C language standard from GNU89 (C89) to GNU11 (C11). <br /> <br />Stemming from a list_for_each_entry() bug, upstream kernel developers including Linus Torvalds himself began discussing C version requirements for the kernel and the benefits of moving to a newer C standard. Since last year with Linux 5.15 the base compiler requirement was <a href="https://www.phoronix.com/scan.php?page=news_item&px=Linux-5.15-Raising-GCC">raised to GCC 5.1</a>, it was deemed safe to go ahead and move from C89 to C11 without introducing any new compiler requirements. <br /><p align="center"><img src="//www.phoronix.net/image.php?id=2022&image=linux_does_c11" /></p> <br />So with Linux 5.18 the jump was made from C89 straight to C11 without first using C99 as a stepping stone. The Linux kernel continues using the GNU dialect of the ISO C standard. The Linux kernel has already enabled some newer C extensions previously while now for kernel code it's safe to assume "-std=gnu11" moving forward. <br /> <br />More details via <a href="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=50560ce6a0bdab2fc37384c52aa02c7043909d2c">this Git merge</a>.</div></div>
+	
+	
+</section>
+
+<section class="feeditem">
+	<h2><a class="itemtitle" href="https://www.phoronix.com/scan.php?page=news_item&px=Linux-5.18-Deprecates-ReiserFS">Linux 5.18 Moves Ahead With Deprecating ReiserFS</a></h2>
+	<time datetime="2022-03-26 09:30:50">2022-03-26 09:30:50</time>
+	
+	<div class="content"><div class="content"> <div style="float: left; padding: 0 10px 10px;"><img alt="LINUX STORAGE -- " src="assets/categories/linuxstorage.jpg" width="100" height="100" /></div> Following the recent developer discussions around <a href="https://www.phoronix.com/scan.php?page=news_item&px=ReiserFS-2022-Linux-Deprecation">deprecating and removing the ReiserFS file-system</a> from the mainline kernel, the in-development Linux 5.18 kernel is going ahead and deprecating it. <br /> <br />There was a consensus among upstream kernel developers to <a href="https://www.phoronix.com/scan.php?page=news_item&px=ReiserFS-Deprecate-Remove-2025">deprecate ReiserFS</a> given that there are no notable users of it any longer, the code is barely maintained, and no legitimate reasons have been found to user ReiserFS over any of the modern alternatives like EXT4, XFS, Btrfs, F2FS, etc. <br /> <br />ReiserFS has barely seen any upstream work besides that of Edward Shishkin as a former Namesys developer that also took on Reiser4 (and now Reiser5) out-of-tree development following Hans Reiser's arrest and murder conviction. Shishkin has contributed fixes occasionally to ReiserFS but those are very rare while he has mostly been focused on Reiser4/Reiser5 that still have no clear trajectory at this point for going mainline without any major corporate backer. <br /><p align="center"><img src="//www.phoronix.net/image.php?id=2022&image=reiserfs_linux_518" /></p> <br />Thus on Friday night <a href="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a452c4eb404df8a7f2a79a37ac77b90b6db1a2c9">fs_for_v5.18-rc1</a> was merged that goes ahead and deprecates ReiserFS. The plan is to treat it as deprecated and formally remove it from the mainline Linux kernel in 2025.</div></div>
+	
+	
+</section>
+
+<section class="feeditem">
+	<h2><a class="itemtitle" href="https://www.phoronix.com/scan.php?page=news_item&px=LoongArch-For-GCC-12">GCC Compiler Accepts China's MIPS-Derived LoongArch CPU Port</a></h2>
+	<time datetime="2022-03-26 09:11:23">2022-03-26 09:11:23</time>
+	
+	<div class="content"><div class="content"> <div style="float: left; padding: 0 10px 10px;"><img alt="GNU -- " src="assets/categories/gnu.jpg" width="100" height="100" /></div> The GCC steering committee has signed off on the <a href="https://www.phoronix.com/scan.php?page=search&q=LoongArch">LoongArch</a> compiler port and could still land for the GCC 12 stable compiler release in a few weeks. <br /> <br />LoongArch is the CPU architecture developed by Chinese hardware vendor Loongson and based on MIPS 64-bit with various modifications. Loongson has been working on the GCC compiler port for a while along with the Linux kernel changes and other software stack support. <br /> <br />Loongson's kernel work on LoongArch was <a href="https://www.phoronix.com/scan.php?page=news_item&px=LoongArch-MIPS-Copy-Kernel">criticized for duplicating lots of MIPS code</a> but has still been working through that and then the main blocker on getting the Linux kernel code introduced shifted to the lack of mainline GCC compiler support. <br /><p align="center"><img src="//www.phoronix.net/image.php?id=2022&image=loongarch_isa" /><br /><em>The LoongArch ISA docs can be found on <a href="https://loongson.github.io/LoongArch-Documentation/LoongArch-Vol1-EN.pdf">GitHub</a>.</em></p> <br />The GCC steering committee <a href="https://gcc.gnu.org/pipermail/gcc/2022-March/238452.html">announced</a> on Friday they have accepted the LoongArch port for inclusion. They hope that this will still land in time for the GCC 12.1 stable release that will be out in April or May. <br /> <br /><a href="https://www.phoronix.com/scan.php?page=news_item&px=Loongson-3A5000-Benchmark">Loongson 3A5000 benchmarks</a> aren't the most promising right now for the initial LoongArch ISA hardware but will be interesting to see how Loongson can evolve the hardware and software support moving forward for this Chinese domestic architecture. <br /> <br />Loongson has also been <a href="https://www.phoronix.com/scan.php?page=news_item&px=LoongArch-LLVM-Landing">working on LoongArch for LLVM</a>.</div></div>
+	
+	
+</section>
+
+<section class="feeditem">
+	<h2><a class="itemtitle" href="https://www.phoronix.com/scan.php?page=news_item&px=Wine-7.5-Released">Wine 7.5 Released With HLSL Compiler Support For Bundled VKD3D</a></h2>
+	<time datetime="2022-03-25 22:04:54">2022-03-25 22:04:54</time>
+	
+	<div class="content"><div class="content"> <div style="float: left; padding: 0 10px 10px;"><img alt="WINE -- " src="assets/categories/wine.jpg" width="100" height="100" /></div> Wine 7.5 is out as the latest bi-weekly software update for enjoying Windows games and applications under Linux, macOS, and other platforms. <br /> <br />Wine 7.5 continues the recent trend of converting more components to portable executable (PE) format, with this release bring Wine's ALSA driver now converted. <br /> <br />Wine 7.5 also adds HLSL compiler support for the bundled VKD3D for Direct3D 12 over Vulkan, with the recent <a href="https://www.phoronix.com/scan.php?page=news_item&px=VKD3D-1.3-Release-Imminent">VKD3D 1.3 adding HLSL shader compilation</a> for that shading language used by Direct3D. <br /> <br />Wine 7.5 has also begun preparing OCSP protocol support, the Online Certificate Status Protocol for obtaining the revocation status of X.509 digital certificates. <br /> <br />Wine 7.5 is rounded out by continued work on code clean-ups around long type handling and other changes. There are 28 known bug fixes with this Wine bi-weekly release affecting software like Microsoft PowerTops and Windows Terminal to games like GRID 2  and Minecraft. <br /> <br />Downloads and more details for Wine 7.5 via <a href="https://www.winehq.org/announce/7.5">WineHQ.org</a>.</div></div>
+	
+	
+</section>
+
+</body>
+</html>
