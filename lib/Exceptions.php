@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
  * Atom feeds for websites that don't have one.
@@ -6,18 +7,19 @@
  * For the full license information, please view the UNLICENSE file distributed
  * with this source code.
  *
- * @package	Core
- * @license	http://unlicense.org/ UNLICENSE
- * @link	https://github.com/rss-bridge/rss-bridge
+ * @package Core
+ * @license http://unlicense.org/ UNLICENSE
+ * @link    https://github.com/rss-bridge/rss-bridge
  */
 
 /**
  * Builds a GitHub search query to find open bugs for the current bridge
  */
-function buildGitHubSearchQuery($bridgeName){
-	return REPOSITORY
-	. 'issues?q='
-	. urlencode('is:issue is:open ' . $bridgeName);
+function buildGitHubSearchQuery($bridgeName)
+{
+    return REPOSITORY
+    . 'issues?q='
+    . urlencode('is:issue is:open ' . $bridgeName);
 }
 
 /**
@@ -33,37 +35,38 @@ function buildGitHubSearchQuery($bridgeName){
  *
  * @todo This function belongs inside a class
  */
-function buildGitHubIssueQuery($title, $body, $labels = null, $maintainer = null){
-	if(!isset($title) || !isset($body) || empty($title) || empty($body)) {
-		return null;
-	}
+function buildGitHubIssueQuery($title, $body, $labels = null, $maintainer = null)
+{
+    if (!isset($title) || !isset($body) || empty($title) || empty($body)) {
+        return null;
+    }
 
-	// Add title and body
-	$uri = REPOSITORY
-		. 'issues/new?title='
-		. urlencode($title)
-		. '&body='
-		. urlencode($body);
+    // Add title and body
+    $uri = REPOSITORY
+        . 'issues/new?title='
+        . urlencode($title)
+        . '&body='
+        . urlencode($body);
 
-	// Add labels
-	if(!is_null($labels) && is_array($labels) && count($labels) > 0) {
-		if(count($lables) === 1) {
-			$uri .= '&labels=' . urlencode($labels[0]);
-		} else {
-			foreach($labels as $label) {
-				$uri .= '&labels[]=' . urlencode($label);
-			}
-		}
-	} elseif(!is_null($labels) && is_string($labels)) {
-		$uri .= '&labels=' . urlencode($labels);
-	}
+    // Add labels
+    if (!is_null($labels) && is_array($labels) && count($labels) > 0) {
+        if (count($lables) === 1) {
+            $uri .= '&labels=' . urlencode($labels[0]);
+        } else {
+            foreach ($labels as $label) {
+                $uri .= '&labels[]=' . urlencode($label);
+            }
+        }
+    } elseif (!is_null($labels) && is_string($labels)) {
+        $uri .= '&labels=' . urlencode($labels);
+    }
 
-	// Add maintainer
-	if(!empty($maintainer)) {
-		$uri .= '&assignee=' . urlencode($maintainer);
-	}
+    // Add maintainer
+    if (!empty($maintainer)) {
+        $uri .= '&assignee=' . urlencode($maintainer);
+    }
 
-	return $uri;
+    return $uri;
 }
 
 /**
@@ -75,35 +78,36 @@ function buildGitHubIssueQuery($title, $body, $labels = null, $maintainer = null
  *
  * @todo This function belongs inside a class
  */
-function buildBridgeException($e, $bridge){
-	if(( !($e instanceof \Exception) && !($e instanceof \Error)) || !($bridge instanceof \BridgeInterface)) {
-		return null;
-	}
+function buildBridgeException($e, $bridge)
+{
+    if (( !($e instanceof \Exception) && !($e instanceof \Error)) || !($bridge instanceof \BridgeInterface)) {
+        return null;
+    }
 
-	$title = $bridge->getName() . ' failed with error ' . $e->getCode();
+    $title = $bridge->getName() . ' failed with error ' . $e->getCode();
 
-	// Build a GitHub compatible message
-	$body = 'Error message: `'
-	. $e->getMessage()
-	. "`\nQuery string: `"
-	. (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '')
-	. "`\nVersion: `"
-	. Configuration::getVersion()
-	. '`';
+    // Build a GitHub compatible message
+    $body = 'Error message: `'
+    . $e->getMessage()
+    . "`\nQuery string: `"
+    . (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '')
+    . "`\nVersion: `"
+    . Configuration::getVersion()
+    . '`';
 
-	$body_html = nl2br($body);
-	$link = buildGitHubIssueQuery($title, $body, 'Bridge-Broken', $bridge->getMaintainer());
-	$searchQuery = buildGitHubSearchQuery($bridge::NAME);
+    $body_html = nl2br($body);
+    $link = buildGitHubIssueQuery($title, $body, 'Bridge-Broken', $bridge->getMaintainer());
+    $searchQuery = buildGitHubSearchQuery($bridge::NAME);
 
-	$header = buildHeader($e, $bridge);
-	$message = <<<EOD
+    $header = buildHeader($e, $bridge);
+    $message = <<<EOD
 <strong>{$bridge->getName()}</strong> was unable to receive or process the
 remote website's content!<br>
 {$body_html}
 EOD;
-	$section = buildSection($e, $bridge, $message, $link, $searchQuery);
+    $section = buildSection($e, $bridge, $message, $link, $searchQuery);
 
-	return $section;
+    return $section;
 }
 
 /**
@@ -115,28 +119,29 @@ EOD;
  *
  * @todo This function belongs inside a class
  */
-function buildTransformException($e, $bridge){
-	if(( !($e instanceof \Exception) && !($e instanceof \Error)) || !($bridge instanceof \BridgeInterface)) {
-		return null;
-	}
+function buildTransformException($e, $bridge)
+{
+    if (( !($e instanceof \Exception) && !($e instanceof \Error)) || !($bridge instanceof \BridgeInterface)) {
+        return null;
+    }
 
-	$title = $bridge->getName() . ' failed with error ' . $e->getCode();
+    $title = $bridge->getName() . ' failed with error ' . $e->getCode();
 
-	// Build a GitHub compatible message
-	$body = 'Error message: `'
-	. $e->getMessage()
-	. "`\nQuery string: `"
-	. (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '')
-	. '`';
+    // Build a GitHub compatible message
+    $body = 'Error message: `'
+    . $e->getMessage()
+    . "`\nQuery string: `"
+    . (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '')
+    . '`';
 
-	$link = buildGitHubIssueQuery($title, $body, 'Bridge-Broken', $bridge->getMaintainer());
-	$searchQuery = buildGitHubSearchQuery($bridge::NAME);
-	$header = buildHeader($e, $bridge);
-	$message = "RSS-Bridge was unable to transform the contents returned by
+    $link = buildGitHubIssueQuery($title, $body, 'Bridge-Broken', $bridge->getMaintainer());
+    $searchQuery = buildGitHubSearchQuery($bridge::NAME);
+    $header = buildHeader($e, $bridge);
+    $message = "RSS-Bridge was unable to transform the contents returned by
 <strong>{$bridge->getName()}</strong>!";
-	$section = buildSection($e, $bridge, $message, $link, $searchQuery);
+    $section = buildSection($e, $bridge, $message, $link, $searchQuery);
 
-	return buildPage($title, $header, $section);
+    return buildPage($title, $header, $section);
 }
 
 /**
@@ -148,8 +153,9 @@ function buildTransformException($e, $bridge){
  *
  * @todo This function belongs inside a class
  */
-function buildHeader($e, $bridge){
-	return <<<EOD
+function buildHeader($e, $bridge)
+{
+    return <<<EOD
 <header>
 	<h1>Error {$e->getCode()}</h1>
 	<h2>{$e->getMessage()}</h2>
@@ -170,8 +176,9 @@ EOD;
  *
  * @todo This function belongs inside a class
  */
-function buildSection($e, $bridge, $message, $link, $searchQuery){
-	return <<<EOD
+function buildSection($e, $bridge, $message, $link, $searchQuery)
+{
+    return <<<EOD
 <section>
 	<p class="exception-message">{$message}</p>
 	<div class="advice">
@@ -202,8 +209,9 @@ EOD;
  *
  * @todo This function belongs inside a class
  */
-function buildPage($title, $header, $section){
-	return <<<EOD
+function buildPage($title, $header, $section)
+{
+    return <<<EOD
 <!DOCTYPE html>
 <html lang="en">
 <head>

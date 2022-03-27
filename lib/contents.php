@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
  * Atom feeds for websites that don't have one.
@@ -6,76 +7,88 @@
  * For the full license information, please view the UNLICENSE file distributed
  * with this source code.
  *
- * @package	Core
- * @license	http://unlicense.org/ UNLICENSE
- * @link	https://github.com/rss-bridge/rss-bridge
+ * @package Core
+ * @license http://unlicense.org/ UNLICENSE
+ * @link    https://github.com/rss-bridge/rss-bridge
  */
 
 
 /**
  * Exception class to handle all errors, when executing getContents
  */
-class GetContentsException extends \Exception {
-	public function __construct($details, $code = 0, Throwable $previous = null) {
-		$message = trim($this->getMessageHeading() . "\n$details");
+class GetContentsException extends \Exception
+{
+    public function __construct($details, $code = 0, Throwable $previous = null)
+    {
+        $message = trim($this->getMessageHeading() . "\n$details");
 
-		$lastError = error_get_last();
-		if($lastError !== null)
-			$message .= "\nLast PHP Error: " . $lastError['message'];
+        $lastError = error_get_last();
+        if ($lastError !== null) {
+            $message .= "\nLast PHP Error: " . $lastError['message'];
+        }
 
-		parent::__construct($message, $code, $previous);
-	}
+        parent::__construct($message, $code, $previous);
+    }
 
-	protected function getMessageHeading() {
-		return 'Could not get contents';
-	}
+    protected function getMessageHeading()
+    {
+        return 'Could not get contents';
+    }
 }
 
 /**
  * Exception class to handle HTTP responses with Cloudflare challenges
  **/
-class CloudflareChallengeException extends \Exception {
-	public function __construct($code = 0, Throwable $previous = null) {
-		$message = <<<EOD
+class CloudflareChallengeException extends \Exception
+{
+    public function __construct($code = 0, Throwable $previous = null)
+    {
+        $message = <<<EOD
 The server responded with a Cloudflare challenge, which is not supported by RSS-Bridge!
 If this error persists longer than a week, please consider opening an issue on GitHub!
 EOD;
 
-		parent::__construct($message, $code, $previous);
-	}
+        parent::__construct($message, $code, $previous);
+    }
 }
 
 /**
  * Exception class to handle non-20x HTTP responses
  **/
-class UnexpectedResponseException extends \GetContentsException {
-	private $responseCode;
-	private $responseHeaders;
-	private $responseBody;
+class UnexpectedResponseException extends \GetContentsException
+{
+    private $responseCode;
+    private $responseHeaders;
+    private $responseBody;
 
-	protected function getMessageHeading() {
-		return 'Unexpected response from upstream';
-	}
+    protected function getMessageHeading()
+    {
+        return 'Unexpected response from upstream';
+    }
 
-	public function __construct($responseBody, $responseHeaders, $responseCode = 500, Throwable $previous = null) {
-		$this->responseCode = $responseCode;
-		$this->responseHeaders = $responseHeaders;
-		$this->responseBody = $responseBody;
+    public function __construct($responseBody, $responseHeaders, $responseCode = 500, Throwable $previous = null)
+    {
+        $this->responseCode = $responseCode;
+        $this->responseHeaders = $responseHeaders;
+        $this->responseBody = $responseBody;
 
-		parent::__construct('', $responseCode, $previous);
-	}
+        parent::__construct('', $responseCode, $previous);
+    }
 
-	public function getResponseCode() {
-		return $this->responseCode;
-	}
+    public function getResponseCode()
+    {
+        return $this->responseCode;
+    }
 
-	public function getResponseHeaders() {
-		return $this->responseHeaders;
-	}
+    public function getResponseHeaders()
+    {
+        return $this->responseHeaders;
+    }
 
-	public function getResponseBody() {
-		return $this->responseBody();
-	}
+    public function getResponseBody()
+    {
+        return $this->responseBody();
+    }
 }
 
 /**
@@ -110,165 +123,162 @@ class UnexpectedResponseException extends \GetContentsException {
  * For more information see http://php.net/manual/en/function.curl-setopt.php
  * @return string|array The contents.
  */
-function getContents($url, $header = array(), $opts = array(), $returnHeader = false){
-	Debug::log('Reading contents from "' . $url . '"');
+function getContents($url, $header = array(), $opts = array(), $returnHeader = false)
+{
+    Debug::log('Reading contents from "' . $url . '"');
 
-	// Initialize cache
-	$cacheFac = new CacheFactory();
-	$cacheFac->setWorkingDir(PATH_LIB_CACHES);
-	$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
-	$cache->setScope('server');
-	$cache->purgeCache(86400); // 24 hours (forced)
+    // Initialize cache
+    $cacheFac = new CacheFactory();
+    $cacheFac->setWorkingDir(PATH_LIB_CACHES);
+    $cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+    $cache->setScope('server');
+    $cache->purgeCache(86400); // 24 hours (forced)
 
-	$params = array($url);
-	$cache->setKey($params);
+    $params = array($url);
+    $cache->setKey($params);
 
-	$retVal = array(
-		'header' => '',
-		'content' => '',
-	);
+    $retVal = array(
+        'header' => '',
+        'content' => '',
+    );
 
-	// Use file_get_contents() if curl module is not installed
-	if(! function_exists('curl_version')) {
+    // Use file_get_contents() if curl module is not installed
+    if (! function_exists('curl_version')) {
+        $httpHeaders = '';
 
-		$httpHeaders = '';
+        foreach ($header as $headerL) {
+            $httpHeaders .= $headerL . "\r\n";
+        }
 
-		foreach ($header as $headerL) {
-			$httpHeaders .= $headerL . "\r\n";
-		}
+        $ctx = stream_context_create(array(
+            'http' => array(
+                'header' => $httpHeaders
+            )
+        ));
 
-		$ctx = stream_context_create(array(
-			'http' => array(
-				'header' => $httpHeaders
-			)
-		));
+        $data = @file_get_contents($url, 0, $ctx);
 
-		$data = @file_get_contents($url, 0, $ctx);
+        if ($data === false) {
+            $errorCode = 500;
+        } else {
+            $errorCode = 200;
+            $retVal['header'] = implode("\r\n", $http_response_header);
+        }
 
-		if($data === false) {
-			$errorCode = 500;
-		} else {
-			$errorCode = 200;
-			$retVal['header'] = implode("\r\n", $http_response_header);
-		}
+        $curlError = '';
+        $curlErrno = '';
+        $headerSize = 0;
+        $finalHeader = array();
+    } else {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
-		$curlError = '';
-		$curlErrno = '';
-		$headerSize = 0;
-		$finalHeader = array();
-	} else {
-		$ch = curl_init($url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        if (is_array($header) && count($header) !== 0) {
+            Debug::log('Setting headers: ' . json_encode($header));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        }
 
-		if(is_array($header) && count($header) !== 0) {
+        curl_setopt($ch, CURLOPT_USERAGENT, ini_get('user_agent'));
+        curl_setopt($ch, CURLOPT_ENCODING, '');
+        curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
 
-			Debug::log('Setting headers: ' . json_encode($header));
-			curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        if (is_array($opts) && count($opts) !== 0) {
+            Debug::log('Setting options: ' . json_encode($opts));
 
-		}
+            foreach ($opts as $key => $value) {
+                curl_setopt($ch, $key, $value);
+            }
+        }
 
-		curl_setopt($ch, CURLOPT_USERAGENT, ini_get('user_agent'));
-		curl_setopt($ch, CURLOPT_ENCODING, '');
-		curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
+        if (defined('PROXY_URL') && !defined('NOPROXY')) {
+            Debug::log('Setting proxy url: ' . PROXY_URL);
+            curl_setopt($ch, CURLOPT_PROXY, PROXY_URL);
+        }
 
-		if(is_array($opts) && count($opts) !== 0) {
+        // We always want the response header as part of the data!
+        curl_setopt($ch, CURLOPT_HEADER, true);
 
-			Debug::log('Setting options: ' . json_encode($opts));
+        // Build "If-Modified-Since" header
+        if (!Debug::isEnabled() && $time = $cache->getTime()) { // Skip if cache file doesn't exist
+            Debug::log('Adding If-Modified-Since');
+            curl_setopt($ch, CURLOPT_TIMEVALUE, $time);
+            curl_setopt($ch, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
+        }
 
-			foreach($opts as $key => $value) {
-				curl_setopt($ch, $key, $value);
-			}
+        // Enables logging for the outgoing header
+        curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 
-		}
+        $data = curl_exec($ch);
+        $errorCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-		if(defined('PROXY_URL') && !defined('NOPROXY')) {
+        $curlError = curl_error($ch);
+        $curlErrno = curl_errno($ch);
+        $curlInfo = curl_getinfo($ch);
 
-			Debug::log('Setting proxy url: ' . PROXY_URL);
-			curl_setopt($ch, CURLOPT_PROXY, PROXY_URL);
+        Debug::log('Outgoing header: ' . json_encode($curlInfo));
 
-		}
+        if ($data === false) {
+            Debug::log('Cant\'t download ' . $url . ' cUrl error: ' . $curlError . ' (' . $curlErrno . ')');
+        }
 
-		// We always want the response header as part of the data!
-		curl_setopt($ch, CURLOPT_HEADER, true);
+        $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $header = substr($data, 0, $headerSize);
+        $retVal['header'] = $header;
 
-		// Build "If-Modified-Since" header
-		if(!Debug::isEnabled() && $time = $cache->getTime()) { // Skip if cache file doesn't exist
-			Debug::log('Adding If-Modified-Since');
-			curl_setopt($ch, CURLOPT_TIMEVALUE, $time);
-			curl_setopt($ch, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
-		}
+        Debug::log('Response header: ' . $header);
 
-		// Enables logging for the outgoing header
-		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+        $headers = parseResponseHeader($header);
+        $finalHeader = end($headers);
 
-		$data = curl_exec($ch);
-		$errorCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+    }
 
-		$curlError = curl_error($ch);
-		$curlErrno = curl_errno($ch);
-		$curlInfo = curl_getinfo($ch);
+    $finalHeader = array_change_key_case($finalHeader, CASE_LOWER);
 
-		Debug::log('Outgoing header: ' . json_encode($curlInfo));
+    switch ($errorCode) {
+        case 200: // Contents OK
+        case 201: // Contents Created
+        case 202: // Contents Accepted
+            Debug::log('New contents received');
+            $data = substr($data, $headerSize);
+            // Disable caching if the server responds with "Cache-Control: no-cache"
+            // or "Cache-Control: no-store"
 
-		if($data === false)
-			Debug::log('Cant\'t download ' . $url . ' cUrl error: ' . $curlError . ' (' . $curlErrno . ')');
+            if (array_key_exists('cache-control', $finalHeader)) {
+                Debug::log('Server responded with "Cache-Control" header');
+                $directives = explode(',', $finalHeader['cache-control']);
+                $directives = array_map('trim', $directives);
+                if (
+                    in_array('no-cache', $directives)
+                    || in_array('no-store', $directives)
+                ) { // Skip caching
+                    Debug::log('Skip server side caching');
+                    $retVal['content'] = $data;
+                    break;
+                }
+            }
+            Debug::log('Store response to cache');
+            $cache->saveData($data);
+            $retVal['content'] = $data;
+            break;
+        case 304: // Not modified, use cached data
+            Debug::log('Contents not modified on host, returning cached data');
+            $retVal['content'] = $cache->loadData();
+            break;
+        default:
+            if (array_key_exists('server', $finalHeader) && stripos($finalHeader['server'], 'cloudflare') !== false) {
+                throw new CloudflareChallengeException($errorCode);
+            }
 
-		$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-		$header = substr($data, 0, $headerSize);
-		$retVal['header'] = $header;
+            if ($curlError || $curlErrno) {
+                throw new GetContentsException('cURL error: ' . $curlError . ' (' . $curlErrno . ')');
+            }
 
-		Debug::log('Response header: ' . $header);
+            throw new UnexpectedResponseException($retVal['content'], $retVal['header'], $errorCode);
+    }
 
-		$headers = parseResponseHeader($header);
-		$finalHeader = end($headers);
-
-		curl_close($ch);
-	}
-
-	$finalHeader = array_change_key_case($finalHeader, CASE_LOWER);
-
-	switch($errorCode) {
-		case 200: // Contents OK
-		case 201: // Contents Created
-		case 202: // Contents Accepted
-			Debug::log('New contents received');
-			$data = substr($data, $headerSize);
-			// Disable caching if the server responds with "Cache-Control: no-cache"
-			// or "Cache-Control: no-store"
-
-			if(array_key_exists('cache-control', $finalHeader)) {
-				Debug::log('Server responded with "Cache-Control" header');
-				$directives = explode(',', $finalHeader['cache-control']);
-				$directives = array_map('trim', $directives);
-				if(in_array('no-cache', $directives)
-				|| in_array('no-store', $directives)) { // Skip caching
-					Debug::log('Skip server side caching');
-					$retVal['content'] = $data;
-					break;
-				}
-			}
-			Debug::log('Store response to cache');
-			$cache->saveData($data);
-			$retVal['content'] = $data;
-			break;
-		case 304: // Not modified, use cached data
-			Debug::log('Contents not modified on host, returning cached data');
-			$retVal['content'] = $cache->loadData();
-			break;
-		default:
-			if(array_key_exists('server', $finalHeader) && stripos($finalHeader['server'], 'cloudflare') !== false) {
-				throw new CloudflareChallengeException($errorCode);
-			}
-
-			if ($curlError || $curlErrno) {
-				throw new GetContentsException('cURL error: ' . $curlError . ' (' . $curlErrno . ')');
-			}
-
-			throw new UnexpectedResponseException($retVal['content'], $retVal['header'], $errorCode);
-	}
-
-	return ($returnHeader === true) ? $retVal : $retVal['content'];
+    return ($returnHeader === true) ? $retVal : $retVal['content'];
 }
 
 /**
@@ -297,24 +307,28 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
  * tags when returning plaintext.
  * @return false|simple_html_dom Contents as simplehtmldom object.
  */
-function getSimpleHTMLDOM($url,
-	$header = array(),
-	$opts = array(),
-	$lowercase = true,
-	$forceTagsClosed = true,
-	$target_charset = DEFAULT_TARGET_CHARSET,
-	$stripRN = true,
-	$defaultBRText = DEFAULT_BR_TEXT,
-	$defaultSpanText = DEFAULT_SPAN_TEXT){
+function getSimpleHTMLDOM(
+    $url,
+    $header = array(),
+    $opts = array(),
+    $lowercase = true,
+    $forceTagsClosed = true,
+    $target_charset = DEFAULT_TARGET_CHARSET,
+    $stripRN = true,
+    $defaultBRText = DEFAULT_BR_TEXT,
+    $defaultSpanText = DEFAULT_SPAN_TEXT
+) {
 
-	$content = getContents($url, $header, $opts);
-	return str_get_html($content,
-	$lowercase,
-	$forceTagsClosed,
-	$target_charset,
-	$stripRN,
-	$defaultBRText,
-	$defaultSpanText);
+    $content = getContents($url, $header, $opts);
+    return str_get_html(
+        $content,
+        $lowercase,
+        $forceTagsClosed,
+        $target_charset,
+        $stripRN,
+        $defaultBRText,
+        $defaultSpanText
+    );
 }
 
 /**
@@ -347,49 +361,55 @@ function getSimpleHTMLDOM($url,
  * tags when returning plaintext.
  * @return false|simple_html_dom Contents as simplehtmldom object.
  */
-function getSimpleHTMLDOMCached($url,
-	$duration = 86400,
-	$header = array(),
-	$opts = array(),
-	$lowercase = true,
-	$forceTagsClosed = true,
-	$target_charset = DEFAULT_TARGET_CHARSET,
-	$stripRN = true,
-	$defaultBRText = DEFAULT_BR_TEXT,
-	$defaultSpanText = DEFAULT_SPAN_TEXT){
+function getSimpleHTMLDOMCached(
+    $url,
+    $duration = 86400,
+    $header = array(),
+    $opts = array(),
+    $lowercase = true,
+    $forceTagsClosed = true,
+    $target_charset = DEFAULT_TARGET_CHARSET,
+    $stripRN = true,
+    $defaultBRText = DEFAULT_BR_TEXT,
+    $defaultSpanText = DEFAULT_SPAN_TEXT
+) {
 
-	Debug::log('Caching url ' . $url . ', duration ' . $duration);
+    Debug::log('Caching url ' . $url . ', duration ' . $duration);
 
-	// Initialize cache
-	$cacheFac = new CacheFactory();
-	$cacheFac->setWorkingDir(PATH_LIB_CACHES);
-	$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
-	$cache->setScope('pages');
-	$cache->purgeCache(86400); // 24 hours (forced)
+    // Initialize cache
+    $cacheFac = new CacheFactory();
+    $cacheFac->setWorkingDir(PATH_LIB_CACHES);
+    $cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+    $cache->setScope('pages');
+    $cache->purgeCache(86400); // 24 hours (forced)
 
-	$params = array($url);
-	$cache->setKey($params);
+    $params = array($url);
+    $cache->setKey($params);
 
-	// Determine if cached file is within duration
-	$time = $cache->getTime();
-	if($time !== false
-	&& (time() - $duration < $time)
-	&& !Debug::isEnabled()) { // Contents within duration
-		$content = $cache->loadData();
-	} else { // Content not within duration
-		$content = getContents($url, $header, $opts);
-		if($content !== false) {
-			$cache->saveData($content);
-		}
-	}
+    // Determine if cached file is within duration
+    $time = $cache->getTime();
+    if (
+        $time !== false
+        && (time() - $duration < $time)
+        && !Debug::isEnabled()
+    ) { // Contents within duration
+        $content = $cache->loadData();
+    } else { // Content not within duration
+        $content = getContents($url, $header, $opts);
+        if ($content !== false) {
+            $cache->saveData($content);
+        }
+    }
 
-	return str_get_html($content,
-	$lowercase,
-	$forceTagsClosed,
-	$target_charset,
-	$stripRN,
-	$defaultBRText,
-	$defaultSpanText);
+    return str_get_html(
+        $content,
+        $lowercase,
+        $forceTagsClosed,
+        $target_charset,
+        $stripRN,
+        $defaultBRText,
+        $defaultSpanText
+    );
 }
 
 /**
@@ -400,34 +420,28 @@ function getSimpleHTMLDOMCached($url,
  * @param string $header The cURL response header.
  * @return array An associative array of response headers.
  */
-function parseResponseHeader($header) {
+function parseResponseHeader($header)
+{
 
-	$headers = array();
-	$requests = explode("\r\n\r\n", trim($header));
+    $headers = array();
+    $requests = explode("\r\n\r\n", trim($header));
 
-	foreach ($requests as $request) {
+    foreach ($requests as $request) {
+        $header = array();
 
-		$header = array();
+        foreach (explode("\r\n", $request) as $i => $line) {
+            if ($i === 0) {
+                $header['http_code'] = $line;
+            } else {
+                list ($key, $value) = explode(':', $line);
+                $header[$key] = trim($value);
+            }
+        }
 
-		foreach (explode("\r\n", $request) as $i => $line) {
+        $headers[] = $header;
+    }
 
-			if($i === 0) {
-				$header['http_code'] = $line;
-			} else {
-
-				list ($key, $value) = explode(':', $line);
-				$header[$key] = trim($value);
-
-			}
-
-		}
-
-		$headers[] = $header;
-
-	}
-
-	return $headers;
-
+    return $headers;
 }
 
 /**
@@ -444,48 +458,52 @@ function parseResponseHeader($header) {
  * @param string $url The URL or path to the file.
  * @return string The MIME type of the file.
  */
-function getMimeType($url) {
-	static $mime = null;
+function getMimeType($url)
+{
+    static $mime = null;
 
-	if (is_null($mime)) {
-		// Default values, overriden by /etc/mime.types when present
-		$mime = array(
-			'jpg' => 'image/jpeg',
-			'gif' => 'image/gif',
-			'png' => 'image/png',
-			'image' => 'image/*'
-		);
-		// '@' is used to mute open_basedir warning, see issue #818
-		if (@is_readable('/etc/mime.types')) {
-			$file = fopen('/etc/mime.types', 'r');
-			while(($line = fgets($file)) !== false) {
-				$line = trim(preg_replace('/#.*/', '', $line));
-				if(!$line)
-					continue;
-				$parts = preg_split('/\s+/', $line);
-				if(count($parts) == 1)
-					continue;
-				$type = array_shift($parts);
-				foreach($parts as $part)
-					$mime[$part] = $type;
-			}
-			fclose($file);
-		}
-	}
+    if (is_null($mime)) {
+        // Default values, overriden by /etc/mime.types when present
+        $mime = array(
+            'jpg' => 'image/jpeg',
+            'gif' => 'image/gif',
+            'png' => 'image/png',
+            'image' => 'image/*'
+        );
+        // '@' is used to mute open_basedir warning, see issue #818
+        if (@is_readable('/etc/mime.types')) {
+            $file = fopen('/etc/mime.types', 'r');
+            while (($line = fgets($file)) !== false) {
+                $line = trim(preg_replace('/#.*/', '', $line));
+                if (!$line) {
+                    continue;
+                }
+                $parts = preg_split('/\s+/', $line);
+                if (count($parts) == 1) {
+                    continue;
+                }
+                $type = array_shift($parts);
+                foreach ($parts as $part) {
+                    $mime[$part] = $type;
+                }
+            }
+            fclose($file);
+        }
+    }
 
-	if (strpos($url, '?') !== false) {
-		$url_temp = substr($url, 0, strpos($url, '?'));
-		if (strpos($url, '#') !== false) {
-			$anchor = substr($url, strpos($url, '#'));
-			$url_temp .= $anchor;
-		}
-		$url = $url_temp;
-	}
+    if (strpos($url, '?') !== false) {
+        $url_temp = substr($url, 0, strpos($url, '?'));
+        if (strpos($url, '#') !== false) {
+            $anchor = substr($url, strpos($url, '#'));
+            $url_temp .= $anchor;
+        }
+        $url = $url_temp;
+    }
 
-	$ext = strtolower(pathinfo($url, PATHINFO_EXTENSION));
-	if (!empty($mime[$ext])) {
-		return $mime[$ext];
-	}
+    $ext = strtolower(pathinfo($url, PATHINFO_EXTENSION));
+    if (!empty($mime[$ext])) {
+        return $mime[$ext];
+    }
 
-	return 'application/octet-stream';
+    return 'application/octet-stream';
 }

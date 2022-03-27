@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
  * Atom feeds for websites that don't have one.
@@ -6,9 +7,9 @@
  * For the full license information, please view the UNLICENSE file distributed
  * with this source code.
  *
- * @package	Core
- * @license	http://unlicense.org/ UNLICENSE
- * @link	https://github.com/rss-bridge/rss-bridge
+ * @package Core
+ * @license http://unlicense.org/ UNLICENSE
+ * @link    https://github.com/rss-bridge/rss-bridge
  */
 
 /**
@@ -20,8 +21,9 @@
  * @link https://en.wikipedia.org/wiki/List_of_HTTP_status_codes List of HTTP
  * status codes
  */
-function returnError($message, $code){
-	throw new \Exception($message, $code);
+function returnError($message, $code)
+{
+    throw new \Exception($message, $code);
 }
 
 /**
@@ -29,8 +31,9 @@ function returnError($message, $code){
  *
  * @param string $message The error message
  */
-function returnClientError($message){
-	returnError($message, 400);
+function returnClientError($message)
+{
+    returnError($message, 400);
 }
 
 /**
@@ -38,8 +41,9 @@ function returnClientError($message){
  *
  * @param string $message The error message
  */
-function returnServerError($message){
-	returnError($message, 500);
+function returnServerError($message)
+{
+    returnError($message, 500);
 }
 
 /**
@@ -50,28 +54,29 @@ function returnServerError($message){
  *
  * @return int The total number the same error has appeared
  */
-function logBridgeError($bridgeName, $code) {
-	$cacheFac = new CacheFactory();
-	$cacheFac->setWorkingDir(PATH_LIB_CACHES);
+function logBridgeError($bridgeName, $code)
+{
+    $cacheFac = new CacheFactory();
+    $cacheFac->setWorkingDir(PATH_LIB_CACHES);
 
-	$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
-	$cache->setScope('error_reporting');
-	$cache->setkey($bridgeName . '_' . $code);
-	$cache->purgeCache(86400); // 24 hours
+    $cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+    $cache->setScope('error_reporting');
+    $cache->setkey($bridgeName . '_' . $code);
+    $cache->purgeCache(86400); // 24 hours
 
-	if($report = $cache->loadData()) {
-		$report = json_decode($report, true);
-		$report['time'] = time();
-		$report['count']++;
-	} else {
-		$report = array(
-			'error' => $code,
-			'time' => time(),
-			'count' => 1,
-		);
-	}
+    if ($report = $cache->loadData()) {
+        $report = json_decode($report, true);
+        $report['time'] = time();
+        $report['count']++;
+    } else {
+        $report = array(
+            'error' => $code,
+            'time' => time(),
+            'count' => 1,
+        );
+    }
 
-	$cache->saveData(json_encode($report));
+    $cache->saveData(json_encode($report));
 
-	return $report['count'];
+    return $report['count'];
 }
