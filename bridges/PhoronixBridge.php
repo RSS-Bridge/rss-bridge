@@ -31,6 +31,7 @@ but some RSS readers don\'t support this. "img" tag are supported by most browse
 		$item = parent::parseItem($newsItem);
 		// $articlePage gets the entire page's contents
 		$articlePage = getSimpleHTMLDOM($newsItem->link);
+		$articlePage = defaultLinkTo($articlePage, $this->getURI());
 		// Extract final link. From Facebook's like plugin.
 		parse_str(parse_url($articlePage->find('iframe[src^=//www.facebook.com/plugins]', 0), PHP_URL_QUERY), $facebookQuery);
 		if (array_key_exists('href', $facebookQuery)) {
