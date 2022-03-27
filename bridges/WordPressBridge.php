@@ -26,6 +26,11 @@ class WordPressBridge extends FeedExpander {
 
 		$article = null;
 		switch(true) {
+
+		// Custom fix for theme in https://jungefreiheit.de/politik/deutschland/2022/wahl-im-saarland/
+		case !is_null($article_html->find('div[data-widget_type="theme-post-content.default"]', 0)):
+			$article = $article_html->find('div[data-widget_type="theme-post-content.default"]', 0);
+			break;
 		case !is_null($article_html->find('[itemprop=articleBody]', 0)):
 			// highest priority content div
 			$article = $article_html->find('[itemprop=articleBody]', 0);
