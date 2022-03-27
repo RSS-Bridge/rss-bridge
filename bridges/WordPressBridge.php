@@ -78,6 +78,7 @@ class WordPressBridge extends FeedExpander {
 
 		if(!is_null($article)) {
 			$item['content'] = $this->cleanContent($article->innertext);
+			$item['content'] = defaultLinkTo($item['content'], $item['uri']);
 		}
 
 		return $item;
