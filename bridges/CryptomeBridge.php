@@ -4,7 +4,7 @@ class CryptomeBridge extends BridgeAbstract {
 	const MAINTAINER = 'BoboTiG';
 	const NAME = 'Cryptome';
 	const URI = 'https://cryptome.org/';
-	const CACHE_TIMEOUT = 21600; //6h
+	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = 'Returns the N most recent documents.';
 	const PARAMETERS = array( array(
 		'n' => array(
