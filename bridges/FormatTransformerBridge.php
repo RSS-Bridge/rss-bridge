@@ -1,5 +1,5 @@
 <?php
-class ProxyBridge extends FeedExpander {
+class FormatTransformerBridge extends FeedExpander {
 	const MAINTAINER = 'dhuschde';
 	const NAME = 'RSS Feed Reader and Proxy';
 	const URI = 'https://github.com/RSS-Bridge/rss-bridge';
@@ -10,7 +10,7 @@ class ProxyBridge extends FeedExpander {
 					'name' => 'Feed URL',
 					'type' => 'text',
 					'required' => true,
-					'exampleValue' => 'https://example.com/feed'
+					'exampleValue' => 'https://nvd.nist.gov/feeds/xml/cve/misc/nvd-rss.xml'
 				)
 			)
 		);
