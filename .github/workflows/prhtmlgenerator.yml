@@ -48,8 +48,10 @@ jobs:
           body="${body//'%'/'%25'}";
           body="${body//$'\n'/'%0A'}";
           body="${body//$'\r'/'%0D'}";
+          echo "::set-output name=bodylength::${#body}"
           echo "::set-output name=body::$body"
       - name: Find Comment
+        if: ${{ steps.testrun.outputs.bodylength > 130 }}
         uses: peter-evans/find-comment@v2
         id: fc
         with:
@@ -57,6 +59,7 @@ jobs:
           comment-author: 'github-actions[bot]'
           body-includes: Pull request artifacts
       - name: Create or update comment
+        if: ${{ steps.testrun.outputs.bodylength > 130 }}
         uses: peter-evans/create-or-update-comment@v2
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
