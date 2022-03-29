@@ -160,6 +160,8 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 
 		if(is_array($header) && count($header) !== 0) {
 

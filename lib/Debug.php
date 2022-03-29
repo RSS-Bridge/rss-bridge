@@ -116,6 +116,6 @@ class Debug {
 			. $calling['function'] . ' - '
 			. $text;
 
-		error_log($message);
+		//error_log($message);
 	}
 }
