@@ -8,6 +8,7 @@ class FeedReducerBridge extends FeedExpander {
 	const PARAMETERS = array( array(
 		'url' => array(
 			'name' => 'Feed URI',
+			'exampleValue' => 'https://lorem-rss.herokuapp.com/feed?length=42',
 			'required' => true
 		),
 		'percentage' => array(
