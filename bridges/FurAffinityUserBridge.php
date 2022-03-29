@@ -3,8 +3,7 @@ class FurAffinityUserBridge extends BridgeAbstract {
 	const NAME = 'FurAffinity User Gallery';
 	const URI = 'https://www.furaffinity.net';
 	const MAINTAINER = 'CyberJacob';
-	const DESCRIPTION = 'N.B. This bridge now requires login cookies in place of a username and password.' .
-		' Please log into FA from a browser, and use the browser\'s developer tools function to get these.';
+	const DESCRIPTION = 'N.B. This bridge now requires login cookies in place of a username and password. Please log into FA from a browser, and use the browser\'s developer tools function to get these.';
 	const PARAMETERS = array(
 		array(
 			'searchUsername' => array(
