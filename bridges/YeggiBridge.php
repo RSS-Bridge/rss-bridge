@@ -3,7 +3,7 @@ class YeggiBridge extends BridgeAbstract {
 
 	const NAME = 'Yeggi Search';
 	const URI = 'https://www.yeggi.com';
-	const DESCRIPTION = 'Returns feeds for search results';
+	const DESCRIPTION = 'Returns 3D Models from Thingiverse, MyMiniFactory, Cults3D, and more';
 	const MAINTAINER = 'AntoineTurmel';
 	const PARAMETERS = array(
 		array(
