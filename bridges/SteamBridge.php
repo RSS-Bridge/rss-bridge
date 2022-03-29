@@ -29,8 +29,7 @@ class SteamBridge extends BridgeAbstract {
 		$sourceUrl = self::URI . 'wishlist/profiles/' . $userid . '/wishlistdata?p=0';
 		$sort = array();
 
-		$json = getContents($sourceUrl)
-			or returnServerError('Could not get content from wishlistdata (' . $sourceUrl . ')');
+		$json = getContents($sourceUrl);
 
 		$appsData = json_decode($json);
 

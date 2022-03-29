@@ -1,4 +1,6 @@
 .git
+!.git/HEAD
+!.git/refs/heads/*
 .gitattributes
 .github/*
 .travis.yml

@@ -27,8 +27,7 @@ class DiarioDoAlentejoBridge extends BridgeAbstract {
 
 	public function collectData(){
 		/* This is slow as molasses (>30s!), keep the cache timeout high to avoid killing the host */
-		$html = getSimpleHTMLDOMCached($this->getURI() . '/pt/noticias-listagem.aspx')
-			or returnServerError('Could not load content');
+		$html = getSimpleHTMLDOMCached($this->getURI() . '/pt/noticias-listagem.aspx');
 
 		foreach($html->find('.list_news .item') as $element) {
 			$item = array();

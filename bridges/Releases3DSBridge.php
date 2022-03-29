@@ -5,13 +5,15 @@ class Releases3DSBridge extends BridgeAbstract {
 	const NAME = '3DS Scene Releases';
 	const URI = 'http://www.3dsdb.com/';
 	const CACHE_TIMEOUT = 10800; // 3h
-	const DESCRIPTION = 'Returns the newest scene releases.';
+	const DESCRIPTION = 'Returns the newest scene releases for Nintendo 3DS.';
 
 	public function collectData(){
+		$this->collectDataUrl(self::URI . 'xml.php');
+	}
 
-		$dataUrl = self::URI . 'xml.php';
-		$xml = getContents($dataUrl)
-			or returnServerError('Could not request 3dsdb: ' . $dataUrl);
+	protected function collectDataUrl($dataUrl){
+
+		$xml = getContents($dataUrl);
 		$limit = 0;
 
 		foreach(array_reverse(explode('<release>', $xml)) as $element) {
@@ -42,28 +44,6 @@ class Releases3DSBridge extends BridgeAbstract {
 			$firmware = extractFromDelimiters($element, '<firmware>', '</firmware>');
 			$type = extractFromDelimiters($element, '<type>', '</type>');
 			$card = extractFromDelimiters($element, '<card>', '</card>');
-
-			//Retrieve cover art and short desc from IGN?
-			$ignResult = false;
-			$ignDescription = '';
-			$ignLink = '';
-			$ignDate = time();
-			$ignCoverArt = '';
-
-			$ignSearchUrl = 'https://www.ign.com/search?q=' . urlencode($name);
-			if($ignResult = getSimpleHTMLDOMCached($ignSearchUrl)) {
-				$ignCoverArt = $ignResult->find('div.search-item-media', 0)->find('img', 0)->src;
-				$ignDesc = $ignResult->find('div.search-item-description', 0)->plaintext;
-				$ignLink = $ignResult->find('div.search-item-sub-title', 0)->find('a', 1)->href;
-				$ignDate = strtotime(trim($ignResult->find('span.publish-date', 0)->plaintext));
-				$ignDescription = '<div><img src="'
-				. $ignCoverArt
-				. '" /></div><div>'
-				. $ignDesc
-				. ' <a href="'
-				. $ignLink
-				. '">More at IGN</a></div>';
-			}
 
 			//Main section : Release description from 3DS database
 			$releaseDescription = '<h3>Release Details</h3><b>Release ID: </b>' . $id
@@ -111,7 +91,7 @@ class Releases3DSBridge extends BridgeAbstract {
 
 	private function typeToString($type){
 		switch($type) {
-			case 1: return '3DS Game';
+			case 1: return 'Card Game';
 			case 4: return 'eShop';
 			default: return '??? (' . $type . ')';
 		}

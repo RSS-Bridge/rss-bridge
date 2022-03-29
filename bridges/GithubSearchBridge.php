@@ -9,6 +9,8 @@ class GithubSearchBridge extends BridgeAbstract {
 	const PARAMETERS = array( array(
 		's' => array(
 			'type' => 'text',
+			'required' => true,
+			'exampleValue' => 'rss-bridge',
 			'name' => 'Search query'
 		)
 	));
@@ -21,8 +23,7 @@ class GithubSearchBridge extends BridgeAbstract {
 										'type' => 'Repositories');
 		$url = self::URI . 'search?' . http_build_query($params);
 
-		$html = getSimpleHTMLDOM($url)
-			or returnServerError('Error while downloading the website content');
+		$html = getSimpleHTMLDOM($url);
 
 		foreach($html->find('li.repo-list-item') as $element) {
 			$item = array();

@@ -11,7 +11,8 @@ class FurAffinityUserBridge extends BridgeAbstract {
 				'name' => 'Search Username',
 				'type' => 'text',
 				'required' => true,
-				'title' => 'Username to fetch the gallery for'
+				'title' => 'Username to fetch the gallery for',
+				'exampleValue' => 'armundy',
 			),
 			'aCookie' => array(
 				'name' => 'Login cookie \'a\'',

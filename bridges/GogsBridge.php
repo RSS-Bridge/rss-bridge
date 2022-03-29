@@ -11,19 +11,19 @@ class GogsBridge extends BridgeAbstract {
 		'global' => array(
 			'host' => array(
 				'name' => 'Host',
-				'exampleValue' => 'https://gogs.io',
+				'exampleValue' => 'notabug.org',
 				'required' => true,
 				'title' => 'Host name without trailing slash',
 			),
 			'user' => array(
 				'name' => 'Username',
-				'exampleValue' => 'gogs',
+				'exampleValue' => 'PDModdingCommunity',
 				'required' => true,
 				'title' => 'User name as it appears in the URL',
 			),
 			'project' => array(
 				'name' => 'Project name',
-				'exampleValue' => 'gogs',
+				'exampleValue' => 'PD-Loader',
 				'required' => true,
 				'title' => 'Project name as it appears in the URL',
 			),
@@ -47,7 +47,7 @@ class GogsBridge extends BridgeAbstract {
 			'issue' => array(
 				'name' => 'Issue number',
 				'type' => 'number',
-				'exampleValue' => 102,
+				'exampleValue' => 100,
 				'required' => true,
 				'title' => 'Issue number from the issues list',
 			),
@@ -108,8 +108,7 @@ class GogsBridge extends BridgeAbstract {
 
 	public function collectData() {
 
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$html = defaultLinkTo($html, $this->getURI());
 

@@ -23,8 +23,7 @@ class SplCenterBridge extends FeedExpander {
 	protected function parseItem($item) {
 		$item = parent::parseItem($item);
 
-		$articleHtml = getSimpleHTMLDOMCached($item['uri'])
-			or returnServerError('Could not request: ' . $item['uri']);
+		$articleHtml = getSimpleHTMLDOMCached($item['uri']);
 
 		foreach ($articleHtml->find('.file') as $index => $media) {
 			$articleHtml->find('div.file', $index)->outertext = '<em>' . $media->outertext . '</em>';

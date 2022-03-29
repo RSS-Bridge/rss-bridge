@@ -1,7 +1,7 @@
 <?php
 
 class AmazonPriceTrackerBridge extends BridgeAbstract {
-	const MAINTAINER = 'captn3m0';
+	const MAINTAINER = 'captn3m0, sal0max';
 	const NAME = 'Amazon Price Tracker';
 	const URI = 'https://www.amazon.com/';
 	const CACHE_TIMEOUT = 3600; // 1h
@@ -32,12 +32,22 @@ class AmazonPriceTrackerBridge extends BridgeAbstract {
 				'Mexico' 		=> 'com.mx',
 				'Netherlands'	=> 'nl',
 				'Spain' 		=> 'es',
+				'Sweden' 		=> 'se',
 				'United Kingdom'	=> 'co.uk',
 				'United States'		=> 'com',
 			),
 			'defaultValue' => 'com',
 		),
 	));
+
+	const PRICE_SELECTORS = array(
+		'#priceblock_ourprice',
+		'.priceBlockBuyingPriceString',
+		'#newBuyBoxPrice',
+		'#tp_price_block_total_price_ww',
+		'span.offer-price',
+		'.a-color-price',
+	);
 
 	protected $title;
 
@@ -53,7 +63,7 @@ class AmazonPriceTrackerBridge extends BridgeAbstract {
 	 */
 	public function getURI() {
 		if (!is_null($this->getInput('asin'))) {
-			return $this->getDomainName() . '/dp/' . $this->getInput('asin') . '/';
+			return $this->getDomainName() . '/dp/' . $this->getInput('asin');
 		}
 		return parent::getURI();
 	}
@@ -145,14 +155,30 @@ EOT;
 	}
 
 	private function scrapePriceGeneric($html) {
-		$priceDiv = $html->find('span.offer-price', 0) ?: $html->find('.a-color-price', 0);
+		$priceDiv = null;
 
-		preg_match('/^\s*([A-Z]{3}|£|\$)\s?([\d.,]+)\s*$/', $priceDiv->plaintext, $matches);
+		foreach(self::PRICE_SELECTORS as $sel) {
+			$priceDiv = $html->find($sel, 0);
+			if ($priceDiv) {
+				break;
+			}
+		}
 
-		if (count($matches) === 3) {
+		if (!$priceDiv) {
+			return false;
+		}
+
+		$priceString = $priceDiv->plaintext;
+
+		preg_match('/[\d.,]+/', $priceString, $matches);
+
+		$price = $matches[0];
+		$currency = trim(str_replace($price, '', $priceString), " \t\n\r\0\x0B\xC2\xA0");
+
+		if ($price != null && $currency != null) {
 			return array(
-				'price' 	=> $matches[2],
-				'currency'	=> $matches[1],
+				'price' 	=> $price,
+				'currency'	=> $currency,
 				'shipping'	=> '0'
 			);
 		}
@@ -175,6 +201,8 @@ EOT;
 			'title' 	=> $this->title,
 			'uri' 		=> $this->getURI(),
 			'content' 	=> "$imageTag<br/>Price: {$data['price']} {$data['currency']}",
+			// This is to ensure that feed readers notice the price change
+			'uid'		=> md5($data['price'])
 		);
 
 		if ($data['shipping'] !== '0') {

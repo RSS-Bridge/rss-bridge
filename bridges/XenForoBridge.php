@@ -110,8 +110,7 @@ class XenForoBridge extends BridgeAbstract {
 
 		}
 
-		$html = getSimpleHTMLDOMCached($this->threadurl)
-			or returnServerError('Failed loading data from "' . $this->threadurl . '"!');
+		$html = getSimpleHTMLDOMCached($this->threadurl);
 
 		$html = defaultLinkTo($html, $this->threadurl);
 

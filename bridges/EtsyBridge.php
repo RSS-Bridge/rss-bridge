@@ -12,7 +12,7 @@ class EtsyBridge extends BridgeAbstract {
 				'type' => 'text',
 				'required' => true,
 				'title' => 'Insert your search term here',
-				'exampleValue' => 'Enter your search term'
+				'exampleValue' => 'lamp'
 			),
 			'queryextension' => array(
 				'name' => 'Query extension',
@@ -33,8 +33,7 @@ class EtsyBridge extends BridgeAbstract {
 	);
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Failed to receive ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$results = $html->find('li.block-grid-item');
 

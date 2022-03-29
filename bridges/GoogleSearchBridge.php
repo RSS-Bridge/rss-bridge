@@ -18,15 +18,15 @@ class GoogleSearchBridge extends BridgeAbstract {
 	const PARAMETERS = array(array(
 		'q' => array(
 			'name' => 'keyword',
-			'required' => true
+			'required' => true,
+			'exampleValue' => 'rss-bridge',
 		)
 	));
 
 	public function collectData(){
 		$html = '';
 
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('No results for this query.');
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$emIsRes = $html->find('div[id=res]', 0);
 
@@ -35,16 +35,10 @@ class GoogleSearchBridge extends BridgeAbstract {
 
 				$item = array();
 
-				// Extract direct URL from google href (eg. /url?q=...)
 				$t = $element->find('a[href]', 0)->href;
-				$item['uri'] = '' . $t;
-				parse_str(parse_url($t, PHP_URL_QUERY), $parameters);
-				if(isset($parameters['q'])) {
-					$item['uri'] = $parameters['q'];
-				}
-
+				$item['uri'] = htmlspecialchars_decode($t);
 				$item['title'] = $element->find('h3', 0)->plaintext;
-				$item['content'] = $element->find('span[class=st]', 0)->plaintext;
+				$item['content'] = $element->find('span[class=aCOpRe]', 0)->plaintext;
 
 				$this->items[] = $item;
 			}
