@@ -63,13 +63,19 @@ class YeggiBridge extends BridgeAbstract {
 			}
 			$item['uri'] = self::URI . $result->find('a', 0)->href;
 			$item['author'] = 'Yeggi';
-			$item['content'] = '';
+
+			$text = $result->find('i');
+			$item['content'] = $text[0]->plaintext . ' on ' . $text[1]->plaintext;
 			$item['uid'] = hash('md5', $item['title']);
+
+			foreach($result->find('.item_3_B_2 > a[href^=/q/]') as $tag) {
+				$item['tags'][] = $tag->plaintext;
+			}
 
 			$image = $result->find('img', 0)->src;
 
 			if($this->getInput('showimage')) {
-				$item['content'] .= '<img src="' . $image . '">';
+				$item['content'] .= '<br><img src="' . $image . '">';
 			}
 
 			$item['enclosures'] = array($image);
