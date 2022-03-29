@@ -18,7 +18,7 @@ class FeedMergeBridge extends FeedExpander {
 					'type' => 'text',
 					'required' => true,
 					'title' => 'Insert your feed URL2',
-					'exampleValue' => 'https://myfeed2.com'
+					'exampleValue' => 'https://lorem-rss.herokuapp.com/feed?unit=year'
 				)
 			)
 		);
