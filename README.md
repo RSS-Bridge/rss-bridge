@@ -4,6 +4,7 @@
 [![GitHub release](https://img.shields.io/github/release/rss-bridge/rss-bridge.svg?logo=github)](https://github.com/rss-bridge/rss-bridge/releases/latest)
 [![irc.libera.chat](https://img.shields.io/badge/irc.libera.chat-%23rssbridge-blue.svg)](https://web.libera.chat/#rssbridge)
 [![Chat on Matrix](https://matrix.to/img/matrix-badge.svg)](https://matrix.to/#/#rssbridge:libera.chat)
+[![Discord](https://img.shields.io/discord/958421198151249921?label=Discord&logo=Discord)](https://discord.gg/K4MhVYWP3u)
 [![Actions Status](https://img.shields.io/github/workflow/status/RSS-Bridge/rss-bridge/Tests/master?label=GitHub%20Actions&logo=github)](https://github.com/RSS-Bridge/rss-bridge/actions)
 [![Docker Build Status](https://img.shields.io/docker/cloud/build/rssbridge/rss-bridge?logo=docker)](https://hub.docker.com/r/rssbridge/rss-bridge/)
 
