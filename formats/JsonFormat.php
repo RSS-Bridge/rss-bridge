@@ -111,12 +111,15 @@ class JsonFormat extends FormatAbstract {
 		}
 		$data['items'] = $items;
 
-		$toReturn = json_encode($data, JSON_PRETTY_PRINT);
+		/**
+		 * The intention here is to discard non-utf8 byte sequences.
+		 * But the JSON_PARTIAL_OUTPUT_ON_ERROR also discards lots of other errors.
+		 * So consider this a hack.
+		 * Switch to JSON_INVALID_UTF8_IGNORE when PHP 7.2 is the latest platform requirement.
+		 */
+		$json = json_encode($data, JSON_PRETTY_PRINT | JSON_PARTIAL_OUTPUT_ON_ERROR);
 
-		// Remove invalid non-UTF8 characters
-		ini_set('mbstring.substitute_character', 'none');
-		$toReturn = mb_convert_encoding($toReturn, $this->getCharset(), 'UTF-8');
-		return $toReturn;
+		return $json;
 	}
 
 	public function display(){
