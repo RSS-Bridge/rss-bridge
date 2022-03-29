@@ -10,6 +10,7 @@ class SteamCommunityBridge extends BridgeAbstract {
 		array(
 			'i' => array(
 				'name' => 'App ID',
+				'exampleValue' => '730',
 				'required' => true
 			),
 			'category' => array(
@@ -33,8 +34,7 @@ class SteamCommunityBridge extends BridgeAbstract {
 
 	protected function getMainPage() {
 		$category = $this->getInput('category');
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not fetch Steam data.');
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		return $html;
 	}

@@ -220,8 +220,7 @@ class BadDragonBridge extends BridgeAbstract {
 	public function collectData() {
 		switch($this->queriedContext) {
 		case 'Sales':
-			$sales = json_decode(getContents(self::URI . 'api/sales'))
-				or returnServerError('Failed to query BD API');
+			$sales = json_decode(getContents(self::URI . 'api/sales'));
 
 			foreach($sales as $sale) {
 				$item = array();
@@ -274,12 +273,10 @@ class BadDragonBridge extends BridgeAbstract {
 			}
 			break;
 		case 'Clearance':
-			$toyData = json_decode(getContents($this->inputToURL(true)))
-				or returnServerError('Failed to query BD API');
+			$toyData = json_decode(getContents($this->inputToURL(true)));
 
 			$productList = json_decode(getContents(self::URI
-				. 'api/inventory-toy/product-list'))
-				or returnServerError('Failed to query BD API');
+				. 'api/inventory-toy/product-list'));
 
 			foreach($toyData->toys as $toy) {
 				$item = array();

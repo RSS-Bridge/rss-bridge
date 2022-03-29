@@ -3,18 +3,17 @@ class HentaiHavenBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'albirew';
 	const NAME = 'Hentai Haven';
-	const URI = 'https://hentaihaven.org/';
+	const URI = 'https://hentaihaven.com/';
 	const CACHE_TIMEOUT = 21600; // 6h
 	const DESCRIPTION = 'Returns releases from Hentai Haven';
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Could not request Hentai Haven.');
+		$html = getSimpleHTMLDOM(self::URI);
 
 		foreach($html->find('div.zoe-grid') as $element) {
 			$item = array();
 			$item['uri'] = $element->find('div.brick-content h3 a', 0)->href;
-			$thumbnailUri = $element->find('a.thumbnail-image img', 0)->getAttribute('data-src');
+			$thumbnailUri = $element->find('a.thumbnail-image img', 0)->getAttribute('src');
 			$item['title'] = mb_convert_encoding(
 				trim($element->find('div.brick-content h3 a', 0)->innertext),
 				'UTF-8',

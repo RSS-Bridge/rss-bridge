@@ -14,6 +14,7 @@ class VkBridge extends BridgeAbstract
 		array(
 			'u' => array(
 				'name' => 'Group or user name',
+				'exampleValue' => 'elonmusk_tech',
 				'required' => true
 			),
 			'hide_reposts' => array(
@@ -51,8 +52,7 @@ class VkBridge extends BridgeAbstract
 
 	public function collectData()
 	{
-		$text_html = $this->getContents()
-		or returnServerError('No results for group or user name "' . $this->getInput('u') . '".');
+		$text_html = $this->getContents();
 
 		$text_html = iconv('windows-1251', 'utf-8//ignore', $text_html);
 		// makes album link generating work correctly
@@ -72,6 +72,11 @@ class VkBridge extends BridgeAbstract
 		$last_post_id = 0;
 
 		foreach ($html->find('.post') as $post) {
+
+			if ($post->find('.wall_post_text_deleted')) {
+				// repost of deleted post
+				continue;
+			}
 
 			defaultLinkTo($post, self::URI);
 
@@ -159,8 +164,6 @@ class VkBridge extends BridgeAbstract
 			// get all other videos
 			foreach($post->find('a.page_post_thumb_video') as $a) {
 				$video_title = htmlspecialchars_decode($a->getAttribute('aria-label'));
-				$temp = explode(' ', $video_title, 2);
-				if (count($temp) > 1) $video_title = $temp[1];
 				$video_link = $a->getAttribute('href');
 				if ($video_link != $main_video_link) $this->appendVideo($video_title, $video_link, $content_suffix, $post_videos);
 				$a->outertext = '';
@@ -232,11 +235,16 @@ class VkBridge extends BridgeAbstract
 				$div->outertext = '';
 			}
 
-			// get sign
+			// get sign / post author
 			$post_author = $pageName;
-			foreach($post->find('a.wall_signed_by') as $a) {
-				$post_author = $a->innertext;
-				$a->outertext = '';
+			$author_selectors = array('a.wall_signed_by', 'a.author');
+			foreach($author_selectors as $author_selector) {
+				$a = $post->find($author_selector, 0);
+				if (is_object($a)) {
+					$post_author = $a->innertext;
+					$a->outertext = '';
+					break;
+				}
 			}
 
 			// fix links and get post hashtags
@@ -274,16 +282,24 @@ class VkBridge extends BridgeAbstract
 				}
 			}
 
-			if (is_object($post->find('div.copy_quote', 0))) {
+			$copy_quote = $post->find('div.copy_quote', 0);
+			if (is_object($copy_quote)) {
 				if ($this->getInput('hide_reposts') === true) {
 					continue;
 				}
-				$copy_quote = $post->find('div.copy_quote', 0);
 				if ($copy_post_header = $copy_quote->find('div.copy_post_header', 0)) {
 					$copy_post_header->outertext = '';
 				}
+
+				$second_copy_quote = $copy_quote->find('div.published_sec_quote', 0);
+				if (is_object($second_copy_quote)) {
+					$second_copy_quote_author = $second_copy_quote->find('a.copy_author', 0)->outertext;
+					$second_copy_quote_content = $second_copy_quote->find('div.copy_post_date', 0)->outertext;
+					$second_copy_quote->outertext = "<br>Reposted ($second_copy_quote_author): $second_copy_quote_content";
+				}
+				$copy_quote_author = $copy_quote->find('a.copy_author', 0)->outertext;
 				$copy_quote_content = $copy_quote->innertext;
-				$copy_quote->outertext = "<br>Reposted: <br>$copy_quote_content";
+				$copy_quote->outertext = "<br>Reposted ($copy_quote_author): <br>$copy_quote_content";
 			}
 
 			$item = array();
@@ -333,7 +349,7 @@ class VkBridge extends BridgeAbstract
 		$data = json_decode($arg, true);
 		if ($data == null) return;
 
-		$thumb = $data['temp']['base'] . $data['temp']['x_'][0] . '.jpg';
+		$thumb = $data['temp']['base'] . $data['temp']['x_'][0];
 		$original = '';
 		foreach(array('y_', 'z_', 'w_') as $key) {
 			if (!isset($data['temp'][$key])) continue;
@@ -343,7 +359,7 @@ class VkBridge extends BridgeAbstract
 			} else {
 				$base = $data['temp']['base'];
 			}
-			$original = $base . $data['temp'][$key][0] . '.jpg';
+			$original = $base . $data['temp'][$key][0];
 		}
 
 		if ($original) {
@@ -366,6 +382,7 @@ class VkBridge extends BridgeAbstract
 			return $time;
 		} else {
 			$strdate = $post->find('span.rel_date', 0)->plaintext;
+			$strdate = preg_replace('/[\x00-\x1F\x7F-\xFF]/', ' ', $strdate);
 
 			$date = date_parse($strdate);
 			if (!$date['year']) {
@@ -423,11 +440,11 @@ class VkBridge extends BridgeAbstract
 			'count' => 200
 		));
 
-		if (isset($result['error'])) return;
-
-		foreach($result['response']['items'] as $item) {
-			$video_id = strval($item['owner_id']) . '_' . strval($item['id']);
-			$this->videos[$video_id]['url'] = $item['player'];
+		if (!isset($result['error'])) {
+			foreach($result['response']['items'] as $item) {
+				$video_id = strval($item['owner_id']) . '_' . strval($item['id']);
+				$this->videos[$video_id]['url'] = $item['player'];
+			}
 		}
 
 		foreach($this->items as &$item) {

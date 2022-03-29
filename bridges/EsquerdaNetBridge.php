@@ -42,8 +42,7 @@ class EsquerdaNetBridge extends FeedExpander {
 		$item = parent::parseItem($newsItem);
 		# Include all the content
 		$uri = $item['uri'];
-		$html = getSimpleHTMLDOMCached($uri)
-			or returnServerError('Could not load content for ' . $uri);
+		$html = getSimpleHTMLDOMCached($uri);
 		$content = $html->find('div#content div.content', 0);
 		## Fix author
 		$authorHTML = $html->find('.field-name-field-op-author a', 0);

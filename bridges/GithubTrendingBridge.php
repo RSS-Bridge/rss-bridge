@@ -579,7 +579,6 @@ class GithubTrendingBridge extends BridgeAbstract {
 			'date_range' => array(
 				'name' => 'Date range',
 				'type' => 'list',
-				'required' => false,
 				'values' => array(
 					'Today' => 'today',
 					'Weekly' => 'weekly',
@@ -595,8 +594,7 @@ class GithubTrendingBridge extends BridgeAbstract {
 		$params = array('since' => urlencode($this->getInput('date_range')));
 		$url = self::URI . '/' . $this->getInput('language') . '?' . http_build_query($params);
 
-		$html = getSimpleHTMLDOM($url)
-			or returnServerError('Error while downloading the website content');
+		$html = getSimpleHTMLDOM($url);
 
 		$this->items = array();
 		foreach($html->find('.Box-row') as $element) {
@@ -609,7 +607,7 @@ class GithubTrendingBridge extends BridgeAbstract {
 			$item['title'] = str_replace('  ', '', trim(strip_tags($element->find('h1 a', 0)->plaintext)));
 
 			// Description
-			$description = $element->find('p.text-gray', 0);
+			$description = $element->find('p', 0);
 			if ($description != null)
 				$item['content'] = trim(strip_tags($description->innertext));
 

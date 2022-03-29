@@ -80,20 +80,14 @@ class ShanaprojectBridge extends BridgeAbstract {
 	// Returns an html object for the Season Anime List (latest season)
 	private function loadSeasonAnimeList(){
 
-		$html = getSimpleHTMLDOM(self::URI . '/seasons')
-			or returnServerError('Could not load \'seasons\' page!');
+		$html = getSimpleHTMLDOM(self::URI . '/seasons');
 
 		$html = defaultLinkTo($html, self::URI . '/seasons');
 
 		$season = $html->find('div.follows_menu > a', 1)
 			or returnServerError('Could not find \'Season Anime List\'!');
 
-		$html = getSimpleHTMLDOM($season->href)
-			or returnServerError(
-				'Could not load \'Season Anime List\' from \''
-				. $season->innertext
-				. '\'!'
-			);
+		$html = getSimpleHTMLDOM($season->href);
 
 		$this->uri = $season->href;
 

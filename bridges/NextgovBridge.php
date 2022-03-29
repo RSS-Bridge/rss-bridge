@@ -15,12 +15,10 @@ class NextgovBridge extends FeedExpander {
 				'Technology News' => 'technology-news',
 				'CIO Briefing' => 'cio-briefing',
 				'Emerging Tech' => 'emerging-tech',
-				'Cloud' => 'cloud-computing',
 				'Cybersecurity' => 'cybersecurity',
-				'Mobile' => 'mobile',
-				'Health' => 'health',
-				'Defense' => 'defense',
-				'Big Data' => 'big-data'
+				'IT Modernization' => 'it-modernization',
+				'Policy' => 'policy',
+				'Ideas' => 'ideas',
 			)
 		)
 	));
@@ -61,7 +59,6 @@ class NextgovBridge extends FeedExpander {
 			return 'Could not request Nextgov: ' . $url;
 
 		$contents = $article->find('div.wysiwyg', 0);
-		$contents->find('svg.content-tombstone', 0)->outertext = '';
 		$contents = $contents->innertext;
 		$contents = stripWithDelimiters($contents, '<div class="ad-container">', '</div>');
 		$contents = stripWithDelimiters($contents, '<div', '</div>'); //ad outer div

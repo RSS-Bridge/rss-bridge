@@ -14,7 +14,8 @@ class IvooxBridge extends BridgeAbstract {
 		'Search result' => array(
 			's' => array(
 				'name' => 'keyword',
-				'exampleValue' => 'test'
+				'required' => true,
+				'exampleValue' => 'car'
 			)
 		)
 	);
@@ -108,8 +109,7 @@ class IvooxBridge extends BridgeAbstract {
 			returnClientError('Not valid mode at IvooxBridge');
 		}
 
-		$dom = getSimpleHTMLDOM($url_feed)
-			or returnServerError('Could not request ' . $url_feed);
+		$dom = getSimpleHTMLDOM($url_feed);
 		$this->ivBridgeParseHtmlListing($dom);
 
 		// restore locale

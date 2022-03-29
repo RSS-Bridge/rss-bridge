@@ -7,14 +7,20 @@ class RainbowSixSiegeBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 7200; // 2h
 	const DESCRIPTION = 'Latest news about Rainbow Six Siege';
 
+	// API key to call Ubisoft API, extracted from the React frontend
+	const NIMBUS_API_KEY = '3u0FfSBUaTSew-2NVfAOSYWevVQHWtY9q3VM8Xx9Lto';
+
 	public function getIcon() {
-		return 'https://static-dm.akamaized.net/siege/prod/favicon-144x144.png';
+		return 'https://static-dm.akamaized.net/siege/prod/favicon.ico';
 	}
 
 	public function collectData(){
-		$dlUrl = 'https://www.ubisoft.com/api/updates/items?categoriesFilter=all';
-		$dlUrl = $dlUrl . '&limit=6&mediaFilter=all&skip=0&startIndex=undefined&locale=en-us';
-		$jsonString = getContents($dlUrl) or returnServerError('Error while downloading the website content');
+		$dlUrl = 'https://nimbus.ubisoft.com/api/v1/items?categoriesFilter=all';
+		$dlUrl = $dlUrl . '&limit=6&mediaFilter=all&skip=0&startIndex=0&tags=BR-rainbow-six%20GA-siege';
+		$dlUrl = $dlUrl . '&locale=en-us&fallbackLocale=en-us&environment=master';
+		$jsonString = getContents($dlUrl, array(
+			'Authorization: ' . self::NIMBUS_API_KEY
+		));
 
 		$json = json_decode($jsonString, true);
 		$json = $json['items'];
@@ -27,34 +33,7 @@ class RainbowSixSiegeBridge extends BridgeAbstract {
 			$uri = $uri . $jsonItem['button']['buttonUrl'];
 
 			$thumbnail = '<img src="' . $jsonItem['thumbnail']['url'] . '" alt="Thumbnail">';
-			$content = $thumbnail . '<br />' . $jsonItem['content'];
-
-			// Markdown parsing from https://gist.github.com/jbroadway/2836900
-
-			// Line breaks
-			$content = preg_replace("/\r\n|\r|\n/", '<br/>', $content);
-
-			// Links
-			$regex = '/\[([^\[]+)\]\(([^\)]+)\)/';
-			$replacement = '<a href=\'\2\'>\1</a>';
-			$content = preg_replace($regex, $replacement, $content);
-
-			// Bold text
-			$regex = '/(\*\*|__)(.*?)\1/';
-			$replacement = '<strong>\2</strong>';
-			$content = preg_replace($regex, $replacement, $content);
-
-			// Lists
-			$regex = '/\n\s*[\*|\-](.*)/';
-			$content = preg_replace_callback($regex, function($regs) {
-				$item = $regs[1];
-				return sprintf ('<ul><li>%s</li></ul>', trim ($item));
-			}, $content);
-
-			// Italic text
-			$regex = '/(\*\*|\*)(.*?)\1/';
-			$replacement = '<i>\2</i>';
-			$content = preg_replace($regex, $replacement, $content);
+			$content = $thumbnail . '<br />' . markdownToHtml($jsonItem['content']);
 
 			$item = array();
 			$item['uri'] = $uri;

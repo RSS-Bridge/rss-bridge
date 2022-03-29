@@ -135,6 +135,9 @@ class ParameterValidator {
 			return false;
 
 		foreach($data as $name => $value) {
+			// Some RSS readers add a cache-busting parameter (_=<timestamp>) to feed URLs, detect and ignore them.
+			if ($name === '_') continue;
+
 			$registered = false;
 			foreach($parameters as $context => $set) {
 				if(array_key_exists($name, $set)) {

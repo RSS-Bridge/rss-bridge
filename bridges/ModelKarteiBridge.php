@@ -7,7 +7,8 @@ class ModelKarteiBridge extends BridgeAbstract {
 	const PARAMETERS = array(array(
 		'model_id' => array(
 			'name'			=> 'Model ID',
-			'exampleValue'	=> '123456'
+			'required' => true,
+			'exampleValue'	=> '614931'
 		)
 	));
 
@@ -20,8 +21,7 @@ class ModelKarteiBridge extends BridgeAbstract {
 		if (empty($model_id))
 			returnServerError('Invalid model ID');
 
-		$html = getSimpleHTMLDOM(self::URI . 'sedcards/model/' . $model_id . '/')
-			or returnServerError('Model not found');
+		$html = getSimpleHTMLDOM(self::URI . 'sedcards/model/' . $model_id . '/');
 
 		$objTitle = $html->find('.sTitle', 0);
 		if ($objTitle)

@@ -8,7 +8,7 @@ class VarietyBridge extends FeedExpander {
 	const DESCRIPTION = 'RSS feed for Variety';
 
 	public function collectData(){
-		$this->collectExpandableDatas('http://feeds.feedburner.com/variety/headlines', 15);
+		$this->collectExpandableDatas('https://feeds.feedburner.com/variety/headlines', 15);
 	}
 
 	protected function parseItem($newsItem){

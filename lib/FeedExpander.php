@@ -58,6 +58,12 @@ abstract class FeedExpander extends BridgeAbstract {
 	private $uri;
 
 	/**
+	 * Holds the icon of the feed
+	 *
+	 */
+	private $icon;
+
+	/**
 	 * Holds the feed type during internal operations.
 	 *
 	 * @var string
@@ -216,6 +222,10 @@ abstract class FeedExpander extends BridgeAbstract {
 	protected function load_RSS_2_0_feed_data($rssContent){
 		$this->title = trim((string)$rssContent->title);
 		$this->uri = trim((string)$rssContent->link);
+
+		if (!empty($rssContent->image)) {
+			$this->icon = trim((string)$rssContent->image->url);
+		}
 	}
 
 	/**
@@ -240,6 +250,12 @@ abstract class FeedExpander extends BridgeAbstract {
 					break;
 				}
 			}
+		}
+
+		if(!empty($content->icon)) {
+			$this->icon = (string)$content->icon;
+		} elseif(!empty($content->logo)) {
+			$this->icon = (string)$content->logo;
 		}
 	}
 
@@ -270,7 +286,9 @@ abstract class FeedExpander extends BridgeAbstract {
 			foreach($feedItem->link as $link) {
 				if(strtolower($link['rel']) === 'alternate') {
 					$item['uri'] = (string)$link['href'];
-					break;
+				}
+				if(strtolower($link['rel']) === 'enclosure') {
+					$item['enclosures'][] = (string)$link['href'];
 				}
 			}
 		}
@@ -346,7 +364,7 @@ abstract class FeedExpander extends BridgeAbstract {
 				if($attribute === 'isPermaLink'
 					&& ($value === 'true' || (
 							filter_var($feedItem->guid, FILTER_VALIDATE_URL)
-							&& !filter_var($item['uri'], FILTER_VALIDATE_URL)
+							&& (empty($item['uri']) || !filter_var($item['uri'], FILTER_VALIDATE_URL))
 						)
 					)
 				) {

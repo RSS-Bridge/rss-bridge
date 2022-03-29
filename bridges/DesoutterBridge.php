@@ -16,7 +16,7 @@ class DesoutterBridge extends BridgeAbstract {
 				'name' => 'Language',
 				'type' => 'list',
 				'title' => 'Select your language',
-				'defaultValue' => 'Corporate',
+				'defaultValue' => 'https://www.desouttertools.com/about-desoutter/news-events',
 				'values' => array(
 					'Corporate'
 					=> 'https://www.desouttertools.com/about-desoutter/news-events',
@@ -120,6 +120,7 @@ class DesoutterBridge extends BridgeAbstract {
 			'limit' => array(
 				'name' => 'Limit',
 				'type' => 'number',
+				'required' => true,
 				'defaultValue' => 3,
 				'title' => "Maximum number of items to return in the feed.\n0 = unlimited"
 			)
@@ -155,8 +156,7 @@ class DesoutterBridge extends BridgeAbstract {
 		}
 		*/
 
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$html = defaultLinkTo($html, $this->getURI());
 
@@ -184,8 +184,7 @@ class DesoutterBridge extends BridgeAbstract {
 	}
 
 	private function getFullNewsArticle($uri) {
-		$html = getSimpleHTMLDOMCached($uri)
-			or returnServerError('Unable to load full article!');
+		$html = getSimpleHTMLDOMCached($uri);
 
 		$html = defaultLinkTo($html, $this->getURI());
 
@@ -199,8 +198,7 @@ class DesoutterBridge extends BridgeAbstract {
 	 * @return void
 	 */
 	private function extractNewsLanguages() {
-		$html = getSimpleHTMLDOMCached('https://www.desouttertools.com/about-desoutter/news-events')
-			or returnServerError('Error loading news!');
+		$html = getSimpleHTMLDOMCached('https://www.desouttertools.com/about-desoutter/news-events');
 
 		$html = defaultLinkTo($html, static::URI);
 
@@ -225,8 +223,7 @@ class DesoutterBridge extends BridgeAbstract {
 	 * @return void
 	 */
 	private function extractIndustryLanguages() {
-		$html = getSimpleHTMLDOMCached('https://www.desouttertools.com/industry-4-0/news')
-			or returnServerError('Error loading news!');
+		$html = getSimpleHTMLDOMCached('https://www.desouttertools.com/industry-4-0/news');
 
 		$html = defaultLinkTo($html, static::URI);
 

@@ -10,7 +10,8 @@ class ArtStationBridge extends BridgeAbstract {
 		'Search Query' => array(
 			'q' => array(
 				'name' => 'Search term',
-				'required' => true
+				'required' => true,
+				'exampleValue'	=> 'bird'
 			)
 		)
 	);
@@ -39,15 +40,13 @@ class ArtStationBridge extends BridgeAbstract {
 		);
 
 		$jsonSearchURL = self::URI . '/api/v2/search/projects.json';
-		$jsonSearchStr = getContents($jsonSearchURL, $header, $opts)
-			or returnServerError('Could not fetch JSON for search query.');
+		$jsonSearchStr = getContents($jsonSearchURL, $header, $opts);
 		return json_decode($jsonSearchStr);
 	}
 
 	private function fetchProject($hashID) {
 		$jsonProjectURL = self::URI . '/projects/' . $hashID . '.json';
-		$jsonProjectStr = getContents($jsonProjectURL)
-			or returnServerError('Could not fetch JSON for project.');
+		$jsonProjectStr = getContents($jsonProjectURL);
 		return json_decode($jsonProjectStr);
 	}
 

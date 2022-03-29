@@ -97,8 +97,7 @@ class DiceBridge extends BridgeAbstract {
 			$uri .= '&telecommute=true';
 		}
 
-		$html = getSimpleHTMLDOM($uri)
-			or returnServerError('Could not request Dice.');
+		$html = getSimpleHTMLDOM($uri);
 		foreach($html->find('div.complete-serp-result-div') as $element) {
 			$item = array();
 			// Title
