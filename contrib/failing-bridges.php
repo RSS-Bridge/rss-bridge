@@ -12,7 +12,6 @@ return [
 	'Elsevier', // 0 items
 	'Etsy', // 0 items
 	'Footito', // 0 items
-	'FurAffinityUser', // Required parameter(s) missing
 	'Gelbooru', // 404
 	'Glassdoor', // "Exception: Unable to find blog posts!"
 	'HentaiHaven', // 0 items

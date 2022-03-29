@@ -206,6 +206,7 @@ function main($argc, $argv): void
 	$excludedBridges = [
 		'YouTubeCommunityTab', // broken, needs geoip solution
 		'Spotify', // needs credentials
+	    'FurAffinityUser', // requires credentials (username and password (and later cookies in PR))
 		'Facebook', // flaky
 		'Instagram', // works but flaky
 		'FB2', // Required parameter(s) missing
