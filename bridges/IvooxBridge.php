@@ -14,7 +14,8 @@ class IvooxBridge extends BridgeAbstract {
 		'Search result' => array(
 			's' => array(
 				'name' => 'keyword',
-				'exampleValue' => 'test'
+				'required' => true,
+				'exampleValue' => 'car'
 			)
 		)
 	);

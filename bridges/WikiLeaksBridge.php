@@ -28,7 +28,7 @@ class WikiLeaksBridge extends BridgeAbstract {
 				'name' => 'Show teaser',
 				'type' => 'checkbox',
 				'title' => 'If checked feeds will display the teaser',
-				'defaultValue' => true
+				'defaultValue' => 'checked'
 			)
 		)
 	);

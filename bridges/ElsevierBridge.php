@@ -11,7 +11,7 @@ class ElsevierBridge extends BridgeAbstract {
 		'j' => array(
 			'name' => 'Journal name',
 			'required' => true,
-			'exampleValue' => 'academic-pediactrics',
+			'exampleValue' => 'academic-pediatrics',
 			'title' => 'Insert html-part of your journal'
 		)
 	));

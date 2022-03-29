@@ -584,7 +584,6 @@ class GithubTrendingBridge extends BridgeAbstract {
 			'date_range' => array(
 				'name' => 'Date range',
 				'type' => 'list',
-				'required' => false,
 				'values' => array(
 					'Today' => 'today',
 					'Weekly' => 'weekly',
@@ -613,7 +612,7 @@ class GithubTrendingBridge extends BridgeAbstract {
 			$item['title'] = str_replace('  ', '', trim(strip_tags($element->find('h1 a', 0)->plaintext)));
 
 			// Description
-			$item['content'] = trim(strip_tags($element->find('p.text-gray', 0)->innertext));
+			$item['content'] = trim(strip_tags($element->find('p', 0)->innertext));
 
 			// Time
 			$item['timestamp'] = time();

@@ -5,7 +5,7 @@
 # This will overwrite previous configs and bridges of same name
 # If there are no matching files, rss-bridge works like default.
 
-find /config/ -type f -name '*.*' -print0 | 
+find /config/ -type f -name '*' -print0 | 
 while IFS= read -r -d '' file; do
     file_name="$(basename "$file")" # Strip leading path
     if [[ $file_name = *" "* ]]; then
@@ -22,6 +22,9 @@ while IFS= read -r -d '' file; do
     whitelist.txt)  yes | cp "$file" /app/ ;
                     chown www-data:www-data "/app/$file_name";
                     printf "Custom whitelist.txt added.\n";;
+    DEBUG)          yes | cp "$file" /app/ ;
+                    chown www-data:www-data "/app/$file_name";
+                    printf "DEBUG file added.\n";;
     esac
 done
 

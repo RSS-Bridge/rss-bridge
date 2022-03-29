@@ -36,12 +36,10 @@ class GetContentsException extends \Exception {
  **/
 class CloudflareChallengeException extends \Exception {
 	public function __construct($code = 0, Throwable $previous = null) {
-		if (!$message) {
-			$message = <<<EOD
+		$message = <<<EOD
 The server responded with a Cloudflare challenge, which is not supported by RSS-Bridge!
 If this error persists longer than a week, please consider opening an issue on GitHub!
 EOD;
-		}
 
 		parent::__construct($message, $code, $previous);
 	}
@@ -130,8 +128,8 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 		'content' => '',
 	);
 
-	// Use file_get_contents if in CLI mode with no root certificates defined
-	if(php_sapi_name() === 'cli' && empty(ini_get('curl.cainfo'))) {
+	// Use file_get_contents() if curl module is not installed
+	if(! function_exists('curl_version')) {
 
 		$httpHeaders = '';
 
@@ -228,6 +226,8 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 		curl_close($ch);
 	}
 
+	$finalHeader = array_change_key_case($finalHeader, CASE_LOWER);
+
 	switch($errorCode) {
 		case 200: // Contents OK
 		case 201: // Contents Created
@@ -236,7 +236,7 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 			$data = substr($data, $headerSize);
 			// Disable caching if the server responds with "Cache-Control: no-cache"
 			// or "Cache-Control: no-store"
-			$finalHeader = array_change_key_case($finalHeader, CASE_LOWER);
+
 			if(array_key_exists('cache-control', $finalHeader)) {
 				Debug::log('Server responded with "Cache-Control" header');
 				$directives = explode(',', $finalHeader['cache-control']);
@@ -257,7 +257,7 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 			$retVal['content'] = $cache->loadData();
 			break;
 		default:
-			if(array_key_exists('Server', $finalHeader) && strpos($finalHeader['Server'], 'cloudflare') !== false) {
+			if(array_key_exists('server', $finalHeader) && stripos($finalHeader['server'], 'cloudflare') !== false) {
 				throw new CloudflareChallengeException($errorCode);
 			}
 

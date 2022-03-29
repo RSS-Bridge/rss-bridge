@@ -42,6 +42,10 @@ class HeiseBridge extends FeedExpander {
 		$item = parent::parseItem($feedItem);
 		$item['uri'] = explode('?', $item['uri'])[0] . '?seite=all';
 
+		if (strpos($item['uri'], 'https://www.heise.de') !== 0) {
+			return $item;
+		}
+
 		$article = getSimpleHTMLDOMCached($item['uri']);
 
 		if ($article) {
