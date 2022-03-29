@@ -5,7 +5,7 @@ class VieDeMerdeBridge extends BridgeAbstract {
 	const NAME = 'VieDeMerde Bridge';
 	const URI = 'https://www.viedemerde.fr';
 	const DESCRIPTION = 'Returns latest quotes from VieDeMerde.';
-	const CACHE_TIMEOUT = 0;//7200;
+	const CACHE_TIMEOUT = 7200;
 
 	const PARAMETERS = array(array(
 			'item_limit' => array(
