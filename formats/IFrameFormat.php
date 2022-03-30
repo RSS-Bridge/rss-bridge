@@ -1,5 +1,5 @@
 <?php
-class EmbedFormat extends FormatAbstract {
+class IFrameFormat extends FormatAbstract {
 	const MIME_TYPE = 'text/html';
 
 	public function stringify(){
