@@ -37,9 +37,11 @@ class AnimeUltimeBridge extends BridgeAbstract {
 		$processedOK = 0;
 		foreach (array($thismonth, $lastmonth) as $requestFilter) {
 
-			//Retrive page contents
 			$url = self::URI . 'history-0-1/' . $requestFilter;
-			$html = getSimpleHTMLDOM($url);
+			$html = getContents($url);
+			// Convert html from iso-8859-1 => utf8
+			$html = utf8_encode($html);
+			$html = str_get_html($html);
 
 			//Relases are sorted by day : process each day individually
 			foreach($html->find('div.history', 0)->find('h3') as $daySection) {
@@ -87,6 +89,8 @@ class AnimeUltimeBridge extends BridgeAbstract {
 
 							// Retrieve description from description page
 							$html_item = getContents($item_uri);
+							// Convert html from iso-8859-1 => utf8
+							$html_item = utf8_encode($html_item);
 							$item_description = substr(
 								$html_item,
 								strpos($html_item, 'class="principal_contain" align="center">') + 41

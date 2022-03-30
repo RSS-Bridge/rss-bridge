@@ -3,7 +3,7 @@ class VieDeMerdeBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'floviolleau';
 	const NAME = 'VieDeMerde Bridge';
-	const URI = 'https://viedemerde.fr';
+	const URI = 'https://www.viedemerde.fr';
 	const DESCRIPTION = 'Returns latest quotes from VieDeMerde.';
 	const CACHE_TIMEOUT = 7200;
 
@@ -23,16 +23,15 @@ class VieDeMerdeBridge extends BridgeAbstract {
 		}
 
 		$html = getSimpleHTMLDOM(self::URI, array());
-
-		$quotes = $html->find('article.article-panel');
+		$quotes = $html->find('article.bg-white');
 		if(sizeof($quotes) === 0) {
 			return;
 		}
 
 		foreach($quotes as $quote) {
 			$item = array();
-			$item['uri'] = self::URI . $quote->find('.article-contents a', 0)->href;
-			$titleContent = $quote->find('.article-contents a h2.classic-title', 0);
+			$item['uri'] = self::URI . $quote->find('a', 0)->href;
+			$titleContent = $quote->find('h2', 0);
 
 			if($titleContent) {
 				$item['title'] = html_entity_decode($titleContent->plaintext, ENT_QUOTES);
@@ -40,9 +39,11 @@ class VieDeMerdeBridge extends BridgeAbstract {
 				continue;
 			}
 
-			$quote->find('.article-contents a h2.classic-title', 0)->outertext = '';
-			$item['content'] = $quote->find('.article-contents a', 0)->innertext;
-			$item['author'] = $quote->find('.article-topbar', 0)->innertext;
+			$quoteText = $quote->find('a', 1)->plaintext;
+			$isAVDM = $quote->find('.vote-btn', 0)->plaintext;
+			$isNotAVDM = $quote->find('.vote-btn', 1)->plaintext;
+			$item['content'] = $quoteText . '<br>' . $isAVDM . '<br>' . $isNotAVDM;
+			$item['author'] = $quote->find('p', 0)->plaintext;
 			$item['uid'] = hash('sha256', $item['title']);
 
 			$this->items[] = $item;
