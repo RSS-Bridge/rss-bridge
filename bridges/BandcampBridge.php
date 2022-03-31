@@ -11,7 +11,8 @@ class BandcampBridge extends BridgeAbstract {
 			'tag' => array(
 				'name' => 'tag',
 				'type' => 'text',
-				'required' => true
+				'required' => true,
+				'exampleValue'	=> 'hip-hop-rap'
 			)
 		),
 		'By band' => array(
@@ -19,7 +20,8 @@ class BandcampBridge extends BridgeAbstract {
 				'name' => 'band',
 				'type' => 'text',
 				'title' => 'Band name as seen in the band page URL',
-				'required' => true
+				'required' => true,
+				'exampleValue'	=> 'aesoprock'
 			),
 			'type' => array(
 				'name' => 'Articles are',
@@ -34,6 +36,7 @@ class BandcampBridge extends BridgeAbstract {
 			'limit' => array(
 				'name' => 'limit',
 				'type' => 'number',
+				'required' => true,
 				'title' => 'Number of releases to return',
 				'defaultValue' => 5
 			)
@@ -67,13 +70,15 @@ class BandcampBridge extends BridgeAbstract {
 				'name' => 'band',
 				'type' => 'text',
 				'title' => 'Band name as seen in the album page URL',
-				'required' => true
+				'required' => true,
+				'exampleValue'	=> 'aesoprock'
 			),
 			'album' => array(
 				'name' => 'album',
 				'type' => 'text',
 				'title' => 'Album name as seen in the album page URL',
-				'required' => true
+				'required' => true,
+				'exampleValue'	=> 'appleseed'
 			),
 			'type' => array(
 				'name' => 'Articles are',
@@ -110,8 +115,7 @@ class BandcampBridge extends BridgeAbstract {
 				CURLOPT_CUSTOMREQUEST => 'POST',
 				CURLOPT_POSTFIELDS => $data
 			);
-			$content = getContents($url, $header, $opts)
-				or returnServerError('Could not complete request to: ' . $url);
+			$content = getContents($url, $header, $opts);
 
 			$json = json_decode($content);
 
@@ -300,8 +304,7 @@ class BandcampBridge extends BridgeAbstract {
 
 	private function apiGet($endpoint, $query_data) {
 		$url = self::URI . 'api/' . $endpoint . '?' . http_build_query($query_data);
-		$data = json_decode(getContents($url))
-			or returnServerError('API request to "' . $url . '" failed.');
+		$data = json_decode(getContents($url));
 		return $data;
 	}
 

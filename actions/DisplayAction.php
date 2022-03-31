@@ -38,6 +38,7 @@ class DisplayAction extends ActionAbstract {
 
 		// Data retrieval
 		$bridge = $bridgeFac->create($bridge);
+		$bridge->loadConfiguration();
 
 		$noproxy = array_key_exists('_noproxy', $this->userData)
 			&& filter_var($this->userData['_noproxy'], FILTER_VALIDATE_BOOLEAN);
@@ -131,7 +132,6 @@ class DisplayAction extends ActionAbstract {
 
 			try {
 				$bridge->setDatas($bridge_params);
-				$bridge->loadConfiguration();
 				$bridge->collectData();
 
 				$items = $bridge->getItems();

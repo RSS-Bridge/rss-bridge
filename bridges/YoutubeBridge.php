@@ -18,34 +18,36 @@ class YoutubeBridge extends BridgeAbstract {
 		'By username' => array(
 			'u' => array(
 				'name' => 'username',
-				'exampleValue' => 'test',
+				'exampleValue' => 'LinusTechTips',
 				'required' => true
 			)
 		),
 		'By channel id' => array(
 			'c' => array(
 				'name' => 'channel id',
-				'exampleValue' => '15',
+				'exampleValue' => 'UCw38-8_Ibv_L6hlKChHO9dQ',
 				'required' => true
 			)
 		),
 		'By custom name' => array(
 			'custom' => array(
 				'name' => 'custom name',
-				'exampleValue' => 'nasa',
+				'exampleValue' => 'LinusTechTips',
 				'required' => true
 			)
 		),
 		'By playlist Id' => array(
 			'p' => array(
 				'name' => 'playlist id',
-				'exampleValue' => '15'
+				'exampleValue' => 'PL8mG-RkN2uTzJc8N0EoyhdC54prvBBLpj',
+				'required' => true
 			)
 		),
 		'Search result' => array(
 			's' => array(
 				'name' => 'search keyword',
-				'exampleValue' => 'test'
+				'exampleValue' => 'LinusTechTips',
+				'required' => true
 			),
 			'pa' => array(
 				'name' => 'page',
@@ -347,8 +349,7 @@ class YoutubeBridge extends BridgeAbstract {
 			$this->request = $this->getInput('p');
 			$url_feed = self::URI . 'feeds/videos.xml?playlist_id=' . urlencode($this->request);
 			$url_listing = self::URI . 'playlist?list=' . urlencode($this->request);
-			$html = $this->ytGetSimpleHTMLDOM($url_listing)
-				or returnServerError("Could not request YouTube. Tried:\n - $url_listing");
+			$html = $this->ytGetSimpleHTMLDOM($url_listing);
 			$jsonData = $this->getJSONData($html);
 			// TODO: this method returns only first 100 video items
 			// if it has more videos, playlistVideoListRenderer will have continuationItemRenderer as last element
@@ -377,8 +378,7 @@ class YoutubeBridge extends BridgeAbstract {
 			. urlencode($this->request)
 			. '&sp=CAI%253D';
 
-			$html = $this->ytGetSimpleHTMLDOM($url_listing)
-				or returnServerError("Could not request YouTube. Tried:\n - $url_listing");
+			$html = $this->ytGetSimpleHTMLDOM($url_listing);
 
 			$jsonData = $this->getJSONData($html);
 			$jsonData = $jsonData->contents->twoColumnSearchResultsRenderer->primaryContents;

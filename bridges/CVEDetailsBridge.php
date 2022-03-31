@@ -55,8 +55,7 @@ class CVEDetailsBridge extends BridgeAbstract {
 	// Make the actual request to cvedetails.com and stores the response
 	// (HTML) for later use and extract vendor and product from it.
 	private function _fetchContent() {
-		$html = getSimpleHTMLDOM($this->_buildURL())
-			or returnServerError('Request failed: ' . $this->_buildURL());
+		$html = getSimpleHTMLDOM($this->_buildURL());
 		$this->html = defaultLinkTo($html, self::URI);
 
 		$vendor = $html->find('#contentdiv > h1 > a', 0);

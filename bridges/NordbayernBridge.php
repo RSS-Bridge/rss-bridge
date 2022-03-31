@@ -6,7 +6,7 @@ class NordbayernBridge extends BridgeAbstract {
 	const NAME = 'Nordbayern';
 	const CACHE_TIMEOUT = 3600;
 	const URI = 'https://www.nordbayern.de';
-	const DESCRIPTION = 'Bridge for Bavarian reginoal news site nordbayern.de';
+	const DESCRIPTION = 'Bridge for Bavarian regional news site nordbayern.de';
 	const PARAMETERS = array( array(
 		'region' => array(
 			'name' => 'region',
@@ -82,6 +82,8 @@ class NordbayernBridge extends BridgeAbstract {
 		defaultLinkTo($article, self::URI);
 
 		$item['uri'] = $link;
+		$item['author'] = $article->find('[class=article__author extrabold]', 0)->plaintext;
+		$item['timestamp'] = strtotime(str_replace('Uhr', '', $article->find('[class=article__release]', 0)->plaintext));
 		if ($article->find('h2', 0) == null) {
 			$item['title'] = $article->find('h3', 0)->innertext;
 		} else {
@@ -97,10 +99,11 @@ class NordbayernBridge extends BridgeAbstract {
 			// the first immage will be the portrait of the author
 			// and not the article banner. The banner in this
 			// case will be the second image.
-			if ($article->find('div[class=authorinfo]', 0) == null) {
-				$bannerUrl = $images[0];
+			// Also skip first image, as its always NN logo.
+			if ($article->find('a[id="openAuthor"]', 0) == null) {
+				$bannerUrl = isset($images[1]) ? $images[1] : null;
 			} else {
-				$bannerUrl = $images[1];
+				$bannerUrl = isset($images[2]) ? $images[2] : null;
 			}
 
 			$item['content'] .= '<img src="' . $bannerUrl . '">';
@@ -116,11 +119,11 @@ class NordbayernBridge extends BridgeAbstract {
 			$item['content'] .= self::getUseFullContent($content);
 		}
 
-		for($i = 0; $i < count($images); $i++) {
+		for($i = 1; $i < count($images); $i++) {
 			$item['content'] .= '<img src="' . $images[$i] . '">';
 		}
 
-		// exclude police reports if descired
+		// exclude police reports if desired
 		if($this->getInput('policeReports') ||
 			!str_contains($item['content'], 'Hier geht es zu allen aktuellen Polizeimeldungen.')) {
 			$this->items[] = $item;

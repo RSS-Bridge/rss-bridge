@@ -44,8 +44,7 @@ class BrutBridge extends BridgeAbstract {
 
 	public function collectData() {
 
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request: ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$results = $html->find('div.results', 0);
 
@@ -54,8 +53,7 @@ class BrutBridge extends BridgeAbstract {
 
 			$videoPath = self::URI . $li->children(0)->href;
 
-			$videoPageHtml = getSimpleHTMLDOMCached($videoPath, 3600)
-				or returnServerError('Could not request: ' . $videoPath);
+			$videoPageHtml = getSimpleHTMLDOMCached($videoPath, 3600);
 
 			$this->videoImage = $videoPageHtml->find('meta[name="twitter:image"]', 0)->content;
 

@@ -28,7 +28,7 @@ final class Configuration {
 	 *
 	 * @todo Replace this property by a constant.
 	 */
-	public static $VERSION = 'dev.2021-04-25';
+	public static $VERSION = 'dev.2022-01-20';
 
 	/**
 	 * Holds the configuration data.
@@ -101,10 +101,6 @@ final class Configuration {
 
 		if(!extension_loaded('json'))
 			self::reportError('"json" extension not loaded. Please check "php.ini"');
-
-		// Check cache folder permissions (write permissions required)
-		if(!is_writable(PATH_CACHE))
-			self::reportError('RSS-Bridge does not have write permissions for ' . PATH_CACHE . '!');
 
 	}
 

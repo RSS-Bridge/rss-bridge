@@ -11,6 +11,7 @@ class PornhubBridge extends BridgeAbstract {
 	const PARAMETERS = array(array(
 		'q' => array(
 			'name' => 'User name',
+			'exampleValue' => 'asa-akira',
 			'required' => true,
 		),
 		'type' => array(
@@ -21,7 +22,7 @@ class PornhubBridge extends BridgeAbstract {
 				'model' => 'model',
 				'pornstar' => 'pornstar',
 			),
-			'defaultValue' => 'users',
+			'defaultValue' => 'pornstar',
 		),
 		'sort' => array(
 			'name' => 'Sort by',
@@ -62,8 +63,7 @@ class PornhubBridge extends BridgeAbstract {
 
 		$show_images = $this->getInput('show_images');
 
-		$html = getSimpleHTMLDOM($uri)
-			or returnServerError('Could not request PornHub.');
+		$html = getSimpleHTMLDOM($uri);
 
 		foreach($html->find('div.videoUList ul.videos li.videoblock') as $element) {
 

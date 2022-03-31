@@ -11,14 +11,14 @@ class PicukiBridge extends BridgeAbstract
 		'Username' => array(
 			'u' => array(
 				'name' => 'username',
-				'exampleValue' => 'katyperry',
+				'exampleValue' => 'aesoprockwins',
 				'required' => true,
 			),
 		),
 		'Hashtag' => array(
 			'h' => array(
 				'name' => 'hashtag',
-				'exampleValue' => 'birds',
+				'exampleValue' => 'beautifulday',
 				'required' => true,
 			),
 		)

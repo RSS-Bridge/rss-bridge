@@ -8,8 +8,7 @@ class SymfonyCastsBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 3600;
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM('https://symfonycasts.com/updates/find')
-			or returnServerError('Unable to get page.');
+		$html = getSimpleHTMLDOM('https://symfonycasts.com/updates/find');
 		$dives = $html->find('div');
 
 		/* @var simple_html_dom $div */

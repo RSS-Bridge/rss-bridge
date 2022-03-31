@@ -10,8 +10,7 @@ class ASRockNewsBridge extends BridgeAbstract {
 
 	public function collectData() {
 
-		$html = getSimpleHTMLDOM(self::URI . '/news/index.asp')
-			or returnServerError('Could not request: ' . self::URI . '/news/index.asp');
+		$html = getSimpleHTMLDOM(self::URI . '/news/index.asp');
 
 		$html = defaultLinkTo($html, self::URI . '/news/');
 
@@ -20,8 +19,7 @@ class ASRockNewsBridge extends BridgeAbstract {
 
 			$articlePath = $a->href;
 
-			$articlePageHtml = getSimpleHTMLDOMCached($articlePath, self::CACHE_TIMEOUT)
-				or returnServerError('Could not request: ' . $articlePath);
+			$articlePageHtml = getSimpleHTMLDOMCached($articlePath, self::CACHE_TIMEOUT);
 
 			$articlePageHtml = defaultLinkTo($articlePageHtml, self::URI);
 

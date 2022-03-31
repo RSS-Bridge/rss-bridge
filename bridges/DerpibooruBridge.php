@@ -24,7 +24,8 @@ class DerpibooruBridge extends BridgeAbstract {
 			),
 			'q' => array(
 				'name' => 'Query',
-				'required' => true
+				'required' => true,
+				'exampleValue' => 'dog',
 			)
 		)
 	);
@@ -77,7 +78,7 @@ class DerpibooruBridge extends BridgeAbstract {
 			. urlencode($this->getInput('f'))
 			. '&q='
 			. urlencode($this->getInput('q'))
-		)) or returnServerError('Failed to query Derpibooru');
+		));
 
 		foreach($queryJson->images as $post) {
 			$item = array();

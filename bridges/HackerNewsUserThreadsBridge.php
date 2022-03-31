@@ -11,13 +11,14 @@ class HackerNewsUserThreadsBridge extends BridgeAbstract {
 			'name' => 'User',
 			'type' => 'text',
 			'required' => true,
+			'exampleValue' => 'nixcraft',
 			'title' => 'User whose threads you want to see'
 		)
 	));
 
 	public function collectData(){
 		$url = 'https://news.ycombinator.com/threads?id=' . $this->getInput('user');
-		$html = getSimpleHTMLDOM($url) or returnServerError('Could not request HN.');
+		$html = getSimpleHTMLDOM($url);
 		Debug::log('queried ' . $url);
 		Debug::log('found ' . $html);
 

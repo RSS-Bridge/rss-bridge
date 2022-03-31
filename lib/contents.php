@@ -11,6 +11,73 @@
  * @link	https://github.com/rss-bridge/rss-bridge
  */
 
+
+/**
+ * Exception class to handle all errors, when executing getContents
+ */
+class GetContentsException extends \Exception {
+	public function __construct($details, $code = 0, Throwable $previous = null) {
+		$message = trim($this->getMessageHeading() . "\n$details");
+
+		$lastError = error_get_last();
+		if($lastError !== null)
+			$message .= "\nLast PHP Error: " . $lastError['message'];
+
+		parent::__construct($message, $code, $previous);
+	}
+
+	protected function getMessageHeading() {
+		return 'Could not get contents';
+	}
+}
+
+/**
+ * Exception class to handle HTTP responses with Cloudflare challenges
+ **/
+class CloudflareChallengeException extends \Exception {
+	public function __construct($code = 0, Throwable $previous = null) {
+		$message = <<<EOD
+The server responded with a Cloudflare challenge, which is not supported by RSS-Bridge!
+If this error persists longer than a week, please consider opening an issue on GitHub!
+EOD;
+
+		parent::__construct($message, $code, $previous);
+	}
+}
+
+/**
+ * Exception class to handle non-20x HTTP responses
+ **/
+class UnexpectedResponseException extends \GetContentsException {
+	private $responseCode;
+	private $responseHeaders;
+	private $responseBody;
+
+	protected function getMessageHeading() {
+		return 'Unexpected response from upstream';
+	}
+
+	public function __construct($responseBody, $responseHeaders, $responseCode = 500, Throwable $previous = null) {
+		$this->responseCode = $responseCode;
+		$this->responseHeaders = $responseHeaders;
+		$this->responseBody = $responseBody;
+
+		parent::__construct('', $responseCode, $previous);
+	}
+
+	public function getResponseCode() {
+		return $this->responseCode;
+	}
+
+	public function getResponseHeaders() {
+		return $this->responseHeaders;
+	}
+
+	public function getResponseBody() {
+		return $this->responseBody();
+	}
+}
+
 /**
  * Gets contents from the Internet.
  *
@@ -61,8 +128,8 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 		'content' => '',
 	);
 
-	// Use file_get_contents if in CLI mode with no root certificates defined
-	if(php_sapi_name() === 'cli' && empty(ini_get('curl.cainfo'))) {
+	// Use file_get_contents() if curl module is not installed
+	if(! function_exists('curl_version')) {
 
 		$httpHeaders = '';
 
@@ -159,6 +226,8 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 		curl_close($ch);
 	}
 
+	$finalHeader = array_change_key_case($finalHeader, CASE_LOWER);
+
 	switch($errorCode) {
 		case 200: // Contents OK
 		case 201: // Contents Created
@@ -167,7 +236,7 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 			$data = substr($data, $headerSize);
 			// Disable caching if the server responds with "Cache-Control: no-cache"
 			// or "Cache-Control: no-store"
-			$finalHeader = array_change_key_case($finalHeader, CASE_LOWER);
+
 			if(array_key_exists('cache-control', $finalHeader)) {
 				Debug::log('Server responded with "Cache-Control" header');
 				$directives = explode(',', $finalHeader['cache-control']);
@@ -188,23 +257,15 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 			$retVal['content'] = $cache->loadData();
 			break;
 		default:
-			if(array_key_exists('Server', $finalHeader) && strpos($finalHeader['Server'], 'cloudflare') !== false) {
-			returnServerError(<<< EOD
-The server responded with a Cloudflare challenge, which is not supported by RSS-Bridge!
-If this error persists longer than a week, please consider opening an issue on GitHub!
-EOD
-				);
+			if(array_key_exists('server', $finalHeader) && stripos($finalHeader['server'], 'cloudflare') !== false) {
+				throw new CloudflareChallengeException($errorCode);
 			}
 
-			$lastError = error_get_last();
-			if($lastError !== null)
-				$lastError = $lastError['message'];
-			returnError(<<<EOD
-Unexpected response from upstream.
-cUrl error: $curlError ($curlErrno)
-PHP error: $lastError
-EOD
-			, $errorCode);
+			if ($curlError || $curlErrno) {
+				throw new GetContentsException('cURL error: ' . $curlError . ' (' . $curlErrno . ')');
+			}
+
+			throw new UnexpectedResponseException($retVal['content'], $retVal['header'], $errorCode);
 	}
 
 	return ($returnHeader === true) ? $retVal : $retVal['content'];

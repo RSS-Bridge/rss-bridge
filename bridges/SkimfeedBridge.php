@@ -402,8 +402,8 @@ class SkimfeedBridge extends BridgeAbstract {
 				'name' => 'Configuration',
 				'type' => 'text',
 				'required' => true,
-				'title' => 'Enter feed numbers from Skimfeed!',
-				'exampleValue' => '5,8,2,l,p,9,23'
+				'title' => 'Enter feed numbers from Skimfeed! e.g: 5,8,2,l,p,9,23',
+				'exampleValue' => '5'
 			)
 		),
 		'global' => array(
@@ -531,8 +531,7 @@ class SkimfeedBridge extends BridgeAbstract {
 		// $this->exportBoxChannels(); die;
 		// $this->exportTechChannels(); die;
 
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Request to ' . $this->getURI() . ' failed!');
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		defaultLinkTo($html, static::URI);
 

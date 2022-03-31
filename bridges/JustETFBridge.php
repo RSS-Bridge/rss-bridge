@@ -17,6 +17,7 @@ class JustETFBridge extends BridgeAbstract {
 				'name' => 'ISIN',
 				'type' => 'text',
 				'required' => true,
+				'exampleValue' => 'IE00B4X9L533',
 				'pattern' => '[a-zA-Z]{2}[a-zA-Z0-9]{10}',
 				'title' => 'ISIN, consisting of 2-letter country code, 9-character identifier, check character'
 			),
@@ -46,8 +47,7 @@ class JustETFBridge extends BridgeAbstract {
 	);
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Failed loading contents from ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		defaultLinkTo($html, static::URI);
 

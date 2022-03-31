@@ -11,10 +11,12 @@ class GithubIssueBridge extends BridgeAbstract {
 		'global' => array(
 			'u' => array(
 				'name' => 'User name',
+				'exampleValue' => 'RSS-Bridge',
 				'required' => true
 			),
 			'p' => array(
 				'name' => 'Project name',
+				'exampleValue' => 'rss-bridge',
 				'required' => true
 			)
 		),
@@ -28,6 +30,7 @@ class GithubIssueBridge extends BridgeAbstract {
 			'i' => array(
 				'name' => 'Issue number',
 				'type' => 'number',
+				'exampleValue' => '2099',
 				'required' => true
 			)
 		)
@@ -177,10 +180,7 @@ class GithubIssueBridge extends BridgeAbstract {
 	}
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError(
-				'No results for ' . static::NAME . ' ' . $this->getURI()
-			);
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		switch($this->queriedContext) {
 		case static::BRIDGE_OPTIONS[1]: // Issue comments

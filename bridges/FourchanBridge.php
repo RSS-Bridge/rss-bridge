@@ -10,11 +10,13 @@ class FourchanBridge extends BridgeAbstract {
 	const PARAMETERS = array( array(
 		'c' => array(
 			'name' => 'Thread category',
-			'required' => true
+			'required' => true,
+			'exampleValue' => 'po',
 		),
 		't' => array(
 			'name' => 'Thread number',
 			'type' => 'number',
+			'exampleValue' => '597271',
 			'required' => true
 		)
 	));
@@ -29,8 +31,7 @@ class FourchanBridge extends BridgeAbstract {
 
 	public function collectData(){
 
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request 4chan, thread not found');
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		foreach($html->find('div.postContainer') as $element) {
 			$item = array();

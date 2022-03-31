@@ -8,8 +8,7 @@ class CopieDoubleBridge extends BridgeAbstract {
 	const DESCRIPTION = 'CopieDouble';
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Could not request CopieDouble.');
+		$html = getSimpleHTMLDOM(self::URI);
 
 		$table = $html->find('table table', 2);
 

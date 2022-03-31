@@ -35,8 +35,7 @@ class BinanceBridge extends BridgeAbstract {
 	}
 
 	protected function collectBlogData() {
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not fetch Binance blog data.');
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$appData = $html->find('script[id="__APP_DATA"]');
 		$appDataJson = json_decode($appData[0]->innertext);
@@ -64,8 +63,7 @@ class BinanceBridge extends BridgeAbstract {
 	}
 
 	protected function collectAnnouncementData() {
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not fetch Zendesk announcement data.');
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		foreach($html->find('a.article-list-link') as $a) {
 			$title = $a->innertext;

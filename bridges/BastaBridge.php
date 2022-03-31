@@ -8,8 +8,7 @@ class BastaBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns the newest articles.';
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM(self::URI . 'spip.php?page=backend')
-			or returnServerError('Could not request Bastamag.');
+		$html = getSimpleHTMLDOM(self::URI . 'spip.php?page=backend');
 
 		$limit = 0;
 

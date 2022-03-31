@@ -1,4 +1,4 @@
-FROM php:7-apache
+FROM php:7-apache-buster
 
 LABEL description="RSS-Bridge is a PHP project capable of generating RSS and Atom feeds for websites that don't have one."
 LABEL repository="https://github.com/RSS-Bridge/rss-bridge"

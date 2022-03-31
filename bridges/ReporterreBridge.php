@@ -22,8 +22,7 @@ class ReporterreBridge extends BridgeAbstract {
 		}
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM(self::URI . 'spip.php?page=backend')
-			or returnServerError('Could not request Reporterre.');
+		$html = getSimpleHTMLDOM(self::URI . 'spip.php?page=backend');
 		$limit = 0;
 
 		foreach($html->find('item') as $element) {

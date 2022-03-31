@@ -45,13 +45,14 @@ class HtmlFormat extends FormatAbstract {
 			$entryTitle = $this->sanitizeHtml(strip_tags($item->getTitle()));
 			$entryUri = $item->getURI() ?: $uri;
 
-			$entryTimestamp = '';
+			$entryDate = '';
 			if($item->getTimestamp()) {
-				$entryTimestamp = '<time datetime="'
-				. date(DATE_ATOM, $item->getTimestamp())
-				. '">'
-				. date(DATE_ATOM, $item->getTimestamp())
-				. '</time>';
+
+				$entryDate = sprintf(
+					'<time datetime="%s">%s</time>',
+					date('Y-m-d H:i:s', $item->getTimestamp()),
+					date('Y-m-d H:i:s', $item->getTimestamp())
+				);
 			}
 
 			$entryContent = '';
@@ -96,7 +97,7 @@ class HtmlFormat extends FormatAbstract {
 
 <section class="feeditem">
 	<h2><a class="itemtitle" href="{$entryUri}">{$entryTitle}</a></h2>
-	{$entryTimestamp}
+	{$entryDate}
 	{$entryAuthor}
 	{$entryContent}
 	{$entryEnclosures}

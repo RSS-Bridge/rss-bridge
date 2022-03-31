@@ -12,6 +12,7 @@ class ElloBridge extends BridgeAbstract {
 			'u' => array(
 				'name' => 'Username',
 				'required' => true,
+				'exampleValue' => 'zteph',
 				'title' => 'Username'
 			)
 		),
@@ -19,6 +20,7 @@ class ElloBridge extends BridgeAbstract {
 			's' => array(
 				'name' => 'Search',
 				'required' => true,
+				'exampleValue' => 'bird',
 				'title' => 'Search'
 			)
 		)

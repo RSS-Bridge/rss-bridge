@@ -34,8 +34,7 @@ class CollegeDeFranceBridge extends BridgeAbstract {
 		 * </li>
 		 */
 		$html = getSimpleHTMLDOM(self::URI
-		. 'components/search-audiovideo.jsp?fulltext=&siteid=1156951719600&lang=FR&type=all')
-			or returnServerError('Could not request CollegeDeFrance.');
+		. 'components/search-audiovideo.jsp?fulltext=&siteid=1156951719600&lang=FR&type=all');
 
 		foreach($html->find('a[data-target]') as $element) {
 			$item = array();

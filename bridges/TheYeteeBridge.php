@@ -9,8 +9,7 @@ class TheYeteeBridge extends BridgeAbstract {
 
 	public function collectData(){
 
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Could not request The Yetee.');
+		$html = getSimpleHTMLDOM(self::URI);
 
 		$div = $html->find('.module_timed-item.is--full');
 		foreach($div as $element) {

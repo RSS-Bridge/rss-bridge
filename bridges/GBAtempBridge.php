@@ -32,36 +32,39 @@ class GBAtempBridge extends BridgeAbstract {
 		return $item;
 	}
 
+	private function decodeHtmlEntities($text) {
+		$text = html_entity_decode($text);
+		$convmap = array(0x0, 0x2FFFF, 0, 0xFFFF);
+		return trim(mb_decode_numericentity($text, $convmap, 'UTF-8'));
+	}
+
 	private function cleanupPostContent($content, $site_url){
-		$content = str_replace(':arrow:', '&#x27a4;', $content);
-		$content = str_replace('href="attachments/', 'href="' . $site_url . 'attachments/', $content);
+		$content = defaultLinkTo($content, self::URI);
 		$content = stripWithDelimiters($content, '<script', '</script>');
-		return $content;
+		$content = stripWithDelimiters($content, '<svg', '</svg>');
+		$content = stripRecursiveHTMLSection($content, 'div', '<div class="reactionsBar');
+		return $this->decodeHtmlEntities($content);
 	}
 
 	private function findItemDate($item){
 		$time = 0;
-		$dateField = $item->find('abbr.DateTime', 0);
+		$dateField = $item->find('time', 0);
 		if (is_object($dateField)) {
-			$time = intval(
-				extractFromDelimiters(
-					$dateField->outertext,
-					'data-time="',
-					'"'
-				)
-			);
-		} else {
-			$dateField = $item->find('span.DateTime', 0);
-			$time = DateTime::createFromFormat(
-				'M j, Y \a\t g:i A',
-				extractFromDelimiters(
-					$dateField->outertext,
-					'title="',
-					'"'
-				)
-			)->getTimestamp();
+			$time = strtotime($dateField->datetime);
 		}
 		return $time;
+	}
+
+	private function findItemImage($item, $selector){
+		$img = extractFromDelimiters($item->find($selector, 0)->style, 'url(', ')');
+		$paramPos = strpos($img, '?');
+		if ($paramPos !== false) {
+			$img = substr($img, 0, $paramPos);
+		}
+		if (!str_ends_with($img, '.png') && !str_ends_with($img, '.jpg')) {
+			$img = $img . '#.image';
+		}
+		return urljoin(self::URI, $img);
 	}
 
 	private function fetchPostContent($uri, $site_url){
@@ -70,23 +73,22 @@ class GBAtempBridge extends BridgeAbstract {
 			return 'Could not request GBAtemp: ' . $uri;
 		}
 
-		$content = $html->find('div.messageContent, blockquote.baseHtml', 0)->innertext;
+		$content = $html->find('article.message-body', 0)->innertext;
 		return $this->cleanupPostContent($content, $site_url);
 	}
 
 	public function collectData(){
 
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Could not request GBAtemp.');
+		$html = getSimpleHTMLDOM(self::URI);
 
 		switch($this->getInput('type')) {
 		case 'N':
-			foreach($html->find('li[class=news_item news full]') as $newsItem) {
-				$url = self::URI . $newsItem->find('a', 0)->href;
-				$img = $this->getURI() . extractFromDelimiters($newsItem->find('a.news_image', 0)->style, 'url(', ')') . '#.image';
+			foreach($html->find('li.news_item.full') as $newsItem) {
+				$url = urljoin(self::URI, $newsItem->find('a', 0)->href);
+				$img = $this->findItemImage($newsItem, 'a.news_image');
 				$time = $this->findItemDate($newsItem);
 				$author = $newsItem->find('a.username', 0)->plaintext;
-				$title = $newsItem->find('a', 1)->plaintext;
+				$title = $this->decodeHtmlEntities($newsItem->find('h3.news_title', 0)->plaintext);
 				$content = $this->fetchPostContent($url, self::URI);
 				$this->items[] = $this->buildItem($url, $title, $author, $time, $img, $content);
 				unset($newsItem); // Some items are heavy, freeing the item proactively helps saving memory
@@ -94,27 +96,23 @@ class GBAtempBridge extends BridgeAbstract {
 			break;
 		case 'R':
 			foreach($html->find('li.portal_review') as $reviewItem) {
-				$url = self::URI . $reviewItem->find('a', 0)->href;
-				$img = $this->getURI() . extractFromDelimiters($reviewItem->find('a', 0)->style, 'image:url(', ')');
-				$title = $reviewItem->find('span.review_title', 0)->plaintext;
-				$content = getSimpleHTMLDOM($url)
-					or returnServerError('Could not request GBAtemp: ' . $uri);
-				$author = $content->find('a.username', 0)->plaintext;
+				$url = urljoin(self::URI, $reviewItem->find('a.review_boxart', 0)->href);
+				$img = $this->findItemImage($reviewItem, 'a.review_boxart');
+				$title = $this->decodeHtmlEntities($reviewItem->find('h2.review_title', 0)->plaintext);
+				$content = getSimpleHTMLDOMCached($url);
+				$author = $content->find('span.author--name', 0)->plaintext;
 				$time = $this->findItemDate($content);
-				$intro = '<p><b>' . ($content->find('div#review_intro', 0)->plaintext) . '</b></p>';
+				$intro = '<p><b>' . ($content->find('div#review_introduction', 0)->plaintext) . '</b></p>';
 				$review = $content->find('div#review_main', 0)->innertext;
-				$subheader = '<p><b>' . $content->find('div.review_subheader', 0)->plaintext . '</b></p>';
-				$procons = $content->find('table.review_procons', 0)->outertext;
-				$scores = $content->find('table.reviewscores', 0)->outertext;
-				$content = $this->cleanupPostContent($intro . $review . $subheader . $procons . $scores, self::URI);
+				$content = $this->cleanupPostContent($intro . $review, self::URI);
 				$this->items[] = $this->buildItem($url, $title, $author, $time, $img, $content);
 				unset($reviewItem); // Free up memory
 			}
 			break;
 		case 'T':
 			foreach($html->find('li.portal-tutorial') as $tutorialItem) {
-				$url = self::URI . $tutorialItem->find('a', 1)->href;
-				$title = $tutorialItem->find('a', 1)->plaintext;
+				$url = urljoin(self::URI, $tutorialItem->find('a', 1)->href);
+				$title = $this->decodeHtmlEntities($tutorialItem->find('a', 1)->plaintext);
 				$time = $this->findItemDate($tutorialItem);
 				$author = $tutorialItem->find('a.username', 0)->plaintext;
 				$content = $this->fetchPostContent($url, self::URI);
@@ -124,8 +122,8 @@ class GBAtempBridge extends BridgeAbstract {
 			break;
 		case 'F':
 			foreach($html->find('li.rc_item') as $postItem) {
-				$url = self::URI . $postItem->find('a', 1)->href;
-				$title = $postItem->find('a', 1)->plaintext;
+				$url = urljoin(self::URI, $postItem->find('a', 1)->href);
+				$title = $this->decodeHtmlEntities($postItem->find('a', 1)->plaintext);
 				$time = $this->findItemDate($postItem);
 				$author = $postItem->find('a.username', 0)->plaintext;
 				$content = $this->fetchPostContent($url, self::URI);

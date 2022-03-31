@@ -8,6 +8,7 @@ class WallpaperflareBridge extends XPathAbstract {
 		'' => array(
 			'search' => array(
 				'name' => 'Search',
+				'exampleValue' => 'birds',
 				'required' => true
 		)
 	));

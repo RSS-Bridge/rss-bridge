@@ -9,8 +9,7 @@ class WosckerBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 1800; // 30 mins
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request: ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$date = $html->find('h1', 0)->plaintext;
 		$timestamp = $html->find('span.dateFont', 0)->plaintext . ' ' . $html->find('span.dateFont', 1)->plaintext;
