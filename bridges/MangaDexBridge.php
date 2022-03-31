@@ -5,7 +5,6 @@ class MangaDexBridge extends BridgeAbstract {
 	const URI = 'https://mangadex.org/';
 	const API_ROOT = 'https://api.mangadex.org/';
 	const DESCRIPTION = 'Returns MangaDex items using the API';
-	const CACHE_TIMEOUT = 0;
 
 	const PARAMETERS = array(
 		'global' => array(
@@ -17,8 +16,9 @@ class MangaDexBridge extends BridgeAbstract {
 			),
 			'lang' => array(
 				'name' => 'Chapter Languages',
-				'title' => 'two-letter language codes, separated by just ","',
+				'title' => 'comma-separated, two-letter language codes (example "en,jp")',
 				'defaultValue' => 'en',
+				'exampleValue' => 'en,jp',
 				'required' => false
 			),
 		),
