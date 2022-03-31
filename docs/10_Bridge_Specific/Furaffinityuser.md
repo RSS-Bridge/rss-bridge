@@ -15,7 +15,7 @@
 
 - On the left side, select "Cookies" -> "Furaffinity.net"
 
-- There will be (at least) two cookie information in the main window. You need the value of the "a" and "b" keys
+- There will be (at least) two cookie informations in the main window. You need the values of the "a" key and "b" key
 
 ### Configuring RSS-Bridge
 
