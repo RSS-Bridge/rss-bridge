@@ -27,6 +27,11 @@ class MangaDexBridge extends BridgeAbstract {
 				'name' => 'URL to title page',
 				'exampleValue' => 'https://mangadex.org/title/f9c33607-9180-4ba6-b85c-e4b5faee7192/official-test-manga',
 				'required' => true
+			),
+			'external' => array(
+				'name' => 'Allow external feed items',
+				'type' => 'checkbox',
+				'title' => 'Some chapters are inaccessible or only available on an external site. Include these?'
 			)
 		)
 	);
@@ -58,6 +63,9 @@ class MangaDexBridge extends BridgeAbstract {
 			preg_match(self::TITLE_REGEX, $this->getInput('url'), $matches)
 				or returnClientError('Invalid URL Parameter');
 			$params['order[updatedAt]'] = 'desc';
+			if (!$this->getInput('external')) {
+				$params['includeFutureUpdates'] = '0';
+			}
 			$array_params['includes[]'] = array('manga', 'scanlation_group', 'user');
 			$uri = self::API_ROOT . 'manga/' . $matches['uuid'] . '/feed';
 			break;
