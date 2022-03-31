@@ -103,6 +103,9 @@ class GlassdoorBridge extends BridgeAbstract {
 			$item['uri'] = $post->find('a', 0)->href;
 			$item['title'] = $post->find('h3', 0)->plaintext;
 			$item['content'] = $post->find('p', 0)->plaintext;
+			$item['author'] = $post->find('p', -2)->plaintext;
+			$item['timestamp'] = strtotime($post->find('p', -1)->plaintext);
+
 			// TODO: fetch entire blog post content
 			$this->items[] = $item;
 
