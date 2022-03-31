@@ -39,6 +39,7 @@ class MangaDexBridge extends BridgeAbstract {
 	const TITLE_REGEX = '#title/(?<uuid>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})#';
 
 	protected $feedName = '';
+	protected $feedURI = '';
 
 	protected function buildArrayQuery($name, $array) {
 		$query = '';
@@ -62,6 +63,7 @@ class MangaDexBridge extends BridgeAbstract {
 		case 'Title Chapters':
 			preg_match(self::TITLE_REGEX, $this->getInput('url'), $matches)
 				or returnClientError('Invalid URL Parameter');
+			$this->feedURI = self::URI . 'title/' . $matches['uuid'];
 			$params['order[updatedAt]'] = 'desc';
 			if (!$this->getInput('external')) {
 				$params['includeFutureUpdates'] = '0';
@@ -91,6 +93,15 @@ class MangaDexBridge extends BridgeAbstract {
 			return $this->feedName . ' Chapters';
 		default:
 			return parent::getName();
+		}
+	}
+
+	public function getURI() {
+		switch($this->queriedContext) {
+		case 'Title Chapters':
+			return $this->feedURI;
+		default:
+			return parent::getURI();
 		}
 	}
 
