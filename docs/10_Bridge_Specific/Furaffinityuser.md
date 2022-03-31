@@ -2,8 +2,9 @@
 
 ## How to retrieve and use cookie values
 ---
-
-    The following steps describe how to get the session cookies using a Chromium-based browser. Other browser may require slightly different steps. Keyword search "how to find cookie values" in your favorite search engine.
+```
+The following steps describe how to get the session cookies using a Chromium-based browser. Other browser may require slightly different steps. Keyword search "how to find cookie values" in your favorite search engine.
+```
 
 ### Retreiving session cookies.
 
