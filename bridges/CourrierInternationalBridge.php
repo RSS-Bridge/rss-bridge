@@ -19,7 +19,9 @@ class CourrierInternationalBridge extends FeedExpander {
 		if(!$content) {
 			$content = $articlePage->find('.depeche-text', 0);
 		}
-
+		if (!$content) {
+			return $item;
+		}
 		$item['content'] = sanitize($content);
 
 		return $item;
