@@ -128,9 +128,8 @@ class GithubIssueBridge extends BridgeAbstract {
 
 		$author = $comment->find('.author', 0)->plaintext;
 
-		$title .= ' / ' . trim(
-			$comment->find('.timeline-comment-header-text', 0)->plaintext
-		);
+		$header = $comment->find('.timeline-comment-header > h3', 0);
+		$title .= ' / ' . ($header ? $header->plaintext : 'Activity');
 
 		$time = $comment->find('relative-time', 0);
 		if ($time === null) {
