@@ -74,6 +74,7 @@ class CraigslistBridge extends BridgeAbstract {
 		foreach($results as $post) {
 
 			// Skip "nearby results" banner and results
+			// This only appears when searchNearby is not specified
 			if ($post->tag == 'h4') {
 				break;
 			}
@@ -86,7 +87,8 @@ class CraigslistBridge extends BridgeAbstract {
 			$item['timestamp'] = $post->find('.result-date', 0)->datetime;
 			$item['uid'] = $heading->id;
 			$item['content'] = $post->find('.result-price', 0)->plaintext . ' '
-							 . $post->find('.result-hood', 0)->plaintext;
+							 // Find the location (local and nearby results if searchNearby=1)
+							 . $post->find('.result-hood, span.nearby', 0)->plaintext;
 
 			$images = $post->find('.result-image[data-ids]', 0);
 			if (!is_null($images)) {
