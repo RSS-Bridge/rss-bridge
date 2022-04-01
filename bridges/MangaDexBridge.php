@@ -17,7 +17,6 @@ class MangaDexBridge extends BridgeAbstract {
 			'lang' => array(
 				'name' => 'Chapter Languages',
 				'title' => 'comma-separated, two-letter language codes (example "en,jp")',
-				'defaultValue' => 'en',
 				'exampleValue' => 'en,jp',
 				'required' => false
 			),
