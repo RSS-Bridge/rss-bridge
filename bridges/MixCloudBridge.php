@@ -25,27 +25,24 @@ class MixCloudBridge extends BridgeAbstract {
 	}
 
 	public function collectData(){
-		ini_set('user_agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:53.0) Gecko/20100101 Firefox/53.0');
+		$mixcloudUri = 'https://api.mixcloud.com/' . $this->getInput('u') . '/feed/';
+		$content = getContents($mixcloudUri);
+		$casts = json_decode($content)->data;
+		$castTypes = array('upload','listen');
 
-		$html = getSimpleHTMLDOM(self::URI . '/' . $this->getInput('u'));
-
-		foreach($html->find('section.card') as $element) {
+		foreach($casts as $cast) {
+			if (! in_array($cast->type, $castTypes)) {
+				// Skip unwanted feed entries (follow, comment, favorite, etc)
+				continue;
+			}
 
 			$item = array();
 
-			$item['uri'] = self::URI . $element->find('hgroup.card-title h1 a', 0)->getAttribute('href');
-			$item['title'] = html_entity_decode(
-				$element->find('hgroup.card-title h1 a span', 0)->getAttribute('title'),
-				ENT_QUOTES
-			);
-
-			$image = $element->find('a.album-art img', 0);
-
-			if($image) {
-				$item['content'] = '<img src="' . $image->getAttribute('src') . '" />';
-			}
-
-			$item['author'] = trim($element->find('hgroup.card-title h2 a', 0)->innertext);
+			$item['uri'] = $cast->cloudcasts[0]->url;
+			$item['title'] = $cast->cloudcasts[0]->name;
+			$item['content'] = '<img src="' . $cast->cloudcasts[0]->pictures->thumbnail . '" />';
+			$item['author'] = $cast->cloudcasts[0]->user->name;
+			$item['timestamp'] = $cast->created_time;
 
 			$this->items[] = $item;
 		}
