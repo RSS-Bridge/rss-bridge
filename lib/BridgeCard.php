@@ -88,7 +88,7 @@ This bridge is not fetching its content through a secure connection</div>';
 				$form .= '<label for="'
 					. $idArg
 					. '">'
-					. filter_var($inputEntry['name'], FILTER_SANITIZE_STRING)
+					. filter_var($inputEntry['name'], FILTER_SANITIZE_FULL_SPECIAL_CHARS)
 					. '</label>'
 					. PHP_EOL;
 
@@ -103,7 +103,7 @@ This bridge is not fetching its content through a secure connection</div>';
 				}
 
 				if(isset($inputEntry['title']))
-					$form .= '<i class="info" title="' . filter_var($inputEntry['title'], FILTER_SANITIZE_STRING) . '">i</i>';
+					$form .= '<i class="info" title="' . filter_var($inputEntry['title'], FILTER_SANITIZE_FULL_SPECIAL_CHARS) . '">i</i>';
 				else
 					$form .= '<i class="no-info"></i>';
 			}
@@ -153,9 +153,9 @@ This bridge is not fetching its content through a secure connection</div>';
 		. ' id="'
 		. $id
 		. '" type="text" value="'
-		. filter_var($entry['defaultValue'], FILTER_SANITIZE_STRING)
+		. filter_var($entry['defaultValue'], FILTER_SANITIZE_FULL_SPECIAL_CHARS)
 		. '" placeholder="'
-		. filter_var($entry['exampleValue'], FILTER_SANITIZE_STRING)
+		. filter_var($entry['exampleValue'], FILTER_SANITIZE_FULL_SPECIAL_CHARS)
 		. '" name="'
 		. $name
 		. '" />'
