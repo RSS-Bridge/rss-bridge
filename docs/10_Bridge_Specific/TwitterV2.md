@@ -28,7 +28,7 @@ Configuration
 
 3. Configure RSS-Bridge
 
-	- In **config.ini.php** add following lines at the end:
+	- In **config.ini.php** (in rss-bridge root directory) add following lines at the end:
 
 	```
 	[TwitterV2Bridge]
