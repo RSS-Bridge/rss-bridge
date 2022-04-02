@@ -155,8 +155,14 @@ class OtrkeyFinderBridge extends BridgeAbstract {
 
 		if ($file == null)
 			return null;
-		else
-			return trim($file->innertext);
+
+		// Sometimes there is HTML in the filename - we don't want that.
+		// To filter that out, enumerate to the node which contains the text only.
+		foreach($file->nodes as $node)
+			if ($node->nodetype == HDOM_TYPE_TEXT)
+				return trim($node->innertext);
+
+		return null;
 	}
 
 	private function buildContent(simple_html_dom_node $node) {
