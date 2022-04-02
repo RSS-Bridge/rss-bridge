@@ -102,10 +102,12 @@ This bridge is not fetching its content through a secure connection</div>';
 					$form .= self::getCheckboxInput($inputEntry, $idArg, $id);
 				}
 
-				if(isset($inputEntry['title']))
-					$form .= '<i class="info" title="' . filter_var($inputEntry['title'], FILTER_SANITIZE_FULL_SPECIAL_CHARS) . '">i</i>';
-				else
+				if(isset($inputEntry['title'])) {
+					$title_filtered = filter_var($inputEntry['title'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+					$form .= '<i class="info" title="' . $title_filtered . '">i</i>';
+				} else {
 					$form .= '<i class="no-info"></i>';
+				}
 			}
 
 			$form .= '</div>';
