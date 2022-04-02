@@ -291,11 +291,12 @@ abstract class BridgeAbstract implements BridgeInterface {
 	 * Returns the value for the provided input
 	 *
 	 * @param string $input The input name
-	 * @return mixed|null The input value or null if the input is not defined
+	 * @param string $default The default value, when input is not defined. Default to null
+	 * @return mixed The input value or the default value if the input is not defined
 	 */
-	protected function getInput($input){
+	protected function getInput($input, $default = null){
 		if(!isset($this->inputs[$this->queriedContext][$input]['value'])) {
-			return null;
+			return $default;
 		}
 		return $this->inputs[$this->queriedContext][$input]['value'];
 	}
