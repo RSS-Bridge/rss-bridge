@@ -3,7 +3,7 @@
 class ParksOnTheAirBridge extends BridgeAbstract {
 	const MAINTAINER = 's0lesurviv0r';
 	const NAME = 'Parks On The Air Spots';
-	const URI = 'https://pota.app';
+	const URI = 'https://pota.app/#';
 	const API_URI = 'https://api.pota.app/spot/activator';
 	const CACHE_TIMEOUT = 60; // 1m
 	const DESCRIPTION = 'Parks On The Air Activator Spots';
@@ -19,9 +19,10 @@ class ParksOnTheAirBridge extends BridgeAbstract {
 		foreach ($spots as $spot) {
 			$title = $spot['activator'] . ' @ ' . $spot['reference'] . ' ' .
 				$spot['frequency'] . ' kHz';
+			$park_link = self::URI . '/park/' . $spot['reference'];
 
 			$content = <<<EOL
-<a href="https://pota.app/#/park/{$spot['reference']}">
+<a href="{$park_link}">
 {$spot['reference']}, {$spot['name']}</a><br />
 Location: {$spot['locationDesc']}<br />
 Frequency: {$spot['frequency']} kHz<br />
@@ -30,7 +31,7 @@ Comments: {$spot['comments']}
 EOL;
 
 			$this->items[] = array(
-				'uri' => 'https://pota.app/#/park/' . $spot['reference'],
+				'uri' => $park_link,
 				'title' => $title,
 				'content' => $content,
 				'timestamp' => $spot['spotTime']
