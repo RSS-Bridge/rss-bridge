@@ -10,7 +10,7 @@ class OtrkeyFinderBridge extends BridgeAbstract {
 		array(
 			'searchterm' => array(
 				'name' => 'Search term',
-				'exampleValue' => 'Terminator',
+				'exampleValue' => 'Tatort',
 				'title' => 'The search term is case-insensitive',
 			),
 			'station' => array(
