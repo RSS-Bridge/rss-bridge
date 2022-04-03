@@ -26,11 +26,14 @@ class FileCache implements CacheInterface {
 	public function saveData($data){
 		// Notice: We use plain serialize() here to reduce memory footprint on
 		// large input data.
-		$writeStream = file_put_contents($this->getCacheFile(), serialize($data));
+		$file = $this->getCacheFile();
+		$bytesWritten = file_put_contents($file, serialize($data));
 
-		if($writeStream === false) {
+		if($bytesWritten === false) {
 			throw new \Exception('Cannot write the cache... Do you have the right permissions ?');
 		}
+
+		chmod($file, 0666);
 
 		return $this;
 	}
@@ -110,6 +113,8 @@ class FileCache implements CacheInterface {
 			if (mkdir($this->path, 0755, true) !== true) {
 				throw new \Exception('Unable to create ' . $this->path);
 			}
+			// Explicit chmod here to avoid messing with umask
+			chmod($this->path, 0777);
 		}
 
 		return $this->path;
