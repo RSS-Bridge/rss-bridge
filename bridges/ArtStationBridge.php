@@ -10,7 +10,8 @@ class ArtStationBridge extends BridgeAbstract {
 		'Search Query' => array(
 			'q' => array(
 				'name' => 'Search term',
-				'required' => true
+				'required' => true,
+				'exampleValue'	=> 'bird'
 			)
 		)
 	);

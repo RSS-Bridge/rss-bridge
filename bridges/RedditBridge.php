@@ -55,6 +55,7 @@ class RedditBridge extends BridgeAbstract {
 			'u' => array(
 				'name' => 'User',
 				'required' => true,
+				'exampleValue' => 'shwikibot',
 				'title' => 'User name'
 			),
 			'comments' => array(

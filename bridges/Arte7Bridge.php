@@ -10,79 +10,82 @@ class Arte7Bridge extends BridgeAbstract {
 	const API_TOKEN = 'Nzc1Yjc1ZjJkYjk1NWFhN2I2MWEwMmRlMzAzNjI5NmU3NWU3ODg4ODJjOWMxNTMxYzEzZGRjYjg2ZGE4MmIwOA';
 
 	const PARAMETERS = array(
-		'Catégorie (Français)' => array(
-			'catfr' => array(
+		'global' => [
+			'video_duration_filter' => [
+				'name' => 'Exclude short videos',
+				'type' => 'checkbox',
+				'title' => 'Exclude videos that are shorter than 3 minutes',
+				'defaultValue'	=> false,
+			],
+		],
+		'Category' => array(
+			'lang' => array(
 				'type' => 'list',
-				'name' => 'Catégorie',
+				'name' => 'Language',
 				'values' => array(
-					'Toutes les vidéos (français)' => null,
-					'Actu & société' => 'ACT',
-					'Séries & fiction' => 'SER',
-					'Cinéma' => 'CIN',
-					'Arts & spectacles classiques' => 'ARS',
+					'Français' => 'fr',
+					'Deutsch' => 'de',
+					'English' => 'en',
+					'Español' => 'es',
+					'Polski' => 'pl',
+					'Italiano' => 'it'
+				),
+				'title' => 'ex. RC-014095 pour https://www.arte.tv/fr/videos/RC-014095/blow-up/',
+				'exampleValue'	=> 'RC-014095'
+			),
+			'cat' => array(
+				'type' => 'list',
+				'name' => 'Category',
+				'values' => array(
+					'All videos' => null,
+					'News & society' => 'ACT',
+					'Series & fiction' => 'SER',
+					'Cinema' => 'CIN',
+					'Culture' => 'ARS',
 					'Culture pop' => 'CPO',
-					'Découverte' => 'DEC',
-					'Histoire' => 'HIST',
+					'Discovery' => 'DEC',
+					'History' => 'HIST',
 					'Science' => 'SCI',
-					'Autre' => 'AUT'
+					'Other' => 'AUT'
 				)
-			)
+			),
 		),
-		'Collection (Français)' => array(
-			'colfr' => array(
-				'name' => 'Collection id',
-				'required' => true,
-				'title' => 'ex. RC-014095 pour https://www.arte.tv/fr/videos/RC-014095/blow-up/'
-			)
-		),
-		'Catégorie (Allemand)' => array(
-			'catde' => array(
+		'Collection' => array(
+			'lang' => array(
 				'type' => 'list',
-				'name' => 'Catégorie',
+				'name' => 'Language',
 				'values' => array(
-					'Alle Videos (deutsch)' => null,
-					'Aktuelles & Gesellschaft' => 'ACT',
-					'Fernsehfilme & Serien' => 'SER',
-					'Kino' => 'CIN',
-					'Kunst & Kultur' => 'ARS',
-					'Popkultur & Alternativ' => 'CPO',
-					'Entdeckung' => 'DEC',
-					'Geschichte' => 'HIST',
-					'Wissenschaft' => 'SCI',
-					'Sonstiges' => 'AUT'
+					'Français' => 'fr',
+					'Deutsch' => 'de',
+					'English' => 'en',
+					'Español' => 'es',
+					'Polski' => 'pl',
+					'Italiano' => 'it'
 				)
-			)
-		),
-		'Collection (Allemand)' => array(
-			'colde' => array(
+			),
+			'col' => array(
 				'name' => 'Collection id',
 				'required' => true,
-				'title' => 'ex. RC-014095 pour https://www.arte.tv/de/videos/RC-014095/blow-up/'
+				'title' => 'ex. RC-014095 pour https://www.arte.tv/de/videos/RC-014095/blow-up/',
+				'exampleValue'	=> 'RC-014095'
 			)
 		)
 	);
 
 	public function collectData(){
+		$lang = $this->getInput('lang');
 		switch($this->queriedContext) {
-		case 'Catégorie (Français)':
-			$category = $this->getInput('catfr');
-			$lang = 'fr';
+		case 'Category':
+			$category = $this->getInput('cat');
+			$collectionId = null;
 			break;
-		case 'Collection (Français)':
-			$lang = 'fr';
-			$collectionId = $this->getInput('colfr');
-			break;
-		case 'Catégorie (Allemand)':
-			$category = $this->getInput('catde');
-			$lang = 'de';
-			break;
-		case 'Collection (Allemand)':
-			$lang = 'de';
-			$collectionId = $this->getInput('colde');
+		case 'Collection':
+			$collectionId = $this->getInput('col');
+			$category = null;
 			break;
 		}
 
-		$url = 'https://api.arte.tv/api/opa/v3/videos?sort=-lastModified&limit=10&language='
+		$url = 'https://api.arte.tv/api/opa/v3/videos?sort=-lastModified&limit=15&language='
 			. $lang
 			. ($category != null ? '&category.code=' . $category : '')
 			. ($collectionId != null ? '&collections.collectionId=' . $collectionId : '');
@@ -95,6 +98,11 @@ class Arte7Bridge extends BridgeAbstract {
 		$input_json = json_decode($input, true);
 
 		foreach($input_json['videos'] as $element) {
+			$durationSeconds = $element['durationSeconds'];
+
+			if ($this->getInput('video_duration_filter') && $durationSeconds < 60 * 3) {
+				continue;
+			}
 
 			$item = array();
 			$item['uri'] = $element['url'];
@@ -106,10 +114,10 @@ class Arte7Bridge extends BridgeAbstract {
 			if(!empty($element['subtitle']))
 				$item['title'] = $element['title'] . ' | ' . $element['subtitle'];
 
-			$item['duration'] = round((int)$element['durationSeconds'] / 60);
+			$durationMinutes = round((int)$durationSeconds / 60);
 			$item['content'] = $element['teaserText']
 			. '<br><br>'
-			. $item['duration']
+			. $durationMinutes
 			. 'min<br><a href="'
 			. $item['uri']
 			. '"><img src="'

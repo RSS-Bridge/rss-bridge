@@ -33,3 +33,16 @@ jobs:
       - run: composer global require dealerdirect/phpcodesniffer-composer-installer
       - run: composer global require phpcompatibility/php-compatibility
       - run: ~/.composer/vendor/bin/phpcs . --standard=phpcompatibility.xml --warning-severity=0 --extensions=php -p
+
+  executable_php_files_check:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          if find -name "*.php" -executable -type f -print -exec false {} +
+          then
+            echo 'Good, no executable php scripts found'
+          else
+            echo 'Please unmark php scripts above as non-executable'
+            exit 1
+          fi

@@ -11,6 +11,7 @@ class EpicgamesBridge extends BridgeAbstract {
 		'postcount' => array(
 			'name' => 'Limit',
 			'type' => 'number',
+			'required' => true,
 			'title' => 'Maximum number of items to return',
 			'defaultValue' => 10,
 		),

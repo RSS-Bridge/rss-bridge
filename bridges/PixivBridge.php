@@ -18,7 +18,7 @@ class PixivBridge extends BridgeAbstract {
 		),
 		'tag' => array(
 			'name' => 'Query to search',
-			'exampleValue' => '葬送のフリーレン',
+			'exampleValue' => 'オリジナル',
 			'required' => true
 		),
 		'posts' => array(

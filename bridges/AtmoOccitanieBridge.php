@@ -8,7 +8,8 @@ class AtmoOccitanieBridge extends BridgeAbstract {
 	const PARAMETERS = array(array(
 		'city' => array(
 			'name' => 'Ville',
-			'required' => true
+			'required' => true,
+			'exampleValue'	=> 'cahors'
 		)
 	));
 	const CACHE_TIMEOUT = 7200;

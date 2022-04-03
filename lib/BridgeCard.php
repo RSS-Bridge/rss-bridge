@@ -88,7 +88,7 @@ This bridge is not fetching its content through a secure connection</div>';
 				$form .= '<label for="'
 					. $idArg
 					. '">'
-					. filter_var($inputEntry['name'], FILTER_SANITIZE_STRING)
+					. filter_var($inputEntry['name'], FILTER_SANITIZE_FULL_SPECIAL_CHARS)
 					. '</label>'
 					. PHP_EOL;
 
@@ -102,10 +102,12 @@ This bridge is not fetching its content through a secure connection</div>';
 					$form .= self::getCheckboxInput($inputEntry, $idArg, $id);
 				}
 
-				if(isset($inputEntry['title']))
-					$form .= '<i class="info" title="' . filter_var($inputEntry['title'], FILTER_SANITIZE_STRING) . '">i</i>';
-				else
+				if(isset($inputEntry['title'])) {
+					$title_filtered = filter_var($inputEntry['title'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+					$form .= '<i class="info" title="' . $title_filtered . '">i</i>';
+				} else {
 					$form .= '<i class="no-info"></i>';
+				}
 			}
 
 			$form .= '</div>';
@@ -113,7 +115,7 @@ This bridge is not fetching its content through a secure connection</div>';
 		}
 
 		if($isActive) {
-			$form .= '<button type="submit" name="format" value="Html">Generate feed</button>';
+			$form .= '<button type="submit" name="format" formtarget="_blank" value="Html">Generate feed</button>';
 		} else {
 			$form .= '<span style="font-weight: bold;">Inactive</span>';
 		}
@@ -153,9 +155,9 @@ This bridge is not fetching its content through a secure connection</div>';
 		. ' id="'
 		. $id
 		. '" type="text" value="'
-		. filter_var($entry['defaultValue'], FILTER_SANITIZE_STRING)
+		. filter_var($entry['defaultValue'], FILTER_SANITIZE_FULL_SPECIAL_CHARS)
 		. '" placeholder="'
-		. filter_var($entry['exampleValue'], FILTER_SANITIZE_STRING)
+		. filter_var($entry['exampleValue'], FILTER_SANITIZE_FULL_SPECIAL_CHARS)
 		. '" name="'
 		. $name
 		. '" />'
@@ -322,7 +324,7 @@ This bridge is not fetching its content through a secure connection</div>';
 		}
 
 		$card = <<<CARD
-			<section id="bridge-{$bridgeName}" data-ref="{$bridgeName}">
+			<section id="bridge-{$bridgeName}" data-ref="{$name}">
 				<h2><a href="{$uri}">{$name}</a></h2>
 				<p class="description">{$description}</p>
 				<input type="checkbox" class="showmore-box" id="showmore-{$bridgeName}" />

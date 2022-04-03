@@ -26,7 +26,7 @@ class AsahiShimbunAJWBridge extends BridgeAbstract {
 					'Opinion » Editorial' => 'opinion/editorial',
 					'Opinion » Vox Populi' => 'opinion/vox',
 				),
-				'defaultValue' => 'Politics',
+				'defaultValue' => 'politics',
 			)
 		)
 	);

@@ -229,7 +229,7 @@ EOD
 
 		$ctx = stream_context_create(array(
 			'http' => array(
-				'user_agent' => 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0',
+				'user_agent' => Configuration::getConfig('http', 'useragent'),
 				'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
 				)
 			)
@@ -254,7 +254,7 @@ EOD
 
 		$context = stream_context_create(array(
 			'http' => array(
-				'user_agent' => 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0',
+				'user_agent' => Configuration::getConfig('http', 'useragent'),
 				'header' => 'Cookie: ' . $cookies
 				)
 			)

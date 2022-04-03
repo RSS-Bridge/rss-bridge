@@ -109,7 +109,7 @@ EOD;
 
 	private function getFeatureContents(&$html){
 		$items = array();
-		foreach($html->getElementsByTagName('h2') as $title) {
+		foreach($html->getElementsByTagName('h3') as $title) {
 			if($title->getAttribute('class') !== 'SummaryHL') {
 				continue;
 			}

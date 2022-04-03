@@ -77,8 +77,6 @@ class GQMagazineBridge extends BridgeAbstract
 		// Since GQ don't want simple class scrapping, let's do it the hard way and ... discover content !
 		$main = $html->find('main', 0);
 		foreach ($main->find('a') as $link) {
-			if(strpos($link, $this->getInput('page')))
-				continue;
 			$uri = $link->href;
 			$date = $link->parent()->find('time', 0);
 
@@ -117,7 +115,7 @@ class GQMagazineBridge extends BridgeAbstract
 	 */
 	private function loadFullArticle($uri){
 		$html = getSimpleHTMLDOMCached($uri);
-		return $html->find('section[data-test-id=MainContentWrapper]', 0);
+		return $html->find('article', 0);
 	}
 
 	/**
