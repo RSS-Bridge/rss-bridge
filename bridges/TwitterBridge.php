@@ -340,11 +340,6 @@ EOD
 				continue;
 			}
 
-			/* Debug::log('>>> ' . json_encode($tweet)); */
-			// Skip spurious retweets
-			// if (isset($tweet->retweeted_status) && substr($tweet->text, 0, 4) === 'RT @') {
-			//	continue;
-			// }
 
 		// Skip pinned tweet
 			if ($hidePinned && $tweet->id_str === $pinnedTweetId) {
