@@ -93,7 +93,7 @@ EOD
 			'list' => array(
 				'name' => 'List',
 				'required' => true,
-				'exampleValue' => 'Tech News',
+				'exampleValue' => 'Tech-News',
 				'title' => 'Insert the list name'
 			),
 			'filter' => array(
