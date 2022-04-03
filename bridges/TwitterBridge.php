@@ -288,16 +288,6 @@ EOD
 
 		$hidePictures = $this->getInput('nopic');
 
-		// $promotedTweetIds = array_reduce($data->timeline->instructions[0]->addEntries->entries, function($carry, $entry) {
-		//    if (!isset($entry->content->item)) {
-		//        return $carry;
-		//    }
-		//    $tweet = $entry->content->item->content->tweet;
-		//    if (isset($tweet->promotedMetadata)) {
-		//        $carry[] = $tweet->id;
-		//    }
-		//    return $carry;
-		// }, array());
 
 		$hidePinned = $this->getInput('nopinned');
 		if ($hidePinned) {
