@@ -346,12 +346,7 @@ EOD
 			//	continue;
 			// }
 
-			// // Skip promoted tweets
-			// if (in_array($tweet->id_str, $promotedTweetIds)) {
-			//	continue;
-			// }
-
-			// // Skip pinned tweet
+		// Skip pinned tweet
 			if ($hidePinned && $tweet->id_str === $pinnedTweetId) {
 				continue;
 			}
