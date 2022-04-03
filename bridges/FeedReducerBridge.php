@@ -54,7 +54,7 @@ class FeedReducerBridge extends FeedExpander {
 	}
 
 	public function getName(){
-		$trimmedPercentage = preg_replace('/[^0-9]/', '', $this->getInput('percentage'));
+		$trimmedPercentage = preg_replace('/[^0-9]/', '', $this->getInput('percentage') ?? '');
 		return parent::getName() . ' [' . $trimmedPercentage . '%]';
 	}
 }
