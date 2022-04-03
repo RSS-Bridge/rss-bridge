@@ -305,7 +305,7 @@ EOD
 			}
 
 
-		// Skip pinned tweet
+			// Skip pinned tweet
 			if ($hidePinned && $tweet->id_str === $pinnedTweetId) {
 				continue;
 			}
