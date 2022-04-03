@@ -93,7 +93,7 @@
     <div class="Page__header">
         <h1><a href="../Bridge_API/index.html">Bridge API</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../Bridge_API/BridgeAbstract.html">BridgeAbstract</a></h1>
                 <span class="ModifiedDate">
-            March 31, 2022 at 11:28 AM        </span>
+            April 3, 2022 at 3:19 AM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/05_Bridge_API/02_BridgeAbstract.md" target="_blank">
                 Edit on GitHub            </a>
@@ -477,6 +477,61 @@ $item['uid']        // A unique ID to identify the current item
 	} else {
 		return null;
 	}
+}
+</code></pre>
+<hr />
+<h1><a id="helper-methods" href="#helper-methods" class="Permalink" aria-hidden="true" title="Permalink">#</a>Helper Methods</h1>
+<p><code>BridgeAbstract</code> implements helper methods to make it easier for bridge maintainers to create bridges. Use these methods whenever possible instead of writing your own.</p>
+<ul>
+<li>
+<a href="#savecachevalue">saveCacheValue</a>
+</li>
+<li>
+<a href="#loadcachevalue">loadCacheValue</a>
+</li>
+</ul>
+<h2><a id="savecachevalue" href="#savecachevalue" class="Permalink" aria-hidden="true" title="Permalink">#</a>saveCacheValue</h2>
+<p>Within the context of the current bridge, stores a value by key in the cache. The value can later be retrieved with <a href="#loadcachevalue">loadCacheValue</a>.</p>
+<pre><code class="hljs php"><span class="hljs-keyword">protected</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">saveCacheValue</span><span class="hljs-params">($key, $value)</span>
+</span></code></pre>
+<ul>
+<li>
+<code>$key</code> - the name under which the value is stored in the cache.</li>
+<li>
+<code>$value</code> - the value to store in the cache.</li>
+</ul>
+<p>Usage example:</p>
+<pre><code class="hljs php"><span class="hljs-keyword">const</span> MY_KEY = <span class="hljs-string">'MyKey'</span>;
+
+<span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">collectData</span><span class="hljs-params">()</span>
+</span>{
+    $value = <span class="hljs-string">'my value'</span>;
+    <span class="hljs-keyword">$this</span>-&gt;saveCacheValue(MY_KEY, $value);
+}
+</code></pre>
+<h2><a id="loadcachevalue" href="#loadcachevalue" class="Permalink" aria-hidden="true" title="Permalink">#</a>loadCacheValue</h2>
+<p>Within the context of the current bridge, loads a value by key from cache. Optionally specifies the cache duration for the key. Returns <code>null</code> if the key doesn’t exist or the value is expired.</p>
+<pre><code class="hljs php"><span class="hljs-keyword">protected</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">loadCacheValue</span><span class="hljs-params">($key, $duration = <span class="hljs-number">86400</span>)</span>
+</span></code></pre>
+<ul>
+<li>
+<code>$key</code> - the name under which the value is stored in the cache.</li>
+<li>
+<code>$duration</code> - the maximum time in seconds after which the value expires. The default duration is 86400 (24 hours).</li>
+</ul>
+<p>Usage example:</p>
+<pre><code class="hljs php"><span class="hljs-keyword">const</span> MY_KEY = <span class="hljs-string">'MyKey'</span>;
+
+<span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">collectData</span><span class="hljs-params">()</span>
+</span>{
+  $value = <span class="hljs-keyword">$this</span>-&gt;loadCacheValue(MY_KEY, <span class="hljs-number">1800</span> <span class="hljs-comment">/* 30 minutes */</span>);
+
+  <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">isset</span>($value)){
+      <span class="hljs-comment">// load value</span>
+      <span class="hljs-keyword">$this</span>-&gt;saveCacheValue(MY_KEY, $value);
+  }
+
+  <span class="hljs-comment">// ...</span>
 }
 </code></pre>
     </div>
