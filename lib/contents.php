@@ -32,20 +32,6 @@ class GetContentsException extends \Exception {
 }
 
 /**
- * Exception class to handle HTTP responses with Cloudflare challenges
- **/
-class CloudflareChallengeException extends \Exception {
-	public function __construct($code = 0, Throwable $previous = null) {
-		$message = <<<EOD
-The server responded with a Cloudflare challenge, which is not supported by RSS-Bridge!
-If this error persists longer than a week, please consider opening an issue on GitHub!
-EOD;
-
-		parent::__construct($message, $code, $previous);
-	}
-}
-
-/**
  * Exception class to handle non-20x HTTP responses
  **/
 class UnexpectedResponseException extends \GetContentsException {
@@ -257,9 +243,6 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 			$retVal['content'] = $cache->loadData();
 			break;
 		default:
-			if(array_key_exists('server', $finalHeader) && stripos($finalHeader['server'], 'cloudflare') !== false) {
-				throw new CloudflareChallengeException($errorCode);
-			}
 
 			if ($curlError || $curlErrno) {
 				throw new GetContentsException('cURL error: ' . $curlError . ' (' . $curlErrno . ')');
