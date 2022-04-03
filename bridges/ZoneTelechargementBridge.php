@@ -47,7 +47,8 @@ class ZoneTelechargementBridge extends BridgeAbstract {
 		$header = array();
 		// Parse the URL to extract the hostname
 		$parse = parse_url($url);
-		$opts = array(CURLOPT_USERAGENT => 'curl/7.64.0',
+		$opts = array(
+			CURLOPT_USERAGENT => Configuration::getConfig('http', 'useragent'),
 			CURLOPT_RESOLVE => $this->getResolve($parse['host'])
 		);
 
