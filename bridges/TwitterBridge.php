@@ -306,10 +306,6 @@ EOD
 			}
 		}
 
-		// Extract tweets from timeline property when in username mode
-		// This fixes number of issues:
-		// * If there's a retweet of a quote tweet, the quoted tweet will not appear in results (since it wasn't retweeted directly)
-		// * Pinned tweets do not get stuck at the bottom
 		// if ($this->queriedContext === 'By username') {
 		//	foreach($data->timeline->instructions[0]->addEntries->entries as $tweet) {
 		//		if (!isset($tweet->content->item)) continue;
