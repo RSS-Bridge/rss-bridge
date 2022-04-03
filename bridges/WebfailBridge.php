@@ -41,9 +41,6 @@ class WebfailBridge extends BridgeAbstract {
 	}
 
 	public function collectData(){
-
-		ini_set('user_agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:53.0) Gecko/20100101 Firefox/53.0');
-
 		$html = getSimpleHTMLDOM($this->getURI() . $this->getInput('type'));
 
 		$type = array_search($this->getInput('type'),

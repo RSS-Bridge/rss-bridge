@@ -17,16 +17,6 @@ if (isset($argv)) {
 	$params = $_GET;
 }
 
-define('USER_AGENT',
-	'Mozilla/5.0 (X11; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0(rss-bridge/'
-	. Configuration::$VERSION
-	. ';+'
-	. REPOSITORY
-	. ')'
-);
-
-ini_set('user_agent', USER_AGENT);
-
 try {
 
 	$actionFac = new \ActionFactory();
