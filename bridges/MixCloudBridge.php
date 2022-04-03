@@ -30,13 +30,14 @@ class MixCloudBridge extends BridgeAbstract {
 	}
 
 	public function collectData(){
+		$user = urlencode($this->getInput('u'));
 		// Get Cloudcasts
-		$mixcloudUri = self::API_URI . $this->getInput('u') . '/cloudcasts/';
+		$mixcloudUri = self::API_URI . $user . '/cloudcasts/';
 		$content = getContents($mixcloudUri);
 		$casts = json_decode($content)->data;
 
 		// Get Listens
-		$mixcloudUri = self::API_URI . $this->getInput('u') . '/listens/';
+		$mixcloudUri = self::API_URI . $user . '/listens/';
 		$content = getContents($mixcloudUri);
 		$listens = json_decode($content)->data;
 
