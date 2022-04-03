@@ -306,29 +306,6 @@ EOD
 			}
 		}
 
-		// if ($this->queriedContext === 'By username') {
-		//	foreach($data->timeline->instructions[0]->addEntries->entries as $tweet) {
-		//		if (!isset($tweet->content->item)) continue;
-		//		$tweetId = $tweet->content->item->content->tweet->id;
-		//		$selectedTweet = $this->getTweet($tweetId, $data->globalObjects);
-		//		if (!$selectedTweet) continue;
-		//		// If this is a retweet, it will contain shorter text and will point to the original full tweet (retweeted_status_id_str).
-		//		// Let's use the original tweet text.
-		//		if (isset($selectedTweet->retweeted_status_id_str)) {
-		//			$tweetId = $selectedTweet->retweeted_status_id_str;
-		//			$selectedTweet = $this->getTweet($tweetId, $data->globalObjects);
-		//			if (!$selectedTweet) continue;
-		//		}
-		//		// use $tweetId as key to avoid duplicates (e.g. user retweeting their own tweet)
-		//		$tweets[$tweetId] = $selectedTweet;
-		//	}
-		// } else {
-		//	foreach($data->globalObjects->tweets as $tweet) {
-		//		$tweets[] = $tweet;
-		//	}
-		// }
-
-		// Create output array with all required elements for each tweet
 		foreach($tweets as $tweet) {
 
 			// Skip own Retweets...
