@@ -288,7 +288,6 @@ EOD
 
 		$hidePictures = $this->getInput('nopic');
 
-
 		$hidePinned = $this->getInput('nopinned');
 		if ($hidePinned) {
 			$pinnedTweetId = null;
