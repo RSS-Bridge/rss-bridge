@@ -56,12 +56,15 @@ HTML
 
 	public function collectData() {
 		/**
-		 * This uses a public beta key which has severe rate limiting.
+		 * This uses Giphy's own undocumented public prod api key,
+		 * which should not have any rate limiting.
+		 * There is a documented public beta api key (dc6zaTOxFJmzC),
+		 * but it has severe rate limiting.
 		 *
 		 * https://giphy.api-docs.io/1.0/welcome/access-and-api-keys
 		 * https://giphy.api-docs.io/1.0/gifs/search-1
 		 */
-		$apiKey = 'dc6zaTOxFJmzC';
+		$apiKey = 'Gc7131jiJuvI7IdN0HZ1D7nh0ow5BU6g';
 		$limit = min($this->getInput('n') ?: 10, 50);
 		$endpoints = array();
 		if (empty($this->getInput('noGif'))) {
