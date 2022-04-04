@@ -15,8 +15,7 @@ class SIMARBridge extends BridgeAbstract {
 	);
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM(self::getURI())
-			or returnServerError('Could not load content');
+		$html = getSimpleHTMLDOM(self::getURI());
 		$e_home = $html->find('#home', 0)
 			or returnServerError('Invalid site structure');
 

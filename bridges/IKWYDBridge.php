@@ -9,6 +9,7 @@ class IKWYDBridge extends BridgeAbstract {
 		array(
 			'ip' => array(
 				'name' => 'IP Address',
+				'exampleValue' => '8.8.8.8',
 				'required' => true
 			),
 			'update' => array(
@@ -60,8 +61,7 @@ class IKWYDBridge extends BridgeAbstract {
 	public function collectData() {
 		$ip = $this->getInput('ip');
 		$root = self::URI . 'en/peer/?ip=' . $ip;
-		$html = getSimpleHTMLDOM($root)
-			or returnServerError('Could not request ' . self::URI);
+		$html = getSimpleHTMLDOM($root);
 
 		$this->name = 'IKWYD: ' . $ip;
 		$this->uri = $root;

@@ -13,6 +13,7 @@ class FSecureBlogBridge extends BridgeAbstract {
 			),
 			'language' => array(
 				'name' => 'Language',
+				'required' => true,
 				'defaultValue' => 'en',
 			),
 			'oldest_date' => array(
@@ -60,6 +61,10 @@ class FSecureBlogBridge extends BridgeAbstract {
 	private function collectCategory($category) {
 		$url = $this->getURI() . "/category/$category/";
 		while ($url) {
+			//Limit total amount of requests
+			if(count($this->items) >= 20) {
+				break;
+			}
 			$url = $this->collectListing($url);
 		}
 	}

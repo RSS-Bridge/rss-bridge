@@ -10,7 +10,8 @@ class SensCritiqueBridge extends BridgeAbstract {
 	const PARAMETERS = array( array(
 		's' => array(
 			'name' => 'Series',
-			'type' => 'checkbox'
+			'type' => 'checkbox',
+			'defaultValue' => 'checked'
 		),
 		'g' => array(
 			'name' => 'Video Games',
@@ -47,8 +48,7 @@ class SensCritiqueBridge extends BridgeAbstract {
 				case 'mu': $uri .= 'musique/actualite';
 				break;
 				}
-				$html = getSimpleHTMLDOM($uri)
-					or returnServerError('No results for this query.');
+				$html = getSimpleHTMLDOM($uri);
 				$list = $html->find('ul.elpr-list', 0);
 
 				$this->extractDataFromList($list);

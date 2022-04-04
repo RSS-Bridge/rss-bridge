@@ -15,11 +15,10 @@ class CourrierInternationalBridge extends FeedExpander {
 		$item = parent::parseItem($feedItem);
 
 		$articlePage = getSimpleHTMLDOMCached($feedItem->link);
-		$content = $articlePage->find('.article-text', 0);
-		if(!$content) {
-			$content = $articlePage->find('.depeche-text', 0);
+		$content = $articlePage->find('.article-text, depeche-text', 0);
+		if (!$content) {
+			return $item;
 		}
-
 		$item['content'] = sanitize($content);
 
 		return $item;

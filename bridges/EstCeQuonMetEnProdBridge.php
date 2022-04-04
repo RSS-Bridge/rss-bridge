@@ -8,8 +8,7 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Should we put a website in production today? (French)';
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Could not request EstCeQuonMetEnProd: ' . self::URI);
+		$html = getSimpleHTMLDOM(self::URI);
 
 		$item = array();
 		$item['uri'] = $this->getURI() . '#' . date('Y-m-d');

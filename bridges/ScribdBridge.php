@@ -9,8 +9,8 @@ class ScribdBridge extends BridgeAbstract {
 			'name' => 'Profile URL',
 			'type' => 'text',
 			'required' => true,
-			'title' => 'Profile URL. Example: https://www.scribd.com/user/489040929/number10leaks-com',
-			'exampleValue' => 'https://www.scribd.com/user/'
+			'title' => 'Profile URL. Example: https://www.scribd.com/user/164147088/Ars-Technica',
+			'exampleValue' => 'https://www.scribd.com/user/164147088/Ars-Technica'
 		),
 	));
 
@@ -20,24 +20,19 @@ class ScribdBridge extends BridgeAbstract {
 	private $feedName = '';
 
 	public function collectData() {
+		$html = getSimpleHTMLDOM($this->getURI());
 
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request: ' . $this->getURI());
+		$this->feedName = $html->find('div.header', 0)->plaintext;
 
-		$header = $html->find('div.header', 0);
-		$this->feedName = $header->find('a', 0)->plaintext;
-
-		foreach($html->find('div.content ul li') as $index => $li) {
+		foreach($html->find('ul.document_cells > li') as $index => $li) {
 			$item = array();
 
 			$item['title'] = $li->find('div.under_title', 0)->plaintext;
 			$item['uri'] = $li->find('a', 0)->href;
 			$item['author'] = $li->find('span.uploader', 0)->plaintext;
-			//$item['timestamp'] =
 			$item['uid'] = $li->find('a', 0)->href;
 
-			$pageHtml = getSimpleHTMLDOMCached($item['uri'], 3600)
-				or returnServerError('Could not request: ' . $item['uri']);
+			$pageHtml = getSimpleHTMLDOMCached($item['uri'], 3600);
 
 			$image = $pageHtml->find('meta[property="og:image"]', 0)->content;
 			$description = $pageHtml->find('meta[property="og:description"]', 0)->content;

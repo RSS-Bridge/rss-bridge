@@ -4,10 +4,10 @@ class TwitterBridge extends BridgeAbstract {
 	const URI = 'https://twitter.com/';
 	const API_URI = 'https://api.twitter.com';
 	const GUEST_TOKEN_USES = 100;
-	const GUEST_TOKEN_EXPIRY = 300; // 5min
+	const GUEST_TOKEN_EXPIRY = 10800; // 3hrs
 	const CACHE_TIMEOUT = 300; // 5min
 	const DESCRIPTION = 'returns tweets';
-	const MAINTAINER = 'pmaziere';
+	const MAINTAINER = 'arnd-s';
 	const PARAMETERS = array(
 		'global' => array(
 			'nopic' => array(
@@ -30,7 +30,7 @@ class TwitterBridge extends BridgeAbstract {
 			'q' => array(
 				'name' => 'Keyword or #hashtag',
 				'required' => true,
-				'exampleValue' => 'rss-bridge, #rss-bridge',
+				'exampleValue' => 'rss-bridge OR rssbridge',
 				'title' => <<<EOD
 * To search for multiple words (must contain all of these words), put a space between them.
 
@@ -87,12 +87,13 @@ EOD
 			'user' => array(
 				'name' => 'User',
 				'required' => true,
-				'exampleValue' => 'sebsauvage',
+				'exampleValue' => 'Scobleizer',
 				'title' => 'Insert a user name'
 			),
 			'list' => array(
 				'name' => 'List',
 				'required' => true,
+				'exampleValue' => 'Tech-News',
 				'title' => 'Insert the list name'
 			),
 			'filter' => array(
@@ -117,6 +118,10 @@ EOD
 			)
 		)
 	);
+
+	private $apiKey     = null;
+	private $guestToken = null;
+	private $authHeader = array();
 
 	public function detectParameters($url){
 		$params = array();
@@ -197,48 +202,65 @@ EOD
 		}
 	}
 
-	private function getApiURI() {
-		switch($this->queriedContext) {
-		case 'By keyword or hashtag':
-			return self::API_URI
-			. '/2/search/adaptive.json?q='
-			. urlencode($this->getInput('q'))
-			. '&tweet_mode=extended&tweet_search_mode=live';
-		case 'By username':
-			// use search endpoint if without replies or without retweets enabled
-			if ($this->getInput('noretweet') || $this->getInput('norep')) {
-				$query = 'from:' . $this->getInput('u');
-				// Twitter's from: search excludes retweets by default
-				if (!$this->getInput('noretweet')) $query .= ' include:nativeretweets';
-				if ($this->getInput('norep')) $query .= ' exclude:replies';
-				return self::API_URI
-				. '/2/search/adaptive.json?q='
-				. urlencode($query)
-				. '&tweet_mode=extended&tweet_search_mode=live';
-			} else {
-				return self::API_URI
-				. '/2/timeline/profile/'
-				. $this->getRestId($this->getInput('u'))
-				. '.json?tweet_mode=extended';
-			}
-		case 'By list':
-			return self::API_URI
-			. '/2/timeline/list.json?list_id='
-			. $this->getListId($this->getInput('user'), $this->getInput('list'))
-			. '&tweet_mode=extended';
-		case 'By list ID':
-			return self::API_URI
-			. '/2/timeline/list.json?list_id='
-			. $this->getInput('listid')
-			. '&tweet_mode=extended';
-		default: returnServerError('Invalid query context !');
-		}
-	}
-
 	public function collectData(){
-		$html = '';
-		$page = $this->getURI();
-		$data = json_decode($this->getApiContents($this->getApiURI()));
+		// $data will contain an array of all found tweets (unfiltered)
+		$data = null;
+		// Contains user data (when in by username context)
+		$user = null;
+		// Array of all found tweets
+		$tweets = array();
+
+		// Get authentication information
+		$this->getApiKey();
+
+		// Try to get all tweets
+		switch($this->queriedContext) {
+		case 'By username':
+			$user = $this->makeApiCall('/1.1/users/show.json', array('screen_name' => $this->getInput('u')));
+			if (!$user) {
+				returnServerError('Requested username can\'t be found.');
+			}
+
+			$params = array(
+				'user_id'       => $user->id_str,
+				'tweet_mode'    => 'extended'
+			);
+
+			$data = $this->makeApiCall('/1.1/statuses/user_timeline.json', $params);
+			break;
+
+		case 'By keyword or hashtag':
+			$params = array(
+				'q'                 => urlencode($this->getInput('q')),
+				'tweet_mode'        => 'extended',
+				'tweet_search_mode' => 'live',
+			);
+
+			$data = $this->makeApiCall('/1.1/search/tweets.json', $params)->statuses;
+			break;
+
+		case 'By list':
+			$params = array(
+				'slug'              => strtolower($this->getInput('list')),
+				'owner_screen_name' => strtolower($this->getInput('user')),
+				'tweet_mode'        => 'extended',
+			);
+
+			$data = $this->makeApiCall('/1.1/lists/statuses.json', $params);
+			break;
+
+		case 'By list ID':
+			$params = array(
+				'list_id'           => $this->getInput('listid'),
+				'tweet_mode'        => 'extended',
+			);
+
+			$data = $this->makeApiCall('/1.1/lists/statuses.json', $params);
+			break;
+
+		default:
+			returnServerError('Invalid query context !');
+		}
 
 		if(!$data) {
 			switch($this->queriedContext) {
@@ -251,65 +273,33 @@ EOD
 			}
 		}
 
-		$hidePictures = $this->getInput('nopic');
+		// Filter out unwanted tweets
+		foreach ($data as $tweet) {
+			// Filter out retweets to remove possible duplicates of original tweet
+			switch($this->queriedContext) {
+			case 'By keyword or hashtag':
+				if (isset($tweet->retweeted_status) && substr($tweet->full_text, 0, 4) === 'RT @') {
+					continue 2;
+				}
+				break;
+			}
+			$tweets[] = $tweet;
+		}
 
-		$promotedTweetIds = array_reduce($data->timeline->instructions[0]->addEntries->entries, function($carry, $entry) {
-			if (!isset($entry->content->item)) {
-				return $carry;
-			}
-			$tweet = $entry->content->item->content->tweet;
-			if (isset($tweet->promotedMetadata)) {
-				$carry[] = $tweet->id;
-			}
-			return $carry;
-		}, array());
+		$hidePictures = $this->getInput('nopic');
 
 		$hidePinned = $this->getInput('nopinned');
 		if ($hidePinned) {
 			$pinnedTweetId = null;
-			if (isset($data->timeline->instructions[1]) && isset($data->timeline->instructions[1]->pinEntry)) {
-				$pinnedTweetId = $data->timeline->instructions[1]->pinEntry->entry->content->item->content->tweet->id;
-			}
-		}
-
-		$tweets = array();
-
-		// Extract tweets from timeline property when in username mode
-		// This fixes number of issues:
-		// * If there's a retweet of a quote tweet, the quoted tweet will not appear in results (since it wasn't retweeted directly)
-		// * Pinned tweets do not get stuck at the bottom
-		if ($this->queriedContext === 'By username') {
-			foreach($data->timeline->instructions[0]->addEntries->entries as $tweet) {
-				if (!isset($tweet->content->item)) continue;
-				$tweetId = $tweet->content->item->content->tweet->id;
-				$selectedTweet = $this->getTweet($tweetId, $data->globalObjects);
-				if (!$selectedTweet) continue;
-				// If this is a retweet, it will contain shorter text and will point to the original full tweet (retweeted_status_id_str).
-				// Let's use the original tweet text.
-				if (isset($selectedTweet->retweeted_status_id_str)) {
-					$tweetId = $selectedTweet->retweeted_status_id_str;
-					$selectedTweet = $this->getTweet($tweetId, $data->globalObjects);
-					if (!$selectedTweet) continue;
-				}
-				// use $tweetId as key to avoid duplicates (e.g. user retweeting their own tweet)
-				$tweets[$tweetId] = $selectedTweet;
-			}
-		} else {
-			foreach($data->globalObjects->tweets as $tweet) {
-				$tweets[] = $tweet;
+			if ($user && $user->pinned_tweet_ids_str) {
+				$pinnedTweetId = $user->pinned_tweet_ids_str;
 			}
 		}
 
 		foreach($tweets as $tweet) {
 
-			/* Debug::log('>>> ' . json_encode($tweet)); */
-			// Skip spurious retweets
-			if (isset($tweet->retweeted_status_id_str) && substr($tweet->full_text, 0, 4) === 'RT @') {
-				continue;
-			}
-
-			// Skip promoted tweets
-			if (in_array($tweet->id_str, $promotedTweetIds)) {
+			// Skip own Retweets...
+			if (isset($tweet->retweeted_status) && $tweet->retweeted_status->user->id_str === $tweet->user->id_str) {
 				continue;
 			}
 
@@ -318,37 +308,52 @@ EOD
 				continue;
 			}
 
-			$item = array();
-			// extract username and sanitize
-			$user_info = $this->getUserInformation($tweet->user_id_str, $data->globalObjects);
-
-			$item['username'] = $user_info->screen_name;
-			$item['fullname'] = $user_info->name;
-			$item['author'] = $item['fullname'] . ' (@' . $item['username'] . ')';
-			if (null !== $this->getInput('u') && strtolower($item['username']) != strtolower($this->getInput('u'))) {
-				$item['author'] .= ' RT: @' . $this->getInput('u');
+			switch($this->queriedContext) {
+				case 'By username':
+					if ($this->getInput('norep') && isset($tweet->in_reply_to_status_id))
+						continue 2;
+					break;
 			}
-			$item['avatar'] = $user_info->profile_image_url_https;
 
-			$item['id'] = $tweet->id_str;
-			$item['uri'] = self::URI . $item['username'] . '/status/' . $item['id'];
-			// extract tweet timestamp
-			$item['timestamp'] = $tweet->created_at;
+			$item = array();
+
+			$realtweet = $tweet;
+			if (isset($tweet->retweeted_status)) {
+				// Tweet is a Retweet, so set author based on original tweet and set realtweet for reference to the right content
+				$realtweet = $tweet->retweeted_status;
+			}
+
+			$item['username']  = $realtweet->user->screen_name;
+			$item['fullname']  = $realtweet->user->name;
+			$item['avatar']    = $realtweet->user->profile_image_url_https;
+			$item['timestamp'] = $realtweet->created_at;
+			$item['id']        = $realtweet->id_str;
+			$item['uri']       = self::URI . $item['username'] . '/status/' . $item['id'];
+			$item['author']    = (isset($tweet->retweeted_status) ? 'RT: ' : '' )
+						 . $item['fullname']
+						 . ' (@'
+						 . $item['username'] . ')';
 
 			// Convert plain text URLs into HTML hyperlinks
-			$cleanedTweet = $tweet->full_text;
+			$fulltext = $realtweet->full_text;
+			$cleanedTweet = $fulltext;
+
 			$foundUrls = false;
 
-			if (isset($tweet->entities->media)) {
-				foreach($tweet->entities->media as $media) {
+			if (substr($cleanedTweet, 0, 4) === 'RT @') {
+				$cleanedTweet = substr($cleanedTweet, 3);
+			}
+
+			if (isset($realtweet->entities->media)) {
+				foreach($realtweet->entities->media as $media) {
 					$cleanedTweet = str_replace($media->url,
 						'<a href="' . $media->expanded_url . '">' . $media->display_url . '</a>',
 						$cleanedTweet);
 					$foundUrls = true;
 				}
 			}
-			if (isset($tweet->entities->urls)) {
-				foreach($tweet->entities->urls as $url) {
+			if (isset($realtweet->entities->urls)) {
+				foreach($realtweet->entities->urls as $url) {
 					$cleanedTweet = str_replace($url->url,
 						'<a href="' . $url->expanded_url . '">' . $url->display_url . '</a>',
 						$cleanedTweet);
@@ -358,7 +363,7 @@ EOD
 			if ($foundUrls === false) {
 				// fallback to regex'es
 				$reg_ex = '/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/';
-				if(preg_match($reg_ex, $tweet->full_text, $url)) {
+				if(preg_match($reg_ex, $realtweet->full_text, $url)) {
 					$cleanedTweet = preg_replace($reg_ex,
 						"<a href='{$url[0]}' target='_blank'>{$url[0]}</a> ",
 						$cleanedTweet);
@@ -383,8 +388,8 @@ EOD;
 
 			// Get images
 			$media_html = '';
-			if(isset($tweet->extended_entities->media) && !$this->getInput('noimg')) {
-				foreach($tweet->extended_entities->media as $media) {
+			if(isset($realtweet->extended_entities->media) && !$this->getInput('noimg')) {
+				foreach($realtweet->extended_entities->media as $media) {
 					switch($media->type) {
 					case 'photo':
 						$image = $media->media_url_https . '?name=orig';
@@ -466,8 +471,6 @@ EOD;
 </div>
 EOD;
 
-			$item['content'] = htmlspecialchars_decode($item['content'], ENT_QUOTES);
-
 			// put out
 			$this->items[] = $item;
 		}
@@ -481,7 +484,7 @@ EOD;
 
 	//The aim of this function is to get an API key and a guest token
 	//This function takes 2 requests, and therefore is cached
-	private function getApiKey() {
+	private function getApiKey($forceNew = 0) {
 
 		$cacheFac = new CacheFactory();
 		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
@@ -506,7 +509,7 @@ EOD;
 		$data = $cache->loadData();
 
 		$apiKey = null;
-		if($data === null || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
+		if($forceNew || $data === null || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
 			$twitterPage = getContents('https://twitter.com');
 
 			$jsLink = false;
@@ -543,76 +546,96 @@ EOD;
 		$guestTokenUses = $gt_cache->loadData();
 
 		$guestToken = null;
-		if($guestTokenUses === null || !is_array($guestTokenUses) || count($guestTokenUses) != 2
+		if($forceNew || $guestTokenUses === null || !is_array($guestTokenUses) || count($guestTokenUses) != 2
 		|| $guestTokenUses[0] <= 0 || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
-			$guestToken = $this->getGuestToken();
-			$gt_cache->saveData(array(self::GUEST_TOKEN_USES, $guestToken));
-			$r_cache->saveData(time());
+			$guestToken = $this->getGuestToken($apiKey);
+			if ($guestToken === null) {
+				if($guestTokenUses === null) {
+					returnServerError('Could not parse guest token');
+				} else {
+					$guestToken = $guestTokenUses[1];
+				}
+			} else {
+				$gt_cache->saveData(array(self::GUEST_TOKEN_USES, $guestToken));
+				$r_cache->saveData(time());
+			}
 		} else {
 			$guestTokenUses[0] -= 1;
 			$gt_cache->saveData($guestTokenUses);
 			$guestToken = $guestTokenUses[1];
 		}
 
-		return array($apiKey, $guestToken);
+		$this->apiKey	   = $apiKey;
+		$this->guestToken  = $guestToken;
+		$this->authHeaders = array(
+			'authorization: Bearer ' . $apiKey,
+			'x-guest-token: ' . $guestToken,
+		);
 
+		return array($apiKey, $guestToken);
 	}
 
 	// Get a guest token. This is different to an API key,
 	// and it seems to change more regularly than the API key.
-	private function getGuestToken() {
-		$pageContent = getContents('https://twitter.com', array(), array(), true);
+	private function getGuestToken($apiKey) {
+		$headers = array(
+			'authorization: Bearer ' . $apiKey,
+		);
+		$opts = array(
+			CURLOPT_POST => 1,
+		);
 
-		$guestTokenRegex = '/gt=([0-9]*)/m';
-		preg_match_all($guestTokenRegex, $pageContent['header'], $guestTokenMatches, PREG_SET_ORDER, 0);
-		if (!$guestTokenMatches)
-				preg_match_all($guestTokenRegex, $pageContent['content'], $guestTokenMatches, PREG_SET_ORDER, 0);
-		if (!$guestTokenMatches) returnServerError('Could not parse guest token');
-		$guestToken = $guestTokenMatches[0][1];
+		try {
+			$pageContent = getContents('https://api.twitter.com/1.1/guest/activate.json', $headers, $opts, true);
+			$guestToken = json_decode($pageContent['content'])->guest_token;
+		} catch (Exception $e) {
+			$guestToken = null;
+		}
 		return $guestToken;
 	}
 
-	private function getApiContents($uri) {
-		$apiKeys = $this->getApiKey();
-		$headers = array('authorization: Bearer ' . $apiKeys[0],
-				 'x-guest-token: ' . $apiKeys[1],
-			   );
-		return getContents($uri, $headers);
-	}
+	/**
+	 * Tries to make an API call to twitter.
+	 * @param $api string API entry point
+	 * @param $params array additional URI parmaeters
+	 * @return object json data
+	 */
+	private function makeApiCall($api, $params) {
+		$uri = self::API_URI . $api . '?' . http_build_query($params);
 
-	private function getRestId($username) {
-		$searchparams = urlencode('{"screen_name":"' . strtolower($username) . '", "withHighlightedLabel":true}');
-		$searchURL = self::API_URI . '/graphql/-xfUfZsnR_zqjFd-IfrN5A/UserByScreenName?variables=' . $searchparams;
-		$searchResult = $this->getApiContents($searchURL);
-		$searchResult = json_decode($searchResult);
-		return $searchResult->data->user->rest_id;
-	}
+		$retries = 1;
+		$retry = 0;
+		do {
+			$retry = 0;
 
-	private function getListId($username, $listName) {
-		$searchparams = urlencode('{"screenName":"'
-				. strtolower($username)
-				. '", "listSlug": "'
-				. $listName
-				. '", "withHighlightedLabel":false}');
-		$searchURL = self::API_URI . '/graphql/ErWsz9cObLel1BF-HjuBlA/ListBySlug?variables=' . $searchparams;
-		$searchResult = $this->getApiContents($searchURL);
-		$searchResult = json_decode($searchResult);
-		return $searchResult->data->user_by_screen_name->list->id_str;
-	}
-
-	private function getUserInformation($userId, $apiData) {
-		foreach($apiData->users as $user) {
-			if($user->id_str == $userId) {
-				return $user;
+			try {
+				$result = getContents($uri, $this->authHeaders, array(), true);
+			} catch (UnexpectedResponseException $e) {
+				switch ($e->getResponseCode()) {
+				case 401:
+				case 403:
+					if ($retries) {
+						$retries--;
+						$retry = 1;
+						$this->getApiKey(1);
+						continue 2;
+					}
+				default:
+					$code = $e->getResponseCode();
+					$data = $e->getResponseBody();
+					returnServerError(<<<EOD
+Failed to make api call: $api
+HTTP Status: $code
+Errormessage: $data
+EOD
+					);
+					break;
+				}
 			}
-		}
-	}
+		} while ($retry);
 
-	private function getTweet($tweetId, $apiData) {
-		if (property_exists($apiData->tweets, $tweetId)) {
-			return $apiData->tweets->$tweetId;
-		} else {
-			return null;
-		}
+		$data = json_decode($result['content']);
+
+		return $data;
 	}
 }

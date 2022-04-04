@@ -1,6 +1,11 @@
 ![RSS-Bridge](static/logo_600px.png)
 ===
-[![LICENSE](https://img.shields.io/badge/license-UNLICENSE-blue.svg)](UNLICENSE) [![GitHub release](https://img.shields.io/github/release/rss-bridge/rss-bridge.svg?logo=github)](https://github.com/rss-bridge/rss-bridge/releases/latest) [![Debian Release](https://img.shields.io/badge/dynamic/json.svg?logo=debian&label=debian%20release&url=https%3A%2F%2Fsources.debian.org%2Fapi%2Fsrc%2Frss-bridge%2F&query=%24.versions%5B0%5D.version&colorB=blue)](https://tracker.debian.org/pkg/rss-bridge) [![Guix Release](https://img.shields.io/badge/guix%20release-unknown-blue.svg)](https://www.gnu.org/software/guix/packages/R/) [![Actions Status](https://img.shields.io/github/workflow/status/RSS-Bridge/rss-bridge/Tests/master?label=GitHub%20Actions&logo=github)](https://github.com/RSS-Bridge/rss-bridge/actions) [![Docker Build Status](https://img.shields.io/docker/cloud/build/rssbridge/rss-bridge?logo=docker)](https://hub.docker.com/r/rssbridge/rss-bridge/)
+[![LICENSE](https://img.shields.io/badge/license-UNLICENSE-blue.svg)](UNLICENSE)
+[![GitHub release](https://img.shields.io/github/release/rss-bridge/rss-bridge.svg?logo=github)](https://github.com/rss-bridge/rss-bridge/releases/latest)
+[![irc.libera.chat](https://img.shields.io/badge/irc.libera.chat-%23rssbridge-blue.svg)](https://web.libera.chat/#rssbridge)
+[![Chat on Matrix](https://matrix.to/img/matrix-badge.svg)](https://matrix.to/#/#rssbridge:libera.chat)
+[![Actions Status](https://img.shields.io/github/workflow/status/RSS-Bridge/rss-bridge/Tests/master?label=GitHub%20Actions&logo=github)](https://github.com/RSS-Bridge/rss-bridge/actions)
+[![Docker Build Status](https://img.shields.io/docker/cloud/build/rssbridge/rss-bridge?logo=docker)](https://hub.docker.com/r/rssbridge/rss-bridge/)
 
 RSS-Bridge is a PHP project capable of generating RSS and Atom feeds for websites that don't have one. It can be used on webservers or as a stand-alone application in CLI mode.
 
@@ -13,11 +18,11 @@ Supported sites/pages (examples)
 * `Cryptome` : Returns the most recent documents from [Cryptome.org](http://cryptome.org/)
 * `DansTonChat`: Most recent quotes from [danstonchat.com](http://danstonchat.com/)
 * `DuckDuckGo`: Most recent results from [DuckDuckGo.com](https://duckduckgo.com/)
-* `Facebook` : Returns the latest posts on a page or profile on [Facebook](https://facebook.com/)
+* `Facebook` : Returns the latest posts on a page or profile on [Facebook](https://facebook.com/) (There is an [issue](https://github.com/RSS-Bridge/rss-bridge/issues/2047) for public instances)
 * `FlickrExplore` : [Latest interesting images](http://www.flickr.com/explore) from Flickr
 * `GoogleSearch` : Most recent results from Google Search
 * `Identi.ca` : Identica user timeline (Should be compatible with other Pump.io instances)
-* `Instagram`: Most recent photos from an Instagram user
+* `Instagram`: Most recent photos from an Instagram user (It is recommended to [configure](https://rss-bridge.github.io/rss-bridge/Bridge_Specific/Instagram.html) this bridge to work)
 * `OpenClassrooms`: Lastest tutorials from [fr.openclassrooms.com](http://fr.openclassrooms.com/)
 * `Pinterest`: Most recent photos from user or search
 * `ScmbBridge`: Newest stories from [secouchermoinsbete.fr](http://secouchermoinsbete.fr/)
@@ -57,7 +62,7 @@ RSS-Bridge hashtag (#rss-bridge) search on Twitter, in Atom format (as displayed
 Requirements
 ===
 
-RSS-Bridge requires PHP 5.6 or higher with following extensions enabled:
+RSS-Bridge requires PHP 7.1 or higher with following extensions enabled:
 
   - [`openssl`](https://secure.php.net/manual/en/book.openssl.php)
   - [`libxml`](https://secure.php.net/manual/en/book.libxml.php)
@@ -108,7 +113,7 @@ We are RSS-Bridge community, a group of developers continuing the project initia
 **Contributors** (sorted alphabetically):
 <!--
 Use this script to generate the list automatically (using the GitHub API):
-https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
+./contrib/prepare_release/fetch_contributors.php
 -->
 
 * [16mhz](https://github.com/16mhz)
@@ -131,6 +136,7 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [b1nj](https://github.com/b1nj)
 * [benasse](https://github.com/benasse)
 * [Binnette](https://github.com/Binnette)
+* [Bockiii](https://github.com/Bockiii)
 * [captn3m0](https://github.com/captn3m0)
 * [chemel](https://github.com/chemel)
 * [Chouchen](https://github.com/Chouchen)
@@ -140,11 +146,12 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [corenting](https://github.com/corenting)
 * [couraudt](https://github.com/couraudt)
 * [csisoap](https://github.com/csisoap)
-* [cyberjacob](https://github.com/cyberjacob)
 * [da2x](https://github.com/da2x)
+* [dabenzel](https://github.com/dabenzel)
 * [Daiyousei](https://github.com/Daiyousei)
 * [dawidsowa](https://github.com/dawidsowa)
 * [DevonHess](https://github.com/DevonHess)
+* [dhuschde](https://github.com/dhuschde)
 * [disk0x](https://github.com/disk0x)
 * [DJCrashdummy](https://github.com/DJCrashdummy)
 * [Djuuu](https://github.com/Djuuu)
@@ -154,17 +161,22 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [Dreckiger-Dan](https://github.com/Dreckiger-Dan)
 * [drego85](https://github.com/drego85)
 * [drklee3](https://github.com/drklee3)
+* [dvikan](https://github.com/dvikan)
 * [em92](https://github.com/em92)
 * [eMerzh](https://github.com/eMerzh)
 * [EtienneM](https://github.com/EtienneM)
+* [f0086](https://github.com/f0086)
 * [fanch317](https://github.com/fanch317)
+* [fatuuse](https://github.com/fatuuse)
 * [fivefilters](https://github.com/fivefilters)
 * [floviolleau](https://github.com/floviolleau)
 * [fluffy-critter](https://github.com/fluffy-critter)
+* [fmachen](https://github.com/fmachen)
 * [Frenzie](https://github.com/Frenzie)
 * [fulmeek](https://github.com/fulmeek)
 * [ggiessen](https://github.com/ggiessen)
 * [Ginko-Aloe](https://github.com/Ginko-Aloe)
+* [girlpunk](https://github.com/girlpunk)
 * [Glandos](https://github.com/Glandos)
 * [gloony](https://github.com/gloony)
 * [GregThib](https://github.com/GregThib)
@@ -177,6 +189,7 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [hunhejj](https://github.com/hunhejj)
 * [husim0](https://github.com/husim0)
 * [IceWreck](https://github.com/IceWreck)
+* [imagoiq](https://github.com/imagoiq)
 * [j0k3r](https://github.com/j0k3r)
 * [JackNUMBER](https://github.com/JackNUMBER)
 * [jacquesh](https://github.com/jacquesh)
@@ -186,11 +199,12 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [jdigilio](https://github.com/jdigilio)
 * [JeremyRand](https://github.com/JeremyRand)
 * [JimDog546](https://github.com/JimDog546)
+* [jNullj](https://github.com/jNullj)
 * [Jocker666z](https://github.com/Jocker666z)
 * [johnnygroovy](https://github.com/johnnygroovy)
 * [johnpc](https://github.com/johnpc)
 * [joni1993](https://github.com/joni1993)
-* [joshcoales](https://github.com/joshcoales)
+* [KamaleiZestri](https://github.com/KamaleiZestri)
 * [klimplant](https://github.com/klimplant)
 * [kolarcz](https://github.com/kolarcz)
 * [kranack](https://github.com/kranack)
@@ -201,12 +215,16 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [lalannev](https://github.com/lalannev)
 * [ldidry](https://github.com/ldidry)
 * [Leomaradan](https://github.com/Leomaradan)
+* [leyrer](https://github.com/leyrer)
 * [liamka](https://github.com/liamka)
 * [Limero](https://github.com/Limero)
 * [LogMANOriginal](https://github.com/LogMANOriginal)
 * [lorenzos](https://github.com/lorenzos)
 * [lukasklinger](https://github.com/lukasklinger)
 * [m0zes](https://github.com/m0zes)
+* [Mar-Koeh](https://github.com/Mar-Koeh)
+* [marcus-at-localhost](https://github.com/marcus-at-localhost)
+* [marius8510000-bot](https://github.com/marius8510000-bot)
 * [matthewseal](https://github.com/matthewseal)
 * [mcbyte-it](https://github.com/mcbyte-it)
 * [mdemoss](https://github.com/mdemoss)
@@ -221,12 +239,12 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [mro](https://github.com/mro)
 * [mschwld](https://github.com/mschwld)
 * [mxmehl](https://github.com/mxmehl)
+* [Mynacol](https://github.com/Mynacol)
 * [nel50n](https://github.com/nel50n)
 * [niawag](https://github.com/niawag)
 * [Niehztog](https://github.com/Niehztog)
 * [Nono-m0le](https://github.com/Nono-m0le)
-* [ObsidianWitch](https://github.com/ObsidianWitch)
-* [OliverParoczai](https://github.com/OliverParoczai)
+* [obsiwitch](https://github.com/obsiwitch)
 * [Ololbu](https://github.com/Ololbu)
 * [ORelio](https://github.com/ORelio)
 * [otakuf](https://github.com/otakuf)
@@ -252,13 +270,16 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [Roliga](https://github.com/Roliga)
 * [ronansalmon](https://github.com/ronansalmon)
 * [rremizov](https://github.com/rremizov)
+* [sal0max](https://github.com/sal0max)
 * [sebsauvage](https://github.com/sebsauvage)
 * [shutosg](https://github.com/shutosg)
 * [simon816](https://github.com/simon816)
 * [Simounet](https://github.com/Simounet)
 * [somini](https://github.com/somini)
+* [SpangleLabs](https://github.com/SpangleLabs)
 * [squeek502](https://github.com/squeek502)
 * [stjohnjohnson](https://github.com/stjohnjohnson)
+* [Stopka](https://github.com/Stopka)
 * [Strubbl](https://github.com/Strubbl)
 * [sublimz](https://github.com/sublimz)
 * [sunchaserinfo](https://github.com/sunchaserinfo)
@@ -273,7 +294,10 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [TheRadialActive](https://github.com/TheRadialActive)
 * [theScrabi](https://github.com/theScrabi)
 * [thezeroalpha](https://github.com/thezeroalpha)
+* [timendum](https://github.com/timendum)
 * [TitiTestScalingo](https://github.com/TitiTestScalingo)
+* [tomaszkane](https://github.com/tomaszkane)
+* [TReKiE](https://github.com/TReKiE)
 * [triatic](https://github.com/triatic)
 * [VerifiedJoseph](https://github.com/VerifiedJoseph)
 * [WalterBarrett](https://github.com/WalterBarrett)
@@ -282,6 +306,7 @@ https://gist.github.com/LogMANOriginal/da00cd1e5f0ca31cef8e193509b17fd8
 * [yamanq](https://github.com/yamanq)
 * [yardenac](https://github.com/yardenac)
 * [ymeister](https://github.com/ymeister)
+* [yue-dongchen](https://github.com/yue-dongchen)
 * [ZeNairolf](https://github.com/ZeNairolf)
 
 Licenses

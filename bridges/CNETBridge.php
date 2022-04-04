@@ -53,8 +53,7 @@ class CNETBridge extends BridgeAbstract {
 
 		// Retrieve webpage
 		$pageUrl = self::URI . (empty($topic) ? 'news/' : $topic . '/');
-		$html = getSimpleHTMLDOM($pageUrl)
-		or returnServerError('Could not request CNET: ' . $pageUrl);
+		$html = getSimpleHTMLDOM($pageUrl);
 
 		// Process articles
 		foreach($html->find('div.assetBody, div.riverPost') as $element) {

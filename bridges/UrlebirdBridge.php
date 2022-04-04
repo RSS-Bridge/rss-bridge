@@ -12,12 +12,19 @@ class UrlebirdBridge extends BridgeAbstract {
 				'name' => '@username or #hashtag',
 				'type' => 'text',
 				'required' => true,
+				'exampleValue' => '@willsmith',
 				'title' => '@username or #hashtag'
 			)
 		)
 	);
 
 	private $title;
+
+	private function fixURI($uri) {
+		$path = parse_url($uri, PHP_URL_PATH);
+		$encoded_path = array_map('urlencode', explode('/', $path));
+		return str_replace($path, implode('/', $encoded_path), $uri);
+	}
 
 	public function collectData() {
 		switch($this->getInput('query')[0]) {
@@ -37,7 +44,7 @@ class UrlebirdBridge extends BridgeAbstract {
 		$articles = $html->find('div.thumb');
 		foreach ($articles as $article) {
 			$item = array();
-			$item['uri'] = $article->find('a', 2)->href;
+			$item['uri'] = $this->fixURI($article->find('a', 2)->href);
 			$article_content = getSimpleHTMLDOM($item['uri']);
 			$item['author'] = $article->find('img', 0)->alt . ' (' .
 				$article_content->find('a.user-video', 1)->innertext . ')';
@@ -48,7 +55,9 @@ class UrlebirdBridge extends BridgeAbstract {
 			$item['content'] = $video->outertext . '<br>' .
 				$article_content->find('div.music', 0) . '<br>' .
 				$article_content->find('div.info2', 0)->innertext .
-				'<br><br><a href="' . $article_content->find('video', 0)->src . '">Video link</a>';
+				'<br><br><a href="' . $article_content->find('video', 0)->src .
+				'">Direct video link</a><br><br><a href="' . $item['uri'] .
+				'">Post link</a><br><br>';
 			$this->items[] = $item;
 		}
 	}

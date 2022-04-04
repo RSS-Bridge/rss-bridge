@@ -32,8 +32,7 @@ class AppleMusicBridge extends BridgeAbstract {
 			. '&entity=album&limit='
 			. $limit .
 			'&sort=recent';
-		$html = getSimpleHTMLDOM($url)
-			or returnServerError('Could not request: ' . $url);
+		$html = getSimpleHTMLDOM($url);
 
 		$json = json_decode($html);
 

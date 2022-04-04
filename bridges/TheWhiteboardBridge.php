@@ -8,7 +8,7 @@ class TheWhiteboardBridge extends BridgeAbstract {
 	public function collectData() {
 		$item = array();
 
-		$html = getSimpleHTMLDOM(self::URI) or returnServerError('Could not load The Whiteboard.');
+		$html = getSimpleHTMLDOM(self::URI);
 
 		$image = $html->find('center', 1)->find('img', 0);
 		$image->src = self::URI . '/' . $image->src;

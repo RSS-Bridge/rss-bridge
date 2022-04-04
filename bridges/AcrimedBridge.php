@@ -3,12 +3,25 @@ class AcrimedBridge extends FeedExpander {
 
 	const MAINTAINER = 'qwertygc';
 	const NAME = 'Acrimed Bridge';
-	const URI = 'http://www.acrimed.org/';
+	const URI = 'https://www.acrimed.org/';
 	const CACHE_TIMEOUT = 4800; //2hours
 	const DESCRIPTION = 'Returns the newest articles';
 
+	const PARAMETERS = [
+		[
+			'limit' => [
+				'name' => 'limit',
+				'type' => 'number',
+				'defaultValue' => -1,
+			]
+		]
+	];
+
 	public function collectData(){
-		$this->collectExpandableDatas(static::URI . 'spip.php?page=backend');
+		$this->collectExpandableDatas(
+			static::URI . 'spip.php?page=backend',
+			$this->getInput('limit')
+		);
 	}
 
 	protected function parseItem($newsItem){

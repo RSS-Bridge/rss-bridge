@@ -18,15 +18,15 @@ class GoogleSearchBridge extends BridgeAbstract {
 	const PARAMETERS = array(array(
 		'q' => array(
 			'name' => 'keyword',
-			'required' => true
+			'required' => true,
+			'exampleValue' => 'rss-bridge',
 		)
 	));
 
 	public function collectData(){
 		$html = '';
 
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('No results for this query.');
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$emIsRes = $html->find('div[id=res]', 0);
 

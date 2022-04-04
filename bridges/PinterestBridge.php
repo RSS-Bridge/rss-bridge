@@ -10,10 +10,12 @@ class PinterestBridge extends FeedExpander {
 		'By username and board' => array(
 			'u' => array(
 				'name' => 'username',
+				'exampleValue' => 'VIGOIndustries',
 				'required' => true
 			),
 			'b' => array(
 				'name' => 'board',
+				'exampleValue' => 'bathroom-remodels',
 				'required' => true
 			)
 		)

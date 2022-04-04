@@ -1,4 +1,5 @@
 <?php
+
 class GlassdoorBridge extends BridgeAbstract {
 
 	// Contexts
@@ -17,7 +18,6 @@ class GlassdoorBridge extends BridgeAbstract {
 	const BLOG_TYPE_COMPANIES_HIRING = 'Companies Hiring';
 	const BLOG_TYPE_CAREER_ADVICE	 = 'Career Advice';
 	const BLOG_TYPE_INTERVIEWS		 = 'Interviews';
-	const BLOG_TYPE_GUIDE			 = 'Guides';
 
 	// Review context parameters
 	const PARAM_REVIEW_COMPANY = 'company';
@@ -39,7 +39,6 @@ class GlassdoorBridge extends BridgeAbstract {
 					self::BLOG_TYPE_COMPANIES_HIRING	=> 'blog/companies-hiring/',
 					self::BLOG_TYPE_CAREER_ADVICE		=> 'blog/career-advice/',
 					self::BLOG_TYPE_INTERVIEWS			=> 'blog/interviews/',
-					self::BLOG_TYPE_GUIDE				=> 'blog/guide/'
 				)
 			),
 			self::PARAM_BLOG_FULL => array(
@@ -67,9 +66,6 @@ class GlassdoorBridge extends BridgeAbstract {
 		)
 	);
 
-	private $host = self::URI; // They redirect without notice :/
-	private $title = '';
-
 	public function getURI() {
 		switch($this->queriedContext) {
 			case self::CONTEXT_BLOG:
@@ -81,19 +77,10 @@ class GlassdoorBridge extends BridgeAbstract {
 		return parent::getURI();
 	}
 
-	public function getName() {
-		return $this->title ? $this->title . ' - ' . self::NAME : parent::getName();
-	}
-
 	public function collectData() {
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Failed loading contents!');
-
-		$this->host = $html->find('link[rel="canonical"]', 0)->href;
-
-		$html = defaultLinkTo($html, $this->host);
-
-		$this->title = $html->find('meta[property="og:title"]', 0)->content;
+		$url = $this->getURI();
+		$html = getSimpleHTMLDOM($url);
+		$html = defaultLinkTo($html, $url);
 		$limit = $this->getInput(self::PARAM_LIMIT);
 
 		switch($this->queriedContext) {
@@ -107,36 +94,24 @@ class GlassdoorBridge extends BridgeAbstract {
 	}
 
 	private function collectBlogData($html, $limit) {
-		$posts = $html->find('section')
+		$posts = $html->find('div.post')
 			or returnServerError('Unable to find blog posts!');
 
 		foreach($posts as $post) {
-			$item = array();
+			$item = [];
 
-			$item['uri'] = $post->find('header a', 0)->href;
-			$item['title'] = $post->find('header', 0)->plaintext;
-			$item['content'] = $post->find('div[class="excerpt-content"]', 0)->plaintext;
-			$item['enclosures'] = array(
-				$this->getFullSizeImageURI($post->find('div[class*="post-thumb"]', 0)->{'data-original'})
-			);
+			$item['uri'] = $post->find('a', 0)->href;
+			$item['title'] = $post->find('h3', 0)->plaintext;
+			$item['content'] = $post->find('p', 0)->plaintext;
+			$item['author'] = $post->find('p', -2)->plaintext;
+			$item['timestamp'] = strtotime($post->find('p', -1)->plaintext);
 
-			// optionally load full articles
-			if($this->getInput(self::PARAM_BLOG_FULL)) {
-				$full_html = getSimpleHTMLDOMCached($item['uri'])
-					or returnServerError('Unable to load full article!');
-
-				$full_html = defaultLinkTo($full_html, $this->host);
-
-				$item['author'] = $full_html->find('a[rel="author"]', 0);
-				$item['content'] = $full_html->find('article', 0);
-				$item['timestamp'] = strtotime($full_html->find('time.updated', 0)->datetime);
-				$item['categories'] = $full_html->find('span[class="post_tag"]');
-			}
-
+			// TODO: fetch entire blog post content
 			$this->items[] = $item;
 
-			if($limit > 0 && count($this->items) >= $limit)
+			if ($limit > 0 && count($this->items) >= $limit) {
 				return;
+			}
 		}
 	}
 
@@ -145,51 +120,30 @@ class GlassdoorBridge extends BridgeAbstract {
 			or returnServerError('Unable to find reviews!');
 
 		foreach($reviews as $review) {
-			$item = array();
+			$item = [];
 
 			$item['uri'] = $review->find('a.reviewLink', 0)->href;
-			$item['title'] = $review->find('[class="summary"]', 0)->plaintext;
-			$item['author'] = $review->find('div.author span', 0)->plaintext;
-			$item['timestamp'] = strtotime($review->find('time', 0)->datetime);
 
-			$mainText = $review->find('p.mainText', 0)->plaintext;
+			// Not all reviews have a title
+			$item['title'] = $review->find('h2', 0)->plaintext ?? 'Glassdoor review';
 
-			$description = '';
-			foreach($review->find('div.description p') as $p) {
+			[$date, $author] = explode('-', $review->find('span.authorInfo', 0)->plaintext);
 
-				if ($p->hasClass('strong')) {
-					$p->tag = 'strong';
-					$p->removeClass('strong');
-				}
+			$item['author'] = trim($author);
 
-				$description .= $p;
-
+			$createdAt = DateTimeImmutable::createFromFormat('F m, Y', trim($date));
+			if ($createdAt) {
+				$item['timestamp'] = $createdAt->getTimestamp();
 			}
 
-			$item['content'] = "<p>{$mainText}</p><p>{$description}</p>";
+			$item['content'] = $review->find('.px-std', 2)->text();
 
 			$this->items[] = $item;
 
-			if($limit > 0 && count($this->items) >= $limit)
+			if($limit > 0 && count($this->items) >= $limit) {
 				return;
+			}
 		}
-	}
-
-	private function getFullSizeImageURI($uri) {
-		/* Images are scaled for display on the website. The scaling takes place
-		 * on the host, who provides images in different sizes.
-		 *
-		 * For example:
-		 * https://www.glassdoor.com/blog/app/uploads/sites/2/GettyImages-982402074-e1538092065712-390x193.jpg
-		 *
-		 * By removing the size information we receive the full sized image.
-		 *
-		 * For example:
-		 * https://www.glassdoor.com/blog/app/uploads/sites/2/GettyImages-982402074-e1538092065712.jpg
-		 */
-
-		$uri = filter_var($uri, FILTER_SANITIZE_URL);
-		return preg_replace('/(.*)(\-\d+x\d+)(\.jpg)/', '$1$3', $uri);
 	}
 
 	private function filterCompanyURI($uri) {

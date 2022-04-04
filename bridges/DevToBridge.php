@@ -45,8 +45,7 @@ apple-icon-5c6fa9f2bce280428589c6195b7f1924206a53b782b371cfe2d02da932c8c173.png'
 	}
 
 	public function collectData() {
-		$html = getSimpleHTMLDOMCached($this->getURI())
-			or returnServerError('Could not request ' . $this->getURI());
+		$html = getSimpleHTMLDOMCached($this->getURI());
 
 		$html = defaultLinkTo($html, static::URI);
 
@@ -95,8 +94,7 @@ EOD;
 	}
 
 	private function getFullArticle($url) {
-		$html = getSimpleHTMLDOMCached($url)
-			or returnServerError('Unable to load article from "' . $url . '"!');
+		$html = getSimpleHTMLDOMCached($url);
 
 		$html = defaultLinkTo($html, static::URI);
 

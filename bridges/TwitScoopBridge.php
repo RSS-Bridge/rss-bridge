@@ -87,8 +87,7 @@ class TwitScoopBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 900; // 15 mins
 
 	public function collectData() {
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request: ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$updated = $html->find('time', 0)->datetime;
 		$trends = $html->find('div.trends', 0);

@@ -14,6 +14,7 @@ class VkBridge extends BridgeAbstract
 		array(
 			'u' => array(
 				'name' => 'Group or user name',
+				'exampleValue' => 'elonmusk_tech',
 				'required' => true
 			),
 			'hide_reposts' => array(
@@ -51,8 +52,7 @@ class VkBridge extends BridgeAbstract
 
 	public function collectData()
 	{
-		$text_html = $this->getContents()
-		or returnServerError('No results for group or user name "' . $this->getInput('u') . '".');
+		$text_html = $this->getContents();
 
 		$text_html = iconv('windows-1251', 'utf-8//ignore', $text_html);
 		// makes album link generating work correctly
@@ -72,6 +72,11 @@ class VkBridge extends BridgeAbstract
 		$last_post_id = 0;
 
 		foreach ($html->find('.post') as $post) {
+
+			if ($post->find('.wall_post_text_deleted')) {
+				// repost of deleted post
+				continue;
+			}
 
 			defaultLinkTo($post, self::URI);
 
@@ -159,8 +164,6 @@ class VkBridge extends BridgeAbstract
 			// get all other videos
 			foreach($post->find('a.page_post_thumb_video') as $a) {
 				$video_title = htmlspecialchars_decode($a->getAttribute('aria-label'));
-				$temp = explode(' ', $video_title, 2);
-				if (count($temp) > 1) $video_title = $temp[1];
 				$video_link = $a->getAttribute('href');
 				if ($video_link != $main_video_link) $this->appendVideo($video_title, $video_link, $content_suffix, $post_videos);
 				$a->outertext = '';
@@ -406,8 +409,6 @@ class VkBridge extends BridgeAbstract
 
 	private function getContents()
 	{
-		ini_set('user-agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:53.0) Gecko/20100101 Firefox/53.0');
-
 		$header = array('Accept-language: en', 'Cookie: remixlang=3');
 
 		return getContents($this->getURI(), $header);
