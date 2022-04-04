@@ -1042,7 +1042,13 @@ class BookMyShowBridge extends BridgeAbstract {
 					'Gujarati' => 'Gujarati',
 					'Assamese' => 'Assamese',
 				)
-			)
+			),
+			'include_online' => array(
+				'name' => 'Include Online Events',
+				'type' => 'checkbox',
+				'defaultValue' => false,
+				'title' => 'Whether to include Online Events (applies only in case of "Events" category)'
+			),
 		)
 	);
 
@@ -1052,10 +1058,10 @@ class BookMyShowBridge extends BridgeAbstract {
 		'Genre' => 'Genre',
 		'Language' => 'Language',
 		'Length' => 'Length',
-		'EventIsGlobal' => 'Global (Y/N)',
+		'EventIsGlobal' => 'Global Event',
 		'MinPrice' => 'Minimum Price',
-		'IsSuperstarExclusiveEvent' => 'SuperStar Exclusive (Y/N)',
-		'EventSoldOut' => 'Sold Out (Y/N)',
+		'IsSuperstarExclusiveEvent' => 'SuperStar Exclusive',
+		'EventSoldOut' => 'Sold Out',
 	);
 
 	// Picked from EventGroup entry for movies
@@ -1110,7 +1116,7 @@ class BookMyShowBridge extends BridgeAbstract {
 	 * spread across multiple dates as a description list.
 	 */
 	private function generateVenueHtml($venues, $dates){
-		$html = '<h3>Venues</h3>';
+		$html = '<h3>Venues</h3><table><thead><tr><th>Venue</th><th>Directions</th></tr></thead><tbody>';
 
 		foreach ($venues as $i => $venueData) {
 			$venueName = $venueData['VenueName'];
@@ -1119,10 +1125,10 @@ class BookMyShowBridge extends BridgeAbstract {
 			$lon = $venueData['VenueLongitude'];
 
 			$directions = $this->generateDirectionsHtml($lat, $lon, $venueName);
-			$html .= "<dt>$venueName</dt><dd><div>$address<br>$directions<br></div></dd>";
+			$html .= "<tr><td>$venueName</td><td>$address<br>$directions</td></tr>";
 		}
 
-		return "<div><dl>$html</dl></div>";
+		return "$html</tbody></table>";
 	}
 
 	/**
@@ -1135,10 +1141,19 @@ class BookMyShowBridge extends BridgeAbstract {
 			if ($header == 'Language') {
 				$this->languages = array($event[$key]);
 			}
+
+			if ($event[$key] == 'Y') {
+				$value = 'Yes';
+			} else if ($event[$key] == 'N') {
+				$value = 'No';
+			} else {
+				$value = $event[$key];
+			}
+
 			$table .= <<<EOT
 			<tr>
 				<th>$header</th>
-				<td>$event[$key]</td>
+				<td>$value</td>
 			</tr>
 EOT;
 		}
@@ -1237,7 +1252,7 @@ EOT;
 	 * Generates a canonical movie URL
 	 */
 	private function generateMovieUrl($eventGroup){
-		return self::URI . '/movies/' . $eventGroup['EventURLTitle'] . $eventGroup['EventCode'];
+		return self::URI . '/movies/' . $eventGroup['EventURLTitle'] . '/' . $eventGroup['EventCode'];
 	}
 
 	private function generateMoviesData($eventGroup){
@@ -1287,8 +1302,23 @@ EOT;
 				array(self::CATEGORIES[$category]),
 				$event['GenreArray']
 			),
-			'uid' => $event['EventGroupCode']
+			'uid' => $event['EventGroupCode'],
 		);
+	}
+
+	/**
+	 * Check if this is an online event. We can't rely on
+	 * EventIsWebView, since that is set to Y for everything
+	 */
+	private function isEventOnline($event){
+		$venues = $event['arrVenues'];
+		if ($venues && count($venues) === 1) {
+			if (preg_match('/(Online|Zoom)/i', $venues[0]['VenueName'])) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public function collectData(){
@@ -1308,21 +1338,32 @@ EOT;
 
 		foreach ($data as $event) {
 			$item = $this->generateEventData($event, $category);
-			if ($this->matchesFilters($category)) {
+			if ($this->matchesFilters($category, $event)) {
 				$this->items[] = $item;
 			}
 		}
 	}
 
-	/**
-	 * Currently only checks if the language filter matches
-	 */
-	private function matchesFilters($category){
+	private function matchesLanguage(){
 		if ($this->getInput('language') !== 'all') {
 			$language = $this->getInput('language');
 			return in_array($language, $this->languages);
 		}
 		return true;
+	}
+
+	private function matchesOnline($event){
+		if ($this->getInput('include_online')) {
+			return true;
+		}
+		return (!$this->isEventOnline($event));
+	}
+
+	/**
+	 * Currently only checks if the language filter matches
+	 */
+	private function matchesFilters($category, $event){
+		return $this->matchesLanguage() and $this->matchesOnline($event);
 	}
 
 	/**
@@ -1335,10 +1376,10 @@ EOT;
 			$categoryName = self::CATEGORIES[$category];
 			$cityNames = array_flip(self::CITIES);
 			$cityName = $cityNames[$city];
-			if ($this->getInput('language')!=='null') {
+			if ($this->getInput('language') !== 'null') {
 				$l = $this->getInput('language');
 				// Sample: English Movies in Delhi
-				return "BookMyShow: $language $categoryName in $cityName";
+				return "BookMyShow: $l $categoryName in $cityName";
 			}
 			return "BookMyShow: $categoryName in $cityName";
 		}
@@ -1375,14 +1416,14 @@ EOT;
 			'GeoURI' => 'geo:%s,%s?q=%s',
 		);
 
-		$html = '<h4>Directions</h4><ul>';
+		$html = '';
 
 		foreach ($links as $app => $str) {
 			$url = sprintf($str, $lat, $long, $address);
-			$html .= "<li><a href='$url' title='$app'>$app</a></li>";
+			$locations[] = "<a href='$url' title='$app'>$app</a>";
 		}
 
-		$html .= '</ul>';
+		$html .= implode(', ', $locations) . '</span>';
 
 		return $html;
 	}
