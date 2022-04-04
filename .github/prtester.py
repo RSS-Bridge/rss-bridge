@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import os.path
 
+from soupsieve import select
+
 # This script is specifically written to be used in automation for https://github.com/RSS-Bridge/rss-bridge
 #
 # This will scrape the whitelisted bridges in the current state (port 3000) and the PR state (port 3001) of
@@ -45,7 +47,14 @@ def testBridges(bridges,status):
                         if parameter.has_attr('checked'):
                             formstring = formstring + '&' + parameter.get('name') + '=on'
                 for list in lists:
-                    formstring = formstring + '&' + list.get('name') + '=' + list.contents[0].get('value')
+                    selectionvalue = ''
+                    for selectionentry in list.contents:
+                        if 'selected' in selectionentry.attrs:
+                            selectionvalue = selectionentry.get('value')
+                            break
+                    if selectionvalue == '':
+                        selectionvalue = list.contents[0].get('value')
+                    formstring = formstring + '&' + list.get('name') + '=' + selectionvalue
                 if not errormessages:
                     # if all example/default values are present, form the full request string, run the request, replace the static css
                     # file with the url of em's public instance and then upload it to termpad.com, a pastebin-like-site.
@@ -80,11 +89,7 @@ with open(os.getcwd() + '/comment.txt', 'w+') as file:
 | ---- | ------ |''')
 
 for status in gitstatus: # run this twice, once for the current version, once for the PR version
-    if status == "current":
-        port = "3000" # both ports are defined in the corresponding workflow .yml file
-    elif status == "pr":
-        port = "3001"
-    URL = "http://localhost:" + port
+    URL = "http://192.168.178.102:3001"
     page = requests.get(URL) # Use python requests to grab the rss-bridge main page
     soup = BeautifulSoup(page.content, "html.parser") # use bs4 to turn the page into soup
     bridges = soup.find_all("section") # get a soup-formatted list of all bridges on the rss-bridge page
