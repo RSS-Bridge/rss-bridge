@@ -86,3 +86,4 @@ class GoodreadsBridge extends BridgeAbstract {
     }
   }
 }
+
