@@ -3,8 +3,6 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import os.path
 
-from soupsieve import select
-
 # This script is specifically written to be used in automation for https://github.com/RSS-Bridge/rss-bridge
 #
 # This will scrape the whitelisted bridges in the current state (port 3000) and the PR state (port 3001) of
@@ -89,7 +87,11 @@ with open(os.getcwd() + '/comment.txt', 'w+') as file:
 | ---- | ------ |''')
 
 for status in gitstatus: # run this twice, once for the current version, once for the PR version
-    URL = "http://192.168.178.102:3001"
+    if status == "current":
+        port = "3000" # both ports are defined in the corresponding workflow .yml file
+    elif status == "pr":
+        port = "3001"
+    URL = "http://localhost:" + port
     page = requests.get(URL) # Use python requests to grab the rss-bridge main page
     soup = BeautifulSoup(page.content, "html.parser") # use bs4 to turn the page into soup
     bridges = soup.find_all("section") # get a soup-formatted list of all bridges on the rss-bridge page
