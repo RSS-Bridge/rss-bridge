@@ -78,7 +78,6 @@ class UnsplashBridge extends BridgeAbstract
 			}
 
 			$item['timestamp'] = $json_item['created_at'];
-
 			$content = 'User: <a href="'
 				. $json_item['user']['links']['html']
 				. '">@'
