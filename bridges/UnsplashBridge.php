@@ -11,7 +11,6 @@ class UnsplashBridge extends BridgeAbstract
 	const PARAMETERS = array(array(
 		'u' => array(
 			'name' => 'Filter by username (optional)',
-			'exampleValue' => 'SomeUser',
 			'type' => 'text',
 			'defaultValue' => 'unsplash'
 		),
