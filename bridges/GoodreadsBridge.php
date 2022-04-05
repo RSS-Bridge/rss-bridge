@@ -62,7 +62,7 @@ class GoodreadsBridge extends BridgeAbstract {
 
       $item['title'] = $row->find('.bookTitle', 0)->plaintext;
       $item['uri'] = $item['uid'] = $row->find('.bookTitle', 0)->getAttribute('href');
-      $item['author'] = $row->find('authorName', 0)->plaintext;
+      $item['author'] = $row->find('.authorName', 0)->plaintext;
       $item['content'] = $row->find('.bookCover', 0)->outertext;
       $item['timestamp'] = $date;
       $item['enclosures'] = array(
