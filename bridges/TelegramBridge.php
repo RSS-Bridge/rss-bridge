@@ -243,7 +243,7 @@ EOD;
 		}
 
 		return <<<EOD
-<blockquote><a href="{$preview->href}">$image</a><br><a href="{$preview->href}">
+<blockquote><a href="{$preview->href}">{$image}</a><br><a href="{$preview->href}">
 {$title} - {$site}</a><br>{$description}</blockquote>
 EOD;
 	}
@@ -263,7 +263,7 @@ EOD;
 		$this->enclosures[] = $photo[1];
 
 		return <<<EOD
-<video controls="" poster="{$photo[1]}" preload="none">
+<video controls="" poster="{$photo[1]}" style="max-width:100%;" preload="none">
 	<source src="{$messageDiv->find('video', 0)->src}" type="video/mp4">
 </video>
 EOD;
@@ -332,11 +332,9 @@ EOD;
 
 		$messageMeta = $messageDiv->find('span.tgme_widget_message_meta', 0);
 		return $messageMeta->find('time', 0)->datetime;
-
 	}
 
 	private function ellipsisTitle($text) {
-
 		$length = 100;
 
 		if (strlen($text) > $length) {
