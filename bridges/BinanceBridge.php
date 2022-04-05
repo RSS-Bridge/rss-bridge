@@ -1,7 +1,7 @@
 <?php
 class BinanceBridge extends BridgeAbstract {
-	const NAME = 'Binance';
-	const URI = 'https://www.binance.com';
+	const NAME = 'Binance Blog';
+	const URI = 'https://www.binance.com/en/blog';
 	const DESCRIPTION = 'Subscribe to the Binance blog.';
 	const MAINTAINER = 'thefranke';
 	const CACHE_TIMEOUT = 3600; // 1h
@@ -10,16 +10,8 @@ class BinanceBridge extends BridgeAbstract {
 		return 'https://bin.bnbstatic.com/static/images/common/favicon.ico';
 	}
 
-	public function getName() {
-		return self::NAME . ' blog';
-	}
-
-	public function getURI() {
-		return self::URI . '/en/blog';
-	}
-
-	protected function collectBlogData() {
-		$html = getSimpleHTMLDOM($this->getURI())
+	public function collectData() {
+		$html = getSimpleHTMLDOM(self::URI)
 			or returnServerError('Could not fetch Binance blog data.');
 
 		$appData = $html->find('script[id="__APP_DATA"]');
@@ -45,9 +37,5 @@ class BinanceBridge extends BridgeAbstract {
 			if (count($this->items) >= 10)
 				break;
 		}
-	}
-
-	public function collectData() {
-		$this->collectBlogData();
 	}
 }
