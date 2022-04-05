@@ -83,7 +83,7 @@ class UnsplashBridge extends BridgeAbstract
 				. '">@'
 				. $json_item['user']['username']
 				. '</a>';
-			if (!is_null($json_item['location']['name'])) {
+			if (isset($json_item['location']['name'])) {
 				$content .= ' | Location: ' . $json_item['location']['name'];
 			}
 			$content .= ' | Image on <a href="'
