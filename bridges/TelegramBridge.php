@@ -9,7 +9,7 @@ class TelegramBridge extends BridgeAbstract {
 				'name' => 'Username',
 				'type' => 'text',
 				'required' => true,
-				'exampleValue' => '@telegram',
+				'exampleValue' => '@rssbridge',
 			)
 		)
 	);
