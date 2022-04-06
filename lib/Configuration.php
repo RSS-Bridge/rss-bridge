@@ -280,13 +280,15 @@ final class Configuration {
 
 		// If the version starts with 'git', its commit based, otherwise its release based
 		// We only need to transform the git based string, not the release based
-		if (substr($localversion,0,3) == "git") {
+		if (substr($localversion, 0, 3) == 'git') {
 			$localversion = substr($localversion, -7);
-			$githubcurl = curl_init("https://api.github.com/repos/rss-bridge/rss-bridge/commits/master");
-			curl_setopt($githubcurl, CURLOPT_HTTPHEADER, array('Accept: application/vnd.github.VERSION.sha','user-agent: rss-bridge'));
-			return substr(curl_exec($githubcurl),0,7);
+			$githubcurl = curl_init('https://api.github.com/repos/rss-bridge/rss-bridge/commits/master');
+			curl_setopt($githubcurl,
+				CURLOPT_HTTPHEADER,
+				array('Accept: application/vnd.github.VERSION.sha','user-agent: rss-bridge'));
+			return substr(curl_exec($githubcurl), 0, 7);
 		} else {
-			$githubcurl = curl_init("https://api.github.com/repos/rss-bridge/rss-bridge/releases/latest");
+			$githubcurl = curl_init('https://api.github.com/repos/rss-bridge/rss-bridge/releases/latest');
 			curl_setopt($githubcurl, CURLOPT_HTTPHEADER, array('user-agent: rss-bridge'));
 			$githubjson = json_decode(curl_exec($githubcurl), true);
 			return $githubjson['tag_name'];
