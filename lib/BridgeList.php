@@ -155,19 +155,19 @@ EOD;
 		$version = Configuration::getVersion();
 		$remoteversion = Configuration::getRemoteVersion();
 
-		if (substr($version,0,3) == "git") {
+		if (substr($version, 0, 3) == 'git') {
 			$version = substr($version, -7);
-			$githubcurl = curl_init("https://api.github.com/repos/rss-bridge/rss-bridge/commits/master");
+			$githubcurl = curl_init('https://api.github.com/repos/rss-bridge/rss-bridge/commits/master');
 			curl_setopt($githubcurl, CURLOPT_HTTPHEADER, array('Accept: application/vnd.github.VERSION.sha'));
-			return substr(curl_exec($githubcurl),0,7);
+			return substr(curl_exec($githubcurl), 0, 7);
 		}
 
 		if($remoteversion !== $version) {
-			$badgestate = "Update_Available";
-			$badgecolor = "red";
+			$badgestate = 'Update_Available';
+			$badgecolor = 'red';
 		} else {
-			$badgestate = "Version_Up--To--Date";
-			$badgecolor = "green";
+			$badgestate = 'Version_Up--To--Date';
+			$badgecolor = 'green';
 		}
 
 		$email = Configuration::getConfig('admin', 'email');
