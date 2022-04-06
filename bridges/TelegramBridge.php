@@ -35,6 +35,7 @@ class TelegramBridge extends BridgeAbstract {
 	}
 
 	public function collectData() {
+
 		$html = getSimpleHTMLDOM($this->getURI());
 
 		$channelTitle = htmlspecialchars_decode(
