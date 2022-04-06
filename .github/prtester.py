@@ -31,9 +31,6 @@ def testBridges(bridges,status):
                 # if an example or default value is missing for a required attribute, it will throw an error
                 # any non-required fields are not tested!!!
                 for parameter in parameters:
-                    if parameter.get('type') == 'hidden' and parameter.get('name') == 'context':
-                        cleanvalue = parameter.get('value').replace(" ","+")
-                        formstring = formstring + '&' + parameter.get('name') + '=' + cleanvalue
                     if parameter.get('type') == 'number' or parameter.get('type') == 'text':
                         if parameter.has_attr('required'):
                             if parameter.get('placeholder') == '':
