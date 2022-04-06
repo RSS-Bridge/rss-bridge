@@ -19,6 +19,29 @@ class TwitterV2Bridge extends BridgeAbstract {
 	);
 	const PARAMETERS = array(
 		'global' => array(
+			'filter' => array(
+				'name' => 'Filter',
+				'exampleValue' => 'rss-bridge',
+				'required' => false,
+				'title' => 'Specify a single term to search for'
+			),
+			'norep' => array(
+				'name' => 'Without replies',
+				'type' => 'checkbox',
+				'title' => 'Activate to exclude reply tweets'
+			),
+			'noretweet' => array(
+				'name' => 'Without retweets',
+				'required' => false,
+				'type' => 'checkbox',
+				'title' => 'Activate to exclude retweets'
+			),
+			'nopinned' => array(
+				'name' => 'Without pinned tweet',
+				'required' => false,
+				'type' => 'checkbox',
+				'title' => 'Activate to exclude pinned tweets'
+			),
 			'maxresults' => array(
 				'name' => 'Maximum results',
 				'required' => false,
@@ -38,7 +61,12 @@ class TwitterV2Bridge extends BridgeAbstract {
 			'noimgscaling' => array(
 				'name' => 'Disable image scaling',
 				'type' => 'checkbox',
-				'title' => 'Activate to disable image scaling in tweets (keeps original image)'
+				'title' => 'Activate to display original sized images (no thumbnails)'
+			),
+			'idastitle' => array(
+				'name' => 'Use tweet id as title',
+				'type' => 'checkbox',
+				'title' => 'Activate to use tweet id as title (instead of tweet text)'
 			)
 		),
 		'By username' => array(
@@ -47,23 +75,6 @@ class TwitterV2Bridge extends BridgeAbstract {
 				'required' => true,
 				'exampleValue' => 'sebsauvage',
 				'title' => 'Insert a user name'
-			),
-			'norep' => array(
-				'name' => 'Without replies',
-				'type' => 'checkbox',
-				'title' => 'Only return initial tweets'
-			),
-			'noretweet' => array(
-				'name' => 'Without retweets',
-				'required' => false,
-				'type' => 'checkbox',
-				'title' => 'Hide retweets'
-			),
-			'nopinned' => array(
-				'name' => 'Without pinned tweet',
-				'required' => false,
-				'type' => 'checkbox',
-				'title' => 'Hide pinned tweet'
 			)
 		),
 		'By keyword or hashtag' => array(
@@ -103,13 +114,7 @@ EOD
 				'name' => 'List ID',
 				'exampleValue' => '31748',
 				'required' => true,
-				'title' => 'Insert the list id'
-			),
-			'filter' => array(
-				'name' => 'Filter',
-				'exampleValue' => 'rss-bridge',
-				'required' => false,
-				'title' => 'Specify a single term to search for'
+				'title' => 'Enter a list id'
 			)
 		)
 	);
@@ -148,10 +153,12 @@ EOD
 		$hideReplies = $this->getInput('norep');
 		$hideRetweets = $this->getInput('noretweet');
 		$hidePinned = $this->getInput('nopinned');
+		$tweetFilter = $this->getInput('filter');
 		$maxResults = $this->getInput('maxresults');
 		if ($maxResults > 100) {
 			$maxResults = 100;
 		}
+		$idAsTitle = $this->getInput('idastitle');
 
 		// Read API token from config.ini.php, put into Header
 		$this->apiToken     = $this->getOption('twitterv2apitoken');
@@ -210,6 +217,14 @@ EOD
 				=> 'referenced_tweets.id.author_id,entities.mentions.username,attachments.media_keys',
 				'media.fields'	=> 'type,url,preview_image_url'
 			);
+
+			// Set params to filter out replies and/or retweets
+			if($hideReplies) {
+				$params['query'] = $params['query'] . ' -is:reply';
+			}
+			if($hideRetweets) {
+				$params['query'] = $params['query'] . ' -is:retweet';
+			}
 
 			$data = $this->makeApiCall('/tweets/search/recent', $params);
 			break;
@@ -311,14 +326,38 @@ EOD
 
 			// Skip pinned tweet
 			if($hidePinned && $tweet->id === $pinnedTweetId) {
+				//Debug::log('Skipping pinned tweet');
 				continue;
 			}
 
-			// Check if Retweet
+			// Check if Retweet or Reply
+			$retweetTypes = array('retweeted', 'quoted');
 			$isRetweet = false;
+			$isReply = false;
 			if(isset($tweet->referenced_tweets)) {
-				if($tweet->referenced_tweets[0]->type === 'retweeted') {
+				if(in_array($tweet->referenced_tweets[0]->type, $retweetTypes)) {
+					//Debug::log('This is a retweet');
 					$isRetweet = true;
+				} elseif ($tweet->referenced_tweets[0]->type === 'replied_to') {
+					//Debug::log('This is a reply');
+					$isReply = true;
+				}
+			}
+
+			// Skip replies and/or retweets. This check is primarily for lists
+			// These should already be pre-filtered for username and keyword queries
+			if (($hideRetweets && $isRetweet) || ($hideReplies && $isReply)) {
+				continue;
+			}
+
+			$cleanedTweet = $tweet->text;
+			//Debug::log('cleanedTweet: ' . $cleanedTweet);
+
+			// Perform optional filtering (skip tweets that don't contain desired word)
+			if (! empty($tweetFilter)) {
+				if(stripos($cleanedTweet, $this->getInput('filter')) === false) {
+					//Debug::log('Skipping tweet that does not contain filter text');
+					continue;
 				}
 			}
 
@@ -383,39 +422,6 @@ EOD
 						 . ' (@'
 						 . $item['username'] . ')';
 
-			// Convert plain text URLs into HTML hyperlinks
-			$cleanedTweet = $tweet->text;
-			//Debug::log('cleanedTweet: ' . $cleanedTweet);
-
-			// Remove 'RT @' from tweet text
-			// To Do: also remove the full username being retweeted?
-			if(substr($cleanedTweet, 0, 4) === 'RT @') {
-				$cleanedTweet = substr($cleanedTweet, 3);
-			}
-
-			// Perform filtering (skip some tweets)
-			switch($this->queriedContext) {
-				case 'By list ID':
-					// Check if list tweet contains desired filter keyword
-					// (using raw content)
-					if($this->getInput('filter')) {
-						if(stripos($cleanedTweet,
-						$this->getInput('filter')) === false) {
-							continue 2; // switch + for-loop!
-						}
-					}
-					break;
-				case 'By username':
-					/* This section should be unnecessary, let's confirm
-					if($hideRetweets && strtolower($item['username']) !=
-					strtolower($this->getInput('u'))) {
-						continue 2; // switch + for-loop!
-					}
-					break;
-					*/
-				default:
-			}
-
 			// Search for and replace URLs in Tweet text
 			$foundUrls = false;
 			if(isset($tweet->entities->urls)) {
@@ -438,7 +444,19 @@ EOD
 			}
 
 			// generate the title
-			$item['title'] = strip_tags($cleanedTweet);
+			if ($idAsTitle) {
+				$titleText = $tweet->id;
+			} else{
+				$titleText = strip_tags($cleanedTweet);
+			}
+
+			if($isRetweet && substr($titleText, 0, 4) === 'RT @') {
+				$titleText = substr_replace($titleText, ':', 2, 0 );
+			} elseif ($isReply  && !$idAsTitle) {
+				$titleText = 'R: ' . $titleText;
+			}
+
+			$item['title'] = $titleText;
 
 			// Add avatar
 			$picture_html = '';
@@ -483,10 +501,11 @@ EOD;
 				foreach($tweetMedia as $media) {
 					switch($media->type) {
 					case 'photo':
-						$image = $media->url . '?name=orig';
 						if ($this->getInput('noimgscaling')) {
+							$image = $media->url;
 							$display_image = $media->url;
 						} else{
+							$image = $media->url . '?name=orig';
 							$display_image = $media->url . '?name=thumb';
 						}
 						// add enclosures
@@ -546,7 +565,7 @@ EOD;
 
 			$item['content'] = htmlspecialchars_decode($item['content'], ENT_QUOTES);
 
-			// put out
+			// put out item
 			$this->items[] = $item;
 		}
 
