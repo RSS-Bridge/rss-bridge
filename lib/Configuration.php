@@ -278,7 +278,7 @@ final class Configuration {
 
 		$remotecache = BridgeAbstract::loadCacheValue(REMOTEVERSION);
 
-		if (isset($remotecache)){
+		if (isset($remotecache)) {
 			return $remotecache;
 		}
 
@@ -296,9 +296,9 @@ final class Configuration {
 		} else {
 			$ghcontent = getContents('https://api.github.com/repos/rss-bridge/rss-bridge/releases/latest');
 			$githubjson = json_decode($ghcontent, true);
-			$remoteversion =  $githubjson['tag_name'];
+			$remoteversion = $githubjson['tag_name'];
 		}
-		
+
 		BridgeAbstract::saveCacheValue(REMOTEVERSION, $remoteversion);
 		return $remoteversion;
 	}
