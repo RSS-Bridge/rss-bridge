@@ -141,6 +141,10 @@ class TelegramBridge extends BridgeAbstract {
 			$message .= $this->processLinkPreview($messageDiv);
 		}
 
+		if ($messageDiv->find('a.tgme_widget_message_location_wrap', 0)) {
+			$message .= $this->processLocation($messageDiv);
+		}
+
 		return $message;
 	}
 
@@ -328,8 +332,23 @@ EOD;
 		return $attachments;
 	}
 
-	private function processDate($messageDiv) {
+	private function processLocation($messageDiv) {
+		if (empty($this->itemTitle)) {
+			$this->itemTitle = '@' . $this->processUsername() . ' posted a location';
+		}
 
+		preg_match($this->backgroundImageRegex, $messageDiv->find('div.tgme_widget_message_location', 0)->style, $image);
+
+		$link = $messageDiv->find('a.tgme_widget_message_location_wrap', 0)->href;
+
+		$this->enclosures[] = $image[1];
+
+		return <<<EOD
+			<a href="{$link}"><img src="{$image[1]}"></a>
+EOD;
+	}
+
+	private function processDate($messageDiv) {
 		$messageMeta = $messageDiv->find('span.tgme_widget_message_meta', 0);
 		return $messageMeta->find('time', 0)->datetime;
 	}
