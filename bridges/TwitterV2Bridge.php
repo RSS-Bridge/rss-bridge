@@ -501,10 +501,11 @@ EOD;
 				foreach($tweetMedia as $media) {
 					switch($media->type) {
 					case 'photo':
-						$image = $media->url . '?name=orig';
 						if ($this->getInput('noimgscaling')) {
+							$image = $media->url;
 							$display_image = $media->url;
 						} else{
+							$image = $media->url . '?name=orig';
 							$display_image = $media->url . '?name=thumb';
 						}
 						// add enclosures
