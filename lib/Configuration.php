@@ -276,7 +276,7 @@ final class Configuration {
 	 */
 	public static function getRemoteVersion() {
 
-		$remotecache = BridgeAbstract::loadCacheValue(REMOTEVERSION);
+		$remotecache = BridgeAbstract::loadCacheValue('REMOTEVERSION');
 
 		if (isset($remotecache)) {
 			return $remotecache;
@@ -299,7 +299,7 @@ final class Configuration {
 			$remoteversion = $githubjson['tag_name'];
 		}
 
-		BridgeAbstract::saveCacheValue(REMOTEVERSION, $remoteversion);
+		BridgeAbstract::saveCacheValue('REMOTEVERSION', $remoteversion);
 		return $remoteversion;
 	}
 
