@@ -276,26 +276,31 @@ final class Configuration {
 	 */
 	public static function getRemoteVersion() {
 
+		$remotecache = BridgeAbstract::loadCacheValue(REMOTEVERSION);
+
+		if (isset($remotecache)){
+			return $remotecache;
+		}
+
 		$localversion = self::getVersion();
 
 		// If the version starts with 'git', its commit based, otherwise its release based
 		// We only need to transform the git based string, not the release based
 		if (substr($localversion, 0, 3) == 'git') {
-			$localversion = substr($localversion, -7);
-			$githubcurl = curl_init('https://api.github.com/repos/rss-bridge/rss-bridge/commits/master');
-			curl_setopt($githubcurl,
-				CURLOPT_HTTPHEADER,
-				array('Accept: application/vnd.github.VERSION.sha','user-agent: rss-bridge'));
-			curl_setopt($githubcurl, CURLOPT_RETURNTRANSFER, true);
-			return substr(curl_exec($githubcurl), 0, 7);
+			$header = array(
+				'Accept: application/vnd.github.VERSION.sha'
+			);
+			$ghcontent = getContents('https://api.github.com/repos/rss-bridge/rss-bridge/commits/master',
+				$header);
+			$remoteversion = substr($ghcontent, 0, 7);
 		} else {
-			$githubcurl = curl_init('https://api.github.com/repos/rss-bridge/rss-bridge/releases/latest');
-			curl_setopt($githubcurl, CURLOPT_HTTPHEADER, array('user-agent: rss-bridge'));
-			curl_setopt($githubcurl, CURLOPT_RETURNTRANSFER, true);
-			$githubjson = json_decode(curl_exec($githubcurl), true);
-			return $githubjson['tag_name'];
+			$ghcontent = getContents('https://api.github.com/repos/rss-bridge/rss-bridge/releases/latest');
+			$githubjson = json_decode($ghcontent, true);
+			$remoteversion =  $githubjson['tag_name'];
 		}
-
+		
+		BridgeAbstract::saveCacheValue(REMOTEVERSION, $remoteversion);
+		return $remoteversion;
 	}
 
 	/**

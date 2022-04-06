@@ -378,7 +378,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	 * @param int $duration Cache duration (optional, default: 24 hours)
 	 * @return mixed Cached value or null if the key doesn't exist or has expired
 	 */
-	protected function loadCacheValue($key, $duration = 86400){
+	public function loadCacheValue($key, $duration = 86400){
 		$cacheFac = new CacheFactory();
 		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
 		$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
@@ -395,7 +395,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	 * @param string $key Key name
 	 * @param mixed $value Value to cache
 	 */
-	protected function saveCacheValue($key, $value){
+	public function saveCacheValue($key, $value){
 		$cacheFac = new CacheFactory();
 		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
 		$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
