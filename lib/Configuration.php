@@ -256,7 +256,7 @@ final class Configuration {
 			if(isset($parts[3])) {
 				$branchName = $parts[3];
 				if(file_exists($revisionHashFile)) {
-					return 'sha-' . substr(file_get_contents($revisionHashFile), 0, 7);
+					return 'sha--' . substr(file_get_contents($revisionHashFile), 0, 7);
 				}
 			}
 		}
