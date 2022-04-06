@@ -153,6 +153,22 @@ EOD;
 	 */
 	private static function getFooter($totalBridges, $totalActiveBridges, $showInactive) {
 		$version = Configuration::getVersion();
+		$remoteversion = Configuration::getRemoteVersion();
+
+		if (substr($version,0,3) == "git") {
+			$version = substr($version, -7);
+			$githubcurl = curl_init("https://api.github.com/repos/rss-bridge/rss-bridge/commits/master");
+			curl_setopt($githubcurl, CURLOPT_HTTPHEADER, array('Accept: application/vnd.github.VERSION.sha'));
+			return substr(curl_exec($githubcurl),0,7);
+		}
+
+		if($remoteversion !== $version) {
+			$badgestate = "Update_Available";
+			$badgecolor = "red";
+		} else {
+			$badgestate = "Version_Up--To--Date";
+			$badgecolor = "green";
+		}
 
 		$email = Configuration::getConfig('admin', 'email');
 		$admininfo = '';
@@ -181,8 +197,7 @@ EOD;
 		return <<<EOD
 <section class="footer">
 	<a href="https://github.com/rss-bridge/rss-bridge">RSS-Bridge ~ Public Domain</a><br>
-	<p><img src="https://img.shields.io/badge/installed-{$version}-yellowgreen">
-	<img src="https://img.shields.io/docker/v/rssbridge/rss-bridge?label=current"></p>
+	<p><img src="https://img.shields.io/badge/{$badgestate}-{$version}-{$badgecolor}"></p>
 	{$totalActiveBridges}/{$totalBridges} active bridges.<br>
 	{$inactive}
 	{$admininfo}

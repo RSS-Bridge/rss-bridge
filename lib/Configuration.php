@@ -256,12 +256,41 @@ final class Configuration {
 			if(isset($parts[3])) {
 				$branchName = $parts[3];
 				if(file_exists($revisionHashFile)) {
-					return 'sha--' . substr(file_get_contents($revisionHashFile), 0, 7);
+					return 'git.' . $branchName . '.' . substr(file_get_contents($revisionHashFile), 0, 7);
 				}
 			}
 		}
 
 		return Configuration::$VERSION;
+
+	}
+
+	/**
+	 * Returns the current remote version string of RSS-Bridge.
+	 *
+	 * This function returns the latest version of RSS-Bridge, depending on
+	 * the type of installation. It will either return the latest git commit sha
+	 * or the latest release version from github
+	 *
+	 * @return string The remote version string.
+	 */
+	public static function getRemoteVersion() {
+
+		$localversion = self::getVersion();
+
+		// If the version starts with 'git', its commit based, otherwise its release based
+		// We only need to transform the git based string, not the release based
+		if (substr($localversion,0,3) == "git") {
+			$localversion = substr($localversion, -7);
+			$githubcurl = curl_init("https://api.github.com/repos/rss-bridge/rss-bridge/commits/master");
+			curl_setopt($githubcurl, CURLOPT_HTTPHEADER, array('Accept: application/vnd.github.VERSION.sha','user-agent: rss-bridge'));
+			return substr(curl_exec($githubcurl),0,7);
+		} else {
+			$githubcurl = curl_init("https://api.github.com/repos/rss-bridge/rss-bridge/releases/latest");
+			curl_setopt($githubcurl, CURLOPT_HTTPHEADER, array('user-agent: rss-bridge'));
+			$githubjson = json_decode(curl_exec($githubcurl), true);
+			return $githubjson['tag_name'];
+		}
 
 	}
 
