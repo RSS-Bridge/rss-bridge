@@ -157,11 +157,6 @@ EOD;
 
 		if (substr($version, 0, 3) == 'git') {
 			$version = substr($version, -7);
-			$githubcurl = curl_init('https://api.github.com/repos/rss-bridge/rss-bridge/commits/master');
-			curl_setopt($githubcurl,
-				CURLOPT_HTTPHEADER,
-				array('Accept: application/vnd.github.VERSION.sha','user-agent: rss-bridge'));
-			$version = substr(curl_exec($githubcurl), 0, 7);
 		}
 
 		if($remoteversion !== $version) {
