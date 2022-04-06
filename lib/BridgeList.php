@@ -181,7 +181,8 @@ EOD;
 		return <<<EOD
 <section class="footer">
 	<a href="https://github.com/rss-bridge/rss-bridge">RSS-Bridge ~ Public Domain</a><br>
-	<p class="version">{$version}</p>
+	<p><img src="https://img.shields.io/badge/installed-{$version}-yellowgreen"></p>
+	<p><img src="https://img.shields.io/docker/v/rssbridge/rss-bridge?label=current"></p>
 	{$totalActiveBridges}/{$totalBridges} active bridges.<br>
 	{$inactive}
 	{$admininfo}
