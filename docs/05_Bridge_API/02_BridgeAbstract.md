@@ -454,3 +454,61 @@ public function detectParameters($url){
 	}
 }
 ```
+
+***
+
+# Helper Methods
+`BridgeAbstract` implements helper methods to make it easier for bridge maintainers to create bridges. Use these methods whenever possible instead of writing your own.
+
+- [saveCacheValue](#savecachevalue)
+- [loadCacheValue](#loadcachevalue)
+
+## saveCacheValue
+Within the context of the current bridge, stores a value by key in the cache. The value can later be retrieved with [loadCacheValue](#loadcachevalue).
+
+```php
+protected function saveCacheValue($key, $value)
+```
+
+- `$key` - the name under which the value is stored in the cache.
+- `$value` - the value to store in the cache.
+
+Usage example:
+
+```php
+const MY_KEY = 'MyKey';
+
+public function collectData()
+{
+    $value = 'my value';
+    $this->saveCacheValue(MY_KEY, $value);
+}
+```
+
+## loadCacheValue
+Within the context of the current bridge, loads a value by key from cache. Optionally specifies the cache duration for the key. Returns `null` if the key doesn't exist or the value is expired.
+
+```php
+protected function loadCacheValue($key, $duration = 86400)
+```
+
+- `$key` - the name under which the value is stored in the cache.
+- `$duration` - the maximum time in seconds after which the value expires. The default duration is 86400 (24 hours).
+
+Usage example:
+
+```php
+const MY_KEY = 'MyKey';
+
+public function collectData()
+{
+  $value = $this->loadCacheValue(MY_KEY, 1800 /* 30 minutes */);
+
+  if (!isset($value)){
+      // load value
+      $this->saveCacheValue(MY_KEY, $value);
+  }
+
+  // ...
+}
+```

@@ -31,6 +31,9 @@ def testBridges(bridges,status):
                 # if an example or default value is missing for a required attribute, it will throw an error
                 # any non-required fields are not tested!!!
                 for parameter in parameters:
+                    if parameter.get('type') == 'hidden' and parameter.get('name') == 'context':
+                        cleanvalue = parameter.get('value').replace(" ","+")
+                        formstring = formstring + '&' + parameter.get('name') + '=' + cleanvalue
                     if parameter.get('type') == 'number' or parameter.get('type') == 'text':
                         if parameter.has_attr('required'):
                             if parameter.get('placeholder') == '':
@@ -45,7 +48,14 @@ def testBridges(bridges,status):
                         if parameter.has_attr('checked'):
                             formstring = formstring + '&' + parameter.get('name') + '=on'
                 for list in lists:
-                    formstring = formstring + '&' + list.get('name') + '=' + list.contents[0].get('value')
+                    selectionvalue = ''
+                    for selectionentry in list.contents:
+                        if 'selected' in selectionentry.attrs:
+                            selectionvalue = selectionentry.get('value')
+                            break
+                    if selectionvalue == '':
+                        selectionvalue = list.contents[0].get('value')
+                    formstring = formstring + '&' + list.get('name') + '=' + selectionvalue
                 if not errormessages:
                     # if all example/default values are present, form the full request string, run the request, replace the static css
                     # file with the url of em's public instance and then upload it to termpad.com, a pastebin-like-site.
