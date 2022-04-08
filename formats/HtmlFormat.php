@@ -67,13 +67,11 @@ class HtmlFormat extends FormatAbstract {
 				$entryEnclosures = '<div class="attachments"><p>Attachments:</p>';
 
 				foreach($item->getEnclosures() as $enclosure) {
+					$template = '<li class="enclosure"><a href="%s" rel="noopener noreferrer nofollow">%s</a></li>';
 					$url = $this->sanitizeHtml($enclosure);
+					$anchorText = substr($url, strrpos($url, '/') + 1);
 
-					$entryEnclosures .= '<li class="enclosure"><a href="'
-					. $url
-					. '">'
-					. substr($url, strrpos($url, '/') + 1)
-					. '</a></li>';
+					$entryEnclosures .= sprintf($template, $url, $anchorText);
 				}
 
 				$entryEnclosures .= '</div>';
