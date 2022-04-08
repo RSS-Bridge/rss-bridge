@@ -169,6 +169,7 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 		}
 
 		curl_setopt($ch, CURLOPT_USERAGENT, Configuration::getConfig('http', 'useragent'));
+		curl_setopt($ch, CURLOPT_TIMEOUT, Configuration::getConfig('http', 'timeout'));
 		curl_setopt($ch, CURLOPT_ENCODING, '');
 		curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
 
