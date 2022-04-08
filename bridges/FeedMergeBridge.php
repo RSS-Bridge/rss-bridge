@@ -1,60 +1,52 @@
 <?php
 
 class FeedMergeBridge extends FeedExpander {
-	const MAINTAINER = 'AntoineTurmel';
+	const MAINTAINER = 'dvikan';
 	const NAME = 'FeedMerge';
 	const URI = 'https://github.com/RSS-Bridge/rss-bridge';
-	const DESCRIPTION = 'Merge 2 feeds';
-	const PARAMETERS = array(
-			array(
-				'feed1' => array(
-					'name' => 'Feed URL 1',
-					'type' => 'text',
-					'required' => true,
-					'title' => 'Insert your feed URL 1',
-					'exampleValue' => 'https://lorem-rss.herokuapp.com/feed?unit=day'
-				),
-				'feed2' => array(
-					'name' => 'Feed URL 2',
-					'type' => 'text',
-					'required' => true,
-					'title' => 'Insert your feed URL2',
-					'exampleValue' => 'https://lorem-rss.herokuapp.com/feed?unit=year'
-				)
-			)
-		);
-		public $feedname = '';
+	const DESCRIPTION = 'This bridge merges two or more feeds into a single feed.'
+						. 'Max 10 items are fetched from each feed.';
+	const PARAMETERS = [
+		[
+			'feed_name' => [
+				'name' => 'Feed name',
+				'type' => 'text',
+				'exampleValue' => 'rss-bridge/FeedMerger',
+			],
+			'feed_1' => [
+				'name' => 'Feed url',
+				'type' => 'text',
+				'required' => true,
+				'exampleValue' => 'https://lorem-rss.herokuapp.com/feed?unit=day'
+			],
+			'feed_2' => ['name' => 'Feed url', 'type' => 'text'],
+			'feed_3' => ['name' => 'Feed url', 'type' => 'text'],
+			'feed_4' => ['name' => 'Feed url', 'type' => 'text'],
+			'feed_5' => ['name' => 'Feed url', 'type' => 'text'],
+		]
+	];
 
-		private function feedName($f){
-			$this->$feedname = $this->$feedname . ' / ' . $f;
+	public function collectData() {
+		$limit = 10;
+		$feeds = [
+			$this->getInput('feed_1'),
+			$this->getInput('feed_2'),
+			$this->getInput('feed_3'),
+			$this->getInput('feed_4'),
+			$this->getInput('feed_5'),
+		];
+		// Remove empty values
+		$feeds = array_filter($feeds);
+		foreach ($feeds as $feed) {
+			$this->collectExpandableDatas($feed, $limit);
 		}
-
-	protected function parseItem($item){
-		$item = parent::parseItem($item);
-		return $item;
-	}
-
-	public function collectData(){
-		$this->collectExpandableDatas($this->getInput('feed1'));
-		$this->feedName(parent::getName());
-		$this->collectExpandableDatas($this->getInput('feed2'));
-		$this->feedName(parent::getName());
-	}
-
-	public function getURI() {
-		return self::URI;
 	}
 
 	public function getIcon() {
-		$feedicon = 'https://cdn.jsdelivr.net/npm/famfamfam-silk@1.0.0/dist/png/folder_feed.png';
-		return $feedicon;
+		return 'https://cdn.jsdelivr.net/npm/famfamfam-silk@1.0.0/dist/png/folder_feed.png';
 	}
 
 	public function getName() {
-		if(isset($feedname)) {
-			return 'FeedMerge ' . $this->$feedname;
-		} else {
-			return 'FeedMerge';
-		}
+		return $this->getInput('feed_name') ?: 'rss-bridge/FeedMerger';
 	}
 }
