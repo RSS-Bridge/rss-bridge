@@ -1,4 +1,5 @@
 <?php
+
 class FeedMergeBridge extends FeedExpander {
 	const MAINTAINER = 'AntoineTurmel';
 	const NAME = 'FeedMerge';
