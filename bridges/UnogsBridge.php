@@ -17,7 +17,8 @@ class UnogsBridge extends BridgeAbstract {
 					'What\'s New' => 'new last 7 days',
 					'Expiring' => 'expiring'
 				)
-			)
+			),
+			'limit' => self::LIMIT,
 		),
 		'Global' => array(),
 		'Country' => array(
@@ -160,8 +161,17 @@ EOD;
 				break;
 		}
 
-		$api_url = self::URI . '/api/search?query=' . urlencode($feed)
-				. ($country_code ? '&countrylist=' . $country_code : '') . '&limit=30';
+		$limit = $this->getInput('limit') ?? 30;
+
+		// https://rapidapi.com/unogs/api/unogsng/details
+		$api_url = sprintf(
+			'%s/api/search?query=%s%s&limit=%s',
+			self::URI,
+			urlencode($feed),
+			$country_code ? '&countrylist=' . $country_code : '',
+			$limit
+		);
+
 		$json_data = $this->getJSON($api_url);
 		$movies = $json_data['results'];
 

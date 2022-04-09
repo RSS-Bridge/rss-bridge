@@ -88,6 +88,16 @@ abstract class BridgeAbstract implements BridgeInterface {
 	const TEST_DETECT_PARAMETERS = array();
 
 	/**
+	 * This is a convenient const for the limit option in bridge contexts.
+	 * Can be inlined and modified if necessary.
+	 */
+	protected const LIMIT = [
+		'name'          => 'Limit',
+		'type'          => 'number',
+		'title'         => 'Maximum number of items to return',
+	];
+
+	/**
 	 * Holds the list of items collected by the bridge
 	 *
 	 * Items must be collected by {@see BridgeInterface::collectData()}

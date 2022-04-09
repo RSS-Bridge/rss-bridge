@@ -156,7 +156,8 @@ class ZDNetBridge extends FeedExpander {
 					'ZDNet Government' => 'blog/government'
 				)
 			)
-		)
+		),
+		'limit' => self::LIMIT,
 	));
 
 	public function collectData(){
@@ -167,7 +168,8 @@ class ZDNetBridge extends FeedExpander {
 			$baseUri = str_replace('www.', 'downloads.', $baseUri);
 		}
 		$url = $baseUri . trim($feed, '/') . '/rss.xml';
-		$this->collectExpandableDatas($url);
+		$limit = $this->getInput('limit') ?? 10;
+		$this->collectExpandableDatas($url, $limit);
 	}
 
 	protected function parseItem($item){
