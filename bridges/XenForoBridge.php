@@ -149,7 +149,6 @@ class XenForoBridge extends BridgeAbstract {
 				break;
 		}
 
-
 		usort($this->items, function($a, $b) {
 			return $b['timestamp'] <=> $a['timestamp'];
 		});
