@@ -10,6 +10,7 @@ class WeLiveSecurityBridge extends FeedExpander {
 			'limit' => self::LIMIT,
 		],
 	];
+
 	protected function parseItem($item){
 		$item = parent::parseItem($item);
 

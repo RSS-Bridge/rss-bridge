@@ -12,6 +12,7 @@ class PcGamerBridge extends BridgeAbstract
 			'limit' => self::LIMIT,
 		]
 	];
+
 	public function collectData()
 	{
 		$html = getSimpleHTMLDOMCached($this->getURI(), 300);
