@@ -57,19 +57,18 @@ class PicukiBridge extends BridgeAbstract
 
 			$item['uri'] = urljoin(self::URI, $element->find('a', 0)->href);
 
-			$item['title'] = $element->find('.photo-description', 0)->plaintext;
+			$description = trim($element->find('.photo-description', 0)->plaintext);
+			$item['title'] = mb_substr($description, 0, 60);
 
 			$is_video = (bool) $element->find('.video-icon', 0);
 			$item['content'] = ($is_video) ? '(video) ' : '';
-			$item['content'] .= $element->find('.photo', 0)->outertext;
+			$item['content'] .= $description;
 
-			$item['enclosures'] = array(
-					// just add `.jpg` extension to get the correct mime type. All Instagram posts are JPG
-					urljoin(self::URI, $element->find('.post-image', 0)->src . '.jpg')
-				);
-
-			$item['thumbnail'] = urljoin(self::URI, $element->find('.post-image', 0)->src);
-
+			$postImage = $element->find('.post-image', 0)->src;
+			$item['enclosures'] = [
+				urljoin(self::URI, $postImage)
+			];
+			$item['thumbnail'] = urljoin(self::URI, $postImage);
 			$this->items[] = $item;
 		}
 	}
