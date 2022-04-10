@@ -51,13 +51,11 @@ Screenshot
 
 Welcome screen:
 
-![Screenshot](https://github.com/RSS-Bridge/rss-bridge/wiki/images/screenshot_rss-bridge_welcome.png)
-
-***
+![Screenshot](/static/screenshot_rss-bridge_welcome.png?raw=true)
 
 RSS-Bridge hashtag (#rss-bridge) search on Twitter, in Atom format (as displayed by Firefox):
 
-![Screenshot](https://github.com/RSS-Bridge/rss-bridge/wiki/images/screenshot_twitterbridge_atom.png)
+![Screenshot](/static/screenshot_twitterbridge_atom.png?raw=true)
 
 Requirements
 ===
