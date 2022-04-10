@@ -48,6 +48,11 @@ class TwitterV2Bridge extends BridgeAbstract {
 				'exampleValue' => '20',
 				'title' => 'Maximum number of tweets to retrieve (limit is 100)'
 			),
+			'imgonly' => array(
+				'name' => 'Only media tweets',
+				'type' => 'checkbox',
+				'title' => 'Activate to show only tweets with media (photo/video)'
+			),
 			'nopic' => array(
 				'name' => 'Hide profile pictures',
 				'type' => 'checkbox',
@@ -159,6 +164,7 @@ EOD
 			$maxResults = 100;
 		}
 		$idAsTitle = $this->getInput('idastitle');
+		$onlyMediaTweets = $this->getInput('imgonly');
 
 		// Read API token from config.ini.php, put into Header
 		$this->apiToken     = $this->getOption('twitterv2apitoken');
@@ -176,7 +182,6 @@ EOD
 			$user = $this->makeApiCall('/users/by/username/'
 			. $this->getInput('u'), $params);
 
-			//Debug::log('User JSON: ' . json_encode($user));
 			if(isset($user->errors)) {
 				Debug::log('User JSON: ' . json_encode($user));
 				returnServerError('Requested username can\'t be found.');
@@ -248,7 +253,6 @@ EOD
 			returnServerError('Invalid query context !');
 		}
 
-		//Debug::log('Data JSON: ' . json_encode($data));
 		if((isset($data->errors) && !isset($data->data)) ||
 		(isset($data->meta) && $data->meta->result_count === 0)) {
 			Debug::log('Data JSON: ' . json_encode($data));
@@ -275,15 +279,12 @@ EOD
 
 		// Extract additional Users data into array
 		isset($data->includes->users) ? $includesUsers = $data->includes->users : $includesUsers = null;
-		//Debug::log('Tweets Users JSON: ' . json_encode($includesUsers));
 
 		// Extract additional Tweets data into array
 		isset($data->includes->tweets) ? $includesTweets = $data->includes->tweets : $includesTweets = null;
-		//Debug::log('Includes Tweets JSON: ' . json_encode($includesTweets));
 
 		// Extract main Tweets data into array
 		$tweets = $data->data;
-		//Debug::log('Tweets JSON: ' . json_encode($tweets));
 
 		// Make another API call to get user and media info for retweets
 		// Is there some way to get this info included in original API call?
@@ -309,7 +310,6 @@ EOD
 
 			// Get the retweeted tweets
 			$retweetedData = $this->makeApiCall('/tweets', $params);
-			//Debug::log('retweetedData JSON: ' . json_encode($retweetedData));
 
 			// Extract retweets Media data into array
 			isset($retweetedData->includes->media) ? $retweetedMedia
@@ -324,9 +324,8 @@ EOD
 		foreach($tweets as $tweet) {
 			//Debug::log('Tweet JSON: ' . json_encode($tweet));
 
-			// Skip pinned tweet
+			// Skip pinned tweet (if selected)
 			if($hidePinned && $tweet->id === $pinnedTweetId) {
-				//Debug::log('Skipping pinned tweet');
 				continue;
 			}
 
@@ -336,27 +335,24 @@ EOD
 			$isReply = false;
 			if(isset($tweet->referenced_tweets)) {
 				if(in_array($tweet->referenced_tweets[0]->type, $retweetTypes)) {
-					//Debug::log('This is a retweet');
 					$isRetweet = true;
 				} elseif ($tweet->referenced_tweets[0]->type === 'replied_to') {
-					//Debug::log('This is a reply');
 					$isReply = true;
 				}
 			}
 
-			// Skip replies and/or retweets. This check is primarily for lists
+			// Skip replies and/or retweets (if selected). This check is primarily for lists
 			// These should already be pre-filtered for username and keyword queries
 			if (($hideRetweets && $isRetweet) || ($hideReplies && $isReply)) {
 				continue;
 			}
-
+      
 			$cleanedTweet = nl2br($tweet->text);
 			//Debug::log('cleanedTweet: ' . $cleanedTweet);
 
-			// Perform optional filtering (skip tweets that don't contain desired word)
+			// Perform filtering (skip tweets that don't contain desired word, if provided)
 			if (! empty($tweetFilter)) {
 				if(stripos($cleanedTweet, $this->getInput('filter')) === false) {
-					//Debug::log('Skipping tweet that does not contain filter text');
 					continue;
 				}
 			}
@@ -369,7 +365,6 @@ EOD
 				// Replace tweet object with original retweeted object
 				if($isRetweet) {
 					foreach($includesTweets as $includesTweet) {
-						//Debug::log('Includes Tweet JSON: ' . json_encode($includesTweet));
 						if($includesTweet->id === $tweet->referenced_tweets[0]->id) {
 							$tweet = $includesTweet;
 							break;
@@ -421,6 +416,12 @@ EOD
 						 . $item['fullname']
 						 . ' (@'
 						 . $item['username'] . ')';
+
+			// Skip non-media tweet (if selected)
+			// This check must wait until after retweets are identified
+			if ($onlyMediaTweets && !isset($tweet->attachments->media_keys)) {
+				continue;
+			}
 
 			// Search for and replace URLs in Tweet text
 			$foundUrls = false;

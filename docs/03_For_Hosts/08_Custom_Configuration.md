@@ -17,6 +17,7 @@ __Notice__: If a parameter is not specified in your `config.ini.php` RSS-Bridge 
 The configuration file is split into sections:
 
 * [system](#system)
+* [http client](#http client)
 * [cache](#cache)
 * [proxy](#proxy)
 * [authentication](#authentication)
@@ -24,6 +25,8 @@ The configuration file is split into sections:
 * [error](#error)
 
 _System_: This section specifies system specific parameters
+
+_Http client_: This section has http client options
 
 _Cache_: This section is all about the caching behavior of RSS-Bridge
 
@@ -97,6 +100,21 @@ Allow users to disable proxy usage for specific requests.
 `true`  = enabled
 
 `false` = disabled (default)
+
+## Http client
+
+This section provides the following parameters:
+
+- timeout
+- useragent
+
+### timeout
+
+Default network timeout.
+
+### useragent
+
+Default user agent.
 
 ## Authentication
 
