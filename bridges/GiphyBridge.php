@@ -31,6 +31,15 @@ class GiphyBridge extends BridgeAbstract {
 		)
 	));
 
+	public function getName()
+	{
+		if (!is_null($this->getInput('s'))) {
+			return $this->getInput('s') . ' - ' . parent::getName();
+		}
+
+		return parent::getName();
+	}
+
 	protected function getGiphyItems($entries){
 		foreach($entries as $entry) {
 			$createdAt = new \DateTime($entry->import_datetime);
