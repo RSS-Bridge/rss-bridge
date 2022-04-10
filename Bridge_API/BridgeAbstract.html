@@ -93,7 +93,7 @@
     <div class="Page__header">
         <h1><a href="../Bridge_API/index.html">Bridge API</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../Bridge_API/BridgeAbstract.html">BridgeAbstract</a></h1>
                 <span class="ModifiedDate">
-            April 8, 2022 at 1:37 PM        </span>
+            April 10, 2022 at 12:58 PM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/05_Bridge_API/02_BridgeAbstract.md" target="_blank">
                 Edit on GitHub            </a>
@@ -105,9 +105,9 @@
 <hr />
 <h1><a id="creating-a-new-bridge" href="#creating-a-new-bridge" class="Permalink" aria-hidden="true" title="Permalink">#</a>Creating a new bridge</h1>
 <p>You need four basic steps in order to create a new bridge:</p>
-<p><a href="#step-1---create-a-new-file"><strong>Step 1</strong></a> - Create a new file<br />
-<a href="#step-2---add-a-class-extending-bridgeabstract"><strong>Step 2</strong></a> - Add a class, extending <code>BridgeAbstract</code><br />
-<a href="#step-3---add-general-constants-to-the-class"><strong>Step 3</strong></a> - Add general constants to the class<br />
+<p><a href="#step-1---create-a-new-file"><strong>Step 1</strong></a> - Create a new file
+<a href="#step-2---add-a-class-extending-bridgeabstract"><strong>Step 2</strong></a> - Add a class, extending <code>BridgeAbstract</code>
+<a href="#step-3---add-general-constants-to-the-class"><strong>Step 3</strong></a> - Add general constants to the class
 <a href="#step-4---implement-a-function-to-collect-feed-data"><strong>Step 4</strong></a> - Implement a function to collect feed data</p>
 <p>These steps are described in more detail below. At the end of this document you’ll find a complete <a href="#template">template</a> based on these instructions. The pictures below show an example based on these instructions:</p>
 <details><summary>Show pictures</summary><div>
@@ -143,7 +143,7 @@ const CACHE_TIMEOUT // (optional) Defines the maximum duration for the cache in 
 <pre><code class="language-PHP">&lt;?PHP
 class MyBridge extends BridgeAbstract {
 	const NAME        = 'My Bridge';
-	const URI         = 'https://github.com/RSS-Bridge/rss-bridge/wiki/BridgeAbstract';
+	const URI         = 'https://rss-bridge.github.io/rss-bridge/Bridge_API/BridgeAbstract.html';
 	const DESCRIPTION = 'Returns &quot;Hello World!&quot;';
 	const MAINTAINER  = 'ghost';
 }
@@ -157,7 +157,7 @@ class MyBridge extends BridgeAbstract {
 <pre><code class="language-PHP">&lt;?PHP
 class MyBridge extends BridgeAbstract {
 	const NAME        = 'My Bridge';
-	const URI         = 'https://github.com/RSS-Bridge/rss-bridge/wiki/BridgeAbstract';
+	const URI         = 'https://rss-bridge.github.io/rss-bridge/Bridge_API/BridgeAbstract.html';
 	const DESCRIPTION = 'Returns &quot;Hello World!&quot;';
 	const MAINTAINER  = 'ghost';
 
@@ -211,7 +211,7 @@ class MyBridge extends BridgeAbstract {
 </code></pre>
 </div></details><br>
 <p>Parameters are organized in two levels:</p>
-<p><a href="##level-1---context"><strong>Level 1</strong></a> - Context<br />
+<p><a href="##level-1---context"><strong>Level 1</strong></a> - Context
 <a href="##level-2---parameter"><strong>Level 2</strong></a> - Parameter</p>
 <h2><a id="level-1-context" href="#level-1-context" class="Permalink" aria-hidden="true" title="Permalink">#</a>Level 1 - Context</h2>
 <p>A context is defined as a associative array of parameters. The name of a context is displayed by RSS-Bridge.</p>
@@ -346,7 +346,7 @@ class MyBridge extends BridgeAbstract {
 ...
 </code></pre>
 <p>If a more complex organization is required to display the values, the above key/value can be used to set a title as a key and another array as a value:</p>
-<pre><code class="language-PHP">... 
+<pre><code class="language-PHP">...
     'type' =&gt; 'list',
     'values' =&gt; array(
         'Item A' =&gt; 'itemA',
