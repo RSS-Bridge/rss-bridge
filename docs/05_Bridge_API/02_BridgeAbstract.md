@@ -6,10 +6,10 @@
 
 You need four basic steps in order to create a new bridge:
 
-[**Step 1**](#step-1---create-a-new-file) - Create a new file  
-[**Step 2**](#step-2---add-a-class-extending-bridgeabstract) - Add a class, extending `BridgeAbstract`  
-[**Step 3**](#step-3---add-general-constants-to-the-class) - Add general constants to the class  
-[**Step 4**](#step-4---implement-a-function-to-collect-feed-data) - Implement a function to collect feed data 
+[**Step 1**](#step-1---create-a-new-file) - Create a new file
+[**Step 2**](#step-2---add-a-class-extending-bridgeabstract) - Add a class, extending `BridgeAbstract`
+[**Step 3**](#step-3---add-general-constants-to-the-class) - Add general constants to the class
+[**Step 4**](#step-4---implement-a-function-to-collect-feed-data) - Implement a function to collect feed data
 
 These steps are described in more detail below. At the end of this document you'll find a complete [template](#template) based on these instructions. The pictures below show an example based on these instructions:
 
@@ -68,7 +68,7 @@ const CACHE_TIMEOUT // (optional) Defines the maximum duration for the cache in 
 <?PHP
 class MyBridge extends BridgeAbstract {
 	const NAME        = 'My Bridge';
-	const URI         = 'https://github.com/RSS-Bridge/rss-bridge/wiki/BridgeAbstract';
+	const URI         = 'https://rss-bridge.github.io/rss-bridge/Bridge_API/BridgeAbstract.html';
 	const DESCRIPTION = 'Returns "Hello World!"';
 	const MAINTAINER  = 'ghost';
 }
@@ -89,7 +89,7 @@ In order for RSS-Bridge to collect data, you must implement the **public** funct
 <?PHP
 class MyBridge extends BridgeAbstract {
 	const NAME        = 'My Bridge';
-	const URI         = 'https://github.com/RSS-Bridge/rss-bridge/wiki/BridgeAbstract';
+	const URI         = 'https://rss-bridge.github.io/rss-bridge/Bridge_API/BridgeAbstract.html';
 	const DESCRIPTION = 'Returns "Hello World!"';
 	const MAINTAINER  = 'ghost';
 
@@ -162,7 +162,7 @@ class MyBridge extends BridgeAbstract {
 
 Parameters are organized in two levels:
 
-[**Level 1**](##level-1---context) - Context  
+[**Level 1**](##level-1---context) - Context
 [**Level 2**](##level-2---parameter) - Parameter
 
 ## Level 1 - Context
@@ -277,7 +277,7 @@ List values are defined in an associative array where keys are the string displa
 
 If a more complex organization is required to display the values, the above key/value can be used to set a title as a key and another array as a value:
 ```PHP
-... 
+...
     'type' => 'list',
     'values' => array(
         'Item A' => 'itemA',
