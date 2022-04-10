@@ -5,6 +5,11 @@ class WeLiveSecurityBridge extends FeedExpander {
 	const NAME = 'We Live Security';
 	const URI = 'https://www.welivesecurity.com/';
 	const DESCRIPTION = 'Returns the newest articles.';
+	const PARAMETERS = [
+		[
+			'limit' => self::LIMIT,
+		],
+	];
 
 	protected function parseItem($item){
 		$item = parent::parseItem($item);
@@ -27,6 +32,7 @@ class WeLiveSecurityBridge extends FeedExpander {
 
 	public function collectData(){
 		$feed = static::URI . 'feed/';
-		$this->collectExpandableDatas($feed);
+		$limit = $this->getInput('limit') ?? 10;
+		$this->collectExpandableDatas($feed, $limit);
 	}
 }

@@ -33,7 +33,8 @@ class DarkReadingBridge extends FeedExpander {
 				'Insider Threats' => '663_Insider%20Threats',
 				'Vulnerability Management' => '664_Vulnerability%20Management',
 			)
-		)
+		),
+		'limit' => self::LIMIT,
 	));
 
 	public function collectData(){
@@ -48,7 +49,8 @@ class DarkReadingBridge extends FeedExpander {
 		if ($feed_id != '000') {
 			$feed_url .= '?f_n=' . $feed_id . '&f_ln=' . $feed_name;
 		}
-		$this->collectExpandableDatas($feed_url, 20);
+		$limit = $this->getInput('limit') ?? 10;
+		$this->collectExpandableDatas($feed_url, $limit);
 	}
 
 	protected function parseItem($newsItem){

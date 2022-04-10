@@ -26,7 +26,8 @@ class FindACrewBridge extends BridgeAbstract {
 			'distance' => array(
 				'name' => 'Limit boundary of search in KM',
 				'title' => 'Boundary of the search in kilometers when using longitude and latitude'
-			)
+			),
+			'limit' => self::LIMIT,
 		)
 	);
 
@@ -59,7 +60,8 @@ class FindACrewBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($url, $header, $opts) or returnClientError('No results for this query.');
 
 		$annonces = $html->find('.css_SrhRst');
-		foreach ($annonces as $annonce) {
+		$limit = $this->getInput('limit') ?? 10;
+		foreach (array_slice($annonces, 0, $limit) as $annonce) {
 			$item = array();
 
 			$link = parent::getURI() . $annonce->find('.lstsum-btn-con a', 0)->href;

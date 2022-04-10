@@ -63,6 +63,7 @@ class FolhaDeSaoPauloBridge extends FeedExpander {
 			$feed_url = self::URI . '/' . $this->getInput('feed');
 		}
 		Debug::log('URL: ' . $feed_url);
-		$this->collectExpandableDatas($feed_url, $this->getInput('amount'));
+		$limit = $this->getInput('amount');
+		$this->collectExpandableDatas($feed_url, $limit);
 	}
 }
