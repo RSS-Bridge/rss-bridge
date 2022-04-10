@@ -44,7 +44,7 @@ RSS-Bridge is capable of producing several output formats:
 * `Mrss` : MRSS feed, for use in feed readers
 * `Plaintext` : Raw text, for consumption by other applications
 
-You can extend RSS-Bridge with your own format, using the [Format API](https://github.com/RSS-Bridge/rss-bridge/wiki/Format-API)!
+You can extend RSS-Bridge with your own format, using the [Format API](https://rss-bridge.github.io/rss-bridge/Format_API/index.html)!
 
 Screenshot
 ===
@@ -73,16 +73,16 @@ RSS-Bridge requires PHP 7.1 or higher with following extensions enabled:
   - [`filter`](https://secure.php.net/manual/en/book.filter.php)
   - [`sqlite3`](http://php.net/manual/en/book.sqlite3.php) (only when using SQLiteCache)
 
-Find more information on our [Wiki](https://github.com/rss-bridge/rss-bridge/wiki)
+Find more information on our [Documentation](https://rss-bridge.github.io/rss-bridge/index.html)
 
 Enable / Disable bridges
 ===
 
 RSS-Bridge allows you to take full control over which bridges are displayed to the user. That way you can host your own RSS-Bridge service with your favorite collection of bridges!
 
-Find more information on the [Wiki](https://github.com/RSS-Bridge/rss-bridge/wiki/Whitelisting)
+Find more information on the [Documentation](https://rss-bridge.github.io/rss-bridge/For_Hosts/Whitelisting.html)
 
-**Notice**: By default, RSS-Bridge will only show a small subset of bridges. Make sure to read up on [whitelisting](https://github.com/RSS-Bridge/rss-bridge/wiki/Whitelisting) to unlock the full potential of RSS-Bridge!
+**Notice**: By default, RSS-Bridge will only show a small subset of bridges. Make sure to read up on [whitelisting](https://rss-bridge.github.io/rss-bridge/For_Hosts/Whitelisting.html) to unlock the full potential of RSS-Bridge!
 
 Deploy
 ===
@@ -104,7 +104,7 @@ There are many ways for you to getting involved with RSS-Bridge. Here are a few 
 - Request new features or suggest ideas (via [Issues](https://github.com/RSS-Bridge/rss-bridge/issues))
 - Discuss bugs, features, ideas or [issues](https://github.com/RSS-Bridge/rss-bridge/issues)
 - Add new bridges or improve the API
-- Improve the [Wiki](https://github.com/RSS-Bridge/rss-bridge/wiki)
+- Improve the [Documentation](https://rss-bridge.github.io/rss-bridge/)
 - Host an instance of RSS-Bridge for your personal use or make it available to the community :sparkling_heart:
 
 Authors
@@ -326,8 +326,8 @@ Technical notes
 ===
 
   * RSS-Bridge uses caching to prevent services from banning your server for repeatedly updating feeds. The specific cache duration can be different between bridges. Cached files are deleted automatically after 24 hours.
-  * You can implement your own bridge, [following these instructions](https://github.com/RSS-Bridge/rss-bridge/wiki/Bridge-API).
-  * You can enable debug mode to disable caching. Find more information on the [Wiki](https://github.com/RSS-Bridge/rss-bridge/wiki/Debug-mode)
+  * You can implement your own bridge, [following these instructions](https://rss-bridge.github.io/rss-bridge/Bridge_API/index.html).
+  * You can enable debug mode to disable caching. Find more information on the [Wiki](https://rss-bridge.github.io/rss-bridge/For_Developers/Debug_mode.html)
 
 Rant
 ===
