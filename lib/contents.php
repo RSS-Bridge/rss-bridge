@@ -128,104 +128,73 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 		'content' => '',
 	);
 
-	// Use file_get_contents() if curl module is not installed
-	if(! function_exists('curl_version')) {
+	$ch = curl_init($url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
-		$httpHeaders = '';
+	if(is_array($header) && count($header) !== 0) {
 
-		foreach ($header as $headerL) {
-			$httpHeaders .= $headerL . "\r\n";
-		}
+		Debug::log('Setting headers: ' . json_encode($header));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 
-		$ctx = stream_context_create(array(
-			'http' => array(
-				'header' => $httpHeaders
-			)
-		));
-
-		$data = @file_get_contents($url, 0, $ctx);
-
-		if($data === false) {
-			$errorCode = 500;
-		} else {
-			$errorCode = 200;
-			$retVal['header'] = implode("\r\n", $http_response_header);
-		}
-
-		$curlError = '';
-		$curlErrno = '';
-		$headerSize = 0;
-		$finalHeader = array();
-	} else {
-		$ch = curl_init($url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-
-		if(is_array($header) && count($header) !== 0) {
-
-			Debug::log('Setting headers: ' . json_encode($header));
-			curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-
-		}
-
-		curl_setopt($ch, CURLOPT_USERAGENT, Configuration::getConfig('http', 'useragent'));
-		curl_setopt($ch, CURLOPT_TIMEOUT, Configuration::getConfig('http', 'timeout'));
-		curl_setopt($ch, CURLOPT_ENCODING, '');
-		curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
-
-		if(is_array($opts) && count($opts) !== 0) {
-
-			Debug::log('Setting options: ' . json_encode($opts));
-
-			foreach($opts as $key => $value) {
-				curl_setopt($ch, $key, $value);
-			}
-
-		}
-
-		if(defined('PROXY_URL') && !defined('NOPROXY')) {
-
-			Debug::log('Setting proxy url: ' . PROXY_URL);
-			curl_setopt($ch, CURLOPT_PROXY, PROXY_URL);
-
-		}
-
-		// We always want the response header as part of the data!
-		curl_setopt($ch, CURLOPT_HEADER, true);
-
-		// Build "If-Modified-Since" header
-		if(!Debug::isEnabled() && $time = $cache->getTime()) { // Skip if cache file doesn't exist
-			Debug::log('Adding If-Modified-Since');
-			curl_setopt($ch, CURLOPT_TIMEVALUE, $time);
-			curl_setopt($ch, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
-		}
-
-		// Enables logging for the outgoing header
-		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
-
-		$data = curl_exec($ch);
-		$errorCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-		$curlError = curl_error($ch);
-		$curlErrno = curl_errno($ch);
-		$curlInfo = curl_getinfo($ch);
-
-		Debug::log('Outgoing header: ' . json_encode($curlInfo));
-
-		if($data === false)
-			Debug::log('Cant\'t download ' . $url . ' cUrl error: ' . $curlError . ' (' . $curlErrno . ')');
-
-		$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-		$header = substr($data, 0, $headerSize);
-		$retVal['header'] = $header;
-
-		Debug::log('Response header: ' . $header);
-
-		$headers = parseResponseHeader($header);
-		$finalHeader = end($headers);
-
-		curl_close($ch);
 	}
+
+	curl_setopt($ch, CURLOPT_USERAGENT, Configuration::getConfig('http', 'useragent'));
+	curl_setopt($ch, CURLOPT_TIMEOUT, Configuration::getConfig('http', 'timeout'));
+	curl_setopt($ch, CURLOPT_ENCODING, '');
+	curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
+
+	if(is_array($opts) && count($opts) !== 0) {
+
+		Debug::log('Setting options: ' . json_encode($opts));
+
+		foreach($opts as $key => $value) {
+			curl_setopt($ch, $key, $value);
+		}
+	}
+
+	if(defined('PROXY_URL') && !defined('NOPROXY')) {
+
+		Debug::log('Setting proxy url: ' . PROXY_URL);
+		curl_setopt($ch, CURLOPT_PROXY, PROXY_URL);
+
+	}
+
+	// We always want the response header as part of the data!
+	curl_setopt($ch, CURLOPT_HEADER, true);
+
+	// Build "If-Modified-Since" header
+	if(!Debug::isEnabled() && $time = $cache->getTime()) { // Skip if cache file doesn't exist
+		Debug::log('Adding If-Modified-Since');
+		curl_setopt($ch, CURLOPT_TIMEVALUE, $time);
+		curl_setopt($ch, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
+	}
+
+	// Enables logging for the outgoing header
+	curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+
+	$data = curl_exec($ch);
+	$errorCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+	$curlError = curl_error($ch);
+	$curlErrno = curl_errno($ch);
+	$curlInfo = curl_getinfo($ch);
+
+	Debug::log('Outgoing header: ' . json_encode($curlInfo));
+
+	if($data === false)
+		Debug::log('Cant\'t download ' . $url . ' cUrl error: ' . $curlError . ' (' . $curlErrno . ')');
+
+	$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+	$header = substr($data, 0, $headerSize);
+	$retVal['header'] = $header;
+
+	Debug::log('Response header: ' . $header);
+
+	$headers = parseResponseHeader($header);
+	$finalHeader = end($headers);
+
+	curl_close($ch);
 
 	$finalHeader = array_change_key_case($finalHeader, CASE_LOWER);
 
