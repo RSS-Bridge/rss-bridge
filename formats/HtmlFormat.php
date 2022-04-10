@@ -1,4 +1,11 @@
 <?php
+function render(string $template, $vars = []): string {
+	extract($vars);
+	require $template;
+	$html = ob_get_clean();
+	return $html;
+}
+
 class HtmlFormat extends FormatAbstract {
 	const MIME_TYPE = 'text/html';
 
@@ -107,29 +114,15 @@ EOD;
 
 		$charset = $this->getCharset();
 
-		/* Data are prepared, now let's begin the "MAGIE !!!" */
-		$toReturn = <<<EOD
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="{$charset}">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>{$title}</title>
-	<link href="static/HtmlFormat.css" rel="stylesheet">
-	<link rel="icon" type="image/png" href="static/favicon.png">
-	{$links}
-	<meta name="robots" content="noindex, follow">
-</head>
-<body>
-	<h1 class="pagetitle"><a href="{$uri}" target="_blank">{$title}</a></h1>
-	<div class="buttons">
-		<a href="./#bridge-{$_GET['bridge']}"><button class="backbutton">← back to rss-bridge</button></a>
-		{$buttons}
-	</div>
-{$entries}
-</body>
-</html>
-EOD;
+		$toReturn = render(__DIR__ . '/../templates/html-format.html.php', [
+			'charset' => $charset,
+			'title' => $title,
+			'links' => $links,
+			'uri' => $uri,
+			'bridge' => $_GET['bridge'],
+			'buttons' => $buttons,
+			'entries' => $entries,
+		]);
 
 		// Remove invalid characters
 		ini_set('mbstring.substitute_character', 'none');
