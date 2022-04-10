@@ -346,7 +346,7 @@ EOD
 			if (($hideRetweets && $isRetweet) || ($hideReplies && $isReply)) {
 				continue;
 			}
-      
+
 			$cleanedTweet = nl2br($tweet->text);
 			//Debug::log('cleanedTweet: ' . $cleanedTweet);
 
