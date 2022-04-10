@@ -35,7 +35,7 @@ class CastorusBridge extends BridgeAbstract {
 		if(!$title)
 			returnServerError('Cannot find title!');
 
-		return htmlspecialchars(trim($title->plaintext));
+		return trim($title->plaintext);
 	}
 
 	// Extracts the url from an actitiy
