@@ -350,7 +350,7 @@ EOD
 				continue;
 			}
 
-			$cleanedTweet = $tweet->text;
+			$cleanedTweet = nl2br($tweet->text);
 			//Debug::log('cleanedTweet: ' . $cleanedTweet);
 
 			// Perform optional filtering (skip tweets that don't contain desired word)
@@ -392,7 +392,7 @@ EOD
 						}
 					}
 				}
-				if(isset($includesUsers)) {
+				if(!$originalUser && isset($includesUsers)) {
 					foreach($includesUsers as $includesUser) {
 						if($includesUser->id === $tweet->author_id) {
 							$originalUser = $includesUser;
@@ -464,7 +464,7 @@ EOD
 				$picture_html = <<<EOD
 <a href="https://twitter.com/{$item['username']}">
 <img
-	style="align:top; width:75px; border:1px solid black;"
+	style="margin-right: 10px; margin-bottom: 10px;"
 	alt="{$item['username']}"
 	src="{$item['avatar']}"
 	title="{$item['fullname']}" />
@@ -506,7 +506,7 @@ EOD;
 							$display_image = $media->url;
 						} else{
 							$image = $media->url . '?name=orig';
-							$display_image = $media->url . '?name=thumb';
+							$display_image = $media->url;
 						}
 						// add enclosures
 						$item['enclosures'][] = $image;
@@ -514,7 +514,6 @@ EOD;
 						$media_html .= <<<EOD
 <a href="{$image}">
 <img
-	style="align:top; max-width:558px; border:1px solid black;"
 	referrerpolicy="no-referrer"
 	src="{$display_image}" />
 </a>
@@ -527,7 +526,6 @@ EOD;
 
 						$media_html .= <<<EOD
 <img
-	style="align:top; max-width:558px; border:1px solid black;"
 	referrerpolicy="no-referrer"
 	src="{$display_image}" />
 EOD;
@@ -539,7 +537,6 @@ EOD;
 
 						$media_html .= <<<EOD
 <img
-	style="align:top; max-width:558px; border:1px solid black;"
 	referrerpolicy="no-referrer"
 	src="{$display_image}" />
 EOD;
@@ -552,14 +549,14 @@ EOD;
 			}
 
 			$item['content'] = <<<EOD
-<div style="display: inline-block; vertical-align: top;">
+<div style="float: left;">
 	{$picture_html}
 </div>
-<div style="display: inline-block; vertical-align: top;">
-	<blockquote>{$cleanedTweet}</blockquote>
+<div style="display: table;">
+	{$cleanedTweet}
 </div>
-<div style="display: block; vertical-align: top;">
-	<blockquote>{$media_html}</blockquote>
+<div style="display: block; margin-top: 16px;">
+	{$media_html}
 </div>
 EOD;
 
