@@ -16,7 +16,7 @@
     "license": "UNLICENSE",
     "support": {
         "issues": "https://github.com/rss-bridge/rss-bridge/issues/",
-        "wiki": "https://github.com/rss-bridge/rss-bridge/wiki/",
+        "docs": "https://rss-bridge.github.io/rss-bridge/",
         "source": "https://github.com/rss-bridge/rss-bridge/",
         "rss": "https://github.com/RSS-Bridge/rss-bridge/commits/master.atom"
     },
