@@ -64,7 +64,7 @@ class NordbayernBridge extends BridgeAbstract {
 	}
 
 	private function getValidImages($pictures) {
-		
+
 		if(empty($pictures)) {
 			return [];
 		}
