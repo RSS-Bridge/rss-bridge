@@ -56,7 +56,7 @@ class ParuVenduImmoBridge extends BridgeAbstract {
 			} else {
 				$price = '';
 			}
-			
+
 			list($href) = explode('#', $element->href);
 
 			$item = array();
