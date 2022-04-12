@@ -55,7 +55,11 @@ class PicalaBridge extends BridgeAbstract {
 			$item = array();
 			$item['uri'] = self::URI . $article->href;
 			$item['title'] = $article->find('h2', 0)->plaintext;
-			$item['content'] = sprintf('<img src="%s" /><br>%s', $article->find('img', 0)->src, $article->find('.teaser__text', 0)->plaintext);
+			$item['content'] = sprintf(
+				'<img src="%s" /><br>%s',
+				$article->find('img', 0)->src,
+				$article->find('.teaser__text', 0)->plaintext
+			);
 			$this->items[] = $item;
 		}
 	}
