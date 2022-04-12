@@ -13,6 +13,7 @@ class KhinsiderBridge extends BridgeAbstract
 		$html = getSimpleHTMLDOM(self::URI);
 
 		$dates = $html->find('#EchoTopic h3');
+		// $dates is empty
 		foreach ($dates as $date) {
 			$item = array();
 			$item['uri'] = self::URI;

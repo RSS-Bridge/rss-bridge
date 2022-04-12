@@ -9,7 +9,7 @@ class PillowfortBridge extends BridgeAbstract {
 			'name' => 'Username',
 			'type' => 'text',
 			'required' => true,
-			'exampleValue' => 'vaxis2',
+			'exampleValue' => 'SomniumAeterna',
 		),
 		'noava' => array(
 			'name' => 'Hide avatar',
@@ -39,6 +39,29 @@ class PillowfortBridge extends BridgeAbstract {
 		)
 	));
 
+	/**
+	 * The Pillowfort bridge.
+	 *
+	 * Pillowfort pages are dynamically generated from a json file
+	 * which holds the last 20 or so posts from the given user.
+	 * This bridge uses that json file and HTML/CSS similar
+	 * to the Twitter bridge for formatting.
+	 */
+	public function collectData() {
+		$jsonSite = getContents($this->getJSONURI());
+
+		$jsonFile = json_decode($jsonSite, true);
+		$posts = $jsonFile['posts'];
+
+		foreach($posts as $post) {
+			$item = $this->getItemFromPost($post);
+
+			//empty when 'noreblogs' is checked and current post is a reblog.
+			if(!empty($item))
+				$this->items[] = $item;
+		}
+	}
+
 	public function getName() {
 		$name = $this -> getUsername();
 		if($name != '')
@@ -56,7 +79,7 @@ class PillowfortBridge extends BridgeAbstract {
 	}
 
 	protected function getJSONURI() {
-		return $this -> getURI() . '/json';
+		return $this -> getURI() . '/json/?p=1';
 	}
 
 	protected function getUsername() {
@@ -195,28 +218,5 @@ EOD;
 EOD;
 
 		return $item;
-	}
-
-	/**
-	 * The Pillowfort bridge.
-	 *
-	 * Pillowfort pages are dynamically generated from a json file
-	 * which holds the last 20 or so posts from the given user.
-	 * This bridge uses that json file and HTML/CSS similar
-	 * to the Twitter bridge for formatting.
-	 */
-	public function collectData() {
-		$jsonSite = getContents($this -> getJSONURI());
-
-		$jsonFile = json_decode($jsonSite, true);
-		$posts = $jsonFile['posts'];
-
-		foreach($posts as $post) {
-			$item = $this->getItemFromPost($post);
-
-			//empty when 'noreblogs' is checked and current post is a reblog.
-			if(!empty($item))
-				$this->items[] = $item;
-		}
 	}
 }

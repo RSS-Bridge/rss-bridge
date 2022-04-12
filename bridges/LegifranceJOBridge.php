@@ -3,6 +3,7 @@ class LegifranceJOBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'Pierre Mazière';
 	const NAME = 'Journal Officiel de la République Française';
+	// This uri returns a snippet of js. Should probably be https://www.legifrance.gouv.fr/jorf/jo/
 	const URI = 'https://www.legifrance.gouv.fr/affichJO.do';
 	const DESCRIPTION = 'Returns the laws and decrees officially registered daily in France';
 
