@@ -15,7 +15,9 @@ class DanbooruBridge extends BridgeAbstract {
 				'type' => 'number'
 			),
 			't' => array(
-				'name' => 'tags'
+				'type' => 'text',
+				'name' => 'tags',
+				'exampleValue' => 'cosplay',
 			)
 		),
 		0 => array()
