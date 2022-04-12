@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/../lib/rssbridge.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -52,7 +51,9 @@ class BridgeImplementationTest extends TestCase {
 		$this->setBridge($path);
 
 		$multiMinimum = 2;
-		if (isset($this->obj::PARAMETERS['global'])) ++$multiMinimum;
+		if (isset($this->obj::PARAMETERS['global'])) {
+			++$multiMinimum;
+		}
 		$multiContexts = (count($this->obj::PARAMETERS) >= $multiMinimum);
 		$paramsSeen = array();
 
@@ -201,8 +202,6 @@ class BridgeImplementationTest extends TestCase {
 		$this->checkUrl($this->obj::URI);
 		$this->checkUrl($this->obj->getURI());
 	}
-
-	////////////////////////////////////////////////////////////////////////////
 
 	public function dataBridgesProvider() {
 		$bridges = array();
