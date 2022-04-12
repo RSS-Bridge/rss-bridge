@@ -29,12 +29,12 @@ class UsbekEtRicaBridge extends BridgeAbstract {
 		$fullarticle = $this->getInput('fullarticle');
 		$html = getSimpleHTMLDOM($this->getURI());
 
-		$articles = $html->find('div.details');
+		$articles = $html->find('article');
 
 		foreach($articles as $article) {
 			$item = array();
 
-			$title = $article->find('div.card-title', 0);
+			$title = $article->find('h2', 0);
 			if($title) {
 				$item['title'] = $title->plaintext;
 			} else {
@@ -47,7 +47,9 @@ class UsbekEtRicaBridge extends BridgeAbstract {
 				$item['author'] = $author->plaintext;
 			}
 
-			$uri = $article->find('a.read', 0)->href;
+			$u = $article->find('a.card-img', 0);
+
+			$uri = $u->href;
 			if(substr($uri, 0, 1) === 'h') { // absolute uri
 				$item['uri'] = $uri;
 			} else { // relative uri
@@ -90,7 +92,7 @@ class UsbekEtRicaBridge extends BridgeAbstract {
 	private function loadFullArticle($uri){
 		$html = getSimpleHTMLDOMCached($uri);
 
-		$content = $html->find('section.main', 0);
+		$content = $html->find('div.rich-text', 1);
 		if($content) {
 			return $this->replaceUriInHtmlElement($content);
 		}
