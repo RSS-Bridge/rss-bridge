@@ -1,5 +1,5 @@
 <?php
-ini_set('max_execution_time', '300');
+
 class NordbayernBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'schabi.org';
@@ -64,11 +64,16 @@ class NordbayernBridge extends BridgeAbstract {
 	}
 
 	private function getValidImages($pictures) {
+
+		if(empty($pictures)) {
+			return [];
+		}
 		$images = array();
-		if(!empty($pictures)) {
-			for($i = 0; $i < count($pictures); $i++) {
-				$imgUrl = $pictures[$i]->find('img', 0)->src;
-				if(strcmp($imgUrl, 'https://www.nordbayern.de/img/nb/logo-vnp.png') !== 0) {
+		for ($i = 0; $i < count($pictures); $i++) {
+			$img = $pictures[$i]->find('img', 0);
+			if ($img) {
+				$imgUrl = $img->src;
+				if (strcmp($imgUrl, 'https://www.nordbayern.de/img/nb/logo-vnp.png') !== 0) {
 					array_push($images, $imgUrl);
 				}
 			}
@@ -82,8 +87,17 @@ class NordbayernBridge extends BridgeAbstract {
 		defaultLinkTo($article, self::URI);
 
 		$item['uri'] = $link;
-		$item['author'] = $article->find('[class=article__author extrabold]', 0)->plaintext;
-		$item['timestamp'] = strtotime(str_replace('Uhr', '', $article->find('[class=article__release]', 0)->plaintext));
+
+		$author = $article->find('[class=article__author extrabold]', 0);
+		if ($author) {
+			$item['author'] = $author->plaintext;
+		}
+
+		$createdAt = $article->find('[class=article__release]', 0);
+		if ($createdAt) {
+			$item['timestamp'] = strtotime(str_replace('Uhr', '', $createdAt->plaintext));
+		}
+
 		if ($article->find('h2', 0) == null) {
 			$item['title'] = $article->find('h3', 0)->innertext;
 		} else {
@@ -135,17 +149,19 @@ class NordbayernBridge extends BridgeAbstract {
 	private function handleNewsblock($listSite) {
 		$main = $listSite->find('main', 0);
 		foreach($main->find('article') as $article) {
-			self::handleArticle(self::URI . $article->find('a', 0)->href);
+			$url = $article->find('a', 0)->href;
+			$url = urljoin(self::URI, $url);
+			self::handleArticle($url);
 		}
 	}
 
 	public function collectData() {
-		$item = array();
 		$region = $this->getInput('region');
 		if($region === 'rothenburg-o-d-t') {
 			$region = 'rothenburg-ob-der-tauber';
 		}
-		$listSite = getSimpleHTMLDOM(self::URI . '/region/' . $region);
+		$url = self::URI . '/region/' . $region;
+		$listSite = getSimpleHTMLDOM($url);
 
 		self::handleNewsblock($listSite);
 	}
