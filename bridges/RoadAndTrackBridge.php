@@ -1,4 +1,5 @@
 <?php
+
 class RoadAndTrackBridge extends BridgeAbstract {
 	const MAINTAINER = 'teromene';
 	const NAME = 'Road And Track Bridge';
@@ -10,17 +11,15 @@ class RoadAndTrackBridge extends BridgeAbstract {
 
 		$page = getSimpleHTMLDOM(self::URI);
 
-		//Process the first element
-		$firstArticleLink = $page->find('.custom-promo-title', 0)->href;
-		$this->items[] = $this->fetchArticle($firstArticleLink);
+		$limit = 5;
 
-		$limit = 19;
-		foreach($page->find('.full-item-title') as $article) {
+		foreach($page->find('a.enk2x9t2') as $article) {
 			$this->items[] = $this->fetchArticle($article->href);
-			$limit -= 1;
-			if($limit == 0) break;
-		}
 
+			if (count($this->items) >= $limit) {
+				break;
+			}
+		}
 	}
 
 	private function fixImages($content) {
@@ -36,7 +35,6 @@ class RoadAndTrackBridge extends BridgeAbstract {
 		}
 
 		return $enclosures;
-
 	}
 
 	private function fetchArticle($articleLink) {
@@ -45,13 +43,19 @@ class RoadAndTrackBridge extends BridgeAbstract {
 		$article = getSimpleHTMLDOM($articleLink);
 		$item = array();
 
-		$item['title'] = $article->find('.content-hed', 0)->innertext;
+		$title = $article->find('.content-hed', 0);
+		if ($title) {
+			$item['title'] = $title->innertext;
+		}
+
 		$item['author'] = $article->find('.byline-name', 0)->innertext;
 		$item['timestamp'] = strtotime($article->find('.content-info-date', 0)->getAttribute('datetime'));
 
 		$content = $article->find('.content-container', 0);
-		if($content->find('.content-rail', 0) !== null)
+		if($content->find('.content-rail', 0) !== null) {
 			$content->find('.content-rail', 0)->innertext = '';
+		}
+
 		$enclosures = $this->fixImages($content);
 
 		$item['enclosures'] = $enclosures;
