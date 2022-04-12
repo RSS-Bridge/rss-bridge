@@ -15,7 +15,7 @@ class GelbooruBridge extends BridgeAbstract {
 			),
 			't' => array(
 				'name' => 'tags',
-				'exampleValue' => 'pinup',
+				'exampleValue' => 'solo',
 				'title' => 'Tags to search for'
 			),
 			'l' => array(
