@@ -7,11 +7,11 @@ class PicalaBridge extends BridgeAbstract {
 		'Tests'		 => 'tests',
 		'Pratique'	 => 'pratique',
 	);
-	const NAME		    = 'Picala Bridge';												    // Name of the Bridge (default: "Unnamed Bridge")
-	const URI		    = 'https://www.picala.fr';										    // URI to the target website of the bridge (default: empty)
-	const DESCRIPTION   = 'Dernière nouvelles du média indépendant sur le vélo électrique'; // A brief description of the Bridge (default: "No description provided")
-	const MAINTAINER	= 'Chouchen';													    // Name of the maintainer, i.e. your name on GitHub (default: "No maintainer")
-	const PARAMETERS	= array(															// (optional) Definition of additional parameters (default: empty)
+	const NAME		    = 'Picala Bridge';
+	const URI		    = 'https://www.picala.fr';
+	const DESCRIPTION   = 'Dernière nouvelles du média indépendant sur le vélo électrique';
+	const MAINTAINER	= 'Chouchen';
+	const PARAMETERS	= array(
 		array(
 			'type' => array(
 				'name' => 'Type',
@@ -20,7 +20,7 @@ class PicalaBridge extends BridgeAbstract {
 			),
 		),
 	);
-	// const CACHE_TIMEOUT // (optional) Defines the maximum duration for the cache in seconds (default: 3600)
+
 	public function getURI() {
 		if(!is_null($this->getInput('type'))) {
 			return sprintf('%s/%s', static::URI, $this->getInput('type'));
@@ -55,7 +55,7 @@ class PicalaBridge extends BridgeAbstract {
 			$item = array();
 			$item['uri'] = self::URI . $article->href;
 			$item['title'] = $article->find('h2', 0)->plaintext;
-			$item['content'] = $article->find('.teaser__text')->plainText;
+			$item['content'] = sprintf('<img src="%s" /><br>%s', $article->find('img', 0)->src, $article->find('.teaser__text', 0)->plaintext);
 			$this->items[] = $item;
 		}
 	}
