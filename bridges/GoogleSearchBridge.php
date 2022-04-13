@@ -35,15 +35,22 @@ class GoogleSearchBridge extends BridgeAbstract {
 				$t = $element->find('a[href]', 0)->href;
 				$item['uri'] = htmlspecialchars_decode($t);
 				$item['title'] = $element->find('h3', 0)->plaintext;
-				$item['content'] = $element->find('span[class=aCOpRe]', 0)->plaintext;
+				$resultComponents = explode(' — ', $element->find('div[data-content-feature=1]', 0)->plaintext);
+				$item['content'] = $resultComponents[1];
 
-				if ($element->find('span[class=f]', 0)) {
-					$item['timestamp'] = str_replace('— ', '', $element->find('span[class=f]', 0)->plaintext);
+				if(strpos($resultComponents[0],'day') === true) {
+					$daysago = explode(' ', $resultComponents[0])[0];
+					$item['timestamp'] = date('d M Y',strtotime("-" . $daysago . " days"));
+				} else {
+					$item['timestamp'] = $resultComponents[0];
 				}
-
+				
 				$this->items[] = $item;
 			}
 		}
+		usort($this->items, function($a, $b) {
+			return $a['timestamp'] < $b['timestamp'];
+		});
 	}
 
 	public function getURI() {
