@@ -23,7 +23,8 @@ class GoogleSearchBridge extends BridgeAbstract {
 	));
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM($this->getURI())
+		$header = array('Accept-language: en-US');
+		$html = getSimpleHTMLDOM($this->getURI(), $header)
 			or returnServerError('No results for this query.');
 
 		$emIsRes = $html->find('div[id=res]', 0);
