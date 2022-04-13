@@ -4,7 +4,6 @@
  * http://www.rssboard.org/rss-specification
  * http://www.rssboard.org/media-rss
  */
-require_once __DIR__ . '/../lib/rssbridge.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -41,8 +40,6 @@ class MrssFormatTest extends TestCase {
 
 		$this->assertXmlStringEqualsXmlFile($this->sample->expected, $this->data);
 	}
-
-	////////////////////////////////////////////////////////////////////////////
 
 	public function sampleProvider() {
 		$samples = array();
@@ -85,7 +82,8 @@ class MrssFormatTest extends TestCase {
 		$this->format->setExtraInfos($this->sample->meta);
 		$this->format->setLastModified(strtotime('2000-01-01 12:00:00 UTC'));
 
-		$this->data = $this->getActualOutput($this->format->display());
+		$_ = $this->format->display();
+		$this->data = $this->getActualOutput();
 		$this->assertNotFalse(simplexml_load_string($this->data));
 		ob_clean();
 	}

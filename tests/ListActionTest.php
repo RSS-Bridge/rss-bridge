@@ -1,11 +1,9 @@
 <?php
-require_once __DIR__ . '/../lib/rssbridge.php';
 
 use PHPUnit\Framework\TestCase;
 
 class ListActionTest extends TestCase {
 
-	private $action;
 	private $data;
 
 	/**
@@ -75,17 +73,15 @@ class ListActionTest extends TestCase {
 		}
 	}
 
-	////////////////////////////////////////////////////////////////////////////
-
 	private function initAction() {
 		$actionFac = new ActionFactory();
 		$actionFac->setWorkingDir(PATH_LIB_ACTIONS);
 
-		$this->action = $actionFac->create('list');
-		$this->action->setUserData(array()); /* no user data required */
+		$action = $actionFac->create('list');
+		$action->setUserData(array()); /* no user data required */
 
 		ob_start();
-		$this->action->execute();
+		$action->execute();
 		$this->data = ob_get_contents();
 		ob_clean();
 		ob_end_flush();

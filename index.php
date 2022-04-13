@@ -1,10 +1,6 @@
 <?php
+
 require_once __DIR__ . '/lib/rssbridge.php';
-
-Configuration::verifyInstallation();
-Configuration::loadConfiguration();
-
-Authentication::showPromptIfNeeded();
 
 /*
 Move the CLI arguments to the $_GET array, in order to be able to use

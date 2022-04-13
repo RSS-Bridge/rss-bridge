@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/../lib/rssbridge.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -39,8 +38,6 @@ class ActionImplementationTest extends TestCase {
 
 		$this->assertEquals($allowedActionAbstract, $methods);
 	}
-
-	////////////////////////////////////////////////////////////////////////////
 
 	public function dataActionsProvider() {
 		$actions = array();

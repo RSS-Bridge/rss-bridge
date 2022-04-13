@@ -103,3 +103,7 @@ spl_autoload_register(function ($className) {
 		}
 	}
 });
+
+Configuration::verifyInstallation();
+Configuration::loadConfiguration();
+Authentication::showPromptIfNeeded();

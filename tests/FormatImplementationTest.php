@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/../lib/rssbridge.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -24,8 +23,6 @@ class FormatImplementationTest extends TestCase {
 		$this->setFormat($path);
 		$this->assertInstanceOf(FormatInterface::class, $this->obj);
 	}
-
-	////////////////////////////////////////////////////////////////////////////
 
 	public function dataFormatsProvider() {
 		$formats = array();
