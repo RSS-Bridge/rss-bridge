@@ -21,27 +21,6 @@
  */
 final class BridgeCard {
 	/**
-	 * Build a HTML document string of buttons for each of the provided formats
-	 *
-	 * @param array $formats A list of format names
-	 * @return string The document string
-	 */
-	private static function buildFormatButtons($formats) {
-		$buttons = '';
-
-		foreach($formats as $name) {
-			$buttons .= '<button type="submit" name="format" value="'
-			. $name
-			. '">'
-			. $name
-			. '</button>'
-			. PHP_EOL;
-		}
-
-		return $buttons;
-	}
-
-	/**
 	 * Get the form header for a bridge card
 	 *
 	 * @param string $bridgeName The bridge name
@@ -109,7 +88,7 @@ This bridge is not fetching its content through a secure connection</div>';
 				$form .= '<label for="'
 					. $idArg
 					. '">'
-					. filter_var($inputEntry['name'], FILTER_SANITIZE_STRING)
+					. filter_var($inputEntry['name'], FILTER_SANITIZE_FULL_SPECIAL_CHARS)
 					. '</label>'
 					. PHP_EOL;
 
@@ -123,10 +102,12 @@ This bridge is not fetching its content through a secure connection</div>';
 					$form .= self::getCheckboxInput($inputEntry, $idArg, $id);
 				}
 
-				if(isset($inputEntry['title']))
-					$form .= '<i class="info" title="' . filter_var($inputEntry['title'], FILTER_SANITIZE_STRING) . '">i</i>';
-				else
+				if(isset($inputEntry['title'])) {
+					$title_filtered = filter_var($inputEntry['title'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+					$form .= '<i class="info" title="' . $title_filtered . '">i</i>';
+				} else {
 					$form .= '<i class="no-info"></i>';
+				}
 			}
 
 			$form .= '</div>';
@@ -134,7 +115,7 @@ This bridge is not fetching its content through a secure connection</div>';
 		}
 
 		if($isActive) {
-			$form .= self::buildFormatButtons($formats);
+			$form .= '<button type="submit" name="format" formtarget="_blank" value="Html">Generate feed</button>';
 		} else {
 			$form .= '<span style="font-weight: bold;">Inactive</span>';
 		}
@@ -174,9 +155,9 @@ This bridge is not fetching its content through a secure connection</div>';
 		. ' id="'
 		. $id
 		. '" type="text" value="'
-		. filter_var($entry['defaultValue'], FILTER_SANITIZE_STRING)
+		. filter_var($entry['defaultValue'], FILTER_SANITIZE_FULL_SPECIAL_CHARS)
 		. '" placeholder="'
-		. filter_var($entry['exampleValue'], FILTER_SANITIZE_STRING)
+		. filter_var($entry['exampleValue'], FILTER_SANITIZE_FULL_SPECIAL_CHARS)
 		. '" name="'
 		. $name
 		. '" />'
@@ -322,6 +303,10 @@ This bridge is not fetching its content through a secure connection</div>';
 		$icon = $bridge->getIcon();
 		$description = $bridge->getDescription();
 		$parameters = $bridge->getParameters();
+		$donationUri = $bridge->getDonationURI();
+		$maintainer = $bridge->getMaintainer();
+
+		$donationsAllowed = Configuration::getConfig('admin', 'donations');
 
 		if(defined('PROXY_URL') && PROXY_BYBRIDGE) {
 			$parameters['global']['_noproxy'] = array(
@@ -339,7 +324,7 @@ This bridge is not fetching its content through a secure connection</div>';
 		}
 
 		$card = <<<CARD
-			<section id="bridge-{$bridgeName}" data-ref="{$bridgeName}">
+			<section id="bridge-{$bridgeName}" data-ref="{$name}">
 				<h2><a href="{$uri}">{$name}</a></h2>
 				<p class="description">{$description}</p>
 				<input type="checkbox" class="showmore-box" id="showmore-{$bridgeName}" />
@@ -347,11 +332,12 @@ This bridge is not fetching its content through a secure connection</div>';
 CARD;
 
 		// If we don't have any parameter for the bridge, we print a generic form to load it.
-		if(count($parameters) === 0
-		|| count($parameters) === 1 && array_key_exists('global', $parameters)) {
-
+		if (count($parameters) === 0) {
 			$card .= self::getForm($bridgeName, $formats, $isActive, $isHttps);
 
+		// Display form with cache timeout and/or noproxy options (if enabled) when bridge has no parameters
+		} else if (count($parameters) === 1 && array_key_exists('global', $parameters)) {
+			$card .= self::getForm($bridgeName, $formats, $isActive, $isHttps, '', $parameters['global']);
 		} else {
 
 			foreach($parameters as $parameterName => $parameter) {
@@ -370,7 +356,11 @@ CARD;
 		}
 
 		$card .= '<label class="showless" for="showmore-' . $bridgeName . '">Show less</label>';
-		$card .= '<p class="maintainer">' . $bridge->getMaintainer() . '</p>';
+		if($donationUri !== '' && $donationsAllowed) {
+			$card .= '<p class="maintainer">' . $maintainer . ' ~ <a href="' . $donationUri . '">Donate</a></p>';
+		} else {
+			$card .= '<p class="maintainer">' . $maintainer . '</p>';
+		}
 		$card .= '</section>';
 
 		return $card;

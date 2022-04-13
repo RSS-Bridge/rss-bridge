@@ -1,6 +1,5 @@
 <?php
 class WordPressBridge extends FeedExpander {
-	const MAINTAINER = 'aledeg';
 	const NAME = 'Wordpress Bridge';
 	const URI = 'https://wordpress.org/';
 	const DESCRIPTION = 'Returns the newest full posts of a WordPress powered website';
@@ -8,6 +7,7 @@ class WordPressBridge extends FeedExpander {
 	const PARAMETERS = array( array(
 		'url' => array(
 			'name' => 'Blog URL',
+			'exampleValue' => 'https://www.wpbeginner.com/',
 			'required' => true
 		)
 	));
@@ -26,6 +26,11 @@ class WordPressBridge extends FeedExpander {
 
 		$article = null;
 		switch(true) {
+
+		// Custom fix for theme in https://jungefreiheit.de/politik/deutschland/2022/wahl-im-saarland/
+		case !is_null($article_html->find('div[data-widget_type="theme-post-content.default"]', 0)):
+			$article = $article_html->find('div[data-widget_type="theme-post-content.default"]', 0);
+			break;
 		case !is_null($article_html->find('[itemprop=articleBody]', 0)):
 			// highest priority content div
 			$article = $article_html->find('[itemprop=articleBody]', 0);
@@ -73,6 +78,7 @@ class WordPressBridge extends FeedExpander {
 
 		if(!is_null($article)) {
 			$item['content'] = $this->cleanContent($article->innertext);
+			$item['content'] = defaultLinkTo($item['content'], $item['uri']);
 		}
 
 		return $item;

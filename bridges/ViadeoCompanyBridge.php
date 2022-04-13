@@ -11,27 +11,30 @@ class ViadeoCompanyBridge extends BridgeAbstract {
 	const PARAMETERS = array( array(
 		'c' => array(
 			'name' => 'Company name',
+			'exampleValue' => 'apple',
 			'required' => true
 		)
 	));
 
 	public function collectData(){
-		$html = '';
-		$link = self::URI . 'fr/company/' . $this->getInput('c');
+		// Redirects to https://emploi.lefigaro.fr/recherche/entreprises
+		$url = sprintf('%sfr/company/%s', self::URI, $this->getInput('c'));
 
-		$html = getSimpleHTMLDOM($link)
-			or returnServerError('Could not request Viadeo.');
+		$html = getSimpleHTMLDOM($url);
 
-		foreach($html->find('//*[@id="company-newsfeed"]/ul/li') as $element) {
+		// TODO: Fix broken xpath selector
+		$elements = $html->find('//*[@id="company-newsfeed"]/ul/li');
+
+		foreach($elements as $element) {
 			$title = $element->find('p', 0)->innertext;
-			if($title) {
-				$item = array();
-				$item['uri'] = $link;
-				$item['title'] = mb_substr($element->find('p', 0)->innertext, 0, 100);
-				$item['content'] = $element->find('p', 0)->innertext;;
-				$this->items[] = $item;
-				$i++;
+			if(!$title) {
+				continue;
 			}
+			$item = array();
+			$item['uri'] = $url;
+			$item['title'] = mb_substr($element->find('p', 0)->innertext, 0, 100);
+			$item['content'] = $element->find('p', 0)->innertext;;
+			$this->items[] = $item;
 		}
 	}
 }

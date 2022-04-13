@@ -1,0 +1,27 @@
+name: Documentation
+
+on:
+  push:
+    paths:
+    - 'docs/**'
+
+jobs:
+  documentation:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        persist-credentials: false
+    - name: Setup PHP
+      uses: shivammathur/setup-php@2.17.1
+      with:
+        php-version: 8.0
+    - name: Install dependencies
+      run: composer global require daux/daux.io
+    - name: Generate documentation
+      run: daux generate
+    - name: Deploy same repository 🚀
+      uses: JamesIves/github-pages-deploy-action@v4.2.5
+      with:
+        folder: "static"
+        branch: gh-pages

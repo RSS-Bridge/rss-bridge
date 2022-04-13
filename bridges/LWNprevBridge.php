@@ -35,8 +35,7 @@ class LWNprevBridge extends BridgeAbstract{
 	public function collectData(){
 		// Because the LWN page is written in loose HTML and not XHTML,
 		// Simple HTML Dom is not accurate enough for the job
-		$content = getContents($this->getURI())
-			or returnServerError('No results for LWNprev');
+		$content = getContents($this->getURI());
 
 		$contents = explode('<b>Page editor</b>', $content);
 
@@ -110,7 +109,7 @@ EOD;
 
 	private function getFeatureContents(&$html){
 		$items = array();
-		foreach($html->getElementsByTagName('h2') as $title) {
+		foreach($html->getElementsByTagName('h3') as $title) {
 			if($title->getAttribute('class') !== 'SummaryHL') {
 				continue;
 			}

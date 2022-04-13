@@ -23,29 +23,58 @@ class InternetArchiveBridge extends BridgeAbstract {
 					'Web Archives' => 'web-archive',
 				),
 				'defaultValue' => 'uploads',
-			)
+			),
+			'limit' => self::LIMIT,
 		)
 	);
 
 	const CACHE_TIMEOUT = 900; // 15 mins
+
+	const TEST_DETECT_PARAMETERS = array(
+		'https://archive.org/details/@verifiedjoseph' => array(
+			'context' => 'Account', 'username' => 'verifiedjoseph', 'content' => 'uploads'
+		),
+		'https://archive.org/details/@verifiedjoseph?tab=collections' => array(
+			'context' => 'Account', 'username' => 'verifiedjoseph', 'content' => 'collections'
+		),
+	);
 
 	private $skipClasses = array(
 		'item-ia mobile-header hidden-tiles',
 		'item-ia account-ia'
 	);
 
+	private $detectParamsRegex = '/https?:\/\/archive\.org\/details\/@([\w]+)(?:\?tab=([a-z-]+))?/';
+
+	public function detectParameters($url) {
+		$params = array();
+
+		if(preg_match($this->detectParamsRegex, $url, $matches) > 0) {
+			$params['context'] = 'Account';
+			$params['username'] = $matches[1];
+			$params['content'] = 'uploads';
+
+			if (isset($matches[2])) {
+				$params['content'] = $matches[2];
+			}
+
+			return $params;
+		}
+
+		return null;
+	}
+
 	public function collectData() {
 
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request: ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$html = defaultLinkTo($html, $this->getURI());
 
 		if ($this->getInput('content') !== 'posts') {
-
 			$detailsDivNumber = 0;
 
-			foreach ($html->find('div.results > div[data-id]') as $index => $result) {
+			$results = $html->find('div.results > div[data-id]');
+			foreach ($results as $index => $result) {
 				$item = array();
 
 				if (in_array($result->class, $this->skipClasses)) {
@@ -54,7 +83,6 @@ class InternetArchiveBridge extends BridgeAbstract {
 
 				switch($result->class) {
 					case 'item-ia':
-
 						switch($this->getInput('content')) {
 							case 'reviews':
 								$item = $this->processReview($result);
@@ -84,6 +112,11 @@ class InternetArchiveBridge extends BridgeAbstract {
 				}
 
 				$detailsDivNumber++;
+
+				$limit = $this->getInput('limit') ?? 10;
+				if (count($this->items) >= $limit) {
+					break;
+				}
 			}
 		}
 
@@ -104,7 +137,6 @@ class InternetArchiveBridge extends BridgeAbstract {
 	public function getName() {
 
 		if (!is_null($this->getInput('username')) && !is_null($this->getInput('content'))) {
-
 			$contentValues = array_flip(self::PARAMETERS['Account']['content']['values']);
 
 			return $contentValues[$this->getInput('content')] . ' - '
@@ -124,11 +156,10 @@ class InternetArchiveBridge extends BridgeAbstract {
 	}
 
 	private function processUpload($result) {
-
 		$item = array();
 
 		$collection = $result->find('a.stealth', 0);
-		$collectionLink = self::URI . $collection->href;
+		$collectionLink = $collection->href;
 		$collectionTitle = $collection->find('div.item-parent-ttl', 0)->plaintext;
 
 		$item['title'] = trim($result->find('div.ttl', 0)->innertext);
@@ -150,7 +181,6 @@ EOD;
 	}
 
 	private function processReview($result) {
-
 		$item = array();
 
 		$item['title'] = trim($result->find('div.ttl', 0)->innertext);
@@ -172,7 +202,6 @@ EOD;
 	}
 
 	private function processWebArchives($result) {
-
 		$item = array();
 
 		$item['title'] = trim($result->find('div.ttl', 0)->plaintext);
@@ -189,7 +218,6 @@ EOD;
 	}
 
 	private function processCollection($result) {
-
 		$item = array();
 
 		$title = trim($result->find('div.collection-title.C.C2', 0)->children(0)->plaintext);
@@ -209,7 +237,6 @@ EOD;
 	}
 
 	private function processHiddenDetails($html, $detailsDivNumber, $item) {
-
 		$description = '';
 
 		if ($html->find('div.details-ia.hidden-tiles', $detailsDivNumber)) {
@@ -237,7 +264,6 @@ EOD;
 	}
 
 	private function processPosts($html) {
-
 		$items = array();
 
 		foreach ($html->find('table.forumTable > tr') as $index => $tr) {
@@ -257,8 +283,7 @@ EOD;
 
 			$postDate = $tr->find('td', 4)->children(0)->plaintext;
 
-			$postPageHtml = getSimpleHTMLDOMCached($item['uri'], 3600)
-				or returnServerError('Could not request: ' . $item['uri']);
+			$postPageHtml = getSimpleHTMLDOMCached($item['uri'], 3600);
 
 			$postPageHtml = defaultLinkTo($postPageHtml, $this->getURI());
 
@@ -284,10 +309,11 @@ EOD;
 
 			$items[] = $item;
 
-			if (count($items) >= 10) {
+			if (count($items) >= $this->getInput('limit') ?? 10) {
 				break;
 			}
 		}
+
 		return $items;
 	}
 }

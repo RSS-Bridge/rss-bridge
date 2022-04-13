@@ -1,4 +1,5 @@
 <?php
+
 class LaCentraleBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'jacknumber';
@@ -414,9 +415,9 @@ class LaCentraleBridge extends BridgeAbstract {
 	));
 
 	public function collectData(){
-		// check data
 		if(!empty($this->getInput('distance'))
-		&& is_null($this->getInput('location'))) {
+			&& is_null($this->getInput('location'))
+		) {
 			returnClientError('You need a place ("CP ou département") to search arround.');
 		}
 
@@ -442,36 +443,31 @@ class LaCentraleBridge extends BridgeAbstract {
 			'doors' => $this->getInput('doors'),
 			'sortBy' => $this->getInput('sort')
 		);
-		$url = self::URI . 'listing?' . http_build_query($params);
-		$html = getSimpleHTMLDOM($url)
-			or returnServerError('Could not request LaCentrale.');
+		$url = sprintf('%slisting?%s', self::URI, http_build_query($params));
+		$html = getSimpleHTMLDOM($url);
 
-		foreach($html->find('.linkAd') as $element) {
+		$elements = $html->find('.adLineContainer');
+		foreach($elements as $element) {
 
 			$item = array();
-			$item['uri'] = trim(self::URI, '/') . $element->href;
-			$item['title'] = $element->find('.brandModel', 0)->plaintext;
-			$item['sellerType'] = $element->find('.typeSeller', 0)->plaintext;
+			$item['uri'] = trim(self::URI, '/') . $element->find('div > a', 0)->href;
+			$item['title'] = $element->find('.searchCard__makeModel', 0)->plaintext;
+			$item['sellerType'] = $element->find('.searchCard__customer', 0)->plaintext;
 			$item['author'] = $item['sellerType'];
-			$item['version'] = $element->find('.version', 0)->plaintext;
-			$item['price'] = $element->find('.fieldPrice', 0)->plaintext;
-			$item['year'] = $element->find('.fieldYear', 0)->plaintext;
-			$item['mileage'] = $element->find('.fieldMileage', 0)->plaintext;
-			$item['departement'] = str_replace(',', '', $element->find('.dptCont', 0)->plaintext);
-			$item['thumbnail'] = $element->find('.imgContent img', 0)->src;
-			$item['enclosures'] = array($item['thumbnail']);
+			$item['version'] = $element->find('.searchCard__version', 0)->plaintext;
+			$item['price'] = $element->find('.searchCard__fieldPrice', 0)->plaintext;
+			$item['year'] = $element->find('.searchCard__year', 0)->plaintext;
+			$item['mileage'] = $element->find('.searchCard__mileage', 0)->plaintext;
+			// The image is lazyloaded with ajax
 
 			$item['content'] = '
-			<img src="' . $item['thumbnail'] . '">
 			<br>Variation : ' . $item['version']
 			. '<br>Prix : ' . $item['price']
 			. '<br>Année : ' . $item['year']
 			. '<br>Kilométrage : ' . $item['mileage']
-			. '<br>Département : ' . $item['departement']
 			. '<br>Type de vendeur : ' . $item['sellerType'];
 
 			$this->items[] = $item;
-
 		}
 	}
 }

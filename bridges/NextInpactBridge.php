@@ -55,7 +55,8 @@ class NextInpactBridge extends FeedExpander {
 				'Hide Brief' => '1',
 				'Only Brief' => '2'
 			)
-		)
+		),
+		'limit' => self::LIMIT,
 	));
 
 	public function collectData(){
@@ -80,7 +81,9 @@ class NextInpactBridge extends FeedExpander {
 			$feed = 'params';
 		}
 
-		$this->collectExpandableDatas($base_uri . 'rss/' . $feed . '.xml' . $args);
+		$url = sprintf('%srss/%s.xml%s', $base_uri, $feed, $args);
+		$limit = $this->getInput('limit') ?? 10;
+		$this->collectExpandableDatas($url, $limit);
 	}
 
 	protected function parseItem($newsItem){

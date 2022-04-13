@@ -1,4 +1,5 @@
 <?php
+
 class ZenodoBridge extends BridgeAbstract {
 	const MAINTAINER = 'theradialactive';
 	const NAME = 'Zenodo';
@@ -7,8 +8,7 @@ class ZenodoBridge extends BridgeAbstract {
 	const DESCRIPTION = 'Returns the newest content of Zenodo';
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('zenodo.org not reachable.');
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		foreach($html->find('div.record-elem') as $element) {
 			$item = array();
@@ -18,10 +18,21 @@ class ZenodoBridge extends BridgeAbstract {
 				ENT_QUOTES
 				)
 			);
-			foreach($element->find('p', 0)->find('span') as $authors) {
-				$item['author'] = $item['author'] . $authors . '; ';
+
+			$p1 = $element->find('p', 0);
+			if ($p1) {
+				foreach ($p1->find('span') as $authors) {
+					$item['author'] = $item['author'] . $authors . '; ';
+				}
 			}
-			$content = $element->find('p.hidden-xs', 0)->find('a', 0)->innertext . '<br>';
+
+			$p2 = $element->find('p.hidden-xs', 0);
+			if ($p2) {
+				$content = $p2->find('a', 0)->innertext . '<br>';
+			} else {
+				$content = 'Nope';
+			}
+
 			$type = '<br>Type: ' . $element->find('span.label-default', 0)->innertext;
 
 			$raw_date = $element->find('small.text-muted', 0)->innertext;

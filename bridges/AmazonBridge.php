@@ -12,6 +12,7 @@ class AmazonBridge extends BridgeAbstract {
 		'q' => array(
 			'name' => 'Keyword',
 			'required' => true,
+			'exampleValue' => 'watch',
 		),
 		'sort' => array(
 			'name' => 'Sort by',
@@ -48,48 +49,53 @@ class AmazonBridge extends BridgeAbstract {
 		),
 	));
 
+	public function collectData() {
+
+		$baseUrl = sprintf('https://www.amazon.%s', $this->getInput('tld'));
+
+		$url = sprintf(
+			'%s/s/?field-keywords=%s&sort=%s',
+			$baseUrl,
+			urlencode($this->getInput('q')),
+			$this->getInput('sort')
+		);
+
+		$dom = getSimpleHTMLDOM($url);
+
+		$elements = $dom->find('div.s-result-item');
+
+		foreach($elements as $element) {
+			$item = [];
+
+			$title = $element->find('h2', 0);
+			if (!$title) {
+				continue;
+			}
+
+			$item['title'] = $title->innertext;
+
+			$itemUrl = $element->find('a', 0)->href;
+			$item['uri'] = urljoin($baseUrl, $itemUrl);
+
+			$image = $element->find('img', 0);
+			if ($image) {
+				$item['content'] = '<img src="' . $image->getAttribute('src') . '" /><br />';
+			}
+
+			$price = $element->find('span.a-price > .a-offscreen', 0);
+			if ($price) {
+				$item['content'] .= $price->innertext;
+			}
+
+			$this->items[] = $item;
+		}
+	}
+
 	public function getName(){
 		if(!is_null($this->getInput('tld')) && !is_null($this->getInput('q'))) {
 			return 'Amazon.' . $this->getInput('tld') . ': ' . $this->getInput('q');
 		}
 
 		return parent::getName();
-	}
-
-	public function collectData() {
-
-		$uri = 'https://www.amazon.' . $this->getInput('tld') . '/';
-		$uri .= 's/?field-keywords=' . urlencode($this->getInput('q')) . '&sort=' . $this->getInput('sort');
-
-		$html = getSimpleHTMLDOM($uri)
-			or returnServerError('Could not request Amazon.');
-
-		foreach($html->find('li.s-result-item') as $element) {
-
-			$item = array();
-
-			// Title
-			$title = $element->find('h2', 0);
-			if (is_null($title)) {
-				continue;
-			}
-
-			$item['title'] = html_entity_decode($title->innertext, ENT_QUOTES);
-
-			// Url
-			$uri = $title->parent()->getAttribute('href');
-			$uri = substr($uri, 0, strrpos($uri, '/'));
-
-			$item['uri'] = substr($uri, 0, strrpos($uri, '/'));
-
-			// Content
-			$image = $element->find('img', 0);
-			$price = $element->find('span.s-price', 0);
-			$price = ($price) ? $price->innertext : '';
-
-			$item['content'] = '<img src="' . $image->getAttribute('src') . '" /><br />' . $price;
-
-			$this->items[] = $item;
-		}
 	}
 }

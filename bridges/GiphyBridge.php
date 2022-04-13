@@ -1,76 +1,106 @@
 <?php
-define('GIPHY_LIMIT', 10);
 
 class GiphyBridge extends BridgeAbstract {
 
-	const MAINTAINER = 'kraoc';
+	const MAINTAINER = 'dvikan';
 	const NAME = 'Giphy Bridge';
 	const URI = 'https://giphy.com/';
-	const CACHE_TIMEOUT = 300; //5min
+	const CACHE_TIMEOUT = 60 * 60 * 8; // 8h
 	const DESCRIPTION = 'Bridge for giphy.com';
 
 	const PARAMETERS = array( array(
 		's' => array(
 			'name' => 'search tag',
+			'exampleValue' => 'bird',
 			'required' => true
 		),
+		'noGif' => array(
+			'name' => 'Without gifs',
+			'type' => 'checkbox',
+			'title' => 'Exclude gifs from the results'
+		),
+		'noStick' => array(
+			'name' => 'Without stickers',
+			'type' => 'checkbox',
+			'title' => 'Exclude stickers from the results'
+		),
 		'n' => array(
-			'name' => 'max number of returned items',
-			'type' => 'number'
+			'name' => 'max number of returned items (max 50)',
+			'type' => 'number',
+			'exampleValue' => 3,
 		)
 	));
 
-	public function collectData(){
-		$html = '';
-		$base_url = 'http://giphy.com';
-		$html = getSimpleHTMLDOM(self::URI . '/search/' . urlencode($this->getInput('s') . '/'))
-			or returnServerError('No results for this query.');
-
-		$max = GIPHY_LIMIT;
-		if($this->getInput('n')) {
-			$max = $this->getInput('n');
+	public function getName()
+	{
+		if (!is_null($this->getInput('s'))) {
+			return $this->getInput('s') . ' - ' . parent::getName();
 		}
 
-		$limit = 0;
-		$kw = urlencode($this->getInput('s'));
-		foreach($html->find('div.hoverable-gif') as $entry) {
-			if($limit < $max) {
-				$node = $entry->first_child();
-				$href = $node->getAttribute('href');
+		return parent::getName();
+	}
 
-				$html2 = getSimpleHTMLDOM(self::URI . $href)
-					or returnServerError('No results for this query.');
-				$figure = $html2->getElementByTagName('figure');
-				$img = $figure->firstChild();
-				$caption = $figure->lastChild();
+	protected function getGiphyItems($entries){
+		foreach($entries as $entry) {
+			$createdAt = new \DateTime($entry->import_datetime);
 
-				$item = array();
-				$item['id'] = $img->getAttribute('data-gif_id');
-				$item['uri'] = $img->getAttribute('data-bitly_gif_url');
-				$item['username'] = 'Giphy - ' . ucfirst($kw);
-				$title = $caption->innertext();
-					$title = preg_replace('/\s+/', ' ', $title);
-					$title = str_replace('animated GIF', '', $title);
-					$title = str_replace($kw, '', $title);
-					$title = preg_replace('/\s+/', ' ', $title);
-					$title = trim($title);
-					if(strlen($title) <= 0) {
-						$title = $item['id'];
-					}
-				$item['title'] = trim($title);
-				$item['content'] = '<a href="'
-				. $item['uri']
-				. '"><img src="'
-				. $img->getAttribute('src')
-				. '" width="'
-				. $img->getAttribute('data-original-width')
-				. '" height="'
-				. $img->getAttribute('data-original-height')
-				. '" /></a>';
-
-				$this->items[] = $item;
-				$limit++;
-			}
+			$this->items[] = array(
+				'id'		=> $entry->id,
+				'uri'		=> $entry->url,
+				'author'	=> $entry->username,
+				'timestamp'	=> $createdAt->format('U'),
+				'title'		=> $entry->title,
+				'content'	=> <<<HTML
+<a href="{$entry->url}">
+<img
+	loading="lazy"
+	src="{$entry->images->downsized->url}"
+	width="{$entry->images->downsized->width}"
+	height="{$entry->images->downsized->height}" />
+</a>
+HTML
+			);
 		}
+	}
+
+	public function collectData() {
+		/**
+		 * This uses Giphy's own undocumented public prod api key,
+		 * which should not have any rate limiting.
+		 * There is a documented public beta api key (dc6zaTOxFJmzC),
+		 * but it has severe rate limiting.
+		 *
+		 * https://giphy.api-docs.io/1.0/welcome/access-and-api-keys
+		 * https://developers.giphy.com/branch/master/docs/api/endpoint/#search
+		 */
+		$apiKey = 'Gc7131jiJuvI7IdN0HZ1D7nh0ow5BU6g';
+		$bundle = 'low_bandwidth';
+		$limit = min($this->getInput('n') ?: 10, 50);
+		$endpoints = array();
+		if (empty($this->getInput('noGif'))) {
+			$endpoints[] = 'gifs';
+		}
+		if (empty($this->getInput('noStick'))) {
+			$endpoints[] = 'stickers';
+		}
+
+		foreach ($endpoints as $endpoint) {
+			$uri = sprintf(
+				'https://api.giphy.com/v1/%s/search?q=%s&limit=%s&bundle=%s&api_key=%s',
+				$endpoint,
+				rawurlencode($this->getInput('s')),
+				$limit,
+				$bundle,
+				$apiKey
+			);
+
+			$result = json_decode(getContents($uri));
+
+			$this->getGiphyItems($result->data);
+		}
+
+		usort($this->items, function ($a, $b) {
+			return $a['timestamp'] < $b['timestamp'];
+		});
 	}
 }

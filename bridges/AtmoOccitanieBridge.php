@@ -8,7 +8,8 @@ class AtmoOccitanieBridge extends BridgeAbstract {
 	const PARAMETERS = array(array(
 		'city' => array(
 			'name' => 'Ville',
-			'required' => true
+			'required' => true,
+			'exampleValue'	=> 'cahors'
 		)
 	));
 	const CACHE_TIMEOUT = 7200;
@@ -16,8 +17,7 @@ class AtmoOccitanieBridge extends BridgeAbstract {
 	public function collectData() {
 		$uri = self::URI . $this->getInput('city');
 
-		$html = getSimpleHTMLDOM($uri)
-				or returnServerError('Could not request ' . $uri);
+		$html = getSimpleHTMLDOM($uri);
 
 		$generalMessage = $html->find('.landing-ville .city-banner .iqa-avertissement', 0)->innertext;
 		$recommendationsDom = $html->find('.landing-ville .recommandations', 0);

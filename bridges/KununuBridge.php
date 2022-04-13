@@ -17,7 +17,8 @@ class KununuBridge extends BridgeAbstract {
 					'Germany' => 'de',
 					'Switzerland' => 'ch',
 					'United States' => 'us'
-				)
+				),
+				'exampleValue' => 'de',
 			),
 			'full' => array(
 				'name' => 'Load full article',
@@ -46,7 +47,7 @@ class KununuBridge extends BridgeAbstract {
 			'company' => array(
 				'name' => 'Company',
 				'required' => true,
-				'exampleValue' => 'kununu-us',
+				'exampleValue' => 'adesso',
 				'title' => 'Insert company name (i.e. Kununu US) or URI path (i.e. kununu-us)'
 			)
 		)
@@ -72,7 +73,8 @@ class KununuBridge extends BridgeAbstract {
 				break;
 			}
 
-			return self::URI . $site . '/' . $company . '/' . $section . '?sort=update_time_desc';
+			$url = sprintf('%s%s/%s/%s?sort=update_time_desc', self::URI, $site, $company, $section);
+			return $url;
 		}
 
 		return parent::getURI();
@@ -91,12 +93,14 @@ class KununuBridge extends BridgeAbstract {
 		return 'https://www.kununu.com/favicon-196x196.png';
 	}
 
+	/**
+	 * All css selectors need rework
+	 */
 	public function collectData(){
 		$full = $this->getInput('full');
 
 		// Load page
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Unable to receive data from ' . $this->getURI() . '!');
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$html = defaultLinkTo($html, static::URI);
 

@@ -9,8 +9,7 @@ class OpenwrtSecurityBridge extends BridgeAbstract {
 
 	public function collectData() {
 		$item = array();
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Could not request entries');
+		$html = getSimpleHTMLDOM(self::URI);
 
 		$advisories = $html->find('div[class=plugin_nspages]', 0);
 

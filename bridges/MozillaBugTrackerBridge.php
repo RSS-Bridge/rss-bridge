@@ -65,7 +65,7 @@ class MozillaBugTrackerBridge extends BridgeAbstract {
 		defaultLinkTo($html, self::URI);
 
 		// Store header information into private members
-		$this->bugid = $html->find('#field-value-bug_id', 0)->plaintext;
+		$this->bugid = trim($html->find('#field-value-bug_id', 0)->plaintext);
 		$this->bugdesc = $html->find('h1#field-value-short_desc', 0)->plaintext;
 
 		// Get and limit comments

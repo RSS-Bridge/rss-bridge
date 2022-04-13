@@ -11,18 +11,26 @@ class DiscogsBridge extends BridgeAbstract {
 			'artistid' => array(
 				'name' => 'Artist ID',
 				'type' => 'number',
+				'required' => true,
+				'exampleValue' => '28104',
+				'title' => 'Only the ID from an artist page. EG /artist/28104-Aesop-Rock is 28104'
 			)
 		),
 		'Label Releases' => array(
 			'labelid' => array(
 				'name' => 'Label ID',
 				'type' => 'number',
+				'required' => true,
+				'exampleValue' => '8201',
+				'title' => 'Only the ID from a label page. EG /label/8201-Rhymesayers-Entertainment is 8201'
 			)
 		),
 		'User Wantlist' => array(
 			'username_wantlist' => array(
 				'name' => 'Username',
 				'type' => 'text',
+				'required' => true,
+				'exampleValue' => 'TheBlindMaster',
 			)
 		),
 		'User Folder' => array(
@@ -44,13 +52,11 @@ class DiscogsBridge extends BridgeAbstract {
 			if(!empty($this->getInput('artistid'))) {
 				$data = getContents('https://api.discogs.com/artists/'
 						. $this->getInput('artistid')
-						. '/releases?sort=year&sort_order=desc')
-						or returnServerError('Unable to query discogs !');
+						. '/releases?sort=year&sort_order=desc');
 			} elseif(!empty($this->getInput('labelid'))) {
 				$data = getContents('https://api.discogs.com/labels/'
 						. $this->getInput('labelid')
-						. '/releases?sort=year&sort_order=desc')
-						or returnServerError('Unable to query discogs !');
+						. '/releases?sort=year&sort_order=desc');
 			}
 
 			$jsonData = json_decode($data, true);
@@ -76,8 +82,7 @@ class DiscogsBridge extends BridgeAbstract {
 			if(!empty($this->getInput('username_wantlist'))) {
 				$data = getContents('https://api.discogs.com/users/'
 						. $this->getInput('username_wantlist')
-						. '/wants?sort=added&sort_order=desc')
-						or returnServerError('Unable to query discogs !');
+						. '/wants?sort=added&sort_order=desc');
 				$jsonData = json_decode($data, true)['wants'];
 
 			} elseif(!empty($this->getInput('username_folder'))) {
@@ -85,8 +90,7 @@ class DiscogsBridge extends BridgeAbstract {
 						. $this->getInput('username_folder')
 						. '/collection/folders/'
 						. $this->getInput('folderid')
-						. '/releases?sort=added&sort_order=desc')
-						or returnServerError('Unable to query discogs !');
+						. '/releases?sort=added&sort_order=desc');
 				$jsonData = json_decode($data, true)['releases'];
 			}
 			foreach($jsonData as $element) {

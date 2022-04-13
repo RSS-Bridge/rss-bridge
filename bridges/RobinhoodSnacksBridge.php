@@ -9,10 +9,11 @@ class RobinhoodSnacksBridge extends BridgeAbstract {
 
 	public function collectData()
 	{
-		$html = getSimpleHTMLDOM(self::URI)
-			or returnServerError('Could not request snacks.robinhood.com.');
+		$html = getSimpleHTMLDOM(self::URI);
 
-		foreach ($html->find('#root > div > div > div > div > div > a') as $element) {
+		$elements = $html->find('#__next > div > div > div > div > div > a');
+
+		foreach ($elements as $element) {
 			if ($element->href === 'https://snacks.robinhood.com/newsletters/page/2/') {
 				continue;
 			}

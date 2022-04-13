@@ -16,12 +16,12 @@
     "license": "UNLICENSE",
     "support": {
         "issues": "https://github.com/rss-bridge/rss-bridge/issues/",
-        "wiki": "https://github.com/rss-bridge/rss-bridge/wiki/",
+        "docs": "https://rss-bridge.github.io/rss-bridge/",
         "source": "https://github.com/rss-bridge/rss-bridge/",
         "rss": "https://github.com/RSS-Bridge/rss-bridge/commits/master.atom"
     },
     "require": {
-        "php": ">=5.6",
+        "php": ">=7.1",
         "ext-mbstring": "*",
         "ext-curl": "*",
         "ext-openssl": "*",
@@ -30,7 +30,7 @@
         "ext-json": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^6 || ^7"
+        "phpunit/phpunit": "^7"
     },
     "suggest": {
         "ext-memcached": "Allows to use memcached as cache type",

@@ -26,10 +26,11 @@ class ParuVenduImmoBridge extends BridgeAbstract {
 	));
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request paruvendu.');
+		$html = getSimpleHTMLDOM($this->getURI());
 
-		foreach($html->find('div.annonce a') as $element) {
+		$elements = $html->find('#bloc_liste > div.ergov3-annonce a');
+
+		foreach($elements as $element) {
 
 			if(!$element->title) {
 				continue;
@@ -42,10 +43,19 @@ class ParuVenduImmoBridge extends BridgeAbstract {
 				}
 			}
 
-			$desc = $element->find('span.desc')[0]->innertext;
-			$desc = str_replace("voir l'annonce", '', $desc);
+			$description = $element->find('p', 0);
+			if ($description) {
+				$desc = str_replace("voir l'annonce", '', $description->innertext);
+			} else {
+				$desc = '';
+			}
 
-			$price = $element->find('span.price')[0]->innertext;
+			$priceElement = $element->find('div.ergov3-priceannonce', 0);
+			if ($priceElement) {
+				$price = $priceElement->innertext;
+			} else {
+				$price = '';
+			}
 
 			list($href) = explode('#', $element->href);
 

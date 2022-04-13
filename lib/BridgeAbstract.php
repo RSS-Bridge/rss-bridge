@@ -41,6 +41,13 @@ abstract class BridgeAbstract implements BridgeInterface {
 	const URI = '';
 
 	/**
+	 * Donation URI to the site the bridge is intended to be used for.
+	 *
+	 * Use {@see BridgeAbstract::getDonationURI()} to read this parameter
+	 */
+	const DONATION_URI = '';
+
+	/**
 	 * A brief description of what the bridge can do
 	 *
 	 * Use {@see BridgeAbstract::getDescription()} to read this parameter
@@ -62,11 +69,33 @@ abstract class BridgeAbstract implements BridgeInterface {
 	const CACHE_TIMEOUT = 3600;
 
 	/**
+	 * Configuration for the bridge
+	 *
+	 * Use {@see BridgeAbstract::getConfiguration()} to read this parameter
+	 */
+	const CONFIGURATION = array();
+
+	/**
 	 * Parameters for the bridge
 	 *
 	 * Use {@see BridgeAbstract::getParameters()} to read this parameter
 	 */
 	const PARAMETERS = array();
+
+	/**
+	 * Test cases for detectParameters for the bridge
+	 */
+	const TEST_DETECT_PARAMETERS = array();
+
+	/**
+	 * This is a convenient const for the limit option in bridge contexts.
+	 * Can be inlined and modified if necessary.
+	 */
+	protected const LIMIT = [
+		'name'          => 'Limit',
+		'type'          => 'number',
+		'title'         => 'Maximum number of items to return',
+	];
 
 	/**
 	 * Holds the list of items collected by the bridge
@@ -239,6 +268,36 @@ abstract class BridgeAbstract implements BridgeInterface {
 	}
 
 	/**
+	 * Loads configuration for the bridge
+	 *
+	 * Returns errors and aborts execution if the provided configuration is
+	 * invalid.
+	 *
+	 * @return void
+	 */
+	public function loadConfiguration() {
+		foreach(static::CONFIGURATION as $optionName => $optionValue) {
+
+			$configurationOption = Configuration::getConfig(get_class($this), $optionName);
+
+			if($configurationOption !== null) {
+				$this->configuration[$optionName] = $configurationOption;
+				continue;
+			}
+
+			if(isset($optionValue['required']) && $optionValue['required'] === true) {
+				returnServerError(
+					'Missing configuration option: '
+					. $optionName
+				);
+			} elseif(isset($optionValue['defaultValue'])) {
+				$this->configuration[$optionName] = $optionValue['defaultValue'];
+			}
+
+		}
+	}
+
+	/**
 	 * Returns the value for the provided input
 	 *
 	 * @param string $input The input name
@@ -249,6 +308,19 @@ abstract class BridgeAbstract implements BridgeInterface {
 			return null;
 		}
 		return $this->inputs[$this->queriedContext][$input]['value'];
+	}
+
+	/**
+	 * Returns the value for the selected configuration
+	 *
+	 * @param string $input The option name
+	 * @return mixed|null The option value or null if the input is not defined
+	 */
+	public function getOption($name){
+		if(!isset($this->configuration[$name])) {
+			return null;
+		}
+		return $this->configuration[$name];
 	}
 
 	/** {@inheritdoc} */
@@ -268,7 +340,12 @@ abstract class BridgeAbstract implements BridgeInterface {
 
 	/** {@inheritdoc} */
 	public function getIcon(){
-		return '';
+		return static::URI . '/favicon.ico';
+	}
+
+	/** {@inheritdoc} */
+	public function getConfiguration(){
+		return static::CONFIGURATION;
 	}
 
 	/** {@inheritdoc} */
@@ -279,6 +356,11 @@ abstract class BridgeAbstract implements BridgeInterface {
 	/** {@inheritdoc} */
 	public function getURI(){
 		return static::URI;
+	}
+
+	/** {@inheritdoc} */
+	public function getDonationURI(){
+		return static::DONATION_URI;
 	}
 
 	/** {@inheritdoc} */
@@ -297,5 +379,38 @@ abstract class BridgeAbstract implements BridgeInterface {
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * Loads a cached value for the specified key
+	 *
+	 * @param string $key Key name
+	 * @param int $duration Cache duration (optional, default: 24 hours)
+	 * @return mixed Cached value or null if the key doesn't exist or has expired
+	 */
+	protected function loadCacheValue($key, $duration = 86400){
+		$cacheFac = new CacheFactory();
+		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
+		$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+		$cache->setScope(get_called_class());
+		$cache->setKey($key);
+		if($cache->getTime() < time() - $duration)
+			return null;
+		return $cache->loadData();
+	}
+
+	/**
+	 * Stores a value to cache with the specified key
+	 *
+	 * @param string $key Key name
+	 * @param mixed $value Value to cache
+	 */
+	protected function saveCacheValue($key, $value){
+		$cacheFac = new CacheFactory();
+		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
+		$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+		$cache->setScope(get_called_class());
+		$cache->setKey($key);
+		$cache->saveData($value);
 	}
 }

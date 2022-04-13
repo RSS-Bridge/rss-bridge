@@ -11,6 +11,73 @@
  * @link	https://github.com/rss-bridge/rss-bridge
  */
 
+
+/**
+ * Exception class to handle all errors, when executing getContents
+ */
+class GetContentsException extends \Exception {
+	public function __construct($details, $code = 0, Throwable $previous = null) {
+		$message = trim($this->getMessageHeading() . "\n$details");
+
+		$lastError = error_get_last();
+		if($lastError !== null)
+			$message .= "\nLast PHP Error: " . $lastError['message'];
+
+		parent::__construct($message, $code, $previous);
+	}
+
+	protected function getMessageHeading() {
+		return 'Could not get contents';
+	}
+}
+
+/**
+ * Exception class to handle HTTP responses with Cloudflare challenges
+ **/
+class CloudflareChallengeException extends \Exception {
+	public function __construct($code = 0, Throwable $previous = null) {
+		$message = <<<EOD
+The server responded with a Cloudflare challenge, which is not supported by RSS-Bridge!
+If this error persists longer than a week, please consider opening an issue on GitHub!
+EOD;
+
+		parent::__construct($message, $code, $previous);
+	}
+}
+
+/**
+ * Exception class to handle non-20x HTTP responses
+ **/
+class UnexpectedResponseException extends \GetContentsException {
+	private $responseCode;
+	private $responseHeaders;
+	private $responseBody;
+
+	protected function getMessageHeading() {
+		return 'Unexpected response from upstream';
+	}
+
+	public function __construct($responseBody, $responseHeaders, $responseCode = 500, Throwable $previous = null) {
+		$this->responseCode = $responseCode;
+		$this->responseHeaders = $responseHeaders;
+		$this->responseBody = $responseBody;
+
+		parent::__construct('', $responseCode, $previous);
+	}
+
+	public function getResponseCode() {
+		return $this->responseCode;
+	}
+
+	public function getResponseHeaders() {
+		return $this->responseHeaders;
+	}
+
+	public function getResponseBody() {
+		return $this->responseBody();
+	}
+}
+
 /**
  * Gets contents from the Internet.
  *
@@ -61,111 +128,85 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 		'content' => '',
 	);
 
-	// Use file_get_contents if in CLI mode with no root certificates defined
-	if(php_sapi_name() === 'cli' && empty(ini_get('curl.cainfo'))) {
+	$ch = curl_init($url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
-		$httpHeaders = '';
+	if(is_array($header) && count($header) !== 0) {
 
-		foreach ($header as $headerL) {
-			$httpHeaders .= $headerL . "\r\n";
-		}
+		Debug::log('Setting headers: ' . json_encode($header));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 
-		$ctx = stream_context_create(array(
-			'http' => array(
-				'header' => $httpHeaders
-			)
-		));
-
-		$data = @file_get_contents($url, 0, $ctx);
-
-		if($data === false) {
-			$errorCode = 500;
-		} else {
-			$errorCode = 200;
-			$retVal['header'] = implode("\r\n", $http_response_header);
-		}
-
-		$curlError = '';
-		$curlErrno = '';
-		$headerSize = 0;
-		$finalHeader = array();
-	} else {
-		$ch = curl_init($url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-
-		if(is_array($header) && count($header) !== 0) {
-
-			Debug::log('Setting headers: ' . json_encode($header));
-			curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-
-		}
-
-		curl_setopt($ch, CURLOPT_USERAGENT, ini_get('user_agent'));
-		curl_setopt($ch, CURLOPT_ENCODING, '');
-		curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
-
-		if(is_array($opts) && count($opts) !== 0) {
-
-			Debug::log('Setting options: ' . json_encode($opts));
-
-			foreach($opts as $key => $value) {
-				curl_setopt($ch, $key, $value);
-			}
-
-		}
-
-		if(defined('PROXY_URL') && !defined('NOPROXY')) {
-
-			Debug::log('Setting proxy url: ' . PROXY_URL);
-			curl_setopt($ch, CURLOPT_PROXY, PROXY_URL);
-
-		}
-
-		// We always want the response header as part of the data!
-		curl_setopt($ch, CURLOPT_HEADER, true);
-
-		// Build "If-Modified-Since" header
-		if(!Debug::isEnabled() && $time = $cache->getTime()) { // Skip if cache file doesn't exist
-			Debug::log('Adding If-Modified-Since');
-			curl_setopt($ch, CURLOPT_TIMEVALUE, $time);
-			curl_setopt($ch, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
-		}
-
-		// Enables logging for the outgoing header
-		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
-
-		$data = curl_exec($ch);
-		$errorCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-		$curlError = curl_error($ch);
-		$curlErrno = curl_errno($ch);
-		$curlInfo = curl_getinfo($ch);
-
-		Debug::log('Outgoing header: ' . json_encode($curlInfo));
-
-		if($data === false)
-			Debug::log('Cant\'t download ' . $url . ' cUrl error: ' . $curlError . ' (' . $curlErrno . ')');
-
-		$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-		$header = substr($data, 0, $headerSize);
-		$retVal['header'] = $header;
-
-		Debug::log('Response header: ' . $header);
-
-		$headers = parseResponseHeader($header);
-		$finalHeader = end($headers);
-
-		curl_close($ch);
 	}
 
+	curl_setopt($ch, CURLOPT_USERAGENT, Configuration::getConfig('http', 'useragent'));
+	curl_setopt($ch, CURLOPT_TIMEOUT, Configuration::getConfig('http', 'timeout'));
+	curl_setopt($ch, CURLOPT_ENCODING, '');
+	curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
+
+	if(is_array($opts) && count($opts) !== 0) {
+
+		Debug::log('Setting options: ' . json_encode($opts));
+
+		foreach($opts as $key => $value) {
+			curl_setopt($ch, $key, $value);
+		}
+	}
+
+	if(defined('PROXY_URL') && !defined('NOPROXY')) {
+
+		Debug::log('Setting proxy url: ' . PROXY_URL);
+		curl_setopt($ch, CURLOPT_PROXY, PROXY_URL);
+
+	}
+
+	// We always want the response header as part of the data!
+	curl_setopt($ch, CURLOPT_HEADER, true);
+
+	// Build "If-Modified-Since" header
+	if(!Debug::isEnabled() && $time = $cache->getTime()) { // Skip if cache file doesn't exist
+		Debug::log('Adding If-Modified-Since');
+		curl_setopt($ch, CURLOPT_TIMEVALUE, $time);
+		curl_setopt($ch, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
+	}
+
+	// Enables logging for the outgoing header
+	curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+
+	$data = curl_exec($ch);
+	$errorCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+	$curlError = curl_error($ch);
+	$curlErrno = curl_errno($ch);
+	$curlInfo = curl_getinfo($ch);
+
+	Debug::log('Outgoing header: ' . json_encode($curlInfo));
+
+	if($data === false)
+		Debug::log('Cant\'t download ' . $url . ' cUrl error: ' . $curlError . ' (' . $curlErrno . ')');
+
+	$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+	$header = substr($data, 0, $headerSize);
+	$retVal['header'] = $header;
+
+	Debug::log('Response header: ' . $header);
+
+	$headers = parseResponseHeader($header);
+	$finalHeader = end($headers);
+
+	curl_close($ch);
+
+	$finalHeader = array_change_key_case($finalHeader, CASE_LOWER);
+
 	switch($errorCode) {
-		case 200: // Contents received
+		case 200: // Contents OK
+		case 201: // Contents Created
+		case 202: // Contents Accepted
 			Debug::log('New contents received');
 			$data = substr($data, $headerSize);
 			// Disable caching if the server responds with "Cache-Control: no-cache"
 			// or "Cache-Control: no-store"
-			$finalHeader = array_change_key_case($finalHeader, CASE_LOWER);
+
 			if(array_key_exists('cache-control', $finalHeader)) {
 				Debug::log('Server responded with "Cache-Control" header');
 				$directives = explode(',', $finalHeader['cache-control']);
@@ -186,24 +227,15 @@ function getContents($url, $header = array(), $opts = array(), $returnHeader = f
 			$retVal['content'] = $cache->loadData();
 			break;
 		default:
-			if(array_key_exists('Server', $finalHeader) && strpos($finalHeader['Server'], 'cloudflare') !== false) {
-			returnServerError(<<< EOD
-The server responded with a Cloudflare challenge, which is not supported by RSS-Bridge!
-If this error persists longer than a week, please consider opening an issue on GitHub!
-EOD
-				);
+			if(array_key_exists('server', $finalHeader) && stripos($finalHeader['server'], 'cloudflare') !== false) {
+				throw new CloudflareChallengeException($errorCode);
 			}
 
-			$lastError = error_get_last();
-			if($lastError !== null)
-				$lastError = $lastError['message'];
-			returnError(<<<EOD
-The requested resource cannot be found!
-Please make sure your input parameters are correct!
-cUrl error: $curlError ($curlErrno)
-PHP error: $lastError
-EOD
-			, $errorCode);
+			if ($curlError || $curlErrno) {
+				throw new GetContentsException('cURL error: ' . $curlError . ' (' . $curlErrno . ')');
+			}
+
+			throw new UnexpectedResponseException($retVal['content'], $retVal['header'], $errorCode);
 	}
 
 	return ($returnHeader === true) ? $retVal : $retVal['content'];
@@ -312,7 +344,7 @@ function getSimpleHTMLDOMCached($url,
 	$time = $cache->getTime();
 	if($time !== false
 	&& (time() - $duration < $time)
-	&& Debug::isEnabled()) { // Contents within duration
+	&& !Debug::isEnabled()) { // Contents within duration
 		$content = $cache->loadData();
 	} else { // Content not within duration
 		$content = getContents($url, $header, $opts);

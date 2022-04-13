@@ -110,8 +110,7 @@ class XenForoBridge extends BridgeAbstract {
 
 		}
 
-		$html = getSimpleHTMLDOMCached($this->threadurl)
-			or returnServerError('Failed loading data from "' . $this->threadurl . '"!');
+		$html = getSimpleHTMLDOMCached($this->threadurl);
 
 		$html = defaultLinkTo($html, $this->threadurl);
 
@@ -150,10 +149,11 @@ class XenForoBridge extends BridgeAbstract {
 				break;
 		}
 
-		while(count($this->items) > $this->getInput('limit')) {
-			array_shift($this->items);
-		}
+		usort($this->items, function($a, $b) {
+			return $b['timestamp'] <=> $a['timestamp'];
+		});
 
+		$this->items = array_slice($this->items, 0, $this->getInput('limit'));
 	}
 
 	/**

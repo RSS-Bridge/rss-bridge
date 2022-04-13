@@ -1,7 +1,7 @@
 <?php
 
 class AmazonPriceTrackerBridge extends BridgeAbstract {
-	const MAINTAINER = 'captn3m0';
+	const MAINTAINER = 'captn3m0, sal0max';
 	const NAME = 'Amazon Price Tracker';
 	const URI = 'https://www.amazon.com/';
 	const CACHE_TIMEOUT = 3600; // 1h
@@ -40,6 +40,17 @@ class AmazonPriceTrackerBridge extends BridgeAbstract {
 		),
 	));
 
+	const PRICE_SELECTORS = array(
+		'#priceblock_ourprice',
+		'.priceBlockBuyingPriceString',
+		'#newBuyBoxPrice',
+		'#tp_price_block_total_price_ww',
+		'span.offer-price',
+		'.a-color-price',
+	);
+
+	const WHITESPACE = " \t\n\r\0\x0B\xC2\xA0";
+
 	protected $title;
 
 	/**
@@ -54,7 +65,7 @@ class AmazonPriceTrackerBridge extends BridgeAbstract {
 	 */
 	public function getURI() {
 		if (!is_null($this->getInput('asin'))) {
-			return $this->getDomainName() . '/dp/' . $this->getInput('asin') . '/';
+			return $this->getDomainName() . '/dp/' . $this->getInput('asin');
 		}
 		return parent::getURI();
 	}
@@ -145,20 +156,66 @@ EOT;
 		return false;
 	}
 
-	private function scrapePriceGeneric($html) {
-		$priceDiv = $html->find('span.offer-price', 0) ?: $html->find('.a-color-price', 0);
+	private function scrapePriceTwister($html) {
+		$str = $html->find('.twister-plus-buying-options-price-data', 0);
 
-		preg_match('/^\s*([A-Z]{3}|£|\$)\s?([\d.,]+)\s*$/', $priceDiv->plaintext, $matches);
-
-		if (count($matches) === 3) {
+		$data = json_decode($str->innertext, true);
+		if(count($data) === 1) {
+			$data = $data[0];
 			return array(
-				'price' 	=> $matches[2],
-				'currency'	=> $matches[1],
+				'displayPrice' => $data['displayPrice'],
+				'currency' => $data['currency'],
+				'shipping' => '0',
+			);
+		}
+
+		return false;
+	}
+
+	private function scrapePriceGeneric($html) {
+		$priceDiv = null;
+
+		foreach(self::PRICE_SELECTORS as $sel) {
+			$priceDiv = $html->find($sel, 0);
+			if ($priceDiv) {
+				break;
+			}
+		}
+
+		if (!$priceDiv) {
+			return false;
+		}
+
+		$priceString = str_replace(str_split(self::WHITESPACE), '', $priceDiv->plaintext);
+		preg_match('/(\d+\.\d{0,2})/', $priceString, $matches);
+
+		$price = $matches[0];
+		$currency = str_replace($price, '', $priceString);
+
+		if ($price != null && $currency != null) {
+			return array(
+				'price' 	=> $price,
+				'currency'	=> $currency,
 				'shipping'	=> '0'
 			);
 		}
 
 		return false;
+	}
+
+	private function renderContent($image, $data) {
+		$price = $data['displayPrice'];
+		if (!$price) {
+			$price = "{$data['price']} {$data['currency']}";
+		}
+
+		$html = "$image<br>Price: $price";
+
+		if ($data['shipping'] !== '0') {
+			$html .= "<br>Shipping: {$data['shipping']} {$data['currency']}</br>";
+		}
+
+		return $html;
 	}
 
 	/**
@@ -170,17 +227,15 @@ EOT;
 		$this->title = $this->getTitle($html);
 		$imageTag = $this->getImage($html);
 
-		$data = $this->scrapePriceFromMetrics($html) ?: $this->scrapePriceGeneric($html);
+		$data = $this->scrapePriceGeneric($html);
 
 		$item = array(
 			'title' 	=> $this->title,
 			'uri' 		=> $this->getURI(),
-			'content' 	=> "$imageTag<br/>Price: {$data['price']} {$data['currency']}",
+			'content' 	=> $this->renderContent($imageTag, $data),
+			// This is to ensure that feed readers notice the price change
+			'uid'		=> md5($data['price'])
 		);
-
-		if ($data['shipping'] !== '0') {
-			$item['content'] .= "<br>Shipping: {$data['shipping']} {$data['currency']}</br>";
-		}
 
 		$this->items[] = $item;
 	}

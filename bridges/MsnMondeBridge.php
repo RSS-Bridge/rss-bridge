@@ -17,10 +17,11 @@ class MsnMondeBridge extends BridgeAbstract {
 	}
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Could not request MsnMonde.');
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$limit = 0;
+
+		// TODO: fix why articles is empty
 		foreach($html->find('.smalla') as $article) {
 			if($limit < 10) {
 				$item = array();

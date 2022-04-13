@@ -13,8 +13,8 @@ class CastorusBridge extends BridgeAbstract {
 				'name' => 'ZIP code',
 				'type' => 'text',
 				'required' => true,
-				'exampleValue' => '74910, 74',
-				'title' => 'Insert ZIP code (complete or partial)'
+				'exampleValue' => '7',
+				'title' => 'Insert ZIP code (complete or partial). e.g: 78125 OR 781 OR 7'
 			)
 		),
 		'Get latest changes via city name' => array(
@@ -22,8 +22,8 @@ class CastorusBridge extends BridgeAbstract {
 				'name' => 'City name',
 				'type' => 'text',
 				'required' => true,
-				'exampleValue' => 'Seyssel, Seys',
-				'title' => 'Insert city name (complete or partial)'
+				'exampleValue' => 'Paris',
+				'title' => 'Insert city name (complete or partial). e.g: Paris OR Par OR P'
 			)
 		)
 	);
@@ -35,7 +35,7 @@ class CastorusBridge extends BridgeAbstract {
 		if(!$title)
 			returnServerError('Cannot find title!');
 
-		return htmlspecialchars(trim($title->plaintext));
+		return trim($title->plaintext);
 	}
 
 	// Extracts the url from an actitiy

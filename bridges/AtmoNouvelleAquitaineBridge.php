@@ -29,8 +29,7 @@ class AtmoNouvelleAquitaineBridge extends BridgeAbstract {
 	public function collectData() {
 		$uri = self::URI . '/monair/commune/' . $this->getInput('cities');
 
-		$html = getSimpleHTMLDOM($uri)
-				or returnServerError('Could not request ' . $uri);
+		$html = getSimpleHTMLDOM($uri);
 
 		$this->dom = $html->find('#block-system-main .city-prevision-map', 0);
 

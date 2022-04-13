@@ -14,7 +14,7 @@ class GitHubGistBridge extends BridgeAbstract {
 			'type' => 'text',
 			'required' => true,
 			'title' => 'Insert Gist ID or URI',
-			'exampleValue' => '2646763, https://gist.github.com/2646763'
+			'exampleValue' => '2646763'
 		)
 	));
 
@@ -51,17 +51,16 @@ class GitHubGistBridge extends BridgeAbstract {
 		DEFAULT_TARGET_CHARSET,
 		false, // Do NOT remove line breaks
 		DEFAULT_BR_TEXT,
-		DEFAULT_SPAN_TEXT)
-			or returnServerError('Could not request ' . $this->getURI());
+		DEFAULT_SPAN_TEXT);
 
 		$html = defaultLinkTo($html, $this->getURI());
 
-		$fileinfo = $html->find('[class="file-info"]', 0)
+		$fileinfo = $html->find('[class~="file-info"]', 0)
 			or returnServerError('Could not find file info!');
 
 		$this->filename = $fileinfo->plaintext;
 
-		$comments = $html->find('div[class="timeline-comment-wrapper"]');
+		$comments = $html->find('div[class~="TimelineItem"]');
 
 		if(is_null($comments)) { // no comments yet
 			return;
@@ -72,8 +71,7 @@ class GitHubGistBridge extends BridgeAbstract {
 			$uri = $comment->find('a[href*=#gistcomment]', 0)
 				or returnServerError('Could not find comment anchor!');
 
-			$title = $comment->find('div[class="unminimized-comment"] h3[class="timeline-comment-header-text"]', 0)
-				or returnServerError('Could not find comment header text!');
+			$title = $comment->find('h3', 0);
 
 			$datetime = $comment->find('[datetime]', 0)
 				or returnServerError('Could not find comment datetime!');
@@ -81,13 +79,13 @@ class GitHubGistBridge extends BridgeAbstract {
 			$author = $comment->find('a.author', 0)
 				or returnServerError('Could not find author name!');
 
-			$message = $comment->find('[class="comment-body"]', 0)
+			$message = $comment->find('[class~="comment-body"]', 0)
 				or returnServerError('Could not find comment body!');
 
 			$item = array();
 
 			$item['uri'] = $uri->href;
-			$item['title'] = str_replace('commented', 'commented on', $title->plaintext);
+			$item['title'] = str_replace('commented', 'commented on', $title->plaintext ?? '');
 			$item['timestamp'] = strtotime($datetime->datetime);
 			$item['author'] = '<a href="' . $author->href . '">' . $author->plaintext . '</a>';
 			$item['content'] = $this->fixContent($message);

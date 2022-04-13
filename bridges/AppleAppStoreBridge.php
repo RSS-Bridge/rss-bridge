@@ -35,7 +35,8 @@ class AppleAppStoreBridge extends BridgeAbstract {
 			'values'	=> array(
 				'US'	=> 'US',
 				'India'	=> 'IN',
-				'Canada'	=> 'CA'
+				'Canada' => 'CA',
+				'Germany' => 'DE',
 			),
 			'defaultValue'	=> 'US',
 		),
@@ -93,6 +94,7 @@ class AppleAppStoreBridge extends BridgeAbstract {
 
 		$headers = array(
 			"Authorization: Bearer $token",
+			'Origin: https://apps.apple.com',
 		);
 
 		$json = json_decode(getContents($uri, $headers), true);

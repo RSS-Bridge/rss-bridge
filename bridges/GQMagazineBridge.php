@@ -32,6 +32,7 @@ class GQMagazineBridge extends BridgeAbstract
 			'required' => true,
 			'exampleValue' => 'sexe/news'
 		),
+		'limit' => self::LIMIT,
 	));
 
 	const REPLACED_ATTRIBUTES = array(
@@ -72,13 +73,16 @@ class GQMagazineBridge extends BridgeAbstract
 
 	public function collectData()
 	{
-		$html = getSimpleHTMLDOM($this->getURI()) or returnServerError('Could not request ' . $this->getURI());
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		// Since GQ don't want simple class scrapping, let's do it the hard way and ... discover content !
 		$main = $html->find('main', 0);
+		$limit = $this->getInput('limit') ?? 10;
 		foreach ($main->find('a') as $link) {
-			if(strpos($link, $this->getInput('page')))
-				continue;
+			if (count($this->items) >= $limit) {
+				break;
+			}
+
 			$uri = $link->href;
 			$date = $link->parent()->find('time', 0);
 
@@ -117,7 +121,7 @@ class GQMagazineBridge extends BridgeAbstract
 	 */
 	private function loadFullArticle($uri){
 		$html = getSimpleHTMLDOMCached($uri);
-		return $html->find('section[data-test-id=MainContentWrapper]', 0);
+		return $html->find('article', 0);
 	}
 
 	/**

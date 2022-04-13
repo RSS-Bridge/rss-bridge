@@ -22,7 +22,8 @@ class WiredBridge extends FeedExpander {
 				'WIRED Guides' => 'wired-guide',		// /feed/tag/wired-guide/latest/rss
 				'Photo' => 'photo'						// /feed/category/photo/latest/rss
 			)
-		)
+		),
+		'limit' => self::LIMIT,
 	));
 
 	public function collectData(){
@@ -42,13 +43,13 @@ class WiredBridge extends FeedExpander {
 		}
 		$feed_url .= 'rss';
 
-		$this->collectExpandableDatas($feed_url);
+		$limit = $this->getInput('limit') ?? -1;
+		$this->collectExpandableDatas($feed_url, $limit);
 	}
 
 	protected function parseItem($newsItem){
 		$item = parent::parseItem($newsItem);
-		$article = getSimpleHTMLDOMCached($item['uri'])
-			or returnServerError('Could not request WIRED: ' . $item['uri']);
+		$article = getSimpleHTMLDOMCached($item['uri']);
 		$item['content'] = $this->extractArticleContent($article);
 
 		$headline = strval($newsItem->description);

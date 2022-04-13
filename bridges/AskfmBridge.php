@@ -10,14 +10,14 @@ class AskfmBridge extends BridgeAbstract {
 		'Ask.fm username' => array(
 			'u' => array(
 				'name' => 'Username',
-				'required' => true
+				'required' => true,
+				'exampleValue'	=> 'ApprovedAndReal'
 			)
 		)
 	);
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM($this->getURI())
-			or returnServerError('Requested username can\'t be found.');
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$html = defaultLinkTo($html, self::URI);
 

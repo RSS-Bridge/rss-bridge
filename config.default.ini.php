@@ -12,6 +12,10 @@
 ; timezone = "UTC" (default)
 timezone = "UTC"
 
+[http]
+timeout = 60
+useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"
+
 [cache]
 
 ; Defines the cache type used by RSS-Bridge
@@ -28,6 +32,13 @@ custom_timeout = false
 ; This address is displayed on the main page, visible to everyone!
 ; ""    = Disabled (default)
 email = ""
+
+; Show Donation information for bridges if available.
+; This will display a 'Donate' link on the bridge view
+; and a "Donate" button in the HTML view of the bridges feed.
+; true  = enabled (default)
+; false = disabled
+donations = true
 
 [proxy]
 
