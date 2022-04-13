@@ -16,7 +16,7 @@ class GoodreadsBridge extends BridgeAbstract {
 			'author_url' => array(
 				'name' => 'Link to author\'s page on Goodreads',
 				'type' => 'text',
-				'required' => 'yes',
+				'required' => true,
 				'title' => 'Should look somewhat like goodreads.com/author/show/',
 				'pattern' => '^(https:\/\/)?(www.)?goodreads\.com\/author\/show\/\d+\..*$',
 				'exampleValue' => 'https://www.goodreads.com/author/show/38550.Brandon_Sanderson'
@@ -61,10 +61,16 @@ class GoodreadsBridge extends BridgeAbstract {
 			continue;
 		}
 
+		$row = defaultLinkTo($row, $this->getURI());
+
 		$item['title'] = $row->find('.bookTitle', 0)->plaintext;
-		$item['uri'] = $item['uid'] = $row->find('.bookTitle', 0)->getAttribute('href');
+		$item['uri'] = $row->find('.bookTitle', 0)->getAttribute('href');
 		$item['author'] = $row->find('.authorName', 0)->plaintext;
-		$item['content'] = $row->find('.bookCover', 0)->outertext;
+		$item['content'] = '<a href="'
+		. $row->find('.bookTitle', 0)->getAttribute('href')
+		. '"><img src="'
+		. $row->find('.bookCover', 0)->getAttribute('src')
+		. '"></a>';
 		$item['timestamp'] = $date;
 		$item['enclosures'] = array(
 			$row->find('.bookCover', 0)->getAttribute('src')
@@ -87,4 +93,3 @@ class GoodreadsBridge extends BridgeAbstract {
 		}
 	}
 }
-
