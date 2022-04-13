@@ -53,10 +53,10 @@ class GoodreadsBridge extends BridgeAbstract {
 			// We are skipping future dates anyway, so this is def published
 			// but we can't pick a dynamic date either to keep clients from getting
 			// confused. So we pick a guaranteed date of 1st-Jan instead.
-			$date = $matches[1] . "-01-01";
+			$date = $matches[1] . '-01-01';
 		} else if ($this->getInput('published_only') !== 'checked') {
 			// We can return unpublished books as well
-			$date = date("Y-01-01");
+			$date = date('Y-01-01');
 		} else {
 			continue;
 		}
@@ -88,7 +88,7 @@ class GoodreadsBridge extends BridgeAbstract {
 			break;
 
 		default:
-			throw new Exception("Invalid context", 1);
+			throw new Exception('Invalid context', 1);
 			break;
 		}
 	}
