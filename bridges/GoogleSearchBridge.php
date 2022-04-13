@@ -40,13 +40,13 @@ class GoogleSearchBridge extends BridgeAbstract {
 				$resultComponents = explode(' — ', $element->find('div[data-content-feature=1]', 0)->plaintext);
 				$item['content'] = $resultComponents[1];
 
-				if(strpos($resultComponents[0],'day') === true) {
+				if(strpos($resultComponents[0], 'day') === true) {
 					$daysago = explode(' ', $resultComponents[0])[0];
-					$item['timestamp'] = date('d M Y',strtotime("-" . $daysago . " days"));
+					$item['timestamp'] = date('d M Y', strtotime('-' . $daysago . ' days'));
 				} else {
 					$item['timestamp'] = $resultComponents[0];
 				}
-				
+
 				$this->items[] = $item;
 			}
 		}
