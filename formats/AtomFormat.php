@@ -67,7 +67,11 @@ class AtomFormat extends FormatAbstract{
 			if (empty($entryContent))
 				$entryContent = $entryTitle;
 
-			$entryAuthor = $this->xml_encode($item->getAuthor());
+			$entryAuthor = '';
+			if ($item->getAuthor()) {
+				$entryAuthor = $this->xml_encode($item->getAuthor());
+			}
+
 			$entryTitle = $this->xml_encode($entryTitle);
 			$entryUri = $this->xml_encode($entryUri);
 			$entryTimestamp = $this->xml_encode(gmdate(DATE_ATOM, $entryTimestamp));
