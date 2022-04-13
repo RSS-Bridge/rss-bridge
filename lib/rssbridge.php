@@ -87,3 +87,7 @@ define('MAX_FILE_SIZE', 10000000); /* Allow larger files for simple_html_dom */
 require_once PATH_LIB_VENDOR . 'parsedown/Parsedown.php';
 require_once PATH_LIB_VENDOR . 'php-urljoin/src/urljoin.php';
 require_once PATH_LIB_VENDOR . 'simplehtmldom/simple_html_dom.php';
+
+Configuration::verifyInstallation();
+Configuration::loadConfiguration();
+Authentication::showPromptIfNeeded();
