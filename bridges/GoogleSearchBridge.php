@@ -29,7 +29,7 @@ class GoogleSearchBridge extends BridgeAbstract {
 		$emIsRes = $html->find('div[id=res]', 0);
 
 		if(!is_null($emIsRes)) {
-			foreach($emIsRes->find('div[class=g]') as $element) {
+			foreach($emIsRes->find('div[class~=g]') as $element) {
 				$item = array();
 
 				$t = $element->find('a[href]', 0)->href;
