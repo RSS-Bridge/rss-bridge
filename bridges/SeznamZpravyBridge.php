@@ -99,6 +99,7 @@ class SeznamZpravyBridge extends BridgeAbstract {
 				if (isset($articleDMElem)) {
 					$articleDMText = $articleDMElem->plaintext;
 				}
+
 				else {
 					// If there is no date but only a time, the article was published today
 					$articleDMText = date('d.m.');
@@ -124,4 +125,3 @@ class SeznamZpravyBridge extends BridgeAbstract {
 		$this->items[] = $item;
 	}
 }
-
