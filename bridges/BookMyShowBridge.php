@@ -1368,6 +1368,8 @@ EOT;
 		usort($this->items, function($a, $b) {
 			return $b['timestamp'] - $a['timestamp'];
 		});
+
+		$this->items = array_slice($this->items, 0, 15);
 	}
 
 	private function matchesLanguage(){
