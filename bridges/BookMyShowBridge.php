@@ -7,6 +7,8 @@ class BookMyShowBridge extends BridgeAbstract {
 	const MOVIES_IMAGE_BASE_FORMAT = 'https://in.bmscdn.com/iedb/movies/images/mobile/thumbnail/large/%s.jpg';
 	const DESCRIPTION = 'Returns the latest events on BookMyShow';
 
+	const TIMEZONE = 'Asia/Kolkata';
+
 	const PLAYS = 'PL';
 	const EVENTS = 'CT';
 	const MOVIES = 'MT';
@@ -1060,7 +1062,8 @@ class BookMyShowBridge extends BridgeAbstract {
 		'Length' => 'Length',
 		'EventIsGlobal' => 'Global Event',
 		'MinPrice' => 'Minimum Price',
-		'IsSuperstarExclusiveEvent' => 'SuperStar Exclusive',
+		// This doesn't seem to be used anywhere
+		// 'IsSuperstarExclusiveEvent' => 'SuperStar Exclusive',
 		'EventSoldOut' => 'Sold Out',
 	);
 
@@ -1070,6 +1073,9 @@ class BookMyShowBridge extends BridgeAbstract {
 		'Duration' => 'Screentime',
 		'EventCensor' => 'Rating',
 	);
+
+	/* Common line that we want to edit out */
+	const SYNOPSIS_REGEX = '/If you [\w\s,]+synopsis\@bookmyshow\.com/';
 
 	// Picked from the ChildEvents entries inside a Event Group
 	// for Movies
@@ -1089,25 +1095,35 @@ class BookMyShowBridge extends BridgeAbstract {
 		return self::URL_PREFIX . $category;
 	}
 
+	private function getDatesHtml($dates){
+		$tz = new DateTimeZone(self::TIMEZONE);
+		$firstDate = DateTime::createFromFormat('Ymd', $dates[0]['ShowDateCode'], $tz)
+			->format('D, d M Y');
+		if (count($dates) == 1) {
+			return "<p>Date: $firstDate</p>";
+		}
+		$lastDateIndex = count($dates) - 1;
+		$lastDate = DateTime::createFromFormat('Ymd', $dates[$lastDateIndex]['ShowDateCode'])
+			->format('D, d M Y');
+		return "<p>Dates: $firstDate - $lastDate</p>";
+	}
+
 	/**
 	 * Given an event array, generates corresponding HTML entry
 	 * @param  array $event
 	 * @see https://gist.github.com/captn3m0/6dbd539ca67579d22d6f90fab710ccd2 Sample JSON data for various events
 	 */
 	private function generateEventHtml($event, $category){
+		$html = $this->getDatesHtml($event['arrDates']);
 		switch ($category) {
 			case self::MOVIES:
-				$html = $this->generateMovieHtml($event);
+				$html .= $this->generateMovieHtml($event);
 				break;
 			default:
-				$html = $this->generateStandardHtml($event);
+				$html .= $this->generateStandardHtml($event);
 		}
 
-		$venues = $event['arrVenues'];
-		$dates = $event['arrDates'];
-
-		$html .= $this->generateVenueHtml($venues, $dates);
-
+		$html .= $this->generateVenueHtml($event['arrVenues']);
 		return $html;
 	}
 
@@ -1115,7 +1131,7 @@ class BookMyShowBridge extends BridgeAbstract {
 	 * Generates a simple Venue HTML, even for multiple venues
 	 * spread across multiple dates as a description list.
 	 */
-	private function generateVenueHtml($venues, $dates){
+	private function generateVenueHtml($venues){
 		$html = '<h3>Venues</h3><table><thead><tr><th>Venue</th><th>Directions</th></tr></thead><tbody>';
 
 		foreach ($venues as $i => $venueData) {
@@ -1235,13 +1251,13 @@ EOT;
 
 		$innerHtml = $this->generateInnerMovieDetails($eventGroup['ChildEvents']);
 
+		$synopsis = preg_replace(self::SYNOPSIS_REGEX, '', $data['EventSynopsis']);
+
 		return <<<EOT
 		<img title="Movie Poster" src="$imgsrc"></img>
-		<br>
-		$table
-		<br>
-		$innerHtml
-		<br>
+		<div>$table</div>
+		<p>$innerHtml</p>
+		<p>${synopsis}</p>
 		More Details are available on the <a href="$url">BookMyShow website</a> and a trailer is available
 		<a href="${data['EventTrailerURL']}" title="Trailer URL">here</a>
 EOT;
@@ -1258,11 +1274,12 @@ EOT;
 	private function generateMoviesData($eventGroup){
 		// Additional data picked up from the first Child Event
 		$data = $eventGroup['ChildEvents'][0];
+		$date = new DateTime($data['EventDate']);
 
 		return array(
 			'uri' => $this->generateMovieUrl($eventGroup),
 			'title' => $eventGroup['EventTitle'],
-			'timestamp' => $data['EventDate'],
+			'timestamp' => $date->format('U'),
 			'author' => 'BookMyShow',
 			'content' => $this->generateMovieHtml($eventGroup),
 			'enclosures' => array(
@@ -1289,10 +1306,16 @@ EOT;
 	 * Takes an event data as array and returns data for RSS Post
 	 */
 	private function generateGenericEventData($event, $category){
+		$datetime = $event['Event_dtmCreated'];
+		if (empty($datetime)) {
+			return null;
+		}
+		$date = new DateTime($event['Event_dtmCreated']);
+
 		return array(
 			'uri' => $event['FShareURL'],
 			'title' => $event['EventTitle'],
-			'timestamp' => $event['Event_dtmCreated'],
+			'timestamp' => $date->format('U'),
 			'author' => 'BookMyShow',
 			'content' => $this->generateEventHtml($event, $category),
 			'enclosures' => array(
@@ -1311,9 +1334,8 @@ EOT;
 	 * EventIsWebView, since that is set to Y for everything
 	 */
 	private function isEventOnline($event){
-		$venues = $event['arrVenues'];
-		if ($venues && count($venues) === 1) {
-			if (preg_match('/(Online|Zoom)/i', $venues[0]['VenueName'])) {
+		if (isset($event['arrVenues']) && count($event['arrVenues']) === 1) {
+			if (preg_match('/(Online|Zoom)/i', $event['arrVenues'][0]['VenueName'])) {
 				return true;
 			}
 		}
@@ -1338,10 +1360,14 @@ EOT;
 
 		foreach ($data as $event) {
 			$item = $this->generateEventData($event, $category);
-			if ($this->matchesFilters($category, $event)) {
+			if ($item and $this->matchesFilters($category, $event)) {
 				$this->items[] = $item;
 			}
 		}
+
+		usort($this->items, function($a, $b) {
+			return $b['timestamp'] - $a['timestamp'];
+		});
 	}
 
 	private function matchesLanguage(){
@@ -1377,7 +1403,7 @@ EOT;
 			$cityNames = array_flip(self::CITIES);
 			$cityName = $cityNames[$city];
 			if ($this->getInput('language') !== 'null') {
-				$l = $this->getInput('language');
+				$l = ucwords($this->getInput('language'));
 				// Sample: English Movies in Delhi
 				return "BookMyShow: $l $categoryName in $cityName";
 			}
