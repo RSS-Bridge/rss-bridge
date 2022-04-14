@@ -15,8 +15,9 @@ class Arte7Bridge extends BridgeAbstract {
 				'type' => 'list',
 				'name' => 'Sort by',
 				'required' => false,
-				'defaultValue' => 'broadcastBegin',
+				'defaultValue' => null,
 				'values' => array(
+					'Default' => null,
 					'Video rights start date' => 'videoRightsBegin',
 					'Video rights end date' => 'videoRightsEnd',
 					'Brodcast date' => 'broadcastBegin',
