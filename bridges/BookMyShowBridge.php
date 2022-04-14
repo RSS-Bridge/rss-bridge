@@ -13,13 +13,13 @@ class BookMyShowBridge extends BridgeAbstract {
 	const EVENTS = 'CT';
 	const MOVIES = 'MT';
 
-	const CATEGORIES = array(
+	const CATEGORIES = [
 		self::PLAYS => 'Plays',
 		self::EVENTS => 'Events',
 		self::MOVIES => 'Movies',
-	);
+	];
 
-	const CITIES = array(
+	const CITIES = [
 		// Most popular cities
 		'Mumbai' => 'MUMBAI',
 		'National Capital Region (NCR)' => 'NCR',
@@ -1008,32 +1008,32 @@ class BookMyShowBridge extends BridgeAbstract {
 		'Yemmiganur' => 'YEMM',
 		'Zaheerabad' => 'ZAGE',
 		'Zirakpur' => 'ZIRK',
-	);
+	];
 
-	const PARAMETERS = array(
-		array(
-			'city' => array(
+	const PARAMETERS = [
+		[
+			'city' => [
 				'name' => 'City',
 				'type' => 'list',
 				'defaultValue' => 'MUMBAI',
 				'values' => self::CITIES,
-			),
+			],
 
-			'category' => array(
+			'category' => [
 				'name' => 'Category',
 				'type' => 'list',
 				'defaultValue' => self::MOVIES,
-				'values' => array(
+				'values' => [
 					'Plays' => self::PLAYS,
 					'Events' => self::EVENTS,
 					'Movies' => self::MOVIES,
-				),
-			),
-			'language' => array(
+				],
+			],
+			'language' => [
 				'name' => 'Language',
 				'type' => 'list',
 				'defaultValue' => 'all',
-				'values' => array(
+				'values' => [
 					'All' => 'all',
 					'Kannada' => 'Kannada',
 					'English' => 'English',
@@ -1043,20 +1043,20 @@ class BookMyShowBridge extends BridgeAbstract {
 					'Malayalam' => 'Malayalam',
 					'Gujarati' => 'Gujarati',
 					'Assamese' => 'Assamese',
-				)
-			),
-			'include_online' => array(
+				]
+			],
+			'include_online' => [
 				'name' => 'Include Online Events',
 				'type' => 'checkbox',
 				'defaultValue' => false,
 				'title' => 'Whether to include Online Events (applies only in case of "Events" category)'
-			),
-		)
-	);
+			],
+		]
+	];
 
 	// Headers used in the generated table for Events/Plays
 	// Left is the BMS API Key, and right is the rendered version
-	const TABLE_HEADERS = array(
+	const TABLE_HEADERS = [
 		'Genre' => 'Genre',
 		'Language' => 'Language',
 		'Length' => 'Length',
@@ -1065,14 +1065,14 @@ class BookMyShowBridge extends BridgeAbstract {
 		// This doesn't seem to be used anywhere
 		// 'IsSuperstarExclusiveEvent' => 'SuperStar Exclusive',
 		'EventSoldOut' => 'Sold Out',
-	);
+	];
 
 	// Picked from EventGroup entry for movies
 	// Left is BMS API Ke, and right is the rendered version
-	const MOVIE_TABLE_HEADERS = array(
+	const MOVIE_TABLE_HEADERS = [
 		'Duration' => 'Screentime',
 		'EventCensor' => 'Rating',
-	);
+	];
 
 	/* Common line that we want to edit out */
 	const SYNOPSIS_REGEX = '/If you [\w\s,]+synopsis\@bookmyshow\.com/';
@@ -1080,16 +1080,45 @@ class BookMyShowBridge extends BridgeAbstract {
 	// Picked from the ChildEvents entries inside a Event Group
 	// for Movies
 	// Left is BMS API Key, right is rendered version
-	const INNER_MOVIE_HEADERS = array(
+	const INNER_MOVIE_HEADERS = [
 		'EventLanguage' => 'Language',
 		'EventDimension' => 'Formats',
 		'EventIsAtmosEnabled' => 'Dolby Atmos',
 		'IsMovieClubEnabled' => 'Movie Club'
-	);
+	];
 
 	// Primary URL for fetching information
 	// The city information is passed via a cookie
 	const URL_PREFIX = 'https://in.bookmyshow.com/serv/getData?cmd=QUICKBOOK&type=';
+
+	public function collectData(){
+		$city = $this->getInput('city');
+		$category = $this->getInput('category');
+
+		$url = $this->makeUrl($category);
+		$headers = $this->makeHeaders($city);
+
+		$data = json_decode(getContents($url, $headers), true);
+
+		if ($category == self::MOVIES) {
+			$data = $data['moviesData']['BookMyShow']['arrEvents'];
+		} else {
+			$data = $data['data']['BookMyShow']['arrEvent'];
+		}
+
+		foreach ($data as $event) {
+			$item = $this->generateEventData($event, $category);
+			if ($item and $this->matchesFilters($category, $event)) {
+				$this->items[] = $item;
+			}
+		}
+
+		usort($this->items, function($a, $b) {
+			return $b['timestamp'] - $a['timestamp'];
+		});
+
+		$this->items = array_slice($this->items, 0, 15);
+	}
 
 	private function makeUrl($category){
 		return self::URL_PREFIX . $category;
@@ -1155,7 +1184,7 @@ class BookMyShowBridge extends BridgeAbstract {
 		$table = '';
 		foreach ($headers as $key => $header) {
 			if ($header == 'Language') {
-				$this->languages = array($event[$key]);
+				$this->languages = [$event[$key]];
 			}
 
 			if ($event[$key] == 'Y') {
@@ -1197,13 +1226,13 @@ EOT;
 	 */
 	private function generateInnerMovieDetails($data){
 		// Show list of languages and list of formats
-		$headers = array('EventLanguage', 'EventDimension');
+		$headers = ['EventLanguage', 'EventDimension'];
 		// if any of these has a Y for any of the screenings, mark it as YES
-		$booleanHeaders = array(
+		$booleanHeaders = [
 			'EventIsAtmosEnabled', 'IsMovieClubEnabled'
-		);
+		];
 
-		$items = array();
+		$items = [];
 
 		// Throw values inside $items[$headerName]
 		foreach ($data as $row) {
@@ -1276,22 +1305,22 @@ EOT;
 		$data = $eventGroup['ChildEvents'][0];
 		$date = new DateTime($data['EventDate']);
 
-		return array(
+		return [
 			'uri' => $this->generateMovieUrl($eventGroup),
 			'title' => $eventGroup['EventTitle'],
 			'timestamp' => $date->format('U'),
 			'author' => 'BookMyShow',
 			'content' => $this->generateMovieHtml($eventGroup),
-			'enclosures' => array(
+			'enclosures' => [
 				sprintf(self::MOVIES_IMAGE_BASE_FORMAT, $data['EventImageCode']),
-			),
+			],
 			// Sample Input = |ADVENTURE|ANIMATION|COMEDY|
 			// Sample Output = ['Adventure', 'Animation', 'Comedy']
 			'categories' => array_filter(
 				explode('|', ucwords(strtolower($eventGroup['EventGrpGenre']), '|'))
 			),
 			'uid' => $eventGroup['EventGroup']
-		);
+		];
 	}
 
 	private function generateEventData($event, $category){
@@ -1312,21 +1341,21 @@ EOT;
 		}
 		$date = new DateTime($event['Event_dtmCreated']);
 
-		return array(
+		return [
 			'uri' => $event['FShareURL'],
 			'title' => $event['EventTitle'],
 			'timestamp' => $date->format('U'),
 			'author' => 'BookMyShow',
 			'content' => $this->generateEventHtml($event, $category),
-			'enclosures' => array(
+			'enclosures' => [
 				$event['BannerURL'],
-			),
+			],
 			'categories' => array_merge(
-				array(self::CATEGORIES[$category]),
+				[self::CATEGORIES[$category]],
 				$event['GenreArray']
 			),
 			'uid' => $event['EventGroupCode'],
-		);
+		];
 	}
 
 	/**
@@ -1341,35 +1370,6 @@ EOT;
 		}
 
 		return false;
-	}
-
-	public function collectData(){
-		$city = $this->getInput('city');
-		$category = $this->getInput('category');
-
-		$url = $this->makeUrl($category);
-		$headers = $this->makeHeaders($city);
-
-		$data = json_decode(getContents($url, $headers), true);
-
-		if ($category == self::MOVIES) {
-			$data = $data['moviesData']['BookMyShow']['arrEvents'];
-		} else {
-			$data = $data['data']['BookMyShow']['arrEvent'];
-		}
-
-		foreach ($data as $event) {
-			$item = $this->generateEventData($event, $category);
-			if ($item and $this->matchesFilters($category, $event)) {
-				$this->items[] = $item;
-			}
-		}
-
-		usort($this->items, function($a, $b) {
-			return $b['timestamp'] - $a['timestamp'];
-		});
-
-		$this->items = array_slice($this->items, 0, 15);
 	}
 
 	private function matchesLanguage(){
@@ -1423,9 +1423,9 @@ EOT;
 	private function makeHeaders($city){
 		$uniqid = uniqid();
 		$rgn = urlencode("|Code=$city|");
-		return array(
+		return [
 			"Cookie: bmsId=$uniqid; Rgn=$rgn;"
-		);
+		];
 	}
 
 	/**
@@ -1435,14 +1435,14 @@ EOT;
 	private function generateDirectionsHtml($lat, $long, $address = ''){
 		$address = urlencode($address);
 
-		$links = array(
+		$links = [
 			'Apple Maps' => 'http://maps.apple.com/maps?q=%s,%s"',
 			'Google Maps' => 'http://maps.google.com/maps?ll=%s,%s',
 			// 'Google Maps (Android)' => 'geo:%s,%s?q=%s',
 			// 'Google Maps (iOS)' => 'comgooglemaps://?center=%s,%s&zoom=12&views=traffic',
 			'OpenStreetMap' => 'https://www.openstreetmap.org/?mlat=%s&mlon=%s&zoom=12',
 			'GeoURI' => 'geo:%s,%s?q=%s',
-		);
+		];
 
 		$html = '';
 
