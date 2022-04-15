@@ -81,7 +81,7 @@ class RutubeBridge extends BridgeAbstract {
 				// Copied from https://stackoverflow.com/a/12590772
 				preg_replace(
 					'$(https?://[a-z0-9_./?=&#-]+)(?![^<>]*>)$i', ' <a href="$1" target="_blank">$1</a> ',
-					$video->description . " "
+					$video->description . ' '
 				)
 			);
 			$item->setContent($content);
