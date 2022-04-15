@@ -1,9 +1,9 @@
 <?php
 class Arte7Bridge extends BridgeAbstract {
 
+	// const MAINTAINER = 'mitsukarenai';
 	const NAME = 'Arte +7';
 	const URI = 'https://www.arte.tv/';
-	const MAINTAINER = 'imagoiq';
 	const CACHE_TIMEOUT = 1800; // 30min
 	const DESCRIPTION = 'Returns newest videos from ARTE +7';
 
@@ -11,39 +11,11 @@ class Arte7Bridge extends BridgeAbstract {
 
 	const PARAMETERS = array(
 		'global' => [
-			'sort_by' => array(
-				'type' => 'list',
-				'name' => 'Sort by',
-				'required' => false,
-				'defaultValue' => null,
-				'values' => array(
-					'Default' => null,
-					'Video rights start date' => 'videoRightsBegin',
-					'Video rights end date' => 'videoRightsEnd',
-					'Brodcast date' => 'broadcastBegin',
-					'Creation date' => 'creationDate',
-					'Last modified' => 'lastModified',
-					'Number of views' => 'views',
-					'Number of views per period' => 'viewsPeriod',
-					'Available screens' => 'availableScreens',
-					'Episode' => 'episode'
-				),
-			),
-			'sort_direction' => array(
-				'type' => 'list',
-				'name' => 'Sort direction',
-				'required' => false,
-				'defaultValue' => 'DESC',
-				'values' => array(
-					'Ascending' => 'ASC',
-					'Descending' => 'DESC'
-				),
-			),
-			'exclude_trailers' => [
-				'name' => 'Exclude trailers',
+			'video_duration_filter' => [
+				'name' => 'Exclude short videos',
 				'type' => 'checkbox',
-				'required' => false,
-				'defaultValue' => false
+				'title' => 'Exclude videos that are shorter than 3 minutes',
+				'defaultValue'	=> false,
 			],
 		],
 		'Category' => array(
@@ -58,6 +30,8 @@ class Arte7Bridge extends BridgeAbstract {
 					'Polski' => 'pl',
 					'Italiano' => 'it'
 				),
+				'title' => 'ex. RC-014095 pour https://www.arte.tv/fr/videos/RC-014095/blow-up/',
+				'exampleValue'	=> 'RC-014095'
 			),
 			'cat' => array(
 				'type' => 'list',
@@ -99,6 +73,7 @@ class Arte7Bridge extends BridgeAbstract {
 	);
 
 	public function collectData(){
+		$lang = $this->getInput('lang');
 		switch($this->queriedContext) {
 		case 'Category':
 			$category = $this->getInput('cat');
@@ -110,13 +85,8 @@ class Arte7Bridge extends BridgeAbstract {
 			break;
 		}
 
-		$lang = $this->getInput('lang');
-		$sort_by = $this->getInput('sort_by');
-		$sort_direction = $this->getInput('sort_direction') == 'ASC' ? '' : '-';
-
-		$url = 'https://api.arte.tv/api/opa/v3/videos?limit=15&language='
+		$url = 'https://api.arte.tv/api/opa/v3/videos?sort=-lastModified&limit=15&language='
 			. $lang
-			. ($sort_by !== null ? '&sort=' . $sort_direction . $sort_by : '')
 			. ($category != null ? '&category.code=' . $category : '')
 			. ($collectionId != null ? '&collections.collectionId=' . $collectionId : '');
 
@@ -128,11 +98,11 @@ class Arte7Bridge extends BridgeAbstract {
 		$input_json = json_decode($input, true);
 
 		foreach($input_json['videos'] as $element) {
-			if($this->getInput('exclude_trailers') && $element['platform'] == 'EXTRAIT') {
+			$durationSeconds = $element['durationSeconds'];
+
+			if ($this->getInput('video_duration_filter') && $durationSeconds < 60 * 3) {
 				continue;
 			}
-
-			$durationSeconds = $element['durationSeconds'];
 
 			$item = array();
 			$item['uri'] = $element['url'];
