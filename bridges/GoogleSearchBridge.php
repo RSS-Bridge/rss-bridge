@@ -24,25 +24,35 @@ class GoogleSearchBridge extends BridgeAbstract {
 	));
 
 	public function collectData(){
-		$html = '';
-
-		$html = getSimpleHTMLDOM($this->getURI());
+		$header = array('Accept-language: en-US');
+		$html = getSimpleHTMLDOM($this->getURI(), $header)
+			or returnServerError('No results for this query.');
 
 		$emIsRes = $html->find('div[id=res]', 0);
 
 		if(!is_null($emIsRes)) {
-			foreach($emIsRes->find('div[class=g]') as $element) {
-
+			foreach($emIsRes->find('div[class~=g]') as $element) {
 				$item = array();
 
 				$t = $element->find('a[href]', 0)->href;
 				$item['uri'] = htmlspecialchars_decode($t);
 				$item['title'] = $element->find('h3', 0)->plaintext;
-				$item['content'] = $element->find('span[class=aCOpRe]', 0)->plaintext;
+				$resultComponents = explode(' — ', $element->find('div[data-content-feature=1]', 0)->plaintext);
+				$item['content'] = $resultComponents[1];
+
+				if(strpos($resultComponents[0], 'day') === true) {
+					$daysago = explode(' ', $resultComponents[0])[0];
+					$item['timestamp'] = date('d M Y', strtotime('-' . $daysago . ' days'));
+				} else {
+					$item['timestamp'] = $resultComponents[0];
+				}
 
 				$this->items[] = $item;
 			}
 		}
+		usort($this->items, function($a, $b) {
+			return $a['timestamp'] < $b['timestamp'];
+		});
 	}
 
 	public function getURI() {
@@ -50,7 +60,7 @@ class GoogleSearchBridge extends BridgeAbstract {
 			return self::URI
 				. 'search?q='
 				. urlencode($this->getInput('q'))
-				. '&num=100&complete=0&tbs=qdr:y,sbd:1';
+				. '&hl=en&num=100&complete=0&tbs=qdr:y,sbd:1';
 		}
 
 		return parent::getURI();
