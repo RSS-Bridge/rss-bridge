@@ -15,17 +15,17 @@ Supported sites/pages (examples)
 ===
 
 * `Bandcamp` : Returns last release from [bandcamp](https://bandcamp.com/) for a tag
-* `Cryptome` : Returns the most recent documents from [Cryptome.org](http://cryptome.org/)
-* `DansTonChat`: Most recent quotes from [danstonchat.com](http://danstonchat.com/)
+* `Cryptome` : Returns the most recent documents from [Cryptome.org](https://cryptome.org/)
+* `DansTonChat`: Most recent quotes from [danstonchat.com](https://danstonchat.com/)
 * `DuckDuckGo`: Most recent results from [DuckDuckGo.com](https://duckduckgo.com/)
 * `Facebook` : Returns the latest posts on a page or profile on [Facebook](https://facebook.com/) (There is an [issue](https://github.com/RSS-Bridge/rss-bridge/issues/2047) for public instances)
-* `FlickrExplore` : [Latest interesting images](http://www.flickr.com/explore) from Flickr
+* `FlickrExplore` : [Latest interesting images](https://www.flickr.com/explore) from Flickr
 * `GoogleSearch` : Most recent results from Google Search
 * `Identi.ca` : Identica user timeline (Should be compatible with other Pump.io instances)
 * `Instagram`: Most recent photos from an Instagram user (It is recommended to [configure](https://rss-bridge.github.io/rss-bridge/Bridge_Specific/Instagram.html) this bridge to work)
-* `OpenClassrooms`: Lastest tutorials from [fr.openclassrooms.com](http://fr.openclassrooms.com/)
+* `OpenClassrooms`: Lastest tutorials from [openclassrooms.com](https://openclassrooms.com/)
 * `Pinterest`: Most recent photos from user or search
-* `ScmbBridge`: Newest stories from [secouchermoinsbete.fr](http://secouchermoinsbete.fr/)
+* `ScmbBridge`: Newest stories from [secouchermoinsbete.fr](https://secouchermoinsbete.fr/)
 * `ThePirateBay` : Returns the newest indexed torrents from [The Pirate Bay](https://thepiratebay.se/) with keywords
 * `Twitter` : Return keyword/hashtag search or user timeline
 * `Wikipedia`: highlighted articles from [Wikipedia](https://wikipedia.org/) in English, German, French or Esperanto
@@ -69,7 +69,7 @@ RSS-Bridge requires PHP 7.1 or higher with following extensions enabled:
   - [`curl`](https://secure.php.net/manual/en/book.curl.php)
   - [`json`](https://secure.php.net/manual/en/book.json.php)
   - [`filter`](https://secure.php.net/manual/en/book.filter.php)
-  - [`sqlite3`](http://php.net/manual/en/book.sqlite3.php) (only when using SQLiteCache)
+  - [`sqlite3`](https://www.php.net/manual/en/book.sqlite3.php) (only when using SQLiteCache)
 
 Find more information on our [Documentation](https://rss-bridge.github.io/rss-bridge/index.html)
 
@@ -108,7 +108,7 @@ There are many ways for you to getting involved with RSS-Bridge. Here are a few 
 Authors
 ===
 
-We are RSS-Bridge community, a group of developers continuing the project initiated by sebsauvage, webmaster of [sebsauvage.net](http://sebsauvage.net), author of [Shaarli](http://sebsauvage.net/wiki/doku.php?id=php:shaarli) and [ZeroBin](http://sebsauvage.net/wiki/doku.php?id=php:zerobin).
+We are RSS-Bridge community, a group of developers continuing the project initiated by sebsauvage, webmaster of [sebsauvage.net](https://sebsauvage.net), author of [Shaarli](https://sebsauvage.net/wiki/doku.php?id=php:shaarli) and [ZeroBin](https://sebsauvage.net/wiki/doku.php?id=php:zerobin).
 
 **Contributors** (sorted alphabetically):
 <!--
@@ -316,9 +316,9 @@ The source code for RSS-Bridge is [Public Domain](UNLICENSE).
 
 RSS-Bridge uses third party libraries with their own license:
 
-  * [`Parsedown`](https://github.com/erusev/parsedown) licensed under the [MIT License](http://opensource.org/licenses/MIT)
-  * [`PHP Simple HTML DOM Parser`](http://simplehtmldom.sourceforge.net/) licensed under the [MIT License](http://opensource.org/licenses/MIT)
-  * [`php-urljoin`](https://github.com/fluffy-critter/php-urljoin) licensed under the [MIT License](http://opensource.org/licenses/MIT)
+  * [`Parsedown`](https://github.com/erusev/parsedown) licensed under the [MIT License](https://opensource.org/licenses/MIT)
+  * [`PHP Simple HTML DOM Parser`](https://simplehtmldom.sourceforge.io/docs/1.9/index.html) licensed under the [MIT License](https://opensource.org/licenses/MIT)
+  * [`php-urljoin`](https://github.com/fluffy-critter/php-urljoin) licensed under the [MIT License](https://opensource.org/licenses/MIT)
 
 Technical notes
 ===
