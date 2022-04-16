@@ -116,7 +116,7 @@ class Arte7Bridge extends BridgeAbstract {
 
 		$url = 'https://api.arte.tv/api/opa/v3/videos?limit=15&language='
 			. $lang
-			. ($sort_by !== null ? '&sort=' . $sort_direction . $sort_by : '')
+			. ($sort_by != null ? '&sort=' . $sort_direction . $sort_by : '')
 			. ($category != null ? '&category.code=' . $category : '')
 			. ($collectionId != null ? '&collections.collectionId=' . $collectionId : '');
 
