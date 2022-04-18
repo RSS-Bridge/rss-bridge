@@ -11,9 +11,9 @@ class GogsBridge extends BridgeAbstract {
 		'global' => array(
 			'host' => array(
 				'name' => 'Host',
-				'exampleValue' => 'notabug.org',
+				'exampleValue' => 'https://notabug.org',
 				'required' => true,
-				'title' => 'Host name without trailing slash',
+				'title' => 'Host name with its protocol, without trailing slash',
 			),
 			'user' => array(
 				'name' => 'Username',
