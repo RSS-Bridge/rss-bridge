@@ -74,7 +74,7 @@ class UnexpectedResponseException extends \GetContentsException {
 	}
 
 	public function getResponseBody() {
-		return $this->responseBody();
+		return $this->responseBody;
 	}
 }
 
