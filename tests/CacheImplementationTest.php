@@ -34,7 +34,6 @@ class CacheImplementationTest extends TestCase {
 	}
 
 	private function setCache($path) {
-		require_once $path;
 		$this->class = basename($path, '.php');
 		$this->assertTrue(class_exists($this->class), 'class ' . $this->class . ' doesn\'t exist');
 	}

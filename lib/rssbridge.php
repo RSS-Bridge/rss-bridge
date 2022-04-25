@@ -88,6 +88,22 @@ require_once PATH_LIB_VENDOR . 'parsedown/Parsedown.php';
 require_once PATH_LIB_VENDOR . 'php-urljoin/src/urljoin.php';
 require_once PATH_LIB_VENDOR . 'simplehtmldom/simple_html_dom.php';
 
+spl_autoload_register(function ($className) {
+	$folders = [
+		__DIR__ . '/../actions/',
+		__DIR__ . '/../bridges/',
+		__DIR__ . '/../caches/',
+		__DIR__ . '/../formats/',
+		__DIR__ . '/../lib/',
+	];
+	foreach ($folders as $folder) {
+		$file = $folder . $className . '.php';
+		if (is_file($file)) {
+			require $file;
+		}
+	}
+});
+
 Configuration::verifyInstallation();
 Configuration::loadConfiguration();
 Authentication::showPromptIfNeeded();
