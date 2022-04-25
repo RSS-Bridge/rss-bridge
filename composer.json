@@ -38,5 +38,10 @@
         "ext-memcached": "Allows to use memcached as cache type",
         "ext-sqlite3": "Allows to use an SQLite database for caching",
         "ext-dom": "Allows to use some bridges based on XPath expressions"
+    },
+    "scripts": {
+        "test": "./vendor/bin/phpunit",
+        "lint": "./vendor/bin/phpcs --standard=phpcs.xml --warning-severity=0 --extensions=php -p ./",
+        "compat": "./vendor/bin/phpcs --standard=phpcompatibility.xml --warning-severity=0 --extensions=php -p ./"
     }
 }
