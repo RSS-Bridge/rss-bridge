@@ -24,6 +24,10 @@ class ABCNewsBridge extends BridgeAbstract {
 			)
 		)
 	);
+	const LANGUAGE = array(
+		'English',
+		'German'
+	);
 
 	public function collectData() {
 		$url = 'https://www.abc.net.au/news/' . $this->getInput('topic');

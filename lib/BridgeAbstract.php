@@ -83,6 +83,13 @@ abstract class BridgeAbstract implements BridgeInterface {
 	const PARAMETERS = array();
 
 	/**
+	 * Languages for the bridge
+	 *
+	 * Use {@see BridgeAbstract::getLanguage()} to read this parameter
+	 */
+	const LANGUAGE = array();
+
+	/**
 	 * Test cases for detectParameters for the bridge
 	 */
 	const TEST_DETECT_PARAMETERS = array();
@@ -366,6 +373,11 @@ abstract class BridgeAbstract implements BridgeInterface {
 	/** {@inheritdoc} */
 	public function getCacheTimeout(){
 		return static::CACHE_TIMEOUT;
+	}
+
+	/** {@inheritdoc} */
+	public function getLanguage(){
+		return static::LANGUAGE;
 	}
 
 	/** {@inheritdoc} */

@@ -300,6 +300,7 @@ This bridge is not fetching its content through a secure connection</div>';
 
 		$uri = $bridge->getURI();
 		$name = $bridge->getName();
+		$language = $bridge->getLanguage();
 		$icon = $bridge->getIcon();
 		$description = $bridge->getDescription();
 		$parameters = $bridge->getParameters();
@@ -324,7 +325,7 @@ This bridge is not fetching its content through a secure connection</div>';
 		}
 
 		$card = <<<CARD
-			<section id="bridge-{$bridgeName}" data-ref="{$name}">
+			<section id="bridge-{$bridgeName}" data-ref="{$name}" language="{$language}">
 				<h2><a href="{$uri}">{$name}</a></h2>
 				<p class="description">{$description}</p>
 				<input type="checkbox" class="showmore-box" id="showmore-{$bridgeName}" />
