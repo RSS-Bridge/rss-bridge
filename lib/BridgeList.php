@@ -135,7 +135,7 @@ EOD;
 <section class="searchbar">
 	<h3>Search</h3>
 	<input type="text" name="searchfield"
-		id="searchfield" placeholder="Insert URL or bridge name"
+		id="searchfield" placeholder="Insert URL, bridge name or language"
 		onchange="search()" onkeyup="search()" value="{$query}">
 </section>
 EOD;
