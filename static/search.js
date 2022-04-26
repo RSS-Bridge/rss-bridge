@@ -23,6 +23,7 @@ function search() {
 	for(var i = 0; i < searchableElements.length; i++) {
 
 		var textValue = searchableElements[i].getAttribute('data-ref');
+		var languageValue = searchableElements[i].getAttribute('language');
 		var anchors = searchableElements[i].getElementsByTagName('a');
 
 		if(anchors != null && anchors.length > 0) {
@@ -40,6 +41,7 @@ function search() {
 
 			if(textValue.match(regexMatch) != null ||
 				uriValue.hostname.match(regexMatch) ||
+				languageValue.match(regexMatch) != null ||
 				searchTermUri != null &&
 				uriValue.hostname != 'localhost' && (
 					uriValue.href.match(regexMatch) != null ||

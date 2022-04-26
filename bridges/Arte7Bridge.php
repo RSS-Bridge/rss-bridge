@@ -97,6 +97,14 @@ class Arte7Bridge extends BridgeAbstract {
 			)
 		)
 	);
+	const LANGUAGE = array(
+		'French',
+		'German',
+		'English',
+		'Spanish',
+		'Polish',
+		'Italian'
+	);
 
 	public function collectData(){
 		switch($this->queriedContext) {
