@@ -362,6 +362,7 @@ EOD
 
 			// Start setting values needed for HTML output
 			if($isRetweet || is_null($user)) {
+				Debug::log('Tweet is retweet, or $user is null');
 				// Replace tweet object with original retweeted object
 				if($isRetweet) {
 					foreach($includesTweets as $includesTweet) {
@@ -380,17 +381,21 @@ EOD
 				// Get user object for retweeted tweet
 				$originalUser = new stdClass(); // make the linters stop complaining
 				if(isset($retweetedUsers)) {
+					Debug::log('Searching for tweet author_id in $retweetedUsers');
 					foreach($retweetedUsers as $retweetedUser) {
 						if($retweetedUser->id === $tweet->author_id) {
 							$originalUser = $retweetedUser;
+							Debug::log('Found author_id match in $retweetedUsers');
 							break;
 						}
 					}
 				}
-				if(!$originalUser && isset($includesUsers)) {
+				if(!isset($originalUser->username) && isset($includesUsers)) {
+					Debug::log('Searching for tweet author_id in $includesUsers');
 					foreach($includesUsers as $includesUser) {
 						if($includesUser->id === $tweet->author_id) {
 							$originalUser = $includesUser;
+							Debug::log('Found author_id match in $includesUsers');
 							break;
 						}
 					}
