@@ -59,6 +59,7 @@ const URI           // URI to the target website of the bridge (default: empty)
 const DESCRIPTION   // A brief description of the Bridge (default: "No description provided")
 const MAINTAINER    // Name of the maintainer, i.e. your name on GitHub (default: "No maintainer")
 const PARAMETERS    // (optional) Definition of additional parameters (default: empty)
+const LANGUAGE      // (optional) Definition of supported languages (default: empty)
 const CACHE_TIMEOUT // (optional) Defines the maximum duration for the cache in seconds (default: 3600)
 ```
 
@@ -71,6 +72,7 @@ class MyBridge extends BridgeAbstract {
 	const URI         = 'https://rss-bridge.github.io/rss-bridge/Bridge_API/BridgeAbstract.html';
 	const DESCRIPTION = 'Returns "Hello World!"';
 	const MAINTAINER  = 'ghost';
+	const LANGUAGE    = array('English', 'German');
 }
 // This line is empty (just imagine it!)
 ```
@@ -92,6 +94,7 @@ class MyBridge extends BridgeAbstract {
 	const URI         = 'https://rss-bridge.github.io/rss-bridge/Bridge_API/BridgeAbstract.html';
 	const DESCRIPTION = 'Returns "Hello World!"';
 	const MAINTAINER  = 'ghost';
+	const LANGUAGE    = array('English', 'German');
 
 	public function collectData() {
 		$item = array(); // Create an empty item
@@ -122,6 +125,7 @@ class MyBridge extends BridgeAbstract {
 	const DESCRIPTION = 'No description provided';
 	const MAINTAINER = 'No maintainer';
 	const PARAMETERS = array(); // Can be omitted!
+	const LANGUAGE = array('English', 'German'); // Can be omitted!
 	const CACHE_TIMEOUT = 3600; // Can be omitted!
 
 	public function collectData() {
