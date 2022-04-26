@@ -300,7 +300,7 @@ This bridge is not fetching its content through a secure connection</div>';
 
 		$uri = $bridge->getURI();
 		$name = $bridge->getName();
-		$language = implode(' ',$bridge->getLanguage());
+		$language = implode(' ', $bridge->getLanguage());
 		$icon = $bridge->getIcon();
 		$description = $bridge->getDescription();
 		$parameters = $bridge->getParameters();
