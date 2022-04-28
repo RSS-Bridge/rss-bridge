@@ -28,7 +28,6 @@ class DisplayAction extends ActionAbstract {
 			or returnClientError('You must specify a format!');
 
 		$bridgeFac = new \BridgeFactory();
-		$bridgeFac->setWorkingDir(PATH_LIB_BRIDGES);
 
 		// whitelist control
 		if(!$bridgeFac->isWhitelisted($bridge)) {
