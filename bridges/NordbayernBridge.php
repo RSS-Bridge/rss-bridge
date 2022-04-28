@@ -55,7 +55,8 @@ class NordbayernBridge extends BridgeAbstract {
 				($imgUrl != '/img/nn/logo-vnp.png') &&
 				($imgUrl != '/img/nb/logo-nuernberger-nachrichten.png') &&
 				($imgUrl != '/img/nb/logo-nordbayern.png') &&
-				($imgUrl != '/img/nn/logo-nuernberger-nachrichten.png')) {
+				($imgUrl != '/img/nn/logo-nuernberger-nachrichten.png') &&
+				($imgUrl != '/img/nb/logo-erlanger-nachrichten.png')) {
 				return '<br><img src="' . $imgUrl . '">';
 			}
 		}
