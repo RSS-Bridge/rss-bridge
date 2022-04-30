@@ -75,6 +75,7 @@ function _http_request(string $url, array $config = []): array
 		'proxy' => null,
 		'curl_options' => [],
 		'if_not_modified_since' => null,
+		'retries' => 3,
 	];
 	$config = array_merge($defaults, $config);
 
@@ -117,10 +118,21 @@ function _http_request(string $url, array $config = []): array
 		$responseHeaders[$name][] = $value;
 		return $len;
 	});
-	$data = curl_exec($ch);
-	if ($data === false) {
-		throw new HttpException(sprintf('%s (%s)', curl_error($ch), curl_errno($ch)));
+
+	$attempts = 0;
+	while(true) {
+		$attempts++;
+		$data = curl_exec($ch);
+		if ($data !== false) {
+			// The network call was successful, so break out of the loop
+			break;
+		}
+		if ($attempts > $config['retries']) {
+			// Finally give up
+			throw new HttpException(sprintf('%s (%s)', curl_error($ch), curl_errno($ch)));
+		}
 	}
+
 	$statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 	curl_close($ch);
 	return [
