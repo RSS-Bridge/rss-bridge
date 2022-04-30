@@ -610,8 +610,8 @@ EOD;
 
 			try {
 				$result = getContents($uri, $this->authHeaders, array(), true);
-			} catch (UnexpectedResponseException $e) {
-				switch ($e->getResponseCode()) {
+			} catch (HttpException $e) {
+				switch ($e->getCode()) {
 				case 401:
 				case 403:
 					if ($retries) {
@@ -621,8 +621,8 @@ EOD;
 						continue 2;
 					}
 				default:
-					$code = $e->getResponseCode();
-					$data = $e->getResponseBody();
+					$code = $e->getCode();
+					$data = $e->getMessage();
 					returnServerError(<<<EOD
 Failed to make api call: $api
 HTTP Status: $code
