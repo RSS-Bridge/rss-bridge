@@ -25,7 +25,7 @@ class ConnectivityAction extends ActionAbstract {
 	public function execute() {
 
 		if(!Debug::isEnabled()) {
-			returnError('This action is only available in debug mode!');
+			returnError('This action is only available in debug mode!', 400);
 		}
 
 		if(!isset($this->userData['bridge'])) {
