@@ -11,9 +11,9 @@ RSS-Bridge is a PHP project capable of generating RSS and Atom feeds for website
 
 **Important**: RSS-Bridge is __not__ a feed reader or feed aggregator, but a tool to generate feeds that are consumed by feed readers and feed aggregators. Find a list of feed aggregators on [Wikipedia](https://en.wikipedia.org/wiki/Comparison_of_feed_aggregators).
 
-# Tutorial
+# Installation
 
-How to install on Debian/Ubuntu:
+Debian/Ubuntu requirements:
 
     apt install zip git nginx php-fpm php-cli php-curl php-mbstring php-simplexml
 
@@ -27,9 +27,7 @@ Install with git:
     cd /var/www
     git clone https://github.com/RSS-Bridge/rss-bridge.git
 
-Configuration:
-
-Create `/etc/nginx/sites-enabled/rssbridge`:
+Nginx example config:
 
     server {
         listen 80;
@@ -51,13 +49,11 @@ Create `/etc/nginx/sites-enabled/rssbridge`:
         }
     }
 
-Reload nginx:
-
-    systemctl reload nginx
-
-Give http user write access to cache folder:
+Give http user write access to the cache folder:
 
     chown www-data:www-data rss-bridge/cache
+
+See [For Hosts](https://rss-bridge.github.io/rss-bridge/For_Hosts/index.html) for more information.
 
 # Supported sites/pages (examples)
 
