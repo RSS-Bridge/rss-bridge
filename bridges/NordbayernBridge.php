@@ -90,6 +90,7 @@ class NordbayernBridge extends BridgeAbstract {
 	private function handleArticle($link) {
 		$item = array();
 		$article = getSimpleHTMLDOM($link);
+		defaultLinkTo($article, self::URI);
 		$content = $article->find('article[id=article]', 0);
 		$item['uri'] = $link;
 
