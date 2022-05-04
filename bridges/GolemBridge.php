@@ -94,8 +94,12 @@ class GolemBridge extends FeedExpander {
 		// reload html, as remove() is buggy
 		$article = str_get_html($article->outertext);
 
+		if ($pageHeader = $article->find('header.paged-cluster-header h1', 0)) {
+			$item .= $pageHeader;
+		}
+
 		$header = $article->find('header', 0);
-		foreach($header->find('p, figure, .paged-cluster-header h1') as $element) {
+		foreach($header->find('p, figure') as $element) {
 			$item .= $element;
 		}
 
