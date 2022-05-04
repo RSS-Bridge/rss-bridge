@@ -72,6 +72,11 @@ class GolemBridge extends FeedExpander {
 			// URI without RSS feed reference
 			$item['uri'] = $articlePage->find('head meta[name="twitter:url"]', 0)->content;
 
+			$author = $articlePage->find('article header .authors .authors__name', 0);
+			if ($author) {
+				$item['author'] = $author->innertext;
+			}
+
 			$item['content'] .= $this->extractContent($articlePage);
 
 			// next page
