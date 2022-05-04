@@ -93,7 +93,8 @@ class GolemBridge extends FeedExpander {
 		$article = $page->find('article', 0);
 
 		// delete known bad elements
-		foreach($article->find('div[id*="adtile"], #job-market, #seminars, div.gbox_affiliate, div.toc, .embedcontent') as $bad) {
+		foreach($article->find('div[id*="adtile"], #job-market, #seminars,
+			div.gbox_affiliate, div.toc, .embedcontent') as $bad) {
 			$bad->remove();
 		}
 		// reload html, as remove() is buggy
