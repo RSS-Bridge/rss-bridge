@@ -91,8 +91,10 @@ class GolemBridge extends FeedExpander {
 		foreach($article->find('div[id*="adtile"], #job-market, #seminars, div.gbox_affiliate, div.toc, #table-jtoc,
 			.social-tools, #list-jtoc, div.tags, #breadcrumbs, .subscribe-newsletter, .clearfix, .teaser-widget,
 			script') as $bad) {
-			$bad->outertext = '';
+			$bad->remove();
 		}
+		// reload html, as remove() is buggy
+		$article = str_get_html($article->outertext);
 
 		$header = $article->find('header', 0);
 		foreach($header->find('p, figure, .paged-cluster-header h1') as $element) {
