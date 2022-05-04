@@ -52,7 +52,7 @@ class GolemBridge extends FeedExpander {
 		)
 	));
 	const LIMIT = 5;
-    const HEADERS = array('Cookie: golem_consent20=simple|220101;');
+	const HEADERS = array('Cookie: golem_consent20=simple|220101;');
 
 	public function collectData() {
 		$this->collectExpandableDatas(
@@ -63,51 +63,53 @@ class GolemBridge extends FeedExpander {
 
 	protected function parseItem($item) {
 		$item = parent::parseItem($item);
-        $item['content'] = $item['content'] ?? '';
+		$item['content'] = $item['content'] ?? '';
 		$uri = $item['uri'];
 
-        while ($uri) {
-            $articlePage = getSimpleHTMLDOMCached($uri, static::CACHE_TIMEOUT, static::HEADERS);
+		while ($uri) {
+			$articlePage = getSimpleHTMLDOMCached($uri, static::CACHE_TIMEOUT, static::HEADERS);
 
-            // URI without RSS feed reference
-            $item['uri'] = $articlePage->find('head meta[name="twitter:url"]', 0)->content;
+			// URI without RSS feed reference
+			$item['uri'] = $articlePage->find('head meta[name="twitter:url"]', 0)->content;
 
-            $item['content'] .= $this->extractContent($articlePage);
+			$item['content'] .= $this->extractContent($articlePage);
 
-            // next page
-            $nextUri = $articlePage->find('link[rel="next"]', 0);
-            $uri = $nextUri ? static::URI . $nextUri->href : null;
-        }
+			// next page
+			$nextUri = $articlePage->find('link[rel="next"]', 0);
+			$uri = $nextUri ? static::URI . $nextUri->href : null;
+		}
 
 		return $item;
 	}
 
 	private function extractContent($page) {
-        $item = '';
+		$item = '';
 
-        $article = $page->find('article', 0);
+		$article = $page->find('article', 0);
 
-        // delete known bad elements
-        foreach($article->find('div[id*="adtile"], #job-market, #seminars, div.gbox_affiliate, div.toc, #table-jtoc, .social-tools, #list-jtoc, div.tags, #breadcrumbs, .subscribe-newsletter, .clearfix, .teaser-widget, script') as $bad) {
-            $bad->outertext = '';
-        }
+		// delete known bad elements
+		foreach($article->find('div[id*="adtile"], #job-market, #seminars, div.gbox_affiliate, div.toc, #table-jtoc,
+			.social-tools, #list-jtoc, div.tags, #breadcrumbs, .subscribe-newsletter, .clearfix, .teaser-widget,
+			script') as $bad) {
+			$bad->outertext = '';
+		}
 
-        $header = $article->find('header', 0);
-        foreach($header->find('p, figure, .paged-cluster-header h1') as $element) {
-            $item .= $element;
-        }
+		$header = $article->find('header', 0);
+		foreach($header->find('p, figure, .paged-cluster-header h1') as $element) {
+			$item .= $element;
+		}
 
-        $content = $article->find('div.formatted', 0);
+		$content = $article->find('div.formatted', 0);
 
-        // fix image galleries (empty src attribute), additionally full image quality
-        foreach($content->find('img[data-src-full]') as $img) {
-            $img->src = $img->getAttribute('data-src-full');
-        }
+		// fix image galleries (empty src attribute), additionally full image quality
+		foreach($content->find('img[data-src-full]') as $img) {
+			$img->src = $img->getAttribute('data-src-full');
+		}
 
-        foreach($content->find('p, h1, h3, img') as $element) {
-            $item .= $element;
-        }
+		foreach($content->find('p, h1, h3, img') as $element) {
+			$item .= $element;
+		}
 
-        return $item;
-    }
+		return $item;
+	}
 }
