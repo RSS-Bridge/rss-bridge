@@ -33,6 +33,9 @@ class MangaDexBridge extends BridgeAbstract {
 				'title' => 'Some chapters are inaccessible or only available on an external site. Include these?'
 			)
 		)
+		// Future Contexts:
+		// Latest uploads (whole site or group): https://api.mangadex.org/swagger.html#/Chapter/get-chapter
+		// Manga List (by author or tags) https://api.mangadex.org/swagger.html#/Manga/get-search-manga
 	);
 
 	const TITLE_REGEX = '#title/(?<uuid>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})#';
@@ -83,7 +86,6 @@ class MangaDexBridge extends BridgeAbstract {
 		}
 
 		return $uri;
-
 	}
 
 	public function getName() {
@@ -131,6 +133,10 @@ class MangaDexBridge extends BridgeAbstract {
 			$item['uid'] = $chapter['id'];
 			$item['uri'] = self::URI . 'chapter/' . $chapter['id'];
 
+			// External chapter
+			if (!$this->getInput('external') && $chapter['attributes']['pages'] == 0)
+				continue;
+
 			// Preceding space accounts for Manga title added later
 			$item['title'] = ' Chapter ' . $chapter['attributes']['chapter'];
 			if (!empty($chapter['attributes']['title'])) {
@@ -148,9 +154,9 @@ class MangaDexBridge extends BridgeAbstract {
 					$groups[] = $rel['attributes']['name'];
 					break;
 				case 'manga':
-					if (empty($this->feedName)) {
+					if (empty($this->feedName))
 						$this->feedName = reset($rel['attributes']['title']);
-					}
+
 					$item['title'] = reset($rel['attributes']['title']) . $item['title'];
 					break;
 				case 'user':
