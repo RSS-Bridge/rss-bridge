@@ -40,7 +40,7 @@ class AtomFormat extends FormatAbstract{
 		foreach($this->getItems() as $item) {
 			$entryTimestamp = $item->getTimestamp();
 			$entryTitle = $item->getTitle();
-			$entryContent = $item->getContent() ?? '';
+			$entryContent = $item->getContent();
 			$entryUri = $item->getURI();
 			$entryID = '';
 
@@ -63,6 +63,9 @@ class AtomFormat extends FormatAbstract{
 					$entryTitle = substr($entryTitle, 0, $wrapPos) . '...';
 				}
 			}
+
+			if (empty($entryContent))
+				$entryContent = ' ';
 
 			$entryAuthor = '';
 			if ($item->getAuthor()) {
