@@ -51,12 +51,12 @@ class NordbayernBridge extends BridgeAbstract {
 		$img = $picture->find('img', 0);
 		if ($img) {
 			$imgUrl = $img->src;
-			if(($imgUrl != '/img/nb/logo-vnp.png')  &&
-				($imgUrl != '/img/nn/logo-vnp.png') &&
-				($imgUrl != '/img/nb/logo-nuernberger-nachrichten.png') &&
-				($imgUrl != '/img/nb/logo-nordbayern.png') &&
-				($imgUrl != '/img/nn/logo-nuernberger-nachrichten.png') &&
-				($imgUrl != '/img/nb/logo-erlanger-nachrichten.png')) {
+			if(!str_contains($imgUrl, '/img/nb/logo-vnp.png')  &&
+				!str_contains($imgUrl, '/img/nn/logo-vnp.png') &&
+				!str_contains($imgUrl, '/img/nb/logo-nuernberger-nachrichten.png') &&
+				!str_contains($imgUrl, '/img/nb/logo-nordbayern.png') &&
+				!str_contains($imgUrl, '/img/nn/logo-nuernberger-nachrichten.png') &&
+				!str_contains($imgUrl, '/img/nb/logo-erlanger-nachrichten.png')) {
 				return '<br><img src="' . $imgUrl . '">';
 			}
 		}
@@ -66,7 +66,8 @@ class NordbayernBridge extends BridgeAbstract {
 	private function getUseFullContent($rawContent) {
 		$content = '';
 		foreach($rawContent->children as $element) {
-			if($element->tag === 'p' || $element->tag === 'h3') {
+			if(($element->tag === 'p' || $element->tag === 'h3') &&
+				$element->class !== 'article__teaser') {
 				$content .= $element;
 			} else if($element->tag === 'main') {
 				$content .= self::getUseFullContent($element->find('article', 0));
@@ -76,11 +77,11 @@ class NordbayernBridge extends BridgeAbstract {
 				!str_contains($element->class, 'article__infobox') &&
 				!str_contains($element->class, 'authorinfo')) {
 				$content .= self::getUseFullContent($element);
-			} else if($element->tag == 'section' &&
+			} else if($element->tag === 'section' &&
 				(str_contains($element->class, 'article__richtext') ||
 					str_contains($element->class, 'article__context'))) {
 				$content .= self::getUseFullContent($element);
-			} else if($element->tag == 'picture') {
+			} else if($element->tag === 'picture') {
 				$content .= self::getValidImage($element);
 			}
 		}
@@ -116,9 +117,12 @@ class NordbayernBridge extends BridgeAbstract {
 						   ->find('p', 0);
 			$item['content'] .= $content;
 		} else {
-			//$content = $article->find('section[class*=article__richtext]', 0)
-			//			   ->find('div', 0)->find('div', 0);
 			$content = $article->find('article', 0);
+			// change order of article teaser in order to show it on top
+			// of the title image. If we didn't do this some rss programs
+			// would show the subtitle of the title image as teaser instead
+			// of the actuall article teaser.
+			$item['content'] .= $content->find('p[class=article__teaser]', 0);
 			$item['content'] .= self::getUseFullContent($content);
 		}
 
