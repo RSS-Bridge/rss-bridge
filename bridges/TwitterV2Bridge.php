@@ -330,11 +330,12 @@ EOD
 			}
 
 			// Check if Retweet or Reply
-			$retweetTypes = array('retweeted', 'quoted');
+			//$retweetTypes = array('retweeted', 'quoted');
 			$isRetweet = false;
 			$isReply = false;
 			if(isset($tweet->referenced_tweets)) {
-				if(in_array($tweet->referenced_tweets[0]->type, $retweetTypes)) {
+				//if(in_array($tweet->referenced_tweets[0]->type, $retweetTypes)) {
+				if($tweet->referenced_tweets[0]->type === 'retweeted') {
 					$isRetweet = true;
 				} elseif ($tweet->referenced_tweets[0]->type === 'replied_to') {
 					$isReply = true;
