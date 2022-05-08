@@ -15,7 +15,7 @@ class MangaDexBridge extends BridgeAbstract {
 				'required' => true
 			),
 			'lang' => array(
-				'name' => 'Chapter Languages',
+				'name' => 'Chapter Languages (default=all)',
 				'title' => 'comma-separated, two-letter language codes (example "en,jp")',
 				'exampleValue' => 'en,jp',
 				'required' => false
@@ -32,10 +32,39 @@ class MangaDexBridge extends BridgeAbstract {
 				'type' => 'checkbox',
 				'title' => 'Some chapters are inaccessible or only available on an external site. Include these?'
 			)
+		),
+		'Search Chapters' => array(
+			'chapter' => array(
+				'name' => 'Chapter Number (default=all)',
+				'title' => 'The example value finds the newest first chapters',
+				'exampleValue' => 1,
+				'required' => false
+			),
+			'groups' => array(
+				'name' => 'Group UUID (default=all)',
+				'title' => 'This can be found in the MangaDex Group Page URL',
+				'exampleValue' => '00e03853-1b96-4f41-9542-c71b8692033b',
+				'required' => false,
+			),
+			'uploader' => array(
+				'name' => 'User UUID (default=all)',
+				'title' => 'This can be found in the MangaDex User Page URL',
+				'exampleValue' => 'd2ae45e0-b5e2-4e7f-a688-17925c2d7d6b',
+				'required' => false,
+			),
+			'external' => array(
+				'name' => 'Allow external feed items',
+				'type' => 'checkbox',
+				'title' => 'Some chapters are inaccessible or only available on an external site. Include these?'
+			)
 		)
-		// Future Contexts:
-		// Latest uploads (whole site or group): https://api.mangadex.org/swagger.html#/Chapter/get-chapter
-		// Manga List (by author or tags) https://api.mangadex.org/swagger.html#/Manga/get-search-manga
+		// Future Manga Contexts:
+		// Manga List (by author or tags): https://api.mangadex.org/swagger.html#/Manga/get-search-manga
+		// Random Manga: https://api.mangadex.org/swagger.html#/Manga/get-manga-random
+		// Future Chapter Contexts:
+		// User Lists https://api.mangadex.org/swagger.html#/Feed/get-list-id-feed
+		//
+		// https://api.mangadex.org/docs/get-covers/
 	);
 
 	const TITLE_REGEX = '#title/(?<uuid>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})#';
@@ -73,9 +102,25 @@ class MangaDexBridge extends BridgeAbstract {
 			$array_params['includes[]'] = array('manga', 'scanlation_group', 'user');
 			$uri = self::API_ROOT . 'manga/' . $matches['uuid'] . '/feed';
 			break;
+		case 'Search Chapters':
+			$params['chapter'] = $this->getInput('chapter');
+			$params['groups[]'] = $this->getInput('groups');
+			$params['uploader'] = $this->getInput('uploader');
+			$params['order[updatedAt]'] = 'desc';
+			if (!$this->getInput('external')) {
+				$params['includeFutureUpdates'] = '0';
+			}
+			$array_params['includes[]'] = array('manga', 'scanlation_group', 'user');
+			$uri = self::API_ROOT . 'chapter';
+			break;
 		default:
 			returnServerError('Unimplemented Context (getAPI)');
 		}
+
+		// Remove null keys
+		$params = array_filter($params, function($v) {
+			return !empty($v);
+		});
 
 		$uri .= '?' . http_build_query($params);
 
@@ -92,6 +137,8 @@ class MangaDexBridge extends BridgeAbstract {
 		switch($this->queriedContext) {
 		case 'Title Chapters':
 			return $this->feedName . ' Chapters';
+		case 'Search Chapters':
+			return 'MangaDex Chapter Search';
 		default:
 			return parent::getName();
 		}
@@ -107,7 +154,7 @@ class MangaDexBridge extends BridgeAbstract {
 	}
 
 	public function collectData() {
-		$api_uri = $this->getApi();
+		$api_uri = $this->getAPI();
 		$header = array(
 			'Content-Type: application/json'
 		);
@@ -120,6 +167,9 @@ class MangaDexBridge extends BridgeAbstract {
 
 		switch($this->queriedContext) {
 		case 'Title Chapters':
+			$this->getChapters($content);
+			break;
+		case 'Search Chapters':
 			$this->getChapters($content);
 			break;
 		default:
@@ -159,6 +209,8 @@ class MangaDexBridge extends BridgeAbstract {
 				case 'manga':
 					if (empty($this->feedName))
 						$this->feedName = reset($rel['attributes']['title']);
+					if ($this->queriedContext !== 'Title Chapters')
+						$item['title'] = reset($rel['attributes']['title']) . ' ' . $item['title'];
 					break;
 				case 'user':
 					if (isset($item['author'])) {
