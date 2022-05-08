@@ -86,7 +86,7 @@ class PixivBridge extends BridgeAbstract {
 		switch($this->queriedContext) {
 		// Tags context
 		case '':
-			$uri = static::URI . 'tags/' . urlencode($this->getInput('tag'));
+			$uri = static::URI . 'tags/' . urlencode($this->getInput('tag') ?? '');
 			break;
 		case 'User':
 			$uri = static::URI . 'users/' . $this->getInput('userid');

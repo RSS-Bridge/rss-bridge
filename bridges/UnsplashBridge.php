@@ -103,7 +103,7 @@ class UnsplashBridge extends BridgeAbstract
 
 	public function getName()
 	{
-		$filteredUser = $this->getInput('u');
+		$filteredUser = $this->getInput('u') ?? '';
 		if (strlen($filteredUser) > 0) {
 			return $filteredUser . ' - ' . self::NAME;
 		} else {
