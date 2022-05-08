@@ -65,7 +65,7 @@ class AtomFormat extends FormatAbstract{
 			}
 
 			if (empty($entryContent))
-				$entryContent = $entryTitle;
+				$entryContent = ' ';
 
 			$entryAuthor = '';
 			if ($item->getAuthor()) {
