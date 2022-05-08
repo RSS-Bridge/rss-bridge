@@ -28,6 +28,9 @@ try {
 	}
 } catch(\Exception $e) {
 	error_log($e);
-	header('Content-Type: text/plain', true, $e->getCode());
+	$code = $e->getCode();
+	if ($code !== -1) {
+		header('Content-Type: text/plain', true, $code);
+	}
 	die($e->getMessage());
 }
