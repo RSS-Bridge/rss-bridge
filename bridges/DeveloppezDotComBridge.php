@@ -13,11 +13,10 @@ class DeveloppezDotComBridge extends FeedExpander
 	const ENCONDINGS = array('Windows-1252', 'UTF-8');
 	const PARAMETERS = array(
 		array(
-			'nbNews' => array(
-				'name' => 'Nombre de news à retourner',
+			'limit' => array(
+				'name' => 'Max items',
 				'type' => 'number',
-				'defaultValue' => 15,
-				'title' => 'Maximum is 20'
+				'defaultValue' => 5,
 			),
 			// list of the differents RSS availables
 			'domain' => array(
@@ -178,20 +177,6 @@ class DeveloppezDotComBridge extends FeedExpander
 	}
 
 	/**
-	 * Return the number of new to collect
-	 */
-	public function getNbNews()
-	{
-		$nbNews = $this->getInput('nbNews');
-		if (!empty($nbNews)) {
-			return $nbNews;
-		}
-
-		// Default value
-		return 15;
-	}
-
-	/**
 	 * Grabs the RSS item from Developpez.com
 	 */
 	public function collectData()
@@ -206,6 +191,10 @@ class DeveloppezDotComBridge extends FeedExpander
 	 */
 	protected function parseItem($newsItem)
 	{
+		if (count($this->items) >= $this->getInput('limit')) {
+			return null;
+		}
+
 		// This function parse each entry in the RSS with the default parse
 		$item = parent::parseItem($newsItem);
 
@@ -297,7 +286,7 @@ class DeveloppezDotComBridge extends FeedExpander
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	private function decodeParagraph($p)
 	{
