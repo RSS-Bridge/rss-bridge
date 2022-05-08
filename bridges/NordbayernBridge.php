@@ -122,7 +122,9 @@ class NordbayernBridge extends BridgeAbstract {
 			// of the title image. If we didn't do this some rss programs
 			// would show the subtitle of the title image as teaser instead
 			// of the actuall article teaser.
-			$item['content'] .= $content->find('p[class=article__teaser]', 0);
+			$item['content'] .= '<p class="article__teaser">' .
+				$content->find('p[class=article__teaser]', 0)->plaintext
+				. '</p>';
 			$item['content'] .= self::getUseFullContent($content);
 		}
 
