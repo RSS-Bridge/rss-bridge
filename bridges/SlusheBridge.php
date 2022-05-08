@@ -93,6 +93,7 @@ class SlusheBridge extends BridgeAbstract {
 					'?s=1';
 				break;
 		}
+
 		$headers = array(
 			'Authority : slushe.com',
 			'Cookie: age-verify=1;',
@@ -103,15 +104,15 @@ class SlusheBridge extends BridgeAbstract {
 			'sec-fetch-mode: navigate',
 			'sec-fetch-site: same-origin',
 			'sec-fetch-user: ?1',
-			'upgrade-insecure-requests: 1',
-			'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' .
-			'(KHTML, like Gecko) Chrome/100.0.4896.147 Safari/537.36'
+			'upgrade-insecure-requests: 1'
 		);
-		$curl_opts = array(
-			CURLOPT_HTTP_VERSION => 3,
-		);
+		// Add user-agent string to headers with implode, due to line length limit
+		$user_agent_string = [
+			'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/',
+			'537.36(KHTML, like Gecko) Chrome/100.0.4896.147 Safari/537.36'
+		];
+		$headers[] = implode('', $user_agent_string);
 
-		//$html = getSimpleHTMLDOM($uri, $headers, $curl_opts);
 		$html = getSimpleHTMLDOM($uri, $headers);
 
 		//Debug::log($html);
@@ -127,29 +128,44 @@ class SlusheBridge extends BridgeAbstract {
 			$author = $element->find('div.artist', 0)->
 				first_child()->first_child()->innertext;
 
-			$media_html = '';
-			// Look for image thumbnails
-			$media_uris = $element->find('div.thumb', 0);
-			if (isset($media_uris)) {
-				foreach($media_uris->find('img') as $media_uri) {
-					$media_html .= $media_uri;
-				}
-			}
-			// Look for video thumbnails
-			$media_uris = $element->find('div.thumb-holder', 0);
-			if (isset($media_uris)) {
-				foreach($media_uris->find('img') as $media_uri) {
-					$media_html .= $media_uri;
-				}
-			}
-
-			// Fill item
+			// Create & populate item
 			$item = array();
 			$item['uri'] = $article_uri;
 			$item['id'] = $item['uri'];
 			$item['timestamp'] = $timestamp;
 			$item['title'] = $title;
 			$item['author'] = $author;
+
+			$media_html = '';
+
+			// Look for image thumbnails
+			$media_uris = $element->find('div.thumb', 0);
+			if (isset($media_uris)) {
+				// Add gallery image count, if it exists
+				$gallery_count = $media_uris->find('span.count', 0);
+				if (isset($gallery_count)) {
+					$media_html .= '<p>Gallery count: ' .
+						$gallery_count->first_child()->innertext . '</p>';
+				}
+				// Add image thumbnail(s)
+				foreach($media_uris->find('img') as $media_uri) {
+					$media_html .= '<a href="' . $article_uri . '">' . $media_uri . '</a>';
+					//Debug::log('Adding to enclosures: ' . str_replace(' ', '%20', $media_uri->src));
+					$item['enclosures'][] = str_replace(' ', '%20', $media_uri->src);
+				}
+			}
+
+			// Look for video thumbnails
+			$media_uris = $element->find('div.thumb-holder', 0);
+			// Add video thumbnail(s)
+			if (isset($media_uris)) {
+				foreach($media_uris->find('img') as $media_uri) {
+					$media_html .= '<p>Video:</p><a href="' .
+						$article_uri . '">' . $media_uri . '</a>';
+					//Debug::log('Adding to enclosures: ' . $media_uri->src);
+					$item['enclosures'][] = $media_uri->src;
+				}
+			}
 			$item['content'] = $media_html;
 
 			if(isset($item['title'])) {
