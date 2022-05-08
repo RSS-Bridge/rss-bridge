@@ -56,10 +56,10 @@ class RadioMelodieBridge extends BridgeAbstract {
 
 				// Handle date to timestamp
 				$dateHTML = $article->find('div[class=author]', 0)->children(1)->plaintext;
-				echo $dateHTML;
+
 				preg_match('/([a-z]{4,10}[ ]{1,2}[0-9]{1,2} [\p{L}]{3,10} [0-9]{4} à [0-9]{2}:[0-9]{2})/mus', $dateHTML, $matches);
 				$dateText = $matches[1];
-				var_dump($matches);
+
 				$timestamp = $this->parseDate($dateText);
 
 				$item['enclosures'] = array_merge($picture, $audio);
