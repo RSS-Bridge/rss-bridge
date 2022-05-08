@@ -55,7 +55,6 @@ class ConnectivityAction extends ActionAbstract {
 	private function reportBridgeConnectivity($bridgeName) {
 
 		$bridgeFac = new \BridgeFactory();
-		$bridgeFac->setWorkingDir(PATH_LIB_BRIDGES);
 
 		if(!$bridgeFac->isWhitelisted($bridgeName)) {
 			header('Content-Type: text/html');

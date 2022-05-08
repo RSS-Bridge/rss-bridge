@@ -289,7 +289,6 @@ This bridge is not fetching its content through a secure connection</div>';
 	static function displayBridgeCard($bridgeName, $formats, $isActive = true){
 
 		$bridgeFac = new \BridgeFactory();
-		$bridgeFac->setWorkingDir(PATH_LIB_BRIDGES);
 
 		$bridge = $bridgeFac->create($bridgeName);
 

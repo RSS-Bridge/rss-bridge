@@ -41,7 +41,6 @@ class ListActionTest extends TestCase {
 		);
 
 		$bridgeFac = new BridgeFactory();
-		$bridgeFac->setWorkingDir(PATH_LIB_BRIDGES);
 
 		$this->assertEquals(
 			count($bridgeFac->getBridgeNames()),
