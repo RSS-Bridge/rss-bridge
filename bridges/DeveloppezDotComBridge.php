@@ -201,7 +201,7 @@ class DeveloppezDotComBridge extends FeedExpander
 
 		// There is a bug in Developpez RSS, coma are writtent as '~?' in the
 		// title, so I have to fix it manually
-		$item["title"] = $this->fixComaInTitle($item["title"]);
+		$item['title'] = $this->fixComaInTitle($item['title']);
 
 		// We get the content of the full article behind the RSS item URL
 		$articleHTMLContent = getSimpleHTMLDOMCached($item['uri']);
@@ -351,7 +351,7 @@ class DeveloppezDotComBridge extends FeedExpander
 			return ' ' . $txt;
 		}
 		// If the text start with word (not punctation), we had a space
-		$pattern = "/^\w/";
+		$pattern = '/^\w/';
 		if (preg_match($pattern, $txt)) {
 			return ' ' . $txt;
 		}
