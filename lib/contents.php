@@ -252,7 +252,11 @@ function getSimpleHTMLDOMCached($url,
 	&& !Debug::isEnabled()) { // Contents within duration
 		$content = $cache->loadData();
 	} else { // Content not within duration
-		$content = getContents($url, $header, $opts);
+		$content = getContents(
+			$url,
+			$header ?? [],
+			$opts ?? []
+		);
 		if($content !== false) {
 			$cache->saveData($content);
 		}
