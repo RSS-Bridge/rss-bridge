@@ -1,7 +1,8 @@
 <?php
+
 class DeveloppezDotComBridge extends FeedExpander
 {
-	const CREATOR = 'polopollo';
+
 	const MAINTAINER = 'Binnette';
 	const NAME = 'Developpez.com Actus (FR)';
 	const URI = 'https://www.developpez.com/';
@@ -217,7 +218,7 @@ class DeveloppezDotComBridge extends FeedExpander
 		// Now we will attach video url in item
 		$videosUrl = $this->getAllVideoUrl($articleHTMLContent);
 		if (!empty($videosUrl)) {
-			$item['enclosures'] = [...$item['enclosures'], ...$videosUrl];
+			$item['enclosures'] = array_merge($item['enclosures'], $videosUrl);
 		}
 
 		// Now we can look for the blog writer/creator
