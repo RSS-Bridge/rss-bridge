@@ -137,8 +137,11 @@ class MangaDexBridge extends BridgeAbstract {
 			if (!$this->getInput('external') && $chapter['attributes']['pages'] == 0)
 				continue;
 
-			// Preceding space accounts for Manga title added later
-			$item['title'] = ' Chapter ' . $chapter['attributes']['chapter'];
+			$item['title'] = '';
+			if (isset($chapter['attributes']['volume']))
+				$item['title'] .= 'Volume ' . $chapter['attributes']['volume'] . ' ';
+			if (isset($chapter['attributes']['chapter']))
+				$item['title'] .= 'Chapter ' . $chapter['attributes']['chapter'];
 			if (!empty($chapter['attributes']['title'])) {
 				$item['title'] .= ' - ' . $chapter['attributes']['title'];
 			}
@@ -156,8 +159,6 @@ class MangaDexBridge extends BridgeAbstract {
 				case 'manga':
 					if (empty($this->feedName))
 						$this->feedName = reset($rel['attributes']['title']);
-
-					$item['title'] = reset($rel['attributes']['title']) . $item['title'];
 					break;
 				case 'user':
 					if (isset($item['author'])) {
