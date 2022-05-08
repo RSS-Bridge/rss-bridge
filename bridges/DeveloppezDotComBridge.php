@@ -167,7 +167,7 @@ class DeveloppezDotComBridge extends FeedExpander
 	/**
 	 * Return the RSS url for selected domain
 	 */
-	public function getRssUrl()
+	private function getRssUrl()
 	{
 		$domain = $this->getInput('domain');
 		if (!empty($domain)) {
