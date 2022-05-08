@@ -51,12 +51,12 @@ class NordbayernBridge extends BridgeAbstract {
 		$img = $picture->find('img', 0);
 		if ($img) {
 			$imgUrl = $img->src;
-			if(($imgUrl != '/img/nb/logo-vnp.png')  &&
-				($imgUrl != '/img/nn/logo-vnp.png') &&
-				($imgUrl != '/img/nb/logo-nuernberger-nachrichten.png') &&
-				($imgUrl != '/img/nb/logo-nordbayern.png') &&
-				($imgUrl != '/img/nn/logo-nuernberger-nachrichten.png') &&
-				($imgUrl != '/img/nb/logo-erlanger-nachrichten.png')) {
+			if(!str_contains($imgUrl, '/img/nb/logo-vnp.png')  &&
+				!str_contains($imgUrl, '/img/nn/logo-vnp.png') &&
+				!str_contains($imgUrl, '/img/nb/logo-nuernberger-nachrichten.png') &&
+				!str_contains($imgUrl, '/img/nb/logo-nordbayern.png') &&
+				!str_contains($imgUrl, '/img/nn/logo-nuernberger-nachrichten.png') &&
+				!str_contains($imgUrl, '/img/nb/logo-erlanger-nachrichten.png')) {
 				return '<br><img src="' . $imgUrl . '">';
 			}
 		}
