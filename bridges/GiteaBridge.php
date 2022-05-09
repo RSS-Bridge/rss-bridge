@@ -62,6 +62,13 @@ class GiteaBridge extends GogsBridge {
 		'Tags' => array(),
 	);
 
+	public function getName() {
+		switch($this->queriedContext) {
+			case 'Tags': return 'Tags for ' . $this->title;
+			default: return parent::getName();
+		}
+	}
+
 	public function getURI() {
 		switch($this->queriedContext) {
 			case 'Tags': {
