@@ -3,7 +3,6 @@ The `FormatAbstract` class implements the [`FormatInterface`](../08_Format_API/0
 * [setContentType](#the-setcontenttype-function)
 * [callContentType](#the-callcontenttype-function)
 * [sanitizeHtml](#the-sanitizehtml-function)
-* [array_trim](#the-array_trim-function)
 
 # Functions
 
@@ -29,12 +28,4 @@ The `sanitizeHtml` function receives an HTML formatted string and returns the st
 
 ```PHP
 sanitizeHtml(string $html): string
-```
-
-## The `array_trim` function
-
-The `array_trim` function receives an array of strings and returns the same array with all elements trimmed (like using the `trim` function on all elements)
-
-```PHP
-array_trim(array $elements): array
 ```
