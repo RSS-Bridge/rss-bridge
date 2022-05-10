@@ -124,8 +124,8 @@ EOD
 		)
 	);
 
-	private $apiToken     = null;
-	private $authHeaders = array();
+	// $Item variable needs to be accessible from multiple functions without passing
+	private $item = array();
 
 	public function getName() {
 		switch($this->queriedContext) {
@@ -167,9 +167,9 @@ EOD
 		$onlyMediaTweets = $this->getInput('imgonly');
 
 		// Read API token from config.ini.php, put into Header
-		$this->apiToken     = $this->getOption('twitterv2apitoken');
-		$this->authHeaders = array(
-			'authorization: Bearer ' . $this->apiToken,
+		$apiToken = $this->getOption('twitterv2apitoken');
+		$authHeaders = array(
+			'authorization: Bearer ' . $apiToken,
 		);
 
 		// Try to get all tweets
@@ -180,7 +180,7 @@ EOD
 				'user.fields'	=> 'pinned_tweet_id,profile_image_url'
 			);
 			$user = $this->makeApiCall('/users/by/username/'
-			. $this->getInput('u'), $params);
+			. $this->getInput('u'), $authHeaders, $params);
 
 			if(isset($user->errors)) {
 				Debug::log('User JSON: ' . json_encode($user));
@@ -209,7 +209,7 @@ EOD
 
 			// Get the tweets
 			$data = $this->makeApiCall('/users/' . $user->data->id
-			. '/tweets', $params);
+			. '/tweets', $authHeaders, $params);
 			break;
 
 		case 'By keyword or hashtag':
@@ -231,7 +231,7 @@ EOD
 				$params['query'] = $params['query'] . ' -is:retweet';
 			}
 
-			$data = $this->makeApiCall('/tweets/search/recent', $params);
+			$data = $this->makeApiCall('/tweets/search/recent', $authHeaders, $params);
 			break;
 
 		case 'By list ID':
@@ -246,7 +246,7 @@ EOD
 			);
 
 			$data = $this->makeApiCall('/lists/' . $this->getInput('listid') .
-			'/tweets', $params);
+			'/tweets', $authHeaders, $params);
 			break;
 
 		default:
@@ -291,13 +291,13 @@ EOD
 		$retweetedData = null;
 		$retweetedMedia = null;
 		$retweetedUsers = null;
-		if(!$hideImages && !$hideRetweets && isset($includesTweets)) {
+		if(!$hideImages && isset($includesTweets)) {
 			// There has to be a better PHP way to extract the tweet Ids?
 			$includesTweetsIds = array();
 			foreach($includesTweets as $includesTweet) {
 				$includesTweetsIds[] = $includesTweet->id;
 			}
-			//Debug::log('includesTweetsIds: ' . join(',', $includesTweetsIds));
+			Debug::log('includesTweetsIds: ' . join(',', $includesTweetsIds));
 
 			// Set default params for API query
 			$params = array(
@@ -309,7 +309,7 @@ EOD
 			);
 
 			// Get the retweeted tweets
-			$retweetedData = $this->makeApiCall('/tweets', $params);
+			$retweetedData = $this->makeApiCall('/tweets', $authHeaders, $params);
 
 			// Extract retweets Media data into array
 			isset($retweetedData->includes->media) ? $retweetedMedia
@@ -329,16 +329,19 @@ EOD
 				continue;
 			}
 
-			// Check if Retweet or Reply
-			//$retweetTypes = array('retweeted', 'quoted');
+			// Check if tweet is Retweet, Quote or Reply
 			$isRetweet = false;
 			$isReply = false;
+			$isQuote = false;
+
 			if(isset($tweet->referenced_tweets)) {
-				//if(in_array($tweet->referenced_tweets[0]->type, $retweetTypes)) {
-				if($tweet->referenced_tweets[0]->type === 'retweeted') {
-					$isRetweet = true;
-				} elseif ($tweet->referenced_tweets[0]->type === 'replied_to') {
-					$isReply = true;
+				switch($tweet->referenced_tweets[0]->type) {
+					case 'retweeted':
+						$isRetweet = true; break;
+					case 'quoted':
+						$isQuote = true; break;
+					case 'replied_to':
+						$isReply = true; break;
 				}
 			}
 
@@ -351,17 +354,33 @@ EOD
 			$cleanedTweet = nl2br($tweet->text);
 			//Debug::log('cleanedTweet: ' . $cleanedTweet);
 
-			// Perform filtering (skip tweets that don't contain desired word, if provided)
+			// Perform optional keyword filtering (only keep tweet if keyword is found)
 			if (! empty($tweetFilter)) {
 				if(stripos($cleanedTweet, $this->getInput('filter')) === false) {
 					continue;
 				}
 			}
 
-			// Initialize empty array to hold eventual HTML output
-			$item = array();
+			// Initialize empty array to hold feed item values
+			$this->item = array();
 
-			// Start setting values needed for HTML output
+			// Start getting and setting values needed for HTML output
+			$quotedTweet = null;
+			$cleanedQuotedTweet = null;
+			$quotedUser = null;
+			if ($isQuote) {
+				Debug::log('Tweet is quote');
+				foreach($includesTweets as $includesTweet) {
+					if($includesTweet->id === $tweet->referenced_tweets[0]->id) {
+						$quotedTweet = $includesTweet;
+						$cleanedQuotedTweet = nl2br($quotedTweet->text);
+						//Debug::log('Found quoted tweet');
+						break;
+					}
+				}
+
+				$quotedUser = $this->getTweetUser($quotedTweet, $retweetedUsers, $includesUsers);
+			}
 			if($isRetweet || is_null($user)) {
 				Debug::log('Tweet is retweet, or $user is null');
 				// Replace tweet object with original retweeted object
@@ -380,77 +399,45 @@ EOD
 				}
 
 				// Get user object for retweeted tweet
-				$originalUser = new stdClass(); // make the linters stop complaining
-				if(isset($retweetedUsers)) {
-					Debug::log('Searching for tweet author_id in $retweetedUsers');
-					foreach($retweetedUsers as $retweetedUser) {
-						if($retweetedUser->id === $tweet->author_id) {
-							$originalUser = $retweetedUser;
-							Debug::log('Found author_id match in $retweetedUsers');
-							break;
-						}
-					}
-				}
-				if(!isset($originalUser->username) && isset($includesUsers)) {
-					Debug::log('Searching for tweet author_id in $includesUsers');
-					foreach($includesUsers as $includesUser) {
-						if($includesUser->id === $tweet->author_id) {
-							$originalUser = $includesUser;
-							Debug::log('Found author_id match in $includesUsers');
-							break;
-						}
-					}
-				}
+				$originalUser = $this->getTweetUser($tweet, $retweetedUsers, $includesUsers);
 
-				$item['username']  = $originalUser->username;
-				$item['fullname']  = $originalUser->name;
+				$this->item['username']  = $originalUser->username;
+				$this->item['fullname']  = $originalUser->name;
 				if(isset($originalUser->profile_image_url)) {
-					$item['avatar']    = $originalUser->profile_image_url;
+					$this->item['avatar']    = $originalUser->profile_image_url;
 				} else{
-					$item['avatar'] = null;
+					$this->item['avatar'] = null;
 				}
 			} else{
-				$item['username']  = $user->data->username;
-				$item['fullname']  = $user->data->name;
-				$item['avatar']    = $user->data->profile_image_url;
+				$this->item['username']  = $user->data->username;
+				$this->item['fullname']  = $user->data->name;
+				$this->item['avatar']    = $user->data->profile_image_url;
 			}
-			$item['id']        = $tweet->id;
-			$item['timestamp'] = $tweet->created_at;
-			$item['uri']
-			= self::URI . $item['username'] . '/status/' . $item['id'];
-			$item['author']    = ($isRetweet ? 'RT: ' : '' )
-						 . $item['fullname']
+			$this->item['id']        = $tweet->id;
+			$this->item['timestamp'] = $tweet->created_at;
+			$this->item['uri']
+			= self::URI . $this->item['username'] . '/status/' . $this->item['id'];
+			$this->item['author']    = ($isRetweet ? 'RT: ' : '' )
+						 . $this->item['fullname']
 						 . ' (@'
-						 . $item['username'] . ')';
+						 . $this->item['username'] . ')';
 
-			// Skip non-media tweet (if selected)
+			// (Optional) Skip non-media tweet
 			// This check must wait until after retweets are identified
-			if ($onlyMediaTweets && !isset($tweet->attachments->media_keys)) {
-				continue;
+			if ($onlyMediaTweets && !isset($tweet->attachments->media_keys) &&
+				(($isQuote && !isset($quotedTweet->attachments->media_keys)) || !$isQuote)) {
+					// There is no media in current tweet or quoted tweet, skip to next
+					continue;
 			}
 
 			// Search for and replace URLs in Tweet text
-			$foundUrls = false;
-			if(isset($tweet->entities->urls)) {
-				foreach($tweet->entities->urls as $url) {
-					$cleanedTweet = str_replace($url->url,
-						'<a href="' . $url->expanded_url
-						. '">' . $url->display_url . '</a>',
-						$cleanedTweet);
-					$foundUrls = true;
-				}
-			}
-			if($foundUrls === false) {
-				// fallback to regex'es
-				$reg_ex = '/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/';
-				if(preg_match($reg_ex, $cleanedTweet, $url)) {
-					$cleanedTweet = preg_replace($reg_ex,
-						"<a href='{$url[0]}' target='_blank'>{$url[0]}</a> ",
-						$cleanedTweet);
-				}
+			$cleanedTweet = $this->replaceTweetURLs($tweet, $cleanedTweet);
+			if (isset($cleanedQuotedTweet)) {
+				Debug::log('Replacing URLs in Quoted Tweet text');
+				$cleanedQuotedTweet = $this->replaceTweetURLs($quotedTweet, $cleanedQuotedTweet);
 			}
 
-			// generate the title
+			// Generate Title text
 			if ($idAsTitle) {
 				$titleText = $tweet->id;
 			} else{
@@ -463,99 +450,38 @@ EOD
 				$titleText = 'R: ' . $titleText;
 			}
 
-			$item['title'] = $titleText;
+			$this->item['title'] = $titleText;
 
-			// Add avatar
+			// Generate Avatar HTML block
 			$picture_html = '';
-			if(!$hideProfilePic && isset($item['avatar'])) {
+			if(!$hideProfilePic && isset($this->item['avatar'])) {
 				$picture_html = <<<EOD
-<a href="https://twitter.com/{$item['username']}">
+<a href="https://twitter.com/{$this->item['username']}">
 <img
 	style="margin-right: 10px; margin-bottom: 10px;"
-	alt="{$item['username']}"
-	src="{$item['avatar']}"
-	title="{$item['fullname']}" />
+	alt="{$this->item['username']}"
+	src="{$this->item['avatar']}"
+	title="{$this->item['fullname']}" />
 </a>
 EOD;
 			}
 
-			// Get images
+			// Generate media HTML block
 			$media_html = '';
-			if(!$hideImages && isset($tweet->attachments->media_keys)) {
-
-				// Match media_keys in tweet to media list from, put matches
-				// into new array
-				$tweetMedia = array();
-				// Start by checking the original list of tweet Media includes
-				if(isset($includesMedia)) {
-					foreach($includesMedia as $includesMedium) {
-						if(in_array ($includesMedium->media_key,
-						$tweet->attachments->media_keys)) {
-							$tweetMedia[] = $includesMedium;
-						}
-					}
+			$quoted_media_html = '';
+			if(!$hideImages) {
+				if (isset($tweet->attachments->media_keys)) {
+					Debug::log('Generating HTML for tweet media');
+					$media_html = $this->createTweetMediaHTML($tweet, $includesMedia, $retweetedMedia);
 				}
-				// If no matches found, check the retweet Media includes
-				if(empty($tweetMedia) && isset($retweetedMedia)) {
-					foreach($retweetedMedia as $retweetedMedium) {
-						if(in_array ($retweetedMedium->media_key,
-						$tweet->attachments->media_keys)) {
-							$tweetMedia[] = $retweetedMedium;
-						}
-					}
-				}
-
-				foreach($tweetMedia as $media) {
-					switch($media->type) {
-					case 'photo':
-						if ($this->getInput('noimgscaling')) {
-							$image = $media->url;
-							$display_image = $media->url;
-						} else{
-							$image = $media->url . '?name=orig';
-							$display_image = $media->url;
-						}
-						// add enclosures
-						$item['enclosures'][] = $image;
-
-						$media_html .= <<<EOD
-<a href="{$image}">
-<img
-	referrerpolicy="no-referrer"
-	src="{$display_image}" />
-</a>
-EOD;
-						break;
-					case 'video':
-						// To Do: Is there a way to easily match this
-						// to a URL for a link?
-						$display_image = $media->preview_image_url;
-
-						$media_html .= <<<EOD
-<img
-	referrerpolicy="no-referrer"
-	src="{$display_image}" />
-EOD;
-						break;
-					case 'animated_gif':
-						// To Do: Is there a way to easily match this to a
-						// URL for a link?
-						$display_image = $media->preview_image_url;
-
-						$media_html .= <<<EOD
-<img
-	referrerpolicy="no-referrer"
-	src="{$display_image}" />
-EOD;
-						break;
-					default:
-						Debug::log('Missing support for media type: '
-						. $media->type);
-					}
+				if (isset($quotedTweet->attachments->media_keys)) {
+					Debug::log('Generating HTML for quoted tweet media');
+					$quoted_media_html = $this->createTweetMediaHTML($quotedTweet, $includesMedia, $retweetedMedia);
 				}
 			}
 
-			$item['content'] = <<<EOD
+			// Generate the HTML for Item content
+			$this->item['content'] = <<<EOD
 <div style="float: left;">
 	{$picture_html}
 </div>
@@ -564,13 +490,27 @@ EOD;
 </div>
 <div style="display: block; margin-top: 16px;">
 	{$media_html}
-</div>
 EOD;
 
-			$item['content'] = htmlspecialchars_decode($item['content'], ENT_QUOTES);
+			// Add Quoted Tweet HTML, if relevant
+			if (isset($quotedTweet)) {
+				$quotedTweetURI = self::URI . $quotedUser->username . '/status/' . $quotedTweet->id;
+				$quote_html = <<<QUOTE
+<div style="display: table; border-style: solid; border-width: 1px; 
+	border-radius: 5px; padding: 5px;">
+	<p><b>$quotedUser->name</b> @$quotedUser->username · 
+	<a href="$quotedTweetURI">$quotedTweet->created_at</a></p>
+	$cleanedQuotedTweet
+	$quoted_media_html
+</div>
+QUOTE;
+				$this->item['content'] .= $quote_html;
+			}
 
-			// put out item
-			$this->items[] = $item;
+			$this->item['content'] = htmlspecialchars_decode($this->item['content'], ENT_QUOTES);
+
+			// Add current Item to Items array
+			$this->items[] = $this->item;
 		}
 
 		// Sort all tweets in array by date
@@ -587,10 +527,160 @@ EOD;
 	 * @param $params array additional URI parmaeters
 	 * @return object json data
 	 */
-	private function makeApiCall($api, $params) {
+	private function makeApiCall($api, $authHeaders, $params) {
 		$uri = self::API_URI . $api . '?' . http_build_query($params);
-		$result = getContents($uri, $this->authHeaders, array(), false);
+		$result = getContents($uri, $authHeaders, array(), false);
 		$data = json_decode($result);
 		return $data;
+	}
+
+	/**
+	 * Change format of URLs in tweet text
+	 * @param $tweetObject object current Tweet JSON
+	 * @param $tweetText string current Tweet text
+	 * @return string modified tweet text
+	 */
+	private function replaceTweetURLs($tweetObject, $tweetText) {
+		$foundUrls = false;
+		// Rewrite URL links, based on URL list in tweet object
+		if(isset($tweetObject->entities->urls)) {
+			foreach($tweetObject->entities->urls as $url) {
+				$tweetText = str_replace($url->url,
+					'<a href="' . $url->expanded_url
+					. '">' . $url->display_url . '</a>',
+					$tweetText);
+			}
+			$foundUrls = true;
+		}
+		// Regex fallback for rewriting URL links. Should never trigger?
+		if($foundUrls === false) {
+			$reg_ex = '/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/';
+			if(preg_match($reg_ex, $tweetText, $url)) {
+				$tweetText = preg_replace($reg_ex,
+					"<a href='{$url[0]}' target='_blank'>{$url[0]}</a> ",
+					$tweetText);
+			}
+		}
+		// Fix back-to-back URLs by adding a <br>
+		$reg_ex = '/\/a>\s*<a/';
+		$tweetText = preg_replace($reg_ex, '/a><br><a', $tweetText);
+
+		return $tweetText;
+	}
+
+	/**
+	 * Find User object for Retweeted/Quoted tweet
+	 * @param $tweetObject object current Tweet JSON
+	 * @param $retweetedUsers
+	 * @param $includesUsers
+	 * @return object found User
+	 */
+	private function getTweetUser($tweetObject, $retweetedUsers, $includesUsers) {
+		$originalUser = new stdClass(); // make the linters stop complaining
+		if(isset($retweetedUsers)) {
+			Debug::log('Searching for tweet author_id in $retweetedUsers');
+			foreach($retweetedUsers as $retweetedUser) {
+				if($retweetedUser->id === $tweetObject->author_id) {
+					$matchedUser = $retweetedUser;
+					Debug::log('Found author_id match in $retweetedUsers');
+					break;
+				}
+			}
+		}
+		if(!isset($matchedUser->username) && isset($includesUsers)) {
+			Debug::log('Searching for tweet author_id in $includesUsers');
+			foreach($includesUsers as $includesUser) {
+				if($includesUser->id === $tweetObject->author_id) {
+					$matchedUser = $includesUser;
+					Debug::log('Found author_id match in $includesUsers');
+					break;
+				}
+			}
+		}
+		return $matchedUser;
+	}
+
+	/**
+	 * Generates HTML for embedded media
+	 * @param $tweetObject object current Tweet JSON
+	 * @param $includesMedia
+	 * @param $retweetedMedia
+	 * @return string modified tweet text
+	 */
+	private function createTweetMediaHTML($tweetObject, $includesMedia, $retweetedMedia){
+		$media_html = '';
+		// Match media_keys in tweet to media list from, put matches into new array
+		$tweetMedia = array();
+		// Start by checking the original list of tweet Media includes
+		if(isset($includesMedia)) {
+			Debug::log('Searching for media_key in $includesMedia');
+			foreach($includesMedia as $includesMedium) {
+				if(in_array ($includesMedium->media_key,
+				$tweetObject->attachments->media_keys)) {
+					Debug::log('Found media_key in $includesMedia');
+					$tweetMedia[] = $includesMedium;
+				}
+			}
+		}
+		// If no matches found, check the retweet Media includes
+		if(empty($tweetMedia) && isset($retweetedMedia)) {
+			Debug::log('Searching for media_key in $retweetedMedia');
+			foreach($retweetedMedia as $retweetedMedium) {
+				if(in_array ($retweetedMedium->media_key,
+				$tweetObject->attachments->media_keys)) {
+					Debug::log('Found media_key in $retweetedMedia');
+					$tweetMedia[] = $retweetedMedium;
+				}
+			}
+		}
+
+		foreach($tweetMedia as $media) {
+			switch($media->type) {
+			case 'photo':
+				if ($this->getInput('noimgscaling')) {
+					$image = $media->url;
+					$display_image = $media->url;
+				} else{
+					$image = $media->url . '?name=orig';
+					$display_image = $media->url;
+				}
+				// add enclosures
+				$this->item['enclosures'][] = $image;
+
+				$media_html .= <<<EOD
+<a href="{$image}">
+<img
+referrerpolicy="no-referrer"
+src="{$display_image}" />
+</a>
+EOD;
+				break;
+			case 'video':
+				// To Do: Is there a way to easily match this
+				// to a direct Video URL?
+				$display_image = $media->preview_image_url;
+
+				$media_html .= <<<EOD
+<p>Video:</p><a href="{$this->item['uri']}">
+<img referrerpolicy="no-referrer" src="{$display_image}" /></a>
+EOD;
+				break;
+			case 'animated_gif':
+				// To Do: Is there a way to easily match this to a
+				// direct animated Gif URL?
+				$display_image = $media->preview_image_url;
+
+				$media_html .= <<<EOD
+<p>Animated Gif:</p><a href="{$this->item['uri']}">
+<img referrerpolicy="no-referrer" src="{$display_image}" /></a>
+EOD;
+				break;
+			default:
+				Debug::log('Missing support for media type: '
+				. $media->type);
+			}
+		}
+
+		return $media_html;
 	}
 }
