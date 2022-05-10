@@ -42,34 +42,49 @@ class PicukiBridge extends BridgeAbstract
 		$html = getSimpleHTMLDOM($this->getURI());
 
 		foreach ($html->find('.box-photos .box-photo') as $element) {
-
-				// check if item is an ad.
+			// skip ad items
 			if (in_array('adv', explode(' ', $element->class))) {
 				continue;
 			}
 
-			$item = array();
+			$url = urljoin(self::URI, $element->find('a', 0)->href);
+
+			$author = trim($element->find('.user-nickname', 0)->plaintext);
 
 			$date = date_create();
-			$relative_date = str_replace(' ago', '', $element->find('.time', 0)->plaintext);
-			date_sub($date, date_interval_create_from_date_string($relative_date));
-			$item['timestamp'] = date_format($date, 'r');
-
-			$item['uri'] = urljoin(self::URI, $element->find('a', 0)->href);
+			$relativeDate = str_replace(' ago', '', $element->find('.time', 0)->plaintext);
+			date_sub($date, date_interval_create_from_date_string($relativeDate));
 
 			$description = trim($element->find('.photo-description', 0)->plaintext);
-			$item['title'] = mb_substr($description, 0, 60);
 
-			$is_video = (bool) $element->find('.video-icon', 0);
-			$item['content'] = ($is_video) ? '(video) ' : '';
-			$item['content'] .= $description;
+			$isVideo = (bool) $element->find('.video-icon', 0);
+			$videoNote = $isVideo ? '<p><i>(video)</i></p>' : '';
 
-			$postImage = $element->find('.post-image', 0)->src;
-			$item['enclosures'] = [
-				urljoin(self::URI, $postImage)
-			];
-			$item['thumbnail'] = urljoin(self::URI, $postImage);
-			$this->items[] = $item;
+			$imageUrl = $element->find('.post-image', 0)->src;
+
+			// the last path segment needs to be encoded, because it contains special characters like + or |
+			$imageUrlParts = explode('/', $imageUrl);
+			$imageUrlParts[count($imageUrlParts) - 1] = urlencode($imageUrlParts[count($imageUrlParts) - 1]);
+			$imageUrl = implode('/', $imageUrlParts);
+
+			// add fake file extension for it to be recognized as image/jpeg instead of application/octet-stream
+			$imageUrl = $imageUrl . '#.jpg';
+
+			$this->items[] = array(
+				'uri'        => $url,
+				'author'     => $author,
+				'timestamp'  => date_format($date, 'r'),
+				'title'      => strlen($description) > 60 ? mb_substr($description, 0, 57) . '...' : $description,
+				'thumbnail'  => $imageUrl,
+				'enclosures' => [$imageUrl],
+				'content'    => <<<HTML
+<a href="{$url}">
+	<img loading="lazy" src="{$imageUrl}" />
+</a>
+{$videoNote}
+<p>{$description}<p>
+HTML
+			);
 		}
 	}
 
