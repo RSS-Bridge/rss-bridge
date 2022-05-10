@@ -68,9 +68,9 @@ class GiteaBridge extends BridgeAbstract {
 		),
 		'Pull requests' => array(
 			'include_description' => array(
-				'name' => 'Include issue description',
+				'name' => 'Include pull request description',
 				'type' => 'checkbox',
-				'title' => 'Activate to include the issue description',
+				'title' => 'Activate to include the pull request description',
 			),
 		),
 		'Releases' => array(),
