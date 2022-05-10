@@ -88,6 +88,14 @@ class NordbayernBridge extends BridgeAbstract {
 		return $content;
 	}
 
+	private function getTeaser($content) {
+		$teaser = $content->find('p[class=article__teaser]', 0)->plaintext;
+		$teaser = preg_replace('/ {143}- {66}/', ' - ', $teaser);
+		$teaser = preg_replace('/ {53}/', '', $teaser);
+		$teaser = '<p class="article__teaser">' . $teaser . '</p>';
+		return $teaser;
+	}
+
 	private function handleArticle($link) {
 		$item = array();
 		$article = getSimpleHTMLDOM($link);
@@ -122,9 +130,7 @@ class NordbayernBridge extends BridgeAbstract {
 			// of the title image. If we didn't do this some rss programs
 			// would show the subtitle of the title image as teaser instead
 			// of the actuall article teaser.
-			$item['content'] .= '<p class="article__teaser">' .
-				$content->find('p[class=article__teaser]', 0)->plaintext
-				. '</p>';
+			$item['content'] .= self::getTeaser($content);
 			$item['content'] .= self::getUseFullContent($content);
 		}
 
