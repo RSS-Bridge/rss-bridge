@@ -94,12 +94,12 @@ class GroupBundNaturschutzBridge extends XPathAbstract
 		),
 	);
 
-	const XPATH_EXPRESSION_ITEM = '//div[@itemtype="http://schema.org/Article"]';
-	const XPATH_EXPRESSION_ITEM_TITLE = './/*[@itemprop="headline"]';
-	const XPATH_EXPRESSION_ITEM_CONTENT = './/*[@itemprop="description"]/text()';
-	const XPATH_EXPRESSION_ITEM_URI = './/a/@href';
-	const XPATH_EXPRESSION_ITEM_TIMESTAMP = './/*[@itemprop="datePublished"]/@datetime';
-	const XPATH_EXPRESSION_ITEM_ENCLOSURES = './/img/@src';
+	const USER_EXPRESSION_ITEM = '//div[@itemtype="http://schema.org/Article"]';
+	const USER_EXPRESSION_ITEM_TITLE = './/*[@itemprop="headline"]';
+	const USER_EXPRESSION_ITEM_CONTENT = './/*[@itemprop="description"]/text()';
+	const USER_EXPRESSION_ITEM_URI = './/a/@href';
+	const USER_EXPRESSION_ITEM_TIMESTAMP = './/*[@itemprop="datePublished"]/@datetime';
+	const USER_EXPRESSION_ITEM_ENCLOSURES = './/img/@src';
 
 	protected function getSourceUrl() {
 		return 'https://' . $this->getInput('group') . '.bund-naturschutz.de/aktuelles';

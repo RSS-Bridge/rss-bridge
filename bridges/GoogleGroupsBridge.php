@@ -30,14 +30,14 @@ class GoogleGroupsBridge extends XPathAbstract {
 		),
 	);
 
-	const XPATH_EXPRESSION_ITEM = '//div[@class="yhgbKd"]';
-	const XPATH_EXPRESSION_ITEM_TITLE = './/span[@class="o1DPKc"]';
-	const XPATH_EXPRESSION_ITEM_CONTENT = './/span[@class="WzoK"]';
-	const XPATH_EXPRESSION_ITEM_URI = './/a[@class="ZLl54"]/@href';
-	const XPATH_EXPRESSION_ITEM_AUTHOR = './/span[@class="z0zUgf"][last()]';
-	const XPATH_EXPRESSION_ITEM_TIMESTAMP = './/div[@class="tRlaM"]';
-	const XPATH_EXPRESSION_ITEM_ENCLOSURES = '';
-	const XPATH_EXPRESSION_ITEM_CATEGORIES = '';
+	const USER_EXPRESSION_ITEM = '//div[@class="yhgbKd"]';
+	const USER_EXPRESSION_ITEM_TITLE = './/span[@class="o1DPKc"]';
+	const USER_EXPRESSION_ITEM_CONTENT = './/span[@class="WzoK"]';
+	const USER_EXPRESSION_ITEM_URI = './/a[@class="ZLl54"]/@href';
+	const USER_EXPRESSION_ITEM_AUTHOR = './/span[@class="z0zUgf"][last()]';
+	const USER_EXPRESSION_ITEM_TIMESTAMP = './/div[@class="tRlaM"]';
+	const USER_EXPRESSION_ITEM_ENCLOSURES = '';
+	const USER_EXPRESSION_ITEM_CATEGORIES = '';
 	const SETTING_FIX_ENCODING = true;
 
 	protected function getSourceUrl() {

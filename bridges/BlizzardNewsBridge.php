@@ -35,14 +35,14 @@ class BlizzardNewsBridge extends XPathAbstract {
 	);
 	const CACHE_TIMEOUT = 3600;
 
-	const XPATH_EXPRESSION_ITEM = '/html/body/div/div[4]/div[2]/div[2]/div/div/section/ol/li/article';
-	const XPATH_EXPRESSION_ITEM_TITLE = './/div/div[2]/h2';
-	const XPATH_EXPRESSION_ITEM_CONTENT = './/div[@class="ArticleListItem-description"]/div[@class="h6"]';
-	const XPATH_EXPRESSION_ITEM_URI = './/a[@class="ArticleLink ArticleLink"]/@href';
-	const XPATH_EXPRESSION_ITEM_AUTHOR = '';
-	const XPATH_EXPRESSION_ITEM_TIMESTAMP = './/time[@class="ArticleListItem-footerTimestamp"]/@timestamp';
-	const XPATH_EXPRESSION_ITEM_ENCLOSURES = './/div[@class="ArticleListItem-image"]/@style';
-	const XPATH_EXPRESSION_ITEM_CATEGORIES = './/div[@class="ArticleListItem-label"]';
+	const USER_EXPRESSION_ITEM = '/html/body/div/div[4]/div[2]/div[2]/div/div/section/ol/li/article';
+	const USER_EXPRESSION_ITEM_TITLE = './/div/div[2]/h2';
+	const USER_EXPRESSION_ITEM_CONTENT = './/div[@class="ArticleListItem-description"]/div[@class="h6"]';
+	const USER_EXPRESSION_ITEM_URI = './/a[@class="ArticleLink ArticleLink"]/@href';
+	const USER_EXPRESSION_ITEM_AUTHOR = '';
+	const USER_EXPRESSION_ITEM_TIMESTAMP = './/time[@class="ArticleListItem-footerTimestamp"]/@timestamp';
+	const USER_EXPRESSION_ITEM_ENCLOSURES = './/div[@class="ArticleListItem-image"]/@style';
+	const USER_EXPRESSION_ITEM_CATEGORIES = './/div[@class="ArticleListItem-label"]';
 	const SETTING_FIX_ENCODING = true;
 
 	/**
