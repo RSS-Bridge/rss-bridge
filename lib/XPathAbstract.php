@@ -16,6 +16,8 @@
  * extends all of its functionality.
  **/
 abstract class XPathAbstract extends UserDefinedAbstract {
+	const XPATH_EXPRESSION_FEED_TITLE = './/title';
+	const XPATH_EXPRESSION_FEED_ICON = './/link[@rel="icon"]/@href';
 	/**
 	 * This function defines how xpath expressions are used to subset the data.
 	 */
