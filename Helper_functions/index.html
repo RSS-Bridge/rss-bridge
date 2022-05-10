@@ -93,7 +93,7 @@
     <div class="Page__header">
         <h1><a href="../Helper_functions/index.html">Helper functions</a></h1>
                 <span class="ModifiedDate">
-            May 9, 2022 at 2:49 PM        </span>
+            May 10, 2022 at 12:38 AM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/06_Helper_functions/index.md" target="_blank">
                 Edit on GitHub            </a>
@@ -184,6 +184,78 @@ $html = defaultLinkTo($html, <span class="hljs-keyword">$this</span>-&gt;getURI(
 
 <span class="hljs-comment">// Output</span>
 <span class="hljs-comment">// &lt;img src="https://www.github.com/rss-bridge/rss-bridge/blob/master/README.md"&gt;</span>
+</code></pre>
+<h1><a id="backgroundtoimg" href="#backgroundtoimg" class="Permalink" aria-hidden="true" title="Permalink">#</a>backgroundToImg</h1>
+<p>Replaces tags with styles of <code>backgroud-image</code> by <code>&lt;img /&gt;</code> tags.</p>
+<pre><code class="hljs php">backgroundToImg(mixed $htmlContent) : object
+</code></pre>
+<p>Returns a DOM object (even if provided a string).</p>
+<h1><a id="extractfromdelimiters" href="#extractfromdelimiters" class="Permalink" aria-hidden="true" title="Permalink">#</a>extractFromDelimiters</h1>
+<p>Extract the first part of a string matching the specified start and end delimiters.</p>
+<pre><code class="hljs php"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">extractFromDelimiters</span><span class="hljs-params">(string $string, string $start, string $end)</span> : <span class="hljs-title">mixed</span>
+</span></code></pre>
+<p>Returns the extracted string if delimiters were found and false otherwise.</p>
+<p><strong>Example</strong></p>
+<pre><code class="hljs php">$string = <span class="hljs-string">'&lt;div&gt;Post author: John Doe&lt;/div&gt;'</span>;
+$start = <span class="hljs-string">'author: '</span>;
+$end = <span class="hljs-string">'&lt;'</span>;
+$extracted = extractFromDelimiters($string, $start, $end);
+
+<span class="hljs-comment">// Output</span>
+<span class="hljs-comment">// 'John Doe'</span>
+</code></pre>
+<h1><a id="stripwithdelimiters" href="#stripwithdelimiters" class="Permalink" aria-hidden="true" title="Permalink">#</a>stripWithDelimiters</h1>
+<p>Remove one or more part(s) of a string using a start and end delmiters.
+It is the inverse of <code>extractFromDelimiters</code>.</p>
+<pre><code class="hljs php"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">stripWithDelimiters</span><span class="hljs-params">(string $string, string $start, string $end)</span> : <span class="hljs-title">string</span>
+</span></code></pre>
+<p>Returns the cleaned string, even if no delimiters were found.</p>
+<p><strong>Example</strong></p>
+<pre><code class="hljs php">$string = <span class="hljs-string">'foo&lt;script&gt;superscript()&lt;/script&gt;bar'</span>;
+$start = <span class="hljs-string">'&lt;script&gt;'</span>;
+$end = <span class="hljs-string">'&lt;/script&gt;'</span>;
+$cleaned = stripWithDelimiters($string, $start, $end);
+
+<span class="hljs-comment">// Output</span>
+<span class="hljs-comment">// 'foobar'</span>
+</code></pre>
+<h1><a id="striprecursivehtmlsection" href="#striprecursivehtmlsection" class="Permalink" aria-hidden="true" title="Permalink">#</a>stripRecursiveHTMLSection</h1>
+<p>Remove HTML sections containing one or more sections using the same HTML tag.</p>
+<pre><code class="hljs php"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">stripRecursiveHTMLSection</span><span class="hljs-params">(string $string, string $tag_name, string $tag_start)</span> : <span class="hljs-title">string</span>
+</span></code></pre>
+<p><strong>Example</strong></p>
+<pre><code class="hljs php">$string = <span class="hljs-string">'foo&lt;div class="ads"&gt;&lt;div&gt;ads&lt;/div&gt;ads&lt;/div&gt;bar'</span>;
+$tag_name = <span class="hljs-string">'div'</span>;
+$tag_start = <span class="hljs-string">'&lt;div class="ads"&gt;'</span>;
+$cleaned = stripRecursiveHTMLSection($string, $tag_name, $tag_start);
+
+<span class="hljs-comment">// Output</span>
+<span class="hljs-comment">// 'foobar'</span>
+</code></pre>
+<h1><a id="markdowntohtml" href="#markdowntohtml" class="Permalink" aria-hidden="true" title="Permalink">#</a>markdownToHtml</h1>
+<p>Converts markdown input to HTML using <a href="https://parsedown.org/" class="Link--external" rel="noopener noreferrer">Parsedown</a>.</p>
+<pre><code class="hljs php"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">markdownToHtml</span><span class="hljs-params">(string $string)</span> : <span class="hljs-title">string</span>
+</span></code></pre>
+<p><strong>Example</strong></p>
+<pre><code class="hljs php">$input = <span class="hljs-string">&lt;&lt;&lt;EOD
+RELEASE-2.8
+ * Share QR code of a token
+ * Dark mode improvemnet
+ * Fix some layout issues
+ * Add shortcut to launch the app with screenshot mode on
+ * Translation improvements
+EOD;</span>
+$html = markdownToHtml($input);
+
+<span class="hljs-comment">// Output:</span>
+<span class="hljs-comment">// &lt;p&gt;RELEASE-2.8&lt;/p&gt;</span>
+<span class="hljs-comment">// &lt;ul&gt;</span>
+<span class="hljs-comment">// &lt;li&gt;Share QR code of a token&lt;/li&gt;</span>
+<span class="hljs-comment">// &lt;li&gt;Dark mode improvemnet&lt;/li&gt;</span>
+<span class="hljs-comment">// &lt;li&gt;Fix some layout issues&lt;/li&gt;</span>
+<span class="hljs-comment">// &lt;li&gt;Add shortcut to launch the app with screenshot mode on&lt;/li&gt;</span>
+<span class="hljs-comment">// &lt;li&gt;Translation improvements&lt;/li&gt;</span>
+<span class="hljs-comment">// &lt;/ul&gt;</span>
 </code></pre>
     </div>
 
