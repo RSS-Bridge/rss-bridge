@@ -57,6 +57,15 @@ class GiteaBridge extends BridgeAbstract {
 				'title' => 'Issue number from the issues list',
 			),
 		),
+		'Single pull request' => array(
+			'pull_request' => array(
+				'name' => 'Pull request number',
+				'type' => 'number',
+				'exampleValue' => 100,
+				'required' => true,
+				'title' => 'Pull request number from the issues list',
+			),
+		),
 		'Pull requests' => array(
 			'include_description' => array(
 				'name' => 'Include issue description',
@@ -81,6 +90,7 @@ class GiteaBridge extends BridgeAbstract {
 			case 'Pull requests':
 			case 'Releases': return $this->title . ' ' . $this->queriedContext;
 			case 'Single issue': return ' Issue ' . $this->getInput('issue') . ': ' . $this->title;
+			case 'Single pull request': return 'Pull request ' . $this->getInput('pull_request') . ': ' . $this->title;
 			case 'Tags': return 'Tags for ' . $this->title;
 			default: return parent::getName();
 		}
@@ -124,6 +134,12 @@ class GiteaBridge extends BridgeAbstract {
 				. '/' . $this->getInput('project')
 				. '/pulls/';
 			} break;
+			case 'Single pull request': {
+				return $this->getInput('host')
+				. '/' . $this->getInput('user')
+				. '/' . $this->getInput('project')
+				. '/pulls/' . $this->getInput('pull_request');
+			} break;
 			default: return parent::getURI();
 		}
 	}
@@ -147,6 +163,9 @@ class GiteaBridge extends BridgeAbstract {
 			} break;
 			case 'Single issue': {
 				$this->collectSingleIssueData($html);
+			} break;
+			case 'Single pull request': {
+				$this->collectSinglePullRequestData($html);
 			} break;
 			case 'Releases': {
 				$this->collectReleasesData($html);
@@ -268,5 +287,29 @@ class GiteaBridge extends BridgeAbstract {
 
 			$this->items[] = $item;
 		}
+	}
+
+	protected function collectSinglePullRequestData($html) {
+		$comments = $html->find('.comment')
+			or returnServerError('Unable to find comments');
+
+		foreach($comments as $comment) {
+			$commentLink = $comment->find('a[href*="#issue"]', 0);
+			if (strpos($comment->getAttribute('class'), 'form') !== false
+				|| strpos($comment->getAttribute('class'), 'merge') !== false
+			) {
+				// Ignore comment form and merge information
+				continue;
+			}
+				$this->items[] = array(
+				'uri' => $comment->find('a[href*="#issue"]', 0)->href,
+				'title' => str_replace($commentLink->plaintext, '', $comment->find('span', 0)->plaintext),
+				'author' => $comment->find('.content a', 0)->plaintext,
+				'timestamp' => $comment->find('.time-since', 0)->title,
+				'content' => $comment->find('.markup', 0),
+			);
+		}
+
+		$this->items = array_reverse($this->items);
 	}
 }
