@@ -57,6 +57,13 @@ class GiteaBridge extends BridgeAbstract {
 				'title' => 'Issue number from the issues list',
 			),
 		),
+		'Pull requests' => array(
+			'include_description' => array(
+				'name' => 'Include issue description',
+				'type' => 'checkbox',
+				'title' => 'Activate to include the issue description',
+			),
+		),
 		'Releases' => array(),
 		'Tags' => array(),
 	);
@@ -71,6 +78,7 @@ class GiteaBridge extends BridgeAbstract {
 		switch($this->queriedContext) {
 			case 'Commits':
 			case 'Issues':
+			case 'Pull requests':
 			case 'Releases': return $this->title . ' ' . $this->queriedContext;
 			case 'Single issue': return ' Issue ' . $this->getInput('issue') . ': ' . $this->title;
 			case 'Tags': return 'Tags for ' . $this->title;
@@ -110,6 +118,12 @@ class GiteaBridge extends BridgeAbstract {
 				. '/' . $this->getInput('project')
 				. '/tags/';
 			} break;
+			case 'Pull requests': {
+				return $this->getInput('host')
+				. '/' . $this->getInput('user')
+				. '/' . $this->getInput('project')
+				. '/pulls/';
+			} break;
 			default: return parent::getURI();
 		}
 	}
@@ -127,6 +141,9 @@ class GiteaBridge extends BridgeAbstract {
 			} break;
 			case 'Issues': {
 				$this->collectIssuesData($html);
+			} break;
+			case 'Pull requests': {
+				$this->collectPullRequestsData($html);
 			} break;
 			case 'Single issue': {
 				$this->collectSingleIssueData($html);
@@ -224,5 +241,32 @@ class GiteaBridge extends BridgeAbstract {
 		}
 
 		$this->items = array_reverse($this->items);
+	}
+
+	protected function collectPullRequestsData($html) {
+		$issues = $html->find('.issue.list li')
+			or returnServerError('Unable to find pull requests');
+
+		foreach($issues as $issue) {
+			$uri = $issue->find('a', 0)->href;
+
+			$item = array(
+				'uri' => $uri,
+				'title' => trim($issue->find('a.index', 0)->plaintext) . ' | ' . $issue->find('a.title', 0)->plaintext,
+				'author' => $issue->find('.desc a', 1)->plaintext,
+				'timestamp' => $issue->find('.time-since', 0)->title,
+			);
+
+			if($this->getInput('include_description')) {
+				$issue_html = getSimpleHTMLDOMCached($uri, 3600)
+					or returnServerError('Unable to load issue description');
+
+				$issue_html = defaultLinkTo($issue_html, $uri);
+
+				$item['content'] = $issue_html->find('.comment .markup', 0);
+			}
+
+			$this->items[] = $item;
+		}
 	}
 }
