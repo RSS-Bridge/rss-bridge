@@ -259,7 +259,7 @@ class GiteaBridge extends BridgeAbstract {
 			$this->items[] = array(
 				'uri' => $commentLink->href,
 				'title' => str_replace($commentLink->plaintext, '', $comment->find('span', 0)->plaintext),
-				'author' => $comment->find('.author a', 0)->plaintext,
+				'author' => $comment->find('a.author', 0)->plaintext,
 				'timestamp' => $comment->find('.time-since', 0)->title,
 				'content' => $comment->find('.render-content', 0),
 			);
