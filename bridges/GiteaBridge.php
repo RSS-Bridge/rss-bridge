@@ -256,13 +256,21 @@ class GiteaBridge extends BridgeAbstract {
 				continue;
 			}
 			$commentLink = $comment->find('a[href*="#issue"]', 0);
-			$this->items[] = array(
-				'uri' => $commentLink->href,
-				'title' => str_replace($commentLink->plaintext, '', $comment->find('span', 0)->plaintext),
+			$item = array(
 				'author' => $comment->find('a.author', 0)->plaintext,
-				'timestamp' => $comment->find('.time-since', 0)->title,
 				'content' => $comment->find('.render-content', 0),
 			);
+			if ($commentLink !== null) {
+				// Regular comment
+				$item['uri'] = $commentLink->href;
+				$item['title'] = str_replace($commentLink->plaintext, '', $comment->find('span', 0)->plaintext);
+				$item['timestamp'] = $comment->find('.time-since', 0)->title;
+			} else {
+				// Change request comment
+				$item['uri'] = $this->getURI() . '#' . $comment->getAttribute('id');
+				$item['title'] = $comment->find('.comment-header .text', 0)->plaintext;
+			}
+			$this->items[] = $item;
 		}
 
 		$this->items = array_reverse($this->items);
