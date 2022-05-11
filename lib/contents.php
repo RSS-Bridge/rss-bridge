@@ -2,6 +2,56 @@
 
 final class HttpException extends \Exception {}
 
+// todo: move this somewhere useful, possibly into a function
+const RSSBRIDGE_HTTP_STATUS_CODES = [
+	'100' => 'Continue',
+	'101' => 'Switching Protocols',
+	'200' => 'OK',
+	'201' => 'Created',
+	'202' => 'Accepted',
+	'203' => 'Non-Authoritative Information',
+	'204' => 'No Content',
+	'205' => 'Reset Content',
+	'206' => 'Partial Content',
+	'300' => 'Multiple Choices',
+	'302' => 'Found',
+	'303' => 'See Other',
+	'304' => 'Not Modified',
+	'305' => 'Use Proxy',
+	'400' => 'Bad Request',
+	'401' => 'Unauthorized',
+	'402' => 'Payment Required',
+	'403' => 'Forbidden',
+	'404' => 'Not Found',
+	'405' => 'Method Not Allowed',
+	'406' => 'Not Acceptable',
+	'407' => 'Proxy Authentication Required',
+	'408' => 'Request Timeout',
+	'409' => 'Conflict',
+	'410' => 'Gone',
+	'411' => 'Length Required',
+	'412' => 'Precondition Failed',
+	'413' => 'Request Entity Too Large',
+	'414' => 'Request-URI Too Long',
+	'415' => 'Unsupported Media Type',
+	'416' => 'Requested Range Not Satisfiable',
+	'417' => 'Expectation Failed',
+	'500' => 'Internal Server Error',
+	'501' => 'Not Implemented',
+	'502' => 'Bad Gateway',
+	'503' => 'Service Unavailable',
+	'504' => 'Gateway Timeout',
+	'505' => 'HTTP Version Not Supported'
+];
+
+/**
+ * Fetch data from an http url
+ *
+ * @param array $httpHeaders E.g. ['Content-type: text/plain']
+ * @param array $curlOptions Associative array e.g. [CURLOPT_MAXREDIRS => 3]
+ * @param bool $returnHeader Whether to include headers in the returned value
+ * @return string|array
+ */
 function getContents(
 	string $url,
 	array $httpHeaders = [],
@@ -42,6 +92,7 @@ function getContents(
 				$directives = explode(',', $lastValue);
 				$directives = array_map('trim', $directives);
 				if(in_array('no-cache', $directives) || in_array('no-store', $directives)) {
+					// Don't cache as instructed by the server
 					break;
 				}
 			}
@@ -51,7 +102,13 @@ function getContents(
 			$response['content'] = $cache->loadData();
 			break;
 		default:
-			throw new HttpException('', $result['code']);
+			throw new HttpException(
+				sprintf(
+					'%s %s',
+					RSSBRIDGE_HTTP_STATUS_CODES[$result['code']] ?? $result['code'],
+					$result['code']
+				)
+			);
 	}
 	if ($returnHeader === true) {
 		return $response;
@@ -92,9 +149,10 @@ function _http_request(string $url, array $config = []): array
 	if($config['proxy']) {
 		curl_setopt($ch, CURLOPT_PROXY, $config['proxy']);
 	}
-	foreach($config['curl_options'] as $key => $value) {
-		curl_setopt($ch, $key, $value);
+	if (curl_setopt_array($ch, $config['curl_options']) === false) {
+		throw new \Exception('Tried to set an illegal curl option');
 	}
+
 	if ($config['if_not_modified_since']) {
 		curl_setopt($ch, CURLOPT_TIMEVALUE, $config['if_not_modified_since']);
 		curl_setopt($ch, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
