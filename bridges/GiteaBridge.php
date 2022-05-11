@@ -16,7 +16,7 @@ class GiteaBridge extends BridgeAbstract {
 		'global' => array(
 			'host' => array(
 				'name' => 'Host',
-				'exampleValue' => 'https://try.gitea.io',
+				'exampleValue' => 'https://gitea.com',
 				'required' => true,
 				'title' => 'Host name with its protocol, without trailing slash',
 			),
@@ -28,7 +28,7 @@ class GiteaBridge extends BridgeAbstract {
 			),
 			'project' => array(
 				'name' => 'Project name',
-				'exampleValue' => 'gitea',
+				'exampleValue' => 'helm-chart',
 				'required' => true,
 				'title' => 'Project name as it appears in the URL',
 			),
