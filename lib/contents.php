@@ -105,8 +105,8 @@ function getContents(
 			throw new HttpException(
 				sprintf(
 					'%s %s',
-					RSSBRIDGE_HTTP_STATUS_CODES[$result['code']] ?? $result['code'],
-					$result['code']
+					$result['code'],
+					RSSBRIDGE_HTTP_STATUS_CODES[$result['code']] ?? $result['code']
 				)
 			);
 	}
