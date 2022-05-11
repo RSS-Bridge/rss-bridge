@@ -162,10 +162,10 @@ class GiteaBridge extends BridgeAbstract {
 				$this->collectPullRequestsData($html);
 			} break;
 			case 'Single issue': {
-				$this->collectSingleIssueData($html);
+				$this->collectSingleIssueOrPrData($html);
 			} break;
 			case 'Single pull request': {
-				$this->collectSinglePullRequestData($html);
+				$this->collectSingleIssueOrPrData($html);
 			} break;
 			case 'Releases': {
 				$this->collectReleasesData($html);
@@ -244,11 +244,17 @@ class GiteaBridge extends BridgeAbstract {
 		}
 	}
 
-	protected function collectSingleIssueData($html) {
+	protected function collectSingleIssueOrPrData($html) {
 		$comments = $html->find('.comment')
 			or returnServerError('Unable to find comments');
 
 		foreach($comments as $comment) {
+			if (strpos($comment->getAttribute('class'), 'form') !== false
+				|| strpos($comment->getAttribute('class'), 'merge') !== false
+			) {
+				// Ignore comment form and merge information
+				continue;
+			}
 			$commentLink = $comment->find('a[href*="#issue"]', 0);
 			$this->items[] = array(
 				'uri' => $commentLink->href,
@@ -287,29 +293,5 @@ class GiteaBridge extends BridgeAbstract {
 
 			$this->items[] = $item;
 		}
-	}
-
-	protected function collectSinglePullRequestData($html) {
-		$comments = $html->find('.comment')
-			or returnServerError('Unable to find comments');
-
-		foreach($comments as $comment) {
-			$commentLink = $comment->find('a[href*="#issue"]', 0);
-			if (strpos($comment->getAttribute('class'), 'form') !== false
-				|| strpos($comment->getAttribute('class'), 'merge') !== false
-			) {
-				// Ignore comment form and merge information
-				continue;
-			}
-				$this->items[] = array(
-				'uri' => $comment->find('a[href*="#issue"]', 0)->href,
-				'title' => str_replace($commentLink->plaintext, '', $comment->find('span', 0)->plaintext),
-				'author' => $comment->find('.content a', 0)->plaintext,
-				'timestamp' => $comment->find('.time-since', 0)->title,
-				'content' => $comment->find('.markup', 0),
-			);
-		}
-
-		$this->items = array_reverse($this->items);
 	}
 }
