@@ -88,10 +88,10 @@ class GiteaBridge extends BridgeAbstract {
 			case 'Commits':
 			case 'Issues':
 			case 'Pull requests':
-			case 'Releases': return $this->title . ' ' . $this->queriedContext;
-			case 'Single issue': return ' Issue ' . $this->getInput('issue') . ': ' . $this->title;
+			case 'Releases':
+			case 'Tags': return $this->title . ' ' . $this->queriedContext;
+			case 'Single issue': return 'Issue ' . $this->getInput('issue') . ': ' . $this->title;
 			case 'Single pull request': return 'Pull request ' . $this->getInput('pull_request') . ': ' . $this->title;
-			case 'Tags': return 'Tags for ' . $this->title;
 			default: return parent::getName();
 		}
 	}
