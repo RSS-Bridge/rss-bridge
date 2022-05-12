@@ -83,12 +83,10 @@ class ConnectivityAction extends ActionAbstract {
 		try {
 			$reply = getContents($bridge::URI, array(), $curl_opts, true);
 
-			if($reply) {
+			if($reply['code'] === 200) {
 				$retVal['successful'] = true;
-				if (isset($reply['header'])) {
-					if ($reply['code'] === 301) {
-						$retVal['http_code'] = 301;
-					}
+				if (isset($reply['header']['location'])) {
+					$retVal['http_code'] = 301;
 				}
 			}
 		} catch(Exception $e) {
