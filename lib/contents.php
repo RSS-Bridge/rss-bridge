@@ -106,8 +106,9 @@ function getContents(
 				sprintf(
 					'%s %s',
 					$result['code'],
-					RSSBRIDGE_HTTP_STATUS_CODES[$result['code']] ?? $result['code']
-				)
+					RSSBRIDGE_HTTP_STATUS_CODES[$result['code']] ?? ''
+				),
+				$result['code']
 			);
 	}
 	if ($returnHeader === true) {
