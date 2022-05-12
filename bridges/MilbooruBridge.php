@@ -1,4 +1,5 @@
 <?php
+require_once('Shimmie2Bridge.php');
 
 class MilbooruBridge extends Shimmie2Bridge {
 

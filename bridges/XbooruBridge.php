@@ -1,4 +1,5 @@
 <?php
+require_once('GelbooruBridge.php');
 
 class XbooruBridge extends GelbooruBridge {
 

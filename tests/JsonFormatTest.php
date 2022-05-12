@@ -3,6 +3,7 @@
  * JsonFormat - JSON Feed Version 1
  * https://jsonfeed.org/version/1
  */
+require_once __DIR__ . '/../lib/rssbridge.php';
 
 use PHPUnit\Framework\TestCase;
 

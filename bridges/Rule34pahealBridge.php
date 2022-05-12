@@ -1,4 +1,5 @@
 <?php
+require_once('Shimmie2Bridge.php');
 
 class Rule34pahealBridge extends Shimmie2Bridge {
 

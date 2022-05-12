@@ -1,4 +1,5 @@
 <?php
+require_once('MoebooruBridge.php');
 
 class KonachanBridge extends MoebooruBridge {
 
