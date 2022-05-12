@@ -86,7 +86,7 @@ class ConnectivityAction extends ActionAbstract {
 			if($reply) {
 				$retVal['successful'] = true;
 				if (isset($reply['header'])) {
-					if (strpos($reply['code'], 'HTTP/1.1 301 Moved Permanently') !== false) {
+					if ($reply['code'] === 301) {
 						$retVal['http_code'] = 301;
 					}
 				}
