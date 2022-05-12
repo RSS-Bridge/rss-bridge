@@ -1,5 +1,5 @@
 <?php
-require_once('GithubIssueBridge.php');
+
 class GitHubPullRequestBridge extends GithubIssueBridge {
 	const MAINTAINER = 'Yaman Qalieh';
 	const NAME = 'GitHub Pull Request';

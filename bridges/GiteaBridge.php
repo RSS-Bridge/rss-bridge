@@ -3,7 +3,6 @@
  * Gitea is a fork of Gogs which may diverge in the future.
  * https://docs.gitea.io/en-us/
  */
-require_once 'GogsBridge.php';
 
 class GiteaBridge extends GogsBridge {
 

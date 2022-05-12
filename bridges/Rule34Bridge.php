@@ -1,5 +1,4 @@
 <?php
-require_once('GelbooruBridge.php');
 
 class Rule34Bridge extends GelbooruBridge {
 
