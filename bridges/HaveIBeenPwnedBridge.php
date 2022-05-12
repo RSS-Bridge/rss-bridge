@@ -38,8 +38,6 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 
 		$data = json_decode(getContents(self::API_URI . '/breaches'), true);
 
-		$breaches = array();
-
 		foreach($data as $breach) {
 			$item = array();
 
@@ -48,7 +46,7 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 						   . $pwnCount . ' breached accounts';
 			$item['dateAdded'] = $breach['AddedDate'];
 			$item['breachDate'] = $breach['BreachDate'];
-			$item['uri'] = self::URI . '/PwnedWebsites' . $breach['Name'];
+			$item['uri'] = self::URI . '/PwnedWebsites#' . $breach['Name'];
 
 			$item['content'] = '<p>' . $breach['Description'] . '</p>';
 			$item['content'] .= '<p>' . $this->breachType($breach) . '</p>';
