@@ -78,6 +78,7 @@ function getContents(
 
 	$result = _http_request($url, $config);
 	$response = [
+		'code' => $result['code'],
 		'header' => $result['headers'],
 		'content' => $result['body'],
 	];
