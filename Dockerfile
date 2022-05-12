@@ -8,7 +8,9 @@ RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
       nginx \
       zlib1g-dev \
+      libzip-dev \
       libmemcached-dev && \
+    docker-php-ext-install zip && \
     pecl install memcached && \
     docker-php-ext-enable memcached && \
     mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
