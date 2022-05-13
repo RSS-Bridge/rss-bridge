@@ -38,7 +38,7 @@ Nginx example config:
         index index.php;
         autoindex off;
 
-        location ~ /(\.|cache|vendor|tests|lib|bridges|actions|contrib|formats|caches) {
+        location ~ /(\.|vendor|tests|lib|bridges|actions|contrib|formats|caches) {
             deny all;
             return 403; # Forbidden
         }
