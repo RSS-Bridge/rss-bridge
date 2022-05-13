@@ -98,7 +98,11 @@ class NordbayernBridge extends BridgeAbstract {
 	}
 
 	private function getTeaser($content) {
-		$teaser = $content->find('p[class=article__teaser]', 0)->plaintext;
+		$teaser = $content->find('p[class=article__teaser]', 0);
+		if($teaser == null) {
+			return '';
+		}
+		$teaser = $teaser->plaintext;
 		$teaser = preg_replace('/ {143}- {66}/', ' - ', $teaser);
 		$teaser = preg_replace('/ {53}/', '', $teaser);
 		$teaser = '<p class="article__teaser">' . $teaser . '</p>';
