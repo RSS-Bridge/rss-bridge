@@ -2002,8 +2002,8 @@ class MydealsBridge extends PepperBridgeAbstract {
 				'name' => 'URL der Diskussion',
 				'type' => 'text',
 				'required' => true,
-				'title' => 'URL-Diskussion zu überwachen:  https://www.mydealz.de/diskussion/title-123',
-				'exampleValue' => '://www.mydealz.de/diskussion/title-123',
+				'title' => 'URL-Diskussion zu überwachen: https://www.mydealz.de/diskussion/title-123',
+				'exampleValue' => 'https://www.mydealz.de/diskussion/title-123',
 				),
 			'only_with_url' => array(
 				'name' => 'Kommentare ohne URL ausschließen',
