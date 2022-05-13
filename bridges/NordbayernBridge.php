@@ -51,12 +51,21 @@ class NordbayernBridge extends BridgeAbstract {
 		$img = $picture->find('img', 0);
 		if ($img) {
 			$imgUrl = $img->src;
-			if(!str_contains($imgUrl, '/img/nb/logo-vnp.png')  &&
-				!str_contains($imgUrl, '/img/nn/logo-vnp.png') &&
-				!str_contains($imgUrl, '/img/nb/logo-nuernberger-nachrichten.png') &&
-				!str_contains($imgUrl, '/img/nb/logo-nordbayern.png') &&
-				!str_contains($imgUrl, '/img/nn/logo-nuernberger-nachrichten.png') &&
-				!str_contains($imgUrl, '/img/nb/logo-erlanger-nachrichten.png')) {
+			if(!str_contains($imgUrl, 'logo-vnp.png')  &&
+				!str_contains($imgUrl, 'logo-vnp.png') &&
+				!str_contains($imgUrl, 'logo-nuernberger-nachrichten.png') &&
+				!str_contains($imgUrl, 'logo-nordbayern.png') &&
+				!str_contains($imgUrl, 'logo-nuernberger-nachrichten.png') &&
+				!str_contains($imgUrl, 'logo-erlanger-nachrichten.png') &&
+				!str_contains($imgUrl, 'logo-nordbayerische-nachrichten.png') &&
+				!str_contains($imgUrl, 'logo-fuerther-nachrichten.png') &&
+				!str_contains($imgUrl, 'logo-altmuehl-bote.png') &&
+				!str_contains($imgUrl, 'logo-weissenburger-tagblatt.png') &&
+				!str_contains($imgUrl, 'logo-treuchtlinger-kurier.png') &&
+				!str_contains($imgUrl, 'logo-neumarkter-nachrichten.png') &&
+				!str_contains($imgUrl, 'logo-roth-hilpoltsteiner-volkszeitung.png') &&
+				!str_contains($imgUrl, 'logo-hilpoltsteiner-zeitung.png') &&
+				!str_contains($imgUrl, 'logo-schwabacher-tagblatt.png')) {
 				return '<br><img src="' . $imgUrl . '">';
 			}
 		}
