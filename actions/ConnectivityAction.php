@@ -85,7 +85,7 @@ class ConnectivityAction extends ActionAbstract {
 
 			if($reply['code'] === 200) {
 				$retVal['successful'] = true;
-				if (strpos(implode('', $reply['status_lines']), '301')) {
+				if (strpos(implode('', $reply['status_lines']), '301 Moved Permanently')) {
 					$retVal['http_code'] = 301;
 				}
 			}
