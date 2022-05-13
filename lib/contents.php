@@ -79,6 +79,7 @@ function getContents(
 	$result = _http_request($url, $config);
 	$response = [
 		'code' => $result['code'],
+		'status_lines' => $result['status_lines'],
 		'header' => $result['headers'],
 		'content' => $result['body'],
 	];
@@ -159,10 +160,15 @@ function _http_request(string $url, array $config = []): array
 		curl_setopt($ch, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
 	}
 
+	$responseStatusLines = [];
 	$responseHeaders = [];
-	curl_setopt($ch, CURLOPT_HEADERFUNCTION, function ($ch, $rawHeader) use (&$responseHeaders) {
+	curl_setopt($ch, CURLOPT_HEADERFUNCTION, function ($ch, $rawHeader) use (&$responseHeaders, &$responseStatusLines) {
 		$len = strlen($rawHeader);
-		if (preg_match('#^HTTP/(2|1.1|1.0)#', $rawHeader) || $rawHeader === "\r\n") {
+		if ($rawHeader === "\r\n") {
+			return $len;
+		}
+		if (preg_match('#^HTTP/(2|1.1|1.0)#', $rawHeader)) {
+			$responseStatusLines[] = $rawHeader;
 			return $len;
 		}
 		$header = explode(':', $rawHeader);
@@ -196,6 +202,7 @@ function _http_request(string $url, array $config = []): array
 	curl_close($ch);
 	return [
 		'code'      => $statusCode,
+		'status_lines' => $responseStatusLines,
 		'headers'   => $responseHeaders,
 		'body'      => $data,
 	];
