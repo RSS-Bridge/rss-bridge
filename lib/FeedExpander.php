@@ -91,7 +91,9 @@ abstract class FeedExpander extends BridgeAbstract {
 		/* Notice we do not use cache here on purpose:
 		 * we want a fresh view of the RSS stream each time
 		 */
-		$content = getContents($url)
+
+		$httpHeaders = ['Accept: text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8'];
+		$content = getContents($url, $httpHeaders)
 			or returnServerError('Could not request ' . $url);
 		$rssContent = simplexml_load_string(trim($content));
 
