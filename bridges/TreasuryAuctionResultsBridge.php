@@ -24,7 +24,7 @@ class TreasuryAuctionResultsBridge extends FeedExpander {
 		 */
 		$content = getContents($url, array(
 			'Accept: 1/1,*/*'
-		), array(CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1))
+		))
 		or returnServerError('Could not request ' . $url);
 		$rssContent = simplexml_load_string(trim($content));
 
