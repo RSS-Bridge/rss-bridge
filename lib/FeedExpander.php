@@ -92,7 +92,11 @@ abstract class FeedExpander extends BridgeAbstract {
 		 * we want a fresh view of the RSS stream each time
 		 */
 
-		$httpHeaders = ['Accept: text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8'];
+		$mimeTypes = [
+			MrssFormat::MIME_TYPE,
+			AtomFormat::MIME_TYPE,
+		];
+		$httpHeaders = ['Accept: ' . implode(', ', $mimeTypes)];
 		$content = getContents($url, $httpHeaders)
 			or returnServerError('Could not request ' . $url);
 		$rssContent = simplexml_load_string(trim($content));
