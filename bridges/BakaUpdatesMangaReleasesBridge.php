@@ -8,9 +8,12 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract {
 		'By series' => array(
 			'series_id' => array(
 				'name'		=> 'Series ID',
+				'title'		=> 'This is obtained from the "Search for all
+				releases of this series" link on the title page. For example:
+https://www.mangaupdates.com/releases.html?search=17360452316&stype=series',
 				'type'		=> 'number',
 				'required'	=> true,
-				'exampleValue'	=> '188066'
+				'exampleValue'	=> '17360452316'
 			)
 		),
 		'By list' => array(
