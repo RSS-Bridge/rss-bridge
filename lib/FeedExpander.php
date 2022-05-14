@@ -95,6 +95,7 @@ abstract class FeedExpander extends BridgeAbstract {
 		$mimeTypes = [
 			MrssFormat::MIME_TYPE,
 			AtomFormat::MIME_TYPE,
+			'*/*',
 		];
 		$httpHeaders = ['Accept: ' . implode(', ', $mimeTypes)];
 		$content = getContents($url, $httpHeaders)
