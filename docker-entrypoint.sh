@@ -5,7 +5,7 @@
 # This will overwrite previous configs and bridges of same name
 # If there are no matching files, rss-bridge works like default.
 
-find /config/ -type f -name '*' -print0 | 
+find /config/ -type f -name '*' -print0 2> /dev/null |
 while IFS= read -r -d '' file; do
     file_name="$(basename "$file")" # Strip leading path
     if [[ $file_name = *" "* ]]; then
