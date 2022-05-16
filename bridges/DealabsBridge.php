@@ -2042,7 +2042,6 @@ class PepperBridgeAbstract extends BridgeAbstract {
 		$selectorDescription = implode(
 			' ', /* Notice this is a space! */
 			array(
-				'cept-description-container',
 				'overflow--wrap-break'
 			)
 		);
@@ -2065,7 +2064,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 			foreach ($list as $deal) {
 				$item = array();
 				$item['uri'] = $this->getDealURI($deal);
-				$item['title'] = $this->GetTitle($deal);
+				$item['title'] = $this->getTitle($deal);
 				$item['author'] = $deal->find('span.thread-username', 0)->plaintext;
 
 				$item['content'] = '<table><tr><td><a href="'
@@ -2078,7 +2077,7 @@ class PepperBridgeAbstract extends BridgeAbstract {
 						. $this->getDiscount($deal)
 						. $this->getShipsFrom($deal)
 						. $this->getShippingCost($deal)
-						. $this->GetSource($deal)
+						. $this->getSource($deal)
 						. $deal->find('div[class*=' . $selectorDescription . ']', 0)->innertext
 						. '</td><td>'
 						. $deal->find('div[class*=' . $selectorHot . ']', 0)
@@ -2267,7 +2266,7 @@ HEREDOC;
 		if($titleA !== null) {
 			$title = $titleA->plaintext;
 		} else {
-		// Inb ssome case, expired deals have a different format
+		// In some case, expired deals have a different format
 			$title = $titleRoot->find('span', 0)->plaintext;
 		}
 
@@ -2328,14 +2327,14 @@ HEREDOC;
 	 */
 	private function getShippingCost($deal)
 	{
-		if ($deal->find('span[class*=cept-shipping-price]', 0) != null) {
-			if ($deal->find('span[class*=cept-shipping-price]', 0)->children(0) != null) {
+		if ($deal->find('span[class*=space--ml-2 size--all-s overflow--wrap-off]', 0) != null) {
+			if ($deal->find('span[class*=space--ml-2 size--all-s overflow--wrap-off]', 0)->children(1) != null) {
 				return '<div>' . $this->i8n('shipping') . ' : '
-					. $deal->find('span[class*=cept-shipping-price]', 0)->children(0)->innertext
+					. $deal->find('span[class*=space--ml-2 size--all-s overflow--wrap-off]', 0)->children(1)->innertext
 					. '</div>';
 			} else {
 				return '<div>' . $this->i8n('shipping') . ' : '
-					. $deal->find('span[class*=cept-shipping-price]', 0)->innertext
+					. $deal->find('span[class*=text--color-greyShade flex--inline]', 0)->innertext
 					. '</div>';
 			}
 		} else {
@@ -2347,11 +2346,11 @@ HEREDOC;
 	 * Get the source of a Deal if it exists
 	 * @return string String of the deal source
 	 */
-	private function GetSource($deal)
+	private function getSource($deal)
 	{
-		if ($deal->find('a[class=text--color-greyShade]', 0) != null) {
+		if ($deal->find('a[class*=text--color-greyShade]', 0) != null) {
 			return '<div>' . $this->i8n('origin') . ' : '
-				. $deal->find('a[class=text--color-greyShade]', 0)->outertext
+				. $deal->find('a[class*=text--color-greyShade]', 0)->outertext
 				. '</div>';
 		} else {
 			return '';
@@ -2396,7 +2395,6 @@ HEREDOC;
 				'width--all-auto',
 				'height--all-auto',
 				'imgFrame-img',
-				'cept-thread-img',
 				'img--dummy',
 				'js-lazy-img'
 			)
@@ -2409,7 +2407,6 @@ HEREDOC;
 				'width--all-auto',
 				'height--all-auto',
 				'imgFrame-img',
-				'cept-thread-img'
 			)
 		);
 		if ($deal->find('img[class=' . $selectorLazy . ']', 0) != null) {
@@ -2431,15 +2428,13 @@ HEREDOC;
 		$selector = implode(
 			' ', /* Notice this is a space! */
 			array(
-				'meta-ribbon',
-				'overflow--wrap-off',
-				'space--l-3',
-				'text--color-greyShade'
+				'hide--toW2',
+				'metaRibbon',
 			)
 		);
-		if ($deal->find('span[class=' . $selector . ']', 0) != null) {
+		if ($deal->find('span[class*=' . $selector . ']', 0) != null) {
 			return '<div>'
-				. $deal->find('span[class=' . $selector . ']', 0)->children(2)->plaintext
+				. $deal->find('span[class*=' . $selector . ']', 0)->children(2)->plaintext
 				. '</div>';
 		} else {
 			return '';
