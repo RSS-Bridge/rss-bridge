@@ -1,5 +1,4 @@
 <?php
-require_once('DanbooruBridge.php');
 
 class BooruprojectBridge extends DanbooruBridge {
 

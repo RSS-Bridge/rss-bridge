@@ -1,6 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/DealabsBridge.php');
 class MydealsBridge extends PepperBridgeAbstract {
 
 	const NAME = 'Mydeals bridge';

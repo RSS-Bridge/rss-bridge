@@ -209,7 +209,7 @@ class BridgeImplementationTest extends TestCase {
 
 	public function dataBridgesProvider() {
 		$bridges = array();
-		foreach (glob(PATH_LIB_BRIDGES . '*.php') as $path) {
+		foreach (glob(PATH_LIB_BRIDGES . '*Bridge.php') as $path) {
 			$bridges[basename($path, '.php')] = array($path);
 		}
 		return $bridges;
