@@ -83,12 +83,10 @@ class ConnectivityAction extends ActionAbstract {
 		try {
 			$reply = getContents($bridge::URI, array(), $curl_opts, true);
 
-			if($reply) {
+			if($reply['code'] === 200) {
 				$retVal['successful'] = true;
-				if (isset($reply['header'])) {
-					if (strpos($reply['header'], 'HTTP/1.1 301 Moved Permanently') !== false) {
-						$retVal['http_code'] = 301;
-					}
+				if (strpos(implode('', $reply['status_lines']), '301 Moved Permanently')) {
+					$retVal['http_code'] = 301;
 				}
 			}
 		} catch(Exception $e) {
