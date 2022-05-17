@@ -12,6 +12,21 @@
  */
 
 /**
+ * Escape for html/xml context
+ */
+function e(string $s): string
+{
+	$translations = [
+		'"' => '&quot;',
+		'&' => '&amp;',
+		"'" => '&#039;',
+		'<' => '&lt;',
+		'>' => '&gt;',
+	];
+	return strtr($s, $translations);
+}
+
+/**
  * Removes unwanted tags from a given HTML text.
  *
  * @param string $html The HTML text to sanitize.

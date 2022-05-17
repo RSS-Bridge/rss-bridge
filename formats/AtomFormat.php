@@ -87,10 +87,7 @@ class AtomFormat extends FormatAbstract{
 
 			$entryCategories = '';
 			foreach($item->getCategories() as $category) {
-				$entryCategories .= '<category term="'
-				. $this->xml_encode($category)
-				. '"/>'
-				. PHP_EOL;
+				$entryCategories .= sprintf('<category term="%s"/>', e($category));
 			}
 
 			$entryThumbnail = $item->thumbnail;
@@ -164,7 +161,10 @@ EOD;
 		return parent::display();
 	}
 
+	/**
+	 * @deprecated Use e() instead
+	 */
 	private function xml_encode($text){
-		return htmlspecialchars($text, ENT_XML1);
+		return e((string) $text);
 	}
 }

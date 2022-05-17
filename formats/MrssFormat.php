@@ -95,9 +95,7 @@ class MrssFormat extends FormatAbstract {
 
 			$entryCategories = '';
 			foreach($item->getCategories() as $category) {
-				$entryCategories .= '<category>'
-				. $category . '</category>'
-				. PHP_EOL;
+				$entryCategories .= sprintf("<category>%s</category>\n", e($category));
 			}
 
 			$items .= <<<EOD
@@ -158,7 +156,10 @@ EOD;
 		return parent::display();
 	}
 
+	/**
+	 * @deprecated Use e() instead
+	 */
 	private function xml_encode($text){
-		return htmlspecialchars($text, ENT_XML1);
+		return e((string) $text);
 	}
 }
