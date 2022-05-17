@@ -49,14 +49,14 @@ const RSSBRIDGE_HTTP_STATUS_CODES = [
  *
  * @param array $httpHeaders E.g. ['Content-type: text/plain']
  * @param array $curlOptions Associative array e.g. [CURLOPT_MAXREDIRS => 3]
- * @param bool $returnHeader Whether to include headers in the returned value
+ * @param bool $returnFull Whether to return an array ['header' => [...], 'content' => '...']
  * @return string|array
  */
 function getContents(
 	string $url,
 	array $httpHeaders = [],
 	array $curlOptions = [],
-	bool $returnHeader = false
+	bool $returnFull = false
 ) {
 	$cacheFactory = new CacheFactory();
 	$cacheFactory->setWorkingDir(PATH_LIB_CACHES);
@@ -112,7 +112,7 @@ function getContents(
 				)
 			);
 	}
-	if ($returnHeader === true) {
+	if ($returnFull === true) {
 		return $response;
 	}
 	return $response['content'];
