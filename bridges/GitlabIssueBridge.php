@@ -2,7 +2,7 @@
 class GitlabIssueBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'Mynacol';
-	const NAME = 'Gitlab Issue';
+	const NAME = 'Gitlab Issue/Merge Request';
 	const URI = 'https://gitlab.com/';
 	const CACHE_TIMEOUT = 1800; // 30min
 	const DESCRIPTION = 'Returns  comments of an issue of a gitlab project';
@@ -16,7 +16,7 @@ class GitlabIssueBridge extends BridgeAbstract {
 				'required' => true
 			),
 			'u' => array(
-				'name' => 'User name',
+				'name' => 'User/Organization name',
 				'exampleValue' => 'fdroid',
 				'required' => true
 			),
@@ -34,26 +34,50 @@ class GitlabIssueBridge extends BridgeAbstract {
 				'exampleValue' => '2099',
 				'required' => true
 			)
+		),
+		'Merge Request comments' => array(
+			'i' => array(
+				'name' => 'Merge Request number',
+				'type' => 'number',
+				'exampleValue' => '2099',
+				'required' => true
+			)
 		)
 	);
 
-	const URL_PATH = '-/issues';
+	const ISSUES_PATH = '-/issues';
+	const MERGE_REQUESTS_PATH = '-/merge_requests';
 	const COMMENTS_PATH = 'discussions.json';
 
 	public function getName(){
-		if ($this->getInput('h')) {
-			$name = $this->getInput('h') . '/' . $this->getInput('u') . '/' . $this->getInput('p');
-			$name = $name . ' Issue #' . $this->getInput('i');
-			return $name;
-		} else {
-			return parent::getName();
+		$name = $this->getInput('h') . '/' . $this->getInput('u') . '/' . $this->getInput('p');
+		switch ($this->queriedContext) {
+			case 'Issue comments':
+				$name .= ' Issue #' . $this->getInput('i');
+				break;
+			case 'Merge Request comments':
+				$name .= 'MR !' . $this->getInput('i');
+				break;
+			default:
+				return parent::getName();
 		}
+		return $name;
 	}
 
 	public function getURI() {
 		$uri = 'https://' . $this->getInput('h') . '/' . $this->getInput('u') . '/'
 			 . $this->getInput('p') . '/';
-		$uri .= static::URL_PATH . '/' . $this->getInput('i');
+		switch ($this->queriedContext) {
+			case 'Issue comments':
+				$uri .= static::ISSUES_PATH;
+				break;
+			case 'Merge Request comments':
+				$uri .= static::MERGE_REQUESTS_PATH;
+				break;
+			default:
+				return $uri;
+		}
+		$uri .= '/' . $this->getInput('i');
 		return $uri;
 	}
 
@@ -63,43 +87,44 @@ class GitlabIssueBridge extends BridgeAbstract {
 
 	public function collectData() {
 		/* parse issue description */
-		$issue = $this->loadCacheValue('issue.json', static::CACHE_TIMEOUT);
-		if (!$issue) {
-			$issue = getContents($this->getURI() . '.json');
-			$this->saveCacheValue('issue.json', $issue);
+		$description_uri = $this->getURI() . '.json';
+		$description = $this->loadCacheValue($description_uri, static::CACHE_TIMEOUT);
+		if (!$description) {
+			$description = getContents($description_uri);
+			$this->saveCacheValue($description_uri, $description);
 		}
-		$issue = json_decode($issue, false);
-		$issue_html = getSimpleHtmlDomCached($this->getURI());
+		$description = json_decode($description, false);
+		$description_html = getSimpleHtmlDomCached($this->getURI());
 
 		$item = array();
 		$item['uri'] = $this->getURI();
-		$item['uid'] = $issue->id;
+		$item['uid'] = $item['uri'];
 
-		$item['timestamp'] = $issue->updated_at ?? $issue->created_at;
+		$item['timestamp'] = $description->updated_at ?? $description->created_at;
 
 		// fix img src
-		foreach ($issue_html->find('img') as $img) {
+		foreach ($description_html->find('img') as $img) {
 			$img->src = $img->getAttribute('data-src');
 		}
-		$authors = $issue_html->find('.issuable-meta a.author-link');
-		//array_map(function($e) { return $e->outerhtml; }, $authors);
-		$editors = $issue_html->find('.edited-text a.author-link');
+		$authors = $description_html->find('.issuable-meta a.author-link');
+		$editors = $description_html->find('.edited-text a.author-link');
 		$author_str = implode(' ', $authors);
 		if ($editors) {
 			$author_str .= ', ' . implode(' ', $editors);
 		}
 		$item['author'] = defaultLinkTo($author_str, 'https://' . $this->getInput('h') . '/');
 
-		$item['title'] = $issue->title;
-		$item['content'] = markdownToHtml($issue->description);
+		$item['title'] = $description->title;
+		$item['content'] = markdownToHtml($description->description);
 
 		$this->items[] = $item;
 
-		/* parse issue comments */
-		$comments = $this->loadCacheValue('comments.json', static::CACHE_TIMEOUT);
+		/* parse issue/MR comments */
+		$comments_uri = $this->getURI() . '/' . static::COMMENTS_PATH;
+		$comments = $this->loadCacheValue($comments_uri, static::CACHE_TIMEOUT);
 		if (!$comments) {
-			$comments = getContents($this->getURI() . '/' . static::COMMENTS_PATH);
-			$this->saveCacheValue('comments.json', $comments);
+			$comments = getContents($comments_uri);
+			$this->saveCacheValue($comments_uri, $comments);
 		}
 		$comments = json_decode($comments, false);
 
@@ -107,8 +132,9 @@ class GitlabIssueBridge extends BridgeAbstract {
 			foreach ($value->notes as $comment) {
 				$item = array();
 				$item['uri'] = $comment->noteable_note_url;
-				$item['uid'] = $comment->id;
+				$item['uid'] = $item['uri'];
 
+				// TODO fix invalid timestamps (fdroid bot)
 				$item['timestamp'] = $comment->last_edited_at ?? $comment->updated_at;
 				$author = $comment->last_edited_by ?? $comment->author;
 				$item['author'] = '<img src="' . $author->avatar_url . '" width=24></img> <a href="https://' . $this->getInput('h') . $author->path . '">' . $author->name . ' @' . $author->username . '</a>';
@@ -129,6 +155,7 @@ class GitlabIssueBridge extends BridgeAbstract {
 				$item['title'] = $author->name . " $content " . date('(Y-m-d)', strtotime($item['timestamp']));
 				$item['content'] = defaultLinkTo($comment->note_html, 'https://' . $this->getInput('h') . '/');
 
+				// TODO sort entries
 				$this->items[] = $item;
 			}
 		}
