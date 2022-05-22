@@ -56,7 +56,7 @@ class GitlabIssueBridge extends BridgeAbstract {
 				$name .= ' Issue #' . $this->getInput('i');
 				break;
 			case 'Merge Request comments':
-				$name .= 'MR !' . $this->getInput('i');
+				$name .= ' MR !' . $this->getInput('i');
 				break;
 			default:
 				return parent::getName();
