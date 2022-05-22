@@ -135,8 +135,8 @@ class GitlabIssueBridge extends BridgeAbstract {
 				$item['uid'] = $item['uri'];
 
 				// TODO fix invalid timestamps (fdroid bot)
-				$item['timestamp'] = $comment->last_edited_at ?? $comment->updated_at;
-				$author = $comment->last_edited_by ?? $comment->author;
+				$item['timestamp'] = $comment->created_at ?? $comment->updated_at ?? $comment->last_edited_at;
+				$author =  $comment->author ?? $comment->last_edited_by;
 				$item['author'] = '<img src="' . $author->avatar_url . '" width=24></img> <a href="https://' . $this->getInput('h') . $author->path . '">' . $author->name . ' @' . $author->username . '</a>';
 
 				$content = '';
@@ -155,7 +155,6 @@ class GitlabIssueBridge extends BridgeAbstract {
 				$item['title'] = $author->name . " $content " . date('(Y-m-d)', strtotime($item['timestamp']));
 				$item['content'] = defaultLinkTo($comment->note_html, 'https://' . $this->getInput('h') . '/');
 
-				// TODO sort entries
 				$this->items[] = $item;
 			}
 		}
