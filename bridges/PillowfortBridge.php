@@ -9,7 +9,7 @@ class PillowfortBridge extends BridgeAbstract {
 			'name' => 'Username',
 			'type' => 'text',
 			'required' => true,
-			'exampleValue' => 'SomniumAeterna',
+			'exampleValue'	=>	'Staff'
 		),
 		'noava' => array(
 			'name' => 'Hide avatar',
