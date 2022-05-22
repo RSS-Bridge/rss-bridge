@@ -20,13 +20,14 @@ class AsahiShimbunAJWBridge extends BridgeAbstract {
 					'Culture » Style' => 'culture/style',
 					'Culture » Movies' => 'culture/movies',
 					'Culture » Manga & Anime' => 'culture/manga_anime',
-					'Asia » China' => 'asia/china',
-					'Asia » Korean Peninsula' => 'asia/korean_peninsula',
-					'Asia » Around Asia' => 'asia/around_asia',
+					'Asia » China' => 'asia_world/china',
+					'Asia » Korean Peninsula' => 'asia_world/korean_peninsula',
+					'Asia » Around Asia' => 'asia_world/around_asia',
+					'Asia » World' => 'asia_world/world',
 					'Opinion » Editorial' => 'opinion/editorial',
 					'Opinion » Vox Populi' => 'opinion/vox',
 				),
-				'defaultValue' => 'Politics',
+				'defaultValue' => 'politics',
 			)
 		)
 	);

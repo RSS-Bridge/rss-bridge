@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/../lib/rssbridge.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -40,8 +39,6 @@ class ActionImplementationTest extends TestCase {
 		$this->assertEquals($allowedActionAbstract, $methods);
 	}
 
-	////////////////////////////////////////////////////////////////////////////
-
 	public function dataActionsProvider() {
 		$actions = array();
 		foreach (glob(PATH_LIB_ACTIONS . '*.php') as $path) {
@@ -51,7 +48,6 @@ class ActionImplementationTest extends TestCase {
 	}
 
 	private function setAction($path) {
-		require_once $path;
 		$this->class = basename($path, '.php');
 		$this->assertTrue(class_exists($this->class), 'class ' . $this->class . ' doesn\'t exist');
 		$this->obj = new $this->class();

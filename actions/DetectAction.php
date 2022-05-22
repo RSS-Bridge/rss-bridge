@@ -20,7 +20,6 @@ class DetectAction extends ActionAbstract {
 			or returnClientError('You must specify a format!');
 
 		$bridgeFac = new \BridgeFactory();
-		$bridgeFac->setWorkingDir(PATH_LIB_BRIDGES);
 
 		foreach($bridgeFac->getBridgeNames() as $bridgeName) {
 

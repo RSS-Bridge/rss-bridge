@@ -19,18 +19,21 @@ class InstagramBridge extends BridgeAbstract {
 		'Username' => array(
 			'u' => array(
 				'name' => 'username',
+				'exampleValue' => 'aesoprockwins',
 				'required' => true
 			)
 		),
 		'Hashtag' => array(
 			'h' => array(
 				'name' => 'hashtag',
+				'exampleValue' => 'beautifulday',
 				'required' => true
 			)
 		),
 		'Location' => array(
 			'l' => array(
 				'name' => 'location',
+				'exampleValue' => 'london',
 				'required' => true
 			)
 		),
@@ -53,6 +56,12 @@ class InstagramBridge extends BridgeAbstract {
 			)
 		)
 
+	);
+
+	const TEST_DETECT_PARAMETERS = array(
+		'https://www.instagram.com/metaverse' => array('u' => 'metaverse'),
+		'https://instagram.com/metaverse' => array('u' => 'metaverse'),
+		'http://www.instagram.com/metaverse' => array('u' => 'metaverse'),
 	);
 
 	const USER_QUERY_HASH = '58b6785bea111c67129decbe6a448951';
@@ -151,6 +160,11 @@ class InstagramBridge extends BridgeAbstract {
 				$mediaURI = self::URI . 'p/' . $media->shortcode . '/media?size=l';
 			}
 
+			$pattern = array('/\@([\w\.]+)/', '/#([\w\.]+)/');
+			$replace = array(
+				'<a href="https://www.instagram.com/$1">@$1</a>',
+				'<a href="https://www.instagram.com/explore/tags/$1">#$1</a>');
+
 			switch($media->__typename) {
 				case 'GraphSidecar':
 					$data = $this->getInstagramSidecarData($item['uri'], $item['title'], $media, $textContent);
@@ -160,7 +174,7 @@ class InstagramBridge extends BridgeAbstract {
 				case 'GraphImage':
 					$item['content'] = '<a href="' . htmlentities($item['uri']) . '" target="_blank">';
 					$item['content'] .= '<img src="' . htmlentities($mediaURI) . '" alt="' . $item['title'] . '" />';
-					$item['content'] .= '</a><br><br>' . nl2br(htmlentities($textContent));
+					$item['content'] .= '</a><br><br>' . nl2br(preg_replace($pattern, $replace, htmlentities($textContent)));
 					$item['enclosures'] = array($mediaURI);
 					break;
 				case 'GraphVideo':
@@ -277,5 +291,19 @@ class InstagramBridge extends BridgeAbstract {
 			return self::URI . 'explore/locations/' . urlencode($this->getInput('l'));
 		}
 		return parent::getURI();
+	}
+
+	public function detectParameters($url){
+		$params = array();
+
+		// By username
+		$regex = '/^(https?:\/\/)?(www\.)?instagram\.com\/([^\/?\n]+)/';
+
+		if(preg_match($regex, $url, $matches) > 0) {
+			$params['u'] = urldecode($matches[3]);
+			return $params;
+		}
+
+		return null;
 	}
 }

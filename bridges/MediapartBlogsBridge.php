@@ -10,6 +10,7 @@ class MediapartBlogsBridge extends BridgeAbstract {
 				'name' => 'Blog Slug',
 				'type' => 'text',
 				'title' => 'Blog user name',
+				'required' => true,
 				'exampleValue' => 'jean-vincot',
 			)
 		)

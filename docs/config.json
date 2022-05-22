@@ -1,0 +1,32 @@
+{
+    "title": "RSS-Bridge",
+    "tagline": "The RSS feed for websites missing it",
+    "author": "RSS-Bridge Contributors",
+    "image": "./images/rssbridgelogo.png",
+    "ignore": {
+            "files": ["Work_In_Progress.md", "readme.md"],
+            "folders": ["99_Theme"]
+    },
+    "live": {
+        "clean_urls": true
+    },
+    "html": {
+        "theme": "daux-blue",
+        "breadcrumbs": true,
+        "breadcrumb_separator": "Chevrons",
+        "toggle_code": true,
+        "date_modified": true,
+        "inherit_index": true,
+
+        "repo": "RSS-Bridge/rss-bridge",
+        "edit_on_github": "RSS-Bridge/rss-bridge/tree/master/docs",
+        "google_analytics": false,
+        "plausible_domain": false,
+        "links": {
+            "GitHub Repository": "https://github.com/RSS-Bridge/rss-bridge",
+            "Help/Support/Bugs": "https://github.com/RSS-Bridge/rss-bridge/issues",
+            "Docker Images": "https://github.com/RSS-Bridge/rss-bridge/pkgs/container/rss-bridge"
+        },
+        "powered_by": "Powered by Daux.io"
+    }
+}

@@ -41,8 +41,6 @@ class JsonFormatTest extends TestCase {
 		$this->assertJsonStringEqualsJsonFile($this->sample->expected, $this->data);
 	}
 
-	////////////////////////////////////////////////////////////////////////////
-
 	public function sampleProvider() {
 		$samples = array();
 		foreach (glob(self::PATH_SAMPLES . '*.json') as $path) {
@@ -84,7 +82,8 @@ class JsonFormatTest extends TestCase {
 		$this->format->setExtraInfos($this->sample->meta);
 		$this->format->setLastModified(strtotime('2000-01-01 12:00:00 UTC'));
 
-		$this->data = $this->getActualOutput($this->format->display());
+		$_ = $this->format->display();
+		$this->data = $this->getActualOutput();
 		$this->assertNotNull(json_decode($this->data), 'invalid JSON output: ' . json_last_error_msg());
 		ob_clean();
 	}

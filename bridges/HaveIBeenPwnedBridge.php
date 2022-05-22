@@ -1,4 +1,11 @@
 <?php
+/**
+ * Uses the API as documented here:
+ * https://haveibeenpwned.com/API/v3#AllBreaches
+ *
+ * Gets the latest breaches by the date of the breach or when it was added to
+ * HIBP.
+ * */
 class HaveIBeenPwnedBridge extends BridgeAbstract {
 	const NAME = 'Have I Been Pwned (HIBP) Bridge';
 	const URI = 'https://haveibeenpwned.com';
@@ -17,61 +24,72 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 		'item_limit' => array(
 			'name' => 'Limit number of returned items',
 			'type' => 'number',
+			'required' => true,
 			'defaultValue' => 20,
 		)
 	));
+	const API_URI = 'https://haveibeenpwned.com/api/v3';
 
 	const CACHE_TIMEOUT = 3600;
-
-	private $breachDateRegex = '/Breach date: ([0-9]{1,2} [A-Z-a-z]+ [0-9]{4})/';
-	private $dateAddedRegex = '/Date added to HIBP: ([0-9]{1,2} [A-Z-a-z]+ [0-9]{4})/';
-	private $accountsRegex = '/Compromised accounts: ([0-9,]+)/';
 
 	private $breaches = array();
 
 	public function collectData() {
 
-		$html = getSimpleHTMLDOM(self::URI . '/PwnedWebsites');
+		$data = json_decode(getContents(self::API_URI . '/breaches'), true);
 
-		$breaches = array();
-
-		foreach($html->find('div.row') as $breach) {
+		foreach($data as $breach) {
 			$item = array();
 
-			if ($breach->class != 'row') {
-				continue;
-			}
+			$pwnCount = number_format($breach['PwnCount']);
+			$item['title'] = $breach['Title'] . ' - '
+						   . $pwnCount . ' breached accounts';
+			$item['dateAdded'] = $breach['AddedDate'];
+			$item['breachDate'] = $breach['BreachDate'];
+			$item['uri'] = self::URI . '/PwnedWebsites#' . $breach['Name'];
 
-			preg_match($this->breachDateRegex, $breach->find('p', 1)->plaintext, $breachDate)
-				or returnServerError('Could not extract details');
-
-			preg_match($this->dateAddedRegex, $breach->find('p', 1)->plaintext, $dateAdded)
-				or returnServerError('Could not extract details');
-
-			preg_match($this->accountsRegex, $breach->find('p', 1)->plaintext, $accounts)
-				or returnServerError('Could not extract details');
-
-			$permalink = $breach->find('p', 1)->find('a', 0)->href;
-
-			// Remove permalink
-			$breach->find('p', 1)->find('a', 0)->outertext = '';
-
-			$item['title'] = html_entity_decode($breach->find('h3', 0)->plaintext, ENT_QUOTES)
-				. ' - ' . $accounts[1] . ' breached accounts';
-			$item['dateAdded'] = strtotime($dateAdded[1]);
-			$item['breachDate'] = strtotime($breachDate[1]);
-			$item['uri'] = self::URI . '/PwnedWebsites' . $permalink;
-
-			$item['content'] = '<p>' . $breach->find('p', 0)->innertext . '</p>';
+			$item['content'] = '<p>' . $breach['Description'] . '</p>';
 			$item['content'] .= '<p>' . $this->breachType($breach) . '</p>';
-			$item['content'] .= '<p>' . $breach->find('p', 1)->innertext . '</p>';
 
+			$breachDate = date('j F Y', strtotime($breach['BreachDate']));
+			$addedDate = date('j F Y', strtotime($breach['AddedDate']));
+			$compData = implode(', ', $breach['DataClasses']);
+
+			$item['content'] .= <<<EOD
+<p>
+<strong>Breach date:</strong> {$breachDate}<br>
+<strong>Date added to HIBP:</strong> {$addedDate}<br>
+<strong>Compromised accounts:</strong> {$pwnCount}<br>
+<strong>Compromised data:</strong> {$compData}<br>
+EOD;
+			$item['uid'] = $breach['Name'];
 			$this->breaches[] = $item;
 		}
 
 		$this->orderBreaches();
 		$this->createItems();
 	}
+
+	private const BREACH_TYPES = array(
+		'IsVerified' => array(
+			false => 'Unverified breach, may be sourced from elsewhere'
+		),
+		'IsFabricated' => array(
+			true => 'Fabricated breach, likely not legitimate'
+		),
+		'IsSensitive' => array(
+			true => 'Sensitive breach, not publicly searchable'
+		),
+		'IsRetired' => array(
+			true => 'Retired breach, removed from system'
+		),
+		'IsSpamList' => array(
+			true => 'Spam list, used for spam marketing'
+		),
+		'IsMalware' => array(
+			true => 'Malware breach'
+		),
+	);
 
 	/**
 	 * Extract data breach type(s)
@@ -80,12 +98,10 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 
 		$content = '';
 
-		if ($breach->find('h3 > i', 0)) {
-
-			foreach ($breach->find('h3 > i') as $i) {
-				$content .= $i->title . '.<br>';
+		foreach (self::BREACH_TYPES as $type => $message) {
+			if (isset($message[$breach[$type]])) {
+				$content .= $message[$breach[$type]] . '.<br>';
 			}
-
 		}
 
 		return $content;
@@ -126,6 +142,7 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 			$item['timestamp'] = $breach[$this->getInput('order')];
 			$item['uri'] = $breach['uri'];
 			$item['content'] = $breach['content'];
+			$item['uid'] = $breach['uid'];
 
 			$this->items[] = $item;
 

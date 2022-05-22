@@ -58,6 +58,12 @@ abstract class FeedExpander extends BridgeAbstract {
 	private $uri;
 
 	/**
+	 * Holds the icon of the feed
+	 *
+	 */
+	private $icon;
+
+	/**
 	 * Holds the feed type during internal operations.
 	 *
 	 * @var string
@@ -85,9 +91,20 @@ abstract class FeedExpander extends BridgeAbstract {
 		/* Notice we do not use cache here on purpose:
 		 * we want a fresh view of the RSS stream each time
 		 */
-		$content = getContents($url)
+
+		$mimeTypes = [
+			MrssFormat::MIME_TYPE,
+			AtomFormat::MIME_TYPE,
+			'*/*',
+		];
+		$httpHeaders = ['Accept: ' . implode(', ', $mimeTypes)];
+		$content = getContents($url, $httpHeaders)
 			or returnServerError('Could not request ' . $url);
 		$rssContent = simplexml_load_string(trim($content));
+
+		if ($rssContent === false) {
+			throw new \Exception('Unable to parse string as xml');
+		}
 
 		Debug::log('Detecting feed format/version');
 		switch(true) {
@@ -216,6 +233,10 @@ abstract class FeedExpander extends BridgeAbstract {
 	protected function load_RSS_2_0_feed_data($rssContent){
 		$this->title = trim((string)$rssContent->title);
 		$this->uri = trim((string)$rssContent->link);
+
+		if (!empty($rssContent->image)) {
+			$this->icon = trim((string)$rssContent->image->url);
+		}
 	}
 
 	/**
@@ -240,6 +261,12 @@ abstract class FeedExpander extends BridgeAbstract {
 					break;
 				}
 			}
+		}
+
+		if(!empty($content->icon)) {
+			$this->icon = (string)$content->icon;
+		} elseif(!empty($content->logo)) {
+			$this->icon = (string)$content->logo;
 		}
 	}
 

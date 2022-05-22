@@ -181,23 +181,4 @@ abstract class FormatAbstract implements FormatInterface {
 		// We leave alone object and embed so that videos can play in RSS readers.
 		return $html;
 	}
-
-	/**
-	 * Trim each element of an array
-	 *
-	 * This function applies `trim()` to all elements in the array, if the element
-	 * is a valid string.
-	 *
-	 * @param array $elements The array to trim
-	 * @return array The trimmed array
-	 *
-	 * @todo This is a utility function that doesn't belong here, find a new home.
-	 */
-	protected function array_trim($elements){
-		foreach($elements as $key => $value) {
-			if(is_string($value))
-				$elements[$key] = trim($value);
-		}
-		return $elements;
-	}
 }

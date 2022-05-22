@@ -60,5 +60,5 @@ Please describe what you expect from the bridge. Whenever possible provide sampl
 
 Keep in mind that opening a request does not guarantee the bridge being implemented! That depends entirely on the interest and time of others to make the bridge for you.
 
-You can also implement your own bridge (with support of the community if needed). Find more information in the [RSS-Bridge Wiki](https://github.com/RSS-Bridge/rss-bridge/wiki/For-developers) developer section.
+You can also implement your own bridge (with support of the community if needed). Find more information in the [RSS-Bridge Documentation](https://rss-bridge.github.io/rss-bridge/For_Developers/index.html) developer section.
 -->

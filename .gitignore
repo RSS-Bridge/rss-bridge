@@ -213,6 +213,7 @@ pip-log.txt
 
 # Unit test / coverage reports
 .coverage
+.phpunit.result.cache
 .tox
 
 #Translations
@@ -228,6 +229,7 @@ pip-log.txt
 /whitelist.txt
 DEBUG
 config.ini.php
+config/*
 
 ######################
 ## VisualStudioCode ##

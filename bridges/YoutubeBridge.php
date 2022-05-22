@@ -18,34 +18,36 @@ class YoutubeBridge extends BridgeAbstract {
 		'By username' => array(
 			'u' => array(
 				'name' => 'username',
-				'exampleValue' => 'test',
+				'exampleValue' => 'LinusTechTips',
 				'required' => true
 			)
 		),
 		'By channel id' => array(
 			'c' => array(
 				'name' => 'channel id',
-				'exampleValue' => '15',
+				'exampleValue' => 'UCw38-8_Ibv_L6hlKChHO9dQ',
 				'required' => true
 			)
 		),
 		'By custom name' => array(
 			'custom' => array(
 				'name' => 'custom name',
-				'exampleValue' => 'nasa',
+				'exampleValue' => 'LinusTechTips',
 				'required' => true
 			)
 		),
 		'By playlist Id' => array(
 			'p' => array(
 				'name' => 'playlist id',
-				'exampleValue' => '15'
+				'exampleValue' => 'PL8mG-RkN2uTzJc8N0EoyhdC54prvBBLpj',
+				'required' => true
 			)
 		),
 		'Search result' => array(
 			's' => array(
 				'name' => 'search keyword',
-				'exampleValue' => 'test'
+				'exampleValue' => 'LinusTechTips',
+				'required' => true
 			),
 			'pa' => array(
 				'name' => 'page',

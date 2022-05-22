@@ -20,6 +20,8 @@ class MsnMondeBridge extends BridgeAbstract {
 		$html = getSimpleHTMLDOM($this->getURI());
 
 		$limit = 0;
+
+		// TODO: fix why articles is empty
 		foreach($html->find('.smalla') as $article) {
 			if($limit < 10) {
 				$item = array();

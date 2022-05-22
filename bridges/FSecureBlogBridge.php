@@ -13,11 +13,12 @@ class FSecureBlogBridge extends BridgeAbstract {
 			),
 			'language' => array(
 				'name' => 'Language',
+				'required' => true,
 				'defaultValue' => 'en',
 			),
 			'oldest_date' => array(
 				'name' => 'Oldest article date',
-				'exampleValue' => '-2 months',
+				'exampleValue' => '-6 months',
 			),
 		)
 	);

@@ -130,7 +130,9 @@ class OpenlyBridge extends BridgeAbstract {
 			$this->feedTitle = $html->find('a.tooltipitem', 0)->plaintext;
 		}
 
-		foreach($html->find('div.item') as $div) {
+		$items = $html->find('div.item');
+		$limit = 5;
+		foreach(array_slice($items, 0, $limit) as $div) {
 			$this->items[] = $this->getArticle($div->find('a', 0)->href);
 
 			if (count($this->items) >= $this->itemLimit) {

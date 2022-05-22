@@ -36,7 +36,7 @@ class PokemonTVBridge extends BridgeAbstract {
 		),
 		'filterseason' => array(
 			'name' => 'Series Season Filter',
-			'exampleValue' => '5',
+			'exampleValue' => '22',
 			'required' => false
 		)
 	));

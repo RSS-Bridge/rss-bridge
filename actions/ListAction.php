@@ -18,7 +18,6 @@ class ListAction extends ActionAbstract {
 		$list->total = 0;
 
 		$bridgeFac = new \BridgeFactory();
-		$bridgeFac->setWorkingDir(PATH_LIB_BRIDGES);
 
 		foreach($bridgeFac->getBridgeNames() as $bridgeName) {
 

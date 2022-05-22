@@ -25,7 +25,7 @@ class ConnectivityAction extends ActionAbstract {
 	public function execute() {
 
 		if(!Debug::isEnabled()) {
-			returnError('This action is only available in debug mode!');
+			returnError('This action is only available in debug mode!', 400);
 		}
 
 		if(!isset($this->userData['bridge'])) {
@@ -55,7 +55,6 @@ class ConnectivityAction extends ActionAbstract {
 	private function reportBridgeConnectivity($bridgeName) {
 
 		$bridgeFac = new \BridgeFactory();
-		$bridgeFac->setWorkingDir(PATH_LIB_BRIDGES);
 
 		if(!$bridgeFac->isWhitelisted($bridgeName)) {
 			header('Content-Type: text/html');
@@ -84,12 +83,10 @@ class ConnectivityAction extends ActionAbstract {
 		try {
 			$reply = getContents($bridge::URI, array(), $curl_opts, true);
 
-			if($reply) {
+			if($reply['code'] === 200) {
 				$retVal['successful'] = true;
-				if (isset($reply['header'])) {
-					if (strpos($reply['header'], 'HTTP/1.1 301 Moved Permanently') !== false) {
-						$retVal['http_code'] = 301;
-					}
+				if (strpos(implode('', $reply['status_lines']), '301 Moved Permanently')) {
+					$retVal['http_code'] = 301;
 				}
 			}
 		} catch(Exception $e) {

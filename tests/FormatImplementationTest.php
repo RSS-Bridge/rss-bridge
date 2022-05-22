@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/../lib/rssbridge.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -25,8 +24,6 @@ class FormatImplementationTest extends TestCase {
 		$this->assertInstanceOf(FormatInterface::class, $this->obj);
 	}
 
-	////////////////////////////////////////////////////////////////////////////
-
 	public function dataFormatsProvider() {
 		$formats = array();
 		foreach (glob(PATH_LIB_FORMATS . '*.php') as $path) {
@@ -36,7 +33,6 @@ class FormatImplementationTest extends TestCase {
 	}
 
 	private function setFormat($path) {
-		require_once $path;
 		$this->class = basename($path, '.php');
 		$this->assertTrue(class_exists($this->class), 'class ' . $this->class . ' doesn\'t exist');
 		$this->obj = new $this->class();

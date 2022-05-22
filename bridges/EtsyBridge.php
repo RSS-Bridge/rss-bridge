@@ -12,7 +12,7 @@ class EtsyBridge extends BridgeAbstract {
 				'type' => 'text',
 				'required' => true,
 				'title' => 'Insert your search term here',
-				'exampleValue' => 'Enter your search term'
+				'exampleValue' => 'lamp'
 			),
 			'queryextension' => array(
 				'name' => 'Query extension',
@@ -22,12 +22,10 @@ class EtsyBridge extends BridgeAbstract {
 (anything after ?search=<your search query>)',
 				'exampleValue' => '&explicit=1&locationQuery=2921044'
 			),
-			'showimage' => array(
-				'name' => 'Show image in content',
+			'hideimage' => array(
+				'name' => 'Hide image in content',
 				'type' => 'checkbox',
-				'required' => false,
-				'title' => 'Activate to show the image in the content',
-				'defaultValue' => 'checked'
+				'title' => 'Activate to hide the image in the content',
 			)
 		)
 	);
@@ -35,29 +33,29 @@ class EtsyBridge extends BridgeAbstract {
 	public function collectData(){
 		$html = getSimpleHTMLDOM($this->getURI());
 
-		$results = $html->find('li.block-grid-item');
+		$results = $html->find('li.wt-list-unstyled');
 
 		foreach($results as $result) {
-			// Skip banner cards (ads for categories)
-			if($result->find('span.ad-indicator'))
+			// Remove Lazy loading
+			if($result->find('.wt-skeleton-ui', 0))
 				continue;
 
 			$item = array();
 
 			$item['title'] = $result->find('a', 0)->title;
 			$item['uri'] = $result->find('a', 0)->href;
-			$item['author'] = $result->find('p.text-gray-lighter', 0)->plaintext;
+			$item['author'] = $result->find('p.wt-text-gray > span', 2)->plaintext;
 
 			$item['content'] = '<p>'
-			. $result->find('span.currency-value', 0)->plaintext . ' '
 			. $result->find('span.currency-symbol', 0)->plaintext
+			. $result->find('span.currency-value', 0)->plaintext
 			. '</p><p>'
 			. $result->find('a', 0)->title
 			. '</p>';
 
-			$image = $result->find('img.display-block', 0)->src;
+			$image = $result->find('img.wt-display-block', 0)->src;
 
-			if($this->getInput('showimage')) {
+			if(!$this->getInput('hideimage')) {
 				$item['content'] .= '<img src="' . $image . '">';
 			}
 

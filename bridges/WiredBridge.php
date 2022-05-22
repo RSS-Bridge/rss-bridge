@@ -22,7 +22,8 @@ class WiredBridge extends FeedExpander {
 				'WIRED Guides' => 'wired-guide',		// /feed/tag/wired-guide/latest/rss
 				'Photo' => 'photo'						// /feed/category/photo/latest/rss
 			)
-		)
+		),
+		'limit' => self::LIMIT,
 	));
 
 	public function collectData(){
@@ -42,7 +43,8 @@ class WiredBridge extends FeedExpander {
 		}
 		$feed_url .= 'rss';
 
-		$this->collectExpandableDatas($feed_url);
+		$limit = $this->getInput('limit') ?? -1;
+		$this->collectExpandableDatas($feed_url, $limit);
 	}
 
 	protected function parseItem($newsItem){

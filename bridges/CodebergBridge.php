@@ -20,6 +20,7 @@ class CodebergBridge extends BridgeAbstract {
 				'name' => 'Issue ID',
 				'type' => 'text',
 				'required' => true,
+				'exampleValue' => '513',
 			)
 		),
 		'Pull Requests' => array(),
@@ -28,14 +29,14 @@ class CodebergBridge extends BridgeAbstract {
 			'username' => array(
 				'name' => 'Username',
 				'type' => 'text',
-				'exampleValue' => 'username',
+				'exampleValue' => 'Codeberg',
 				'title' => 'Username of account that the repository belongs to.',
 				'required' => true,
 			),
 			'repo' => array(
 				'name' => 'Repository',
 				'type' => 'text',
-				'exampleValue' => 'repo',
+				'exampleValue' => 'Community',
 				'required' => true,
 			)
 		)
@@ -205,6 +206,9 @@ class CodebergBridge extends BridgeAbstract {
 		return $this->getInput('username') . '/' . $this->getInput('repo');
 	}
 
+	/**
+	 * Extract commits
+	 */
 	private function extractCommits($html) {
 		$table = $html->find('table#commits-table', 0);
 		$tbody = $table->find('tbody.commit-list', 0);
@@ -231,25 +235,27 @@ class CodebergBridge extends BridgeAbstract {
 		}
 	}
 
+	/**
+	 * Extract issues
+	 */
 	private function extractIssues($html) {
-		$div = $html->find('div.repository', 0);
+		$div = $html->find('div.issue.list', 0);
 
 		foreach ($div->find('li.item') as $li) {
 			$item = array();
 
-			$number = $li->find('div', 0)->plaintext;
+			$number = trim($li->find('a.index,ml-0.mr-2', 0)->plaintext);
 
 			$item['title'] = $li->find('a.title', 0)->plaintext . ' (' . $number . ')';
 			$item['uri'] = $li->find('a.title', 0)->href;
-			$item['timestamp'] = $li->find('p.desc', 0)->find('span', 0)->title;
-			$item['author'] = $li->find('p.desc', 0)->find('a', 0)->plaintext;
+			$item['timestamp'] = $li->find('span.time-since', 0)->title;
+			$item['author'] = $li->find('div.desc', 0)->find('a', 1)->plaintext;
 
 			// Fetch issue page
 			$issuePage = getSimpleHTMLDOMCached($item['uri'], 3600);
-
 			$issuePage = defaultLinkTo($issuePage, self::URI);
 
-			$item['content'] = $issuePage->find('ui.timeline', 0)->find('div.render-content.markdown', 0);
+			$item['content'] = $issuePage->find('div.timeline-item.comment.first', 0)->find('div.render-content.markup', 0);
 
 			foreach ($li->find('a.ui.label') as $label) {
 				$item['categories'][] = $label->plaintext;
@@ -259,20 +265,23 @@ class CodebergBridge extends BridgeAbstract {
 		}
 	}
 
+	/**
+	 * Extract issue comments
+	 */
 	private function extractIssueComments($html) {
 		$this->issueTitle = $html->find('span#issue-title', 0)->plaintext
 			. ' (' . $html->find('span.index', 0)->plaintext . ')';
 
-		foreach ($html->find('ui.timeline > div.timeline-item.comment') as $div) {
+		foreach ($html->find('div.timeline-item.comment') as $div) {
 			$item = array();
 
 			if ($div->class === 'timeline-item comment merge box') {
 				continue;
 			}
 
-			$item['title'] = $this->ellipsisTitle($div->find('div.render-content.markdown', 0)->plaintext);
+			$item['title'] = $this->ellipsisTitle($div->find('div.render-content.markup', 0)->plaintext);
 			$item['uri'] = $div->find('span.text.grey', 0)->find('a', 1)->href;
-			$item['content'] = $div->find('div.render-content.markdown', 0);
+			$item['content'] = $div->find('div.render-content.markup', 0);
 
 			if ($div->find('div.dropzone-attachments', 0)) {
 				$item['content'] .= $div->find('div.dropzone-attachments', 0);
@@ -285,25 +294,27 @@ class CodebergBridge extends BridgeAbstract {
 		}
 	}
 
+	/**
+	 * Extract pulls
+	 */
 	private function extractPulls($html) {
-		$div = $html->find('div.repository', 0);
+		$div = $html->find('div.issue.list', 0);
 
 		foreach ($div->find('li.item') as $li) {
 			$item = array();
 
-			$number = $li->find('div', 0)->plaintext;
+			$number = trim($li->find('a.index,ml-0.mr-2', 0)->plaintext);
 
 			$item['title'] = $li->find('a.title', 0)->plaintext . ' (' . $number . ')';
 			$item['uri'] = $li->find('a.title', 0)->href;
-			$item['timestamp'] = $li->find('p.desc', 0)->find('span', 0)->title;
-			$item['author'] = $li->find('p.desc', 0)->find('a', 0)->plaintext;
+			$item['timestamp'] = $li->find('span.time-since', 0)->title;
+			$item['author'] = $li->find('div.desc', 0)->find('a', 1)->plaintext;
 
 			// Fetch pull request page
 			$pullRequestPage = getSimpleHTMLDOMCached($item['uri'], 3600);
-
 			$pullRequestPage = defaultLinkTo($pullRequestPage, self::URI);
 
-			$item['content'] = $pullRequestPage->find('ui.timeline', 0)->find('div.render-content.markdown', 0);
+			$item['content'] = $pullRequestPage->find('ui.timeline', 0)->find('div.render-content.markup', 0);
 
 			foreach ($li->find('a.ui.label') as $label) {
 				$item['categories'][] = $label->plaintext;
@@ -313,49 +324,40 @@ class CodebergBridge extends BridgeAbstract {
 		}
 	}
 
+	/**
+	 * Extract releases
+	 */
 	private function extractReleases($html) {
 		$ul = $html->find('ul#release-list', 0);
 
 		foreach ($ul->find('li.ui.grid') as $li) {
 			$item = array();
+			$item['title'] = $li->find('h4', 0)->plaintext;
+			$item['uri'] = $li->find('h4', 0)->find('a', 0)->href;
 
-			if ($li->find('h3', 0)) { // Release
-				$item['title'] = $li->find('h3', 0)->plaintext;
-				$item['uri'] = $li->find('h3', 0)->find('a', 0)->href;
+			$tag = $this->stripSvg($li->find('span.tag', 0));
+			$commit = $this->stripSvg($li->find('span.commit', 0));
+			$downloads = $this->extractDownloads($li->find('details.download', 0));
 
-				$tag = $li->find('span.tag', 0)->find('a', 0);
-				$commit = $li->find('span.commit', 0);
-				$downloads = $this->extractDownloads($li->find('div.download', 0));
-
-				$item['content'] = $li->find('div.markdown', 0);
-				$item['content'] .= <<<HTML
+			$item['content'] = $li->find('div.markup.desc', 0);
+			$item['content'] .= <<<HTML
 <strong>Tag</strong>
 <p>{$tag}</p>
 <strong>Commit</strong>
 <p>{$commit}</p>
 {$downloads}
 HTML;
-				$item['timestamp'] = $li->find('span.time', 0)->find('span', 0)->title;
-				$item['author'] = $li->find('span.author', 0)->find('a', 0)->plaintext;
-			}
 
-			if ($li->find('h4', 0)) { // Tag
-				$item['title'] = $li->find('h4', 0)->plaintext;
-				$item['uri'] = $li->find('h4', 0)->find('a', 0)->href;
-
-				$item['content'] = <<<HTML
-<strong>Commit</strong>
-<p>{$li->find('div.download', 0)->find('a', 0)}</p>
-HTML;
-
-				$item['content'] .= $this->extractDownloads($li->find('div.download', 0), true);
-				$item['timestamp'] = $li->find('span.time', 0)->find('span', 0)->title;
-			}
+			$item['timestamp'] = $li->find('span.time', 0)->find('span', 0)->title;
+			$item['author'] = $li->find('span.author', 0)->find('a', 0)->plaintext;
 
 			$this->items[] = $item;
 		}
 	}
 
+	/**
+	 * Extract downloads for a releases
+	 */
 	private function extractDownloads($html, $skipFirst = false) {
 		$downloads = '';
 
@@ -365,7 +367,7 @@ HTML;
 			}
 
 			$downloads .= <<<HTML
-{$a}<br>
+<a href="{$a->herf}">{$a->plaintext}</a><br>
 HTML;
 		}
 
@@ -375,6 +377,9 @@ HTML;
 EOD;
 	}
 
+	/**
+	 * Ellipsis title to first 100 characters
+	 */
 	private function ellipsisTitle($text) {
 		$length = 100;
 
@@ -383,5 +388,16 @@ EOD;
 			return $text[0] . '...';
 		}
 		return $text;
+	}
+
+	/**
+	 * Strip SVG tag
+	 */
+	private function stripSvg($html) {
+		if ($html->find('svg', 0)) {
+			$html->find('svg', 0)->outertext = '';
+		}
+
+		return $html;
 	}
 }

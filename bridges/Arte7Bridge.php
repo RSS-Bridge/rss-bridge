@@ -1,89 +1,122 @@
 <?php
 class Arte7Bridge extends BridgeAbstract {
 
-	// const MAINTAINER = 'mitsukarenai';
 	const NAME = 'Arte +7';
 	const URI = 'https://www.arte.tv/';
+	const MAINTAINER = 'imagoiq';
 	const CACHE_TIMEOUT = 1800; // 30min
 	const DESCRIPTION = 'Returns newest videos from ARTE +7';
 
 	const API_TOKEN = 'Nzc1Yjc1ZjJkYjk1NWFhN2I2MWEwMmRlMzAzNjI5NmU3NWU3ODg4ODJjOWMxNTMxYzEzZGRjYjg2ZGE4MmIwOA';
 
 	const PARAMETERS = array(
-		'Catégorie (Français)' => array(
-			'catfr' => array(
+		'global' => [
+			'sort_by' => array(
 				'type' => 'list',
-				'name' => 'Catégorie',
+				'name' => 'Sort by',
+				'required' => false,
+				'defaultValue' => null,
 				'values' => array(
-					'Toutes les vidéos (français)' => null,
-					'Actu & société' => 'ACT',
-					'Séries & fiction' => 'SER',
-					'Cinéma' => 'CIN',
-					'Arts & spectacles classiques' => 'ARS',
+					'Default' => null,
+					'Video rights start date' => 'videoRightsBegin',
+					'Video rights end date' => 'videoRightsEnd',
+					'Brodcast date' => 'broadcastBegin',
+					'Creation date' => 'creationDate',
+					'Last modified' => 'lastModified',
+					'Number of views' => 'views',
+					'Number of views per period' => 'viewsPeriod',
+					'Available screens' => 'availableScreens',
+					'Episode' => 'episode'
+				),
+			),
+			'sort_direction' => array(
+				'type' => 'list',
+				'name' => 'Sort direction',
+				'required' => false,
+				'defaultValue' => 'DESC',
+				'values' => array(
+					'Ascending' => 'ASC',
+					'Descending' => 'DESC'
+				),
+			),
+			'exclude_trailers' => [
+				'name' => 'Exclude trailers',
+				'type' => 'checkbox',
+				'required' => false,
+				'defaultValue' => false
+			],
+		],
+		'Category' => array(
+			'lang' => array(
+				'type' => 'list',
+				'name' => 'Language',
+				'values' => array(
+					'Français' => 'fr',
+					'Deutsch' => 'de',
+					'English' => 'en',
+					'Español' => 'es',
+					'Polski' => 'pl',
+					'Italiano' => 'it'
+				),
+			),
+			'cat' => array(
+				'type' => 'list',
+				'name' => 'Category',
+				'values' => array(
+					'All videos' => null,
+					'News & society' => 'ACT',
+					'Series & fiction' => 'SER',
+					'Cinema' => 'CIN',
+					'Culture' => 'ARS',
 					'Culture pop' => 'CPO',
-					'Découverte' => 'DEC',
-					'Histoire' => 'HIST',
+					'Discovery' => 'DEC',
+					'History' => 'HIST',
 					'Science' => 'SCI',
-					'Autre' => 'AUT'
+					'Other' => 'AUT'
 				)
-			)
+			),
 		),
-		'Collection (Français)' => array(
-			'colfr' => array(
-				'name' => 'Collection id',
-				'required' => true,
-				'title' => 'ex. RC-014095 pour https://www.arte.tv/fr/videos/RC-014095/blow-up/'
-			)
-		),
-		'Catégorie (Allemand)' => array(
-			'catde' => array(
+		'Collection' => array(
+			'lang' => array(
 				'type' => 'list',
-				'name' => 'Catégorie',
+				'name' => 'Language',
 				'values' => array(
-					'Alle Videos (deutsch)' => null,
-					'Aktuelles & Gesellschaft' => 'ACT',
-					'Fernsehfilme & Serien' => 'SER',
-					'Kino' => 'CIN',
-					'Kunst & Kultur' => 'ARS',
-					'Popkultur & Alternativ' => 'CPO',
-					'Entdeckung' => 'DEC',
-					'Geschichte' => 'HIST',
-					'Wissenschaft' => 'SCI',
-					'Sonstiges' => 'AUT'
+					'Français' => 'fr',
+					'Deutsch' => 'de',
+					'English' => 'en',
+					'Español' => 'es',
+					'Polski' => 'pl',
+					'Italiano' => 'it'
 				)
-			)
-		),
-		'Collection (Allemand)' => array(
-			'colde' => array(
+			),
+			'col' => array(
 				'name' => 'Collection id',
 				'required' => true,
-				'title' => 'ex. RC-014095 pour https://www.arte.tv/de/videos/RC-014095/blow-up/'
+				'title' => 'ex. RC-014095 pour https://www.arte.tv/de/videos/RC-014095/blow-up/',
+				'exampleValue'	=> 'RC-014095'
 			)
 		)
 	);
 
 	public function collectData(){
 		switch($this->queriedContext) {
-		case 'Catégorie (Français)':
-			$category = $this->getInput('catfr');
-			$lang = 'fr';
+		case 'Category':
+			$category = $this->getInput('cat');
+			$collectionId = null;
 			break;
-		case 'Collection (Français)':
-			$lang = 'fr';
-			$collectionId = $this->getInput('colfr');
-			break;
-		case 'Catégorie (Allemand)':
-			$category = $this->getInput('catde');
-			$lang = 'de';
-			break;
-		case 'Collection (Allemand)':
-			$lang = 'de';
-			$collectionId = $this->getInput('colde');
+		case 'Collection':
+			$collectionId = $this->getInput('col');
+			$category = null;
 			break;
 		}
 
-		$url = 'https://api.arte.tv/api/opa/v3/videos?sort=-lastModified&limit=10&language='
+		$lang = $this->getInput('lang');
+		$sort_by = $this->getInput('sort_by');
+		$sort_direction = $this->getInput('sort_direction') == 'ASC' ? '' : '-';
+
+		$url = 'https://api.arte.tv/api/opa/v3/videos?limit=15&language='
 			. $lang
+			. ($sort_by != null ? '&sort=' . $sort_direction . $sort_by : '')
 			. ($category != null ? '&category.code=' . $category : '')
 			. ($collectionId != null ? '&collections.collectionId=' . $collectionId : '');
 
@@ -95,6 +128,11 @@ class Arte7Bridge extends BridgeAbstract {
 		$input_json = json_decode($input, true);
 
 		foreach($input_json['videos'] as $element) {
+			if($this->getInput('exclude_trailers') && $element['platform'] == 'EXTRAIT') {
+				continue;
+			}
+
+			$durationSeconds = $element['durationSeconds'];
 
 			$item = array();
 			$item['uri'] = $element['url'];
@@ -106,10 +144,10 @@ class Arte7Bridge extends BridgeAbstract {
 			if(!empty($element['subtitle']))
 				$item['title'] = $element['title'] . ' | ' . $element['subtitle'];
 
-			$item['duration'] = round((int)$element['durationSeconds'] / 60);
+			$durationMinutes = round((int)$durationSeconds / 60);
 			$item['content'] = $element['teaserText']
 			. '<br><br>'
-			. $item['duration']
+			. $durationMinutes
 			. 'min<br><a href="'
 			. $item['uri']
 			. '"><img src="'

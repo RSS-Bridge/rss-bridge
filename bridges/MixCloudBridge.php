@@ -5,6 +5,7 @@ class MixCloudBridge extends BridgeAbstract {
 	const MAINTAINER = 'Alexis CHEMEL';
 	const NAME = 'MixCloud';
 	const URI = 'https://www.mixcloud.com';
+	const API_URI = 'https://api.mixcloud.com/';
 	const CACHE_TIMEOUT = 3600; // 1h
 	const DESCRIPTION = 'Returns latest musics on user stream';
 
@@ -12,6 +13,7 @@ class MixCloudBridge extends BridgeAbstract {
 		'u' => array(
 			'name' => 'username',
 			'required' => true,
+			'exampleValue' => 'DJJazzyJeff',
 		)
 	));
 
@@ -23,30 +25,37 @@ class MixCloudBridge extends BridgeAbstract {
 		return parent::getName();
 	}
 
+	private static function compareDate($stream1, $stream2) {
+		return (strtotime($stream1['timestamp']) < strtotime($stream2['timestamp']) ? 1 : -1);
+	}
+
 	public function collectData(){
-		ini_set('user_agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:53.0) Gecko/20100101 Firefox/53.0');
+		$user = urlencode($this->getInput('u'));
+		// Get Cloudcasts
+		$mixcloudUri = self::API_URI . $user . '/cloudcasts/';
+		$content = getContents($mixcloudUri);
+		$casts = json_decode($content)->data;
 
-		$html = getSimpleHTMLDOM(self::URI . '/' . $this->getInput('u'));
+		// Get Listens
+		$mixcloudUri = self::API_URI . $user . '/listens/';
+		$content = getContents($mixcloudUri);
+		$listens = json_decode($content)->data;
 
-		foreach($html->find('section.card') as $element) {
+		$streams = array_merge($casts, $listens);
 
+		foreach($streams as $stream) {
 			$item = array();
 
-			$item['uri'] = self::URI . $element->find('hgroup.card-title h1 a', 0)->getAttribute('href');
-			$item['title'] = html_entity_decode(
-				$element->find('hgroup.card-title h1 a span', 0)->getAttribute('title'),
-				ENT_QUOTES
-			);
-
-			$image = $element->find('a.album-art img', 0);
-
-			if($image) {
-				$item['content'] = '<img src="' . $image->getAttribute('src') . '" />';
-			}
-
-			$item['author'] = trim($element->find('hgroup.card-title h2 a', 0)->innertext);
+			$item['uri'] = $stream->url;
+			$item['title'] = $stream->name;
+			$item['content'] = '<img src="' . $stream->pictures->thumbnail . '" />';
+			$item['author'] = $stream->user->name;
+			$item['timestamp'] = $stream->created_time;
 
 			$this->items[] = $item;
 		}
+
+		// Sort items by date
+		usort($this->items, array('MixCloudBridge', 'compareDate'));
 	}
 }

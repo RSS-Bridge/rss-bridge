@@ -24,10 +24,8 @@ class ActionFactory extends FactoryAbstract {
 		$filePath = $this->buildFilePath($name);
 
 		if(!file_exists($filePath)) {
-			throw new \Exception('File ' . $filePath . ' does not exist!');
+			throw new \Exception('Action ' . $name . ' does not exist!');
 		}
-
-		require_once $filePath;
 
 		$class = $this->buildClassName($name);
 

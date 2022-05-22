@@ -7,11 +7,18 @@ class PcGamerBridge extends BridgeAbstract
 		updates and news on all your favorite PC gaming franchises.';
 	const MAINTAINER = 'IceWreck, mdemoss';
 
+	const PARAMETERS = [
+		[
+			'limit' => self::LIMIT,
+		]
+	];
+
 	public function collectData()
 	{
 		$html = getSimpleHTMLDOMCached($this->getURI(), 300);
 		$stories = $html->find('a.article-link');
-		foreach ($stories as $element) {
+		$limit = $this->getInput('limit') ?? 10;
+		foreach (array_slice($stories, 0, $limit) as $element) {
 			$item = array();
 			$item['uri'] = $element->href;
 			$articleHtml = getSimpleHTMLDOMCached($item['uri']);

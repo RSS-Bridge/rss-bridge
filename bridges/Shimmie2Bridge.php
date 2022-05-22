@@ -1,5 +1,4 @@
 <?php
-require_once('DanbooruBridge.php');
 
 class Shimmie2Bridge extends DanbooruBridge {
 
@@ -24,14 +23,14 @@ class Shimmie2Bridge extends DanbooruBridge {
 		$item['id'] = (int)preg_replace('/[^0-9]/', '', $element->getAttribute(static::IDATTRIBUTE));
 		$item['timestamp'] = time();
 		$thumbnailUri = $this->getURI() . $element->find('img', 0)->src;
-		$item['tags'] = $element->getAttribute('data-tags');
+		$item['categories'] = explode(' ', $element->getAttribute('data-tags'));
 		$item['title'] = $this->getName() . ' | ' . $item['id'];
 		$item['content'] = '<a href="'
 		. $item['uri']
 		. '"><img src="'
 		. $thumbnailUri
 		. '" /></a><br>Tags: '
-		. $item['tags'];
+		. $element->getAttribute('data-tags');
 
 		return $item;
 	}

@@ -41,9 +41,6 @@ class WebfailBridge extends BridgeAbstract {
 	}
 
 	public function collectData(){
-
-		ini_set('user_agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:53.0) Gecko/20100101 Firefox/53.0');
-
 		$html = getSimpleHTMLDOM($this->getURI() . $this->getInput('type'));
 
 		$type = array_search($this->getInput('type'),
@@ -82,6 +79,16 @@ class WebfailBridge extends BridgeAbstract {
 			$description = '';
 			if(!is_null($element->find('div.wf-news-description', 0))) {
 				$description = $element->find('div.wf-news-description', 0)->innertext;
+			}
+
+			$infoElement = $element->find('div.wf-small', 0);
+			if (!is_null($infoElement)) {
+				if (preg_match('/(\d{2}\.\d{2}\.\d{4})/m', $infoElement->innertext, $matches) === 1 && count($matches) == 2) {
+					$dt = DateTime::createFromFormat('!d.m.Y', $matches[1]);
+					if ($dt !== false) {
+						$item['timestamp'] = $dt->getTimestamp();
+					}
+				}
 			}
 
 			$item['content'] = '<p>'

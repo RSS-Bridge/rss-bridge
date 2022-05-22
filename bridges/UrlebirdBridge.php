@@ -12,6 +12,7 @@ class UrlebirdBridge extends BridgeAbstract {
 				'name' => '@username or #hashtag',
 				'type' => 'text',
 				'required' => true,
+				'exampleValue' => '@willsmith',
 				'title' => '@username or #hashtag'
 			)
 		)

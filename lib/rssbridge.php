@@ -50,33 +50,8 @@ define('FILE_CONFIG_DEFAULT', PATH_ROOT . 'config.default.ini.php');
 /** URL to the RSS-Bridge repository */
 define('REPOSITORY', 'https://github.com/RSS-Bridge/rss-bridge/');
 
-// Interfaces
-require_once PATH_LIB . 'ActionInterface.php';
-require_once PATH_LIB . 'BridgeInterface.php';
-require_once PATH_LIB . 'CacheInterface.php';
-require_once PATH_LIB . 'FormatInterface.php';
-
-// Classes
-require_once PATH_LIB . 'FactoryAbstract.php';
-require_once PATH_LIB . 'FeedItem.php';
-require_once PATH_LIB . 'Debug.php';
-require_once PATH_LIB . 'Exceptions.php';
-require_once PATH_LIB . 'FormatFactory.php';
-require_once PATH_LIB . 'FormatAbstract.php';
-require_once PATH_LIB . 'BridgeFactory.php';
-require_once PATH_LIB . 'BridgeAbstract.php';
-require_once PATH_LIB . 'FeedExpander.php';
-require_once PATH_LIB . 'CacheFactory.php';
-require_once PATH_LIB . 'Authentication.php';
-require_once PATH_LIB . 'Configuration.php';
-require_once PATH_LIB . 'BridgeCard.php';
-require_once PATH_LIB . 'BridgeList.php';
-require_once PATH_LIB . 'ParameterValidator.php';
-require_once PATH_LIB . 'ActionFactory.php';
-require_once PATH_LIB . 'ActionAbstract.php';
-require_once PATH_LIB . 'XPathAbstract.php';
-
 // Functions
+require_once PATH_LIB . 'Exceptions.php';
 require_once PATH_LIB . 'html.php';
 require_once PATH_LIB . 'error.php';
 require_once PATH_LIB . 'contents.php';
@@ -87,3 +62,23 @@ define('MAX_FILE_SIZE', 10000000); /* Allow larger files for simple_html_dom */
 require_once PATH_LIB_VENDOR . 'parsedown/Parsedown.php';
 require_once PATH_LIB_VENDOR . 'php-urljoin/src/urljoin.php';
 require_once PATH_LIB_VENDOR . 'simplehtmldom/simple_html_dom.php';
+
+spl_autoload_register(function ($className) {
+	$folders = [
+		__DIR__ . '/../actions/',
+		__DIR__ . '/../bridges/',
+		__DIR__ . '/../caches/',
+		__DIR__ . '/../formats/',
+		__DIR__ . '/../lib/',
+	];
+	foreach ($folders as $folder) {
+		$file = $folder . $className . '.php';
+		if (is_file($file)) {
+			require $file;
+		}
+	}
+});
+
+Configuration::verifyInstallation();
+Configuration::loadConfiguration();
+Authentication::showPromptIfNeeded();
