@@ -152,7 +152,7 @@ class GitlabIssueBridge extends BridgeAbstract {
 						$content = $comment->note_html;
 					}
 				}
-				$item['title'] = $author->name . " $content " . date('(Y-m-d)', strtotime($item['timestamp']));
+				$item['title'] = $author->name . " $content";
 				$item['content'] = defaultLinkTo($comment->note_html, 'https://' . $this->getInput('h') . '/');
 
 				$this->items[] = $item;
