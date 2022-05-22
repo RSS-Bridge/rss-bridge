@@ -8,7 +8,8 @@
             'gist' => array(
                 'name' => "Gist/Raw Url",
                 'type' => 'text',
-                'required' => true
+                'required' => true,
+                'exampleValue' => 'https://raw.githubusercontent.com/kurisumx/baka/main/ikedan'
             )
         ));
 
