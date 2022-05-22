@@ -64,9 +64,13 @@ class GitlabIssueBridge extends BridgeAbstract {
 		return $name;
 	}
 
-	public function getURI() {
-		$uri = 'https://' . $this->getInput('h') . '/' . $this->getInput('u') . '/'
+	public function getProjectURI() {
+		return 'https://' . $this->getInput('h') . '/' . $this->getInput('u') . '/'
 			 . $this->getInput('p') . '/';
+	}
+
+	public function getURI() {
+		$uri = $this->getProjectURI();
 		switch ($this->queriedContext) {
 			case 'Issue comments':
 				$uri .= static::ISSUES_PATH;
@@ -85,8 +89,7 @@ class GitlabIssueBridge extends BridgeAbstract {
 		return 'https://' . $this->getInput('h') . '/favicon.ico';
 	}
 
-	public function collectData() {
-		/* parse issue description */
+	private function parseIssueDescription() {
 		$description_uri = $this->getURI() . '.json';
 		$description = $this->loadCacheValue($description_uri, static::CACHE_TIMEOUT);
 		if (!$description) {
@@ -100,24 +103,66 @@ class GitlabIssueBridge extends BridgeAbstract {
 		$item['uri'] = $this->getURI();
 		$item['uid'] = $item['uri'];
 
-		$item['timestamp'] = $description->updated_at ?? $description->created_at;
+		$item['timestamp'] = $description->created_at ?? $description->updated_at;
 
+		$item['author'] = parseAuthor($description_html);
+
+		$item['title'] = $description->title;
+		$item['content'] = markdownToHtml($description->description);
+
+		return $item;
+	}
+
+	private function parseAuthor($description_html) {
 		// fix img src
 		foreach ($description_html->find('img') as $img) {
 			$img->src = $img->getAttribute('data-src');
 		}
-		$authors = $description_html->find('.issuable-meta a.author-link');
+
+		$authors = $description_html->find('.issuable-meta a.author-link, .merge-request a.author-link');
 		$editors = $description_html->find('.edited-text a.author-link');
 		$author_str = implode(' ', $authors);
 		if ($editors) {
 			$author_str .= ', ' . implode(' ', $editors);
 		}
-		$item['author'] = defaultLinkTo($author_str, 'https://' . $this->getInput('h') . '/');
+		return defaultLinkTo($author_str, 'https://' . $this->getInput('h') . '/');
+	}
 
-		$item['title'] = $description->title;
+	private function parseMRDescription() {
+		$description_uri = $this->getURI() . '/cached_widget.json';
+		$description = $this->loadCacheValue($description_uri, static::CACHE_TIMEOUT);
+		if (!$description) {
+			$description = getContents($description_uri);
+			$this->saveCacheValue($description_uri, $description);
+		}
+		$description = json_decode($description, false);
+		$description_html = getSimpleHtmlDomCached($this->getURI());
+
+		$item = array();
+		$item['uri'] = $this->getURI();
+		$item['uid'] = $item['uri'];
+
+		$item['timestamp'] = $description_html->find('.merge-request-details time', 0)->datetime;
+
+		$item['author'] = $this->parseAuthor($description_html);
+
+		$item['title'] = 'Merge Request ' . $description->title;
 		$item['content'] = markdownToHtml($description->description);
 
-		$this->items[] = $item;
+		return $item;
+	}
+
+	public function collectData() {
+		switch ($this->queriedContext) {
+			case 'Issue comments':
+				$this->items[] = $this->parseIssueDescription();
+				break;
+			case 'Merge Request comments':
+				$this->items[] = $this->parseMRDescription();
+				break;
+			default:
+				break;
+		}
 
 		/* parse issue/MR comments */
 		$comments_uri = $this->getURI() . '/' . static::COMMENTS_PATH;
@@ -144,10 +189,16 @@ class GitlabIssueBridge extends BridgeAbstract {
 					$content = $comment->note_html;
 					if ($comment->type === 'StateNote') {
 						$content .= ' the issue';
+					} elseif ($comment->type === null) {
+						// e.g. "added 900 commits\n800 from master\n175h4d - commit message\n..."
+						$content = str_get_html($comment->note_html)->find('p', 0);
 					}
 				} else {
+					// no switch-case to do strict comparison
 					if ($comment->type === null || $comment->type === 'DiscussionNote') {
 						$content = 'commented';
+					} elseif ($comment->type === 'DiffNote') {
+						$content = 'commented on a thread';
 					} else {
 						$content = $comment->note_html;
 					}
