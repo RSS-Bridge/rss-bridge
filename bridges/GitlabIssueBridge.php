@@ -113,11 +113,19 @@ class GitlabIssueBridge extends BridgeAbstract {
 		return $item;
 	}
 
-	private function parseAuthor($description_html) {
-		// fix img src
-		foreach ($description_html->find('img') as $img) {
+	private function fixImgSrc($html) {
+		if (is_string($html)) {
+			$html = str_get_html($html);
+		}
+
+		foreach ($html->find('img') as $img) {
 			$img->src = $img->getAttribute('data-src');
 		}
+		return $html;
+	}
+
+	private function parseAuthor($description_html) {
+		$description_html = $this->fixImgSrc($description_html);
 
 		$authors = $description_html->find('.issuable-meta a.author-link, .merge-request a.author-link');
 		$editors = $description_html->find('.edited-text a.author-link');
@@ -204,7 +212,9 @@ class GitlabIssueBridge extends BridgeAbstract {
 					}
 				}
 				$item['title'] = $author->name . " $content";
-				$item['content'] = defaultLinkTo($comment->note_html, 'https://' . $this->getInput('h') . '/');
+
+				$content = $this->fixImgSrc($comment->note_html);
+				$item['content'] = defaultLinkTo($content, 'https://' . $this->getInput('h') . '/');
 
 				$this->items[] = $item;
 			}
