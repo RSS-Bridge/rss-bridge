@@ -57,7 +57,7 @@ class CubariBridge extends BridgeAbstract
 		}
 	}
 
-	protected function getEncodedGIST()
+	protected function getEncodedGist()
 	{
 		$url = $this->getInput('gist');
 
