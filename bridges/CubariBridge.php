@@ -63,7 +63,7 @@ class CubariBridge extends BridgeAbstract
 
 		preg_match('/\/([a-z]*)\.githubusercontent.com(.*)/', $url, $matches);
 
-		//raw or gist is first match.
+		// raw or gist is first match.
 		$unencoded = $matches[1] . $matches[2];
 
 		return base64_encode($unencoded);
