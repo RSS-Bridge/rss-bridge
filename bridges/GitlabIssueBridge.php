@@ -105,7 +105,7 @@ class GitlabIssueBridge extends BridgeAbstract {
 
 		$item['timestamp'] = $description->created_at ?? $description->updated_at;
 
-		$item['author'] = parseAuthor($description_html);
+		$item['author'] = $this->parseAuthor($description_html);
 
 		$item['title'] = $description->title;
 		$item['content'] = markdownToHtml($description->description);
