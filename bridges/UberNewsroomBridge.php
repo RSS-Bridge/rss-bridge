@@ -36,4 +36,23 @@ class UberNewsroomBridge extends BridgeAbstract {
 			$this->items[] = $item;	
 		}
 	}
+
+	public function getURI() {
+		if (is_null($this->getInput('region')) === false && $this->getInput('region') !== 'all') {
+			return self::URI . '/'. $this->getInput('region') .'/newsroom';
+		}
+
+		return parent::getURI() . '/newsroom';
+	}
+
+	public function getName() {
+		if (is_null($this->getInput('region'))  === false) {
+			$parameters = $this->getParameters();
+			$regionValues = array_flip($parameters[0]['region']['values']);
+
+			return $regionValues[$this->getInput('region')] . ' - Uber Newsroom';
+		}
+
+		return parent::getName();
+	}
 }
