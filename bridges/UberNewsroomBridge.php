@@ -11,7 +11,6 @@ class UberNewsroomBridge extends BridgeAbstract {
 			'name' => 'Region',
 			'type' => 'list',
 			'values' => array(
-				'All Regions' => 'all',
 				'Africa' => array(
 					'Egypt' => 'en-EG',
 					'Ghana' => 'en-GH',
@@ -107,14 +106,13 @@ class UberNewsroomBridge extends BridgeAbstract {
 					'Venezuela' => 'en-VE',
 				),
 			),
-			'defaultValue' => 'all',
+			'defaultValue' => 'en-US',
 		)
 	));
 
 	const CACHE_TIMEOUT = 3600;
 
 	private array $regions = [
-		'all' => 'All Regions',
 		'en-EG' => 'Egypt',
 		'en-GH' => 'Ghana',
 		'en-KE' => 'Kenya',
