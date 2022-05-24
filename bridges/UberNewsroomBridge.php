@@ -1,8 +1,8 @@
 <?php
 class UberNewsroomBridge extends BridgeAbstract {
 	const NAME = 'Uber Newsroom Bridge';
-	const URI = 'https://tracker.archiveteam.org/';
-	const URI_JSON = 'https://newsroomapi.uber.com/wp-json/wp/v2/posts/';
+	const URI = 'https://www.uber.com';
+	const URI_JSON = 'https://newsroomapi.uber.com/wp-json/wp/v2/posts/?per_page=15';
 	const DESCRIPTION = 'Returns news posts';
 	const MAINTAINER = 'VerifiedJoseph';
 	const PARAMETERS = array(array(
@@ -10,13 +10,12 @@ class UberNewsroomBridge extends BridgeAbstract {
 			'name' => 'Region',
 			'type' => 'list',
 			'values' => array(
-				'All' => 'all',
+				'All Regions' => 'all',
 				'United State' => 'en-US',
 			),
 			'defaultValue' => 'all',
 		)
-	)
-);
+	));
 
 	const CACHE_TIMEOUT = 3600;
 
@@ -33,7 +32,7 @@ class UberNewsroomBridge extends BridgeAbstract {
 			$item['uri'] = $post->link;
 			$item['content'] = $post->content->rendered;
 
-			$this->items[] = $item;	
+			$this->items[] = $item;
 		}
 	}
 
