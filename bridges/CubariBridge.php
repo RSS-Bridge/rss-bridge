@@ -55,7 +55,7 @@ class CubariBridge extends BridgeAbstract
 			$item = $this->getItemFromChapter($chapnum, $chapter);
 			$this->items[] = $item;
 		}
-	
+
 		array_multisort(array_column($this->items, 'timestamp'), SORT_DESC, $this->items);
 	}
 
