@@ -84,9 +84,9 @@ class CubariBridge extends BridgeAbstract
 			$item['author'] = $key;
 		$item['timestamp'] = $chapter['last_updated'];
 
-		$item['content'] = '<p>Manga: ' . $this->mangaTitle . '</p>
+		$item['content'] = '<p>Manga: <a href=' . $this->getURI() .  '>' . $this->mangaTitle . '</a> </p>
 			<p>Chapter Number: ' . $chapnum . '</p>
-			<p>Chapter Title: ' . $chapter['title'] . '</p>
+			<p>Chapter Title: <a href=' . $item['uri'] . '>' . $chapter['title'] . '</a></p>
 			<p>Group: ' . $item['author'] . '</p>';
 
 		$item['uid'] = $this->getSanitizedHash($item['title'] . $item['author']);
