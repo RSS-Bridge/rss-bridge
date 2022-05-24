@@ -124,7 +124,7 @@ class UberNewsroomBridge extends BridgeAbstract {
 			$item['title'] = $post->title->rendered;
 			$item['timestamp'] = $post->date;
 			$item['uri'] = $post->link;
-			$item['content'] = $post->content->rendered;
+			$item['content'] = $this->formatContent($post->content->rendered);
 			$item['enclosures'][] = $this->getImage($post->yoast_head);
 
 			$this->items[] = $item;
@@ -168,5 +168,20 @@ class UberNewsroomBridge extends BridgeAbstract {
 		}
 
 		return '';
+	}
+
+	private function formatContent($html) {
+		$html = str_get_html($html);
+
+		foreach ($html->find('div.wp-video') as $div) {
+			$div->style = '';
+		}
+
+		foreach ($html->find('video') as $video) {
+			$video->width = '100%';
+			$video->height = '';
+		}
+
+		return $html;
 	}
 }
