@@ -55,6 +55,8 @@ class CubariBridge extends BridgeAbstract
 			$item = $this->getItemFromChapter($chapnum, $chapter);
 			$this->items[] = $item;
 		}
+		
+		array_multisort(array_column($this->items, 'timestamp'), SORT_DESC, $this->items);
 	}
 
 	protected function getEncodedGist()
@@ -84,7 +86,7 @@ class CubariBridge extends BridgeAbstract
 			$item['author'] = $key;
 		$item['timestamp'] = $chapter['last_updated'];
 
-		$item['content'] = '<p>Manga: <a href=' . $this->getURI() .  '>' . $this->mangaTitle . '</a> </p>
+		$item['content'] = '<p>Manga: <a href=' . $this->getURI() . '>' . $this->mangaTitle . '</a> </p>
 			<p>Chapter Number: ' . $chapnum . '</p>
 			<p>Chapter Title: <a href=' . $item['uri'] . '>' . $chapter['title'] . '</a></p>
 			<p>Group: ' . $item['author'] . '</p>';
