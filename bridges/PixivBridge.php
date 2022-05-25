@@ -169,7 +169,9 @@ class PixivBridge extends BridgeAbstract {
 			$item['author'] = $result['userName'];
 			$item['timestamp'] = $result['updateDate'];
 			$item['tags'] = $result['tags'];
-			$item['content'] = "<img src='" . $this->cacheImage($result['url'], $result['id']) . "' />";
+			$cached_image = $this->cacheImage($result['url'], $result['id'],
+											  array_key_exists('illustType', $result));
+			$item['content'] = "<img src='" . $cached_image . "' />";
 
 			// Additional content items
 			if (array_key_exists('pageCount', $result)) {
@@ -182,7 +184,7 @@ class PixivBridge extends BridgeAbstract {
 		}
 	}
 
-	private function cacheImage($url, $illustId) {
+	private function cacheImage($url, $illustId, $isImage) {
 		$illustId = preg_replace('/[^0-9]/', '', $illustId);
 		$thumbnailurl = $url;
 
@@ -199,7 +201,7 @@ class PixivBridge extends BridgeAbstract {
 		if(!is_file($path)) {
 
 			// Get fullsize URL
-			if (!$this->getInput('mode') !== 'novels/' && $this->getInput('fullsize')) {
+			if ($isImage && $this->getInput('fullsize')) {
 				$ajax_uri = static::URI . 'ajax/illust/' . $illustId;
 				$imagejson = json_decode(getContents($ajax_uri), true);
 				$url = $imagejson['body']['urls']['original'];
