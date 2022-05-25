@@ -1,4 +1,5 @@
 import requests
+import itertools
 from bs4 import BeautifulSoup
 from datetime import datetime
 import os.path
@@ -47,15 +48,16 @@ def testBridges(bridges,status):
                     if parameter.get('type') == 'checkbox':
                         if parameter.has_attr('checked'):
                             formstring = formstring + '&' + parameter.get('name') + '=on'
-                for list in lists:
+                for listing in lists:
                     selectionvalue = ''
-                    for selectionentry in list.contents:
+                    listingflat = list(itertools.chain.from_iterable(listing))
+                    for selectionentry in listingflat:
                         if 'selected' in selectionentry.attrs:
                             selectionvalue = selectionentry.get('value')
                             break
                     if selectionvalue == '':
-                        selectionvalue = list.contents[0].get('value')
-                    formstring = formstring + '&' + list.get('name') + '=' + selectionvalue
+                        selectionvalue = listingflat[0].get('value')
+                    formstring = formstring + '&' + listing.get('name') + '=' + selectionvalue
                 if not errormessages:
                     # if all example/default values are present, form the full request string, run the request, replace the static css
                     # file with the url of em's public instance and then upload it to termpad.com, a pastebin-like-site.
