@@ -50,14 +50,16 @@ def testBridges(bridges,status):
                             formstring = formstring + '&' + parameter.get('name') + '=on'
                 for listing in lists:
                     selectionvalue = ''
-                    listingflat = list(itertools.chain.from_iterable(listing))
-                    for selectionentry in listingflat:
+                    listname = listing.get('name')
+                    if 'optgroup' in listing.contents[0].name:
+                        listing = list(itertools.chain.from_iterable(listing))
+                    for selectionentry in listing:
                         if 'selected' in selectionentry.attrs:
                             selectionvalue = selectionentry.get('value')
                             break
                     if selectionvalue == '':
-                        selectionvalue = listingflat[0].get('value')
-                    formstring = formstring + '&' + listing.get('name') + '=' + selectionvalue
+                        selectionvalue = listing.contents[0].get('value')
+                    formstring = formstring + '&' + listname + '=' + selectionvalue
                 if not errormessages:
                     # if all example/default values are present, form the full request string, run the request, replace the static css
                     # file with the url of em's public instance and then upload it to termpad.com, a pastebin-like-site.
