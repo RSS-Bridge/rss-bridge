@@ -101,8 +101,8 @@ class NordbayernBridge extends BridgeAbstract {
 		$content = $article->find('article[id=article]', 0);
 		$item['uri'] = $link;
 
-		$author = $article->find('[id="openAuthor"]', 0);
-		if ($author) {
+		$author = $article->find('.article__author', 1);
+		if ($author !== null) {
 			$item['author'] = trim($author->plaintext);
 		}
 
