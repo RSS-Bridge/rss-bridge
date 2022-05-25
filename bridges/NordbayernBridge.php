@@ -51,21 +51,7 @@ class NordbayernBridge extends BridgeAbstract {
 		$img = $picture->find('img', 0);
 		if ($img) {
 			$imgUrl = $img->src;
-			if(!str_contains($imgUrl, 'logo-vnp.png')  &&
-				!str_contains($imgUrl, 'logo-vnp.png') &&
-				!str_contains($imgUrl, 'logo-nuernberger-nachrichten.png') &&
-				!str_contains($imgUrl, 'logo-nordbayern.png') &&
-				!str_contains($imgUrl, 'logo-nuernberger-nachrichten.png') &&
-				!str_contains($imgUrl, 'logo-erlanger-nachrichten.png') &&
-				!str_contains($imgUrl, 'logo-nordbayerische-nachrichten.png') &&
-				!str_contains($imgUrl, 'logo-fuerther-nachrichten.png') &&
-				!str_contains($imgUrl, 'logo-altmuehl-bote.png') &&
-				!str_contains($imgUrl, 'logo-weissenburger-tagblatt.png') &&
-				!str_contains($imgUrl, 'logo-treuchtlinger-kurier.png') &&
-				!str_contains($imgUrl, 'logo-neumarkter-nachrichten.png') &&
-				!str_contains($imgUrl, 'logo-roth-hilpoltsteiner-volkszeitung.png') &&
-				!str_contains($imgUrl, 'logo-hilpoltsteiner-zeitung.png') &&
-				!str_contains($imgUrl, 'logo-schwabacher-tagblatt.png')) {
+			if(!preg_match('#/logo-.*\.png#', $imgUrl)) {
 				return '<br><img src="' . $imgUrl . '">';
 			}
 		}
@@ -99,12 +85,11 @@ class NordbayernBridge extends BridgeAbstract {
 
 	private function getTeaser($content) {
 		$teaser = $content->find('p[class=article__teaser]', 0);
-		if($teaser == null) {
+		if($teaser === null) {
 			return '';
 		}
 		$teaser = $teaser->plaintext;
-		$teaser = preg_replace('/ {143}- {66}/', ' - ', $teaser);
-		$teaser = preg_replace('/ {53}/', '', $teaser);
+		$teaser = preg_replace('/[ ]{2,}/', ' ', $teaser);
 		$teaser = '<p class="article__teaser">' . $teaser . '</p>';
 		return $teaser;
 	}
@@ -118,7 +103,7 @@ class NordbayernBridge extends BridgeAbstract {
 
 		$author = $article->find('[id="openAuthor"]', 0);
 		if ($author) {
-			$item['author'] = $author->plaintext;
+			$item['author'] = trim($author->plaintext);
 		}
 
 		$createdAt = $article->find('[class=article__release]', 0);
@@ -126,14 +111,14 @@ class NordbayernBridge extends BridgeAbstract {
 			$item['timestamp'] = strtotime(str_replace('Uhr', '', $createdAt->plaintext));
 		}
 
-		if ($article->find('h2', 0) == null) {
+		if ($article->find('h2', 0) === null) {
 			$item['title'] = $article->find('h3', 0)->innertext;
 		} else {
 			$item['title'] = $article->find('h2', 0)->innertext;
 		}
 		$item['content'] = '';
 
-		if ($article->find('section[class*=article__richtext]', 0) == null) {
+		if ($article->find('section[class*=article__richtext]', 0) === null) {
 			$content = $article->find('div[class*=modul__teaser]', 0)
 						   ->find('p', 0);
 			$item['content'] .= $content;
