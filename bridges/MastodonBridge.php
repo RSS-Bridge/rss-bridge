@@ -8,9 +8,9 @@ class MastodonBridge extends FeedExpander {
 	// use the official feed: https://pixelfed.instance/users/username.atom (Posts only)
 
 	const MAINTAINER = 'Austin Huang';
-	const NAME = 'ActivityPub (Mastodon, Pleroma, Misskey...) Bridge';
+	const NAME = 'Mastodon Bridge';
 	const CACHE_TIMEOUT = 900; // 15mn
-	const DESCRIPTION = 'Returns recent statuses for an ActivityPub-compatible account.';
+	const DESCRIPTION = 'Returns recent statuses for a Mastodon account. May support other ActivityPub-compatible accounts.';
 	const URI = 'https://mastodon.social';
 
 	const PARAMETERS = array(array(
