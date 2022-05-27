@@ -10,7 +10,7 @@ class MastodonBridge extends FeedExpander {
 	const MAINTAINER = 'Austin Huang';
 	const NAME = 'Mastodon Bridge';
 	const CACHE_TIMEOUT = 900; // 15mn
-	const DESCRIPTION = 'Returns recent statuses for a Mastodon account. May support other ActivityPub-compatible accounts.';
+	const DESCRIPTION = 'Returns recent statuses. May support other ActivityPub-compatible accounts.';
 	const URI = 'https://mastodon.social';
 
 	const PARAMETERS = array(array(
@@ -83,8 +83,7 @@ class MastodonBridge extends FeedExpander {
 			foreach ($content['orderedItems'] as $status) {
 				$this->items[] = $this->parseItem($status);
 			}
-		}
-		else returnServerError('Unexpected response from server.');
+		} else returnServerError('Unexpected response from server.');
 	}
 
 	protected function parseItem($content) {
@@ -120,13 +119,14 @@ class MastodonBridge extends FeedExpander {
 	protected function parseObject($object, $item) {
 		$item['content'] = $object['content'];
 		if (strlen(strip_tags($object['content'])) > 75) {
-			$item['title'] = $item['title'] . substr(strip_tags($object['content']), 0, strpos(wordwrap(strip_tags($object['content']), 75), "\n")) . '...';
-		}
-		else $item['title'] = $item['title'] . strip_tags($object['content']);
+			$item['title'] = $item['title'] .
+							 substr(strip_tags($object['content']), 0, strpos(wordwrap(strip_tags($object['content']), 75), "\n")) . '...';
+		} else $item['title'] = $item['title'] . strip_tags($object['content']);
 		$item['uri'] = $object['id'];
 		foreach ($object['attachment'] as $attachment) {
 			// Only process REMOTE pictures (prevent xss)
-			if (preg_match('/^image\//', $attachment['mediaType'], $match) && preg_match('/^http(s|):\/\//', $attachment['url'], $match)) {
+			if (preg_match('/^image\//', $attachment['mediaType'], $match) &&
+				preg_match('/^http(s|):\/\//', $attachment['url'], $match)) {
 				$item['content'] = $item['content'] . '<br /><img ';
 				if ($attachment['name']) $item['content'] = $item['content'] . 'alt="' . $attachment['name'] . '" ';
 				$item['content'] = $item['content'] . 'src="' . $attachment['url'] . '" />';
