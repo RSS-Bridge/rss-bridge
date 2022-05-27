@@ -65,11 +65,9 @@ class MastodonBridge extends FeedExpander {
 				'Content-Type: application/jrd+json'
 			);
 			$webfinger = json_decode(getContents($webfingerUrl, $webfingerHeader), true);
-			if ($webfinger['subject'] == $resource) {
-				foreach ($webfinger['links'] as $link) {
-					if ($link['type'] == 'application/activity+json')
-						return $link['href'] . '/outbox?page=true';
-				}
+			foreach ($webfinger['links'] as $link) {
+				if ($link['type'] == 'application/activity+json')
+					return $link['href'];
 			}
 		}
 
@@ -77,7 +75,7 @@ class MastodonBridge extends FeedExpander {
 	}
 
 	public function collectData(){
-		$url = $this->getURI();
+		$url = $this->getURI() . '/outbox?page=true';
 		$content = json_decode(getContents($url, self::AP_HEADER), true);
 		if ($content['id'] == $url) {
 			foreach ($content['orderedItems'] as $status) {
