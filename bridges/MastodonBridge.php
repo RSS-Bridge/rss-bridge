@@ -22,13 +22,13 @@ class MastodonBridge extends FeedExpander {
 		'norep' => array(
 			'name' => 'Without replies',
 			'type' => 'checkbox',
-			'title' => 'Only return initial statuses'
+			'title' => 'Only return statuses that are not replies, as determined by relations (not mentions).'
 		),
 		'noboost' => array(
 			'name' => 'Without boosts',
 			'required' => false,
 			'type' => 'checkbox',
-			'title' => 'Hide boosts'
+			'title' => 'Hide boosts. Note that RSS-Bridge will fetch the original status from other federated instances.'
 			)
 		));
 
@@ -102,7 +102,9 @@ class MastodonBridge extends FeedExpander {
 					$item['title'] = 'Shared a status by ' . $rtUser . ': ';
 					$item = $this->parseObject($rtContent, $item);
 				} catch (Throwable $th) {
-					return null;
+					$item['title'] = 'Shared an unreachable status: ' . $content['object'];
+					$item['content'] = $content['object'];
+					$item['uri'] = $content['object'];
 				}
 				break;
 			case 'Create':
@@ -125,7 +127,7 @@ class MastodonBridge extends FeedExpander {
 		$item['uri'] = $object['id'];
 		foreach ($object['attachment'] as $attachment) {
 			// Only process REMOTE pictures (prevent xss)
-			if (preg_match('/^image\//', $attachment['mediaType'], $match) &&
+			if ($attachment['mediaType'] && preg_match('/^image\//', $attachment['mediaType'], $match) &&
 				preg_match('/^http(s|):\/\//', $attachment['url'], $match)) {
 				$item['content'] = $item['content'] . '<br /><img ';
 				if ($attachment['name']) $item['content'] = $item['content'] . 'alt="' . $attachment['name'] . '" ';
