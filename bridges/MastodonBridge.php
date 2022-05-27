@@ -1,11 +1,16 @@
 <?php
 
 class MastodonBridge extends FeedExpander {
+	// This script attempts to imitiate the behaviour of a read-only ActivityPub server
+	// to read the outbox.
 
-	const MAINTAINER = 'husim0';
-	const NAME = 'Mastodon Bridge';
+	// Note: Most PixelFed instances have ActivityPub outbox disabled,
+	// use the official feed: https://pixelfed.instance/users/username.atom (Posts only)
+
+	const MAINTAINER = 'Austin Huang';
+	const NAME = 'ActivityPub (Mastodon, Pleroma, Misskey...) Bridge';
 	const CACHE_TIMEOUT = 900; // 15mn
-	const DESCRIPTION = 'Returns toots';
+	const DESCRIPTION = 'Returns recent statuses for an ActivityPub-compatible account.';
 	const URI = 'https://mastodon.social';
 
 	const PARAMETERS = array(array(
@@ -17,7 +22,7 @@ class MastodonBridge extends FeedExpander {
 		'norep' => array(
 			'name' => 'Without replies',
 			'type' => 'checkbox',
-			'title' => 'Only return initial toots'
+			'title' => 'Only return initial statuses'
 		),
 		'noboost' => array(
 			'name' => 'Without boosts',
@@ -27,44 +32,16 @@ class MastodonBridge extends FeedExpander {
 			)
 		));
 
+	const AP_HEADER = array(
+			'Accept: application/activity+json'
+		);
+
 	public function getName(){
 		switch($this->queriedContext) {
 		case 'By username':
 			return $this->getInput('canusername');
 		default: return parent::getName();
 		}
-	}
-
-	protected function parseItem($newItem){
-		$item = parent::parseItem($newItem);
-
-		$content = str_get_html($item['content']);
-		$title = str_get_html($item['title']);
-
-		$item['title'] = $content->plaintext;
-
-		if(strlen($item['title']) > 75) {
-			$item['title'] = substr($item['title'], 0, strpos(wordwrap($item['title'], 75), "\n")) . '...';
-		}
-
-		if(strpos($title, 'shared a status by') !== false) {
-			if($this->getInput('noboost')) {
-				return null;
-			}
-
-			preg_match('/shared a status by (\S{0,})/', $title, $matches);
-			$item['title'] = 'Boost ' . $matches[1] . ' ' . $item['title'];
-			$item['author'] = $matches[1];
-		} else {
-			$item['author'] = $this->getInput('canusername');
-		}
-
-		// Check if it's a initial toot or a response
-		if($this->getInput('norep') && preg_match('/^@.+/', trim($content->plaintext))) {
-			return null;
-		}
-
-		return $item;
 	}
 
 	private function getInstance(){
@@ -78,13 +55,83 @@ class MastodonBridge extends FeedExpander {
 	}
 
 	public function getURI(){
-		if($this->getInput('canusername'))
-			return 'https://' . $this->getInstance() . '/@' . $this->getUsername() . '.rss';
+		if($this->getInput('canusername')) {
+			// We parse webfinger to make sure the URL is correct. This is mostly because
+			// MissKey uses user ID instead of the username in the endpoint, and also to
+			// be compatible with future ActivityPub implementations.
+			$resource = 'acct:' . $this->getUsername() . '@' . $this->getInstance();
+			$webfingerUrl = 'https://' . $this->getInstance() . '/.well-known/webfinger?resource=' . $resource;
+			$webfingerHeader = array(
+				'Content-Type: application/jrd+json'
+			);
+			$webfinger = json_decode(getContents($webfingerUrl, $webfingerHeader), true);
+			if ($webfinger['subject'] == $resource) {
+				foreach ($webfinger['links'] as $link) {
+					if ($link['type'] == 'application/activity+json')
+						return $link['href'] . '/outbox?page=true';
+				}
+			}
+		}
 
 		return parent::getURI();
 	}
 
 	public function collectData(){
-		return $this->collectExpandableDatas($this->getURI());
+		$url = $this->getURI();
+		$content = json_decode(getContents($url, self::AP_HEADER), true);
+		if ($content['id'] == $url) {
+			foreach ($content['orderedItems'] as $status) {
+				$this->items[] = $this->parseItem($status);
+			}
+		}
+		else returnServerError('Unexpected response from server.');
+	}
+
+	protected function parseItem($content) {
+		$item = array();
+		switch ($content['type']) {
+			case 'Announce': // boost
+				if ($this->getInput('noboost')) return null;
+				// We fetch the boosted content.
+				try {
+					$rtContent = json_decode(getContents($content['object'], self::AP_HEADER), true);
+					// We fetch the author, since we cannot always assume the format of the URL.
+					$user = json_decode(getContents($rtContent['attributedTo'], self::AP_HEADER), true);
+					preg_match('/http(|s):\/\/([a-z0-9-\.]{0,})\//', $rtContent['attributedTo'], $matches);
+					$rtUser = '@' . $user['preferredUsername'] . '@' . $matches[2];
+					$item['author'] = $rtUser;
+					$item['title'] = 'Shared a status by ' . $rtUser . ': ';
+					$item = $this->parseObject($rtContent, $item);
+				} catch (Throwable $th) {
+					return null;
+				}
+				break;
+			case 'Create':
+				if ($this->getInput('norep') && $content['object']['inReplyTo']) return null;
+				$item['author'] = $this->getInput('canusername');
+				$item['title'] = '';
+				$item = $this->parseObject($content['object'], $item);
+		}
+		$item['timestamp'] = $content['published'];
+		$item['uid'] = $content['id'];
+		return $item;
+	}
+
+	protected function parseObject($object, $item) {
+		$item['content'] = $object['content'];
+		if (strlen(strip_tags($object['content'])) > 75) {
+			$item['title'] = $item['title'] . substr(strip_tags($object['content']), 0, strpos(wordwrap(strip_tags($object['content']), 75), "\n")) . '...';
+		}
+		else $item['title'] = $item['title'] . strip_tags($object['content']);
+		$item['uri'] = $object['id'];
+		foreach ($object['attachment'] as $attachment) {
+			// Only process REMOTE pictures (prevent xss)
+			if (preg_match('/^image\//', $attachment['mediaType'], $match) && preg_match('/^http(s|):\/\//', $attachment['url'], $match)) {
+				$item['content'] = $item['content'] . '<br /><img ';
+				if ($attachment['name']) $item['content'] = $item['content'] . 'alt="' . $attachment['name'] . '" ';
+				$item['content'] = $item['content'] . 'src="' . $attachment['url'] . '" />';
+			}
+		}
+		return $item;
 	}
 }
