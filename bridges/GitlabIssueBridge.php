@@ -5,7 +5,7 @@ class GitlabIssueBridge extends BridgeAbstract {
 	const NAME = 'Gitlab Issue/Merge Request';
 	const URI = 'https://gitlab.com/';
 	const CACHE_TIMEOUT = 1800; // 30min
-	const DESCRIPTION = 'Returns  comments of an issue of a gitlab project';
+	const DESCRIPTION = 'Returns  comments of an issue/MR of a gitlab project';
 
 	const PARAMETERS = array(
 		'global' => array(
