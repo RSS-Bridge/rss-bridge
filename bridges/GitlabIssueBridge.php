@@ -190,8 +190,9 @@ class GitlabIssueBridge extends BridgeAbstract {
 
 				// TODO fix invalid timestamps (fdroid bot)
 				$item['timestamp'] = $comment->created_at ?? $comment->updated_at ?? $comment->last_edited_at;
-				$author =  $comment->author ?? $comment->last_edited_by;
-				$item['author'] = '<img src="' . $author->avatar_url . '" width=24></img> <a href="https://' . $this->getInput('h') . $author->path . '">' . $author->name . ' @' . $author->username . '</a>';
+				$author = $comment->author ?? $comment->last_edited_by;
+				$item['author'] = '<img src="' . $author->avatar_url . '" width=24></img> <a href="https://' .
+					$this->getInput('h') . $author->path . '">' . $author->name . ' @' . $author->username . '</a>';
 
 				$content = '';
 				if ($comment->system) {
