@@ -111,12 +111,12 @@ class GolemBridge extends FeedExpander {
 
 		$content = $article->find('div.formatted', 0);
 
-		// fix image galleries (empty src attribute), additionally full image quality
-		foreach($content->find('img[data-src-full]') as $img) {
+		// full image quality
+		foreach($content->find('img[data-src-full][src*="."]') as $img) {
 			$img->src = $img->getAttribute('data-src-full');
 		}
 
-		foreach($content->find('p, h1, h3, img') as $element) {
+		foreach($content->find('p, h1, h3, img[src*="."]') as $element) {
 			$item .= $element;
 		}
 
