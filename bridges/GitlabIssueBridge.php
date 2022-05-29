@@ -64,8 +64,9 @@ class GitlabIssueBridge extends BridgeAbstract {
 		return $name;
 	}
 
-	public function getProjectURI() {
-		return 'https://' . $this->getInput('h') . '/' . $this->getInput('u') . '/'
+	private function getProjectURI() {
+		$host = $this->getInput('h') ?? 'gitlab.com';
+		return 'https://' . $host . '/' . $this->getInput('u') . '/'
 			 . $this->getInput('p') . '/';
 	}
 
