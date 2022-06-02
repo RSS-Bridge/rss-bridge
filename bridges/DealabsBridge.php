@@ -10,7 +10,7 @@ class DealabsBridge extends PepperBridgeAbstract {
 			'q' => array(
 				'name' => 'Mot(s) clé(s)',
 				'type' => 'text',
-				'exampleValue' => 'lamp',
+				'exampleValue' => 'lampe',
 				'required' => true
 			),
 			'hide_expired' => array(
@@ -1886,7 +1886,7 @@ class DealabsBridge extends PepperBridgeAbstract {
 				'type' => 'text',
 				'required' => true,
 				'title' => 'URL discussion à surveiller: https://www.dealabs.com/discussions/titre-1234',
-				'exampleValue' => 'https://www.dealabs.com/discussions/titre-1234',
+				'exampleValue' => 'https://www.dealabs.com/discussions/jeux-steam-gratuits-gleam-woobox-etc-1071415',
 				),
 
 			'only_with_url' => array(
