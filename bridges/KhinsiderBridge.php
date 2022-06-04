@@ -12,18 +12,23 @@ class KhinsiderBridge extends BridgeAbstract
 	{
 		$html = getSimpleHTMLDOM(self::URI);
 
-		$dates = $html->find('#EchoTopic h3');
+		$dates = $html->find('.latestSoundtrackHeading');
+		$tables = $html->find('.albumList');
 		// $dates is empty
-		foreach ($dates as $date) {
+		foreach ($dates as $i => $date) {
 			$item = array();
 			$item['uri'] = self::URI;
-			$item['timestamp'] = DateTime::createFromFormat('F jS, Y', $date->plaintext)->format('U');
+			$item['timestamp'] = DateTime::createFromFormat('F jS, Y', $date->plaintext)->setTime(1, 1)->format('U');
 			$item['title'] = sprintf('OST for %s', $date->plaintext);
 			$item['author'] = 'Khinsider';
-			$links = $date->next_sibling()->find('a');
+			$trs = $tables[$i]->find('tr');
 			$content = '<ul>';
-			foreach ($links as $link) {
-				$content .= sprintf('<li><a href="%s">%s</a></li>', $link->href, $link->plaintext);
+			foreach ($trs as $tr) {
+				$td = $tr->find('td', 1);
+				if (null !== $td) {
+					$link = $td->find('a', 0);
+					$content .= sprintf('<li><a href="%s">%s</a></li>', $link->href, $link->plaintext);
+				}
 			}
 			$content .= '</ul>';
 			$item['content'] = $content;
