@@ -100,11 +100,7 @@ class GitlabIssueBridge extends BridgeAbstract {
 
 		/* parse issue/MR comments */
 		$comments_uri = $this->getURI() . '/discussions.json';
-		$comments = $this->loadCacheValue($comments_uri, static::CACHE_TIMEOUT);
-		if (!$comments) {
-			$comments = getContents($comments_uri);
-			$this->saveCacheValue($comments_uri, $comments);
-		}
+		$comments = getContents($comments_uri);
 		$comments = json_decode($comments, false);
 
 		foreach ($comments as $value) {
@@ -150,11 +146,7 @@ class GitlabIssueBridge extends BridgeAbstract {
 
 	private function parseIssueDescription() {
 		$description_uri = $this->getURI() . '.json';
-		$description = $this->loadCacheValue($description_uri, static::CACHE_TIMEOUT);
-		if (!$description) {
-			$description = getContents($description_uri);
-			$this->saveCacheValue($description_uri, $description);
-		}
+		$description = getContents($description_uri);
 		$description = json_decode($description, false);
 		$description_html = getSimpleHtmlDomCached($this->getURI());
 
@@ -197,11 +189,7 @@ class GitlabIssueBridge extends BridgeAbstract {
 
 	private function parseMRDescription() {
 		$description_uri = $this->getURI() . '/cached_widget.json';
-		$description = $this->loadCacheValue($description_uri, static::CACHE_TIMEOUT);
-		if (!$description) {
-			$description = getContents($description_uri);
-			$this->saveCacheValue($description_uri, $description);
-		}
+		$description = getContents($description_uri);
 		$description = json_decode($description, false);
 		$description_html = getSimpleHtmlDomCached($this->getURI());
 
