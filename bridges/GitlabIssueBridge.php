@@ -90,6 +90,68 @@ class GitlabIssueBridge extends BridgeAbstract {
 		return 'https://' . $this->getInput('h') . '/favicon.ico';
 	}
 
+	public function collectData() {
+		switch ($this->queriedContext) {
+			case 'Issue comments':
+				$this->items[] = $this->parseIssueDescription();
+				break;
+			case 'Merge Request comments':
+				$this->items[] = $this->parseMRDescription();
+				break;
+			default:
+				break;
+		}
+
+		/* parse issue/MR comments */
+		$comments_uri = $this->getURI() . '/' . static::COMMENTS_PATH;
+		$comments = $this->loadCacheValue($comments_uri, static::CACHE_TIMEOUT);
+		if (!$comments) {
+			$comments = getContents($comments_uri);
+			$this->saveCacheValue($comments_uri, $comments);
+		}
+		$comments = json_decode($comments, false);
+
+		foreach ($comments as $value) {
+			foreach ($value->notes as $comment) {
+				$item = array();
+				$item['uri'] = $comment->noteable_note_url;
+				$item['uid'] = $item['uri'];
+
+				// TODO fix invalid timestamps (fdroid bot)
+				$item['timestamp'] = $comment->created_at ?? $comment->updated_at ?? $comment->last_edited_at;
+				$author = $comment->author ?? $comment->last_edited_by;
+				$item['author'] = '<img src="' . $author->avatar_url . '" width=24></img> <a href="https://' .
+					$this->getInput('h') . $author->path . '">' . $author->name . ' @' . $author->username . '</a>';
+
+				$content = '';
+				if ($comment->system) {
+					$content = $comment->note_html;
+					if ($comment->type === 'StateNote') {
+						$content .= ' the issue';
+					} elseif ($comment->type === null) {
+						// e.g. "added 900 commits\n800 from master\n175h4d - commit message\n..."
+						$content = str_get_html($comment->note_html)->find('p', 0);
+					}
+				} else {
+					// no switch-case to do strict comparison
+					if ($comment->type === null || $comment->type === 'DiscussionNote') {
+						$content = 'commented';
+					} elseif ($comment->type === 'DiffNote') {
+						$content = 'commented on a thread';
+					} else {
+						$content = $comment->note_html;
+					}
+				}
+				$item['title'] = $author->name . " $content";
+
+				$content = $this->fixImgSrc($comment->note_html);
+				$item['content'] = defaultLinkTo($content, 'https://' . $this->getInput('h') . '/');
+
+				$this->items[] = $item;
+			}
+		}
+	}
+
 	private function parseIssueDescription() {
 		$description_uri = $this->getURI() . '.json';
 		$description = $this->loadCacheValue($description_uri, static::CACHE_TIMEOUT);
@@ -159,67 +221,5 @@ class GitlabIssueBridge extends BridgeAbstract {
 		$item['content'] = markdownToHtml($description->description);
 
 		return $item;
-	}
-
-	public function collectData() {
-		switch ($this->queriedContext) {
-			case 'Issue comments':
-				$this->items[] = $this->parseIssueDescription();
-				break;
-			case 'Merge Request comments':
-				$this->items[] = $this->parseMRDescription();
-				break;
-			default:
-				break;
-		}
-
-		/* parse issue/MR comments */
-		$comments_uri = $this->getURI() . '/' . static::COMMENTS_PATH;
-		$comments = $this->loadCacheValue($comments_uri, static::CACHE_TIMEOUT);
-		if (!$comments) {
-			$comments = getContents($comments_uri);
-			$this->saveCacheValue($comments_uri, $comments);
-		}
-		$comments = json_decode($comments, false);
-
-		foreach ($comments as $value) {
-			foreach ($value->notes as $comment) {
-				$item = array();
-				$item['uri'] = $comment->noteable_note_url;
-				$item['uid'] = $item['uri'];
-
-				// TODO fix invalid timestamps (fdroid bot)
-				$item['timestamp'] = $comment->created_at ?? $comment->updated_at ?? $comment->last_edited_at;
-				$author = $comment->author ?? $comment->last_edited_by;
-				$item['author'] = '<img src="' . $author->avatar_url . '" width=24></img> <a href="https://' .
-					$this->getInput('h') . $author->path . '">' . $author->name . ' @' . $author->username . '</a>';
-
-				$content = '';
-				if ($comment->system) {
-					$content = $comment->note_html;
-					if ($comment->type === 'StateNote') {
-						$content .= ' the issue';
-					} elseif ($comment->type === null) {
-						// e.g. "added 900 commits\n800 from master\n175h4d - commit message\n..."
-						$content = str_get_html($comment->note_html)->find('p', 0);
-					}
-				} else {
-					// no switch-case to do strict comparison
-					if ($comment->type === null || $comment->type === 'DiscussionNote') {
-						$content = 'commented';
-					} elseif ($comment->type === 'DiffNote') {
-						$content = 'commented on a thread';
-					} else {
-						$content = $comment->note_html;
-					}
-				}
-				$item['title'] = $author->name . " $content";
-
-				$content = $this->fixImgSrc($comment->note_html);
-				$item['content'] = defaultLinkTo($content, 'https://' . $this->getInput('h') . '/');
-
-				$this->items[] = $item;
-			}
-		}
 	}
 }
