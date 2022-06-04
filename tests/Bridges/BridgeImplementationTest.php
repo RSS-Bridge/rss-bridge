@@ -1,5 +1,11 @@
 <?php
 
+namespace RssBridge\Tests\Bridges;
+
+use BridgeAbstract;
+use BridgeInterface;
+use FeedExpander;
+use PixivBridge;
 use PHPUnit\Framework\TestCase;
 
 class BridgeImplementationTest extends TestCase {
@@ -216,7 +222,7 @@ class BridgeImplementationTest extends TestCase {
 	}
 
 	private function setBridge($path) {
-		$this->class = basename($path, '.php');
+		$this->class = '\\' . basename($path, '.php');
 		$this->assertTrue(class_exists($this->class), 'class ' . $this->class . ' doesn\'t exist');
 		$this->obj = new $this->class();
 	}

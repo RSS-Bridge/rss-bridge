@@ -1,5 +1,8 @@
 <?php
 
+namespace RssBridge\Tests\Caches;
+
+use CacheInterface;
 use PHPUnit\Framework\TestCase;
 
 class CacheImplementationTest extends TestCase {
@@ -34,7 +37,7 @@ class CacheImplementationTest extends TestCase {
 	}
 
 	private function setCache($path) {
-		$this->class = basename($path, '.php');
+		$this->class = '\\' . basename($path, '.php');
 		$this->assertTrue(class_exists($this->class), 'class ' . $this->class . ' doesn\'t exist');
 	}
 }

@@ -1,15 +1,17 @@
 <?php
 /**
- * MrssFormat - RSS 2.0 + Media RSS
- * http://www.rssboard.org/rss-specification
- * http://www.rssboard.org/media-rss
+ * JsonFormat - JSON Feed Version 1
+ * https://jsonfeed.org/version/1
  */
 
+namespace RssBridge\Tests\Formats;
+
+use FormatFactory;
 use PHPUnit\Framework\TestCase;
 
-class MrssFormatTest extends TestCase {
+class JsonFormatTest extends TestCase {
 	const PATH_SAMPLES	= __DIR__ . '/samples/';
-	const PATH_EXPECTED	= __DIR__ . '/samples/expectedMrssFormat/';
+	const PATH_EXPECTED	= __DIR__ . '/samples/expectedJsonFormat/';
 
 	private $sample;
 	private $format;
@@ -23,7 +25,7 @@ class MrssFormatTest extends TestCase {
 		$this->setSample($path);
 		$this->initFormat();
 
-		$this->assertXmlStringEqualsXmlFile($this->sample->expected, $this->data);
+		$this->assertJsonStringEqualsJsonFile($this->sample->expected, $this->data);
 	}
 
 	public function sampleProvider() {
@@ -48,7 +50,7 @@ class MrssFormatTest extends TestCase {
 			$this->sample = (object)array(
 				'meta'		=> $data['meta'],
 				'items'		=> $items,
-				'expected'	=> self::PATH_EXPECTED . basename($path, '.json') . '.xml'
+				'expected'	=> self::PATH_EXPECTED . basename($path)
 			);
 		} else {
 			$this->fail('invalid test sample: ' . basename($path, '.json'));
@@ -62,12 +64,12 @@ class MrssFormatTest extends TestCase {
 	private function initFormat() {
 		$formatFac = new FormatFactory();
 		$formatFac->setWorkingDir(PATH_LIB_FORMATS);
-		$this->format = $formatFac->create('Mrss');
+		$this->format = $formatFac->create('Json');
 		$this->format->setItems($this->sample->items);
 		$this->format->setExtraInfos($this->sample->meta);
 		$this->format->setLastModified(strtotime('2000-01-01 12:00:00 UTC'));
 
 		$this->data = $this->format->stringify();
-		$this->assertNotFalse(simplexml_load_string($this->data));
+		$this->assertNotNull(json_decode($this->data), 'invalid JSON output: ' . json_last_error_msg());
 	}
 }

@@ -1,5 +1,9 @@
 <?php
 
+namespace RssBridge\Tests\Actions;
+
+use ActionAbstract;
+use ActionInterface;
 use PHPUnit\Framework\TestCase;
 
 class ActionImplementationTest extends TestCase {
@@ -48,7 +52,7 @@ class ActionImplementationTest extends TestCase {
 	}
 
 	private function setAction($path) {
-		$this->class = basename($path, '.php');
+		$this->class = '\\' . basename($path, '.php');
 		$this->assertTrue(class_exists($this->class), 'class ' . $this->class . ' doesn\'t exist');
 		$this->obj = new $this->class();
 	}
