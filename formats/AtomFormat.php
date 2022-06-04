@@ -165,6 +165,6 @@ EOD;
 	}
 
 	private function xml_encode($text){
-		return htmlspecialchars($text, ENT_XML1);
+		return htmlspecialchars($text);
 	}
 }

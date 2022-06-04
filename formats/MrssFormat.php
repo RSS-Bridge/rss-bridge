@@ -95,6 +95,7 @@ class MrssFormat extends FormatAbstract {
 
 			$entryCategories = '';
 			foreach($item->getCategories() as $category) {
+				$category = $this->xml_encode($category);
 				$entryCategories .= '<category>'
 				. $category . '</category>'
 				. PHP_EOL;
