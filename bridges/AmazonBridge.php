@@ -42,6 +42,8 @@ class AmazonBridge extends BridgeAbstract {
 				'Mexico' => 'com.mx',
 				'Netherlands' => 'nl',
 				'Spain' => 'es',
+				'Sweden' => 'se',
+				'Turkey' => 'com.tr',
 				'United Kingdom' => 'co.uk',
 				'United States' => 'com',
 			),
