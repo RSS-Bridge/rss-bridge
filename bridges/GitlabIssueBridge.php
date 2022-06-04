@@ -45,10 +45,6 @@ class GitlabIssueBridge extends BridgeAbstract {
 		)
 	);
 
-	const ISSUES_PATH = '-/issues';
-	const MERGE_REQUESTS_PATH = '-/merge_requests';
-	const COMMENTS_PATH = 'discussions.json';
-
 	public function getName(){
 		$name = $this->getInput('h') . '/' . $this->getInput('u') . '/' . $this->getInput('p');
 		switch ($this->queriedContext) {
@@ -74,10 +70,10 @@ class GitlabIssueBridge extends BridgeAbstract {
 		$uri = $this->getProjectURI();
 		switch ($this->queriedContext) {
 			case 'Issue comments':
-				$uri .= static::ISSUES_PATH;
+				$uri .= '-/issues';
 				break;
 			case 'Merge Request comments':
-				$uri .= static::MERGE_REQUESTS_PATH;
+				$uri .= '-/merge_requests';
 				break;
 			default:
 				return $uri;
@@ -103,7 +99,7 @@ class GitlabIssueBridge extends BridgeAbstract {
 		}
 
 		/* parse issue/MR comments */
-		$comments_uri = $this->getURI() . '/' . static::COMMENTS_PATH;
+		$comments_uri = $this->getURI() . '/discussions.json';
 		$comments = $this->loadCacheValue($comments_uri, static::CACHE_TIMEOUT);
 		if (!$comments) {
 			$comments = getContents($comments_uri);
