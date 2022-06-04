@@ -51,12 +51,7 @@ class NordbayernBridge extends BridgeAbstract {
 		$img = $picture->find('img', 0);
 		if ($img) {
 			$imgUrl = $img->src;
-			if(!str_contains($imgUrl, '/img/nb/logo-vnp.png')  &&
-				!str_contains($imgUrl, '/img/nn/logo-vnp.png') &&
-				!str_contains($imgUrl, '/img/nb/logo-nuernberger-nachrichten.png') &&
-				!str_contains($imgUrl, '/img/nb/logo-nordbayern.png') &&
-				!str_contains($imgUrl, '/img/nn/logo-nuernberger-nachrichten.png') &&
-				!str_contains($imgUrl, '/img/nb/logo-erlanger-nachrichten.png')) {
+			if(!preg_match('#/logo-.*\.png#', $imgUrl)) {
 				return '<br><img src="' . $imgUrl . '">';
 			}
 		}
@@ -88,6 +83,17 @@ class NordbayernBridge extends BridgeAbstract {
 		return $content;
 	}
 
+	private function getTeaser($content) {
+		$teaser = $content->find('p[class=article__teaser]', 0);
+		if($teaser === null) {
+			return '';
+		}
+		$teaser = $teaser->plaintext;
+		$teaser = preg_replace('/[ ]{2,}/', ' ', $teaser);
+		$teaser = '<p class="article__teaser">' . $teaser . '</p>';
+		return $teaser;
+	}
+
 	private function handleArticle($link) {
 		$item = array();
 		$article = getSimpleHTMLDOM($link);
@@ -95,9 +101,9 @@ class NordbayernBridge extends BridgeAbstract {
 		$content = $article->find('article[id=article]', 0);
 		$item['uri'] = $link;
 
-		$author = $article->find('[id="openAuthor"]', 0);
-		if ($author) {
-			$item['author'] = $author->plaintext;
+		$author = $article->find('.article__author', 1);
+		if ($author !== null) {
+			$item['author'] = trim($author->plaintext);
 		}
 
 		$createdAt = $article->find('[class=article__release]', 0);
@@ -105,14 +111,14 @@ class NordbayernBridge extends BridgeAbstract {
 			$item['timestamp'] = strtotime(str_replace('Uhr', '', $createdAt->plaintext));
 		}
 
-		if ($article->find('h2', 0) == null) {
+		if ($article->find('h2', 0) === null) {
 			$item['title'] = $article->find('h3', 0)->innertext;
 		} else {
 			$item['title'] = $article->find('h2', 0)->innertext;
 		}
 		$item['content'] = '';
 
-		if ($article->find('section[class*=article__richtext]', 0) == null) {
+		if ($article->find('section[class*=article__richtext]', 0) === null) {
 			$content = $article->find('div[class*=modul__teaser]', 0)
 						   ->find('p', 0);
 			$item['content'] .= $content;
@@ -122,7 +128,7 @@ class NordbayernBridge extends BridgeAbstract {
 			// of the title image. If we didn't do this some rss programs
 			// would show the subtitle of the title image as teaser instead
 			// of the actuall article teaser.
-			$item['content'] .= $content->find('p[class=article__teaser]', 0);
+			$item['content'] .= self::getTeaser($content);
 			$item['content'] .= self::getUseFullContent($content);
 		}
 
