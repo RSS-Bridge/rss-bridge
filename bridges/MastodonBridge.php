@@ -1,6 +1,6 @@
 <?php
 
-class MastodonBridge extends FeedExpander {
+class MastodonBridge extends BridgeAbstract {
 	// This script attempts to imitiate the behaviour of a read-only ActivityPub server
 	// to read the outbox.
 
@@ -36,20 +36,20 @@ class MastodonBridge extends FeedExpander {
 			'Accept: application/activity+json'
 		);
 
-	public function getName(){
+	public function getName() {
 		switch($this->queriedContext) {
-		case 'By username':
-			return $this->getInput('canusername');
-		default: return parent::getName();
+			case 'By username':
+				return $this->getInput('canusername');
+			default: return parent::getName();
 		}
 	}
 
-	private function getInstance(){
+	private function getInstance() {
 		preg_match('/^@[a-zA-Z0-9_]+@(.+)/', $this->getInput('canusername'), $matches);
 		return $matches[1];
 	}
 
-	private function getUsername(){
+	private function getUsername() {
 		preg_match('/^@([a-zA-Z_0-9_]+)@.+/', $this->getInput('canusername'), $matches);
 		return $matches[1];
 	}
@@ -66,29 +66,34 @@ class MastodonBridge extends FeedExpander {
 			);
 			$webfinger = json_decode(getContents($webfingerUrl, $webfingerHeader), true);
 			foreach ($webfinger['links'] as $link) {
-				if ($link['type'] == 'application/activity+json')
+				if ($link['type'] === 'application/activity+json') {
 					return $link['href'];
+				}
 			}
 		}
 
 		return parent::getURI();
 	}
 
-	public function collectData(){
+	public function collectData() {
 		$url = $this->getURI() . '/outbox?page=true';
 		$content = json_decode(getContents($url, self::AP_HEADER), true);
-		if ($content['id'] == $url) {
+		if ($content['id'] === $url) {
 			foreach ($content['orderedItems'] as $status) {
 				$this->items[] = $this->parseItem($status);
 			}
-		} else returnServerError('Unexpected response from server.');
+		} else {
+			throw new \Exception('Unexpected response from server.');
+		}
 	}
 
 	protected function parseItem($content) {
 		$item = array();
 		switch ($content['type']) {
 			case 'Announce': // boost
-				if ($this->getInput('noboost')) return null;
+				if ($this->getInput('noboost')) {
+					return null;
+				}
 				// We fetch the boosted content.
 				try {
 					$rtContent = json_decode(getContents($content['object'], self::AP_HEADER), true);
@@ -106,7 +111,9 @@ class MastodonBridge extends FeedExpander {
 				}
 				break;
 			case 'Create':
-				if ($this->getInput('norep') && $content['object']['inReplyTo']) return null;
+				if ($this->getInput('norep') && $content['object']['inReplyTo']) {
+					return null;
+				}
 				$item['author'] = $this->getInput('canusername');
 				$item['title'] = '';
 				$item = $this->parseObject($content['object'], $item);
@@ -118,18 +125,26 @@ class MastodonBridge extends FeedExpander {
 
 	protected function parseObject($object, $item) {
 		$item['content'] = $object['content'];
-		if (strlen(strip_tags($object['content'])) > 75) {
-			$item['title'] = $item['title'] .
-							 substr(strip_tags($object['content']), 0, strpos(wordwrap(strip_tags($object['content']), 75), "\n")) . '...';
-		} else $item['title'] = $item['title'] . strip_tags($object['content']);
+		$strippedContent = strip_tags($object['content']);
+
+		if (mb_strlen($strippedContent) > 75) {
+			$contentSubstring = mb_substr($strippedContent, 0, mb_strpos(wordwrap($strippedContent, 75), "\n"));
+			$item['title'] .= $contentSubstring . '...';
+		} else {
+			$item['title'] .= $strippedContent;
+		}
 		$item['uri'] = $object['id'];
 		foreach ($object['attachment'] as $attachment) {
 			// Only process REMOTE pictures (prevent xss)
-			if ($attachment['mediaType'] && preg_match('/^image\//', $attachment['mediaType'], $match) &&
-				preg_match('/^http(s|):\/\//', $attachment['url'], $match)) {
+			if ($attachment['mediaType']
+				&& preg_match('/^image\//', $attachment['mediaType'], $match)
+				&& preg_match('/^http(s|):\/\//', $attachment['url'], $match)
+			) {
 				$item['content'] = $item['content'] . '<br /><img ';
-				if ($attachment['name']) $item['content'] = $item['content'] . 'alt="' . $attachment['name'] . '" ';
-				$item['content'] = $item['content'] . 'src="' . $attachment['url'] . '" />';
+				if ($attachment['name']) {
+					$item['content'] .= sprintf('alt="%s" ', $attachment['name']);
+				}
+				$item['content'] .= sprintf('src="%s" />', $attachment['url']);
 			}
 		}
 		return $item;
