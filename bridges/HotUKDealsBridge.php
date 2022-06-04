@@ -3252,7 +3252,7 @@ class HotUKDealsBridge extends PepperBridgeAbstract {
 				'name' => 'Discussion URL',
 				'type' => 'text',
 				'required' => true,
-				'title' => 'Discussion URL to monitor. Ex: https://www.hotukdeals.com/discussions/the-hukd-lego-thread-3599357',
+				'title' => 'Discussion URL to monitor. Ex: https://www.hotukdeals.com/discussions/title-123',
 				'exampleValue' => 'https://www.hotukdeals.com/discussions/the-hukd-lego-thread-3599357',
 				),
 			'only_with_url' => array(

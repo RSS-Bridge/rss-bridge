@@ -11,7 +11,7 @@ class MydealsBridge extends PepperBridgeAbstract {
 			'q' => array(
 				'name' => 'Stichworten',
 				'type' => 'text',
-				'exampleValue' => 'watch',
+				'exampleValue' => 'lamp',
 				'required' => true
 			),
 			'hide_expired' => array(
@@ -2002,7 +2002,7 @@ class MydealsBridge extends PepperBridgeAbstract {
 				'type' => 'text',
 				'required' => true,
 				'title' => 'URL-Diskussion zu überwachen: https://www.mydealz.de/diskussion/title-123',
-				'exampleValue' => 'https://www.mydealz.de/diskussion/title-123',
+				'exampleValue' => 'https://www.mydealz.de/diskussion/anleitung-wie-schreibe-ich-einen-deal-1658317',
 				),
 			'only_with_url' => array(
 				'name' => 'Kommentare ohne URL ausschließen',
