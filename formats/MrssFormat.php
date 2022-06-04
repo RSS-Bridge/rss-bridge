@@ -150,14 +150,6 @@ EOD;
 		return $toReturn;
 	}
 
-	public function display(){
-		$this
-			->setContentType(self::MIME_TYPE . '; charset=' . $this->getCharset())
-			->callContentType();
-
-		return parent::display();
-	}
-
 	private function xml_encode($text){
 		return htmlspecialchars($text, ENT_XML1);
 	}

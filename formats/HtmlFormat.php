@@ -137,14 +137,6 @@ EOD;
 		return $toReturn;
 	}
 
-	public function display() {
-		$this
-			->setContentType(self::MIME_TYPE . '; charset=' . $this->getCharset())
-			->callContentType();
-
-		return parent::display();
-	}
-
 	private function buildButton($format, $query) {
 		return <<<EOD
 <a href="./?{$query}"><button class="rss-feed">{$format}</button></a>
