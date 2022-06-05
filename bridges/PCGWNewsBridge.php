@@ -13,7 +13,7 @@ class PCGWNewsBridge extends FeedExpander {
 	public function collectData() {
 		$html = getSimpleHTMLDOM($this->getURI());
 
-		$now = strtotime("now");
+		$now = strtotime('now');
 
 		foreach($html->find('.mw-parser-output .news_li') as $element) {
 			$item = array();
