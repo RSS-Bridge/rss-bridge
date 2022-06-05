@@ -127,7 +127,6 @@ The default URI shows the Madara demo page.';
 		// It's possible to find this from the input parameters, but it is already available here.
 		$info['root'] = $html->find('a.logo', 0)->href;
 
-
 		$this->saveCacheValue($url_cache, $info);
 		return $info;
 	}
