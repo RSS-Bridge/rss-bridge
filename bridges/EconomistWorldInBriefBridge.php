@@ -96,7 +96,7 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
             'title' => 'World in brief at ' . $today->format('Y.m.d'),
             'content' => $contents,
             'timestamp' => $today->format('U'),
-            'uid' => 'world-at-frief-' . $today->format('U')
+            'uid' => 'world-in-brief-' . $today->format('U')
         );
     }
 
