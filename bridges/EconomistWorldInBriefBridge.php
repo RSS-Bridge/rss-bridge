@@ -12,7 +12,6 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
         '' => array(
             'splitGobbets' => array(
                 'name' => 'Split the short stories',
-                'required' => true,
                 'type' => 'checkbox',
                 'defaultValue' => false,
                 'title' => 'Whether to split the short stories into separate entries'
@@ -24,19 +23,16 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
             ),
             'agenda' => array(
                 'name' => 'Add agenda for the day',
-                'required' => true,
                 'type' => 'checkbox',
                 'defaultValue' => 'checked'
             ),
             'agendaPictures' => array(
                 'name' => 'Include pictures to the agenda',
-                'required' => true,
                 'type' => 'checkbox',
                 'defaultValue' => 'checked'
             ),
             'quote' => array(
                 'name' => 'Include the quote of the day',
-                'required' => true,
                 'type' => 'checkbox'
             )
         )
@@ -71,10 +67,10 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
             $match = preg_match('/[\.,]/', $title, $matches, PREG_OFFSET_CAPTURE);
             if ($match > 0) {
                 $point = $matches[0][1];
-                $title = substr($title, 0, $point);
+                $title = mb_substr($title, 0, $point);
             }
-            if ($limit && strlen($title) > $limit) {
-                $title = substr($title, 0, $limit) . '...';
+            if ($limit && mb_strlen($title) > $limit) {
+                $title = mb_substr($title, 0, $limit) . '...';
             }
             $item = array(
                 'uri' => self::URI,
@@ -116,7 +112,8 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
 
             $res_content = '';
             if ($image != null && $this->getInput('agendaPictures') == 1) {
-                $res_content .= $image->outertext;
+                $img = $image->find('img', 0);
+                $res_content .= '<img src="' . $img->src . '" />';
             }
             $res_content .= $content->innertext;
             $this->items[] = array(
