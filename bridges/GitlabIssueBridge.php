@@ -60,14 +60,10 @@ class GitlabIssueBridge extends BridgeAbstract {
 		return $name;
 	}
 
-	private function getProjectURI() {
-		$host = $this->getInput('h') ?? 'gitlab.com';
-		return 'https://' . $host . '/' . $this->getInput('u') . '/'
-			 . $this->getInput('p') . '/';
-	}
-
 	public function getURI() {
-		$uri = $this->getProjectURI();
+		$host = $this->getInput('h') ?? 'gitlab.com';
+		$uri = 'https://' . $host . '/' . $this->getInput('u') . '/'
+			 . $this->getInput('p') . '/';
 		switch ($this->queriedContext) {
 			case 'Issue comments':
 				$uri .= '-/issues';
@@ -92,7 +88,7 @@ class GitlabIssueBridge extends BridgeAbstract {
 				$this->items[] = $this->parseIssueDescription();
 				break;
 			case 'Merge Request comments':
-				$this->items[] = $this->parseMRDescription();
+				$this->items[] = $this->parseMergeRequestDescription();
 				break;
 			default:
 				break;
@@ -164,6 +160,26 @@ class GitlabIssueBridge extends BridgeAbstract {
 		return $item;
 	}
 
+	private function parseMergeRequestDescription() {
+		$description_uri = $this->getURI() . '/cached_widget.json';
+		$description = getContents($description_uri);
+		$description = json_decode($description, false);
+		$description_html = getSimpleHtmlDomCached($this->getURI());
+
+		$item = array();
+		$item['uri'] = $this->getURI();
+		$item['uid'] = $item['uri'];
+
+		$item['timestamp'] = $description_html->find('.merge-request-details time', 0)->datetime;
+
+		$item['author'] = $this->parseAuthor($description_html);
+
+		$item['title'] = 'Merge Request ' . $description->title;
+		$item['content'] = markdownToHtml($description->description);
+
+		return $item;
+	}
+
 	private function fixImgSrc($html) {
 		if (is_string($html)) {
 			$html = str_get_html($html);
@@ -185,25 +201,5 @@ class GitlabIssueBridge extends BridgeAbstract {
 			$author_str .= ', ' . implode(' ', $editors);
 		}
 		return defaultLinkTo($author_str, 'https://' . $this->getInput('h') . '/');
-	}
-
-	private function parseMRDescription() {
-		$description_uri = $this->getURI() . '/cached_widget.json';
-		$description = getContents($description_uri);
-		$description = json_decode($description, false);
-		$description_html = getSimpleHtmlDomCached($this->getURI());
-
-		$item = array();
-		$item['uri'] = $this->getURI();
-		$item['uid'] = $item['uri'];
-
-		$item['timestamp'] = $description_html->find('.merge-request-details time', 0)->datetime;
-
-		$item['author'] = $this->parseAuthor($description_html);
-
-		$item['title'] = 'Merge Request ' . $description->title;
-		$item['content'] = markdownToHtml($description->description);
-
-		return $item;
 	}
 }
