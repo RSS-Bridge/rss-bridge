@@ -48,7 +48,7 @@ class EuronewsBridge extends BridgeAbstract
 	{
 		$limit = $this->getInput('limit');
 		$root_url = 'https://' . $this->getInput('lang');
-		$url =  $root_url . '/api/timeline.json?limit=' . $limit;
+		$url = $root_url . '/api/timeline.json?limit=' . $limit;
 		$json = getContents($url);
 		$data = json_decode($json, true);
 
