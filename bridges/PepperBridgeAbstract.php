@@ -119,17 +119,25 @@ class PepperBridgeAbstract extends BridgeAbstract {
 					. $deal->find('div[class*=' . $selectorHot . ']', 0)
 						->find('span', 1)->outertext
 					. '</td></table>';
-				$dealDateDiv = $deal->find('div[class*=' . $selectorDate . ']', 0)
-					->find('span[class=hide--toW3]');
-				$itemDate = end($dealDateDiv)->plaintext;
-				// In case of a Local deal, there is no date, but we can use
-				// this case for other reason (like date not in the last field)
-				if ($this->contains($itemDate, $this->i8n('localdeal'))) {
-					$item['timestamp'] = time();
-				} else if ($this->contains($itemDate, $this->i8n('relative-date-indicator'))) {
-					$item['timestamp'] = $this->relativeDateToTimestamp($itemDate);
-				} else {
-					$item['timestamp'] = $this->parseDate($itemDate);
+
+				// Check if a clock icon is displayed on the deal
+				$clocks = $deal->find('svg[class*=icon--clock]');
+				if($clocks !== null && count($clocks) > 0) {
+					// Get the last clock, corresponding to the deal posting date
+					$clock = end($clocks);
+
+					// Find the text corresponding to the clock
+					$spanDateDiv = $clock->parent()->find('span[class=hide--toW3]', 0);
+					$itemDate = $spanDateDiv->plaintext;
+					// In case of a Local deal, there is no date, but we can use
+					// this case for other reason (like date not in the last field)
+					if ($this->contains($itemDate, $this->i8n('localdeal'))) {
+						$item['timestamp'] = time();
+					} else if ($this->contains($itemDate, $this->i8n('relative-date-indicator'))) {
+						$item['timestamp'] = $this->relativeDateToTimestamp($itemDate);
+					} else {
+						$item['timestamp'] = $this->parseDate($itemDate);
+					}
 				}
 				$this->items[] = $item;
 			}
@@ -564,7 +572,6 @@ HEREDOC;
 			'year',
 			''
 		);
-
 		$date->modify(str_replace($search, $replace, $str));
 		return $date->getTimestamp();
 	}

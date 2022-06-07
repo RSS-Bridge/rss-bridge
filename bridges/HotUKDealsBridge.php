@@ -3305,7 +3305,7 @@ class HotUKDealsBridge extends PepperBridgeAbstract {
 			'th'
 		),
 		'local-time-relative' => array(
-			'Found ',
+			'Posted ',
 			'm',
 			'h,',
 			'day',
