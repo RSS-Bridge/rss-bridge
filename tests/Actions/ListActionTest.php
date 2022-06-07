@@ -1,5 +1,9 @@
 <?php
 
+namespace RssBridge\Tests\Actions;
+
+use ActionFactory;
+use BridgeFactory;
 use PHPUnit\Framework\TestCase;
 
 class ListActionTest extends TestCase {

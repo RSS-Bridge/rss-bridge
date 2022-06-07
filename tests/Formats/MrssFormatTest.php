@@ -1,14 +1,18 @@
 <?php
 /**
- * AtomFormat - RFC 4287: The Atom Syndication Format
- * https://tools.ietf.org/html/rfc4287
+ * MrssFormat - RSS 2.0 + Media RSS
+ * http://www.rssboard.org/rss-specification
+ * http://www.rssboard.org/media-rss
  */
 
+namespace RssBridge\Tests\Formats;
+
+use FormatFactory;
 use PHPUnit\Framework\TestCase;
 
-class AtomFormatTest extends TestCase {
+class MrssFormatTest extends TestCase {
 	const PATH_SAMPLES	= __DIR__ . '/samples/';
-	const PATH_EXPECTED	= __DIR__ . '/samples/expectedAtomFormat/';
+	const PATH_EXPECTED	= __DIR__ . '/samples/expectedMrssFormat/';
 
 	private $sample;
 	private $format;
@@ -61,7 +65,7 @@ class AtomFormatTest extends TestCase {
 	private function initFormat() {
 		$formatFac = new FormatFactory();
 		$formatFac->setWorkingDir(PATH_LIB_FORMATS);
-		$this->format = $formatFac->create('Atom');
+		$this->format = $formatFac->create('Mrss');
 		$this->format->setItems($this->sample->items);
 		$this->format->setExtraInfos($this->sample->meta);
 		$this->format->setLastModified(strtotime('2000-01-01 12:00:00 UTC'));

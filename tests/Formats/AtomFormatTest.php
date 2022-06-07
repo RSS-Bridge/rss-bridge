@@ -1,15 +1,17 @@
 <?php
 /**
- * JsonFormat - JSON Feed Version 1
- * https://jsonfeed.org/version/1
+ * AtomFormat - RFC 4287: The Atom Syndication Format
+ * https://tools.ietf.org/html/rfc4287
  */
-require_once __DIR__ . '/../lib/rssbridge.php';
 
+namespace RssBridge\Tests\Formats;
+
+use FormatFactory;
 use PHPUnit\Framework\TestCase;
 
-class JsonFormatTest extends TestCase {
+class AtomFormatTest extends TestCase {
 	const PATH_SAMPLES	= __DIR__ . '/samples/';
-	const PATH_EXPECTED	= __DIR__ . '/samples/expectedJsonFormat/';
+	const PATH_EXPECTED	= __DIR__ . '/samples/expectedAtomFormat/';
 
 	private $sample;
 	private $format;
@@ -23,7 +25,7 @@ class JsonFormatTest extends TestCase {
 		$this->setSample($path);
 		$this->initFormat();
 
-		$this->assertJsonStringEqualsJsonFile($this->sample->expected, $this->data);
+		$this->assertXmlStringEqualsXmlFile($this->sample->expected, $this->data);
 	}
 
 	public function sampleProvider() {
@@ -48,7 +50,7 @@ class JsonFormatTest extends TestCase {
 			$this->sample = (object)array(
 				'meta'		=> $data['meta'],
 				'items'		=> $items,
-				'expected'	=> self::PATH_EXPECTED . basename($path)
+				'expected'	=> self::PATH_EXPECTED . basename($path, '.json') . '.xml'
 			);
 		} else {
 			$this->fail('invalid test sample: ' . basename($path, '.json'));
@@ -62,12 +64,12 @@ class JsonFormatTest extends TestCase {
 	private function initFormat() {
 		$formatFac = new FormatFactory();
 		$formatFac->setWorkingDir(PATH_LIB_FORMATS);
-		$this->format = $formatFac->create('Json');
+		$this->format = $formatFac->create('Atom');
 		$this->format->setItems($this->sample->items);
 		$this->format->setExtraInfos($this->sample->meta);
 		$this->format->setLastModified(strtotime('2000-01-01 12:00:00 UTC'));
 
 		$this->data = $this->format->stringify();
-		$this->assertNotNull(json_decode($this->data), 'invalid JSON output: ' . json_last_error_msg());
+		$this->assertNotFalse(simplexml_load_string($this->data));
 	}
 }
