@@ -16,7 +16,8 @@ jobs:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-versions }}
+          php-version: ${{ matrix.php-versions }}    
+      - run: composer dump-autoload   
       - run: composer global require phpunit/phpunit ^7
       - run: phpunit --configuration=phpunit.xml --include-path=lib/
 
