@@ -100,7 +100,7 @@ class MrssFormat extends FormatAbstract {
 			$itemTimestamp = $item->getTimestamp();
 			$itemTitle = $item->getTitle();
 			$itemUri = $item->getURI();
-			$itemContent = $this->sanitizeHtml($item->getContent());
+			$itemContent = $item->getContent() ? $this->sanitizeHtml($item->getContent()) : '';
 			$entryID = $item->getUid();
 			$isPermaLink = 'false';
 
