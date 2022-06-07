@@ -18,21 +18,6 @@ class JsonFormatTest extends TestCase {
 	/**
 	 * @dataProvider sampleProvider
 	 * @runInSeparateProcess
-	 * @requires function xdebug_get_headers
-	 */
-	public function testHeaders($path) {
-		$this->setSample($path);
-		$this->initFormat();
-
-		$this->assertContains(
-			'Content-Type: application/json; charset=' . $this->format->getCharset(),
-			xdebug_get_headers()
-		);
-	}
-
-	/**
-	 * @dataProvider sampleProvider
-	 * @runInSeparateProcess
 	 */
 	public function testOutput($path) {
 		$this->setSample($path);
@@ -82,9 +67,7 @@ class JsonFormatTest extends TestCase {
 		$this->format->setExtraInfos($this->sample->meta);
 		$this->format->setLastModified(strtotime('2000-01-01 12:00:00 UTC'));
 
-		$_ = $this->format->display();
-		$this->data = $this->getActualOutput();
+		$this->data = $this->format->stringify();
 		$this->assertNotNull(json_decode($this->data), 'invalid JSON output: ' . json_last_error_msg());
-		ob_clean();
 	}
 }

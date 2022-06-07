@@ -122,14 +122,6 @@ class JsonFormat extends FormatAbstract {
 		return $json;
 	}
 
-	public function display(){
-		$this
-			->setContentType(self::MIME_TYPE . '; charset=' . $this->getCharset())
-			->callContentType();
-
-		return parent::display();
-	}
-
 	private function isHTML($text) {
 		return (strlen(strip_tags($text)) != strlen($text));
 	}

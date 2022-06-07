@@ -18,21 +18,6 @@ class MrssFormatTest extends TestCase {
 	/**
 	 * @dataProvider sampleProvider
 	 * @runInSeparateProcess
-	 * @requires function xdebug_get_headers
-	 */
-	public function testHeaders($path) {
-		$this->setSample($path);
-		$this->initFormat();
-
-		$this->assertContains(
-			'Content-Type: application/rss+xml; charset=' . $this->format->getCharset(),
-			xdebug_get_headers()
-		);
-	}
-
-	/**
-	 * @dataProvider sampleProvider
-	 * @runInSeparateProcess
 	 */
 	public function testOutput($path) {
 		$this->setSample($path);
@@ -82,9 +67,7 @@ class MrssFormatTest extends TestCase {
 		$this->format->setExtraInfos($this->sample->meta);
 		$this->format->setLastModified(strtotime('2000-01-01 12:00:00 UTC'));
 
-		$_ = $this->format->display();
-		$this->data = $this->getActualOutput();
+		$this->data = $this->format->stringify();
 		$this->assertNotFalse(simplexml_load_string($this->data));
-		ob_clean();
 	}
 }
