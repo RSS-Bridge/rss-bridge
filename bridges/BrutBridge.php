@@ -53,7 +53,7 @@ class BrutBridge extends BridgeAbstract {
 			$videoPageHtml = getSimpleHTMLDOMCached($videoPath, 3600);
 
 			$json = $this->extractJson($videoPageHtml);
-			$id =  array_keys((array) $json->media->index)[0];
+			$id = array_keys((array) $json->media->index)[0];
 
 			$item['uri'] = $videoPath;
 			$item['title'] = $json->media->index->$id->title;
@@ -112,13 +112,13 @@ EOD;
 		if (!preg_match($this->jsonRegex, $html, $parts)) {
 			returnServerError('Failed to extract data from page');
 		}
-		
+
 		$data = json_decode($parts[1]);
-		
+
 		if ($data === false) {
 			returnServerError('Failed to decode extracted data');
 		}
-		
+
 		return $data;
 	}
 }
