@@ -60,9 +60,11 @@ class BrutBridge extends BridgeAbstract {
 			$item['timestamp'] = $json->media->index->$id->published_at;
 			$item['enclosures'][] = $json->media->index->$id->media->thumbnail;
 
-			$description = $videoPageHtml->find('div.description', 0);
-			if ($videoPageHtml->find('div.core-see-more', 0)) {
-				$description .= $videoPageHtml->find('div.core-see-more', 0);
+			$description = $json->media->index->$id->description;
+			$article = '';
+
+			if (is_null($json->media->index->$id->media->seo_article) === false) {
+				$article = markdownToHtml($json->media->index->$id->media->seo_article);
 			}
 
 			$item['content'] = <<<EOD
@@ -70,6 +72,7 @@ class BrutBridge extends BridgeAbstract {
 				<source src="{$json->media->index->$id->media->mp4_url}" type="video/mp4">
 			</video>
 			<p>{$description}</p>
+			{$article}
 EOD;
 
 			$this->items[] = $item;
