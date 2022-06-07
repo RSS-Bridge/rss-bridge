@@ -54,7 +54,7 @@ class EuronewsBridge extends BridgeAbstract
 
 		foreach ($data as $datum) {
 			$datum_uri = $root_url . $datum['fullUrl'];
-			$url_datum = $this->getContent($datum_uri);
+			$url_datum = $this->getItemContent($datum_uri);
 			$categories = array();
 			if (array_key_exists('program', $datum)) {
 				if (array_key_exists('title', $datum['program'])) {
@@ -80,7 +80,7 @@ class EuronewsBridge extends BridgeAbstract
 		}
 	}
 
-	private function getContent($url)
+	private function getItemContent($url)
 	{
 		try {
 			$html = getSimpleHTMLDOMCached($url);
@@ -90,7 +90,7 @@ class EuronewsBridge extends BridgeAbstract
 		}
 		$data = $html->find('script[type="application/ld+json"]', 0)->innertext;
 		$json = json_decode($data, true);
-		$author = null;
+		$author = 'Euronews';
 		$content = '';
 		$enclosures = array();
 		if (array_key_exists('@graph', $json)) {
@@ -129,7 +129,7 @@ class EuronewsBridge extends BridgeAbstract
 				if ($element->tag == 'p') {
 					$scribble_live = $element->find('#scribblelive-items', 0);
 					if (is_null($scribble_live)) {
-						// A normal pargraph
+						// A normal paragraph
 						$content .= '<p>' . $element->innertext . '</p>';
 					} else {
 						// LIVE mode
