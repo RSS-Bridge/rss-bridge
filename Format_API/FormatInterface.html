@@ -93,7 +93,7 @@
     <div class="Page__header">
         <h1><a href="../Format_API/index.html">Format API</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../Format_API/FormatInterface.html">FormatInterface</a></h1>
                 <span class="ModifiedDate">
-            June 4, 2022 at 11:52 AM        </span>
+            June 7, 2022 at 9:06 AM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/08_Format_API/02_FormatInterface.md" target="_blank">
                 Edit on GitHub            </a>
@@ -133,10 +133,6 @@
 </ul>
 <p>Find a <a href="#template">template</a> at the end of this file</p>
 <h1><a id="functions" href="#functions" class="Permalink" aria-hidden="true" title="Permalink">#</a>Functions</h1>
-<h2><a id="the-display-function" href="#the-display-function" class="Permalink" aria-hidden="true" title="Permalink">#</a>The <code>display</code> function</h2>
-<p>The <code>display</code> function shows the contents to the user and must return the object instance.</p>
-<pre><code class="language-PHP">display(): self
-</code></pre>
 <h2><a id="the-stringify-function" href="#the-stringify-function" class="Permalink" aria-hidden="true" title="Permalink">#</a>The <code>stringify</code> function</h2>
 <p>The <code>stringify</code> function returns the items received by <a href="#the-setitem-function"><code>setItems</code></a> as string.</p>
 <pre><code class="language-PHP">stringify(): string
@@ -199,12 +195,6 @@ class MyTypeFormat implements FormatInterface {
     public function stringify(){
         // Implement your code here
         return ''; // Return items as string
-    }
-
-    public function display(){
-        // Implement your code here
-        echo $this-&gt;stringify();
-        return $this;
     }
 
     public function setItems(array $items){
