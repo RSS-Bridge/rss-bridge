@@ -7,7 +7,7 @@ class BandcampDailyBridge extends BridgeAbstract {
 	const PARAMETERS = array(
 		'Latest articles' => array(),
 		'Best of' => array(
-			'content' => array(
+			'best-content' => array(
 				'name' => 'content',
 				'type' => 'list',
 				'values' => array(
@@ -28,7 +28,7 @@ class BandcampDailyBridge extends BridgeAbstract {
 			),
 		),
 		'Genres' => array(
-			'content' => array(
+			'genres-content' => array(
 				'name' => 'content',
 				'type' => 'list',
 				'values' => array(
@@ -62,7 +62,7 @@ class BandcampDailyBridge extends BridgeAbstract {
 			),
 		),
 		'Franchises' => array(
-			'content' => array(
+			'franchises-content' => array(
 				'name' => 'content',
 				'type' => 'list',
 				'values' => array(
@@ -133,23 +133,28 @@ class BandcampDailyBridge extends BridgeAbstract {
 			case 'Best of':
 			case 'Genres':
 			case 'Franchises':
-				return self::URI . '/' . $this->getInput('content');
+				// TODO Switch to array_key_first once php >= 7.3
+				$contentKey = key(self::PARAMETERS[$this->queriedContext]);
+				return self::URI . '/' . $this->getInput($contentKey);
 			default:
 				return parent::getURI();
 		}
 	}
 
 	public function getName() {
-		if ($this->queriedContext === 'Latest articles') {
-			return $this->queriedContext . ' - Bandcamp Daily';
+		switch($this->queriedContext) {
+			case 'Latest articles':
+				return $this->queriedContext . ' - Bandcamp Daily';
+			case 'Best of':
+			case 'Genres':
+			case 'Franchises':
+				// TODO Switch to array_key_first once php >= 7.3
+				$contentKey = key(self::PARAMETERS[$this->queriedContext]);
+				$contentValues = array_flip(self::PARAMETERS[$this->queriedContext][$contentKey]['values']);
+
+				return $contentValues[$this->getInput($contentKey)] . ' - Bandcamp Daily';
+			default:
+				return parent::getName();
 		}
-
-		if (!is_null($this->getInput('content'))) {
-			$contentValues = array_flip(self::PARAMETERS[$this->queriedContext]['content']['values']);
-
-			return $contentValues[$this->getInput('content')] . ' - Bandcamp Daily';
-		}
-
-		return parent::getName();
 	}
 }
