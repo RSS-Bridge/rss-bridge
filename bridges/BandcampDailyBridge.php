@@ -133,7 +133,8 @@ class BandcampDailyBridge extends BridgeAbstract {
 			case 'Best of':
 			case 'Genres':
 			case 'Franchises':
-				$contentKey = array_key_first(self::PARAMETERS[$this->queriedContext]);
+				// TODO Switch to array_key_first once php >= 7.3
+				$contentKey = key(self::PARAMETERS[$this->queriedContext]);
 				return self::URI . '/' . $this->getInput($contentKey);
 			default:
 				return parent::getURI();
@@ -147,7 +148,8 @@ class BandcampDailyBridge extends BridgeAbstract {
 			case 'Best of':
 			case 'Genres':
 			case 'Franchises':
-				$contentKey = array_key_first(self::PARAMETERS[$this->queriedContext]);
+				// TODO Switch to array_key_first once php >= 7.3
+				$contentKey = key(self::PARAMETERS[$this->queriedContext]);
 				$contentValues = array_flip(self::PARAMETERS[$this->queriedContext][$contentKey]['values']);
 
 				return $contentValues[$this->getInput($contentKey)] . ' - Bandcamp Daily';
