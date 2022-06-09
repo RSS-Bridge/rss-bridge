@@ -23,6 +23,7 @@
  * - **Timestamp**: A timestamp of when the item was first released
  * - **Author**: Name of the author
  * - **Content**: Body of the feed, as text or HTML
+ * - **Duration**: Duration of the media in the URI (if any), in seconds
  * - **Enclosures**: A list of links to media objects (images, videos, etc...)
  * - **Categories**: A list of category names or tags to categorize the item
  *
@@ -48,6 +49,9 @@ class FeedItem {
 
 	/** @var string|null Body of the feed */
 	protected $content = null;
+
+	/** @var int|null Duration of the linked media in seconds */
+	protected $duration = null;
 
 	/** @var array List of links to media objects */
 	protected $enclosures = array();
@@ -429,6 +433,35 @@ class FeedItem {
 	}
 
 	/**
+	 * Get duration (for items where the link points to media)
+	 *
+	 * Use {@see FeedItem::setDuration()} to set the duration.
+	 *
+	 * @return ?int Duration in seconds.
+	 */
+	public function getDuration(): ?int {
+		return $this->duration;
+	}
+
+	/**
+	 * Set duration (for items where the link points to media)
+	 *
+	 * Use {@see FeedItem::getDuration()} to get the duration.
+	 *
+	 * @param int $duration Duration of the media in seconds
+	 * @return self
+	 */
+	public function setDuration(?int $duration): self {
+		if($duration !== null && $duration < 0) {
+			Debug::log('Duration must be a non-negative integer!');
+		} else {
+			$this->duration = $duration;
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Add miscellaneous elements to the item.
 	 *
 	 * @param string $key Name of the element.
@@ -461,6 +494,7 @@ class FeedItem {
 				'timestamp' => $this->timestamp,
 				'author' => $this->author,
 				'content' => $this->content,
+				'duration' => $this->duration,
 				'enclosures' => $this->enclosures,
 				'categories' => $this->categories,
 				'uid' => $this->uid,
@@ -490,6 +524,7 @@ class FeedItem {
 			case 'timestamp': $this->setTimestamp($value); break;
 			case 'author': $this->setAuthor($value); break;
 			case 'content': $this->setContent($value); break;
+			case 'duration': $this->setDuration($value); break;
 			case 'enclosures': $this->setEnclosures($value); break;
 			case 'categories': $this->setCategories($value); break;
 			case 'uid': $this->setUid($value); break;
@@ -513,6 +548,7 @@ class FeedItem {
 			case 'timestamp': return $this->getTimestamp();
 			case 'author': return $this->getAuthor();
 			case 'content': return $this->getContent();
+			case 'duration': return $this->getDuration();
 			case 'enclosures': return $this->getEnclosures();
 			case 'categories': return $this->getCategories();
 			case 'uid': return $this->getUid();
