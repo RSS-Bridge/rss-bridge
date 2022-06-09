@@ -140,6 +140,7 @@ class Arte7Bridge extends BridgeAbstract {
 
 			$item['timestamp'] = strtotime($element['videoRightsBegin']);
 			$item['title'] = $element['title'];
+			$item['duration'] = (int) $durationSeconds;
 
 			if(!empty($element['subtitle']))
 				$item['title'] = $element['title'] . ' | ' . $element['subtitle'];
