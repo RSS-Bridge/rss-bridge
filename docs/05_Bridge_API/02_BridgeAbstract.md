@@ -372,6 +372,7 @@ $item['title']      // Title of the item
 $item['timestamp']  // Timestamp of the item in numeric or text format (compatible for strtotime())
 $item['author']     // Name of the author for this item
 $item['content']    // Content in HTML format
+$item['duration']   // Duration of the media in the URI (if any), in seconds (used for podcast Mrss feeds)
 $item['enclosures'] // Array of URIs to an attachments (pictures, files, etc...)
 $item['categories'] // Array of categories / tags / topics
 $item['uid']        // A unique ID to identify the current item
