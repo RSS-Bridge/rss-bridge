@@ -29,6 +29,7 @@ class MrssFormat extends FormatAbstract {
 
 	protected const ATOM_NS = 'http://www.w3.org/2005/Atom';
 	protected const MRSS_NS = 'http://search.yahoo.com/mrss/';
+	protected const ITUNES_NS = 'http://www.itunes.com/dtds/podcast-1.0.dtd';
 
 	const ALLOWED_IMAGE_EXT = array(
 		'.gif', '.jpg', '.png'
@@ -52,6 +53,7 @@ class MrssFormat extends FormatAbstract {
 		$feed->setAttribute('version', '2.0');
 		$feed->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:atom', self::ATOM_NS);
 		$feed->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:media', self::MRSS_NS);
+		$feed->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:itunes', self::ITUNES_NS);
 
 		$channel = $document->createElement('channel');
 		$feed->appendChild($channel);
@@ -101,6 +103,7 @@ class MrssFormat extends FormatAbstract {
 			$itemTitle = $item->getTitle();
 			$itemUri = $item->getURI();
 			$itemContent = $this->sanitizeHtml($item->getContent());
+			$itemDuration = $item->getDuration();
 			$entryID = $item->getUid();
 			$isPermaLink = 'false';
 
@@ -142,6 +145,12 @@ class MrssFormat extends FormatAbstract {
 				$entryDescription = $document->createElement('description');
 				$entry->appendChild($entryDescription);
 				$entryDescription->appendChild($document->createTextNode($itemContent));
+			}
+
+			if ($itemDuration !== null) {
+				$entryDuration = $document->createElementNS(self::ITUNES_NS, 'itunes:duration');
+				$entryDuration->appendChild($document->createTextNode((string)$itemDuration));
+				$entry->appendChild($entryDuration);
 			}
 
 			foreach($item->getEnclosures() as $enclosure) {
