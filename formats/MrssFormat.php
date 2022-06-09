@@ -48,26 +48,26 @@ class MrssFormat extends FormatAbstract {
 		$document = new DomDocument('1.0', $this->getCharset());
 		$document->formatOutput = true;
 		$feed = $document->createElement('rss');
+		$document->appendChild($feed);
 		$feed->setAttribute('version', '2.0');
 		$feed->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:atom', self::ATOM_NS);
 		$feed->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:media', self::MRSS_NS);
-		$document->appendChild($feed);
 
 		$channel = $document->createElement('channel');
 		$feed->appendChild($channel);
 
 		$title = $extraInfos['name'];
 		$channelTitle = $document->createElement('title');
-		$channelTitle->appendChild($document->createTextNode($title));
 		$channel->appendChild($channelTitle);
+		$channelTitle->appendChild($document->createTextNode($title));
 
 		$link = $document->createElement('link');
-		$link->appendChild($document->createTextNode($uri));
 		$channel->appendChild($link);
+		$link->appendChild($document->createTextNode($uri));
 
 		$description = $document->createElement('description');
-		$description->appendChild($document->createTextNode($extraInfos['name']));
 		$channel->appendChild($description);
+		$description->appendChild($document->createTextNode($extraInfos['name']));
 
 		$icon = $extraInfos['icon'];
 		if (!empty($icon) && in_array(substr($icon, -4), self::ALLOWED_IMAGE_EXT)) {
@@ -84,17 +84,17 @@ class MrssFormat extends FormatAbstract {
 			$feedImage->appendChild($iconLink);
 		}
 
-		$linkAlternate = $document->createElementNS(self::ATOM_NS, 'atom:link');
+		$linkAlternate = $document->createElementNS(self::ATOM_NS, 'link');
+		$channel->appendChild($linkAlternate);
 		$linkAlternate->setAttribute('rel', 'alternate');
 		$linkAlternate->setAttribute('type', 'text/html');
 		$linkAlternate->setAttribute('href', $uri);
-		$channel->appendChild($linkAlternate);
 
-		$linkSelf = $document->createElementNS(self::ATOM_NS, 'atom:link');
+		$linkSelf = $document->createElementNS(self::ATOM_NS, 'link');
+		$channel->appendChild($linkSelf);
 		$linkSelf->setAttribute('rel', 'self');
 		$linkSelf->setAttribute('type', 'application/atom+xml');
 		$linkSelf->setAttribute('href', $feedUrl);
-		$channel->appendChild($linkSelf);
 
 		foreach($this->getItems() as $item) {
 			$itemTimestamp = $item->getTimestamp();
@@ -113,51 +113,50 @@ class MrssFormat extends FormatAbstract {
 				$entryID = hash('sha1', $itemTitle . $itemContent);
 
 			$entry = $document->createElement('item');
+			$channel->appendChild($entry);
 
 			if (!empty($itemTitle)) {
 				$entryTitle = $document->createElement('title');
-				$entryTitle->appendChild($document->createTextNode($itemTitle));
 				$entry->appendChild($entryTitle);
+				$entryTitle->appendChild($document->createTextNode($itemTitle));
 			}
 
 			if (!empty($itemUri)) {
 				$entryLink = $document->createElement('link');
-				$entryLink->appendChild($document->createTextNode($itemUri));
 				$entry->appendChild($entryLink);
+				$entryLink->appendChild($document->createTextNode($itemUri));
 			}
 
 			$entryGuid = $document->createElement('guid');
 			$entryGuid->setAttribute('isPermaLink', $isPermaLink);
-			$entryGuid->appendChild($document->createTextNode($entryID));
 			$entry->appendChild($entryGuid);
+			$entryGuid->appendChild($document->createTextNode($entryID));
 
 			if (!empty($itemTimestamp)) {
 				$entryPublished = $document->createElement('pubDate');
-				$entryPublished->appendChild($document->createTextNode(gmdate(DATE_RFC2822, $itemTimestamp)));
 				$entry->appendChild($entryPublished);
+				$entryPublished->appendChild($document->createTextNode(gmdate(DATE_RFC2822, $itemTimestamp)));
 			}
 
 			if (!empty($itemContent)) {
 				$entryDescription = $document->createElement('description');
-				$entryDescription->appendChild($document->createTextNode($itemContent));
 				$entry->appendChild($entryDescription);
+				$entryDescription->appendChild($document->createTextNode($itemContent));
 			}
 
 			foreach($item->getEnclosures() as $enclosure) {
-				$entryEnclosure = $document->createElementNS(self::MRSS_NS, 'media:content');
+				$entryEnclosure = $document->createElementNS(self::MRSS_NS, 'content');
+				$entry->appendChild($entryEnclosure);
 				$entryEnclosure->setAttribute('url', $enclosure);
 				$entryEnclosure->setAttribute('type', getMimeType($enclosure));
-				$entry->appendChild($entryEnclosure);
 			}
 
 			$entryCategories = '';
 			foreach($item->getCategories() as $category) {
 				$entryCategory = $document->createElement('category');
-				$entryCategory->appendChild($document->createTextNode($category));
 				$entry->appendChild($entryCategory);
+				$entryCategory->appendChild($document->createTextNode($category));
 			}
-
-			$channel->appendChild($entry);
 		}
 
 		$toReturn = $document->saveXML();
