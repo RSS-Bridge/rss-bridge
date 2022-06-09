@@ -27,8 +27,8 @@ class CyanideAndHappinessBridge extends BridgeAbstract {
 				'uid'       => $link,
 				'author'    => $author,
 				'title'     => $date,
-				'uri'       => $link . "#comic",
-				'timestamp' => str_replace('.', '-', $date) . "T00:00:00Z",
+				'uri'       => $link . '#comic',
+				'timestamp' => str_replace('.', '-', $date) . 'T00:00:00Z',
 				'content'   => "<img src=\"$image\" />"
 			);
 			$this->items[] = $item;
