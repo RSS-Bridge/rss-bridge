@@ -168,7 +168,7 @@ class PixivBridge extends BridgeAbstract {
 			$item['title'] = $result['title'];
 			$item['author'] = $result['userName'];
 			$item['timestamp'] = $result['updateDate'];
-			$item['tags'] = $result['tags'];
+			$item['categories'] = $result['tags'];
 			$cached_image = $this->cacheImage($result['url'], $result['id'],
 											  array_key_exists('illustType', $result));
 			$item['content'] = "<img src='" . $cached_image . "' />";
