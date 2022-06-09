@@ -14,6 +14,7 @@
 /**
  * Throws an exception when called.
  *
+ * @deprecated Explicitly throw an exception instead of calling this
  * @throws \Exception when called
  * @param string $message The error message
  * @param int $code The HTTP error code
@@ -27,6 +28,7 @@ function returnError($message, $code){
 /**
  * Returns HTTP Error 400 (Bad Request) when called.
  *
+ * @deprecated Explicitly throw an exception instead of calling this
  * @param string $message The error message
  */
 function returnClientError($message){
@@ -36,6 +38,7 @@ function returnClientError($message){
 /**
  * Returns HTTP Error 500 (Internal Server Error) when called.
  *
+ * @deprecated Explicitly throw an exception instead of calling this
  * @param string $message The error message
  */
 function returnServerError($message){

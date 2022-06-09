@@ -10,9 +10,10 @@ class KilledbyGoogleBridge extends BridgeAbstract {
 
 	public function collectData() {
 
-		$json = getContents(self::URI . '/graveyard.json')
-			or returnServerError('Could not request: ' . self::URI . '/graveyard.json');
-
+		$json = getContents(self::URI . '/graveyard.json');
+		if (! $json) {
+			throw new \Exception('Could not request: ' . self::URI . '/graveyard.json');
+		}
 		$this->handleJson($json);
 		$this->orderItems();
 		$this->limitItems();
