@@ -321,6 +321,7 @@ RSS-Bridge uses third party libraries with their own license:
   * [`PHP Simple HTML DOM Parser`](https://simplehtmldom.sourceforge.io/docs/1.9/index.html) licensed under the [MIT License](https://opensource.org/licenses/MIT)
   * [`php-urljoin`](https://github.com/fluffy-critter/php-urljoin) licensed under the [MIT License](https://opensource.org/licenses/MIT)
   * [php polyfills](https://github.com/symfony/polyfill) licensed under the [MIT License](https://opensource.org/licenses/MIT)
+  * [`Laravel framework`](https://github.com/laravel/framework/) licensed under the [MIT License](https://opensource.org/licenses/MIT)
 
 Technical notes
 ===
