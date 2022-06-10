@@ -106,6 +106,7 @@ class ConnectivityAction extends ActionAbstract {
 			}
 		} catch(Exception $e) {
 			$retVal['successful'] = false;
+			$retVal['http_code'] = $e->getCode();
 		}
 
 		return $retVal;
@@ -124,9 +125,15 @@ class ConnectivityAction extends ActionAbstract {
 		$bridge = $bridgeFac->create($bridgeName);
 		$params = $bridge->getTestParameters();
 		foreach($params as $set) {
+			$failed = false;
 			$bridge->setDatas($set);
-			$bridge->collectData();
-			if (!$bridge->checkItems()) {
+			try {
+				$bridge->collectData();
+			} catch (Exception $e) {
+				$failed = true;
+			}
+
+			if ($failed or !$bridge->checkItems()) {
 				$retVal['valid_items'] = false;
 				$retVal['failed_on'] = $set;
 				break;
