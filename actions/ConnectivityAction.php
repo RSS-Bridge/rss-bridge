@@ -56,13 +56,16 @@ class ConnectivityAction extends ActionAbstract {
 		}
 
 		$bridge = $bridgeFac->create($bridgeName);
+		if (!$bridge) {
+			generateReport(['bridge' => null]);
+		}
 
 		$retVal = array_merge(
 			['bridge' => $bridgeName],
-			$this->testBridgeConnectivity($bridge)
+			$this->testBridgeConnectivity($bridgeName)
 		);
 		if (isset($this->userData['check_items'])) {
-			$retVal = array_merge($retVal, $this->testBridgeItems($bridge));
+			$retVal = array_merge($retVal, $this->testBridgeItems($bridgeName));
 		}
 		$this->generateReport($retVal);
 
@@ -76,10 +79,12 @@ class ConnectivityAction extends ActionAbstract {
 	/**
 	 * Gets information on bridge connectivity status
 	 *
-	 * @param string $bridge instance of the bridge to generate the report for
+	 * @param string $bridgeName Name of the bridge to test connectivity
 	 * @return array
 	 */
-	private function testBridgeConnectivity($bridge) {
+	private function testBridgeConnectivity($bridgeName) {
+		$bridgeFac = new \BridgeFactory();
+		$bridge = $bridgeFac->create($bridgeName);
 
 		$retVal = array(
 			'successful' => false,
@@ -106,8 +111,17 @@ class ConnectivityAction extends ActionAbstract {
 		return $retVal;
 	}
 
-	private function testBridgeItems($bridge) {
+	/**
+	 * Gets information on bridge's returned items
+	 * Uses overridable getTestParameters and checkItems.
+	 *
+	 * @param string $bridgeName Name of the bridge to test returned items
+	 * @return array
+	 */
+	private function testBridgeItems($bridgeName) {
 		$retVal = ['valid_items' => true];
+		$bridgeFac = new \BridgeFactory();
+		$bridge = $bridgeFac->create($bridgeName);
 		$params = $bridge->getTestParameters();
 		foreach($params as $set) {
 			$bridge->setDatas($set);
@@ -117,7 +131,7 @@ class ConnectivityAction extends ActionAbstract {
 				$retVal['failed_on'] = $set;
 				break;
 			}
-			$bridge->clearDatas();
+			$bridge = $bridgeFac->create($bridgeName);
 		}
 		return $retVal;
 	}

@@ -268,15 +268,6 @@ abstract class BridgeAbstract implements BridgeInterface {
 	}
 
 	/**
-	 * Resets bridge internal state (items, inputs, context)
-	 */
-	public function clearDatas(){
-		$this->items = array();
-		$this->inputs = array();
-		$this->queriedContext = '';
-	}
-
-	/**
 	 * Loads configuration for the bridge
 	 *
 	 * Returns errors and aborts execution if the provided configuration is
@@ -432,7 +423,8 @@ abstract class BridgeAbstract implements BridgeInterface {
 			$ret[] = $values;
 
 			// Reset internal state for next iteration
-			$this->clearDatas();
+			$this->inputs = array();
+			$this->queriedContext = '';
 		}
 
 		return $ret;
