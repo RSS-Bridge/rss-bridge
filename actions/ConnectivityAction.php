@@ -20,6 +20,19 @@
  * - Returns an error if the bridge is not whitelisted.
  * - Returns a responsive web page that automatically checks all whitelisted
  * bridges (using JavaScript) if no bridge is specified.
+ *
+ * The report is generated as Json-formatted string in the format
+ * {
+ *   "bridge": "<bridge-name>",
+ *   "successful": true/false,
+ *   "http_code": code
+ * }
+ *
+ * If check_items is passed, the additional keys will be present:
+ * {
+ *   "valid_items": true/false,
+ *   "failed_on": null/array,
+ * }
  */
 class ConnectivityAction extends ActionAbstract {
 	public function execute() {
@@ -28,32 +41,13 @@ class ConnectivityAction extends ActionAbstract {
 			returnError('This action is only available in debug mode!', 400);
 		}
 
+		// Return the javascript tester when visiting the main page
 		if(!isset($this->userData['bridge'])) {
 			$this->returnEntryPage();
 			return;
 		}
 
 		$bridgeName = $this->userData['bridge'];
-
-		$this->reportBridgeConnectivity($bridgeName);
-
-	}
-
-	/**
-	 * Generates a report about the bridge connectivity status and sends it back
-	 * to the user.
-	 *
-	 * The report is generated as Json-formatted string in the format
-	 * {
-	 *   "bridge": "<bridge-name>",
-	 *   "successful": true/false
-	 * }
-	 *
-	 * @param string $bridgeName Name of the bridge to generate the report for
-	 * @return void
-	 */
-	private function reportBridgeConnectivity($bridgeName) {
-
 		$bridgeFac = new \BridgeFactory();
 
 		if(!$bridgeFac->isWhitelisted($bridgeName)) {
@@ -61,20 +55,36 @@ class ConnectivityAction extends ActionAbstract {
 			returnServerError('Bridge is not whitelisted!');
 		}
 
+		$bridge = $bridgeFac->create($bridgeName);
+
+		$retVal = array_merge(
+			['bridge' => $bridgeName],
+			$this->testBridgeConnectivity($bridge),
+		);
+		if (isset($this->userData['check_items'])) {
+			$retVal = array_merge($retVal, $this->testBridgeItems($bridge));
+		}
+		$this->generateReport($retVal);
+
+	}
+
+	private function generateReport($values) {
 		header('Content-Type: text/json');
+		echo json_encode($values);
+	}
+
+	/**
+	 * Gets information on bridge connectivity status
+	 *
+	 * @param string $bridge instance of the bridge to generate the report for
+	 * @return array
+	 */
+	private function testBridgeConnectivity($bridge) {
 
 		$retVal = array(
-			'bridge' => $bridgeName,
 			'successful' => false,
 			'http_code' => 200,
 		);
-
-		$bridge = $bridgeFac->create($bridgeName);
-
-		if($bridge === false) {
-			echo json_encode($retVal);
-			return;
-		}
 
 		$curl_opts = array(
 			CURLOPT_CONNECTTIMEOUT => 5
@@ -93,12 +103,27 @@ class ConnectivityAction extends ActionAbstract {
 			$retVal['successful'] = false;
 		}
 
-		echo json_encode($retVal);
+		return $retVal;
+	}
 
+	private function testBridgeItems($bridge) {
+		$retVal = ['valid_items' => true];
+		$params = $bridge->getTestParameters();
+		foreach($params as $set) {
+			$bridge->setDatas($set);
+			$bridge->collectData();
+			if (!$bridge->checkItems()) {
+				$retVal['valid_items'] = false;
+				$retVal['failed_on'] = $set;
+				break;
+			}
+			$bridge->clearDatas();
+		}
+		return $retVal;
 	}
 
 	private function returnEntryPage() {
-	echo <<<EOD
+		echo <<<EOD
 <!DOCTYPE html>
 
 <html>

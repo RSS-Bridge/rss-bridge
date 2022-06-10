@@ -268,6 +268,15 @@ abstract class BridgeAbstract implements BridgeInterface {
 	}
 
 	/**
+	 * Resets bridge internal state (items, inputs, context)
+ 	 */
+	public function clearDatas(){
+		$this->items = array();
+		$this->inputs = array();
+		$this->queriedContext = '';
+	}
+
+	/**
 	 * Loads configuration for the bridge
 	 *
 	 * Returns errors and aborts execution if the provided configuration is
@@ -379,6 +388,67 @@ abstract class BridgeAbstract implements BridgeInterface {
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * Get a variety of input parameters to test. By default uses the
+	 * example/defaultValues of the bridge.
+	 *
+	 * @return array of valid testing parameters, for each context. Ex:
+	 * array(
+	 *    array('context' => 'context1', $name => $value, ...),
+	 *    array('context' => 'context1', $name => $value, ...),
+	 *    array('context' => 'context2', $name => $value, ...),
+	 *    ...
+	 *  ),
+	 *  ...
+	 * )
+	 */
+	public function getTestParameters(){
+		// Set default/exampleValue for global parameters
+		$globals = array();
+		if (array_key_exists('global', static::PARAMETERS)) {
+			foreach(static::PARAMETERS['global'] as $name => $parameter) {
+				$globals[$name] = $parameter['defaultValue'] ?? $parameter['exampleValue'] ?? null;
+			}
+		}
+
+		$ret = array();
+		foreach(static::PARAMETERS as $context => $cparams) {
+			if ($context === 'global') continue;
+			$values = $globals;
+			foreach($cparams as $name => $parameter) {
+				$values[$name] = $parameter['defaultValue'] ?? $parameter['exampleValue'] ?? null;
+			}
+
+			// Sets defaults for null
+			$this->setInputs($values, $context);
+			foreach($values as $name => $value) {
+				if ($value === null) {
+					$values[$name] = $this->getInput($name);
+				}
+			}
+			$values['context'] = $context;
+			$ret[] = $values;
+
+			// Reset internal state for next iteration
+			$this->clearDatas();
+		}
+
+		return $ret;
+	}
+
+	/**
+	 * Tests feed items to check if they are valid. By default, it just checks
+	 * if any feed items were created.
+	 *
+	 * Override this function for more involved testing. For example, checking
+	 * that a bridge with a mandatory author is always storing an author.
+	 *
+	 * @return bool true if valid, false otherwise
+	 */
+	public function checkItems(){
+		if !empty($this->getItems());
 	}
 
 	/**
