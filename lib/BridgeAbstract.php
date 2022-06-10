@@ -269,7 +269,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 
 	/**
 	 * Resets bridge internal state (items, inputs, context)
- 	 */
+	 */
 	public function clearDatas(){
 		$this->items = array();
 		$this->inputs = array();
@@ -448,7 +448,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	 * @return bool true if valid, false otherwise
 	 */
 	public function checkItems(){
-		if !empty($this->getItems());
+		return !empty($this->getItems());
 	}
 
 	/**

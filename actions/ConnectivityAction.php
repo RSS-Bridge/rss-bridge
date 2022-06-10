@@ -59,7 +59,7 @@ class ConnectivityAction extends ActionAbstract {
 
 		$retVal = array_merge(
 			['bridge' => $bridgeName],
-			$this->testBridgeConnectivity($bridge),
+			$this->testBridgeConnectivity($bridge)
 		);
 		if (isset($this->userData['check_items'])) {
 			$retVal = array_merge($retVal, $this->testBridgeItems($bridge));
