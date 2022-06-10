@@ -136,7 +136,7 @@ class UberNewsroomBridge extends BridgeAbstract {
 			$item['timestamp'] = $post->date;
 			$item['uri'] = $post->link;
 			$item['content'] = $this->formatContent($post->content->rendered);
-			$item['enclosures'][] = $this->getImage($post->yoast_head);
+			$item['enclosures'][] = $article->image_full;
 
 			$this->items[] = $item;
 		}
@@ -170,17 +170,6 @@ class UberNewsroomBridge extends BridgeAbstract {
 			}
 		}
 	}
-
-	private function getImage($html) {
-		$html = str_get_html($html);
-
-		if ($html->find('meta[property="og:image"]', 0)) {
-			return $html->find('meta[property="og:image"]', 0)->content;
-		}
-
-		return '';
-	}
-
 	private function formatContent($html) {
 		$html = str_get_html($html);
 
