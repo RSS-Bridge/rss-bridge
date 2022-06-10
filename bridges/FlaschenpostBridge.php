@@ -225,12 +225,12 @@ class FlaschenpostBridge extends BridgeAbstract {
 		// only discounted products
 		if ($regularPrice != $discountPrice) {
 			$name = str_replace('"', '\'', $product->name);
-			$imageUrl = "https://image.flaschenpost.de/cdn-cgi/image/width=120,height=120,q=50/articles/small/"
-				. $article->articleId . ".png";
+			$imageUrl = 'https://image.flaschenpost.de/cdn-cgi/image/width=120,height=120,q=50/articles/small/'
+				. $article->articleId . '.png';
 			$pricePerUnit = str_replace(['(', ')'], '', $article->pricePerUnit);
 			$deposit = $article->deposit ? "Pfand: $article->deposit" : 'Pfandfrei';
-			$alcohol = $product->alcoholInfo ?
-				str_replace(['enthält', 'Vol.-', 'Alkohol'], '', $product->alcoholInfo) . ' Alkohol' : '';
+			$alcohol = $product->alcoholInfo ? str_replace(['enthält', 'Vol.-', 'Alkohol'], '', $product->alcoholInfo)
+				. ' Alkohol' : '';
 			$description = <<<EOD
 <div style="padding: 20px; display: flex;">
 <img src="{$imageUrl}" alt="{$name}" style="float: left; margin-right: 35px;"/>
