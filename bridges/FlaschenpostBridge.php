@@ -57,25 +57,25 @@ class FlaschenpostBridge extends BridgeAbstract {
 	public function getName(): string {
 		$categories = array();
 		if ($this->getInput('water'))
-			array_push($categories, "Wasser");
+			array_push($categories, 'Wasser');
 		if ($this->getInput('beer'))
-			array_push($categories, "Bier");
+			array_push($categories, 'Bier');
 		if ($this->getInput('lemonade'))
-			array_push($categories, "Limonade");
+			array_push($categories, 'Limonade');
 		if ($this->getInput('juice'))
-			array_push($categories, "Saft & Schorle");
+			array_push($categories, 'Saft & Schorle');
 		if ($this->getInput('wine'))
-			array_push($categories, "Wein & Mehr");
+			array_push($categories, 'Wein & Mehr');
 		if ($this->getInput('liquor'))
-			array_push($categories, "Spirituosen");
+			array_push($categories, 'Spirituosen');
 		if ($this->getInput('food'))
-			array_push($categories, "Lebensmittel");
+			array_push($categories, 'Lebensmittel');
 		if ($this->getInput('household'))
-			array_push($categories, "Haushalt");
+			array_push($categories, 'Haushalt');
 		if (empty($categories)) {
 			return $this::NAME;
 		} else {
-			return $this::NAME . ' – ' . implode(", ", $categories);
+			return $this::NAME . ' – ' . implode(', ', $categories);
 		}
 	}
 
@@ -224,11 +224,16 @@ class FlaschenpostBridge extends BridgeAbstract {
 
 		// only discounted products
 		if ($regularPrice != $discountPrice) {
-			$name = str_replace('"', '\'', $product->name);
-			$imageUrl = "https://image.flaschenpost.de/cdn-cgi/image/width=120,height=120,q=50/articles/small/{$article->articleId}.png";
-			$pricePerUnit = str_replace(['(', ')'], '', $article->pricePerUnit);
-			$deposit = $article->deposit ? "Pfand: $article->deposit" : "Pfandfrei";
-			$alcohol = $product->alcoholInfo ? str_replace(['enthält', 'Vol.-', 'Alkohol'], '', $product->alcoholInfo) . ' Alkohol' : "";
+			$name =
+				str_replace('"', '\'', $product->name);
+			$imageUrl =
+				"https://image.flaschenpost.de/cdn-cgi/image/width=120,height=120,q=50/articles/small/{$article->articleId}.png";
+			$pricePerUnit =
+				str_replace(['(', ')'], '', $article->pricePerUnit);
+			$deposit =
+				$article->deposit ? "Pfand: $article->deposit" : 'Pfandfrei';
+			$alcohol =
+				$product->alcoholInfo ? str_replace(['enthält', 'Vol.-', 'Alkohol'], '', $product->alcoholInfo) . ' Alkohol' : '';
 			$description = <<<EOD
 <div style="padding: 20px; display: flex;">
 <img src="{$imageUrl}" alt="{$name}" style="float: left; margin-right: 35px;"/>
@@ -285,6 +290,4 @@ EOD;
 			}
 		}
 	}
-
-
 }
