@@ -17,6 +17,6 @@
 | ![](https://iplookup.flagfox.net/images/h16/FR.png) | https://rssbridge.boldair.dev | ![](https://img.shields.io/website?down_color=red&down_message=down&up_color=lime&up_message=up&url=https%3A%2F%2Frssbridge.boldair.dev) | [@Boldairdev](https://github.com/Boldairdev) | Latest Github release, Hosted on PHP 8.0 in Roubaix, France |
 | ![](https://iplookup.flagfox.net/images/h16/CA.png) | https://rssbridge.bus-hit.me | ![](https://img.shields.io/website/https/rssbridge.bus-hit.me.svg)| [@austinhuang0131](https://austinhuang.me/) | Hosted with Oracle in Québec, Canada |
 | ![](https://iplookup.flagfox.net/images/h16/IN.png) | https://rss-bridge.bb8.fun | ![](https://img.shields.io/website/https/rss-bridge.bb8.fun.svg) | [@captn3m0](https://github.com/captn3m0) | Hosted in Bengaluru, India |
-| ![](https://iplookup.flagfox.net/images/h16/GB.png) | http://rss-bridge.org/bridge01 | ![](https://img.shields.io/website/http/rss-bridge.org/bridge01.svg) | [@dvikan](https://github.com/dvikan) | London, Digital Ocean|
+| ![](https://iplookup.flagfox.net/images/h16/GB.png) | https://rss-bridge.org/bridge01 | ![](https://img.shields.io/website/https/rss-bridge.org/bridge01.svg) | [@dvikan](https://github.com/dvikan) | London, Digital Ocean|
 
 ## Inactive instances
