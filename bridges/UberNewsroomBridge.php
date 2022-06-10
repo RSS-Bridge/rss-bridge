@@ -123,9 +123,13 @@ class UberNewsroomBridge extends BridgeAbstract {
 
 	const CACHE_TIMEOUT = 3600;
 
+	private $regionName = '';
+
 	public function collectData() {
 		$json = getContents(self::URI_API_DATA . $this->getInput('region'));
 		$data = json_decode($json);
+
+		$this->regionName = $data->region->name;
 
 		foreach ($data->articles as $article) {
 			$json = getContents(self::URI_API_POST . $article->id);
@@ -143,7 +147,7 @@ class UberNewsroomBridge extends BridgeAbstract {
 	}
 
 	public function getURI() {
-		if (is_null($this->getInput('region')) === false && $this->getInput('region') !== 'all') {
+		if (is_null($this->getInput('region')) === false) {
 			return self::URI . '/' . $this->getInput('region') . '/newsroom';
 		}
 
@@ -152,24 +156,12 @@ class UberNewsroomBridge extends BridgeAbstract {
 
 	public function getName() {
 		if (is_null($this->getInput('region')) === false) {
-			return $this->getRegionName() . ' - Uber Newsroom';
+			return $this->regionName . ' - Uber Newsroom';
 		}
 
 		return parent::getName();
 	}
 
-	private function getRegionName() {
-		$parameters = $this->getParameters();
-
-		foreach ($parameters[0]['region']['values'] as $values) {
-			foreach ($values as $name => $code) {
-
-				if ($code === $this->getInput('region')) {
-					return $name;
-				}
-			}
-		}
-	}
 	private function formatContent($html) {
 		$html = str_get_html($html);
 
