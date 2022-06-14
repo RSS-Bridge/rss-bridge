@@ -10,49 +10,37 @@ class ZenodoBridge extends BridgeAbstract {
 	public function collectData(){
 		$html = getSimpleHTMLDOM($this->getURI());
 
-		foreach($html->find('div.record-elem') as $element) {
+		foreach($html->find('div.record-elem.row') as $element) {
 			$item = array();
-			$item['uri'] = self::URI . $element->find('h4', 0)->find('a', 0)->href;
-			$item['title'] = trim(
-				htmlspecialchars_decode($element->find('h4', 0)->find('a', 0)->innertext,
-				ENT_QUOTES
-				)
-			);
+			$item['uri'] = self::URI . $element->find('h4 > a', 0)->href;
+			$item['title'] = trim(htmlspecialchars_decode($element->find('h4 > a', 0)->innertext, ENT_QUOTES));
 
-			$p1 = $element->find('p', 0);
-			if ($p1) {
-				foreach ($p1->find('span') as $authors) {
-					$item['author'] = $item['author'] . $authors . '; ';
-				}
+			$authors = $element->find('p', 0);
+			if ($authors) {
+				$item['author'] = $authors->plaintext;
 			}
 
-			$p2 = $element->find('p.hidden-xs', 0);
-			if ($p2) {
-				$content = $p2->find('a', 0)->innertext . '<br>';
+			$summary = $element->find('p.hidden-xs > a', 0);
+			if ($summary) {
+				$content = $summary->innertext . '<br>';
 			} else {
-				$content = 'Nope';
+				$content = 'No content';
 			}
 
 			$type = '<br>Type: ' . $element->find('span.label-default', 0)->innertext;
+			$item['categories'] = array($element->find('span.label-default', 0)->innertext);
 
 			$raw_date = $element->find('small.text-muted', 0)->innertext;
-			$clean_date = date_parse(str_replace('Uploaded on ', '', $raw_date));
+			$clean_date = str_replace('Uploaded on ', '', $raw_date);
 
-			$content = $content . date_parse($clean_date);
+			$content = $content . $raw_date;
 
-			$item['timestamp'] = mktime(
-					$clean_date['hour'],
-					$clean_date['minute'],
-					$clean_date['second'],
-					$clean_date['month'],
-					$clean_date['day'],
-					$clean_date['year']
-			);
+			$item['timestamp'] = $clean_date;
 
 			$access = '';
-			if ($element->find('span.label-success', 0)->innertext) {
+			if ($element->find('span.label-success', 0)) {
 				$access = 'Open Access';
-			} elseif ($element->find('span.label-warning', 0)->innertext) {
+			} elseif ($element->find('span.label-warning', 0)) {
 				$access = 'Embargoed Access';
 			} else {
 				$access = $element->find('span.label-error', 0)->innertext;
