@@ -6,7 +6,7 @@ abstract class JSONAbstract extends UserDefinedAbstract {
 
 	protected function provideWebsiteContent() {
 		$header = array(
-			'Content-Type: application/json'
+			'Accept: application/json'
 		);
 		return getContents($this->getURI(), $header);
 	}
