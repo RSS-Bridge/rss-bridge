@@ -8,7 +8,7 @@ abstract class JsonAbstract extends UserDefinedAbstract {
 		$header = array(
 			'Accept: application/json'
 		);
-		return getContents($this->getURI(), $header);
+		return getContents($this->feedUri, $header);
 	}
 
 	protected function provideWebsiteData() {
@@ -41,10 +41,6 @@ abstract class JsonAbstract extends UserDefinedAbstract {
 		return is_null($result)
 			|| (is_array($result) && count($result) === 0)
 			|| (is_string($result) && strlen($result) === 0);
-	}
-
-	protected function transformWebsiteToData($html) {
-		return json_decode($this->provideWebsiteContent(), true);
 	}
 
 	protected function getDataValue($result) {

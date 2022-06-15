@@ -389,7 +389,7 @@ abstract class UserDefinedAbstract extends BridgeAbstract {
 	 * @return string
 	 */
 	protected function provideFeedIcon($data) {
-		$icon = $this->convertUserQuery($data, $this->getParam('feed_title'), null);
+		$icon = $this->convertUserQuery($data, $this->getParam('feed_icon'), null);
 		if(!$this->isEmpty($icon)) {
 			return $this->getDataValue($icon);
 		}
