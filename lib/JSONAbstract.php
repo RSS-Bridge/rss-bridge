@@ -20,15 +20,18 @@ abstract class JSONAbstract extends UserDefinedAbstract {
 	}
 
 	protected function convertUserQuery($json, $query, $context) {
-		if (empty($query))
+		if (empty($query)) {
 			return null;
+		}
 
-		if (!is_null($context))
+		if (!is_null($context)) {
 			$json = $context;
+		}
 
 		foreach(explode($this->getExpressionDelimiter(), $query) as $key) {
-			if (empty($key))
+			if (empty($key)) {
 				return $json;
+			}
 			$json = @$json[$key];
 		}
 		return $json;
