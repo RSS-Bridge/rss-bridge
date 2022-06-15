@@ -12,9 +12,10 @@ class UberNewsroomBridge extends BridgeAbstract {
 			'type' => 'list',
 			'values' => array(
 				'Africa' => array(
-					'Egypt' => 'en-EG',
+					'Egypt' => 'ar-EG',
 					'Ghana' => 'en-GH',
 					'Kenya' => 'en-KE',
+					'Morocco' => 'fr-MA',
 					'Nigeria' => 'en-NG',
 					'South Africa' => 'en-ZA',
 					'Tanzania' => 'en-TZ',
@@ -22,66 +23,76 @@ class UberNewsroomBridge extends BridgeAbstract {
 				),
 				'Asia' => array(
 					'Bangladesh' => 'en-BD',
-					'Hong Kong' => 'en-HK',
+					'Cambodia' => 'km-KH',
+					'China' => 'zh-CN',
+					'Hong Kong' => 'zh-HK',
 					'India' => 'en-IN',
+					'Indonesia' => 'en-ID',
 					'Japan' => 'ja-JP',
-					'Korea' => 'en-KR',
-					'Macau' => 'en-MO',
+					'Korea' => 'ko-KR',
+					'Macau' => 'zh-MO',
+					'Malaysia' => 'en-MY',
+					'Myanmar' => 'en-MM',
+					'Philippines' => 'en-PH',
+					'Singapore' => 'en-SG',
 					'Sri Lanka' => 'en-LK',
-					'Taiwan' => 'en-TW',
+					'Taiwan' => 'zh-TW',
+					'Thailand' => 'th-TH',
+					'Vietnam' => 'vi-VN',
 				),
 				'Central America' => array(
 					'Costa Rica' => 'es-CR',
 					'Dominican Republic' => 'es-DO',
 					'El Salvador' => 'es-SV',
 					'Guatemala' => 'es-GT',
-					'Honduras' => 'en-HN',
+					'Honduras' => 'es-HN',
 					'Mexico' => 'es-MX',
 					'Nicaragua' => 'es-NI',
 					'Panama' => 'es-PA',
-					'Puerto Rico' => 'en-PR',
+					'Puerto Rico' => 'es-PR',
 				),
 				'Europe' => array(
 					'Austria' => 'de-AT',
 					'Azerbaijan' => 'az',
 					'Belarus' => 'ru-BY',
-					'Belgium' => 'en-BE',
-					'Bulgaria' => 'en-BG',
+					'Belgium' => 'fr-BE',
+					'Bulgaria' => 'bg',
 					'Croatia' => 'hr',
 					'Czech Republic' => 'cs-CZ',
-					'Denmark' => 'en-DK',
-					'Estonia' => 'en-EE',
-					'Finland' => 'en-FI',
-					'France' => 'en-FR',
-					'Germany' => 'en-DE',
-					'Greece' => 'en-GR',
-					'Hungary' => 'en-HU',
+					'Denmark' => 'da-DK',
+					'Estonia' => 'et-EE',
+					'Finland' => 'fi',
+					'France' => 'fr',
+					'Germany' => 'de',
+					'Greece' => 'el-GR',
+					'Hungary' => 'hu',
 					'Ireland' => 'en-IE',
-					'Italy' => 'en-IT',
+					'Italy' => 'it',
 					'Kazakhstan' => 'ru-KZ',
-					'Lithuania' => 'en-LT',
-					'Netherlands' => 'en-NL',
-					'Norway' => 'en-NO',
+					'Lithuania' => 'lt',
+					'Netherlands' => 'nl',
+					'Norway' => 'nb-NO',
 					'Poland' => 'pl',
-					'Portugal' => 'en-PT',
-					'Romania' => 'en-RO',
+					'Portugal' => 'pt',
+					'Romania' => 'ro',
 					'Russia' => 'ru',
 					'Slovakia' => 'sk',
 					'Spain' => 'es-ES',
-					'Sweden' => 'en-SE',
-					'Switzerland' => 'en-CH',
-					'Turkey' => 'en-TR',
+					'Sweden' => 'sv-SE',
+					'Switzerland' => 'fr-CH',
+					'Turkey' => 'tr',
 					'Ukraine' => 'uk-UA',
 					'United Kingdom' => 'en-GB',
 				),
 				'Middle East' => array(
 					'Bahrain' => 'en-BH',
-					'Israel' => 'en-IL',
+					'Israel' => 'he-IL',
 					'Jordan' => 'en-JO',
+					'Kuwait' => 'en-KW',
 					'Lebanon' => 'en-LB',
 					'Pakistan' => 'en-PK',
 					'Qatar' => 'en-QA',
-					'Saudi Arabia' => 'en-SA',
+					'Saudi Arabia' => 'ar-SA',
 					'United Arab Emirates' => 'en-AE',
 				),
 				'North America' => array(
@@ -99,11 +110,11 @@ class UberNewsroomBridge extends BridgeAbstract {
 					'Chile' => 'es-CL',
 					'Colombia' => 'es-CO',
 					'Ecuador' => 'es-EC',
-					'Paraguay' => 'en-PY',
+					'Paraguay' => 'es-PY',
 					'Peru' => 'es-PE',
 					'Trinidad & Tobago' => 'en-TT',
 					'Uruguay' => 'es-UY',
-					'Venezuela' => 'en-VE',
+					'Venezuela' => 'es-VE',
 				),
 			),
 			'defaultValue' => 'en-US',
@@ -112,9 +123,13 @@ class UberNewsroomBridge extends BridgeAbstract {
 
 	const CACHE_TIMEOUT = 3600;
 
+	private $regionName = '';
+
 	public function collectData() {
 		$json = getContents(self::URI_API_DATA . $this->getInput('region'));
 		$data = json_decode($json);
+
+		$this->regionName = $data->region->name;
 
 		foreach ($data->articles as $article) {
 			$json = getContents(self::URI_API_POST . $article->id);
@@ -125,14 +140,14 @@ class UberNewsroomBridge extends BridgeAbstract {
 			$item['timestamp'] = $post->date;
 			$item['uri'] = $post->link;
 			$item['content'] = $this->formatContent($post->content->rendered);
-			$item['enclosures'][] = $this->getImage($post->yoast_head);
+			$item['enclosures'][] = $article->image_full;
 
 			$this->items[] = $item;
 		}
 	}
 
 	public function getURI() {
-		if (is_null($this->getInput('region')) === false && $this->getInput('region') !== 'all') {
+		if (is_null($this->getInput('region')) === false) {
 			return self::URI . '/' . $this->getInput('region') . '/newsroom';
 		}
 
@@ -141,33 +156,10 @@ class UberNewsroomBridge extends BridgeAbstract {
 
 	public function getName() {
 		if (is_null($this->getInput('region')) === false) {
-			return $this->getRegionName() . ' - Uber Newsroom';
+			return $this->regionName . ' - Uber Newsroom';
 		}
 
 		return parent::getName();
-	}
-
-	private function getRegionName() {
-		$parameters = $this->getParameters();
-
-		foreach ($parameters[0]['region']['values'] as $values) {
-			foreach ($values as $name => $code) {
-
-				if ($code === $this->getInput('region')) {
-					return $name;
-				}
-			}
-		}
-	}
-
-	private function getImage($html) {
-		$html = str_get_html($html);
-
-		if ($html->find('meta[property="og:image"]', 0)) {
-			return $html->find('meta[property="og:image"]', 0)->content;
-		}
-
-		return '';
 	}
 
 	private function formatContent($html) {
