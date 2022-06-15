@@ -1,6 +1,6 @@
 <?php
 
-abstract class JSONAbstract extends UserDefinedAbstract {
+abstract class JsonAbstract extends UserDefinedAbstract {
 
 	const USER_EXPRESSION_DELIMITER = '.';
 

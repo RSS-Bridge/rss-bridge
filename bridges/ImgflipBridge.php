@@ -1,6 +1,6 @@
 <?php
 
-class ImgflipBridge extends JSONAbstract {
+class ImgflipBridge extends JsonAbstract {
 
 	const NAME = 'Imgflip Bridge';
 	const DESCRIPTION = 'Returns the latest memes';
