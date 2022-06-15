@@ -165,4 +165,3 @@ class PanneauPocketBridge extends BridgeAbstract {
 		'Vieux-Vy-sur-Couesnon-35490' => '2016313694'
 	];
 }
-
