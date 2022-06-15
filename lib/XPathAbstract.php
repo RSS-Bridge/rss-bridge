@@ -23,7 +23,7 @@ abstract class XPathAbstract extends UserDefinedAbstract {
 	 * This function defines how xpath expressions are used to subset the data.
 	 */
 	protected function convertUserQuery($xpath, $query, $context) {
-		return @$xpath->evaluate($query, $context);
+		return $xpath->evaluate($query, $context);
 	}
 
 	protected function isEmpty($typedResult) {

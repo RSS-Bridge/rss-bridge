@@ -32,7 +32,7 @@ abstract class JSONAbstract extends UserDefinedAbstract {
 			if (empty($key)) {
 				return $json;
 			}
-			$json = @$json[$key];
+			$json = $json[$key] ?? null;
 		}
 		return $json;
 	}
