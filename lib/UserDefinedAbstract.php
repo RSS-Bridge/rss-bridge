@@ -450,24 +450,34 @@ abstract class UserDefinedAbstract extends BridgeAbstract {
 	 */
 	protected function formatParamValue($param, $value)
 	{
-		$value = $this->fixEncoding($value);
 		switch ($param) {
 			case 'title':
-				return $this->formatItemTitle($value);
+				$value = $this->formatItemTitle($value);
+				break;
 			case 'content':
-				return $this->formatItemContent($value);
+				$value = $this->formatItemContent($value);
+				break;
 			case 'uri':
-				return $this->formatItemUri($value);
+				$value = $this->formatItemUri($value);
+				break;
 			case 'author':
-				return $this->formatItemAuthor($value);
+				$value = $this->formatItemAuthor($value);
+				break;
 			case 'timestamp':
-				return $this->formatItemTimestamp($value);
+				$value = $this->formatItemTimestamp($value);
+				break;
 			case 'enclosures':
-				return $this->formatItemEnclosures($value);
+				$value = $this->formatItemEnclosures($value);
+				break;
 			case 'categories':
-				return $this->formatItemCategories($value);
+				$value = $this->formatItemCategories($value);
+				break;
 			case 'uid':
-				return $this->formatItemUid($value);
+				$value = $this->formatItemUid($value);
+				break;
+		}
+		if (!is_array($value)) {
+			$value = $this->fixEncoding($value);
 		}
 		return $value;
 	}
