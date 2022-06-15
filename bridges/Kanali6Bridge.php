@@ -7,6 +7,7 @@ class Kanali6Bridge extends XPathAbstract {
 	const MAINTAINER = 'Yaman Qalieh';
 
 	const FEED_SOURCE_URL = 'https://kanali6.com.cy/mp3/TOC.xml';
+	const USER_EXPRESSION_FEED_TITLE = '';
 	const USER_EXPRESSION_ITEM = '//recording[position() <= 50]';
 	const USER_EXPRESSION_ITEM_TITLE = './title';
 	const USER_EXPRESSION_ITEM_CONTENT = './durationvisual';
