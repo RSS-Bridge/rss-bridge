@@ -2,9 +2,10 @@
 class TikTokBridge extends BridgeAbstract {
 	const NAME = 'TikTok Bridge';
 	const URI = 'https://www.tiktok.com';
-	const DESCRIPTION = 'Returns newest posts for a user';
+	const DESCRIPTION = 'Returns posts';
 	const MAINTAINER = 'VerifiedJoseph';
-	const PARAMETERS = array(array(
+	const PARAMETERS = array(
+		'By user' => array(
 		'username' => array(
 			'name' => 'Username',
 			'type' => 'text',
@@ -25,6 +26,7 @@ class TikTokBridge extends BridgeAbstract {
 		$params = array();
 
 		if(preg_match('/tiktok\.com\/(@[\w]+)/', $url, $matches) > 0) {
+			$params['context'] = 'By user';
 			$params['username'] = $matches[1];
 			return $params;
 		}
@@ -58,19 +60,19 @@ EOD;
 	}
 
 	public function getURI() {
-		if (is_null($this->getInput('username')) === false) {
-			return self::URI . '/' . $this->processUsername();
+		switch($this->queriedContext) {
+			case 'By user':
+				return self::URI . '/' . $this->processUsername();
+			default: return parent::getURI();
 		}
-
-		return parent::getURI();
 	}
 
 	public function getName() {
-		if (empty($this->feedName) === false) {
-			return $this->feedName . ' (' . $this->processUsername() . ') - TikTok';
+		switch($this->queriedContext) {
+			case 'By user':
+				return $this->feedName . ' (' . $this->processUsername() . ') - TikTok';
+			default: return parent::getName();
 		}
-
-		return parent::getName();
 	}
 
 	private function processUsername() {
