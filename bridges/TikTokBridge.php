@@ -24,7 +24,7 @@ class TikTokBridge extends BridgeAbstract {
 	public function detectParameters($url) {
 		$params = array();
 
-		if(preg_match('tiktok\.com\/(@[\w]+)', $url, $matches) > 0) {
+		if(preg_match('/tiktok\.com\/(@[\w]+)/', $url, $matches) > 0) {
 			$params['username'] = $matches[1];
 			return $params;
 		}
