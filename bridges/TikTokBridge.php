@@ -14,7 +14,7 @@ class TikTokBridge extends BridgeAbstract {
 	));
 
 	const TEST_DETECT_PARAMETERS = array(
-		'https://www.tiktok.com/@tiktok' => array('username' => 'tiktok')
+		'https://www.tiktok.com/@tiktok' => array('username' => '@tiktok')
 	);
 
 	const CACHE_TIMEOUT = 900; // 15 minutes
