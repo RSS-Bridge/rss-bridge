@@ -7,7 +7,7 @@ class YGGTorrentBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'teromene';
 	const NAME = 'Yggtorrent Bridge';
-	const URI = 'https://yggtorrent.is';
+	const URI = 'https://yggtorrent.fi';
 	const DESCRIPTION = 'Returns torrent search from Yggtorrent';
 
 	const PARAMETERS = array(
@@ -16,7 +16,7 @@ class YGGTorrentBridge extends BridgeAbstract {
 				'name' => 'category',
 				'type' => 'list',
 				'values' => array(
-					'Toute les catégories' => 'all.all',
+					'Toutes les catégories' => 'all.all',
 					'Film/Vidéo - Toutes les sous-catégories' => '2145.all',
 					'Film/Vidéo - Animation' => '2145.2178',
 					'Film/Vidéo - Animation Série' => '2145.2179',
@@ -93,9 +93,9 @@ class YGGTorrentBridge extends BridgeAbstract {
 					. $this->getInput('nom')
 					. '&description='
 					. $this->getInput('description')
-					. '&fichier='
-					. $this->getInput('fichier')
 					. '&file='
+					. $this->getInput('fichier')
+					. '&uploader='
 					. $this->getInput('uploader')
 					. '&category='
 					. $category
