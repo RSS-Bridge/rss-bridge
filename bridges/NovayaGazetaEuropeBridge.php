@@ -14,9 +14,9 @@ class NovayaGazetaEuropeBridge extends BridgeAbstract
 			'language' => array(
 				'name' => 'Language',
 				'type' => 'list',
-				'defaultValue' => '',
+				'defaultValue' => 'ru',
 				'values' => array(
-					'Russian' => '',
+					'Russian' => 'ru',
 					'English' => 'en',
 				)
 			)
@@ -27,7 +27,7 @@ class NovayaGazetaEuropeBridge extends BridgeAbstract
 	public function collectData()
 	{
 		$url = 'https://novayagazeta.eu/api/v1/get/main';
-		if ($this->getInput('language') != '') {
+		if ($this->getInput('language') != 'ru') {
 			$url .= '?lang=' . $this->getInput('language');
 		}
 
