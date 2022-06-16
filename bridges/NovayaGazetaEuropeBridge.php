@@ -23,7 +23,6 @@ class NovayaGazetaEuropeBridge extends BridgeAbstract
 		)
 	);
 
-
 	public function collectData()
 	{
 		$url = 'https://novayagazeta.eu/api/v1/get/main';
@@ -93,7 +92,7 @@ class NovayaGazetaEuropeBridge extends BridgeAbstract
 				if ($datum->data !== null) {
 					$res .= "<figcaption>{$datum->data}</figcaption>";
 				}
-				$res .= "</figure>";
+				$res .= '</figure>';
 				break;
 			case 'text/quote':
 				return "<figure><quote>{$datum->data}</quote></figure><br>";
