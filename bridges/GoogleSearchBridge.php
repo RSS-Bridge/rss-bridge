@@ -20,6 +20,11 @@ class GoogleSearchBridge extends BridgeAbstract {
 			'name' => 'keyword',
 			'required' => true,
 			'exampleValue' => 'rss-bridge',
+		),
+		'verbatim' => array(
+			'name' => 'Verbatim',
+			'type' => 'checkbox',
+			'required' => false,
 		)
 	));
 
@@ -57,10 +62,14 @@ class GoogleSearchBridge extends BridgeAbstract {
 
 	public function getURI() {
 		if (!is_null($this->getInput('q'))) {
-			return self::URI
+			$URI = self::URI
 				. 'search?q='
 				. urlencode($this->getInput('q'))
 				. '&hl=en&num=100&complete=0&tbs=qdr:y,sbd:1';
+			if ($this->getInput('verbatim')) {
+				$URI = $URI . ',li:1';
+			}
+			return $URI;
 		}
 
 		return parent::getURI();
