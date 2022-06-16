@@ -13,9 +13,24 @@ class TikTokBridge extends BridgeAbstract {
 		)
 	));
 
+	const TEST_DETECT_PARAMETERS = array(
+		'https://www.tiktok.com/@tiktok' => array('username' => 'tiktok')
+	);
+
 	const CACHE_TIMEOUT = 900; // 15 minutes
 
 	private $feedName = '';
+
+	public function detectParameters($url) {
+		$params = array();
+
+		if(preg_match('tiktok\.com\/(@[\w]+)', $url, $matches) > 0) {
+			$params['username'] = $matches[1];
+			return $params;
+		}
+
+		return null;
+	}
 
 	public function collectData() {
 		$html = getSimpleHTMLDOM($this->getURI());
