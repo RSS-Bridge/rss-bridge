@@ -13,7 +13,7 @@ class TikTokBridge extends BridgeAbstract {
 		)
 	));
 
-	const CACHE_TIMEOUT = 1900;
+	const CACHE_TIMEOUT = 900; // 15 minutes
 
 	private $feedName = '';
 
