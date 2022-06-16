@@ -85,7 +85,6 @@ class NovayaGazetaEuropeBridge extends BridgeAbstract
 		switch ($datum->type) {
 			case 'text':
 				return $datum->data;
-				break;
 			case 'image/single':
 				$alt = strip_tags($datum->data);
 				$res = "<figure><img src=\"{$datum->previewUrl}\" alt=\"{$alt}\" />";
@@ -93,17 +92,15 @@ class NovayaGazetaEuropeBridge extends BridgeAbstract
 					$res .= "<figcaption>{$datum->data}</figcaption>";
 				}
 				$res .= '</figure>';
-				break;
+				return $res;
 			case 'text/quote':
 				return "<figure><quote>{$datum->data}</quote></figure><br>";
-				break;
 			case 'embed/native':
 				$desc = $datum->link;
 				if (property_exists($datum, 'caption')) {
 					$desc = $datum->caption;
 				}
 				return "<p><a link=\"{$datum->link}\">{$desc}</a></p>";
-				break;
 			case 'text/framed':
 				$res = '';
 				if (property_exists($datum, 'typeDisplay')) {
