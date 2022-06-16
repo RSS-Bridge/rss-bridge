@@ -24,7 +24,7 @@ class GoogleSearchBridge extends BridgeAbstract {
 		'verbatim' => array(
 			'name' => 'Verbatim',
 			'type' => 'checkbox',
-			'required' => false,
+			'title' => 'Use literal keyword(s) without making improvements',
 		)
 	));
 
@@ -62,14 +62,14 @@ class GoogleSearchBridge extends BridgeAbstract {
 
 	public function getURI() {
 		if (!is_null($this->getInput('q'))) {
-			$URI = self::URI
+			$url = self::URI
 				. 'search?q='
 				. urlencode($this->getInput('q'))
 				. '&hl=en&num=100&complete=0&tbs=qdr:y,sbd:1';
 			if ($this->getInput('verbatim')) {
-				$URI = $URI . ',li:1';
+				$url = $url . ',li:1';
 			}
-			return $URI;
+			return $url;
 		}
 
 		return parent::getURI();
