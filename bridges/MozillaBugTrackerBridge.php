@@ -3,7 +3,8 @@ class MozillaBugTrackerBridge extends BridgeAbstract {
 
 	const NAME = 'Mozilla Bug Tracker';
 	const URI = 'https://bugzilla.mozilla.org';
-	const DESCRIPTION = 'Returns feeds for bug comments';
+	const DESCRIPTION = 'DEPRECATED: Use BugzillaBridge instead.
+Returns feeds for bug comments';
 	const MAINTAINER = 'AntoineTurmel';
 	const PARAMETERS = array(
 		'Bug comments' => array(
