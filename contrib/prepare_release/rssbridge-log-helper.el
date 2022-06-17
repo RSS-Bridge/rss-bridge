@@ -2,18 +2,27 @@
 
 ;;; Commentary:
 
+;; Keyboard abbreviations used below:
+;; C-x == Ctrl + x
+;; M-x == Alt + x
+
 ;; How to use this helper?
 ;; 1. Run "git log --reverse 2021-04-25..master > tmp.md" (2021-04-25 is an example tag of a previous version)
 ;; 2. Copy the contents of template.md to the start of tmp.md
-;; 3. In Emacs, type M-x (Alt-x) load-file then choose rssbridge-log-helper.el
-;; 4. Open tmp.md in Emacs and run M-x rssbridge-log-transient-state and
-;; you will enter a mode with the following shortcuts:
+;; 3. Open Emacs. Type M-x load-file <ENTER>
+;; 4. Enter in the path to rssbridge-log-helper.el then <ENTER>
+;; 5. Type M-x find-file <ENTER>
+;; 6. Enter the path to tmp.md then <ENTER>
+;; 7. Type M-x rssbridge-log-transient-state <ENTER>
+;; 8. You can now use the following shortcuts to organize the commits:
 ;;      x: Delete commit
 ;;      g: Copy as general change
 ;;      n: Copy as new bridge
 ;;      m: Copy as modified bridge
 ;;      r: Copy as removed bridge
 ;;      <any key>: Quit
+;; 9. Once you are done with all the commits, type C-x then C-s
+;; 10. Exit Emacs with C-x then C-c
 
 ;;; Code:
 
