@@ -60,7 +60,7 @@ RSS-Bridge hashtag (#rss-bridge) search on Twitter, in Atom format (as displayed
 Requirements
 ===
 
-RSS-Bridge requires PHP 7.1 or higher with following extensions enabled:
+RSS-Bridge requires PHP 7.4 or higher with following extensions enabled:
 
   - [`openssl`](https://secure.php.net/manual/en/book.openssl.php)
   - [`libxml`](https://secure.php.net/manual/en/book.libxml.php)
