@@ -53,7 +53,6 @@ abstract class BaseFormatTest extends TestCase {
 
 	protected function formatData(string $formatName, \stdClass $sample): string {
 		$formatFac = new FormatFactory();
-		$formatFac->setWorkingDir(PATH_LIB_FORMATS);
 		$format = $formatFac->create($formatName);
 		$format->setItems($sample->items);
 		$format->setExtraInfos($sample->meta);
