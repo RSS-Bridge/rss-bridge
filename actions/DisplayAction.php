@@ -153,7 +153,7 @@ class DisplayAction extends ActionAbstract {
 					'donationUri'  => $bridge->getDonationURI(),
 					'icon' => $bridge->getIcon()
 				);
-			} catch(Error $e) {
+			} catch(\Throwable $e) {
 				error_log($e);
 
 				if(logBridgeError($bridge::NAME, $e->getCode()) >= Configuration::getConfig('error', 'report_limit')) {
@@ -186,38 +186,6 @@ class DisplayAction extends ActionAbstract {
 							. http_build_query($this->userData)
 						);
 
-						$item->setTimestamp(time());
-						$item->setContent(buildBridgeException($e, $bridge));
-
-						$items[] = $item;
-					} elseif(Configuration::getConfig('error', 'output') === 'http') {
-						header('Content-Type: text/html', true, $this->get_return_code($e));
-						die(buildTransformException($e, $bridge));
-					}
-				}
-			} catch(Exception $e) {
-				error_log($e);
-
-				if(logBridgeError($bridge::NAME, $e->getCode()) >= Configuration::getConfig('error', 'report_limit')) {
-					if(Configuration::getConfig('error', 'output') === 'feed') {
-						$item = new \FeedItem();
-
-						// Create "new" error message every 24 hours
-						$this->userData['_error_time'] = urlencode((int)(time() / 86400));
-
-						$item->setURI(
-							(isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '')
-							. '?'
-							. http_build_query($this->userData)
-						);
-
-						$item->setTitle(
-							'Bridge returned error '
-							. $e->getCode()
-							. '! ('
-							. $this->userData['_error_time']
-							. ')'
-						);
 						$item->setTimestamp(time());
 						$item->setContent(buildBridgeException($e, $bridge));
 
