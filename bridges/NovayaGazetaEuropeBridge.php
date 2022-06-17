@@ -94,7 +94,7 @@ class NovayaGazetaEuropeBridge extends BridgeAbstract
 				$res .= '</figure>';
 				return $res;
 			case 'text/quote':
-				return "<figure><quote>{$datum->data}</quote></figure><br>";
+				return "<figure><blockquote>{$datum->data}</blockquote></figure><br>";
 			case 'embed/native':
 				$desc = $datum->link;
 				if (property_exists($datum, 'caption')) {
