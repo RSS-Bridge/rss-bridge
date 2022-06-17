@@ -20,7 +20,7 @@ try {
 
 	if(array_key_exists('action', $params)) {
 		$action = $actionFac->create($params['action']);
-		$action->setUserData($params);
+		$action->userData = $params;
 		$action->execute();
 	} else {
 		$showInactive = filter_input(INPUT_GET, 'show_inactive', FILTER_VALIDATE_BOOLEAN);

@@ -2,7 +2,6 @@
 
 namespace RssBridge\Tests\Actions;
 
-use ActionAbstract;
 use ActionInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -32,15 +31,15 @@ class ActionImplementationTest extends TestCase {
 	 * @dataProvider dataActionsProvider
 	 */
 	public function testVisibleMethods($path) {
-		$allowedActionAbstract = get_class_methods(ActionAbstract::class);
-		sort($allowedActionAbstract);
+		$allowedMethods = get_class_methods(ActionInterface::class);
+		sort($allowedMethods);
 
 		$this->setAction($path);
 
 		$methods = get_class_methods($this->obj);
 		sort($methods);
 
-		$this->assertEquals($allowedActionAbstract, $methods);
+		$this->assertEquals($allowedMethods, $methods);
 	}
 
 	public function dataActionsProvider() {
