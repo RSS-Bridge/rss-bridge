@@ -85,7 +85,6 @@ class YGGTorrentBridge extends BridgeAbstract {
 	);
 
 	public function collectData() {
-
 		$catInfo = explode('.', $this->getInput('cat'));
 		$category = $catInfo[0];
 		$subcategory = $catInfo[1];
@@ -115,7 +114,7 @@ class YGGTorrentBridge extends BridgeAbstract {
 			$item = array();
 			$item['timestamp'] = $row->find('.hidden', 1)->plaintext;
 			$item['title'] = $row->find('a#torrent_name', 0)->plaintext;
-			$item['uri'] = $row->find('a#torrent_name', 0)->href;
+			$item['uri'] = $this->processLink($row->find('a#torrent_name', 0)->href);
 			$item['seeders'] = $row->find('td', 7)->plaintext;
 			$item['leechers'] = $row->find('td', 8)->plaintext;
 			$item['size'] = $row->find('td', 5)->plaintext;
@@ -124,6 +123,22 @@ class YGGTorrentBridge extends BridgeAbstract {
 			$this->items[] = $item;
 		}
 
+	}
+
+	/**
+	 * Convert special characters like é to %C3%A9 in the url
+	 */
+	private function processLink($url) {
+		$url = explode('/', $url);
+		foreach($url as $index => $value) {
+			// Skip https://{self::URI}/
+			if ($index < 3) {
+				continue;
+			}
+			// Decode first so that characters like + are not encoded
+			$url[$index] = urlencode(urldecode($value));
+		}
+		return implode('/', $url);
 	}
 
 	private function collectTorrentData($url) {
