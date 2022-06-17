@@ -220,11 +220,7 @@ class DisplayAction extends ActionAbstract {
 			header('Content-Type: ' . $format->getMimeType() . '; charset=' . $format->getCharset());
 
 			echo $format->stringify();
-		} catch(Error $e) {
-			error_log($e);
-			header('Content-Type: text/html', true, $e->getCode());
-			die(buildTransformException($e, $bridge));
-		} catch(Exception $e) {
+		} catch(\Throwable $e) {
 			error_log($e);
 			header('Content-Type: text/html', true, $e->getCode());
 			die(buildTransformException($e, $bridge));
