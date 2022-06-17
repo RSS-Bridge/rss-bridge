@@ -59,7 +59,7 @@ final class ParlerBridge extends BridgeAbstract
 
 	private function fetchParlerProfileFeed(string $user): array
 	{
-		$json = getContents('https://parler.com/open-api/profile-feed.php', [], [
+		$json = getContents('https://parler.com/open-api/ProfileFeedEndpoint.php', [], [
 			CURLOPT_POSTFIELDS => http_build_query([
 				'user' => $user,
 				'page' => '1',
@@ -75,6 +75,6 @@ final class ParlerBridge extends BridgeAbstract
 		if ($response->data === []) {
 			throw new \Exception('Unknown Parler username');
 		}
-		return $response->data->posts;
+		return $response->data;
 	}
 }
