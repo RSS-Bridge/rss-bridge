@@ -70,7 +70,10 @@ class InstagramBridge extends BridgeAbstract {
 
 	public function getCacheTimeout() {
 		$customTimeout = $this->getOption('cache_timeout');
-		return $customTimeout || parent::getCacheTimeout();
+		if ($customTimeout) {
+			return $customTimeout;
+		}
+		return parent::getCacheTimeout();
 	}
 
 	protected function getContents($uri) {
