@@ -7,7 +7,7 @@ class YGGTorrentBridge extends BridgeAbstract {
 
 	const MAINTAINER = 'teromene';
 	const NAME = 'Yggtorrent Bridge';
-	const URI = 'https://yggtorrent.is';
+	const URI = 'https://www5.yggtorrent.fi';
 	const DESCRIPTION = 'Returns torrent search from Yggtorrent';
 
 	const PARAMETERS = array(
@@ -16,7 +16,7 @@ class YGGTorrentBridge extends BridgeAbstract {
 				'name' => 'category',
 				'type' => 'list',
 				'values' => array(
-					'Toute les catégories' => 'all.all',
+					'Toutes les catégories' => 'all.all',
 					'Film/Vidéo - Toutes les sous-catégories' => '2145.all',
 					'Film/Vidéo - Animation' => '2145.2178',
 					'Film/Vidéo - Animation Série' => '2145.2179',
@@ -62,7 +62,8 @@ class YGGTorrentBridge extends BridgeAbstract {
 			'nom' => array(
 				'name' => 'Nom',
 				'description' => 'Nom du torrent',
-				'type' => 'text'
+				'type' => 'text',
+				'exampleValue' => 'matrix'
 			),
 			'description' => array(
 				'name' => 'Description',
@@ -84,7 +85,6 @@ class YGGTorrentBridge extends BridgeAbstract {
 	);
 
 	public function collectData() {
-
 		$catInfo = explode('.', $this->getInput('cat'));
 		$category = $catInfo[0];
 		$subcategory = $catInfo[1];
@@ -93,9 +93,9 @@ class YGGTorrentBridge extends BridgeAbstract {
 					. $this->getInput('nom')
 					. '&description='
 					. $this->getInput('description')
-					. '&fichier='
-					. $this->getInput('fichier')
 					. '&file='
+					. $this->getInput('fichier')
+					. '&uploader='
 					. $this->getInput('uploader')
 					. '&category='
 					. $category
@@ -113,30 +113,37 @@ class YGGTorrentBridge extends BridgeAbstract {
 			if($count == 22) break; // Stop processing after 21 items (20 + 1 table header)
 			$item = array();
 			$item['timestamp'] = $row->find('.hidden', 1)->plaintext;
-			$item['title'] = $row->find('a', 1)->plaintext;
-			$item['uri'] = $row->find('a', 1)->href;
-			$torrentData = $this->collectTorrentData($row->find('a', 1)->href);
-			$item['author'] = $torrentData['author'];
-			$item['content'] = $torrentData['content'];
+			$item['title'] = $row->find('a#torrent_name', 0)->plaintext;
+			$item['uri'] = $this->processLink($row->find('a#torrent_name', 0)->href);
 			$item['seeders'] = $row->find('td', 7)->plaintext;
 			$item['leechers'] = $row->find('td', 8)->plaintext;
 			$item['size'] = $row->find('td', 5)->plaintext;
+			$item = array_merge($item, $this->collectTorrentData($item['uri']));
 
 			$this->items[] = $item;
 		}
 
 	}
 
-	private function collectTorrentData($url) {
+	/**
+	 * Convert special characters like é to %C3%A9 in the url
+	 */
+	private function processLink($url) {
+		$url = explode('/', $url);
+		foreach($url as $index => $value) {
+			// Skip https://{self::URI}/
+			if ($index < 3) {
+				continue;
+			}
+			// Decode first so that characters like + are not encoded
+			$url[$index] = urlencode(urldecode($value));
+		}
+		return implode('/', $url);
+	}
 
-		//For weird reason, the link we get can be invalid, we fix it.
-		$url_full = explode('/', $url);
-		$url_full[4] = urlencode($url_full[4]);
-		$url_full[5] = urlencode($url_full[5]);
-		$url_full[6] = urlencode($url_full[6]);
-		$url = implode('/', $url_full);
-		$page = getSimpleHTMLDOMCached($url);
-		$author = $page->find('.informations', 0)->find('a', 4)->plaintext;
+	private function collectTorrentData($url) {
+		$page = defaultLinkTo(getSimpleHTMLDOMCached($url), self::URI);
+		$author = $page->find('.informations tr', 5)->find('td', 1)->plaintext;
 		$content = $page->find('.default', 1);
 		return array('author' => $author, 'content' => $content);
 	}
