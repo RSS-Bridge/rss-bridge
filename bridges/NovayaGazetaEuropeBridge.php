@@ -19,6 +19,13 @@ class NovayaGazetaEuropeBridge extends BridgeAbstract
 					'Russian' => 'ru',
 					'English' => 'en',
 				)
+			),
+			'limit' => array(
+				'name' => 'Limit',
+				'type' => 'number',
+				'required' => false,
+				'title' => 'Maximum number of items to return',
+				'defaultValue' => 20
 			)
 		)
 	);
@@ -38,43 +45,58 @@ class NovayaGazetaEuropeBridge extends BridgeAbstract
 				if (!property_exists($block, 'date')) {
 					continue;
 				}
-				$body = '';
-				if (property_exists($block, 'body') && $block->body !== null) {
-					$body = self::convertBody($block->body, $block->lead);
-				} else {
-					$record_json = getContents("https://novayagazeta.eu/api/v1/get/record?slug={$block->slug}");
-					$record_data = json_decode($record_json);
-					$body = self::convertBody($record_data->record->body, $record_data->record->lead);
-				}
 				$title = strip_tags($block->title);
-				if (property_exists($block, 'subtitle') && mb_strlen($block->subtitle) > 0) {
+				if (!empty($block->subtitle)) {
 					$title .= '. ' . strip_tags($block->subtitle);
 				}
 				$item = array(
 					'uri' => self::URI . '/articles/' . $block->slug,
+					'block' => $block,
 					'title' => $title,
 					'author' => join(', ', array_map(function ($author) {
 						return $author->name;
 					}, $block->authors)),
 					'timestamp' => $block->date / 1000,
-					'categories' => $block->tags,
-					'content' => $body
+					'categories' => $block->tags
 				);
 				$this->items[] = $item;
 			}
 		}
 		usort($this->items, function ($item1, $item2) {
-			return $item1['timestamp'] < $item2['timestamp'];
+			return $item2['timestamp'] <=> $item1['timestamp'];
 		});
+		if ($this->getInput('limit') !== null) {
+			$this->items = array_slice($this->items, 0, $this->getInput('limit'));
+		}
+		foreach ($this->items as &$item) {
+			$block = $item['block'];
+			$body = '';
+			if (property_exists($block, 'body') && $block->body !== null) {
+				$body = self::convertBody($block);
+			} else {
+				$record_json = getContents("https://novayagazeta.eu/api/v1/get/record?slug={$block->slug}");
+				$record_data = json_decode($record_json);
+				$body = self::convertBody($record_data->record);
+			}
+			$item['content'] = $body;
+			unset($item['block']);
+		}
 	}
 
-	private function convertBody($data, $lead) {
+	private function convertBody($data) {
 		$body = '';
-		if ($lead !== null) {
-			$body .= "<p><b>{$lead}</b></p>";
+		if ($data->previewUrl !== null && !$data->isPreviewHidden) {
+			$body .= '<figure><img src="' . $data->previewUrl . '"/>';
+			if ($data->previewCaption !== null) {
+				$body .= '<figcaption>' . $data->previewCaption . '</figcaption>';
+			}
+			$body .= '</figure>';
 		}
-		if (!is_null($data)) {
-			foreach ($data as $datum) {
+		if ($data->lead !== null) {
+			$body .= "<p><b>{$data->lead}</b></p>";
+		}
+		if (!empty($data->body)) {
+			foreach ($data->body as $datum) {
 				$body .= self::convertElement($datum);
 			}
 		}
