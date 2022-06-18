@@ -25,12 +25,12 @@ class TikTokBridge extends BridgeAbstract {
 	private $feedName = '';
 
 	public function detectParameters($url) {
-		$params = array();
 
 		if(preg_match('/tiktok\.com\/(@[\w]+)/', $url, $matches) > 0) {
-			$params['context'] = 'By user';
-			$params['username'] = $matches[1];
-			return $params;
+			return array(
+				'context' => 'By user',
+				'username' => $matches[1]
+			);
 		}
 
 		return null;
