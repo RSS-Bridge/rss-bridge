@@ -532,7 +532,7 @@ abstract class XPathAbstract extends BridgeAbstract {
 	 */
 	protected function cleanMediaUrl($mediaUrl)
 	{
-		$pattern = '~(?:http(?:s)?:)?[\/a-zA-Z0-9\-_\.\%]+\.(?:jpg|gif|png|jpeg|ico|mp3){1}~i';
+		$pattern = '~(?:http(?:s)?:)?[\/a-zA-Z0-9\-=_,\.\%]+\.(?:jpg|gif|png|jpeg|ico|mp3|webp){1}~i';
 		$result = preg_match($pattern, $mediaUrl, $matches);
 		if(1 !== $result) {
 			return;
