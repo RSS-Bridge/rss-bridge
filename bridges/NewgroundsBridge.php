@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 class NewgroundsBridge extends BridgeAbstract
 {
@@ -6,49 +7,38 @@ class NewgroundsBridge extends BridgeAbstract
 	const URI = 'https://www.newgrounds.com';
 	const DESCRIPTION = 'Get the latest art from a given user';
 	const MAINTAINER = 'KamaleiZestri';
-	const PARAMETERS = array(array(
-		'username' => array(
-			'name' => 'Username',
-			'type' => 'text',
-			'required' => true,
-			'exampleValue' => 'TomFulp'
-		)
-	));
-
-	public function getName()
-	{
-		if (!empty($this->getInput('username'))) {
-			return $this->getInput('username') . ' - ' . self::NAME;
-		}
-		return parent::getName();
-	}
-
-	public function getURI()
-	{
-		if (!empty($this->getInput('username'))) {
-			return 'https://' . $this->getInput('username') . '.newgrounds.com/art';
-		}
-		return parent::getURI();
-	}
+	const PARAMETERS = [
+		'User' => [
+			'username' => [
+				'name' => 'Username',
+				'type' => 'text',
+				'required' => true,
+				'exampleValue' => 'TomFulp'
+			]
+		]
+	];
 
 	public function collectData()
 	{
-		$userlink = 'https://' . $this->getInput('username') . '.newgrounds.com/art';
-		$html = getSimpleHTMLDOM($userlink);
+		$username = $this->getInput('username');
+		if (!preg_match('/^\w+$/', $username)) {
+			throw new \Exception('Illegal username');
+		}
+
+		$html = getSimpleHTMLDOM($this->getURI());
 
 		$posts = $html->find('.item-portalitem-art-medium');
 
 		foreach ($posts as $post) {
-			$item = array();
+			$item = [];
 
-			$item['author'] = $this->getInput('username');
+			$item['author'] = $username;
 			$item['uri'] = $post->href;
-			$item['uid'] = $item['uri'];
 
 			$titleOrRestricted = $post->find('h4')[0]->innertext;
 
-			//Newgrounds doesn't show public previews for NSFW content.
-			if ($titleOrRestricted == 'Restricted Content: Sign in to view!') {
+			// Newgrounds doesn't show public previews for NSFW content.
+			if ($titleOrRestricted === 'Restricted Content: Sign in to view!') {
 				$item['title'] = 'NSFW: ' . $item['uri'];
 				$item['content'] = <<<EOD
 <a href="{$item['uri']}">
@@ -70,5 +60,21 @@ EOD;
 
 			$this->items[] = $item;
 		}
+	}
+
+	public function getName()
+	{
+		if ($this->getInput('username')) {
+			return sprintf('%s - %s', $this->getInput('username'), self::NAME);
+		}
+		return parent::getName();
+	}
+
+	public function getURI()
+	{
+		if ($this->getInput('username')) {
+			return sprintf('https://%s.newgrounds.com/art', $this->getInput('username'));
+		}
+		return parent::getURI();
 	}
 }
