@@ -30,7 +30,7 @@ class FormatFactory
 
 	/**
 	 * @throws \InvalidArgumentException
-	 * @param string $name The name of the cache object e.g. "File", "Memcached" or "SQLite"
+	 * @param string $name The name of the format e.g. "Atom", "Mrss" or "Json"
 	 */
 	public function create(string $name): FormatInterface
 	{
