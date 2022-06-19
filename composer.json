@@ -22,7 +22,7 @@
         "rss": "https://github.com/RSS-Bridge/rss-bridge/commits/master.atom"
     },
     "require": {
-        "php": ">=7.1",
+        "php": ">=7.4",
         "ext-mbstring": "*",
         "ext-curl": "*",
         "ext-openssl": "*",

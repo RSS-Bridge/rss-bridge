@@ -60,7 +60,7 @@ RSS-Bridge hashtag (#rss-bridge) search on Twitter, in Atom format (as displayed
 Requirements
 ===
 
-RSS-Bridge requires PHP 7.1 or higher with following extensions enabled:
+RSS-Bridge requires PHP 7.4 or higher with following extensions enabled:
 
   - [`openssl`](https://secure.php.net/manual/en/book.openssl.php)
   - [`libxml`](https://secure.php.net/manual/en/book.libxml.php)
@@ -349,7 +349,6 @@ RSS-Bridge uses third party libraries with their own license:
   * [`Parsedown`](https://github.com/erusev/parsedown) licensed under the [MIT License](https://opensource.org/licenses/MIT)
   * [`PHP Simple HTML DOM Parser`](https://simplehtmldom.sourceforge.io/docs/1.9/index.html) licensed under the [MIT License](https://opensource.org/licenses/MIT)
   * [`php-urljoin`](https://github.com/fluffy-critter/php-urljoin) licensed under the [MIT License](https://opensource.org/licenses/MIT)
-  * [php polyfills](https://github.com/symfony/polyfill) licensed under the [MIT License](https://opensource.org/licenses/MIT)
   * [`Laravel framework`](https://github.com/laravel/framework/) licensed under the [MIT License](https://opensource.org/licenses/MIT)
 
 Technical notes
