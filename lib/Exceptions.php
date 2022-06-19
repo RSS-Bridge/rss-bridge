@@ -66,7 +66,7 @@ function buildGitHubIssueQuery($title, $body, $labels = null, $maintainer = null
 	return $uri;
 }
 
-function buildBridgeException(\Throwable $e, $bridge)
+function buildBridgeException(\Throwable $e, BridgeInterface $bridge): string
 {
 	$title = $bridge->getName() . ' failed with error ' . $e->getCode();
 
@@ -94,7 +94,8 @@ EOD;
 	return $section;
 }
 
-function buildTransformException(\Throwable $e, $bridge){
+function buildTransformException(\Throwable $e, BridgeInterface $bridge): string
+{
 	$title = $bridge->getName() . ' failed with error ' . $e->getCode();
 
 	// Build a GitHub compatible message
