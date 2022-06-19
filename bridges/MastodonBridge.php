@@ -2,8 +2,7 @@
 
 class MastodonBridge extends BridgeAbstract {
 	// This script attempts to imitiate the behaviour of a read-only ActivityPub server
-	// to read the outbox. This does not support instances that require HTTP signatures
-	// for ActivityPub endpoints.
+	// to read the outbox.
 
 	// Note: Most PixelFed instances have ActivityPub outbox disabled,
 	// so use the official feed: https://pixelfed.instance/users/username.atom (Posts only)
@@ -13,6 +12,19 @@ class MastodonBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 900; // 15mn
 	const DESCRIPTION = 'Returns recent statuses. Supports Mastodon, Pleroma and Misskey, among others.';
 	const URI = 'https://mastodon.social';
+
+	// Some Mastodon instances use Secure Mode which requires all requests to be signed.
+	// You do not need this for most instances, but if you want to support every known
+	// instance, then you should configure them.
+	// See also https://docs.joinmastodon.org/spec/security/#http
+	const CONFIGURATION = array(
+		'private_key' => array(
+			'required' => false,
+		),
+		'key_id' => array(
+			'required' => false,
+		),
+	);
 
 	const PARAMETERS = array(array(
 		'canusername' => array(
@@ -38,11 +50,10 @@ class MastodonBridge extends BridgeAbstract {
 		);
 
 	public function getName() {
-		switch($this->queriedContext) {
-			case 'By username':
-				return $this->getInput('canusername');
-			default: return parent::getName();
+		if($this->getInput('canusername')) {
+			return $this->getInput('canusername');
 		}
+		return parent::getName();
 	}
 
 	private function getInstance() {
@@ -58,8 +69,8 @@ class MastodonBridge extends BridgeAbstract {
 	public function getURI(){
 		if($this->getInput('canusername')) {
 			// We parse webfinger to make sure the URL is correct. This is mostly because
-			// MissKey uses user ID instead of the username in the endpoint, and also to
-			// be compatible with future ActivityPub implementations.
+			// MissKey uses user ID instead of the username in the endpoint, domain delegations,
+			// and also to be compatible with future ActivityPub implementations.
 			$resource = 'acct:' . $this->getUsername() . '@' . $this->getInstance();
 			$webfingerUrl = 'https://' . $this->getInstance() . '/.well-known/webfinger?resource=' . $resource;
 			$webfingerHeader = array(
@@ -81,15 +92,14 @@ class MastodonBridge extends BridgeAbstract {
 		$content = json_decode(getContents($url, self::AP_HEADER), true);
 		if ($content['id'] === $url) {
 			foreach ($content['orderedItems'] as $status) {
-				$users = array();
-				$this->items[] = $this->parseItem($status, $users);
+				$this->items[] = $this->parseItem($status);
 			}
 		} else {
 			throw new \Exception('Unexpected response from server.');
 		}
 	}
 
-	protected function parseItem($content, &$users) {
+	protected function parseItem($content) {
 		$item = array();
 		switch ($content['type']) {
 			case 'Announce': // boost
@@ -98,31 +108,28 @@ class MastodonBridge extends BridgeAbstract {
 				}
 				// We fetch the boosted content.
 				try {
-					$rtContent = json_decode(getContents($content['object'], self::AP_HEADER), true);
-					if ($rtContent['attributedTo'] && isset($users[$rtContent['attributedTo']])) {
-						$item['author'] = $users[$rtContent['attributedTo']];
-						$item['title'] = 'Shared a status by ' . $item['author'] . ': ';
-						$item = $this->parseObject($rtContent, $item);
-					} else {
+					$rtContent = $this->fetchAP($content['object']);
+					$rtUser = $this->loadCacheValue($rtContent['attributedTo'], 86400);
+					if (!isset($rtUser)) {
 						// We fetch the author, since we cannot always assume the format of the URL.
 						$user = json_decode(getContents($rtContent['attributedTo'], self::AP_HEADER), true);
-						preg_match('/http(|s):\/\/([a-z0-9-\.]{0,})\//', $rtContent['attributedTo'], $matches);
+						preg_match('/https?:\/\/([a-z0-9-\.]{0,})\//', $rtContent['attributedTo'], $matches);
 						// We assume that the server name as indicated by the path is the actual server name,
 						// since using webfinger to delegate domains is not officially supported, and it only
 						// seems to work in one way.
-						$rtUser = '@' . $user['preferredUsername'] . '@' . $matches[2];
-						$users[$rtContent['attributedTo']] = $rtUser;
-						$item['author'] = $rtUser;
-						$item['title'] = 'Shared a status by ' . $rtUser . ': ';
-						$item = $this->parseObject($rtContent, $item);
+						$rtUser = '@' . $user['preferredUsername'] . '@' . $matches[1];
+						$this->saveCacheValue($rtContent['attributedTo'], $rtUser);
 					}
+					$item['author'] = $rtUser;
+					$item['title'] = 'Shared a status by ' . $rtUser . ': ';
+					$item = $this->parseObject($rtContent, $item);
 				} catch (UnexpectedResponseException $th) {
 					$item['title'] = 'Shared an unreachable status: ' . $content['object'];
 					$item['content'] = $content['object'];
 					$item['uri'] = $content['object'];
 				}
 				break;
-			case 'Create':
+			case 'Create': // posts
 				if ($this->getInput('norep') && isset($content['object']['inReplyTo'])) {
 					return null;
 				}
@@ -137,7 +144,7 @@ class MastodonBridge extends BridgeAbstract {
 
 	protected function parseObject($object, $item) {
 		$item['content'] = $object['content'];
-		$strippedContent = strip_tags($object['content']);
+		$strippedContent = strip_tags(str_replace('<br>', ' ', $object['content']));
 
 		if (mb_strlen($strippedContent) > 75) {
 			$contentSubstring = mb_substr($strippedContent, 0, mb_strpos(wordwrap($strippedContent, 75), "\n"));
