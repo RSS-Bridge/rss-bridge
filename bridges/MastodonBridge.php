@@ -45,10 +45,6 @@ class MastodonBridge extends BridgeAbstract {
 			)
 		));
 
-	const AP_HEADER = array(
-			'Accept: application/activity+json'
-		);
-
 	public function getName() {
 		if($this->getInput('canusername')) {
 			return $this->getInput('canusername');
@@ -89,7 +85,7 @@ class MastodonBridge extends BridgeAbstract {
 
 	public function collectData() {
 		$url = $this->getURI() . '/outbox?page=true';
-		$content = json_decode(getContents($url, self::AP_HEADER), true);
+		$content = $this->fetchAP($url);
 		if ($content['id'] === $url) {
 			foreach ($content['orderedItems'] as $status) {
 				$this->items[] = $this->parseItem($status);
@@ -112,7 +108,7 @@ class MastodonBridge extends BridgeAbstract {
 					$rtUser = $this->loadCacheValue($rtContent['attributedTo'], 86400);
 					if (!isset($rtUser)) {
 						// We fetch the author, since we cannot always assume the format of the URL.
-						$user = json_decode(getContents($rtContent['attributedTo'], self::AP_HEADER), true);
+						$user = $this->fetchAP($rtContent['attributedTo']);
 						preg_match('/https?:\/\/([a-z0-9-\.]{0,})\//', $rtContent['attributedTo'], $matches);
 						// We assume that the server name as indicated by the path is the actual server name,
 						// since using webfinger to delegate domains is not officially supported, and it only
@@ -167,5 +163,32 @@ class MastodonBridge extends BridgeAbstract {
 			}
 		}
 		return $item;
+	}
+
+	protected function fetchAP($url) {
+		$d = new DateTime();
+		$d->setTimezone(new DateTimeZone('GMT'));
+		$date = $d->format('D, d M Y H:i:s e');
+		preg_match('/https?:\/\/([a-z0-9-\.]{0,})(\/[^?#]+)/', $url, $matches);
+		$headers = array(
+			'Accept: application/activity+json',
+			'Host: ' . $matches[1],
+			'Date: ' . $date
+		);
+		$privateKey = $this->getOption('private_key');
+		$keyId = $this->getOption('key_id');
+		if ($privateKey && $keyId) {
+			$pkey = openssl_pkey_get_private('file://' . $privateKey);
+			$toSign = '(request-target): get ' . $matches[2] . "\nhost: " . $matches[1] . "\ndate: " . $date;
+			$result = openssl_sign($toSign, $signature, $pkey, 'RSA-SHA256');
+			if ($result) {
+				Debug::log($toSign);
+				$sig = 'Signature: keyId="' . $keyId . '",headers="(request-target) host date",signature="' .
+						base64_encode($signature) . '"';
+				Debug::log($sig);
+				array_push($headers, $sig);
+			}
+		}
+		return json_decode(getContents($url, $headers), true);
 	}
 }
