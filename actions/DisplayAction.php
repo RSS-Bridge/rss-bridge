@@ -163,22 +163,12 @@ class DisplayAction extends ActionAbstract {
 						// Create "new" error message every 24 hours
 						$this->userData['_error_time'] = urlencode((int)(time() / 86400));
 
-						// Error 0 is a special case (i.e. "trying to get property of non-object")
-						if($e->getCode() === 0) {
-							$item->setTitle(
-								'Bridge encountered an unexpected situation! ('
-								. $this->userData['_error_time']
-								. ')'
-							);
-						} else {
-							$item->setTitle(
-								'Bridge returned error '
-								. $e->getCode()
-								. '! ('
-								. $this->userData['_error_time']
-								. ')'
-							);
-						}
+						$message = sprintf(
+							'Bridge returned error %s! (%s)',
+							$e->getCode(),
+							$this->userData['_error_time']
+						);
+						$item->setTitle($message);
 
 						$item->setURI(
 							(isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '')
