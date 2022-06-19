@@ -29,6 +29,7 @@ class FormatFactory
 	}
 
 	/**
+	 * @throws \InvalidArgumentException
 	 * @param string $name The name of the cache object e.g. "File", "Memcached" or "SQLite"
 	 */
 	public function create(string $name): CacheInterface
