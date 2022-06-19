@@ -32,7 +32,7 @@ class FormatFactory
 	 * @throws \InvalidArgumentException
 	 * @param string $name The name of the cache object e.g. "File", "Memcached" or "SQLite"
 	 */
-	public function create(string $name): CacheInterface
+	public function create(string $name): FormatInterface
 	{
 		if (! preg_match('/^[a-zA-Z0-9-]*$/', $name)) {
 			throw new \InvalidArgumentException('Format name invalid!');
