@@ -11,7 +11,7 @@ class MastodonBridge extends BridgeAbstract {
 	const MAINTAINER = 'Austin Huang';
 	const NAME = 'ActivityPub Bridge';
 	const CACHE_TIMEOUT = 900; // 15mn
-	const DESCRIPTION = 'Returns recent statuses. Supports ActivityPub-compatible platforms, including Mastodon, Pleroma and Misskey.';
+	const DESCRIPTION = 'Returns recent statuses. Supports Mastodon, Pleroma and Misskey, among others.';
 	const URI = 'https://mastodon.social';
 
 	const PARAMETERS = array(array(
