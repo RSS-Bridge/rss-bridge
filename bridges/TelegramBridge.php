@@ -189,7 +189,6 @@ EOD;
 			return $stickerDiv;
 
 		} elseif (preg_match($this->backgroundImageRegex, $stickerDiv->find('i', 0)->style, $sticker)) {
-			$this->enclosures[] = $sticker[1];
 
 			return <<<EOD
 				<a href="{$stickerDiv->children(0)->herf}"><img src="{$sticker[1]}"></a>
@@ -237,7 +236,6 @@ EOD;
 		   preg_match($this->backgroundImageRegex, $preview->find('i', 0)->style, $photo)) {
 
 			$image = '<img src="' . $photo[1] . '"/>';
-			$this->enclosures[] = $photo[1];
 		}
 
 		if ($preview->find('div.link_preview_title', 0)) {
@@ -288,8 +286,6 @@ EOD;
 		foreach ($messageDiv->find('a.tgme_widget_message_photo_wrap') as $photoWrap) {
 			preg_match($this->backgroundImageRegex, $photoWrap->style, $photo);
 
-			$this->enclosures[] = $photo[1];
-
 			$photos .= <<<EOD
 <a href="{$photoWrap->href}"><img src="{$photo[1]}"/></a><br>
 EOD;
@@ -307,8 +303,6 @@ EOD;
 		} elseif ($messageDiv->find('i.link_preview_video_thumb')) {
 			preg_match($this->backgroundImageRegex, $messageDiv->find('i.link_preview_video_thumb', 0)->style, $photo);
 		}
-
-		$this->enclosures[] = $photo[1];
 
 		return <<<EOD
 <a href="{$messageDiv->find('a.not_supported', 0)->href}">
@@ -343,8 +337,6 @@ EOD;
 		preg_match($this->backgroundImageRegex, $messageDiv->find('div.tgme_widget_message_location', 0)->style, $image);
 
 		$link = $messageDiv->find('a.tgme_widget_message_location_wrap', 0)->href;
-
-		$this->enclosures[] = $image[1];
 
 		return <<<EOD
 			<a href="{$link}"><img src="{$image[1]}"></a>
