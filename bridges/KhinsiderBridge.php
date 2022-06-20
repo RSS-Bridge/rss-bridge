@@ -18,7 +18,7 @@ class KhinsiderBridge extends BridgeAbstract
 		foreach ($dates as $i => $date) {
 			$item = array();
 			$item['uri'] = self::URI;
-			$item['timestamp'] = DateTime::createFromFormat('F jS, Y', $date->plaintext)->setTime(1, 1)->format('U');
+			$item['timestamp'] = \DateTime::createFromFormat('F jS, Y', $date->plaintext)->setTime(1, 1)->format('U');
 			$item['title'] = sprintf('OST for %s', $date->plaintext);
 			$item['author'] = 'Khinsider';
 			$trs = $tables[$i]->find('tr');

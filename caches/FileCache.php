@@ -1,4 +1,5 @@
 <?php
+
 /**
 * Cache with file system
 */
@@ -49,9 +50,9 @@ class FileCache implements CacheInterface {
 	public function purgeCache($seconds){
 		$cachePath = $this->getPath();
 		if(file_exists($cachePath)) {
-			$cacheIterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator($cachePath),
-			RecursiveIteratorIterator::CHILD_FIRST
+			$cacheIterator = new \RecursiveIteratorIterator(
+				new \RecursiveDirectoryIterator($cachePath),
+				\RecursiveIteratorIterator::CHILD_FIRST
 			);
 
 			foreach($cacheIterator as $cacheFile) {

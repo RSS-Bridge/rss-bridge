@@ -19,7 +19,7 @@ class DetectAction extends ActionAbstract {
 		$format = $this->userData['format']
 			or returnClientError('You must specify a format!');
 
-		$bridgeFac = new \BridgeFactory();
+		$bridgeFac = new BridgeFactory();
 
 		foreach($bridgeFac->getBridgeNames() as $bridgeName) {
 

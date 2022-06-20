@@ -43,7 +43,7 @@ class AlfaBankByBridge extends BridgeAbstract {
 				$item = array();
 				$item['uid'] = 'urn:sha1:' . hash('sha1', $element->getAttribute('data-notification-id'));
 				$item['title'] = $element->find('div.item-title', 0)->innertext;
-				$item['timestamp'] = DateTime::createFromFormat(
+				$item['timestamp'] = \DateTime::createFromFormat(
 					'd M Y',
 					$this->ruMonthsToEn($element->find('div.item-date', 0)->innertext)
 					)->getTimestamp();

@@ -160,7 +160,7 @@ final class Configuration {
 		}
 
 		if(!is_string(self::getConfig('system', 'timezone'))
-		|| !in_array(self::getConfig('system', 'timezone'), timezone_identifiers_list(DateTimeZone::ALL_WITH_BC)))
+		|| !in_array(self::getConfig('system', 'timezone'), timezone_identifiers_list(\DateTimeZone::ALL_WITH_BC)))
 			self::reportConfigurationError('system', 'timezone');
 
 		date_default_timezone_set(self::getConfig('system', 'timezone'));

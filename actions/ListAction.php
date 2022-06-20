@@ -13,11 +13,11 @@
 
 class ListAction extends ActionAbstract {
 	public function execute() {
-		$list = new StdClass();
+		$list = new \stdClass();
 		$list->bridges = array();
 		$list->total = 0;
 
-		$bridgeFac = new \BridgeFactory();
+		$bridgeFac = new BridgeFactory();
 
 		foreach($bridgeFac->getBridgeNames() as $bridgeName) {
 

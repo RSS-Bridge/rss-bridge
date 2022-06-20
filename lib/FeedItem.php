@@ -81,7 +81,7 @@ class FeedItem {
 	 * $item['enclosures'] = array('https://github.com/favicon.ico');
 	 * $item['categories'] = array('php', 'rss-bridge', 'awesome');
 	 *
-	 * $feedItem = new \FeedItem($item);
+	 * $feedItem = new FeedItem($item);
 	 *
 	 * ```
 	 *
@@ -475,7 +475,7 @@ class FeedItem {
 	 * to implement in some cases:
 	 *
 	 * ```PHP
-	 * $item = new \FeedItem();
+	 * $item = new FeedItem();
 	 * $item->content = 'Hello World!';
 	 * $item->my_id = 42;
 	 * ```

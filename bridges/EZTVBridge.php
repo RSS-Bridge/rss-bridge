@@ -106,6 +106,6 @@ on EZTV. Get IMDB IDs from IMDB.';
 		}
 
 		// Sort all torrents in array by date
-		usort($this->items, array('EZTVBridge', 'compareDate'));
+		usort($this->items, array($this, 'compareDate'));
 	}
 }

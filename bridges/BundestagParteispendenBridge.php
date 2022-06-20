@@ -80,7 +80,7 @@ URI;
 			$item['enclosures'] = array($dip->href);
 
 		// Try to parse the date
-		$dateTime = DateTime::createFromFormat('d.m.Y', $date);
+		$dateTime = \DateTime::createFromFormat('d.m.Y', $date);
 		if ($dateTime !== false)
 			$item['timestamp'] = $dateTime->getTimestamp();
 

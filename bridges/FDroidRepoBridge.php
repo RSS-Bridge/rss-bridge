@@ -88,7 +88,7 @@ class FDroidRepoBridge extends BridgeAbstract {
 		file_put_contents($jar_loc, $jar);
 
 		// JAR files are specially formatted ZIP files
-		$jar = new ZipArchive;
+		$jar = new \ZipArchive;
 		if ($jar->open($jar_loc) !== true) {
 			returnServerError('Failed to extract archive');
 		}
@@ -125,7 +125,7 @@ class FDroidRepoBridge extends BridgeAbstract {
 			$item['uri'] = $this->getURI() . '/' . $latest['apkName'];
 			$item['title'] = $lang['name'] ?? $app['packageName'];
 			$item['title'] .= ' ' . $latest['versionName'];
-			$item['timestamp'] = date(DateTime::ISO8601, (int) ($app['lastUpdated'] / 1000));
+			$item['timestamp'] = date(\DateTime::ISO8601, (int) ($app['lastUpdated'] / 1000));
 			if (isset($app['authorName']))
 				$item['author'] = $app['authorName'];
 			if (isset($app['categories']))
@@ -173,7 +173,7 @@ EOD;
 			$item = array();
 			$item['uri'] = $this->getURI() . '/' . $version['apkName'];
 			$item['title'] = $version['versionName'];
-			$item['timestamp'] = date(DateTime::ISO8601, (int) ($version['added'] / 1000));
+			$item['timestamp'] = date(\DateTime::ISO8601, (int) ($version['added'] / 1000));
 			$item['uid'] = $version['versionCode'];
 			$size = round($version['size'] / 1048576, 1); // Bytes -> MB
 			$sdk_link = 'https://developer.android.com/studio/releases/platforms';

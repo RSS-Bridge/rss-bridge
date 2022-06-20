@@ -59,7 +59,7 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
 
 	private function splitGobbets($gobbets)
 	{
-		$today = new Datetime();
+		$today = new \Datetime();
 		$today->setTime(0, 0, 0, 0);
 		$limit = $this->getInput('limit');
 		foreach ($gobbets->find('._gobbet') as $gobbet) {
@@ -85,7 +85,7 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
 
 	private function mergeGobbets($gobbets)
 	{
-		$today = new Datetime();
+		$today = new \Datetime();
 		$today->setTime(0, 0, 0, 0);
 		$contents = '';
 		foreach ($gobbets->find('._gobbet') as $gobbet) {
@@ -103,7 +103,7 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
 	private function collectArticles($articles)
 	{
 		$i = 0;
-		$today = new Datetime();
+		$today = new \Datetime();
 		$today->setTime(0, 0, 0, 0);
 		foreach ($articles->find('._article') as $article) {
 			$title = $article->find('._headline', 0)->plaintext;
@@ -128,7 +128,7 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
 	}
 
 	private function addQuote($quote) {
-		$today = new Datetime();
+		$today = new \Datetime();
 		$today->setTime(0, 0, 0, 0);
 		$this->items[] = array(
 			'uri' => self::URI,

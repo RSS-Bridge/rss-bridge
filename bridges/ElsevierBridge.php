@@ -27,7 +27,7 @@ class ElsevierBridge extends BridgeAbstract {
 			$item['title'] = $recentArticle->find('h2', 0)->plaintext;
 			$item['author'] = $recentArticle->find('p > span', 0)->plaintext;
 			$publicationDateString = trim($recentArticle->find('p > span', 1)->plaintext);
-			$publicationDate = DateTimeImmutable::createFromFormat('F d, Y', $publicationDateString);
+			$publicationDate = \DateTimeImmutable::createFromFormat('F d, Y', $publicationDateString);
 			if ($publicationDate) {
 				$item['timestamp'] = $publicationDate->getTimestamp();
 			}

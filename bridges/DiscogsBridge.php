@@ -70,7 +70,7 @@ class DiscogsBridge extends BridgeAbstract {
 				$item['uri'] = self::URI . $this->getInput('artistid') . '/release/' . $resId;
 
 				if(isset($release['year'])) {
-					$item['timestamp'] = DateTime::createFromFormat('Y', $release['year'])->getTimestamp();
+					$item['timestamp'] = \DateTime::createFromFormat('Y', $release['year'])->getTimestamp();
 				}
 
 				$item['content'] = $item['author'] . ' - ' . $item['title'];

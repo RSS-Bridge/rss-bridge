@@ -62,7 +62,7 @@ EOD;
 		$totalActiveBridges = 0;
 		$inactiveBridges = '';
 
-		$bridgeFac = new \BridgeFactory();
+		$bridgeFac = new BridgeFactory();
 		$bridgeList = $bridgeFac->getBridgeNames();
 
 		$formatFac = new FormatFactory();

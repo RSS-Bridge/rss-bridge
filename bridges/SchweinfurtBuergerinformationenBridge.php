@@ -111,7 +111,7 @@ class SchweinfurtBuergerinformationenBridge extends BridgeAbstract {
 		// Get the date of the article. Example: "zuletzt geändert: 26.05.2020"
 		$editDate = $div->find('div#edit', 0)->plaintext;
 		$editDate = substr($editDate, strrpos($editDate, ' ') + 1);
-		$editDate = DateTime::createFromFormat('d.m.Y', $editDate);
+		$editDate = \DateTime::createFromFormat('d.m.Y', $editDate);
 
 		if ($editDate !== false)
 			$item['timestamp'] = $editDate->getTimestamp();

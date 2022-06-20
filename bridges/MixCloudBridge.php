@@ -56,6 +56,6 @@ class MixCloudBridge extends BridgeAbstract {
 		}
 
 		// Sort items by date
-		usort($this->items, array('MixCloudBridge', 'compareDate'));
+		usort($this->items, array($this, 'compareDate'));
 	}
 }

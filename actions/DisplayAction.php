@@ -27,7 +27,7 @@ class DisplayAction extends ActionAbstract {
 		$format = $this->userData['format']
 			or returnClientError('You must specify a format!');
 
-		$bridgeFac = new \BridgeFactory();
+		$bridgeFac = new BridgeFactory();
 
 		// whitelist control
 		if(!$bridgeFac->isWhitelisted($bridge)) {
@@ -121,7 +121,7 @@ class DisplayAction extends ActionAbstract {
 
 			if(isset($cached['items']) && isset($cached['extraInfos'])) {
 				foreach($cached['items'] as $item) {
-					$items[] = new \FeedItem($item);
+					$items[] = new FeedItem($item);
 				}
 
 				$infos = $cached['extraInfos'];
@@ -141,7 +141,7 @@ class DisplayAction extends ActionAbstract {
 					$feedItems = array();
 
 					foreach($items as $item) {
-						$feedItems[] = new \FeedItem($item);
+						$feedItems[] = new FeedItem($item);
 					}
 
 					$items = $feedItems;
@@ -158,7 +158,7 @@ class DisplayAction extends ActionAbstract {
 
 				if(logBridgeError($bridge::NAME, $e->getCode()) >= Configuration::getConfig('error', 'report_limit')) {
 					if(Configuration::getConfig('error', 'output') === 'feed') {
-						$item = new \FeedItem();
+						$item = new FeedItem();
 
 						// Create "new" error message every 24 hours
 						$this->userData['_error_time'] = urlencode((int)(time() / 86400));
@@ -200,7 +200,7 @@ class DisplayAction extends ActionAbstract {
 
 				if(logBridgeError($bridge::NAME, $e->getCode()) >= Configuration::getConfig('error', 'report_limit')) {
 					if(Configuration::getConfig('error', 'output') === 'feed') {
-						$item = new \FeedItem();
+						$item = new FeedItem();
 
 						// Create "new" error message every 24 hours
 						$this->userData['_error_time'] = urlencode((int)(time() / 86400));

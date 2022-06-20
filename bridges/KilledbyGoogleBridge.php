@@ -28,9 +28,9 @@ class KilledbyGoogleBridge extends BridgeAbstract {
 		foreach($graveyard as $tombstone) {
 			$item = array();
 
-			$openDate = new DateTime($tombstone['dateOpen']);
-			$closeDate = new DateTime($tombstone['dateClose']);
-			$currentDate = new DateTime();
+			$openDate = new \DateTime($tombstone['dateOpen']);
+			$closeDate = new \DateTime($tombstone['dateClose']);
+			$currentDate = new \DateTime();
 
 			$yearOpened = $openDate->format('Y');
 			$yearClosed = $closeDate->format('Y');

@@ -69,7 +69,7 @@ class TorrentGalaxyBridge extends BridgeAbstract {
 			$item['title'] = $identity->plaintext;
 
 			// todo: parse date strings such as '1Hr ago' etc.
-			$createdAt = DateTime::createFromFormat('d/m/y H:i', $creadate);
+			$createdAt = \DateTime::createFromFormat('d/m/y H:i', $creadate);
 			if ($createdAt) {
 				$item['timestamp'] = $createdAt->format('U');
 			}

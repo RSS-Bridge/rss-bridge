@@ -37,7 +37,7 @@ class ComicsKingdomBridge extends BridgeAbstract {
 			$item['uri'] = $link;
 			$item['author'] = $author;
 			$item['title'] = 'Comics Kingdom ' . $this->getInput('comicname');
-			$item['timestamp'] = DateTime::createFromFormat('Y-m-d', $date[count($date) - 1])->getTimestamp();
+			$item['timestamp'] = \DateTime::createFromFormat('Y-m-d', $date[count($date) - 1])->getTimestamp();
 			$item['content'] = '<img src="' . $imagelink . '" />';
 
 			$this->items[] = $item;

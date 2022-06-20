@@ -41,7 +41,7 @@ final class ParlerBridge extends BridgeAbstract
 				'content'   => nl2br($primary->full_body),
 			];
 
-			$date = DateTimeImmutable::createFromFormat('m/d/YH:i A', $primary->date_str . $primary->time_str);
+			$date = \DateTimeImmutable::createFromFormat('m/d/YH:i A', $primary->date_str . $primary->time_str);
 			if ($date) {
 				$item['timestamp'] = $date->getTimestamp();
 			} else {

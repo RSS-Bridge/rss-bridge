@@ -84,7 +84,7 @@ class WebfailBridge extends BridgeAbstract {
 			$infoElement = $element->find('div.wf-small', 0);
 			if (!is_null($infoElement)) {
 				if (preg_match('/(\d{2}\.\d{2}\.\d{4})/m', $infoElement->innertext, $matches) === 1 && count($matches) == 2) {
-					$dt = DateTime::createFromFormat('!d.m.Y', $matches[1]);
+					$dt = \DateTime::createFromFormat('!d.m.Y', $matches[1]);
 					if ($dt !== false) {
 						$item['timestamp'] = $dt->getTimestamp();
 					}

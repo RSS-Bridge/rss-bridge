@@ -1125,14 +1125,14 @@ class BookMyShowBridge extends BridgeAbstract {
 	}
 
 	private function getDatesHtml($dates){
-		$tz = new DateTimeZone(self::TIMEZONE);
-		$firstDate = DateTime::createFromFormat('Ymd', $dates[0]['ShowDateCode'], $tz)
+		$tz = new \DateTimeZone(self::TIMEZONE);
+		$firstDate = \DateTime::createFromFormat('Ymd', $dates[0]['ShowDateCode'], $tz)
 			->format('D, d M Y');
 		if (count($dates) == 1) {
 			return "<p>Date: $firstDate</p>";
 		}
 		$lastDateIndex = count($dates) - 1;
-		$lastDate = DateTime::createFromFormat('Ymd', $dates[$lastDateIndex]['ShowDateCode'])
+		$lastDate = \DateTime::createFromFormat('Ymd', $dates[$lastDateIndex]['ShowDateCode'])
 			->format('D, d M Y');
 		return "<p>Dates: $firstDate - $lastDate</p>";
 	}
@@ -1303,7 +1303,7 @@ EOT;
 	private function generateMoviesData($eventGroup){
 		// Additional data picked up from the first Child Event
 		$data = $eventGroup['ChildEvents'][0];
-		$date = new DateTime($data['EventDate']);
+		$date = new \DateTime($data['EventDate']);
 
 		return [
 			'uri' => $this->generateMovieUrl($eventGroup),
@@ -1339,7 +1339,7 @@ EOT;
 		if (empty($datetime)) {
 			return null;
 		}
-		$date = new DateTime($event['Event_dtmCreated']);
+		$date = new \DateTime($event['Event_dtmCreated']);
 
 		return [
 			'uri' => $event['FShareURL'],

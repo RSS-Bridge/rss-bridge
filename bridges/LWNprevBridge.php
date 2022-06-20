@@ -50,7 +50,7 @@ EOD;
 			}
 
 			libxml_use_internal_errors(true);
-			$html = new DOMDocument();
+			$html = new \DOMDocument();
 			$html->loadHTML($content);
 			libxml_clear_errors();
 

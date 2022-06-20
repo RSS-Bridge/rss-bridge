@@ -475,11 +475,9 @@ EOD;
 			$this->items[] = $item;
 		}
 
-		usort($this->items, array('TwitterBridge', 'compareTweetId'));
-	}
-
-	private static function compareTweetId($tweet1, $tweet2) {
-		return (intval($tweet1['id']) < intval($tweet2['id']) ? 1 : -1);
+		usort($this->items, function ($tweet1, $tweet2) {
+			return (intval($tweet1['id']) < intval($tweet2['id']) ? 1 : -1);
+		});
 	}
 
 	//The aim of this function is to get an API key and a guest token
@@ -588,7 +586,7 @@ EOD;
 		try {
 			$pageContent = getContents('https://api.twitter.com/1.1/guest/activate.json', $headers, $opts, true);
 			$guestToken = json_decode($pageContent['content'])->guest_token;
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$guestToken = null;
 		}
 		return $guestToken;

@@ -34,7 +34,7 @@ class GoComicsBridge extends BridgeAbstract {
 			$item['uri'] = $link;
 			$item['author'] = $author;
 			$item['title'] = 'GoComics ' . $this->getInput('comicname');
-			$item['timestamp'] = DateTime::createFromFormat('Ymd', $date[5] . $date[6] . $date[7])->getTimestamp();
+			$item['timestamp'] = \DateTime::createFromFormat('Ymd', $date[5] . $date[6] . $date[7])->getTimestamp();
 			$item['content'] = '<img src="' . $imagelink . '" />';
 
 			$link = self::URI . $page->find('.js-previous-comic', 0)->href;

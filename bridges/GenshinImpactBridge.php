@@ -37,7 +37,7 @@ class GenshinImpactBridge extends BridgeAbstract {
 			$article_json = json_decode($article_res, true);
 			$article_time = $article_json['data']['start_time'];
 			$timezone = 'Asia/Shanghai';
-			$article_timestamp = new DateTime($article_time, new DateTimeZone($timezone));
+			$article_timestamp = new \DateTime($article_time, new \DateTimeZone($timezone));
 
 			$item = array();
 

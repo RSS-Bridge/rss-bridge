@@ -54,7 +54,7 @@ class ConnectivityAction extends ActionAbstract {
 	 */
 	private function reportBridgeConnectivity($bridgeName) {
 
-		$bridgeFac = new \BridgeFactory();
+		$bridgeFac = new BridgeFactory();
 
 		if(!$bridgeFac->isWhitelisted($bridgeName)) {
 			header('Content-Type: text/html');

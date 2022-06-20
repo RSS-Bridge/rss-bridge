@@ -49,18 +49,18 @@ class CollegeDeFranceBridge extends BridgeAbstract {
 			// But unfortunately some don't have any hours info
 			// <a href="/site/institut-physique/
 			// The-Mysteries-of-Decoherence-Sebastien-Gleyzes-[Video-3-35].htm" data-target="after">
-			$timezone = new DateTimeZone('Europe/Paris');
+			$timezone = new \DateTimeZone('Europe/Paris');
 
 			// strpos($element->href, '201') will break in 2020 but it'll
 			// probably break prior to then due to site changes anyway
-			$d = DateTime::createFromFormat(
+			$d = \DateTime::createFromFormat(
 				'!Y-m-d-H\hi',
 				substr($element->href, strpos($element->href, '201'), 16),
 				$timezone
 			);
 
 			if(!$d) {
-				$d = DateTime::createFromFormat(
+				$d = \DateTime::createFromFormat(
 					'!d m Y',
 					trim(str_replace(
 						array_values($months),

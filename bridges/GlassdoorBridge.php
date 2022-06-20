@@ -131,7 +131,7 @@ class GlassdoorBridge extends BridgeAbstract {
 
 			$item['author'] = trim($author);
 
-			$createdAt = DateTimeImmutable::createFromFormat('F m, Y', trim($date));
+			$createdAt = \DateTimeImmutable::createFromFormat('F m, Y', trim($date));
 			if ($createdAt) {
 				$item['timestamp'] = $createdAt->getTimestamp();
 			}

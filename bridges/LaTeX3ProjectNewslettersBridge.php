@@ -21,7 +21,7 @@ class LaTeX3ProjectNewslettersBridge extends BridgeAbstract {
 		$item = array();
 		$item['uri'] = static::URI . $element->find('td', 1)->find('a', 0)->href;
 		$item['title'] = $element->find('td', 1)->find('a', 0)->plaintext;
-		$item['timestamp'] = DateTime::createFromFormat('Y/m/d', $element->find('td', 0)->plaintext)->getTimestamp();
+		$item['timestamp'] = \DateTime::createFromFormat('Y/m/d', $element->find('td', 0)->plaintext)->getTimestamp();
 		$item['content'] = $element->find('td', 2)->plaintext;
 		$item['author'] = 'LaTeX3 Project';
 		return $item;

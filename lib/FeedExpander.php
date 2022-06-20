@@ -219,7 +219,7 @@ abstract class FeedExpander extends BridgeAbstract {
 	 * @return int The timestamp
 	 */
 	protected function RSS_2_0_time_to_timestamp($item){
-		return DateTime::createFromFormat('D, d M Y H:i:s e', $item->pubDate)->getTimestamp();
+		return \DateTime::createFromFormat('D, d M Y H:i:s e', $item->pubDate)->getTimestamp();
 	}
 
 	/**

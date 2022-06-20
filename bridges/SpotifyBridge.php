@@ -75,7 +75,7 @@ class SpotifyBridge extends BridgeAbstract {
 		elseif(strlen($album_date) == 7)
 			$album_date .= '-01';
 
-		return DateTime::createFromFormat('Y-m-d', $album_date)->getTimestamp();
+		return \DateTime::createFromFormat('Y-m-d', $album_date)->getTimestamp();
 	}
 
 	private function getAlbumType() {
@@ -94,7 +94,7 @@ class SpotifyBridge extends BridgeAbstract {
 		$cache->setKey(array('token'));
 
 		if($cache->getTime()) {
-			$time = (new DateTime)->getTimestamp() - $cache->getTime();
+			$time = (new \DateTime)->getTimestamp() - $cache->getTime();
 			Debug::log('Token time: ' . $time);
 		}
 

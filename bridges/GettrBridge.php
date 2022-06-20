@@ -119,10 +119,7 @@ HTML;
 		return 'https://gettr.com/favicon.ico';
 	}
 
-	/**
-	 * @param stdClass $post
-	 */
-	private function processMetadata(stdClass $post): void
+	private function processMetadata(\stdClass $post): void
 	{
 		// Unused metadata, maybe used later
 		$textLanguage = $post->txt_lang ?? 'en';
