@@ -10,7 +10,9 @@ class MastodonBridge extends BridgeAbstract {
 	const MAINTAINER = 'Austin Huang';
 	const NAME = 'ActivityPub Bridge';
 	const CACHE_TIMEOUT = 900; // 15mn
-	const DESCRIPTION = 'Returns recent statuses. Supports Mastodon, Pleroma and Misskey, among others.';
+	const DESCRIPTION = 'Returns recent statuses. Supports Mastodon, Pleroma and Misskey, among others. Access to
+	instances that have Authorized Fetch enabled requires
+	<a href="https://rss-bridge.github.io/rss-bridge/Bridge_Specific/ActivityPub_(Mastodon).html">configuration</a>.';
 	const URI = 'https://mastodon.social';
 
 	// Some Mastodon instances use Secure Mode which requires all requests to be signed.
