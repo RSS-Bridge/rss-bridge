@@ -45,7 +45,7 @@ class KilledbyGoogleBridge extends BridgeAbstract {
 			$item['timestamp'] = strtotime($tombstone['dateClose']);
 
 			$item['content'] = <<<EOD
-<p>{$tombstone['description']}</p><p><a href="{$tombstone['link']}">{$tombstone['link']}</p>
+<p>{$tombstone['description']}</p><p><a href="{$tombstone['link']}">{$tombstone['link']}</a></p>
 EOD;
 
 			$item['enclosures'][] = 'https://static.killedbygoogle.com/com/tombstone.svg';
