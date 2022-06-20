@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+    <title>ActivityPub (Mastodon) - RSS-Bridge</title>
+    <meta name="description" content="The RSS feed for websites missing it">
+    <meta name="author" content="RSS-Bridge Contributors">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <link rel="icon" href="../themes/daux/img/favicon-blue.png" type="image/x-icon">
+
+    <!-- Mobile -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- JS -->
+    <script>
+        window.base_url = "../";
+        document.documentElement.classList.remove('no-js');
+    </script>
+
+    <!-- Font -->
+    
+    <!-- CSS -->
+            <link href='../themes/daux/css/theme-blue.min.css' rel='stylesheet' type='text/css'>
+            <link href='../daux_libraries/search.css' rel='stylesheet' type='text/css'>
+    </head>
+<body class="">
+    <div class="Columns content">
+    <aside class="Columns__left Collapsible">
+        <button type="button" class="Button Collapsible__trigger" aria-controls="sidebar_content" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="Collapsible__trigger__bar"></span>
+            <span class="Collapsible__trigger__bar"></span>
+            <span class="Collapsible__trigger__bar"></span>
+        </button>
+
+        <a class="Brand" href="../index.html">RSS-Bridge</a>
+
+    <form role='search' action="/" method="get" class="Search" id="search_form">
+        <label for="search_input">
+            <span class='u-visuallyHidden'>Search</span>
+        </label>
+        <input
+            type="search"
+            id="search_input"
+            class="Search__field"
+            placeholder="Search..."
+            aria-label="Search..."
+            autocomplete="on"
+            results=25
+            autosave=text_search
+        >
+        <label>
+            <input type="submit" class='u-visuallyHidden' />
+            <span class='u-visuallyHidden'>Search...</span>
+            <svg class="Search__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 451 451">
+                <path d="M447.05 428l-109.6-109.6c29.4-33.8 47.2-77.9 47.2-126.1C384.65 86.2 298.35 0 192.35 0 86.25 0 .05 86.3.05 192.3s86.3 192.3 192.3 192.3c48.2 0 92.3-17.8 126.1-47.2L428.05 447c2.6 2.6 6.1 4 9.5 4s6.9-1.3 9.5-4c5.2-5.2 5.2-13.8 0-19zM26.95 192.3c0-91.2 74.2-165.3 165.3-165.3 91.2 0 165.3 74.2 165.3 165.3s-74.1 165.4-165.3 165.4c-91.1 0-165.3-74.2-165.3-165.4z"/>
+            </svg>
+        </label>
+    </form>
+
+        <div class="Collapsible__content" id="sidebar_content">
+            <!-- Navigation -->
+            <ul class='Nav'><li class='Nav__item  has-children'><a href="../General/Project_goals.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>General</a><ul class='Nav'><li class='Nav__item '><a href="../General/Project_goals.html">Project-goals</a></li><li class='Nav__item '><a href="../General/Contribute.html">Contribute</a></li><li class='Nav__item '><a href="../General/Requirements.html">Requirements</a></li><li class='Nav__item '><a href="../General/Screenshots.html">Screenshots</a></li><li class='Nav__item '><a href="../General/FAQ.html">FAQ</a></li><li class='Nav__item '><a href="../General/Public_Hosts.html">Public Hosts</a></li></ul></li><li class='Nav__item '><a href="../CLI/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>CLI</a><ul class='Nav'></ul></li><li class='Nav__item  has-children'><a href="../For_Hosts/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>For Hosts</a><ul class='Nav'><li class='Nav__item '><a href="../For_Hosts/Installation.html">Installation</a></li><li class='Nav__item '><a href="../For_Hosts/Updating.html">Updating</a></li><li class='Nav__item '><a href="../For_Hosts/Docker_Installation.html">Docker Installation</a></li><li class='Nav__item '><a href="../For_Hosts/Heroku_Installation.html">Heroku Installation</a></li><li class='Nav__item '><a href="../For_Hosts/Whitelisting.html">Whitelisting</a></li><li class='Nav__item '><a href="../For_Hosts/Authentication.html">Authentication</a></li><li class='Nav__item '><a href="../For_Hosts/Customizations.html">Customizations</a></li><li class='Nav__item '><a href="../For_Hosts/Custom_Configuration.html">Custom Configuration</a></li></ul></li><li class='Nav__item  has-children'><a href="../For_Developers/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>For Developers</a><ul class='Nav'><li class='Nav__item '><a href="../For_Developers/Coding_style_policy.html">Coding style policy</a></li><li class='Nav__item '><a href="../For_Developers/Pull_Request_policy.html">Pull Request policy</a></li><li class='Nav__item '><a href="../For_Developers/Folder_structure.html">Folder structure</a></li><li class='Nav__item '><a href="../For_Developers/Actions.html">Actions</a></li><li class='Nav__item '><a href="../For_Developers/Debug_mode.html">Debug mode</a></li></ul></li><li class='Nav__item  has-children'><a href="../Bridge_API/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Bridge API</a><ul class='Nav'><li class='Nav__item '><a href="../Bridge_API/How_to_create_a_new_bridge.html">How to create a new bridge</a></li><li class='Nav__item '><a href="../Bridge_API/BridgeAbstract.html">BridgeAbstract</a></li><li class='Nav__item '><a href="../Bridge_API/FeedExpander.html">FeedExpander</a></li><li class='Nav__item '><a href="../Bridge_API/XPathAbstract.html">XPathAbstract</a></li></ul></li><li class='Nav__item '><a href="../Helper_functions/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Helper functions</a><ul class='Nav'></ul></li><li class='Nav__item  has-children'><a href="../Cache_API/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Cache API</a><ul class='Nav'><li class='Nav__item '><a href="../Cache_API/How_to_create_a_new_cache.html">How to create a new cache</a></li><li class='Nav__item '><a href="../Cache_API/CacheInterface.html">CacheInterface</a></li></ul></li><li class='Nav__item  has-children'><a href="../Format_API/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Format API</a><ul class='Nav'><li class='Nav__item '><a href="../Format_API/How_to_create_a_new_format.html">How to create a new format</a></li><li class='Nav__item '><a href="../Format_API/FormatInterface.html">FormatInterface</a></li><li class='Nav__item '><a href="../Format_API/FormatAbstract.html">FormatAbstract</a></li></ul></li><li class='Nav__item '><a href="../Technical_recommendations/index.html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Technical recommendations</a><ul class='Nav'></ul></li><li class='Nav__item Nav__item--open has-children'><a href="../Bridge_Specific/ActivityPub_(Mastodon).html" class="Nav__item__link"><i class="Nav__arrow">&nbsp;</i>Bridge Specific</a><ul class='Nav'><li class='Nav__item Nav__item--active'><a href="../Bridge_Specific/ActivityPub_(Mastodon).html">ActivityPub (Mastodon)</a></li><li class='Nav__item '><a href="../Bridge_Specific/Furaffinityuser.html">Furaffinityuser</a></li><li class='Nav__item '><a href="../Bridge_Specific/Instagram.html">Instagram</a></li><li class='Nav__item '><a href="../Bridge_Specific/TwitterV2.html">TwitterV2</a></li></ul></li></ul>
+            <div class="Links">
+                                    <hr/>
+                                            <a href="https://github.com/RSS-Bridge/rss-bridge" target="_blank"  rel="noopener noreferrer">GitHub Repository</a>
+                        <br />
+                                            <a href="https://github.com/RSS-Bridge/rss-bridge/issues" target="_blank"  rel="noopener noreferrer">Help/Support/Bugs</a>
+                        <br />
+                                            <a href="https://github.com/RSS-Bridge/rss-bridge/pkgs/container/rss-bridge" target="_blank"  rel="noopener noreferrer">Docker Images</a>
+                        <br />
+                                                </div>
+
+                            <div class="CodeToggler">
+                    <hr/>
+                    <label class="Checkbox">Show Code Blocks                        <input type="checkbox" class="CodeToggler__button--main" checked="checked"/>
+                        <div class="Checkbox__indicator"></div>
+                    </label>
+                </div>
+            
+                
+                                    <div class="PoweredBy">
+                        <hr/>
+                        Powered by Daux.io                    </div>
+                        </div>
+    </aside>
+    <div class="Columns__right">
+        <div class="Columns__right__content">
+            <div class="doc_content">
+                <article class="Page">
+
+    <div class="Page__header">
+        <h1><a href="../Bridge_Specific/ActivityPub_(Mastodon).html">Bridge Specific</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../Bridge_Specific/ActivityPub_(Mastodon).html">ActivityPub (Mastodon)</a></h1>
+                <span class="ModifiedDate">
+            June 20, 2022 at 4:12 PM        </span>
+                        <span class="EditOn">
+            <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/10_Bridge_Specific/ActivityPub_(Mastodon).md" target="_blank">
+                Edit on GitHub            </a>
+        </span>
+            </div>
+
+    <div class="s-content">
+        <h1><a id="mastodonbridge-aka-activitypub-bridge" href="#mastodonbridge-aka-activitypub-bridge" class="Permalink" aria-hidden="true" title="Permalink">#</a>MastodonBridge (aka. ActivityPub Bridge)</h1>
+<p>Certain ActivityPub implementations, such as <a href="https://docs.joinmastodon.org/spec/security/#http" class="Link--external" rel="noopener noreferrer">Mastodon</a> and <a href="https://docs-develop.pleroma.social/backend/configuration/cheatsheet/#activitypub" class="Link--external" rel="noopener noreferrer">Pleroma</a>, allow instances to require requests to ActivityPub endpoints to be signed. RSS-Bridge can handle the HTTP signature header if a private key is provided, while the ActivityPub instance must be able to know the corresponding public key.</p>
+<p>You do <strong>not</strong> need to configure this if the usage on your RSS-Bridge instance is limited to accessing ActivityPub instances that do not have such requirements. While the majority of ActivityPub instances don’t have them at the time of writing, the situation may change in the future.</p>
+<h2><a id="configuration" href="#configuration" class="Permalink" aria-hidden="true" title="Permalink">#</a>Configuration</h2>
+<p><a href="https://blog.joinmastodon.org/2018/06/how-to-implement-a-basic-activitypub-server/" class="Link--external" rel="noopener noreferrer">This article</a> is referenced.</p>
+<ol>
+<li>Select a domain. It may, but does not need to, be the one RSS-Bridge is on. For all subsequent steps, replace <code>DOMAIN</code> with this domain.</li>
+<li>Run the following commands on your machine:</li>
+</ol>
+<pre><code class="hljs bash">$ openssl genrsa -out private.pem 2048
+$ openssl rsa -<span class="hljs-keyword">in</span> private.pem -outform PEM -pubout -out public.pem
+</code></pre>
+<ol start="3">
+<li>Place <code>private.pem</code> in an appropriate location and note down its absolute path.</li>
+<li>Serve the following page at <code>https://DOMAIN/.well-known/webfinger</code>:</li>
+</ol>
+<pre><code class="hljs json">{
+	<span class="hljs-attr">"subject"</span>: <span class="hljs-string">"acct:DOMAIN@DOMAIN"</span>,
+	<span class="hljs-attr">"aliases"</span>: [<span class="hljs-string">"https://DOMAIN/actor"</span>],
+	<span class="hljs-attr">"links"</span>: [{
+		<span class="hljs-attr">"rel"</span>: <span class="hljs-string">"self"</span>,
+		<span class="hljs-attr">"type"</span>: <span class="hljs-string">"application/activity+json"</span>,
+		<span class="hljs-attr">"href"</span>: <span class="hljs-string">"https://DOMAIN/actor"</span>
+	}]
+}
+</code></pre>
+<ol start="5">
+<li>Serve the following page at <code>https://DOMAIN/actor</code>, replacing the value of <code>publicKeyPem</code> with the contents of the <code>public.pem</code> file in step 2, with all line breaks substituted with <code>\n</code>:</li>
+</ol>
+<pre><code class="hljs json">{
+    <span class="hljs-attr">"@context"</span>: [
+      <span class="hljs-string">"https://www.w3.org/ns/activitystreams"</span>,
+      <span class="hljs-string">"https://w3id.org/security/v1"</span>
+    ],
+    <span class="hljs-attr">"id"</span>: <span class="hljs-string">"https://DOMAIN/actor"</span>,
+    <span class="hljs-attr">"type"</span>: <span class="hljs-string">"Application"</span>,
+    <span class="hljs-attr">"inbox"</span>: <span class="hljs-string">"https://DOMAIN/actor/inbox"</span>,
+    <span class="hljs-attr">"preferredUsername"</span>: <span class="hljs-string">"DOMAIN"</span>,
+    <span class="hljs-attr">"publicKey"</span>: {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-string">"https://DOMAIN/actor#main-key"</span>,
+        <span class="hljs-attr">"owner"</span>: <span class="hljs-string">"https://DOMAIN/actor"</span>,
+        <span class="hljs-attr">"publicKeyPem"</span>: <span class="hljs-string">"-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----\n"</span>
+    }
+}
+</code></pre>
+<ol start="6">
+<li>Add the following configuration in <code>config.ini.php</code> in your RSS-Bridge folder, replacing the path with the one from step 3:</li>
+</ol>
+<pre><code class="hljs ini"><span class="hljs-section">[MastodonBridge]</span>
+<span class="hljs-attr">private_key</span> = <span class="hljs-string">"/absolute/path/to/your/private.pem"</span>
+<span class="hljs-attr">key_id</span> = <span class="hljs-string">"https://DOMAIN/actor#main-key"</span>
+</code></pre>
+<h2><a id="considerations" href="#considerations" class="Permalink" aria-hidden="true" title="Permalink">#</a>Considerations</h2>
+<p>Any ActivityPub instance your users requested content from will be able to identify requests from your RSS-Bridge instance by the domain you specified in the configuration. This also means that an ActivityPub instance may choose to block this domain should they judge your instance’s usage excessive. Therefore, public instance operators should monitor for abuse and prepare to communicate with ActivityPub instance admins when necessary. You may also leave contact information as the <code>summary</code> value in the actor JSON (step 5).</p>
+    </div>
+
+        <nav>
+        <ul class="Pager">
+            <li class=Pager--prev><a href="../Technical_recommendations/index.html">Previous</a></li>            <li class=Pager--next><a href="../Bridge_Specific/Furaffinityuser.html">Next</a></li>        </ul>
+    </nav>
+    </article>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+    <!-- JS -->
+            <script src="../themes/daux/js/daux.min.js"></script>
+    
+        <script>
+        
+        window.searchLanguage = "";
+        window.searchTranslation = {"Search_one_result":"1 result","Search_results":"!count results","Search_no_results":"Nothing found","Search_common_words_ignored":"Common words are largely ignored","Search_too_short":"Search too short","Search_one_character_or_more":"Should be one character or more","Search_should_be_x_or_more":"Should be !min characters or more","Link_previous":"Previous","Link_next":"Next"};
+    </script>
+
+    <!-- Search -->
+    <script type="text/javascript" src="../daux_libraries/search.min.js"></script>
+
+    <script>
+        window.search({'base_url': '../'})
+    </script>
+</body>
+</html>
