@@ -2,7 +2,7 @@
 
 Certain ActivityPub implementations, such as [Mastodon](https://docs.joinmastodon.org/spec/security/#http) and [Pleroma](https://docs-develop.pleroma.social/backend/configuration/cheatsheet/#activitypub), allow instances to require requests to ActivityPub endpoints to be signed. RSS-Bridge can handle the HTTP signature header if a private key is provided, while the ActivityPub instance must be able to know the corresponding public key.
 
-You do **not** need to configure this if their usage is limited to accessing ActivityPub instances that do not have such requirements.
+You do **not** need to configure this if the usage on your RSS-Bridge instance is limited to accessing ActivityPub instances that do not have such requirements. While the majority of ActivityPub instances don't have them at the time of writing, the situation may change in the future.
 
 ## Configuration
 
@@ -27,7 +27,7 @@ $ openssl rsa -in private.pem -outform PEM -pubout -out public.pem
 	}]
 }
 ```
-5. Serve the following page at `https://DOMAIN/actor`, replacing the value of `publicKeyPem` with the contents of the `public.pem` file in step 2:
+5. Serve the following page at `https://DOMAIN/actor`, replacing the value of `publicKeyPem` with the contents of the `public.pem` file in step 2, with all line breaks substituted with `\n`:
 ```json
 {
     "@context": [
@@ -54,4 +54,4 @@ key_id = "https://DOMAIN/actor#main-key"
 
 ## Considerations
 
-Any ActivityPub instance your users requested content from will be able to identify requests from your RSS-Bridge instance by the domain you specified in the configuration. This also means that an ActivityPub instance may choose to block this domain should they judge your instance's usage excessive. Therefore, public instance operators may need to monitor for abuse and communicate with ActivityPub instance admins when necessary.
+Any ActivityPub instance your users requested content from will be able to identify requests from your RSS-Bridge instance by the domain you specified in the configuration. This also means that an ActivityPub instance may choose to block this domain should they judge your instance's usage excessive. Therefore, public instance operators should monitor for abuse and prepare to communicate with ActivityPub instance admins when necessary. You may also leave contact information as the `summary` value in the actor JSON (step 5).
