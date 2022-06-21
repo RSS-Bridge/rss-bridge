@@ -42,6 +42,7 @@ TEXT;
 		foreach ($feeds as $feed) {
 			$this->collectExpandableDatas($feed, $limit);
 		}
+		usort($this->items, fn($a, $b) => $b['timestamp'] <=> $a['timestamp']);
 	}
 
 	public function getIcon() {
