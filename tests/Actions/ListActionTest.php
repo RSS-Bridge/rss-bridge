@@ -80,7 +80,6 @@ class ListActionTest extends TestCase {
 		$actionFac = new ActionFactory();
 
 		$action = $actionFac->create('list');
-		$action->setUserData(array()); /* no user data required */
 
 		ob_start();
 		$action->execute();

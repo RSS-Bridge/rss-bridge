@@ -11,7 +11,10 @@
  * @link	https://github.com/rss-bridge/rss-bridge
  */
 
-class DisplayAction extends ActionAbstract {
+class DisplayAction implements ActionInterface
+{
+	public $userData = [];
+
 	private function get_return_code($error) {
 		$returnCode = $error->getCode();
 		if ($returnCode === 301 || $returnCode === 302) {

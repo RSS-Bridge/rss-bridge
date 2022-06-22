@@ -21,7 +21,10 @@
  * - Returns a responsive web page that automatically checks all whitelisted
  * bridges (using JavaScript) if no bridge is specified.
  */
-class ConnectivityAction extends ActionAbstract {
+class ConnectivityAction implements ActionInterface
+{
+	public $userData = [];
+
 	public function execute() {
 
 		if(!Debug::isEnabled()) {
