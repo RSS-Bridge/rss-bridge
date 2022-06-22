@@ -1,7 +1,6 @@
 <?php
 
 class GitHubPullRequestBridge extends GithubIssueBridge {
-	const MAINTAINER = 'Yaman Qalieh';
 	const NAME = 'GitHub Pull Request';
 	const DESCRIPTION = 'Returns the pull request or comments of a pull request of a GitHub project';
 

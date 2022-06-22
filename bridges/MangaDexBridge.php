@@ -1,6 +1,5 @@
 <?php
 class MangaDexBridge extends BridgeAbstract {
-	const MAINTAINER = 'Yaman Qalieh';
 	const NAME = 'MangaDex Bridge';
 	const URI = 'https://mangadex.org/';
 	const API_ROOT = 'https://api.mangadex.org/';

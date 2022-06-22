@@ -3,7 +3,6 @@ class PixivBridge extends BridgeAbstract {
 
 	// Good resource on API return values (Ex: illustType):
 	// https://hackage.haskell.org/package/pixiv-0.1.0/docs/Web-Pixiv-Types.html
-	const MAINTAINER = 'Yaman Qalieh';
 	const NAME = 'Pixiv Bridge';
 	const URI = 'https://www.pixiv.net/';
 	const DESCRIPTION = 'Returns the tag search from pixiv.net';

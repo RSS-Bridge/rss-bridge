@@ -3,7 +3,6 @@ class AstrophysicsDataSystemBridge extends BridgeAbstract {
 	const NAME = 'SAO/NASA Astrophysics Data System';
 	const DESCRIPTION = 'Returns the latest publications from a query';
 	const URI = 'https://ui.adsabs.harvard.edu';
-	const MAINTAINER = 'Yaman Qalieh';
 	const PARAMETERS = array(
 		'Publications' => array(
 			'query' => array(

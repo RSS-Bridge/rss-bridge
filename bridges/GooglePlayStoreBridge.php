@@ -1,6 +1,5 @@
 <?php
 class GooglePlayStoreBridge extends BridgeAbstract {
-	const MAINTAINER = 'Yaman Qalieh';
 	const NAME = 'Google Play Store';
 	const URI = 'https://play.google.com/store/apps';
 	const CACHE_TIMEOUT = 3600; // 1h

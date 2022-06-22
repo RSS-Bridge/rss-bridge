@@ -4,7 +4,6 @@ class Kanali6Bridge extends XPathAbstract {
 	const NAME = 'Kanali6 Latest Podcasts';
 	const DESCRIPTION = 'Returns the latest podcasts';
 	const URI = 'https://kanali6.com.cy/mp3/TOC.html';
-	const MAINTAINER = 'Yaman Qalieh';
 
 	const FEED_SOURCE_URL = 'https://kanali6.com.cy/mp3/TOC.xml';
 	const XPATH_EXPRESSION_ITEM = '//recording[position() <= 50]';
