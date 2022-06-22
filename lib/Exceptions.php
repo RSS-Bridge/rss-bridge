@@ -66,20 +66,8 @@ function buildGitHubIssueQuery($title, $body, $labels = null, $maintainer = null
 	return $uri;
 }
 
-/**
- * Returns the exception message as HTML string
- *
- * @param object $e Exception The exception to show
- * @param object $bridge object The bridge object
- * @return string|null Returns the exception as HTML string or null.
- *
- * @todo This function belongs inside a class
- */
-function buildBridgeException($e, $bridge){
-	if(( !($e instanceof \Exception) && !($e instanceof \Error)) || !($bridge instanceof \BridgeInterface)) {
-		return null;
-	}
-
+function buildBridgeException(\Throwable $e, BridgeInterface $bridge): string
+{
 	$title = $bridge->getName() . ' failed with error ' . $e->getCode();
 
 	// Build a GitHub compatible message
@@ -106,20 +94,8 @@ EOD;
 	return $section;
 }
 
-/**
- * Returns the exception message as HTML string
- *
- * @param object $e Exception The exception to show
- * @param object $bridge object The bridge object
- * @return string|null Returns the exception as HTML string or null.
- *
- * @todo This function belongs inside a class
- */
-function buildTransformException($e, $bridge){
-	if(( !($e instanceof \Exception) && !($e instanceof \Error)) || !($bridge instanceof \BridgeInterface)) {
-		return null;
-	}
-
+function buildTransformException(\Throwable $e, BridgeInterface $bridge): string
+{
 	$title = $bridge->getName() . ' failed with error ' . $e->getCode();
 
 	// Build a GitHub compatible message
