@@ -240,7 +240,6 @@ class DisplayAction extends ActionAbstract {
 		// Data transformation
 		try {
 			$formatFac = new FormatFactory();
-			$formatFac->setWorkingDir(PATH_LIB_FORMATS);
 			$format = $formatFac->create($format);
 			$format->setItems($items);
 			$format->setExtraInfos($infos);
