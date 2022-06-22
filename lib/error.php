@@ -52,7 +52,6 @@ function returnServerError($message){
  */
 function logBridgeError($bridgeName, $code) {
 	$cacheFac = new CacheFactory();
-	$cacheFac->setWorkingDir(PATH_LIB_CACHES);
 
 	$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
 	$cache->setScope('error_reporting');

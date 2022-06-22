@@ -92,7 +92,7 @@ class DisplayAction extends ActionAbstract {
 
 		// Initialize cache
 		$cacheFac = new CacheFactory();
-		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
+
 		$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
 		$cache->setScope('');
 		$cache->purgeCache(86400); // 24 hours
