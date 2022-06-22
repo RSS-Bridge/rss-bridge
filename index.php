@@ -25,11 +25,14 @@ try {
 		$showInactive = filter_input(INPUT_GET, 'show_inactive', FILTER_VALIDATE_BOOLEAN);
 		echo BridgeList::create($showInactive);
 	}
-} catch(\Exception $e) {
+} catch(\Throwable $e) {
 	error_log($e);
 	$code = $e->getCode();
 	if ($code !== -1) {
 		header('Content-Type: text/plain', true, $code);
 	}
-	die($e->getMessage());
+
+	$message = sprintf("Uncaught Exception %s: '%s'\n", get_class($e), $e->getMessage());
+
+	print $message;
 }
