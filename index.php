@@ -16,7 +16,6 @@ if (isset($argv)) {
 try {
 
 	$actionFac = new \ActionFactory();
-	$actionFac->setWorkingDir(PATH_LIB_ACTIONS);
 
 	if(array_key_exists('action', $params)) {
 		$action = $actionFac->create($params['action']);
