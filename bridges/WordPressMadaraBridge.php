@@ -6,7 +6,6 @@
 */
 class WordPressMadaraBridge extends BridgeAbstract {
 	const URI = 'https://live.mangabooth.com/';
-	const MAINTAINER = 'Yaman Qalieh';
 	const NAME = 'WordPress Madara';
 	const DESCRIPTION = 'Returns latest chapters published through the Madara Manga theme.
 The default URI shows the Madara demo page.';

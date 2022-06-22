@@ -4,7 +4,6 @@ class GoogleGroupsBridge extends XPathAbstract {
 	const NAME = 'Google Groups Bridge';
 	const DESCRIPTION = 'Returns the latest posts on a Google Group';
 	const URI = 'https://groups.google.com';
-	const MAINTAINER = 'Yaman Qalieh';
 	const PARAMETERS = array( array(
 		'group' => array(
 			'name' => 'Group id',

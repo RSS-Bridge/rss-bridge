@@ -1,6 +1,5 @@
 <?php
 class CraigslistBridge extends BridgeAbstract {
-	const MAINTAINER = 'Yaman Qalieh';
 	const NAME = 'Craigslist Bridge';
 	const URI = 'https://craigslist.org/';
 	const DESCRIPTION = 'Returns craigslist search results';
