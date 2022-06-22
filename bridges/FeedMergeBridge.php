@@ -25,11 +25,13 @@ TEXT;
 			'feed_3' => ['name' => 'Feed url', 'type' => 'text'],
 			'feed_4' => ['name' => 'Feed url', 'type' => 'text'],
 			'feed_5' => ['name' => 'Feed url', 'type' => 'text'],
+
+			'limit' => self::LIMIT,
 		]
 	];
 
 	public function collectData() {
-		$limit = 10;
+		$limit = (int)($this->getInput('limit') ?: 10);
 		$feeds = [
 			$this->getInput('feed_1'),
 			$this->getInput('feed_2'),
@@ -40,8 +42,13 @@ TEXT;
 		// Remove empty values
 		$feeds = array_filter($feeds);
 		foreach ($feeds as $feed) {
-			$this->collectExpandableDatas($feed, $limit);
+			// Fetch all items from the feed
+			$this->collectExpandableDatas($feed);
 		}
+		// Sort by timestamp descending
+		usort($this->items, fn($a, $b) => $b['timestamp'] <=> $a['timestamp']);
+		// Grab the first $limit items
+		$this->items = array_slice($this->items, 0, $limit);
 	}
 
 	public function getIcon() {
