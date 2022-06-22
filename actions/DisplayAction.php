@@ -11,7 +11,10 @@
  * @link	https://github.com/rss-bridge/rss-bridge
  */
 
-class DisplayAction extends ActionAbstract {
+class DisplayAction implements ActionInterface
+{
+	public $userData = [];
+
 	private function get_return_code($error) {
 		$returnCode = $error->getCode();
 		if ($returnCode === 301 || $returnCode === 302) {
@@ -92,7 +95,7 @@ class DisplayAction extends ActionAbstract {
 
 		// Initialize cache
 		$cacheFac = new CacheFactory();
-		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
+
 		$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
 		$cache->setScope('');
 		$cache->purgeCache(86400); // 24 hours
@@ -153,7 +156,7 @@ class DisplayAction extends ActionAbstract {
 					'donationUri'  => $bridge->getDonationURI(),
 					'icon' => $bridge->getIcon()
 				);
-			} catch(Error $e) {
+			} catch(\Throwable $e) {
 				error_log($e);
 
 				if(logBridgeError($bridge::NAME, $e->getCode()) >= Configuration::getConfig('error', 'report_limit')) {
@@ -163,22 +166,12 @@ class DisplayAction extends ActionAbstract {
 						// Create "new" error message every 24 hours
 						$this->userData['_error_time'] = urlencode((int)(time() / 86400));
 
-						// Error 0 is a special case (i.e. "trying to get property of non-object")
-						if($e->getCode() === 0) {
-							$item->setTitle(
-								'Bridge encountered an unexpected situation! ('
-								. $this->userData['_error_time']
-								. ')'
-							);
-						} else {
-							$item->setTitle(
-								'Bridge returned error '
-								. $e->getCode()
-								. '! ('
-								. $this->userData['_error_time']
-								. ')'
-							);
-						}
+						$message = sprintf(
+							'Bridge returned error %s! (%s)',
+							$e->getCode(),
+							$this->userData['_error_time']
+						);
+						$item->setTitle($message);
 
 						$item->setURI(
 							(isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '')
@@ -186,38 +179,6 @@ class DisplayAction extends ActionAbstract {
 							. http_build_query($this->userData)
 						);
 
-						$item->setTimestamp(time());
-						$item->setContent(buildBridgeException($e, $bridge));
-
-						$items[] = $item;
-					} elseif(Configuration::getConfig('error', 'output') === 'http') {
-						header('Content-Type: text/html', true, $this->get_return_code($e));
-						die(buildTransformException($e, $bridge));
-					}
-				}
-			} catch(Exception $e) {
-				error_log($e);
-
-				if(logBridgeError($bridge::NAME, $e->getCode()) >= Configuration::getConfig('error', 'report_limit')) {
-					if(Configuration::getConfig('error', 'output') === 'feed') {
-						$item = new FeedItem();
-
-						// Create "new" error message every 24 hours
-						$this->userData['_error_time'] = urlencode((int)(time() / 86400));
-
-						$item->setURI(
-							(isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '')
-							. '?'
-							. http_build_query($this->userData)
-						);
-
-						$item->setTitle(
-							'Bridge returned error '
-							. $e->getCode()
-							. '! ('
-							. $this->userData['_error_time']
-							. ')'
-						);
 						$item->setTimestamp(time());
 						$item->setContent(buildBridgeException($e, $bridge));
 
@@ -240,7 +201,6 @@ class DisplayAction extends ActionAbstract {
 		// Data transformation
 		try {
 			$formatFac = new FormatFactory();
-			$formatFac->setWorkingDir(PATH_LIB_FORMATS);
 			$format = $formatFac->create($format);
 			$format->setItems($items);
 			$format->setExtraInfos($infos);
@@ -252,11 +212,7 @@ class DisplayAction extends ActionAbstract {
 			header('Content-Type: ' . $format->getMimeType() . '; charset=' . $format->getCharset());
 
 			echo $format->stringify();
-		} catch(Error $e) {
-			error_log($e);
-			header('Content-Type: text/html', true, $e->getCode());
-			die(buildTransformException($e, $bridge));
-		} catch(Exception $e) {
+		} catch(\Throwable $e) {
 			error_log($e);
 			header('Content-Type: text/html', true, $e->getCode());
 			die(buildTransformException($e, $bridge));

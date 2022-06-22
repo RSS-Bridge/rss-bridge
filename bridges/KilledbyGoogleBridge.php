@@ -41,13 +41,14 @@ class KilledbyGoogleBridge extends BridgeAbstract {
 
 			$item['title'] = $tombstone['name'] . ' (' . $yearOpened . ' - ' . $yearClosed . ')';
 			$item['uid'] = $tombstone['slug'];
+			$item['uri'] = $tombstone['link'];
 			$item['timestamp'] = strtotime($tombstone['dateClose']);
 
 			$item['content'] = <<<EOD
-<p>{$tombstone['description']}</p><p><a href="{$tombstone['link']}">{$tombstone['link']}</p>
+<p>{$tombstone['description']}</p><p><a href="{$tombstone['link']}">{$tombstone['link']}</a></p>
 EOD;
 
-			$item['enclosures'][] = self::URI . '/assets/tombstone.svg';
+			$item['enclosures'][] = 'https://static.killedbygoogle.com/com/tombstone.svg';
 
 			$this->items[] = $item;
 		}

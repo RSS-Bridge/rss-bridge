@@ -11,7 +11,6 @@ class HtmlFormat extends FormatAbstract {
 
 		// Dynamically build buttons for all formats (except HTML)
 		$formatFac = new FormatFactory();
-		$formatFac->setWorkingDir(PATH_LIB_FORMATS);
 
 		$buttons = '';
 		$links = '';

@@ -390,7 +390,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	 */
 	protected function loadCacheValue($key, $duration = 86400){
 		$cacheFac = new CacheFactory();
-		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
+
 		$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
 		$cache->setScope(get_called_class());
 		$cache->setKey($key);
@@ -407,7 +407,7 @@ abstract class BridgeAbstract implements BridgeInterface {
 	 */
 	protected function saveCacheValue($key, $value){
 		$cacheFac = new CacheFactory();
-		$cacheFac->setWorkingDir(PATH_LIB_CACHES);
+
 		$cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
 		$cache->setScope(get_called_class());
 		$cache->setKey($key);

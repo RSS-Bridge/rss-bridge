@@ -16,21 +16,23 @@ if (isset($argv)) {
 try {
 
 	$actionFac = new ActionFactory();
-	$actionFac->setWorkingDir(PATH_LIB_ACTIONS);
 
 	if(array_key_exists('action', $params)) {
 		$action = $actionFac->create($params['action']);
-		$action->setUserData($params);
+		$action->userData = $params;
 		$action->execute();
 	} else {
 		$showInactive = filter_input(INPUT_GET, 'show_inactive', FILTER_VALIDATE_BOOLEAN);
 		echo BridgeList::create($showInactive);
 	}
-} catch(\Exception $e) {
+} catch(\Throwable $e) {
 	error_log($e);
 	$code = $e->getCode();
 	if ($code !== -1) {
 		header('Content-Type: text/plain', true, $code);
 	}
-	die($e->getMessage());
+
+	$message = sprintf("Uncaught Exception %s: '%s'\n", get_class($e), $e->getMessage());
+
+	print $message;
 }
