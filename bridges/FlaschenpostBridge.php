@@ -57,21 +57,21 @@ class FlaschenpostBridge extends BridgeAbstract {
 	public function getName(): string {
 		$categories = array();
 		if ($this->getInput('water'))
-			array_push($categories, 'Wasser');
+			$categories[] = 'Wasser';
 		if ($this->getInput('beer'))
-			array_push($categories, 'Bier');
+			$categories[] = 'Bier';
 		if ($this->getInput('lemonade'))
-			array_push($categories, 'Limonade');
+			$categories[] = 'Limonade';
 		if ($this->getInput('juice'))
-			array_push($categories, 'Saft & Schorle');
+			$categories[] = 'Saft & Schorle';
 		if ($this->getInput('wine'))
-			array_push($categories, 'Wein & Mehr');
+			$categories[] = 'Wein & Mehr';
 		if ($this->getInput('liquor'))
-			array_push($categories, 'Spirituosen');
+			$categories[] = 'Spirituosen';
 		if ($this->getInput('food'))
-			array_push($categories, 'Lebensmittel');
+			$categories[] = 'Lebensmittel';
 		if ($this->getInput('household'))
-			array_push($categories, 'Haushalt');
+			$categories[] = 'Haushalt';
 		if (empty($categories)) {
 			return $this::NAME;
 		} else {
@@ -188,7 +188,7 @@ class FlaschenpostBridge extends BridgeAbstract {
 					. $url
 					. "?plz={$this->getInput('zip-code')}"
 				);
-			} catch (Exception $ex) {
+			} catch (\Exception $ex) {
 				// this url is currently not available: skip it
 				continue;
 			}
@@ -249,8 +249,8 @@ EOD;
 			$item['title'] = "$name: $discountPriceString statt $regularPriceString (-$discount\u{2009}%)";
 			$item['content'] = $description;
 			// use current date (@midnight) as timestamp
-			$item['timestamp'] = DateTime::createFromFormat('d.m.y', date('d.m.y'))
-				->setTimezone(new DateTimeZone('Europe/Berlin'))
+			$item['timestamp'] = \DateTime::createFromFormat('d.m.y', date('d.m.y'))
+				->setTimezone(new \DateTimeZone('Europe/Berlin'))
 				->setTime(0, 0)
 				->getTimestamp();
 			$item['uri'] = urljoin(
@@ -276,10 +276,10 @@ EOD;
 
 	// https://stackoverflow.com/a/3975706/421140
 	private function recursiveFind(array $haystack, $needle) {
-		$iterator = new RecursiveArrayIterator($haystack);
-		$recursive = new RecursiveIteratorIterator(
+		$iterator = new \RecursiveArrayIterator($haystack);
+		$recursive = new \RecursiveIteratorIterator(
 			$iterator,
-			RecursiveIteratorIterator::SELF_FIRST
+			\RecursiveIteratorIterator::SELF_FIRST
 		);
 		foreach ($recursive as $key => $value) {
 			if ($key === $needle) {
