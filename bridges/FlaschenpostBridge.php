@@ -314,11 +314,11 @@ EOD;
 	 * @return array (of strings)
 	 */
 	private function splitJsonObjects(string $json): array {
-		$q = FALSE;
+		$q = false;
 		$len = strlen($json);
 		for ($l = $c = $i = 0; $i < $len; $i++) {
 			$json[$i] == '"' && ($i > 0 ? $json[$i - 1] : '') != '\\' && $q = !$q;
-			if (!$q && in_array($json[$i], array(" ", "\r", "\n", "\t"))) {
+			if (!$q && in_array($json[$i], array(' ', "\r", "\n", "\t"))) {
 				continue;
 			}
 			in_array($json[$i], array('{', '[')) && !$q && $l++;
@@ -328,5 +328,4 @@ EOD;
 		}
 		return isset($objects) ? $objects : array();
 	}
-
 }
