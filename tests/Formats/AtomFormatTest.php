@@ -10,18 +10,20 @@ require_once __DIR__ . '/BaseFormatTest.php';
 
 use PHPUnit\Framework\TestCase;
 
-class AtomFormatTest extends BaseFormatTest {
-	private const PATH_EXPECTED = self::PATH_SAMPLES . 'expectedAtomFormat/';
+class AtomFormatTest extends BaseFormatTest
+{
+    private const PATH_EXPECTED = self::PATH_SAMPLES . 'expectedAtomFormat/';
 
-	/**
-	 * @dataProvider sampleProvider
-	 * @runInSeparateProcess
-	 */
-	public function testOutput(string $name, string $path) {
-		$data = $this->formatData('Atom', $this->loadSample($path));
-		$this->assertNotFalse(simplexml_load_string($data));
+    /**
+     * @dataProvider sampleProvider
+     * @runInSeparateProcess
+     */
+    public function testOutput(string $name, string $path)
+    {
+        $data = $this->formatData('Atom', $this->loadSample($path));
+        $this->assertNotFalse(simplexml_load_string($data));
 
-		$expected = self::PATH_EXPECTED . $name . '.xml';
-		$this->assertXmlStringEqualsXmlFile($expected, $data);
-	}
+        $expected = self::PATH_EXPECTED . $name . '.xml';
+        $this->assertXmlStringEqualsXmlFile($expected, $data);
+    }
 }

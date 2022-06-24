@@ -6,9 +6,9 @@
  * For the full license information, please view the UNLICENSE file distributed
  * with this source code.
  *
- * @package	Core
- * @license	http://unlicense.org/ UNLICENSE
- * @link	https://github.com/rss-bridge/rss-bridge
+ * @package Core
+ * @license http://unlicense.org/ UNLICENSE
+ * @link    https://github.com/rss-bridge/rss-bridge
  */
 
 /**
@@ -25,27 +25,30 @@
  * @todo Check if this implementation is still necessary, because simplehtmldom
  * already removes some of the tags (search for `remove_noise` in simple_html_dom.php).
  */
-function sanitize($html,
-	$tags_to_remove = array('script', 'iframe', 'input', 'form'),
-	$attributes_to_keep = array('title', 'href', 'src'),
-	$text_to_keep = array()){
+function sanitize(
+    $html,
+    $tags_to_remove = array('script', 'iframe', 'input', 'form'),
+    $attributes_to_keep = array('title', 'href', 'src'),
+    $text_to_keep = array()
+) {
 
-	$htmlContent = str_get_html($html);
+    $htmlContent = str_get_html($html);
 
-	foreach($htmlContent->find('*') as $element) {
-		if(in_array($element->tag, $text_to_keep)) {
-			$element->outertext = $element->plaintext;
-		} elseif(in_array($element->tag, $tags_to_remove)) {
-			$element->outertext = '';
-		} else {
-			foreach($element->getAllAttributes() as $attributeName => $attribute) {
-				if(!in_array($attributeName, $attributes_to_keep))
-					$element->removeAttribute($attributeName);
-			}
-		}
-	}
+    foreach ($htmlContent->find('*') as $element) {
+        if (in_array($element->tag, $text_to_keep)) {
+            $element->outertext = $element->plaintext;
+        } elseif (in_array($element->tag, $tags_to_remove)) {
+            $element->outertext = '';
+        } else {
+            foreach ($element->getAllAttributes() as $attributeName => $attribute) {
+                if (!in_array($attributeName, $attributes_to_keep)) {
+                    $element->removeAttribute($attributeName);
+                }
+            }
+        }
+    }
 
-	return $htmlContent;
+    return $htmlContent;
 }
 
 /**
@@ -74,23 +77,19 @@ function sanitize($html,
  * @param string $htmlContent The HTML content
  * @return string The HTML content with all ocurrences replaced
  */
-function backgroundToImg($htmlContent) {
+function backgroundToImg($htmlContent)
+{
 
-	$regex = '/background-image[ ]{0,}:[ ]{0,}url\([\'"]{0,}(.*?)[\'"]{0,}\)/';
-	$htmlContent = str_get_html($htmlContent);
+    $regex = '/background-image[ ]{0,}:[ ]{0,}url\([\'"]{0,}(.*?)[\'"]{0,}\)/';
+    $htmlContent = str_get_html($htmlContent);
 
-	foreach($htmlContent->find('*') as $element) {
+    foreach ($htmlContent->find('*') as $element) {
+        if (preg_match($regex, $element->style, $matches) > 0) {
+            $element->outertext = '<img style="display:block;" src="' . $matches[1] . '" />';
+        }
+    }
 
-		if(preg_match($regex, $element->style, $matches) > 0) {
-
-			$element->outertext = '<img style="display:block;" src="' . $matches[1] . '" />';
-
-		}
-
-	}
-
-	return $htmlContent;
-
+    return $htmlContent;
 }
 
 /**
@@ -104,26 +103,27 @@ function backgroundToImg($htmlContent) {
  * @param string $server Fully qualified URL to the page containing relative links
  * @return object Content with fixed URLs.
  */
-function defaultLinkTo($content, $server){
-	$string_convert = false;
-	if (is_string($content)) {
-		$string_convert = true;
-		$content = str_get_html($content);
-	}
+function defaultLinkTo($content, $server)
+{
+    $string_convert = false;
+    if (is_string($content)) {
+        $string_convert = true;
+        $content = str_get_html($content);
+    }
 
-	foreach($content->find('img') as $image) {
-		$image->src = urljoin($server, $image->src);
-	}
+    foreach ($content->find('img') as $image) {
+        $image->src = urljoin($server, $image->src);
+    }
 
-	foreach($content->find('a') as $anchor) {
-		$anchor->href = urljoin($server, $anchor->href);
-	}
+    foreach ($content->find('a') as $anchor) {
+        $anchor->href = urljoin($server, $anchor->href);
+    }
 
-	if ($string_convert) {
-		$content = $content->outertext;
-	}
+    if ($string_convert) {
+        $content = $content->outertext;
+    }
 
-	return $content;
+    return $content;
 }
 
 /**
@@ -135,12 +135,13 @@ function defaultLinkTo($content, $server){
  * @return string|bool Extracted string, e.g. `John Doe`, or false if the
  * delimiters were not found.
  */
-function extractFromDelimiters($string, $start, $end) {
-	if (strpos($string, $start) !== false) {
-		$section_retrieved = substr($string, strpos($string, $start) + strlen($start));
-		$section_retrieved = substr($section_retrieved, 0, strpos($section_retrieved, $end));
-		return $section_retrieved;
-	} return false;
+function extractFromDelimiters($string, $start, $end)
+{
+    if (strpos($string, $start) !== false) {
+        $section_retrieved = substr($string, strpos($string, $start) + strlen($start));
+        $section_retrieved = substr($section_retrieved, 0, strpos($section_retrieved, $end));
+        return $section_retrieved;
+    } return false;
 }
 
 /**
@@ -151,13 +152,14 @@ function extractFromDelimiters($string, $start, $end) {
  * @param string $end End delimiter, e.g. `</script>`
  * @return string Cleaned string, e.g. `foobar`
  */
-function stripWithDelimiters($string, $start, $end) {
-	while(strpos($string, $start) !== false) {
-		$section_to_remove = substr($string, strpos($string, $start));
-		$section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
-		$string = str_replace($section_to_remove, '', $string);
-	}
-	return $string;
+function stripWithDelimiters($string, $start, $end)
+{
+    while (strpos($string, $start) !== false) {
+        $section_to_remove = substr($string, strpos($string, $start));
+        $section_to_remove = substr($section_to_remove, 0, strpos($section_to_remove, $end) + strlen($end));
+        $string = str_replace($section_to_remove, '', $string);
+    }
+    return $string;
 }
 
 /**
@@ -170,28 +172,29 @@ function stripWithDelimiters($string, $start, $end) {
  *
  * @todo This function needs more documentation to make it maintainable.
  */
-function stripRecursiveHTMLSection($string, $tag_name, $tag_start){
-	$open_tag = '<' . $tag_name;
-	$close_tag = '</' . $tag_name . '>';
-	$close_tag_length = strlen($close_tag);
-	if(strpos($tag_start, $open_tag) === 0) {
-		while(strpos($string, $tag_start) !== false) {
-			$max_recursion = 100;
-			$section_to_remove = null;
-			$section_start = strpos($string, $tag_start);
-			$search_offset = $section_start;
-			do {
-				$max_recursion--;
-				$section_end = strpos($string, $close_tag, $search_offset);
-				$search_offset = $section_end + $close_tag_length;
-				$section_to_remove = substr($string, $section_start, $section_end - $section_start + $close_tag_length);
-				$open_tag_count = substr_count($section_to_remove, $open_tag);
-				$close_tag_count = substr_count($section_to_remove, $close_tag);
-			} while ($open_tag_count > $close_tag_count && $max_recursion > 0);
-			$string = str_replace($section_to_remove, '', $string);
-		}
-	}
-	return $string;
+function stripRecursiveHTMLSection($string, $tag_name, $tag_start)
+{
+    $open_tag = '<' . $tag_name;
+    $close_tag = '</' . $tag_name . '>';
+    $close_tag_length = strlen($close_tag);
+    if (strpos($tag_start, $open_tag) === 0) {
+        while (strpos($string, $tag_start) !== false) {
+            $max_recursion = 100;
+            $section_to_remove = null;
+            $section_start = strpos($string, $tag_start);
+            $search_offset = $section_start;
+            do {
+                $max_recursion--;
+                $section_end = strpos($string, $close_tag, $search_offset);
+                $search_offset = $section_end + $close_tag_length;
+                $section_to_remove = substr($string, $section_start, $section_end - $section_start + $close_tag_length);
+                $open_tag_count = substr_count($section_to_remove, $open_tag);
+                $close_tag_count = substr_count($section_to_remove, $close_tag);
+            } while ($open_tag_count > $close_tag_count && $max_recursion > 0);
+            $string = str_replace($section_to_remove, '', $string);
+        }
+    }
+    return $string;
 }
 
 /**
@@ -202,8 +205,9 @@ function stripRecursiveHTMLSection($string, $tag_name, $tag_start){
  * @param string $string Input string in Markdown format
  * @return string output string in HTML format
  */
-function markdownToHtml($string) {
+function markdownToHtml($string)
+{
 
-	$Parsedown = new Parsedown();
-	return $Parsedown->text($string);
+    $Parsedown = new Parsedown();
+    return $Parsedown->text($string);
 }

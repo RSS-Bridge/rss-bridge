@@ -6,85 +6,89 @@ use ActionFactory;
 use BridgeFactory;
 use PHPUnit\Framework\TestCase;
 
-class ListActionTest extends TestCase {
+class ListActionTest extends TestCase
+{
 
-	private $data;
+    private $data;
 
-	/**
-	 * @runInSeparateProcess
-	 * @requires function xdebug_get_headers
-	 */
-	public function testHeaders() {
-		$this->initAction();
+    /**
+     * @runInSeparateProcess
+     * @requires function xdebug_get_headers
+     */
+    public function testHeaders()
+    {
+        $this->initAction();
 
-		$this->assertContains(
-			'Content-Type: application/json',
-			xdebug_get_headers()
-		);
-	}
+        $this->assertContains(
+            'Content-Type: application/json',
+            xdebug_get_headers()
+        );
+    }
 
-	/**
-	 * @runInSeparateProcess
-	 */
-	public function testOutput() {
-		$this->initAction();
+    /**
+     * @runInSeparateProcess
+     */
+    public function testOutput()
+    {
+        $this->initAction();
 
-		$items = json_decode($this->data, true);
+        $items = json_decode($this->data, true);
 
-		$this->assertNotNull($items, 'invalid JSON output: ' . json_last_error_msg());
+        $this->assertNotNull($items, 'invalid JSON output: ' . json_last_error_msg());
 
-		$this->assertArrayHasKey('total', $items, 'Missing "total" parameter');
-		$this->assertIsInt($items['total'], 'Invalid type');
+        $this->assertArrayHasKey('total', $items, 'Missing "total" parameter');
+        $this->assertIsInt($items['total'], 'Invalid type');
 
-		$this->assertArrayHasKey('bridges', $items, 'Missing "bridges" array');
+        $this->assertArrayHasKey('bridges', $items, 'Missing "bridges" array');
 
-		$this->assertEquals(
-			$items['total'],
-			count($items['bridges']),
-			'Item count doesn\'t match'
-		);
+        $this->assertEquals(
+            $items['total'],
+            count($items['bridges']),
+            'Item count doesn\'t match'
+        );
 
-		$bridgeFac = new BridgeFactory();
+        $bridgeFac = new BridgeFactory();
 
-		$this->assertEquals(
-			count($bridgeFac->getBridgeNames()),
-			count($items['bridges']),
-			'Number of bridges doesn\'t match'
-		);
+        $this->assertEquals(
+            count($bridgeFac->getBridgeNames()),
+            count($items['bridges']),
+            'Number of bridges doesn\'t match'
+        );
 
-		$expectedKeys = array(
-			'status',
-			'uri',
-			'name',
-			'icon',
-			'parameters',
-			'maintainer',
-			'description'
-		);
+        $expectedKeys = array(
+            'status',
+            'uri',
+            'name',
+            'icon',
+            'parameters',
+            'maintainer',
+            'description'
+        );
 
-		$allowedStatus = array(
-			'active',
-			'inactive'
-		);
+        $allowedStatus = array(
+            'active',
+            'inactive'
+        );
 
-		foreach($items['bridges'] as $bridge) {
-			foreach($expectedKeys as $key) {
-				$this->assertArrayHasKey($key, $bridge, 'Missing key "' . $key . '"');
-			}
+        foreach ($items['bridges'] as $bridge) {
+            foreach ($expectedKeys as $key) {
+                $this->assertArrayHasKey($key, $bridge, 'Missing key "' . $key . '"');
+            }
 
-			$this->assertContains($bridge['status'], $allowedStatus, 'Invalid status value');
-		}
-	}
+            $this->assertContains($bridge['status'], $allowedStatus, 'Invalid status value');
+        }
+    }
 
-	private function initAction() {
-		$actionFac = new ActionFactory();
+    private function initAction()
+    {
+        $actionFac = new ActionFactory();
 
-		$action = $actionFac->create('list');
+        $action = $actionFac->create('list');
 
-		ob_start();
-		$action->execute();
-		$this->data = ob_get_contents();
-		ob_clean();
-		ob_end_flush();
-	}
+        ob_start();
+        $action->execute();
+        $this->data = ob_get_contents();
+        ob_clean();
+        ob_end_flush();
+    }
 }

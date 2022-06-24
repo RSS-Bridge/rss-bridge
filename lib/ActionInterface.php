@@ -6,21 +6,22 @@
  * For the full license information, please view the UNLICENSE file distributed
  * with this source code.
  *
- * @package	Core
- * @license	http://unlicense.org/ UNLICENSE
- * @link	https://github.com/rss-bridge/rss-bridge
+ * @package Core
+ * @license http://unlicense.org/ UNLICENSE
+ * @link    https://github.com/rss-bridge/rss-bridge
  */
 
 /**
  * Interface for action objects.
  */
-interface ActionInterface {
-	/**
-	 * Execute the action.
-	 *
-	 * Note: This function directly outputs data to the user.
-	 *
-	 * @return void
-	 */
-	public function execute();
+interface ActionInterface
+{
+    /**
+     * Execute the action.
+     *
+     * Note: This function directly outputs data to the user.
+     *
+     * @return void
+     */
+    public function execute();
 }

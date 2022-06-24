@@ -1,352 +1,367 @@
 <?php
-class JustETFBridge extends BridgeAbstract {
-	const NAME = 'justETF Bridge';
-	const URI = 'https://www.justetf.com';
-	const DESCRIPTION = 'Currently only supports the news feed';
-	const MAINTAINER = 'logmanoriginal';
-	const PARAMETERS = array(
-		'News' => array(
-			'full' => array(
-				'name' => 'Full Article',
-				'type' => 'checkbox',
-				'title' => 'Enable to load full articles'
-			)
-		),
-		'Profile' => array(
-			'isin' => array(
-				'name' => 'ISIN',
-				'type' => 'text',
-				'required' => true,
-				'exampleValue' => 'IE00B4X9L533',
-				'pattern' => '[a-zA-Z]{2}[a-zA-Z0-9]{10}',
-				'title' => 'ISIN, consisting of 2-letter country code, 9-character identifier, check character'
-			),
-			'strategy' => array(
-				'name' => 'Include Strategy',
-				'type' => 'checkbox',
-				'defaultValue' => 'checked'
-			),
-			'description' => array(
-				'name' => 'Include Description',
-				'type' => 'checkbox',
-				'defaultValue' => 'checked'
-			)
-		),
-		'global' => array(
-			'lang' => array(
-				'name' => 'Language',
-				'type' => 'list',
-				'values' => array(
-					'Englisch' => 'en',
-					'Deutsch'  => 'de',
-					'Italiano' => 'it'
-				),
-				'defaultValue' => 'Englisch'
-			)
-		)
-	);
-
-	public function collectData() {
-		$html = getSimpleHTMLDOM($this->getURI());
-
-		defaultLinkTo($html, static::URI);
-
-		switch($this->queriedContext) {
-			case 'News':
-				$this->collectNews($html);
-				break;
-			case 'Profile':
-				$this->collectProfile($html);
-				break;
-		}
-	}
-
-	public function getURI() {
-		$uri = static::URI;
-
-		if($this->getInput('lang')) {
-			$uri .= '/' . $this->getInput('lang');
-		}
-
-		switch($this->queriedContext) {
-			case 'News':
-				$uri .= '/news';
-				break;
-			case 'Profile':
-				$uri .= '/etf-profile.html?' . http_build_query(array(
-					'isin' => strtoupper($this->getInput('isin'))
-				));
-				break;
-		}
-
-		return $uri;
-	}
-
-	public function getName() {
-		$name = static::NAME;
-
-		$name .= ($this->queriedContext) ? ' - ' . $this->queriedContext : '';
-
-		switch($this->queriedContext) {
-			case 'News': break;
-			case 'Profile':
-				if($this->getInput('isin')) {
-					$name .= ' ISIN ' . strtoupper($this->getInput('isin'));
-				}
-		}
-
-		if($this->getInput('lang')) {
-			$name .= ' (' . strtoupper($this->getInput('lang')) . ')';
-		}
-
-		return $name;
-	}
+class JustETFBridge extends BridgeAbstract
+{
+    const NAME = 'justETF Bridge';
+    const URI = 'https://www.justetf.com';
+    const DESCRIPTION = 'Currently only supports the news feed';
+    const MAINTAINER = 'logmanoriginal';
+    const PARAMETERS = array(
+        'News' => array(
+            'full' => array(
+                'name' => 'Full Article',
+                'type' => 'checkbox',
+                'title' => 'Enable to load full articles'
+            )
+        ),
+        'Profile' => array(
+            'isin' => array(
+                'name' => 'ISIN',
+                'type' => 'text',
+                'required' => true,
+                'exampleValue' => 'IE00B4X9L533',
+                'pattern' => '[a-zA-Z]{2}[a-zA-Z0-9]{10}',
+                'title' => 'ISIN, consisting of 2-letter country code, 9-character identifier, check character'
+            ),
+            'strategy' => array(
+                'name' => 'Include Strategy',
+                'type' => 'checkbox',
+                'defaultValue' => 'checked'
+            ),
+            'description' => array(
+                'name' => 'Include Description',
+                'type' => 'checkbox',
+                'defaultValue' => 'checked'
+            )
+        ),
+        'global' => array(
+            'lang' => array(
+                'name' => 'Language',
+                'type' => 'list',
+                'values' => array(
+                    'Englisch' => 'en',
+                    'Deutsch'  => 'de',
+                    'Italiano' => 'it'
+                ),
+                'defaultValue' => 'Englisch'
+            )
+        )
+    );
+
+    public function collectData()
+    {
+        $html = getSimpleHTMLDOM($this->getURI());
+
+        defaultLinkTo($html, static::URI);
+
+        switch ($this->queriedContext) {
+            case 'News':
+                $this->collectNews($html);
+                break;
+            case 'Profile':
+                $this->collectProfile($html);
+                break;
+        }
+    }
+
+    public function getURI()
+    {
+        $uri = static::URI;
+
+        if ($this->getInput('lang')) {
+            $uri .= '/' . $this->getInput('lang');
+        }
+
+        switch ($this->queriedContext) {
+            case 'News':
+                $uri .= '/news';
+                break;
+            case 'Profile':
+                $uri .= '/etf-profile.html?' . http_build_query(array(
+                    'isin' => strtoupper($this->getInput('isin'))
+                ));
+                break;
+        }
+
+        return $uri;
+    }
+
+    public function getName()
+    {
+        $name = static::NAME;
+
+        $name .= ($this->queriedContext) ? ' - ' . $this->queriedContext : '';
+
+        switch ($this->queriedContext) {
+            case 'News':
+                break;
+            case 'Profile':
+                if ($this->getInput('isin')) {
+                    $name .= ' ISIN ' . strtoupper($this->getInput('isin'));
+                }
+        }
+
+        if ($this->getInput('lang')) {
+            $name .= ' (' . strtoupper($this->getInput('lang')) . ')';
+        }
+
+        return $name;
+    }
+
+    #region Common
+
+    /**
+     * Fixes dates depending on the choosen language:
+     *
+     * de : dd.mm.yy
+     * en : dd.mm.yy
+     * it : dd/mm/yy
+     *
+     * Basically strtotime doesn't convert dates correctly due to formats
+     * being hard to interpret. So we use the DateTime object, manually
+     * fixing dates and times (set to 00:00:00.000).
+     *
+     * We don't know the timezone, so just assume +00:00 (or whatever
+     * DateTime chooses)
+     */
+    private function fixDate($date)
+    {
+        switch ($this->getInput('lang')) {
+            case 'en':
+            case 'de':
+                $df = date_create_from_format('d.m.y', $date);
+                break;
+            case 'it':
+                $df = date_create_from_format('d/m/y', $date);
+                break;
+        }
 
-	#region Common
+        date_time_set($df, 0, 0);
 
-	/**
-	 * Fixes dates depending on the choosen language:
-	 *
-	 * de : dd.mm.yy
-	 * en : dd.mm.yy
-	 * it : dd/mm/yy
-	 *
-	 * Basically strtotime doesn't convert dates correctly due to formats
-	 * being hard to interpret. So we use the DateTime object, manually
-	 * fixing dates and times (set to 00:00:00.000).
-	 *
-	 * We don't know the timezone, so just assume +00:00 (or whatever
-	 * DateTime chooses)
-	 */
-	private function fixDate($date) {
-		switch($this->getInput('lang')) {
-			case 'en':
-			case 'de':
-				$df = date_create_from_format('d.m.y', $date);
-				break;
-			case 'it':
-				$df = date_create_from_format('d/m/y', $date);
-				break;
-		}
+        // Debug::log(date_format($df, 'U'));
 
-		date_time_set($df, 0, 0);
+        return date_format($df, 'U');
+    }
 
-		// Debug::log(date_format($df, 'U'));
+    private function extractImages($article)
+    {
+        // Notice: We can have zero or more images (though it should mostly be 1)
+        $elements = $article->find('img');
 
-		return date_format($df, 'U');
-	}
+        $images = array();
 
-	private function extractImages($article) {
-		// Notice: We can have zero or more images (though it should mostly be 1)
-		$elements = $article->find('img');
+        foreach ($elements as $img) {
+            // Skip the logo (mostly provided part of a hidden div)
+            if (substr($img->src, strrpos($img->src, '/') + 1) === 'logo.png') {
+                continue;
+            }
 
-		$images = array();
+            $images[] = $img->src;
+        }
 
-		foreach($elements as $img) {
-			// Skip the logo (mostly provided part of a hidden div)
-			if(substr($img->src, strrpos($img->src, '/') + 1) === 'logo.png')
-				continue;
+        return $images;
+    }
 
-			$images[] = $img->src;
-		}
+    #endregion
 
-		return $images;
-	}
+    #region News
+
+    private function collectNews($html)
+    {
+        $articles = $html->find('div.newsTopArticle')
+            or returnServerError('No articles found! Layout might have changed!');
 
-	#endregion
+        foreach ($articles as $article) {
+            $item = array();
+
+            // Common data
 
-	#region News
+            $item['uri'] = $this->extractNewsUri($article);
+            $item['timestamp'] = $this->extractNewsDate($article);
+            $item['title'] = $this->extractNewsTitle($article);
 
-	private function collectNews($html) {
-		$articles = $html->find('div.newsTopArticle')
-			or returnServerError('No articles found! Layout might have changed!');
+            if ($this->getInput('full')) {
+                $uri = $this->extractNewsUri($article);
 
-		foreach($articles as $article) {
+                $html = getSimpleHTMLDOMCached($uri)
+                    or returnServerError('Failed loading full article from ' . $uri);
 
-			$item = array();
+                $fullArticle = $html->find('div.article', 0)
+                    or returnServerError('No content found! Layout might have changed!');
 
-			// Common data
+                defaultLinkTo($fullArticle, static::URI);
 
-			$item['uri'] = $this->extractNewsUri($article);
-			$item['timestamp'] = $this->extractNewsDate($article);
-			$item['title'] = $this->extractNewsTitle($article);
+                $item['author'] = $this->extractFullArticleAuthor($fullArticle);
+                $item['content'] = $this->extractFullArticleContent($fullArticle);
+                $item['enclosures'] = $this->extractImages($fullArticle);
+            } else {
+                $item['content'] = $this->extractNewsDescription($article);
+                $item['enclosures'] = $this->extractImages($article);
+            }
 
-			if($this->getInput('full')) {
+            $this->items[] = $item;
+        }
+    }
 
-				$uri = $this->extractNewsUri($article);
+    private function extractNewsUri($article)
+    {
+        $element = $article->find('a', 0)
+            or returnServerError('Anchor not found!');
 
-				$html = getSimpleHTMLDOMCached($uri)
-					or returnServerError('Failed loading full article from ' . $uri);
+        return $element->href;
+    }
 
-				$fullArticle = $html->find('div.article', 0)
-					or returnServerError('No content found! Layout might have changed!');
+    private function extractNewsDate($article)
+    {
+        $element = $article->find('div.subheadline', 0)
+            or returnServerError('Date not found!');
 
-				defaultLinkTo($fullArticle, static::URI);
+        // Debug::log($element->plaintext);
 
-				$item['author'] = $this->extractFullArticleAuthor($fullArticle);
-				$item['content'] = $this->extractFullArticleContent($fullArticle);
-				$item['enclosures'] = $this->extractImages($fullArticle);
+        $date = trim(explode('|', $element->plaintext)[0]);
 
-			} else {
+        return $this->fixDate($date);
+    }
 
-				$item['content'] = $this->extractNewsDescription($article);
-				$item['enclosures'] = $this->extractImages($article);
+    private function extractNewsDescription($article)
+    {
+        $element = $article->find('span.newsText', 0)
+            or returnServerError('Description not found!');
 
-			}
+        $element->find('a', 0)->onclick = '';
 
-			$this->items[] = $item;
-		}
-	}
+        // Debug::log($element->innertext);
 
-	private function extractNewsUri($article) {
-		$element = $article->find('a', 0)
-			or returnServerError('Anchor not found!');
+        return $element->innertext;
+    }
 
-		return $element->href;
-	}
+    private function extractNewsTitle($article)
+    {
+        $element = $article->find('h3', 0)
+            or returnServerError('Title not found!');
 
-	private function extractNewsDate($article) {
-		$element = $article->find('div.subheadline', 0)
-			or returnServerError('Date not found!');
+        return $element->plaintext;
+    }
 
-		// Debug::log($element->plaintext);
+    private function extractFullArticleContent($article)
+    {
+        $element = $article->find('div.article_body', 0)
+            or returnServerError('Article body not found!');
 
-		$date = trim(explode('|', $element->plaintext)[0]);
+        // Remove teaser image
+        $element->find('img.teaser-img', 0)->outertext = '';
 
-		return $this->fixDate($date);
-	}
+        // Remove self advertisements
+        foreach ($element->find('.call-action') as $adv) {
+            $adv->outertext = '';
+        }
 
-	private function extractNewsDescription($article) {
-		$element = $article->find('span.newsText', 0)
-			or returnServerError('Description not found!');
+        // Remove tips
+        foreach ($element->find('.panel-edu') as $tip) {
+            $tip->outertext = '';
+        }
 
-		$element->find('a', 0)->onclick = '';
+        // Remove inline scripts (used for i.e. interactive graphs) as they are
+        // rendered as a long series of strings
+        foreach ($element->find('script') as $script) {
+            $script->outertext = '[Content removed! Visit site to see full contents!]';
+        }
 
-		// Debug::log($element->innertext);
+        return $element->innertext;
+    }
 
-		return $element->innertext;
-	}
+    private function extractFullArticleAuthor($article)
+    {
+        $element = $article->find('span[itemprop=name]', 0)
+            or returnServerError('Author not found!');
 
-	private function extractNewsTitle($article) {
-		$element = $article->find('h3', 0)
-			or returnServerError('Title not found!');
+        return $element->plaintext;
+    }
 
-		return $element->plaintext;
-	}
+    #endregion
 
-	private function extractFullArticleContent($article) {
-		$element = $article->find('div.article_body', 0)
-			or returnServerError('Article body not found!');
+    #region Profile
 
-		// Remove teaser image
-		$element->find('img.teaser-img', 0)->outertext = '';
+    private function collectProfile($html)
+    {
+        $item = array();
 
-		// Remove self advertisements
-		foreach($element->find('.call-action') as $adv) {
-			$adv->outertext = '';
-		}
+        $item['uri'] = $this->getURI();
+        $item['timestamp'] = $this->extractProfileDate($html);
+        $item['title'] = $this->extractProfiletitle($html);
+        $item['author'] = $this->extractProfileAuthor($html);
+        $item['content'] = $this->extractProfileContent($html);
 
-		// Remove tips
-		foreach($element->find('.panel-edu') as $tip) {
-			$tip->outertext = '';
-		}
+        $this->items[] = $item;
+    }
 
-		// Remove inline scripts (used for i.e. interactive graphs) as they are
-		// rendered as a long series of strings
-		foreach($element->find('script') as $script) {
-			$script->outertext = '[Content removed! Visit site to see full contents!]';
-		}
+    private function extractProfileDate($html)
+    {
+        $element = $html->find('div.infobox div.vallabel', 0)
+            or returnServerError('Date not found!');
 
-		return $element->innertext;
-	}
+        // Debug::log($element->plaintext);
 
-	private function extractFullArticleAuthor($article) {
-		$element = $article->find('span[itemprop=name]', 0)
-			or returnServerError('Author not found!');
+        $date = trim(explode("\r\n", $element->plaintext)[1]);
 
-		return $element->plaintext;
-	}
+        return $this->fixDate($date);
+    }
 
-	#endregion
+    private function extractProfileTitle($html)
+    {
+        $element = $html->find('span.h1', 0)
+            or returnServerError('Title not found!');
 
-	#region Profile
+        return $element->plaintext;
+    }
 
-	private function collectProfile($html) {
-		$item = array();
+    private function extractProfileContent($html)
+    {
+        // There are a few thins we are interested:
+        // - Investment Strategy
+        // - Description
+        // - Quote
 
-		$item['uri'] = $this->getURI();
-		$item['timestamp'] = $this->extractProfileDate($html);
-		$item['title'] = $this->extractProfiletitle($html);
-		$item['author'] = $this->extractProfileAuthor($html);
-		$item['content'] = $this->extractProfileContent($html);
+        $strategy = $html->find('div.tab-container div.col-sm-6 p', 0)
+            or returnServerError('Investment Strategy not found!');
 
-		$this->items[] = $item;
-	}
+        // Description requires a bit of cleanup due to lack of propper identification
 
-	private function extractProfileDate($html) {
-		$element = $html->find('div.infobox div.vallabel', 0)
-			or returnServerError('Date not found!');
+        $description = $html->find('div.headline', 5)
+            or returnServerError('Description container not found!');
 
-		// Debug::log($element->plaintext);
+        $description = $description->parent();
 
-		$date = trim(explode("\r\n", $element->plaintext)[1]);
+        foreach ($description->find('div') as $div) {
+            $div->outertext = '';
+        }
 
-		return $this->fixDate($date);
-	}
+        $quote = $html->find('div.infobox div.val', 0)
+            or returnServerError('Quote not found!');
 
-	private function extractProfileTitle($html) {
-		$element = $html->find('span.h1', 0)
-			or returnServerError('Title not found!');
+        $quote_html = '<strong>Quote</strong><br><p>' . $quote . '</p>';
+        $strategy_html = '';
+        $description_html = '';
 
-		return $element->plaintext;
-	}
+        if ($this->getInput('strategy') === true) {
+            $strategy_html = '<strong>Strategy</strong><br><p>' . $strategy . '</p><br>';
+        }
 
-	private function extractProfileContent($html) {
-		// There are a few thins we are interested:
-		// - Investment Strategy
-		// - Description
-		// - Quote
+        if ($this->getInput('description') === true) {
+            $description_html = '<strong>Description</strong><br><p>' . $description . '</p><br>';
+        }
 
-		$strategy = $html->find('div.tab-container div.col-sm-6 p', 0)
-			or returnServerError('Investment Strategy not found!');
+        return $strategy_html . $description_html . $quote_html;
+    }
 
-		// Description requires a bit of cleanup due to lack of propper identification
+    private function extractProfileAuthor($html)
+    {
+        // Use ISIN + WKN as author
+        // Notice: "identfier" is not a typo [sic]!
+        $element = $html->find('span.identfier', 0)
+            or returnServerError('Author not found!');
 
-		$description = $html->find('div.headline', 5)
-			or returnServerError('Description container not found!');
+        return $element->plaintext;
+    }
 
-		$description = $description->parent();
-
-		foreach($description->find('div') as $div) {
-			$div->outertext = '';
-		}
-
-		$quote = $html->find('div.infobox div.val', 0)
-			or returnServerError('Quote not found!');
-
-		$quote_html = '<strong>Quote</strong><br><p>' . $quote . '</p>';
-		$strategy_html = '';
-		$description_html = '';
-
-		if($this->getInput('strategy') === true) {
-			$strategy_html = '<strong>Strategy</strong><br><p>' . $strategy . '</p><br>';
-		}
-
-		if($this->getInput('description') === true) {
-			$description_html = '<strong>Description</strong><br><p>' . $description . '</p><br>';
-		}
-
-		return $strategy_html . $description_html . $quote_html;
-	}
-
-	private function extractProfileAuthor($html) {
-		// Use ISIN + WKN as author
-		// Notice: "identfier" is not a typo [sic]!
-		$element = $html->find('span.identfier', 0)
-			or returnServerError('Author not found!');
-
-		return $element->plaintext;
-	}
-
-	#endregion
+    #endregion
 }
