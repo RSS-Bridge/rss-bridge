@@ -194,15 +194,12 @@ class FlaschenpostBridge extends BridgeAbstract {
 			}
 
 			// extract the JavaScript block which contains all the data we need
-			$regex = '/const rootElementBaseViewModels = \[(.*)\];/';
+			$regex = '/(\{childElements:\[.*\})\];/';
 			preg_match($regex, $html, $matches);
 			$js = $matches[1];
 
 			// convert JavaScript to JSON
-			$js = strip_tags($js);
-			$js = str_replace('"', '\\"', $js);
-			$js = preg_replace('/(\w+)(?=:[\w\[{\'])/i', '"$1"', $js);
-			$js = str_replace('\'', '"', $js);
+			$js = $this->jsToJson($js);
 
 			// get all products
 			$products = $this->recursiveFind((array)json_decode($js), 'products');
@@ -213,6 +210,20 @@ class FlaschenpostBridge extends BridgeAbstract {
 				}
 			}
 		}
+	}
+
+	private function jsToJson(string $js): string {
+		// remove all html
+		$js = strip_tags($js);
+		// escape double quotes
+		$js = str_replace('"', '\\"', $js);
+		// add double quotes to all keys
+		$js = preg_replace('/(?<=[,{])(\w+)(?=:)/', '"$1"', $js);
+		// replace all single quotes with double quotes at all values
+		$js = str_replace('\'', '"', $js);
+		// sometimes, there are more than one JSON blocks; we're interested in the first one
+		$js = $this->splitJsonObjects($js)[0];
+		return $js;
 	}
 
 	private function addArticle($article, $product) {
@@ -286,5 +297,36 @@ EOD;
 				return $value;
 			}
 		}
+		return null;
 	}
+
+	/**
+	 * http://ryanuber.com/07-31-2012/split-and-decode-json-php.html
+	 *
+	 * json_split_objects - Return an array of many JSON objects
+	 *
+	 * In some applications (such as PHPUnit, or salt), JSON output is presented as multiple
+	 * objects, which you cannot simply pass in to json_decode(). This function will split
+	 * the JSON objects apart and return them as an array of strings, one object per indice.
+	 *
+	 * @param string $json The JSON data to parse
+	 *
+	 * @return array (of strings)
+	 */
+	private function splitJsonObjects(string $json): array {
+		$q = FALSE;
+		$len = strlen($json);
+		for ($l = $c = $i = 0; $i < $len; $i++) {
+			$json[$i] == '"' && ($i > 0 ? $json[$i - 1] : '') != '\\' && $q = !$q;
+			if (!$q && in_array($json[$i], array(" ", "\r", "\n", "\t"))) {
+				continue;
+			}
+			in_array($json[$i], array('{', '[')) && !$q && $l++;
+			in_array($json[$i], array('}', ']')) && !$q && $l--;
+			(isset($objects[$c]) && $objects[$c] .= $json[$i]) || $objects[$c] = $json[$i];
+			$c += ($l == 0);
+		}
+		return isset($objects) ? $objects : array();
+	}
+
 }
