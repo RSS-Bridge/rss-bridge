@@ -39,36 +39,36 @@ class FicbookBridge extends BridgeAbstract {
 
 	public function getURI() {
 		switch($this->queriedContext) {
-			case 'Site News': {
+			case 'Site News':
 				// For some reason this is not HTTPS
 				return 'http://ficbook.net/sitenews';
-			}
-			case 'Fiction Updates': {
+
+			case 'Fiction Updates':
 				return self::URI
 				. 'readfic/'
 				. urlencode($this->getInput('fiction_id'));
-			}
-			case 'Fiction Comments': {
+
+			case 'Fiction Comments':
 				return self::URI
 				. 'readfic/'
 				. urlencode($this->getInput('fiction_id'))
 				. '/comments#content';
-			}
+
 			default: return parent::getURI();
 		}
 	}
 
 	public function getName() {
 		switch($this->queriedContext) {
-			case 'Site News': {
+			case 'Site News':
 				return $this->queriedContext . ' | ' . self::NAME;
-			}
-			case 'Fiction Updates': {
+
+			case 'Fiction Updates':
 				return $this->titleName . ' | ' . self::NAME;
-			}
-			case 'Fiction Comments': {
+
+			case 'Fiction Comments':
 				return $this->titleName . ' | Comments | ' . self::NAME;
-			}
+
 			default: return self::NAME;
 		}
 	}

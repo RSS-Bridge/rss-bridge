@@ -113,6 +113,7 @@ class MoinMoinBridge extends BridgeAbstract {
 
 						break;
 					}
+					// fall-through
 				case 'separator':
 				default: // Use contents from the current page
 					$item['content'] = $this->cleanArticle($section[2]);

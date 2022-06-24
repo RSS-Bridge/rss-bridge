@@ -14,10 +14,9 @@ if (isset($argv)) {
 }
 
 try {
+	$actionFac = new ActionFactory();
 
-	$actionFac = new \ActionFactory();
-
-	if(array_key_exists('action', $params)) {
+	if (array_key_exists('action', $params)) {
 		$action = $actionFac->create($params['action']);
 		$action->userData = $params;
 		$action->execute();
@@ -25,8 +24,9 @@ try {
 		$showInactive = filter_input(INPUT_GET, 'show_inactive', FILTER_VALIDATE_BOOLEAN);
 		echo BridgeList::create($showInactive);
 	}
-} catch(\Throwable $e) {
+} catch (\Throwable $e) {
 	error_log($e);
+
 	$code = $e->getCode();
 	if ($code !== -1) {
 		header('Content-Type: text/plain', true, $code);

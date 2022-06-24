@@ -22,5 +22,5 @@ interface ActionInterface {
 	 *
 	 * @return void
 	 */
-	function execute();
+	public function execute();
 }

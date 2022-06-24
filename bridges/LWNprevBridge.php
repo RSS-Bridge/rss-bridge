@@ -8,7 +8,7 @@ class LWNprevBridge extends BridgeAbstract{
 
 	private $editionTimeStamp;
 
-	function getURI(){
+	public function getURI(){
 		return self::URI . 'free/bigpage';
 	}
 
@@ -144,6 +144,7 @@ EOD;
 			if($cat->getAttribute('class') !== 'Cat2HL') {
 				break;
 			}
+			// fall-through? Looks like a bug
 		case 'Cat2HL':
 			$cat2 = $cat->textContent;
 			$cat = $cat->previousSibling;
@@ -155,6 +156,7 @@ EOD;
 			if($cat->getAttribute('class') !== 'Cat1HL') {
 				break;
 			}
+			// fall-through? Looks like a bug
 		case 'Cat1HL':
 			$cat1 = $cat->textContent;
 			$cats[0] = $cat1;

@@ -43,10 +43,10 @@ class BAEBridge extends BridgeAbstract {
 
 			$content = $htmlDetail->find('article p', 0)->innertext;
 			if (!empty($this->getInput('keyword'))) {
-				$keyword = $this->remove_accents(strtolower($this->getInput('keyword')));
-				$cleanTitle = $this->remove_accents(strtolower($item['title']));
+				$keyword = $this->removeAccents(strtolower($this->getInput('keyword')));
+				$cleanTitle = $this->removeAccents(strtolower($item['title']));
 				if (strpos($cleanTitle, $keyword) === false) {
-					$cleanContent = $this->remove_accents(strtolower($content));
+					$cleanContent = $this->removeAccents(strtolower($content));
 					if (strpos($cleanContent, $keyword) === false) {
 						continue;
 					}
@@ -79,7 +79,7 @@ class BAEBridge extends BridgeAbstract {
 		return $uri;
 	}
 
-	private function remove_accents($string) {
+	private function removeAccents($string) {
 		$chars = array(
 			// Decompositions for Latin-1 Supplement
 			'ª' => 'a', 'º' => 'o',
