@@ -13,7 +13,12 @@ class GoogleSearchBridge extends BridgeAbstract {
 			'name' => 'keyword',
 			'required' => true,
 			'exampleValue' => 'rss-bridge',
-		)
+		),
+		'verbatim' => array(
+			'name' => 'Verbatim',
+			'type' => 'checkbox',
+			'title' => 'Use literal keyword(s) without making improvements',
+		),
 	));
 
 	public function collectData(){
@@ -78,7 +83,8 @@ class GoogleSearchBridge extends BridgeAbstract {
 				'hl'		=> 'en',
 				'num'		=> '100', // get 100 results
 				'complete'	=> '0',
-				'tbs'		=> 'qdr:y,sbd:1' // in past year, sort by date
+				// in past year, sort by date, optionally verbatim
+				'tbs'		=> 'qdr:y,sbd:1' . ($this->getInput('verbatim') ? ',li:1' : ''),
 			];
 			return sprintf('https://www.google.com/search?%s', http_build_query($queryParameters));
 		}
