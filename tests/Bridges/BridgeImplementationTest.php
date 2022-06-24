@@ -5,7 +5,6 @@ namespace RssBridge\Tests\Bridges;
 use BridgeAbstract;
 use BridgeInterface;
 use FeedExpander;
-use PixivBridge;
 use PHPUnit\Framework\TestCase;
 
 class BridgeImplementationTest extends TestCase {
@@ -74,10 +73,7 @@ class BridgeImplementationTest extends TestCase {
 			if ($multiContexts) {
 				$this->assertIsString($context, 'invalid context name');
 
-				// Pixiv has a context that is the empty string, for BC.
-				if (! ($this->obj instanceof PixivBridge)) {
-					$this->assertNotEmpty($context, 'The context name cannot be empty');
-				}
+				$this->assertNotEmpty($context, 'The context name cannot be empty');
 			}
 
 			if (empty($params)) {
