@@ -259,10 +259,13 @@ EOD
 			switch($this->queriedContext) {
 			case 'By keyword or hashtag':
 				returnServerError('No results for this query.');
+				// fall-through
 			case 'By username':
 				returnServerError('Requested username cannnot be found.');
+				// fall-through
 			case 'By list ID':
 				returnServerError('Requested list cannnot be found');
+				// fall-through
 			}
 		}
 

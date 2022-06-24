@@ -39,7 +39,7 @@ class CVEDetailsBridge extends BridgeAbstract {
 	// Because of the optional product ID, we need to attach it if it is
 	// set. The search result page has the exact same structure (with and
 	// without the product ID).
-	private function _buildURL() {
+	private function buildUrl() {
 		$url = self::URI . '/vulnerability-list/vendor_id-' . $this->getInput('vendor_id');
 		if ($this->getInput('product_id') !== '') {
 			$url .= '/product_id-' . $this->getInput('product_id');
@@ -54,8 +54,8 @@ class CVEDetailsBridge extends BridgeAbstract {
 
 	// Make the actual request to cvedetails.com and stores the response
 	// (HTML) for later use and extract vendor and product from it.
-	private function _fetchContent() {
-		$html = getSimpleHTMLDOM($this->_buildURL());
+	private function fetchContent() {
+		$html = getSimpleHTMLDOM($this->buildUrl());
 		$this->html = defaultLinkTo($html, self::URI);
 
 		$vendor = $html->find('#contentdiv > h1 > a', 0);
@@ -80,7 +80,7 @@ class CVEDetailsBridge extends BridgeAbstract {
 		}
 
 		if ($this->html == null) {
-			$this->_fetchContent();
+			$this->fetchContent();
 		}
 
 		$name = 'CVE Vulnerabilities for ' . $this->vendor;
@@ -94,7 +94,7 @@ class CVEDetailsBridge extends BridgeAbstract {
 	// Pull the data from the HTML response and fill the items..
 	public function collectData() {
 		if ($this->html == null) {
-			$this->_fetchContent();
+			$this->fetchContent();
 		}
 
 		foreach ($this->html->find('#vulnslisttable .srrowns') as $i => $tr) {

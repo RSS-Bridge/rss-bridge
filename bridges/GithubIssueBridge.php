@@ -263,23 +263,22 @@ class GithubIssueBridge extends BridgeAbstract {
 		$path_segments = array_values(array_filter(explode('/', $url_components['path'])));
 
 		switch(count($path_segments)) {
-			case 2: { // Project issues
+			case 2: // Project issues
 				list($user, $project) = $path_segments;
 				$show_comments = 'off';
-			} break;
-			case 3: { // Project issues with issue comments
+				break;
+			case 3: // Project issues with issue comments
 				if($path_segments[2] !== static::URL_PATH) {
 					return null;
 				}
 				list($user, $project) = $path_segments;
 				$show_comments = 'on';
-			} break;
-			case 4: { // Issue comments
+				break;
+			case 4: // Issue comments
 				list($user, $project, /* issues */, $issue) = $path_segments;
-			} break;
-			default: {
+				break;
+			default:
 				return null;
-			}
 		}
 
 		return array(

@@ -110,7 +110,7 @@ EOD;
 		//preg_replace used for images with spaces in the url
 
 		switch($dimensions) {
-			case 'None': {
+			case 'None':
 				foreach($media as $image) {
 					$imageURL = preg_replace('[ ]', '%20', $image['url']);
 					$text .= <<<EOD
@@ -120,8 +120,8 @@ EOD;
 EOD;
 				}
 				break;
-			}
-			case 'Small': {
+
+			case 'Small':
 				foreach($media as $image) {
 					$imageURL = preg_replace('[ ]', '%20', $image['small_image_url']);
 					$text .= <<<EOD
@@ -134,8 +134,8 @@ EOD;
 EOD;
 				}
 				break;
-			}
-			case 'Full': {
+
+			case 'Full':
 				foreach($media as $image) {
 			$imageURL = preg_replace('[ ]', '%20', $image['url']);
 			$text .= <<<EOD
@@ -148,7 +148,7 @@ EOD;
 EOD;
 				}
 				break;
-			}
+
 			default:
 				break;
 		}

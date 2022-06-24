@@ -48,12 +48,10 @@ class NationalGeographicBridge extends BridgeAbstract {
 
 	public function getURI() {
 		switch ($this->queriedContext) {
-			case self::CONTEXT_BY_TOPIC: {
+			case self::CONTEXT_BY_TOPIC:
 				return self::URI . $this->getInput(self::PARAMETER_TOPIC);
-			} break;
-			default: {
+			default:
 				return parent::getURI();
-			}
 		}
 	}
 
@@ -68,26 +66,21 @@ class NationalGeographicBridge extends BridgeAbstract {
 	public function collectData() {
 		$this->topicName = $this->getTopicName($this->getInput(self::PARAMETER_TOPIC));
 		switch($this->topicName) {
-			case self::TOPIC_MAGAZINE: {
+			case self::TOPIC_MAGAZINE:
 				return $this->collectMagazine();
-			} break;
-			case self::TOPIC_LATEST_STORIES: {
+			case self::TOPIC_LATEST_STORIES:
 				return $this->collectLatestStories();
-			} break;
-			default: {
+			default:
 				returnServerError('Unknown topic: "' . $this->topicName . '"');
-			}
 		}
 	}
 
 	public function getName() {
 		switch ($this->queriedContext) {
-			case self::CONTEXT_BY_TOPIC: {
+			case self::CONTEXT_BY_TOPIC:
 				return static::NAME . ': ' . $this->topicName;
-			} break;
-			default: {
+			default:
 				return parent::getName();
-			}
 		}
 	}
 
@@ -327,7 +320,7 @@ EOD;
 						case 'video':
 							$content .= $this->handleImages($module, $module['cmsType']);
 							break;
-						case 'pullquote';
+						case 'pullquote':
 							$quote = $module['quote'];
 							$author_name = '';
 							$authors = (isset($module['byLineProps']['authors']) ? $module['byLineProps']['authors'] : array());

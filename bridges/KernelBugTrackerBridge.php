@@ -78,7 +78,9 @@ Returns feeds for bug comments';
 		// Order comments
 		switch($sorting) {
 			case 'lf': $comments = array_reverse($comments, true);
+				// fall-through
 			case 'of':
+				// fall-through
 			default: // Nothing to do, keep original order
 		}
 

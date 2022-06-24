@@ -64,30 +64,30 @@ class GogsBridge extends BridgeAbstract {
 
 	public function getURI() {
 		switch($this->queriedContext) {
-			case 'Commits': {
+			case 'Commits':
 				return $this->getInput('host')
 				. '/' . $this->getInput('user')
 				. '/' . $this->getInput('project')
 				. '/commits/' . $this->getInput('branch');
-			} break;
-			case 'Issues': {
+
+			case 'Issues':
 				return $this->getInput('host')
 				. '/' . $this->getInput('user')
 				. '/' . $this->getInput('project')
 				. '/issues/';
-			} break;
-			case 'Single issue': {
+
+			case 'Single issue':
 				return $this->getInput('host')
 				. '/' . $this->getInput('user')
 				. '/' . $this->getInput('project')
 				. '/issues/' . $this->getInput('issue');
-			} break;
-			case 'Releases': {
+
+			case 'Releases':
 				return $this->getInput('host')
 				. '/' . $this->getInput('user')
 				. '/' . $this->getInput('project')
 				. '/releases/';
-			} break;
+
 			default: return parent::getURI();
 		}
 	}
@@ -115,18 +115,18 @@ class GogsBridge extends BridgeAbstract {
 		$this->title = $html->find('[property="og:title"]', 0)->content;
 
 		switch($this->queriedContext) {
-			case 'Commits': {
+			case 'Commits':
 				$this->collectCommitsData($html);
-			} break;
-			case 'Issues': {
+				break;
+			case 'Issues':
 				$this->collectIssuesData($html);
-			} break;
-			case 'Single issue': {
+				break;
+			case 'Single issue':
 				$this->collectSingleIssueData($html);
-			} break;
-			case 'Releases': {
+				break;
+			case 'Releases':
 				$this->collectReleasesData($html);
-			} break;
+				break;
 		}
 
 	}

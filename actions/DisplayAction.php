@@ -15,7 +15,7 @@ class DisplayAction implements ActionInterface
 {
 	public $userData = [];
 
-	private function get_return_code($error) {
+	private function getReturnCode($error) {
 		$returnCode = $error->getCode();
 		if ($returnCode === 301 || $returnCode === 302) {
 			# Don't pass redirect codes to the exterior
@@ -184,7 +184,7 @@ class DisplayAction implements ActionInterface
 
 						$items[] = $item;
 					} elseif(Configuration::getConfig('error', 'output') === 'http') {
-						header('Content-Type: text/html', true, $this->get_return_code($e));
+						header('Content-Type: text/html', true, $this->getReturnCode($e));
 						die(buildTransformException($e, $bridge));
 					}
 				}

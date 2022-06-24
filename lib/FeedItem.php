@@ -483,7 +483,7 @@ class FeedItem {
 	 * @param string $name Property name
 	 * @param mixed $value Property value
 	 */
-	function __set($name, $value) {
+	public function __set($name, $value) {
 		switch($name) {
 			case 'uri': $this->setURI($value); break;
 			case 'title': $this->setTitle($value); break;
@@ -506,7 +506,7 @@ class FeedItem {
 	 * @param string $name Property name
 	 * @return mixed Property value
 	 */
-	function __get($name) {
+	public function __get($name) {
 		switch($name) {
 			case 'uri': return $this->getURI();
 			case 'title': return $this->getTitle();

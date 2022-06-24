@@ -44,13 +44,13 @@ class FeedExpanderExampleBridge extends FeedExpander {
 	protected function parseItem($newsItem) {
 		switch($this->getInput('version')) {
 			case 'rss_0_9_1':
-				return $this->parseRSS_0_9_1_Item($newsItem);
+				return $this->parseRss091Item($newsItem);
 				break;
 			case 'rss_1_0':
-				return $this->parseRSS_1_0_Item($newsItem);
+				return $this->parseRss1Item($newsItem);
 				break;
 			case 'rss_2_0':
-				return $this->parseRSS_2_0_Item($newsItem);
+				return $this->parseRss2Item($newsItem);
 				break;
 			case 'atom_1_0':
 				return $this->parseATOMItem($newsItem);

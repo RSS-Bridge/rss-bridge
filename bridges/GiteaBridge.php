@@ -98,48 +98,48 @@ class GiteaBridge extends BridgeAbstract {
 
 	public function getURI() {
 		switch($this->queriedContext) {
-			case 'Commits': {
+			case 'Commits':
 				return $this->getInput('host')
 				. '/' . $this->getInput('user')
 				. '/' . $this->getInput('project')
 				. '/commits/' . $this->getInput('branch');
-			} break;
-			case 'Issues': {
+
+			case 'Issues':
 				return $this->getInput('host')
 				. '/' . $this->getInput('user')
 				. '/' . $this->getInput('project')
 				. '/issues/';
-			} break;
-			case 'Single issue': {
+
+			case 'Single issue':
 				return $this->getInput('host')
 				. '/' . $this->getInput('user')
 				. '/' . $this->getInput('project')
 				. '/issues/' . $this->getInput('issue');
-			} break;
-			case 'Releases': {
+
+			case 'Releases':
 				return $this->getInput('host')
 				. '/' . $this->getInput('user')
 				. '/' . $this->getInput('project')
 				. '/releases/';
-			} break;
-			case 'Tags': {
+
+			case 'Tags':
 				return $this->getInput('host')
 				. '/' . $this->getInput('user')
 				. '/' . $this->getInput('project')
 				. '/tags/';
-			} break;
-			case 'Pull requests': {
+
+			case 'Pull requests':
 				return $this->getInput('host')
 				. '/' . $this->getInput('user')
 				. '/' . $this->getInput('project')
 				. '/pulls/';
-			} break;
-			case 'Single pull request': {
+
+			case 'Single pull request':
 				return $this->getInput('host')
 				. '/' . $this->getInput('user')
 				. '/' . $this->getInput('project')
 				. '/pulls/' . $this->getInput('pull_request');
-			} break;
+
 			default: return parent::getURI();
 		}
 	}
@@ -152,27 +152,27 @@ class GiteaBridge extends BridgeAbstract {
 		$this->title = $html->find('[property="og:title"]', 0)->content;
 
 		switch($this->queriedContext) {
-			case 'Commits': {
+			case 'Commits':
 				$this->collectCommitsData($html);
-			} break;
-			case 'Issues': {
+				break;
+			case 'Issues':
 				$this->collectIssuesData($html);
-			} break;
-			case 'Pull requests': {
+				break;
+			case 'Pull requests':
 				$this->collectPullRequestsData($html);
-			} break;
-			case 'Single issue': {
+				break;
+			case 'Single issue':
 				$this->collectSingleIssueOrPrData($html);
-			} break;
-			case 'Single pull request': {
+				break;
+			case 'Single pull request':
 				$this->collectSingleIssueOrPrData($html);
-			} break;
-			case 'Releases': {
+				break;
+			case 'Releases':
 				$this->collectReleasesData($html);
-			} break;
-			case 'Tags': {
+				break;
+			case 'Tags':
 				$this->collectTagsData($html);
-			} break;
+				break;
 		}
 	}
 

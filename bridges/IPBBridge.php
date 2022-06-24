@@ -68,7 +68,7 @@ class IPBBridge extends FeedExpander {
 			case $this->isTopic($html):
 				$this->collectTopic($html, $limit);
 				break;
-			case $this->isForum($html);
+			case $this->isForum($html):
 				$this->collectForum($html);
 				break;
 			default:

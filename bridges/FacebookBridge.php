@@ -395,7 +395,7 @@ class FacebookBridge extends BridgeAbstract {
 	/**
 	 * Bypass external link redirection
 	 */
-	private function unescape_fb_link($content){
+	private function unescapeFacebookLink($content){
 		return preg_replace_callback('/ href=\"([^"]+)\"/i', function($matches){
 			if(is_array($matches) && count($matches) > 1) {
 
@@ -413,7 +413,7 @@ class FacebookBridge extends BridgeAbstract {
 	/**
 	 * Remove Facebook's tracking code
 	 */
-	private function remove_tracking_codes($content){
+	private function removeTrackingCodes($content){
 		return preg_replace_callback('/ href=\"([^"]+)\"/i', function($matches){
 			if(is_array($matches) && count($matches) > 1) {
 
@@ -434,7 +434,7 @@ class FacebookBridge extends BridgeAbstract {
 	 * Convert textual representation of emoticons back to ASCII emoticons.
 	 * i.e. "<i><u>smile emoticon</u></i>" => ":)"
 	 */
-	private function unescape_fb_emote($content){
+	private function unescapeFacebookEmote($content){
 		return preg_replace_callback('/<i><u>([^ <>]+) ([^<>]+)<\/u><\/i>/i', function($matches){
 				static $facebook_emoticons = array(
 					'smile' => ':)',
@@ -669,7 +669,7 @@ EOD;
 						// Remove html nodes, keep only img, links, basic formatting
 						$content = strip_tags($content, '<a><img><i><u><br><p>');
 
-						$content = $this->unescape_fb_link($content);
+						$content = $this->unescapeFacebookLink($content);
 
 						// Clean useless html tag properties and fix link closing tags
 						foreach (array(
@@ -690,7 +690,7 @@ EOD;
 
 						$content = preg_replace('/<\/a [^>]+>/i', '</a>', $content);
 
-						$this->unescape_fb_emote($content);
+						$this->unescapeFacebookEmote($content);
 
 						// Restore links in the post before further parsing
 						$post = defaultLinkTo($post, self::URI);
@@ -698,7 +698,7 @@ EOD;
 						// Restore links in the content before adding to the item
 						$content = defaultLinkTo($content, self::URI);
 
-						$content = $this->remove_tracking_codes($content);
+						$content = $this->removeTrackingCodes($content);
 
 						// Retrieve date of the post
 						$date = $post->find('abbr')[0];
