@@ -16,6 +16,7 @@ def testBridges(bridges,status):
         if bridge.get('data-ref'): # Some div entries are empty, this ignores those
             bridgeid = bridge.get('id')
             bridgeid = bridgeid.split('-')[1] # this extracts a readable bridge name from the bridge metadata
+            print(bridgeid + "\n")
             bridgestring = '/?action=display&bridge=' + bridgeid + '&format=Html'
             forms = bridge.find_all("form")
             formid = 1
