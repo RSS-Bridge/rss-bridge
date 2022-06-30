@@ -1,55 +1,59 @@
 <?php
-class ASRockNewsBridge extends BridgeAbstract {
-	const NAME = 'ASRock News Bridge';
-	const URI = 'https://www.asrock.com';
-	const DESCRIPTION = 'Returns latest news articles';
-	const MAINTAINER = 'VerifiedJoseph';
-	const PARAMETERS = array();
 
-	const CACHE_TIMEOUT = 3600; // 1 hour
+class ASRockNewsBridge extends BridgeAbstract
+{
+    const NAME = 'ASRock News Bridge';
+    const URI = 'https://www.asrock.com';
+    const DESCRIPTION = 'Returns latest news articles';
+    const MAINTAINER = 'VerifiedJoseph';
+    const PARAMETERS = [];
 
-	public function collectData() {
+    const CACHE_TIMEOUT = 3600; // 1 hour
 
-		$html = getSimpleHTMLDOM(self::URI . '/news/index.asp');
+    public function collectData()
+    {
 
-		$html = defaultLinkTo($html, self::URI . '/news/');
+        $html = getSimpleHTMLDOM(self::URI . '/news/index.asp');
 
-		foreach($html->find('div.inner > a') as $index => $a) {
-			$item = array();
+        $html = defaultLinkTo($html, self::URI . '/news/');
 
-			$articlePath = $a->href;
+        foreach($html->find('div.inner > a') as $index => $a) {
+            $item = [];
 
-			$articlePageHtml = getSimpleHTMLDOMCached($articlePath, self::CACHE_TIMEOUT);
+            $articlePath = $a->href;
 
-			$articlePageHtml = defaultLinkTo($articlePageHtml, self::URI);
+            $articlePageHtml = getSimpleHTMLDOMCached($articlePath, self::CACHE_TIMEOUT);
 
-			$contents = $articlePageHtml->find('div.Contents', 0);
+            $articlePageHtml = defaultLinkTo($articlePageHtml, self::URI);
 
-			$item['uri'] = $articlePath;
-			$item['title'] = $contents->find('h3', 0)->innertext;
+            $contents = $articlePageHtml->find('div.Contents', 0);
 
-			$contents->find('h3', 0)->outertext = '';
+            $item['uri'] = $articlePath;
+            $item['title'] = $contents->find('h3', 0)->innertext;
 
-			$item['content'] = $contents->innertext;
-			$item['timestamp'] = $this->extractDate($a->plaintext);
-			$item['enclosures'][] = $a->find('img', 0)->src;
-			$this->items[] = $item;
+            $contents->find('h3', 0)->outertext = '';
 
-			if (count($this->items) >= 10) {
-				break;
-			}
-		}
-	}
+            $item['content'] = $contents->innertext;
+            $item['timestamp'] = $this->extractDate($a->plaintext);
+            $item['enclosures'][] = $a->find('img', 0)->src;
+            $this->items[] = $item;
 
-	private function extractDate($text) {
-		$dateRegex = '/^([0-9]{4}\/[0-9]{1,2}\/[0-9]{1,2})/';
+            if (count($this->items) >= 10) {
+                break;
+            }
+        }
+    }
 
-		$text = trim($text);
+    private function extractDate($text)
+    {
+        $dateRegex = '/^([0-9]{4}\/[0-9]{1,2}\/[0-9]{1,2})/';
 
-		if (preg_match($dateRegex, $text, $matches)) {
-			return $matches[1];
-		}
+        $text = trim($text);
 
-		return '';
-	}
+        if (preg_match($dateRegex, $text, $matches)) {
+            return $matches[1];
+        }
+
+        return '';
+    }
 }

@@ -11,6 +11,8 @@
     <exclude name="PSR1.Files.SideEffects.FoundWithSymbols"/>
   </rule>
 
+  <rule ref="Generic.Arrays.DisallowLongArraySyntax" />
+
   <rule ref="Generic.Files.LineLength">
     <properties>
       <property name="lineLimit" value="120"/>

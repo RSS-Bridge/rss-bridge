@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
  * Atom feeds for websites that don't have one.
@@ -6,9 +7,9 @@
  * For the full license information, please view the UNLICENSE file distributed
  * with this source code.
  *
- * @package	Core
- * @license	http://unlicense.org/ UNLICENSE
- * @link	https://github.com/rss-bridge/rss-bridge
+ * @package Core
+ * @license http://unlicense.org/ UNLICENSE
+ * @link    https://github.com/rss-bridge/rss-bridge
  */
 
 /**
@@ -52,93 +53,94 @@
  * * **Cache timeout**
  * The default cache timeout for the bridge.
  */
-interface BridgeInterface {
-	/**
-	 * Collects data from the site
-	 */
-	public function collectData();
+interface BridgeInterface
+{
+    /**
+     * Collects data from the site
+     */
+    public function collectData();
 
-	/**
-	* Get the user's supplied configuration for the bridge
-	*/
-	public function getConfiguration();
+    /**
+    * Get the user's supplied configuration for the bridge
+    */
+    public function getConfiguration();
 
-	/**
-	 * Returns the value for the selected configuration
-	 *
-	 * @param string $input The option name
-	 * @return mixed|null The option value or null if the input is not defined
-	 */
-	public function getOption($name);
+    /**
+     * Returns the value for the selected configuration
+     *
+     * @param string $input The option name
+     * @return mixed|null The option value or null if the input is not defined
+     */
+    public function getOption($name);
 
-	/**
-	 * Returns the description
-	 *
-	 * @return string Description
-	 */
-	public function getDescription();
+    /**
+     * Returns the description
+     *
+     * @return string Description
+     */
+    public function getDescription();
 
-	/**
-	 * Returns an array of collected items
-	 *
-	 * @return array Associative array of items
-	 */
-	public function getItems();
+    /**
+     * Returns an array of collected items
+     *
+     * @return array Associative array of items
+     */
+    public function getItems();
 
-	/**
-	 * Returns the bridge maintainer
-	 *
-	 * @return string Bridge maintainer
-	 */
-	public function getMaintainer();
+    /**
+     * Returns the bridge maintainer
+     *
+     * @return string Bridge maintainer
+     */
+    public function getMaintainer();
 
-	/**
-	 * Returns the bridge name
-	 *
-	 * @return string Bridge name
-	 */
-	public function getName();
+    /**
+     * Returns the bridge name
+     *
+     * @return string Bridge name
+     */
+    public function getName();
 
-	/**
-	 * Returns the bridge icon
-	 *
-	 * @return string Bridge icon
-	 */
-	public function getIcon();
+    /**
+     * Returns the bridge icon
+     *
+     * @return string Bridge icon
+     */
+    public function getIcon();
 
-	/**
-	 * Returns the bridge parameters
-	 *
-	 * @return array Bridge parameters
-	 */
-	public function getParameters();
+    /**
+     * Returns the bridge parameters
+     *
+     * @return array Bridge parameters
+     */
+    public function getParameters();
 
-	/**
-	 * Returns the bridge URI
-	 *
-	 * @return string Bridge URI
-	 */
-	public function getURI();
+    /**
+     * Returns the bridge URI
+     *
+     * @return string Bridge URI
+     */
+    public function getURI();
 
-	/**
-	 * Returns the bridge Donation URI
-	 *
-	 * @return string Bridge Donation URI
-	 */
-	public function getDonationURI();
+    /**
+     * Returns the bridge Donation URI
+     *
+     * @return string Bridge Donation URI
+     */
+    public function getDonationURI();
 
-	/**
-	 * Returns the cache timeout
-	 *
-	 * @return int Cache timeout
-	 */
-	public function getCacheTimeout();
+    /**
+     * Returns the cache timeout
+     *
+     * @return int Cache timeout
+     */
+    public function getCacheTimeout();
 
-	/**
-	 * Returns parameters from given URL or null if URL is not applicable
-	 *
-	 * @param string $url URL to extract parameters from
-	 * @return array|null List of bridge parameters or null if detection failed.
-	 */
-	public function detectParameters($url);
+    /**
+     * Returns parameters from given URL or null if URL is not applicable
+     *
+     * @param string $url URL to extract parameters from
+     * @return array|null List of bridge parameters or null if detection failed.
+     */
+    public function detectParameters($url);
 }

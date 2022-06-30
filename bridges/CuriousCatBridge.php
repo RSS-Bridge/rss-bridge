@@ -1,108 +1,115 @@
 <?php
-class CuriousCatBridge extends BridgeAbstract {
-	const NAME = 'Curious Cat Bridge';
-	const URI = 'https://curiouscat.me';
-	const DESCRIPTION = 'Returns list of newest questions and answers for a user profile';
-	const MAINTAINER = 'VerifiedJoseph';
-	const PARAMETERS = array(array(
-		'username' => array(
-			'name' => 'Username',
-			'type' => 'text',
-			'required' => true,
-			'exampleValue' => 'koethekoethe',
-		)
-	));
 
-	const CACHE_TIMEOUT = 3600;
+class CuriousCatBridge extends BridgeAbstract
+{
+    const NAME = 'Curious Cat Bridge';
+    const URI = 'https://curiouscat.me';
+    const DESCRIPTION = 'Returns list of newest questions and answers for a user profile';
+    const MAINTAINER = 'VerifiedJoseph';
+    const PARAMETERS = [[
+        'username' => [
+            'name' => 'Username',
+            'type' => 'text',
+            'required' => true,
+            'exampleValue' => 'koethekoethe',
+        ]
+    ]];
 
-	public function collectData() {
+    const CACHE_TIMEOUT = 3600;
 
-		$url = self::URI . '/api/v2/profile?username=' . urlencode($this->getInput('username'));
+    public function collectData()
+    {
 
-		$apiJson = getContents($url);
+        $url = self::URI . '/api/v2/profile?username=' . urlencode($this->getInput('username'));
 
-		$apiData = json_decode($apiJson, true);
+        $apiJson = getContents($url);
 
-		foreach($apiData['posts'] as $post) {
-			$item = array();
+        $apiData = json_decode($apiJson, true);
 
-			$item['author'] = 'Anonymous';
+        foreach($apiData['posts'] as $post) {
+            $item = [];
 
-			if ($post['senderData']['id'] !== false) {
-				$item['author'] = $post['senderData']['username'];
-			}
+            $item['author'] = 'Anonymous';
 
-			$item['uri'] = $this->getURI() . '/post/' . $post['id'];
-			$item['title'] = $this->ellipsisTitle($post['comment']);
+            if ($post['senderData']['id'] !== false) {
+                $item['author'] = $post['senderData']['username'];
+            }
 
-			$item['content'] = $this->processContent($post);
-			$item['timestamp'] = $post['timestamp'];
+            $item['uri'] = $this->getURI() . '/post/' . $post['id'];
+            $item['title'] = $this->ellipsisTitle($post['comment']);
 
-			$this->items[] = $item;
-		}
-	}
+            $item['content'] = $this->processContent($post);
+            $item['timestamp'] = $post['timestamp'];
 
-	public function getURI() {
+            $this->items[] = $item;
+        }
+    }
 
-		if (!is_null($this->getInput('username'))) {
-			return self::URI . '/' . $this->getInput('username');
-		}
+    public function getURI()
+    {
 
-		return parent::getURI();
-	}
+        if (!is_null($this->getInput('username'))) {
+            return self::URI . '/' . $this->getInput('username');
+        }
 
-	public function getName() {
+        return parent::getURI();
+    }
 
-		if (!is_null($this->getInput('username'))) {
-			return $this->getInput('username') . ' - Curious Cat';
-		}
+    public function getName()
+    {
 
-		return parent::getName();
-	}
+        if (!is_null($this->getInput('username'))) {
+            return $this->getInput('username') . ' - Curious Cat';
+        }
 
-	private function processContent($post) {
+        return parent::getName();
+    }
 
-		$author = 'Anonymous';
+    private function processContent($post)
+    {
 
-		if ($post['senderData']['id'] !== false) {
-			$authorUrl = self::URI . '/' . $post['senderData']['username'];
+        $author = 'Anonymous';
 
-			$author = <<<EOD
+        if ($post['senderData']['id'] !== false) {
+            $authorUrl = self::URI . '/' . $post['senderData']['username'];
+
+            $author = <<<EOD
 <a href="{$authorUrl}">{$post['senderData']['username']}</a>
 EOD;
-		}
+        }
 
-		$question = $this->formatUrls($post['comment']);
-		$answer = $this->formatUrls($post['reply']);
+        $question = $this->formatUrls($post['comment']);
+        $answer = $this->formatUrls($post['reply']);
 
-		$content = <<<EOD
+        $content = <<<EOD
 <p>{$author} asked:</p>
 <blockquote>{$question}</blockquote><br/>
 <p>{$post['addresseeData']['username']} answered:</p>
 <blockquote>{$answer}</blockquote>
 EOD;
 
-		return $content;
-	}
+        return $content;
+    }
 
-	private function ellipsisTitle($text) {
-		$length = 150;
+    private function ellipsisTitle($text)
+    {
+        $length = 150;
 
-		if (strlen($text) > $length) {
-			$text = explode('<br>', wordwrap($text, $length, '<br>'));
-			return $text[0] . '...';
-		}
+        if (strlen($text) > $length) {
+            $text = explode('<br>', wordwrap($text, $length, '<br>'));
+            return $text[0] . '...';
+        }
 
-		return $text;
-	}
+        return $text;
+    }
 
-	private function formatUrls($content) {
+    private function formatUrls($content)
+    {
 
-		return preg_replace(
-			'/(http[s]{0,1}\:\/\/[a-zA-Z0-9.\/\?\&=\-_]{4,})/ims',
-			'<a target="_blank" href="$1" target="_blank">$1</a> ',
-			$content
-		);
-
-	}
+        return preg_replace(
+            '/(http[s]{0,1}\:\/\/[a-zA-Z0-9.\/\?\&=\-_]{4,})/ims',
+            '<a target="_blank" href="$1" target="_blank">$1</a> ',
+            $content
+        );
+    }
 }
