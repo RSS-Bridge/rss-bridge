@@ -98,7 +98,7 @@ class MangaDexBridge extends BridgeAbstract
                 preg_match(self::TITLE_REGEX, $this->getInput('url'), $matches)
                 or returnClientError('Invalid URL Parameter');
                 $this->feedURI = self::URI . 'title/' . $matches['uuid'];
-                $params['order[updatedAt]'] = 'desc';
+                $params['order[readableAt]'] = 'desc';
                 if (!$this->getInput('external')) {
                     $params['includeFutureUpdates'] = '0';
                 }
@@ -109,7 +109,7 @@ class MangaDexBridge extends BridgeAbstract
                 $params['chapter'] = $this->getInput('chapter');
                 $params['groups[]'] = $this->getInput('groups');
                 $params['uploader'] = $this->getInput('uploader');
-                $params['order[updatedAt]'] = 'desc';
+                $params['order[readableAt]'] = 'desc';
                 if (!$this->getInput('external')) {
                     $params['includeFutureUpdates'] = '0';
                 }
@@ -207,7 +207,7 @@ class MangaDexBridge extends BridgeAbstract
             }
             $item['title'] .= ' [' . $chapter['attributes']['translatedLanguage'] . ']';
 
-            $item['timestamp'] = $chapter['attributes']['updatedAt'];
+            $item['timestamp'] = $chapter['attributes']['readableAt'];
 
             $groups = [];
             $users = [];
