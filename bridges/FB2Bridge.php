@@ -12,7 +12,7 @@ class FB2Bridge extends BridgeAbstract
     const PARAMETERS = [ [
         'u' => [
             'name' => 'Username',
-            'required' => true
+            'required' => true,
         ],
         'abbrev_name' => [
             'name' => 'Abbreviate author name in title',
@@ -65,7 +65,7 @@ class FB2Bridge extends BridgeAbstract
                 'confused' => 'o_O',
                 'upset' => 'xD',
                 'colonthree' => ':3',
-                'like' => '&#x1F44D;'];
+                'like' => '&#x1F44D;', ];
             $len = count($matches);
             if ($len > 1) {
                 for ($i = 1; $i < $len; $i++) {
@@ -85,14 +85,16 @@ class FB2Bridge extends BridgeAbstract
             $pageInfo = $this->getPageInfos($page, $cookies);
 
             if ($pageInfo['userId'] === null) {
-                returnClientError(<<<EOD
-Unable to get the page id. You should consider getting the ID by hand, then importing it into FB2Bridge
-EOD
+                returnClientError(
+                    <<<EOD
+                        Unable to get the page id. You should consider getting the ID by hand, then importing it into FB2Bridge
+                        EOD
                 );
             } elseif ($pageInfo['userId'] == -1) {
-                returnClientError(<<<EOD
-This page is not accessible without being logged in.
-EOD
+                returnClientError(
+                    <<<EOD
+                        This page is not accessible without being logged in.
+                        EOD
                 );
             }
         }
@@ -120,7 +122,7 @@ EOD
 
             //Decode images
             $imagecleaned = preg_replace_callback('/<i [^>]* style="[^"]*url\(\'(.*?)\'\).*?><\/i>/m', function ($matches) {
-                    return "<img src='" . str_replace(['\\3a ', '\\3d ', '\\26 '], [':', '=', '&'], $matches[1]) . "' />";
+                return "<img src='" . str_replace(['\\3a ', '\\3d ', '\\26 '], [':', '=', '&'], $matches[1]) . "' />";
             }, $content);
             $content = str_get_html($imagecleaned);
 
@@ -156,9 +158,9 @@ EOD
                 'aria-[^=]*',
                 'role',
                 'rel',
-                'id'] as $property_name
+                'id', ] as $property_name
             ) {
-                    $content = preg_replace('/ ' . $property_name . '=\"[^"]*\"/i', '', $content);
+                $content = preg_replace('/ ' . $property_name . '=\"[^"]*\"/i', '', $content);
             }
             $content = preg_replace('/<\/a [^>]+>/i', '</a>', $content);
 
@@ -247,8 +249,8 @@ EOD
         $ctx = stream_context_create([
             'http' => [
                 'user_agent' => Configuration::getConfig('http', 'useragent'),
-                'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
-                ]
+                'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                ],
             ]);
         $a = file_get_contents($pageURL, 0, $ctx);
 
@@ -271,8 +273,8 @@ EOD
         $context = stream_context_create([
             'http' => [
                 'user_agent' => Configuration::getConfig('http', 'useragent'),
-                'header' => 'Cookie: ' . $cookies
-                ]
+                'header' => 'Cookie: ' . $cookies,
+                ],
             ]);
 
         $pageContent = file_get_contents($page, 0, $context);

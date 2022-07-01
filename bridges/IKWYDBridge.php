@@ -12,14 +12,14 @@ class IKWYDBridge extends BridgeAbstract
             'ip' => [
                 'name' => 'IP Address',
                 'exampleValue' => '8.8.8.8',
-                'required' => true
+                'required' => true,
             ],
             'update' => [
                 'name' => 'Update last seen',
                 'type' => 'checkbox',
-                'title' => 'Update timestamp every time "last seen" changes'
-            ]
-        ]
+                'title' => 'Update timestamp every time "last seen" changes',
+            ],
+        ],
     ];
     private $name;
     private $uri;

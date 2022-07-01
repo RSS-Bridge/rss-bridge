@@ -13,14 +13,14 @@ class FunkBridge extends BridgeAbstract
                 'name' => 'Slug',
                 'type' => 'text',
                 'required' => true,
-                'exampleValue' => 'game-two-856'
+                'exampleValue' => 'game-two-856',
             ],
             'max' => [
                 'name' => 'Maximum',
                 'type' => 'number',
-                'defaultValue' => '-1'
-            ]
-        ]
+                'defaultValue' => '-1',
+            ],
+        ],
     ];
 
     public function collectData()
@@ -53,7 +53,7 @@ class FunkBridge extends BridgeAbstract
         $item['author'] = str_replace('-' . $element['channelId'], '', $element['channelAlias']);
         $item['content'] = $element['shortDescription'];
         $item['enclosures'] = [
-            'https://www.funk.net/api/v4.0/thumbnails/' . $element['imageLandscape']
+            'https://www.funk.net/api/v4.0/thumbnails/' . $element['imageLandscape'],
         ];
         $item['uid'] = $element['entityId'];
         return $item;
@@ -64,7 +64,7 @@ class FunkBridge extends BridgeAbstract
         $regex = '/^https?:\/\/(?:www\.)?funk\.net\/channel\/([^\/]+).*$/';
         if (preg_match($regex, $url, $urlMatches) > 0) {
             return [
-                'channel' => $urlMatches[1]
+                'channel' => $urlMatches[1],
             ];
         } else {
             return null;

@@ -10,14 +10,14 @@ class FeedReducerBridge extends FeedExpander
         'url' => [
             'name' => 'Feed URI',
             'exampleValue' => 'https://lorem-rss.herokuapp.com/feed?length=42',
-            'required' => true
+            'required' => true,
         ],
         'percentage' => [
             'name' => 'percentage',
             'type' => 'number',
             'exampleValue' => 50,
-            'required' => true
-        ]
+            'required' => true,
+        ],
     ]];
     const CACHE_TIMEOUT = 3600;
 

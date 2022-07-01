@@ -21,10 +21,10 @@ class ABCNewsBridge extends BridgeAbstract
                     'SA' => 'sa',
                     'TAS' => 'tas',
                     'VIC' => 'vic',
-                    'WA' => 'wa'
+                    'WA' => 'wa',
                 ],
-            ]
-        ]
+            ],
+        ],
     ];
 
     public function collectData()

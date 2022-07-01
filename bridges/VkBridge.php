@@ -14,13 +14,13 @@ class VkBridge extends BridgeAbstract
             'u' => [
                 'name' => 'Group or user name',
                 'exampleValue' => 'elonmusk_tech',
-                'required' => true
+                'required' => true,
             ],
             'hide_reposts' => [
                 'name' => 'Hide reposts',
                 'type' => 'checkbox',
-            ]
-        ]
+            ],
+        ],
     ];
 
     protected $videos = [];
@@ -448,7 +448,7 @@ class VkBridge extends BridgeAbstract
     {
         $result = $this->api('video.get', [
             'videos' => implode(',', array_keys($this->videos)),
-            'count' => 200
+            'count' => 200,
         ]);
 
         if (!isset($result['error'])) {

@@ -14,8 +14,8 @@ class MediapartBlogsBridge extends BridgeAbstract
                 'title' => 'Blog user name',
                 'required' => true,
                 'exampleValue' => 'jean-vincot',
-            ]
-        ]
+            ],
+        ],
     ];
 
     public function getIcon()

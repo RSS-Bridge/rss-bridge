@@ -15,11 +15,11 @@ class EliteDangerousGalnetBridge extends BridgeAbstract
                 'values' => [
                     'English' => 'en',
                     'French' => 'fr',
-                    'German' => 'de'
+                    'German' => 'de',
                 ],
-                'defaultValue' => 'en'
-            ]
-        ]
+                'defaultValue' => 'en',
+            ],
+        ],
     ];
 
     public function collectData()

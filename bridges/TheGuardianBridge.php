@@ -22,9 +22,9 @@ class TheGuardianBridge extends FeedExpander
                 'Opinion' => '/uk/commentisfree/rss',
                 'Lifestyle' => '/uk/lifeandstyle/rss',
                 'Culture' => '/uk/culture/rss',
-                'Sports' => '/uk/sport/rss'
-            ]
-        ]
+                'Sports' => '/uk/sport/rss',
+            ],
+        ],
 
         /*
 
@@ -84,7 +84,7 @@ class TheGuardianBridge extends FeedExpander
             '.element-atom',
             '.submeta',
             'youtube-media-atom',
-            'svg'
+            'svg',
         ];
 
         // Remove the listed crap

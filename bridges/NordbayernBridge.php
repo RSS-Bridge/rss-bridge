@@ -36,15 +36,15 @@ class NordbayernBridge extends BridgeAbstract
                 'Roth' => 'roth',
                 'Rothenburg o.d.T.' => 'rothenburg-o-d-t',
                 'Treuchtlingen' => 'treuchtlingen',
-                'Weißenburg' => 'weissenburg'
-            ]
+                'Weißenburg' => 'weissenburg',
+            ],
         ],
         'policeReports' => [
             'name' => 'Police Reports',
             'type' => 'checkbox',
             'exampleValue' => 'checked',
             'title' => 'Include Police Reports',
-        ]
+        ],
     ]];
 
     private function getValidImage($picture)

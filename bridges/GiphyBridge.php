@@ -12,23 +12,23 @@ class GiphyBridge extends BridgeAbstract
         's' => [
             'name' => 'search tag',
             'exampleValue' => 'bird',
-            'required' => true
+            'required' => true,
         ],
         'noGif' => [
             'name' => 'Without gifs',
             'type' => 'checkbox',
-            'title' => 'Exclude gifs from the results'
+            'title' => 'Exclude gifs from the results',
         ],
         'noStick' => [
             'name' => 'Without stickers',
             'type' => 'checkbox',
-            'title' => 'Exclude stickers from the results'
+            'title' => 'Exclude stickers from the results',
         ],
         'n' => [
             'name' => 'max number of returned items (max 50)',
             'type' => 'number',
             'exampleValue' => 3,
-        ]
+        ],
     ]];
 
     public function getName()
@@ -46,20 +46,20 @@ class GiphyBridge extends BridgeAbstract
             $createdAt = new \DateTime($entry->import_datetime);
 
             $this->items[] = [
-                'id'        => $entry->id,
-                'uri'       => $entry->url,
-                'author'    => $entry->username,
+                'id' => $entry->id,
+                'uri' => $entry->url,
+                'author' => $entry->username,
                 'timestamp' => $createdAt->format('U'),
-                'title'     => $entry->title,
-                'content'   => <<<HTML
-<a href="{$entry->url}">
-<img
-	loading="lazy"
-	src="{$entry->images->downsized->url}"
-	width="{$entry->images->downsized->width}"
-	height="{$entry->images->downsized->height}" />
-</a>
-HTML
+                'title' => $entry->title,
+                'content' => <<<HTML
+                    <a href="{$entry->url}">
+                    <img
+                    	loading="lazy"
+                    	src="{$entry->images->downsized->url}"
+                    	width="{$entry->images->downsized->width}"
+                    	height="{$entry->images->downsized->height}" />
+                    </a>
+                    HTML,
             ];
         }
     }

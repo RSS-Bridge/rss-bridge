@@ -12,22 +12,22 @@ class PickyWallpapersBridge extends BridgeAbstract
         'c' => [
             'name' => 'category',
             'exampleValue' => 'funny',
-            'required' => true
+            'required' => true,
         ],
         's' => [
-            'name' => 'subcategory'
+            'name' => 'subcategory',
         ],
         'm' => [
             'name' => 'Max number of wallpapers',
             'defaultValue' => 12,
-            'type' => 'number'
+            'type' => 'number',
         ],
         'r' => [
             'name' => 'resolution',
             'exampleValue' => '1920x1200, 1680x1050,…',
             'defaultValue' => '1920x1200',
-            'pattern' => '[0-9]{3,4}x[0-9]{3,4}'
-        ]
+            'pattern' => '[0-9]{3,4}x[0-9]{3,4}',
+        ],
     ]];
 
     public function collectData()

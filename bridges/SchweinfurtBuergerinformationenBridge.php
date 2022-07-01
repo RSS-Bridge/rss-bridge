@@ -17,8 +17,8 @@ class SchweinfurtBuergerinformationenBridge extends BridgeAbstract
                 'title' => 'Specifies the number of pages to fetch. Usually one or two are enough.',
                 'exampleValue' => '1',
                 'defaultValue' => '1',
-            ]
-        ]
+            ],
+        ],
     ];
 
     public function getIcon()

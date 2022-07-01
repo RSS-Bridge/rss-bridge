@@ -13,40 +13,40 @@ class BadDragonBridge extends BridgeAbstract
         'Clearance' => [
             'ready_made' => [
                 'name' => 'Ready Made',
-                'type' => 'checkbox'
+                'type' => 'checkbox',
             ],
             'flop' => [
                 'name' => 'Flops',
-                'type' => 'checkbox'
+                'type' => 'checkbox',
             ],
             'skus' => [
                 'name' => 'Products',
                 'exampleValue' => 'chanceflared, crackers',
-                'title' => 'Comma separated list of product SKUs'
+                'title' => 'Comma separated list of product SKUs',
             ],
             'onesize' => [
                 'name' => 'One-Size',
-                'type' => 'checkbox'
+                'type' => 'checkbox',
             ],
             'mini' => [
                 'name' => 'Mini',
-                'type' => 'checkbox'
+                'type' => 'checkbox',
             ],
             'small' => [
                 'name' => 'Small',
-                'type' => 'checkbox'
+                'type' => 'checkbox',
             ],
             'medium' => [
                 'name' => 'Medium',
-                'type' => 'checkbox'
+                'type' => 'checkbox',
             ],
             'large' => [
                 'name' => 'Large',
-                'type' => 'checkbox'
+                'type' => 'checkbox',
             ],
             'extralarge' => [
                 'name' => 'Extra Large',
-                'type' => 'checkbox'
+                'type' => 'checkbox',
             ],
             'category' => [
                 'name' => 'Category',
@@ -60,50 +60,50 @@ class BadDragonBridge extends BridgeAbstract
                     'Packers' => 'packer',
                     'Lil\' Squirts' => 'shooter',
                     'Lil\' Vibes' => 'vibrator',
-                    'Wearables' => 'wearable'
+                    'Wearables' => 'wearable',
                 ],
                 'defaultValue' => 'all',
             ],
             'soft' => [
                 'name' => 'Soft Firmness',
-                'type' => 'checkbox'
+                'type' => 'checkbox',
             ],
             'med_firm' => [
                 'name' => 'Medium Firmness',
-                'type' => 'checkbox'
+                'type' => 'checkbox',
             ],
             'firm' => [
                 'name' => 'Firm',
-                'type' => 'checkbox'
+                'type' => 'checkbox',
             ],
             'split' => [
                 'name' => 'Split Firmness',
-                'type' => 'checkbox'
+                'type' => 'checkbox',
             ],
             'maxprice' => [
                 'name' => 'Max Price',
                 'type' => 'number',
                 'required' => true,
-                'defaultValue' => 300
+                'defaultValue' => 300,
             ],
             'minprice' => [
                 'name' => 'Min Price',
                 'type' => 'number',
-                'defaultValue' => 0
+                'defaultValue' => 0,
             ],
             'cumtube' => [
                 'name' => 'Cumtube',
-                'type' => 'checkbox'
+                'type' => 'checkbox',
             ],
             'suctionCup' => [
                 'name' => 'Suction Cup',
-                'type' => 'checkbox'
+                'type' => 'checkbox',
             ],
             'noAccessories' => [
                 'name' => 'No Accessories',
-                'type' => 'checkbox'
-            ]
-        ]
+                'type' => 'checkbox',
+            ],
+        ],
     ];
 
     /*
@@ -329,7 +329,7 @@ class BadDragonBridge extends BridgeAbstract
                     '2' => 'Extra soft',
                     '3' => 'Soft',
                     '5' => 'Medium',
-                    '8' => 'Firm'
+                    '8' => 'Firm',
                     ];
                     $firmnesses = explode('/', $toy->firmness);
                     if (count($firmnesses) === 2) {

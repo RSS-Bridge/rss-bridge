@@ -14,9 +14,9 @@ class UrlebirdBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'exampleValue' => '@willsmith',
-                'title' => '@username or #hashtag'
-            ]
-        ]
+                'title' => '@username or #hashtag',
+            ],
+        ],
     ];
 
     private $title;

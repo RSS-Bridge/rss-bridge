@@ -18,14 +18,14 @@ class FurAffinityUserBridge extends BridgeAbstract
             'aCookie' => [
                 'name' => 'Login cookie \'a\'',
                 'type' => 'text',
-                'required' => true
+                'required' => true,
             ],
             'bCookie' => [
                 'name' => 'Login cookie \'b\'',
                 'type' => 'text',
-                'required' => true
-            ]
-        ]
+                'required' => true,
+            ],
+        ],
     ];
 
     public function collectData()

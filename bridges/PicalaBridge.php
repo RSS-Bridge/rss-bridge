@@ -2,17 +2,17 @@
 
 class PicalaBridge extends BridgeAbstract
 {
-    const TYPES      = [
+    const TYPES = [
         'Actualités' => 'actualites',
-        'Économie'   => 'economie',
-        'Tests'      => 'tests',
-        'Pratique'   => 'pratique',
+        'Économie' => 'economie',
+        'Tests' => 'tests',
+        'Pratique' => 'pratique',
     ];
-    const NAME          = 'Picala Bridge';
-    const URI           = 'https://www.picala.fr';
-    const DESCRIPTION   = 'Dernière nouvelles du média indépendant sur le vélo électrique';
-    const MAINTAINER    = 'Chouchen';
-    const PARAMETERS    = [
+    const NAME = 'Picala Bridge';
+    const URI = 'https://www.picala.fr';
+    const DESCRIPTION = 'Dernière nouvelles du média indépendant sur le vélo électrique';
+    const MAINTAINER = 'Chouchen';
+    const PARAMETERS = [
         [
             'type' => [
                 'name' => 'Type',

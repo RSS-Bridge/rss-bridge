@@ -10,8 +10,8 @@ class AtmoNouvelleAquitaineBridge extends BridgeAbstract
         'cities' => [
             'name' => 'Choisir une ville',
             'type' => 'list',
-            'values' => self::CITIES
-        ]
+            'values' => self::CITIES,
+        ],
     ]];
     const CACHE_TIMEOUT = 7200;
 
@@ -4645,6 +4645,6 @@ class AtmoNouvelleAquitaineBridge extends BridgeAbstract
         'Yviers (16210)' => '16424',
         'Yvrac (33370)' => '33554',
         'Yvrac-et-Malleyrand (16110)' => '16425',
-        'Yzosse (40180)' => '40334'
+        'Yzosse (40180)' => '40334',
     ];
 }

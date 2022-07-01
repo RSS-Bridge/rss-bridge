@@ -33,7 +33,7 @@ class IGNBridge extends FeedExpander
             '.jsx-4213937408',
             '.commerce-container',
             '.widget-container',
-            '.newsletter-signup-button'
+            '.newsletter-signup-button',
         ];
 
         // Remove useless elements

@@ -12,7 +12,7 @@ class ScribdBridge extends BridgeAbstract
             'type' => 'text',
             'required' => true,
             'title' => 'Profile URL. Example: https://www.scribd.com/user/164147088/Ars-Technica',
-            'exampleValue' => 'https://www.scribd.com/user/164147088/Ars-Technica'
+            'exampleValue' => 'https://www.scribd.com/user/164147088/Ars-Technica',
         ],
     ]];
 
@@ -45,8 +45,8 @@ class ScribdBridge extends BridgeAbstract
             }
 
             $item['content'] = <<<EOD
-<p>{$description}<p><p><img src="{$image}"></p>
-EOD;
+                <p>{$description}<p><p><img src="{$image}"></p>
+                EOD;
 
             $item['enclosures'][] = $image;
 

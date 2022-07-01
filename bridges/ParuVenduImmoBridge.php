@@ -11,19 +11,19 @@ class ParuVenduImmoBridge extends BridgeAbstract
     const PARAMETERS = [ [
         'minarea' => [
             'name' => 'Minimal surface m²',
-            'type' => 'number'
+            'type' => 'number',
         ],
         'maxprice' => [
             'name' => 'Max price',
-            'type' => 'number'
+            'type' => 'number',
         ],
         'pa' => [
             'name' => 'Country code',
-            'exampleValue' => 'FR'
+            'exampleValue' => 'FR',
         ],
         'lo' => [
-            'name' => 'department numbers or postal codes, comma-separated'
-        ]
+            'name' => 'department numbers or postal codes, comma-separated',
+        ],
     ]];
 
     public function collectData()
@@ -58,7 +58,7 @@ class ParuVenduImmoBridge extends BridgeAbstract
                 $price = '';
             }
 
-            list($href) = explode('#', $element->href);
+            [$href] = explode('#', $element->href);
 
             $item = [];
             $item['uri'] = self::URI . $href;

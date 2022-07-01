@@ -72,7 +72,7 @@ class PepperBridgeAbstract extends BridgeAbstract
             ' ', /* Notice this is a space! */
             [
                 'cept-vote-box',
-                'vote-box'
+                'vote-box',
             ]
         );
 
@@ -80,7 +80,7 @@ class PepperBridgeAbstract extends BridgeAbstract
         $selectorDescription = implode(
             ' ', /* Notice this is a space! */
             [
-                'overflow--wrap-break'
+                'overflow--wrap-break',
             ]
         );
 
@@ -90,7 +90,7 @@ class PepperBridgeAbstract extends BridgeAbstract
             [
                 'size--all-s',
                 'flex',
-                'boxAlign-jc--all-fe'
+                'boxAlign-jc--all-fe',
             ]
         );
 
@@ -173,17 +173,17 @@ class PepperBridgeAbstract extends BridgeAbstract
         // This string was extracted during a Website visit, and minified using this neat tool :
         // https://codepen.io/dangodev/pen/Baoqmoy
         $graphqlString = <<<'HEREDOC'
-query comments($filter:CommentFilter!,$limit:Int,$page:Int){comments(filter:$filter,limit:$limit,page:$page){
-items{...commentFields}pagination{...paginationFields}}}fragment commentFields on Comment{commentId threadId url 
-preparedHtmlContent user{...userMediumAvatarFields...userNameFields...userPersonaFields bestBadge{...badgeFields}}
-reactionCounts{type count}deletable currentUserReaction{type}reported reportable source status createdAt updatedAt 
-ignored popular deletedBy{username}notes{content createdAt user{username}}lastEdit{reason timeAgo userId}}fragment 
-userMediumAvatarFields on User{userId isDeletedOrPendingDeletion imageUrls(slot:"default",variations:
-["user_small_avatar"])}fragment userNameFields on User{userId username isUserProfileHidden isDeletedOrPendingDeletion}
-fragment userPersonaFields on User{persona{type text}}fragment badgeFields on Badge{badgeId level{...badgeLevelFields}}
-fragment badgeLevelFields on BadgeLevel{key name description}fragment paginationFields on Pagination{count current last
- next previous size order}
-HEREDOC;
+            query comments($filter:CommentFilter!,$limit:Int,$page:Int){comments(filter:$filter,limit:$limit,page:$page){
+            items{...commentFields}pagination{...paginationFields}}}fragment commentFields on Comment{commentId threadId url 
+            preparedHtmlContent user{...userMediumAvatarFields...userNameFields...userPersonaFields bestBadge{...badgeFields}}
+            reactionCounts{type count}deletable currentUserReaction{type}reported reportable source status createdAt updatedAt 
+            ignored popular deletedBy{username}notes{content createdAt user{username}}lastEdit{reason timeAgo userId}}fragment 
+            userMediumAvatarFields on User{userId isDeletedOrPendingDeletion imageUrls(slot:"default",variations:
+            ["user_small_avatar"])}fragment userNameFields on User{userId username isUserProfileHidden isDeletedOrPendingDeletion}
+            fragment userPersonaFields on User{persona{type text}}fragment badgeFields on Badge{badgeId level{...badgeLevelFields}}
+            fragment badgeLevelFields on BadgeLevel{key name description}fragment paginationFields on Pagination{count current last
+             next previous size order}
+            HEREDOC;
 
         // Construct the JSON object to send to the Website
         $queryArray = [
@@ -215,7 +215,7 @@ HEREDOC;
         // CURL Options
         $opts = [
             CURLOPT_POST => 1,
-            CURLOPT_POSTFIELDS => $queryJSON
+            CURLOPT_POSTFIELDS => $queryJSON,
         ];
         $json = getContents($url, $header, $opts);
         $objects = json_decode($json);
@@ -443,7 +443,7 @@ HEREDOC;
                 'height--all-auto',
                 'imgFrame-img',
                 'img--dummy',
-                'js-lazy-img'
+                'js-lazy-img',
             ]
         );
 
@@ -509,7 +509,7 @@ HEREDOC;
             'September',
             'October',
             'November',
-            'December'
+            'December',
         ];
 
         // A date can be prfixed with some words, we remove theme
@@ -576,7 +576,7 @@ HEREDOC;
             'day',
             'month',
             'year',
-            ''
+            '',
         ];
         $date->modify(str_replace($search, $replace, $str));
         return $date->getTimestamp();

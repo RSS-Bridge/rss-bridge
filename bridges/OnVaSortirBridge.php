@@ -112,9 +112,9 @@ class OnVaSortirBridge extends FeedExpander
                     'Valence' => 'valence',
                     'Vannes' => 'vannes',
                     'Zurich' => 'zurich',
-                ]
-            ]
-            ]
+                ],
+            ],
+            ],
     ];
 
     protected function parseItem($item)

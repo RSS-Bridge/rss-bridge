@@ -33,7 +33,7 @@ class MrssFormat extends FormatAbstract
     protected const MRSS_NS = 'http://search.yahoo.com/mrss/';
 
     const ALLOWED_IMAGE_EXT = [
-        '.gif', '.jpg', '.png'
+        '.gif', '.jpg', '.png',
     ];
 
     public function stringify()

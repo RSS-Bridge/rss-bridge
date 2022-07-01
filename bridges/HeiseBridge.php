@@ -19,16 +19,16 @@ class HeiseBridge extends FeedExpander
                 'Internet-Störungen'
                 => 'https://www.heise.de/netze/netzwerk-tools/imonitor-internet-stoerungen/feed/aktuelle-meldungen/',
                 'Alle News von heise Developer'
-                => 'https://www.heise.de/developer/rss/news-atom.xml'
-            ]
+                => 'https://www.heise.de/developer/rss/news-atom.xml',
+            ],
         ],
         'limit' => [
             'name' => 'Limit',
             'type' => 'number',
             'required' => false,
             'title' => 'Specify number of full articles to return',
-            'defaultValue' => 5
-        ]
+            'defaultValue' => 5,
+        ],
     ]];
     const LIMIT = 5;
 

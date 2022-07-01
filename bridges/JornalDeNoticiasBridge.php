@@ -11,8 +11,8 @@ class JornalDeNoticiasBridge extends BridgeAbstract
             'url' => [
                 'name' => 'URL (relative)',
                 'exampleValue' => 'opiniao/catia-domingues.html',
-            ]
-        ]
+            ],
+        ],
     ];
 
     public function getIcon()

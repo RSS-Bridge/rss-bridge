@@ -27,9 +27,9 @@ class DauphineLibereBridge extends FeedExpander
                 'Isère Sud' => 'isere-sud',
                 'Savoie' => 'savoie',
                 'Haute-Savoie' => 'haute-savoie',
-                'Vaucluse' => 'vaucluse'
-            ]
-        ]
+                'Vaucluse' => 'vaucluse',
+            ],
+        ],
     ]];
 
     public function collectData()

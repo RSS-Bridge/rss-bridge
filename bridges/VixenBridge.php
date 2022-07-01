@@ -27,10 +27,10 @@ class VixenBridge extends BridgeAbstract
                     'TushyRaw' => 'TushyRaw',
                     'Vixen' => 'Vixen',
                     'Slayed' => 'Slayed',
-                    'Deeper' => 'Deeper'
+                    'Deeper' => 'Deeper',
                 ],
-            ]
-        ]
+            ],
+        ],
     ];
 
     public function collectData()

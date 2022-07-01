@@ -26,20 +26,20 @@ class PokemonTVBridge extends BridgeAbstract
                 'Portoguese' => 'br',
                 'Russian' => 'ru',
                 'Spanish' => 'es',
-                'Swedish' => 'se'
+                'Swedish' => 'se',
             ],
-            'defaultValue' => 'English (US)'
+            'defaultValue' => 'English (US)',
         ],
         'filtername' => [
             'name' => 'Series Name Filter',
             'exampleValue' => 'Ultra',
-            'required' => false
+            'required' => false,
         ],
         'filterseason' => [
             'name' => 'Series Season Filter',
             'exampleValue' => '22',
-            'required' => false
-        ]
+            'required' => false,
+        ],
     ]];
 
     public function collectData()

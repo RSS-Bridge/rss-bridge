@@ -14,14 +14,14 @@ class DailymotionBridge extends BridgeAbstract
                 'name' => 'username',
                 'required' => true,
                 'exampleValue' => 'moviepilot',
-            ]
+            ],
         ],
         'By playlist id' => [
             'p' => [
                 'name' => 'playlist id',
                 'required' => true,
                 'exampleValue' => 'x6xyc6',
-            ]
+            ],
         ],
         'From search results' => [
             's' => [
@@ -33,8 +33,8 @@ class DailymotionBridge extends BridgeAbstract
                 'name' => 'Page',
                 'type' => 'number',
                 'defaultValue' => 1,
-            ]
-        ]
+            ],
+        ],
     ];
 
     private $feedName = '';

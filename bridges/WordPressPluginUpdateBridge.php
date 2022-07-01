@@ -15,8 +15,8 @@ final class WordPressPluginUpdateBridge extends BridgeAbstract
                 'exampleValue' => 'akismet',
                 'required' => true,
                 'title' => 'Slug or url',
-            ]
-        ]
+            ],
+        ],
     ];
 
     public function collectData()
@@ -39,9 +39,9 @@ final class WordPressPluginUpdateBridge extends BridgeAbstract
 
         foreach ($pluginData->versions as $version => $downloadUrl) {
             $this->items[] = [
-                'title'     => $version,
-                'uri'       => sprintf('https://wordpress.org/plugins/%s/#developers', $slug),
-                'uid'       => $downloadUrl,
+                'title' => $version,
+                'uri' => sprintf('https://wordpress.org/plugins/%s/#developers', $slug),
+                'uid' => $downloadUrl,
             ];
         }
 

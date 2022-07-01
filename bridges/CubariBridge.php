@@ -11,8 +11,8 @@ class CubariBridge extends BridgeAbstract
             'name' => 'Gist/Raw Url',
             'type' => 'text',
             'required' => true,
-            'exampleValue' => 'https://raw.githubusercontent.com/kurisumx/baka/main/ikedan'
-        ]
+            'exampleValue' => 'https://raw.githubusercontent.com/kurisumx/baka/main/ikedan',
+        ],
     ]];
 
     private $mangaTitle = '';

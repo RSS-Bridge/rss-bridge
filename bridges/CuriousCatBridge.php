@@ -12,7 +12,7 @@ class CuriousCatBridge extends BridgeAbstract
             'type' => 'text',
             'required' => true,
             'exampleValue' => 'koethekoethe',
-        ]
+        ],
     ]];
 
     const CACHE_TIMEOUT = 3600;
@@ -70,19 +70,19 @@ class CuriousCatBridge extends BridgeAbstract
             $authorUrl = self::URI . '/' . $post['senderData']['username'];
 
             $author = <<<EOD
-<a href="{$authorUrl}">{$post['senderData']['username']}</a>
-EOD;
+                <a href="{$authorUrl}">{$post['senderData']['username']}</a>
+                EOD;
         }
 
         $question = $this->formatUrls($post['comment']);
         $answer = $this->formatUrls($post['reply']);
 
         $content = <<<EOD
-<p>{$author} asked:</p>
-<blockquote>{$question}</blockquote><br/>
-<p>{$post['addresseeData']['username']} answered:</p>
-<blockquote>{$answer}</blockquote>
-EOD;
+            <p>{$author} asked:</p>
+            <blockquote>{$question}</blockquote><br/>
+            <p>{$post['addresseeData']['username']} answered:</p>
+            <blockquote>{$answer}</blockquote>
+            EOD;
 
         return $content;
     }

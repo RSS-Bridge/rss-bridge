@@ -10,41 +10,41 @@ class AppleAppStoreBridge extends BridgeAbstract
 
     const PARAMETERS = [[
         'id' => [
-            'name'  => 'Application ID',
-            'required'  => true,
-            'exampleValue'  => '310633997'
+            'name' => 'Application ID',
+            'required' => true,
+            'exampleValue' => '310633997',
         ],
         'p' => [
-            'name'  => 'Platform',
-            'type'  => 'list',
-            'values'    => [
-                'iPad'  => 'ipad',
-                'iPhone'    => 'iphone',
-                'Mac'   => 'mac',
+            'name' => 'Platform',
+            'type' => 'list',
+            'values' => [
+                'iPad' => 'ipad',
+                'iPhone' => 'iphone',
+                'Mac' => 'mac',
 
                 // The following 2 are present in responses
                 // but not yet tested
-                'Web'   => 'web',
-                'Apple TV'  => 'appletv',
+                'Web' => 'web',
+                'Apple TV' => 'appletv',
             ],
-            'defaultValue'  => 'iphone',
+            'defaultValue' => 'iphone',
         ],
-        'country'   => [
-            'name'  => 'Store Country',
-            'type'  => 'list',
-            'values'    => [
-                'US'    => 'US',
+        'country' => [
+            'name' => 'Store Country',
+            'type' => 'list',
+            'values' => [
+                'US' => 'US',
                 'India' => 'IN',
                 'Canada' => 'CA',
                 'Germany' => 'DE',
             ],
-            'defaultValue'  => 'US',
+            'defaultValue' => 'US',
         ],
     ]];
 
     const PLATFORM_MAPPING = [
-        'iphone'    => 'ios',
-        'ipad'  => 'ios',
+        'iphone' => 'ios',
+        'ipad' => 'ios',
     ];
 
     private function makeHtmlUrl($id, $country)

@@ -26,7 +26,7 @@ class FolhaDeSaoPauloBridge extends FeedExpander
                 'type' => 'checkbox',
                 'defaultValue' => true,
             ],
-        ]
+        ],
     ];
 
     protected function parseItem($item)

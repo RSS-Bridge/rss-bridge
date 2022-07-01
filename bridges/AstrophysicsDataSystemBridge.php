@@ -11,9 +11,9 @@ class AstrophysicsDataSystemBridge extends BridgeAbstract
                 'name' => 'query',
                 'title' => 'Same format as the search bar on the website',
                 'exampleValue' => 'author:"huchra, john"',
-                'required' => true
-            ]
-        ]];
+                'required' => true,
+            ],
+        ], ];
 
     private $feedTitle;
 
@@ -36,7 +36,7 @@ class AstrophysicsDataSystemBridge extends BridgeAbstract
     public function collectData()
     {
         $headers = [
-            'Cookie: core=always;'
+            'Cookie: core=always;',
         ];
         $html = str_get_html(defaultLinkTo(getContents($this->getURI(), $headers), self::URI));
         $this->feedTitle = html_entity_decode($html->find('title', 0)->plaintext);

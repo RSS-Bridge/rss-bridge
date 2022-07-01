@@ -12,8 +12,8 @@ class DiarioDeNoticiasBridge extends BridgeAbstract
                 'name' => 'Tag Name',
                 'required' => true,
                 'exampleValue' => 'rogerio-casanova',
-            ]
-        ]
+            ],
+        ],
     ];
 
     const MONPT = [

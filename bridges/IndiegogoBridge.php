@@ -17,7 +17,7 @@ class IndiegogoBridge extends BridgeAbstract
                     'Just Launched' => 'just_launched',
                     'Ending Soon' => 'ending_soon',
                 ],
-                'defaultValue' => 'Just Launched'
+                'defaultValue' => 'Just Launched',
             ],
         ],
         'All Categories' => [],
@@ -106,15 +106,15 @@ class IndiegogoBridge extends BridgeAbstract
     protected function getCategories()
     {
         $selection = [
-            'sort'  => 'trending',
-            'project_type'  => 'campaign',
+            'sort' => 'trending',
+            'project_type' => 'campaign',
             'project_timing' => $this->getInput('timing'),
             'category_main' => null,
             'category_top_level' => null,
-            'page_num'  => 1,
-            'per_page'  => 12,
+            'page_num' => 1,
+            'per_page' => 12,
             'q' => '',
-            'tags'  => []
+            'tags' => [],
         ];
 
         switch ($this->queriedContext) {

@@ -14,11 +14,11 @@ class PixivBridge extends BridgeAbstract
             'posts' => [
                 'name' => 'Post Limit',
                 'type' => 'number',
-                'defaultValue' => '10'
+                'defaultValue' => '10',
             ],
             'fullsize' => [
                 'name' => 'Full-size Image',
-                'type' => 'checkbox'
+                'type' => 'checkbox',
             ],
             'mode' => [
                 'name' => 'Post Type',
@@ -26,23 +26,23 @@ class PixivBridge extends BridgeAbstract
                 'values' => ['All Works' => 'all',
                                   'Illustrations' => 'illustrations/',
                                   'Manga' => 'manga/',
-                                  'Novels' => 'novels/']
+                                  'Novels' => 'novels/', ],
             ],
         ],
         'Tag' => [
             'tag' => [
                 'name' => 'Query to search',
                 'exampleValue' => 'オリジナル',
-                'required' => true
-            ]
+                'required' => true,
+            ],
         ],
         'User' => [
             'userid' => [
                 'name' => 'User ID from profile URL',
                 'exampleValue' => '11',
-                'required' => true
-            ]
-        ]
+                'required' => true,
+            ],
+        ],
     ];
 
     // maps from URLs to json keys by context
@@ -50,13 +50,13 @@ class PixivBridge extends BridgeAbstract
         'Tag' => [
             'illustrations/' => 'illust',
             'manga/' => 'manga',
-            'novels/' => 'novel'
+            'novels/' => 'novel',
         ],
         'User' => [
             'illustrations/' => 'illusts',
             'manga/' => 'manga',
-            'novels/' => 'novels'
-        ]
+            'novels/' => 'novels',
+        ],
     ];
 
     // Hold the username for getName()

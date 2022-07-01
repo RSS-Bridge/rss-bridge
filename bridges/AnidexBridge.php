@@ -34,8 +34,8 @@ class AnidexBridge extends BridgeAbstract
                     'Applications' => '13',
                     'Pictures' => '14',
                     'Adult Video' => '15',
-                    'Other' => '16'
-                ]
+                    'Other' => '16',
+                ],
             ],
             'lang_id' => [
                 'name' => 'Language',
@@ -72,29 +72,29 @@ class AnidexBridge extends BridgeAbstract
                     'Korean' => '28',
                     'Spanish (LATAM)' => '29',
                     'Persian' => '30',
-                    'Malaysian' => '31'
-                ]
+                    'Malaysian' => '31',
+                ],
             ],
             'group_id' => [
                 'name' => 'Group ID',
-                'type' => 'number'
+                'type' => 'number',
             ],
             'r' => [
                 'name' => 'Hide Remakes',
-                'type' => 'checkbox'
+                'type' => 'checkbox',
             ],
             'b' => [
                 'name' => 'Only Batches',
-                'type' => 'checkbox'
+                'type' => 'checkbox',
             ],
             'a' => [
                 'name' => 'Only Authorized',
-                'type' => 'checkbox'
+                'type' => 'checkbox',
             ],
             'q' => [
                 'name' => 'Keyword',
                 'description' => 'Keyword(s)',
-                'type' => 'text'
+                'type' => 'text',
             ],
             'h' => [
                 'name' => 'Adult content',
@@ -102,10 +102,10 @@ class AnidexBridge extends BridgeAbstract
                 'values' => [
                     'No filter' => '0',
                     'Hide +18' => '1',
-                    'Only +18' => '2'
-                ]
-            ]
-        ]
+                    'Only +18' => '2',
+                ],
+            ],
+        ],
     ];
 
     public function collectData()

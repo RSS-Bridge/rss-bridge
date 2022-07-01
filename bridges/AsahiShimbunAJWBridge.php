@@ -30,8 +30,8 @@ class AsahiShimbunAJWBridge extends BridgeAbstract
                     'Opinion » Vox Populi' => 'opinion/vox',
                 ],
                 'defaultValue' => 'politics',
-            ]
-        ]
+            ],
+        ],
     ];
 
     private function getSectionURI($section)

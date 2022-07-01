@@ -14,18 +14,18 @@ class GitlabIssueBridge extends BridgeAbstract
                 'name' => 'Gitlab instance host name',
                 'exampleValue' => 'gitlab.com',
                 'defaultValue' => 'gitlab.com',
-                'required' => true
+                'required' => true,
             ],
             'u' => [
                 'name' => 'User/Organization name',
                 'exampleValue' => 'fdroid',
-                'required' => true
+                'required' => true,
             ],
             'p' => [
                 'name' => 'Project name',
                 'exampleValue' => 'fdroidclient',
-                'required' => true
-            ]
+                'required' => true,
+            ],
 
         ],
         'Issue comments' => [
@@ -33,17 +33,17 @@ class GitlabIssueBridge extends BridgeAbstract
                 'name' => 'Issue number',
                 'type' => 'number',
                 'exampleValue' => '2099',
-                'required' => true
-            ]
+                'required' => true,
+            ],
         ],
         'Merge Request comments' => [
             'i' => [
                 'name' => 'Merge Request number',
                 'type' => 'number',
                 'exampleValue' => '2099',
-                'required' => true
-            ]
-        ]
+                'required' => true,
+            ],
+        ],
     ];
 
     public function getName()

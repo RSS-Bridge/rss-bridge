@@ -16,7 +16,7 @@ class ReutersBridge extends BridgeAbstract
      */
     const ALLOWED_WIREITEM_TYPES = [
         'story',
-        'headlines'
+        'headlines',
     ];
 
     /**
@@ -24,7 +24,7 @@ class ReutersBridge extends BridgeAbstract
      */
     const ALLOWED_TEMPLATE_TYPES = [
         'story',
-        'headlines'
+        'headlines',
     ];
 
     const PARAMETERS = [
@@ -52,7 +52,7 @@ class ReutersBridge extends BridgeAbstract
                         'UK' => 'chan:61leiu7j',
                         'USA News' => 'us',
                         'The Great Reboot' => '/world/the-great-reboot',
-                        'Reuters Next' => '/world/reuters-next'
+                        'Reuters Next' => '/world/reuters-next',
                     ],
                     'Business' => [
                         'Business' => 'business',
@@ -111,10 +111,10 @@ class ReutersBridge extends BridgeAbstract
                         'Lifestyle' => 'life',
                         'Oddly Enough' => '/lifestyle/oddly-enough',
                         'Science' => 'science',
-                    ]
-                ]
-            ]
-        ]
+                    ],
+                ],
+            ],
+        ],
     ];
 
     const BACKWARD_COMPATIBILITY = [
@@ -140,7 +140,7 @@ class ReutersBridge extends BridgeAbstract
         'chan:abtpk0vm',
         'chan:8ym8q8dl',
         'politics',
-        'wire'
+        'wire',
     ];
 
     /**
@@ -238,7 +238,7 @@ class ReutersBridge extends BridgeAbstract
 
                 if ($is_article_uid) {
                     $query = [
-                        'id' => $endpoint
+                        'id' => $endpoint,
                     ];
                 } else {
                     $query = [
@@ -253,7 +253,7 @@ class ReutersBridge extends BridgeAbstract
             case 'section':
                 if ($this->useWireAPI) {
                     if (strpos($endpoint, 'chan:') !== false) {
-                    // Now checking whether that feed has unique ID or not.
+                        // Now checking whether that feed has unique ID or not.
                         $feed_uri = "/feed/rapp/us/wirefeed/$endpoint";
                     } else {
                         $feed_uri = "/feed/rapp/us/tabbar/feeds/$endpoint";
@@ -263,7 +263,7 @@ class ReutersBridge extends BridgeAbstract
                 $query = [
                     'section_id' => $endpoint,
                     'size' => 30,
-                    'website' => 'reuters'
+                    'website' => 'reuters',
                 ];
 
                 if ($endpoint != '/home') {
@@ -337,7 +337,7 @@ class ReutersBridge extends BridgeAbstract
             'author' => $this->handleAuthorName($authorlist),
             'category' => $category,
             'images' => $this->handleImage($image_list),
-            'published_at' => $published_at
+            'published_at' => $published_at,
         ];
         return $content_detail;
     }
@@ -373,7 +373,7 @@ class ReutersBridge extends BridgeAbstract
             'category' => '',
             'images' => $images,
             'published_at' => '',
-            'status' => 'redirected'
+            'status' => 'redirected',
         ];
     }
 
@@ -469,24 +469,24 @@ class ReutersBridge extends BridgeAbstract
                         case 'instagram':
                             $url = "https://instagram.com/p/$cid/media/?size=l";
                             $embed .= <<<EOD
-<img 
-	src="{$url}"
-	alt="instagram-image-$cid"
->
-EOD;
+                                <img 
+                                	src="{$url}"
+                                	alt="instagram-image-$cid"
+                                >
+                                EOD;
                             break;
                         case 'youtube':
                             $url = "https://www.youtube.com/embed/$cid";
                             $embed .= <<<EOD
-<‌iframe
-	width="560" 
-	height="315" 
-	src="{$url}"
-	frameborder="0" 
-	allowfullscreen
->
-</iframe>
-EOD;
+                                <‌iframe
+                                	width="560" 
+                                	height="315" 
+                                	src="{$url}"
+                                	frameborder="0" 
+                                	allowfullscreen
+                                >
+                                </iframe>
+                                EOD;
                             break;
                     }
                     $description .= $embed;

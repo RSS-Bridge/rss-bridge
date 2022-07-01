@@ -31,7 +31,7 @@ class AO3Bridge extends BridgeAbstract
                 // Example: latest chapters from A Better Past by LysSerris
                 'exampleValue' => '18181853',
             ],
-        ]
+        ],
     ];
 
     // Feed for lists of works (e.g. recent works, search results, filtered tags,

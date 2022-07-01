@@ -35,7 +35,7 @@ class ParameterValidator
     {
         $this->invalid[] = [
             'name' => $name,
-            'reason' => $reason
+            'reason' => $reason,
         ];
     }
 
@@ -65,8 +65,8 @@ class ParameterValidator
                 $value,
                 FILTER_VALIDATE_REGEXP,
                 ['options' => [
-                    'regexp' => '/^' . $pattern . '$/'
-                ]
+                    'regexp' => '/^' . $pattern . '$/',
+                ],
                 ]
             );
         } else {

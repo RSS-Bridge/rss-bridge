@@ -38,9 +38,9 @@ class AssociatedPressNewsBridge extends BridgeAbstract
                 'name' => 'Topic',
                 'type' => 'text',
                 'required' => true,
-                'exampleValue' => 'europe'
+                'exampleValue' => 'europe',
             ],
-        ]
+        ],
     ];
 
     const CACHE_TIMEOUT = 900; // 15 mins
@@ -119,7 +119,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract
         foreach ($tagContents['cards'] as $card) {
             $item = [];
 
-             // skip hub peeks & Notifications
+            // skip hub peeks & Notifications
             if ($card['cardType'] == 'Hub Peek' || $card['cardType'] == 'Notification') {
                 continue;
             }
@@ -207,15 +207,15 @@ class AssociatedPressNewsBridge extends BridgeAbstract
                     $mediaCaption = $media['caption'];
 
                     $div->outertext = <<<EOD
-	<figure><img loading="lazy" src="{$mediaUrl}"/><figcaption>{$mediaCaption}</figcaption></figure>
-EOD;
+                        	<figure><img loading="lazy" src="{$mediaUrl}"/><figcaption>{$mediaCaption}</figcaption></figure>
+                        EOD;
                 }
 
                 if ($media['type'] === 'YouTube') {
                     $div->outertext = <<<EOD
-	<iframe src="https://www.youtube.com/embed/{$media['externalId']}" width="560" height="315">
-	</iframe>
-EOD;
+                        	<iframe src="https://www.youtube.com/embed/{$media['externalId']}" width="560" height="315">
+                        	</iframe>
+                        EOD;
                 }
             }
         }
@@ -234,8 +234,8 @@ EOD;
 
                     if ($div) {
                         $div->outertext = <<<EOD
-<p><a href="{$url}">{$embed['calloutText']} {$embed['displayName']}</a></p>
-EOD;
+                            <p><a href="{$url}">{$embed['calloutText']} {$embed['displayName']}</a></p>
+                            EOD;
                     }
                 }
             }
@@ -249,14 +249,14 @@ EOD;
         if ($video['type'] === 'YouTube') {
             $url = 'https://www.youtube.com/embed/' . $video['externalId'];
             $html = <<<EOD
-<iframe width="560" height="315" src="{$url}" frameborder="0" allowfullscreen></iframe>
-EOD;
+                <iframe width="560" height="315" src="{$url}" frameborder="0" allowfullscreen></iframe>
+                EOD;
         } else {
             $html = <<<EOD
-<video controls poster="https://storage.googleapis.com/afs-prod/media/{$video['id']}/800.jpeg" preload="none">
-	<source src="{$video['gcsBaseUrl']} {$video['videoRenderedSizes'][0]} {$video['videoFileExtension']}" type="video/mp4">
-</video>
-EOD;
+                <video controls poster="https://storage.googleapis.com/afs-prod/media/{$video['id']}/800.jpeg" preload="none">
+                	<source src="{$video['gcsBaseUrl']} {$video['videoRenderedSizes'][0]} {$video['videoFileExtension']}" type="video/mp4">
+                </video>
+                EOD;
         }
 
         return $html;

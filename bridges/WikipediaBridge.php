@@ -23,7 +23,7 @@ class WikipediaBridge extends BridgeAbstract
                 'Esperanto' => 'eo',
                 'French' => 'fr',
                 'German' => 'de',
-            ]
+            ],
         ],
         'subject' => [
             'name' => 'Subject',
@@ -32,14 +32,14 @@ class WikipediaBridge extends BridgeAbstract
             'exampleValue' => 'Today\'s featured article',
             'values' => [
                 'Today\'s featured article' => 'tfa',
-                'Did you know…' => 'dyk'
-            ]
+                'Did you know…' => 'dyk',
+            ],
         ],
         'fullarticle' => [
             'name' => 'Load full article',
             'type' => 'checkbox',
-            'title' => 'Activate to always load the full article'
-        ]
+            'title' => 'Activate to always load the full article',
+        ],
     ]];
 
     public function getURI()

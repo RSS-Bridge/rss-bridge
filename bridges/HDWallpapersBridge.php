@@ -12,17 +12,17 @@ class HDWallpapersBridge extends BridgeAbstract
         'c' => [
             'name' => 'category',
             'required' => true,
-            'defaultValue' => 'latest_wallpapers'
+            'defaultValue' => 'latest_wallpapers',
         ],
         'm' => [
-            'name' => 'max number of wallpapers'
+            'name' => 'max number of wallpapers',
         ],
         'r' => [
             'name' => 'resolution',
             'required' => true,
             'defaultValue' => 'HD',
-            'title' => 'e.g=HD OR 1920x1200 OR 1680x1050'
-        ]
+            'title' => 'e.g=HD OR 1920x1200 OR 1680x1050',
+        ],
     ]];
 
     public function collectData()

@@ -12,11 +12,11 @@ class MoebooruBridge extends BridgeAbstract
         'p' => [
             'name' => 'page',
             'defaultValue' => 1,
-            'type' => 'number'
+            'type' => 'number',
         ],
         't' => [
-            'name' => 'tags'
-        ]
+            'name' => 'tags',
+        ],
     ]];
 
     protected function getFullURI()

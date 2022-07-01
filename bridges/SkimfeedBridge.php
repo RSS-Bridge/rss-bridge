@@ -59,8 +59,8 @@ class SkimfeedBridge extends BridgeAbstract
                     'Venture Beat' => '/news/venture-beat.html',
                     'ReadWriteWeb' => '/news/readwriteweb.html',
                     'High Scalability' => '/news/high-scalability.html',
-                ]
-            ]
+                ],
+            ],
         ],
         self::CONTEXT_HOT_TOPICS => [],
         self::CONTEXT_TECH_NEWS => [ // auto-generated (see below)
@@ -394,7 +394,7 @@ class SkimfeedBridge extends BridgeAbstract
                         'Austin Evans' => '/news/austin-evans.html',
                         'NCIX' => '/news/ncix.html',
                     ],
-                ]
+                ],
             ],
         ],
         self::CONTEXT_CUSTOM => [
@@ -403,17 +403,17 @@ class SkimfeedBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'title' => 'Enter feed numbers from Skimfeed! e.g: 5,8,2,l,p,9,23',
-                'exampleValue' => '5'
-            ]
+                'exampleValue' => '5',
+            ],
         ],
         'global' => [
             'limit' => [
                 'name' => 'Limit',
                 'type' => 'number',
                 'title' => 'Limits the number of returned items in the feed',
-                'exampleValue' => 10
-            ]
-        ]
+                'exampleValue' => 10,
+            ],
+        ],
     ];
 
     public function getURI()
@@ -630,7 +630,7 @@ class SkimfeedBridge extends BridgeAbstract
                 or returnServerError('Could not find box anchor!');
 
             $author = '<a href="' . $anchor->href . '">' . trim($anchor->plaintext) . '</a>';
-            $uri    = $anchor->href;
+            $uri = $anchor->href;
 
             $box_html = getSimpleHTMLDOM($uri)
                 or returnServerError('Could not load custom feed!');
@@ -646,7 +646,7 @@ class SkimfeedBridge extends BridgeAbstract
         $query = parse_url($anchor->href, PHP_URL_QUERY);
 
         foreach (explode('&', $query) as $parameter) {
-            list($key, $value) = explode('=', $parameter);
+            [$key, $value] = explode('=', $parameter);
 
             if ($key !== 'u') {
                 continue;
@@ -676,21 +676,21 @@ class SkimfeedBridge extends BridgeAbstract
 
         // begin of 'channel' list
         $message = <<<EOD
-'box_channel' => array(
-	'name' => 'Channel',
-	'type' => 'list',
-	'required' => true,
-	'title' => 'Select your channel',
-	'values' => array(
+            'box_channel' => array(
+            	'name' => 'Channel',
+            	'type' => 'list',
+            	'required' => true,
+            	'title' => 'Select your channel',
+            	'values' => array(
 
-EOD;
+            EOD;
 
         foreach ($boxes as $box) {
             $anchor = $box->find('span.boxtitles a', 0)
                 or returnServerError('Could not find box anchor!');
 
-            $title  = trim($anchor->plaintext);
-            $uri    = $anchor->href;
+            $title = trim($anchor->plaintext);
+            $uri = $anchor->href;
 
             // add value
             $message .= "\t\t'{$title}' => '{$uri}', \n";
@@ -698,19 +698,19 @@ EOD;
 
         // end of 'box' list
         $message .= <<<EOD
-	)
-),
-EOD;
+            	)
+            ),
+            EOD;
 
         echo <<<EOD
-<!DOCTYPE html>
+            <!DOCTYPE html>
 
-<html>
-	<body>
-		<code style="white-space: pre-wrap;">{$message}</code>
-	</body>
-</html>
-EOD;
+            <html>
+            	<body>
+            		<code style="white-space: pre-wrap;">{$message}</code>
+            	</body>
+            </html>
+            EOD;
     }
 
     /**
@@ -733,14 +733,14 @@ EOD;
 
         // begin of 'tech_channel' list
         $message = <<<EOD
-'tech_channel' => array(
-	'name' => 'Tech channel',
-	'type' => 'list',
-	'required' => true,
-	'title' => 'Select your tech channel',
-	'values' => array(
+            'tech_channel' => array(
+            	'name' => 'Tech channel',
+            	'type' => 'list',
+            	'required' => true,
+            	'title' => 'Select your tech channel',
+            	'values' => array(
 
-EOD;
+            EOD;
 
         foreach ($channels as $channel) {
             if (
@@ -753,8 +753,8 @@ EOD;
                 continue;
             }
 
-            $title  = trim($channel->plaintext);
-            $uri    = '/' . $channel->href;
+            $title = trim($channel->plaintext);
+            $uri = '/' . $channel->href;
 
             $message .= "\t\t'{$title}' => array(\n";
 
@@ -768,8 +768,8 @@ EOD;
                 $anchor = $box->find('span.boxtitles a', 0)
                     or returnServerError('Could not find box anchor!');
 
-                $boxtitle   = trim($anchor->plaintext);
-                $boxuri     = $anchor->href;
+                $boxtitle = trim($anchor->plaintext);
+                $boxuri = $anchor->href;
 
                 $message .= "\t\t\t'{$boxtitle}' => '{$boxuri}', \n";
             }
@@ -779,19 +779,19 @@ EOD;
 
         // end of 'box' list
         $message .= <<<EOD
-	)
-),
-EOD;
+            	)
+            ),
+            EOD;
 
         echo <<<EOD
-<!DOCTYPE html>
+            <!DOCTYPE html>
 
-<html>
-	<body>
-		<code style="white-space: pre-wrap;">{$message}</code>
-	</body>
-</html>
-EOD;
+            <html>
+            	<body>
+            		<code style="white-space: pre-wrap;">{$message}</code>
+            	</body>
+            </html>
+            EOD;
     }
 
     /**

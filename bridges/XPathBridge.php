@@ -13,143 +13,133 @@ class XPathBridge extends XPathAbstract
             'url' => [
                 'name' => 'Enter web page URL',
                 'title' => <<<"EOL"
-You can specify any website URL which serves data suited for display in RSS feeds
-(for example a news blog).
-EOL
-                , 'type' => 'text',
+                    You can specify any website URL which serves data suited for display in RSS feeds
+                    (for example a news blog).
+                    EOL, 'type' => 'text',
                 'exampleValue' => 'https://news.blizzard.com/en-en',
                 'defaultValue' => 'https://news.blizzard.com/en-en',
-                'required' => true
+                'required' => true,
             ],
 
             'item' => [
                 'name' => 'Item selector',
                 'title' => <<<"EOL"
-Enter an XPath expression matching a list of dom nodes, each node containing one
-feed article item in total (usually a surrounding &lt;div&gt; or &lt;span&gt; tag). This will
-be the context nodes for all of the following expressions. This expression usually
-starts with a single forward slash.
-EOL
-                , 'type' => 'text',
+                    Enter an XPath expression matching a list of dom nodes, each node containing one
+                    feed article item in total (usually a surrounding &lt;div&gt; or &lt;span&gt; tag). This will
+                    be the context nodes for all of the following expressions. This expression usually
+                    starts with a single forward slash.
+                    EOL, 'type' => 'text',
                 'exampleValue' => '/html/body/div/div[4]/div[2]/div[2]/div/div/section/ol/li/article',
                 'defaultValue' => '/html/body/div/div[4]/div[2]/div[2]/div/div/section/ol/li/article',
-                'required' => true
+                'required' => true,
             ],
 
             'title' => [
                 'name' => 'Item title selector',
                 'title' => <<<"EOL"
-This expression should match a node contained within each article item node
-containing the article headline. It should start with a dot followed by two
-forward slashes, referring to any descendant nodes of the article item node.
-EOL
-                , 'type' => 'text',
+                    This expression should match a node contained within each article item node
+                    containing the article headline. It should start with a dot followed by two
+                    forward slashes, referring to any descendant nodes of the article item node.
+                    EOL, 'type' => 'text',
                 'exampleValue' => './/div/div[2]/h2',
                 'defaultValue' => './/div/div[2]/h2',
-                'required' => true
+                'required' => true,
             ],
 
             'content' => [
                 'name' => 'Item description selector',
                 'title' => <<<"EOL"
-This expression should match a node contained within each article item node
-containing the article content or description. It should start with a dot
-followed by two forward slashes, referring to any descendant nodes of the
-article item node.
-EOL
-                , 'type' => 'text',
+                    This expression should match a node contained within each article item node
+                    containing the article content or description. It should start with a dot
+                    followed by two forward slashes, referring to any descendant nodes of the
+                    article item node.
+                    EOL, 'type' => 'text',
                 'exampleValue' => './/div[@class="ArticleListItem-description"]/div[@class="h6"]',
                 'defaultValue' => './/div[@class="ArticleListItem-description"]/div[@class="h6"]',
-                'required' => false
+                'required' => false,
             ],
 
             'uri' => [
                 'name' => 'Item URL selector',
                 'title' => <<<"EOL"
-This expression should match a node's attribute containing the article URL
-(usually the href attribute of an &lt;a&gt; tag). It should start with a dot
-followed by two forward slashes, referring to any descendant nodes of
-the article item node. Attributes can be selected by prepending an @ char
-before the attributes name.
-EOL
-                , 'type' => 'text',
+                    This expression should match a node's attribute containing the article URL
+                    (usually the href attribute of an &lt;a&gt; tag). It should start with a dot
+                    followed by two forward slashes, referring to any descendant nodes of
+                    the article item node. Attributes can be selected by prepending an @ char
+                    before the attributes name.
+                    EOL, 'type' => 'text',
                 'exampleValue' => './/a[@class="ArticleLink ArticleLink"]/@href',
                 'defaultValue' => './/a[@class="ArticleLink ArticleLink"]/@href',
-                'required' => false
+                'required' => false,
             ],
 
             'author' => [
                 'name' => 'Item author selector',
                 'title' => <<<"EOL"
-This expression should match a node contained within each article item
-node containing the article author's name. It should start with a dot
-followed by two forward slashes, referring to any descendant nodes of
-the article item node.
-EOL
-                , 'type' => 'text',
-                'required' => false
+                    This expression should match a node contained within each article item
+                    node containing the article author's name. It should start with a dot
+                    followed by two forward slashes, referring to any descendant nodes of
+                    the article item node.
+                    EOL, 'type' => 'text',
+                'required' => false,
             ],
 
             'timestamp' => [
                 'name' => 'Item date selector',
                 'title' => <<<"EOL"
-This expression should match a node or node's attribute containing the
-article timestamp or date (parsable by PHP's strtotime function). It
-should start with a dot followed by two forward slashes, referring to
-any descendant nodes of the article item node. Attributes can be
-selected by prepending an @ char before the attributes name.
-EOL
-                , 'type' => 'text',
+                    This expression should match a node or node's attribute containing the
+                    article timestamp or date (parsable by PHP's strtotime function). It
+                    should start with a dot followed by two forward slashes, referring to
+                    any descendant nodes of the article item node. Attributes can be
+                    selected by prepending an @ char before the attributes name.
+                    EOL, 'type' => 'text',
                 'exampleValue' => './/time[@class="ArticleListItem-footerTimestamp"]/@timestamp',
                 'defaultValue' => './/time[@class="ArticleListItem-footerTimestamp"]/@timestamp',
-                'required' => false
+                'required' => false,
             ],
 
             'enclosures' => [
                 'name' => 'Item image selector',
                 'title' => <<<"EOL"
-This expression should match a node's attribute containing an article
-image URL (usually the src attribute of an &lt;img&gt; tag or a style
-attribute). It should start with a dot followed by two forward slashes,
-referring to any descendant nodes of the article item node. Attributes
-can be selected by prepending an @ char before the attributes name.
-EOL
-                , 'type' => 'text',
+                    This expression should match a node's attribute containing an article
+                    image URL (usually the src attribute of an &lt;img&gt; tag or a style
+                    attribute). It should start with a dot followed by two forward slashes,
+                    referring to any descendant nodes of the article item node. Attributes
+                    can be selected by prepending an @ char before the attributes name.
+                    EOL, 'type' => 'text',
                 'exampleValue' => './/div[@class="ArticleListItem-image"]/@style',
                 'defaultValue' => './/div[@class="ArticleListItem-image"]/@style',
-                'required' => false
+                'required' => false,
             ],
 
             'categories' => [
                 'name' => 'Item category selector',
                 'title' => <<<"EOL"
-This expression should match a node or node's attribute contained
-within each article item node containing the article category. This
-could be inside &lt;div&gt; or &lt;span&gt; tags or sometimes be hidden
-in a data attribute. It should start with a dot followed by two
-forward slashes, referring to any descendant nodes of the article
-item node. Attributes can be selected by prepending an @ char
-before the attributes name.
-EOL
-                , 'type' => 'text',
+                    This expression should match a node or node's attribute contained
+                    within each article item node containing the article category. This
+                    could be inside &lt;div&gt; or &lt;span&gt; tags or sometimes be hidden
+                    in a data attribute. It should start with a dot followed by two
+                    forward slashes, referring to any descendant nodes of the article
+                    item node. Attributes can be selected by prepending an @ char
+                    before the attributes name.
+                    EOL, 'type' => 'text',
                 'exampleValue' => './/div[@class="ArticleListItem-label"]',
                 'defaultValue' => './/div[@class="ArticleListItem-label"]',
-                'required' => false
+                'required' => false,
             ],
 
             'fix_encoding' => [
                 'name' => 'Fix encoding',
                 'title' => <<<"EOL"
-Check this to fix feed encoding by invoking PHP's utf8_decode
-function on all extracted texts. Try this in case you see "broken" or
-"weird" characters in your feed where you'd normally expect umlauts
-or any other non-ascii characters.
-EOL
-                , 'type' => 'checkbox',
-                'required' => false
+                    Check this to fix feed encoding by invoking PHP's utf8_decode
+                    function on all extracted texts. Try this in case you see "broken" or
+                    "weird" characters in your feed where you'd normally expect umlauts
+                    or any other non-ascii characters.
+                    EOL, 'type' => 'checkbox',
+                'required' => false,
             ],
 
-        ]
+        ],
     ];
 
     /**

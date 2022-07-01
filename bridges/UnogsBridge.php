@@ -15,8 +15,8 @@ class UnogsBridge extends BridgeAbstract
                 'title' => 'Choose whether you want latest movies or removal on Netflix',
                 'values' => [
                     'What\'s New' => 'new last 7 days',
-                    'Expiring' => 'expiring'
-                ]
+                    'Expiring' => 'expiring',
+                ],
             ],
             'limit' => self::LIMIT,
         ],
@@ -64,10 +64,10 @@ class UnogsBridge extends BridgeAbstract
                     'Turkey' => 432,
                     'Ukraine' => 436,
                     'United Kingdom' => 46,
-                    'United States' => 78
-                ]
-            ]
-        ]
+                    'United States' => 78,
+                ],
+            ],
+        ],
     ];
 
     public function getName()
@@ -106,7 +106,7 @@ class UnogsBridge extends BridgeAbstract
     {
         $header = [
             'Referer: https://unogs.com/',
-            'referrer: http://unogs.com'
+            'referrer: http://unogs.com',
         ];
 
         $raw = getContents($url, $header);
@@ -146,11 +146,11 @@ class UnogsBridge extends BridgeAbstract
         $unogs_url = self::URI . '/title/' . $netflix_id;
 
         $item['content'] = <<<EOD
-<img src={$image_url}>
-$expired_warning
-<p>$netflix_synopsis</p>
-<p>Details: <a href={$unogs_url}>$unogs_url</a></p>
-EOD;
+            <img src={$image_url}>
+            $expired_warning
+            <p>$netflix_synopsis</p>
+            <p>Details: <a href={$unogs_url}>$unogs_url</a></p>
+            EOD;
         $this->items[] = $item;
     }
 

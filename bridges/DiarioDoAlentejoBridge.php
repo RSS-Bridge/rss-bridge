@@ -21,7 +21,7 @@ class DiarioDoAlentejoBridge extends BridgeAbstract
         'setembro',
         'outubro',
         'novembro',
-        'dezembro'];
+        'dezembro', ];
 
     public function getIcon()
     {

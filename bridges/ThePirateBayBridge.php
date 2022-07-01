@@ -17,7 +17,7 @@ class ThePirateBayBridge extends BridgeAbstract
         'q' => [
             'name' => 'keywords/username/category, separated by semicolons',
             'exampleValue' => 'simpsons',
-            'required' => true
+            'required' => true,
         ],
         'crit' => [
             'type' => 'list',
@@ -26,7 +26,7 @@ class ThePirateBayBridge extends BridgeAbstract
                 'search' => 'search',
                 'category' => 'cat',
                 'user' => 'usr',
-            ]
+            ],
         ],
         'catCheck' => [
             'type' => 'checkbox',
@@ -34,7 +34,7 @@ class ThePirateBayBridge extends BridgeAbstract
         ],
         'cat' => [
             'name' => 'Category number',
-            'exampleValue' => '100, 200… See TPB for category number'
+            'exampleValue' => '100, 200… See TPB for category number',
         ],
         'trusted' => [
             'type' => 'checkbox',
@@ -187,7 +187,7 @@ class ThePirateBayBridge extends BridgeAbstract
         $item['timestamp'] = $torrent->added;
         $item['author'] = $torrent->username;
 
-        $content  = '<b>Type:</b> '
+        $content = '<b>Type:</b> '
             . $this->renderCategory($torrent->category) . '<br>';
         $content .= "<b>Files:</b> $torrent->num_files<br>";
         $content .= '<b>Size:</b> ' . $this->renderSize($torrent->size) . '<br><br>';
@@ -206,11 +206,11 @@ class ThePirateBayBridge extends BridgeAbstract
         }
 
         $html = <<<HTML
-<a href="%s">
-	<img src="%s/images/icon-magnet.gif"> GET THIS TORRENT
-</a>
-<br>
-HTML;
+            <a href="%s">
+            	<img src="%s/images/icon-magnet.gif"> GET THIS TORRENT
+            </a>
+            <br>
+            HTML;
         $content .= sprintf($html, $magnetLink, self::STATIC_SERVER);
 
         $item['content'] = $content;

@@ -16,7 +16,7 @@ class IndeedBridge extends BridgeAbstract
                 'required' => true,
                 'title' => 'Company name',
                 'exampleValue' => 'GitHub',
-            ]
+            ],
         ],
         'global' => [
             'language' => [
@@ -70,7 +70,7 @@ class IndeedBridge extends BridgeAbstract
                     'ar-EG' => 'ar-EG',
                     'fr-MA' => 'fr-MA',
                     'en-NG' => 'en-NG',
-                ]
+                ],
             ],
             'limit' => [
                 'name' => 'Limit',
@@ -78,8 +78,8 @@ class IndeedBridge extends BridgeAbstract
                 'required' => true,
                 'title' => 'Maximum number of items to return',
                 'exampleValue' => 20,
-            ]
-        ]
+            ],
+        ],
     ];
 
     const SITES = [

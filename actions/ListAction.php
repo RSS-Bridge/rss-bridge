@@ -27,7 +27,7 @@ class ListAction implements ActionInterface
 
             if ($bridge === false) { // Broken bridge, show as inactive
                 $list->bridges[$bridgeName] = [
-                    'status' => 'inactive'
+                    'status' => 'inactive',
                 ];
 
                 continue;
@@ -43,7 +43,7 @@ class ListAction implements ActionInterface
                 'icon' => $bridge->getIcon(),
                 'parameters' => $bridge->getParameters(),
                 'maintainer' => $bridge->getMaintainer(),
-                'description' => $bridge->getDescription()
+                'description' => $bridge->getDescription(),
             ];
         }
 

@@ -11,8 +11,8 @@ class BugzillaBridge extends BridgeAbstract
             'instance' => [
                 'name' => 'Instance URL',
                 'required' => true,
-                'exampleValue' => 'https://bugzilla.mozilla.org'
-            ]
+                'exampleValue' => 'https://bugzilla.mozilla.org',
+            ],
         ],
         'Bug comments' => [
             'id' => [
@@ -20,26 +20,26 @@ class BugzillaBridge extends BridgeAbstract
                 'type' => 'number',
                 'required' => true,
                 'title' => 'Insert bug tracking ID',
-                'exampleValue' => 121241
+                'exampleValue' => 121241,
             ],
             'limit' => [
                 'name' => 'Number of comments to return',
                 'type' => 'number',
                 'required' => false,
                 'title' => 'Specify number of comments to return',
-                'defaultValue' => -1
+                'defaultValue' => -1,
             ],
             'skiptags' => [
                 'name' => 'Skip offtopic comments',
                 'type' => 'checkbox',
-                'title' => 'Excludes comments tagged as advocacy, metoo, or offtopic from the feed'
-            ]
-        ]
+                'title' => 'Excludes comments tagged as advocacy, metoo, or offtopic from the feed',
+            ],
+        ],
     ];
 
     const SKIPPED_ACTIVITY = [
         'cc' => true,
-        'comment_tag' => true
+        'comment_tag' => true,
     ];
 
     const SKIPPED_TAGS = ['advocacy', 'metoo', 'offtopic'];

@@ -12,20 +12,20 @@ class FM4Bridge extends BridgeAbstract
             'tag' => [
                 'name' => 'Tag (author, category, ...)',
                 'title' => 'Tag to retrieve',
-                'exampleValue' => 'musik'
+                'exampleValue' => 'musik',
             ],
             'loadcontent' => [
                 'name' => 'Load Full Article Content',
                 'title' => 'Retrieve full content of articles (may take longer)',
-                'type' => 'checkbox'
+                'type' => 'checkbox',
             ],
             'pages' => [
                 'name' => 'Pages',
                 'title' => 'Amount of pages to load',
                 'type' => 'number',
-                'defaultValue' => 1
-            ]
-        ]
+                'defaultValue' => 1,
+            ],
+        ],
     ];
 
     private function getPageData($tag, $page)

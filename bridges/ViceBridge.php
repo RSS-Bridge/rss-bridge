@@ -16,9 +16,9 @@ class ViceBridge extends FeedExpander
                 'Motherboard - Tech' => 'en_us/rss/topic/tech',
                 'Entertainment' => 'en_us/rss/topic/entertainment',
                 'Noisey - Music' => 'en_us/rss/topic/music',
-                'Munchies - Food' => 'en_us/rss/topic/food'
-            ]
-        ]
+                'Munchies - Food' => 'en_us/rss/topic/food',
+            ],
+        ],
     ]];
 
     public function collectData()

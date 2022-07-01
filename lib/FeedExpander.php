@@ -405,10 +405,11 @@ abstract class FeedExpander extends BridgeAbstract
             foreach ($feedItem->guid->attributes() as $attribute => $value) {
                 if (
                     $attribute === 'isPermaLink'
-                    && ($value === 'true' || (
-                            filter_var($feedItem->guid, FILTER_VALIDATE_URL)
+                    && (
+                        $value === 'true' || (
+                        filter_var($feedItem->guid, FILTER_VALIDATE_URL)
                             && (empty($item['uri']) || !filter_var($item['uri'], FILTER_VALIDATE_URL))
-                        )
+                    )
                     )
                 ) {
                     $item['uri'] = (string)$feedItem->guid;
@@ -430,7 +431,7 @@ abstract class FeedExpander extends BridgeAbstract
         } elseif (isset($dc->creator)) {
             $item['author'] = (string)$dc->creator;
         } elseif (isset($media->credit)) {
-                $item['author'] = (string)$media->credit;
+            $item['author'] = (string)$media->credit;
         }
 
         if (isset($feedItem->enclosure) && !empty($feedItem->enclosure['url'])) {

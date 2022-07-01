@@ -11,12 +11,12 @@ class SpotifyBridge extends BridgeAbstract
         'clientid' => [
             'name' => 'Client ID',
             'type' => 'text',
-            'required' => true
+            'required' => true,
         ],
         'clientsecret' => [
             'name' => 'Client secret',
             'type' => 'text',
-            'required' => true
+            'required' => true,
         ],
         'spotifyuri' => [
             'name' => 'Spotify URIs',
@@ -29,15 +29,15 @@ class SpotifyBridge extends BridgeAbstract
             'type' => 'text',
             'required' => false,
             'exampleValue' => 'album,single,appears_on,compilation',
-            'defaultValue' => 'album,single'
+            'defaultValue' => 'album,single',
         ],
         'country' => [
             'name' => 'Country',
             'type' => 'text',
             'required' => false,
             'exampleValue' => 'US',
-            'defaultValue' => 'US'
-        ]
+            'defaultValue' => 'US',
+        ],
     ]];
 
     const TOKENURI = 'https://accounts.spotify.com/api/token';
@@ -188,7 +188,7 @@ class SpotifyBridge extends BridgeAbstract
         curl_setopt($curl, CURLOPT_HTTPHEADER, ['Authorization: Basic '
             . base64_encode($this->getInput('clientid')
             . ':'
-            . $this->getInput('clientsecret'))]);
+            . $this->getInput('clientsecret')), ]);
 
         $json = curl_exec($curl);
         $json = json_decode($json)->access_token;
@@ -205,7 +205,7 @@ class SpotifyBridge extends BridgeAbstract
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_HTTPHEADER, ['Authorization: Bearer '
-            . $this->token]);
+            . $this->token, ]);
 
         Debug::log('Fetching content from ' . $url);
         $json = curl_exec($curl);

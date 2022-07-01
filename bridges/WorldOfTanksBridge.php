@@ -18,9 +18,9 @@ class WorldOfTanksBridge extends FeedExpander
                 'Deutsch' => 'de',
                 'Čeština' => 'cs',
                 'Polski' => 'pl',
-                'Türkçe' => 'tr'
-            ]
-        ]
+                'Türkçe' => 'tr',
+            ],
+        ],
     ]];
 
     const POSSIBLE_ARTICLES = ['article', 'rich-article'];

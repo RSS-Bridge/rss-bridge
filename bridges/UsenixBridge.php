@@ -63,7 +63,7 @@ final class UsenixBridge extends BridgeAbstract
 
         return [
             'content' => $content,
-            'categories' => $tags
+            'categories' => $tags,
         ];
     }
 }

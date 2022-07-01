@@ -15,28 +15,28 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
                 'name' => 'Split the short stories',
                 'type' => 'checkbox',
                 'defaultValue' => false,
-                'title' => 'Whether to split the short stories into separate entries'
+                'title' => 'Whether to split the short stories into separate entries',
             ],
             'limit' => [
                 'name' => 'Truncate headers for the short stories',
                 'type' => 'number',
-                'defaultValue' => 100
+                'defaultValue' => 100,
             ],
             'agenda' => [
                 'name' => 'Add agenda for the day',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
+                'defaultValue' => 'checked',
             ],
             'agendaPictures' => [
                 'name' => 'Include pictures to the agenda',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
+                'defaultValue' => 'checked',
             ],
             'quote' => [
                 'name' => 'Include the quote of the day',
-                'type' => 'checkbox'
-            ]
-        ]
+                'type' => 'checkbox',
+            ],
+        ],
     ];
 
     public function collectData()
@@ -78,7 +78,7 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
                 'title' => $title,
                 'content' => $gobbet->innertext,
                 'timestamp' => $today->format('U'),
-                'uid' => md5($gobbet->plaintext)
+                'uid' => md5($gobbet->plaintext),
             ];
             $this->items[] = $item;
         }
@@ -97,7 +97,7 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
             'title' => 'World in brief at ' . $today->format('Y.m.d'),
             'content' => $contents,
             'timestamp' => $today->format('U'),
-            'uid' => 'world-in-brief-' . $today->format('U')
+            'uid' => 'world-in-brief-' . $today->format('U'),
         ];
     }
 
@@ -137,7 +137,7 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
             'title' => 'Quote of the day ' . $today->format('Y.m.d'),
             'content' => $quote->innertext,
             'timestamp' => $today->format('U'),
-            'uid' => 'quote-' . $today->format('U')
+            'uid' => 'quote-' . $today->format('U'),
         ];
     }
 }

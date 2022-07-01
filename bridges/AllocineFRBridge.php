@@ -28,8 +28,8 @@ class AllocineFRBridge extends BridgeAbstract
                 'Complètement...' => 'completement',
                 '#Fun Facts' => 'fun-facts',
                 'Origin Story' => 'origin-story',
-            ]
-        ]
+            ],
+        ],
     ]];
 
     public function getURI()
@@ -50,7 +50,7 @@ class AllocineFRBridge extends BridgeAbstract
                 'cliches' => '/video/programme-24834/',
                 'completement' => '/video/programme-23859/',
                 'fun-facts' => '/video/programme-23040/',
-                'origin-story' => '/video/programme-25667/'
+                'origin-story' => '/video/programme-25667/',
             ];
 
             $category = $this->getInput('category');

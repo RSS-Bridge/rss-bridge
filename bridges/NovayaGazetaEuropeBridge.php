@@ -18,16 +18,16 @@ class NovayaGazetaEuropeBridge extends BridgeAbstract
                 'values' => [
                     'Russian' => 'ru',
                     'English' => 'en',
-                ]
+                ],
             ],
             'limit' => [
                 'name' => 'Limit',
                 'type' => 'number',
                 'required' => false,
                 'title' => 'Maximum number of items to return',
-                'defaultValue' => 20
-            ]
-        ]
+                'defaultValue' => 20,
+            ],
+        ],
     ];
 
     public function collectData()
@@ -57,7 +57,7 @@ class NovayaGazetaEuropeBridge extends BridgeAbstract
                         return $author->name;
                     }, $block->authors)),
                     'timestamp' => $block->date / 1000,
-                    'categories' => $block->tags
+                    'categories' => $block->tags,
                 ];
                 $this->items[] = $item;
             }

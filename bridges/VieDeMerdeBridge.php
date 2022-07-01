@@ -12,8 +12,8 @@ class VieDeMerdeBridge extends BridgeAbstract
             'item_limit' => [
             'name' => 'Limit number of returned items',
             'type' => 'number',
-            'defaultValue' => 20
-            ]
+            'defaultValue' => 20,
+            ],
     ]];
 
     public function collectData()

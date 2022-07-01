@@ -12,8 +12,8 @@ class IdenticaBridge extends BridgeAbstract
         'u' => [
             'name' => 'username',
             'exampleValue' => 'jxself',
-            'required' => true
-        ]
+            'required' => true,
+        ],
     ]];
 
     public function collectData()

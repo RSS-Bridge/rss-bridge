@@ -11,14 +11,14 @@ class MediapartBridge extends FeedExpander
                 'name' => 'Single page article',
                 'type' => 'checkbox',
                 'title' => 'Display long articles on a single page',
-                'defaultValue' => 'checked'
+                'defaultValue' => 'checked',
             ],
             'mpsessid' => [
                 'name' => 'MPSESSID',
                 'type' => 'text',
-                'title' => 'Value of the session cookie MPSESSID'
-            ]
-        ]
+                'title' => 'Value of the session cookie MPSESSID',
+            ],
+        ],
     ];
     const CACHE_TIMEOUT = 7200; // 2h
     const DESCRIPTION = 'Returns the newest articles.';

@@ -12,17 +12,17 @@ class YouTubeCommunityTabBridge extends BridgeAbstract
                 'name' => 'Channel ID',
                 'type' => 'text',
                 'required' => true,
-                'exampleValue' => 'UCULkRHBdLC5ZcEQBaL0oYHQ'
-            ]
+                'exampleValue' => 'UCULkRHBdLC5ZcEQBaL0oYHQ',
+            ],
         ],
         'By username' => [
             'username' => [
                 'name' => 'Username',
                 'type' => 'text',
                 'required' => true,
-                'exampleValue' => 'YouTubeUK'
+                'exampleValue' => 'YouTubeUK',
             ],
-        ]
+        ],
     ];
 
     const CACHE_TIMEOUT = 3600; // 1 hour
@@ -213,9 +213,9 @@ class YouTubeCommunityTabBridge extends BridgeAbstract
                 }
 
                 $content = <<<EOD
-<iframe width="100%" height="410" src="https://www.youtube.com/embed/{$attachments->videoRenderer->videoId}" 
-frameborder="0" allow="encrypted-media;" allowfullscreen></iframe>
-EOD;
+                    <iframe width="100%" height="410" src="https://www.youtube.com/embed/{$attachments->videoRenderer->videoId}" 
+                    frameborder="0" allow="encrypted-media;" allowfullscreen></iframe>
+                    EOD;
             }
 
             // Image
@@ -227,8 +227,8 @@ EOD;
                 $lastThumb = end($attachments->backstageImageRenderer->image->thumbnails);
 
                 $content = <<<EOD
-<p><img src="{$lastThumb->url}"></p>
-EOD;
+                    <p><img src="{$lastThumb->url}"></p>
+                    EOD;
             }
 
             // Poll
@@ -241,13 +241,13 @@ EOD;
 
                 foreach ($attachments->pollRenderer->choices as $choice) {
                     $pollChoices .= <<<EOD
-<li>{$choice->text->runs[0]->text}</li>
-EOD;
+                        <li>{$choice->text->runs[0]->text}</li>
+                        EOD;
                 }
 
                 $content = <<<EOD
-<hr><p>Poll ({$attachments->pollRenderer->totalVotes->simpleText})<br><ul>{$pollChoices}</ul><p>
-EOD;
+                    <hr><p>Poll ({$attachments->pollRenderer->totalVotes->simpleText})<br><ul>{$pollChoices}</ul><p>
+                    EOD;
             }
         }
 

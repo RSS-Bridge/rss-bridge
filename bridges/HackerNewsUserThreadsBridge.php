@@ -13,8 +13,8 @@ class HackerNewsUserThreadsBridge extends BridgeAbstract
             'type' => 'text',
             'required' => true,
             'exampleValue' => 'nixcraft',
-            'title' => 'User whose threads you want to see'
-        ]
+            'title' => 'User whose threads you want to see',
+        ],
     ]];
 
     public function collectData()

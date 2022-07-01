@@ -13,7 +13,7 @@ class TwitchBridge extends BridgeAbstract
             'type' => 'text',
             'required' => true,
             'exampleValue' => 'criticalrole',
-            'title' => 'Lowercase channel name as seen in channel URL'
+            'title' => 'Lowercase channel name as seen in channel URL',
         ],
         'type' => [
             'name' => 'Type',
@@ -24,10 +24,10 @@ class TwitchBridge extends BridgeAbstract
                 'Highlights' => 'highlight',
                 'Uploads' => 'upload',
                 'Past Premieres' => 'past_premiere',
-                'Premiere Uploads' => 'premiere_upload'
+                'Premiere Uploads' => 'premiere_upload',
             ],
-            'defaultValue' => 'archive'
-        ]
+            'defaultValue' => 'archive',
+        ],
     ]];
 
     /*
@@ -43,57 +43,57 @@ class TwitchBridge extends BridgeAbstract
             'HIGHLIGHT',
             'UPLOAD',
             'PAST_PREMIERE',
-            'PREMIERE_UPLOAD'
+            'PREMIERE_UPLOAD',
         ],
         'archive' => 'ARCHIVE',
         'highlight' => 'HIGHLIGHT',
         'upload' => 'UPLOAD',
         'past_premiere' => 'PAST_PREMIERE',
-        'premiere_upload' => 'PREMIERE_UPLOAD'
+        'premiere_upload' => 'PREMIERE_UPLOAD',
     ];
 
     public function collectData()
     {
         $query = <<<'EOD'
-query VODList($channel: String!, $types: [BroadcastType!]) {
-  user(login: $channel) {
-    displayName
-    videos(types: $types, sort: TIME) {
-      edges {
-        node {
-          id
-          title
-          publishedAt
-          lengthSeconds
-          viewCount
-          thumbnailURLs(width: 640, height: 360)
-          previewThumbnailURL(width: 640, height: 360)
-          description
-          tags
-          contentTags {
-            isLanguageTag
-            localizedName
-          }
-          game {
-            displayName
-          }
-          moments(momentRequestType: VIDEO_CHAPTER_MARKERS) {
-            edges {
-              node {
-                description
-                positionMilliseconds
+            query VODList($channel: String!, $types: [BroadcastType!]) {
+              user(login: $channel) {
+                displayName
+                videos(types: $types, sort: TIME) {
+                  edges {
+                    node {
+                      id
+                      title
+                      publishedAt
+                      lengthSeconds
+                      viewCount
+                      thumbnailURLs(width: 640, height: 360)
+                      previewThumbnailURL(width: 640, height: 360)
+                      description
+                      tags
+                      contentTags {
+                        isLanguageTag
+                        localizedName
+                      }
+                      game {
+                        displayName
+                      }
+                      moments(momentRequestType: VIDEO_CHAPTER_MARKERS) {
+                        edges {
+                          node {
+                            description
+                            positionMilliseconds
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
-          }
-        }
-      }
-    }
-  }
-}
-EOD;
+            EOD;
         $variables = [
             'channel' => $this->getInput('channel'),
-            'types' => self::BROADCAST_TYPES[$this->getInput('type')]
+            'types' => self::BROADCAST_TYPES[$this->getInput('type')],
         ];
         $data = $this->apiRequest($query, $variables);
 
@@ -212,14 +212,14 @@ EOD;
     {
         $request = [
             'query' => $query,
-            'variables' => $variables
+            'variables' => $variables,
         ];
         $header = [
-            'Client-ID: ' . self::CLIENT_ID
+            'Client-ID: ' . self::CLIENT_ID,
         ];
         $opts = [
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => json_encode($request)
+            CURLOPT_POSTFIELDS => json_encode($request),
         ];
 
         Debug::log("Sending GraphQL query:\n" . $query);

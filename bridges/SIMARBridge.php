@@ -12,8 +12,8 @@ class SIMARBridge extends BridgeAbstract
                 'type' => 'checkbox',
                 'name' => 'Incluir Intervenções?',
                 'defaultValue' => 'checked',
-            ]
-        ]
+            ],
+        ],
     ];
 
     public function collectData()

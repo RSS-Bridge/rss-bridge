@@ -14,7 +14,7 @@ class PikabuBridge extends BridgeAbstract
             'Горячее' => 'hot',
             'Свежее' => 'new',
         ],
-        'defaultValue' => 'hot'
+        'defaultValue' => 'hot',
     ];
 
     const PARAMETERS = [
@@ -22,25 +22,25 @@ class PikabuBridge extends BridgeAbstract
             'tag' => [
                 'name' => 'Тег',
                 'exampleValue' => 'it',
-                'required' => true
+                'required' => true,
             ],
-            'filter' => self::PARAMETERS_FILTER
+            'filter' => self::PARAMETERS_FILTER,
         ],
         'По сообществу' => [
             'community' => [
                 'name' => 'Сообщество',
                 'exampleValue' => 'linux',
-                'required' => true
+                'required' => true,
             ],
-            'filter' => self::PARAMETERS_FILTER
+            'filter' => self::PARAMETERS_FILTER,
         ],
         'По пользователю' => [
             'user' => [
                 'name' => 'Пользователь',
                 'exampleValue' => 'admin',
-                'required' => true
-            ]
-        ]
+                'required' => true,
+            ],
+        ],
     ];
 
     protected $title = null;

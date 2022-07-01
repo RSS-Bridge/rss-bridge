@@ -36,8 +36,8 @@ class NextInpactBridge extends FeedExpander
                     'Économie' => 'category:6',
                     'Culture numérique' => 'category:7',
                     'Next INpact' => 'category:8',
-                ]
-            ]
+                ],
+            ],
         ],
         'filter_premium' => [
             'name' => 'Premium',
@@ -45,8 +45,8 @@ class NextInpactBridge extends FeedExpander
             'values' => [
                 'No filter' => '0',
                 'Hide Premium' => '1',
-                'Only Premium' => '2'
-            ]
+                'Only Premium' => '2',
+            ],
         ],
         'filter_brief' => [
             'name' => 'Brief',
@@ -54,8 +54,8 @@ class NextInpactBridge extends FeedExpander
             'values' => [
                 'No filter' => '0',
                 'Hide Brief' => '1',
-                'Only Brief' => '2'
-            ]
+                'Only Brief' => '2',
+            ],
         ],
         'limit' => self::LIMIT,
     ]];
@@ -110,7 +110,7 @@ class NextInpactBridge extends FeedExpander
         foreach (
             [
             'filter_premium' => 'p.red-msg',
-            'filter_brief' => $brief_selector
+            'filter_brief' => $brief_selector,
             ] as $param_name => $selector
         ) {
             $param_val = intval($this->getInput($param_name));

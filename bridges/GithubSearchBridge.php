@@ -12,8 +12,8 @@ class GithubSearchBridge extends BridgeAbstract
             'type' => 'text',
             'required' => true,
             'exampleValue' => 'rss-bridge',
-            'name' => 'Search query'
-        ]
+            'name' => 'Search query',
+        ],
     ]];
 
     public function collectData()
@@ -22,7 +22,7 @@ class GithubSearchBridge extends BridgeAbstract
                                         'q' => urlencode($this->getInput('s')),
                                         's' => 'updated',
                                         'o' => 'desc',
-                                        'type' => 'Repositories'];
+                                        'type' => 'Repositories', ];
         $url = self::URI . 'search?' . http_build_query($params);
 
         $html = getSimpleHTMLDOM($url);

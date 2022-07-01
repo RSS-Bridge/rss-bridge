@@ -572,8 +572,8 @@ class GithubTrendingBridge extends BridgeAbstract
                     'ZIL' => 'zil',
                     'Zimpl' => 'zimpl',
                 ],
-                'defaultValue' => 'All languages'
-            ]
+                'defaultValue' => 'All languages',
+            ],
         ],
 
         'global' => [
@@ -585,9 +585,9 @@ class GithubTrendingBridge extends BridgeAbstract
                     'Weekly' => 'weekly',
                     'Monthly' => 'monthly',
                 ],
-                'defaultValue' => 'today'
-            ]
-        ]
+                'defaultValue' => 'today',
+            ],
+        ],
 
     ];
 

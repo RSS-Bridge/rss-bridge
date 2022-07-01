@@ -14,8 +14,8 @@ class NyaaTorrentsBridge extends FeedExpander
                 'values' => [
                     'No filter' => '0',
                     'No remakes' => '1',
-                    'Trusted only' => '2'
-                ]
+                    'Trusted only' => '2',
+                ],
             ],
             'c' => [
                 'name' => 'Category',
@@ -45,19 +45,19 @@ class NyaaTorrentsBridge extends FeedExpander
                     'Software' => '6_0',
                     'Software - Apps' => '6_1',
                     'Software - Games' => '6_2',
-                ]
+                ],
             ],
             'q' => [
                 'name' => 'Keyword',
                 'description' => 'Keyword(s)',
-                'type' => 'text'
+                'type' => 'text',
             ],
             'u' => [
                 'name' => 'User',
                 'description' => 'User',
-                'type' => 'text'
-            ]
-        ]
+                'type' => 'text',
+            ],
+        ],
     ];
 
     public function getIcon()
@@ -73,7 +73,7 @@ class NyaaTorrentsBridge extends FeedExpander
                 'f' => $this->getInput('f'),
                 'c' => $this->getInput('c'),
                 'q' => $this->getInput('q'),
-                'u' => $this->getInput('u')
+                'u' => $this->getInput('u'),
             ]),
             20
         );

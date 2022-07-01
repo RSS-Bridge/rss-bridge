@@ -10,8 +10,8 @@ class WordPressBridge extends FeedExpander
         'url' => [
             'name' => 'Blog URL',
             'exampleValue' => 'https://www.wpbeginner.com/',
-            'required' => true
-        ]
+            'required' => true,
+        ],
     ]];
 
     private function cleanContent($content)

@@ -35,7 +35,7 @@ class TheHackerNewsBridge extends BridgeAbstract
                             $element->find('img[data-echo]', 0)->outertext,
                             "data-echo='",
                             "'"
-                        )
+                        ),
                     ];
                 } else {
                     $article_thumbnail = [];

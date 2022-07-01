@@ -32,15 +32,15 @@ final class BridgeCard
     private static function getFormHeader($bridgeName, $isHttps = false, $parameterName = '')
     {
         $form = <<<EOD
-			<form method="GET" action="?">
-				<input type="hidden" name="action" value="display" />
-				<input type="hidden" name="bridge" value="{$bridgeName}" />
-EOD;
+            			<form method="GET" action="?">
+            				<input type="hidden" name="action" value="display" />
+            				<input type="hidden" name="bridge" value="{$bridgeName}" />
+            EOD;
 
         if (!empty($parameterName)) {
             $form .= <<<EOD
-				<input type="hidden" name="context" value="{$parameterName}" />
-EOD;
+                				<input type="hidden" name="context" value="{$parameterName}" />
+                EOD;
         }
 
         if (!$isHttps) {
@@ -327,7 +327,7 @@ This bridge is not fetching its content through a secure connection</div>';
         if (defined('PROXY_URL') && PROXY_BYBRIDGE) {
             $parameters['global']['_noproxy'] = [
                 'name' => 'Disable proxy (' . ((defined('PROXY_NAME') && PROXY_NAME) ? PROXY_NAME : PROXY_URL) . ')',
-                'type' => 'checkbox'
+                'type' => 'checkbox',
             ];
         }
 
@@ -335,17 +335,17 @@ This bridge is not fetching its content through a secure connection</div>';
             $parameters['global']['_cache_timeout'] = [
                 'name' => 'Cache timeout in seconds',
                 'type' => 'number',
-                'defaultValue' => $bridge->getCacheTimeout()
+                'defaultValue' => $bridge->getCacheTimeout(),
             ];
         }
 
         $card = <<<CARD
-			<section id="bridge-{$bridgeName}" data-ref="{$name}">
-				<h2><a href="{$uri}">{$name}</a></h2>
-				<p class="description">{$description}</p>
-				<input type="checkbox" class="showmore-box" id="showmore-{$bridgeName}" />
-				<label class="showmore" for="showmore-{$bridgeName}">Show more</label>
-CARD;
+            			<section id="bridge-{$bridgeName}" data-ref="{$name}">
+            				<h2><a href="{$uri}">{$name}</a></h2>
+            				<p class="description">{$description}</p>
+            				<input type="checkbox" class="showmore-box" id="showmore-{$bridgeName}" />
+            				<label class="showmore" for="showmore-{$bridgeName}">Show more</label>
+            CARD;
 
         // If we don't have any parameter for the bridge, we print a generic form to load it.
         if (count($parameters) === 0) {

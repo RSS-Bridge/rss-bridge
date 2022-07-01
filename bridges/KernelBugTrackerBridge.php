@@ -14,14 +14,14 @@ Returns feeds for bug comments';
                 'type' => 'number',
                 'required' => true,
                 'title' => 'Insert bug tracking ID',
-                'exampleValue' => 121241
+                'exampleValue' => 121241,
             ],
             'limit' => [
                 'name' => 'Number of comments to return',
                 'type' => 'number',
                 'required' => false,
                 'title' => 'Specify number of comments to return',
-                'defaultValue' => -1
+                'defaultValue' => -1,
             ],
             'sorting' => [
                 'name' => 'Sorting',
@@ -31,10 +31,10 @@ Returns feeds for bug comments';
                 'defaultValue' => 'of',
                 'values' => [
                     'Oldest first' => 'of',
-                    'Latest first' => 'lf'
-                ]
-            ]
-        ]
+                    'Latest first' => 'lf',
+                ],
+            ],
+        ],
     ];
 
     private $bugid = '';

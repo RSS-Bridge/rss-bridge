@@ -86,7 +86,7 @@ class BandcampDailyBridge extends BridgeAbstract
                 ],
                 'defaultValue' => 'lists',
             ],
-        ]
+        ],
     ];
 
     const CACHE_TIMEOUT = 3600; // 1 hour

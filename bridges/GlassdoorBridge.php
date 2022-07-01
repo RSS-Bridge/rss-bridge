@@ -3,7 +3,7 @@
 class GlassdoorBridge extends BridgeAbstract
 {
     // Contexts
-    const CONTEXT_BLOG   = 'Blogs';
+    const CONTEXT_BLOG = 'Blogs';
     const CONTEXT_REVIEW = 'Company Reviews';
     const CONTEXT_GLOBAL = 'global';
 
@@ -14,10 +14,10 @@ class GlassdoorBridge extends BridgeAbstract
     const PARAM_BLOG_TYPE = 'blog_type';
     const PARAM_BLOG_FULL = 'full_article';
 
-    const BLOG_TYPE_HOME             = 'Home';
+    const BLOG_TYPE_HOME = 'Home';
     const BLOG_TYPE_COMPANIES_HIRING = 'Companies Hiring';
-    const BLOG_TYPE_CAREER_ADVICE    = 'Career Advice';
-    const BLOG_TYPE_INTERVIEWS       = 'Interviews';
+    const BLOG_TYPE_CAREER_ADVICE = 'Career Advice';
+    const BLOG_TYPE_INTERVIEWS = 'Interviews';
 
     // Review context parameters
     const PARAM_REVIEW_COMPANY = 'company';
@@ -35,16 +35,16 @@ class GlassdoorBridge extends BridgeAbstract
                 'type' => 'list',
                 'title' => 'Select the blog you want to follow',
                 'values' => [
-                    self::BLOG_TYPE_HOME                => 'blog/',
-                    self::BLOG_TYPE_COMPANIES_HIRING    => 'blog/companies-hiring/',
-                    self::BLOG_TYPE_CAREER_ADVICE       => 'blog/career-advice/',
-                    self::BLOG_TYPE_INTERVIEWS          => 'blog/interviews/',
-                ]
+                    self::BLOG_TYPE_HOME => 'blog/',
+                    self::BLOG_TYPE_COMPANIES_HIRING => 'blog/companies-hiring/',
+                    self::BLOG_TYPE_CAREER_ADVICE => 'blog/career-advice/',
+                    self::BLOG_TYPE_INTERVIEWS => 'blog/interviews/',
+                ],
             ],
             self::PARAM_BLOG_FULL => [
                 'name' => 'Full article',
                 'type' => 'checkbox',
-                'title' => 'Enable to return the full article for each post'
+                'title' => 'Enable to return the full article for each post',
             ],
         ],
         self::CONTEXT_REVIEW => [
@@ -53,17 +53,17 @@ class GlassdoorBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'title' => 'Paste the company review page URL here!',
-                'exampleValue' => 'https://www.glassdoor.com/Reviews/GitHub-Reviews-E671945.htm'
-            ]
+                'exampleValue' => 'https://www.glassdoor.com/Reviews/GitHub-Reviews-E671945.htm',
+            ],
         ],
         self::CONTEXT_GLOBAL => [
             self::PARAM_LIMIT => [
                 'name' => 'Limit',
                 'type' => 'number',
                 'defaultValue' => -1,
-                'title' => 'Specifies the maximum number of items to return (default: All)'
-            ]
-        ]
+                'title' => 'Specifies the maximum number of items to return (default: All)',
+            ],
+        ],
     ];
 
     public function getURI()
@@ -185,7 +185,7 @@ class GlassdoorBridge extends BridgeAbstract
             'de-CH' => 'Bewertungen',
             'fr-CH' => 'Avis',
             'en-GB' => 'Reviews',
-            'en'    => 'Reviews'
+            'en' => 'Reviews',
         ];
 
         if (!in_array($parts[1], $allowed_strings)) {

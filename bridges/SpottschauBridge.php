@@ -34,9 +34,9 @@ class SpottschauBridge extends BridgeAbstract
         $imageAlt = $image->attr['alt'];
 
         $item['content'] = <<<EOD
-<img src="{$imageUrl}" alt="{$imageAlt}"/>
-<br/>
-EOD;
+            <img src="{$imageUrl}" alt="{$imageAlt}"/>
+            <br/>
+            EOD;
         $this->items[] = $item;
     }
 }

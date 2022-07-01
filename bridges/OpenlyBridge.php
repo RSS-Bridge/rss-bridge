@@ -19,18 +19,18 @@ class OpenlyBridge extends BridgeAbstract
                     'Europe' => 'europe',
                     'Latin America' => 'latin-america',
                     'Middle Easta' => 'middle-east',
-                    'North America' => 'north-america'
-                ]
+                    'North America' => 'north-america',
+                ],
             ],
             'content' => [
                 'name' => 'Content',
                 'type' => 'list',
                 'values' => [
                     'News' => 'news',
-                    'Opinion' => 'people'
+                    'Opinion' => 'people',
                 ],
-                'defaultValue' => 'news'
-            ]
+                'defaultValue' => 'news',
+            ],
         ],
         'By Tag' => [
             'tag' => [
@@ -44,10 +44,10 @@ class OpenlyBridge extends BridgeAbstract
                 'type' => 'list',
                 'values' => [
                     'News' => 'news',
-                    'Opinion' => 'people'
+                    'Opinion' => 'people',
                 ],
-                'defaultValue' => 'news'
-            ]
+                'defaultValue' => 'news',
+            ],
         ],
         'By Author' => [
             'profileId' => [
@@ -55,26 +55,26 @@ class OpenlyBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'exampleValue' => '003D000002WZGYRIA5',
-            ]
-        ]
+            ],
+        ],
     ];
 
     const TEST_DETECT_PARAMETERS = [
         'https://www.openlynews.com/profile/?id=0033z00002XUTepAAH' => [
-            'context' => 'By Author', 'profileId' => '0033z00002XUTepAAH'
+            'context' => 'By Author', 'profileId' => '0033z00002XUTepAAH',
         ],
         'https://www.openlynews.com/news/?page=1&theme=lgbt-law' => [
-            'context' => 'By Tag', 'content' => 'news', 'tag' => 'lgbt-law'
+            'context' => 'By Tag', 'content' => 'news', 'tag' => 'lgbt-law',
         ],
         'https://www.openlynews.com/news/?page=1&region=north-america' => [
-            'context' => 'By Region', 'content' => 'news', 'region' => 'north-america'
+            'context' => 'By Region', 'content' => 'news', 'region' => 'north-america',
         ],
         'https://www.openlynews.com/news/?theme=lgbt-law' => [
-            'context' => 'By Tag', 'content' => 'news', 'tag' => 'lgbt-law'
+            'context' => 'By Tag', 'content' => 'news', 'tag' => 'lgbt-law',
         ],
         'https://www.openlynews.com/news/?region=north-america' => [
-            'context' => 'By Region', 'content' => 'news', 'region' => 'north-america'
-        ]
+            'context' => 'By Region', 'content' => 'news', 'region' => 'north-america',
+        ],
     ];
 
     const CACHE_TIMEOUT = 900; // 15 mins

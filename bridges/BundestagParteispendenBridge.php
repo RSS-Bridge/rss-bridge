@@ -9,11 +9,11 @@ class BundestagParteispendenBridge extends BridgeAbstract
     const CACHE_TIMEOUT = 86400; // 24h
     const DESCRIPTION = 'Returns the latest "soft money" donations to parties represented in the German Bundestag.';
     const CONTENT_TEMPLATE = <<<TMPL
-<p><b>Partei:</b><br>%s</p>
-<p><b>Spendenbetrag:</b><br>%s</p>
-<p><b>Spender:</b><br>%s</p>
-<p><b>Eingang der Spende:</b><br>%s</p>
-TMPL;
+        <p><b>Partei:</b><br>%s</p>
+        <p><b>Spendenbetrag:</b><br>%s</p>
+        <p><b>Spender:</b><br>%s</p>
+        <p><b>Eingang der Spende:</b><br>%s</p>
+        TMPL;
 
     public function getIcon()
     {
@@ -23,8 +23,8 @@ TMPL;
     public function collectData()
     {
         $ajaxUri = <<<URI
-https://www.bundestag.de/ajax/filterlist/de/parlament/praesidium/parteienfinanzierung/fundstellen50000/462002-462002
-URI;
+            https://www.bundestag.de/ajax/filterlist/de/parlament/praesidium/parteienfinanzierung/fundstellen50000/462002-462002
+            URI;
         // Get the main page
         $html = getSimpleHTMLDOMCached($ajaxUri, self::CACHE_TIMEOUT)
             or returnServerError('Could not request AJAX list.');
@@ -61,11 +61,11 @@ URI;
         $item = [];
 
         //              | column     | paragraph inside column
-        $party  = $row->children[0]->children[0]->innertext;
+        $party = $row->children[0]->children[0]->innertext;
         $amount = $row->children[1]->children[0]->innertext . ' €';
-        $donor  = $row->children[2]->children[0]->innertext;
-        $date   = $row->children[3]->children[0]->innertext;
-        $dip    = $row->children[4]->children[0]->find('a.dipLink', 0);
+        $donor = $row->children[2]->children[0]->innertext;
+        $date = $row->children[3]->children[0]->innertext;
+        $dip = $row->children[4]->children[0]->find('a.dipLink', 0);
 
         // Strip whitespace from date string.
         $date = str_replace(' ', '', $date);

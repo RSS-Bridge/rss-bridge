@@ -12,14 +12,14 @@ class PinterestBridge extends FeedExpander
             'u' => [
                 'name' => 'username',
                 'exampleValue' => 'VIGOIndustries',
-                'required' => true
+                'required' => true,
             ],
             'b' => [
                 'name' => 'board',
                 'exampleValue' => 'bathroom-remodels',
-                'required' => true
-            ]
-        ]
+                'required' => true,
+            ],
+        ],
     ];
 
     public function getIcon()

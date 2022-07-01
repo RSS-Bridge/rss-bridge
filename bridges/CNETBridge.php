@@ -22,10 +22,10 @@ class CNETBridge extends BridgeAbstract
                     'Sci-Tech' => 'topics-sci-tech',
                     'Security' => 'topics-security',
                     'Internet' => 'topics-internet',
-                    'Tech Industry' => 'topics-tech-industry'
-                ]
-            ]
-        ]
+                    'Tech Industry' => 'topics-tech-industry',
+                ],
+            ],
+        ],
     ];
 
     private function cleanArticle($article_html)

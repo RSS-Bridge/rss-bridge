@@ -11,8 +11,8 @@ class DemoBridge extends BridgeAbstract
         'testCheckbox' => [
             'testCheckbox' => [
                 'type' => 'checkbox',
-                'name' => 'test des checkbox'
-            ]
+                'name' => 'test des checkbox',
+            ],
         ],
         'testList' => [
             'testList' => [
@@ -20,17 +20,17 @@ class DemoBridge extends BridgeAbstract
                 'name' => 'test des listes',
                 'values' => [
                     'Test' => 'test',
-                    'Test 2' => 'test2'
-                ]
-            ]
+                    'Test 2' => 'test2',
+                ],
+            ],
         ],
         'testNumber' => [
             'testNumber' => [
                 'type' => 'number',
                 'name' => 'test des numéros',
-                'exampleValue' => '1515632'
-            ]
-        ]
+                'exampleValue' => '1515632',
+            ],
+        ],
     ];
 
     public function collectData()

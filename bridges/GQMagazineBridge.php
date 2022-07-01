@@ -25,12 +25,12 @@ class GQMagazineBridge extends BridgeAbstract
         'domain' => [
             'name' => 'Domain to use',
             'required' => true,
-            'defaultValue' => self::DEFAULT_DOMAIN
+            'defaultValue' => self::DEFAULT_DOMAIN,
         ],
         'page' => [
             'name' => 'Initial page to load',
             'required' => true,
-            'exampleValue' => 'sexe/news'
+            'exampleValue' => 'sexe/news',
         ],
         'limit' => self::LIMIT,
     ]];
@@ -38,12 +38,12 @@ class GQMagazineBridge extends BridgeAbstract
     const REPLACED_ATTRIBUTES = [
         'href' => 'href',
         'src' => 'src',
-        'data-original' => 'src'
+        'data-original' => 'src',
     ];
 
     const POSSIBLE_TITLES = [
         'h2',
-        'h3'
+        'h3',
     ];
 
     private function getDomain()

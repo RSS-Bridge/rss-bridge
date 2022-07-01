@@ -17,30 +17,30 @@ class KununuBridge extends BridgeAbstract
                 'values' => [
                     'Austria' => 'at',
                     'Germany' => 'de',
-                    'Switzerland' => 'ch'
+                    'Switzerland' => 'ch',
                 ],
                 'exampleValue' => 'de',
             ],
             'include_ratings' => [
                 'name' => 'Include ratings',
                 'type' => 'checkbox',
-                'title' => 'Activate to include ratings in the feed'
+                'title' => 'Activate to include ratings in the feed',
             ],
             'limit' => [
                 'name' => 'Limit',
                 'type' => 'number',
                 'defaultValue' => 3,
-                'title' => "Maximum number of items to return in the feed.\n0 = unlimited"
-            ]
+                'title' => "Maximum number of items to return in the feed.\n0 = unlimited",
+            ],
         ],
         [
             'company' => [
                 'name' => 'Company',
                 'required' => true,
                 'exampleValue' => 'kununu',
-                'title' => 'Insert company name (i.e. Kununu) or URI path (i.e. kununu)'
-            ]
-        ]
+                'title' => 'Insert company name (i.e. Kununu) or URI path (i.e. kununu)',
+            ],
+        ],
     ];
 
     private $companyName = '';
@@ -141,12 +141,12 @@ class KununuBridge extends BridgeAbstract
             $retVal .= (empty($retVal) ? '' : '<hr>') . '<table>';
             foreach ($json['ratings'] as $rating) {
                 $retVal .= <<<EOD
-<tr>
-	<td>{$rating['id']}
-	<td>{$rating['roundedScore']}
-	<td>{$rating['text']}
-</tr>
-EOD;
+                    <tr>
+                    	<td>{$rating['id']}
+                    	<td>{$rating['roundedScore']}
+                    	<td>{$rating['text']}
+                    </tr>
+                    EOD;
             }
             $retVal .= '</table>';
         }

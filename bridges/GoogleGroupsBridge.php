@@ -10,23 +10,23 @@ class GoogleGroupsBridge extends XPathAbstract
             'name' => 'Group id',
             'title' => 'The string that follows /g/ in the URL',
             'exampleValue' => 'governance',
-            'required' => true
+            'required' => true,
         ],
         'account' => [
             'name' => 'Account id',
             'title' => 'Some Google groups have an additional id following /a/ in the URL',
             'exampleValue' => 'mozilla.org',
-            'required' => false
-        ]
+            'required' => false,
+        ],
     ]];
     const CACHE_TIMEOUT = 3600;
 
     const TEST_DETECT_PARAMETERS = [
         'https://groups.google.com/a/mozilla.org/g/announce' => [
-            'account' => 'mozilla.org', 'group' => 'announce'
+            'account' => 'mozilla.org', 'group' => 'announce',
         ],
         'https://groups.google.com/g/ansible-project' => [
-            'account' => null, 'group' => 'ansible-project'
+            'account' => null, 'group' => 'ansible-project',
         ],
     ];
 

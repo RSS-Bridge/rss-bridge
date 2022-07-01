@@ -9,20 +9,20 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract
     const PARAMETERS = [
         'By series' => [
             'series_id' => [
-                'name'      => 'Series ID',
-                'type'      => 'number',
-                'required'  => true,
-                'exampleValue'  => '188066'
-            ]
+                'name' => 'Series ID',
+                'type' => 'number',
+                'required' => true,
+                'exampleValue' => '188066',
+            ],
         ],
         'By list' => [
             'list_id' => [
-                'name'      => 'List ID and Type',
-                'type'      => 'text',
-                'required'  => true,
-                'exampleValue'  => '4395&list=read'
-            ]
-        ]
+                'name' => 'List ID and Type',
+                'type' => 'text',
+                'required' => true,
+                'exampleValue' => '4395&list=read',
+            ],
+        ],
     ];
     const LIMIT_COLS = 5;
     const LIMIT_ITEMS = 10;

@@ -14,9 +14,9 @@ class SeznamZpravyBridge extends BridgeAbstract
                 'required' => true,
                 'title' => 'The dash-separated author string, as shown in the URL bar.',
                 'pattern' => '[a-z]+-[a-z]+-[0-9]+',
-                'exampleValue' => 'radek-nohl-1'
+                'exampleValue' => 'radek-nohl-1',
             ],
-        ]
+        ],
     ];
 
     private $feedName;
@@ -43,7 +43,7 @@ class SeznamZpravyBridge extends BridgeAbstract
                 'articleTime' => 'span.mol-formatted-date__time',
                 'articleContent' => 'div[data-dot=ogm-article-content]',
                 'articleImage' => 'div[data-dot=ogm-main-media] img',
-                'articleParagraphs' => 'div[data-dot=mol-paragraph]'
+                'articleParagraphs' => 'div[data-dot=mol-paragraph]',
                 ];
 
                 $html = getSimpleHTMLDOMCached($url . $this->getInput('author'), $ONE_DAY);
@@ -115,7 +115,7 @@ class SeznamZpravyBridge extends BridgeAbstract
                     'timestamp' => strtotime($articleDMY . ' ' . $articleTime),
                     'author' => $author,
                     'content' => $contentText,
-                    'categories' => $categories
+                    'categories' => $categories,
                     ];
                     if (isset($articleImageElem)) {
                         $item['enclosures'] = ['https:' . $articleImageElem->src];

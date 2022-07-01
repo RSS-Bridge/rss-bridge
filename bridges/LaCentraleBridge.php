@@ -17,8 +17,8 @@ class LaCentraleBridge extends BridgeAbstract
                 'Moto' => 'moto',
                 'Scooter' => 'scooter',
                 'Quad' => 'quad',
-                'Caravane/Camping-car' => 'mobileHome'
-            ]
+                'Caravane/Camping-car' => 'mobileHome',
+            ],
         ],
         'brand' => [
             'name' => 'Marque',
@@ -216,18 +216,18 @@ class LaCentraleBridge extends BridgeAbstract
                 'YAMAHA' => 'YAMAHA',
                 'YCF' => 'YCF',
                 'ZERO' => 'ZERO',
-                'ZONGSHEN' => 'ZONGSHEN'
-            ]
+                'ZONGSHEN' => 'ZONGSHEN',
+            ],
         ],
         'model' => [
             'name' => 'Modèle',
             'type' => 'text',
-            'title' => 'Get the exact name on LaCentrale'
+            'title' => 'Get the exact name on LaCentrale',
         ],
         'versions' => [
             'name' => 'Version(s)',
             'type' => 'text',
-            'title' => 'Get the exact name(s) on LaCentrale. Separate by comma'
+            'title' => 'Get the exact name(s) on LaCentrale. Separate by comma',
         ],
         'category' => [
             'name' => 'Catégorie',
@@ -256,7 +256,7 @@ class LaCentraleBridge extends BridgeAbstract
                     'Bus et minibus' => '82',
                     'Fourgonnette' => '85',
                     'Pick-up' => '50',
-                    'Voiture société, commerciale' => '80'
+                    'Voiture société, commerciale' => '80',
                 ],
                 'Moto' => [
                     'Custom' => '60',
@@ -268,29 +268,29 @@ class LaCentraleBridge extends BridgeAbstract
                     'Supermotard' => '66',
                     'Trail' => '67',
                     'Side-car' => '69',
-                    'Sportive' => '68'
+                    'Sportive' => '68',
                 ],
                 'Caravane/Camping-car' => [
                     'Caravane' => '423',
                     'Profilé' => '506',
                     'Fourgon aménagé' => '507',
                     'Intégral' => '508',
-                    'Capucine' => '510'
-                ]
-            ]
+                    'Capucine' => '510',
+                ],
+            ],
         ],
         'pricemin' => [
             'name' => 'Prix min',
-            'type' => 'number'
+            'type' => 'number',
         ],
         'pricemax' => [
             'name' => 'Prix max',
-            'type' => 'number'
+            'type' => 'number',
         ],
         'location' => [
             'name' => 'CP ou département',
             'type' => 'number',
-            'title' => 'Only one'
+            'title' => 'Only one',
         ],
         'distance' => [
             'name' => 'Rayon de recherche',
@@ -301,8 +301,8 @@ class LaCentraleBridge extends BridgeAbstract
                 '20 km' => '2',
                 '50 km' => '3',
                 '100 km' => '4',
-                '200 km' => '5'
-            ]
+                '200 km' => '5',
+            ],
         ],
         'region' => [
             'name' => 'Région',
@@ -321,32 +321,32 @@ class LaCentraleBridge extends BridgeAbstract
                 'Nouvelle-Aquitaine' => 'FR-PAC',
                 'Occitanie' => 'FR-PDL',
                 'Pays de la Loire' => 'FR-OCC',
-                'Provence-Alpes-Côte d\'Azur' => 'FR-NAQ'
-            ]
+                'Provence-Alpes-Côte d\'Azur' => 'FR-NAQ',
+            ],
         ],
         'mileagemin' => [
             'name' => 'Kilométrage min',
-            'type' => 'number'
+            'type' => 'number',
         ],
         'mileagemax' => [
             'name' => 'Kilométrage max',
-            'type' => 'number'
+            'type' => 'number',
         ],
         'yearmin' => [
             'name' => 'Année min',
-            'type' => 'number'
+            'type' => 'number',
         ],
         'yearmax' => [
             'name' => 'Année max',
-            'type' => 'number'
+            'type' => 'number',
         ],
         'cubiccapacitymin' => [
             'name' => 'Cylindrée min',
-            'type' => 'number'
+            'type' => 'number',
         ],
         'cubiccapacitymax' => [
             'name' => 'Cylindrée max',
-            'type' => 'number'
+            'type' => 'number',
         ],
         'fuel' => [
             'name' => 'Énergie',
@@ -359,8 +359,8 @@ class LaCentraleBridge extends BridgeAbstract
                 'Hybride' => 'hyb',
                 'GPL' => 'gpl',
                 'Bioéthanol' => 'eth',
-                'Autre' => 'alt'
-            ]
+                'Autre' => 'alt',
+            ],
         ],
         'gearbox' => [
             'name' => 'Boite de vitesse',
@@ -368,8 +368,8 @@ class LaCentraleBridge extends BridgeAbstract
             'values' => [
                 '' => '',
                 'Boite automatique' => 'AUTO',
-                'Boite mécanique' => 'MANUAL'
-            ]
+                'Boite mécanique' => 'MANUAL',
+            ],
         ],
         'doors' => [
             'name' => 'Nombre de portes',
@@ -380,12 +380,12 @@ class LaCentraleBridge extends BridgeAbstract
                 '3 portes' => '3',
                 '4 portes' => '4',
                 '5 portes' => '5',
-                '6 portes ou plus' => '6'
-            ]
+                '6 portes ou plus' => '6',
+            ],
         ],
         'firsthand' => [
             'name' => 'Première main',
-            'type' => 'checkbox'
+            'type' => 'checkbox',
         ],
         'seller' => [
             'name' => 'Vendeur',
@@ -393,8 +393,8 @@ class LaCentraleBridge extends BridgeAbstract
             'values' => [
                 '' => '',
                 'Particulier' => 'PART',
-                'Professionel' => 'PRO'
-            ]
+                'Professionel' => 'PRO',
+            ],
         ],
         'sort' => [
             'name' => 'Tri',
@@ -409,8 +409,8 @@ class LaCentraleBridge extends BridgeAbstract
                 'Année (croissant)' => 'yearAsc',
                 'Année (décroissant)' => 'yearDesc',
                 'Département (croissant)' => 'visitPlaceAsc',
-                'Département (décroissant)' => 'visitPlaceDesc'
-            ]
+                'Département (décroissant)' => 'visitPlaceDesc',
+            ],
         ],
     ]];
 
@@ -443,7 +443,7 @@ class LaCentraleBridge extends BridgeAbstract
             'firstHand' => $this->getInput('firsthand') ? 'true' : 'false',
             'gearbox' => $this->getInput('gearbox'),
             'doors' => $this->getInput('doors'),
-            'sortBy' => $this->getInput('sort')
+            'sortBy' => $this->getInput('sort'),
         ];
         $url = sprintf('%slisting?%s', self::URI, http_build_query($params));
         $html = getSimpleHTMLDOM($url);

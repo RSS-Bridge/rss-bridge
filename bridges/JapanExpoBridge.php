@@ -11,7 +11,7 @@ class JapanExpoBridge extends BridgeAbstract
         'mode' => [
             'name' => 'Show full contents',
             'type' => 'checkbox',
-        ]
+        ],
     ]];
 
     public function getIcon()
@@ -100,7 +100,7 @@ class JapanExpoBridge extends BridgeAbstract
                     'septembre' => 'sep',
                     'octobre' => 'oct',
                     'novembre' => 'nov',
-                    'décembre' => 'dec'
+                    'décembre' => 'dec',
                 ]
             )
         );

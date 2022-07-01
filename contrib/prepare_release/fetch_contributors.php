@@ -12,7 +12,7 @@ while ($next) { /* Collect all contributors */
     $headers = [
         'Accept: application/json',
         'Content-Type: application/json',
-        'User-Agent: RSS-Bridge'
+        'User-Agent: RSS-Bridge',
     ];
     $result = _http_request($url, ['headers' => $headers]);
 
@@ -26,7 +26,7 @@ while ($next) { /* Collect all contributors */
 
     // Check if there is a link with 'rel="next"'
     foreach ($links as $link) {
-        list($url, $type) = explode(';', $link, 2);
+        [$url, $type] = explode(';', $link, 2);
 
         if (trim($type) === 'rel="next"') {
             $url = trim(preg_replace('/([<>])/', '', $url));

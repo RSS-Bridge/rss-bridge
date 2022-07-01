@@ -17,7 +17,7 @@ class FurAffinityBridge extends BridgeAbstract
             'rating-general' => [
                 'name' => 'General',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
+                'defaultValue' => 'checked',
             ],
             'rating-mature' => [
                 'name' => 'Mature',
@@ -35,39 +35,39 @@ class FurAffinityBridge extends BridgeAbstract
                     '3 Days' => '3days',
                     'A Week' => 'week',
                     'A Month' => 'month',
-                    'All time' => 'all'
+                    'All time' => 'all',
                 ],
-                'defaultValue' => 'all'
+                'defaultValue' => 'all',
             ],
             'type-art' => [
                 'name' => 'Art',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
+                'defaultValue' => 'checked',
             ],
             'type-flash' => [
                 'name' => 'Flash',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
+                'defaultValue' => 'checked',
             ],
             'type-photo' => [
                 'name' => 'Photography',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
+                'defaultValue' => 'checked',
             ],
             'type-music' => [
                 'name' => 'Music',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
+                'defaultValue' => 'checked',
             ],
             'type-story' => [
                 'name' => 'Story',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
+                'defaultValue' => 'checked',
             ],
             'type-poetry' => [
                 'name' => 'Poetry',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
+                'defaultValue' => 'checked',
             ],
             'mode' => [
                 'name' => 'Match mode',
@@ -75,29 +75,29 @@ class FurAffinityBridge extends BridgeAbstract
                 'values' => [
                     'All of the words' => 'all',
                     'Any of the words' => 'any',
-                    'Extended' => 'extended'
+                    'Extended' => 'extended',
                 ],
-                'defaultValue' => 'extended'
+                'defaultValue' => 'extended',
             ],
             'limit' => [
                 'name' => 'Limit',
                 'type' => 'number',
                 'required' => true,
                 'defaultValue' => 10,
-                'title' => 'Limit number of submissions to return. -1 for unlimited.'
+                'title' => 'Limit number of submissions to return. -1 for unlimited.',
             ],
             'full' => [
                 'name' => 'Full view',
                 'title' => 'Include description, tags, date and larger image in article. Uses more bandwidth.',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
+                'defaultValue' => 'checked',
             ],
             'cache' => [
                 'name' => 'Cache submission pages',
                 'title' => 'Reduces requests to FA when Full view is enabled. Changes to submission details may be delayed.',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
-            ]
+                'defaultValue' => 'checked',
+            ],
         ],
         'Browse' => [
             'cat' => [
@@ -116,21 +116,21 @@ class FurAffinityBridge extends BridgeAbstract
                         'Icons' => 9,
                         'Mosaics' => 10,
                         'Photography' => 11,
-                        'Sculpting' => 12
+                        'Sculpting' => 12,
                     ],
                     'Readable Art' => [
                         'Story' => 13,
                         'Poetry' => 14,
-                        'Prose' => 15
+                        'Prose' => 15,
                     ],
                     'Audio Art' => [
                         'Music' => 16,
-                        'Podcasts' => 17
+                        'Podcasts' => 17,
                     ],
                     'Downloadable' => [
                         'Skins' => 18,
                         'Handhelds' => 19,
-                        'Resources' => 20
+                        'Resources' => 20,
                     ],
                     'Other Stuff' => [
                         'Adoptables' => 21,
@@ -143,10 +143,10 @@ class FurAffinityBridge extends BridgeAbstract
                         'Scraps' => 28,
                         'Wallpaper' => 29,
                         'YCH / Sale' => 30,
-                        'Other' => 31
-                    ]
+                        'Other' => 31,
+                    ],
                 ],
-                'defaultValue' => 1
+                'defaultValue' => 1,
             ],
             'atype' => [
                 'name' => 'Type',
@@ -166,7 +166,7 @@ class FurAffinityBridge extends BridgeAbstract
                         'Scenery' => 11,
                         'Still Life' => 12,
                         'Tutorials' => 13,
-                        'Miscellaneous' => 14
+                        'Miscellaneous' => 14,
                     ],
                     'Fetish / Furry specialty' => [
                         'Baby fur' => 101,
@@ -188,7 +188,7 @@ class FurAffinityBridge extends BridgeAbstract
                         'Transformation' => 116,
                         'Vore' => 117,
                         'Water Sports' => 118,
-                        'General Furry Art' => 100
+                        'General Furry Art' => 100,
                     ],
                     'Music' => [
                         'Techno' => 201,
@@ -205,10 +205,10 @@ class FurAffinityBridge extends BridgeAbstract
                         'Pop' => 212,
                         'Rap' => 213,
                         'Industrial' => 214,
-                        'Other Music' => 200
-                    ]
+                        'Other Music' => 200,
+                    ],
                 ],
-                'defaultValue' => 1
+                'defaultValue' => 1,
             ],
             'species' => [
                 'name' => 'Species',
@@ -219,7 +219,7 @@ class FurAffinityBridge extends BridgeAbstract
                         'Frog' => 1001,
                         'Newt' => 1002,
                         'Salamander' => 1003,
-                        'Amphibian (Other)' => 1000
+                        'Amphibian (Other)' => 1000,
                     ],
                     'Aquatic' => [
                         'Cephalopod' => 2001,
@@ -229,7 +229,7 @@ class FurAffinityBridge extends BridgeAbstract
                         'Seal' => 6068,
                         'Shark' => 2006,
                         'Whale' => 2003,
-                        'Aquatic (Other)' => 2000
+                        'Aquatic (Other)' => 2000,
                     ],
                     'Avian' => [
                         'Corvid' => 3001,
@@ -243,14 +243,14 @@ class FurAffinityBridge extends BridgeAbstract
                         'Owl' => 3009,
                         'Phoenix' => 3010,
                         'Swan' => 3011,
-                        'Avian (Other)' => 3000
+                        'Avian (Other)' => 3000,
                     ],
                     'Bears &amp; Ursines' => [
-                        'Bear' => 6002
+                        'Bear' => 6002,
                     ],
                     'Camelids' => [
                         'Camel' => 6074,
-                        'Llama' => 6036
+                        'Llama' => 6036,
                     ],
                     'Canines &amp; Lupines' => [
                         'Coyote' => 6008,
@@ -261,17 +261,17 @@ class FurAffinityBridge extends BridgeAbstract
                         'Jackal' => 6013,
                         'Husky' => 6014,
                         'Wolf' => 6016,
-                        'Canine (Other)' => 6017
+                        'Canine (Other)' => 6017,
                     ],
                     'Cervines' => [
-                        'Cervine (Other)' => 6018
+                        'Cervine (Other)' => 6018,
                     ],
                     'Cows &amp; Bovines' => [
                         'Antelope' => 6004,
                         'Cows' => 6003,
                         'Gazelle' => 6005,
                         'Goat' => 6006,
-                        'Bovines (General)' => 6007
+                        'Bovines (General)' => 6007,
                     ],
                     'Dragons' => [
                         'Eastern Dragon' => 4001,
@@ -279,13 +279,13 @@ class FurAffinityBridge extends BridgeAbstract
                         'Serpent' => 4003,
                         'Western Dragon' => 4004,
                         'Wyvern' => 4005,
-                        'Dragon (Other)' => 4000
+                        'Dragon (Other)' => 4000,
                     ],
                     'Equestrians' => [
                         'Donkey' => 6019,
                         'Horse' => 6034,
                         'Pony' => 6073,
-                        'Zebra' => 6071
+                        'Zebra' => 6071,
                     ],
                     'Exotic &amp; Mythicals' => [
                         'Argonian' => 5002,
@@ -312,7 +312,7 @@ class FurAffinityBridge extends BridgeAbstract
                         'Unicorn' => 5023,
                         'Xenomorph' => 5024,
                         'Alien (Other)' => 5001,
-                        'Exotic (Other)' => 5000
+                        'Exotic (Other)' => 5000,
                     ],
                     'Felines' => [
                         'Domestic Cat' => 6020,
@@ -325,13 +325,13 @@ class FurAffinityBridge extends BridgeAbstract
                         'Ocelot' => 6027,
                         'Panther' => 6028,
                         'Tiger' => 6029,
-                        'Feline (Other)' => 6030
+                        'Feline (Other)' => 6030,
                     ],
                     'Insects' => [
                         'Arachnid' => 8000,
                         'Mantid' => 8004,
                         'Scorpion' => 8005,
-                        'Insect (Other)' => 8003
+                        'Insect (Other)' => 8003,
                     ],
                     'Mammals (Other)' => [
                         'Bat' => 6001,
@@ -347,7 +347,7 @@ class FurAffinityBridge extends BridgeAbstract
                         'Meerkat' => 6043,
                         'Mongoose' => 6044,
                         'Rhinoceros' => 6063,
-                        'Mammals (Other)' => 6000
+                        'Mammals (Other)' => 6000,
                     ],
                     'Marsupials' => [
                         'Opossum' => 6037,
@@ -355,7 +355,7 @@ class FurAffinityBridge extends BridgeAbstract
                         'Koala' => 6039,
                         'Quoll' => 6040,
                         'Wallaby' => 6041,
-                        'Marsupial (Other)' => 6042
+                        'Marsupial (Other)' => 6042,
                     ],
                     'Mustelids' => [
                         'Badger' => 6045,
@@ -364,14 +364,14 @@ class FurAffinityBridge extends BridgeAbstract
                         'Otter' => 6047,
                         'Skunk' => 6069,
                         'Weasel' => 6049,
-                        'Mustelid (Other)' => 6051
+                        'Mustelid (Other)' => 6051,
                     ],
                     'Primates' => [
                         'Gorilla' => 6054,
                         'Human' => 6055,
                         'Lemur' => 6056,
                         'Monkey' => 6057,
-                        'Primate (Other)' => 6058
+                        'Primate (Other)' => 6058,
                     ],
                     'Reptillian' => [
                         'Alligator &amp; Crocodile' => 7001,
@@ -380,26 +380,26 @@ class FurAffinityBridge extends BridgeAbstract
                         'Lizard' => 7005,
                         'Snakes &amp; Serpents' => 7006,
                         'Turtle' => 7007,
-                        'Reptilian (Other)' => 7000
+                        'Reptilian (Other)' => 7000,
                     ],
                     'Rodents' => [
                         'Beaver' => 6064,
                         'Mouse' => 6065,
                         'Rat' => 6061,
                         'Squirrel' => 6070,
-                        'Rodent (Other)' => 6067
+                        'Rodent (Other)' => 6067,
                     ],
                     'Vulpines' => [
                         'Fennec' => 6072,
                         'Fox' => 6075,
-                        'Vulpine (Other)' => 6015
+                        'Vulpine (Other)' => 6015,
                     ],
                     'Other' => [
                         'Dinosaur' => 8001,
-                        'Wolverine' => 6050
-                    ]
+                        'Wolverine' => 6050,
+                    ],
                 ],
-                'defaultValue' => 1
+                'defaultValue' => 1,
             ],
             'gender' => [
                 'name' => 'Gender',
@@ -411,14 +411,14 @@ class FurAffinityBridge extends BridgeAbstract
                     'Herm' => 4,
                     'Transgender' => 5,
                     'Multiple characters' => 6,
-                    'Other / Not Specified' => 7
+                    'Other / Not Specified' => 7,
                 ],
-                'defaultValue' => 0
+                'defaultValue' => 0,
             ],
             'rating_general' => [
                 'name' => 'General',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
+                'defaultValue' => 'checked',
             ],
             'rating_mature' => [
                 'name' => 'Mature',
@@ -433,20 +433,20 @@ class FurAffinityBridge extends BridgeAbstract
                 'type' => 'number',
                 'required' => true,
                 'defaultValue' => 10,
-                'title' => 'Limit number of submissions to return. -1 for unlimited.'
+                'title' => 'Limit number of submissions to return. -1 for unlimited.',
             ],
             'full' => [
                 'name' => 'Full view',
                 'title' => 'Include description, tags, date and larger image in article. Uses more bandwidth.',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
+                'defaultValue' => 'checked',
             ],
             'cache' => [
                 'name' => 'Cache submission pages',
                 'title' => 'Reduces requests to FA when Full view is enabled. Changes to submission details may be delayed.',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
-            ]
+                'defaultValue' => 'checked',
+            ],
 
         ],
         'Journals' => [
@@ -454,14 +454,14 @@ class FurAffinityBridge extends BridgeAbstract
                 'name' => 'Username',
                 'required' => true,
                 'exampleValue' => 'dhw',
-                'title' => 'Lowercase username as seen in URLs'
+                'title' => 'Lowercase username as seen in URLs',
             ],
             'limit' => [
                 'name' => 'Limit',
                 'type' => 'number',
                 'defaultValue' => -1,
-                'title' => 'Limit number of journals to return. -1 for unlimited.'
-            ]
+                'title' => 'Limit number of journals to return. -1 for unlimited.',
+            ],
 
         ],
         'Single Journal' => [
@@ -470,124 +470,124 @@ class FurAffinityBridge extends BridgeAbstract
                 'required' => true,
                 'exampleValue' => '10008853',
                 'type' => 'number',
-                'title' => 'Number seen in journal URL'
-            ]
+                'title' => 'Number seen in journal URL',
+            ],
         ],
         'Gallery' => [
             'username-gallery' => [
                 'name' => 'Username',
                 'required' => true,
                 'exampleValue' => 'dhw',
-                'title' => 'Lowercase username as seen in URLs'
+                'title' => 'Lowercase username as seen in URLs',
             ],
             'limit' => [
                 'name' => 'Limit',
                 'type' => 'number',
                 'required' => true,
                 'defaultValue' => 10,
-                'title' => 'Limit number of submissions to return. -1 for unlimited.'
+                'title' => 'Limit number of submissions to return. -1 for unlimited.',
             ],
             'full' => [
                 'name' => 'Full view',
                 'title' => 'Include description, tags, date and larger image in article. Uses more bandwidth.',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
+                'defaultValue' => 'checked',
             ],
             'cache' => [
                 'name' => 'Cache submission pages',
                 'title' => 'Reduces requests to FA when Full view is enabled. Changes to submission details may be delayed.',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
-            ]
+                'defaultValue' => 'checked',
+            ],
         ],
         'Scraps' => [
             'username-scraps' => [
                 'name' => 'Username',
                 'required' => true,
                 'exampleValue' => 'dhw',
-                'title' => 'Lowercase username as seen in URLs'
+                'title' => 'Lowercase username as seen in URLs',
             ],
             'limit' => [
                 'name' => 'Limit',
                 'type' => 'number',
                 'required' => true,
                 'defaultValue' => 10,
-                'title' => 'Limit number of submissions to return. -1 for unlimited.'
+                'title' => 'Limit number of submissions to return. -1 for unlimited.',
             ],
             'full' => [
                 'name' => 'Full view',
                 'title' => 'Include description, tags, date and larger image in article. Uses more bandwidth.',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
+                'defaultValue' => 'checked',
             ],
             'cache' => [
                 'name' => 'Cache submission pages',
                 'title' => 'Reduces requests to FA when Full view is enabled. Changes to submission details may be delayed.',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
-            ]
+                'defaultValue' => 'checked',
+            ],
         ],
         'Favorites' => [
             'username-favorites' => [
                 'name' => 'Username',
                 'required' => true,
                 'exampleValue' => 'dhw',
-                'title' => 'Lowercase username as seen in URLs'
+                'title' => 'Lowercase username as seen in URLs',
             ],
             'limit' => [
                 'name' => 'Limit',
                 'type' => 'number',
                 'required' => true,
                 'defaultValue' => 10,
-                'title' => 'Limit number of submissions to return. -1 for unlimited.'
+                'title' => 'Limit number of submissions to return. -1 for unlimited.',
             ],
             'full' => [
                 'name' => 'Full view',
                 'title' => 'Include description, tags, date and larger image in article. Uses more bandwidth.',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
+                'defaultValue' => 'checked',
             ],
             'cache' => [
                 'name' => 'Cache submission pages',
                 'title' => 'Reduces requests to FA when Full view is enabled. Changes to submission details may be delayed.',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
-            ]
+                'defaultValue' => 'checked',
+            ],
         ],
         'Gallery Folder' => [
             'username-folder' => [
                 'name' => 'Username',
                 'required' => true,
                 'exampleValue' => 'kopk',
-                'title' => 'Lowercase username as seen in URLs'
+                'title' => 'Lowercase username as seen in URLs',
             ],
             'folder-id' => [
                 'name' => 'Folder ID',
                 'required' => true,
                 'exampleValue' => '1031990',
                 'type' => 'number',
-                'title' => 'Number seen in folder URL'
+                'title' => 'Number seen in folder URL',
             ],
             'limit' => [
                 'name' => 'Limit',
                 'type' => 'number',
                 'required' => true,
                 'defaultValue' => 10,
-                'title' => 'Limit number of submissions to return. -1 for unlimited.'
+                'title' => 'Limit number of submissions to return. -1 for unlimited.',
             ],
             'full' => [
                 'name' => 'Full view',
                 'title' => 'Include description, tags, date and larger image in article. Uses more bandwidth.',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
+                'defaultValue' => 'checked',
             ],
             'cache' => [
                 'name' => 'Cache submission pages',
                 'title' => 'Reduces requests to FA when Full view is enabled. Changes to submission details may be delayed.',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
-            ]
-        ]
+                'defaultValue' => 'checked',
+            ],
+        ],
     ];
 
     /*
@@ -752,7 +752,7 @@ class FurAffinityBridge extends BridgeAbstract
                 'type-music' => ($this->getInput('type-music') === true ? 'on' : 0),
                 'type-story' => ($this->getInput('type-story') === true ? 'on' : 0),
                 'type-poetry' => ($this->getInput('type-poetry') === true ? 'on' : 0),
-                'mode' => $this->getInput('mode')
+                'mode' => $this->getInput('mode'),
                 ];
                 $html = $this->postFASimpleHTMLDOM($data);
                 $limit = (is_int($this->getInput('limit')) ? $this->getInput('limit') : 10);
@@ -767,7 +767,7 @@ class FurAffinityBridge extends BridgeAbstract
                 'perpage' => 72,
                 'rating_general' => ($this->getInput('rating_general') === true ? 'on' : 0),
                 'rating_mature' => ($this->getInput('rating_mature') === true ? 'on' : 0),
-                'rating_adult' => ($this->getInput('rating_adult') === true ? 'on' : 0)
+                'rating_adult' => ($this->getInput('rating_adult') === true ? 'on' : 0),
                 ];
                 $html = $this->postFASimpleHTMLDOM($data);
                 $limit = (is_int($this->getInput('limit-browse')) ? $this->getInput('limit-browse') : 10);
@@ -795,37 +795,37 @@ class FurAffinityBridge extends BridgeAbstract
 
     private function postFASimpleHTMLDOM($data)
     {
-            $opts = [
+        $opts = [
                 CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => http_build_query($data)
+                CURLOPT_POSTFIELDS => http_build_query($data),
             ];
-            $header = [
+        $header = [
                 'Host: ' . parse_url(self::URI, PHP_URL_HOST),
                 'Content-Type: application/x-www-form-urlencoded',
-                'Cookie: ' . self::FA_AUTH_COOKIE
+                'Cookie: ' . self::FA_AUTH_COOKIE,
             ];
 
-            $html = getSimpleHTMLDOM($this->getURI(), $header, $opts);
-            $html = defaultLinkTo($html, $this->getURI());
+        $html = getSimpleHTMLDOM($this->getURI(), $header, $opts);
+        $html = defaultLinkTo($html, $this->getURI());
 
-            return $html;
+        return $html;
     }
 
     private function getFASimpleHTMLDOM($url, $cache = false)
     {
-            $header = [
-                'Cookie: ' . self::FA_AUTH_COOKIE
+        $header = [
+                'Cookie: ' . self::FA_AUTH_COOKIE,
             ];
 
-            if ($cache) {
-                $html = getSimpleHTMLDOMCached($url, 86400, $header); // 24 hours
-            } else {
-                $html = getSimpleHTMLDOM($url, $header);
-            }
+        if ($cache) {
+            $html = getSimpleHTMLDOMCached($url, 86400, $header); // 24 hours
+        } else {
+            $html = getSimpleHTMLDOM($url, $header);
+        }
 
-            $html = defaultLinkTo($html, $url);
+        $html = defaultLinkTo($html, $url);
 
-            return $html;
+        return $html;
     }
 
     private function itemsFromJournalList($html, $limit)
@@ -902,7 +902,7 @@ class FurAffinityBridge extends BridgeAbstract
                 $stats = $submissionHTML->find('.stats-container', 0);
                 $item['timestamp'] = strtotime($stats->find('.popup_date', 0)->title);
                 $item['enclosures'] = [
-                    $submissionHTML->find('.actions a[href^=https://d.facdn]', 0)->href
+                    $submissionHTML->find('.actions a[href^=https://d.facdn]', 0)->href,
                 ];
                 foreach ($stats->find('#keywords a') as $keyword) {
                     $item['categories'][] = $keyword->plaintext;
@@ -920,19 +920,19 @@ class FurAffinityBridge extends BridgeAbstract
                 $description = $description->innertext;
 
                 $item['content'] = <<<EOD
-<a href="$submissionURL">
-	<img src="{$imgURL}" referrerpolicy="no-referrer" />
-</a>
-<p>
-{$description}
-</p>
-EOD;
+                    <a href="$submissionURL">
+                    	<img src="{$imgURL}" referrerpolicy="no-referrer" />
+                    </a>
+                    <p>
+                    {$description}
+                    </p>
+                    EOD;
             } else {
                 $item['content'] = <<<EOD
-<a href="$submissionURL">
-	<img src="$imgURL" referrerpolicy="no-referrer" />
-</a>
-EOD;
+                    <a href="$submissionURL">
+                    	<img src="$imgURL" referrerpolicy="no-referrer" />
+                    </a>
+                    EOD;
             }
 
             $this->items[] = $item;

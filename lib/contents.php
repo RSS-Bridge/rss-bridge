@@ -44,7 +44,7 @@ const RSSBRIDGE_HTTP_STATUS_CODES = [
     '502' => 'Bad Gateway',
     '503' => 'Service Unavailable',
     '504' => 'Gateway Timeout',
-    '505' => 'HTTP Version Not Supported'
+    '505' => 'HTTP Version Not Supported',
 ];
 
 /**
@@ -212,10 +212,10 @@ function _http_request(string $url, array $config = []): array
     $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
     return [
-        'code'      => $statusCode,
+        'code' => $statusCode,
         'status_lines' => $responseStatusLines,
-        'headers'   => $responseHeaders,
-        'body'      => $data,
+        'headers' => $responseHeaders,
+        'body' => $data,
     ];
 }
 

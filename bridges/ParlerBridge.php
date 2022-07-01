@@ -16,7 +16,7 @@ final class ParlerBridge extends BridgeAbstract
                 'exampleValue' => 'NigelFarage',
             ],
             'limit' => self::LIMIT,
-        ]
+        ],
     ];
 
     public function collectData()
@@ -34,11 +34,11 @@ final class ParlerBridge extends BridgeAbstract
             $primary = $post->primary;
 
             $item = [
-                'title'     => mb_substr($primary->body, 0, 100),
-                'uri'       => sprintf('https://parler.com/feed/%s', $primary->uuid),
-                'author'    => $primary->username,
-                'uid'       => $primary->uuid,
-                'content'   => nl2br($primary->full_body),
+                'title' => mb_substr($primary->body, 0, 100),
+                'uri' => sprintf('https://parler.com/feed/%s', $primary->uuid),
+                'author' => $primary->username,
+                'uid' => $primary->uuid,
+                'content' => nl2br($primary->full_body),
             ];
 
             $date = DateTimeImmutable::createFromFormat('m/d/YH:i A', $primary->date_str . $primary->time_str);

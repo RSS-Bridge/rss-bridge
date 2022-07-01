@@ -10,7 +10,7 @@ class CrewbayBridge extends BridgeAbstract
         [
             'keyword' => [
                 'name' => 'Filter by keyword',
-                'title' => 'Enter the keyword to filter here'
+                'title' => 'Enter the keyword to filter here',
             ],
             'type' => [
                 'name' => 'Type of search',
@@ -18,8 +18,8 @@ class CrewbayBridge extends BridgeAbstract
                 'type' => 'list',
                 'values' => [
                     'Find a boat' => 'boats',
-                    'Find a crew' => 'crew'
-                ]
+                    'Find a crew' => 'crew',
+                ],
             ],
             'status' => [
                 'name' => 'Status on the boat',
@@ -27,8 +27,8 @@ class CrewbayBridge extends BridgeAbstract
                 'type' => 'list',
                 'values' => [
                     'Recreational' => 'recreational',
-                    'Professional' => 'professional'
-                ]
+                    'Professional' => 'professional',
+                ],
             ],
             'recreational_position' => [
                 'name' => 'Recreational position wanted',
@@ -42,8 +42,8 @@ class CrewbayBridge extends BridgeAbstract
                     'Competent Crew' => 'Competent Crew',
                     'Racing' => 'Racing',
                     'Voluntary work' => 'Voluntary work',
-                    'Mile building' => 'Mile building'
-                ]
+                    'Mile building' => 'Mile building',
+                ],
             ],
             'professional_position' => [
                 'name' => 'Professional position wanted',
@@ -100,10 +100,10 @@ class CrewbayBridge extends BridgeAbstract
                     'Stew/Beautician' => 'Stew/Beautician',
                     'Stew/Masseuse' => 'Stew/Masseuse',
                     'Manager' => 'Manager',
-                    'Sailing instructor' => 'Sailing instructor'
-                ]
-            ]
-        ]
+                    'Sailing instructor' => 'Sailing instructor',
+                ],
+            ],
+        ],
     ];
 
     public function collectData()

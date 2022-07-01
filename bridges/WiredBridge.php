@@ -22,8 +22,8 @@ class WiredBridge extends FeedExpander
                 'Transportation' => 'transportation',   // /feed/category/transportation/latest/rss
                 'Backchannel' => 'backchannel',         // /feed/category/backchannel/latest/rss
                 'WIRED Guides' => 'wired-guide',        // /feed/tag/wired-guide/latest/rss
-                'Photo' => 'photo'                      // /feed/category/photo/latest/rss
-            ]
+                'Photo' => 'photo',                      // /feed/category/photo/latest/rss
+            ],
         ],
         'limit' => self::LIMIT,
     ]];

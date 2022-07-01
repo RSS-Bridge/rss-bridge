@@ -13,8 +13,8 @@ class PatreonBridge extends BridgeAbstract
             'type' => 'text',
             'required' => true,
             'exampleValue' => 'sanityinc',
-            'title' => 'Creator name as seen in their page URL'
-        ]
+            'title' => 'Creator name as seen in their page URL',
+        ],
     ]];
 
     public function collectData()
@@ -72,14 +72,14 @@ class PatreonBridge extends BridgeAbstract
                     //'image_url',
                     'full_name',
                     //'url'
-                ])
+                ]),
             ],
             'filter' => [
                 'contains_exclusive_posts' => true,
                 'is_draft' => false,
-                'campaign_id' => $campaign_id
+                'campaign_id' => $campaign_id,
             ],
-            'sort' => '-published_at'
+            'sort' => '-published_at',
         ];
         $posts = $this->apiGet('posts', $query);
 
@@ -89,7 +89,7 @@ class PatreonBridge extends BridgeAbstract
                 'title' => $post->attributes->title,
                 'timestamp' => $post->attributes->published_at,
                 'content' => '',
-                'uid' => 'patreon.com/' . $post->id
+                'uid' => 'patreon.com/' . $post->id,
             ];
 
             $user = $this->findInclude(
@@ -169,13 +169,13 @@ class PatreonBridge extends BridgeAbstract
          */
         $header = [
             'Accept-Language: en-US',
-            'Content-Type: application/json'
+            'Content-Type: application/json',
         ];
         $opts = [
             CURLOPT_SSL_CIPHER_LIST => implode(':', [
                 'DEFAULT',
-                '!DHE-RSA-CHACHA20-POLY1305'
-            ])
+                '!DHE-RSA-CHACHA20-POLY1305',
+            ]),
         ];
 
         $data = json_decode(getContents($url, $header, $opts));

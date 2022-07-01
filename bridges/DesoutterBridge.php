@@ -59,7 +59,7 @@ class DesoutterBridge extends BridgeAbstract
                     => 'https://www.desoutter.com.tr/desoutter-hakkinda/haberler-etkinlikler',
                     '中国'
                     => 'https://www.desouttertools.com.cn/guan-yu-ma-tou/xin-wen-he-huo-dong',
-                ]
+                ],
             ],
         ],
         self::CATEGORY_INDUSTRY => [
@@ -109,23 +109,23 @@ class DesoutterBridge extends BridgeAbstract
                     => 'https://www.desoutter.com.tr/endustri-4-0/haberler',
                     '中国'
                     => 'https://www.desouttertools.com.cn/industry-4-0/news',
-                ]
+                ],
             ],
         ],
         'global' => [
             'full' => [
                 'name' => 'Load full articles',
                 'type' => 'checkbox',
-                'title' => 'Enable to load the full article for each item'
+                'title' => 'Enable to load the full article for each item',
             ],
             'limit' => [
                 'name' => 'Limit',
                 'type' => 'number',
                 'required' => true,
                 'defaultValue' => 3,
-                'title' => "Maximum number of items to return in the feed.\n0 = unlimited"
-            ]
-        ]
+                'title' => "Maximum number of items to return in the feed.\n0 = unlimited",
+            ],
+        ],
     ];
 
     private $title;

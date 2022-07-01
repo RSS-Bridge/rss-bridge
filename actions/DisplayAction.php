@@ -77,7 +77,7 @@ class DisplayAction implements ActionInterface
                     'format',
                     '_noproxy',
                     '_cache_timeout',
-                    '_error_time'
+                    '_error_time',
                 ],
                 ''
             )
@@ -92,7 +92,7 @@ class DisplayAction implements ActionInterface
                     'format',
                     '_noproxy',
                     '_cache_timeout',
-                    '_error_time'
+                    '_error_time',
                 ],
                 ''
             )
@@ -156,9 +156,9 @@ class DisplayAction implements ActionInterface
 
                 $infos = [
                     'name' => $bridge->getName(),
-                    'uri'  => $bridge->getURI(),
-                    'donationUri'  => $bridge->getDonationURI(),
-                    'icon' => $bridge->getIcon()
+                    'uri' => $bridge->getURI(),
+                    'donationUri' => $bridge->getDonationURI(),
+                    'icon' => $bridge->getIcon(),
                 ];
             } catch (\Throwable $e) {
                 error_log($e);
@@ -199,7 +199,7 @@ class DisplayAction implements ActionInterface
                 'items' => array_map(function ($i) {
                     return $i->toArray();
                 }, $items),
-                'extraInfos' => $infos
+                'extraInfos' => $infos,
             ]);
         }
 

@@ -1044,15 +1044,15 @@ class BookMyShowBridge extends BridgeAbstract
                     'Malayalam' => 'Malayalam',
                     'Gujarati' => 'Gujarati',
                     'Assamese' => 'Assamese',
-                ]
+                ],
             ],
             'include_online' => [
                 'name' => 'Include Online Events',
                 'type' => 'checkbox',
                 'defaultValue' => false,
-                'title' => 'Whether to include Online Events (applies only in case of "Events" category)'
+                'title' => 'Whether to include Online Events (applies only in case of "Events" category)',
             ],
-        ]
+        ],
     ];
 
     // Headers used in the generated table for Events/Plays
@@ -1085,7 +1085,7 @@ class BookMyShowBridge extends BridgeAbstract
         'EventLanguage' => 'Language',
         'EventDimension' => 'Formats',
         'EventIsAtmosEnabled' => 'Dolby Atmos',
-        'IsMovieClubEnabled' => 'Movie Club'
+        'IsMovieClubEnabled' => 'Movie Club',
     ];
 
     // Primary URL for fetching information
@@ -1203,11 +1203,11 @@ class BookMyShowBridge extends BridgeAbstract
             }
 
             $table .= <<<EOT
-			<tr>
-				<th>$header</th>
-				<td>$value</td>
-			</tr>
-EOT;
+                			<tr>
+                				<th>$header</th>
+                				<td>$value</td>
+                			</tr>
+                EOT;
         }
 
         return "<table>$table</table>";
@@ -1220,12 +1220,12 @@ EOT;
         $imgsrc = $event['BannerURL'];
 
         return <<<EOT
-		<img title="Event Banner URL" src="$imgsrc"></img>
-		<br>
-		$table
-		<br>
-		More Details are available on the <a href="${event['FShareURL']}">BookMyShow website</a>.
-EOT;
+            		<img title="Event Banner URL" src="$imgsrc"></img>
+            		<br>
+            		$table
+            		<br>
+            		More Details are available on the <a href="${event['FShareURL']}">BookMyShow website</a>.
+            EOT;
     }
 
     /**
@@ -1238,7 +1238,7 @@ EOT;
         $headers = ['EventLanguage', 'EventDimension'];
         // if any of these has a Y for any of the screenings, mark it as YES
         $booleanHeaders = [
-            'EventIsAtmosEnabled', 'IsMovieClubEnabled'
+            'EventIsAtmosEnabled', 'IsMovieClubEnabled',
         ];
 
         $items = [];
@@ -1293,13 +1293,13 @@ EOT;
         $synopsis = preg_replace(self::SYNOPSIS_REGEX, '', $data['EventSynopsis']);
 
         return <<<EOT
-		<img title="Movie Poster" src="$imgsrc"></img>
-		<div>$table</div>
-		<p>$innerHtml</p>
-		<p>${synopsis}</p>
-		More Details are available on the <a href="$url">BookMyShow website</a> and a trailer is available
-		<a href="${data['EventTrailerURL']}" title="Trailer URL">here</a>
-EOT;
+            		<img title="Movie Poster" src="$imgsrc"></img>
+            		<div>$table</div>
+            		<p>$innerHtml</p>
+            		<p>${synopsis}</p>
+            		More Details are available on the <a href="$url">BookMyShow website</a> and a trailer is available
+            		<a href="${data['EventTrailerURL']}" title="Trailer URL">here</a>
+            EOT;
     }
 
     /**
@@ -1330,7 +1330,7 @@ EOT;
             'categories' => array_filter(
                 explode('|', ucwords(strtolower($eventGroup['EventGrpGenre']), '|'))
             ),
-            'uid' => $eventGroup['EventGroup']
+            'uid' => $eventGroup['EventGroup'],
         ];
     }
 
@@ -1443,7 +1443,7 @@ EOT;
         $uniqid = uniqid();
         $rgn = urlencode("|Code=$city|");
         return [
-            "Cookie: bmsId=$uniqid; Rgn=$rgn;"
+            "Cookie: bmsId=$uniqid; Rgn=$rgn;",
         ];
     }
 

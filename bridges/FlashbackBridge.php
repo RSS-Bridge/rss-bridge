@@ -14,24 +14,24 @@ class FlashbackBridge extends BridgeAbstract
                 'name' => 'Category number',
                 'type' => 'number',
                 'exampleValue' => '249',
-                'required' => true
-                ]
+                'required' => true,
+                ],
     ],
     'Tag' => [
     'a' => [
                 'name' => 'Tag',
                 'type' => 'text',
                 'exampleValue' => 'stockholm',
-                'required' => true
-                ]
+                'required' => true,
+                ],
     ],
     'Thread' => [
     't' => [
                 'name' => 'Thread number',
                 'type' => 'number',
                 'exampleValue' => '1420554',
-                'required' => true
-                ]
+                'required' => true,
+                ],
     ],
     /*'User' => array(
     'u' => array(
@@ -46,7 +46,7 @@ class FlashbackBridge extends BridgeAbstract
                 'name' => 'Words',
                 'type' => 'text',
                 'exampleValue' => 'sök',
-                'required' => true
+                'required' => true,
                 ],
     'type' => [
                 'name' => 'Type of search',
@@ -54,10 +54,10 @@ class FlashbackBridge extends BridgeAbstract
                 'defaultValue' => 'Posts',
                 'values' => [
                     'Posts' => 'posts',
-                    'Subjects' => 'subjects'
-                ]
-    ]
-    ]
+                    'Subjects' => 'subjects',
+                ],
+    ],
+    ],
     ];
 
     public function getName()

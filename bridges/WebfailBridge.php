@@ -14,9 +14,9 @@ class WebfailBridge extends BridgeAbstract
                 'title' => 'Select your language',
                 'values' => [
                     'English' => 'en',
-                    'German' => 'de'
+                    'German' => 'de',
                 ],
-                'defaultValue' => 'English'
+                'defaultValue' => 'English',
             ],
             'type' => [
                 'name' => 'Type',
@@ -27,11 +27,11 @@ class WebfailBridge extends BridgeAbstract
                     'Facebook' => '/ffdts',
                     'Images' => '/images',
                     'Videos' => '/videos',
-                    'Gifs' => '/gifs'
+                    'Gifs' => '/gifs',
                 ],
-                'defaultValue' => 'None'
-            ]
-        ]
+                'defaultValue' => 'None',
+            ],
+        ],
     ];
 
     public function getURI()

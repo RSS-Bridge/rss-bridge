@@ -13,9 +13,9 @@ class MallTvBridge extends BridgeAbstract
             'url' => [
                 'name' => 'url to the show',
                 'required' => true,
-                'exampleValue' => 'https://www.mall.tv/zivot-je-hra'
-            ]
-        ]
+                'exampleValue' => 'https://www.mall.tv/zivot-je-hra',
+            ],
+        ],
     ];
 
     private function fixChars($text)
@@ -57,7 +57,7 @@ class MallTvBridge extends BridgeAbstract
                 'title' => $this->fixChars($itemTitle->plaintext),
                 'uri' => $itemUri,
                 'content' => '<img src="' . $itemThumbnail->getAttribute('data-src') . '" />',
-                'timestamp' => $this->getUploadTimeFromUrl($itemUri)
+                'timestamp' => $this->getUploadTimeFromUrl($itemUri),
             ];
 
             $this->items[] = $item;
@@ -66,11 +66,11 @@ class MallTvBridge extends BridgeAbstract
 
     public function getURI()
     {
-        return isset($this->feedUri) ? $this->feedUri : parent::getURI();
+        return $this->feedUri ?? parent::getURI();
     }
 
     public function getName()
     {
-        return isset($this->feedName) ? $this->feedName : parent::getName();
+        return $this->feedName ?? parent::getName();
     }
 }

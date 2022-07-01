@@ -5,7 +5,7 @@ class CachetBridge extends BridgeAbstract
     const NAME = 'Cachet Bridge';
     const URI = 'https://cachethq.io/';
     const DESCRIPTION = 'Returns status updates from any Cachet installation';
-    const MAINTAINER  = 'klimplant';
+    const MAINTAINER = 'klimplant';
     const PARAMETERS = [
         [
             'host' => [
@@ -17,9 +17,9 @@ class CachetBridge extends BridgeAbstract
             ], 'additional_info' => [
                 'name' => 'Additional Timestamps',
                 'type' => 'checkbox',
-                'title' => 'Whether to include the given timestamps'
-            ]
-        ]
+                'title' => 'Whether to include the given timestamps',
+            ],
+        ],
     ];
     const CACHE_TIMEOUT = 300;
 

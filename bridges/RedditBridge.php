@@ -14,7 +14,7 @@ class RedditBridge extends BridgeAbstract
                 'required' => false,
                 'type' => 'number',
                 'exampleValue' => 100,
-                'title' => 'Filter out posts with lower score'
+                'title' => 'Filter out posts with lower score',
             ],
             'd' => [
                 'name' => 'Sort By',
@@ -24,47 +24,47 @@ class RedditBridge extends BridgeAbstract
                     'Hot' => 'hot',
                     'Relevance' => 'relevance',
                     'New' => 'new',
-                    'Top' => 'top'
+                    'Top' => 'top',
                 ],
-                'defaultValue' => 'Hot'
+                'defaultValue' => 'Hot',
             ],
             'search' => [
                 'name' => 'Keyword search',
                 'required' => false,
                 'exampleValue' => 'cats, dogs',
-                'title' => 'Keyword search, separated by commas'
-            ]
+                'title' => 'Keyword search, separated by commas',
+            ],
         ],
         'single' => [
             'r' => [
                 'name' => 'SubReddit',
                 'required' => true,
                 'exampleValue' => 'selfhosted',
-                'title' => 'SubReddit name'
-            ]
+                'title' => 'SubReddit name',
+            ],
         ],
         'multi' => [
             'rs' => [
                 'name' => 'SubReddits',
                 'required' => true,
                 'exampleValue' => 'selfhosted, php',
-                'title' => 'SubReddit names, separated by commas'
-            ]
+                'title' => 'SubReddit names, separated by commas',
+            ],
         ],
         'user' => [
             'u' => [
                 'name' => 'User',
                 'required' => true,
                 'exampleValue' => 'shwikibot',
-                'title' => 'User name'
+                'title' => 'User name',
             ],
             'comments' => [
                 'type' => 'checkbox',
                 'name' => 'Comments',
                 'title' => 'Whether to return comments',
-                'defaultValue' => false
-            ]
-        ]
+                'defaultValue' => false,
+            ],
+        ],
     ];
 
     public function detectParameters($url)
@@ -79,11 +79,11 @@ class RedditBridge extends BridgeAbstract
 
         if ($path[1] == 'r') {
             return [
-                'r' => $path[2]
+                'r' => $path[2],
             ];
         } elseif ($path[1] == 'user') {
             return [
-                'u' => $path[2]
+                'u' => $path[2],
             ];
         } else {
             return null;
@@ -212,7 +212,7 @@ class RedditBridge extends BridgeAbstract
                         $this->encodePermalink($data->permalink),
                         '<img src="' . $data->url . '" />'
                     );
-                } elseif (isset($data->is_gallery) ? $data->is_gallery : false) {
+                } elseif ($data->is_gallery ?? false) {
                     // Multiple images
 
                     $images = [];

@@ -12,8 +12,8 @@ class FirefoxAddonsBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'exampleValue' => 'save-to-the-wayback-machine',
-            ]
-        ]
+            ],
+        ],
     ];
 
     const CACHE_TIMEOUT = 3600;
@@ -73,15 +73,15 @@ class FirefoxAddonsBridge extends BridgeAbstract
             }
 
             $item['content'] = <<<EOD
-<strong>Release Notes</strong>
-<p>{$releaseNotes}</p>
-<strong>Compatibility</strong>
-<p>{$compatibility}</p>
-<strong>License</strong>
-<p>{$license}</p>
-<strong>Download</strong>
-<p><a href="{$downloadlink}">{$xpiFilename}</a> ($size)</p>
-EOD;
+                <strong>Release Notes</strong>
+                <p>{$releaseNotes}</p>
+                <strong>Compatibility</strong>
+                <p>{$compatibility}</p>
+                <strong>License</strong>
+                <p>{$license}</p>
+                <strong>Download</strong>
+                <p><a href="{$downloadlink}">{$xpiFilename}</a> ($size)</p>
+                EOD;
 
             $this->items[] = $item;
         }

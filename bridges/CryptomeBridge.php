@@ -12,8 +12,8 @@ class CryptomeBridge extends BridgeAbstract
             'name' => 'number of elements',
             'type' => 'number',
             'required' => true,
-            'exampleValue' => 10
-        ]
+            'exampleValue' => 10,
+        ],
     ]];
 
     public function getIcon()

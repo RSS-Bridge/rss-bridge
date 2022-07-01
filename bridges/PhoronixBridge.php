@@ -13,14 +13,14 @@ class PhoronixBridge extends FeedExpander
             'type' => 'number',
             'required' => false,
             'title' => 'Maximum number of items to return',
-            'defaultValue' => 10
+            'defaultValue' => 10,
         ],
         'svgAsImg' => [
             'name' => 'SVG in "image" tag',
             'type' => 'checkbox',
             'title' => 'Some benchmarks are exported as SVG with "object" tag,
 but some RSS readers don\'t support this. "img" tag are supported by most browsers',
-            'defaultValue' => false
+            'defaultValue' => false,
         ],
     ]];
 

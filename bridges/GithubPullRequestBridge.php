@@ -10,33 +10,33 @@ class GitHubPullRequestBridge extends GithubIssueBridge
             'u' => [
                 'name' => 'User name',
                 'exampleValue' => 'RSS-Bridge',
-                'required' => true
+                'required' => true,
             ],
             'p' => [
                 'name' => 'Project name',
                 'exampleValue' => 'rss-bridge',
-                'required' => true
-            ]
+                'required' => true,
+            ],
         ],
         'Project Pull Requests' => [
             'c' => [
                 'name' => 'Show Pull Request Comments',
-                'type' => 'checkbox'
+                'type' => 'checkbox',
             ],
             'q' => [
                 'name' => 'Search Query',
                 'defaultValue' => 'is:pr is:open sort:created-desc',
-                'required' => true
-            ]
+                'required' => true,
+            ],
         ],
         'Pull Request comments' => [
             'i' => [
                 'name' => 'Pull Request number',
                 'type' => 'number',
                 'exampleValue' => '2100',
-                'required' => true
-            ]
-        ]
+                'required' => true,
+            ],
+        ],
     ];
 
     const BRIDGE_OPTIONS = [0 => 'Project Pull Requests', 1 => 'Pull Request comments'];

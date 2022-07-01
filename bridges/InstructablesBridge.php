@@ -217,7 +217,7 @@ class InstructablesBridge extends BridgeAbstract
                     ],
                 ],
                 'title' => 'Select your category (required)',
-                'defaultValue' => 'Circuits'
+                'defaultValue' => 'Circuits',
             ],
             'filter' => [
                 'name' => 'Filter',
@@ -227,12 +227,12 @@ class InstructablesBridge extends BridgeAbstract
                     'Recent' => 'recent/',
                     'Popular' => 'popular/',
                     'Views' => 'views/',
-                    'Contest Winners' => 'winners/'
+                    'Contest Winners' => 'winners/',
                 ],
                 'title' => 'Select a filter',
-                'defaultValue' => 'Featured'
-            ]
-        ]
+                'defaultValue' => 'Featured',
+            ],
+        ],
     ];
 
     public function collectData()

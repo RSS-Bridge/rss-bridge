@@ -13,8 +13,8 @@ class ViadeoCompanyBridge extends BridgeAbstract
         'c' => [
             'name' => 'Company name',
             'exampleValue' => 'apple',
-            'required' => true
-        ]
+            'required' => true,
+        ],
     ]];
 
     public function collectData()

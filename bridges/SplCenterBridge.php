@@ -15,8 +15,8 @@ class SplCenterBridge extends FeedExpander
                     'Hatewatch' => 'hatewatch',
                 ],
                 'defaultValue' => 'news',
-            ]
-        ]
+            ],
+        ],
     ];
 
     const CACHE_TIMEOUT = 3600; // 1 hour

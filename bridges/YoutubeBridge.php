@@ -20,64 +20,64 @@ class YoutubeBridge extends BridgeAbstract
             'u' => [
                 'name' => 'username',
                 'exampleValue' => 'LinusTechTips',
-                'required' => true
-            ]
+                'required' => true,
+            ],
         ],
         'By channel id' => [
             'c' => [
                 'name' => 'channel id',
                 'exampleValue' => 'UCw38-8_Ibv_L6hlKChHO9dQ',
-                'required' => true
-            ]
+                'required' => true,
+            ],
         ],
         'By custom name' => [
             'custom' => [
                 'name' => 'custom name',
                 'exampleValue' => 'LinusTechTips',
-                'required' => true
-            ]
+                'required' => true,
+            ],
         ],
         'By playlist Id' => [
             'p' => [
                 'name' => 'playlist id',
                 'exampleValue' => 'PL8mG-RkN2uTzJc8N0EoyhdC54prvBBLpj',
-                'required' => true
-            ]
+                'required' => true,
+            ],
         ],
         'Search result' => [
             's' => [
                 'name' => 'search keyword',
                 'exampleValue' => 'LinusTechTips',
-                'required' => true
+                'required' => true,
             ],
             'pa' => [
                 'name' => 'page',
                 'type' => 'number',
                 'title' => 'This option is not work anymore, as YouTube will always return the same page',
-                'exampleValue' => 1
-            ]
+                'exampleValue' => 1,
+            ],
         ],
         'global' => [
             'duration_min' => [
                 'name' => 'min. duration (minutes)',
                 'type' => 'number',
                 'title' => 'Minimum duration for the video in minutes',
-                'exampleValue' => 5
+                'exampleValue' => 5,
             ],
             'duration_max' => [
                 'name' => 'max. duration (minutes)',
                 'type' => 'number',
                 'title' => 'Maximum duration for the video in minutes',
-                'exampleValue' => 10
-            ]
-        ]
+                'exampleValue' => 10,
+            ],
+        ],
     ];
 
     private $feedName = '';
     private $feeduri = '';
     private $channel_name = '';
     // This took from repo BetterVideoRss of VerifiedJoseph.
-	const URI_REGEX = '/(https?:\/\/(?:www\.)?(?:[a-zA-Z0-9-.]{2,256}\.[a-z]{2,20})(\:[0-9]{2    ,4})?(?:\/[a-zA-Z0-9@:%_\+.,~#"\'!?&\/\/=\-*]+|\/)?)/ims'; //phpcs:ignore
+    const URI_REGEX = '/(https?:\/\/(?:www\.)?(?:[a-zA-Z0-9-.]{2,256}\.[a-z]{2,20})(\:[0-9]{2    ,4})?(?:\/[a-zA-Z0-9@:%_\+.,~#"\'!?&\/\/=\-*]+|\/)?)/ims'; //phpcs:ignore
 
     private function ytBridgeQueryVideoInfo($vid, &$author, &$desc, &$time)
     {
@@ -192,7 +192,7 @@ class YoutubeBridge extends BridgeAbstract
     private function ytGetSimpleHTMLDOM($url, $cached = false)
     {
         $header = [
-            'Accept-Language: en-US'
+            'Accept-Language: en-US',
         ];
         $opts = [];
         $lowercase = true;
@@ -433,7 +433,7 @@ class YoutubeBridge extends BridgeAbstract
 
     public function getName()
     {
-      // Name depends on queriedContext:
+        // Name depends on queriedContext:
         switch ($this->queriedContext) {
             case 'By username':
             case 'By channel id':

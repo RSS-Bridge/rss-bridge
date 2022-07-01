@@ -26,9 +26,9 @@ class Formula1Bridge extends BridgeAbstract
                 'required' => false,
                 'title' => 'Number of articles to return',
                 'exampleValue' => self::LIMIT_DEFAULT,
-                'defaultValue' => self::LIMIT_DEFAULT
-            ]
-        ]
+                'defaultValue' => self::LIMIT_DEFAULT,
+            ],
+        ],
     ];
 
     public function collectData()

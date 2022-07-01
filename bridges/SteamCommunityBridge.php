@@ -13,7 +13,7 @@ class SteamCommunityBridge extends BridgeAbstract
             'i' => [
                 'name' => 'App ID',
                 'exampleValue' => '730',
-                'required' => true
+                'required' => true,
             ],
             'category' => [
                 'name' => 'category',
@@ -24,10 +24,10 @@ class SteamCommunityBridge extends BridgeAbstract
                     'Artwork' => 'images',
                     'Screenshots' => 'screenshots',
                     'Videos' => 'videos',
-                    'Workshop' => 'workshop'
-                ]
-            ]
-        ]
+                    'Workshop' => 'workshop',
+                ],
+            ],
+        ],
     ];
 
     public function getIcon()

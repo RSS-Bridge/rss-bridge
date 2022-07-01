@@ -12,9 +12,9 @@ class AskfmBridge extends BridgeAbstract
             'u' => [
                 'name' => 'Username',
                 'required' => true,
-                'exampleValue'  => 'ApprovedAndReal'
-            ]
-        ]
+                'exampleValue' => 'ApprovedAndReal',
+            ],
+        ],
     ];
 
     public function collectData()

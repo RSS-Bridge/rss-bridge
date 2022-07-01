@@ -148,7 +148,7 @@ class RadioMelodieBridge extends BridgeAbstract
             'jeudi',
             'vendredi',
             'samedi',
-            'dimanche'
+            'dimanche',
         ];
 
         // English replacement date text
@@ -171,7 +171,7 @@ class RadioMelodieBridge extends BridgeAbstract
             'thursday',
             'friday',
             'saturday',
-            'sunday'
+            'sunday',
         ];
 
         $dateFormat = 'l j F Y \à H:i';

@@ -11,8 +11,8 @@ class FirstLookMediaTechBridge extends BridgeAbstract
             'projects' => [
                 'type' => 'checkbox',
                 'name' => 'Include Projects?',
-            ]
-        ]
+            ],
+        ],
     ];
 
     public function collectData()

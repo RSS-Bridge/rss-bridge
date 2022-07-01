@@ -16,9 +16,9 @@ The default URI shows the Madara demo page.';
             'url' => [
                 'name' => 'Manga URL',
                 'exampleValue' => 'https://live.mangabooth.com/manga/manga-text-chapter/',
-                'required' => true
-            ]
-        ]
+                'required' => true,
+            ],
+        ],
     ];
 
     public function getName()
@@ -65,7 +65,7 @@ The default URI shows the Madara demo page.';
         $headers = [];
         $opts = [CURLOPT_POSTFIELDS => [
             'action' => 'manga_get_chapters',
-            'manga' => $mangaInfo['id']
+            'manga' => $mangaInfo['id'],
         ]];
         return str_get_html(getContents($uri, $headers, $opts));
     }

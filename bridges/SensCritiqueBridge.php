@@ -12,24 +12,24 @@ class SensCritiqueBridge extends BridgeAbstract
         's' => [
             'name' => 'Series',
             'type' => 'checkbox',
-            'defaultValue' => 'checked'
+            'defaultValue' => 'checked',
         ],
         'g' => [
             'name' => 'Video Games',
-            'type' => 'checkbox'
+            'type' => 'checkbox',
         ],
         'b' => [
             'name' => 'Books',
-            'type' => 'checkbox'
+            'type' => 'checkbox',
         ],
         'bd' => [
             'name' => 'BD',
-            'type' => 'checkbox'
+            'type' => 'checkbox',
         ],
         'mu' => [
             'name' => 'Music',
-            'type' => 'checkbox'
-        ]
+            'type' => 'checkbox',
+        ],
     ]];
 
     public function collectData()

@@ -18,8 +18,8 @@ class FourchanBridge extends BridgeAbstract
             'name' => 'Thread number',
             'type' => 'number',
             'exampleValue' => '597271',
-            'required' => true
-        ]
+            'required' => true,
+        ],
     ]];
 
     public function getURI()

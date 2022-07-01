@@ -75,15 +75,15 @@ class TwitScoopBridge extends BridgeAbstract
                     'United States' => 'united-states',
                     'Venezuela' => 'venezuela',
                     'Vietnam' => 'vietnam',
-                ]
+                ],
             ],
             'limit' => [
                 'name' => 'Topics',
                 'type' => 'number',
                 'title' => 'Number of trending topics to return. Max 50',
                 'defaultValue' => 20,
-            ]
-        ]
+            ],
+        ],
     ];
 
     const CACHE_TIMEOUT = 900; // 15 mins
@@ -118,13 +118,13 @@ class TwitScoopBridge extends BridgeAbstract
             }
 
             $item['content'] = <<<EOD
-<strong>Rank</strong><br>
-<p>{$number}</p>
-<Strong>Topic</strong><br>
-<p>{$name}</p>
-<Strong>Tweets</strong><br>
-<p>{$tweets}</p>
-EOD;
+                <strong>Rank</strong><br>
+                <p>{$number}</p>
+                <Strong>Topic</strong><br>
+                <p>{$name}</p>
+                <Strong>Tweets</strong><br>
+                <p>{$tweets}</p>
+                EOD;
             $item['timestamp'] = $updated;
 
             $this->items[] = $item;

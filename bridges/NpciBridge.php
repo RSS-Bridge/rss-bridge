@@ -40,9 +40,9 @@ class NpciBridge extends BridgeAbstract
                 'AePS' => 'aeps',
                 'BHIM Aadhaar' => 'bhim-aadhaar',
                 'e-RUPI' => 'e-rupi',
-                'Bharat BillPay' => 'bharat-billpay'
-            ]
-        ]
+                'Bharat BillPay' => 'bharat-billpay',
+            ],
+        ],
     ]];
 
     public function getName()
@@ -84,11 +84,11 @@ class NpciBridge extends BridgeAbstract
             $item = [
                 'uri' => $uri,
                 'title' => $title,
-                'content' => $title ,
+                'content' => $title,
                 'uid' => sha1($pdfLink),
                 'enclosures' => [
-                    $uri
-                ]
+                    $uri,
+                ],
             ];
 
             $this->items[] = $item;

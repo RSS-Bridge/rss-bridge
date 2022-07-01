@@ -15,14 +15,14 @@ class GlowficBridge extends BridgeAbstract
                 'title' => 'https://www.glowfic.com/posts/POST ID',
                 'required' => true,
                 'exampleValue' => '2756',
-                'type' => 'number'
+                'type' => 'number',
             ],
             'start_page' => [
                 'name' => 'Start Page',
                 'title' => 'To start from an offset page',
-                'type' => 'number'
-            ]
-        ]
+                'type' => 'number',
+            ],
+        ],
     ];
 
     public function collectData()

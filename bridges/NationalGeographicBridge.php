@@ -20,19 +20,19 @@ class NationalGeographicBridge extends BridgeAbstract
                 'type' => 'list',
                 'values' => [
                     self::TOPIC_MAGAZINE => 'magazine',
-                    self::TOPIC_LATEST_STORIES => 'latest-stories'
+                    self::TOPIC_LATEST_STORIES => 'latest-stories',
                 ],
                 'title' => 'Select your topic',
-                'defaultValue' => 'Magazine'
-            ]
+                'defaultValue' => 'Magazine',
+            ],
         ],
         'global' => [
             self::PARAMETER_FULL_ARTICLE => [
                 'name' => 'Full Article',
                 'type' => 'checkbox',
-                'title' => 'Enable to load full articles and other infos (takes longer)'
-            ]
-        ]
+                'title' => 'Enable to load full articles and other infos (takes longer)',
+            ],
+        ],
     ];
 
     private $topicName = '';
@@ -40,7 +40,7 @@ class NationalGeographicBridge extends BridgeAbstract
 			RvcGljL2xhdGVzdC1zdG9yaWVzIiwicG9ydGZvbGlvIjoibmF0Z2VvIiwicXVlcn
 			lUeXBlIjoiTE9DQVRPUiJ9LCJtb2R1bGVJZCI6bnVsbH0';
     const LATEST_STORIES_ID = [
-        '1df278bb-0e3d-4a67-a0ce-8fae48392822-f2-m1'
+        '1df278bb-0e3d-4a67-a0ce-8fae48392822-f2-m1',
     ];
     const MAGAZINE_ID = [
         '94d87d74-f41a-4a32-9acd-b591ba2df288-f2-m1',
@@ -230,17 +230,17 @@ class NationalGeographicBridge extends BridgeAbstract
                 if (isset($image['crdt'])) {
                     $image_credit = $image['crdt'];
                 }
-                $caption = (isset($image_module['caption']) ? $image_module['caption'] : '');
+                $caption = ($image_module['caption'] ?? '');
                 break;
             case 'photogallery':
-                $image_credit = (isset($image_module['caption']['credit']) ? $image_module['caption']['credit'] : '');
+                $image_credit = ($image_module['caption']['credit'] ?? '');
                 $caption = $image_module['caption']['text'];
                 $image_src = $image_module['img']['src'];
                 $image_alt = $image_module['img']['altText'];
                 break;
             case 'video':
-                $image_credit = (isset($image_module['credit']) ? $image_module['credit'] : '');
-                $description = (isset($image_module['description']) ? $image_module['description'] : '');
+                $image_credit = ($image_module['credit'] ?? '');
+                $description = ($image_module['description'] ?? '');
                 $caption = $description . ' Video can be watched on the article\'s page';
                 $image = $image_module['image'];
                 $image_alt = $image['altText'];
@@ -250,11 +250,11 @@ class NationalGeographicBridge extends BridgeAbstract
         $image_caption = $caption . ' ' . $image_credit
                     . '. Notes: Some image may have copyrighted on it.';
         $wrapper = <<<EOD
-<figure>
-<img src="{$image_src}" alt="{$image_alt}">
-<figcaption>$image_caption</figcaption>
-</figure>
-EOD;
+            <figure>
+            <img src="{$image_src}" alt="{$image_alt}">
+            <figcaption>$image_caption</figcaption>
+            </figure>
+            EOD;
         return $wrapper;
     }
 
@@ -325,7 +325,7 @@ EOD;
                             if (isset($module['image'])) {
                                 $content .= $this->handleImages($module['image'], $module['image']['cmsType']);
                             }
-                            $content .= '<p>' . (isset($module['text']) ? $module['text'] : '') . '</p>';
+                            $content .= '<p>' . ($module['text'] ?? '') . '</p>';
                             break;
                         case 'photogallery':
                             $gallery = $body['cntnt']['media'];
@@ -339,19 +339,19 @@ EOD;
                         case 'pullquote':
                             $quote = $module['quote'];
                             $author_name = '';
-                            $authors = (isset($module['byLineProps']['authors']) ? $module['byLineProps']['authors'] : []);
+                            $authors = ($module['byLineProps']['authors'] ?? []);
                             foreach ($authors as $author) {
-                                $author_desc = (isset($author['authorDesc']) ? $author['authorDesc'] : '');
+                                $author_desc = ($author['authorDesc'] ?? '');
                                 $author_name .= $author['displayName'] . ', ' . $author_desc;
                             }
                             $content .= <<<EOD
-<figure>
-<blockquote>
-<p>$quote</p>
-</blockquote>
-<figcaption>$author_name</figcaption>
-</figure>
-EOD;
+                                <figure>
+                                <blockquote>
+                                <p>$quote</p>
+                                </blockquote>
+                                <figcaption>$author_name</figcaption>
+                                </figure>
+                                EOD;
                             break;
                     }
                     break;
@@ -364,7 +364,7 @@ EOD;
         return [
             'content' => $content,
             'published_date' => $published_date,
-            'authors' => $authors_name
+            'authors' => $authors_name,
         ];
     }
 }

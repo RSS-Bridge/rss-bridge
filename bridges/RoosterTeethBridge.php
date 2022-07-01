@@ -24,8 +24,8 @@ class RoosterTeethBridge extends BridgeAbstract
                     'JT Music' => 'jt-music',
                     'Kinda Funny' => 'kinda-funny',
                     'Rooster Teeth' => 'rooster-teeth',
-                    'Sugar Pine 7' => 'sugar-pine-7'
-                ]
+                    'Sugar Pine 7' => 'sugar-pine-7',
+                ],
             ],
             'sort' => [
                 'type' => 'list',
@@ -33,9 +33,9 @@ class RoosterTeethBridge extends BridgeAbstract
                 'title' => 'Select a sort order',
                 'values' => [
                     'Newest -> Oldest' => 'desc',
-                    'Oldest -> Newest' => 'asc'
+                    'Oldest -> Newest' => 'asc',
                 ],
-                'defaultValue' => 'desc'
+                'defaultValue' => 'desc',
             ],
             'first' => [
                 'type' => 'list',
@@ -43,17 +43,17 @@ class RoosterTeethBridge extends BridgeAbstract
                 'title' => 'Select whether to include "First" videos before they are public',
                 'values' => [
                     'True' => true,
-                    'False' => false
-                ]
+                    'False' => false,
+                ],
             ],
             'limit' => [
                 'name' => 'Limit',
                 'type' => 'number',
                 'required' => false,
                 'title' => 'Maximum number of items to return',
-                'defaultValue' => 10
-            ]
-        ]
+                'defaultValue' => 10,
+            ],
+        ],
     ];
 
     public function collectData()

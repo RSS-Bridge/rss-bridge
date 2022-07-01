@@ -28,8 +28,8 @@ class WorldCosplayBridge extends BridgeAbstract
                 'type' => 'number',
                 'required' => true,
                 'title' => 'WorldCosplay character ID',
-                'exampleValue' => 18204
-            ]
+                'exampleValue' => 18204,
+            ],
         ],
         'Cosplayer' => [
             'uid' => [
@@ -37,8 +37,8 @@ class WorldCosplayBridge extends BridgeAbstract
                 'type' => 'number',
                 'required' => true,
                 'title' => 'Cosplayer\'s WorldCosplay profile ID',
-                'exampleValue' => 406782
-            ]
+                'exampleValue' => 406782,
+            ],
         ],
         'Series' => [
             'sid' => [
@@ -46,8 +46,8 @@ class WorldCosplayBridge extends BridgeAbstract
                 'type' => 'number',
                 'required' => true,
                 'title' => 'WorldCosplay series ID',
-                'exampleValue' => 3139
-            ]
+                'exampleValue' => 3139,
+            ],
         ],
         'Tag' => [
             'tid' => [
@@ -55,8 +55,8 @@ class WorldCosplayBridge extends BridgeAbstract
                 'type' => 'number',
                 'required' => true,
                 'title' => 'WorldCosplay tag ID',
-                'exampleValue' => 33643
-            ]
+                'exampleValue' => 33643,
+            ],
         ],
         'global' => [
             'limit' => [
@@ -65,9 +65,9 @@ class WorldCosplayBridge extends BridgeAbstract
                 'required' => false,
                 'title' => 'Maximum number of photos to return',
                 'exampleValue' => 5,
-                'defaultValue' => 5
-            ]
-        ]
+                'defaultValue' => 5,
+            ],
+        ],
     ];
 
     public function collectData()
@@ -103,7 +103,7 @@ class WorldCosplayBridge extends BridgeAbstract
         $list = $json->list;
 
         foreach ($list as $img) {
-            $image = isset($img->photo) ? $img->photo : $img;
+            $image = $img->photo ?? $img;
             $item = [
                 'uri' => self::URI . substr($image->url, 1),
                 'title' => $image->subject,

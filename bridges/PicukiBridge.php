@@ -22,7 +22,7 @@ class PicukiBridge extends BridgeAbstract
                 'exampleValue' => 'beautifulday',
                 'required' => true,
             ],
-        ]
+        ],
     ];
 
     public function getURI()
@@ -72,19 +72,19 @@ class PicukiBridge extends BridgeAbstract
             $imageUrl = $imageUrl . '#.jpg';
 
             $this->items[] = [
-                'uri'        => $url,
-                'author'     => $author,
-                'timestamp'  => date_format($date, 'r'),
-                'title'      => strlen($description) > 60 ? mb_substr($description, 0, 57) . '...' : $description,
-                'thumbnail'  => $imageUrl,
+                'uri' => $url,
+                'author' => $author,
+                'timestamp' => date_format($date, 'r'),
+                'title' => strlen($description) > 60 ? mb_substr($description, 0, 57) . '...' : $description,
+                'thumbnail' => $imageUrl,
                 'enclosures' => [$imageUrl],
-                'content'    => <<<HTML
-<a href="{$url}">
-	<img loading="lazy" src="{$imageUrl}" />
-</a>
-{$videoNote}
-<p>{$description}<p>
-HTML
+                'content' => <<<HTML
+                    <a href="{$url}">
+                    	<img loading="lazy" src="{$imageUrl}" />
+                    </a>
+                    {$videoNote}
+                    <p>{$description}<p>
+                    HTML,
             ];
         }
     }

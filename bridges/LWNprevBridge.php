@@ -48,9 +48,9 @@ class LWNprevBridge extends BridgeAbstract
         foreach ($contents as $content) {
             if (strpos($content, '<html>') === false) {
                 $content = <<<EOD
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html><head><title>LWN</title></head><body>{$content}</body></html>
-EOD;
+                    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+                    <html><head><title>LWN</title></head><body>{$content}</body></html>
+                    EOD;
             } else {
                 $content = $content . '</body></html>';
             }

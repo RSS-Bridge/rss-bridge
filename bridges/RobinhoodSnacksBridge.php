@@ -22,7 +22,7 @@ class RobinhoodSnacksBridge extends BridgeAbstract
         'Sec-Fetch-User: ?1',
         'Pragma: no-cache',
         'Cache-Control: no-cache',
-        'TE: trailers'
+        'TE: trailers',
     ];
 
     public function collectData()
@@ -53,7 +53,7 @@ class RobinhoodSnacksBridge extends BridgeAbstract
                 'uri' => $uri,
                 'title' => $title,
                 'timestamp' => $timestamp,
-                'content' => self::getArticleContent($uri)
+                'content' => self::getArticleContent($uri),
             ];
         }
     }

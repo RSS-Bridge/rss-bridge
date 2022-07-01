@@ -13,16 +13,16 @@ class IPBBridge extends FeedExpander
                 'type' => 'text',
                 'required' => true,
                 'title' => 'Insert forum, subforum or topic URI',
-                'exampleValue' => 'https://invisioncommunity.com/forums/forum/499-feedback-and-ideas/'
+                'exampleValue' => 'https://invisioncommunity.com/forums/forum/499-feedback-and-ideas/',
             ],
             'limit' => [
                 'name' => 'Limit',
                 'type' => 'number',
                 'required' => false,
                 'title' => 'Specifies the number of items to return on each request (-1: all)',
-                'defaultValue' => 10
-            ]
-        ]
+                'defaultValue' => 10,
+            ],
+        ],
     ];
     const CACHE_TIMEOUT = 3600;
 
@@ -306,12 +306,12 @@ class IPBBridge extends FeedExpander
         // Restore quote highlighting
         foreach ($html->find('blockquote') as $quote) {
             $quote->style = <<<EOD
-padding: 0px 15px;
-border-width: 1px 1px 1px 2px;
-border-style: solid;
-border-color: #ededed #e8e8e8 #dbdbdb #666666;
-background: #fbfbfb;
-EOD;
+                padding: 0px 15px;
+                border-width: 1px 1px 1px 2px;
+                border-style: solid;
+                border-color: #ededed #e8e8e8 #dbdbdb #666666;
+                background: #fbfbfb;
+                EOD;
         }
 
         // Remove unnecessary tags

@@ -33,8 +33,8 @@ class XenForoBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'title' => 'Insert URL to the thread for which the feed should be generated',
-                'exampleValue' => 'https://xenforo.com/community/threads/guide-to-suggestions.2285/'
-            ]
+                'exampleValue' => 'https://xenforo.com/community/threads/guide-to-suggestions.2285/',
+            ],
         ],
         'global' => [
             'limit' => [
@@ -42,9 +42,9 @@ class XenForoBridge extends BridgeAbstract
                 'type' => 'number',
                 'required' => false,
                 'title' => 'Specify maximum number of elements to return in the feed',
-                'defaultValue' => 10
-            ]
-        ]
+                'defaultValue' => 10,
+            ],
+        ],
     ];
     const CACHE_TIMEOUT = 7200; // 10 minutes
 
@@ -288,10 +288,10 @@ class XenForoBridge extends BridgeAbstract
         // high. When this happens we need to load further pages (from last backwards)
         if (($pageNav = $html->find('div.PageNav', 0))) {
             $lastpage = $pageNav->{'data-last'};
-            $baseurl  = $pageNav->{'data-baseurl'};
+            $baseurl = $pageNav->{'data-baseurl'};
             $sentinel = $pageNav->{'data-sentinel'};
 
-            $hosturl  = parse_url($this->threadurl, PHP_URL_SCHEME)
+            $hosturl = parse_url($this->threadurl, PHP_URL_SCHEME)
             . '://'
             . parse_url($this->threadurl, PHP_URL_HOST)
             . '/';
@@ -335,7 +335,7 @@ class XenForoBridge extends BridgeAbstract
 
             $sentinel = '{{sentinel}}';
 
-            $hosturl  = parse_url($this->threadurl, PHP_URL_SCHEME)
+            $hosturl = parse_url($this->threadurl, PHP_URL_SCHEME)
             . '://'
             . parse_url($this->threadurl, PHP_URL_HOST);
 
@@ -390,7 +390,7 @@ class XenForoBridge extends BridgeAbstract
             'September',
             'October',
             'November',
-            'December'
+            'December',
         ];
 
         switch ($lang) {
@@ -411,7 +411,7 @@ class XenForoBridge extends BridgeAbstract
                     'September',
                     'Oktober',
                     'November',
-                    'Dezember'
+                    'Dezember',
                 ];
 
                 $mnamesdeshort = [
@@ -426,7 +426,7 @@ class XenForoBridge extends BridgeAbstract
                     'Sep.',
                     'Okt.',
                     'Nov.',
-                    'Dez.'
+                    'Dez.',
                 ];
 
                 $date = str_ireplace($mnamesde, $mnamesen, $date);

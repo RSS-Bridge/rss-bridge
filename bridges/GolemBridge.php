@@ -41,16 +41,16 @@ class GolemBridge extends FeedExpander
                 'Wirtschaft'
                 => 'https://rss.golem.de/rss.php?ms=wirtschaft&feed=ATOM1.0',
                 'Wissenschaft'
-                => 'https://rss.golem.de/rss.php?ms=wissenschaft&feed=ATOM1.0'
-            ]
+                => 'https://rss.golem.de/rss.php?ms=wissenschaft&feed=ATOM1.0',
+            ],
         ],
         'limit' => [
             'name' => 'Limit',
             'type' => 'number',
             'required' => false,
             'title' => 'Specify number of full articles to return',
-            'defaultValue' => 5
-        ]
+            'defaultValue' => 5,
+        ],
     ]];
     const LIMIT = 5;
     const HEADERS = ['Cookie: golem_consent20=simple|220101;'];
@@ -66,7 +66,7 @@ class GolemBridge extends FeedExpander
     protected function parseItem($item)
     {
         $item = parent::parseItem($item);
-        $item['content'] = $item['content'] ?? '';
+        $item['content'] ??= '';
         $uri = $item['uri'];
 
         while ($uri) {

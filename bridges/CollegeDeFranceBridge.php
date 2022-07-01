@@ -22,7 +22,7 @@ class CollegeDeFranceBridge extends BridgeAbstract
             '09' => 'sept.',
             '10' => 'oct.',
             '11' => 'nov.',
-            '12' => 'déc.'
+            '12' => 'déc.',
         ];
 
         // The "API" used by the site returns a list of partial HTML in this form

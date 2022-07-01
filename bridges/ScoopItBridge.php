@@ -12,8 +12,8 @@ class ScoopItBridge extends BridgeAbstract
         'u' => [
             'name' => 'keyword',
             'exampleValue' => 'docker',
-            'required' => true
-        ]
+            'required' => true,
+        ],
     ]];
 
     public function collectData()

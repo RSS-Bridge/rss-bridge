@@ -69,8 +69,8 @@ class GizmodoBridge extends FeedExpander
             $imageUrl = 'https://i.kinja-img.com/gawker-media/image/upload/' . $id . '.' . $format;
 
             $figure->find('span', 0)->outertext = <<<EOD
-<img src="{$imageUrl}">
-EOD;
+                <img src="{$imageUrl}">
+                EOD;
         }
     }
 

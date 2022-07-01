@@ -61,12 +61,12 @@ class ListActionTest extends TestCase
             'icon',
             'parameters',
             'maintainer',
-            'description'
+            'description',
         ];
 
         $allowedStatus = [
             'active',
-            'inactive'
+            'inactive',
         ];
 
         foreach ($items['bridges'] as $bridge) {

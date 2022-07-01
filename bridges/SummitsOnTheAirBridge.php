@@ -13,9 +13,9 @@ class SummitsOnTheAirBridge extends BridgeAbstract
             'c' => [
                 'name' => 'count',
                 'required' => true,
-                'defaultValue' => 10
-            ]
-        ]
+                'defaultValue' => 10,
+            ],
+        ],
     ];
 
     public function collectData()
@@ -33,18 +33,18 @@ class SummitsOnTheAirBridge extends BridgeAbstract
                 $spot['frequency'] . ' MHz';
 
             $content = <<<EOL
-			<a href="http://summits.sota.org.uk/summit/{$summit}">
-			{$summit}, {$spot['summitDetails']}</a><br />
-			Frequency: {$spot['frequency']} MHz<br />
-			Mode: {$spot['mode']}<br />
-			Comments: {$spot['comments']}
-EOL;
+                			<a href="http://summits.sota.org.uk/summit/{$summit}">
+                			{$summit}, {$spot['summitDetails']}</a><br />
+                			Frequency: {$spot['frequency']} MHz<br />
+                			Mode: {$spot['mode']}<br />
+                			Comments: {$spot['comments']}
+                EOL;
 
             $this->items[] = [
                 'uri' => 'https://sotawatch.sota.org.uk/en/',
                 'title' => $title,
                 'content' => $content,
-                'timestamp' => $spot['timeStamp']
+                'timestamp' => $spot['timeStamp'],
             ];
         }
     }

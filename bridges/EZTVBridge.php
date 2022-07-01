@@ -14,34 +14,34 @@ on EZTV. Get IMDB IDs from IMDB.';
                 'name' => 'Show IMDB IDs',
                 'exampleValue' => '8740790,1733785',
                 'required' => true,
-                'title' => 'One or more IMDB show IDs (can be found in the IMDB show URL)'
+                'title' => 'One or more IMDB show IDs (can be found in the IMDB show URL)',
             ],
             'no480' => [
                 'name' => 'No 480p',
                 'type' => 'checkbox',
-                'title' => 'Activate to exclude 480p torrents'
+                'title' => 'Activate to exclude 480p torrents',
             ],
             'no720' => [
                 'name' => 'No 720p',
                 'type' => 'checkbox',
-                'title' => 'Activate to exclude 720p torrents'
+                'title' => 'Activate to exclude 720p torrents',
             ],
             'no1080' => [
                 'name' => 'No 1080p',
                 'type' => 'checkbox',
-                'title' => 'Activate to exclude 1080p torrents'
+                'title' => 'Activate to exclude 1080p torrents',
             ],
             'no2160' => [
                 'name' => 'No 2160p',
                 'type' => 'checkbox',
-                'title' => 'Activate to exclude 2160p torrents'
+                'title' => 'Activate to exclude 2160p torrents',
             ],
             'noUnknownRes' => [
                 'name' => 'No Unknown resolution',
                 'type' => 'checkbox',
-                'title' => 'Activate to exclude unknown resolution torrents'
+                'title' => 'Activate to exclude unknown resolution torrents',
             ],
-        ]
+        ],
     ];
 
     // Shamelessly lifted from https://stackoverflow.com/a/2510459

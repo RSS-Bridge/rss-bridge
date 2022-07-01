@@ -11,7 +11,7 @@ class FilterBridge extends FeedExpander
     const PARAMETERS = [[
         'url' => [
             'name' => 'Feed URL',
-            'type'  => 'text',
+            'type' => 'text',
             'defaultValue' => 'https://lorem-rss.herokuapp.com/feed?unit=day',
             'required' => true,
         ],
@@ -43,7 +43,7 @@ class FilterBridge extends FeedExpander
             'name' => 'Apply filter on title',
             'type' => 'checkbox',
             'required' => false,
-            'defaultValue' => 'checked'
+            'defaultValue' => 'checked',
         ],
         'target_content' => [
             'name' => 'Apply filter on content',

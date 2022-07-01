@@ -16,16 +16,16 @@ class AlfaBankByBridge extends BridgeAbstract
 					" клиентов физ. лиц либо для клиентов-юридических лиц и ИП',
                 'values' => [
                     'Новости' => 'news',
-                    'Новости бизнеса' => 'newsBusiness'
+                    'Новости бизнеса' => 'newsBusiness',
                 ],
-                'defaultValue' => 'news'
+                'defaultValue' => 'news',
             ],
             'fullContent' => [
                 'name' => 'Включать содержимое',
                 'type' => 'checkbox',
-                'title' => 'Если выбрано, содержимое уведомлений вставляется в поток (работает медленно)'
-            ]
-        ]
+                'title' => 'Если выбрано, содержимое уведомлений вставляется в поток (работает медленно)',
+            ],
+        ],
     ];
 
     public function collectData()
@@ -78,10 +78,10 @@ class AlfaBankByBridge extends BridgeAbstract
     {
         $ruMonths = [
             'Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня',
-            'Июля', 'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря' ];
+            'Июля', 'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря', ];
         $enMonths = [
             'January', 'February', 'March', 'April', 'May', 'June',
-            'July', 'August', 'September', 'October', 'November', 'December' ];
+            'July', 'August', 'September', 'October', 'November', 'December', ];
         return str_replace($ruMonths, $enMonths, $date);
     }
 }

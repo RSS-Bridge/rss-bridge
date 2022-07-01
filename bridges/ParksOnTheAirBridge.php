@@ -23,19 +23,19 @@ class ParksOnTheAirBridge extends BridgeAbstract
             $park_link = self::URI . '/park/' . $spot['reference'];
 
             $content = <<<EOL
-<a href="{$park_link}">
-{$spot['reference']}, {$spot['name']}</a><br />
-Location: {$spot['locationDesc']}<br />
-Frequency: {$spot['frequency']} kHz<br />
-Spotter: {$spot['spotter']}<br />
-Comments: {$spot['comments']}
-EOL;
+                <a href="{$park_link}">
+                {$spot['reference']}, {$spot['name']}</a><br />
+                Location: {$spot['locationDesc']}<br />
+                Frequency: {$spot['frequency']} kHz<br />
+                Spotter: {$spot['spotter']}<br />
+                Comments: {$spot['comments']}
+                EOL;
 
             $this->items[] = [
                 'uri' => $park_link,
                 'title' => $title,
                 'content' => $content,
-                'timestamp' => $spot['spotTime']
+                'timestamp' => $spot['spotTime'],
             ];
         }
     }

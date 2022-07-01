@@ -30,24 +30,24 @@ final class BridgeList
     private static function getHead()
     {
         return <<<EOD
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta name="description" content="RSS-Bridge" />
-	<title>RSS-Bridge</title>
-	<link href="static/style.css" rel="stylesheet">
-	<link rel="icon" type="image/png" href="static/favicon.png">
-	<script src="static/search.js"></script>
-	<script src="static/select.js"></script>
-	<noscript>
-		<style>
-			.searchbar {
-				display: none;
-			}
-		</style>
-	</noscript>
-</head>
-EOD;
+            <head>
+            	<meta charset="utf-8">
+            	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            	<meta name="description" content="RSS-Bridge" />
+            	<title>RSS-Bridge</title>
+            	<link href="static/style.css" rel="stylesheet">
+            	<link rel="icon" type="image/png" href="static/favicon.png">
+            	<script src="static/search.js"></script>
+            	<script src="static/select.js"></script>
+            	<noscript>
+            		<style>
+            			.searchbar {
+            				display: none;
+            			}
+            		</style>
+            	</noscript>
+            </head>
+            EOD;
     }
 
     /**
@@ -100,23 +100,23 @@ EOD;
         if (Debug::isEnabled()) {
             if (!Debug::isSecure()) {
                 $warning .= <<<EOD
-<section class="critical-warning">Warning : Debug mode is active from any location,
- make sure only you can access RSS-Bridge.</section>
-EOD;
+                    <section class="critical-warning">Warning : Debug mode is active from any location,
+                     make sure only you can access RSS-Bridge.</section>
+                    EOD;
             } else {
                 $warning .= <<<EOD
-<section class="warning">Warning : Debug mode is active from your IP address,
- your requests will bypass the cache.</section>
-EOD;
+                    <section class="warning">Warning : Debug mode is active from your IP address,
+                     your requests will bypass the cache.</section>
+                    EOD;
             }
         }
 
         return <<<EOD
-<header>
-	<div class="logo"></div>
-	{$warning}
-</header>
-EOD;
+            <header>
+            	<div class="logo"></div>
+            	{$warning}
+            </header>
+            EOD;
     }
 
     /**
@@ -129,13 +129,13 @@ EOD;
         $query = filter_input(INPUT_GET, 'q', FILTER_SANITIZE_SPECIAL_CHARS);
 
         return <<<EOD
-<section class="searchbar">
-	<h3>Search</h3>
-	<input type="text" name="searchfield"
-		id="searchfield" placeholder="Insert URL or bridge name"
-		onchange="search()" onkeyup="search()" value="{$query}">
-</section>
-EOD;
+            <section class="searchbar">
+            	<h3>Search</h3>
+            	<input type="text" name="searchfield"
+            		id="searchfield" placeholder="Insert URL or bridge name"
+            		onchange="search()" onkeyup="search()" value="{$query}">
+            </section>
+            EOD;
     }
 
     /**
@@ -156,12 +156,12 @@ EOD;
         $admininfo = '';
         if (!empty($email)) {
             $admininfo = <<<EOD
-<br />
-<span>
-   You may email the administrator of this RSS-Bridge instance
-   at <a href="mailto:{$email}">{$email}</a>
-</span>
-EOD;
+                <br />
+                <span>
+                   You may email the administrator of this RSS-Bridge instance
+                   at <a href="mailto:{$email}">{$email}</a>
+                </span>
+                EOD;
         }
 
         $inactive = '';
@@ -175,14 +175,14 @@ EOD;
         }
 
         return <<<EOD
-<section class="footer">
-	<a href="https://github.com/rss-bridge/rss-bridge">RSS-Bridge ~ Public Domain</a><br>
-	<p class="version">{$version}</p>
-	{$totalActiveBridges}/{$totalBridges} active bridges.<br>
-	{$inactive}
-	{$admininfo}
-</section>
-EOD;
+            <section class="footer">
+            	<a href="https://github.com/rss-bridge/rss-bridge">RSS-Bridge ~ Public Domain</a><br>
+            	<p class="version">{$version}</p>
+            	{$totalActiveBridges}/{$totalBridges} active bridges.<br>
+            	{$inactive}
+            	{$admininfo}
+            </section>
+            EOD;
     }
 
     /**

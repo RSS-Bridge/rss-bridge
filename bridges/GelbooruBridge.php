@@ -12,20 +12,20 @@ class GelbooruBridge extends BridgeAbstract
             'p' => [
                 'name' => 'page',
                 'defaultValue' => 0,
-                'type' => 'number'
+                'type' => 'number',
             ],
             't' => [
                 'name' => 'tags',
                 'exampleValue' => 'solo',
-                'title' => 'Tags to search for'
+                'title' => 'Tags to search for',
             ],
             'l' => [
                 'name' => 'limit',
                 'exampleValue' => 100,
-                'title' => 'How many posts to retrieve (hard limit of 1000)'
-            ]
+                'title' => 'How many posts to retrieve (hard limit of 1000)',
+            ],
         ],
-        0 => []
+        0 => [],
     ];
 
     protected function getFullURI()

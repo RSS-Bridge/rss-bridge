@@ -13,13 +13,13 @@ class StockFilingsBridge extends FeedExpander
     const PARAMETERS = [
         [
         'ticker' => [
-            'name'          => 'cik',
-            'required'      => true,
-            'exampleValue'  => 'AMD',
+            'name' => 'cik',
+            'required' => true,
+            'exampleValue' => 'AMD',
             // https://stackoverflow.com/a/12827734
-            'pattern'       => '[A-Za-z0-9]+',
+            'pattern' => '[A-Za-z0-9]+',
         ],
-        ]];
+        ], ];
 
     public function getIcon()
     {

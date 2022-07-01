@@ -15,18 +15,18 @@ class TwitterBridge extends BridgeAbstract
             'nopic' => [
                 'name' => 'Hide profile pictures',
                 'type' => 'checkbox',
-                'title' => 'Activate to hide profile pictures in content'
+                'title' => 'Activate to hide profile pictures in content',
             ],
             'noimg' => [
                 'name' => 'Hide images in tweets',
                 'type' => 'checkbox',
-                'title' => 'Activate to hide images in tweets'
+                'title' => 'Activate to hide images in tweets',
             ],
             'noimgscaling' => [
                 'name' => 'Disable image scaling',
                 'type' => 'checkbox',
-                'title' => 'Activate to disable image scaling in tweets (keeps original image)'
-            ]
+                'title' => 'Activate to disable image scaling in tweets (keeps original image)',
+            ],
         ],
         'By keyword or hashtag' => [
             'q' => [
@@ -34,94 +34,94 @@ class TwitterBridge extends BridgeAbstract
                 'required' => true,
                 'exampleValue' => 'rss-bridge OR rssbridge',
                 'title' => <<<EOD
-* To search for multiple words (must contain all of these words), put a space between them.
+                    * To search for multiple words (must contain all of these words), put a space between them.
 
-Example: `rss-bridge release`.
+                    Example: `rss-bridge release`.
 
-* To search for multiple words (contains any of these words), put "OR" between them.
+                    * To search for multiple words (contains any of these words), put "OR" between them.
 
-Example: `rss-bridge OR rssbridge`.
+                    Example: `rss-bridge OR rssbridge`.
 
-* To search for an exact phrase (including whitespace), put double-quotes around them.
+                    * To search for an exact phrase (including whitespace), put double-quotes around them.
 
-Example: `"rss-bridge release"`
+                    Example: `"rss-bridge release"`
 
-* If you want to search for anything **but** a specific word, put a hyphen before it.
+                    * If you want to search for anything **but** a specific word, put a hyphen before it.
 
-Example: `rss-bridge -release` (ignores "release")
+                    Example: `rss-bridge -release` (ignores "release")
 
-* Of course, this also works for hashtags.
+                    * Of course, this also works for hashtags.
 
-Example: `#rss-bridge OR #rssbridge`
+                    Example: `#rss-bridge OR #rssbridge`
 
-* And you can combine them in any shape or form you like.
+                    * And you can combine them in any shape or form you like.
 
-Example: `#rss-bridge OR #rssbridge -release`
-EOD
-            ]
+                    Example: `#rss-bridge OR #rssbridge -release`
+                    EOD,
+            ],
         ],
         'By username' => [
             'u' => [
                 'name' => 'username',
                 'required' => true,
                 'exampleValue' => 'sebsauvage',
-                'title' => 'Insert a user name'
+                'title' => 'Insert a user name',
             ],
             'norep' => [
                 'name' => 'Without replies',
                 'type' => 'checkbox',
-                'title' => 'Only return initial tweets'
+                'title' => 'Only return initial tweets',
             ],
             'noretweet' => [
                 'name' => 'Without retweets',
                 'required' => false,
                 'type' => 'checkbox',
-                'title' => 'Hide retweets'
+                'title' => 'Hide retweets',
             ],
             'nopinned' => [
                 'name' => 'Without pinned tweet',
                 'required' => false,
                 'type' => 'checkbox',
-                'title' => 'Hide pinned tweet'
-            ]
+                'title' => 'Hide pinned tweet',
+            ],
         ],
         'By list' => [
             'user' => [
                 'name' => 'User',
                 'required' => true,
                 'exampleValue' => 'Scobleizer',
-                'title' => 'Insert a user name'
+                'title' => 'Insert a user name',
             ],
             'list' => [
                 'name' => 'List',
                 'required' => true,
                 'exampleValue' => 'Tech-News',
-                'title' => 'Insert the list name'
+                'title' => 'Insert the list name',
             ],
             'filter' => [
                 'name' => 'Filter',
                 'exampleValue' => '#rss-bridge',
                 'required' => false,
-                'title' => 'Specify term to search for'
-            ]
+                'title' => 'Specify term to search for',
+            ],
         ],
         'By list ID' => [
             'listid' => [
                 'name' => 'List ID',
                 'exampleValue' => '31748',
                 'required' => true,
-                'title' => 'Insert the list id'
+                'title' => 'Insert the list id',
             ],
             'filter' => [
                 'name' => 'Filter',
                 'exampleValue' => '#rss-bridge',
                 'required' => false,
-                'title' => 'Specify term to search for'
-            ]
-        ]
+                'title' => 'Specify term to search for',
+            ],
+        ],
     ];
 
-    private $apiKey     = null;
+    private $apiKey = null;
     private $guestToken = null;
     private $authHeader = [];
 
@@ -230,8 +230,8 @@ EOD
                 }
 
                 $params = [
-                'user_id'       => $user->id_str,
-                'tweet_mode'    => 'extended'
+                'user_id' => $user->id_str,
+                'tweet_mode' => 'extended',
                 ];
 
                 $data = $this->makeApiCall('/1.1/statuses/user_timeline.json', $params);
@@ -239,8 +239,8 @@ EOD
 
             case 'By keyword or hashtag':
                 $params = [
-                'q'                 => urlencode($this->getInput('q')),
-                'tweet_mode'        => 'extended',
+                'q' => urlencode($this->getInput('q')),
+                'tweet_mode' => 'extended',
                 'tweet_search_mode' => 'live',
                 ];
 
@@ -249,9 +249,9 @@ EOD
 
             case 'By list':
                 $params = [
-                'slug'              => strtolower($this->getInput('list')),
+                'slug' => strtolower($this->getInput('list')),
                 'owner_screen_name' => strtolower($this->getInput('user')),
-                'tweet_mode'        => 'extended',
+                'tweet_mode' => 'extended',
                 ];
 
                 $data = $this->makeApiCall('/1.1/lists/statuses.json', $params);
@@ -259,8 +259,8 @@ EOD
 
             case 'By list ID':
                 $params = [
-                'list_id'           => $this->getInput('listid'),
-                'tweet_mode'        => 'extended',
+                'list_id' => $this->getInput('listid'),
+                'tweet_mode' => 'extended',
                 ];
 
                 $data = $this->makeApiCall('/1.1/lists/statuses.json', $params);
@@ -333,13 +333,13 @@ EOD
                 $realtweet = $tweet->retweeted_status;
             }
 
-            $item['username']  = $realtweet->user->screen_name;
-            $item['fullname']  = $realtweet->user->name;
-            $item['avatar']    = $realtweet->user->profile_image_url_https;
+            $item['username'] = $realtweet->user->screen_name;
+            $item['fullname'] = $realtweet->user->name;
+            $item['avatar'] = $realtweet->user->profile_image_url_https;
             $item['timestamp'] = $realtweet->created_at;
-            $item['id']        = $realtweet->id_str;
-            $item['uri']       = self::URI . $item['username'] . '/status/' . $item['id'];
-            $item['author']    = (isset($tweet->retweeted_status) ? 'RT: ' : '' )
+            $item['id'] = $realtweet->id_str;
+            $item['uri'] = self::URI . $item['username'] . '/status/' . $item['id'];
+            $item['author'] = (isset($tweet->retweeted_status) ? 'RT: ' : '')
                          . $item['fullname']
                          . ' (@'
                          . $item['username'] . ')';
@@ -392,14 +392,14 @@ EOD
             $picture_html = '';
             if (!$hidePictures) {
                 $picture_html = <<<EOD
-<a href="https://twitter.com/{$item['username']}">
-<img
-	style="align:top; width:75px; border:1px solid black;"
-	alt="{$item['username']}"
-	src="{$item['avatar']}"
-	title="{$item['fullname']}" />
-</a>
-EOD;
+                    <a href="https://twitter.com/{$item['username']}">
+                    <img
+                    	style="align:top; width:75px; border:1px solid black;"
+                    	alt="{$item['username']}"
+                    	src="{$item['avatar']}"
+                    	title="{$item['fullname']}" />
+                    </a>
+                    EOD;
             }
 
             // Get images
@@ -414,13 +414,13 @@ EOD;
                             $item['enclosures'][] = $image;
 
                             $media_html .= <<<EOD
-<a href="{$image}">
-<img
-	style="align:top; max-width:558px; border:1px solid black;"
-	referrerpolicy="no-referrer"
-	src="{$display_image}" />
-</a>
-EOD;
+                                <a href="{$image}">
+                                <img
+                                	style="align:top; max-width:558px; border:1px solid black;"
+                                	referrerpolicy="no-referrer"
+                                	src="{$display_image}" />
+                                </a>
+                                EOD;
                             break;
                         case 'video':
                         case 'animated_gif':
@@ -430,7 +430,7 @@ EOD;
                                 $video = null;
                                 $maxBitrate = -1;
                                 foreach ($media->video_info->variants as $variant) {
-                                    $bitRate = isset($variant->bitrate) ? $variant->bitrate : -100;
+                                    $bitRate = $variant->bitrate ?? -100;
                                     if ($bitRate > $maxBitrate) {
                                         $maxBitrate = $bitRate;
                                         $video = $variant->url;
@@ -442,12 +442,12 @@ EOD;
                                     $item['enclosures'][] = $poster;
 
                                     $media_html .= <<<EOD
-<a href="{$link}">Video</a>
-<video
-	style="align:top; max-width:558px; border:1px solid black;"
-	referrerpolicy="no-referrer"
-	src="{$video}" poster="{$poster}" />
-EOD;
+                                        <a href="{$link}">Video</a>
+                                        <video
+                                        	style="align:top; max-width:558px; border:1px solid black;"
+                                        	referrerpolicy="no-referrer"
+                                        	src="{$video}" poster="{$poster}" />
+                                        EOD;
                                 }
                             }
                             break;
@@ -476,16 +476,16 @@ EOD;
             }
 
             $item['content'] = <<<EOD
-<div style="display: inline-block; vertical-align: top;">
-	{$picture_html}
-</div>
-<div style="display: inline-block; vertical-align: top;">
-	<blockquote>{$cleanedTweet}</blockquote>
-</div>
-<div style="display: block; vertical-align: top;">
-	<blockquote>{$media_html}</blockquote>
-</div>
-EOD;
+                <div style="display: inline-block; vertical-align: top;">
+                	{$picture_html}
+                </div>
+                <div style="display: inline-block; vertical-align: top;">
+                	<blockquote>{$cleanedTweet}</blockquote>
+                </div>
+                <div style="display: block; vertical-align: top;">
+                	<blockquote>{$media_html}</blockquote>
+                </div>
+                EOD;
 
             // put out
             $this->items[] = $item;
@@ -543,7 +543,7 @@ EOD;
                 }
             }
             if (!$jsLink) {
-                 returnServerError('Could not locate main.js link');
+                returnServerError('Could not locate main.js link');
             }
 
             $jsContent = getContents($jsLink);
@@ -584,8 +584,8 @@ EOD;
             $guestToken = $guestTokenUses[1];
         }
 
-        $this->apiKey      = $apiKey;
-        $this->guestToken  = $guestToken;
+        $this->apiKey = $apiKey;
+        $this->guestToken = $guestToken;
         $this->authHeaders = [
             'authorization: Bearer ' . $apiKey,
             'x-guest-token: ' . $guestToken,
@@ -646,11 +646,12 @@ EOD;
                     default:
                         $code = $e->getCode();
                         $data = $e->getMessage();
-                        returnServerError(<<<EOD
-Failed to make api call: $api
-HTTP Status: $code
-Errormessage: $data
-EOD
+                        returnServerError(
+                            <<<EOD
+                                Failed to make api call: $api
+                                HTTP Status: $code
+                                Errormessage: $data
+                                EOD
                         );
                         break;
                 }

@@ -23,7 +23,7 @@ class LeMondeInformatiqueBridge extends FeedExpander
                 '/grande/',
                 '/petite/',
                 $article_html->find('.article-image > img, figure > img', 0)->src
-            )
+            ),
         ];
 
         //No response header sets the encoding, explicit conversion is needed or subsequent xml_encode() will fail

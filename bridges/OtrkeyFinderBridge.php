@@ -55,7 +55,7 @@ class OtrkeyFinderBridge extends BridgeAbstract
                 'exampleValue' => '5',
                 'defaultValue' => '5',
             ],
-        ]
+        ],
     ];
     // Example: Terminator_20.04.13_02-25_sf2_100_TVOON_DE.mpg.avi.otrkey
     // The first group is the running time in minutes

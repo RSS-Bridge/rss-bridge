@@ -35,7 +35,7 @@ class AlbionOnlineBridge extends BridgeAbstract
             'name' => 'Full changelog',
             'type' => 'checkbox',
             'required' => false,
-            'title' => 'Enable to receive the full changelog post for each item'
+            'title' => 'Enable to receive the full changelog post for each item',
         ],
     ]];
 

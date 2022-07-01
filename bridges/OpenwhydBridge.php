@@ -12,8 +12,8 @@ class OpenwhydBridge extends BridgeAbstract
         'u' => [
             'name' => 'username/id',
             'exampleValue' => '5247f0267e91c862b2b052d0',
-            'required' => true
-        ]
+            'required' => true,
+        ],
     ]];
 
     private $userName = '';

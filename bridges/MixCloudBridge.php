@@ -14,7 +14,7 @@ class MixCloudBridge extends BridgeAbstract
             'name' => 'username',
             'required' => true,
             'exampleValue' => 'DJJazzyJeff',
-        ]
+        ],
     ]];
 
     public function getName()

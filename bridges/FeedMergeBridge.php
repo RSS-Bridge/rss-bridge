@@ -6,8 +6,8 @@ class FeedMergeBridge extends FeedExpander
     const NAME = 'FeedMerge';
     const URI = 'https://github.com/RSS-Bridge/rss-bridge';
     const DESCRIPTION = <<<'TEXT'
-This bridge merges two or more feeds into a single feed. Max 10 items are fetched from each feed.
-TEXT;
+        This bridge merges two or more feeds into a single feed. Max 10 items are fetched from each feed.
+        TEXT;
 
     const PARAMETERS = [
         [
@@ -20,7 +20,7 @@ TEXT;
                 'name' => 'Feed url',
                 'type' => 'text',
                 'required' => true,
-                'exampleValue' => 'https://lorem-rss.herokuapp.com/feed?unit=day'
+                'exampleValue' => 'https://lorem-rss.herokuapp.com/feed?unit=day',
             ],
             'feed_2' => ['name' => 'Feed url', 'type' => 'text'],
             'feed_3' => ['name' => 'Feed url', 'type' => 'text'],
@@ -28,7 +28,7 @@ TEXT;
             'feed_5' => ['name' => 'Feed url', 'type' => 'text'],
 
             'limit' => self::LIMIT,
-        ]
+        ],
     ];
 
     public function collectData()
@@ -48,7 +48,7 @@ TEXT;
             $this->collectExpandableDatas($feed);
         }
         // Sort by timestamp descending
-        usort($this->items, fn($a, $b) => $b['timestamp'] <=> $a['timestamp']);
+        usort($this->items, fn ($a, $b) => $b['timestamp'] <=> $a['timestamp']);
         // Grab the first $limit items
         $this->items = array_slice($this->items, 0, $limit);
     }

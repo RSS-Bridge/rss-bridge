@@ -13,7 +13,7 @@ class FacebookBridge extends BridgeAbstract
         'User' => [
             'u' => [
                 'name' => 'Username',
-                'required' => true
+                'required' => true,
             ],
             'media_type' => [
                 'name' => 'Media type',
@@ -22,17 +22,17 @@ class FacebookBridge extends BridgeAbstract
                 'values' => [
                     'All' => 'all',
                     'Video' => 'video',
-                    'No Video' => 'novideo'
+                    'No Video' => 'novideo',
                 ],
-                'defaultValue' => 'all'
+                'defaultValue' => 'all',
             ],
             'skip_reviews' => [
                 'name' => 'Skip reviews',
                 'type' => 'checkbox',
                 'required' => false,
                 'defaultValue' => false,
-                'title' => 'Feed includes reviews when unchecked'
-            ]
+                'title' => 'Feed includes reviews when unchecked',
+            ],
         ],
         'Group' => [
             'g' => [
@@ -40,8 +40,8 @@ class FacebookBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'exampleValue' => 'https://www.facebook.com/groups/743149642484225',
-                'title' => 'Insert group name or facebook group URL'
-            ]
+                'title' => 'Insert group name or facebook group URL',
+            ],
         ],
         'global' => [
             'limit' => [
@@ -49,9 +49,9 @@ class FacebookBridge extends BridgeAbstract
                 'type' => 'number',
                 'required' => false,
                 'title' => 'Specify the number of items to return (default: -1)',
-                'defaultValue' => -1
-            ]
-        ]
+                'defaultValue' => -1,
+            ],
+        ],
     ];
 
     private $authorName = '';
@@ -67,7 +67,7 @@ class FacebookBridge extends BridgeAbstract
         switch ($this->queriedContext) {
             case 'User':
                 if (!empty($this->authorName)) {
-                    return isset($this->extraInfos['name']) ? $this->extraInfos['name'] : $this->authorName;
+                    return $this->extraInfos['name'] ?? $this->authorName;
                 }
                 break;
 
@@ -425,7 +425,7 @@ class FacebookBridge extends BridgeAbstract
     private function unescapeFacebookEmote($content)
     {
         return preg_replace_callback('/<i><u>([^ <>]+) ([^<>]+)<\/u><\/i>/i', function ($matches) {
-                static $facebook_emoticons = [
+            static $facebook_emoticons = [
                     'smile' => ':)',
                     'frown' => ':(',
                     'tongue' => ':P',
@@ -446,21 +446,21 @@ class FacebookBridge extends BridgeAbstract
                     'confused' => 'o_O',
                     'upset' => 'xD',
                     'colonthree' => ':3',
-                    'like' => '&#x1F44D;'];
+                    'like' => '&#x1F44D;', ];
 
-                $len = count($matches);
+            $len = count($matches);
 
-                if ($len > 1) {
-                    for ($i = 1; $i < $len; $i++) {
-                        foreach ($facebook_emoticons as $name => $emote) {
-                            if ($matches[$i] === $name) {
-                                return $emote;
-                            }
+            if ($len > 1) {
+                for ($i = 1; $i < $len; $i++) {
+                    foreach ($facebook_emoticons as $name => $emote) {
+                        if ($matches[$i] === $name) {
+                            return $emote;
                         }
                     }
                 }
+            }
 
-                return $matches[0];
+            return $matches[0];
         }, $content);
     }
 
@@ -489,15 +489,15 @@ class FacebookBridge extends BridgeAbstract
         header('Content-Type: text/html', true, 500);
 
         $message = <<<EOD
-<form method="post" action="?{$_SERVER['QUERY_STRING']}">
-<h2>Facebook captcha challenge</h2>
-<p>Unfortunately, rss-bridge cannot fetch the requested page.<br />
-Facebook wants rss-bridge to resolve the following captcha:</p>
-<p><img src="data:image/png;base64,{$img}" /></p>
-<p><b>Response:</b> <input name="captcha_response" placeholder="please fill in" />
-<input type="submit" value="Submit!" /></p>
-</form>
-EOD;
+            <form method="post" action="?{$_SERVER['QUERY_STRING']}">
+            <h2>Facebook captcha challenge</h2>
+            <p>Unfortunately, rss-bridge cannot fetch the requested page.<br />
+            Facebook wants rss-bridge to resolve the following captcha:</p>
+            <p><img src="data:image/png;base64,{$img}" /></p>
+            <p><b>Response:</b> <input name="captcha_response" placeholder="please fill in" />
+            <input type="submit" value="Submit!" /></p>
+            </form>
+            EOD;
 
         die($message);
     }
@@ -521,12 +521,12 @@ EOD;
                 $header = [
                     'Content-type: application/x-www-form-urlencoded',
                     'Referer: ' . $captcha_action,
-                    'Cookie: noscript=1'
+                    'Cookie: noscript=1',
                 ];
 
                 $opts = [
                     CURLOPT_POST => 1,
-                    CURLOPT_POSTFIELDS => http_build_query($captcha_fields)
+                    CURLOPT_POSTFIELDS => http_build_query($captcha_fields),
                 ];
 
                 $html = getSimpleHTMLDOM($captcha_action, $header, $opts);
@@ -688,7 +688,7 @@ EOD;
                             'aria-[^=]*',
                             'role',
                             'rel',
-                            'id'] as $property_name
+                            'id', ] as $property_name
                         ) {
                             $content = preg_replace('/ ' . $property_name . '=\"[^"]*\"/i', '', $content);
                         }

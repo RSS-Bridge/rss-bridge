@@ -21,22 +21,22 @@ class InstagramBridge extends BridgeAbstract
             'u' => [
                 'name' => 'username',
                 'exampleValue' => 'aesoprockwins',
-                'required' => true
-            ]
+                'required' => true,
+            ],
         ],
         'Hashtag' => [
             'h' => [
                 'name' => 'hashtag',
                 'exampleValue' => 'beautifulday',
-                'required' => true
-            ]
+                'required' => true,
+            ],
         ],
         'Location' => [
             'l' => [
                 'name' => 'location',
                 'exampleValue' => 'london',
-                'required' => true
-            ]
+                'required' => true,
+            ],
         ],
         'global' => [
             'media_type' => [
@@ -49,13 +49,13 @@ class InstagramBridge extends BridgeAbstract
                     'Picture' => 'picture',
                     'Multiple' => 'multiple',
                 ],
-                'defaultValue' => 'all'
+                'defaultValue' => 'all',
             ],
             'direct_links' => [
                 'name' => 'Use direct media links',
                 'type' => 'checkbox',
-            ]
-        ]
+            ],
+        ],
 
     ];
 
@@ -102,7 +102,7 @@ class InstagramBridge extends BridgeAbstract
         $key = $cache->loadData();
 
         if ($key == null) {
-                $data = $this->getContents(self::URI . 'web/search/topsearch/?query=' . $username);
+            $data = $this->getContents(self::URI . 'web/search/topsearch/?query=' . $username);
             foreach (json_decode($data)->users as $user) {
                 if (strtolower($user->user->username) === strtolower($username)) {
                     $key = $user->user->pk;
@@ -111,7 +111,7 @@ class InstagramBridge extends BridgeAbstract
             if ($key == null) {
                 returnServerError('Unable to find username in search result.');
             }
-                $cache->saveData($key);
+            $cache->saveData($key);
         }
         return $key;
     }
@@ -179,7 +179,7 @@ class InstagramBridge extends BridgeAbstract
             $pattern = ['/\@([\w\.]+)/', '/#([\w\.]+)/'];
             $replace = [
                 '<a href="https://www.instagram.com/$1">@$1</a>',
-                '<a href="https://www.instagram.com/explore/tags/$1">#$1</a>'];
+                '<a href="https://www.instagram.com/explore/tags/$1">#$1</a>', ];
 
             switch ($media->__typename) {
                 case 'GraphSidecar':

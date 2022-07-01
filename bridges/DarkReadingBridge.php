@@ -34,7 +34,7 @@ class DarkReadingBridge extends FeedExpander
                 'Advanced Threats' => '662_Advanced%20Threats',
                 'Insider Threats' => '663_Insider%20Threats',
                 'Vulnerability Management' => '664_Vulnerability%20Management',
-            ]
+            ],
         ],
         'limit' => self::LIMIT,
     ]];

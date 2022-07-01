@@ -14,8 +14,8 @@ class GitHubGistBridge extends BridgeAbstract
             'type' => 'text',
             'required' => true,
             'title' => 'Insert Gist ID or URI',
-            'exampleValue' => '2646763'
-        ]
+            'exampleValue' => '2646763',
+        ],
     ]];
 
     private $filename;
@@ -101,24 +101,24 @@ class GitHubGistBridge extends BridgeAbstract
         // Restore code (inside <pre />) highlighting
         foreach ($content->find('pre') as $pre) {
             $pre->style = <<<EOD
-padding: 16px;
-overflow: auto;
-font-size: 85%;
-line-height: 1.45;
-background-color: #f6f8fa;
-border-radius: 3px;
-word-wrap: normal;
-box-sizing: border-box;
-margin-bottom: 16px;
-EOD;
+                padding: 16px;
+                overflow: auto;
+                font-size: 85%;
+                line-height: 1.45;
+                background-color: #f6f8fa;
+                border-radius: 3px;
+                word-wrap: normal;
+                box-sizing: border-box;
+                margin-bottom: 16px;
+                EOD;
 
             $code = $pre->find('code', 0);
 
             if ($code) {
                 $code->style = <<<EOD
-white-space: pre;
-word-break: normal;
-EOD;
+                    white-space: pre;
+                    word-break: normal;
+                    EOD;
             }
         }
 
@@ -129,10 +129,10 @@ EOD;
             }
 
             $code->style = <<<EOD
-background-color: rgba(27,31,35,0.05);
-padding: 0.2em 0.4em;
-border-radius: 3px;
-EOD;
+                background-color: rgba(27,31,35,0.05);
+                padding: 0.2em 0.4em;
+                border-radius: 3px;
+                EOD;
         }
 
         // restore text spacing

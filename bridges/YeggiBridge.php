@@ -13,7 +13,7 @@ class YeggiBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'title' => 'Insert your search term here',
-                'exampleValue' => 'vase'
+                'exampleValue' => 'vase',
             ],
             'sortby' => [
                 'name' => 'Sort by',
@@ -24,7 +24,7 @@ class YeggiBridge extends BridgeAbstract
                     'Popular' => '1',
                     'Latest' => '2',
                 ],
-                'defaultValue' => 'newest'
+                'defaultValue' => 'newest',
             ],
             'show' => [
                 'name' => 'Show',
@@ -35,16 +35,16 @@ class YeggiBridge extends BridgeAbstract
                     'Free' => '1',
                     'For sale' => '2',
                 ],
-                'defaultValue' => 'all'
+                'defaultValue' => 'all',
             ],
             'showimage' => [
                 'name' => 'Show image in content',
                 'type' => 'checkbox',
                 'required' => false,
                 'title' => 'Activate to show the image in the content',
-                'defaultValue' => 'checked'
-            ]
-        ]
+                'defaultValue' => 'checked',
+            ],
+        ],
     ];
 
     public function collectData()

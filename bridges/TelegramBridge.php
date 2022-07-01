@@ -12,8 +12,8 @@ class TelegramBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'exampleValue' => '@rssbridge',
-            ]
-        ]
+            ],
+        ],
     ];
     const TEST_DETECT_PARAMETERS = [
         'https://t.me/s/durov' => ['username' => 'durov'],
@@ -179,10 +179,10 @@ class TelegramBridge extends BridgeAbstract
         }
 
         return <<<EOD
-<blockquote>{$author}<br>
-{$text}
-<a href="{$reply->href}">{$reply->href}</a></blockquote><hr>
-EOD;
+            <blockquote>{$author}<br>
+            {$text}
+            <a href="{$reply->href}">{$reply->href}</a></blockquote><hr>
+            EOD;
     }
 
     private function processSticker($messageDiv)
@@ -200,8 +200,8 @@ EOD;
             return $stickerDiv;
         } elseif (preg_match($this->backgroundImageRegex, $stickerDiv->find('i', 0)->style, $sticker)) {
             return <<<EOD
-				<a href="{$stickerDiv->children(0)->herf}"><img src="{$sticker[1]}"></a>
-EOD;
+                				<a href="{$stickerDiv->children(0)->herf}"><img src="{$sticker[1]}"></a>
+                EOD;
         }
     }
 
@@ -225,8 +225,8 @@ EOD;
         $pollOptions .= '</ul>';
 
         return <<<EOD
-			{$title}<br><small>$type</small><br>{$pollOptions}
-EOD;
+            			{$title}<br><small>$type</small><br>{$pollOptions}
+            EOD;
     }
 
     private function processLinkPreview($messageDiv)
@@ -262,9 +262,9 @@ EOD;
         }
 
         return <<<EOD
-<blockquote><a href="{$preview->href}">{$image}</a><br><a href="{$preview->href}">
-{$title} - {$site}</a><br>{$description}</blockquote>
-EOD;
+            <blockquote><a href="{$preview->href}">{$image}</a><br><a href="{$preview->href}">
+            {$title} - {$site}</a><br>{$description}</blockquote>
+            EOD;
     }
 
     private function processVideo($messageDiv)
@@ -282,10 +282,10 @@ EOD;
         $this->enclosures[] = $photo[1];
 
         return <<<EOD
-<video controls="" poster="{$photo[1]}" style="max-width:100%;" preload="none">
-	<source src="{$messageDiv->find('video', 0)->src}" type="video/mp4">
-</video>
-EOD;
+            <video controls="" poster="{$photo[1]}" style="max-width:100%;" preload="none">
+            	<source src="{$messageDiv->find('video', 0)->src}" type="video/mp4">
+            </video>
+            EOD;
     }
 
     private function processPhoto($messageDiv)
@@ -300,8 +300,8 @@ EOD;
             preg_match($this->backgroundImageRegex, $photoWrap->style, $photo);
 
             $photos .= <<<EOD
-<a href="{$photoWrap->href}"><img src="{$photo[1]}"/></a><br>
-EOD;
+                <a href="{$photoWrap->href}"><img src="{$photo[1]}"/></a><br>
+                EOD;
         }
         return $photos;
     }
@@ -319,11 +319,11 @@ EOD;
         }
 
         return <<<EOD
-<a href="{$messageDiv->find('a.not_supported', 0)->href}">
-{$messageDiv->find('div.message_media_not_supported_label', 0)->innertext}<br><br>
-{$messageDiv->find('span.message_media_view_in_telegram', 0)->innertext}<br><br>
-<img src="{$photo[1]}"/></a>
-EOD;
+            <a href="{$messageDiv->find('a.not_supported', 0)->href}">
+            {$messageDiv->find('div.message_media_not_supported_label', 0)->innertext}<br><br>
+            {$messageDiv->find('span.message_media_view_in_telegram', 0)->innertext}<br><br>
+            <img src="{$photo[1]}"/></a>
+            EOD;
     }
 
     private function processAttachment($messageDiv)
@@ -336,9 +336,9 @@ EOD;
 
         foreach ($messageDiv->find('div.tgme_widget_message_document') as $document) {
             $attachments .= <<<EOD
-{$document->find('div.tgme_widget_message_document_title', 0)->plaintext} -
-{$document->find('div.tgme_widget_message_document_extra', 0)->plaintext}<br>
-EOD;
+                {$document->find('div.tgme_widget_message_document_title', 0)->plaintext} -
+                {$document->find('div.tgme_widget_message_document_extra', 0)->plaintext}<br>
+                EOD;
         }
 
         return $attachments;
@@ -355,8 +355,8 @@ EOD;
         $link = $messageDiv->find('a.tgme_widget_message_location_wrap', 0)->href;
 
         return <<<EOD
-			<a href="{$link}"><img src="{$image[1]}"></a>
-EOD;
+            			<a href="{$link}"><img src="{$image[1]}"></a>
+            EOD;
     }
 
     private function ellipsisTitle($text)

@@ -12,7 +12,7 @@ class MydealsBridge extends PepperBridgeAbstract
                 'name' => 'Stichworten',
                 'type' => 'text',
                 'exampleValue' => 'lamp',
-                'required' => true
+                'required' => true,
             ],
             'hide_expired' => [
                 'name' => 'Abgelaufenes ausblenden',
@@ -27,13 +27,13 @@ class MydealsBridge extends PepperBridgeAbstract
                 'name' => 'Minimaler Preis',
                 'type' => 'text',
                 'title' => 'Minmaler Preis in Euros',
-                'required' => false
+                'required' => false,
             ],
             'priceTo' => [
                 'name' => 'Maximaler Preis',
                 'type' => 'text',
                 'title' => 'maximaler Preis in Euro',
-                'required' => false
+                'required' => false,
             ],
         ],
 
@@ -1984,7 +1984,7 @@ class MydealsBridge extends PepperBridgeAbstract
                     'ZTE Smartphones' => 'zte-smartphones',
                     'ZWILLING' => 'zwilling',
                     'ZWILLING Besteck' => 'zwilling-besteck',
-                ]
+                ],
             ],
             'order' => [
                 'name' => 'sortieren nach',
@@ -1993,7 +1993,7 @@ class MydealsBridge extends PepperBridgeAbstract
                 'values' => [
                     'Vom heißesten zum kältesten Deal' => '-hot',
                     'Vom jüngsten Deal zum ältesten' => '-new',
-                ]
+                ],
             ],
         ],
         'Überwachung Diskussion' => [
@@ -2009,8 +2009,8 @@ class MydealsBridge extends PepperBridgeAbstract
                 'type' => 'checkbox',
                 'title' => 'Kommentare, die keine URL enthalten, im Feed ausschließen',
                 'defaultValue' => false,
-                ]
-            ]
+                ],
+            ],
     ];
 
     public $lang = [
@@ -2025,7 +2025,7 @@ class MydealsBridge extends PepperBridgeAbstract
         'no-results' => 'Ups, wir konnten keine Deals zu',
         'relative-date-indicator' => [
             'vor',
-            'seit'
+            'seit',
         ],
         'price' => 'Preis',
         'shipping' => 'Versand',
@@ -2047,7 +2047,7 @@ class MydealsBridge extends PepperBridgeAbstract
             'Okt',
             'Nov',
             'Dez',
-            '.'
+            '.',
         ],
         'local-time-relative' => [
             'eingestellt vor ',
@@ -2057,7 +2057,7 @@ class MydealsBridge extends PepperBridgeAbstract
             'days',
             'month',
             'year',
-            'and '
+            'and ',
         ],
         'date-prefixes' => [
             'eingestellt am ',
@@ -2067,14 +2067,14 @@ class MydealsBridge extends PepperBridgeAbstract
         'relative-date-alt-prefixes' => [
             'aktualisiert vor ',
             'kommentiert vor ',
-            'heiß seit '
+            'heiß seit ',
         ],
         'relative-date-ignore-suffix' => [
-            '/von.*$/'
+            '/von.*$/',
         ],
         'localdeal' => [
             'Lokal ',
-            'Läuft bis '
-        ]
+            'Läuft bis ',
+        ],
     ];
 }

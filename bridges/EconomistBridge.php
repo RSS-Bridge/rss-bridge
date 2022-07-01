@@ -15,8 +15,8 @@ class EconomistBridge extends FeedExpander
                 'required' => true,
                 'type' => 'number',
                 'defaultValue' => 10,
-                'title' => 'Maximum number of returned feed items. Maximum 30, default 10'
-            ]
+                'title' => 'Maximum number of returned feed items. Maximum 30, default 10',
+            ],
         ],
         'Topics' => [
             'topic' => [
@@ -46,8 +46,8 @@ class EconomistBridge extends FeedExpander
                     'Obituaries' => 'obituary',
                     'Graphic detail' => 'graphic-detail',
                     'Indicators' => 'economic-and-financial-indicators',
-                ]
-            ]
+                ],
+            ],
         ],
         'Blogs' => [
             'blog' => [
@@ -67,9 +67,9 @@ class EconomistBridge extends FeedExpander
                     'Kaffeeklatsch' => 'kaffeeklatsch',
                     'Prospero' => 'prospero',
                     'The Economist Explains' => 'the-economist-explains',
-                ]
-            ]
-        ]
+                ],
+            ],
+        ],
     ];
 
     public function collectData()
@@ -134,7 +134,7 @@ class EconomistBridge extends FeedExpander
         // clean the article content. Remove all div's since the text is in paragraph elements
         foreach (
             [
-            '<div '
+            '<div ',
             ] as $tag_start
         ) {
             $content = stripRecursiveHTMLSection($content, 'div', $tag_start);

@@ -13,7 +13,7 @@ class EtsyBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'title' => 'Insert your search term here',
-                'exampleValue' => 'lamp'
+                'exampleValue' => 'lamp',
             ],
             'queryextension' => [
                 'name' => 'Query extension',
@@ -21,14 +21,14 @@ class EtsyBridge extends BridgeAbstract
                 'required' => false,
                 'title' => 'Insert additional query parts here
 (anything after ?search=<your search query>)',
-                'exampleValue' => '&explicit=1&locationQuery=2921044'
+                'exampleValue' => '&explicit=1&locationQuery=2921044',
             ],
             'hideimage' => [
                 'name' => 'Hide image in content',
                 'type' => 'checkbox',
                 'title' => 'Activate to hide the image in the content',
-            ]
-        ]
+            ],
+        ],
     ];
 
     public function collectData()

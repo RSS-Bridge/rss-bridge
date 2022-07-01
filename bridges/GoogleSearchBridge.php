@@ -81,12 +81,12 @@ class GoogleSearchBridge extends BridgeAbstract
     {
         if ($this->getInput('q')) {
             $queryParameters = [
-                'q'         => $this->getInput('q'),
-                'hl'        => 'en',
-                'num'       => '100', // get 100 results
-                'complete'  => '0',
+                'q' => $this->getInput('q'),
+                'hl' => 'en',
+                'num' => '100', // get 100 results
+                'complete' => '0',
                 // in past year, sort by date, optionally verbatim
-                'tbs'       => 'qdr:y,sbd:1' . ($this->getInput('verbatim') ? ',li:1' : ''),
+                'tbs' => 'qdr:y,sbd:1' . ($this->getInput('verbatim') ? ',li:1' : ''),
             ];
             return sprintf('https://www.google.com/search?%s', http_build_query($queryParameters));
         }

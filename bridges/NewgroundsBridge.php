@@ -14,9 +14,9 @@ class NewgroundsBridge extends BridgeAbstract
                 'name' => 'Username',
                 'type' => 'text',
                 'required' => true,
-                'exampleValue' => 'TomFulp'
-            ]
-        ]
+                'exampleValue' => 'TomFulp',
+            ],
+        ],
     ];
 
     public function collectData()
@@ -42,21 +42,21 @@ class NewgroundsBridge extends BridgeAbstract
             if ($titleOrRestricted === 'Restricted Content: Sign in to view!') {
                 $item['title'] = 'NSFW: ' . $item['uri'];
                 $item['content'] = <<<EOD
-<a href="{$item['uri']}">
-{$item['title']}
-</a>
-EOD;
+                    <a href="{$item['uri']}">
+                    {$item['title']}
+                    </a>
+                    EOD;
             } else {
                 $item['title'] = $titleOrRestricted;
                 $item['content'] = <<<EOD
-<a href="{$item['uri']}">
-<img
-    style="align:top; width:270px; border:1px solid black;"
-    alt="{$item['title']}"
-    src="{$post->find('img')[0]->src}"
-    title="{$item['title']}" />
-</a>
-EOD;
+                    <a href="{$item['uri']}">
+                    <img
+                        style="align:top; width:270px; border:1px solid black;"
+                        alt="{$item['title']}"
+                        src="{$post->find('img')[0]->src}"
+                        title="{$item['title']}" />
+                    </a>
+                    EOD;
             }
 
             $this->items[] = $item;

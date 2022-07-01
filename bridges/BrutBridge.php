@@ -34,8 +34,8 @@ class BrutBridge extends BridgeAbstract
                         'Mexico' => 'mx',
                 ],
                 'defaultValue' => 'us',
-            ]
-        ]
+            ],
+        ],
     ];
 
     const CACHE_TIMEOUT = 1800; // 30 mins
@@ -70,12 +70,12 @@ class BrutBridge extends BridgeAbstract
             }
 
             $item['content'] = <<<EOD
-			<video controls poster="{$json->media->index->$id->media->thumbnail}" preload="none">
-				<source src="{$json->media->index->$id->media->mp4_url}" type="video/mp4">
-			</video>
-			<p>{$description}</p>
-			{$article}
-EOD;
+                			<video controls poster="{$json->media->index->$id->media->thumbnail}" preload="none">
+                				<source src="{$json->media->index->$id->media->mp4_url}" type="video/mp4">
+                			</video>
+                			<p>{$description}</p>
+                			{$article}
+                EOD;
 
             $this->items[] = $item;
 

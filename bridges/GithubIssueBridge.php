@@ -13,33 +13,33 @@ class GithubIssueBridge extends BridgeAbstract
             'u' => [
                 'name' => 'User name',
                 'exampleValue' => 'RSS-Bridge',
-                'required' => true
+                'required' => true,
             ],
             'p' => [
                 'name' => 'Project name',
                 'exampleValue' => 'rss-bridge',
-                'required' => true
-            ]
+                'required' => true,
+            ],
         ],
         'Project Issues' => [
             'c' => [
                 'name' => 'Show Issues Comments',
-                'type' => 'checkbox'
+                'type' => 'checkbox',
             ],
             'q' => [
                 'name' => 'Search Query',
                 'defaultValue' => 'is:issue is:open sort:updated-desc',
-                'required' => true
-            ]
+                'required' => true,
+            ],
         ],
         'Issue comments' => [
             'i' => [
                 'name' => 'Issue number',
                 'type' => 'number',
                 'exampleValue' => '2099',
-                'required' => true
-            ]
-        ]
+                'required' => true,
+            ],
+        ],
     ];
 
     // Allows generalization with GithubPullRequestBridge
@@ -274,18 +274,18 @@ class GithubIssueBridge extends BridgeAbstract
 
         switch (count($path_segments)) {
             case 2: // Project issues
-                list($user, $project) = $path_segments;
+                [$user, $project] = $path_segments;
                 $show_comments = 'off';
                 break;
             case 3: // Project issues with issue comments
                 if ($path_segments[2] !== static::URL_PATH) {
                     return null;
                 }
-                list($user, $project) = $path_segments;
+                [$user, $project] = $path_segments;
                 $show_comments = 'on';
                 break;
             case 4: // Issue comments
-                list($user, $project, /* issues */, $issue) = $path_segments;
+                [$user, $project, /* issues */, $issue] = $path_segments;
                 break;
             default:
                 return null;
@@ -294,8 +294,8 @@ class GithubIssueBridge extends BridgeAbstract
         return [
             'u' => $user,
             'p' => $project,
-            'c' => isset($show_comments) ? $show_comments : null,
-            'i' => isset($issue) ? $issue : null,
+            'c' => $show_comments ?? null,
+            'i' => $issue ?? null,
         ];
     }
 }

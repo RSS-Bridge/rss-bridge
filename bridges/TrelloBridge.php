@@ -13,17 +13,17 @@ class TrelloBridge extends BridgeAbstract
                 'name' => 'Board ID',
                 'required' => true,
                 'exampleValue' => 'g9mdhdzg',
-                'title' => 'Taken from Trello URL, e.g. trello.com/b/[Board ID]'
-            ]
+                'title' => 'Taken from Trello URL, e.g. trello.com/b/[Board ID]',
+            ],
         ],
         'Card' => [
             'c' => [
                 'name' => 'Card ID',
                 'required' => true,
                 'exampleValue' => '8vddc9pE',
-                'title' => 'Taken from Trello URL, e.g. trello.com/c/[Card ID]'
-            ]
-        ]
+                'title' => 'Taken from Trello URL, e.g. trello.com/c/[Card ID]',
+            ],
+        ],
     ];
 
     /*
@@ -476,7 +476,7 @@ class TrelloBridge extends BridgeAbstract
         'action_voting'
             => 'voting',
         'action_withdraw_enterprise_join_request'
-            => '{memberCreator} withdrew a request to add team {organization} to the enterprise {enterprise}'
+            => '{memberCreator} withdrew a request to add team {organization} to the enterprise {enterprise}',
         ];
 
     const REQUEST_ACTIONS_BOARDS = [
@@ -522,7 +522,7 @@ class TrelloBridge extends BridgeAbstract
         'unconfirmedOrganizationInvitation',
         'updateBoard',
         'updateCustomField',
-        'updateList:closed'
+        'updateList:closed',
     ];
 
     const REQUEST_ACTIONS_CARDS = [
@@ -545,7 +545,7 @@ class TrelloBridge extends BridgeAbstract
         'updateCard:due',
         'updateCard:dueComplete',
         'updateCheckItemStateOnCard',
-        'updateCustomFieldItem'
+        'updateCustomFieldItem',
     ];
 
     private $feedName = '';
@@ -618,7 +618,7 @@ class TrelloBridge extends BridgeAbstract
     {
         $apiParams = [
             'actions_display' => 'true',
-            'fields' => 'name,url'
+            'fields' => 'name,url',
         ];
         switch ($this->queriedContext) {
             case 'Board':
@@ -645,7 +645,7 @@ class TrelloBridge extends BridgeAbstract
             $item['categories'] = [
                 'trello',
                 $action->data->board->name,
-                $action->type
+                $action->type,
             ];
             if (isset($action->data->card)) {
                 $item['categories'][] = $action->data->card->name;

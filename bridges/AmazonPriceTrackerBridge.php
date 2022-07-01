@@ -11,36 +11,36 @@ class AmazonPriceTrackerBridge extends BridgeAbstract
     const PARAMETERS = [
         [
         'asin' => [
-            'name'          => 'ASIN',
-            'required'      => true,
-            'exampleValue'  => 'B071GB1VMQ',
+            'name' => 'ASIN',
+            'required' => true,
+            'exampleValue' => 'B071GB1VMQ',
             // https://stackoverflow.com/a/12827734
-            'pattern'       => 'B[\dA-Z]{9}|\d{9}(X|\d)',
+            'pattern' => 'B[\dA-Z]{9}|\d{9}(X|\d)',
         ],
         'tld' => [
             'name' => 'Country',
             'type' => 'list',
             'values' => [
-                'Australia'         => 'com.au',
-                'Brazil'        => 'com.br',
-                'Canada'        => 'ca',
-                'China'         => 'cn',
-                'France'        => 'fr',
-                'Germany'       => 'de',
-                'India'         => 'in',
-                'Italy'         => 'it',
-                'Japan'         => 'co.jp',
-                'Mexico'        => 'com.mx',
-                'Netherlands'       => 'nl',
-                'Spain'         => 'es',
-                'Sweden'        => 'se',
-                'Turkey'        => 'com.tr',
-                'United Kingdom'    => 'co.uk',
-                'United States'     => 'com',
+                'Australia' => 'com.au',
+                'Brazil' => 'com.br',
+                'Canada' => 'ca',
+                'China' => 'cn',
+                'France' => 'fr',
+                'Germany' => 'de',
+                'India' => 'in',
+                'Italy' => 'it',
+                'Japan' => 'co.jp',
+                'Mexico' => 'com.mx',
+                'Netherlands' => 'nl',
+                'Spain' => 'es',
+                'Sweden' => 'se',
+                'Turkey' => 'com.tr',
+                'United Kingdom' => 'co.uk',
+                'United States' => 'com',
             ],
             'defaultValue' => 'com',
         ],
-        ]];
+        ], ];
 
     const PRICE_SELECTORS = [
         '#priceblock_ourprice',
@@ -134,8 +134,8 @@ class AmazonPriceTrackerBridge extends BridgeAbstract
         $image = $image ?: 'https://placekitten.com/200/300';
 
         return <<<EOT
-<img width="300" style="max-width:300;max-height:300" src="$image" alt="{$this->title}" />
-EOT;
+            <img width="300" style="max-width:300;max-height:300" src="$image" alt="{$this->title}" />
+            EOT;
     }
 
     /**
@@ -158,9 +158,9 @@ EOT;
         //  data-asin-currency-code="USD" data-substitute-count="-1" ... />
         if ($asinData) {
             return [
-                'price'     => $asinData->getAttribute('data-asin-price'),
-                'currency'  => $asinData->getAttribute('data-asin-currency-code'),
-                'shipping'  => $asinData->getAttribute('data-asin-shipping')
+                'price' => $asinData->getAttribute('data-asin-price'),
+                'currency' => $asinData->getAttribute('data-asin-currency-code'),
+                'shipping' => $asinData->getAttribute('data-asin-shipping'),
             ];
         }
 
@@ -207,9 +207,9 @@ EOT;
 
         if ($price != null && $currency != null) {
             return [
-                'price'     => $price,
-                'currency'  => $currency,
-                'shipping'  => '0'
+                'price' => $price,
+                'currency' => $currency,
+                'shipping' => '0',
             ];
         }
 
@@ -245,11 +245,11 @@ EOT;
         $data = $this->scrapePriceGeneric($html);
 
         $item = [
-            'title'     => $this->title,
-            'uri'       => $this->getURI(),
-            'content'   => $this->renderContent($imageTag, $data),
+            'title' => $this->title,
+            'uri' => $this->getURI(),
+            'content' => $this->renderContent($imageTag, $data),
             // This is to ensure that feed readers notice the price change
-            'uid'       => md5($data['price'])
+            'uid' => md5($data['price']),
         ];
 
         $this->items[] = $item;

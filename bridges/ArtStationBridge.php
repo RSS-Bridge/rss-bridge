@@ -13,9 +13,9 @@ class ArtStationBridge extends BridgeAbstract
             'q' => [
                 'name' => 'Search term',
                 'required' => true,
-                'exampleValue'  => 'bird'
-            ]
-        ]
+                'exampleValue' => 'bird',
+            ],
+        ],
     ];
 
     public function getIcon()
@@ -35,13 +35,13 @@ class ArtStationBridge extends BridgeAbstract
 
         $header = [
             'Content-Type: application/json',
-            'Accept: application/json'
+            'Accept: application/json',
         ];
 
         $opts = [
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => $data,
-            CURLOPT_RETURNTRANSFER => true
+            CURLOPT_RETURNTRANSFER => true,
         ];
 
         $jsonSearchURL = self::URI . '/api/v2/search/projects.json';

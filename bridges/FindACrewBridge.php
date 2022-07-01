@@ -14,23 +14,23 @@ class FindACrewBridge extends BridgeAbstract
                 'type' => 'list',
                 'values' => [
                     'Find a boat' => 'boat',
-                    'Find a crew' => 'crew'
-                ]
+                    'Find a crew' => 'crew',
+                ],
             ],
             'long' => [
                 'name' => 'Longitude of the searched location',
-                'title' => 'Center the search at that longitude (e.g: -42.02)'
+                'title' => 'Center the search at that longitude (e.g: -42.02)',
             ],
             'lat' => [
                 'name' => 'Latitude of the searched location',
-                'title' => 'Center the search at that latitude (e.g: 12.42)'
+                'title' => 'Center the search at that latitude (e.g: 12.42)',
             ],
             'distance' => [
                 'name' => 'Limit boundary of search in KM',
-                'title' => 'Boundary of the search in kilometers when using longitude and latitude'
+                'title' => 'Boundary of the search in kilometers when using longitude and latitude',
             ],
             'limit' => self::LIMIT,
-        ]
+        ],
     ];
 
     public function collectData()
@@ -52,12 +52,12 @@ class FindACrewBridge extends BridgeAbstract
         }
 
         $header = [
-            'Content-Type: application/x-www-form-urlencoded'
+            'Content-Type: application/x-www-form-urlencoded',
         ];
 
         $opts = [
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => http_build_query($data) . "\n"
+            CURLOPT_POSTFIELDS => http_build_query($data) . "\n",
         ];
 
         $html = getSimpleHTMLDOM($url, $header, $opts) or returnClientError('No results for this query.');

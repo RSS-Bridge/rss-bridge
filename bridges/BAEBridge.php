@@ -10,7 +10,7 @@ class BAEBridge extends BridgeAbstract
         [
             'keyword' => [
                 'name' => 'Filtrer par mots clés',
-                'title' => 'Entrez le mot clé à filtrer ici'
+                'title' => 'Entrez le mot clé à filtrer ici',
             ],
             'type' => [
                 'name' => 'Type de recherche',
@@ -20,10 +20,10 @@ class BAEBridge extends BridgeAbstract
                     'Toutes les annonces' => false,
                     'Les embarquements' => 'boat',
                     'Les skippers' => 'skipper',
-                    'Les équipiers' => 'crew'
-                ]
-            ]
-        ]
+                    'Les équipiers' => 'crew',
+                ],
+            ],
+        ],
     ];
 
     public function collectData()

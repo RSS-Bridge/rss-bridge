@@ -13,7 +13,7 @@ class ExtremeDownloadBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'title' => 'URL d\'une série sans le https://www.extreme-down.plus/',
-                'exampleValue' => 'series-hd/hd-series-vostfr/46631-halt-and-catch-fire-saison-04-vostfr-hdtv-720p.html'],
+                'exampleValue' => 'series-hd/hd-series-vostfr/46631-halt-and-catch-fire-saison-04-vostfr-hdtv-720p.html', ],
             'filter' => [
                 'name' => 'Type de contenu',
                 'type' => 'list',
@@ -21,10 +21,10 @@ class ExtremeDownloadBridge extends BridgeAbstract
                 'values' => [
                     'Streaming et Téléchargement' => 'both',
                     'Téléchargement' => 'download',
-                    'Streaming' => 'streaming'
-                    ]
-                ]
-            ]
+                    'Streaming' => 'streaming',
+                    ],
+                ],
+            ],
         ];
 
     public function collectData()
@@ -35,7 +35,7 @@ class ExtremeDownloadBridge extends BridgeAbstract
 
         $typesText = [
             'download' => 'Téléchargement',
-            'streaming' => 'Streaming'
+            'streaming' => 'Streaming',
         ];
 
         // Get the TV show title

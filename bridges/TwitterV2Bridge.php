@@ -17,7 +17,7 @@ class TwitterV2Bridge extends BridgeAbstract
     const CONFIGURATION = [
         'twitterv2apitoken' => [
             'required' => true,
-        ]
+        ],
     ];
     const PARAMETERS = [
         'global' => [
@@ -25,64 +25,64 @@ class TwitterV2Bridge extends BridgeAbstract
                 'name' => 'Filter',
                 'exampleValue' => 'rss-bridge',
                 'required' => false,
-                'title' => 'Specify a single term to search for'
+                'title' => 'Specify a single term to search for',
             ],
             'norep' => [
                 'name' => 'Without replies',
                 'type' => 'checkbox',
-                'title' => 'Activate to exclude reply tweets'
+                'title' => 'Activate to exclude reply tweets',
             ],
             'noretweet' => [
                 'name' => 'Without retweets',
                 'required' => false,
                 'type' => 'checkbox',
-                'title' => 'Activate to exclude retweets'
+                'title' => 'Activate to exclude retweets',
             ],
             'nopinned' => [
                 'name' => 'Without pinned tweet',
                 'required' => false,
                 'type' => 'checkbox',
-                'title' => 'Activate to exclude pinned tweets'
+                'title' => 'Activate to exclude pinned tweets',
             ],
             'maxresults' => [
                 'name' => 'Maximum results',
                 'required' => false,
                 'exampleValue' => '20',
-                'title' => 'Maximum number of tweets to retrieve (limit is 100)'
+                'title' => 'Maximum number of tweets to retrieve (limit is 100)',
             ],
             'imgonly' => [
                 'name' => 'Only media tweets',
                 'type' => 'checkbox',
-                'title' => 'Activate to show only tweets with media (photo/video)'
+                'title' => 'Activate to show only tweets with media (photo/video)',
             ],
             'nopic' => [
                 'name' => 'Hide profile pictures',
                 'type' => 'checkbox',
-                'title' => 'Activate to hide profile pictures in content'
+                'title' => 'Activate to hide profile pictures in content',
             ],
             'noimg' => [
                 'name' => 'Hide images in tweets',
                 'type' => 'checkbox',
-                'title' => 'Activate to hide images in tweets'
+                'title' => 'Activate to hide images in tweets',
             ],
             'noimgscaling' => [
                 'name' => 'Disable image scaling',
                 'type' => 'checkbox',
-                'title' => 'Activate to display original sized images (no thumbnails)'
+                'title' => 'Activate to display original sized images (no thumbnails)',
             ],
             'idastitle' => [
                 'name' => 'Use tweet id as title',
                 'type' => 'checkbox',
-                'title' => 'Activate to use tweet id as title (instead of tweet text)'
-            ]
+                'title' => 'Activate to use tweet id as title (instead of tweet text)',
+            ],
         ],
         'By username' => [
             'u' => [
                 'name' => 'username',
                 'required' => true,
                 'exampleValue' => 'sebsauvage',
-                'title' => 'Insert a user name'
-            ]
+                'title' => 'Insert a user name',
+            ],
         ],
         'By keyword or hashtag' => [
             'query' => [
@@ -90,40 +90,40 @@ class TwitterV2Bridge extends BridgeAbstract
                 'required' => true,
                 'exampleValue' => 'rss-bridge OR #rss-bridge',
                 'title' => <<<EOD
-* To search for multiple words (must contain all of these words), put a space between them.
+                    * To search for multiple words (must contain all of these words), put a space between them.
 
-Example: `rss-bridge release`.
+                    Example: `rss-bridge release`.
 
-* To search for multiple words (contains any of these words), put "OR" between them.
+                    * To search for multiple words (contains any of these words), put "OR" between them.
 
-Example: `rss-bridge OR rssbridge`.
+                    Example: `rss-bridge OR rssbridge`.
 
-* To search for an exact phrase (including whitespace), put double-quotes around them.
+                    * To search for an exact phrase (including whitespace), put double-quotes around them.
 
-Example: `"rss-bridge release"`
+                    Example: `"rss-bridge release"`
 
-* If you want to search for anything **but** a specific word, put a hyphen before it.
+                    * If you want to search for anything **but** a specific word, put a hyphen before it.
 
-Example: `rss-bridge -release` (ignores "release")
+                    Example: `rss-bridge -release` (ignores "release")
 
-* Of course, this also works for hashtags.
+                    * Of course, this also works for hashtags.
 
-Example: `#rss-bridge OR #rssbridge`
+                    Example: `#rss-bridge OR #rssbridge`
 
-* And you can combine them in any shape or form you like.
+                    * And you can combine them in any shape or form you like.
 
-Example: `#rss-bridge OR #rssbridge -release`
-EOD
-            ]
+                    Example: `#rss-bridge OR #rssbridge -release`
+                    EOD,
+            ],
         ],
         'By list ID' => [
             'listid' => [
                 'name' => 'List ID',
                 'exampleValue' => '31748',
                 'required' => true,
-                'title' => 'Enter a list id'
-            ]
-        ]
+                'title' => 'Enter a list id',
+            ],
+        ],
     ];
 
     // $Item variable needs to be accessible from multiple functions without passing
@@ -181,7 +181,7 @@ EOD
             case 'By username':
                 //Get id from username
                 $params = [
-                'user.fields'   => 'pinned_tweet_id,profile_image_url'
+                'user.fields' => 'pinned_tweet_id,profile_image_url',
                 ];
                 $user = $this->makeApiCall('/users/by/username/'
                 . $this->getInput('u'), $authHeaders, $params);
@@ -193,13 +193,13 @@ EOD
 
                 // Set default params
                 $params = [
-                'max_results'   => (empty($maxResults) ? '10' : $maxResults ),
+                'max_results' => (empty($maxResults) ? '10' : $maxResults),
                 'tweet.fields'
                 => 'created_at,referenced_tweets,entities,attachments',
-                'user.fields'   => 'pinned_tweet_id',
+                'user.fields' => 'pinned_tweet_id',
                 'expansions'
                 => 'referenced_tweets.id.author_id,entities.mentions.username,attachments.media_keys',
-                'media.fields'  => 'type,url,preview_image_url'
+                'media.fields' => 'type,url,preview_image_url',
                 ];
 
                 // Set params to filter out replies and/or retweets
@@ -218,13 +218,13 @@ EOD
 
             case 'By keyword or hashtag':
                 $params = [
-                'query'         => $this->getInput('query'),
-                'max_results'   => (empty($maxResults) ? '10' : $maxResults ),
+                'query' => $this->getInput('query'),
+                'max_results' => (empty($maxResults) ? '10' : $maxResults),
                 'tweet.fields'
                 => 'created_at,referenced_tweets,entities,attachments',
                 'expansions'
                 => 'referenced_tweets.id.author_id,entities.mentions.username,attachments.media_keys',
-                'media.fields'  => 'type,url,preview_image_url'
+                'media.fields' => 'type,url,preview_image_url',
                 ];
 
                 // Set params to filter out replies and/or retweets
@@ -241,12 +241,12 @@ EOD
             case 'By list ID':
                 // Set default params
                 $params = [
-                'max_results' => (empty($maxResults) ? '10' : $maxResults ),
+                'max_results' => (empty($maxResults) ? '10' : $maxResults),
                 'tweet.fields'
                 => 'created_at,referenced_tweets,entities,attachments',
                 'expansions'
                 => 'referenced_tweets.id.author_id,entities.mentions.username,attachments.media_keys',
-                'media.fields'  => 'type,url,preview_image_url'
+                'media.fields' => 'type,url,preview_image_url',
                 ];
 
                 $data = $this->makeApiCall('/lists/' . $this->getInput('listid') .
@@ -310,11 +310,11 @@ EOD
 
             // Set default params for API query
             $params = [
-                'ids'           => join(',', $includesTweetsIds),
-                'tweet.fields'  => 'entities,attachments',
-                'expansions'    => 'author_id,attachments.media_keys',
-                'media.fields'  => 'type,url,preview_image_url',
-                'user.fields'   => 'id,profile_image_url'
+                'ids' => join(',', $includesTweetsIds),
+                'tweet.fields' => 'entities,attachments',
+                'expansions' => 'author_id,attachments.media_keys',
+                'media.fields' => 'type,url,preview_image_url',
+                'user.fields' => 'id,profile_image_url',
             ];
 
             // Get the retweeted tweets
@@ -413,23 +413,23 @@ EOD
                 // Get user object for retweeted tweet
                 $originalUser = $this->getTweetUser($tweet, $retweetedUsers, $includesUsers);
 
-                $this->item['username']  = $originalUser->username;
-                $this->item['fullname']  = $originalUser->name;
+                $this->item['username'] = $originalUser->username;
+                $this->item['fullname'] = $originalUser->name;
                 if (isset($originalUser->profile_image_url)) {
-                    $this->item['avatar']    = $originalUser->profile_image_url;
+                    $this->item['avatar'] = $originalUser->profile_image_url;
                 } else {
                     $this->item['avatar'] = null;
                 }
             } else {
-                $this->item['username']  = $user->data->username;
-                $this->item['fullname']  = $user->data->name;
-                $this->item['avatar']    = $user->data->profile_image_url;
+                $this->item['username'] = $user->data->username;
+                $this->item['fullname'] = $user->data->name;
+                $this->item['avatar'] = $user->data->profile_image_url;
             }
-            $this->item['id']        = $tweet->id;
+            $this->item['id'] = $tweet->id;
             $this->item['timestamp'] = $tweet->created_at;
             $this->item['uri']
             = self::URI . $this->item['username'] . '/status/' . $this->item['id'];
-            $this->item['author']    = ($isRetweet ? 'RT: ' : '' )
+            $this->item['author'] = ($isRetweet ? 'RT: ' : '')
                          . $this->item['fullname']
                          . ' (@'
                          . $this->item['username'] . ')';
@@ -440,8 +440,8 @@ EOD
                 $onlyMediaTweets && !isset($tweet->attachments->media_keys) &&
                 (($isQuote && !isset($quotedTweet->attachments->media_keys)) || !$isQuote)
             ) {
-                    // There is no media in current tweet or quoted tweet, skip to next
-                    continue;
+                // There is no media in current tweet or quoted tweet, skip to next
+                continue;
             }
 
             // Search for and replace URLs in Tweet text
@@ -460,7 +460,7 @@ EOD
 
             if ($isRetweet && substr($titleText, 0, 4) === 'RT @') {
                 $titleText = substr_replace($titleText, ':', 2, 0);
-            } elseif ($isReply  && !$idAsTitle) {
+            } elseif ($isReply && !$idAsTitle) {
                 $titleText = 'R: ' . $titleText;
             }
 
@@ -470,14 +470,14 @@ EOD
             $picture_html = '';
             if (!$hideProfilePic && isset($this->item['avatar'])) {
                 $picture_html = <<<EOD
-<a href="https://twitter.com/{$this->item['username']}">
-<img
-	style="margin-right: 10px; margin-bottom: 10px;"
-	alt="{$this->item['username']}"
-	src="{$this->item['avatar']}"
-	title="{$this->item['fullname']}" />
-</a>
-EOD;
+                    <a href="https://twitter.com/{$this->item['username']}">
+                    <img
+                    	style="margin-right: 10px; margin-bottom: 10px;"
+                    	alt="{$this->item['username']}"
+                    	src="{$this->item['avatar']}"
+                    	title="{$this->item['fullname']}" />
+                    </a>
+                    EOD;
             }
 
             // Generate media HTML block
@@ -496,28 +496,28 @@ EOD;
 
             // Generate the HTML for Item content
             $this->item['content'] = <<<EOD
-<div style="float: left;">
-	{$picture_html}
-</div>
-<div style="display: table;">
-	{$cleanedTweet}
-</div>
-<div style="display: block; margin-top: 16px;">
-	{$media_html}
-EOD;
+                <div style="float: left;">
+                	{$picture_html}
+                </div>
+                <div style="display: table;">
+                	{$cleanedTweet}
+                </div>
+                <div style="display: block; margin-top: 16px;">
+                	{$media_html}
+                EOD;
 
             // Add Quoted Tweet HTML, if relevant
             if (isset($quotedTweet)) {
                 $quotedTweetURI = self::URI . $quotedUser->username . '/status/' . $quotedTweet->id;
                 $quote_html = <<<QUOTE
-<div style="display: table; border-style: solid; border-width: 1px; 
-	border-radius: 5px; padding: 5px;">
-	<p><b>$quotedUser->name</b> @$quotedUser->username · 
-	<a href="$quotedTweetURI">$quotedTweet->created_at</a></p>
-	$cleanedQuotedTweet
-	$quoted_media_html
-</div>
-QUOTE;
+                    <div style="display: table; border-style: solid; border-width: 1px; 
+                    	border-radius: 5px; padding: 5px;">
+                    	<p><b>$quotedUser->name</b> @$quotedUser->username · 
+                    	<a href="$quotedTweetURI">$quotedTweet->created_at</a></p>
+                    	$cleanedQuotedTweet
+                    	$quoted_media_html
+                    </div>
+                    QUOTE;
                 $this->item['content'] .= $quote_html;
             }
 
@@ -679,12 +679,12 @@ QUOTE;
                     $this->item['enclosures'][] = $image;
 
                     $media_html .= <<<EOD
-<a href="{$image}">
-<img
-referrerpolicy="no-referrer"
-src="{$display_image}" />
-</a>
-EOD;
+                        <a href="{$image}">
+                        <img
+                        referrerpolicy="no-referrer"
+                        src="{$display_image}" />
+                        </a>
+                        EOD;
                     break;
                 case 'video':
                     // To Do: Is there a way to easily match this
@@ -692,9 +692,9 @@ EOD;
                     $display_image = $media->preview_image_url;
 
                     $media_html .= <<<EOD
-<p>Video:</p><a href="{$this->item['uri']}">
-<img referrerpolicy="no-referrer" src="{$display_image}" /></a>
-EOD;
+                        <p>Video:</p><a href="{$this->item['uri']}">
+                        <img referrerpolicy="no-referrer" src="{$display_image}" /></a>
+                        EOD;
                     break;
                 case 'animated_gif':
                     // To Do: Is there a way to easily match this to a
@@ -702,9 +702,9 @@ EOD;
                     $display_image = $media->preview_image_url;
 
                     $media_html .= <<<EOD
-<p>Animated Gif:</p><a href="{$this->item['uri']}">
-<img referrerpolicy="no-referrer" src="{$display_image}" /></a>
-EOD;
+                        <p>Animated Gif:</p><a href="{$this->item['uri']}">
+                        <img referrerpolicy="no-referrer" src="{$display_image}" /></a>
+                        EOD;
                     break;
                 default:
                     Debug::log('Missing support for media type: '

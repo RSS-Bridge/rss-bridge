@@ -14,15 +14,15 @@ class UsbekEtRicaBridge extends BridgeAbstract
                 'type' => 'number',
                 'required' => false,
                 'title' => 'Specifies the maximum number of articles to return',
-                'defaultValue' => -1
+                'defaultValue' => -1,
             ],
             'fullarticle' => [
                 'name' => 'Load full article',
                 'type' => 'checkbox',
                 'required' => false,
                 'title' => 'Activate to load full articles',
-            ]
-        ]
+            ],
+        ],
     ];
 
     public function collectData()
@@ -74,7 +74,7 @@ class UsbekEtRicaBridge extends BridgeAbstract
             $image = $article->find('div.card-img img', 0);
             if ($image) {
                 $item['enclosures'] = [
-                    $image->src
+                    $image->src,
                 ];
             }
 

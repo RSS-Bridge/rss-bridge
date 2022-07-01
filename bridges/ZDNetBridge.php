@@ -22,7 +22,7 @@ class ZDNetBridge extends FeedExpander
                     'Latest Australia Articles' => 'au',
                     'Latest UK Articles' => 'uk',
                     'Latest US Articles' => 'us',
-                    'Latest Asia Articles' => 'as'
+                    'Latest Asia Articles' => 'as',
                 ],
                 'Keep up with ZDNet Blogs RSS:' => [
                     'Transforming the Datacenter' => 'blog/transforming-datacenter',
@@ -116,7 +116,7 @@ class ZDNetBridge extends FeedExpander
                     'ZDNet Government' => 'blog/government',
                     'ZDNet UK Book Reviews' => 'blog/zdnet-uk-book-reviews',
                     'ZDNet UK First Take' => 'blog/zdnet-uk-first-take',
-                    'Zero Day' => 'blog/security'
+                    'Zero Day' => 'blog/security',
                 ],
                 'ZDNet Hot Topics RSS:' => [
                     'Apple' => 'topic/apple',
@@ -141,7 +141,7 @@ class ZDNetBridge extends FeedExpander
                     'Processors' => 'topic/processors',
                     'Samsung' => 'topic/samsung',
                     'Security' => 'topic/security',
-                    'Small business: going big on mobility' => 'topic/small-business-going-big-on-mobility'
+                    'Small business: going big on mobility' => 'topic/small-business-going-big-on-mobility',
                 ],
                 'Product Blogs:' => [
                     'Digital Cameras & Camcorders' => 'blog/digitalcameras',
@@ -149,14 +149,14 @@ class ZDNetBridge extends FeedExpander
                     'Laptops and Desktops' => 'blog/computers',
                     'The Mobile Gadgeteer' => 'blog/mobile-gadgeteer',
                     'Smartphones and Cell Phones' => 'blog/cell-phones',
-                    'The ToyBox' => 'blog/gadgetreviews'
+                    'The ToyBox' => 'blog/gadgetreviews',
                 ],
                 'Vertical Blogs:' => [
                     'ZDNet Education' => 'blog/education',
                     'ZDNet Healthcare' => 'blog/healthcare',
-                    'ZDNet Government' => 'blog/government'
-                ]
-            ]
+                    'ZDNet Government' => 'blog/government',
+                ],
+            ],
         ],
         'limit' => self::LIMIT,
     ]];

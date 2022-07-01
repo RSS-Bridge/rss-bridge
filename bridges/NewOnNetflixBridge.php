@@ -17,7 +17,7 @@ class NewOnNetflixBridge extends BridgeAbstract
                 'United States' => 'usa',
             ],
             'defaultValue' => 'uk',
-        ]
+        ],
     ]];
     const CACHE_TIMEOUT = 3600 * 24;
 
@@ -42,11 +42,11 @@ class NewOnNetflixBridge extends BridgeAbstract
                 $to = 'unknown';
             }
             $summary = <<<EOD
-				<img src="{$img->lazy_src}" loading="lazy">
-				<div>{$title->title}</div>
-				<div><strong>Added on:</strong>$from</div>
-				<div><strong>Removed on:</strong>$to</div>
-EOD;
+                				<img src="{$img->lazy_src}" loading="lazy">
+                				<div>{$title->title}</div>
+                				<div><strong>Added on:</strong>$from</div>
+                				<div><strong>Removed on:</strong>$to</div>
+                EOD;
 
             $item = [];
             $item['uri'] = $baseURI . $title->href;

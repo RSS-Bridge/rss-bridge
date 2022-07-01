@@ -15,7 +15,7 @@ class DuckDuckGoBridge extends BridgeAbstract
         'u' => [
             'name' => 'keyword',
             'exampleValue' => 'duck',
-            'required' => true
+            'required' => true,
         ],
         'sort' => [
             'name' => 'sort by',
@@ -23,10 +23,10 @@ class DuckDuckGoBridge extends BridgeAbstract
             'required' => false,
             'values' => [
                 'date' => self::SORT_DATE,
-                'relevance' => self::SORT_RELEVANCE
+                'relevance' => self::SORT_RELEVANCE,
             ],
-            'defaultValue' => self::SORT_DATE
-        ]
+            'defaultValue' => self::SORT_DATE,
+        ],
     ]];
 
     public function collectData()

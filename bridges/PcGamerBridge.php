@@ -11,7 +11,7 @@ class PcGamerBridge extends BridgeAbstract
     const PARAMETERS = [
         [
             'limit' => self::LIMIT,
-        ]
+        ],
     ];
 
     public function collectData()

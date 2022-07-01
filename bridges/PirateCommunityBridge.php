@@ -13,8 +13,8 @@ class PirateCommunityBridge extends BridgeAbstract
             'type' => 'number',
             'exampleValue' => '12651',
             'title' => 'Topic ID from topic URL. If the URL contains t=12 the ID is 12.',
-            'required' => true
-        ]]];
+            'required' => true,
+        ], ]];
 
     private $feedName = '';
 

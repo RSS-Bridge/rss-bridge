@@ -13,9 +13,9 @@ class ExplosmBridge extends BridgeAbstract
                 'name' => 'Posts limit',
                 'type' => 'number',
                 'title' => 'Maximum number of items to return',
-                'defaultValue' => 5
-                ]
-            ]
+                'defaultValue' => 5,
+                ],
+            ],
         ];
 
     public function collectData()

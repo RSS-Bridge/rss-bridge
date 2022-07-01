@@ -26,12 +26,12 @@ class BlizzardNewsBridge extends XPathAbstract
                     'Русский' => 'ru-ru',
                     'ภาษาไทย' => 'th-th',
                     '简体中文' => 'zh-cn',
-                    '繁體中文' => 'zh-tw'
+                    '繁體中文' => 'zh-tw',
                 ],
                 'defaultValue' => 'en-us',
-                'title' => 'Select your language'
-            ]
-        ]
+                'title' => 'Select your language',
+            ],
+        ],
     ];
     const CACHE_TIMEOUT = 3600;
 

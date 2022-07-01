@@ -18,9 +18,9 @@ class TebeoBridge extends FeedExpander
                 'Sport' => '/3-sport',
                 'Culture-Loisirs' => '/5-culture-loisirs',
                 'Société' => '/15-societe',
-                'Langue Bretonne' => '/9-langue-bretonne'
-            ]
-        ]
+                'Langue Bretonne' => '/9-langue-bretonne',
+            ],
+        ],
     ]];
 
     public function getIcon()

@@ -12,7 +12,7 @@ class HotUKDealsBridge extends PepperBridgeAbstract
                 'name' => 'Keyword(s)',
                 'type' => 'text',
                 'exampleValue' => 'lamp',
-                'required' => true
+                'required' => true,
             ],
             'hide_expired' => [
                 'name' => 'Hide expired deals',
@@ -27,13 +27,13 @@ class HotUKDealsBridge extends PepperBridgeAbstract
                 'name' => 'Minimal Price',
                 'type' => 'text',
                 'title' => 'Minmal Price in Pounds',
-                'required' => false
+                'required' => false,
             ],
             'priceTo' => [
                 'name' => 'Maximum Price',
                 'type' => 'text',
                 'title' => 'Maximum Price in Pounds',
-                'required' => false
+                'required' => false,
             ],
         ],
 
@@ -3235,7 +3235,7 @@ class HotUKDealsBridge extends PepperBridgeAbstract
                     'ZTE' => 'zte',
                     'ZTE Smartphone' => 'zte-smartphone',
                     'ZyXEL' => 'zyxel',
-                ]
+                ],
             ],
             'order' => [
                 'name' => 'Order by',
@@ -3244,8 +3244,8 @@ class HotUKDealsBridge extends PepperBridgeAbstract
                 'values' => [
                     'From the most to the least hot deal' => '-hot',
                     'From the most recent deal to the oldest' => '-new',
-                ]
-            ]
+                ],
+            ],
         ],
         'Discussion Monitoring' => [
             'url' => [
@@ -3260,8 +3260,8 @@ class HotUKDealsBridge extends PepperBridgeAbstract
                 'type' => 'checkbox',
                 'title' => 'Exclude comments that does not contains URL in the feed',
                 'defaultValue' => false,
-                ]
-            ]
+                ],
+            ],
 
 
     ];
@@ -3302,7 +3302,7 @@ class HotUKDealsBridge extends PepperBridgeAbstract
             'st',
             'nd',
             'rd',
-            'th'
+            'th',
         ],
         'local-time-relative' => [
             'Posted ',
@@ -3312,24 +3312,24 @@ class HotUKDealsBridge extends PepperBridgeAbstract
             'days',
             'month',
             'year',
-            'and '
+            'and ',
         ],
         'date-prefixes' => [
             'Found ',
             'Refreshed ',
-            'Made hot '
+            'Made hot ',
         ],
         'relative-date-alt-prefixes' => [
             'Made hot ',
             'Refreshed ',
-            'Last updated '
+            'Last updated ',
         ],
         'relative-date-ignore-suffix' => [
-            '/by.*$/'
+            '/by.*$/',
         ],
         'localdeal' => [
             'Local',
-            'Expires'
-        ]
+            'Expires',
+        ],
     ];
 }

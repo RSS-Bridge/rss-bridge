@@ -14,8 +14,8 @@ class AcrimedBridge extends FeedExpander
                 'name' => 'limit',
                 'type' => 'number',
                 'defaultValue' => -1,
-            ]
-        ]
+            ],
+        ],
     ];
 
     public function collectData()

@@ -93,9 +93,9 @@ abstract class BridgeAbstract implements BridgeInterface
      * Can be inlined and modified if necessary.
      */
     protected const LIMIT = [
-        'name'          => 'Limit',
-        'type'          => 'number',
-        'title'         => 'Maximum number of items to return',
+        'name' => 'Limit',
+        'type' => 'number',
+        'title' => 'Maximum number of items to return',
     ];
 
     /**
@@ -162,7 +162,7 @@ abstract class BridgeAbstract implements BridgeInterface
                     continue;
                 }
 
-                $type = isset($properties['type']) ? $properties['type'] : 'text';
+                $type = $properties['type'] ?? 'text';
 
                 switch ($type) {
                     case 'checkbox':

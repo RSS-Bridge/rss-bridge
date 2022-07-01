@@ -27,7 +27,7 @@ class Arte7Bridge extends BridgeAbstract
                     'Number of views' => 'views',
                     'Number of views per period' => 'viewsPeriod',
                     'Available screens' => 'availableScreens',
-                    'Episode' => 'episode'
+                    'Episode' => 'episode',
                 ],
             ],
             'sort_direction' => [
@@ -37,14 +37,14 @@ class Arte7Bridge extends BridgeAbstract
                 'defaultValue' => 'DESC',
                 'values' => [
                     'Ascending' => 'ASC',
-                    'Descending' => 'DESC'
+                    'Descending' => 'DESC',
                 ],
             ],
             'exclude_trailers' => [
                 'name' => 'Exclude trailers',
                 'type' => 'checkbox',
                 'required' => false,
-                'defaultValue' => false
+                'defaultValue' => false,
             ],
         ],
         'Category' => [
@@ -57,7 +57,7 @@ class Arte7Bridge extends BridgeAbstract
                     'English' => 'en',
                     'Español' => 'es',
                     'Polski' => 'pl',
-                    'Italiano' => 'it'
+                    'Italiano' => 'it',
                 ],
             ],
             'cat' => [
@@ -73,8 +73,8 @@ class Arte7Bridge extends BridgeAbstract
                     'Discovery' => 'DEC',
                     'History' => 'HIST',
                     'Science' => 'SCI',
-                    'Other' => 'AUT'
-                ]
+                    'Other' => 'AUT',
+                ],
             ],
         ],
         'Collection' => [
@@ -87,16 +87,16 @@ class Arte7Bridge extends BridgeAbstract
                     'English' => 'en',
                     'Español' => 'es',
                     'Polski' => 'pl',
-                    'Italiano' => 'it'
-                ]
+                    'Italiano' => 'it',
+                ],
             ],
             'col' => [
                 'name' => 'Collection id',
                 'required' => true,
                 'title' => 'ex. RC-014095 pour https://www.arte.tv/de/videos/RC-014095/blow-up/',
-                'exampleValue'  => 'RC-014095'
-            ]
-        ]
+                'exampleValue' => 'RC-014095',
+            ],
+        ],
     ];
 
     public function collectData()
@@ -123,7 +123,7 @@ class Arte7Bridge extends BridgeAbstract
             . ($collectionId != null ? '&collections.collectionId=' . $collectionId : '');
 
         $header = [
-            'Authorization: Bearer ' . self::API_TOKEN
+            'Authorization: Bearer ' . self::API_TOKEN,
         ];
 
         $input = getContents($url, $header);

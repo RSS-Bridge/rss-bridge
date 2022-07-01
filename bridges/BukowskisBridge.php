@@ -139,7 +139,7 @@ class BukowskisBridge extends BridgeAbstract
                     'Bags & Trunks' => 'vintage-fashion.bags-trunks',
                     'Clothes' => 'vintage-fashion.clothes',
                 ],
-            ]
+            ],
         ],
         'sort_order' => [
             'name' => 'Sort order',
@@ -162,7 +162,7 @@ class BukowskisBridge extends BridgeAbstract
             'values' => [
                 'English' => 'en',
                 'Swedish' => 'sv',
-                'Finnish' => 'fi'
+                'Finnish' => 'fi',
             ],
         ],
     ]];

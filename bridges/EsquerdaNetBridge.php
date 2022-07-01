@@ -18,9 +18,9 @@ class EsquerdaNetBridge extends FeedExpander
                     'Vídeo' => 'video',
                     'Opinião' => 'opinioes',
                     'Rádio' => 'radio',
-                ]
-            ]
-        ]
+                ],
+            ],
+        ],
     ];
 
     public function getURI()

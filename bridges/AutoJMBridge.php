@@ -13,9 +13,9 @@ class AutoJMBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'title' => 'URL d\'une recherche avec filtre de véhicules sans le http://www.autojm.fr/',
-                'exampleValue' => 'recherche?brands[]=peugeot&ranges[]=peugeot-nouvelle-308-2021-5p'
+                'exampleValue' => 'recherche?brands[]=peugeot&ranges[]=peugeot-nouvelle-308-2021-5p',
             ],
-        ]
+        ],
     ];
     const CACHE_TIMEOUT = 3600;
 
@@ -42,7 +42,7 @@ class AutoJMBridge extends BridgeAbstract
 
         // Set the header 'X-Requested-With' like the website does it
         $header = [
-            'X-Requested-With: XMLHttpRequest'
+            'X-Requested-With: XMLHttpRequest',
         ];
 
         // Get the JSON content of the form

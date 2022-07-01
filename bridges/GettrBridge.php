@@ -22,7 +22,7 @@ class GettrBridge extends BridgeAbstract
                 'defaultValue' => 5,
                 'required' => true,
             ],
-        ]
+        ],
     ];
 
     public function collectData()
@@ -68,27 +68,27 @@ class GettrBridge extends BridgeAbstract
         // Preview image
         if (isset($post->previmg)) {
             $content .= <<<HTML
-<a href="$post->prevsrc" target="_blank">
-    <img
-        src='$post->previmg'
-        alt='Unable to load image'
-        loading='lazy'
-    >
-</a>
-<br><br>
-HTML;
+                <a href="$post->prevsrc" target="_blank">
+                    <img
+                        src='$post->previmg'
+                        alt='Unable to load image'
+                        loading='lazy'
+                    >
+                </a>
+                <br><br>
+                HTML;
         }
 
         // Images
         foreach ($post->imgs ?? [] as $imageUrl) {
             $content .= <<<HTML
-<img
-    src='https://media.gettr.com/$imageUrl'
-    alt='Unable to load image'
-    target='_blank'
->
-<br><br>
-HTML;
+                <img
+                    src='https://media.gettr.com/$imageUrl'
+                    alt='Unable to load image'
+                    target='_blank'
+                >
+                <br><br>
+                HTML;
         }
 
         // Video
@@ -96,16 +96,16 @@ HTML;
             $mainImage = $post->main;
 
             $content .= <<<HTML
-<video
-    style="max-width: 100%"
-    controls
-    preload="none"
-    poster="https://media.gettr.com/$mainImage"
->
-  <source src="https://media.gettr.com/$post->ovid" type="video/mp4">
-  Your browser does not support the video element. Kindly update it to latest version.
-</video >
-HTML;
+                <video
+                    style="max-width: 100%"
+                    controls
+                    preload="none"
+                    poster="https://media.gettr.com/$mainImage"
+                >
+                  <source src="https://media.gettr.com/$post->ovid" type="video/mp4">
+                  Your browser does not support the video element. Kindly update it to latest version.
+                </video >
+                HTML;
             // This is typically a m3u8 which I don't know how to present in a browser
             $streamingUrl = $post->vid;
         }

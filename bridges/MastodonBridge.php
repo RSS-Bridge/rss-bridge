@@ -38,14 +38,14 @@ class MastodonBridge extends BridgeAbstract
         'norep' => [
             'name' => 'Without replies',
             'type' => 'checkbox',
-            'title' => 'Only return statuses that are not replies, as determined by relations (not mentions).'
+            'title' => 'Only return statuses that are not replies, as determined by relations (not mentions).',
         ],
         'noboost' => [
             'name' => 'Without boosts',
             'required' => false,
             'type' => 'checkbox',
-            'title' => 'Hide boosts. Note that RSS-Bridge will fetch the original status from other federated instances.'
-            ]
+            'title' => 'Hide boosts. Note that RSS-Bridge will fetch the original status from other federated instances.',
+            ],
         ]];
 
     public function getName()
@@ -77,7 +77,7 @@ class MastodonBridge extends BridgeAbstract
             $resource = 'acct:' . $this->getUsername() . '@' . $this->getInstance();
             $webfingerUrl = 'https://' . $this->getInstance() . '/.well-known/webfinger?resource=' . $resource;
             $webfingerHeader = [
-                'Content-Type: application/jrd+json'
+                'Content-Type: application/jrd+json',
             ];
             $webfinger = json_decode(getContents($webfingerUrl, $webfingerHeader), true);
             foreach ($webfinger['links'] as $link) {
@@ -185,7 +185,7 @@ class MastodonBridge extends BridgeAbstract
         $headers = [
             'Accept: application/activity+json',
             'Host: ' . $matches[1],
-            'Date: ' . $date
+            'Date: ' . $date,
         ];
         $privateKey = $this->getOption('private_key');
         $keyId = $this->getOption('key_id');

@@ -23,7 +23,7 @@ class CodebergBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'exampleValue' => '513',
-            ]
+            ],
         ],
         'Pull Requests' => [],
         'Releases' => [],
@@ -40,31 +40,31 @@ class CodebergBridge extends BridgeAbstract
                 'type' => 'text',
                 'exampleValue' => 'Community',
                 'required' => true,
-            ]
-        ]
+            ],
+        ],
     ];
 
     const CACHE_TIMEOUT = 1800;
 
     const TEST_DETECT_PARAMETERS = [
         'https://codeberg.org/Codeberg/Community/issues/507' => [
-            'context' => 'Issue Comments', 'username' => 'Codeberg', 'repo' => 'Community', 'issueId' => '507'
+            'context' => 'Issue Comments', 'username' => 'Codeberg', 'repo' => 'Community', 'issueId' => '507',
         ],
         'https://codeberg.org/Codeberg/Community/issues' => [
-            'context' => 'Issues', 'username' => 'Codeberg', 'repo' => 'Community'
+            'context' => 'Issues', 'username' => 'Codeberg', 'repo' => 'Community',
         ],
         'https://codeberg.org/Codeberg/Community/pulls' => [
-            'context' => 'Pull Requests', 'username' => 'Codeberg', 'repo' => 'Community'
+            'context' => 'Pull Requests', 'username' => 'Codeberg', 'repo' => 'Community',
         ],
         'https://codeberg.org/Codeberg/Community/releases' => [
-            'context' => 'Releases', 'username' => 'Codeberg', 'repo' => 'Community'
+            'context' => 'Releases', 'username' => 'Codeberg', 'repo' => 'Community',
         ],
         'https://codeberg.org/Codeberg/Community/commits/branch/master' => [
-            'context' => 'Commits', 'username' => 'Codeberg', 'repo' => 'Community', 'branch' => 'master'
+            'context' => 'Commits', 'username' => 'Codeberg', 'repo' => 'Community', 'branch' => 'master',
         ],
         'https://codeberg.org/Codeberg/Community/commits' => [
-            'context' => 'Commits', 'username' => 'Codeberg', 'repo' => 'Community'
-        ]
+            'context' => 'Commits', 'username' => 'Codeberg', 'repo' => 'Community',
+        ],
     ];
 
     private $defaultBranch = 'main';
@@ -354,12 +354,12 @@ class CodebergBridge extends BridgeAbstract
 
             $item['content'] = $li->find('div.markup.desc', 0);
             $item['content'] .= <<<HTML
-<strong>Tag</strong>
-<p>{$tag}</p>
-<strong>Commit</strong>
-<p>{$commit}</p>
-{$downloads}
-HTML;
+                <strong>Tag</strong>
+                <p>{$tag}</p>
+                <strong>Commit</strong>
+                <p>{$commit}</p>
+                {$downloads}
+                HTML;
 
             $item['timestamp'] = $li->find('span.time', 0)->find('span', 0)->title;
             $item['author'] = $li->find('span.author', 0)->find('a', 0)->plaintext;
@@ -381,14 +381,14 @@ HTML;
             }
 
             $downloads .= <<<HTML
-<a href="{$a->herf}">{$a->plaintext}</a><br>
-HTML;
+                <a href="{$a->herf}">{$a->plaintext}</a><br>
+                HTML;
         }
 
         return <<<EOD
-<strong>Downloads</strong>
-<p>{$downloads}</p>
-EOD;
+            <strong>Downloads</strong>
+            <p>{$downloads}</p>
+            EOD;
     }
 
     /**

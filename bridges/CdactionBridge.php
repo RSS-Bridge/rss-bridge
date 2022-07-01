@@ -30,9 +30,9 @@ class CdactionBridge extends BridgeAbstract
                 'Na luzie' => [
                     'Konkursy' => 'konkursy',
                     'Nadgodziny' => 'nadgodziny',
-                ]
-            ]
-        ]]
+                ],
+            ],
+        ], ],
     ];
 
     public function collectData()

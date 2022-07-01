@@ -13,8 +13,8 @@ class BandcampBridge extends BridgeAbstract
                 'name' => 'tag',
                 'type' => 'text',
                 'required' => true,
-                'exampleValue'  => 'hip-hop-rap'
-            ]
+                'exampleValue' => 'hip-hop-rap',
+            ],
         ],
         'By band' => [
             'band' => [
@@ -22,7 +22,7 @@ class BandcampBridge extends BridgeAbstract
                 'type' => 'text',
                 'title' => 'Band name as seen in the band page URL',
                 'required' => true,
-                'exampleValue'  => 'aesoprock'
+                'exampleValue' => 'aesoprock',
             ],
             'type' => [
                 'name' => 'Articles are',
@@ -30,24 +30,24 @@ class BandcampBridge extends BridgeAbstract
                 'values' => [
                     'Releases' => 'releases',
                     'Releases, new one when track list changes' => 'changes',
-                    'Individual tracks' => 'tracks'
+                    'Individual tracks' => 'tracks',
                 ],
-                'defaultValue' => 'changes'
+                'defaultValue' => 'changes',
             ],
             'limit' => [
                 'name' => 'limit',
                 'type' => 'number',
                 'required' => true,
                 'title' => 'Number of releases to return',
-                'defaultValue' => 5
-            ]
+                'defaultValue' => 5,
+            ],
         ],
         'By label' => [
             'label' => [
                 'name' => 'label',
                 'type' => 'text',
                 'title' => 'label name as seen in the label page URL',
-                'required' => true
+                'required' => true,
             ],
             'type' => [
                 'name' => 'Articles are',
@@ -55,16 +55,16 @@ class BandcampBridge extends BridgeAbstract
                 'values' => [
                     'Releases' => 'releases',
                     'Releases, new one when track list changes' => 'changes',
-                    'Individual tracks' => 'tracks'
+                    'Individual tracks' => 'tracks',
                 ],
-                'defaultValue' => 'changes'
+                'defaultValue' => 'changes',
             ],
             'limit' => [
                 'name' => 'limit',
                 'type' => 'number',
                 'title' => 'Number of releases to return',
-                'defaultValue' => 5
-            ]
+                'defaultValue' => 5,
+            ],
         ],
         'By album' => [
             'band' => [
@@ -72,14 +72,14 @@ class BandcampBridge extends BridgeAbstract
                 'type' => 'text',
                 'title' => 'Band name as seen in the album page URL',
                 'required' => true,
-                'exampleValue'  => 'aesoprock'
+                'exampleValue' => 'aesoprock',
             ],
             'album' => [
                 'name' => 'album',
                 'type' => 'text',
                 'title' => 'Album name as seen in the album page URL',
                 'required' => true,
-                'exampleValue'  => 'appleseed'
+                'exampleValue' => 'appleseed',
             ],
             'type' => [
                 'name' => 'Articles are',
@@ -87,11 +87,11 @@ class BandcampBridge extends BridgeAbstract
                 'values' => [
                     'Releases' => 'releases',
                     'Releases, new one when track list changes' => 'changes',
-                    'Individual tracks' => 'tracks'
+                    'Individual tracks' => 'tracks',
                 ],
-                'defaultValue' => 'tracks'
-            ]
-        ]
+                'defaultValue' => 'tracks',
+            ],
+        ],
     ];
     const IMGURI = 'https://f4.bcbits.com/';
     const IMGSIZE_300PX = 23;
@@ -112,11 +112,11 @@ class BandcampBridge extends BridgeAbstract
                 $data = $this->buildRequestJson();
                 $header = [
                 'Content-Type: application/json',
-                'Content-Length: ' . strlen($data)
+                'Content-Length: ' . strlen($data),
                 ];
                 $opts = [
                 CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => $data
+                CURLOPT_POSTFIELDS => $data,
                 ];
                 $content = getContents($url, $header, $opts);
 
@@ -145,7 +145,7 @@ class BandcampBridge extends BridgeAbstract
                     $item = [
                     'uri' => $url,
                     'author' => $full_artist,
-                    'title' => $full_title
+                    'title' => $full_title,
                     ];
                     $item['content'] = "<img src='$small_img' /><br/>$full_title";
                     $item['enclosures'] = [$img];
@@ -174,7 +174,7 @@ class BandcampBridge extends BridgeAbstract
                     case 'By band':
                     case 'By label':
                         $query_data = [
-                        'band_id' => $band_id
+                        'band_id' => $band_id,
                         ];
                         $band_data = $this->apiGet('mobile/22/band_details', $query_data);
 
@@ -188,7 +188,7 @@ class BandcampBridge extends BridgeAbstract
                             $query_data = [
                             'band_id' => $band_id,
                             'tralbum_type' => $tralbum_type,
-                            'tralbum_id' => $album_basic_data->item_id
+                            'tralbum_id' => $album_basic_data->item_id,
                             ];
                             $tralbums[] = $this->apiGet('mobile/22/tralbum_details', $query_data);
                         }
@@ -203,7 +203,7 @@ class BandcampBridge extends BridgeAbstract
                         $query_data = [
                         'band_id' => $band_id,
                         'tralbum_type' => 'a',
-                        'tralbum_id' => $album_id
+                        'tralbum_id' => $album_id,
                         ];
                         $tralbums[] = $this->apiGet('mobile/22/tralbum_details', $query_data);
 
@@ -216,7 +216,7 @@ class BandcampBridge extends BridgeAbstract
                             $query_data = [
                             'band_id' => $band_id,
                             'tralbum_type' => 't',
-                            'tralbum_id' => $track->track_id
+                            'tralbum_id' => $track->track_id,
                             ];
                             $track_data = $this->apiGet('mobile/22/tralbum_details', $query_data);
 
@@ -261,7 +261,7 @@ class BandcampBridge extends BridgeAbstract
             'author' => $full_artist,
             'title' => $full_title,
             'enclosures' => [$img],
-            'timestamp' => $tralbum_data->release_date
+            'timestamp' => $tralbum_data->release_date,
         ];
 
         $item['categories'] = [];
@@ -300,7 +300,7 @@ class BandcampBridge extends BridgeAbstract
         $requestJson = [
             'tag' => $this->getInput('tag'),
             'page' => 1,
-            'sort' => 'date'
+            'sort' => 'date',
         ];
         return json_encode($requestJson);
     }

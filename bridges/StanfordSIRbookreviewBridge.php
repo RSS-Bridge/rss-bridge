@@ -14,9 +14,9 @@ class StanfordSIRbookreviewBridge extends BridgeAbstract
                 'values' => [
                     'reviews' => 'reviews',
                     'excerpts' => 'excerpts',
-                ]
-             ]
-        ]
+                ],
+             ],
+        ],
     ];
 
     public function collectData()

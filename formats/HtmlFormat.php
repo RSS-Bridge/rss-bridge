@@ -93,43 +93,43 @@ class HtmlFormat extends FormatAbstract
 
             $entries .= <<<EOD
 
-<section class="feeditem">
-	<h2><a class="itemtitle" href="{$entryUri}">{$entryTitle}</a></h2>
-	{$entryDate}
-	{$entryAuthor}
-	{$entryContent}
-	{$entryEnclosures}
-	{$entryCategories}
-</section>
+                <section class="feeditem">
+                	<h2><a class="itemtitle" href="{$entryUri}">{$entryTitle}</a></h2>
+                	{$entryDate}
+                	{$entryAuthor}
+                	{$entryContent}
+                	{$entryEnclosures}
+                	{$entryCategories}
+                </section>
 
-EOD;
+                EOD;
         }
 
         $charset = $this->getCharset();
 
         /* Data are prepared, now let's begin the "MAGIE !!!" */
         $toReturn = <<<EOD
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="{$charset}">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>{$title}</title>
-	<link href="static/HtmlFormat.css" rel="stylesheet">
-	<link rel="icon" type="image/png" href="static/favicon.png">
-	{$links}
-	<meta name="robots" content="noindex, follow">
-</head>
-<body>
-	<h1 class="pagetitle"><a href="{$uri}" target="_blank">{$title}</a></h1>
-	<div class="buttons">
-		<a href="./#bridge-{$_GET['bridge']}"><button class="backbutton">← back to rss-bridge</button></a>
-		{$buttons}
-	</div>
-{$entries}
-</body>
-</html>
-EOD;
+            <!DOCTYPE html>
+            <html>
+            <head>
+            	<meta charset="{$charset}">
+            	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            	<title>{$title}</title>
+            	<link href="static/HtmlFormat.css" rel="stylesheet">
+            	<link rel="icon" type="image/png" href="static/favicon.png">
+            	{$links}
+            	<meta name="robots" content="noindex, follow">
+            </head>
+            <body>
+            	<h1 class="pagetitle"><a href="{$uri}" target="_blank">{$title}</a></h1>
+            	<div class="buttons">
+            		<a href="./#bridge-{$_GET['bridge']}"><button class="backbutton">← back to rss-bridge</button></a>
+            		{$buttons}
+            	</div>
+            {$entries}
+            </body>
+            </html>
+            EOD;
 
         // Remove invalid characters
         ini_set('mbstring.substitute_character', 'none');
@@ -140,15 +140,15 @@ EOD;
     private function buildButton($format, $query)
     {
         return <<<EOD
-<a href="./?{$query}"><button class="rss-feed">{$format}</button></a>
-EOD;
+            <a href="./?{$query}"><button class="rss-feed">{$format}</button></a>
+            EOD;
     }
 
     private function buildLink($format, $query, $mime)
     {
         return <<<EOD
-<link href="./?{$query}" title="{$format}" rel="alternate" type="{$mime}">
+            <link href="./?{$query}" title="{$format}" rel="alternate" type="{$mime}">
 
-EOD;
+            EOD;
     }
 }

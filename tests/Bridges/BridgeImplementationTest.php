@@ -71,7 +71,7 @@ class BridgeImplementationTest extends TestCase
             'text',
             'number',
             'list',
-            'checkbox'
+            'checkbox',
         ];
 
         foreach ($this->obj::PARAMETERS as $context => $params) {

@@ -14,8 +14,8 @@ class FDroidRepoBridge extends BridgeAbstract
                 'name' => 'Repository URL',
                 'title' => 'Usually ends with /repo/',
                 'required' => true,
-                'exampleValue' => 'https://srv.tt-rss.org/fdroid/repo'
-            ]
+                'exampleValue' => 'https://srv.tt-rss.org/fdroid/repo',
+            ],
         ],
         'Latest Updates' => [
             'sorting' => [
@@ -23,21 +23,21 @@ class FDroidRepoBridge extends BridgeAbstract
                 'type' => 'list',
                 'values' => [
                     'Latest added apps' => 'added',
-                    'Latest updated apps' => 'lastUpdated'
-                ]
+                    'Latest updated apps' => 'lastUpdated',
+                ],
             ],
             'locale' => [
                 'name' => 'Locale',
-                'defaultValue' => 'en-US'
-            ]
+                'defaultValue' => 'en-US',
+            ],
         ],
         'Follow Package' => [
             'package' => [
                 'name' => 'Package Identifier',
                 'required' => true,
-                'exampleValue' => 'org.fox.ttrss'
-            ]
-        ]
+                'exampleValue' => 'org.fox.ttrss',
+            ],
+        ],
     ];
 
     // Stores repo information
@@ -157,18 +157,18 @@ class FDroidRepoBridge extends BridgeAbstract
             $issueTracker = $this->link($app['issueTracker'] ?? null);
             $license = $app['license'] ?? 'None';
             $item['content'] = <<<EOD
-{$icon}
-<p>{$summary}</p>
-<h1>Description</h1>
-{$description}
-<h1>What's New</h1>
-{$whatsNew}
-<h1>Information</h1>
-<p>Website: {$website}</p>
-<p>Source Code: {$source}</p>
-<p>Issue Tracker: {$issueTracker}</p>
-<p>license: {$app['license']}</p>
-EOD;
+                {$icon}
+                <p>{$summary}</p>
+                <h1>Description</h1>
+                {$description}
+                <h1>What's New</h1>
+                {$whatsNew}
+                <h1>Information</h1>
+                <p>Website: {$website}</p>
+                <p>Source Code: {$source}</p>
+                <p>Issue Tracker: {$issueTracker}</p>
+                <p>license: {$app['license']}</p>
+                EOD;
             $this->items[] = $item;
         }
     }
@@ -190,11 +190,11 @@ EOD;
             $size = round($version['size'] / 1048576, 1); // Bytes -> MB
             $sdk_link = 'https://developer.android.com/studio/releases/platforms';
             $item['content'] = <<<EOD
-<p>size: {$size}MB</p>
-<p>Minimum SDK: {$version['minSdkVersion']}
-(<a href="{$sdk_link}">SDK to Android Version List</a>)</p>
-<p>hash ({$version['hashType']}): {$version['hash']}</p>
-EOD;
+                <p>size: {$size}MB</p>
+                <p>Minimum SDK: {$version['minSdkVersion']}
+                (<a href="{$sdk_link}">SDK to Android Version List</a>)</p>
+                <p>hash ({$version['hashType']}): {$version['hash']}</p>
+                EOD;
             $this->items[] = $item;
             if (--$count <= 0) {
                 break;

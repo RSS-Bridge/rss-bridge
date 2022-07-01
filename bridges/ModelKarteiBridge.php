@@ -8,10 +8,10 @@ class ModelKarteiBridge extends BridgeAbstract
     const MAINTAINER = 'fulmeek';
     const PARAMETERS = [[
         'model_id' => [
-            'name'          => 'Model ID',
+            'name' => 'Model ID',
             'required' => true,
-            'exampleValue'  => '614931'
-        ]
+            'exampleValue' => '614931',
+        ],
     ]];
 
     const LIMIT_ITEMS = 10;
@@ -44,13 +44,13 @@ class ModelKarteiBridge extends BridgeAbstract
 
             $item = [];
 
-            $title      = $element->title;
-            $date       = $element->{'data-date'};
-            $author     = $this->feedName;
-            $text       = '';
+            $title = $element->title;
+            $date = $element->{'data-date'};
+            $author = $this->feedName;
+            $text = '';
 
-            $objImage   = $element->find('a.photoLink img', 0);
-            $objLink    = $element->find('a.photoLink', 0);
+            $objImage = $element->find('a.photoLink img', 0);
+            $objLink = $element->find('a.photoLink', 0);
 
             if ($objLink) {
                 $page = getSimpleHTMLDOMCached($objLink->href);
@@ -85,9 +85,9 @@ class ModelKarteiBridge extends BridgeAbstract
                 }
             }
 
-            $item['title']      = $title;
-            $item['timestamp']  = $date;
-            $item['author']     = $author;
+            $item['title'] = $title;
+            $item['timestamp'] = $date;
+            $item['author'] = $author;
 
             if ($objImage) {
                 $item['content'] = '<img src="' . $objImage->src . '"/>';

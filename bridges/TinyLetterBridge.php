@@ -12,8 +12,8 @@ class TinyLetterBridge extends BridgeAbstract
                 'name' => 'User Name',
                 'required' => true,
                 'exampleValue' => 'forwards',
-            ]
-        ]
+            ],
+        ],
     ];
 
     public function getName()

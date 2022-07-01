@@ -9,22 +9,22 @@ class GooglePlayStoreBridge extends BridgeAbstract
 
     const TEST_DETECT_PARAMETERS = [
         'https://play.google.com/store/apps/details?id=com.ichi2.anki' => [
-            'id' => 'com.ichi2.anki'
-        ]
+            'id' => 'com.ichi2.anki',
+        ],
     ];
 
     const PARAMETERS = [[
         'id' => [
             'name' => 'Application ID',
             'exampleValue' => 'com.ichi2.anki',
-            'required' => true
-        ]
+            'required' => true,
+        ],
     ]];
 
     const INFORMATION_MAP = [
         'Updated' => 'timestamp',
         'Current Version' => 'title',
-        'Offered By' => 'author'
+        'Offered By' => 'author',
     ];
 
     public function collectData()

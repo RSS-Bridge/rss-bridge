@@ -14,8 +14,8 @@ class RtsBridge extends BridgeAbstract
                 'required' => true,
                 'exampleValue' => 385418,
                 'title' => 'ex. 385418 pour
-				https://www.rts.ch/play/tv/emission/a-bon-entendeur?id=385418'
-            ]
+				https://www.rts.ch/play/tv/emission/a-bon-entendeur?id=385418',
+            ],
         ],
         'ID de la section' => [
             'idSection' => [
@@ -23,9 +23,9 @@ class RtsBridge extends BridgeAbstract
                 'required' => true,
                 'exampleValue' => 'ce802a54-8877-49cc-acd6-8d244762829b',
                 'title' => 'ex. ce802a54-8877-49cc-acd6-8d244762829b pour
-				https://www.rts.ch/play/tv/detail/humour?id=ce802a54-8877-49cc-acd6-8d244762829b'
-            ]
-        ]
+				https://www.rts.ch/play/tv/detail/humour?id=ce802a54-8877-49cc-acd6-8d244762829b',
+            ],
+        ],
     ];
 
     public function collectData()

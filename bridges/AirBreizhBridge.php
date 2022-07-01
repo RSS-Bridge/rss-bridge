@@ -18,10 +18,10 @@ class AirBreizhBridge extends BridgeAbstract
                     'Information' => 'information',
                     'Autres documents' => 'autres-documents',
                     'Plan Régional de Surveillance de la qualité de l’air' => 'prsqa',
-                    'Transport' => 'transport'
-                ]
-            ]
-        ]
+                    'Transport' => 'transport',
+                ],
+            ],
+        ],
     ];
 
     public function getIcon()

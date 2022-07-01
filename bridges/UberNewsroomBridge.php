@@ -120,7 +120,7 @@ class UberNewsroomBridge extends BridgeAbstract
                 ],
             ],
             'defaultValue' => 'en-US',
-        ]
+        ],
     ]];
 
     const CACHE_TIMEOUT = 3600;

@@ -26,9 +26,9 @@ class DonnonsBridge extends BridgeAbstract
                 'type' => 'number',
                 'required' => true,
                 'defaultValue' => 5,
-                'title' => 'Indique le nombre de pages de donnons.org qui seront scannées'
-            ]
-        ]
+                'title' => 'Indique le nombre de pages de donnons.org qui seront scannées',
+            ],
+        ],
     ];
 
     public function collectData()

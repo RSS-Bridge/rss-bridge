@@ -40,8 +40,8 @@ class LeBonCoinBridge extends BridgeAbstract
                     'Guadeloupe' => '23',
                     'Martinique' => '24',
                     'Guyane' => '25',
-                    'Réunion' => '26'
-                ]
+                    'Réunion' => '26',
+                ],
             ],
             'department' => [
                 'name' => 'Département',
@@ -143,12 +143,12 @@ class LeBonCoinBridge extends BridgeAbstract
                     'Hauts-de-Seine' => '92',
                     'Seine-Saint-Denis' => '93',
                     'Val-de-Marne' => '94',
-                    'Val-d\'Oise' => '95'
-                ]
+                    'Val-d\'Oise' => '95',
+                ],
             ],
             'cities' => [
                 'name' => 'Villes',
-                'title' => 'Codes postaux séparés par des virgules'
+                'title' => 'Codes postaux séparés par des virgules',
             ],
             'category' => [
                 'name' => 'Catégorie',
@@ -157,7 +157,7 @@ class LeBonCoinBridge extends BridgeAbstract
                     'Toutes catégories' => '',
                     'EMPLOI' => [
                         'Emploi et recrutement' => '71',
-                        'Offres d\'emploi et jobs' => '33'
+                        'Offres d\'emploi et jobs' => '33',
                     ],
                     'VÉHICULES' => [
                         'Tous' => '1',
@@ -169,14 +169,14 @@ class LeBonCoinBridge extends BridgeAbstract
                         'Equipement Moto' => '44',
                         'Equipement Caravaning' => '50',
                         'Nautisme' => '7',
-                        'Equipement Nautisme' => '51'
+                        'Equipement Nautisme' => '51',
                     ],
                     'IMMOBILIER' => [
                         'Tous' => '8',
                         'Ventes immobilières' => '9',
                         'Locations' => '10',
                         'Colocations' => '11',
-                        'Bureaux & Commerces' => '13'
+                        'Bureaux & Commerces' => '13',
                     ],
                     'VACANCES' => [
                         'Tous' => '66',
@@ -184,14 +184,14 @@ class LeBonCoinBridge extends BridgeAbstract
                         'Chambres d\'hôtes' => '67',
                         'Campings' => '68',
                         'Hôtels' => '69',
-                        'Hébergements insolites' => '70'
+                        'Hébergements insolites' => '70',
                     ],
                     'MULTIMÉDIA' => [
                         'Tous' => '14',
                         'Informatique' => '15',
                         'Consoles & Jeux vidéo' => '43',
                         'Image & Son' => '16',
-                        'Téléphonie' => '17'
+                        'Téléphonie' => '17',
                     ],
                     'LOISIRS' => [
                         'Tous' => '24',
@@ -204,7 +204,7 @@ class LeBonCoinBridge extends BridgeAbstract
                         'Instruments de musique' => '30',
                         'Collection' => '40',
                         'Jeux & Jouets' => '41',
-                        'Vins & Gastronomie' => '48'
+                        'Vins & Gastronomie' => '48',
                     ],
                     'MATÉRIEL PROFESSIONNEL' => [
                         'Tous' => '56',
@@ -216,7 +216,7 @@ class LeBonCoinBridge extends BridgeAbstract
                         'Restauration - Hôtellerie' => '61',
                         'Fournitures de Bureau' => '62',
                         'Commerces & Marchés' => '63',
-                        'Matériel Médical' => '64'
+                        'Matériel Médical' => '64',
                     ],
                     'SERVICES' => [
                         'Tous' => '31',
@@ -224,7 +224,7 @@ class LeBonCoinBridge extends BridgeAbstract
                         'Billetterie' => '35',
                         'Événements' => '49',
                         'Cours particuliers' => '36',
-                        'Covoiturage' => '65'
+                        'Covoiturage' => '65',
                     ],
                     'MAISON' => [
                         'Tous' => '18',
@@ -242,16 +242,16 @@ class LeBonCoinBridge extends BridgeAbstract
                         'Équipement bébé' => '23',
                         'Vêtements bébé' => '54',
                     ],
-                    'AUTRES' => '37'
-                ]
+                    'AUTRES' => '37',
+                ],
             ],
             'pricemin' => [
                 'name' => 'Prix min',
-                'type' => 'number'
+                'type' => 'number',
             ],
             'pricemax' => [
                 'name' => 'Prix max',
-                'type' => 'number'
+                'type' => 'number',
             ],
             'estate' => [
                 'name' => 'Type de bien',
@@ -262,48 +262,48 @@ class LeBonCoinBridge extends BridgeAbstract
                     'Appartement' => '2',
                     'Terrain' => '3',
                     'Parking' => '4',
-                    'Autre' => '5'
-                ]
+                    'Autre' => '5',
+                ],
             ],
             'roomsmin' => [
                 'name' => 'Pièces min',
-                'type' => 'number'
+                'type' => 'number',
             ],
             'roomsmax' => [
                 'name' => 'Pièces max',
-                'type' => 'number'
+                'type' => 'number',
             ],
             'squaremin' => [
                 'name' => 'Surface min',
-                'type' => 'number'
+                'type' => 'number',
             ],
             'squaremax' => [
                 'name' => 'Surface max',
-                'type' => 'number'
+                'type' => 'number',
             ],
             'mileagemin' => [
                 'name' => 'Kilométrage min',
-                'type' => 'number'
+                'type' => 'number',
             ],
             'mileagemax' => [
                 'name' => 'Kilométrage max',
-                'type' => 'number'
+                'type' => 'number',
             ],
             'yearmin' => [
                 'name' => 'Année min',
-                'type' => 'number'
+                'type' => 'number',
             ],
             'yearmax' => [
                 'name' => 'Année max',
-                'type' => 'number'
+                'type' => 'number',
             ],
             'cubiccapacitymin' => [
                 'name' => 'Cylindrée min',
-                'type' => 'number'
+                'type' => 'number',
             ],
             'cubiccapacitymax' => [
                 'name' => 'Cylindrée max',
-                'type' => 'number'
+                'type' => 'number',
             ],
             'fuel' => [
                 'name' => 'Énergie',
@@ -315,8 +315,8 @@ class LeBonCoinBridge extends BridgeAbstract
                     'GPL' => '3',
                     'Électrique' => '4',
                     'Hybride' => '6',
-                    'Autre' => '5'
-                ]
+                    'Autre' => '5',
+                ],
             ],
             'owner' => [
                 'name' => 'Vendeur',
@@ -324,10 +324,10 @@ class LeBonCoinBridge extends BridgeAbstract
                 'values' => [
                     'Tous' => '',
                     'Particuliers' => 'private',
-                    'Professionnels' => 'pro'
-                ]
-            ]
-        ]
+                    'Professionnels' => 'pro',
+                ],
+            ],
+        ],
     ];
 
     public static $LBC_API_KEY = 'ba0c2dad52b3ec';
@@ -351,7 +351,7 @@ class LeBonCoinBridge extends BridgeAbstract
 
         return [
             'min' => $range_min,
-            'max' => $range_max
+            'max' => $range_max,
         ];
     }
 
@@ -366,12 +366,12 @@ class LeBonCoinBridge extends BridgeAbstract
             'X-LBC-CC: 7',
             'Accept: application/json,application/hal+json',
             'Content-Length: ' . strlen($data),
-            'api_key: ' . self::$LBC_API_KEY
+            'api_key: ' . self::$LBC_API_KEY,
         ];
 
         $opts = [
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => $data
+            CURLOPT_POSTFIELDS => $data,
 
         ];
 
@@ -426,7 +426,7 @@ class LeBonCoinBridge extends BridgeAbstract
         $requestJson->filters = new StdClass();
 
         $requestJson->filters->keywords = [
-            'text' => $this->getInput('keywords')
+            'text' => $this->getInput('keywords'),
         ];
 
         if ($this->getInput('region') != '') {
@@ -442,13 +442,13 @@ class LeBonCoinBridge extends BridgeAbstract
 
             foreach (explode(',', $this->getInput('cities')) as $zipcode) {
                 $requestJson->filters->location['city_zipcodes'][] = [
-                    'zipcode' => trim($zipcode)
+                    'zipcode' => trim($zipcode),
                 ];
             }
         }
 
         $requestJson->filters->category = [
-            'id' => $this->getInput('category')
+            'id' => $this->getInput('category'),
         ];
 
         if (

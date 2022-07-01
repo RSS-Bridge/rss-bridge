@@ -12,7 +12,7 @@ class DealabsBridge extends PepperBridgeAbstract
                 'name' => 'Mot(s) clé(s)',
                 'type' => 'text',
                 'exampleValue' => 'lampe',
-                'required' => true
+                'required' => true,
             ],
             'hide_expired' => [
                 'name' => 'Masquer les éléments expirés',
@@ -27,13 +27,13 @@ class DealabsBridge extends PepperBridgeAbstract
                 'name' => 'Prix minimum',
                 'type' => 'text',
                 'title' => 'Prix mnimum en euros',
-                'required' => false
+                'required' => false,
             ],
             'priceTo' => [
                 'name' => 'Prix maximum',
                 'type' => 'text',
                 'title' => 'Prix maximum en euros',
-                'required' => false
+                'required' => false,
             ],
         ],
 
@@ -1869,7 +1869,7 @@ class DealabsBridge extends PepperBridgeAbstract
                     'Yeelight' => 'xiaomi-yeelight',
                     'Yoshi&#039;s Crafted World' => 'yoshi-crafted-world',
                     'Zoos' => 'zoos',
-                ]
+                ],
             ],
             'order' => [
                 'name' => 'Trier par',
@@ -1878,8 +1878,8 @@ class DealabsBridge extends PepperBridgeAbstract
                 'values' => [
                     'Du deal le plus Hot au moins Hot' => '-hot',
                     'Du deal le plus récent au plus ancien' => '-nouveaux',
-                ]
-            ]
+                ],
+            ],
         ],
         'Surveillance Discussion' => [
             'url' => [
@@ -1895,10 +1895,10 @@ class DealabsBridge extends PepperBridgeAbstract
                 'type' => 'checkbox',
                 'title' => 'Exclure les commentaires ne contenant pas d\'URL dans le flux',
                 'defaultValue' => false,
-                ]
+                ],
 
 
-            ]
+            ],
 
     ];
 
@@ -1934,7 +1934,7 @@ class DealabsBridge extends PepperBridgeAbstract
             'septembre',
             'octobre',
             'novembre',
-            'décembre'
+            'décembre',
         ],
         'local-time-relative' => [
             'il y a ',
@@ -1944,7 +1944,7 @@ class DealabsBridge extends PepperBridgeAbstract
             'jours',
             'mois',
             'ans',
-            'et '
+            'et ',
         ],
         'date-prefixes' => [
             'Actualisé ',
@@ -1957,7 +1957,7 @@ class DealabsBridge extends PepperBridgeAbstract
 
         'localdeal' => [
             'Local',
-            'Pays d\'expédition'
+            'Pays d\'expédition',
         ],
     ];
 }

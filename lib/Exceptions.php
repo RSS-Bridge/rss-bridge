@@ -77,7 +77,7 @@ function buildBridgeException(\Throwable $e, BridgeInterface $bridge): string
     $body = 'Error message: `'
     . $e->getMessage()
     . "`\nQuery string: `"
-    . (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '')
+    . ($_SERVER['QUERY_STRING'] ?? '')
     . "`\nVersion: `"
     . Configuration::getVersion()
     . '`';
@@ -88,10 +88,10 @@ function buildBridgeException(\Throwable $e, BridgeInterface $bridge): string
 
     $header = buildHeader($e, $bridge);
     $message = <<<EOD
-<strong>{$bridge->getName()}</strong> was unable to receive or process the
-remote website's content!<br>
-{$body_html}
-EOD;
+        <strong>{$bridge->getName()}</strong> was unable to receive or process the
+        remote website's content!<br>
+        {$body_html}
+        EOD;
     $section = buildSection($e, $bridge, $message, $link, $searchQuery);
 
     return $section;
@@ -105,7 +105,7 @@ function buildTransformException(\Throwable $e, BridgeInterface $bridge): string
     $body = 'Error message: `'
     . $e->getMessage()
     . "`\nQuery string: `"
-    . (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '')
+    . ($_SERVER['QUERY_STRING'] ?? '')
     . '`';
 
     $link = buildGitHubIssueQuery($title, $body, 'Bridge-Broken', $bridge->getMaintainer());
@@ -130,12 +130,12 @@ function buildTransformException(\Throwable $e, BridgeInterface $bridge): string
 function buildHeader($e, $bridge)
 {
     return <<<EOD
-<header>
-	<h1>Error {$e->getCode()}</h1>
-	<h2>{$e->getMessage()}</h2>
-	<p class="status">{$bridge->getName()}</p>
-</header>
-EOD;
+        <header>
+        	<h1>Error {$e->getCode()}</h1>
+        	<h2>{$e->getMessage()}</h2>
+        	<p class="status">{$bridge->getName()}</p>
+        </header>
+        EOD;
 }
 
 /**
@@ -153,24 +153,24 @@ EOD;
 function buildSection($e, $bridge, $message, $link, $searchQuery)
 {
     return <<<EOD
-<section>
-	<p class="exception-message">{$message}</p>
-	<div class="advice">
-		<ul class="advice">
-			<li>Press Return to check your input parameters</li>
-			<li>Press F5 to retry</li>
-			<li>Check if this issue was already reported on <a href="{$searchQuery}">GitHub</a> (give it a thumbs-up)</li>
-			<li>Open a <a href="{$link}">GitHub Issue</a> if this error persists</li>
-		</ul>
-	</div>
-	<a href="{$searchQuery}" title="Opens GitHub to search for similar issues">
-		<button>Search GitHub Issues</button>
-	</a>
-	<a href="{$link}" title="After clicking this button you can review
-	the issue before submitting it"><button>Open GitHub Issue</button></a>
-	<p class="maintainer">{$bridge->getMaintainer()}</p>
-</section>
-EOD;
+        <section>
+        	<p class="exception-message">{$message}</p>
+        	<div class="advice">
+        		<ul class="advice">
+        			<li>Press Return to check your input parameters</li>
+        			<li>Press F5 to retry</li>
+        			<li>Check if this issue was already reported on <a href="{$searchQuery}">GitHub</a> (give it a thumbs-up)</li>
+        			<li>Open a <a href="{$link}">GitHub Issue</a> if this error persists</li>
+        		</ul>
+        	</div>
+        	<a href="{$searchQuery}" title="Opens GitHub to search for similar issues">
+        		<button>Search GitHub Issues</button>
+        	</a>
+        	<a href="{$link}" title="After clicking this button you can review
+        	the issue before submitting it"><button>Open GitHub Issue</button></a>
+        	<p class="maintainer">{$bridge->getMaintainer()}</p>
+        </section>
+        EOD;
 }
 
 /**
@@ -186,16 +186,16 @@ EOD;
 function buildPage($title, $header, $section)
 {
     return <<<EOD
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<title>{$title}</title>
-	<link href="static/style.css" rel="stylesheet">
-</head>
-<body>
-	{$header}
-	{$section}
-</body>
-</html>
-EOD;
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+        	<title>{$title}</title>
+        	<link href="static/style.css" rel="stylesheet">
+        </head>
+        <body>
+        	{$header}
+        	{$section}
+        </body>
+        </html>
+        EOD;
 }

@@ -15,9 +15,9 @@ class GBAtempBridge extends BridgeAbstract
                 'News' => 'N',
                 'Reviews' => 'R',
                 'Tutorials' => 'T',
-                'Forum' => 'F'
-            ]
-        ]
+                'Forum' => 'F',
+            ],
+        ],
     ]];
 
     private function buildItem($uri, $title, $author, $timestamp, $thumbnail, $content)

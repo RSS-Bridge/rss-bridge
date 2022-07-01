@@ -13,15 +13,15 @@ class DanbooruBridge extends BridgeAbstract
             'p' => [
                 'name' => 'page',
                 'defaultValue' => 1,
-                'type' => 'number'
+                'type' => 'number',
             ],
             't' => [
                 'type' => 'text',
                 'name' => 'tags',
                 'exampleValue' => 'cosplay',
-            ]
+            ],
         ],
-        0 => []
+        0 => [],
     ];
 
     const PATHTODATA = 'article';

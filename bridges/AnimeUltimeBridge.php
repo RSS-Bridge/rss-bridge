@@ -15,9 +15,9 @@ class AnimeUltimeBridge extends BridgeAbstract
             'Everything' => '',
             'Anime' => 'A',
             'Drama' => 'D',
-            'Tokusatsu' => 'T'
-            ]
-        ]
+            'Tokusatsu' => 'T',
+            ],
+        ],
     ]];
 
     private $filter = 'Releases';

@@ -11,22 +11,22 @@ class BooruprojectBridge extends DanbooruBridge
             'p' => [
                 'name' => 'page',
                 'defaultValue' => 0,
-                'type' => 'number'
+                'type' => 'number',
             ],
             't' => [
                 'name' => 'tags',
                 'required' => true,
-                'exampleValue'  => 'tagme',
-                'title' => 'Use "all" to get all posts'
-            ]
+                'exampleValue' => 'tagme',
+                'title' => 'Use "all" to get all posts',
+            ],
         ],
         'Booru subdomain (subdomain.booru.org)' => [
             'i' => [
                 'name' => 'Subdomain',
                 'required' => true,
-                'exampleValue'  => 'rm'
-            ]
-        ]
+                'exampleValue' => 'rm',
+            ],
+        ],
     ];
 
     const PATHTODATA = '.thumb';

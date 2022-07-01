@@ -13,33 +13,33 @@ class MangaDexBridge extends BridgeAbstract
                 'name' => 'Item Limit',
                 'type' => 'number',
                 'defaultValue' => 10,
-                'required' => true
+                'required' => true,
             ],
             'lang' => [
                 'name' => 'Chapter Languages (default=all)',
                 'title' => 'comma-separated, two-letter language codes (example "en,jp")',
                 'exampleValue' => 'en,jp',
-                'required' => false
+                'required' => false,
             ],
         ],
         'Title Chapters' => [
             'url' => [
                 'name' => 'URL to title page',
                 'exampleValue' => 'https://mangadex.org/title/f9c33607-9180-4ba6-b85c-e4b5faee7192/official-test-manga',
-                'required' => true
+                'required' => true,
             ],
             'external' => [
                 'name' => 'Allow external feed items',
                 'type' => 'checkbox',
-                'title' => 'Some chapters are inaccessible or only available on an external site. Include these?'
-            ]
+                'title' => 'Some chapters are inaccessible or only available on an external site. Include these?',
+            ],
         ],
         'Search Chapters' => [
             'chapter' => [
                 'name' => 'Chapter Number (default=all)',
                 'title' => 'The example value finds the newest first chapters',
                 'exampleValue' => 1,
-                'required' => false
+                'required' => false,
             ],
             'groups' => [
                 'name' => 'Group UUID (default=all)',
@@ -56,9 +56,9 @@ class MangaDexBridge extends BridgeAbstract
             'external' => [
                 'name' => 'Allow external feed items',
                 'type' => 'checkbox',
-                'title' => 'Some chapters are inaccessible or only available on an external site. Include these?'
-            ]
-        ]
+                'title' => 'Some chapters are inaccessible or only available on an external site. Include these?',
+            ],
+        ],
         // Future Manga Contexts:
         // Manga List (by author or tags): https://api.mangadex.org/swagger.html#/Manga/get-search-manga
         // Random Manga: https://api.mangadex.org/swagger.html#/Manga/get-manga-random
@@ -85,7 +85,7 @@ class MangaDexBridge extends BridgeAbstract
     protected function getAPI()
     {
         $params = [
-            'limit' => $this->getInput('limit')
+            'limit' => $this->getInput('limit'),
         ];
 
         $array_params = [];
@@ -162,7 +162,7 @@ class MangaDexBridge extends BridgeAbstract
     {
         $api_uri = $this->getAPI();
         $header = [
-            'Content-Type: application/json'
+            'Content-Type: application/json',
         ];
         $content = json_decode(getContents($api_uri, $header), true);
         if ($content['result'] == 'ok') {

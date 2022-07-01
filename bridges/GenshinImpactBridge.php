@@ -16,11 +16,11 @@ class GenshinImpactBridge extends BridgeAbstract
                     'Latest' => 10,
                     'Info' => 11,
                     'Updates' => 12,
-                    'Events' => 13
+                    'Events' => 13,
                 ],
-                'defaultValue' => 10
-            ]
-        ]
+                'defaultValue' => 10,
+            ],
+        ],
     ];
 
     public function collectData()

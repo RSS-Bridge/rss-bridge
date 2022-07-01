@@ -19,7 +19,7 @@ class DockerHubBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'exampleValue' => 'rss-bridge',
-            ]
+            ],
         ],
         'Official Image' => [
             'repo' => [
@@ -27,7 +27,7 @@ class DockerHubBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'exampleValue' => 'postgres',
-            ]
+            ],
         ],
     ];
 
@@ -76,13 +76,13 @@ class DockerHubBridge extends BridgeAbstract
             $item['author'] = $result->last_updater_username;
             $item['timestamp'] = $result->tag_last_pushed;
             $item['content'] = <<<EOD
-<Strong>Tag</strong><br>
-<p>{$result->name}</p>
-<Strong>Last pushed</strong><br>
-<p>{$lastPushed}</p>
-<Strong>Images</strong><br>
-{$this->getImages($result)}
-EOD;
+                <Strong>Tag</strong><br>
+                <p>{$result->name}</p>
+                <Strong>Last pushed</strong><br>
+                <p>{$lastPushed}</p>
+                <Strong>Images</strong><br>
+                {$this->getImages($result)}
+                EOD;
 
             $this->items[] = $item;
         }
@@ -150,19 +150,19 @@ EOD;
     private function getImages($result)
     {
         $html = <<<EOD
-<table style="width:300px;"><thead><tr><th>Digest</th><th>OS/architecture</th></tr></thead></tbody>
-EOD;
+            <table style="width:300px;"><thead><tr><th>Digest</th><th>OS/architecture</th></tr></thead></tbody>
+            EOD;
 
         foreach ($result->images as $image) {
             $layersUrl = $this->getLayerUrl($result->name, $image->digest);
             $id = $this->getShortDigestId($image->digest);
 
             $html .= <<<EOD
-			<tr>
-				<td><a href="{$layersUrl}">{$id}</a></td>
-				<td>{$image->os}/{$image->architecture}</td>
-			</tr>
-EOD;
+                			<tr>
+                				<td><a href="{$layersUrl}">{$id}</a></td>
+                				<td>{$image->os}/{$image->architecture}</td>
+                			</tr>
+                EOD;
         }
 
         return $html . '</tbody></table>';

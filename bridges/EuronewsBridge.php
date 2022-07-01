@@ -33,16 +33,16 @@ class EuronewsBridge extends BridgeAbstract
                     // 'Georigian' => 'euronewsgeorgia.com',
                     // 'Bulgarian' => 'euronewsbulgaria.com'
                     // 'Serbian' => 'euronews.rs'
-                ]
+                ],
             ],
             'limit' => [
                 'name' => 'Limit of items per feed',
                 'required' => true,
                 'type' => 'number',
                 'defaultValue' => 10,
-                'title' => 'Maximum number of returned feed items. Maximum 50, default 10'
+                'title' => 'Maximum number of returned feed items. Maximum 50, default 10',
             ],
-        ]
+        ],
     ];
 
     public function collectData()
@@ -75,7 +75,7 @@ class EuronewsBridge extends BridgeAbstract
                 'content' => $url_datum['content'],
                 'author' => $url_datum['author'],
                 'enclosures' => $url_datum['enclosures'],
-                'categories' => array_unique($categories)
+                'categories' => array_unique($categories),
             ];
             $this->items[] = $item;
         }
@@ -205,7 +205,7 @@ class EuronewsBridge extends BridgeAbstract
         return [
             'author' => $author,
             'content' => $content,
-            'enclosures' => $enclosures
+            'enclosures' => $enclosures,
         ];
     }
 }

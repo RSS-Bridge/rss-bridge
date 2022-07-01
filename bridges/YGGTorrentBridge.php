@@ -56,32 +56,32 @@ class YGGTorrentBridge extends BridgeAbstract
                     'GPS - Toutes les sous-catégories' => '2141.all',
                     'GPS - Applications' => '2141.2168',
                     'GPS - Cartes' => '2141.2169',
-                    'GPS - Divers' => '2141.2170'
-                ]
+                    'GPS - Divers' => '2141.2170',
+                ],
             ],
             'nom' => [
                 'name' => 'Nom',
                 'description' => 'Nom du torrent',
                 'type' => 'text',
-                'exampleValue' => 'matrix'
+                'exampleValue' => 'matrix',
             ],
             'description' => [
                 'name' => 'Description',
                 'description' => 'Description du torrent',
-                'type' => 'text'
+                'type' => 'text',
             ],
             'fichier' => [
                 'name' => 'Fichier',
                 'description' => 'Fichier du torrent',
-                'type' => 'text'
+                'type' => 'text',
             ],
             'uploader' => [
                 'name' => 'Uploader',
                 'description' => 'Uploader du torrent',
-                'type' => 'text'
+                'type' => 'text',
             ],
 
-        ]
+        ],
     ];
 
     public function collectData()

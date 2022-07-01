@@ -13,7 +13,7 @@ class VimeoBridge extends BridgeAbstract
                 'name' => 'Search Query',
                 'type' => 'text',
                 'exampleValue' => 'birds',
-                'required' => true
+                'required' => true,
             ],
             'type' => [
                 'name' => 'Show results for',
@@ -24,10 +24,10 @@ class VimeoBridge extends BridgeAbstract
                     'On Demand' => 'search/ondemand',
                     'People' => 'search/people',
                     'Channels' => 'search/channels',
-                    'Groups' => 'search/groups'
-                ]
-            ]
-        ]
+                    'Groups' => 'search/groups',
+                ],
+            ],
+        ],
     ];
 
     public function getURI()
@@ -118,7 +118,7 @@ class VimeoBridge extends BridgeAbstract
         $item['timestamp'] = strtotime($element->clip->created_time);
 
         $item['enclosures'] = [
-            end($element->clip->pictures->sizes)->link
+            end($element->clip->pictures->sizes)->link,
         ];
 
         $item['content'] = "<img src={$item['enclosures'][0]} />";
@@ -139,7 +139,7 @@ class VimeoBridge extends BridgeAbstract
         }
 
         $item['enclosures'] = [
-            end($element->ondemand->pictures->sizes)->link
+            end($element->ondemand->pictures->sizes)->link,
         ];
 
         $item['content'] = "<img src={$item['enclosures'][0]} />";
@@ -155,7 +155,7 @@ class VimeoBridge extends BridgeAbstract
         $item['title'] = $element->people->name;
 
         $item['enclosures'] = [
-            end($element->people->pictures->sizes)->link
+            end($element->people->pictures->sizes)->link,
         ];
 
         $item['content'] = "<img src={$item['enclosures'][0]} />";
@@ -171,7 +171,7 @@ class VimeoBridge extends BridgeAbstract
         $item['title'] = $element->channel->name;
 
         $item['enclosures'] = [
-            end($element->channel->pictures->sizes)->link
+            end($element->channel->pictures->sizes)->link,
         ];
 
         $item['content'] = "<img src={$item['enclosures'][0]} />";
@@ -187,7 +187,7 @@ class VimeoBridge extends BridgeAbstract
         $item['title'] = $element->group->name;
 
         $item['enclosures'] = [
-            end($element->group->pictures->sizes)->link
+            end($element->group->pictures->sizes)->link,
         ];
 
         $item['content'] = "<img src={$item['enclosures'][0]} />";

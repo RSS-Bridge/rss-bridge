@@ -14,23 +14,23 @@ class ElloBridge extends BridgeAbstract
                 'name' => 'Username',
                 'required' => true,
                 'exampleValue' => 'zteph',
-                'title' => 'Username'
-            ]
+                'title' => 'Username',
+            ],
         ],
         'Search' => [
             's' => [
                 'name' => 'Search',
                 'required' => true,
                 'exampleValue' => 'bird',
-                'title' => 'Search'
-            ]
-        ]
+                'title' => 'Search',
+            ],
+        ],
     ];
 
     public function collectData()
     {
         $header = [
-            'Authorization: Bearer ' . $this->getAPIKey()
+            'Authorization: Bearer ' . $this->getAPIKey(),
         ];
 
         if (!empty($this->getInput('u'))) {

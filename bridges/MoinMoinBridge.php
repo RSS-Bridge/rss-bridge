@@ -13,7 +13,7 @@ class MoinMoinBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'title' => 'Insert wiki page URI (e.g.: https://moinmo.in/MoinMoin)',
-                'exampleValue' => 'https://moinmo.in/MoinMoin'
+                'exampleValue' => 'https://moinmo.in/MoinMoin',
             ],
             'separator' => [
                 'name' => 'Separator',
@@ -26,15 +26,15 @@ class MoinMoinBridge extends BridgeAbstract
                     'Header (h2)' => 'h2',
                     'Header (h3)' => 'h3',
                     'List element (li)' => 'li',
-                    'Anchor (a)' => 'a'
-                ]
+                    'Anchor (a)' => 'a',
+                ],
             ],
             'limit' => [
                 'name' => 'Limit',
                 'type' => 'number',
                 'required' => false,
                 'title' => 'Number of items to return (from top)',
-                'defaultValue' => -1
+                'defaultValue' => -1,
             ],
             'content' => [
                 'name' => 'Content',
@@ -45,10 +45,10 @@ class MoinMoinBridge extends BridgeAbstract
                 'values' => [
                     'By separator' => 'separator',
                     'Follow link (only for anchor)' => 'follow',
-                    'None' => 'none'
-                ]
-            ]
-        ]
+                    'None' => 'none',
+                ],
+            ],
+        ],
     ];
 
     private $title = '';
@@ -176,7 +176,7 @@ class MoinMoinBridge extends BridgeAbstract
                 "\<{$this->getInput('separator')}.+?(?=\>)\>",
                 "(.+?)(?=\<\/{$this->getInput('separator')}\>)",
                 "\<\/{$this->getInput('separator')}\>",
-                "(.+?)((?=\<{$this->getInput('separator')})|(?=\<div\sid=\"pagebottom\")){1}"
+                "(.+?)((?=\<{$this->getInput('separator')})|(?=\<div\sid=\"pagebottom\")){1}",
             ]
         );
 
@@ -193,8 +193,8 @@ class MoinMoinBridge extends BridgeAbstract
                 [
                     $content,
                     $html->find('title', 0)->innertext,
-                    $content
-                ]
+                    $content,
+                ],
             ];
         }
 

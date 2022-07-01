@@ -14,7 +14,7 @@ class TorrentGalaxyBridge extends BridgeAbstract
                 'name' => 'search',
                 'required' => true,
                 'exampleValue' => 'simpsons',
-                'title' => 'Type your query'
+                'title' => 'Type your query',
             ],
             'lang' => [
                 'name' => 'language',
@@ -45,10 +45,10 @@ class TorrentGalaxyBridge extends BridgeAbstract
                     'Urdu' => '20',
                     'Arabic' => '21',
                     'Swedish' => '22',
-                    'Romanian' => '23'
-                ]
-            ]
-        ]
+                    'Romanian' => '23',
+                ],
+            ],
+        ],
     ];
 
     public function collectData()
@@ -77,15 +77,15 @@ class TorrentGalaxyBridge extends BridgeAbstract
 
             $item['author'] = $authorid->plaintext;
             $item['content'] = <<<HTML
-<h1>{$identity->plaintext}</h1>
-<h2>Links</h2>
-<p><a href="{$glxlinks->find('a', 1)->href}" title="magnet link">magnet</a></p>
-<p><a href="{$glxlinks->find('a', 0)->href}" title="torrent link">torrent</a></p>
-<h2>Infos</h2>
-<p>Size: {$result->find('div.tgxtablecell', 7)->plaintext}</p>
-<p>Added by: <a href="{$authorid->href}" title="author profile">{$authorid->plaintext}</a></p>
-<p>Upload time: {$creadate}</p>
-HTML;
+                <h1>{$identity->plaintext}</h1>
+                <h2>Links</h2>
+                <p><a href="{$glxlinks->find('a', 1)->href}" title="magnet link">magnet</a></p>
+                <p><a href="{$glxlinks->find('a', 0)->href}" title="torrent link">torrent</a></p>
+                <h2>Infos</h2>
+                <p>Size: {$result->find('div.tgxtablecell', 7)->plaintext}</p>
+                <p>Added by: <a href="{$authorid->href}" title="author profile">{$authorid->plaintext}</a></p>
+                <p>Upload time: {$creadate}</p>
+                HTML;
             $item['enclosures'] = [$glxlinks->find('a', 0)->href];
             $item['categories'] = [$result->find('div.tgxtablecell', 0)->plaintext];
             if (preg_match('#/torrent/([^/]+)/#', self::URI . $identity->href, $torrentid)) {

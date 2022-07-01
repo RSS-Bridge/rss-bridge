@@ -21,10 +21,10 @@ class BundesbankBridge extends BridgeAbstract
                 'defaultValue' => self::LANG_DE,
                 'values' => [
                     'English' => self::LANG_EN,
-                    'Deutsch' => self::LANG_DE
-                ]
-            ]
-        ]
+                    'Deutsch' => self::LANG_DE,
+                ],
+            ],
+        ],
     ];
 
     public function getIcon()
@@ -78,7 +78,7 @@ class BundesbankBridge extends BridgeAbstract
             // Downloads and older studies don't have images
             if ($study->find('.teasable__image', 0)) {
                 $item['enclosures'] = [
-                    $study->find('.teasable__image img', 0)->src
+                    $study->find('.teasable__image img', 0)->src,
                 ];
             }
 

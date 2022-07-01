@@ -13,7 +13,7 @@ class RutubeBridge extends BridgeAbstract
                 'name' => 'ИД канала',
                 'exampleValue' => 1342940,  // Мятежник Джек
                 'type' => 'number',
-                'required' => true
+                'required' => true,
             ],
         ],
         'По плейлисту' => [
@@ -21,7 +21,7 @@ class RutubeBridge extends BridgeAbstract
                 'name' => 'ИД плейлиста',
                 'exampleValue' => 83641,  // QRUSH
                 'type' => 'number',
-                'required' => true
+                'required' => true,
             ],
         ],
     ];

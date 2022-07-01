@@ -20,8 +20,8 @@ class NextgovBridge extends FeedExpander
                 'IT Modernization' => 'it-modernization',
                 'Policy' => 'policy',
                 'Ideas' => 'ideas',
-            ]
-        ]
+            ],
+        ],
     ]];
 
     public function collectData()

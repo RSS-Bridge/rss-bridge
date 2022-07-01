@@ -11,22 +11,22 @@ class PillowfortBridge extends BridgeAbstract
             'name' => 'Username',
             'type' => 'text',
             'required' => true,
-            'exampleValue'  => 'Staff'
+            'exampleValue' => 'Staff',
         ],
         'noava' => [
             'name' => 'Hide avatar',
             'type' => 'checkbox',
-            'title' => 'Check to hide user avatars.'
+            'title' => 'Check to hide user avatars.',
         ],
         'noreblog' => [
             'name' => 'Hide reblogs',
             'type' => 'checkbox',
-            'title' => 'Check to only show original posts.'
+            'title' => 'Check to only show original posts.',
         ],
         'noretags' => [
             'name' => 'Prefer original tags',
             'type' => 'checkbox',
-            'title' => 'Check to use tags from original post(if available) instead of reblog\'s tags'
+            'title' => 'Check to use tags from original post(if available) instead of reblog\'s tags',
         ],
         'image' => [
             'name' => 'Select image type',
@@ -35,10 +35,10 @@ class PillowfortBridge extends BridgeAbstract
             'values' => [
                 'None' => 'None',
                 'Small' => 'Small',
-                'Full' => 'Full'
+                'Full' => 'Full',
             ],
-            'defaultValue' => 'Full'
-        ]
+            'defaultValue' => 'Full',
+        ],
     ]];
 
     /**
@@ -104,14 +104,14 @@ class PillowfortBridge extends BridgeAbstract
             return '';
         } else {
             return <<<EOD
-<a href="{self::URI}/posts/{$author}">
-<img
-	style="align:top; width:75px; border:1px solid black;"
-	alt="{$author}"
-	src="{$avatar_url}"
-	title="{$title}" />
-</a>
-EOD;
+                <a href="{self::URI}/posts/{$author}">
+                <img
+                	style="align:top; width:75px; border:1px solid black;"
+                	alt="{$author}"
+                	src="{$avatar_url}"
+                	title="{$title}" />
+                </a>
+                EOD;
         }
     }
 
@@ -127,10 +127,10 @@ EOD;
                 foreach ($media as $image) {
                     $imageURL = preg_replace('[ ]', '%20', $image['url']);
                     $text .= <<<EOD
-<a href="{$imageURL}">
-	{$imageURL}
-</a>
-EOD;
+                        <a href="{$imageURL}">
+                        	{$imageURL}
+                        </a>
+                        EOD;
                 }
                 break;
 
@@ -138,13 +138,13 @@ EOD;
                 foreach ($media as $image) {
                     $imageURL = preg_replace('[ ]', '%20', $image['small_image_url']);
                     $text .= <<<EOD
-<a href="{$imageURL}">
-	<img
-		style="align:top; max-width:558px; border:1px solid black;"
-		src="{$imageURL}" 
-	/>
-</a>
-EOD;
+                        <a href="{$imageURL}">
+                        	<img
+                        		style="align:top; max-width:558px; border:1px solid black;"
+                        		src="{$imageURL}" 
+                        	/>
+                        </a>
+                        EOD;
                 }
                 break;
 
@@ -152,13 +152,13 @@ EOD;
                 foreach ($media as $image) {
                     $imageURL = preg_replace('[ ]', '%20', $image['url']);
                     $text .= <<<EOD
-<a href="{$imageURL}">
-	<img
-		style="align:top; max-width:558px; border:1px solid black;"
-		src="{$imageURL}" 
-	/>
-</a>
-EOD;
+                        <a href="{$imageURL}">
+                        	<img
+                        		style="align:top; max-width:558px; border:1px solid black;"
+                        		src="{$imageURL}" 
+                        	/>
+                        </a>
+                        EOD;
                 }
                 break;
 
@@ -214,7 +214,7 @@ EOD;
          */
         $item['categories'] = $post['tags'];
         if ($embPost) {
-            if ($this -> getInput('noretags') || ($post['tags'] == null )) {
+            if ($this -> getInput('noretags') || ($post['tags'] == null)) {
                 $item['categories'] = $post['original_post']['tag_list'];
             }
         }
@@ -227,16 +227,16 @@ EOD;
         $imagesText = $this -> genImagesText($post['media']);
 
         $item['content'] = <<<EOD
-<div style="display: inline-block; vertical-align: top;">
-	{$avatarText}
-</div>
-<div style="display: inline-block; vertical-align: top;">
-	{$post['content']}
-</div>
-<div style="display: block; vertical-align: top;">
-	{$imagesText}
-</div>
-EOD;
+            <div style="display: inline-block; vertical-align: top;">
+            	{$avatarText}
+            </div>
+            <div style="display: inline-block; vertical-align: top;">
+            	{$post['content']}
+            </div>
+            <div style="display: block; vertical-align: top;">
+            	{$imagesText}
+            </div>
+            EOD;
 
         return $item;
     }

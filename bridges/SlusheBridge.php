@@ -13,8 +13,8 @@ class SlusheBridge extends BridgeAbstract
                 'name' => 'Artist name',
                 'required' => true,
                 'exampleValue' => 'lexx228',
-                'title' => 'Enter an artist name'
-            ]
+                'title' => 'Enter an artist name',
+            ],
         ],
         'Category' => [
             'category' => [
@@ -50,18 +50,18 @@ class SlusheBridge extends BridgeAbstract
                     'Solo' => '66',
                     'Threesome' => '38',
                     'TV & Film Fan Art' => '34',
-                    'Western Fan Art' => '33'
-                ]
-            ]
+                    'Western Fan Art' => '33',
+                ],
+            ],
         ],
         'Search' => [
             'search_term' => [
                 'name' => 'Search term(s)',
                 'required' => true,
                 'exampleValue' => 'pole dance',
-                'title' => 'Enter one or more search terms, separated by spaces'
-            ]
-        ]
+                'title' => 'Enter one or more search terms, separated by spaces',
+            ],
+        ],
     ];
 
     public function getName()
@@ -107,12 +107,12 @@ class SlusheBridge extends BridgeAbstract
             'sec-fetch-mode: navigate',
             'sec-fetch-site: same-origin',
             'sec-fetch-user: ?1',
-            'upgrade-insecure-requests: 1'
+            'upgrade-insecure-requests: 1',
         ];
         // Add user-agent string to headers with implode, due to line length limit
         $user_agent_string = [
             'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/',
-            '537.36(KHTML, like Gecko) Chrome/100.0.4896.147 Safari/537.36'
+            '537.36(KHTML, like Gecko) Chrome/100.0.4896.147 Safari/537.36',
         ];
         $headers[] = implode('', $user_agent_string);
 

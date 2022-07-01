@@ -17,66 +17,66 @@ class FuturaSciencesBridge extends FeedExpander
                     'Les dernières définitions de Futura-Sciences' => 'definitions',
                     'Les dernières photos de Futura-Sciences' => 'photos',
                     'Les dernières questions - réponses de Futura-Sciences' => 'questions-reponses',
-                    'Les derniers dossiers de Futura-Sciences' => 'dossiers'
+                    'Les derniers dossiers de Futura-Sciences' => 'dossiers',
                 ],
                 'Les flux Services' => [
                     'Les cartes virtuelles de Futura-Sciences' => 'services/cartes-virtuelles',
-                    'Les fonds d\'écran de Futura-Sciences' => 'services/fonds-ecran'
+                    'Les fonds d\'écran de Futura-Sciences' => 'services/fonds-ecran',
                 ],
                 'Les flux Santé' => [
                     'Les dernières actualités de Futura-Santé' => 'sante/actualites',
                     'Les dernières définitions de Futura-Santé' => 'sante/definitions',
                     'Les dernières questions-réponses de Futura-Santé' => 'sante/question-reponses',
-                    'Les derniers dossiers de Futura-Santé' => 'sante/dossiers'
+                    'Les derniers dossiers de Futura-Santé' => 'sante/dossiers',
                 ],
                 'Les flux High-Tech' => [
                     'Les dernières actualités de Futura-High-Tech' => 'high-tech/actualites',
                     'Les dernières astuces de Futura-High-Tech' => 'high-tech/question-reponses',
                     'Les dernières définitions de Futura-High-Tech' => 'high-tech/definitions',
-                    'Les derniers dossiers de Futura-High-Tech' => 'high-tech/dossiers'
+                    'Les derniers dossiers de Futura-High-Tech' => 'high-tech/dossiers',
                 ],
                 'Les flux Espace' => [
                     'Les dernières actualités de Futura-Espace' => 'espace/actualites',
                     'Les dernières définitions de Futura-Espace' => 'espace/definitions',
                     'Les dernières questions-réponses de Futura-Espace' => 'espace/question-reponses',
-                    'Les derniers dossiers de Futura-Espace' => 'espace/dossiers'
+                    'Les derniers dossiers de Futura-Espace' => 'espace/dossiers',
                 ],
                 'Les flux Environnement' => [
                     'Les dernières actualités de Futura-Environnement' => 'environnement/actualites',
                     'Les dernières définitions de Futura-Environnement' => 'environnement/definitions',
                     'Les dernières questions-réponses de Futura-Environnement' => 'environnement/question-reponses',
-                    'Les derniers dossiers de Futura-Environnement' => 'environnement/dossiers'
+                    'Les derniers dossiers de Futura-Environnement' => 'environnement/dossiers',
                 ],
                 'Les flux Maison' => [
                     'Les dernières actualités de Futura-Maison' => 'maison/actualites',
                     'Les dernières astuces de Futura-Maison' => 'maison/question-reponses',
                     'Les dernières définitions de Futura-Maison' => 'maison/definitions',
-                    'Les derniers dossiers de Futura-Maison' => 'maison/dossiers'
+                    'Les derniers dossiers de Futura-Maison' => 'maison/dossiers',
                 ],
                 'Les flux Nature' => [
                     'Les dernières actualités de Futura-Nature' => 'nature/actualites',
                     'Les dernières définitions de Futura-Nature' => 'nature/definitions',
                     'Les dernières questions-réponses de Futura-Nature' => 'nature/question-reponses',
-                    'Les derniers dossiers de Futura-Nature' => 'nature/dossiers'
+                    'Les derniers dossiers de Futura-Nature' => 'nature/dossiers',
                 ],
                 'Les flux Terre' => [
                     'Les dernières actualités de Futura-Terre' => 'terre/actualites',
                     'Les dernières définitions de Futura-Terre' => 'terre/definitions',
                     'Les dernières questions-réponses de Futura-Terre' => 'terre/question-reponses',
-                    'Les derniers dossiers de Futura-Terre' => 'terre/dossiers'
+                    'Les derniers dossiers de Futura-Terre' => 'terre/dossiers',
                 ],
                 'Les flux Matière' => [
                     'Les dernières actualités de Futura-Matière' => 'matiere/actualites',
                     'Les dernières définitions de Futura-Matière' => 'matiere/definitions',
                     'Les dernières questions-réponses de Futura-Matière' => 'matiere/question-reponses',
-                    'Les derniers dossiers de Futura-Matière' => 'matiere/dossiers'
+                    'Les derniers dossiers de Futura-Matière' => 'matiere/dossiers',
                 ],
                 'Les flux Mathématiques' => [
                     'Les dernières actualités de Futura-Mathématiques' => 'mathematiques/actualites',
-                    'Les derniers dossiers de Futura-Mathématiques' => 'mathematiques/dossiers'
-                ]
-            ]
-        ]
+                    'Les derniers dossiers de Futura-Mathématiques' => 'mathematiques/dossiers',
+                ],
+            ],
+        ],
     ]];
 
     public function collectData()
@@ -123,14 +123,14 @@ class FuturaSciencesBridge extends FeedExpander
             'addthis_toolbox',
             'noprint',
             'hubbottom',
-            'hubbottom2'
+            'hubbottom2',
             ] as $div_class_remove
         ) {
             foreach ($contents->find('div.' . $div_class_remove) as $div) {
                 $keep_div = false;
                 foreach (
                     [
-                    'didyouknow'
+                    'didyouknow',
                     ] as $div_class_dont_remove
                 ) {
                     if (strpos($div->getAttribute('class'), $div_class_dont_remove) !== false) {

@@ -47,9 +47,9 @@ class ARDMediathekBridge extends BridgeAbstract
                 'name' => 'Show Link or ID',
                 'required' => true,
                 'title' => 'Link to the show page or just its alphanumeric suffix',
-                'defaultValue' => 'https://www.ardmediathek.de/sendung/45-min/Y3JpZDovL25kci5kZS8xMzkx/'
-            ]
-        ]
+                'defaultValue' => 'https://www.ardmediathek.de/sendung/45-min/Y3JpZDovL25kci5kZS8xMzkx/',
+            ],
+        ],
     ];
 
     public function collectData()
@@ -84,7 +84,7 @@ class ARDMediathekBridge extends BridgeAbstract
             $item['title'] = $video->longTitle;
             // in the test, aspect16x9 was the only child of images, not sure whether that is always true
             $item['enclosures'] = [
-                str_replace(self::IMAGEWIDTHPLACEHOLDER, self::IMAGEWIDTH, $video->images->aspect16x9->src)
+                str_replace(self::IMAGEWIDTHPLACEHOLDER, self::IMAGEWIDTH, $video->images->aspect16x9->src),
             ];
             $item['content'] = '<img src="' . $item['enclosures'][0] . '" /><p>';
             $item['timestamp'] = $video->broadcastedOn;

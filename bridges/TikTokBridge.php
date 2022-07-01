@@ -13,13 +13,13 @@ class TikTokBridge extends BridgeAbstract
             'type' => 'text',
             'required' => true,
             'exampleValue' => '@tiktok',
-        ]
-        ]];
+        ],
+        ], ];
 
     const TEST_DETECT_PARAMETERS = [
         'https://www.tiktok.com/@tiktok' => [
-            'context' => 'By user', 'username' => '@tiktok'
-        ]
+            'context' => 'By user', 'username' => '@tiktok',
+        ],
     ];
 
     const CACHE_TIMEOUT = 900; // 15 minutes
@@ -31,7 +31,7 @@ class TikTokBridge extends BridgeAbstract
         if (preg_match('/tiktok\.com\/(@[\w]+)/', $url, $matches) > 0) {
             return [
                 'context' => 'By user',
-                'username' => $matches[1]
+                'username' => $matches[1],
             ];
         }
 
@@ -56,9 +56,9 @@ class TikTokBridge extends BridgeAbstract
             $item['enclosures'][] = $image;
 
             $item['content'] = <<<EOD
-<a href="{$link}"><img src="{$image}"/></a>
-<p>{$views} views<p>
-EOD;
+                <a href="{$link}"><img src="{$image}"/></a>
+                <p>{$views} views<p>
+                EOD;
 
             $this->items[] = $item;
         }

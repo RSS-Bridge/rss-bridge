@@ -19,8 +19,8 @@ class SteamBridge extends BridgeAbstract
             'only_discount' => [
                 'name' => 'Only discount',
                 'type' => 'checkbox',
-            ]
-        ]
+            ],
+        ],
     ];
 
     public function collectData()

@@ -11,8 +11,8 @@ class JustETFBridge extends BridgeAbstract
             'full' => [
                 'name' => 'Full Article',
                 'type' => 'checkbox',
-                'title' => 'Enable to load full articles'
-            ]
+                'title' => 'Enable to load full articles',
+            ],
         ],
         'Profile' => [
             'isin' => [
@@ -21,18 +21,18 @@ class JustETFBridge extends BridgeAbstract
                 'required' => true,
                 'exampleValue' => 'IE00B4X9L533',
                 'pattern' => '[a-zA-Z]{2}[a-zA-Z0-9]{10}',
-                'title' => 'ISIN, consisting of 2-letter country code, 9-character identifier, check character'
+                'title' => 'ISIN, consisting of 2-letter country code, 9-character identifier, check character',
             ],
             'strategy' => [
                 'name' => 'Include Strategy',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
+                'defaultValue' => 'checked',
             ],
             'description' => [
                 'name' => 'Include Description',
                 'type' => 'checkbox',
-                'defaultValue' => 'checked'
-            ]
+                'defaultValue' => 'checked',
+            ],
         ],
         'global' => [
             'lang' => [
@@ -40,12 +40,12 @@ class JustETFBridge extends BridgeAbstract
                 'type' => 'list',
                 'values' => [
                     'Englisch' => 'en',
-                    'Deutsch'  => 'de',
-                    'Italiano' => 'it'
+                    'Deutsch' => 'de',
+                    'Italiano' => 'it',
                 ],
-                'defaultValue' => 'Englisch'
-            ]
-        ]
+                'defaultValue' => 'Englisch',
+            ],
+        ],
     ];
 
     public function collectData()
@@ -78,7 +78,7 @@ class JustETFBridge extends BridgeAbstract
                 break;
             case 'Profile':
                 $uri .= '/etf-profile.html?' . http_build_query([
-                    'isin' => strtoupper($this->getInput('isin'))
+                    'isin' => strtoupper($this->getInput('isin')),
                 ]);
                 break;
         }

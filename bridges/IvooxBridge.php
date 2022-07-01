@@ -17,9 +17,9 @@ class IvooxBridge extends BridgeAbstract
             's' => [
                 'name' => 'keyword',
                 'required' => true,
-                'exampleValue' => 'car'
-            ]
-        ]
+                'exampleValue' => 'car',
+            ],
+        ],
     ];
 
     private function ivBridgeAddItem(
@@ -120,7 +120,7 @@ class IvooxBridge extends BridgeAbstract
 
         foreach ($originalLocales as $localeSetting) {
             if (strpos($localeSetting, '=') !== false) {
-                list($category, $locale) = explode('=', $localeSetting);
+                [$category, $locale] = explode('=', $localeSetting);
             } else {
                 $category = LC_ALL;
                 $locale = $localeSetting;

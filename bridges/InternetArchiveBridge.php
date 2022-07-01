@@ -27,23 +27,23 @@ class InternetArchiveBridge extends BridgeAbstract
                 'defaultValue' => 'uploads',
             ],
             'limit' => self::LIMIT,
-        ]
+        ],
     ];
 
     const CACHE_TIMEOUT = 900; // 15 mins
 
     const TEST_DETECT_PARAMETERS = [
         'https://archive.org/details/@verifiedjoseph' => [
-            'context' => 'Account', 'username' => 'verifiedjoseph', 'content' => 'uploads'
+            'context' => 'Account', 'username' => 'verifiedjoseph', 'content' => 'uploads',
         ],
         'https://archive.org/details/@verifiedjoseph?tab=collections' => [
-            'context' => 'Account', 'username' => 'verifiedjoseph', 'content' => 'collections'
+            'context' => 'Account', 'username' => 'verifiedjoseph', 'content' => 'collections',
         ],
     ];
 
     private $skipClasses = [
         'item-ia mobile-header hidden-tiles',
-        'item-ia account-ia'
+        'item-ia account-ia',
     ];
 
     private $detectParamsRegex = '/https?:\/\/archive\.org\/details\/@([\w]+)(?:\?tab=([a-z-]+))?/';
@@ -173,9 +173,9 @@ class InternetArchiveBridge extends BridgeAbstract
         }
 
         $item['content'] = <<<EOD
-<p>Media Type: {$result->attr['data-mediatype']}<br>
-Collection: <a href="{$collectionLink}">{$collectionTitle}</a></p>
-EOD;
+            <p>Media Type: {$result->attr['data-mediatype']}<br>
+            Collection: <a href="{$collectionLink}">{$collectionTitle}</a></p>
+            EOD;
 
         $item['enclosures'][] = self::URI . $result->find('img.item-img', 0)->source;
 
@@ -195,9 +195,9 @@ EOD;
         }
 
         $item['content'] = <<<EOD
-<p><strong>Subject: {$result->find('div.review-title', 0)->plaintext}</strong></p>
-<p>{$result->find('div.hidden-lists.review' , 0)->children(1)->plaintext}</p>
-EOD;
+            <p><strong>Subject: {$result->find('div.review-title', 0)->plaintext}</strong></p>
+            <p>{$result->find('div.hidden-lists.review', 0)->children(1)->plaintext}</p>
+            EOD;
 
         $item['enclosures'][] = self::URI . $result->find('img.item-img', 0)->source;
 
@@ -213,8 +213,8 @@ EOD;
         $item['uri'] = $result->find('div.item-ttl.C.C2 > a', 0)->href;
 
         $item['content'] = <<<EOD
-{$this->processUsername()} archived <a href="{$item['uri']}">{$result->find('div.ttl', 0)->plaintext}</a>
-EOD;
+            {$this->processUsername()} archived <a href="{$item['uri']}">{$result->find('div.ttl', 0)->plaintext}</a>
+            EOD;
 
         $item['enclosures'][] = $result->find('img.item-img', 0)->source;
 
@@ -285,8 +285,8 @@ EOD;
             $item['uri'] = $tr->find('td', 0)->children(0)->href;
 
             $formLink = <<<EOD
-<a href="{$tr->find('td', 2)->children(0)->href}">{$tr->find('td', 2)->children(0)->plaintext}</a>
-EOD;
+                <a href="{$tr->find('td', 2)->children(0)->href}">{$tr->find('td', 2)->children(0)->plaintext}</a>
+                EOD;
 
             $postDate = $tr->find('td', 4)->children(0)->plaintext;
 
@@ -298,21 +298,21 @@ EOD;
 
             $parentLink = '';
             $replyLink = <<<EOD
-<a href="{$post->find('a', 0)->href}">Reply</a>
-EOD;
+                <a href="{$post->find('a', 0)->href}">Reply</a>
+                EOD;
 
             if ($post->find('a', 1)->innertext = 'See parent post') {
                 $parentLink = <<<EOD
-<a href="{$post->find('a', 1)->href}">View parent post</a>
-EOD;
+                    <a href="{$post->find('a', 1)->href}">View parent post</a>
+                    EOD;
             }
 
             $post->find('h1', 0)->outertext = '';
             $post->find('h2', 0)->outertext = '';
 
             $item['content'] = <<<EOD
-<p>{$post->innertext}</p>{$replyLink} - {$parentLink} - Posted in {$formLink} on {$postDate}
-EOD;
+                <p>{$post->innertext}</p>{$replyLink} - {$parentLink} - Posted in {$formLink} on {$postDate}
+                EOD;
 
             $items[] = $item;
 

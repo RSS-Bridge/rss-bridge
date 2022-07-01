@@ -21,18 +21,18 @@ class WikiLeaksBridge extends BridgeAbstract
                         'International Politics' => '+-International-Politics-+',
                         'Corporations' => '+-Corporations-+',
                         'Government' => '+-Government-+',
-                        'War & Military' => '+-War-Military-+'
-                    ]
+                        'War & Military' => '+-War-Military-+',
+                    ],
                 ],
-                'defaultValue' => 'news'
+                'defaultValue' => 'news',
             ],
             'teaser' => [
                 'name' => 'Show teaser',
                 'type' => 'checkbox',
                 'title' => 'If checked feeds will display the teaser',
-                'defaultValue' => 'checked'
-            ]
-        ]
+                'defaultValue' => 'checked',
+            ],
+        ],
     ];
 
     public function collectData()

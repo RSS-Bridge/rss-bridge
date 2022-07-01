@@ -21,7 +21,7 @@ class FSecureBlogBridge extends BridgeAbstract
                 'name' => 'Oldest article date',
                 'exampleValue' => '-6 months',
             ],
-        ]
+        ],
     ];
 
     public function getURI()

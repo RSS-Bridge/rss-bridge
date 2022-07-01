@@ -36,7 +36,7 @@ class JsonFormat extends FormatAbstract
             'version' => 'https://jsonfeed.org/version/1',
             'title' => (!empty($extraInfos['name'])) ? $extraInfos['name'] : $urlHost,
             'home_page_url' => (!empty($extraInfos['uri'])) ? $extraInfos['uri'] : REPOSITORY,
-            'feed_url' => $urlPrefix . $urlHost . $urlRequest
+            'feed_url' => $urlPrefix . $urlHost . $urlRequest,
         ];
 
         if (!empty($extraInfos['icon'])) {
@@ -72,7 +72,7 @@ class JsonFormat extends FormatAbstract
             }
             if (!empty($entryAuthor)) {
                 $entry['author'] = [
-                    'name' => $entryAuthor
+                    'name' => $entryAuthor,
                 ];
             }
             if (!empty($entryTimestamp)) {
@@ -93,7 +93,7 @@ class JsonFormat extends FormatAbstract
                 foreach ($entryEnclosures as $enclosure) {
                     $entry['attachments'][] = [
                         'url' => $enclosure,
-                        'mime_type' => getMimeType($enclosure)
+                        'mime_type' => getMimeType($enclosure),
                     ];
                 }
             }

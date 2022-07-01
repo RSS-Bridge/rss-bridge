@@ -12,13 +12,13 @@ class UnsplashBridge extends BridgeAbstract
         'u' => [
             'name' => 'Filter by username (optional)',
             'type' => 'text',
-            'defaultValue' => 'unsplash'
+            'defaultValue' => 'unsplash',
         ],
         'm' => [
             'name' => 'Max number of photos',
             'type' => 'number',
             'defaultValue' => 20,
-            'required' => true
+            'required' => true,
         ],
         'prev_q' => [
             'name' => 'Preview quality',
@@ -29,7 +29,7 @@ class UnsplashBridge extends BridgeAbstract
                 'small' => 'small',
                 'thumb' => 'thumb',
             ],
-            'defaultValue' => 'regular'
+            'defaultValue' => 'regular',
         ],
         'w' => [
             'name' => 'Max download width (optional)',
@@ -42,7 +42,7 @@ class UnsplashBridge extends BridgeAbstract
             'exampleValue' => 75,
             'type' => 'number',
             'defaultValue' => 75,
-        ]
+        ],
     ]];
 
     public function collectData()

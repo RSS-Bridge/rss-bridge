@@ -19,17 +19,17 @@ class DerpibooruBridge extends BridgeAbstract
                     'Legacy Default' => 37431,
                     '18+ Dark' => 37429,
                     'Maximum Spoilers' => 37430,
-                    'Default' => 100073
+                    'Default' => 100073,
                 ],
-                'defaultValue' => 56027
+                'defaultValue' => 56027,
 
             ],
             'q' => [
                 'name' => 'Query',
                 'required' => true,
                 'exampleValue' => 'dog',
-            ]
-        ]
+            ],
+        ],
     ];
 
     public function detectParameters($url)

@@ -39,12 +39,12 @@ class TheFarSideBridge extends BridgeAbstract
             }
 
             $item['content'] .= <<<EOD
-<figure>
-	<img title="{$caption}" src="data:image/jpeg;base64,{$imageBase64}"/>
-	<figcaption>{$caption}</figcaption>
-</figure>
-<br/>
-EOD;
+                <figure>
+                	<img title="{$caption}" src="data:image/jpeg;base64,{$imageBase64}"/>
+                	<figcaption>{$caption}</figcaption>
+                </figure>
+                <br/>
+                EOD;
         }
 
         $this->items[] = $item;

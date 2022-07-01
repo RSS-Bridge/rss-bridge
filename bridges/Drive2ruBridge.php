@@ -15,7 +15,7 @@ class Drive2ruBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'title' => 'Например: https://www.drive2.ru/experience/suzuki/g4895/',
-                'exampleValue' => 'https://www.drive2.ru/experience/suzuki/g4895/'
+                'exampleValue' => 'https://www.drive2.ru/experience/suzuki/g4895/',
             ],
         ],
         'Личные блоги' => [
@@ -24,8 +24,8 @@ class Drive2ruBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'title' => 'Например: Mickey',
-                'exampleValue' => 'Mickey'
-            ]
+                'exampleValue' => 'Mickey',
+            ],
         ],
         'Публикации по темам (Стоит почитать)' => [
             'topic' => [
@@ -63,17 +63,17 @@ class Drive2ruBridge extends BridgeAbstract
                     'Фотосессии' => '120',
                     'Шины и диски' => '140',
                     'Электрика' => '130',
-                    'Электромобили' => '131'
+                    'Электромобили' => '131',
                 ],
                 'defaultValue' => '16',
-            ]
+            ],
         ],
         'global' => [
             'full_articles' => [
                 'name' => 'Загружать в ленту полный текст',
-                'type' => 'checkbox'
-            ]
-        ]
+                'type' => 'checkbox',
+            ],
+        ],
     ];
 
     private $title;
@@ -182,7 +182,7 @@ class Drive2ruBridge extends BridgeAbstract
 
     private function addCommentsLink($content, $url)
     {
-                return $content . '<br><a href="' . $url . '#comments">Перейти к комментариям</a>';
+        return $content . '<br><a href="' . $url . '#comments">Перейти к комментариям</a>';
     }
 
     private function addReadMoreLink($content, $url)

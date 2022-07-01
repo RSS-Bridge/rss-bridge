@@ -23,18 +23,18 @@ class CyanideAndHappinessBridge extends BridgeAbstract
         $html = getSimpleHTMLDOM($this->getUri());
 
         foreach ($html->find('[class*=ComicImage]') as $element) {
-            $date        = $element->find('[class^=Author__Right] p', 0)->plaintext;
-            $author      = str_replace('by ', '', $element->find('[class^=Author__Right] p', 1)->plaintext);
-            $image       = $element->find('img', 0)->src;
-            $link        = $html->find('[rel=canonical]', 0)->href;
+            $date = $element->find('[class^=Author__Right] p', 0)->plaintext;
+            $author = str_replace('by ', '', $element->find('[class^=Author__Right] p', 1)->plaintext);
+            $image = $element->find('img', 0)->src;
+            $link = $html->find('[rel=canonical]', 0)->href;
 
             $item = [
-                'uid'       => $link,
-                'author'    => $author,
-                'title'     => $date,
-                'uri'       => $link . '#comic',
+                'uid' => $link,
+                'author' => $author,
+                'title' => $date,
+                'uri' => $link . '#comic',
                 'timestamp' => str_replace('.', '-', $date) . 'T00:00:00Z',
-                'content'   => "<img src=\"$image\" />"
+                'content' => "<img src=\"$image\" />",
             ];
             $this->items[] = $item;
         }

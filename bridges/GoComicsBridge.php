@@ -12,8 +12,8 @@ class GoComicsBridge extends BridgeAbstract
             'name' => 'comicname',
             'type' => 'text',
             'exampleValue' => 'heartofthecity',
-            'required' => true
-        ]
+            'required' => true,
+        ],
     ]];
 
     public function collectData()

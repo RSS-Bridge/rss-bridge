@@ -28,7 +28,7 @@ class HaveIBeenPwnedBridge extends BridgeAbstract
             'type' => 'number',
             'required' => true,
             'defaultValue' => 20,
-        ]
+        ],
     ]];
     const API_URI = 'https://haveibeenpwned.com/api/v3';
 
@@ -58,12 +58,12 @@ class HaveIBeenPwnedBridge extends BridgeAbstract
             $compData = implode(', ', $breach['DataClasses']);
 
             $item['content'] .= <<<EOD
-<p>
-<strong>Breach date:</strong> {$breachDate}<br>
-<strong>Date added to HIBP:</strong> {$addedDate}<br>
-<strong>Compromised accounts:</strong> {$pwnCount}<br>
-<strong>Compromised data:</strong> {$compData}<br>
-EOD;
+                <p>
+                <strong>Breach date:</strong> {$breachDate}<br>
+                <strong>Date added to HIBP:</strong> {$addedDate}<br>
+                <strong>Compromised accounts:</strong> {$pwnCount}<br>
+                <strong>Compromised data:</strong> {$compData}<br>
+                EOD;
             $item['uid'] = $breach['Name'];
             $this->breaches[] = $item;
         }
@@ -74,22 +74,22 @@ EOD;
 
     private const BREACH_TYPES = [
         'IsVerified' => [
-            false => 'Unverified breach, may be sourced from elsewhere'
+            false => 'Unverified breach, may be sourced from elsewhere',
         ],
         'IsFabricated' => [
-            true => 'Fabricated breach, likely not legitimate'
+            true => 'Fabricated breach, likely not legitimate',
         ],
         'IsSensitive' => [
-            true => 'Sensitive breach, not publicly searchable'
+            true => 'Sensitive breach, not publicly searchable',
         ],
         'IsRetired' => [
-            true => 'Retired breach, removed from system'
+            true => 'Retired breach, removed from system',
         ],
         'IsSpamList' => [
-            true => 'Spam list, used for spam marketing'
+            true => 'Spam list, used for spam marketing',
         ],
         'IsMalware' => [
-            true => 'Malware breach'
+            true => 'Malware breach',
         ],
     ];
 

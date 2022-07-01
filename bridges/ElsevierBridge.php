@@ -13,8 +13,8 @@ class ElsevierBridge extends BridgeAbstract
             'name' => 'Journal name',
             'required' => true,
             'exampleValue' => 'academic-pediatrics',
-            'title' => 'Insert html-part of your journal'
-        ]
+            'title' => 'Insert html-part of your journal',
+        ],
     ]];
 
     public function collectData()

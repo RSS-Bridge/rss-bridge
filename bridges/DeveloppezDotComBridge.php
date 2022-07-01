@@ -157,10 +157,10 @@ class DeveloppezDotComBridge extends FeedExpander
                     'word' => 'word',
                     'xhtml' => 'xhtml',
                     'xml' => 'xml',
-                    'zend-framework' => 'zend-framework'
+                    'zend-framework' => 'zend-framework',
                 ],
-            ]
-        ]
+            ],
+        ],
     ];
 
     /**

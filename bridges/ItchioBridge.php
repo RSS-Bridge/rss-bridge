@@ -11,7 +11,7 @@ class ItchioBridge extends BridgeAbstract
             'name' => 'Product URL',
             'exampleValue' => 'https://remedybg.itch.io/remedybg',
             'required' => true,
-        ]
+        ],
     ]];
     const CACHE_TIMEOUT = 21600; // 6 hours
 

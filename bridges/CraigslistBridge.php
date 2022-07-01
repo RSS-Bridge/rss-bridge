@@ -11,28 +11,28 @@ class CraigslistBridge extends BridgeAbstract
             'name' => 'Region',
             'title' => 'The subdomain before craigslist.org in the URL',
             'exampleValue' => 'sfbay',
-            'required' => true
+            'required' => true,
         ],
         'search' => [
             'name' => 'Search Query',
             'title' => 'Everything in the URL after /search/',
             'exampleValue' => 'sya?query=laptop',
-            'required' => true
+            'required' => true,
         ],
         'limit' => [
             'name' => 'Number of Posts',
             'type' => 'number',
             'title' => 'The maximum number of posts is 120. Use 0 for unlimited posts.',
-            'defaultValue' => '25'
-        ]
+            'defaultValue' => '25',
+        ],
     ]];
 
     const TEST_DETECT_PARAMETERS = [
         'https://sfbay.craigslist.org/search/sya?query=laptop' => [
-            'region' => 'sfbay', 'search' => 'sya?query=laptop'
+            'region' => 'sfbay', 'search' => 'sya?query=laptop',
         ],
         'https://newyork.craigslist.org/search/sss?query=32gb+flash+drive&bundleDuplicates=1&max_price=20' => [
-            'region' => 'newyork', 'search' => 'sss?query=32gb+flash+drive&bundleDuplicates=1&max_price=20'
+            'region' => 'newyork', 'search' => 'sss?query=32gb+flash+drive&bundleDuplicates=1&max_price=20',
         ],
     ];
 

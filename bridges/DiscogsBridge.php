@@ -13,8 +13,8 @@ class DiscogsBridge extends BridgeAbstract
                 'type' => 'number',
                 'required' => true,
                 'exampleValue' => '28104',
-                'title' => 'Only the ID from an artist page. EG /artist/28104-Aesop-Rock is 28104'
-            ]
+                'title' => 'Only the ID from an artist page. EG /artist/28104-Aesop-Rock is 28104',
+            ],
         ],
         'Label Releases' => [
             'labelid' => [
@@ -22,8 +22,8 @@ class DiscogsBridge extends BridgeAbstract
                 'type' => 'number',
                 'required' => true,
                 'exampleValue' => '8201',
-                'title' => 'Only the ID from a label page. EG /label/8201-Rhymesayers-Entertainment is 8201'
-            ]
+                'title' => 'Only the ID from a label page. EG /label/8201-Rhymesayers-Entertainment is 8201',
+            ],
         ],
         'User Wantlist' => [
             'username_wantlist' => [
@@ -31,7 +31,7 @@ class DiscogsBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'exampleValue' => 'TheBlindMaster',
-            ]
+            ],
         ],
         'User Folder' => [
             'username_folder' => [
@@ -41,8 +41,8 @@ class DiscogsBridge extends BridgeAbstract
             'folderid' => [
                 'name' => 'Folder ID',
                 'type' => 'number',
-            ]
-        ]
+            ],
+        ],
     ];
 
     public function collectData()

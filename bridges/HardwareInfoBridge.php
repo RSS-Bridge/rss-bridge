@@ -43,7 +43,7 @@ class HardwareInfoBridge extends FeedExpander
         'div.incontent',
         'div.article__content__social-bar',
         'div#revealNewsTip',
-        'div.article__previous_next'
+        'div.article__previous_next',
         ];
 
         foreach ($to_remove_selectors as $selector) {

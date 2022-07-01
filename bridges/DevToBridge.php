@@ -17,15 +17,15 @@ class DevToBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'title' => 'Insert your tag',
-                'exampleValue' => 'python'
+                'exampleValue' => 'python',
             ],
             'full' => [
                 'name' => 'Full article',
                 'type' => 'checkbox',
                 'required' => false,
-                'title' => 'Enable to receive the full article for each item'
-            ]
-        ]
+                'title' => 'Enable to receive the full article for each item',
+            ],
+        ],
     ];
 
     public function getURI()
@@ -71,13 +71,13 @@ apple-icon-5c6fa9f2bce280428589c6195b7f1924206a53b782b371cfe2d02da932c8c173.png'
             if ($this->getInput('full')) {
                 $fullArticle = $this->getFullArticle($item['uri']);
                 $item['content'] = <<<EOD
-<p>{$fullArticle}</p>
-EOD;
+                    <p>{$fullArticle}</p>
+                    EOD;
             } else {
                 $item['content'] = <<<EOD
-<img src="{$item['enclosures'][0]}" alt="{$item['author']}">
-<p>{$item['title']}</p>
-EOD;
+                    <img src="{$item['enclosures'][0]}" alt="{$item['author']}">
+                    <p>{$item['title']}</p>
+                    EOD;
             }
 
             // categories

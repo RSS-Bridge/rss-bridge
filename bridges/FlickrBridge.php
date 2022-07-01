@@ -19,7 +19,7 @@ class FlickrBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'title' => 'Insert keyword',
-                'exampleValue' => 'bird'
+                'exampleValue' => 'bird',
             ],
             'media' => [
                 'name' => 'Media',
@@ -41,7 +41,7 @@ class FlickrBridge extends BridgeAbstract
                     'Interesting' => 'interestingness-desc',
                 ],
                 'defaultValue' => 'relevance',
-            ]
+            ],
         ],
         'By username' => [
             'u' => [
@@ -49,7 +49,7 @@ class FlickrBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'title' => 'Insert username (as shown in the address bar)',
-                'exampleValue' => 'flickr'
+                'exampleValue' => 'flickr',
             ],
             'content' => [
                 'name' => 'Content',
@@ -80,8 +80,8 @@ class FlickrBridge extends BridgeAbstract
                     'Interesting' => 'interestingness-desc',
                 ],
                 'defaultValue' => 'date-posted-desc',
-            ]
-        ]
+            ],
+        ],
     ];
 
     private $username = '';

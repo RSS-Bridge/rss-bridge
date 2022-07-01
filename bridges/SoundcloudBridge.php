@@ -12,7 +12,7 @@ class SoundCloudBridge extends BridgeAbstract
         'u' => [
             'name' => 'username',
             'exampleValue' => 'thekidlaroi',
-            'required' => true
+            'required' => true,
         ],
         't' => [
             'name' => 'Content',
@@ -24,9 +24,9 @@ class SoundCloudBridge extends BridgeAbstract
                 'Albums' => 'albums',
                 'Playlists' => 'playlists',
                 'Reposts' => 'reposts',
-                'Likes' => 'likes'
-            ]
-        ]
+                'Likes' => 'likes',
+            ],
+        ],
     ]];
 
     private $apiUrl = 'https://api-v2.soundcloud.com/';
@@ -66,16 +66,16 @@ class SoundCloudBridge extends BridgeAbstract
             $description = nl2br($apiItem->description);
 
             $item['content'] = <<<HTML
-				<p>{$description}</p>
-HTML;
+                				<p>{$description}</p>
+                HTML;
 
             if (isset($apiItem->tracks) && $apiItem->track_count > 0) {
                 $list = $this->getTrackList($apiItem->tracks);
 
                 $item['content'] .= <<<HTML
-					<p><strong>Tracks ({$apiItem->track_count})</strong></p>
-					{$list}
-HTML;
+                    					<p><strong>Tracks ({$apiItem->track_count})</strong></p>
+                    					{$list}
+                    HTML;
             }
 
             $item['enclosures'][] = $apiItem->artwork_url;
@@ -241,13 +241,13 @@ HTML;
         $list = '';
         foreach ($apiItems as $track) {
             $list .= <<<HTML
-				<li>{$track->user->username} — <a href="{$track->permalink_url}">{$track->title}</a></li>
-HTML;
+                				<li>{$track->user->username} — <a href="{$track->permalink_url}">{$track->title}</a></li>
+                HTML;
         }
 
         $html = <<<HTML
-			<ul>{$list}</ul>
-HTML;
+            			<ul>{$list}</ul>
+            HTML;
 
         return $html;
     }

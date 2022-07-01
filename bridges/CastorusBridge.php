@@ -16,8 +16,8 @@ class CastorusBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'exampleValue' => '7',
-                'title' => 'Insert ZIP code (complete or partial). e.g: 78125 OR 781 OR 7'
-            ]
+                'title' => 'Insert ZIP code (complete or partial). e.g: 78125 OR 781 OR 7',
+            ],
         ],
         'Get latest changes via city name' => [
             'city' => [
@@ -25,9 +25,9 @@ class CastorusBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'exampleValue' => 'Paris',
-                'title' => 'Insert city name (complete or partial). e.g: Paris OR Par OR P'
-            ]
-        ]
+                'title' => 'Insert city name (complete or partial). e.g: Paris OR Par OR P',
+            ],
+        ],
     ];
 
     // Extracts the title from an actitiy
