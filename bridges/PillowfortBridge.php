@@ -214,7 +214,7 @@ EOD;
          */
         $item['categories'] = $post['tags'];
         if ($embPost) {
-            if ($this -> getInput('noretags') || ($post['tags'] == null )) {
+            if ($this -> getInput('noretags') || ($post['tags'] == null)) {
                 $item['categories'] = $post['original_post']['tag_list'];
             }
         }

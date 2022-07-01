@@ -140,7 +140,8 @@ function extractFromDelimiters($string, $start, $end)
         $section_retrieved = substr($string, strpos($string, $start) + strlen($start));
         $section_retrieved = substr($section_retrieved, 0, strpos($section_retrieved, $end));
         return $section_retrieved;
-    } return false;
+    }
+    return false;
 }
 
 /**

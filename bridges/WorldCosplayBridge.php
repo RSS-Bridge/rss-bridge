@@ -103,7 +103,7 @@ class WorldCosplayBridge extends BridgeAbstract
         $list = $json->list;
 
         foreach ($list as $img) {
-            $image = isset($img->photo) ? $img->photo : $img;
+            $image = $img->photo ?? $img;
             $item = [
                 'uri' => self::URI . substr($image->url, 1),
                 'title' => $image->subject,

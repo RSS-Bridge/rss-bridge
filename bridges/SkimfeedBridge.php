@@ -646,7 +646,7 @@ class SkimfeedBridge extends BridgeAbstract
         $query = parse_url($anchor->href, PHP_URL_QUERY);
 
         foreach (explode('&', $query) as $parameter) {
-            list($key, $value) = explode('=', $parameter);
+            [$key, $value] = explode('=', $parameter);
 
             if ($key !== 'u') {
                 continue;

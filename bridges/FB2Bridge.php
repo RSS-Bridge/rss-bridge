@@ -85,12 +85,14 @@ class FB2Bridge extends BridgeAbstract
             $pageInfo = $this->getPageInfos($page, $cookies);
 
             if ($pageInfo['userId'] === null) {
-                returnClientError(<<<EOD
+                returnClientError(
+                    <<<EOD
 Unable to get the page id. You should consider getting the ID by hand, then importing it into FB2Bridge
 EOD
                 );
             } elseif ($pageInfo['userId'] == -1) {
-                returnClientError(<<<EOD
+                returnClientError(
+                    <<<EOD
 This page is not accessible without being logged in.
 EOD
                 );
@@ -120,7 +122,7 @@ EOD
 
             //Decode images
             $imagecleaned = preg_replace_callback('/<i [^>]* style="[^"]*url\(\'(.*?)\'\).*?><\/i>/m', function ($matches) {
-                    return "<img src='" . str_replace(['\\3a ', '\\3d ', '\\26 '], [':', '=', '&'], $matches[1]) . "' />";
+                return "<img src='" . str_replace(['\\3a ', '\\3d ', '\\26 '], [':', '=', '&'], $matches[1]) . "' />";
             }, $content);
             $content = str_get_html($imagecleaned);
 
@@ -158,7 +160,7 @@ EOD
                 'rel',
                 'id'] as $property_name
             ) {
-                    $content = preg_replace('/ ' . $property_name . '=\"[^"]*\"/i', '', $content);
+                $content = preg_replace('/ ' . $property_name . '=\"[^"]*\"/i', '', $content);
             }
             $content = preg_replace('/<\/a [^>]+>/i', '</a>', $content);
 

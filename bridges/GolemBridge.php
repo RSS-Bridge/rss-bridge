@@ -66,7 +66,7 @@ class GolemBridge extends FeedExpander
     protected function parseItem($item)
     {
         $item = parent::parseItem($item);
-        $item['content'] = $item['content'] ?? '';
+        $item['content'] ??= '';
         $uri = $item['uri'];
 
         while ($uri) {

@@ -212,7 +212,7 @@ class RedditBridge extends BridgeAbstract
                         $this->encodePermalink($data->permalink),
                         '<img src="' . $data->url . '" />'
                     );
-                } elseif (isset($data->is_gallery) ? $data->is_gallery : false) {
+                } elseif ($data->is_gallery ?? false) {
                     // Multiple images
 
                     $images = [];

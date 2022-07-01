@@ -114,7 +114,7 @@ class Debug
         $calling = end($backtrace);
         $message = $calling['file'] . ':'
             . $calling['line'] . ' class '
-            . (isset($calling['class']) ? $calling['class'] : '<no-class>') . '->'
+            . ($calling['class'] ?? '<no-class>') . '->'
             . $calling['function'] . ' - '
             . $text;
 

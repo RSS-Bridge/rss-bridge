@@ -339,7 +339,7 @@ EOD
             $item['timestamp'] = $realtweet->created_at;
             $item['id']        = $realtweet->id_str;
             $item['uri']       = self::URI . $item['username'] . '/status/' . $item['id'];
-            $item['author']    = (isset($tweet->retweeted_status) ? 'RT: ' : '' )
+            $item['author']    = (isset($tweet->retweeted_status) ? 'RT: ' : '')
                          . $item['fullname']
                          . ' (@'
                          . $item['username'] . ')';
@@ -430,7 +430,7 @@ EOD;
                                 $video = null;
                                 $maxBitrate = -1;
                                 foreach ($media->video_info->variants as $variant) {
-                                    $bitRate = isset($variant->bitrate) ? $variant->bitrate : -100;
+                                    $bitRate = $variant->bitrate ?? -100;
                                     if ($bitRate > $maxBitrate) {
                                         $maxBitrate = $bitRate;
                                         $video = $variant->url;
@@ -543,7 +543,7 @@ EOD;
                 }
             }
             if (!$jsLink) {
-                 returnServerError('Could not locate main.js link');
+                returnServerError('Could not locate main.js link');
             }
 
             $jsContent = getContents($jsLink);
@@ -646,7 +646,8 @@ EOD;
                     default:
                         $code = $e->getCode();
                         $data = $e->getMessage();
-                        returnServerError(<<<EOD
+                        returnServerError(
+                            <<<EOD
 Failed to make api call: $api
 HTTP Status: $code
 Errormessage: $data

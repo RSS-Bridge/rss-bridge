@@ -14,26 +14,26 @@ class TheYeteeBridge extends BridgeAbstract
 
         $div = $html->find('.module_timed-item.is--full');
         foreach ($div as $element) {
-                $item = [];
-                $item['enclosures'] = [];
+            $item = [];
+            $item['enclosures'] = [];
 
-                $title = $element->find('h2', 0)->plaintext;
-                $item['title'] = $title;
+            $title = $element->find('h2', 0)->plaintext;
+            $item['title'] = $title;
 
-                $author = trim($element->find('.module_timed-item--artist a', 0)->plaintext);
-                $item['author'] = $author;
+            $author = trim($element->find('.module_timed-item--artist a', 0)->plaintext);
+            $item['author'] = $author;
 
-                $item['uri'] = static::URI;
+            $item['uri'] = static::URI;
 
-                $content = '<p>' . $title . ' by ' . $author . '</p>';
-                $photos = $element->find('a.img');
+            $content = '<p>' . $title . ' by ' . $author . '</p>';
+            $photos = $element->find('a.img');
             foreach ($photos as $photo) {
                 $content = $content . "<br /><img src='$photo->href' />";
                 $item['enclosures'][] = $photo->src;
             }
-                $item['content'] = $content;
+            $item['content'] = $content;
 
-                $this->items[] = $item;
+            $this->items[] = $item;
         }
     }
 }

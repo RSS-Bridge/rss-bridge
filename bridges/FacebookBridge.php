@@ -67,7 +67,7 @@ class FacebookBridge extends BridgeAbstract
         switch ($this->queriedContext) {
             case 'User':
                 if (!empty($this->authorName)) {
-                    return isset($this->extraInfos['name']) ? $this->extraInfos['name'] : $this->authorName;
+                    return $this->extraInfos['name'] ?? $this->authorName;
                 }
                 break;
 
@@ -425,7 +425,7 @@ class FacebookBridge extends BridgeAbstract
     private function unescapeFacebookEmote($content)
     {
         return preg_replace_callback('/<i><u>([^ <>]+) ([^<>]+)<\/u><\/i>/i', function ($matches) {
-                static $facebook_emoticons = [
+            static $facebook_emoticons = [
                     'smile' => ':)',
                     'frown' => ':(',
                     'tongue' => ':P',
@@ -448,19 +448,19 @@ class FacebookBridge extends BridgeAbstract
                     'colonthree' => ':3',
                     'like' => '&#x1F44D;'];
 
-                $len = count($matches);
+            $len = count($matches);
 
-                if ($len > 1) {
-                    for ($i = 1; $i < $len; $i++) {
-                        foreach ($facebook_emoticons as $name => $emote) {
-                            if ($matches[$i] === $name) {
-                                return $emote;
-                            }
+            if ($len > 1) {
+                for ($i = 1; $i < $len; $i++) {
+                    foreach ($facebook_emoticons as $name => $emote) {
+                        if ($matches[$i] === $name) {
+                            return $emote;
                         }
                     }
                 }
+            }
 
-                return $matches[0];
+            return $matches[0];
         }, $content);
     }
 

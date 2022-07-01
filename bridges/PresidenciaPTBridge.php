@@ -73,7 +73,7 @@ class PresidenciaPTBridge extends BridgeAbstract
                             return ' de ' . $name . ' de ';
                         }, self::PT_MONTH_NAMES),
                         array_map(function ($num) {
-                                return sprintf('-%02d-', $num);
+                            return sprintf('-%02d-', $num);
                         }, range(1, sizeof(self::PT_MONTH_NAMES))),
                         $edt
                     );

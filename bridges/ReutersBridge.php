@@ -253,7 +253,7 @@ class ReutersBridge extends BridgeAbstract
             case 'section':
                 if ($this->useWireAPI) {
                     if (strpos($endpoint, 'chan:') !== false) {
-                    // Now checking whether that feed has unique ID or not.
+                        // Now checking whether that feed has unique ID or not.
                         $feed_uri = "/feed/rapp/us/wirefeed/$endpoint";
                     } else {
                         $feed_uri = "/feed/rapp/us/tabbar/feeds/$endpoint";

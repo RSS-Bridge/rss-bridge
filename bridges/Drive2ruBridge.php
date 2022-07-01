@@ -182,7 +182,7 @@ class Drive2ruBridge extends BridgeAbstract
 
     private function addCommentsLink($content, $url)
     {
-                return $content . '<br><a href="' . $url . '#comments">Перейти к комментариям</a>';
+        return $content . '<br><a href="' . $url . '#comments">Перейти к комментариям</a>';
     }
 
     private function addReadMoreLink($content, $url)

@@ -77,7 +77,7 @@ class YoutubeBridge extends BridgeAbstract
     private $feeduri = '';
     private $channel_name = '';
     // This took from repo BetterVideoRss of VerifiedJoseph.
-	const URI_REGEX = '/(https?:\/\/(?:www\.)?(?:[a-zA-Z0-9-.]{2,256}\.[a-z]{2,20})(\:[0-9]{2    ,4})?(?:\/[a-zA-Z0-9@:%_\+.,~#"\'!?&\/\/=\-*]+|\/)?)/ims'; //phpcs:ignore
+    const URI_REGEX = '/(https?:\/\/(?:www\.)?(?:[a-zA-Z0-9-.]{2,256}\.[a-z]{2,20})(\:[0-9]{2    ,4})?(?:\/[a-zA-Z0-9@:%_\+.,~#"\'!?&\/\/=\-*]+|\/)?)/ims'; //phpcs:ignore
 
     private function ytBridgeQueryVideoInfo($vid, &$author, &$desc, &$time)
     {
@@ -433,7 +433,7 @@ class YoutubeBridge extends BridgeAbstract
 
     public function getName()
     {
-      // Name depends on queriedContext:
+        // Name depends on queriedContext:
         switch ($this->queriedContext) {
             case 'By username':
             case 'By channel id':

@@ -193,7 +193,7 @@ EOD
 
                 // Set default params
                 $params = [
-                'max_results'   => (empty($maxResults) ? '10' : $maxResults ),
+                'max_results'   => (empty($maxResults) ? '10' : $maxResults),
                 'tweet.fields'
                 => 'created_at,referenced_tweets,entities,attachments',
                 'user.fields'   => 'pinned_tweet_id',
@@ -219,7 +219,7 @@ EOD
             case 'By keyword or hashtag':
                 $params = [
                 'query'         => $this->getInput('query'),
-                'max_results'   => (empty($maxResults) ? '10' : $maxResults ),
+                'max_results'   => (empty($maxResults) ? '10' : $maxResults),
                 'tweet.fields'
                 => 'created_at,referenced_tweets,entities,attachments',
                 'expansions'
@@ -241,7 +241,7 @@ EOD
             case 'By list ID':
                 // Set default params
                 $params = [
-                'max_results' => (empty($maxResults) ? '10' : $maxResults ),
+                'max_results' => (empty($maxResults) ? '10' : $maxResults),
                 'tweet.fields'
                 => 'created_at,referenced_tweets,entities,attachments',
                 'expansions'
@@ -429,7 +429,7 @@ EOD
             $this->item['timestamp'] = $tweet->created_at;
             $this->item['uri']
             = self::URI . $this->item['username'] . '/status/' . $this->item['id'];
-            $this->item['author']    = ($isRetweet ? 'RT: ' : '' )
+            $this->item['author']    = ($isRetweet ? 'RT: ' : '')
                          . $this->item['fullname']
                          . ' (@'
                          . $this->item['username'] . ')';
@@ -440,8 +440,8 @@ EOD
                 $onlyMediaTweets && !isset($tweet->attachments->media_keys) &&
                 (($isQuote && !isset($quotedTweet->attachments->media_keys)) || !$isQuote)
             ) {
-                    // There is no media in current tweet or quoted tweet, skip to next
-                    continue;
+                // There is no media in current tweet or quoted tweet, skip to next
+                continue;
             }
 
             // Search for and replace URLs in Tweet text
