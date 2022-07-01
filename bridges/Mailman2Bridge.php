@@ -2,7 +2,6 @@
 
 class Mailman2Bridge extends BridgeAbstract
 {
-
     const NAME = 'Mailman2Bridge';
     const URI = 'https://github.com/rss-bridge/rss-bridge';
     const MAINTAINER = 'imagoiq';
