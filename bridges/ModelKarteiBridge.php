@@ -1,102 +1,118 @@
 <?php
-class ModelKarteiBridge extends BridgeAbstract {
-	const NAME = 'model-kartei.de';
-	const URI = 'https://www.model-kartei.de/';
-	const DESCRIPTION = 'Get the public comp card gallery';
-	const MAINTAINER = 'fulmeek';
-	const PARAMETERS = array(array(
-		'model_id' => array(
-			'name'			=> 'Model ID',
-			'required' => true,
-			'exampleValue'	=> '614931'
-		)
-	));
 
-	const LIMIT_ITEMS = 10;
+class ModelKarteiBridge extends BridgeAbstract
+{
+    const NAME = 'model-kartei.de';
+    const URI = 'https://www.model-kartei.de/';
+    const DESCRIPTION = 'Get the public comp card gallery';
+    const MAINTAINER = 'fulmeek';
+    const PARAMETERS = [[
+        'model_id' => [
+            'name'          => 'Model ID',
+            'required' => true,
+            'exampleValue'  => '614931'
+        ]
+    ]];
 
-	private $feedName = '';
+    const LIMIT_ITEMS = 10;
 
-	public function collectData() {
-		$model_id = preg_replace('/[^0-9]/', '', $this->getInput('model_id'));
-		if (empty($model_id))
-			returnServerError('Invalid model ID');
+    private $feedName = '';
 
-		$html = getSimpleHTMLDOM(self::URI . 'sedcards/model/' . $model_id . '/');
+    public function collectData()
+    {
+        $model_id = preg_replace('/[^0-9]/', '', $this->getInput('model_id'));
+        if (empty($model_id)) {
+            returnServerError('Invalid model ID');
+        }
 
-		$objTitle = $html->find('.sTitle', 0);
-		if ($objTitle)
-			$this->feedName = $objTitle->plaintext;
+        $html = getSimpleHTMLDOM(self::URI . 'sedcards/model/' . $model_id . '/');
 
-		$itemlist = $html->find('#photoList .photoPreview');
-		if (!$itemlist)
-			returnServerError('No gallery');
+        $objTitle = $html->find('.sTitle', 0);
+        if ($objTitle) {
+            $this->feedName = $objTitle->plaintext;
+        }
 
-		foreach($itemlist as $idx => $element) {
-			if ($idx >= self::LIMIT_ITEMS)
-				break;
+        $itemlist = $html->find('#photoList .photoPreview');
+        if (!$itemlist) {
+            returnServerError('No gallery');
+        }
 
-			$item = array();
+        foreach ($itemlist as $idx => $element) {
+            if ($idx >= self::LIMIT_ITEMS) {
+                break;
+            }
 
-			$title		= $element->title;
-			$date		= $element->{'data-date'};
-			$author		= $this->feedName;
-			$text		= '';
+            $item = [];
 
-			$objImage	= $element->find('a.photoLink img', 0);
-			$objLink	= $element->find('a.photoLink', 0);
+            $title      = $element->title;
+            $date       = $element->{'data-date'};
+            $author     = $this->feedName;
+            $text       = '';
 
-			if ($objLink) {
-				$page = getSimpleHTMLDOMCached($objLink->href);
+            $objImage   = $element->find('a.photoLink img', 0);
+            $objLink    = $element->find('a.photoLink', 0);
 
-				if (empty($title)) {
-					$objTitle = $page->find('.p-title', 0);
-					if ($objTitle)
-						$title = $objTitle->plaintext;
-				}
-				if (empty($date)) {
-					$objDate = $page->find('.cameraDetails .date', 0);
-					if ($objDate)
-						$date = strtotime($objDate->parent()->plaintext);
-				}
-				if (empty($author)) {
-					$objAuthor = $page->find('.p-publisher a', 0);
-					if ($objAuthor)
-						$author = $objAuthor->plaintext;
-				}
+            if ($objLink) {
+                $page = getSimpleHTMLDOMCached($objLink->href);
 
-				$objFullImage = $page->find('img#gofullscreen', 0);
-				if ($objFullImage)
-					$objImage = $objFullImage;
+                if (empty($title)) {
+                    $objTitle = $page->find('.p-title', 0);
+                    if ($objTitle) {
+                        $title = $objTitle->plaintext;
+                    }
+                }
+                if (empty($date)) {
+                    $objDate = $page->find('.cameraDetails .date', 0);
+                    if ($objDate) {
+                        $date = strtotime($objDate->parent()->plaintext);
+                    }
+                }
+                if (empty($author)) {
+                    $objAuthor = $page->find('.p-publisher a', 0);
+                    if ($objAuthor) {
+                        $author = $objAuthor->plaintext;
+                    }
+                }
 
-				$objText = $page->find('.p-desc', 0);
-				if ($objText)
-					$text = $objText->plaintext;
-			}
+                $objFullImage = $page->find('img#gofullscreen', 0);
+                if ($objFullImage) {
+                    $objImage = $objFullImage;
+                }
 
-			$item['title']		= $title;
-			$item['timestamp']	= $date;
-			$item['author']		= $author;
+                $objText = $page->find('.p-desc', 0);
+                if ($objText) {
+                    $text = $objText->plaintext;
+                }
+            }
 
-			if ($objImage)
-				$item['content'] = '<img src="' . $objImage->src . '"/>';
-			if ($objLink) {
-				$item['uri'] = $objLink->href;
-				if (!empty($item['content']))
-					$item['content'] = '<a href="' . $objLink->href . '" target="_blank">' . $item['content'] . '</a>';
-			} else {
-				$item['uri'] = 'urn:sha1:' . hash('sha1', $item['content']);
-			}
-			if (!empty($text))
-				$item['content'] = '<p>' . $text . '</p>' . $item['content'];
+            $item['title']      = $title;
+            $item['timestamp']  = $date;
+            $item['author']     = $author;
 
-			$this->items[] = $item;
-		}
-	}
+            if ($objImage) {
+                $item['content'] = '<img src="' . $objImage->src . '"/>';
+            }
+            if ($objLink) {
+                $item['uri'] = $objLink->href;
+                if (!empty($item['content'])) {
+                    $item['content'] = '<a href="' . $objLink->href . '" target="_blank">' . $item['content'] . '</a>';
+                }
+            } else {
+                $item['uri'] = 'urn:sha1:' . hash('sha1', $item['content']);
+            }
+            if (!empty($text)) {
+                $item['content'] = '<p>' . $text . '</p>' . $item['content'];
+            }
 
-	public function getName(){
-		if(!empty($this->feedName)) {
-			return $this->feedName . ' - ' . self::NAME;
-		}
-		return parent::getName();
-	}
+            $this->items[] = $item;
+        }
+    }
+
+    public function getName()
+    {
+        if (!empty($this->feedName)) {
+            return $this->feedName . ' - ' . self::NAME;
+        }
+        return parent::getName();
+    }
 }

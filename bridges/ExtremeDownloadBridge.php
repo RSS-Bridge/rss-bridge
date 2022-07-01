@@ -1,111 +1,116 @@
 <?php
-class ExtremeDownloadBridge extends BridgeAbstract {
-	const NAME = 'Extreme Download';
-	const URI = 'https://www.extreme-down.plus/';
-	const DESCRIPTION = 'Suivi de série sur Extreme Download';
-	const MAINTAINER = 'sysadminstory';
-	const PARAMETERS = array(
-		'Suivre la publication des épisodes d\'une série en cours de diffusion' => array(
-			'url' => array(
-				'name' => 'URL de la série',
-				'type' => 'text',
-				'required' => true,
-				'title' => 'URL d\'une série sans le https://www.extreme-down.plus/',
-				'exampleValue' => 'series-hd/hd-series-vostfr/46631-halt-and-catch-fire-saison-04-vostfr-hdtv-720p.html'),
-			'filter' => array(
-				'name' => 'Type de contenu',
-				'type' => 'list',
-				'title' => 'Type de contenu à suivre : Téléchargement, Streaming ou les deux',
-				'values' => array(
-					'Streaming et Téléchargement' => 'both',
-					'Téléchargement' => 'download',
-					'Streaming' => 'streaming'
-					)
-				)
-			)
-		);
 
-	public function collectData(){
-		$html = getSimpleHTMLDOM(self::URI . $this->getInput('url'));
+class ExtremeDownloadBridge extends BridgeAbstract
+{
+    const NAME = 'Extreme Download';
+    const URI = 'https://www.extreme-down.plus/';
+    const DESCRIPTION = 'Suivi de série sur Extreme Download';
+    const MAINTAINER = 'sysadminstory';
+    const PARAMETERS = [
+        'Suivre la publication des épisodes d\'une série en cours de diffusion' => [
+            'url' => [
+                'name' => 'URL de la série',
+                'type' => 'text',
+                'required' => true,
+                'title' => 'URL d\'une série sans le https://www.extreme-down.plus/',
+                'exampleValue' => 'series-hd/hd-series-vostfr/46631-halt-and-catch-fire-saison-04-vostfr-hdtv-720p.html'],
+            'filter' => [
+                'name' => 'Type de contenu',
+                'type' => 'list',
+                'title' => 'Type de contenu à suivre : Téléchargement, Streaming ou les deux',
+                'values' => [
+                    'Streaming et Téléchargement' => 'both',
+                    'Téléchargement' => 'download',
+                    'Streaming' => 'streaming'
+                    ]
+                ]
+            ]
+        ];
 
-		$filter = $this->getInput('filter');
+    public function collectData()
+    {
+        $html = getSimpleHTMLDOM(self::URI . $this->getInput('url'));
 
-		$typesText = array(
-			'download' => 'Téléchargement',
-			'streaming' => 'Streaming'
-		);
+        $filter = $this->getInput('filter');
 
-		// Get the TV show title
-		$this->showTitle = trim($html->find('span[id=news-title]', 0)->plaintext);
+        $typesText = [
+            'download' => 'Téléchargement',
+            'streaming' => 'Streaming'
+        ];
 
-		$list = $html->find('div[class=prez_7]');
-		foreach($list as $element) {
-			$add = false;
-			// Link type is needed is needed to generate an unique link
-			$type = $this->findLinkType($element);
-			if($filter == 'both') {
-				$add = true;
-			} else {
-				if($type == $filter) {
-					$add = true;
-				}
-			}
-			if($add == true) {
-				$item = array();
+        // Get the TV show title
+        $this->showTitle = trim($html->find('span[id=news-title]', 0)->plaintext);
 
-				// Get the element name
-				$title = $element->plaintext;
+        $list = $html->find('div[class=prez_7]');
+        foreach ($list as $element) {
+            $add = false;
+            // Link type is needed is needed to generate an unique link
+            $type = $this->findLinkType($element);
+            if ($filter == 'both') {
+                $add = true;
+            } else {
+                if ($type == $filter) {
+                    $add = true;
+                }
+            }
+            if ($add == true) {
+                $item = [];
 
-				// Get thee element links
-				$links = $element->next_sibling()->innertext;
+                // Get the element name
+                $title = $element->plaintext;
 
-				$item['content'] = $links;
-				$item['title'] = $this->showTitle . ' ' . $title . ' - ' . $typesText[$type];
-				// As RSS Bridge use the URI as GUID they need to be unique : adding a md5 hash of the title element
-				// should geneerate unique URI to prevent confusion for RSS readers
-				$item['uri'] = self::URI . $this->getInput('url') . '#' . hash('md5', $item['title']);
+                // Get thee element links
+                $links = $element->next_sibling()->innertext;
 
-				$this->items[] = $item;
-			}
-		}
-	}
+                $item['content'] = $links;
+                $item['title'] = $this->showTitle . ' ' . $title . ' - ' . $typesText[$type];
+                // As RSS Bridge use the URI as GUID they need to be unique : adding a md5 hash of the title element
+                // should geneerate unique URI to prevent confusion for RSS readers
+                $item['uri'] = self::URI . $this->getInput('url') . '#' . hash('md5', $item['title']);
 
-	public function getName(){
-		switch($this->queriedContext) {
-		case 'Suivre la publication des épisodes d\'une série en cours de diffusion':
-			return $this->showTitle . ' - ' . self::NAME;
-			break;
-		default:
-			return self::NAME;
-		}
-	}
+                $this->items[] = $item;
+            }
+        }
+    }
 
-	public function getURI() {
-		switch($this->queriedContext) {
-		case 'Suivre la publication des épisodes d\'une série en cours de diffusion':
-			return self::URI . $this->getInput('url');
-			break;
-		default:
-			return self::URI;
-		}
-	}
+    public function getName()
+    {
+        switch ($this->queriedContext) {
+            case 'Suivre la publication des épisodes d\'une série en cours de diffusion':
+                return $this->showTitle . ' - ' . self::NAME;
+            break;
+            default:
+                return self::NAME;
+        }
+    }
 
-	private function findLinkType($element)
-	{
-		$return = '';
-		// Walk through all elements in the reverse order until finding one with class 'presz_2'
-		while($element->class != 'prez_2') {
-			$element = $element->prev_sibling();
-		}
-		$text = html_entity_decode($element->plaintext);
+    public function getURI()
+    {
+        switch ($this->queriedContext) {
+            case 'Suivre la publication des épisodes d\'une série en cours de diffusion':
+                return self::URI . $this->getInput('url');
+            break;
+            default:
+                return self::URI;
+        }
+    }
 
-		// Regarding the text of the element, return the according link type
-		if(stristr($text, 'téléchargement') != false) {
-			$return = 'download';
-		} else if(stristr($text, 'streaming') != false) {
-			$return = 'streaming';
-		}
+    private function findLinkType($element)
+    {
+        $return = '';
+        // Walk through all elements in the reverse order until finding one with class 'presz_2'
+        while ($element->class != 'prez_2') {
+            $element = $element->prev_sibling();
+        }
+        $text = html_entity_decode($element->plaintext);
 
-		return $return;
-	}
+        // Regarding the text of the element, return the according link type
+        if (stristr($text, 'téléchargement') != false) {
+            $return = 'download';
+        } elseif (stristr($text, 'streaming') != false) {
+            $return = 'streaming';
+        }
+
+        return $return;
+    }
 }

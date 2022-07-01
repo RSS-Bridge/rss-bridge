@@ -1,78 +1,81 @@
 <?php
-class ScribdBridge extends BridgeAbstract {
-	const NAME = 'Scribd Bridge';
-	const URI = 'https://www.scribd.com';
-	const DESCRIPTION = 'Returns documents uploaded by a user.';
-	const MAINTAINER = 'VerifiedJoseph';
-	const PARAMETERS = array(array(
-		'profile' => array(
-			'name' => 'Profile URL',
-			'type' => 'text',
-			'required' => true,
-			'title' => 'Profile URL. Example: https://www.scribd.com/user/164147088/Ars-Technica',
-			'exampleValue' => 'https://www.scribd.com/user/164147088/Ars-Technica'
-		),
-	));
 
-	const CACHE_TIMEOUT = 3600;
+class ScribdBridge extends BridgeAbstract
+{
+    const NAME = 'Scribd Bridge';
+    const URI = 'https://www.scribd.com';
+    const DESCRIPTION = 'Returns documents uploaded by a user.';
+    const MAINTAINER = 'VerifiedJoseph';
+    const PARAMETERS = [[
+        'profile' => [
+            'name' => 'Profile URL',
+            'type' => 'text',
+            'required' => true,
+            'title' => 'Profile URL. Example: https://www.scribd.com/user/164147088/Ars-Technica',
+            'exampleValue' => 'https://www.scribd.com/user/164147088/Ars-Technica'
+        ],
+    ]];
 
-	private $profileUrlRegex = '/scribd\.com\/(user\/[0-9]+\/[\w-]+)\/?/';
-	private $feedName = '';
+    const CACHE_TIMEOUT = 3600;
 
-	public function collectData() {
-		$html = getSimpleHTMLDOM($this->getURI());
+    private $profileUrlRegex = '/scribd\.com\/(user\/[0-9]+\/[\w-]+)\/?/';
+    private $feedName = '';
 
-		$this->feedName = $html->find('div.header', 0)->plaintext;
+    public function collectData()
+    {
+        $html = getSimpleHTMLDOM($this->getURI());
 
-		foreach($html->find('ul.document_cells > li') as $index => $li) {
-			$item = array();
+        $this->feedName = $html->find('div.header', 0)->plaintext;
 
-			$item['title'] = $li->find('div.under_title', 0)->plaintext;
-			$item['uri'] = $li->find('a', 0)->href;
-			$item['author'] = $li->find('span.uploader', 0)->plaintext;
-			$item['uid'] = $li->find('a', 0)->href;
+        foreach ($html->find('ul.document_cells > li') as $index => $li) {
+            $item = [];
 
-			$pageHtml = getSimpleHTMLDOMCached($item['uri'], 3600);
+            $item['title'] = $li->find('div.under_title', 0)->plaintext;
+            $item['uri'] = $li->find('a', 0)->href;
+            $item['author'] = $li->find('span.uploader', 0)->plaintext;
+            $item['uid'] = $li->find('a', 0)->href;
 
-			$image = $pageHtml->find('meta[property="og:image"]', 0)->content;
-			$description = $pageHtml->find('meta[property="og:description"]', 0)->content;
+            $pageHtml = getSimpleHTMLDOMCached($item['uri'], 3600);
 
-			foreach ($pageHtml->find('ul.interest_pills li') as $pills) {
-				$item['categories'][] = $pills->plaintext;
-			}
+            $image = $pageHtml->find('meta[property="og:image"]', 0)->content;
+            $description = $pageHtml->find('meta[property="og:description"]', 0)->content;
 
-			$item['content'] = <<<EOD
+            foreach ($pageHtml->find('ul.interest_pills li') as $pills) {
+                $item['categories'][] = $pills->plaintext;
+            }
+
+            $item['content'] = <<<EOD
 <p>{$description}<p><p><img src="{$image}"></p>
 EOD;
 
-			$item['enclosures'][] = $image;
+            $item['enclosures'][] = $image;
 
-			$this->items[] = $item;
+            $this->items[] = $item;
 
-			if (count($this->items) >= 15) {
-				break;
-			}
-		}
-	}
+            if (count($this->items) >= 15) {
+                break;
+            }
+        }
+    }
 
-	public function getName() {
+    public function getName()
+    {
+        if ($this->feedName) {
+            return $this->feedName . ' - Scribd';
+        }
 
-		if ($this->feedName) {
-			return $this->feedName . ' - Scribd';
-		}
+        return parent::getName();
+    }
 
-		return parent::getName();
-	}
+    public function getURI()
+    {
+        if (!is_null($this->getInput('profile'))) {
+            preg_match($this->profileUrlRegex, $this->getInput('profile'), $user)
+                or returnServerError('Could not extract user ID and name from given profile URL.');
 
-	public function getURI() {
+            return self::URI . '/' . $user[1] . '/uploads';
+        }
 
-		if (!is_null($this->getInput('profile'))) {
-			preg_match($this->profileUrlRegex, $this->getInput('profile'), $user)
-				or returnServerError('Could not extract user ID and name from given profile URL.');
-
-			return self::URI . '/' . $user[1] . '/uploads';
-		}
-
-		return parent::getURI();
-	}
+        return parent::getURI();
+    }
 }

@@ -1,118 +1,135 @@
 <?php
-class CastorusBridge extends BridgeAbstract {
-	const MAINTAINER = 'logmanoriginal';
-	const NAME = 'Castorus Bridge';
-	const URI = 'https://www.castorus.com';
-	const CACHE_TIMEOUT = 600; // 10min
-	const DESCRIPTION = 'Returns the latest changes';
 
-	const PARAMETERS = array(
-		'Get latest changes' => array(),
-		'Get latest changes via ZIP code' => array(
-			'zip' => array(
-				'name' => 'ZIP code',
-				'type' => 'text',
-				'required' => true,
-				'exampleValue' => '7',
-				'title' => 'Insert ZIP code (complete or partial). e.g: 78125 OR 781 OR 7'
-			)
-		),
-		'Get latest changes via city name' => array(
-			'city' => array(
-				'name' => 'City name',
-				'type' => 'text',
-				'required' => true,
-				'exampleValue' => 'Paris',
-				'title' => 'Insert city name (complete or partial). e.g: Paris OR Par OR P'
-			)
-		)
-	);
+class CastorusBridge extends BridgeAbstract
+{
+    const MAINTAINER = 'logmanoriginal';
+    const NAME = 'Castorus Bridge';
+    const URI = 'https://www.castorus.com';
+    const CACHE_TIMEOUT = 600; // 10min
+    const DESCRIPTION = 'Returns the latest changes';
 
-	// Extracts the title from an actitiy
-	private function extractActivityTitle($activity){
-		$title = $activity->find('a', 0);
+    const PARAMETERS = [
+        'Get latest changes' => [],
+        'Get latest changes via ZIP code' => [
+            'zip' => [
+                'name' => 'ZIP code',
+                'type' => 'text',
+                'required' => true,
+                'exampleValue' => '7',
+                'title' => 'Insert ZIP code (complete or partial). e.g: 78125 OR 781 OR 7'
+            ]
+        ],
+        'Get latest changes via city name' => [
+            'city' => [
+                'name' => 'City name',
+                'type' => 'text',
+                'required' => true,
+                'exampleValue' => 'Paris',
+                'title' => 'Insert city name (complete or partial). e.g: Paris OR Par OR P'
+            ]
+        ]
+    ];
 
-		if(!$title)
-			returnServerError('Cannot find title!');
+    // Extracts the title from an actitiy
+    private function extractActivityTitle($activity)
+    {
+        $title = $activity->find('a', 0);
 
-		return trim($title->plaintext);
-	}
+        if (!$title) {
+            returnServerError('Cannot find title!');
+        }
 
-	// Extracts the url from an actitiy
-	private function extractActivityUrl($activity){
-		$url = $activity->find('a', 0);
+        return trim($title->plaintext);
+    }
 
-		if(!$url)
-			returnServerError('Cannot find url!');
+    // Extracts the url from an actitiy
+    private function extractActivityUrl($activity)
+    {
+        $url = $activity->find('a', 0);
 
-		return self::URI . $url->href;
-	}
+        if (!$url) {
+            returnServerError('Cannot find url!');
+        }
 
-	// Extracts the time from an activity
-	private function extractActivityTime($activity){
-		// Unfortunately the time is part of the parent node,
-		// so we have to clear all child nodes first
-		$nodes = $activity->find('*');
+        return self::URI . $url->href;
+    }
 
-		if(!$nodes)
-			returnServerError('Cannot find nodes!');
+    // Extracts the time from an activity
+    private function extractActivityTime($activity)
+    {
+        // Unfortunately the time is part of the parent node,
+        // so we have to clear all child nodes first
+        $nodes = $activity->find('*');
 
-		foreach($nodes as $node) {
-			$node->outertext = '';
-		}
+        if (!$nodes) {
+            returnServerError('Cannot find nodes!');
+        }
 
-		return strtotime($activity->innertext);
-	}
+        foreach ($nodes as $node) {
+            $node->outertext = '';
+        }
 
-	// Extracts the price change
-	private function extractActivityPrice($activity){
-		$price = $activity->find('span', 1);
+        return strtotime($activity->innertext);
+    }
 
-		if(!$price)
-			returnServerError('Cannot find price!');
+    // Extracts the price change
+    private function extractActivityPrice($activity)
+    {
+        $price = $activity->find('span', 1);
 
-		return $price->innertext;
-	}
+        if (!$price) {
+            returnServerError('Cannot find price!');
+        }
 
-	public function collectData(){
-		$zip_filter = trim($this->getInput('zip'));
-		$city_filter = trim($this->getInput('city'));
+        return $price->innertext;
+    }
 
-		$html = getSimpleHTMLDOM(self::URI);
+    public function collectData()
+    {
+        $zip_filter = trim($this->getInput('zip'));
+        $city_filter = trim($this->getInput('city'));
 
-		if(!$html)
-			returnServerError('Could not load data from ' . self::URI . '!');
+        $html = getSimpleHTMLDOM(self::URI);
 
-		$activities = $html->find('div#activite > li');
+        if (!$html) {
+            returnServerError('Could not load data from ' . self::URI . '!');
+        }
 
-		if(!$activities)
-			returnServerError('Failed to find activities!');
+        $activities = $html->find('div#activite > li');
 
-		foreach($activities as $activity) {
-			$item = array();
+        if (!$activities) {
+            returnServerError('Failed to find activities!');
+        }
 
-			$item['title'] = $this->extractActivityTitle($activity);
-			$item['uri'] = $this->extractActivityUrl($activity);
-			$item['timestamp'] = $this->extractActivityTime($activity);
-			$item['content'] = '<a href="'
-			. $item['uri']
-			. '">'
-			. $item['title']
-			. '</a><br><p>'
-			. $this->extractActivityPrice($activity)
-			. '</p>';
+        foreach ($activities as $activity) {
+            $item = [];
 
-			if(isset($zip_filter)
-			&& !(substr($item['title'], 0, strlen($zip_filter)) === $zip_filter)) {
-				continue; // Skip this item
-			}
+            $item['title'] = $this->extractActivityTitle($activity);
+            $item['uri'] = $this->extractActivityUrl($activity);
+            $item['timestamp'] = $this->extractActivityTime($activity);
+            $item['content'] = '<a href="'
+            . $item['uri']
+            . '">'
+            . $item['title']
+            . '</a><br><p>'
+            . $this->extractActivityPrice($activity)
+            . '</p>';
 
-			if(isset($city_filter)
-			&& !(substr($item['title'], strpos($item['title'], ' ') + 1, strlen($city_filter)) === $city_filter)) {
-				continue; // Skip this item
-			}
+            if (
+                isset($zip_filter)
+                && !(substr($item['title'], 0, strlen($zip_filter)) === $zip_filter)
+            ) {
+                continue; // Skip this item
+            }
 
-			$this->items[] = $item;
-		}
-	}
+            if (
+                isset($city_filter)
+                && !(substr($item['title'], strpos($item['title'], ' ') + 1, strlen($city_filter)) === $city_filter)
+            ) {
+                continue; // Skip this item
+            }
+
+            $this->items[] = $item;
+        }
+    }
 }

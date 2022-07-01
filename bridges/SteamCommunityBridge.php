@@ -1,191 +1,209 @@
 <?php
-class SteamCommunityBridge extends BridgeAbstract {
-	const NAME = 'Steam Community';
-	const URI = 'https://www.steamcommunity.com';
-	const DESCRIPTION = 'Get the latest community updates for a game on Steam.';
-	const MAINTAINER = 'thefranke';
-	const CACHE_TIMEOUT = 3600; // 1h
 
-	const PARAMETERS = array(
-		array(
-			'i' => array(
-				'name' => 'App ID',
-				'exampleValue' => '730',
-				'required' => true
-			),
-			'category' => array(
-				'name' => 'category',
-				'type' => 'list',
-				'exampleValue' => 'Artwork',
-				'title' => 'Select a category',
-				'values' => array(
-					'Artwork' => 'images',
-					'Screenshots' => 'screenshots',
-					'Videos' => 'videos',
-					'Workshop' => 'workshop'
-				)
-			)
-		)
-	);
+class SteamCommunityBridge extends BridgeAbstract
+{
+    const NAME = 'Steam Community';
+    const URI = 'https://www.steamcommunity.com';
+    const DESCRIPTION = 'Get the latest community updates for a game on Steam.';
+    const MAINTAINER = 'thefranke';
+    const CACHE_TIMEOUT = 3600; // 1h
 
-	public function getIcon() {
-		return self::URI . '/favicon.ico';
-	}
+    const PARAMETERS = [
+        [
+            'i' => [
+                'name' => 'App ID',
+                'exampleValue' => '730',
+                'required' => true
+            ],
+            'category' => [
+                'name' => 'category',
+                'type' => 'list',
+                'exampleValue' => 'Artwork',
+                'title' => 'Select a category',
+                'values' => [
+                    'Artwork' => 'images',
+                    'Screenshots' => 'screenshots',
+                    'Videos' => 'videos',
+                    'Workshop' => 'workshop'
+                ]
+            ]
+        ]
+    ];
 
-	protected function getMainPage() {
-		$category = $this->getInput('category');
-		$html = getSimpleHTMLDOM($this->getURI());
+    public function getIcon()
+    {
+        return self::URI . '/favicon.ico';
+    }
 
-		return $html;
-	}
+    protected function getMainPage()
+    {
+        $category = $this->getInput('category');
+        $html = getSimpleHTMLDOM($this->getURI());
 
-	public function getName() {
-		$category = $this->getInput('category');
+        return $html;
+    }
 
-		if (is_null('i') || is_null($category)) {
-			return self::NAME;
-		}
+    public function getName()
+    {
+        $category = $this->getInput('category');
 
-		$html = $this->getMainPage();
+        if (is_null('i') || is_null($category)) {
+            return self::NAME;
+        }
 
-		$titleItem = $html->find('div.apphub_AppName', 0);
+        $html = $this->getMainPage();
 
-		if (!$titleItem)
-			return self::NAME;
+        $titleItem = $html->find('div.apphub_AppName', 0);
 
-		return $titleItem->innertext . ' (' . ucwords($category) . ')';
-	}
+        if (!$titleItem) {
+            return self::NAME;
+        }
 
-	public function getURI() {
-		if ($this->getInput('category') === 'workshop')
-			return self::URI . '/workshop/browse/?appid='
-				. $this->getInput('i') . '&browsesort=mostrecent';
+        return $titleItem->innertext . ' (' . ucwords($category) . ')';
+    }
 
-		return self::URI . '/app/'
-			. $this->getInput('i') . '/'
-			. $this->getInput('category')
-			. '/?p=1&browsefilter=mostrecent';
-	}
+    public function getURI()
+    {
+        if ($this->getInput('category') === 'workshop') {
+            return self::URI . '/workshop/browse/?appid='
+                . $this->getInput('i') . '&browsesort=mostrecent';
+        }
 
-	private function collectMedia() {
-		$category = $this->getInput('category');
-		$html = $this->getMainPage();
-		$cards = $html->find('div.apphub_Card');
+        return self::URI . '/app/'
+            . $this->getInput('i') . '/'
+            . $this->getInput('category')
+            . '/?p=1&browsefilter=mostrecent';
+    }
 
-		foreach($cards as $card) {
-			$uri = $card->getAttribute('data-modal-content-url');
+    private function collectMedia()
+    {
+        $category = $this->getInput('category');
+        $html = $this->getMainPage();
+        $cards = $html->find('div.apphub_Card');
 
-			$htmlCard = getSimpleHTMLDOMCached($uri);
+        foreach ($cards as $card) {
+            $uri = $card->getAttribute('data-modal-content-url');
 
-			$author = $card->find('div.apphub_CardContentAuthorName', 0)->innertext;
-			$author = strip_tags($author);
+            $htmlCard = getSimpleHTMLDOMCached($uri);
 
-			$title = $author . '\'s screenshot';
+            $author = $card->find('div.apphub_CardContentAuthorName', 0)->innertext;
+            $author = strip_tags($author);
 
-			if ($category != 'screenshots')
-				$title = $htmlCard->find('div.workshopItemTitle', 0)->innertext;
+            $title = $author . '\'s screenshot';
 
-			$date = $htmlCard->find('div.detailsStatRight', 0)->innertext;
+            if ($category != 'screenshots') {
+                $title = $htmlCard->find('div.workshopItemTitle', 0)->innertext;
+            }
 
-			// create item
-			$item = array();
-			$item['title'] = $title;
-			$item['uri'] = $uri;
-			$item['timestamp'] = strtotime($date);
-			$item['author'] = $author;
-			$item['categories'] = $category;
+            $date = $htmlCard->find('div.detailsStatRight', 0)->innertext;
 
-			$media = $htmlCard->getElementById('ActualMedia');
-			$mediaURI = $media->getAttribute('src');
-			$downloadURI = $mediaURI;
+            // create item
+            $item = [];
+            $item['title'] = $title;
+            $item['uri'] = $uri;
+            $item['timestamp'] = strtotime($date);
+            $item['author'] = $author;
+            $item['categories'] = $category;
 
-			if ($category == 'videos') {
-				preg_match('/.*\/embed\/(.*)\?/', $mediaURI, $result);
-				$youtubeID = $result[1];
-				$mediaURI = 'https://img.youtube.com/vi/' . $youtubeID . '/hqdefault.jpg';
-				$downloadURI = 'https://www.youtube.com/watch?v=' . $youtubeID;
-			}
+            $media = $htmlCard->getElementById('ActualMedia');
+            $mediaURI = $media->getAttribute('src');
+            $downloadURI = $mediaURI;
 
-			$desc = '';
+            if ($category == 'videos') {
+                preg_match('/.*\/embed\/(.*)\?/', $mediaURI, $result);
+                $youtubeID = $result[1];
+                $mediaURI = 'https://img.youtube.com/vi/' . $youtubeID . '/hqdefault.jpg';
+                $downloadURI = 'https://www.youtube.com/watch?v=' . $youtubeID;
+            }
 
-			if ($category == 'screenshots') {
-				$descItem = $htmlCard->find('div.screenshotDescription', 0);
-				if ($descItem)
-					$desc = $descItem->innertext;
-			}
+            $desc = '';
 
-			if ($category == 'images') {
-				$descItem = $htmlCard->find('div.nonScreenshotDescription', 0);
-				if ($descItem)
-					$desc = $descItem->innertext;
-				$downloadURI = $htmlCard->find('a.downloadImage', 0)->href;
-			}
+            if ($category == 'screenshots') {
+                $descItem = $htmlCard->find('div.screenshotDescription', 0);
+                if ($descItem) {
+                    $desc = $descItem->innertext;
+                }
+            }
 
-			$item['content'] = '<p><a href="' . $downloadURI . '"><img src="' . $mediaURI . '"/></a></p>';
-			$item['content'] .= '<p>' . $desc . '</p>';
+            if ($category == 'images') {
+                $descItem = $htmlCard->find('div.nonScreenshotDescription', 0);
+                if ($descItem) {
+                    $desc = $descItem->innertext;
+                }
+                $downloadURI = $htmlCard->find('a.downloadImage', 0)->href;
+            }
 
-			$this->items[] = $item;
+            $item['content'] = '<p><a href="' . $downloadURI . '"><img src="' . $mediaURI . '"/></a></p>';
+            $item['content'] .= '<p>' . $desc . '</p>';
 
-			if (count($this->items) >= 10)
-				break;
-		}
-	}
+            $this->items[] = $item;
 
-	private function collectWorkshop() {
-		$category = $this->getInput('category');
-		$html = $this->getMainPage();
-		$workShopItems = $html->find('div.workshopItem');
+            if (count($this->items) >= 10) {
+                break;
+            }
+        }
+    }
 
-		foreach($workShopItems as $workShopItem) {
-			$author = $workShopItem->find('div.workshopItemAuthorName', 0)->find('a', 0);
-			$author = $author->innertext;
+    private function collectWorkshop()
+    {
+        $category = $this->getInput('category');
+        $html = $this->getMainPage();
+        $workShopItems = $html->find('div.workshopItem');
 
-			$fileRating = $workShopItem->find('img.fileRating', 0);
+        foreach ($workShopItems as $workShopItem) {
+            $author = $workShopItem->find('div.workshopItemAuthorName', 0)->find('a', 0);
+            $author = $author->innertext;
 
-			$uri = $workShopItem->find('a.ugc', 0)->getAttribute('href');
+            $fileRating = $workShopItem->find('img.fileRating', 0);
 
-			$htmlItem = getSimpleHTMLDOMCached($uri);
+            $uri = $workShopItem->find('a.ugc', 0)->getAttribute('href');
 
-			$title = $htmlItem->find('div.workshopItemTitle', 0)->innertext;
-			$date = $htmlItem->find('div.detailsStatRight', 0)->innertext;
-			$description = $htmlItem->find('div.workshopItemDescription', 0)->innertext;
+            $htmlItem = getSimpleHTMLDOMCached($uri);
 
-			$previewImage = $htmlItem->find('#previewImage', 0);
+            $title = $htmlItem->find('div.workshopItemTitle', 0)->innertext;
+            $date = $htmlItem->find('div.detailsStatRight', 0)->innertext;
+            $description = $htmlItem->find('div.workshopItemDescription', 0)->innertext;
 
-			$htmlTags = $htmlItem->find('div.workshopTags');
+            $previewImage = $htmlItem->find('#previewImage', 0);
 
-			$tags = '';
+            $htmlTags = $htmlItem->find('div.workshopTags');
 
-			foreach($htmlTags as $htmlTag) {
-				if ($tags !== '')
-					$tags .= ',';
+            $tags = '';
 
-				$tags .= $htmlTag->find('a', 0)->innertext;
-			}
+            foreach ($htmlTags as $htmlTag) {
+                if ($tags !== '') {
+                    $tags .= ',';
+                }
 
-			// create item
-			$item = array();
-			$item['title'] = $title;
-			$item['uri'] = $uri;
-			$item['timestamp'] = strtotime($date);
-			$item['author'] = $author;
-			$item['categories'] = $category;
+                $tags .= $htmlTag->find('a', 0)->innertext;
+            }
 
-			$item['content'] = '<p><a href="' . $uri . '">'
-				. $previewImage . '</a></p><p>' . $fileRating
-				. '</p><p>' . $description . '</p>';
+            // create item
+            $item = [];
+            $item['title'] = $title;
+            $item['uri'] = $uri;
+            $item['timestamp'] = strtotime($date);
+            $item['author'] = $author;
+            $item['categories'] = $category;
 
-			$this->items[] = $item;
+            $item['content'] = '<p><a href="' . $uri . '">'
+                . $previewImage . '</a></p><p>' . $fileRating
+                . '</p><p>' . $description . '</p>';
 
-			if (count($this->items) >= 10)
-				break;
-		}
-	}
+            $this->items[] = $item;
 
-	public function collectData() {
-		if ($this->getInput('category') === 'workshop')
-			$this->collectWorkshop();
-		else
-			$this->collectMedia();
-	}
+            if (count($this->items) >= 10) {
+                break;
+            }
+        }
+    }
+
+    public function collectData()
+    {
+        if ($this->getInput('category') === 'workshop') {
+            $this->collectWorkshop();
+        } else {
+            $this->collectMedia();
+        }
+    }
 }

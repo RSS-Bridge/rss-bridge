@@ -1,96 +1,97 @@
 <?php
-class HtmlFormat extends FormatAbstract {
-	const MIME_TYPE = 'text/html';
 
-	public function stringify(){
-		$extraInfos = $this->getExtraInfos();
-		$title = htmlspecialchars($extraInfos['name']);
-		$uri = htmlspecialchars($extraInfos['uri']);
-		$donationUri = htmlspecialchars($extraInfos['donationUri']);
-		$donationsAllowed = Configuration::getConfig('admin', 'donations');
+class HtmlFormat extends FormatAbstract
+{
+    const MIME_TYPE = 'text/html';
 
-		// Dynamically build buttons for all formats (except HTML)
-		$formatFac = new FormatFactory();
+    public function stringify()
+    {
+        $extraInfos = $this->getExtraInfos();
+        $title = htmlspecialchars($extraInfos['name']);
+        $uri = htmlspecialchars($extraInfos['uri']);
+        $donationUri = htmlspecialchars($extraInfos['donationUri']);
+        $donationsAllowed = Configuration::getConfig('admin', 'donations');
 
-		$buttons = '';
-		$links = '';
+        // Dynamically build buttons for all formats (except HTML)
+        $formatFac = new FormatFactory();
 
-		foreach($formatFac->getFormatNames() as $format) {
-			if(strcasecmp($format, 'HTML') === 0) {
-				continue;
-			}
+        $buttons = '';
+        $links = '';
 
-			$query = str_ireplace('format=Html', 'format=' . $format, htmlentities($_SERVER['QUERY_STRING']));
-			$buttons .= $this->buildButton($format, $query) . PHP_EOL;
+        foreach ($formatFac->getFormatNames() as $format) {
+            if (strcasecmp($format, 'HTML') === 0) {
+                continue;
+            }
 
-			$mime = $formatFac->create($format)->getMimeType();
-			$links .= $this->buildLink($format, $query, $mime) . PHP_EOL;
-		}
+            $query = str_ireplace('format=Html', 'format=' . $format, htmlentities($_SERVER['QUERY_STRING']));
+            $buttons .= $this->buildButton($format, $query) . PHP_EOL;
 
-		if($donationUri !== '' && $donationsAllowed) {
-			$buttons .= '<a href="'
-						. $donationUri
-						. '" target="_blank"><button class="highlight">Donate to maintainer</button></a>'
-						. PHP_EOL;
-			$links .= '<link href="'
-						. $donationUri
-						. ' target="_blank"" title="Donate to Maintainer" rel="alternate">'
-						. PHP_EOL;
-		}
+            $mime = $formatFac->create($format)->getMimeType();
+            $links .= $this->buildLink($format, $query, $mime) . PHP_EOL;
+        }
 
-		$entries = '';
-		foreach($this->getItems() as $item) {
-			$entryAuthor = $item->getAuthor() ? '<br /><p class="author">by: ' . $item->getAuthor() . '</p>' : '';
-			$entryTitle = $this->sanitizeHtml(strip_tags($item->getTitle()));
-			$entryUri = $item->getURI() ?: $uri;
+        if ($donationUri !== '' && $donationsAllowed) {
+            $buttons .= '<a href="'
+                        . $donationUri
+                        . '" target="_blank"><button class="highlight">Donate to maintainer</button></a>'
+                        . PHP_EOL;
+            $links .= '<link href="'
+                        . $donationUri
+                        . ' target="_blank"" title="Donate to Maintainer" rel="alternate">'
+                        . PHP_EOL;
+        }
 
-			$entryDate = '';
-			if($item->getTimestamp()) {
+        $entries = '';
+        foreach ($this->getItems() as $item) {
+            $entryAuthor = $item->getAuthor() ? '<br /><p class="author">by: ' . $item->getAuthor() . '</p>' : '';
+            $entryTitle = $this->sanitizeHtml(strip_tags($item->getTitle()));
+            $entryUri = $item->getURI() ?: $uri;
 
-				$entryDate = sprintf(
-					'<time datetime="%s">%s</time>',
-					date('Y-m-d H:i:s', $item->getTimestamp()),
-					date('Y-m-d H:i:s', $item->getTimestamp())
-				);
-			}
+            $entryDate = '';
+            if ($item->getTimestamp()) {
+                $entryDate = sprintf(
+                    '<time datetime="%s">%s</time>',
+                    date('Y-m-d H:i:s', $item->getTimestamp()),
+                    date('Y-m-d H:i:s', $item->getTimestamp())
+                );
+            }
 
-			$entryContent = '';
-			if($item->getContent()) {
-				$entryContent = '<div class="content">'
-				. $this->sanitizeHtml($item->getContent())
-				. '</div>';
-			}
+            $entryContent = '';
+            if ($item->getContent()) {
+                $entryContent = '<div class="content">'
+                . $this->sanitizeHtml($item->getContent())
+                . '</div>';
+            }
 
-			$entryEnclosures = '';
-			if(!empty($item->getEnclosures())) {
-				$entryEnclosures = '<div class="attachments"><p>Attachments:</p>';
+            $entryEnclosures = '';
+            if (!empty($item->getEnclosures())) {
+                $entryEnclosures = '<div class="attachments"><p>Attachments:</p>';
 
-				foreach($item->getEnclosures() as $enclosure) {
-					$template = '<li class="enclosure"><a href="%s" rel="noopener noreferrer nofollow">%s</a></li>';
-					$url = $this->sanitizeHtml($enclosure);
-					$anchorText = substr($url, strrpos($url, '/') + 1);
+                foreach ($item->getEnclosures() as $enclosure) {
+                    $template = '<li class="enclosure"><a href="%s" rel="noopener noreferrer nofollow">%s</a></li>';
+                    $url = $this->sanitizeHtml($enclosure);
+                    $anchorText = substr($url, strrpos($url, '/') + 1);
 
-					$entryEnclosures .= sprintf($template, $url, $anchorText);
-				}
+                    $entryEnclosures .= sprintf($template, $url, $anchorText);
+                }
 
-				$entryEnclosures .= '</div>';
-			}
+                $entryEnclosures .= '</div>';
+            }
 
-			$entryCategories = '';
-			if(!empty($item->getCategories())) {
-				$entryCategories = '<div class="categories"><p>Categories:</p>';
+            $entryCategories = '';
+            if (!empty($item->getCategories())) {
+                $entryCategories = '<div class="categories"><p>Categories:</p>';
 
-				foreach($item->getCategories() as $category) {
+                foreach ($item->getCategories() as $category) {
+                    $entryCategories .= '<li class="category">'
+                    . $this->sanitizeHtml($category)
+                    . '</li>';
+                }
 
-					$entryCategories .= '<li class="category">'
-					. $this->sanitizeHtml($category)
-					. '</li>';
-				}
+                $entryCategories .= '</div>';
+            }
 
-				$entryCategories .= '</div>';
-			}
-
-			$entries .= <<<EOD
+            $entries .= <<<EOD
 
 <section class="feeditem">
 	<h2><a class="itemtitle" href="{$entryUri}">{$entryTitle}</a></h2>
@@ -102,12 +103,12 @@ class HtmlFormat extends FormatAbstract {
 </section>
 
 EOD;
-		}
+        }
 
-		$charset = $this->getCharset();
+        $charset = $this->getCharset();
 
-		/* Data are prepared, now let's begin the "MAGIE !!!" */
-		$toReturn = <<<EOD
+        /* Data are prepared, now let's begin the "MAGIE !!!" */
+        $toReturn = <<<EOD
 <!DOCTYPE html>
 <html>
 <head>
@@ -130,22 +131,24 @@ EOD;
 </html>
 EOD;
 
-		// Remove invalid characters
-		ini_set('mbstring.substitute_character', 'none');
-		$toReturn = mb_convert_encoding($toReturn, $this->getCharset(), 'UTF-8');
-		return $toReturn;
-	}
+        // Remove invalid characters
+        ini_set('mbstring.substitute_character', 'none');
+        $toReturn = mb_convert_encoding($toReturn, $this->getCharset(), 'UTF-8');
+        return $toReturn;
+    }
 
-	private function buildButton($format, $query) {
-		return <<<EOD
+    private function buildButton($format, $query)
+    {
+        return <<<EOD
 <a href="./?{$query}"><button class="rss-feed">{$format}</button></a>
 EOD;
-	}
+    }
 
-	private function buildLink($format, $query, $mime) {
-		return <<<EOD
+    private function buildLink($format, $query, $mime)
+    {
+        return <<<EOD
 <link href="./?{$query}" title="{$format}" rel="alternate" type="{$mime}">
 
 EOD;
-	}
+    }
 }
