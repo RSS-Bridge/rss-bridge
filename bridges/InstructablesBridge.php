@@ -269,7 +269,7 @@ class InstructablesBridge extends BridgeAbstract {
 
 	public function getName() {
 		switch($this->queriedContext) {
-			case 'Category': {
+			case 'Category':
 				foreach(self::PARAMETERS[$this->queriedContext]['category']['values'] as $key => $value) {
 					$subcategory = array_search($this->getInput('category'), $value);
 
@@ -283,7 +283,6 @@ class InstructablesBridge extends BridgeAbstract {
 				);
 
 				return $subcategory . ' (' . $filter . ') - ' . static::NAME;
-			} break;
 		}
 
 		return parent::getName();
@@ -291,11 +290,10 @@ class InstructablesBridge extends BridgeAbstract {
 
 	public function getURI() {
 		switch($this->queriedContext) {
-			case 'Category': {
+			case 'Category':
 				return self::URI
 				. $this->getInput('category')
 				. $this->getInput('filter');
-			} break;
 		}
 
 		return parent::getURI();
