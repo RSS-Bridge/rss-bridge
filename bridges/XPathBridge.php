@@ -120,6 +120,18 @@ EOL
                 'required' => false
             ],
 
+            'enclosuresPosition' => [
+                'type' => 'list',
+                'name' => 'Item image position',
+                'title' => 'You can specify if you want to embed the image inside the description (before/after) or as enclosure',
+                'values' => [
+                    'As enclosure' => 'Enclosures',
+                    'Before description' => 'BeforeContent',
+                    'After description' => 'AfterContent',
+                ],
+                'defaultValue' => 'Enclosures',
+            ],
+
             'categories' => [
                 'name' => 'Item category selector',
                 'title' => <<<"EOL"
@@ -226,6 +238,15 @@ EOL
     }
 
     /**
+     * Item Enclosures Position
+     * @return string
+     */
+    protected function getItemEnclosuresPosition()
+    {
+        return $this->getInput('enclosuresPosition');
+    }
+
+    /**
      * XPath expression for extracting an item category from the item context
      * @return string
      */
@@ -241,6 +262,14 @@ EOL
     protected function getSettingFixEncoding()
     {
         return $this->getInput('fix_encoding');
+    }
+
+    public function getItems()
+    {
+        foreach ($this->items as $item) {
+            $this->setEnclosuresPosition($item);
+        }
+        return $this->items;
     }
 
     /**
@@ -260,5 +289,58 @@ EOL
         $uri = str_replace('|', '%7C', $uri);
 
         return $uri;
+    }
+
+    protected function setEnclosuresPosition($item)
+    {
+        $enclosuresPosition = $this->getItemEnclosuresPosition();
+        $hasEnclosureInsideContent = str_contains($enclosuresPosition, 'Content');
+
+        if ($hasEnclosureInsideContent) {
+            $content = $item->getContent();
+            $enclosures = $item->getEnclosures();
+
+            $content = $this->getContentWithEnclosures($enclosures[0], $enclosuresPosition, $content);
+            $item->setContent($content);
+            $item->setEnclosures(null);
+        }
+    }
+
+    /**
+     * @param string $enclosuresParam
+     * @param string $typedResult
+     * @param string $enclosuresPosition
+     * @return string
+     */
+
+    protected function getContentWithEnclosures($enclosuresUrl, $enclosuresPosition, $originalContent)
+    {
+        $enclosureHtml = $this->getEnclosuresAsHtml('image', $enclosuresUrl);
+
+        if ($enclosuresPosition === 'BeforeContent') {
+            $content = $enclosureHtml . '<br/>' . $originalContent;
+        }
+        if ($enclosuresPosition === 'AfterContent') {
+            $content = $originalContent . '<br/>' . $enclosureHtml;
+        }
+
+        return $content;
+    }
+
+    /**
+     * @param string $mediaType
+     * @param string $url
+     * @return string
+     */
+
+    protected function getEnclosuresAsHtml($mediaType, $url)
+    {
+        if ($mediaType === 'image') {
+            return '<img src="'
+                . $url
+                . '" />';
+        }
+
+        return '';
     }
 }
