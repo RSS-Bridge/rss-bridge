@@ -1,99 +1,111 @@
 <?php
-class VixenBridge extends BridgeAbstract {
-	const NAME = 'Vixen Network Bridge';
-	const URI = 'https://www.vixen.com';
-	const DESCRIPTION = 'Latest videos from Vixen Network sites';
-	const MAINTAINER = 'pubak42';
 
-	/**
-	 * The pictures on the pages are referenced with temporary links with
-	 * limited validity. Greater cache timeout results in invalid links in
-	 * the feed
-	 */
-	const CACHE_TIMEOUT = 60;
+class VixenBridge extends BridgeAbstract
+{
+    const NAME = 'Vixen Network Bridge';
+    const URI = 'https://www.vixen.com';
+    const DESCRIPTION = 'Latest videos from Vixen Network sites';
+    const MAINTAINER = 'pubak42';
 
-	const PARAMETERS = array(
-		array(
-			'site' => array(
-				'type' => 'list',
-				'name' => 'Site',
-				'title' => 'Choose site of interest',
-				'values' => array(
-					'Blacked' => 'Blacked',
-					'BlackedRaw' => 'BlackedRaw',
-					'Tushy' => 'Tushy',
-					'TushyRaw' => 'TushyRaw',
-					'Vixen' => 'Vixen',
-					'Slayed' => 'Slayed',
-					'Deeper' => 'Deeper'
-				),
-			)
-		)
-	);
+    /**
+     * The pictures on the pages are referenced with temporary links with
+     * limited validity. Greater cache timeout results in invalid links in
+     * the feed
+     */
+    const CACHE_TIMEOUT = 60;
 
-	public function collectData() {
-		$videosURL = $this->getURI() . '/videos';
+    const PARAMETERS = [
+        [
+            'site' => [
+                'type' => 'list',
+                'name' => 'Site',
+                'title' => 'Choose site of interest',
+                'values' => [
+                    'Blacked' => 'Blacked',
+                    'BlackedRaw' => 'BlackedRaw',
+                    'Tushy' => 'Tushy',
+                    'TushyRaw' => 'TushyRaw',
+                    'Vixen' => 'Vixen',
+                    'Slayed' => 'Slayed',
+                    'Deeper' => 'Deeper'
+                ],
+            ]
+        ]
+    ];
 
-		$website = getSimpleHTMLDOM($videosURL);
-		$json = $website->getElementById('__NEXT_DATA__');
-		$data = json_decode($json->innertext(), true);
-		$nodes = array_column($data['props']['pageProps']['edges'], 'node');
+    public function collectData()
+    {
+        $videosURL = $this->getURI() . '/videos';
 
-		foreach($nodes as $n) {
-			$imageURL = $n['images']['listing'][2]['highdpi']['triple'];
+        $website = getSimpleHTMLDOM($videosURL);
+        $json = $website->getElementById('__NEXT_DATA__');
+        $data = json_decode($json->innertext(), true);
+        $nodes = array_column($data['props']['pageProps']['edges'], 'node');
 
-			$item = [
-				'title' => $n['title'],
-				'uri' => "$videosURL/$n[slug]",
-				'uid' => $n['videoId'],
-				'timestamp' => strtotime($n['releaseDate']),
-				'enclosures' => [ $imageURL ],
-				'author' => implode(' & ', array_column($n['modelsSlugged'], 'name')),
-			];
+        foreach ($nodes as $n) {
+            $imageURL = $n['images']['listing'][2]['highdpi']['triple'];
 
-			/*
-			 * No images retrieved from here. Should be cached for as long as
-			 * possible to avoid rate throttling
-			 */
-			$target = getSimpleHtmlDOMCached($item['uri'], 86400);
-			$item['content'] = $this->generateContent($imageURL,
-					$target->find('meta[name=description]', 0)->content,
-					$n['modelsSlugged']);
+            $item = [
+                'title' => $n['title'],
+                'uri' => "$videosURL/$n[slug]",
+                'uid' => $n['videoId'],
+                'timestamp' => strtotime($n['releaseDate']),
+                'enclosures' => [ $imageURL ],
+                'author' => implode(' & ', array_column($n['modelsSlugged'], 'name')),
+            ];
 
-			$item['categories'] = array_map('ucwords',
-					explode(',', $target->find('meta[name=keywords]', 0)->content));
+            /*
+             * No images retrieved from here. Should be cached for as long as
+             * possible to avoid rate throttling
+             */
+            $target = getSimpleHtmlDOMCached($item['uri'], 86400);
+            $item['content'] = $this->generateContent(
+                $imageURL,
+                $target->find('meta[name=description]', 0)->content,
+                $n['modelsSlugged']
+            );
 
-			$this->items[] = $item;
-		}
-	}
+            $item['categories'] = array_map(
+                'ucwords',
+                explode(',', $target->find('meta[name=keywords]', 0)->content)
+            );
 
-	public function getURI() {
-		$param = $this->getInput('site');
-		return $param ? "https://www.$param.com" : self::URI;
-	}
+            $this->items[] = $item;
+        }
+    }
 
-	/**
-	 * Return name of the bridge. Default is needed for bridge index list
-	 */
-	public function getName() {
-		$param = $this->getInput('site');
-		return $param ? "$param Bridge" : self::NAME;
-	}
+    public function getURI()
+    {
+        $param = $this->getInput('site');
+        return $param ? "https://www.$param.com" : self::URI;
+    }
 
-	private static function makeLink($URI, $text) {
-		return "<a href=\"$URI\">$text</a>";
-	}
+    /**
+     * Return name of the bridge. Default is needed for bridge index list
+     */
+    public function getName()
+    {
+        $param = $this->getInput('site');
+        return $param ? "$param Bridge" : self::NAME;
+    }
 
-	private function generateContent($imageURI, $description, $models) {
-		$content = "<img src=\"$imageURI\" referrerpolicy=\"no-referrer\"/><p>$description</p>";
-		$modelLinks = array_map(
-			function($model) {
-				return self::makeLink(
-					$this->getURI() . "/models/$model[slugged]",
-					$model['name']);
-			},
-			$models
-		);
-		return $content . '<p>Starring: ' . implode(' & ', $modelLinks) . '</p>';
-	}
+    private static function makeLink($URI, $text)
+    {
+        return "<a href=\"$URI\">$text</a>";
+    }
+
+    private function generateContent($imageURI, $description, $models)
+    {
+        $content = "<img src=\"$imageURI\" referrerpolicy=\"no-referrer\"/><p>$description</p>";
+        $modelLinks = array_map(
+            function ($model) {
+                return self::makeLink(
+                    $this->getURI() . "/models/$model[slugged]",
+                    $model['name']
+                );
+            },
+            $models
+        );
+        return $content . '<p>Starring: ' . implode(' & ', $modelLinks) . '</p>';
+    }
 }

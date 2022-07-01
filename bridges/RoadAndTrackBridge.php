@@ -1,72 +1,71 @@
 <?php
 
-class RoadAndTrackBridge extends BridgeAbstract {
-	const MAINTAINER = 'teromene';
-	const NAME = 'Road And Track Bridge';
-	const URI = 'https://www.roadandtrack.com/';
-	const CACHE_TIMEOUT = 86400; // 24h
-	const DESCRIPTION = 'Returns the latest news from Road & Track.';
+class RoadAndTrackBridge extends BridgeAbstract
+{
+    const MAINTAINER = 'teromene';
+    const NAME = 'Road And Track Bridge';
+    const URI = 'https://www.roadandtrack.com/';
+    const CACHE_TIMEOUT = 86400; // 24h
+    const DESCRIPTION = 'Returns the latest news from Road & Track.';
 
-	public function collectData() {
+    public function collectData()
+    {
+        $page = getSimpleHTMLDOM(self::URI);
 
-		$page = getSimpleHTMLDOM(self::URI);
+        $limit = 5;
 
-		$limit = 5;
+        foreach ($page->find('a.enk2x9t2') as $article) {
+            $this->items[] = $this->fetchArticle($article->href);
 
-		foreach($page->find('a.enk2x9t2') as $article) {
-			$this->items[] = $this->fetchArticle($article->href);
+            if (count($this->items) >= $limit) {
+                break;
+            }
+        }
+    }
 
-			if (count($this->items) >= $limit) {
-				break;
-			}
-		}
-	}
+    private function fixImages($content)
+    {
+        $enclosures = [];
+        foreach ($content->find('img') as $image) {
+            $image->src = explode('?', $image->getAttribute('data-src'))[0];
+            $enclosures[] = $image->src;
+        }
 
-	private function fixImages($content) {
+        foreach ($content->find('.embed-image-wrap, .content-lede-image-wrap') as $imgContainer) {
+            $imgContainer->style = '';
+        }
 
-		$enclosures = array();
-		foreach($content->find('img') as $image) {
-			$image->src = explode('?', $image->getAttribute('data-src'))[0];
-			$enclosures[] = $image->src;
-		}
+        return $enclosures;
+    }
 
-		foreach($content->find('.embed-image-wrap, .content-lede-image-wrap') as $imgContainer) {
-			$imgContainer->style = '';
-		}
+    private function fetchArticle($articleLink)
+    {
+        $articleLink = self::URI . $articleLink;
+        $article = getSimpleHTMLDOM($articleLink);
+        $item = [];
 
-		return $enclosures;
-	}
+        $title = $article->find('.content-hed', 0);
+        if ($title) {
+            $item['title'] = $title->innertext;
+        }
 
-	private function fetchArticle($articleLink) {
+        $item['author'] = $article->find('.byline-name', 0)->innertext;
+        $item['timestamp'] = strtotime($article->find('.content-info-date', 0)->getAttribute('datetime'));
 
-		$articleLink = self::URI . $articleLink;
-		$article = getSimpleHTMLDOM($articleLink);
-		$item = array();
+        $content = $article->find('.content-container', 0);
+        if ($content->find('.content-rail', 0) !== null) {
+            $content->find('.content-rail', 0)->innertext = '';
+        }
 
-		$title = $article->find('.content-hed', 0);
-		if ($title) {
-			$item['title'] = $title->innertext;
-		}
+        $enclosures = $this->fixImages($content);
 
-		$item['author'] = $article->find('.byline-name', 0)->innertext;
-		$item['timestamp'] = strtotime($article->find('.content-info-date', 0)->getAttribute('datetime'));
+        $item['enclosures'] = $enclosures;
+        $item['content'] = $content;
+        return $item;
+    }
 
-		$content = $article->find('.content-container', 0);
-		if($content->find('.content-rail', 0) !== null) {
-			$content->find('.content-rail', 0)->innertext = '';
-		}
-
-		$enclosures = $this->fixImages($content);
-
-		$item['enclosures'] = $enclosures;
-		$item['content'] = $content;
-		return $item;
-
-	}
-
-	private function getArticleContent($article) {
-
-		return getContents($article->contentUrl);
-
-	}
+    private function getArticleContent($article)
+    {
+        return getContents($article->contentUrl);
+    }
 }

@@ -1,175 +1,197 @@
 <?php
 
-class VimeoBridge extends BridgeAbstract {
+class VimeoBridge extends BridgeAbstract
+{
+    const NAME = 'Vimeo Bridge';
+    const URI = 'https://vimeo.com/';
+    const DESCRIPTION = 'Returns search results from Vimeo';
+    const MAINTAINER = 'logmanoriginal';
 
-	const NAME = 'Vimeo Bridge';
-	const URI = 'https://vimeo.com/';
-	const DESCRIPTION = 'Returns search results from Vimeo';
-	const MAINTAINER = 'logmanoriginal';
+    const PARAMETERS = [
+        [
+            'q' => [
+                'name' => 'Search Query',
+                'type' => 'text',
+                'exampleValue' => 'birds',
+                'required' => true
+            ],
+            'type' => [
+                'name' => 'Show results for',
+                'type' => 'list',
+                'defaultValue' => 'Videos',
+                'values' => [
+                    'Videos' => 'search',
+                    'On Demand' => 'search/ondemand',
+                    'People' => 'search/people',
+                    'Channels' => 'search/channels',
+                    'Groups' => 'search/groups'
+                ]
+            ]
+        ]
+    ];
 
-	const PARAMETERS = array(
-		array(
-			'q' => array(
-				'name' => 'Search Query',
-				'type' => 'text',
-				'exampleValue' => 'birds',
-				'required' => true
-			),
-			'type' => array(
-				'name' => 'Show results for',
-				'type' => 'list',
-				'defaultValue' => 'Videos',
-				'values' => array(
-					'Videos' => 'search',
-					'On Demand' => 'search/ondemand',
-					'People' => 'search/people',
-					'Channels' => 'search/channels',
-					'Groups' => 'search/groups'
-				)
-			)
-		)
-	);
+    public function getURI()
+    {
+        if (
+            ($query = $this->getInput('q'))
+            && ($type = $this->getInput('type'))
+        ) {
+            return self::URI . $type . '/sort:latest?q=' . $query;
+        }
 
-	public function getURI() {
-		if(($query = $this->getInput('q'))
-		&& ($type = $this->getInput('type'))) {
-			return self::URI . $type . '/sort:latest?q=' . $query;
-		}
+        return parent::getURI();
+    }
 
-		return parent::getURI();
-	}
+    public function collectData()
+    {
+        $html = getSimpleHTMLDOM(
+            $this->getURI(),
+            $header = [],
+            $opts = [],
+            $lowercase = true,
+            $forceTagsClosed = true,
+            $target_charset = DEFAULT_TARGET_CHARSET,
+            $stripRN = false, // We want to keep newline characters
+            $defaultBRText = DEFAULT_BR_TEXT,
+            $defaultSpanText = DEFAULT_SPAN_TEXT
+        );
 
-	public function collectData() {
+        $json = null; // Holds the JSON data
 
-		$html = getSimpleHTMLDOM($this->getURI(),
-			$header = array(),
-			$opts = array(),
-			$lowercase = true,
-			$forceTagsClosed = true,
-			$target_charset = DEFAULT_TARGET_CHARSET,
-			$stripRN = false, // We want to keep newline characters
-			$defaultBRText = DEFAULT_BR_TEXT,
-			$defaultSpanText = DEFAULT_SPAN_TEXT);
+        /**
+         * Search results are included as JSON formatted string inside a script
+         * tag that has the variable 'vimeo.config'. The data is condensed into
+         * a single line of code, so we can just search for the newline.
+         *
+         * Everything after "vimeo.config = _extend((vimeo.config || {}), " is
+         * the JSON formatted string.
+         */
+        foreach ($html->find('script') as $script) {
+            foreach (explode("\n", $script) as $line) {
+                $line = trim($line);
 
-		$json = null; // Holds the JSON data
+                if (strpos($line, 'vimeo.config') !== 0) {
+                    continue;
+                }
 
-		/**
-		 * Search results are included as JSON formatted string inside a script
-		 * tag that has the variable 'vimeo.config'. The data is condensed into
-		 * a single line of code, so we can just search for the newline.
-		 *
-		 * Everything after "vimeo.config = _extend((vimeo.config || {}), " is
-		 * the JSON formatted string.
-		 */
-		foreach($html->find('script') as $script) {
-			foreach(explode("\n", $script) as $line) {
-				$line = trim($line);
+                // 45 = strlen("vimeo.config = _extend((vimeo.config || {}), ");
+                // 47 = 45 + 2, because we don't want the final ");"
+                $json = json_decode(substr($line, 45, strlen($line) - 47));
+            }
+        }
 
-				if(strpos($line, 'vimeo.config') !== 0)
-					continue;
+        if (is_null($json)) {
+            returnClientError('No results for this query!');
+        }
 
-				// 45 = strlen("vimeo.config = _extend((vimeo.config || {}), ");
-				// 47 = 45 + 2, because we don't want the final ");"
-				$json = json_decode(substr($line, 45, strlen($line) - 47));
-			}
-		}
+        foreach ($json->api->initial_json->data as $element) {
+            switch ($element->type) {
+                case 'clip':
+                    $this->addClip($element);
+                    break;
+                case 'ondemand':
+                    $this->addOnDemand($element);
+                    break;
+                case 'people':
+                    $this->addPeople($element);
+                    break;
+                case 'channel':
+                    $this->addChannel($element);
+                    break;
+                case 'group':
+                    $this->addGroup($element);
+                    break;
 
-		if(is_null($json)) {
-			returnClientError('No results for this query!');
-		}
+                default:
+                    returnServerError('Unknown type: ' . $element->type);
+            }
+        }
+    }
 
-		foreach($json->api->initial_json->data as $element) {
-			switch($element->type) {
-				case 'clip': $this->addClip($element); break;
-				case 'ondemand': $this->addOnDemand($element); break;
-				case 'people': $this->addPeople($element); break;
-				case 'channel': $this->addChannel($element); break;
-				case 'group': $this->addGroup($element); break;
+    private function addClip($element)
+    {
+        $item = [];
 
-				default: returnServerError('Unknown type: ' . $element->type);
-			}
-		}
+        $item['uri'] = $element->clip->link;
+        $item['title'] = $element->clip->name;
+        $item['author'] = $element->clip->user->name;
+        $item['timestamp'] = strtotime($element->clip->created_time);
 
-	}
+        $item['enclosures'] = [
+            end($element->clip->pictures->sizes)->link
+        ];
 
-	private function addClip($element) {
-		$item = array();
+        $item['content'] = "<img src={$item['enclosures'][0]} />";
 
-		$item['uri'] = $element->clip->link;
-		$item['title'] = $element->clip->name;
-		$item['author'] = $element->clip->user->name;
-		$item['timestamp'] = strtotime($element->clip->created_time);
+        $this->items[] = $item;
+    }
 
-		$item['enclosures'] = array(
-			end($element->clip->pictures->sizes)->link
-		);
+    private function addOnDemand($element)
+    {
+        $item = [];
 
-		$item['content'] = "<img src={$item['enclosures'][0]} />";
+        $item['uri'] = $element->ondemand->link;
+        $item['title'] = $element->ondemand->name;
 
-		$this->items[] = $item;
-	}
+        // Only for films
+        if (isset($element->ondemand->film)) {
+            $item['timestamp'] = strtotime($element->ondemand->film->release_time);
+        }
 
-	private function addOnDemand($element) {
-		$item = array();
+        $item['enclosures'] = [
+            end($element->ondemand->pictures->sizes)->link
+        ];
 
-		$item['uri'] = $element->ondemand->link;
-		$item['title'] = $element->ondemand->name;
+        $item['content'] = "<img src={$item['enclosures'][0]} />";
 
-		// Only for films
-		if(isset($element->ondemand->film))
-			$item['timestamp'] = strtotime($element->ondemand->film->release_time);
+        $this->items[] = $item;
+    }
 
-		$item['enclosures'] = array(
-			end($element->ondemand->pictures->sizes)->link
-		);
+    private function addPeople($element)
+    {
+        $item = [];
 
-		$item['content'] = "<img src={$item['enclosures'][0]} />";
+        $item['uri'] = $element->people->link;
+        $item['title'] = $element->people->name;
 
-		$this->items[] = $item;
-	}
+        $item['enclosures'] = [
+            end($element->people->pictures->sizes)->link
+        ];
 
-	private function addPeople($element) {
-		$item = array();
+        $item['content'] = "<img src={$item['enclosures'][0]} />";
 
-		$item['uri'] = $element->people->link;
-		$item['title'] = $element->people->name;
+        $this->items[] = $item;
+    }
 
-		$item['enclosures'] = array(
-			end($element->people->pictures->sizes)->link
-		);
+    private function addChannel($element)
+    {
+        $item = [];
 
-		$item['content'] = "<img src={$item['enclosures'][0]} />";
+        $item['uri'] = $element->channel->link;
+        $item['title'] = $element->channel->name;
 
-		$this->items[] = $item;
-	}
+        $item['enclosures'] = [
+            end($element->channel->pictures->sizes)->link
+        ];
 
-	private function addChannel($element) {
-		$item = array();
+        $item['content'] = "<img src={$item['enclosures'][0]} />";
 
-		$item['uri'] = $element->channel->link;
-		$item['title'] = $element->channel->name;
+        $this->items[] = $item;
+    }
 
-		$item['enclosures'] = array(
-			end($element->channel->pictures->sizes)->link
-		);
+    private function addGroup($element)
+    {
+        $item = [];
 
-		$item['content'] = "<img src={$item['enclosures'][0]} />";
+        $item['uri'] = $element->group->link;
+        $item['title'] = $element->group->name;
 
-		$this->items[] = $item;
-	}
+        $item['enclosures'] = [
+            end($element->group->pictures->sizes)->link
+        ];
 
-	private function addGroup($element) {
-		$item = array();
+        $item['content'] = "<img src={$item['enclosures'][0]} />";
 
-		$item['uri'] = $element->group->link;
-		$item['title'] = $element->group->name;
-
-		$item['enclosures'] = array(
-			end($element->group->pictures->sizes)->link
-		);
-
-		$item['content'] = "<img src={$item['enclosures'][0]} />";
-
-		$this->items[] = $item;
-	}
+        $this->items[] = $item;
+    }
 }

@@ -1,48 +1,50 @@
 <?php
-class WallmineNewsBridge extends BridgeAbstract {
-	const NAME = 'Wallmine News Bridge';
-	const URI = 'https://wallmine.com';
-	const DESCRIPTION = 'Returns financial news';
-	const MAINTAINER = 'VerifiedJoseph';
-	const PARAMETERS = array();
 
-	const CACHE_TIMEOUT = 900; // 15 mins
+class WallmineNewsBridge extends BridgeAbstract
+{
+    const NAME = 'Wallmine News Bridge';
+    const URI = 'https://wallmine.com';
+    const DESCRIPTION = 'Returns financial news';
+    const MAINTAINER = 'VerifiedJoseph';
+    const PARAMETERS = [];
 
-	public function collectData() {
-		$html = getSimpleHTMLDOM($this->getURI() . '/news/');
+    const CACHE_TIMEOUT = 900; // 15 mins
 
-		$html = defaultLinkTo($html, self::URI);
+    public function collectData()
+    {
+        $html = getSimpleHTMLDOM($this->getURI() . '/news/');
 
-		foreach($html->find('div.container.news-card') as $div) {
-			$item = array();
-			$item['uri'] = $div->find('a', 0)->href;
+        $html = defaultLinkTo($html, self::URI);
 
-			$image = $div->find('img.img-fluid', 0)->src;
+        foreach ($html->find('div.container.news-card') as $div) {
+            $item = [];
+            $item['uri'] = $div->find('a', 0)->href;
 
-			$page = getSimpleHTMLDOMCached($item['uri'], 7200);
+            $image = $div->find('img.img-fluid', 0)->src;
 
-			$article = $page->find('div.container.article-container', 0);
+            $page = getSimpleHTMLDOMCached($item['uri'], 7200);
 
-			$item['title'] = $article->find('h1', 0)->plaintext;
+            $article = $page->find('div.container.article-container', 0);
 
-			$article->find('p.published-on', 0)->children(0)->outertext = '';
-			$article->find('p.published-on', 0)->children(1)->outertext = '';
-			$date = str_replace('at', '', $article->find('p.published-on', 0)->innertext);
+            $item['title'] = $article->find('h1', 0)->plaintext;
 
-			$item['timestamp'] = $date;
+            $article->find('p.published-on', 0)->children(0)->outertext = '';
+            $article->find('p.published-on', 0)->children(1)->outertext = '';
+            $date = str_replace('at', '', $article->find('p.published-on', 0)->innertext);
 
-			$article->find('h1', 0)->outertext = '';
-			$article->find('p.published-on', 0)->outertext = '';
+            $item['timestamp'] = $date;
 
-			$item['content'] = $article->innertext;
-			$item['enclosures'][] = $image;
+            $article->find('h1', 0)->outertext = '';
+            $article->find('p.published-on', 0)->outertext = '';
 
-			$this->items[] = $item;
+            $item['content'] = $article->innertext;
+            $item['enclosures'][] = $image;
 
-			if (count($this->items) >= 10) {
-				break;
-			}
-		}
+            $this->items[] = $item;
 
-	}
+            if (count($this->items) >= 10) {
+                break;
+            }
+        }
+    }
 }

@@ -1,37 +1,42 @@
 <?php
-class CyanideAndHappinessBridge extends BridgeAbstract {
-	const NAME = 'Cyanide & Happiness';
-	const URI = 'https://explosm.net/';
-	const DESCRIPTION = 'The Webcomic from Explosm.';
-	const MAINTAINER = 'sal0max';
-	const CACHE_TIMEOUT = 60 * 60 * 2; // 2 hours
 
-	public function getIcon() {
-		return self::URI . 'favicon-32x32.png';
-	}
+class CyanideAndHappinessBridge extends BridgeAbstract
+{
+    const NAME = 'Cyanide & Happiness';
+    const URI = 'https://explosm.net/';
+    const DESCRIPTION = 'The Webcomic from Explosm.';
+    const MAINTAINER = 'sal0max';
+    const CACHE_TIMEOUT = 60 * 60 * 2; // 2 hours
 
-	public function getURI(){
-		return self::URI . 'comics/latest#comic';
-	}
+    public function getIcon()
+    {
+        return self::URI . 'favicon-32x32.png';
+    }
 
-	public function collectData() {
-		$html = getSimpleHTMLDOM($this->getUri());
+    public function getURI()
+    {
+        return self::URI . 'comics/latest#comic';
+    }
 
-		foreach ($html->find('[class*=ComicImage]') as $element) {
-			$date        = $element->find('[class^=Author__Right] p', 0)->plaintext;
-			$author      = str_replace('by ', '', $element->find('[class^=Author__Right] p', 1)->plaintext);
-			$image       = $element->find('img', 0)->src;
-			$link        = $html->find('[rel=canonical]', 0)->href;
+    public function collectData()
+    {
+        $html = getSimpleHTMLDOM($this->getUri());
 
-			$item = array(
-				'uid'       => $link,
-				'author'    => $author,
-				'title'     => $date,
-				'uri'       => $link . '#comic',
-				'timestamp' => str_replace('.', '-', $date) . 'T00:00:00Z',
-				'content'   => "<img src=\"$image\" />"
-			);
-			$this->items[] = $item;
-		}
-	}
+        foreach ($html->find('[class*=ComicImage]') as $element) {
+            $date        = $element->find('[class^=Author__Right] p', 0)->plaintext;
+            $author      = str_replace('by ', '', $element->find('[class^=Author__Right] p', 1)->plaintext);
+            $image       = $element->find('img', 0)->src;
+            $link        = $html->find('[rel=canonical]', 0)->href;
+
+            $item = [
+                'uid'       => $link,
+                'author'    => $author,
+                'title'     => $date,
+                'uri'       => $link . '#comic',
+                'timestamp' => str_replace('.', '-', $date) . 'T00:00:00Z',
+                'content'   => "<img src=\"$image\" />"
+            ];
+            $this->items[] = $item;
+        }
+    }
 }
