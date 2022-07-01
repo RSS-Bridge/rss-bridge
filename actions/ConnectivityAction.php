@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
  * Atom feeds for websites that don't have one.
@@ -6,9 +7,9 @@
  * For the full license information, please view the UNLICENSE file distributed
  * with this source code.
  *
- * @package	Core
- * @license	http://unlicense.org/ UNLICENSE
- * @link	https://github.com/rss-bridge/rss-bridge
+ * @package Core
+ * @license http://unlicense.org/ UNLICENSE
+ * @link    https://github.com/rss-bridge/rss-bridge
  */
 
 /**
@@ -23,85 +24,86 @@
  */
 class ConnectivityAction implements ActionInterface
 {
-	public $userData = [];
+    public $userData = [];
 
-	public function execute() {
+    public function execute()
+    {
 
-		if(!Debug::isEnabled()) {
-			returnError('This action is only available in debug mode!', 400);
-		}
+        if (!Debug::isEnabled()) {
+            returnError('This action is only available in debug mode!', 400);
+        }
 
-		if(!isset($this->userData['bridge'])) {
-			$this->returnEntryPage();
-			return;
-		}
+        if (!isset($this->userData['bridge'])) {
+            $this->returnEntryPage();
+            return;
+        }
 
-		$bridgeName = $this->userData['bridge'];
+        $bridgeName = $this->userData['bridge'];
 
-		$this->reportBridgeConnectivity($bridgeName);
+        $this->reportBridgeConnectivity($bridgeName);
+    }
 
-	}
+    /**
+     * Generates a report about the bridge connectivity status and sends it back
+     * to the user.
+     *
+     * The report is generated as Json-formatted string in the format
+     * {
+     *   "bridge": "<bridge-name>",
+     *   "successful": true/false
+     * }
+     *
+     * @param string $bridgeName Name of the bridge to generate the report for
+     * @return void
+     */
+    private function reportBridgeConnectivity($bridgeName)
+    {
 
-	/**
-	 * Generates a report about the bridge connectivity status and sends it back
-	 * to the user.
-	 *
-	 * The report is generated as Json-formatted string in the format
-	 * {
-	 *   "bridge": "<bridge-name>",
-	 *   "successful": true/false
-	 * }
-	 *
-	 * @param string $bridgeName Name of the bridge to generate the report for
-	 * @return void
-	 */
-	private function reportBridgeConnectivity($bridgeName) {
+        $bridgeFac = new \BridgeFactory();
 
-		$bridgeFac = new \BridgeFactory();
+        if (!$bridgeFac->isWhitelisted($bridgeName)) {
+            header('Content-Type: text/html');
+            returnServerError('Bridge is not whitelisted!');
+        }
 
-		if(!$bridgeFac->isWhitelisted($bridgeName)) {
-			header('Content-Type: text/html');
-			returnServerError('Bridge is not whitelisted!');
-		}
+        header('Content-Type: text/json');
 
-		header('Content-Type: text/json');
+        $retVal = [
+            'bridge' => $bridgeName,
+            'successful' => false,
+            'http_code' => 200,
+        ];
 
-		$retVal = array(
-			'bridge' => $bridgeName,
-			'successful' => false,
-			'http_code' => 200,
-		);
+        $bridge = $bridgeFac->create($bridgeName);
 
-		$bridge = $bridgeFac->create($bridgeName);
+        if ($bridge === false) {
+            echo json_encode($retVal);
+            return;
+        }
 
-		if($bridge === false) {
-			echo json_encode($retVal);
-			return;
-		}
+        $curl_opts = [
+            CURLOPT_CONNECTTIMEOUT => 5
+        ];
 
-		$curl_opts = array(
-			CURLOPT_CONNECTTIMEOUT => 5
-		);
+        try {
+            $reply = getContents($bridge::URI, [], $curl_opts, true);
 
-		try {
-			$reply = getContents($bridge::URI, array(), $curl_opts, true);
+            if ($reply['code'] === 200) {
+                $retVal['successful'] = true;
+                if (strpos(implode('', $reply['status_lines']), '301 Moved Permanently')) {
+                    $retVal['http_code'] = 301;
+                }
+            }
+        } catch (Exception $e) {
+            $retVal['successful'] = false;
+        }
 
-			if($reply['code'] === 200) {
-				$retVal['successful'] = true;
-				if (strpos(implode('', $reply['status_lines']), '301 Moved Permanently')) {
-					$retVal['http_code'] = 301;
-				}
-			}
-		} catch(Exception $e) {
-			$retVal['successful'] = false;
-		}
+        echo json_encode($retVal);
+    }
 
-		echo json_encode($retVal);
-
-	}
-
-	private function returnEntryPage() {
-	echo <<<EOD
+    private function returnEntryPage()
+    {
+        echo <<<EOD
 <!DOCTYPE html>
 
 <html>
@@ -132,5 +134,5 @@ class ConnectivityAction implements ActionInterface
 	</body>
 </html>
 EOD;
-	}
+    }
 }

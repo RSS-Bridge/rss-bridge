@@ -1,86 +1,91 @@
 <?php
-class HDWallpapersBridge extends BridgeAbstract {
-	const MAINTAINER = 'nel50n';
-	const NAME = 'HD Wallpapers Bridge';
-	const URI = 'https://www.hdwallpapers.in/';
-	const CACHE_TIMEOUT = 43200; //12h
-	const DESCRIPTION = 'Returns the latests wallpapers from HDWallpapers';
 
-	const PARAMETERS = array( array(
-		'c' => array(
-			'name' => 'category',
-			'required' => true,
-			'defaultValue' => 'latest_wallpapers'
-		),
-		'm' => array(
-			'name' => 'max number of wallpapers'
-		),
-		'r' => array(
-			'name' => 'resolution',
-			'required' => true,
-			'defaultValue' => 'HD',
-			'title' => 'e.g=HD OR 1920x1200 OR 1680x1050'
-		)
-	));
+class HDWallpapersBridge extends BridgeAbstract
+{
+    const MAINTAINER = 'nel50n';
+    const NAME = 'HD Wallpapers Bridge';
+    const URI = 'https://www.hdwallpapers.in/';
+    const CACHE_TIMEOUT = 43200; //12h
+    const DESCRIPTION = 'Returns the latests wallpapers from HDWallpapers';
 
-	public function collectData(){
-		$category = $this->getInput('c');
-		if(strrpos($category, 'wallpapers') !== strlen($category) - strlen('wallpapers')) {
-			$category .= '-desktop-wallpapers';
-		}
+    const PARAMETERS = [ [
+        'c' => [
+            'name' => 'category',
+            'required' => true,
+            'defaultValue' => 'latest_wallpapers'
+        ],
+        'm' => [
+            'name' => 'max number of wallpapers'
+        ],
+        'r' => [
+            'name' => 'resolution',
+            'required' => true,
+            'defaultValue' => 'HD',
+            'title' => 'e.g=HD OR 1920x1200 OR 1680x1050'
+        ]
+    ]];
 
-		$num = 0;
-		$max = $this->getInput('m') ?: 14;
-		$lastpage = 1;
+    public function collectData()
+    {
+        $category = $this->getInput('c');
+        if (strrpos($category, 'wallpapers') !== strlen($category) - strlen('wallpapers')) {
+            $category .= '-desktop-wallpapers';
+        }
 
-		for($page = 1; $page <= $lastpage; $page++) {
-			$link = self::URI . $category . '/page/' . $page;
-			$html = getSimpleHTMLDOM($link);
+        $num = 0;
+        $max = $this->getInput('m') ?: 14;
+        $lastpage = 1;
 
-			if($page === 1) {
-				preg_match('/page\/(\d+)$/', $html->find('.pagination a', -2)->href, $matches);
-				$lastpage = min($matches[1], ceil($max / 14));
-			}
+        for ($page = 1; $page <= $lastpage; $page++) {
+            $link = self::URI . $category . '/page/' . $page;
+            $html = getSimpleHTMLDOM($link);
 
-			$html = defaultLinkTo($html, self::URI);
+            if ($page === 1) {
+                preg_match('/page\/(\d+)$/', $html->find('.pagination a', -2)->href, $matches);
+                $lastpage = min($matches[1], ceil($max / 14));
+            }
 
-			foreach($html->find('.wallpapers .wall a') as $element) {
-				$thumbnail = $element->find('img', 0);
+            $html = defaultLinkTo($html, self::URI);
 
-				$search = array(self::URI, 'wallpapers.html');
-				$replace = array(self::URI . 'download/', $this->getInput('r') . '.jpg');
+            foreach ($html->find('.wallpapers .wall a') as $element) {
+                $thumbnail = $element->find('img', 0);
 
-				$item = array();
-				$item['uri'] = str_replace($search, $replace, $element->href);
+                $search = [self::URI, 'wallpapers.html'];
+                $replace = [self::URI . 'download/', $this->getInput('r') . '.jpg'];
 
-				$item['timestamp'] = time();
-				$item['title'] = $element->find('em1', 0)->text();
-				$item['content'] = $item['title']
-				. '<br><a href="'
-				. $item['uri']
-				. '"><img src="'
-				. $thumbnail->src
-				. '" /></a>';
+                $item = [];
+                $item['uri'] = str_replace($search, $replace, $element->href);
 
-				$item['enclosures'] = array($item['uri']);
-				$this->items[] = $item;
+                $item['timestamp'] = time();
+                $item['title'] = $element->find('em1', 0)->text();
+                $item['content'] = $item['title']
+                . '<br><a href="'
+                . $item['uri']
+                . '"><img src="'
+                . $thumbnail->src
+                . '" /></a>';
 
-				$num++;
-				if ($num >= $max)
-					break 2;
-			}
-		}
-	}
+                $item['enclosures'] = [$item['uri']];
+                $this->items[] = $item;
 
-	public function getName(){
-		if(!is_null($this->getInput('c')) && !is_null($this->getInput('r'))) {
-			return 'HDWallpapers - '
-			. str_replace(array('__', '_'), array(' & ', ' '), $this->getInput('c'))
-			. ' ['
-			. $this->getInput('r')
-			. ']';
-		}
+                $num++;
+                if ($num >= $max) {
+                    break 2;
+                }
+            }
+        }
+    }
 
-		return parent::getName();
-	}
+    public function getName()
+    {
+        if (!is_null($this->getInput('c')) && !is_null($this->getInput('r'))) {
+            return 'HDWallpapers - '
+            . str_replace(['__', '_'], [' & ', ' '], $this->getInput('c'))
+            . ' ['
+            . $this->getInput('r')
+            . ']';
+        }
+
+        return parent::getName();
+    }
 }
