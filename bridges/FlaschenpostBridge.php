@@ -52,9 +52,151 @@ class FlaschenpostBridge extends BridgeAbstract
         ]
     ];
 
-    public function getIcon()
+    public function collectData()
     {
-        return 'https://image.flaschenpost.de/CI/fp-favicon.png';
+        $categories = [];
+        if ($this->getInput('water')) {
+            array_push(
+                $categories,
+                'wasser/spritzig',
+                'wasser/medium',
+                'wasser/still',
+                'wasser/aromatisiert',
+                'wasser/heilwasser',
+                'wasser/bio-wasser',
+                'wasser/gourmet'
+            );
+        }
+        if ($this->getInput('beer')) {
+            array_push(
+                $categories,
+                'bier/alkoholfrei',
+                'bier/biermischgetraenke',
+                'bier/craft-beer',
+                'bier/export-lager-maerzen',
+                'bier/helles',
+                'bier/internationale-biere',
+                'bier/koelsch',
+                'bier/land-kellerbier',
+                'bier/malzbier',
+                'bier/pils',
+                'bier/radler',
+                'bier/spezialitaeten',
+                'bier/weizen-weissbier'
+            );
+        }
+        if ($this->getInput('lemonade')) {
+            array_push(
+                $categories,
+                'limonade/cola',
+                'limonade/orangenlimonade',
+                'limonade/zitronenlimonade',
+                'limonade/cola-mix',
+                'limonade/teegetraenke',
+                'limonade/fassbrause',
+                'limonade/mate',
+                'limonade/bio',
+                'limonade/zum-mixen',
+                'limonade/sonstige-limos'
+            );
+        }
+        if ($this->getInput('juice')) {
+            array_push(
+                $categories,
+                'saft-und-schorle/apfelsaft',
+                'saft-und-schorle/apfelschorle',
+                'saft-und-schorle/orangensaft',
+                'saft-und-schorle/multivitaminsaft',
+                'saft-und-schorle/maracujasaft',
+                'saft-und-schorle/traubensaft',
+                'saft-und-schorle/johannisbeersaft',
+                'saft-und-schorle/rhabarbersaft',
+                'saft-und-schorle/rhabarberschorle',
+                'saft-und-schorle/kirschsaft',
+                'saft-und-schorle/sonstige-saefte',
+                'saft-und-schorle/sonstige-schorlen'
+            );
+        }
+        if ($this->getInput('wine')) {
+            array_push(
+                $categories,
+                'wein-und-mehr/weisswein',
+                'wein-und-mehr/rotwein',
+                'wein-und-mehr/rose',
+                'wein-und-mehr/bio-wein',
+                'wein-und-mehr/sonstige-weine',
+                'wein-und-mehr/sekt-mehr',
+                'wein-und-mehr/probierpakete',
+                'wein-und-mehr/gluehwein'
+            );
+        }
+        if ($this->getInput('liquor')) {
+            array_push(
+                $categories,
+                'spirituosen/wodka',
+                'spirituosen/gin',
+                'spirituosen/whisky',
+                'spirituosen/rum',
+                'spirituosen/weitere-spirituosen',
+                'spirituosen/kraeuterlikoer',
+                'spirituosen/weitere-likoere',
+                'spirituosen/aperitif'
+            );
+        }
+        if ($this->getInput('food')) {
+            array_push(
+                $categories,
+                'lebensmittel/veggie-vegan',
+                'lebensmittel/kaffee-tee',
+                'lebensmittel/milch-alternativen',
+                'lebensmittel/tiefkuehltruhe',
+                'lebensmittel/nuesse-trockenobst',
+                'lebensmittel/suesses-salziges',
+                'lebensmittel/nudeln-reis-getreide',
+                'lebensmittel/fertiges-konserven',
+                'lebensmittel/sossen-oele-gewuerze'
+            );
+        }
+        if ($this->getInput('household')) {
+            array_push(
+                $categories,
+                'haushalt/hygieneartikel',
+                'haushalt/gesundheit-verhuetung',
+                'haushalt/kueche',
+                'haushalt/haushaltsartikel',
+                'haushalt/spuelen-reinigen',
+                'haushalt/waschen'
+            );
+        }
+
+        foreach ($categories as $category) {
+            try {
+                $url = sprintf('https://www.flaschenpost.de/%s?plz=%s', $category, $this->getInput('zip-code'));
+                // Gives redirect on unknown zip-code
+                $html = getSimpleHTMLDOM($url, [], [CURLOPT_FOLLOWLOCATION => false]);
+            } catch (\Exception $e) {
+                // skip
+                continue;
+            }
+
+            // extract the JavaScript block which contains all the data we need
+            $regex = '/(\{childElements:\[.*\})\];/';
+            preg_match($regex, $html, $matches);
+            $js = $matches[1];
+
+            // convert JavaScript to JSON
+            $js = $this->jsToJson($js);
+
+            // get all products
+            $json_decode = json_decode($js, false, 512, JSON_THROW_ON_ERROR);
+            $products = $this->recursiveFind((array) $json_decode, 'products');
+            foreach ($products as $product) {
+                // there can be multiple variants, like 0.5l and 0.33l bottles
+                foreach ($product->product->articles as $article) {
+                    $this->addArticle($article, $product->product);
+                }
+            }
+        }
     }
 
     public function getName(): string
@@ -88,156 +230,6 @@ class FlaschenpostBridge extends BridgeAbstract
             return $this::NAME;
         } else {
             return $this::NAME . ' – ' . implode(', ', $categories);
-        }
-    }
-
-    public function collectData()
-    {
-        // which categories to include
-        $urls = [];
-        if ($this->getInput('water')) {
-            array_push(
-                $urls,
-                'wasser/spritzig',
-                'wasser/medium',
-                'wasser/still',
-                'wasser/aromatisiert',
-                'wasser/heilwasser',
-                'wasser/bio-wasser',
-                'wasser/gourmet'
-            );
-        }
-        if ($this->getInput('beer')) {
-            array_push(
-                $urls,
-                'bier/alkoholfrei',
-                'bier/biermischgetraenke',
-                'bier/craft-beer',
-                'bier/export-lager-maerzen',
-                'bier/helles',
-                'bier/internationale-biere',
-                'bier/koelsch',
-                'bier/land-kellerbier',
-                'bier/malzbier',
-                'bier/pils',
-                'bier/radler',
-                'bier/spezialitaeten',
-                'bier/weizen-weissbier'
-            );
-        }
-        if ($this->getInput('lemonade')) {
-            array_push(
-                $urls,
-                'limonade/cola',
-                'limonade/orangenlimonade',
-                'limonade/zitronenlimonade',
-                'limonade/cola-mix',
-                'limonade/teegetraenke',
-                'limonade/fassbrause',
-                'limonade/mate',
-                'limonade/bio',
-                'limonade/zum-mixen',
-                'limonade/sonstige-limos'
-            );
-        }
-        if ($this->getInput('juice')) {
-            array_push(
-                $urls,
-                'saft-und-schorle/apfelsaft',
-                'saft-und-schorle/apfelschorle',
-                'saft-und-schorle/orangensaft',
-                'saft-und-schorle/multivitaminsaft',
-                'saft-und-schorle/maracujasaft',
-                'saft-und-schorle/traubensaft',
-                'saft-und-schorle/johannisbeersaft',
-                'saft-und-schorle/rhabarbersaft',
-                'saft-und-schorle/rhabarberschorle',
-                'saft-und-schorle/kirschsaft',
-                'saft-und-schorle/sonstige-saefte',
-                'saft-und-schorle/sonstige-schorlen'
-            );
-        }
-        if ($this->getInput('wine')) {
-            array_push(
-                $urls,
-                'wein-und-mehr/weisswein',
-                'wein-und-mehr/rotwein',
-                'wein-und-mehr/rose',
-                'wein-und-mehr/bio-wein',
-                'wein-und-mehr/sonstige-weine',
-                'wein-und-mehr/sekt-mehr',
-                'wein-und-mehr/probierpakete',
-                'wein-und-mehr/gluehwein'
-            );
-        }
-        if ($this->getInput('liquor')) {
-            array_push(
-                $urls,
-                'spirituosen/wodka',
-                'spirituosen/gin',
-                'spirituosen/whisky',
-                'spirituosen/rum',
-                'spirituosen/weitere-spirituosen',
-                'spirituosen/kraeuterlikoer',
-                'spirituosen/weitere-likoere',
-                'spirituosen/aperitif'
-            );
-        }
-        if ($this->getInput('food')) {
-            array_push(
-                $urls,
-                'lebensmittel/veggie-vegan',
-                'lebensmittel/kaffee-tee',
-                'lebensmittel/milch-alternativen',
-                'lebensmittel/tiefkuehltruhe',
-                'lebensmittel/nuesse-trockenobst',
-                'lebensmittel/suesses-salziges',
-                'lebensmittel/nudeln-reis-getreide',
-                'lebensmittel/fertiges-konserven',
-                'lebensmittel/sossen-oele-gewuerze'
-            );
-        }
-        if ($this->getInput('household')) {
-            array_push(
-                $urls,
-                'haushalt/hygieneartikel',
-                'haushalt/gesundheit-verhuetung',
-                'haushalt/kueche',
-                'haushalt/haushaltsartikel',
-                'haushalt/spuelen-reinigen',
-                'haushalt/waschen'
-            );
-        }
-
-        // start scraping
-        foreach ($urls as $url) {
-            try {
-                $html = getSimpleHTMLDOM(
-                    self::URI
-                    . $url
-                    . "?plz={$this->getInput('zip-code')}"
-                );
-            } catch (\Exception $ex) {
-                // this url is currently not available: skip it
-                continue;
-            }
-
-            // extract the JavaScript block which contains all the data we need
-            $regex = '/(\{childElements:\[.*\})\];/';
-            preg_match($regex, $html, $matches);
-            $js = $matches[1];
-
-            // convert JavaScript to JSON
-            $js = $this->jsToJson($js);
-
-            // get all products
-            $products = $this->recursiveFind((array)json_decode($js), 'products');
-            foreach ($products as $product) {
-                // there can be multiple variants, like 0.5l and 0.33l bottles
-                foreach ($product->product->articles as $article) {
-                    $this->addArticle($article, $product->product);
-                }
-            }
         }
     }
 
@@ -290,15 +282,18 @@ EOD;
 
             $item['title'] = "$name: $discountPriceString statt $regularPriceString (-$discount\u{2009}%)";
             $item['content'] = $description;
+
             // use current date (@midnight) as timestamp
-            $item['timestamp'] = \DateTime::createFromFormat('d.m.y', date('d.m.y'))
+            $item['timestamp'] = (new \DateTime())
                 ->setTimezone(new \DateTimeZone('Europe/Berlin'))
                 ->setTime(0, 0)
                 ->getTimestamp();
+
             $item['uri'] = urljoin(
                 'https://www.flaschenpost.de/',
                 "{$product->brandWebShopUrl}/{$product->webShopUrl}"
             );
+
             // use "name-<timestamp>" as uid; that way, there's a new entry each day, when a product stays discounted
             $item['uid'] = $name . '-' . $item['timestamp'];
 
@@ -314,6 +309,11 @@ EOD;
                 $this->items[] = $item;
             }
         }
+    }
+
+    public function getIcon()
+    {
+        return 'https://image.flaschenpost.de/CI/fp-favicon.png';
     }
 
     // https://stackoverflow.com/a/3975706/421140
@@ -359,6 +359,6 @@ EOD;
             (isset($objects[$c]) && $objects[$c] .= $json[$i]) || $objects[$c] = $json[$i];
             $c += ($l == 0);
         }
-        return isset($objects) ? $objects : [];
+        return $objects ?? [];
     }
 }
