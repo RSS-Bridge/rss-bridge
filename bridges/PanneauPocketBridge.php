@@ -6,77 +6,18 @@ class PanneauPocketBridge extends BridgeAbstract
     const URI = 'https://app.panneaupocket.com';
     const DESCRIPTION = 'Fetches the latest infos from Panneau Pocket';
     const MAINTAINER = 'floviolleau';
-    const PARAMETERS = [[
-                'cities' => [
-                    'name' => 'Choisir une ville',
-                    'type' => 'list',
-                    'values' => self::CITIES
-                 ]
-               ]];
+    const PARAMETERS = [
+        [
+            'cities' => [
+                'name' => 'Choisir une ville',
+                'type' => 'list',
+                'values' => self::CITIES,
+            ]
+        ]
+    ];
     const CACHE_TIMEOUT = 7200;
 
-    // debug function to get cities
-    private function getCities()
-    {
-        $url = self::URI . '/public-api/city';
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101 Firefox/80.0');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        $content = curl_exec($ch);
-        $cities = json_encode($content, JSON_PRETTY_PRINT);
-        $cities = json_decode($content, true);
-
-        $formattedCities = null;
-        $citiesString = '[<br>';
-        foreach ($cities as $city) {
-            if (str_starts_with($city['postCode'], '35')) {
-                $formattedCities[$city['name'] . ' - ' . $city['postCode']] = $city['id'];
-                $citiesString .= '"' . $city['name'] . '-' . $city['postCode'] . '" => "' . $city['id'] . '",';
-                $citiesString .= '<br>';
-            }
-        }
-        $citiesString .= ']';
-        echo '<pre>' . $citiesString . '</pre>';
-        die();
-    }
-
-    private function clean($string)
-    {
-        $string = str_replace(' ', '-', $string);
-        return preg_replace('/[^A-Za-z0-9\-]/', '', $string);
-    }
-
-    public function collectData()
-    {
-        // for debug
-        // $this->getCities();
-        $found = array_search($this->getInput('cities'), self::CITIES);
-        $city = strtolower($this->getInput('cities') . '-' . $found);
-        $url = self::URI . '/ville/' . $city;
-
-        $html = getSimpleHTMLDOM($url) or returnServerError('Could not request ' . $url);
-        $itemsDom = $html->find('.sign-carousel--item');
-        foreach ($itemsDom as $itemDom) {
-            $publicationUrl = $itemDom->find('a.dropdown-item.item-twitter', 0)->href;
-            $publicationUrl = str_replace('https://twitter.com/intent/tweet?url=', '', $publicationUrl);
-            $publicationUrl = str_replace('&text=', '', $publicationUrl);
-            $publicationTitle = $itemDom->find('.sign-preview__content .title', 0)->innerText();
-            $publicationContent = $itemDom->find('.sign-preview__content .content', 0)->innerText();
-
-            $item['uri'] = $publicationUrl;
-            $item['title'] = $publicationTitle;
-            $item['author'] = 'floviolleau';
-            $item['content'] = $publicationContent;
-            $item['uid'] = hash('sha256', strtolower($this->clean($item['title'])));
-
-            $this->items[] = $item;
-        }
-    }
-
-    const CITIES = [
+    private const CITIES = [
         'Andouillé-Neuville-35250' => '1455789521',
         'Aubigné-35250' => '1814317005',
         'Availles-sur-Seiche-35130' => '1892893207',
@@ -169,4 +110,57 @@ class PanneauPocketBridge extends BridgeAbstract
         'Vergéal-35680' => '389815752',
         'Vieux-Vy-sur-Couesnon-35490' => '2016313694'
     ];
+
+    public function collectData()
+    {
+        $found = array_search($this->getInput('cities'), self::CITIES);
+        $city = strtolower($this->getInput('cities') . '-' . $found);
+        $url = sprintf('https://app.panneaupocket.com/ville/%s', urlencode($city));
+
+        $html = getSimpleHTMLDOM($url);
+
+        foreach ($html->find('.sign-carousel--item') as $itemDom) {
+            $item['uri'] = $itemDom->find('button[type=button]', 0)->href;
+            $item['title'] = $itemDom->find('.sign-preview__content .title', 0)->innertext;
+            $item['author'] = 'floviolleau';
+            $item['content'] = $itemDom->find('.sign-preview__content .content', 0)->innertext;
+
+            $timestamp = $itemDom->find('span.date', 0)->plaintext;
+            if (preg_match('#(?<d>[0-9]+)/(?<m>[0-9]+)/(?<y>[0-9]+)#', $timestamp, $match)) {
+                $item['timestamp'] = "{$match['y']}-{$match['m']}-{$match['d']}";
+            }
+
+            $this->items[] = $item;
+        }
+    }
+
+    /**
+     * debug function to get cities
+     */
+    private static function getCities()
+    {
+        $url = self::URI . '/public-api/city';
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101 Firefox/80.0');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        $content = curl_exec($ch);
+        $cities = json_encode($content, JSON_PRETTY_PRINT);
+        $cities = json_decode($content, true);
+
+        $formattedCities = null;
+        $citiesString = '[<br>';
+        foreach ($cities as $city) {
+            if (str_starts_with($city['postCode'], '35')) {
+                $formattedCities[$city['name'] . ' - ' . $city['postCode']] = $city['id'];
+                $citiesString .= '"' . $city['name'] . '-' . $city['postCode'] . '" => "' . $city['id'] . '",';
+                $citiesString .= '<br>';
+            }
+        }
+        $citiesString .= ']';
+        echo '<pre>' . $citiesString . '</pre>';
+        die();
+    }
 }
