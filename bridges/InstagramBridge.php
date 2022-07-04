@@ -69,53 +69,6 @@ class InstagramBridge extends BridgeAbstract
     const TAG_QUERY_HASH = '9b498c08113f1e09617a1703c22b2f32';
     const SHORTCODE_QUERY_HASH = '865589822932d1b43dfe312121dd353a';
 
-    public function getCacheTimeout()
-    {
-        $customTimeout = $this->getOption('cache_timeout');
-        if ($customTimeout) {
-            return $customTimeout;
-        }
-        return parent::getCacheTimeout();
-    }
-
-    protected function getContents($uri)
-    {
-        $headers = [];
-        $sessionId = $this->getOption('session_id');
-        if ($sessionId) {
-            $headers[] = 'cookie: sessionid=' . $sessionId;
-        }
-        return getContents($uri, $headers);
-    }
-
-    protected function getInstagramUserId($username)
-    {
-        if (is_numeric($username)) {
-            return $username;
-        }
-
-        $cacheFac = new CacheFactory();
-
-        $cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
-        $cache->setScope(get_called_class());
-        $cache->setKey([$username]);
-        $key = $cache->loadData();
-
-        if ($key == null) {
-                $data = $this->getContents(self::URI . 'web/search/topsearch/?query=' . $username);
-            foreach (json_decode($data)->users as $user) {
-                if (strtolower($user->user->username) === strtolower($username)) {
-                    $key = $user->user->pk;
-                }
-            }
-            if ($key == null) {
-                returnServerError('Unable to find username in search result.');
-            }
-                $cache->saveData($key);
-        }
-        return $key;
-    }
-
     public function collectData()
     {
         $directLink = !is_null($this->getInput('direct_links')) && $this->getInput('direct_links');
@@ -212,6 +165,83 @@ class InstagramBridge extends BridgeAbstract
         }
     }
 
+    protected function getInstagramJSON($uri)
+    {
+        if (!is_null($this->getInput('u'))) {
+            $userId = $this->getInstagramUserId($this->getInput('u'));
+            $data = $this->getContents(self::URI .
+                'graphql/query/?query_hash=' .
+                self::USER_QUERY_HASH .
+                '&variables={"id"%3A"' .
+                $userId .
+                '"%2C"first"%3A10}');
+            return json_decode($data);
+        } elseif (!is_null($this->getInput('h'))) {
+            $data = $this->getContents(self::URI .
+                'graphql/query/?query_hash=' .
+                self::TAG_QUERY_HASH .
+                '&variables={"tag_name"%3A"' .
+                $this->getInput('h') .
+                '"%2C"first"%3A10}');
+
+            return json_decode($data);
+        } else {
+            $html = getContents($uri);
+            $scriptRegex = '/window\._sharedData = (.*);<\/script>/';
+
+            preg_match($scriptRegex, $html, $matches, PREG_OFFSET_CAPTURE, 0);
+
+            return json_decode($matches[1][0]);
+        }
+    }
+
+    protected function getInstagramUserId($username)
+    {
+        if (is_numeric($username)) {
+            return $username;
+        }
+
+        $cacheFac = new CacheFactory();
+
+        $cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+        $cache->setScope(get_called_class());
+        $cache->setKey([$username]);
+        $key = $cache->loadData();
+
+        if ($key == null) {
+            $data = $this->getContents(self::URI . 'web/search/topsearch/?query=' . $username);
+            foreach (json_decode($data)->users as $user) {
+                if (strtolower($user->user->username) === strtolower($username)) {
+                    $key = $user->user->pk;
+                }
+            }
+            if ($key == null) {
+                returnServerError('Unable to find username in search result.');
+            }
+            $cache->saveData($key);
+        }
+        return $key;
+    }
+
+    protected function getContents($uri)
+    {
+        $headers = [];
+        $sessionId = $this->getOption('session_id');
+        if ($sessionId) {
+            $headers[] = 'cookie: sessionid=' . $sessionId;
+        }
+        return getContents($uri, $headers);
+    }
+
+    public function getCacheTimeout()
+    {
+        $customTimeout = $this->getOption('cache_timeout');
+        if ($customTimeout) {
+            return $customTimeout;
+        }
+        return parent::getCacheTimeout();
+    }
+
     // returns Sidecar(a post which has multiple media)'s contents and enclosures
     protected function getInstagramSidecarData($uri, $postTitle, $mediaInfo, $textContent)
     {
@@ -239,8 +269,8 @@ class InstagramBridge extends BridgeAbstract
 
         return [$content, $enclosures];
     }
-
     // returns Video post's contents and enclosures
+
     protected function getInstagramVideoData($uri, $mediaURI, $mediaInfo, $textContent)
     {
         $content = '<video controls>';
@@ -260,36 +290,6 @@ class InstagramBridge extends BridgeAbstract
             $textContent = trim($media->edge_media_to_caption->edges[0]->node->text);
         }
         return $textContent;
-    }
-
-    protected function getInstagramJSON($uri)
-    {
-        if (!is_null($this->getInput('u'))) {
-            $userId = $this->getInstagramUserId($this->getInput('u'));
-            $data = $this->getContents(self::URI .
-                                'graphql/query/?query_hash=' .
-                                 self::USER_QUERY_HASH .
-                                 '&variables={"id"%3A"' .
-                                $userId .
-                                '"%2C"first"%3A10}');
-            return json_decode($data);
-        } elseif (!is_null($this->getInput('h'))) {
-            $data = $this->getContents(self::URI .
-                    'graphql/query/?query_hash=' .
-                     self::TAG_QUERY_HASH .
-                     '&variables={"tag_name"%3A"' .
-                    $this->getInput('h') .
-                    '"%2C"first"%3A10}');
-
-            return json_decode($data);
-        } else {
-            $html = getContents($uri);
-            $scriptRegex = '/window\._sharedData = (.*);<\/script>/';
-
-            preg_match($scriptRegex, $html, $matches, PREG_OFFSET_CAPTURE, 0);
-
-            return json_decode($matches[1][0]);
-        }
     }
 
     public function getName()
