@@ -125,11 +125,11 @@ EOL
                 'name' => 'Item image position',
                 'title' => 'You can specify if you want to embed the image inside the description (before/after) or as enclosure',
                 'values' => [
-                    'As enclosure' => 'Enclosures',
-                    'Before description' => 'BeforeContent',
-                    'After description' => 'AfterContent',
+                    'As enclosure' => 'enclosures',
+                    'Before description' => 'before_content',
+                    'After description' => 'after_content',
                 ],
-                'defaultValue' => 'Enclosures',
+                'defaultValue' => 'enclosures',
             ],
 
             'categories' => [
@@ -291,10 +291,11 @@ EOL
         return $uri;
     }
 
-    protected function setEnclosuresPosition($item)
+    private function setEnclosuresPosition($item)
     {
-        $enclosuresPosition = $this->getItemEnclosuresPosition();
-        $hasEnclosureInsideContent = str_contains($enclosuresPosition, 'Content');
+        $enclosuresPosition = static::getItemEnclosuresPosition();
+        $enclosuresContentPosition = ['before_content', 'after_content'];
+        $hasEnclosureInsideContent = in_array($enclosuresPosition, $enclosuresContentPosition);
 
         if ($hasEnclosureInsideContent) {
             $content = $item->getContent();
@@ -317,10 +318,10 @@ EOL
     {
         $enclosureHtml = $this->getEnclosuresAsHtml('image', $enclosuresUrl);
 
-        if ($enclosuresPosition === 'BeforeContent') {
+        if ($enclosuresPosition === 'before_content') {
             $content = $enclosureHtml . '<br/>' . $originalContent;
         }
-        if ($enclosuresPosition === 'AfterContent') {
+        if ($enclosuresPosition === 'after_content') {
             $content = $originalContent . '<br/>' . $enclosureHtml;
         }
 
