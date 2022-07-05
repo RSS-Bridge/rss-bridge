@@ -73,7 +73,12 @@ class InstagramBridge extends BridgeAbstract
     {
         $directLink = !is_null($this->getInput('direct_links')) && $this->getInput('direct_links');
 
-        $data = $this->getInstagramJSON($this->getURI());
+        $data = $this->getInstagramJSON();
+        if (strstr($data, "<title>\nLogin • Instagram\n</title>")) {
+            throw new \Exception('Got hit with the instagram login screen.');
+        }
+
+        $data = json_decode($data, false, 512, JSON_THROW_ON_ERROR);
 
         if (!is_null($this->getInput('u'))) {
             $userMedia = $data->data->user->edge_owner_to_timeline_media->edges;
@@ -165,7 +170,7 @@ class InstagramBridge extends BridgeAbstract
         }
     }
 
-    protected function getInstagramJSON($uri)
+    protected function getInstagramJSON()
     {
         if (!is_null($this->getInput('u'))) {
             $userId = $this->getInstagramUserId($this->getInput('u'));
@@ -175,7 +180,7 @@ class InstagramBridge extends BridgeAbstract
                 '&variables={"id"%3A"' .
                 $userId .
                 '"%2C"first"%3A10}');
-            return json_decode($data);
+            return $data;
         } elseif (!is_null($this->getInput('h'))) {
             $data = $this->getContents(self::URI .
                 'graphql/query/?query_hash=' .
@@ -184,14 +189,15 @@ class InstagramBridge extends BridgeAbstract
                 $this->getInput('h') .
                 '"%2C"first"%3A10}');
 
-            return json_decode($data);
+            return $data;
         } else {
+            $uri = $this->getURI();
             $html = getContents($uri);
             $scriptRegex = '/window\._sharedData = (.*);<\/script>/';
 
             preg_match($scriptRegex, $html, $matches, PREG_OFFSET_CAPTURE, 0);
 
-            return json_decode($matches[1][0]);
+            return $matches[1][0];
         }
     }
 
