@@ -7,7 +7,7 @@ class VkBridge extends BridgeAbstract
     // const MAINTAINER = 'ahiles3005';
     const NAME = 'VK.com';
     const URI = 'https://vk.com/';
-    const CACHE_TIMEOUT = 300; // 5min
+    const CACHE_TIMEOUT = 60 * 55; // 55m
     const DESCRIPTION = 'Working with open pages';
     const PARAMETERS = [
         [
@@ -51,7 +51,15 @@ class VkBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $text_html = $this->getContents();
+        $headers = [
+            'Accept-language: en',
+            'Cookie: remixlang=3',
+        ];
+        $options = [
+            // Don't follow location because the anti-bot response is a redirect to /429.html
+            CURLOPT_FOLLOWLOCATION => false,
+        ];
+        $text_html = getContents($this->getURI(), $headers, $options);
 
         $text_html = iconv('windows-1251', 'utf-8//ignore', $text_html);
         // makes album link generating work correctly
@@ -417,13 +425,6 @@ class VkBridge extends BridgeAbstract
         }
     }
 
-    private function getContents()
-    {
-        $header = ['Accept-language: en', 'Cookie: remixlang=3'];
-
-        return getContents($this->getURI(), $header);
-    }
-
     protected function appendVideo($video_title, $video_link, &$content_suffix, array &$post_videos)
     {
         if (!$video_title) {
@@ -472,6 +473,8 @@ class VkBridge extends BridgeAbstract
     {
         $params['v'] = '5.80';
         $params['access_token'] = $this->getAccessToken();
-        return json_decode(getContents('https://api.vk.com/method/' . $method . '?' . http_build_query($params)), true);
+        $url = sprintf('https://api.vk.com/method/%s?%s', $method, http_build_query($params));
+        $response = getContents($url, [], [CURLOPT_FOLLOWLOCATION => false]);
+        return json_decode($response, true);
     }
 }

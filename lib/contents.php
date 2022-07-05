@@ -99,14 +99,7 @@ function getContents(
         case 201:
         case 202:
             if (isset($result['headers']['cache-control'])) {
-                $cachecontrol = $result['headers']['cache-control'];
-                $lastValue = array_pop($cachecontrol);
-                $directives = explode(',', $lastValue);
-                $directives = array_map('trim', $directives);
-                if (in_array('no-cache', $directives) || in_array('no-store', $directives)) {
-                    // Don't cache as instructed by the server
-                    break;
-                }
+                // ignore cache-control
             }
             $cache->saveData($result['body']);
             break;
