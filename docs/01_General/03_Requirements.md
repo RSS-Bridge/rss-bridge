@@ -2,7 +2,7 @@
 
 ## A Web server* with:
 
-  - PHP 7.1 (or higher)
+  - PHP 7.4 (or higher)
   - [`openssl`](https://secure.php.net/manual/en/book.openssl.php) extension
   - [`libxml`](https://secure.php.net/manual/en/book.libxml.php) extension (enabled by default, see [PHP Manual](http://php.net/manual/en/libxml.installation.php))
   - [`mbstring`](https://secure.php.net/manual/en/book.mbstring.php) extension
