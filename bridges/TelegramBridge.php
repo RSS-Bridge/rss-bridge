@@ -16,9 +16,12 @@ class TelegramBridge extends BridgeAbstract
         ]
     ];
     const TEST_DETECT_PARAMETERS = [
-        'https://t.me/s/durov' => ['username' => 'durov'],
-        'https://t.me/durov' => ['username' => 'durov'],
-        'http://t.me/durov' => ['username' => 'durov'],
+        'https://t.me/s/durov' => ['username' => 'rssbridge'],
+        'https://t.me/durov' => ['username' => 'rssbridge'],
+        'http://t.me/durov' => ['username' => 'rssbridge'],
+        'https://telegram.me/s/durov' => ['username' => 'rssbridge'],
+        'https://telegram.me/durov' => ['username' => 'rssbridge'],
+        'http://telegram.me/durov' => ['username' => 'rssbridge'],
     ];
 
     const CACHE_TIMEOUT = 900; // 15 mins
@@ -28,7 +31,7 @@ class TelegramBridge extends BridgeAbstract
     private $itemTitle = '';
 
     private $backgroundImageRegex = "/background-image:url\('(.*)'\)/";
-    private $detectParamsRegex = '/^https?:\/\/t.me\/(?:s\/)?([\w]+)$/';
+    private $detectParamsRegex = '/^https?:\/\/(?:t|telegram)\.me\/(?:s\/)?([\w]+)$/';
 
     public function detectParameters($url)
     {
