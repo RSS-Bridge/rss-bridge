@@ -25,16 +25,16 @@ final class BridgeCard
     /**
      * Get the form header for a bridge card
      *
-     * @param string $bridgeName The bridge name
+     * @param class-string<BridgeInterface> $bridgeClassName The bridge name
      * @param bool $isHttps If disabled, adds a warning to the form
      * @return string The form header
      */
-    private static function getFormHeader($bridgeName, $isHttps = false, $parameterName = '')
+    private static function getFormHeader($bridgeClassName, $isHttps = false, $parameterName = '')
     {
         $form = <<<EOD
 			<form method="GET" action="?">
 				<input type="hidden" name="action" value="display" />
-				<input type="hidden" name="bridge" value="{$bridgeName}" />
+				<input type="hidden" name="bridge" value="{$bridgeClassName}" />
 EOD;
 
         if (!empty($parameterName)) {
@@ -54,7 +54,7 @@ This bridge is not fetching its content through a secure connection</div>';
     /**
      * Get the form body for a bridge
      *
-     * @param string $bridgeName The bridge name
+     * @param class-string<BridgeInterface> $bridgeClassName The bridge name
      * @param array $formats A list of supported formats
      * @param bool $isActive Indicates if a bridge is enabled or not
      * @param bool $isHttps Indicates if a bridge uses HTTPS or not
@@ -63,14 +63,14 @@ This bridge is not fetching its content through a secure connection</div>';
      * @return string The form body
      */
     private static function getForm(
-        $bridgeName,
+        $bridgeClassName,
         $formats,
         $isActive = false,
         $isHttps = false,
         $parameterName = '',
         $parameters = []
     ) {
-        $form = self::getFormHeader($bridgeName, $isHttps, $parameterName);
+        $form = self::getFormHeader($bridgeClassName, $isHttps, $parameterName);
 
         if (count($parameters) > 0) {
             $form .= '<div class="parameters">';
@@ -85,7 +85,7 @@ This bridge is not fetching its content through a secure connection</div>';
                 }
 
                 $idArg = 'arg-'
-                    . urlencode($bridgeName)
+                    . urlencode($bridgeClassName)
                     . '-'
                     . urlencode($parameterName)
                     . '-'
@@ -297,16 +297,16 @@ This bridge is not fetching its content through a secure connection</div>';
     /**
      * Gets a single bridge card
      *
-     * @param string $bridgeName The bridge name
+     * @param class-string<BridgeInterface> $bridgeClassName The bridge name
      * @param array $formats A list of formats
      * @param bool $isActive Indicates if the bridge is active or not
      * @return string The bridge card
      */
-    public static function displayBridgeCard($bridgeName, $formats, $isActive = true)
+    public static function displayBridgeCard($bridgeClassName, $formats, $isActive = true)
     {
         $bridgeFactory = new \BridgeFactory();
 
-        $bridge = $bridgeFactory->create($bridgeName);
+        $bridge = $bridgeFactory->create($bridgeClassName);
 
         if ($bridge == false) {
             return '';
@@ -340,20 +340,20 @@ This bridge is not fetching its content through a secure connection</div>';
         }
 
         $card = <<<CARD
-			<section id="bridge-{$bridgeName}" data-ref="{$name}">
+			<section id="bridge-{$bridgeClassName}" data-ref="{$name}">
 				<h2><a href="{$uri}">{$name}</a></h2>
 				<p class="description">{$description}</p>
-				<input type="checkbox" class="showmore-box" id="showmore-{$bridgeName}" />
-				<label class="showmore" for="showmore-{$bridgeName}">Show more</label>
+				<input type="checkbox" class="showmore-box" id="showmore-{$bridgeClassName}" />
+				<label class="showmore" for="showmore-{$bridgeClassName}">Show more</label>
 CARD;
 
         // If we don't have any parameter for the bridge, we print a generic form to load it.
         if (count($parameters) === 0) {
-            $card .= self::getForm($bridgeName, $formats, $isActive, $isHttps);
+            $card .= self::getForm($bridgeClassName, $formats, $isActive, $isHttps);
 
         // Display form with cache timeout and/or noproxy options (if enabled) when bridge has no parameters
         } elseif (count($parameters) === 1 && array_key_exists('global', $parameters)) {
-            $card .= self::getForm($bridgeName, $formats, $isActive, $isHttps, '', $parameters['global']);
+            $card .= self::getForm($bridgeClassName, $formats, $isActive, $isHttps, '', $parameters['global']);
         } else {
             foreach ($parameters as $parameterName => $parameter) {
                 if (!is_numeric($parameterName) && $parameterName === 'global') {
@@ -368,11 +368,11 @@ CARD;
                     $card .= '<h5>' . $parameterName . '</h5>' . PHP_EOL;
                 }
 
-                $card .= self::getForm($bridgeName, $formats, $isActive, $isHttps, $parameterName, $parameter);
+                $card .= self::getForm($bridgeClassName, $formats, $isActive, $isHttps, $parameterName, $parameter);
             }
         }
 
-        $card .= '<label class="showless" for="showmore-' . $bridgeName . '">Show less</label>';
+        $card .= '<label class="showless" for="showmore-' . $bridgeClassName . '">Show less</label>';
         if ($donationUri !== '' && $donationsAllowed) {
             $card .= '<p class="maintainer">' . $maintainer . ' ~ <a href="' . $donationUri . '">Donate</a></p>';
         } else {

@@ -28,21 +28,25 @@ class DisplayAction implements ActionInterface
 
     public function execute()
     {
-        $bridge = array_key_exists('bridge', $this->userData) ? $this->userData['bridge'] : null;
+        $bridgeFactory = new \BridgeFactory();
+
+        $bridgeClassName = isset($this->userData['bridge']) ? $bridgeFactory->sanitizeBridgeName($this->userData['bridge']) : null;
+
+        if ($bridgeClassName === null) {
+            throw new \InvalidArgumentException('Bridge name invalid!');
+        }
 
         $format = $this->userData['format']
             or returnClientError('You must specify a format!');
 
-        $bridgeFactory = new \BridgeFactory();
-
         // whitelist control
-        if (!$bridgeFactory->isWhitelisted($bridge)) {
+        if (!$bridgeFactory->isWhitelisted($bridgeClassName)) {
             throw new \Exception('This bridge is not whitelisted', 401);
             die;
         }
 
         // Data retrieval
-        $bridge = $bridgeFactory->create($bridge);
+        $bridge = $bridgeFactory->create($bridgeClassName);
         $bridge->loadConfiguration();
 
         $noproxy = array_key_exists('_noproxy', $this->userData)
