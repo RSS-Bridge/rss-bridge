@@ -29,10 +29,11 @@ class CacheFactory
     }
 
     /**
-     * @param string $name The name of the cache e.g. "File", "Memcached" or "SQLite"
+     * @param string|null $name The name of the cache e.g. "File", "Memcached" or "SQLite"
      */
-    public function create(string $name): CacheInterface
+    public function create(string $name = null): CacheInterface
     {
+        $name ??= Configuration::getConfig('cache', 'type');
         $name = $this->sanitizeCacheName($name) . 'Cache';
 
         if (! preg_match('/^[A-Z][a-zA-Z0-9-]*$/', $name)) {

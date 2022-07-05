@@ -407,7 +407,7 @@ abstract class BridgeAbstract implements BridgeInterface
     {
         $cacheFac = new CacheFactory();
 
-        $cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+        $cache = $cacheFac->create();
         $cache->setScope(get_called_class());
         $cache->setKey($key);
         if ($cache->getTime() < time() - $duration) {
@@ -426,7 +426,7 @@ abstract class BridgeAbstract implements BridgeInterface
     {
         $cacheFac = new CacheFactory();
 
-        $cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+        $cache = $cacheFac->create();
         $cache->setScope(get_called_class());
         $cache->setKey($key);
         $cache->saveData($value);
