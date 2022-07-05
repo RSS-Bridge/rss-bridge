@@ -57,55 +57,45 @@ final class Configuration
      * Returns an error message and aborts execution if the installation does
      * not satisfy the requirements of RSS-Bridge.
      *
-     * **Requirements**
-     * - PHP 7.1.0 or higher
-     * - `openssl` extension
-     * - `libxml` extension
-     * - `mbstring` extension
-     * - `simplexml` extension
-     * - `curl` extension
-     * - `json` extension
-     * - The cache folder specified by {@see PATH_CACHE} requires write permission
-     * - The whitelist file specified by {@see WHITELIST} requires write permission
-     *
-     * @link http://php.net/supported-versions.php PHP Supported Versions
-     * @link http://php.net/manual/en/book.openssl.php OpenSSL
-     * @link http://php.net/manual/en/book.libxml.php libxml
-     * @link http://php.net/manual/en/book.mbstring.php Multibyte String (mbstring)
-     * @link http://php.net/manual/en/book.simplexml.php SimpleXML
-     * @link http://php.net/manual/en/book.curl.php Client URL Library (curl)
-     * @link http://php.net/manual/en/book.json.php JavaScript Object Notation (json)
-     *
      * @return void
      */
     public static function verifyInstallation()
     {
         // Check PHP version
+        // PHP Supported Versions: https://www.php.net/supported-versions.php
         if (version_compare(PHP_VERSION, '7.4.0') === -1) {
             self::reportError('RSS-Bridge requires at least PHP version 7.4.0!');
         }
-        // extensions check
+
+        // Extensions check
+
+        // OpenSSL: https://www.php.net/manual/en/book.openssl.php
         if (!extension_loaded('openssl')) {
             self::reportError('"openssl" extension not loaded. Please check "php.ini"');
         }
 
+        // libxml: https://www.php.net/manual/en/book.libxml.php
         if (!extension_loaded('libxml')) {
             self::reportError('"libxml" extension not loaded. Please check "php.ini"');
         }
 
+        // Multibyte String (mbstring): https://www.php.net/manual/en/book.mbstring.php
         if (!extension_loaded('mbstring')) {
             self::reportError('"mbstring" extension not loaded. Please check "php.ini"');
         }
 
+        // SimpleXML: https://www.php.net/manual/en/book.simplexml.php
         if (!extension_loaded('simplexml')) {
             self::reportError('"simplexml" extension not loaded. Please check "php.ini"');
         }
 
+        // Client URL Library (curl): https://www.php.net/manual/en/book.curl.php
         // Allow RSS-Bridge to run without curl module in CLI mode without root certificates
         if (!extension_loaded('curl') && !(php_sapi_name() === 'cli' && empty(ini_get('curl.cainfo')))) {
             self::reportError('"curl" extension not loaded. Please check "php.ini"');
         }
 
+        // JavaScript Object Notation (json): https://www.php.net/manual/en/book.json.php
         if (!extension_loaded('json')) {
             self::reportError('"json" extension not loaded. Please check "php.ini"');
         }
