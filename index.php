@@ -1,5 +1,13 @@
 <?php
 
+if (PHP_SAPI === 'cli-server') {
+    $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    // Serves frontend.
+    if (preg_match('/^\/static/', $path)) {
+        return false;
+    }
+}
+
 require_once __DIR__ . '/lib/rssbridge.php';
 
 /*
