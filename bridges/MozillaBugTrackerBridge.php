@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @deprecated Use BugzillaBridge instead
+ */
 class MozillaBugTrackerBridge extends BridgeAbstract
 {
     const NAME = 'Mozilla Bug Tracker';

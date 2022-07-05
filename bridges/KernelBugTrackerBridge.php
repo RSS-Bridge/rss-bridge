@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @deprecated Use BugzillaBridge instead
+ */
 class KernelBugTrackerBridge extends BridgeAbstract
 {
     const NAME = 'Kernel Bug Tracker';

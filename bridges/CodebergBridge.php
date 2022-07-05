@@ -1,10 +1,14 @@
 <?php
 
+/**
+ * @deprecated Use GiteaBridge instead.
+ */
 class CodebergBridge extends BridgeAbstract
 {
     const NAME = 'Codeberg Bridge';
     const URI = 'https://codeberg.org/';
-    const DESCRIPTION = 'Returns commits, issues, pull requests or releases for a repository.';
+    const DESCRIPTION = 'DEPRECATED: Use GiteaBridge instead.
+Returns commits, issues, pull requests or releases for a repository.';
     const MAINTAINER = 'VerifiedJoseph';
     const PARAMETERS = [
         'Commits' => [
