@@ -71,6 +71,10 @@ EOD;
         $formatFactory = new FormatFactory();
         $formats = $formatFactory->getFormatNames();
 
+        $bridgeClassNames = array_filter(
+            $bridgeClassNames,
+            fn($bridgeClassName) => $bridgeFactory->getDeprecationReason($bridgeClassName) === null
+        );
         $totalBridges = count($bridgeClassNames);
 
         foreach ($bridgeClassNames as $bridgeClassName) {

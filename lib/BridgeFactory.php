@@ -64,6 +64,24 @@ final class BridgeFactory
     }
 
     /**
+     * @param class-string<BridgeInterface>
+     */
+    public function getDeprecationReason(string $name): ?string
+    {
+        $reflection = new ReflectionClass($name);
+        $doc = $reflection->getDocComment();
+        if ($doc === false) {
+            return null;
+        }
+
+        if (preg_match('(@deprecated(?P<reason>.*))', $doc, $match)) {
+            return trim($match['reason']);
+        }
+
+        return null;
+    }
+
+    /**
      * Tries to turn a potentially human produced bridge name into a class name.
      *
      * @param mixed $name
