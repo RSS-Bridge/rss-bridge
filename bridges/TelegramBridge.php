@@ -16,12 +16,12 @@ class TelegramBridge extends BridgeAbstract
         ]
     ];
     const TEST_DETECT_PARAMETERS = [
-        'https://t.me/s/durov' => ['username' => 'rssbridge'],
-        'https://t.me/durov' => ['username' => 'rssbridge'],
-        'http://t.me/durov' => ['username' => 'rssbridge'],
-        'https://telegram.me/s/durov' => ['username' => 'rssbridge'],
-        'https://telegram.me/durov' => ['username' => 'rssbridge'],
-        'http://telegram.me/durov' => ['username' => 'rssbridge'],
+        'https://t.me/s/rssbridge' => ['username' => 'rssbridge'],
+        'https://t.me/rssbridge' => ['username' => 'rssbridge'],
+        'http://t.me/rssbridge' => ['username' => 'rssbridge'],
+        'https://telegram.me/s/rssbridge' => ['username' => 'rssbridge'],
+        'https://telegram.me/rssbridge' => ['username' => 'rssbridge'],
+        'http://telegram.me/rssbridge' => ['username' => 'rssbridge'],
     ];
 
     const CACHE_TIMEOUT = 900; // 15 mins
