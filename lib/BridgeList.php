@@ -61,20 +61,26 @@ EOD;
      */
     private static function getBridges($showInactive, &$totalBridges, &$totalActiveBridges)
     {
-        $body = '';
         $totalActiveBridges = 0;
         $inactiveBridges = '';
 
-        $bridgeFac = new \BridgeFactory();
-        $bridgeList = $bridgeFac->getBridgeNames();
+        // Hide these bridges. But they still work.
+        $deprecatedBridges = [
+            'Codeberg',
+            'MozillaBugTracker',
+            'KernelBugTracker',
+        ];
+        $bridgeFactory = new BridgeFactory();
+        $bridgeNames = array_diff($bridgeFactory->getBridgeNames(), $deprecatedBridges);
 
-        $formatFac = new FormatFactory();
-        $formats = $formatFac->getFormatNames();
+        $formatFactory = new FormatFactory();
+        $formats = $formatFactory->getFormatNames();
 
-        $totalBridges = count($bridgeList);
+        $totalBridges = count($bridgeNames);
 
-        foreach ($bridgeList as $bridgeName) {
-            if ($bridgeFac->isWhitelisted($bridgeName)) {
+        $body = '';
+        foreach ($bridgeNames as $bridgeName) {
+            if ($bridgeFactory->isWhitelisted($bridgeName)) {
                 $body .= BridgeCard::displayBridgeCard($bridgeName, $formats);
                 $totalActiveBridges++;
             } elseif ($showInactive) {
