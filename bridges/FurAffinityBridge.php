@@ -914,10 +914,13 @@ class FurAffinityBridge extends BridgeAbstract
                     $imgURL = 'https:' . $previewSrc;
                 }
 
-                $description = $submissionHTML
-                    ->find('.maintable .maintable tr td.alt1', -1);
-                $this->setReferrerPolicy($description);
-                $description = $description->innertext;
+                $description = $submissionHTML->find('div.submission-description', 0);
+                if ($description) {
+                    $this->setReferrerPolicy($description);
+                    $description = trim($description->innertext);
+                } else {
+                    $description = '';
+                }
 
                 $item['content'] = <<<EOD
 <a href="$submissionURL">
