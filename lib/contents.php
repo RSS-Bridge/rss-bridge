@@ -70,7 +70,7 @@ function getContents(
 ) {
     $cacheFactory = new CacheFactory();
 
-    $cache = $cacheFactory->create(Configuration::getConfig('cache', 'type'));
+    $cache = $cacheFactory->create();
     $cache->setScope('server');
     $cache->purgeCache(86400); // 24 hours (forced)
     $cache->setKey([$url]);
@@ -319,7 +319,7 @@ function getSimpleHTMLDOMCached(
     // Initialize cache
     $cacheFac = new CacheFactory();
 
-    $cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+    $cache = $cacheFac->create();
     $cache->setScope('pages');
     $cache->purgeCache(86400); // 24 hours (forced)
 

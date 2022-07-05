@@ -101,7 +101,7 @@ class DisplayAction implements ActionInterface
         // Initialize cache
         $cacheFac = new CacheFactory();
 
-        $cache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+        $cache = $cacheFac->create();
         $cache->setScope('');
         $cache->purgeCache(86400); // 24 hours
         $cache->setKey($cache_params);

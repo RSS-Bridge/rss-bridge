@@ -124,7 +124,7 @@ HTML;
 
         $cacheFac = new CacheFactory();
 
-        $this->clientIDCache = $cacheFac->create(Configuration::getConfig('cache', 'type'));
+        $this->clientIDCache = $cacheFac->create();
         $this->clientIDCache->setScope(get_called_class());
         $this->clientIDCache->setKey(['client_id']);
     }
