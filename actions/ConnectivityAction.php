@@ -57,9 +57,9 @@ class ConnectivityAction implements ActionInterface
      */
     private function reportBridgeConnectivity($bridgeName)
     {
-        $bridgeFac = new \BridgeFactory();
+        $bridgeFactory = new \BridgeFactory();
 
-        if (!$bridgeFac->isWhitelisted($bridgeName)) {
+        if (!$bridgeFactory->isWhitelisted($bridgeName)) {
             header('Content-Type: text/html');
             returnServerError('Bridge is not whitelisted!');
         }
@@ -72,7 +72,7 @@ class ConnectivityAction implements ActionInterface
             'http_code' => 200,
         ];
 
-        $bridge = $bridgeFac->create($bridgeName);
+        $bridge = $bridgeFactory->create($bridgeName);
 
         if ($bridge === false) {
             echo json_encode($retVal);

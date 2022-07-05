@@ -304,9 +304,9 @@ This bridge is not fetching its content through a secure connection</div>';
      */
     public static function displayBridgeCard($bridgeName, $formats, $isActive = true)
     {
-        $bridgeFac = new \BridgeFactory();
+        $bridgeFactory = new \BridgeFactory();
 
-        $bridge = $bridgeFac->create($bridgeName);
+        $bridge = $bridgeFactory->create($bridgeName);
 
         if ($bridge == false) {
             return '';
