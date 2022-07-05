@@ -26,6 +26,13 @@ class ConnectivityAction implements ActionInterface
 {
     public $userData = [];
 
+    private BridgeFactory $bridgeFactory;
+
+    public function __construct()
+    {
+        $this->bridgeFactory = new \BridgeFactory();
+    }
+
     public function execute()
     {
         if (!Debug::isEnabled()) {
@@ -39,7 +46,13 @@ class ConnectivityAction implements ActionInterface
 
         $bridgeName = $this->userData['bridge'];
 
-        $this->reportBridgeConnectivity($bridgeName);
+        $bridgeClassName = $this->bridgeFactory->sanitizeBridgeName($bridgeName);
+
+        if ($bridgeClassName === null) {
+            throw new \InvalidArgumentException('Bridge name invalid!');
+        }
+
+        $this->reportBridgeConnectivity($bridgeClassName);
     }
 
     /**
@@ -52,14 +65,12 @@ class ConnectivityAction implements ActionInterface
      *   "successful": true/false
      * }
      *
-     * @param string $bridgeName Name of the bridge to generate the report for
+     * @param class-string<BridgeInterface> $bridgeClassName Name of the bridge to generate the report for
      * @return void
      */
-    private function reportBridgeConnectivity($bridgeName)
+    private function reportBridgeConnectivity($bridgeClassName)
     {
-        $bridgeFactory = new \BridgeFactory();
-
-        if (!$bridgeFactory->isWhitelisted($bridgeName)) {
+        if (!$this->bridgeFactory->isWhitelisted($bridgeClassName)) {
             header('Content-Type: text/html');
             returnServerError('Bridge is not whitelisted!');
         }
@@ -67,12 +78,12 @@ class ConnectivityAction implements ActionInterface
         header('Content-Type: text/json');
 
         $retVal = [
-            'bridge' => $bridgeName,
+            'bridge' => $bridgeClassName,
             'successful' => false,
             'http_code' => 200,
         ];
 
-        $bridge = $bridgeFactory->create($bridgeName);
+        $bridge = $this->bridgeFactory->create($bridgeClassName);
 
         if ($bridge === false) {
             echo json_encode($retVal);

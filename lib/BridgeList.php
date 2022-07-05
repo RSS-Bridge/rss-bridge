@@ -66,20 +66,20 @@ EOD;
         $inactiveBridges = '';
 
         $bridgeFactory = new \BridgeFactory();
-        $bridgeNames = $bridgeFactory->getBridgeNames();
+        $bridgeClassNames = $bridgeFactory->getBridgeClassNames();
 
         $formatFactory = new FormatFactory();
         $formats = $formatFactory->getFormatNames();
 
-        $totalBridges = count($bridgeNames);
+        $totalBridges = count($bridgeClassNames);
 
-        foreach ($bridgeNames as $bridgeName) {
-            if ($bridgeFactory->isWhitelisted($bridgeName)) {
-                $body .= BridgeCard::displayBridgeCard($bridgeName, $formats);
+        foreach ($bridgeClassNames as $bridgeClassName) {
+            if ($bridgeFactory->isWhitelisted($bridgeClassName)) {
+                $body .= BridgeCard::displayBridgeCard($bridgeClassName, $formats);
                 $totalActiveBridges++;
             } elseif ($showInactive) {
                 // inactive bridges
-                $inactiveBridges .= BridgeCard::displayBridgeCard($bridgeName, $formats, false) . PHP_EOL;
+                $inactiveBridges .= BridgeCard::displayBridgeCard($bridgeClassName, $formats, false) . PHP_EOL;
             }
         }
 
