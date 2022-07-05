@@ -41,16 +41,32 @@ TEXT;
             $this->getInput('feed_4'),
             $this->getInput('feed_5'),
         ];
+
         // Remove empty values
         $feeds = array_filter($feeds);
+
         foreach ($feeds as $feed) {
             // Fetch all items from the feed
             $this->collectExpandableDatas($feed);
         }
+
         // Sort by timestamp descending
         usort($this->items, fn($a, $b) => $b['timestamp'] <=> $a['timestamp']);
+
+        // Remove duplicates
+        $items = [];
+        foreach ($this->items as $item) {
+            $index = $item['uri'] ?? null;
+            if ($index) {
+                // Overwrite duplicates
+                $items[$index] = $item;
+            } else {
+                $items[] = $item;
+            }
+        }
+
         // Grab the first $limit items
-        $this->items = array_slice($this->items, 0, $limit);
+        $this->items = array_slice(array_values($items), 0, $limit);
     }
 
     public function getIcon()
