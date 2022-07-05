@@ -46,10 +46,10 @@ class ListActionTest extends TestCase
             'Item count doesn\'t match'
         );
 
-        $bridgeFac = new BridgeFactory();
+        $bridgeFactory = new BridgeFactory();
 
         $this->assertEquals(
-            count($bridgeFac->getBridgeNames()),
+            count($bridgeFactory->getBridgeNames()),
             count($items['bridges']),
             'Number of bridges doesn\'t match'
         );

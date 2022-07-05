@@ -33,16 +33,16 @@ class DisplayAction implements ActionInterface
         $format = $this->userData['format']
             or returnClientError('You must specify a format!');
 
-        $bridgeFac = new \BridgeFactory();
+        $bridgeFactory = new \BridgeFactory();
 
         // whitelist control
-        if (!$bridgeFac->isWhitelisted($bridge)) {
+        if (!$bridgeFactory->isWhitelisted($bridge)) {
             throw new \Exception('This bridge is not whitelisted', 401);
             die;
         }
 
         // Data retrieval
-        $bridge = $bridgeFac->create($bridge);
+        $bridge = $bridgeFactory->create($bridge);
         $bridge->loadConfiguration();
 
         $noproxy = array_key_exists('_noproxy', $this->userData)
