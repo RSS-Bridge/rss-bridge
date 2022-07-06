@@ -20,10 +20,10 @@ class ListAction implements ActionInterface
         $list->bridges = [];
         $list->total = 0;
 
-        $bridgeFac = new \BridgeFactory();
+        $bridgeFactory = new \BridgeFactory();
 
-        foreach ($bridgeFac->getBridgeNames() as $bridgeName) {
-            $bridge = $bridgeFac->create($bridgeName);
+        foreach ($bridgeFactory->getBridgeNames() as $bridgeName) {
+            $bridge = $bridgeFactory->create($bridgeName);
 
             if ($bridge === false) { // Broken bridge, show as inactive
                 $list->bridges[$bridgeName] = [
@@ -33,7 +33,7 @@ class ListAction implements ActionInterface
                 continue;
             }
 
-            $status = $bridgeFac->isWhitelisted($bridgeName) ? 'active' : 'inactive';
+            $status = $bridgeFactory->isWhitelisted($bridgeName) ? 'active' : 'inactive';
 
             $list->bridges[$bridgeName] = [
                 'status' => $status,

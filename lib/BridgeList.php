@@ -65,16 +65,16 @@ EOD;
         $totalActiveBridges = 0;
         $inactiveBridges = '';
 
-        $bridgeFac = new \BridgeFactory();
-        $bridgeList = $bridgeFac->getBridgeNames();
+        $bridgeFactory = new \BridgeFactory();
+        $bridgeNames = $bridgeFactory->getBridgeNames();
 
-        $formatFac = new FormatFactory();
-        $formats = $formatFac->getFormatNames();
+        $formatFactory = new FormatFactory();
+        $formats = $formatFactory->getFormatNames();
 
-        $totalBridges = count($bridgeList);
+        $totalBridges = count($bridgeNames);
 
-        foreach ($bridgeList as $bridgeName) {
-            if ($bridgeFac->isWhitelisted($bridgeName)) {
+        foreach ($bridgeNames as $bridgeName) {
+            if ($bridgeFactory->isWhitelisted($bridgeName)) {
                 $body .= BridgeCard::displayBridgeCard($bridgeName, $formats);
                 $totalActiveBridges++;
             } elseif ($showInactive) {

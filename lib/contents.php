@@ -317,9 +317,9 @@ function getSimpleHTMLDOMCached(
     Debug::log('Caching url ' . $url . ', duration ' . $duration);
 
     // Initialize cache
-    $cacheFac = new CacheFactory();
+    $cacheFactory = new CacheFactory();
 
-    $cache = $cacheFac->create();
+    $cache = $cacheFactory->create();
     $cache->setScope('pages');
     $cache->purgeCache(86400); // 24 hours (forced)
 

@@ -24,14 +24,14 @@ class DetectAction implements ActionInterface
         $format = $this->userData['format']
             or returnClientError('You must specify a format!');
 
-        $bridgeFac = new \BridgeFactory();
+        $bridgeFactory = new \BridgeFactory();
 
-        foreach ($bridgeFac->getBridgeNames() as $bridgeName) {
-            if (!$bridgeFac->isWhitelisted($bridgeName)) {
+        foreach ($bridgeFactory->getBridgeNames() as $bridgeName) {
+            if (!$bridgeFactory->isWhitelisted($bridgeName)) {
                 continue;
             }
 
-            $bridge = $bridgeFac->create($bridgeName);
+            $bridge = $bridgeFactory->create($bridgeName);
 
             if ($bridge === false) {
                 continue;

@@ -13,12 +13,12 @@ class HtmlFormat extends FormatAbstract
         $donationsAllowed = Configuration::getConfig('admin', 'donations');
 
         // Dynamically build buttons for all formats (except HTML)
-        $formatFac = new FormatFactory();
+        $formatFactory = new FormatFactory();
 
         $buttons = '';
         $links = '';
 
-        foreach ($formatFac->getFormatNames() as $format) {
+        foreach ($formatFactory->getFormatNames() as $format) {
             if (strcasecmp($format, 'HTML') === 0) {
                 continue;
             }
@@ -26,7 +26,7 @@ class HtmlFormat extends FormatAbstract
             $query = str_ireplace('format=Html', 'format=' . $format, htmlentities($_SERVER['QUERY_STRING']));
             $buttons .= $this->buildButton($format, $query) . PHP_EOL;
 
-            $mime = $formatFac->create($format)->getMimeType();
+            $mime = $formatFactory->create($format)->getMimeType();
             $links .= $this->buildLink($format, $query, $mime) . PHP_EOL;
         }
 

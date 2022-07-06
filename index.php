@@ -14,10 +14,10 @@ if (isset($argv)) {
 }
 
 try {
-    $actionFac = new ActionFactory();
+    $actionFactory = new ActionFactory();
 
     if (array_key_exists('action', $params)) {
-        $action = $actionFac->create($params['action']);
+        $action = $actionFactory->create($params['action']);
         $action->userData = $params;
         $action->execute();
     } else {

@@ -33,16 +33,16 @@ class DisplayAction implements ActionInterface
         $format = $this->userData['format']
             or returnClientError('You must specify a format!');
 
-        $bridgeFac = new \BridgeFactory();
+        $bridgeFactory = new \BridgeFactory();
 
         // whitelist control
-        if (!$bridgeFac->isWhitelisted($bridge)) {
+        if (!$bridgeFactory->isWhitelisted($bridge)) {
             throw new \Exception('This bridge is not whitelisted', 401);
             die;
         }
 
         // Data retrieval
-        $bridge = $bridgeFac->create($bridge);
+        $bridge = $bridgeFactory->create($bridge);
         $bridge->loadConfiguration();
 
         $noproxy = array_key_exists('_noproxy', $this->userData)
@@ -99,9 +99,9 @@ class DisplayAction implements ActionInterface
         );
 
         // Initialize cache
-        $cacheFac = new CacheFactory();
+        $cacheFactory = new CacheFactory();
 
-        $cache = $cacheFac->create();
+        $cache = $cacheFactory->create();
         $cache->setScope('');
         $cache->purgeCache(86400); // 24 hours
         $cache->setKey($cache_params);
@@ -205,8 +205,8 @@ class DisplayAction implements ActionInterface
 
         // Data transformation
         try {
-            $formatFac = new FormatFactory();
-            $format = $formatFac->create($format);
+            $formatFactory = new FormatFactory();
+            $format = $formatFactory->create($format);
             $format->setItems($items);
             $format->setExtraInfos($infos);
             $lastModified = $cache->getTime();
