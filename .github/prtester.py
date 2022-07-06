@@ -54,12 +54,15 @@ def testBridges(bridges,status):
                     listname = listing.get('name')
                     if 'optgroup' in listing.contents[0].name:
                         listing = list(itertools.chain.from_iterable(listing))
+                    firstselectionentry = 1
                     for selectionentry in listing:
-                        if 'selected' in selectionentry.attrs:
+                        if firstselectionentry:
                             selectionvalue = selectionentry.get('value')
-                            break
-                    if selectionvalue == '':
-                        selectionvalue = listing.contents[0].get('value')
+                            firstselectionentry = 0
+                        else:
+                            if 'selected' in selectionentry.attrs:
+                                selectionvalue = selectionentry.get('value')
+                                break
                     formstring = formstring + '&' + listname + '=' + selectionvalue
                 if not errormessages:
                     # if all example/default values are present, form the full request string, run the request, replace the static css
