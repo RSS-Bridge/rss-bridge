@@ -20,6 +20,9 @@ function render(string $template, array $context = []): string
 
 function render_template(string $template, array $context = []): string
 {
+    if (isset($context['template'])) {
+        throw new \Exception("Don't use `template` as a context key");
+    }
     extract($context);
     ob_start();
     try {
