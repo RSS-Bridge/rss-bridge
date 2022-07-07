@@ -2,60 +2,57 @@
 
 class ExplosmBridge extends BridgeAbstract
 {
-    const MAINTAINER = 'bockiii';
-    const NAME = 'Explosm Bridge';
-    const URI = 'https://www.explosm.net/';
-    const CACHE_TIMEOUT = 4800; //2hours
-    const DESCRIPTION = 'Returns the last 5 comics';
-    const PARAMETERS = [
-        'Get latest posts' => [
+    const NAME = 'Explosm: Cyanide & Happiness';
+    const URI = 'https://explosm.net/';
+    const DESCRIPTION = 'A Webcomic by Kris Wilson, Rob DenBleyker, and Dave McElfatrick.';
+    const MAINTAINER = 'sal0max, bockiii';
+    const CACHE_TIMEOUT = 60 * 60 * 2; // 2 hours
+    const PARAMETERS = [[
             'limit' => [
-                'name' => 'Posts limit',
+                'name' => 'Limit',
                 'type' => 'number',
-                'title' => 'Maximum number of items to return',
+                'title' => 'The number of recent comics to get.',
                 'defaultValue' => 5
-                ]
             ]
-        ];
+        ]
+    ];
+
+    public function getIcon()
+    {
+        return self::URI . 'favicon-32x32.png';
+    }
+
+    public function getURI()
+    {
+        return self::URI . 'comics/latest#comic';
+    }
 
     public function collectData()
     {
         $limit = $this->getInput('limit');
-        $latest = getSimpleHTMLDOM('https://explosm.net/comics/latest');
-        $image = $latest->find('div[id=comic]', 0)->find('img', 0)->getAttribute('src');
-        $date_string = $latest->find('p[class*=Author__P]', 0)->innertext;
-        $next_data_string = $latest->find('script[id=__NEXT_DATA__]', 0)->innertext;
-        $exp = '/{\\\"latest\\\":\[{\\\"slug\\\":\\\"(.*?)\\ /';
-        $reg_array = [];
-        preg_match($exp, $next_data_string, $reg_array);
-        $comic_id = $reg_array[1];
-        $comic_id = substr($comic_id, 0, strpos($comic_id, '\\'));
-        $item = [];
-        $item['uri'] = $this::URI . 'comics/' . $comic_id;
-        $item['uid'] = $this::URI . 'comics/' . $comic_id;
-        $item['title'] = 'Comic for ' . $date_string;
-        $item['timestamp'] = strtotime($date_string);
-        $item['author'] = $latest->find('p[class*=Author__P]', 2)->innertext;
-        $item['content'] = '<img src="' . $image . '" />';
-        $this->items[] = $item;
+        $url = $this->getUri();
 
-        $next_comic = substr($this::URI, 0, -1)
-            . $latest->find('div[class*=MainComic__Selector]', 0)->find('a', 0)->getAttribute('href');
-        // use index 1 as the latest comic was already found
-        for ($i = 1; $i <= $limit; $i++) {
-            $this_comic = getSimpleHTMLDOM($next_comic);
-            $image = $this_comic->find('div[id=comic]', 0)->find('img', 0)->getAttribute('src');
-            $date_string = $this_comic->find('p[class*=Author__P]', 0)->innertext;
-            $item = [];
-            $item['uri'] = $next_comic;
-            $item['uid'] = $next_comic;
-            $item['title'] = 'Comic for ' . $date_string;
-            $item['timestamp'] = strtotime($date_string);
-            $item['author'] = $this_comic->find('p[class*=Author__P]', 2)->innertext;
-            $item['content'] = '<img src="' . $image . '" />';
+        for ($i = 0; $i < $limit; $i++) {
+            $html = getSimpleHTMLDOM($url);
+
+            $element = $html->find('[class*=ComicImage]', 0);
+            $date    = $element->find('[class^=Author__Right] p', 0)->plaintext;
+            $author  = str_replace('by ', '', $element->find('[class^=Author__Right] p', 1)->plaintext);
+            $image   = $element->find('img', 0)->src;
+            $link    = $html->find('[rel=canonical]', 0)->href;
+
+            $item = [
+                'uid'       => $link,
+                'author'    => $author,
+                'title'     => $date,
+                'uri'       => $link . '#comic',
+                'timestamp' => str_replace('.', '-', $date) . 'T00:00:00Z',
+                'content'   => "<img src=\"$image\" />"
+            ];
             $this->items[] = $item;
-            $next_comic = substr($this::URI, 0, -1)
-                . $this_comic->find('div[class*=MainComic__Selector]', 0)->find('a', 0)->getAttribute('href'); // get next comic link
+
+            // get next url
+            $url = self::URI . $html->find('[class*=ComicSelector]>a', 0)->href;
         }
     }
 }
