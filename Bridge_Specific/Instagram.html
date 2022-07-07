@@ -93,7 +93,7 @@
     <div class="Page__header">
         <h1><a href="../Bridge_Specific/ActivityPub_(Mastodon).html">Bridge Specific</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../Bridge_Specific/Instagram.html">Instagram</a></h1>
                 <span class="ModifiedDate">
-            July 5, 2022 at 6:34 PM        </span>
+            July 7, 2022 at 3:08 AM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/10_Bridge_Specific/Instagram.md" target="_blank">
                 Edit on GitHub            </a>
@@ -106,8 +106,8 @@
 it is suggested to deploy a private RSS-Bridge instance that uses a working Instagram account.</p>
 <h2><a id="configuration" href="#configuration" class="Permalink" aria-hidden="true" title="Permalink">#</a>Configuration</h2>
 <ol>
-<li>Retreiving session id.
-The following steps describe how to get the session id using a Chromium-based browser.</li>
+<li>Retreiving <code>session id</code> and <code>ds_user_id</code>.
+The following steps describe how to get the <code>session id</code> and <code>ds user id</code> using a Chromium-based browser.</li>
 </ol>
 <ul>
 <li>
@@ -139,7 +139,7 @@ It is NOT recommended to use your existing account that is used for common inter
 <p>In the new frame open the “Headers” tab and scroll to “Request Headers”</p>
 </li>
 <li>
-<p>There will be a cookie param will lots of <code>&lt;key&gt;=&lt;value&gt;;</code> text. You need the value of the “sessionid” key. Copy it.</p>
+<p>There will be a cookie param will lots of <code>&lt;key&gt;=&lt;value&gt;;</code> text. You need the value of the “sessionid” and “ds_user_id” keys. Copy them.</p>
 </li>
 </ul>
 <ol start="2">
@@ -150,6 +150,7 @@ It is NOT recommended to use your existing account that is used for common inter
 </ul>
 <pre><code>[InstagramBridge]
 session_id = %sessionid from step 1%
+ds_user_id = %ds_user_id from step 1%
 cache_timeout = %cache timeout in seconds%
 </code></pre>
 <p>The bigger the cache_timeout value, the smaller the chance for RSS-Bridge to throw 429 errors.
