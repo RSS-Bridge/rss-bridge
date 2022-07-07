@@ -14,6 +14,9 @@ class InstagramBridge extends BridgeAbstract
         'cache_timeout' => [
             'required' => false,
         ],
+        'ds_user_id' => [
+            'required' => false,
+        ],
     ];
 
     const PARAMETERS = [
@@ -82,8 +85,9 @@ class InstagramBridge extends BridgeAbstract
     {
         $headers = [];
         $sessionId = $this->getOption('session_id');
-        if ($sessionId) {
-            $headers[] = 'cookie: sessionid=' . $sessionId;
+        $dsUserId = $this->getOption('ds_user_id');
+        if ($sessionId and $dsUserId) {
+            $headers[] = 'cookie: sessionid=' . $sessionId . '; ds_user_id=' . $dsUserId;
         }
         return getContents($uri, $headers);
     }
