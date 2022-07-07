@@ -59,7 +59,7 @@ class DisplayAction implements ActionInterface
                 unset($this->userData['_cache_timeout']);
                 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) . '?' . http_build_query($this->userData);
                 header('Location: ' . $uri, true, 301);
-                die();
+                exit;
             }
 
             $cache_timeout = filter_var($this->userData['_cache_timeout'], FILTER_VALIDATE_INT);
@@ -122,7 +122,7 @@ class DisplayAction implements ActionInterface
 
                 if ($mtime <= $stime) { // Cached data is older or same
                     header('Last-Modified: ' . gmdate('D, d M Y H:i:s ', $mtime) . 'GMT', true, 304);
-                    die();
+                    exit;
                 }
             }
 
@@ -189,7 +189,9 @@ class DisplayAction implements ActionInterface
                         $items[] = $item;
                     } elseif (Configuration::getConfig('error', 'output') === 'http') {
                         header('Content-Type: text/html', true, $this->getReturnCode($e));
-                        die(buildTransformException($e, $bridge));
+                        $response = buildTransformException($e, $bridge);
+                        print $response;
+                        exit;
                     }
                 }
             }
@@ -220,7 +222,9 @@ class DisplayAction implements ActionInterface
         } catch (\Throwable $e) {
             error_log($e);
             header('Content-Type: text/html', true, $e->getCode());
-            die(buildTransformException($e, $bridge));
+            $response = buildTransformException($e, $bridge);
+            print $response;
+            exit;
         }
     }
 }

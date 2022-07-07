@@ -13,7 +13,8 @@ class SQLiteCache implements CacheInterface
     public function __construct()
     {
         if (!extension_loaded('sqlite3')) {
-            die('"sqlite3" extension not loaded. Please check "php.ini"');
+            print render('error.html.php', ['message' => '"sqlite3" extension not loaded. Please check "php.ini"']);
+            exit;
         }
 
         if (!is_writable(PATH_CACHE)) {
@@ -25,12 +26,16 @@ class SQLiteCache implements CacheInterface
 
         $file = Configuration::getConfig(get_called_class(), 'file');
         if (empty($file)) {
-            die('Configuration for ' . get_called_class() . ' missing. Please check your ' . FILE_CONFIG);
+            $message = sprintf('Configuration for %s missing. Please check your %s', get_called_class(), FILE_CONFIG);
+            print render('error.html.php', ['message' => $message]);
+            exit;
         }
         if (dirname($file) == '.') {
             $file = PATH_CACHE . $file;
         } elseif (!is_dir(dirname($file))) {
-            die('Invalid configuration for ' . get_called_class() . '. Please check your ' . FILE_CONFIG);
+            $message = sprintf('Invalid configuration for %s. Please check your %s', get_called_class(), FILE_CONFIG);
+            print render('error.html.php', ['message' => $message]);
+            exit;
         }
 
         if (!is_file($file)) {

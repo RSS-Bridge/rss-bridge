@@ -317,7 +317,9 @@ final class Configuration
      */
     private static function reportError($message)
     {
-        header('Content-Type: text/plain', true, 500);
-        die('Configuration error' . PHP_EOL . $message);
+        print render('error.html.php', [
+            'message' => "Configuration error: $message",
+        ]);
+        exit;
     }
 }
