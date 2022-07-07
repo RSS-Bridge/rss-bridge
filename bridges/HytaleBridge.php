@@ -17,8 +17,8 @@ class HytaleBridge extends BridgeAbstract
             $item = [];
 
             $splitted_timestamp = explode('-', $blog_post->publishedAt);
-            $year = $isodatetime[0];
-            $month = $isodatetime[1];
+            $year = $splitted_timestamp[0];
+            $month = $splitted_timestamp[1];
             $slug = $blog_post->slug;
 
             $uri = 'https://hytale.com/news/' . $year . '/' . $month . '/' . $slug;
@@ -29,7 +29,7 @@ class HytaleBridge extends BridgeAbstract
             $item['timestamp'] = $blog_post->publishedAt;
             $item['content'] = $blog_post->bodyExcerpt;
 
-            $this->$items[] = $item;
+            $this->items[] = $item;
         }
     }
 }
