@@ -8,18 +8,18 @@ rss-bridge from the command line
 */
 if (isset($argv)) {
     parse_str(implode('&', array_slice($argv, 1)), $cliArgs);
-    $params = array_merge($_GET, $cliArgs);
+    $request = array_merge($_GET, $cliArgs);
 } else {
-    $params = $_GET;
+    $request = $_GET;
 }
 
 try {
     $actionFactory = new ActionFactory();
 
-    if (array_key_exists('action', $params)) {
-        $action = $actionFactory->create($params['action']);
-        $action->userData = $params;
-        $action->execute();
+    if (array_key_exists('action', $request)) {
+        $action = $actionFactory->create($request['action']);
+
+        $action->execute($request);
     } else {
         $showInactive = filter_input(INPUT_GET, 'show_inactive', FILTER_VALIDATE_BOOLEAN);
         echo BridgeList::create($showInactive);

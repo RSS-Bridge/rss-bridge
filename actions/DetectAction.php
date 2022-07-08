@@ -14,14 +14,12 @@
 
 class DetectAction implements ActionInterface
 {
-    public $userData = [];
-
-    public function execute()
+    public function execute(array $request)
     {
-        $targetURL = $this->userData['url']
+        $targetURL = $request['url']
             or returnClientError('You must specify a url!');
 
-        $format = $this->userData['format']
+        $format = $request['format']
             or returnClientError('You must specify a format!');
 
         $bridgeFactory = new \BridgeFactory();

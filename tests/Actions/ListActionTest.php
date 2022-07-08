@@ -85,7 +85,7 @@ class ListActionTest extends TestCase
         $action = $actionFactory->create('list');
 
         ob_start();
-        $action->execute();
+        $action->execute([]);
         $this->data = ob_get_contents();
         ob_clean();
         ob_end_flush();

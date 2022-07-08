@@ -14,7 +14,7 @@
 
 class ListAction implements ActionInterface
 {
-    public function execute()
+    public function execute(array $request)
     {
         $list = new StdClass();
         $list->bridges = [];

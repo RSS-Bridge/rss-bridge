@@ -14,19 +14,20 @@
 
 class DisplayAction implements ActionInterface
 {
-    public $userData = [];
-
-    public function execute()
+    public function execute(array $request)
     {
         $bridgeFactory = new \BridgeFactory();
 
-        $bridgeClassName = isset($this->userData['bridge']) ? $bridgeFactory->sanitizeBridgeName($this->userData['bridge']) : null;
+        $bridgeClassName = null;
+        if (isset($request['bridge'])) {
+            $bridgeClassName = $bridgeFactory->sanitizeBridgeName($request['bridge']);
+        }
 
         if ($bridgeClassName === null) {
             throw new \InvalidArgumentException('Bridge name invalid!');
         }
 
-        $format = $this->userData['format']
+        $format = $request['format']
             or returnClientError('You must specify a format!');
 
         // whitelist control
@@ -39,8 +40,8 @@ class DisplayAction implements ActionInterface
         $bridge = $bridgeFactory->create($bridgeClassName);
         $bridge->loadConfiguration();
 
-        $noproxy = array_key_exists('_noproxy', $this->userData)
-            && filter_var($this->userData['_noproxy'], FILTER_VALIDATE_BOOLEAN);
+        $noproxy = array_key_exists('_noproxy', $request)
+            && filter_var($request['_noproxy'], FILTER_VALIDATE_BOOLEAN);
 
         if (defined('PROXY_URL') && PROXY_BYBRIDGE && $noproxy) {
             define('NOPROXY', true);
@@ -48,22 +49,22 @@ class DisplayAction implements ActionInterface
 
         // Cache timeout
         $cache_timeout = -1;
-        if (array_key_exists('_cache_timeout', $this->userData)) {
+        if (array_key_exists('_cache_timeout', $request)) {
             if (!CUSTOM_CACHE_TIMEOUT) {
-                unset($this->userData['_cache_timeout']);
-                $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) . '?' . http_build_query($this->userData);
+                unset($request['_cache_timeout']);
+                $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) . '?' . http_build_query($request);
                 header('Location: ' . $uri, true, 301);
                 exit;
             }
 
-            $cache_timeout = filter_var($this->userData['_cache_timeout'], FILTER_VALIDATE_INT);
+            $cache_timeout = filter_var($request['_cache_timeout'], FILTER_VALIDATE_INT);
         } else {
             $cache_timeout = $bridge->getCacheTimeout();
         }
 
         // Remove parameters that don't concern bridges
         $bridge_params = array_diff_key(
-            $this->userData,
+            $request,
             array_fill_keys(
                 [
                     'action',
@@ -79,7 +80,7 @@ class DisplayAction implements ActionInterface
 
         // Remove parameters that don't concern caches
         $cache_params = array_diff_key(
-            $this->userData,
+            $request,
             array_fill_keys(
                 [
                     'action',
@@ -162,19 +163,19 @@ class DisplayAction implements ActionInterface
                         $item = new \FeedItem();
 
                         // Create "new" error message every 24 hours
-                        $this->userData['_error_time'] = urlencode((int)(time() / 86400));
+                        $request['_error_time'] = urlencode((int)(time() / 86400));
 
                         $message = sprintf(
                             'Bridge returned error %s! (%s)',
                             $e->getCode(),
-                            $this->userData['_error_time']
+                            $request['_error_time']
                         );
                         $item->setTitle($message);
 
                         $item->setURI(
                             (isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '')
                             . '?'
-                            . http_build_query($this->userData)
+                            . http_build_query($request)
                         );
 
                         $item->setTimestamp(time());

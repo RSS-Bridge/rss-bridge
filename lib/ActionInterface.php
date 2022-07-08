@@ -24,5 +24,5 @@ interface ActionInterface
      *
      * @return void
      */
-    public function execute();
+    public function execute(array $request);
 }
