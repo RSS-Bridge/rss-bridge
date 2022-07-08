@@ -1,9 +1,19 @@
-<section>
-    <h2>Something went wrong</h2>
+<div style="width: 60%; margin: 30px auto">
+
+    <h1>Something went wrong</h1>
+    <br>
+    <?= e($message) ?>
+    <br>
     <br>
 
-    <p>
-        <?= e($message) ?>
-    </p>
+    <?php if (isset($stacktrace)): ?>
+        <?php foreach ($stacktrace as $frame) : ?>
+            <code>
+                <?= e($frame) ?>
+            </code>
+            <br>
+        <?php endforeach; ?>
+    <?php endif; ?>
 
-</section>
+</div>
+
