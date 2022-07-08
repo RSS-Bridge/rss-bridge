@@ -317,6 +317,7 @@ final class Configuration
      */
     private static function reportError($message)
     {
+        http_response_code(500);
         print render('error.html.php', [
             'message' => "Configuration error: $message",
         ]);
