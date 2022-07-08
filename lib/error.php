@@ -102,11 +102,11 @@ function create_sane_stacktrace(\Throwable $e): array
 }
 
 /**
- * Remove path prefix for privacy/security reasons
+ * Trim path prefix for privacy/security reasons
  *
- * Example: "/var/www/lib/error.php" => "lib/error.php"
+ * Example: "/var/www/rss-bridge/index.php" => "index.php"
  */
-function trim_path_prefix(string $s): string
+function trim_path_prefix(string $filePath): string
 {
-    return mb_substr($s, mb_strlen(__FILE__) - 13);
+    return mb_substr($filePath, mb_strlen(dirname(__DIR__)) + 1);
 }
