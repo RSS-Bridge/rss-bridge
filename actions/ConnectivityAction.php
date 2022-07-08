@@ -24,8 +24,6 @@
  */
 class ConnectivityAction implements ActionInterface
 {
-    public $userData = [];
-
     private BridgeFactory $bridgeFactory;
 
     public function __construct()
@@ -33,18 +31,18 @@ class ConnectivityAction implements ActionInterface
         $this->bridgeFactory = new \BridgeFactory();
     }
 
-    public function execute()
+    public function execute(array $request)
     {
         if (!Debug::isEnabled()) {
             returnError('This action is only available in debug mode!', 400);
         }
 
-        if (!isset($this->userData['bridge'])) {
+        if (!isset($request['bridge'])) {
             $this->returnEntryPage();
             return;
         }
 
-        $bridgeName = $this->userData['bridge'];
+        $bridgeName = $request['bridge'];
 
         $bridgeClassName = $this->bridgeFactory->sanitizeBridgeName($bridgeName);
 
