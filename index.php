@@ -35,6 +35,7 @@ try {
         $e->getLine()
     );
 
+    http_response_code(500);
     print render('error.html.php', [
         'message' => $message,
         'stacktrace' => create_sane_stacktrace($e),
