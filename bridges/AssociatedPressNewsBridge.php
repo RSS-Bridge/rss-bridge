@@ -149,8 +149,11 @@ class AssociatedPressNewsBridge extends BridgeAbstract
                     $this->processIframes($html);
 
                     if (!is_null($storyContent['leadPhotoId'])) {
-                        $item['enclosures'][] = 'https://storage.googleapis.com/afs-prod/media/'
-                            . $storyContent['leadPhotoId'] . '/800.jpeg';
+                        $leadPhotoUrl = sprintf('https://storage.googleapis.com/afs-prod/media/%s/800.jpeg', $storyContent['leadPhotoId']);
+                        $leadPhotoImageTag = sprintf('<img src="%s">', $leadPhotoUrl);
+                        // Move the image to the beginning of the content
+                        $html = $leadPhotoImageTag . $html;
+                        // Explicitly not adding it to the item's enclosures!
                     }
             }
 
