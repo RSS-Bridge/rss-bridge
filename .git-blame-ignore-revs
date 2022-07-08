@@ -1,0 +1,4 @@
+# Reformat code base to PSR12
+4f75591060d95208a301bc6bf460d875631b29cc
+# Fix coding style missed by phpbcf
+951092eef374db048b77bac85e75e3547bfac702
