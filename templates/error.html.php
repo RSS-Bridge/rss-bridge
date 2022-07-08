@@ -1,6 +1,9 @@
 <div style="width: 60%; margin: 30px auto">
 
-    <h1>Something went wrong</h1>
+    <h1>
+        <?= e($title ?? 'Something went wrong') ?>
+    </h1>
+
     <br>
     <?= e($message) ?>
     <br>
