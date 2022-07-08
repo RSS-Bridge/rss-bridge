@@ -38,7 +38,6 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 /* Let's go for the actual style */
 body {
 	background-color: #f0f0f0;
-	//font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
 	font-family: sans-serif;
 }
 
