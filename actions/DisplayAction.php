@@ -215,19 +215,7 @@ class DisplayAction implements ActionInterface
 
                         $items[] = $item;
                     } elseif (Configuration::getConfig('error', 'output') === 'http') {
-                        $message = sprintf(
-                            'Uncaught Exception %s: %s at %s line %s',
-                            get_class($e),
-                            $e->getMessage(),
-                            trim_path_prefix($e->getFile()),
-                            $e->getLine()
-                        );
-                        http_response_code(500);
-                        print render('error.html.php', [
-                            'message' => $message,
-                            'stacktrace' => create_sane_stacktrace($e),
-                        ]);
-                        exit;
+                        throw $e;
                     }
                 }
             }
