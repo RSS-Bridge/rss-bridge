@@ -162,7 +162,7 @@ abstract class BridgeAbstract implements BridgeInterface
                     continue;
                 }
 
-                $type = isset($properties['type']) ? $properties['type'] : 'text';
+                $type = $properties['type'] ?? 'text';
 
                 switch ($type) {
                     case 'checkbox':

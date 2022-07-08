@@ -26,7 +26,7 @@ while ($next) { /* Collect all contributors */
 
     // Check if there is a link with 'rel="next"'
     foreach ($links as $link) {
-        list($url, $type) = explode(';', $link, 2);
+        [$url, $type] = explode(';', $link, 2);
 
         if (trim($type) === 'rel="next"') {
             $url = trim(preg_replace('/([<>])/', '', $url));

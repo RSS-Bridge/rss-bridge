@@ -33,7 +33,7 @@ class ShanaprojectBridge extends BridgeAbstract
 
     public function getURI()
     {
-        return isset($this->uri) ? $this->uri : parent::getURI();
+        return $this->uri ?? parent::getURI();
     }
 
     public function collectData()
@@ -47,11 +47,11 @@ class ShanaprojectBridge extends BridgeAbstract
         $min_total_episodes = $this->getInput('min_total_episodes') ?: 0;
 
         foreach ($animes as $anime) {
-            list(
+            [
                 $episodes_released,
                 /* of */,
                 $episodes_total
-            ) = explode(' ', $this->extractAnimeEpisodeInformation($anime));
+            ] = explode(' ', $this->extractAnimeEpisodeInformation($anime));
 
             // Skip if not enough episodes yet
             if ($episodes_released < $min_episodes) {

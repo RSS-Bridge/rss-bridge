@@ -76,7 +76,9 @@ class OneFortuneADayBridge extends BridgeAbstract
 
     private function getQuote($seed)
     {
-        $quotes = explode('//', <<<QUOTES
+        $quotes = explode(
+            '//',
+            <<<QUOTES
 People are naturally attracted to you.
 //You learn from your mistakes... You will learn a lot today.
 //If you have something good in your life, don't let it go!

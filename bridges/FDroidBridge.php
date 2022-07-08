@@ -72,17 +72,17 @@ class FDroidBridge extends BridgeAbstract
         // and now extracting app info from the selected widget (and yeah turns out icons are of heterogeneous sizes)
 
         foreach ($html_widget->find('a') as $element) {
-                $item = [];
-                $item['uri'] = self::URI . $element->href;
-                $item['title'] = $element->find('h4', 0)->plaintext;
-                $item['icon'] = $element->find('img', 0)->src;
-                $item['timestamp'] = $this->getTimestamp($item['icon']);
-                $item['summary'] = $element->find('span.package-summary', 0)->plaintext;
-                $item['content'] = '
+            $item = [];
+            $item['uri'] = self::URI . $element->href;
+            $item['title'] = $element->find('h4', 0)->plaintext;
+            $item['icon'] = $element->find('img', 0)->src;
+            $item['timestamp'] = $this->getTimestamp($item['icon']);
+            $item['summary'] = $element->find('span.package-summary', 0)->plaintext;
+            $item['content'] = '
 					<a href="' . $item['uri'] . '">
 						<img alt="" style="max-height:128px" src="' . $item['icon'] . '">
 					</a><br>' . $item['summary'];
-                $this->items[] = $item;
+            $this->items[] = $item;
         }
     }
 }

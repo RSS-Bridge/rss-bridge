@@ -47,7 +47,7 @@ class GoodreadsBridge extends BridgeAbstract
             $dateSpan = $row->find('.uitext', 0)->plaintext;
             $date = null;
 
-        // If book is not yet published, ignore for now
+            // If book is not yet published, ignore for now
             if (preg_match('/published\s+(\d{4})/', $dateSpan, $matches) === 1) {
                 // Goodreads doesn't give us exact publication date here, only a year
                 // We are skipping future dates anyway, so this is def published

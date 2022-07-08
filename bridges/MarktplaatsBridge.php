@@ -126,8 +126,8 @@ class MarktplaatsBridge extends BridgeAbstract
     public function getName()
     {
         if (!is_null($this->getInput('q'))) {
-                return $this->getInput('q') . ' - Marktplaats';
+            return $this->getInput('q') . ' - Marktplaats';
         }
-                return parent::getName();
+        return parent::getName();
     }
 }

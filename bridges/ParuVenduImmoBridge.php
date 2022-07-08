@@ -58,7 +58,7 @@ class ParuVenduImmoBridge extends BridgeAbstract
                 $price = '';
             }
 
-            list($href) = explode('#', $element->href);
+            [$href] = explode('#', $element->href);
 
             $item = [];
             $item['uri'] = self::URI . $href;

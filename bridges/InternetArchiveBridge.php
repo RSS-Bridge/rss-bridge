@@ -196,7 +196,7 @@ EOD;
 
         $item['content'] = <<<EOD
 <p><strong>Subject: {$result->find('div.review-title', 0)->plaintext}</strong></p>
-<p>{$result->find('div.hidden-lists.review' , 0)->children(1)->plaintext}</p>
+<p>{$result->find('div.hidden-lists.review', 0)->children(1)->plaintext}</p>
 EOD;
 
         $item['enclosures'][] = self::URI . $result->find('img.item-img', 0)->source;

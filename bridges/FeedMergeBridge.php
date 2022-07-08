@@ -51,7 +51,7 @@ TEXT;
         }
 
         // Sort by timestamp descending
-        usort($this->items, fn($a, $b) => $b['timestamp'] <=> $a['timestamp']);
+        usort($this->items, fn ($a, $b) => $b['timestamp'] <=> $a['timestamp']);
 
         // Remove duplicates
         $items = [];

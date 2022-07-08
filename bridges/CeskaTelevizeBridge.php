@@ -33,7 +33,7 @@ class CeskaTelevizeBridge extends BridgeAbstract
             returnServerError('Could not get date from Česká televize string');
         }
 
-        $date = sprintf('%04d-%02d-%02d', isset($match[3]) ? $match[3] : date('Y'), $match[2], $match[1]);
+        $date = sprintf('%04d-%02d-%02d', $match[3] ?? date('Y'), $match[2], $match[1]);
         return strtotime($date);
     }
 
@@ -46,7 +46,7 @@ class CeskaTelevizeBridge extends BridgeAbstract
             returnServerError('Invalid url');
         }
 
-        $category = isset($match[4]) ? $match[4] : 'nove';
+        $category = $match[4] ?? 'nove';
         $fixedUrl = "{$match[1]}dily/{$category}/";
 
         $html = getSimpleHTMLDOM($fixedUrl);
@@ -78,11 +78,11 @@ class CeskaTelevizeBridge extends BridgeAbstract
 
     public function getURI()
     {
-        return isset($this->feedUri) ? $this->feedUri : parent::getURI();
+        return $this->feedUri ?? parent::getURI();
     }
 
     public function getName()
     {
-        return isset($this->feedName) ? $this->feedName : parent::getName();
+        return $this->feedName ?? parent::getName();
     }
 }

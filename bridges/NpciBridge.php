@@ -84,7 +84,7 @@ class NpciBridge extends BridgeAbstract
             $item = [
                 'uri' => $uri,
                 'title' => $title,
-                'content' => $title ,
+                'content' => $title,
                 'uid' => sha1($pdfLink),
                 'enclosures' => [
                     $uri

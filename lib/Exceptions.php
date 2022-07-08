@@ -77,7 +77,7 @@ function buildBridgeException(\Throwable $e, BridgeInterface $bridge): string
     $body = 'Error message: `'
     . $e->getMessage()
     . "`\nQuery string: `"
-    . (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '')
+    . ($_SERVER['QUERY_STRING'] ?? '')
     . "`\nVersion: `"
     . Configuration::getVersion()
     . '`';
@@ -105,7 +105,7 @@ function buildTransformException(\Throwable $e, BridgeInterface $bridge): string
     $body = 'Error message: `'
     . $e->getMessage()
     . "`\nQuery string: `"
-    . (isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '')
+    . ($_SERVER['QUERY_STRING'] ?? '')
     . '`';
 
     $link = buildGitHubIssueQuery($title, $body, 'Bridge-Broken', $bridge->getMaintainer());

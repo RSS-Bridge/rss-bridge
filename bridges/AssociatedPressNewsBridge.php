@@ -119,7 +119,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract
         foreach ($tagContents['cards'] as $card) {
             $item = [];
 
-             // skip hub peeks & Notifications
+            // skip hub peeks & Notifications
             if ($card['cardType'] == 'Hub Peek' || $card['cardType'] == 'Notification') {
                 continue;
             }

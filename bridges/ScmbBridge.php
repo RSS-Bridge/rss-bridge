@@ -30,9 +30,9 @@ class ScmbBridge extends BridgeAbstract
 
             // get publication date
             $str_date = $article->find('time', 0)->datetime;
-            list($date, $time) = explode(' ', $str_date);
-            list($y, $m, $d) = explode('-', $date);
-            list($h, $i) = explode(':', $time);
+            [$date, $time] = explode(' ', $str_date);
+            [$y, $m, $d] = explode('-', $date);
+            [$h, $i] = explode(':', $time);
             $timestamp = mktime($h, $i, 0, $m, $d, $y);
             $item['timestamp'] = $timestamp;
 
