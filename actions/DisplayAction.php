@@ -186,29 +186,12 @@ class DisplayAction implements ActionInterface
                             trim_path_prefix($e->getFile()),
                             $e->getLine()
                         );
-                        $stacktrace = create_sane_stacktrace($e);
-                        $issueBody = sprintf(
-                            "```\n%s\n\n%s\n\nQuery string:%s\nVersion:%s\n```",
-                            $message,
-                            implode("\n", $stacktrace),
-                            $_SERVER['QUERY_STRING'] ?? '',
-                            Configuration::getVersion(),
-                        );
-                        $issueUrl = sprintf('https://github.com/RSS-Bridge/rss-bridge/issues/new?%s', http_build_query([
-                            'title' => sprintf('%s failed with error %s', $bridge->getName(), $e->getCode()),
-                            'body' => $issueBody,
-                            'labels' => 'Bridge-Broken',
-                            'assignee' => $bridge->getMaintainer(),
-                        ]));
-                        $searchUrl = sprintf(
-                            'https://github.com/RSS-Bridge/rss-bridge/issues?q=%s',
-                            urlencode('is:issue is:open ' . $bridge::NAME)
-                        );
+
                         $content = render_template('bridge-error.html.php', [
                             'message' => $message,
-                            'stacktrace' => $stacktrace,
-                            'searchUrl' => $searchUrl,
-                            'issueUrl' => $issueUrl,
+                            'stacktrace' => create_sane_stacktrace($e),
+                            'searchUrl' => self::createGithubSearchUrl($bridge),
+                            'issueUrl' => self::createGithubIssueUrl($bridge, $e, $message),
                             'bridge' => $bridge,
                         ]);
                         $item->setContent($content);
@@ -239,5 +222,29 @@ class DisplayAction implements ActionInterface
         }
         header('Content-Type: ' . $format->getMimeType() . '; charset=' . $format->getCharset());
         print $format->stringify();
+    }
+
+    private static function createGithubIssueUrl($bridge, $e, string $message): string
+    {
+        return sprintf('https://github.com/RSS-Bridge/rss-bridge/issues/new?%s', http_build_query([
+            'title' => sprintf('%s failed with error %s', $bridge->getName(), $e->getCode()),
+            'body' => sprintf(
+                "```\n%s\n\n%s\n\nQuery string:%s\nVersion:%s\n```",
+                $message,
+                implode("\n", create_sane_stacktrace($e)),
+                $_SERVER['QUERY_STRING'] ?? '',
+                Configuration::getVersion(),
+            ),
+            'labels' => 'Bridge-Broken',
+            'assignee' => $bridge->getMaintainer(),
+        ]));
+    }
+
+    private static function createGithubSearchUrl($bridge): string
+    {
+        return sprintf(
+            'https://github.com/RSS-Bridge/rss-bridge/issues?q=%s',
+            urlencode('is:issue is:open ' . $bridge->getName())
+        );
     }
 }
