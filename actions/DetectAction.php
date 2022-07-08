@@ -26,12 +26,12 @@ class DetectAction implements ActionInterface
 
         $bridgeFactory = new \BridgeFactory();
 
-        foreach ($bridgeFactory->getBridgeNames() as $bridgeName) {
-            if (!$bridgeFactory->isWhitelisted($bridgeName)) {
+        foreach ($bridgeFactory->getBridgeClassNames() as $bridgeClassName) {
+            if (!$bridgeFactory->isWhitelisted($bridgeClassName)) {
                 continue;
             }
 
-            $bridge = $bridgeFactory->create($bridgeName);
+            $bridge = $bridgeFactory->create($bridgeClassName);
 
             if ($bridge === false) {
                 continue;
@@ -43,7 +43,7 @@ class DetectAction implements ActionInterface
                 continue;
             }
 
-            $bridgeParams['bridge'] = $bridgeName;
+            $bridgeParams['bridge'] = $bridgeClassName;
             $bridgeParams['format'] = $format;
 
             header('Location: ?action=display&' . http_build_query($bridgeParams), true, 301);

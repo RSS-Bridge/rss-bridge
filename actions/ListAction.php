@@ -22,20 +22,20 @@ class ListAction implements ActionInterface
 
         $bridgeFactory = new \BridgeFactory();
 
-        foreach ($bridgeFactory->getBridgeNames() as $bridgeName) {
-            $bridge = $bridgeFactory->create($bridgeName);
+        foreach ($bridgeFactory->getBridgeClassNames() as $bridgeClassName) {
+            $bridge = $bridgeFactory->create($bridgeClassName);
 
             if ($bridge === false) { // Broken bridge, show as inactive
-                $list->bridges[$bridgeName] = [
+                $list->bridges[$bridgeClassName] = [
                     'status' => 'inactive'
                 ];
 
                 continue;
             }
 
-            $status = $bridgeFactory->isWhitelisted($bridgeName) ? 'active' : 'inactive';
+            $status = $bridgeFactory->isWhitelisted($bridgeClassName) ? 'active' : 'inactive';
 
-            $list->bridges[$bridgeName] = [
+            $list->bridges[$bridgeClassName] = [
                 'status' => $status,
                 'uri' => $bridge->getURI(),
                 'donationUri' => $bridge->getDonationURI(),

@@ -40,7 +40,7 @@ class ActionImplementationTest extends TestCase
 
         $this->setAction($path);
 
-        $methods = get_class_methods($this->obj);
+        $methods = array_diff(get_class_methods($this->obj), ['__construct']);
         sort($methods);
 
         $this->assertEquals($allowedMethods, $methods);

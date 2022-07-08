@@ -49,7 +49,7 @@ class ListActionTest extends TestCase
         $bridgeFactory = new BridgeFactory();
 
         $this->assertEquals(
-            count($bridgeFactory->getBridgeNames()),
+            count($bridgeFactory->getBridgeClassNames()),
             count($items['bridges']),
             'Number of bridges doesn\'t match'
         );
