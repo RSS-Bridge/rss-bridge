@@ -79,3 +79,34 @@ function logBridgeError($bridgeName, $code)
 
     return $report['count'];
 }
+
+function create_sane_stacktrace(\Throwable $e): array
+{
+    $frames = array_reverse($e->getTrace());
+    $frames[] = [
+        'file' => $e->getFile(),
+        'line' => $e->getLine(),
+    ];
+    $stackTrace = [];
+    foreach ($frames as $i => $frame) {
+        $file = $frame['file'] ?? '(no file)';
+        $line = $frame['line'] ?? '(no line)';
+        $stackTrace[] = sprintf(
+            '#%s %s:%s',
+            $i,
+            trim_path_prefix($file),
+            $line,
+        );
+    }
+    return $stackTrace;
+}
+
+/**
+ * Remove path prefix for privacy/security reasons
+ *
+ * Example: "/var/www/lib/error.php" => "lib/error.php"
+ */
+function trim_path_prefix(string $s): string
+{
+    return mb_substr($s, mb_strlen(__FILE__) - 13);
+}

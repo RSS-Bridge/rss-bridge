@@ -26,7 +26,17 @@ try {
     }
 } catch (\Throwable $e) {
     error_log($e);
+
+    $message = sprintf(
+        'Uncaught Exception %s: %s at %s line %s',
+        get_class($e),
+        $e->getMessage(),
+        trim_path_prefix($e->getFile()),
+        $e->getLine()
+    );
+
     print render('error.html.php', [
-        'message' => sprintf("Uncaught Exception %s: '%s'\n", get_class($e), $e->getMessage()),
+        'message' => $message,
+        'stacktrace' => create_sane_stacktrace($e),
     ]);
 }

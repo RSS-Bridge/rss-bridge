@@ -16,16 +16,6 @@ class DisplayAction implements ActionInterface
 {
     public $userData = [];
 
-    private function getReturnCode($error)
-    {
-        $returnCode = $error->getCode();
-        if ($returnCode === 301 || $returnCode === 302) {
-            # Don't pass redirect codes to the exterior
-            $returnCode = 508;
-        }
-        return $returnCode;
-    }
-
     public function execute()
     {
         $bridgeFactory = new \BridgeFactory();
@@ -188,19 +178,60 @@ class DisplayAction implements ActionInterface
                         );
 
                         $item->setTimestamp(time());
-                        $item->setContent(buildBridgeException($e, $bridge));
+
+                        $message = sprintf(
+                            'Uncaught Exception %s: %s at %s line %s',
+                            get_class($e),
+                            $e->getMessage(),
+                            trim_path_prefix($e->getFile()),
+                            $e->getLine()
+                        );
+                        $stacktrace = create_sane_stacktrace($e);
+                        $issueBody = sprintf(
+                            "```\n%s\n\n%s\n\nQuery string:%s\nVersion:%s\n```",
+                            $message,
+                            implode("\n", $stacktrace),
+                            $_SERVER['QUERY_STRING'] ?? '',
+                            Configuration::getVersion(),
+                        );
+                        $issueUrl = sprintf('https://github.com/RSS-Bridge/rss-bridge/issues/new?%s', http_build_query([
+                            'title' => sprintf('%s failed with error %s', $bridge->getName(), $e->getCode()),
+                            'body' => $issueBody,
+                            'labels' => 'Bridge-Broken',
+                            'assignee' => $bridge->getMaintainer(),
+                        ]));
+                        $searchUrl = sprintf(
+                            'https://github.com/RSS-Bridge/rss-bridge/issues?q=%s',
+                            urlencode('is:issue is:open ' . $bridge::NAME)
+                        );
+                        $content = render_template('bridge-error.html.php', [
+                            'message' => $message,
+                            'stacktrace' => $stacktrace,
+                            'searchUrl' => $searchUrl,
+                            'issueUrl' => $issueUrl,
+                            'bridge' => $bridge,
+                        ]);
+                        $item->setContent($content);
 
                         $items[] = $item;
                     } elseif (Configuration::getConfig('error', 'output') === 'http') {
-                        header('Content-Type: text/html', true, $this->getReturnCode($e));
-                        $response = buildTransformException($e, $bridge);
-                        print $response;
+                        $message = sprintf(
+                            'Uncaught Exception %s: %s at %s line %s',
+                            get_class($e),
+                            $e->getMessage(),
+                            trim_path_prefix($e->getFile()),
+                            $e->getLine()
+                        );
+                        http_response_code(500);
+                        print render('error.html.php', [
+                            'message' => $message,
+                            'stacktrace' => create_sane_stacktrace($e),
+                        ]);
                         exit;
                     }
                 }
             }
 
-            // Store data in cache
             $cache->saveData([
                 'items' => array_map(function ($i) {
                     return $i->toArray();
@@ -209,26 +240,16 @@ class DisplayAction implements ActionInterface
             ]);
         }
 
-        // Data transformation
-        try {
-            $formatFactory = new FormatFactory();
-            $format = $formatFactory->create($format);
-            $format->setItems($items);
-            $format->setExtraInfos($infos);
-            $lastModified = $cache->getTime();
-            $format->setLastModified($lastModified);
-            if ($lastModified) {
-                header('Last-Modified: ' . gmdate('D, d M Y H:i:s ', $lastModified) . 'GMT');
-            }
-            header('Content-Type: ' . $format->getMimeType() . '; charset=' . $format->getCharset());
-
-            echo $format->stringify();
-        } catch (\Throwable $e) {
-            error_log($e);
-            header('Content-Type: text/html', true, $e->getCode());
-            $response = buildTransformException($e, $bridge);
-            print $response;
-            exit;
+        $formatFactory = new FormatFactory();
+        $format = $formatFactory->create($format);
+        $format->setItems($items);
+        $format->setExtraInfos($infos);
+        $lastModified = $cache->getTime();
+        $format->setLastModified($lastModified);
+        if ($lastModified) {
+            header('Last-Modified: ' . gmdate('D, d M Y H:i:s ', $lastModified) . 'GMT');
         }
+        header('Content-Type: ' . $format->getMimeType() . '; charset=' . $format->getCharset());
+        print $format->stringify();
     }
 }
