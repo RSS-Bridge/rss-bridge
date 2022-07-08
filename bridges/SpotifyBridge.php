@@ -100,9 +100,7 @@ class SpotifyBridge extends BridgeAbstract
 
     private function getToken()
     {
-        $cacheFactory = new CacheFactory();
-
-        $cache = $cacheFactory->create();
+        $cache = CacheFactory::create();
         $cache->setScope(get_called_class());
         $cache->setKey(['token']);
 

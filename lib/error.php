@@ -56,9 +56,7 @@ function returnServerError($message)
  */
 function logBridgeError($bridgeName, $code)
 {
-    $cacheFactory = new CacheFactory();
-
-    $cache = $cacheFactory->create();
+    $cache = CacheFactory::create();
     $cache->setScope('error_reporting');
     $cache->setkey($bridgeName . '_' . $code);
     $cache->purgeCache(86400); // 24 hours

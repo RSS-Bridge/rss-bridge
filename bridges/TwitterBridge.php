@@ -503,9 +503,7 @@ EOD;
     //This function takes 2 requests, and therefore is cached
     private function getApiKey($forceNew = 0)
     {
-        $cacheFactory = new CacheFactory();
-
-        $r_cache = $cacheFactory->create();
+        $r_cache = CacheFactory::create();
         $r_cache->setScope(get_called_class());
         $r_cache->setKey(['refresh']);
         $data = $r_cache->loadData();
@@ -518,9 +516,7 @@ EOD;
             $refresh = $data;
         }
 
-        $cacheFactory = new CacheFactory();
-
-        $cache = $cacheFactory->create();
+        $cache = CacheFactory::create();
         $cache->setScope(get_called_class());
         $cache->setKey(['api_key']);
         $data = $cache->loadData();
@@ -555,9 +551,7 @@ EOD;
             $apiKey = $data;
         }
 
-        $cacheFac2 = new CacheFactory();
-
-        $gt_cache = $cacheFactory->create();
+        $gt_cache = CacheFactory::create();
         $gt_cache->setScope(get_called_class());
         $gt_cache->setKey(['guest_token']);
         $guestTokenUses = $gt_cache->loadData();

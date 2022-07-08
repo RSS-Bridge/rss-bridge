@@ -98,9 +98,7 @@ class InstagramBridge extends BridgeAbstract
             return $username;
         }
 
-        $cacheFactory = new CacheFactory();
-
-        $cache = $cacheFactory->create();
+        $cache = CacheFactory::create();
         $cache->setScope(get_called_class());
         $cache->setKey([$username]);
         $key = $cache->loadData();

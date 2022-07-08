@@ -68,9 +68,7 @@ function getContents(
     array $curlOptions = [],
     bool $returnFull = false
 ) {
-    $cacheFactory = new CacheFactory();
-
-    $cache = $cacheFactory->create();
+    $cache = CacheFactory::create();
     $cache->setScope('server');
     $cache->purgeCache(86400); // 24 hours (forced)
     $cache->setKey([$url]);
@@ -316,10 +314,7 @@ function getSimpleHTMLDOMCached(
 ) {
     Debug::log('Caching url ' . $url . ', duration ' . $duration);
 
-    // Initialize cache
-    $cacheFactory = new CacheFactory();
-
-    $cache = $cacheFactory->create();
+    $cache = CacheFactory::create();
     $cache->setScope('pages');
     $cache->purgeCache(86400); // 24 hours (forced)
 

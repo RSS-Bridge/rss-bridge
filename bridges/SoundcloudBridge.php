@@ -122,9 +122,7 @@ HTML;
             return;
         }
 
-        $cacheFactory = new CacheFactory();
-
-        $this->clientIDCache = $cacheFactory->create();
+        $this->clientIDCache = CacheFactory::create();
         $this->clientIDCache->setScope(get_called_class());
         $this->clientIDCache->setKey(['client_id']);
     }

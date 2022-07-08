@@ -14,56 +14,30 @@
 
 class CacheFactory
 {
-    private $folder;
-    private $cacheNames;
-
-    public function __construct(string $folder = PATH_LIB_CACHES)
+    private function __construct()
     {
-        $this->folder = $folder;
-        // create cache names
-        foreach (scandir($this->folder) as $file) {
-            if (preg_match('/^([^.]+)Cache\.php$/U', $file, $m)) {
-                $this->cacheNames[] = $m[1];
-            }
-        }
     }
 
-    /**
-     * @param string|null $name The name of the cache e.g. "File", "Memcached" or "SQLite"
-     */
-    public function create(string $name = null): CacheInterface
+    public static function create(string $name = null): CacheInterface
     {
         $name ??= Configuration::getConfig('cache', 'type');
-        $name = $this->sanitizeCacheName($name) . 'Cache';
-
-        if (! preg_match('/^[A-Z][a-zA-Z0-9-]*$/', $name)) {
-            throw new \InvalidArgumentException('Cache name invalid!');
-        }
-
-        $filePath = $this->folder . $name . '.php';
-        if (!file_exists($filePath)) {
-            throw new \Exception('Invalid cache');
-        }
-        $className = '\\' . $name;
-        return new $className();
-    }
-
-    protected function sanitizeCacheName(string $name)
-    {
         // Trim trailing '.php' if exists
         if (preg_match('/(.+)(?:\.php)/', $name, $matches)) {
             $name = $matches[1];
         }
-
         // Trim trailing 'Cache' if exists
         if (preg_match('/(.+)(?:Cache)$/i', $name, $matches)) {
             $name = $matches[1];
         }
-
-        if (in_array(strtolower($name), array_map('strtolower', $this->cacheNames))) {
-            $index = array_search(strtolower($name), array_map('strtolower', $this->cacheNames));
-            return $this->cacheNames[$index];
+        $caches = [
+            'file'      => FileCache::class,
+            'memcached' => MemcachedCache::class,
+            'sqlite'    => SQLiteCache::class,
+        ];
+        $name = mb_strtolower($name);
+        if (! isset($caches[$name])) {
+            throw new \InvalidArgumentException('Cache name invalid!');
         }
-        return null;
+        return new $caches[$name]();
     }
 }
