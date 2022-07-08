@@ -14,6 +14,14 @@ if (isset($argv)) {
 }
 
 try {
+    foreach ($request as $value) {
+        if (! is_string($value)) {
+            http_response_code(400);
+            print render('error.html.php', ['message' => '400 Bad Request']);
+            exit;
+        }
+    }
+
     $actionFactory = new ActionFactory();
 
     if (array_key_exists('action', $request)) {
