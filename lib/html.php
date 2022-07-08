@@ -12,6 +12,44 @@
  * @link    https://github.com/rss-bridge/rss-bridge
  */
 
+function render(string $template, array $context = []): string
+{
+    $context['page'] = render_template($template, $context);
+    return render_template('base.html.php', $context);
+}
+
+function render_template(string $template, array $context = []): string
+{
+    if (isset($context['template'])) {
+        throw new \Exception("Don't use `template` as a context key");
+    }
+    extract($context);
+    ob_start();
+    try {
+        require __DIR__ . '/../templates/' . $template;
+    } catch (\Throwable $e) {
+        ob_end_clean();
+        throw $e;
+    }
+    return ob_get_clean();
+}
+
+/**
+ * Escape for html context
+ */
+function e(string $s): string
+{
+    return htmlspecialchars($s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+
+/**
+ * Explicitly don't escape
+ */
+function raw(string $s): string
+{
+    return $s;
+}
+
 /**
  * Removes unwanted tags from a given HTML text.
  *
