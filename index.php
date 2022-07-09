@@ -2,6 +2,10 @@
 
 require_once __DIR__ . '/lib/rssbridge.php';
 
+Configuration::verifyInstallation();
+Configuration::loadConfiguration();
+Authentication::showPromptIfNeeded();
+
 try {
     if (isset($argv)) {
         parse_str(implode('&', array_slice($argv, 1)), $cliArgs);
