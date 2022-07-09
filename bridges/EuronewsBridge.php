@@ -13,9 +13,9 @@ class EuronewsBridge extends BridgeAbstract
             'lang' => [
                 'name' => 'Language',
                 'type' => 'list',
-                'defaultValue' => 'euronews.com',
+                'defaultValue' => 'www.euronews.com',
                 'values' => [
-                    'English' => 'euronews.com',
+                    'English' => 'www.euronews.com',
                     'French' => 'fr.euronews.com',
                     'German' => 'de.euronews.com',
                     'Italian' => 'it.euronews.com',
@@ -48,7 +48,11 @@ class EuronewsBridge extends BridgeAbstract
     public function collectData()
     {
         $limit = $this->getInput('limit');
-        $root_url = 'https://' . $this->getInput('lang');
+        $lang = $this->getInput('lang');
+        if ($lang === 'euronews.com') {
+            $lang = 'www.euronews.com';
+        }
+        $root_url = 'https://' . $lang;
         $url = $root_url . '/api/timeline.json?limit=' . $limit;
         $json = getContents($url);
         $data = json_decode($json, true);
