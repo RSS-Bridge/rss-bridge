@@ -52,6 +52,7 @@ define('FILE_CONFIG_DEFAULT', PATH_ROOT . 'config.default.ini.php');
 define('REPOSITORY', 'https://github.com/RSS-Bridge/rss-bridge/');
 
 // Files
+require_once PATH_LIB . 'Container.php';
 require_once PATH_LIB . 'html.php';
 require_once PATH_LIB . 'error.php';
 require_once PATH_LIB . 'contents.php';
