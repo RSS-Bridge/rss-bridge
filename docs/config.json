@@ -10,6 +10,7 @@
     "live": {
         "clean_urls": true
     },
+    "templates": "daux/templates",
     "html": {
         "theme": "daux-blue",
         "breadcrumbs": true,
