@@ -39,7 +39,7 @@ class TwitterEngineeringBridge extends FeedExpander
         return $item;
     }
 
-    private function getCategoriesFromTags($article_html)
+    private static function getCategoriesFromTags($article_html)
     {
         $tags_list_items = [$article_html->find('.post__tags > ul > li')];
         $categories = [];

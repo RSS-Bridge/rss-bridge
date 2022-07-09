@@ -83,7 +83,7 @@ class NovayaGazetaEuropeBridge extends BridgeAbstract
         }
     }
 
-    private function convertBody($data)
+    private static function convertBody($data)
     {
         $body = '';
         if ($data->previewUrl !== null && !$data->isPreviewHidden) {
@@ -104,7 +104,7 @@ class NovayaGazetaEuropeBridge extends BridgeAbstract
         return $body;
     }
 
-    private function convertElement($datum)
+    private static function convertElement($datum)
     {
         switch ($datum->type) {
             case 'text':

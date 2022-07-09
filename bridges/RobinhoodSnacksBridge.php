@@ -53,7 +53,7 @@ class RobinhoodSnacksBridge extends BridgeAbstract
                 'uri' => $uri,
                 'title' => $title,
                 'timestamp' => $timestamp,
-                'content' => self::getArticleContent($uri)
+                'content' => $this->getArticleContent($uri)
             ];
         }
     }

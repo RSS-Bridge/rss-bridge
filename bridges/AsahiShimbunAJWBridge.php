@@ -36,7 +36,7 @@ class AsahiShimbunAJWBridge extends BridgeAbstract
 
     private function getSectionURI($section)
     {
-        return self::getURI() . $section . '/';
+        return $this->getURI() . $section . '/';
     }
 
     public function collectData()

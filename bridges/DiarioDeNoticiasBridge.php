@@ -62,7 +62,7 @@ class DiarioDeNoticiasBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $archives = self::getURI();
+        $archives = $this->getURI();
         $html = getSimpleHTMLDOMCached($archives);
 
         foreach ($html->find('article') as $element) {
