@@ -38,7 +38,7 @@ class TinyLetterBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $archives = self::getURI() . '/archive';
+        $archives = $this->getURI() . '/archive';
         $html = getSimpleHTMLDOMCached($archives);
 
         foreach ($html->find('.message-list li') as $element) {

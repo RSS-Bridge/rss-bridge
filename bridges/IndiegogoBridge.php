@@ -82,7 +82,7 @@ class IndiegogoBridge extends BridgeAbstract
     public function collectData()
     {
         $url = 'https://www.indiegogo.com/private_api/discover';
-        $data_array = self::getCategories();
+        $data_array = $this->getCategories();
 
         $header = ['Content-type: application/json'];
         $opts = [CURLOPT_POSTFIELDS => json_encode($data_array)];

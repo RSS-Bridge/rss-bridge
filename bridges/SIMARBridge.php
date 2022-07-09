@@ -18,7 +18,7 @@ class SIMARBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::getURI());
+        $html = getSimpleHTMLDOM($this->getURI());
         $e_home = $html->find('#home', 0)
             or returnServerError('Invalid site structure');
 
@@ -40,7 +40,7 @@ class SIMARBridge extends BridgeAbstract
                 $item = [];
 
                 $item['title'] = 'Intervenção: ' . $element->plaintext;
-                $item['uri'] = self::getURI() . $element->href;
+                $item['uri'] = $this->getURI() . $element->href;
                 $item['content'] = $element->innertext;
 
                 /* Try to get the actual contents for this kind of item */
