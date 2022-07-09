@@ -93,7 +93,7 @@
     <div class="Page__header">
         <h1><a href="../For_Developers/index.html">For Developers</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../For_Developers/Folder_structure.html">Folder structure</a></h1>
                 <span class="ModifiedDate">
-            July 7, 2022 at 3:08 AM        </span>
+            July 9, 2022 at 11:33 AM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/04_For_Developers/03_Folder_structure.md" target="_blank">
                 Edit on GitHub            </a>
@@ -111,28 +111,48 @@
 </thead>
 <tbody>
 <tr>
+<td><a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/actions" class="Link--external" rel="noopener noreferrer"><code>actions/</code></a></td>
+<td>Contains all “<a href="https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller" class="Link--external" rel="noopener noreferrer">controllers</a>” for the web front-end.</td>
+</tr>
+<tr>
 <td><a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/bridges" class="Link--external" rel="noopener noreferrer"><code>bridges/</code></a></td>
-<td>Contains all bridges that are currently supported by <strong>RSS-Bridge</strong>. Each file represents one Bridge that is displayed on the <a href="../General/Screenshots.html#welcome-screen">Welcome screen</a> of <strong>RSS-Bridge</strong></td>
+<td>Contains all bridges that are currently supported. Each file represents one Bridge that is displayed on the <a href="../General/Screenshots.html#welcome-screen">Welcome screen</a> of <strong>RSS-Bridge</strong></td>
 </tr>
 <tr>
 <td><a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/caches" class="Link--external" rel="noopener noreferrer"><code>caches/</code></a></td>
-<td>Contains all cache types for <strong>RSS-Bridge</strong>.</td>
+<td>Contains implementation for different cache back-ends supported.</td>
 </tr>
 <tr>
-<td><a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/css" class="Link--external" rel="noopener noreferrer"><code>css/</code></a></td>
-<td>Contains all <a href="https://en.wikipedia.org/wiki/Cascading_Style_Sheets" class="Link--external" rel="noopener noreferrer">Cascading Style Sheets</a> for <strong>RSS-Bridge</strong></td>
+<td><a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/contrib" class="Link--external" rel="noopener noreferrer"><code>contrib/</code></a></td>
+<td>Contains various helpers for development and release process.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs" class="Link--external" rel="noopener noreferrer"><code>docs/</code></a></td>
+<td>Contains this documentation.</td>
 </tr>
 <tr>
 <td><a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/formats" class="Link--external" rel="noopener noreferrer"><code>formats/</code></a></td>
-<td>Contains all export formats for <strong>RSS-Bridge</strong>.</td>
+<td>Contains all export formats.</td>
 </tr>
 <tr>
 <td><a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/lib" class="Link--external" rel="noopener noreferrer"><code>lib/</code></a></td>
-<td>Contains the core API of <strong>RSS-Bridge</strong>.</td>
+<td>Contains the core API and helper functions.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/static" class="Link--external" rel="noopener noreferrer"><code>static/</code></a></td>
+<td>Contains all static assets for the web front-end, including images, style sheets and JavaScript code.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/templates" class="Link--external" rel="noopener noreferrer"><code>templates/</code></a></td>
+<td>Contains templates for producing the HTML of the web front-end.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/tests" class="Link--external" rel="noopener noreferrer"><code>tests/</code></a></td>
+<td>Contains the test suite and fixtures.</td>
 </tr>
 <tr>
 <td><a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/vendor" class="Link--external" rel="noopener noreferrer"><code>vendor/</code></a></td>
-<td>Contains vendor specific files to support <strong>RSS-Bridge</strong>. Development of all files in this folder must be done in the vendor specific repository (not part of <strong>RSS-Bridge</strong>)</td>
+<td>Contains third-party libraries used by <strong>RSS-Bridge</strong>. Development of all files in this folder must be done in the vendor specific repository (not part of <strong>RSS-Bridge</strong>)</td>
 </tr>
 </tbody>
 </table>
