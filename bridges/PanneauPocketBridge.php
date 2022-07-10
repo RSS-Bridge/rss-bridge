@@ -15,7 +15,7 @@ class PanneauPocketBridge extends BridgeAbstract
             ]
         ]
     ];
-    const CACHE_TIMEOUT = 7200;
+    const CACHE_TIMEOUT = 7200; // 2h
 
     private const CITIES = [
         'Andouillé-Neuville-35250' => '1455789521',
@@ -120,6 +120,8 @@ class PanneauPocketBridge extends BridgeAbstract
         $html = getSimpleHTMLDOM($url);
 
         foreach ($html->find('.sign-carousel--item') as $itemDom) {
+            $item = [];
+
             $item['uri'] = $itemDom->find('button[type=button]', 0)->href;
             $item['title'] = $itemDom->find('.sign-preview__content .title', 0)->innertext;
             $item['author'] = 'floviolleau';
@@ -135,27 +137,18 @@ class PanneauPocketBridge extends BridgeAbstract
     }
 
     /**
-     * debug function to get cities
+     * Produce self::CITIES array
      */
     private static function getCities()
     {
-        $url = self::URI . '/public-api/city';
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101 Firefox/80.0');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        $content = curl_exec($ch);
-        $cities = json_encode($content, JSON_PRETTY_PRINT);
-        $cities = json_decode($content, true);
+        $cities = json_decode(getContents(self::URI . '/public-api/city'), true);
 
         $formattedCities = null;
         $citiesString = '[<br>';
         foreach ($cities as $city) {
             if (str_starts_with($city['postCode'], '35')) {
                 $formattedCities[$city['name'] . ' - ' . $city['postCode']] = $city['id'];
-                $citiesString .= '"' . $city['name'] . '-' . $city['postCode'] . '" => "' . $city['id'] . '",';
+                $citiesString .= '    "' . $city['name'] . '-' . $city['postCode'] . '" => "' . $city['id'] . '",';
                 $citiesString .= '<br>';
             }
         }
