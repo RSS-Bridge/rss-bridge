@@ -11,11 +11,11 @@ class HytaleBridge extends BridgeAbstract
     const _API_URL_BLOG_POST = 'https://hytale.com/api/blog/post/slug/';
     const _BLOG_THUMB_URL = 'https://cdn.hytale.com/variants/blog_thumb_';
     const _BLOG_COVER_URL = 'https://cdn.hytale.com/variants/blog_cover_';
-    const _IMG_REGEX = '/https:\/\/cdn\.hytale\.com\/\w+\.(?:jpg|png)/';
+    const _IMG_REGEX = '#https://cdn\.hytale\.com/\w+\.(?:jpg|png)#';
 
     public function collectData()
     {
-        $blog_posts = json_decode(file_get_contents(self::_API_URL_PUBLISHED));
+        $blog_posts = json_decode(getContents(self::_API_URL_PUBLISHED));
 
         foreach ($blog_posts as $blog_post) {
             $item = [];
@@ -32,7 +32,7 @@ class HytaleBridge extends BridgeAbstract
             $item['author'] = $blog_post->author;
             $item['timestamp'] = $blog_post->publishedAt;
 
-            $blog_post_full = json_decode(file_get_contents(self::_API_URL_BLOG_POST . $slug));
+            $blog_post_full = json_decode(getContents(self::_API_URL_BLOG_POST . $slug));
 
             $item['content'] = $blog_post_full->body;
             $blog_cover_s3_key = $blog_post_full->coverImage->s3Key;
