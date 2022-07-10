@@ -2,18 +2,24 @@
 
 require_once __DIR__ . '/lib/rssbridge.php';
 
-/*
-Move the CLI arguments to the $_GET array, in order to be able to use
-rss-bridge from the command line
-*/
-if (isset($argv)) {
-    parse_str(implode('&', array_slice($argv, 1)), $cliArgs);
-    $request = array_merge($_GET, $cliArgs);
-} else {
-    $request = $_GET;
-}
-
 try {
+    if (isset($argv)) {
+        parse_str(implode('&', array_slice($argv, 1)), $cliArgs);
+        $request = $cliArgs;
+    } else {
+        $request = $_GET;
+    }
+    foreach ($request as $key => $value) {
+        if (! is_string($value)) {
+            http_response_code(400);
+            print render('error.html.php', [
+                'title' => '400 Bad Request',
+                'message' => "Query parameter \"$key\" is not a string.",
+            ]);
+            exit(1);
+        }
+    }
+
     $actionFactory = new ActionFactory();
 
     if (array_key_exists('action', $request)) {
