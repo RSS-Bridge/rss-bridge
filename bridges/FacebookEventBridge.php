@@ -26,6 +26,9 @@ class FacebookEventBridge extends BridgeAbstract
         $url = sprintf('https://m.facebook.com/%s/events/', $url);
         $dom = getSimpleHTMLDOMCached($url);
 
+        if (strstr($dom->innertext, '<title>Log in to Facebook | Facebook</title>')) {
+            throw new \Exception('Got hit by anti-bot');
+        }
         $d = $dom->find('#pages_msite_body_contents', 0);
         if (!$d) {
             throw new \Exception('Unable to find #pages_msite_body_contents');
