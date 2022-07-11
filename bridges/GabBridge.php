@@ -11,6 +11,7 @@ final class GabBridge extends BridgeAbstract
             'username' => [
                 'name' => 'username',
                 'type' => 'text',
+                'defaultValue' => 'realdonaldtrump',
             ],
         ]
     ];
