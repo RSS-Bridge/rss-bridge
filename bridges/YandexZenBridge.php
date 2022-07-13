@@ -61,6 +61,9 @@ class YandexZenBridge extends BridgeAbstract
 
     public function getName()
     {
+        if (is_null($this->getInput('username'))) {
+            return parent::getName();
+        }
         return $this->getInput('username') . '\'s latest zen.yandex posts';
     }
 }
