@@ -74,7 +74,11 @@ class VkBridge extends BridgeAbstract
         // change all linebreak to HTML compatible <br />
         $ret = nl2br($ret);
         // find URLs
-        $ret = preg_replace('/((https?|ftp|gopher)\:\/\/[a-zA-Z0-9\-\.]+(:[a-zA-Z0-9]*)?\/?([@\w\-\+\.\?\,\'\/&amp;%\$#\=~\x5C])*)/', "<a href='$1'>$1</a>", $ret);
+        $ret = preg_replace(
+            '/((https?|ftp|gopher)\:\/\/[a-zA-Z0-9\-\.]+(:[a-zA-Z0-9]*)?\/?([@\w\-\+\.\?\,\'\/&amp;%\$#\=~\x5C])*)/',
+            "<a href='$1'>$1</a>",
+            $ret
+        );
         // find [id1|Pawel Durow] form links
         $ret = preg_replace('/\[(\w+)\|([^\]]+)\]/', "<a href='https://vk.com/$1'>$2</a>", $ret);
 
@@ -91,6 +95,7 @@ class VkBridge extends BridgeAbstract
                     $href = "https://vk.com/video{$attachment['video']['owner_id']}_{$attachment['video']['id']}";
                     $ret .= "<p><a href='{$href}'><img src='{$photo}' alt='Video: {$title}'><br/>Video: {$title}</a></p>";
                 }
+
                 // VK audio
                 elseif ($attachment['type'] == 'audio') {
                     $artist = htmlentities($attachment['audio']['artist'], ENT_QUOTES | ENT_HTML401);
@@ -113,11 +118,13 @@ class VkBridge extends BridgeAbstract
                     $text = htmlentities($attachment['photo']['text'], ENT_QUOTES | ENT_HTML401);
                     $ret .= "<p><img src='{$photo}' alt='{$text}'></p>";
                 }
+
                 // GIF docs
                 elseif ($attachment['type'] == 'doc' and $attachment['doc']['ext'] == 'gif') {
                     $url = htmlentities($attachment['doc']['url'], ENT_QUOTES | ENT_HTML401);
                     $ret .= "<p><img src='{$url}'></p>";
                 }
+
                 // links
                 elseif ($attachment['type'] == 'link') {
                     $url = htmlentities($attachment['link']['url'], ENT_QUOTES | ENT_HTML401);
@@ -130,12 +137,14 @@ class VkBridge extends BridgeAbstract
                         $ret .= "<p><a href='{$url}'>{$title}</a></p>";
                     }
                 }
+
                 // notes
                 elseif ($attachment['type'] == 'note') {
                     $title = htmlentities($attachment['note']['title'], ENT_QUOTES | ENT_HTML401);
                     $url = htmlentities($attachment['note']['view_url'], ENT_QUOTES | ENT_HTML401);
                     $ret .= "<p><a href='{$url}'>{$title}</a></p>";
                 }
+
                 // polls
                 elseif ($attachment['type'] == 'poll') {
                     $question = htmlentities($attachment['poll']['question'], ENT_QUOTES | ENT_HTML401);
@@ -207,10 +216,19 @@ class VkBridge extends BridgeAbstract
                     continue;
                 }
                 $originalPost = $post['copy_history'][0];
-                $originalPostAuthorURI = 'https://vk.com/' . ($originalPost['from_id'] < 0 ? 'club' : 'id') . strval(abs($originalPost['owner_id']));
+                if ($originalPost['from_id'] < 0) {
+                    $originalPostAuthorScreenName = 'club' . (-$originalPost['owner_id']);
+                } else {
+                    $originalPostAuthorScreenName = 'id' . $originalPost['owner_id'];
+                }
+                $originalPostAuthorURI = 'https://vk.com/' . $originalPostAuthorScreenName;
                 $originalPostAuthorName = $this->ownerNames[$originalPost['from_id']];
                 $originalPostAuthor = "<a href='$originalPostAuthorURI'>$originalPostAuthorName</a>";
-                $content .= '<p>Reposted (<a href="' . $this->getPostURI($originalPost) . '">Post</a> from ' . $originalPostAuthor . '):</p>';
+                $content .= '<p>Reposted (<a href="';
+                $content .= $this->getPostURI($originalPost);
+                $content .= '">Post</a> from ';
+                $content .= $originalPostAuthor;
+                $content .= '):</p>';
                 $content .= $this->generateContentFromPost($originalPost);
             }
             $item->setContent($content);
