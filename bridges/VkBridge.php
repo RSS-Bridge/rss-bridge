@@ -51,7 +51,8 @@ class VkBridge extends BridgeAbstract
         return parent::getName();
     }
 
-    protected function getPostURI($post) {
+    protected function getPostURI($post)
+    {
         $r = 'https://vk.com/wall' . $post['owner_id'] . '_';
         if (isset($post['reply_post_id'])) {
             $r .= $post['reply_post_id'] . '?reply=' . $post['id'] . '&thread=' . $post['parents_stack'][0];
@@ -64,7 +65,8 @@ class VkBridge extends BridgeAbstract
     // This function is based on SlackCoyote's vkfeed2rss
     // https://github.com/em92/vkfeed2rss
 
-    protected function generateContentFromPost($post) {
+    protected function generateContentFromPost($post)
+    {
         // it's what we will return
         $ret = $post['text'];
         // html special characters convertion
@@ -92,13 +94,13 @@ class VkBridge extends BridgeAbstract
                 // VK audio
                 elseif ($attachment['type'] == 'audio') {
                     $artist = htmlentities($attachment['audio']['artist'], ENT_QUOTES | ENT_HTML401);
-                    $title =  htmlentities($attachment['audio']['title'], ENT_QUOTES | ENT_HTML401);
+                    $title = htmlentities($attachment['audio']['title'], ENT_QUOTES | ENT_HTML401);
                     $ret .= "<p>Audio: {$artist} - {$title}</p>";
                 }
                 // any doc apart of gif
                 elseif ($attachment['type'] == 'doc' and $attachment['doc']['ext'] != 'gif') {
                     $doc_url = htmlentities($attachment['doc']['url'], ENT_QUOTES | ENT_HTML401);
-                    $title =   htmlentities($attachment['doc']['title'], ENT_QUOTES | ENT_HTML401);
+                    $title = htmlentities($attachment['doc']['title'], ENT_QUOTES | ENT_HTML401);
                     $ret .= "<p><a href='{$doc_url}'>Document: {$title}</a></p>";
                 }
             }
@@ -108,7 +110,7 @@ class VkBridge extends BridgeAbstract
                 // GIF in vk is a document, so, not handled as photo
                 if ($attachment['type'] == 'photo') {
                     $photo = htmlentities($this->getImageURLWithWidth($attachment['photo']['sizes'], 604), ENT_QUOTES | ENT_HTML401);
-                    $text =  htmlentities($attachment['photo']['text'], ENT_QUOTES | ENT_HTML401);
+                    $text = htmlentities($attachment['photo']['text'], ENT_QUOTES | ENT_HTML401);
                     $ret .= "<p><img src='{$photo}' alt='{$text}'></p>";
                 }
                 // GIF docs
@@ -124,14 +126,14 @@ class VkBridge extends BridgeAbstract
                     if (isset($attachment['link']['photo']['photo_604'])) {
                         $photo = htmlentities($attachment['link']['photo']['photo_604'], ENT_QUOTES | ENT_HTML401);
                         $ret .= "<p><a href='{$url}'><img src='{$photo}' alt='{$title}'></a></p>";
-                    }
-                    else
+                    } else {
                         $ret .= "<p><a href='{$url}'>{$title}</a></p>";
+                    }
                 }
                 // notes
                 elseif ($attachment['type'] == 'note') {
                     $title = htmlentities($attachment['note']['title'], ENT_QUOTES | ENT_HTML401);
-                    $url =   htmlentities($attachment['note']['view_url'], ENT_QUOTES | ENT_HTML401);
+                    $url = htmlentities($attachment['note']['view_url'], ENT_QUOTES | ENT_HTML401);
                     $ret .= "<p><a href='{$url}'>{$title}</a></p>";
                 }
                 // polls
@@ -141,9 +143,9 @@ class VkBridge extends BridgeAbstract
                     $answers = $attachment['poll']['answers'];
                     $ret .= "<p>Poll: {$question} ({$vote_count} votes)<br />";
                     foreach ($answers as $answer) {
-                        $text =  htmlentities($answer['text'], ENT_QUOTES | ENT_HTML401);
+                        $text = htmlentities($answer['text'], ENT_QUOTES | ENT_HTML401);
                         $votes = $answer['votes'];
-                        $rate =  $answer['rate'];
+                        $rate = $answer['rate'];
                         $ret .= "* {$text}: {$votes} ({$rate}%)<br />";
                     }
                     $ret .= '</p>';
@@ -156,16 +158,20 @@ class VkBridge extends BridgeAbstract
         return $ret;
     }
 
-    protected function getImageURLWithWidth($items, $width) {
+    protected function getImageURLWithWidth($items, $width)
+    {
         $url = '';
-        foreach($items as $item) {
+        foreach ($items as $item) {
             $url = $item['url'];
-            if ($item['width'] == $width) break;
+            if ($item['width'] == $width) {
+                break;
+            }
         }
         return $url;
     }
 
-    public function collectData() {
+    public function collectData()
+    {
         if ($this->getOption('access_token')) {
             $this->collectDataUsingAPI();
         } else {
@@ -173,7 +179,8 @@ class VkBridge extends BridgeAbstract
         }
     }
 
-    protected function collectDataUsingAPI() {
+    protected function collectDataUsingAPI()
+    {
         $ownerId = 0;
         $r = $this->api('wall.get', [
             'domain' => $this->getInput('u'),
@@ -181,15 +188,15 @@ class VkBridge extends BridgeAbstract
         ]);
 
         // preparing ownerNames dictionary
-        foreach($r['response']['profiles'] as $profile) {
+        foreach ($r['response']['profiles'] as $profile) {
             $this->ownerNames[$profile['id']] = $profile['first_name'] . ' ' . $profile['last_name'];
         }
-        foreach($r['response']['groups'] as $group) {
+        foreach ($r['response']['groups'] as $group) {
             $this->ownerNames[-$group['id']] = $group['name'];
         }
 
         // fetching feed
-        foreach($r['response']['items'] as $post) {
+        foreach ($r['response']['items'] as $post) {
             if (!$ownerId) {
                 $ownerId = $post['owner_id'];
             }
@@ -203,7 +210,7 @@ class VkBridge extends BridgeAbstract
                 $originalPostAuthorURI = 'https://vk.com/' . ($originalPost['from_id'] < 0 ? 'club' : 'id') . strval(abs($originalPost['owner_id']));
                 $originalPostAuthorName = $this->ownerNames[$originalPost['from_id']];
                 $originalPostAuthor = "<a href='$originalPostAuthorURI'>$originalPostAuthorName</a>";
-                $content .= '<p>Reposted (<a href="' . $this->getPostURI($originalPost) . '">Post</a> from ' .  $originalPostAuthor . '):</p>';
+                $content .= '<p>Reposted (<a href="' . $this->getPostURI($originalPost) . '">Post</a> from ' . $originalPostAuthor . '):</p>';
                 $content .= $this->generateContentFromPost($originalPost);
             }
             $item->setContent($content);
@@ -218,7 +225,8 @@ class VkBridge extends BridgeAbstract
         $this->pageName = $this->ownerNames[$ownerId];
     }
 
-    public function collectDataWithoutAPI() {
+    public function collectDataWithoutAPI()
+    {
         $text_html = $this->getContents();
 
         $text_html = iconv('windows-1251', 'utf-8//ignore', $text_html);
@@ -610,14 +618,15 @@ class VkBridge extends BridgeAbstract
         }
     }
 
-    protected function api($method, array $params) {
-        $access_token = $this->getOption("access_token");
+    protected function api($method, array $params)
+    {
+        $access_token = $this->getOption('access_token');
         if (!$access_token) {
-            returnServerError("You cannot run VK API methods without access_token");
+            returnServerError('You cannot run VK API methods without access_token');
         }
         $params['v'] = '5.131';
         $params['access_token'] = $access_token;
-        $r = json_decode( getContents('https://api.vk.com/method/' . $method . '?' . http_build_query($params)), true );
+        $r = json_decode(getContents('https://api.vk.com/method/' . $method . '?' . http_build_query($params)), true);
         if (isset($r['error'])) {
             returnServerError('API returned error: ' . $r['error']['error_msg'] . ' (' . $r['error']['error_code'] . ')');
         }
