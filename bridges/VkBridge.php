@@ -23,13 +23,15 @@ class VkBridge extends BridgeAbstract
         ]
     ];
 
-    protected $videos = [];
-    protected $pageName;
+    const CONFIGURATION = [
+        'access_token' => [
+            'required' => false,
+        ],
+    ];
 
-    protected function getAccessToken()
-    {
-        return 'e69b2db9f6cd4a97c0716893232587165c18be85bc1af1834560125c1d3c8ec281eb407a78cca0ae16776';
-    }
+    protected $videos = [];
+    protected $ownerNames = [];
+    protected $pageName;
 
     public function getURI()
     {
@@ -49,8 +51,174 @@ class VkBridge extends BridgeAbstract
         return parent::getName();
     }
 
-    public function collectData()
-    {
+    protected function getPostURI($post) {
+        $r = 'https://vk.com/wall' . $post['owner_id'] . '_';
+        if (isset($post['reply_post_id'])) {
+            $r .= $post['reply_post_id'] . '?reply=' . $post['id'] . '&thread=' . $post['parents_stack'][0];
+        } else {
+            $r .= $post['id'];
+        }
+        return $r;
+    }
+
+    // This function is based on SlackCoyote's vkfeed2rss
+    // https://github.com/em92/vkfeed2rss
+
+    protected function generateContentFromPost($post) {
+        // it's what we will return
+        $ret = $post['text'];
+        // html special characters convertion
+        $ret = htmlentities($ret, ENT_QUOTES | ENT_HTML401);
+        // change all linebreak to HTML compatible <br />
+        $ret = nl2br($ret);
+        // find URLs
+        $ret = preg_replace('/((https?|ftp|gopher)\:\/\/[a-zA-Z0-9\-\.]+(:[a-zA-Z0-9]*)?\/?([@\w\-\+\.\?\,\'\/&amp;%\$#\=~\x5C])*)/', "<a href='$1'>$1</a>", $ret);
+        // find [id1|Pawel Durow] form links
+        $ret = preg_replace('/\[(\w+)\|([^\]]+)\]/', "<a href='https://vk.com/$1'>$2</a>", $ret);
+
+        $ret = "<p>$ret</p>";
+
+        // attachments
+        if (isset($post['attachments'])) {
+            // level 1
+            foreach ($post['attachments'] as $attachment) {
+                // VK videos
+                if ($attachment['type'] == 'video') {
+                    $title = htmlentities($attachment['video']['title'], ENT_QUOTES | ENT_HTML401);
+                    $photo = htmlentities($this->getImageURLWithWidth($attachment['video']['image'], 320), ENT_QUOTES | ENT_HTML401);
+                    $href = "https://vk.com/video{$attachment['video']['owner_id']}_{$attachment['video']['id']}";
+                    $ret .= "<p><a href='{$href}'><img src='{$photo}' alt='Video: {$title}'><br/>Video: {$title}</a></p>";
+                }
+                // VK audio
+                elseif ($attachment['type'] == 'audio') {
+                    $artist = htmlentities($attachment['audio']['artist'], ENT_QUOTES | ENT_HTML401);
+                    $title =  htmlentities($attachment['audio']['title'], ENT_QUOTES | ENT_HTML401);
+                    $ret .= "<p>Audio: {$artist} - {$title}</p>";
+                }
+                // any doc apart of gif
+                elseif ($attachment['type'] == 'doc' and $attachment['doc']['ext'] != 'gif') {
+                    $doc_url = htmlentities($attachment['doc']['url'], ENT_QUOTES | ENT_HTML401);
+                    $title =   htmlentities($attachment['doc']['title'], ENT_QUOTES | ENT_HTML401);
+                    $ret .= "<p><a href='{$doc_url}'>Document: {$title}</a></p>";
+                }
+            }
+            // level 2
+            foreach ($post['attachments'] as $attachment) {
+                // JPEG, PNG photos
+                // GIF in vk is a document, so, not handled as photo
+                if ($attachment['type'] == 'photo') {
+                    $photo = htmlentities($this->getImageURLWithWidth($attachment['photo']['sizes'], 604), ENT_QUOTES | ENT_HTML401);
+                    $text =  htmlentities($attachment['photo']['text'], ENT_QUOTES | ENT_HTML401);
+                    $ret .= "<p><img src='{$photo}' alt='{$text}'></p>";
+                }
+                // GIF docs
+                elseif ($attachment['type'] == 'doc' and $attachment['doc']['ext'] == 'gif') {
+                    $url = htmlentities($attachment['doc']['url'], ENT_QUOTES | ENT_HTML401);
+                    $ret .= "<p><img src='{$url}'></p>";
+                }
+                // links
+                elseif ($attachment['type'] == 'link') {
+                    $url = htmlentities($attachment['link']['url'], ENT_QUOTES | ENT_HTML401);
+                    $url = str_replace('https://m.vk.com', 'https://vk.com', $url);
+                    $title = htmlentities($attachment['link']['title'], ENT_QUOTES | ENT_HTML401);
+                    if (isset($attachment['link']['photo']['photo_604'])) {
+                        $photo = htmlentities($attachment['link']['photo']['photo_604'], ENT_QUOTES | ENT_HTML401);
+                        $ret .= "<p><a href='{$url}'><img src='{$photo}' alt='{$title}'></a></p>";
+                    }
+                    else
+                        $ret .= "<p><a href='{$url}'>{$title}</a></p>";
+                }
+                // notes
+                elseif ($attachment['type'] == 'note') {
+                    $title = htmlentities($attachment['note']['title'], ENT_QUOTES | ENT_HTML401);
+                    $url =   htmlentities($attachment['note']['view_url'], ENT_QUOTES | ENT_HTML401);
+                    $ret .= "<p><a href='{$url}'>{$title}</a></p>";
+                }
+                // polls
+                elseif ($attachment['type'] == 'poll') {
+                    $question = htmlentities($attachment['poll']['question'], ENT_QUOTES | ENT_HTML401);
+                    $vote_count = $attachment['poll']['votes'];
+                    $answers = $attachment['poll']['answers'];
+                    $ret .= "<p>Poll: {$question} ({$vote_count} votes)<br />";
+                    foreach ($answers as $answer) {
+                        $text =  htmlentities($answer['text'], ENT_QUOTES | ENT_HTML401);
+                        $votes = $answer['votes'];
+                        $rate =  $answer['rate'];
+                        $ret .= "* {$text}: {$votes} ({$rate}%)<br />";
+                    }
+                    $ret .= '</p>';
+                } elseif (!in_array($attachment['type'], ['video', 'audio', 'doc'])) {
+                    $ret .= "<p>Unknown attachment type: {$attachment['type']}</p>";
+                }
+            }
+        }
+
+        return $ret;
+    }
+
+    protected function getImageURLWithWidth($items, $width) {
+        $url = '';
+        foreach($items as $item) {
+            $url = $item['url'];
+            if ($item['width'] == $width) break;
+        }
+        return $url;
+    }
+
+    public function collectData() {
+        if ($this->getOption('access_token')) {
+            $this->collectDataUsingAPI();
+        } else {
+            $this->collectDataWithoutAPI();
+        }
+    }
+
+    protected function collectDataUsingAPI() {
+        $ownerId = 0;
+        $r = $this->api('wall.get', [
+            'domain' => $this->getInput('u'),
+            'extended' => '1',
+        ]);
+
+        // preparing ownerNames dictionary
+        foreach($r['response']['profiles'] as $profile) {
+            $this->ownerNames[$profile['id']] = $profile['first_name'] . ' ' . $profile['last_name'];
+        }
+        foreach($r['response']['groups'] as $group) {
+            $this->ownerNames[-$group['id']] = $group['name'];
+        }
+
+        // fetching feed
+        foreach($r['response']['items'] as $post) {
+            if (!$ownerId) {
+                $ownerId = $post['owner_id'];
+            }
+            $item = new FeedItem();
+            $content = $this->generateContentFromPost($post);
+            if (isset($post['copy_history'])) {
+                if ($this->getInput('hide_reposts')) {
+                    continue;
+                }
+                $originalPost = $post['copy_history'][0];
+                $originalPostAuthorURI = 'https://vk.com/' . ($originalPost['from_id'] < 0 ? 'club' : 'id') . strval(abs($originalPost['owner_id']));
+                $originalPostAuthorName = $this->ownerNames[$originalPost['from_id']];
+                $originalPostAuthor = "<a href='$originalPostAuthorURI'>$originalPostAuthorName</a>";
+                $content .= '<p>Reposted (<a href="' . $this->getPostURI($originalPost) . '">Post</a> from ' .  $originalPostAuthor . '):</p>';
+                $content .= $this->generateContentFromPost($originalPost);
+            }
+            $item->setContent($content);
+            $item->setTimestamp($post['date']);
+            $item->setAuthor($this->ownerNames[$post['from_id']]);
+            $item->setTitle($this->getTitle($content));
+            $item->setURI($this->getPostURI($post));
+
+            $this->items[] = $item;
+        }
+
+        $this->pageName = $this->ownerNames[$ownerId];
+    }
+
+    public function collectDataWithoutAPI() {
         $text_html = $this->getContents();
 
         $text_html = iconv('windows-1251', 'utf-8//ignore', $text_html);
@@ -336,8 +504,6 @@ class VkBridge extends BridgeAbstract
                 });
             }
         }
-
-        $this->getCleanVideoLinks();
     }
 
     private function getPhoto($a)
@@ -421,7 +587,7 @@ class VkBridge extends BridgeAbstract
     {
         $header = ['Accept-language: en', 'Cookie: remixlang=3'];
 
-        return getContents($this->getURI(), $header);
+        return getContents($this->getURI(), $header, [CURLOPT_FOLLOWLOCATION => false]);
     }
 
     protected function appendVideo($video_title, $video_link, &$content_suffix, array &$post_videos)
@@ -444,34 +610,17 @@ class VkBridge extends BridgeAbstract
         }
     }
 
-    protected function getCleanVideoLinks()
-    {
-        $result = $this->api('video.get', [
-            'videos' => implode(',', array_keys($this->videos)),
-            'count' => 200
-        ]);
-
-        if (!isset($result['error'])) {
-            foreach ($result['response']['items'] as $item) {
-                $video_id = strval($item['owner_id']) . '_' . strval($item['id']);
-                $this->videos[$video_id]['url'] = $item['player'];
-            }
+    protected function api($method, array $params) {
+        $access_token = $this->getOption("access_token");
+        if (!$access_token) {
+            returnServerError("You cannot run VK API methods without access_token");
         }
-
-        foreach ($this->items as &$item) {
-            foreach ($item['videos'] as $video_id) {
-                $video_link = $this->videos[$video_id]['url'];
-                $video_title = $this->videos[$video_id]['title'];
-                $item['content'] .= '<br>Video: <a href="' . htmlspecialchars($video_link) . '">' . $video_title . '</a>';
-            }
-            unset($item['videos']);
+        $params['v'] = '5.131';
+        $params['access_token'] = $access_token;
+        $r = json_decode( getContents('https://api.vk.com/method/' . $method . '?' . http_build_query($params)), true );
+        if (isset($r['error'])) {
+            returnServerError('API returned error: ' . $r['error']['error_msg'] . ' (' . $r['error']['error_code'] . ')');
         }
-    }
-
-    protected function api($method, array $params)
-    {
-        $params['v'] = '5.80';
-        $params['access_token'] = $this->getAccessToken();
-        return json_decode(getContents('https://api.vk.com/method/' . $method . '?' . http_build_query($params)), true);
+        return $r;
     }
 }
