@@ -225,7 +225,7 @@ class VkBridge extends BridgeAbstract
         $this->pageName = $this->ownerNames[$ownerId];
     }
 
-    public function collectDataWithoutAPI()
+    protected function collectDataWithoutAPI()
     {
         $text_html = $this->getContents();
 
