@@ -88,22 +88,19 @@ class VkBridge extends BridgeAbstract
         if (isset($post['attachments'])) {
             // level 1
             foreach ($post['attachments'] as $attachment) {
-                // VK videos
                 if ($attachment['type'] == 'video') {
+                    // VK videos
                     $title = htmlentities($attachment['video']['title'], ENT_QUOTES | ENT_HTML401);
                     $photo = htmlentities($this->getImageURLWithWidth($attachment['video']['image'], 320), ENT_QUOTES | ENT_HTML401);
                     $href = "https://vk.com/video{$attachment['video']['owner_id']}_{$attachment['video']['id']}";
                     $ret .= "<p><a href='{$href}'><img src='{$photo}' alt='Video: {$title}'><br/>Video: {$title}</a></p>";
-                }
-
-                // VK audio
-                elseif ($attachment['type'] == 'audio') {
+                } elseif ($attachment['type'] == 'audio') {
+                    // VK audio
                     $artist = htmlentities($attachment['audio']['artist'], ENT_QUOTES | ENT_HTML401);
                     $title = htmlentities($attachment['audio']['title'], ENT_QUOTES | ENT_HTML401);
                     $ret .= "<p>Audio: {$artist} - {$title}</p>";
-                }
-                // any doc apart of gif
-                elseif ($attachment['type'] == 'doc' and $attachment['doc']['ext'] != 'gif') {
+                } elseif ($attachment['type'] == 'doc' and $attachment['doc']['ext'] != 'gif') {
+                    // any doc apart of gif
                     $doc_url = htmlentities($attachment['doc']['url'], ENT_QUOTES | ENT_HTML401);
                     $title = htmlentities($attachment['doc']['title'], ENT_QUOTES | ENT_HTML401);
                     $ret .= "<p><a href='{$doc_url}'>Document: {$title}</a></p>";
@@ -111,22 +108,18 @@ class VkBridge extends BridgeAbstract
             }
             // level 2
             foreach ($post['attachments'] as $attachment) {
-                // JPEG, PNG photos
-                // GIF in vk is a document, so, not handled as photo
                 if ($attachment['type'] == 'photo') {
+                    // JPEG, PNG photos
+                    // GIF in vk is a document, so, not handled as photo
                     $photo = htmlentities($this->getImageURLWithWidth($attachment['photo']['sizes'], 604), ENT_QUOTES | ENT_HTML401);
                     $text = htmlentities($attachment['photo']['text'], ENT_QUOTES | ENT_HTML401);
                     $ret .= "<p><img src='{$photo}' alt='{$text}'></p>";
-                }
-
-                // GIF docs
-                elseif ($attachment['type'] == 'doc' and $attachment['doc']['ext'] == 'gif') {
+                } elseif ($attachment['type'] == 'doc' and $attachment['doc']['ext'] == 'gif') {
+                    // GIF docs
                     $url = htmlentities($attachment['doc']['url'], ENT_QUOTES | ENT_HTML401);
                     $ret .= "<p><img src='{$url}'></p>";
-                }
-
-                // links
-                elseif ($attachment['type'] == 'link') {
+                } elseif ($attachment['type'] == 'link') {
+                    // links
                     $url = htmlentities($attachment['link']['url'], ENT_QUOTES | ENT_HTML401);
                     $url = str_replace('https://m.vk.com', 'https://vk.com', $url);
                     $title = htmlentities($attachment['link']['title'], ENT_QUOTES | ENT_HTML401);
@@ -136,17 +129,13 @@ class VkBridge extends BridgeAbstract
                     } else {
                         $ret .= "<p><a href='{$url}'>{$title}</a></p>";
                     }
-                }
-
-                // notes
-                elseif ($attachment['type'] == 'note') {
+                } elseif ($attachment['type'] == 'note') {
+                    // notes
                     $title = htmlentities($attachment['note']['title'], ENT_QUOTES | ENT_HTML401);
                     $url = htmlentities($attachment['note']['view_url'], ENT_QUOTES | ENT_HTML401);
                     $ret .= "<p><a href='{$url}'>{$title}</a></p>";
-                }
-
-                // polls
-                elseif ($attachment['type'] == 'poll') {
+                } elseif ($attachment['type'] == 'poll') {
+                    // polls
                     $question = htmlentities($attachment['poll']['question'], ENT_QUOTES | ENT_HTML401);
                     $vote_count = $attachment['poll']['votes'];
                     $answers = $attachment['poll']['answers'];
