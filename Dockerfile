@@ -19,6 +19,13 @@ COPY ./config/nginx.conf /etc/nginx/sites-enabled/default
 
 COPY --chown=www-data:www-data ./ /app/
 
+# curl-impersonate v0.5.1
+RUN cd /usr/local/lib && \
+    mkdir curl-impersonate && cd curl-impersonate && \
+    curl -L "https://github.com/lwthiker/curl-impersonate/releases/download/v0.5.1/libcurl-impersonate-v0.5.1.x86_64-linux-gnu.tar.gz" | tar xvzf -
+ENV LD_PRELOAD /usr/local/lib/curl-impersonate/libcurl-impersonate-ff.so
+ENV CURL_IMPERSONATE ff91esr
+
 EXPOSE 80
 
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
