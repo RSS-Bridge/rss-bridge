@@ -66,7 +66,6 @@ class NovelUpdatesBridge extends BridgeAbstract
         if (!empty($this->seriesTitle)) {
             return $this->seriesTitle . ' - ' . static::NAME;
         }
-
         return parent::getName();
     }
 }
