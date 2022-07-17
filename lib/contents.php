@@ -75,8 +75,26 @@ function getContents(
     $cache->purgeCache(86400); // 24 hours (forced)
     $cache->setKey([$url]);
 
+    // Snagged from https://github.com/lwthiker/curl-impersonate/blob/main/firefox/curl_ff102
+    $defaultHttpHeaders = [
+        'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        'Accept-Language' => 'en-US,en;q=0.5',
+        'Upgrade-Insecure-Requests' => '1',
+        'Sec-Fetch-Dest' => 'document',
+        'Sec-Fetch-Mode' => 'navigate',
+        'Sec-Fetch-Site' => 'none',
+        'Sec-Fetch-User' => '?1',
+        'TE' => 'Trailers',
+    ];
+    $httpHeadersNormalized = [];
+    foreach ($httpHeaders as $httpHeader) {
+        $parts = explode(':', $httpHeader);
+        $headerName = trim($parts[0]);
+        $headerValue = trim(implode(':', array_slice($parts, 1)));
+        $httpHeadersNormalized[$headerName] = $headerValue;
+    }
     $config = [
-        'headers' => $httpHeaders,
+        'headers' => array_merge($defaultHttpHeaders, $httpHeadersNormalized),
         'curl_options' => $curlOptions,
     ];
     if (Configuration::getConfig('proxy', 'url') && !defined('NOPROXY')) {
@@ -154,7 +172,11 @@ function _http_request(string $url, array $config = []): array
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
     curl_setopt($ch, CURLOPT_HEADER, false);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $config['headers']);
+    $httpHeaders = [];
+    foreach ($config['headers'] as $name => $value) {
+        $httpHeaders[] = sprintf('%s: %s', $name, $value);
+    }
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeaders);
     curl_setopt($ch, CURLOPT_USERAGENT, $config['useragent']);
     curl_setopt($ch, CURLOPT_TIMEOUT, $config['timeout']);
     curl_setopt($ch, CURLOPT_ENCODING, '');
