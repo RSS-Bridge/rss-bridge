@@ -15,40 +15,61 @@ class HytaleBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $blog_posts = json_decode(getContents(self::_API_URL_PUBLISHED));
+        $blogPosts = json_decode(getContents(self::_API_URL_PUBLISHED));
+        $length = count($blogPosts);
 
-        foreach ($blog_posts as $blog_post) {
-            $item = [];
+        for ($i = 1; $i < $length; $i += 3) {
+            $slug = $blogPosts[$i]->slug;
 
-            $splitted_timestamp = explode('-', $blog_post->publishedAt);
-            $year = $splitted_timestamp[0];
-            $month = $splitted_timestamp[1];
-            $slug = $blog_post->slug;
+            $blogPost = json_decode(getContents(self::_API_URL_BLOG_POST . $slug));
 
-            $uri = 'https://hytale.com/news/' . $year . '/' . $month . '/' . $slug;
-
-            $item['uri'] = $uri;
-            $item['title'] = $blog_post->title;
-            $item['author'] = $blog_post->author;
-            $item['timestamp'] = $blog_post->publishedAt;
-
-            $blog_post_full = json_decode(getContents(self::_API_URL_BLOG_POST . $slug));
-
-            $item['content'] = $blog_post_full->body;
-            $blog_cover_s3_key = $blog_post_full->coverImage->s3Key;
-
-            $cover_images_urls = [
-                self::_BLOG_COVER_URL . $blog_cover_s3_key,
-                self::_BLOG_THUMB_URL . $blog_cover_s3_key,
-            ];
-
-            if (preg_match_all(self::_IMG_REGEX, $blog_post_full->body, $body_images_urls)) {
-                $item['enclosures'] = array_merge($cover_images_urls, $body_images_urls[0]);
-            } else {
-                $item['enclosures'] = $cover_images_urls;
+            if (property_exists($blogPost, 'previous')) {
+                $this->addBlogPost($blogPost->previous);
             }
 
-            $this->items[] = $item;
+            $this->addBlogPost($blogPost);
+
+            if (property_exists($blogPost, 'next')) {
+                $this->addBlogPost($blogPost->next);
+            }
         }
+
+        if ($length % 3 == 1) {
+            $slug = $blogPosts[count($blogPosts) - 1]->slug;
+
+            $blogPost = json_decode(getContents(self::_API_URL_BLOG_POST . $slug));
+            $this->addBlogPost($blogPost);
+        }
+    }
+
+    private function addBlogPost($blogPost)
+    {
+        $item = [];
+
+        $splittedTimestamp = explode('-', $blogPost->publishedAt);
+        $year = $splittedTimestamp[0];
+        $month = $splittedTimestamp[1];
+        $slug = $blogPost->slug;
+        $uri = 'https://hytale.com/news/' . $year . '/' . $month . '/' . $slug;
+
+        $item['uri'] = $uri;
+        $item['title'] = $blogPost->title;
+        $item['author'] = $blogPost->author;
+        $item['timestamp'] = $blogPost->publishedAt;
+        $item['content'] = $blogPost->body;
+
+        $blogCoverS3Key = $blogPost->coverImage->s3Key;
+        $coverImagesURLs = [
+            self::_BLOG_COVER_URL . $blogCoverS3Key,
+            self::_BLOG_THUMB_URL . $blogCoverS3Key,
+        ];
+
+        if (preg_match_all(self::_IMG_REGEX, $blogPost->body, $bodyImagesURLs)) {
+            $item['enclosures'] = array_merge($coverImagesURLs, $bodyImagesURLs[0]);
+        } else {
+            $item['enclosures'] = $coverImagesURLs;
+        }
+
+        $this->items[] = $item;
     }
 }
