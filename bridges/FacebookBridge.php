@@ -197,6 +197,7 @@ class FacebookBridge extends BridgeAbstract
             $item['uri'] = $this->extractGroupPostURI($post);
             $item['title'] = $this->extractGroupPostTitle($post);
             $item['author'] = $this->extractGroupPostAuthor($post);
+            $item['timestamp'] = $this->extractGroupPostDate($post);
             $item['content'] = $this->extractGroupPostContent($post);
             $item['enclosures'] = $this->extractGroupPostEnclosures($post);
 
@@ -302,6 +303,14 @@ class FacebookBridge extends BridgeAbstract
     {
         $element = $post->find('h3 a', 0)
             or returnServerError('Unable to find author information!');
+
+        return $element->plaintext;
+    }
+
+    private function extractGroupPostDate($post)
+    {
+        $element = $post->find('abbr', 0)
+            or returnServerError('Unable to find date information!');
 
         return $element->plaintext;
     }
