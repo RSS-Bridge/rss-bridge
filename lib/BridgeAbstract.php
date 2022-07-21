@@ -431,4 +431,17 @@ abstract class BridgeAbstract implements BridgeInterface
         $cache->setKey($key);
         $cache->saveData($value);
     }
+
+    public function isDeprecated(): bool
+    {
+        return false;
+    }
+
+    public function getDeprecationMessage(): string
+    {
+        if (! $this->isDeprecated()) {
+            throw new \LogicException();
+        }
+        return 'This bridge is deprecated';
+    }
 }
