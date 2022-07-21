@@ -76,6 +76,16 @@ class CodebergBridge extends BridgeAbstract
     private $releasesUrlRegex = '/codeberg\.org\/([\w]+)\/([\w]+)\/releases/';
     private $issueCommentsUrlRegex = '/codeberg\.org\/([\w]+)\/([\w]+)\/issues\/([0-9]+)/';
 
+    public function isDeprecated(): bool
+    {
+        return true;
+    }
+
+    public function getDeprecationMessage(): string
+    {
+        return 'Use GiteaBridge instead';
+    }
+
     public function detectParameters($url)
     {
         $params = [];
