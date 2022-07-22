@@ -313,7 +313,7 @@ class FacebookBridge extends BridgeAbstract
             or returnServerError('Unable to find date information!');
 
         $d = date_parse($element->plaintext);
-        $year = empty($d['year']) ? date("Y") : $d['year']; // Post from current year doesn't display the year
+        $year = empty($d['year']) ? date('Y') : $d['year']; // Post from current year doesn't display the year
         return mktime($d['hour'], $d['minute'], $d['second'], $d['month'], $d['day'], $d['year']);
     }
 
