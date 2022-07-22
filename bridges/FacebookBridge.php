@@ -172,6 +172,8 @@ class FacebookBridge extends BridgeAbstract
             $header = [];
         }
 
+        $headerDate = ['Accept-Language: en'];
+
         $touchURI = str_replace(
             'https://www.facebook',
             'https://touch.facebook',
@@ -179,6 +181,7 @@ class FacebookBridge extends BridgeAbstract
         );
 
         $html = getSimpleHTMLDOM($touchURI, $header);
+        $htmlDate = getSimpleHTMLDOM($touchURI, $headerDate);
 
         if (!$this->isPublicGroup($html)) {
             returnClientError('This group is not public! RSS-Bridge only supports public groups!');
@@ -191,13 +194,16 @@ class FacebookBridge extends BridgeAbstract
         $posts = $html->find('div.story_body_container')
             or returnServerError('Failed finding posts!');
 
-        foreach ($posts as $post) {
+        $postsDate = $htmlDate->find('div.story_body_container')
+            or returnServerError('Failed finding posts!');
+
+        foreach ($posts as $index => $post) {
             $item = [];
 
             $item['uri'] = $this->extractGroupPostURI($post);
             $item['title'] = $this->extractGroupPostTitle($post);
             $item['author'] = $this->extractGroupPostAuthor($post);
-            $item['timestamp'] = $this->extractGroupPostDate($post);
+            $item['timestamp'] = $this->extractGroupPostDate($postsDate[$index]);
             $item['content'] = $this->extractGroupPostContent($post);
             $item['enclosures'] = $this->extractGroupPostEnclosures($post);
 
@@ -312,9 +318,21 @@ class FacebookBridge extends BridgeAbstract
         $element = $post->find('abbr', 0)
             or returnServerError('Unable to find date information!');
 
+        /* Relative date: minutes */
+        $hasMinuteOnly = preg_match('/(\d{1,2}) min/', $element->plaintext, $minuteOnly);
+        if ($hasMinuteOnly) {
+            return mktime(date('h'), date('i') - $minuteOnly[1], date('s'));
+        }
+        /* Relative date: hours */
+        $hasHourOnly = preg_match('/(\d{1,2}) hr/', $element->plaintext, $hourOnly);
+        if ($hasHourOnly) {
+            return mktime(date('h') - $hourOnly[1], date('i'), date('s'));
+        }
+
+        /* Absolute date */
         $d = date_parse($element->plaintext);
         $year = empty($d['year']) ? date('Y') : $d['year']; // Post from current year doesn't display the year
-        return mktime($d['hour'], $d['minute'], $d['second'], $d['month'], $d['day'], $d['year']);
+        return mktime($d['hour'], $d['minute'], $d['second'], $d['month'], $d['day'], $year);
     }
 
     private function extractGroupPostEnclosures($post)
