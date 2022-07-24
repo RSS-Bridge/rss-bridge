@@ -141,7 +141,7 @@ class NineGagBridge extends BridgeAbstract
         $cursor = 'c=10';
         $posts = [];
         for ($i = 0; $i < $this->getPages(); ++$i) {
-            $content = getContents($url . $cursor);
+            $content = $this->fetcher->getContents($url . $cursor);
             $json = json_decode($content, true);
             $posts = array_merge($posts, $json['data']['posts']);
             $cursor = $json['data']['nextCursor'];

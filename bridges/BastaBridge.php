@@ -10,7 +10,7 @@ class BastaBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI . 'spip.php?page=backend');
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI . 'spip.php?page=backend');
 
         $limit = 0;
 
@@ -21,7 +21,7 @@ class BastaBridge extends BridgeAbstract
                 $item['uri'] = $element->find('guid', 0)->plaintext;
                 $item['timestamp'] = strtotime($element->find('dc:date', 0)->plaintext);
 
-                $html = getSimpleHTMLDOM($item['uri']);
+                $html = $this->fetcher->getSimpleHTMLDOM($item['uri']);
                 $html = defaultLinkTo($html, self::URI);
 
                 $item['content'] = $html->find('div.texte', 0)->innertext;

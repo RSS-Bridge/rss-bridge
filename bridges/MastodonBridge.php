@@ -79,7 +79,7 @@ class MastodonBridge extends BridgeAbstract
             $webfingerHeader = [
                 'Content-Type: application/jrd+json'
             ];
-            $webfinger = json_decode(getContents($webfingerUrl, $webfingerHeader), true);
+            $webfinger = json_decode($this->fetcher->getContents($webfingerUrl, $webfingerHeader), true);
             foreach ($webfinger['links'] as $link) {
                 if ($link['type'] === 'application/activity+json') {
                     return $link['href'];
@@ -201,6 +201,6 @@ class MastodonBridge extends BridgeAbstract
                 array_push($headers, $sig);
             }
         }
-        return json_decode(getContents($url, $headers), true);
+        return json_decode($this->fetcher->getContents($url, $headers), true);
     }
 }

@@ -11,7 +11,7 @@ class ScmbBridge extends BridgeAbstract
     public function collectData()
     {
         $html = '';
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
 
         foreach ($html->find('article') as $article) {
             $item = [];

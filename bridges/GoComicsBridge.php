@@ -18,7 +18,7 @@ class GoComicsBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         //Get info from first page
         $author = preg_replace('/By /', '', $html->find('.media-subheading', 0)->plaintext);
@@ -27,7 +27,7 @@ class GoComicsBridge extends BridgeAbstract
         for ($i = 0; $i < 5; $i++) {
             $item = [];
 
-            $page = getSimpleHTMLDOM($link);
+            $page = $this->fetcher->getSimpleHTMLDOM($link);
             $imagelink = $page->find('.comic.container', 0)->getAttribute('data-image');
             $date = explode('/', $link);
 

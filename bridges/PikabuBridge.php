@@ -80,7 +80,7 @@ class PikabuBridge extends BridgeAbstract
     {
         $link = $this->getURI();
 
-        $text_html = getContents($link);
+        $text_html = $this->fetcher->getContents($link);
         $text_html = iconv('windows-1251', 'utf-8', $text_html);
         $html = str_get_html($text_html);
 

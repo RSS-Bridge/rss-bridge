@@ -41,14 +41,15 @@ class GitHubGistBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(
+        $html = $this->fetcher->getSimpleHTMLDOM(
             $this->getURI(),
             null,
             null,
             true,
             true,
             DEFAULT_TARGET_CHARSET,
-            false, // Do NOT remove line breaks
+            false,
+            // Do NOT remove line breaks
             DEFAULT_BR_TEXT,
             DEFAULT_SPAN_TEXT
         );

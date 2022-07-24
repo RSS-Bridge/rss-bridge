@@ -69,7 +69,7 @@ class InternetArchiveBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         $html = defaultLinkTo($html, $this->getURI());
 
@@ -290,7 +290,7 @@ EOD;
 
             $postDate = $tr->find('td', 4)->children(0)->plaintext;
 
-            $postPageHtml = getSimpleHTMLDOMCached($item['uri'], 3600);
+            $postPageHtml = $this->fetcher->getSimpleHTMLDOMCached($item['uri'], 3600);
 
             $postPageHtml = defaultLinkTo($postPageHtml, $this->getURI());
 

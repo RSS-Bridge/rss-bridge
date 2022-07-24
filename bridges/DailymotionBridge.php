@@ -50,7 +50,7 @@ class DailymotionBridge extends BridgeAbstract
     public function collectData()
     {
         if ($this->queriedContext === 'By username' || $this->queriedContext === 'By playlist id') {
-            $apiJson = getContents($this->getApiUrl());
+            $apiJson = $this->fetcher->getContents($this->getApiUrl());
 
             $apiData = json_decode($apiJson, true);
 
@@ -74,7 +74,7 @@ class DailymotionBridge extends BridgeAbstract
         }
 
         if ($this->queriedContext === 'From search results') {
-            $html = getSimpleHTMLDOM($this->getURI());
+            $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
             foreach ($html->find('div.media a.preview_link') as $element) {
                 $item = [];
@@ -166,7 +166,7 @@ class DailymotionBridge extends BridgeAbstract
     {
         $metadata = [];
 
-        $html = getSimpleHTMLDOM(self::URI . 'video/' . $id);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI . 'video/' . $id);
 
         if (!$html) {
             return $metadata;
@@ -187,7 +187,7 @@ class DailymotionBridge extends BridgeAbstract
 
         $url = self::URI . 'playlist/' . $id;
 
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
 
         $title = $html->find('meta[property=og:title]', 0)->getAttribute('content');
         return $title;

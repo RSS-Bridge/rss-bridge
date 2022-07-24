@@ -28,7 +28,7 @@ class ParuVenduImmoBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         $elements = $html->find('#bloc_liste > div.ergov3-annonce a');
 

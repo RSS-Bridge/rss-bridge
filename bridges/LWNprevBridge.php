@@ -41,7 +41,7 @@ class LWNprevBridge extends BridgeAbstract
     {
         // Because the LWN page is written in loose HTML and not XHTML,
         // Simple HTML Dom is not accurate enough for the job
-        $content = getContents($this->getURI());
+        $content = $this->fetcher->getContents($this->getURI());
 
         $contents = explode('<b>Page editor</b>', $content);
 

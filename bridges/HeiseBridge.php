@@ -49,7 +49,7 @@ class HeiseBridge extends FeedExpander
             return $item;
         }
 
-        $article = getSimpleHTMLDOMCached($item['uri']);
+        $article = $this->fetcher->getSimpleHTMLDOMCached($item['uri']);
 
         if ($article) {
             $article = defaultLinkTo($article, $item['uri']);

@@ -10,7 +10,7 @@ class NasaApodBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI . 'archivepix.html');
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI . 'archivepix.html');
 
         // Start at 1 to skip the "APOD Full Archive" on top of the page
         for ($i = 1; $i < 4; $i++) {
@@ -20,7 +20,7 @@ class NasaApodBridge extends BridgeAbstract
             $uri = self::URI . $uri_page;
             $item['uri'] = $uri;
 
-            $picture_html = getSimpleHTMLDOM($uri);
+            $picture_html = $this->fetcher->getSimpleHTMLDOM($uri);
             $picture_html_string = $picture_html->innertext;
 
             //Extract image and explanation

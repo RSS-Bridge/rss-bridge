@@ -159,7 +159,7 @@ class DesoutterBridge extends BridgeAbstract
         }
         */
 
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         $html = defaultLinkTo($html, $this->getURI());
 
@@ -189,7 +189,7 @@ class DesoutterBridge extends BridgeAbstract
 
     private function getFullNewsArticle($uri)
     {
-        $html = getSimpleHTMLDOMCached($uri);
+        $html = $this->fetcher->getSimpleHTMLDOMCached($uri);
 
         $html = defaultLinkTo($html, $this->getURI());
 
@@ -204,7 +204,7 @@ class DesoutterBridge extends BridgeAbstract
      */
     private function extractNewsLanguages()
     {
-        $html = getSimpleHTMLDOMCached('https://www.desouttertools.com/about-desoutter/news-events');
+        $html = $this->fetcher->getSimpleHTMLDOMCached('https://www.desouttertools.com/about-desoutter/news-events');
 
         $html = defaultLinkTo($html, static::URI);
 
@@ -230,7 +230,7 @@ class DesoutterBridge extends BridgeAbstract
      */
     private function extractIndustryLanguages()
     {
-        $html = getSimpleHTMLDOMCached('https://www.desouttertools.com/industry-4-0/news');
+        $html = $this->fetcher->getSimpleHTMLDOMCached('https://www.desouttertools.com/industry-4-0/news');
 
         $html = defaultLinkTo($html, static::URI);
 

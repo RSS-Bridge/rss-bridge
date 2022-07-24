@@ -23,7 +23,7 @@ class CryptomeBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
 
         $number = $this->getInput('n');
         if (!empty($number)) {

@@ -67,7 +67,7 @@ class RoosterTeethBridge extends BridgeAbstract
                 . '&order=' . $this->getInput('sort')
                 . '&page=1';
 
-            $htmlJSON = getSimpleHTMLDOM($uri);
+            $htmlJSON = $this->fetcher->getSimpleHTMLDOM($uri);
         } else {
             $uri = self::API
                 . '/api/v1/episodes?per_page='
@@ -76,7 +76,7 @@ class RoosterTeethBridge extends BridgeAbstract
                 . $this->getInput('sort')
                 . '&page=1';
 
-            $htmlJSON = getSimpleHTMLDOM($uri);
+            $htmlJSON = $this->fetcher->getSimpleHTMLDOM($uri);
         }
 
         $htmlArray = json_decode($htmlJSON, true);

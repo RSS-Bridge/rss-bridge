@@ -90,7 +90,7 @@ class TwitScoopBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         $updated = $html->find('time', 0)->datetime;
         $trends = $html->find('div.trends', 0);

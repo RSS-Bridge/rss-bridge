@@ -17,7 +17,7 @@ class VarietyBridge extends FeedExpander
     {
         $item = parent::parseItem($newsItem);
         // $articlePage gets the entire page's contents
-        $articlePage = getSimpleHTMLDOM($newsItem->link);
+        $articlePage = $this->fetcher->getSimpleHTMLDOM($newsItem->link);
 
         // Remove Script tags
         foreach ($articlePage->find('script') as $script_tag) {

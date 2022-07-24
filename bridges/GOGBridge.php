@@ -9,7 +9,7 @@ class GOGBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $values = getContents('https://www.gog.com/games/ajax/filtered?limit=25&sort=new');
+        $values = $this->fetcher->getContents('https://www.gog.com/games/ajax/filtered?limit=25&sort=new');
         $decodedValues = json_decode($values);
 
         $limit = 0;
@@ -37,7 +37,7 @@ class GOGBridge extends BridgeAbstract
 
     private function buildGameContentPage($game)
     {
-        $gameDescriptionText = getContents('https://api.gog.com/products/' . $game->id . '?expand=description');
+        $gameDescriptionText = $this->fetcher->getContents('https://api.gog.com/products/' . $game->id . '?expand=description');
 
         $gameDescriptionValue = json_decode($gameDescriptionText);
 

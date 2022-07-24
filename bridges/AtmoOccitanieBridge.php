@@ -19,7 +19,7 @@ class AtmoOccitanieBridge extends BridgeAbstract
     {
         $uri = self::URI . $this->getInput('city');
 
-        $html = getSimpleHTMLDOM($uri);
+        $html = $this->fetcher->getSimpleHTMLDOM($uri);
 
         $generalMessage = $html->find('.landing-ville .city-banner .iqa-avertissement', 0)->innertext;
         $recommendationsDom = $html->find('.landing-ville .recommandations', 0);

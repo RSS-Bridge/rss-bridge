@@ -26,7 +26,7 @@ class WordPressBridge extends FeedExpander
     {
         $item = parent::parseItem($newItem);
 
-        $article_html = getSimpleHTMLDOMCached($item['uri']);
+        $article_html = $this->fetcher->getSimpleHTMLDOMCached($item['uri']);
 
         $article = null;
         switch (true) {

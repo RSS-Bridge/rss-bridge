@@ -64,7 +64,7 @@ class RutubeBridge extends BridgeAbstract
     {
         $link = $this->getURI();
 
-        $html = getContents($link);
+        $html = $this->fetcher->getContents($link);
         $reduxState = $this->getJSONData($html);
         $videos = [];
         if ($this->getInput('c')) {

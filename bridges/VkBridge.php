@@ -421,7 +421,7 @@ class VkBridge extends BridgeAbstract
     {
         $header = ['Accept-language: en', 'Cookie: remixlang=3'];
 
-        return getContents($this->getURI(), $header);
+        return $this->fetcher->getContents($this->getURI(), $header);
     }
 
     protected function appendVideo($video_title, $video_link, &$content_suffix, array &$post_videos)
@@ -473,6 +473,6 @@ class VkBridge extends BridgeAbstract
         $params['v'] = '5.80';
         $params['access_token'] = $this->getAccessToken();
         $uri = 'https://api.vk.com/method/' . $method . '?' . http_build_query($params);
-        return json_decode(getContents($uri), true);
+        return json_decode($this->fetcher->getContents($uri), true);
     }
 }

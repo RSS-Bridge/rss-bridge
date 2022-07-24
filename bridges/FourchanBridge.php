@@ -33,7 +33,7 @@ class FourchanBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         foreach ($html->find('div.postContainer') as $element) {
             $item = [];

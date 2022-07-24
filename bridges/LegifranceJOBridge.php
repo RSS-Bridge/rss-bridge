@@ -48,7 +48,7 @@ class LegifranceJOBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI)
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI)
             or $this->returnServer('Unable to download ' . self::URI);
 
         $this->author = trim($html->find('h2.titleJO', 0)->plaintext);

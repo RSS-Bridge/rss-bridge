@@ -31,7 +31,7 @@ class YandexZenBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $profile_json = json_decode(getContents($this->getAPIUrl()));
+        $profile_json = json_decode($this->fetcher->getContents($this->getAPIUrl()));
         $limit = $this->getInput('limit');
 
         foreach (array_slice($profile_json->items, 0, $limit) as $post) {

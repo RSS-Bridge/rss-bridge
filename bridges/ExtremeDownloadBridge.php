@@ -29,7 +29,7 @@ class ExtremeDownloadBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI . $this->getInput('url'));
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI . $this->getInput('url'));
 
         $filter = $this->getInput('filter');
 

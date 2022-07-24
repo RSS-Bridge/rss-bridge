@@ -10,7 +10,7 @@ class StripeAPIChangeLogBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
 
         foreach ($html->find('h3') as $change) {
             $item = [];

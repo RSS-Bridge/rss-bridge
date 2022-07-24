@@ -101,7 +101,7 @@ class GitlabIssueBridge extends BridgeAbstract
 
         /* parse issue/MR comments */
         $comments_uri = $this->getURI() . '/discussions.json';
-        $comments = getContents($comments_uri);
+        $comments = $this->fetcher->getContents($comments_uri);
         $comments = json_decode($comments, false);
 
         foreach ($comments as $value) {
@@ -148,9 +148,9 @@ class GitlabIssueBridge extends BridgeAbstract
     private function parseIssueDescription()
     {
         $description_uri = $this->getURI() . '.json';
-        $description = getContents($description_uri);
+        $description = $this->fetcher->getContents($description_uri);
         $description = json_decode($description, false);
-        $description_html = getSimpleHtmlDomCached($this->getURI());
+        $description_html = $this->fetcher->getSimpleHTMLDOMCached($this->getURI());
 
         $item = [];
         $item['uri'] = $this->getURI();
@@ -169,9 +169,9 @@ class GitlabIssueBridge extends BridgeAbstract
     private function parseMergeRequestDescription()
     {
         $description_uri = $this->getURI() . '/cached_widget.json';
-        $description = getContents($description_uri);
+        $description = $this->fetcher->getContents($description_uri);
         $description = json_decode($description, false);
-        $description_html = getSimpleHtmlDomCached($this->getURI());
+        $description_html = $this->fetcher->getSimpleHTMLDOMCached($this->getURI());
 
         $item = [];
         $item['uri'] = $this->getURI();

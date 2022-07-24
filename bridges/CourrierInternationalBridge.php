@@ -17,7 +17,7 @@ class CourrierInternationalBridge extends FeedExpander
     {
         $item = parent::parseItem($feedItem);
 
-        $articlePage = getSimpleHTMLDOMCached($feedItem->link);
+        $articlePage = $this->fetcher->getSimpleHTMLDOMCached($feedItem->link);
         $content = $articlePage->find('.article-text, depeche-text', 0);
         if (!$content) {
             return $item;

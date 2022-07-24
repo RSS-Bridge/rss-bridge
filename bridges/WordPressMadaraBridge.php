@@ -55,7 +55,7 @@ The default URI shows the Madara demo page.';
         $uri = rtrim($this->getInput('url'), '/') . '/ajax/chapters/';
         $headers = [];
         $opts = [CURLOPT_POST => 1];
-        return str_get_html(getContents($uri, $headers, $opts));
+        return str_get_html($this->fetcher->getContents($uri, $headers, $opts));
     }
 
     protected function queryAjaxChaptersOld()
@@ -67,7 +67,7 @@ The default URI shows the Madara demo page.';
             'action' => 'manga_get_chapters',
             'manga' => $mangaInfo['id']
         ]];
-        return str_get_html(getContents($uri, $headers, $opts));
+        return str_get_html($this->fetcher->getContents($uri, $headers, $opts));
     }
 
     protected function queryAjaxChapters()
@@ -123,7 +123,7 @@ The default URI shows the Madara demo page.';
         }
 
         $info = [];
-        $html = getSimpleHTMLDOMCached($url);
+        $html = $this->fetcher->getSimpleHTMLDOMCached($url);
 
         $info['title'] = html_entity_decode($html->find('*[property=og:title]', 0)->content);
         $author = $html->find('.author-content', 0);

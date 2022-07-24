@@ -27,7 +27,7 @@ class JapanExpoBridge extends BridgeAbstract
             }
         };
 
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
         $fullcontent = $this->getInput('mode');
         $count = 0;
 
@@ -45,7 +45,7 @@ class JapanExpoBridge extends BridgeAbstract
                     break;
                 }
 
-                $article_html = getSimpleHTMLDOMCached($url);
+                $article_html = $this->fetcher->getSimpleHTMLDOMCached($url);
                 $header = $article_html->find('header.pageHeadBox', 0);
                 $timestamp = strtotime($header->find('time', 0)->datetime);
                 $title_html = $header->find('div.section', 0)->next_sibling();

@@ -19,7 +19,7 @@ class NYTBridge extends FeedExpander
         $article = '';
 
         // $articlePage gets the entire page's contents
-        $articlePage = getSimpleHTMLDOM($newsItem->link);
+        $articlePage = $this->fetcher->getSimpleHTMLDOM($newsItem->link);
 
         // handle subtitle
         $subtitle = $articlePage->find('p.css-w6ymp8', 0);

@@ -51,7 +51,7 @@ Returns feeds for bug comments';
         $sorting = $this->getInput('sorting');
 
         // We use the print preview page for simplicity
-        $html = getSimpleHTMLDOMCached(
+        $html = $this->fetcher->getSimpleHTMLDOMCached(
             $this->getURI() . '&format=multiple',
             86400,
             null,
@@ -59,7 +59,8 @@ Returns feeds for bug comments';
             true,
             true,
             DEFAULT_TARGET_CHARSET,
-            false, // Do NOT remove line breaks
+            false,
+            // Do NOT remove line breaks
             DEFAULT_BR_TEXT,
             DEFAULT_SPAN_TEXT
         );

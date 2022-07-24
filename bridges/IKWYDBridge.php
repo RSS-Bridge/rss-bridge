@@ -67,7 +67,7 @@ class IKWYDBridge extends BridgeAbstract
     {
         $ip = $this->getInput('ip');
         $root = self::URI . 'en/peer/?ip=' . $ip;
-        $html = getSimpleHTMLDOM($root);
+        $html = $this->fetcher->getSimpleHTMLDOM($root);
 
         $this->name = 'IKWYD: ' . $ip;
         $this->uri = $root;

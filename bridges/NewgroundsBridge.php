@@ -26,7 +26,7 @@ class NewgroundsBridge extends BridgeAbstract
             throw new \Exception('Illegal username');
         }
 
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         $posts = $html->find('.item-portalitem-art-medium');
 

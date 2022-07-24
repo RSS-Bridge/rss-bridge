@@ -240,7 +240,7 @@ class InstructablesBridge extends BridgeAbstract
         // Enable the following line to get the category list (dev mode)
         // $this->listCategories();
 
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
         $html = defaultLinkTo($html, $this->getURI());
 
         $covers = $html->find('
@@ -312,12 +312,12 @@ class InstructablesBridge extends BridgeAbstract
     private function listCategories()
     {
         // Use home page to acquire main categories
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
         $html = defaultLinkTo($html, self::URI);
 
         foreach ($html->find('.home-content-explore-link') as $category) {
             // Use arbitrary category to receive full list
-            $html = getSimpleHTMLDOM($category->href);
+            $html = $this->fetcher->getSimpleHTMLDOM($category->href);
 
             foreach ($html->find('.channel-thumbnail a') as $channel) {
                 $name = html_entity_decode(trim($channel->title));

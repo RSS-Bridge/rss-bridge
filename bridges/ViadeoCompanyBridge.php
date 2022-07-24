@@ -22,7 +22,7 @@ class ViadeoCompanyBridge extends BridgeAbstract
         // Redirects to https://emploi.lefigaro.fr/recherche/entreprises
         $url = sprintf('%sfr/company/%s', self::URI, $this->getInput('c'));
 
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
 
         // TODO: Fix broken xpath selector
         $elements = $html->find('//*[@id="company-newsfeed"]/ul/li');

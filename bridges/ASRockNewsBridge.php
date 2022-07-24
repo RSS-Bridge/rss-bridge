@@ -12,7 +12,7 @@ class ASRockNewsBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI . '/news/index.asp');
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI . '/news/index.asp');
 
         $html = defaultLinkTo($html, self::URI . '/news/');
 
@@ -21,7 +21,7 @@ class ASRockNewsBridge extends BridgeAbstract
 
             $articlePath = $a->href;
 
-            $articlePageHtml = getSimpleHTMLDOMCached($articlePath, self::CACHE_TIMEOUT);
+            $articlePageHtml = $this->fetcher->getSimpleHTMLDOMCached($articlePath, self::CACHE_TIMEOUT);
 
             $articlePageHtml = defaultLinkTo($articlePageHtml, self::URI);
 

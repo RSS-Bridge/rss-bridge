@@ -9,7 +9,7 @@ class DavesTrailerPageBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(static::URI)
+        $html = $this->fetcher->getSimpleHTMLDOM(static::URI)
         or returnClientError('No results for this query.');
 
         $curr_date = null;

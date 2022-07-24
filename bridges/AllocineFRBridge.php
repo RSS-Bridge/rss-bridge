@@ -66,7 +66,7 @@ class AllocineFRBridge extends BridgeAbstract
 
     private function getLastSeasonURI($category)
     {
-        $html = getSimpleHTMLDOMCached(static::URI . $category, 86400);
+        $html = $this->fetcher->getSimpleHTMLDOMCached(static::URI . $category, 86400);
         $seasonLink = $html->find('section[class=section-wrap section]', 0)->find('div[class=cf]', 0)->find('a', 0);
         $URI = $seasonLink->href;
         return $URI;
@@ -87,7 +87,7 @@ class AllocineFRBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         $category = array_search(
             $this->getInput('category'),

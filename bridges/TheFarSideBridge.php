@@ -12,7 +12,7 @@ class TheFarSideBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
 
         $div = $html->find('div.tfs-page-container__cows', 0);
 
@@ -27,7 +27,7 @@ class TheFarSideBridge extends BridgeAbstract
             $imageUrl = $image->attr['data-src'];
 
             // Images are downloaded to bypass the hotlink protection.
-            $image = getContents($imageUrl, ['Referer: ' . self::URI]);
+            $image = $this->fetcher->getContents($imageUrl, ['Referer: ' . self::URI]);
 
             // Encode image as base64
             $imageBase64 = base64_encode($image);

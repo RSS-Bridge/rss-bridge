@@ -9,7 +9,7 @@ class Rue89Bridge extends BridgeAbstract
 
     public function collectData()
     {
-        $jsonArticles = getContents('https://appdata.nouvelobs.com/rue89/feed.json');
+        $jsonArticles = $this->fetcher->getContents('https://appdata.nouvelobs.com/rue89/feed.json');
         $articles = json_decode($jsonArticles)->items;
         foreach ($articles as $article) {
             $this->items[] = $this->getArticle($article);
@@ -18,7 +18,7 @@ class Rue89Bridge extends BridgeAbstract
 
     private function getArticle($articleInfo)
     {
-        $articleJson = getContents($articleInfo->json_url);
+        $articleJson = $this->fetcher->getContents($articleInfo->json_url);
         $article = json_decode($articleJson);
         $item = [];
         $item['title'] = $article->title;

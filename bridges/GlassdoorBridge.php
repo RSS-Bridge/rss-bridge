@@ -81,7 +81,7 @@ class GlassdoorBridge extends BridgeAbstract
     public function collectData()
     {
         $url = $this->getURI();
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
         $html = defaultLinkTo($html, $url);
         $limit = $this->getInput(self::PARAM_LIMIT);
 

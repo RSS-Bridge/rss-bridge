@@ -33,7 +33,7 @@ class NotAlwaysBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
         foreach ($html->find('.post') as $post) {
             #print_r($post);
             $item = [];

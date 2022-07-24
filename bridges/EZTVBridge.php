@@ -88,7 +88,7 @@ on EZTV. Get IMDB IDs from IMDB.';
 
         foreach ($showIds as $showId) {
             $eztvUri = $this->getURI() . 'api/get-torrents?imdb_id=' . $showId;
-            $content = getContents($eztvUri);
+            $content = $this->fetcher->getContents($eztvUri);
             $torrents = json_decode($content)->torrents;
             foreach ($torrents as $torrent) {
                 $title = $torrent->title;

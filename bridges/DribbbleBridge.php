@@ -16,7 +16,7 @@ favicon-63b2904a073c89b52b19aa08cebc16a154bcf83fee8ecc6439968b1e6db569c7.ico';
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
 
         $json = $this->loadEmbeddedJsonData($html);
 

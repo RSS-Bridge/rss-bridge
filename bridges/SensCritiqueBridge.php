@@ -55,7 +55,7 @@ class SensCritiqueBridge extends BridgeAbstract
                         $uri .= 'musique/actualite';
                         break;
                 }
-                $html = getSimpleHTMLDOM($uri);
+                $html = $this->fetcher->getSimpleHTMLDOM($uri);
                 $list = $html->find('ul.elpr-list', 0);
 
                 $this->extractDataFromList($list);

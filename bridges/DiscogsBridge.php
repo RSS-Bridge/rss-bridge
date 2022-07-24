@@ -49,11 +49,11 @@ class DiscogsBridge extends BridgeAbstract
     {
         if (!empty($this->getInput('artistid')) || !empty($this->getInput('labelid'))) {
             if (!empty($this->getInput('artistid'))) {
-                $data = getContents('https://api.discogs.com/artists/'
+                $data = $this->fetcher->getContents('https://api.discogs.com/artists/'
                         . $this->getInput('artistid')
                         . '/releases?sort=year&sort_order=desc');
             } elseif (!empty($this->getInput('labelid'))) {
-                $data = getContents('https://api.discogs.com/labels/'
+                $data = $this->fetcher->getContents('https://api.discogs.com/labels/'
                         . $this->getInput('labelid')
                         . '/releases?sort=year&sort_order=desc');
             }
@@ -76,12 +76,12 @@ class DiscogsBridge extends BridgeAbstract
             }
         } elseif (!empty($this->getInput('username_wantlist')) || !empty($this->getInput('username_folder'))) {
             if (!empty($this->getInput('username_wantlist'))) {
-                $data = getContents('https://api.discogs.com/users/'
+                $data = $this->fetcher->getContents('https://api.discogs.com/users/'
                         . $this->getInput('username_wantlist')
                         . '/wants?sort=added&sort_order=desc');
                 $jsonData = json_decode($data, true)['wants'];
             } elseif (!empty($this->getInput('username_folder'))) {
-                $data = getContents('https://api.discogs.com/users/'
+                $data = $this->fetcher->getContents('https://api.discogs.com/users/'
                         . $this->getInput('username_folder')
                         . '/collection/folders/'
                         . $this->getInput('folderid')

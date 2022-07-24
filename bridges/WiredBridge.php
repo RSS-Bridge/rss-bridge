@@ -53,7 +53,7 @@ class WiredBridge extends FeedExpander
     protected function parseItem($newsItem)
     {
         $item = parent::parseItem($newsItem);
-        $article = getSimpleHTMLDOMCached($item['uri']);
+        $article = $this->fetcher->getSimpleHTMLDOMCached($item['uri']);
         $item['content'] = $this->extractArticleContent($article);
 
         $headline = strval($newsItem->description);

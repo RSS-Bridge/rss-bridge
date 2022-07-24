@@ -62,7 +62,7 @@ class TheGuardianBridge extends FeedExpander
         // --- Recovering the article ---
 
         // $articlePage gets the entire page's contents
-        $articlePage = getSimpleHTMLDOM($newsItem->link);
+        $articlePage = $this->fetcher->getSimpleHTMLDOM($newsItem->link);
         // figure contain's the main article image
         $article = $articlePage->find('figure', 0);
         // content__article-body has the actual article

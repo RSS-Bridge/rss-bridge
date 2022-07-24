@@ -40,7 +40,7 @@ class PicukiBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         foreach ($html->find('.box-photos .box-photo') as $element) {
             // skip ad items

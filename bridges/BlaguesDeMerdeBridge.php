@@ -15,7 +15,7 @@ class BlaguesDeMerdeBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
 
         foreach ($html->find('div.blague') as $element) {
             $item = [];

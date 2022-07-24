@@ -227,7 +227,7 @@ class BadDragonBridge extends BridgeAbstract
     {
         switch ($this->queriedContext) {
             case 'Sales':
-                $sales = json_decode(getContents(self::URI . 'api/sales'));
+                $sales = json_decode($this->fetcher->getContents(self::URI . 'api/sales'));
 
                 foreach ($sales as $sale) {
                     $item = [];
@@ -280,9 +280,9 @@ class BadDragonBridge extends BridgeAbstract
                 }
                 break;
             case 'Clearance':
-                $toyData = json_decode(getContents($this->inputToURL(true)));
+                $toyData = json_decode($this->fetcher->getContents($this->inputToURL(true)));
 
-                $productList = json_decode(getContents(self::URI
+                $productList = json_decode($this->fetcher->getContents(self::URI
                 . 'api/inventory-toy/product-list'));
 
                 foreach ($toyData->toys as $toy) {

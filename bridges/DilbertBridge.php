@@ -10,7 +10,7 @@ class DilbertBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
 
         foreach ($html->find('section.comic-item') as $element) {
             $img = $element->find('img', 0);

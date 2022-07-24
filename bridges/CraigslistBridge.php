@@ -60,7 +60,7 @@ class CraigslistBridge extends BridgeAbstract
     public function collectData()
     {
         $uri = $this->getURI();
-        $html = getSimpleHTMLDOM($uri);
+        $html = $this->fetcher->getSimpleHTMLDOM($uri);
 
         // Check if no results page is shown (nearby results)
         if ($html->find('.displaycountShow', 0)->plaintext == '0') {

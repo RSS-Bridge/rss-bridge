@@ -54,7 +54,7 @@ class EuronewsBridge extends BridgeAbstract
         }
         $root_url = 'https://' . $lang;
         $url = $root_url . '/api/timeline.json?limit=' . $limit;
-        $json = getContents($url);
+        $json = $this->fetcher->getContents($url);
         $data = json_decode($json, true);
 
         foreach ($data as $datum) {
@@ -88,7 +88,7 @@ class EuronewsBridge extends BridgeAbstract
     private function getItemContent($url)
     {
         try {
-            $html = getSimpleHTMLDOMCached($url);
+            $html = $this->fetcher->getSimpleHTMLDOMCached($url);
         } catch (Exception $e) {
             // Every once in a while it fails with too many redirects
             return ['author' => null, 'content' => null, 'enclosures' => null];

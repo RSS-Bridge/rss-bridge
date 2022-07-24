@@ -42,13 +42,13 @@ class UrlebirdBridge extends BridgeAbstract
                 break;
         }
 
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
         $this->title = $html->find('title', 0)->innertext;
         $articles = $html->find('div.thumb');
         foreach ($articles as $article) {
             $item = [];
             $item['uri'] = $this->fixURI($article->find('a', 2)->href);
-            $article_content = getSimpleHTMLDOM($item['uri']);
+            $article_content = $this->fetcher->getSimpleHTMLDOM($item['uri']);
             $item['author'] = $article->find('img', 0)->alt . ' (' .
                 $article_content->find('a.user-video', 1)->innertext . ')';
             $item['title'] = $article_content->find('title', 0)->innertext;

@@ -60,14 +60,14 @@ class YouTubeCommunityTabBridge extends BridgeAbstract
         if (is_null($this->getInput('username')) === false) {
             try {
                 $this->feedUrl = $this->buildCommunityUri($this->getInput('username'), 'c');
-                $html = getSimpleHTMLDOM($this->feedUrl);
+                $html = $this->fetcher->getSimpleHTMLDOM($this->feedUrl);
             } catch (Exception $e) {
                 $this->feedUrl = $this->buildCommunityUri($this->getInput('username'), 'user');
-                $html = getSimpleHTMLDOM($this->feedUrl);
+                $html = $this->fetcher->getSimpleHTMLDOM($this->feedUrl);
             }
         } else {
             $this->feedUrl = $this->buildCommunityUri($this->getInput('channel'), 'channel');
-            $html = getSimpleHTMLDOM($this->feedUrl);
+            $html = $this->fetcher->getSimpleHTMLDOM($this->feedUrl);
         }
 
         $json = $this->extractJson($html->find('body', 0)->innertext);

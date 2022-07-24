@@ -805,7 +805,7 @@ class FurAffinityBridge extends BridgeAbstract
                 'Cookie: ' . self::FA_AUTH_COOKIE
             ];
 
-        $html = getSimpleHTMLDOM($this->getURI(), $header, $opts);
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI(), $header, $opts);
         $html = defaultLinkTo($html, $this->getURI());
 
         return $html;
@@ -818,9 +818,9 @@ class FurAffinityBridge extends BridgeAbstract
             ];
 
         if ($cache) {
-            $html = getSimpleHTMLDOMCached($url, 86400, $header); // 24 hours
+            $html = $this->fetcher->getSimpleHTMLDOMCached($url, 86400, $header); // 24 hours
         } else {
-            $html = getSimpleHTMLDOM($url, $header);
+            $html = $this->fetcher->getSimpleHTMLDOM($url, $header);
         }
 
         $html = defaultLinkTo($html, $url);

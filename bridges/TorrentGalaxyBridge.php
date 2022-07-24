@@ -57,7 +57,7 @@ class TorrentGalaxyBridge extends BridgeAbstract
             . '/torrents.php?search=' . urlencode($this->getInput('search'))
             . '&lang=' . $this->getInput('lang')
             . '&sort=id&order=desc';
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
 
         foreach ($html->find('div.tgxtablerow') as $result) {
             $identity = $result->find('div.tgxtablecell', 3)->find('div a', 0);

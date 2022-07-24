@@ -89,7 +89,7 @@ class InstagramBridge extends BridgeAbstract
         if ($sessionId and $dsUserId) {
             $headers[] = 'cookie: sessionid=' . $sessionId . '; ds_user_id=' . $dsUserId;
         }
-        return getContents($uri, $headers);
+        return $this->fetcher->getContents($uri, $headers);
     }
 
     protected function getInstagramUserId($username)
@@ -287,7 +287,7 @@ class InstagramBridge extends BridgeAbstract
 
             return json_decode($data);
         } else {
-            $html = getContents($uri);
+            $html = $this->fetcher->getContents($uri);
             $scriptRegex = '/window\._sharedData = (.*);<\/script>/';
 
             preg_match($scriptRegex, $html, $matches, PREG_OFFSET_CAPTURE, 0);

@@ -90,7 +90,7 @@ class YGGTorrentBridge extends BridgeAbstract
         $category = $catInfo[0];
         $subcategory = $catInfo[1];
 
-        $html = getSimpleHTMLDOM(self::URI . '/engine/search?name='
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI . '/engine/search?name='
                     . $this->getInput('nom')
                     . '&description='
                     . $this->getInput('description')
@@ -150,7 +150,7 @@ class YGGTorrentBridge extends BridgeAbstract
 
     private function collectTorrentData($url)
     {
-        $page = defaultLinkTo(getSimpleHTMLDOMCached($url), self::URI);
+        $page = defaultLinkTo($this->fetcher->getSimpleHTMLDOMCached($url), self::URI);
         $author = $page->find('.informations tr', 5)->find('td', 1)->plaintext;
         $content = $page->find('.default', 1);
         return ['author' => $author, 'content' => $content];

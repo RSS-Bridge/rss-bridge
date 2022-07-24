@@ -173,7 +173,7 @@ class FlaschenpostBridge extends BridgeAbstract
             try {
                 $url = sprintf('https://www.flaschenpost.de/%s?plz=%s', $category, $this->getInput('zip-code'));
                 // Gives redirect on unknown zip-code
-                $html = getSimpleHTMLDOM($url, [], [CURLOPT_FOLLOWLOCATION => false]);
+                $html = $this->fetcher->getSimpleHTMLDOM($url, [], [CURLOPT_FOLLOWLOCATION => false]);
             } catch (\Exception $e) {
                 // skip
                 continue;

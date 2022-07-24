@@ -15,7 +15,7 @@ class Releases3DSBridge extends BridgeAbstract
 
     protected function collectDataUrl($dataUrl)
     {
-        $xml = getContents($dataUrl);
+        $xml = $this->fetcher->getContents($dataUrl);
         $limit = 0;
 
         foreach (array_reverse(explode('<release>', $xml)) as $element) {

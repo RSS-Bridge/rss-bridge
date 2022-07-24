@@ -9,7 +9,7 @@ class ExecuteProgramBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $data = json_decode(getContents('https://www.executeprogram.com/api/pages/blog'));
+        $data = json_decode($this->fetcher->getContents('https://www.executeprogram.com/api/pages/blog'));
 
         foreach ($data->posts as $post) {
             $year = $post->date->year;

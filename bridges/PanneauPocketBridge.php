@@ -117,7 +117,7 @@ class PanneauPocketBridge extends BridgeAbstract
         $city = strtolower($this->getInput('cities') . '-' . $found);
         $url = sprintf('https://app.panneaupocket.com/ville/%s', urlencode($city));
 
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
 
         foreach ($html->find('.sign-carousel--item') as $itemDom) {
             $item = [];
@@ -141,7 +141,7 @@ class PanneauPocketBridge extends BridgeAbstract
      */
     private function getCities()
     {
-        $cities = json_decode(getContents(self::URI . '/public-api/city'), true);
+        $cities = json_decode($this->fetcher->getContents(self::URI . '/public-api/city'), true);
 
         $formattedCities = null;
         $citiesString = '[<br>';

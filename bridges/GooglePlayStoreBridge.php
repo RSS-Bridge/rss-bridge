@@ -30,7 +30,7 @@ class GooglePlayStoreBridge extends BridgeAbstract
     public function collectData()
     {
         $appuri = static::URI . '/details?id=' . $this->getInput('id');
-        $html = getSimpleHTMLDOM($appuri);
+        $html = $this->fetcher->getSimpleHTMLDOM($appuri);
 
         $item = [];
         $item['uri'] = $appuri;

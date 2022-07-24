@@ -30,7 +30,7 @@ class MoebooruBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getFullURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getFullURI());
 
         $input_json = explode('Post.register(', $html);
         foreach ($input_json as $element) {

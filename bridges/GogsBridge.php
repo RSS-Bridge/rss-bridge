@@ -116,7 +116,7 @@ class GogsBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         $html = defaultLinkTo($html, $this->getURI());
 
@@ -171,7 +171,7 @@ class GogsBridge extends BridgeAbstract
             ];
 
             if ($this->getInput('include_description')) {
-                $issue_html = getSimpleHTMLDOMCached($uri, 3600)
+                $issue_html = $this->fetcher->getSimpleHTMLDOMCached($uri, 3600)
                     or returnServerError('Unable to load issue description');
 
                 $issue_html = defaultLinkTo($issue_html, $uri);

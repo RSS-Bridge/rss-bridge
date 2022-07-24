@@ -30,7 +30,7 @@ class AcrimedBridge extends FeedExpander
     {
         $item = parent::parseItem($newsItem);
 
-        $articlePage = getSimpleHTMLDOM($newsItem->link);
+        $articlePage = $this->fetcher->getSimpleHTMLDOM($newsItem->link);
         $article = sanitize($articlePage->find('article.article1', 0)->innertext);
         $article = defaultLinkTo($article, static::URI);
         $item['content'] = $article;

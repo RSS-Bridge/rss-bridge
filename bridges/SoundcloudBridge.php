@@ -146,7 +146,7 @@ HTML;
     {
         $this->initClientIDCache();
 
-        $playerHTML = getContents($this->playerUrl);
+        $playerHTML = $this->fetcher->getContents($this->playerUrl);
 
         // Extract widget JS filenames from player page
         if (preg_match_all($this->widgetRegex, $playerHTML, $matches) == false) {
@@ -159,7 +159,7 @@ HTML;
         foreach ($matches[0] as $widgetFile) {
             $widgetURL = $this->widgetUrl . $widgetFile;
 
-            $widgetJS = getContents($widgetURL);
+            $widgetJS = $this->fetcher->getContents($widgetURL);
 
             if (preg_match($this->clientIdRegex, $widgetJS, $matches)) {
                 $clientID = $matches[1];
@@ -215,13 +215,13 @@ HTML;
         $url = $this->buildApiUrl($endpoint, $parameters);
 
         try {
-            return json_decode(getContents($url));
+            return json_decode($this->fetcher->getContents($url));
         } catch (Exception $e) {
             // Retry once with refreshed client ID
             $parameters['client_id'] = $this->refreshClientID();
             $url = $this->buildApiUrl($endpoint, $parameters);
 
-            return json_decode(getContents($url));
+            return json_decode($this->fetcher->getContents($url));
         }
     }
 

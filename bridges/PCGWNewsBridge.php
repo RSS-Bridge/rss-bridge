@@ -15,7 +15,7 @@ class PCGWNewsBridge extends FeedExpander
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         $now = strtotime('now');
 

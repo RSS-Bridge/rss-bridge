@@ -103,7 +103,7 @@ EOD
         $requestString = 'https://touch.facebook.com/page_content_list_view/more/?page_id='
         . $pageInfo['userId']
         . '&start_cursor=1&num_to_fetch=105&surface_type=timeline';
-        $fileContent = getContents($requestString);
+        $fileContent = $this->fetcher->getContents($requestString);
         $html = $this->buildContent($fileContent);
         $author = $pageInfo['username'];
 

@@ -21,7 +21,7 @@ class ScoopItBridge extends BridgeAbstract
         $this->request = $this->getInput('u');
         $link = self::URI . 'search?q=' . urlencode($this->getInput('u'));
 
-        $html = getSimpleHTMLDOM($link);
+        $html = $this->fetcher->getSimpleHTMLDOM($link);
 
         foreach ($html->find('div.post-view') as $element) {
             $item = [];

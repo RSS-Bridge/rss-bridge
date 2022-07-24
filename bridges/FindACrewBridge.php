@@ -60,7 +60,7 @@ class FindACrewBridge extends BridgeAbstract
             CURLOPT_POSTFIELDS => http_build_query($data) . "\n"
         ];
 
-        $html = getSimpleHTMLDOM($url, $header, $opts) or returnClientError('No results for this query.');
+        $html = $this->fetcher->getSimpleHTMLDOM($url, $header, $opts) or returnClientError('No results for this query.');
 
         $annonces = $html->find('.css_SrhRst');
         $limit = $this->getInput('limit') ?? 10;
@@ -68,7 +68,7 @@ class FindACrewBridge extends BridgeAbstract
             $item = [];
 
             $link = parent::getURI() . $annonce->find('.lstsum-btn-con a', 0)->href;
-            $htmlDetail = getSimpleHTMLDOMCached($link . '?mdl=2'); // add ?mdl=2 for xhr content not full html page
+            $htmlDetail = $this->fetcher->getSimpleHTMLDOMCached($link . '?mdl=2'); // add ?mdl=2 for xhr content not full html page
 
             $img = parent::getURI() . $htmlDetail->find('img.img-responsive', 0)->getAttribute('src');
             $item['title'] = $htmlDetail->find('div.label-account', 0)->plaintext;

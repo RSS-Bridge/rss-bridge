@@ -25,7 +25,7 @@ class MediapartBlogsBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::BASE_URI . '/' . $this->getInput('slug') . '/blog');
+        $html = $this->fetcher->getSimpleHTMLDOM(self::BASE_URI . '/' . $this->getInput('slug') . '/blog');
 
         foreach ($html->find('ul.post-list li') as $element) {
             $item = [];

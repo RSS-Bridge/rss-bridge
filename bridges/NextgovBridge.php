@@ -57,7 +57,7 @@ class NextgovBridge extends FeedExpander
 
     private function extractContent($url)
     {
-        $article = getSimpleHTMLDOMCached($url);
+        $article = $this->fetcher->getSimpleHTMLDOMCached($url);
 
         if (!is_object($article)) {
             return 'Could not request Nextgov: ' . $url;

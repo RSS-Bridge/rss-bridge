@@ -16,13 +16,13 @@ class PcGamerBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOMCached($this->getURI(), 300);
+        $html = $this->fetcher->getSimpleHTMLDOMCached($this->getURI(), 300);
         $stories = $html->find('a.article-link');
         $limit = $this->getInput('limit') ?? 10;
         foreach (array_slice($stories, 0, $limit) as $element) {
             $item = [];
             $item['uri'] = $element->href;
-            $articleHtml = getSimpleHTMLDOMCached($item['uri']);
+            $articleHtml = $this->fetcher->getSimpleHTMLDOMCached($item['uri']);
 
             // Relying on meta tags ought to be more reliable.
             $item['title'] = $articleHtml->find('meta[name=parsely-title]', 0)->content;

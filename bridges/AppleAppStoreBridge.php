@@ -72,7 +72,7 @@ class AppleAppStoreBridge extends BridgeAbstract
     private function getDataFromShoebox($id, $platform, $country)
     {
         $uri = $this->makeHtmlUrl($id, $country);
-        $html = getSimpleHTMLDOMCached($uri, 3600);
+        $html = $this->fetcher->getSimpleHTMLDOMCached($uri, 3600);
         $script = $html->find('script[id="shoebox-ember-data-store"]', 0);
 
         $json = json_decode($script->innertext, true);
@@ -83,7 +83,7 @@ class AppleAppStoreBridge extends BridgeAbstract
     {
         $uri = $this->makeHtmlUrl($id, $country);
 
-        $html = getSimpleHTMLDOMCached($uri, 3600);
+        $html = $this->fetcher->getSimpleHTMLDOMCached($uri, 3600);
 
         $meta = $html->find('meta[name="web-experience-app/config/environment"]', 0);
 
@@ -103,7 +103,7 @@ class AppleAppStoreBridge extends BridgeAbstract
             'Origin: https://apps.apple.com',
         ];
 
-        $json = json_decode(getContents($uri, $headers), true);
+        $json = json_decode($this->fetcher->getContents($uri, $headers), true);
 
         return $json['data'][0];
     }

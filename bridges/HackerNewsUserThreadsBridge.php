@@ -20,7 +20,7 @@ class HackerNewsUserThreadsBridge extends BridgeAbstract
     public function collectData()
     {
         $url = 'https://news.ycombinator.com/threads?id=' . $this->getInput('user');
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
         Debug::log('queried ' . $url);
         Debug::log('found ' . $html);
 

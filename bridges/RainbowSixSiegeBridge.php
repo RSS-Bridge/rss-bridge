@@ -21,7 +21,7 @@ class RainbowSixSiegeBridge extends BridgeAbstract
         $dlUrl = 'https://nimbus.ubisoft.com/api/v1/items?categoriesFilter=all';
         $dlUrl = $dlUrl . '&limit=6&mediaFilter=all&skip=0&startIndex=0&tags=BR-rainbow-six%20GA-siege';
         $dlUrl = $dlUrl . '&locale=en-us&fallbackLocale=en-us&environment=master';
-        $jsonString = getContents($dlUrl, [
+        $jsonString = $this->fetcher->getContents($dlUrl, [
             'Authorization: ' . self::NIMBUS_API_KEY
         ]);
 

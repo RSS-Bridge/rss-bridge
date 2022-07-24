@@ -77,7 +77,7 @@ class KununuBridge extends BridgeAbstract
         $full = $this->getInput('full');
 
         // Load page
-        $json = json_decode(getContents($this->getAPI()), true);
+        $json = json_decode($this->fetcher->getContents($this->getAPI()), true);
         $this->companyName = $json['common']['name'];
         $baseURI = $this->getURI() . '/bewertung/';
 

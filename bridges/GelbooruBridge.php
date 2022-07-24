@@ -72,7 +72,7 @@ class GelbooruBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $content = getContents($this->getFullURI());
+        $content = $this->fetcher->getContents($this->getFullURI());
         // $content is empty string
 
         // Most other Gelbooru-based boorus put their content in the root of

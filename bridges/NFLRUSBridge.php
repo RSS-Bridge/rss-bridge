@@ -9,7 +9,7 @@ class NFLRUSBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
         $html = defaultLinkTo($html, self::URI);
 
         $articles = $html->find('.big-post_content-col');

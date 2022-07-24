@@ -178,7 +178,7 @@ class ZDNetBridge extends FeedExpander
     {
         $item = parent::parseItem($item);
 
-        $article = getSimpleHTMLDOMCached($item['uri']);
+        $article = $this->fetcher->getSimpleHTMLDOMCached($item['uri']);
         if (!$article) {
             returnServerError('Could not request ZDNet: ' . $url);
         }

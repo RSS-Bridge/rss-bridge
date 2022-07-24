@@ -58,7 +58,7 @@ class UnsplashBridge extends BridgeAbstract
             $url .= '/users/' . $filteredUser;
         }
         $url .= '/photos?page=1&per_page=' . $max;
-        $api_response = getContents($url);
+        $api_response = $this->fetcher->getContents($url);
 
         $json = json_decode($api_response, true);
 

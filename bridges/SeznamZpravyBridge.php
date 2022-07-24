@@ -46,7 +46,7 @@ class SeznamZpravyBridge extends BridgeAbstract
                 'articleParagraphs' => 'div[data-dot=mol-paragraph]'
                 ];
 
-                $html = getSimpleHTMLDOMCached($url . $this->getInput('author'), $ONE_DAY);
+                $html = $this->fetcher->getSimpleHTMLDOMCached($url . $this->getInput('author'), $ONE_DAY);
                 $mainBreadcrumbs = $html->find($selectors['breadcrumbs'], 0)
                 or returnServerError('Could not get breadcrumbs for: ' . $this->getURI());
 
@@ -64,7 +64,7 @@ class SeznamZpravyBridge extends BridgeAbstract
                     or returnServerError('Could not find title for: ' . $this->getURI());
                     $articleURL = $titleLink->href;
 
-                    $articleContentHTML = getSimpleHTMLDOMCached($articleURL, $ONE_DAY);
+                    $articleContentHTML = $this->fetcher->getSimpleHTMLDOMCached($articleURL, $ONE_DAY);
 
                     // Article header image
                     $articleImageElem = $articleContentHTML->find($selectors['articleImage'], 0);

@@ -18,7 +18,7 @@ class ItchioBridge extends BridgeAbstract
     public function collectData()
     {
         $url = $this->getInput('url');
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
 
         $title = $html->find('.game_title', 0)->innertext;
 

@@ -51,7 +51,7 @@ class PillowfortBridge extends BridgeAbstract
      */
     public function collectData()
     {
-        $jsonSite = getContents($this->getJSONURI());
+        $jsonSite = $this->fetcher->getContents($this->getJSONURI());
 
         $jsonFile = json_decode($jsonSite, true);
         $posts = $jsonFile['posts'];

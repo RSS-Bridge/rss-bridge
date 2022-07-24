@@ -147,7 +147,7 @@ EOT;
     {
         $uri = $this->getURI();
 
-        return getSimpleHTMLDOM($uri) ?: returnServerError('Could not request Amazon.');
+        return $this->fetcher->getSimpleHTMLDOM($uri) ?: returnServerError('Could not request Amazon.');
     }
 
     private function scrapePriceFromMetrics($html)

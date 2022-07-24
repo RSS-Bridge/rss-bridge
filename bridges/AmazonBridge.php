@@ -63,7 +63,7 @@ class AmazonBridge extends BridgeAbstract
             $this->getInput('sort')
         );
 
-        $dom = getSimpleHTMLDOM($url);
+        $dom = $this->fetcher->getSimpleHTMLDOM($url);
 
         $elements = $dom->find('div.s-result-item');
 

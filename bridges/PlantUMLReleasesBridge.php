@@ -23,7 +23,7 @@ class PlantUMLReleasesBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = defaultLinkTo(getSimpleHTMLDOM($this->getURI()), self::URI);
+        $html = defaultLinkTo($this->fetcher->getSimpleHTMLDOM($this->getURI()), self::URI);
 
         $num_items = 0;
         $main = $html->find('div[id=root]', 0);

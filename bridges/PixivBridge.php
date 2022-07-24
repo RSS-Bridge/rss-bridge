@@ -130,7 +130,7 @@ class PixivBridge extends BridgeAbstract
 
     private function collectWorksArray()
     {
-        $content = getContents($this->getSearchURI($this->getInput('mode')));
+        $content = $this->fetcher->getContents($this->getSearchURI($this->getInput('mode')));
         $content = json_decode($content, true);
         if ($this->getInput('mode') == 'all') {
             $total = [];
@@ -211,15 +211,15 @@ class PixivBridge extends BridgeAbstract
             // Get fullsize URL
             if ($isImage && $this->getInput('fullsize')) {
                 $ajax_uri = static::URI . 'ajax/illust/' . $illustId;
-                $imagejson = json_decode(getContents($ajax_uri), true);
+                $imagejson = json_decode($this->fetcher->getContents($ajax_uri), true);
                 $url = $imagejson['body']['urls']['original'];
             }
 
             $headers = ['Referer: ' . static::URI];
             try {
-                $illust = getContents($url, $headers);
+                $illust = $this->fetcher->getContents($url, $headers);
             } catch (Exception $e) {
-                $illust = getContents($thumbnailurl, $headers); // Original thumbnail
+                $illust = $this->fetcher->getContents($thumbnailurl, $headers); // Original thumbnail
             }
             file_put_contents($path, $illust);
         }

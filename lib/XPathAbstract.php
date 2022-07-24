@@ -335,7 +335,7 @@ abstract class XPathAbstract extends BridgeAbstract
      */
     protected function provideWebsiteContent()
     {
-        return getContents($this->feedUri);
+        return $this->fetcher->getContents($this->feedUri);
     }
 
     /**

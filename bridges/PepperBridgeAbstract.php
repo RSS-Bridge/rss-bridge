@@ -43,7 +43,7 @@ class PepperBridgeAbstract extends BridgeAbstract
      */
     protected function collectDeals($url)
     {
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
         $list = $html->find('article[id]');
 
         // Deal Image Link CSS Selector
@@ -217,7 +217,7 @@ HEREDOC;
             CURLOPT_POST => 1,
             CURLOPT_POSTFIELDS => $queryJSON
         ];
-        $json = getContents($url, $header, $opts);
+        $json = $this->fetcher->getContents($url, $header, $opts);
         $objects = json_decode($json);
         foreach ($objects->data->comments->items as $comment) {
             $item = [];
@@ -330,7 +330,7 @@ HEREDOC;
      */
     private function getTalkTitle()
     {
-        $html = getSimpleHTMLDOMCached($this->getInput('url'));
+        $html = $this->fetcher->getSimpleHTMLDOMCached($this->getInput('url'));
         $title = $html->find('h1[class=thread-title]', 0)->plaintext;
         return $title;
     }

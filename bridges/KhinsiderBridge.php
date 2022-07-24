@@ -10,7 +10,7 @@ class KhinsiderBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
 
         $dates = $html->find('.latestSoundtrackHeading');
         $tables = $html->find('.albumList');

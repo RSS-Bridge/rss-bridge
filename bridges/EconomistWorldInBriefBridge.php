@@ -41,7 +41,7 @@ class EconomistWorldInBriefBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
         $gobbets = $html->find('._gobbets', 0);
         if ($this->getInput('splitGobbets') == 1) {
             $this->splitGobbets($gobbets);

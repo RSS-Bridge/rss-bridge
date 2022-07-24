@@ -17,7 +17,7 @@ class HardwareInfoBridge extends FeedExpander
         $item = parent::parseItem($feedItem);
 
         //get full article
-        $articlePage = getSimpleHTMLDOMCached($feedItem->link);
+        $articlePage = $this->fetcher->getSimpleHTMLDOMCached($feedItem->link);
 
         $article = $articlePage->find('div.article__content', 0);
 

@@ -12,7 +12,7 @@ class SuperSmashBlogBridge extends BridgeAbstract
     {
         $dlUrl = 'https://www.smashbros.com/data/bs/en_US/json/en_US.json';
 
-        $jsonString = getContents($dlUrl);
+        $jsonString = $this->fetcher->getContents($dlUrl);
         $json = json_decode($jsonString, true);
 
         foreach ($json as $article) {

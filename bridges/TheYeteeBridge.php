@@ -10,7 +10,7 @@ class TheYeteeBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
 
         $div = $html->find('.module_timed-item.is--full');
         foreach ($div as $element) {

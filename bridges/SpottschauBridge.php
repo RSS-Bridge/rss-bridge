@@ -12,7 +12,7 @@ class SpottschauBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
 
         $item = [];
         $item['uri'] = urljoin(self::URI, $html->find('div.strip>a', 0)->attr['href']);

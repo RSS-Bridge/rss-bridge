@@ -12,7 +12,7 @@ class GatesNotesBridge extends FeedExpander
     {
         $item = parent::parseItem($item);
 
-        $article_html = getSimpleHTMLDOMCached($item['uri']);
+        $article_html = $this->fetcher->getSimpleHTMLDOMCached($item['uri']);
         if (!$article_html) {
             $item['content'] .= '<p><em>Could not request ' . $this->getName() . ': ' . $item['uri'] . '</em></p>';
             return $item;

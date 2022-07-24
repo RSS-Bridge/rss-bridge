@@ -38,7 +38,7 @@ class AstrophysicsDataSystemBridge extends BridgeAbstract
         $headers = [
             'Cookie: core=always;'
         ];
-        $html = str_get_html(defaultLinkTo(getContents($this->getURI(), $headers), self::URI));
+        $html = str_get_html(defaultLinkTo($this->fetcher->getContents($this->getURI(), $headers), self::URI));
         $this->feedTitle = html_entity_decode($html->find('title', 0)->plaintext);
         foreach ($html->find('div.row > ul > li') as $pub) {
             $item = [];

@@ -19,7 +19,7 @@ class ComicsKingdomBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI(), [], [], true, false);
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI(), [], [], true, false);
 
         // Get author from first page
         $author = $html->find('div.author p', 0);
@@ -30,7 +30,7 @@ class ComicsKingdomBridge extends BridgeAbstract
         for ($i = 0; $i < 3; $i++) {
             $item = [];
 
-            $page = getSimpleHTMLDOM($link);
+            $page = $this->fetcher->getSimpleHTMLDOM($link);
 
             $imagelink = $page->find('meta[property=og:image]', 0)->content;
 

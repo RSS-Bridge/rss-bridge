@@ -53,7 +53,7 @@ class GoogleGroupsBridge extends XPathAbstract
 
     protected function provideWebsiteContent()
     {
-        return defaultLinkTo(getContents($this->getSourceUrl()), self::URI);
+        return defaultLinkTo($this->fetcher->getContents($this->getSourceUrl()), self::URI);
     }
 
     const URL_REGEX = '#^https://groups.google.com(?:/a/(?<account>\S+))?(?:/g/(?<group>\S+))#';

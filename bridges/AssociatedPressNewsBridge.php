@@ -105,7 +105,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract
 
     private function collectCardData()
     {
-        $json = getContents($this->getTagURI())
+        $json = $this->fetcher->getContents($this->getTagURI())
             or returnServerError('Could not request: ' . $this->getTagURI());
 
         $tagContents = json_decode($json, true);
@@ -193,7 +193,7 @@ class AssociatedPressNewsBridge extends BridgeAbstract
     {
         if ($html->find('div.media-placeholder', 0)) {
             // Fetch page content
-            $json = getContents('https://afs-prod.appspot.com/api/v2/content/' . $id);
+            $json = $this->fetcher->getContents('https://afs-prod.appspot.com/api/v2/content/' . $id);
             $storyContent = json_decode($json, true);
 
             foreach ($html->find('div.media-placeholder') as $div) {

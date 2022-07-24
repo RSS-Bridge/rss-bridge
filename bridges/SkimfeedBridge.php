@@ -512,7 +512,7 @@ class SkimfeedBridge extends BridgeAbstract
         // $this->exportBoxChannels(); die;
         // $this->exportTechChannels(); die;
 
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         defaultLinkTo($html, static::URI);
 
@@ -632,7 +632,7 @@ class SkimfeedBridge extends BridgeAbstract
             $author = '<a href="' . $anchor->href . '">' . trim($anchor->plaintext) . '</a>';
             $uri    = $anchor->href;
 
-            $box_html = getSimpleHTMLDOM($uri)
+            $box_html = $this->fetcher->getSimpleHTMLDOM($uri)
                 or returnServerError('Could not load custom feed!');
 
             $this->extractFeed($box_html, $author);
@@ -664,7 +664,7 @@ class SkimfeedBridge extends BridgeAbstract
      */
     private function exportBoxChannels()
     {
-        $html = getSimpleHTMLDOMCached(static::URI)
+        $html = $this->fetcher->getSimpleHTMLDOMCached(static::URI)
             or returnServerError('No contents received from Skimfeed!');
 
         if (!$this->isCompatible($html)) {
@@ -721,7 +721,7 @@ EOD;
      */
     private function exportTechChannels()
     {
-        $html = getSimpleHTMLDOMCached(static::URI)
+        $html = $this->fetcher->getSimpleHTMLDOMCached(static::URI)
             or returnServerError('No contents received from Skimfeed!');
 
         if (!$this->isCompatible($html)) {
@@ -758,7 +758,7 @@ EOD;
 
             $message .= "\t\t'{$title}' => array(\n";
 
-            $channel_html = getSimpleHTMLDOMCached(static::URI . $uri)
+            $channel_html = $this->fetcher->getSimpleHTMLDOMCached(static::URI . $uri)
                 or returnServerError('Could not load tech channel ' . $channel->plaintext . '!');
 
             $boxes = $channel_html->find('#boxx .boxes')

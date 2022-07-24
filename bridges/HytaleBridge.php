@@ -15,13 +15,13 @@ class HytaleBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $blogPosts = json_decode(getContents(self::_API_URL_PUBLISHED));
+        $blogPosts = json_decode($this->fetcher->getContents(self::_API_URL_PUBLISHED));
         $length = count($blogPosts);
 
         for ($i = 1; $i < $length; $i += 3) {
             $slug = $blogPosts[$i]->slug;
 
-            $blogPost = json_decode(getContents(self::_API_URL_BLOG_POST . $slug));
+            $blogPost = json_decode($this->fetcher->getContents(self::_API_URL_BLOG_POST . $slug));
 
             if (property_exists($blogPost, 'previous')) {
                 $this->addBlogPost($blogPost->previous);
@@ -37,7 +37,7 @@ class HytaleBridge extends BridgeAbstract
         if ($length % 3 == 1) {
             $slug = $blogPosts[count($blogPosts) - 1]->slug;
 
-            $blogPost = json_decode(getContents(self::_API_URL_BLOG_POST . $slug));
+            $blogPost = json_decode($this->fetcher->getContents(self::_API_URL_BLOG_POST . $slug));
             $this->addBlogPost($blogPost);
         }
     }

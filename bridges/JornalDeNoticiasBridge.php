@@ -35,7 +35,7 @@ class JornalDeNoticiasBridge extends BridgeAbstract
     public function collectData()
     {
         $archives = $this->getURI();
-        $html = getSimpleHTMLDOMCached($archives);
+        $html = $this->fetcher->getSimpleHTMLDOMCached($archives);
 
         foreach ($html->find('article') as $element) {
             $item = [];

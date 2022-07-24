@@ -38,7 +38,7 @@ class ElloBridge extends BridgeAbstract
         } else {
             $uri = self::URI . 'api/v2/posts?terms=' . urlencode($this->getInput('s'));
         }
-        $postData = getContents($uri, $header) or
+        $postData = $this->fetcher->getContents($uri, $header) or
             returnServerError('Unable to query Ello API.');
 
         $postData = json_decode($postData);
@@ -121,7 +121,7 @@ class ElloBridge extends BridgeAbstract
         $key = $cache->loadData();
 
         if ($key == null) {
-            $keyInfo = getContents(self::URI . 'api/webapp-token') or
+            $keyInfo = $this->fetcher->getContents(self::URI . 'api/webapp-token') or
                 returnServerError('Unable to get token.');
             $key = json_decode($keyInfo)->token->access_token;
             $cache->saveData($key);

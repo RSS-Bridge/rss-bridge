@@ -65,7 +65,7 @@ class NpciBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOMCached($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOMCached($this->getURI());
         $year = date('Y');
         $elements = $html->find("div[id=year$year] .pdf-item");
 

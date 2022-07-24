@@ -15,7 +15,7 @@ class MondeDiploBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
 
         foreach ($html->find('div.unarticle') as $article) {
             $element = $article->parent();

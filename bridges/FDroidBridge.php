@@ -55,7 +55,7 @@ class FDroidBridge extends BridgeAbstract
     public function collectData()
     {
         $url = self::URI;
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
 
         // targetting the corresponding widget based on user selection
         // "updated" is the 5th widget on the page, "added" is the 6th

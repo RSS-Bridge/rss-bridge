@@ -87,7 +87,7 @@ class NyaaTorrentsBridge extends FeedExpander
         $item['uri'] = str_replace('/download/', '/view/', $item['uri']);
         $item['uri'] = str_replace('.torrent', '', $item['uri']);
 
-        if ($item_html = getSimpleHTMLDOMCached($item['uri'])) {
+        if ($item_html = $this->fetcher->getSimpleHTMLDOMCached($item['uri'])) {
             //Retrieve full description from page contents
             $item_desc = str_get_html(
                 markdownToHtml(html_entity_decode($item_html->find('#torrent-description', 0)->innertext))

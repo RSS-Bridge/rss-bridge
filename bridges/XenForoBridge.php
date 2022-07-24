@@ -111,7 +111,7 @@ class XenForoBridge extends BridgeAbstract
             $this->threadurl = str_replace($matches[1], '', $this->threadurl);
         }
 
-        $html = getSimpleHTMLDOMCached($this->threadurl);
+        $html = $this->fetcher->getSimpleHTMLDOMCached($this->threadurl);
 
         $html = defaultLinkTo($html, $this->threadurl);
 
@@ -304,10 +304,10 @@ class XenForoBridge extends BridgeAbstract
 
                 // We can optimize performance by caching all but the last page
                 if ($page != $lastpage) {
-                    $html = getSimpleHTMLDOMCached($pageurl)
+                    $html = $this->fetcher->getSimpleHTMLDOMCached($pageurl)
                         or returnServerError('Error loading contents from ' . $pageurl . '!');
                 } else {
-                    $html = getSimpleHTMLDOM($pageurl)
+                    $html = $this->fetcher->getSimpleHTMLDOM($pageurl)
                         or returnServerError('Error loading contents from ' . $pageurl . '!');
                 }
 
@@ -347,10 +347,10 @@ class XenForoBridge extends BridgeAbstract
 
                 // We can optimize performance by caching all but the last page
                 if ($page != $lastpage) {
-                    $html = getSimpleHTMLDOMCached($pageurl)
+                    $html = $this->fetcher->getSimpleHTMLDOMCached($pageurl)
                         or returnServerError('Error loading contents from ' . $pageurl . '!');
                 } else {
-                    $html = getSimpleHTMLDOM($pageurl)
+                    $html = $this->fetcher->getSimpleHTMLDOM($pageurl)
                         or returnServerError('Error loading contents from ' . $pageurl . '!');
                 }
 

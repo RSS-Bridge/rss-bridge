@@ -49,7 +49,7 @@ class CeskaTelevizeBridge extends BridgeAbstract
         $category = $match[4] ?? 'nove';
         $fixedUrl = "{$match[1]}dily/{$category}/";
 
-        $html = getSimpleHTMLDOM($fixedUrl);
+        $html = $this->fetcher->getSimpleHTMLDOM($fixedUrl);
 
         $this->feedUri = $fixedUrl;
         $this->feedName = str_replace('Přehled dílů — ', '', $this->fixChars($html->find('title', 0)->plaintext));

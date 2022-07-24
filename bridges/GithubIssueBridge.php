@@ -191,7 +191,7 @@ class GithubIssueBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         switch ($this->queriedContext) {
             case static::BRIDGE_OPTIONS[1]: // Issue comments
@@ -210,7 +210,7 @@ class GithubIssueBridge extends BridgeAbstract
                     if ($this->getInput('c')) {
                         $uri = static::URI . $this->getInput('u')
                          . '/' . $this->getInput('p') . '/' . static::URL_PATH . '/' . $issueNbr;
-                        $issue = getSimpleHTMLDOMCached($uri, static::CACHE_TIMEOUT);
+                        $issue = $this->fetcher->getSimpleHTMLDOMCached($uri, static::CACHE_TIMEOUT);
                         if ($issue) {
                             $this->items = array_merge(
                                 $this->items,

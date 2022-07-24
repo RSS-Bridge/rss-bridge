@@ -9,7 +9,7 @@ class FabriceBellardBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
 
         foreach ($html->find('p') as $obj) {
             $item = [];

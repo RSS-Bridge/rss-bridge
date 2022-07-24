@@ -151,7 +151,7 @@ class ReutersBridge extends BridgeAbstract
      */
     private function getJson($uri)
     {
-        $returned_data = getContents($uri);
+        $returned_data = $this->fetcher->getContents($uri);
         return json_decode($returned_data, true);
     }
 
@@ -344,7 +344,7 @@ class ReutersBridge extends BridgeAbstract
 
     private function handleRedirectedArticle($url)
     {
-        $html = getSimpleHTMLDOMCached($url, 86400); // Duration 24h
+        $html = $this->fetcher->getSimpleHTMLDOMCached($url, 86400); // Duration 24h
 
         $description = '';
         $author = '';
@@ -460,7 +460,7 @@ class ReutersBridge extends BridgeAbstract
                                 $get_embed_url = 'https://publish.twitter.com/oembed?url='
                                                                  . urlencode($tweet_url) .
                                                                 '&partner=&hide_thread=false';
-                                $oembed_json = json_decode(getContents($get_embed_url), true);
+                                $oembed_json = json_decode($this->fetcher->getContents($get_embed_url), true);
                                 $embed .= $oembed_json['html'];
                             } catch (Exception $e) { // In case not found any tweet.
                                 $embed .= '';

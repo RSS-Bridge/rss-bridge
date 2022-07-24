@@ -37,7 +37,7 @@ class Formula1Bridge extends BridgeAbstract
         $limit = min(self::LIMIT_MAX, max(self::LIMIT_MIN, $limit));
         $url = sprintf(self::API_URL, $limit);
 
-        $json = json_decode(getContents($url, ['apikey: ' . self::API_KEY]));
+        $json = json_decode($this->fetcher->getContents($url, ['apikey: ' . self::API_KEY]));
         if (property_exists($json, 'error')) {
             returnServerError($json->message);
         }

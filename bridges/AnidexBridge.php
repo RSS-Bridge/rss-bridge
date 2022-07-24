@@ -143,7 +143,7 @@ class AnidexBridge extends BridgeAbstract
         $opt[CURLOPT_SSL_VERIFYPEER] = 0;
 
         // Retrieve torrent listing from search results, which does not contain torrent description
-        $html = getSimpleHTMLDOM($search_url, $headers, $opt);
+        $html = $this->fetcher->getSimpleHTMLDOM($search_url, $headers, $opt);
         $links = $html->find('a');
         $results = [];
         foreach ($links as $link) {
@@ -171,7 +171,7 @@ class AnidexBridge extends BridgeAbstract
                 $item_fetch_uri = self::ALTERNATE_URI . 'torrent/' . $torrent_id;
 
                 //Retrieve full description from torrent page (cached for 24 hours: 86400 seconds)
-                if ($item_html = getSimpleHTMLDOMCached($item_fetch_uri, 86400, $headers, $opt)) {
+                if ($item_html = $this->fetcher->getSimpleHTMLDOMCached($item_fetch_uri, 86400, $headers, $opt)) {
                     //Retrieve data from page contents
                     $item_title = str_replace(' (Torrent) - AniDex ', '', $item_html->find('title', 0)->plaintext);
                     $item_desc = $item_html->find('div.panel-body', 0);

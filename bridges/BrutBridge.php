@@ -44,7 +44,7 @@ class BrutBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         $results = $html->find('div.results', 0);
 
@@ -52,7 +52,7 @@ class BrutBridge extends BridgeAbstract
             $item = [];
 
             $videoPath = self::URI . $li->children(0)->href;
-            $videoPageHtml = getSimpleHTMLDOMCached($videoPath, 3600);
+            $videoPageHtml = $this->fetcher->getSimpleHTMLDOMCached($videoPath, 3600);
 
             $json = $this->extractJson($videoPageHtml);
             $id = array_keys((array) $json->media->index)[0];

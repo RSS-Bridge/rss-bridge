@@ -9,7 +9,7 @@ class TheHackerNewsBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
         $limit = 0;
 
         foreach ($html->find('div.body-post') as $element) {
@@ -41,7 +41,7 @@ class TheHackerNewsBridge extends BridgeAbstract
                     $article_thumbnail = [];
                 }
 
-                if ($article = getSimpleHTMLDOMCached($article_url)) {
+                if ($article = $this->fetcher->getSimpleHTMLDOMCached($article_url)) {
                     //Article body
                     $contents = $article->find('div.articlebody', 0)->innertext;
                     $contents = stripRecursiveHtmlSection($contents, 'div', '<div class="ad_');

@@ -375,7 +375,7 @@ class LeBonCoinBridge extends BridgeAbstract
 
         ];
 
-        $content = getContents($url, $header, $opts);
+        $content = $this->fetcher->getContents($url, $header, $opts);
 
         $json = json_decode($content);
 

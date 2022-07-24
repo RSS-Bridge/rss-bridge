@@ -32,7 +32,7 @@ class FunkBridge extends BridgeAbstract
                     $url .= '?size=' . $this->getInput('max');
                 }
 
-                $jsonString = getContents($url) or returnServerError('No contents received!');
+                $jsonString = $this->fetcher->getContents($url) or returnServerError('No contents received!');
                 $json = json_decode($jsonString, true);
 
                 foreach ($json['list'] as $element) {
