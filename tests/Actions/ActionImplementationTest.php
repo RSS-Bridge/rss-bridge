@@ -59,6 +59,11 @@ class ActionImplementationTest extends TestCase
     {
         $this->class = '\\' . basename($path, '.php');
         $this->assertTrue(class_exists($this->class), 'class ' . $this->class . ' doesn\'t exist');
-        $this->obj = new $this->class();
+
+        if (is_a($this->class, \ConnectivityAction::class, true)) {
+            $this->obj = new $this->class(new \Fetcher());
+        } else {
+            $this->obj = new $this->class();
+        }
     }
 }

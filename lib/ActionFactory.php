@@ -32,6 +32,11 @@ class ActionFactory
             throw new \Exception('Invalid action');
         }
         $className = '\\' . $name;
+
+        if (is_a($className, \ConnectivityAction::class, true)) {
+            return new $className(new \Fetcher());
+        }
+
         return new $className();
     }
 }
