@@ -202,9 +202,30 @@ class YoutubeBridge extends BridgeAbstract
         $defaultBRText = DEFAULT_BR_TEXT;
         $defaultSpanText = DEFAULT_SPAN_TEXT;
         if ($cached) {
-            return $this->fetcher->getSimpleHTMLDOMCached($url, 86400, $header, $opts, $lowercase, $forceTagsClosed, $target_charset, $stripRN, $defaultBRText, $defaultSpanText);
+            return $this->fetcher->getSimpleHTMLDOMCached(
+                $url,
+                86400,
+                $header,
+                $opts,
+                $lowercase,
+                $forceTagsClosed,
+                $target_charset,
+                $stripRN,
+                $defaultBRText,
+                $defaultSpanText
+            );
         }
-        return $this->fetcher->getSimpleHTMLDOM($url, $header, $opts, $lowercase, $forceTagsClosed, $target_charset, $stripRN, $defaultBRText, $defaultSpanText);
+        return $this->fetcher->getSimpleHTMLDOM(
+            $url,
+            $header,
+            $opts,
+            $lowercase,
+            $forceTagsClosed,
+            $target_charset,
+            $stripRN,
+            $defaultBRText,
+            $defaultSpanText
+        );
     }
 
     private function getJSONData($html)
