@@ -28,7 +28,7 @@ final class WordPressPluginUpdateBridge extends BridgeAbstract
             $slug = str_replace(['/'], '', $input);
         }
 
-        $pluginData = self::fetchPluginData($slug);
+        $pluginData = $this->fetchPluginData($slug);
 
         if ($pluginData->versions === []) {
             throw new \Exception('This plugin does not have versioning data');
@@ -56,7 +56,7 @@ final class WordPressPluginUpdateBridge extends BridgeAbstract
      * https://codex.wordpress.org/WordPress.org_API#Plugins
      * https://wordpress.org/support/topic/using-the-wordpress-org-api/
      */
-    private static function fetchPluginData(string $slug): \stdClass
+    private function fetchPluginData(string $slug): \stdClass
     {
         $api = 'https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&request[slug]=%s';
         return json_decode(getContents(sprintf($api, $slug)));
