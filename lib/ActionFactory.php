@@ -32,6 +32,6 @@ class ActionFactory
             throw new \Exception('Invalid action');
         }
         $className = '\\' . $name;
-        return new $className();
+        return \Container::instance()->get($className);
     }
 }

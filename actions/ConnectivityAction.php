@@ -25,10 +25,12 @@
 class ConnectivityAction implements ActionInterface
 {
     private BridgeFactory $bridgeFactory;
+    private Fetcher $fetcher;
 
-    public function __construct()
+    public function __construct(Fetcher $fetcher)
     {
         $this->bridgeFactory = new \BridgeFactory();
+        $this->fetcher = $fetcher;
     }
 
     public function execute(array $request)
@@ -93,7 +95,7 @@ class ConnectivityAction implements ActionInterface
         ];
 
         try {
-            $reply = getContents($bridge::URI, [], $curl_opts, true);
+            $reply = $this->fetcher->getContents($bridge::URI, [], $curl_opts, true);
 
             if ($reply['code'] === 200) {
                 $retVal['successful'] = true;
