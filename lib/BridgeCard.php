@@ -302,10 +302,8 @@ This bridge is not fetching its content through a secure connection</div>';
      * @param bool $isActive Indicates if the bridge is active or not
      * @return string The bridge card
      */
-    public static function displayBridgeCard($bridgeClassName, $formats, $isActive = true)
+    public static function displayBridgeCard(BridgeFactory $bridgeFactory, $bridgeClassName, $formats, $isActive = true)
     {
-        $bridgeFactory = new \BridgeFactory();
-
         $bridge = $bridgeFactory->create($bridgeClassName);
 
         if ($bridge == false) {

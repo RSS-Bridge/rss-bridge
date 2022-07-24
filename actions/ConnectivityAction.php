@@ -29,7 +29,7 @@ class ConnectivityAction implements ActionInterface
 
     public function __construct(Fetcher $fetcher)
     {
-        $this->bridgeFactory = new \BridgeFactory();
+        $this->bridgeFactory = new \BridgeFactory($fetcher);
         $this->fetcher = $fetcher;
     }
 

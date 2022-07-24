@@ -126,6 +126,13 @@ abstract class BridgeAbstract implements BridgeInterface
      */
     protected $queriedContext = '';
 
+    protected Fetcher $fetcher;
+
+    public function __construct(Fetcher $fetcher)
+    {
+        $this->fetcher = $fetcher;
+    }
+
     /** {@inheritdoc} */
     public function getItems()
     {

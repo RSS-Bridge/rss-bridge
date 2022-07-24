@@ -14,13 +14,18 @@
 
 class DisplayAction implements ActionInterface
 {
+    private BridgeFactory $bridgeFactory;
+
+    public function __construct(Fetcher $fetcher)
+    {
+        $this->bridgeFactory = new \BridgeFactory($fetcher);
+    }
+
     public function execute(array $request)
     {
-        $bridgeFactory = new \BridgeFactory();
-
         $bridgeClassName = null;
         if (isset($request['bridge'])) {
-            $bridgeClassName = $bridgeFactory->sanitizeBridgeName($request['bridge']);
+            $bridgeClassName = $this->bridgeFactory->sanitizeBridgeName($request['bridge']);
         }
 
         if ($bridgeClassName === null) {
@@ -31,13 +36,13 @@ class DisplayAction implements ActionInterface
             or returnClientError('You must specify a format!');
 
         // whitelist control
-        if (!$bridgeFactory->isWhitelisted($bridgeClassName)) {
+        if (!$this->bridgeFactory->isWhitelisted($bridgeClassName)) {
             throw new \Exception('This bridge is not whitelisted', 401);
             die;
         }
 
         // Data retrieval
-        $bridge = $bridgeFactory->create($bridgeClassName);
+        $bridge = $this->bridgeFactory->create($bridgeClassName);
         $bridge->loadConfiguration();
 
         $noproxy = array_key_exists('_noproxy', $request)

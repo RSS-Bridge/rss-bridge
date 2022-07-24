@@ -14,16 +14,21 @@
 
 class ListAction implements ActionInterface
 {
+    private BridgeFactory $bridgeFactory;
+
+    public function __construct(Fetcher $fetcher)
+    {
+        $this->bridgeFactory = new \BridgeFactory($fetcher);
+    }
+
     public function execute(array $request)
     {
         $list = new StdClass();
         $list->bridges = [];
         $list->total = 0;
 
-        $bridgeFactory = new \BridgeFactory();
-
-        foreach ($bridgeFactory->getBridgeClassNames() as $bridgeClassName) {
-            $bridge = $bridgeFactory->create($bridgeClassName);
+        foreach ($this->bridgeFactory->getBridgeClassNames() as $bridgeClassName) {
+            $bridge = $this->bridgeFactory->create($bridgeClassName);
 
             if ($bridge === false) { // Broken bridge, show as inactive
                 $list->bridges[$bridgeClassName] = [
@@ -33,7 +38,7 @@ class ListAction implements ActionInterface
                 continue;
             }
 
-            $status = $bridgeFactory->isWhitelisted($bridgeClassName) ? 'active' : 'inactive';
+            $status = $this->bridgeFactory->isWhitelisted($bridgeClassName) ? 'active' : 'inactive';
 
             $list->bridges[$bridgeClassName] = [
                 'status' => $status,

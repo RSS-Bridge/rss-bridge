@@ -14,6 +14,13 @@
 
 class DetectAction implements ActionInterface
 {
+    private BridgeFactory $bridgeFactory;
+
+    public function __construct(Fetcher $fetcher)
+    {
+        $this->bridgeFactory = new \BridgeFactory($fetcher);
+    }
+
     public function execute(array $request)
     {
         $targetURL = $request['url']
@@ -22,14 +29,12 @@ class DetectAction implements ActionInterface
         $format = $request['format']
             or returnClientError('You must specify a format!');
 
-        $bridgeFactory = new \BridgeFactory();
-
-        foreach ($bridgeFactory->getBridgeClassNames() as $bridgeClassName) {
-            if (!$bridgeFactory->isWhitelisted($bridgeClassName)) {
+        foreach ($this->bridgeFactory->getBridgeClassNames() as $bridgeClassName) {
+            if (!$this->bridgeFactory->isWhitelisted($bridgeClassName)) {
                 continue;
             }
 
-            $bridge = $bridgeFactory->create($bridgeClassName);
+            $bridge = $this->bridgeFactory->create($bridgeClassName);
 
             if ($bridge === false) {
                 continue;

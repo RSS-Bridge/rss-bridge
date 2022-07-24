@@ -16,8 +16,11 @@ class ActionFactory
 {
     private $folder;
 
-    public function __construct(string $folder = PATH_LIB_ACTIONS)
+    private Fetcher $fetcher;
+
+    public function __construct(Fetcher $fetcher, string $folder = PATH_LIB_ACTIONS)
     {
+        $this->fetcher = $fetcher;
         $this->folder = $folder;
     }
 
@@ -32,11 +35,6 @@ class ActionFactory
             throw new \Exception('Invalid action');
         }
         $className = '\\' . $name;
-
-        if (is_a($className, \ConnectivityAction::class, true)) {
-            return new $className(new \Fetcher());
-        }
-
-        return new $className();
+        return new $className($this->fetcher);
     }
 }

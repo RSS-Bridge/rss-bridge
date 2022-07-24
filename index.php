@@ -24,7 +24,7 @@ try {
         }
     }
 
-    $actionFactory = new ActionFactory();
+    $actionFactory = new ActionFactory(new Fetcher());
 
     if (array_key_exists('action', $request)) {
         $action = $actionFactory->create($request['action']);
@@ -32,7 +32,8 @@ try {
         $action->execute($request);
     } else {
         $showInactive = filter_input(INPUT_GET, 'show_inactive', FILTER_VALIDATE_BOOLEAN);
-        echo BridgeList::create($showInactive);
+        $bridgeFactory = new BridgeFactory(new Fetcher());
+        echo BridgeList::create($bridgeFactory, $showInactive);
     }
 } catch (\Throwable $e) {
     error_log($e);

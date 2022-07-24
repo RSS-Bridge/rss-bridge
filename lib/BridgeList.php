@@ -59,13 +59,12 @@ EOD;
      * @param int $totalActiveBridges (ref) Returns the number of active bridges.
      * @return string The document body for all bridge cards.
      */
-    private static function getBridges($showInactive, &$totalBridges, &$totalActiveBridges)
+    private static function getBridges(BridgeFactory $bridgeFactory, $showInactive, &$totalBridges, &$totalActiveBridges)
     {
         $body = '';
         $totalActiveBridges = 0;
         $inactiveBridges = '';
 
-        $bridgeFactory = new \BridgeFactory();
         $bridgeClassNames = $bridgeFactory->getBridgeClassNames();
 
         $formatFactory = new FormatFactory();
@@ -75,11 +74,11 @@ EOD;
 
         foreach ($bridgeClassNames as $bridgeClassName) {
             if ($bridgeFactory->isWhitelisted($bridgeClassName)) {
-                $body .= BridgeCard::displayBridgeCard($bridgeClassName, $formats);
+                $body .= BridgeCard::displayBridgeCard($bridgeFactory, $bridgeClassName, $formats);
                 $totalActiveBridges++;
             } elseif ($showInactive) {
                 // inactive bridges
-                $inactiveBridges .= BridgeCard::displayBridgeCard($bridgeClassName, $formats, false) . PHP_EOL;
+                $inactiveBridges .= BridgeCard::displayBridgeCard($bridgeFactory, $bridgeClassName, $formats, false) . PHP_EOL;
             }
         }
 
@@ -192,7 +191,7 @@ EOD;
      * if enabled.
      * @return string The home page
      */
-    public static function create($showInactive = true)
+    public static function create(BridgeFactory $bridgeFactory, $showInactive = true)
     {
         $totalBridges = 0;
         $totalActiveBridges = 0;
@@ -202,7 +201,7 @@ EOD;
         . '<body onload="search()">'
         . BridgeList::getHeader()
         . BridgeList::getSearchbar()
-        . BridgeList::getBridges($showInactive, $totalBridges, $totalActiveBridges)
+        . BridgeList::getBridges($bridgeFactory, $showInactive, $totalBridges, $totalActiveBridges)
         . BridgeList::getFooter($totalBridges, $totalActiveBridges, $showInactive)
         . '</body></html>';
     }
