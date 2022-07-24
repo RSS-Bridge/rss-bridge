@@ -1,5 +1,9 @@
-# getInput
-The `getInput` function is used to receive a value for a parameter, specified in `const PARAMETERS`
+# BridgeAbstract
+
+These helpers are available inside all child classes of `BridgeAbstract` (i.e. bridges). You can access them on `$this`.
+
+## getInput
+The `BridgeAbstract::getInput` method is used to receive a value for a parameter, specified in `const PARAMETERS`
 
 ```PHP
 $this->getInput('your input name here');
@@ -7,8 +11,13 @@ $this->getInput('your input name here');
 
 `getInput` will either return the value for your parameter or `null` if the parameter is unknown or not specified.
 
-# getContents
-The `getContents` function uses [cURL](https://secure.php.net/manual/en/book.curl.php) to acquire data from the specified URI while respecting the various settings defined at a global level by RSS-Bridge (i.e., proxy host, user agent, etc.). This function accepts a few parameters:
+
+# Fetcher
+
+These helpers are part of a `Fetcher` instance. All child classes inheriting from `BridgeAbstract` (i.e. bridges) have `Fetcher` available as `$this->fetcher` property.
+
+## getContents
+The `Fetcher::getContents` method uses [cURL](https://secure.php.net/manual/en/book.curl.php) to acquire data from the specified URI while respecting the various settings defined at a global level by RSS-Bridge (i.e., proxy host, user agent, etc.). This method accepts a few parameters:
 
 | Parameter | Type   | Optional   | Description
 | --------- | ------ | ---------- | ----------
@@ -19,25 +28,30 @@ The `getContents` function uses [cURL](https://secure.php.net/manual/en/book.cur
 ```PHP
 $header = array('Content-type:text/plain', 'Content-length: 100');
 $opts = array(CURLOPT_POST => 1);
-$html = getContents($url, $header, $opts);
+$html = $this->fetcher->getContents($url, $header, $opts);
 ```
 
-# getSimpleHTMLDOM
-The `getSimpleHTMLDOM` function is a wrapper for the [simple_html_dom](http://simplehtmldom.sourceforge.net/) [file_get_html](http://simplehtmldom.sourceforge.net/manual_api.htm#api) function in order to provide context by design.
+## getSimpleHTMLDOM
+The `Fetcher::getSimpleHTMLDOM` method of is a wrapper for the [simple_html_dom](http://simplehtmldom.sourceforge.net/) [file_get_html](http://simplehtmldom.sourceforge.net/manual_api.htm#api) function in order to provide context by design.
 
 ```PHP
-$html = getSimpleHTMLDOM('your URI');
+$html = $this->fetcher->getSimpleHTMLDOM('your URI');
 ```
-# getSimpleHTMLDOMCached
-The `getSimpleHTMLDOMCached` function does the same as the [`getSimpleHTMLDOM`](#getsimplehtmldom) function, except that the content received for the given URI is stored in a cache and loaded from cache on the next request if the specified cache duration was not reached. Use this function for data that is very unlikely to change between consecutive requests to **RSS-Bridge**. This function allows to specify the cache duration with the second parameter (default is 24 hours / 86400 seconds).
+
+## getSimpleHTMLDOMCached
+The `Fetcher::getSimpleHTMLDOMCached` method of does the same as the [`getSimpleHTMLDOM`](#getsimplehtmldom) method, except that the content received for the given URI is stored in a cache and loaded from cache on the next request if the specified cache duration was not reached. Use this method for data that is very unlikely to change between consecutive requests to **RSS-Bridge**. This method allows to specify the cache duration with the second parameter (default is 24 hours / 86400 seconds).
 
 ```PHP
-$html = getSimpleHTMLDOMCached('your URI', 86400); // Duration 24h
+$html = $this->fetcher->getSimpleHTMLDOMCached('your URI', 86400); // Duration 24h
 ```
 
 **Notice:** Due to the current implementation a value greater than 86400 seconds (24 hours) will not work as the cache is purged every 24 hours automatically.
 
-# returnError
+# Global functions
+
+These functions can be used anywhere.
+
+## returnError
 **Notice:** Whenever possible make use of [`returnClientError`](#returnclienterror) or [`returnServerError`](#returnservererror)
 
 The `returnError` function aborts execution of the current bridge and returns the given error message with the provided error number:
@@ -48,7 +62,7 @@ returnError('Your error message', 404);
 
 Check the [list of error codes](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes) for applicable error numbers.
 
-# returnClientError
+## returnClientError
 The `returnClientError` function aborts execution of the current bridge and returns the given error message with error code **400**:
 
 ```PHP
@@ -57,7 +71,7 @@ returnClientError('Your error message')
 
 Use this function when the user provided invalid parameter or a required parameter is missing.
 
-# returnServerError
+## returnServerError
 The `returnServerError` function aborts execution of the current bridge and returns the given error message with error code **500**:
 
 ```PHP
@@ -66,7 +80,7 @@ returnServerError('Your error message')
 
 Use this function when a problem occurs that has nothing to do with the parameters provided by the user. (like: Host service gone missing, empty data received, etc...)
 
-# defaultLinkTo
+## defaultLinkTo
 Automatically replaces any relative URL in a given string or DOM object (i.e. the one returned by [getSimpleHTMLDOM](#getsimplehtmldom)) with an absolute URL.
 
 ```php
@@ -91,7 +105,7 @@ $html = defaultLinkTo($html, $this->getURI()); // Using bridge URL
 // <img src="https://www.github.com/rss-bridge/rss-bridge/blob/master/README.md">
 ```
 
-# backgroundToImg
+## backgroundToImg
 Replaces tags with styles of `backgroud-image` by `<img />` tags.
 
 ```php
@@ -100,7 +114,7 @@ backgroundToImg(mixed $htmlContent) : object
 
 Returns a DOM object (even if provided a string).
 
-# extractFromDelimiters
+## extractFromDelimiters
 Extract the first part of a string matching the specified start and end delimiters.
 ```php
 function extractFromDelimiters(string $string, string $start, string $end) : mixed
@@ -120,7 +134,7 @@ $extracted = extractFromDelimiters($string, $start, $end);
 // 'John Doe'
 ```
 
-# stripWithDelimiters
+## stripWithDelimiters
 Remove one or more part(s) of a string using a start and end delmiters.
 It is the inverse of `extractFromDelimiters`.
 
@@ -142,7 +156,7 @@ $cleaned = stripWithDelimiters($string, $start, $end);
 // 'foobar'
 ```
 
-# stripRecursiveHTMLSection
+## stripRecursiveHTMLSection
 Remove HTML sections containing one or more sections using the same HTML tag.
 
 ```php
@@ -161,7 +175,7 @@ $cleaned = stripRecursiveHTMLSection($string, $tag_name, $tag_start);
 // 'foobar'
 ```
 
-# markdownToHtml
+## markdownToHtml
 Converts markdown input to HTML using [Parsedown](https://parsedown.org/).
 
 ```php
