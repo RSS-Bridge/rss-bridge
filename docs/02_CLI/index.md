@@ -27,9 +27,9 @@ This parameter specifies the format in which RSS-Bridge returns the contents. RS
 
 RSS-Bridge supports optional parameters. These parameters are only valid if the options have been enabled in the index.php script.
 
-### _noproxy
+### \_noproxy
 
-This parameter is only available if a proxy server has been specified via `PROXY_URL` and 'PROXY_BYBRIDGE' has been enabled. This is a Boolean parameter that can be set to '1' (true) or '0' (false).
+This parameter is only available if a proxy server has been specified via `proxy.url` and `proxy.by_bridge` has been enabled. This is a Boolean parameter that can be set to `true` or `false`.
 
 ## Bridge parameters
 
