@@ -139,7 +139,7 @@ class PanneauPocketBridge extends BridgeAbstract
     /**
      * Produce self::CITIES array
      */
-    private static function getCities()
+    private function getCities()
     {
         $cities = json_decode(getContents(self::URI . '/public-api/city'), true);
 
