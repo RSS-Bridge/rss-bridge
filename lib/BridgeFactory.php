@@ -44,7 +44,8 @@ final class BridgeFactory
      */
     public function create(string $name): BridgeInterface
     {
-        return new $name();
+        $dic = Container::instance();
+        return $dic->get($name);
     }
 
     /**

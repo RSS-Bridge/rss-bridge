@@ -232,7 +232,7 @@ class BridgeImplementationTest extends TestCase
     {
         $this->class = '\\' . basename($path, '.php');
         $this->assertTrue(class_exists($this->class), 'class ' . $this->class . ' doesn\'t exist');
-        $this->obj = new $this->class();
+        $this->obj = \Container::instance()->get($this->class);
     }
 
     private function checkUrl($url)
