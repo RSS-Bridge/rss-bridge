@@ -19,7 +19,7 @@ class TestBridge extends BridgeAbstract {
 	const CACHE_TIMEOUT = 3600;
 
 	public function collectData(){
-		$html = getSimpleHTMLDOM('https://github.com/rss-bridge/rss-bridge')
+		$html = $this->fetcher->getSimpleHTMLDOM('https://github.com/rss-bridge/rss-bridge')
 			or returnServerError('No contents received!');
 	}
 }
