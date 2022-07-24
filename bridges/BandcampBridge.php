@@ -118,7 +118,7 @@ class BandcampBridge extends BridgeAbstract
                 CURLOPT_CUSTOMREQUEST => 'POST',
                 CURLOPT_POSTFIELDS => $data
                 ];
-                $content = getContents($url, $header, $opts);
+                $content = $this->fetcher->getContents($url, $header, $opts);
 
                 $json = json_decode($content);
 
@@ -155,7 +155,7 @@ class BandcampBridge extends BridgeAbstract
             case 'By band':
             case 'By label':
             case 'By album':
-                $html = getSimpleHTMLDOMCached($this->getURI(), 86400);
+                $html = $this->fetcher->getSimpleHTMLDOMCached($this->getURI(), 86400);
 
                 if ($html->find('meta[name=title]', 0)) {
                     $this->feedName = $html->find('meta[name=title]', 0)->content;
@@ -313,7 +313,7 @@ class BandcampBridge extends BridgeAbstract
     private function apiGet($endpoint, $query_data)
     {
         $url = self::URI . 'api/' . $endpoint . '?' . http_build_query($query_data);
-        $data = json_decode(getContents($url));
+        $data = json_decode($this->fetcher->getContents($url));
         return $data;
     }
 

@@ -53,7 +53,7 @@ class SchweinfurtBuergerinformationenBridge extends BridgeAbstract
     private function getArticleIDsFromPage($page)
     {
         $url = sprintf(self::URI . '?art_pager=%d', $page);
-        $html = getSimpleHTMLDOMCached($url, self::INDEX_CACHE_TIMEOUT)
+        $html = $this->fetcher->getSimpleHTMLDOMCached($url, self::INDEX_CACHE_TIMEOUT)
             or returnServerError('Could not retrieve ' . $url);
 
         $articles = $html->find('div.artikel-uebersicht');
@@ -74,7 +74,7 @@ class SchweinfurtBuergerinformationenBridge extends BridgeAbstract
     private function generateItemFromArticle($id)
     {
         $url = sprintf(self::ARTICLE_URI, $id);
-        $html = getSimpleHTMLDOMCached($url, self::ARTICLE_CACHE_TIMEOUT)
+        $html = $this->fetcher->getSimpleHTMLDOMCached($url, self::ARTICLE_CACHE_TIMEOUT)
             or returnServerError('Could not retrieve ' . $url);
 
         $div = $html->find('div#artikel-detail', 0);

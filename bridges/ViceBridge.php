@@ -32,7 +32,7 @@ class ViceBridge extends FeedExpander
     {
         $item = parent::parseItem($newsItem);
         // $articlePage gets the entire page's contents
-        $articlePage = getSimpleHTMLDOM($newsItem->link);
+        $articlePage = $this->fetcher->getSimpleHTMLDOM($newsItem->link);
         // text and embedded content
         $article = $article . $articlePage->find('.article__body', 0);
         $item['content'] = $article;

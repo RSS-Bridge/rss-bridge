@@ -109,7 +109,7 @@ class UnogsBridge extends BridgeAbstract
             'referrer: http://unogs.com'
         ];
 
-        $raw = getContents($url, $header);
+        $raw = $this->fetcher->getContents($url, $header);
         return json_decode($raw, true);
     }
 

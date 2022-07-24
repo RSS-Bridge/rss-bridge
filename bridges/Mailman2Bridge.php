@@ -34,7 +34,7 @@ class Mailman2Bridge extends BridgeAbstract
         $url = $this->getInput('url');
         $limit = $this->getInput('limit');
 
-        $html = defaultLinkTo(getSimpleHTMLDOMCached($url, 1800), $url);
+        $html = defaultLinkTo($this->fetcher->getSimpleHTMLDOMCached($url, 1800), $url);
 
         // Fetch archive urls from the frontpage
         $archives = [];
@@ -54,14 +54,14 @@ class Mailman2Bridge extends BridgeAbstract
 
             // Fetch urls to mails
             $parent = pathinfo($archive['bydate'], PATHINFO_DIRNAME) . '/';
-            $html = defaultLinkTo(getSimpleHTMLDOMCached($archive['bydate'], 1800), $parent);
+            $html = defaultLinkTo($this->fetcher->getSimpleHTMLDOMCached($archive['bydate'], 1800), $parent);
             $links = array_map(function ($val) {
                 return $val->getAttribute('href');
             }, $html->find('ul', 1)->find('li a[href$=".html"]'));
             $mailUrls = array_reverse($links);
 
             // Parse mbox
-            $data = getContents($archive['download']);
+            $data = $this->fetcher->getContents($archive['download']);
             if (str_ends_with($archive['download'], '.gz')) {
                 $data = \gzdecode($data, (1024 ** 2) * 25); // 25M
                 if ($data === false) {

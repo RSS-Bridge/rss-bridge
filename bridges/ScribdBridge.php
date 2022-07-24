@@ -23,7 +23,7 @@ class ScribdBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         $this->feedName = $html->find('div.header', 0)->plaintext;
 
@@ -35,7 +35,7 @@ class ScribdBridge extends BridgeAbstract
             $item['author'] = $li->find('span.uploader', 0)->plaintext;
             $item['uid'] = $li->find('a', 0)->href;
 
-            $pageHtml = getSimpleHTMLDOMCached($item['uri'], 3600);
+            $pageHtml = $this->fetcher->getSimpleHTMLDOMCached($item['uri'], 3600);
 
             $image = $pageHtml->find('meta[property="og:image"]', 0)->content;
             $description = $pageHtml->find('meta[property="og:description"]', 0)->content;

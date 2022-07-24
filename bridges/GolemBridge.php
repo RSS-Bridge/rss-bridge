@@ -70,7 +70,7 @@ class GolemBridge extends FeedExpander
         $uri = $item['uri'];
 
         while ($uri) {
-            $articlePage = getSimpleHTMLDOMCached($uri, static::CACHE_TIMEOUT, static::HEADERS);
+            $articlePage = $this->fetcher->getSimpleHTMLDOMCached($uri, static::CACHE_TIMEOUT, static::HEADERS);
 
             // URI without RSS feed reference
             $item['uri'] = $articlePage->find('head meta[name="twitter:url"]', 0)->content;

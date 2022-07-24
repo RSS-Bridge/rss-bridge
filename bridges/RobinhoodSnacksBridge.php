@@ -27,7 +27,7 @@ class RobinhoodSnacksBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI, self::FAKE_HEADERS);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI, self::FAKE_HEADERS);
         $html = defaultLinkTo($html, $this->getURI());
 
         $elements = $html->find('#__next > div > div > div > div > a');
@@ -60,7 +60,7 @@ class RobinhoodSnacksBridge extends BridgeAbstract
 
     private function getArticleContent($uri)
     {
-        $article_html = getSimpleHTMLDOMCached($uri, self::CACHE_TIMEOUT, self::FAKE_HEADERS);
+        $article_html = $this->fetcher->getSimpleHTMLDOMCached($uri, self::CACHE_TIMEOUT, self::FAKE_HEADERS);
         if (!$article_html) {
             return '';
         }

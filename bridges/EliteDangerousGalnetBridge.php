@@ -27,7 +27,7 @@ class EliteDangerousGalnetBridge extends BridgeAbstract
         $language = $this->getInput('language');
         $url = 'https://community.elitedangerous.com/';
         $url = $url . $language . '/galnet';
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
 
         foreach ($html->find('div.article') as $element) {
             $item = [];

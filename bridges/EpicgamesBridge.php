@@ -53,8 +53,8 @@ class EpicgamesBridge extends BridgeAbstract
         // Example: https://store-content.ak.epicgames.com/api/ru/content/blog?limit=25
         $urlBlog = $api . $this->getInput('language') . '/content/blog?limit=' . $this->getInput('postcount');
 
-        $dataSticky = getContents($urlSticky);
-        $dataBlog = getContents($urlBlog);
+        $dataSticky = $this->fetcher->getContents($urlSticky);
+        $dataBlog = $this->fetcher->getContents($urlBlog);
 
         // Merge data
         $decodedData = array_merge(json_decode($dataSticky), json_decode($dataBlog));

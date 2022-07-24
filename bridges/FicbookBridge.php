@@ -82,7 +82,7 @@ class FicbookBridge extends BridgeAbstract
     {
         $header = ['Accept-Language: en-US'];
 
-        $html = getSimpleHTMLDOM($this->getURI(), $header);
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI(), $header);
 
         $html = defaultLinkTo($html, self::URI);
 
@@ -135,7 +135,7 @@ class FicbookBridge extends BridgeAbstract
             ];
 
             if ($this->getInput('include_contents')) {
-                $content = getSimpleHTMLDOMCached($item['uri']);
+                $content = $this->fetcher->getSimpleHTMLDOMCached($item['uri']);
                 $item['content'] = $content->find('#content', 0);
             }
 

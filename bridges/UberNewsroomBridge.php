@@ -129,13 +129,13 @@ class UberNewsroomBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $json = getContents(self::URI_API_DATA . $this->getInput('region'));
+        $json = $this->fetcher->getContents(self::URI_API_DATA . $this->getInput('region'));
         $data = json_decode($json);
 
         $this->regionName = $data->region->name;
 
         foreach ($data->articles as $article) {
-            $json = getContents(self::URI_API_POST . $article->id);
+            $json = $this->fetcher->getContents(self::URI_API_POST . $article->id);
             $post = json_decode($json);
 
             $item = [];

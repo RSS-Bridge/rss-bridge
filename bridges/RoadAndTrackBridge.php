@@ -10,7 +10,7 @@ class RoadAndTrackBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $page = getSimpleHTMLDOM(self::URI);
+        $page = $this->fetcher->getSimpleHTMLDOM(self::URI);
 
         $limit = 5;
 
@@ -41,7 +41,7 @@ class RoadAndTrackBridge extends BridgeAbstract
     private function fetchArticle($articleLink)
     {
         $articleLink = self::URI . $articleLink;
-        $article = getSimpleHTMLDOM($articleLink);
+        $article = $this->fetcher->getSimpleHTMLDOM($articleLink);
         $item = [];
 
         $title = $article->find('.content-hed', 0);
@@ -66,6 +66,6 @@ class RoadAndTrackBridge extends BridgeAbstract
 
     private function getArticleContent($article)
     {
-        return getContents($article->contentUrl);
+        return $this->fetcher->getContents($article->contentUrl);
     }
 }

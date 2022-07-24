@@ -89,7 +89,7 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract
 
     private function collectDataBySeries()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         // content is an unstructured pile of divs, ugly to parse
         $cols = $html->find('div#main_content div.row > div.text');
@@ -157,10 +157,10 @@ class BakaUpdatesMangaReleasesBridge extends BridgeAbstract
         $this -> feedName = 'Releases';
         $list = [];
 
-        $releasesHTML = getSimpleHTMLDOM(self::RELEASES_URL);
+        $releasesHTML = $this->fetcher->getSimpleHTMLDOM(self::RELEASES_URL);
 
         $list_id = $this -> getInput('list_id');
-        $listHTML = getSimpleHTMLDOM('https://www.mangaupdates.com/mylist.html?id=' . $list_id);
+        $listHTML = $this->fetcher->getSimpleHTMLDOM('https://www.mangaupdates.com/mylist.html?id=' . $list_id);
 
         //get ids of the manga that the user follows,
         $parts = $listHTML -> find('table#ptable tr > td.pl');

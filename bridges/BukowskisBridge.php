@@ -188,7 +188,7 @@ class BukowskisBridge extends BridgeAbstract
             $url = $url . '/sort/' . $sort_order;
         }
 
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
 
         $this->title = htmlspecialchars_decode($html->find('title', 0)->innertext);
 

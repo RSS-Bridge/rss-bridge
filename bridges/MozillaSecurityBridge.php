@@ -11,7 +11,7 @@ class MozillaSecurityBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
 
         $html = defaultLinkTo($html, self::WEBROOT);
 

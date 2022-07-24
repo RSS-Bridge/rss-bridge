@@ -86,7 +86,7 @@ class IndiegogoBridge extends BridgeAbstract
 
         $header = ['Content-type: application/json'];
         $opts = [CURLOPT_POSTFIELDS => json_encode($data_array)];
-        $html = getContents($url, $header, $opts);
+        $html = $this->fetcher->getContents($url, $header, $opts);
         $html_response = json_decode($html, true);
 
         foreach ($html_response['response']['discoverables'] as $obj) {

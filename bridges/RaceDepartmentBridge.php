@@ -17,7 +17,7 @@ class RaceDepartmentBridge extends FeedExpander
         $item = parent::parseRss2Item($feedItem);
 
         //fetch page
-        $articlePage = getSimpleHTMLDOMCached($feedItem->link);
+        $articlePage = $this->fetcher->getSimpleHTMLDOMCached($feedItem->link);
 
         $coverImage = $articlePage->find('img.js-articleCoverImage', 0);
         #relative url -> absolute url

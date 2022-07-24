@@ -12,7 +12,7 @@ class GizmodoBridge extends FeedExpander
     {
         $item = parent::parseItem($item);
 
-        $html = getSimpleHTMLDOMCached($item['uri']);
+        $html = $this->fetcher->getSimpleHTMLDOMCached($item['uri']);
 
         $html = defaultLinkTo($html, $this->getURI());
         $this->stripTags($html);

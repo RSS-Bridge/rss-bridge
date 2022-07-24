@@ -545,7 +545,7 @@ QUOTE;
     private function makeApiCall($api, $authHeaders, $params)
     {
         $uri = self::API_URI . $api . '?' . http_build_query($params);
-        $result = getContents($uri, $authHeaders, [], false);
+        $result = $this->fetcher->getContents($uri, $authHeaders, [], false);
         $data = json_decode($result);
         return $data;
     }

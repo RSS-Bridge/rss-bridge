@@ -85,7 +85,7 @@ class BugzillaBridge extends BridgeAbstract
     protected function getTitle($url)
     {
         // Only request the summary for a faster request
-        $json = json_decode(getContents($url . '?include_fields=summary'), true);
+        $json = json_decode($this->fetcher->getContents($url . '?include_fields=summary'), true);
         $this->title = 'Bug ' . $this->bugid . ' - ' .
                      $json['bugs'][0]['summary'] . ' - ' .
                      // Remove https://
@@ -94,7 +94,7 @@ class BugzillaBridge extends BridgeAbstract
 
     protected function collectComments($url)
     {
-        $json = json_decode(getContents($url), true);
+        $json = json_decode($this->fetcher->getContents($url), true);
 
         // Array of comments is here
         if (!isset($json['bugs'][$this->bugid]['comments'])) {
@@ -127,7 +127,7 @@ class BugzillaBridge extends BridgeAbstract
 
     protected function collectUpdates($url)
     {
-        $json = json_decode(getContents($url), true);
+        $json = json_decode($this->fetcher->getContents($url), true);
 
         // Array of changesets which contain an array of changes
         if (!isset($json['bugs']['0']['history'])) {
@@ -170,7 +170,7 @@ class BugzillaBridge extends BridgeAbstract
 
         $url = $this->instance . '/rest/user/' . $user . '?include_fields=real_name';
         try {
-            $json = json_decode(getContents($url), true);
+            $json = json_decode($this->fetcher->getContents($url), true);
             if (isset($json['error']) and $json['error']) {
                 throw new Exception();
             }

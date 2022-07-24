@@ -91,18 +91,18 @@ class FlickrBridge extends BridgeAbstract
         switch ($this->queriedContext) {
             case 'Explore':
                 $filter = 'photo-lite-models';
-                $html = getSimpleHTMLDOM($this->getURI());
+                $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
                 break;
 
             case 'By keyword':
                 $filter = 'photo-lite-models';
-                $html = getSimpleHTMLDOM($this->getURI());
+                $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
                 break;
 
             case 'By username':
                 //$filter = 'photo-models';
                 $filter = 'photo-lite-models';
-                $html = getSimpleHTMLDOM($this->getURI());
+                $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
                 $this->username = $this->getInput('u');
 

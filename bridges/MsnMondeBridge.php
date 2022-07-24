@@ -32,7 +32,7 @@ class MsnMondeBridge extends FeedExpander
             return;
         }
 
-        $json = json_decode(getContents(self::JSON_URL . $matches['id']), true);
+        $json = json_decode($this->fetcher->getContents(self::JSON_URL . $matches['id']), true);
         $item['content'] = $json['body'];
         if (!empty($json['authors'])) {
             $item['author'] = reset($json['authors'])['name'];

@@ -60,7 +60,7 @@ class CachetBridge extends BridgeAbstract
             return $this->componentCache[$id];
         }
 
-        $component = getContents($this->getURI() . '/api/v1/components/' . $id);
+        $component = $this->fetcher->getContents($this->getURI() . '/api/v1/components/' . $id);
         $component = json_decode($component);
         if ($component === null) {
             return '';
@@ -70,13 +70,13 @@ class CachetBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $ping = getContents(urljoin($this->getURI(), '/api/v1/ping'));
+        $ping = $this->fetcher->getContents(urljoin($this->getURI(), '/api/v1/ping'));
         if (!$this->validatePing($ping)) {
             returnClientError('Provided URI is invalid!');
         }
 
         $url = urljoin($this->getURI(), '/api/v1/incidents?sort=id&order=desc');
-        $incidents = getContents($url);
+        $incidents = $this->fetcher->getContents($url);
         $incidents = json_decode($incidents);
         if ($incidents === null) {
             returnClientError('/api/v1/incidents returned no valid json');

@@ -203,7 +203,7 @@ class DeveloppezDotComBridge extends FeedExpander
         $item['title'] = $this->fixComaInTitle($item['title']);
 
         // We get the content of the full article behind the RSS item URL
-        $articleHTMLContent = getSimpleHTMLDOMCached($item['uri']);
+        $articleHTMLContent = $this->fetcher->getSimpleHTMLDOMCached($item['uri']);
 
         // Here we call our custom parser
         $fullText = $this->extractFullText($articleHTMLContent);

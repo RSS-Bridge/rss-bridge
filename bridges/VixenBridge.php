@@ -37,7 +37,7 @@ class VixenBridge extends BridgeAbstract
     {
         $videosURL = $this->getURI() . '/videos';
 
-        $website = getSimpleHTMLDOM($videosURL);
+        $website = $this->fetcher->getSimpleHTMLDOM($videosURL);
         $json = $website->getElementById('__NEXT_DATA__');
         $data = json_decode($json->innertext(), true);
         $nodes = array_column($data['props']['pageProps']['edges'], 'node');
@@ -58,7 +58,7 @@ class VixenBridge extends BridgeAbstract
              * No images retrieved from here. Should be cached for as long as
              * possible to avoid rate throttling
              */
-            $target = getSimpleHtmlDOMCached($item['uri'], 86400);
+            $target = $this->fetcher->getSimpleHTMLDOMCached($item['uri'], 86400);
             $item['content'] = $this->generateContent(
                 $imageURL,
                 $target->find('meta[name=description]', 0)->content,

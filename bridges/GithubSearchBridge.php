@@ -25,7 +25,7 @@ class GithubSearchBridge extends BridgeAbstract
                                         'type' => 'Repositories'];
         $url = self::URI . 'search?' . http_build_query($params);
 
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
 
         foreach ($html->find('li.repo-list-item') as $element) {
             $item = [];

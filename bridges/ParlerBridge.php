@@ -59,7 +59,7 @@ final class ParlerBridge extends BridgeAbstract
 
     private function fetchParlerProfileFeed(string $user): array
     {
-        $json = getContents('https://parler.com/open-api/ProfileFeedEndpoint.php', [], [
+        $json = $this->fetcher->getContents('https://parler.com/open-api/ProfileFeedEndpoint.php', [], [
             CURLOPT_POSTFIELDS => http_build_query([
                 'user' => $user,
                 'page' => '1',

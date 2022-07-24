@@ -38,7 +38,7 @@ class HaveIBeenPwnedBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $data = json_decode(getContents(self::API_URI . '/breaches'), true);
+        $data = json_decode($this->fetcher->getContents(self::API_URI . '/breaches'), true);
 
         foreach ($data as $breach) {
             $item = [];

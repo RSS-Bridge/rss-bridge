@@ -22,7 +22,7 @@ class AwwwardsBridge extends BridgeAbstract
     private function fetchSites()
     {
         Debug::log('Fetching all sites');
-        $sites = getSimpleHTMLDOM(self::SITESURI);
+        $sites = $this->fetcher->getSimpleHTMLDOM(self::SITESURI);
 
         Debug::log('Parsing all JSON data');
         foreach ($sites->find('li[data-model]') as $site) {

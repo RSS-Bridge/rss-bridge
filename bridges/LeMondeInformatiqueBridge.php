@@ -15,7 +15,7 @@ class LeMondeInformatiqueBridge extends FeedExpander
     protected function parseItem($newsItem)
     {
         $item = parent::parseItem($newsItem);
-        $article_html = getSimpleHTMLDOMCached($item['uri']);
+        $article_html = $this->fetcher->getSimpleHTMLDOMCached($item['uri']);
 
         //Deduce thumbnail URL from article image URL
         $item['enclosures'] = [

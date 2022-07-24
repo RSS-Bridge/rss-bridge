@@ -50,7 +50,7 @@ class JustETFBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         defaultLinkTo($html, static::URI);
 
@@ -183,7 +183,7 @@ class JustETFBridge extends BridgeAbstract
             if ($this->getInput('full')) {
                 $uri = $this->extractNewsUri($article);
 
-                $html = getSimpleHTMLDOMCached($uri)
+                $html = $this->fetcher->getSimpleHTMLDOMCached($uri)
                     or returnServerError('Failed loading full article from ' . $uri);
 
                 $fullArticle = $html->find('div.article', 0)

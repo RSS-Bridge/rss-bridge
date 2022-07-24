@@ -10,7 +10,7 @@ class CopieDoubleBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
 
         $table = $html->find('table table', 2);
 

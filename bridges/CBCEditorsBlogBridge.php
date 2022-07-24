@@ -9,7 +9,7 @@ class CBCEditorsBlogBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
 
         // Loop on each blog post entry
         foreach ($html->find('div.contentListCards', 0)->find('a[data-test=type-story]') as $element) {

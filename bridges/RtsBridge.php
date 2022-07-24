@@ -46,7 +46,7 @@ class RtsBridge extends BridgeAbstract
         }
 
         $header = [];
-        $input = getContents($url, $header);
+        $input = $this->fetcher->getContents($url, $header);
         $input_json = json_decode($input, true);
 
         foreach ($input_json['data']['data'] as $element) {

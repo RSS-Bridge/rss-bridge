@@ -61,7 +61,7 @@ class DockerHubBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $json = getContents($this->getApiUrl());
+        $json = $this->fetcher->getContents($this->getApiUrl());
 
         $data = json_decode($json, false);
 

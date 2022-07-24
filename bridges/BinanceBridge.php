@@ -15,7 +15,7 @@ class BinanceBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI)
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI)
             or returnServerError('Could not fetch Binance blog data.');
 
         $appData = $html->find('script[id="__APP_DATA"]');

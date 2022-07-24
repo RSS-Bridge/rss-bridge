@@ -12,7 +12,7 @@ class N26Bridge extends BridgeAbstract
     {
         $limit = 5;
         $url = 'https://n26.com/en-eu/blog/all';
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
 
         $articles = $html->find('div[class="bl bm"]');
 
@@ -24,7 +24,7 @@ class N26Bridge extends BridgeAbstract
 
             $item['title'] = $article->find('a', 1)->plaintext;
 
-            $fullArticle = getSimpleHTMLDOM($item['uri']);
+            $fullArticle = $this->fetcher->getSimpleHTMLDOM($item['uri']);
 
             $createdAt = $fullArticle->find('time', 0);
             $item['timestamp'] = strtotime($createdAt->plaintext);

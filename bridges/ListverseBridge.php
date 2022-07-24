@@ -17,7 +17,7 @@ class ListverseBridge extends FeedExpander
     {
         $item = parent::parseItem($newsItem);
         // $articlePage gets the entire page's contents
-        $articlePage = getSimpleHTMLDOM($newsItem->link);
+        $articlePage = $this->fetcher->getSimpleHTMLDOM($newsItem->link);
         $article = $articlePage->find('#articlecontentonly', 0);
         $item['content'] = $article;
         return $item;

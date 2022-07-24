@@ -34,7 +34,7 @@ class FolhaDeSaoPauloBridge extends FeedExpander
         $item = parent::parseItem($item);
 
         if ($this->getInput('deep_crawl')) {
-            $articleHTMLContent = getSimpleHTMLDOMCached($item['uri']);
+            $articleHTMLContent = $this->fetcher->getSimpleHTMLDOMCached($item['uri']);
             if ($articleHTMLContent) {
                 foreach ($articleHTMLContent->find('div.c-news__body .is-hidden') as $toRemove) {
                     $toRemove->innertext = '';

@@ -62,7 +62,7 @@ class IPBBridge extends FeedExpander
         }
 
         // No valid feed, so do it the hard way
-        $html = getSimpleHTMLDOM($uri);
+        $html = $this->fetcher->getSimpleHTMLDOM($uri);
 
         $limit = $this->getInput('limit');
 
@@ -180,7 +180,7 @@ class IPBBridge extends FeedExpander
                 break;
             }
 
-            $html = getSimpleHTMLDOMCached($next);
+            $html = $this->fetcher->getSimpleHTMLDOMCached($next);
         }
 
         // We might have more items than specified, remove excess
@@ -198,7 +198,7 @@ class IPBBridge extends FeedExpander
 
             if ($active !== $last) {
                 // Load last page into memory (cached)
-                $html = getSimpleHTMLDOMCached($html->find('.ipsPagination_last a', 0)->href);
+                $html = $this->fetcher->getSimpleHTMLDOMCached($html->find('.ipsPagination_last a', 0)->href);
             }
         }
 
@@ -248,7 +248,7 @@ class IPBBridge extends FeedExpander
 
             if ($active !== $last->plaintext) {
                 // Load last page into memory (cached)
-                $html = getSimpleHTMLDOMCached($last->href);
+                $html = $this->fetcher->getSimpleHTMLDOMCached($last->href);
             }
         }
 

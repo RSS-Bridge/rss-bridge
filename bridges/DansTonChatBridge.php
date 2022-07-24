@@ -10,7 +10,7 @@ class DansTonChatBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI . 'latest.html');
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI . 'latest.html');
 
         foreach ($html->find('div.item') as $element) {
             $item = [];

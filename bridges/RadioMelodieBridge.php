@@ -14,13 +14,13 @@ class RadioMelodieBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI . '/actu/');
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI . '/actu/');
         $list = $html->find('div[class=listArticles]', 0)->children();
 
         foreach ($list as $element) {
             if ($element->tag == 'a') {
                 $articleURL = self::URI . $element->href;
-                $article = getSimpleHTMLDOM($articleURL);
+                $article = $this->fetcher->getSimpleHTMLDOM($articleURL);
                 $this->rewriteAudioPlayers($article);
                 // Reload the modified content
                 $article = str_get_html($article->save());

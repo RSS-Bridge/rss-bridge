@@ -38,7 +38,7 @@ class AnimeUltimeBridge extends BridgeAbstract
         $processedOK = 0;
         foreach ([$thismonth, $lastmonth] as $requestFilter) {
             $url = self::URI . 'history-0-1/' . $requestFilter;
-            $html = getContents($url);
+            $html = $this->fetcher->getContents($url);
             // Convert html from iso-8859-1 => utf8
             $html = utf8_encode($html);
             $html = str_get_html($html);
@@ -85,7 +85,7 @@ class AnimeUltimeBridge extends BridgeAbstract
 
                         if (!empty($item_uri)) {
                             // Retrieve description from description page
-                            $html_item = getContents($item_uri);
+                            $html_item = $this->fetcher->getContents($item_uri);
                             // Convert html from iso-8859-1 => utf8
                             $html_item = utf8_encode($html_item);
                             $item_description = substr(

@@ -25,7 +25,7 @@ class ModelKarteiBridge extends BridgeAbstract
             returnServerError('Invalid model ID');
         }
 
-        $html = getSimpleHTMLDOM(self::URI . 'sedcards/model/' . $model_id . '/');
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI . 'sedcards/model/' . $model_id . '/');
 
         $objTitle = $html->find('.sTitle', 0);
         if ($objTitle) {
@@ -53,7 +53,7 @@ class ModelKarteiBridge extends BridgeAbstract
             $objLink    = $element->find('a.photoLink', 0);
 
             if ($objLink) {
-                $page = getSimpleHTMLDOMCached($objLink->href);
+                $page = $this->fetcher->getSimpleHTMLDOMCached($objLink->href);
 
                 if (empty($title)) {
                     $objTitle = $page->find('.p-title', 0);

@@ -39,7 +39,7 @@ class FirefoxAddonsBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         $this->feedName = $html->find('h1[class="AddonTitle"] > a', 0)->innertext;
         $author = $html->find('span.AddonTitle-author > a', 0)->plaintext;

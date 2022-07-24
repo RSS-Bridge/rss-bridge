@@ -49,7 +49,7 @@ class YeggiBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         $results = $html->find('div.item_1_A');
 

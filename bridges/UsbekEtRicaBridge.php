@@ -29,7 +29,7 @@ class UsbekEtRicaBridge extends BridgeAbstract
     {
         $limit = $this->getInput('limit');
         $fullarticle = $this->getInput('fullarticle');
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         $articles = $html->find('article');
 
@@ -93,7 +93,7 @@ class UsbekEtRicaBridge extends BridgeAbstract
     */
     private function loadFullArticle($uri)
     {
-        $html = getSimpleHTMLDOMCached($uri);
+        $html = $this->fetcher->getSimpleHTMLDOMCached($uri);
 
         $content = $html->find('div.rich-text', 1);
         if ($content) {

@@ -9,7 +9,7 @@ class ReporterreBridge extends BridgeAbstract
 
     private function extractContent($url)
     {
-        $html2 = getSimpleHTMLDOM($url);
+        $html2 = $this->fetcher->getSimpleHTMLDOM($url);
         $html2 = defaultLinkTo($html2, self::URI);
 
         foreach ($html2->find('div[style=text-align:justify]') as $e) {
@@ -25,7 +25,7 @@ class ReporterreBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI . 'spip.php?page=backend');
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI . 'spip.php?page=backend');
         $limit = 0;
 
         foreach ($html->find('item') as $element) {

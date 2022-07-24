@@ -37,7 +37,7 @@ class AlfaBankByBridge extends BridgeAbstract
         if ($business) {
             $mainPageUrl .= '?business=true';
         }
-        $html = getSimpleHTMLDOM($mainPageUrl);
+        $html = $this->fetcher->getSimpleHTMLDOM($mainPageUrl);
         $limit = 0;
 
         foreach ($html->find('a.notifications__item') as $element) {
@@ -57,7 +57,7 @@ class AlfaBankByBridge extends BridgeAbstract
                 $item['uri'] = $itemUrl;
 
                 if ($fullContent) {
-                    $itemHtml = getSimpleHTMLDOM($itemUrl);
+                    $itemHtml = $this->fetcher->getSimpleHTMLDOM($itemUrl);
                     if ($itemHtml) {
                         $item['content'] = $itemHtml->find('div.now-p__content-text', 0)->innertext;
                     }

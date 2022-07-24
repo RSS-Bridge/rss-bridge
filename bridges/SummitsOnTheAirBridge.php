@@ -22,7 +22,7 @@ class SummitsOnTheAirBridge extends BridgeAbstract
     {
         $header = ['Content-type:application/json'];
         $opts = [CURLOPT_HTTPGET => 1];
-        $json = getContents($this->getURI() . $this->getInput('c'), $header, $opts);
+        $json = $this->fetcher->getContents($this->getURI() . $this->getInput('c'), $header, $opts);
 
         $spots = json_decode($json, true);
 

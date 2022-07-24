@@ -527,7 +527,7 @@ EOD;
 
         $apiKey = null;
         if ($forceNew || $data === null || (time() - $refresh) > self::GUEST_TOKEN_EXPIRY) {
-            $twitterPage = getContents('https://twitter.com');
+            $twitterPage = $this->fetcher->getContents('https://twitter.com');
 
             $jsLink = false;
             $jsMainRegexArray = [
@@ -546,7 +546,7 @@ EOD;
                 returnServerError('Could not locate main.js link');
             }
 
-            $jsContent = getContents($jsLink);
+            $jsContent = $this->fetcher->getContents($jsLink);
             $apiKeyRegex = '/([a-zA-Z0-9]{59}%[a-zA-Z0-9]{44})/m';
             preg_match_all($apiKeyRegex, $jsContent, $apiKeyMatches, PREG_SET_ORDER, 0);
             $apiKey = $apiKeyMatches[0][0];
@@ -606,7 +606,7 @@ EOD;
         ];
 
         try {
-            $pageContent = getContents('https://api.twitter.com/1.1/guest/activate.json', $headers, $opts, true);
+            $pageContent = $this->fetcher->getContents('https://api.twitter.com/1.1/guest/activate.json', $headers, $opts, true);
             $guestToken = json_decode($pageContent['content'])->guest_token;
         } catch (Exception $e) {
             $guestToken = null;
@@ -630,7 +630,7 @@ EOD;
             $retry = 0;
 
             try {
-                $result = getContents($uri, $this->authHeaders, [], true);
+                $result = $this->fetcher->getContents($uri, $this->authHeaders, [], true);
             } catch (HttpException $e) {
                 switch ($e->getCode()) {
                     case 401:

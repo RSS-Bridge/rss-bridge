@@ -26,7 +26,7 @@ TMPL;
 https://www.bundestag.de/ajax/filterlist/de/parlament/praesidium/parteienfinanzierung/fundstellen50000/462002-462002
 URI;
         // Get the main page
-        $html = getSimpleHTMLDOMCached($ajaxUri, self::CACHE_TIMEOUT)
+        $html = $this->fetcher->getSimpleHTMLDOMCached($ajaxUri, self::CACHE_TIMEOUT)
             or returnServerError('Could not request AJAX list.');
 
         // Build the URL from the first anchor element. The list is sorted by year, descending, so the first element is the current year.
@@ -36,7 +36,7 @@ URI;
         $url = 'https://www.bundestag.de' . $firstAnchor->href;
 
         // Get the actual page with the soft money donations
-        $html = getSimpleHTMLDOMCached($url, self::CACHE_TIMEOUT)
+        $html = $this->fetcher->getSimpleHTMLDOMCached($url, self::CACHE_TIMEOUT)
             or returnServerError('Could not request ' . $url);
 
         $rows = $html->find('table.table > tbody > tr')

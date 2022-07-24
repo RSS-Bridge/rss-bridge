@@ -178,7 +178,7 @@ class FacebookBridge extends BridgeAbstract
             $this->getURI()
         );
 
-        $html = getSimpleHTMLDOM($touchURI, $header);
+        $html = $this->fetcher->getSimpleHTMLDOM($touchURI, $header);
 
         if (!$this->isPublicGroup($html)) {
             returnClientError('This group is not public! RSS-Bridge only supports public groups!');
@@ -484,7 +484,7 @@ class FacebookBridge extends BridgeAbstract
         $_SESSION['captcha_action'] = $captcha->find('form', 0)->action;
 
         // Show captcha filling form to the viewer, proxying the captcha image
-        $img = base64_encode(getContents($captcha->find('img', 0)->src));
+        $img = base64_encode($this->fetcher->getContents($captcha->find('img', 0)->src));
 
         header('Content-Type: text/html', true, 500);
 
@@ -529,7 +529,7 @@ EOD;
                     CURLOPT_POSTFIELDS => http_build_query($captcha_fields)
                 ];
 
-                $html = getSimpleHTMLDOM($captcha_action, $header, $opts);
+                $html = $this->fetcher->getSimpleHTMLDOM($captcha_action, $header, $opts);
 
                 return $html;
             }
@@ -553,7 +553,7 @@ EOD;
                 $header = [];
             }
 
-            $html = getSimpleHTMLDOM($this->getURI(), $header);
+            $html = $this->fetcher->getSimpleHTMLDOM($this->getURI(), $header);
         }
 
         // Handle captcha form?

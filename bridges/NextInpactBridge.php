@@ -100,7 +100,7 @@ class NextInpactBridge extends FeedExpander
 
     private function extractContent($item, $url)
     {
-        $html = getSimpleHTMLDOMCached($url);
+        $html = $this->fetcher->getSimpleHTMLDOMCached($url);
         if (!is_object($html)) {
             return 'Failed to request NextInpact: ' . $url;
         }

@@ -33,7 +33,7 @@ class EtsyBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         $results = $html->find('li.wt-list-unstyled');
 

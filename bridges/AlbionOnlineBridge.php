@@ -45,7 +45,7 @@ class AlbionOnlineBridge extends BridgeAbstract
         // Example: https://albiononline.com/en/changelog/1/5
         $url = $api . $this->getInput('language') . '/changelog/1/' . $this->getInput('postcount');
 
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
 
         foreach ($html->find('li') as $data) {
             $item = [];
@@ -69,7 +69,7 @@ class AlbionOnlineBridge extends BridgeAbstract
 
     private function getFullChangelog($url)
     {
-        $html = getSimpleHTMLDOMCached($url);
+        $html = $this->fetcher->getSimpleHTMLDOMCached($url);
         $html = defaultLinkTo($html, self::URI);
         return $html->find('div.small-12.columns', 1)->innertext;
     }

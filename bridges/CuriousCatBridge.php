@@ -21,7 +21,7 @@ class CuriousCatBridge extends BridgeAbstract
     {
         $url = self::URI . '/api/v2/profile?username=' . urlencode($this->getInput('username'));
 
-        $apiJson = getContents($url);
+        $apiJson = $this->fetcher->getContents($url);
 
         $apiData = json_decode($apiJson, true);
 

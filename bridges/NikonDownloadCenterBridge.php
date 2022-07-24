@@ -21,7 +21,7 @@ class NikonDownloadCenterBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         foreach ($html->find('dd>ul>li') as $element) {
             $date        = $element->find('.date', 0)->plaintext;

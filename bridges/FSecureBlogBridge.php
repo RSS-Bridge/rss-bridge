@@ -50,7 +50,7 @@ class FSecureBlogBridge extends BridgeAbstract
             return;
         }
 
-        $html = getSimpleHTMLDOMCached($this->getURI() . '/');
+        $html = $this->fetcher->getSimpleHTMLDOMCached($this->getURI() . '/');
 
         foreach ($html->find('ul.c-header-menu-desktop__list li a') as $link) {
             $url = parse_url($link->href);
@@ -76,7 +76,7 @@ class FSecureBlogBridge extends BridgeAbstract
     // n.b. this relies on articles to be ordered by date so the cutoff works
     private function collectListing($url)
     {
-        $html = getSimpleHTMLDOMCached($url, 60 * 60);
+        $html = $this->fetcher->getSimpleHTMLDOMCached($url, 60 * 60);
         $items = $html->find('section.b-blog .l-blog__content__listing div.c-listing-item');
 
         $catName = trim($html->find('section.b-blog .c-blog-header__title', 0)->plaintext);
@@ -101,7 +101,7 @@ class FSecureBlogBridge extends BridgeAbstract
         if (array_key_exists($url, $this->seen)) {
             return true;
         }
-        $html = getSimpleHTMLDOMCached($url);
+        $html = $this->fetcher->getSimpleHTMLDOMCached($url);
 
         $rssItem = [ 'uri' => $url, 'uid' => $url ];
         $rssItem['title'] = $html->find('meta[property=og:title]', 0)->content;

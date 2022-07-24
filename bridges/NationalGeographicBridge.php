@@ -101,7 +101,7 @@ class NationalGeographicBridge extends BridgeAbstract
         foreach (self::MAGAZINE_ID as $id) {
             $uri = $this->getAPIURL($id);
 
-            $json_raw = getContents($uri);
+            $json_raw = $this->fetcher->getContents($uri);
 
             $json = json_decode($json_raw, true)['tiles'];
             $stories = array_merge($json, $stories);
@@ -119,7 +119,7 @@ class NationalGeographicBridge extends BridgeAbstract
         foreach (self::LATEST_STORIES_ID as $id) {
             $uri = $this->getAPIURL($id);
 
-            $json_raw = getContents($uri);
+            $json_raw = $this->fetcher->getContents($uri);
 
             $json = json_decode($json_raw, true)['tiles'];
             $stories = array_merge($stories, $json);
@@ -260,7 +260,7 @@ EOD;
 
     private function getFullArticle($uri)
     {
-        $html = getContents($uri);
+        $html = $this->fetcher->getContents($uri);
 
         $scriptRegex = '/window\[\'__natgeo__\'\]=(.*);<\/script>/';
 

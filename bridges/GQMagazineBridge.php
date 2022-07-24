@@ -77,7 +77,7 @@ class GQMagazineBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         // Since GQ don't want simple class scrapping, let's do it the hard way and ... discover content !
         $main = $html->find('main', 0);
@@ -125,7 +125,7 @@ class GQMagazineBridge extends BridgeAbstract
      */
     private function loadFullArticle($uri)
     {
-        $html = getSimpleHTMLDOMCached($uri);
+        $html = $this->fetcher->getSimpleHTMLDOMCached($uri);
         return $html->find('article', 0);
     }
 

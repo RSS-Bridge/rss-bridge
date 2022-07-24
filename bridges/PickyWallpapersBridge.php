@@ -38,7 +38,7 @@ class PickyWallpapersBridge extends BridgeAbstract
         $resolution = $this->getInput('r'); // Wide wallpaper default
 
         for ($page = 1; $page <= $lastpage; $page++) {
-            $html = getSimpleHTMLDOM($this->getURI() . '/page-' . $page . '/');
+            $html = $this->fetcher->getSimpleHTMLDOM($this->getURI() . '/page-' . $page . '/');
 
             if ($page === 1) {
                 preg_match('/page-(\d+)\/$/', $html->find('.pages li a', -2)->href, $matches);

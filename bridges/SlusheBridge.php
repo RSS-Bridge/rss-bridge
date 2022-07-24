@@ -116,7 +116,7 @@ class SlusheBridge extends BridgeAbstract
         ];
         $headers[] = implode('', $user_agent_string);
 
-        $html = getSimpleHTMLDOM($uri, $headers);
+        $html = $this->fetcher->getSimpleHTMLDOM($uri, $headers);
 
         //Debug::log($html);
         //Debug::log($html->find('div.blog-item')[0]);

@@ -89,7 +89,7 @@ class CastorusBridge extends BridgeAbstract
         $zip_filter = trim($this->getInput('zip'));
         $city_filter = trim($this->getInput('city'));
 
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
 
         if (!$html) {
             returnServerError('Could not load data from ' . self::URI . '!');

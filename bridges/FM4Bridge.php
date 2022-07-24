@@ -38,7 +38,7 @@ class FM4Bridge extends BridgeAbstract
 
         $uri = $uri . '?page=' . $page;
 
-        $html = getSimpleHTMLDOM($uri);
+        $html = $this->fetcher->getSimpleHTMLDOM($uri);
 
         $page_items = [];
 
@@ -51,7 +51,7 @@ class FM4Bridge extends BridgeAbstract
             $item['timestamp'] = strtotime($article->find('p[class*=time]', 0)->plaintext);
 
             if ($this->getInput('loadcontent')) {
-                $item['content'] = getSimpleHTMLDOM($item['uri'])->find('div[class=storyText]', 0);
+                $item['content'] = $this->fetcher->getSimpleHTMLDOM($item['uri'])->find('div[class=storyText]', 0);
             }
 
             $page_items[] = $item;

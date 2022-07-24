@@ -136,7 +136,7 @@ class RedditBridge extends BridgeAbstract
 
         foreach ($subreddits as $subreddit) {
             $name = trim($subreddit);
-            $values = getContents(self::URI
+            $values = $this->fetcher->getContents(self::URI
                     . '/search.json?q='
                     . $keywords
                     . ($user ? 'author%3A' : 'subreddit%3A')

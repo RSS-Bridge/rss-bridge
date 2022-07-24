@@ -133,7 +133,7 @@ class ThePirateBayBridge extends BridgeAbstract
                 returnClientError('Impossible');
         }
         $api = 'https://apibay.org';
-        $json = getContents($api . $query);
+        $json = $this->fetcher->getContents($api . $query);
         $result = json_decode($json);
 
         if ($result[0]->name === 'No results returned') {

@@ -46,7 +46,7 @@ class PokemonTVBridge extends BridgeAbstract
     {
         $link = 'https://www.pokemon.com/api/pokemontv/v2/channels/' . $this->getInput('language');
 
-        $html = getSimpleHTMLDOM($link);
+        $html = $this->fetcher->getSimpleHTMLDOM($link);
         $parsed_json = json_decode($html);
 
         $filtername = $this->getInput('filtername');

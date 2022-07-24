@@ -21,7 +21,7 @@ class ElsevierBridge extends BridgeAbstract
     {
         // Not all journals have the /recent-articles page
         $url = sprintf('https://www.journals.elsevier.com/%s/recent-articles/', $this->getInput('j'));
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
 
         foreach ($html->find('article') as $recentArticle) {
             $item = [];

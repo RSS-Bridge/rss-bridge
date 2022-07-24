@@ -446,7 +446,7 @@ class LaCentraleBridge extends BridgeAbstract
             'sortBy' => $this->getInput('sort')
         ];
         $url = sprintf('%slisting?%s', self::URI, http_build_query($params));
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
 
         $elements = $html->find('.adLineContainer');
         foreach ($elements as $element) {

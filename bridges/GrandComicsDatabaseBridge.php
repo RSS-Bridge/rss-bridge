@@ -18,7 +18,7 @@ class GrandComicsDatabaseBridge extends BridgeAbstract
     public function collectData()
     {
         $url = self::URI . 'series/' . $this->getInput('series') . '/details/timeline/';
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
 
         $table = $html->find('table', 0);
         $list = array_reverse($table->find('[class^=row_even]'));

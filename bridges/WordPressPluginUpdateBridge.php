@@ -59,6 +59,6 @@ final class WordPressPluginUpdateBridge extends BridgeAbstract
     private function fetchPluginData(string $slug): \stdClass
     {
         $api = 'https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&request[slug]=%s';
-        return json_decode(getContents(sprintf($api, $slug)));
+        return json_decode($this->fetcher->getContents(sprintf($api, $slug)));
     }
 }

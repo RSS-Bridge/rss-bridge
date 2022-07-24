@@ -1100,7 +1100,7 @@ class BookMyShowBridge extends BridgeAbstract
         $url = $this->makeUrl($category);
         $headers = $this->makeHeaders($city);
 
-        $data = json_decode(getContents($url, $headers), true);
+        $data = json_decode($this->fetcher->getContents($url, $headers), true);
 
         if ($category == self::MOVIES) {
             $data = $data['moviesData']['BookMyShow']['arrEvents'];

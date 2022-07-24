@@ -58,7 +58,7 @@ class CVEDetailsBridge extends BridgeAbstract
     // (HTML) for later use and extract vendor and product from it.
     private function fetchContent()
     {
-        $html = getSimpleHTMLDOM($this->buildUrl());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->buildUrl());
         $this->html = defaultLinkTo($html, self::URI);
 
         $vendor = $html->find('#contentdiv > h1 > a', 0);

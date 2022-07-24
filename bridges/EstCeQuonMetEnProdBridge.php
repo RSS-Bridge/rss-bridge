@@ -10,7 +10,7 @@ class EstCeQuonMetEnProdBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
 
         $item = [];
         $item['uri'] = $this->getURI() . '#' . date('Y-m-d');

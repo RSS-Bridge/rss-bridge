@@ -56,7 +56,7 @@ class PicalaBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $fullhtml = getSimpleHTMLDOM($this->getURI());
+        $fullhtml = $this->fetcher->getSimpleHTMLDOM($this->getURI());
         foreach ($fullhtml->find('.list-container-category a') as $article) {
             $srcsets = explode(',', $article->find('img', 0)->getAttribute('srcset'));
             $image = explode(' ', trim(array_shift($srcsets)))[0];

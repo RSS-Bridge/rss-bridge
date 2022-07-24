@@ -93,7 +93,7 @@ class BandcampDailyBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI())
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI())
             or returnServerError('Could not request: ' . $this->getURI());
 
         $html = defaultLinkTo($html, self::URI);
@@ -105,7 +105,7 @@ class BandcampDailyBridge extends BridgeAbstract
 
             $articlePath = $article->find('a.title', 0)->href;
 
-            $articlePageHtml = getSimpleHTMLDOMCached($articlePath, 3600)
+            $articlePageHtml = $this->fetcher->getSimpleHTMLDOMCached($articlePath, 3600)
                 or returnServerError('Could not request: ' . $articlePath);
 
             $item['uri'] = $articlePath;

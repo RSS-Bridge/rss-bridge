@@ -18,7 +18,7 @@ class SIMARBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
         $e_home = $html->find('#home', 0)
             or returnServerError('Invalid site structure');
 
@@ -44,7 +44,7 @@ class SIMARBridge extends BridgeAbstract
                 $item['content'] = $element->innertext;
 
                 /* Try to get the actual contents for this kind of item */
-                $item_html = getSimpleHTMLDOMCached($item['uri']);
+                $item_html = $this->fetcher->getSimpleHTMLDOMCached($item['uri']);
                 if ($item_html) {
                     $e_item = $item_html->find('.auto-style59', 0);
                     foreach ($e_item->find('p') as $paragraph) {

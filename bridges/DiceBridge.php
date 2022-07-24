@@ -100,7 +100,7 @@ class DiceBridge extends BridgeAbstract
             $uri .= '&telecommute=true';
         }
 
-        $html = getSimpleHTMLDOM($uri);
+        $html = $this->fetcher->getSimpleHTMLDOM($uri);
         foreach ($html->find('div.complete-serp-result-div') as $element) {
             $item = [];
             // Title

@@ -31,7 +31,7 @@ class TebeoBridge extends FeedExpander
     public function collectData()
     {
         $url = self::URI . '/le-replay/' . $this->getInput('cat');
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
 
         foreach ($html->find('div[id=items_replay] div.replay') as $element) {
             $item = [];

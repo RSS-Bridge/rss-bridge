@@ -59,7 +59,7 @@ class DarkReadingBridge extends FeedExpander
     protected function parseItem($newsItem)
     {
         $item = parent::parseItem($newsItem);
-        $article = getSimpleHTMLDOMCached($item['uri']);
+        $article = $this->fetcher->getSimpleHTMLDOMCached($item['uri']);
         $item['content'] = $this->extractArticleContent($article);
         $item['enclosures'] = []; //remove author profile picture
         $image = $article->find('meta[property="og:image"]', 0);

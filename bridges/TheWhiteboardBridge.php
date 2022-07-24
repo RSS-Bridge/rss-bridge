@@ -11,7 +11,7 @@ class TheWhiteboardBridge extends BridgeAbstract
     {
         $item = [];
 
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
 
         $image = $html->find('center', 1)->find('img', 0);
         $image->src = self::URI . '/' . $image->src;

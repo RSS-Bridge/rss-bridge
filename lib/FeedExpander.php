@@ -100,7 +100,7 @@ abstract class FeedExpander extends BridgeAbstract
             '*/*',
         ];
         $httpHeaders = ['Accept: ' . implode(', ', $mimeTypes)];
-        $content = getContents($url, $httpHeaders)
+        $content = $this->fetcher->getContents($url, $httpHeaders)
             or returnServerError('Could not request ' . $url);
         $rssContent = simplexml_load_string(trim($content));
 

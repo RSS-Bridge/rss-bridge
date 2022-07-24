@@ -109,14 +109,14 @@ class CrewbayBridge extends BridgeAbstract
     public function collectData()
     {
         $url = $this->getURI();
-        $html = getSimpleHTMLDOM($url) or returnClientError('No results for this query.');
+        $html = $this->fetcher->getSimpleHTMLDOM($url) or returnClientError('No results for this query.');
 
         $annonces = $html->find('#SearchResults div.result');
         $limit = 0;
 
         foreach ($annonces as $annonce) {
             $detail = $annonce->find('.btn--profile', 0);
-            $htmlDetail = getSimpleHTMLDOMCached($detail->href);
+            $htmlDetail = $this->fetcher->getSimpleHTMLDOMCached($detail->href);
 
             if (!empty($this->getInput('recreational_position')) || !empty($this->getInput('professional_position'))) {
                 if ($this->getInput('type') == 'boats') {

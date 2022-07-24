@@ -20,7 +20,7 @@ class IGNBridge extends FeedExpander
         $item = parent::parseItem($newsItem);
 
         // $articlePage gets the entire page's contents
-        $articlePage = getSimpleHTMLDOM($newsItem->link);
+        $articlePage = $this->fetcher->getSimpleHTMLDOM($newsItem->link);
 
         // List of BS elements
         $uselessElements = [

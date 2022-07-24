@@ -96,7 +96,7 @@ HTML
                 $apiKey
             );
 
-            $result = json_decode(getContents($uri));
+            $result = json_decode($this->fetcher->getContents($uri));
 
             $this->getGiphyItems($result->data);
         }

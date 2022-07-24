@@ -31,7 +31,7 @@ class DuckDuckGoBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI . 'html/?kd=-1&q=' . $this->getInput('u') . $this->getInput('sort'));
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI . 'html/?kd=-1&q=' . $this->getInput('u') . $this->getInput('sort'));
 
         foreach ($html->find('div.result') as $element) {
             $item = [];

@@ -10,7 +10,7 @@ class LesJoiesDuCodeBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
 
         foreach ($html->find('article.blog-post') as $element) {
             $item = [];

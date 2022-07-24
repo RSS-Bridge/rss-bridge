@@ -14,7 +14,7 @@ class HashnodeBridge extends BridgeAbstract
         $this->items = [];
         for ($i = 0; $i < 5; $i++) {
             $url = self::LATEST_POSTS . $i;
-            $content = getContents($url);
+            $content = $this->fetcher->getContents($url);
             $array = json_decode($content, true);
 
             if ($array['posts'] != null) {

@@ -38,7 +38,7 @@ class SteamCommunityBridge extends BridgeAbstract
     protected function getMainPage()
     {
         $category = $this->getInput('category');
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         return $html;
     }
@@ -84,7 +84,7 @@ class SteamCommunityBridge extends BridgeAbstract
         foreach ($cards as $card) {
             $uri = $card->getAttribute('data-modal-content-url');
 
-            $htmlCard = getSimpleHTMLDOMCached($uri);
+            $htmlCard = $this->fetcher->getSimpleHTMLDOMCached($uri);
 
             $author = $card->find('div.apphub_CardContentAuthorName', 0)->innertext;
             $author = strip_tags($author);
@@ -158,7 +158,7 @@ class SteamCommunityBridge extends BridgeAbstract
 
             $uri = $workShopItem->find('a.ugc', 0)->getAttribute('href');
 
-            $htmlItem = getSimpleHTMLDOMCached($uri);
+            $htmlItem = $this->fetcher->getSimpleHTMLDOMCached($uri);
 
             $title = $htmlItem->find('div.workshopItemTitle', 0)->innertext;
             $date = $htmlItem->find('div.detailsStatRight', 0)->innertext;

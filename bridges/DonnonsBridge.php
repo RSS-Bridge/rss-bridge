@@ -44,7 +44,7 @@ class DonnonsBridge extends BridgeAbstract
     {
         $uri = $this->getPageURI($page);
 
-        $html = getSimpleHTMLDOM($uri);
+        $html = $this->fetcher->getSimpleHTMLDOM($uri);
 
         $searchDiv = $html->find('div[id=search]', 0);
 

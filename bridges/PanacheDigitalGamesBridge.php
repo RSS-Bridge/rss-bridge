@@ -22,7 +22,7 @@ class PanacheDigitalGamesBridge extends BridgeAbstract
     public function collectData()
     {
         $articles = $this->getURI();
-        $html = getSimpleHTMLDOMCached($articles);
+        $html = $this->fetcher->getSimpleHTMLDOMCached($articles);
 
         foreach ($html->find('.news-item') as $element) {
             $item = [];

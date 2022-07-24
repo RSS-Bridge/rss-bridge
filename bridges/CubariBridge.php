@@ -47,7 +47,7 @@ class CubariBridge extends BridgeAbstract
      */
     public function collectData()
     {
-        $jsonSite = getContents($this->getInput('gist'));
+        $jsonSite = $this->fetcher->getContents($this->getInput('gist'));
         $jsonFile = json_decode($jsonSite, true);
 
         $this->mangaTitle = $jsonFile['title'];

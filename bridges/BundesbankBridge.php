@@ -46,7 +46,7 @@ class BundesbankBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         $html = defaultLinkTo($html, $this->getURI());
 

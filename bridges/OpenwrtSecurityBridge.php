@@ -12,7 +12,7 @@ class OpenwrtSecurityBridge extends BridgeAbstract
     public function collectData()
     {
         $item = [];
-        $html = getSimpleHTMLDOM(self::URI);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI);
 
         $advisories = $html->find('div[class=plugin_nspages]', 0);
 

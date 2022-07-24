@@ -10,7 +10,7 @@ class ZenodoBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         foreach ($html->find('div.record-elem.row') as $element) {
             $item = [];

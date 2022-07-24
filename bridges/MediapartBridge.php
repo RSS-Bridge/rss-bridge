@@ -50,11 +50,7 @@ class MediapartBridge extends FeedExpander
                 $opt[CURLOPT_COOKIE] = 'MPSESSID=' . $mpsessid;
 
                 // Get the page
-                $articlePage = getSimpleHTMLDOM(
-                    $newsItem->link . '?onglet=full',
-                    [],
-                    $opt
-                );
+                $articlePage = $this->fetcher->getSimpleHTMLDOM($newsItem->link . '?onglet=full', [], $opt);
 
                 // Extract the article content
                 $content = $articlePage->find('div.content-article', 0)->innertext;

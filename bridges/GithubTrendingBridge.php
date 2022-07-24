@@ -596,7 +596,7 @@ class GithubTrendingBridge extends BridgeAbstract
         $params = ['since' => urlencode($this->getInput('date_range'))];
         $url = self::URI . '/' . $this->getInput('language') . '?' . http_build_query($params);
 
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
 
         $this->items = [];
         foreach ($html->find('.Box-row') as $element) {

@@ -29,13 +29,13 @@ class BAEBridge extends BridgeAbstract
     public function collectData()
     {
         $url = $this->getURI();
-        $html = getSimpleHTMLDOM($url) or returnClientError('No results for this query.');
+        $html = $this->fetcher->getSimpleHTMLDOM($url) or returnClientError('No results for this query.');
 
         $annonces = $html->find('main article');
         foreach ($annonces as $annonce) {
             $detail = $annonce->find('footer a', 0);
 
-            $htmlDetail = getSimpleHTMLDOMCached(parent::getURI() . $detail->href);
+            $htmlDetail = $this->fetcher->getSimpleHTMLDOMCached(parent::getURI() . $detail->href);
             if (!$htmlDetail) {
                 continue;
             }

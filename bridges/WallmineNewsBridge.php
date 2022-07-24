@@ -12,7 +12,7 @@ class WallmineNewsBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI() . '/news/');
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI() . '/news/');
 
         $html = defaultLinkTo($html, self::URI);
 
@@ -22,7 +22,7 @@ class WallmineNewsBridge extends BridgeAbstract
 
             $image = $div->find('img.img-fluid', 0)->src;
 
-            $page = getSimpleHTMLDOMCached($item['uri'], 7200);
+            $page = $this->fetcher->getSimpleHTMLDOMCached($item['uri'], 7200);
 
             $article = $page->find('div.container.article-container', 0);
 

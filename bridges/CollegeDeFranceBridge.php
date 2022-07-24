@@ -35,7 +35,7 @@ class CollegeDeFranceBridge extends BridgeAbstract
          *  </a>
          * </li>
          */
-        $html = getSimpleHTMLDOM(self::URI
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI
         . 'components/search-audiovideo.jsp?fulltext=&siteid=1156951719600&lang=FR&type=all');
 
         foreach ($html->find('a[data-target]') as $element) {

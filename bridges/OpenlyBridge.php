@@ -122,7 +122,7 @@ class OpenlyBridge extends BridgeAbstract
             $url = $this->getURI();
         }
 
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
         $html = defaultLinkTo($html, $this->getURI());
 
         if ($html->find('h1', 0)) {
@@ -232,7 +232,7 @@ class OpenlyBridge extends BridgeAbstract
 
     private function getArticle($url)
     {
-        $article = getSimpleHTMLDOMCached($url, self::ARTICLE_CACHE_TIMEOUT);
+        $article = $this->fetcher->getSimpleHTMLDOMCached($url, self::ARTICLE_CACHE_TIMEOUT);
         $article = defaultLinkTo($article, $this->getURI());
 
         $item = [];

@@ -41,7 +41,7 @@ class GoodreadsBridge extends BridgeAbstract
 
         $authorListUrl = "https://www.goodreads.com/author/list/$authorId?sort=original_publication_year";
 
-        $html = getSimpleHTMLDOMCached($authorListUrl, self::CACHE_TIMEOUT);
+        $html = $this->fetcher->getSimpleHTMLDOMCached($authorListUrl, self::CACHE_TIMEOUT);
 
         foreach ($html->find('tr[itemtype="http://schema.org/Book"]') as $row) {
             $dateSpan = $row->find('.uitext', 0)->plaintext;

@@ -135,7 +135,7 @@ class CodebergBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         $html = defaultLinkTo($html, $this->getURI());
 
@@ -262,7 +262,7 @@ class CodebergBridge extends BridgeAbstract
             $item['author'] = $li->find('div.desc', 0)->find('a', 1)->plaintext;
 
             // Fetch issue page
-            $issuePage = getSimpleHTMLDOMCached($item['uri'], 3600);
+            $issuePage = $this->fetcher->getSimpleHTMLDOMCached($item['uri'], 3600);
             $issuePage = defaultLinkTo($issuePage, self::URI);
 
             $item['content'] = $issuePage->find('div.timeline-item.comment.first', 0)->find('div.render-content.markup', 0);
@@ -323,7 +323,7 @@ class CodebergBridge extends BridgeAbstract
             $item['author'] = $li->find('div.desc', 0)->find('a', 1)->plaintext;
 
             // Fetch pull request page
-            $pullRequestPage = getSimpleHTMLDOMCached($item['uri'], 3600);
+            $pullRequestPage = $this->fetcher->getSimpleHTMLDOMCached($item['uri'], 3600);
             $pullRequestPage = defaultLinkTo($pullRequestPage, self::URI);
 
             $item['content'] = $pullRequestPage->find('ui.timeline', 0)->find('div.render-content.markup', 0);

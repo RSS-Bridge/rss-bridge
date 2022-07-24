@@ -38,7 +38,7 @@ class AO3Bridge extends BridgeAbstract
     // bookmarks, series, collections).
     private function collectList($url)
     {
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
         $html = defaultLinkTo($html, self::URI);
 
         foreach ($html->find('.index.group > li') as $element) {
@@ -68,7 +68,7 @@ class AO3Bridge extends BridgeAbstract
     private function collectWork($id)
     {
         $url = self::URI . "/works/$id/navigate";
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
         $html = defaultLinkTo($html, self::URI);
 
         $this->title = $html->find('h2 a', 0)->plaintext;

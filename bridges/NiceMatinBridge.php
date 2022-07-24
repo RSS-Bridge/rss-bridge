@@ -21,7 +21,7 @@ class NiceMatinBridge extends FeedExpander
 
     private function extractContent($url)
     {
-        $html = getSimpleHTMLDOMCached($url);
+        $html = $this->fetcher->getSimpleHTMLDOMCached($url);
         if (!$html) {
             return 'Could not acquire content from url: ' . $url . '!';
         }

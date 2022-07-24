@@ -64,7 +64,7 @@ class DanbooruBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOMCached($this->getFullURI());
+        $html = $this->fetcher->getSimpleHTMLDOMCached($this->getFullURI());
 
         foreach ($html->find(static::PATHTODATA) as $element) {
             $this->items[] = $this->getItemFromElement($element);

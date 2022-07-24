@@ -47,7 +47,7 @@ class TelegramBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         $channelTitle = htmlspecialchars_decode(
             $html->find('div.tgme_channel_info_header_title span', 0)->plaintext,

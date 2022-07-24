@@ -13,7 +13,7 @@ class ParksOnTheAirBridge extends BridgeAbstract
     {
         $header = ['Content-type:application/json'];
         $opts = [CURLOPT_HTTPGET => 1];
-        $json = getContents(self::API_URI, $header, $opts);
+        $json = $this->fetcher->getContents(self::API_URI, $header, $opts);
 
         $spots = json_decode($json, true);
 

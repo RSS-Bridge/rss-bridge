@@ -80,7 +80,7 @@ class Drive2ruBridge extends BridgeAbstract
 
     private function getUserContent($url)
     {
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
         $this->title = $html->find('title', 0)->innertext;
         $articles = $html->find('div.js-entity');
         foreach ($articles as $article) {
@@ -88,7 +88,7 @@ class Drive2ruBridge extends BridgeAbstract
             $item['title'] = $article->find('a.c-link--text', 0)->plaintext;
             $item['uri'] = urljoin(self::URI, $article->find('a.c-link--text', 0)->href);
             if ($this->getInput('full_articles')) {
-                $content = getSimpleHTMLDomCached($item['uri'])->find('div.c-post__body', 0);
+                $content = $this->fetcher->getSimpleHTMLDOMCached($item['uri'])->find('div.c-post__body', 0);
                 $item['content'] = $this->addCommentsLink(
                     $this->adjustContent($content)->innertext,
                     $item['uri']
@@ -106,7 +106,7 @@ class Drive2ruBridge extends BridgeAbstract
 
     private function getLogbooksContent($url)
     {
-        $html = getSimpleHTMLDOM($url);
+        $html = $this->fetcher->getSimpleHTMLDOM($url);
         $this->title = $html->find('title', 0)->innertext;
         $articles = $html->find('div.js-entity');
         foreach ($articles as $article) {
@@ -114,7 +114,7 @@ class Drive2ruBridge extends BridgeAbstract
             $item['title'] = $article->find('a.c-link--text', 1)->plaintext;
             $item['uri'] = urljoin(self::URI, $article->find('a.c-link--text', 1)->href);
             if ($this->getInput('full_articles')) {
-                $content = getSimpleHTMLDomCached($item['uri'])->find('div.c-post__body', 0);
+                $content = $this->fetcher->getSimpleHTMLDOMCached($item['uri'])->find('div.c-post__body', 0);
                 $item['content'] = $this->addCommentsLink(
                     $this->adjustContent($content)->innertext,
                     $item['uri']
@@ -132,7 +132,7 @@ class Drive2ruBridge extends BridgeAbstract
 
     private function getNews()
     {
-        $html = getSimpleHTMLDOM('https://www.drive2.ru/editorial/');
+        $html = $this->fetcher->getSimpleHTMLDOM('https://www.drive2.ru/editorial/');
         $this->title = $html->find('title', 0)->innertext;
         $articles = $html->find('div.c-article-card');
         foreach ($articles as $article) {
@@ -140,7 +140,7 @@ class Drive2ruBridge extends BridgeAbstract
             $item['title'] = $article->find('a.c-link--text', 0)->plaintext;
             $item['uri'] = urljoin(self::URI, $article->find('a.c-link--text', 0)->href);
             if ($this->getInput('full_articles')) {
-                $content = getSimpleHTMLDomCached($item['uri'])->find('div.article', 0);
+                $content = $this->fetcher->getSimpleHTMLDOMCached($item['uri'])->find('div.article', 0);
                 $item['content'] = $this->addCommentsLink(
                     $this->adjustContent($content)->innertext,
                     $item['uri']

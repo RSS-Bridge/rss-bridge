@@ -138,7 +138,7 @@ class IndeedBridge extends BridgeAbstract
         $limit = $this->getInput('limit') ?: 20;
 
         do {
-            $html = getSimpleHTMLDOM($url);
+            $html = $this->fetcher->getSimpleHTMLDOM($url);
 
             $html = defaultLinkTo($html, $url);
 

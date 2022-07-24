@@ -56,7 +56,7 @@ class CNETBridge extends BridgeAbstract
 
         // Retrieve webpage
         $pageUrl = self::URI . (empty($topic) ? 'news/' : $topic . '/');
-        $html = getSimpleHTMLDOM($pageUrl);
+        $html = $this->fetcher->getSimpleHTMLDOM($pageUrl);
 
         // Process articles
         foreach ($html->find('div.assetBody, div.riverPost') as $element) {
@@ -76,7 +76,7 @@ class CNETBridge extends BridgeAbstract
             }
 
             if (!empty($article_title) && !empty($article_uri) && strpos($article_uri, self::URI . 'news/') !== false) {
-                $article_html = getSimpleHTMLDOMCached($article_uri) or $article_html = null;
+                $article_html = $this->fetcher->getSimpleHTMLDOMCached($article_uri) or $article_html = null;
 
                 if (!is_null($article_html)) {
                     if (empty($article_thumbnail)) {

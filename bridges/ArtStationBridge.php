@@ -45,14 +45,14 @@ class ArtStationBridge extends BridgeAbstract
         ];
 
         $jsonSearchURL = self::URI . '/api/v2/search/projects.json';
-        $jsonSearchStr = getContents($jsonSearchURL, $header, $opts);
+        $jsonSearchStr = $this->fetcher->getContents($jsonSearchURL, $header, $opts);
         return json_decode($jsonSearchStr);
     }
 
     private function fetchProject($hashID)
     {
         $jsonProjectURL = self::URI . '/projects/' . $hashID . '.json';
-        $jsonProjectStr = getContents($jsonProjectURL);
+        $jsonProjectStr = $this->fetcher->getContents($jsonProjectURL);
         return json_decode($jsonProjectStr);
     }
 

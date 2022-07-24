@@ -19,7 +19,7 @@ class PatreonBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOMCached($this->getURI(), 86400);
+        $html = $this->fetcher->getSimpleHTMLDOMCached($this->getURI(), 86400);
         $regex = '#/api/campaigns/([0-9]+)#';
         if (preg_match($regex, $html->save(), $matches) > 0) {
             $campaign_id = $matches[1];
@@ -178,7 +178,7 @@ class PatreonBridge extends BridgeAbstract
             ])
         ];
 
-        $data = json_decode(getContents($url, $header, $opts));
+        $data = json_decode($this->fetcher->getContents($url, $header, $opts));
 
         return $data;
     }

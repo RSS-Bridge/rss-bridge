@@ -46,7 +46,7 @@ class WebfailBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI() . $this->getInput('type'));
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI() . $this->getInput('type'));
 
         $type = array_search(
             $this->getInput('type'),

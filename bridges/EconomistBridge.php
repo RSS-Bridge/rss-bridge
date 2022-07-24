@@ -98,7 +98,7 @@ class EconomistBridge extends FeedExpander
     protected function parseItem($feedItem)
     {
         $item = parent::parseItem($feedItem);
-        $article = getSimpleHTMLDOM($item['uri']);
+        $article = $this->fetcher->getSimpleHTMLDOM($item['uri']);
         // before the article can be added, it needs to be cleaned up, thus, the extra function
         // We also need to distinguish between old style and new style articles
         if ($article->find('article', 0)->getAttribute('data-test-id') == 'Article') {

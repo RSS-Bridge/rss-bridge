@@ -90,7 +90,7 @@ class FDroidRepoBridge extends BridgeAbstract
         $url = $this->getURI();
 
         // Get repo information (only available as JAR)
-        $jar = getContents($url . '/index-v1.jar');
+        $jar = $this->fetcher->getContents($url . '/index-v1.jar');
         $jar_loc = tempnam(sys_get_temp_dir(), '');
         file_put_contents($jar_loc, $jar);
 

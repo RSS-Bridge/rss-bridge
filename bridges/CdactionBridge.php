@@ -37,7 +37,7 @@ class CdactionBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI() . '/' . $this->getInput('category'));
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI() . '/' . $this->getInput('category'));
 
         $newsJson = $html->find('script#__NEXT_DATA__', 0)->innertext;
         if (!$newsJson = json_decode($newsJson)) {

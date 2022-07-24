@@ -25,7 +25,7 @@ final class UsenixBridge extends BridgeAbstract
     private function collectLoginOnlineItems(): void
     {
         $url = 'https://www.usenix.org/publications/loginonline';
-        $dom = getSimpleHTMLDOMCached($url);
+        $dom = $this->fetcher->getSimpleHTMLDOMCached($url);
         $items = $dom->find('div.view-content > div');
 
         foreach ($items as $item) {
@@ -49,7 +49,7 @@ final class UsenixBridge extends BridgeAbstract
 
     private function getItemContent(string $uri): array
     {
-        $html = getSimpleHTMLDOMCached($uri);
+        $html = $this->fetcher->getSimpleHTMLDOMCached($uri);
         $content = $html->find('.paragraphs-items-full', 0)->innertext;
         $extra = $html->find('fieldset', 0);
         if (!empty($extra)) {

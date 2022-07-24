@@ -24,7 +24,7 @@ class VieDeMerdeBridge extends BridgeAbstract
             $limit = 20;
         }
 
-        $html = getSimpleHTMLDOM(self::URI, []);
+        $html = $this->fetcher->getSimpleHTMLDOM(self::URI, []);
         $quotes = $html->find('article.bg-white');
         if (sizeof($quotes) === 0) {
             return;

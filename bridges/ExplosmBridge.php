@@ -33,7 +33,7 @@ class ExplosmBridge extends BridgeAbstract
         $url = $this->getUri();
 
         for ($i = 0; $i < $limit; $i++) {
-            $html = getSimpleHTMLDOM($url);
+            $html = $this->fetcher->getSimpleHTMLDOM($url);
 
             $element = $html->find('[class*=ComicImage]', 0);
             $date    = $element->find('[class^=Author__Right] p', 0)->plaintext;

@@ -61,7 +61,7 @@ class PirateCommunityBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM($this->getURI());
+        $html = $this->fetcher->getSimpleHTMLDOM($this->getURI());
 
         $this->feedName = $html->find('head title', 0)->plaintext;
 

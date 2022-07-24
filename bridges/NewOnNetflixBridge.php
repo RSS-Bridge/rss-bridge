@@ -24,7 +24,7 @@ class NewOnNetflixBridge extends BridgeAbstract
     public function collectData()
     {
         $baseURI = 'https://' . $this->getInput('country') . '.newonnetflix.info';
-        $html = getSimpleHTMLDOMCached($baseURI . '/lastchance', self::CACHE_TIMEOUT);
+        $html = $this->fetcher->getSimpleHTMLDOMCached($baseURI . '/lastchance', self::CACHE_TIMEOUT);
 
         foreach ($html->find('article.oldpost') as $element) {
             $title = $element->find('a.infopop[title]', 0);

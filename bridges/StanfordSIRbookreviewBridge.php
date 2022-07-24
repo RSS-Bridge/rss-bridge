@@ -30,7 +30,7 @@ class StanfordSIRbookreviewBridge extends BridgeAbstract
                 break;
         }
 
-        $html = getSimpleHTMLDOM($url)
+        $html = $this->fetcher->getSimpleHTMLDOM($url)
             or returnServerError('Failed loading content!');
         foreach ($html->find('article') as $element) {
             $item = [];

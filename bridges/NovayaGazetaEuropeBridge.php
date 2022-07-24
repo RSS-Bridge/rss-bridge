@@ -37,7 +37,7 @@ class NovayaGazetaEuropeBridge extends BridgeAbstract
             $url .= '?lang=' . $this->getInput('language');
         }
 
-        $json = getContents($url);
+        $json = $this->fetcher->getContents($url);
         $data = json_decode($json);
 
         foreach ($data->records as $record) {
@@ -74,7 +74,7 @@ class NovayaGazetaEuropeBridge extends BridgeAbstract
             if (property_exists($block, 'body') && $block->body !== null) {
                 $body = self::convertBody($block);
             } else {
-                $record_json = getContents("https://novayagazeta.eu/api/v1/get/record?slug={$block->slug}");
+                $record_json = $this->fetcher->getContents("https://novayagazeta.eu/api/v1/get/record?slug={$block->slug}");
                 $record_data = json_decode($record_json);
                 $body = self::convertBody($record_data->record);
             }

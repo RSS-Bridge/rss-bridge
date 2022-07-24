@@ -44,14 +44,15 @@ class VimeoBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOM(
+        $html = $this->fetcher->getSimpleHTMLDOM(
             $this->getURI(),
             $header = [],
             $opts = [],
             $lowercase = true,
             $forceTagsClosed = true,
             $target_charset = DEFAULT_TARGET_CHARSET,
-            $stripRN = false, // We want to keep newline characters
+            $stripRN = false,
+            // We want to keep newline characters
             $defaultBRText = DEFAULT_BR_TEXT,
             $defaultSpanText = DEFAULT_SPAN_TEXT
         );

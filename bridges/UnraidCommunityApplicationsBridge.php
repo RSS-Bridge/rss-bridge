@@ -15,7 +15,7 @@ class UnraidCommunityApplicationsBridge extends BridgeAbstract
     private function fetchApps()
     {
         Debug::log('Fetching all applications/plugins');
-        $this->apps = getContents(self::APPSURI);
+        $this->apps = $this->fetcher->getContents(self::APPSURI);
         $this->apps = json_decode($this->apps, true)['applist'];
     }
 

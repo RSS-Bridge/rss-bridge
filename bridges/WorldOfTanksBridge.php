@@ -44,7 +44,7 @@ class WorldOfTanksBridge extends FeedExpander
      */
     private function loadFullArticle($uri)
     {
-        $html = getSimpleHTMLDOMCached($uri);
+        $html = $this->fetcher->getSimpleHTMLDOMCached($uri);
 
         foreach (self::POSSIBLE_ARTICLES as $article_class) {
             $content = $html->find('article', 0);

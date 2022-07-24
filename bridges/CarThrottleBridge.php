@@ -17,7 +17,7 @@ class CarThrottleBridge extends FeedExpander
         $item = parent::parseItem($feedItem);
 
         //fetch page
-        $articlePage = getSimpleHTMLDOMCached($feedItem->link)
+        $articlePage = $this->fetcher->getSimpleHTMLDOMCached($feedItem->link)
             or returnServerError('Could not retrieve ' . $feedItem->link);
 
         $subtitle = $articlePage->find('p.standfirst', 0);

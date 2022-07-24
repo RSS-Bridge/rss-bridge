@@ -52,7 +52,7 @@ Once a project reaches 10,000 supporters, it gets reviewed by the lego experts.'
             CURLOPT_POST => 1,
             CURLOPT_POSTFIELDS => $this->getHttpPostData()
         ];
-        $responseData = getContents($this->getHttpPostURI(), $header, $opts) or
+        $responseData = $this->fetcher->getContents($this->getHttpPostURI(), $header, $opts) or
                 returnServerError('Unable to query Lego Ideas API.');
 
         foreach (json_decode($responseData)->results as $project) {

@@ -164,7 +164,7 @@ class MangaDexBridge extends BridgeAbstract
         $header = [
             'Content-Type: application/json'
         ];
-        $content = json_decode(getContents($api_uri, $header), true);
+        $content = json_decode($this->fetcher->getContents($api_uri, $header), true);
         if ($content['result'] == 'ok') {
             $content = $content['data'];
         } else {
