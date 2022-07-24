@@ -43,7 +43,7 @@ class DisplayAction implements ActionInterface
         $noproxy = array_key_exists('_noproxy', $request)
             && filter_var($request['_noproxy'], FILTER_VALIDATE_BOOLEAN);
 
-        if (defined('PROXY_URL') && PROXY_BYBRIDGE && $noproxy) {
+        if (Configuration::getConfig('proxy', 'url') && Configuration::getConfig('proxy', 'by_bridge') && $noproxy) {
             define('NOPROXY', true);
         }
 

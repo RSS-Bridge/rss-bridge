@@ -79,8 +79,8 @@ function getContents(
         'headers' => $httpHeaders,
         'curl_options' => $curlOptions,
     ];
-    if (defined('PROXY_URL') && !defined('NOPROXY')) {
-        $config['proxy'] = PROXY_URL;
+    if (Configuration::getConfig('proxy', 'url') && !defined('NOPROXY')) {
+        $config['proxy'] = Configuration::getConfig('proxy', 'url');
     }
     if (!Debug::isEnabled() && $cache->getTime()) {
         $config['if_not_modified_since'] = $cache->getTime();

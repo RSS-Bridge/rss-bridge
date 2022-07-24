@@ -168,27 +168,19 @@ final class Configuration
         date_default_timezone_set(self::getConfig('system', 'timezone'));
 
         if (!is_string(self::getConfig('proxy', 'url'))) {
+            /** URL of the proxy server */
             self::reportConfigurationError('proxy', 'url', 'Is not a valid string');
         }
 
-        if (!empty(self::getConfig('proxy', 'url'))) {
-            /** URL of the proxy server */
-            define('PROXY_URL', self::getConfig('proxy', 'url'));
-        }
-
+        /** True if proxy usage can be enabled selectively for each bridge */
         if (!is_bool(self::getConfig('proxy', 'by_bridge'))) {
             self::reportConfigurationError('proxy', 'by_bridge', 'Is not a valid Boolean');
         }
 
-        /** True if proxy usage can be enabled selectively for each bridge */
-        define('PROXY_BYBRIDGE', self::getConfig('proxy', 'by_bridge'));
-
         if (!is_string(self::getConfig('proxy', 'name'))) {
+            /** Name of the proxy server */
             self::reportConfigurationError('proxy', 'name', 'Is not a valid string');
         }
-
-        /** Name of the proxy server */
-        define('PROXY_NAME', self::getConfig('proxy', 'name'));
 
         if (!is_string(self::getConfig('cache', 'type'))) {
             self::reportConfigurationError('cache', 'type', 'Is not a valid string');

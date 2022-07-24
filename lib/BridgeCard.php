@@ -324,9 +324,9 @@ This bridge is not fetching its content through a secure connection</div>';
 
         $donationsAllowed = Configuration::getConfig('admin', 'donations');
 
-        if (defined('PROXY_URL') && PROXY_BYBRIDGE) {
+        if (Configuration::getConfig('proxy', 'url') && Configuration::getConfig('proxy', 'by_bridge')) {
             $parameters['global']['_noproxy'] = [
-                'name' => 'Disable proxy (' . ((defined('PROXY_NAME') && PROXY_NAME) ? PROXY_NAME : PROXY_URL) . ')',
+                'name' => 'Disable proxy (' . (Configuration::getConfig('proxy', 'name') ?: Configuration::getConfig('proxy', 'url')) . ')',
                 'type' => 'checkbox'
             ];
         }
