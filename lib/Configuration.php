@@ -131,8 +131,8 @@ final class Configuration
             self::reportError('The default configuration file is missing at ' . FILE_CONFIG_DEFAULT);
         }
 
-        Configuration::$config = parse_ini_file(FILE_CONFIG_DEFAULT, true, INI_SCANNER_TYPED);
-        if (!Configuration::$config) {
+        $config = parse_ini_file(FILE_CONFIG_DEFAULT, true, INI_SCANNER_TYPED);
+        if (!$config) {
             self::reportError('Error parsing ' . FILE_CONFIG_DEFAULT);
         }
 
@@ -140,23 +140,25 @@ final class Configuration
             // Replace default configuration with custom settings
             foreach (parse_ini_file(FILE_CONFIG, true, INI_SCANNER_TYPED) as $header => $section) {
                 foreach ($section as $key => $value) {
-                    Configuration::$config[$header][$key] = $value;
+                    $config[$header][$key] = $value;
                 }
             }
         }
 
-        foreach (getenv() as $envkey => $value) {
+        foreach (getenv() as $envName => $envValue) {
             // Replace all settings with their respective environment variable if available
-            $keyArray = explode('_', $envkey);
+            $keyArray = explode('_', $envName);
             if ($keyArray[0] === 'RSSBRIDGE') {
                 $header = strtolower($keyArray[1]);
                 $key = strtolower($keyArray[2]);
-                if ($value === 'true' || $value === 'false') {
-                    $value = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+                if ($envValue === 'true' || $envValue === 'false') {
+                    $envValue = filter_var($envValue, FILTER_VALIDATE_BOOLEAN);
                 }
-                Configuration::$config[$header][$key] = $value;
+                $config[$header][$key] = $envValue;
             }
         }
+
+        self::$config = $config;
 
         if (
             !is_string(self::getConfig('system', 'timezone'))
@@ -165,14 +167,10 @@ final class Configuration
             self::reportConfigurationError('system', 'timezone');
         }
 
-        date_default_timezone_set(self::getConfig('system', 'timezone'));
-
         if (!is_string(self::getConfig('proxy', 'url'))) {
-            /** URL of the proxy server */
             self::reportConfigurationError('proxy', 'url', 'Is not a valid string');
         }
 
-        /** True if proxy usage can be enabled selectively for each bridge */
         if (!is_bool(self::getConfig('proxy', 'by_bridge'))) {
             self::reportConfigurationError('proxy', 'by_bridge', 'Is not a valid Boolean');
         }
@@ -189,9 +187,6 @@ final class Configuration
         if (!is_bool(self::getConfig('cache', 'custom_timeout'))) {
             self::reportConfigurationError('cache', 'custom_timeout', 'Is not a valid Boolean');
         }
-
-        /** True if the cache timeout can be specified by the user */
-        define('CUSTOM_CACHE_TIMEOUT', self::getConfig('cache', 'custom_timeout'));
 
         if (!is_bool(self::getConfig('authentication', 'enable'))) {
             self::reportConfigurationError('authentication', 'enable', 'Is not a valid Boolean');
