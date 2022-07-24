@@ -54,6 +54,8 @@ define('REPOSITORY', 'https://github.com/RSS-Bridge/rss-bridge/');
 // Files
 require_once PATH_LIB . 'html.php';
 require_once PATH_LIB . 'error.php';
+require_once PATH_LIB . 'HttpException.php';
+require_once PATH_LIB . 'Fetcher.php';
 require_once PATH_LIB . 'contents.php';
 require_once PATH_LIB . 'php8backports.php';
 
