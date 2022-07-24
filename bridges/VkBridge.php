@@ -472,6 +472,7 @@ class VkBridge extends BridgeAbstract
     {
         $params['v'] = '5.80';
         $params['access_token'] = $this->getAccessToken();
-        return json_decode(getContents('https://api.vk.com/method/' . $method . '?' . http_build_query($params)), true);
+        $uri = 'https://api.vk.com/method/' . $method . '?' . http_build_query($params);
+        return json_decode(getContents($uri), true);
     }
 }

@@ -88,8 +88,9 @@ class Drive2ruBridge extends BridgeAbstract
             $item['title'] = $article->find('a.c-link--text', 0)->plaintext;
             $item['uri'] = urljoin(self::URI, $article->find('a.c-link--text', 0)->href);
             if ($this->getInput('full_articles')) {
+                $content = getSimpleHTMLDomCached($item['uri'])->find('div.c-post__body', 0);
                 $item['content'] = $this->addCommentsLink(
-                    $this->adjustContent(getSimpleHTMLDomCached($item['uri'])->find('div.c-post__body', 0))->innertext,
+                    $this->adjustContent($content)->innertext,
                     $item['uri']
                 );
             } else {
@@ -113,8 +114,9 @@ class Drive2ruBridge extends BridgeAbstract
             $item['title'] = $article->find('a.c-link--text', 1)->plaintext;
             $item['uri'] = urljoin(self::URI, $article->find('a.c-link--text', 1)->href);
             if ($this->getInput('full_articles')) {
+                $content = getSimpleHTMLDomCached($item['uri'])->find('div.c-post__body', 0);
                 $item['content'] = $this->addCommentsLink(
-                    $this->adjustContent(getSimpleHTMLDomCached($item['uri'])->find('div.c-post__body', 0))->innertext,
+                    $this->adjustContent($content)->innertext,
                     $item['uri']
                 );
             } else {
@@ -138,8 +140,9 @@ class Drive2ruBridge extends BridgeAbstract
             $item['title'] = $article->find('a.c-link--text', 0)->plaintext;
             $item['uri'] = urljoin(self::URI, $article->find('a.c-link--text', 0)->href);
             if ($this->getInput('full_articles')) {
+                $content = getSimpleHTMLDomCached($item['uri'])->find('div.article', 0);
                 $item['content'] = $this->addCommentsLink(
-                    $this->adjustContent(getSimpleHTMLDomCached($item['uri'])->find('div.article', 0))->innertext,
+                    $this->adjustContent($content)->innertext,
                     $item['uri']
                 );
             } else {
