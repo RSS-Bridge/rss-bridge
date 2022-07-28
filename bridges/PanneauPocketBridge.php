@@ -123,9 +123,9 @@ class PanneauPocketBridge extends BridgeAbstract
             $item = [];
 
             $item['uri'] = $itemDom->find('button[type=button]', 0)->href;
-            $item['title'] = $itemDom->find('.sign-preview__content .title', 0)->innertext;
+            $item['title'] = $itemDom->find('.sign-preview__content .title', 0)->innertext();
             $item['author'] = 'floviolleau';
-            $item['content'] = $itemDom->find('.sign-preview__content .content', 0)->innertext;
+            $item['content'] = $itemDom->find('.sign-preview__content .content', 0)->innertext();
 
             $timestamp = $itemDom->find('span.date', 0)->plaintext;
             if (preg_match('#(?<d>[0-9]+)/(?<m>[0-9]+)/(?<y>[0-9]+)#', $timestamp, $match)) {
@@ -139,14 +139,14 @@ class PanneauPocketBridge extends BridgeAbstract
     /**
      * Produce self::CITIES array
      */
-    private static function getCities()
+    private static function getCities($zipcodeStartWith)
     {
         $cities = json_decode(getContents(self::URI . '/public-api/city'), true);
 
         $formattedCities = null;
         $citiesString = '[<br>';
         foreach ($cities as $city) {
-            if (str_starts_with($city['postCode'], '35')) {
+            if (str_starts_with($city['postCode'], $zipcodeStartWith)) {
                 $formattedCities[$city['name'] . ' - ' . $city['postCode']] = $city['id'];
                 $citiesString .= '    "' . $city['name'] . '-' . $city['postCode'] . '" => "' . $city['id'] . '",';
                 $citiesString .= '<br>';
