@@ -113,8 +113,8 @@ class PanneauPocketBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $found = array_search($this->getInput('cities'), self::CITIES);
-        $city = strtolower($this->getInput('cities') . '-' . $found);
+        $matchedCity = array_search($this->getInput('cities'), self::CITIES);
+        $city = strtolower($this->getInput('cities') . '-' . $matchedCity);
         $url = sprintf('https://app.panneaupocket.com/ville/%s', urlencode($city));
 
         $html = getSimpleHTMLDOM($url);
