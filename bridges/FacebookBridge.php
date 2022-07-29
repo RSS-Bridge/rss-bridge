@@ -275,11 +275,30 @@ class FacebookBridge extends BridgeAbstract
         $elements = $post->find('a')
             or returnServerError('Unable to find URI!');
 
+        // Find the one that is a permalink
         foreach ($elements as $anchor) {
-            // Find the one that is a permalink
             if (strpos($anchor->href, 'permalink') !== false) {
                 $arr = explode('?', $anchor->href, 2);
                 return $arr[0];
+            }
+        }
+
+        // Take the second link for post that are shared
+        $secondAnchor = $elements[2]->href;
+
+        // Transform to permanent link by removing fluctuating parameters
+        if (isset($secondAnchor)) {
+            // Link like /groupname/photos
+            if (strpos($secondAnchor, '.php') === false) {
+                $arr = explode('?', $secondAnchor, 2);
+                return $arr[0];
+            }
+
+            // Link like story.php?
+            if (strpos($secondAnchor, 'story.php') !== false) {
+                // id & story_fbid parameters are the only ones needed to keep
+                $arr = explode('&amp;m_entstream_source', $secondAnchor, 2);
+                return html_entity_decode($arr[0]);
             }
         }
 
