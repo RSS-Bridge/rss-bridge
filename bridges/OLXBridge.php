@@ -38,6 +38,26 @@ class OLXBridge extends BridgeAbstract
 
         return parent::getURI();
     }
+
+    public function getName()
+    {
+        $paths = explode('/', parse_url($this->getInput('url'), PHP_URL_PATH));
+
+        $query = array_reduce($paths, function ($q, $p) {
+            if (preg_match('/^q-(.+)$/i', $p, $matches)) {
+                $q[] = str_replace('-', ' ', urldecode($matches[1]));
+            }
+
+            return $q;
+        });
+
+        if ($query) {
+            return $query[0];
+        }
+
+        return parent::getName();
+    }
+
     public function collectData()
     {
         # make sure we order by the most recently listed offers
