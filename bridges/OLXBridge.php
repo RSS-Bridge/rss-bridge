@@ -20,6 +20,10 @@ class OLXBridge extends BridgeAbstract
         'includeFeaturedPosts' => [
             'type' => 'checkbox',
             'name' => 'Include featured posts'
+        ],
+        'shippingOfferedOnly' => [
+            'type' => 'checkbox',
+            'name' => 'Only posts with shipping offered'
         ]
     ]];
 
@@ -58,6 +62,17 @@ class OLXBridge extends BridgeAbstract
                 continue;
             }
 
+            $shippingOffered = $post->find('.css-1c0ed4l svg', 0)->outertext;
+            if ($this->getInput('shippingOfferedOnly') && !$shippingOffered) {
+                continue;
+            }
+
+            $negotiable = $post->find('p[data-testid="ad-price"] span.css-e2218f', 0)->plaintext;
+            if ($negotiable) {
+                $price = trim(str_replace($negotiable, '', $price));
+                $negotiable = '(' . $negotiable . ')';
+            }
+
             if ($post->find('h6', 0)->plaintext != '') {
                 $item['uri'] = $post->find('a', 0)->href;
                 $item['title'] = $post->find('h6', 0)->plaintext;
@@ -72,14 +87,6 @@ class OLXBridge extends BridgeAbstract
                     $img = $articleHTMLContent->find('div.swiper-wrapper img', 0)->src;
                 }
             }
-
-            $negotiable = $post->find('p[data-testid="ad-price"] span.css-e2218f', 0)->plaintext;
-            if ($negotiable) {
-                $price = trim(str_replace($negotiable, '', $price));
-                $negotiable = '(' . $negotiable . ')';
-            }
-
-            $shippingOffered = $post->find('.css-1c0ed4l svg', 0)->outertext;
 
             $locationAndDate = $post->find('p[data-testid="location-date"]', 0)->plaintext;
             $locationAndDateArray = explode(' - ', $locationAndDate, 2);
