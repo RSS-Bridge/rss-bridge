@@ -77,17 +77,17 @@ class OLXBridge extends BridgeAbstract
                 continue;
             }
 
-            $price = $post->find('p[data-testid="ad-price"]', 0)->plaintext;
+            $price = $post->find('p[data-testid="ad-price"]', 0)->plaintext ?? '';
             if (!$this->getInput('includePostsWithoutPricetag') && !$price) {
                 continue;
             }
 
-            $shippingOffered = $post->find('.css-1c0ed4l svg', 0)->outertext;
+            $shippingOffered = $post->find('.css-1c0ed4l svg', 0)->outertext ?? false;
             if ($this->getInput('shippingOfferedOnly') && !$shippingOffered) {
                 continue;
             }
 
-            $negotiable = $post->find('p[data-testid="ad-price"] span.css-e2218f', 0)->plaintext;
+            $negotiable = $post->find('p[data-testid="ad-price"] span.css-e2218f', 0)->plaintext ?? false;
             if ($negotiable) {
                 $price = trim(str_replace($negotiable, '', $price));
                 $negotiable = '(' . $negotiable . ')';
