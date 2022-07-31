@@ -7,11 +7,6 @@ Configuration::loadConfiguration();
 
 date_default_timezone_set(Configuration::getConfig('system', 'timezone'));
 
-if (Configuration::getConfig('proxy', 'url')) {
-    define('PROXY_URL', Configuration::getConfig('proxy', 'url'));
-}
-define('PROXY_BYBRIDGE', Configuration::getConfig('proxy', 'by_bridge'));
-define('PROXY_NAME', Configuration::getConfig('proxy', 'name'));
 define('CUSTOM_CACHE_TIMEOUT', Configuration::getConfig('cache', 'custom_timeout'));
 
 Authentication::showPromptIfNeeded();

@@ -149,14 +149,8 @@ final class Configuration
             // Replace all settings with their respective environment variable if available
             $keyArray = explode('_', $envName);
             if ($keyArray[0] === 'RSSBRIDGE') {
-                // Preserve casing
-                if ($keyArray[1] == 'TwitterV2Bridge') {
-                    $header = $keyArray[1];
-                    $key = $keyArray[2];
-                } else {
-                    $header = strtolower($keyArray[1]);
-                    $key = strtolower($keyArray[2]);
-                }
+                $header = strtolower($keyArray[1]);
+                $key = strtolower($keyArray[2]);
                 if ($envValue === 'true' || $envValue === 'false') {
                     $envValue = filter_var($envValue, FILTER_VALIDATE_BOOLEAN);
                 }
