@@ -207,7 +207,7 @@ class FeedItem
         if (!is_string($title)) {
             Debug::log('Title must be a string!');
         } else {
-            $this->title = trim($title);
+            $this->title = truncate(trim($title));
         }
 
         return $this;
