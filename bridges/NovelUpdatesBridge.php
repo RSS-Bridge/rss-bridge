@@ -30,7 +30,7 @@ class NovelUpdatesBridge extends BridgeAbstract
     {
         $fullhtml = getSimpleHTMLDOM($this->getURI());
 
-        $this->seriesTitle = $fullhtml->find('h4.seriestitle', 0)->plaintext;
+        $this->seriesTitle = $fullhtml->find('div.seriestitlenu', 0)->plaintext;
         // dirty fix for nasty simpledom bug: https://github.com/sebsauvage/rss-bridge/issues/259
         // forcefully removes tbody
         $html = $fullhtml->find('table#myTable', 0)->innertext;
@@ -66,7 +66,6 @@ class NovelUpdatesBridge extends BridgeAbstract
         if (!empty($this->seriesTitle)) {
             return $this->seriesTitle . ' - ' . static::NAME;
         }
-
         return parent::getName();
     }
 }
