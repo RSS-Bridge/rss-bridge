@@ -230,11 +230,13 @@ class DisplayAction implements ActionInterface
         return sprintf('https://github.com/RSS-Bridge/rss-bridge/issues/new?%s', http_build_query([
             'title' => sprintf('%s failed with error %s', $bridge->getName(), $e->getCode()),
             'body' => sprintf(
-                "```\n%s\n\n%s\n\nQuery string:%s\nVersion:%s\n```",
+                "```\n%s\n\n%s\n\nQuery string:%s\nVersion:%s\nOs:%s\nPHP version:%s\n```",
                 $message,
                 implode("\n", create_sane_stacktrace($e)),
                 $_SERVER['QUERY_STRING'] ?? '',
                 Configuration::getVersion(),
+                PHP_OS_FAMILY,
+                phpversion() ?: 'Unknown'
             ),
             'labels' => 'Bridge-Broken',
             'assignee' => $bridge->getMaintainer(),
