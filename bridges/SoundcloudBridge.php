@@ -125,7 +125,7 @@ HTML;
         $cacheFactory = new CacheFactory();
 
         $this->clientIDCache = $cacheFactory->create();
-        $this->clientIDCache->setScope(get_called_class());
+        $this->clientIDCache->setScope('SoundCloudBridge');
         $this->clientIDCache->setKey(['client_id']);
     }
 

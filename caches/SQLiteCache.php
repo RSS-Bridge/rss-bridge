@@ -24,16 +24,17 @@ class SQLiteCache implements CacheInterface
             );
         }
 
-        $file = Configuration::getConfig(get_called_class(), 'file');
+        $section = 'SQLiteCache';
+        $file = Configuration::getConfig($section, 'file');
         if (empty($file)) {
-            $message = sprintf('Configuration for %s missing. Please check your %s', get_called_class(), FILE_CONFIG);
+            $message = sprintf('Configuration for %s missing. Please check your %s', $section, FILE_CONFIG);
             print render('error.html.php', ['message' => $message]);
             exit;
         }
         if (dirname($file) == '.') {
             $file = PATH_CACHE . $file;
         } elseif (!is_dir(dirname($file))) {
-            $message = sprintf('Invalid configuration for %s. Please check your %s', get_called_class(), FILE_CONFIG);
+            $message = sprintf('Invalid configuration for %s. Please check your %s', $section, FILE_CONFIG);
             print render('error.html.php', ['message' => $message]);
             exit;
         }

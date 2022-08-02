@@ -280,7 +280,8 @@ abstract class BridgeAbstract implements BridgeInterface
     public function loadConfiguration()
     {
         foreach (static::CONFIGURATION as $optionName => $optionValue) {
-            $configurationOption = Configuration::getConfig(get_class($this), $optionName);
+            $section = (new ReflectionClass($this))->getShortName();
+            $configurationOption = Configuration::getConfig($section, $optionName);
 
             if ($configurationOption !== null) {
                 $this->configuration[$optionName] = $configurationOption;
@@ -408,7 +409,9 @@ abstract class BridgeAbstract implements BridgeInterface
         $cacheFactory = new CacheFactory();
 
         $cache = $cacheFactory->create();
-        $cache->setScope(get_called_class());
+        // Create class name without the namespace part
+        $scope = (new ReflectionClass($this))->getShortName();
+        $cache->setScope($scope);
         $cache->setKey($key);
         if ($cache->getTime() < time() - $duration) {
             return null;
@@ -427,7 +430,8 @@ abstract class BridgeAbstract implements BridgeInterface
         $cacheFactory = new CacheFactory();
 
         $cache = $cacheFactory->create();
-        $cache->setScope(get_called_class());
+        $scope = (new ReflectionClass($this))->getShortName();
+        $cache->setScope($scope);
         $cache->setKey($key);
         $cache->saveData($value);
     }

@@ -15,22 +15,23 @@ class MemcachedCache implements CacheInterface
             returnServerError('"memcached" extension not loaded. Please check "php.ini"');
         }
 
-        $host = Configuration::getConfig(get_called_class(), 'host');
-        $port = Configuration::getConfig(get_called_class(), 'port');
+        $section = 'MemcachedCache';
+        $host = Configuration::getConfig($section, 'host');
+        $port = Configuration::getConfig($section, 'port');
         if (empty($host) && empty($port)) {
-            returnServerError('Configuration for ' . get_called_class() . ' missing. Please check your ' . FILE_CONFIG);
+            returnServerError('Configuration for ' . $section . ' missing. Please check your ' . FILE_CONFIG);
         } elseif (empty($host)) {
-            returnServerError('"host" param is not set for ' . get_called_class() . '. Please check your ' . FILE_CONFIG);
+            returnServerError('"host" param is not set for ' . $section . '. Please check your ' . FILE_CONFIG);
         } elseif (empty($port)) {
-            returnServerError('"port" param is not set for ' . get_called_class() . '. Please check your ' . FILE_CONFIG);
+            returnServerError('"port" param is not set for ' . $section . '. Please check your ' . FILE_CONFIG);
         } elseif (!ctype_digit($port)) {
-            returnServerError('"port" param is invalid for ' . get_called_class() . '. Please check your ' . FILE_CONFIG);
+            returnServerError('"port" param is invalid for ' . $section . '. Please check your ' . FILE_CONFIG);
         }
 
         $port = intval($port);
 
         if ($port < 1 || $port > 65535) {
-            returnServerError('"port" param is invalid for ' . get_called_class() . '. Please check your ' . FILE_CONFIG);
+            returnServerError('"port" param is invalid for ' . $section . '. Please check your ' . FILE_CONFIG);
         }
 
         $conn = new Memcached();

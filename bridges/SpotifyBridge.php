@@ -103,7 +103,7 @@ class SpotifyBridge extends BridgeAbstract
         $cacheFactory = new CacheFactory();
 
         $cache = $cacheFactory->create();
-        $cache->setScope(get_called_class());
+        $cache->setScope('SpotifyBridge');
         $cache->setKey(['token']);
 
         if ($cache->getTime()) {

@@ -4,6 +4,11 @@ require_once __DIR__ . '/lib/rssbridge.php';
 
 Configuration::verifyInstallation();
 Configuration::loadConfiguration();
+
+date_default_timezone_set(Configuration::getConfig('system', 'timezone'));
+
+define('CUSTOM_CACHE_TIMEOUT', Configuration::getConfig('cache', 'custom_timeout'));
+
 Authentication::showPromptIfNeeded();
 
 try {
