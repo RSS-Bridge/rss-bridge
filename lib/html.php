@@ -98,6 +98,15 @@ function sanitize(
     return $htmlContent;
 }
 
+function sanitize_html(string $html): string
+{
+    $html = str_replace('<script', '<&zwnj;script', $html); // Disable scripts, but leave them visible.
+    $html = str_replace('<iframe', '<&zwnj;iframe', $html);
+    $html = str_replace('<link', '<&zwnj;link', $html);
+    // We leave alone object and embed so that videos can play in RSS readers.
+    return $html;
+}
+
 /**
  * Replace background by image
  *

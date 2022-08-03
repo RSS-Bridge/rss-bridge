@@ -1,8 +1,5 @@
 <?php
 
-/**
-* Cache with file system
-*/
 class FileCache implements CacheInterface
 {
     protected $path;
@@ -11,10 +8,7 @@ class FileCache implements CacheInterface
     public function __construct()
     {
         if (!is_writable(PATH_CACHE)) {
-            returnServerError(
-                'RSS-Bridge does not have write permissions for '
-                . PATH_CACHE . '!'
-            );
+            throw new \Exception('RSS-Bridge does not have write permissions for ' . PATH_CACHE . '!');
         }
     }
 
@@ -23,20 +17,15 @@ class FileCache implements CacheInterface
         if (file_exists($this->getCacheFile())) {
             return unserialize(file_get_contents($this->getCacheFile()));
         }
-
         return null;
     }
 
     public function saveData($data)
     {
-        // Notice: We use plain serialize() here to reduce memory footprint on
-        // large input data.
         $writeStream = file_put_contents($this->getCacheFile(), serialize($data));
-
         if ($writeStream === false) {
             throw new \Exception('Cannot write the cache... Do you have the right permissions ?');
         }
-
         return $this;
     }
 
@@ -46,7 +35,10 @@ class FileCache implements CacheInterface
         clearstatcache(false, $cacheFile);
         if (file_exists($cacheFile)) {
             $time = filemtime($cacheFile);
-            return ($time !== false) ? $time : null;
+            if ($time !== false) {
+                return $time;
+            }
+            return null;
         }
 
         return null;
@@ -55,28 +47,25 @@ class FileCache implements CacheInterface
     public function purgeCache($seconds)
     {
         $cachePath = $this->getPath();
-        if (file_exists($cachePath)) {
-            $cacheIterator = new RecursiveIteratorIterator(
-                new RecursiveDirectoryIterator($cachePath),
-                RecursiveIteratorIterator::CHILD_FIRST
-            );
+        if (!file_exists($cachePath)) {
+            return;
+        }
+        $cacheIterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($cachePath),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
 
-            foreach ($cacheIterator as $cacheFile) {
-                if (in_array($cacheFile->getBasename(), ['.', '..', '.gitkeep'])) {
-                    continue;
-                } elseif ($cacheFile->isFile()) {
-                    if (filemtime($cacheFile->getPathname()) < time() - $seconds) {
-                        unlink($cacheFile->getPathname());
-                    }
+        foreach ($cacheIterator as $cacheFile) {
+            if (in_array($cacheFile->getBasename(), ['.', '..', '.gitkeep'])) {
+                continue;
+            } elseif ($cacheFile->isFile()) {
+                if (filemtime($cacheFile->getPathname()) < time() - $seconds) {
+                    unlink($cacheFile->getPathname());
                 }
             }
         }
     }
 
-    /**
-    * Set scope
-    * @return self
-    */
     public function setScope($scope)
     {
         if (is_null($scope) || !is_string($scope)) {
@@ -88,10 +77,6 @@ class FileCache implements CacheInterface
         return $this;
     }
 
-    /**
-    * Set key
-    * @return self
-    */
     public function setKey($key)
     {
         if (!empty($key) && is_array($key)) {
@@ -107,10 +92,6 @@ class FileCache implements CacheInterface
         return $this;
     }
 
-    /**
-    * Return cache path (and create if not exist)
-    * @return string Cache path
-    */
     private function getPath()
     {
         if (is_null($this->path)) {
@@ -126,19 +107,11 @@ class FileCache implements CacheInterface
         return $this->path;
     }
 
-    /**
-    * Get the file name use for cache store
-    * @return string Path to the file cache
-    */
     private function getCacheFile()
     {
         return $this->getPath() . $this->getCacheName();
     }
 
-    /**
-    * Determines file name for store the cache
-    * return string
-    */
     private function getCacheName()
     {
         if (is_null($this->key)) {

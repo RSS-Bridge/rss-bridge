@@ -18,17 +18,21 @@ class AtomFormat extends FormatAbstract
 
     public function stringify()
     {
-        $urlPrefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
-        $urlHost = (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '';
-        $urlPath = (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : '';
-        $urlRequest = (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
+        $https = $_SERVER['HTTPS'] ?? null;
+        $urlPrefix = $https === 'on' ? 'https://' : 'http://';
+        $urlHost = $_SERVER['HTTP_HOST'] ?? '';
+        $urlRequest = $_SERVER['REQUEST_URI'] ?? '';
 
         $feedUrl = $urlPrefix . $urlHost . $urlRequest;
 
         $extraInfos = $this->getExtraInfos();
-        $uri = !empty($extraInfos['uri']) ? $extraInfos['uri'] : REPOSITORY;
+        if (empty($extraInfos['uri'])) {
+            $uri = REPOSITORY;
+        } else {
+            $uri = $extraInfos['uri'];
+        }
 
-        $document = new DomDocument('1.0', $this->getCharset());
+        $document = new \DomDocument('1.0', $this->getCharset());
         $document->formatOutput = true;
         $feed = $document->createElementNS(self::ATOM_NS, 'feed');
         $document->appendChild($feed);
@@ -44,10 +48,10 @@ class AtomFormat extends FormatAbstract
         $id->appendChild($document->createTextNode($feedUrl));
 
         $uriparts = parse_url($uri);
-        if (!empty($extraInfos['icon'])) {
-            $iconUrl = $extraInfos['icon'];
-        } else {
+        if (empty($extraInfos['icon'])) {
             $iconUrl = $uriparts['scheme'] . '://' . $uriparts['host'] . '/favicon.ico';
+        } else {
+            $iconUrl = $extraInfos['icon'];
         }
         $icon = $document->createElement('icon');
         $feed->appendChild($icon);
@@ -94,11 +98,13 @@ class AtomFormat extends FormatAbstract
                 $entryID = 'urn:sha1:' . $item->getUid();
             }
 
-            if (empty($entryID)) { // Fallback to provided URI
+            if (empty($entryID)) {
+                // Fallback to provided URI
                 $entryID = $entryUri;
             }
 
-            if (empty($entryID)) { // Fallback to title and content
+            if (empty($entryID)) {
+                // Fallback to title and content
                 $entryID = 'urn:sha1:' . hash('sha1', $entryTitle . $entryContent);
             }
 
@@ -126,7 +132,7 @@ class AtomFormat extends FormatAbstract
             $title->setAttribute('type', 'html');
             $title->appendChild($document->createTextNode($entryTitle));
 
-            $entryTimestamp = gmdate(DATE_ATOM, $entryTimestamp);
+            $entryTimestamp = gmdate(\DATE_ATOM, $entryTimestamp);
             $published = $document->createElement('published');
             $entry->appendChild($published);
             $published->appendChild($document->createTextNode($entryTimestamp));
@@ -157,14 +163,14 @@ class AtomFormat extends FormatAbstract
 
             $content = $document->createElement('content');
             $content->setAttribute('type', 'html');
-            $content->appendChild($document->createTextNode($this->sanitizeHtml($entryContent)));
+            $content->appendChild($document->createTextNode(sanitize_html($entryContent)));
             $entry->appendChild($content);
 
             foreach ($item->getEnclosures() as $enclosure) {
                 $entryEnclosure = $document->createElement('link');
                 $entry->appendChild($entryEnclosure);
                 $entryEnclosure->setAttribute('rel', 'enclosure');
-                $entryEnclosure->setAttribute('type', getMimeType($enclosure));
+                $entryEnclosure->setAttribute('type', parse_mime_type($enclosure));
                 $entryEnclosure->setAttribute('href', $enclosure);
             }
 

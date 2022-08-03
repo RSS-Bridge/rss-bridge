@@ -329,10 +329,10 @@ class FeedItem
             $content = (string)$content;
         }
 
-        if (!is_string($content)) {
-            Debug::log('Content must be a string!');
-        } else {
+        if (is_string($content)) {
             $this->content = $content;
+        } else {
+            Debug::log('Content must be a string!');
         }
 
         return $this;
@@ -361,11 +361,9 @@ class FeedItem
      */
     public function setEnclosures($enclosures)
     {
-        $this->enclosures = []; // Clear previous data
+        $this->enclosures = [];
 
-        if (!is_array($enclosures)) {
-            Debug::log('Enclosures must be an array!');
-        } else {
+        if (is_array($enclosures)) {
             foreach ($enclosures as $enclosure) {
                 if (
                     !filter_var(
@@ -379,6 +377,8 @@ class FeedItem
                     $this->enclosures[] = $enclosure;
                 }
             }
+        } else {
+            Debug::log('Enclosures must be an array!');
         }
 
         return $this;
@@ -407,11 +407,9 @@ class FeedItem
      */
     public function setCategories($categories)
     {
-        $this->categories = []; // Clear previous data
+        $this->categories = [];
 
-        if (!is_array($categories)) {
-            Debug::log('Categories must be an array!');
-        } else {
+        if (is_array($categories)) {
             foreach ($categories as $category) {
                 if (!is_string($category)) {
                     Debug::log('Category must be a string!');
@@ -419,6 +417,8 @@ class FeedItem
                     $this->categories[] = $category;
                 }
             }
+        } else {
+            Debug::log('Categories must be an array!');
         }
 
         return $this;

@@ -16,27 +16,17 @@ class ListAction implements ActionInterface
 {
     public function execute(array $request)
     {
-        $list = new StdClass();
+        $list = new \stdClass();
         $list->bridges = [];
         $list->total = 0;
 
-        $bridgeFactory = new \BridgeFactory();
+        $bridgeFactory = new BridgeFactory();
 
         foreach ($bridgeFactory->getBridgeClassNames() as $bridgeClassName) {
             $bridge = $bridgeFactory->create($bridgeClassName);
 
-            if ($bridge === false) { // Broken bridge, show as inactive
-                $list->bridges[$bridgeClassName] = [
-                    'status' => 'inactive'
-                ];
-
-                continue;
-            }
-
-            $status = $bridgeFactory->isWhitelisted($bridgeClassName) ? 'active' : 'inactive';
-
             $list->bridges[$bridgeClassName] = [
-                'status' => $status,
+                'status' => $bridgeFactory->isWhitelisted($bridgeClassName) ? 'active' : 'inactive',
                 'uri' => $bridge->getURI(),
                 'donationUri' => $bridge->getDonationURI(),
                 'name' => $bridge->getName(),
@@ -50,6 +40,6 @@ class ListAction implements ActionInterface
         $list->total = count($list->bridges);
 
         header('Content-Type: application/json');
-        echo json_encode($list, JSON_PRETTY_PRINT);
+        print Json::encode($list);
     }
 }

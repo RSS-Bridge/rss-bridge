@@ -71,7 +71,9 @@ class RedditBridge extends BridgeAbstract
     {
         $parsed_url = parse_url($url);
 
-        if ($parsed_url['host'] != 'www.reddit.com' && $parsed_url['host'] != 'old.reddit.com') {
+        $host = $parsed_url['host'] ?? null;
+
+        if ($host != 'www.reddit.com' && $host != 'old.reddit.com') {
             return null;
         }
 

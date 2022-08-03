@@ -9,5 +9,5 @@ The `FormatAbstract` class implements the [`FormatInterface`](../08_Format_API/0
 The `sanitizeHtml` function receives an HTML formatted string and returns the string with disabled `<script>`, `<iframe>` and `<link>` tags.
 
 ```PHP
-sanitizeHtml(string $html): string
+sanitize_html(string $html): string
 ```

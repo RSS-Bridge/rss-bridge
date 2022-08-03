@@ -85,10 +85,10 @@ abstract class FeedExpander extends BridgeAbstract
     public function collectExpandableDatas($url, $maxItems = -1)
     {
         if (empty($url)) {
-            returnServerError('There is no $url for this RSS expander');
+            throw new \Exception('There is no $url for this RSS expander');
         }
 
-        Debug::log('Loading from ' . $url);
+        Debug::log(sprintf('Loading from %s', $url));
 
         /* Notice we do not use cache here on purpose:
          * we want a fresh view of the RSS stream each time
@@ -100,8 +100,7 @@ abstract class FeedExpander extends BridgeAbstract
             '*/*',
         ];
         $httpHeaders = ['Accept: ' . implode(', ', $mimeTypes)];
-        $content = getContents($url, $httpHeaders)
-            or returnServerError('Could not request ' . $url);
+        $content = getContents($url, $httpHeaders);
         $rssContent = simplexml_load_string(trim($content));
 
         if ($rssContent === false) {
@@ -127,8 +126,7 @@ abstract class FeedExpander extends BridgeAbstract
                 break;
             default:
                 Debug::log('Unknown feed format/version');
-                returnServerError('The feed format is unknown!');
-                break;
+                throw new \Exception('The feed format is unknown!');
         }
 
         return $this;
@@ -151,7 +149,7 @@ abstract class FeedExpander extends BridgeAbstract
     {
         $this->loadRss2Data($rssContent->channel[0]);
         foreach ($rssContent->item as $item) {
-            Debug::log('parsing item ' . var_export($item, true));
+            Debug::log(sprintf('Parsing item %s', var_export($item, true)));
             $tmp_item = $this->parseItem($item);
             if (!empty($tmp_item)) {
                 $this->items[] = $tmp_item;
@@ -453,33 +451,39 @@ abstract class FeedExpander extends BridgeAbstract
         switch ($this->feedType) {
             case self::FEED_TYPE_RSS_1_0:
                 return $this->parseRss1Item($item);
-            break;
             case self::FEED_TYPE_RSS_2_0:
                 return $this->parseRss2Item($item);
-            break;
             case self::FEED_TYPE_ATOM_1_0:
                 return $this->parseATOMItem($item);
-            break;
             default:
-                returnClientError('Unknown version ' . $this->getInput('version') . '!');
+                throw new \Exception(sprintf('Unknown version %s!', $this->getInput('version')));
         }
     }
 
     /** {@inheritdoc} */
     public function getURI()
     {
-        return !empty($this->uri) ? $this->uri : parent::getURI();
+        if (!empty($this->uri)) {
+            return $this->uri;
+        }
+        return parent::getURI();
     }
 
     /** {@inheritdoc} */
     public function getName()
     {
-        return !empty($this->title) ? $this->title : parent::getName();
+        if (!empty($this->title)) {
+            return $this->title;
+        }
+        return parent::getName();
     }
 
     /** {@inheritdoc} */
     public function getIcon()
     {
-        return !empty($this->icon) ? $this->icon : parent::getIcon();
+        if (!empty($this->icon)) {
+            return $this->icon;
+        }
+        return parent::getIcon();
     }
 }

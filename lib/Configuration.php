@@ -41,14 +41,8 @@ final class Configuration
      */
     private static $config = null;
 
-    /**
-     * Throw an exception when trying to create a new instance of this class.
-     *
-     * @throws \LogicException if called.
-     */
-    public function __construct()
+    private function __construct()
     {
-        throw new \LogicException('Can\'t create object of this class!');
     }
 
     /**
@@ -63,7 +57,7 @@ final class Configuration
     {
         // Check PHP version
         // PHP Supported Versions: https://www.php.net/supported-versions.php
-        if (version_compare(PHP_VERSION, '7.4.0') === -1) {
+        if (version_compare(\PHP_VERSION, '7.4.0') === -1) {
             self::reportError('RSS-Bridge requires at least PHP version 7.4.0!');
         }
 
@@ -192,11 +186,11 @@ final class Configuration
             self::reportConfigurationError('authentication', 'enable', 'Is not a valid Boolean');
         }
 
-        if (!is_string(self::getConfig('authentication', 'username'))) {
+        if (!self::getConfig('authentication', 'username')) {
             self::reportConfigurationError('authentication', 'username', 'Is not a valid string');
         }
 
-        if (!is_string(self::getConfig('authentication', 'password'))) {
+        if (! self::getConfig('authentication', 'password')) {
             self::reportConfigurationError('authentication', 'password', 'Is not a valid string');
         }
 
@@ -250,7 +244,7 @@ final class Configuration
      */
     public static function getVersion()
     {
-        $headFile = PATH_ROOT . '.git/HEAD';
+        $headFile = __DIR__ . '/../.git/HEAD';
 
         // '@' is used to mute open_basedir warning
         if (@is_readable($headFile)) {
@@ -295,19 +289,8 @@ final class Configuration
         self::reportError($report);
     }
 
-    /**
-     * Reports an error message to the user and ends execution
-     *
-     * @param string $message The error message
-     *
-     * @return void
-     */
     private static function reportError($message)
     {
-        http_response_code(500);
-        print render('error.html.php', [
-            'message' => "Configuration error: $message",
-        ]);
-        exit;
+        throw new \Exception(sprintf('Configuration error: %s', $message));
     }
 }
