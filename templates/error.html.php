@@ -10,6 +10,9 @@
     <br>
 
     <?php if (isset($stacktrace)): ?>
+        <h2>Stacktrace</h2>
+        <br>
+
         <?php foreach ($stacktrace as $frame) : ?>
             <code>
                 <?= e($frame) ?>
