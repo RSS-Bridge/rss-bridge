@@ -8,7 +8,7 @@ class FileCache implements CacheInterface
     public function __construct()
     {
         if (!is_writable(PATH_CACHE)) {
-            throw new \Exception('RSS-Bridge does not have write permissions for ' . PATH_CACHE . '!');
+            throw new \Exception('The cache folder is not writeable');
         }
     }
 
@@ -100,7 +100,7 @@ class FileCache implements CacheInterface
 
         if (!is_dir($this->path)) {
             if (mkdir($this->path, 0755, true) !== true) {
-                throw new \Exception('Unable to create ' . $this->path);
+                throw new \Exception('mkdir: Unable to create file cache folder');
             }
         }
 

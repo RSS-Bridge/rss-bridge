@@ -17,21 +17,20 @@ class SQLiteCache implements CacheInterface
         }
 
         if (!is_writable(PATH_CACHE)) {
-            throw new \Exception('RSS-Bridge does not have write permissions for ' . PATH_CACHE . '!');
+            throw new \Exception('The cache folder is not writable');
         }
 
         $section = 'SQLiteCache';
         $file = Configuration::getConfig($section, 'file');
         if (empty($file)) {
-            throw new \Exception(sprintf('Configuration for %s missing. Please check your %s', $section, FILE_CONFIG));
+            throw new \Exception(sprintf('Configuration for %s missing.', $section));
         }
 
         if (dirname($file) == '.') {
             $file = PATH_CACHE . $file;
         } elseif (!is_dir(dirname($file))) {
-            throw new \Exception(sprintf('Invalid configuration for %s. Please check your %s', $section, FILE_CONFIG));
+            throw new \Exception(sprintf('Invalid configuration for %s', $section));
         }
-
 
         if (!is_file($file)) {
             // The instantiation creates the file
