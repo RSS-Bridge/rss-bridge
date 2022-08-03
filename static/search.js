@@ -1,60 +1,32 @@
-function search() {
+function rssbridge_list_search() {
+    function remove_www_from_url(url) {
+        if (url.hostname.indexOf('www.') === 0) {
+            url.hostname = url.hostname.substr(4);
+        }
+    }
 
-	var searchTerm = document.getElementById('searchfield').value;
-	var searchableElements = document.getElementsByTagName('section');
-
-	var regexMatch = new RegExp(searchTerm, 'i');
-
-	// Attempt to create anchor from search term (will default to 'localhost' on failure)
-	var searchTermUri = document.createElement('a');
-	searchTermUri.href = searchTerm;
-
-	if(searchTermUri.hostname == 'localhost') {
-		searchTermUri = null;
-	} else {
-
-		// Ignore "www."
-		if(searchTermUri.hostname.indexOf('www.') === 0) {
-			searchTermUri.hostname = searchTermUri.hostname.substr(4);
-		}
-
-	}
-
-	for(var i = 0; i < searchableElements.length; i++) {
-
-		var textValue = searchableElements[i].getAttribute('data-ref');
-		var anchors = searchableElements[i].getElementsByTagName('a');
-
-		if(anchors != null && anchors.length > 0) {
-
-			var uriValue = anchors[0]; // First anchor is bridge URI
-
-			// Ignore "www."
-			if(uriValue.hostname.indexOf('www.') === 0) {
-				uriValue.hostname = uriValue.hostname.substr(4);
-			}
-
-		}
-
-		if(textValue != null && uriValue != null) {
-
-			if(textValue.match(regexMatch) != null ||
-				uriValue.hostname.match(regexMatch) ||
-				searchTermUri != null &&
-				uriValue.hostname != 'localhost' && (
-					uriValue.href.match(regexMatch) != null ||
-					uriValue.hostname == searchTermUri.hostname)) {
-
-				searchableElements[i].style.display = 'block';
-
-			} else {
-
-				searchableElements[i].style.display = 'none';
-
-			}
-
-		}
-
-	}
-
+    var search = document.getElementById('searchfield').value;
+    var searchAsUrl = document.createElement('a');
+    searchAsUrl.href = search;
+    remove_www_from_url(searchAsUrl);
+    var bridgeCards = document.querySelectorAll('section.bridge-card');
+    for (var i = 0; i < bridgeCards.length; i++) {
+        var bridgeName = bridgeCards[i].getAttribute('data-ref');
+        var bridgeUrl = bridgeCards[i].getElementsByTagName('a')[0];
+        remove_www_from_url(bridgeUrl);
+        bridgeCards[i].style.display = 'none';
+        if (!bridgeName || !bridgeUrl) {
+            continue;
+        }
+        var searchRegex = new RegExp(search, 'i');
+        if (bridgeName.match(searchRegex)) {
+            bridgeCards[i].style.display = 'block';
+        }
+        if (bridgeUrl.toString().match(searchRegex)) {
+            bridgeCards[i].style.display = 'block';
+        }
+        if (bridgeUrl.hostname === searchAsUrl.hostname) {
+            bridgeCards[i].style.display = 'block';
+        }
+    }
 }

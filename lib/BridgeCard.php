@@ -340,7 +340,11 @@ This bridge is not fetching its content through a secure connection</div>';
         }
 
         $card = <<<CARD
-			<section id="bridge-{$bridgeClassName}" data-ref="{$name}">
+			<section
+			    class="bridge-card"
+			    id="bridge-{$bridgeClassName}"
+			    data-ref="{$name}"
+			>
 				<h2><a href="{$uri}">{$name}</a></h2>
 				<p class="description">{$description}</p>
 				<input type="checkbox" class="showmore-box" id="showmore-{$bridgeClassName}" />
