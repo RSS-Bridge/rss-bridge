@@ -32,10 +32,15 @@ class SQLiteCache implements CacheInterface
             throw new \Exception(sprintf('Invalid configuration for %s. Please check your %s', $section, FILE_CONFIG));
         }
 
-        $this->db = new \SQLite3($file);
-        $this->db->enableExceptions(true);
+
         if (!is_file($file)) {
+            // The instantiation creates the file
+            $this->db = new \SQLite3($file);
+            $this->db->enableExceptions(true);
             $this->db->exec("CREATE TABLE storage ('key' BLOB PRIMARY KEY, 'value' BLOB, 'updated' INTEGER)");
+        } else {
+            $this->db = new \SQLite3($file);
+            $this->db->enableExceptions(true);
         }
         $this->db->busyTimeout(5000);
     }
