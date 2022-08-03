@@ -12,6 +12,8 @@ function rssbridge_list_search() {
     var bridgeCards = document.querySelectorAll('section.bridge-card');
     for (var i = 0; i < bridgeCards.length; i++) {
         var bridgeName = bridgeCards[i].getAttribute('data-ref');
+        var bridgeShortName = bridgeCards[i].getAttribute('data-short-name');
+        var bridgeDescription = bridgeCards[i].querySelector('.description');
         var bridgeUrl = bridgeCards[i].getElementsByTagName('a')[0];
         remove_www_from_url(bridgeUrl);
         bridgeCards[i].style.display = 'none';
@@ -20,6 +22,12 @@ function rssbridge_list_search() {
         }
         var searchRegex = new RegExp(search, 'i');
         if (bridgeName.match(searchRegex)) {
+            bridgeCards[i].style.display = 'block';
+        }
+        if (bridgeShortName.match(searchRegex)) {
+            bridgeCards[i].style.display = 'block';
+        }
+        if (bridgeDescription.textContent.match(searchRegex)) {
             bridgeCards[i].style.display = 'block';
         }
         if (bridgeUrl.toString().match(searchRegex)) {

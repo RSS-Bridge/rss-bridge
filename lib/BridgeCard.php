@@ -316,6 +316,7 @@ This bridge is not fetching its content through a secure connection</div>';
 
         $uri = $bridge->getURI();
         $name = $bridge->getName();
+        $shortName = $bridge->getShortName();
         $icon = $bridge->getIcon();
         $description = $bridge->getDescription();
         $parameters = $bridge->getParameters();
@@ -344,6 +345,7 @@ This bridge is not fetching its content through a secure connection</div>';
 			    class="bridge-card"
 			    id="bridge-{$bridgeClassName}"
 			    data-ref="{$name}"
+			    data-short-name="$shortName"
 			>
 				<h2><a href="{$uri}">{$name}</a></h2>
 				<p class="description">{$description}</p>
