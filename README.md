@@ -18,6 +18,10 @@ Screenshot of the Twitter bridge for Rasmus Lerdorf:
 
 ![Screenshot #2](/static/twitter-rasmus.png?raw=true)
 
+Screenshot of the cli usage:
+
+![Screenshot #3](/static/twitter-rasmus-cli.png?raw=true)
+
 [Documentation](https://rss-bridge.github.io/rss-bridge/index.html)
 
 Check out RSS-Bridge right now on https://rss-bridge.org/bridge01 or find another
