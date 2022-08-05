@@ -93,6 +93,9 @@ Browse http://localhost:3000/
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 [![Deploy to Cloudron](https://cloudron.io/img/button.svg)](https://www.cloudron.io/store/com.rssbridgeapp.cloudronapp.html)
 
+The Heroku quick deploy currently does not work. It might possibly work if you fork this repo and
+modify the `repository` in `scalingo.json`. See https://github.com/RSS-Bridge/rss-bridge/issues/2688
+
 Learn more in
 [Installation](https://rss-bridge.github.io/rss-bridge/For_Hosts/Installation.html).
 
