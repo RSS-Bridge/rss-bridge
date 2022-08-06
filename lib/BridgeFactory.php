@@ -27,7 +27,8 @@ final class BridgeFactory
         } else {
             $contents = '';
         }
-        if ($contents === '*') { // Whitelist all bridges
+        if ($contents === '*') {
+            // Whitelist all bridges
             $this->whitelist = $this->getBridgeClassNames();
         } else {
             foreach (explode("\n", $contents) as $bridgeName) {
@@ -97,7 +98,6 @@ final class BridgeFactory
             return $this->getBridgeClassNames()[$index];
         }
 
-        Debug::log('Invalid bridge name specified: "' . $name . '"!');
         return null;
     }
 }

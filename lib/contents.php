@@ -1,9 +1,5 @@
 <?php
 
-final class HttpException extends \Exception
-{
-}
-
 // todo: move this somewhere useful, possibly into a function
 const RSSBRIDGE_HTTP_STATUS_CODES = [
     '100' => 'Continue',
@@ -75,12 +71,30 @@ function getContents(
     $cache->purgeCache(86400); // 24 hours (forced)
     $cache->setKey([$url]);
 
+    // Snagged from https://github.com/lwthiker/curl-impersonate/blob/main/firefox/curl_ff102
+    $defaultHttpHeaders = [
+        'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        'Accept-Language' => 'en-US,en;q=0.5',
+        'Upgrade-Insecure-Requests' => '1',
+        'Sec-Fetch-Dest' => 'document',
+        'Sec-Fetch-Mode' => 'navigate',
+        'Sec-Fetch-Site' => 'none',
+        'Sec-Fetch-User' => '?1',
+        'TE' => 'Trailers',
+    ];
+    $httpHeadersNormalized = [];
+    foreach ($httpHeaders as $httpHeader) {
+        $parts = explode(':', $httpHeader);
+        $headerName = trim($parts[0]);
+        $headerValue = trim(implode(':', array_slice($parts, 1)));
+        $httpHeadersNormalized[$headerName] = $headerValue;
+    }
     $config = [
-        'headers' => $httpHeaders,
+        'headers' => array_merge($defaultHttpHeaders, $httpHeadersNormalized),
         'curl_options' => $curlOptions,
     ];
-    if (defined('PROXY_URL') && !defined('NOPROXY')) {
-        $config['proxy'] = PROXY_URL;
+    if (Configuration::getConfig('proxy', 'url') && !defined('NOPROXY')) {
+        $config['proxy'] = Configuration::getConfig('proxy', 'url');
     }
     if (!Debug::isEnabled() && $cache->getTime()) {
         $config['if_not_modified_since'] = $cache->getTime();
@@ -110,7 +124,8 @@ function getContents(
             }
             $cache->saveData($result['body']);
             break;
-        case 304: // Not Modified
+        case 304:
+            // Not Modified
             $response['content'] = $cache->loadData();
             break;
         default:
@@ -154,11 +169,17 @@ function _http_request(string $url, array $config = []): array
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
     curl_setopt($ch, CURLOPT_HEADER, false);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $config['headers']);
+    $httpHeaders = [];
+    foreach ($config['headers'] as $name => $value) {
+        $httpHeaders[] = sprintf('%s: %s', $name, $value);
+    }
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeaders);
     curl_setopt($ch, CURLOPT_USERAGENT, $config['useragent']);
     curl_setopt($ch, CURLOPT_TIMEOUT, $config['timeout']);
     curl_setopt($ch, CURLOPT_ENCODING, '');
     curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
+    // Force HTTP 1.1 because newer versions of libcurl defaults to HTTP/2
+    curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
     if ($config['proxy']) {
         curl_setopt($ch, CURLOPT_PROXY, $config['proxy']);
     }
@@ -354,69 +375,4 @@ function getSimpleHTMLDOMCached(
         $defaultBRText,
         $defaultSpanText
     );
-}
-
-/**
- * Determines the MIME type from a URL/Path file extension.
- *
- * _Remarks_:
- *
- * * The built-in functions `mime_content_type` and `fileinfo` require fetching
- * remote contents.
- * * A caller can hint for a MIME type by appending `#.ext` to the URL (i.e. `#.image`).
- *
- * Based on https://stackoverflow.com/a/1147952
- *
- * @param string $url The URL or path to the file.
- * @return string The MIME type of the file.
- */
-function getMimeType($url)
-{
-    static $mime = null;
-
-    if (is_null($mime)) {
-        // Default values, overriden by /etc/mime.types when present
-        $mime = [
-            'jpg' => 'image/jpeg',
-            'gif' => 'image/gif',
-            'png' => 'image/png',
-            'image' => 'image/*',
-            'mp3' => 'audio/mpeg',
-        ];
-        // '@' is used to mute open_basedir warning, see issue #818
-        if (@is_readable('/etc/mime.types')) {
-            $file = fopen('/etc/mime.types', 'r');
-            while (($line = fgets($file)) !== false) {
-                $line = trim(preg_replace('/#.*/', '', $line));
-                if (!$line) {
-                    continue;
-                }
-                $parts = preg_split('/\s+/', $line);
-                if (count($parts) == 1) {
-                    continue;
-                }
-                $type = array_shift($parts);
-                foreach ($parts as $part) {
-                    $mime[$part] = $type;
-                }
-            }
-            fclose($file);
-        }
-    }
-
-    if (strpos($url, '?') !== false) {
-        $url_temp = substr($url, 0, strpos($url, '?'));
-        if (strpos($url, '#') !== false) {
-            $anchor = substr($url, strpos($url, '#'));
-            $url_temp .= $anchor;
-        }
-        $url = $url_temp;
-    }
-
-    $ext = strtolower(pathinfo($url, PATHINFO_EXTENSION));
-    if (!empty($mime[$ext])) {
-        return $mime[$ext];
-    }
-
-    return 'application/octet-stream';
 }

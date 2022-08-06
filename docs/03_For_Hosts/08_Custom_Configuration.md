@@ -17,7 +17,7 @@ __Notice__: If a parameter is not specified in your `config.ini.php` RSS-Bridge 
 The configuration file is split into sections:
 
 * [system](#system)
-* [http client](#http client)
+* [http client](#http-client)
 * [cache](#cache)
 * [proxy](#proxy)
 * [authentication](#authentication)

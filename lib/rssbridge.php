@@ -13,55 +13,56 @@
  */
 
 /** Path to the root folder of RSS-Bridge (where index.php is located) */
-define('PATH_ROOT', __DIR__ . '/../');
-
-/** Path to the core library */
-define('PATH_LIB', PATH_ROOT . 'lib/');
-
-/** Path to the vendor library */
-define('PATH_LIB_VENDOR', PATH_ROOT . 'vendor/');
+const PATH_ROOT = __DIR__ . '/../';
 
 /** Path to the bridges library */
-define('PATH_LIB_BRIDGES', PATH_ROOT . 'bridges/');
+const PATH_LIB_BRIDGES = __DIR__ . '/../bridges/';
 
 /** Path to the formats library */
-define('PATH_LIB_FORMATS', PATH_ROOT . 'formats/');
+const PATH_LIB_FORMATS = __DIR__ . '/../formats/';
 
 /** Path to the caches library */
-define('PATH_LIB_CACHES', PATH_ROOT . 'caches/');
+const PATH_LIB_CACHES = __DIR__ . '/../caches/';
 
 /** Path to the actions library */
-define('PATH_LIB_ACTIONS', PATH_ROOT . 'actions/');
+const PATH_LIB_ACTIONS = __DIR__ . '/../actions/';
 
 /** Path to the cache folder */
-define('PATH_CACHE', PATH_ROOT . 'cache/');
+const PATH_CACHE = __DIR__ . '/../cache/';
 
 /** Path to the whitelist file */
-define('WHITELIST', PATH_ROOT . 'whitelist.txt');
+const WHITELIST = __DIR__ . '/../whitelist.txt';
 
 /** Path to the default whitelist file */
-define('WHITELIST_DEFAULT', PATH_ROOT . 'whitelist.default.txt');
+const WHITELIST_DEFAULT = __DIR__ . '/../whitelist.default.txt';
 
 /** Path to the configuration file */
-define('FILE_CONFIG', PATH_ROOT . 'config.ini.php');
+const FILE_CONFIG = __DIR__ . '/../config.ini.php';
 
 /** Path to the default configuration file */
-define('FILE_CONFIG_DEFAULT', PATH_ROOT . 'config.default.ini.php');
+const FILE_CONFIG_DEFAULT = __DIR__ . '/../config.default.ini.php';
 
 /** URL to the RSS-Bridge repository */
-define('REPOSITORY', 'https://github.com/RSS-Bridge/rss-bridge/');
+const REPOSITORY = 'https://github.com/RSS-Bridge/rss-bridge/';
+
+// Allow larger files for simple_html_dom
+const MAX_FILE_SIZE = 10000000;
 
 // Files
-require_once PATH_LIB . 'html.php';
-require_once PATH_LIB . 'error.php';
-require_once PATH_LIB . 'contents.php';
-require_once PATH_LIB . 'php8backports.php';
-
-// Vendor
-define('MAX_FILE_SIZE', 10000000); /* Allow larger files for simple_html_dom */
-require_once PATH_LIB_VENDOR . 'parsedown/Parsedown.php';
-require_once PATH_LIB_VENDOR . 'php-urljoin/src/urljoin.php';
-require_once PATH_LIB_VENDOR . 'simplehtmldom/simple_html_dom.php';
+$files = [
+    __DIR__ . '/../lib/html.php',
+    __DIR__ . '/../lib/error.php',
+    __DIR__ . '/../lib/contents.php',
+    __DIR__ . '/../lib/php8backports.php',
+    __DIR__ . '/../lib/utils.php',
+    // Vendor
+    __DIR__ . '/../vendor/parsedown/Parsedown.php',
+    __DIR__ . '/../vendor/php-urljoin/src/urljoin.php',
+    __DIR__ . '/../vendor/simplehtmldom/simple_html_dom.php',
+];
+foreach ($files as $file) {
+    require_once $file;
+}
 
 spl_autoload_register(function ($className) {
     $folders = [

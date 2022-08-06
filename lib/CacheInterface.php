@@ -55,7 +55,7 @@ interface CacheInterface
     /**
      * Returns the timestamp for the curent cache data
      *
-     * @return int Timestamp or null
+     * @return ?int Timestamp
      */
     public function getTime();
 

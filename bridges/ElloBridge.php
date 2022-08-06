@@ -116,7 +116,7 @@ class ElloBridge extends BridgeAbstract
         $cacheFactory = new CacheFactory();
 
         $cache = $cacheFactory->create();
-        $cache->setScope(get_called_class());
+        $cache->setScope('ElloBridge');
         $cache->setKey(['key']);
         $key = $cache->loadData();
 

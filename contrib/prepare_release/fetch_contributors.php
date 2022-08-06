@@ -12,9 +12,9 @@ $next = true;
 
 while ($next) { /* Collect all contributors */
     $headers = [
-        'Accept: application/json',
-        'Content-Type: application/json',
-        'User-Agent: RSS-Bridge'
+        'Accept' => 'application/json',
+        'Content-Type' => 'application/json',
+        'User-Agent' => 'RSS-Bridge',
     ];
     $result = _http_request($url, ['headers' => $headers]);
 

@@ -12,19 +12,6 @@
  * @link    https://github.com/rss-bridge/rss-bridge
  */
 
-/**
- * An abstract class for bridges
- *
- * This class implements {@see BridgeInterface} with most common functions in
- * order to reduce code duplication. Bridges should inherit from this class
- * instead of implementing the interface manually.
- *
- * @todo Move constants to the interface (this is supported by PHP)
- * @todo Change visibility of constants to protected
- * @todo Return `self` on more functions to allow chaining
- * @todo Add specification for PARAMETERS ()
- * @todo Add specification for $items
- */
 abstract class BridgeAbstract implements BridgeInterface
 {
     /**
@@ -107,7 +94,7 @@ abstract class BridgeAbstract implements BridgeInterface
      *
      * @var array
      */
-    protected $items = [];
+    protected array $items = [];
 
     /**
      * Holds the list of input parameters used by the bridge
@@ -117,7 +104,7 @@ abstract class BridgeAbstract implements BridgeInterface
      *
      * @var array
      */
-    protected $inputs = [];
+    protected array $inputs = [];
 
     /**
      * Holds the name of the queried context
@@ -233,7 +220,7 @@ abstract class BridgeAbstract implements BridgeInterface
 
         if (empty(static::PARAMETERS)) {
             if (!empty($inputs)) {
-                returnClientError('Invalid parameters value(s)');
+                throw new \Exception('Invalid parameters value(s)');
             }
 
             return;
@@ -249,10 +236,7 @@ abstract class BridgeAbstract implements BridgeInterface
                 $validator->getInvalidParameters()
             );
 
-            returnClientError(
-                'Invalid parameters value(s): '
-                . implode(', ', $parameters)
-            );
+            throw new \Exception(sprintf('Invalid parameters value(s): %s', implode(', ', $parameters)));
         }
 
         // Guess the context from input data
@@ -261,9 +245,9 @@ abstract class BridgeAbstract implements BridgeInterface
         }
 
         if (is_null($this->queriedContext)) {
-            returnClientError('Required parameter(s) missing');
+            throw new \Exception('Required parameter(s) missing');
         } elseif ($this->queriedContext === false) {
-            returnClientError('Mixed context parameters');
+            throw new \Exception('Mixed context parameters');
         }
 
         $this->setInputs($inputs, $this->queriedContext);
@@ -280,7 +264,8 @@ abstract class BridgeAbstract implements BridgeInterface
     public function loadConfiguration()
     {
         foreach (static::CONFIGURATION as $optionName => $optionValue) {
-            $configurationOption = Configuration::getConfig(get_class($this), $optionName);
+            $section = $this->getShortName();
+            $configurationOption = Configuration::getConfig($section, $optionName);
 
             if ($configurationOption !== null) {
                 $this->configuration[$optionName] = $configurationOption;
@@ -288,10 +273,7 @@ abstract class BridgeAbstract implements BridgeInterface
             }
 
             if (isset($optionValue['required']) && $optionValue['required'] === true) {
-                returnServerError(
-                    'Missing configuration option: '
-                    . $optionName
-                );
+                throw new \Exception(sprintf('Missing configuration option: %s', $optionName));
             } elseif (isset($optionValue['defaultValue'])) {
                 $this->configuration[$optionName] = $optionValue['defaultValue'];
             }
@@ -313,17 +295,11 @@ abstract class BridgeAbstract implements BridgeInterface
     }
 
     /**
-     * Returns the value for the selected configuration
-     *
-     * @param string $input The option name
-     * @return mixed|null The option value or null if the input is not defined
+     * Get bridge configuration value
      */
     public function getOption($name)
     {
-        if (!isset($this->configuration[$name])) {
-            return null;
-        }
-        return $this->configuration[$name];
+        return $this->configuration[$name] ?? null;
     }
 
     /** {@inheritdoc} */
@@ -391,9 +367,8 @@ abstract class BridgeAbstract implements BridgeInterface
             && $urlMatches[3] === $bridgeUriMatches[3]
         ) {
             return [];
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -403,12 +378,14 @@ abstract class BridgeAbstract implements BridgeInterface
      * @param int $duration Cache duration (optional, default: 24 hours)
      * @return mixed Cached value or null if the key doesn't exist or has expired
      */
-    protected function loadCacheValue($key, $duration = 86400)
+    protected function loadCacheValue($key, int $duration = 86400)
     {
         $cacheFactory = new CacheFactory();
 
         $cache = $cacheFactory->create();
-        $cache->setScope(get_called_class());
+        // Create class name without the namespace part
+        $scope = $this->getShortName();
+        $cache->setScope($scope);
         $cache->setKey($key);
         if ($cache->getTime() < time() - $duration) {
             return null;
@@ -427,7 +404,8 @@ abstract class BridgeAbstract implements BridgeInterface
         $cacheFactory = new CacheFactory();
 
         $cache = $cacheFactory->create();
-        $cache->setScope(get_called_class());
+        $scope = $this->getShortName();
+        $cache->setScope($scope);
         $cache->setKey($key);
         $cache->saveData($value);
     }
@@ -444,4 +422,8 @@ abstract class BridgeAbstract implements BridgeInterface
         }
         return 'This bridge is deprecated';
     }
-}
+
+    public function getShortName(): string
+    {
+        return (new \ReflectionClass($this))->getShortName();
+    }

@@ -33,22 +33,28 @@ class MrssFormat extends FormatAbstract
     protected const MRSS_NS = 'http://search.yahoo.com/mrss/';
 
     const ALLOWED_IMAGE_EXT = [
-        '.gif', '.jpg', '.png'
+        '.gif',
+        '.jpg',
+        '.png',
     ];
 
     public function stringify()
     {
-        $urlPrefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
-        $urlHost = (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '';
-        $urlPath = (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : '';
-        $urlRequest = (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
+        $https = $_SERVER['HTTPS'] ?? null;
+        $urlPrefix = $https == 'on' ? 'https://' : 'http://';
+        $urlHost = $_SERVER['HTTP_HOST'] ?? '';
+        $urlRequest = $_SERVER['REQUEST_URI'] ?? '';
 
         $feedUrl = $urlPrefix . $urlHost . $urlRequest;
 
         $extraInfos = $this->getExtraInfos();
-        $uri = !empty($extraInfos['uri']) ? $extraInfos['uri'] : REPOSITORY;
+        if (empty($extraInfos['uri'])) {
+            $uri = REPOSITORY;
+        } else {
+            $uri = $extraInfos['uri'];
+        }
 
-        $document = new DomDocument('1.0', $this->getCharset());
+        $document = new \DomDocument('1.0', $this->getCharset());
         $document->formatOutput = true;
         $feed = $document->createElement('rss');
         $document->appendChild($feed);
@@ -103,16 +109,18 @@ class MrssFormat extends FormatAbstract
             $itemTimestamp = $item->getTimestamp();
             $itemTitle = $item->getTitle();
             $itemUri = $item->getURI();
-            $itemContent = $item->getContent() ? $this->sanitizeHtml($item->getContent()) : '';
+            $itemContent = $item->getContent() ? sanitize_html($item->getContent()) : '';
             $entryID = $item->getUid();
             $isPermaLink = 'false';
 
-            if (empty($entryID) && !empty($itemUri)) { // Fallback to provided URI
+            if (empty($entryID) && !empty($itemUri)) {
+                // Fallback to provided URI
                 $entryID = $itemUri;
                 $isPermaLink = 'true';
             }
 
-            if (empty($entryID)) { // Fallback to title and content
+            if (empty($entryID)) {
+                // Fallback to title and content
                 $entryID = hash('sha1', $itemTitle . $itemContent);
             }
 
@@ -139,7 +147,7 @@ class MrssFormat extends FormatAbstract
             if (!empty($itemTimestamp)) {
                 $entryPublished = $document->createElement('pubDate');
                 $entry->appendChild($entryPublished);
-                $entryPublished->appendChild($document->createTextNode(gmdate(DATE_RFC2822, $itemTimestamp)));
+                $entryPublished->appendChild($document->createTextNode(gmdate(\DATE_RFC2822, $itemTimestamp)));
             }
 
             if (!empty($itemContent)) {
@@ -152,10 +160,9 @@ class MrssFormat extends FormatAbstract
                 $entryEnclosure = $document->createElementNS(self::MRSS_NS, 'content');
                 $entry->appendChild($entryEnclosure);
                 $entryEnclosure->setAttribute('url', $enclosure);
-                $entryEnclosure->setAttribute('type', getMimeType($enclosure));
+                $entryEnclosure->setAttribute('type', parse_mime_type($enclosure));
             }
 
-            $entryCategories = '';
             foreach ($item->getCategories() as $category) {
                 $entryCategory = $document->createElement('category');
                 $entry->appendChild($entryCategory);

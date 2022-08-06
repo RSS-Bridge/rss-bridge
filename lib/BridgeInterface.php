@@ -147,4 +147,6 @@ interface BridgeInterface
     public function isDeprecated(): bool;
 
     public function getDeprecationMessage(): string;
+    
+    public function getShortName(): string;
 }

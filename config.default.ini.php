@@ -14,7 +14,7 @@ timezone = "UTC"
 
 [http]
 timeout = 60
-useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"
+useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0"
 
 [cache]
 
@@ -65,12 +65,10 @@ by_bridge = false
 ; false = disabled (default)
 enable = false
 
-; The username for authentication. Insert this name when prompted for login.
-username = ""
+username = "admin"
 
-; The password for authentication. Insert this password when prompted for login.
-; Use a strong password to prevent others from guessing your login!
-password = ""
+; This default password is public knowledge. Replace it.
+password = "7afbf648a369b261"
 
 [error]
 

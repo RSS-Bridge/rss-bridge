@@ -50,6 +50,15 @@ function raw(string $s): string
     return $s;
 }
 
+function truncate(string $s, int $length = 150, $marker = '...'): string
+{
+    $s = trim($s);
+    if (mb_strlen($s) <= $length) {
+        return $s;
+    }
+    return mb_substr($s, 0, $length) . $marker;
+}
+
 /**
  * Removes unwanted tags from a given HTML text.
  *
@@ -87,6 +96,15 @@ function sanitize(
     }
 
     return $htmlContent;
+}
+
+function sanitize_html(string $html): string
+{
+    $html = str_replace('<script', '<&zwnj;script', $html); // Disable scripts, but leave them visible.
+    $html = str_replace('<iframe', '<&zwnj;iframe', $html);
+    $html = str_replace('<link', '<&zwnj;link', $html);
+    // We leave alone object and embed so that videos can play in RSS readers.
+    return $html;
 }
 
 /**
