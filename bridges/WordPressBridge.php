@@ -72,7 +72,7 @@ class WordPressBridge extends FeedExpander
             } else {
                 $article_image = $article_image->getAttribute('data-lazy-src');
             }
-            $mime_type = getMimeType($article_image);
+            $mime_type = parse_mime_type($article_image);
             if (strpos($mime_type, 'image') === false) {
                 $article_image .= '#.image'; // force image
             }

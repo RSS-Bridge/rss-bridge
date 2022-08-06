@@ -121,6 +121,10 @@ class IvooxBridge extends BridgeAbstract
         foreach ($originalLocales as $localeSetting) {
             if (strpos($localeSetting, '=') !== false) {
                 [$category, $locale] = explode('=', $localeSetting);
+                if (! defined($category)) {
+                    continue;
+                }
+                $category = constant($category);
             } else {
                 $category = LC_ALL;
                 $locale = $localeSetting;

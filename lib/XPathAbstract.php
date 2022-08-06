@@ -341,10 +341,10 @@ abstract class XPathAbstract extends BridgeAbstract
     /**
      * Should provide the feeds title
      *
-     * @param DOMXPath $xpath
+     * @param \DOMXPath $xpath
      * @return string
      */
-    protected function provideFeedTitle(DOMXPath $xpath)
+    protected function provideFeedTitle(\DOMXPath $xpath)
     {
         $title = $xpath->query($this->getParam('feed_title'));
         if (count($title) === 1) {
@@ -355,10 +355,10 @@ abstract class XPathAbstract extends BridgeAbstract
     /**
      * Should provide the URL of the feed's favicon
      *
-     * @param DOMXPath $xpath
+     * @param \DOMXPath $xpath
      * @return string
      */
-    protected function provideFeedIcon(DOMXPath $xpath)
+    protected function provideFeedIcon(\DOMXPath $xpath)
     {
         $icon = $xpath->query($this->getParam('feed_icon'));
         if (count($icon) === 1) {
@@ -369,10 +369,10 @@ abstract class XPathAbstract extends BridgeAbstract
     /**
      * Should provide the feed's items.
      *
-     * @param DOMXPath $xpath
-     * @return DOMNodeList
+     * @param \DOMXPath $xpath
+     * @return \DOMNodeList
      */
-    protected function provideFeedItems(DOMXPath $xpath)
+    protected function provideFeedItems(\DOMXPath $xpath)
     {
         return @$xpath->query($this->getParam('item'));
     }
@@ -381,13 +381,13 @@ abstract class XPathAbstract extends BridgeAbstract
     {
         $this->feedUri = $this->getParam('url');
 
-        $webPageHtml = new DOMDocument();
+        $webPageHtml = new \DOMDocument();
         libxml_use_internal_errors(true);
         $webPageHtml->loadHTML($this->provideWebsiteContent());
         libxml_clear_errors();
         libxml_use_internal_errors(false);
 
-        $xpath = new DOMXPath($webPageHtml);
+        $xpath = new \DOMXPath($webPageHtml);
 
         $this->feedName = $this->provideFeedTitle($xpath);
         $this->feedIcon = $this->provideFeedIcon($xpath);
@@ -398,7 +398,7 @@ abstract class XPathAbstract extends BridgeAbstract
         }
 
         foreach ($entries as $entry) {
-            $item = new \FeedItem();
+            $item = new FeedItem();
             foreach (['title', 'content', 'uri', 'author', 'timestamp', 'enclosures', 'categories'] as $param) {
                 $expression = $this->getParam($param);
                 if ('' === $expression) {
@@ -408,7 +408,7 @@ abstract class XPathAbstract extends BridgeAbstract
                 //can be a string or DOMNodeList, depending on the expression result
                 $typedResult = @$xpath->evaluate($expression, $entry);
                 if (
-                    $typedResult === false || ($typedResult instanceof DOMNodeList && count($typedResult) === 0)
+                    $typedResult === false || ($typedResult instanceof \DOMNodeList && count($typedResult) === 0)
                     || (is_string($typedResult) && strlen(trim($typedResult)) === 0)
                 ) {
                     continue;
@@ -571,19 +571,19 @@ abstract class XPathAbstract extends BridgeAbstract
      */
     protected function getItemValueOrNodeValue($typedResult)
     {
-        if ($typedResult instanceof DOMNodeList) {
+        if ($typedResult instanceof \DOMNodeList) {
             $item = $typedResult->item(0);
-            if ($item instanceof DOMElement) {
+            if ($item instanceof \DOMElement) {
                 return trim($item->nodeValue);
-            } elseif ($item instanceof DOMAttr) {
+            } elseif ($item instanceof \DOMAttr) {
                 return trim($item->value);
-            } elseif ($item instanceof DOMText) {
+            } elseif ($item instanceof \DOMText) {
                 return trim($item->wholeText);
             }
         } elseif (is_string($typedResult) && strlen($typedResult) > 0) {
             return trim($typedResult);
         }
-        returnServerError('Unknown type of XPath expression result.');
+        throw new \Exception('Unknown type of XPath expression result.');
     }
 
     /**
@@ -605,8 +605,8 @@ abstract class XPathAbstract extends BridgeAbstract
      * @param FeedItem $item
      * @return string|null
      */
-    protected function generateItemId(\FeedItem $item)
+    protected function generateItemId(FeedItem $item)
     {
-        return null; //auto generation
+        return null;
     }
 }

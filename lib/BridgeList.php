@@ -23,6 +23,28 @@
 final class BridgeList
 {
     /**
+     * Create the entire home page
+     *
+     * @param bool $showInactive Inactive bridges are displayed on the home page,
+     * if enabled.
+     * @return string The home page
+     */
+    public static function create($showInactive = true)
+    {
+        $totalBridges = 0;
+        $totalActiveBridges = 0;
+
+        return '<!DOCTYPE html><html lang="en">'
+            . BridgeList::getHead()
+            . '<body onload="search()">'
+            . BridgeList::getHeader()
+            . BridgeList::getSearchbar()
+            . BridgeList::getBridges($showInactive, $totalBridges, $totalActiveBridges)
+            . BridgeList::getFooter($totalBridges, $totalActiveBridges, $showInactive)
+            . '</body></html>';
+    }
+
+    /**
      * Get the document head
      *
      * @return string The document head
@@ -65,7 +87,7 @@ EOD;
         $totalActiveBridges = 0;
         $inactiveBridges = '';
 
-        $bridgeFactory = new \BridgeFactory();
+        $bridgeFactory = new BridgeFactory();
         $bridgeClassNames = $bridgeFactory->getBridgeClassNames();
 
         $formatFactory = new FormatFactory();
@@ -126,7 +148,7 @@ EOD;
      */
     private static function getSearchbar()
     {
-        $query = filter_input(INPUT_GET, 'q', FILTER_SANITIZE_SPECIAL_CHARS);
+        $query = filter_input(INPUT_GET, 'q', \FILTER_SANITIZE_SPECIAL_CHARS);
 
         return <<<EOD
 <section class="searchbar">
@@ -173,10 +195,10 @@ EOD;
         $inactive = '';
 
         if ($totalActiveBridges !== $totalBridges) {
-            if (!$showInactive) {
-                $inactive = '<a href="?show_inactive=1"><button class="small">Show inactive bridges</button></a><br>';
-            } else {
+            if ($showInactive) {
                 $inactive = '<a href="?show_inactive=0"><button class="small">Hide inactive bridges</button></a><br>';
+            } else {
+                $inactive = '<a href="?show_inactive=1"><button class="small">Show inactive bridges</button></a><br>';
             }
         }
 
@@ -189,27 +211,5 @@ EOD;
 	{$admininfo}
 </section>
 EOD;
-    }
-
-    /**
-     * Create the entire home page
-     *
-     * @param bool $showInactive Inactive bridges are displayed on the home page,
-     * if enabled.
-     * @return string The home page
-     */
-    public static function create($showInactive = true)
-    {
-        $totalBridges = 0;
-        $totalActiveBridges = 0;
-
-        return '<!DOCTYPE html><html lang="en">'
-        . BridgeList::getHead()
-        . '<body onload="rssbridge_list_search()">'
-        . BridgeList::getHeader()
-        . BridgeList::getSearchbar()
-        . BridgeList::getBridges($showInactive, $totalBridges, $totalActiveBridges)
-        . BridgeList::getFooter($totalBridges, $totalActiveBridges, $showInactive)
-        . '</body></html>';
     }
 }

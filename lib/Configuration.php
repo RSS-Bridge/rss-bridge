@@ -41,14 +41,8 @@ final class Configuration
      */
     private static $config = null;
 
-    /**
-     * Throw an exception when trying to create a new instance of this class.
-     *
-     * @throws \LogicException if called.
-     */
-    public function __construct()
+    private function __construct()
     {
-        throw new \LogicException('Can\'t create object of this class!');
     }
 
     /**
@@ -61,43 +55,45 @@ final class Configuration
      */
     public static function verifyInstallation()
     {
-        // Check PHP version
-        // PHP Supported Versions: https://www.php.net/supported-versions.php
-        if (version_compare(PHP_VERSION, '7.4.0') === -1) {
+        if (version_compare(\PHP_VERSION, '7.4.0') === -1) {
             self::reportError('RSS-Bridge requires at least PHP version 7.4.0!');
         }
 
-        // Extensions check
+        $errors = [];
 
         // OpenSSL: https://www.php.net/manual/en/book.openssl.php
         if (!extension_loaded('openssl')) {
-            self::reportError('"openssl" extension not loaded. Please check "php.ini"');
+            $errors[] = 'openssl extension not loaded';
         }
 
         // libxml: https://www.php.net/manual/en/book.libxml.php
         if (!extension_loaded('libxml')) {
-            self::reportError('"libxml" extension not loaded. Please check "php.ini"');
+            $errors[] = 'libxml extension not loaded';
         }
 
         // Multibyte String (mbstring): https://www.php.net/manual/en/book.mbstring.php
         if (!extension_loaded('mbstring')) {
-            self::reportError('"mbstring" extension not loaded. Please check "php.ini"');
+            $errors[] = 'mbstring extension not loaded';
         }
 
         // SimpleXML: https://www.php.net/manual/en/book.simplexml.php
         if (!extension_loaded('simplexml')) {
-            self::reportError('"simplexml" extension not loaded. Please check "php.ini"');
+            $errors[] = 'simplexml extension not loaded';
         }
 
         // Client URL Library (curl): https://www.php.net/manual/en/book.curl.php
         // Allow RSS-Bridge to run without curl module in CLI mode without root certificates
         if (!extension_loaded('curl') && !(php_sapi_name() === 'cli' && empty(ini_get('curl.cainfo')))) {
-            self::reportError('"curl" extension not loaded. Please check "php.ini"');
+            $errors[] = 'curl extension not loaded';
         }
 
         // JavaScript Object Notation (json): https://www.php.net/manual/en/book.json.php
         if (!extension_loaded('json')) {
-            self::reportError('"json" extension not loaded. Please check "php.ini"');
+            $errors[] = 'json extension not loaded';
+        }
+
+        if ($errors) {
+            throw new \Exception(sprintf('Configuration error: %s', implode(', ', $errors)));
         }
     }
 
@@ -192,11 +188,11 @@ final class Configuration
             self::reportConfigurationError('authentication', 'enable', 'Is not a valid Boolean');
         }
 
-        if (!is_string(self::getConfig('authentication', 'username'))) {
+        if (!self::getConfig('authentication', 'username')) {
             self::reportConfigurationError('authentication', 'username', 'Is not a valid string');
         }
 
-        if (!is_string(self::getConfig('authentication', 'password'))) {
+        if (! self::getConfig('authentication', 'password')) {
             self::reportConfigurationError('authentication', 'password', 'Is not a valid string');
         }
 
@@ -250,7 +246,7 @@ final class Configuration
      */
     public static function getVersion()
     {
-        $headFile = PATH_ROOT . '.git/HEAD';
+        $headFile = __DIR__ . '/../.git/HEAD';
 
         // '@' is used to mute open_basedir warning
         if (@is_readable($headFile)) {
@@ -295,19 +291,8 @@ final class Configuration
         self::reportError($report);
     }
 
-    /**
-     * Reports an error message to the user and ends execution
-     *
-     * @param string $message The error message
-     *
-     * @return void
-     */
     private static function reportError($message)
     {
-        http_response_code(500);
-        print render('error.html.php', [
-            'message' => "Configuration error: $message",
-        ]);
-        exit;
+        throw new \Exception(sprintf('Configuration error: %s', $message));
     }
 }
