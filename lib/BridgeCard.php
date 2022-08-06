@@ -58,18 +58,19 @@ final class BridgeCard
             ];
         }
 
+        $shortName = $bridge->getShortName();
         $card = <<<CARD
-        <section
-			      class="bridge-card"
-			      id="bridge-{$bridgeClassName}"
-			      data-ref="{$name}"
-			      data-short-name="$shortName"
-			  >
-      
-				<h2><a href="{$uri}">{$name}</a></h2>
-				<p class="description">{$description}</p>
-				<input type="checkbox" class="showmore-box" id="showmore-{$bridgeClassName}" />
-				<label class="showmore" for="showmore-{$bridgeClassName}">Show more</label>
+                <section
+                    class="bridge-card"
+                    id="bridge-{$bridgeClassName}"
+                    data-ref="{$name}"
+                    data-short-name="$shortName"
+                >
+
+                <h2><a href="{$uri}">{$name}</a></h2>
+                <p class="description">{$description}</p>
+                <input type="checkbox" class="showmore-box" id="showmore-{$bridgeClassName}" />
+                <label class="showmore" for="showmore-{$bridgeClassName}">Show more</label>
 CARD;
 
         // If we don't have any parameter for the bridge, we print a generic form to load it.
@@ -122,9 +123,9 @@ CARD;
     private static function getFormHeader($bridgeClassName, $isHttps = false, $parameterName = '')
     {
         $form = <<<EOD
-			<form method="GET" action="?">
-				<input type="hidden" name="action" value="display" />
-				<input type="hidden" name="bridge" value="{$bridgeClassName}" />
+            <form method="GET" action="?">
+                <input type="hidden" name="action" value="display" />
+                <input type="hidden" name="bridge" value="{$bridgeClassName}" />
 EOD;
 
         if (!empty($parameterName)) {

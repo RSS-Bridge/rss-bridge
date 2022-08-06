@@ -36,7 +36,7 @@ final class BridgeList
 
         return '<!DOCTYPE html><html lang="en">'
             . BridgeList::getHead()
-            . '<body onload="search()">'
+            . '<body onload="rssbridge_list_search()">'
             . BridgeList::getHeader()
             . BridgeList::getSearchbar()
             . BridgeList::getBridges($showInactive, $totalBridges, $totalActiveBridges)
