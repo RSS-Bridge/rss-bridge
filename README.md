@@ -1,18 +1,188 @@
+# RSS-Bridge
+
 ![RSS-Bridge](static/logo_600px.png)
-===
+
+RSS-Bridge is a PHP project capable of generating RSS and Atom feeds for websites that don't have one.
+
 [![LICENSE](https://img.shields.io/badge/license-UNLICENSE-blue.svg)](UNLICENSE)
 [![GitHub release](https://img.shields.io/github/release/rss-bridge/rss-bridge.svg?logo=github)](https://github.com/rss-bridge/rss-bridge/releases/latest)
 [![irc.libera.chat](https://img.shields.io/badge/irc.libera.chat-%23rssbridge-blue.svg)](https://web.libera.chat/#rssbridge)
 [![Chat on Matrix](https://matrix.to/img/matrix-badge.svg)](https://matrix.to/#/#rssbridge:libera.chat)
 [![Actions Status](https://img.shields.io/github/workflow/status/RSS-Bridge/rss-bridge/Tests/master?label=GitHub%20Actions&logo=github)](https://github.com/RSS-Bridge/rss-bridge/actions)
-[![Docker Build Status](https://img.shields.io/docker/cloud/build/rssbridge/rss-bridge?logo=docker)](https://hub.docker.com/r/rssbridge/rss-bridge/)
 
-RSS-Bridge is a PHP project capable of generating RSS and Atom feeds for websites that don't have one. It can be used on webservers or as a stand-alone application in CLI mode.
+Screenshot of the Twitter bridge configuration:
 
-**Important**: RSS-Bridge is __not__ a feed reader or feed aggregator, but a tool to generate feeds that are consumed by feed readers and feed aggregators. Find a list of feed aggregators on [Wikipedia](https://en.wikipedia.org/wiki/Comparison_of_feed_aggregators).
+![Screenshot #1](/static/twitter-form.png?raw=true)
 
-Supported sites/pages (examples)
-===
+Screenshot of the Twitter bridge for Rasmus Lerdorf:
+
+![Screenshot #2](/static/twitter-rasmus.png?raw=true)
+
+[Documentation](https://rss-bridge.github.io/rss-bridge/index.html)
+
+Check out RSS-Bridge right now on https://rss-bridge.org/bridge01 or find another
+[public instance](https://rss-bridge.github.io/rss-bridge/General/Public_Hosts.html).
+
+## Tutorial
+
+### Install with git:
+
+```bash
+cd /var/www
+git clone https://github.com/RSS-Bridge/rss-bridge.git
+
+# Give the http user write permission to the cache folder
+chown www-data:www-data /var/www/rss-bridge/cache
+
+# Optionally copy over the default config file
+cp config.default.ini.php config.ini.php
+
+# Optionally copy over the default whitelist file
+cp whitelist.default.txt whitelist.txt
+```
+
+Example config for nginx:
+
+```nginx
+# /etc/nginx/sites-enabled/rssbridge
+server {
+    listen 80;
+    # server_name example.com;
+    root /var/www/rss-bridge;
+    index index.php;
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php-fpm.sock;
+    }
+}
+```
+
+### Install with Docker:
+
+Install by using docker image from Docker Hub:
+
+```bash
+# Create container
+docker create --name=rss-bridge --publish 3000:80 rssbridge/rss-bridge
+
+# Start container
+docker start rss-bridge
+```
+
+Browse http://localhost:3000/
+
+Install by locally building the image:
+
+```bash
+# Build image from Dockerfile
+docker build -t rss-bridge .
+
+# Create container
+docker create --name rss-bridge --publish 3000:80 rss-bridge
+
+# Start the container
+docker start rss-bridge
+```
+
+Browse http://localhost:3000/
+
+### Alternative installation methods
+
+[![Deploy on Scalingo](https://cdn.scalingo.com/deploy/button.svg)](https://my.scalingo.com/deploy?source=https://github.com/sebsauvage/rss-bridge)
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+[![Deploy to Cloudron](https://cloudron.io/img/button.svg)](https://www.cloudron.io/store/com.rssbridgeapp.cloudronapp.html)
+
+The Heroku quick deploy currently does not work. It might possibly work if you fork this repo and
+modify the `repository` in `scalingo.json`. See https://github.com/RSS-Bridge/rss-bridge/issues/2688
+
+Learn more in
+[Installation](https://rss-bridge.github.io/rss-bridge/For_Hosts/Installation.html).
+
+### Create a bridge
+
+Create the new bridge in `bridges/ExecuteBridge.php`:
+
+```php
+<?php
+
+class ExecuteBridge extends BridgeAbstract
+{
+    const NAME = 'Execute Program Blog';
+
+    public function collectData()
+    {
+        $url = 'https://www.executeprogram.com/api/pages/blog';
+        $data = json_decode(getContents($url));
+
+        foreach ($data->posts as $post) {
+            $this->items[] = [
+                'uri'       => sprintf('https://www.executeprogram.com/blog/%s', $post->slug),
+                'title'     => $post->title,
+                'content'   => $post->body,
+            ];
+        }
+    }
+}
+```
+
+Learn more in [bridge api](https://rss-bridge.github.io/rss-bridge/Bridge_API/index.html).
+
+## How-to
+
+### How to enable all bridges
+
+Write an asterisks in `whitelist.txt`:
+
+    echo '*' > whitelist.txt
+
+Learn more in [enabling briges](https://rss-bridge.github.io/rss-bridge/For_Hosts/Whitelisting.html)
+
+### How to enable a bridge
+
+Add the bridge name to `whitelist.txt`:
+
+    echo 'FirefoxAddonsBridge' >> whitelist.txt
+
+### How to enable debug mode
+
+Create a file named `DEBUG`:
+
+    touch DEBUG
+
+Learn more in [debug mode](https://rss-bridge.github.io/rss-bridge/For_Developers/Debug_mode.html).
+
+### How to create a new output format
+
+[Create a new format](https://rss-bridge.github.io/rss-bridge/Format_API/index.html).
+
+## Explanation
+
+We are RSS-Bridge community, a group of developers continuing the project initiated by sebsauvage,
+webmaster of
+[sebsauvage.net](https://sebsauvage.net), author of
+[Shaarli](https://sebsauvage.net/wiki/doku.php?id=php:shaarli) and
+[ZeroBin](https://sebsauvage.net/wiki/doku.php?id=php:zerobin).
+
+See [CONTRIBUTORS.md](CONTRIBUTORS.md)
+
+RSS-Bridge uses caching to prevent services from banning your server for repeatedly updating feeds.
+The specific cache duration can be different between bridges. Cached files are deleted automatically after 24 hours.
+
+RSS-Bridge allows you to take full control over which bridges are displayed to the user.
+That way you can host your own RSS-Bridge service with your favorite collection of bridges!
+
+Supported output formats:
+
+* `Atom` : Atom feed, for use in feed readers
+* `Html` : Simple HTML page
+* `Json` : JSON, for consumption by other applications
+* `Mrss` : MRSS feed, for use in feed readers
+* `Plaintext` : Raw text, for consumption by other applications
+
+## Reference
+
+### A selection of bridges
 
 * `Bandcamp` : Returns last release from [bandcamp](https://bandcamp.com/) for a tag
 * `Cryptome` : Returns the most recent documents from [Cryptome.org](https://cryptome.org/)
@@ -33,88 +203,7 @@ Supported sites/pages (examples)
 
 And [many more](bridges/), thanks to the community!
 
-Output format
-===
-
-RSS-Bridge is capable of producing several output formats:
-
-* `Atom` : Atom feed, for use in feed readers
-* `Html` : Simple HTML page
-* `Json` : JSON, for consumption by other applications
-* `Mrss` : MRSS feed, for use in feed readers
-* `Plaintext` : Raw text, for consumption by other applications
-
-You can extend RSS-Bridge with your own format, using the [Format API](https://rss-bridge.github.io/rss-bridge/Format_API/index.html)!
-
-Screenshot
-===
-
-Welcome screen:
-
-![Screenshot](/static/screenshot_rss-bridge_welcome.png?raw=true)
-
-RSS-Bridge hashtag (#rss-bridge) search on Twitter, in Atom format (as displayed by Firefox):
-
-![Screenshot](/static/screenshot_twitterbridge_atom.png?raw=true)
-
-Requirements
-===
-
-RSS-Bridge requires PHP 7.4 or higher with following extensions enabled:
-
-  - [`openssl`](https://secure.php.net/manual/en/book.openssl.php)
-  - [`libxml`](https://secure.php.net/manual/en/book.libxml.php)
-  - [`mbstring`](https://secure.php.net/manual/en/book.mbstring.php)
-  - [`simplexml`](https://secure.php.net/manual/en/book.simplexml.php)
-  - [`curl`](https://secure.php.net/manual/en/book.curl.php)
-  - [`json`](https://secure.php.net/manual/en/book.json.php)
-  - [`filter`](https://secure.php.net/manual/en/book.filter.php)
-  - [`zip`](https://secure.php.net/manual/en/book.zip.php) (for some bridges)
-  - [`sqlite3`](https://www.php.net/manual/en/book.sqlite3.php) (only when using SQLiteCache)
-
-Find more information on our [Documentation](https://rss-bridge.github.io/rss-bridge/index.html)
-
-Enable / Disable bridges
-===
-
-RSS-Bridge allows you to take full control over which bridges are displayed to the user. That way you can host your own RSS-Bridge service with your favorite collection of bridges!
-
-Find more information on the [Documentation](https://rss-bridge.github.io/rss-bridge/For_Hosts/Whitelisting.html)
-
-**Notice**: By default, RSS-Bridge will only show a small subset of bridges. Make sure to read up on [whitelisting](https://rss-bridge.github.io/rss-bridge/For_Hosts/Whitelisting.html) to unlock the full potential of RSS-Bridge!
-
-Deploy
-===
-
-Thanks to the community, hosting your own instance of RSS-Bridge is as easy as clicking a button!
-*Note: External providers' applications are packaged by 3rd parties. Use at your own discretion.*
-
-[![Deploy on Scalingo](https://cdn.scalingo.com/deploy/button.svg)](https://my.scalingo.com/deploy?source=https://github.com/sebsauvage/rss-bridge)
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-[![Deploy to Cloudron](https://cloudron.io/img/button.svg)](https://www.cloudron.io/store/com.rssbridgeapp.cloudronapp.html)
-
-Getting involved
-===
-
-There are many ways for you to getting involved with RSS-Bridge. Here are a few things:
-
-- Share RSS-Bridge with your friends (Twitter, Facebook, ..._you name it_...)
-- Report broken bridges or bugs by opening [Issues](https://github.com/RSS-Bridge/rss-bridge/issues) on GitHub
-- Request new features or suggest ideas (via [Issues](https://github.com/RSS-Bridge/rss-bridge/issues))
-- Discuss bugs, features, ideas or [issues](https://github.com/RSS-Bridge/rss-bridge/issues)
-- Add new bridges or improve the API
-- Improve the [Documentation](https://rss-bridge.github.io/rss-bridge/)
-- Host an instance of RSS-Bridge for your personal use or make it available to the community :sparkling_heart:
-
-Authors
-===
-
-We are RSS-Bridge community, a group of developers continuing the project initiated by sebsauvage, webmaster of [sebsauvage.net](https://sebsauvage.net), author of [Shaarli](https://sebsauvage.net/wiki/doku.php?id=php:shaarli) and [ZeroBin](https://sebsauvage.net/wiki/doku.php?id=php:zerobin).
-
-See [CONTRIBUTORS.md](CONTRIBUTORS.md)
-
-Licenses
-===
+### Licenses
 
 The source code for RSS-Bridge is [Public Domain](UNLICENSE).
 
@@ -125,15 +214,7 @@ RSS-Bridge uses third party libraries with their own license:
   * [`php-urljoin`](https://github.com/fluffy-critter/php-urljoin) licensed under the [MIT License](https://opensource.org/licenses/MIT)
   * [`Laravel framework`](https://github.com/laravel/framework/) licensed under the [MIT License](https://opensource.org/licenses/MIT)
 
-Technical notes
-===
-
-  * RSS-Bridge uses caching to prevent services from banning your server for repeatedly updating feeds. The specific cache duration can be different between bridges. Cached files are deleted automatically after 24 hours.
-  * You can implement your own bridge, [following these instructions](https://rss-bridge.github.io/rss-bridge/Bridge_API/index.html).
-  * You can enable debug mode to disable caching. Find more information on the [Wiki](https://rss-bridge.github.io/rss-bridge/For_Developers/Debug_mode.html)
-
-Rant
-===
+## Rant
 
 *Dear so-called "social" websites.*
 
