@@ -143,4 +143,6 @@ interface BridgeInterface
      * @return array|null List of bridge parameters or null if detection failed.
      */
     public function detectParameters($url);
+
+    public function getShortName(): string;
 }

@@ -36,7 +36,7 @@ final class BridgeList
 
         return '<!DOCTYPE html><html lang="en">'
             . BridgeList::getHead()
-            . '<body onload="search()">'
+            . '<body onload="rssbridge_list_search()">'
             . BridgeList::getHeader()
             . BridgeList::getSearchbar()
             . BridgeList::getBridges($showInactive, $totalBridges, $totalActiveBridges)
@@ -152,10 +152,16 @@ EOD;
 
         return <<<EOD
 <section class="searchbar">
-	<h3>Search</h3>
-	<input type="text" name="searchfield"
-		id="searchfield" placeholder="Insert URL or bridge name"
-		onchange="search()" onkeyup="search()" value="{$query}">
+    <h3>Search</h3>
+    <input
+        type="text"
+        name="searchfield"
+        id="searchfield"
+        placeholder="Insert URL or bridge name"
+        onchange="rssbridge_list_search()"
+        onkeyup="rssbridge_list_search()"
+        value="{$query}"
+    >
 </section>
 EOD;
     }
