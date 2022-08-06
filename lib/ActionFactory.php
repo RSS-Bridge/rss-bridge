@@ -26,7 +26,8 @@ class ActionFactory
      */
     public function create(string $name): ActionInterface
     {
-        $name = ucfirst(strtolower($name)) . 'Action';
+        $name = strtolower($name) . 'Action';
+        $name = implode(array_map('ucfirst', explode('-', $name)));
         $filePath = $this->folder . $name . '.php';
         if (!file_exists($filePath)) {
             throw new \Exception('Invalid action');
