@@ -1,9 +1,5 @@
 <?php
 
-/**
-* Plaintext
-* Returns $this->items as raw php data.
-*/
 class PlaintextFormat extends FormatAbstract
 {
     const MIME_TYPE = 'text/plain';

@@ -13,38 +13,32 @@ class SQLiteCache implements CacheInterface
     public function __construct()
     {
         if (!extension_loaded('sqlite3')) {
-            print render('error.html.php', ['message' => '"sqlite3" extension not loaded. Please check "php.ini"']);
-            exit;
+            throw new \Exception('"sqlite3" extension not loaded. Please check "php.ini"');
         }
 
         if (!is_writable(PATH_CACHE)) {
-            returnServerError(
-                'RSS-Bridge does not have write permissions for '
-                . PATH_CACHE . '!'
-            );
+            throw new \Exception('The cache folder is not writable');
         }
 
         $section = 'SQLiteCache';
         $file = Configuration::getConfig($section, 'file');
         if (empty($file)) {
-            $message = sprintf('Configuration for %s missing. Please check your %s', $section, FILE_CONFIG);
-            print render('error.html.php', ['message' => $message]);
-            exit;
+            throw new \Exception(sprintf('Configuration for %s missing.', $section));
         }
+
         if (dirname($file) == '.') {
             $file = PATH_CACHE . $file;
         } elseif (!is_dir(dirname($file))) {
-            $message = sprintf('Invalid configuration for %s. Please check your %s', $section, FILE_CONFIG);
-            print render('error.html.php', ['message' => $message]);
-            exit;
+            throw new \Exception(sprintf('Invalid configuration for %s', $section));
         }
 
         if (!is_file($file)) {
-            $this->db = new SQLite3($file);
+            // The instantiation creates the file
+            $this->db = new \SQLite3($file);
             $this->db->enableExceptions(true);
             $this->db->exec("CREATE TABLE storage ('key' BLOB PRIMARY KEY, 'value' BLOB, 'updated' INTEGER)");
         } else {
-            $this->db = new SQLite3($file);
+            $this->db = new \SQLite3($file);
             $this->db->enableExceptions(true);
         }
         $this->db->busyTimeout(5000);
@@ -55,8 +49,8 @@ class SQLiteCache implements CacheInterface
         $Qselect = $this->db->prepare('SELECT value FROM storage WHERE key = :key');
         $Qselect->bindValue(':key', $this->getCacheKey());
         $result = $Qselect->execute();
-        if ($result instanceof SQLite3Result) {
-            $data = $result->fetchArray(SQLITE3_ASSOC);
+        if ($result instanceof \SQLite3Result) {
+            $data = $result->fetchArray(\SQLITE3_ASSOC);
             if (isset($data['value'])) {
                 return unserialize($data['value']);
             }
@@ -81,7 +75,7 @@ class SQLiteCache implements CacheInterface
         $Qselect = $this->db->prepare('SELECT updated FROM storage WHERE key = :key');
         $Qselect->bindValue(':key', $this->getCacheKey());
         $result = $Qselect->execute();
-        if ($result instanceof SQLite3Result) {
+        if ($result instanceof \SQLite3Result) {
             $data = $result->fetchArray(SQLITE3_ASSOC);
             if (isset($data['updated'])) {
                 return $data['updated'];
@@ -98,10 +92,6 @@ class SQLiteCache implements CacheInterface
         $Qdelete->execute();
     }
 
-    /**
-    * Set scope
-    * @return self
-    */
     public function setScope($scope)
     {
         if (is_null($scope) || !is_string($scope)) {
@@ -112,10 +102,6 @@ class SQLiteCache implements CacheInterface
         return $this;
     }
 
-    /**
-    * Set key
-    * @return self
-    */
     public function setKey($key)
     {
         if (!empty($key) && is_array($key)) {
@@ -130,8 +116,6 @@ class SQLiteCache implements CacheInterface
         $this->key = $key;
         return $this;
     }
-
-    ////////////////////////////////////////////////////////////////////////////
 
     private function getCacheKey()
     {

@@ -22,7 +22,9 @@ class PirateCommunityBridge extends BridgeAbstract
     {
         $parsed_url = parse_url($url);
 
-        if ($parsed_url['host'] !== 'raymanpc.com') {
+        $host = $parsed_url['host'] ?? null;
+
+        if ($host !== 'raymanpc.com') {
             return null;
         }
 

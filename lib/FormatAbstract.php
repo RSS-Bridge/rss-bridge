@@ -63,7 +63,10 @@ abstract class FormatAbstract implements FormatInterface
     {
         $charset = $this->charset;
 
-        return is_null($charset) ? static::DEFAULT_CHARSET : $charset;
+        if (is_null($charset)) {
+            return static::DEFAULT_CHARSET;
+        }
+        return $charset;
     }
 
     /**
@@ -93,7 +96,7 @@ abstract class FormatAbstract implements FormatInterface
     public function getItems()
     {
         if (!is_array($this->items)) {
-            throw new \LogicException('Feed the ' . get_class($this) . ' with "setItems" method before !');
+            throw new \LogicException(sprintf('Feed the %s with "setItems" method before !', get_class($this)));
         }
 
         return $this->items;
@@ -125,27 +128,5 @@ abstract class FormatAbstract implements FormatInterface
         }
 
         return $this->extraInfos;
-    }
-
-    /**
-     * Sanitize HTML while leaving it functional.
-     *
-     * Keeps HTML as-is (with clickable hyperlinks) while reducing annoying and
-     * potentially dangerous things.
-     *
-     * @param string $html The HTML content
-     * @return string The sanitized HTML content
-     *
-     * @todo This belongs into `html.php`
-     * @todo Maybe switch to http://htmlpurifier.org/
-     * @todo Maybe switch to http://www.bioinformatics.org/phplabware/internal_utilities/htmLawed/index.php
-     */
-    protected function sanitizeHtml(string $html): string
-    {
-        $html = str_replace('<script', '<&zwnj;script', $html); // Disable scripts, but leave them visible.
-        $html = str_replace('<iframe', '<&zwnj;iframe', $html);
-        $html = str_replace('<link', '<&zwnj;link', $html);
-        // We leave alone object and embed so that videos can play in RSS readers.
-        return $html;
     }
 }

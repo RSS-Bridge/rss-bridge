@@ -9,6 +9,7 @@
 
   <rule ref="PSR12">
     <exclude name="PSR1.Classes.ClassDeclaration.MissingNamespace"/>
+    <exclude name="PSR1.Classes.ClassDeclaration.MultipleClasses"/>
     <exclude name="PSR1.Files.SideEffects.FoundWithSymbols"/>
     <exclude name="PSR12.Properties.ConstantVisibility.NotFound"/>
   </rule>

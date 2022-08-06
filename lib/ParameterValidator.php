@@ -35,7 +35,7 @@ class ParameterValidator
     {
         $this->invalid[] = [
             'name' => $name,
-            'reason' => $reason
+            'reason' => $reason,
         ];
     }
 
@@ -216,7 +216,7 @@ class ParameterValidator
             if (array_key_exists('global', $parameters)) {
                 $notInContext = array_diff_key($notInContext, $parameters['global']);
             }
-            if (sizeof($notInContext) > 0) {
+            if (count($notInContext) > 0) {
                 continue;
             }
 
@@ -246,7 +246,8 @@ class ParameterValidator
         unset($queriedContexts['global']);
 
         switch (array_sum($queriedContexts)) {
-            case 0: // Found no match, is there a context without parameters?
+            case 0:
+                // Found no match, is there a context without parameters?
                 if (isset($data['context'])) {
                     return $data['context'];
                 }
@@ -256,7 +257,8 @@ class ParameterValidator
                     }
                 }
                 return null;
-            case 1: // Found unique match
+            case 1:
+                // Found unique match
                 return array_search(true, $queriedContexts);
             default:
                 return false;

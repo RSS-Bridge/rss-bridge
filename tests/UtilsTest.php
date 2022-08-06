@@ -16,4 +16,19 @@ final class UtilsTest extends TestCase
         $this->assertSame('foo', truncate('foo', 4));
         $this->assertSame('fo[...]', truncate('foo', 2, '[...]'));
     }
+
+    public function testFileCache()
+    {
+        $sut = new \FileCache();
+        $sut->setScope('scope');
+        $sut->purgeCache(-1);
+        $sut->setKey(['key']);
+
+        $this->assertNull($sut->loadData());
+
+        $sut->saveData('data');
+        $this->assertSame('data', $sut->loadData());
+        $this->assertIsNumeric($sut->getTime());
+        $sut->purgeCache(-1);
+    }
 }

@@ -43,6 +43,25 @@ class FDroidRepoBridge extends BridgeAbstract
     // Stores repo information
     private $repo;
 
+    public function collectData()
+    {
+        if (!extension_loaded('zip')) {
+            throw new \Exception('FDroidRepoBridge requires the php-zip extension');
+        }
+
+        $this->repo = $this->getRepo();
+        switch ($this->queriedContext) {
+            case 'Latest Updates':
+                $this->getAllUpdates();
+                break;
+            case 'Follow Package':
+                $this->getPackage($this->getInput('package'));
+                break;
+            default:
+                returnServerError('Unimplemented Context (collectData)');
+        }
+    }
+
     public function getURI()
     {
         if (empty($this->queriedContext)) {
@@ -70,21 +89,6 @@ class FDroidRepoBridge extends BridgeAbstract
         }
     }
 
-    public function collectData()
-    {
-        $this->repo = $this->getRepo();
-        switch ($this->queriedContext) {
-            case 'Latest Updates':
-                $this->getAllUpdates();
-                break;
-            case 'Follow Package':
-                $this->getPackage($this->getInput('package'));
-                break;
-            default:
-                returnServerError('Unimplemented Context (collectData)');
-        }
-    }
-
     private function getRepo()
     {
         $url = $this->getURI();
@@ -95,9 +99,10 @@ class FDroidRepoBridge extends BridgeAbstract
         file_put_contents($jar_loc, $jar);
 
         // JAR files are specially formatted ZIP files
-        $jar = new ZipArchive();
+        $jar = new \ZipArchive();
         if ($jar->open($jar_loc) !== true) {
-            returnServerError('Failed to extract archive');
+            unlink($jar_loc);
+            throw new \Exception('Failed to extract archive');
         }
 
         // Get file pointer to the relevant JSON inside
@@ -109,6 +114,7 @@ class FDroidRepoBridge extends BridgeAbstract
         $data = json_decode(stream_get_contents($fp), true);
         fclose($fp);
         $jar->close();
+        unlink($jar_loc);
         return $data;
     }
 

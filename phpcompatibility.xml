@@ -10,6 +10,8 @@
   -->
   <config name="testVersion" value="7.4-"/>
   <rule ref="PHPCompatibility">
+    <!-- This sniff is very overzealous and inaccurate, so we'll disable it -->
+    <exclude name="PHPCompatibility.Extensions.RemovedExtensions"/>
   </rule>
 
 </ruleset>

@@ -64,8 +64,8 @@ class Debug
     {
         static $firstCall = true; // Initialized on first call
 
-        if ($firstCall && file_exists(PATH_ROOT . 'DEBUG')) {
-            $debug_whitelist = trim(file_get_contents(PATH_ROOT . 'DEBUG'));
+        if ($firstCall && file_exists(__DIR__ . '/../DEBUG')) {
+            $debug_whitelist = trim(file_get_contents(__DIR__ . '/../DEBUG'));
 
             self::$enabled = empty($debug_whitelist) || in_array(
                 $_SERVER['REMOTE_ADDR'],

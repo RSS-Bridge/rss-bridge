@@ -7,9 +7,9 @@ class HtmlFormat extends FormatAbstract
     public function stringify()
     {
         $extraInfos = $this->getExtraInfos();
-        $title = htmlspecialchars($extraInfos['name']);
-        $uri = htmlspecialchars($extraInfos['uri']);
-        $donationUri = htmlspecialchars($extraInfos['donationUri']);
+        $title = e($extraInfos['name']);
+        $uri = e($extraInfos['uri']);
+        $donationUri = e($extraInfos['donationUri']);
         $donationsAllowed = Configuration::getConfig('admin', 'donations');
 
         // Dynamically build buttons for all formats (except HTML)
@@ -19,32 +19,39 @@ class HtmlFormat extends FormatAbstract
         $links = '';
 
         foreach ($formatFactory->getFormatNames() as $format) {
-            if (strcasecmp($format, 'HTML') === 0) {
+            if ($format === 'Html') {
                 continue;
             }
 
-            $query = str_ireplace('format=Html', 'format=' . $format, htmlentities($_SERVER['QUERY_STRING']));
-            $buttons .= $this->buildButton($format, $query) . PHP_EOL;
+            $queryString = $_SERVER['QUERY_STRING'];
+            $query = str_ireplace('format=Html', 'format=' . $format, htmlentities($queryString));
+            $buttons .= sprintf('<a href="./?%s"><button class="rss-feed">%s</button></a>', $query, $format) . "\n";
 
             $mime = $formatFactory->create($format)->getMimeType();
-            $links .= $this->buildLink($format, $query, $mime) . PHP_EOL;
+            $links .= sprintf('<link href="./?%s" title="%s" rel="alternate" type="%s">', $query, $format, $mime) . "\n";
         }
 
         if ($donationUri !== '' && $donationsAllowed) {
-            $buttons .= '<a href="'
-                        . $donationUri
-                        . '" target="_blank"><button class="highlight">Donate to maintainer</button></a>'
-                        . PHP_EOL;
-            $links .= '<link href="'
-                        . $donationUri
-                        . ' target="_blank"" title="Donate to Maintainer" rel="alternate">'
-                        . PHP_EOL;
+            $str = sprintf(
+                '<a href="%s" target="_blank"><button class="highlight">Donate to maintainer</button></a>',
+                $donationUri
+            );
+            $buttons .= $str;
+            $str1 = sprintf(
+                '<link href="%s target="_blank"" title="Donate to Maintainer" rel="alternate">',
+                $donationUri
+            );
+            $links .= $str1;
         }
 
         $entries = '';
         foreach ($this->getItems() as $item) {
-            $entryAuthor = $item->getAuthor() ? '<br /><p class="author">by: ' . $item->getAuthor() . '</p>' : '';
-            $entryTitle = $this->sanitizeHtml(strip_tags($item->getTitle()));
+            if ($item->getAuthor()) {
+                $entryAuthor = sprintf('<br /><p class="author">by: %s</p>', $item->getAuthor());
+            } else {
+                $entryAuthor = '';
+            }
+            $entryTitle = sanitize_html(strip_tags($item->getTitle()));
             $entryUri = $item->getURI() ?: $uri;
 
             $entryDate = '';
@@ -58,9 +65,8 @@ class HtmlFormat extends FormatAbstract
 
             $entryContent = '';
             if ($item->getContent()) {
-                $entryContent = '<div class="content">'
-                . $this->sanitizeHtml($item->getContent())
-                . '</div>';
+                $str2 = sprintf('<div class="content">%s</div>', sanitize_html($item->getContent()));
+                $entryContent = $str2;
             }
 
             $entryEnclosures = '';
@@ -69,7 +75,7 @@ class HtmlFormat extends FormatAbstract
 
                 foreach ($item->getEnclosures() as $enclosure) {
                     $template = '<li class="enclosure"><a href="%s" rel="noopener noreferrer nofollow">%s</a></li>';
-                    $url = $this->sanitizeHtml($enclosure);
+                    $url = sanitize_html($enclosure);
                     $anchorText = substr($url, strrpos($url, '/') + 1);
 
                     $entryEnclosures .= sprintf($template, $url, $anchorText);
@@ -84,7 +90,7 @@ class HtmlFormat extends FormatAbstract
 
                 foreach ($item->getCategories() as $category) {
                     $entryCategories .= '<li class="category">'
-                    . $this->sanitizeHtml($category)
+                    . sanitize_html($category)
                     . '</li>';
                 }
 
@@ -106,8 +112,6 @@ EOD;
         }
 
         $charset = $this->getCharset();
-
-        /* Data are prepared, now let's begin the "MAGIE !!!" */
         $toReturn = <<<EOD
 <!DOCTYPE html>
 <html>
@@ -135,20 +139,5 @@ EOD;
         ini_set('mbstring.substitute_character', 'none');
         $toReturn = mb_convert_encoding($toReturn, $this->getCharset(), 'UTF-8');
         return $toReturn;
-    }
-
-    private function buildButton($format, $query)
-    {
-        return <<<EOD
-<a href="./?{$query}"><button class="rss-feed">{$format}</button></a>
-EOD;
-    }
-
-    private function buildLink($format, $query, $mime)
-    {
-        return <<<EOD
-<link href="./?{$query}" title="{$format}" rel="alternate" type="{$mime}">
-
-EOD;
     }
 }

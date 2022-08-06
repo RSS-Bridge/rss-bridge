@@ -16,13 +16,17 @@ class DetectAction implements ActionInterface
 {
     public function execute(array $request)
     {
-        $targetURL = $request['url']
-            or returnClientError('You must specify a url!');
+        $targetURL = $request['url'] ?? null;
+        $format = $request['format'] ?? null;
 
-        $format = $request['format']
-            or returnClientError('You must specify a format!');
+        if (!$targetURL) {
+            throw new \Exception('You must specify a url!');
+        }
+        if (!$format) {
+            throw new \Exception('You must specify a format!');
+        }
 
-        $bridgeFactory = new \BridgeFactory();
+        $bridgeFactory = new BridgeFactory();
 
         foreach ($bridgeFactory->getBridgeClassNames() as $bridgeClassName) {
             if (!$bridgeFactory->isWhitelisted($bridgeClassName)) {
@@ -30,10 +34,6 @@ class DetectAction implements ActionInterface
             }
 
             $bridge = $bridgeFactory->create($bridgeClassName);
-
-            if ($bridge === false) {
-                continue;
-            }
 
             $bridgeParams = $bridge->detectParameters($targetURL);
 
@@ -45,9 +45,9 @@ class DetectAction implements ActionInterface
             $bridgeParams['format'] = $format;
 
             header('Location: ?action=display&' . http_build_query($bridgeParams), true, 301);
-            exit;
+            return;
         }
 
-        returnClientError('No bridge found for given URL: ' . $targetURL);
+        throw new \Exception('No bridge found for given URL: ' . $targetURL);
     }
 }
