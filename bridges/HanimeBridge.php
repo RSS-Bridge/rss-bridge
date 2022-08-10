@@ -26,7 +26,7 @@ class HanimeBridge extends BridgeAbstract
 
             $item['uri'] = $video_uri;
             $item['title'] = $video->find('.hv-title', 0)->plaintext;
-            $item['enclosures'][] = $cover;
+            $item['content'] = sprintf('<img src="%s">', $cover);
 
             $this->items[] = $item;
         }
