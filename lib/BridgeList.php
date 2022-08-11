@@ -59,8 +59,10 @@ final class BridgeList
 	<title>RSS-Bridge</title>
 	<link href="static/style.css" rel="stylesheet">
 	<link rel="icon" type="image/png" href="static/favicon.png">
-	<script src="static/search.js"></script>
-	<script src="static/select.js"></script>
+	<script src="static/rss-bridge.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', rssbridge_toggle_bridge);
+    </script>
 	<noscript>
 		<style>
 			.searchbar {
