@@ -51,14 +51,8 @@ final class RssBridge
         }
 
         $actionFactory = new ActionFactory();
-
-        if (array_key_exists('action', $request)) {
-            $action = $actionFactory->create($request['action']);
-
-            $action->execute($request);
-        } else {
-            $showInactive = filter_input(INPUT_GET, 'show_inactive', FILTER_VALIDATE_BOOLEAN);
-            print BridgeList::create($showInactive);
-        }
+        $action = $request['action'] ?? 'Frontpage';
+        $action = $actionFactory->create($action);
+        $action->execute($request);
     }
 }
