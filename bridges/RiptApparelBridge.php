@@ -18,8 +18,8 @@ class RiptApparelBridge extends BridgeAbstract
             $title = $element->find('div.design-info', 0)->find('div.title', 0)->innertext;
             $uri = self::URI . $element->find('div.design-info', 0)->find('a', 0)->href;
             $today = date('m/d/Y');
-            $imagesrcset = $element->find('div.design-images', 0)->find('div[data-subtype="Mens"]', 0)->find('img', 0)->getAttribute('data-srcset');
-            $image = rtrim(explode(',', $imagesrcset)[2], ' 900w');
+            $imagesrcset = $element->find('div.design-images', 0)->find('div[data-subtype="Mens"]', 0)->find('img', 0);
+            $image = rtrim(explode(',', $imagesrcset->getAttribute('data-srcset'))[2], ' 900w');
             $item = [];
             $item['uri'] = $uri;
             $item['title'] = $title;
