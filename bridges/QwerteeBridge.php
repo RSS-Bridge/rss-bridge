@@ -14,7 +14,7 @@ class QwerteeBridge extends BridgeAbstract
     {
         $html = getSimpleHTMLDOM(self::URI);
 
-        foreach($html->find('div.big-slides', 0)->find('div.big-slide') as $element) {
+        foreach ($html->find('div.big-slides', 0)->find('div.big-slide') as $element) {
             $title = $element->find('div.index-tee', 0)->getAttribute('data-name', 0);
             $today = date('m/d/Y');
             $item = [];
@@ -26,8 +26,7 @@ class QwerteeBridge extends BridgeAbstract
             . $item['uri']
             . '"><img src="'
             . $element->find('img', 0)->getAttribute('src', 0)
-            . '" /></a>'
-            ;
+            . '" /></a>';
 
             $this->items[] = $item;
         }

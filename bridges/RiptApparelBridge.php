@@ -14,7 +14,7 @@ class RiptApparelBridge extends BridgeAbstract
     {
         $html = getSimpleHTMLDOM(self::URI);
 
-        foreach($html->find('div.daily-designs', 0)->find('div.collection') as $element) {
+        foreach ($html->find('div.daily-designs', 0)->find('div.collection') as $element) {
             $title = $element->find('div.design-info', 0)->find('div.title', 0)->innertext;
             $uri = self::URI . $element->find('div.design-info', 0)->find('a', 0)->href;
             $today = date('m/d/Y');
@@ -29,11 +29,9 @@ class RiptApparelBridge extends BridgeAbstract
             . $uri
             . '"><img src="'
             . $image
-            . '" /></a>'
-            ;
+            . '" /></a>';
 
             $this->items[] = $item;
         }
     }
-
 }

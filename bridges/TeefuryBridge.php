@@ -15,7 +15,7 @@ class TeefuryBridge extends BridgeAbstract
         $html = getSimpleHTMLDOM(self::URI);
         $html = defaultLinkTo($html, self::URI);
 
-        foreach($html->find('div.odad-card__wrapper') as $element) {
+        foreach ($html->find('div.odad-card__wrapper') as $element) {
             $titletext = $element->find('p', 0)->innertext;
             $title = trim(explode('<br>', $titletext)[0]);
             $today = date('m/d/Y');
@@ -30,8 +30,7 @@ class TeefuryBridge extends BridgeAbstract
             . $uri
             . '"><img src="'
             . $element->find('div.js-odad-link', 1)->find('img', 0)->attr['src']
-            . '" /></a>'
-            ;
+            . '" /></a>';
 
             $this->items[] = $item;
         }
