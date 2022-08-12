@@ -61,7 +61,7 @@ class OLXBridge extends BridgeAbstract
     public function collectData()
     {
         # make sure we order by the most recently listed offers
-        $url = trim(preg_replace('/([?&])search%5Border%5D=[^&]+(&|$)/', '$1', $this->getInput('url')), '?&');
+        $url = trim(preg_replace('/([?&])search%5Border%5D=[^&]+(&|$)/', '$1', $this->getInput('url')), '?&/');
         $url = preg_replace('/([?&])view=[^&]+(&|$)/', '', $url);
         $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . 'search%5Border%5D=created_at:desc';
 
