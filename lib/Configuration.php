@@ -19,26 +19,8 @@
  */
 final class Configuration
 {
-    /**
-     * Holds the current release version of RSS-Bridge.
-     *
-     * Do not access this property directly!
-     * Use {@see Configuration::getVersion()} instead.
-     *
-     * @var string
-     *
-     * @todo Replace this property by a constant.
-     */
-    public static $VERSION = 'dev.2022-06-14';
+    private const VERSION = 'dev.2022-06-14';
 
-    /**
-     * Holds the configuration data.
-     *
-     * Do not access this property directly!
-     * Use {@see Configuration::getConfig()} instead.
-     *
-     * @var array|null
-     */
     private static $config = null;
 
     private function __construct()
@@ -103,13 +85,13 @@ final class Configuration
      * Returns an error message and aborts execution if the configuration is invalid.
      *
      * The RSS-Bridge configuration is split into two files:
-     * - {@see FILE_CONFIG_DEFAULT} The default configuration file that ships
+     * - The default configuration file that ships
      * with every release of RSS-Bridge (do not modify this file!).
-     * - {@see FILE_CONFIG} The local configuration file that can be modified
+     * - The local configuration file that can be modified
      * by server administrators.
      *
-     * RSS-Bridge will first load {@see FILE_CONFIG_DEFAULT} into memory and then
-     * replace parameters with the contents of {@see FILE_CONFIG}. That way new
+     * RSS-Bridge will first load default config into memory and then
+     * replace parameters with the contents of the custom config. That way new
      * parameters are automatically initialized with default values and custom
      * configurations can be reduced to the minimum set of parametes necessary
      * (only the ones that changed).
@@ -123,25 +105,29 @@ final class Configuration
      */
     public static function loadConfiguration()
     {
-        if (!file_exists(FILE_CONFIG_DEFAULT)) {
-            self::reportError('The default configuration file is missing at ' . FILE_CONFIG_DEFAULT);
+        $env = getenv();
+        $defaultConfig = __DIR__ . '/../config.default.ini.php';
+        $customConfig = __DIR__ . '/../config.ini.php';
+
+        if (!file_exists($defaultConfig)) {
+            self::reportError('The default configuration file is missing');
         }
 
-        $config = parse_ini_file(FILE_CONFIG_DEFAULT, true, INI_SCANNER_TYPED);
+        $config = parse_ini_file($defaultConfig, true, INI_SCANNER_TYPED);
         if (!$config) {
-            self::reportError('Error parsing ' . FILE_CONFIG_DEFAULT);
+            self::reportError('Error parsing config');
         }
 
-        if (file_exists(FILE_CONFIG)) {
+        if (file_exists($customConfig)) {
             // Replace default configuration with custom settings
-            foreach (parse_ini_file(FILE_CONFIG, true, INI_SCANNER_TYPED) as $header => $section) {
+            foreach (parse_ini_file($customConfig, true, INI_SCANNER_TYPED) as $header => $section) {
                 foreach ($section as $key => $value) {
                     $config[$header][$key] = $value;
                 }
             }
         }
 
-        foreach (getenv() as $envName => $envValue) {
+        foreach ($env as $envName => $envValue) {
             // Replace all settings with their respective environment variable if available
             $keyArray = explode('_', $envName);
             if ($keyArray[0] === 'RSSBRIDGE') {
@@ -235,20 +221,10 @@ final class Configuration
         return null;
     }
 
-    /**
-     * Returns the current version string of RSS-Bridge.
-     *
-     * This function returns the contents of {@see Configuration::$VERSION} for
-     * regular installations and the git branch name and commit id for instances
-     * running in a git environment.
-     *
-     * @return string The version string.
-     */
     public static function getVersion()
     {
         $headFile = __DIR__ . '/../.git/HEAD';
 
-        // '@' is used to mute open_basedir warning
         if (@is_readable($headFile)) {
             $revisionHashFile = '.git/' . substr(file_get_contents($headFile), 5, -1);
             $parts = explode('/', $revisionHashFile);
@@ -260,8 +236,7 @@ final class Configuration
                 }
             }
         }
-
-        return Configuration::$VERSION;
+        return self::VERSION;
     }
 
     /**
@@ -276,18 +251,7 @@ final class Configuration
      */
     private static function reportConfigurationError($section, $key, $message = '')
     {
-        $report = "Parameter [{$section}] => \"{$key}\" is invalid!" . PHP_EOL;
-
-        if (file_exists(FILE_CONFIG)) {
-            $report .= 'Please check your configuration file at ' . FILE_CONFIG . PHP_EOL;
-        } elseif (!file_exists(FILE_CONFIG_DEFAULT)) {
-            $report .= 'The default configuration file is missing at ' . FILE_CONFIG_DEFAULT . PHP_EOL;
-        } else {
-            $report .= 'The default configuration file is broken.' . PHP_EOL
-            . 'Restore the original file from ' . REPOSITORY . PHP_EOL;
-        }
-
-        $report .= $message;
+        $report = "Parameter [{$section}] => \"{$key}\" is invalid!\n$message";
         self::reportError($report);
     }
 
