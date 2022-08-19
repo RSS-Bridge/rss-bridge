@@ -46,7 +46,7 @@ class DisplayAction implements ActionInterface
         }
 
         if (array_key_exists('_cache_timeout', $request)) {
-            if (!CUSTOM_CACHE_TIMEOUT) {
+            if (! Configuration::getConfig('cache', 'custom_timeout')) {
                 unset($request['_cache_timeout']);
                 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) . '?' . http_build_query($request);
                 header('Location: ' . $uri, true, 301);

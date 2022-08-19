@@ -50,7 +50,7 @@ final class BridgeCard
             ];
         }
 
-        if (CUSTOM_CACHE_TIMEOUT) {
+        if (Configuration::getConfig('cache', 'custom_timeout')) {
             $parameters['global']['_cache_timeout'] = [
                 'name' => 'Cache timeout in seconds',
                 'type' => 'number',

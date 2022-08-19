@@ -21,7 +21,7 @@ final class Configuration
 {
     private const VERSION = 'dev.2022-06-14';
 
-    private static $config = null;
+    private static array $config = [];
 
     private function __construct()
     {
@@ -38,7 +38,7 @@ final class Configuration
     public static function verifyInstallation()
     {
         if (version_compare(\PHP_VERSION, '7.4.0') === -1) {
-            self::reportError('RSS-Bridge requires at least PHP version 7.4.0!');
+            throw new \Exception('RSS-Bridge requires at least PHP version 7.4.0!');
         }
 
         $errors = [];
@@ -79,60 +79,25 @@ final class Configuration
         }
     }
 
-    /**
-     * Loads the configuration from disk and checks if the parameters are valid.
-     *
-     * Returns an error message and aborts execution if the configuration is invalid.
-     *
-     * The RSS-Bridge configuration is split into two files:
-     * - The default configuration file that ships
-     * with every release of RSS-Bridge (do not modify this file!).
-     * - The local configuration file that can be modified
-     * by server administrators.
-     *
-     * RSS-Bridge will first load default config into memory and then
-     * replace parameters with the contents of the custom config. That way new
-     * parameters are automatically initialized with default values and custom
-     * configurations can be reduced to the minimum set of parametes necessary
-     * (only the ones that changed).
-     *
-     * The configuration files must be placed in the root folder of RSS-Bridge
-     * (next to `index.php`).
-     *
-     * _Notice_: The configuration is stored in {@see Configuration::$config}.
-     *
-     * @return void
-     */
-    public static function loadConfiguration()
+    public static function loadConfiguration(array $customConfig = [], array $env = [])
     {
-        $env = getenv();
-        $defaultConfig = __DIR__ . '/../config.default.ini.php';
-        $customConfig = __DIR__ . '/../config.ini.php';
-
-        if (!file_exists($defaultConfig)) {
-            self::reportError('The default configuration file is missing');
+        if (!file_exists(__DIR__ . '/../config.default.ini.php')) {
+            throw new \Exception('The default configuration file is missing');
         }
-
-        $config = parse_ini_file($defaultConfig, true, INI_SCANNER_TYPED);
+        $config = parse_ini_file(__DIR__ . '/../config.default.ini.php', true, INI_SCANNER_TYPED);
         if (!$config) {
-            self::reportError('Error parsing config');
+            throw new \Exception('Error parsing config');
         }
-
-        if (file_exists($customConfig)) {
-            // Replace default configuration with custom settings
-            foreach (parse_ini_file($customConfig, true, INI_SCANNER_TYPED) as $header => $section) {
-                foreach ($section as $key => $value) {
-                    $config[$header][$key] = $value;
-                }
+        foreach ($customConfig as $header => $section) {
+            foreach ($section as $key => $value) {
+                $config[$header][$key] = $value;
             }
         }
-
         foreach ($env as $envName => $envValue) {
-            // Replace all settings with their respective environment variable if available
-            $keyArray = explode('_', $envName);
-            if ($keyArray[0] === 'RSSBRIDGE') {
-                $header = strtolower($keyArray[1]);
-                $key = strtolower($keyArray[2]);
+            $nameParts = explode('_', $envName);
+            if ($nameParts[0] === 'RSSBRIDGE') {
+                $header = strtolower($nameParts[1]);
+                $key = strtolower($nameParts[2]);
                 if ($envValue === 'true' || $envValue === 'false') {
                     $envValue = filter_var($envValue, FILTER_VALIDATE_BOOLEAN);
                 }
@@ -146,79 +111,68 @@ final class Configuration
             !is_string(self::getConfig('system', 'timezone'))
             || !in_array(self::getConfig('system', 'timezone'), timezone_identifiers_list(DateTimeZone::ALL_WITH_BC))
         ) {
-            self::reportConfigurationError('system', 'timezone');
+            self::throwConfigError('system', 'timezone');
         }
 
         if (!is_string(self::getConfig('proxy', 'url'))) {
-            self::reportConfigurationError('proxy', 'url', 'Is not a valid string');
+            self::throwConfigError('proxy', 'url', 'Is not a valid string');
         }
 
         if (!is_bool(self::getConfig('proxy', 'by_bridge'))) {
-            self::reportConfigurationError('proxy', 'by_bridge', 'Is not a valid Boolean');
+            self::throwConfigError('proxy', 'by_bridge', 'Is not a valid Boolean');
         }
 
         if (!is_string(self::getConfig('proxy', 'name'))) {
             /** Name of the proxy server */
-            self::reportConfigurationError('proxy', 'name', 'Is not a valid string');
+            self::throwConfigError('proxy', 'name', 'Is not a valid string');
         }
 
         if (!is_string(self::getConfig('cache', 'type'))) {
-            self::reportConfigurationError('cache', 'type', 'Is not a valid string');
+            self::throwConfigError('cache', 'type', 'Is not a valid string');
         }
 
         if (!is_bool(self::getConfig('cache', 'custom_timeout'))) {
-            self::reportConfigurationError('cache', 'custom_timeout', 'Is not a valid Boolean');
+            self::throwConfigError('cache', 'custom_timeout', 'Is not a valid Boolean');
         }
 
         if (!is_bool(self::getConfig('authentication', 'enable'))) {
-            self::reportConfigurationError('authentication', 'enable', 'Is not a valid Boolean');
+            self::throwConfigError('authentication', 'enable', 'Is not a valid Boolean');
         }
 
         if (!self::getConfig('authentication', 'username')) {
-            self::reportConfigurationError('authentication', 'username', 'Is not a valid string');
+            self::throwConfigError('authentication', 'username', 'Is not a valid string');
         }
 
         if (! self::getConfig('authentication', 'password')) {
-            self::reportConfigurationError('authentication', 'password', 'Is not a valid string');
+            self::throwConfigError('authentication', 'password', 'Is not a valid string');
         }
 
         if (
             !empty(self::getConfig('admin', 'email'))
             && !filter_var(self::getConfig('admin', 'email'), FILTER_VALIDATE_EMAIL)
         ) {
-            self::reportConfigurationError('admin', 'email', 'Is not a valid email address');
+            self::throwConfigError('admin', 'email', 'Is not a valid email address');
         }
 
         if (!is_bool(self::getConfig('admin', 'donations'))) {
-            self::reportConfigurationError('admin', 'donations', 'Is not a valid Boolean');
+            self::throwConfigError('admin', 'donations', 'Is not a valid Boolean');
         }
 
         if (!is_string(self::getConfig('error', 'output'))) {
-            self::reportConfigurationError('error', 'output', 'Is not a valid String');
+            self::throwConfigError('error', 'output', 'Is not a valid String');
         }
 
         if (
             !is_numeric(self::getConfig('error', 'report_limit'))
             || self::getConfig('error', 'report_limit') < 1
         ) {
-            self::reportConfigurationError('admin', 'report_limit', 'Value is invalid');
+            self::throwConfigError('admin', 'report_limit', 'Value is invalid');
         }
     }
 
-    /**
-     * Returns the value of a parameter identified by section and key.
-     *
-     * @param string $section The section name.
-     * @param string $key The property name (key).
-     * @return mixed|null The parameter value.
-     */
-    public static function getConfig($section, $key)
+    public static function getConfig(string $section, string $key)
     {
-        if (array_key_exists($section, self::$config) && array_key_exists($key, self::$config[$section])) {
-            return self::$config[$section][$key];
-        }
-
-        return null;
+        return self::$config[strtolower($section)][strtolower($key)] ?? null;
     }
 
     public static function getVersion()
@@ -239,24 +193,8 @@ final class Configuration
         return self::VERSION;
     }
 
-    /**
-     * Reports an configuration error for the specified section and key to the
-     * user and ends execution
-     *
-     * @param string $section The section name
-     * @param string $key The configuration key
-     * @param string $message An optional message to the user
-     *
-     * @return void
-     */
-    private static function reportConfigurationError($section, $key, $message = '')
+    private static function throwConfigError($section, $key, $message = '')
     {
-        $report = "Parameter [{$section}] => \"{$key}\" is invalid!\n$message";
-        self::reportError($report);
-    }
-
-    private static function reportError($message)
-    {
-        throw new \Exception(sprintf('Configuration error: %s', $message));
+        throw new \Exception("Config [$section] => [$key] is invalid. $message");
     }
 }

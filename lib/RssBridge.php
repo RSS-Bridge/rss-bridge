@@ -33,11 +33,14 @@ final class RssBridge
     private function run($request): void
     {
         Configuration::verifyInstallation();
-        Configuration::loadConfiguration();
+
+        $customConfig = [];
+        if (file_exists(__DIR__ . '/../config.ini.php')) {
+            $customConfig = parse_ini_file(__DIR__ . '/../config.ini.php', true, INI_SCANNER_TYPED);
+        }
+        Configuration::loadConfiguration($customConfig, getenv());
 
         date_default_timezone_set(Configuration::getConfig('system', 'timezone'));
-
-        define('CUSTOM_CACHE_TIMEOUT', Configuration::getConfig('cache', 'custom_timeout'));
 
         $authenticationMiddleware = new AuthenticationMiddleware();
         if (Configuration::getConfig('authentication', 'enable')) {

@@ -314,8 +314,7 @@ class FeedItem
      *
      * Use {@see FeedItem::getContent()} to get the current item content.
      *
-     * @param string|object $content The item content as text or simple_html_dom
-     * object.
+     * @param string|object $content The item content as text or simple_html_dom object.
      * @return self
      */
     public function setContent($content)
