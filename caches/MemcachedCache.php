@@ -20,22 +20,22 @@ class MemcachedCache implements CacheInterface
         $port = Configuration::getConfig($section, 'port');
 
         if (empty($host) && empty($port)) {
-            throw new \Exception('Configuration for ' . $section . ' missing. Please check your ' . FILE_CONFIG);
+            throw new \Exception('Configuration for ' . $section . ' missing.');
         }
         if (empty($host)) {
-            throw new \Exception('"host" param is not set for ' . $section . '. Please check your ' . FILE_CONFIG);
+            throw new \Exception('"host" param is not set for ' . $section);
         }
         if (empty($port)) {
-            throw new \Exception('"port" param is not set for ' . $section . '. Please check your ' . FILE_CONFIG);
+            throw new \Exception('"port" param is not set for ' . $section);
         }
         if (!ctype_digit($port)) {
-            throw new \Exception('"port" param is invalid for ' . $section . '. Please check your ' . FILE_CONFIG);
+            throw new \Exception('"port" param is invalid for ' . $section);
         }
 
         $port = intval($port);
 
         if ($port < 1 || $port > 65535) {
-            throw new \Exception('"port" param is invalid for ' . $section . '. Please check your ' . FILE_CONFIG);
+            throw new \Exception('"port" param is invalid for ' . $section);
         }
 
         $conn = new \Memcached();

@@ -22,7 +22,7 @@ class SQLiteCache implements CacheInterface
 
         $section = 'SQLiteCache';
         $file = Configuration::getConfig($section, 'file');
-        if (empty($file)) {
+        if (!$file) {
             throw new \Exception(sprintf('Configuration for %s missing.', $section));
         }
 

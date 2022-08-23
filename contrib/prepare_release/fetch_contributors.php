@@ -4,8 +4,6 @@
 
 require __DIR__ . '/../../lib/rssbridge.php';
 
-Configuration::loadConfiguration();
-
 $url = 'https://api.github.com/repos/rss-bridge/rss-bridge/contributors';
 $contributors = [];
 $next = true;

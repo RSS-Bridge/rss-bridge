@@ -36,12 +36,6 @@ const WHITELIST = __DIR__ . '/../whitelist.txt';
 /** Path to the default whitelist file */
 const WHITELIST_DEFAULT = __DIR__ . '/../whitelist.default.txt';
 
-/** Path to the configuration file */
-const FILE_CONFIG = __DIR__ . '/../config.ini.php';
-
-/** Path to the default configuration file */
-const FILE_CONFIG_DEFAULT = __DIR__ . '/../config.default.ini.php';
-
 /** URL to the RSS-Bridge repository */
 const REPOSITORY = 'https://github.com/RSS-Bridge/rss-bridge/';
 
