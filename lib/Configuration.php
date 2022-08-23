@@ -88,24 +88,27 @@ final class Configuration
         if (!$config) {
             throw new \Exception('Error parsing config');
         }
+        foreach ($config as $header => $section) {
+            foreach ($section as $key => $value) {
+                self::setConfig($header, $key, $value);
+            }
+        }
         foreach ($customConfig as $header => $section) {
             foreach ($section as $key => $value) {
-                $config[$header][$key] = $value;
+                self::setConfig($header, $key, $value);
             }
         }
         foreach ($env as $envName => $envValue) {
             $nameParts = explode('_', $envName);
             if ($nameParts[0] === 'RSSBRIDGE') {
-                $header = strtolower($nameParts[1]);
-                $key = strtolower($nameParts[2]);
+                $header = $nameParts[1];
+                $key = $nameParts[2];
                 if ($envValue === 'true' || $envValue === 'false') {
                     $envValue = filter_var($envValue, FILTER_VALIDATE_BOOLEAN);
                 }
-                $config[$header][$key] = $envValue;
+                self::setConfig($header, $key, $envValue);
             }
         }
-
-        self::$config = $config;
 
         if (
             !is_string(self::getConfig('system', 'timezone'))
@@ -173,6 +176,11 @@ final class Configuration
     public static function getConfig(string $section, string $key)
     {
         return self::$config[strtolower($section)][strtolower($key)] ?? null;
+    }
+
+    private static function setConfig(string $section, string $key, $value): void
+    {
+        self::$config[strtolower($section)][strtolower($key)] = $value;
     }
 
     public static function getVersion()
