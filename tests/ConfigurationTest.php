@@ -33,5 +33,6 @@ final class ConfigurationTest extends TestCase
         $this->assertSame('Europe/Berlin', Configuration::getConfig('system', 'timezone'));
         $this->assertSame('aaa', Configuration::getConfig('TwitterV2Bridge', 'twitterv2apitoken'));
         $this->assertSame('bbb', Configuration::getConfig('SQLiteCache', 'file'));
+        $this->assertSame('bbb', Configuration::getConfig('sqlitecache', 'file'));
     }
 }
