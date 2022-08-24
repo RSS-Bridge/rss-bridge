@@ -91,6 +91,8 @@ class RutubeBridge extends BridgeAbstract
                     $video->description . ' '
                 )
             );
+            $item->setTimestamp($video->created_ts);
+            $item->setAuthor($video->author->name);
             $item->setContent($content);
             $this->items[] = $item;
         }
