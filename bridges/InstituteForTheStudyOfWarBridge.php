@@ -32,7 +32,7 @@ class InstituteForTheStudyOfWarBridge extends BridgeAbstract
     private function processEntry($entry)
     {
         $h2 = $entry->find('h2', 0);
-        $title = $h2->innertext;
+        $title = $h2->plaintext;
         $uri = $h2->find('a', 0)->href;
 
         $date_span = $entry->find('span.datespan', 0);
