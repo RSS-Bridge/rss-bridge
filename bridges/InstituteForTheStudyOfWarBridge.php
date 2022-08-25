@@ -13,7 +13,7 @@ class InstituteForTheStudyOfWarBridge extends BridgeAbstract
         '' => [
             'searchURL' => [
                 'name' => 'Filter URL',
-                'defaultValue' => '',
+				'required' => false,
                 'title' => 'Set a filter on https://www.understandingwar.org/publications and copy the URL parameters.'
             ],
         ]
