@@ -132,6 +132,7 @@ class PikabuBridge extends BridgeAbstract
             }
 
             $title_element = $post->find('.story__title-link', 0);
+            if (str_contains($title_element->href, 'from=cpm')) continue; // skip sponsored posts
 
             $title = $title_element->plaintext;
             $community_link = $post->find('.story__community-link', 0);
