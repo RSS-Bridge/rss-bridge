@@ -123,9 +123,9 @@ class PanneauPocketBridge extends BridgeAbstract
             $item = [];
 
             $item['uri'] = $itemDom->find('button[type=button]', 0)->href;
-            $item['title'] = $itemDom->find('.sign-preview__content .title', 0)->innertext();
+            $item['title'] = $itemDom->find('.sign-preview__content .title', 0)->innertext;
             $item['author'] = 'floviolleau';
-            $item['content'] = $itemDom->find('.sign-preview__content .content', 0)->innertext();
+            $item['content'] = $itemDom->find('.sign-preview__content .content', 0)->innertext;
 
             $timestamp = $itemDom->find('span.date', 0)->plaintext;
             if (preg_match('#(?<d>[0-9]+)/(?<m>[0-9]+)/(?<y>[0-9]+)#', $timestamp, $match)) {
