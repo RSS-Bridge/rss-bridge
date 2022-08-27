@@ -1,7 +1,7 @@
 <phpunit
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.5/phpunit.xsd"
-	bootstrap="./lib/rssbridge.php"
+	bootstrap="./lib/bootstrap.php"
 	colors="true"
 	processIsolation="false"
 	timeoutForSmallTests="1"
