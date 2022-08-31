@@ -142,11 +142,11 @@ final class Configuration
             self::throwConfigError('authentication', 'enable', 'Is not a valid Boolean');
         }
 
-        if (!self::getConfig('authentication', 'username')) {
+        if (!is_string(self::getConfig('authentication', 'username'))) {
             self::throwConfigError('authentication', 'username', 'Is not a valid string');
         }
 
-        if (! self::getConfig('authentication', 'password')) {
+        if (!is_string(self::getConfig('authentication', 'password'))) {
             self::throwConfigError('authentication', 'password', 'Is not a valid string');
         }
 
