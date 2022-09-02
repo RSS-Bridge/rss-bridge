@@ -224,6 +224,6 @@ class PixivBridge extends BridgeAbstract
             file_put_contents($path, $illust);
         }
 
-        return 'cache/pixiv_img/' . preg_replace('/.*\//', '', $path);
+        return get_home_page_url() . 'cache/pixiv_img/' . preg_replace('/.*\//', '', $path);
     }
 }
