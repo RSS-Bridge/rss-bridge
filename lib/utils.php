@@ -18,6 +18,21 @@ final class Json
     }
 }
 
+/**
+ * Returns e.g. 'https://example.com/' or 'https://example.com/bridge/'
+ */
+function get_home_page_url(): string
+{
+    $https = $_SERVER['HTTPS'] ?? null;
+    $host = $_SERVER['HTTP_HOST'] ?? null;
+    $uri = $_SERVER['REQUEST_URI'] ?? null;
+    if (($pos = strpos($uri, '?')) !== false) {
+        $uri = substr($uri, 0, $pos);
+    }
+    $scheme = $https === 'on' ? 'https' : 'http';
+    return "$scheme://$host$uri";
+}
+
 function create_sane_stacktrace(\Throwable $e): array
 {
     $frames = array_reverse($e->getTrace());
