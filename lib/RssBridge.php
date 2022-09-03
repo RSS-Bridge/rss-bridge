@@ -35,7 +35,7 @@ final class RssBridge
 
         set_error_handler(function ($code, $message, $file, $line) {
             $e = new \ErrorException($message, 0, $code, $file, $line);
-            Logger::warning(sprintf('%s at %s line %s', $message, $file, $line), ['e' => $e]);
+            Logger::warning(sprintf('%s at %s line %s', $message, trim_path_prefix($file), $line), ['e' => $e]);
         });
 
         date_default_timezone_set(Configuration::getConfig('system', 'timezone'));
