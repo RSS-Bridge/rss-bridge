@@ -33,6 +33,17 @@ function get_home_page_url(): string
     return "$scheme://$host$uri";
 }
 
+function create_sane_exception_message(\Throwable $e): string
+{
+    return sprintf(
+        'Exception %s: %s at %s line %s',
+        get_class($e),
+        $e->getMessage(),
+        trim_path_prefix($e->getFile()),
+        $e->getLine()
+    );
+}
+
 function create_sane_stacktrace(\Throwable $e): array
 {
     $frames = array_reverse($e->getTrace());
@@ -50,6 +61,9 @@ function create_sane_stacktrace(\Throwable $e): array
             trim_path_prefix($file),
             $line,
         );
+    }
+    if ($e instanceof \ErrorException) {
+        array_pop($stackTrace);
     }
     return $stackTrace;
 }
@@ -150,4 +164,9 @@ function format_bytes(int $bytes, $precision = 2)
     $bytes /= pow(1024, $pow);
 
     return round($bytes, $precision) . ' ' . $units[$pow];
+}
+
+function now(): \DateTimeImmutable
+{
+    return new \DateTimeImmutable();
 }
