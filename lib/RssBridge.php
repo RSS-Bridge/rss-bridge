@@ -34,6 +34,9 @@ final class RssBridge
         Configuration::loadConfiguration($customConfig, getenv());
 
         set_error_handler(function ($code, $message, $file, $line) {
+            if ((error_reporting() & $code) === 0) {
+                return false;
+            }
             $e = new \ErrorException($message, 0, $code, $file, $line);
             Logger::warning(sprintf('%s at %s line %s', $message, trim_path_prefix($file), $line), ['e' => $e]);
         });
