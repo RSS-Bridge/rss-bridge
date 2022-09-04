@@ -26,6 +26,13 @@ final class Logger
             $context['code'] = $context['e']->getCode();
             $context['stacktrace'] = create_sane_stacktrace($context['e']);
             unset($context['e']);
+            if (
+                str_starts_with($context['message'], 'Exception Exception: You must specify a format!')
+                || str_starts_with($context['message'], 'Exception InvalidArgumentException: Bridge name invalid!')
+            ) {
+                // Don't log this record because it's usually a bot
+                return;
+            }
         }
         $text = sprintf(
             "[%s] rssbridge.%s %s %s\n",
@@ -34,13 +41,6 @@ final class Logger
             $message,
             $context ? Json::encode($context) : ''
         );
-        if (
-            str_starts_with($context['message'], 'Exception Exception: You must specify a format!')
-            || str_starts_with($context['message'], 'Exception InvalidArgumentException: Bridge name invalid!')
-        ) {
-            // Don't log this record because it's usually a bot
-            return;
-        }
         error_log($text);
     }
 }
