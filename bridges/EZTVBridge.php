@@ -1,20 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 class EZTVBridge extends BridgeAbstract
 {
     const MAINTAINER = 'alexAubin';
     const NAME = 'EZTV';
     const URI = 'https://eztv.re/';
-    const DESCRIPTION = 'Returns list of torrents for specific show(s)
-on EZTV. Get IMDB IDs from IMDB.';
+    const DESCRIPTION = 'Search for torrents by IMDB id. You can find IMDB id in the url of a tv show.';
 
     const PARAMETERS = [
         [
             'ids' => [
-                'name' => 'Show IMDB IDs',
+                'name' => 'IMDB ids',
                 'exampleValue' => '8740790,1733785',
                 'required' => true,
-                'title' => 'One or more IMDB show IDs (can be found in the IMDB show URL)'
+                'title' => 'One or more IMDB ids'
             ],
             'no480' => [
                 'name' => 'No 480p',
@@ -44,53 +45,16 @@ on EZTV. Get IMDB IDs from IMDB.';
         ]
     ];
 
-    // Shamelessly lifted from https://stackoverflow.com/a/2510459
-    protected function formatBytes($bytes, $precision = 2)
-    {
-        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
-
-        $bytes = max($bytes, 0);
-        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
-        $pow = min($pow, count($units) - 1);
-        $bytes /= pow(1024, $pow);
-
-        return round($bytes, $precision) . ' ' . $units[$pow];
-    }
-
-    protected function getItemFromTorrent($torrent)
-    {
-        $item = [];
-        $item['uri'] = $torrent->episode_url;
-        $item['author'] = $torrent->imdb_id;
-        $item['timestamp'] = date('d F Y H:i:s', $torrent->date_released_unix);
-        $item['title'] = $torrent->title;
-        $item['enclosures'][] = $torrent->torrent_url;
-
-        $thumbnailUri = 'https:' . $torrent->small_screenshot;
-        $torrentSize = $this->formatBytes($torrent->size_bytes);
-
-        $item['content'] = $torrent->filename . '<br>File size: '
-        . $torrentSize . '<br><a href="' . $torrent->magnet_url
-        . '">magnet link</a><br><a href="' . $torrent->torrent_url
-        . '">torrent link</a><br><img src="' . $thumbnailUri . '" />';
-
-        return $item;
-    }
-
-    private static function compareDate($torrent1, $torrent2)
-    {
-        return (strtotime($torrent1['timestamp']) < strtotime($torrent2['timestamp']) ? 1 : -1);
-    }
-
     public function collectData()
     {
-        $showIds = explode(',', $this->getInput('ids'));
-
-        foreach ($showIds as $showId) {
-            $eztvUri = $this->getURI() . 'api/get-torrents?imdb_id=' . $showId;
-            $content = getContents($eztvUri);
-            $torrents = json_decode($content)->torrents;
-            foreach ($torrents as $torrent) {
+        $ids = explode(',', trim($this->getInput('ids')));
+        foreach ($ids as $id) {
+            $data = json_decode(getContents(sprintf('https://eztv.re/api/get-torrents?imdb_id=%s', $id)));
+            if (!isset($data->torrents)) {
+                // No results
+                continue;
+            }
+            foreach ($data->torrents as $torrent) {
                 $title = $torrent->title;
                 $regex480 = '/480p/';
                 $regex720 = '/720p/';
@@ -107,12 +71,31 @@ on EZTV. Get IMDB IDs from IMDB.';
                 ) {
                     continue;
                 }
-
                 $this->items[] = $this->getItemFromTorrent($torrent);
             }
         }
+        usort($this->items, function ($torrent1, $torrent2) {
+            return $torrent2['timestamp'] <=> $torrent1['timestamp'];
+        });
+    }
 
-        // Sort all torrents in array by date
-        usort($this->items, ['EZTVBridge', 'compareDate']);
+    protected function getItemFromTorrent($torrent)
+    {
+        $item = [];
+        $item['uri'] = $torrent->episode_url;
+        $item['author'] = $torrent->imdb_id;
+        $item['timestamp'] = $torrent->date_released_unix;
+        $item['title'] = $torrent->title;
+        $item['enclosures'][] = $torrent->torrent_url;
+
+        $thumbnailUri = 'https:' . $torrent->small_screenshot;
+        $torrentSize = format_bytes((int) $torrent->size_bytes);
+
+        $item['content'] = $torrent->filename . '<br>File size: '
+        . $torrentSize . '<br><a href="' . $torrent->magnet_url
+        . '">magnet link</a><br><a href="' . $torrent->torrent_url
+        . '">torrent link</a><br><img src="' . $thumbnailUri . '" />';
+
+        return $item;
     }
 }
