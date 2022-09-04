@@ -79,7 +79,7 @@ class WordPressBridge extends FeedExpander
             if (empty($item['enclosures'])) {
                 $item['enclosures'] = [$article_image];
             } else {
-                $item['enclosures'] = array_merge($item['enclosures'], $article_image);
+                $item['enclosures'] = array_merge($item['enclosures'], (array) $article_image);
             }
         }
 
