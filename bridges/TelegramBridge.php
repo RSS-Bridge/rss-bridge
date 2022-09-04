@@ -4,7 +4,7 @@ class TelegramBridge extends BridgeAbstract
 {
     const NAME = 'Telegram Bridge';
     const URI = 'https://t.me';
-    const DESCRIPTION = 'Returns newest posts from a public Telegram channel';
+    const DESCRIPTION = 'Returns newest posts from a *public* Telegram channel';
     const MAINTAINER = 'VerifiedJoseph';
     const PARAMETERS = [[
             'username' => [
@@ -49,14 +49,14 @@ class TelegramBridge extends BridgeAbstract
     {
         $html = getSimpleHTMLDOM($this->getURI());
 
-        $channelTitle = htmlspecialchars_decode(
-            $html->find('div.tgme_channel_info_header_title span', 0)->plaintext,
-            ENT_QUOTES
-        );
-
+        $channelTitle = $html->find('div.tgme_channel_info_header_title span', 0)->plaintext ?? '';
+        $channelTitle = htmlspecialchars_decode($channelTitle, ENT_QUOTES);
         $this->feedName = $channelTitle . ' (@' . $this->processUsername() . ')';
-
-        foreach ($html->find('div.tgme_widget_message_wrap.js-widget_message_wrap') as $index => $messageDiv) {
+        $posts = $html->find('div.tgme_widget_message_wrap.js-widget_message_wrap');
+        if (!$channelTitle && !$posts) {
+            throw new \Exception('Unable to find channel. The channel is non-existing or non-public.');
+        }
+        foreach ($posts as $messageDiv) {
             $this->itemTitle = '';
             $this->enclosures = [];
             $item = [];
