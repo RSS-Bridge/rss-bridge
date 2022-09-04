@@ -55,7 +55,7 @@ class SoundCloudBridge extends BridgeAbstract
 
         foreach ($apiItems->collection as $index => $apiItem) {
             if (in_array($this->getInput('t'), $hasTrackObject) === true) {
-                $apiItem = $apiItem->track;
+                $apiItem = $apiItem->playlist ?? $apiItem->track;
             }
 
             $item = [];
