@@ -38,7 +38,11 @@ final class RssBridge
                 return false;
             }
             $e = new \ErrorException($message, 0, $code, $file, $line);
-            Logger::warning(sprintf('%s at %s line %s', $message, trim_path_prefix($file), $line), ['e' => $e]);
+            $text = sprintf('%s at %s line %s', $message, trim_path_prefix($file), $line);
+            Logger::warning($text, ['e' => $e]);
+            if (Debug::isEnabled()) {
+                print sprintf('<pre>%s</pre>', $text);
+            }
         });
 
         date_default_timezone_set(Configuration::getConfig('system', 'timezone'));

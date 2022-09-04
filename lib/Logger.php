@@ -41,9 +41,6 @@ final class Logger
             $message,
             $context ? Json::encode($context) : ''
         );
-        if (Debug::isEnabled()) {
-            print sprintf('<pre>%s</pre>', $text);
-        }
         error_log($text);
     }
 }
