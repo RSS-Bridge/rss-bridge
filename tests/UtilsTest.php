@@ -21,9 +21,9 @@ final class UtilsTest extends TestCase
     {
         $this->assertSame('1 B', format_bytes(1));
         $this->assertSame('1 KB', format_bytes(1024));
-        $this->assertSame('1 MB', format_bytes(1024**2));
-        $this->assertSame('1 GB', format_bytes(1024**3));
-        $this->assertSame('1 TB', format_bytes(1024**4));
+        $this->assertSame('1 MB', format_bytes(1024 ** 2));
+        $this->assertSame('1 GB', format_bytes(1024 ** 3));
+        $this->assertSame('1 TB', format_bytes(1024 ** 4));
     }
 
     public function testFileCache()
