@@ -43,6 +43,44 @@ const RSSBRIDGE_HTTP_STATUS_CODES = [
     '505' => 'HTTP Version Not Supported'
 ];
 
+class TransportException extends \Exception
+{
+}
+
+class HttpException extends \Exception
+{
+    private int $statusCode;
+    private array $headers;
+
+    public function __construct(int $statusCode, array $headers = [], string $message = '', int $code = 0, \Throwable $previous = null)
+    {
+        $this->statusCode = $statusCode;
+        $this->headers = $headers;
+        if (!$message) {
+            $message = sprintf(
+                '%s %s',
+                $statusCode,
+                RSSBRIDGE_HTTP_STATUS_CODES[$statusCode] ?? ''
+            );
+        }
+        if (!$code) {
+            $code = $statusCode;
+        }
+
+        parent::__construct($message, $code, $previous);
+    }
+
+    public function getStatusCode(): int
+    {
+        return $this->statusCode;
+    }
+
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
+}
+
 /**
  * Fetch data from an http url
  *
@@ -129,14 +167,7 @@ function getContents(
             $response['content'] = $cache->loadData();
             break;
         default:
-            throw new HttpException(
-                sprintf(
-                    '%s %s',
-                    $result['code'],
-                    RSSBRIDGE_HTTP_STATUS_CODES[$result['code']] ?? ''
-                ),
-                $result['code']
-            );
+            throw new HttpException($result['code'], $result['headers']);
     }
     if ($returnFull === true) {
         return $response;
@@ -226,7 +257,7 @@ function _http_request(string $url, array $config = []): array
         }
         if ($attempts > $config['retries']) {
             // Finally give up
-            throw new HttpException(sprintf('%s (%s)', curl_error($ch), curl_errno($ch)));
+            throw new TransportException(sprintf('%s (%s)', curl_error($ch), curl_errno($ch)));
         }
     }
 

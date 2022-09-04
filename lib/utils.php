@@ -1,9 +1,5 @@
 <?php
 
-final class HttpException extends \Exception
-{
-}
-
 final class Json
 {
     public static function encode($value): string
