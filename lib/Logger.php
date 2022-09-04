@@ -34,6 +34,10 @@ final class Logger
             $message,
             $context ? Json::encode($context) : ''
         );
+        if (str_starts_with($context['message'], 'Exception Exception: You must specify a format!')) {
+            // Don't log this record because it's usually a bot
+            return;
+        }
         error_log($text);
     }
 }
