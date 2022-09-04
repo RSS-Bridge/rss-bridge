@@ -18,7 +18,13 @@
         Query string: <?= e($_SERVER['QUERY_STRING'] ?? '') ?>
     </p>
     <p>
-        Version: <?= e(Configuration::getVersion()) ?>
+        Version: <?= raw(Configuration::getVersion()) ?>
+    </p>
+    <p>
+        OS: <?= raw(PHP_OS_FAMILY) ?>
+    </p>
+    <p>
+        PHP version: <?= raw(phpversion() ?: 'Unknown'()) ?>
     </p>
 
     <div class="advice">
