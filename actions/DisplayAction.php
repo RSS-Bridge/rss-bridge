@@ -150,7 +150,10 @@ class DisplayAction implements ActionInterface
                     'icon' => $bridge->getIcon()
                 ];
             } catch (\Throwable $e) {
-                Logger::error(sprintf('Exception in %s', $bridgeClassName), ['e' => $e]);
+                Logger::error(sprintf('Exception in %s', $bridgeClassName), [
+                    'e' => $e,
+                    'url' => get_current_url(),
+                ]);
                 $errorCount = logBridgeError($bridge::NAME, $e->getCode());
 
                 if ($errorCount >= Configuration::getConfig('error', 'report_limit')) {
@@ -162,15 +165,10 @@ class DisplayAction implements ActionInterface
 
                         $message = sprintf('Bridge returned error %s! (%s)', $e->getCode(), $request['_error_time']);
                         $item->setTitle($message);
-
-                        $homePageUrl = isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '';
-                        $itemUrl = $homePageUrl . '?' . http_build_query($request);
-                        $item->setURI($itemUrl);
-
+                        $item->setURI(get_current_url());
                         $item->setTimestamp(time());
 
                         $message = create_sane_exception_message($e);
-
                         $content = render_template('bridge-error.html.php', [
                             'message' => $message,
                             'stacktrace' => create_sane_stacktrace($e),

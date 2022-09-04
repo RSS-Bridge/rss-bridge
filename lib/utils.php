@@ -19,16 +19,28 @@ final class Json
 }
 
 /**
- * Returns e.g. 'https://example.com/' or 'https://example.com/bridge/'
+ * Get the home page url of rss-bridge e.g. 'https://example.com/' or 'https://example.com/bridge/'
  */
 function get_home_page_url(): string
 {
-    $https = $_SERVER['HTTPS'] ?? null;
-    $host = $_SERVER['HTTP_HOST'] ?? null;
-    $uri = $_SERVER['REQUEST_URI'] ?? null;
+    $https = $_SERVER['HTTPS'] ?? '';
+    $host = $_SERVER['HTTP_HOST'] ?? '';
+    $uri = $_SERVER['REQUEST_URI'] ?? '';
     if (($pos = strpos($uri, '?')) !== false) {
         $uri = substr($uri, 0, $pos);
     }
+    $scheme = $https === 'on' ? 'https' : 'http';
+    return "$scheme://$host$uri";
+}
+
+/**
+ * Get the full current url e.g. 'http://example.com/?action=display&bridge=FooBridge'
+ */
+function get_current_url(): string
+{
+    $https = $_SERVER['HTTPS'] ?? '';
+    $host = $_SERVER['HTTP_HOST'] ?? '';
+    $uri = $_SERVER['REQUEST_URI'] ?? '';
     $scheme = $https === 'on' ? 'https' : 'http';
     return "$scheme://$host$uri";
 }
