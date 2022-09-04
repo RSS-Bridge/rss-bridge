@@ -34,7 +34,7 @@ class ViceBridge extends FeedExpander
         // $articlePage gets the entire page's contents
         $articlePage = getSimpleHTMLDOM($newsItem->link);
         // text and embedded content
-        $article = $article . $articlePage->find('.article__body', 0);
+        $article = $articlePage->find('.article__body', 0);
         $item['content'] = $article;
 
         return $item;
