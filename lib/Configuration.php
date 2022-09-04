@@ -21,7 +21,7 @@ final class Configuration
 {
     private const VERSION = 'dev.2022-06-14';
 
-    private static array $config = [];
+    private static $config = [];
 
     private function __construct()
     {
