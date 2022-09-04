@@ -34,7 +34,10 @@ final class Logger
             $message,
             $context ? Json::encode($context) : ''
         );
-        if (str_starts_with($context['message'], 'Exception Exception: You must specify a format!')) {
+        if (
+            str_starts_with($context['message'], 'Exception Exception: You must specify a format!')
+            || str_starts_with($context['message'], 'Exception InvalidArgumentException: Bridge name invalid!')
+        ) {
             // Don't log this record because it's usually a bot
             return;
         }
