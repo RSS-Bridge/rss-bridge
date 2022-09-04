@@ -91,13 +91,13 @@ class FilterBridge extends FeedExpander
         // Retrieve fields to check
         $filter_fields = [];
         if ($this->getInput('target_title')) {
-            $filter_fields[] = $item['title'];
+            $filter_fields[] = $item['title'] ?? null;
         }
         if ($this->getInput('target_content')) {
-            $filter_fields[] = $item['content'];
+            $filter_fields[] = $item['content'] ?? null;
         }
         if ($this->getInput('target_author')) {
-            $filter_fields[] = $item['author'];
+            $filter_fields[] = $item['author'] ?? null;
         }
 
         // Apply filter on item
