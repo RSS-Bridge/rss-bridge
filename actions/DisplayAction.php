@@ -35,6 +35,9 @@ class DisplayAction implements ActionInterface
             throw new \Exception('This bridge is not whitelisted');
         }
 
+        $formatFactory = new FormatFactory();
+        $format = $formatFactory->create($format);
+
         $bridge = $bridgeFactory->create($bridgeClassName);
         $bridge->loadConfiguration();
 
@@ -150,10 +153,7 @@ class DisplayAction implements ActionInterface
                     'icon' => $bridge->getIcon()
                 ];
             } catch (\Throwable $e) {
-                Logger::error(sprintf('Exception in %s', $bridgeClassName), [
-                    'e' => $e,
-                    'url' => get_current_url(),
-                ]);
+                Logger::error(sprintf('Exception in %s', $bridgeClassName), ['e' => $e]);
                 $errorCount = logBridgeError($bridge::NAME, $e->getCode());
 
                 if ($errorCount >= Configuration::getConfig('error', 'report_limit')) {
@@ -193,8 +193,6 @@ class DisplayAction implements ActionInterface
             ]);
         }
 
-        $formatFactory = new FormatFactory();
-        $format = $formatFactory->create($format);
         $format->setItems($items);
         $format->setExtraInfos($infos);
         $lastModified = $cache->getTime();

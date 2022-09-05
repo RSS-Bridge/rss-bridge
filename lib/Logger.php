@@ -22,16 +22,22 @@ final class Logger
     private static function log(string $level, string $message, array $context = []): void
     {
         if (isset($context['e'])) {
+            $context['url'] = get_current_url();
             $context['message'] = create_sane_exception_message($context['e']);
             $context['code'] = $context['e']->getCode();
             $context['stacktrace'] = create_sane_stacktrace($context['e']);
             unset($context['e']);
-            if (
-                str_starts_with($context['message'], 'Exception Exception: You must specify a format!')
-                || str_starts_with($context['message'], 'Exception InvalidArgumentException: Bridge name invalid!')
-            ) {
-                // Don't log this record because it's usually a bot
-                return;
+            $ignoredExceptions = [
+                'Exception Exception: You must specify a format!',
+                'Exception InvalidArgumentException: Format name invalid!',
+                'Exception InvalidArgumentException: Unknown format given!',
+                'Exception InvalidArgumentException: Bridge name invalid!',
+            ];
+            foreach ($ignoredExceptions as $ignoredException) {
+                if (str_starts_with($context['message'], $ignoredException)) {
+                    // Don't log this record because it's usually a bot
+                    return;
+                }
             }
         }
         $text = sprintf(
