@@ -42,7 +42,8 @@ class TikTokBridge extends BridgeAbstract
     {
         $html = getSimpleHTMLDOM($this->getURI());
 
-        $this->feedName = htmlspecialchars_decode($html->find('h1', 0)->plaintext);
+        $title = $html->find('h1', 0)->plaintext ?? self::NAME;
+        $this->feedName = htmlspecialchars_decode($title);
 
         foreach ($html->find('div.tiktok-x6y88p-DivItemContainerV2') as $div) {
             $item = [];
