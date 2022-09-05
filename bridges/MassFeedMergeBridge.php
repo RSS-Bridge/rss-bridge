@@ -6,7 +6,7 @@ class MassFeedMergeBridge extends FeedExpander
     const NAME = 'MassFeedMerge';
     const URI = 'https://github.com/RSS-Bridge/rss-bridge';
     const DESCRIPTION = <<<'TEXT'
-An extention of FeedMergeBridge (by dvikan) - allowing more feeds. \r\n This bridge merges two or more feeds into a single feed. Max 10 items are fetched from each feed. \r\n Feeds should be space delimited. \r\n Extremely long requests should change large_client_header_buffers in nginx.conf
+An extention of FeedMergeBridge (by dvikan) - allowing more feeds. This bridge merges two or more feeds into a single feed. Max 10 items are fetched from each feed. Feeds should be space delimited. Extremely long requests should change large_client_header_buffers in nginx.conf
 TEXT;
 
     const PARAMETERS = [
