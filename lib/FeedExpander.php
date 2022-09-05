@@ -104,7 +104,7 @@ abstract class FeedExpander extends BridgeAbstract
         $rssContent = simplexml_load_string(trim($content));
 
         if ($rssContent === false) {
-            throw new \Exception('Unable to parse string as xml');
+            throw new \Exception(sprintf('Unable to parse xml from "%s"', $url));
         }
 
         Debug::log('Detecting feed format/version');
