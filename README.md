@@ -25,6 +25,8 @@ Check out RSS-Bridge right now on https://rss-bridge.org/bridge01 or find anothe
 
 ## Tutorial
 
+RSS-Bridge requires php 7.4.
+
 ### Install with git:
 
 ```bash
@@ -47,7 +49,7 @@ Example config for nginx:
 # /etc/nginx/sites-enabled/rssbridge
 server {
     listen 80;
-    # server_name example.com;
+    server_name example.com;
     root /var/www/rss-bridge;
     index index.php;
 
@@ -101,7 +103,7 @@ Learn more in
 
 ### Create a bridge
 
-Create the new bridge in `bridges/ExecuteBridge.php`:
+Create the new bridge in e.g. `bridges/ExecuteBridge.php`:
 
 ```php
 <?php
@@ -132,7 +134,7 @@ Learn more in [bridge api](https://rss-bridge.github.io/rss-bridge/Bridge_API/in
 
 ### How to enable all bridges
 
-Write an asterisks in `whitelist.txt`:
+Write an asterisks to `whitelist.txt`:
 
     echo '*' > whitelist.txt
 
