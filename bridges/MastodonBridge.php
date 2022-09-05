@@ -45,61 +45,21 @@ class MastodonBridge extends BridgeAbstract
             'required' => false,
             'type' => 'checkbox',
             'title' => 'Hide boosts. Note that RSS-Bridge will fetch the original status from other federated instances.'
-            ]
-        ]];
-
-    public function getName()
-    {
-        if ($this->getInput('canusername')) {
-            return $this->getInput('canusername');
-        }
-        return parent::getName();
-    }
-
-    private function getInstance()
-    {
-        preg_match('/^@[a-zA-Z0-9_]+@(.+)/', $this->getInput('canusername'), $matches);
-        return $matches[1];
-    }
-
-    private function getUsername()
-    {
-        preg_match('/^@([a-zA-Z_0-9_]+)@.+/', $this->getInput('canusername'), $matches);
-        return $matches[1];
-    }
-
-    public function getURI()
-    {
-        if ($this->getInput('canusername')) {
-            // We parse webfinger to make sure the URL is correct. This is mostly because
-            // MissKey uses user ID instead of the username in the endpoint, domain delegations,
-            // and also to be compatible with future ActivityPub implementations.
-            $resource = 'acct:' . $this->getUsername() . '@' . $this->getInstance();
-            $webfingerUrl = 'https://' . $this->getInstance() . '/.well-known/webfinger?resource=' . $resource;
-            $webfingerHeader = [
-                'Content-Type: application/jrd+json'
-            ];
-            $webfinger = json_decode(getContents($webfingerUrl, $webfingerHeader), true);
-            foreach ($webfinger['links'] as $link) {
-                if ($link['type'] === 'application/activity+json') {
-                    return $link['href'];
-                }
-            }
-        }
-
-        return parent::getURI();
-    }
+        ],
+    ]];
 
     public function collectData()
     {
         $url = $this->getURI() . '/outbox?page=true';
         $content = $this->fetchAP($url);
-        if ($content['id'] === $url) {
-            foreach ($content['orderedItems'] as $status) {
-                $this->items[] = $this->parseItem($status);
-            }
-        } else {
+        if ($content['id'] !== $url) {
             throw new \Exception('Unexpected response from server.');
+        }
+        foreach ($content['orderedItems'] as $status) {
+            $item = $this->parseItem($status);
+            if ($item) {
+                $this->items[] = $item;
+            }
         }
     }
 
@@ -128,7 +88,7 @@ class MastodonBridge extends BridgeAbstract
                     $item['author'] = $rtUser;
                     $item['title'] = 'Shared a status by ' . $rtUser . ': ';
                     $item = $this->parseObject($rtContent, $item);
-                } catch (UnexpectedResponseException $th) {
+                } catch (HttpException $e) {
                     $item['title'] = 'Shared an unreachable status: ' . $content['object'];
                     $item['content'] = $content['object'];
                     $item['uri'] = $content['object'];
@@ -174,6 +134,48 @@ class MastodonBridge extends BridgeAbstract
             }
         }
         return $item;
+    }
+
+    public function getName()
+    {
+        if ($this->getInput('canusername')) {
+            return $this->getInput('canusername');
+        }
+        return parent::getName();
+    }
+
+    private function getInstance()
+    {
+        preg_match('/^@[a-zA-Z0-9_]+@(.+)/', $this->getInput('canusername'), $matches);
+        return $matches[1];
+    }
+
+    private function getUsername()
+    {
+        preg_match('/^@([a-zA-Z_0-9_]+)@.+/', $this->getInput('canusername'), $matches);
+        return $matches[1];
+    }
+
+    public function getURI()
+    {
+        if ($this->getInput('canusername')) {
+            // We parse webfinger to make sure the URL is correct. This is mostly because
+            // MissKey uses user ID instead of the username in the endpoint, domain delegations,
+            // and also to be compatible with future ActivityPub implementations.
+            $resource = 'acct:' . $this->getUsername() . '@' . $this->getInstance();
+            $webfingerUrl = 'https://' . $this->getInstance() . '/.well-known/webfinger?resource=' . $resource;
+            $webfingerHeader = [
+                'Content-Type: application/jrd+json'
+            ];
+            $webfinger = json_decode(getContents($webfingerUrl, $webfingerHeader), true);
+            foreach ($webfinger['links'] as $link) {
+                if ($link['type'] === 'application/activity+json') {
+                    return $link['href'];
+                }
+            }
+        }
+
+        return parent::getURI();
     }
 
     protected function fetchAP($url)
