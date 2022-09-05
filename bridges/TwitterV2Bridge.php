@@ -363,16 +363,6 @@ EOD
                 continue;
             }
 
-            $cleanedTweet = nl2br($tweet->text);
-            //Debug::log('cleanedTweet: ' . $cleanedTweet);
-
-            // Perform optional keyword filtering (only keep tweet if keyword is found)
-            if (! empty($tweetFilter)) {
-                if (stripos($cleanedTweet, $this->getInput('filter')) === false) {
-                    continue;
-                }
-            }
-
             // Initialize empty array to hold feed item values
             $this->item = [];
 
@@ -434,7 +424,17 @@ EOD
                          . ' (@'
                          . $this->item['username'] . ')';
 
-            // (Optional) Skip non-media tweet
+            $cleanedTweet = nl2br($tweet->text);
+            //Debug::log('cleanedTweet: ' . $cleanedTweet);
+
+            // Perform optional keyword filtering (only keep tweet if keyword is found)
+            if (! empty($tweetFilter)) {
+                if (stripos($cleanedTweet, $this->getInput('filter')) === false) {
+                    continue;
+                }
+            }
+
+            // Perform optional non-media tweet skip
             // This check must wait until after retweets are identified
             if (
                 $onlyMediaTweets && !isset($tweet->attachments->media_keys) &&
@@ -458,8 +458,12 @@ EOD
                 $titleText = strip_tags($cleanedTweet);
             }
 
-            if ($isRetweet && substr($titleText, 0, 4) === 'RT @') {
-                $titleText = substr_replace($titleText, ':', 2, 0);
+            if ($isRetweet) {
+                if (substr($titleText, 0, 4) === 'RT @') {
+                    $titleText = substr_replace($titleText, ':', 2, 0);
+                } else {
+                    $titleText = 'RT: @' . $this->item['username'] . ': ' . $titleText;
+                }
             } elseif ($isReply  && !$idAsTitle) {
                 $titleText = 'R: ' . $titleText;
             }
