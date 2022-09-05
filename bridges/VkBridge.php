@@ -374,7 +374,7 @@ class VkBridge extends BridgeAbstract
         if ($original) {
             return "<a href='$original'><img src='$thumb'></a>";
         } else {
-            return "<img src='$thumb'>";
+            return backgroundToImg($a);
         }
     }
 
