@@ -22,10 +22,12 @@ final class Logger
     private static function log(string $level, string $message, array $context = []): void
     {
         if (isset($context['e'])) {
-            $context['url'] = get_current_url();
-            $context['message'] = create_sane_exception_message($context['e']);
+            $context['message'] = $context['e']->getMessage();
+            $context['file'] = trim_path_prefix($context['e']->getFile());
+            $context['line'] = $context['e']->getLine();
             $context['code'] = $context['e']->getCode();
-            $context['stacktrace'] = create_sane_stacktrace($context['e']);
+            $context['url'] = get_current_url();
+            $context['trace'] = create_sane_stacktrace($context['e']);
             unset($context['e']);
             $ignoredExceptions = [
                 'Exception Exception: You must specify a format!',
