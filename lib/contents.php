@@ -64,8 +64,7 @@ function getContents(
     string $url,
     array $httpHeaders = [],
     array $curlOptions = [],
-    bool $returnFull = false,
-    array $otherExpectedResponseCodes = []
+    bool $returnFull = false
 ) {
     $cacheFactory = new CacheFactory();
 
@@ -127,15 +126,16 @@ function getContents(
             }
             $cache->saveData($result['body']);
             break;
+        case 301:
+        case 302:
+        case 303:
+            // TODO: cache
+            break;
         case 304:
             // Not Modified
             $response['content'] = $cache->loadData();
             break;
         default:
-            if (in_array($result['code'], $otherExpectedResponseCodes)) {
-                break;
-            }
-
             throw new HttpException(
                 sprintf(
                     '%s %s',
