@@ -55,8 +55,6 @@ const RSSBRIDGE_HTTP_STATUS_CODES = [
  *                              'content' => string,
  *                              'status_lines' => array,
  *                         ]
- * @param array $otherExpectedResponseCodes Array with other expected http response status codes
- *                         E.g. [301, 302]
 
  * @return string|array
  */
