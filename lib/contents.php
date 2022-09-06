@@ -55,6 +55,8 @@ const RSSBRIDGE_HTTP_STATUS_CODES = [
  *                              'content' => string,
  *                              'status_lines' => array,
  *                         ]
+ * @param array $otherExpectedResponseCodes Array with other expected http response status codes
+ *                         E.g. [301, 302]
 
  * @return string|array
  */
@@ -62,7 +64,8 @@ function getContents(
     string $url,
     array $httpHeaders = [],
     array $curlOptions = [],
-    bool $returnFull = false
+    bool $returnFull = false,
+    array $otherExpectedResponseCodes = []
 ) {
     $cacheFactory = new CacheFactory();
 
@@ -129,6 +132,10 @@ function getContents(
             $response['content'] = $cache->loadData();
             break;
         default:
+            if (in_array($result['code'], $otherExpectedResponseCodes)) {
+                break;
+            }
+
             throw new HttpException(
                 sprintf(
                     '%s %s',
