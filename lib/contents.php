@@ -124,6 +124,11 @@ function getContents(
             }
             $cache->saveData($result['body']);
             break;
+        case 301:
+        case 302:
+        case 303:
+            // todo: cache
+            break;
         case 304:
             // Not Modified
             $response['content'] = $cache->loadData();
