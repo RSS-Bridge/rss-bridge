@@ -420,8 +420,30 @@ class VkBridge extends BridgeAbstract
     private function getContents()
     {
         $header = ['Accept-language: en', 'Cookie: remixlang=3'];
+        $redirects = 0;
+        $uri = $this->getURI();
 
-        return getContents($this->getURI(), $header);
+        while ($redirects < 2) {
+            $response = getContents($uri, $header, [CURLOPT_FOLLOWLOCATION => false], true);
+
+            if (in_array($response['code'], [200, 304])) {
+                return $response['content'];
+            }
+
+            $uri = urljoin(self::URI, $response['header']['location'][0]);
+
+            if (str_contains($uri, '/429.html')) {
+                returnServerError('VK responded "Too many requests"');
+            }
+
+            if (!preg_match('#^https?://vk.com/(club|public)#', $uri)) {
+                returnServerError('Unexpected redirect location');
+            }
+
+            $redirects++;
+        }
+
+        returnServerError('Too many redirects, while retreving content from VK');
     }
 
     protected function appendVideo($video_title, $video_link, &$content_suffix, array &$post_videos)
