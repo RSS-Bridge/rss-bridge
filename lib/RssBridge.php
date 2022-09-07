@@ -8,7 +8,7 @@ final class RssBridge
             parse_str(implode('&', array_slice($argv, 1)), $cliArgs);
             $request = $cliArgs;
         } else {
-            $request = $_GET;
+            $request = array_merge($_GET, $_POST);
         }
 
         try {
