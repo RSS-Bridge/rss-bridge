@@ -22,7 +22,7 @@ final class Logger
     private static function log(string $level, string $message, array $context = []): void
     {
         if (isset($context['e'])) {
-            $context['message'] = $context['e']->getMessage();
+            $context['message'] = create_sane_exception_message($context['e']);
             $context['file'] = trim_path_prefix($context['e']->getFile());
             $context['line'] = $context['e']->getLine();
             $context['code'] = $context['e']->getCode();
