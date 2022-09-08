@@ -19,8 +19,15 @@ class NYTBridge extends FeedExpander
         $article = '';
 
         // $articlePage gets the entire page's contents
-        $articlePage = getSimpleHTMLDOM($newsItem->link);
-
+        try {
+            $articlePage = getSimpleHTMLDOM($newsItem->link);
+        } catch (HttpException $e) {
+            // 403 Forbidden, This means we got anti-bot response
+            if ($e->getCode() === 403) {
+                return $item;
+            }
+            throw $e;
+        }
         // handle subtitle
         $subtitle = $articlePage->find('p.css-w6ymp8', 0);
         if ($subtitle != null) {
