@@ -73,9 +73,6 @@ class Debug
             );
 
             if (self::$enabled) {
-                ini_set('display_errors', '1');
-                error_reporting(E_ALL);
-
                 self::$secure = !empty($debug_whitelist);
             }
 
@@ -99,25 +96,18 @@ class Debug
         return self::$secure;
     }
 
-    /**
-     * Adds a debug message to error_log if debug mode is enabled
-     *
-     * @param string $text The message to add to error_log
-     */
-    public static function log($text)
+    public static function log($message)
     {
         if (!self::isEnabled()) {
             return;
         }
-
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
-        $calling = end($backtrace);
-        $message = $calling['file'] . ':'
-            . $calling['line'] . ' class '
-            . ($calling['class'] ?? '<no-class>') . '->'
-            . $calling['function'] . ' - '
-            . $text;
-
-        error_log($message);
+        $lastFrame = end($backtrace);
+        $file = trim_path_prefix($lastFrame['file']);
+        $line = $lastFrame['line'];
+        $class = $lastFrame['class'] ?? '';
+        $function = $lastFrame['function'];
+        $text = sprintf('%s:%s %s->%s() %s', $file, $line, $class, $function, $message);
+        Logger::info($text);
     }
 }

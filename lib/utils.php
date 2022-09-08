@@ -19,18 +19,41 @@ final class Json
 }
 
 /**
- * Returns e.g. 'https://example.com/' or 'https://example.com/bridge/'
+ * Get the home page url of rss-bridge e.g. 'https://example.com/' or 'https://example.com/bridge/'
  */
 function get_home_page_url(): string
 {
-    $https = $_SERVER['HTTPS'] ?? null;
-    $host = $_SERVER['HTTP_HOST'] ?? null;
-    $uri = $_SERVER['REQUEST_URI'] ?? null;
+    $https = $_SERVER['HTTPS'] ?? '';
+    $host = $_SERVER['HTTP_HOST'] ?? '';
+    $uri = $_SERVER['REQUEST_URI'] ?? '';
     if (($pos = strpos($uri, '?')) !== false) {
         $uri = substr($uri, 0, $pos);
     }
     $scheme = $https === 'on' ? 'https' : 'http';
     return "$scheme://$host$uri";
+}
+
+/**
+ * Get the full current url e.g. 'http://example.com/?action=display&bridge=FooBridge'
+ */
+function get_current_url(): string
+{
+    $https = $_SERVER['HTTPS'] ?? '';
+    $host = $_SERVER['HTTP_HOST'] ?? '';
+    $uri = $_SERVER['REQUEST_URI'] ?? '';
+    $scheme = $https === 'on' ? 'https' : 'http';
+    return "$scheme://$host$uri";
+}
+
+function create_sane_exception_message(\Throwable $e): string
+{
+    return sprintf(
+        'Exception %s: %s at %s line %s',
+        get_class($e),
+        $e->getMessage(),
+        trim_path_prefix($e->getFile()),
+        $e->getLine()
+    );
 }
 
 function create_sane_stacktrace(\Throwable $e): array
@@ -40,18 +63,18 @@ function create_sane_stacktrace(\Throwable $e): array
         'file' => $e->getFile(),
         'line' => $e->getLine(),
     ];
-    $stackTrace = [];
+    $trace = [];
     foreach ($frames as $i => $frame) {
         $file = $frame['file'] ?? '(no file)';
         $line = $frame['line'] ?? '(no line)';
-        $stackTrace[] = sprintf(
+        $trace[] = sprintf(
             '#%s %s:%s',
             $i,
             trim_path_prefix($file),
             $line,
         );
     }
-    return $stackTrace;
+    return $trace;
 }
 
 /**
@@ -150,4 +173,9 @@ function format_bytes(int $bytes, $precision = 2)
     $bytes /= pow(1024, $pow);
 
     return round($bytes, $precision) . ' ' . $units[$pow];
+}
+
+function now(): \DateTimeImmutable
+{
+    return new \DateTimeImmutable();
 }

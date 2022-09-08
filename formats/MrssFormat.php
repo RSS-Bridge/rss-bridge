@@ -40,13 +40,7 @@ class MrssFormat extends FormatAbstract
 
     public function stringify()
     {
-        $https = $_SERVER['HTTPS'] ?? null;
-        $urlPrefix = $https == 'on' ? 'https://' : 'http://';
-        $urlHost = $_SERVER['HTTP_HOST'] ?? '';
-        $urlRequest = $_SERVER['REQUEST_URI'] ?? '';
-
-        $feedUrl = $urlPrefix . $urlHost . $urlRequest;
-
+        $feedUrl = get_current_url();
         $extraInfos = $this->getExtraInfos();
         if (empty($extraInfos['uri'])) {
             $uri = REPOSITORY;

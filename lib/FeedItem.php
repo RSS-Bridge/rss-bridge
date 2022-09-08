@@ -164,7 +164,7 @@ class FeedItem
                 FILTER_FLAG_PATH_REQUIRED
             )
         ) {
-            Debug::log('URI must include a scheme, host and path!');
+            Debug::log(sprintf('Not a valid url: "%s"', $uri));
         } else {
             $scheme = parse_url($uri, PHP_URL_SCHEME);
 

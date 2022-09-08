@@ -14,17 +14,10 @@ final class RssBridge
         try {
             $this->run($request);
         } catch (\Throwable $e) {
-            error_log($e);
-            $message = sprintf(
-                'Uncaught Exception %s: %s at %s line %s',
-                get_class($e),
-                $e->getMessage(),
-                trim_path_prefix($e->getFile()),
-                $e->getLine()
-            );
+            Logger::error('Exception in main', ['e' => $e]);
             http_response_code(500);
             print render('error.html.php', [
-                'message' => $message,
+                'message' => create_sane_exception_message($e),
                 'stacktrace' => create_sane_stacktrace($e),
             ]);
         }
@@ -39,6 +32,17 @@ final class RssBridge
             $customConfig = parse_ini_file(__DIR__ . '/../config.ini.php', true, INI_SCANNER_TYPED);
         }
         Configuration::loadConfiguration($customConfig, getenv());
+
+        set_error_handler(function ($code, $message, $file, $line) {
+            if ((error_reporting() & $code) === 0) {
+                return false;
+            }
+            $text = sprintf('%s at %s line %s', $message, trim_path_prefix($file), $line);
+            Logger::warning($text);
+            if (Debug::isEnabled()) {
+                print sprintf('<pre>%s</pre>', $text);
+            }
+        });
 
         date_default_timezone_set(Configuration::getConfig('system', 'timezone'));
 

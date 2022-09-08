@@ -25,18 +25,13 @@ class JsonFormat extends FormatAbstract
 
     public function stringify()
     {
-        $https = $_SERVER['HTTPS'] ?? null;
-        $urlPrefix = $https === 'on' ? 'https://' : 'http://';
-        $urlHost = $_SERVER['HTTP_HOST'] ?? '';
-        $urlRequest = $_SERVER['REQUEST_URI'] ?? '';
-
+        $host = $_SERVER['HTTP_HOST'] ?? '';
         $extraInfos = $this->getExtraInfos();
-
         $data = [
             'version' => 'https://jsonfeed.org/version/1',
-            'title' => (!empty($extraInfos['name'])) ? $extraInfos['name'] : $urlHost,
-            'home_page_url' => (!empty($extraInfos['uri'])) ? $extraInfos['uri'] : REPOSITORY,
-            'feed_url' => $urlPrefix . $urlHost . $urlRequest
+            'title' => empty($extraInfos['name']) ? $host : $extraInfos['name'],
+            'home_page_url' => empty($extraInfos['uri']) ? REPOSITORY : $extraInfos['uri'],
+            'feed_url' => get_current_url(),
         ];
 
         if (!empty($extraInfos['icon'])) {
