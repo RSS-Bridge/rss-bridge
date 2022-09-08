@@ -26,11 +26,18 @@ TEXT;
             'feed_3' => ['name' => 'Feed url', 'type' => 'text'],
             'feed_4' => ['name' => 'Feed url', 'type' => 'text'],
             'feed_5' => ['name' => 'Feed url', 'type' => 'text'],
-
+            'feed_6' => ['name' => 'Feed url', 'type' => 'text'],
+            'feed_7' => ['name' => 'Feed url', 'type' => 'text'],
+            'feed_8' => ['name' => 'Feed url', 'type' => 'text'],
+            'feed_9' => ['name' => 'Feed url', 'type' => 'text'],
+            'feed_10' => ['name' => 'Feed url', 'type' => 'text'],
             'limit' => self::LIMIT,
         ]
     ];
 
+    /**
+     * todo: Consider a strategy which produces a shorter feed url
+     */
     public function collectData()
     {
         $limit = (int)($this->getInput('limit') ?: 10);
@@ -40,6 +47,11 @@ TEXT;
             $this->getInput('feed_3'),
             $this->getInput('feed_4'),
             $this->getInput('feed_5'),
+            $this->getInput('feed_6'),
+            $this->getInput('feed_7'),
+            $this->getInput('feed_8'),
+            $this->getInput('feed_9'),
+            $this->getInput('feed_10'),
         ];
 
         // Remove empty values
@@ -53,7 +65,7 @@ TEXT;
         // Sort by timestamp descending
         usort($this->items, fn ($a, $b) => $b['timestamp'] <=> $a['timestamp']);
 
-        // Remove duplicates
+        // Remove duplicates by using url as unique key
         $items = [];
         foreach ($this->items as $item) {
             $index = $item['uri'] ?? null;
@@ -64,8 +76,6 @@ TEXT;
                 $items[] = $item;
             }
         }
-
-        // Grab the first $limit items
         $this->items = array_slice(array_values($items), 0, $limit);
     }
 
