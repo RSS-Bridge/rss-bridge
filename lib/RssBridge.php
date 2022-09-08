@@ -37,9 +37,8 @@ final class RssBridge
             if ((error_reporting() & $code) === 0) {
                 return false;
             }
-            $e = new \ErrorException($message, 0, $code, $file, $line);
             $text = sprintf('%s at %s line %s', $message, trim_path_prefix($file), $line);
-            Logger::warning($text, ['e' => $e]);
+            Logger::warning($text);
             if (Debug::isEnabled()) {
                 print sprintf('<pre>%s</pre>', $text);
             }

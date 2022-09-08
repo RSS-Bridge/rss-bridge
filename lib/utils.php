@@ -63,21 +63,18 @@ function create_sane_stacktrace(\Throwable $e): array
         'file' => $e->getFile(),
         'line' => $e->getLine(),
     ];
-    $stackTrace = [];
+    $trace = [];
     foreach ($frames as $i => $frame) {
         $file = $frame['file'] ?? '(no file)';
         $line = $frame['line'] ?? '(no line)';
-        $stackTrace[] = sprintf(
+        $trace[] = sprintf(
             '#%s %s:%s',
             $i,
             trim_path_prefix($file),
             $line,
         );
     }
-    if ($e instanceof \ErrorException) {
-        array_pop($stackTrace);
-    }
-    return $stackTrace;
+    return $trace;
 }
 
 /**
