@@ -612,7 +612,7 @@ EOD;
             // Some article cause unexpected behaviour like redirect to another site not API.
             // Attempt to check article source type to avoid this.
             if (!$this->useWireAPI && $source_type != 'Package') { // Only Reuters PF api have this, Wire don't.
-                $author = $this->handleAuthorName($story['authors']);
+                $author = $this->handleAuthorName($story['authors'] ?? []);
                 $timestamp = $story['published_time'];
                 $image_placeholder = '';
                 if (isset($story['thumbnail'])) {
