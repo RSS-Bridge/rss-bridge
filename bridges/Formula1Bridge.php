@@ -11,7 +11,6 @@ class Formula1Bridge extends BridgeAbstract
     const API_URL = 'https://api.formula1.com/v1/editorial/articles?limit=%u';
 
     const ARTICLE_AUTHOR = 'Formula 1';
-    const ARTICLE_HTML = '<p>%s</p><a href="%s" target="_blank"><img src="%s" alt="%s" title="%s"></a>';
     const ARTICLE_URL = 'https://formula1.com/en/latest/article.%s.%s.html';
 
     const LIMIT_MIN = 1;
@@ -58,8 +57,8 @@ class Formula1Bridge extends BridgeAbstract
             $item['enclosures'] = [$article->thumbnail->image->url];
             $item['uid'] = $article->id;
             $item['content'] = sprintf(
-                self::ARTICLE_HTML,
-                $article->metaDescription,
+                '<p>%s</p><a href="%s" target="_blank"><img src="%s" alt="%s" title="%s"></a>',
+                $article->metaDescription ?? $article->title,
                 $item['uri'],
                 $item['enclosures'][0],
                 $caption,

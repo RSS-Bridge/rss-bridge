@@ -107,11 +107,14 @@ class WorldCosplayBridge extends BridgeAbstract
             $item = [
                 'uri' => self::URI . substr($image->url, 1),
                 'title' => $image->subject,
-                'timestamp' => $image->created_at,
                 'author' => $img->member->global_name,
                 'enclosures' => [$image->large_url],
                 'uid' => $image->id,
             ];
+            // Context cosplayer don't have created_at
+            if (isset($image->created_at)) {
+                $item['timestamp'] = $image->created_at;
+            }
             $item['content'] = sprintf(
                 self::CONTENT_HTML,
                 $item['uri'],
