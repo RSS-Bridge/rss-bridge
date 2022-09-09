@@ -273,7 +273,7 @@ EOD
         if (!$data) {
             switch ($this->queriedContext) {
                 case 'By keyword or hashtag':
-                    returnServerError('No results for this query.');
+                    returnServerError('twitter: No results for this query.');
                     // fall-through
                 case 'By username':
                     returnServerError('Requested username can\'t be found.');
@@ -645,16 +645,7 @@ EOD;
                         }
                         // fall-through
                     default:
-                        $code = $e->getCode();
-                        $data = $e->getMessage();
-                        returnServerError(
-                            <<<EOD
-Failed to make api call: $api
-HTTP Status: $code
-Errormessage: $data
-EOD
-                        );
-                        break;
+                        throw $e;
                 }
             }
         } while ($retry);

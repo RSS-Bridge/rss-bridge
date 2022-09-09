@@ -34,6 +34,7 @@ final class Logger
                 'Exception InvalidArgumentException: Format name invalid!',
                 'Exception InvalidArgumentException: Unknown format given!',
                 'Exception InvalidArgumentException: Bridge name invalid!',
+                'Exception Exception: twitter: No results for this query',
             ];
             foreach ($ignoredExceptions as $ignoredException) {
                 if (str_starts_with($context['message'], $ignoredException)) {
