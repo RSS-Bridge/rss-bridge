@@ -165,7 +165,7 @@ class MastodonBridge extends BridgeAbstract
             $resource = 'acct:' . $this->getUsername() . '@' . $this->getInstance();
             $webfingerUrl = 'https://' . $this->getInstance() . '/.well-known/webfinger?resource=' . $resource;
             $webfingerHeader = [
-                'Content-Type: application/jrd+json'
+                'Accept: application/jrd+json'
             ];
             $webfinger = json_decode(getContents($webfingerUrl, $webfingerHeader), true);
             foreach ($webfinger['links'] as $link) {
