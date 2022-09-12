@@ -41,7 +41,7 @@ class RedditBridge extends BridgeAbstract
                 'required' => true,
                 'exampleValue' => 'selfhosted',
                 'title' => 'SubReddit name'
-            ]
+            ],
             'f' => [
                 'name' => 'Flair',
                 'required' => false,
