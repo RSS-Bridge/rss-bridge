@@ -101,6 +101,10 @@ final class Configuration
         foreach ($env as $envName => $envValue) {
             $nameParts = explode('_', $envName);
             if ($nameParts[0] === 'RSSBRIDGE') {
+                if (count($nameParts) < 3) {
+                    // Invalid env name
+                    continue;
+                }
                 $header = $nameParts[1];
                 $key = $nameParts[2];
                 if ($envValue === 'true' || $envValue === 'false') {
