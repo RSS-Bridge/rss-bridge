@@ -42,6 +42,12 @@ class RedditBridge extends BridgeAbstract
                 'exampleValue' => 'selfhosted',
                 'title' => 'SubReddit name'
             ]
+            'f' => [
+                'name' => 'Flair',
+                'required' => false,
+                'exampleValue' => 'Proxy',
+                'title' => 'Flair filter'
+            ]
         ],
         'multi' => [
             'rs' => [
@@ -136,11 +142,22 @@ class RedditBridge extends BridgeAbstract
             $keywords = '';
         }
 
+        if (!($this->getInput('f') === '')) {
+            $flair = $this->getInput('f');
+            $flair = str_replace([',', ' '], '%20', $flair);
+            $flair = 'flair%3A%22' . $flair . '%22%20';
+        } else {
+            $flair = '';
+        }
+
+
+
         foreach ($subreddits as $subreddit) {
             $name = trim($subreddit);
             $values = getContents(self::URI
                     . '/search.json?q='
                     . $keywords
+                    . $flair
                     . ($user ? 'author%3A' : 'subreddit%3A')
                     . $name
                     . '&sort='
