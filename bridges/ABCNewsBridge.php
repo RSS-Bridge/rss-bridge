@@ -29,20 +29,21 @@ class ABCNewsBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $url = 'https://www.abc.net.au/news/' . $this->getInput('topic');
-        $html = getSimpleHTMLDOM($url)->find('.YAJzu._2FvRw.ZWhbj._3BZxh', 0);
-        $html = defaultLinkTo($html, $this->getURI());
-
-        foreach ($html->find('._2H7Su') as $article) {
-            $item = [];
-
-            $title = $article->find('._3T9Id.fmhNa.nsZdE._2c2Zy._1tOey._3EOTW', 0);
-            $item['title'] = $title->plaintext;
-            $item['uri'] = $title->href;
-            $item['content'] = $article->find('.rMkro._1cBaI._3PhF6._10YQT._1yL-m', 0)->plaintext;
-            $item['timestamp'] = strtotime($article->find('time', 0)->datetime);
-
-            $this->items[] = $item;
+        $url = sprintf('https://www.abc.net.au/news/%s', $this->getInput('topic'));
+        $dom = getSimpleHTMLDOM($url);
+        $dom = $dom->find('div[data-component="CardList"]', 0);
+        if (!$dom) {
+            throw new \Exception(sprintf('Unable to find css selector on `%s`', $url));
+        }
+        $dom = defaultLinkTo($dom, $this->getURI());
+        foreach ($dom->find('div[data-component="GenericCard"]') as $article) {
+            $a = $article->find('a', 0);
+            $this->items[] = [
+                'title' => $a->plaintext,
+                'uri' => $a->href,
+                'content' => $article->find('[data-component="CardDescription"]', 0)->plaintext,
+                'timestamp' => strtotime($article->find('time', 0)->datetime),
+            ];
         }
     }
 }
