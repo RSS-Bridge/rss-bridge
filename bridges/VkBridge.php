@@ -304,8 +304,19 @@ class VkBridge extends BridgeAbstract
             }
 
             $item = [];
-            $item['content'] = strip_tags(backgroundToImg($post->find('div.wall_text', 0)->innertext), '<a><br><img>');
-            $item['content'] .= $content_suffix;
+            $content = strip_tags(backgroundToImg($post->find('div.wall_text', 0)->innertext), '<a><br><img>');
+            $content .= $content_suffix;
+            $content = str_get_html($content);
+            foreach($content->find('img') as $img) {
+                $parsed_src = parse_url($img->getAttribute('src'));
+
+                // unblur images
+                if (str_starts_with($parsed_src['path'], '/impf/')) {
+                    $new_src = $parsed_src['scheme'] . '://' . $parsed_src['host'] . substr($parsed_src['path'], 5);
+                    $img->setAttribute('src', $new_src);
+                }
+            }
+            $item['content'] = $content->outertext;
             $item['categories'] = $hashtags;
 
             // get post link
