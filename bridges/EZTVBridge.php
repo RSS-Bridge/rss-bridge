@@ -6,7 +6,7 @@ class EZTVBridge extends BridgeAbstract
 {
     const MAINTAINER = 'alexAubin';
     const NAME = 'EZTV';
-    const URI = 'https://eztv.re/';
+    const URI = 'https://eztvstatus.com';
     const DESCRIPTION = 'Search for torrents by IMDB id. You can find IMDB id in the url of a tv show.';
 
     const PARAMETERS = [
@@ -47,9 +47,11 @@ class EZTVBridge extends BridgeAbstract
 
     public function collectData()
     {
+        $eztv_uri = $this->getEztvUri();
+        Debug::log($eztv_uri);
         $ids = explode(',', trim($this->getInput('ids')));
         foreach ($ids as $id) {
-            $data = json_decode(getContents(sprintf('https://eztv.re/api/get-torrents?imdb_id=%s', $id)));
+            $data = json_decode(getContents(sprintf('%s/api/get-torrents?imdb_id=%s', $eztv_uri, $id)));
             if (!isset($data->torrents)) {
                 // No results
                 continue;
@@ -77,6 +79,19 @@ class EZTVBridge extends BridgeAbstract
         usort($this->items, function ($torrent1, $torrent2) {
             return $torrent2['timestamp'] <=> $torrent1['timestamp'];
         });
+    }
+
+    protected function getEztvUri()
+    {
+        $html = getSimpleHTMLDom(self::URI);
+        $urls = $html->find('a.domainLink');
+        foreach ($urls as $url) {
+            $headers = get_headers($url->href);
+            if (substr($headers[0], 9, 3) === '200') {
+                return $url->href;
+            }
+        }
+        throw new Exception('No valid EZTV URI available');
     }
 
     protected function getItemFromTorrent($torrent)
