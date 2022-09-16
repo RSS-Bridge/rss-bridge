@@ -73,7 +73,7 @@ class TwitterV2Bridge extends BridgeAbstract
             'noexternallink' => [
                 'name' => 'Hide external link from content html',
                 'type' => 'checkbox',
-                'title' => 'Activate to hide images in tweets'
+                'title' => 'Activate to hide the links from the content html field'
             ],
             'idastitle' => [
                 'name' => 'Use tweet id as title',
