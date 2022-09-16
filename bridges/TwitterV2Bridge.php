@@ -71,7 +71,7 @@ class TwitterV2Bridge extends BridgeAbstract
                 'title' => 'Activate to display original sized images (no thumbnails)'
             ],
             'noexternallink' => [
-                'name' => 'Hide externel link from content html',
+                'name' => 'Hide external link from content html',
                 'type' => 'checkbox',
                 'title' => 'Activate to hide images in tweets'
             ],
