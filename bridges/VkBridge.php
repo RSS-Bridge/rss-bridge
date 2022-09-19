@@ -23,13 +23,7 @@ class VkBridge extends BridgeAbstract
         ]
     ];
 
-    protected $videos = [];
     protected $pageName;
-
-    protected function getAccessToken()
-    {
-        return 'e69b2db9f6cd4a97c0716893232587165c18be85bc1af1834560125c1d3c8ec281eb407a78cca0ae16776';
-    }
 
     public function getURI()
     {
@@ -54,8 +48,7 @@ class VkBridge extends BridgeAbstract
         $text_html = $this->getContents();
 
         $text_html = iconv('windows-1251', 'utf-8//ignore', $text_html);
-        // makes album link generating work correctly
-        $text_html = str_replace('"class="page_album_link">', '" class="page_album_link">', $text_html);
+
         $html = str_get_html($text_html);
         $pageName = $html->find('.page_name', 0);
         if (is_object($pageName)) {
@@ -77,8 +70,6 @@ class VkBridge extends BridgeAbstract
             }
 
             defaultLinkTo($post, self::URI);
-
-            $post_videos = [];
 
             $is_pinned_post = false;
             if (strpos($post->getAttribute('class'), 'post_fixed') !== false) {
@@ -156,7 +147,7 @@ class VkBridge extends BridgeAbstract
             if (is_object($video)) {
                 $video_title = $video->find('div.post_video_title', 0)->plaintext;
                 $video_link = $video->find('a.lnk', 0)->getAttribute('href');
-                $this->appendVideo($video_title, $video_link, $content_suffix, $post_videos);
+                $this->appendVideo($video_title, $video_link, $content_suffix);
                 $video->outertext = '';
                 $main_video_link = $video_link;
             }
@@ -166,7 +157,7 @@ class VkBridge extends BridgeAbstract
                 $video_title = htmlspecialchars_decode($a->getAttribute('aria-label'));
                 $video_link = $a->getAttribute('href');
                 if ($video_link != $main_video_link) {
-                    $this->appendVideo($video_title, $video_link, $content_suffix, $post_videos);
+                    $this->appendVideo($video_title, $video_link, $content_suffix);
                 }
                 $a->outertext = '';
             }
@@ -338,7 +329,6 @@ class VkBridge extends BridgeAbstract
             $item['timestamp'] = $this->getTime($post);
             $item['title'] = $this->getTitle($item['content']);
             $item['author'] = $post_author;
-            $item['videos'] = $post_videos;
             if ($is_pinned_post) {
                 // do not append it now
                 $pinned_post_item = $item;
@@ -358,8 +348,6 @@ class VkBridge extends BridgeAbstract
                 });
             }
         }
-
-        $this->getCleanVideoLinks();
     }
 
     private function getPhoto($a)
@@ -468,54 +456,12 @@ class VkBridge extends BridgeAbstract
         returnServerError('Too many redirects, while retreving content from VK');
     }
 
-    protected function appendVideo($video_title, $video_link, &$content_suffix, array &$post_videos)
+    protected function appendVideo($video_title, $video_link, &$content_suffix)
     {
         if (!$video_title) {
             $video_title = '(empty)';
         }
 
-        preg_match('/video([0-9-]+_[0-9]+)/', $video_link, $preg_match_result);
-
-        if (count($preg_match_result) > 1) {
-            $video_id = $preg_match_result[1];
-            $this->videos[ $video_id ] = [
-                'url' => $video_link,
-                'title' => $video_title,
-            ];
-            $post_videos[] = $video_id;
-        } else {
-            $content_suffix .= '<br>Video: <a href="' . htmlspecialchars($video_link) . '">' . $video_title . '</a>';
-        }
-    }
-
-    protected function getCleanVideoLinks()
-    {
-        $result = $this->api('video.get', [
-            'videos' => implode(',', array_keys($this->videos)),
-            'count' => 200
-        ]);
-
-        if (!isset($result['error'])) {
-            foreach ($result['response']['items'] as $item) {
-                $video_id = strval($item['owner_id']) . '_' . strval($item['id']);
-                $this->videos[$video_id]['url'] = $item['player'];
-            }
-        }
-
-        foreach ($this->items as &$item) {
-            foreach ($item['videos'] as $video_id) {
-                $video_link = $this->videos[$video_id]['url'];
-                $video_title = $this->videos[$video_id]['title'];
-                $item['content'] .= '<br>Video: <a href="' . htmlspecialchars($video_link) . '">' . $video_title . '</a>';
-            }
-            unset($item['videos']);
-        }
-    }
-
-    protected function api($method, array $params)
-    {
-        $params['v'] = '5.80';
-        $params['access_token'] = $this->getAccessToken();
-        return json_decode(getContents('https://api.vk.com/method/' . $method . '?' . http_build_query($params)), true);
+        $content_suffix .= '<br>Video: <a href="' . htmlspecialchars($video_link) . '">' . $video_title . '</a>';
     }
 }
