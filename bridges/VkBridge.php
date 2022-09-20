@@ -446,7 +446,7 @@ class VkBridge extends BridgeAbstract
                 returnServerError('VK responded "Too many requests"');
             }
 
-            if (!preg_match('#^https?://vk.com/(club|public)#', $uri)) {
+            if (!preg_match('#^https?://vk.com/#', $uri)) {
                 returnServerError('Unexpected redirect location');
             }
 
