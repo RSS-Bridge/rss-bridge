@@ -297,6 +297,9 @@ class VkBridge extends BridgeAbstract
             $item = [];
             $content = strip_tags(backgroundToImg($post->find('div.wall_text', 0)->innertext), '<a><br><img>');
             $content .= $content_suffix;
+            if (!$content) {
+                $content = '(empty post)';
+            }
             $content = str_get_html($content);
             foreach ($content->find('img') as $img) {
                 $parsed_src = parse_url($img->getAttribute('src'));
