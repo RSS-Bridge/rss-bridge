@@ -70,6 +70,11 @@ class TwitterV2Bridge extends BridgeAbstract
                 'type' => 'checkbox',
                 'title' => 'Activate to display original sized images (no thumbnails)'
             ],
+            'noexternallink' => [
+                'name' => 'Hide external link from content html',
+                'type' => 'checkbox',
+                'title' => 'Activate to hide the links from the content html field'
+            ],
             'idastitle' => [
                 'name' => 'Use tweet id as title',
                 'type' => 'checkbox',
@@ -556,7 +561,7 @@ QUOTE;
             }
 
             // Add External Link HTML, if relevant
-            if (isset($extURL)) {
+            if (isset($extURL) && !$this->getInput('noexternallink')) {
                 Debug::log('Adding HTML for external link');
                 $ext_html = <<<EXTERNAL
 <div style="display: table; border-style: solid; border-width: 1px; border-radius: 5px; padding: 5px;">
