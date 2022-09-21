@@ -62,7 +62,7 @@ class HeiseBridge extends FeedExpander
     private function addArticleToItem($item, $article)
     {
         // copy full-res img src to standard img element
-        foreach($article->find('a-img') as $aimg) {
+        foreach ($article->find('a-img') as $aimg) {
             $img = $aimg->find('img', 0);
             $img->src = $aimg->src;
             // client scales based on aspect ratio in style attribute
@@ -84,14 +84,19 @@ class HeiseBridge extends FeedExpander
         $item['content'] = implode('', $headerElements);
 
         $authors = $header->find('.a-creator__names .a-creator__name');
-        if ($authors)
-            $item['author'] = implode(', ', array_map(function ($e) { return $e->plaintext; }, $authors ));
+        if ($authors) {
+            $item['author'] = implode(', ', array_map(function ($e) {
+                return $e->plaintext;
+            }, $authors));
+        }
 
         $content = $article->find('.article-content', 0);
-        $contentElements = $content->find('p, h3, ul, table, pre, a-img img, a-bilderstrecke h2, a-bilderstrecke figure, a-bilderstrecke figcaption');
+        $contentElements = $content->find(
+            'p, h3, ul, table, pre, a-img img, a-bilderstrecke h2, a-bilderstrecke figure, a-bilderstrecke figcaption'
+        );
         $item['content'] .= implode('', $contentElements);
 
-        foreach($article->find('a-img img, a-bilderstrecke img, figure img') as $img) {
+        foreach ($article->find('a-img img, a-bilderstrecke img, figure img') as $img) {
             $item['enclosures'][] = $img->src;
         }
 
