@@ -30,14 +30,14 @@ final class Logger
             $context['message'] = create_sane_exception_message($context['e']);
             $context['code'] = $context['e']->getCode();
             $context['url'] = get_current_url();
-            $context['trace'] = trace_to_strings(trace_from_exception($context['e']));
+            $context['trace'] = trace_to_call_points(trace_from_exception($context['e']));
             unset($context['e']);
             // Don't log these records
             $ignoredExceptions = [
-                'Exception Exception: You must specify a format!',
-                'Exception InvalidArgumentException: Format name invalid!',
-                'Exception InvalidArgumentException: Unknown format given!',
-                'Exception InvalidArgumentException: Bridge name invalid!',
+                'Exception Exception: You must specify a format',
+                'Exception InvalidArgumentException: Format name invalid',
+                'Exception InvalidArgumentException: Unknown format given',
+                'Exception InvalidArgumentException: Bridge name invalid',
                 'Exception Exception: twitter: No results for this query',
             ];
             foreach ($ignoredExceptions as $ignoredException) {

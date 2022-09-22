@@ -56,6 +56,14 @@ function create_sane_exception_message(\Throwable $e): string
     );
 }
 
+/**
+ * Returns e.g. https://github.com/RSS-Bridge/rss-bridge/blob/master/bridges/AO3Bridge.php#L8
+ */
+function render_github_url(string $file, int $line, string $revision = 'master'): string
+{
+    return sprintf('https://github.com/RSS-Bridge/rss-bridge/blob/%s/%s#L%s', $revision, $file, $line);
+}
+
 function trace_from_exception(\Throwable $e): array
 {
     $frames = array_reverse($e->getTrace());
@@ -76,35 +84,37 @@ function trace_from_exception(\Throwable $e): array
     return $trace;
 }
 
-function trace_to_strings(array $trace): array
+function trace_to_call_points(array $trace): array
 {
-    $result = [];
-    foreach ($trace as $frame) {
-        if ($frame['class']) {
-            $result[] = sprintf(
-                '%s(%s): %s%s%s()',
-                $frame['file'],
-                $frame['line'],
-                $frame['class'],
-                $frame['type'],
-                $frame['function'],
-            );
-        } elseif ($frame['function']) {
-            $result[] = sprintf(
-                '%s(%s): %s()',
-                $frame['file'],
-                $frame['line'],
-                $frame['function'],
-            );
-        } else {
-            $result[] = sprintf(
-                '%s(%s)',
-                $frame['file'],
-                $frame['line'],
-            );
-        }
+    return array_map(fn($frame) => frame_to_call_point($frame), $trace);
+}
+
+function frame_to_call_point(array $frame): string
+{
+    if ($frame['class']) {
+        $sprintf = sprintf(
+            '%s(%s): %s%s%s()',
+            $frame['file'],
+            $frame['line'],
+            $frame['class'],
+            $frame['type'],
+            $frame['function'],
+        );
+    } elseif ($frame['function']) {
+        $sprintf = sprintf(
+            '%s(%s): %s()',
+            $frame['file'],
+            $frame['line'],
+            $frame['function'],
+        );
+    } else {
+        $sprintf = sprintf(
+            '%s(%s)',
+            $frame['file'],
+            $frame['line'],
+        );
     }
-    return $result;
+    return $sprintf;
 }
 
 /**

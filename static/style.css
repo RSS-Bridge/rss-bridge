@@ -328,12 +328,6 @@ h5 {
 	margin-bottom: 6px;
 }
 
-.advice {
-	margin-left: auto;
-	margin-right: auto;
-	display: table;
-}
-
 .advice > li {
 	text-align: left;
 }

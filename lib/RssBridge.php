@@ -17,8 +17,11 @@ final class RssBridge
             Logger::error('Exception in main', ['e' => $e]);
             http_response_code(500);
             print render('error.html.php', [
-                'message' => create_sane_exception_message($e),
-                'trace' => trace_to_strings(trace_from_exception($e)),
+                'class'     => get_class($e),
+                'message'   => $e->getMessage(),
+                'file'      => trim_path_prefix($e->getFile()),
+                'line'      => $e->getLine(),
+                'trace'     => trace_from_exception($e),
             ]);
         }
     }

@@ -170,8 +170,11 @@ class DisplayAction implements ActionInterface
 
                         $exceptionMessage = create_sane_exception_message($e);
                         $content = render_template('bridge-error.html.php', [
-                            'message' => $exceptionMessage,
-                            'trace' => trace_to_strings(trace_from_exception($e)),
+                            'class' => get_class($e),
+                            'message' => $e->getMessage(),
+                            'file' => trim_path_prefix($e->getFile()),
+                            'line' => $e->getLine(),
+                            'trace' => trace_from_exception($e),
                             'searchUrl' => self::createGithubSearchUrl($bridge),
                             'issueUrl' => self::createGithubIssueUrl($bridge, $e, $exceptionMessage),
                             'bridge' => $bridge,
@@ -211,7 +214,7 @@ class DisplayAction implements ActionInterface
             'body' => sprintf(
                 "```\n%s\n\n%s\n\nQuery string: %s\nVersion: %s\nOs: %s\nPHP version: %s\n```",
                 $message,
-                implode("\n", trace_to_strings(trace_from_exception($e))),
+                implode("\n", trace_to_call_points(trace_from_exception($e))),
                 $_SERVER['QUERY_STRING'] ?? '',
                 Configuration::getVersion(),
                 PHP_OS_FAMILY,

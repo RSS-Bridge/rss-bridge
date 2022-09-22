@@ -1,22 +1,35 @@
 <section>
     <p class="exception-message">
-        <?= e($message ?? '') ?>
+        Exception
+        <a href="https://www.php.net/manual/en/class.<?= strtolower($class) ?>.php">
+            <?= $class ?>
+        </a>
+
+        <b>
+            <?= e($message) ?>
+        </b>
+
+        in
+
+        <a href="<?= render_github_url($file, $line) ?>">
+            <?= $file ?>(<?= $line ?>)
+        </a>
     </p>
 
-    <?php if (isset($trace)): ?>
-        <?php foreach ($trace as $i => $frame): ?>
-            <code>
-                #<?= $i ?>
-                <?= e($frame) ?>
-            </code>
-            <br>
-        <?php endforeach; ?>
-    <?php endif; ?>
+    <?php foreach ($trace as $i => $frame) : ?>
+        #<?= $i ?>
+
+        <a href="<?= render_github_url($frame['file'], $frame['line']) ?>">
+            <?= frame_to_call_point($frame) ?>
+        </a>
+
+        <br>
+    <?php endforeach; ?>
 
     <br>
 
     <p>
-        Query string: <?= e($_SERVER['QUERY_STRING'] ?? '') ?>
+        Query string: <?= e(urldecode($_SERVER['QUERY_STRING']) ?? '') ?>
     </p>
     <p>
         Version: <?= raw(Configuration::getVersion()) ?>
@@ -25,24 +38,15 @@
         OS: <?= raw(PHP_OS_FAMILY) ?>
     </p>
     <p>
-        PHP version: <?= raw(phpversion() ?: 'Unknown'()) ?>
+        PHP version: <?= raw(PHP_VERSION ?: 'Unknown') ?>
     </p>
 
-    <div class="advice">
-        <ul class="advice">
-            <li>Press Return to check your input parameters</li>
-            <li>Press F5 to retry</li>
-            <li>Check if this issue was already reported on <a href="<?= raw($searchUrl) ?>">GitHub</a> (give it a thumbs-up)</li>
-            <li>Open a <a href="<?= raw($issueUrl) ?>">GitHub Issue</a> if this error persists</li>
-        </ul>
-    </div>
-
     <a href="<?= raw($searchUrl) ?>" title="Opens GitHub to search for similar issues">
-        <button>Search GitHub Issues</button>
+        <button>Find similar bugs</button>
     </a>
 
     <a href="<?= raw($issueUrl) ?>" title="After clicking this button you can review the issue before submitting it">
-        <button>Open GitHub Issue</button>
+        <button>Create GitHub Issue</button>
     </a>
 
     <p class="maintainer"><?= e($bridge->getMaintainer()) ?></p>
