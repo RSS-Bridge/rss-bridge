@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 final class Logger
 {
+    public static function debug(string $message, array $context = [])
+    {
+        self::log('DEBUG', $message, $context);
+    }
+
     public static function info(string $message, array $context = []): void
     {
         self::log('INFO', $message, $context);
@@ -23,12 +28,11 @@ final class Logger
     {
         if (isset($context['e'])) {
             $context['message'] = create_sane_exception_message($context['e']);
-            $context['file'] = trim_path_prefix($context['e']->getFile());
-            $context['line'] = $context['e']->getLine();
             $context['code'] = $context['e']->getCode();
             $context['url'] = get_current_url();
-            $context['trace'] = create_sane_stacktrace($context['e']);
+            $context['trace'] = trace_to_strings(trace_from_exception($context['e']));
             unset($context['e']);
+            // Don't log these records
             $ignoredExceptions = [
                 'Exception Exception: You must specify a format!',
                 'Exception InvalidArgumentException: Format name invalid!',
@@ -38,7 +42,6 @@ final class Logger
             ];
             foreach ($ignoredExceptions as $ignoredException) {
                 if (str_starts_with($context['message'], $ignoredException)) {
-                    // Don't log this record because it's usually a bot
                     return;
                 }
             }

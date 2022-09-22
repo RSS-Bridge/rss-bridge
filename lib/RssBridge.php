@@ -18,7 +18,7 @@ final class RssBridge
             http_response_code(500);
             print render('error.html.php', [
                 'message' => create_sane_exception_message($e),
-                'stacktrace' => create_sane_stacktrace($e),
+                'trace' => trace_to_strings(trace_from_exception($e)),
             ]);
         }
     }

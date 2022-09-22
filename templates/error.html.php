@@ -9,12 +9,13 @@
     <br>
     <br>
 
-    <?php if (isset($stacktrace)): ?>
+    <?php if (isset($trace)): ?>
         <h2>Stacktrace</h2>
         <br>
 
-        <?php foreach ($stacktrace as $frame) : ?>
+        <?php foreach ($trace as $i => $frame) : ?>
             <code>
+                #<?= $i ?>
                 <?= e($frame) ?>
             </code>
             <br>

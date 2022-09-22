@@ -56,7 +56,7 @@ function create_sane_exception_message(\Throwable $e): string
     );
 }
 
-function create_sane_stacktrace(\Throwable $e): array
+function trace_from_exception(\Throwable $e): array
 {
     $frames = array_reverse($e->getTrace());
     $frames[] = [
@@ -64,17 +64,29 @@ function create_sane_stacktrace(\Throwable $e): array
         'line' => $e->getLine(),
     ];
     $trace = [];
-    foreach ($frames as $i => $frame) {
-        $file = $frame['file'] ?? '(no file)';
-        $line = $frame['line'] ?? '(no line)';
-        $trace[] = sprintf(
-            '#%s %s:%s',
-            $i,
-            trim_path_prefix($file),
-            $line,
-        );
+    foreach ($frames as $frame) {
+        $trace[] = [
+            'file'      => trim_path_prefix($frame['file'] ?? ''),
+            'line'      => $frame['line'] ?? null,
+            'class'     => $frame['class'] ?? null,
+            'type'      => $frame['type'] ?? null,
+            'function'  => $frame['function'] ?? null,
+        ];
     }
     return $trace;
+}
+
+function trace_to_strings(array $trace): array
+{
+    $result = [];
+    foreach ($trace as $frame) {
+        $result[] = sprintf(
+            '%s:%s',
+            $frame['file'],
+            $frame['line']
+        );
+    }
+    return $result;
 }
 
 /**

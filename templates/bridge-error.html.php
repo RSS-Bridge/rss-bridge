@@ -3,9 +3,10 @@
         <?= e($message ?? '') ?>
     </p>
 
-    <?php if (isset($stacktrace)): ?>
-        <?php foreach ($stacktrace as $frame): ?>
+    <?php if (isset($trace)): ?>
+        <?php foreach ($trace as $i => $frame): ?>
             <code>
+                #<?= $i ?>
                 <?= e($frame) ?>
             </code>
             <br>
