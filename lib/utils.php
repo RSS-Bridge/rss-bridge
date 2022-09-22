@@ -80,11 +80,29 @@ function trace_to_strings(array $trace): array
 {
     $result = [];
     foreach ($trace as $frame) {
-        $result[] = sprintf(
-            '%s:%s',
-            $frame['file'],
-            $frame['line']
-        );
+        if ($frame['class']) {
+            $result[] = sprintf(
+                '%s(%s): %s%s%s()',
+                $frame['file'],
+                $frame['line'],
+                $frame['class'],
+                $frame['type'],
+                $frame['function'],
+            );
+        } elseif ($frame['function']) {
+            $result[] = sprintf(
+                '%s(%s): %s()',
+                $frame['file'],
+                $frame['line'],
+                $frame['function'],
+            );
+        } else {
+            $result[] = sprintf(
+                '%s(%s)',
+                $frame['file'],
+                $frame['line'],
+            );
+        }
     }
     return $result;
 }

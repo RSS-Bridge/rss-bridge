@@ -102,10 +102,11 @@ class Debug
             return;
         }
         $e = new \Exception();
-        $trace = trace_to_strings(trace_from_exception($e));
+        $trace = trace_from_exception($e);
         // Drop the current frame
         array_pop($trace);
         $lastFrame = $trace[array_key_last($trace)];
-        Logger::debug(sprintf('%s %s', $lastFrame, $message));
+        $text = sprintf('%s(%s): %s', $lastFrame['file'], $lastFrame['line'], $message);
+        Logger::debug($text);
     }
 }

@@ -38,6 +38,7 @@ final class RssBridge
                 return false;
             }
             $text = sprintf('%s at %s line %s', $message, trim_path_prefix($file), $line);
+            // Drop the current frame
             Logger::warning($text);
             if (Debug::isEnabled()) {
                 print sprintf('<pre>%s</pre>', $text);
