@@ -38,7 +38,7 @@ class HtmlFormat extends FormatAbstract
         foreach ($this->getItems() as $item) {
             $items[] = [
                 'url'           => $item->getURI() ?: $extraInfos['uri'],
-                'title'         => $item->getTitle(),
+                'title'         => $item->getTitle() ?? '(no title)',
                 'timestamp'     => $item->getTimestamp(),
                 'author'        => $item->getAuthor(),
                 'content'       => $item->getContent() ?? '',
