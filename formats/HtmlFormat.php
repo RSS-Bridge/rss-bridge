@@ -37,11 +37,11 @@ class HtmlFormat extends FormatAbstract
         $items = [];
         foreach ($this->getItems() as $item) {
             $items[] = [
-                'url'           => $item->getURI() ?: e($extraInfos['uri']),
-                'title'         => sanitize_html(strip_tags($item->getTitle())),
+                'url'           => $item->getURI() ?: $extraInfos['uri'],
+                'title'         => $item->getTitle(),
                 'timestamp'     => $item->getTimestamp(),
                 'author'        => $item->getAuthor(),
-                'content'       => sanitize_html($item->getContent() ?? ''),
+                'content'       => $item->getContent() ?? '',
                 'enclosures'    => $item->getEnclosures(),
                 'categories'    => $item->getCategories(),
             ];
