@@ -44,7 +44,7 @@
                 <a
                     class="itemtitle"
                     href="<?= e($item['url']) ?>"
-                ><?= e($item['title']) ?></a>
+                ><?= strip_tags($item['title']) ?></a>
             </h2>
 
             <?php if ($item['timestamp']): ?>
