@@ -47,17 +47,14 @@ class GoogleScholarBridge extends BridgeAbstract
             foreach ($articleEntries as $entry) {
                 $field = $entry->find('div[class="gsc_oci_field"]', 0)->plaintext;
                 $value = $entry->find('div[class="gsc_oci_value"]', 0)->plaintext;
-                
+
                 if ($field == 'Publication date') {
                     $articleDate = $value;
-                }
-                else if ($field == 'Description') {
+                } else if ($field == 'Description') {
                     $articleAbstract = $value;
-                }
-                else if ($field == 'Scholar articles' || $field == 'Total citations') {
+                } else if ($field == 'Scholar articles' || $field == 'Total citations') {
                     continue;
-                }
-                else {
+                } else {
                     $content = $content . $field . ': ' . $value . '<br><br>';
                 }
             }
