@@ -229,6 +229,7 @@ pip-log.txt
 /whitelist.txt
 DEBUG
 config.ini.php
+config/*
 
 ######################
 ## VisualStudioCode ##

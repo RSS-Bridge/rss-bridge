@@ -1,242 +1,156 @@
 <?php
-class KununuBridge extends BridgeAbstract {
-	const MAINTAINER = 'logmanoriginal';
-	const NAME = 'Kununu Bridge';
-	const URI = 'https://www.kununu.com/';
-	const CACHE_TIMEOUT = 86400; // 24h
-	const DESCRIPTION = 'Returns the latest reviews for a company and site of your choice.';
 
-	const PARAMETERS = array(
-		'global' => array(
-			'site' => array(
-				'name' => 'Site',
-				'type' => 'list',
-				'title' => 'Select your site',
-				'values' => array(
-					'Austria' => 'at',
-					'Germany' => 'de',
-					'Switzerland' => 'ch',
-					'United States' => 'us'
-				)
-			),
-			'full' => array(
-				'name' => 'Load full article',
-				'type' => 'checkbox',
-				'exampleValue' => 'checked',
-				'title' => 'Activate to load full article'
-			),
-			'include_ratings' => array(
-				'name' => 'Include ratings',
-				'type' => 'checkbox',
-				'title' => 'Activate to include ratings in the feed'
-			),
-			'include_benefits' => array(
-				'name' => 'Include benefits',
-				'type' => 'checkbox',
-				'title' => 'Activate to include benefits in the feed'
-			),
-			'limit' => array(
-				'name' => 'Limit',
-				'type' => 'number',
-				'defaultValue' => 3,
-				'title' => "Maximum number of items to return in the feed.\n0 = unlimited"
-			)
-		),
-		array(
-			'company' => array(
-				'name' => 'Company',
-				'required' => true,
-				'exampleValue' => 'kununu-us',
-				'title' => 'Insert company name (i.e. Kununu US) or URI path (i.e. kununu-us)'
-			)
-		)
-	);
+class KununuBridge extends BridgeAbstract
+{
+    const MAINTAINER = 'logmanoriginal';
+    const NAME = 'Kununu Bridge';
+    const URI = 'https://www.kununu.com/';
+    const CACHE_TIMEOUT = 86400; // 24h
+    const DESCRIPTION = 'Returns the latest reviews for a company and site of your choice.';
 
-	private $companyName = '';
+    const PARAMETERS = [
+        'global' => [
+            'site' => [
+                'name' => 'Site',
+                'type' => 'list',
+                'title' => 'Select your site',
+                'values' => [
+                    'Austria' => 'at',
+                    'Germany' => 'de',
+                    'Switzerland' => 'ch'
+                ],
+                'exampleValue' => 'de',
+            ],
+            'include_ratings' => [
+                'name' => 'Include ratings',
+                'type' => 'checkbox',
+                'title' => 'Activate to include ratings in the feed'
+            ],
+            'limit' => [
+                'name' => 'Limit',
+                'type' => 'number',
+                'defaultValue' => 3,
+                'title' => "Maximum number of items to return in the feed.\n0 = unlimited"
+            ]
+        ],
+        [
+            'company' => [
+                'name' => 'Company',
+                'required' => true,
+                'exampleValue' => 'kununu',
+                'title' => 'Insert company name (i.e. Kununu) or URI path (i.e. kununu)'
+            ]
+        ]
+    ];
 
-	public function getURI(){
-		if(!is_null($this->getInput('company')) && !is_null($this->getInput('site'))) {
+    private $companyName = '';
 
-			$company = $this->fixCompanyName($this->getInput('company'));
-			$site = $this->getInput('site');
-			$section = '';
+    public function getURI()
+    {
+        if (!is_null($this->getInput('company')) && !is_null($this->getInput('site'))) {
+            $company = $this->fixCompanyName($this->getInput('company'));
+            $site = $this->getInput('site');
 
-			switch($site) {
-			case 'at':
-			case 'de':
-			case 'ch':
-				$section = 'kommentare';
-				break;
-			case 'us':
-				$section = 'reviews';
-				break;
-			}
+            return sprintf('%s%s/%s', self::URI, $site, $company);
+        }
 
-			return self::URI . $site . '/' . $company . '/' . $section . '?sort=update_time_desc';
-		}
+        return parent::getURI();
+    }
 
-		return parent::getURI();
-	}
+    public function getName()
+    {
+        if (!is_null($this->getInput('company'))) {
+            $company = $this->fixCompanyName($this->getInput('company'));
+            return ($this->companyName ?: $company) . ' - ' . self::NAME;
+        }
 
-	public function getName(){
-		if(!is_null($this->getInput('company'))) {
-			$company = $this->fixCompanyName($this->getInput('company'));
-			return ($this->companyName ?: $company) . ' - ' . self::NAME;
-		}
+        return parent::getName();
+    }
 
-		return parent::getName();
-	}
+    public function getIcon()
+    {
+        return 'https://www.kununu.com/favicon-196x196.png';
+    }
 
-	public function getIcon() {
-		return 'https://www.kununu.com/favicon-196x196.png';
-	}
+    public function collectData()
+    {
+        $full = $this->getInput('full');
 
-	public function collectData(){
-		$full = $this->getInput('full');
+        // Load page
+        $json = json_decode(getContents($this->getAPI()), true);
+        $this->companyName = $json['common']['name'];
+        $baseURI = $this->getURI() . '/bewertung/';
 
-		// Load page
-		$html = getSimpleHTMLDOM($this->getURI());
+        $limit = $this->getInput('limit') ?: 0;
 
-		$html = defaultLinkTo($html, static::URI);
+        // Go through all articles
+        foreach ($json['reviews'] as $review) {
+            $item = [];
+            $item['author'] = $review['position'] . ' / ' . $review['department'];
+            $item['timestamp'] = $review['createdAt'];
+            $item['title'] = $review['roundedScore'] . ' : ' . $review['title'];
+            $item['uri'] = $baseURI . $review['uuid'];
+            $item['content'] = $this->extractArticleDescription($review);
+            $this->items[] = $item;
 
-		// Update name for this request
-		$company = $html->find('span[class="company-name"]', 0)
-			or returnServerError('Cannot find company name!');
+            if ($limit > 0 && count($this->items) >= $limit) {
+                break;
+            }
+        }
+    }
 
-		$this->companyName = $company->innertext;
+    /**
+    * Returns JSON API url
+    */
+    private function getAPI()
+    {
+        $company = $this->fixCompanyName($this->getInput('company'));
+        $site = $this->getInput('site');
 
-		// Find the section with all the panels (reviews)
-		$section = $html->find('section.kununu-scroll-element', 0)
-			or returnServerError('Unable to find panel section!');
+        return self::URI . 'middlewares/profiles/' .
+               $site . '/' . $company .
+               '/reviews?reviewType=employees&urlParams=sort=newest&sort=newest&page=1';
+    }
 
-		// Find all articles (within the panels)
-		$articles = $section->find('article')
-			or returnServerError('Unable to find articles!');
+    /*
+    * Returns a fixed version of the provided company name
+    */
+    private function fixCompanyName($company)
+    {
+        $company = trim($company);
+        $company = str_replace(' ', '-', $company);
+        $company = strtolower($company);
 
-		$limit = $this->getInput('limit') ?: 0;
+        $umlauts = ['/ä/','/ö/','/ü/','/Ä/','/Ö/','/Ü/','/ß/'];
+        $replace = ['ae','oe','ue','Ae','Oe','Ue','ss'];
 
-		// Go through all articles
-		foreach($articles as $article) {
+        return preg_replace($umlauts, $replace, $company);
+    }
 
-			$anchor = $article->find('h1.review-title a', 0)
-				or returnServerError('Cannot find article URI!');
+    /**
+    * Returns the description from a given article
+    */
+    private function extractArticleDescription($json)
+    {
+        $retVal = '';
+        foreach ($json['texts'] as $text) {
+            $retVal .= '<h4>' . $text['id'] . '</h4><p>' . $text['text'] . '</p>';
+        }
 
-			$date = $article->find('meta[itemprop=dateCreated]', 0)
-				or returnServerError('Cannot find article date!');
-
-			$rating = $article->find('span.rating', 0)
-				or returnServerError('Cannot find article rating!');
-
-			$summary = $article->find('[itemprop=name]', 0)
-				or returnServerError('Cannot find article summary!');
-
-			$item = array();
-
-			$item['author'] = $this->extractArticleAuthorPosition($article);
-			$item['timestamp'] = strtotime($date->content);
-			$item['title'] = $rating->getAttribute('aria-label')
-			. ' : '
-			. strip_tags($summary->innertext);
-
-			$item['uri'] = $anchor->href;
-
-			if($full) {
-				$item['content'] = $this->extractFullDescription($item['uri']);
-			} else {
-				$item['content'] = $this->extractArticleDescription($article);
-			}
-
-			$this->items[] = $item;
-
-			if ($limit > 0 && count($this->items) >= $limit) break;
-
-		}
-	}
-
-	/*
-	* Returns a fixed version of the provided company name
-	*/
-	private function fixCompanyName($company){
-		$company = trim($company);
-		$company = str_replace(' ', '-', $company);
-		$company = strtolower($company);
-
-		$umlauts = Array('/ä/','/ö/','/ü/','/Ä/','/Ö/','/Ü/','/ß/');
-		$replace = Array('ae','oe','ue','Ae','Oe','Ue','ss');
-
-		return preg_replace($umlauts, $replace, $company);
-	}
-
-	/**
-	* Returns the position of the author from a given article
-	*/
-	private function extractArticleAuthorPosition($article){
-		// We need to parse the user-content manually
-		$user_content = $article->find('div.user-content', 0)
-			or returnServerError('Cannot find user content!');
-
-		// Go through all h2 elements to find index of required span (I know... it's stupid)
-		$author_position = 'Unknown';
-		foreach($user_content->find('div') as $content) {
-			if(stristr(strtolower($content->plaintext), 'position')) { /* This works for at, ch, de, us */
-				$author_position = $content->next_sibling()->plaintext;
-				break;
-			}
-		}
-
-		return $author_position;
-	}
-
-	/**
-	* Returns the description from a given article
-	*/
-	private function extractArticleDescription($article){
-		$description = $article->find('[itemprop=reviewBody]', 0)
-			or returnServerError('Cannot find article description!');
-
-		$retVal = $description->innertext;
-
-		if($this->getInput('include_ratings')
-		&& ($ratings = $article->find('.review-ratings .rating-group'))) {
-			$retVal .= (empty($retVal) ? '' : '<hr>') . '<table>';
-			foreach($ratings as $rating) {
-				$retVal .= <<<EOD
+        if ($this->getInput('include_ratings') && !empty($json['ratings'])) {
+            $retVal .= (empty($retVal) ? '' : '<hr>') . '<table>';
+            foreach ($json['ratings'] as $rating) {
+                $retVal .= <<<EOD
 <tr>
-	<td>{$rating->find('.rating-title', 0)->plaintext}
-	<td>{$rating->find('.rating-badge', 0)->plaintext}
+	<td>{$rating['id']}
+	<td>{$rating['roundedScore']}
+	<td>{$rating['text']}
 </tr>
 EOD;
-			}
-			$retVal .= '</table>';
-		}
+            }
+            $retVal .= '</table>';
+        }
 
-		if($this->getInput('include_benefits')
-		&& ($benefits = $article->find('benefit'))) {
-			$retVal .= (empty($retVal) ? '' : '<hr>') . '<ul>';
-			foreach($benefits as $benefit) {
-				$retVal .= "<li>{$benefit->plaintext}</li>";
-			}
-			$retVal .= '</ul>';
-		}
-
-		return $retVal;
-	}
-
-	/**
-	* Returns the full description from a given uri
-	*/
-	private function extractFullDescription($uri){
-		// Load full article
-		$html = getSimpleHTMLDOMCached($uri)
-			or returnServerError('Could not load full description!');
-
-		$html =	defaultLinkTo($html, static::URI);
-
-		// Find the article
-		$article = $html->find('article', 0)
-			or returnServerError('Cannot find article!');
-
-		// Luckily they use the same layout for the review overview and full article pages :)
-		return $this->extractArticleDescription($article);
-	}
+        return $retVal;
+    }
 }

@@ -1,84 +1,89 @@
 <?php
-class DiarioDeNoticiasBridge extends BridgeAbstract {
-	const NAME = 'Diário de Notícias (PT)';
-	const URI = 'https://dn.pt';
-	const DESCRIPTION = 'Diário de Notícias (DN.PT)';
-	const MAINTAINER = 'somini';
-	const PARAMETERS = array(
-		'Tag' => array(
-			'n' => array(
-				'name' => 'Tag Name',
-				'required' => true,
-				'exampleValue' => 'rogerio-casanova',
-			)
-		)
-	);
 
-	const MONPT = array(
-		'jan',
-		'fev',
-		'mar',
-		'abr',
-		'mai',
-		'jun',
-		'jul',
-		'ago',
-		'set',
-		'out',
-		'nov',
-		'dez',
-	);
+class DiarioDeNoticiasBridge extends BridgeAbstract
+{
+    const NAME = 'Diário de Notícias (PT)';
+    const URI = 'https://dn.pt';
+    const DESCRIPTION = 'Diário de Notícias (DN.PT)';
+    const MAINTAINER = 'somini';
+    const PARAMETERS = [
+        'Tag' => [
+            'n' => [
+                'name' => 'Tag Name',
+                'required' => true,
+                'exampleValue' => 'rogerio-casanova',
+            ]
+        ]
+    ];
 
-	public function getIcon() {
-		return 'https://static.globalnoticias.pt/dn/common/images/favicons/favicon-128.png';
-	}
+    const MONPT = [
+        'jan',
+        'fev',
+        'mar',
+        'abr',
+        'mai',
+        'jun',
+        'jul',
+        'ago',
+        'set',
+        'out',
+        'nov',
+        'dez',
+    ];
 
-	public function getName() {
-		switch($this->queriedContext) {
-		case 'Tag':
-			$name = self::NAME . ' | Tag | ' . $this->getInput('n');
-			break;
-		default:
-			$name = self::NAME;
-		}
-		return $name;
-	}
+    public function getIcon()
+    {
+        return 'https://static.globalnoticias.pt/dn/common/images/favicons/favicon-128.png';
+    }
 
-	public function getURI() {
-		switch($this->queriedContext) {
-		case 'Tag':
-			$url = self::URI . '/tag/' . $this->getInput('n') . '.html';
-			break;
-		default:
-			$url = self::URI;
-		}
-		return $url;
-	}
+    public function getName()
+    {
+        switch ($this->queriedContext) {
+            case 'Tag':
+                $name = self::NAME . ' | Tag | ' . $this->getInput('n');
+                break;
+            default:
+                $name = self::NAME;
+        }
+        return $name;
+    }
 
-	public function collectData() {
-		$archives = self::getURI();
-		$html = getSimpleHTMLDOMCached($archives);
+    public function getURI()
+    {
+        switch ($this->queriedContext) {
+            case 'Tag':
+                $url = self::URI . '/tag/' . $this->getInput('n') . '.html';
+                break;
+            default:
+                $url = self::URI;
+        }
+        return $url;
+    }
 
-		foreach($html->find('article') as $element) {
-			$item = array();
+    public function collectData()
+    {
+        $archives = $this->getURI();
+        $html = getSimpleHTMLDOMCached($archives);
 
-			$title = $element->find('.t-am-title', 0);
-			$link = $element->find('a.t-am-text', 0);
+        foreach ($html->find('article') as $element) {
+            $item = [];
 
-			$item['title'] = $title->plaintext;
-			$item['uri'] = self::URI . $link->href;
+            $title = $element->find('.t-am-title', 0);
+            $link = $element->find('a.t-am-text', 0);
 
-			$snippet = $element->find('.t-am-lead', 0);
-			if ($snippet) {
-				$item['content'] = $snippet->plaintext;
-			}
-			preg_match('|edicao-do-dia\\/(?P<day>\d\d)-(?P<monpt>\w\w\w)-(?P<year>\d\d\d\d)|', $link->href, $d);
-			if ($d) {
-				$item['timestamp'] = sprintf('%s-%s-%s', $d['year'], array_search($d['monpt'], self::MONPT) + 1, $d['day']);
-			}
+            $item['title'] = $title->plaintext;
+            $item['uri'] = self::URI . $link->href;
 
-			$this->items[] = $item;
-		}
+            $snippet = $element->find('.t-am-lead', 0);
+            if ($snippet) {
+                $item['content'] = $snippet->plaintext;
+            }
+            preg_match('|edicao-do-dia\\/(?P<day>\d\d)-(?P<monpt>\w\w\w)-(?P<year>\d\d\d\d)|', $link->href, $d);
+            if ($d) {
+                $item['timestamp'] = sprintf('%s-%s-%s', $d['year'], array_search($d['monpt'], self::MONPT) + 1, $d['day']);
+            }
 
-	}
+            $this->items[] = $item;
+        }
+    }
 }

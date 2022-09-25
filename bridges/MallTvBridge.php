@@ -1,71 +1,76 @@
 <?php
 
-class MallTvBridge extends BridgeAbstract {
+class MallTvBridge extends BridgeAbstract
+{
+    const NAME = 'MALL.TV Bridge';
+    const URI = 'https://www.mall.tv';
+    const CACHE_TIMEOUT = 3600;
+    const DESCRIPTION = 'Return newest videos';
+    const MAINTAINER = 'kolarcz';
 
-	const NAME = 'MALL.TV Bridge';
-	const URI = 'https://www.mall.tv';
-	const CACHE_TIMEOUT = 3600;
-	const DESCRIPTION = 'Return newest videos';
-	const MAINTAINER = 'kolarcz';
+    const PARAMETERS = [
+        [
+            'url' => [
+                'name' => 'url to the show',
+                'required' => true,
+                'exampleValue' => 'https://www.mall.tv/zivot-je-hra'
+            ]
+        ]
+    ];
 
-	const PARAMETERS = array(
-		array(
-			'url' => array(
-				'name' => 'url to the show',
-				'required' => true,
-				'exampleValue' => 'https://www.mall.tv/zivot-je-hra'
-			)
-		)
-	);
+    private function fixChars($text)
+    {
+        return html_entity_decode($text, ENT_QUOTES, 'UTF-8');
+    }
 
-	private function fixChars($text) {
-		return html_entity_decode($text, ENT_QUOTES, 'UTF-8');
-	}
+    private function getUploadTimeFromUrl($url)
+    {
+        $html = getSimpleHTMLDOM($url);
 
-	private function getUploadTimeFromUrl($url) {
-		$html = getSimpleHTMLDOM($url);
+        $scriptLdJson = $html->find('script[type="application/ld+json"]', 0)->innertext;
+        if (!preg_match('/[\'"]uploadDate[\'"]\s*:\s*[\'"](\d{4}-\d{2}-\d{2})[\'"]/', $scriptLdJson, $match)) {
+            returnServerError('Could not get date from MALL.TV detail page');
+        }
 
-		$scriptLdJson = $html->find('script[type="application/ld+json"]', 0)->innertext;
-		if (!preg_match('/[\'"]uploadDate[\'"]\s*:\s*[\'"](\d{4}-\d{2}-\d{2})[\'"]/', $scriptLdJson, $match)) {
-			returnServerError('Could not get date from MALL.TV detail page');
-		}
+        return strtotime($match[1]);
+    }
 
-		return strtotime($match[1]);
-	}
+    public function collectData()
+    {
+        $url = $this->getInput('url');
 
-	public function collectData() {
-		$url = $this->getInput('url');
+        if (!preg_match('/^https:\/\/www\.mall\.tv\/[a-z0-9-]+(\/[a-z0-9-]+)?\/?$/', $url)) {
+            returnServerError('Invalid url');
+        }
 
-		if (!preg_match('/^https:\/\/www\.mall\.tv\/[a-z0-9-]+(\/[a-z0-9-]+)?\/?$/', $url)) {
-			returnServerError('Invalid url');
-		}
+        $html = getSimpleHTMLDOM($url);
 
-		$html = getSimpleHTMLDOM($url);
+        $this->feedUri = $url;
+        $this->feedName = $this->fixChars($html->find('title', 0)->plaintext);
 
-		$this->feedUri = $url;
-		$this->feedName = $this->fixChars($html->find('title', 0)->plaintext);
+        foreach ($html->find('section.isVideo .video-card') as $element) {
+            $itemTitle = $element->find('.video-card__details-link', 0);
+            $itemThumbnail = $element->find('.video-card__thumbnail', 0);
+            $itemUri = self::URI . $itemTitle->getAttribute('href');
 
-		foreach ($html->find('section.isVideo .video-card') as $element) {
-			$itemTitle = $element->find('.video-card__details-link', 0);
-			$itemThumbnail = $element->find('.video-card__thumbnail', 0);
-			$itemUri = self::URI . $itemTitle->getAttribute('href');
+            $item = [
+                'title' => $this->fixChars($itemTitle->plaintext),
+                'uri' => $itemUri,
+                'content' => '<img src="' . $itemThumbnail->getAttribute('data-src') . '" />',
+                'timestamp' => $this->getUploadTimeFromUrl($itemUri)
+            ];
 
-			$item = array(
-				'title' => $this->fixChars($itemTitle->plaintext),
-				'uri' => $itemUri,
-				'content' => '<img src="' . $itemThumbnail->getAttribute('data-src') . '" />',
-				'timestamp' => $this->getUploadTimeFromUrl($itemUri)
-			);
+            $this->items[] = $item;
+        }
+    }
 
-			$this->items[] = $item;
-		}
-	}
+    public function getURI()
+    {
+        return $this->feedUri ?? parent::getURI();
+    }
 
-	public function getURI() {
-		return isset($this->feedUri) ? $this->feedUri : parent::getURI();
-	}
-
-	public function getName() {
-		return isset($this->feedName) ? $this->feedName : parent::getName();
-	}
+    public function getName()
+    {
+        return $this->feedName ?? parent::getName();
+    }
 }

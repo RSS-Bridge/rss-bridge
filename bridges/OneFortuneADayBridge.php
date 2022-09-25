@@ -1,76 +1,84 @@
 <?php
-class OneFortuneADayBridge extends BridgeAbstract {
-	const NAME = 'One Fortune a Day';
-	const URI = 'https://github.com/fulmeek';
-	const DESCRIPTION = 'Get a fortune quote every single day.';
-	const MAINTAINER = 'fulmeek';
-	const PARAMETERS = array(array(
-		'time' => array(
-			'name'		=> 'Time in UTC',
-			'type'		=> 'list',
-			'values'	=> array(
-				'0:00'	=> 0,
-				'1:00'	=> 1,
-				'2:00'	=> 2,
-				'3:00'	=> 3,
-				'4:00'	=> 4,
-				'5:00'	=> 5,
-				'6:00'	=> 6,
-				'7:00'	=> 7,
-				'8:00'	=> 8,
-				'9:00'	=> 9,
-				'10:00'	=> 10,
-				'11:00'	=> 11,
-				'12:00'	=> 12,
-				'13:00'	=> 13,
-				'14:00'	=> 14,
-				'15:00'	=> 15,
-				'16:00'	=> 16,
-				'17:00'	=> 17,
-				'18:00'	=> 18,
-				'19:00'	=> 19,
-				'20:00'	=> 20,
-				'21:00'	=> 21,
-				'22:00'	=> 22,
-				'23:00'	=> 23,
-			),
-			'defaultValue' => 5
-		),
-		'lucky' => array(
-			'name' => 'Lucky number (optional)',
-			'type' => 'text'
-		)
-	));
 
-	const LIMIT_ITEMS = 7;
-	const DAY_SECS = 86400;
+class OneFortuneADayBridge extends BridgeAbstract
+{
+    const NAME = 'One Fortune a Day';
+    const URI = 'https://github.com/fulmeek';
+    const DESCRIPTION = 'Get a fortune quote every single day.';
+    const MAINTAINER = 'fulmeek';
+    const PARAMETERS = [[
+        'time' => [
+            'name'      => 'Time in UTC',
+            'type'      => 'list',
+            'values'    => [
+                '0:00'  => 0,
+                '1:00'  => 1,
+                '2:00'  => 2,
+                '3:00'  => 3,
+                '4:00'  => 4,
+                '5:00'  => 5,
+                '6:00'  => 6,
+                '7:00'  => 7,
+                '8:00'  => 8,
+                '9:00'  => 9,
+                '10:00' => 10,
+                '11:00' => 11,
+                '12:00' => 12,
+                '13:00' => 13,
+                '14:00' => 14,
+                '15:00' => 15,
+                '16:00' => 16,
+                '17:00' => 17,
+                '18:00' => 18,
+                '19:00' => 19,
+                '20:00' => 20,
+                '21:00' => 21,
+                '22:00' => 22,
+                '23:00' => 23,
+            ],
+            'defaultValue' => 5
+        ],
+        'lucky' => [
+            'name' => 'Lucky number (optional)',
+            'type' => 'text'
+        ]
+    ]];
 
-	public function getDescription(){
-		return self::DESCRIPTION . '<br/>Set a lucky number to get your personal quotes, like ' . mt_rand();
-	}
+    const LIMIT_ITEMS = 7;
+    const DAY_SECS = 86400;
 
-	public function collectData() {
-		$time = gmmktime((int)$this->getInput('time'), 0, 0);
-		if ($time > time())
-			$time -= self::DAY_SECS;
+    public function getDescription()
+    {
+        return self::DESCRIPTION . '<br/>Set a lucky number to get your personal quotes, like ' . mt_rand();
+    }
 
-		for ($i = self::LIMIT_ITEMS; $i > 0; --$i) {
-			$seed = gmdate('Ymd', $time) . $this->getInput('lucky');
-			$quote = $this->getQuote($seed);
+    public function collectData()
+    {
+        $time = gmmktime((int)$this->getInput('time'), 0, 0);
+        if ($time > time()) {
+            $time -= self::DAY_SECS;
+        }
 
-			$item['title']		= strftime('%A, %x', $time);
-			$item['content']	= htmlentities($quote, ENT_QUOTES, 'UTF-8');
-			$item['timestamp']	= $time;
-			$item['uid']		= hash('sha1', $seed);
+        for ($i = self::LIMIT_ITEMS; $i > 0; --$i) {
+            $seed = gmdate('Ymd', $time) . $this->getInput('lucky');
+            $quote = $this->getQuote($seed);
 
-			$this->items[] = $item;
+            $item['title']      = strftime('%A, %x', $time);
+            $item['content']    = htmlentities($quote, ENT_QUOTES, 'UTF-8');
+            $item['timestamp']  = $time;
+            $item['uid']        = hash('sha1', $seed);
 
-			$time -= self::DAY_SECS;
-		}
-	}
+            $this->items[] = $item;
 
-	private function getQuote($seed) {
-		$quotes = explode('//', <<<QUOTES
+            $time -= self::DAY_SECS;
+        }
+    }
+
+    private function getQuote($seed)
+    {
+        $quotes = explode(
+            '//',
+            <<<QUOTES
 People are naturally attracted to you.
 //You learn from your mistakes... You will learn a lot today.
 //If you have something good in your life, don't let it go!
@@ -954,9 +962,9 @@ you never try.
 //Working hard will make you live a happy life.
 //A pleasant surprise is waiting for you.
 QUOTES
-		);
+        );
 
-		$i = round(fmod(hexdec(hash('crc32', $seed)), count($quotes)), 0);
-		return trim(str_replace(array("\r\n", "\n", "\r"), ' ', $quotes[$i]));
-	}
+        $i = round(fmod(hexdec(hash('crc32', $seed)), count($quotes)), 0);
+        return trim(str_replace(["\r\n", "\n", "\r"], ' ', $quotes[$i]));
+    }
 }

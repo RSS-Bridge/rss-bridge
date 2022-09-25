@@ -1,75 +1,78 @@
 <?php
-class FirefoxAddonsBridge extends BridgeAbstract {
-	const NAME = 'Firefox Add-ons Bridge';
-	const URI = 'https://addons.mozilla.org/';
-	const DESCRIPTION = 'Returns version history for a Firefox Add-on.';
-	const MAINTAINER = 'VerifiedJoseph';
-	const PARAMETERS = array(array(
-			'id' => array(
-				'name' => 'Add-on ID',
-				'type' => 'text',
-				'required' => true,
-				'exampleValue' => 'save-to-the-wayback-machine',
-			)
-		)
-	);
 
-	const CACHE_TIMEOUT = 3600;
+class FirefoxAddonsBridge extends BridgeAbstract
+{
+    const NAME = 'Firefox Add-ons Bridge';
+    const URI = 'https://addons.mozilla.org/';
+    const DESCRIPTION = 'Returns version history for a Firefox Add-on.';
+    const MAINTAINER = 'VerifiedJoseph';
+    const PARAMETERS = [[
+            'id' => [
+                'name' => 'Add-on ID',
+                'type' => 'text',
+                'required' => true,
+                'exampleValue' => 'save-to-the-wayback-machine',
+            ]
+        ]
+    ];
 
-	private $feedName = '';
-	private $releaseDateRegex = '/Released ([\w, ]+) - ([\w. ]+)/';
-	private $xpiFileRegex = '/([A-Za-z0-9_.-]+)\.xpi$/';
-	private $outgoingRegex = '/https:\/\/outgoing.prod.mozaws.net\/v1\/(?:[A-z0-9]+)\//';
+    const CACHE_TIMEOUT = 3600;
 
-	private $urlRegex = '/addons\.mozilla\.org\/(?:[\w-]+\/)?firefox\/addon\/([\w-]+)/';
+    private $feedName = '';
+    private $releaseDateRegex = '/Released ([\w, ]+) - ([\w. ]+)/';
+    private $xpiFileRegex = '/([A-Za-z0-9_.-]+)\.xpi$/';
+    private $outgoingRegex = '/https:\/\/outgoing.prod.mozaws.net\/v1\/(?:[A-z0-9]+)\//';
 
-	public function detectParameters($url) {
-		$params = array();
+    private $urlRegex = '/addons\.mozilla\.org\/(?:[\w-]+\/)?firefox\/addon\/([\w-]+)/';
 
-		if(preg_match($this->urlRegex, $url, $matches)) {
-			$params['id'] = $matches[1];
-			return $params;
-		}
+    public function detectParameters($url)
+    {
+        $params = [];
 
-		return null;
-	}
+        if (preg_match($this->urlRegex, $url, $matches)) {
+            $params['id'] = $matches[1];
+            return $params;
+        }
 
-	public function collectData() {
-		$html = getSimpleHTMLDOM($this->getURI());
+        return null;
+    }
 
-		$this->feedName = $html->find('h1[class="AddonTitle"] > a', 0)->innertext;
-		$author = $html->find('span.AddonTitle-author > a', 0)->plaintext;
+    public function collectData()
+    {
+        $html = getSimpleHTMLDOM($this->getURI());
 
-		foreach ($html->find('li.AddonVersionCard') as $li) {
-			$item = array();
+        $this->feedName = $html->find('h1[class="AddonTitle"] > a', 0)->innertext;
+        $author = $html->find('span.AddonTitle-author > a', 0)->plaintext;
 
-			$item['title'] = $li->find('h2.AddonVersionCard-version', 0)->plaintext;
-			$item['uid'] = $item['title'];
-			$item['uri'] = $this->getURI();
-			$item['author'] = $author;
+        foreach ($html->find('li.AddonVersionCard') as $li) {
+            $item = [];
 
-			if (preg_match($this->releaseDateRegex, $li->find('div.AddonVersionCard-fileInfo', 0)->plaintext, $match)) {
-				$item['timestamp'] = $match[1];
-				$size = $match[2];
-			}
+            $item['title'] = $li->find('h2.AddonVersionCard-version', 0)->plaintext;
+            $item['uid'] = $item['title'];
+            $item['uri'] = $this->getURI();
+            $item['author'] = $author;
 
-			$compatibility = $li->find('div.AddonVersionCard-compatibility', 0)->plaintext;
-			$license = $li->find('p.AddonVersionCard-license', 0)->innertext;
+            if (preg_match($this->releaseDateRegex, $li->find('div.AddonVersionCard-fileInfo', 0)->plaintext, $match)) {
+                $item['timestamp'] = $match[1];
+                $size = $match[2];
+            }
 
-			if ($li->find('a.InstallButtonWrapper-download-link', 0)) {
-				$downloadlink = $li->find('a.InstallButtonWrapper-download-link', 0)->href;
+            $compatibility = $li->find('div.AddonVersionCard-compatibility', 0)->plaintext;
+            $license = $li->find('p.AddonVersionCard-license', 0)->innertext;
 
-			} elseif ($li->find('a.Button.Button--action.AMInstallButton-button.Button--puffy', 0)) {
-				$downloadlink = $li->find('a.Button.Button--action.AMInstallButton-button.Button--puffy', 0)->href;
-			}
+            if ($li->find('a.InstallButtonWrapper-download-link', 0)) {
+                $downloadlink = $li->find('a.InstallButtonWrapper-download-link', 0)->href;
+            } elseif ($li->find('a.Button.Button--action.AMInstallButton-button.Button--puffy', 0)) {
+                $downloadlink = $li->find('a.Button.Button--action.AMInstallButton-button.Button--puffy', 0)->href;
+            }
 
-			$releaseNotes = $this->removeOutgoinglink($li->find('div.AddonVersionCard-releaseNotes', 0));
+            $releaseNotes = $this->removeOutgoinglink($li->find('div.AddonVersionCard-releaseNotes', 0));
 
-			if (preg_match($this->xpiFileRegex, $downloadlink, $match)) {
-				$xpiFilename = $match[0];
-			}
+            if (preg_match($this->xpiFileRegex, $downloadlink, $match)) {
+                $xpiFilename = $match[0];
+            }
 
-			$item['content'] = <<<EOD
+            $item['content'] = <<<EOD
 <strong>Release Notes</strong>
 <p>{$releaseNotes}</p>
 <strong>Compatibility</strong>
@@ -80,31 +83,34 @@ class FirefoxAddonsBridge extends BridgeAbstract {
 <p><a href="{$downloadlink}">{$xpiFilename}</a> ($size)</p>
 EOD;
 
-			$this->items[] = $item;
-		}
-	}
+            $this->items[] = $item;
+        }
+    }
 
-	public function getURI() {
-		if (!is_null($this->getInput('id'))) {
-			return self::URI . 'en-US/firefox/addon/' . $this->getInput('id') . '/versions/';
-		}
+    public function getURI()
+    {
+        if (!is_null($this->getInput('id'))) {
+            return self::URI . 'en-US/firefox/addon/' . $this->getInput('id') . '/versions/';
+        }
 
-		return parent::getURI();
-	}
+        return parent::getURI();
+    }
 
-	public function getName() {
-		if (!empty($this->feedName)) {
-			return $this->feedName . ' - Firefox Add-on';
-		}
+    public function getName()
+    {
+        if (!empty($this->feedName)) {
+            return $this->feedName . ' - Firefox Add-on';
+        }
 
-		return parent::getName();
-	}
+        return parent::getName();
+    }
 
-	private function removeOutgoinglink($html) {
-		foreach ($html->find('a') as $a) {
-			$a->href = urldecode(preg_replace($this->outgoingRegex, '', $a->href));
-		}
+    private function removeOutgoinglink($html)
+    {
+        foreach ($html->find('a') as $a) {
+            $a->href = urldecode(preg_replace($this->outgoingRegex, '', $a->href));
+        }
 
-		return $html->innertext;
-	}
+        return $html->innertext;
+    }
 }

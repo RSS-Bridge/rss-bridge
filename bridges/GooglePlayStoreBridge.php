@@ -1,61 +1,64 @@
 <?php
-class GooglePlayStoreBridge extends BridgeAbstract {
-	const MAINTAINER = 'Yaman Qalieh';
-	const NAME = 'Google Play Store';
-	const URI = 'https://play.google.com/store/apps';
-	const CACHE_TIMEOUT = 3600; // 1h
-	const DESCRIPTION = 'Returns the most recent version of an app with its changelog';
 
-	const TEST_DETECT_PARAMETERS = array(
-		'https://play.google.com/store/apps/details?id=com.ichi2.anki' => array(
-			'id' => 'com.ichi2.anki'
-		)
-	);
+class GooglePlayStoreBridge extends BridgeAbstract
+{
+    const NAME = 'Google Play Store';
+    const URI = 'https://play.google.com/store/apps';
+    const CACHE_TIMEOUT = 3600; // 1h
+    const DESCRIPTION = 'Returns the most recent version of an app with its changelog';
 
-	const PARAMETERS = array(array(
-		'id' => array(
-			'name' => 'Application ID',
-			'exampleValue' => 'com.ichi2.anki',
-			'required' => true
-		)
-	));
+    const TEST_DETECT_PARAMETERS = [
+        'https://play.google.com/store/apps/details?id=com.ichi2.anki' => [
+            'id' => 'com.ichi2.anki'
+        ]
+    ];
 
-	const INFORMATION_MAP = array(
-		'Updated' => 'timestamp',
-		'Current Version' => 'title',
-		'Offered By' => 'author'
-	);
+    const PARAMETERS = [[
+        'id' => [
+            'name' => 'Application ID',
+            'exampleValue' => 'com.ichi2.anki',
+            'required' => true
+        ]
+    ]];
 
-	public function collectData() {
-		$appuri = static::URI . '/details?id=' . $this->getInput('id');
-		$html = getSimpleHTMLDOM($appuri);
+    const INFORMATION_MAP = [
+        'Updated' => 'timestamp',
+        'Current Version' => 'title',
+        'Offered By' => 'author'
+    ];
 
-		$item = array();
-		$item['uri'] = $appuri;
-		$item['content'] = $html->find('div[itemprop=description]', 1)->innertext;
+    public function collectData()
+    {
+        $appuri = static::URI . '/details?id=' . $this->getInput('id');
+        $html = getSimpleHTMLDOM($appuri);
 
-		// Find other fields from Additional Information section
-		foreach($html->find('.hAyfc') as $info) {
-			$index = self::INFORMATION_MAP[$info->first_child()->plaintext] ?? null;
-			if (is_null($index)) {
-				continue;
-			}
-			$item[$index] = $info->children(1)->plaintext;
-		}
+        $item = [];
+        $item['uri'] = $appuri;
+        $item['content'] = $html->find('div[itemprop=description]', 1)->innertext;
 
-		$this->items[] = $item;
-	}
+        // Find other fields from Additional Information section
+        foreach ($html->find('.hAyfc') as $info) {
+            $index = self::INFORMATION_MAP[$info->first_child()->plaintext] ?? null;
+            if (is_null($index)) {
+                continue;
+            }
+            $item[$index] = $info->children(1)->plaintext;
+        }
 
-	public function detectParameters($url) {
-		// Example: https://play.google.com/store/apps/details?id=com.ichi2.anki
+        $this->items[] = $item;
+    }
 
-		$params = array();
-		$regex = '/^(https?:\/\/)?play\.google\.com\/store\/apps\/details\?id=([^\/&?\n]+)/';
-		if(preg_match($regex, $url, $matches) > 0) {
-			$params['id'] = urldecode($matches[2]);
-			return $params;
-		}
+    public function detectParameters($url)
+    {
+        // Example: https://play.google.com/store/apps/details?id=com.ichi2.anki
 
-		return null;
-	}
+        $params = [];
+        $regex = '/^(https?:\/\/)?play\.google\.com\/store\/apps\/details\?id=([^\/&?\n]+)/';
+        if (preg_match($regex, $url, $matches) > 0) {
+            $params['id'] = urldecode($matches[2]);
+            return $params;
+        }
+
+        return null;
+    }
 }

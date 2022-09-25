@@ -1,157 +1,129 @@
 <?php
-class BrutBridge extends BridgeAbstract {
-	const NAME = 'Brut Bridge';
-	const URI = 'https://www.brut.media';
-	const DESCRIPTION = 'Returns 5 newest videos by category and edition';
-	const MAINTAINER = 'VerifiedJoseph';
-	const PARAMETERS = array(array(
-			'category' => array(
-				'name' => 'Category',
-				'type' => 'list',
-				'values' => array(
-					'News' => 'news',
-					'International' => 'international',
-					'Economy' => 'economy',
-					'Science and Technology' => 'science-and-technology',
-					'Entertainment' => 'entertainment',
-					'Sports' => 'sport',
-					'Nature' => 'nature',
-					'Health' => 'health',
-				),
-				'defaultValue' => 'news',
-			),
-			'edition' => array(
-				'name' => ' Edition',
-				'type' => 'list',
-					'values' => array(
-						'United States' => 'us',
-						'United Kingdom' => 'uk',
-						'France' => 'fr',
-						'Spain' => 'es',
-						'India' => 'in',
-						'Mexico' => 'mx',
-				),
-				'defaultValue' => 'us',
-			)
-		)
-	);
 
-	const CACHE_TIMEOUT = 1800; // 30 mins
+class BrutBridge extends BridgeAbstract
+{
+    const NAME = 'Brut Bridge';
+    const URI = 'https://www.brut.media';
+    const DESCRIPTION = 'Returns 10 newest videos by category and edition';
+    const MAINTAINER = 'VerifiedJoseph';
+    const PARAMETERS = [[
+            'category' => [
+                'name' => 'Category',
+                'type' => 'list',
+                'values' => [
+                    'News' => 'news',
+                    'International' => 'international',
+                    'Economy' => 'economy',
+                    'Science and Technology' => 'science-and-technology',
+                    'Entertainment' => 'entertainment',
+                    'Sports' => 'sport',
+                    'Nature' => 'nature',
+                    'Health' => 'health',
+                ],
+                'defaultValue' => 'news',
+            ],
+            'edition' => [
+                'name' => ' Edition',
+                'type' => 'list',
+                    'values' => [
+                        'United States' => 'us',
+                        'United Kingdom' => 'uk',
+                        'France' => 'fr',
+                        'Spain' => 'es',
+                        'India' => 'in',
+                        'Mexico' => 'mx',
+                ],
+                'defaultValue' => 'us',
+            ]
+        ]
+    ];
 
-	private $videoId = '';
-	private $videoType = '';
-	private $videoImage = '';
+    const CACHE_TIMEOUT = 1800; // 30 mins
 
-	public function collectData() {
+    private $jsonRegex = '/window\.__PRELOADED_STATE__ = ((?:.*)});/';
 
-		$html = getSimpleHTMLDOM($this->getURI());
+    public function collectData()
+    {
+        $html = getSimpleHTMLDOM($this->getURI());
 
-		$results = $html->find('div.results', 0);
+        $results = $html->find('div.results', 0);
 
-		foreach($results->find('li.col-6.col-sm-4.col-md-3.col-lg-2.px-2.pb-4') as $index => $li) {
-			$item = array();
+        foreach ($results->find('li.col-6.col-sm-4.col-md-3.col-lg-2.px-2.pb-4') as $li) {
+            $item = [];
 
-			$videoPath = self::URI . $li->children(0)->href;
+            $videoPath = self::URI . $li->children(0)->href;
+            $videoPageHtml = getSimpleHTMLDOMCached($videoPath, 3600);
 
-			$videoPageHtml = getSimpleHTMLDOMCached($videoPath, 3600);
+            $json = $this->extractJson($videoPageHtml);
+            $id = array_keys((array) $json->media->index)[0];
 
-			$this->videoImage = $videoPageHtml->find('meta[name="twitter:image"]', 0)->content;
+            $item['uri'] = $videoPath;
+            $item['title'] = $json->media->index->$id->title;
+            $item['timestamp'] = $json->media->index->$id->published_at;
+            $item['enclosures'][] = $json->media->index->$id->media->thumbnail;
 
-			$this->processTwitterImage();
+            $description = $json->media->index->$id->description;
+            $article = '';
 
-			$description = $videoPageHtml->find('div.description', 0);
+            if (is_null($json->media->index->$id->media->seo_article) === false) {
+                $article = markdownToHtml($json->media->index->$id->media->seo_article);
+            }
 
-			$item['uri'] = $videoPath;
-			$item['title'] = $description->find('h1', 0)->plaintext;
+            $item['content'] = <<<EOD
+			<video controls poster="{$json->media->index->$id->media->thumbnail}" preload="none">
+				<source src="{$json->media->index->$id->media->mp4_url}" type="video/mp4">
+			</video>
+			<p>{$description}</p>
+			{$article}
+EOD;
 
-			if ($description->find('div.date', 0)->children(0)) {
-				$description->find('div.date', 0)->children(0)->outertext = '';
-			}
+            $this->items[] = $item;
 
-			$item['content'] = $this->processContent(
-				$description
-			);
+            if (count($this->items) >= 10) {
+                break;
+            }
+        }
+    }
 
-			$item['timestamp'] = $this->processDate($description);
-			$item['enclosures'][] = $this->videoImage;
+    public function getURI()
+    {
+        if (!is_null($this->getInput('edition')) && !is_null($this->getInput('category'))) {
+            return self::URI . '/' . $this->getInput('edition') . '/' . $this->getInput('category');
+        }
 
-			$this->items[] = $item;
+        return parent::getURI();
+    }
 
-			if (count($this->items) >= 5) {
-				break;
-			}
-		}
-	}
+    public function getName()
+    {
+        if (!is_null($this->getInput('edition')) && !is_null($this->getInput('category'))) {
+            $parameters = $this->getParameters();
 
-	public function getURI() {
+            $editionValues = array_flip($parameters[0]['edition']['values']);
+            $categoryValues = array_flip($parameters[0]['category']['values']);
 
-		if (!is_null($this->getInput('edition')) && !is_null($this->getInput('category'))) {
-			return self::URI . '/' . $this->getInput('edition') . '/' . $this->getInput('category');
-		}
+            return $categoryValues[$this->getInput('category')] . ' - ' .
+                $editionValues[$this->getInput('edition')] . ' - Brut.';
+        }
 
-		return parent::getURI();
-	}
+        return parent::getName();
+    }
 
-	public function getName() {
+    /**
+     * Extract JSON from page
+     */
+    private function extractJson($html)
+    {
+        if (!preg_match($this->jsonRegex, $html, $parts)) {
+            returnServerError('Failed to extract data from page');
+        }
 
-		if (!is_null($this->getInput('edition')) && !is_null($this->getInput('category'))) {
-			$parameters = $this->getParameters();
+        $data = json_decode($parts[1]);
 
-			$editionValues = array_flip($parameters[0]['edition']['values']);
-			$categoryValues = array_flip($parameters[0]['category']['values']);
+        if ($data === false) {
+            returnServerError('Failed to decode extracted data');
+        }
 
-			return $categoryValues[$this->getInput('category')] . ' - ' .
-				$editionValues[$this->getInput('edition')] . ' - Brut.';
-		}
-
-		return parent::getName();
-	}
-
-	private function processDate($description) {
-
-		if ($this->getInput('edition') === 'uk') {
-			$date = DateTime::createFromFormat('d/m/Y H:i', $description->find('div.date', 0)->innertext);
-			return strtotime($date->format('Y-m-d H:i:s'));
-		}
-
-		return strtotime($description->find('div.date', 0)->innertext);
-	}
-
-	private function processContent($description) {
-
-		$content = '<video controls poster="' . $this->videoImage . '" preload="none">
-			<source src="https://content.brut.media/video/' . $this->videoId . '-' . $this->videoType . '-web.mp4"
-            type="video/mp4">
-			</video>';
-		$content .= '<p>' . $description->find('h2.mb-1', 0)->innertext . '</p>';
-
-		if ($description->find('div.text.pb-3', 0)->children(1)->class != 'date') {
-			$content .= '<p>' . $description->find('div.text.pb-3', 0)->children(1)->innertext . '</p>';
-		}
-
-		return $content;
-	}
-
-	private function processTwitterImage() {
-		/**
-		 * Extract video ID + type from twitter image
-		 *
-		 * Example (wrapped):
-		 *  https://img.brut.media/thumbnail/
-		 *  the-life-of-rita-moreno-2cce75b5-d448-44d2-a97c-ca50d6470dd4-square.jpg
-		 *  ?ts=1559337892
-		 */
-		$fpath = parse_url($this->videoImage, PHP_URL_PATH);
-		$fname = basename($fpath);
-		$fname = substr($fname, 0, strrpos($fname, '.'));
-		$parts = explode('-', $fname);
-
-		if (end($parts) === 'auto') {
-			$key = array_search('auto', $parts);
-			unset($parts[$key]);
-		}
-
-		$this->videoId = implode('-', array_splice($parts, -6, 5));
-		$this->videoType = end($parts);
-	}
+        return $data;
+    }
 }

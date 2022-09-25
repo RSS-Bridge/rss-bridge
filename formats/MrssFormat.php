@@ -1,4 +1,5 @@
 <?php
+
 /**
  * MrssFormat - RSS 2.0 + Media RSS
  * http://www.rssboard.org/rss-specification
@@ -24,141 +25,150 @@
  * - Since the Media RSS extension has its own namespace, the output is a valid
  *   RSS 2.0 feed that works with feed readers that don't support the extension.
  */
-class MrssFormat extends FormatAbstract {
-	const MIME_TYPE = 'application/rss+xml';
+class MrssFormat extends FormatAbstract
+{
+    const MIME_TYPE = 'application/rss+xml';
 
-	const ALLOWED_IMAGE_EXT = array(
-		'.gif', '.jpg', '.png'
-	);
+    protected const ATOM_NS = 'http://www.w3.org/2005/Atom';
+    protected const MRSS_NS = 'http://search.yahoo.com/mrss/';
 
-	public function stringify(){
-		$urlPrefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
-		$urlHost = (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '';
-		$urlPath = (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : '';
-		$urlRequest = (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
+    const ALLOWED_IMAGE_EXT = [
+        '.gif',
+        '.jpg',
+        '.png',
+    ];
 
-		$feedUrl = $this->xml_encode($urlPrefix . $urlHost . $urlRequest);
+    public function stringify()
+    {
+        $feedUrl = get_current_url();
+        $extraInfos = $this->getExtraInfos();
+        if (empty($extraInfos['uri'])) {
+            $uri = REPOSITORY;
+        } else {
+            $uri = $extraInfos['uri'];
+        }
 
-		$extraInfos = $this->getExtraInfos();
-		$title = $this->xml_encode($extraInfos['name']);
-		$icon = $extraInfos['icon'];
+        $document = new \DomDocument('1.0', $this->getCharset());
+        $document->formatOutput = true;
+        $feed = $document->createElement('rss');
+        $document->appendChild($feed);
+        $feed->setAttribute('version', '2.0');
+        $feed->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:atom', self::ATOM_NS);
+        $feed->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:media', self::MRSS_NS);
 
-		if(!empty($extraInfos['uri'])) {
-			$uri = $this->xml_encode($extraInfos['uri']);
-		} else {
-			$uri = REPOSITORY;
-		}
+        $channel = $document->createElement('channel');
+        $feed->appendChild($channel);
 
-		$items = '';
-		foreach($this->getItems() as $item) {
-			$itemTimestamp = $item->getTimestamp();
-			$itemTitle = $this->xml_encode($item->getTitle());
-			$itemUri = $this->xml_encode($item->getURI());
-			$itemContent = $this->xml_encode($this->sanitizeHtml($item->getContent()));
-			$entryID = $item->getUid();
-			$isPermaLink = 'false';
+        $title = $extraInfos['name'];
+        $channelTitle = $document->createElement('title');
+        $channel->appendChild($channelTitle);
+        $channelTitle->appendChild($document->createTextNode($title));
 
-			if (empty($entryID) && !empty($itemUri)) { // Fallback to provided URI
-				$entryID = $itemUri;
-				$isPermaLink = 'true';
-			}
+        $link = $document->createElement('link');
+        $channel->appendChild($link);
+        $link->appendChild($document->createTextNode($uri));
 
-			if (empty($entryID)) // Fallback to title and content
-				$entryID = hash('sha1', $itemTitle . $itemContent);
+        $description = $document->createElement('description');
+        $channel->appendChild($description);
+        $description->appendChild($document->createTextNode($extraInfos['name']));
 
-			$entryTitle = '';
-			if (!empty($itemTitle))
-				$entryTitle = '<title>' . $itemTitle . '</title>';
+        $icon = $extraInfos['icon'];
+        if (!empty($icon) && in_array(substr($icon, -4), self::ALLOWED_IMAGE_EXT)) {
+            $feedImage = $document->createElement('image');
+            $channel->appendChild($feedImage);
+            $iconUrl = $document->createElement('url');
+            $iconUrl->appendChild($document->createTextNode($icon));
+            $feedImage->appendChild($iconUrl);
+            $iconTitle = $document->createElement('title');
+            $iconTitle->appendChild($document->createTextNode($title));
+            $feedImage->appendChild($iconTitle);
+            $iconLink = $document->createElement('link');
+            $iconLink->appendChild($document->createTextNode($uri));
+            $feedImage->appendChild($iconLink);
+        }
 
-			$entryLink = '';
-			if (!empty($itemUri))
-				$entryLink = '<link>' . $itemUri . '</link>';
+        $linkAlternate = $document->createElementNS(self::ATOM_NS, 'link');
+        $channel->appendChild($linkAlternate);
+        $linkAlternate->setAttribute('rel', 'alternate');
+        $linkAlternate->setAttribute('type', 'text/html');
+        $linkAlternate->setAttribute('href', $uri);
 
-			$entryPublished = '';
-			if (!empty($itemTimestamp)) {
-				$entryPublished = '<pubDate>'
-				. $this->xml_encode(gmdate(DATE_RFC2822, $itemTimestamp))
-				. '</pubDate>';
-			}
+        $linkSelf = $document->createElementNS(self::ATOM_NS, 'link');
+        $channel->appendChild($linkSelf);
+        $linkSelf->setAttribute('rel', 'self');
+        $linkSelf->setAttribute('type', 'application/atom+xml');
+        $linkSelf->setAttribute('href', $feedUrl);
 
-			$entryDescription = '';
-			if (!empty($itemContent))
-				$entryDescription = '<description>' . $itemContent . '</description>';
+        foreach ($this->getItems() as $item) {
+            $itemTimestamp = $item->getTimestamp();
+            $itemTitle = $item->getTitle();
+            $itemUri = $item->getURI();
+            $itemContent = $item->getContent() ? sanitize_html($item->getContent()) : '';
+            $entryID = $item->getUid();
+            $isPermaLink = 'false';
 
-			$entryEnclosures = '';
-			foreach($item->getEnclosures() as $enclosure) {
-				$entryEnclosures .= '<media:content url="'
-				. $this->xml_encode($enclosure)
-				. '" type="' . getMimeType($enclosure) . '"/>'
-				. PHP_EOL;
-			}
+            if (empty($entryID) && !empty($itemUri)) {
+                // Fallback to provided URI
+                $entryID = $itemUri;
+                $isPermaLink = 'true';
+            }
 
-			$entryCategories = '';
-			foreach($item->getCategories() as $category) {
-				$entryCategories .= '<category>'
-				. $category . '</category>'
-				. PHP_EOL;
-			}
+            if (empty($entryID)) {
+                // Fallback to title and content
+                $entryID = hash('sha1', $itemTitle . $itemContent);
+            }
 
-			$items .= <<<EOD
+            $entry = $document->createElement('item');
+            $channel->appendChild($entry);
 
-	<item>
-		{$entryTitle}
-		{$entryLink}
-		<guid isPermaLink="{$isPermaLink}">{$entryID}</guid>
-		{$entryPublished}
-		{$entryDescription}
-		{$entryEnclosures}
-		{$entryCategories}
-	</item>
+            if (!empty($itemTitle)) {
+                $entryTitle = $document->createElement('title');
+                $entry->appendChild($entryTitle);
+                $entryTitle->appendChild($document->createTextNode($itemTitle));
+            }
 
-EOD;
-		}
+            if (!empty($itemUri)) {
+                $entryLink = $document->createElement('link');
+                $entry->appendChild($entryLink);
+                $entryLink->appendChild($document->createTextNode($itemUri));
+            }
 
-		$charset = $this->getCharset();
+            $entryGuid = $document->createElement('guid');
+            $entryGuid->setAttribute('isPermaLink', $isPermaLink);
+            $entry->appendChild($entryGuid);
+            $entryGuid->appendChild($document->createTextNode($entryID));
 
-		$feedImage = '';
-		if (!empty($icon) && in_array(substr($icon, -4), self::ALLOWED_IMAGE_EXT)) {
-			$feedImage .= <<<EOD
-		<image>
-			<url>{$icon}</url>
-			<title>{$title}</title>
-			<link>{$uri}</link>
-		</image>
-EOD;
-		}
+            if (!empty($itemTimestamp)) {
+                $entryPublished = $document->createElement('pubDate');
+                $entry->appendChild($entryPublished);
+                $entryPublished->appendChild($document->createTextNode(gmdate(\DATE_RFC2822, $itemTimestamp)));
+            }
 
-		/* Data are prepared, now let's begin the "MAGIE !!!" */
-		$toReturn = <<<EOD
-<?xml version="1.0" encoding="{$charset}"?>
-<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/" xmlns:atom="http://www.w3.org/2005/Atom">
-	<channel>
-		<title>{$title}</title>
-		<link>{$uri}</link>
-		<description>{$title}</description>
-		{$feedImage}
-		<atom:link rel="alternate" type="text/html" href="{$uri}"/>
-		<atom:link rel="self" href="{$feedUrl}" type="application/atom+xml"/>
-		{$items}
-	</channel>
-</rss>
-EOD;
+            if (!empty($itemContent)) {
+                $entryDescription = $document->createElement('description');
+                $entry->appendChild($entryDescription);
+                $entryDescription->appendChild($document->createTextNode($itemContent));
+            }
 
-		// Remove invalid non-UTF8 characters
-		ini_set('mbstring.substitute_character', 'none');
-		$toReturn = mb_convert_encoding($toReturn, $this->getCharset(), 'UTF-8');
-		return $toReturn;
-	}
+            foreach ($item->getEnclosures() as $enclosure) {
+                $entryEnclosure = $document->createElementNS(self::MRSS_NS, 'content');
+                $entry->appendChild($entryEnclosure);
+                $entryEnclosure->setAttribute('url', $enclosure);
+                $entryEnclosure->setAttribute('type', parse_mime_type($enclosure));
+            }
 
-	public function display(){
-		$this
-			->setContentType(self::MIME_TYPE . '; charset=' . $this->getCharset())
-			->callContentType();
+            foreach ($item->getCategories() as $category) {
+                $entryCategory = $document->createElement('category');
+                $entry->appendChild($entryCategory);
+                $entryCategory->appendChild($document->createTextNode($category));
+            }
+        }
 
-		return parent::display();
-	}
+        $toReturn = $document->saveXML();
 
-	private function xml_encode($text){
-		return htmlspecialchars($text, ENT_XML1);
-	}
+        // Remove invalid non-UTF8 characters
+        ini_set('mbstring.substitute_character', 'none');
+        $toReturn = mb_convert_encoding($toReturn, $this->getCharset(), 'UTF-8');
+        return $toReturn;
+    }
 }

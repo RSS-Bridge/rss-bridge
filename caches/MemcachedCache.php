@@ -1,115 +1,123 @@
 <?php
-class MemcachedCache implements CacheInterface {
 
-	private $scope;
-	private $key;
-	private $conn;
-	private $expiration = 0;
-	private $time = false;
-	private $data = null;
+class MemcachedCache implements CacheInterface
+{
+    private $scope;
+    private $key;
+    private $conn;
+    private $expiration = 0;
+    private $time = false;
+    private $data = null;
 
-	public function __construct() {
-		if (!extension_loaded('memcached')) {
-			returnServerError('"memcached" extension not loaded. Please check "php.ini"');
-		}
+    public function __construct()
+    {
+        if (!extension_loaded('memcached')) {
+            throw new \Exception('"memcached" extension not loaded. Please check "php.ini"');
+        }
 
-		$host = Configuration::getConfig(get_called_class(), 'host');
-		$port = Configuration::getConfig(get_called_class(), 'port');
-		if (empty($host) && empty($port)) {
-			returnServerError('Configuration for ' . get_called_class() . ' missing. Please check your ' . FILE_CONFIG);
-		} else if (empty($host)) {
-			returnServerError('"host" param is not set for ' . get_called_class() . '. Please check your ' . FILE_CONFIG);
-		} else if (empty($port)) {
-			returnServerError('"port" param is not set for ' . get_called_class() . '. Please check your ' . FILE_CONFIG);
-		} else if (!ctype_digit($port)) {
-			returnServerError('"port" param is invalid for ' . get_called_class() . '. Please check your ' . FILE_CONFIG);
-		}
+        $section = 'MemcachedCache';
+        $host = Configuration::getConfig($section, 'host');
+        $port = Configuration::getConfig($section, 'port');
 
-		$port = intval($port);
+        if (empty($host) && empty($port)) {
+            throw new \Exception('Configuration for ' . $section . ' missing.');
+        }
+        if (empty($host)) {
+            throw new \Exception('"host" param is not set for ' . $section);
+        }
+        if (empty($port)) {
+            throw new \Exception('"port" param is not set for ' . $section);
+        }
+        if (!ctype_digit($port)) {
+            throw new \Exception('"port" param is invalid for ' . $section);
+        }
 
-		if ($port < 1 || $port > 65535) {
-			returnServerError('"port" param is invalid for ' . get_called_class() . '. Please check your ' . FILE_CONFIG);
-		}
+        $port = intval($port);
 
-		$conn = new Memcached();
-		$conn->addServer($host, $port) or returnServerError('Could not connect to memcached server');
-		$this->conn = $conn;
-	}
+        if ($port < 1 || $port > 65535) {
+            throw new \Exception('"port" param is invalid for ' . $section);
+        }
 
-	public function loadData(){
-		if ($this->data) return $this->data;
-		$result = $this->conn->get($this->getCacheKey());
-		if ($result === false) {
-			return null;
-		}
+        $conn = new \Memcached();
+        $conn->addServer($host, $port) or returnServerError('Could not connect to memcached server');
+        $this->conn = $conn;
+    }
 
-		$this->time = $result['time'];
-		$this->data = $result['data'];
-		return $result['data'];
-	}
+    public function loadData()
+    {
+        if ($this->data) {
+            return $this->data;
+        }
+        $result = $this->conn->get($this->getCacheKey());
+        if ($result === false) {
+            return null;
+        }
 
-	public function saveData($datas){
-		$time = time();
-		$object_to_save = array(
-			'data' => $datas,
-			'time' => $time,
-		);
-		$result = $this->conn->set($this->getCacheKey(), $object_to_save, $this->expiration);
+        $this->time = $result['time'];
+        $this->data = $result['data'];
+        return $result['data'];
+    }
 
-		if($result === false) {
-			returnServerError('Cannot write the cache to memcached server');
-		}
+    public function saveData($datas)
+    {
+        $time = time();
+        $object_to_save = [
+            'data' => $datas,
+            'time' => $time,
+        ];
+        $result = $this->conn->set($this->getCacheKey(), $object_to_save, $this->expiration);
 
-		$this->time = $time;
+        if ($result === false) {
+            throw new \Exception('Cannot write the cache to memcached server');
+        }
 
-		return $this;
-	}
+        $this->time = $time;
 
-	public function getTime(){
-		if ($this->time === false) {
-			$this->loadData();
-		}
-		return $this->time;
-	}
+        return $this;
+    }
 
-	public function purgeCache($duration){
-		// Note: does not purges cache right now
-		// Just sets cache expiration and leave cache purging for memcached itself
-		$this->expiration = $duration;
-	}
+    public function getTime()
+    {
+        if ($this->time === false) {
+            $this->loadData();
+        }
+        return $this->time;
+    }
 
-	/**
-	* Set scope
-	* @return self
-	*/
-	public function setScope($scope){
-		$this->scope = $scope;
-		return $this;
-	}
+    public function purgeCache($duration)
+    {
+        // Note: does not purges cache right now
+        // Just sets cache expiration and leave cache purging for memcached itself
+        $this->expiration = $duration;
+    }
 
-	/**
-	* Set key
-	* @return self
-	*/
-	public function setKey($key){
-		if (!empty($key) && is_array($key)) {
-			$key = array_map('strtolower', $key);
-		}
-		$key = json_encode($key);
+    public function setScope($scope)
+    {
+        $this->scope = $scope;
+        return $this;
+    }
 
-		if (!is_string($key)) {
-			throw new \Exception('The given key is invalid!');
-		}
+    public function setKey($key)
+    {
+        if (!empty($key) && is_array($key)) {
+            $key = array_map('strtolower', $key);
+        }
+        $key = json_encode($key);
 
-		$this->key = $key;
-		return $this;
-	}
+        if (!is_string($key)) {
+            throw new \Exception('The given key is invalid!');
+        }
 
-	private function getCacheKey(){
-		if(is_null($this->key)) {
-			returnServerError('Call "setKey" first!');
-		}
+        $this->key = $key;
+        return $this;
+    }
 
-		return 'rss_bridge_cache_' . hash('md5', $this->scope . $this->key . 'A');
-	}
+    private function getCacheKey()
+    {
+        if (is_null($this->key)) {
+            throw new \Exception('Call "setKey" first!');
+        }
+
+        return 'rss_bridge_cache_' . hash('md5', $this->scope . $this->key . 'A');
+    }
 }

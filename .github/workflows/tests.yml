@@ -7,28 +7,15 @@ on:
     branches: [ master ]
 
 jobs:
-  phpunit7:
-    runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        php-versions: ['7.1', '7.2', '7.3']
-    steps:
-      - uses: actions/checkout@v2
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-versions }}
-      - run: composer global require phpunit/phpunit ^7
-      - run: phpunit --configuration=phpunit.xml --include-path=lib/
-
   phpunit8:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        php-versions: ['7.3', '7.4', '8.0', '8.1']
+        php-versions: ['7.4', '8.0', '8.1']
     steps:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-      - run: composer global require phpunit/phpunit ^8
-      - run: phpunit --configuration=phpunit.xml --include-path=lib/
+      - run: composer install
+      - run: composer test

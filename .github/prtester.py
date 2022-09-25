@@ -1,9 +1,8 @@
 import requests
+import itertools
 from bs4 import BeautifulSoup
 from datetime import datetime
 import os.path
-
-from soupsieve import select
 
 # This script is specifically written to be used in automation for https://github.com/RSS-Bridge/rss-bridge
 #
@@ -17,6 +16,7 @@ def testBridges(bridges,status):
         if bridge.get('data-ref'): # Some div entries are empty, this ignores those
             bridgeid = bridge.get('id')
             bridgeid = bridgeid.split('-')[1] # this extracts a readable bridge name from the bridge metadata
+            print(bridgeid + "\n")
             bridgestring = '/?action=display&bridge=' + bridgeid + '&format=Html'
             forms = bridge.find_all("form")
             formid = 1
@@ -33,6 +33,9 @@ def testBridges(bridges,status):
                 # if an example or default value is missing for a required attribute, it will throw an error
                 # any non-required fields are not tested!!!
                 for parameter in parameters:
+                    if parameter.get('type') == 'hidden' and parameter.get('name') == 'context':
+                        cleanvalue = parameter.get('value').replace(" ","+")
+                        formstring = formstring + '&' + parameter.get('name') + '=' + cleanvalue
                     if parameter.get('type') == 'number' or parameter.get('type') == 'text':
                         if parameter.has_attr('required'):
                             if parameter.get('placeholder') == '':
@@ -46,15 +49,21 @@ def testBridges(bridges,status):
                     if parameter.get('type') == 'checkbox':
                         if parameter.has_attr('checked'):
                             formstring = formstring + '&' + parameter.get('name') + '=on'
-                for list in lists:
+                for listing in lists:
                     selectionvalue = ''
-                    for selectionentry in list.contents:
-                        if 'selected' in selectionentry.attrs:
+                    listname = listing.get('name')
+                    if 'optgroup' in listing.contents[0].name:
+                        listing = list(itertools.chain.from_iterable(listing))
+                    firstselectionentry = 1
+                    for selectionentry in listing:
+                        if firstselectionentry:
                             selectionvalue = selectionentry.get('value')
-                            break
-                    if selectionvalue == '':
-                        selectionvalue = list.contents[0].get('value')
-                    formstring = formstring + '&' + list.get('name') + '=' + selectionvalue
+                            firstselectionentry = 0
+                        else:
+                            if 'selected' in selectionentry.attrs:
+                                selectionvalue = selectionentry.get('value')
+                                break
+                    formstring = formstring + '&' + listname + '=' + selectionvalue
                 if not errormessages:
                     # if all example/default values are present, form the full request string, run the request, replace the static css
                     # file with the url of em's public instance and then upload it to termpad.com, a pastebin-like-site.
@@ -89,7 +98,11 @@ with open(os.getcwd() + '/comment.txt', 'w+') as file:
 | ---- | ------ |''')
 
 for status in gitstatus: # run this twice, once for the current version, once for the PR version
-    URL = "http://192.168.178.102:3001"
+    if status == "current":
+        port = "3000" # both ports are defined in the corresponding workflow .yml file
+    elif status == "pr":
+        port = "3001"
+    URL = "http://localhost:" + port
     page = requests.get(URL) # Use python requests to grab the rss-bridge main page
     soup = BeautifulSoup(page.content, "html.parser") # use bs4 to turn the page into soup
     bridges = soup.find_all("section") # get a soup-formatted list of all bridges on the rss-bridge page

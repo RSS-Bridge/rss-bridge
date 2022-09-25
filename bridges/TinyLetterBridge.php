@@ -1,54 +1,58 @@
 <?php
-class TinyLetterBridge extends BridgeAbstract {
-	const NAME = 'Tiny Letter';
-	const URI = 'https://tinyletter.com/';
-	const DESCRIPTION = 'Tiny Letter is a mailing list service';
-	const MAINTAINER = 'somini';
-	const PARAMETERS = array(
-		array(
-			'username' => array(
-				'name' => 'User Name',
-				'required' => true,
-				'exampleValue' => 'forwards',
-			)
-		)
-	);
 
-	public function getName() {
-		$username = $this->getInput('username');
-		if (!is_null($username)) {
-			return static::NAME . ' | ' . $username;
-		}
+class TinyLetterBridge extends BridgeAbstract
+{
+    const NAME = 'Tiny Letter';
+    const URI = 'https://tinyletter.com/';
+    const DESCRIPTION = 'Tiny Letter is a mailing list service';
+    const MAINTAINER = 'somini';
+    const PARAMETERS = [
+        [
+            'username' => [
+                'name' => 'User Name',
+                'required' => true,
+                'exampleValue' => 'forwards',
+            ]
+        ]
+    ];
 
-		return parent::getName();
-	}
+    public function getName()
+    {
+        $username = $this->getInput('username');
+        if (!is_null($username)) {
+            return static::NAME . ' | ' . $username;
+        }
 
-	public function getURI() {
-		$username = $this->getInput('username');
-		if (!is_null($username)) {
-			return static::URI . urlencode($username);
-		}
+        return parent::getName();
+    }
 
-		return parent::getURI();
-	}
+    public function getURI()
+    {
+        $username = $this->getInput('username');
+        if (!is_null($username)) {
+            return static::URI . urlencode($username);
+        }
 
-	public function collectData() {
-		$archives = self::getURI() . '/archive';
-		$html = getSimpleHTMLDOMCached($archives);
+        return parent::getURI();
+    }
 
-		foreach($html->find('.message-list li') as $element) {
-			$item = array();
+    public function collectData()
+    {
+        $archives = $this->getURI() . '/archive';
+        $html = getSimpleHTMLDOMCached($archives);
 
-			$snippet = $element->find('p.message-snippet', 0);
-			$link = $element->find('.message-link', 0);
+        foreach ($html->find('.message-list li') as $element) {
+            $item = [];
 
-			$item['title'] = $link->plaintext;
-			$item['content'] = $snippet->innertext;
-			$item['uri'] = $link->href;
-			$item['timestamp'] = strtotime($element->find('.message-date', 0)->plaintext);
+            $snippet = $element->find('p.message-snippet', 0);
+            $link = $element->find('.message-link', 0);
 
-			$this->items[] = $item;
-		}
+            $item['title'] = $link->plaintext;
+            $item['content'] = $snippet->innertext;
+            $item['uri'] = $link->href;
+            $item['timestamp'] = strtotime($element->find('.message-date', 0)->plaintext);
 
-	}
+            $this->items[] = $item;
+        }
+    }
 }

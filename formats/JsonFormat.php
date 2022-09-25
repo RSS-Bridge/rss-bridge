@@ -1,4 +1,5 @@
 <?php
+
 /**
  * JsonFormat - JSON Feed Version 1
  * https://jsonfeed.org/version/1
@@ -7,130 +8,116 @@
  * https://validator.jsonfeed.org
  * https://github.com/vigetlabs/json-feed-validator
  */
-class JsonFormat extends FormatAbstract {
-	const MIME_TYPE = 'application/json';
+class JsonFormat extends FormatAbstract
+{
+    const MIME_TYPE = 'application/json';
 
-	const VENDOR_EXCLUDES = array(
-		'author',
-		'title',
-		'uri',
-		'timestamp',
-		'content',
-		'enclosures',
-		'categories',
-		'uid',
-	);
+    const VENDOR_EXCLUDES = [
+        'author',
+        'title',
+        'uri',
+        'timestamp',
+        'content',
+        'enclosures',
+        'categories',
+        'uid',
+    ];
 
-	public function stringify(){
-		$urlPrefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
-		$urlHost = (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '';
-		$urlPath = (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : '';
-		$urlRequest = (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
+    public function stringify()
+    {
+        $host = $_SERVER['HTTP_HOST'] ?? '';
+        $extraInfos = $this->getExtraInfos();
+        $data = [
+            'version' => 'https://jsonfeed.org/version/1',
+            'title' => empty($extraInfos['name']) ? $host : $extraInfos['name'],
+            'home_page_url' => empty($extraInfos['uri']) ? REPOSITORY : $extraInfos['uri'],
+            'feed_url' => get_current_url(),
+        ];
 
-		$extraInfos = $this->getExtraInfos();
+        if (!empty($extraInfos['icon'])) {
+            $data['icon'] = $extraInfos['icon'];
+            $data['favicon'] = $extraInfos['icon'];
+        }
 
-		$data = array(
-			'version' => 'https://jsonfeed.org/version/1',
-			'title' => (!empty($extraInfos['name'])) ? $extraInfos['name'] : $urlHost,
-			'home_page_url' => (!empty($extraInfos['uri'])) ? $extraInfos['uri'] : REPOSITORY,
-			'feed_url' => $urlPrefix . $urlHost . $urlRequest
-		);
+        $items = [];
+        foreach ($this->getItems() as $item) {
+            $entry = [];
 
-		if (!empty($extraInfos['icon'])) {
-			$data['icon'] = $extraInfos['icon'];
-			$data['favicon'] = $extraInfos['icon'];
-		}
+            $entryAuthor = $item->getAuthor();
+            $entryTitle = $item->getTitle();
+            $entryUri = $item->getURI();
+            $entryTimestamp = $item->getTimestamp();
+            $entryContent = $item->getContent() ? sanitize_html($item->getContent()) : '';
+            $entryEnclosures = $item->getEnclosures();
+            $entryCategories = $item->getCategories();
 
-		$items = array();
-		foreach ($this->getItems() as $item) {
-			$entry = array();
+            $vendorFields = $item->toArray();
+            foreach (self::VENDOR_EXCLUDES as $key) {
+                unset($vendorFields[$key]);
+            }
 
-			$entryAuthor = $item->getAuthor();
-			$entryTitle = $item->getTitle();
-			$entryUri = $item->getURI();
-			$entryTimestamp = $item->getTimestamp();
-			$entryContent = $this->sanitizeHtml($item->getContent());
-			$entryEnclosures = $item->getEnclosures();
-			$entryCategories = $item->getCategories();
+            $entry['id'] = $item->getUid();
 
-			$vendorFields = $item->toArray();
-			foreach (self::VENDOR_EXCLUDES as $key) {
-				unset($vendorFields[$key]);
-			}
+            if (empty($entry['id'])) {
+                $entry['id'] = $entryUri;
+            }
 
-			$entry['id'] = $item->getUid();
+            if (!empty($entryTitle)) {
+                $entry['title'] = $entryTitle;
+            }
+            if (!empty($entryAuthor)) {
+                $entry['author'] = [
+                    'name' => $entryAuthor
+                ];
+            }
+            if (!empty($entryTimestamp)) {
+                $entry['date_modified'] = gmdate(\DATE_ATOM, $entryTimestamp);
+            }
+            if (!empty($entryUri)) {
+                $entry['url'] = $entryUri;
+            }
+            if (!empty($entryContent)) {
+                if (is_html($entryContent)) {
+                    $entry['content_html'] = $entryContent;
+                } else {
+                    $entry['content_text'] = $entryContent;
+                }
+            }
+            if (!empty($entryEnclosures)) {
+                $entry['attachments'] = [];
+                foreach ($entryEnclosures as $enclosure) {
+                    $entry['attachments'][] = [
+                        'url' => $enclosure,
+                        'mime_type' => parse_mime_type($enclosure)
+                    ];
+                }
+            }
+            if (!empty($entryCategories)) {
+                $entry['tags'] = [];
+                foreach ($entryCategories as $category) {
+                    $entry['tags'][] = $category;
+                }
+            }
+            if (!empty($vendorFields)) {
+                $entry['_rssbridge'] = $vendorFields;
+            }
 
-			if (empty($entry['id'])) {
-				$entry['id'] = $entryUri;
-			}
+            if (empty($entry['id'])) {
+                $entry['id'] = hash('sha1', $entryTitle . $entryContent);
+            }
 
-			if (!empty($entryTitle)) {
-				$entry['title'] = $entryTitle;
-			}
-			if (!empty($entryAuthor)) {
-				$entry['author'] = array(
-					'name' => $entryAuthor
-				);
-			}
-			if (!empty($entryTimestamp)) {
-				$entry['date_modified'] = gmdate(DATE_ATOM, $entryTimestamp);
-			}
-			if (!empty($entryUri)) {
-				$entry['url'] = $entryUri;
-			}
-			if (!empty($entryContent)) {
-				if ($this->isHTML($entryContent)) {
-					$entry['content_html'] = $entryContent;
-				} else {
-					$entry['content_text'] = $entryContent;
-				}
-			}
-			if (!empty($entryEnclosures)) {
-				$entry['attachments'] = array();
-				foreach ($entryEnclosures as $enclosure) {
-					$entry['attachments'][] = array(
-						'url' => $enclosure,
-						'mime_type' => getMimeType($enclosure)
-					);
-				}
-			}
-			if (!empty($entryCategories)) {
-				$entry['tags'] = array();
-				foreach ($entryCategories as $category) {
-					$entry['tags'][] = $category;
-				}
-			}
-			if (!empty($vendorFields)) {
-				$entry['_rssbridge'] = $vendorFields;
-			}
+            $items[] = $entry;
+        }
+        $data['items'] = $items;
 
-			if (empty($entry['id']))
-				$entry['id'] = hash('sha1', $entryTitle . $entryContent);
+        /**
+         * The intention here is to discard non-utf8 byte sequences.
+         * But the JSON_PARTIAL_OUTPUT_ON_ERROR also discards lots of other errors.
+         * So consider this a hack.
+         * Switch to JSON_INVALID_UTF8_IGNORE when PHP 7.2 is the latest platform requirement.
+         */
+        $json = json_encode($data, \JSON_PRETTY_PRINT | \JSON_PARTIAL_OUTPUT_ON_ERROR);
 
-			$items[] = $entry;
-		}
-		$data['items'] = $items;
-
-		/**
-		 * The intention here is to discard non-utf8 byte sequences.
-		 * But the JSON_PARTIAL_OUTPUT_ON_ERROR also discards lots of other errors.
-		 * So consider this a hack.
-		 * Switch to JSON_INVALID_UTF8_IGNORE when PHP 7.2 is the latest platform requirement.
-		 */
-		$json = json_encode($data, JSON_PRETTY_PRINT | JSON_PARTIAL_OUTPUT_ON_ERROR);
-
-		return $json;
-	}
-
-	public function display(){
-		$this
-			->setContentType(self::MIME_TYPE . '; charset=' . $this->getCharset())
-			->callContentType();
-
-		return parent::display();
-	}
-
-	private function isHTML($text) {
-		return (strlen(strip_tags($text)) != strlen($text));
-	}
+        return $json;
+    }
 }

@@ -1,6 +1,7 @@
 <phpunit
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.5/phpunit.xsd"
+	bootstrap="./lib/bootstrap.php"
 	colors="true"
 	processIsolation="false"
 	timeoutForSmallTests="1"
@@ -8,14 +9,8 @@
 	timeoutForLargeTests="6" >
 
 	<testsuites>
-		<testsuite name="implementations">
-			<directory suffix="ImplementationTest.php">tests</directory>
-		</testsuite>
-		<testsuite name="formats">
-			<directory suffix="FormatTest.php">tests</directory>
-		</testsuite>
-		<testsuite name="actions">
-			<directory suffix="ActionTest.php">tests</directory>
+		<testsuite name="rss-bridge">
+			<directory>./tests</directory>
 		</testsuite>
 	</testsuites>
 

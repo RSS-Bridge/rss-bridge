@@ -7,8 +7,8 @@ it is suggested to deploy a private RSS-Bridge instance that uses a working Inst
 Configuration
 -------------
 
-1. Retreiving session id.
-The following steps describe how to get the session id using a Chromium-based browser.
+1. Retreiving `session id` and `ds_user_id`.
+The following steps describe how to get the `session id` and `ds user id` using a Chromium-based browser.
 
 - Create an Instagram account, that you will use for your RSS-Bridge instance.
 It is NOT recommended to use your existing account that is used for common interaction with Instagram services.
@@ -29,7 +29,7 @@ It is NOT recommended to use your existing account that is used for common inter
 
 - In the new frame open the "Headers" tab and scroll to "Request Headers"
 
-- There will be a cookie param will lots of `<key>=<value>;` text. You need the value of the "sessionid" key. Copy it.
+- There will be a cookie param will lots of `<key>=<value>;` text. You need the value of the "sessionid" and "ds_user_id" keys. Copy them.
 
 2. Configuring RSS-Bridge
 
@@ -38,6 +38,7 @@ It is NOT recommended to use your existing account that is used for common inter
 ```
 [InstagramBridge]
 session_id = %sessionid from step 1%
+ds_user_id = %ds_user_id from step 1%
 cache_timeout = %cache timeout in seconds%
 ```
 

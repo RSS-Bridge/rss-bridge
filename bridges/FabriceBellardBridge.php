@@ -1,35 +1,38 @@
 <?php
-class FabriceBellardBridge extends BridgeAbstract {
-	const NAME = 'Fabrice Bellard';
-	const URI = 'https://bellard.org/';
-	const DESCRIPTION = "Fabrice Bellard's Home Page";
-	const MAINTAINER = 'somini';
 
-	public function collectData() {
-		$html = getSimpleHTMLDOM(self::URI);
+class FabriceBellardBridge extends BridgeAbstract
+{
+    const NAME = 'Fabrice Bellard';
+    const URI = 'https://bellard.org/';
+    const DESCRIPTION = "Fabrice Bellard's Home Page";
+    const MAINTAINER = 'somini';
 
-		foreach ($html->find('p') as $obj) {
-			$item = array();
+    public function collectData()
+    {
+        $html = getSimpleHTMLDOM(self::URI);
 
-			$html = defaultLinkTo($html, $this->getURI());
+        foreach ($html->find('p') as $obj) {
+            $item = [];
 
-			$links = $obj->find('a');
-			if (count($links) > 0) {
-				$link_uri = $links[0]->href;
-			} else {
-				$link_uri = $this->getURI();
-			}
+            $html = defaultLinkTo($html, $this->getURI());
 
-			/* try to make sure the link is valid */
-			if ($link_uri[-1] !== '/' && strpos($link_uri, '/') === false) {
-				$link_uri = $link_uri . '/';
-			}
+            $links = $obj->find('a');
+            if (count($links) > 0) {
+                $link_uri = $links[0]->href;
+            } else {
+                $link_uri = $this->getURI();
+            }
 
-			$item['title'] = strip_tags($obj->innertext);
-			$item['uri'] = $link_uri;
-			$item['content'] = $obj->innertext;
+            /* try to make sure the link is valid */
+            if ($link_uri[-1] !== '/' && strpos($link_uri, '/') === false) {
+                $link_uri = $link_uri . '/';
+            }
 
-			$this->items[] = $item;
-		}
-	}
+            $item['title'] = strip_tags($obj->innertext);
+            $item['uri'] = $link_uri;
+            $item['content'] = $obj->innertext;
+
+            $this->items[] = $item;
+        }
+    }
 }
