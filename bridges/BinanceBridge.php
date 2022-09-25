@@ -28,9 +28,9 @@ class BinanceBridge extends BridgeAbstract
             $category = $element->category->name;
 
             $suburl = strtolower($category);
-            $suburl = str_replace(" ", "_", $suburl);
+            $suburl = str_replace(' ', '_', $suburl);
 
-            $uri = self::URI . "/" . $suburl . "/" . $element->idStr;
+            $uri = self::URI . '/' . $suburl . '/' . $element->idStr;
 
             $contentHTML = getSimpleHTMLDOMCached($uri);
             $contentAppData = $contentHTML->find('script[id="__APP_DATA"]');
