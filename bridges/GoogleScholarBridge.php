@@ -33,8 +33,6 @@ class GoogleScholarBridge extends BridgeAbstract
         foreach ($publications as $publication) {
             $articleUrl = self::URI . htmlspecialchars_decode($publication->find('a[class="gsc_a_at"]', 0)->href);
             $articleTitle = $publication->find('a[class="gsc_a_at"]', 0)->plaintext;
-            $articleAuthor = $publication->find('div[class="gs_gray"]', 0)->plaintext;
-            $articlePublisher = $publication->find('div[class="gs_gray"]', 1)->plaintext;
 
             # fetch the article itself to extract rest of content
             $contentArticle = getSimpleHTMLDOMCached($articleUrl);
@@ -42,6 +40,7 @@ class GoogleScholarBridge extends BridgeAbstract
 
             $articleDate = '';
             $articleAbstract = '';
+            $articleAuthor = '';
             $content = '';
 
             foreach ($articleEntries as $entry) {
@@ -52,6 +51,8 @@ class GoogleScholarBridge extends BridgeAbstract
                     $articleDate = $value;
                 } else if ($field == 'Description') {
                     $articleAbstract = $value;
+                } else if ($field == 'Authors') {
+                    $articleAuthor = $value;
                 } else if ($field == 'Scholar articles' || $field == 'Total citations') {
                     continue;
                 } else {
