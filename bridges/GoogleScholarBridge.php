@@ -29,7 +29,7 @@ class GoogleScholarBridge extends BridgeAbstract
             or returnServerError('Could not fetch Google Scholar data.');
 
         $publications = $html->find('tr[class="gsc_a_tr"]');
-        
+
         foreach ($publications as $publication) {
             $articleUrl = self::URI . htmlspecialchars_decode($publication->find('a[class="gsc_a_at"]', 0)->href);
             $articleTitle = $publication->find('a[class="gsc_a_at"]', 0)->plaintext;
@@ -44,17 +44,19 @@ class GoogleScholarBridge extends BridgeAbstract
             $articleAbstract = '';
             $content = '';
 
-            foreach ($articleEntries as $entry)
-            {
+            foreach ($articleEntries as $entry) {
                 $field = $entry->find('div[class="gsc_oci_field"]', 0)->plaintext;
                 $value = $entry->find('div[class="gsc_oci_value"]', 0)->plaintext;
                 
-                if ($field == 'Publication date')
+                if ($field == 'Publication date') {
                     $articleDate = $value;
-                else if ($field == 'Description')
+                }
+                else if ($field == 'Description') {
                     $articleAbstract = $value;
-                else if ($field == 'Scholar articles' || $field == 'Total citations')
+                }
+                else if ($field == 'Scholar articles' || $field == 'Total citations') {
                     continue;
+                }
                 else {
                     $content = $content . $field . ': ' . $value . '<br><br>';
                 }
@@ -63,7 +65,7 @@ class GoogleScholarBridge extends BridgeAbstract
             $content = $content . $articleAbstract;
 
             $item = [];
-            
+
             $item['title'] = $articleTitle;
             $item['uri'] = $articleUrl;
             $item['timestamp'] = strtotime($articleDate);
