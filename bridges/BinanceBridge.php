@@ -20,13 +20,22 @@ class BinanceBridge extends BridgeAbstract
 
         $appData = $html->find('script[id="__APP_DATA"]');
         $appDataJson = json_decode($appData[0]->innertext);
+        $allposts = $appDataJson->routeProps->f3ac->blogListRes->list;
 
-        foreach ($appDataJson->pageData->redux->blogList->blogList as $element) {
-            $date = $element->postTime;
-            $abstract = $element->brief;
-            $uri = self::URI . '/' . $element->lang . '/blog/' . $element->idStr;
+        foreach ($allposts as $element) {
+            $date = $element->releasedTime;
             $title = $element->title;
-            $content = $element->content;
+            $category = $element->category->name;
+
+            $suburl = strtolower($category);
+            $suburl = str_replace(' ', '_', $suburl);
+
+            $uri = self::URI . '/' . $suburl . '/' . $element->idStr;
+
+            $contentHTML = getSimpleHTMLDOMCached($uri);
+            $contentAppData = $contentHTML->find('script[id="__APP_DATA"]');
+            $contentAppDataJson = json_decode($contentAppData[0]->innertext);
+            $content = $contentAppDataJson->routeProps->a106->blogDetail->content;
 
             $item = [];
             $item['title'] = $title;
@@ -34,6 +43,7 @@ class BinanceBridge extends BridgeAbstract
             $item['timestamp'] = substr($date, 0, -3);
             $item['author'] = 'Binance';
             $item['content'] = $content;
+            $item['categories'] = $category;
 
             $this->items[] = $item;
 
