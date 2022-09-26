@@ -154,27 +154,17 @@ class FeedItem
                 Debug::log('The item provided as URI is unknown!');
             }
         }
-
         if (!is_string($uri)) {
-            Debug::log('URI must be a string!');
-        } elseif (
-            !filter_var(
-                $uri,
-                FILTER_VALIDATE_URL,
-                FILTER_FLAG_PATH_REQUIRED
-            )
-        ) {
-            Debug::log(sprintf('Not a valid url: "%s"', $uri));
-        } else {
-            $scheme = parse_url($uri, PHP_URL_SCHEME);
-
-            if ($scheme !== 'http' && $scheme !== 'https') {
-                Debug::log('URI scheme must be "http" or "https"!');
-            } else {
-                $this->uri = trim($uri);
-            }
+            Debug::log(sprintf('Expected $uri to be string but got %s', gettype($uri)));
+            return $this;
         }
-
+        $uri = trim($uri);
+        // Intentionally doing a weak url validation here because FILTER_VALIDATE_URL is too strict
+        if (!preg_match('#^https?://#i', $uri)) {
+            Debug::log(sprintf('Not a valid url: "%s"', $uri));
+            return $this;
+        }
+        $this->uri = $uri;
         return $this;
     }
 
