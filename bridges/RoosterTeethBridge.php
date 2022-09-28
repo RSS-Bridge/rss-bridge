@@ -19,12 +19,17 @@ class RoosterTeethBridge extends BridgeAbstract
                     'Achievement Hunter' => 'achievement-hunter',
                     'Cow Chop' => 'cow-chop',
                     'Death Battle' => 'death-battle',
+                    'Friends of RT' => 'friends-of-rt',
                     'Funhaus' => 'funhaus',
                     'Inside Gaming' => 'inside-gaming',
                     'JT Music' => 'jt-music',
                     'Kinda Funny' => 'kinda-funny',
+                    'Red vs. Blue Universe' => 'red-vs-blue-universe',
                     'Rooster Teeth' => 'rooster-teeth',
-                    'Sugar Pine 7' => 'sugar-pine-7'
+                    'RWBY Universe' => 'rwby-universe',
+                    'Squad Team Force' => 'squad-team-force',
+                    'Sugar Pine 7' => 'sugar-pine-7',
+                    'The Yogscast' => 'the-yogscast',
                 ]
             ],
             'sort' => [
