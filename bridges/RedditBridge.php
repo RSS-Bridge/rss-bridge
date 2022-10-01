@@ -144,7 +144,7 @@ class RedditBridge extends BridgeAbstract
 
         if (!($this->getInput('f') === '') && $this->queriedContext == 'single') {
             $flair = $this->getInput('f');
-            $flair = str_replace([',', ' '], '%20', $flair);
+            $flair = str_replace(' ', '%20', $flair);
             $flair = 'flair%3A%22' . $flair . '%22%20';
         } else {
             $flair = '';
