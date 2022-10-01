@@ -13,11 +13,13 @@ class EliteDangerousGalnetBridge extends BridgeAbstract
                 'name' => 'Language',
                 'type' => 'list',
                 'values' => [
-                    'English' => 'en',
-                    'French' => 'fr',
-                    'German' => 'de'
+                    'English' => 'en-US',
+                    'French' => 'fr-FR',
+                    'German' => 'de-DE',
+                    'Russian' => 'ru-RU',
+                    'Spanish' => 'es-ES',
                 ],
-                'defaultValue' => 'en'
+                'defaultValue' => 'en-US'
             ]
         ]
     ];
@@ -25,26 +27,30 @@ class EliteDangerousGalnetBridge extends BridgeAbstract
     public function collectData()
     {
         $language = $this->getInput('language');
-        $url = 'https://community.elitedangerous.com/';
-        $url = $url . $language . '/galnet';
-        $html = getSimpleHTMLDOM($url);
+        $url = 'https://cms.zaonce.net/';
+        $url = $url . $language . '/jsonapi/node/galnet_article';
+        $url = $url . '?&sort=-published_at&page[offset]=0&page[limit]=12';
 
-        foreach ($html->find('div.article') as $element) {
+        $html = getSimpleHTMLDOM($url);
+        $json = json_decode($html);
+
+        foreach ($json->data as $element) {
             $item = [];
 
-            $uri = $element->find('h3 a', 0)->href;
-            $uri = 'https://community.elitedangerous.com/' . $language . $uri;
+            $uri = 'https://www.elitedangerous.com/news/galnet/';
+            $uri = $uri . $element->attributes->field_slug;
             $item['uri'] = $uri;
 
-            $item['title'] = $element->find('h3 a', 0)->plaintext;
+            $item['title'] = $element->attributes->title;
 
-            $content = $element->find('p', -1)->innertext;
-            $item['content'] = $content;
+            $picture = 'https://hosting.zaonce.net/elite-dangerous/galnet/';
+            $picture = $picture . $element->attributes->field_galnet_image . '.png';
+            $picture = '<img src="' . $picture . '"/>';
 
-            $date = $element->find('p.small', 0)->innertext;
-            $article_year = substr($date, -4) - 1286; //Convert E:D date to actual date
-            $date = substr($date, 0, -4) . $article_year;
-            $item['timestamp'] = strtotime($date);
+            $content = $element->attributes->body->processed;
+            $item['content'] = $picture . $content;
+
+            $item['timestamp'] = strtotime($element->attributes->published_at);
 
             $this->items[] = $item;
         }
