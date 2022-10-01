@@ -99,7 +99,7 @@ EOD;
             if (
                 !$node || (
                     $node->nodeType !== XML_TEXT_NODE &&
-                    $node->nodeName === 'h2' || (
+                    $node->nodeName === 'h3' || (
                         !is_null($node->attributes) &&
                         !is_null($class = $node->attributes->getNamedItem('class')) &&
                         in_array($class->nodeValue, ['Cat1HL','Cat2HL'])
