@@ -49,13 +49,21 @@ class GithubSearchBridge extends BridgeAbstract
             $tags = $element->find('a.topic-tag');
             $tags_array = [];
             if (count($tags) != 0) {
-                $content = $content . 'Tags : ';
+                $content = $content . 'Tags: ';
                 foreach ($tags as $tag_element) {
                     $tag_link = 'https://github.com' . $tag_element->href;
                     $tag_name = trim($tag_element->innertext);
                     $content = $content . '<a href="' . $tag_link . '">' . $tag_name . '</a> ';
                     array_push($tags_array, $tag_element->innertext);
                 }
+            }
+
+            // Programming language
+            if (count($element->find('span[itemprop=programmingLanguage]')) != 0) {
+                $language = $element->find('span[itemprop=programmingLanguage]', 0)->innertext;
+
+                $content = $content . '<br />';
+                $content = $content . 'Language: ' . $language;
             }
 
             $item['categories'] = $tags_array;
