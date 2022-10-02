@@ -1,4 +1,5 @@
 <?php
+
 class EconomistAllBridge extends FeedExpander
 {
     const MAINTAINER = 'sqrtminusone';
@@ -8,83 +9,82 @@ class EconomistAllBridge extends FeedExpander
     const CACHE_TIMEOUT = 60 * 60 * 3; // 3 hours
     const DESCRIPTION = 'Aggegate all feeds from the Economist';
 
-    const PARAMETERS = array(
-        '' => array(
-            'limit' => array(
+    const PARAMETERS = [
+        '' => [
+            'limit' => [
                 'name' => 'Limit number of items per feed',
                 'required' => true,
                 'type' => 'number',
                 'defaultValue' => 10,
                 'title' => 'Maximum number of returned feed items. Maximum 30, default 10'
-            ),
-            'addToTitle' => array(
+            ],
+            'addToTitle' => [
                 'name' => 'Add categories to title',
-                'required' => true,
                 'type' => 'checkbox',
                 'defaultValue' => 'checked'
-            ),
-            'addContents' => array(
+            ],
+            'addContents' => [
                 'name' => 'Also fetch contents for articles',
                 'type' => 'checkbox',
                 'defaultValue' => 'checked'
-            ),
-            'filterDays' => array(
+            ],
+            'filterDays' => [
                 'name' => 'Maximum age of the article (days)',
                 'type' => 'number',
                 'defaultValue' => 14,
                 'title' => 'Do not show articles older than this value'
-            ),
-            'onlyAudio' => array(
+            ],
+            'onlyAudio' => [
                 'name' => 'Only fetch articles with an audio version',
                 'type' => 'checkbox',
-            )
-        )
-    );
+            ]
+        ]
+    ];
 
-    const FEEDS = array(
+    const FEEDS = [
         // Normal feeds
         'Latest' => 'latest',
-		'The world this week' => 'the-world-this-week',
-		'Letters' => 'letters',
-		'Leaders' => 'leaders',
-		'Briefings' => 'briefing',
-		'Special reports' => 'special-report',
-		'Britain' => 'britain',
-		'Europe' => 'europe',
-		'United States' => 'united-states',
-		'The Americas' => 'the-americas',
-		'Middle East and Africa' => 'middle-east-and-africa',
-		'Asia' => 'asia',
-		'China' => 'china',
-		'International' => 'international',
-		'Business' => 'business',
-		'Finance and economics' => 'finance-and-economics',
-		'Science and technology' => 'science-and-technology',
-		'Books and arts' => 'books-and-arts',
-		'Obituaries' => 'obituary',
-		'Graphic detail' => 'graphic-detail',
-		'Indicators' => 'economic-and-financial-indicators',
-		'The Economist Reads' => 'the-economist-reads',
-		// Blogs
-		'Bagehots notebook' => 'bagehots-notebook',
-		'Bartleby' => 'bartleby',
-		'Buttonwoods notebook' => 'buttonwoods-notebook',
-		'Charlemagnes notebook' => 'charlemagnes-notebook',
-		'Democracy in America' => 'democracy-in-america',
-		'Erasmus' => 'erasmus',
-		'Free exchange' => 'free-exchange',
-		'Game theory' => 'game-theory',
-		'Gulliver' => 'gulliver',
-		'Kaffeeklatsch' => 'kaffeeklatsch',
-		'Prospero' => 'prospero',
-		'The Economist Explains' => 'the-economist-explains'
-    );
+        'The world this week' => 'the-world-this-week',
+        'Letters' => 'letters',
+        'Leaders' => 'leaders',
+        'Briefings' => 'briefing',
+        'Special reports' => 'special-report',
+        'Britain' => 'britain',
+        'Europe' => 'europe',
+        'United States' => 'united-states',
+        'The Americas' => 'the-americas',
+        'Middle East and Africa' => 'middle-east-and-africa',
+        'Asia' => 'asia',
+        'China' => 'china',
+        'International' => 'international',
+        'Business' => 'business',
+        'Finance and economics' => 'finance-and-economics',
+        'Science and technology' => 'science-and-technology',
+        'Books and arts' => 'books-and-arts',
+        'Obituaries' => 'obituary',
+        'Graphic detail' => 'graphic-detail',
+        'Indicators' => 'economic-and-financial-indicators',
+        'The Economist Reads' => 'the-economist-reads',
+        // Blogs
+        'Bagehots notebook' => 'bagehots-notebook',
+        'Bartleby' => 'bartleby',
+        'Buttonwoods notebook' => 'buttonwoods-notebook',
+        'Charlemagnes notebook' => 'charlemagnes-notebook',
+        'Democracy in America' => 'democracy-in-america',
+        'Erasmus' => 'erasmus',
+        'Free exchange' => 'free-exchange',
+        'Game theory' => 'game-theory',
+        'Gulliver' => 'gulliver',
+        'Kaffeeklatsch' => 'kaffeeklatsch',
+        'Prospero' => 'prospero',
+        'The Economist Explains' => 'the-economist-explains'
+    ];
 
-    const SECTION_PRIORITIES = array(
+    const SECTION_PRIORITIES = [
         '[The world this week] Politics' => 1,
         '[The world this week] Business' => 2,
         '[The world this week] KAL’s cartoon' => 3
-    );
+    ];
 
     private function getContents($uri)
     {
@@ -118,7 +118,7 @@ class EconomistAllBridge extends FeedExpander
             }
         }
 
-        // Remove "capitalization" with <small> tags
+        // Remove 'capitalization' with <small> tags
         foreach ($elem->find('small') as $small) {
             $small->outertext = $small->innertext;
         }
@@ -132,12 +132,12 @@ class EconomistAllBridge extends FeedExpander
         }
 
         // No idea how this works on the original site
-		foreach($elem->find('img') as $img) {
-			$img->removeAttribute('width');
-			$img->removeAttribute('height');
-		}
+        foreach ($elem->find('img') as $img) {
+            $img->removeAttribute('width');
+            $img->removeAttribute('height');
+        }
 
-        // Some hacks for "interactive" sections to make them a bit
+        // Some hacks for 'interactive' sections to make them a bit
         // more readable. Here's one example:
         // https://www.economist.com/interactive/briefing/2022/09/24/war-in-ukraine-has-reshaped-worlds-fuel-markets
         $svelte = $elem->find('svelte-scroller-outer', 0);
@@ -179,7 +179,7 @@ class EconomistAllBridge extends FeedExpander
             $vertical->parent->removeChild($vertical);
         }
 
-        // Section with "Save", "Share" and "Give buttons"
+        // Section with 'Save', 'Share' and 'Give buttons'
         foreach ($elem->find('div[data-test-id=sharing-modal]') as $sharing) {
             $sharing->parent->removeChild($sharing);
         }
@@ -206,15 +206,15 @@ class EconomistAllBridge extends FeedExpander
         $res = str_replace('<section', '<div', $res);
         $res = str_replace('</section', '</div', $res);
         $content = '<div>' . $res . '</div>';
-        return array($content, $audio_url);
+        return [$content, $audio_url];
     }
 
 
     public function collectData()
     {
         set_time_limit(600);
-        $allItems = array();
-        $tags = array();
+        $allItems = [];
+        $tags = [];
         // limit the returned articles to 30 at max
         if ((int)$this->getInput('limit') <= 30) {
             $limit = (int)$this->getInput('limit');
@@ -228,17 +228,17 @@ class EconomistAllBridge extends FeedExpander
             }
             $this->collectExpandableDatas('https://www.economist.com/' . $url . '/rss.xml', $limit);
             foreach ($this->items as $item) {
-                $allItems[$item["uri"]] = $item;
-                if (array_key_exists($item["uri"], $tags)) {
-                    array_push($tags[$item["uri"]], $tag);
+                $allItems[$item['uri']] = $item;
+                if (array_key_exists($item['uri'], $tags)) {
+                    array_push($tags[$item['uri']], $tag);
                 } else {
-                    $tags[$item["uri"]] = array($tag);
+                    $tags[$item['uri']] = [$tag];
                 }
             }
-            $this->items = array();
+            $this->items = [];
         }
 
-        $feedIndices = array();
+        $feedIndices = [];
         $feeds = array_keys(self::FEEDS);
         for ($i = 0; $i < count($feeds); $i++) {
             $feedIndices[$feeds[$i]] = $i;
@@ -253,19 +253,19 @@ class EconomistAllBridge extends FeedExpander
         }
 
         foreach ($allItems as $uri => $item) {
-            $item["categories"] = $tags[$uri];
+            $item['categories'] = $tags[$uri];
             if ($this->getInput('addToTitle') == 1) {
-                $item["title"] = "[" . join(", ", $tags[$uri]) . "] " . $item["title"];
+                $item['title'] = '[' . join(', ', $tags[$uri]) . '] ' . $item['title'];
             }
-            $item["feedIndex"] = $feedIndices[$tags[$uri][0]];
+            $item['feedIndex'] = $feedIndices[$tags[$uri][0]];
             if ($item['timestamp'] < $max_age) {
                 continue;
             }
             if ($this->getInput('addContents') == 1) {
                 list($content, $audio_url) = $this->getContents($uri);
-                $item["content"] = $content;
+                $item['content'] = $content;
                 if ($audio_url != null) {
-                    $item["enclosures"] = array($audio_url);
+                    $item['enclosures'] = [$audio_url];
                 } else if ($this->getInput('onlyAudio') == 1) {
                     continue;
                 }
