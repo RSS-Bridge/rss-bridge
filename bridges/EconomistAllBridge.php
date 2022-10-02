@@ -80,6 +80,12 @@ class EconomistAllBridge extends FeedExpander
 		'The Economist Explains' => 'the-economist-explains'
     );
 
+    const SECTION_PRIORITIES = array(
+        '[The world this week] Politics' => 1,
+        '[The world this week] Business' => 2,
+        '[The world this week] KAL’s cartoon' => 3
+    );
+
     private function getContents($uri)
     {
         $html = getSimpleHTMLDOMCached($uri);
@@ -217,6 +223,9 @@ class EconomistAllBridge extends FeedExpander
         }
 
         foreach (self::FEEDS as $tag => $url) {
+            if ($url == 'latest' && $this->getInput('onlyAudio') == 1) {
+                continue;
+            }
             $this->collectExpandableDatas('https://www.economist.com/' . $url . '/rss.xml', $limit);
             foreach ($this->items as $item) {
                 $allItems[$item["uri"]] = $item;
@@ -261,19 +270,27 @@ class EconomistAllBridge extends FeedExpander
                     continue;
                 }
             }
+            // There's a small delta between timestamps in different
+            // feeds, and that screws the intended section ordering in
+            // the journal. So timestamps are rounded to days.  It's
+            // not the kind of publication where the exact time is
+            // relevant anyway.
+            $item['timestamp'] = $item['timestamp'] - ($item['timestamp'] % (60 * 60 * 24));
             $this->items[] = $item;
         }
 
         usort($this->items, function ($item1, $item2) {
-            // There's a small delta between timestamps in different
-            // feeds, which screws the original section ordering in
-            // the journal. So timestamps are rounded to days.
-            $timestamp1 = $item1['timestamp'] - ($item1['timestamp'] % (60 * 60 * 24));
-            $timestamp2 = $item2['timestamp'] - ($item2['timestamp'] % (60 * 60 * 24));
-            if ($timestamp1 == $timestamp2) {
-                return $item1['feedIndex'] > $item2['feedIndex'];
+            if ($item1['timestamp'] == $item2['timestamp']) {
+                $idx1 = $item1['feedIndex'];
+                $idx2 = $item2['feedIndex'];
+                if ($idx1 == $idx2 && $this->getInput('addToTitle') == 1) {
+                    $pr_1 = self::SECTION_PRIORITIES[$item1['title']] ?? 100;
+                    $pr_2 = self::SECTION_PRIORITIES[$item2['title']] ?? 100;
+                    return $pr_1 > $pr_2;
+                }
+                return $idx1 > $idx2;
             }
-            return $timestamp1 < $timestamp2;
+            return $item1['timestamp'] < $item2['timestamp'];
         });
     }
 }
