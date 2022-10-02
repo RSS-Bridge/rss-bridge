@@ -51,6 +51,12 @@ class RoosterTeethBridge extends BridgeAbstract
                     'False' => false
                 ]
             ],
+            'episodeImage' => [
+                'name' => 'Episode Image',
+                'type' => 'checkbox',
+                'defaultValue' => 'checked',
+                'title' => 'Select whether to include an episode image (if available)',
+            ],
             'limit' => [
                 'name' => 'Limit',
                 'type' => 'number',
@@ -104,8 +110,38 @@ class RoosterTeethBridge extends BridgeAbstract
             $item['title'] = $value['attributes']['title'];
             $item['timestamp'] = $value['attributes']['member_golive_at'];
             $item['author'] = $value['attributes']['show_title'];
+            $item['content'] = $this->getItemContent($value);
 
             $this->items[] = $item;
         }
+    }
+
+    protected function getItemContent(array $value): string
+    {
+        $content = nl2br($value['attributes']['description']);
+
+        if (isset($value['attributes']['length'])) {
+            $duration_format = $value['attributes']['length'] > 3600 ? 'G:i:s' : 'i:s';
+            $content = sprintf(
+                'Duration: %s<br><br>%s',
+                gmdate($duration_format, $value['attributes']['length']),
+                $content
+            );
+        }
+
+        if ($this->getInput('episodeImage') === true) {
+            foreach ($value['included']['images'] ?? [] as $image) {
+                if ($image['type'] == 'episode_image') {
+                    $content = sprintf(
+                        '<img src="%s"/><br><br>%s',
+                        $image['attributes']['medium'],
+                        $content,
+                    );
+                    break;
+                }
+            }
+        }
+
+        return $content;
     }
 }
