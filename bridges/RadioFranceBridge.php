@@ -11,10 +11,11 @@
 class RadioFranceBridge extends BridgeAbstract
 {
     const NAME          = 'Radio France';
-//    const URI           // URI to the target website of the bridge (default: empty)
+    const URI           = 'https://www.radiofrance.fr/franceinter/podcasts';
     const DESCRIPTION   = 'A bridge allowing to read transcripts for Radio France shows';
     const MAINTAINER    = 'Riduidel';
     const DEFAULT_DOMAIN = 'https://www.radiofrance.fr';
+
     /*
      * The URL Prefix of the (Webapp-)API
      * @const APIENDPOINT https-URL of the used endpoint
