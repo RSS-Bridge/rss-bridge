@@ -10,11 +10,11 @@
  */
 class RadioFranceBridge extends BridgeAbstract
 {
-    const NAME          = "Radio France";
+    const NAME          = 'Radio France';
 //    const URI           // URI to the target website of the bridge (default: empty)
-    const DESCRIPTION   = "A bridge allowing to read transcripts for Radio France shows";
-    const MAINTAINER    = "Riduidel";
-    const DEFAULT_DOMAIN = "https://www.radiofrance.fr";
+    const DESCRIPTION   = 'A bridge allowing to read transcripts for Radio France shows';
+    const MAINTAINER    = 'Riduidel';
+    const DEFAULT_DOMAIN = 'https://www.radiofrance.fr';
     /*
      * The URL Prefix of the (Webapp-)API
      * @const APIENDPOINT https-URL of the used endpoint
@@ -32,7 +32,7 @@ class RadioFranceBridge extends BridgeAbstract
             'required' => true,
             'exampleValue' => 'franceinter/podcasts/burne-out'
         ]
-    ]];
+        ]];
 
     private function getDomain()
     {
@@ -76,106 +76,115 @@ class RadioFranceBridge extends BridgeAbstract
                     $item['uri'] = $this->getDomain() . '/' . $uri;
             }
             // Finally, obtain the mp3 from some weird Radio France API (url obtained by reading network calls, no less)
-            $media_url = self::APIENDPOINT . "?value=" . $uri;
+            $media_url = self::APIENDPOINT . '?value=' . $uri;
             $rawJSON = getSimpleHTMLDOMCached($media_url);
             $processedJSON = json_decode($rawJSON);
             $model_content = $processedJSON->content;
-            if(empty($model_content->manifestations)) {
+            if (empty($model_content->manifestations)) {
                 error_log("Seems like $uri has no manifestation");
             } else {
-                $item['enclosures'] = array( $model_content->manifestations[0]->url );
-    
+                $item['enclosures'] = [ $model_content->manifestations[0]->url ];
+
                 $item['content'] = '';
-                if(isset($model_content->visual)) {
-                    $item['content'] .=  "<img 
+                if (isset($model_content->visual)) {
+                    $item['content'] .= "<img 
                         src=\"{$model_content->visual->src}\" 
                         alt=\"{$model_content->visual->legend}\"
                         style=\"float:left; width:400px; margin: 1em;\"/>";
                 }
-                if ( isset($model_content->standFirst )) {
+                if (isset($model_content->standFirst)) {
                     $item['content'] .= $model_content->standFirst;
                 }
-                if ( isset($model_content->bodyJson )) {
-                    if(!empty($item['content'])) {
-                        $item['content'] .=  "<hr/>";
+                if (isset($model_content->bodyJson)) {
+                    if (!empty($item['content'])) {
+                        $item['content'] .= '<hr/>';
                     }
-                    $pseudo_html_array = array_map(array($this, "convertJsonElementToHTML"), $model_content->bodyJson);
+                    $pseudo_html_array = array_map([$this, 'convertJsonElementToHTML'], $model_content->bodyJson);
                     $pseudo_html_text = array_reduce(
                         $pseudo_html_array,
-                        function($text, $element) {
+                        function ($text, $element) {
                             return $text . "\n" . $element;
-                        }, ""
+                        },
+                        ''
                     );
                     $item['content'] .= $pseudo_html_text;
                 }
-                if(isset($model_content->producers)) {
-                    $item['author'] = $this->read_authors_names_from($model_content->producers);
-                } else if( isset($model_content->staff)) {
-                    $item['author'] = $this->read_authors_names_from($model_content->staff);
+                if (isset($model_content->producers)) {
+                    $item['author'] = $this->readAuthorsNamesFrom($model_content->producers);
+                } elseif (isset($model_content->staff)) {
+                    $item['author'] = $this->readAuthorsNamesFrom($model_content->staff);
                 }
                 $time = $card->find('time', 0);
                 $timevalue = $time->getAttribute('datetime');
                 $item['timestamp'] = strtotime($timevalue);
-        
+
                 $this->items[] = $item;
             }
         }
     }
 
-    private function read_authors_names_from($persons_array) {
-        $persons_names = array_map(function($person_element) { return $person_element->name; }, $persons_array);
-        return array_reduce($persons_names, function($a, $b) {
-            if(!empty($a)) {
-                $a.=", ";
+    private function readAuthorsNamesFrom($persons_array)
+    {
+        $persons_names = array_map(function ($person_element) {
+            return $person_element->name;
+        }, $persons_array);
+        return array_reduce($persons_names, function ($a, $b) {
+            if (!empty($a)) {
+                $a .= ', ';
             }
-            return $a.$b;
-        }, "");
+            return $a . $b;
+        }, '');
     }
 
-    private function convertJsonElementToHTML($jsonElement) {
-        $childText = isset($jsonElement->children) ? $this->convertJsonChildrenToHTML($jsonElement->children) : "";
-        $valueText = isset($jsonElement->value) ? $jsonElement->value : "";
-        switch($jsonElement->type) {
-            case "text":
+    private function convertJsonElementToHTML($jsonElement)
+    {
+        $childText = isset($jsonElement->children) ? $this->convertJsonChildrenToHTML($jsonElement->children) : '';
+        $valueText = isset($jsonElement->value) ? $jsonElement->value : '';
+        switch ($jsonElement->type) {
+            case 'text':
                 return "{$childText}{$valueText}";
-            case "heading":
+            case 'heading':
                 $level = $jsonElement->level;
                 return "<h$level>{$childText}{$valueText}</h$level>";
-            case "list":
-                $tag = "ul";
-                if(isset($jsonElement->ordered)) {
-                    if($jsonElement->ordered) {
-                        $tag = "ol";
+            case 'list':
+                $tag = 'ul';
+                if (isset($jsonElement->ordered)) {
+                    if ($jsonElement->ordered) {
+                        $tag = 'ol';
                     }
                 }
-                return "<$tag>\n".$childText."</$tag>\n";
-            case "list_item":
+                return "<$tag>\n" . $childText . "</$tag>\n";
+            case 'list_item':
                 return "<li>{$childText}{$valueText}</li>\n";
-            case "bounce";
-                return "";
-            case "paragraph";
+            case 'bounce':
+                return '';
+            case 'paragraph':
                 return "<p>{$childText}{$valueText}</p>\n";
-            case "quote";
+            case 'quote':
                 return "<blockquote>{$childText}{$valueText}</blockquote>\n";
-            case "link":
+            case 'link':
                 return "<a href=\"{$jsonElement->data->href}\">{$childText}{$valueText}</a>\n";
-            case "audio":
-                return "";
-            case "embed":
+            case 'audio':
+                return '';
+            case 'embed':
                 return $jsonElement->data->html;
             default:
                 return $jsonElement->value;
         }
     }
 
-    private function convertJsonChildrenToHTML($children) {
-        $converted = array_map(array($this, "convertJsonElementToHTML"), $children);
-        return array_reduce($converted, function($a, $b) { return $a.$b; }, "");
+    private function convertJsonChildrenToHTML($children)
+    {
+        $converted = array_map([$this, 'convertJsonElementToHTML'], $children);
+        return array_reduce($converted, function ($a, $b) {
+            return $a . $b;
+        }, '');
     }
 
-    private function removeAds($element) {
+    private function removeAds($element)
+    {
         $ads = $element->find('AdSlot');
-        foreach($ads as $ad) {
+        foreach ($ads as $ad) {
             $ad->remove();
         }
         return $element;
