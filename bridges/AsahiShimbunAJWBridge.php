@@ -68,7 +68,12 @@ class AsahiShimbunAJWBridge extends BridgeAbstract
                 $e_video->outertext = '';
                 $element->innertext = "VIDEO: $element->innertext";
             }
-            $item['title'] = $element->innertext;
+            $e_title = $element->find('.title', 0);
+            if ($e_title) {
+                $item['title'] = $e_title->innertext;
+            } else {
+                $item['title'] = $element->innertext;
+            }
 
             $this->items[] = $item;
         }
