@@ -68,7 +68,10 @@ class OLXBridge extends BridgeAbstract
         $html = getSimpleHTMLDOM($url);
         $html = defaultLinkTo($html, $this->getURI());
 
-        $results = $html->find(".listing-grid-container div[data-cy='l-card']");
+        # the second grid, if any, has extended results from additional categories, outside of original search scope
+        $listing_grid = $html->find("div[data-testid='listing-grid']", 0);
+
+        $results = $listing_grid->find("div[data-cy='l-card']");
 
         foreach ($results as $post) {
             $item = [];
