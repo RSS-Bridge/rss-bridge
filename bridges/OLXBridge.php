@@ -3,7 +3,11 @@
 class OLXBridge extends BridgeAbstract
 {
     const NAME = 'OLX';
-    const DESCRIPTION = 'Returns the search results from the OLX auctioning platforms (Bulgaria, Kazakhstan, Poland, Portugal, Romania, Ukraine and Uzbekistan only)';
+    const DESCRIPTION = <<<'EOF'
+Returns the search results from the OLX auctioning platforms
+(Bulgaria, Kazakhstan, Poland, Portugal, Romania, Ukraine and Uzbekistan only)
+EOF;
+
     const URI = 'https://www.olx.com';
     const MAINTAINER = 'wrobelda';
     const PARAMETERS = [[
@@ -116,13 +120,11 @@ class OLXBridge extends BridgeAbstract
 
             # Extract a clean ID without resorting to the convoluted CSS class or sibling selectors. Should be always present.
             $refreshLink = $articleHTMLContent->find('a[data-testid=refresh-link]', 0)->href ?? false;
-            if ($refreshLink)
-            {
+            if ($refreshLink) {
                 parse_str(parse_url($refreshLink, PHP_URL_QUERY), $refreshQuery);
                 $item['uid'] = $refreshQuery['ad-id'];
-            }
-            # may be an imported offer from a sibling auto-moto classifieds platform
-            else {
+            } else {
+                # may be an imported offer from a sibling auto-moto classifieds platform
                 $item['uid'] = $articleHTMLContent->find('span[id=ad_id]', 0)->plaintext;
             }
 
@@ -132,17 +134,15 @@ class OLXBridge extends BridgeAbstract
             }
 
             $isoDate = $articleHTMLContent->find('meta[property="og:updated_time"]', 0)->content ?? false;
-            if ($isoDate)
-            {
+            if ($isoDate) {
                 $item['timestamp'] = strtotime($isoDate);
-            }
-            else {
+            } else {
                 $date = $articleHTMLContent->find('span[data-cy="ad-posted-at"]', 0)->plaintext;
                 # Relative, today
                 if (preg_match('/^.*\s(\d\d:\d\d)$/i', $date, $matches)) {
                     $item['timestamp'] = strtotime($matches[1]);
-                } # full, localized date
-                else {
+                } else {
+                    # full, localized date
                     $formatter = new IntlDateFormatter($isoLang, IntlDateFormatter::SHORT, IntlDateFormatter::NONE);
                     $item['timestamp'] = $formatter->parse($date);
                 }
