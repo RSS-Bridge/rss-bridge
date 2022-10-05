@@ -28,7 +28,7 @@ class GenshinImpactBridge extends BridgeAbstract
         $category = $this->getInput('category');
 
         $url = 'https://genshin.mihoyo.com/content/yuanshen/getContentList';
-        $url = $url . '?pageSize=3&pageNum=1&channelId=' . $category;
+        $url = $url . '?pageSize=5&pageNum=1&channelId=' . $category;
         $api_response = getContents($url);
         $json_list = json_decode($api_response, true);
 

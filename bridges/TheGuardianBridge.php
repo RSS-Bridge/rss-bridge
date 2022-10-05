@@ -66,7 +66,7 @@ class TheGuardianBridge extends FeedExpander
         // figure contain's the main article image
         $article = $articlePage->find('figure', 0);
         // content__article-body has the actual article
-        foreach ($articlePage->find('.content__article-body') as $element) {
+        foreach ($articlePage->find('#maincontent') as $element) {
             $article = $article . $element;
         }
 
@@ -80,11 +80,13 @@ class TheGuardianBridge extends FeedExpander
 
         // List of all the crap in the article
         $uselessElements = [
+            'span > figcaption',
             '#show-caption',
             '.element-atom',
             '.submeta',
             'youtube-media-atom',
-            'svg'
+            'svg',
+            '#the-checkbox',
         ];
 
         // Remove the listed crap
