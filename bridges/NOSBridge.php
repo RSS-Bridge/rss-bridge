@@ -1,6 +1,6 @@
 <?php
 
-class NosNieuwsBridge extends BridgeAbstract
+class NOSBridge extends BridgeAbstract
 {
     const NAME = 'NOS Nieuws & Sport Bridge';
     const URI = 'https://www.nos.nl';
