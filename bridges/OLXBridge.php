@@ -69,6 +69,8 @@ class OLXBridge extends BridgeAbstract
         $html = getSimpleHTMLDOM($url);
         $html = defaultLinkTo($html, $this->getURI());
 
+        $isoLang = $html->find('meta[http-equiv=Content-Language]', 0)->getAttribute('content');
+
         # the second grid, if any, has extended results from additional categories, outside of original search scope
         $listing_grid = $html->find("div[data-testid='listing-grid']", 0);
 
@@ -102,35 +104,46 @@ class OLXBridge extends BridgeAbstract
                 $item['title'] = $post->find('h6', 0)->plaintext;
             }
 
-            $img = $post->find('img', 0)->src;
-            # Once we hit the lazy-loading images, we need to deep-crawl
-            if (pathinfo($img, PATHINFO_EXTENSION) == 'svg') {
-                $articleHTMLContent = getSimpleHTMLDOMCached($item['uri']);
-
-                if ($articleHTMLContent) {
-                    $img = $articleHTMLContent->find('div.swiper-wrapper img', 0)->src;
-                }
-            }
-
+            # ignore the date component, as it is too convoluted — use the deep-crawled one; see below
             $locationAndDate = $post->find('p[data-testid="location-date"]', 0)->plaintext;
             $locationAndDateArray = explode(' - ', $locationAndDate, 2);
             $location = trim($locationAndDateArray[0]);
-            $date = trim($locationAndDateArray[1]);
+
+            # OLX only shows 5 results before images get lazy-loaded, so we have to deep-crawl *almost* all the results.
+            # Given that, do deep-crawl *all* the results, which allows to aso obtain the ID, the simplified location
+            # and date strings, as well as the detailed description.
+            $articleHTMLContent = getSimpleHTMLDOMCached($item['uri']);
+
+            # Extract a clean ID without resorting to the convoluted CSS class or sibling selectors. Should be always present.
+            parse_str(parse_url($articleHTMLContent->find('a[data-testid=refresh-link]', 0)->href, PHP_URL_QUERY), $refreshQuery);
+            $item['id'] = $refreshQuery['ad-id'];
+
+            $item['enclosures'] = [$articleHTMLContent->find('div.swiper-wrapper img', 0)->src];
+
+            $date = $articleHTMLContent->find('span[data-cy="ad-posted-at"]', 0)->plaintext;
+            # Relative, today
+            if (preg_match('/^.*\s(\d\d:\d\d)$/i', $date, $matches)) {
+                $item['timestamp'] = strtotime($matches[1]);
+            }
+            # full, localized date
+            else {
+                $formatter = new IntlDateFormatter($isoLang, IntlDateFormatter::SHORT, IntlDateFormatter::NONE);
+                $item['timestamp'] = $formatter->parse($date);
+            }
+
+            $descriptionHtml = $articleHTMLContent->find('div[data-cy="ad_description"] div', 0)->innertext;
 
             $item['content'] = <<<CONTENT
 <table>
     <tbody>
-      <tr>
-        <td style="width=300;">
-              <p><img src="$img"></p>
-        </td>
-       </tr>
        <tr>
         <td>
           <p>$location</p>
-          <p>$date</p>
           <p><span style="font-weight:bold">$price</span> $negotiable <span>$shippingOffered</span></p>
         </td>
+      </tr>
+      <tr>
+      $descriptionHtml
       </tr>
     </tbody>
 </table>

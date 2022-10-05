@@ -12,8 +12,11 @@ RUN apt-get update && \
       zlib1g-dev \
       libzip-dev \
       libmemcached-dev \
-      nss-plugin-pem && \
+      nss-plugin-pem \
+      libicu-dev && \
     docker-php-ext-install zip && \
+    docker-php-ext-install zip && \
+    docker-php-ext-install intl && \
     pecl install memcached && \
     docker-php-ext-enable memcached && \
     docker-php-ext-enable opcache && \
