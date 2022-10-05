@@ -3,13 +3,14 @@
 class OLXBridge extends BridgeAbstract
 {
     const NAME = 'OLX';
-    const DESCRIPTION = 'Returns the search results from the OLX auctioning platforms';
+    const DESCRIPTION = 'Returns the search results from the OLX auctioning platforms (Bulgaria, Kazakhstan, Poland, Portugal, Romania, Ukraine and Uzbekistan only)';
     const URI = 'https://www.olx.com';
     const MAINTAINER = 'wrobelda';
     const PARAMETERS = [[
         'url' => [
             'name' => 'Search URL',
             'title' => 'Copy the URL from your browser\'s address bar after searching for your items and paste it here',
+            'pattern' => '^(https:\/\/)?(www.)?olx\.(bg|kz|pl|pt|ro|ua|uz).*$',
             'exampleValue' => 'https://www.olx.pl/d/oferty/q-cebula/',
             'required' => true,
         ],
