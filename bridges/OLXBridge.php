@@ -115,8 +115,16 @@ class OLXBridge extends BridgeAbstract
             $articleHTMLContent = getSimpleHTMLDOMCached($item['uri']);
 
             # Extract a clean ID without resorting to the convoluted CSS class or sibling selectors. Should be always present.
-            parse_str(parse_url($articleHTMLContent->find('a[data-testid=refresh-link]', 0)->href, PHP_URL_QUERY), $refreshQuery);
-            $item['uid'] = $refreshQuery['ad-id'];
+            $refreshLink = $articleHTMLContent->find('a[data-testid=refresh-link]', 0)->href ?? false;
+            if ($refreshLink)
+            {
+                parse_str(parse_url($refreshLink, PHP_URL_QUERY), $refreshQuery);
+                $item['uid'] = $refreshQuery['ad-id'];
+            }
+            # may be an imported offer from a sibling auto-moto classifieds platform
+            else {
+                $item['uid'] = $articleHTMLContent->find('span[id=ad_id]', 0)->plaintext;
+            }
 
             $img = $articleHTMLContent->find('div.swiper-wrapper img', 0)->src ?? false;
             if ($img) {
