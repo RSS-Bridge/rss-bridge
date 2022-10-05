@@ -131,15 +131,21 @@ class OLXBridge extends BridgeAbstract
                 $item['enclosures'] = [$img];
             }
 
-            $date = $articleHTMLContent->find('span[data-cy="ad-posted-at"]', 0)->plaintext;
-            # Relative, today
-            if (preg_match('/^.*\s(\d\d:\d\d)$/i', $date, $matches)) {
-                $item['timestamp'] = strtotime($matches[1]);
+            $isoDate = $articleHTMLContent->find('meta[property="og:updated_time"]', 0)->content ?? false;
+            if ($isoDate)
+            {
+                $item['timestamp'] = strtotime($isoDate);
             }
-            # full, localized date
             else {
-                $formatter = new IntlDateFormatter($isoLang, IntlDateFormatter::SHORT, IntlDateFormatter::NONE);
-                $item['timestamp'] = $formatter->parse($date);
+                $date = $articleHTMLContent->find('span[data-cy="ad-posted-at"]', 0)->plaintext;
+                # Relative, today
+                if (preg_match('/^.*\s(\d\d:\d\d)$/i', $date, $matches)) {
+                    $item['timestamp'] = strtotime($matches[1]);
+                } # full, localized date
+                else {
+                    $formatter = new IntlDateFormatter($isoLang, IntlDateFormatter::SHORT, IntlDateFormatter::NONE);
+                    $item['timestamp'] = $formatter->parse($date);
+                }
             }
 
             $descriptionHtml = $articleHTMLContent->find('div[data-cy="ad_description"] div', 0)->innertext;
