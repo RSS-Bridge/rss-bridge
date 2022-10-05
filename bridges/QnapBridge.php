@@ -6,7 +6,11 @@ final class QnapBridge extends BridgeAbstract
 {
     const NAME = 'QNAP';
     const URI = 'https://www.qnap.com/fr-fr/security-news/2022';
-    const DESCRIPTION = 'Unofficial feed for security news';
+    const DESCRIPTION = <<<'DESCRIPTION'
+<b>Use offical feed instead: https://www.qnap.com/fr-fr/security-news/feed </b><br><br>
+Unofficial feed for security news.
+DESCRIPTION;
+
     const MAINTAINER = 'dvikan';
 
     public function collectData()
