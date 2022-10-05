@@ -116,7 +116,7 @@ class OLXBridge extends BridgeAbstract
 
             # Extract a clean ID without resorting to the convoluted CSS class or sibling selectors. Should be always present.
             parse_str(parse_url($articleHTMLContent->find('a[data-testid=refresh-link]', 0)->href, PHP_URL_QUERY), $refreshQuery);
-            $item['id'] = $refreshQuery['ad-id'];
+            $item['uid'] = $refreshQuery['ad-id'];
 
             $item['enclosures'] = [$articleHTMLContent->find('div.swiper-wrapper img', 0)->src];
 
