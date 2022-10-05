@@ -126,11 +126,7 @@ class OLXBridge extends BridgeAbstract
                 $item['uid'] = $articleHTMLContent->find('span[id=ad_id]', 0)->plaintext;
             }
 
-            $img = $articleHTMLContent->find('div.swiper-wrapper img', 0)->src ?? false;
-            if (!$img) {
-                $img = $articleHTMLContent->find('div.photo-item img', 0)->getAttribute('data-lazy') ?? false;
-            }
-
+            $img = $articleHTMLContent->find('meta[property="og:image"]', 0)->getAttribute('content') ?? false;
             if ($img) {
                 $item['enclosures'] = [$img];
             }
