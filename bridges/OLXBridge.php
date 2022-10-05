@@ -69,7 +69,7 @@ class OLXBridge extends BridgeAbstract
         $html = getSimpleHTMLDOM($url);
         $html = defaultLinkTo($html, $this->getURI());
 
-        $isoLang = $html->find('meta[http-equiv=Content-Language]', 0)->getAttribute('content');
+        $isoLang = $html->find('meta[http-equiv=Content-Language]', 0)->content;
 
         # the second grid, if any, has extended results from additional categories, outside of original search scope
         $listing_grid = $html->find("div[data-testid='listing-grid']", 0);
@@ -126,7 +126,7 @@ class OLXBridge extends BridgeAbstract
                 $item['uid'] = $articleHTMLContent->find('span[id=ad_id]', 0)->plaintext;
             }
 
-            $img = $articleHTMLContent->find('meta[property="og:image"]', 0)->getAttribute('content') ?? false;
+            $img = $articleHTMLContent->find('meta[property="og:image"]', 0)->content ?? false;
             if ($img) {
                 $item['enclosures'] = [$img];
             }
