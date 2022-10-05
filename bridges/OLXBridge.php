@@ -118,7 +118,10 @@ class OLXBridge extends BridgeAbstract
             parse_str(parse_url($articleHTMLContent->find('a[data-testid=refresh-link]', 0)->href, PHP_URL_QUERY), $refreshQuery);
             $item['uid'] = $refreshQuery['ad-id'];
 
-            $item['enclosures'] = [$articleHTMLContent->find('div.swiper-wrapper img', 0)->src];
+            $img = $articleHTMLContent->find('div.swiper-wrapper img', 0)->src ?? false;
+            if ($img) {
+                $item['enclosures'] = [$img];
+            }
 
             $date = $articleHTMLContent->find('span[data-cy="ad-posted-at"]', 0)->plaintext;
             # Relative, today
