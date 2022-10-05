@@ -148,7 +148,10 @@ class OLXBridge extends BridgeAbstract
                 }
             }
 
-            $descriptionHtml = $articleHTMLContent->find('div[data-cy="ad_description"] div', 0)->innertext;
+            $descriptionHtml = $articleHTMLContent->find('div[data-cy="ad_description"] div', 0)->innertext ?? false;
+            if (!$descriptionHtml) {
+                $descriptionHtml = $articleHTMLContent->find('div[id="description"] div[data-read-more]', 0)->innertext ?? false;
+            }
 
             $item['content'] = <<<CONTENT
 <table>
