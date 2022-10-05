@@ -137,10 +137,11 @@ function getContents(
         default:
             throw new HttpException(
                 sprintf(
-                    '%s resulted in `%s %s`',
+                    '%s resulted in `%s %s`: %s',
                     $url,
                     $result['code'],
-                    RSSBRIDGE_HTTP_STATUS_CODES[$result['code']] ?? ''
+                    RSSBRIDGE_HTTP_STATUS_CODES[$result['code']] ?? '',
+                    mb_substr($result['body'], 0, 500),
                 ),
                 $result['code']
             );
