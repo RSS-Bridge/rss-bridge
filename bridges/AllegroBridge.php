@@ -19,6 +19,17 @@ class AllegroBridge extends BridgeAbstract
         ]
     ]];
 
+    public function getName()
+    {
+        parse_str(parse_url($this->getInput('url'), PHP_URL_QUERY), $fields);
+
+        if ($query = array_key_exists('string', $fields) ? urldecode($fields['string']) : false) {
+            return $query;
+        }
+
+        return parent::getName();
+    }
+
     public function collectData()
     {
         # make sure we order by the most recently listed offers
