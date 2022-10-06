@@ -3,7 +3,7 @@ body.with-search {
 }
 
 .SearchResults {
-    background: #fff;
+    background: var(--body-background);
     max-width: 650px;
     padding: 15px;
     margin: 0;
@@ -67,10 +67,11 @@ body.with-search {
     font-weight: 300;
     font-size: 15px;
     line-height: 1.7;
-    color: #555;
+    color: var(--color-text);
 }
 
 .SearchResults__close {
+    color: currentcolor;
     border: 0 transparent solid;
     background: none;
 
@@ -90,12 +91,12 @@ body.with-search {
 }
 
 .SearchResults__title a {
-    color: #333;
+    color: var(--color-text);
     text-decoration: none;
 }
 
 .SearchResults__title a:hover {
-    color: #555;
+    opacity: 0.8;
 }
 
 .SearchResults__url {
@@ -119,7 +120,7 @@ body.with-search {
     font-weight: 300;
     font-size: 15px;
     line-height: 1.6;
-    color: #555;
+    color: var(--color-text);
     word-wrap: break-word;
     hyphens: auto;
     margin-top: 3px;
