@@ -95,6 +95,16 @@ class AllegroBridge extends BridgeAbstract
                 $offerExtraInfo .= ', Smart';
             }
 
+            $item['categories'] = [];
+            $parameters = $post->find('dd');
+            foreach ($parameters as $parameter) {
+                if (in_array(strtolower($parameter->innertext), ['brak', 'nie'])) {
+                    continue;
+                }
+
+                $item['categories'][] = $parameter->innertext;
+            }
+
             $item['content'] = $descriptionPretty
                 . '<div><strong>'
                 . $price
