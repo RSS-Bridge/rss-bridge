@@ -572,7 +572,6 @@ EOD;
             returnServerError('You must be logged in to view this page. This is not supported by RSS-Bridge.');
         }
 
-        file_put_contents('/tmp/a.html', "$html");
         $mainColumn = $html->find('#pagelet_timeline_main_column');
         if (!$mainColumn) {
             throw new \Exception(sprintf('Unable to find anything useful in %s', $url));
