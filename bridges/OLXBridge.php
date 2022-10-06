@@ -130,7 +130,7 @@ EOF;
 
             $img = $articleHTMLContent->find('meta[property="og:image"]', 0)->content ?? false;
             if ($img) {
-                $item['enclosures'] = [$img];
+                $item['enclosures'] = [$img . '#.image'];
             }
 
             $isoDate = $articleHTMLContent->find('meta[property="og:updated_time"]', 0)->content ?? false;
