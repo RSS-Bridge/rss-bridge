@@ -77,7 +77,10 @@ class AllegroBridge extends BridgeAbstract
             $price = $post->find('._6a66d_6R3iN', 0)->plaintext;
             $price = empty($auctionTimeLeft) ? $price : $price . '- kwota licytacji';
 
-            $image = $post->find('._6a66d_44ioA img', 0)->{'data-src'} ?: $post->find('._6a66d_44ioA img', 0)->src;
+            $image = $post->find('._6a66d_44ioA img', 0)->{'data-src'} ?: $post->find('._6a66d_44ioA img', 0)->src ?? false;
+            if ($image) {
+                $item['enclosures'] = [$image . '#.image'];
+            }
 
             $offerExtraInfo = array_filter($post->find('.mqu1_g3.mgn2_12'), function ($node) {
                 return empty($node->find('.mvrt_0'));
@@ -101,11 +104,7 @@ class AllegroBridge extends BridgeAbstract
                 . $buyNowAuction
                 . '</div><dl>'
                 . $offerExtraInfo
-                . '</dl><div><img src="'
-                . $image
-                . '" alt="'
-                . $title
-                . '"></div><hr>';
+                . '</dl><hr>';
 
             $this->items[] = $item;
         }
