@@ -181,19 +181,18 @@ EOF;
             $item['content'] = <<<CONTENT
 <table>
     <tbody>
-       <tr>
+      <tr>
         <td>
           <p>$location</p>
           <p><span style="font-weight:bold">$price</span> $negotiable <span>$shippingOffered</span></p>
         </td>
       </tr>
       <tr>
-      $descriptionHtml
+        <td>$descriptionHtml</td>
       </tr>
     </tbody>
 </table>
 CONTENT;
-
             $this->items[] = $item;
         }
     }
