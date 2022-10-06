@@ -69,9 +69,10 @@ class AllegroBridge extends BridgeAbstract
             $description = $post->find('.m7er_k4.mpof_5r.mpof_z0_s', 0)->innertext;
             $descriptionPretty = preg_replace($descriptionPatterns, $descriptionReplacements, $description);
 
-            $buyNowAuction = str_replace('</span><span', '</span> <span', $post->find('.mqu1_g3.mvrt_0.mgn2_12', 0)->innertext);
+            $buyNowAuction = $post->find('.mqu1_g3.mvrt_0.mgn2_12', 0)->innertext ?? '';
+            $buyNowAuction = str_replace('</span><span', '</span> <span', $buyNowAuction);
 
-            $auctionTimeLeft = $post->find('._6a66d_ImOzU', 0)->innertext;
+            $auctionTimeLeft = $post->find('._6a66d_ImOzU', 0)->innertext ?? '';
 
             $price = $post->find('._6a66d_6R3iN', 0)->plaintext;
             $price = empty($auctionTimeLeft) ? $price : $price . '- kwota licytacji';
@@ -82,7 +83,8 @@ class AllegroBridge extends BridgeAbstract
                 return empty($node->find('.mvrt_0'));
             })[0]->plaintext;
 
-            if (str_contains($post->find('._6a66d_TC2Zk', 0)->innertext, 'z kurierem')) {
+            $isSmart = $post->find('._6a66d_TC2Zk', 0)->innertext ?? '';
+            if (str_contains($isSmart, 'z kurierem')) {
                 $offerExtraInfo .= ', Smart z kurierem';
             } else {
                 $offerExtraInfo .= ', Smart';
