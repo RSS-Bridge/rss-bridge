@@ -153,8 +153,6 @@ EOF;
                 $descriptionHtml = $articleHTMLContent->find('div[id="description"] div[data-read-more]', 0)->innertext ?? false;
             }
 
-            # <ol data-testid="breadcrumbs" data-cy="categories-breadcrumbs" class="css-2tdfce"><li data-testid="breadcrumb-item" class="css-7dfllt"><a href="/" class="css-tyi2d1">Strona główna</a></li><li data-testid="breadcrumb-item" class="css-7dfllt"><a href="/elektronika/" class="css-tyi2d1">Elektronika</a></li><li data-testid="breadcrumb-item" class="css-7dfllt"><a href="/elektronika/telefony/" class="css-tyi2d1">Telefony</a></li><li data-testid="breadcrumb-item" class="css-7dfllt"><a href="/elektronika/telefony/smartfony-telefony-komorkowe/" class="css-tyi2d1">Smartfony i telefony komórkowe</a></li><li data-testid="breadcrumb-item" class="css-7dfllt"><a href="/elektronika/telefony/smartfony-telefony-komorkowe/iphone/" class="css-tyi2d1">iPhone</a></li><li data-testid="breadcrumb-item" class="css-7dfllt"><a href="/elektronika/telefony/smartfony-telefony-komorkowe/iphone/dolnoslaskie/" class="css-tyi2d1">iPhone - Dolnośląskie</a></li><li data-testid="breadcrumb-item" class="css-7dfllt"><a href="/elektronika/telefony/smartfony-telefony-komorkowe/iphone/wroclaw/" class="css-tyi2d1">iPhone - Wrocław</a></li><li data-testid="breadcrumb-item" class="css-7dfllt"><a href="/elektronika/telefony/smartfony-telefony-komorkowe/iphone/wroclaw/?search%5Bdistrict_id%5D=393" class="css-tyi2d1">iPhone - Fabryczna</a></li></ol>
-
             $item['categories'] = [];
             $breadcrumbs = $articleHTMLContent->find('li[data-testid="breadcrumb-item"]');
             foreach ($breadcrumbs as $breadcrumb) {
@@ -162,6 +160,21 @@ EOF;
 
                 if ($category) {
                     $item['categories'][] = $category->plaintext;
+                }
+            }
+
+            $parameters = $articleHTMLContent->find('div.parametersArea li');
+            foreach ($parameters as $parameter) {
+                $category = $parameter->find('a', 0)->plaintext ?? false;
+
+                if ($category = empty($category) ? false : trim($category)) {
+                    if ($category == 'Tak') {
+                        $category = $parameter->find('span', 0)->plaintext ?? '';
+                    } elseif ($category == 'Nie') {
+                        continue;
+                    }
+
+                    $item['categories'][] = $category;
                 }
             }
 
