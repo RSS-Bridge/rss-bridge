@@ -54,7 +54,7 @@ class AllegroBridge extends BridgeAbstract
         foreach ($results as $post) {
             $item = [];
 
-            $uri = $post->find('._6a66d_LX75-', 0)->href;
+            $item['uri'] = $post->find('._6a66d_LX75-', 0)->href;
 
 //TODO: port this over, whatever it does, from https://github.com/MK-PL/AllegroRSS
 //        if (arrayLinks.includes('events/clicks?')) {
@@ -62,7 +62,7 @@ class AllegroBridge extends BridgeAbstract
 //          arrayLinks = sponsoredLink.slice(0, sponsoredLink.indexOf('?'))
 //        }
 
-            $title = $post->find('._6a66d_LX75-', 0)->innertext;
+            $item['title'] = $post->find('._6a66d_LX75-', 0)->innertext;
 
             $descriptionPatterns = ['/<\s*dt[^>]*>\b/', '/<\/dt>/', '/<\s*dd[^>]*>\b/', '/<\/dd>/'];
             $descriptionReplacements = ['<span>', ':</span> ', '<strong>', ',</strong> '];
@@ -93,8 +93,6 @@ class AllegroBridge extends BridgeAbstract
                 $offerExtraInfo .= ', Smart';
             }
 
-            $item['uri'] = $uri;
-            $item['title'] = $title;
             $item['content'] = $descriptionPretty
                 . '<div><strong>'
                 . $price
