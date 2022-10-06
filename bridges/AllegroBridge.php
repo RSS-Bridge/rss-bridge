@@ -64,6 +64,8 @@ class AllegroBridge extends BridgeAbstract
 
             $item['title'] = $post->find('._6a66d_LX75-', 0)->innertext;
 
+            $item['uid'] = $post->{'data-analytics-view-value'};
+
             $descriptionPatterns = ['/<\s*dt[^>]*>\b/', '/<\/dt>/', '/<\s*dd[^>]*>\b/', '/<\/dd>/'];
             $descriptionReplacements = ['<span>', ':</span> ', '<strong>', ',</strong> '];
             $description = $post->find('.m7er_k4.mpof_5r.mpof_z0_s', 0)->innertext;
