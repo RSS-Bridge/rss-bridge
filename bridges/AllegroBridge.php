@@ -86,7 +86,9 @@ class AllegroBridge extends BridgeAbstract
 
             $offerExtraInfo = array_filter($post->find('.mqu1_g3.mgn2_12'), function ($node) {
                 return empty($node->find('.mvrt_0'));
-            })[0]->plaintext;
+            });
+
+            $offerExtraInfo = $offerExtraInfo[0]->plaintext ?? '';
 
             $isSmart = $post->find('._6a66d_TC2Zk', 0)->innertext ?? '';
             if (str_contains($isSmart, 'z kurierem')) {
