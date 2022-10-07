@@ -32,12 +32,26 @@ EOF;
         ]
     ]];
 
-    public function getURI()
+    private function getHostname()
     {
         $scheme = parse_url($this->getInput('url'), PHP_URL_SCHEME);
         $host = parse_url($this->getInput('url'), PHP_URL_HOST);
 
         return $scheme . '://' . $host;
+    }
+
+    public function getURI()
+    {
+        if ($this->getInput('url')) {
+            # make sure we order by the most recently listed offers
+            $uri = trim(preg_replace('/([?&])search%5Border%5D=[^&]+(&|$)/', '$1', $this->getInput('url')), '?&/');
+            $uri = preg_replace('/([?&])view=[^&]+(&|$)/', '', $uri);
+            $uri .= (parse_url($uri, PHP_URL_QUERY) ? '&' : '?') . 'search%5Border%5D=created_at:desc';
+
+            return $uri;
+        } else {
+            return parent::getURI();
+        }
     }
 
     public function getName()
@@ -61,13 +75,8 @@ EOF;
 
     public function collectData()
     {
-        # make sure we order by the most recently listed offers
-        $url = trim(preg_replace('/([?&])search%5Border%5D=[^&]+(&|$)/', '$1', $this->getInput('url')), '?&/');
-        $url = preg_replace('/([?&])view=[^&]+(&|$)/', '', $url);
-        $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . 'search%5Border%5D=created_at:desc';
-
-        $html = getSimpleHTMLDOM($url);
-        $html = defaultLinkTo($html, $this->getURI());
+        $html = getSimpleHTMLDOM($this->getURI());
+        $html = defaultLinkTo($html, $this->getHostname());
 
         $isoLang = $html->find('meta[http-equiv=Content-Language]', 0)->content;
 
