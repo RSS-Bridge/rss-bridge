@@ -37,11 +37,7 @@ EOF;
         $scheme = parse_url($this->getInput('url'), PHP_URL_SCHEME);
         $host = parse_url($this->getInput('url'), PHP_URL_HOST);
 
-        if (strpos($host, 'olx')) {
-            return $scheme . '://' . $host;
-        }
-
-        return parent::getURI();
+        return $scheme . '://' . $host;
     }
 
     public function getName()
