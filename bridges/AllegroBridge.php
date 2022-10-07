@@ -40,6 +40,11 @@ COOKIE
         return parent::getName();
     }
 
+    public function getURI()
+    {
+        return $this->getInput('url') ?? parent::getURI();
+    }
+
     public function collectData()
     {
         # make sure we order by the most recently listed offers
