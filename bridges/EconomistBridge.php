@@ -2,7 +2,7 @@
 
 class EconomistBridge extends FeedExpander
 {
-    const MAINTAINER = 'bockiii';
+    const MAINTAINER = 'bockiii, sqrtminusone';
     const NAME = 'Economist Bridge';
     const URI = 'https://www.economist.com/';
     const CACHE_TIMEOUT = 3600; //1hour
@@ -46,6 +46,7 @@ class EconomistBridge extends FeedExpander
                     'Obituaries' => 'obituary',
                     'Graphic detail' => 'graphic-detail',
                     'Indicators' => 'economic-and-financial-indicators',
+                    'The Economist Reads' => 'the-economist-reads',
                 ]
             ]
         ],
@@ -98,52 +99,129 @@ class EconomistBridge extends FeedExpander
     protected function parseItem($feedItem)
     {
         $item = parent::parseItem($feedItem);
-        $article = getSimpleHTMLDOM($item['uri']);
-        // before the article can be added, it needs to be cleaned up, thus, the extra function
-        // We also need to distinguish between old style and new style articles
-        if ($article->find('article', 0)->getAttribute('data-test-id') == 'Article') {
-            $contentNode = 'div.layout-article-body';
-            $imgNode = 'div.article__lead-image';
-            $categoryNode = 'span.article__subheadline';
-        } elseif ($article->find('article', 0)->getAttribute('data-test-id') === 'NewArticle') {
-            $contentNode = 'section';
-            $imgNode = 'figure.css-12eysrk.e3y6nua0';
-            $categoryNode = 'span.ern1uyf0';
-        } else {
-            return;
-        }
+        $html = getSimpleHTMLDOM($item['uri']);
 
-        $item['content'] = $this->cleanContent($article, $contentNode);
-        // only the article lead image is retained if it's there
-        if (!is_null($article->find($imgNode, 0))) {
-            $item['enclosures'][] = $article->find($imgNode, 0)->find('img', 0)->getAttribute('src');
-        } else {
-            $item['enclosures'][] = '';
+        $article = $html->find('#new-article-template', 0);
+        if ($article == null) {
+            $article = $html->find('main', 0);
         }
-        // add the subheadline as category. This will create a link in new articles
-        // and a text in old articles
-        $item['categories'][] = $article->find($categoryNode, 0)->innertext;
-
+        if ($article) {
+            $elem = $article->find('div', 0);
+            list($content, $audio_url) = $this->processContent($html, $elem);
+            $item['content'] = $content;
+            if ($audio_url != null) {
+                $item['enclosures'] = [$audio_url];
+            }
+        }
         return $item;
     }
 
-    private function cleanContent($article, $contentNode)
+    private function processContent($html, $elem)
     {
-        // the actual article is in this div
-        $content = $article->find($contentNode, 0)->innertext;
-        // clean the article content. Remove all div's since the text is in paragraph elements
-        foreach (
-            [
-            '<div '
-            ] as $tag_start
-        ) {
-            $content = stripRecursiveHTMLSection($content, 'div', $tag_start);
+        // Remove extra styles
+        $styles = $elem->find('style');
+        foreach ($styles as $style) {
+            $style->parent->removeChild($style);
         }
-        // now remove embedded iframes. The podcast postings contain these for example
-        $content = preg_replace('/<iframe.*?\/iframe>/i', '', $content);
-        // fix the relative links
-        $content = defaultLinkTo($content, $this->getURI());
 
-        return $content;
+        // Remove the section with remaining articles
+        $more_elem = $elem->find('h2.ds-section-headline.ds-section-headline--rule-emphasised', 0);
+        if ($more_elem != null) {
+            if ($more_elem->parent && $more_elem->parent->parent) {
+                $more_elem->parent->parent->removeChild($more_elem->parent);
+            }
+        }
+
+        // Remove 'capitalization' with <small> tags
+        foreach ($elem->find('small') as $small) {
+            $small->outertext = strtoupper($small->innertext);
+        }
+
+        // Extract audio
+        $audio_url = null;
+        $audio_elem = $elem->find('#audio-player', 0);
+        if ($audio_elem != null) {
+            $audio_url = $audio_elem->src;
+            $audio_elem->parent->parent->removeChild($audio_elem->parent);
+        }
+
+        // No idea how this works on the original site
+        foreach ($elem->find('img') as $img) {
+            $img->removeAttribute('width');
+            $img->removeAttribute('height');
+        }
+
+        // Some hacks for 'interactive' sections to make them a bit
+        // more readable. Here's one example:
+        // https://www.economist.com/interactive/briefing/2022/09/24/war-in-ukraine-has-reshaped-worlds-fuel-markets
+        $svelte = $elem->find('svelte-scroller-outer', 0);
+        if ($svelte != null) {
+            $svelte->parent->removeChild($svelte);
+        }
+        foreach ($elem->find('img') as $strange_img) {
+            if (!str_contains($strange_img->src, 'https://economist.com')) {
+                $strange_img->src = 'https://economist.com' . $strange_img->src;
+            }
+        }
+        // Trying to fix interactive infographics. This doesn't look
+        // quite as well, but fortunately, such elements are rare
+        // (~95% of infographics are plain images)
+        foreach ($elem->find('div.ds-image') as $ds_img) {
+            $ds_img->style = 'max-width: min(100%, 700px); overflow: hidden; margin: 2rem auto;';
+            $g_artboard = null;
+            foreach ($ds_img->find('div.g-artboard') as $g_artboard_cand) {
+                if (!str_contains($g_artboard_cand->style, 'display: none')) {
+                    $g_artboard = $g_artboard_cand;
+                }
+            }
+            if ($g_artboard != null) {
+                $g_artboard->style = $g_artboard->style . 'position: relative;';
+                $img = $g_artboard->find('img', 0);
+                if ($img != null) {
+                    $img->style = 'top: 0; display: block; width: 100% !important;';
+                    foreach ($g_artboard->find('div') as $div) {
+                        if ($div->style == null) {
+                            $div->style = 'position: absolute;';
+                        } else {
+                            $div->style = $div->style . 'position: absolute';
+                        }
+                    }
+                }
+            }
+        }
+
+        $vertical = $elem->find('div[data-test-id=vertical]', 0);
+        if ($vertical != null) {
+            $vertical->parent->removeChild($vertical);
+        }
+
+        // Section with 'Save', 'Share' and 'Give buttons'
+        foreach ($elem->find('div[data-test-id=sharing-modal]') as $sharing) {
+            $sharing->parent->removeChild($sharing);
+        }
+        // These links become HUGE without <style> tags and aren't
+        // particularly useful anyhow
+        foreach ($elem->find('a.ds-link-with-arrow-icon') as $a) {
+            $a->parent->removeChild($a);
+        }
+
+        // The Economist puts infographics into iframes, which doesn't
+        // work in any of my readers. So this replaces iframes with
+        // links.
+        foreach ($elem->find('iframe') as $iframe) {
+            $a = $html->createElement('a');
+            $a->href = $iframe->src;
+            $a->innertext = $iframe->src;
+            $iframe->parent->appendChild($a);
+            $iframe->parent->removeChild($iframe);
+        }
+
+        // Using <section> tags does nothing except interfering with
+        // rss-bridge styles, so this replaces them with <div>
+        $res = $elem->innertext;
+        $res = str_replace('<section', '<div', $res);
+        $res = str_replace('</section', '</div', $res);
+        $content = '<div>' . $res . '</div>';
+        return [$content, $audio_url];
     }
 }
