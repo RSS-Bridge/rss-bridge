@@ -38,6 +38,12 @@ class NordbayernBridge extends BridgeAbstract
             'type' => 'checkbox',
             'exampleValue' => 'checked',
             'title' => 'Include Police Reports',
+        ],
+        'hideNNPlus' => [
+            'name' => 'Hide NN+ articles',
+            'type' => 'checkbox',
+            'exampleValue' => 'unchecked',
+            'title' => 'Hide all paywall articles on NN'
         ]
     ]];
 
@@ -153,7 +159,13 @@ class NordbayernBridge extends BridgeAbstract
         foreach ($main->find('article') as $article) {
             $url = $article->find('a', 0)->href;
             $url = urljoin(self::URI, $url);
-            self::handleArticle($url);
+            // exclude nn+ articles if desired
+            if (
+                !$this->getInput('hideNNPlus') ||
+                !str_contains($url, 'www.nn.de')
+            ) {
+                self::handleArticle($url);
+            }
         }
     }
 
