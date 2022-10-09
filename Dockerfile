@@ -13,6 +13,7 @@ RUN apt-get update && \
     docker-php-ext-install zip && \
     pecl install memcached && \
     docker-php-ext-enable memcached && \
+    docker-php-ext-enable opcache && \
     mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 COPY ./config/nginx.conf /etc/nginx/sites-enabled/default
