@@ -208,11 +208,15 @@ class MastodonBridge extends BridgeAbstract
         // GoToSocial expects the query string to be included when
         // building the url to sign
         // @see https://github.com/superseriousbusiness/gotosocial/issues/107#issuecomment-1188289857
-        $regex = $this->getInput('signaturetype') == 'query'
-            ? '/https?:\/\/([a-z0-9-\.]{0,})(\/[^#]+)/'
-            : '/https?:\/\/([a-z0-9-\.]{0,})(\/[^#?]+)/';
+        $regex = [
+            // Include query string when parsing URL
+            'query' => '/https?:\/\/([a-z0-9-\.]{0,})(\/[^#]+)/',
 
-        preg_match($regex, $url, $matches);
+            // Exclude query string when parsing URL
+            'noquery' => '/https?:\/\/([a-z0-9-\.]{0,})(\/[^#?]+)/',
+        ];
+
+        preg_match($regex[$this->getInput('signaturetype')], $url, $matches);
         $headers = [
             'Accept: application/activity+json',
             'Host: ' . $matches[1],
