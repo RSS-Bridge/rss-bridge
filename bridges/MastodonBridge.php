@@ -46,6 +46,16 @@ class MastodonBridge extends BridgeAbstract
             'type' => 'checkbox',
             'title' => 'Hide boosts. Note that RSS-Bridge will fetch the original status from other federated instances.'
         ],
+        'signaturetype' => [
+            'type' => 'list',
+            'name' => 'Signature Type',
+            'title' => 'How to sign requests when fetching from Authorized Fetch enabled instances',
+            'values' => [
+                'Without Query (Mastodon)' => 'noquery',
+                'With Query (GoToSocial)' => 'query',
+            ],
+            'defaultValue' => 'noquery'
+        ],
     ]];
 
     public function collectData()
@@ -109,6 +119,11 @@ class MastodonBridge extends BridgeAbstract
 
     protected function parseObject($object, $item)
     {
+        // If object is a link to another object, fetch it
+        if (is_string($object)) {
+            $object = $this->fetchAP($object);
+        }
+
         $item['content'] = $object['content'];
         $strippedContent = strip_tags(str_replace('<br>', ' ', $object['content']));
 
@@ -119,6 +134,12 @@ class MastodonBridge extends BridgeAbstract
             $item['title'] .= $strippedContent;
         }
         $item['uri'] = $object['id'];
+
+        if (isset($object['attachment']['url'])) {
+            // Normalize attachment (turn single attachment into array)
+            $object['attachment'] = [$object['attachment']];
+        }
+
         foreach ($object['attachment'] as $attachment) {
             // Only process REMOTE pictures (prevent xss)
             if (
@@ -183,7 +204,19 @@ class MastodonBridge extends BridgeAbstract
         $d = new DateTime();
         $d->setTimezone(new DateTimeZone('GMT'));
         $date = $d->format('D, d M Y H:i:s e');
-        preg_match('/https?:\/\/([a-z0-9-\.]{0,})(\/[^?#]+)/', $url, $matches);
+
+        // GoToSocial expects the query string to be included when
+        // building the url to sign
+        // @see https://github.com/superseriousbusiness/gotosocial/issues/107#issuecomment-1188289857
+        $regex = [
+            // Include query string when parsing URL
+            'query' => '/https?:\/\/([a-z0-9-\.]{0,})(\/[^#]+)/',
+
+            // Exclude query string when parsing URL
+            'noquery' => '/https?:\/\/([a-z0-9-\.]{0,})(\/[^#?]+)/',
+        ];
+
+        preg_match($regex[$this->getInput('signaturetype')], $url, $matches);
         $headers = [
             'Accept: application/activity+json',
             'Host: ' . $matches[1],
