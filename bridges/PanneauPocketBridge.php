@@ -113,8 +113,8 @@ class PanneauPocketBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $found = array_search($this->getInput('cities'), self::CITIES);
-        $city = strtolower($this->getInput('cities') . '-' . $found);
+        $matchedCity = array_search($this->getInput('cities'), self::CITIES);
+        $city = strtolower($this->getInput('cities') . '-' . $matchedCity);
         $url = sprintf('https://app.panneaupocket.com/ville/%s', urlencode($city));
 
         $html = getSimpleHTMLDOM($url);
@@ -139,14 +139,14 @@ class PanneauPocketBridge extends BridgeAbstract
     /**
      * Produce self::CITIES array
      */
-    private static function getCities()
+    private static function getCities($zipcodeStartWith)
     {
         $cities = json_decode(getContents(self::URI . '/public-api/city'), true);
 
         $formattedCities = null;
         $citiesString = '[<br>';
         foreach ($cities as $city) {
-            if (str_starts_with($city['postCode'], '35')) {
+            if (str_starts_with($city['postCode'], $zipcodeStartWith)) {
                 $formattedCities[$city['name'] . ' - ' . $city['postCode']] = $city['id'];
                 $citiesString .= '    "' . $city['name'] . '-' . $city['postCode'] . '" => "' . $city['id'] . '",';
                 $citiesString .= '<br>';
