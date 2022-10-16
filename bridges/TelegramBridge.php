@@ -282,12 +282,16 @@ EOD;
             preg_match($this->backgroundImageRegex, $messageDiv->find('i.link_preview_video_thumb', 0)->style, $photo);
         } elseif ($messageDiv->find('i.tgme_widget_message_roundvideo_thumb')) {
             preg_match($this->backgroundImageRegex, $messageDiv->find('i.tgme_widget_message_roundvideo_thumb', 0)->style, $photo);
+        } else {
+            // Not all videos have a poster image
+            $photo = [null, null];
         }
 
         $this->enclosures[] = $photo[1];
 
+        // Intentionally omitting preload="none" on <video>
         return <<<EOD
-<video controls="" poster="{$photo[1]}" style="max-width:100%;" preload="none">
+<video controls="" poster="{$photo[1]}" style="max-width:100%;">
 	<source src="{$messageDiv->find('video', 0)->src}" type="video/mp4">
 </video>
 EOD;
