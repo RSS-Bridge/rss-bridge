@@ -31,50 +31,52 @@ class UnraidCommunityApplicationsBridge extends BridgeAbstract
     {
         $this->fetchApps();
         $this->sortApps();
-
-        Debug::log('Building RSS feed');
         foreach ($this->apps as $app) {
-            if (!array_key_exists('Language', $app)) {
-                $item = [];
-                $item['title'] = $app['Name'];
-                $item['timestamp'] = $app['FirstSeen'];
-                $item['author'] = explode('\'', $app['Repo'])[0];
-                $item['categories'] = explode(' ', $app['Category']);
-                $item['content'] = '';
+            if (array_key_exists('Language', $app)) {
+                continue;
+            }
+            $item = [];
+            $item['title'] = $app['Name'];
+            $item['timestamp'] = $app['FirstSeen'];
+            $item['author'] = explode('\'', $app['Repo'])[0];
+            $item['content'] = '';
 
-                if (array_key_exists('Icon', $app)) {
-                    $item['content'] .= '<img style="width: 64px" src="'
-                        . $app['Icon']
-                        . '">';
-                }
+            if (isset($app['CategoryList'])) {
+                $item['categories'] = $app['CategoryList'];
+            }
 
-                if (array_key_exists('Overview', $app)) {
-                    $item['content'] .= '<p>'
-                        . $app['Overview']
-                        . '</p>';
-                }
+            if (array_key_exists('Icon', $app)) {
+                $item['content'] .= '<img style="width: 64px" src="'
+                    . $app['Icon']
+                    . '">';
+            }
 
-                if (array_key_exists('Project', $app)) {
-                    $item['uri'] = $app['Project'];
-                }
+            if (array_key_exists('Overview', $app)) {
+                $item['content'] .= '<p>'
+                    . $app['Overview']
+                    . '</p>';
+            }
 
-                if (array_key_exists('Registry', $app)) {
-                    $item['content'] .= '<br><a href="'
-                        . $app['Registry']
-                        . '">Docker Hub</a>';
-                }
+            if (array_key_exists('Project', $app)) {
+                $item['uri'] = $app['Project'];
+            }
 
-                if (array_key_exists('Support', $app)) {
-                    $item['content'] .= '<br><a href="'
-                        . $app['Support']
-                        . '">Support</a>';
-                }
+            if (array_key_exists('Registry', $app)) {
+                $item['content'] .= '<br><a href="'
+                    . $app['Registry']
+                    . '">Docker Hub</a>';
+            }
 
-                $this->items[] = $item;
+            if (array_key_exists('Support', $app)) {
+                $item['content'] .= '<br><a href="'
+                    . $app['Support']
+                    . '">Support</a>';
+            }
 
-                if (count($this->items) >= 15) {
-                    break;
-                }
+            $this->items[] = $item;
+
+            if (count($this->items) >= 150) {
+                break;
             }
         }
     }
