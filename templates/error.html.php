@@ -3,14 +3,15 @@
     <h1>Something went wrong</h1>
 
     <p>
-    <?= e($message) ?>
+        <?= e($message) ?>
+    </p>
 
-    <br>
     <h2>Stacktrace</h2>
 
-
     <?php foreach ($trace as $i => $frame) : ?>
-        #<?= $i ?> <?= frame_to_call_point($frame) ?>
+        <code>
+            #<?= $i ?> <?= e(frame_to_call_point($frame)) ?>
+        </code>
         <br>
     <?php endforeach; ?>
 

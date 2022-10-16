@@ -4,7 +4,7 @@
     </p>
 
     <?php foreach ($trace as $i => $frame) : ?>
-        #<?= $i ?> <?= frame_to_call_point($frame) ?>
+        #<?= $i ?> <?= e(frame_to_call_point($frame)) ?>
         <br>
     <?php endforeach; ?>
 
@@ -31,6 +31,8 @@
         <button>Create GitHub Issue</button>
     </a>
 
-    <p class="maintainer"><?= e($maintainer) ?></p>
+    <p class="maintainer">
+        <?= e($maintainer) ?>
+    </p>
 </section>
 

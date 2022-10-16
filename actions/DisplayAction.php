@@ -169,7 +169,6 @@ class DisplayAction implements ActionInterface
                         $item->setTimestamp(time());
 
                         $content = render_template(__DIR__ . '/../templates/bridge-error.html.php', [
-                            'class' => get_class($e),
                             'message' => create_sane_exception_message($e),
                             'trace' => trace_from_exception($e),
                             'searchUrl' => self::createGithubSearchUrl($bridge),
