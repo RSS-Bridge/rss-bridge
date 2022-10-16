@@ -101,13 +101,12 @@ class Debug
         if (!self::isEnabled()) {
             return;
         }
-        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
-        $lastFrame = end($backtrace);
-        $file = trim_path_prefix($lastFrame['file']);
-        $line = $lastFrame['line'];
-        $class = $lastFrame['class'] ?? '';
-        $function = $lastFrame['function'];
-        $text = sprintf('%s:%s %s->%s() %s', $file, $line, $class, $function, $message);
-        Logger::info($text);
+        $e = new \Exception();
+        $trace = trace_from_exception($e);
+        // Drop the current frame
+        array_pop($trace);
+        $lastFrame = $trace[array_key_last($trace)];
+        $text = sprintf('%s(%s): %s', $lastFrame['file'], $lastFrame['line'], $message);
+        Logger::debug($text);
     }
 }

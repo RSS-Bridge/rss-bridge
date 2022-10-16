@@ -38,11 +38,11 @@ class FormatFactory
         if (! preg_match('/^[a-zA-Z0-9-]*$/', $name)) {
             throw new \InvalidArgumentException('Format name invalid!');
         }
-        $name = $this->sanitizeFormatName($name);
-        if ($name === null) {
-            throw new \InvalidArgumentException('Unknown format given!');
+        $sanitizedName = $this->sanitizeFormatName($name);
+        if ($sanitizedName === null) {
+            throw new \InvalidArgumentException(sprintf('Unknown format given `%s`', $name));
         }
-        $className = '\\' . $name . 'Format';
+        $className = '\\' . $sanitizedName . 'Format';
         return new $className();
     }
 

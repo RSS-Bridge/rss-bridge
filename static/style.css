@@ -50,6 +50,12 @@ a:hover {
 	text-decoration: underline;
 }
 
+h1,h2 {
+	margin-bottom: 10px;
+}
+p {
+	margin-bottom: 10px;
+}
 /* Header */
 
 header {
@@ -326,12 +332,6 @@ h5 {
 	width: 80%;
 	margin: auto;
 	margin-bottom: 6px;
-}
-
-.advice {
-	margin-left: auto;
-	margin-right: auto;
-	display: table;
 }
 
 .advice > li {

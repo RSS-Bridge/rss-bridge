@@ -16,9 +16,9 @@ final class RssBridge
         } catch (\Throwable $e) {
             Logger::error('Exception in main', ['e' => $e]);
             http_response_code(500);
-            print render('error.html.php', [
-                'message' => create_sane_exception_message($e),
-                'stacktrace' => create_sane_stacktrace($e),
+            print render(__DIR__ . '/../templates/error.html.php', [
+                'message'   => create_sane_exception_message($e),
+                'trace'     => trace_from_exception($e),
             ]);
         }
     }
@@ -38,6 +38,7 @@ final class RssBridge
                 return false;
             }
             $text = sprintf('%s at %s line %s', $message, trim_path_prefix($file), $line);
+            // Drop the current frame
             Logger::warning($text);
             if (Debug::isEnabled()) {
                 print sprintf('<pre>%s</pre>', $text);

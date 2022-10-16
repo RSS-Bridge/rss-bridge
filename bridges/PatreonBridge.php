@@ -19,7 +19,8 @@ class PatreonBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $html = getSimpleHTMLDOMCached($this->getURI(), 86400);
+        $url = $this->getURI();
+        $html = getSimpleHTMLDOMCached($url);
         $regex = '#/api/campaigns/([0-9]+)#';
         if (preg_match($regex, $html->save(), $matches) > 0) {
             $campaign_id = $matches[1];

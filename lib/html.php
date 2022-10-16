@@ -14,6 +14,9 @@
 
 function render(string $template, array $context = []): string
 {
+    if ($template === 'base.html.php') {
+        throw new \Exception('Do not render base.html.php into itself');
+    }
     $context['page'] = render_template($template, $context);
     return render_template('base.html.php', $context);
 }
