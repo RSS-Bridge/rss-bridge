@@ -101,13 +101,31 @@ abstract class FeedExpander extends BridgeAbstract
         ];
         $httpHeaders = ['Accept: ' . implode(', ', $mimeTypes)];
         $content = getContents($url, $httpHeaders);
-        // Suppress php errors. We will check return value for success.
-        $rssContent = @simplexml_load_string(trim($content));
-        if ($rssContent === false) {
-            throw new \Exception(sprintf('Unable to parse xml from "%s"', $url));
+        if ($content === '') {
+            throw new \Exception(sprintf('Unable to parse xml from `%s` because we got the empty string', $url));
         }
+        // Maybe move this call earlier up the stack frames
+        // Disable triggering of the php error-handler and handle errors manually instead
+        libxml_use_internal_errors(true);
+        // Consider replacing libxml with https://www.php.net/domdocument
+        // Intentionally not using the silencing operator (@) because it has no effect here
+        $rssContent = simplexml_load_string(trim($content));
+        if ($rssContent === false) {
+            $xmlErrors = libxml_get_errors();
+            foreach ($xmlErrors as $xmlError) {
+                if (Debug::isEnabled()) {
+                    Debug::log(trim($xmlError->message));
+                }
+            }
+            if ($xmlErrors) {
+                // Render only the first error into exception message
+                $firstXmlErrorMessage = $xmlErrors[0]->message;
+            }
+            throw new \Exception(sprintf('Unable to parse xml from `%s` %s', $url, $firstXmlErrorMessage ?? ''));
+        }
+        // Restore previous behaviour in case other code relies on it being off
+        libxml_use_internal_errors(false);
 
-        Debug::log('Detecting feed format/version');
         switch (true) {
             case isset($rssContent->item[0]):
                 Debug::log('Detected RSS 1.0 format');

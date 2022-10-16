@@ -41,7 +41,7 @@ final class RssBridge
             // Drop the current frame
             Logger::warning($text);
             if (Debug::isEnabled()) {
-                print sprintf('<pre>%s</pre>', $text);
+                print sprintf("<pre>%s</pre>\n", e($text));
             }
         });
 
