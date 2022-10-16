@@ -168,16 +168,13 @@ class DisplayAction implements ActionInterface
                         $item->setURI(get_current_url());
                         $item->setTimestamp(time());
 
-                        $exceptionMessage = create_sane_exception_message($e);
-                        $content = render_template('bridge-error.html.php', [
+                        $content = render_template(__DIR__ . '/../templates/bridge-error.html.php', [
                             'class' => get_class($e),
-                            'message' => $e->getMessage(),
-                            'file' => trim_path_prefix($e->getFile()),
-                            'line' => $e->getLine(),
+                            'message' => create_sane_exception_message($e),
                             'trace' => trace_from_exception($e),
                             'searchUrl' => self::createGithubSearchUrl($bridge),
-                            'issueUrl' => self::createGithubIssueUrl($bridge, $e, $exceptionMessage),
-                            'bridge' => $bridge,
+                            'issueUrl' => self::createGithubIssueUrl($bridge, $e, create_sane_exception_message($e)),
+                            'maintainer' => $bridge->getMaintainer(),
                         ]);
                         $item->setContent($content);
 

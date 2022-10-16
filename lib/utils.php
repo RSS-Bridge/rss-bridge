@@ -48,7 +48,7 @@ function get_current_url(): string
 function create_sane_exception_message(\Throwable $e): string
 {
     return sprintf(
-        'Exception %s: %s at %s line %s',
+        'Exception %s: %s in %s line %s',
         get_class($e),
         $e->getMessage(),
         trim_path_prefix($e->getFile()),
@@ -92,7 +92,7 @@ function trace_to_call_points(array $trace): array
 function frame_to_call_point(array $frame): string
 {
     if ($frame['class']) {
-        $sprintf = sprintf(
+        return sprintf(
             '%s(%s): %s%s%s()',
             $frame['file'],
             $frame['line'],
@@ -101,20 +101,19 @@ function frame_to_call_point(array $frame): string
             $frame['function'],
         );
     } elseif ($frame['function']) {
-        $sprintf = sprintf(
+        return sprintf(
             '%s(%s): %s()',
             $frame['file'],
             $frame['line'],
             $frame['function'],
         );
     } else {
-        $sprintf = sprintf(
+        return sprintf(
             '%s(%s)',
             $frame['file'],
             $frame['line'],
         );
     }
-    return $sprintf;
 }
 
 /**
