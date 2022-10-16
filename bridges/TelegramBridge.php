@@ -24,7 +24,7 @@ class TelegramBridge extends BridgeAbstract
         'http://telegram.me/rssbridge' => ['username' => 'rssbridge'],
     ];
 
-    const CACHE_TIMEOUT = 900; // 15 mins
+    const CACHE_TIMEOUT = 60 * 15; // 15 mins
 
     private $feedName = '';
     private $enclosures = [];

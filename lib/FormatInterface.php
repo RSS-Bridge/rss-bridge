@@ -42,7 +42,7 @@ interface FormatInterface
      * Return items
      *
      * @throws \LogicException if the items are not set
-     * @return array The items
+     * @return FeedItem[] The items
      */
     public function getItems();
 

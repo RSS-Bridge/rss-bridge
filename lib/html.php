@@ -18,15 +18,26 @@ function render(string $template, array $context = []): string
     return render_template('base.html.php', $context);
 }
 
+/**
+ * Render template as absolute path or relative to templates folder.
+ * Do not pass user input in $template
+ */
 function render_template(string $template, array $context = []): string
 {
     if (isset($context['template'])) {
         throw new \Exception("Don't use `template` as a context key");
     }
+    $templateFilepath = __DIR__ . '/../templates/' . $template;
     extract($context);
     ob_start();
     try {
-        require __DIR__ . '/../templates/' . $template;
+        if (is_file($template)) {
+            require $template;
+        } elseif (is_file($templateFilepath)) {
+            require $templateFilepath;
+        } else {
+            throw new \Exception(sprintf('Unable to find template `%s`', $template));
+        }
     } catch (\Throwable $e) {
         ob_end_clean();
         throw $e;
