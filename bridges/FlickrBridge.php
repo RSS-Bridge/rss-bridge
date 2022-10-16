@@ -243,7 +243,8 @@ class FlickrBridge extends BridgeAbstract
     {
         $areas = [];
 
-        foreach ($model['sizes'] as $size) {
+        foreach ($model['sizes']['data'] as $size) {
+            $size = $size['data'];
             $areas[$size['width'] * $size['height']] = $size['url'];
         }
 
@@ -255,7 +256,8 @@ class FlickrBridge extends BridgeAbstract
         $areas = [];
         $limit = 320 * 240;
 
-        foreach ($model['sizes'] as $size) {
+        foreach ($model['sizes']['data'] as $size) {
+            $size = $size['data'];
             $image_area = $size['width'] * $size['height'];
 
             if ($image_area >= $limit) {
