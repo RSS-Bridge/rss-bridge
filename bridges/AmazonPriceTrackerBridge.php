@@ -187,6 +187,12 @@ EOT;
 
     private function scrapePriceGeneric($html)
     {
+        $default = [
+            'price'         => null,
+            'displayPrice'  => null,
+            'currency'      => null,
+            'shipping'      => null,
+        ];
         $priceDiv = null;
 
         foreach (self::PRICE_SELECTORS as $sel) {
@@ -197,58 +203,48 @@ EOT;
         }
 
         if (!$priceDiv) {
-            return false;
+            return $default;
         }
 
         $priceString = str_replace(str_split(self::WHITESPACE), '', $priceDiv->plaintext);
         preg_match('/(\d+\.\d{0,2})/', $priceString, $matches);
 
-        $price = $matches[0];
+        $price = $matches[0] ?? null;
         $currency = str_replace($price, '', $priceString);
 
         if ($price != null && $currency != null) {
             return [
                 'price'     => $price,
+                'displayPrice'  => null,
                 'currency'  => $currency,
                 'shipping'  => '0'
             ];
         }
-
-        return false;
+        return $default;
     }
 
-    private function renderContent($image, $data)
-    {
-        $price = $data['displayPrice'];
-        if (!$price) {
-            $price = "{$data['price']} {$data['currency']}";
-        }
-
-        $html = "$image<br>Price: $price";
-
-        if ($data['shipping'] !== '0') {
-            $html .= "<br>Shipping: {$data['shipping']} {$data['currency']}</br>";
-        }
-
-        return $html;
-    }
-
-    /**
-     * Scrape method for Amazon product page
-     * @return [type] [description]
-     */
     public function collectData()
     {
         $html = $this->getHtml();
         $this->title = $this->getTitle($html);
-        $imageTag = $this->getImage($html);
-
+        $image = $this->getImage($html);
         $data = $this->scrapePriceGeneric($html);
+
+        // render
+        $content = '';
+        $price = $data['displayPrice'];
+        if (!$price) {
+            $price = sprintf('%s %s', $data['price'], $data['currency']);
+        }
+        $content .= sprintf('%s<br>Price: %s', $image, $price);
+        if ($data['shipping'] !== '0') {
+            $content .= sprintf('<br>Shipping: %s %s</br>', $data['shipping'], $data['currency']);
+        }
 
         $item = [
             'title'     => $this->title,
             'uri'       => $this->getURI(),
-            'content'   => $this->renderContent($imageTag, $data),
+            'content'   => $content,
             // This is to ensure that feed readers notice the price change
             'uid'       => md5($data['price'])
         ];

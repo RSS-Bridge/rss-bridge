@@ -180,10 +180,16 @@ class ZDNetBridge extends FeedExpander
 
         $article = getSimpleHTMLDOMCached($item['uri']);
         if (!$article) {
-            returnServerError('Could not request ZDNet: ' . $url);
+            Logger::info('Unable to parse the dom from ' . $item['uri']);
+            return $item;
         }
 
-        $contents = $article->find('article', 0)->innertext;
+        $articleTag = $article->find('article', 0) ?? $article->find('.c-articleContent', 0);
+        if (!$articleTag) {
+            Logger::info('Unable to parse <article> tag in ' . $item['uri']);
+            return $item;
+        }
+        $contents = $articleTag->innertext;
         foreach (
             [
             '<div class="shareBar"',

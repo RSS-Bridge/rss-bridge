@@ -91,11 +91,14 @@ class PornhubBridge extends BridgeAbstract
                 $item['content'] = '<a href="' . $item['uri'] . '"><img src="' . $image . '"></a>';
             }
 
-            // date hack, guess upload YYYYMMDD from thumbnail URL (format: https://ci.phncdn.com/videos/201907/25/--- )
             $uploaded = explode('/', $image);
-            $uploaded = strtotime($uploaded[4] . $uploaded[5]);
-            $item['timestamp'] = $uploaded;
-
+            if (isset($uploaded[4])) {
+                // date hack, guess upload YYYYMMDD from thumbnail URL (format: https://ci.phncdn.com/videos/201907/25/--- )
+                $uploadTimestamp = strtotime($uploaded[4] . $uploaded[5]);
+                $item['timestamp'] = $uploadTimestamp;
+            } else {
+                // The thumbnail url did not have a date in it for some unknown reason
+            }
             $this->items[] = $item;
         }
     }

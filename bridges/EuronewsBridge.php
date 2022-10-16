@@ -58,7 +58,7 @@ class EuronewsBridge extends BridgeAbstract
         $data = json_decode($json, true);
 
         foreach ($data as $datum) {
-            $datum_uri = $root_url . $datum['fullUrl'];
+            $datum_uri = $root_url . $datum['path'];
             $url_datum = $this->getItemContent($datum_uri);
             $categories = [];
             if (array_key_exists('program', $datum)) {
