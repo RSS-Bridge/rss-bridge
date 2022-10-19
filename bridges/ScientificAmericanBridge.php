@@ -7,14 +7,14 @@ class ScientificAmericanBridge extends FeedExpander
     const URI = 'https://www.scientificamerican.com/';
 
     const CACHE_TIMEOUT = 60 * 60 * 1; // 1 hour
-    const DESCRIPTION = 'All articles from the latest feed, plus articles in issues';
+    const DESCRIPTION = 'All articles from the latest feed, plus articles in issues.';
 
     const PARAMETERS = [
         '' => [
             'parseIssues' => [
-                'name' => 'Number of issues to parse and add to the feed',
+                'name' => 'Number of issues to parse and add to the feed. Takes longer to load, but includes all articles.',
                 'type' => 'number',
-                'defaultValue' => 1,
+                'defaultValue' => 0,
             ],
             'addContents' => [
                 'name' => 'Also fetch contents for articles',
@@ -54,14 +54,16 @@ class ScientificAmericanBridge extends FeedExpander
         }
     }
 
-    private function collectFeed() {
+    private function collectFeed()
+    {
         $this->collectExpandableDatas(self::FEED);
         $items = $this->items;
         $this->items = [];
         return $items;
     }
 
-    private function collectIssues() {
+    private function collectIssues()
+    {
         $html = getSimpleHTMLDOMCached(self::ISSUES);
         $issues_root = $html->find('div.store-listing-group', 0);
         $issues = $issues_root->find('div.store-listing-group__item');
@@ -79,7 +81,8 @@ class ScientificAmericanBridge extends FeedExpander
         return $items;
     }
 
-    private function parseIssue($issue_link) {
+    private function parseIssue($issue_link)
+    {
         $items = [];
         $html = getSimpleHTMLDOMCached($issue_link);
 
@@ -102,7 +105,8 @@ class ScientificAmericanBridge extends FeedExpander
         return $items;
     }
 
-    private function parseIssueItem($article) {
+    private function parseIssueItem($article)
+    {
         $title = $article->getAttribute('data-article-title');
         $a = $article->find('a', 0);
         $link = null;
@@ -127,7 +131,8 @@ class ScientificAmericanBridge extends FeedExpander
         ];
     }
 
-    private function updateItem($item) {
+    private function updateItem($item)
+    {
         $html = getSimpleHTMLDOMCached($item['uri']);
         $article = $html->find('#sa_body', 0)->find('article', 0);
 
