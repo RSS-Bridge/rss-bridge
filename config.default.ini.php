@@ -57,7 +57,7 @@ by_bridge = false
 
 [authentication]
 
-; Enables authentication for all requests to this RSS-Bridge instance.
+; Enables basic authentication for all requests to this RSS-Bridge instance.
 ;
 ; Warning: You'll have to upgrade existing feeds after enabling this option!
 ;
@@ -69,6 +69,9 @@ username = "admin"
 
 ; This default password is public knowledge. Replace it.
 password = "7afbf648a369b261"
+
+; This will be used only for actions that require privileged access
+access_token = ""
 
 [error]
 
