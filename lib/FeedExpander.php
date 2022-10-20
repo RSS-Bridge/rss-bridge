@@ -290,7 +290,7 @@ abstract class FeedExpander extends BridgeAbstract
             $item['uri'] = (string)$feedItem->id;
         }
         if (isset($feedItem->title)) {
-            $item['title'] = (string)$feedItem->title;
+            $item['title'] = html_entity_decode((string)$feedItem->title);
         }
         if (isset($feedItem->updated)) {
             $item['timestamp'] = strtotime((string)$feedItem->updated);
@@ -336,7 +336,7 @@ abstract class FeedExpander extends BridgeAbstract
             $item['uri'] = (string)$feedItem->link;
         }
         if (isset($feedItem->title)) {
-            $item['title'] = (string)$feedItem->title;
+            $item['title'] = html_entity_decode((string)$feedItem->title);
         }
         // rss 0.91 doesn't support timestamps
         // rss 0.91 doesn't support authors
