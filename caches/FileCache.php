@@ -79,9 +79,6 @@ class FileCache implements CacheInterface
 
     public function setKey($key)
     {
-        if (!empty($key) && is_array($key)) {
-            $key = array_map('strtolower', $key);
-        }
         $key = json_encode($key);
 
         if (!is_string($key)) {
