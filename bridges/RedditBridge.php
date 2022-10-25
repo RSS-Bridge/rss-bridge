@@ -150,8 +150,6 @@ class RedditBridge extends BridgeAbstract
             $flair = '';
         }
 
-
-
         foreach ($subreddits as $subreddit) {
             $name = trim($subreddit);
             $values = getContents(self::URI
@@ -207,14 +205,17 @@ class RedditBridge extends BridgeAbstract
 
                     $item['content']
                         = htmlspecialchars_decode($data->selftext_html);
-                } elseif (isset($data->post_hint) ? $data->post_hint == 'link' : false) {
+                } elseif (isset($data->post_hint) && $data->post_hint == 'link') {
                     // Link with preview
 
                     if (isset($data->media)) {
-                        // Reddit embeds content for some sites (e.g. Twitter)
-                        $embed = htmlspecialchars_decode(
-                            $data->media->oembed->html
-                        );
+                        // todo: maybe switch on the type
+                        if (isset($data->media->oembed->html)) {
+                            // Reddit embeds content for some sites (e.g. Twitter)
+                            $embed = htmlspecialchars_decode($data->media->oembed->html);
+                        } else {
+                            $embed = '';
+                        }
                     } else {
                         $embed = '';
                     }

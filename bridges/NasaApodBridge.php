@@ -26,9 +26,10 @@ class NasaApodBridge extends BridgeAbstract
             //Extract image and explanation
             $image_wrapper = $picture_html->find('a', 1);
             $image_path = $image_wrapper->href;
+            // This image is not present when youtube embed
             $img_placeholder = $image_wrapper->find('img', 0);
-            $img_alt = $img_placeholder->alt;
-            $img_style = $img_placeholder->style;
+            $img_alt = $img_placeholder->alt ?? '';
+            $img_style = $img_placeholder->style ?? '';
             $image_uri = self::URI . $image_path;
             $new_img_placeholder = "<img src=\"$image_uri\" alt=\"$img_alt\" style=\"$img_style\">";
             $media = "<a href=\"$image_uri\">$new_img_placeholder</a>";
