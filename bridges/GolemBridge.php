@@ -69,7 +69,15 @@ class GolemBridge extends FeedExpander
         $item['content'] ??= '';
         $uri = $item['uri'];
 
+        $urls = [];
+
         while ($uri) {
+            if (isset($urls[$uri])) {
+                // Prevent forever a loop
+                break;
+            }
+            $urls[$uri] = true;
+
             $articlePage = getSimpleHTMLDOMCached($uri, static::CACHE_TIMEOUT, static::HEADERS);
 
             // URI without RSS feed reference
