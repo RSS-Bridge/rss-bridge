@@ -40,6 +40,9 @@ class MoebooruBridge extends BridgeAbstract
 
         foreach ($data as $datai) {
             $json = json_decode($datai, true);
+            if ($json === null) {
+                continue;
+            }
             $item = [];
             $item['uri'] = $this->getURI() . '/post/show/' . $json['id'];
             $item['postid'] = $json['id'];

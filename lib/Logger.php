@@ -38,7 +38,12 @@ final class Logger
                 'Exception InvalidArgumentException: Format name invalid',
                 'Exception InvalidArgumentException: Unknown format given',
                 'Exception InvalidArgumentException: Bridge name invalid',
+                'Exception Exception: Invalid action',
                 'Exception Exception: twitter: No results for this query',
+                // telegram
+                'Exception Exception: Unable to find channel. The channel is non-existing or non-public',
+                // fb
+                'Exception Exception: This group is not public! RSS-Bridge only supports public groups!',
             ];
             foreach ($ignoredExceptions as $ignoredException) {
                 if (str_starts_with($context['message'], $ignoredException)) {

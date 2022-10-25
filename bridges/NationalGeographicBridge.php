@@ -170,10 +170,8 @@ class NationalGeographicBridge extends BridgeAbstract
         $image = $story['img'];
         $item['enclosures'][] = $image['src'];
 
-        $tags = $story['tags'];
-        foreach ($tags as $tag) {
-            $tag_name = $tag['name'];
-            $item['categories'][] = $tag_name;
+        foreach ($story['tags'] as $tag) {
+            $item['categories'][] = $tag['name'] ?? $tag;
         }
 
         $this->items[] = $item;

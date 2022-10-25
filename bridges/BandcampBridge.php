@@ -313,6 +313,7 @@ class BandcampBridge extends BridgeAbstract
     private function apiGet($endpoint, $query_data)
     {
         $url = self::URI . 'api/' . $endpoint . '?' . http_build_query($query_data);
+        // todo: 429 Too Many Requests happens a lot
         $data = json_decode(getContents($url));
         return $data;
     }
