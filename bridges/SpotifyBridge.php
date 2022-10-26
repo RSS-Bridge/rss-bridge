@@ -109,7 +109,7 @@ class SpotifyBridge extends BridgeAbstract
         } elseif (strlen($date) == 7) {
             $date .= '-01';
         }
-        
+
         if (strlen($date) > 10) {
             return DateTime::createFromFormat('Y-m-d\TH:i:s\Z', $date)->getTimestamp();
         }
@@ -319,7 +319,7 @@ class SpotifyBridge extends BridgeAbstract
             }
         });
     }
-    
+
     private function collectAlbums()
     {
         $offset = 0;
@@ -354,7 +354,7 @@ class SpotifyBridge extends BridgeAbstract
             }
         }
     }
-    
+
     private function collectTracks()
     {
         $offset = 0;
