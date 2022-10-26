@@ -9,54 +9,54 @@ class SpotifyBridge extends BridgeAbstract
     const CACHE_TIMEOUT = 3600;
     const PARAMETERS = [
         'global' => [
-			'clientid' => [
-				'name' => 'Client ID',
-				'type' => 'text',
-				'required' => true
-			],
-			'clientsecret' => [
-				'name' => 'Client secret',
-				'type' => 'text',
-				'required' => true
-			],
-			'country' => [
-				'name' => 'Country',
-				'type' => 'text',
-				'required' => false,
-				'exampleValue' => 'US',
-				'defaultValue' => 'US'
-			],
-			'limit' => [
-				'name' => 'Limit',
-				'type' => 'number',
-				'required' => false,
-				'exampleValue' => 10,
-				'defaultValue' => 10
-			]
-		],
-		'artist' => [
-			'spotifyuri' => [
-				'name' => 'Spotify URIs',
-				'type' => 'text',
-				'required' => true,
-				'exampleValue' => 'spotify:artist:4lianjyuR1tqf6oUX8kjrZ [,spotify:artist:3JsMj0DEzyWc0VDlHuy9Bx]',
-			],
-			'albumtype' => [
-				'name' => 'Album type',
-				'type' => 'text',
-				'required' => false,
-				'exampleValue' => 'album,single,appears_on,compilation',
-				'defaultValue' => 'album,single'
-			]
-		],
-		'playlist' => [
-			'spotifyuri' => [
-				'name' => 'Spotify URIs',
-				'type' => 'text',
-				'required' => true,
-				'exampleValue' => 'spotify:playlist:37i9dQZF1DXcBWIGoYBM5M [,spotify:playlist:37i9dQZF1DX0XUsuxWHRQd]',
-			],
-		]
+            'clientid' => [
+                'name' => 'Client ID',
+                'type' => 'text',
+                'required' => true
+            ],
+            'clientsecret' => [
+                'name' => 'Client secret',
+                'type' => 'text',
+                'required' => true
+            ],
+            'country' => [
+                'name' => 'Country',
+                'type' => 'text',
+                'required' => false,
+                'exampleValue' => 'US',
+                'defaultValue' => 'US'
+            ],
+            'limit' => [
+                'name' => 'Limit',
+                'type' => 'number',
+                'required' => false,
+                'exampleValue' => 10,
+                'defaultValue' => 10
+            ]
+        ],
+        'artist' => [
+            'spotifyuri' => [
+                'name' => 'Spotify URIs',
+                'type' => 'text',
+                'required' => true,
+                'exampleValue' => 'spotify:artist:4lianjyuR1tqf6oUX8kjrZ [,spotify:artist:3JsMj0DEzyWc0VDlHuy9Bx]',
+            ],
+            'albumtype' => [
+                'name' => 'Album type',
+                'type' => 'text',
+                'required' => false,
+                'exampleValue' => 'album,single,appears_on,compilation',
+                'defaultValue' => 'album,single'
+            ]
+        ],
+        'playlist' => [
+            'spotifyuri' => [
+                'name' => 'Spotify URIs',
+                'type' => 'text',
+                'required' => true,
+                'exampleValue' => 'spotify:playlist:37i9dQZF1DXcBWIGoYBM5M [,spotify:playlist:37i9dQZF1DX0XUsuxWHRQd]',
+            ],
+        ]
     ];
 
     const TOKENURI = 'https://accounts.spotify.com/api/token';
@@ -67,8 +67,8 @@ class SpotifyBridge extends BridgeAbstract
     private $token = '';
     private $artists = [];
     private $albums = [];
-	private $playlists = [];
-	private $tracks = [];
+    private $playlists = [];
+    private $tracks = [];
 
     public function getURI()
     {
@@ -82,11 +82,11 @@ class SpotifyBridge extends BridgeAbstract
     public function getName()
     {
         if (empty($this->name)) {
-			if ($this->queriedContext == 'artist') {
-				$this->getArtist();
-			} else {
-				$this->getPlaylist();
-			}
+            if ($this->queriedContext == 'artist') {
+                $this->getArtist();
+            } else {
+                $this->getPlaylist();
+            }
         }
 
         return $this->name;
@@ -109,10 +109,10 @@ class SpotifyBridge extends BridgeAbstract
         } elseif (strlen($date) == 7) {
             $date .= '-01';
         }
-		
-		if (strlen($date) > 10) {
-			return DateTime::createFromFormat('Y-m-d\TH:i:s\Z', $date)->getTimestamp();
-		}
+        
+        if (strlen($date) > 10) {
+            return DateTime::createFromFormat('Y-m-d\TH:i:s\Z', $date)->getTimestamp();
+        }
 
         return DateTime::createFromFormat('Y-m-d', $date)->getTimestamp();
     }
@@ -319,9 +319,9 @@ class SpotifyBridge extends BridgeAbstract
             }
         });
     }
-	
-	private function collectAlbums()
-	{
+    
+    private function collectAlbums()
+    {
         $offset = 0;
 
         $this->getAllAlbums();
@@ -353,10 +353,10 @@ class SpotifyBridge extends BridgeAbstract
                 break;
             }
         }
-	}
-	
-	private function collectTracks()
-	{
+    }
+    
+    private function collectTracks()
+    {
         $offset = 0;
 
         $this->getAllTracks();
@@ -383,14 +383,14 @@ class SpotifyBridge extends BridgeAbstract
                 break;
             }
         }
-	}
+    }
 
     public function collectData()
     {
-		if ($this->queriedContext == 'artist') {
-			$this->collectAlbums();
-		} else {
-			$this->collectTracks();
-		}
+        if ($this->queriedContext == 'artist') {
+            $this->collectAlbums();
+        } else {
+            $this->collectTracks();
+        }
     }
 }
