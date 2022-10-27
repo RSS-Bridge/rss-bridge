@@ -91,11 +91,11 @@ class SpotifyBridge extends BridgeAbstract
 
     private function getDate($entry)
     {
-		if ($entry['type'] === 'album'){
-			$date = $entry['release_date'];
-		} else {
-			$date = $entry['added_at'];
-		}
+        if ($entry['type'] === 'album') {
+            $date = $entry['release_date'];
+        } else {
+            $date = $entry['added_at'];
+        }
 
         if (strlen($date) == 4) {
             $date .= '-01-01';
@@ -107,7 +107,7 @@ class SpotifyBridge extends BridgeAbstract
             return DateTime::createFromFormat('Y-m-d\TH:i:s\Z', $date)->getTimestamp();
         }
 
-		return DateTime::createFromFormat('Y-m-d', $date)->getTimestamp();
+        return DateTime::createFromFormat('Y-m-d', $date)->getTimestamp();
     }
 
     private function getAlbumType()
@@ -170,7 +170,7 @@ class SpotifyBridge extends BridgeAbstract
         $this->entries = [];
 
         $this->getAllUris();
-        
+
         Debug::log('Fetching all entries');
         foreach ($this->uris as $uri) {
             $type = $this->getUriType($uri) . 's';
@@ -178,19 +178,17 @@ class SpotifyBridge extends BridgeAbstract
             $fetch = true;
             $offset = 0;
 
-            $api_url = self::APIURI . $type. '/'
+            $api_url = self::APIURI . $type . '/'
                 . $this->getId($uri)
                 . '/' . $entry_type
-                . '?limit=50'
-                . '&country='
+                . '?limit=50&country='
                 . $this->getCountry();
 
-            if ($type === "artists") {
+            if ($type === 'artists') {
                 $api_url = $api_url . '&include_groups=' . $this->getAlbumType();
             }
 
             while ($fetch) {
-
                 $partial = $this->fetchContent($api_url
                     . '&offset='
                     . $offset);
@@ -296,7 +294,7 @@ class SpotifyBridge extends BridgeAbstract
         $item['content'] = '<img style="width: 256px" src="'
             . $track['track']['album']['images'][0]['url']
             . '">';
-        
+
         return $item;
     }
 
@@ -309,7 +307,6 @@ class SpotifyBridge extends BridgeAbstract
 
         Debug::log('Building RSS feed');
         foreach ($this->entries as $entry) {
-
             if ($entry['type'] === 'album') {
                 $item = $this->getAlbumData($entry);
             } else {
