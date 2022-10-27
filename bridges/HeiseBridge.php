@@ -80,22 +80,25 @@ class HeiseBridge extends FeedExpander
         $article = str_get_html($article->outertext);
 
         $header = $article->find('header.a-article-header', 0);
-        $headerElements = $header->find('p, a-img img, figure img');
-        $item['content'] = implode('', $headerElements);
+        if ($header) {
+            $headerElements = $header->find('p, a-img img, figure img');
+            $item['content'] = implode('', $headerElements);
 
-        $authors = $header->find('.a-creator__names .a-creator__name');
-        if ($authors) {
-            $item['author'] = implode(', ', array_map(function ($e) {
-                return $e->plaintext;
-            }, $authors));
+            $authors = $header->find('.a-creator__names .a-creator__name');
+            if ($authors) {
+                $item['author'] = implode(', ', array_map(function ($e) {
+                    return $e->plaintext;
+                }, $authors));
+            }
         }
 
         $content = $article->find('.article-content', 0);
-        $contentElements = $content->find(
-            'p, h3, ul, table, pre, a-img img, a-bilderstrecke h2, a-bilderstrecke figure, a-bilderstrecke figcaption'
-        );
-        $item['content'] .= implode('', $contentElements);
-
+        if ($content) {
+            $contentElements = $content->find(
+                'p, h3, ul, table, pre, a-img img, a-bilderstrecke h2, a-bilderstrecke figure, a-bilderstrecke figcaption'
+            );
+            $item['content'] .= implode('', $contentElements);
+        }
         foreach ($article->find('a-img img, a-bilderstrecke img, figure img') as $img) {
             $item['enclosures'][] = $img->src;
         }
