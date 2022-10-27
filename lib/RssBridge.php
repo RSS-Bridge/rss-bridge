@@ -16,10 +16,7 @@ final class RssBridge
         } catch (\Throwable $e) {
             Logger::error('Exception in main', ['e' => $e]);
             http_response_code(500);
-            print render(__DIR__ . '/../templates/error.html.php', [
-                'message'   => create_sane_exception_message($e),
-                'trace'     => trace_from_exception($e),
-            ]);
+            print render(__DIR__ . '/../templates/error.html.php', ['e' => $e]);
         }
     }
 

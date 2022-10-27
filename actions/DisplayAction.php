@@ -163,14 +163,15 @@ class DisplayAction implements ActionInterface
                         // Create "new" error message every 24 hours
                         $request['_error_time'] = urlencode((int)(time() / 86400));
 
+                        // todo: I don't think this _error_time in the title is useful. It's confusing.
                         $itemTitle = sprintf('Bridge returned error %s! (%s)', $e->getCode(), $request['_error_time']);
                         $item->setTitle($itemTitle);
                         $item->setURI(get_current_url());
                         $item->setTimestamp(time());
 
+                        // todo: consider giving more helpful error messages
                         $content = render_template(__DIR__ . '/../templates/bridge-error.html.php', [
-                            'message' => create_sane_exception_message($e),
-                            'trace' => trace_from_exception($e),
+                            'error' => render_template(__DIR__ . '/../templates/error.html.php', ['e' => $e]),
                             'searchUrl' => self::createGithubSearchUrl($bridge),
                             'issueUrl' => self::createGithubIssueUrl($bridge, $e, create_sane_exception_message($e)),
                             'maintainer' => $bridge->getMaintainer(),

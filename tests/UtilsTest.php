@@ -40,4 +40,11 @@ final class UtilsTest extends TestCase
         $this->assertIsNumeric($sut->getTime());
         $sut->purgeCache(-1);
     }
+
+    public function testTrimFilePath()
+    {
+        $this->assertSame('', trim_path_prefix(dirname(__DIR__)));
+        $this->assertSame('tests', trim_path_prefix(__DIR__));
+        $this->assertSame('tests/UtilsTest.php', trim_path_prefix(__DIR__ . '/UtilsTest.php'));
+    }
 }

@@ -59,6 +59,7 @@ TEXT;
 
         foreach ($feeds as $feed) {
             // Fetch all items from the feed
+            // todo: consider wrapping this in a try..catch to not let a single feed break the entire bridge?
             $this->collectExpandableDatas($feed);
         }
 

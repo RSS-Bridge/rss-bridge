@@ -35,6 +35,7 @@ final class FrontpageAction implements ActionInterface
     </script>
 </head>
 <body onload="rssbridge_list_search()">
+<div class="container">
 EOD;
     }
 
@@ -146,6 +147,7 @@ EOD;
 	{$inactive}
 	{$admininfo}
 </section>
+</div>
 </body></html>
 EOD;
     }

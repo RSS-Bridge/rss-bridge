@@ -27,26 +27,31 @@ final class Logger
     private static function log(string $level, string $message, array $context = []): void
     {
         if (isset($context['e'])) {
-            $context['message'] = create_sane_exception_message($context['e']);
-            $context['code'] = $context['e']->getCode();
-            $context['url'] = get_current_url();
-            $context['trace'] = trace_to_call_points(trace_from_exception($context['e']));
+            /** @var \Throwable $e */
+            $e = $context['e'];
             unset($context['e']);
-            // Don't log these records
+            $context['type'] = get_class($e);
+            $context['code'] = $e->getCode();
+            $context['message'] = $e->getMessage();
+            $context['file'] = trim_path_prefix($e->getFile());
+            $context['line'] = $e->getLine();
+            $context['url'] = get_current_url();
+            $context['trace'] = trace_to_call_points(trace_from_exception($e));
+            // Don't log these exceptions
             $ignoredExceptions = [
-                'Exception Exception: You must specify a format',
-                'Exception InvalidArgumentException: Format name invalid',
-                'Exception InvalidArgumentException: Unknown format given',
-                'Exception InvalidArgumentException: Bridge name invalid',
-                'Exception Exception: Invalid action',
-                'Exception Exception: twitter: No results for this query',
+                'You must specify a format',
+                'Format name invalid',
+                'Unknown format given',
+                'Bridge name invalid',
+                'Invalid action',
+                'twitter: No results for this query',
                 // telegram
-                'Exception Exception: Unable to find channel. The channel is non-existing or non-public',
+                'Unable to find channel. The channel is non-existing or non-public',
                 // fb
-                'Exception Exception: This group is not public! RSS-Bridge only supports public groups!',
+                'This group is not public! RSS-Bridge only supports public groups!',
             ];
             foreach ($ignoredExceptions as $ignoredException) {
-                if (str_starts_with($context['message'], $ignoredException)) {
+                if (str_starts_with($e->getMessage(), $ignoredException)) {
                     return;
                 }
             }
