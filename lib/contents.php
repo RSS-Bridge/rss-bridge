@@ -364,7 +364,7 @@ function getSimpleHTMLDOMCached(
     $defaultBRText = DEFAULT_BR_TEXT,
     $defaultSpanText = DEFAULT_SPAN_TEXT
 ) {
-    Debug::log('Caching url ' . $url . ', duration ' . $duration);
+    Logger::debug(sprintf('Caching url %s, duration %d', $url, $duration));
 
     // Initialize cache
     $cacheFactory = new CacheFactory();
