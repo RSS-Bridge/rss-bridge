@@ -68,7 +68,7 @@ def testBridges(bridges,status):
                     # if all example/default values are present, form the full request string, run the request, replace the static css
                     # file with the url of em's public instance and then upload it to termpad.com, a pastebin-like-site.
                     r = requests.get(URL + bridgestring + formstring)
-                    pagetext = r.text.replace('static/HtmlFormat.css','https://feed.eugenemolotov.ru/static/HtmlFormat.css')
+                    pagetext = r.text.replace('static/style.css','https://rss-bridge.org/bridge01/static/style.css')
                     pagetext = pagetext.encode("utf_8")
                     termpad = requests.post(url="https://termpad.com/", data=pagetext)
                     termpadurl = termpad.text
