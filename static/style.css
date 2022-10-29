@@ -158,6 +158,7 @@ section > p.author {
 }
 section.footer {
     opacity: 0.5;
+    text-align: center;
 }
 
 section.footer:hover {
