@@ -321,7 +321,7 @@ class FeedItem
         if (is_string($content)) {
             $this->content = $content;
         } else {
-            Debug::log('Content must be a string!');
+            Debug::log(sprintf('Feed content must be a string but got %s', gettype($content)));
         }
 
         return $this;

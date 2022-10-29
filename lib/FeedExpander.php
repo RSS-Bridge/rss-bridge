@@ -126,6 +126,9 @@ abstract class FeedExpander extends BridgeAbstract
         // Restore previous behaviour in case other code relies on it being off
         libxml_use_internal_errors(false);
 
+        // Commented out because it's spammy
+        // Debug::log(sprintf("RSS content is ===========\n%s===========", var_export($rssContent, true)));
+
         switch (true) {
             case isset($rssContent->item[0]):
                 Debug::log('Detected RSS 1.0 format');
@@ -167,7 +170,6 @@ abstract class FeedExpander extends BridgeAbstract
     {
         $this->loadRss2Data($rssContent->channel[0]);
         foreach ($rssContent->item as $item) {
-            Debug::log(sprintf('Parsing item %s', var_export($item, true)));
             $tmp_item = $this->parseItem($item);
             if (!empty($tmp_item)) {
                 $this->items[] = $tmp_item;
@@ -183,24 +185,16 @@ abstract class FeedExpander extends BridgeAbstract
      *
      * @link http://www.rssboard.org/rss-specification RSS 2.0 Specification
      *
-     * @param object $rssContent The RSS content
-     * @param int $maxItems Maximum number of items to collect from the feed
-     * (`-1`: no limit).
+     * @param int $maxItems Maximum number of items to collect from the feed (`-1`: no limit).
      * @return void
      *
-     * @todo Instead of passing $maxItems to all functions, just add all items
-     * and remove excessive items later.
+     * @todo Instead of passing $maxItems to all functions, just add all items and remove excessive items later.
      */
-    protected function collectRss2($rssContent, $maxItems)
+    protected function collectRss2(\SimpleXMLElement $rssContent, $maxItems)
     {
         $rssContent = $rssContent->channel[0];
-        Debug::log('RSS content is ===========\n'
-        . var_export($rssContent, true)
-        . '===========');
-
         $this->loadRss2Data($rssContent);
         foreach ($rssContent->item as $item) {
-            Debug::log('parsing item ' . var_export($item, true));
             $tmp_item = $this->parseItem($item);
             if (!empty($tmp_item)) {
                 $this->items[] = $tmp_item;
@@ -228,7 +222,6 @@ abstract class FeedExpander extends BridgeAbstract
     {
         $this->loadAtomData($content);
         foreach ($content->entry as $item) {
-            Debug::log('parsing item ' . var_export($item, true));
             $tmp_item = $this->parseItem($item);
             if (!empty($tmp_item)) {
                 $this->items[] = $tmp_item;

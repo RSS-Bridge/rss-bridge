@@ -6,7 +6,9 @@ final class Logger
 {
     public static function debug(string $message, array $context = [])
     {
-        self::log('DEBUG', $message, $context);
+        if (Debug::isEnabled()) {
+            self::log('DEBUG', $message, $context);
+        }
     }
 
     public static function info(string $message, array $context = []): void
