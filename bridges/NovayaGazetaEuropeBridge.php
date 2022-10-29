@@ -120,11 +120,14 @@ class NovayaGazetaEuropeBridge extends BridgeAbstract
             case 'text/quote':
                 return "<figure><blockquote>{$datum->data}</blockquote></figure><br>";
             case 'embed/native':
-                $desc = $datum->link;
-                if (property_exists($datum, 'caption')) {
-                    $desc = $datum->caption;
+                if (isset($datum->link)) {
+                    $desc = $datum->link;
+                    if (isset($datum->caption)) {
+                        $desc = $datum->caption;
+                    }
+                    return sprintf('<p><a href="%s">%s</a></p>', $datum->link, $desc);
                 }
-                return "<p><a link=\"{$datum->link}\">{$desc}</a></p>";
+                return '';
             case 'text/framed':
                 $res = '';
                 if (property_exists($datum, 'typeDisplay')) {

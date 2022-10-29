@@ -8,11 +8,15 @@
     <link href="static/style.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="static/favicon.png">
 </head>
-<body>
-    <header>
-        <div class="logo"></div>
-    </header>
 
-    <?= raw($page) ?>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo"></div>
+        </header>
+
+        <?= raw($page) ?>
+    </div>
+</body>
 </html>
 

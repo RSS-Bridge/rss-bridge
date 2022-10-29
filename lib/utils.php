@@ -119,7 +119,7 @@ function frame_to_call_point(array $frame): string
 /**
  * Trim path prefix for privacy/security reasons
  *
- * Example: "/var/www/rss-bridge/index.php" => "index.php"
+ * Example: "/home/davidsf/rss-bridge/index.php" => "index.php"
  */
 function trim_path_prefix(string $filePath): string
 {
