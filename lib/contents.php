@@ -1,48 +1,50 @@
 <?php
 
-// todo: move this somewhere useful, possibly into a function
-const RSSBRIDGE_HTTP_STATUS_CODES = [
-    '100' => 'Continue',
-    '101' => 'Switching Protocols',
-    '200' => 'OK',
-    '201' => 'Created',
-    '202' => 'Accepted',
-    '203' => 'Non-Authoritative Information',
-    '204' => 'No Content',
-    '205' => 'Reset Content',
-    '206' => 'Partial Content',
-    '300' => 'Multiple Choices',
-    '301' => 'Moved Permanently',
-    '302' => 'Found',
-    '303' => 'See Other',
-    '304' => 'Not Modified',
-    '305' => 'Use Proxy',
-    '400' => 'Bad Request',
-    '401' => 'Unauthorized',
-    '402' => 'Payment Required',
-    '403' => 'Forbidden',
-    '404' => 'Not Found',
-    '405' => 'Method Not Allowed',
-    '406' => 'Not Acceptable',
-    '407' => 'Proxy Authentication Required',
-    '408' => 'Request Timeout',
-    '409' => 'Conflict',
-    '410' => 'Gone',
-    '411' => 'Length Required',
-    '412' => 'Precondition Failed',
-    '413' => 'Request Entity Too Large',
-    '414' => 'Request-URI Too Long',
-    '415' => 'Unsupported Media Type',
-    '416' => 'Requested Range Not Satisfiable',
-    '417' => 'Expectation Failed',
-    '429' => 'Too Many Requests',
-    '500' => 'Internal Server Error',
-    '501' => 'Not Implemented',
-    '502' => 'Bad Gateway',
-    '503' => 'Service Unavailable',
-    '504' => 'Gateway Timeout',
-    '505' => 'HTTP Version Not Supported'
-];
+final class Response
+{
+    public const STATUS_CODES = [
+        '100' => 'Continue',
+        '101' => 'Switching Protocols',
+        '200' => 'OK',
+        '201' => 'Created',
+        '202' => 'Accepted',
+        '203' => 'Non-Authoritative Information',
+        '204' => 'No Content',
+        '205' => 'Reset Content',
+        '206' => 'Partial Content',
+        '300' => 'Multiple Choices',
+        '301' => 'Moved Permanently',
+        '302' => 'Found',
+        '303' => 'See Other',
+        '304' => 'Not Modified',
+        '305' => 'Use Proxy',
+        '400' => 'Bad Request',
+        '401' => 'Unauthorized',
+        '402' => 'Payment Required',
+        '403' => 'Forbidden',
+        '404' => 'Not Found',
+        '405' => 'Method Not Allowed',
+        '406' => 'Not Acceptable',
+        '407' => 'Proxy Authentication Required',
+        '408' => 'Request Timeout',
+        '409' => 'Conflict',
+        '410' => 'Gone',
+        '411' => 'Length Required',
+        '412' => 'Precondition Failed',
+        '413' => 'Request Entity Too Large',
+        '414' => 'Request-URI Too Long',
+        '415' => 'Unsupported Media Type',
+        '416' => 'Requested Range Not Satisfiable',
+        '417' => 'Expectation Failed',
+        '429' => 'Too Many Requests',
+        '500' => 'Internal Server Error',
+        '501' => 'Not Implemented',
+        '502' => 'Bad Gateway',
+        '503' => 'Service Unavailable',
+        '504' => 'Gateway Timeout',
+        '505' => 'HTTP Version Not Supported'
+    ];
+}
 
 /**
  * Fetch data from an http url
@@ -135,16 +137,29 @@ function getContents(
             $response['content'] = $cache->loadData();
             break;
         default:
-            throw new HttpException(
-                sprintf(
-                    '%s resulted in `%s %s`: %s',
-                    $url,
-                    $result['code'],
-                    RSSBRIDGE_HTTP_STATUS_CODES[$result['code']] ?? '',
-                    mb_substr($result['body'], 0, 500),
-                ),
-                $result['code']
-            );
+            if (Debug::isEnabled()) {
+                // Include a part of the response body in the exception message
+                throw new HttpException(
+                    sprintf(
+                        '%s resulted in `%s %s: %s`',
+                        $url,
+                        $result['code'],
+                        Response::STATUS_CODES[$result['code']] ?? '',
+                        mb_substr($result['body'], 0, 500),
+                    ),
+                    $result['code']
+                );
+            } else {
+                throw new HttpException(
+                    sprintf(
+                        '%s resulted in `%s %s`',
+                        $url,
+                        $result['code'],
+                        Response::STATUS_CODES[$result['code']] ?? '',
+                    ),
+                    $result['code']
+                );
+            }
     }
     if ($returnFull === true) {
         return $response;
