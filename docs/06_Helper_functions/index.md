@@ -15,6 +15,7 @@ The `getContents` function uses [cURL](https://secure.php.net/manual/en/book.cur
 | `url`     | string | *required* | The URL of the contents to acquire
 | `header`  | array  | *optional* | An array of HTTP header fields to set, in the format `array('Content-type: text/plain', 'Content-length: 100')`, see [CURLOPT_HTTPHEADER](https://secure.php.net/manual/en/function.curl-setopt.php)
 | `opts`    | array  | *optional* | An array of cURL options in the format `array(CURLOPT_POST => 1);`, see [curl_setopt](https://secure.php.net/manual/en/function.curl-setopt.php) for a complete list of options.
+| `returnFull`    | boolean  | *optional* | Specifies whether to return the response body from cURL (default) or the response body, code, headers, etc.
 
 ```PHP
 $header = array('Content-type:text/plain', 'Content-length: 100');
