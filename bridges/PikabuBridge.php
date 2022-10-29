@@ -14,7 +14,7 @@ class PikabuBridge extends BridgeAbstract
             'Горячее' => 'hot',
             'Свежее' => 'new',
         ],
-        'defaultValue' => 'hot',
+        'defaultValue' => 'hot'
     ];
 
     const PARAMETERS = [
