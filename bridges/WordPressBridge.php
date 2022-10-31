@@ -5,13 +5,19 @@ class WordPressBridge extends FeedExpander
     const NAME = 'Wordpress Bridge';
     const URI = 'https://wordpress.org/';
     const DESCRIPTION = 'Returns the newest full posts of a WordPress powered website';
+    const MAINTAINER = 'ORelio';
 
     const PARAMETERS = [ [
         'url' => [
             'name' => 'Blog URL',
-            'exampleValue' => 'https://www.wpbeginner.com/',
+            'exampleValue' => 'https://wordpress.org/',
             'required' => true
-        ]
+        ],
+        'limit' => self::LIMIT,
+        'content-selector' => [
+            'name' => 'Content Selector (Optional - Advanced users)',
+            'exampleValue' => '.custom-article-class',
+        ],
     ]];
 
     private function cleanContent($content)
@@ -28,15 +34,20 @@ class WordPressBridge extends FeedExpander
 
         $article_html = getSimpleHTMLDOMCached($item['uri']);
 
+        // Find article body
         $article = null;
         switch (true) {
-        // Custom fix for theme in https://jungefreiheit.de/politik/deutschland/2022/wahl-im-saarland/
-            case !is_null($article_html->find('div[data-widget_type="theme-post-content.default"]', 0)):
-                $article = $article_html->find('div[data-widget_type="theme-post-content.default"]', 0);
+            case !empty($this->getInput('content-selector')):
+                // custom contect selector (manually specified by user)
+                $article = $article_html->find($this->getInput('content-selector'), 0);
                 break;
             case !is_null($article_html->find('[itemprop=articleBody]', 0)):
-                // highest priority content div
+                // highest priority content div (used for SEO)
                 $article = $article_html->find('[itemprop=articleBody]', 0);
+                break;
+            case !is_null($article_html->find('.article-content', 0)):
+                // more precise than article when present
+                $article = $article_html->find('.article-content', 0);
                 break;
             case !is_null($article_html->find('article', 0)):
                 // most common content div
@@ -56,22 +67,33 @@ class WordPressBridge extends FeedExpander
                 break;
         }
 
-        foreach ($article->find('h1.entry-title') as $title) {
-            if ($title->plaintext == $item['title']) {
+        // Remove duplicate title from content
+        foreach ($article->find('h1') as $title) {
+            if (trim(html_entity_decode($title->plaintext) == $item['title'])) {
                 $title->outertext = '';
             }
         }
 
+        // Convert lazy-loading images and iframes (videos...)
+        foreach ($article->find('img, iframe') as $img) {
+            if (!empty($img->getAttribute('data-src'))) {
+                $img->src = $img->getAttribute('data-src');
+            } elseif (!empty($img->getAttribute('data-srcset'))) {
+                $img->src = explode(' ', $img->getAttribute('data-srcset'))[0];
+            } elseif (!empty($img->getAttribute('data-lazy-src'))) {
+                $img->src = $img->getAttribute('data-lazy-src');
+            } elseif (!empty($img->getAttribute('srcset'))) {
+                $img->src = explode(' ', $img->getAttribute('srcset'))[0];
+            }
+        }
+
+        // Find article main image
         $article_image = $article_html->find('img.wp-post-image', 0);
         if (!empty($item['content']) && (!is_object($article_image) || empty($article_image->src))) {
             $article_image = str_get_html($item['content'])->find('img.wp-post-image', 0);
         }
         if (is_object($article_image) && !empty($article_image->src)) {
-            if (empty($article_image->getAttribute('data-lazy-src'))) {
-                $article_image = $article_image->src;
-            } else {
-                $article_image = $article_image->getAttribute('data-lazy-src');
-            }
+            $article_image = $article_image->src;
             $mime_type = parse_mime_type($article_image);
             if (strpos($mime_type, 'image') === false) {
                 $article_image .= '#.image'; // force image
@@ -102,14 +124,15 @@ class WordPressBridge extends FeedExpander
 
     public function collectData()
     {
+        $limit = $this->getInput('limit') ?? 10;
         if ($this->getInput('url') && substr($this->getInput('url'), 0, strlen('http')) !== 'http') {
             // just in case someone find a way to access local files by playing with the url
             returnClientError('The url parameter must either refer to http or https protocol.');
         }
         try {
-            $this->collectExpandableDatas($this->getURI() . '/feed/atom/', 20);
+            $this->collectExpandableDatas($this->getURI() . '/feed/atom/', $limit);
         } catch (Exception $e) {
-            $this->collectExpandableDatas($this->getURI() . '/?feed=atom', 20);
+            $this->collectExpandableDatas($this->getURI() . '/?feed=atom', $limit);
         }
     }
 }
