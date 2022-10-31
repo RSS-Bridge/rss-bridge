@@ -68,19 +68,21 @@ class WordPressBridge extends FeedExpander
         }
 
         // Remove duplicate title from content
-        foreach ($article->find('h1') as $title)
-            if (trim(html_entity_decode($title->plaintext) == $item['title']))
+        foreach ($article->find('h1') as $title) {
+            if (trim(html_entity_decode($title->plaintext) == $item['title'])) {
                 $title->outertext = '';
+            }
+        }
 
         // Convert lazy-loading images and iframes (videos...)
-        foreach($article->find('img, iframe') as $img) {
-            if(!empty($img->getAttribute('data-src'))) {
+        foreach ($article->find('img, iframe') as $img) {
+            if (!empty($img->getAttribute('data-src'))) {
                 $img->src = $img->getAttribute('data-src');
-            } elseif(!empty($img->getAttribute('data-srcset'))) {
+            } elseif (!empty($img->getAttribute('data-srcset'))) {
                 $img->src = explode(' ', $img->getAttribute('data-srcset'))[0];
-            } elseif(!empty($img->getAttribute('data-lazy-src'))) {
+            } elseif (!empty($img->getAttribute('data-lazy-src'))) {
                 $img->src = $img->getAttribute('data-lazy-src');
-            } elseif(!empty($img->getAttribute('srcset'))) {
+            } elseif (!empty($img->getAttribute('srcset'))) {
                 $img->src = explode(' ', $img->getAttribute('srcset'))[0];
             }
         }
@@ -132,6 +134,5 @@ class WordPressBridge extends FeedExpander
         } catch (Exception $e) {
             $this->collectExpandableDatas($this->getURI() . '/?feed=atom', $limit);
         }
-
     }
 }
