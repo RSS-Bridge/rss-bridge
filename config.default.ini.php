@@ -93,3 +93,13 @@ file = "cache.sqlite"
 [MemcachedCache]
 host = "localhost"
 port = 11211
+
+; --- Bridge specific configuration ------
+
+[DiscogsBridge]
+
+; Sets the personal access token for interactions with Discogs. When
+; provided, images can be included in generated feeds.
+;
+; "" = no token used (default)
+personal_access_token = ""
