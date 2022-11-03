@@ -20,70 +20,6 @@ class GBAtempBridge extends BridgeAbstract
         ]
     ]];
 
-    private function buildItem($uri, $title, $author, $timestamp, $thumbnail, $content)
-    {
-        $item = [];
-        $item['uri'] = $uri;
-        $item['title'] = $title;
-        $item['author'] = $author;
-        $item['timestamp'] = $timestamp;
-        $item['content'] = $content;
-        if (!empty($thumbnail)) {
-            $item['enclosures'] = [$thumbnail];
-        }
-        return $item;
-    }
-
-    private function decodeHtmlEntities($text)
-    {
-        $text = html_entity_decode($text);
-        $convmap = [0x0, 0x2FFFF, 0, 0xFFFF];
-        return trim(mb_decode_numericentity($text, $convmap, 'UTF-8'));
-    }
-
-    private function cleanupPostContent($content, $site_url)
-    {
-        $content = defaultLinkTo($content, self::URI);
-        $content = stripWithDelimiters($content, '<script', '</script>');
-        $content = stripWithDelimiters($content, '<svg', '</svg>');
-        $content = stripRecursiveHTMLSection($content, 'div', '<div class="reactionsBar');
-        return $this->decodeHtmlEntities($content);
-    }
-
-    private function findItemDate($item)
-    {
-        $time = 0;
-        $dateField = $item->find('time', 0);
-        if (is_object($dateField)) {
-            $time = strtotime($dateField->datetime);
-        }
-        return $time;
-    }
-
-    private function findItemImage($item, $selector)
-    {
-        $img = extractFromDelimiters($item->find($selector, 0)->style, 'url(', ')');
-        $paramPos = strpos($img, '?');
-        if ($paramPos !== false) {
-            $img = substr($img, 0, $paramPos);
-        }
-        if (!str_ends_with($img, '.png') && !str_ends_with($img, '.jpg')) {
-            $img = $img . '#.image';
-        }
-        return urljoin(self::URI, $img);
-    }
-
-    private function fetchPostContent($uri, $site_url)
-    {
-        $html = getSimpleHTMLDOMCached($uri);
-        if (!$html) {
-            return 'Could not request GBAtemp: ' . $uri;
-        }
-
-        $content = $html->find('article.message-body', 0)->innertext;
-        return $this->cleanupPostContent($content, $site_url);
-    }
-
     public function collectData()
     {
         $html = getSimpleHTMLDOM(self::URI);
@@ -139,6 +75,72 @@ class GBAtempBridge extends BridgeAbstract
                 }
                 break;
         }
+    }
+
+    private function fetchPostContent($uri, $site_url)
+    {
+        $html = getSimpleHTMLDOMCached($uri);
+        if (!$html) {
+            return 'Could not request GBAtemp: ' . $uri;
+        }
+        $var = $html->find('#review_main', 0);
+        if (!$var) {
+            $var = $html->find('div.message-userContent article.message-body', 0);
+        }
+        return $this->cleanupPostContent($var->innertext, $site_url);
+    }
+
+    private function buildItem($uri, $title, $author, $timestamp, $thumbnail, $content)
+    {
+        $item = [];
+        $item['uri'] = $uri;
+        $item['title'] = $title;
+        $item['author'] = $author;
+        $item['timestamp'] = $timestamp;
+        $item['content'] = $content;
+        if (!empty($thumbnail)) {
+            $item['enclosures'] = [$thumbnail];
+        }
+        return $item;
+    }
+
+    private function decodeHtmlEntities($text)
+    {
+        $text = html_entity_decode($text);
+        $convmap = [0x0, 0x2FFFF, 0, 0xFFFF];
+        return trim(mb_decode_numericentity($text, $convmap, 'UTF-8'));
+    }
+
+    private function cleanupPostContent($content, $site_url)
+    {
+        $content = defaultLinkTo($content, self::URI);
+        $content = stripWithDelimiters($content, '<script', '</script>');
+        $content = stripWithDelimiters($content, '<svg', '</svg>');
+        $content = stripRecursiveHTMLSection($content, 'div', '<div class="reactionsBar');
+        return $this->decodeHtmlEntities($content);
+    }
+
+    private function findItemDate($item)
+    {
+        $time = 0;
+        $dateField = $item->find('time', 0);
+        if (is_object($dateField)) {
+            $time = strtotime($dateField->datetime);
+        }
+        return $time;
+    }
+
+    private function findItemImage($item, $selector)
+    {
+        $img = extractFromDelimiters($item->find($selector, 0)->style, 'url(', ')');
+        $paramPos = strpos($img, '?');
+        if ($paramPos !== false) {
+            $img = substr($img, 0, $paramPos);
+        }
+        if (!str_ends_with($img, '.png') && !str_ends_with($img, '.jpg')) {
+            $img = $img . '#.image';
+        }
+        return urljoin(self::URI, $img);
     }
 
     public function getName()
