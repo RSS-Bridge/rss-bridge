@@ -44,6 +44,38 @@ final class Response
         '504' => 'Gateway Timeout',
         '505' => 'HTTP Version Not Supported'
     ];
+    private string $body;
+    private int $code;
+    private array $headers;
+
+    public function __construct(
+        string $body = '',
+        int $code = 200,
+        array $headers = []
+    ) {
+        $this->body = $body;
+        $this->code = $code;
+        $this->headers = $headers;
+    }
+
+    public function getBody()
+    {
+        return $this->body;
+    }
+
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
+
+    public function send(): void
+    {
+        http_response_code($this->code);
+        foreach ($this->headers as $name => $value) {
+            header(sprintf('%s: %s', $name, $value));
+        }
+        print $this->body;
+    }
 }
 
 /**

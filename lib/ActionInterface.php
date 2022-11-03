@@ -22,7 +22,7 @@ interface ActionInterface
      *
      * Note: This function directly outputs data to the user.
      *
-     * @return void
+     * @return ?string
      */
     public function execute(array $request);
 }

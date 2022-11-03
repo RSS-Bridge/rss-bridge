@@ -52,8 +52,7 @@ class DisplayAction implements ActionInterface
             if (! Configuration::getConfig('cache', 'custom_timeout')) {
                 unset($request['_cache_timeout']);
                 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) . '?' . http_build_query($request);
-                header('Location: ' . $uri, true, 301);
-                return;
+                return new Response('', 301, ['Location' => $uri]);
             }
 
             $cache_timeout = filter_var($request['_cache_timeout'], FILTER_VALIDATE_INT);
@@ -116,8 +115,8 @@ class DisplayAction implements ActionInterface
 
                 if ($mtime <= $stime) {
                     // Cached data is older or same
-                    header('Last-Modified: ' . gmdate('D, d M Y H:i:s ', $mtime) . 'GMT', true, 304);
-                    return;
+                    $lastModified2 = gmdate('D, d M Y H:i:s ', $mtime) . 'GMT';
+                    return new Response('', 304, ['Last-Modified' => $lastModified2]);
                 }
             }
 
@@ -197,11 +196,12 @@ class DisplayAction implements ActionInterface
         $format->setExtraInfos($infos);
         $lastModified = $cache->getTime();
         $format->setLastModified($lastModified);
+        $headers = [];
         if ($lastModified) {
-            header('Last-Modified: ' . gmdate('D, d M Y H:i:s ', $lastModified) . 'GMT');
+            $headers['Last-Modified'] = gmdate('D, d M Y H:i:s ', $lastModified) . 'GMT';
         }
-        header('Content-Type: ' . $format->getMimeType() . '; charset=' . $format->getCharset());
-        print $format->stringify();
+        $headers['Content-Type'] = $format->getMimeType() . '; charset=' . $format->getCharset();
+        return new Response($format->stringify(), 200, $headers);
     }
 
     private static function createGithubIssueUrl($bridge, $e, string $message): string

@@ -2,36 +2,26 @@
 
 namespace RssBridge\Tests\Actions;
 
-use ActionFactory;
 use BridgeFactory;
 use PHPUnit\Framework\TestCase;
 
 class ListActionTest extends TestCase
 {
-    private $data;
-
-    /**
-     * @runInSeparateProcess
-     * @requires function xdebug_get_headers
-     */
     public function testHeaders()
     {
-        $this->initAction();
-
-        $this->assertContains(
-            'Content-Type: application/json',
-            xdebug_get_headers()
-        );
+        $action = new \ListAction();
+        $response = $action->execute([]);
+        $headers = $response->getHeaders();
+        $this->assertSame($headers['Content-Type'], 'application/json');
     }
 
-    /**
-     * @runInSeparateProcess
-     */
     public function testOutput()
     {
-        $this->initAction();
+        $action = new \ListAction();
+        $response = $action->execute([]);
+        $data = $response->getBody();
 
-        $items = json_decode($this->data, true);
+        $items = json_decode($data, true);
 
         $this->assertNotNull($items, 'invalid JSON output: ' . json_last_error_msg());
 
@@ -76,18 +66,5 @@ class ListActionTest extends TestCase
 
             $this->assertContains($bridge['status'], $allowedStatus, 'Invalid status value');
         }
-    }
-
-    private function initAction()
-    {
-        $actionFactory = new ActionFactory();
-
-        $action = $actionFactory->create('list');
-
-        ob_start();
-        $action->execute([]);
-        $this->data = ob_get_contents();
-        ob_clean();
-        ob_end_flush();
     }
 }

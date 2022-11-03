@@ -38,8 +38,7 @@ class ConnectivityAction implements ActionInterface
         }
 
         if (!isset($request['bridge'])) {
-            print render_template('connectivity.html.php');
-            return;
+            return render_template('connectivity.html.php');
         }
 
         $bridgeClassName = $this->bridgeFactory->sanitizeBridgeName($request['bridge']);
@@ -48,7 +47,7 @@ class ConnectivityAction implements ActionInterface
             throw new \InvalidArgumentException('Bridge name invalid!');
         }
 
-        $this->reportBridgeConnectivity($bridgeClassName);
+        return $this->reportBridgeConnectivity($bridgeClassName);
     }
 
     private function reportBridgeConnectivity($bridgeClassName)
@@ -80,7 +79,6 @@ class ConnectivityAction implements ActionInterface
             $retVal['successful'] = false;
         }
 
-        header('Content-Type: text/json');
-        print Json::encode($retVal);
+        return new Response(Json::encode($retVal), 200, ['Content-Type' => 'text/json']);
     }
 }
