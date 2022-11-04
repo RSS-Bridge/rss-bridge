@@ -104,7 +104,7 @@ class ARDAudiothekBridge extends BridgeAbstract
                     $imageSquare
                 ];
                 // synopsis in list is shortened, full synopsis is available using one request per item
-                $item['content'] = '<img src="' . $image . '" /><p>'.$audio->synopsis.'</p>';
+                $item['content'] = '<img src="' . $image . '" /><p>' . $audio->synopsis . '</p>';
                 $item['timestamp'] = $audio->publicationStartDateAndTime;
                 $item['uid'] = $audio->id;
                 $item['author'] = $audio->programSet->publicationService->title;
