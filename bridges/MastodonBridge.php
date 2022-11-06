@@ -12,8 +12,8 @@ class MastodonBridge extends BridgeAbstract
     const NAME = 'ActivityPub Bridge';
     const CACHE_TIMEOUT = 900; // 15mn
     const DESCRIPTION = 'Returns recent statuses. Supports Mastodon, Pleroma and Misskey, among others. Access to
-	instances that have Authorized Fetch enabled requires
-	<a href="https://rss-bridge.github.io/rss-bridge/Bridge_Specific/ActivityPub_(Mastodon).html">configuration</a>.';
+    instances that have Authorized Fetch enabled requires
+    <a href="https://rss-bridge.github.io/rss-bridge/Bridge_Specific/ActivityPub_(Mastodon).html">configuration</a>.';
     const URI = 'https://mastodon.social';
 
     // Some Mastodon instances use Secure Mode which requires all requests to be signed.
@@ -48,12 +48,12 @@ class MastodonBridge extends BridgeAbstract
         'signaturetype' => [
             'type' => 'list',
             'name' => 'Signature Type',
-	    'title' => 'How to sign requests when fetching from instances.
-	    	Defaults to "nosig" for RSS-Bridge instances that did not set up signatures.',
+            'title' => 'How to sign requests when fetching from instances.
+                Defaults to "nosig" for RSS-Bridge instances that did not set up signatures.',
             'values' => [
                 'Without Query (Mastodon)' => 'noquery',
-		'With Query (GoToSocial)' => 'query',
-		'Don\'t sign' => 'nosig',
+                'With Query (GoToSocial)' => 'query',
+                'Don\'t sign' => 'nosig',
             ],
             'defaultValue' => 'noquery'
         ],
@@ -62,14 +62,14 @@ class MastodonBridge extends BridgeAbstract
     public function collectData()
     {
         $user = $this->fetchAP($this->getURI());
-	$content = $this->fetchAP($user['outbox']);
-	if (is_array($content['first'])) { // mobilizon
-	    $content = $content['first'];
-	} else {
-	    $content = $this->fetchAP($content['first']);
-	}
-	$items = $content['orderedItems'] ?? $content['items'];
-    	foreach ($items as $status) {
+        $content = $this->fetchAP($user['outbox']);
+        if (is_array($content['first'])) { // mobilizon
+            $content = $content['first'];
+        } else {
+            $content = $this->fetchAP($content['first']);
+        }
+        $items = $content['orderedItems'] ?? $content['items'];
+        foreach ($items as $status) {
             $item = $this->parseItem($status);
             if ($item) {
                 $this->items[] = $item;
@@ -107,25 +107,25 @@ class MastodonBridge extends BridgeAbstract
                     $item['content'] = $content['object'];
                     $item['uri'] = $content['object'];
                 }
-		break;
-	    case 'Note': // frendica posts
+                break;
+            case 'Note': // frendica posts
                 if ($this->getInput('norep') && isset($content['inReplyTo'])) {
                     return null;
                 }
                 $item['title'] = '';
                 $item['author'] = $this->getInput('canusername');
-		$item = $this->parseObject($content, $item);
-		break;
-	    case 'Create': // posts
+                $item = $this->parseObject($content, $item);
+                break;
+            case 'Create': // posts
                 if ($this->getInput('norep') && isset($content['object']['inReplyTo'])) {
                     return null;
-		}
-		$item['title'] = '';
+                }
+                $item['title'] = '';
                 $item['author'] = $this->getInput('canusername');
-		$item = $this->parseObject($content['object'], $item);
-		break;
-	    default:
-		return null;
+                $item = $this->parseObject($content['object'], $item);
+                break;
+            default:
+                return null;
         }
         $item['timestamp'] = $content['published'] ?? $item['timestamp'];
         $item['uid'] = $content['id'];
@@ -142,18 +142,20 @@ class MastodonBridge extends BridgeAbstract
         $item['content'] = $object['content'];
         $strippedContent = strip_tags(str_replace('<br>', ' ', $object['content']));
 
-	if (isset($object['name'])) {
-	    $item['title'] = $object['name'];
-	} else if (mb_strlen($strippedContent) > 75) {
+        if (isset($object['name'])) {
+            $item['title'] = $object['name'];
+        } else if (mb_strlen($strippedContent) > 75) {
             $contentSubstring = mb_substr($strippedContent, 0, mb_strpos(wordwrap($strippedContent, 75), "\n"));
             $item['title'] .= $contentSubstring . '...';
         } else {
             $item['title'] .= $strippedContent;
         }
-	$item['uri'] = $object['id'];
-	$item['timestamp'] = $object['published'];
+        $item['uri'] = $object['id'];
+        $item['timestamp'] = $object['published'];
 
-	if (!isset($object['attachment'])) return $item;
+        if (!isset($object['attachment'])) {
+            return $item;
+        }
 
         if (isset($object['attachment']['url'])) {
             // Normalize attachment (turn single attachment into array)
@@ -233,8 +235,8 @@ class MastodonBridge extends BridgeAbstract
             'query' => '/https?:\/\/([a-z0-9-\.]{0,})(\/[^#]+)/',
 
             // Exclude query string when parsing URL
-	    'noquery' => '/https?:\/\/([a-z0-9-\.]{0,})(\/[^#?]+)/',
-	    'nosig' => '/https?:\/\/([a-z0-9-\.]{0,})(\/[^#?]+)/',
+            'noquery' => '/https?:\/\/([a-z0-9-\.]{0,})(\/[^#?]+)/',
+            'nosig' => '/https?:\/\/([a-z0-9-\.]{0,})(\/[^#?]+)/',
         ];
 
         preg_match($regex[$this->getInput('signaturetype')], $url, $matches);
