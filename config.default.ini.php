@@ -33,6 +33,9 @@ custom_timeout = false
 ; ""    = Disabled (default)
 email = ""
 
+; Advertise a contact Telegram url e.g. "https://t.me/elegantobjects"
+telegram = ""
+
 ; Show Donation information for bridges if available.
 ; This will display a 'Donate' link on the bridge view
 ; and a "Donate" button in the HTML view of the bridges feed.

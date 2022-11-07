@@ -53,10 +53,18 @@
         <?php endif; ?>
     <?php endif; ?>
 
+    <br>
+
     <?php if ($admin_email): ?>
-        <span>
-            You may email the administrator of this RSS-Bridge instance at
-            <a href="mailto:<?= e($admin_email) ?>"><?= e($admin_email) ?></a>
-        </span>
+        <div>
+            Email: <a href="mailto:<?= e($admin_email) ?>"><?= e($admin_email) ?></a>
+        </div>
     <?php endif; ?>
+
+    <?php if ($admin_telegram): ?>
+        <div>
+            Telegram: <a href="<?= e($admin_telegram) ?>"><?= e($admin_telegram) ?></a>
+        </div>
+    <?php endif; ?>
+
 </section>
