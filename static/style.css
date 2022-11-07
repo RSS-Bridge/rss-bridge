@@ -78,12 +78,12 @@ header > div.logo {
     margin: auto;
 }
 
-header > section.warning {
+section.warning {
     background-color: #ffc600;
     color: #5f5f5f;
 }
 
-header > section.critical-warning {
+section.critical-warning {
     background-color: #cf3e3e;
     font-weight: bold;
     color: white;

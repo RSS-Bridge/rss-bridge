@@ -60,6 +60,7 @@ final class RssBridge
             }
         });
 
+        // Consider: ini_set('error_reporting', E_ALL & ~E_DEPRECATED);
         date_default_timezone_set(Configuration::getConfig('system', 'timezone'));
 
         $authenticationMiddleware = new AuthenticationMiddleware();
@@ -73,9 +74,22 @@ final class RssBridge
             }
         }
 
-        $actionFactory = new ActionFactory();
-        $action = $request['action'] ?? 'Frontpage';
-        $action = $actionFactory->create($action);
-        $action->execute($request);
+        $actionName = $request['action'] ?? 'Frontpage';
+        $actionName = strtolower($actionName) . 'Action';
+        $actionName = implode(array_map('ucfirst', explode('-', $actionName)));
+
+        $filePath = __DIR__ . '/../actions/' . $actionName . '.php';
+        if (!file_exists($filePath)) {
+            throw new \Exception(sprintf('Invalid action: %s', $actionName));
+        }
+        $className = '\\' . $actionName;
+        $action = new $className();
+
+        $response = $action->execute($request);
+        if (is_string($response)) {
+            print $response;
+        } elseif ($response instanceof Response) {
+            $response->send();
+        }
     }
 }
