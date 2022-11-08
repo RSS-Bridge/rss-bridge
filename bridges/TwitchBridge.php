@@ -84,12 +84,16 @@ query VODList($channel: String!, $types: [BroadcastType!]) {
   }
 }
 EOD;
+        $channel = $this->getInput('channel');
+        $type = $this->getInput('type');
         $variables = [
-            'channel' => $this->getInput('channel'),
-            'types' => self::BROADCAST_TYPES[$this->getInput('type')]
+            'channel' => $channel,
+            'types' => self::BROADCAST_TYPES[$type]
         ];
         $data = $this->apiRequest($query, $variables);
-
+        if ($data->user === null) {
+            throw new \Exception(sprintf('Unable to find channel `%s`', $channel));
+        }
         $user = $data->user;
         foreach ($user->videos->edges as $edge) {
             $video = $edge->node;

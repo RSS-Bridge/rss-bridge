@@ -64,7 +64,11 @@ TEXT;
         }
 
         // Sort by timestamp descending
-        usort($this->items, fn ($a, $b) => $b['timestamp'] <=> $a['timestamp']);
+        usort($this->items, function ($a, $b) {
+            $t1 = $a['timestamp'] ?? $a['uri'] ?? $a['title'];
+            $t2 = $b['timestamp'] ?? $b['uri'] ?? $b['title'];
+            return $t2 <=> $t1;
+        });
 
         // Remove duplicates by using url as unique key
         $items = [];
