@@ -64,8 +64,12 @@ class GelbooruBridge extends BridgeAbstract
         }
 
         $item['content'] = '<a href="' . $item['uri'] . '"><img src="'
-        . $thumbnailUri . '" /></a><br><br><b>Tags:</b> '
-        . $item['tags'] . '<br><br>' . $item['timestamp'];
+        . $thumbnailUri . '" /></a><br><br><b>Dimensions:</b> '
+        . strval($element->width) . ' x ' . strval($element->height) . '<br><br><b>Tags:</b> '
+        . $item['tags'];
+        if (!is_null($element->source)) {
+            $item['content'] .= '<br><br><b>Source: </b><a href="' . $element->source . '">' . $element->source . '</a>';
+        }
 
         return $item;
     }
