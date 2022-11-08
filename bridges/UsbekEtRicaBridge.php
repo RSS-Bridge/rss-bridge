@@ -49,20 +49,24 @@ class UsbekEtRicaBridge extends BridgeAbstract
                 $item['author'] = $author->plaintext;
             }
 
+            $content = null;
+
             $u = $article->find('a.card-img', 0);
-
-            $uri = $u->href;
-            if (substr($uri, 0, 1) === 'h') { // absolute uri
-                $item['uri'] = $uri;
-            } else { // relative uri
-                $item['uri'] = $this->getURI() . $uri;
+            if ($u) {
+                $uri = $u->href;
+                if (substr($uri, 0, 1) === 'h') {
+                    // absolute uri
+                    $item['uri'] = $uri;
+                } else {
+                    // relative uri
+                    $item['uri'] = $this->getURI() . $uri;
+                }
+                if ($fullarticle) {
+                    $content = $this->loadFullArticle($item['uri']);
+                }
             }
 
-            if ($fullarticle) {
-                $content = $this->loadFullArticle($item['uri']);
-            }
-
-            if ($fullarticle && !is_null($content)) {
+            if ($fullarticle && $content) {
                 $item['content'] = $content;
             } else {
                 $excerpt = $article->find('div.card-excerpt', 0);
