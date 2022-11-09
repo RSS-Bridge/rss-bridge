@@ -277,7 +277,7 @@ class WikipediaBridge extends BridgeAbstract
         switch ($subject) {
             case WIKIPEDIA_SUBJECT_TFA:
                 $element = $html->find('div[id=mp-tfa]', 0);
-                $this->addTodaysFeaturedArticleGeneric($element, $fullArticle, -1);
+                $this->addTodaysFeaturedArticleGeneric($element, $fullArticle, '...', -1);
                 break;
             case WIKIPEDIA_SUBJECT_DYK:
                 $element = $html->find('div[id=mp-dyk]', 0);
@@ -296,7 +296,7 @@ class WikipediaBridge extends BridgeAbstract
         switch ($subject) {
             case WIKIPEDIA_SUBJECT_TFA:
                 $element = $html->find('div[id=main-tfa]', 0);
-                $this->addTodaysFeaturedArticleGeneric($element, $fullArticle, -1);
+                $this->addTodaysFeaturedArticleGeneric($element, $fullArticle, '...', -1);
                 break;
             case WIKIPEDIA_SUBJECT_DYK:
                 $element = $html->find('div[id=main-dyk]', 0);
