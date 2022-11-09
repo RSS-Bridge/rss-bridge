@@ -28,7 +28,12 @@ class PcGamerBridge extends BridgeAbstract
             $item['title'] = $articleHtml->find('meta[name=parsely-title]', 0)->content;
             $item['content'] = html_entity_decode($articleHtml->find('meta[name=description]', 0)->content);
             $item['author'] = $articleHtml->find('meta[name=parsely-author]', 0)->content;
-            $item['enclosures'][] = $articleHtml->find('meta[name=parsely-image-url]', 0)->content;
+
+            $imageUrl = $articleHtml->find('meta[name=parsely-image-url]', 0);
+            if ($imageUrl) {
+                $item['enclosures'][] = $imageUrl->content;
+            }
+
             /* I don't know why every article has two extra tags, but because
             one matches another common tag, "guide," it needs to be removed. */
             $item['categories'] = array_diff(
