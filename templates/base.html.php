@@ -12,8 +12,16 @@
 <body>
     <div class="container">
         <header>
-            <div class="logo"></div>
+            <a href="./">
+                <img width="400" src="static/logo_600px.png">
+            </a>
         </header>
+
+        <?php if ($system_message): ?>
+            <div class="alert">
+                <?= raw($system_message) ?>
+            </div>
+        <?php endif; ?>
 
         <?= raw($page) ?>
     </div>
