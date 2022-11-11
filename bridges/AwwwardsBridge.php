@@ -25,12 +25,8 @@ class AwwwardsBridge extends BridgeAbstract
         $sites = getSimpleHTMLDOM(self::SITESURI);
 
         Debug::log('Parsing all JSON data');
-        foreach ($sites->find('li[data-model]') as $site) {
-            $decode = html_entity_decode(
-                $site->attr['data-model'],
-                ENT_QUOTES,
-                'utf-8'
-            );
+        foreach ($sites->find('.grid-sites li') as $site) {
+            $decode = html_entity_decode($site->attr['data-collectable-model-value'], ENT_QUOTES, 'utf-8');
             $decode = json_decode($decode, true);
             $this->sites[] = $decode;
         }
