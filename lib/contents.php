@@ -128,6 +128,13 @@ function getContents(
         'headers' => array_merge($defaultHttpHeaders, $httpHeadersNormalized),
         'curl_options' => $curlOptions,
     ];
+
+    $maxFileSize = Configuration::getConfig('http', 'max_filesize');
+    if ($maxFileSize) {
+        // Multiply with 2^20 (1M) to the value in bytes
+        $config['max_filesize'] = $maxFileSize * 2 ** 20;
+    }
+
     if (Configuration::getConfig('proxy', 'url') && !defined('NOPROXY')) {
         $config['proxy'] = Configuration::getConfig('proxy', 'url');
     }
@@ -200,10 +207,9 @@ function getContents(
 }
 
 /**
- * Private function used internally
- *
  * Fetch content from url
  *
+ * @internal Private function used internally
  * @throws HttpException
  */
 function _http_request(string $url, array $config = []): array
@@ -216,6 +222,7 @@ function _http_request(string $url, array $config = []): array
         'curl_options' => [],
         'if_not_modified_since' => null,
         'retries' => 3,
+        'max_filesize' => null,
     ];
     $config = array_merge($defaults, $config);
 
@@ -235,6 +242,21 @@ function _http_request(string $url, array $config = []): array
     curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
     // Force HTTP 1.1 because newer versions of libcurl defaults to HTTP/2
     curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+
+    if ($config['max_filesize']) {
+        // This option inspects the Content-Length header
+        curl_setopt($ch, CURLOPT_MAXFILESIZE, $config['max_filesize']);
+        curl_setopt($ch, CURLOPT_NOPROGRESS, false);
+        // This progress function will monitor responses who omit the Content-Length header
+        curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, function ($ch, $downloadSize, $downloaded, $uploadSize, $uploaded) use ($config) {
+            if ($downloaded > $config['max_filesize']) {
+                // Return a non-zero value to abort the transfer
+                return -1;
+            }
+            return 0;
+        });
+    }
+
     if ($config['proxy']) {
         curl_setopt($ch, CURLOPT_PROXY, $config['proxy']);
     }
