@@ -21,7 +21,7 @@ class FirefoxAddonsBridge extends BridgeAbstract
     private $feedName = '';
     private $releaseDateRegex = '/Released ([\w, ]+) - ([\w. ]+)/';
     private $xpiFileRegex = '/([A-Za-z0-9_.-]+)\.xpi$/';
-    private $outgoingRegex = '/https:\/\/outgoing.prod.mozaws.net\/v1\/(?:[A-z0-9]+)\//';
+    private $outgoingRegex = '/https:\/\/prod.outgoing\.prod\.webservices\.mozgcp\.net\/v1\/(?:[A-z0-9]+)\//';
 
     private $urlRegex = '/addons\.mozilla\.org\/(?:[\w-]+\/)?firefox\/addon\/([\w-]+)/';
 
@@ -66,7 +66,7 @@ class FirefoxAddonsBridge extends BridgeAbstract
                 $downloadlink = $li->find('a.Button.Button--action.AMInstallButton-button.Button--puffy', 0)->href;
             }
 
-            $releaseNotes = $this->removeOutgoinglink($li->find('div.AddonVersionCard-releaseNotes', 0));
+            $releaseNotes = $this->removeLinkRedirects($li->find('div.AddonVersionCard-releaseNotes', 0));
 
             if (preg_match($this->xpiFileRegex, $downloadlink, $match)) {
                 $xpiFilename = $match[0];
@@ -105,7 +105,10 @@ EOD;
         return parent::getName();
     }
 
-    private function removeOutgoinglink($html)
+    /**
+     * Removes 'https://prod.outgoing.prod.webservices.mozgcp.net/v1/' from external links
+     */
+    private function removeLinkRedirects($html)
     {
         foreach ($html->find('a') as $a) {
             $a->href = urldecode(preg_replace($this->outgoingRegex, '', $a->href));
