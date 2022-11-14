@@ -23,6 +23,13 @@
 <body>
 
     <div class="container">
+
+        <header>
+            <a href="./">
+                <img width="400" src="static/logo_600px.png">
+            </a>
+        </header>
+
         <h1 class="pagetitle">
             <a href="<?= e($uri) ?>" target="_blank"><?= e($title) ?></a>
         </h1>
