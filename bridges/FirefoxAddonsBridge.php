@@ -106,7 +106,7 @@ EOD;
     }
 
     /**
-     * Removes 'https://prod.outgoing.prod.webservices.mozgcp.net/v1\' from external links
+     * Removes 'https://prod.outgoing.prod.webservices.mozgcp.net/v1/' from external links
      */
     private function removeLinkRedirects($html)
     {
