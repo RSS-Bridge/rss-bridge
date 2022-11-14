@@ -420,7 +420,7 @@ class ReutersBridge extends BridgeAbstract
     {
         $description = '';
         foreach ($contents as $content) {
-            $data;
+            $data = '';
             if (isset($content['content'])) {
                 $data = $content['content'];
             }

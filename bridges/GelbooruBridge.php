@@ -67,7 +67,7 @@ class GelbooruBridge extends BridgeAbstract
         . $thumbnailUri . '" /></a><br><br><b>Dimensions:</b> '
         . strval($element->width) . ' x ' . strval($element->height) . '<br><br><b>Tags:</b> '
         . $item['tags'];
-        if (!is_null($element->source)) {
+        if (isset($element->source)) {
             $item['content'] .= '<br><br><b>Source: </b><a href="' . $element->source . '">' . $element->source . '</a>';
         }
 

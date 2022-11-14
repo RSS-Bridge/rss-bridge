@@ -146,15 +146,15 @@ abstract class FeedExpander extends BridgeAbstract
                 $this->collectAtom1($rssContent, $maxItems);
                 break;
             default:
-                Debug::log('Unknown feed format/version');
-                throw new \Exception('The feed format is unknown!');
+                Debug::log(sprintf('Unable to detect feed format from `%s`', $url));
+                throw new \Exception(sprintf('Unable to detect feed format from `%s`', $url));
         }
 
         return $this;
     }
 
     /**
-     * Collect data from a RSS 1.0 compatible feed
+     * Collect data from an RSS 1.0 compatible feed
      *
      * @link http://web.resource.org/rss/1.0/spec RDF Site Summary (RSS) 1.0
      *
