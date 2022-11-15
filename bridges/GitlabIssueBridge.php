@@ -158,7 +158,10 @@ class GitlabIssueBridge extends BridgeAbstract
 
         $item['timestamp'] = $description->created_at ?? $description->updated_at;
 
-        $item['author'] = $this->parseAuthor($description_html);
+        $author = $this->parseAuthor($description_html);
+        if ($author) {
+            $item['author'] = $author;
+        }
 
         $item['title'] = $description->title;
         $item['content'] = markdownToHtml($description->description);
@@ -179,7 +182,10 @@ class GitlabIssueBridge extends BridgeAbstract
 
         $item['timestamp'] = $description_html->find('.merge-request-details time', 0)->datetime;
 
-        $item['author'] = $this->parseAuthor($description_html);
+        $author = $this->parseAuthor($description_html);
+        if ($author) {
+            $item['author'] = $author;
+        }
 
         $item['title'] = 'Merge Request ' . $description->title;
         $item['content'] = markdownToHtml($description->description);
@@ -205,6 +211,9 @@ class GitlabIssueBridge extends BridgeAbstract
 
         $authors = $description_html->find('.issuable-meta a.author-link, .merge-request a.author-link');
         $editors = $description_html->find('.edited-text a.author-link');
+        if ($authors === [] && $editors === []) {
+            return null;
+        }
         $author_str = implode(' ', $authors);
         if ($editors) {
             $author_str .= ', ' . implode(' ', $editors);
