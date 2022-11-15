@@ -171,10 +171,14 @@ function backgroundToImg($htmlContent)
  *
  * @param string|object $content The HTML content. Supports HTML objects or string objects
  * @param string $server Fully qualified URL to the page containing relative links
- * @return object Content with fixed URLs.
+ * @return string|object Content with fixed URLs.
  */
 function defaultLinkTo($content, $server)
 {
+    if ($content === '') {
+        return $server;
+    }
+
     $string_convert = false;
     if (is_string($content)) {
         $string_convert = true;
