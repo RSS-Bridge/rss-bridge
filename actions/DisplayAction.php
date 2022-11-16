@@ -145,6 +145,14 @@ class DisplayAction implements ActionInterface
                     $items = $feedItems;
                 }
 
+                usort($items, function (FeedItem $a, FeedItem $b) {
+                    // Always sort items by timestamp descending
+                    // Items without a timestamp are considered equal
+                    $ts1 = $a->getTimestamp() ?? 0;
+                    $ts2 = $b->getTimestamp() ?? 0;
+                    return $ts2 <=> $ts1;
+                });
+
                 $infos = [
                     'name' => $bridge->getName(),
                     'uri'  => $bridge->getURI(),
