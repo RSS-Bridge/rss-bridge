@@ -10,15 +10,14 @@ RSS-Bridge is a PHP project capable of generating RSS and Atom feeds for website
 [![Chat on Matrix](https://matrix.to/img/matrix-badge.svg)](https://matrix.to/#/#rssbridge:libera.chat)
 [![Actions Status](https://img.shields.io/github/workflow/status/RSS-Bridge/rss-bridge/Tests/master?label=GitHub%20Actions&logo=github)](https://github.com/RSS-Bridge/rss-bridge/actions)
 
-Screenshot of the Twitter bridge configuration:
+|||
+|:-:|:-:|
+|![Screenshot #1](/static/screenshot-1.png?raw=true)|![Screenshot #2](/static/screenshot-2.png?raw=true)|
+|![Screenshot #3](/static/screenshot-3.png?raw=true)|![Screenshot #4](/static/screenshot-4.png?raw=true)|
+|![Screenshot #5](/static/screenshot-5.png?raw=true)|![Screenshot #6](/static/screenshot-6.png?raw=true)|
+|![Screenshot #7](/static/twitter-form.png?raw=true)|![Screenshot #8](/static/twitter-rasmus.png?raw=true)|
 
-![Screenshot #1](/static/twitter-form.png?raw=true)
-
-Screenshot of the Twitter bridge for Rasmus Lerdorf:
-
-![Screenshot #2](/static/twitter-rasmus.png?raw=true)
-
-[Documentation](https://rss-bridge.github.io/rss-bridge/index.html)
+[Full documentation](https://rss-bridge.github.io/rss-bridge/index.html)
 
 Check out RSS-Bridge right now on https://rss-bridge.org/bridge01 or find another
 [public instance](https://rss-bridge.github.io/rss-bridge/General/Public_Hosts.html).
