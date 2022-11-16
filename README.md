@@ -212,22 +212,15 @@ Supported output formats:
 
 ### A selection of bridges
 
-* `Bandcamp` : Returns last release from [bandcamp](https://bandcamp.com/) for a tag
-* `Cryptome` : Returns the most recent documents from [Cryptome.org](https://cryptome.org/)
-* `DansTonChat`: Most recent quotes from [danstonchat.com](https://danstonchat.com/)
-* `DuckDuckGo`: Most recent results from [DuckDuckGo.com](https://duckduckgo.com/)
-* `Facebook` : Returns the latest posts on a page or profile on [Facebook](https://facebook.com/) (There is an [issue](https://github.com/RSS-Bridge/rss-bridge/issues/2047) for public instances)
-* `FlickrExplore` : [Latest interesting images](https://www.flickr.com/explore) from Flickr
-* `GoogleSearch` : Most recent results from Google Search
-* `Identi.ca` : Identica user timeline (Should be compatible with other Pump.io instances)
-* `Instagram`: Most recent photos from an Instagram user (It is recommended to [configure](https://rss-bridge.github.io/rss-bridge/Bridge_Specific/Instagram.html) this bridge to work)
-* `OpenClassrooms`: Lastest tutorials from [openclassrooms.com](https://openclassrooms.com/)
-* `Pinterest`: Most recent photos from user or search
-* `ScmbBridge`: Newest stories from [secouchermoinsbete.fr](https://secouchermoinsbete.fr/)
-* `ThePirateBay` : Returns the newest indexed torrents from [The Pirate Bay](https://thepiratebay.se/) with keywords
-* `Twitter` : Return keyword/hashtag search or user timeline
-* `Wikipedia`: highlighted articles from [Wikipedia](https://wikipedia.org/) in English, German, French or Esperanto
 * `YouTube` : YouTube user channel, playlist or search
+* `Twitter` : Return keyword/hashtag search or user timeline
+* `Telegram` : Return the latest posts from a public group
+* `Reddit` : Return the latest posts from a subreddit or user
+* `Filter` : Filter an existing feed url
+* `Vk` : Latest posts from a user or group
+* `FeedMerge` : Merge two or more existing feeds into one
+* `Twitch` : Fetch the latest videos from a channel
+* `ThePirateBay` : Returns the newest indexed torrents from [The Pirate Bay](https://thepiratebay.se/) with keywords
 
 And [many more](bridges/), thanks to the community!
 
