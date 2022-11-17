@@ -292,6 +292,8 @@ EOD;
         } elseif ($messageDiv->find('i.link_preview_video_thumb')) {
             preg_match(self::BACKGROUND_IMAGE_REGEX, $messageDiv->find('i.link_preview_video_thumb', 0)->style, $photo);
         } else {
+            // Unsupported content ususally don't have a preview image
+            $photo = [null, null];
         }
 
         return <<<EOD
