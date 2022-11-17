@@ -25,25 +25,12 @@ class TelegramBridge extends BridgeAbstract
     ];
 
     const CACHE_TIMEOUT = 60 * 15; // 15 mins
-
     private $feedName = '';
+
     private $enclosures = [];
     private $itemTitle = '';
 
-    private $backgroundImageRegex = "/background-image:url\('(.*)'\)/";
-    private $detectParamsRegex = '/^https?:\/\/(?:t|telegram)\.me\/(?:s\/)?([\w]+)$/';
-
-    public function detectParameters($url)
-    {
-        $params = [];
-
-        if (preg_match($this->detectParamsRegex, $url, $matches) > 0) {
-            $params['username'] = $matches[1];
-            return $params;
-        }
-
-        return null;
-    }
+    private const BACKGROUND_IMAGE_REGEX = "/background-image:url\('(.*)'\)/";
 
     public function collectData()
     {
@@ -51,7 +38,7 @@ class TelegramBridge extends BridgeAbstract
 
         $channelTitle = $html->find('div.tgme_channel_info_header_title span', 0)->plaintext ?? '';
         $channelTitle = htmlspecialchars_decode($channelTitle, ENT_QUOTES);
-        $this->feedName = $channelTitle . ' (@' . $this->processUsername() . ')';
+        $this->feedName = $channelTitle . ' (@' . $this->normalizeUsername() . ')';
         $posts = $html->find('div.tgme_widget_message_wrap.js-widget_message_wrap');
         if (!$channelTitle && !$posts) {
             throw new \Exception('Unable to find channel. The channel is non-existing or non-public.');
@@ -61,10 +48,10 @@ class TelegramBridge extends BridgeAbstract
             $this->enclosures = [];
             $item = [];
 
-            $item['uri'] = $this->processUri($messageDiv);
+            $item['uri'] = $messageDiv->find('a.tgme_widget_message_date', 0)->href;
             $item['content'] = $this->processContent($messageDiv);
             $item['title'] = $this->itemTitle;
-            $item['timestamp'] = $this->processDate($messageDiv);
+            $item['timestamp'] = $messageDiv->find('span.tgme_widget_message_meta', 0)->find('time', 0)->datetime;
             $item['enclosures'] = $this->enclosures;
             $author = trim($messageDiv->find('a.tgme_widget_message_owner_name', 0)->plaintext);
             $item['author'] = html_entity_decode($author, ENT_QUOTES);
@@ -72,44 +59,6 @@ class TelegramBridge extends BridgeAbstract
             $this->items[] = $item;
         }
         $this->items = array_reverse($this->items);
-    }
-
-    public function getURI()
-    {
-        if (!is_null($this->getInput('username'))) {
-            return self::URI . '/s/' . $this->processUsername();
-        }
-
-        return parent::getURI();
-    }
-
-    public function getName()
-    {
-        if (!empty($this->feedName)) {
-            return $this->feedName . ' - Telegram';
-        }
-
-        return parent::getName();
-    }
-
-    private function processUsername()
-    {
-        if (substr($this->getInput('username'), 0, 1) === '@') {
-            return substr($this->getInput('username'), 1);
-        }
-
-        return $this->getInput('username');
-    }
-
-    private function processUri($messageDiv)
-    {
-        return $messageDiv->find('a.tgme_widget_message_date', 0)->href;
-    }
-
-    private function processDate($messageDiv)
-    {
-        $messageMeta = $messageDiv->find('span.tgme_widget_message_meta', 0);
-        return $messageMeta->find('time', 0)->datetime;
     }
 
     private function processContent($messageDiv)
@@ -167,6 +116,23 @@ class TelegramBridge extends BridgeAbstract
         return $message;
     }
 
+    public function getURI()
+    {
+        $username = $this->getInput('username');
+        if ($username) {
+            return self::URI . '/s/' . $this->normalizeUsername();
+        }
+        return parent::getURI();
+    }
+
+    public function getName()
+    {
+        if ($this->feedName) {
+            return $this->feedName . ' - Telegram';
+        }
+        return parent::getName();
+    }
+
     private function processReply($messageDiv)
     {
         $reply = $messageDiv->find('a.tgme_widget_message_reply', 0);
@@ -190,8 +156,8 @@ EOD;
 
     private function processSticker($messageDiv)
     {
-        if (empty($this->itemTitle)) {
-            $this->itemTitle = '@' . $this->processUsername() . ' posted a sticker';
+        if (!$this->itemTitle) {
+            $this->itemTitle = '@' . $this->normalizeUsername() . ' posted a sticker';
         }
 
         $stickerDiv = $messageDiv->find('div.tgme_widget_message_sticker_wrap', 0);
@@ -201,7 +167,7 @@ EOD;
             $stickerDiv->find('picture', 0)->style = '';
 
             return $stickerDiv;
-        } elseif (preg_match($this->backgroundImageRegex, $stickerDiv->find('i', 0)->style, $sticker)) {
+        } elseif (preg_match(self::BACKGROUND_IMAGE_REGEX, $stickerDiv->find('i', 0)->style, $sticker)) {
             return <<<EOD
 				<a href="{$stickerDiv->children(0)->herf}"><img src="{$sticker[1]}"></a>
 EOD;
@@ -215,7 +181,7 @@ EOD;
         $title = $poll->find('div.tgme_widget_message_poll_question', 0)->plaintext;
         $type = $poll->find('div.tgme_widget_message_poll_type', 0)->plaintext;
 
-        if (empty($this->itemTitle)) {
+        if (!$this->itemTitle) {
             $this->itemTitle = $title;
         }
 
@@ -247,7 +213,7 @@ EOD;
 
         if (
             $preview->find('i', 0) &&
-            preg_match($this->backgroundImageRegex, $preview->find('i', 0)->style, $photo)
+            preg_match(self::BACKGROUND_IMAGE_REGEX, $preview->find('i', 0)->style, $photo)
         ) {
             $image = '<img src="' . $photo[1] . '"/>';
         }
@@ -272,16 +238,16 @@ EOD;
 
     private function processVideo($messageDiv)
     {
-        if (empty($this->itemTitle)) {
-            $this->itemTitle = '@' . $this->processUsername() . ' posted a video';
+        if (!$this->itemTitle) {
+            $this->itemTitle = '@' . $this->normalizeUsername() . ' posted a video';
         }
 
         if ($messageDiv->find('i.tgme_widget_message_video_thumb')) {
-            preg_match($this->backgroundImageRegex, $messageDiv->find('i.tgme_widget_message_video_thumb', 0)->style, $photo);
+            preg_match(self::BACKGROUND_IMAGE_REGEX, $messageDiv->find('i.tgme_widget_message_video_thumb', 0)->style, $photo);
         } elseif ($messageDiv->find('i.link_preview_video_thumb')) {
-            preg_match($this->backgroundImageRegex, $messageDiv->find('i.link_preview_video_thumb', 0)->style, $photo);
+            preg_match(self::BACKGROUND_IMAGE_REGEX, $messageDiv->find('i.link_preview_video_thumb', 0)->style, $photo);
         } elseif ($messageDiv->find('i.tgme_widget_message_roundvideo_thumb')) {
-            preg_match($this->backgroundImageRegex, $messageDiv->find('i.tgme_widget_message_roundvideo_thumb', 0)->style, $photo);
+            preg_match(self::BACKGROUND_IMAGE_REGEX, $messageDiv->find('i.tgme_widget_message_roundvideo_thumb', 0)->style, $photo);
         } else {
             // Not all videos have a poster image
             $photo = [null, null];
@@ -299,14 +265,14 @@ EOD;
 
     private function processPhoto($messageDiv)
     {
-        if (empty($this->itemTitle)) {
-            $this->itemTitle = '@' . $this->processUsername() . ' posted a photo';
+        if (!$this->itemTitle) {
+            $this->itemTitle = '@' . $this->normalizeUsername() . ' posted a photo';
         }
 
         $photos = '';
 
         foreach ($messageDiv->find('a.tgme_widget_message_photo_wrap') as $photoWrap) {
-            preg_match($this->backgroundImageRegex, $photoWrap->style, $photo);
+            preg_match(self::BACKGROUND_IMAGE_REGEX, $photoWrap->style, $photo);
 
             $photos .= <<<EOD
 <a href="{$photoWrap->href}"><img src="{$photo[1]}"/></a><br>
@@ -317,14 +283,17 @@ EOD;
 
     private function processNotSupported($messageDiv)
     {
-        if (empty($this->itemTitle)) {
-            $this->itemTitle = '@' . $this->processUsername() . ' posted a video';
+        if (!$this->itemTitle) {
+            $this->itemTitle = '@' . $this->normalizeUsername() . ' posted a video';
         }
 
         if ($messageDiv->find('i.tgme_widget_message_video_thumb')) {
-            preg_match($this->backgroundImageRegex, $messageDiv->find('i.tgme_widget_message_video_thumb', 0)->style, $photo);
+            preg_match(self::BACKGROUND_IMAGE_REGEX, $messageDiv->find('i.tgme_widget_message_video_thumb', 0)->style, $photo);
         } elseif ($messageDiv->find('i.link_preview_video_thumb')) {
-            preg_match($this->backgroundImageRegex, $messageDiv->find('i.link_preview_video_thumb', 0)->style, $photo);
+            preg_match(self::BACKGROUND_IMAGE_REGEX, $messageDiv->find('i.link_preview_video_thumb', 0)->style, $photo);
+        } else {
+            // Unsupported content ususally don't have a preview image
+            $photo = [null, null];
         }
 
         return <<<EOD
@@ -339,8 +308,8 @@ EOD;
     {
         $attachments = 'File attachments:<br>';
 
-        if (empty($this->itemTitle)) {
-            $this->itemTitle = '@' . $this->processUsername() . ' posted an attachment';
+        if (!$this->itemTitle) {
+            $this->itemTitle = '@' . $this->normalizeUsername() . ' posted an attachment';
         }
 
         foreach ($messageDiv->find('div.tgme_widget_message_document') as $document) {
@@ -355,11 +324,11 @@ EOD;
 
     private function processLocation($messageDiv)
     {
-        if (empty($this->itemTitle)) {
-            $this->itemTitle = '@' . $this->processUsername() . ' posted a location';
+        if (!$this->itemTitle) {
+            $this->itemTitle = '@' . $this->normalizeUsername() . ' posted a location';
         }
 
-        preg_match($this->backgroundImageRegex, $messageDiv->find('div.tgme_widget_message_location', 0)->style, $image);
+        preg_match(self::BACKGROUND_IMAGE_REGEX, $messageDiv->find('div.tgme_widget_message_location', 0)->style, $image);
 
         $link = $messageDiv->find('a.tgme_widget_message_location_wrap', 0)->href;
 
@@ -368,14 +337,35 @@ EOD;
 EOD;
     }
 
+    // todo: extract truncate
     private function ellipsisTitle($text)
     {
         $length = 100;
-
         if (strlen($text) > $length) {
             $text = explode('<br>', wordwrap($text, $length, '<br>'));
             return $text[0] . '...';
         }
         return $text;
+    }
+
+    private function normalizeUsername()
+    {
+        // todo: can be replaced with ltrim($username, '@');
+        $username = $this->getInput('username');
+        if (substr($username, 0, 1) === '@') {
+            return substr($username, 1);
+        }
+        return $username;
+    }
+
+    public function detectParameters($url)
+    {
+        $detectParamsRegex = '/^https?:\/\/(?:t|telegram)\.me\/(?:s\/)?([\w]+)$/';
+        $params = [];
+        if (preg_match($detectParamsRegex, $url, $matches) > 0) {
+            $params['username'] = $matches[1];
+            return $params;
+        }
+        return null;
     }
 }
