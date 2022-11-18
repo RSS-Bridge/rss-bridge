@@ -14,19 +14,9 @@
 
 abstract class BridgeAbstract implements BridgeInterface
 {
-    /**
-     * Name of the bridge
-     *
-     * Use {@see BridgeAbstract::getName()} to read this parameter
-     */
-    const NAME = 'Unnamed bridge';
+    const NAME = null;
 
-    /**
-     * URI to the site the bridge is intended to be used for.
-     *
-     * Use {@see BridgeAbstract::getURI()} to read this parameter
-     */
-    const URI = '';
+    const URI = null;
 
     /**
      * Donation URI to the site the bridge is intended to be used for.
@@ -35,12 +25,7 @@ abstract class BridgeAbstract implements BridgeInterface
      */
     const DONATION_URI = '';
 
-    /**
-     * A brief description of what the bridge can do
-     *
-     * Use {@see BridgeAbstract::getDescription()} to read this parameter
-     */
-    const DESCRIPTION = 'No description provided';
+    const DESCRIPTION = null;
 
     /**
      * The name of the maintainer. Multiple maintainers can be separated by comma
@@ -302,10 +287,13 @@ abstract class BridgeAbstract implements BridgeInterface
         return $this->configuration[$name] ?? null;
     }
 
-    /** {@inheritdoc} */
+    /**
+     * The description is not used in any of the feed outputs. It is used in the bridge form.
+     */
     public function getDescription()
     {
-        return static::DESCRIPTION;
+        $docComment = (new \ReflectionClass($this))->getDocComment() ?: null;
+        return static::DESCRIPTION ?? $docComment;
     }
 
     /** {@inheritdoc} */
@@ -314,16 +302,18 @@ abstract class BridgeAbstract implements BridgeInterface
         return static::MAINTAINER;
     }
 
-    /** {@inheritdoc} */
+    /**
+     * The name is used as the feed name in outputs.
+     */
     public function getName()
     {
-        return static::NAME;
+        return static::NAME ?? (new \ReflectionClass($this))->getShortName();
     }
 
     /** {@inheritdoc} */
     public function getIcon()
     {
-        return static::URI . '/favicon.ico';
+        return $this->getURI() . '/favicon.ico';
     }
 
     /** {@inheritdoc} */
@@ -338,10 +328,12 @@ abstract class BridgeAbstract implements BridgeInterface
         return static::PARAMETERS;
     }
 
-    /** {@inheritdoc} */
+    /**
+     * The uri is used as home page url in feed outputs
+     */
     public function getURI()
     {
-        return static::URI;
+        return static::URI ?? 'https://github.com/RSS-Bridge/rss-bridge';
     }
 
     /** {@inheritdoc} */
@@ -363,7 +355,7 @@ abstract class BridgeAbstract implements BridgeInterface
         if (
             empty(static::PARAMETERS)
             && preg_match($regex, $url, $urlMatches) > 0
-            && preg_match($regex, static::URI, $bridgeUriMatches) > 0
+            && preg_match($regex, $this->getURI(), $bridgeUriMatches) > 0
             && $urlMatches[3] === $bridgeUriMatches[3]
         ) {
             return [];

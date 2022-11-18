@@ -131,12 +131,6 @@ EOD;
         if (!empty($parameterName)) {
             $form .= sprintf('<input type="hidden" name="context" value="%s" />', $parameterName);
         }
-
-        if (!$isHttps) {
-            $form .= '<div class="secure-warning">Warning :
-This bridge is not fetching its content through a secure connection</div>';
-        }
-
         return $form;
     }
 

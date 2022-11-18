@@ -67,7 +67,7 @@ class ConnectivityAction implements ActionInterface
             CURLOPT_CONNECTTIMEOUT => 5
         ];
         try {
-            $reply = getContents($bridge::URI, [], $curl_opts, true);
+            $reply = getContents($bridge->getURI(), [], $curl_opts, true);
 
             if ($reply['code'] === 200) {
                 $retVal['successful'] = true;

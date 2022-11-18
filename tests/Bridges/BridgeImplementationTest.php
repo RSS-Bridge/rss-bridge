@@ -39,12 +39,6 @@ class BridgeImplementationTest extends TestCase
     {
         $this->setBridge($path);
 
-        $this->assertIsString($this->obj::NAME, 'class::NAME');
-        $this->assertNotEmpty($this->obj::NAME, 'class::NAME');
-        $this->assertIsString($this->obj::URI, 'class::URI');
-        $this->assertNotEmpty($this->obj::URI, 'class::URI');
-        $this->assertIsString($this->obj::DESCRIPTION, 'class::DESCRIPTION');
-        $this->assertNotEmpty($this->obj::DESCRIPTION, 'class::DESCRIPTION');
         $this->assertIsString($this->obj::MAINTAINER, 'class::MAINTAINER');
         $this->assertNotEmpty($this->obj::MAINTAINER, 'class::MAINTAINER');
 
@@ -173,6 +167,10 @@ class BridgeImplementationTest extends TestCase
         $this->setBridge($path);
 
         $methods = get_class_methods($this->obj);
+
+        if (($key = array_search('__invoke', $methods)) !== false) {
+            unset($methods[$key]);
+        }
         sort($methods);
         if ($this->obj instanceof FeedExpander) {
             $this->assertEquals($allowedFeedExpander, $methods);
@@ -188,21 +186,9 @@ class BridgeImplementationTest extends TestCase
     {
         $this->setBridge($path);
 
-        $value = $this->obj->getDescription();
-        $this->assertIsString($value, '$class->getDescription()');
-        $this->assertNotEmpty($value, '$class->getDescription()');
-
         $value = $this->obj->getMaintainer();
         $this->assertIsString($value, '$class->getMaintainer()');
         $this->assertNotEmpty($value, '$class->getMaintainer()');
-
-        $value = $this->obj->getName();
-        $this->assertIsString($value, '$class->getName()');
-        $this->assertNotEmpty($value, '$class->getName()');
-
-        $value = $this->obj->getURI();
-        $this->assertIsString($value, '$class->getURI()');
-        $this->assertNotEmpty($value, '$class->getURI()');
 
         $value = $this->obj->getIcon();
         $this->assertIsString($value, '$class->getIcon()');
@@ -214,9 +200,6 @@ class BridgeImplementationTest extends TestCase
     public function testUri($path)
     {
         $this->setBridge($path);
-
-        $this->checkUrl($this->obj::URI);
-        $this->checkUrl($this->obj->getURI());
     }
 
     public function dataBridgesProvider()

@@ -73,11 +73,6 @@ interface BridgeInterface
      */
     public function getOption($name);
 
-    /**
-     * Returns the description
-     *
-     * @return string Description
-     */
     public function getDescription();
 
     /**
@@ -94,11 +89,6 @@ interface BridgeInterface
      */
     public function getMaintainer();
 
-    /**
-     * Returns the bridge name
-     *
-     * @return string Bridge name
-     */
     public function getName();
 
     /**
@@ -115,11 +105,6 @@ interface BridgeInterface
      */
     public function getParameters();
 
-    /**
-     * Returns the bridge URI
-     *
-     * @return string Bridge URI
-     */
     public function getURI();
 
     /**

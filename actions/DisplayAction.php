@@ -160,7 +160,7 @@ class DisplayAction implements ActionInterface
                     Logger::error(sprintf('Exception in %s', $bridgeClassName), ['e' => $e]);
                 }
 
-                $errorCount = logBridgeError($bridge::NAME, $e->getCode());
+                $errorCount = logBridgeError($bridge->getName(), $e->getCode());
 
                 if ($errorCount >= Configuration::getConfig('error', 'report_limit')) {
                     if (Configuration::getConfig('error', 'output') === 'feed') {
