@@ -48,7 +48,7 @@ function get_current_url(): string
 function create_sane_exception_message(\Throwable $e): string
 {
     return sprintf(
-        'Exception %s: %s in %s line %s',
+        '%s: %s in %s line %s',
         get_class($e),
         $e->getMessage(),
         trim_path_prefix($e->getFile()),
