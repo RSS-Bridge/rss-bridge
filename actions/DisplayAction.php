@@ -152,7 +152,14 @@ class DisplayAction implements ActionInterface
                     'icon' => $bridge->getIcon()
                 ];
             } catch (\Throwable $e) {
-                Logger::error(sprintf('Exception in %s', $bridgeClassName), ['e' => $e]);
+                if ($e instanceof HttpException) {
+                    // Produce a smaller log record for http exceptions
+                    Logger::warning(sprintf('Exception in %s: %s', $bridgeClassName, create_sane_exception_message($e)));
+                } else {
+                    // Log the exception
+                    Logger::error(sprintf('Exception in %s', $bridgeClassName), ['e' => $e]);
+                }
+
                 $errorCount = logBridgeError($bridge::NAME, $e->getCode());
 
                 if ($errorCount >= Configuration::getConfig('error', 'report_limit')) {
