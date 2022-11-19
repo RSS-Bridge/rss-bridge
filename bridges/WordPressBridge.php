@@ -93,6 +93,11 @@ class WordPressBridge extends FeedExpander
             }
         }
 
+        // Unwrap images figures
+        foreach ($article->find('figure.wp-block-image') as $figure) {
+            $figure->outertext = $figure->innertext;
+        }
+
         if (!is_null($article)) {
             $item['content'] = $this->cleanContent($article->innertext);
             $item['content'] = defaultLinkTo($item['content'], $item['uri']);
