@@ -308,27 +308,47 @@ function stripWithDelimiters($string, $start, $end)
  * @param string $tag_start Start of the HTML tag to remove, e.g. `<div class="ads">`
  * @return string Cleaned String, e.g. `foobar`
  *
- * @todo This function needs more documentation to make it maintainable.
+ * This function works by locating the desired tag start, then finding the appropriate
+ * end by counting opening and ending tags until the amount of open tags reaches zero:
+ *
+ * ```
+ * Amount of open tags:
+ *         1          2       1        0
+ * |---------------||---|   |----|   |----|
+ * <div class="ads"><div>ads</div>ads</div>bar
+ * | <-------- Section to remove -------> |
+ * ```
  */
 function stripRecursiveHTMLSection($string, $tag_name, $tag_start)
 {
     $open_tag = '<' . $tag_name;
     $close_tag = '</' . $tag_name . '>';
     $close_tag_length = strlen($close_tag);
+
+    // Make sure the provided $tag_start argument matches the provided $tag_name argument
     if (strpos($tag_start, $open_tag) === 0) {
+        // While stag_start is present, there is at least one remaining section to remove
         while (strpos($string, $tag_start) !== false) {
+            // In order to locate the end of the section, we attempt each closing tag until we find the right one
+            // We know we found the right one when the amount of "<tag" is the same as amount of "</tag"
+            // When the attempted "</tag" is not the correct one, we increase $search_offset to skip it
+            // and retry unless $max_recursion is reached (prevents infinite loop on malformed HTML)
             $max_recursion = 100;
             $section_to_remove = null;
             $section_start = strpos($string, $tag_start);
             $search_offset = $section_start;
             do {
                 $max_recursion--;
+                // Move on to the next occurrence of "</tag"
                 $section_end = strpos($string, $close_tag, $search_offset);
                 $search_offset = $section_end + $close_tag_length;
+                // If the next "</tag" is the correct one, then this is the section we must remove:
                 $section_to_remove = substr($string, $section_start, $section_end - $section_start + $close_tag_length);
+                // Count amount of "<tag" and "</tag" in the section to remove
                 $open_tag_count = substr_count($section_to_remove, $open_tag);
                 $close_tag_count = substr_count($section_to_remove, $close_tag);
             } while ($open_tag_count > $close_tag_count && $max_recursion > 0);
+            // We exited the loop, let's remove the section
             $string = str_replace($section_to_remove, '', $string);
         }
     }
