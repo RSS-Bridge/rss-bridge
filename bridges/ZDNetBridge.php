@@ -208,7 +208,7 @@ class ZDNetBridge extends FeedExpander
         $contents = stripWithDelimiters($contents, '<meta itemprop="image"', '>');
         $contents = stripWithDelimiters($contents, '<svg class="svg-symbol', '</svg>');
         $contents = trim(stripWithDelimiters($contents, '<section class="sharethrough-top', '</section>'));
-        $item['content'] = $contents;
+        $item['content'] = convertLazyLoading($contents);
 
         return $item;
     }
