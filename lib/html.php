@@ -201,6 +201,69 @@ function defaultLinkTo($dom, $url)
 }
 
 /**
+ * Convert lazy-loading images and frames (video embeds) into static elements
+ *
+ * This function looks for lazy-loading attributes such as 'data-src' and converts
+ * them back to regular ones such as 'src', making them loadable in RSS readers.
+ * It also converts <picture> elements to plain <img> elements.
+ *
+ * @param string|object $content The HTML content. Supports HTML objects or string objects
+ * @return string|object Content with fixed image/frame URLs (same type as input).
+ */
+function convertLazyLoading($dom)
+{
+    $string_convert = false;
+    if (is_string($dom)) {
+        $string_convert = true;
+        $dom = str_get_html($dom);
+    }
+
+    // Process standalone images, embeds and picture sources
+    foreach ($dom->find('img, iframe, source') as $img) {
+        if (!empty($img->getAttribute('data-src'))) {
+            $img->src = $img->getAttribute('data-src');
+        } elseif (!empty($img->getAttribute('data-srcset'))) {
+            $img->src = explode(' ', $img->getAttribute('data-srcset'))[0];
+        } elseif (!empty($img->getAttribute('data-lazy-src'))) {
+            $img->src = $img->getAttribute('data-lazy-src');
+        } elseif (!empty($img->getAttribute('srcset'))) {
+            $img->src = explode(' ', $img->getAttribute('srcset'))[0];
+        } else {
+            continue; // Proceed to next element without removing attributes
+        }
+        foreach (['loading', 'decoding', 'srcset', 'data-src', 'data-srcset'] as $attr) {
+            if ($img->hasAttribute($attr)) {
+                $img->removeAttribute($attr);
+            }
+        }
+    }
+
+    // Convert complex HTML5 pictures to plain, standalone images
+    // <img> and <source> tags already have their "src" attribute set at this point,
+    // so we replace the whole <picture> with a standalone <img> from within the <picture>
+    foreach ($dom->find('picture') as $picture) {
+        $img = $picture->find('img, source', 0);
+        if (!empty($img)) {
+            if ($img->tag == 'source') {
+                $img->tag = 'img';
+            }
+            // Adding/removing node would change its position inside the parent element,
+            // So instead we rewrite the node in-place though the outertext attribute
+            $picture->outertext = $img->outertext;
+        }
+    }
+
+    // If the expected return type is object, reload the DOM to make sure
+    // all $picture->outertext rewritten above are converted back to objects
+    $dom = $dom->outertext;
+    if (!$string_convert) {
+        $dom = str_get_html($dom);
+    }
+
+    return $dom;
+}
+
+/**
  * Extract the first part of a string matching the specified start and end delimiters
  *
  * @param string $string Input string, e.g. `<div>Post author: John Doe</div>`
