@@ -327,7 +327,7 @@ function stripRecursiveHTMLSection($string, $tag_name, $tag_start)
 
     // Make sure the provided $tag_start argument matches the provided $tag_name argument
     if (strpos($tag_start, $open_tag) === 0) {
-        // While stag_start is present, there is at least one remaining section to remove
+        // While tag_start is present, there is at least one remaining section to remove
         while (strpos($string, $tag_start) !== false) {
             // In order to locate the end of the section, we attempt each closing tag until we find the right one
             // We know we found the right one when the amount of "<tag" is the same as amount of "</tag"
