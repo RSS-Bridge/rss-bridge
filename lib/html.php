@@ -201,6 +201,69 @@ function defaultLinkTo($dom, $url)
 }
 
 /**
+ * Convert lazy-loading images and frames (video embeds) into static elements
+ *
+ * This function looks for lazy-loading attributes such as 'data-src' and converts
+ * them back to regular ones such as 'src', making them loadable in RSS readers.
+ * It also converts <picture> elements to plain <img> elements.
+ *
+ * @param string|object $content The HTML content. Supports HTML objects or string objects
+ * @return string|object Content with fixed image/frame URLs (same type as input).
+ */
+function convertLazyLoading($dom)
+{
+    $string_convert = false;
+    if (is_string($dom)) {
+        $string_convert = true;
+        $dom = str_get_html($dom);
+    }
+
+    // Process standalone images, embeds and picture sources
+    foreach ($dom->find('img, iframe, source') as $img) {
+        if (!empty($img->getAttribute('data-src'))) {
+            $img->src = $img->getAttribute('data-src');
+        } elseif (!empty($img->getAttribute('data-srcset'))) {
+            $img->src = explode(' ', $img->getAttribute('data-srcset'))[0];
+        } elseif (!empty($img->getAttribute('data-lazy-src'))) {
+            $img->src = $img->getAttribute('data-lazy-src');
+        } elseif (!empty($img->getAttribute('srcset'))) {
+            $img->src = explode(' ', $img->getAttribute('srcset'))[0];
+        } else {
+            continue; // Proceed to next element without removing attributes
+        }
+        foreach (['loading', 'decoding', 'srcset', 'data-src', 'data-srcset'] as $attr) {
+            if ($img->hasAttribute($attr)) {
+                $img->removeAttribute($attr);
+            }
+        }
+    }
+
+    // Convert complex HTML5 pictures to plain, standalone images
+    // <img> and <source> tags already have their "src" attribute set at this point,
+    // so we replace the whole <picture> with a standalone <img> from within the <picture>
+    foreach ($dom->find('picture') as $picture) {
+        $img = $picture->find('img, source', 0);
+        if (!empty($img)) {
+            if ($img->tag == 'source') {
+                $img->tag = 'img';
+            }
+            // Adding/removing node would change its position inside the parent element,
+            // So instead we rewrite the node in-place though the outertext attribute
+            $picture->outertext = $img->outertext;
+        }
+    }
+
+    // If the expected return type is object, reload the DOM to make sure
+    // all $picture->outertext rewritten above are converted back to objects
+    $dom = $dom->outertext;
+    if (!$string_convert) {
+        $dom = str_get_html($dom);
+    }
+
+    return $dom;
+}
+
+/**
  * Extract the first part of a string matching the specified start and end delimiters
  *
  * @param string $string Input string, e.g. `<div>Post author: John Doe</div>`
@@ -245,27 +308,47 @@ function stripWithDelimiters($string, $start, $end)
  * @param string $tag_start Start of the HTML tag to remove, e.g. `<div class="ads">`
  * @return string Cleaned String, e.g. `foobar`
  *
- * @todo This function needs more documentation to make it maintainable.
+ * This function works by locating the desired tag start, then finding the appropriate
+ * end by counting opening and ending tags until the amount of open tags reaches zero:
+ *
+ * ```
+ * Amount of open tags:
+ *         1          2       1        0
+ * |---------------||---|   |----|   |----|
+ * <div class="ads"><div>ads</div>ads</div>bar
+ * | <-------- Section to remove -------> |
+ * ```
  */
 function stripRecursiveHTMLSection($string, $tag_name, $tag_start)
 {
     $open_tag = '<' . $tag_name;
     $close_tag = '</' . $tag_name . '>';
     $close_tag_length = strlen($close_tag);
+
+    // Make sure the provided $tag_start argument matches the provided $tag_name argument
     if (strpos($tag_start, $open_tag) === 0) {
+        // While tag_start is present, there is at least one remaining section to remove
         while (strpos($string, $tag_start) !== false) {
+            // In order to locate the end of the section, we attempt each closing tag until we find the right one
+            // We know we found the right one when the amount of "<tag" is the same as amount of "</tag"
+            // When the attempted "</tag" is not the correct one, we increase $search_offset to skip it
+            // and retry unless $max_recursion is reached (prevents infinite loop on malformed HTML)
             $max_recursion = 100;
             $section_to_remove = null;
             $section_start = strpos($string, $tag_start);
             $search_offset = $section_start;
             do {
                 $max_recursion--;
+                // Move on to the next occurrence of "</tag"
                 $section_end = strpos($string, $close_tag, $search_offset);
                 $search_offset = $section_end + $close_tag_length;
+                // If the next "</tag" is the correct one, then this is the section we must remove:
                 $section_to_remove = substr($string, $section_start, $section_end - $section_start + $close_tag_length);
+                // Count amount of "<tag" and "</tag" in the section to remove
                 $open_tag_count = substr_count($section_to_remove, $open_tag);
                 $close_tag_count = substr_count($section_to_remove, $close_tag);
             } while ($open_tag_count > $close_tag_count && $max_recursion > 0);
+            // We exited the loop, let's remove the section
             $string = str_replace($section_to_remove, '', $string);
         }
     }

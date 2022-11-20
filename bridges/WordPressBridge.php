@@ -74,20 +74,8 @@ class WordPressBridge extends FeedExpander
             }
         }
 
-        // Convert lazy-loading images and iframes (videos...)
-        foreach ($article->find('img, iframe') as $img) {
-            if (!empty($img->getAttribute('data-src'))) {
-                $img->src = $img->getAttribute('data-src');
-            } elseif (!empty($img->getAttribute('data-srcset'))) {
-                $img->src = explode(' ', $img->getAttribute('data-srcset'))[0];
-            } elseif (!empty($img->getAttribute('data-lazy-src'))) {
-                $img->src = $img->getAttribute('data-lazy-src');
-            } elseif (!empty($img->getAttribute('srcset'))) {
-                $img->src = explode(' ', $img->getAttribute('srcset'))[0];
-            }
-        }
-
         // Find article main image
+        $article = convertLazyLoading($article);
         $article_image = $article_html->find('img.wp-post-image', 0);
         if (!empty($item['content']) && (!is_object($article_image) || empty($article_image->src))) {
             $article_image = str_get_html($item['content'])->find('img.wp-post-image', 0);
@@ -103,6 +91,11 @@ class WordPressBridge extends FeedExpander
             } else {
                 $item['enclosures'] = array_merge($item['enclosures'], (array) $article_image);
             }
+        }
+
+        // Unwrap images figures
+        foreach ($article->find('figure.wp-block-image') as $figure) {
+            $figure->outertext = $figure->innertext;
         }
 
         if (!is_null($article)) {
