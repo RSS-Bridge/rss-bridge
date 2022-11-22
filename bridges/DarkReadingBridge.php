@@ -85,6 +85,6 @@ class DarkReadingBridge extends FeedExpander
             $content = stripRecursiveHTMLSection($content, 'div', $div_start);
         }
 
-        return $content;
+        return convertLazyLoading($content);
     }
 }
