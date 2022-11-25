@@ -16,7 +16,8 @@ class VproTegenlichtBridge extends BridgeAbstract
     public function collectData()
     {
         $url = sprintf('https://www.vpro.nl/programmas/tegenlicht/lees/artikelen.html');
-        $dom = getSimpleHTMLDOM($url);
+        $dom = getSimpleHTMLDOM($url)
+               or returnServerError('No contents received!');
         $dom = $dom->find('ul#browsable-news-overview', 0);
         
         $dom = defaultLinkTo($dom, $this->getURI());
