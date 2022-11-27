@@ -16,6 +16,7 @@
 | ![](https://iplookup.flagfox.net/images/h16/FR.png) | https://bridge.suumitsu.eu | ![](https://img.shields.io/website/https/bridge.suumitsu.eu.svg) | [@mitsukarenai](https://github.com/mitsukarenai) | Hosted in Paris, France |
 | ![](https://iplookup.flagfox.net/images/h16/NL.png) | https://feed.eugenemolotov.ru | ![](https://img.shields.io/website/https/feed.eugenemolotov.ru.svg) | [@em92](https://github.com/em92) | Hosted in Amsterdam, Netherlands |
 | ![](https://iplookup.flagfox.net/images/h16/DE.png) | https://rss-bridge.mediani.de | ![](https://img.shields.io/website/https/rss-bridge.mediani.de.svg) | [@sokai](https://github.com/sokai) | Hosted with Netcup, Germany |
+| ![](https://iplookup.flagfox.net/images/h16/US.png) | http://rb.vern.cc/ | ![](https://img.shields.io/website/https/rb.vern.cc.svg) | [@vern.cc](https://vern.cc/en/admin) | Hosted with Hetzner, US |
 
 ## Inactive instances
 
