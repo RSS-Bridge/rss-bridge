@@ -23,7 +23,8 @@ class KitsuBridge extends BridgeAbstract
         foreach ($feedContent['data'] as $episode) {
             $item = [];
 
-            $item['title'] = $animeList[(int)$episode['relationships']['media']['data']['id']]['canonicalTitle'] . ': Episode ' . $episode['attributes']['number'];
+            $item['title'] = $animeList[(int)$episode['relationships']['media']['data']['id']]['canonicalTitle']
+             . ': Episode ' . $episode['attributes']['number'];
             $item['content'] = $episode['attributes']['canonicalTitle'];
             if ($episode['attributes']['description']) {
                 $item['content'] .= '<br/><br/>'
