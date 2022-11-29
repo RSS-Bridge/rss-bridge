@@ -3,14 +3,14 @@
 class KitsuBridge extends BridgeAbstract
 {
     const NAME = 'Kitsu Episode Updates';
-    const URI = 'https://kitsu.io/api/edge/episodes?filter[mediaType]=Anime&sort=-airdate&include=media&page[limit]=20';
+    const URI = 'https://kitsu.io';
     const DESCRIPTION = 'Lists latest upcoming episodes';
     //const PARAMETERS = array();
     const CACHE_TIMEOUT = 3600;
 
     public function collectData()
     {
-        $feedContent = json_decode(getContents(self::URI), true);
+        $feedContent = json_decode(getContents(self::URI . '/api/edge/episodes?filter[mediaType]=Anime&sort=-airdate&include=media&page[limit]=20'), true);
 
         $animeList = [];
 
