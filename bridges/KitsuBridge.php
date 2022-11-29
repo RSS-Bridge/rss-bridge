@@ -47,16 +47,18 @@ class KitsuBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $pageSize = $this->getInput('number_of_items') > 0 && $this->getInput('number_of_items') < 20
-            ? $this->getInput('number_of_items') : 20;
+        $pageSize = $this->getInput('number_of_items') > 0 && $this->getInput('number_of_items') < 20 ?
+            $this->getInput('number_of_items') :
+            20;
 
         if ($this->getInput('id') && ctype_digit($this->getInput('id'))) {
-            $urlApi = self::URI . '/api/edge/episodes?filter[mediaType]=Anime&filter[media_id]=' . $this->getInput('id') 
+            $urlApi = self::URI . '/api/edge/episodes?filter[mediaType]=Anime&filter[media_id]=' . $this->getInput('id')
                 . '&sort=-airdate&include=media&page[limit]=' . $pageSize;
         } elseif ($this->getInput('name') || $this->getInput('url_path')) {
-            $urlApiAnime = $this->getInput('url_path')
-                ? self::URI . '/api/edge/anime?filter[slug]=' . urlencode($this->getInput('url_path'))
-                : self::URI . '/api/edge/anime?filter[text]=' . urlencode($this->getInput('name'));
+            $urlApiAnime = 
+                $this->getInput('url_path') ?
+                self::URI . '/api/edge/anime?filter[slug]=' . urlencode($this->getInput('url_path')) :
+                self::URI . '/api/edge/anime?filter[text]=' . urlencode($this->getInput('name'));
             $animeList = json_decode(getContents($urlApiAnime), true);
             if ($animeList['meta']['count'] == 0 || !isset($animeList['data'][0]['id'])) {
                 throw new \Exception('show not found');
