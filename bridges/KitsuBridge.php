@@ -10,7 +10,8 @@ class KitsuBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $feedContent = json_decode(getContents(self::URI . '/api/edge/episodes?filter[mediaType]=Anime&sort=-airdate&include=media&page[limit]=20'), true);
+        $apiRequest = '/api/edge/episodes?filter[mediaType]=Anime&sort=-airdate&include=media&page[limit]=20';
+        $feedContent = json_decode(getContents(self::URI . $apiRequest), true);
 
         $animeList = [];
 
