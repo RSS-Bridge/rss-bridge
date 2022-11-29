@@ -8,10 +8,66 @@ class KitsuBridge extends BridgeAbstract
     //const PARAMETERS = array();
     const CACHE_TIMEOUT = 3600;
 
+    const PARAMETERS = [
+        'Episodes from all shows' => [],
+        'By show id' => [
+            'id' => [
+                'name' => 'Show id',
+                'type' => 'number',
+                'title' => 'Specify the id of the anime show as provided by the api',
+                'exampleValue' => '43806',
+                'required' => true
+            ]
+        ],
+        'By show name' => [
+            'name' => [
+                'name' => 'Show name',
+                'title' => 'Copy & paste the exact name from show URL',
+                'exampleValue' => 'Chainsaw Man',
+                'required' => true
+            ]
+        ],
+        'By show url path' => [
+            'url_path' => [
+                'name' => 'Show URL path',
+                'title' => 'Copy & paste the exact name from show URL',
+                'exampleValue' => 'chainsaw-man',
+                'required' => true
+            ]
+        ],
+        'global' => [
+            'number_of_items' => [
+                'name' => 'Number of items',
+                'type' => 'number',
+                'title' => 'Specify the number of items in the resulting feed (max 20)',
+                'exampleValue' => 20
+            ]
+        ]
+    ];
+
     public function collectData()
     {
-        $apiRequest = '/api/edge/episodes?filter[mediaType]=Anime&sort=-airdate&include=media&page[limit]=20';
-        $feedContent = json_decode(getContents(self::URI . $apiRequest), true);
+        $pageSize = $this->getInput('number_of_items') > 0 && $this->getInput('number_of_items') < 20
+            ? $this->getInput('number_of_items') : 20;
+
+        if ($this->getInput('id') && ctype_digit($this->getInput('id'))) {
+            $urlApi = self::URI . '/api/edge/episodes?filter[mediaType]=Anime&filter[media_id]=' . $this->getInput('id') 
+                . '&sort=-airdate&include=media&page[limit]=' . $pageSize;
+        } elseif ($this->getInput('name') || $this->getInput('url_path')) {
+            $urlApiAnime = $this->getInput('url_path')
+                ? self::URI . '/api/edge/anime?filter[slug]=' . urlencode($this->getInput('url_path'))
+                : self::URI . '/api/edge/anime?filter[text]=' . urlencode($this->getInput('name'));
+            $animeList = json_decode(getContents($urlApiAnime), true);
+            if ($animeList['meta']['count'] == 0 || !isset($animeList['data'][0]['id'])) {
+                throw new \Exception('show not found');
+            }
+            $urlApi = self::URI . '/api/edge/episodes?filter[mediaType]=Anime&filter[media_id]=' . $animeList['data'][0]['id']
+                . '&sort=-airdate&include=media&page[limit]=' . $pageSize;
+        } else {
+            $urlApi = self::URI . '/api/edge/episodes?filter[mediaType]=Anime&sort=-airdate&include=media&page[limit]=' . $pageSize;
+        }
+
+        $feedContent = json_decode(getContents($urlApi), true);
 
         $animeList = [];
 
@@ -44,5 +100,9 @@ class KitsuBridge extends BridgeAbstract
 
             $this->items[] = $item;
         }
+
+        usort($this->items, function ($item1, $item2) {
+            return $item2['timestamp'] <=> $item1['timestamp'];
+        });
     }
 }
