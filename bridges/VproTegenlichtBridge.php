@@ -19,13 +19,13 @@ class VproTegenlichtBridge extends BridgeAbstract
         $dom = getSimpleHTMLDOM($url)
                or returnServerError('No contents received!');
         $dom = $dom->find('ul#browsable-news-overview', 0);
-        
+    
         $dom = defaultLinkTo($dom, $this->getURI());
         foreach ($dom->find('li') as $article) {
             $a = $article->find('a.complex-teaser', 0);
             $title = $article->find('a.complex-teaser', 0)->title;
             $url = $article->find('a.complex-teaser', 0)->href;
-            $author = "VPRO tegenlicht";
+            $author = 'VPRO tegenlicht';
             $content = $article->find('p.complex-teaser-summary', 0)->plaintext;
             $timestamp = strtotime($article->find('div.complex-teaser-data', 0)->plaintext);
 
