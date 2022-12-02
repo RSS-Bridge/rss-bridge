@@ -15,7 +15,6 @@ RUN apt-get update && \
       nss-plugin-pem \
       libicu-dev && \
     docker-php-ext-install zip && \
-    docker-php-ext-install zip && \
     docker-php-ext-install intl && \
     pecl install memcached && \
     docker-php-ext-enable memcached && \
