@@ -103,7 +103,7 @@ docker start rss-bridge
 
 Browse http://localhost:3000/
 
-Run with docker-compose:
+#### Install with docker-compose
 
 Create a `docker-compose.yml` file locally with with the following content:
 ```yml
@@ -123,6 +123,8 @@ Then launch with `docker-compose`:
 ```bash
 docker-compose up
 ```
+
+Browse http://localhost:3000/
 
 ### Alternative installation methods
 
