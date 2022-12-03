@@ -103,6 +103,29 @@ docker start rss-bridge
 
 Browse http://localhost:3000/
 
+#### Install with docker-compose
+
+Create a `docker-compose.yml` file locally with with the following content:
+```yml
+version: '2'
+services:
+  rss-bridge:
+    image: rssbridge/rss-bridge:latest
+    volumes:
+      - </local/custom/path>:/config
+    ports:
+      - 3000:80
+    restart: unless-stopped
+```
+
+Then launch with `docker-compose`:
+
+```bash
+docker-compose up
+```
+
+Browse http://localhost:3000/
+
 ### Alternative installation methods
 
 [![Deploy on Scalingo](https://cdn.scalingo.com/deploy/button.svg)](https://my.scalingo.com/deploy?source=https://github.com/sebsauvage/rss-bridge)
