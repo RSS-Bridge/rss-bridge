@@ -76,9 +76,9 @@ class VkBridge extends BridgeAbstract
                 $is_pinned_post = true;
             }
 
-            if (is_object($post->find('a.wall_post_more', 0))) {
-                //delete link "show full" in content
-                $post->find('a.wall_post_more', 0)->outertext = '';
+            // Remove 'Show more' button
+            foreach ($post->find('button.PostTextMore') as $junk) {
+                $junk->outertext = '';
             }
 
             $content_suffix = '';
