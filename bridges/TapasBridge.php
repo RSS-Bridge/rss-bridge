@@ -1,9 +1,9 @@
 <?php
 class TapasBridge extends FeedExpander {
-	const NAME			= "Tapas.io";
-	const URI			= "https://tapas.io/";
-	const DESCRIPTION	= "Return new chapters from standart Tapas RSS";
-	const MAINTAINER	= "Ololbu";
+	const NAME			= 'Tapas.io';
+	const URI			= 'https://tapas.io/';
+	const DESCRIPTION	= 'Return new chapters from standart Tapas RSS';
+	const MAINTAINER	= 'Ololbu';
 	const CACHE_TIMEOUT	= 3600;
 	const PARAMETERS	= array (
 		array(
@@ -48,7 +48,7 @@ class TapasBridge extends FeedExpander {
 
 		if ($this->getInput('extend_content')) {
 			$html = getSimpleHTMLDOM($item['uri']) or returnServerError('Could not request ' . $this->getURI());
-			if (!$item['content']) $item['content'] = "";
+			if (!$item['content']) $item['content'] = '';
 			if ($html->find('article.main__body', 0)) {
 				foreach($html->find('article', 0)->find('img') as $line) {
 					$item['content'] .= '<img src="' . $line->{'data-src'} . '">';
@@ -65,13 +65,13 @@ class TapasBridge extends FeedExpander {
 	}
 
 	public function collectData() {
-		if (preg_match("/^[\d]+$/", $this->getInput('title'))) {
+		if (preg_match('/^[\d]+$/', $this->getInput('title'))) {
 			$this->id = $this->getInput('title');
 		}
 		if ($this->getInput('force_title') or !$this->id) {
 				$html = getSimpleHTMLDOM($this->getURI()) or returnServerError('Could not request ' . $this->getURI());
 				$this->id = $html->find('meta[property$=":url"]', 0)->content;
-				$this->id = str_ireplace(array("tapastic://series/", "/info"), "", $this->id);
+				$this->id = str_ireplace(array('tapastic://series/', '/info'), '', $this->id);
 		}
 		$this->collectExpandableDatas($this->getURI());
 	}
