@@ -1,5 +1,4 @@
 <?php
-//Bridge request: https://github.com/RSS-Bridge/rss-bridge/issues/1684
 class TapasBridge extends FeedExpander {
 	const NAME			= "Tapas.io";
 	const URI			= "https://tapas.io/";
