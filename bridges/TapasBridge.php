@@ -6,7 +6,7 @@ class TapasBridge extends FeedExpander {
 	const MAINTAINER	= "Ololbu";
 	const CACHE_TIMEOUT	= 3600;
 	const PARAMETERS	= array (
-		'Series updates' => array(
+		array(
 			'title' => array(
 				'name' => 'URL\'s title / ID',
 				'type' => 'text',
