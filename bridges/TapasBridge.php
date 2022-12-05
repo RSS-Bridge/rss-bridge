@@ -31,7 +31,7 @@ class TapasBridge extends FeedExpander {
 	public function getURI() {
 		if ($this->id) {
 			return self::URI . 'rss/series/' . $this->id;
-		} elseif ($this->queriedContext) {
+		} else {
 			return self::URI . 'series/' . $this->getInput('title') . '/info/';
 		}
 		return self::URI;
