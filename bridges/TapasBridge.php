@@ -1,30 +1,31 @@
 <?php
+
 class TapasBridge extends FeedExpander {
 	const NAME			= 'Tapas.io';
 	const URI			= 'https://tapas.io/';
 	const DESCRIPTION	= 'Return new chapters from standart Tapas RSS';
 	const MAINTAINER	= 'Ololbu';
 	const CACHE_TIMEOUT	= 3600;
-	const PARAMETERS	= array (
-		array(
-			'title' => array(
+	const PARAMETERS	= [
+		[
+			'title' => [
 				'name' => 'URL\'s title / ID',
 				'type' => 'text',
 				'required' => true,
 				'title' => 'Insert title from URL (tapas.io/series/THIS_TITLE/info) or title ID',
-			),
-			'extend_content' => array(
+			],
+			'extend_content' => [
 				'name' => 'Include on-site content',
 				'type' => 'checkbox',
 				'title' => 'Activate to include images or chapter text',
-			),
-//			'force_title' => array(
+			],
+//			'force_title' => [
 //				'name' => 'Force title use',
 //				'type' => 'checkbox',
 //				'title' => 'If you have trouble with feed getting, try this option.',
-//			),
-		)
-	);
+//			],
+		]
+	];
 
 	protected $id;
 
@@ -41,16 +42,16 @@ class TapasBridge extends FeedExpander {
 		$item = parent::parseItem($feedItem);
 
 		$namespaces = $feedItem->getNamespaces(true);
-		if(isset($namespaces['content'])) {
+		if (isset($namespaces['content'])) {
 			$description = $feedItem->children($namespaces['content']);
-			if(isset($description->encoded)) $item['content'] = (string)$description->encoded;
+			if (isset($description->encoded)) $item['content'] = (string)$description->encoded;
 		}
 
 		if ($this->getInput('extend_content')) {
 			$html = getSimpleHTMLDOM($item['uri']) or returnServerError('Could not request ' . $this->getURI());
 			if (!$item['content']) $item['content'] = '';
 			if ($html->find('article.main__body', 0)) {
-				foreach($html->find('article', 0)->find('img') as $line) {
+				foreach ($html->find('article', 0)->find('img') as $line) {
 					$item['content'] .= '<img src="' . $line->{'data-src'} . '">';
 				}
 			} elseif ($html->find('article.main__body--book', 0)) {
