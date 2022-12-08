@@ -27,6 +27,7 @@ class CodebergBridge extends BridgeAbstract
         ],
         'Pull Requests' => [],
         'Releases' => [],
+        'Tags' => [],
         'global' => [
             'username' => [
                 'name' => 'Username',
@@ -98,6 +99,9 @@ class CodebergBridge extends BridgeAbstract
             case 'Releases':
                 $this->extractReleases($html);
                 break;
+            case 'Tags':
+                $this->extractTags($html);
+                break;
             default:
                 throw new \Exception('Invalid context: ' . $this->queriedContext);
         }
@@ -120,6 +124,8 @@ class CodebergBridge extends BridgeAbstract
                 return $this->getRepo() . ' Pull Requests - ' . self::NAME;
             case 'Releases':
                 return $this->getRepo() . ' Releases - ' . self::NAME;
+            case 'Tags':
+                return $this->getRepo() . ' Tags - ' . self::NAME;
             default:
                 return parent::getName();
         }
@@ -138,6 +144,8 @@ class CodebergBridge extends BridgeAbstract
                 return self::URI . $this->getRepo() . '/pulls';
             case 'Releases':
                 return self::URI . $this->getRepo() . '/releases';
+            case 'Tags':
+                return self::URI . $this->getRepo() . '/tags';
             default:
                 return parent::getURI();
         }
@@ -312,6 +320,21 @@ HTML;
             $item['author'] = $li->find('span.author', 0)->find('a', 0)->plaintext;
 
             $this->items[] = $item;
+        }
+    }
+
+    private function extractTags($html)
+    {
+        $tags = $html->find('td.tag');
+        if ($tags === []) {
+            throw new \Exception('Found zero tags');
+        }
+        foreach ($tags as $tag) {
+            $this->items[] = [
+                'title' => $tag->find('a', 0)->plaintext,
+                'uri' => $tag->find('a', 0)->href,
+                'content' => $tag->innertext,
+            ];
         }
     }
 
