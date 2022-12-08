@@ -59,7 +59,7 @@ class RadioFranceBridge extends BridgeAbstract
         // An array of dom nodes
         $documentsList = $html->find('.DocumentsList', 0);
         $documentsListWrapper = $documentsList->find('.DocumentsList-wrapper', 0);
-        $cardList = $documentsListWrapper->find('.Card');
+        $cardList = $documentsListWrapper->find('.CardMedia');
 
         foreach ($cardList as $card) {
             $item = [];
