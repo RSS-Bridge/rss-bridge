@@ -27,6 +27,7 @@ class CodebergBridge extends BridgeAbstract
         ],
         'Pull Requests' => [],
         'Releases' => [],
+        'Tags' => [],
         'global' => [
             'username' => [
                 'name' => 'Username',
@@ -76,63 +77,6 @@ class CodebergBridge extends BridgeAbstract
     private $releasesUrlRegex = '/codeberg\.org\/([\w]+)\/([\w]+)\/releases/';
     private $issueCommentsUrlRegex = '/codeberg\.org\/([\w]+)\/([\w]+)\/issues\/([0-9]+)/';
 
-    public function detectParameters($url)
-    {
-        $params = [];
-
-        // Issue Comments
-        if (preg_match($this->issueCommentsUrlRegex, $url, $matches)) {
-            $params['context'] = 'Issue Comments';
-            $params['username'] = $matches[1];
-            $params['repo'] = $matches[2];
-            $params['issueId'] = $matches[3];
-
-            return $params;
-        }
-
-        // Issues
-        if (preg_match($this->issuesUrlRegex, $url, $matches)) {
-            $params['context'] = 'Issues';
-            $params['username'] = $matches[1];
-            $params['repo'] = $matches[2];
-
-            return $params;
-        }
-
-        // Pull Requests
-        if (preg_match($this->pullsUrlRegex, $url, $matches)) {
-            $params['context'] = 'Pull Requests';
-            $params['username'] = $matches[1];
-            $params['repo'] = $matches[2];
-
-            return $params;
-        }
-
-        // Releases
-        if (preg_match($this->releasesUrlRegex, $url, $matches)) {
-            $params['context'] = 'Releases';
-            $params['username'] = $matches[1];
-            $params['repo'] = $matches[2];
-
-            return $params;
-        }
-
-        // Commits
-        if (preg_match($this->urlRegex, $url, $matches)) {
-            $params['context'] = 'Commits';
-            $params['username'] = $matches[1];
-            $params['repo'] = $matches[2];
-
-            if (isset($matches[3])) {
-                $params['branch'] = $matches[3];
-            }
-
-            return $params;
-        }
-
-        return null;
-    }
-
     public function collectData()
     {
         $html = getSimpleHTMLDOM($this->getURI());
@@ -155,8 +99,11 @@ class CodebergBridge extends BridgeAbstract
             case 'Releases':
                 $this->extractReleases($html);
                 break;
+            case 'Tags':
+                $this->extractTags($html);
+                break;
             default:
-                returnClientError('Invalid context: ' . $this->queriedContext);
+                throw new \Exception('Invalid context: ' . $this->queriedContext);
         }
     }
 
@@ -177,6 +124,8 @@ class CodebergBridge extends BridgeAbstract
                 return $this->getRepo() . ' Pull Requests - ' . self::NAME;
             case 'Releases':
                 return $this->getRepo() . ' Releases - ' . self::NAME;
+            case 'Tags':
+                return $this->getRepo() . ' Tags - ' . self::NAME;
             default:
                 return parent::getName();
         }
@@ -195,6 +144,8 @@ class CodebergBridge extends BridgeAbstract
                 return self::URI . $this->getRepo() . '/pulls';
             case 'Releases':
                 return self::URI . $this->getRepo() . '/releases';
+            case 'Tags':
+                return self::URI . $this->getRepo() . '/tags';
             default:
                 return parent::getURI();
         }
@@ -343,7 +294,11 @@ class CodebergBridge extends BridgeAbstract
     {
         $ul = $html->find('ul#release-list', 0);
 
-        foreach ($ul->find('li.ui.grid') as $li) {
+        $lis = $ul->find('li.ui.grid');
+        if ($lis === []) {
+            throw new \Exception('Found zero releases');
+        }
+        foreach ($lis as $li) {
             $item = [];
             $item['title'] = $li->find('h4', 0)->plaintext;
             $item['uri'] = $li->find('h4', 0)->find('a', 0)->href;
@@ -365,6 +320,21 @@ HTML;
             $item['author'] = $li->find('span.author', 0)->find('a', 0)->plaintext;
 
             $this->items[] = $item;
+        }
+    }
+
+    private function extractTags($html)
+    {
+        $tags = $html->find('td.tag');
+        if ($tags === []) {
+            throw new \Exception('Found zero tags');
+        }
+        foreach ($tags as $tag) {
+            $this->items[] = [
+                'title' => $tag->find('a', 0)->plaintext,
+                'uri' => $tag->find('a', 0)->href,
+                'content' => $tag->innertext,
+            ];
         }
     }
 
@@ -415,5 +385,62 @@ EOD;
         }
 
         return $html;
+    }
+
+    public function detectParameters($url)
+    {
+        $params = [];
+
+        // Issue Comments
+        if (preg_match($this->issueCommentsUrlRegex, $url, $matches)) {
+            $params['context'] = 'Issue Comments';
+            $params['username'] = $matches[1];
+            $params['repo'] = $matches[2];
+            $params['issueId'] = $matches[3];
+
+            return $params;
+        }
+
+        // Issues
+        if (preg_match($this->issuesUrlRegex, $url, $matches)) {
+            $params['context'] = 'Issues';
+            $params['username'] = $matches[1];
+            $params['repo'] = $matches[2];
+
+            return $params;
+        }
+
+        // Pull Requests
+        if (preg_match($this->pullsUrlRegex, $url, $matches)) {
+            $params['context'] = 'Pull Requests';
+            $params['username'] = $matches[1];
+            $params['repo'] = $matches[2];
+
+            return $params;
+        }
+
+        // Releases
+        if (preg_match($this->releasesUrlRegex, $url, $matches)) {
+            $params['context'] = 'Releases';
+            $params['username'] = $matches[1];
+            $params['repo'] = $matches[2];
+
+            return $params;
+        }
+
+        // Commits
+        if (preg_match($this->urlRegex, $url, $matches)) {
+            $params['context'] = 'Commits';
+            $params['username'] = $matches[1];
+            $params['repo'] = $matches[2];
+
+            if (isset($matches[3])) {
+                $params['branch'] = $matches[3];
+            }
+
+            return $params;
+        }
+
+        return null;
     }
 }
