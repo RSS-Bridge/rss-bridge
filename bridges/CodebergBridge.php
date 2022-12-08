@@ -76,63 +76,6 @@ class CodebergBridge extends BridgeAbstract
     private $releasesUrlRegex = '/codeberg\.org\/([\w]+)\/([\w]+)\/releases/';
     private $issueCommentsUrlRegex = '/codeberg\.org\/([\w]+)\/([\w]+)\/issues\/([0-9]+)/';
 
-    public function detectParameters($url)
-    {
-        $params = [];
-
-        // Issue Comments
-        if (preg_match($this->issueCommentsUrlRegex, $url, $matches)) {
-            $params['context'] = 'Issue Comments';
-            $params['username'] = $matches[1];
-            $params['repo'] = $matches[2];
-            $params['issueId'] = $matches[3];
-
-            return $params;
-        }
-
-        // Issues
-        if (preg_match($this->issuesUrlRegex, $url, $matches)) {
-            $params['context'] = 'Issues';
-            $params['username'] = $matches[1];
-            $params['repo'] = $matches[2];
-
-            return $params;
-        }
-
-        // Pull Requests
-        if (preg_match($this->pullsUrlRegex, $url, $matches)) {
-            $params['context'] = 'Pull Requests';
-            $params['username'] = $matches[1];
-            $params['repo'] = $matches[2];
-
-            return $params;
-        }
-
-        // Releases
-        if (preg_match($this->releasesUrlRegex, $url, $matches)) {
-            $params['context'] = 'Releases';
-            $params['username'] = $matches[1];
-            $params['repo'] = $matches[2];
-
-            return $params;
-        }
-
-        // Commits
-        if (preg_match($this->urlRegex, $url, $matches)) {
-            $params['context'] = 'Commits';
-            $params['username'] = $matches[1];
-            $params['repo'] = $matches[2];
-
-            if (isset($matches[3])) {
-                $params['branch'] = $matches[3];
-            }
-
-            return $params;
-        }
-
-        return null;
-    }
-
     public function collectData()
     {
         $html = getSimpleHTMLDOM($this->getURI());
@@ -156,7 +99,7 @@ class CodebergBridge extends BridgeAbstract
                 $this->extractReleases($html);
                 break;
             default:
-                returnClientError('Invalid context: ' . $this->queriedContext);
+                throw new \Exception('Invalid context: ' . $this->queriedContext);
         }
     }
 
@@ -343,7 +286,11 @@ class CodebergBridge extends BridgeAbstract
     {
         $ul = $html->find('ul#release-list', 0);
 
-        foreach ($ul->find('li.ui.grid') as $li) {
+        $lis = $ul->find('li.ui.grid');
+        if ($lis === []) {
+            throw new \Exception('Found zero releases');
+        }
+        foreach ($lis as $li) {
             $item = [];
             $item['title'] = $li->find('h4', 0)->plaintext;
             $item['uri'] = $li->find('h4', 0)->find('a', 0)->href;
@@ -415,5 +362,62 @@ EOD;
         }
 
         return $html;
+    }
+
+    public function detectParameters($url)
+    {
+        $params = [];
+
+        // Issue Comments
+        if (preg_match($this->issueCommentsUrlRegex, $url, $matches)) {
+            $params['context'] = 'Issue Comments';
+            $params['username'] = $matches[1];
+            $params['repo'] = $matches[2];
+            $params['issueId'] = $matches[3];
+
+            return $params;
+        }
+
+        // Issues
+        if (preg_match($this->issuesUrlRegex, $url, $matches)) {
+            $params['context'] = 'Issues';
+            $params['username'] = $matches[1];
+            $params['repo'] = $matches[2];
+
+            return $params;
+        }
+
+        // Pull Requests
+        if (preg_match($this->pullsUrlRegex, $url, $matches)) {
+            $params['context'] = 'Pull Requests';
+            $params['username'] = $matches[1];
+            $params['repo'] = $matches[2];
+
+            return $params;
+        }
+
+        // Releases
+        if (preg_match($this->releasesUrlRegex, $url, $matches)) {
+            $params['context'] = 'Releases';
+            $params['username'] = $matches[1];
+            $params['repo'] = $matches[2];
+
+            return $params;
+        }
+
+        // Commits
+        if (preg_match($this->urlRegex, $url, $matches)) {
+            $params['context'] = 'Commits';
+            $params['username'] = $matches[1];
+            $params['repo'] = $matches[2];
+
+            if (isset($matches[3])) {
+                $params['branch'] = $matches[3];
+            }
+
+            return $params;
+        }
+
+        return null;
     }
 }
