@@ -47,12 +47,16 @@ class TapasBridge extends FeedExpander
         $namespaces = $feedItem->getNamespaces(true);
         if (isset($namespaces['content'])) {
             $description = $feedItem->children($namespaces['content']);
-            if (isset($description->encoded)) $item['content'] = (string)$description->encoded;
+            if (isset($description->encoded)) {
+                $item['content'] = (string)$description->encoded;
+            }
         }
 
         if ($this->getInput('extend_content')) {
             $html = getSimpleHTMLDOM($item['uri']) or returnServerError('Could not request ' . $this->getURI());
-            if (!$item['content']) $item['content'] = '';
+            if (!$item['content']) {
+                $item['content'] = '';
+            }
             if ($html->find('article.main__body', 0)) {
                 foreach ($html->find('article', 0)->find('img') as $line) {
                     $item['content'] .= '<img src="' . $line->{'data-src'} . '">';
@@ -76,7 +80,7 @@ class TapasBridge extends FeedExpander
         if ($this->getInput('force_title') or !$this->id) {
             $html = getSimpleHTMLDOM($this->getURI()) or returnServerError('Could not request ' . $this->getURI());
             $this->id = $html->find('meta[property$=":url"]', 0)->content;
-            $this->id = str_ireplace(array('tapastic://series/', '/info'), '', $this->id);
+            $this->id = str_ireplace(['tapastic://series/', '/info'], '', $this->id);
         }
         $this->collectExpandableDatas($this->getURI());
     }
