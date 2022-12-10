@@ -37,7 +37,7 @@ class StreamCzBridge extends BridgeAbstract
         if (null === $scriptElement) {
             returnServerError('Could not find metadata element on the page');
         }
-        $json = extractFromDelimiters($scriptElement->innertext, 'data : ', "logs : ");
+        $json = extractFromDelimiters($scriptElement->innertext, 'data : ', 'logs : ');
         if (false === $json) {
             returnServerError('Could not extract metadata from the page');
         }
