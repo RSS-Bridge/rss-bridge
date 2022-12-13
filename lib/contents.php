@@ -125,6 +125,8 @@ function getContents(
         $httpHeadersNormalized[$headerName] = $headerValue;
     }
     $config = [
+        'useragent' => Configuration::getConfig('http', 'useragent'),
+        'timeout' => Configuration::getConfig('http', 'timeout'),
         'headers' => array_merge($defaultHttpHeaders, $httpHeadersNormalized),
         'curl_options' => $curlOptions,
     ];
@@ -215,8 +217,8 @@ function getContents(
 function _http_request(string $url, array $config = []): array
 {
     $defaults = [
-        'useragent' => Configuration::getConfig('http', 'useragent'),
-        'timeout' => Configuration::getConfig('http', 'timeout'),
+        'useragent' => null,
+        'timeout' => 5,
         'headers' => [],
         'proxy' => null,
         'curl_options' => [],
@@ -236,7 +238,9 @@ function _http_request(string $url, array $config = []): array
         $httpHeaders[] = sprintf('%s: %s', $name, $value);
     }
     curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeaders);
-    curl_setopt($ch, CURLOPT_USERAGENT, $config['useragent']);
+    if ($config['useragent']) {
+        curl_setopt($ch, CURLOPT_USERAGENT, $config['useragent']);
+    }
     curl_setopt($ch, CURLOPT_TIMEOUT, $config['timeout']);
     curl_setopt($ch, CURLOPT_ENCODING, '');
     curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);

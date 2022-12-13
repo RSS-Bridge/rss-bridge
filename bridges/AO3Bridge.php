@@ -92,7 +92,8 @@ class AO3Bridge extends BridgeAbstract
     private function collectWork($id)
     {
         $url = self::URI . "/works/$id/navigate";
-        $html = getSimpleHTMLDOM($url);
+        $response = _http_request($url, ['useragent' => 'rss-bridge bot (https://github.com/RSS-Bridge/rss-bridge)']);
+        $html = \str_get_html($response['body']);
         $html = defaultLinkTo($html, self::URI);
 
         $this->title = $html->find('h2 a', 0)->plaintext;
