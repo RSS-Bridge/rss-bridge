@@ -34,8 +34,30 @@ class AO3Bridge extends BridgeAbstract
         ]
     ];
 
-    // Feed for lists of works (e.g. recent works, search results, filtered tags,
-    // bookmarks, series, collections).
+    public function collectData()
+    {
+        switch ($this->queriedContext) {
+            case 'Bookmarks':
+                $user = $this->getInput('user');
+                $this->title = $user;
+                $url = self::URI
+                    . '/users/' . $user
+                    . '/bookmarks?bookmark_search[sort_column]=bookmarkable_date';
+                $this->collectList($url);
+                break;
+            case 'List':
+                $this->collectList($this->getInput('url'));
+                break;
+            case 'Work':
+                $this->collectWork($this->getInput('id'));
+                break;
+        }
+    }
+
+    /**
+     * Feed for lists of works (e.g. recent works, search results, filtered tags,
+     * bookmarks, series, collections).
+     */
     private function collectList($url)
     {
         $html = getSimpleHTMLDOM($url);
@@ -64,11 +86,14 @@ class AO3Bridge extends BridgeAbstract
         }
     }
 
-    // Feed for recent chapters of a specific work.
+    /**
+     * Feed for recent chapters of a specific work.
+     */
     private function collectWork($id)
     {
         $url = self::URI . "/works/$id/navigate";
-        $html = getSimpleHTMLDOM($url);
+        $response = _http_request($url, ['useragent' => 'rss-bridge bot (https://github.com/RSS-Bridge/rss-bridge)']);
+        $html = \str_get_html($response['body']);
         $html = defaultLinkTo($html, self::URI);
 
         $this->title = $html->find('h2 a', 0)->plaintext;
@@ -91,27 +116,6 @@ class AO3Bridge extends BridgeAbstract
         }
 
         $this->items = array_reverse($this->items);
-    }
-
-    public function collectData()
-    {
-        switch ($this->queriedContext) {
-            case 'Bookmarks':
-                $user = $this->getInput('user');
-                $this->title = $user;
-                $url = self::URI
-                    . '/users/' . $user
-                    . '/bookmarks?bookmark_search[sort_column]=bookmarkable_date';
-                return $this->collectList($url);
-            case 'List':
-                return $this->collectList(
-                    $this->getInput('url')
-                );
-            case 'Work':
-                return $this->collectWork(
-                    $this->getInput('id')
-                );
-        }
     }
 
     public function getName()
