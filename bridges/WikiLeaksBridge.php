@@ -93,8 +93,10 @@ class WikiLeaksBridge extends BridgeAbstract
             $item['title'] = $article->find('h3', 0)->plaintext;
             $item['uri'] = static::URI . $article->find('h3 a', 0)->href;
             $item['content'] = $article->find('div.introduction', 0)->plaintext;
-            $item['timestamp'] = strtotime($article->find('div.timestamp', 0)->plaintext);
-
+            $timestamp = $article->find('div.timestamp', 0);
+            if ($timestamp) {
+                $item['timestamp'] = strtotime($timestamp->plaintext);
+            }
             $this->items[] = $item;
         }
     }
