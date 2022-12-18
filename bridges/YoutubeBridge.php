@@ -257,6 +257,8 @@ class YoutubeBridge extends BridgeAbstract
                 $wrapper = $item->videoRenderer;
             } elseif (isset($item->playlistVideoRenderer)) {
                 $wrapper = $item->playlistVideoRenderer;
+            } elseif (isset($item->richItemRenderer)) {
+                $wrapper = $item->richItemRenderer->content->videoRenderer;
             } else {
                 continue;
             }
@@ -278,7 +280,7 @@ class YoutubeBridge extends BridgeAbstract
             // 01:03:30 / 15:06 / 1:24
             $durationText = 0;
             if (isset($wrapper->lengthText)) {
-                $durationText = $wrapper->lengthText;
+                $durationText = $wrapper->lengthText->simpleText;
             } else {
                 foreach ($wrapper->thumbnailOverlays as $overlay) {
                     if (isset($overlay->thumbnailOverlayTimeStatusRenderer)) {
@@ -288,14 +290,8 @@ class YoutubeBridge extends BridgeAbstract
                 }
             }
 
-            if (isset($durationText->simpleText)) {
-                $durationText = trim($durationText->simpleText);
-            } else {
-                $durationText = 0;
-            }
-
-            if (preg_match('/([\d]{1,2}):([\d]{1,2})\:([\d]{2})/', $durationText)) {
-                $durationText = preg_replace('/([\d]{1,2}):([\d]{1,2})\:([\d]{2})/', '$1:$2:$3', $durationText);
+            if (preg_match('/([\d]{1,2})\:([\d]{1,2})\:([\d]{2})/', $durationText)) {
+                $durationText = preg_replace('/([\d]{1,2})\:([\d]{1,2})\:([\d]{2})/', '$1:$2:$3', $durationText);
             } else {
                 $durationText = preg_replace('/([\d]{1,2})\:([\d]{2})/', '00:$1:$2', $durationText);
             }
@@ -350,8 +346,8 @@ class YoutubeBridge extends BridgeAbstract
                 if (isset($jsonData->contents)) {
                     $channel_id = $jsonData->metadata->channelMetadataRenderer->externalId;
                     $jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[1];
-                    $jsonData = $jsonData->tabRenderer->content->sectionListRenderer->contents[0];
-                    $jsonData = $jsonData->itemSectionRenderer->contents[0]->gridRenderer->items;
+                    $jsonData = $jsonData->tabRenderer->content->richGridRenderer->contents;
+                    // $jsonData = $jsonData->itemSectionRenderer->contents[0]->gridRenderer->items;
                     $this->parseJSONListing($jsonData);
                 } else {
                     returnServerError('Unable to get data from YouTube. Username/Channel: ' . $this->request);
