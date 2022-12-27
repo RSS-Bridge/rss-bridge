@@ -122,7 +122,7 @@ $extracted = extractFromDelimiters($string, $start, $end);
 ```
 
 # stripWithDelimiters
-Remove one or more part(s) of a string using a start and end delmiters.
+Remove one or more part(s) of a string using a start and end delimiter.
 It is the inverse of `extractFromDelimiters`.
 
 ```php
