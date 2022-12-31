@@ -297,10 +297,6 @@ class ReutersBridge extends BridgeAbstract
         $url = $this->getAPIURL($feed_uri, 'article', $is_article_uid);
         $rawData = $this->getJson($url);
 
-        if (json_last_error() != JSON_ERROR_NONE) { // Checking whether a valid JSON or not
-            return $this->handleRedirectedArticle($url);
-        }
-
         $article_content = '';
         $authorlist = '';
         $category = [];
@@ -340,41 +336,6 @@ class ReutersBridge extends BridgeAbstract
             'published_at' => $published_at
         ];
         return $content_detail;
-    }
-
-    private function handleRedirectedArticle($url)
-    {
-        $html = getSimpleHTMLDOMCached($url, 86400); // Duration 24h
-
-        $description = '';
-        $author = '';
-        $images = '';
-        $meta_items = $html->find('meta');
-        foreach ($meta_items as $meta) {
-            switch ($meta->name) {
-                case 'description':
-                    $description = $meta->content;
-                    break;
-                case 'author':
-                case 'twitter:creator':
-                    $author = $meta->content;
-                    break;
-                case 'twitter:image:src':
-                case 'twitter:image':
-                    $url = $meta->content;
-                    $images = "<img src=$url" . '>';
-                    break;
-            }
-        }
-
-        return [
-            'content' => $description,
-            'author' => $author,
-            'category' => '',
-            'images' => $images,
-            'published_at' => '',
-            'status' => 'redirected'
-        ];
     }
 
     private function handleImage($images)
@@ -527,28 +488,6 @@ EOD;
         return $description;
     }
 
-    /**
-     * @param array $stories
-     */
-    private function addRelatedStories($stories)
-    {
-        foreach ($stories as $story) {
-            $story_data = $this->getArticle($story['url']);
-            $title = $story['caption'];
-            $url = self::URI . $story['url'];
-            if (isset($story_data['status']) && $story_data['status'] != 'redirected') {
-                $article_body = defaultLinkTo($story_data['content'], $this->getURI());
-            } else {
-                $article_body = $story_data['content'];
-            }
-            $content = $article_body . $story_data['images'];
-            $timestamp = $story_data['published_at'];
-            $category = $story_data['category'];
-            $author = $story_data['author'];
-            $this->addStories($title, $content, $timestamp, $author, $url, $category);
-        }
-    }
-
     public function getName()
     {
         return $this->feedName;
@@ -606,9 +545,6 @@ EOD;
                 $title = $story['title'];
                 $article_uri = $story['canonical_url'];
                 $source_type = $story['source']['name'];
-                if (isset($story['related_stories'])) {
-                    $this->addRelatedStories($story['related_stories']);
-                }
             }
 
             // Some article cause unexpected behaviour like redirect to another site not API.
