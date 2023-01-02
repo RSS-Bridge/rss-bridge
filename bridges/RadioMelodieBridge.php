@@ -32,7 +32,7 @@ class RadioMelodieBridge extends BridgeAbstract
                 $picture = [];
 
                 // Get the Main picture URL
-                $picture[] = self::URI . $article->find('figure[class=photoviewer]', 0)->find('img', 0)->src;
+                $picture[] = self::URI . $article->find('figure[class*=photoviewer]', 0)->find('img', 0)->src;
                 $audioHTML = $article->find('audio');
 
                 // Add the audio element to the enclosure
