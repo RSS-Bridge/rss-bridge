@@ -1,4 +1,4 @@
-The `FormatInterface`interface defines functions that need to be implemented by all formats:
+The `FormatInterface` interface defines functions that need to be implemented by all formats:
 
 * [display](#the-display-function)
 * [stringify](#the-stringify-function)
