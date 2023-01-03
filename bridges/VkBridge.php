@@ -141,24 +141,15 @@ class VkBridge extends BridgeAbstract
                 $article->outertext = '';
             }
 
-            // get video on post
-            $video = $post->find('div.post_video_desc', 0);
-            $main_video_link = '';
-            if (is_object($video)) {
-                $video_title = $video->find('div.post_video_title', 0)->plaintext;
-                $video_link = $video->find('a.lnk', 0)->getAttribute('href');
-                $this->appendVideo($video_title, $video_link, $content_suffix);
-                $video->outertext = '';
-                $main_video_link = $video_link;
-            }
-
-            // get all other videos
+            // get all videos
             foreach ($post->find('a.page_post_thumb_video') as $a) {
                 $video_title = htmlspecialchars_decode($a->getAttribute('aria-label'));
-                $video_link = $a->getAttribute('href');
-                if ($video_link != $main_video_link) {
-                    $this->appendVideo($video_title, $video_link, $content_suffix);
+                $video_title_split_pos = strrpos($video_title, ' is ');
+                if ($video_title_split_pos !== false) {
+                    $video_title = substr($video_title, 0, $video_title_split_pos);
                 }
+                $video_link = $a->getAttribute('href');
+                $this->appendVideo($video_title, $video_link, backgroundToImg($a), $content_suffix);
                 $a->outertext = '';
             }
 
@@ -459,12 +450,13 @@ class VkBridge extends BridgeAbstract
         returnServerError('Too many redirects, while retreving content from VK');
     }
 
-    protected function appendVideo($video_title, $video_link, &$content_suffix)
+    protected function appendVideo($video_title, $video_link, $previewImg, &$content_suffix)
     {
         if (!$video_title) {
             $video_title = '(empty)';
         }
 
-        $content_suffix .= '<br>Video: <a href="' . htmlspecialchars($video_link) . '">' . $video_title . '</a>';
+        $content_suffix .= '<br><a href="' . htmlspecialchars($video_link) . '">' . $previewImg;
+        $content_suffix .= 'Video: ' . $video_title . '</a>';
     }
 }
