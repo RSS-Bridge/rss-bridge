@@ -19,6 +19,7 @@ class PicartoBridge extends BridgeAbstract {
 
 	// See "https://api.picarto.tv/" for Picarto API docs
 	const API_BASE_URI = 'https://api.picarto.tv/api/v1/channel/name/';
+	const TIMEZONE_DEFAULT = timezone_open('Europe/Berlin'); 
 	
 	public function collectData() {
 		$channelName = $this->getInput('channel');
@@ -32,7 +33,15 @@ class PicartoBridge extends BridgeAbstract {
 			$item['title'] = $response['name'] . ' is now online';
 
 			$rawDate = $response["last_live"];
-			$date = date_create_from_format("Y-m-d H:i:s", $rawDate);
+			
+			try {
+				$date = date_create_from_format("Y-m-d H:i:s T", $rawDate);
+			} catch (Throwable $t) { // PHP 7
+				$date = date_create_from_format("Y-m-d H:i:s", $rawDate, $TIMEZONE_DEFAULT);
+			} catch (Exception $e) { // PHP 5
+				$date = date_create_from_format("Y-m-d H:i:s", $rawDate, $TIMEZONE_DEFAULT);
+			}
+
 			$item['timestamp'] = $date->getTimestamp();
 
 			// Display stream preview as content
