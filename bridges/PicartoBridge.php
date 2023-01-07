@@ -53,7 +53,7 @@ class PicartoBridge extends BridgeAbstract {
 		
 		$regex = '/^(https?:\/\/)?(www\.)?picarto\.tv\/([^\/?\n]+)/';
 		if (preg_match($regex, $url, $matches) > 0) {
-			$params['channel'] = urldecode($matches[3]);
+			$params['channel'] = urldecode($matches[1]);
 			return $params;
 		}
 		
