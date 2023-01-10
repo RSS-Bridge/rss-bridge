@@ -39,19 +39,24 @@ class FilterBridge extends FeedExpander
             'type' => 'checkbox',
             'required' => false,
         ],
-        'target_title' => [
-            'name' => 'Apply filter on title',
+        'target_author' => [
+            'name' => 'Apply filter on author',
             'type' => 'checkbox',
             'required' => false,
-            'defaultValue' => 'checked'
         ],
         'target_content' => [
             'name' => 'Apply filter on content',
             'type' => 'checkbox',
             'required' => false,
         ],
-        'target_author' => [
-            'name' => 'Apply filter on author',
+        'target_title' => [
+            'name' => 'Apply filter on title',
+            'type' => 'checkbox',
+            'required' => false,
+            'defaultValue' => 'checked'
+        ],
+        'target_uri' => [
+            'name' => 'Apply filter on URI/URL',
             'type' => 'checkbox',
             'required' => false,
         ],
@@ -90,14 +95,17 @@ class FilterBridge extends FeedExpander
 
         // Retrieve fields to check
         $filter_fields = [];
-        if ($this->getInput('target_title')) {
-            $filter_fields[] = $item['title'] ?? null;
+        if ($this->getInput('target_author')) {
+            $filter_fields[] = $item['author'] ?? null;
         }
         if ($this->getInput('target_content')) {
             $filter_fields[] = $item['content'] ?? null;
         }
-        if ($this->getInput('target_author')) {
-            $filter_fields[] = $item['author'] ?? null;
+        if ($this->getInput('target_title')) {
+            $filter_fields[] = $item['title'] ?? null;
+        }
+        if ($this->getInput('target_uri')) {
+            $filter_fields[] = $item['uri'] ?? null;
         }
 
         // Apply filter on item
