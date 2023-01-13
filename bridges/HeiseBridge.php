@@ -61,19 +61,11 @@ class HeiseBridge extends FeedExpander
 
     private function addArticleToItem($item, $article)
     {
-        // copy full-res img src to standard img element
-        foreach ($article->find('a-img') as $aimg) {
-            $img = $aimg->find('img', 0);
-            $img->src = $aimg->src;
-            // client scales based on aspect ratio in style attribute
-            $img->width = '';
-            $img->height = '';
-        }
         // relink URIs, as the previous a-img tags weren't recognized by this function
         $article = defaultLinkTo($article, $item['uri']);
 
         // remove unwanted stuff
-        foreach ($article->find('figure.branding, a-ad, div.ho-text, noscript img, .opt-in__content-container') as $element) {
+        foreach ($article->find('figure.branding, a-ad, div.ho-text, a-img, .opt-in__content-container') as $element) {
             $element->remove();
         }
         // reload html, as remove() is buggy
@@ -81,7 +73,7 @@ class HeiseBridge extends FeedExpander
 
         $header = $article->find('header.a-article-header', 0);
         if ($header) {
-            $headerElements = $header->find('p, a-img img, figure img');
+            $headerElements = $header->find('p, figure img, noscript img');
             $item['content'] = implode('', $headerElements);
 
             $authors = $header->find('.a-creator__names .a-creator__name');
@@ -95,13 +87,10 @@ class HeiseBridge extends FeedExpander
         $content = $article->find('.article-content', 0);
         if ($content) {
             $contentElements = $content->find(
-                'p, h3, ul, table, pre, a-img img, a-bilderstrecke h2, a-bilderstrecke figure, a-bilderstrecke figcaption'
+                'p, h3, ul, table, pre, noscript img, a-bilderstrecke h2, a-bilderstrecke figure, a-bilderstrecke figcaption'
             );
             $item['content'] .= implode('', $contentElements);
-        }
-        foreach ($article->find('a-img img, a-bilderstrecke img, figure img') as $img) {
-            $item['enclosures'][] = $img->src;
-        }
+        }    
 
         return $item;
     }
