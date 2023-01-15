@@ -16,7 +16,7 @@ class PicartoBridge extends BridgeAbstract {
 			)
 		)
 	);
-	//FIXME: beep boop github's bot is being dumb. delete this comment if I somehow forget to.
+
 	// See "https://api.picarto.tv/" for Picarto API docs
 	const API_BASE_URI = 'https://api.picarto.tv/api/v1/channel/name/';
 	const TIMEZONE_DEFAULT = timezone_open('Europe/Berlin'); 
