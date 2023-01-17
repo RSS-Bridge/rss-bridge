@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../For_Developers/index.html">For Developers</a> <svg class="Page__header--separator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175"><path d="M360.73 229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1 0s-5.3 13.8 0 19.1l215.5 215.5-215.5 215.5c-5.3 5.3-5.3 13.8 0 19.1 2.6 2.6 6.1 4 9.5 4 3.4 0 6.9-1.3 9.5-4l225.1-225.1c5.3-5.2 5.3-13.8.1-19z"/></svg> <a href="../For_Developers/Coding_style_policy.html">Coding style policy</a></h1>
                 <span class="ModifiedDate">
-            January 3, 2023 at 10:25 AM        </span>
+            January 17, 2023 at 12:21 PM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/04_For_Developers/01_Coding_style_policy.md" target="_blank">
                 Edit on GitHub            </a>
@@ -109,10 +109,10 @@
 
     <div class="s-content">
         <p>This section explains the coding style policy for RSS-Bridge with examples and references to external resources. Please make sure your code is compliant before opening a pull request.</p>
-<p>RSS-Bridge uses <a href="https://travis-ci.org/" class="Link--external" rel="noopener noreferrer">Travis-CI</a> to validate code quality. You will automatically be notified if issues were found in your pull request. You must fix those issues before the pull request will be merged. Refer to <a href="https://github.com/RSS-Bridge/rss-bridge/blob/master/phpcs.xml" class="Link--external" rel="noopener noreferrer">phpcs.xml</a> for a complete list of policies enforced by Travis-CI.</p>
+<p>You will automatically be notified if issues were found in your pull request. You must fix those issues before the pull request will be merged. Refer to <a href="https://github.com/RSS-Bridge/rss-bridge/blob/master/phpcs.xml" class="Link--external" rel="noopener noreferrer">phpcs.xml</a> for a complete list of policies enforced by Travis-CI.</p>
 <p>If you want to run the checks locally, make sure you have <a href="https://github.com/squizlabs/PHP_CodeSniffer" class="Link--external" rel="noopener noreferrer"><code>phpcs</code></a> and <a href="https://phpunit.de/" class="Link--external" rel="noopener noreferrer"><code>phpunit</code></a> installed on your machine and run following commands in the root directory of RSS-Bridge (tested on Debian):</p>
-<pre><code class="hljs shell">phpcs . --standard=phpcs.xml --warning-severity=0 --extensions=php -p
-phpunit --configuration=phpunit.xml --include-path=lib/
+<pre><code class="hljs shell">./vendor/bin/phpcs --standard=phpcs.xml --warning-severity=0 --extensions=php -p ./
+./vendor/bin/phpunit
 </code></pre>
 <p>The following list provides an overview of all policies applied to RSS-Bridge.</p>
 <h1><a id="whitespace" href="#whitespace" class="Permalink" aria-hidden="true" title="Permalink">#</a>Whitespace</h1>
@@ -147,44 +147,9 @@ phpunit --configuration=phpunit.xml --include-path=lib/
 <p>Whitespace at the end of lines or at the start or end of a file is invisible to the reader and absolutely unnecessary. Thus it must be removed.</p>
 <p><em>Reference</em>: <a href="https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Squiz/Sniffs/WhiteSpace/SuperfluousWhitespaceSniff.php" class="Link--external" rel="noopener noreferrer"><code>Squiz.WhiteSpace.SuperfluousWhitespace</code></a></p>
 <h1><a id="indentation" href="#indentation" class="Permalink" aria-hidden="true" title="Permalink">#</a>Indentation</h1>
-<h2><a id="use-tabs-for-indentation" href="#use-tabs-for-indentation" class="Permalink" aria-hidden="true" title="Permalink">#</a>Use tabs for indentation</h2>
-<p>RSS-Bridge uses tabs for indentation on all PHP files in the repository (except files located in the <code>vendor</code> directory)</p>
-<p><em>Reference</em>: <a href="https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Generic/Sniffs/WhiteSpace/DisallowSpaceIndentSniff.php" class="Link--external" rel="noopener noreferrer"><code>Generic.WhiteSpace.DisallowSpaceIndent</code></a></p>
+<h2><a id="use-spaces-indentation" href="#use-spaces-indentation" class="Permalink" aria-hidden="true" title="Permalink">#</a>Use spaces indentation</h2>
 <h1><a id="maximum-line-length" href="#maximum-line-length" class="Permalink" aria-hidden="true" title="Permalink">#</a>Maximum Line Length</h1>
-<h2><a id="the-maximum-line-length-should-not-exceed-80-characters" href="#the-maximum-line-length-should-not-exceed-80-characters" class="Permalink" aria-hidden="true" title="Permalink">#</a>The maximum line length should not exceed 80 characters</h2>
-<p>One line of code should have no more than <strong>80 characters</strong> (soft limit) and must never exceed <strong>120 characters</strong> (hard limit).</p>
-<p><em>Notice</em>: Travis-CI enforces the hard limit of 120 characters. Maintainers may ask you to indent lines longer than 80 characters before merging. This is generally done to keep the code as readable and maintainable as possible.</p>
-<p>For long conditional statements, consider indenting the statement into multiple lines.</p>
-<details><summary>Example</summary><div><br>
-<p><strong>Bad</strong> (the total length of the line is <strong>94</strong> characters)</p>
-<pre><code class="language-PHP">if($time !== false &amp;&amp; (time() - $duration &lt; $time) &amp;&amp; (!defined('DEBUG') || DEBUG !== true)) {
-
-}
-</code></pre>
-<p><strong>Good</strong> (add line breaks)</p>
-<pre><code class="language-PHP">if($time !== false
-&amp;&amp; (time() - $duration &lt; $time)
-&amp;&amp; (!defined('DEBUG') || DEBUG !== true)) {
-
-}
-</code></pre>
-</div></details><br>
-<p>For long text, either add line feeds, or make use of the <a href="http://php.net/manual/en/language.types.string.php#language.types.string.syntax.heredoc" class="Link--external" rel="noopener noreferrer"><code>heredoc</code></a> syntax.</p>
-<details><summary>Example</summary><div><br>
-<p><strong>Bad</strong> (the total length of the line is <strong>340</strong> characters - from <a href="https://www.lipsum.com/feed/html" class="Link--external" rel="noopener noreferrer">Lorem Ipsum</a>)</p>
-<pre><code class="language-PHP">$longtext = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse condimentum nec est eget posuere. Proin at sagittis risus. Fusce faucibus lectus leo, eu ornare velit tristique eu. Curabitur elementum facilisis ultricies. Praesent dictum fermentum lectus a rhoncus. Donec vitae justo metus. Sed molestie faucibus egestas.';
-</code></pre>
-<p><strong>Good</strong> (use <code>heredoc</code> syntax - this will add line-breaks)</p>
-<pre><code class="language-PHP">$longtext = &lt;&lt;&lt;EOD
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-condimentum nec est eget posuere. Proin at sagittis risus. Fusce faucibus
-lectus leo, eu ornare velit tristique eu. Curabitur elementum facilisis
-ultricies. Praesent dictum fermentum lectus a rhoncus. Donec vitae justo metus.
-Sed molestie faucibus egestas.
-EOD;
-</code></pre>
-</div></details><br>
-<p><em>Reference</em>: <a href="https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Generic/Sniffs/Files/LineLengthSniff.php" class="Link--external" rel="noopener noreferrer"><code>Generic.Files.LineLength</code></a></p>
+<p>There is no maximum line length.</p>
 <h1><a id="strings" href="#strings" class="Permalink" aria-hidden="true" title="Permalink">#</a>Strings</h1>
 <h2><a id="whenever-possible-use-single-quote-strings" href="#whenever-possible-use-single-quote-strings" class="Permalink" aria-hidden="true" title="Permalink">#</a>Whenever possible use single quote strings</h2>
 <p>PHP supports both single quote strings and double quote strings. For pure text you must use single quote strings for consistency. Double quote strings are only allowed for special characters (i.e. <code>&quot;\n&quot;</code>) or inlined variables (i.e. <code>&quot;My name is {$name}&quot;</code>);</p>
@@ -522,17 +487,7 @@ EOD;
 </div></details><br>
 <p><em>Reference</em>: <a href="https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Squiz/Sniffs/WhiteSpace/CastSpacingSniff.php" class="Link--external" rel="noopener noreferrer"><code>Squiz.WhiteSpace.CastSpacing</code></a></p>
 <h1><a id="arrays" href="#arrays" class="Permalink" aria-hidden="true" title="Permalink">#</a>Arrays</h1>
-<h2><a id="always-use-the-long-array-syntax" href="#always-use-the-long-array-syntax" class="Permalink" aria-hidden="true" title="Permalink">#</a>Always use the long array syntax</h2>
-<p>Arrays should be initialized using the long array syntax.</p>
-<details><summary>Example</summary><div><br>
-<p><strong>Bad</strong></p>
-<pre><code class="language-PHP">$data = [ 'hello' =&gt; 'world' ];
-</code></pre>
-<p><strong>Good</strong></p>
-<pre><code class="language-PHP">$data = array('hello' =&gt; 'world');
-</code></pre>
-</div></details><br>
-<p><em>Reference</em>: <a href="https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Standards/Generic/Sniffs/Arrays/DisallowShortArraySyntaxSniff.php" class="Link--external" rel="noopener noreferrer"><code>Generic.Arrays.DisallowShortArraySyntax</code></a></p>
+<h2><a id="always-use-the-short-array-syntax" href="#always-use-the-short-array-syntax" class="Permalink" aria-hidden="true" title="Permalink">#</a>Always use the short array syntax</h2>
     </div>
 
         <nav>
