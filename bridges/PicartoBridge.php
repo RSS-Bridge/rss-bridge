@@ -1,6 +1,6 @@
 <?php
 
-class PicartoBridge extends BridgeAbstract 
+class PicartoBridge extends BridgeAbstract
 {
 	const NAME = 'Picarto';
 	const URI = 'https://picarto.tv';
@@ -22,10 +22,10 @@ class PicartoBridge extends BridgeAbstract
 	const API_BASE_URI = 'https://api.picarto.tv/api/v1/channel/name/';
 	const TIMEZONE_DEFAULT = timezone_open('Europe/Berlin');
 
-	public function collectData() 
+	public function collectData()
 	{
 		$channelName = $this->getInput('channel');
-		$apiUrl = $API_BASE_URI() . $channelName
+		$apiUrl = $API_BASE_URI() . $channelName;
 		$picartoResponse = json_decode(getContents($apiUrl), true);
 
 		if ($picartoResponse['online']) {
@@ -55,7 +55,7 @@ class PicartoBridge extends BridgeAbstract
 		}
 	}
 
-	public function getName() 
+	public function getName()
 	{
 		return parent::getName() . ' - ' . $this->getInput('channel');
 	}
