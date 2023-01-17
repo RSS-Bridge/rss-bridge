@@ -20,7 +20,7 @@ class PicartoBridge extends BridgeAbstract
 
 	// See "https://api.picarto.tv/" for Picarto API docs
 	const API_BASE_URI = 'https://api.picarto.tv/api/v1/channel/name/';
-	const TIMEZONE_DEFAULT = timezone_open('Europe/Berlin');
+	const TIMEZONE_DEFAULT = 'Europe/Berlin';
 
 	public function collectData()
 	{
@@ -39,9 +39,11 @@ class PicartoBridge extends BridgeAbstract
 			try {
 				$date = date_create_from_format('Y-m-d H:i:s T', $rawDate);
 			} catch (Throwable $t) { // PHP 7
-				$date = date_create_from_format('Y-m-d H:i:s', $rawDate, $TIMEZONE_DEFAULT);
+				$timezone = timezone_open($TIMEZONE_DEFAULT);
+				$date = date_create_from_format('Y-m-d H:i:s', $rawDate, $timezone);
 			} catch (Exception $e) { // PHP 5
-				$date = date_create_from_format('Y-m-d H:i:s', $rawDate, $TIMEZONE_DEFAULT);
+				$timezone = timezone_open($TIMEZONE_DEFAULT);
+				$date = date_create_from_format('Y-m-d H:i:s', $rawDate, $timezone);
 			}
 
 			$item['timestamp'] = $date->getTimestamp();
