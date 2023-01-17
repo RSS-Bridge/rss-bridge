@@ -25,7 +25,7 @@ class PicartoBridge extends BridgeAbstract
 	public function collectData()
 	{
 		$channelName = $this->getInput('channel');
-		$apiUrl = $API_BASE_URI() . $channelName;
+		$apiUrl = $API_BASE_URI . $channelName;
 		$picartoResponse = json_decode(getContents($apiUrl), true);
 
 		if ($picartoResponse['online']) {
