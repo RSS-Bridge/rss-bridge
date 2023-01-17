@@ -26,15 +26,15 @@ class PicartoBridge extends BridgeAbstract
 	{
 		$channelName = $this->getInput('channel');
 		$apiUrl = $API_BASE_URI() . $channelName
-		$response = json_decode(getContents($apiUrl), true);
+		$picartoResponse = json_decode(getContents($apiUrl), true);
 
-		if ($response['online']) {
+		if ($picartoResponse['online']) {
 			$item = array();
 
 			$item['uri'] = getURI() . '/' . $channel;
-			$item['title'] = $response['name'] . ' is now online';
+			$item['title'] = $picartoResponse['name'] . ' is now online';
 
-			$rawDate = $response['last_live'];
+			$rawDate = $picartoResponse['last_live'];
 
 			try {
 				$date = date_create_from_format('Y-m-d H:i:s T', $rawDate);
@@ -48,7 +48,7 @@ class PicartoBridge extends BridgeAbstract
 
 			// Display stream preview as content
 			$item['content'] = '<img src="'
-				. $response['thumbnails']['tablet']
+				. $picartoResponse['thumbnails']['tablet']
 				. '"/>';
 
 			$this->items[] = $item;
