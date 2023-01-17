@@ -90,7 +90,7 @@ class HeiseBridge extends FeedExpander
                 'p, h3, ul, table, pre, noscript img, a-bilderstrecke h2, a-bilderstrecke figure, a-bilderstrecke figcaption'
             );
             $item['content'] .= implode('', $contentElements);
-        }    
+        }
 
         return $item;
     }
