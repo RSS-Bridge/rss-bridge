@@ -54,14 +54,15 @@ class TldrTechBridge extends BridgeAbstract
         }
     }
 
-    private function parseEntry($uri) {
+    private function parseEntry($uri)
+    {
         $html = getSimpleHTMLDOM($uri);
         $content = $html->find('div.content-center.mt-5', 0);
         $subscribe_form = $content->find('div.mt-5 > div > form', 0);
         if ($subscribe_form) {
             $content->removeChild($subscribe_form->parent->parent);
         }
-        $privacy_link = $content->find('a[href='/privacy']', 0);
+        $privacy_link = $content->find("a[href='/privacy']", 0);
         if ($privacy_link) {
             $content->removeChild($privacy_link->parent->parent);
         }
@@ -76,17 +77,17 @@ class TldrTechBridge extends BridgeAbstract
             $header_root->appendChild($elem);
         }
 
-        foreach($content->find('a.font-bold') as $a) {
+        foreach ($content->find('a.font-bold') as $a) {
             $a->removeAttribute('class');
             $elem = $html->createElement('b', $a->plaintext);
             $a->removeChild($a->firstChild());
             $a->appendChild($elem);
         }
-        foreach($content->children() as $child) {
+        foreach ($content->children() as $child) {
             if ($child->tag != 'div') {
                 continue;
             }
-            foreach($child->children() as $grandchild) {
+            foreach ($child->children() as $grandchild) {
                 if ($grandchild->tag == 'div') {
                     $grandchild->style = 'margin-bottom: 12px;';
                 }
