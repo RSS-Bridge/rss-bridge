@@ -26,6 +26,14 @@ class RadioMelodieBridge extends BridgeAbstract
                 $article = str_get_html($article->save());
                 $textDOM = $article->find('article', 0);
 
+                // Remove HTML code for the article title
+                $textDOM->find('h1', 0)->outertext = '';
+
+                // Fix the CSS for the author
+                $textDOM->find('div[class=author]', 0)->find('img', 0)
+                       ->setAttribute('style', 'width: 60px; margin: 0 15px; display: inline-block; vertical-align: top;');
+
+
                 // Initialise arrays
                 $item = [];
                 $audio = [];
@@ -76,6 +84,7 @@ class RadioMelodieBridge extends BridgeAbstract
 
                 // Remove the share article part
                 $textDOM->find('div[class=share]', 0)->outertext = '';
+                $textDOM->find('div[class=share]', 1)->outertext = '';
 
                 // Rewrite relative Links
                 $textDOM = defaultLinkTo($textDOM, self::URI . '/');
