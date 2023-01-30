@@ -38,7 +38,7 @@ Check out RSS-Bridge right now on https://rss-bridge.org/bridge01 or find anothe
 
 ## Tutorial
 
-RSS-Bridge requires php 7.4.
+RSS-Bridge requires php 7.4 (or higher).
 
 ### Install with git:
 
