@@ -3,6 +3,7 @@
 class DevToBridge extends BridgeAbstract
 {
     const CONTEXT_BY_TAG = 'By tag';
+    const CONTEXT_BY_USER = 'By user';
 
     const NAME = 'dev.to Bridge';
     const URI = 'https://dev.to';
@@ -25,6 +26,21 @@ class DevToBridge extends BridgeAbstract
                 'required' => false,
                 'title' => 'Enable to receive the full article for each item'
             ]
+            ],
+        self::CONTEXT_BY_USER => [
+            'user' => [
+                'name' => 'User',
+                'type' => 'text',
+                'required' => true,
+                'title' => 'Insert your username',
+                'exampleValue' => 'n3wt0n'
+            ],
+            'full' => [
+                'name' => 'Full article',
+                'type' => 'checkbox',
+                'required' => false,
+                'title' => 'Enable to receive the full article for each item'
+            ]
         ]
     ];
 
@@ -34,6 +50,11 @@ class DevToBridge extends BridgeAbstract
             case self::CONTEXT_BY_TAG:
                 if ($tag = $this->getInput('tag')) {
                     return static::URI . '/t/' . urlencode($tag);
+                }
+                break;
+            case self::CONTEXT_BY_USER:
+                if ($user = $this->getInput('user')) {
+                    return static::URI . '/' . urlencode($user);
                 }
                 break;
         }
