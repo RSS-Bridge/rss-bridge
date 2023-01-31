@@ -11,7 +11,7 @@ jobs:
     # Needs additional permissions https://github.com/actions/first-interaction/issues/10#issuecomment-1041402989
     steps:
       - name: Check out self
-        uses: actions/checkout@v2.3.2
+        uses: actions/checkout@v3
         with:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
@@ -31,7 +31,7 @@ jobs:
           docker build -t prbuild .;
           docker run -d -v $GITHUB_WORKSPACE/whitelist.txt:/app/whitelist.txt -v $GITHUB_WORKSPACE/DEBUG:/app/DEBUG -p 3001:80 prbuild
       - name: Setup python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.7'
           cache: 'pip'
@@ -48,8 +48,7 @@ jobs:
           body="${body//'%'/'%25'}";
           body="${body//$'\n'/'%0A'}";
           body="${body//$'\r'/'%0D'}";
-          echo "::set-output name=bodylength::${#body}"
-          echo "::set-output name=body::$body"
+          echo "bodylength=${#body}" >> $GITHUB_OUTPUT
       - name: Find Comment
         if: ${{ steps.testrun.outputs.bodylength > 130 }}
         uses: peter-evans/find-comment@v2
@@ -64,6 +63,5 @@ jobs:
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            ${{ steps.testrun.outputs.body }}
+          body-file: comment.txt
           edit-mode: replace
