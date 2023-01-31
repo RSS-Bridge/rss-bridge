@@ -8,7 +8,8 @@ on:
       - '20*'
 
 env:
-  DOCKERHUB_SLUG: bocki/rss-bridge-test
+  DOCKERHUB_SLUG: rssbridge/rss-bridge
+  GHCR_SLUG: ghcr.io/rss-bridge/rss-bridge
 
 jobs:
   bake:
@@ -42,7 +43,13 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-
+      -
+        name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       -
         name: Build and push
         uses: docker/bake-action@v2
