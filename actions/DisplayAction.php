@@ -160,7 +160,7 @@ class DisplayAction implements ActionInterface
                     Logger::error(sprintf('Exception in %s', $bridgeClassName), ['e' => $e]);
                 }
 
-                $errorCount = logBridgeError($bridge::NAME, $e->getCode());
+                $errorCount = self::logBridgeError($bridge::NAME, $e->getCode());
 
                 if ($errorCount >= Configuration::getConfig('error', 'report_limit')) {
                     if (Configuration::getConfig('error', 'output') === 'feed') {
@@ -209,6 +209,28 @@ class DisplayAction implements ActionInterface
         }
         $headers['Content-Type'] = $format->getMimeType() . '; charset=' . $format->getCharset();
         return new Response($format->stringify(), 200, $headers);
+    }
+
+    private static function logBridgeError($bridgeName, $code)
+    {
+        $cacheFactory = new CacheFactory();
+        $cache = $cacheFactory->create();
+        $cache->setScope('error_reporting');
+        $cache->setkey($bridgeName . '_' . $code);
+        $cache->purgeCache(86400); // 24 hours
+        if ($report = $cache->loadData()) {
+            $report = Json::decode($report);
+            $report['time'] = time();
+            $report['count']++;
+        } else {
+            $report = [
+                'error' => $code,
+                'time' => time(),
+                'count' => 1,
+            ];
+        }
+        $cache->saveData(Json::encode($report));
+        return $report['count'];
     }
 
     private static function createGithubIssueUrl($bridge, $e, string $message): string
