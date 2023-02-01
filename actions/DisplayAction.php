@@ -107,29 +107,27 @@ class DisplayAction implements ActionInterface
             && (time() - $cache_timeout < $mtime)
             && !Debug::isEnabled()
         ) {
-            // Load cached data
-            // Send "Not Modified" response if client supports it
-            // Implementation based on https://stackoverflow.com/a/10847262
-            if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
-                $stime = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']);
+            // At this point we found the feed in the cache
 
+            if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
+                // The client wants to know if the feed has changed since its last check
+                $stime = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']);
                 if ($mtime <= $stime) {
-                    // Cached data is older or same
                     $lastModified2 = gmdate('D, d M Y H:i:s ', $mtime) . 'GMT';
                     return new Response('', 304, ['Last-Modified' => $lastModified2]);
                 }
             }
 
+            // Fetch the cached feed from the cache and prepare it
             $cached = $cache->loadData();
-
             if (isset($cached['items']) && isset($cached['extraInfos'])) {
                 foreach ($cached['items'] as $item) {
                     $items[] = new FeedItem($item);
                 }
-
                 $infos = $cached['extraInfos'];
             }
         } else {
+            // At this point we did NOT find the feed in the cache. So invoke the bridge!
             try {
                 $bridge->setDatas($bridge_params);
                 $bridge->collectData();
@@ -143,7 +141,6 @@ class DisplayAction implements ActionInterface
                     }
                     $items = $feedItems;
                 }
-
                 $infos = [
                     'name' => $bridge->getName(),
                     'uri'  => $bridge->getURI(),
