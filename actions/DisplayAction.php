@@ -160,7 +160,7 @@ class DisplayAction implements ActionInterface
                     Logger::error(sprintf('Exception in %s', $bridgeClassName), ['e' => $e]);
                 }
 
-                $errorCount = self::logBridgeError($bridge::NAME, $e->getCode());
+                $errorCount = self::logBridgeError($bridge->getName(), $e->getCode());
 
                 if ($errorCount >= Configuration::getConfig('error', 'report_limit')) {
                     if (Configuration::getConfig('error', 'output') === 'feed') {
@@ -216,7 +216,7 @@ class DisplayAction implements ActionInterface
         $cacheFactory = new CacheFactory();
         $cache = $cacheFactory->create();
         $cache->setScope('error_reporting');
-        $cache->setkey($bridgeName . '_' . $code);
+        $cache->setkey([$bridgeName . '_' . $code]);
         $cache->purgeCache(86400); // 24 hours
         if ($report = $cache->loadData()) {
             $report = Json::decode($report);
