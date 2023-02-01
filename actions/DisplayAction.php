@@ -197,13 +197,16 @@ class DisplayAction implements ActionInterface
         $item = new FeedItem();
 
         // Create "new" error message every 24 hours
-        $_error_time = urlencode((int)(time() / 86400));
-        $itemTitle = sprintf('Bridge returned error %s! (%s)', $e->getCode(), $_error_time);
+        $dailyUid = urlencode((int)(time() / 86400));
+        $itemTitle = sprintf('Bridge returned error %s! (%s)', $e->getCode(), $dailyUid);
         $item->setTitle($itemTitle);
         $item->setURI(get_current_url());
         $item->setTimestamp(time());
 
-        // todo: consider giving more helpful error messages
+        // Create a unique id for feed readers e.g. "staysafetv twitch videos_2023_19389"
+        $itemUid = $bridge->getName() . '_' . date('Y') . '_' . $dailyUid;
+        $item->setUid($itemUid);
+
         $content = render_template(__DIR__ . '/../templates/bridge-error.html.php', [
             'error' => render_template(__DIR__ . '/../templates/error.html.php', ['e' => $e]),
             'searchUrl' => self::createGithubSearchUrl($bridge),
