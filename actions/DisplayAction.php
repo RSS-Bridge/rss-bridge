@@ -130,7 +130,6 @@ class DisplayAction implements ActionInterface
                 $infos = $cached['extraInfos'];
             }
         } else {
-            // Collect new data
             try {
                 $bridge->setDatas($bridge_params);
                 $bridge->collectData();
@@ -160,32 +159,14 @@ class DisplayAction implements ActionInterface
                     Logger::error(sprintf('Exception in %s', $bridgeClassName), ['e' => $e]);
                 }
 
+                // Emit error only if we are passed the error report limit
                 $errorCount = self::logBridgeError($bridge->getName(), $e->getCode());
-
                 if ($errorCount >= Configuration::getConfig('error', 'report_limit')) {
                     if (Configuration::getConfig('error', 'output') === 'feed') {
-                        $item = new FeedItem();
-
-                        // Create "new" error message every 24 hours
-                        $request['_error_time'] = urlencode((int)(time() / 86400));
-
-                        // todo: I don't think this _error_time in the title is useful. It's confusing.
-                        $itemTitle = sprintf('Bridge returned error %s! (%s)', $e->getCode(), $request['_error_time']);
-                        $item->setTitle($itemTitle);
-                        $item->setURI(get_current_url());
-                        $item->setTimestamp(time());
-
-                        // todo: consider giving more helpful error messages
-                        $content = render_template(__DIR__ . '/../templates/bridge-error.html.php', [
-                            'error' => render_template(__DIR__ . '/../templates/error.html.php', ['e' => $e]),
-                            'searchUrl' => self::createGithubSearchUrl($bridge),
-                            'issueUrl' => self::createGithubIssueUrl($bridge, $e, create_sane_exception_message($e)),
-                            'maintainer' => $bridge->getMaintainer(),
-                        ]);
-                        $item->setContent($content);
-
-                        $items[] = $item;
+                        // Emit the error as a feed item in a feed so that feed readers can pick it up
+                        $items[] = $this->createFeedItemFromException($e, $bridge);
                     } elseif (Configuration::getConfig('error', 'output') === 'http') {
+                        // Emit as a regular web response
                         throw $e;
                     }
                 }
@@ -209,6 +190,28 @@ class DisplayAction implements ActionInterface
         }
         $headers['Content-Type'] = $format->getMimeType() . '; charset=' . $format->getCharset();
         return new Response($format->stringify(), 200, $headers);
+    }
+
+    private function createFeedItemFromException($e, BridgeInterface $bridge): FeedItem
+    {
+        $item = new FeedItem();
+
+        // Create "new" error message every 24 hours
+        $_error_time = urlencode((int)(time() / 86400));
+        $itemTitle = sprintf('Bridge returned error %s! (%s)', $e->getCode(), $_error_time);
+        $item->setTitle($itemTitle);
+        $item->setURI(get_current_url());
+        $item->setTimestamp(time());
+
+        // todo: consider giving more helpful error messages
+        $content = render_template(__DIR__ . '/../templates/bridge-error.html.php', [
+            'error' => render_template(__DIR__ . '/../templates/error.html.php', ['e' => $e]),
+            'searchUrl' => self::createGithubSearchUrl($bridge),
+            'issueUrl' => self::createGithubIssueUrl($bridge, $e, create_sane_exception_message($e)),
+            'maintainer' => $bridge->getMaintainer(),
+        ]);
+        $item->setContent($content);
+        return $item;
     }
 
     private static function logBridgeError($bridgeName, $code)

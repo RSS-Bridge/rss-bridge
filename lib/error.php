@@ -45,5 +45,3 @@ function returnServerError($message)
 {
     returnError($message, 500);
 }
-
-
