@@ -16,7 +16,7 @@ class FilterBridge extends FeedExpander
             'required' => true,
         ],
         'filter' => [
-            'name' => 'Filter (regular expression)',
+            'name' => 'Filter (regular expression!!!)',
             'required' => false,
         ],
         'filter_type' => [
@@ -87,8 +87,16 @@ class FilterBridge extends FeedExpander
             }
         }
 
-        // Build regular expression
-        $regex = '/' . $this->getInput('filter') . '/';
+        $filter = $this->getInput('filter');
+        if (! str_contains($filter, '#')) {
+            $delimiter = '#';
+        } elseif (! str_contains($filter, '/')) {
+            $delimiter = '/';
+        } else {
+            throw new \Exception('Cannot use both / and # inside filter');
+        }
+
+        $regex = $delimiter . $filter . $delimiter;
         if ($this->getInput('case_insensitive')) {
             $regex .= 'i';
         }
@@ -105,6 +113,7 @@ class FilterBridge extends FeedExpander
             $filter_fields[] = $item['title'] ?? null;
         }
         if ($this->getInput('target_uri')) {
+            // todo: maybe consider 'http' and 'https' equivalent? Also maybe optionally .www subdomain?
             $filter_fields[] = $item['uri'] ?? null;
         }
 
@@ -115,7 +124,11 @@ class FilterBridge extends FeedExpander
             if ($length_limit > 0) {
                 $field = substr($field, 0, $length_limit);
             }
-            $keep_item |= boolval(preg_match($regex, $field));
+            $result = preg_match($regex, $field);
+            if ($result === false) {
+                // todo: maybe notify user about the error here?
+            }
+            $keep_item |= boolval($result);
             if ($this->getInput('fix_encoding')) {
                 $keep_item |= boolval(preg_match($regex, utf8_decode($field)));
                 $keep_item |= boolval(preg_match($regex, utf8_encode($field)));
