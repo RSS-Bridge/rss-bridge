@@ -3,6 +3,7 @@
 | Country | Address | Status |  Contact | Comment |
 |:-------:|---------|--------|----------|---------|
 | ![](https://iplookup.flagfox.net/images/h16/GB.png) | https://rss-bridge.org/bridge01 | ![](https://img.shields.io/website/https/rss-bridge.org/bridge01.svg) | [@dvikan](https://github.com/dvikan) | London, Digital Ocean|
+| ![](https://iplookup.flagfox.net/images/h16/GB.png) | https://rss-bridge.lewd.tech | ![](https://img.shields.io/website/https/rss-bridge.lewd.tech.svg) | [@Erisa](https://github.com/Erisa) | N/A, CloudFlare |
 | ![](https://iplookup.flagfox.net/images/h16/FR.png) | https://bridge.easter.fr | ![](https://img.shields.io/website/https/bridge.easter.fr.svg) | [@chatainsim](https://github.com/chatainsim) | Hosted in Roubaix, France |
 | ![](https://iplookup.flagfox.net/images/h16/FR.png) | https://wtf.roflcopter.fr/rss-bridge/ | ![](https://img.shields.io/website/https/wtf.roflcopter.fr/rss-bridge.svg) | [roflcopter.fr](https://wtf.roflcopter.fr/) | Hosted in France |
 | ![](https://iplookup.flagfox.net/images/h16/DE.png) | https://rss.nixnet.services | ![](https://img.shields.io/website/https/rss.nixnet.services.svg) | [@amolith](https://nixnet.services/contact) | Hosted in Wunstorf, Germany |
