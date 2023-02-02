@@ -45,37 +45,3 @@ function returnServerError($message)
 {
     returnError($message, 500);
 }
-
-/**
- * Stores bridge-specific errors in a cache file.
- *
- * @param string $bridgeName The name of the bridge that failed.
- * @param int $code The error code
- *
- * @return int The total number the same error has appeared
- */
-function logBridgeError($bridgeName, $code)
-{
-    $cacheFactory = new CacheFactory();
-
-    $cache = $cacheFactory->create();
-    $cache->setScope('error_reporting');
-    $cache->setkey($bridgeName . '_' . $code);
-    $cache->purgeCache(86400); // 24 hours
-
-    if ($report = $cache->loadData()) {
-        $report = Json::decode($report);
-        $report['time'] = time();
-        $report['count']++;
-    } else {
-        $report = [
-            'error' => $code,
-            'time' => time(),
-            'count' => 1,
-        ];
-    }
-
-    $cache->saveData(Json::encode($report));
-
-    return $report['count'];
-}
