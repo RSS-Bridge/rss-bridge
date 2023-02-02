@@ -193,16 +193,15 @@ class DisplayAction implements ActionInterface
     {
         $item = new FeedItem();
 
-        // Create "new" error message every 24 hours
-        $dailyUid = urlencode((int)(time() / 86400));
-        $itemTitle = sprintf('Bridge returned error %s! (%s)', $e->getCode(), $dailyUid);
+        // Create a unique identifier every 24 hours
+        $uniqueIdentifier = urlencode((int)(time() / 86400));
+        $itemTitle = sprintf('Bridge returned error %s! (%s)', $e->getCode(), $uniqueIdentifier);
         $item->setTitle($itemTitle);
         $item->setURI(get_current_url());
         $item->setTimestamp(time());
 
-        // Create a unique id for feed readers e.g. "staysafetv twitch videos_2023_19389"
-        $itemUid = $bridge->getName() . '_' . date('Y') . '_' . $dailyUid;
-        $item->setUid($itemUid);
+        // Create a item identifier for feed readers e.g. "staysafetv twitch videos_19389"
+        $item->setUid($bridge->getName() . '_' . $uniqueIdentifier);
 
         $content = render_template(__DIR__ . '/../templates/bridge-error.html.php', [
             'error' => render_template(__DIR__ . '/../templates/error.html.php', ['e' => $e]),
