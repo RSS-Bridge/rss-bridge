@@ -32,8 +32,16 @@ TEXT;
             'feed_9' => ['name' => 'Feed url', 'type' => 'text'],
             'feed_10' => ['name' => 'Feed url', 'type' => 'text'],
             'limit' => self::LIMIT,
+            'dedup' => [
+                'name' => 'Remove duplicate',
+                'type' => 'checkbox',
+                'required' => false,
+                'title' => 'Remove duplicate item (based on ID or URI)'
+            ],
         ]
     ];
+
+    private $key_array = [];
 
     /**
      * todo: Consider a strategy which produces a shorter feed url
@@ -59,8 +67,27 @@ TEXT;
 
         foreach ($feeds as $feed) {
             // Fetch all items from the feed
-            // todo: consider wrapping this in a try..catch to not let a single feed break the entire bridge?
+            // todo: consider wrapping this in a try..catch to not let a single feed break the entire bridge?            
             $this->collectExpandableDatas($feed);
+        }
+
+        if ($this->getInput('dedup')) {
+            // Filter items by id or uri to remove duplicates
+            $this->items = array_filter($this->items, function ($item) {
+                $key = null;
+                if (isset($item['id'])) {
+                    $key = $item['id'];
+                } else if (isset($item['uri'])) {
+                    $key = $item['uri'];
+                }
+
+                if (is_null($key)) {
+                    return true;
+                } else if (!in_array($key, $this->key_array)) {
+                    $this->key_array[] = $key;
+                    return true;
+                }
+            });
         }
 
         // Sort by timestamp descending
