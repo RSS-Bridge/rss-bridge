@@ -316,7 +316,7 @@ class VkBridge extends BridgeAbstract
             $item['categories'] = $hashtags;
 
             // get post link
-            $post_link = $post->find('a.post_link', 0)->getAttribute('href');
+            $post_link = $post->find('a.PostHeaderSubtitle__link', 0)->getAttribute('href');
             preg_match('/wall-?\d+_(\d+)/', $post_link, $preg_match_result);
             $item['post_id'] = intval($preg_match_result[1]);
             $item['uri'] = $post_link;
@@ -393,10 +393,10 @@ class VkBridge extends BridgeAbstract
 
     private function getTime($post)
     {
-        if ($time = $post->find('span.rel_date', 0)->getAttribute('time')) {
+        if ($time = $post->find('time.PostHeaderSubtitle__item', 0)->getAttribute('time')) {
             return $time;
         } else {
-            $strdate = $post->find('span.rel_date', 0)->plaintext;
+            $strdate = $post->find('time.PostHeaderSubtitle__item', 0)->plaintext;
             $strdate = preg_replace('/[\x00-\x1F\x7F-\xFF]/', ' ', $strdate);
 
             $date = date_parse($strdate);
