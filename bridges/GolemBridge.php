@@ -85,7 +85,7 @@ class GolemBridge extends FeedExpander
 
             $author = $articlePage->find('article header .authors .authors__name', 0);
             if ($author) {
-                $item['author'] = $author->innertext;
+                $item['author'] = $author->plaintext;
             }
 
             $item['content'] .= $this->extractContent($articlePage);
