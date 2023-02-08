@@ -29,10 +29,13 @@ class TwitterClient
             }
         }
         $timeline = $this->fetchTimeline($userInfo->rest_id);
+        if ($timeline->data->user->result->__typename === 'UserUnavailable') {
+            throw new \Exception('UserUnavailable');
+        }
         $instructions = $timeline->data->user->result->timeline_v2->timeline->instructions;
         $instruction = $instructions[1];
         if ($instruction->type !== 'TimelineAddEntries') {
-            throw new \Exception('Unexpected instruction type');
+            throw new \Exception(sprintf('Unexpected instruction type: %s', $instruction->type));
         }
         $tweets = [];
         foreach ($instruction->entries as $entry) {
@@ -72,6 +75,9 @@ class TwitterClient
             urlencode(json_encode($variables))
         );
         $response = json_decode(getContents($url, $this->createHttpHeaders()));
+        if ($response->errors) {
+            throw new Exception('Errors');
+        }
         $userInfo = $response->data->user;
         $this->data[$screenName] = $userInfo;
         $this->cache->saveData($this->data);
