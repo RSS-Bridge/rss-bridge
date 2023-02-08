@@ -18,7 +18,16 @@ class TwitterClient
     public function fetchUserTweets(string $screenName)
     {
         $this->fetchGuestToken();
-        $userInfo = $this->fetchUserInfoByScreenName($screenName);
+        try {
+            $userInfo = $this->fetchUserInfoByScreenName($screenName);
+        } catch (HttpException $e) {
+            if ($e->getCode() === 403) {
+                // guest_token expired expired
+                $this->data['guest_token'] = null;
+                $this->fetchGuestToken();
+                $userInfo = $this->fetchUserInfoByScreenName($screenName);
+            }
+        }
         $timeline = $this->fetchTimeline($userInfo->rest_id);
         $instructions = $timeline->data->user->result->timeline_v2->timeline->instructions;
         $instruction = $instructions[1];
