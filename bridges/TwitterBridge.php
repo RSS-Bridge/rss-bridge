@@ -226,6 +226,7 @@ EOD
                 $cache = new FileCache();
                 $cache->setScope('twitter');
                 $cache->setKey(['cache']);
+                $cache->purgeCache(60 * 60 * 3); // 3h
                 $api = new TwitterClient($cache);
 
                 $data = $api->fetchUserTweets($this->getInput('u'));
