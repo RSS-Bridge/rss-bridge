@@ -19,7 +19,10 @@ class ItchioBridge extends BridgeAbstract
     {
         $url = $this->getInput('url');
         $html = getSimpleHTMLDOM($url);
-
+        // if the page is password protected, abort
+        if ($html->find('.game_password_page', 0) !== null) {
+            returnClientError('The requested page is password protected.');
+        }
         $title = $html->find('.game_title', 0)->innertext;
 
         $content = 'The following files are available to download:<br/>';
