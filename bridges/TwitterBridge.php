@@ -283,6 +283,9 @@ EOD
 
         // Filter out unwanted tweets
         foreach ($data->tweets as $tweet) {
+            if (!$tweet) {
+                continue;
+            }
             // Filter out retweets to remove possible duplicates of original tweet
             switch ($this->queriedContext) {
                 case 'By keyword or hashtag':

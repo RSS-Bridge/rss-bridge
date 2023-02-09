@@ -50,6 +50,9 @@ class TwitterClient
             if ($entry->content->entryType !== 'TimelineTimelineItem') {
                 continue;
             }
+            if (!isset($entry->content->itemContent->tweet_results->result->legacy)) {
+                continue;
+            }
             $tweets[] = $entry->content->itemContent->tweet_results->result->legacy;
         }
         return (object) [
