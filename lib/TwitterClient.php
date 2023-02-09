@@ -15,24 +15,32 @@ class TwitterClient
         $this->data = $cache->loadData() ?? [];
     }
 
-    public function fetchUserTweets(string $screenName)
+    public function fetchUserTweets(string $screenName): \stdClass
     {
         $this->fetchGuestToken();
         try {
             $userInfo = $this->fetchUserInfoByScreenName($screenName);
         } catch (HttpException $e) {
             if ($e->getCode() === 403) {
+                Logger::info('The guest token has expired');
                 // guest_token expired expired
                 $this->data['guest_token'] = null;
                 $this->fetchGuestToken();
                 $userInfo = $this->fetchUserInfoByScreenName($screenName);
+            } else {
+                throw $e;
             }
         }
         $timeline = $this->fetchTimeline($userInfo->rest_id);
-        if ($timeline->data->user->result->__typename === 'UserUnavailable') {
+        $result = $timeline->data->user->result;
+        if ($result->__typename === 'UserUnavailable') {
             throw new \Exception('UserUnavailable');
         }
-        $instructions = $timeline->data->user->result->timeline_v2->timeline->instructions;
+        $instructionTypes = ['TimelineAddEntries', 'TimelineClearCache'];
+        $instructions = $result->timeline_v2->timeline->instructions;
+        if (!isset($instructions[1])) {
+            throw new \Exception('The account exists but has not tweeted yet?');
+        }
         $instruction = $instructions[1];
         if ($instruction->type !== 'TimelineAddEntries') {
             throw new \Exception(sprintf('Unexpected instruction type: %s', $instruction->type));
@@ -44,7 +52,7 @@ class TwitterClient
             }
             $tweets[] = $entry->content->itemContent->tweet_results->result->legacy;
         }
-        return (object)[
+        return (object) [
             'user_info' => $userInfo,
             'tweets' => $tweets,
         ];
@@ -53,12 +61,15 @@ class TwitterClient
     private function fetchGuestToken(): void
     {
         if (isset($this->data['guest_token'])) {
+            Logger::info('Reusing cached guest token: ' . $this->data['guest_token']);
             return;
         }
         $url = 'https://api.twitter.com/1.1/guest/activate.json';
         $response = getContents($url, $this->createHttpHeaders(), [CURLOPT_POST => true]);
-        $this->data['guest_token'] = json_decode($response)->guest_token;
+        $guest_token = json_decode($response)->guest_token;
+        $this->data['guest_token'] = $guest_token;
         $this->cache->saveData($this->data);
+        Logger::info("Fetch new guest token: $guest_token");
     }
 
     private function fetchUserInfoByScreenName(string $screenName)
@@ -75,8 +86,9 @@ class TwitterClient
             urlencode(json_encode($variables))
         );
         $response = json_decode(getContents($url, $this->createHttpHeaders()));
-        if ($response->errors) {
-            throw new Exception('Errors');
+        if (isset($response->errors)) {
+            // Grab the first error message
+            throw new \Exception(sprintf('From twitter api: "%s"', $response->errors[0]->message));
         }
         $userInfo = $response->data->user;
         $this->data[$screenName] = $userInfo;
