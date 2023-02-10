@@ -71,7 +71,6 @@ class PepperBridgeAbstract extends BridgeAbstract
         $selectorHot = implode(
             ' ', /* Notice this is a space! */
             [
-                'cept-vote-box',
                 'vote-box'
             ]
         );
@@ -119,7 +118,7 @@ class PepperBridgeAbstract extends BridgeAbstract
                     . $deal->find('div[class*=' . $selectorDescription . ']', 0)->innertext
                     . '</td><td>'
                     . $deal->find('div[class*=' . $selectorHot . ']', 0)
-                        ->find('span', 1)->outertext
+                        ->find('span', 0)->outertext
                     . '</td></table>';
 
                 // Check if a clock icon is displayed on the deal
