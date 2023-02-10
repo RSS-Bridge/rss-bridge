@@ -23,7 +23,6 @@ class TwitterClient
         } catch (HttpException $e) {
             if ($e->getCode() === 403) {
                 Logger::info('The guest token has expired');
-                // guest_token expired expired
                 $this->data['guest_token'] = null;
                 $this->fetchGuestToken();
                 $userInfo = $this->fetchUserInfoByScreenName($screenName);
@@ -31,7 +30,20 @@ class TwitterClient
                 throw $e;
             }
         }
-        $timeline = $this->fetchTimeline($userInfo->rest_id);
+
+        try {
+            $timeline = $this->fetchTimeline($userInfo->rest_id);
+        } catch (HttpException $e) {
+            if ($e->getCode() === 403) {
+                Logger::info('The guest token has expired');
+                $this->data['guest_token'] = null;
+                $this->fetchGuestToken();
+                $timeline = $this->fetchTimeline($userInfo->rest_id);
+            } else {
+                throw $e;
+            }
+        }
+
         $result = $timeline->data->user->result;
         if ($result->__typename === 'UserUnavailable') {
             throw new \Exception('UserUnavailable');
