@@ -24,8 +24,7 @@ max_filesize = 20
 
 [cache]
 
-; Defines the cache type used by RSS-Bridge
-; "file" = FileCache (default)
+; Cache type: file, sqlite, memcached, null
 type = "file"
 
 ; Allow users to specify custom timeout for specific requests.
