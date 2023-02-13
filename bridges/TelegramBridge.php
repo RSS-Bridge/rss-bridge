@@ -369,7 +369,7 @@ EOD;
                 $params['username'] = $matches[1];
             }
 
-            if ($matches[2] !== '') {
+            if (isset($matches[2]) && $matches[2] !== '') {
                 $params['username'] = $matches[2];
             }
 
