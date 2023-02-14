@@ -19,16 +19,26 @@ class DockerHubBridge extends BridgeAbstract
                 'type' => 'text',
                 'required' => true,
                 'exampleValue' => 'rss-bridge',
+            ],
+            'filter' => [
+                'name' => 'Filter tag',
+                'type' => 'text',
+                'required' => true,
             ]
         ],
         'Official Image' => [
             'repo' => [
                 'name' => 'Repository',
                 'type' => 'text',
-                'required' => true,
+                'required' => false,
                 'exampleValue' => 'postgres',
+            ],
+            'filter' => [
+                'name' => 'Filter tag',
+                'type' => 'text',
+                'required' => false,
             ]
-        ],
+        ]
     ];
 
     const CACHE_TIMEOUT = 3600; // 1 hour
@@ -90,21 +100,33 @@ EOD;
 
     public function getURI()
     {
+        $uri = parent::getURI();
+
         if ($this->queriedContext === 'Official Image') {
-            return self::URI . '/_/' . $this->getRepo();
+            $uri = self::URI . '/_/' . $this->getRepo();
         }
 
-        if ($this->getInput('repo')) {
-            return self::URI . '/r/' . $this->getRepo();
+        if ($this->queriedContext === 'User Submitted Image') {
+            $uri = '/r/' . $this->getRepo();
         }
 
-        return parent::getURI();
+        if ($this->getInput('filter')) {
+            $uri .= '/tags/?&page=1&name=' . $this->getInput('filter');
+        }
+
+        return $uri;
     }
 
     public function getName()
     {
         if ($this->getInput('repo')) {
-            return $this->getRepo() . ' - Docker Hub';
+            $name = $this->getRepo();
+
+            if ($this->getInput('filter')) {
+                $name .= ':' . $this->getInput('filter');
+            }
+
+            return $name . ' - Docker Hub';
         }
 
         return parent::getName();
@@ -121,11 +143,21 @@ EOD;
 
     private function getApiUrl()
     {
+        $url = '';
+
         if ($this->queriedContext === 'Official Image') {
-            return $this->apiURL . 'library/' . $this->getRepo() . '/tags/?page_size=25&page=1';
+            $url = $this->apiURL . 'library/' . $this->getRepo() . '/tags/?page_size=25&page=1';
         }
 
-        return $this->apiURL . $this->getRepo() . '/tags/?page_size=25&page=1';
+        if ($this->queriedContext === 'User Submitted Image') {
+           $url = $this->getRepo() . '/tags/?page_size=25&page=1';
+        }
+
+        if ($this->getInput('filter')) {
+            $url .= '&name=' . $this->getInput('filter');
+        }
+
+        return $url;
     }
 
     private function getLayerUrl($name, $digest)
@@ -140,11 +172,17 @@ EOD;
 
     private function getTagUrl($name)
     {
+        $url = '';
+
         if ($this->queriedContext === 'Official Image') {
-            return self::URI . '/_/' . $this->getRepo() . '?tab=tags&name=' . $name;
+            $url = self::URI . '/_/' . $this->getRepo();
         }
 
-        return self::URI . '/r/' . $this->getRepo() . '/tags?name=' . $name;
+        if ($this->queriedContext === 'User Submitted Image') {
+            $url = '/r/' . $this->getRepo();
+        }
+
+        return $url . '/tags/?&page=1&name=' . $name;
     }
 
     private function getImages($result)
