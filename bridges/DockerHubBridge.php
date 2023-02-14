@@ -23,7 +23,7 @@ class DockerHubBridge extends BridgeAbstract
             'filter' => [
                 'name' => 'Filter tag',
                 'type' => 'text',
-                'required' => true,
+                'required' => false,
             ]
         ],
         'Official Image' => [
@@ -151,7 +151,7 @@ EOD;
         }
 
         if ($this->queriedContext === 'User Submitted Image') {
-            $url = $this->getRepo() . '/tags/?page_size=25&page=1';
+            $url = $this->apiURL . $this->getRepo() . '/tags/?page_size=25&page=1';
         }
 
         if ($this->getInput('filter')) {
@@ -180,7 +180,7 @@ EOD;
         }
 
         if ($this->queriedContext === 'User Submitted Image') {
-            $url = '/r/' . $this->getRepo();
+            $url = self::URI . '/r/' . $this->getRepo();
         }
 
         return $url . '/tags/?&page=1&name=' . $name;
