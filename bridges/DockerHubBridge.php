@@ -151,7 +151,7 @@ EOD;
         }
 
         if ($this->queriedContext === 'User Submitted Image') {
-           $url = $this->getRepo() . '/tags/?page_size=25&page=1';
+            $url = $this->getRepo() . '/tags/?page_size=25&page=1';
         }
 
         if ($this->getInput('filter')) {
