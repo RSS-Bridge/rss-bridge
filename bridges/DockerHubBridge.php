@@ -183,7 +183,7 @@ EOD;
             $url = self::URI . '/r/' . $this->getRepo();
         }
 
-        return $url . '/tags/?&page=1&name=' . $name;
+        return $url . '/tags/?&name=' . $name;
     }
 
     private function getImages($result)
