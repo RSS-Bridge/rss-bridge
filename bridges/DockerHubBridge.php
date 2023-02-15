@@ -30,7 +30,7 @@ class DockerHubBridge extends BridgeAbstract
             'repo' => [
                 'name' => 'Repository',
                 'type' => 'text',
-                'required' => false,
+                'required' => true,
                 'exampleValue' => 'postgres',
             ],
             'filter' => [
