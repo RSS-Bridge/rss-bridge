@@ -24,6 +24,7 @@ class DockerHubBridge extends BridgeAbstract
                 'name' => 'Filter tag',
                 'type' => 'text',
                 'required' => false,
+                'exampleValue' => 'latest',
             ]
         ],
         'Official Image' => [
