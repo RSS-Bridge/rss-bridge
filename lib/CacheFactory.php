@@ -38,7 +38,9 @@ class CacheFactory
             case NullCache::class:
                 return new NullCache();
             case FileCache::class:
-                return new FileCache();
+                return new FileCache([
+                    'enable_purge' => Configuration::getConfig('FileCache', 'enable_purge'),
+                ]);
             case SQLiteCache::class:
                 return new SQLiteCache();
             case MemcachedCache::class:

@@ -2,11 +2,13 @@
 
 class FileCache implements CacheInterface
 {
+    private array $config;
     protected $path;
     protected $key;
 
-    public function __construct()
+    public function __construct(array $config = [])
     {
+        $this->config = $config;
         if (!is_writable(PATH_CACHE)) {
             throw new \Exception('The cache folder is not writeable');
         }
@@ -46,6 +48,10 @@ class FileCache implements CacheInterface
 
     public function purgeCache($seconds)
     {
+        if (! $this->config['enable_purge']) {
+            return;
+        }
+
         $cachePath = $this->getPath();
         if (!file_exists($cachePath)) {
             return;
