@@ -16,11 +16,11 @@
         </div>
 
         <div>
-            <strong>Message:</strong> <?= e($e->getMessage()) ?>
+            <strong>Message:</strong> <?= e(sanitize_root($e->getMessage())) ?>
         </div>
 
         <div>
-            <strong>File:</strong> <?= e(trim_path_prefix($e->getFile())) ?>
+            <strong>File:</strong> <?= e(sanitize_root($e->getFile())) ?>
         </div>
 
         <div>

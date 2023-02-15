@@ -50,8 +50,8 @@ function create_sane_exception_message(\Throwable $e): string
     return sprintf(
         '%s: %s in %s line %s',
         get_class($e),
-        $e->getMessage(),
-        trim_path_prefix($e->getFile()),
+        sanitize_root($e->getMessage()),
+        sanitize_root($e->getFile()),
         $e->getLine()
     );
 }
@@ -74,7 +74,7 @@ function trace_from_exception(\Throwable $e): array
     $trace = [];
     foreach ($frames as $frame) {
         $trace[] = [
-            'file'      => trim_path_prefix($frame['file'] ?? ''),
+            'file'      => sanitize_root($frame['file'] ?? ''),
             'line'      => $frame['line'] ?? null,
             'class'     => $frame['class'] ?? null,
             'type'      => $frame['type'] ?? null,
@@ -121,9 +121,17 @@ function frame_to_call_point(array $frame): string
  *
  * Example: "/home/davidsf/rss-bridge/index.php" => "index.php"
  */
-function trim_path_prefix(string $filePath): string
+function sanitize_root(string $filePath): string
 {
-    return mb_substr($filePath, mb_strlen(dirname(__DIR__)) + 1);
+    // Root folder of the project e.g. /home/satoshi/repos/rss-bridge
+    $root = dirname(__DIR__);
+    return _sanitize_path_name($filePath, $root);
+}
+
+function _sanitize_path_name(string $s, string $pathName): string
+{
+    // Remove all occurrences of $pathName in the string
+    return str_replace(["$pathName/", $pathName], '', $s);
 }
 
 /**
