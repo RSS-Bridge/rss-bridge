@@ -62,6 +62,9 @@ class MastodonBridge extends BridgeAbstract
     public function collectData()
     {
         $user = $this->fetchAP($this->getURI());
+        if (!isset($user['outbox'])) {
+            throw new \Exception('Unable to find the outbox');
+        }
         $content = $this->fetchAP($user['outbox']);
         if (is_array($content['first'])) { // mobilizon
             $content = $content['first'];
