@@ -40,6 +40,7 @@ class PicukiBridge extends BridgeAbstract
 
     public function collectData()
     {
+        $re = '#let short_code = "(.*?)";\s*$#m';
         $html = getSimpleHTMLDOM($this->getURI());
 
         foreach ($html->find('.box-photos .box-photo') as $element) {
@@ -49,6 +50,12 @@ class PicukiBridge extends BridgeAbstract
             }
 
             $url = urljoin(self::URI, $element->find('a', 0)->href);
+            $html = getSimpleHTMLDOMCached($url);
+            preg_match($re, $html, $matches);
+            $sourceUrl = null;
+            if ($matches) {
+                $sourceUrl = 'https://instagram.com/p/' . $matches[1];
+            }
 
             $author = trim($element->find('.user-nickname', 0)->plaintext);
 
@@ -77,6 +84,7 @@ class PicukiBridge extends BridgeAbstract
                 'timestamp'  => date_format($date, 'r'),
                 'title'      => strlen($description) > 60 ? mb_substr($description, 0, 57) . '...' : $description,
                 'thumbnail'  => $imageUrl,
+                'source'     => $sourceUrl,
                 'enclosures' => [$imageUrl],
                 'content'    => <<<HTML
 <a href="{$url}">
