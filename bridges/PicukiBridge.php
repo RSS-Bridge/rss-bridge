@@ -89,6 +89,7 @@ class PicukiBridge extends BridgeAbstract
 <a href="{$url}">
 	<img loading="lazy" src="{$imageUrl}" />
 </a>
+<a href="{$sourceUrl}">{$sourceUrl}</a>
 {$videoNote}
 <p>{$description}<p>
 HTML
