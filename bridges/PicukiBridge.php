@@ -51,9 +51,8 @@ class PicukiBridge extends BridgeAbstract
 
             $url = urljoin(self::URI, $element->find('a', 0)->href);
             $html = getSimpleHTMLDOMCached($url);
-            preg_match($re, $html, $matches);
             $sourceUrl = null;
-            if ($matches) {
+            if (preg_match($re, $html, $matches) > 0) {
                 $sourceUrl = 'https://instagram.com/p/' . $matches[1];
             }
 
