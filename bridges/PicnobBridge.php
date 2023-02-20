@@ -54,7 +54,7 @@ class PicnobBridge extends BridgeAbstract
                                 $relativeDate = str_replace(' ago', '', $element->find('.time', 0)->plaintext);
                                 date_sub($date, date_interval_create_from_date_string($relativeDate));
 
-                                $description = trim($element->find('.sum', 0)->plaintext);
+                                $description = defaultLinkTo(trim($element->find('.sum', 0)->innertext), self::URI);
 
                                 $isVideo = (bool) $element->find('.icon_video', 0);
                                 $videoNote = $isVideo ? '<p><i>(video)</i></p>' : '';
@@ -68,6 +68,8 @@ class PicnobBridge extends BridgeAbstract
                                 $imageUrl = $element->find('.img', 0)->getAttribute('data-src');
                                 parse_str(parse_url($imageUrl, PHP_URL_QUERY), $imageVars);
                                 $imageUrl = $imageVars['u'];
+
+                                $uid = explode('/', parse_url($url, PHP_URL_PATH))[2];
 
                                 $this->items[] = [
                                         'uri'        => $url,
@@ -83,7 +85,8 @@ class PicnobBridge extends BridgeAbstract
 {$tvNote}
 {$moreContentNote}
 <p>{$description}<p>
-HTML
+HTML,
+                                       'uid' => $uid
                                 ];
                 }
             }
