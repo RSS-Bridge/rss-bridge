@@ -244,8 +244,6 @@ function _http_request(string $url, array $config = []): array
     curl_setopt($ch, CURLOPT_TIMEOUT, $config['timeout']);
     curl_setopt($ch, CURLOPT_ENCODING, '');
     curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
-    // Force HTTP 1.1 because newer versions of libcurl defaults to HTTP/2
-    curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
 
     if ($config['max_filesize']) {
         // This option inspects the Content-Length header
