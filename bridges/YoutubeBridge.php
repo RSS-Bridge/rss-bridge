@@ -350,8 +350,10 @@ class YoutubeBridge extends BridgeAbstract
                 if (isset($jsonData->contents)) {
                     $channel_id = $jsonData->metadata->channelMetadataRenderer->externalId;
                     $jsonData = $jsonData->contents->twoColumnBrowseResultsRenderer->tabs[1];
-                    $jsonData = $jsonData->tabRenderer->content->sectionListRenderer->contents[0];
-                    $jsonData = $jsonData->itemSectionRenderer->contents[0]->gridRenderer->items;
+                    $jsonData = $jsonData->tabRenderer->content->richGridRenderer->contents;
+                    $jsonData = array_map(function($item) {
+                        return $item->richItemRenderer->content;
+                    }, $jsonData);
                     $this->parseJSONListing($jsonData);
                 } else {
                     returnServerError('Unable to get data from YouTube. Username/Channel: ' . $this->request);
