@@ -14,13 +14,13 @@ class JustWatchBridge extends BridgeAbstract
                 'defaultValue' => 'us',
                 'type' => 'list',
                 'values' => [
-                    'North America' => array(
+                    'North America' => [
                         'Bermuda' => 'bm',
                         'Canada' => 'ca',
                         'Mexico' => 'mx',
                         'United States' => 'us'
-                    ),
-                    'South America' => array(
+                    ],
+                    'South America' => [
                         'Argentina' => 'ar',
                         'Bolivia' => 'bo',
                         'Brazil' => 'br',
@@ -32,8 +32,8 @@ class JustWatchBridge extends BridgeAbstract
                         'Peru' => 'pe',
                         'Uruguay' => 'uy',
                         'Venezuela' => 've'
-                    ),
-                    'Europe' => array(
+                    ],
+                    'Europe' => [
                         'Albania' => 'al',
                         'Andorra' => 'ad',
                         'Austria' => 'at',
@@ -77,8 +77,8 @@ class JustWatchBridge extends BridgeAbstract
                         'Turkey' => 'tr',
                         'United Kingdom' => 'uk',
                         'Vatican City' => 'va'
-                    ),
-                    'Asia' => array(
+                    ],
+                    'Asia' => [
                         'Hong Kong' => 'hk',
                         'India' => 'in',
                         'Indonesia' => 'id',
@@ -91,15 +91,15 @@ class JustWatchBridge extends BridgeAbstract
                         'South Korea' => 'kr',
                         'Taiwan' => 'tw',
                         'Thailand' => 'th'
-                    ),
-                    'Central America' => array(
+                    ],
+                    'Central America' => [
                         'Costa Rica' => 'cr',
                         'El Salvador' => 'sv',
                         'Guatemala' => 'gt',
                         'Honduras' => 'hn',
                         'Panama' => 'pa'
-                    ),
-                    'Africa' => array(
+                    ],
+                    'Africa' => [
                         'Algeria' => 'dz',
                         'Cape Verde' => 'cv',
                         'Equatorial Guinea' => 'gq',
@@ -118,14 +118,14 @@ class JustWatchBridge extends BridgeAbstract
                         'Tunisia' => 'tn',
                         'Uganda' => 'ug',
                         'Zambia' => 'zm'
-                    ),
-                    'Pacific' => array(
+                    ],
+                    'Pacific' => [
                         'Australia' => 'au',
                         'Fiji' => 'fj',
                         'French Polynesia' => 'pf',
                         'New Zealand' => 'nz'
-                    ),
-                    'Middle East' => array(
+                    ],
+                    'Middle East' => [
                         'Bahrain' => 'bh',
                         'Egypt' => 'eg',
                         'Iraq' => 'iq',
@@ -166,16 +166,16 @@ class JustWatchBridge extends BridgeAbstract
         $today = $html->find('div.title-timeline', 0);
         $providers = $today->find('div.provider-timeline');
 
-        foreach ($providers as $provider)
+        foreach ($providers as $provider) 
         {
             $titles = $html->find('div.horizontal-title-list__item');
-            foreach ($titles as $title)
+            foreach ($titles as $title) 
             {
                 $item = [];
                 $item['uri'] = $title->find('a', 0)->href;
                 $item['title'] = $provider->find('picture > img', 0)->alt . ' - ' . $title->find('.title-poster__image > img', 0)->alt;
                 $image = $title->find('.title-poster__image > img', 0)->attr['src'];
-                if (str_starts_with($image, 'data'))
+                if (str_starts_with($image, 'data')) 
                 {
                     $image = $title->find('.title-poster__image > img', 0)->attr['data-src'];
                 }
@@ -185,11 +185,11 @@ class JustWatchBridge extends BridgeAbstract
                 $content .= '<b>Media:</b> '
                     . $title->find('.title-poster__image > img', 0)->alt . '<br>';
 
-                if (isset($title->find('.title-poster__badge', 0)->plaintext))
+                if (isset($title->find('.title-poster__badge', 0)->plaintext)) 
                 {
                     $content .= '<b>Type:</b> Series<br>';
                     $content .= '<b>Season:</b> ' . $title->find('.title-poster__badge', 0)->plaintext . '<br>';
-                } else
+                } else 
                 {
                     $content .= '<b>Type:</b> Movie<br>';
                 }
@@ -214,15 +214,15 @@ class JustWatchBridge extends BridgeAbstract
     public function getKeyName($input = '')
     {
         $parameters = $this->getParameters();
-        if (strlen($input) < 2)
+        if (strlen($input) < 2) 
         {
             return array_search((int)$input, $parameters[0]['mediatype']['values'], true);
-        } else
+        } else 
         {
             $returnkey = '';
-            foreach ($parameters[0]['country']['values'] as $valuearray)
+            foreach ($parameters[0]['country']['values'] as $valuearray) 
             {
-                if (strlen($returnkey) < 2)
+                if (strlen($returnkey) < 2) 
                 {
                     $returnkey = array_search($input, $valuearray, true);
                 }
@@ -233,10 +233,15 @@ class JustWatchBridge extends BridgeAbstract
 
     public function getName()
     {
-        if (!is_null($this->getInput('country')))
+        if (!is_null($this->getInput('country'))) 
         {
             return 'JustWatch - ' . $this->getKeyName($this->getInput('country')) . ' - ' . $this->getKeyName($this->getInput('mediatype'));
         }
         return parent::getName();
+    }
+
+    public function getIcon()
+    {
+        return 'https://www.justwatch.com/appassets/favicon.ico';
     }
 }
