@@ -204,7 +204,7 @@ class JustWatchBridge extends BridgeAbstract
         return 'https://www.justwatch.com/' . $this->getInput('country');
     }
 
-    private function getKeyName($input = '')
+    protected function getKeyName($input = '')
     {
         $parameters = $this->getParameters();
         if (strlen($input) < 2) {
