@@ -166,17 +166,14 @@ class JustWatchBridge extends BridgeAbstract
         $today = $html->find('div.title-timeline', 0);
         $providers = $today->find('div.provider-timeline');
 
-        foreach ($providers as $provider) 
-        {
+        foreach ($providers as $provider) {
             $titles = $html->find('div.horizontal-title-list__item');
-            foreach ($titles as $title) 
-            {
+            foreach ($titles as $title) {
                 $item = [];
                 $item['uri'] = $title->find('a', 0)->href;
                 $item['title'] = $provider->find('picture > img', 0)->alt . ' - ' . $title->find('.title-poster__image > img', 0)->alt;
                 $image = $title->find('.title-poster__image > img', 0)->attr['src'];
-                if (str_starts_with($image, 'data')) 
-                {
+                if (str_starts_with($image, 'data')) {
                     $image = $title->find('.title-poster__image > img', 0)->attr['data-src'];
                 }
 
@@ -185,12 +182,10 @@ class JustWatchBridge extends BridgeAbstract
                 $content .= '<b>Media:</b> '
                     . $title->find('.title-poster__image > img', 0)->alt . '<br>';
 
-                if (isset($title->find('.title-poster__badge', 0)->plaintext)) 
-                {
+                if (isset($title->find('.title-poster__badge', 0)->plaintext)) {
                     $content .= '<b>Type:</b> Series<br>';
                     $content .= '<b>Season:</b> ' . $title->find('.title-poster__badge', 0)->plaintext . '<br>';
-                } else 
-                {
+                } else {
                     $content .= '<b>Type:</b> Movie<br>';
                 }
 
@@ -214,16 +209,12 @@ class JustWatchBridge extends BridgeAbstract
     public function getKeyName($input = '')
     {
         $parameters = $this->getParameters();
-        if (strlen($input) < 2) 
-        {
+        if (strlen($input) < 2) {
             return array_search((int)$input, $parameters[0]['mediatype']['values'], true);
-        } else 
-        {
+        } else {
             $returnkey = '';
-            foreach ($parameters[0]['country']['values'] as $valuearray) 
-            {
-                if (strlen($returnkey) < 2) 
-                {
+            foreach ($parameters[0]['country']['values'] as $valuearray) {
+                if (strlen($returnkey) < 2) {
                     $returnkey = array_search($input, $valuearray, true);
                 }
             }
@@ -233,8 +224,7 @@ class JustWatchBridge extends BridgeAbstract
 
     public function getName()
     {
-        if (!is_null($this->getInput('country'))) 
-        {
+        if (!is_null($this->getInput('country'))) {
             return 'JustWatch - ' . $this->getKeyName($this->getInput('country')) . ' - ' . $this->getKeyName($this->getInput('mediatype'));
         }
         return parent::getName();
