@@ -138,7 +138,7 @@ class JustWatchBridge extends BridgeAbstract
                         'Saudi Arabia' => 'sa',
                         'United Arab Emirates' => 'ae',
                         'Yemen' => 'ye'
-                    )
+                    ]
                 ]
             ],
             'mediatype' => [
@@ -151,7 +151,7 @@ class JustWatchBridge extends BridgeAbstract
                     'Movies' => 1,
                     'Series' => 2
                 ]
-            ],
+            ]
         ]
     ];
 
