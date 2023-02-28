@@ -23,6 +23,7 @@ class TldrTechBridge extends BridgeAbstract
                 'values' => [
                     'Tech' => 'tech',
                     'Crypto' => 'crypto',
+                    'AI' => 'ai'
                 ],
                 'defaultValue' => 'tech'
             ]
