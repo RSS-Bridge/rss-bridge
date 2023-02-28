@@ -10,7 +10,6 @@ class JustWatchBridge extends BridgeAbstract
     const PARAMETERS = [[
             'country' => [
                 'name' => 'Country',
-                'required' => true,
                 'defaultValue' => 'us',
                 'type' => 'list',
                 'values' => [
@@ -143,7 +142,6 @@ class JustWatchBridge extends BridgeAbstract
             ],
             'mediatype' => [
                 'name' => 'Type',
-                'required' => true,
                 'defaultValue' => '0',
                 'type' => 'list',
                 'values' => [
