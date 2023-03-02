@@ -204,26 +204,10 @@ class JustWatchBridge extends BridgeAbstract
         return 'https://www.justwatch.com/' . $this->getInput('country');
     }
 
-    protected function getKeyName($input = '')
-    {
-        $parameters = $this->getParameters();
-        if (strlen($input) < 2) {
-            return array_search((int)$input, $parameters[0]['mediatype']['values'], true);
-        } else {
-            $returnkey = '';
-            foreach ($parameters[0]['country']['values'] as $valuearray) {
-                if (strlen($returnkey) < 2) {
-                    $returnkey = array_search($input, $valuearray, true);
-                }
-            }
-            return $returnkey;
-        }
-    }
-
     public function getName()
     {
         if (!is_null($this->getInput('country'))) {
-            return 'JustWatch - ' . $this->getKeyName($this->getInput('country')) . ' - ' . $this->getKeyName($this->getInput('mediatype'));
+            return 'JustWatch - ' . $this->getKey('country') . ' - ' . $this->getKey('mediatype');
         }
         return parent::getName();
     }
