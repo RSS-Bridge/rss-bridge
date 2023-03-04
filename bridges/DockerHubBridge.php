@@ -194,7 +194,7 @@ EOD;
         foreach ($result->images as $image) {
             $layersUrl = $this->getLayerUrl($result->name, $image->digest);
             $id = $this->getShortDigestId($image->digest);
-            $size = $this->readableFileSize($image->size);
+            $size = format_bytes($image->size);
             $data .= <<<EOD
             <tr>
                 <td><a href="{$layersUrl}">{$id}</a></td>
@@ -224,30 +224,5 @@ EOD;
     {
         $parts = explode(':', $digest);
         return substr($parts[1], 0, 12);
-    }
-
-    private function readableFileSize($bytes)
-    {
-        $byteCountGB = 1073741824;
-        $byteCountMB = 1048576;
-        $byteCountKB = 1024;
-        $numDecimalPlaces = 2;
-        $minByteCount = 1;
-
-        if ($bytes >= $byteCountGB) { // 1GB or greater
-            $string = round($bytes / $byteCountGB, $numDecimalPlaces) . ' GB';
-        } elseif ($bytes >= $byteCountMB) { // 1MB or greater
-            $string = round($bytes / $byteCountMB, $numDecimalPlaces) . ' MB';
-        } elseif ($bytes >= $byteCountKB) { // 1KB or greater
-            $string = round($bytes / $byteCountKB, $numDecimalPlaces) . ' KB';
-        } elseif ($bytes > $minByteCount) { // Greater than 1 byte
-            $string = $bytes . ' bytes';
-        } elseif ($bytes === $minByteCount) { // 1 byte
-            $string = $bytes . ' byte';
-        } else { // 0 bytes
-            $string = '0 bytes';
-        }
-
-        return $string;
     }
 }
