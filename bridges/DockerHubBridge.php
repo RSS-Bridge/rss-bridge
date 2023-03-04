@@ -93,7 +93,7 @@ class DockerHubBridge extends BridgeAbstract
 <Strong>Last pushed</strong><br>
 <p>{$lastPushed}</p>
 <Strong>Images</strong><br>
-{$this->getImages($result)}
+{$this->getImagesTable($result)}
 EOD;
 
             $this->items[] = $item;
@@ -187,30 +187,72 @@ EOD;
         return $url . '/tags/?&name=' . $name;
     }
 
-    private function getImages($result)
+    private function getImagesTable($result)
     {
-        $html = <<<EOD
-<table style="width:300px;"><thead><tr><th>Digest</th><th>OS/architecture</th></tr></thead></tbody>
-EOD;
+        $data = '';
 
         foreach ($result->images as $image) {
             $layersUrl = $this->getLayerUrl($result->name, $image->digest);
             $id = $this->getShortDigestId($image->digest);
-
-            $html .= <<<EOD
-			<tr>
-				<td><a href="{$layersUrl}">{$id}</a></td>
-				<td>{$image->os}/{$image->architecture}</td>
-			</tr>
+            $size = $this->readableFileSize($image->size);
+            $data .= <<<EOD
+            <tr>
+                <td><a href="{$layersUrl}">{$id}</a></td>
+                <td>{$image->os}/{$image->architecture}</td>
+                <td>{$size}</td>
+            </tr>
 EOD;
         }
 
-        return $html . '</tbody></table>';
+        return <<<EOD
+<table style="width:400px;">
+    <thead>
+        <tr style="text-align: left;">
+            <th>Digest</th>
+            <th>OS/architecture</th>
+            <th>Compressed Size</th>
+        </tr>
+    </thead>
+    </tbody>
+        {$data}
+    </tbody>
+</table>
+EOD;
+
     }
 
     private function getShortDigestId($digest)
     {
         $parts = explode(':', $digest);
         return substr($parts[1], 0, 12);
+    }
+
+    private function readableFileSize($bytes) {
+        $byteCountGB = 1073741824;
+        $byteCountMB = 1048576;
+        $byteCountKB = 1024;
+        $numDecimalPlaces = 2;
+        $minByteCount = 1;
+
+        if ($bytes >= $byteCountGB) { // 1GB or greater
+            $string = round($bytes / $byteCountGB, $numDecimalPlaces) . ' GB';
+
+        } elseif ($bytes >= $byteCountMB) { // 1MB or greater
+            $string = round($bytes / $byteCountMB, $numDecimalPlaces) . ' MB';
+
+        } elseif ($bytes >=$byteCountKB) { // 1KB or greater
+            $string = round($bytes / $byteCountKB, $numDecimalPlaces) . ' KB';
+
+        } elseif ($bytes > $minByteCount) { // Greater than 1 byte
+            $string = $bytes . ' bytes';
+
+        } elseif ($bytes === $minByteCount) { // 1 byte
+            $string = $bytes . ' byte';
+
+        } else { // 0 bytes
+            $string = '0 bytes';
+        }
+
+        return $string;
     }
 }
