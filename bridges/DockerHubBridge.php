@@ -218,7 +218,6 @@ EOD;
     </tbody>
 </table>
 EOD;
-
     }
 
     private function getShortDigestId($digest)
@@ -227,7 +226,8 @@ EOD;
         return substr($parts[1], 0, 12);
     }
 
-    private function readableFileSize($bytes) {
+    private function readableFileSize($bytes)
+    {
         $byteCountGB = 1073741824;
         $byteCountMB = 1048576;
         $byteCountKB = 1024;
@@ -236,19 +236,14 @@ EOD;
 
         if ($bytes >= $byteCountGB) { // 1GB or greater
             $string = round($bytes / $byteCountGB, $numDecimalPlaces) . ' GB';
-
         } elseif ($bytes >= $byteCountMB) { // 1MB or greater
             $string = round($bytes / $byteCountMB, $numDecimalPlaces) . ' MB';
-
-        } elseif ($bytes >=$byteCountKB) { // 1KB or greater
+        } elseif ($bytes >= $byteCountKB) { // 1KB or greater
             $string = round($bytes / $byteCountKB, $numDecimalPlaces) . ' KB';
-
         } elseif ($bytes > $minByteCount) { // Greater than 1 byte
             $string = $bytes . ' bytes';
-
         } elseif ($bytes === $minByteCount) { // 1 byte
             $string = $bytes . ' byte';
-
         } else { // 0 bytes
             $string = '0 bytes';
         }
