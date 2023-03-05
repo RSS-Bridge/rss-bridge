@@ -11,7 +11,7 @@ class FinanzflussBridge extends BridgeAbstract
 
     public function collectData()
     {
-        $baseurl='https://www.finanzfluss.de';
+        $baseurl = 'https://www.finanzfluss.de';
         $dom = getSimpleHTMLDOM('https://www.finanzfluss.de/blog');
         foreach ($dom->find('.preview-card') as $li) {
             $a = $li->find('a', 0);
@@ -20,11 +20,11 @@ class FinanzflussBridge extends BridgeAbstract
 
             //get article
             $domarticle = getSimpleHTMLDOM($url);
-            $content = $domarticle->find('div.content',0);
+            $content = $domarticle->find('div.content', 0);
 
             //get header-image and set absolute src
-            $headerimage = $domarticle->find('div.article-header-image',0);
-            $headerimageimg = $headerimage->find('img[src]',0);
+            $headerimage = $domarticle->find('div.article-header-image', 0);
+            $headerimageimg = $headerimage->find('img[src]', 0);
             $src = $headerimageimg->src;
             $headerimageimg->src = $baseurl . $src;
             $headerimageimg->srcset = $baseurl . $src;
@@ -37,7 +37,7 @@ class FinanzflussBridge extends BridgeAbstract
             }
 
             //get author
-            $author = $domarticle->find('div.author-name',0);
+            $author = $domarticle->find('div.author-name', 0);
 
             $this->items[] = [
                 'title' => $title->plaintext,
