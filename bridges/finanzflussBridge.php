@@ -1,6 +1,6 @@
 <?php
 
-class finanzflussBridge extends BridgeAbstract
+class FinanzflussBridge extends BridgeAbstract
 {
     const MAINTAINER = 'Tone866';
     const NAME = 'finanzfluss Bridge';
