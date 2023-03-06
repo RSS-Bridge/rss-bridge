@@ -63,8 +63,8 @@ final class RssBridge
         // Consider: ini_set('error_reporting', E_ALL & ~E_DEPRECATED);
         date_default_timezone_set(Configuration::getConfig('system', 'timezone'));
 
-        $authenticationMiddleware = new AuthenticationMiddleware();
         if (Configuration::getConfig('authentication', 'enable')) {
+            $authenticationMiddleware = new AuthenticationMiddleware();
             $authenticationMiddleware();
         }
 

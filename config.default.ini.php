@@ -75,8 +75,8 @@ enable = false
 
 username = "admin"
 
-; This default password is public knowledge. Replace it.
-password = "7afbf648a369b261"
+; The password cannot be the empty string if authentication is enabled.
+password = ""
 
 ; This will be used only for actions that require privileged access
 access_token = ""
