@@ -95,6 +95,10 @@ report_limit = 1
 
 ; --- Cache specific configuration ---------------------------------------------
 
+[FileCache]
+; Whether to actually delete files when purging. Can be useful to turn off to increase performance.
+enable_purge = true
+
 [SQLiteCache]
 file = "cache.sqlite"
 

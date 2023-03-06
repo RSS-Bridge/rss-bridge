@@ -28,7 +28,7 @@ final class UtilsTest extends TestCase
 
     public function testFileCache()
     {
-        $sut = new \FileCache();
+        $sut = new \FileCache(['enable_purge' => true]);
         $sut->setScope('scope');
         $sut->purgeCache(-1);
         $sut->setKey(['key']);

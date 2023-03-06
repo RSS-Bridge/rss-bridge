@@ -24,19 +24,32 @@ class CacheFactory
         if (preg_match('/(.+)(?:Cache)$/i', $name, $matches)) {
             $name = $matches[1];
         }
-        if (in_array(strtolower($name), array_map('strtolower', $cacheNames))) {
-            $index = array_search(strtolower($name), array_map('strtolower', $cacheNames));
-            $name = $cacheNames[$index];
-        } else {
+
+        $index = array_search(strtolower($name), array_map('strtolower', $cacheNames));
+        if ($index === false) {
             throw new \InvalidArgumentException(sprintf('Invalid cache name: "%s"', $name));
         }
-        if (! preg_match('/^[A-Z][a-zA-Z0-9-]*$/', $name)) {
-            throw new \InvalidArgumentException(sprintf('Invalid cache name: "%s"', $name));
+        $className = $cacheNames[$index] . 'Cache';
+        if (!preg_match('/^[A-Z][a-zA-Z0-9-]*$/', $className)) {
+            throw new \InvalidArgumentException(sprintf('Invalid cache classname: "%s"', $className));
         }
-        $className = $name . 'Cache';
-        if (!file_exists(PATH_LIB_CACHES . $className . '.php')) {
-            throw new \Exception('Unable to find the cache file');
+
+        switch ($className) {
+            case NullCache::class:
+                return new NullCache();
+            case FileCache::class:
+                return new FileCache([
+                    'enable_purge' => Configuration::getConfig('FileCache', 'enable_purge'),
+                ]);
+            case SQLiteCache::class:
+                return new SQLiteCache();
+            case MemcachedCache::class:
+                return new MemcachedCache();
+            default:
+                if (!file_exists(PATH_LIB_CACHES . $className . '.php')) {
+                    throw new \Exception('Unable to find the cache file');
+                }
+                return new $className();
         }
-        return new $className();
     }
 }
