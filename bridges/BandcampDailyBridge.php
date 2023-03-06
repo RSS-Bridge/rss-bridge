@@ -95,6 +95,7 @@ class BandcampDailyBridge extends BridgeAbstract
     {
         $html = getSimpleHTMLDOM($this->getURI())
             or returnServerError('Could not request: ' . $this->getURI());
+
         $html = defaultLinkTo($html, self::URI);
 
         $articles = $html->find('articles-list', 0);
@@ -136,7 +137,9 @@ class BandcampDailyBridge extends BridgeAbstract
             case 'Best of':
             case 'Genres':
             case 'Franchises':
-                return self::URI . '/' . $this->getInput('franchises-content');
+                // TODO Switch to array_key_first once php >= 7.3
+                $contentKey = key(self::PARAMETERS[$this->queriedContext]);
+                return self::URI . '/' . $this->getInput($contentKey);
             default:
                 return parent::getURI();
         }
@@ -150,7 +153,10 @@ class BandcampDailyBridge extends BridgeAbstract
             case 'Best of':
             case 'Genres':
             case 'Franchises':
-                return $this->getKey('franchises-content') . ' - Bandcamp Daily';
+                $contentKey = array_key_first(self::PARAMETERS[$this->queriedContext]);
+                $contentValues = array_flip(self::PARAMETERS[$this->queriedContext][$contentKey]['values']);
+
+                return $contentValues[$this->getInput($contentKey)] . ' - Bandcamp Daily';
             default:
                 return parent::getName();
         }
