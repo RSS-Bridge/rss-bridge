@@ -146,11 +146,7 @@ class GBAtempBridge extends BridgeAbstract
     public function getName()
     {
         if (!is_null($this->getInput('type'))) {
-            $type = array_search(
-                $this->getInput('type'),
-                self::PARAMETERS[$this->queriedContext]['type']['values']
-            );
-            return 'GBAtemp ' . $type . ' Bridge';
+            return 'GBAtemp ' . $this->getKey('type') . ' Bridge';
         }
 
         return parent::getName();

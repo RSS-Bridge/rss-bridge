@@ -306,8 +306,16 @@ abstract class BridgeAbstract implements BridgeInterface
         if (!isset($this->inputs[$this->queriedContext][$input]['value'])) {
             return null;
         }
+        if (array_key_exists('global', static::PARAMETERS)) {
+            if (array_key_exists($input, static::PARAMETERS['global'])) {
+                $context = 'global';
+            }
+        }
+        if (!isset($context)) {
+            $context = $this->queriedContext;
+        }
         $needle = $this->inputs[$this->queriedContext][$input]['value'];
-        foreach (static::PARAMETERS[$this->queriedContext][$input]['values'] as $first_level_key => $first_level_value) {
+        foreach (static::PARAMETERS[$context][$input]['values'] as $first_level_key => $first_level_value) {
             if ($needle === (string)$first_level_value) {
                 return $first_level_key;
             } elseif (is_array($first_level_value)) {
