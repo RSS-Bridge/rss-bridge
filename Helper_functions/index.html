@@ -100,7 +100,7 @@
     <div class="Page__header">
         <h1><a href="../Helper_functions/index.html">Helper functions</a></h1>
                 <span class="ModifiedDate">
-            March 4, 2023 at 3:37 PM        </span>
+            March 6, 2023 at 11:02 AM        </span>
                         <span class="EditOn">
             <a href="https://github.com/RSS-Bridge/rss-bridge/tree/master/docs/06_Helper_functions/index.md" target="_blank">
                 Edit on GitHub            </a>
@@ -113,6 +113,31 @@
 <pre><code class="language-PHP">$this-&gt;getInput('your input name here');
 </code></pre>
 <p><code>getInput</code> will either return the value for your parameter or <code>null</code> if the parameter is unknown or not specified.</p>
+<h1><a id="getkey" href="#getkey" class="Permalink" aria-hidden="true" title="Permalink">#</a>getKey</h1>
+<p>The <code>getKey</code> function is used to receive the key name to a selected list value given the name of the list, specified in <code>const PARAMETERS</code>
+Is able to work with multidimensional list arrays.</p>
+<pre><code class="language-PHP">// Given a multidimensional array like this
+const PARAMETERS = [[
+        'country' =&gt; [
+            'name' =&gt; 'Country',
+            'type' =&gt; 'list',
+            'values' =&gt; [
+                'North America' =&gt; [
+                    'Mexico' =&gt; 'mx',
+                    'United States' =&gt; 'us'
+                ],
+                'South America' =&gt; [
+                    'Uruguay' =&gt; 'uy',
+                    'Venezuela' =&gt; 've'
+                ],
+            ]
+        ]
+]],
+// Provide the list name to the function
+$this-&gt;getKey('country');
+// if the selected value was &quot;ve&quot;, this function will return &quot;Venezuela&quot;
+</code></pre>
+<p><code>getKey</code> will either return the key name for your parameter or <code>null</code> if the parameter is unknown or not specified.</p>
 <h1><a id="getcontents" href="#getcontents" class="Permalink" aria-hidden="true" title="Permalink">#</a>getContents</h1>
 <p>The <code>getContents</code> function uses <a href="https://secure.php.net/manual/en/book.curl.php" class="Link--external" rel="noopener noreferrer">cURL</a> to acquire data from the specified URI while respecting the various settings defined at a global level by RSS-Bridge (i.e., proxy host, user agent, etc.). This function accepts a few parameters:</p>
 <table>
