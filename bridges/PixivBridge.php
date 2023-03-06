@@ -76,7 +76,7 @@ class PixivBridge extends BridgeAbstract
             default:
                 return parent::getName();
         }
-        return "Pixiv " . $this->getKey('mode') . " from ${context} ${query}";
+        return 'Pixiv ' . $this->getKey('mode') . " from ${context} ${query}";
     }
 
     public function getURI()
