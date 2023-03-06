@@ -592,9 +592,7 @@ HEREDOC;
                 return $this->i8n('bridge-name') . ' - ' . $this->i8n('title-keyword') . ' : ' . $this->getInput('q');
                 break;
             case $this->i8n('context-group'):
-                $values = $this->getParameters()[$this->i8n('context-group')]['group']['values'];
-                $group = array_search($this->getInput('group'), $values);
-                return $this->i8n('bridge-name') . ' - ' . $this->i8n('title-group') . ' : ' . $group;
+                return $this->i8n('bridge-name') . ' - ' . $this->i8n('title-group') . ' : ' . $this->getKey('group');
                 break;
             case $this->i8n('context-talk'):
                 return $this->i8n('bridge-name') . ' - ' . $this->i8n('title-talk') . ' : ' . $this->getTalkTitle();
