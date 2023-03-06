@@ -138,9 +138,7 @@ class InternetArchiveBridge extends BridgeAbstract
     public function getName()
     {
         if (!is_null($this->getInput('username')) && !is_null($this->getInput('content'))) {
-            $contentValues = array_flip(self::PARAMETERS['Account']['content']['values']);
-
-            return $contentValues[$this->getInput('content')] . ' - '
+            return $this->getKey('content') . ' - '
                 . $this->processUsername() . ' - Internet Archive';
         }
 

@@ -75,11 +75,7 @@ class AllocineFRBridge extends BridgeAbstract
     public function getName()
     {
         if (!is_null($this->getInput('category'))) {
-            return self::NAME . ' : '
-                . array_search(
-                    $this->getInput('category'),
-                    self::PARAMETERS[$this->queriedContext]['category']['values']
-                );
+            return self::NAME . ' : ' . $this->getKey('category');
         }
 
         return parent::getName();
@@ -89,10 +85,6 @@ class AllocineFRBridge extends BridgeAbstract
     {
         $html = getSimpleHTMLDOM($this->getURI());
 
-        $category = array_search(
-            $this->getInput('category'),
-            self::PARAMETERS[$this->queriedContext]['category']['values']
-        );
         foreach ($html->find('div[class=gd-col-left]', 0)->find('div[class*=video-card]') as $element) {
             $item = [];
 

@@ -76,11 +76,7 @@ class PixivBridge extends BridgeAbstract
             default:
                 return parent::getName();
         }
-        $mode = array_search(
-            $this->getInput('mode'),
-            self::PARAMETERS['global']['mode']['values']
-        );
-        return "Pixiv ${mode} from ${context} ${query}";
+        return 'Pixiv ' . $this->getKey('mode') . " from ${context} ${query}";
     }
 
     public function getURI()
@@ -149,7 +145,6 @@ class PixivBridge extends BridgeAbstract
     public function collectData()
     {
         $content = $this->collectWorksArray();
-
         $content = array_filter($content, function ($v, $k) {
             return !array_key_exists('isAdContainer', $v);
         }, ARRAY_FILTER_USE_BOTH);

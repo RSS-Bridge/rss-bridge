@@ -47,13 +47,9 @@ class NpciBridge extends BridgeAbstract
 
     public function getName()
     {
-        $product = $this->getInput('product');
-        if ($product) {
-            $productNameMap = array_flip(self::PARAMETERS[0]['product']['values']);
-            $productName = $productNameMap[$product];
-            return "NPCI Circulars: $productName";
+        if ($this->getInput('product')) {
+            return 'NPCI Circulars: ' . $this->getKey('product');
         }
-
         return 'NPCI Circulars';
     }
 

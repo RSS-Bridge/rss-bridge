@@ -7,6 +7,35 @@ $this->getInput('your input name here');
 
 `getInput` will either return the value for your parameter or `null` if the parameter is unknown or not specified.
 
+# getKey
+The `getKey` function is used to receive the key name to a selected list value given the name of the list, specified in `const PARAMETERS`
+Is able to work with multidimensional list arrays.
+
+```PHP
+// Given a multidimensional array like this
+const PARAMETERS = [[
+        'country' => [
+            'name' => 'Country',
+            'type' => 'list',
+            'values' => [
+                'North America' => [
+                    'Mexico' => 'mx',
+                    'United States' => 'us'
+                ],
+                'South America' => [
+                    'Uruguay' => 'uy',
+                    'Venezuela' => 've'
+                ],
+            ]
+        ]
+]],
+// Provide the list name to the function
+$this->getKey('country');
+// if the selected value was "ve", this function will return "Venezuela"
+```
+
+`getKey` will either return the key name for your parameter or `null` if the parameter is unknown or not specified.
+
 # getContents
 The `getContents` function uses [cURL](https://secure.php.net/manual/en/book.curl.php) to acquire data from the specified URI while respecting the various settings defined at a global level by RSS-Bridge (i.e., proxy host, user agent, etc.). This function accepts a few parameters:
 
