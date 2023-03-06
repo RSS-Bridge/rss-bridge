@@ -41,10 +41,17 @@ final class UtilsTest extends TestCase
         $sut->purgeCache(-1);
     }
 
-    public function testTrimFilePath()
+    public function testSanitizePathName()
     {
-        $this->assertSame('', trim_path_prefix(dirname(__DIR__)));
-        $this->assertSame('tests', trim_path_prefix(__DIR__));
-        $this->assertSame('tests/UtilsTest.php', trim_path_prefix(__DIR__ . '/UtilsTest.php'));
+        $this->assertSame('index.php', _sanitize_path_name('/home/satoshi/rss-bridge/index.php', '/home/satoshi/rss-bridge'));
+        $this->assertSame('tests/UtilsTest.php', _sanitize_path_name('/home/satoshi/rss-bridge/tests/UtilsTest.php', '/home/satoshi/rss-bridge'));
+        $this->assertSame('bug in lib/kek.php', _sanitize_path_name('bug in /home/satoshi/rss-bridge/lib/kek.php', '/home/satoshi/rss-bridge'));
+    }
+
+    public function testSanitizePathNameInErrorMessage()
+    {
+        $raw       = 'Error: Argument 1 passed to foo() must be an instance of kk, string given, called in /home/satoshi/rss-bridge/bridges/RumbleBridge.php';
+        $sanitized = 'Error: Argument 1 passed to foo() must be an instance of kk, string given, called in bridges/RumbleBridge.php';
+        $this->assertSame($sanitized, _sanitize_path_name($raw, '/home/satoshi/rss-bridge'));
     }
 }
