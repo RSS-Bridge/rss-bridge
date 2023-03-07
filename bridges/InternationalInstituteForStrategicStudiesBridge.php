@@ -49,7 +49,8 @@ class InternationalInstituteForStrategicStudiesBridge extends BridgeAbstract
         }
     }
 
-    private function getContents($uri) {
+    private function getContents($uri)
+    {
         $html = getSimpleHTMLDOMCached($uri);
         $body = $html->find('body', 0);
         $scripts = $body->find('script');
@@ -72,9 +73,10 @@ class InternationalInstituteForStrategicStudiesBridge extends BridgeAbstract
         return $result;
     }
 
-    private function getRenderArguments($script_text) {
+    private function getRenderArguments($script_text)
+    {
         $matches = [];
         preg_match('/React\.createElement\(Components\.\w+, {(.*)}\),/', $script_text, $matches);
-        return json_decode('{' . $matches[1] . '}' );
+        return json_decode('{' . $matches[1] . '}');
     }
 }
