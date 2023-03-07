@@ -8,7 +8,8 @@
 			"settings": {
 				"php.validate.executablePath": "/usr/local/bin/php",
 				"phpSniffer.executablesFolder": "/usr/local/bin/",
-				"phpcs.executablePath": "/usr/local/bin/phpcs"
+				"phpcs.executablePath": "/usr/local/bin/phpcs",
+				"phpcs.lintOnType": false
 			},
 
 			// Add the IDs of extensions you want installed when the container is created.
