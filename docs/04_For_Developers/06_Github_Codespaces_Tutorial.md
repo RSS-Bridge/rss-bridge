@@ -26,7 +26,7 @@ This will give you an example workflow of how to create a bridge for RSS-Bridge 
    ![debug](../images/codespaces_05.png)
 7. You can now create a new branch for your new bridge by clicking on the "master" entry in the bottom left and select "create new branch" from the menu.
 8. You can commit straight from the IDE as your github credentials are already included in the Codespace.
-9. To open a PR, go back to the Github website and open it there.
+9. To open a PR, either go back to the Github website and open it there or do it right from the Codespaces instance using the github integration (when you push a new branch, it will ask you if you want to open a new PR).
 
 # How-Tos
 
