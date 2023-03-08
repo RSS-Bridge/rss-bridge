@@ -15,7 +15,7 @@
 class GithubSecurityAdvisoriesBridge extends BridgeAbstract
 {
     const NAME = 'Github Security Advisories';
-	const MAINTAINER = 'ThibautPlg';
+    const MAINTAINER = 'ThibautPlg';
     const DESCRIPTION = 'Report Security Advisories of a Github repository';
     const URI = 'https://github.com';
 
@@ -33,11 +33,11 @@ class GithubSecurityAdvisoriesBridge extends BridgeAbstract
     // Main function, collect data and parse content
     public function collectData()
     {
-        $re = '/https:\/\/github\.com\/.*?\/security-advisories\/security\/advisories/i';
+        $re = '#https://github\.com/.*?/security/advisories#i';
         $url = trim($this->getInput('repository_url'));
 
         if (!preg_match($re, $url)) {
-            returnClientError('Invalid URL. Must end in "/security-advisories\/security\/advisories"');
+            returnClientError('Invalid URL. Must end in "/security/advisories"');
         }
 
 
@@ -50,21 +50,21 @@ class GithubSecurityAdvisoriesBridge extends BridgeAbstract
 
         foreach ($this->DOM->find('#advisories > .Box > div > ul > li') as $i => $tr) {
 
-            $vulnUrl = "https://github.com/".$tr->find('.Link--primary', 0)->href;
+            $vulnUrl = 'https://github.com/' . $tr->find('.Link--primary', 0)->href;
 
             $details = $this->getDetails($vulnUrl);
 
             // Making a nice title
-            $title = "[".$tr->find('.Label', 0)->title ."]";
+            $title = '[' . $tr->find('.Label', 0)->title . ']';
             // If possible, add CVE id
-            if(!!$details['CVEID']) {
-                $title .= " ".$details['CVEID']." :";
+            if (isset($details['CVEID'])) {
+                $title .= ' ' . $details['CVEID'] . ' :';
             }
             // Adding real page title
-            $title .= " " . $tr->find('.Link--primary', 0)->innertext;
+            $title .= ' ' . $tr->find('.Link--primary', 0)->innertext;
 
             // Making the content, with the extended description if possible
-            if(!!$details['extendedDescription']) {
+            if (isset($details['extendedDescription'])) {
                 $content = $details['extendedDescription'];
             } else {
                 $content = $tr->find('.Link--primary', 0)->innertext;
@@ -82,16 +82,16 @@ class GithubSecurityAdvisoriesBridge extends BridgeAbstract
     // Returns an array of details found about the security advisory, if possible
     public function getDetails($vulnUrl)
     {
-        $re = '/https:\/\/github\.com\/.*?\/security-advisories\/security\/advisories\/.*/i';
+		$re = '#https://github\.com/.*?/security/advisories/.*#i';
         $url = trim($vulnUrl);
         if (!preg_match($re, $url)) {
-            returnServerError('Details cannot be fetched for this url : '.$url);
+            returnServerError('Details cannot be fetched for this url : ' . $url);
         }
         $DOM = getSimpleHTMLDOMCached($url);
 
         return [
-            "extendedDescription" =>  $DOM->find('.markdown-body',0),
-            "CVEID" => $DOM->find('.discussion-sidebar-item', 1)->find('div',0),
+            'extendedDescription' =>  $DOM->find('.markdown-body',0), 
+            'CVEID' => $DOM->find('.discussion-sidebar-item', 1)->find('div',0), 
         ];
     }
 }
