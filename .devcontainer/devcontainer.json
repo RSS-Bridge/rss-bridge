@@ -6,7 +6,10 @@
 		"vscode": {
 			// Set *default* container specific settings.json values on container create.
 			"settings": {
-				"php.validate.executablePath": "/usr/local/bin/php"
+				"php.validate.executablePath": "/usr/local/bin/php",
+				"phpSniffer.executablesFolder": "/usr/local/bin/",
+				"phpcs.executablePath": "/usr/local/bin/phpcs",
+				"phpcs.lintOnType": false
 			},
 
 			// Add the IDs of extensions you want installed when the container is created.
@@ -14,7 +17,8 @@
 				"xdebug.php-debug",
 				"bmewburn.vscode-intelephense-client",
 				"philfontaine.autolaunch",
-				"eamodio.gitlens"
+				"eamodio.gitlens",
+				"shevaua.phpcs"
 			]
 		}
 	},
