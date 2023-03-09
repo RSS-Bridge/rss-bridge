@@ -96,6 +96,9 @@ report_limit = 1
 ; --- Cache specific configuration ---------------------------------------------
 
 [FileCache]
+; The root folder to store files in.
+; "" = Use the cache folder in the repository (default)
+path = ""
 ; Whether to actually delete files when purging. Can be useful to turn off to increase performance.
 enable_purge = true
 

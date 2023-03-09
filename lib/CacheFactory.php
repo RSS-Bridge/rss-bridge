@@ -39,6 +39,8 @@ class CacheFactory
                 return new NullCache();
             case FileCache::class:
                 return new FileCache([
+                    // Intentionally checking for "truthy" value
+                    'path' => Configuration::getConfig('FileCache', 'path') ?: PATH_CACHE,
                     'enable_purge' => Configuration::getConfig('FileCache', 'enable_purge'),
                 ]);
             case SQLiteCache::class:
