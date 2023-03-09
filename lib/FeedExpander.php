@@ -102,7 +102,7 @@ abstract class FeedExpander extends BridgeAbstract
         $httpHeaders = ['Accept: ' . implode(', ', $mimeTypes)];
         $content = getContents($url, $httpHeaders);
         if ($content === '') {
-            throw new \Exception(sprintf('Unable to parse xml from `%s` because we got the empty string', $url));
+            throw new \Exception(sprintf('Unable to parse xml from `%s` because we got the empty string', $url), 10);
         }
         // Maybe move this call earlier up the stack frames
         // Disable triggering of the php error-handler and handle errors manually instead
@@ -121,7 +121,7 @@ abstract class FeedExpander extends BridgeAbstract
                 // Render only the first error into exception message
                 $firstXmlErrorMessage = $xmlErrors[0]->message;
             }
-            throw new \Exception(sprintf('Unable to parse xml from `%s` %s', $url, $firstXmlErrorMessage ?? ''));
+            throw new \Exception(sprintf('Unable to parse xml from `%s` %s', $url, $firstXmlErrorMessage ?? ''), 11);
         }
         // Restore previous behaviour in case other code relies on it being off
         libxml_use_internal_errors(false);
