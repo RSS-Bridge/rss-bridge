@@ -1,8 +1,38 @@
 <div class="error">
 
-    <h1>Application Error</h1>
+    <h2>Application Error</h2>
 
-    <p>The application could not run because of the following error:</p>
+    <p>
+        The application could not run because of the following error:
+    </p>
+
+    <?php if ($e instanceof HttpException): ?>
+        <?php if ($e instanceof CloudFlareException): ?>
+            <h2>The website is protected by CloudFlare</h2>
+            <p>
+                RSS-Bridge tried to fetch a website.
+                The fetching was blocked by CloudFlare.
+                CloudFlare is anti-bot software.
+                Its purpose is to block non-humans.
+            </p>
+        <?php endif; ?>
+
+        <?php if ($e->getCode() === 404): ?>
+            <h2>The website was not found</h2>
+            <p>
+                RSS-Bridge tried to fetch a page on a website.
+                But it doesn't exists.
+            </p>
+        <?php endif; ?>
+
+        <?php if ($e->getCode() === 429): ?>
+            <h2>Try again later</h2>
+            <p>
+                RSS-Bridge tried to fetch a website.
+                They told us to try again later.
+            </p>
+        <?php endif; ?>
+    <?php endif; ?>
 
     <h2>Details</h2>
 
