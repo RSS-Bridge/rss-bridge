@@ -20,8 +20,11 @@ class GatesNotesBridge extends FeedExpander
         $article_html = defaultLinkTo($article_html, $this->getURI());
 
         $top_description = '<p>' . $article_html->find('div.article_top_description', 0)->innertext . '</p>';
-        $hero_image = '<img src=' . $article_html->find('img.article_top_DMT_Image', 0)->getAttribute('data-src') . '>';
 
+        $hero_image = '';
+        if ($article_html->find('img.article_top_DMT_Image', 0)) {
+            $hero_image = '<img src=' . $article_html->find('img.article_top_DMT_Image', 0)->getAttribute('data-src') . '>';
+        }
         $article_body = $article_html->find('div.TGN_Article_ReadTimeSection', 0);
         // Convert iframe of Youtube videos to link
         foreach ($article_body->find('iframe') as $found) {
@@ -51,5 +54,20 @@ class GatesNotesBridge extends FeedExpander
     {
         $feed = static::URI . '/rss';
         $this->collectExpandableDatas($feed);
+    }
+
+    public function collectExpandableDatas($url, $maxItems = -1)
+    {
+        $mimeTypes = [
+            MrssFormat::MIME_TYPE,
+            AtomFormat::MIME_TYPE,
+            '*/*',
+        ];
+        $httpHeaders = ['Accept: ' . implode(', ', $mimeTypes)];
+        $content = getContents($url, $httpHeaders);
+        $content = str_replace(['<p>', '</p>', '<br>'], '', $content);
+        $rssContent = simplexml_load_string(trim($content));
+        $this->feedType = self::FEED_TYPE_RSS_2_0;
+        $this->collectRss2($rssContent, $maxItems);
     }
 }

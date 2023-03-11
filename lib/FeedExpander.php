@@ -69,7 +69,7 @@ abstract class FeedExpander extends BridgeAbstract
      *
      * @var string
      */
-    private $feedType;
+    protected $feedType;
 
     /**
      * Collects data from an existing feed.
@@ -104,6 +104,7 @@ abstract class FeedExpander extends BridgeAbstract
         if ($content === '') {
             throw new \Exception(sprintf('Unable to parse xml from `%s` because we got the empty string', $url));
         }
+
         // Maybe move this call earlier up the stack frames
         // Disable triggering of the php error-handler and handle errors manually instead
         libxml_use_internal_errors(true);
