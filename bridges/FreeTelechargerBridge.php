@@ -18,7 +18,7 @@ class FreeTelechargerBridge extends BridgeAbstract
                         ],
                 ]
         ];
-        const CACHE_TIMEOUT = '3600';
+        const CACHE_TIMEOUT = 3600;
         public function collectData()
         {
                 $html = getSimpleHTMLDOM(self::URI . $this->getInput('url'));
