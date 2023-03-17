@@ -48,7 +48,7 @@ class AppleAppStoreBridge extends BridgeAbstract
                 'Australia' => 'AU',
                 'New Zealand' => 'NZ',
                 'Indonesia' => 'ID',
-                'Brasil' => 'BR',
+                'Brazil' => 'BR',
                 
             ],
             'defaultValue'  => 'US',
