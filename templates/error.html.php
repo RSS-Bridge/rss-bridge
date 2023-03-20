@@ -1,8 +1,48 @@
 <div class="error">
 
-    <h1>Application Error</h1>
+    <?php if ($e instanceof HttpException): ?>
+        <?php if ($e instanceof CloudFlareException): ?>
+            <h2>The website is protected by CloudFlare</h2>
+            <p>
+                RSS-Bridge tried to fetch a website.
+                The fetching was blocked by CloudFlare.
+                CloudFlare is anti-bot software.
+                Its purpose is to block non-humans.
+            </p>
+        <?php endif; ?>
 
-    <p>The application could not run because of the following error:</p>
+        <?php if ($e->getCode() === 404): ?>
+            <h2>The website was not found</h2>
+            <p>
+                RSS-Bridge tried to fetch a page on a website.
+                But it doesn't exists.
+            </p>
+        <?php endif; ?>
+
+        <?php if ($e->getCode() === 429): ?>
+            <h2>Try again later</h2>
+            <p>
+                RSS-Bridge tried to fetch a website.
+                They told us to try again later.
+            </p>
+        <?php endif; ?>
+
+    <?php else: ?>
+        <?php if ($e->getCode() === 10): ?>
+            <h2>The rss feed is completely empty</h2>
+            <p>
+                RSS-Bridge tried parse the empty string as xml.
+                The fetched url is not pointing to real xml.
+            </p>
+        <?php endif; ?>
+
+        <?php if ($e->getCode() === 11): ?>
+            <h2>There is something wrong with the rss feed</h2>
+            <p>
+                RSS-Bridge tried parse xml. It failed. The xml is probably broken.
+            </p>
+        <?php endif; ?>
+    <?php endif; ?>
 
     <h2>Details</h2>
 

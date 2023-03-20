@@ -1,6 +1,10 @@
 <?php
 
-final class HttpException extends \Exception
+class HttpException extends \Exception
+{
+}
+
+final class CloudFlareException extends HttpException
 {
 }
 
