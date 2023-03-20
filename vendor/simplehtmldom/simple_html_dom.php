@@ -110,6 +110,14 @@ function str_get_html(
 		$defaultSpanText
 	);
 
+    // The following two if statements are rss-bridge patch
+    if (empty($str)) {
+        throw new \Exception('Refusing to parse empty string input');
+    }
+    if (strlen($str) > MAX_FILE_SIZE) {
+        throw new \Exception('Refusing to parse too big input');
+    }
+
 	if (empty($str) || strlen($str) > MAX_FILE_SIZE) {
 		$dom->clear();
 		return false;

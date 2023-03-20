@@ -54,11 +54,7 @@ class SplCenterBridge extends FeedExpander
     public function getName()
     {
         if (!is_null($this->getInput('content'))) {
-            $parameters = $this->getParameters();
-
-            $contentValues = array_flip($parameters[0]['content']['values']);
-
-            return $contentValues[$this->getInput('content')] . ' - Southern Poverty Law Center';
+            return $this->getKey('content') . ' - Southern Poverty Law Center';
         }
 
         return parent::getName();

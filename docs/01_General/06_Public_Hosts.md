@@ -4,7 +4,7 @@
 |:-------:|---------|--------|----------|---------|
 | ![](https://iplookup.flagfox.net/images/h16/GB.png) | https://rss-bridge.org/bridge01 | ![](https://img.shields.io/website/https/rss-bridge.org/bridge01.svg) | [@dvikan](https://github.com/dvikan) | London, Digital Ocean|
 | ![](https://iplookup.flagfox.net/images/h16/GB.png) | https://rss-bridge.lewd.tech | ![](https://img.shields.io/website/https/rss-bridge.lewd.tech.svg) | [@Erisa](https://github.com/Erisa) | Hosted in London, protected by Cloudflare Rate Limiting |
-| ![](https://iplookup.flagfox.net/images/h16/FR.png) | https://bridge.easter.fr | ![](https://img.shields.io/website/https/bridge.easter.fr.svg) | [@chatainsim](https://github.com/chatainsim) | Hosted in Roubaix, France |
+| ![](https://iplookup.flagfox.net/images/h16/FR.png) | https://bridge.easter.fr | ![](https://img.shields.io/website/https/bridge.easter.fr.svg) | [@chatainsim](https://github.com/chatainsim) | Hosted in Isère, France |
 | ![](https://iplookup.flagfox.net/images/h16/FR.png) | https://wtf.roflcopter.fr/rss-bridge/ | ![](https://img.shields.io/website/https/wtf.roflcopter.fr/rss-bridge.svg) | [roflcopter.fr](https://wtf.roflcopter.fr/) | Hosted in France |
 | ![](https://iplookup.flagfox.net/images/h16/DE.png) | https://rss.nixnet.services | ![](https://img.shields.io/website/https/rss.nixnet.services.svg) | [@amolith](https://nixnet.services/contact) | Hosted in Wunstorf, Germany |
 | ![](https://iplookup.flagfox.net/images/h16/AT.png) | https://rss-bridge.ggc-project.de | ![](https://img.shields.io/website/https/rss-bridge.ggc-project.de) | [@ggc-project.de](https://social.dev-wiki.de/@ggc_project) | Hosted in Steyr, Austria |
@@ -18,6 +18,7 @@
 | ![](https://iplookup.flagfox.net/images/h16/NL.png) | https://feed.eugenemolotov.ru | ![](https://img.shields.io/website/https/feed.eugenemolotov.ru.svg) | [@em92](https://github.com/em92) | Hosted in Amsterdam, Netherlands |
 | ![](https://iplookup.flagfox.net/images/h16/DE.png) | https://rss-bridge.mediani.de | ![](https://img.shields.io/website/https/rss-bridge.mediani.de.svg) | [@sokai](https://github.com/sokai) | Hosted with Netcup, Germany |
 | ![](https://iplookup.flagfox.net/images/h16/US.png) | http://rb.vern.cc/ | ![](https://img.shields.io/website/https/rb.vern.cc.svg) | [@vern.cc](https://vern.cc/en/admin) | Hosted with Hetzner, US |
+| ![](https://iplookup.flagfox.net/images/h16/FR.png) | https://rssbridge.flossboxin.org.in/ | ![](https://img.shields.io/badge/website-up-brightgreen) | [@vdbhb59](https://github.com/vdbhb59) | Hosted with OVH SAS (Maintained in India)
 
 ## Inactive instances
 

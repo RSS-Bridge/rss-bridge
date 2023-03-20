@@ -75,8 +75,8 @@ enable = false
 
 username = "admin"
 
-; This default password is public knowledge. Replace it.
-password = "7afbf648a369b261"
+; The password cannot be the empty string if authentication is enabled.
+password = ""
 
 ; This will be used only for actions that require privileged access
 access_token = ""
@@ -94,6 +94,13 @@ output = "feed"
 report_limit = 1
 
 ; --- Cache specific configuration ---------------------------------------------
+
+[FileCache]
+; The root folder to store files in.
+; "" = Use the cache folder in the repository (default)
+path = ""
+; Whether to actually delete files when purging. Can be useful to turn off to increase performance.
+enable_purge = true
 
 [SQLiteCache]
 file = "cache.sqlite"

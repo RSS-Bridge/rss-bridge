@@ -26,25 +26,24 @@ final class UtilsTest extends TestCase
         $this->assertSame('1 TB', format_bytes(1024 ** 4));
     }
 
-    public function testFileCache()
+    public function testSanitizePathName()
     {
-        $sut = new \FileCache();
-        $sut->setScope('scope');
-        $sut->purgeCache(-1);
-        $sut->setKey(['key']);
-
-        $this->assertNull($sut->loadData());
-
-        $sut->saveData('data');
-        $this->assertSame('data', $sut->loadData());
-        $this->assertIsNumeric($sut->getTime());
-        $sut->purgeCache(-1);
+        $this->assertSame('index.php', _sanitize_path_name('/home/satoshi/rss-bridge/index.php', '/home/satoshi/rss-bridge'));
+        $this->assertSame('tests/UtilsTest.php', _sanitize_path_name('/home/satoshi/rss-bridge/tests/UtilsTest.php', '/home/satoshi/rss-bridge'));
+        $this->assertSame('bug in lib/kek.php', _sanitize_path_name('bug in /home/satoshi/rss-bridge/lib/kek.php', '/home/satoshi/rss-bridge'));
     }
 
-    public function testTrimFilePath()
+    public function testSanitizePathNameInErrorMessage()
     {
-        $this->assertSame('', trim_path_prefix(dirname(__DIR__)));
-        $this->assertSame('tests', trim_path_prefix(__DIR__));
-        $this->assertSame('tests/UtilsTest.php', trim_path_prefix(__DIR__ . '/UtilsTest.php'));
+        $raw       = 'Error: Argument 1 passed to foo() must be an instance of kk, string given, called in /home/satoshi/rss-bridge/bridges/RumbleBridge.php';
+        $sanitized = 'Error: Argument 1 passed to foo() must be an instance of kk, string given, called in bridges/RumbleBridge.php';
+        $this->assertSame($sanitized, _sanitize_path_name($raw, '/home/satoshi/rss-bridge'));
+    }
+
+    public function testCreateRandomString()
+    {
+        $this->assertSame(2, strlen(create_random_string(1)));
+        $this->assertSame(4, strlen(create_random_string(2)));
+        $this->assertSame(6, strlen(create_random_string(3)));
     }
 }

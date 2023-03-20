@@ -1,0 +1,27 @@
+{
+	"name": "rss-bridge dev",
+	"build": { "dockerfile": "Dockerfile" },
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			"settings": {
+				"php.validate.executablePath": "/usr/local/bin/php",
+				"phpSniffer.executablesFolder": "/usr/local/bin/",
+				"phpcs.executablePath": "/usr/local/bin/phpcs",
+				"phpcs.lintOnType": false
+			},
+
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"xdebug.php-debug",
+				"bmewburn.vscode-intelephense-client",
+				"philfontaine.autolaunch",
+				"eamodio.gitlens",
+				"shevaua.phpcs"
+			]
+		}
+	},
+	"forwardPorts": [3100, 9000, 9003],
+	"postCreateCommand": "cp .devcontainer/nginx.conf /etc/nginx/conf.d/default.conf && cp .devcontainer/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini && mkdir .vscode && cp .devcontainer/launch.json .vscode && echo '*' > whitelist.txt && chmod a+x \"$(pwd)\" && rm -rf /var/www/html && ln -s \"$(pwd)\" /var/www/html && nginx && php-fpm -D"
+}

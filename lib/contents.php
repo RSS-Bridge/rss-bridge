@@ -178,29 +178,28 @@ function getContents(
             $response['content'] = $cache->loadData();
             break;
         default:
-            if (Debug::isEnabled()) {
-                // Include a part of the response body in the exception message
-                throw new HttpException(
-                    sprintf(
-                        '%s resulted in `%s %s: %s`',
-                        $url,
-                        $result['code'],
-                        Response::STATUS_CODES[$result['code']] ?? '',
-                        mb_substr($result['body'], 0, 500),
-                    ),
-                    $result['code']
-                );
-            } else {
-                throw new HttpException(
-                    sprintf(
-                        '%s resulted in `%s %s`',
-                        $url,
-                        $result['code'],
-                        Response::STATUS_CODES[$result['code']] ?? '',
-                    ),
-                    $result['code']
-                );
+            $exceptionMessage = sprintf(
+                '%s resulted in %s %s %s',
+                $url,
+                $result['code'],
+                Response::STATUS_CODES[$result['code']] ?? '',
+                // If debug, include a part of the response body in the exception message
+                Debug::isEnabled() ? mb_substr($result['body'], 0, 500) : '',
+            );
+
+            // The following code must be extracted if it grows too much
+            $cloudflareTitles = [
+                '<title>Just a moment...',
+                '<title>Please Wait...',
+                '<title>Attention Required!'
+            ];
+            foreach ($cloudflareTitles as $cloudflareTitle) {
+                if (str_contains($result['body'], $cloudflareTitle)) {
+                    throw new CloudFlareException($exceptionMessage, $result['code']);
+                }
             }
+
+            throw new HttpException($exceptionMessage, $result['code']);
     }
     if ($returnFull === true) {
         return $response;

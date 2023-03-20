@@ -14,6 +14,13 @@
 
 final class AuthenticationMiddleware
 {
+    public function __construct()
+    {
+        if (Configuration::getConfig('authentication', 'password') === '') {
+            throw new \Exception('The authentication password cannot be the empty string');
+        }
+    }
+
     public function __invoke(): void
     {
         $user = $_SERVER['PHP_AUTH_USER'] ?? null;

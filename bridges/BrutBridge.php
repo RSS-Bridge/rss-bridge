@@ -97,13 +97,8 @@ EOD;
     public function getName()
     {
         if (!is_null($this->getInput('edition')) && !is_null($this->getInput('category'))) {
-            $parameters = $this->getParameters();
-
-            $editionValues = array_flip($parameters[0]['edition']['values']);
-            $categoryValues = array_flip($parameters[0]['category']['values']);
-
-            return $categoryValues[$this->getInput('category')] . ' - ' .
-                $editionValues[$this->getInput('edition')] . ' - Brut.';
+            return $this->getKey('category') . ' - ' .
+                $this->getKey('edition') . ' - Brut.';
         }
 
         return parent::getName();

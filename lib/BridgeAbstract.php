@@ -295,6 +295,40 @@ abstract class BridgeAbstract implements BridgeInterface
     }
 
     /**
+     * Get the key name of a given input
+     * Can process multilevel arrays with two levels, the max level a list can have
+     *
+     * @param string $input The input name
+     * @return string|null The accompaning key to a given input or null if the input is not defined
+     */
+    public function getKey($input)
+    {
+        if (!isset($this->inputs[$this->queriedContext][$input]['value'])) {
+            return null;
+        }
+        if (array_key_exists('global', static::PARAMETERS)) {
+            if (array_key_exists($input, static::PARAMETERS['global'])) {
+                $context = 'global';
+            }
+        }
+        if (!isset($context)) {
+            $context = $this->queriedContext;
+        }
+        $needle = $this->inputs[$this->queriedContext][$input]['value'];
+        foreach (static::PARAMETERS[$context][$input]['values'] as $first_level_key => $first_level_value) {
+            if ($needle === (string)$first_level_value) {
+                return $first_level_key;
+            } elseif (is_array($first_level_value)) {
+                foreach ($first_level_value as $second_level_key => $second_level_value) {
+                    if ($needle === (string)$second_level_value) {
+                        return $second_level_key;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Get bridge configuration value
      */
     public function getOption($name)

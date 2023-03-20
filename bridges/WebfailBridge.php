@@ -48,10 +48,7 @@ class WebfailBridge extends BridgeAbstract
     {
         $html = getSimpleHTMLDOM($this->getURI() . $this->getInput('type'));
 
-        $type = array_search(
-            $this->getInput('type'),
-            self::PARAMETERS[$this->queriedContext]['type']['values']
-        );
+        $type = $this->getKey('type');
 
         switch (strtolower($type)) {
             case 'facebook':
