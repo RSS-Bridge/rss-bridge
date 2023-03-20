@@ -226,3 +226,8 @@ function now(): \DateTimeImmutable
 {
     return new \DateTimeImmutable();
 }
+
+function create_random_string(int $bytes = 16): string
+{
+    return bin2hex(openssl_random_pseudo_bytes($bytes));
+}

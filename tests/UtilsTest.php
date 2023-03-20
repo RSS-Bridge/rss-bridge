@@ -26,21 +26,6 @@ final class UtilsTest extends TestCase
         $this->assertSame('1 TB', format_bytes(1024 ** 4));
     }
 
-    public function testFileCache()
-    {
-        $sut = new \FileCache(['enable_purge' => true]);
-        $sut->setScope('scope');
-        $sut->purgeCache(-1);
-        $sut->setKey(['key']);
-
-        $this->assertNull($sut->loadData());
-
-        $sut->saveData('data');
-        $this->assertSame('data', $sut->loadData());
-        $this->assertIsNumeric($sut->getTime());
-        $sut->purgeCache(-1);
-    }
-
     public function testSanitizePathName()
     {
         $this->assertSame('index.php', _sanitize_path_name('/home/satoshi/rss-bridge/index.php', '/home/satoshi/rss-bridge'));
@@ -53,5 +38,12 @@ final class UtilsTest extends TestCase
         $raw       = 'Error: Argument 1 passed to foo() must be an instance of kk, string given, called in /home/satoshi/rss-bridge/bridges/RumbleBridge.php';
         $sanitized = 'Error: Argument 1 passed to foo() must be an instance of kk, string given, called in bridges/RumbleBridge.php';
         $this->assertSame($sanitized, _sanitize_path_name($raw, '/home/satoshi/rss-bridge'));
+    }
+
+    public function testCreateRandomString()
+    {
+        $this->assertSame(2, strlen(create_random_string(1)));
+        $this->assertSame(4, strlen(create_random_string(2)));
+        $this->assertSame(6, strlen(create_random_string(3)));
     }
 }

@@ -186,6 +186,9 @@ class PixivBridge extends BridgeAbstract
         }
     }
 
+    /**
+     * todo: remove manual file cache
+     */
     private function cacheImage($url, $illustId, $isImage)
     {
         $illustId = preg_replace('/[^0-9]/', '', $illustId);

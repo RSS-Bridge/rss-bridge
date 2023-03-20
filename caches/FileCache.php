@@ -3,14 +3,18 @@
 class FileCache implements CacheInterface
 {
     private array $config;
-    protected $path;
+    protected $scope;
     protected $key;
 
     public function __construct(array $config = [])
     {
         $this->config = $config;
-        if (!is_writable(PATH_CACHE)) {
-            throw new \Exception('The cache folder is not writeable');
+
+        if (!is_dir($this->config['path'])) {
+            throw new \Exception('The cache path does not exists. You probably want: mkdir cache && chown www-data:www-data cache');
+        }
+        if (!is_writable($this->config['path'])) {
+            throw new \Exception('The cache path is not writeable. You probably want: chown www-data:www-data cache');
         }
     }
 
@@ -26,7 +30,7 @@ class FileCache implements CacheInterface
     {
         $writeStream = file_put_contents($this->getCacheFile(), serialize($data));
         if ($writeStream === false) {
-            throw new \Exception('Cannot write the cache... Do you have the right permissions ?');
+            throw new \Exception('The cache path is not writeable. You probably want: chown www-data:www-data cache');
         }
         return $this;
     }
@@ -52,7 +56,7 @@ class FileCache implements CacheInterface
             return;
         }
 
-        $cachePath = $this->getPath();
+        $cachePath = $this->getScope();
         if (!file_exists($cachePath)) {
             return;
         }
@@ -79,7 +83,7 @@ class FileCache implements CacheInterface
             throw new \Exception('The given scope is invalid!');
         }
 
-        $this->path = PATH_CACHE . trim($scope, " \t\n\r\0\x0B\\\/") . '/';
+        $this->scope = $this->config['path'] . trim($scope, " \t\n\r\0\x0B\\\/") . '/';
 
         return $this;
     }
@@ -96,24 +100,24 @@ class FileCache implements CacheInterface
         return $this;
     }
 
-    private function getPath()
+    private function getScope()
     {
-        if (is_null($this->path)) {
+        if (is_null($this->scope)) {
             throw new \Exception('Call "setScope" first!');
         }
 
-        if (!is_dir($this->path)) {
-            if (mkdir($this->path, 0755, true) !== true) {
+        if (!is_dir($this->scope)) {
+            if (mkdir($this->scope, 0755, true) !== true) {
                 throw new \Exception('mkdir: Unable to create file cache folder');
             }
         }
 
-        return $this->path;
+        return $this->scope;
     }
 
     private function getCacheFile()
     {
-        return $this->getPath() . $this->getCacheName();
+        return $this->getScope() . $this->getCacheName();
     }
 
     private function getCacheName()
