@@ -23,7 +23,7 @@ class ARDAudiothekBridge extends BridgeAbstract
      */
     const IMAGEWIDTHPLACEHOLDER = '{width}';
     /*
-     * File extension appended to image link in $this->icon 
+     * File extension appended to image link in $this->icon
      * @const IMAGEEXTENSION
      */
     const IMAGEEXTENSION = '.jpg';
