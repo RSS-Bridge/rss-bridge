@@ -40,6 +40,7 @@ const WHITELIST_DEFAULT = __DIR__ . '/../whitelist.default.txt';
 const REPOSITORY = 'https://github.com/RSS-Bridge/rss-bridge/';
 
 // Allow larger files for simple_html_dom
+// todo: extract to config (if possible)
 const MAX_FILE_SIZE = 10000000;
 
 // Files

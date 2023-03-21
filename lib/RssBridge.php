@@ -42,6 +42,7 @@ final class RssBridge
             );
             Logger::warning($text);
             if (Debug::isEnabled()) {
+                // todo: extract to log handler
                 print sprintf("<pre>%s</pre>\n", e($text));
             }
         });
@@ -59,6 +60,7 @@ final class RssBridge
                 );
                 Logger::error($message);
                 if (Debug::isEnabled()) {
+                    // todo: extract to log handler
                     print sprintf("<pre>%s</pre>\n", e($message));
                 }
             }

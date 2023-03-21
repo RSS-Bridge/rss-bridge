@@ -1,23 +1,20 @@
 <?php
 
 /**
- * This file is part of RSS-Bridge, a PHP project capable of generating RSS and
- * Atom feeds for websites that don't have one.
- *
- * For the full license information, please view the UNLICENSE file distributed
- * with this source code.
- *
- * @package Core
- * @license http://unlicense.org/ UNLICENSE
- * @link    https://github.com/rss-bridge/rss-bridge
+ * Render template using base.html.php as base
  */
-
 function render(string $template, array $context = []): string
 {
     if ($template === 'base.html.php') {
         throw new \Exception('Do not render base.html.php into itself');
     }
-    $context['system_message'] = Configuration::getConfig('system', 'message');
+    $context['messages'] = $context['messages'] ?? [];
+    if (Configuration::getConfig('system', 'message')) {
+        $context['messages'][] = Configuration::getConfig('system', 'message');
+    }
+    if (Debug::isEnabled()) {
+        $context['messages'][] = 'Debug mode is enabled';
+    }
     $context['page'] = render_template($template, $context);
     return render_template('base.html.php', $context);
 }

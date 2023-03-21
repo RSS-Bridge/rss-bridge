@@ -113,9 +113,7 @@ abstract class FeedExpander extends BridgeAbstract
         if ($rssContent === false) {
             $xmlErrors = libxml_get_errors();
             foreach ($xmlErrors as $xmlError) {
-                if (Debug::isEnabled()) {
-                    Debug::log(trim($xmlError->message));
-                }
+                Logger::debug(trim($xmlError->message));
             }
             if ($xmlErrors) {
                 // Render only the first error into exception message

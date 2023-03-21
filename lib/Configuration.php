@@ -114,11 +114,25 @@ final class Configuration
             }
         }
 
+        if (file_exists(__DIR__ . '/../DEBUG')) {
+            // The debug mode has been moved to config. Preserve existing installs which has this DEBUG file.
+            $debug_whitelist = trim(file_get_contents(__DIR__ . '/../DEBUG'));
+            $ip = $_SERVER['REMOTE_ADDR'];
+            if (empty($debug_whitelist) || in_array($ip, explode("\n", str_replace("\r", '', $debug_whitelist)))) {
+                // Enable debug mode if the file is empty, or contains the client ip address
+                self::setConfig('system', 'debug', true);
+            }
+        }
+
         if (
             !is_string(self::getConfig('system', 'timezone'))
             || !in_array(self::getConfig('system', 'timezone'), timezone_identifiers_list(DateTimeZone::ALL_WITH_BC))
         ) {
             self::throwConfigError('system', 'timezone');
+        }
+
+        if (!is_bool(self::getConfig('system', 'debug'))) {
+            self::throwConfigError('system', 'debug', 'Is not a valid Boolean');
         }
 
         if (!is_string(self::getConfig('proxy', 'url'))) {
