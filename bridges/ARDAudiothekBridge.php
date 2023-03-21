@@ -22,6 +22,11 @@ class ARDAudiothekBridge extends BridgeAbstract
      * @const IMAGEWIDTHPLACEHOLDER
      */
     const IMAGEWIDTHPLACEHOLDER = '{width}';
+    /*
+     * File extension appended to image link in $this->icon
+     * @const IMAGEEXTENSION
+     */
+    const IMAGEEXTENSION = '.jpg';
 
     const PARAMETERS = [
         [
@@ -115,6 +120,9 @@ class ARDAudiothekBridge extends BridgeAbstract
         $this->title = $processedJSON->title;
         $this->uri = $processedJSON->sharingUrl;
         $this->icon = str_replace(self::IMAGEWIDTHPLACEHOLDER, self::IMAGEWIDTH, $processedJSON->image->url1X1);
+        // add image file extension to URL so icon is shown in generated RSS feeds, see
+        // https://github.com/RSS-Bridge/rss-bridge/blob/4aed05c7b678b5673386d61374bba13637d15487/formats/MrssFormat.php#L76
+        $this->icon = $this->icon . self::IMAGEEXTENSION;
 
         $this->items = array_slice($this->items, 0, $limit);
 
