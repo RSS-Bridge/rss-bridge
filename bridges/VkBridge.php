@@ -24,6 +24,7 @@ class VkBridge extends BridgeAbstract
     ];
 
     protected $pageName;
+    protected $tz = 0;
 
     public function getURI()
     {
@@ -50,6 +51,13 @@ class VkBridge extends BridgeAbstract
         $text_html = iconv('windows-1251', 'utf-8//ignore', $text_html);
 
         $html = str_get_html($text_html);
+        foreach ($html->find('script') as $script) {
+            preg_match('/tz: ([0-9]+)/', $script->outertext, $matches);
+            if (count($matches) > 0) {
+                $this->tz = intval($matches[1]);
+                break;
+            }
+        }
         $pageName = $html->find('.page_name', 0);
         if (is_object($pageName)) {
             $pageName = $pageName->plaintext;
@@ -393,8 +401,9 @@ class VkBridge extends BridgeAbstract
 
     private function getTime($post)
     {
-        if ($time = $post->find('time.PostHeaderSubtitle__item', 0)->getAttribute('time')) {
-            return $time;
+        $accurateDateElement = $post->find('span.rel_date', 0);
+        if ($accurateDateElement) {
+            return $accurateDateElement->getAttribute('time');
         } else {
             $strdate = $post->find('time.PostHeaderSubtitle__item', 0)->plaintext;
             $strdate = preg_replace('/[\x00-\x1F\x7F-\xFF]/', ' ', $strdate);
@@ -417,7 +426,7 @@ class VkBridge extends BridgeAbstract
                 $date['hour'] = $date['minute'] = '00';
             }
             return strtotime($date['day'] . '-' . $date['month'] . '-' . $date['year'] . ' ' .
-                $date['hour'] . ':' . $date['minute']);
+                $date['hour'] . ':' . $date['minute']) - $this->tz;
         }
     }
 
