@@ -66,7 +66,6 @@ p {
 
 /* Header */
 header {
-    margin-top: 40px;
     padding: 15px;
     color: #1182DB;
     text-align: center;
@@ -133,7 +132,7 @@ input:focus:-ms-input-placeholder { opacity: 0; }
 
 .container {
     width: 60%;
-    margin: 30px auto;
+    margin: 0 auto 30px auto;
 }
 
 /* Section */
