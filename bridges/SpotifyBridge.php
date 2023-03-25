@@ -194,7 +194,9 @@ class SpotifyBridge extends BridgeAbstract
 
         $cache = $cacheFactory->create();
         $cache->setScope('SpotifyBridge');
-        $cache->setKey(['token']);
+
+        $cacheKey = sprintf('%s:%s', $this->getInput('clientid'), $this->getInput('clientsecret'));
+        $cache->setKey($cacheKey);
 
         $time = null;
         if ($cache->getTime()) {
