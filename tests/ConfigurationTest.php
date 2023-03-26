@@ -14,6 +14,7 @@ final class ConfigurationTest extends TestCase
         Configuration::loadConfiguration();
         $this->assertSame(null, Configuration::getConfig('foobar', ''));
         $this->assertSame(null, Configuration::getConfig('foo', 'bar'));
+        $this->assertSame('baz', Configuration::getConfig('foo', 'bar', 'baz'));
         $this->assertSame(null, Configuration::getConfig('cache', ''));
         $this->assertSame('UTC', Configuration::getConfig('system', 'timezone'));
     }
