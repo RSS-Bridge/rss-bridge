@@ -114,13 +114,27 @@ final class Configuration
             }
         }
 
+        $ip = $_SERVER['REMOTE_ADDR'];
         if (file_exists(__DIR__ . '/../DEBUG')) {
             // The debug mode has been moved to config. Preserve existing installs which has this DEBUG file.
-            $debug_whitelist = trim(file_get_contents(__DIR__ . '/../DEBUG'));
-            $ip = $_SERVER['REMOTE_ADDR'];
-            if (empty($debug_whitelist) || in_array($ip, explode("\n", str_replace("\r", '', $debug_whitelist)))) {
-                // Enable debug mode if the file is empty, or contains the client ip address
-                self::setConfig('system', 'debug', true);
+            $debug = trim(file_get_contents(__DIR__ . '/../DEBUG'));
+            if ($debug) {
+                $debugModeWhitelist = explode("\n", str_replace("\r", '', $debug));
+                self::setConfig('system', 'debug_mode_whitelist', $debugModeWhitelist);
+                if (in_array($ip, $debugModeWhitelist)) {
+                    self::setConfig('system', 'enable_debug_mode', true);
+                }
+            } else {
+                self::setConfig('system', 'enable_debug_mode', true);
+                self::setConfig('system', 'debug_mode_whitelist', []);
+            }
+        } else {
+            $enableDebugMode = self::getConfig('system', 'enable_debug_mode');
+            $debugModeWhitelist = self::getConfig('system', 'debug_mode_whitelist') ?: [];
+            if (
+                !$enableDebugMode || !($debugModeWhitelist === [] || in_array($ip, $debugModeWhitelist))
+            ) {
+                self::setConfig('system', 'enable_debug_mode', false);
             }
         }
 
@@ -131,8 +145,11 @@ final class Configuration
             self::throwConfigError('system', 'timezone');
         }
 
-        if (!is_bool(self::getConfig('system', 'debug'))) {
-            self::throwConfigError('system', 'debug', 'Is not a valid Boolean');
+        if (!is_bool(self::getConfig('system', 'enable_debug_mode'))) {
+            self::throwConfigError('system', 'enable_debug_mode', 'Is not a valid Boolean');
+        }
+        if (!is_array(self::getConfig('system', 'debug_mode_whitelist') ?: [])) {
+            self::throwConfigError('system', 'debug_mode_whitelist', 'Is not a valid array');
         }
 
         if (!is_string(self::getConfig('proxy', 'url'))) {

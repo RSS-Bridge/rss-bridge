@@ -3,11 +3,11 @@
 class Debug
 {
     /**
-     * Convenience function for Configuration::getConfig('system', 'debug')
+     * Convenience function for Configuration::getConfig('system', 'enable_debug_mode')
      */
     public static function isEnabled(): bool
     {
-        return Configuration::getConfig('system', 'debug') === true;
+        return Configuration::getConfig('system', 'enable_debug_mode') === true;
     }
 
     public static function log($message)
